@@ -1,0 +1,75 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model accounts {
+  id String @id @default(uuid())
+  name String @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+  version Int @default(1)
+  trades trades[]
+  status status[]
+}
+
+model status {
+  id String @id @default(uuid())
+  accountId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+  version Int @default(1)
+  trades trades[]
+  accounts accounts[]
+}
+
+model universe {
+  id String @id @default(uuid())
+  distribution Float
+  distributions_per_year Int
+  last_price Float
+  most_recent_sell_date DateTime?
+  symbol String
+  ex_date DateTime
+  risk Int
+  risk_group Int
+  expired Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+  version Int @default(1)
+  trades trades[]
+}
+
+model trades {
+  id String @id @default(uuid())
+  universeId String
+  universe universe @relation(fields: [universeId], references: [id])
+  statusId String
+  status status @relation(fields: [statusId], references: [id])
+  accountId String
+  account accounts @relation(fields: [accountId], references: [id])
+  buy Float
+  sell Float
+  buy_date DateTime
+  sell_date DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+}
+
+model holidays {
+  id String @id @default(uuid())
+  date DateTime
+  name String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+  version Int @default(1)
+}
