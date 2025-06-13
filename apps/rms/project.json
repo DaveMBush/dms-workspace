@@ -63,7 +63,11 @@
           "buildTarget": "rms:build:development"
         }
       },
-      "defaultConfiguration": "development"
+      "defaultConfiguration": "development",
+      "dependsOn": ["server:serve"],
+      "options": {
+        "proxyConfig": "apps/rms/proxy.conf.json"
+      }
     },
     "extract-i18n": {
       "executor": "@angular/build:extract-i18n",
