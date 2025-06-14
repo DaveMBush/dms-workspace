@@ -1,2 +1,9 @@
-<app-nx-welcome></app-nx-welcome>
+<p-toolbar>
+  <ng-template #start>
+    <h1>Retirement Money Secrets</h1>
+  </ng-template>
+  <ng-template #end>
+    <p-button icon="pi {{ themeIcon }}" class="mr-2" text severity="secondary" (onClick)="toggleTheme()" />
+  </ng-template>
+</p-toolbar>
 <router-outlet></router-outlet>
