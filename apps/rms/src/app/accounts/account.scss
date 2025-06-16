@@ -1,20 +1,21 @@
 :host {
-  height: 100%;
   display: flex;
   flex-direction: column;
+  width: 100%;
 }
 
 .toolbar {
   flex: 0 0 auto;
 }
 
-.splitter {
+p-listbox {
   flex: 1 1 auto;
-}
-
-.account-panel {
   display: flex;
   flex-direction: column;
-  height: 100%;
-  width: 100%;
+}
+
+::ng-deep {
+  .p-listbox {
+    flex: 1 1 auto;
+  }
 }

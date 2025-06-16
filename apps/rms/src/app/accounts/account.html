@@ -1,0 +1,10 @@
+<p-toolbar class="toolbar font-semibold text-lg">
+  <ng-template #start>
+    Accounts
+  </ng-template>
+  <ng-template #end>
+    <p-button icon="pi pi-plus" class="mr-2" text severity="secondary" />
+  </ng-template>
+</p-toolbar>
+
+<p-listbox [options]="accounts" />

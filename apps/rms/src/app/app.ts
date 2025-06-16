@@ -1,22 +1,26 @@
 import { isPlatformBrowser } from '@angular/common';
-import { Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { Component, inject, Inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
+import { SplitterModule } from 'primeng/splitter';
 import { ToolbarModule } from 'primeng/toolbar';
+import { Account } from './accounts/account';
+import { PanelModule } from 'primeng/panel';
 
 const DARK_MODE_KEY = 'rms-dark';
 
 @Component({
-  imports: [ButtonModule, RouterModule, ToolbarModule],
+  imports: [Account,ButtonModule,PanelModule, RouterModule, ToolbarModule, SplitterModule],
   selector: 'app-root',
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
 export class App implements OnInit {
   themeIcon = 'pi-moon';
-  constructor(@Inject(PLATFORM_ID) private platformId: object) {}
+  platformId = inject(PLATFORM_ID);
+  isBrowser = isPlatformBrowser(this.platformId);
   ngOnInit(): void {
-    if (isPlatformBrowser(this.platformId)) {
+    if (this.isBrowser) {
       if (document.readyState === 'complete') {
         this.afterPageLoad();
       } else {

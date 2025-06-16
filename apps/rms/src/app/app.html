@@ -1,9 +1,20 @@
-<p-toolbar>
+<p-toolbar class="toolbar font-semibold text-lg">
   <ng-template #start>
-    <h1>Retirement Money Secrets</h1>
+    RMS Manager
   </ng-template>
   <ng-template #end>
-    <p-button icon="pi {{ themeIcon }}" class="mr-2" text severity="secondary" (onClick)="toggleTheme()" />
+    <p-button ngSkipHydration icon="pi {{ isBrowser ? themeIcon : '' }}" class="mr-2" text severity="secondary" (onClick)="toggleTheme()" />
   </ng-template>
 </p-toolbar>
-<router-outlet></router-outlet>
+<p-splitter class="splitter" stateStorage="local" stateKey="rms-splitter-state" [panelSizes]="[20, 80]" [style]="{ height: '100%' }">
+    <ng-template #panel>
+      @if (isBrowser) {
+        <app-account />
+      }
+    </ng-template>
+    <ng-template #panel>
+        <router-outlet></router-outlet>
+    </ng-template>
+</p-splitter>
+
+
