@@ -5,7 +5,7 @@ import { accountEffectsServiceToken } from './account-effect-service-token';
 
 export const accountsDefinition: SmartEntityDefinition<Account> =
 {
-    entityName: 'locations',
+    entityName: 'accounts',
     effectServiceToken: accountEffectsServiceToken,
     defaultRow: function standardLocationsDefaultRowFunction(id) {
       return {

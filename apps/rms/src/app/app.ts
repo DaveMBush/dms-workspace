@@ -4,13 +4,12 @@ import { RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { SplitterModule } from 'primeng/splitter';
 import { ToolbarModule } from 'primeng/toolbar';
-import { Account } from './accounts/account';
 import { PanelModule } from 'primeng/panel';
 
 const DARK_MODE_KEY = 'rms-dark';
 
 @Component({
-  imports: [Account,ButtonModule,PanelModule, RouterModule, ToolbarModule, SplitterModule],
+  imports: [ButtonModule,PanelModule, RouterModule, ToolbarModule, SplitterModule],
   selector: 'app-root',
   templateUrl: './app.html',
   styleUrl: './app.scss',

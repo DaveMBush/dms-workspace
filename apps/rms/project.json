@@ -8,11 +8,15 @@
   "targets": {
     "build": {
       "executor": "@angular/build:application",
-      "outputs": ["{options.outputPath}"],
+      "outputs": [
+        "{options.outputPath}"
+      ],
       "options": {
         "outputPath": "dist/apps/rms",
         "browser": "apps/rms/src/main.ts",
-        "polyfills": ["zone.js"],
+        "polyfills": [
+          "zone.js"
+        ],
         "tsConfig": "apps/rms/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
         "assets": [
@@ -21,12 +25,9 @@
             "input": "apps/rms/public"
           }
         ],
-        "styles": ["apps/rms/src/styles.scss"],
-        "server": "apps/rms/src/main.server.ts",
-        "ssr": {
-          "entry": "apps/rms/src/server.ts"
-        },
-        "outputMode": "server"
+        "styles": [
+          "apps/rms/src/styles.scss"
+        ]
       },
       "configurations": {
         "production": {
@@ -64,7 +65,9 @@
         }
       },
       "defaultConfiguration": "development",
-      "dependsOn": ["server:serve"],
+      "dependsOn": [
+        "server:serve"
+      ],
       "options": {
         "proxyConfig": "apps/rms/proxy.conf.json"
       }
@@ -80,7 +83,9 @@
     },
     "test": {
       "executor": "@nx/vite:test",
-      "outputs": ["{options.reportsDirectory}"],
+      "outputs": [
+        "{options.reportsDirectory}"
+      ],
       "options": {
         "reportsDirectory": "../../coverage/apps/rms"
       }

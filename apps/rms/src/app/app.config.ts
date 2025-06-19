@@ -17,14 +17,15 @@ import {
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeng/themes/aura';
-import { TopEffectsService } from './store/top/top-effect.service';
-import { topEffectsServiceToken } from './store/top/top-effect-service-token';
-import { accountEffectsServiceToken } from './store/accounts/account-effect-service-token';
-import { AccountEffectsService } from './store/accounts/account-effect.service';
+import { TopEffectsService } from './accounts/store/top/top-effect.service';
+import { topEffectsServiceToken } from './accounts/store/top/top-effect-service-token';
+import { accountEffectsServiceToken } from './accounts/store/accounts/account-effect-service-token';
+import { AccountEffectsService } from './accounts/store/accounts/account-effect.service';
 import { provideHttpClient, withFetch, withInterceptorsFromDi } from '@angular/common/http';
-import { provideSmartFeatureSignalEntities, provideSmartNgRX } from '@smarttools/smart-signals';
-import { accountsDefinition } from './store/accounts/accounts-definition.const';
-import { topDefinition } from './store/top/top-definition.const';
+import { provideSmartFeatureSignalEntities, provideSmartNgRX, smartErrorHandlerToken } from '@smarttools/smart-signals';
+import { accountsDefinition } from './accounts/store/accounts/accounts-definition.const';
+import { topDefinition } from './accounts/store/top/top-definition.const';
+import { ErrorHandlerService } from './error-handler/error-handler.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [{
@@ -33,8 +34,12 @@ export const appConfig: ApplicationConfig = {
   }, {
     provide: accountEffectsServiceToken,
     useClass: AccountEffectsService,
-  },
-    provideClientHydration(withEventReplay()),
+  },    {
+      provide: smartErrorHandlerToken,
+      useClass: ErrorHandlerService,
+    },
+
+    // provideClientHydration(withEventReplay()),
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideAnimationsAsync(),
@@ -42,17 +47,16 @@ export const appConfig: ApplicationConfig = {
       theme: {
         preset: Aura,
         options: {
-          darkModeSelector: '.p-dark',
+          cssLayer: {
+            name: 'primeng',
+            order: 'theme, base, primeng'
+          },
+          darkModeSelector: '.p-dark'
         },
       },
     }),
     provideHttpClient(withInterceptorsFromDi(),withFetch()),
     provideRouter(appRoutes),
-    provideClientHydration(withEventReplay()),
-    provideSmartNgRX(),
-      provideSmartFeatureSignalEntities('tree-standard', [
-        topDefinition,
-        accountsDefinition
-      ])
+    provideSmartNgRX()
   ],
 };

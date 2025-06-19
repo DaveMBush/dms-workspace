@@ -1,6 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
 @import "primeicons/primeicons.css";
-@import "primeflex/primeflex.css";
+
+@custom-variant dark (&:where(.p-dark, .p-dark *));     //dark mode configuration
 
 html, body {
   margin: 0;

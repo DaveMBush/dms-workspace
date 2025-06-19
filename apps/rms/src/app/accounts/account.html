@@ -1,10 +1,18 @@
-<p-toolbar class="toolbar font-semibold text-lg">
+<p-toolbar class="bg-surface-0 dark:bg-surface-900 text-lg font-semibold">
   <ng-template #start>
     Accounts
   </ng-template>
   <ng-template #end>
-    <p-button icon="pi pi-plus" class="mr-2" text severity="secondary" />
+    <p-button icon="pi pi-plus" class="mr-2" text severity="secondary" (onClick)="addAccount()"/>
   </ng-template>
 </p-toolbar>
 
-<p-listbox [options]="accounts" />
+<p-listbox [options]="accountsArray$()" dataKey="id" class="mt-4">
+  <ng-template pTemplate="item" let-account>
+    @if(addingNode === account.id) {
+      <rms-node-editor placeholder="Edit Account" [(ngModel)]="editingContent" (cancel)="cancelEdit(account)" />
+    } @else {
+      <div class="text-color hover:text-color-emphasis">{{ account.name }}</div>
+    }
+  </ng-template>
+</p-listbox>

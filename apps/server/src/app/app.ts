@@ -22,6 +22,6 @@ export async function app(fastify: FastifyInstance, opts: AppOptions) {
   // define your routes in one of these
   fastify.register(AutoLoad, {
     dir: path.join(__dirname, 'routes'),
-    options: { ...opts },
+    options: { ...opts, prefix: '/api' },
   });
 }
