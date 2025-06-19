@@ -1,4 +1,4 @@
-<p-toolbar class="bg-surface-0 dark:bg-surface-900 text-lg font-semibold">
+<p-toolbar class="text-lg font-semibold">
   <ng-template #start>
     Accounts
   </ng-template>
@@ -7,7 +7,7 @@
   </ng-template>
 </p-toolbar>
 
-<p-listbox [options]="accountsArray$()" dataKey="id" class="mt-4">
+<p-listbox [options]="accountsArray$()" dataKey="id" class="mt-0">
   <ng-template pTemplate="item" let-account>
     @if(addingNode === account.id) {
       <rms-node-editor placeholder="Edit Account" [(ngModel)]="editingContent" (cancel)="cancelEdit(account)" />

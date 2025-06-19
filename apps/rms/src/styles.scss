@@ -1,5 +1,8 @@
 /* You can add global styles to this file, and also import other style files */
 @import "primeicons/primeicons.css";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 @custom-variant dark (&:where(.p-dark, .p-dark *));     //dark mode configuration
 
