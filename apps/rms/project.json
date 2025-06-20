@@ -65,9 +65,6 @@
         }
       },
       "defaultConfiguration": "development",
-      "dependsOn": [
-        "server:serve"
-      ],
       "options": {
         "proxyConfig": "apps/rms/proxy.conf.json"
       }

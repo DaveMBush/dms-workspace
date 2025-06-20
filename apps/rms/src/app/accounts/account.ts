@@ -54,7 +54,18 @@ export class Account {
     this.accountService.addAccount();
   }
 
+  protected editAccount(item: AccountInterface): void {
+    this.accountService.editAccount(item);
+  }
+
+  protected deleteAccount(item: AccountInterface): void {
+    this.accountService.deleteAccount(item);
+  }
   protected cancelEdit(item: AccountInterface): void {
     this.accountService.cancelEdit(item);
+  }
+
+  protected saveEdit(item: AccountInterface): void {
+    this.accountService.saveEdit(item);
   }
 }

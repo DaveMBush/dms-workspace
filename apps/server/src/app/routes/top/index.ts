@@ -20,6 +20,7 @@ export default async function (fastify: FastifyInstance): Promise<void> {
       },
     },
     async function (request, reply): Promise<Top[]> {
+      console.log('POST /api/top called with body:', request.body);
     const ids = request.body as unknown as string[];
     if(ids.length === 0) {
       return reply.status(200).send([]);
@@ -31,6 +32,6 @@ export default async function (fastify: FastifyInstance): Promise<void> {
       },
       orderBy: { createdAt: 'asc'}
     });
-      return reply.status(200).send([{id: '1', accounts: topAccounts.map((account) => account.id)}]);
+    return reply.status(200).send([{id: '1', accounts: topAccounts.map((account) => account.id)}]);
   });
 }

@@ -1,4 +1,4 @@
-import Fastify from 'fastify';
+import Fastify, { fastify } from 'fastify';
 import { app } from './app/app';
 
 const host = process.env.HOST ?? 'localhost';
@@ -14,6 +14,7 @@ server.register(app);
 
 // Start listening.
 server.listen({ port, host }, (err) => {
+  console.log(server.printRoutes());
   if (err) {
     server.log.error(err);
     process.exit(1);

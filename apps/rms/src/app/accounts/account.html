@@ -1,6 +1,6 @@
 <p-toolbar class="text-lg font-semibold">
   <ng-template #start>
-    Accounts
+    <div class="whitespace-nowrap truncate">Accounts</div>
   </ng-template>
   <ng-template #end>
     <p-button icon="pi pi-plus" class="mr-2" text severity="secondary" (onClick)="addAccount()"/>
@@ -9,10 +9,14 @@
 
 <p-listbox [options]="accountsArray$()" dataKey="id" class="mt-0">
   <ng-template pTemplate="item" let-account>
-    @if(addingNode === account.id) {
-      <rms-node-editor placeholder="Edit Account" [(ngModel)]="editingContent" (cancel)="cancelEdit(account)" />
+    @if(addingNode === account.id || editingNode === account.id) {
+      <rms-node-editor placeholder="Edit Account" [(ngModel)]="editingContent" (cancel)="cancelEdit(account)" (save)="saveEdit(account)" />
     } @else {
-      <div class="text-color hover:text-color-emphasis">{{ account.name }}</div>
+      <div class="group flex flex-row basis-full">
+        <div class="flex-auto text-color hover:text-color-emphasis whitespace-nowrap truncate">{{ account.name }}</div>
+        <p-button icon="pi pi-pencil" class="flex-none invisible group-hover:visible" text severity="secondary" (click)="editAccount(account)" />
+        <p-button icon="pi pi-trash" class="flex-none invisible group-hover:visible" text severity="secondary" (click)="deleteAccount(account)" />
+      </div>
     }
   </ng-template>
 </p-listbox>

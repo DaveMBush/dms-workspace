@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Account } from './account';
-import { SmartArray } from '@smarttools/smart-signals';
+import { RowProxyDelete, SmartArray } from '@smarttools/smart-signals';
 import { Account as AccountInterface } from './store/accounts/account.interface';
 import { Top } from './store/top/top.interface';
 
@@ -24,9 +24,34 @@ export class AccountComponentService {
     );
   }
 
+  editAccount(item: AccountInterface): void {
+    this.component.editingNode = item.id;
+    this.component.editingContent = item.name;
+  }
+
   cancelEdit(item: AccountInterface): void {
+    if(this.component.addingNode.length > 0) {
+      (this.component.accounts$() as SmartArray<Top, AccountInterface>).removeFromStore!(item, this.component.top['1']!);
+    }
+    this.component.addingNode = '';
+    this.component.editingNode = '';
+    this.component.editingContent = '';
+  }
+
+  deleteAccount(item: AccountInterface): void {
+    (item as RowProxyDelete).delete!();
+  }
+
+  saveEdit(item: AccountInterface): void {
+    if (this.component.editingContent === '') {
+      return;
+    }
+    var account = this.component.accountsArray$().find((n: AccountInterface) => n.id === item.id);
+    if (account) {
+      account.name = this.component.editingContent;
+    }
+    this.component.editingNode = '';
     this.component.addingNode = '';
     this.component.editingContent = '';
-    (this.component.accounts$() as SmartArray<Top, AccountInterface>).removeFromStore!(item, this.component.top['1']!);
   }
 }

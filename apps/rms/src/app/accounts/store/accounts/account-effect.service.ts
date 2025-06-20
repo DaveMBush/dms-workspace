@@ -16,7 +16,7 @@ export class AccountEffectsService extends EffectService<Account> {
   }
 
   override loadByIds(ids: string[]): Observable<Account[]> {
-    return this.http.post<Account[]>(this.apiAccount, ids);
+    return this.http.post<Account[]>(this.apiAccount , ids);
   }
 
   override update(newRow: Account): Observable<Account[]> {
@@ -24,7 +24,7 @@ export class AccountEffectsService extends EffectService<Account> {
   }
 
   override add(row: Account): Observable<Account[]> {
-    return this.http.post<Account[]>(this.apiAccount, row);
+    return this.http.post<Account[]>(this.apiAccount + '/add', row);
   }
 
   override delete(id: string): Observable<void> {

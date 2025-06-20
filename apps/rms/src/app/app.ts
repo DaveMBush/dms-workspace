@@ -5,19 +5,33 @@ import { ButtonModule } from 'primeng/button';
 import { SplitterModule } from 'primeng/splitter';
 import { ToolbarModule } from 'primeng/toolbar';
 import { PanelModule } from 'primeng/panel';
+import { TooltipModule } from 'primeng/tooltip';
+import { SettingsComponent } from './settings/settings.component';
+import { SettingsService } from './settings/settings.service';
 
 const DARK_MODE_KEY = 'rms-dark';
 
 @Component({
-  imports: [ButtonModule,PanelModule, RouterModule, ToolbarModule, SplitterModule],
+  imports: [
+    ButtonModule,
+    PanelModule,
+    RouterModule,
+    ToolbarModule,
+    SplitterModule,
+    TooltipModule,
+    SettingsComponent,
+  ],
   selector: 'app-root',
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
 export class App implements OnInit {
   themeIcon = 'pi-moon';
+  themeTooltip = 'Dark Mode';
   platformId = inject(PLATFORM_ID);
   isBrowser = isPlatformBrowser(this.platformId);
+  protected readonly settingsService = inject(SettingsService);
+
   ngOnInit(): void {
     if (this.isBrowser) {
       if (document.readyState === 'complete') {
@@ -39,6 +53,7 @@ export class App implements OnInit {
 
     if (darkValue === 'true') {
       this.themeIcon = 'pi-sun';
+      this.themeTooltip = 'Light Mode';
       document
         .querySelector('html')
         ?.classList.toggle('p-dark', true);
@@ -50,5 +65,6 @@ export class App implements OnInit {
     document.querySelector('html')?.classList.toggle('p-dark', !isDark);
     localStorage.setItem(DARK_MODE_KEY, !isDark ? 'true' : 'false');
     this.themeIcon = !isDark ? 'pi-sun' : 'pi-moon';
+    this.themeTooltip = !isDark ? 'Light Mode' : 'Dark Mode';
   }
 }
