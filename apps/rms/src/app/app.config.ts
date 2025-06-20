@@ -49,7 +49,7 @@ export const appConfig: ApplicationConfig = {
         options: {
           cssLayer: {
             name: 'primeng',
-            order: 'theme, base, primeng'
+            order: 'tailwind-base, primeng, tailwind-utilities',
           },
           darkModeSelector: '.p-dark'
         },

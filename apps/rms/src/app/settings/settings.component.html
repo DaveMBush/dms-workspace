@@ -1,8 +1,10 @@
-<p-dialog header="Settings" [(visible)]="settingsService.visible" [modal]="true" [style]="{ width: '50vw' }">
-  <p>
-    Settings content goes here.
-  </p>
+<p-dialog header="Settings" [(visible)]="settingsService.visible" [modal]="true" [style]="{ width: '25vw' }">
+  <div class="flex flex-col">
+    <label for="symbols">Symbols</label>
+    <textarea id="symbols" pInputTextarea [rows]="5" [(ngModel)]="symbols"></textarea>
+  </div>
   <ng-template pTemplate="footer">
-    <p-button (click)="settingsService.hide()" label="Close" styleClass="p-button-text"></p-button>
+    <p-button (click)="settingsService.hide()" label="Cancel" severity="secondary"></p-button>
+    <p-button (click)="save()" label="Save"></p-button>
   </ng-template>
 </p-dialog>
