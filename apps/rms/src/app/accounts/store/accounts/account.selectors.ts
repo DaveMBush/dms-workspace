@@ -1,7 +1,7 @@
 import { createSmartSignal, getTopChildRows } from '@smarttools/smart-signals';
-import { Top } from '../top/top.interface';
+import { Top } from '../../../store/top/top.interface';
 import { Account } from './account.interface';
-import { selectTopEntities } from '../top/top.selectors';
+import { selectTopEntities } from '../../../store/top/top.selectors';
 
 export const selectAccountsEntity = createSmartSignal<Account>(
   'app',
