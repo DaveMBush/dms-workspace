@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ViewChild, ElementRef } from '@angular/core';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { SettingsService } from './settings.service';
@@ -14,10 +14,19 @@ import { FormsModule } from '@angular/forms';
 })
 export class SettingsComponent {
   protected readonly settingsService = inject(SettingsService);
-  symbols = '';
+  @ViewChild('equitySymbolsTextarea') equitySymbolsTextarea!: ElementRef<HTMLTextAreaElement>;
+  equitySymbols = '';
+  incomeSymbols = '';
+  taxFreeIncomeSymbols = '';
 
   save() {
     // Save logic goes here
     this.settingsService.hide();
+  }
+
+  onDialogShow() {
+    setTimeout(() => {
+      this.equitySymbolsTextarea.nativeElement.focus();
+    });
   }
 }

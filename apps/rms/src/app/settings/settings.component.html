@@ -1,7 +1,18 @@
-<p-dialog header="Settings" [(visible)]="settingsService.visible" [modal]="true" [style]="{ width: '25vw' }">
-  <div class="flex flex-col">
-    <label for="symbols">Symbols</label>
-    <textarea id="symbols" pInputTextarea [rows]="5" [(ngModel)]="symbols"></textarea>
+<p-dialog header="Settings" [(visible)]="settingsService.visible" [modal]="true" [style]="{ width: '25vw' }" (onShow)="onDialogShow()">
+  <h4 class="mt-0">Current Universe</h4>
+  <div class="flex flex-col gap-4 pl-4">
+    <div class="flex flex-col">
+      <label for="equitySymbols">Equity</label>
+      <textarea #equitySymbolsTextarea id="equitySymbols" pInputTextarea [rows]="5" [(ngModel)]="equitySymbols"></textarea>
+    </div>
+    <div class="flex flex-col">
+      <label for="incomeSymbols">Income</label>
+      <textarea id="incomeSymbols" pInputTextarea [rows]="5" [(ngModel)]="incomeSymbols"></textarea>
+    </div>
+    <div class="flex flex-col">
+      <label for="taxFreeIncomeSymbols">Tax Free Income</label>
+      <textarea id="taxFreeIncomeSymbols" pInputTextarea [rows]="5" [(ngModel)]="taxFreeIncomeSymbols"></textarea>
+    </div>
   </div>
   <ng-template pTemplate="footer">
     <p-button (click)="settingsService.hide()" label="Cancel" severity="secondary"></p-button>
