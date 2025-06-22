@@ -4,7 +4,8 @@
   "license": "MIT",
   "scripts": {
     "start:server": "nx run server:serve",
-    "start:rms": "nx run rms:serve"
+    "start:rms": "nx run rms:serve",
+    "build:rms": "nx run rms:build"
   },
   "private": true,
   "dependencies": {
