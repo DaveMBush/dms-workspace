@@ -6,13 +6,23 @@ import { provideSmartFeatureSignalEntities } from '@smarttools/smart-signals';
 export const appRoutes: Route[] = [
   {
     path: '',
-    outlet: 'accounts',
-    loadComponent: () => import('./accounts/account').then((m) => m.Account),
+    loadComponent: () => import('./shell/shell.component').then((m) => m.ShellComponent),
     providers: [
       provideSmartFeatureSignalEntities('app', [
         topDefinition,
-        accountsDefinition
       ])
+    ],
+    children: [
+      {
+        path: '',
+        outlet: 'accounts',
+        loadComponent: () => import('./accounts/account').then((m) => m.Account),
+        providers: [
+          provideSmartFeatureSignalEntities('app', [
+            accountsDefinition
+          ])
+        ]
+      },
     ]
   },
 ];
