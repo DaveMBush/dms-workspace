@@ -29,7 +29,7 @@ export default async function (fastify: FastifyInstance): Promise<void> {
     },
     async function (request, reply): Promise<void> {
       console.log('HANDLER: POST /api/settings');
-      const { equities, income, tax_free_income } = request.body;
+      const { equities, income, taxFreeIncome } = request.body;
 
       const riskGroup: RiskGroup[] = [];
       const riskGroups = await prisma.risk_group.findMany();
@@ -54,16 +54,23 @@ export default async function (fastify: FastifyInstance): Promise<void> {
         riskGroup[1] = riskGroups.find(riskGroup => riskGroup.name === 'Income')!;
         riskGroup[2] = riskGroups.find(riskGroup => riskGroup.name === 'Tax Free Income')!;
       }
-      [equities, income, tax_free_income]
-        .forEach((value, index) => {
-          const symbols = value
-            .split(/\r?\n/)      // Split on both \n and \r\n
-            .map(s => s.trim())  // Remove extra spaces from each line
-            .filter(Boolean);
-          symbols.forEach(async (symbol) => {
-            addOrUpdateSymbol(symbol, riskGroup[index].id);
+      try {
+        [equities, income, taxFreeIncome]
+          .forEach((value, index) => {
+            if(!value || value.length === 0) {
+              return;
+            }
+            const symbols = value
+              .split(/\r?\n/)      // Split on both \n and \r\n
+              .map(s => s.trim())  // Remove extra spaces from each line
+              .filter(Boolean);
+            symbols.forEach(async (symbol) => {
+              addOrUpdateSymbol(symbol, riskGroup[index].id);
+            });
           });
-      });
+      } catch (error) {
+        reply.status(500).send({ error: 'Internal server error' });
+      }
     }
   );
 }
@@ -96,11 +103,11 @@ async function addOrUpdateSymbol(symbol: string, riskGroupId: string) {
       data: {
         symbol: symbol,
         risk_group_id: riskGroupId,
-        distribution: 0,
-        distributions_per_year: 0,
+        distribution: distribution?.distribution,
+        distributions_per_year: distribution?.distributions_per_year,
         last_price: lastPrice,
         most_recent_sell_date: null,
-        ex_date: null,
+        ex_date: exDate,
         risk: 0,
         expired: false,
       },
@@ -115,8 +122,8 @@ async function getDistribution(symbol: string, exDate: Date, retryCount: number 
     }
     const oneYearAgo = new Date(exDate.valueOf() - (365 * 24 * 60 * 60 * 1000));
     const oneDayFromNow = new Date(exDate.valueOf() + (24 * 60 * 60 * 1000));
-    const result = await yahooFinance.historical(symbol, { period1: oneYearAgo, period2: oneDayFromNow, events: 'dividends' });
-    const dividends = result.filter((r) => r);
+    const result = await yahooFinance.chart(symbol, { period1: oneYearAgo, period2: oneDayFromNow, events: 'dividends' });
+    const dividends = result.events?.dividends?.filter((r) => r);
     let currentDividend = dividends.find((d) => d.date == exDate);
     if (!currentDividend) {
       currentDividend = dividends[dividends.length - 1];
@@ -130,7 +137,7 @@ async function getDistribution(symbol: string, exDate: Date, retryCount: number 
       perYear = 4
     }
     return {
-      distribution: currentDividend.dividends,
+      distribution: currentDividend.amount,
       ex_date: currentDividend.date,
       distributions_per_year: perYear,
     };
