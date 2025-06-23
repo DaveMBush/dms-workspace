@@ -4,6 +4,7 @@ import { ButtonModule } from 'primeng/button';
 import { SettingsService } from './settings.service';
 import { Textarea } from 'primeng/textarea';
 import { FormsModule } from '@angular/forms';
+import { RiskGroupService } from './risk-group.service';
 
 @Component({
   selector: 'app-settings',
@@ -11,6 +12,7 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['./settings.component.scss'],
   standalone: true,
   imports: [DialogModule, ButtonModule, Textarea, FormsModule],
+  viewProviders: [RiskGroupService]
 })
 export class SettingsComponent {
   protected readonly settingsService = inject(SettingsService);

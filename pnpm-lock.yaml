@@ -74,9 +74,6 @@ importers:
       rxjs:
         specifier: ~7.8.0
         version: 7.8.2
-      zone.js:
-        specifier: ~0.15.0
-        version: 0.15.1
     devDependencies:
       '@analogjs/vite-plugin-angular':
         specifier: ~1.17.1
@@ -19416,4 +19413,5 @@ snapshots:
 
   yoctocolors-cjs@2.1.2: {}
 
-  zone.js@0.15.1: {}
+  zone.js@0.15.1:
+    optional: true

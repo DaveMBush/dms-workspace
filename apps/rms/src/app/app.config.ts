@@ -3,6 +3,7 @@ import {
   provideBrowserGlobalErrorListeners,
   Provider,
   provideZoneChangeDetection,
+  provideZonelessChangeDetection,
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { appRoutes } from './app.routes';
@@ -16,6 +17,8 @@ import { AccountEffectsService } from './accounts/store/accounts/account-effect.
 import { provideHttpClient, withFetch, withInterceptorsFromDi } from '@angular/common/http';
 import { provideSmartNgRX, smartErrorHandlerToken } from '@smarttools/smart-signals';
 import { ErrorHandlerService } from './error-handler/error-handler.service';
+import { RiskGroupEffectsService } from './store/risk-group/risk-group-effect.service';
+import { riskGroupEffectsServiceToken } from './store/risk-group/risk-group-effect-service-token';
 
 export const appConfig: ApplicationConfig = {
   providers: [{
@@ -24,14 +27,17 @@ export const appConfig: ApplicationConfig = {
   }, {
     provide: accountEffectsServiceToken,
     useClass: AccountEffectsService,
-  },    {
+  }, {
+    provide: riskGroupEffectsServiceToken,
+    useClass: RiskGroupEffectsService,
+  }, {
       provide: smartErrorHandlerToken,
       useClass: ErrorHandlerService,
     },
 
     // provideClientHydration(withEventReplay()),
     provideBrowserGlobalErrorListeners(),
-    provideZoneChangeDetection({ eventCoalescing: true }),
+    provideZonelessChangeDetection(),
     provideAnimationsAsync(),
     providePrimeNG({
       theme: {

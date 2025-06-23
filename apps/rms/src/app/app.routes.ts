@@ -2,6 +2,7 @@ import { Route } from '@angular/router';
 import { topDefinition } from './store/top/top-definition.const';
 import { accountsDefinition } from './accounts/store/accounts/accounts-definition.const';
 import { provideSmartFeatureSignalEntities } from '@smarttools/smart-signals';
+import { riskGroupDefinition } from './store/risk-group/risk-group-definition.const';
 
 export const appRoutes: Route[] = [
   {
@@ -10,6 +11,7 @@ export const appRoutes: Route[] = [
     providers: [
       provideSmartFeatureSignalEntities('app', [
         topDefinition,
+        riskGroupDefinition
       ])
     ],
     children: [

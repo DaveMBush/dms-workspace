@@ -14,9 +14,7 @@
       "options": {
         "outputPath": "dist/apps/rms",
         "browser": "apps/rms/src/main.ts",
-        "polyfills": [
-          "zone.js"
-        ],
+        "polyfills": [],
         "tsConfig": "apps/rms/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
         "assets": [
