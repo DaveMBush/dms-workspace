@@ -15,7 +15,11 @@
   [panelSizes]="[20, 80]">
     <ng-template #panel>
       <div class="h-full w-full">
-        <app-global />
+        <app-global
+          [selectedId]="selectedId"
+          (selectedIdChange)="onSelectionChange($event)"
+        />
+        <!-- TODO: Pass selection to accounts component if not using router-outlet -->
         <router-outlet name="accounts"></router-outlet>
       </div>
     </ng-template>

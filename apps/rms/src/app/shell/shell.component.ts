@@ -34,6 +34,7 @@ export class ShellComponent implements OnInit {
   platformId = inject(PLATFORM_ID);
   isBrowser = isPlatformBrowser(this.platformId);
   protected readonly settingsService = inject(SettingsService);
+  selectedId: string | null = null;
 
   ngOnInit(): void {
     if (this.isBrowser) {
@@ -69,5 +70,9 @@ export class ShellComponent implements OnInit {
     localStorage.setItem(DARK_MODE_KEY, !isDark ? 'true' : 'false');
     this.themeIcon = !isDark ? 'pi-sun' : 'pi-moon';
     this.themeTooltip = !isDark ? 'Light Mode' : 'Dark Mode';
+  }
+
+  onSelectionChange(id: string) {
+    this.selectedId = id;
   }
 }
