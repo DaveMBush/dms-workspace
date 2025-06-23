@@ -1,0 +1,13 @@
+<p-toolbar class="text-lg font-semibold">
+  <ng-template #start>
+    <div class="whitespace-nowrap truncate">Global</div>
+  </ng-template>
+</p-toolbar>
+
+<p-listbox [options]="globals" dataKey="id" class="mt-0">
+  <ng-template pTemplate="item" let-global>
+    <div class="group flex flex-row basis-full">
+      <div class="flex-auto text-color hover:text-color-emphasis whitespace-nowrap truncate">{{ global.name }}</div>
+    </div>
+  </ng-template>
+</p-listbox>

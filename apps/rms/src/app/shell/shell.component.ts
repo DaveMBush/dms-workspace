@@ -8,6 +8,7 @@ import { PanelModule } from 'primeng/panel';
 import { TooltipModule } from 'primeng/tooltip';
 import { SettingsComponent } from '../settings/settings.component';
 import { SettingsService } from '../settings/settings.service';
+import { GlobalComponent } from '../global/global.component';
 
 const DARK_MODE_KEY = 'rms-dark';
 
@@ -20,6 +21,7 @@ const DARK_MODE_KEY = 'rms-dark';
     SplitterModule,
     TooltipModule,
     SettingsComponent,
+    GlobalComponent,
   ],
   selector: 'app-shell',
   templateUrl: './shell.component.html',
