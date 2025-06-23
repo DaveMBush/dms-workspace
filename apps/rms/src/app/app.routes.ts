@@ -29,7 +29,7 @@ export const appRoutes: Route[] = [
       },
       {
         path: 'global/universe',
-        loadComponent: () => import('./global/global-universe.component').then(m => m.GlobalUniverseComponent),
+        loadComponent: () => import('./global/global-universe/global-universe.component').then(m => m.GlobalUniverseComponent),
       },
     ]
   },

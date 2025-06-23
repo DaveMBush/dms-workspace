@@ -5,7 +5,7 @@ import { selectTopEntities } from '../top/top.selectors';
 
 export const selectUniverseEntity = createSmartSignal<Universe>(
   'app',
-  'universes'
+  'universe'
 );
 
 export const selectTopUniverses = createSmartSignal(selectTopEntities, [

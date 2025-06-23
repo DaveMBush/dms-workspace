@@ -16,7 +16,7 @@ export const universeDefinition: SmartEntityDefinition<Universe> = {
       symbol: '',
       ex_date: '',
       risk: 0,
-      risk_group: 0,
+      risk_group_id: '',
       expired: false,
     };
   },

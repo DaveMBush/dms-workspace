@@ -14,7 +14,15 @@ export default async function (fastify: FastifyInstance): Promise<void> {
         response: {
           200: {
             type: 'array',
-            items: { type: 'object', properties: { id: { type: 'string' }, accounts: { type: 'array', items: { type: 'string' } } } },
+            items: {
+              type: 'object',
+              properties: {
+                id: { type: 'string' },
+                accounts: { type: 'array', items: { type: 'string' } },
+                universes: { type: 'array', items: { type: 'string' } },
+                riskGroups: { type: 'array', items: { type: 'string' } }
+              }
+            },
           },
         },
       },
@@ -32,6 +40,23 @@ export default async function (fastify: FastifyInstance): Promise<void> {
       },
       orderBy: { createdAt: 'asc'}
     });
-    return reply.status(200).send([{id: '1', accounts: topAccounts.map((account) => account.id)}]);
+    const universe = await prisma.universe.findMany({
+      select: {
+        id: true
+      },
+      orderBy: { createdAt: 'asc'}
+    });
+    const riskGroup = await prisma.risk_group.findMany({
+      select: {
+        id: true
+      },
+      orderBy: { createdAt: 'asc'}
+    });
+      return reply.status(200).send([{
+        id: '1',
+        accounts: topAccounts.map((account) => account.id),
+        universes: universe.map((universe) => universe.id),
+        riskGroups: riskGroup.map((riskGroup) => riskGroup.id),
+      }]);
   });
 }

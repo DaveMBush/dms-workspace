@@ -7,7 +7,7 @@ export interface Universe {
   symbol: string;
   ex_date: string; // ISO date string
   risk: number;
-  risk_group: number;
+  risk_group_id: string;
   expired: boolean;
   name: string;
 }

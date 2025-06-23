@@ -1,0 +1,23 @@
+<p-toolbar class="text-lg font-semibold">
+  <ng-template #start>
+    <div class="whitespace-nowrap truncate">Universe</div>
+  </ng-template>
+</p-toolbar>
+<p-table [value]="universe$()">
+  <ng-template pTemplate="header">
+    <tr>
+      <th>Symbol</th>
+      <th>Name</th>
+      <th>Risk Group</th>
+      <th>Ex-Date</th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-row>
+    <tr>
+      <td>{{ row.symbol }}</td>
+      <td>{{ row.name }}</td>
+      <td>{{ row.riskGroup }}</td>
+      <td>{{ row.ex_date }}</td>
+    </tr>
+  </ng-template>
+</p-table>
