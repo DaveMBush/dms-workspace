@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ToolbarModule } from 'primeng/toolbar';
 import { ListboxModule } from 'primeng/listbox';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-global',
@@ -13,13 +14,18 @@ import { FormsModule } from '@angular/forms';
 })
 export class GlobalComponent {
   @Input() selectedId: string | null = null;
-  @Output() selectedIdChange = new EventEmitter<string>();
+  @Output() selectedIdChange = new EventEmitter<{id: string, name: string}>();
 
   globals = [
     { id: 'universe', name: 'Universe' },
   ];
 
-  onSelect(id: string) {
-    this.selectedIdChange.emit(id);
+  constructor(private router: Router) {}
+
+  onSelect(e: {id: string, name: string}) {
+    this.selectedIdChange.emit(e);
+    if (e.id === 'universe') {
+      this.router.navigate(['/global/universe']);
+    }
   }
 }

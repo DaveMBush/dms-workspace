@@ -19,6 +19,8 @@ import { provideSmartNgRX, smartErrorHandlerToken } from '@smarttools/smart-sign
 import { ErrorHandlerService } from './error-handler/error-handler.service';
 import { RiskGroupEffectsService } from './store/risk-group/risk-group-effect.service';
 import { riskGroupEffectsServiceToken } from './store/risk-group/risk-group-effect-service-token';
+import { universeEffectsServiceToken } from './store/universe/universe-effect-service-token';
+import { UniverseEffectsService } from './store/universe/universe-effect.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [{
@@ -30,6 +32,9 @@ export const appConfig: ApplicationConfig = {
   }, {
     provide: riskGroupEffectsServiceToken,
     useClass: RiskGroupEffectsService,
+  }, {
+    provide: universeEffectsServiceToken,
+    useClass: UniverseEffectsService,
   }, {
       provide: smartErrorHandlerToken,
       useClass: ErrorHandlerService,

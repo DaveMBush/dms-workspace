@@ -72,7 +72,7 @@ export class ShellComponent implements OnInit {
     this.themeTooltip = !isDark ? 'Light Mode' : 'Dark Mode';
   }
 
-  onSelectionChange(id: string) {
-    this.selectedId = id;
+  onSelectionChange(e: {id: string, name: string}) {
+    this.selectedId = e.id;
   }
 }
