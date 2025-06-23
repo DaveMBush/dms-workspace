@@ -4,7 +4,7 @@ import { ButtonModule } from 'primeng/button';
 import { SettingsService } from './settings.service';
 import { Textarea } from 'primeng/textarea';
 import { FormsModule } from '@angular/forms';
-import { RiskGroupService } from './risk-group.service';
+import { UpdateUniverseService } from './update-universe.service';
 
 @Component({
   selector: 'app-settings',
@@ -12,17 +12,18 @@ import { RiskGroupService } from './risk-group.service';
   styleUrls: ['./settings.component.scss'],
   standalone: true,
   imports: [DialogModule, ButtonModule, Textarea, FormsModule],
-  viewProviders: [RiskGroupService]
+  viewProviders: [UpdateUniverseService]
 })
 export class SettingsComponent {
   protected readonly settingsService = inject(SettingsService);
+  protected readonly updateUniverseService = inject(UpdateUniverseService);
   @ViewChild('equitySymbolsTextarea') equitySymbolsTextarea!: ElementRef<HTMLTextAreaElement>;
   equitySymbols = '';
   incomeSymbols = '';
   taxFreeIncomeSymbols = '';
 
   save() {
-    // Save logic goes here
+    this.updateUniverseService.updateUniverse(this.equitySymbols, this.incomeSymbols, this.taxFreeIncomeSymbols);
     this.settingsService.hide();
   }
 
