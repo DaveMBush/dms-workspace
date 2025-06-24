@@ -36,7 +36,7 @@ model universe {
   last_price             Float
   most_recent_sell_date  DateTime?
   symbol                 String
-  ex_date                DateTime
+  ex_date                DateTime?
   risk                   Int
   risk_group_id          String
   risk_group             risk_group @relation(fields: [risk_group_id], references: [id])

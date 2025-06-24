@@ -5,7 +5,7 @@ import { riskGroupEffectsServiceToken } from './risk-group-effect-service-token'
 
 export const riskGroupDefinition: SmartEntityDefinition<RiskGroup> =
 {
-    entityName: 'riskGroup',
+    entityName: 'riskGroups',
     effectServiceToken: riskGroupEffectsServiceToken,
     defaultRow: function standardLocationsDefaultRowFunction(id) {
       return {

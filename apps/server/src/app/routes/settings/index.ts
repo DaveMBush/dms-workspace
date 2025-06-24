@@ -82,8 +82,17 @@ async function addOrUpdateSymbol(symbol: string, riskGroupId: string) {
     },
   });
   const lastPrice = await getLastPrice(symbol);
-  const exDate = await getExDate(symbol);
-  const distribution = await getDistribution(symbol, exDate);
+  const distribution = await getDistribution(symbol);
+  const today = new Date();
+  let exDateToSet = undefined;
+  if (
+    distribution?.ex_date &&
+    distribution.ex_date instanceof Date &&
+    !isNaN(distribution.ex_date.valueOf()) &&
+    distribution.ex_date > today
+  ) {
+    exDateToSet = distribution.ex_date;
+  }
   if (universe) {
     await prisma.universe.update({
       where: { id: universe.id },
@@ -93,7 +102,7 @@ async function addOrUpdateSymbol(symbol: string, riskGroupId: string) {
         distributions_per_year: distribution?.distributions_per_year,
         last_price: lastPrice,
         most_recent_sell_date: null,
-        ex_date: exDate,
+        ex_date: exDateToSet,
         risk: 0,
         expired: false,
       },
@@ -107,7 +116,7 @@ async function addOrUpdateSymbol(symbol: string, riskGroupId: string) {
         distributions_per_year: distribution?.distributions_per_year,
         last_price: lastPrice,
         most_recent_sell_date: null,
-        ex_date: exDate,
+        ex_date: exDateToSet,
         risk: 0,
         expired: false,
       },
@@ -115,16 +124,21 @@ async function addOrUpdateSymbol(symbol: string, riskGroupId: string) {
   }
 }
 
-async function getDistribution(symbol: string, exDate: Date, retryCount: number = 0) {
+async function getDistribution(symbol: string, retryCount: number = 0) {
   try {
     if (retryCount > 0) {
       await sleep(1000);
     }
+    let exDate = new Date();
     const oneYearAgo = new Date(exDate.valueOf() - (365 * 24 * 60 * 60 * 1000));
-    const oneDayFromNow = new Date(exDate.valueOf() + (24 * 60 * 60 * 1000));
-    const result = await yahooFinance.chart(symbol, { period1: oneYearAgo, period2: oneDayFromNow, events: 'dividends' });
+    const oneMonthFromNow = new Date(exDate.valueOf() + (31 * 24 * 60 * 60 * 1000));
+    const result = await yahooFinance.chart(symbol, {
+      period1: oneYearAgo.toISOString().slice(0, 10),
+      period2: oneMonthFromNow.toISOString().slice(0, 10),
+      events: 'dividends'
+    });
     const dividends = result.events?.dividends?.filter((r) => r);
-    let currentDividend = dividends.find((d) => d.date == exDate);
+    let currentDividend = dividends.find((d) => Number(d.date) * 1000 >= Date.now().valueOf());
     if (!currentDividend) {
       currentDividend = dividends[dividends.length - 1];
     }
@@ -138,38 +152,18 @@ async function getDistribution(symbol: string, exDate: Date, retryCount: number 
     }
     return {
       distribution: currentDividend.amount,
-      ex_date: currentDividend.date,
+      ex_date: new Date(Number(currentDividend.date) * 1000),
       distributions_per_year: perYear,
     };
   } catch (error) {
     if (retryCount < 3) {
-      return getDistribution(symbol, exDate, retryCount + 1);
-    }
-    return null;
-  }
-}
-
-async function getExDate(symbol: string, retryCount: number = 0) {
-  try {
-    if (retryCount > 0) {
-      await sleep(1000);
-    }
-    const quote = await yahooFinance.quoteSummary(symbol, { modules: [ "calendarEvents" ] });
-    return quote.calendarEvents.exDividendDate;
-  } catch (error) {
-    if (retryCount < 3) {
-      return getExDate(symbol, retryCount + 1);
+      return getDistribution(symbol, retryCount + 1);
     }
     return null;
   }
 }
 
 async function getLastPrice(symbol: string, retryCount: number = 0) {
-  // using yahoo-finance2 get:
-  // - last price
-  // - current ex-date
-  // - current distribution
-  // - distributions per year (is this monthly, quarterly, yearly?)
   try {
     if (retryCount > 0) {
       await sleep(1000);

@@ -5,7 +5,7 @@ import { selectTopEntities } from '../../store/top/top.selectors';
 
 export const selectRiskGroupEntity = createSmartSignal<RiskGroup>(
   'app',
-  'riskGroup'
+  'riskGroups'
 );
 
 export const selectTopRiskGroup = createSmartSignal(

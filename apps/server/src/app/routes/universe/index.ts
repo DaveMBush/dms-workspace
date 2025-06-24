@@ -30,7 +30,7 @@ export default async function (fastify: FastifyInstance): Promise<void> {
         last_price: u.last_price,
         most_recent_sell_date: u.most_recent_sell_date?.toISOString() ?? null,
         symbol: u.symbol,
-        ex_date: u.ex_date.toISOString(),
+        ex_date: u.ex_date?.toISOString(),
         risk: u.risk,
         risk_group_id: u.risk_group_id,
         expired: u.expired

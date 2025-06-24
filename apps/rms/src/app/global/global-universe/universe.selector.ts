@@ -1,15 +1,22 @@
 import { computed } from "@angular/core";
-import { selectRiskGroupEntity } from "../../store/risk-group/risk-group.selectors";
+import { selectRiskGroup } from "../../store/risk-group/risk-group.selectors";
 import { selectUniverses } from "../../store/universe/universe.selectors";
+import { RiskGroup } from "../../store/risk-group/risk-group.interface";
 
 export const selectUniverse = computed(() => {
   const universeEntities = selectUniverses();
-  const riskGroupEntities = selectRiskGroupEntity();
+  const riskGroupArray = selectRiskGroup();
+  const riskGroupEntities: Record<string, RiskGroup> = {};
+  for (var i = 0; i < riskGroupArray.length; i++) {
+    riskGroupEntities[riskGroupArray[i].id] = riskGroupArray[i];
+  }
   const result = [];
   for (let i = 0; i < universeEntities.length; i++) {
     let universe = universeEntities[i];
-    console.log('universe', universe);
-    let riskGroup = riskGroupEntities.entities[universe.risk_group_id];
+    let riskGroup = null;
+    if (universe.risk_group_id) {
+      riskGroup = riskGroupEntities[universe.risk_group_id];
+    }
     result.push ({
       symbol: universe.symbol,
       riskGroup: riskGroup?.name ?? '',
@@ -17,7 +24,7 @@ export const selectUniverse = computed(() => {
       distributions_per_year: universe.distributions_per_year,
       last_price: universe.last_price,
       most_recent_sell_date: universe.most_recent_sell_date,
-      ex_date: new Date(universe.ex_date).toLocaleDateString(),
+      ex_date: universe.ex_date ? new Date(universe.ex_date).toLocaleDateString() : '',
       risk: universe.risk,
     });
   }
