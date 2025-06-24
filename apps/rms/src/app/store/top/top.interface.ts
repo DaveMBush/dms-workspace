@@ -1,6 +1,6 @@
 export interface Top {
   id: string;
   accounts: string[];
-  risk_groups: string[];
+  riskGroups: string[];
   universes: string[];
 }

@@ -13,7 +13,7 @@ export const selectTopRiskGroup = createSmartSignal(
   {
     childFeature: 'app',
     childEntity: 'riskGroups',
-    parentField: 'risk_groups',
+    parentField: 'riskGroups',
     parentFeature: 'app',
     parentEntity: 'top',
     childSelector: selectRiskGroupEntity,
@@ -22,6 +22,6 @@ export const selectTopRiskGroup = createSmartSignal(
 
 export const selectRiskGroup = getTopChildRows<Top, RiskGroup>(
   selectTopRiskGroup,
-  'risk_groups'
+  'riskGroups'
 );
 
