@@ -24,7 +24,7 @@ export const selectUniverse = computed(() => {
       distributions_per_year: universe.distributions_per_year,
       last_price: universe.last_price,
       most_recent_sell_date: universe.most_recent_sell_date,
-      ex_date: universe.ex_date ? new Date(universe.ex_date).toLocaleDateString() : '',
+      ex_date: universe.ex_date ? new Date(universe.ex_date) : '',
       risk: universe.risk,
     });
   }
