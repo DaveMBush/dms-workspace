@@ -5,14 +5,14 @@ import { selectTopEntities } from '../top/top.selectors';
 
 export const selectUniverseEntity = createSmartSignal<Universe>(
   'app',
-  'universe'
+  'universes'
 );
 
 export const selectTopUniverses = createSmartSignal(selectTopEntities, [
   {
     childFeature: 'app',
-    childEntity: 'universe',
-    parentField: 'universe',
+    childEntity: 'universes',
+    parentField: 'universes',
     parentFeature: 'app',
     parentEntity: 'top',
     childSelector: selectUniverseEntity,
@@ -21,5 +21,5 @@ export const selectTopUniverses = createSmartSignal(selectTopEntities, [
 
 export const selectUniverses = getTopChildRows<Top, Universe>(
   selectTopUniverses,
-  'universe'
+  'universes'
 );

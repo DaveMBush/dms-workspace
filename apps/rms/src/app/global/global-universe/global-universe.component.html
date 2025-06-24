@@ -3,20 +3,26 @@
     <div class="whitespace-nowrap truncate">Universe</div>
   </ng-template>
 </p-toolbar>
-<p-table [value]="universe$()">
+<p-table [value]="universe$()" [size]="'small'">
   <ng-template pTemplate="header">
     <tr>
       <th>Symbol</th>
-      <th>Name</th>
       <th>Risk Group</th>
+      <th>Distribution</th>
+      <th>Distributions per Year</th>
+      <th>Last Price</th>
+      <th>Most Recent Sell Date</th>
       <th>Ex-Date</th>
     </tr>
   </ng-template>
   <ng-template pTemplate="body" let-row>
     <tr>
       <td>{{ row.symbol }}</td>
-      <td>{{ row.name }}</td>
       <td>{{ row.riskGroup }}</td>
+      <td>{{ row.distribution }}</td>
+      <td>{{ row.distributions_per_year }}</td>
+      <td>{{ row.last_price }}</td>
+      <td>{{ row.most_recent_sell_date }}</td>
       <td>{{ row.ex_date }}</td>
     </tr>
   </ng-template>

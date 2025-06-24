@@ -11,8 +11,8 @@ export const topDefinition: SmartEntityDefinition<Top> = {
     return {
       id,
       accounts: [],
-      risk_group: [],
-      universe: [],
+      risk_groups: [],
+      universes: [],
     };
   },
 };

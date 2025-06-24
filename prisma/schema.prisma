@@ -30,7 +30,7 @@ model status {
 }
 
 model universe {
-  id                     String    @id @default(uuid())
+  id                     String     @id @default(uuid())
   distribution           Float
   distributions_per_year Int
   last_price             Float
@@ -38,13 +38,24 @@ model universe {
   symbol                 String
   ex_date                DateTime
   risk                   Int
-  risk_group             Int
-  expired                Boolean   @default(false)
-  createdAt              DateTime  @default(now())
-  updatedAt              DateTime  @updatedAt
+  risk_group_id          String
+  risk_group             risk_group @relation(fields: [risk_group_id], references: [id])
+  expired                Boolean    @default(false)
+  createdAt              DateTime   @default(now())
+  updatedAt              DateTime   @updatedAt
   deletedAt              DateTime?
-  version                Int       @default(1)
+  version                Int        @default(1)
   trades                 trades[]
+}
+
+model risk_group {
+  id        String     @id @default(uuid())
+  name      String
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  deletedAt DateTime?
+  version   Int        @default(1)
+  universe  universe[]
 }
 
 model trades {

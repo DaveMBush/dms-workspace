@@ -3,7 +3,7 @@ import { Universe } from './universe.interface';
 import { universeEffectsServiceToken } from './universe-effect-service-token';
 
 export const universeDefinition: SmartEntityDefinition<Universe> = {
-  entityName: 'universe',
+  entityName: 'universes',
   effectServiceToken: universeEffectsServiceToken,
   defaultRow: function defaultRowFunction(id) {
     return {
