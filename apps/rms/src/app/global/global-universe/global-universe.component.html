@@ -10,6 +10,7 @@
       <th>Risk Group</th>
       <th>Distribution</th>
       <th>Distributions per Year</th>
+      <th>Yield %</th>
       <th>Last Price</th>
       <th>Most Recent Sell Date</th>
       <th>Ex-Date</th>
@@ -21,6 +22,7 @@
       <td>{{ row.riskGroup }}</td>
       <td>{{ row.distribution }}</td>
       <td>{{ row.distributions_per_year }}</td>
+      <td>{{ row.yield_percent | number:'1.2-2' }}%</td>
       <td>{{ row.last_price }}</td>
       <td>{{ row.most_recent_sell_date }}</td>
       @if (row.ex_date && row.ex_date >= today) {

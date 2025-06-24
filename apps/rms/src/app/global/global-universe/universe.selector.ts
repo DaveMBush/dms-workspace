@@ -26,6 +26,7 @@ export const selectUniverse = computed(() => {
       most_recent_sell_date: universe.most_recent_sell_date,
       ex_date: universe.ex_date ? new Date(universe.ex_date) : '',
       risk: universe.risk,
+      yield_percent: 100 * universe.distributions_per_year * (universe.distribution / universe.last_price),
     });
   }
   return result;

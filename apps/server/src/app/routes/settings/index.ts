@@ -91,7 +91,7 @@ async function addOrUpdateSymbol(symbol: string, riskGroupId: string) {
     !isNaN(distribution.ex_date.valueOf()) &&
     distribution.ex_date > today
   ) {
-    exDateToSet = distribution.ex_date;
+    exDateToSet = distribution?.ex_date;
   }
   if (universe) {
     await prisma.universe.update({
@@ -116,7 +116,7 @@ async function addOrUpdateSymbol(symbol: string, riskGroupId: string) {
         distributions_per_year: distribution?.distributions_per_year,
         last_price: lastPrice,
         most_recent_sell_date: null,
-        ex_date: exDateToSet,
+        ex_date: distribution.ex_date,
         risk: 0,
         expired: false,
       },
@@ -137,22 +137,26 @@ async function getDistribution(symbol: string, retryCount: number = 0) {
       period2: oneMonthFromNow.toISOString().slice(0, 10),
       events: 'dividends'
     });
-    const dividends = result.events?.dividends?.filter((r) => r);
-    let currentDividend = dividends.find((d) => Number(d.date) * 1000 >= Date.now().valueOf());
+    const dividends = result.events?.dividends?.filter((r) => r).map((r) => ({date: new Date(Number(r.date) * 1000), amount: r.amount}));
+    let currentDividend = dividends.find((d) => d.date.valueOf() >= Date.now().valueOf());
     if (!currentDividend) {
       currentDividend = dividends[dividends.length - 1];
     }
-    const previousMonth = new Date(currentDividend.date);
-    previousMonth.setMonth(previousMonth.getMonth() - 1);
-    const previousMonthDividends = dividends.filter((d) => d.date > previousMonth);
-    const previousMonthDividend = previousMonthDividends[0];
-    let perYear = 12;
-    if (previousMonthDividend.date == currentDividend.date) {
-      perYear = 4
+    const currentIndex = dividends.findIndex((d) => d.date.valueOf() === currentDividend.date.valueOf());
+    const previousIndex = currentIndex - 1;
+    let perYear = 1;
+    if (previousIndex >= 0) {
+      perYear = 12;
+      const previousDividend = dividends[previousIndex];
+      const previousMonth = previousDividend.date.getMonth();
+      const currentMonth = currentDividend.date.getMonth();
+      if (previousMonth < currentMonth - 1) {
+        perYear = 4
+      }
     }
     return {
       distribution: currentDividend.amount,
-      ex_date: new Date(Number(currentDividend.date) * 1000),
+      ex_date: currentDividend.date,
       distributions_per_year: perYear,
     };
   } catch (error) {

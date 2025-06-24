@@ -4,12 +4,12 @@ import { TableModule } from 'primeng/table';
 import { selectUniverse } from './universe.selector';
 import { DatePickerModule } from 'primeng/datepicker';
 import { FormsModule } from '@angular/forms';
-import { DatePipe } from '@angular/common';
+import { DatePipe, DecimalPipe } from '@angular/common';
 
 @Component({
   selector: 'app-global-universe',
   standalone: true,
-  imports: [DatePipe, ToolbarModule, TableModule, DatePickerModule, FormsModule],
+  imports: [DatePipe, DecimalPipe, ToolbarModule, TableModule, DatePickerModule, FormsModule],
   templateUrl: './global-universe.component.html',
   styleUrls: ['./global-universe.component.scss'],
 })
