@@ -15,18 +15,6 @@ model accounts {
   deletedAt DateTime?
   version   Int       @default(1)
   trades    trades[]
-  statuses  status[]
-}
-
-model status {
-  id        String     @id @default(uuid())
-  accountId String
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  deletedAt DateTime?
-  version   Int        @default(1)
-  trades    trades[]
-  accounts  accounts[]
 }
 
 model universe {
@@ -62,8 +50,6 @@ model trades {
   id         String    @id @default(uuid())
   universeId String
   universe   universe  @relation(fields: [universeId], references: [id])
-  statusId   String
-  status     status    @relation(fields: [statusId], references: [id])
   accountId  String
   account    accounts  @relation(fields: [accountId], references: [id])
   buy        Float

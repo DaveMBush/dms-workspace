@@ -19,6 +19,7 @@ export class AccountComponentService {
       {
         name: 'New Account',
         id: 'new',
+        trades: []
       },
       this.component.top['1']!
     );

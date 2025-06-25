@@ -11,7 +11,7 @@ export const accountsDefinition: SmartEntityDefinition<Account> =
       return {
         id,
         name: '',
-        departments: [],
+        trades: [],
       };
     },
   };
