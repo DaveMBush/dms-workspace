@@ -1,22 +1,27 @@
 <p-dialog header="Universe Settings" [(visible)]="settingsService.visible" [modal]="true" [style]="{ width: '25vw' }" (onShow)="onDialogShow()">
   <h4 class="mt-0">Current Universe</h4>
-  <div class="flex flex-row gap-4 pl-4">
-    <div class="flex flex-col" style="flex: 1; min-width: 0;">
+  <div class="universe-fields-row">
+    <div class="universe-field">
       <label for="equitySymbols">Equity</label>
-      <textarea #equitySymbolsTextarea id="equitySymbols" pInputTextarea [rows]="5" [(ngModel)]="equitySymbols" style="width: 100%;"></textarea>
+      <textarea #equitySymbolsTextarea id="equitySymbols" pInputTextarea [rows]="5" [(ngModel)]="equitySymbols" class="universe-textarea"></textarea>
     </div>
-    <div class="flex flex-col" style="flex: 1; min-width: 0;">
+    <div class="universe-field">
       <label for="incomeSymbols">Income</label>
-      <textarea id="incomeSymbols" pInputTextarea [rows]="5" [(ngModel)]="incomeSymbols" style="width: 100%;"></textarea>
+      <textarea id="incomeSymbols" pInputTextarea [rows]="5" [(ngModel)]="incomeSymbols" class="universe-textarea"></textarea>
     </div>
-    <div class="flex flex-col" style="flex: 1; min-width: 0;">
+    <div class="universe-field">
       <label for="taxFreeIncomeSymbols">Tax Free Income</label>
-      <textarea id="taxFreeIncomeSymbols" pInputTextarea [rows]="5" [(ngModel)]="taxFreeIncomeSymbols" style="width: 100%;"></textarea>
+      <textarea id="taxFreeIncomeSymbols" pInputTextarea [rows]="5" [(ngModel)]="taxFreeIncomeSymbols" class="universe-textarea"></textarea>
     </div>
   </div>
   <ng-template pTemplate="footer">
     <p-button (click)="settingsService.hide()" label="Cancel" severity="secondary"></p-button>
-    <p-button label="Update Fields"></p-button>
-    <p-button (click)="save()" label="Update Universe" [disabled]="!equitySymbols && !incomeSymbols && !taxFreeIncomeSymbols" class="update-universe-btn"></p-button>
+    <p-button label="Update Fields" (click)="updateFields()"></p-button>
+    <p-button (click)="updateUniverse()" label="Update Universe" [disabled]="!equitySymbols && !incomeSymbols && !taxFreeIncomeSymbols" class="update-universe-btn"></p-button>
   </ng-template>
+  @if (loading) {
+    <div class="modal-spinner-overlay">
+      <p-progressSpinner styleClass="modal-spinner" strokeWidth="4" animationDuration=".7s"/>
+    </div>
+  }
 </p-dialog>

@@ -6,3 +6,39 @@
 ::ng-deep .update-universe-btn button[disabled] {
   cursor: not-allowed !important;
 }
+
+.universe-fields-row {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  padding-left: 1rem;
+}
+
+.universe-field {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.universe-textarea {
+  width: 100%;
+}
+
+.modal-spinner-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-spinner {
+  width: 60px;
+  height: 60px;
+}
