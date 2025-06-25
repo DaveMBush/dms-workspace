@@ -29,7 +29,7 @@ export const appRoutes: Route[] = [
       },
       {
         path: 'accounts/:accountId',
-        loadComponent: () => import('./accounts/account-panel/account-panel.component').then(m => m.AccountPanelComponent),
+        loadComponent: () => import('./account-panel/account-panel.component').then(m => m.AccountPanelComponent),
       },
       {
         path: 'global/universe',
