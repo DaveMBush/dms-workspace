@@ -1,0 +1,8 @@
+.disabled-button {
+  cursor: not-allowed !important;
+}
+
+::ng-deep .update-universe-btn button:disabled,
+::ng-deep .update-universe-btn button[disabled] {
+  cursor: not-allowed !important;
+}
