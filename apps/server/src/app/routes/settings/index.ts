@@ -53,19 +53,23 @@ export default async function (fastify: FastifyInstance): Promise<void> {
         riskGroup[2] = riskGroups.find(riskGroup => riskGroup.name === 'Tax Free Income')!;
       }
       try {
-        [equities, income, taxFreeIncome]
-          .forEach((value, index) => {
-            if(!value || value.length === 0) {
+        const groupValues = [equities, income, taxFreeIncome];
+
+        await Promise.all(
+          groupValues.map(async (value, index) => {
+            if (!value || value.length === 0) {
               return;
             }
             const symbols = value
-              .split(/\r?\n/)      // Split on both \n and \r\n
-              .map(s => s.trim())  // Remove extra spaces from each line
+              .split(/\r?\n/)
+              .map(s => s.trim())
               .filter(Boolean);
-            symbols.forEach(async (symbol) => {
-              addOrUpdateSymbol(symbol, riskGroup[index].id);
-            });
-          });
+
+            await Promise.all(
+              symbols.map(symbol => addOrUpdateSymbol(symbol, riskGroup[index].id))
+            );
+          })
+        );
       } catch (error) {
         reply.status(500).send({ error: 'Internal server error' });
       }
