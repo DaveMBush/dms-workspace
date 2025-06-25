@@ -6,8 +6,8 @@ import { SplitterModule } from 'primeng/splitter';
 import { ToolbarModule } from 'primeng/toolbar';
 import { PanelModule } from 'primeng/panel';
 import { TooltipModule } from 'primeng/tooltip';
-import { UniverseSettingsComponent } from '../settings/settings.component';
-import { UniverseSettingsService } from '../settings/settings.service';
+import { UniverseSettingsComponent } from '../universe-settings/universe-settings.component';
+import { UniverseSettingsService } from '../universe-settings/universe-settings.service';
 import { GlobalComponent } from '../global/global.component';
 
 const DARK_MODE_KEY = 'rms-dark';

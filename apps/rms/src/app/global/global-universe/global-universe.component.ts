@@ -10,7 +10,7 @@ import { TagModule } from 'primeng/tag';
 import { Universe } from '../../store/universe/universe.interface';
 import { selectUniverses } from '../../store/universe/universe.selectors';
 import { InputNumberModule } from 'primeng/inputnumber';
-import { UniverseSettingsService } from '../../settings/settings.service';
+import { UniverseSettingsService } from '../../universe-settings/universe-settings.service';
 import { ButtonModule } from 'primeng/button';
 import { TooltipModule } from 'primeng/tooltip';
 
