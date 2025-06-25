@@ -1,1 +1,13 @@
-Account Panel Works
+<p-toolbar class="text-lg font-semibold">
+  <ng-template #start>
+    <div class="whitespace-nowrap truncate">{{ accountName$() }}</div>
+  </ng-template>
+  <ng-template #end>
+    <!-- Add toolbar actions here if needed -->
+  </ng-template>
+</p-toolbar>
+<div class="flex flex-col h-full min-h-0">
+  <div class="flex-1 min-h-0 overflow-auto">
+    <app-account-detail />
+  </div>
+</div>
