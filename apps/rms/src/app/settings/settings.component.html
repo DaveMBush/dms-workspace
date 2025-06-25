@@ -16,6 +16,7 @@
   </div>
   <ng-template pTemplate="footer">
     <p-button (click)="settingsService.hide()" label="Cancel" severity="secondary"></p-button>
+    <p-button label="Update Fields"></p-button>
     <p-button (click)="save()" label="Update Universe" [disabled]="!equitySymbols && !incomeSymbols && !taxFreeIncomeSymbols" class="update-universe-btn"></p-button>
   </ng-template>
 </p-dialog>
