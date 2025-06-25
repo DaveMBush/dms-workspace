@@ -28,8 +28,24 @@ export const appRoutes: Route[] = [
         ]
       },
       {
-        path: 'accounts/:accountId',
+        path: 'account/:accountId',
         loadComponent: () => import('./account-panel/account-panel.component').then(m => m.AccountPanelComponent),
+        children: [
+          {
+            path: '',
+            loadComponent: () => import('./account-panel/account-detail.component').then(m => m.AccountDetailComponent),
+            children: [
+              {
+                path: '',
+                loadComponent: () => import('./account-panel/open-positions.component').then(m => m.OpenPositionsComponent),
+              },
+              {
+                path: 'sold',
+                loadComponent: () => import('./account-panel/sold-positions.component').then(m => m.SoldPositionsComponent),
+              },
+            ]
+          }
+        ]
       },
       {
         path: 'global/universe',

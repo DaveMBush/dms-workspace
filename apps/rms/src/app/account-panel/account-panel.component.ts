@@ -1,7 +1,8 @@
-import { Component, computed, inject, signal, Signal } from '@angular/core';
+import { Component, computed, inject, Signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ToolbarModule } from 'primeng/toolbar';
 import { ActivatedRoute } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { AccountDetailComponent } from './account-detail.component';
 import { selectAccounts } from '../accounts/store/accounts/account.selectors';
 import { Account as AccountInterface } from '../accounts/store/accounts/account.interface';
@@ -11,17 +12,17 @@ import { Top } from '../store/top/top.interface';
 @Component({
   selector: 'app-account-panel',
   standalone: true,
-  imports: [CommonModule, ToolbarModule, AccountDetailComponent],
+  imports: [CommonModule, ToolbarModule, RouterModule, AccountDetailComponent],
   templateUrl: './account-panel.component.html',
   styleUrls: ['./account-panel.component.scss']
 })
 export class AccountPanelComponent {
   private route = inject(ActivatedRoute);
-  private accounts$ = selectAccounts;
+  private accounts$ = selectAccounts as Signal<SmartArray<Top, AccountInterface> & AccountInterface[]>;
 
-  accountId = signal('');
+  accountId = '';
   accountName$ = computed(() => {
-    const id = this.accountId();
+    const id = this.accountId;
     const accounts = this.accounts$();
     for (let i = 0; i < accounts.length; i++) {
       if (accounts[i].id === id) {
@@ -33,7 +34,7 @@ export class AccountPanelComponent {
 
   constructor() {
     this.route.params.subscribe(params => {
-      this.accountId.set(params['accountId']);
+      this.accountId = params['accountId'];
     });
   }
 }

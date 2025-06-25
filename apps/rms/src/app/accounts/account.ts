@@ -72,6 +72,6 @@ export class Account {
   }
 
   onAccountSelect(account: AccountInterface): void {
-    this.router.navigate(['/accounts', account.id]);
+    this.router.navigate(['/account', account.id]);
   }
 }
