@@ -3,35 +3,77 @@
     <div class="whitespace-nowrap truncate">Universe</div>
   </ng-template>
 </p-toolbar>
-<p-table [value]="universe$()" size="small" showGridlines>
+<p-table [value]="universe$()"
+size="small"
+[scrollable]="true"
+[scrollHeight]="'calc(100vh - 120px)'"
+showGridlines
+>
   <ng-template pTemplate="header">
+    <tr>
+      <th></th>
+      <th>
+        <p-columnFilter field="riskGroup" matchMode="equals" [showMenu]="false">
+          <ng-template #filter let-value let-filter="filterCallback">
+            <p-select [options]="riskGroups" (onChange)="filter($event.value)" placeholder="Select One" [showClear]="true">
+              <ng-template let-option #item>
+                <p-tag [value]="option.value" />
+              </ng-template>
+            </p-select>
+          </ng-template>
+        </p-columnFilter>
+      </th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
     <tr>
       <th>Symbol</th>
       <th>Risk Group</th>
       <th>Distribution</th>
       <th>Distributions per Year</th>
-      <th>Yield %</th>
+      <th pSortableColumn="yield_percent">Yield % <p-sortIcon field="yield_percent" /></th>
       <th>Last Price</th>
-      <th>Most Recent Sell Date</th>
       <th>Ex-Date</th>
+      <th pSortableColumn="most_recent_sell_date">Most Recent Sell Date <p-sortIcon field="most_recent_sell_date" /></th>
     </tr>
   </ng-template>
   <ng-template pTemplate="body" let-row>
     <tr>
       <td>{{ row.symbol }}</td>
       <td>{{ row.riskGroup }}</td>
-      <td>{{ row.distribution }}</td>
-      <td>{{ row.distributions_per_year }}</td>
+      <td [pEditableColumn]="'distribution'" class="bg-gray-200 dark:bg-gray-800">
+        <p-cellEditor>
+          <ng-template #input>
+            <p-inputNumber mode="decimal" [(ngModel)]="row.distribution" [min]="0" [step]="0.01" (keydown.enter)="onEditCommit(row, 'distribution')"></p-inputNumber>
+          </ng-template>
+          <ng-template #output>
+            {{ row.distribution }}
+          </ng-template>
+        </p-cellEditor>
+      </td>
+      <td [pEditableColumn]="'distributions_per_year'" class="bg-gray-200 dark:bg-gray-800">
+        <p-cellEditor>
+          <ng-template #input>
+            <p-inputNumber [(ngModel)]="row.distributions_per_year" [min]="1" [max]="12" [step]="1" (keydown.enter)="onEditCommit(row, 'distributions_per_year')"></p-inputNumber>
+          </ng-template>
+          <ng-template #output>
+            {{ row.distributions_per_year }}
+          </ng-template>
+        </p-cellEditor>
+      </td>
       <td>{{ row.yield_percent | number:'1.2-2' }}%</td>
       <td>{{ row.last_price }}</td>
-      <td>{{ row.most_recent_sell_date }}</td>
       @if (row.ex_date && row.ex_date >= today) {
         <td>{{ row.ex_date | date:'MM/dd/yyyy' }}</td>
       } @else {
-        <td [pEditableColumn]="row.ex_date" class="bg-red-500">
+        <td [pEditableColumn]="'ex_date'" class="bg-red-300 dark:bg-red-700">
           <p-cellEditor>
             <ng-template #input>
-              <p-datepicker [(ngModel)]="row.ex_date"></p-datepicker>
+              <p-datepicker [(ngModel)]="row.ex_date" (keydown.enter)="onEditCommit(row, 'ex_date')"></p-datepicker>
             </ng-template>
             <ng-template #output>
               {{ row.ex_date | date:'MM/dd/yyyy' }}
@@ -39,6 +81,7 @@
           </p-cellEditor>
         </td>
       }
+      <td>{{ row.most_recent_sell_date }}</td>
     </tr>
   </ng-template>
 </p-table>

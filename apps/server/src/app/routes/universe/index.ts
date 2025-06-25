@@ -76,10 +76,30 @@ export default async function (fastify: FastifyInstance): Promise<void> {
   // Update
   fastify.put<{ Body: Universe, Reply: Universe[] }>('/',
     async function (request, reply): Promise<void> {
-      const { id, ...rest } = request.body;
+      const { id,
+        distribution,
+        distributions_per_year,
+        last_price,
+        most_recent_sell_date,
+        symbol,
+        ex_date,
+        risk,
+        risk_group_id,
+        expired
+      } = request.body;
       await prisma.universe.update({
         where: { id },
-        data: rest,
+        data: {
+          distribution,
+          distributions_per_year,
+          last_price,
+          most_recent_sell_date,
+          symbol,
+          ex_date,
+          risk,
+          risk_group_id,
+          expired
+        },
       });
       const universes = await prisma.universe.findMany({
         where: { id }
