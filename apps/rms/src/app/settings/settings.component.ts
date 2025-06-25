@@ -1,22 +1,22 @@
 import { Component, inject, ViewChild, ElementRef } from '@angular/core';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
-import { SettingsService } from './settings.service';
+import { UniverseSettingsService } from './settings.service';
 import { Textarea } from 'primeng/textarea';
 import { FormsModule } from '@angular/forms';
-import { UpdateUniverseService } from './update-universe.service';
+import { UpdateUniverseSettingsService } from './update-universe.service';
 
 @Component({
-  selector: 'app-settings',
+  selector: 'app-universe-settings',
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.scss'],
   standalone: true,
   imports: [DialogModule, ButtonModule, Textarea, FormsModule],
-  viewProviders: [UpdateUniverseService]
+  viewProviders: [UpdateUniverseSettingsService]
 })
-export class SettingsComponent {
-  protected readonly settingsService = inject(SettingsService);
-  protected readonly updateUniverseService = inject(UpdateUniverseService);
+export class UniverseSettingsComponent {
+  protected readonly settingsService = inject(UniverseSettingsService);
+  protected readonly updateUniverseService = inject(UpdateUniverseSettingsService);
   @ViewChild('equitySymbolsTextarea') equitySymbolsTextarea!: ElementRef<HTMLTextAreaElement>;
   equitySymbols = '';
   incomeSymbols = '';

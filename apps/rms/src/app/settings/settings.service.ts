@@ -3,7 +3,7 @@ import { Injectable, signal } from '@angular/core';
 @Injectable({
   providedIn: 'root',
 })
-export class SettingsService {
+export class UniverseSettingsService {
   readonly visible = signal(false);
 
   show() {

@@ -2,6 +2,9 @@
   <ng-template #start>
     <div class="whitespace-nowrap truncate">Universe</div>
   </ng-template>
+  <ng-template #end>
+    <p-button (click)="settingsService.show()" icon="pi pi-cog" class="mr-2" text severity="secondary" pTooltip="Settings" tooltipPosition="bottom" />
+  </ng-template>
 </p-toolbar>
 <p-table [value]="universe$()"
 size="small"

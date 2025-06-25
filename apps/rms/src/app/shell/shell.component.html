@@ -3,7 +3,6 @@
     RMS Manager
   </ng-template>
   <ng-template #end>
-    <p-button (click)="settingsService.show()" icon="pi pi-cog" class="mr-2" text severity="secondary" pTooltip="Settings" tooltipPosition="bottom" />
     <p-button ngSkipHydration icon="pi {{ isBrowser ? themeIcon : '' }}" class="mr-2" text severity="secondary" (onClick)="toggleTheme()" [pTooltip]="themeTooltip" tooltipPosition="bottom" />
   </ng-template>
 </p-toolbar>
@@ -30,5 +29,5 @@
     </ng-template>
 </p-splitter>
 @defer (when settingsService.visible()) {
-  <app-settings />
+  <app-universe-settings />
 }

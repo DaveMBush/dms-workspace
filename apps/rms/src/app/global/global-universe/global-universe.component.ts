@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { ToolbarModule } from 'primeng/toolbar';
 import { TableModule } from 'primeng/table';
 import { selectUniverse } from './universe.selector';
@@ -10,11 +10,14 @@ import { TagModule } from 'primeng/tag';
 import { Universe } from '../../store/universe/universe.interface';
 import { selectUniverses } from '../../store/universe/universe.selectors';
 import { InputNumberModule } from 'primeng/inputnumber';
+import { UniverseSettingsService } from '../../settings/settings.service';
+import { ButtonModule } from 'primeng/button';
+import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-global-universe',
   standalone: true,
-  imports: [TagModule, InputNumberModule, SelectModule, DatePipe, DecimalPipe, ToolbarModule, TableModule, DatePickerModule, FormsModule],
+  imports: [TagModule, InputNumberModule, SelectModule, DatePipe, DecimalPipe, ToolbarModule, TableModule, DatePickerModule, FormsModule, ButtonModule, TooltipModule],
   templateUrl: './global-universe.component.html',
   styleUrls: ['./global-universe.component.scss'],
 })
@@ -26,6 +29,7 @@ export class GlobalUniverseComponent {
     { label: 'Income', value: 'Income' },
     { label: 'Tax Free', value: 'Tax Free Income' }
   ];
+  protected readonly settingsService = inject(UniverseSettingsService);
 
   public onEditDistributionComplete(row: Universe) {
     console.log('onEditDistributionComplete', row);

@@ -6,8 +6,8 @@ import { SplitterModule } from 'primeng/splitter';
 import { ToolbarModule } from 'primeng/toolbar';
 import { PanelModule } from 'primeng/panel';
 import { TooltipModule } from 'primeng/tooltip';
-import { SettingsComponent } from '../settings/settings.component';
-import { SettingsService } from '../settings/settings.service';
+import { UniverseSettingsComponent } from '../settings/settings.component';
+import { UniverseSettingsService } from '../settings/settings.service';
 import { GlobalComponent } from '../global/global.component';
 
 const DARK_MODE_KEY = 'rms-dark';
@@ -20,7 +20,7 @@ const DARK_MODE_KEY = 'rms-dark';
     ToolbarModule,
     SplitterModule,
     TooltipModule,
-    SettingsComponent,
+    UniverseSettingsComponent,
     GlobalComponent,
   ],
   selector: 'app-shell',
@@ -33,7 +33,7 @@ export class ShellComponent implements OnInit {
   themeTooltip = 'Dark Mode';
   platformId = inject(PLATFORM_ID);
   isBrowser = isPlatformBrowser(this.platformId);
-  protected readonly settingsService = inject(SettingsService);
+  protected readonly settingsService = inject(UniverseSettingsService);
   selectedId: string | null = null;
 
   ngOnInit(): void {
