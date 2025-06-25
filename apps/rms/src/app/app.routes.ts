@@ -28,6 +28,10 @@ export const appRoutes: Route[] = [
         ]
       },
       {
+        path: 'accounts/:accountId',
+        loadComponent: () => import('./accounts/account-panel/account-panel.component').then(m => m.AccountPanelComponent),
+      },
+      {
         path: 'global/universe',
         loadComponent: () => import('./global/global-universe/global-universe.component').then(m => m.GlobalUniverseComponent),
       },

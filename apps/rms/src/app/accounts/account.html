@@ -12,7 +12,7 @@
     @if(addingNode === account.id || editingNode === account.id) {
       <rms-node-editor placeholder="Edit Account" [(ngModel)]="editingContent" (cancel)="cancelEdit(account)" (save)="saveEdit(account)" />
     } @else {
-      <div class="group flex flex-row basis-full">
+      <div class="group flex flex-row basis-full" (click)="onAccountSelect(account)">
         <div class="flex-auto text-color hover:text-color-emphasis whitespace-nowrap truncate">{{ account.name }}</div>
         <p-button icon="pi pi-pencil" class="flex-none invisible group-hover:visible" text severity="secondary" (click)="editAccount(account)" />
         <p-button icon="pi pi-trash" class="flex-none invisible group-hover:visible" text severity="secondary" (click)="deleteAccount(account)" />
