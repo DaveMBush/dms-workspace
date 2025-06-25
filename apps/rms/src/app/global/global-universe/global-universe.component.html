@@ -73,7 +73,7 @@ showGridlines
         <td [pEditableColumn]="'ex_date'" class="bg-red-300 dark:bg-red-700">
           <p-cellEditor>
             <ng-template #input>
-              <p-datepicker [(ngModel)]="row.ex_date" (keydown.enter)="onEditCommit(row, 'ex_date')"></p-datepicker>
+              <p-datepicker [(ngModel)]="row.ex_date" (keydown.enter)="onEditCommit(row, 'ex_date')" appendTo="body"></p-datepicker>
             </ng-template>
             <ng-template #output>
               {{ row.ex_date | date:'MM/dd/yyyy' }}
