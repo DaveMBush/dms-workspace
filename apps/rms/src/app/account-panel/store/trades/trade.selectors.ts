@@ -1,25 +1,25 @@
 import { createSmartSignal, getTopChildRows } from '@smarttools/smart-signals';
-import { Top } from '../../../store/top/top.interface';
+import { Account } from '../../../accounts/store/accounts/account.interface';
 import { Trade } from './trade.interface';
-import { selectTopEntities } from '../../../store/top/top.selectors';
+import { selectAccountsEntity } from '../../../accounts/store/accounts/account.selectors';
 
 export const selectTradesEntity = createSmartSignal<Trade>(
   'app',
   'trades'
 );
 
-export const selectTopTrades = createSmartSignal(selectTopEntities, [
+export const selectAccountTrades = createSmartSignal(selectAccountsEntity, [
   {
     childFeature: 'app',
     childEntity: 'trades',
     parentField: 'trades',
     parentFeature: 'app',
-    parentEntity: 'top',
+    parentEntity: 'accounts',
     childSelector: selectTradesEntity,
   },
 ]);
 
-export const selectTrades = getTopChildRows<Top, Trade>(
-  selectTopTrades,
+export const selectTrades = getTopChildRows<Account, Trade>(
+  selectAccountTrades,
   'trades'
 );
