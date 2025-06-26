@@ -6,8 +6,9 @@ New Position Works!
       <label for="symbol" class="mb-1 font-semibold">Symbol</label>
       <p-autoComplete
         inputId="symbol"
-        [(ngModel)]="symbol"
-        [suggestions]="filteredSymbols"
+        [ngModel]="symbol()"
+        (ngModelChange)="symbol.set($event)"
+        [suggestions]="filteredSymbols()"
         (completeMethod)="filterSymbols($event)"
         [forceSelection]="true"
         [dropdown]="true"
@@ -20,21 +21,43 @@ New Position Works!
     </div>
     <div class="flex flex-col flex-1 min-w-0">
       <label for="quantity" class="mb-1 font-semibold">Quantity</label>
-      <input id="quantity" type="number" class="p-inputtext p-component border rounded px-2 py-1 text-sm" />
+      <p-inputNumber
+        inputId="quantity"
+        [ngModel]="quantity()"
+        (ngModelChange)="quantity.set($event)"
+        [ngModelOptions]="{standalone: true}"
+        class="w-full"
+      ></p-inputNumber>
     </div>
   </div>
   <div class="flex flex-row gap-4">
     <div class="flex flex-col flex-1 min-w-0">
       <label for="buy" class="mb-1 font-semibold">Buy</label>
-      <input id="buy" type="number" class="p-inputtext p-component border rounded px-2 py-1 text-sm" />
+      <p-inputNumber
+        inputId="buy"
+        [ngModel]="buy()"
+        (ngModelChange)="buy.set($event)"
+        [ngModelOptions]="{standalone: true}"
+        class="w-full"
+        [mode]="'decimal'"
+        [minFractionDigits]="2" [maxFractionDigits]="5"
+      ></p-inputNumber>
     </div>
     <div class="flex flex-col flex-1 min-w-0">
       <label for="buyDate" class="mb-1 font-semibold">Buy Date</label>
-      <input id="buyDate" type="date" class="p-inputtext p-component border rounded px-2 py-1 text-sm" />
+      <p-calendar
+        inputId="buyDate"
+        [ngModel]="buyDate()"
+        (ngModelChange)="buyDate.set($event)"
+        [ngModelOptions]="{standalone: true}"
+        dateFormat="yy-mm-dd"
+        class="w-full"
+        appendTo="body"
+      ></p-calendar>
     </div>
   </div>
   <div class="flex flex-row justify-end gap-2 mt-4">
     <button type="button" class="p-button p-component p-button-secondary" (click)="onCancel()">Cancel</button>
-    <button type="button" class="p-button p-component p-button-primary" (click)="onSave()">Save</button>
+    <button type="button" class="p-button p-component p-button-primary" (click)="onSave()" [disabled]="!canSave()">Save</button>
   </div>
 </form>

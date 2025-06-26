@@ -62,6 +62,7 @@ export default async function (fastify: FastifyInstance): Promise<void> {
           sell: request.body.sell,
           buy_date: new Date(request.body.buy_date),
           sell_date: request.body.sell_date ? new Date(request.body.sell_date) : undefined,
+          quantity: 1,
         },
       });
       const trade = await prisma.trades.findMany({
