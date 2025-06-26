@@ -23,9 +23,20 @@
       styleClass="mr-2"
       severity="secondary"
       icon="pi pi-plus"
+      (onClick)="openNewPositionDialog()"
     ></p-button>
   }
 </div>
+<p-dialog
+  header="New Position"
+  [(visible)]="showNewPositionDialog"
+  [modal]="true"
+  [closable]="true"
+  [dismissableMask]="true"
+  styleClass="w-full max-w-lg"
+>
+  <app-new-position />
+</p-dialog>
 <div class="flex-1 min-h-full max-h-full">
   <router-outlet></router-outlet>
 </div>
