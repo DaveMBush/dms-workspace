@@ -33,7 +33,6 @@ export class GlobalUniverseComponent {
   protected readonly settingsService = inject(UniverseSettingsService);
 
   public onEditDistributionComplete(row: Universe) {
-    console.log('onEditDistributionComplete', row);
     const universes = selectUniverses();
     for (let i = 0; i < universes.length; i++) {
       if (universes[i].symbol === row.symbol) {
@@ -77,7 +76,6 @@ export class GlobalUniverseComponent {
         break;
       }
     }
-    console.log('Edit committed:', event.data, event.field, event);
   }
 
   public onEditCommit(row: Universe, field: string) {
@@ -88,6 +86,5 @@ export class GlobalUniverseComponent {
         break;
       }
     }
-    console.log('Cell edit committed:', row, field);
   }
 }

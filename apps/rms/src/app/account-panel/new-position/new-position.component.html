@@ -4,7 +4,19 @@ New Position Works!
   <div class="flex flex-row gap-4">
     <div class="flex flex-col flex-1 min-w-0">
       <label for="symbol" class="mb-1 font-semibold">Symbol</label>
-      <input id="symbol" type="text" class="p-inputtext p-component border rounded px-2 py-1 text-sm" />
+      <p-autoComplete
+        inputId="symbol"
+        [(ngModel)]="symbol"
+        [suggestions]="filteredSymbols"
+        (completeMethod)="filterSymbols($event)"
+        [forceSelection]="true"
+        [dropdown]="true"
+        [minLength]="1"
+        [ngModelOptions]="{standalone: true}"
+        [field]="''"
+        class="w-full"
+        placeholder="Select symbol..."
+      ></p-autoComplete>
     </div>
     <div class="flex flex-col flex-1 min-w-0">
       <label for="quantity" class="mb-1 font-semibold">Quantity</label>
