@@ -1,7 +1,11 @@
 <p-table
   [value]="positions()"
-  class="min-w-full border border-gray-200 rounded-lg shadow-sm"
+  class="min-w-full max-h-full min-h-full rounded-lg shadow-sm"
   [responsiveLayout]="'scroll'"
+  size="small"
+  [scrollable]="true"
+  [scrollHeight]="'calc(100vh - 120px)'"
+  showGridlines
 >
   <ng-template pTemplate="header">
     <tr class="bg-gray-100">

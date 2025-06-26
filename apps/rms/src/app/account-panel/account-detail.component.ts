@@ -8,6 +8,7 @@ import { RouterModule, Router, ActivatedRoute } from '@angular/router';
   standalone: true,
   imports: [CommonModule, TabViewModule, RouterModule],
   templateUrl: './account-detail.component.html',
+  styleUrls: ['./account-detail.component.scss']
 })
 export class AccountDetailComponent {
   constructor(public router: Router, public route: ActivatedRoute) {}
