@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Output, EventEmitter } from '@angular/core';
 
 @Component({
   selector: 'app-new-position',
@@ -6,4 +6,14 @@ import { Component } from '@angular/core';
   templateUrl: './new-position.component.html',
   styleUrls: ['./new-position.component.scss']
 })
-export class NewPositionComponent {}
+export class NewPositionComponent {
+  @Output() close = new EventEmitter<void>();
+
+  onSave() {
+    this.close.emit();
+  }
+
+  onCancel() {
+    this.close.emit();
+  }
+}

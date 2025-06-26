@@ -35,7 +35,7 @@
   [dismissableMask]="true"
   styleClass="w-full max-w-lg"
 >
-  <app-new-position />
+  <app-new-position (close)="closeNewPositionDialog()" />
 </p-dialog>
 <div class="flex-1 min-h-full max-h-full">
   <router-outlet></router-outlet>
