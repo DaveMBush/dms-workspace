@@ -1,5 +1,5 @@
 <p-table
-  [value]="positions"
+  [value]="positions()"
   class="min-w-full border border-gray-200 rounded-lg shadow-sm"
   [responsiveLayout]="'scroll'"
 >
@@ -21,15 +21,15 @@
   <ng-template pTemplate="body" let-row>
     <tr>
       <td class="px-2 py-1">{{ row.symbol }}</td>
-      <td class="px-2 py-1">{{ row.exDate }}</td>
-      <td class="px-2 py-1">{{ row.buy }}</td>
-      <td class="px-2 py-1">{{ row.buyDate }}</td>
+      <td class="px-2 py-1">{{ row.exDate | date:'MM/dd/yyyy' }}</td>
+      <td class="px-2 py-1">{{ row.buy | currency:'USD':'symbol':'1.2-4' }}</td>
+      <td class="px-2 py-1">{{ row.buyDate | date:'MM/dd/yyyy' }}</td>
       <td class="px-2 py-1">{{ row.quantity }}</td>
-      <td class="px-2 py-1">{{ row.expectedYield | currency }}</td>
+      <td class="px-2 py-1">{{ row.expectedYield | currency:'USD':'symbol':'1.2-2' }}</td>
       <td class="px-2 py-1">{{ row.sell }}</td>
       <td class="px-2 py-1">{{ row.sellDate }}</td>
       <td class="px-2 py-1">{{ row.daysHeld }}</td>
-      <td class="px-2 py-1">{{ row.targetGain | percent:'1.0-2' }}</td>
+      <td class="px-2 py-1">{{ row.targetGain }}</td>
       <td class="px-2 py-1">{{ row.targetSell }}</td>
     </tr>
   </ng-template>

@@ -6,4 +6,5 @@ export interface Trade {
   sell: number;
   buy_date: string;
   sell_date?: string;
+  quantity: number;
 }

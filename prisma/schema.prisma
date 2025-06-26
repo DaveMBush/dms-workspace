@@ -55,6 +55,7 @@ model trades {
   buy        Float
   sell       Float
   buy_date   DateTime
+  quantity   Int
   sell_date  DateTime?
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt

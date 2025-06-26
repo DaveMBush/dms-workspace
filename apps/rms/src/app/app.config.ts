@@ -21,6 +21,8 @@ import { RiskGroupEffectsService } from './store/risk-group/risk-group-effect.se
 import { riskGroupEffectsServiceToken } from './store/risk-group/risk-group-effect-service-token';
 import { universeEffectsServiceToken } from './store/universe/universe-effect-service-token';
 import { UniverseEffectsService } from './store/universe/universe-effect.service';
+import { tradeEffectsServiceToken } from './account-panel/store/trades/trade-effect-service-token';
+import { TradeEffectsService } from './account-panel/store/trades/trade-effect.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [{
@@ -36,9 +38,12 @@ export const appConfig: ApplicationConfig = {
     provide: universeEffectsServiceToken,
     useClass: UniverseEffectsService,
   }, {
-      provide: smartErrorHandlerToken,
-      useClass: ErrorHandlerService,
-    },
+    provide: tradeEffectsServiceToken,
+    useClass: TradeEffectsService,
+  }, {
+    provide: smartErrorHandlerToken,
+    useClass: ErrorHandlerService,
+  },
 
     // provideClientHydration(withEventReplay()),
     provideBrowserGlobalErrorListeners(),

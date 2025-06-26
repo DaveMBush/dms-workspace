@@ -15,6 +15,7 @@ export const tradesDefinition: SmartEntityDefinition<Trade> = {
       sell: 0,
       buy_date: '',
       sell_date: undefined,
+      quantity: 0,
     };
   },
 };

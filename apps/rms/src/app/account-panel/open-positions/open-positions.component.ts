@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
+import { selectOpenPositions } from '../store/trades/trade.selectors';
 
 interface OpenPosition {
   symbol: string;
@@ -24,19 +25,5 @@ interface OpenPosition {
   styleUrls: ['./open-positions.component.scss'],
 })
 export class OpenPositionsComponent {
-  positions: OpenPosition[] = [
-    {
-      symbol: 'AAPL',
-      exDate: '2024-06-01',
-      buy: 150.25,
-      buyDate: '2024-05-15',
-      quantity: 100,
-      expectedYield: 250.5,
-      sell: 0,
-      sellDate: '',
-      daysHeld: 10,
-      targetGain: 0.1,
-      targetSell: 165.0,
-    },
-  ];
+  positions = selectOpenPositions;
 }

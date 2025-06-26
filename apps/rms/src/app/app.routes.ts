@@ -4,6 +4,7 @@ import { accountsDefinition } from './accounts/store/accounts/accounts-definitio
 import { provideSmartFeatureSignalEntities } from '@smarttools/smart-signals';
 import { riskGroupDefinition } from './store/risk-group/risk-group-definition.const';
 import { universeDefinition } from './store/universe/universe-definition.const';
+import { tradesDefinition } from './account-panel/store/trades/trades-definition.const';
 
 export const appRoutes: Route[] = [
   {
@@ -34,6 +35,11 @@ export const appRoutes: Route[] = [
           {
             path: '',
             loadComponent: () => import('./account-panel/account-detail.component').then(m => m.AccountDetailComponent),
+            providers: [
+              provideSmartFeatureSignalEntities('app', [
+                tradesDefinition
+              ])
+            ],
             children: [
               {
                 path: '',
