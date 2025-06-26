@@ -1,4 +1,4 @@
-<div class="flex border-b border-surface-200 dark:border-surface-700 mb-4">
+<div class="flex border-b border-surface-200 dark:border-surface-700 mb-4 items-center">
   <a
     [routerLink]="['.']"
     routerLinkActive="text-primary border-primary"
@@ -15,6 +15,16 @@
   >
     Sold
   </a>
+  <span class="flex-1"></span>
+  @if (router.url.endsWith('/account/' + accountId)) {
+    <p-button
+      pTooltip="Add New Position"
+      aria-label="Add Open Position"
+      styleClass="mr-2"
+      severity="secondary"
+      icon="pi pi-plus"
+    ></p-button>
+  }
 </div>
 <div class="flex-1 min-h-full max-h-full">
   <router-outlet></router-outlet>
