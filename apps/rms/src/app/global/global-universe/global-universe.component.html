@@ -14,7 +14,10 @@ showGridlines
 >
   <ng-template pTemplate="header">
     <tr>
-      <th></th>
+      <th>
+        <p-columnFilter field="symbol" [showMenu]="false">
+        </p-columnFilter>
+      </th>
       <th>
         <p-columnFilter field="riskGroup" matchMode="equals" [showMenu]="false">
           <ng-template #filter let-value let-filter="filterCallback">
@@ -51,7 +54,7 @@ showGridlines
       <td [pEditableColumn]="'distribution'" class="bg-gray-200 dark:bg-gray-800">
         <p-cellEditor>
           <ng-template #input>
-            <p-inputNumber mode="decimal" [(ngModel)]="row.distribution" [min]="0" [step]="0.01" (keydown.enter)="onEditCommit(row, 'distribution')"></p-inputNumber>
+            <p-inputNumber mode="decimal" [minFractionDigits]="2" [maxFractionDigits]="5" [(ngModel)]="row.distribution" [min]="0" [step]="0.01" (keydown.enter)="onEditCommit(row, 'distribution')"></p-inputNumber>
           </ng-template>
           <ng-template #output>
             {{ row.distribution }}
@@ -71,7 +74,16 @@ showGridlines
       <td>{{ row.yield_percent | number:'1.2-2' }}%</td>
       <td>{{ row.last_price }}</td>
       @if (row.ex_date && row.ex_date >= today) {
-        <td>{{ row.ex_date | date:'MM/dd/yyyy' }}</td>
+        <td [pEditableColumn]="'ex_date'" class="bg-gray-300 dark:bg-gray-700">
+          <p-cellEditor>
+            <ng-template #input>
+              <p-datepicker [(ngModel)]="row.ex_date" (keydown.enter)="onEditCommit(row, 'ex_date')" appendTo="body"></p-datepicker>
+            </ng-template>
+            <ng-template #output>
+              {{ row.ex_date | date:'MM/dd/yyyy' }}
+            </ng-template>
+          </p-cellEditor>
+        </td>
       } @else {
         <td [pEditableColumn]="'ex_date'" class="bg-red-300 dark:bg-red-700">
           <p-cellEditor>

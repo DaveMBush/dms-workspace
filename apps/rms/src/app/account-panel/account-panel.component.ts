@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { ToolbarModule } from 'primeng/toolbar';
 import { ActivatedRoute } from '@angular/router';
 import { RouterModule } from '@angular/router';
-import { AccountDetailComponent } from './account-detail.component';
 import { selectAccounts } from '../accounts/store/accounts/account.selectors';
 import { Account as AccountInterface } from '../accounts/store/accounts/account.interface';
 import { SmartArray } from '@smarttools/smart-signals';
@@ -12,7 +11,7 @@ import { Top } from '../store/top/top.interface';
 @Component({
   selector: 'app-account-panel',
   standalone: true,
-  imports: [CommonModule, ToolbarModule, RouterModule, AccountDetailComponent],
+  imports: [CommonModule, ToolbarModule, RouterModule],
   templateUrl: './account-panel.component.html',
   styleUrls: ['./account-panel.component.scss']
 })

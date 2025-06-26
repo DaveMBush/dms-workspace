@@ -29,6 +29,7 @@ export class GlobalUniverseComponent {
     { label: 'Income', value: 'Income' },
     { label: 'Tax Free', value: 'Tax Free Income' }
   ];
+  public searchSymbol = '';
   protected readonly settingsService = inject(UniverseSettingsService);
 
   public onEditDistributionComplete(row: Universe) {
