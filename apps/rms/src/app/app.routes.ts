@@ -37,11 +37,11 @@ export const appRoutes: Route[] = [
             children: [
               {
                 path: '',
-                loadComponent: () => import('./account-panel/open-positions.component').then(m => m.OpenPositionsComponent),
+                loadComponent: () => import('./account-panel/open-positions/open-positions.component').then(m => m.OpenPositionsComponent),
               },
               {
                 path: 'sold',
-                loadComponent: () => import('./account-panel/sold-positions.component').then(m => m.SoldPositionsComponent),
+                loadComponent: () => import('./account-panel/sold-positions/sold-positions.component').then(m => m.SoldPositionsComponent),
               },
             ]
           }
