@@ -9,6 +9,7 @@ export interface Trade {
   sell: number;
   buy_date: string;
   sell_date?: string;
+  quantity: number;
 }
 
 export interface NewTrade {
@@ -18,6 +19,7 @@ export interface NewTrade {
   sell: number;
   buy_date: string;
   sell_date?: string;
+  quantity: number;
 }
 
 export default async function (fastify: FastifyInstance): Promise<void> {
@@ -47,6 +49,7 @@ export default async function (fastify: FastifyInstance): Promise<void> {
         sell: trade.sell,
         buy_date: trade.buy_date.toISOString(),
         sell_date: trade.sell_date?.toISOString(),
+        quantity: trade.quantity,
       }));
     }
   );
@@ -62,7 +65,7 @@ export default async function (fastify: FastifyInstance): Promise<void> {
           sell: request.body.sell,
           buy_date: new Date(request.body.buy_date),
           sell_date: request.body.sell_date ? new Date(request.body.sell_date) : undefined,
-          quantity: 1,
+          quantity: request.body.quantity,
         },
       });
       const trade = await prisma.trades.findMany({
@@ -76,6 +79,7 @@ export default async function (fastify: FastifyInstance): Promise<void> {
         sell: t.sell,
         buy_date: t.buy_date.toISOString(),
         sell_date: t.sell_date?.toISOString(),
+        quantity: t.quantity,
       })));
     }
   );
@@ -115,6 +119,7 @@ export default async function (fastify: FastifyInstance): Promise<void> {
         sell: t.sell,
         buy_date: t.buy_date.toISOString(),
         sell_date: t.sell_date?.toISOString(),
+        quantity: t.quantity,
       })));
     }
   );

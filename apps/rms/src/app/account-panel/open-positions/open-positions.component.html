@@ -20,6 +20,7 @@
       <th class="px-2 py-2">Days Held</th>
       <th class="px-2 py-2">Target Gain</th>
       <th class="px-2 py-2">Target Sell</th>
+      <th class="px-2 py-2"></th>
     </tr>
   </ng-template>
   <ng-template pTemplate="body" let-row>
@@ -35,6 +36,9 @@
       <td class="px-2 py-1">{{ row.daysHeld }}</td>
       <td class="px-2 py-1">{{ row.targetGain }}</td>
       <td class="px-2 py-1">{{ row.targetSell }}</td>
+      <td class="px-2 py-1">
+        <p-button icon="pi pi-trash" severity="danger" (onClick)="trash(row)" />
+      </td>
     </tr>
   </ng-template>
 </p-table>

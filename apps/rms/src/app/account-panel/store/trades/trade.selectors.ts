@@ -5,6 +5,7 @@ import { selectAccountsEntity } from '../../../accounts/store/accounts/account.s
 import { computed } from '@angular/core';
 import { selectUniverses } from '../../../store/universe/universe.selectors';
 import { OpenPosition } from './open-position.interface';
+import { Universe } from '../../../store/universe/universe.interface';
 
 export const selectTradesEntity = createSmartSignal<Trade>(
   'app',
@@ -30,10 +31,22 @@ export const selectTrades = getTopChildRows<Account, Trade>(
 export const selectOpenPositions = computed(() => {
   const trades = selectTrades();
   const universes = selectUniverses();
+  const universeMap = new Map<string, Universe>();
+  let universe: Universe | undefined;
+  for (let j = 0; j < universes.length; j++) {
+    universe = universes[j];
+    if (universe.symbol.length === 0) {
+      continue;
+    }
+    universeMap.set(universe.id, universe);
+  }
   const openPositions = [] as OpenPosition[];
   for (let i = 0; i < trades.length; i++) {
     const trade = trades[i];
-    const universe = universes.find((universe) => universe.id === trade.universeId);
+    if (trade.sell > 0 && trade.sell_date) {
+      continue;
+    }
+    universe = universeMap.get(trade.universeId);
     if (!universe) {
       continue;
     }
@@ -58,10 +71,13 @@ export const selectOpenPositions = computed(() => {
     }
     // now that we have an ex_date, how many trading days between
     // now and the formulaExDate?
-    const tradingDaysToExDate = differenceInTradingDays(formulaExDate.toISOString(), trade.buy_date);
+    const tradingDaysToExDate = differenceInTradingDays(
+      trade.buy_date,
+      formulaExDate.toISOString());
     const daysHeld = differenceInTradingDays(trade.buy_date, (new Date()).toISOString());
     const targetGainFactor = 3 * daysHeld/tradingDaysToExDate;
     openPositions.push({
+      id: trade.id,
       symbol: universe?.symbol,
       exDate: universe?.ex_date,
       buy: trade.buy,

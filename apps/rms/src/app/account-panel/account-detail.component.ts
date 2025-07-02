@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TabViewModule } from 'primeng/tabview';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
@@ -16,8 +16,8 @@ import { NewPositionComponent } from './new-position/new-position.component';
 })
 export class AccountDetailComponent {
   showNewPositionDialog = false;
-
-  constructor(public router: Router, public route: ActivatedRoute) {}
+  router = inject(Router);
+  route = inject(ActivatedRoute);
 
   get accountId(): string | null {
     return this.route.snapshot.paramMap.get('accountId');

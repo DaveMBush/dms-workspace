@@ -1,37 +1,48 @@
-import { Component, Output, EventEmitter, computed, signal } from '@angular/core';
+import { Component, Output, EventEmitter, computed, signal, model, OnInit, inject } from '@angular/core';
 import { selectUniverses } from '../../store/universe/universe.selectors';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { InputNumberModule } from 'primeng/inputnumber';
-import { CalendarModule } from 'primeng/calendar';
+import { DatePickerModule } from 'primeng/datepicker';
 import { FormsModule } from '@angular/forms';
+import { selectTrades } from '../store/trades/trade.selectors';
+import { SmartArray } from '@smarttools/smart-signals';
+import { Trade } from '../store/trades/trade.interface';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Account } from '../../accounts/store/accounts/account.interface';
 
 @Component({
   selector: 'app-new-position',
   standalone: true,
-  imports: [AutoCompleteModule, InputNumberModule, CalendarModule, FormsModule],
+  imports: [AutoCompleteModule, InputNumberModule, DatePickerModule, FormsModule],
   templateUrl: './new-position.component.html',
   styleUrls: ['./new-position.component.scss']
 })
 export class NewPositionComponent {
   @Output() close = new EventEmitter<void>();
+  router = inject(Router);
+  route = inject(ActivatedRoute);
 
-  symbol = signal<string | null>(null);
-  buy = signal<number | null>(null);
-  quantity = signal<number | null>(null);
-  buyDate = signal<Date | null>(null);
-  filteredSymbols = signal<string[]>([]);
+  accountId = computed(() => {
+    return this.route.snapshot.paramMap.get('accountId');
+  });
 
-  availableSymbols = computed(() => {
+  symbol = model<string | null>(null);
+  buy = model<number | null>(null);
+  quantity = model<number | null>(null);
+  buyDate = model<Date | null>(null);
+  filter = model<string>('');
+  filteredSymbols = computed(() => {
     const symbols = selectUniverses();
-    const returnedSymbols = [] as string[];
+    const returnedSymbols = [] as {label: string, value: string}[];
     for(let i = 0; i < symbols.length; i++) {
       const symbol = symbols[i];
       if (symbol.expired) {
         continue;
       }
-      returnedSymbols.push(symbol.symbol);
+      returnedSymbols.push({label: symbol.symbol, value: symbol.id});
     }
-    return returnedSymbols;
+    const query = this.filter().toLowerCase();
+    return returnedSymbols.filter((r) => r.label.toLowerCase().includes(query));
   });
 
   canSave = computed(() =>
@@ -39,15 +50,26 @@ export class NewPositionComponent {
   );
 
   filterSymbols(event: { query: string }) {
-    const query = event.query.toLowerCase();
-    this.filteredSymbols.set(
-      this.availableSymbols().filter(s =>
-        s.toLowerCase().includes(query)
-      )
-    );
+    // hack to get the dropdown to display the first time
+    this.filter.set(event.query + 'a');
+    this.filter.set(event.query + '');
   }
 
   onSave() {
+    const trades = selectTrades() as SmartArray<Account, Trade> & Trade[];
+    trades.add!({
+      id: 'new',
+      universeId: this.symbol()!,
+      accountId: this.accountId()!,
+      buy: Number(this.buy()!),
+      quantity: Number(this.quantity()!),
+      buy_date: this.buyDate()!.toISOString(),
+      sell: 0,
+    },{
+      id: this.accountId()!,
+      name: 'New Account',
+      trades: []
+    });
     this.close.emit();
   }
 

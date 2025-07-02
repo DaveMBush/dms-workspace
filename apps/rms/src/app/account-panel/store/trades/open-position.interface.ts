@@ -1,4 +1,5 @@
 export interface OpenPosition {
+  id: string;
   symbol: string;
   exDate: string;
   buy: number;

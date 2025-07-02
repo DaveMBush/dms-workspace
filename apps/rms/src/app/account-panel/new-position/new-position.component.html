@@ -6,15 +6,16 @@ New Position Works!
       <label for="symbol" class="mb-1 font-semibold">Symbol</label>
       <p-autoComplete
         inputId="symbol"
-        [ngModel]="symbol()"
-        (ngModelChange)="symbol.set($event)"
+        [(ngModel)]="symbol"
         [suggestions]="filteredSymbols()"
         (completeMethod)="filterSymbols($event)"
         [forceSelection]="true"
         [dropdown]="true"
         [minLength]="1"
         [ngModelOptions]="{standalone: true}"
-        [field]="''"
+        [optionLabel]="'label'"
+        [optionValue]="'value'"
+        appendTo="body"
         class="w-full"
         placeholder="Select symbol..."
       ></p-autoComplete>
@@ -23,8 +24,7 @@ New Position Works!
       <label for="quantity" class="mb-1 font-semibold">Quantity</label>
       <p-inputNumber
         inputId="quantity"
-        [ngModel]="quantity()"
-        (ngModelChange)="quantity.set($event)"
+        [(ngModel)]="quantity"
         [ngModelOptions]="{standalone: true}"
         class="w-full"
       ></p-inputNumber>
@@ -35,8 +35,7 @@ New Position Works!
       <label for="buy" class="mb-1 font-semibold">Buy</label>
       <p-inputNumber
         inputId="buy"
-        [ngModel]="buy()"
-        (ngModelChange)="buy.set($event)"
+        [(ngModel)]="buy"
         [ngModelOptions]="{standalone: true}"
         class="w-full"
         [mode]="'decimal'"
@@ -45,15 +44,14 @@ New Position Works!
     </div>
     <div class="flex flex-col flex-1 min-w-0">
       <label for="buyDate" class="mb-1 font-semibold">Buy Date</label>
-      <p-calendar
+      <p-datepicker
         inputId="buyDate"
-        [ngModel]="buyDate()"
-        (ngModelChange)="buyDate.set($event)"
+        [(ngModel)]="buyDate"
         [ngModelOptions]="{standalone: true}"
         dateFormat="yy-mm-dd"
         class="w-full"
         appendTo="body"
-      ></p-calendar>
+      ></p-datepicker>
     </div>
   </div>
   <div class="flex flex-row justify-end gap-2 mt-4">
