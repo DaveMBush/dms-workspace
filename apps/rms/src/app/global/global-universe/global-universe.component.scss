@@ -1,1 +1,8 @@
 /* Styles for GlobalUniverseComponent */
+:ng-deep {
+  input {
+    max-width: 100%;
+    padding: 2px;
+    margin: 0;
+  }
+}

@@ -87,4 +87,10 @@ export class GlobalUniverseComponent {
       }
     }
   }
+
+  stopArrowKeyPropagation(event: KeyboardEvent) {
+    if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+      event.stopPropagation();
+    }
+  }
 }
