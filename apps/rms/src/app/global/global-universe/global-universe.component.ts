@@ -13,11 +13,12 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { UniverseSettingsService } from '../../universe-settings/universe-settings.service';
 import { ButtonModule } from 'primeng/button';
 import { TooltipModule } from 'primeng/tooltip';
+import { NgClass } from '@angular/common';
 
 @Component({
   selector: 'app-global-universe',
   standalone: true,
-  imports: [TagModule, InputNumberModule, SelectModule, DatePipe, DecimalPipe, ToolbarModule, TableModule, DatePickerModule, FormsModule, ButtonModule, TooltipModule],
+  imports: [TagModule, InputNumberModule, SelectModule, DatePipe, DecimalPipe, ToolbarModule, TableModule, DatePickerModule, FormsModule, ButtonModule, TooltipModule, NgClass],
   templateUrl: './global-universe.component.html',
   styleUrls: ['./global-universe.component.scss'],
 })
@@ -28,6 +29,10 @@ export class GlobalUniverseComponent {
     { label: 'Equities', value: 'Equities' },
     { label: 'Income', value: 'Income' },
     { label: 'Tax Free', value: 'Tax Free Income' }
+  ];
+  public expiredOptions = [
+    { label: 'Yes', value: true },
+    { label: 'No', value: false }
   ];
   public searchSymbol = '';
   protected readonly settingsService = inject(UniverseSettingsService);
