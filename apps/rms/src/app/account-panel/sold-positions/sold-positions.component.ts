@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
-import { selectOpenPositions, selectTrades } from '../store/trades/trade.selectors';
+import { selectClosedPositions, selectTrades } from '../store/trades/trade.selectors';
 import { RowProxyDelete } from '@smarttools/smart-signals';
 import { ButtonModule } from 'primeng/button';
 import { InputNumberModule } from 'primeng/inputnumber';
@@ -37,7 +37,7 @@ type EditableTradeField = 'buy' | 'buyDate' | 'quantity' | 'sell' | 'sellDate';
   styleUrls: ['./sold-positions.component.scss'],
 })
 export class SoldPositionsComponent {
-  positions = selectOpenPositions;
+  positions = selectClosedPositions;
   toastMessages = signal<{ severity: string; summary: string; detail: string }[]>([]);
   constructor(private messageService: MessageService) {}
   trash(position: SoldPosition) {

@@ -5,6 +5,7 @@ import { selectAccountsEntity } from '../../../accounts/store/accounts/account.s
 import { computed } from '@angular/core';
 import { selectUniverses } from '../../../store/universe/universe.selectors';
 import { OpenPosition } from './open-position.interface';
+import { ClosedPosition } from './closed-position.interface';
 import { Universe } from '../../../store/universe/universe.interface';
 
 export const selectTradesEntity = createSmartSignal<Trade>(
@@ -27,6 +28,67 @@ export const selectTrades = getTopChildRows<Account, Trade>(
   selectAccountTrades,
   'trades'
 );
+
+export const selectClosedPositions = computed(() => {
+  const trades = selectTrades();
+  const universes = selectUniverses();
+  const universeMap = new Map<string, Universe>();
+  let universe: Universe | undefined;
+  for (let j = 0; j < universes.length; j++) {
+    universe = universes[j];
+    if (universe.symbol.length === 0) {
+      continue;
+    }
+    universeMap.set(universe.id, universe);
+  }
+  const closedPositions = [] as ClosedPosition[];
+  for (let i = 0; i < trades.length; i++) {
+    const trade = trades[i];
+    if (trade.sell === 0 || !trade.sell_date) {
+      continue;
+    }
+    universe = universeMap.get(trade.universeId);
+    if (!universe) {
+      continue;
+    }
+    const formulaExDate = new Date(universe?.ex_date);
+    if (formulaExDate.valueOf() < new Date().valueOf()) {
+      if (universe.distribution === 12) {
+        // assume the next ex_date is the next month
+        while (formulaExDate.valueOf() < new Date().valueOf()) {
+          formulaExDate.setMonth(formulaExDate.getMonth() + 1);
+        }
+      } else if (universe.distribution === 4) {
+        // assume the next ex_date is the next quarter
+        while (formulaExDate.valueOf() < new Date().valueOf()) {
+          formulaExDate.setMonth(formulaExDate.getMonth() + 3);
+        }
+      } else {
+        // assume it is a year from the last one
+        while (formulaExDate.valueOf() < new Date().valueOf()) {
+          formulaExDate.setFullYear(formulaExDate.getFullYear() + 1);
+        }
+      }
+    }
+    // now that we have an ex_date, how many trading days between
+    // now and the formulaExDate?
+    const tradingDaysToExDate = differenceInTradingDays(
+      trade.buy_date,
+      formulaExDate.toISOString());
+    const daysHeld = differenceInTradingDays(trade.buy_date, trade.sell_date);
+    closedPositions.push({
+      id: trade.id,
+      symbol: universe?.symbol,
+      buy: trade.buy,
+      buyDate: new Date(trade.buy_date),
+      sell: trade.sell,
+      sellDate: trade.sell_date ? new Date(trade.sell_date) : undefined,
+      daysHeld: daysHeld,
+      quantity: trade.quantity,
+    });
+  }
+  return closedPositions;
+});
 
 export const selectOpenPositions = computed(() => {
   const trades = selectTrades();
