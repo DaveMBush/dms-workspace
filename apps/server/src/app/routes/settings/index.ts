@@ -55,6 +55,14 @@ export default async function (fastify: FastifyInstance): Promise<void> {
       try {
         const groupValues = [equities, income, taxFreeIncome];
 
+        // Gather all symbols from all groups
+        const allSymbols = groupValues
+          .flatMap(value =>
+            value
+              ? value.split(/\r?\n/).map(s => s.trim()).filter(Boolean)
+              : []
+          );
+
         await Promise.all(
           groupValues.map(async (value, index) => {
             if (!value || value.length === 0) {
@@ -70,6 +78,19 @@ export default async function (fastify: FastifyInstance): Promise<void> {
             );
           })
         );
+
+        // Mark all other symbols as expired, but only if not already expired
+        await prisma.universe.updateMany({
+          where: {
+            symbol: {
+              notIn: allSymbols,
+            },
+            expired: false,
+          },
+          data: {
+            expired: true,
+          },
+        });
       } catch (error) {
         reply.status(500).send({ error: 'Internal server error' });
       }
