@@ -1,8 +1,7 @@
 import { FastifyInstance } from "fastify";
-import { RiskGroup } from "../common/risk-group.interface";
 import { prisma } from "../../../prisma/prisma-client";
 import { getLastPrice } from "../common/get-last-price.function";
-import { getDistribution } from "../common/get-distribution.function";
+import { getDistributions } from "../common/get-distributions.function";
 
 export default async function (fastify: FastifyInstance): Promise<void> {
 
@@ -14,33 +13,32 @@ export default async function (fastify: FastifyInstance): Promise<void> {
 
       const universes = await prisma.universe.findMany();
 
-      await Promise.all(
-        universes.map(async (universe) => {
-          const lastPrice = await getLastPrice(universe.symbol);
-          const distribution = await getDistribution(universe.symbol);
-          if (!distribution) {
-            console.log(`No distribution found for ${universe.symbol}`);
-          }
-          if (distribution != null && distribution.ex_date > universe.ex_date) {
-            await prisma.universe.update({
-              where: { id: universe.id },
-              data: {
-                last_price: lastPrice,
-                ex_date: distribution.ex_date,
-                distributions_per_year: distribution.distributions_per_year,
-                distribution: distribution.distribution,
-              },
-            });
-          } else {
-            await prisma.universe.update({
-              where: { id: universe.id },
-              data: {
-                last_price: lastPrice,
-              },
-            });
-          }
-        })
-      );
+      for (let i = 0; i < universes.length; i++) {
+        const universe = universes[i];
+        const lastPrice = await getLastPrice(universe.symbol);
+        const distribution = await getDistributions(universe.symbol);
+        if (!distribution) {
+          console.log(`No distribution found for ${universe.symbol}`);
+        }
+        if (distribution != null && distribution.ex_date > universe.ex_date) {
+          await prisma.universe.update({
+            where: { id: universe.id },
+            data: {
+              last_price: lastPrice,
+              ex_date: distribution.ex_date,
+              distributions_per_year: distribution.distributions_per_year,
+              distribution: distribution.distribution,
+            },
+          });
+        } else {
+          await prisma.universe.update({
+            where: { id: universe.id },
+            data: {
+              last_price: lastPrice,
+            },
+          });
+        }
+      }
     }
   );
 }
