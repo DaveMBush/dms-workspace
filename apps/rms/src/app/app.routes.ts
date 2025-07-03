@@ -51,7 +51,7 @@ export const appRoutes: Route[] = [
               },
               {
                 path: 'div-dep',
-                loadComponent: () => import('./account-panel/dividend-deposits/dividend-deposits.component').then(m => m.DividendDepositsComponent),
+                loadComponent: () => import('./account-panel/dividend-deposits/dividend-deposits').then(m => m.DividendDeposits),
               }
             ]
           }
