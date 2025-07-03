@@ -7,4 +7,6 @@ export interface ClosedPosition {
   sell: number;
   sellDate?: Date;
   daysHeld: number;
+  capitalGain: number;
+  capitalGainPercentage: number;
 }

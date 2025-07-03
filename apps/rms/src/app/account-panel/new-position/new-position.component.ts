@@ -33,16 +33,38 @@ export class NewPositionComponent {
   filter = model<string>('');
   filteredSymbols = computed(() => {
     const symbols = selectUniverses();
-    const returnedSymbols = [] as {label: string, value: string}[];
-    for(let i = 0; i < symbols.length; i++) {
+    const returnedSymbols = [] as { label: string; value: string; expired: boolean }[];
+    const selectedId = this.symbol();
+    let selectedSymbol: { label: string; value: string; expired: boolean } | undefined;
+    for (let i = 0; i < symbols.length; i++) {
       const symbol = symbols[i];
-      if (symbol.expired) {
-        continue;
+      const entry = {
+        label: symbol.symbol,
+        value: symbol.id,
+        expired: symbol.expired,
+      };
+      if (symbol.id === selectedId) {
+        selectedSymbol = entry;
       }
-      returnedSymbols.push({label: symbol.symbol, value: symbol.id});
+      returnedSymbols.push(entry);
     }
     const query = this.filter().toLowerCase();
-    return returnedSymbols.filter((r) => r.label.toLowerCase().includes(query));
+    let filtered = returnedSymbols.filter((r) => r.label.toLowerCase().includes(query));
+    // Ensure the selected symbol is always present
+    if (selectedSymbol && !filtered.some(r => r.value === selectedSymbol!.value)) {
+      filtered = [selectedSymbol, ...filtered];
+    }
+    return filtered;
+  });
+
+  selectedSymbolExpired = computed(() => {
+    const symbols = selectUniverses();
+    for (let i = 0; i < symbols.length; i++) {
+      if (symbols[i].id === this.symbol()) {
+        return symbols[i].expired;
+      }
+    }
+    return false;
   });
 
   canSave = computed(() =>
@@ -64,6 +86,7 @@ export class NewPositionComponent {
       buy: Number(this.buy()!),
       quantity: Number(this.quantity()!),
       buy_date: this.buyDate()!.toISOString(),
+      sell_date: undefined,
       sell: 0,
     },{
       id: this.accountId()!,

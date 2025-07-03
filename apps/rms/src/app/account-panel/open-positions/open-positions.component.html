@@ -9,12 +9,21 @@
 >
   <ng-template pTemplate="header">
     <tr class="bg-gray-100">
-      <th class="px-2 py-2">Symbol</th>
+      <th class="px-2 py-2">
+        <p-columnFilter field="symbol" matchMode="contains" [showMenu]="false">
+          <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+            <input pInputText type="text" (input)="filter($any($event.target).value)" placeholder="Filter by symbol..." class="p-column-filter" />
+          </ng-template>
+        </p-columnFilter>
+      </th>
       <th class="px-2 py-2">Ex-Date</th>
       <th class="px-2 py-2">Buy</th>
-      <th class="px-2 py-2">Buy Date</th>
+      <th class="px-2 py-2" pSortableColumn="buyDate">Buy Date <p-sortIcon field="buyDate"></p-sortIcon></th>
       <th class="px-2 py-2">Quantity</th>
       <th class="px-2 py-2">Expected $$$ Yield</th>
+      <th class="px-2 py-2">Last Price</th>
+      <th class="px-2 py-2" pSortableColumn="unrealizedGainPercent">Unrlz Gain% <p-sortIcon field="unrealizedGainPercent"></p-sortIcon></th>
+      <th class="px-2 py-2" pSortableColumn="unrealizedGain">Unrlz Gain$ <p-sortIcon field="unrealizedGain"></p-sortIcon></th>
       <th class="px-2 py-2">Sell</th>
       <th class="px-2 py-2">Sell Date</th>
       <th class="px-2 py-2">Days Held</th>
@@ -85,6 +94,9 @@
         </p-cellEditor>
       </td>
       <td class="px-2 py-1">{{ row.expectedYield | currency:'USD':'symbol':'1.2-2' }}</td>
+      <td class="px-2 py-1">{{ row.lastPrice | currency:'USD':'symbol':'1.2-4' }}</td>
+      <td class="px-2 py-1">{{ row.unrealizedGainPercent | number:'1.2-2' }}%</td>
+      <td class="px-2 py-1">{{ row.unrealizedGain | currency:'USD':'symbol':'1.2-4' }}</td>
       <td class="px-2 py-1 w-32 overflow-hidden" [pEditableColumn]="'sell'">
         <p-cellEditor>
           <ng-template #input>
@@ -92,7 +104,7 @@
               [(ngModel)]="row.sell"
               (keydown.enter)="onEditCommit(row, 'sell')"
               (keydown)="stopArrowKeyPropagation($event)"
-              (onBlur)="onEditCommit(row, 'sell')"
+              (onSelect)="onEditCommit(row, 'sell')"
               class="w-32 block"
               [min]="0"
               [mode]="'decimal'"
@@ -124,8 +136,8 @@
         </p-cellEditor>
       </td>
       <td class="px-2 py-1">{{ row.daysHeld }}</td>
-      <td class="px-2 py-1">{{ row.targetGain }}</td>
-      <td class="px-2 py-1">{{ row.targetSell }}</td>
+      <td class="px-2 py-1">{{ row.targetGain | currency:'USD':'symbol':'1.2-4' }}</td>
+      <td class="px-2 py-1">{{ row.targetSell | currency:'USD':'symbol':'1.2-4' }}</td>
       <td class="px-2 py-1">
         <p-button icon="pi pi-trash" severity="danger" (onClick)="trash(row)" />
       </td>

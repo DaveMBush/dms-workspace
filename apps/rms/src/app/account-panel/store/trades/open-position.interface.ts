@@ -11,4 +11,7 @@ export interface OpenPosition {
   daysHeld: number;
   targetGain: number;
   targetSell: number;
+  lastPrice: number;
+  unrealizedGainPercent: number;
+  unrealizedGain: number;
 }

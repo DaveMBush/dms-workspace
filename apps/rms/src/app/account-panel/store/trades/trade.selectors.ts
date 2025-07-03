@@ -85,6 +85,8 @@ export const selectClosedPositions = computed(() => {
       sellDate: trade.sell_date ? new Date(trade.sell_date) : undefined,
       daysHeld: daysHeld,
       quantity: trade.quantity,
+      capitalGain: (trade.sell - trade.buy) * trade.quantity,
+      capitalGainPercentage: (trade.sell - trade.buy) / trade.buy * 100,
     });
   }
   return closedPositions;
@@ -137,7 +139,9 @@ export const selectOpenPositions = computed(() => {
       trade.buy_date,
       formulaExDate.toISOString());
     const daysHeld = differenceInTradingDays(trade.buy_date, (new Date()).toISOString());
-    const targetGainFactor = 3 * daysHeld/tradingDaysToExDate;
+    const targetGainFactor = 3 * daysHeld / tradingDaysToExDate;
+    const expectedYield = universe?.distribution ? trade.quantity * universe.distribution : 0;
+    const targetGain = Math.min(expectedYield, universe?.distribution ? targetGainFactor * universe.distribution * trade.quantity : 0);
     openPositions.push({
       id: trade.id,
       symbol: universe?.symbol,
@@ -147,10 +151,13 @@ export const selectOpenPositions = computed(() => {
       sell: trade.sell,
       sellDate: trade.sell_date ? new Date(trade.sell_date) : undefined,
       daysHeld: daysHeld,
-      expectedYield: universe?.distribution ? trade.buy * trade.quantity * universe.distribution : 0,
-      targetGain: universe?.distribution ? targetGainFactor * universe.distribution * trade.quantity : 0,
-      targetSell: universe?.distribution ? trade.buy + (targetGainFactor * universe.distribution) : 0,
+      expectedYield,
+      targetGain,
+      targetSell: (targetGain / trade.quantity) + trade.buy,
       quantity: trade.quantity,
+      lastPrice: universe?.last_price,
+      unrealizedGainPercent: (universe?.last_price - trade.buy) / trade.buy * 100,
+      unrealizedGain: (universe?.last_price - trade.buy) * trade.quantity,
     });
   }
   return openPositions;

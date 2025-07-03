@@ -16,6 +16,8 @@
       <th class="px-2 py-2">Sell</th>
       <th class="px-2 py-2">Sell Date</th>
       <th class="px-2 py-2">Days Held</th>
+      <th class="px-2 py-2">Cap Gains$</th>
+      <th class="px-2 py-2">Cap Gains%</th>
       <th class="px-2 py-2"></th>
     </tr>
   </ng-template>
@@ -118,6 +120,8 @@
         </p-cellEditor>
       </td>
       <td class="px-2 py-1">{{ row.daysHeld }}</td>
+      <td class="px-2 py-1">{{ row.capitalGain | currency:'USD':'symbol':'1.2-4' }}</td>
+      <td class="px-2 py-1">{{ row.capitalGainPercentage | number:'1.2-2' }}%</td>
       <td class="px-2 py-1">
         <p-button icon="pi pi-trash" severity="danger" (onClick)="trash(row)" />
       </td>
