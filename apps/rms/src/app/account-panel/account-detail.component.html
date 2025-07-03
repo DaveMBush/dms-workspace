@@ -15,6 +15,14 @@
   >
     Sold
   </a>
+  <a
+    [routerLink]="['div-dep']"
+    routerLinkActive="text-primary border-primary"
+    [routerLinkActiveOptions]="{ exact: true }"
+    class="px-4 py-2 -mb-px border-b-2 font-semibold cursor-pointer"
+  >
+    Dividends & Deposits
+  </a>
   <span class="flex-1"></span>
   @if (router.url.endsWith('/account/' + accountId)) {
     <p-button

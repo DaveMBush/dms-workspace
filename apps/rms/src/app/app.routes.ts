@@ -49,6 +49,10 @@ export const appRoutes: Route[] = [
                 path: 'sold',
                 loadComponent: () => import('./account-panel/sold-positions/sold-positions.component').then(m => m.SoldPositionsComponent),
               },
+              {
+                path: 'div-dep',
+                loadComponent: () => import('./account-panel/dividend-deposits/dividend-deposits.component').then(m => m.DividendDepositsComponent),
+              }
             ]
           }
         ]
