@@ -5,6 +5,7 @@ import { RiskGroup } from './common/risk-group.interface';
 import yahooFinance from 'yahoo-finance2';
 import { getLastPrice } from './common/get-last-price.function';
 import { getDistribution } from './common/get-distribution.function';
+import { getDistributions } from './common/get-distributions.function';
 
 yahooFinance.suppressNotices(['yahooSurvey']);
 
@@ -105,7 +106,7 @@ async function addOrUpdateSymbol(symbol: string, riskGroupId: string) {
     },
   });
   const lastPrice = await getLastPrice(symbol);
-  const distribution = await getDistribution(symbol);
+  const distribution = await getDistributions(symbol);
   const today = new Date();
   let exDateToSet = undefined;
   if (
@@ -117,6 +118,9 @@ async function addOrUpdateSymbol(symbol: string, riskGroupId: string) {
     exDateToSet = distribution?.ex_date;
   }
   if (universe) {
+    if (distribution === undefined) {
+      return;
+    }
     await prisma.universe.update({
       where: { id: universe.id },
       data: {

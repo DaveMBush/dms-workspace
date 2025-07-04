@@ -16,9 +16,17 @@ export default async function (fastify: FastifyInstance): Promise<void> {
       for (let i = 0; i < universes.length; i++) {
         const universe = universes[i];
         const lastPrice = await getLastPrice(universe.symbol);
-        const distribution = await getDistributions(universe.symbol);
-        if (!distribution) {
-          console.log(`No distribution found for ${universe.symbol}`);
+        let distribution = {
+          distribution: universe.distribution,
+          distributions_per_year: universe.distributions_per_year,
+          ex_date: universe.ex_date,
+        }
+        // skip if we already have an ex-date after today
+        if (universe.ex_date < new Date()) {
+          distribution = await getDistributions(universe.symbol);
+          if (!distribution === undefined) {
+            console.log(`No distribution found for ${universe.symbol}`);
+          }
         }
         if (distribution != null && distribution.ex_date > universe.ex_date) {
           await prisma.universe.update({

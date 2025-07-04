@@ -37,11 +37,7 @@ export async function getDistributions(symbol: string): Promise<{
     });
     const data = response.data?.Data || [];
     if (!Array.isArray(data) || data.length === 0) {
-      return {
-        distribution: 0,
-        ex_date: new Date(),
-        distributions_per_year: 0,
-      };
+      return undefined;
     }
     // Convert and sort by date ascending
     const rows = data
