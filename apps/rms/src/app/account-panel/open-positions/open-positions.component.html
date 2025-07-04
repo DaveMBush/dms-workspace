@@ -8,35 +8,35 @@
   showGridlines
 >
   <ng-template pTemplate="header">
-    <tr class="bg-gray-100">
-      <th class="px-2 py-2">
+    <tr class="bg-gray-100 dark:bg-slate-800">
+      <th>
         <p-columnFilter field="symbol" matchMode="contains" [showMenu]="false">
           <ng-template pTemplate="filter" let-value let-filter="filterCallback">
             <input pInputText type="text" (input)="filter($any($event.target).value)" placeholder="Filter by symbol..." class="p-column-filter" />
           </ng-template>
         </p-columnFilter>
       </th>
-      <th class="px-2 py-2">Ex-Date</th>
-      <th class="px-2 py-2">Buy</th>
-      <th class="px-2 py-2" pSortableColumn="buyDate">Buy Date <p-sortIcon field="buyDate"></p-sortIcon></th>
-      <th class="px-2 py-2">Quantity</th>
-      <th class="px-2 py-2">Expected $$$ Yield</th>
-      <th class="px-2 py-2">Last Price</th>
-      <th class="px-2 py-2" pSortableColumn="unrealizedGainPercent">Unrlz Gain% <p-sortIcon field="unrealizedGainPercent"></p-sortIcon></th>
-      <th class="px-2 py-2" pSortableColumn="unrealizedGain">Unrlz Gain$ <p-sortIcon field="unrealizedGain"></p-sortIcon></th>
-      <th class="px-2 py-2">Sell</th>
-      <th class="px-2 py-2">Sell Date</th>
-      <th class="px-2 py-2">Days Held</th>
-      <th class="px-2 py-2">Target Gain</th>
-      <th class="px-2 py-2">Target Sell</th>
-      <th class="px-2 py-2"></th>
+      <th>Ex-Date</th>
+      <th>Buy</th>
+      <th pSortableColumn="buyDate">Buy Date <p-sortIcon field="buyDate"></p-sortIcon></th>
+      <th>Quantity</th>
+      <th>Expected $$$ Yield</th>
+      <th>Last Price</th>
+      <th pSortableColumn="unrealizedGainPercent">Unrlz Gain% <p-sortIcon field="unrealizedGainPercent"></p-sortIcon></th>
+      <th pSortableColumn="unrealizedGain">Unrlz Gain$ <p-sortIcon field="unrealizedGain"></p-sortIcon></th>
+      <th>Sell</th>
+      <th>Sell Date</th>
+      <th>Days Held</th>
+      <th>Target Gain</th>
+      <th>Target Sell</th>
+      <th></th>
     </tr>
   </ng-template>
   <ng-template pTemplate="body" let-row>
     <tr>
-      <td class="px-2 py-1">{{ row.symbol }}</td>
-      <td class="px-2 py-1">{{ row.exDate | date:'MM/dd/yyyy' }}</td>
-      <td class="px-2 py-1 w-100 overflow-hidden" [pEditableColumn]="'buy'">
+      <td>{{ row.symbol }}</td>
+      <td>{{ row.exDate | date:'MM/dd/yyyy' }}</td>
+      <td class="w-100 overflow-hidden" [pEditableColumn]="'buy'">
         <p-cellEditor>
           <ng-template #input>
             <p-inputNumber
@@ -57,7 +57,7 @@
           </ng-template>
         </p-cellEditor>
       </td>
-      <td class="px-2 py-1 w-32 overflow-hidden" [pEditableColumn]="'buyDate'">
+      <td class="w-32 overflow-hidden" [pEditableColumn]="'buyDate'">
         <p-cellEditor>
           <ng-template #input>
             <p-datepicker
@@ -75,7 +75,7 @@
           </ng-template>
         </p-cellEditor>
       </td>
-      <td class="px-2 py-1 w-32 overflow-hidden" [pEditableColumn]="'quantity'">
+      <td class="w-32 overflow-hidden" [pEditableColumn]="'quantity'">
         <p-cellEditor>
           <ng-template #input>
             <p-inputNumber
@@ -93,11 +93,11 @@
           </ng-template>
         </p-cellEditor>
       </td>
-      <td class="px-2 py-1">{{ row.expectedYield | currency:'USD':'symbol':'1.2-2' }}</td>
-      <td class="px-2 py-1">{{ row.lastPrice | currency:'USD':'symbol':'1.2-4' }}</td>
-      <td class="px-2 py-1">{{ row.unrealizedGainPercent | number:'1.2-2' }}%</td>
-      <td class="px-2 py-1">{{ row.unrealizedGain | currency:'USD':'symbol':'1.2-4' }}</td>
-      <td class="px-2 py-1 w-32 overflow-hidden" [pEditableColumn]="'sell'">
+      <td>{{ row.expectedYield | currency:'USD':'symbol':'1.2-2' }}</td>
+      <td>{{ row.lastPrice | currency:'USD':'symbol':'1.2-4' }}</td>
+      <td>{{ row.unrealizedGainPercent | number:'1.2-2' }}%</td>
+      <td>{{ row.unrealizedGain | currency:'USD':'symbol':'1.2-4' }}</td>
+      <td class="w-32 overflow-hidden" [pEditableColumn]="'sell'">
         <p-cellEditor>
           <ng-template #input>
             <p-inputNumber
@@ -117,7 +117,7 @@
           </ng-template>
         </p-cellEditor>
       </td>
-      <td class="px-2 py-1 w-32 overflow-hidden" [pEditableColumn]="'sellDate'">
+      <td class="w-32 overflow-hidden" [pEditableColumn]="'sellDate'">
         <p-cellEditor>
           <ng-template #input>
             <p-datepicker
@@ -135,10 +135,10 @@
           </ng-template>
         </p-cellEditor>
       </td>
-      <td class="px-2 py-1">{{ row.daysHeld }}</td>
-      <td class="px-2 py-1">{{ row.targetGain | currency:'USD':'symbol':'1.2-4' }}</td>
-      <td class="px-2 py-1">{{ row.targetSell | currency:'USD':'symbol':'1.2-4' }}</td>
-      <td class="px-2 py-1">
+      <td>{{ row.daysHeld }}</td>
+      <td>{{ row.targetGain | currency:'USD':'symbol':'1.2-4' }}</td>
+      <td>{{ row.targetSell | currency:'USD':'symbol':'1.2-4' }}</td>
+      <td>
         <p-button icon="pi pi-trash" severity="danger" (onClick)="trash(row)" />
       </td>
     </tr>
