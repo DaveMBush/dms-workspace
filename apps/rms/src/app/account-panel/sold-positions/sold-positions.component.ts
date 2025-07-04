@@ -11,6 +11,7 @@ import { Trade } from '../store/trades/trade.interface';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { signal } from '@angular/core';
+import { selectUniverses } from '../../store/universe/universe.selectors';
 
 interface SoldPosition {
   id: string;
@@ -62,7 +63,7 @@ export class SoldPositionsComponent {
     return true;
   }
 
-  onEditCommit<K extends EditableTradeField>(row: SoldPosition, field: string) {
+  onEditCommit(row: SoldPosition, field: string) {
     const trades = selectTrades();
     for (let i = 0; i < trades.length; i++) {
       if (trades[i].id === row.id) {
@@ -73,6 +74,17 @@ export class SoldPositionsComponent {
             this.messageService.add({ severity: 'error', summary: 'Invalid Date', detail: 'Sell date cannot be before buy date.' });
             row.sellDate = trades[i].sell_date ? new Date(trades[i].sell_date as string).toISOString() : '';
             return;
+          }
+          const universe = selectUniverses();
+          for (let j = 0; j < universe.length; j++) {
+            if (universe[j].symbol === row.symbol) {
+              console.log('symbol found');
+              if (universe[j].most_recent_sell_date !== null || row.sellDate > universe[j].most_recent_sell_date!) {
+                console.log('updating most recent sell date', row.sellDate);
+                universe[j].most_recent_sell_date = row.sellDate;
+              }
+              break;
+            }
           }
         }
         if (field === 'buyDate') {
