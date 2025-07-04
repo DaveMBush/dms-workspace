@@ -3,4 +3,5 @@ export interface Top {
   accounts: string[];
   universes: string[];
   riskGroups: string[];
+  divDepositTypes: string[];
 }

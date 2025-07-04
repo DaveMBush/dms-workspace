@@ -3,8 +3,8 @@ import { CommonModule } from '@angular/common';
 import { ToolbarModule } from 'primeng/toolbar';
 import { ActivatedRoute } from '@angular/router';
 import { RouterModule } from '@angular/router';
-import { selectAccounts } from '../accounts/store/accounts/account.selectors';
-import { Account as AccountInterface } from '../accounts/store/accounts/account.interface';
+import { selectAccounts } from '../store/accounts/account.selectors';
+import { Account as AccountInterface } from '../store/accounts/account.interface';
 import { SmartArray } from '@smarttools/smart-signals';
 import { Top } from '../store/top/top.interface';
 

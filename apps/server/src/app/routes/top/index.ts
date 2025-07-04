@@ -52,11 +52,18 @@ export default async function (fastify: FastifyInstance): Promise<void> {
       },
       orderBy: { createdAt: 'asc'}
     });
+    const divDepositTypes = await prisma.divDepositType.findMany({
+      select: {
+        id: true
+      },
+      orderBy: { createdAt: 'asc'}
+    });
       return reply.status(200).send([{
         id: '1',
         accounts: topAccounts.map((account) => account.id),
         universes: universe.map((universe) => universe.id),
         riskGroups: riskGroup.map((riskGroup) => riskGroup.id),
+        divDepositTypes: divDepositTypes.map((divDepositType) => divDepositType.id)
       }]);
   });
 }

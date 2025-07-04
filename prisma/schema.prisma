@@ -15,6 +15,8 @@ model accounts {
   deletedAt DateTime?
   version   Int       @default(1)
   trades    trades[]
+
+  divDeposits divDeposits[]
 }
 
 model universe {
@@ -34,6 +36,8 @@ model universe {
   deletedAt              DateTime?
   version                Int        @default(1)
   trades                 trades[]
+
+  divDeposits divDeposits[]
 }
 
 model risk_group {
@@ -66,6 +70,31 @@ model holidays {
   id        String    @id @default(uuid())
   date      DateTime
   name      String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  version   Int       @default(1)
+}
+
+model divDepositType {
+  id        String    @id @default(uuid())
+  name      String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  divDeposits divDeposits[]
+}
+
+model divDeposits {
+  id        String    @id @default(uuid())
+  date      DateTime
+  amount    Float
+  accountId String
+  account   accounts  @relation(fields: [accountId], references: [id])
+  divDepositTypeId String
+  divDepositType divDepositType @relation(fields: [divDepositTypeId], references: [id])
+  universeId String?
+  universe   universe?  @relation(fields: [universeId], references: [id])
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?

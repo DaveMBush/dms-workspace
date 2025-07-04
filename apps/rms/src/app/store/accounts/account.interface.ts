@@ -1,5 +1,6 @@
 export interface Account {
   id: string;
   name: string;
-  trades: string[]
+  trades: string[];
+  divDeposits: string[];
 }

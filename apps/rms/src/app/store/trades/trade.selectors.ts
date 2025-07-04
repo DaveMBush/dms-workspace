@@ -1,12 +1,12 @@
 import { createSmartSignal, getTopChildRows } from '@smarttools/smart-signals';
-import { Account } from '../../../accounts/store/accounts/account.interface';
+import { Account } from '../accounts/account.interface';
 import { Trade } from './trade.interface';
-import { selectAccountsEntity } from '../../../accounts/store/accounts/account.selectors';
+import { selectAccountsEntity } from '../accounts/account.selectors';
 import { computed } from '@angular/core';
-import { selectUniverses } from '../../../store/universe/universe.selectors';
+import { selectUniverses } from '../universe/universe.selectors';
 import { OpenPosition } from './open-position.interface';
 import { ClosedPosition } from './closed-position.interface';
-import { Universe } from '../../../store/universe/universe.interface';
+import { Universe } from '../universe/universe.interface';
 
 export const selectTradesEntity = createSmartSignal<Trade>(
   'app',

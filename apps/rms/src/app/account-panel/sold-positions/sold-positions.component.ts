@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
-import { selectClosedPositions, selectTrades } from '../store/trades/trade.selectors';
+import { selectClosedPositions, selectTrades } from '../../store/trades/trade.selectors';
 import { RowProxyDelete } from '@smarttools/smart-signals';
 import { ButtonModule } from 'primeng/button';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { DatePickerModule } from 'primeng/datepicker';
 import { FormsModule } from '@angular/forms';
-import { Trade } from '../store/trades/trade.interface';
+import { Trade } from '../../store/trades/trade.interface';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { signal } from '@angular/core';

@@ -4,11 +4,11 @@ import { AutoCompleteModule } from 'primeng/autocomplete';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { DatePickerModule } from 'primeng/datepicker';
 import { FormsModule } from '@angular/forms';
-import { selectTrades } from '../store/trades/trade.selectors';
+import { selectTrades } from '../../store/trades/trade.selectors';
 import { SmartArray } from '@smarttools/smart-signals';
-import { Trade } from '../store/trades/trade.interface';
+import { Trade } from '../../store/trades/trade.interface';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Account } from '../../accounts/store/accounts/account.interface';
+import { Account } from '../../store/accounts/account.interface';
 
 @Component({
   selector: 'app-new-position',
@@ -91,7 +91,8 @@ export class NewPositionComponent {
     },{
       id: this.accountId()!,
       name: 'New Account',
-      trades: []
+      trades: [],
+      divDeposits: []
     });
     this.close.emit();
   }
