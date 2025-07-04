@@ -11,6 +11,7 @@ import { Trade } from '../store/trades/trade.interface';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { signal } from '@angular/core';
+import { selectUniverses } from '../../store/universe/universe.selectors';
 
 interface OpenPosition {
   id: string;
@@ -74,6 +75,15 @@ export class OpenPositionsComponent {
             // revert row.sellDate to previous value
             row.sellDate = trades[i].sell_date ? new Date(trades[i].sell_date as string).toISOString() : '';
             return;
+          }
+          const universe = selectUniverses();
+          for (let j = 0; j < universe.length; j++) {
+            if (universe[j].symbol === row.symbol) {
+              if (universe[j].most_recent_sell_date !== null || row.sellDate > universe[j].most_recent_sell_date!) {
+                universe[j].most_recent_sell_date = row.sellDate;
+              }
+              break;
+            }
           }
         }
         if (field === 'buyDate') {

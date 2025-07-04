@@ -60,7 +60,7 @@ showGridlines
     </tr>
   </ng-template>
   <ng-template pTemplate="body" let-row>
-    <tr [ngClass]="{ 'expired-row': row.expired }">
+    <tr [ngClass]="isDimmed(row) ? 'text-gray-400 dark:text-gray-600' : ''">
       <td>{{ row.symbol }}</td>
       <td>{{ row.riskGroup }}</td>
       <td [pEditableColumn]="'distribution'" class="bg-gray-200 dark:bg-gray-800">
@@ -108,7 +108,7 @@ showGridlines
           </p-cellEditor>
         </td>
       }
-      <td>{{ row.most_recent_sell_date }}</td>
+      <td>{{ row.most_recent_sell_date | date:'MM/dd/yyyy' }}</td>
       <td class="text-center">{{ row.expired ? '*' : '' }}</td>
     </tr>
   </ng-template>
