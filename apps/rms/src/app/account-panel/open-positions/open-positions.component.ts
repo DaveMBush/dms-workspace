@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
-import { selectOpenPositions, selectTrades } from '../../store/trades/trade.selectors';
+import { selectTrades } from '../../store/trades/trade.selectors';
 import { RowProxyDelete } from '@smarttools/smart-signals';
 import { ButtonModule } from 'primeng/button';
 import { InputNumberModule } from 'primeng/inputnumber';
@@ -12,6 +12,7 @@ import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { signal } from '@angular/core';
 import { selectUniverses } from '../../store/universe/universe.selectors';
+import { OpenPositionsComponentService } from './open-positions-component.service';
 
 interface OpenPosition {
   id: string;
@@ -36,9 +37,11 @@ type EditableTradeField = 'buy' | 'buyDate' | 'quantity' | 'sell' | 'sellDate';
   imports: [CommonModule, TableModule, ButtonModule, InputNumberModule, DatePickerModule, FormsModule, ToastModule],
   templateUrl: './open-positions.component.html',
   styleUrls: ['./open-positions.component.scss'],
+  viewProviders: [OpenPositionsComponentService],
 })
 export class OpenPositionsComponent {
-  positions = selectOpenPositions;
+  private openPositionsService = inject(OpenPositionsComponentService);
+  positions = this.openPositionsService.selectOpenPositions;
   toastMessages = signal<{ severity: string; summary: string; detail: string }[]>([]);
   constructor(private messageService: MessageService) {}
   trash(position: OpenPosition) {
@@ -63,7 +66,7 @@ export class OpenPositionsComponent {
     return true;
   }
 
-  onEditCommit<K extends EditableTradeField>(row: OpenPosition, field: string) {
+  onEditCommit(row: OpenPosition, field: string) {
     const trades = selectTrades();
     for (let i = 0; i < trades.length; i++) {
       if (trades[i].id === row.id) {

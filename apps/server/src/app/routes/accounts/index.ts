@@ -25,8 +25,28 @@ export default async function (fastify: FastifyInstance): Promise<void> {
 
       const accounts = await prisma.accounts.findMany({
         where: { id: { in: ids } },
-        include: {
-          trades: true,
+        select: {
+          id: true,
+          name: true,
+          trades: {
+            select: {
+              id: true,
+            },
+            orderBy: {
+              buy_date: 'asc',
+            },
+          },
+          divDeposits: {
+            select: {
+              id: true,
+            },
+            orderBy: {
+              date: 'asc',
+            },
+          }
+        },
+        orderBy: {
+          name: 'asc',
         },
       });
 
@@ -34,6 +54,7 @@ export default async function (fastify: FastifyInstance): Promise<void> {
         id: account.id,
         name: account.name,
         trades: account.trades.map((trade) => trade.id),
+        divDeposits: account.divDeposits.map((divDeposit) => divDeposit.id),
       }));
     }
   );

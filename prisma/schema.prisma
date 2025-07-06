@@ -15,7 +15,6 @@ model accounts {
   deletedAt DateTime?
   version   Int       @default(1)
   trades    trades[]
-
   divDeposits divDeposits[]
 }
 
