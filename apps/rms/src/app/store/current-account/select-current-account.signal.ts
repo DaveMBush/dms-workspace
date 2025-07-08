@@ -1,7 +1,6 @@
 import { computed, Signal } from '@angular/core';
 import { currentAccountSignalStore } from './current-account.signal-store';
 import { Account } from '../accounts/account.interface';
-import { selectAccounts, selectAccountsEntity } from '../accounts/account.selectors';
 import { selectAccountTrades } from '../trades/trade.selectors';
 
 
