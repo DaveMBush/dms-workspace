@@ -44,7 +44,7 @@ export class SoldPositionsComponent {
   toastMessages = signal<{ severity: string; summary: string; detail: string }[]>([]);
   constructor(private messageService: MessageService) {}
   trash(position: SoldPosition) {
-    const trades = selectTrades();
+    const trades = this.soldPositionsService.trades();
     for (let i = 0; i < trades.length; i++) {
       const trade = trades[i];
       if (trade.id === position.id) {
@@ -66,7 +66,7 @@ export class SoldPositionsComponent {
   }
 
   onEditCommit(row: SoldPosition, field: string) {
-    const trades = selectTrades();
+    const trades = this.soldPositionsService.trades();
     for (let i = 0; i < trades.length; i++) {
       if (trades[i].id === row.id) {
         let tradeField = field;

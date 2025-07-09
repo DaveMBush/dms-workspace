@@ -4,10 +4,17 @@ import { selectUniverses } from '../../store/universe/universe.selectors';
 import { OpenPosition } from '../../store/trades/open-position.interface';
 import { currentAccountSignalStore } from '../../store/current-account/current-account.signal-store';
 import { selectCurrentAccountSignal } from '../../store/current-account/select-current-account.signal';
-
+import { RowProxyDelete, SmartArray } from '@smarttools/smart-signals';
+import { Account } from '../../accounts/account';
+import { OpenPosition as OpenPositionInterface } from './open-position.interface';
 @Injectable({ providedIn: 'root' })
 export class OpenPositionsComponentService {
   private currentAccountSignalStore = inject(currentAccountSignalStore);
+
+  trades = computed(() => {
+    const currentAccount = selectCurrentAccountSignal(this.currentAccountSignalStore);
+    return currentAccount().trades as Trade[];
+  });
 
   // Helper function for trading days
   private differenceInTradingDays(start: string, end: string): number {
@@ -30,8 +37,7 @@ export class OpenPositionsComponentService {
   }
 
   selectOpenPositions = computed(() => {
-    const currentAccount = selectCurrentAccountSignal(this.currentAccountSignalStore);
-    const trades = currentAccount().trades as Trade[];
+    const trades = this.trades();
     const universes = selectUniverses();
     const universeMap = new Map<string, any>();
     let universe: any;
@@ -102,4 +108,17 @@ export class OpenPositionsComponentService {
     }
     return openPositions;
   });
+
+  deleteOpenPosition(position: OpenPositionInterface) {
+    const currentAccount = selectCurrentAccountSignal(this.currentAccountSignalStore);
+    const trades = currentAccount().trades as Trade[];
+    const tradesArray = trades as SmartArray<Account, Trade> & Trade[];
+    for (let i = 0; i < tradesArray.length; i++) {
+      const trade = tradesArray[i] as RowProxyDelete & Trade;
+      if (trade.id === position.id) {
+        trade.delete!();
+        break;
+      }
+    }
+  }
 }

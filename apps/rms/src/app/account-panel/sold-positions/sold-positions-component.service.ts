@@ -11,29 +11,13 @@ import { Universe } from '../../store/universe/universe.interface';
 export class SoldPositionsComponentService {
   private currentAccountSignalStore = inject(currentAccountSignalStore);
 
-  private differenceInTradingDays(start: string, end: string): number {
-    const startDate = new Date(start);
-    const endDate = new Date(end);
-    let count = 0;
-    let current = new Date(startDate);
-    const holidays = [] as string[];
-    const holidaySet = new Set(holidays.map(d => new Date(d).toDateString()));
-    while (current <= endDate) {
-      const day = current.getDay();
-      const isWeekend = day === 0 || day === 6;
-      const isHoliday = holidaySet.has(current.toDateString());
-      if (!isWeekend && !isHoliday) {
-        count++;
-      }
-      current.setDate(current.getDate() + 1);
-    }
-    return count;
-  }
+  trades = computed(() => {
+    const currentAccount = selectCurrentAccountSignal(this.currentAccountSignalStore);
+    return currentAccount().trades as Trade[];
+  });
 
   selectClosedPositions = computed(() => {
-    const currentAccountSignal = this.currentAccountSignalStore;
-    const currentAccount = selectCurrentAccountSignal(currentAccountSignal);
-    const trades = currentAccount().trades as Trade[];
+    const trades = this.trades();
     const universes = selectUniverses();
     const universeMap = new Map<string, Universe>();
     let universe: Universe | undefined;
@@ -73,11 +57,6 @@ export class SoldPositionsComponentService {
           }
         }
       }
-      // now that we have an ex_date, how many trading days between
-      // now and the formulaExDate?
-      const tradingDaysToExDate = differenceInTradingDays(
-        trade.buy_date,
-        formulaExDate.toISOString());
       const daysHeld = differenceInTradingDays(trade.buy_date, trade.sell_date);
       closedPositions.push({
         id: trade.id,

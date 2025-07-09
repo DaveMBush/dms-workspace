@@ -13,21 +13,8 @@ import { MessageService } from 'primeng/api';
 import { signal } from '@angular/core';
 import { selectUniverses } from '../../store/universe/universe.selectors';
 import { OpenPositionsComponentService } from './open-positions-component.service';
-
-interface OpenPosition {
-  id: string;
-  symbol: string;
-  exDate: string;
-  buy: number;
-  buyDate: string;
-  quantity: number;
-  expectedYield: number;
-  sell: number;
-  sellDate: string;
-  daysHeld: number;
-  targetGain: number;
-  targetSell: number;
-}
+import { selectCurrentAccountSignal } from '../../store/current-account/select-current-account.signal';
+import { OpenPosition } from './open-position.interface';
 
 type EditableTradeField = 'buy' | 'buyDate' | 'quantity' | 'sell' | 'sellDate';
 
@@ -45,13 +32,7 @@ export class OpenPositionsComponent {
   toastMessages = signal<{ severity: string; summary: string; detail: string }[]>([]);
   constructor(private messageService: MessageService) {}
   trash(position: OpenPosition) {
-    const trades = selectTrades();
-    for (let i = 0; i < trades.length; i++) {
-      const trade = trades[i];
-      if (trade.id === position.id) {
-        (trade as RowProxyDelete).delete!();
-      }
-    }
+    this.openPositionsService.deleteOpenPosition(position);
   }
 
   private isDateRangeValid(buyDate: unknown, sellDate: unknown, editing: 'buyDate' | 'sellDate'): boolean {
@@ -67,7 +48,7 @@ export class OpenPositionsComponent {
   }
 
   onEditCommit(row: OpenPosition, field: string) {
-    const trades = selectTrades();
+    const trades = this.openPositionsService.trades();
     for (let i = 0; i < trades.length; i++) {
       if (trades[i].id === row.id) {
         let tradeField = field;
