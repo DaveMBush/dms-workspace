@@ -34,6 +34,16 @@
       (onClick)="openNewPositionDialog()"
     ></p-button>
   }
+  @if (router.url.endsWith('/account/' + accountId + '/div-dep')) {
+    <p-button
+      pTooltip="Add New Dividend or Deposit"
+      aria-label="Add Dividend or Deposit"
+      styleClass="mr-2"
+      severity="secondary"
+      icon="pi pi-plus"
+      (onClick)="openNewDivDepDialog()"
+    ></p-button>
+  }
 </div>
 <p-dialog
   header="New Position"
@@ -45,6 +55,17 @@
 >
   <app-new-position (close)="closeNewPositionDialog()" />
 </p-dialog>
+<p-dialog
+  header="New Dividend or Deposit"
+  [(visible)]="showNewDivDepDialog"
+  [modal]="true"
+  [closable]="true"
+  [dismissableMask]="true"
+  styleClass="w-full max-w-lg"
+>
+  <app-div-dep-modal (close)="closeNewDivDepDialog()" />
+</p-dialog>
+
 <div class="flex-1 min-h-full max-h-full">
   <router-outlet></router-outlet>
 </div>

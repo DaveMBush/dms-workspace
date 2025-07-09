@@ -2,21 +2,15 @@ import { createSmartSignal, getTopChildRows } from '@smarttools/smart-signals';
 import { Account } from '../accounts/account.interface';
 import { Trade } from './trade.interface';
 import { selectAccountsEntity } from '../accounts/account.selectors';
-import { computed, inject } from '@angular/core';
-import { selectUniverses } from '../universe/universe.selectors';
-import { OpenPosition } from './open-position.interface';
-import { ClosedPosition } from './closed-position.interface';
-import { Universe } from '../universe/universe.interface';
-import { currentAccountSignalStore } from '../current-account/current-account.signal-store';
-import { selectCurrentAccountSignal } from '../current-account/select-current-account.signal';
-import { differenceInTradingDays } from './difference-in-trading-days.function';
+import { selectDivDepositEntity } from '../div-deposits/div-deposits.selectors';
+import { DivDeposit } from '../div-deposits/div-deposit.interface';
 
 export const selectTradesEntity = createSmartSignal<Trade>(
   'app',
   'trades'
 );
 
-export const selectAccountTrades = createSmartSignal(selectAccountsEntity, [
+export const selectAccountChildren = createSmartSignal<Account, Trade | DivDeposit>(selectAccountsEntity, [
   {
     childFeature: 'app',
     childEntity: 'trades',
@@ -25,9 +19,17 @@ export const selectAccountTrades = createSmartSignal(selectAccountsEntity, [
     parentEntity: 'accounts',
     childSelector: selectTradesEntity,
   },
+  {
+    childFeature: 'app',
+    childEntity: 'divDeposits',
+    parentField: 'divDeposits',
+    parentFeature: 'app',
+    parentEntity: 'accounts',
+    childSelector: selectDivDepositEntity,
+  }
 ]);
 
 export const selectTrades = getTopChildRows<Account, Trade>(
-  selectAccountTrades,
+  selectAccountChildren,
   'trades'
 );

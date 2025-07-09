@@ -13,7 +13,8 @@ export const divDepositDefinition: SmartEntityDefinition<DivDeposit> =
         date: new Date(),
         amount: 0,
         accountId: '',
-        divDepositTypeId: ''
+        divDepositTypeId: '',
+        universeId: ''
       };
     },
   };

@@ -8,7 +8,7 @@ export const selectDivDepositTypeEntity = createSmartSignal<DivDepositType>(
   'divDepositTypes'
 );
 
-export const selectTopDivDepositType = createSmartSignal(
+export const selectTopDivDepositTypes = createSmartSignal(
   selectTopEntities, [
   {
     childFeature: 'app',
@@ -20,7 +20,7 @@ export const selectTopDivDepositType = createSmartSignal(
   },
 ]);
 
-export const selectDivDepositType = getTopChildRows<Top, DivDepositType>(
-  selectTopDivDepositType,
+export const selectDivDepositTypes = getTopChildRows<Top, DivDepositType>(
+  selectTopDivDepositTypes,
   'divDepositTypes'
 );

@@ -23,6 +23,10 @@ import { universeEffectsServiceToken } from './store/universe/universe-effect-se
 import { UniverseEffectsService } from './store/universe/universe-effect.service';
 import { tradeEffectsServiceToken } from './store/trades/trade-effect-service-token';
 import { TradeEffectsService } from './store/trades/trade-effect.service';
+import { divDepositsEffectsServiceToken } from './store/div-deposits/div-deposits-effect-service-token';
+import { DivDepositsEffectsService } from './store/div-deposits/div-deposits-effect.service';
+import { divDepositTypesEffectsServiceToken } from './store/div-deposit-types/div-deposit-types-effect-service-token';
+import { DivDepositTypesEffectsService } from './store/div-deposit-types/div-deposit-types-effect.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [{
@@ -41,6 +45,12 @@ export const appConfig: ApplicationConfig = {
     provide: tradeEffectsServiceToken,
     useClass: TradeEffectsService,
   }, {
+    provide: divDepositsEffectsServiceToken,
+    useClass: DivDepositsEffectsService,
+    }, {
+    provide: divDepositTypesEffectsServiceToken,
+    useClass: DivDepositTypesEffectsService,
+    }, {
     provide: smartErrorHandlerToken,
     useClass: ErrorHandlerService,
   },

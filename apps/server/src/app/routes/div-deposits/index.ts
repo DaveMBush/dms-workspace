@@ -23,20 +23,6 @@ export default async function (fastify: FastifyInstance): Promise<void> {
         where: { id: { in: ids } }
       });
 
-      const divDepositTypes = await prisma.divDepositType.findMany();
-      if (divDepositTypes.length === 0) {
-        await prisma.divDepositType.create({
-          data: {
-            name: 'Dividend'
-          }
-        });
-        await prisma.divDepositType.create({
-          data: {
-            name: 'Deposit'
-          }
-        });
-      }
-
       return divDeposits.map((u) => ({
         id: u.id,
         date: u.date,
@@ -54,7 +40,11 @@ export default async function (fastify: FastifyInstance): Promise<void> {
       const { ...rest } = request.body;
       const result = await prisma.divDeposits.create({
         data: {
-          ...rest,
+          date: rest.date,
+          amount: rest.amount,
+          accountId: rest.accountId,
+          divDepositTypeId: rest.divDepositTypeId,
+          universeId: rest.universeId
         }
       });
       reply.status(200).send([

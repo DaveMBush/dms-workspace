@@ -1,7 +1,7 @@
 import { computed, Signal } from '@angular/core';
 import { currentAccountSignalStore } from './current-account.signal-store';
 import { Account } from '../accounts/account.interface';
-import { selectAccountTrades } from '../trades/trade.selectors';
+import { selectAccountChildren } from '../trades/trade.selectors';
 
 
 // Define the store instance type to properly type the parameter
@@ -14,7 +14,7 @@ export function selectCurrentAccountSignal(
     const currentAccountId = store.selectCurrentAccountId();
 
     // First get the location with departments
-    const accountsState = selectAccountTrades();
+    const accountsState = selectAccountChildren();
     const account = accountsState.entities[currentAccountId];
 
     if (account) {

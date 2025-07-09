@@ -4,4 +4,5 @@ export interface DivDeposit {
   amount: number;
   accountId: string;
   divDepositTypeId: string;
+  universeId: string;
 }
