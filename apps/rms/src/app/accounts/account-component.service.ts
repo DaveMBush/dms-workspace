@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Account } from './account';
 import { RowProxyDelete, SmartArray } from '@smarttools/smart-signals';
-import { Account as AccountInterface } from './store/accounts/account.interface';
+import { Account as AccountInterface } from '../store/accounts/account.interface';
 import { Top } from '../store/top/top.interface';
 
 @Injectable()
@@ -19,7 +19,8 @@ export class AccountComponentService {
       {
         name: 'New Account',
         id: 'new',
-        trades: []
+        trades: [],
+        divDeposits: []
       },
       this.component.top['1']!
     );

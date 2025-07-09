@@ -1,0 +1,9 @@
+---
+description: rules for how to use components
+alwaysApply: false
+---
+# Component Best Practices
+
+- Do not specify `standalone: true` in component decorators, as it is the default.
+- Use signals for all inputs, outputs, and any variable accessed by the template.
+- Never use inline HTML or SCSS in components; always use external files.

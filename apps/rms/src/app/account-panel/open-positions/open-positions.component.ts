@@ -1,32 +1,20 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
-import { selectOpenPositions, selectTrades } from '../store/trades/trade.selectors';
+import { selectTrades } from '../../store/trades/trade.selectors';
 import { RowProxyDelete } from '@smarttools/smart-signals';
 import { ButtonModule } from 'primeng/button';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { DatePickerModule } from 'primeng/datepicker';
 import { FormsModule } from '@angular/forms';
-import { Trade } from '../store/trades/trade.interface';
+import { Trade } from '../../store/trades/trade.interface';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { signal } from '@angular/core';
 import { selectUniverses } from '../../store/universe/universe.selectors';
-
-interface OpenPosition {
-  id: string;
-  symbol: string;
-  exDate: string;
-  buy: number;
-  buyDate: string;
-  quantity: number;
-  expectedYield: number;
-  sell: number;
-  sellDate: string;
-  daysHeld: number;
-  targetGain: number;
-  targetSell: number;
-}
+import { OpenPositionsComponentService } from './open-positions-component.service';
+import { selectCurrentAccountSignal } from '../../store/current-account/select-current-account.signal';
+import { OpenPosition } from './open-position.interface';
 
 type EditableTradeField = 'buy' | 'buyDate' | 'quantity' | 'sell' | 'sellDate';
 
@@ -36,19 +24,15 @@ type EditableTradeField = 'buy' | 'buyDate' | 'quantity' | 'sell' | 'sellDate';
   imports: [CommonModule, TableModule, ButtonModule, InputNumberModule, DatePickerModule, FormsModule, ToastModule],
   templateUrl: './open-positions.component.html',
   styleUrls: ['./open-positions.component.scss'],
+  viewProviders: [OpenPositionsComponentService],
 })
 export class OpenPositionsComponent {
-  positions = selectOpenPositions;
+  private openPositionsService = inject(OpenPositionsComponentService);
+  positions = this.openPositionsService.selectOpenPositions;
   toastMessages = signal<{ severity: string; summary: string; detail: string }[]>([]);
   constructor(private messageService: MessageService) {}
   trash(position: OpenPosition) {
-    const trades = selectTrades();
-    for (let i = 0; i < trades.length; i++) {
-      const trade = trades[i];
-      if (trade.id === position.id) {
-        (trade as RowProxyDelete).delete!();
-      }
-    }
+    this.openPositionsService.deleteOpenPosition(position);
   }
 
   private isDateRangeValid(buyDate: unknown, sellDate: unknown, editing: 'buyDate' | 'sellDate'): boolean {
@@ -63,8 +47,8 @@ export class OpenPositionsComponent {
     return true;
   }
 
-  onEditCommit<K extends EditableTradeField>(row: OpenPosition, field: string) {
-    const trades = selectTrades();
+  onEditCommit(row: OpenPosition, field: string) {
+    const trades = this.openPositionsService.trades();
     for (let i = 0; i < trades.length; i++) {
       if (trades[i].id === row.id) {
         let tradeField = field;

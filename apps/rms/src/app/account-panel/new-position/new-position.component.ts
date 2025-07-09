@@ -4,11 +4,12 @@ import { AutoCompleteModule } from 'primeng/autocomplete';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { DatePickerModule } from 'primeng/datepicker';
 import { FormsModule } from '@angular/forms';
-import { selectTrades } from '../store/trades/trade.selectors';
-import { SmartArray } from '@smarttools/smart-signals';
-import { Trade } from '../store/trades/trade.interface';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Account } from '../../accounts/store/accounts/account.interface';
+import { selectCurrentAccountSignal } from '../../store/current-account/select-current-account.signal';
+import { currentAccountSignalStore } from '../../store/current-account/current-account.signal-store';
+import { SmartArray } from '@smarttools/smart-signals';
+import { Trade } from '../../store/trades/trade.interface';
+import { Account } from '../../store/accounts/account.interface';
 
 @Component({
   selector: 'app-new-position',
@@ -77,8 +78,16 @@ export class NewPositionComponent {
     this.filter.set(event.query + '');
   }
 
+  private currentAccount = inject(currentAccountSignalStore)
+
+
   onSave() {
-    const trades = selectTrades() as SmartArray<Account, Trade> & Trade[];
+    const account = selectCurrentAccountSignal(this.currentAccount);
+    if (!account) {
+      return;
+    }
+    const act = account();
+    const trades = act.trades as SmartArray<Account, Trade> & Trade[];
     trades.add!({
       id: 'new',
       universeId: this.symbol()!,
@@ -91,7 +100,8 @@ export class NewPositionComponent {
     },{
       id: this.accountId()!,
       name: 'New Account',
-      trades: []
+      trades: [],
+      divDeposits: []
     });
     this.close.emit();
   }

@@ -1,1 +1,22 @@
-<p>dividend-deposits works!</p>
+<p-table [value]="deposits()" class="min-w-full rounded-lg shadow-sm table-fixed" size="small" showGridlines>
+  <ng-template pTemplate="header">
+    <tr class="bg-gray-100 dark:bg-slate-800">
+      <th>Symbol</th>
+      <th>Date</th>
+      <th>Amount</th>
+      <th>Type</th>
+      <th></th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-row>
+    <tr>
+      <td>{{ row.symbol }}</td>
+      <td>{{ row.date | date:'MM/dd/yyyy' }}</td>
+      <td>{{ row.amount | currency:'USD':'symbol':'1.2-2' }}</td>
+      <td>{{ row.divDeposit }}</td>
+      <td>
+        <p-button icon="pi pi-trash" severity="danger" (onClick)="deleteDeposit(row)" />
+      </td>
+    </tr>
+  </ng-template>
+</p-table>

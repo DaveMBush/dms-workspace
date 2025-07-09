@@ -1,17 +1,18 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
-import { selectClosedPositions, selectTrades } from '../store/trades/trade.selectors';
+import { selectTrades } from '../../store/trades/trade.selectors';
 import { RowProxyDelete } from '@smarttools/smart-signals';
 import { ButtonModule } from 'primeng/button';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { DatePickerModule } from 'primeng/datepicker';
 import { FormsModule } from '@angular/forms';
-import { Trade } from '../store/trades/trade.interface';
+import { Trade } from '../../store/trades/trade.interface';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { signal } from '@angular/core';
 import { selectUniverses } from '../../store/universe/universe.selectors';
+import { SoldPositionsComponentService } from './sold-positions-component.service';
 
 interface SoldPosition {
   id: string;
@@ -38,11 +39,12 @@ type EditableTradeField = 'buy' | 'buyDate' | 'quantity' | 'sell' | 'sellDate';
   styleUrls: ['./sold-positions.component.scss'],
 })
 export class SoldPositionsComponent {
-  positions = selectClosedPositions;
+  private soldPositionsService = inject(SoldPositionsComponentService);
+  positions = this.soldPositionsService.selectClosedPositions;
   toastMessages = signal<{ severity: string; summary: string; detail: string }[]>([]);
   constructor(private messageService: MessageService) {}
   trash(position: SoldPosition) {
-    const trades = selectTrades();
+    const trades = this.soldPositionsService.trades();
     for (let i = 0; i < trades.length; i++) {
       const trade = trades[i];
       if (trade.id === position.id) {
@@ -64,7 +66,7 @@ export class SoldPositionsComponent {
   }
 
   onEditCommit(row: SoldPosition, field: string) {
-    const trades = selectTrades();
+    const trades = this.soldPositionsService.trades();
     for (let i = 0; i < trades.length; i++) {
       if (trades[i].id === row.id) {
         let tradeField = field;

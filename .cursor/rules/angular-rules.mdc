@@ -1,0 +1,7 @@
+---
+description: whenever you inject a service into a component or another service, use inject().
+alwaysApply: false
+---
+# Angular Service Injection Rule
+
+- All Angular services should be injected using `inject()` instead of using the constructor.

@@ -1,10 +1,12 @@
 import { Route } from '@angular/router';
 import { topDefinition } from './store/top/top-definition.const';
-import { accountsDefinition } from './accounts/store/accounts/accounts-definition.const';
+import { accountsDefinition } from './store/accounts/accounts-definition.const';
 import { provideSmartFeatureSignalEntities } from '@smarttools/smart-signals';
 import { riskGroupDefinition } from './store/risk-group/risk-group-definition.const';
 import { universeDefinition } from './store/universe/universe-definition.const';
-import { tradesDefinition } from './account-panel/store/trades/trades-definition.const';
+import { tradesDefinition } from './store/trades/trades-definition.const';
+import { divDepositTypesDefinition } from './store/div-deposit-types/div-deposit-types-definition.const';
+import { divDepositDefinition } from './store/div-deposits/div-deposit-definition.const';
 
 export const appRoutes: Route[] = [
   {
@@ -14,7 +16,9 @@ export const appRoutes: Route[] = [
       provideSmartFeatureSignalEntities('app', [
         topDefinition,
         riskGroupDefinition,
-        universeDefinition
+        universeDefinition,
+        divDepositTypesDefinition,
+        divDepositDefinition
       ])
     ],
     children: [

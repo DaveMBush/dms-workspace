@@ -1,0 +1,41 @@
+<form class="flex flex-col gap-4 p-4">
+  <div class="flex flex-row gap-4">
+    <div class="flex flex-col w-1/2">
+      <label for="symbol" class="mb-1 font-semibold">Symbol</label>
+      <p-autoComplete
+        inputId="symbol"
+        [ngModel]="symbol()"
+        (ngModelChange)="symbol.set($event)"
+        [suggestions]="filteredSymbols()"
+        (completeMethod)="filterSymbols($event)"
+        [forceSelection]="true"
+        [dropdown]="true"
+        [minLength]="1"
+        [ngModelOptions]="{standalone: true}"
+        [optionLabel]="'label'"
+        [optionValue]="'value'"
+        appendTo="body"
+        class="w-full"
+        placeholder="Select symbol..."
+      ></p-autoComplete>
+    </div>
+    <div class="flex flex-col w-1/2">
+      <label for="date" class="mb-1 font-semibold">Date</label>
+      <p-datepicker inputId="date" [ngModel]="date()" (ngModelChange)="date.set($event)" name="date" appendTo="body" class="w-full" dateFormat="mm/dd/yy"></p-datepicker>
+    </div>
+  </div>
+  <div class="flex flex-row gap-4">
+    <div class="flex flex-col w-1/2">
+      <label for="amount" class="mb-1 font-semibold">Amount</label>
+      <p-inputNumber inputId="amount" [ngModel]="amount()" (ngModelChange)="amount.set($event)" name="amount" class="w-full" mode="decimal" [minFractionDigits]="2" [maxFractionDigits]="5"></p-inputNumber>
+    </div>
+    <div class="flex flex-col w-1/2">
+      <label for="type" class="mb-1 font-semibold">Type</label>
+      <p-select inputId="type" [ngModel]="type()" (ngModelChange)="type.set($event)" name="type" [options]="types()" optionLabel="name" optionValue="id" class="w-full"></p-select>
+    </div>
+  </div>
+  <div class="flex flex-row gap-2 justify-end mt-4">
+    <p-button label="Cancel" severity="secondary" (onClick)="onClose()"></p-button>
+    <p-button label="Save" icon="pi pi-check" severity="primary" type="submit" (onClick)="onSave()"></p-button>
+  </div>
+</form>

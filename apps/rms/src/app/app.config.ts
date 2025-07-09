@@ -12,8 +12,8 @@ import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeng/themes/aura';
 import { TopEffectsService } from './store/top/top-effect.service';
 import { topEffectsServiceToken } from './store/top/top-effect-service-token';
-import { accountEffectsServiceToken } from './accounts/store/accounts/account-effect-service-token';
-import { AccountEffectsService } from './accounts/store/accounts/account-effect.service';
+import { accountEffectsServiceToken } from './store/accounts/account-effect-service-token';
+import { AccountEffectsService } from './store/accounts/account-effect.service';
 import { provideHttpClient, withFetch, withInterceptorsFromDi } from '@angular/common/http';
 import { provideSmartNgRX, smartErrorHandlerToken } from '@smarttools/smart-signals';
 import { ErrorHandlerService } from './error-handler/error-handler.service';
@@ -21,8 +21,12 @@ import { RiskGroupEffectsService } from './store/risk-group/risk-group-effect.se
 import { riskGroupEffectsServiceToken } from './store/risk-group/risk-group-effect-service-token';
 import { universeEffectsServiceToken } from './store/universe/universe-effect-service-token';
 import { UniverseEffectsService } from './store/universe/universe-effect.service';
-import { tradeEffectsServiceToken } from './account-panel/store/trades/trade-effect-service-token';
-import { TradeEffectsService } from './account-panel/store/trades/trade-effect.service';
+import { tradeEffectsServiceToken } from './store/trades/trade-effect-service-token';
+import { TradeEffectsService } from './store/trades/trade-effect.service';
+import { divDepositsEffectsServiceToken } from './store/div-deposits/div-deposits-effect-service-token';
+import { DivDepositsEffectsService } from './store/div-deposits/div-deposits-effect.service';
+import { divDepositTypesEffectsServiceToken } from './store/div-deposit-types/div-deposit-types-effect-service-token';
+import { DivDepositTypesEffectsService } from './store/div-deposit-types/div-deposit-types-effect.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [{
@@ -41,6 +45,12 @@ export const appConfig: ApplicationConfig = {
     provide: tradeEffectsServiceToken,
     useClass: TradeEffectsService,
   }, {
+    provide: divDepositsEffectsServiceToken,
+    useClass: DivDepositsEffectsService,
+    }, {
+    provide: divDepositTypesEffectsServiceToken,
+    useClass: DivDepositTypesEffectsService,
+    }, {
     provide: smartErrorHandlerToken,
     useClass: ErrorHandlerService,
   },
