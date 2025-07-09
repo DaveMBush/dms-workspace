@@ -4,4 +4,5 @@ export interface Top {
   universes: string[];
   riskGroups: string[];
   divDepositTypes: string[];
+  holidays: Date[];
 }

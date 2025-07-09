@@ -67,7 +67,7 @@ model trades {
 
 model holidays {
   id        String    @id @default(uuid())
-  date      DateTime
+  date      DateTime  @unique
   name      String
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt

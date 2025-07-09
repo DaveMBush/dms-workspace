@@ -1,6 +1,7 @@
 import { FastifyInstance } from 'fastify';
 import { Top } from './top.interface';
 import { prisma } from '../../prisma/prisma-client';
+import { getHolidays } from 'nyse-holidays';
 
 export default async function (fastify: FastifyInstance): Promise<void> {
   console.log('registering /api/top route');
@@ -21,7 +22,8 @@ export default async function (fastify: FastifyInstance): Promise<void> {
                 accounts: { type: 'array', items: { type: 'string' } },
                 universes: { type: 'array', items: { type: 'string' } },
                 riskGroups: { type: 'array', items: { type: 'string' } },
-                divDepositTypes: { type: 'array', items: { type: 'string' } }
+                divDepositTypes: { type: 'array', items: { type: 'string' } },
+                holidays: { type: 'array', items: { type: 'string', format: 'date-time' } }
               }
             },
           },
@@ -34,6 +36,38 @@ export default async function (fastify: FastifyInstance): Promise<void> {
       if (ids.length === 0) {
         return reply.status(200).send([]);
       }
+
+      const holidays = await prisma.holidays.findMany({
+        select: {
+          date: true
+        },
+        orderBy: { createdAt: 'asc' },
+        where: {
+          date: {
+            gte: new Date('2026-01-01')
+          }
+        }
+      });
+      if (holidays.length === 0) {
+        const thisYear = (new Date()).getFullYear();
+        let holidays = getHolidays(thisYear);
+        for (const holiday of holidays) {
+          await prisma.holidays.upsert({
+            where: { date: holiday.date },
+            update: { },
+            create: { date: holiday.date, name: holiday.name }
+          });
+        }
+        holidays = getHolidays(thisYear + 1);
+        for (const holiday of holidays) {
+          await prisma.holidays.upsert({
+            where: { date: holiday.date },
+            update: { },
+            create: { date: holiday.date, name: holiday.name }
+          });
+        }
+      }
+
 
       const topAccounts = await prisma.accounts.findMany({
         select: {
@@ -77,12 +111,19 @@ export default async function (fastify: FastifyInstance): Promise<void> {
           orderBy: { createdAt: 'asc' }
         });
       }
+      const dbHolidays = await prisma.holidays.findMany({
+        select: {
+          date: true
+        },
+        orderBy: { createdAt: 'asc' }
+      });
       return reply.status(200).send([{
         id: '1',
         accounts: topAccounts.map((account) => account.id),
         universes: universe.map((universe) => universe.id),
         riskGroups: riskGroup.map((riskGroup) => riskGroup.id),
         divDepositTypes: divDepositTypes.map((divDepositType) => divDepositType.id),
+        holidays: dbHolidays.map((holiday) => holiday.date)
       }]);
     });
 }

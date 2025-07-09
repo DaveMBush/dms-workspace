@@ -7,6 +7,7 @@ import { selectCurrentAccountSignal } from '../../store/current-account/select-c
 import { RowProxyDelete, SmartArray } from '@smarttools/smart-signals';
 import { Account } from '../../accounts/account';
 import { OpenPosition as OpenPositionInterface } from './open-position.interface';
+import { selectHolidays } from '../../store/top/top.selectors';
 @Injectable({ providedIn: 'root' })
 export class OpenPositionsComponentService {
   private currentAccountSignalStore = inject(currentAccountSignalStore);
@@ -22,7 +23,7 @@ export class OpenPositionsComponentService {
     const endDate = new Date(end);
     let count = 0;
     let current = new Date(startDate);
-    const holidays = [] as string[];
+    const holidays = selectHolidays();
     const holidaySet = new Set(holidays.map(d => new Date(d).toDateString()));
     while (current <= endDate) {
       const day = current.getDay();
