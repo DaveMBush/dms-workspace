@@ -50,8 +50,17 @@ export class OpenPositionsComponent {
   onEditCommit(row: OpenPosition, field: string) {
     const trades = this.openPositionsService.trades();
     for (let i = 0; i < trades.length; i++) {
+      let tradeField = field;
       if (trades[i].id === row.id) {
-        let tradeField = field;
+        if (field === 'sell') {
+          const universe = selectUniverses();
+          for (let j = 0; j < universe.length; j++) {
+            if (universe[j].symbol === row.symbol) {
+              universe[j].most_recent_sell_price = row.sell;
+              break;
+            }
+          }
+        }
         if (field === 'sellDate') {
           tradeField = 'sell_date';
           if (!this.isDateRangeValid(row.buyDate, row.sellDate, 'sellDate')) {
