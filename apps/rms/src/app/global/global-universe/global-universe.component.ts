@@ -51,6 +51,7 @@ export class GlobalUniverseComponent {
     const universes = selectUniverses();
     for (let i = 0; i < universes.length; i++) {
       if (universes[i].symbol === row.symbol) {
+        console.log('onEditDistributionsPerYearComplete', universes[i].distributions_per_year, row.distributions_per_year);
         universes[i].distributions_per_year = row.distributions_per_year;
         break;
       }

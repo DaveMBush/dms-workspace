@@ -4,6 +4,7 @@ export interface Universe {
   distributions_per_year: number;
   last_price: number;
   most_recent_sell_date: string | null; // ISO date string
+  most_recent_sell_price: number | null;
   symbol: string;
   ex_date: string; // ISO date string
   risk: number;

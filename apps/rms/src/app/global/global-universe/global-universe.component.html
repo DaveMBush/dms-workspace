@@ -1,4 +1,4 @@
-<p-toolbar class="text-lg font-semibold">
+<p-toolbar class="text-lg font-semibold flex-none">
   <ng-template #start>
     <div class="whitespace-nowrap truncate">Universe</div>
   </ng-template>
@@ -8,8 +8,7 @@
 </p-toolbar>
 <p-table [value]="universe$()"
 size="small"
-[scrollable]="true"
-[scrollHeight]="'calc(100vh - 120px)'"
+[scrollable]="true" class="flex-1 overflow-auto min-h-0"
 showGridlines
 >
   <ng-template pTemplate="header">
@@ -55,7 +54,8 @@ showGridlines
       <th pSortableColumn="yield_percent">Yield % <p-sortIcon field="yield_percent" /></th>
       <th>Last Price</th>
       <th>Ex-Date</th>
-      <th pSortableColumn="most_recent_sell_date">Most Recent Sell Date <p-sortIcon field="most_recent_sell_date" /></th>
+      <th pSortableColumn="most_recent_sell_date">Mst Rcnt Sll Dt <p-sortIcon field="most_recent_sell_date" /></th>
+      <th pSortableColumn="most_recent_sell_price">Mst Rcnt Sell $ <p-sortIcon field="most_recent_sell_price" /></th>
       <th>Expired</th>
     </tr>
   </ng-template>
@@ -109,6 +109,7 @@ showGridlines
         </td>
       }
       <td>{{ row.most_recent_sell_date | date:'MM/dd/yyyy' }}</td>
+      <td>{{ row.most_recent_sell_price | number:'1.2-4' }}</td>
       <td class="text-center">{{ row.expired ? '*' : '' }}</td>
     </tr>
   </ng-template>

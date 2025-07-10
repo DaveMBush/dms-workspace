@@ -1,4 +1,4 @@
-<p-toolbar class="text-xl font-semibold toolbar">
+<p-toolbar class="text-xl font-semibold toolbar flex-none">
   <ng-template #start>
     RMS Manager
   </ng-template>
@@ -7,7 +7,7 @@
   </ng-template>
 </p-toolbar>
 <p-splitter
-  class="splitter"
+  class="flex-1 overflow-auto min-h-0"
   [style]="{ height: '100%' }"
   stateStorage="local"
   stateKey="rms-splitter-state"

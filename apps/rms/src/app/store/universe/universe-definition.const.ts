@@ -13,6 +13,7 @@ export const universeDefinition: SmartEntityDefinition<Universe> = {
       distributions_per_year: 0,
       last_price: 0,
       most_recent_sell_date: '',
+      most_recent_sell_price: 0,
       symbol: '',
       ex_date: '',
       risk: 0,

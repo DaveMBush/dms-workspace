@@ -24,6 +24,7 @@ model universe {
   distributions_per_year Int
   last_price             Float
   most_recent_sell_date  DateTime?
+  most_recent_sell_price Float?
   symbol                 String
   ex_date                DateTime?
   risk                   Int

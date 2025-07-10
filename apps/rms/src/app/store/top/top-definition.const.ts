@@ -13,7 +13,8 @@ export const topDefinition: SmartEntityDefinition<Top> = {
       accounts: [],
       riskGroups: [],
       universes: [],
-      divDepositTypes: []
+      divDepositTypes: [],
+      holidays: []
     };
   },
 };
