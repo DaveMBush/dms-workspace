@@ -12,7 +12,8 @@ export const accountsDefinition: SmartEntityDefinition<Account> =
         id,
         name: '',
         trades: [],
-        divDeposits: []
+        divDeposits: [],
+        months: []
       };
     },
   };

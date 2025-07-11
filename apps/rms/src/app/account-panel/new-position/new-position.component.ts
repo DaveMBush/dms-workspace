@@ -101,7 +101,8 @@ export class NewPositionComponent {
       id: this.accountId()!,
       name: 'New Account',
       trades: [],
-      divDeposits: []
+      divDeposits: [],
+      months: []
     });
     this.close.emit();
   }

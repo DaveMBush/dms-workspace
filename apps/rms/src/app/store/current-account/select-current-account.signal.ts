@@ -25,6 +25,7 @@ export function selectCurrentAccountSignal(
         ...account,
         trades,
         divDeposits,
+        months: account.months,
       };
     }
 
@@ -33,6 +34,7 @@ export function selectCurrentAccountSignal(
       name: '',
       trades: [],
       divDeposits: [],
+      months: [],
     };
   });
 }
