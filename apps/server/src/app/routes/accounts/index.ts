@@ -52,27 +52,30 @@ export default async function (fastify: FastifyInstance): Promise<void> {
         },
       });
 
-      const months1 = new Set(accounts.flatMap((account) => account.trades.filter((trade) => trade.sell_date !== null).map((trade) => {
-        const d = new Date(trade.sell_date);
-        return `${d.getFullYear()}-${d.getMonth() + 1}`;
-      })));
-      const months2 = new Set(accounts.flatMap((account) => account.divDeposits.map((divDeposit) => {
-        const d = new Date(divDeposit.date);
-        return `${d.getFullYear()}-${d.getMonth() + 1}`;
-      })));
-      const months = [...months1.union(months2)].sort((a: string, b: string) => a.localeCompare(b))
-        .map((m) => {
-          const [year, month] = m.split('-');
-          return {year: parseInt(year), month: parseInt(month)};
-        });
+      return accounts.map((account) => {
+        const months1 = new Set(account.trades.filter((trade) => trade.sell_date !== null).map((trade) => {
+          const d = new Date(trade.sell_date);
+          return `${d.getFullYear()}-${d.getMonth() + 1}`;
+        }));
+        const months2 = new Set(account.divDeposits.map((divDeposit) => {
+          const d = new Date(divDeposit.date);
+          return `${d.getFullYear()}-${d.getMonth() + 1}`;
+        }));
+        const months = [...months1.union(months2)].sort((a: string, b: string) => b.localeCompare(a))
+          .map((m) => {
+            const [year, month] = m.split('-');
+            return {year: parseInt(year), month: parseInt(month)};
+          });
 
-      return accounts.map((account) => ({
-        id: account.id,
-        name: account.name,
-        trades: account.trades.map((trade) => trade.id),
-        divDeposits: account.divDeposits.map((divDeposit) => divDeposit.id),
-        months,
-      }));
+
+        return {
+          id: account.id,
+          name: account.name,
+          trades: account.trades.map((trade) => trade.id),
+          divDeposits: account.divDeposits.map((divDeposit) => divDeposit.id),
+          months,
+        }
+      });
     }
   );
   console.log('registering /api/accounts/add route');

@@ -14,23 +14,26 @@
     <div class="grid grid-cols-2 gap-6 w-full max-w-md mb-8">
       <div class="flex flex-col">
         <span class="text-xs text-gray-500">Deposits</span>
-        <span class="text-lg font-semibold">$0.00</span>
+        <span class="text-lg font-semibold">{{summary()?.deposits | currency}}</span>
       </div>
       <div class="flex flex-col">
         <span class="text-xs text-gray-500">Dividends</span>
-        <span class="text-lg font-semibold">$0.00</span>
+        <span class="text-lg font-semibold">{{summary()?.dividends | currency}}</span>
       </div>
       <div class="flex flex-col">
         <span class="text-xs text-gray-500">Capital Gain</span>
-        <span class="text-lg font-semibold">$0.00</span>
+        <span class="text-lg font-semibold">{{summary()?.capitalGains | currency}}</span>
       </div>
       <div class="flex flex-col">
         <span class="text-xs text-gray-500">% Increase</span>
-        <span class="text-lg font-semibold">0.00%</span>
+        <span class="text-lg font-semibold">{{
+          12 * ((summary()?.capitalGains ?? 0) +
+            (summary()?.dividends ?? 0)) /
+            (summary()?.deposits ?? 0) | percent:'1.2-2'}}</span>
       </div>
     </div>
     <div class="w-full max-w-md">
-      <p-chart type="pie" [data]="compositionData" [options]="compositionOptions" styleClass="w-full h-72"/>
+      <p-chart type="pie" [data]="compositionData()" [options]="compositionOptions" styleClass="w-full h-72"/>
     </div>
   </div>
   <!-- Right: Line chart -->

@@ -1,41 +1,64 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, effect, inject, OnInit } from '@angular/core';
 import { DropdownModule } from 'primeng/dropdown';
 import { FormsModule } from '@angular/forms';
 import { ChartModule } from 'primeng/chart';
 import { SummaryComponentService } from './summary-component.service';
+import { Summary } from './summary.interface';
+import { CurrencyPipe, PercentPipe } from '@angular/common';
 
 @Component({
   selector: 'app-summary',
   standalone: true,
-  imports: [DropdownModule, FormsModule, ChartModule],
+  imports: [PercentPipe, CurrencyPipe, DropdownModule, FormsModule, ChartModule],
   templateUrl: './summary.component.html',
   styleUrls: ['./summary.component.scss'],
   viewProviders: [SummaryComponentService]
 })
 export class SummaryComponent {
   summaryComponentService = inject(SummaryComponentService);
-  selectedMonth: string | null = null;
-
+  summary = this.summaryComponentService.summary;
+  selectedMonth = this.summaryComponentService.selectedMonth;
   months = this.summaryComponentService.months;
-
-  compositionData = {
-    labels: ['Equities', 'Income', 'Tax Free'],
-    datasets: [
-      {
-        data: [33.3, 33.3, 33.3],
-        backgroundColor: [
-          '#42A5F5', // Equities
-          '#66BB6A', // Income
-          '#FFA726'  // Tax Free
-        ],
-        hoverBackgroundColor: [
-          '#64B5F6',
-          '#81C784',
-          '#FFB74D'
-        ]
+  constructor() {
+    effect(() => {
+      const months = this.months();
+      if (months.length > 0) {
+        this.selectedMonth.set(months[0].value);
+      } else {
+        this.selectedMonth.set(null);
       }
-    ]
-  };
+    })
+  }
+
+  compositionData = computed(() => {
+    const s = this.summary();
+    if (!s) {
+      return {
+        labels: [],
+        datasets: []
+      };
+    }
+    const { equities, income, tax_free_income } = s;
+    const total = equities + income + tax_free_income;
+    return {
+      labels: ['Equities', 'Income', 'Tax Free'],
+      datasets: [
+        {
+          data: [100 * equities/total, 100 * income/total, 100 * tax_free_income/total],
+          backgroundColor: [
+            '#42A5F5', // Equities
+            '#66BB6A', // Income
+            '#FFA726'  // Tax Free
+          ],
+          hoverBackgroundColor: [
+            '#64B5F6',
+            '#81C784',
+            '#FFB74D'
+          ]
+        }
+      ]
+    }
+  });
 
   compositionOptions = {
     plugins: {
