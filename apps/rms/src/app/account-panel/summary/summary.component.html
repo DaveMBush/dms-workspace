@@ -37,12 +37,13 @@
     </div>
   </div>
   <!-- Right: Line chart -->
-  <div class="flex-1 w-full">
+  <div class="flex-1 w-full h-full">
     <p-chart
       type="line"
-      [data]="lineChartData"
+      [data]="lineChartData()"
       [options]="lineChartOptions"
-      styleClass="w-full h-96"
+      [height]="'100%'"
+      [width]="'100%'"
     ></p-chart>
   </div>
 </div>

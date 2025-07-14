@@ -3,6 +3,7 @@ import { computed, inject, Injectable, signal } from '@angular/core';
 import { currentAccountSignalStore } from '../../store/current-account/current-account.signal-store';
 import { selectCurrentAccountSignal } from '../../store/current-account/select-current-account.signal';
 import { Summary } from './summary.interface';
+import { Graph } from './graph.interface';
 
 @Injectable()
 export class SummaryComponentService {
@@ -20,6 +21,20 @@ export class SummaryComponentService {
       params: {
         month,
         account_id: accountId,
+      }
+    };
+  });
+
+  httpGraph = httpResource<Graph[]>(() => {
+    const currentAccount = selectCurrentAccountSignal(this.currentAccount);
+    const year = (new Date()).getFullYear();
+    const accountId = currentAccount()?.id ?? '';
+    return {
+      url: 'http://localhost:4200/api/summary/graph',
+      params: {
+        year,
+        account_id: accountId,
+        time_period: 'year',
       }
     };
   });
@@ -42,6 +57,14 @@ export class SummaryComponentService {
       };
     }
     return this.httpSummary.value();
+  });
+
+  graph = computed(() => {
+    const currentAccount = selectCurrentAccountSignal(this.currentAccount);
+    if (!this.selectedMonth() || !currentAccount()) {
+      return [];
+    }
+    return this.httpGraph.value();
   });
 
 }
