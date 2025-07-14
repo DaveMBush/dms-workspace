@@ -84,6 +84,10 @@ export class GlobalUniverseComponent {
     }
   }
 
+  public trackById(index: number, row: Universe) {
+    return row.id;
+  }
+
   public onEditCommit(row: Universe, field: string) {
     const universes = selectUniverses();
     for (let i = 0; i < universes.length; i++) {

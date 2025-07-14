@@ -69,4 +69,8 @@ export class DividendDeposits implements OnInit {
       }
     }
   }
+
+  public trackById(index: number, row: DivDeposit) {
+    return row.id;
+  }
 }

@@ -9,7 +9,7 @@
 <p-table [value]="universe$()"
 size="small"
 [scrollable]="true" class="flex-1 overflow-auto min-h-0"
-showGridlines
+showGridlines [rowTrackBy]="trackById"
 >
   <ng-template pTemplate="header">
     <tr>
