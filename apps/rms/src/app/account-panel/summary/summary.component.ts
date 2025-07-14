@@ -72,15 +72,13 @@ export class SummaryComponent {
     }
   };
 
-  monthlyLabels = [
-    'Jan 2024', 'Feb 2024', 'Mar 2024', 'Apr 2024', 'May 2024', 'Jun 2024'
-  ];
-
   lineChartData = {
-    labels: this.monthlyLabels,
+    labels: [
+    'Jan 2024', 'Feb 2024', 'Mar 2024', 'Apr 2024', 'May 2024', 'Jun 2024'
+  ],
     datasets: [
       {
-        label: 'Deposits',
+        label: 'Base',
         data: [1000, 2000, 3000, 4000, 5000, 6000],
         borderColor: '#42A5F5',
         backgroundColor: 'rgba(66,165,245,0.2)',
@@ -88,7 +86,7 @@ export class SummaryComponent {
         tension: 0.3
       },
       {
-        label: 'Deposits + Capital Gains',
+        label: 'Capital Gains',
         data: [1000, 2200, 3500, 4800, 6300, 8000],
         borderColor: '#66BB6A',
         backgroundColor: 'rgba(102,187,106,0.2)',
@@ -96,7 +94,7 @@ export class SummaryComponent {
         tension: 0.3
       },
       {
-        label: 'Deposits + Capital Gains + Dividends',
+        label: 'Dividends',
         data: [1000, 2300, 3700, 5100, 6700, 8500],
         borderColor: '#FFA726',
         backgroundColor: 'rgba(255,167,38,0.2)',
