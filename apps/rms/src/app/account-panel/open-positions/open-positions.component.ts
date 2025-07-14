@@ -35,6 +35,10 @@ export class OpenPositionsComponent {
     this.openPositionsService.deleteOpenPosition(position);
   }
 
+  public trackById(index: number, row: OpenPosition) {
+    return row.id;
+  }
+
   private isDateRangeValid(buyDate: unknown, sellDate: unknown, editing: 'buyDate' | 'sellDate'): boolean {
     const buy = buyDate instanceof Date ? buyDate : buyDate ? new Date(buyDate as string) : undefined;
     const sell = sellDate instanceof Date ? sellDate : sellDate ? new Date(sellDate as string) : undefined;
