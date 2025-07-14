@@ -20,7 +20,8 @@ export class AccountComponentService {
         name: 'New Account',
         id: 'new',
         trades: [],
-        divDeposits: []
+        divDeposits: [],
+        months: []
       },
       this.component.top['1']!
     );

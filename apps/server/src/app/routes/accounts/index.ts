@@ -31,6 +31,7 @@ export default async function (fastify: FastifyInstance): Promise<void> {
           trades: {
             select: {
               id: true,
+              sell_date: true,
             },
             orderBy: {
               buy_date: 'asc',
@@ -39,44 +40,65 @@ export default async function (fastify: FastifyInstance): Promise<void> {
           divDeposits: {
             select: {
               id: true,
+              date: true,
             },
             orderBy: {
               date: 'asc',
             },
-          }
+          },
         },
         orderBy: {
           name: 'asc',
         },
       });
 
-      return accounts.map((account) => ({
-        id: account.id,
-        name: account.name,
-        trades: account.trades.map((trade) => trade.id),
-        divDeposits: account.divDeposits.map((divDeposit) => divDeposit.id),
-      }));
+      return accounts.map((account) => {
+        const months1 = new Set(account.trades.filter((trade) => trade.sell_date !== null).map((trade) => {
+          const d = new Date(trade.sell_date);
+          return `${d.getFullYear()}-${d.getMonth() + 1}`;
+        }));
+        const months2 = new Set(account.divDeposits.map((divDeposit) => {
+          const d = new Date(divDeposit.date);
+          return `${d.getFullYear()}-${d.getMonth() + 1}`;
+        }));
+        const months = [...months1.union(months2)].sort((a: string, b: string) => b.localeCompare(a))
+          .map((m) => {
+            const [year, month] = m.split('-');
+            return {year: parseInt(year), month: parseInt(month)};
+          });
+
+
+        return {
+          id: account.id,
+          name: account.name,
+          trades: account.trades.map((trade) => trade.id),
+          divDeposits: account.divDeposits.map((divDeposit) => divDeposit.id),
+          months,
+        }
+      });
     }
   );
   console.log('registering /api/accounts/add route');
   fastify.post<{ Body: NewAccount, Reply: Account[]; }>('/add',
     async function (request, reply): Promise<void> {
-    const result = await prisma.accounts.create({
-      data: {
-        name: request.body.name,
-      },
-    });
-    var account = await prisma.accounts.findMany({
-      where: { id: { in: [result.id] } },
-      include: {
-        trades: true,
-      },
-    });
-    reply.status(200).send(account.map((account) => ({
-      id: account.id,
-      name: account.name,
-      trades: account.trades.map((trade) => trade.id),
-    })));
+      const result = await prisma.accounts.create({
+        data: {
+          name: request.body.name,
+        },
+      });
+      var account = await prisma.accounts.findMany({
+        where: { id: { in: [result.id] } },
+        include: {
+          trades: true,
+        },
+      });
+      reply.status(200).send(account.map((account) => ({
+        id: account.id,
+        name: account.name,
+        trades: account.trades.map((trade) => trade.id),
+        divDeposits: [],
+        months: [],
+      })));
     }
   );
   console.log('registering /api/accounts/delete route');

@@ -47,6 +47,10 @@ export const appRoutes: Route[] = [
             children: [
               {
                 path: '',
+                loadComponent: () => import('./account-panel/summary/summary.component').then(m => m.SummaryComponent),
+              },
+              {
+                path: 'open',
                 loadComponent: () => import('./account-panel/open-positions/open-positions.component').then(m => m.OpenPositionsComponent),
               },
               {

@@ -5,6 +5,14 @@
     [routerLinkActiveOptions]="{ exact: true }"
     class="px-4 py-2 -mb-px border-b-2 font-semibold cursor-pointer"
   >
+    Summary
+  </a>
+  <a
+    [routerLink]="['open']"
+    routerLinkActive="text-primary border-primary"
+    [routerLinkActiveOptions]="{ exact: true }"
+    class="px-4 py-2 -mb-px border-b-2 font-semibold cursor-pointer"
+  >
     Open Positions
   </a>
   <a
@@ -24,7 +32,7 @@
     Dividends & Deposits
   </a>
   <span class="flex-1"></span>
-  @if (router.url.endsWith('/account/' + accountId)) {
+  @if (router.url.endsWith('/account/' + accountId + '/open')) {
     <p-button
       pTooltip="Add New Position"
       aria-label="Add Open Position"
@@ -66,6 +74,6 @@
   <app-div-dep-modal (close)="closeNewDivDepDialog()" />
 </p-dialog>
 
-<div class="flex-1 overflow-auto min-h-0">
+<div class="flex-1 min-h-0">
   <router-outlet></router-outlet>
 </div>
