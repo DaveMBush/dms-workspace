@@ -96,7 +96,7 @@ export default async function (fastify: FastifyInstance): Promise<void> {
   // PUT /api/trades - update a trade
   fastify.put<{ Body: Trade; Reply: Trade[] }>('/',
     async function (request, reply): Promise<void> {
-      const { id, universeId, accountId, buy, sell, buy_date, sell_date } = request.body;
+      const { id, universeId, accountId, buy, sell, buy_date, sell_date, quantity } = request.body;
       await prisma.trades.update({
         where: { id },
         data: {
@@ -106,6 +106,7 @@ export default async function (fastify: FastifyInstance): Promise<void> {
           sell,
           buy_date: new Date(buy_date),
           sell_date: sell_date ? new Date(sell_date) : undefined,
+          quantity,
         },
       });
       const trades = await prisma.trades.findMany({
