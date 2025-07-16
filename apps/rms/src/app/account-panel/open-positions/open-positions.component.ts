@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, ElementRef, inject, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { selectTrades } from '../../store/trades/trade.selectors';
@@ -27,6 +27,7 @@ type EditableTradeField = 'buy' | 'buyDate' | 'quantity' | 'sell' | 'sellDate';
   viewProviders: [OpenPositionsComponentService],
 })
 export class OpenPositionsComponent {
+  private scrollTopSignal = signal(0);
   private openPositionsService = inject(OpenPositionsComponentService);
   positions = this.openPositionsService.selectOpenPositions;
   toastMessages = signal<{ severity: string; summary: string; detail: string }[]>([]);
@@ -52,6 +53,10 @@ export class OpenPositionsComponent {
   }
 
   onEditCommit(row: OpenPosition, field: string) {
+    const scrollContainer = this.getScrollContainer();
+    if (scrollContainer) {
+      this.scrollTopSignal.set(scrollContainer.scrollTop);
+    }
     const trades = this.openPositionsService.trades();
     for (let i = 0; i < trades.length; i++) {
       let tradeField = field;
@@ -97,6 +102,12 @@ export class OpenPositionsComponent {
         break;
       }
     }
+    setTimeout(() => {
+      const scrollContainer = this.getScrollContainer();
+      if (scrollContainer) {
+        scrollContainer.scrollTop = this.scrollTopSignal();
+      }
+    }, 200);
   }
 
   stopArrowKeyPropagation(event: KeyboardEvent) {
@@ -104,4 +115,12 @@ export class OpenPositionsComponent {
       event.stopPropagation();
     }
   }
+
+  tableRef = viewChild('tableRef', { read: ElementRef });
+
+  private getScrollContainer(): HTMLElement | null {
+    const tableEl = this.tableRef()?.nativeElement as HTMLElement;
+    return tableEl?.querySelector('.p-datatable-table-container') as HTMLElement | null;
+  }
+
 }
