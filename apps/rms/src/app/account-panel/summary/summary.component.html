@@ -2,14 +2,12 @@
   <!-- Left: Dropdown, stats, pie chart -->
   <div class="flex flex-col items-start w-full md:w-1/2 max-w-md">
     <div class="mb-4">
-      <p-dropdown
+      <p-select
         [options]="months()"
         [(ngModel)]="selectedMonth"
         placeholder="Select Month"
         class="w-48"
-        appendTo="body"
-        [showClear]="true"
-      ></p-dropdown>
+      ></p-select>
     </div>
     <div class="grid grid-cols-2 gap-6 w-full max-w-md mb-8">
       <div class="flex flex-col">

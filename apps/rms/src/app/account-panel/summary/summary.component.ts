@@ -1,15 +1,14 @@
 import { Component, computed, effect, inject, OnInit } from '@angular/core';
-import { DropdownModule } from 'primeng/dropdown';
+import { SelectModule } from 'primeng/select';
 import { FormsModule } from '@angular/forms';
 import { ChartModule } from 'primeng/chart';
 import { SummaryComponentService } from './summary-component.service';
-import { Summary } from './summary.interface';
 import { CurrencyPipe, PercentPipe } from '@angular/common';
 
 @Component({
   selector: 'app-summary',
   standalone: true,
-  imports: [PercentPipe, CurrencyPipe, DropdownModule, FormsModule, ChartModule],
+  imports: [PercentPipe, CurrencyPipe, SelectModule, FormsModule, ChartModule],
   templateUrl: './summary.component.html',
   styleUrls: ['./summary.component.scss'],
   viewProviders: [SummaryComponentService]
