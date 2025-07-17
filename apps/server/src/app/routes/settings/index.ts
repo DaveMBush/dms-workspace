@@ -4,7 +4,6 @@ import { Settings } from './settings.interface';
 import { RiskGroup } from './common/risk-group.interface';
 import yahooFinance from 'yahoo-finance2';
 import { getLastPrice } from './common/get-last-price.function';
-import { getDistribution } from './common/get-distribution.function';
 import { getDistributions } from './common/get-distributions.function';
 
 yahooFinance.suppressNotices(['yahooSurvey']);
@@ -64,21 +63,19 @@ export default async function (fastify: FastifyInstance): Promise<void> {
               : []
           );
 
-        await Promise.all(
-          groupValues.map(async (value, index) => {
-            if (!value || value.length === 0) {
-              return;
-            }
-            const symbols = value
-              .split(/\r?\n/)
-              .map(s => s.trim())
-              .filter(Boolean);
-
-            await Promise.all(
-              symbols.map(symbol => addOrUpdateSymbol(symbol, riskGroup[index].id))
-            );
-          })
-        );
+        for (let index = 0; index < groupValues.length; index++) {
+          const value = groupValues[index];
+          if (!value || value.length === 0) {
+            continue;
+          }
+          const symbols = value
+            .split(/\r?\n/)
+            .map(s => s.trim())
+            .filter(Boolean);
+          for (const symbol of symbols) {
+            await addOrUpdateSymbol(symbol, riskGroup[index].id);
+          }
+        }
 
         // Mark all other symbols as expired, but only if not already expired
         await prisma.universe.updateMany({

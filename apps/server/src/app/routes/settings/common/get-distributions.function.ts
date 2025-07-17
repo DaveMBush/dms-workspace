@@ -37,6 +37,7 @@ export async function getDistributions(symbol: string): Promise<{
     });
     const data = response.data?.Data || [];
     if (!Array.isArray(data) || data.length === 0) {
+      console.log(`No distributions found for ${symbol}`);
       return undefined;
     }
     // Convert and sort by date ascending
@@ -61,13 +62,13 @@ export async function getDistributions(symbol: string): Promise<{
       // Find the most recent 2-4 past distributions
       const recentRows = rows
         .filter((row: any) => row.date < nowDate)
-        .slice(-4)
-        .reverse(); // oldest to newest
+        .reverse() // oldest to newest
+        .slice(-4);
       if (recentRows.length > 1) {
         const intervals = [];
         for (let i = 1; i < recentRows.length; i++) {
           intervals.push(
-            (recentRows[i].date.valueOf() - recentRows[i - 1].date.valueOf()) /
+            (recentRows[i - 1].date.valueOf() - recentRows[i].date.valueOf()) /
               (1000 * 60 * 60 * 24)
           );
         }
@@ -86,6 +87,7 @@ export async function getDistributions(symbol: string): Promise<{
       distributions_per_year: perYear,
     };
   } catch (error) {
+    console.log(`Error getting distributions for ${symbol}: ${error}`);
     return {
       distribution: 0,
       ex_date: new Date(),
