@@ -1,1 +1,36 @@
-<p>screener works!</p>
+<p-toolbar class="text-lg font-semibold flex-none">
+  <ng-template #start>
+    <div class="whitespace-nowrap truncate">Screener</div>
+  </ng-template>
+  <ng-template #end>
+    <p-button icon="pi pi-refresh" class="mr-2" text severity="secondary" pTooltip="Refresh" tooltipPosition="bottom" />
+    <p-button icon="pi pi-cog" text severity="secondary" pTooltip="Settings" tooltipPosition="bottom" />
+  </ng-template>
+</p-toolbar>
+
+<p-table [value]="screenerData()"
+  size="small"
+  [scrollable]="true"
+  class="flex-1 overflow-auto min-h-0"
+  showGridlines
+  [rowTrackBy]="trackById"
+>
+  <ng-template pTemplate="header">
+    <tr>
+      <th>Symbol</th>
+      <th>Risk Group</th>
+      <th>Has Volatility</th>
+      <th>Objectives Understood</th>
+      <th>Graph Higher Before 2008</th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-row>
+    <tr>
+      <td>{{ row.symbol }}</td>
+      <td>{{ row.riskGroup }}</td>
+      <td>{{ row.has_volitility ? '✓' : '✗' }}</td>
+      <td>{{ row.objectives_understood ? '✓' : '✗' }}</td>
+      <td>{{ row.graph_higher_before_2008 ? '✓' : '✗' }}</td>
+    </tr>
+  </ng-template>
+</p-table>
