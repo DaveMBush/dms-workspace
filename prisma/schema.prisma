@@ -103,10 +103,10 @@ model divDeposits {
 
 model screener {
   id        String    @id @default(uuid())
-  symbol    String
-  holdings  Int
-  total_percent_top_holdings Int
-  inception_date DateTime
+  symbol    String    @unique
+  has_volitility Boolean
+  objectives_understood Boolean
+  graph_higher_before_2008 Boolean
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?

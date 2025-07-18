@@ -26,6 +26,7 @@
     "@smarttools/smart-signals": "^2.1.4",
     "axios": "^1.6.0",
     "chart.js": "^4.5.0",
+    "cheerio": "^1.0.0",
     "express": "^4.21.2",
     "fastify": "~5.2.1",
     "fastify-plugin": "~5.0.1",
