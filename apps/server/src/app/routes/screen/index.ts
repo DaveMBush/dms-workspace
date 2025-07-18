@@ -18,6 +18,12 @@ export default async function (fastify: FastifyInstance): Promise<void> {
       },
     },
     async function (request, reply): Promise<void> {
+      const riskGroup = [];
+      const riskGroups = await prisma.risk_group.findMany();
+      riskGroup[0] = riskGroups.find(riskGroup => riskGroup.name === 'Equities')!;
+      riskGroup[1] = riskGroups.find(riskGroup => riskGroup.name === 'Income')!;
+      riskGroup[2] = riskGroups.find(riskGroup => riskGroup.name === 'Tax Free Income')!;
+
       // grab today's list of symbols from cefconnect
       // https://www.cefconnect.com/api/v3/dailypricing
       const url = 'https://www.cefconnect.com/api/v3/dailypricing';
@@ -93,6 +99,19 @@ export default async function (fastify: FastifyInstance): Promise<void> {
       });
 
       qualifyingSymbols.forEach(async (qs) => {
+        let riskGroupId = '';
+        if(qs.CategoryId <= 10 || qs.CategoryId === 25 || qs.CategoryId === 26) {
+          riskGroupId = riskGroup[0].id;
+        }
+        else if(qs.CategoryId >= 11 && qs.CategoryId <= 20) {
+          riskGroupId = riskGroup[1].id;
+        }
+        else if(qs.CategoryId >= 21 && qs.CategoryId <= 24) {
+          riskGroupId = riskGroup[2].id;
+        }
+        else {
+          return;
+        }
         // find the existing symbol if it exists
         const existingSymbol = await prisma.screener.findUnique({
           where: {
@@ -138,6 +157,7 @@ export default async function (fastify: FastifyInstance): Promise<void> {
         await prisma.screener.create({
           data: {
             symbol: qs.Ticker,
+            risk_group_id: riskGroupId,
             has_volitility: false,
             objectives_understood: false,
             graph_higher_before_2008: false,

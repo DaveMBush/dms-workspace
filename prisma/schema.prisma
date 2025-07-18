@@ -8,13 +8,13 @@ datasource db {
 }
 
 model accounts {
-  id        String    @id @default(uuid())
-  name      String    @unique
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-  version   Int       @default(1)
-  trades    trades[]
+  id          String        @id @default(uuid())
+  name        String        @unique
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  deletedAt   DateTime?
+  version     Int           @default(1)
+  trades      trades[]
   divDeposits divDeposits[]
 }
 
@@ -48,6 +48,7 @@ model risk_group {
   deletedAt DateTime?
   version   Int        @default(1)
   universe  universe[]
+  screener  screener[]
 }
 
 model trades {
@@ -77,38 +78,40 @@ model holidays {
 }
 
 model divDepositType {
-  id        String    @id @default(uuid())
-  name      String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
+  id          String        @id @default(uuid())
+  name        String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  deletedAt   DateTime?
   divDeposits divDeposits[]
 }
 
 model divDeposits {
-  id        String    @id @default(uuid())
-  date      DateTime
-  amount    Float
-  accountId String
-  account   accounts  @relation(fields: [accountId], references: [id])
+  id               String         @id @default(uuid())
+  date             DateTime
+  amount           Float
+  accountId        String
+  account          accounts       @relation(fields: [accountId], references: [id])
   divDepositTypeId String
-  divDepositType divDepositType @relation(fields: [divDepositTypeId], references: [id])
-  universeId String?
-  universe   universe?  @relation(fields: [universeId], references: [id])
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-  version   Int       @default(1)
+  divDepositType   divDepositType @relation(fields: [divDepositTypeId], references: [id])
+  universeId       String?
+  universe         universe?      @relation(fields: [universeId], references: [id])
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  deletedAt        DateTime?
+  version          Int            @default(1)
 }
 
 model screener {
-  id        String    @id @default(uuid())
-  symbol    String    @unique
-  has_volitility Boolean
-  objectives_understood Boolean
+  id                       String     @id @default(uuid())
+  symbol                   String     @unique
+  risk_group_id            String
+  risk_group               risk_group @relation(fields: [risk_group_id], references: [id])
+  has_volitility           Boolean
+  objectives_understood    Boolean
   graph_higher_before_2008 Boolean
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-  version   Int       @default(1)
+  createdAt                DateTime   @default(now())
+  updatedAt                DateTime   @updatedAt
+  deletedAt                DateTime?
+  version                  Int        @default(1)
 }

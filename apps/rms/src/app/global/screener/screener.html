@@ -3,8 +3,8 @@
     <div class="whitespace-nowrap truncate">Screener</div>
   </ng-template>
   <ng-template #end>
-    <p-button icon="pi pi-refresh" class="mr-2" text severity="secondary" pTooltip="Refresh" tooltipPosition="bottom" />
-    <p-button icon="pi pi-cog" text severity="secondary" pTooltip="Settings" tooltipPosition="bottom" />
+    <p-button icon="pi pi-refresh" class="mr-2" text severity="secondary"
+      pTooltip="Refresh" tooltipPosition="bottom" (click)="refresh()"/>
   </ng-template>
 </p-toolbar>
 
@@ -13,8 +13,7 @@
   [scrollable]="true"
   class="flex-1 overflow-auto min-h-0"
   showGridlines
-  [rowTrackBy]="trackById"
->
+  [rowTrackBy]="trackById">
   <ng-template pTemplate="header">
     <tr>
       <th>Symbol</th>

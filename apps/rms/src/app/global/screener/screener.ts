@@ -1,10 +1,11 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ToolbarModule } from 'primeng/toolbar';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { FormsModule } from '@angular/forms';
+import { ScreenerService } from './screener.service';
 
 @Component({
   selector: 'app-screener',
@@ -16,10 +17,12 @@ import { FormsModule } from '@angular/forms';
     InputTextModule,
     FormsModule
   ],
+  viewProviders: [ScreenerService],
   templateUrl: './screener.html',
   styleUrl: './screener.scss',
 })
 export class Screener {
+  screenerService = inject(ScreenerService);
   screenerData = signal([
     {
       id: 1,
@@ -55,5 +58,11 @@ export class Screener {
 
   trackById(index: number, item: any): number {
     return item.id;
+  }
+
+  refresh() {
+    this.screenerService.refresh().subscribe((data) => {
+      console.log(data);
+    });
   }
 }
