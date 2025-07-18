@@ -68,7 +68,10 @@ export const appRoutes: Route[] = [
       {
         path: 'global/universe',
         loadComponent: () => import('./global/global-universe/global-universe.component').then(m => m.GlobalUniverseComponent),
-      },
+      }, {
+        path: 'global/screener',
+        loadComponent: () => import('./global/screener/screener').then(m => m.Screener),
+      }
     ]
   },
 ];

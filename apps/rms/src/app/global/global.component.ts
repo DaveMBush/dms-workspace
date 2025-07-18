@@ -18,14 +18,13 @@ export class GlobalComponent {
 
   globals = [
     { id: 'universe', name: 'Universe' },
+    { id: 'screener', name: 'Screener' },
   ];
 
   constructor(private router: Router) {}
 
   onSelect(e: {id: string, name: string}) {
     this.selectedIdChange.emit(e);
-    if (e.id === 'universe') {
-      this.router.navigate(['/global/universe']);
-    }
+    this.router.navigate([`/global/${e.id}`]);
   }
 }
