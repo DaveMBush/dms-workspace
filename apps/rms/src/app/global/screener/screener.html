@@ -8,13 +8,33 @@
   </ng-template>
 </p-toolbar>
 
-<p-table [value]="screenerData()"
+<p-table [value]="filteredScreenerData()"
   size="small"
   [scrollable]="true"
   class="flex-1 overflow-auto min-h-0"
   showGridlines
   [rowTrackBy]="trackById">
   <ng-template pTemplate="header">
+    <tr>
+      <th></th>
+      <th>
+        <p-select
+          [options]="riskGroups"
+          [(ngModel)]="selectedRiskGroup"
+          placeholder="Select One"
+          [showClear]="true"
+          optionLabel="label"
+          class="w-40"
+        >
+          <ng-template let-option #item>
+            <p-tag [value]="option.value" />
+          </ng-template>
+        </p-select>
+      </th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
     <tr>
       <th>Symbol</th>
       <th>Risk Group</th>
@@ -25,11 +45,32 @@
   </ng-template>
   <ng-template pTemplate="body" let-row>
     <tr>
-      <td>{{ row.symbol }}</td>
-      <td>{{ row.riskGroup }}</td>
-      <td>{{ row.has_volitility ? '✓' : '✗' }}</td>
-      <td>{{ row.objectives_understood ? '✓' : '✗' }}</td>
-      <td>{{ row.graph_higher_before_2008 ? '✓' : '✗' }}</td>
+      <td><a
+        [href]="'https://www.cefconnect.com/fund/' + row.symbol"
+        target="_blank"
+        class="underline text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+      >
+        {{ row.symbol }}
+      </a></td>
+      <td>{{ row.risk_group }}</td>
+      <td><p-checkbox binary="true" [ngModel]="row.has_volitility" (ngModelChange)="updateScreener(row.id, 'has_volitility', $event)"></p-checkbox></td>
+      <td><p-checkbox binary="true" [ngModel]="row.objectives_understood" (ngModelChange)="updateScreener(row.id, 'objectives_understood', $event)"></p-checkbox></td>
+      <td><p-checkbox binary="true" [ngModel]="row.graph_higher_before_2008" (ngModelChange)="updateScreener(row.id, 'graph_higher_before_2008', $event)"></p-checkbox></td>
     </tr>
   </ng-template>
 </p-table>
+
+<!-- Overlay -->
+@if (showOverlay()) {
+  <div class="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+    <div class="text-center">
+      <p-progressSpinner
+        styleClass="w-12 h-12"
+        strokeWidth="4"
+        fill="var(--surface-ground)"
+        animationDuration=".5s">
+      </p-progressSpinner>
+      <p class="mt-4 text-white font-medium">Refreshing data...</p>
+    </div>
+  </div>
+}

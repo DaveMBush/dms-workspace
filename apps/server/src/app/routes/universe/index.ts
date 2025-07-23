@@ -21,7 +21,12 @@ export default async function (fastify: FastifyInstance): Promise<void> {
       }
       const universes = await prisma.universe.findMany({
         where: { id: { in: ids } },
-        include: { risk_group: true },
+        include: {
+          risk_group: true,
+          trades: {
+            where: { sell_date: null }
+          }
+        },
       });
       return universes.map((u) => ({
         id: u.id,
@@ -34,6 +39,7 @@ export default async function (fastify: FastifyInstance): Promise<void> {
         ex_date: u.ex_date?.toISOString(),
         risk: u.risk,
         risk_group_id: u.risk_group_id,
+        position: u.trades.reduce((acc, trade) => acc + trade.buy * trade.quantity, 0),
         expired: u.expired
       }));
     }
@@ -60,6 +66,7 @@ export default async function (fastify: FastifyInstance): Promise<void> {
           ex_date: result.ex_date.toISOString(),
           risk: result.risk,
           risk_group_id: result.risk_group_id,
+          position: 0,
           expired: result.expired
         },
       ]);
@@ -106,7 +113,16 @@ export default async function (fastify: FastifyInstance): Promise<void> {
         },
       });
       const universes = await prisma.universe.findMany({
-        where: { id }
+        where: { id },
+        include: {
+          trades: {
+            where: {
+              sell_date: {
+                equals: null
+              }
+            }
+          }
+        }
       });
       const result = universes.map((u) => ({
         id: u.id,
@@ -119,6 +135,7 @@ export default async function (fastify: FastifyInstance): Promise<void> {
         ex_date: u.ex_date.toISOString(),
         risk: u.risk,
         risk_group_id: u.risk_group_id,
+        position: u.trades.reduce((acc, trade) => acc + trade.buy * trade.quantity, 0),
         expired: u.expired
       }));
       reply.status(200).send(result);

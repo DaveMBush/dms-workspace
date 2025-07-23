@@ -11,4 +11,5 @@ export interface Universe {
   risk_group_id: string;
   expired: boolean;
   name: string;
+  position: number;
 }

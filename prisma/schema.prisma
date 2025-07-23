@@ -27,7 +27,7 @@ model universe {
   most_recent_sell_price Float?
   symbol                 String
   ex_date                DateTime?
-  risk                   Int
+  risk_score             Int
   risk_group_id          String
   risk_group             risk_group @relation(fields: [risk_group_id], references: [id])
   expired                Boolean    @default(false)
@@ -36,7 +36,6 @@ model universe {
   deletedAt              DateTime?
   version                Int        @default(1)
   trades                 trades[]
-
   divDeposits divDeposits[]
 }
 
@@ -105,6 +104,10 @@ model divDeposits {
 model screener {
   id                       String     @id @default(uuid())
   symbol                   String     @unique
+  distribution             Float
+  distributions_per_year   Int
+  last_price               Float
+  ex_date                  DateTime?
   risk_group_id            String
   risk_group               risk_group @relation(fields: [risk_group_id], references: [id])
   has_volitility           Boolean

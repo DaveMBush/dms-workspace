@@ -30,6 +30,7 @@ export const selectUniverse = computed(() => {
       risk: universe.risk,
       yield_percent: 100 * universe.distributions_per_year * (universe.distribution / universe.last_price),
       expired: universe.expired,
+      position: universe.position,
     });
   }
   return result;

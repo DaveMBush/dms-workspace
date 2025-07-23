@@ -11,7 +11,6 @@ export async function getConsistentDistributions(symbol: string): Promise<boolea
 
   if (timeSinceLastCall < RATE_LIMIT_DELAY) {
     const waitTime = RATE_LIMIT_DELAY - timeSinceLastCall;
-    console.log(`Rate limiting: waiting ${waitTime}ms before next API call`);
     await new Promise(resolve => setTimeout(resolve, waitTime));
   }
 
@@ -39,31 +38,34 @@ export async function getConsistentDistributions(symbol: string): Promise<boolea
   });
   const data = response.data?.Data || [];
   if (!Array.isArray(data) || data.length === 0) {
-    console.log(`No distributions found for ${symbol}`);
     return false;
   }
-  // Convert and sort by date descending
+  // Convert and sort by date ascending (oldest first)
   const rows = data
     .map((row: any) => ({
       amount: row.TotDiv,
       date: new Date(row.ExDivDateDisplay),
     }))
     .filter((row: any) => !isNaN(row.date.valueOf()))
-    .sort((a: any, b: any) => b.date.valueOf() - a.date.valueOf());
+    .sort((a: any, b: any) => a.date.valueOf() - b.date.valueOf());
 
-  // Find next ex-date after or equal to today, or most recent past ex-date
-  const nowDate = new Date();
-  let nextOrRecent = rows.findIndex((row: any) => row.date >= nowDate);
-  // get the three most recent ex-dates
-  const recentExDates = rows.slice(nextOrRecent, nextOrRecent + 3);
-  // check for a declining trend in distributions
-  // where a declining trend is 3 ex-dates in a row
-  // where the distribution strictly decreases (each value < previous)
-  const isDeclining = recentExDates.every((row: any, index: number) => {
-    if (index === 0) return true;
-    return row.amount < recentExDates[index - 1].amount;
-  });
-  const result = !isDeclining; // Return true if NOT declining (i.e., consistent or increasing)
+  // Get the three most recent ex-dates (last 3 in chronological order)
+  const recentExDates = rows.slice(-3);
 
-  return result;
+  // Check for a declining trend in distributions
+  // We need at least 3 distributions to check for a trend
+  if (recentExDates.length < 3) {
+    return true; // Not enough data to determine trend
+  }
+
+  const currentDistribution = recentExDates[2].amount;      // Most recent
+  const previousDistribution = recentExDates[1].amount;     // Middle
+  const distributionBeforePrevious = recentExDates[0].amount; // Oldest
+
+  // If we have a declining trend (each value < previous), return false
+  if (currentDistribution < previousDistribution && previousDistribution < distributionBeforePrevious) {
+    return false;
+  }
+
+  return true;
 }

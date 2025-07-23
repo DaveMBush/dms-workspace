@@ -9,7 +9,7 @@ export default async function (fastify: FastifyInstance): Promise<void> {
   // Path: POST /api/accounts
   fastify.get<{ Body: void, Reply: void }>('/',
     async function (request, reply): Promise<void> {
-      console.log('HANDLER: POST /api/settings/update');
+      console.log('HANDLER: GET /api/settings/update');
 
       const universes = await prisma.universe.findMany();
 

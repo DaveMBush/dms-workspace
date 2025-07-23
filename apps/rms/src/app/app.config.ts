@@ -27,6 +27,8 @@ import { divDepositsEffectsServiceToken } from './store/div-deposits/div-deposit
 import { DivDepositsEffectsService } from './store/div-deposits/div-deposits-effect.service';
 import { divDepositTypesEffectsServiceToken } from './store/div-deposit-types/div-deposit-types-effect-service-token';
 import { DivDepositTypesEffectsService } from './store/div-deposit-types/div-deposit-types-effect.service';
+import { ScreenEffectsService } from './store/screen/screen-effect.service';
+import { screenEffectsServiceToken } from './store/screen/screen-effect-service-token';
 
 export const appConfig: ApplicationConfig = {
   providers: [{
@@ -53,7 +55,10 @@ export const appConfig: ApplicationConfig = {
     }, {
     provide: smartErrorHandlerToken,
     useClass: ErrorHandlerService,
-  },
+    }, {
+    provide: screenEffectsServiceToken,
+    useClass: ScreenEffectsService,
+    },
 
     // provideClientHydration(withEventReplay()),
     provideBrowserGlobalErrorListeners(),

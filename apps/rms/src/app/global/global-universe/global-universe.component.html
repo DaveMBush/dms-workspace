@@ -35,8 +35,9 @@ showGridlines [rowTrackBy]="trackById"
       <th></th>
       <th></th>
       <th></th>
+      <th></th>
       <th>
-        <p-columnFilter field="expired" matchMode="equals" [showMenu]="false">
+      <p-columnFilter field="expired" matchMode="equals" [showMenu]="false">
           <ng-template #filter let-value let-filter="filterCallback">
             <p-select [options]="expiredOptions" (onChange)="filter($event.value)" placeholder="Select One" [showClear]="true">
               <ng-template let-option #item>
@@ -57,6 +58,7 @@ showGridlines [rowTrackBy]="trackById"
       <th>Ex-Date</th>
       <th pSortableColumn="most_recent_sell_date">Mst Rcnt Sll Dt <p-sortIcon field="most_recent_sell_date" /></th>
       <th pSortableColumn="most_recent_sell_price">Mst Rcnt Sell $ <p-sortIcon field="most_recent_sell_price" /></th>
+      <th>Position</th>
       <th>Expired</th>
     </tr>
   </ng-template>
@@ -111,6 +113,7 @@ showGridlines [rowTrackBy]="trackById"
       }
       <td>{{ row.most_recent_sell_date | date:'MM/dd/yyyy' }}</td>
       <td>{{ row.most_recent_sell_price | number:'1.2-4' }}</td>
+      <td>{{  row.position === 0 ? '' : row.position | number:'1.2-4' }}</td>
       <td class="text-center">{{ row.expired ? '*' : '' }}</td>
     </tr>
   </ng-template>

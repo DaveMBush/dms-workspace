@@ -23,7 +23,8 @@ export default async function (fastify: FastifyInstance): Promise<void> {
                 universes: { type: 'array', items: { type: 'string' } },
                 riskGroups: { type: 'array', items: { type: 'string' } },
                 divDepositTypes: { type: 'array', items: { type: 'string' } },
-                holidays: { type: 'array', items: { type: 'string', format: 'date-time' } }
+                holidays: { type: 'array', items: { type: 'string', format: 'date-time' } },
+                screens: { type: 'array', items: { type: 'string' } }
               }
             },
           },
@@ -117,13 +118,20 @@ export default async function (fastify: FastifyInstance): Promise<void> {
         },
         orderBy: { createdAt: 'asc' }
       });
+      const screens = await prisma.screener.findMany({
+        select: {
+          id: true
+        },
+        orderBy: { createdAt: 'asc' }
+      });
       return reply.status(200).send([{
         id: '1',
         accounts: topAccounts.map((account) => account.id),
         universes: universe.map((universe) => universe.id),
         riskGroups: riskGroup.map((riskGroup) => riskGroup.id),
         divDepositTypes: divDepositTypes.map((divDepositType) => divDepositType.id),
-        holidays: dbHolidays.map((holiday) => holiday.date)
+        holidays: dbHolidays.map((holiday) => holiday.date),
+        screens: screens.map((screen) => screen.id)
       }]);
     });
 }

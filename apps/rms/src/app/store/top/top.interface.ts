@@ -1,3 +1,5 @@
+import { Screen } from '../screen/screen.interface';
+
 export interface Top {
   id: string;
   accounts: string[];
@@ -5,4 +7,5 @@ export interface Top {
   universes: string[];
   divDepositTypes: string[];
   holidays: Date[];
+  screens: Screen[];
 }
