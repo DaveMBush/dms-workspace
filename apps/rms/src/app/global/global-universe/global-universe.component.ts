@@ -25,6 +25,7 @@ import { NgClass } from '@angular/common';
 export class GlobalUniverseComponent {
   public readonly universe$ = selectUniverse;
   public readonly today = new Date();
+  public sortCriteria: Array<{field: string, order: number}> = [];
   public riskGroups = [
     { label: 'Equities', value: 'Equities' },
     { label: 'Income', value: 'Income' },
@@ -102,6 +103,106 @@ export class GlobalUniverseComponent {
     if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
       event.stopPropagation();
     }
+  }
+
+  /**
+   * Handles column sorting with multi-column support
+   */
+  public onSort(field: string): void {
+    const existingIndex = this.sortCriteria.findIndex(criteria => criteria.field === field);
+
+    if (existingIndex >= 0) {
+      // Toggle order for existing field
+      this.sortCriteria[existingIndex].order = this.sortCriteria[existingIndex].order === 1 ? -1 : 1;
+    } else {
+      // Add new field to sort criteria
+      this.sortCriteria.push({ field, order: 1 });
+    }
+
+    // Apply sorting to the data
+    this.applySorting();
+  }
+
+  /**
+   * Returns the appropriate sort icon class for a field
+   */
+  public getSortIcon(field: string): string {
+    const criteria = this.sortCriteria.find(c => c.field === field);
+    if (!criteria) return 'pi pi-sort';
+    return criteria.order === 1 ? 'pi pi-sort-up' : 'pi pi-sort-down';
+  }
+
+  /**
+   * Applies the current sort criteria to the universe data
+   */
+  private applySorting(): void {
+    const universeData = this.universe$();
+    if (this.sortCriteria.length === 0) return;
+
+    universeData.sort((a, b) => {
+      for (const criteria of this.sortCriteria) {
+        const aValue = this.getFieldValueFromDisplayData(a, criteria.field);
+        const bValue = this.getFieldValueFromDisplayData(b, criteria.field);
+
+        const comparison = this.compareValues(aValue, bValue);
+        if (comparison !== 0) {
+          return criteria.order * comparison;
+        }
+      }
+      return 0;
+    });
+  }
+
+  /**
+   * Gets the value of a field from the display data object
+   */
+  private getFieldValueFromDisplayData(data: any, field: string): any {
+    switch (field) {
+      case 'yield_percent':
+        return data.yield_percent || 0;
+      case 'ex_date':
+        return data.ex_date instanceof Date ? data.ex_date : new Date(0);
+      case 'most_recent_sell_date':
+        return data.most_recent_sell_date ? new Date(data.most_recent_sell_date) : new Date(0);
+      case 'most_recent_sell_price':
+        return data.most_recent_sell_price || 0;
+      default:
+        return data[field];
+    }
+  }
+
+  /**
+   * Gets the value of a field from a universe object
+   */
+  private getFieldValue(universe: Universe, field: string): any {
+    switch (field) {
+      case 'yield_percent':
+        return 100 * universe.distributions_per_year * (universe.distribution / universe.last_price);
+      case 'ex_date':
+        return universe.ex_date ? new Date(universe.ex_date) : new Date(0);
+      case 'most_recent_sell_date':
+        return universe.most_recent_sell_date ? new Date(universe.most_recent_sell_date) : new Date(0);
+      case 'most_recent_sell_price':
+        return universe.most_recent_sell_price || 0;
+      default:
+        return (universe as any)[field];
+    }
+  }
+
+  /**
+   * Compares two values for sorting
+   */
+  private compareValues(a: any, b: any): number {
+    if (a instanceof Date && b instanceof Date) {
+      return a.getTime() - b.getTime();
+    }
+    if (typeof a === 'number' && typeof b === 'number') {
+      return a - b;
+    }
+    if (typeof a === 'string' && typeof b === 'string') {
+      return a.localeCompare(b);
+    }
+    return 0;
   }
 
   /**

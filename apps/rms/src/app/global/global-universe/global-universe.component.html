@@ -53,11 +53,11 @@ showGridlines [rowTrackBy]="trackById"
       <th>Risk Group</th>
       <th>Distribution</th>
       <th>Distributions per Year</th>
-      <th pSortableColumn="yield_percent">Yield % <p-sortIcon field="yield_percent" /></th>
+      <th (click)="onSort('yield_percent')" class="cursor-pointer select-none">Yield % <i [class]="getSortIcon('yield_percent')"></i></th>
       <th>Last Price</th>
-      <th>Ex-Date</th>
-      <th pSortableColumn="most_recent_sell_date">Mst Rcnt Sll Dt <p-sortIcon field="most_recent_sell_date" /></th>
-      <th pSortableColumn="most_recent_sell_price">Mst Rcnt Sell $ <p-sortIcon field="most_recent_sell_price" /></th>
+      <th (click)="onSort('ex_date')" class="cursor-pointer select-none">Ex-Date <i [class]="getSortIcon('ex_date')"></i></th>
+      <th (click)="onSort('most_recent_sell_date')" class="cursor-pointer select-none">Mst Rcnt Sll Dt <i [class]="getSortIcon('most_recent_sell_date')"></i></th>
+      <th (click)="onSort('most_recent_sell_price')" class="cursor-pointer select-none">Mst Rcnt Sell $ <i [class]="getSortIcon('most_recent_sell_price')"></i></th>
       <th>Position</th>
       <th>Expired</th>
     </tr>

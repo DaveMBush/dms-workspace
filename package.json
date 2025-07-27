@@ -5,6 +5,7 @@
   "scripts": {
     "start:server": "nx run server:serve",
     "start:rms": "nx run rms:serve --no-hmr",
+    "start:simulation": "nx run simulation:serve",
     "build:rms": "nx run rms:build"
   },
   "private": true,
