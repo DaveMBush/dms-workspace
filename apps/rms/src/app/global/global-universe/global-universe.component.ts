@@ -161,7 +161,7 @@ export class GlobalUniverseComponent {
       case 'yield_percent':
         return data.yield_percent || 0;
       case 'ex_date':
-        return data.ex_date instanceof Date ? data.ex_date : new Date(0);
+        return this.getSortableExDate(data);
       case 'most_recent_sell_date':
         return data.most_recent_sell_date ? new Date(data.most_recent_sell_date) : new Date(0);
       case 'most_recent_sell_price':
@@ -169,6 +169,44 @@ export class GlobalUniverseComponent {
       default:
         return data[field];
     }
+  }
+
+  /**
+   * Gets the sortable ex-date value, which may be a calculated next ex-date
+   * if the current ex-date has passed
+   */
+  private getSortableExDate(data: any): Date {
+    if (!data.ex_date || !(data.ex_date instanceof Date)) {
+      return new Date(0);
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Normalize to start of day
+
+    const exDate = new Date(data.ex_date);
+    exDate.setHours(0, 0, 0, 0); // Normalize to start of day
+
+    // If ex-date is today or in the past, calculate the next expected ex-date
+    if (exDate <= today) {
+      const distributionsPerYear = data.distributions_per_year || 0;
+      const nextExDate = new Date(exDate);
+
+      if (distributionsPerYear === 12) {
+        // Monthly distributions - add 1 month
+        nextExDate.setMonth(nextExDate.getMonth() + 1);
+      } else if (distributionsPerYear === 4) {
+        // Quarterly distributions - add 3 months
+        nextExDate.setMonth(nextExDate.getMonth() + 3);
+      } else {
+        // For other frequencies, use the original date
+        return exDate;
+      }
+
+      return nextExDate;
+    }
+
+    // If ex-date is in the future, use the original date
+    return exDate;
   }
 
   /**
