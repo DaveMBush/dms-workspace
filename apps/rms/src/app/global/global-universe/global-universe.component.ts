@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, computed, signal } from '@angular/core';
 import { ToolbarModule } from 'primeng/toolbar';
 import { TableModule } from 'primeng/table';
 import { selectUniverse } from './universe.selector';
@@ -23,9 +23,8 @@ import { NgClass } from '@angular/common';
   styleUrls: ['./global-universe.component.scss'],
 })
 export class GlobalUniverseComponent {
-  public readonly universe$ = selectUniverse;
   public readonly today = new Date();
-  public sortCriteria: Array<{field: string, order: number}> = [];
+  public sortCriteria = signal<Array<{field: string, order: number}>>([]);
   public riskGroups = [
     { label: 'Equities', value: 'Equities' },
     { label: 'Income', value: 'Income' },
@@ -37,6 +36,34 @@ export class GlobalUniverseComponent {
   ];
   public searchSymbol = '';
   protected readonly settingsService = inject(UniverseSettingsService);
+
+  // Computed signal that automatically applies sorting when data changes
+  public readonly universe$ = computed(() => {
+    const rawData = selectUniverse();
+    const currentSortCriteria = this.sortCriteria();
+
+    if (currentSortCriteria.length === 0) {
+      return rawData;
+    }
+
+    // Create a copy to avoid mutating the original data
+    const sortedData = [...rawData];
+
+    sortedData.sort((a, b) => {
+      for (const criteria of currentSortCriteria) {
+        const aValue = this.getFieldValueFromDisplayData(a, criteria.field);
+        const bValue = this.getFieldValueFromDisplayData(b, criteria.field);
+
+        const comparison = this.compareValues(aValue, bValue);
+        if (comparison !== 0) {
+          return criteria.order * comparison;
+        }
+      }
+      return 0;
+    });
+
+    return sortedData;
+  });
 
   public onEditDistributionComplete(row: Universe) {
     const universes = selectUniverses();
@@ -105,53 +132,36 @@ export class GlobalUniverseComponent {
     }
   }
 
-  /**
+      /**
    * Handles column sorting with multi-column support
    */
   public onSort(field: string): void {
-    const existingIndex = this.sortCriteria.findIndex(criteria => criteria.field === field);
+    const currentCriteria = this.sortCriteria();
+    const existingIndex = currentCriteria.findIndex(criteria => criteria.field === field);
 
     if (existingIndex >= 0) {
       // Toggle order for existing field
-      this.sortCriteria[existingIndex].order = this.sortCriteria[existingIndex].order === 1 ? -1 : 1;
+      const updatedCriteria = [...currentCriteria];
+      updatedCriteria[existingIndex].order = updatedCriteria[existingIndex].order === 1 ? -1 : 1;
+      this.sortCriteria.set(updatedCriteria);
     } else {
       // Add new field to sort criteria
-      this.sortCriteria.push({ field, order: 1 });
+      this.sortCriteria.set([...currentCriteria, { field, order: 1 }]);
     }
-
-    // Apply sorting to the data
-    this.applySorting();
+    // The computed signal will automatically re-evaluate and apply sorting
   }
 
   /**
    * Returns the appropriate sort icon class for a field
    */
   public getSortIcon(field: string): string {
-    const criteria = this.sortCriteria.find(c => c.field === field);
+    const currentCriteria = this.sortCriteria();
+    const criteria = currentCriteria.find(c => c.field === field);
     if (!criteria) return 'pi pi-sort';
     return criteria.order === 1 ? 'pi pi-sort-up' : 'pi pi-sort-down';
   }
 
-  /**
-   * Applies the current sort criteria to the universe data
-   */
-  private applySorting(): void {
-    const universeData = this.universe$();
-    if (this.sortCriteria.length === 0) return;
 
-    universeData.sort((a, b) => {
-      for (const criteria of this.sortCriteria) {
-        const aValue = this.getFieldValueFromDisplayData(a, criteria.field);
-        const bValue = this.getFieldValueFromDisplayData(b, criteria.field);
-
-        const comparison = this.compareValues(aValue, bValue);
-        if (comparison !== 0) {
-          return criteria.order * comparison;
-        }
-      }
-      return 0;
-    });
-  }
 
   /**
    * Gets the value of a field from the display data object
