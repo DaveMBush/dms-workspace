@@ -48,10 +48,8 @@ function saveCache(cacheKey: string, data: any): void {
 
 interface SimulationParams {
   initialCapital: number;
-  monthlyDistribution: number;
-  initialPrice: number;
-  gainThreshold: number;
   cashThreshold: number;
+  gainThreshold: number;
   simulationYears: number;
   symbols: string[]; // Add symbols array
 }
@@ -86,9 +84,12 @@ interface StrategyResult {
 interface SimulationResult {
   buyAndHold: StrategyResult;
   tradingStrategy: StrategyResult;
+  adjustedBuyAndHold: StrategyResult;
   comparison: {
     tradingVsBuyHold: number;
     tradingVsBuyHoldPercent: number;
+    adjustedVsBuyHold: number;
+    adjustedVsBuyHoldPercent: number;
   };
 }
 
@@ -343,7 +344,7 @@ class TradingSimulation {
       }
       dailyData.push({ day, year: dateInfo.year, month: dateInfo.month, dayOfMonth: dateInfo.dayOfMonth, price: currentPrice, shares, cash, totalValue, dividends, cumulativeDividends, trades, symbolAllocations });
     }
-    const projectedAnnualDividends = shares * params.monthlyDistribution * 12;
+    const projectedAnnualDividends = this.calculateProjectedAnnualDividends(symbolShares, symbolData, totalDays);
     const symbolResults: { [symbol: string]: { shares: number; value: number; dividends: number } } = {};
     for (const symbol of params.symbols) {
       symbolResults[symbol] = {
@@ -382,34 +383,47 @@ class TradingSimulation {
   }
 
   async runMultiSymbolSimulation(params: SimulationParams): Promise<SimulationResult> {
-    // Calculate date range for historical data
-    const endDate = new Date();
-    const startDate = new Date();
-    startDate.setFullYear(startDate.getFullYear() - params.simulationYears);
-
-    // Fetch historical data for all symbols
+    console.log('Fetching historical data for all symbols...');
     const symbolData: { [symbol: string]: { prices: { day: number; price: number }[]; dividends: { day: number; amount: number }[] } } = {};
-    for (const symbol of params.symbols) {
-      const data = await this.fetchHistoricalData(symbol, startDate, endDate, params.simulationYears);
-      symbolData[symbol] = data;
+
+    // Fetch data for each symbol
+    for (let i = 0; i < params.symbols.length; i++) {
+      const symbol = params.symbols[i];
+      console.log(`Fetching data for ${symbol} (${i + 1}/${params.symbols.length})...`);
+
+      const endDate = new Date();
+      const startDate = new Date();
+      startDate.setFullYear(endDate.getFullYear() - params.simulationYears);
+
+      symbolData[symbol] = await this.fetchHistoricalData(symbol, startDate, endDate, params.simulationYears);
     }
 
-    // Find minimum days across all symbols
-    const minDays = Math.min(...Object.values(symbolData).map(data => data.prices.length - 1));
+    // Find the minimum number of days across all symbols
+    const totalDays = Math.min(...Object.values(symbolData).map(data => data.prices.length));
 
-    // Run strategies
-    const buyAndHoldResult = this.runMultiSymbolBuyAndHoldStrategy(params, symbolData, minDays);
-    const tradingResult = this.runMultiSymbolTradingStrategy(params, symbolData, minDays);
+    console.log(`Running simulation for ${totalDays} days...`);
 
-    const comparison = {
-      tradingVsBuyHold: tradingResult.projectedAnnualDividends - buyAndHoldResult.projectedAnnualDividends,
-      tradingVsBuyHoldPercent: ((tradingResult.projectedAnnualDividends / buyAndHoldResult.projectedAnnualDividends) - 1) * 100
-    };
+    // Run all three strategies
+    const buyAndHold = this.runMultiSymbolBuyAndHoldStrategy(params, symbolData, totalDays);
+    const tradingStrategy = this.runMultiSymbolTradingStrategy(params, symbolData, totalDays);
+    const adjustedBuyAndHold = this.runMultiSymbolAdjustedBuyAndHoldStrategy(params, symbolData, totalDays);
+
+    // Calculate comparisons
+    const tradingVsBuyHold = tradingStrategy.projectedAnnualDividends - buyAndHold.projectedAnnualDividends;
+    const tradingVsBuyHoldPercent = (tradingVsBuyHold / buyAndHold.projectedAnnualDividends) * 100;
+    const adjustedVsBuyHold = adjustedBuyAndHold.projectedAnnualDividends - buyAndHold.projectedAnnualDividends;
+    const adjustedVsBuyHoldPercent = (adjustedVsBuyHold / buyAndHold.projectedAnnualDividends) * 100;
 
     return {
-      buyAndHold: buyAndHoldResult,
-      tradingStrategy: tradingResult,
-      comparison
+      buyAndHold,
+      tradingStrategy,
+      adjustedBuyAndHold,
+      comparison: {
+        tradingVsBuyHold,
+        tradingVsBuyHoldPercent,
+        adjustedVsBuyHold,
+        adjustedVsBuyHoldPercent
+      }
     };
   }
 
@@ -544,10 +558,54 @@ class TradingSimulation {
       symbolLots[symbol] = [];
     }
 
-    let cash = params.initialCapital - Object.values(symbolValues).reduce((sum, value) => sum + value, 0);
+    let cash = params.initialCapital;
     let cumulativeDividends = 0;
     let totalTrades = 0;
     let lastDividendDay = -1;
+
+    // Initial allocation - invest in symbols with 10%+ yield
+    let remainingCash = params.initialCapital;
+    const initialAllocation = params.initialCapital / params.symbols.length;
+
+    // Find symbols with 10%+ yield for initial investment
+    const eligibleSymbols = params.symbols.filter(symbol => {
+      const initialPrice = symbolData[symbol].prices[0].price;
+      const yieldRate = this.calculateYield(symbol, { [symbol]: Math.floor(initialAllocation / initialPrice) }, symbolData, 0);
+      return yieldRate >= 10;
+    });
+
+    console.log(`Initial allocation - Found ${eligibleSymbols.length} symbols with 10%+ yield out of ${params.symbols.length} total symbols`);
+    if (eligibleSymbols.length === 0) {
+      console.log('No symbols meet 10% yield requirement for initial allocation - will wait for yield improvement');
+    }
+
+    if (eligibleSymbols.length > 0) {
+      // Invest equally in eligible symbols
+      const investmentPerSymbol = Math.floor(remainingCash / eligibleSymbols.length);
+
+      for (const symbol of eligibleSymbols) {
+        const initialPrice = symbolData[symbol].prices[0].price;
+        const newShares = Math.floor(investmentPerSymbol / initialPrice);
+
+        if (newShares > 0) {
+          symbolShares[symbol] = newShares;
+          symbolValues[symbol] = newShares * initialPrice;
+          symbolLastBuyPrices[symbol] = initialPrice;
+
+          // Add initial lot
+          symbolLots[symbol].push({
+            shares: newShares,
+            buyPrice: initialPrice,
+            buyDay: 0
+          });
+
+          remainingCash -= newShares * initialPrice;
+          totalTrades++;
+        }
+      }
+    }
+
+    cash = remainingCash;
 
     for (let day = 1; day <= totalDays; day++) {
       const dateInfo = this.getDateInfo(day);
@@ -574,7 +632,7 @@ class TradingSimulation {
         if (params.gainThreshold > 0 && symbolLots[symbol].length > 0) {
           const lotsToSell: { lotIndex: number; shares: number; sellPrice: number }[] = [];
 
-          // Check each lot for 1% gain
+          // Check each lot for gain threshold
           for (let i = 0; i < symbolLots[symbol].length; i++) {
             const lot = symbolLots[symbol][i];
             if (currentPrice >= lot.buyPrice * (1 + params.gainThreshold)) {
@@ -588,6 +646,7 @@ class TradingSimulation {
 
           // Sell lots that have achieved the gain
           if (lotsToSell.length > 0) {
+            console.log(`Day ${day}: ${symbol} selling ${lotsToSell.length} lots with gain threshold ${(params.gainThreshold * 100).toFixed(1)}%`);
             let totalSharesSold = 0;
             let totalSellValue = 0;
 
@@ -612,12 +671,71 @@ class TradingSimulation {
             }
 
             trades.push(`${symbol}: SELL ${totalSharesSold} shares at $${currentPrice.toFixed(2)} (${lotsToSell.length} lots)`);
-            cash += totalSellValue;
+
+            // Add 1/10th of sale proceeds to available cash for rebalancing
+            const rebalancingCash = totalSellValue * 0.1;
+            cash += totalSellValue - rebalancingCash; // Keep 90% of proceeds
+            const availableRebalancingCash = rebalancingCash;
+
             symbolShares[symbol] -= totalSharesSold;
             symbolValues[symbol] = symbolShares[symbol] * currentPrice;
             totalTrades++;
             symbolPendingBuyBack[symbol] = true;
             symbolSoldShares[symbol] += totalSharesSold;
+
+            // Check if symbol should exit pool due to low yield
+            const currentYield = this.calculateYield(symbol, symbolShares, symbolData, day);
+            if (currentYield < 10 && symbolShares[symbol] > 0) {
+              trades.push(`EXITED pool: ${symbol} yield dropped to ${currentYield.toFixed(1)}%`);
+            }
+
+            // Use rebalancing cash to buy other symbols if available
+            if (availableRebalancingCash >= 2000) {
+              // Find symbols with 10%+ yield that are not in our pool
+              const eligibleSymbols = params.symbols.filter(s => {
+                const yieldRate = this.calculateYield(s, symbolShares, symbolData, day);
+                const inPool = this.isSymbolInPool(s, symbolShares);
+                return yieldRate >= 10 && !inPool && s !== symbol;
+              });
+
+              if (eligibleSymbols.length > 0) {
+                // Find the least invested symbols among eligible ones
+                const leastInvestedSymbols = eligibleSymbols
+                  .map(s => ({ symbol: s, value: symbolValues[s] }))
+                  .sort((a, b) => a.value - b.value);
+
+                // Invest $2000 increments in least invested eligible symbols
+                let remainingRebalancingCash = availableRebalancingCash;
+                const investmentAmount = 2000;
+
+                for (const { symbol: targetSymbol } of leastInvestedSymbols) {
+                  if (remainingRebalancingCash >= investmentAmount) {
+                    const targetPrice = symbolData[targetSymbol].prices[day]?.price || symbolData[targetSymbol].prices[symbolData[targetSymbol].prices.length - 1].price;
+                    const newShares = Math.floor(investmentAmount / targetPrice);
+
+                    if (newShares > 0) {
+                      // Add new lot for new investment
+                      symbolLots[targetSymbol].push({
+                        shares: newShares,
+                        buyPrice: targetPrice,
+                        buyDay: day
+                      });
+
+                      symbolShares[targetSymbol] += newShares;
+                      symbolValues[targetSymbol] = symbolShares[targetSymbol] * targetPrice;
+                      remainingRebalancingCash -= newShares * targetPrice;
+                      totalTrades++;
+                      trades.push(`REBALANCE: Buy ${newShares} shares of ${targetSymbol} at $${targetPrice.toFixed(2)} (yield: ${this.calculateYield(targetSymbol, symbolShares, symbolData, day).toFixed(1)}%)`);
+                    }
+                  }
+                }
+                cash += remainingRebalancingCash; // Add any unused rebalancing cash back
+              } else {
+                cash += availableRebalancingCash; // No eligible symbols, add back to cash
+              }
+            } else {
+              cash += availableRebalancingCash; // Not enough for investment, add back to cash
+            }
           }
         }
 
@@ -632,12 +750,18 @@ class TradingSimulation {
           // Check if current price is below any of our sold lot prices
           const hasPriceDrop = symbolSoldLots[symbol].some(soldLot => currentPrice < soldLot.sellPrice);
 
+          // Check if current price has gone up another 1% from any sold lot price
+          const hasPriceIncrease = symbolSoldLots[symbol].some(soldLot => currentPrice >= soldLot.sellPrice * 1.01);
+
           if (hasPriceDrop) {
             shouldBuyBack = true;
             buyBackReason = `Price dropped to $${currentPrice.toFixed(2)} (below sell prices)`;
           } else if (tomorrowDividend) {
             shouldBuyBack = true;
             buyBackReason = `Buying back day before ex-date to collect dividend at $${currentPrice.toFixed(2)}`;
+          } else if (hasPriceIncrease) {
+            shouldBuyBack = true;
+            buyBackReason = `Price increased 1% to $${currentPrice.toFixed(2)} (above sell prices)`;
           }
 
           if (shouldBuyBack) {
@@ -670,6 +794,39 @@ class TradingSimulation {
               } else {
                 // Still have shares to buy back later
                 console.log(`Day ${day}: ${symbol} bought back ${buyShares} shares, still need ${symbolSoldShares[symbol]} more`);
+              }
+            }
+          }
+        }
+        // Check if sold symbols should re-enter pool due to improved yield
+        if (symbolSoldShares[symbol] > 0) {
+          const currentYield = this.calculateYield(symbol, symbolShares, symbolData, day);
+          if (currentYield >= 10) {
+            // Symbol has improved yield, try to buy back more aggressively
+            const sharesToBuyBack = symbolSoldShares[symbol];
+            const affordableShares = Math.floor(cash / currentPrice);
+            const buyShares = Math.min(sharesToBuyBack, affordableShares);
+
+            if (buyShares > 0) {
+              const buyValue = buyShares * currentPrice;
+              trades.push(`${symbol}: RE-ENTERING pool: Buy back ${buyShares} shares at $${currentPrice.toFixed(2)} (yield: ${currentYield.toFixed(1)}%)`);
+
+              // Add new lot for bought back shares
+              symbolLots[symbol].push({
+                shares: buyShares,
+                buyPrice: currentPrice,
+                buyDay: day
+              });
+
+              symbolShares[symbol] += buyShares;
+              symbolValues[symbol] = symbolShares[symbol] * currentPrice;
+              cash -= buyValue;
+              symbolLastBuyPrices[symbol] = currentPrice;
+              symbolSoldShares[symbol] -= buyShares;
+              totalTrades++;
+
+              if (symbolSoldShares[symbol] === 0) {
+                symbolPendingBuyBack[symbol] = false;
               }
             }
           }
@@ -713,16 +870,242 @@ class TradingSimulation {
           }
         }
 
-        // Then, make new investments with remaining cash - split among multiple symbols
+        // Then, make new investments with remaining cash - yield-based strategy
         if (cash >= params.cashThreshold) {
-          // Calculate how much to invest per symbol (split cash among all symbols)
-          const investmentPerSymbol = Math.floor(cash / params.symbols.length);
+          // Find symbols with 10%+ yield that are not in our pool
+          const eligibleSymbols = params.symbols.filter(symbol => {
+            const yieldRate = this.calculateYield(symbol, symbolShares, symbolData, day);
+            const inPool = this.isSymbolInPool(symbol, symbolShares);
+            return yieldRate >= 10 && !inPool;
+          });
 
-          if (investmentPerSymbol > 0) {
-            // Try to invest in each symbol
-            for (const symbol of params.symbols) {
+          if (eligibleSymbols.length > 0) {
+            console.log(`Day ${day}: Found ${eligibleSymbols.length} symbols with 10%+ yield ready to enter pool`);
+          }
+
+          if (eligibleSymbols.length > 0) {
+            // Find the least invested symbols among eligible ones
+            const leastInvestedSymbols = eligibleSymbols
+              .map(symbol => ({ symbol, value: symbolValues[symbol] }))
+              .sort((a, b) => a.value - b.value);
+
+            // Invest $2000 increments in least invested eligible symbols
+            let remainingCash = cash;
+            const investmentAmount = 2000;
+
+            for (const { symbol } of leastInvestedSymbols) {
+              if (remainingCash >= investmentAmount) {
+                const currentPrice = symbolData[symbol].prices[day]?.price || symbolData[symbol].prices[symbolData[symbol].prices.length - 1].price;
+                const newShares = Math.floor(investmentAmount / currentPrice);
+
+                if (newShares > 0) {
+                  // Add new lot for new investment
+                  symbolLots[symbol].push({
+                    shares: newShares,
+                    buyPrice: currentPrice,
+                    buyDay: day
+                  });
+
+                  symbolShares[symbol] += newShares;
+                  symbolValues[symbol] = symbolShares[symbol] * currentPrice;
+                  remainingCash -= newShares * currentPrice;
+                  totalTrades++;
+                  trades.push(`ENTERED pool: Buy ${newShares} shares of ${symbol} at $${currentPrice.toFixed(2)} (yield: ${this.calculateYield(symbol, symbolShares, symbolData, day).toFixed(1)}%)`);
+                }
+              }
+            }
+            cash = remainingCash;
+          }
+        }
+      }
+
+      const symbolAllocations: { [symbol: string]: { shares: number; value: number } } = {};
+      for (const symbol of params.symbols) {
+        symbolAllocations[symbol] = { shares: symbolShares[symbol], value: symbolValues[symbol] };
+      }
+
+      dailyData.push({
+        day,
+        year: dateInfo.year,
+        month: dateInfo.month,
+        dayOfMonth: dateInfo.dayOfMonth,
+        price: 0, // Average price across symbols
+        shares: Object.values(symbolShares).reduce((sum, shares) => sum + shares, 0),
+        cash,
+        totalValue,
+        dividends: 0, // Daily dividends are handled per symbol
+        cumulativeDividends,
+        trades,
+        symbolAllocations
+      });
+    }
+
+    const symbolResults: { [symbol: string]: { shares: number; value: number; dividends: number } } = {};
+    let finalTotalValue = cash;
+    for (const symbol of params.symbols) {
+      const finalPrice = symbolData[symbol].prices[totalDays - 1].price;
+      const symbolValue = symbolShares[symbol] * finalPrice;
+      finalTotalValue += symbolValue;
+      symbolResults[symbol] = {
+        shares: symbolShares[symbol],
+        value: symbolValue,
+        dividends: symbolDividends[symbol]
+      };
+    }
+
+    // Calculate projected annual dividends based on current holdings
+    let projectedAnnualDividends = 0;
+    for (const symbol of params.symbols) {
+      const finalPrice = symbolData[symbol].prices[totalDays]?.price || symbolData[symbol].prices[symbolData[symbol].prices.length - 1].price;
+      const finalShares = symbolShares[symbol];
+
+      // Calculate annual dividend rate for this symbol
+      const symbolDividendRate = this.calculateYield(symbol, symbolShares, symbolData, totalDays) / 100;
+      const annualDividendPerShare = finalPrice * symbolDividendRate;
+
+      projectedAnnualDividends += finalShares * annualDividendPerShare;
+    }
+
+    return {
+      strategyName: 'Multi-Symbol Trading Strategy',
+      dailyData,
+      finalShares: Object.values(symbolShares).reduce((sum, shares) => sum + shares, 0),
+      finalCash: cash,
+      finalTotalValue,
+      totalDividendsCollected: cumulativeDividends,
+      projectedAnnualDividends,
+      totalTrades,
+      symbolResults
+    };
+  }
+
+  private runMultiSymbolAdjustedBuyAndHoldStrategy(params: SimulationParams, symbolData: { [symbol: string]: { prices: { day: number; price: number }[]; dividends: { day: number; amount: number }[] } }, totalDays: number): StrategyResult {
+    const dailyData: DailyData[] = [];
+    const symbolShares: { [symbol: string]: number } = {};
+    const symbolValues: { [symbol: string]: number } = {};
+    const symbolDividends: { [symbol: string]: number } = {};
+    const symbolLots: { [symbol: string]: { shares: number; buyPrice: number; buyDay: number }[] } = {};
+
+    // Initialize with equal allocation (like buy & hold)
+    const initialAllocation = params.initialCapital / params.symbols.length;
+
+    for (const symbol of params.symbols) {
+      const initialPrice = symbolData[symbol].prices[0].price;
+      symbolShares[symbol] = Math.floor(initialAllocation / initialPrice);
+      symbolValues[symbol] = symbolShares[symbol] * initialPrice;
+      symbolDividends[symbol] = 0;
+      symbolLots[symbol] = [{
+        shares: symbolShares[symbol],
+        buyPrice: initialPrice,
+        buyDay: 0
+      }];
+    }
+
+    let cash = params.initialCapital - Object.values(symbolValues).reduce((sum, value) => sum + value, 0);
+    let cumulativeDividends = 0;
+    let totalTrades = 0;
+    let lastDividendDay = -1;
+
+    for (let day = 1; day <= totalDays; day++) {
+      const dateInfo = this.getDateInfo(day);
+      const trades: string[] = [];
+      let totalValue = cash;
+
+      // Update prices and collect dividends for each symbol
+      for (const symbol of params.symbols) {
+        const currentPrice = symbolData[symbol].prices[day]?.price || symbolData[symbol].prices[symbolData[symbol].prices.length - 1].price;
+        symbolValues[symbol] = symbolShares[symbol] * currentPrice;
+        totalValue += symbolValues[symbol];
+
+        // Check for dividends
+        const symbolDividend = symbolData[symbol].dividends.find(d => d.day === day);
+        if (symbolDividend) {
+          const dividendAmount = symbolShares[symbol] * symbolDividend.amount;
+          symbolDividends[symbol] += dividendAmount;
+          cumulativeDividends += dividendAmount;
+          cash += dividendAmount;
+          trades.push(`${symbol}: Collected $${dividendAmount.toFixed(2)} dividend`);
+        }
+
+        // Check for lots to sell (yield < 10% AND price > buy price)
+        if (symbolLots[symbol].length > 0) {
+          const lotsToSell: { lotIndex: number; shares: number; sellPrice: number }[] = [];
+
+          // Check each lot
+          for (let i = 0; i < symbolLots[symbol].length; i++) {
+            const lot = symbolLots[symbol][i];
+            const currentYield = this.calculateYield(symbol, symbolShares, symbolData, day);
+
+            // Sell if yield < 10% AND price > buy price
+            if (currentYield < 10 && currentPrice > lot.buyPrice) {
+              lotsToSell.push({
+                lotIndex: i,
+                shares: lot.shares,
+                sellPrice: currentPrice
+              });
+            }
+          }
+
+          // Sell lots that meet criteria
+          if (lotsToSell.length > 0) {
+            let totalSharesSold = 0;
+            let totalSellValue = 0;
+
+            // Sell lots in reverse order to avoid index shifting
+            for (let i = lotsToSell.length - 1; i >= 0; i--) {
+              const lotToSell = lotsToSell[i];
+              const lotIndex = lotToSell.lotIndex;
+              const lot = symbolLots[symbol][lotIndex];
+
+              totalSharesSold += lot.shares;
+              totalSellValue += lot.shares * lotToSell.sellPrice;
+
+              // Remove the lot
+              symbolLots[symbol].splice(lotIndex, 1);
+            }
+
+            trades.push(`${symbol}: SELL ${totalSharesSold} shares at $${currentPrice.toFixed(2)} (yield: ${this.calculateYield(symbol, symbolShares, symbolData, day).toFixed(1)}%, price > buy price)`);
+            cash += totalSellValue;
+            symbolShares[symbol] -= totalSharesSold;
+            symbolValues[symbol] = symbolShares[symbol] * currentPrice;
+            totalTrades++;
+          }
+        }
+      }
+
+      // Rebalancing logic: reinvest cash in symbols with 10%+ yield
+      if (cash >= params.cashThreshold) {
+        // First, try to invest in symbols with 10%+ yield that are not in our pool (0 shares)
+        const eligibleZeroShareSymbols = params.symbols.filter(symbol => {
+          const yieldRate = this.calculateYield(symbol, symbolShares, symbolData, day);
+          const inPool = this.isSymbolInPool(symbol, symbolShares);
+          return yieldRate >= 10 && !inPool;
+        });
+
+        // Then, consider symbols with 10%+ yield that are already in our pool
+        const eligibleExistingSymbols = params.symbols.filter(symbol => {
+          const yieldRate = this.calculateYield(symbol, symbolShares, symbolData, day);
+          const inPool = this.isSymbolInPool(symbol, symbolShares);
+          return yieldRate >= 10 && inPool;
+        });
+
+        // Combine lists, prioritizing zero-share symbols
+        const allEligibleSymbols = [...eligibleZeroShareSymbols, ...eligibleExistingSymbols];
+
+        if (allEligibleSymbols.length > 0) {
+          // Find the least invested symbols among eligible ones
+          const leastInvestedSymbols = allEligibleSymbols
+            .map(symbol => ({ symbol, value: symbolValues[symbol] }))
+            .sort((a, b) => a.value - b.value);
+
+          // Invest $2000 increments in least invested eligible symbols
+          let remainingCash = cash;
+          const investmentAmount = 2000;
+
+          for (const { symbol } of leastInvestedSymbols) {
+            if (remainingCash >= investmentAmount) {
               const currentPrice = symbolData[symbol].prices[day]?.price || symbolData[symbol].prices[symbolData[symbol].prices.length - 1].price;
-              const newShares = Math.floor(investmentPerSymbol / currentPrice);
+              const newShares = Math.floor(investmentAmount / currentPrice);
 
               if (newShares > 0) {
                 // Add new lot for new investment
@@ -734,12 +1117,13 @@ class TradingSimulation {
 
                 symbolShares[symbol] += newShares;
                 symbolValues[symbol] = symbolShares[symbol] * currentPrice;
-                cash -= newShares * currentPrice;
+                remainingCash -= newShares * currentPrice;
                 totalTrades++;
-                trades.push(`REINVEST: Buy ${newShares} shares of ${symbol} at $${currentPrice.toFixed(2)}`);
+                trades.push(`REINVEST: Buy ${newShares} shares of ${symbol} at $${currentPrice.toFixed(2)} (yield: ${this.calculateYield(symbol, symbolShares, symbolData, day).toFixed(1)}%)`);
               }
             }
           }
+          cash = remainingCash;
         }
       }
 
@@ -779,7 +1163,7 @@ class TradingSimulation {
 
     const projectedAnnualDividends = cumulativeDividends * (365 / totalDays);
     return {
-      strategyName: 'Multi-Symbol Trading Strategy',
+      strategyName: 'Multi-Symbol Adjusted Buy and Hold',
       dailyData,
       finalShares: Object.values(symbolShares).reduce((sum, shares) => sum + shares, 0),
       finalCash: cash,
@@ -789,6 +1173,28 @@ class TradingSimulation {
       totalTrades,
       symbolResults
     };
+  }
+
+  private calculateYield(symbol: string, symbolShares: { [symbol: string]: number }, symbolData: { [symbol: string]: { prices: { day: number; price: number }[]; dividends: { day: number; amount: number }[] } }, day: number): number {
+    const currentPrice = symbolData[symbol].prices[day]?.price || symbolData[symbol].prices[symbolData[symbol].prices.length - 1].price;
+    const shares = symbolShares[symbol];
+
+    if (shares === 0 || currentPrice === 0) return 0;
+
+    // Calculate annual dividends based on actual dividend data
+    const dividends = symbolData[symbol].dividends;
+    if (dividends.length === 0) return 0;
+
+    // Use the first dividend to estimate annual yield
+    const firstDividend = dividends[0];
+    const annualDividends = shares * firstDividend.amount * 12; // Assume monthly dividends
+    const currentValue = shares * currentPrice;
+
+    return (annualDividends / currentValue) * 100;
+  }
+
+  private isSymbolInPool(symbol: string, symbolShares: { [symbol: string]: number }): boolean {
+    return symbolShares[symbol] > 0;
   }
 
   private selectSymbolToInvest(symbols: string[], symbolValues: { [symbol: string]: number }, availableCash: number): string | null {
@@ -804,87 +1210,110 @@ class TradingSimulation {
     // TODO: Implement actual yield calculation
     return candidates[0];
   }
+
+  private calculateProjectedAnnualDividends(symbolShares: { [symbol: string]: number }, symbolData: { [symbol: string]: { prices: { day: number; price: number }[]; dividends: { day: number; amount: number }[] } }, totalDays: number): number {
+    let projectedAnnualDividends = 0;
+    for (const symbol of Object.keys(symbolShares)) {
+      const finalPrice = symbolData[symbol].prices[totalDays]?.price || symbolData[symbol].prices[symbolData[symbol].prices.length - 1].price;
+      const finalShares = symbolShares[symbol];
+
+      // Calculate annual dividend rate for this symbol
+      const symbolDividendRate = this.calculateYield(symbol, symbolShares, symbolData, totalDays) / 100;
+      const annualDividendPerShare = finalPrice * symbolDividendRate;
+
+      projectedAnnualDividends += finalShares * annualDividendPerShare;
+    }
+    return projectedAnnualDividends;
+  }
 }
 
 // Main execution
 async function main() {
   const simulation = new TradingSimulation();
 
-  const params: SimulationParams = {
-    initialCapital: 1000000, // Changed from 10000 to 1000000
-    monthlyDistribution: 0.25,
-    initialPrice: 10,
-    gainThreshold: 0.01, // 1% - back to the original scenario
+  const baseParams: SimulationParams = {
+    initialCapital: 1000000,
     cashThreshold: 2000,
-    simulationYears: 5, // Currently set to 5 years for faster testing
-    symbols: simulation.symbols // Use the class's symbols array
+    gainThreshold: 0.0,
+    simulationYears: 5,
+    symbols: simulation.symbols
   };
 
-  console.log('=== Multi-Symbol CEF Trading Strategy Simulation ===');
-  console.log('');
-  console.log('Parameters:');
-  console.log(`Initial Capital: $${params.initialCapital.toLocaleString()}`);
-  console.log(`Monthly Distribution: $${params.monthlyDistribution}`);
-  console.log(`Initial Price: $${params.initialPrice}`);
-  console.log(`Gain Threshold: ${(params.gainThreshold * 100).toFixed(0)}%`);
-  console.log(`Cash Threshold: $${params.cashThreshold.toLocaleString()}`);
-  console.log(`Simulation Years: ${params.simulationYears}`);
-  console.log(`Symbols: ${params.symbols.join(', ')}`);
+  console.log('\n=== Multi-Symbol CEF Trading Strategy Simulation ===');
+  console.log('\nParameters:');
+  console.log(`Initial Capital: $${baseParams.initialCapital.toLocaleString()}`);
+  console.log(`Cash Threshold: $${baseParams.cashThreshold.toLocaleString()}`);
+  console.log(`Simulation Years: ${baseParams.simulationYears}`);
+  console.log(`Symbols: ${baseParams.symbols.join(', ')}`);
   console.log('');
 
-  // Run the multi-symbol simulation
-  console.log('\n=== RUNNING MULTI-SYMBOL SIMULATION ===');
-  const result = await simulation.runMultiSymbolSimulation(params);
+  // Test different gain thresholds
+  const gainThresholds = [0.005, 0.01, 0.02, 0.03, 0.04, 0.05]; // 0.5%, 1%, 2%, 3%, 4%, 5%
+  const results: { gainThreshold: number; tradingVsBuyHold: number; tradingVsBuyHoldPercent: number; adjustedVsBuyHold: number; adjustedVsBuyHoldPercent: number; tradingVsAdjusted: number; tradingVsAdjustedPercent: number }[] = [];
 
-  console.log('\n=== RESULTS ===');
-  console.log('');
+  for (const gainThreshold of gainThresholds) {
+    console.log(`\n=== RUNNING SIMULATION WITH ${(gainThreshold * 100).toFixed(1)}% GAIN THRESHOLD ===`);
 
-  console.log('MULTI-SYMBOL BUY AND HOLD STRATEGY:');
-  console.log(`Final Shares: ${result.buyAndHold.finalShares.toLocaleString()}`);
-  console.log(`Final Cash: $${result.buyAndHold.finalCash.toFixed(2)}`);
-  console.log(`Final Total Value: $${result.buyAndHold.finalTotalValue.toFixed(2)}`);
-  console.log(`Total Dividends Collected: $${result.buyAndHold.totalDividendsCollected.toFixed(2)}`);
-  console.log(`Projected Annual Dividends: $${result.buyAndHold.projectedAnnualDividends.toFixed(2)}`);
-  console.log(`Total Trades: ${result.buyAndHold.totalTrades}`);
-  console.log('Per-Symbol Results:');
-  for (const [symbol, data] of Object.entries(result.buyAndHold.symbolResults)) {
-    console.log(`  ${symbol}: ${data.shares.toLocaleString()} shares, $${data.value.toFixed(2)} value, $${data.dividends.toFixed(2)} dividends`);
+    const params = { ...baseParams, gainThreshold };
+    console.log(`DEBUG: gainThreshold = ${gainThreshold}, params.gainThreshold = ${params.gainThreshold}`);
+    const result = await simulation.runMultiSymbolSimulation(params);
+
+    // Add debugging output
+    console.log(`Trading Strategy - Total Trades: ${result.tradingStrategy.totalTrades}`);
+    console.log(`Adjusted Strategy - Total Trades: ${result.adjustedBuyAndHold.totalTrades}`);
+    console.log(`Trading Strategy - Final Shares: ${result.tradingStrategy.finalShares}`);
+    console.log(`Adjusted Strategy - Final Shares: ${result.adjustedBuyAndHold.finalShares}`);
+
+    // Calculate direct comparison between Trading and Adjusted
+    const tradingVsAdjusted = result.tradingStrategy.projectedAnnualDividends - result.adjustedBuyAndHold.projectedAnnualDividends;
+    const tradingVsAdjustedPercent = (tradingVsAdjusted / result.adjustedBuyAndHold.projectedAnnualDividends) * 100;
+
+    results.push({
+      gainThreshold,
+      tradingVsBuyHold: result.comparison.tradingVsBuyHold,
+      tradingVsBuyHoldPercent: result.comparison.tradingVsBuyHoldPercent,
+      adjustedVsBuyHold: result.comparison.adjustedVsBuyHold,
+      adjustedVsBuyHoldPercent: result.comparison.adjustedVsBuyHoldPercent,
+      tradingVsAdjusted,
+      tradingVsAdjustedPercent
+    });
   }
-  console.log('');
 
-  console.log('MULTI-SYMBOL TRADING STRATEGY:');
-  console.log(`Final Shares: ${result.tradingStrategy.finalShares.toLocaleString()}`);
-  console.log(`Final Cash: $${result.tradingStrategy.finalCash.toFixed(2)}`);
-  console.log(`Final Total Value: $${result.tradingStrategy.finalTotalValue.toFixed(2)}`);
-  console.log(`Total Dividends Collected: $${result.tradingStrategy.totalDividendsCollected.toFixed(2)}`);
-  console.log(`Projected Annual Dividends: $${result.tradingStrategy.projectedAnnualDividends.toFixed(2)}`);
-  console.log(`Total Trades: ${result.tradingStrategy.totalTrades}`);
-  console.log('Per-Symbol Results:');
-  for (const [symbol, data] of Object.entries(result.tradingStrategy.symbolResults)) {
-    console.log(`  ${symbol}: ${data.shares.toLocaleString()} shares, $${data.value.toFixed(2)} value, $${data.dividends.toFixed(2)} dividends`);
-  }
+  // Display results table
+  console.log('\n=== COMPARISON RESULTS ===');
   console.log('');
+  console.log('Gain Threshold | Trading vs Buy & Hold | Adjusted vs Buy & Hold | Trading vs Adjusted');
+  console.log('---------------|----------------------|------------------------|-------------------');
 
-  console.log('COMPARISON:');
-  console.log(`Trading vs Buy & Hold: $${result.comparison.tradingVsBuyHold.toFixed(2)}`);
-  console.log(`Trading vs Buy & Hold: ${result.comparison.tradingVsBuyHoldPercent.toFixed(2)}%`);
-  console.log('');
+  for (const result of results) {
+    const gainPercent = (result.gainThreshold * 100).toFixed(1);
+    const tradingVsBuyHold = result.tradingVsBuyHoldPercent.toFixed(2);
+    const adjustedVsBuyHold = result.adjustedVsBuyHoldPercent.toFixed(2);
+    const tradingVsAdjusted = result.tradingVsAdjustedPercent.toFixed(2);
 
-  if (result.comparison.tradingVsBuyHold > 0) {
-    console.log('✅ Trading strategy produces HIGHER annual dividends');
-  } else if (result.comparison.tradingVsBuyHold < 0) {
-    console.log('❌ Trading strategy produces LOWER annual dividends');
-  } else {
-    console.log('➖ Trading strategy produces SAME annual dividends');
+    console.log(`${gainPercent.padStart(6)}%      | ${tradingVsBuyHold.padStart(8)}%        | ${adjustedVsBuyHold.padStart(10)}%          | ${tradingVsAdjusted.padStart(8)}%`);
   }
 
   console.log('');
-  console.log('=== CONCLUSION ===');
-  console.log('The simulation shows whether selling at gains and buying back');
-  console.log('produces better dividend income than simply buying and holding');
-  console.log('in a multi-symbol portfolio with rebalancing.');
-  console.log('Run multiple times to see the variance in results due to');
-  console.log('random price movements.');
+
+  // Find best performing strategy
+  const bestTradingVsBuyHold = results.reduce((best, current) =>
+    current.tradingVsBuyHoldPercent > best.tradingVsBuyHoldPercent ? current : best
+  );
+
+  const bestAdjustedVsBuyHold = results.reduce((best, current) =>
+    current.adjustedVsBuyHoldPercent > best.adjustedVsBuyHoldPercent ? current : best
+  );
+
+  const bestTradingVsAdjusted = results.reduce((best, current) =>
+    current.tradingVsAdjustedPercent > best.tradingVsAdjustedPercent ? current : best
+  );
+
+  console.log('=== BEST PERFORMING CONFIGURATIONS ===');
+  console.log(`Best Trading vs Buy & Hold: ${(bestTradingVsBuyHold.gainThreshold * 100).toFixed(1)}% threshold (${bestTradingVsBuyHold.tradingVsBuyHoldPercent.toFixed(2)}%)`);
+  console.log(`Best Adjusted vs Buy & Hold: ${(bestAdjustedVsBuyHold.gainThreshold * 100).toFixed(1)}% threshold (${bestAdjustedVsBuyHold.adjustedVsBuyHoldPercent.toFixed(2)}%)`);
+  console.log(`Best Trading vs Adjusted: ${(bestTradingVsAdjusted.gainThreshold * 100).toFixed(1)}% threshold (${bestTradingVsAdjusted.tradingVsAdjustedPercent.toFixed(2)}%)`);
+  console.log('');
 }
 
 // Run the simulation
