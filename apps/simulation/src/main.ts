@@ -97,9 +97,10 @@ class TradingSimulation {
         console.log(`Found ${result.events.dividends.length} dividend events`);
         for (let i = 0; i < result.events.dividends.length; i++) {
           const dividend = result.events.dividends[i];
-          const day = Math.floor((dividend.date - startDate.getTime()) / (1000 * 60 * 60 * 24));
+          const dividendDate = new Date(dividend.date * 1000); // Convert timestamp to Date
+          const day = Math.floor((dividendDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
           dividends.push({ day, amount: dividend.amount });
-          console.log(`Dividend: Day ${day}, Amount: $${dividend.amount}`);
+          console.log(`Dividend: Day ${day}, Amount: $${dividend.amount}, Date: ${dividendDate.toISOString().slice(0, 10)}`);
         }
       } else {
         console.log('No dividend events found in the data');
