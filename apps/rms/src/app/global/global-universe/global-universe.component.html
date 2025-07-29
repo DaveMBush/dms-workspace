@@ -3,7 +3,7 @@
     <div class="whitespace-nowrap truncate">Universe</div>
   </ng-template>
   <ng-template #end>
-    <p-button (click)="settingsService.show()" icon="pi pi-cog" class="mr-2" text severity="secondary" pTooltip="Settings" tooltipPosition="bottom" />
+    <p-button (click)="settingsService.show()" icon="pi pi-cog" text severity="secondary" pTooltip="Settings" tooltipPosition="bottom" />
   </ng-template>
 </p-toolbar>
 <p-table [value]="universe$()"
@@ -30,7 +30,19 @@ showGridlines [rowTrackBy]="trackById"
       </th>
       <th></th>
       <th></th>
-      <th></th>
+      <th>
+        <p-inputNumber
+          [(ngModel)]="minYieldFilter"
+          [min]="0"
+          [max]="100"
+          [step]="0.1"
+          [minFractionDigits]="1"
+          [maxFractionDigits]="2"
+          placeholder="Min Yield %"
+          class="w-full"
+          (onInput)="onYieldFilterChange()"
+        />
+      </th>
       <th></th>
       <th></th>
       <th></th>

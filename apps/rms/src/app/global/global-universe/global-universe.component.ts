@@ -25,6 +25,7 @@ import { NgClass } from '@angular/common';
 export class GlobalUniverseComponent {
   public readonly today = new Date();
   public sortCriteria = signal<Array<{field: string, order: number}>>([]);
+  public minYieldFilter = signal<number | null>(null);
   public riskGroups = [
     { label: 'Equities', value: 'Equities' },
     { label: 'Income', value: 'Income' },
@@ -41,13 +42,20 @@ export class GlobalUniverseComponent {
   public readonly universe$ = computed(() => {
     const rawData = selectUniverse();
     const currentSortCriteria = this.sortCriteria();
+    const minYield = this.minYieldFilter();
+
+    // Apply yield filter first
+    let filteredData = rawData;
+    if (minYield !== null && minYield > 0) {
+      filteredData = rawData.filter(item => (item.yield_percent || 0) >= minYield);
+    }
 
     if (currentSortCriteria.length === 0) {
-      return rawData;
+      return filteredData;
     }
 
     // Create a copy to avoid mutating the original data
-    const sortedData = [...rawData];
+    const sortedData = [...filteredData];
 
     sortedData.sort((a, b) => {
       for (const criteria of currentSortCriteria) {
@@ -161,6 +169,12 @@ export class GlobalUniverseComponent {
     return criteria.order === 1 ? 'pi pi-sort-up' : 'pi pi-sort-down';
   }
 
+  /**
+   * Handles yield filter changes
+   */
+  public onYieldFilterChange(): void {
+    // The computed signal will automatically re-evaluate when minYieldFilter changes
+  }
 
 
   /**
