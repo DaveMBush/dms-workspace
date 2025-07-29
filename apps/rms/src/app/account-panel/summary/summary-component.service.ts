@@ -56,7 +56,19 @@ export class SummaryComponentService {
         tax_free_income: 0,
       };
     }
-    return this.httpSummary.value();
+    const httpValue = this.httpSummary.value();
+    // Return previous value if new data is loading to prevent flash
+    if (httpValue === undefined && this.httpSummary.loading()) {
+      return this.summary() || {
+        deposits: 0,
+        dividends: 0,
+        capitalGains: 0,
+        equities: 0,
+        income: 0,
+        tax_free_income: 0,
+      };
+    }
+    return httpValue;
   });
 
   graph = computed(() => {
@@ -64,7 +76,12 @@ export class SummaryComponentService {
     if (!this.selectedMonth() || !currentAccount()) {
       return [];
     }
-    return this.httpGraph.value();
+    const httpValue = this.httpGraph.value();
+    // Return previous value if new data is loading to prevent flash
+    if (httpValue === undefined && this.httpGraph.loading()) {
+      return this.graph() || [];
+    }
+    return httpValue;
   });
 
 }
