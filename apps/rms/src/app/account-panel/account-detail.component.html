@@ -61,7 +61,9 @@
   [dismissableMask]="true"
   styleClass="w-full max-w-lg"
 >
+@if (showNewPositionDialog) {
   <app-new-position (close)="closeNewPositionDialog()" />
+}
 </p-dialog>
 <p-dialog
   header="New Dividend or Deposit"
@@ -71,7 +73,9 @@
   [dismissableMask]="true"
   styleClass="w-full max-w-lg"
 >
+@if (showNewDivDepDialog) {
   <app-div-dep-modal (close)="closeNewDivDepDialog()" />
+}
 </p-dialog>
 
 <div class="flex-1 min-h-0">
