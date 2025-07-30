@@ -2,8 +2,19 @@
   <ng-template #start>
     <div class="whitespace-nowrap truncate">Universe</div>
   </ng-template>
+  <ng-template #center>
+    <div class="flex items-center gap-2">
+      <span class="text-sm text-gray-600 dark:text-gray-400">Account:</span>
+      <p-select
+        [options]="accountOptions()"
+        [(ngModel)]="selectedAccountId"
+        placeholder="Select Account"
+        class="w-48"
+      />
+    </div>
+  </ng-template>
   <ng-template #end>
-    <p-button (click)="settingsService.show()" icon="pi pi-cog" class="mr-2" text severity="secondary" pTooltip="Settings" tooltipPosition="bottom" />
+    <p-button (click)="settingsService.show()" icon="pi pi-cog" text severity="secondary" pTooltip="Settings" tooltipPosition="bottom" />
   </ng-template>
 </p-toolbar>
 <p-table [value]="universe$()"
@@ -30,12 +41,26 @@ showGridlines [rowTrackBy]="trackById"
       </th>
       <th></th>
       <th></th>
+      <th>
+        <p-inputNumber
+          [(ngModel)]="minYieldFilter"
+          [min]="0"
+          [max]="100"
+          [step]="0.1"
+          [minFractionDigits]="1"
+          [maxFractionDigits]="2"
+          placeholder="Min Yield %"
+          class="w-full"
+          (onInput)="onYieldFilterChange()"
+        />
+      </th>
+      <th></th>
       <th></th>
       <th></th>
       <th></th>
       <th></th>
       <th>
-        <p-columnFilter field="expired" matchMode="equals" [showMenu]="false">
+      <p-columnFilter field="expired" matchMode="equals" [showMenu]="false">
           <ng-template #filter let-value let-filter="filterCallback">
             <p-select [options]="expiredOptions" (onChange)="filter($event.value)" placeholder="Select One" [showClear]="true">
               <ng-template let-option #item>
@@ -50,12 +75,13 @@ showGridlines [rowTrackBy]="trackById"
       <th>Symbol</th>
       <th>Risk Group</th>
       <th>Distribution</th>
-      <th>Distributions per Year</th>
-      <th pSortableColumn="yield_percent">Yield % <p-sortIcon field="yield_percent" /></th>
+      <th>Distributions / Year</th>
+      <th (click)="onSort('yield_percent')" class="cursor-pointer select-none">Yield % <i [class]="getSortIcon('yield_percent')"></i></th>
       <th>Last Price</th>
-      <th>Ex-Date</th>
-      <th pSortableColumn="most_recent_sell_date">Mst Rcnt Sll Dt <p-sortIcon field="most_recent_sell_date" /></th>
-      <th pSortableColumn="most_recent_sell_price">Mst Rcnt Sell $ <p-sortIcon field="most_recent_sell_price" /></th>
+      <th (click)="onSort('ex_date')" class="cursor-pointer select-none">Ex-Date <i [class]="getSortIcon('ex_date')"></i></th>
+      <th (click)="onSort('most_recent_sell_date')" class="cursor-pointer select-none">Mst Rcnt Sll Dt <i [class]="getSortIcon('most_recent_sell_date')"></i></th>
+      <th (click)="onSort('most_recent_sell_price')" class="cursor-pointer select-none">Mst Rcnt Sell $ <i [class]="getSortIcon('most_recent_sell_price')"></i></th>
+      <th>Position</th>
       <th>Expired</th>
     </tr>
   </ng-template>
@@ -110,6 +136,7 @@ showGridlines [rowTrackBy]="trackById"
       }
       <td>{{ row.most_recent_sell_date | date:'MM/dd/yyyy' }}</td>
       <td>{{ row.most_recent_sell_price | number:'1.2-4' }}</td>
+      <td>{{  row.position === 0 ? '' : row.position | number:'1.2-4' }}</td>
       <td class="text-center">{{ row.expired ? '*' : '' }}</td>
     </tr>
   </ng-template>

@@ -19,6 +19,7 @@ export const universeDefinition: SmartEntityDefinition<Universe> = {
       risk: 0,
       risk_group_id: '',
       expired: false,
+      position: 0,
     };
   },
 };

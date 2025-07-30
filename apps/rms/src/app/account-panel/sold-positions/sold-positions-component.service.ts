@@ -10,6 +10,7 @@ import { Universe } from '../../store/universe/universe.interface';
 @Injectable({ providedIn: 'root' })
 export class SoldPositionsComponentService {
   private currentAccountSignalStore = inject(currentAccountSignalStore);
+  private closedPositionCache = new Map<string, ClosedPosition>();
 
   trades = computed(() => {
     const currentAccount = selectCurrentAccountSignal(this.currentAccountSignalStore);
@@ -29,6 +30,7 @@ export class SoldPositionsComponentService {
       universeMap.set(universe.id, universe);
     }
     const closedPositions = [] as ClosedPosition[];
+    const seenIds = new Set<string>();
     for (let i = 0; i < trades.length; i++) {
       const trade = trades[i];
       if (trade.sell === 0 || !trade.sell_date) {
@@ -41,24 +43,23 @@ export class SoldPositionsComponentService {
       const formulaExDate = new Date(universe?.ex_date);
       if (formulaExDate.valueOf() < new Date().valueOf()) {
         if (universe.distribution === 12) {
-          // assume the next ex_date is the next month
           while (formulaExDate.valueOf() < new Date().valueOf()) {
             formulaExDate.setMonth(formulaExDate.getMonth() + 1);
           }
         } else if (universe.distribution === 4) {
-          // assume the next ex_date is the next quarter
           while (formulaExDate.valueOf() < new Date().valueOf()) {
             formulaExDate.setMonth(formulaExDate.getMonth() + 3);
           }
         } else {
-          // assume it is a year from the last one
           while (formulaExDate.valueOf() < new Date().valueOf()) {
             formulaExDate.setFullYear(formulaExDate.getFullYear() + 1);
           }
         }
       }
       const daysHeld = differenceInTradingDays(trade.buy_date, trade.sell_date);
-      closedPositions.push({
+      const id = trade.id;
+      let row = this.closedPositionCache.get(id);
+      const newRow: ClosedPosition = {
         id: trade.id,
         symbol: universe?.symbol,
         buy: trade.buy,
@@ -69,7 +70,21 @@ export class SoldPositionsComponentService {
         quantity: trade.quantity,
         capitalGain: (trade.sell - trade.buy) * trade.quantity,
         capitalGainPercentage: (trade.sell - trade.buy) / trade.buy * 100,
-      });
+      };
+      if (!row) {
+        row = newRow;
+        this.closedPositionCache.set(id, row);
+      } else {
+        Object.assign(row, newRow);
+      }
+      closedPositions.push(row);
+      seenIds.add(id);
+    }
+    // Clean up cache for removed trades
+    for (const id of this.closedPositionCache.keys()) {
+      if (!seenIds.has(id)) {
+        this.closedPositionCache.delete(id);
+      }
     }
     return closedPositions;
   });

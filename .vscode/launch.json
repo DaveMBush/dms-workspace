@@ -5,10 +5,25 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Launch via PNPM",
+      "name": "Launch server via PNPM",
       "request": "launch",
       "runtimeArgs": [
         "start:server",
+        "--",
+        "--inspect-brk"
+      ],
+      "runtimeExecutable": "pnpm",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "console": "integratedTerminal",
+      "type": "node"
+    },
+    {
+      "name": "Launch simulation via PNPM",
+      "request": "launch",
+      "runtimeArgs": [
+        "start:simulation",
         "--",
         "--inspect-brk"
       ],

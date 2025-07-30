@@ -1,15 +1,15 @@
-import { Component, computed, effect, inject, OnInit } from '@angular/core';
-import { DropdownModule } from 'primeng/dropdown';
+import { Component, computed, effect, inject, signal } from '@angular/core';
+import { SelectModule } from 'primeng/select';
 import { FormsModule } from '@angular/forms';
 import { ChartModule } from 'primeng/chart';
 import { SummaryComponentService } from './summary-component.service';
-import { Summary } from './summary.interface';
 import { CurrencyPipe, PercentPipe } from '@angular/common';
+import { Graph } from './graph.interface';
 
 @Component({
   selector: 'app-summary',
   standalone: true,
-  imports: [PercentPipe, CurrencyPipe, DropdownModule, FormsModule, ChartModule],
+  imports: [PercentPipe, CurrencyPipe, SelectModule, FormsModule, ChartModule],
   templateUrl: './summary.component.html',
   styleUrls: ['./summary.component.scss'],
   viewProviders: [SummaryComponentService]
@@ -19,6 +19,7 @@ export class SummaryComponent {
   summary = this.summaryComponentService.summary;
   selectedMonth = this.summaryComponentService.selectedMonth;
   months = this.summaryComponentService.months;
+
   constructor() {
     effect(() => {
       const months = this.months();
@@ -33,18 +34,21 @@ export class SummaryComponent {
   compositionData = computed(() => {
     const s = this.summary();
     if (!s) {
-      return {
-        labels: [],
-        datasets: []
-      };
+      return this.getEmptyCompositionData();
     }
+
     const { equities, income, tax_free_income } = s;
     const total = equities + income + tax_free_income;
+
+    const newEquities = 100 * equities/total;
+    const newIncome = 100 * income/total;
+    const newTaxFree = 100 * tax_free_income/total;
+
     return {
       labels: ['Equities', 'Income', 'Tax Free'],
       datasets: [
         {
-          data: [100 * equities/total, 100 * income/total, 100 * tax_free_income/total],
+          data: [newEquities, newIncome, newTaxFree],
           backgroundColor: [
             '#42A5F5', // Equities
             '#66BB6A', // Income
@@ -57,8 +61,29 @@ export class SummaryComponent {
           ]
         }
       ]
-    }
+    };
   });
+
+  private getEmptyCompositionData() {
+    return {
+      labels: ['Equities', 'Income', 'Tax Free'],
+      datasets: [
+        {
+          data: [0, 0, 0],
+          backgroundColor: [
+            '#42A5F5', // Equities
+            '#66BB6A', // Income
+            '#FFA726'  // Tax Free
+          ],
+          hoverBackgroundColor: [
+            '#64B5F6',
+            '#81C784',
+            '#FFB74D'
+          ]
+        }
+      ]
+    };
+  }
 
   compositionOptions = {
     plugins: {
@@ -69,17 +94,29 @@ export class SummaryComponent {
           font: { size: 14 }
         }
       }
+    },
+    animation: {
+      duration: 0 // Disable animations to prevent re-animation on data refresh
     }
   };
 
   lineChartData = computed(() => {
     const g = this.summaryComponentService.graph();
-    return   {
-      labels: g?.map((g) => g.month),
+    if (!g || g.length === 0) {
+      return this.getEmptyLineChartData();
+    }
+
+    const newLabels = g.map((g: Graph) => g.month);
+    const newBaseData = g.map((g: Graph) => g.deposits);
+    const newCapitalGainsData = g.map((g: Graph) => g.deposits + g.capitalGains);
+    const newDividendsData = g.map((g: Graph) => g.deposits + g.capitalGains + g.dividends);
+
+    return {
+      labels: newLabels,
       datasets: [
         {
           label: 'Base',
-          data: g?.map((g) => g.deposits),
+          data: newBaseData,
           borderColor: '#42A5F5',
           backgroundColor: 'rgba(66,165,245,0.2)',
           fill: false,
@@ -87,7 +124,7 @@ export class SummaryComponent {
         },
         {
           label: 'Capital Gains',
-          data: g?.map((g) => g.deposits + g.capitalGains),
+          data: newCapitalGainsData,
           borderColor: '#66BB6A',
           backgroundColor: 'rgba(102,187,106,0.2)',
           fill: false,
@@ -95,7 +132,7 @@ export class SummaryComponent {
         },
         {
           label: 'Dividends',
-          data: g?.map((g) => g.deposits + g.capitalGains + g.dividends),
+          data: newDividendsData,
           borderColor: '#FFA726',
           backgroundColor: 'rgba(255,167,38,0.2)',
           fill: false,
@@ -103,8 +140,39 @@ export class SummaryComponent {
         }
       ]
     };
-
   });
+
+  private getEmptyLineChartData() {
+    return {
+      labels: [],
+      datasets: [
+        {
+          label: 'Base',
+          data: [],
+          borderColor: '#42A5F5',
+          backgroundColor: 'rgba(66,165,245,0.2)',
+          fill: false,
+          tension: 0.1
+        },
+        {
+          label: 'Capital Gains',
+          data: [],
+          borderColor: '#66BB6A',
+          backgroundColor: 'rgba(102,187,106,0.2)',
+          fill: false,
+          tension: 0.1
+        },
+        {
+          label: 'Dividends',
+          data: [],
+          borderColor: '#FFA726',
+          backgroundColor: 'rgba(255,167,38,0.2)',
+          fill: false,
+          tension: 0.1
+        }
+      ]
+    };
+  }
 
   lineChartOptions = {
     responsive: true,
@@ -127,6 +195,9 @@ export class SummaryComponent {
         ticks: { color: '#6B7280' },
         min: 40000
       }
+    },
+    animation: {
+      duration: 0 // Disable animations to prevent re-animation on data refresh
     }
   };
 }

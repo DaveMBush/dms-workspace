@@ -2,34 +2,32 @@
   <!-- Left: Dropdown, stats, pie chart -->
   <div class="flex flex-col items-start w-full md:w-1/2 max-w-md">
     <div class="mb-4">
-      <p-dropdown
+      <p-select
         [options]="months()"
         [(ngModel)]="selectedMonth"
         placeholder="Select Month"
         class="w-48"
-        appendTo="body"
-        [showClear]="true"
-      ></p-dropdown>
+        styleClass="w-48"
+      ></p-select>
     </div>
     <div class="grid grid-cols-2 gap-6 w-full max-w-md mb-8">
       <div class="flex flex-col">
         <span class="text-xs text-gray-500">Base</span>
-        <span class="text-lg font-semibold">{{summary()?.deposits | currency}}</span>
+        <span class="text-lg font-semibold">{{summary().deposits | currency}}</span>
       </div>
       <div class="flex flex-col">
         <span class="text-xs text-gray-500">Dividends</span>
-        <span class="text-lg font-semibold">{{summary()?.dividends | currency}}</span>
+        <span class="text-lg font-semibold">{{summary().dividends | currency}}</span>
       </div>
       <div class="flex flex-col">
         <span class="text-xs text-gray-500">Capital Gain</span>
-        <span class="text-lg font-semibold">{{summary()?.capitalGains | currency}}</span>
+        <span class="text-lg font-semibold">{{summary().capitalGains | currency}}</span>
       </div>
       <div class="flex flex-col">
         <span class="text-xs text-gray-500">% Increase</span>
         <span class="text-lg font-semibold">{{
-          12 * ((summary()?.capitalGains ?? 0) +
-            (summary()?.dividends ?? 0)) /
-            (summary()?.deposits ?? 0) | percent:'1.2-2'}}</span>
+          12 * (summary().capitalGains + summary().dividends) /
+            summary().deposits | percent:'1.2-2'}}</span>
       </div>
     </div>
     <div class="w-full max-w-md">

@@ -14,7 +14,8 @@ export const topDefinition: SmartEntityDefinition<Top> = {
       riskGroups: [],
       universes: [],
       divDepositTypes: [],
-      holidays: []
+      holidays: [],
+      screens: []
     };
   },
 };

@@ -20,7 +20,6 @@ import { selectCurrentAccountSignal } from '../store/current-account/select-curr
 export class AccountPanelComponent {
   private route = inject(ActivatedRoute);
   private currentAccount = inject(currentAccountSignalStore)
-  private accounts$ = selectAccounts as Signal<SmartArray<Top, AccountInterface> & AccountInterface[]>;
 
   accountId = '';
   accountName$ = computed(() => {

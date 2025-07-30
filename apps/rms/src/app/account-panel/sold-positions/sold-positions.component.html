@@ -1,4 +1,4 @@
-<p-table
+<p-table #tableRef
   [value]="positions()"
   class="min-w-full max-h-full min-h-full rounded-lg shadow-sm table-fixed"
   [responsiveLayout]="'scroll'"
@@ -7,6 +7,7 @@
   [scrollHeight]="'calc(100vh - 172px)'"
   showGridlines
   [rowTrackBy]="trackById"
+  [dataKey]="'id'"
 >
   <ng-template pTemplate="header">
     <tr class="bg-gray-100">
@@ -26,7 +27,8 @@
     <tr>
       <td>{{ row.symbol }}</td>
       <td class="w-100 overflow-hidden" [pEditableColumn]="'buy'">
-        <p-cellEditor>
+        <p-cellEditor
+        >
           <ng-template #input>
             <p-inputNumber
               [style]="{'width': '100px'}"

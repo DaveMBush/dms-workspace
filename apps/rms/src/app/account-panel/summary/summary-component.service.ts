@@ -41,10 +41,14 @@ export class SummaryComponentService {
 
   months = computed(() => {
     const currentAccount = selectCurrentAccountSignal(this.currentAccount);
-    return currentAccount().months.map((month) => ({label: `${month.month}/${month.year}`, value: `${month.year}-${month.month}`}));
+    const account = currentAccount();
+    if (!account || !account.months) {
+      return [];
+    }
+    return account.months.map((month) => ({label: `${month.month}/${month.year}`, value: `${month.year}-${month.month}`}));
   })
 
-  summary = computed(() => {
+  summary = computed((): Summary => {
     const currentAccount = selectCurrentAccountSignal(this.currentAccount);
     if (!this.selectedMonth() || !currentAccount()) {
       return {
@@ -56,15 +60,39 @@ export class SummaryComponentService {
         tax_free_income: 0,
       };
     }
-    return this.httpSummary.value();
+    const httpValue = this.httpSummary.value();
+    // Return default value if new data is loading to prevent flash
+    if (httpValue === undefined && this.httpSummary.isLoading()) {
+      return {
+        deposits: 0,
+        dividends: 0,
+        capitalGains: 0,
+        equities: 0,
+        income: 0,
+        tax_free_income: 0,
+      };
+    }
+    return httpValue || {
+      deposits: 0,
+      dividends: 0,
+      capitalGains: 0,
+      equities: 0,
+      income: 0,
+      tax_free_income: 0,
+    };
   });
 
-  graph = computed(() => {
+  graph = computed((): Graph[] => {
     const currentAccount = selectCurrentAccountSignal(this.currentAccount);
-    if (!this.selectedMonth() || !currentAccount()) {
+    if (!currentAccount()) {
       return [];
     }
-    return this.httpGraph.value();
+    const httpValue = this.httpGraph.value();
+    // Return empty array if new data is loading to prevent flash
+    if (httpValue === undefined && this.httpGraph.isLoading()) {
+      return [];
+    }
+    return httpValue || [];
   });
 
 }

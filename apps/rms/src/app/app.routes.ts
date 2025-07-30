@@ -7,6 +7,7 @@ import { universeDefinition } from './store/universe/universe-definition.const';
 import { tradesDefinition } from './store/trades/trades-definition.const';
 import { divDepositTypesDefinition } from './store/div-deposit-types/div-deposit-types-definition.const';
 import { divDepositDefinition } from './store/div-deposits/div-deposit-definition.const';
+import { screenDefinition } from './store/screen/screen-definition.const';
 
 export const appRoutes: Route[] = [
   {
@@ -68,7 +69,15 @@ export const appRoutes: Route[] = [
       {
         path: 'global/universe',
         loadComponent: () => import('./global/global-universe/global-universe.component').then(m => m.GlobalUniverseComponent),
-      },
+      }, {
+        path: 'global/screener',
+        loadComponent: () => import('./global/screener/screener').then(m => m.Screener),
+        providers: [
+          provideSmartFeatureSignalEntities('app', [
+            screenDefinition
+          ])
+        ]
+      }
     ]
   },
 ];

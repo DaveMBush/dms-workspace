@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, viewChild, ElementRef, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { selectTrades } from '../../store/trades/trade.selectors';
@@ -10,7 +10,6 @@ import { FormsModule } from '@angular/forms';
 import { Trade } from '../../store/trades/trade.interface';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
-import { signal } from '@angular/core';
 import { selectUniverses } from '../../store/universe/universe.selectors';
 import { SoldPositionsComponentService } from './sold-positions-component.service';
 
@@ -42,6 +41,8 @@ export class SoldPositionsComponent {
   private soldPositionsService = inject(SoldPositionsComponentService);
   positions = this.soldPositionsService.selectClosedPositions;
   toastMessages = signal<{ severity: string; summary: string; detail: string }[]>([]);
+  tableRef = viewChild('tableRef', { read: ElementRef });
+  private scrollTopSignal = signal(0);
   constructor(private messageService: MessageService) {}
   trash(position: SoldPosition) {
     const trades = this.soldPositionsService.trades();
@@ -69,7 +70,17 @@ export class SoldPositionsComponent {
     return true;
   }
 
+  private getScrollContainer(): HTMLElement | null {
+    const tableEl = this.tableRef()?.nativeElement as HTMLElement;
+    return tableEl?.querySelector('.p-datatable-table-container') as HTMLElement | null;
+  }
+
+
   onEditCommit(row: SoldPosition, field: string) {
+    const scrollContainer = this.getScrollContainer();
+    if (scrollContainer) {
+      this.scrollTopSignal.set(scrollContainer.scrollTop);
+    }
     const trades = this.soldPositionsService.trades();
     for (let i = 0; i < trades.length; i++) {
       if (trades[i].id === row.id) {
@@ -115,6 +126,12 @@ export class SoldPositionsComponent {
         break;
       }
     }
+    setTimeout(() => {
+      const scrollContainer = this.getScrollContainer();
+      if (scrollContainer) {
+        scrollContainer.scrollTop = this.scrollTopSignal();
+      }
+    }, 200);
   }
 
   stopArrowKeyPropagation(event: KeyboardEvent) {

@@ -1,0 +1,53 @@
+=== CEF Trading Strategy Simulation ===
+
+Parameters:
+Initial Capital: $1,000,000
+Monthly Distribution: $0.25
+Initial Price: $10
+Gain Threshold: 1%
+Cash Threshold: $2000
+Simulation Years: 10
+
+=== TESTING: Zero Gain Threshold ===
+Buy & Hold Final Shares: 157172
+Trading Final Shares: 157172
+Shares Difference: 0
+Annual Dividend Difference: $0.00
+✅ SUCCESS: With zero gain threshold, results are identical.
+
+=== SAMPLE TRADES FROM TRADING STRATEGY ===
+Day 14 (1/15/2020): REINVEST: Buy 2141 shares at $11.67
+Day 45 (2/15/2020): REINVEST: Buy 2196 shares at $11.63
+Day 74 (3/15/2020): REINVEST: Buy 2468 shares at $10.57
+Day 105 (4/15/2020): REINVEST: Buy 1821 shares at $14.66
+Day 135 (5/15/2020): REINVEST: Buy 1364 shares at $19.90
+
+=== RESULTS ===
+
+BUY AND HOLD STRATEGY:
+Final Shares: 177,237
+Final Cash: $857.62
+Final Total Value: $169606605.32
+Total Dividends Collected: $4788565.50
+Projected Annual Dividends: $531711.00
+Total Trades: 120
+
+TRADING STRATEGY:
+Final Shares: 177,237
+Final Cash: $885.31
+Final Total Value: $169606633.01
+Total Dividends Collected: $4788567.50
+Projected Annual Dividends: $531711.00
+Total Trades: 1784
+
+COMPARISON:
+Trading vs Buy & Hold: $0.00
+Trading vs Buy & Hold: 0.00%
+
+❌ Trading strategy produces LOWER annual dividends
+
+=== CONCLUSION ===
+The simulation shows whether selling at gains and buying back
+produces better dividend income than simply buying and holding.
+Run multiple times to see the variance in results due to
+random price movements.
