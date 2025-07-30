@@ -13,7 +13,6 @@ export function selectCurrentAccountSignal(
   return computed(function selectCurrentAccount() {
     const currentAccountId = store.selectCurrentAccountId();
 
-    // First get the location with departments
     const accountsState = selectAccountChildren();
     const account = accountsState.entities[currentAccountId];
 

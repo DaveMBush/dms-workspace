@@ -14,6 +14,10 @@ import { UniverseSettingsService } from '../../universe-settings/universe-settin
 import { ButtonModule } from 'primeng/button';
 import { TooltipModule } from 'primeng/tooltip';
 import { NgClass } from '@angular/common';
+import { selectAccounts, selectAccountsEntity, selectTopAccounts } from '../../store/accounts/account.selectors';
+import { Account } from '../../store/accounts/account.interface';
+import { Trade } from '../../store/trades/trade.interface';
+import { selectAccountChildren } from '../../store/trades/trade.selectors';
 
 @Component({
   selector: 'app-global-universe',
@@ -26,6 +30,7 @@ export class GlobalUniverseComponent {
   public readonly today = new Date();
   public sortCriteria = signal<Array<{field: string, order: number}>>([]);
   public minYieldFilter = signal<number | null>(null);
+  public selectedAccountId = signal<string>('all');
   public riskGroups = [
     { label: 'Equities', value: 'Equities' },
     { label: 'Income', value: 'Income' },
@@ -38,16 +43,49 @@ export class GlobalUniverseComponent {
   public searchSymbol = '';
   protected readonly settingsService = inject(UniverseSettingsService);
 
+  // Account options for the dropdown
+  public accountOptions = computed(() => {
+    const accounts = selectAccounts();
+    const options = [
+      { label: 'All Accounts', value: 'all' }
+    ];
+
+    for (let i = 0; i < accounts.length; i++) {
+      const account = accounts[i];
+      options.push({
+        label: account.name,
+        value: account.id
+      });
+    }
+
+    return options;
+  });
+
   // Computed signal that automatically applies sorting when data changes
   public readonly universe$ = computed(() => {
     const rawData = selectUniverse();
     const currentSortCriteria = this.sortCriteria();
     const minYield = this.minYieldFilter();
+    const selectedAccount = this.selectedAccountId();
 
     // Apply yield filter first
     let filteredData = rawData;
     if (minYield !== null && minYield > 0) {
       filteredData = rawData.filter(item => (item.yield_percent || 0) >= minYield);
+    }
+
+    // Apply account-specific filtering for position and sell data
+    if (selectedAccount !== 'all') {
+      filteredData = filteredData.map(item => {
+        // Get account-specific data for this symbol
+        const accountSpecificData = this.getAccountSpecificData(item.symbol, selectedAccount);
+        return {
+          ...item,
+          position: accountSpecificData.position,
+          most_recent_sell_date: accountSpecificData.most_recent_sell_date,
+          most_recent_sell_price: accountSpecificData.most_recent_sell_price
+        };
+      });
     }
 
     if (currentSortCriteria.length === 0) {
@@ -176,7 +214,6 @@ export class GlobalUniverseComponent {
     // The computed signal will automatically re-evaluate when minYieldFilter changes
   }
 
-
   /**
    * Gets the value of a field from the display data object
    */
@@ -231,6 +268,62 @@ export class GlobalUniverseComponent {
 
     // If ex-date is in the future, use the original date
     return exDate;
+  }
+
+  /**
+   * Gets account-specific data for a symbol
+   */
+  private getAccountSpecificData(symbol: string, accountId: string): {
+    position: number;
+    most_recent_sell_date: string | null;
+    most_recent_sell_price: number | null;
+  } {
+    const universes = selectUniverses();
+    let universeId: string | undefined;
+    for (let i = 0; i < universes.length; i++) {
+      if (universes[i].symbol === symbol) {
+        universeId = universes[i].id;
+        break;
+      }
+    }
+
+    const accountsState = selectAccountChildren();
+    const account = accountsState.entities[accountId];
+
+    if (!account) {
+      return {
+        position: 0,
+        most_recent_sell_date: null,
+        most_recent_sell_price: null
+      };
+    }
+
+    // Find trades for this symbol in this account
+    const trades = account.trades as Trade[];
+    const symbolTrades = [] as Trade[];
+    for (let i = 0; i < trades.length; i++) {
+      if (trades[i].universeId === universeId) {
+        symbolTrades.push(trades[i]);
+      }
+    }
+
+    // Calculate position (sum of buy * quantity for open positions)
+    const position = symbolTrades
+      .filter(trade => !trade.sell_date) // Only open positions
+      .reduce((sum, trade) => sum + (trade.buy * trade.quantity), 0);
+
+    // Find most recent sell date and price
+    const soldTrades = symbolTrades
+      .filter(trade => trade.sell_date)
+      .sort((a, b) => new Date(b.sell_date as string).getTime() - new Date(a.sell_date as string).getTime());
+
+    const mostRecentSell = soldTrades[0];
+
+    return {
+      position,
+      most_recent_sell_date: mostRecentSell?.sell_date || null,
+      most_recent_sell_price: mostRecentSell?.sell || null
+    };
   }
 
   /**
