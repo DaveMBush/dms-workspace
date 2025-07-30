@@ -6,8 +6,9 @@ import {
   withMethods,
   withState,
 } from '@ngrx/signals';
-import { CurrentAccount } from './current-account.interface';
+
 import { selectAccounts } from '../accounts/account.selectors';
+import { CurrentAccount } from './current-account.interface';
 
 
 export const currentAccountSignalStore = signalStore(

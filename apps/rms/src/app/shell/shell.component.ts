@@ -1,14 +1,15 @@
 import { isPlatformBrowser } from '@angular/common';
-import { Component, inject, Inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
+import { PanelModule } from 'primeng/panel';
 import { SplitterModule } from 'primeng/splitter';
 import { ToolbarModule } from 'primeng/toolbar';
-import { PanelModule } from 'primeng/panel';
 import { TooltipModule } from 'primeng/tooltip';
+
+import { GlobalComponent } from '../global/global.component';
 import { UniverseSettingsComponent } from '../universe-settings/universe-settings.component';
 import { UniverseSettingsService } from '../universe-settings/universe-settings.service';
-import { GlobalComponent } from '../global/global.component';
 
 const DARK_MODE_KEY = 'rms-dark';
 

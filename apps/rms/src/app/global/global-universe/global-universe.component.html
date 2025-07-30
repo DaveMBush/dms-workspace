@@ -6,7 +6,7 @@
     <div class="flex items-center gap-2">
       <span class="text-sm text-gray-600 dark:text-gray-400">Account:</span>
       <p-select
-        [options]="accountOptions()"
+        [options]="accountOptions$()"
         [(ngModel)]="selectedAccountId"
         placeholder="Select Account"
         class="w-48"

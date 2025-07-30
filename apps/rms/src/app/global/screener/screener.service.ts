@@ -1,7 +1,8 @@
-import { computed, inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { selectScreen } from '../../store/screen/screen.selectors';
+import { computed, inject, Injectable } from '@angular/core';
+
 import { Screen } from '../../store/screen/screen.interface';
+import { selectScreen } from '../../store/screen/screen.selectors';
 
 @Injectable()
 export class ScreenerService {

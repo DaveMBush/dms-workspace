@@ -1,15 +1,16 @@
-import { Component, Output, EventEmitter, computed, signal, model, OnInit, inject } from '@angular/core';
-import { selectUniverses } from '../../store/universe/universe.selectors';
-import { AutoCompleteModule } from 'primeng/autocomplete';
-import { InputNumberModule } from 'primeng/inputnumber';
-import { DatePickerModule } from 'primeng/datepicker';
+import { Component, computed, EventEmitter, inject,model, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { selectCurrentAccountSignal } from '../../store/current-account/select-current-account.signal';
-import { currentAccountSignalStore } from '../../store/current-account/current-account.signal-store';
 import { SmartArray } from '@smarttools/smart-signals';
-import { Trade } from '../../store/trades/trade.interface';
+import { AutoCompleteModule } from 'primeng/autocomplete';
+import { DatePickerModule } from 'primeng/datepicker';
+import { InputNumberModule } from 'primeng/inputnumber';
+
 import { Account } from '../../store/accounts/account.interface';
+import { currentAccountSignalStore } from '../../store/current-account/current-account.signal-store';
+import { selectCurrentAccountSignal } from '../../store/current-account/select-current-account.signal';
+import { Trade } from '../../store/trades/trade.interface';
+import { selectUniverses } from '../../store/universe/universe.selectors';
 
 @Component({
   selector: 'app-new-position',
@@ -52,7 +53,7 @@ export class NewPositionComponent {
     const query = this.filter().toLowerCase();
     let filtered = returnedSymbols.filter((r) => r.label.toLowerCase().includes(query));
     // Ensure the selected symbol is always present
-    if (selectedSymbol && !filtered.some(r => r.value === selectedSymbol!.value)) {
+    if (selectedSymbol && !filtered.some(r => r.value === selectedSymbol.value)) {
       filtered = [selectedSymbol, ...filtered];
     }
     return filtered;

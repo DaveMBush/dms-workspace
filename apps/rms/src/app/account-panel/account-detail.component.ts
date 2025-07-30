@@ -1,11 +1,12 @@
-import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, Router, ActivatedRoute } from '@angular/router';
-import { TooltipModule } from 'primeng/tooltip';
+import { Component, inject } from '@angular/core';
+import { ActivatedRoute,Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
-import { NewPositionComponent } from './new-position/new-position.component';
+import { TooltipModule } from 'primeng/tooltip';
+
 import { DivDepModalComponent } from './div-dep-modal/div-dep-modal.component';
+import { NewPositionComponent } from './new-position/new-position.component';
 
 @Component({
   selector: 'app-account-detail',

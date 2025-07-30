@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { Account } from './account';
 import { RowProxyDelete, SmartArray } from '@smarttools/smart-signals';
+
 import { Account as AccountInterface } from '../store/accounts/account.interface';
 import { Top } from '../store/top/top.interface';
+import { Account } from './account';
 
 @Injectable()
 export class AccountComponentService {
@@ -49,7 +50,7 @@ export class AccountComponentService {
     if (this.component.editingContent === '') {
       return;
     }
-    var account = this.component.accountsArray$().find((n: AccountInterface) => n.id === item.id);
+    const account = this.component.accountsArray$().find((n: AccountInterface) => n.id === item.id);
     if (account) {
       account.name = this.component.editingContent;
     }

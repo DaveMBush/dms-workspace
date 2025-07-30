@@ -1,11 +1,12 @@
-import { Injectable, computed, inject } from '@angular/core';
-import { Trade } from '../../store/trades/trade.interface';
-import { selectUniverses } from '../../store/universe/universe.selectors';
-import { ClosedPosition } from '../../store/trades/closed-position.interface';
+import { computed, inject,Injectable } from '@angular/core';
+
 import { currentAccountSignalStore } from '../../store/current-account/current-account.signal-store';
 import { selectCurrentAccountSignal } from '../../store/current-account/select-current-account.signal';
+import { ClosedPosition } from '../../store/trades/closed-position.interface';
 import { differenceInTradingDays } from '../../store/trades/difference-in-trading-days.function';
+import { Trade } from '../../store/trades/trade.interface';
 import { Universe } from '../../store/universe/universe.interface';
+import { selectUniverses } from '../../store/universe/universe.selectors';
 
 @Injectable({ providedIn: 'root' })
 export class SoldPositionsComponentService {
@@ -66,7 +67,7 @@ export class SoldPositionsComponentService {
         buyDate: new Date(trade.buy_date),
         sell: trade.sell,
         sellDate: trade.sell_date ? new Date(trade.sell_date) : undefined,
-        daysHeld: daysHeld,
+        daysHeld,
         quantity: trade.quantity,
         capitalGain: (trade.sell - trade.buy) * trade.quantity,
         capitalGainPercentage: (trade.sell - trade.buy) / trade.buy * 100,

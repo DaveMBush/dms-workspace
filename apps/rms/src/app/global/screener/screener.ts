@@ -1,16 +1,17 @@
-import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ToolbarModule } from 'primeng/toolbar';
-import { TableModule } from 'primeng/table';
-import { ButtonModule } from 'primeng/button';
-import { InputTextModule } from 'primeng/inputtext';
+import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ScreenerService } from './screener.service';
+import { ButtonModule } from 'primeng/button';
+import { CheckboxModule } from 'primeng/checkbox';
+import { InputTextModule } from 'primeng/inputtext';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { SelectModule } from 'primeng/select';
+import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
-import { CheckboxModule } from 'primeng/checkbox';
+import { ToolbarModule } from 'primeng/toolbar';
+
 import { Screen } from '../../store/screen/screen.interface';
+import { ScreenerService } from './screener.service';
 
 @Component({
   selector: 'app-screener',
@@ -45,7 +46,7 @@ export class Screener {
   filteredScreenerData = computed(() => {
     const data = this.screenerService.screens();
     const selectedRiskGroup = this.selectedRiskGroup();
-    if (!selectedRiskGroup) return data;
+    if (!selectedRiskGroup) {return data;}
     return data.filter(row => row.risk_group === selectedRiskGroup.value);
   });
 
@@ -60,7 +61,7 @@ export class Screener {
         console.log(data);
         this.showOverlay.set(false);
       },
-      error: (error) => {
+      error: (error: unknown) => {
         console.error('Refresh failed:', error);
         this.showOverlay.set(false);
       }

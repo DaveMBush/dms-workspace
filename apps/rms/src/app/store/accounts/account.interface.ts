@@ -5,6 +5,6 @@ export interface Account {
   id: string;
   name: string;
   trades: string[] | Trade[];
-  divDeposits: string[] | DivDeposit[];
+  divDeposits: DivDeposit[] | string[];
   months: {month: number, year: number}[];
 }

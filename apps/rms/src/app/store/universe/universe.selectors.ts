@@ -1,7 +1,8 @@
 import { createSmartSignal, getTopChildRows } from '@smarttools/smart-signals';
+
 import { Top } from '../top/top.interface';
-import { Universe } from './universe.interface';
 import { selectTopEntities } from '../top/top.selectors';
+import { Universe } from './universe.interface';
 
 export const selectUniverseEntity = createSmartSignal<Universe>(
   'app',

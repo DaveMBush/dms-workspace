@@ -1,23 +1,22 @@
-import { Component, inject, computed, signal } from '@angular/core';
-import { ToolbarModule } from 'primeng/toolbar';
-import { TableModule } from 'primeng/table';
-import { selectUniverse } from './universe.selector';
-import { DatePickerModule } from 'primeng/datepicker';
+import { DatePipe, DecimalPipe , NgClass } from '@angular/common';
+import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { DatePipe, DecimalPipe } from '@angular/common';
-import { SelectModule } from 'primeng/select';
-import { TagModule } from 'primeng/tag';
-import { Universe } from '../../store/universe/universe.interface';
-import { selectUniverses } from '../../store/universe/universe.selectors';
-import { InputNumberModule } from 'primeng/inputnumber';
-import { UniverseSettingsService } from '../../universe-settings/universe-settings.service';
 import { ButtonModule } from 'primeng/button';
+import { DatePickerModule } from 'primeng/datepicker';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { SelectModule } from 'primeng/select';
+import { TableModule } from 'primeng/table';
+import { TagModule } from 'primeng/tag';
+import { ToolbarModule } from 'primeng/toolbar';
 import { TooltipModule } from 'primeng/tooltip';
-import { NgClass } from '@angular/common';
-import { selectAccounts, selectAccountsEntity, selectTopAccounts } from '../../store/accounts/account.selectors';
-import { Account } from '../../store/accounts/account.interface';
+
+import { selectAccounts } from '../../store/accounts/account.selectors';
 import { Trade } from '../../store/trades/trade.interface';
 import { selectAccountChildren } from '../../store/trades/trade.selectors';
+import { Universe } from '../../store/universe/universe.interface';
+import { selectUniverses } from '../../store/universe/universe.selectors';
+import { UniverseSettingsService } from '../../universe-settings/universe-settings.service';
+import { selectUniverse } from './universe.selector';
 
 @Component({
   selector: 'app-global-universe',
@@ -27,24 +26,26 @@ import { selectAccountChildren } from '../../store/trades/trade.selectors';
   styleUrls: ['./global-universe.component.scss'],
 })
 export class GlobalUniverseComponent {
-  public readonly today = new Date();
-  public sortCriteria = signal<Array<{field: string, order: number}>>([]);
-  public minYieldFilter = signal<number | null>(null);
-  public selectedAccountId = signal<string>('all');
-  public riskGroups = [
+  readonly today = new Date();
+  sortCriteria = signal<Array<{field: string, order: number}>>([]);
+  minYieldFilter = signal<number | null>(null);
+  selectedAccountId = signal<string>('all');
+  riskGroups = [
     { label: 'Equities', value: 'Equities' },
     { label: 'Income', value: 'Income' },
     { label: 'Tax Free', value: 'Tax Free Income' }
   ];
-  public expiredOptions = [
+
+  expiredOptions = [
     { label: 'Yes', value: true },
     { label: 'No', value: false }
   ];
-  public searchSymbol = '';
+
+  searchSymbol = '';
   protected readonly settingsService = inject(UniverseSettingsService);
 
   // Account options for the dropdown
-  public accountOptions = computed(() => {
+  accountOptions$ = computed(() => {
     const accounts = selectAccounts();
     const options = [
       { label: 'All Accounts', value: 'all' }
@@ -62,7 +63,7 @@ export class GlobalUniverseComponent {
   });
 
   // Computed signal that automatically applies sorting when data changes
-  public readonly universe$ = computed(() => {
+  readonly universe$ = computed(() => {
     const rawData = selectUniverse();
     const currentSortCriteria = this.sortCriteria();
     const minYield = this.minYieldFilter();
@@ -111,7 +112,7 @@ export class GlobalUniverseComponent {
     return sortedData;
   });
 
-  public onEditDistributionComplete(row: Universe) {
+  onEditDistributionComplete(row: Universe) {
     const universes = selectUniverses();
     for (let i = 0; i < universes.length; i++) {
       if (universes[i].symbol === row.symbol) {
@@ -121,7 +122,7 @@ export class GlobalUniverseComponent {
     }
   }
 
-  public onEditDistributionsPerYearComplete(row: Universe) {
+  onEditDistributionsPerYearComplete(row: Universe) {
     const universes = selectUniverses();
     for (let i = 0; i < universes.length; i++) {
       if (universes[i].symbol === row.symbol) {
@@ -132,7 +133,7 @@ export class GlobalUniverseComponent {
     }
   }
 
-  public onEditDateComplete(row: Universe) {
+  onEditDateComplete(row: Universe) {
     const universes = selectUniverses();
     for (let i = 0; i < universes.length; i++) {
       if (universes[i].symbol === row.symbol) {
@@ -144,7 +145,7 @@ export class GlobalUniverseComponent {
     }
   }
 
-  public onEditComplete(event: any) {
+  onEditComplete(event: any) {
     // event.data: the row object
     // event.field: the field name (e.g., 'distribution')
     // event.originalEvent: the DOM event
@@ -158,11 +159,11 @@ export class GlobalUniverseComponent {
     }
   }
 
-  public trackById(index: number, row: Universe) {
+  trackById(index: number, row: Universe) {
     return row.id;
   }
 
-  public onEditCommit(row: Universe, field: string) {
+  onEditCommit(row: Universe, field: string) {
     const universes = selectUniverses();
     for (let i = 0; i < universes.length; i++) {
       if (universes[i].symbol === row.symbol) {
@@ -181,7 +182,7 @@ export class GlobalUniverseComponent {
       /**
    * Handles column sorting with multi-column support
    */
-  public onSort(field: string): void {
+  onSort(field: string): void {
     const currentCriteria = this.sortCriteria();
     const existingIndex = currentCriteria.findIndex(criteria => criteria.field === field);
 
@@ -200,17 +201,17 @@ export class GlobalUniverseComponent {
   /**
    * Returns the appropriate sort icon class for a field
    */
-  public getSortIcon(field: string): string {
+  getSortIcon(field: string): string {
     const currentCriteria = this.sortCriteria();
     const criteria = currentCriteria.find(c => c.field === field);
-    if (!criteria) return 'pi pi-sort';
+    if (!criteria) {return 'pi pi-sort';}
     return criteria.order === 1 ? 'pi pi-sort-up' : 'pi pi-sort-down';
   }
 
   /**
    * Handles yield filter changes
    */
-  public onYieldFilterChange(): void {
+  onYieldFilterChange(): void {
     // The computed signal will automatically re-evaluate when minYieldFilter changes
   }
 
@@ -315,7 +316,7 @@ export class GlobalUniverseComponent {
     // Find most recent sell date and price
     const soldTrades = symbolTrades
       .filter(trade => trade.sell_date)
-      .sort((a, b) => new Date(b.sell_date as string).getTime() - new Date(a.sell_date as string).getTime());
+      .sort((a, b) => new Date(b.sell_date!).getTime() - new Date(a.sell_date!).getTime());
 
     const mostRecentSell = soldTrades[0];
 
@@ -363,22 +364,22 @@ export class GlobalUniverseComponent {
   /**
    * Returns true if the row should be dimmed: expired or most_recent_sell_date is today or previous trading day.
    */
-  public isDimmed(row: Universe): boolean {
-    if (row.expired) return true;
-    if (!row.most_recent_sell_date) return false;
+  isDimmed(row: Universe): boolean {
+    if (row.expired) {return true;}
+    if (!row.most_recent_sell_date) {return false;}
     const today = new Date();
     const mostRecent = new Date(row.most_recent_sell_date);
     // Normalize to yyyy-mm-dd
     const toYMD = (d: Date) => d.toISOString().slice(0, 10);
-    if (toYMD(mostRecent) === toYMD(today)) return true;
+    if (toYMD(mostRecent) === toYMD(today)) {return true;}
     // Previous trading day logic
-    let prev = new Date(today);
+    const prev = new Date(today);
     prev.setDate(today.getDate() - 1);
     // If today is Monday, previous trading day is Friday
     if (today.getDay() === 1) {
       prev.setDate(today.getDate() - 3);
     }
-    if (toYMD(mostRecent) === toYMD(prev)) return true;
+    if (toYMD(mostRecent) === toYMD(prev)) {return true;}
     return false;
   }
 }

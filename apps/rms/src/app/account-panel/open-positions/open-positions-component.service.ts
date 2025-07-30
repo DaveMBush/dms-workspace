@@ -1,13 +1,14 @@
-import { Injectable, computed, inject } from '@angular/core';
-import { Trade } from '../../store/trades/trade.interface';
-import { selectUniverses } from '../../store/universe/universe.selectors';
-import { OpenPosition } from '../../store/trades/open-position.interface';
+import { computed, inject,Injectable } from '@angular/core';
+import { RowProxyDelete, SmartArray } from '@smarttools/smart-signals';
+
+import { Account } from '../../accounts/account';
 import { currentAccountSignalStore } from '../../store/current-account/current-account.signal-store';
 import { selectCurrentAccountSignal } from '../../store/current-account/select-current-account.signal';
-import { RowProxyDelete, SmartArray } from '@smarttools/smart-signals';
-import { Account } from '../../accounts/account';
-import { OpenPosition as OpenPositionInterface } from './open-position.interface';
 import { selectHolidays } from '../../store/top/top.selectors';
+import { OpenPosition } from '../../store/trades/open-position.interface';
+import { Trade } from '../../store/trades/trade.interface';
+import { selectUniverses } from '../../store/universe/universe.selectors';
+import { OpenPosition as OpenPositionInterface } from './open-position.interface';
 @Injectable({ providedIn: 'root' })
 export class OpenPositionsComponentService {
   private currentAccountSignalStore = inject(currentAccountSignalStore);
@@ -22,7 +23,7 @@ export class OpenPositionsComponentService {
     const startDate = new Date(start);
     const endDate = new Date(end);
     let count = 0;
-    let current = new Date(startDate);
+    const current = new Date(startDate);
     const holidays = selectHolidays();
     const holidaySet = new Set(holidays.map(d => new Date(d).toDateString()));
     while (current <= endDate) {
@@ -97,7 +98,7 @@ export class OpenPositionsComponentService {
         buyDate: new Date(trade.buy_date),
         sell: trade.sell,
         sellDate: trade.sell_date ? new Date(trade.sell_date) : undefined,
-        daysHeld: daysHeld,
+        daysHeld,
         expectedYield,
         targetGain,
         targetSell: (targetGain / trade.quantity) + trade.buy,

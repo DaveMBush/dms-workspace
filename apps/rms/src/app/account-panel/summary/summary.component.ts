@@ -1,10 +1,11 @@
-import { Component, computed, effect, inject, signal } from '@angular/core';
-import { SelectModule } from 'primeng/select';
+import { CurrencyPipe, PercentPipe } from '@angular/common';
+import { Component, computed, effect, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ChartModule } from 'primeng/chart';
-import { SummaryComponentService } from './summary-component.service';
-import { CurrencyPipe, PercentPipe } from '@angular/common';
+import { SelectModule } from 'primeng/select';
+
 import { Graph } from './graph.interface';
+import { SummaryComponentService } from './summary-component.service';
 
 @Component({
   selector: 'app-summary',
@@ -16,13 +17,14 @@ import { Graph } from './graph.interface';
 })
 export class SummaryComponent {
   summaryComponentService = inject(SummaryComponentService);
-  summary = this.summaryComponentService.summary;
+  summary$ = this.summaryComponentService.summary;
   selectedMonth = this.summaryComponentService.selectedMonth;
-  months = this.summaryComponentService.months;
+  months$ = this.summaryComponentService.months;
 
   constructor() {
+    // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hid this
     effect(() => {
-      const months = this.months();
+      const months = this.months$();
       if (months.length > 0) {
         this.selectedMonth.set(months[0].value);
       } else {
@@ -31,10 +33,11 @@ export class SummaryComponent {
     })
   }
 
-  compositionData = computed(() => {
-    const s = this.summary();
+    // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hid this
+  compositionData$ = computed(() => {
+    const s = this.summary$();
     if (!s) {
-      return this.getEmptyCompositionData();
+      return this.emptyCompositionData;
     }
 
     const { equities, income, tax_free_income } = s;
@@ -64,8 +67,7 @@ export class SummaryComponent {
     };
   });
 
-  private getEmptyCompositionData() {
-    return {
+  private emptyCompositionData = {
       labels: ['Equities', 'Income', 'Tax Free'],
       datasets: [
         {
@@ -83,7 +85,6 @@ export class SummaryComponent {
         }
       ]
     };
-  }
 
   compositionOptions = {
     plugins: {
@@ -100,16 +101,25 @@ export class SummaryComponent {
     }
   };
 
-  lineChartData = computed(() => {
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
+  lineChartData$ = computed(() => {
     const g = this.summaryComponentService.graph();
     if (!g || g.length === 0) {
-      return this.getEmptyLineChartData();
+      return this.emptyLineChartData;
     }
 
-    const newLabels = g.map((g: Graph) => g.month);
-    const newBaseData = g.map((g: Graph) => g.deposits);
-    const newCapitalGainsData = g.map((g: Graph) => g.deposits + g.capitalGains);
-    const newDividendsData = g.map((g: Graph) => g.deposits + g.capitalGains + g.dividends);
+    const newLabels = g.map(function getLabels(gr: Graph) {
+      return gr.month;
+    });
+    const newBaseData = g.map(function getBaseData(gr: Graph) {
+      return gr.deposits;
+    });
+    const newCapitalGainsData = g.map(function getCapitalGainsData(gr: Graph) {
+      return gr.deposits + gr.capitalGains;
+    });
+    const newDividendsData = g.map(function getDividendsData(gr: Graph) {
+      return gr.deposits + gr.capitalGains + gr.dividends;
+    });
 
     return {
       labels: newLabels,
@@ -142,8 +152,7 @@ export class SummaryComponent {
     };
   });
 
-  private getEmptyLineChartData() {
-    return {
+  private emptyLineChartData = {
       labels: [],
       datasets: [
         {
@@ -172,7 +181,6 @@ export class SummaryComponent {
         }
       ]
     };
-  }
 
   lineChartOptions = {
     responsive: true,

@@ -1,4 +1,5 @@
 import { SmartEntityDefinition } from '@smarttools/smart-signals';
+
 import { Universe } from './universe.interface';
 import { universeEffectsServiceToken } from './universe-effect-service-token';
 

@@ -1,24 +1,25 @@
+import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
   computed,
   inject,
+OnInit,
   Signal,
-  ViewEncapsulation,
-} from '@angular/core';
-import { CommonModule } from '@angular/common';
+  ViewEncapsulation, } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { SmartArray } from '@smarttools/smart-signals';
+import { ButtonModule } from 'primeng/button';
 import { ListboxModule } from 'primeng/listbox';
 import { ToolbarModule } from 'primeng/toolbar';
-import { ButtonModule } from 'primeng/button';
-import { selectAccounts } from '../store/accounts/account.selectors';
-import { selectTopEntities } from '../store/top/top.selectors';
-import { SmartArray } from '@smarttools/smart-signals';
-import { Top } from '../store/top/top.interface';
-import { Account as AccountInterface } from '../store/accounts/account.interface';
+
 import { NodeEditorComponent } from '../shared/components/edit/node-editor.component';
-import { FormsModule } from '@angular/forms';
+import { Account as AccountInterface } from '../store/accounts/account.interface';
+import { selectAccounts } from '../store/accounts/account.selectors';
+import { Top } from '../store/top/top.interface';
+import { selectTopEntities } from '../store/top/top.selectors';
 import { AccountComponentService } from './account-component.service';
-import { Router } from '@angular/router';
 
 @Component({
   imports: [CommonModule, ButtonModule, FormsModule, NodeEditorComponent, ListboxModule, ToolbarModule],
@@ -29,10 +30,10 @@ import { Router } from '@angular/router';
   changeDetection: ChangeDetectionStrategy.OnPush,
   viewProviders: [AccountComponentService],
 })
-export class Account {
+export class Account implements OnInit {
   private accountService = inject(AccountComponentService);
   private router = inject(Router);
-  accounts$ = selectAccounts as Signal<SmartArray<Top, AccountInterface> & AccountInterface[]>;
+  accounts$ = selectAccounts as Signal<AccountInterface[] & SmartArray<Top, AccountInterface>>;
   top = selectTopEntities().entities;
 
   ngOnInit(): void {
@@ -40,9 +41,9 @@ export class Account {
   }
 
   accountsArray$ = computed(() => {
-    var accounts = this.accounts$() as SmartArray<Top, AccountInterface>;
-    var accountsArray = [] as AccountInterface[];
-    for (var i = 0; i < accounts.length; i++) {
+    const accounts = this.accounts$() as SmartArray<Top, AccountInterface>;
+    const accountsArray = [] as AccountInterface[];
+    for (let i = 0; i < accounts.length; i++) {
       accountsArray.push(accounts[i] as AccountInterface);
     }
     return accountsArray;
@@ -63,6 +64,7 @@ export class Account {
   protected deleteAccount(item: AccountInterface): void {
     this.accountService.deleteAccount(item);
   }
+
   protected cancelEdit(item: AccountInterface): void {
     this.accountService.cancelEdit(item);
   }

@@ -1,9 +1,9 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ToolbarModule } from 'primeng/toolbar';
-import { ListboxModule } from 'primeng/listbox';
+import { Component, EventEmitter,Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { ListboxModule } from 'primeng/listbox';
+import { ToolbarModule } from 'primeng/toolbar';
 
 @Component({
   selector: 'app-global',

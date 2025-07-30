@@ -1,7 +1,8 @@
 import { createSmartSignal, getTopChildRows } from '@smarttools/smart-signals';
+
+import { selectTopEntities } from '../../store/top/top.selectors';
 import { Top } from '../top/top.interface';
 import { DivDepositType } from './div-deposit-type.interface';
-import { selectTopEntities } from '../../store/top/top.selectors';
 
 export const selectDivDepositTypeEntity = createSmartSignal<DivDepositType>(
   'app',

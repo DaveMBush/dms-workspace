@@ -1,16 +1,17 @@
 import { createSmartSignal, getTopChildRows } from '@smarttools/smart-signals';
+
 import { Account } from '../accounts/account.interface';
-import { Trade } from './trade.interface';
 import { selectAccountsEntity } from '../accounts/account.selectors';
-import { selectDivDepositEntity } from '../div-deposits/div-deposits.selectors';
 import { DivDeposit } from '../div-deposits/div-deposit.interface';
+import { selectDivDepositEntity } from '../div-deposits/div-deposits.selectors';
+import { Trade } from './trade.interface';
 
 export const selectTradesEntity = createSmartSignal<Trade>(
   'app',
   'trades'
 );
 
-export const selectAccountChildren = createSmartSignal<Account, Trade | DivDeposit>(selectAccountsEntity, [
+export const selectAccountChildren = createSmartSignal<Account, DivDeposit | Trade>(selectAccountsEntity, [
   {
     childFeature: 'app',
     childEntity: 'trades',

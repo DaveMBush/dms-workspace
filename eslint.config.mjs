@@ -1,20 +1,18 @@
-const { FlatCompat } = require('@eslint/eslintrc');
-const js = require('@eslint/js');
-const eslintPluginJsdoc = require('eslint-plugin-jsdoc');
-const nxEslintPlugin = require('@nx/eslint-plugin');
-const eslintPluginSonarjs = require('eslint-plugin-sonarjs');
-const eslintPluginImport = require('eslint-plugin-import');
-const angularEslintEslintPlugin = require('@angular-eslint/eslint-plugin');
-const eslintPluginEslintComments = require('eslint-plugin-eslint-comments');
-const smarttoolsEslintPluginRxjs = require('@smarttools/eslint-plugin-rxjs');
-const smarttoolsEslintPlugin = require('@smarttools/eslint-plugin');
-const typescriptEslintEslintPlugin = require('@typescript-eslint/eslint-plugin');
-const eslintPluginUnusedImports = require('eslint-plugin-unused-imports');
-const ngrxEslintPlugin = require('@ngrx/eslint-plugin');
-const eslintPluginMaxParamsNoConstructor = require('eslint-plugin-max-params-no-constructor');
-const eslintPluginJest = require('eslint-plugin-jest');
-const typescriptEslintParser = require('@typescript-eslint/parser');
-const playwright = require('eslint-plugin-playwright');
+import { FlatCompat } from '@eslint/eslintrc';
+import js from '@eslint/js';
+import eslintPluginJsdoc from 'eslint-plugin-jsdoc';
+import nxEslintPlugin from '@nx/eslint-plugin';
+import eslintPluginSonarjs from 'eslint-plugin-sonarjs';
+import eslintPluginImport from 'eslint-plugin-import';
+import eslintPluginEslintComments from 'eslint-plugin-eslint-comments';
+import smarttoolsEslintPluginRxjs from '@smarttools/eslint-plugin-rxjs';
+import smarttoolsEslintPlugin from '@smarttools/eslint-plugin';
+import typescriptEslintEslintPlugin from '@typescript-eslint/eslint-plugin';
+import eslintPluginUnusedImports from 'eslint-plugin-unused-imports';
+import ngrxEslintPlugin from '@ngrx/eslint-plugin';
+import eslintPluginMaxParamsNoConstructor from 'eslint-plugin-max-params-no-constructor';
+import typescriptEslintParser from '@typescript-eslint/parser';
+import playwright from 'eslint-plugin-playwright';
 
 // can't support function until NX eslint supports ESM or
 // functional supports CommonJS OR I figure out how to get
@@ -22,7 +20,7 @@ const playwright = require('eslint-plugin-playwright');
 //const functional = require('eslint-plugin-functional');
 
 const compat = new FlatCompat({
-  baseDirectory: __dirname,
+  baseDirectory: import.meta.dirname,
   recommendedConfig: js.configs.recommended,
 });
 
@@ -40,7 +38,7 @@ const eslintConfig = async () => {
         sonarjs: eslintPluginSonarjs,
         import: eslintPluginImport,
         //functional,
-        '@angular-eslint/eslint-plugin': angularEslintEslintPlugin,
+        // '@angular-eslint': angularEslintEslintPlugin, // Registered by FlatCompat
         'eslint-comments': eslintPluginEslintComments,
         unicorn,
         '@smarttools/rxjs': smarttoolsEslintPluginRxjs,
@@ -49,7 +47,7 @@ const eslintConfig = async () => {
         'unused-imports': eslintPluginUnusedImports,
         '@ngrx': ngrxEslintPlugin,
         'max-params-no-constructor': eslintPluginMaxParamsNoConstructor,
-        jest: eslintPluginJest,
+        // jest: eslintPluginJest, // Removed - using Vitest instead
         '@stylistic': stylisticEslintPlugin,
         playwright,
         //deprecation,
@@ -57,7 +55,7 @@ const eslintConfig = async () => {
     },
     { languageOptions: { parser: typescriptEslintParser } },
     {
-      files: ['jest.config.ts'],
+      files: ['vitest.config.ts', 'vitest.config.mts'],
       rules: {
         'eslint-comments/no-restricted-disable': 'off',
         'eslint-comments/require-description': 'off',
@@ -65,7 +63,7 @@ const eslintConfig = async () => {
       },
     },
     {
-      files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
+      files: ['**/*.ts', '**/*.tsx'],
       ignores: ['**/playwright.config.ts'],
       rules: {
         '@nx/enforce-module-boundaries': [
@@ -110,7 +108,13 @@ const eslintConfig = async () => {
       },
       languageOptions: {
         parserOptions: {
-          project: ['tsconfig.base.json'],
+          project: [
+            'apps/rms/tsconfig.json',
+            'apps/rms/tsconfig.app.json',
+            'apps/rms/tsconfig.spec.json',
+            'apps/server/tsconfig.json',
+            'apps/rms-e2e/tsconfig.json',
+          ],
         },
       },
     },
@@ -122,6 +126,19 @@ const eslintConfig = async () => {
       .map((config) => ({
         ...config,
         files: ['**/*.ts', '**/*.tsx', '**/*.cts', '**/*.mts'],
+        languageOptions: {
+          ...config.languageOptions,
+          parserOptions: {
+            ...config.languageOptions?.parserOptions,
+            project: [
+              'apps/rms/tsconfig.json',
+              'apps/rms/tsconfig.app.json',
+              'apps/rms/tsconfig.spec.json',
+              'apps/server/tsconfig.json',
+              'apps/rms-e2e/tsconfig.json',
+            ],
+          },
+        },
         rules: {
           ...config.rules,
           'simple-import-sort/imports': [
@@ -151,6 +168,19 @@ const eslintConfig = async () => {
         ...config,
         files: ['**/*.ts'],
         ignores: ['**/playwright.config.ts'],
+        languageOptions: {
+          ...config.languageOptions,
+          parserOptions: {
+            ...config.languageOptions?.parserOptions,
+            project: [
+              'apps/rms/tsconfig.json',
+              'apps/rms/tsconfig.app.json',
+              'apps/rms/tsconfig.spec.json',
+              'apps/server/tsconfig.json',
+              'apps/rms-e2e/tsconfig.json',
+            ],
+          },
+        },
         rules: {
           ...config.rules,
           complexity: [
@@ -315,7 +345,7 @@ const eslintConfig = async () => {
           'prefer-spread': 'error',
           'prefer-arrow-callback': 'off',
           radix: 'error',
-          '@angular-eslint/component-class-suffix': 'error',
+          //'@angular-eslint/component-class-suffix': 'error',
           '@angular-eslint/component-selector': [
             'error',
             {
@@ -779,6 +809,19 @@ const eslintConfig = async () => {
           ],
         },
       })),
+    {
+      files: ['**/*.js', '**/*.jsx'],
+      languageOptions: {
+        parser: typescriptEslintParser,
+        parserOptions: {
+          ecmaVersion: 'latest',
+          sourceType: 'module',
+        },
+      },
+      rules: {
+        'no-console': 'off',
+      },
+    },
     ...compat
       .config({
         extends: ['plugin:@nx/javascript'],
@@ -790,46 +833,37 @@ const eslintConfig = async () => {
           ...config.rules,
         },
       })),
-    ...compat
-      .config({
-        extends: ['plugin:jest/recommended'],
-        plugins: ['jest'],
-        env: {
-          jest: true,
-        },
-      })
-      .map((config) => ({
-        ...config,
-        files: [
-          '**/*.{spec,test}.ts',
-          '**/*.{spec,test}.tsx',
-          '**/*.{spec,test}.js',
-          '**/*.{spec,test}.jsx',
-        ],
-        rules: {
-          ...config.rules,
-          '@smarttools/no-anonymous-functions': 'off',
-          '@smarttools/one-exported-item-per-file': 'off',
-          'no-restricted-syntax': 'off',
-          'max-lines': 'off',
-          'max-lines-per-function': 'off',
-          'max-nested-callbacks': 'off',
-          'sonarjs/no-nested-functions': 'off',
-          'sonarjs/function-return-type': 'off',
-          'max-classes-per-file': 'off',
-          'jest/expect-expect': [
-            'error',
-            {
-              assertFunctionNames: [
-                'expect',
-                'expectObservable',
-                'expectSubscriptions',
-              ],
-            },
+    {
+      files: [
+        '**/*.{spec,test}.ts',
+        '**/*.{spec,test}.tsx',
+        '**/*.{spec,test}.js',
+        '**/*.{spec,test}.jsx',
+      ],
+      languageOptions: {
+        parserOptions: {
+          project: [
+            'apps/rms/tsconfig.json',
+            'apps/rms/tsconfig.app.json',
+            'apps/rms/tsconfig.spec.json',
+            'apps/server/tsconfig.json',
+            'apps/rms-e2e/tsconfig.json',
           ],
         },
-      })),
+      },
+      rules: {
+        '@smarttools/no-anonymous-functions': 'off',
+        '@smarttools/one-exported-item-per-file': 'off',
+        'no-restricted-syntax': 'off',
+        'max-lines': 'off',
+        'max-lines-per-function': 'off',
+        'max-nested-callbacks': 'off',
+        'sonarjs/no-nested-functions': 'off',
+        'sonarjs/function-return-type': 'off',
+        'max-classes-per-file': 'off',
+      },
+    },
   ];
 };
 
-module.exports = eslintConfig();
+export default await eslintConfig();

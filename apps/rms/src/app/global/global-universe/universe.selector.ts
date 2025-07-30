@@ -1,19 +1,20 @@
 import { computed } from "@angular/core";
+
+import { RiskGroup } from "../../store/risk-group/risk-group.interface";
 import { selectRiskGroup } from "../../store/risk-group/risk-group.selectors";
 import { selectUniverses } from "../../store/universe/universe.selectors";
-import { RiskGroup } from "../../store/risk-group/risk-group.interface";
 
 
 export const selectUniverse = computed(() => {
   const universeEntities = selectUniverses();
   const riskGroupArray = selectRiskGroup();
   const riskGroupEntities: Record<string, RiskGroup> = {};
-  for (var i = 0; i < riskGroupArray.length; i++) {
+  for (let i = 0; i < riskGroupArray.length; i++) {
     riskGroupEntities[riskGroupArray[i].id] = riskGroupArray[i];
   }
   const result = [];
   for (let i = 0; i < universeEntities.length; i++) {
-    let universe = universeEntities[i];
+    const universe = universeEntities[i];
     let riskGroup = null;
     if (universe.risk_group_id) {
       riskGroup = riskGroupEntities[universe.risk_group_id];

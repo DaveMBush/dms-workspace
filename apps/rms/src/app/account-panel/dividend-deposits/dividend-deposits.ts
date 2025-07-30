@@ -1,16 +1,16 @@
-import { Component, computed, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TableModule } from 'primeng/table';
-import { ButtonModule } from 'primeng/button';
-import { DivDeposit } from '../../store/div-deposits/div-deposit.interface';
-import { selectCurrentAccountSignal } from '../../store/current-account/select-current-account.signal';
-import { currentAccountSignalStore } from '../../store/current-account/current-account.signal-store';
+import { Component, computed, inject, OnInit } from '@angular/core';
 import { RowProxyDelete, SmartArray } from '@smarttools/smart-signals';
+import { ButtonModule } from 'primeng/button';
+import { TableModule } from 'primeng/table';
+
 import { Account } from '../../store/accounts/account.interface';
-import { selectDivDepositTypes } from '../../store/div-deposit-types/div-deposit-types.selectors';
+import { currentAccountSignalStore } from '../../store/current-account/current-account.signal-store';
+import { selectCurrentAccountSignal } from '../../store/current-account/select-current-account.signal';
 import { DivDepositType } from '../../store/div-deposit-types/div-deposit-type.interface';
+import { selectDivDepositTypes } from '../../store/div-deposit-types/div-deposit-types.selectors';
+import { DivDeposit } from '../../store/div-deposits/div-deposit.interface';
 import { selectUniverses } from '../../store/universe/universe.selectors';
-import { Universe } from '../../store/universe/universe.interface';
 
 @Component({
   selector: 'app-dividend-deposits',
@@ -38,7 +38,7 @@ export class DividendDeposits implements OnInit {
     }
     const act = account();
     const divDeposits = [];
-    const divDepositsArray = act.divDeposits as SmartArray<Account, DivDeposit> & DivDeposit[];
+    const divDepositsArray = act.divDeposits as DivDeposit[] & SmartArray<Account, DivDeposit>;
     for (let i = 0; i < divDepositsArray.length; i++) {
       divDeposits.push({
         id: divDepositsArray[i].id,
@@ -60,9 +60,9 @@ export class DividendDeposits implements OnInit {
       return;
     }
     const act = account();
-    const divDepositsArray = act.divDeposits as SmartArray<Account, DivDeposit> & DivDeposit[];
+    const divDepositsArray = act.divDeposits as DivDeposit[] & SmartArray<Account, DivDeposit>;
     for (let i = 0; i < divDepositsArray.length; i++) {
-      const divDeposit = divDepositsArray[i] as RowProxyDelete & DivDeposit;
+      const divDeposit = divDepositsArray[i] as DivDeposit & RowProxyDelete;
       if (divDeposit.id === row.id) {
         divDeposit.delete!();
         break;
@@ -70,7 +70,7 @@ export class DividendDeposits implements OnInit {
     }
   }
 
-  public trackById(index: number, row: DivDeposit) {
+  trackById(index: number, row: DivDeposit) {
     return row.id;
   }
 }

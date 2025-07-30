@@ -1,11 +1,12 @@
-import { Component, inject, ViewChild, ElementRef } from '@angular/core';
-import { DialogModule } from 'primeng/dialog';
-import { ButtonModule } from 'primeng/button';
-import { UniverseSettingsService } from './universe-settings.service';
-import { Textarea } from 'primeng/textarea';
+import { Component, ElementRef,inject, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { UpdateUniverseSettingsService } from './update-universe.service';
+import { ButtonModule } from 'primeng/button';
+import { DialogModule } from 'primeng/dialog';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { Textarea } from 'primeng/textarea';
+
+import { UniverseSettingsService } from './universe-settings.service';
+import { UpdateUniverseSettingsService } from './update-universe.service';
 
 @Component({
   selector: 'app-universe-settings',

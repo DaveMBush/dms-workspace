@@ -7,7 +7,7 @@ export function differenceInTradingDays(
   const startDate = new Date(start);
   const endDate = new Date(end);
   let count = 0;
-  let current = new Date(startDate);
+  const current = new Date(startDate);
 
   const holidays = selectHolidays();
 

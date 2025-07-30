@@ -1,19 +1,20 @@
-import { Component, signal, output, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, computed, inject,output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { InputNumberModule } from 'primeng/inputnumber';
-import { DatePickerModule } from 'primeng/datepicker';
-import { SelectModule } from 'primeng/select';
-import { ButtonModule } from 'primeng/button';
-import { AutoCompleteModule } from 'primeng/autocomplete';
-import { selectDivDepositTypes } from '../../store/div-deposit-types/div-deposit-types.selectors';
-import { DivDepositType } from '../../store/div-deposit-types/div-deposit-type.interface';
-import { currentAccountSignalStore } from '../../store/current-account/current-account.signal-store';
-import { DivDeposit } from '../../store/div-deposits/div-deposit.interface';
-import { Account } from '../../store/accounts/account.interface';
-import { SmartArray } from '@smarttools/smart-signals';
-import { selectCurrentAccountSignal } from '../../store/current-account/select-current-account.signal';
 import { ActivatedRoute } from '@angular/router';
+import { SmartArray } from '@smarttools/smart-signals';
+import { AutoCompleteModule } from 'primeng/autocomplete';
+import { ButtonModule } from 'primeng/button';
+import { DatePickerModule } from 'primeng/datepicker';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { SelectModule } from 'primeng/select';
+
+import { Account } from '../../store/accounts/account.interface';
+import { currentAccountSignalStore } from '../../store/current-account/current-account.signal-store';
+import { selectCurrentAccountSignal } from '../../store/current-account/select-current-account.signal';
+import { DivDepositType } from '../../store/div-deposit-types/div-deposit-type.interface';
+import { selectDivDepositTypes } from '../../store/div-deposit-types/div-deposit-types.selectors';
+import { DivDeposit } from '../../store/div-deposits/div-deposit.interface';
 import { selectUniverses } from '../../store/universe/universe.selectors';
 
 @Component({
@@ -23,12 +24,13 @@ import { selectUniverses } from '../../store/universe/universe.selectors';
   styleUrl: './div-dep-modal.component.scss',
 })
 export class DivDepModalComponent {
-  readonly close = output<void>();
+  readonly close = output();
   route = inject(ActivatedRoute);
   private currentAccount = inject(currentAccountSignalStore)
   accountId = computed(() => {
     return this.route.snapshot.paramMap.get('accountId');
   });
+
   // Symbol typeahead logic
   symbol = signal<string | null>(null);
   filter = signal<string>('');
@@ -51,15 +53,17 @@ export class DivDepModalComponent {
     }
     const query = this.filter().toLowerCase();
     let filtered = returnedSymbols.filter((r) => r.label.toLowerCase().includes(query));
-    if (selectedSymbol && !filtered.some(r => r.value === selectedSymbol!.value)) {
+    if (selectedSymbol && !filtered.some(r => r.value === selectedSymbol.value)) {
       filtered = [selectedSymbol, ...filtered];
     }
     return filtered;
   });
+
   filterSymbols(event: { query: string }) {
     this.filter.set(event.query + 'a');
     this.filter.set(event.query + '');
   }
+
   date = signal<Date | null>(null);
   amount = signal<number | null>(null);
   type = signal<string | null>(null);
@@ -82,7 +86,7 @@ export class DivDepModalComponent {
       return;
     }
     const act = account();
-    const divDeposits = act.divDeposits as SmartArray<Account, DivDeposit> & DivDeposit[];
+    const divDeposits = act.divDeposits as DivDeposit[] & SmartArray<Account, DivDeposit>;
     divDeposits.add!({
       id: 'new',
       date: this.date()!,

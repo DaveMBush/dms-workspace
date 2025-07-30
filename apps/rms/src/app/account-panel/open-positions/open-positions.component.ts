@@ -1,20 +1,17 @@
-import { Component, ElementRef, inject, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TableModule } from 'primeng/table';
-import { selectTrades } from '../../store/trades/trade.selectors';
-import { RowProxyDelete } from '@smarttools/smart-signals';
-import { ButtonModule } from 'primeng/button';
-import { InputNumberModule } from 'primeng/inputnumber';
-import { DatePickerModule } from 'primeng/datepicker';
+import { Component, ElementRef, inject, signal,viewChild  } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Trade } from '../../store/trades/trade.interface';
-import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
-import { signal } from '@angular/core';
+import { ButtonModule } from 'primeng/button';
+import { DatePickerModule } from 'primeng/datepicker';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { TableModule } from 'primeng/table';
+import { ToastModule } from 'primeng/toast';
+
+import { Trade } from '../../store/trades/trade.interface';
 import { selectUniverses } from '../../store/universe/universe.selectors';
-import { OpenPositionsComponentService } from './open-positions-component.service';
-import { selectCurrentAccountSignal } from '../../store/current-account/select-current-account.signal';
 import { OpenPosition } from './open-position.interface';
+import { OpenPositionsComponentService } from './open-positions-component.service';
 
 type EditableTradeField = 'buy' | 'buyDate' | 'quantity' | 'sell' | 'sellDate';
 
@@ -36,7 +33,7 @@ export class OpenPositionsComponent {
     this.openPositionsService.deleteOpenPosition(position);
   }
 
-  public trackById(index: number, row: OpenPosition) {
+  trackById(index: number, row: OpenPosition) {
     return row.id;
   }
 
@@ -75,7 +72,7 @@ export class OpenPositionsComponent {
           if (!this.isDateRangeValid(row.buyDate, row.sellDate, 'sellDate')) {
             this.messageService.add({ severity: 'error', summary: 'Invalid Date', detail: 'Sell date cannot be before buy date.' });
             // revert row.sellDate to previous value
-            row.sellDate = trades[i].sell_date ? new Date(trades[i].sell_date as string).toISOString() : '';
+            row.sellDate = trades[i].sell_date ? new Date(trades[i].sell_date!).toISOString() : '';
             return;
           }
           const universe = selectUniverses();
@@ -93,7 +90,7 @@ export class OpenPositionsComponent {
           if (!this.isDateRangeValid(row.buyDate, row.sellDate, 'buyDate')) {
             this.messageService.add({ severity: 'error', summary: 'Invalid Date', detail: 'Buy date cannot be after sell date.' });
             // revert row.buyDate to previous value
-            row.buyDate = trades[i].buy_date ? new Date(trades[i].buy_date as string).toISOString() : '';
+            row.buyDate = trades[i].buy_date ? new Date(trades[i].buy_date).toISOString() : '';
             return;
           }
         }
@@ -120,7 +117,7 @@ export class OpenPositionsComponent {
 
   private getScrollContainer(): HTMLElement | null {
     const tableEl = this.tableRef()?.nativeElement as HTMLElement;
-    return tableEl?.querySelector('.p-datatable-table-container') as HTMLElement | null;
+    return tableEl?.querySelector('.p-datatable-table-container');
   }
 
 }
