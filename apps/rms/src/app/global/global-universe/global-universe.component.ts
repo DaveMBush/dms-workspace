@@ -1,5 +1,5 @@
 import { DatePipe, DecimalPipe , NgClass } from '@angular/common';
-import { Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy,Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { DatePickerModule } from 'primeng/datepicker';
@@ -19,7 +19,7 @@ import { UniverseSettingsService } from '../../universe-settings/universe-settin
 import { selectUniverse } from './universe.selector';
 
 @Component({
-  selector: 'app-global-universe',
+  changeDetection: ChangeDetectionStrategy.OnPush,selector: 'app-global-universe',
   standalone: true,
   imports: [TagModule, InputNumberModule, SelectModule, DatePipe, DecimalPipe, ToolbarModule, TableModule, DatePickerModule, FormsModule, ButtonModule, TooltipModule, NgClass],
   templateUrl: './global-universe.component.html',
@@ -45,7 +45,7 @@ export class GlobalUniverseComponent {
   protected readonly settingsService = inject(UniverseSettingsService);
 
   // Account options for the dropdown
-  accountOptions$ = computed(() => {
+  accountOptions$ = computed(function accountOptionsComputed() {
     const accounts = selectAccounts();
     const options = [
       { label: 'All Accounts', value: 'all' }
@@ -63,23 +63,27 @@ export class GlobalUniverseComponent {
   });
 
   // Computed signal that automatically applies sorting when data changes
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- function would hide this
   readonly universe$ = computed(() => {
     const rawData = selectUniverse();
     const currentSortCriteria = this.sortCriteria();
     const minYield = this.minYieldFilter();
     const selectedAccount = this.selectedAccountId();
+    const self = this;
 
     // Apply yield filter first
     let filteredData = rawData;
     if (minYield !== null && minYield > 0) {
-      filteredData = rawData.filter(item => (item.yield_percent || 0) >= minYield);
+      filteredData = rawData.filter(function filterYield(item) {
+        return (item.yield_percent || 0) >= minYield;
+      });
     }
 
     // Apply account-specific filtering for position and sell data
     if (selectedAccount !== 'all') {
-      filteredData = filteredData.map(item => {
+      filteredData = filteredData.map(function mapAccountSpecificData(item) {
         // Get account-specific data for this symbol
-        const accountSpecificData = this.getAccountSpecificData(item.symbol, selectedAccount);
+        const accountSpecificData = self.getAccountSpecificData(item.symbol, selectedAccount);
         return {
           ...item,
           position: accountSpecificData.position,
@@ -96,12 +100,12 @@ export class GlobalUniverseComponent {
     // Create a copy to avoid mutating the original data
     const sortedData = [...filteredData];
 
-    sortedData.sort((a, b) => {
+    sortedData.sort(function sortData(a, b) {
       for (const criteria of currentSortCriteria) {
-        const aValue = this.getFieldValueFromDisplayData(a, criteria.field);
-        const bValue = this.getFieldValueFromDisplayData(b, criteria.field);
+        const aValue = self.getFieldValueFromDisplayData(a, criteria.field);
+        const bValue = self.getFieldValueFromDisplayData(b, criteria.field);
 
-        const comparison = this.compareValues(aValue, bValue);
+        const comparison = self.compareValues(aValue, bValue);
         if (comparison !== 0) {
           return criteria.order * comparison;
         }
@@ -112,7 +116,7 @@ export class GlobalUniverseComponent {
     return sortedData;
   });
 
-  onEditDistributionComplete(row: Universe) {
+  onEditDistributionComplete(row: Universe): void {
     const universes = selectUniverses();
     for (let i = 0; i < universes.length; i++) {
       if (universes[i].symbol === row.symbol) {
@@ -122,7 +126,7 @@ export class GlobalUniverseComponent {
     }
   }
 
-  onEditDistributionsPerYearComplete(row: Universe) {
+  onEditDistributionsPerYearComplete(row: Universe): void {
     const universes = selectUniverses();
     for (let i = 0; i < universes.length; i++) {
       if (universes[i].symbol === row.symbol) {
@@ -133,7 +137,7 @@ export class GlobalUniverseComponent {
     }
   }
 
-  onEditDateComplete(row: Universe) {
+  onEditDateComplete(row: Universe): void {
     const universes = selectUniverses();
     for (let i = 0; i < universes.length; i++) {
       if (universes[i].symbol === row.symbol) {
@@ -145,7 +149,7 @@ export class GlobalUniverseComponent {
     }
   }
 
-  onEditComplete(event: any) {
+  onEditComplete(event: any): void {
     // event.data: the row object
     // event.field: the field name (e.g., 'distribution')
     // event.originalEvent: the DOM event
@@ -163,7 +167,7 @@ export class GlobalUniverseComponent {
     return row.id;
   }
 
-  onEditCommit(row: Universe, field: string) {
+  onEditCommit(row: Universe, field: string): void {
     const universes = selectUniverses();
     for (let i = 0; i < universes.length; i++) {
       if (universes[i].symbol === row.symbol) {
@@ -173,7 +177,7 @@ export class GlobalUniverseComponent {
     }
   }
 
-  stopArrowKeyPropagation(event: KeyboardEvent) {
+  stopArrowKeyPropagation(event: KeyboardEvent): void {
     if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
       event.stopPropagation();
     }
@@ -198,13 +202,37 @@ export class GlobalUniverseComponent {
     // The computed signal will automatically re-evaluate and apply sorting
   }
 
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
+  yieldPercentSortIcon$ = computed(() => {
+    return this.getSortIcon('yield_percent');
+  });
+
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
+  exDateSortIcon$ = computed(() => {
+    return this.getSortIcon('ex_date');
+  });
+
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
+  mostRecentSellDateSortIcon$ = computed(() => {
+    return this.getSortIcon('most_recent_sell_date');
+  });
+
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
+  mostRecentSellPriceSortIcon$ = computed(() => {
+    return this.getSortIcon('most_recent_sell_price');
+  });
+
   /**
    * Returns the appropriate sort icon class for a field
    */
   getSortIcon(field: string): string {
     const currentCriteria = this.sortCriteria();
-    const criteria = currentCriteria.find(c => c.field === field);
-    if (!criteria) {return 'pi pi-sort';}
+    const criteria = currentCriteria.find(function findCriteria(c) {
+      return c.field === field
+    });
+    if (!criteria) {
+      return 'pi pi-sort';
+    }
     return criteria.order === 1 ? 'pi pi-sort-up' : 'pi pi-sort-down';
   }
 
@@ -218,18 +246,22 @@ export class GlobalUniverseComponent {
   /**
    * Gets the value of a field from the display data object
    */
-  private getFieldValueFromDisplayData(data: any, field: string): any {
+  private getFieldValueFromDisplayData(data: unknown, field: string): unknown {
     switch (field) {
       case 'yield_percent':
-        return data.yield_percent || 0;
+        // eslint-disable-next-line @typescript-eslint/naming-convention -- matching source
+        return (data as {yield_percent: number}).yield_percent ?? 0;
       case 'ex_date':
-        return this.getSortableExDate(data);
+        // eslint-disable-next-line @typescript-eslint/naming-convention -- matching destination
+        return this.getSortableExDate(data as { ex_date: unknown, distributions_per_year: number });
       case 'most_recent_sell_date':
-        return data.most_recent_sell_date ? new Date(data.most_recent_sell_date) : new Date(0);
+        // eslint-disable-next-line @typescript-eslint/naming-convention -- matching source
+        return (data as { most_recent_sell_date: string }).most_recent_sell_date ? new Date((data as { most_recent_sell_date: string }).most_recent_sell_date) : new Date(0);
       case 'most_recent_sell_price':
-        return data.most_recent_sell_price || 0;
+        // eslint-disable-next-line @typescript-eslint/naming-convention -- matching source
+        return (data as { most_recent_sell_price: number }).most_recent_sell_price ?? 0;
       default:
-        return data[field];
+        return (data as Record<string, unknown>)[field];
     }
   }
 
@@ -237,7 +269,8 @@ export class GlobalUniverseComponent {
    * Gets the sortable ex-date value, which may be a calculated next ex-date
    * if the current ex-date has passed
    */
-  private getSortableExDate(data: any): Date {
+  // eslint-disable-next-line @typescript-eslint/naming-convention -- matching source
+  private getSortableExDate(data: { ex_date: unknown, distributions_per_year: number }): Date {
     if (!data.ex_date || !(data.ex_date instanceof Date)) {
       return new Date(0);
     }
@@ -250,7 +283,8 @@ export class GlobalUniverseComponent {
 
     // If ex-date is today or in the past, calculate the next expected ex-date
     if (exDate <= today) {
-      const distributionsPerYear = data.distributions_per_year || 0;
+      // eslint-disable-next-line @typescript-eslint/naming-convention -- matching source
+      const distributionsPerYear = (data as { distributions_per_year: number }).distributions_per_year ?? 0;
       const nextExDate = new Date(exDate);
 
       if (distributionsPerYear === 12) {
@@ -364,7 +398,7 @@ export class GlobalUniverseComponent {
   /**
    * Returns true if the row should be dimmed: expired or most_recent_sell_date is today or previous trading day.
    */
-  isDimmed(row: Universe): boolean {
+  private isRowDimmed(row: any): boolean {
     if (row.expired) {return true;}
     if (!row.most_recent_sell_date) {return false;}
     const today = new Date();
@@ -382,4 +416,19 @@ export class GlobalUniverseComponent {
     if (toYMD(mostRecent) === toYMD(prev)) {return true;}
     return false;
   }
+
+  /**
+   * Computed signal that returns universe data with dimmed state included
+   */
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
+  readonly universeWithDimmedState$ = computed(() => {
+    const universes = this.universe$();
+    // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
+    return universes.map(universe => ({
+      ...universe,
+      isDimmed: this.isRowDimmed(universe)
+    }));
+  });
+
+
 }

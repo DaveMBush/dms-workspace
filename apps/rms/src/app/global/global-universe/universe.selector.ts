@@ -5,7 +5,7 @@ import { selectRiskGroup } from "../../store/risk-group/risk-group.selectors";
 import { selectUniverses } from "../../store/universe/universe.selectors";
 
 
-export const selectUniverse = computed(() => {
+export const selectUniverse = computed(function selectUniverseFunction() {
   const universeEntities = selectUniverses();
   const riskGroupArray = selectRiskGroup();
   const riskGroupEntities: Record<string, RiskGroup> = {};
