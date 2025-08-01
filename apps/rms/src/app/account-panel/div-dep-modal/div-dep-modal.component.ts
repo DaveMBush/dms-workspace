@@ -13,9 +13,9 @@ import { Account } from '../../store/accounts/account.interface';
 import { currentAccountSignalStore } from '../../store/current-account/current-account.signal-store';
 import { selectCurrentAccountSignal } from '../../store/current-account/select-current-account.signal';
 import { DivDepositType } from '../../store/div-deposit-types/div-deposit-type.interface';
-import { selectDivDepositTypes } from '../../store/div-deposit-types/div-deposit-types.selectors';
+import { selectDivDepositTypes } from '../../store/div-deposit-types/selectors/select-div-deposit-types.function';
 import { DivDeposit } from '../../store/div-deposits/div-deposit.interface';
-import { selectUniverses } from '../../store/universe/universe.selectors';
+import { selectUniverses } from '../../store/universe/selectors/select-universes.function';
 
 @Component({
   selector: 'app-div-dep-modal',

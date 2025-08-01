@@ -1,8 +1,8 @@
 import { computed } from "@angular/core";
 
 import { RiskGroup } from "../../store/risk-group/risk-group.interface";
-import { selectRiskGroup } from "../../store/risk-group/risk-group.selectors";
-import { selectUniverses } from "../../store/universe/universe.selectors";
+import { selectRiskGroup } from "../../store/risk-group/selectors/select-risk-group.function";
+import { selectUniverses } from "../../store/universe/selectors/select-universes.function";
 
 
 export const selectUniverse = computed(function selectUniverseFunction() {

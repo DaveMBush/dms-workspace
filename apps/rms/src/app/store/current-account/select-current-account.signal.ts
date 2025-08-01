@@ -1,7 +1,7 @@
 import { computed, Signal } from '@angular/core';
 
 import { Account } from '../accounts/account.interface';
-import { selectAccountChildren } from '../trades/trade.selectors';
+import { selectAccountChildren } from '../trades/selectors/select-account-children.function';
 import { currentAccountSignalStore } from './current-account.signal-store';
 
 

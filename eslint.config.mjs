@@ -350,7 +350,7 @@ const eslintConfig = async () => {
             'error',
             {
               type: 'element',
-              prefix: ['dmb', 'dmb'],
+              prefix: ['rms'],
               style: 'kebab-case',
             },
           ],
@@ -361,7 +361,7 @@ const eslintConfig = async () => {
             'error',
             {
               type: 'attribute',
-              prefix: ['dmb'],
+              prefix: ['rms'],
               style: 'camelCase',
             },
           ],
@@ -377,7 +377,7 @@ const eslintConfig = async () => {
           '@angular-eslint/pipe-prefix': [
             'error',
             {
-              prefixes: ['dmb'],
+              prefixes: ['rms'],
             },
           ],
           '@angular-eslint/prefer-on-push-component-change-detection': 'error',
@@ -512,7 +512,7 @@ const eslintConfig = async () => {
             {
               selector: 'variable',
               modifiers: ['const'],
-              format: ['camelCase'],
+              format: ['camelCase', 'UPPER_CASE'],
               leadingUnderscore: 'forbid',
               trailingUnderscore: 'forbid',
             },
@@ -758,9 +758,9 @@ const eslintConfig = async () => {
       },
     },
     {
-      files: ['reducer.factory.ts'],
+      files: ['**/*.routes.ts'],
       rules: {
-        'max-lines-per-function': 'off',
+        '@smarttools/no-anonymous-functions': 'off',
       },
     },
     ...compat

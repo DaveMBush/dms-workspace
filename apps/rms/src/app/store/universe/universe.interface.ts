@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention -- matching server */
 export interface Universe {
   id: string;
   distribution: number;

@@ -5,8 +5,8 @@ import { selectCurrentAccountSignal } from '../../store/current-account/select-c
 import { ClosedPosition } from '../../store/trades/closed-position.interface';
 import { differenceInTradingDays } from '../../store/trades/difference-in-trading-days.function';
 import { Trade } from '../../store/trades/trade.interface';
+import { selectUniverses } from '../../store/universe/selectors/select-universes.function';
 import { Universe } from '../../store/universe/universe.interface';
-import { selectUniverses } from '../../store/universe/universe.selectors';
 
 @Injectable({ providedIn: 'root' })
 export class SoldPositionsComponentService {

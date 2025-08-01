@@ -1,4 +1,4 @@
-import { selectHolidays } from "../top/top.selectors";
+import { selectHolidays } from "../top/selectors/select-holidays.function";
 
 export function differenceInTradingDays(
   start: string,
@@ -12,7 +12,9 @@ export function differenceInTradingDays(
   const holidays = selectHolidays();
 
   // Normalize holidays to a Set for fast lookup
-  const holidaySet = new Set(holidays.map(d => new Date(d).toDateString()));
+  const holidaySet = new Set(holidays.map(function holidaySetMap(d) {
+    return new Date(d).toDateString();
+  }));
 
   while (current <= endDate) {
     const day = current.getDay();

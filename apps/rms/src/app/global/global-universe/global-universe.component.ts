@@ -10,16 +10,20 @@ import { TagModule } from 'primeng/tag';
 import { ToolbarModule } from 'primeng/toolbar';
 import { TooltipModule } from 'primeng/tooltip';
 
-import { selectAccounts } from '../../store/accounts/account.selectors';
+import { selectAccounts } from '../../store/accounts/selectors/select-accounts.function';
+import { selectAccountChildren } from '../../store/trades/selectors/select-account-children.function';
 import { Trade } from '../../store/trades/trade.interface';
-import { selectAccountChildren } from '../../store/trades/trade.selectors';
+import { selectUniverses } from '../../store/universe/selectors/select-universes.function';
 import { Universe } from '../../store/universe/universe.interface';
-import { selectUniverses } from '../../store/universe/universe.selectors';
 import { UniverseSettingsService } from '../../universe-settings/universe-settings.service';
+import { compareForSort } from './compare-for-sort.function';
+import { getSortIcon } from './get-sort-icon.function';
+import { isRowDimmed } from './is-row-dimmed.function';
 import { selectUniverse } from './universe.selector';
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,selector: 'app-global-universe',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  selector: 'rms-global-universe',
   standalone: true,
   imports: [TagModule, InputNumberModule, SelectModule, DatePipe, DecimalPipe, ToolbarModule, TableModule, DatePickerModule, FormsModule, ButtonModule, TooltipModule, NgClass],
   templateUrl: './global-universe.component.html',
@@ -105,7 +109,7 @@ export class GlobalUniverseComponent {
         const aValue = self.getFieldValueFromDisplayData(a, criteria.field);
         const bValue = self.getFieldValueFromDisplayData(b, criteria.field);
 
-        const comparison = self.compareValues(aValue, bValue);
+        const comparison = compareForSort(aValue, bValue);
         if (comparison !== 0) {
           return criteria.order * comparison;
         }
@@ -130,7 +134,6 @@ export class GlobalUniverseComponent {
     const universes = selectUniverses();
     for (let i = 0; i < universes.length; i++) {
       if (universes[i].symbol === row.symbol) {
-        console.log('onEditDistributionsPerYearComplete', universes[i].distributions_per_year, row.distributions_per_year);
         universes[i].distributions_per_year = row.distributions_per_year;
         break;
       }
@@ -141,54 +144,55 @@ export class GlobalUniverseComponent {
     const universes = selectUniverses();
     for (let i = 0; i < universes.length; i++) {
       if (universes[i].symbol === row.symbol) {
-        universes[i].ex_date = (typeof row.ex_date === 'object' && row.ex_date !== null && (row.ex_date as any) instanceof Date)
-          ? (row.ex_date as any).toISOString()
+        universes[i].ex_date = (typeof row.ex_date === 'object' && row.ex_date !== null && (row.ex_date as unknown) instanceof Date)
+          ? (row.ex_date as Date).toISOString()
           : row.ex_date;
         break;
       }
     }
   }
 
-  onEditComplete(event: any): void {
+  onEditComplete(event: {data: Record<string, unknown>, field: string}): void {
     // event.data: the row object
     // event.field: the field name (e.g., 'distribution')
     // event.originalEvent: the DOM event
     const universes = selectUniverses();
     for (let i = 0; i < universes.length; i++) {
-      if (universes[i].symbol === event.data.symbol) {
+      if (universes[i].symbol === event.data['symbol']) {
         // Update the field that was edited
-        (universes[i] as any)[event.field] = event.data[event.field];
+        (universes[i] as unknown as Record<string, unknown>)[event.field] = event.data[event.field];
         break;
       }
     }
   }
 
-  trackById(index: number, row: Universe) {
+  protected trackById(index: number, row: Universe): string {
     return row.id;
   }
 
-  onEditCommit(row: Universe, field: string): void {
+  protected onEditCommit(row: Record<string, unknown>, field: string): void {
     const universes = selectUniverses();
     for (let i = 0; i < universes.length; i++) {
-      if (universes[i].symbol === row.symbol) {
-        (universes[i] as any)[field] = (row as any)[field];
+      if (universes[i].symbol === row['symbol']) {
+        (universes[i] as unknown as Record<string, unknown>)[field] = row[field];
         break;
       }
     }
   }
 
-  stopArrowKeyPropagation(event: KeyboardEvent): void {
+  protected stopArrowKeyPropagation(event: KeyboardEvent): void {
     if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
       event.stopPropagation();
     }
   }
 
-      /**
+  /**
    * Handles column sorting with multi-column support
    */
-  onSort(field: string): void {
+  protected onSort(field: string): void {
     const currentCriteria = this.sortCriteria();
-    const existingIndex = currentCriteria.findIndex(criteria => criteria.field === field);
+    const existingIndex = currentCriteria.findIndex(
+      function findCriteria(criteria) { return criteria.field === field });
 
     if (existingIndex >= 0) {
       // Toggle order for existing field
@@ -204,44 +208,23 @@ export class GlobalUniverseComponent {
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
   yieldPercentSortIcon$ = computed(() => {
-    return this.getSortIcon('yield_percent');
+    return getSortIcon('yield_percent', this.sortCriteria);
   });
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
   exDateSortIcon$ = computed(() => {
-    return this.getSortIcon('ex_date');
+    return getSortIcon('ex_date', this.sortCriteria);
   });
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
   mostRecentSellDateSortIcon$ = computed(() => {
-    return this.getSortIcon('most_recent_sell_date');
+    return getSortIcon('most_recent_sell_date', this.sortCriteria);
   });
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
   mostRecentSellPriceSortIcon$ = computed(() => {
-    return this.getSortIcon('most_recent_sell_price');
+    return getSortIcon('most_recent_sell_price', this.sortCriteria);
   });
-
-  /**
-   * Returns the appropriate sort icon class for a field
-   */
-  getSortIcon(field: string): string {
-    const currentCriteria = this.sortCriteria();
-    const criteria = currentCriteria.find(function findCriteria(c) {
-      return c.field === field
-    });
-    if (!criteria) {
-      return 'pi pi-sort';
-    }
-    return criteria.order === 1 ? 'pi pi-sort-up' : 'pi pi-sort-down';
-  }
-
-  /**
-   * Handles yield filter changes
-   */
-  onYieldFilterChange(): void {
-    // The computed signal will automatically re-evaluate when minYieldFilter changes
-  }
 
   /**
    * Gets the value of a field from the display data object
@@ -270,8 +253,8 @@ export class GlobalUniverseComponent {
    * if the current ex-date has passed
    */
   // eslint-disable-next-line @typescript-eslint/naming-convention -- matching source
-  private getSortableExDate(data: { ex_date: unknown, distributions_per_year: number }): Date {
-    if (!data.ex_date || !(data.ex_date instanceof Date)) {
+  private getSortableExDate(data: { ex_date?: unknown, distributions_per_year: number }): Date {
+    if (!(data.ex_date instanceof Date)) {
       return new Date(0);
     }
 
@@ -310,7 +293,9 @@ export class GlobalUniverseComponent {
    */
   private getAccountSpecificData(symbol: string, accountId: string): {
     position: number;
+    // eslint-disable-next-line @typescript-eslint/naming-convention -- matching source
     most_recent_sell_date: string | null;
+    // eslint-disable-next-line @typescript-eslint/naming-convention -- matching source
     most_recent_sell_price: number | null;
   } {
     const universes = selectUniverses();
@@ -344,77 +329,30 @@ export class GlobalUniverseComponent {
 
     // Calculate position (sum of buy * quantity for open positions)
     const position = symbolTrades
-      .filter(trade => !trade.sell_date) // Only open positions
-      .reduce((sum, trade) => sum + (trade.buy * trade.quantity), 0);
+      .filter(function symbolTradesPositionFilter(trade) {
+        // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions -- this is the only thing that works reliably without triggering another lint error
+        return !trade.sell_date;
+      }) // Only open positions
+      .reduce(function symbolTradesPositionReduce(sum, trade) {
+        return sum + (trade.buy * trade.quantity);
+      }, 0);
 
     // Find most recent sell date and price
     const soldTrades = symbolTrades
-      .filter(trade => trade.sell_date)
-      .sort((a, b) => new Date(b.sell_date!).getTime() - new Date(a.sell_date!).getTime());
+      .filter(function filterSellDates(trade) {
+        return Boolean(trade.sell_date);
+      })
+      .sort(function sortTrades(a, b) {
+        return new Date(b.sell_date!).getTime() - new Date(a.sell_date!).getTime()
+      });
 
     const mostRecentSell = soldTrades[0];
 
     return {
       position,
-      most_recent_sell_date: mostRecentSell?.sell_date || null,
-      most_recent_sell_price: mostRecentSell?.sell || null
+      most_recent_sell_date: mostRecentSell?.sell_date ?? null,
+      most_recent_sell_price: mostRecentSell?.sell ?? null
     };
-  }
-
-  /**
-   * Gets the value of a field from a universe object
-   */
-  private getFieldValue(universe: Universe, field: string): any {
-    switch (field) {
-      case 'yield_percent':
-        return 100 * universe.distributions_per_year * (universe.distribution / universe.last_price);
-      case 'ex_date':
-        return universe.ex_date ? new Date(universe.ex_date) : new Date(0);
-      case 'most_recent_sell_date':
-        return universe.most_recent_sell_date ? new Date(universe.most_recent_sell_date) : new Date(0);
-      case 'most_recent_sell_price':
-        return universe.most_recent_sell_price || 0;
-      default:
-        return (universe as any)[field];
-    }
-  }
-
-  /**
-   * Compares two values for sorting
-   */
-  private compareValues(a: any, b: any): number {
-    if (a instanceof Date && b instanceof Date) {
-      return a.getTime() - b.getTime();
-    }
-    if (typeof a === 'number' && typeof b === 'number') {
-      return a - b;
-    }
-    if (typeof a === 'string' && typeof b === 'string') {
-      return a.localeCompare(b);
-    }
-    return 0;
-  }
-
-  /**
-   * Returns true if the row should be dimmed: expired or most_recent_sell_date is today or previous trading day.
-   */
-  private isRowDimmed(row: any): boolean {
-    if (row.expired) {return true;}
-    if (!row.most_recent_sell_date) {return false;}
-    const today = new Date();
-    const mostRecent = new Date(row.most_recent_sell_date);
-    // Normalize to yyyy-mm-dd
-    const toYMD = (d: Date) => d.toISOString().slice(0, 10);
-    if (toYMD(mostRecent) === toYMD(today)) {return true;}
-    // Previous trading day logic
-    const prev = new Date(today);
-    prev.setDate(today.getDate() - 1);
-    // If today is Monday, previous trading day is Friday
-    if (today.getDay() === 1) {
-      prev.setDate(today.getDate() - 3);
-    }
-    if (toYMD(mostRecent) === toYMD(prev)) {return true;}
-    return false;
   }
 
   /**
@@ -422,11 +360,11 @@ export class GlobalUniverseComponent {
    */
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
   readonly universeWithDimmedState$ = computed(() => {
-    const universes = this.universe$();
+    const universes = this.universe$() as unknown as Universe[];
     // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
     return universes.map(universe => ({
       ...universe,
-      isDimmed: this.isRowDimmed(universe)
+      isDimmed: isRowDimmed(universe)
     }));
   });
 

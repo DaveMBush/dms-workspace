@@ -7,7 +7,7 @@ import {
   withState,
 } from '@ngrx/signals';
 
-import { selectAccounts } from '../accounts/account.selectors';
+import { selectAccounts } from '../accounts/selectors/select-accounts.function';
 import { CurrentAccount } from './current-account.interface';
 
 

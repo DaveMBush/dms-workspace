@@ -10,7 +10,7 @@ import { TableModule } from 'primeng/table';
 import { ToastModule } from 'primeng/toast';
 
 import { Trade } from '../../store/trades/trade.interface';
-import { selectUniverses } from '../../store/universe/universe.selectors';
+import { selectUniverses } from '../../store/universe/selectors/select-universes.function';
 import { SoldPositionsComponentService } from './sold-positions-component.service';
 
 interface SoldPosition {

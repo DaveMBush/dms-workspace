@@ -4,10 +4,10 @@ import { RowProxyDelete, SmartArray } from '@smarttools/smart-signals';
 import { Account } from '../../accounts/account';
 import { currentAccountSignalStore } from '../../store/current-account/current-account.signal-store';
 import { selectCurrentAccountSignal } from '../../store/current-account/select-current-account.signal';
-import { selectHolidays } from '../../store/top/top.selectors';
+import { selectHolidays } from '../../store/top/selectors/select-holidays.function';
 import { OpenPosition } from '../../store/trades/open-position.interface';
 import { Trade } from '../../store/trades/trade.interface';
-import { selectUniverses } from '../../store/universe/universe.selectors';
+import { selectUniverses } from '../../store/universe/selectors/select-universes.function';
 import { OpenPosition as OpenPositionInterface } from './open-position.interface';
 @Injectable({ providedIn: 'root' })
 export class OpenPositionsComponentService {

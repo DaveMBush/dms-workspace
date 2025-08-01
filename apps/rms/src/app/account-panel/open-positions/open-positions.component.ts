@@ -9,7 +9,7 @@ import { TableModule } from 'primeng/table';
 import { ToastModule } from 'primeng/toast';
 
 import { Trade } from '../../store/trades/trade.interface';
-import { selectUniverses } from '../../store/universe/universe.selectors';
+import { selectUniverses } from '../../store/universe/selectors/select-universes.function';
 import { OpenPosition } from './open-position.interface';
 import { OpenPositionsComponentService } from './open-positions-component.service';
 

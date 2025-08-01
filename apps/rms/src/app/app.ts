@@ -6,7 +6,7 @@ import { ToastModule } from 'primeng/toast';
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,imports: [RouterModule, ToastModule],
   providers: [MessageService],
-  selector: 'app-root',
+  selector: 'rms-root',
   template: `<p-toast position="bottom-left"></p-toast><router-outlet></router-outlet>`,
 })
 export class App {}

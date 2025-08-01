@@ -9,7 +9,7 @@ import { UniverseSettingsService } from './universe-settings.service';
 import { UpdateUniverseSettingsService } from './update-universe.service';
 
 @Component({
-  selector: 'app-universe-settings',
+  selector: 'rms-universe-settings',
   templateUrl: './universe-settings.component.html',
   styleUrls: ['./universe-settings.component.scss'],
   standalone: true,

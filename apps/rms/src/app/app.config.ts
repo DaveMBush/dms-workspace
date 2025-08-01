@@ -6,7 +6,7 @@ import {
 } from '@angular/core';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter } from '@angular/router';
-import Aura from '@primeng/themes/aura';
+import aura from '@primeng/themes/aura';
 import { provideSmartNgRX, smartErrorHandlerToken } from '@smarttools/smart-signals';
 import { providePrimeNG } from 'primeng/config';
 
@@ -65,7 +65,7 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     providePrimeNG({
       theme: {
-        preset: Aura,
+        preset: aura,
         options: {
           cssLayer: {
             name: 'primeng',

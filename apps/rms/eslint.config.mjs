@@ -10,7 +10,7 @@ export default [
         'error',
         {
           type: 'attribute',
-          prefix: 'app',
+          prefix: 'rms',
           style: 'camelCase',
         },
       ],
@@ -18,7 +18,7 @@ export default [
         'error',
         {
           type: 'element',
-          prefix: 'app',
+          prefix: 'rms',
           style: 'kebab-case',
         },
       ],
@@ -30,7 +30,7 @@ export default [
     rules: {},
   },
   {
-    files: ['**/server.ts'],
+    files: ['**/server.ts', '**/error-handler.service.ts'],
     rules: {
       'no-console': 'off',
     },
