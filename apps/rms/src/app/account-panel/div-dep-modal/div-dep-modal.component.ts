@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject,output, signal } from '@angular/core';
+import { ChangeDetectionStrategy,Component, computed, inject,output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { SmartArray } from '@smarttools/smart-signals';
@@ -18,26 +18,30 @@ import { DivDeposit } from '../../store/div-deposits/div-deposit.interface';
 import { selectUniverses } from '../../store/universe/selectors/select-universes.function';
 
 @Component({
-  selector: 'app-div-dep-modal',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  selector: 'rms-div-dep-modal',
   imports: [CommonModule, FormsModule, InputNumberModule, DatePickerModule, SelectModule, ButtonModule, AutoCompleteModule],
   templateUrl: './div-dep-modal.component.html',
   styleUrl: './div-dep-modal.component.scss',
 })
 export class DivDepModalComponent {
+  // eslint-disable-next-line @angular-eslint/no-output-native -- it is the only thing that make sense and it does not conflict
   readonly close = output();
   route = inject(ActivatedRoute);
   private currentAccount = inject(currentAccountSignalStore)
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- will hide this
   accountId = computed(() => {
     return this.route.snapshot.paramMap.get('accountId');
   });
 
   // Symbol typeahead logic
-  symbol = signal<string | null>(null);
+  symbol$ = signal<string | null>(null);
   filter = signal<string>('');
-  filteredSymbols = computed(() => {
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- will hide this
+  filteredSymbols$ = computed(() => {
     const symbols = selectUniverses();
     const returnedSymbols = [] as { label: string; value: string; expired: boolean }[];
-    const selectedId = this.symbol();
+    const selectedId = this.symbol$();
     let selectedSymbol: { label: string; value: string; expired: boolean } | undefined;
     for (let i = 0; i < symbols.length; i++) {
       const symbol = symbols[i];
@@ -52,22 +56,27 @@ export class DivDepModalComponent {
       returnedSymbols.push(entry);
     }
     const query = this.filter().toLowerCase();
-    let filtered = returnedSymbols.filter((r) => r.label.toLowerCase().includes(query));
-    if (selectedSymbol && !filtered.some(r => r.value === selectedSymbol.value)) {
+    let filtered = returnedSymbols.filter(function symbolFilter(r) {
+      return r.label.toLowerCase().includes(query);
+    });
+    if (selectedSymbol && !filtered.some(function symbolValueFilter(r) {
+      return r.value === selectedSymbol.value;
+    })) {
       filtered = [selectedSymbol, ...filtered];
     }
     return filtered;
   });
 
-  filterSymbols(event: { query: string }) {
+  filterSymbols(event: { query: string }): void {
     this.filter.set(event.query + 'a');
     this.filter.set(event.query + '');
   }
 
-  date = signal<Date | null>(null);
-  amount = signal<number | null>(null);
-  type = signal<string | null>(null);
-  types = computed(() => {
+  date$ = signal<Date | null>(null);
+  amount$ = signal<number | null>(null);
+  type$ = signal<string | null>(null);
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- will hide this
+  types$ = computed(() => {
     const types = selectDivDepositTypes();
     const returnTypes = [] as DivDepositType[];
     for(let i = 0; i < types.length; i++) {
@@ -76,24 +85,21 @@ export class DivDepModalComponent {
     return returnTypes;
   });
 
-  onClose() {
+  handleClose(): void {
     this.close.emit();
   }
 
-  onSave() {
+  handleSave(): void {
     const account = selectCurrentAccountSignal(this.currentAccount);
-    if (!account) {
-      return;
-    }
     const act = account();
     const divDeposits = act.divDeposits as DivDeposit[] & SmartArray<Account, DivDeposit>;
     divDeposits.add!({
       id: 'new',
-      date: this.date()!,
-      amount: this.amount()!,
+      date: this.date$()!,
+      amount: this.amount$()!,
       accountId: act.id,
-      divDepositTypeId: this.type()!,
-      universeId: this.symbol()!,
+      divDepositTypeId: this.type$()!,
+      universeId: this.symbol$()!,
     },{
       id: this.accountId()!,
       name: 'New Account',

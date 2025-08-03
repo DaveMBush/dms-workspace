@@ -1,43 +1,77 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
-import { ActivatedRoute,Router, RouterModule } from '@angular/router';
+import { ChangeDetectionStrategy, Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
+import { ActivatedRoute, NavigationEnd, Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { TooltipModule } from 'primeng/tooltip';
+import { filter, Subscription } from 'rxjs';
 
 import { DivDepModalComponent } from './div-dep-modal/div-dep-modal.component';
 import { NewPositionComponent } from './new-position/new-position.component';
 
 @Component({
-  selector: 'app-account-detail',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  selector: 'rms-account-detail',
   standalone: true,
   imports: [CommonModule, RouterModule, TooltipModule, ButtonModule, DialogModule, NewPositionComponent, DivDepModalComponent],
   templateUrl: './account-detail.component.html',
   styleUrls: ['./account-detail.component.scss']
 })
-export class AccountDetailComponent {
+export class AccountDetailComponent implements OnInit, OnDestroy {
   showNewPositionDialog = false;
   showNewDivDepDialog = false;
   router = inject(Router);
   route = inject(ActivatedRoute);
 
+  private routeSubscription?: Subscription;
+  private currentUrl$ = signal<string>('');
+
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
+  isOpenPositionsRoute$ = computed(() => {
+    const currentUrl = this.currentUrl$();
+    const accountId = this.accountId;
+    return currentUrl.endsWith(`/account/${accountId}/open`);
+  });
+
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
+  isDivDepRoute$ = computed(() => {
+    const currentUrl = this.currentUrl$();
+    const accountId = this.accountId;
+    return currentUrl.endsWith(`/account/${accountId}/div-dep`);
+  });
+
   get accountId(): string | null {
     return this.route.snapshot.paramMap.get('accountId');
   }
 
-  openNewPositionDialog() {
+  ngOnInit(): void {
+    this.routeSubscription = this.router.events
+      .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd)) // eslint-disable-line @smarttools/no-anonymous-functions -- standard RxJS pattern
+      .subscribe(() => { // eslint-disable-line @smarttools/no-anonymous-functions -- standard RxJS pattern
+        this.currentUrl$.set(this.router.url);
+      });
+
+    // Set initial URL
+    this.currentUrl$.set(this.router.url);
+  }
+
+  ngOnDestroy(): void {
+    this.routeSubscription?.unsubscribe();
+  }
+
+  openNewPositionDialog(): void {
     this.showNewPositionDialog = true;
   }
 
-  openNewDivDepDialog() {
+  openNewDivDepDialog(): void {
     this.showNewDivDepDialog = true;
   }
 
-  closeNewPositionDialog() {
+  closeNewPositionDialog(): void {
     this.showNewPositionDialog = false;
   }
 
-  closeNewDivDepDialog() {
+  closeNewDivDepDialog(): void {
     this.showNewDivDepDialog = false;
   }
 }

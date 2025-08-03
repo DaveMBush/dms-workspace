@@ -61,18 +61,6 @@ export class Account implements OnInit, OnDestroy {
     this.routeSubscription?.unsubscribe();
   }
 
-  private updateSelectionFromRoute(url: string): void {
-    const accountMatch = /\/account\/([^/]+)/.exec(url);
-    const accountId = accountMatch?.[1];
-
-    if (accountId !== undefined && accountId !== '') {
-      this.selectedAccountId$.set(accountId);
-    } else {
-      // Clear selection if not on an account route
-      this.selectedAccountId$.set(null);
-    }
-  }
-
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- making this a function hides this
   accountsArray$ = computed(() => {
     const accounts = this.accounts$() as SmartArray<Top, AccountInterface>;
@@ -115,4 +103,17 @@ export class Account implements OnInit, OnDestroy {
     this.selectedAccountId$.set(account.id);
     void this.router.navigate(['/account', account.id]);
   }
+
+  private updateSelectionFromRoute(url: string): void {
+    const accountMatch = /\/account\/([^/]+)/.exec(url);
+    const accountId = accountMatch?.[1];
+
+    if (accountId !== undefined && accountId !== '') {
+      this.selectedAccountId$.set(accountId);
+    } else {
+      // Clear selection if not on an account route
+      this.selectedAccountId$.set(null);
+    }
+  }
+
 }

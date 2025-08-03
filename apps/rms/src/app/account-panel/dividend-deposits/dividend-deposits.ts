@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy,Component, computed, inject } from '@angular/core';
 import { RowProxyDelete, SmartArray } from '@smarttools/smart-signals';
 import { ButtonModule } from 'primeng/button';
 import { TableModule } from 'primeng/table';
@@ -13,15 +13,18 @@ import { DivDeposit } from '../../store/div-deposits/div-deposit.interface';
 import { selectUniverses } from '../../store/universe/selectors/select-universes.function';
 
 @Component({
-  selector: 'app-dividend-deposits',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  selector: 'rms-dividend-deposits',
   imports: [CommonModule, TableModule, ButtonModule],
   templateUrl: './dividend-deposits.html',
   styleUrl: './dividend-deposits.scss',
 })
-export class DividendDeposits implements OnInit {
+export class DividendDeposits {
   private currentAccount = inject(currentAccountSignalStore);
   symbolsMap = new Map<string, string>();
-  deposits = computed(() => {
+
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- will hide this
+  deposits$ = computed(() => {
     const symbols = selectUniverses();
     for (let i = 0; i < symbols.length; i++) {
       this.symbolsMap.set(symbols[i].id, symbols[i].symbol);
@@ -33,9 +36,6 @@ export class DividendDeposits implements OnInit {
       divDepositTypesMap.set(divDepositTypes[i].id, divDepositTypes[i]);
     }
     const account = selectCurrentAccountSignal(this.currentAccount);
-    if (!account) {
-      return [];
-    }
     const act = account();
     const divDeposits = [];
     const divDepositsArray = act.divDeposits as DivDeposit[] & SmartArray<Account, DivDeposit>;
@@ -51,14 +51,8 @@ export class DividendDeposits implements OnInit {
     return divDeposits;
   });
 
-  ngOnInit() {
-  }
-
-  deleteDeposit(row: DivDeposit) {
+  deleteDeposit(row: DivDeposit): void {
     const account = selectCurrentAccountSignal(this.currentAccount);
-    if (!account) {
-      return;
-    }
     const act = account();
     const divDepositsArray = act.divDeposits as DivDeposit[] & SmartArray<Account, DivDeposit>;
     for (let i = 0; i < divDepositsArray.length; i++) {
@@ -70,7 +64,7 @@ export class DividendDeposits implements OnInit {
     }
   }
 
-  trackById(index: number, row: DivDeposit) {
+  trackById(index: number, row: DivDeposit): string {
     return row.id;
   }
 }

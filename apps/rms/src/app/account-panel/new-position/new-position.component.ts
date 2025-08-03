@@ -1,4 +1,4 @@
-import { Component, computed, EventEmitter, inject,model, Output } from '@angular/core';
+import { ChangeDetectionStrategy,Component, computed, inject,model, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SmartArray } from '@smarttools/smart-signals';
@@ -13,17 +13,20 @@ import { Trade } from '../../store/trades/trade.interface';
 import { selectUniverses } from '../../store/universe/selectors/select-universes.function';
 
 @Component({
-  selector: 'app-new-position',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  selector: 'rms-new-position',
   standalone: true,
   imports: [AutoCompleteModule, InputNumberModule, DatePickerModule, FormsModule],
   templateUrl: './new-position.component.html',
   styleUrls: ['./new-position.component.scss']
 })
 export class NewPositionComponent {
-  @Output() close = new EventEmitter<void>();
+  // eslint-disable-next-line @angular-eslint/no-output-native -- it is the only thing that make sense and it does not conflict
+  readonly close = output();
   router = inject(Router);
   route = inject(ActivatedRoute);
 
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- will hide this
   accountId = computed(() => {
     return this.route.snapshot.paramMap.get('accountId');
   });
@@ -33,7 +36,8 @@ export class NewPositionComponent {
   quantity = model<number | null>(null);
   buyDate = model<Date | null>(null);
   filter = model<string>('');
-  filteredSymbols = computed(() => {
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- will hide this
+  filteredSymbols$ = computed(() => {
     const symbols = selectUniverses();
     const returnedSymbols = [] as { label: string; value: string; expired: boolean }[];
     const selectedId = this.symbol();
@@ -51,15 +55,20 @@ export class NewPositionComponent {
       returnedSymbols.push(entry);
     }
     const query = this.filter().toLowerCase();
-    let filtered = returnedSymbols.filter((r) => r.label.toLowerCase().includes(query));
+    let filtered = returnedSymbols.filter(function symbolFilter(r) {
+      return r.label.toLowerCase().includes(query);
+    });
     // Ensure the selected symbol is always present
-    if (selectedSymbol && !filtered.some(r => r.value === selectedSymbol.value)) {
+    if (selectedSymbol && !filtered.some(function symbolValueFilter(r) {
+      return r.value === selectedSymbol.value;
+    })) {
       filtered = [selectedSymbol, ...filtered];
     }
     return filtered;
   });
 
-  selectedSymbolExpired = computed(() => {
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- will hide this
+  selectedSymbolExpired$ = computed(() => {
     const symbols = selectUniverses();
     for (let i = 0; i < symbols.length; i++) {
       if (symbols[i].id === this.symbol()) {
@@ -69,11 +78,12 @@ export class NewPositionComponent {
     return false;
   });
 
-  canSave = computed(() =>
-    !!(this.symbol() && this.buy() && this.quantity() && this.buyDate())
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- will hide this
+  canSave$ = computed(() =>
+    !!(this.symbol() !== null && this.buy() !== null && this.quantity() !== null && this.buyDate() !== null )
   );
 
-  filterSymbols(event: { query: string }) {
+  filterSymbols(event: { query: string }): void {
     // hack to get the dropdown to display the first time
     this.filter.set(event.query + 'a');
     this.filter.set(event.query + '');
@@ -82,11 +92,8 @@ export class NewPositionComponent {
   private currentAccount = inject(currentAccountSignalStore)
 
 
-  onSave() {
+  handleSave(): void {
     const account = selectCurrentAccountSignal(this.currentAccount);
-    if (!account) {
-      return;
-    }
     const act = account();
     const trades = act.trades as SmartArray<Account, Trade> & Trade[];
     trades.add!({
@@ -108,7 +115,7 @@ export class NewPositionComponent {
     this.close.emit();
   }
 
-  onCancel() {
+  handleCancel(): void {
     this.close.emit();
   }
 }

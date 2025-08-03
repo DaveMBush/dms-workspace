@@ -71,18 +71,6 @@ export class ShellComponent implements OnInit, OnDestroy {
     this.routeSubscription?.unsubscribe();
   }
 
-  private updateSelectionFromRoute(url: string): void {
-    const globalMatch = /\/global\/([^/]+)/.exec(url);
-    const globalId = globalMatch?.[1];
-
-    if (globalId !== undefined && globalId !== '') {
-      this.selectedId = globalId;
-    } else {
-      // Clear selection if not on a global route
-      this.selectedId = null;
-    }
-  }
-
   protected toggleTheme(): void {
     const isDark = localStorage.getItem(DARK_MODE_KEY) === 'true';
     document.querySelector('html')?.classList.toggle('p-dark', !isDark);
@@ -93,6 +81,19 @@ export class ShellComponent implements OnInit, OnDestroy {
 
   protected onSelectionChange(e: {id: string, name: string}): void {
     this.selectedId = e.id;
+  }
+
+
+  private updateSelectionFromRoute(url: string): void {
+    const globalMatch = /\/global\/([^/]+)/.exec(url);
+    const globalId = globalMatch?.[1];
+
+    if (globalId !== undefined && globalId !== '') {
+      this.selectedId = globalId;
+    } else {
+      // Clear selection if not on a global route
+      this.selectedId = null;
+    }
   }
 
   private afterPageLoad(): void {

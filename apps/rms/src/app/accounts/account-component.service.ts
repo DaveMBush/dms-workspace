@@ -50,7 +50,10 @@ export class AccountComponentService {
     if (this.component.editingContent === '') {
       return;
     }
-    const account = this.component.accountsArray$().find((n: AccountInterface) => n.id === item.id);
+    const account = this.component.accountsArray$()
+      .find(function findAccount(n: AccountInterface) {
+        return n.id === item.id;
+      });
     if (account) {
       account.name = this.component.editingContent;
     }

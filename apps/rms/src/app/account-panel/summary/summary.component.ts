@@ -1,5 +1,5 @@
 import { CurrencyPipe, PercentPipe } from '@angular/common';
-import { Component, computed, effect, inject } from '@angular/core';
+import { ChangeDetectionStrategy,Component, computed, effect, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ChartModule } from 'primeng/chart';
 import { SelectModule } from 'primeng/select';
@@ -8,7 +8,8 @@ import { Graph } from './graph.interface';
 import { SummaryComponentService } from './summary-component.service';
 
 @Component({
-  selector: 'app-summary',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  selector: 'rms-summary',
   standalone: true,
   imports: [PercentPipe, CurrencyPipe, SelectModule, FormsModule, ChartModule],
   templateUrl: './summary.component.html',
@@ -36,9 +37,6 @@ export class SummaryComponent {
     // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hid this
   compositionData$ = computed(() => {
     const s = this.summary$();
-    if (!s) {
-      return this.emptyCompositionData;
-    }
 
     const { equities, income, tax_free_income } = s;
     const total = equities + income + tax_free_income;
@@ -104,7 +102,7 @@ export class SummaryComponent {
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
   lineChartData$ = computed(() => {
     const g = this.summaryComponentService.graph();
-    if (!g || g.length === 0) {
+    if (g.length === 0) {
       return this.emptyLineChartData;
     }
 

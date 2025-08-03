@@ -43,6 +43,11 @@ export class GlobalComponent implements OnInit, OnDestroy {
     this.routeSubscription?.unsubscribe();
   }
 
+  protected onSelect(e: {id: string, name: string}): void {
+    this.selectedIdChange.emit(e);
+    void this.router.navigate([`/global/${e.id}`]);
+  }
+
   private updateSelectionFromRoute(url: string): void {
     const globalMatch = /\/global\/([^/]+)/.exec(url);
     const globalId = globalMatch?.[1];
@@ -54,10 +59,5 @@ export class GlobalComponent implements OnInit, OnDestroy {
       // Clear selection if not on a global route
       this.selectedIdChange.emit({ id: '', name: '' });
     }
-  }
-
-  protected onSelect(e: {id: string, name: string}): void {
-    this.selectedIdChange.emit(e);
-    void this.router.navigate([`/global/${e.id}`]);
   }
 }

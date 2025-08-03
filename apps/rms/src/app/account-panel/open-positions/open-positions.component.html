@@ -1,5 +1,5 @@
 <p-table #tableRef
-  [value]="positions()"
+  [value]="positions$()"
   class="flex-1 min-w-full max-h-full min-h-full rounded-lg shadow-sm table-fixed"
   [responsiveLayout]="'scroll'"
   size="small"
@@ -11,10 +11,7 @@
   <ng-template pTemplate="header">
     <tr class="bg-gray-100 dark:bg-slate-800">
       <th class="min-w-16 max-w-16">
-        <p-columnFilter field="symbol" matchMode="contains" [showMenu]="false">
-          <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-            <input pInputText type="text" (input)="filter($any($event.target).value)" placeholder="Filter..." class="p-column-filter min-w-16 max-w-16" />
-          </ng-template>
+        <p-columnFilter [style]="{'max-width': '100%'}" field="symbol" matchMode="contains" [showMenu]="false">
         </p-columnFilter>
       </th>
       <th class="min-w-32 max-w-32">Ex-Date</th>
