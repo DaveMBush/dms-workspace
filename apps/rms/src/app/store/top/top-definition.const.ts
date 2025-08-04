@@ -1,7 +1,7 @@
 import { SmartEntityDefinition } from '@smarttools/smart-signals';
 
-import { topEffectsServiceToken } from './top-effect-service-token';
 import { Top } from './top.interface';
+import { topEffectsServiceToken } from './top-effect-service-token';
 
 export const topDefinition: SmartEntityDefinition<Top> = {
   entityName: 'top',

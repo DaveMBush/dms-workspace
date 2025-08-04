@@ -6,7 +6,7 @@
     <div class="flex items-center gap-2">
       <span class="text-sm text-gray-600 dark:text-gray-400">Account:</span>
       <p-select
-        [options]="accountOptions()"
+        [options]="accountOptions$()"
         [(ngModel)]="selectedAccountId"
         placeholder="Select Account"
         class="w-48"
@@ -17,7 +17,7 @@
     <p-button (click)="settingsService.show()" icon="pi pi-cog" text severity="secondary" pTooltip="Settings" tooltipPosition="bottom" />
   </ng-template>
 </p-toolbar>
-<p-table [value]="universe$()"
+<p-table [value]="universeWithDimmedState$()"
 size="small"
 [scrollable]="true" class="flex-1 overflow-auto min-h-0"
 showGridlines [rowTrackBy]="trackById"
@@ -51,7 +51,6 @@ showGridlines [rowTrackBy]="trackById"
           [maxFractionDigits]="2"
           placeholder="Min Yield %"
           class="w-full"
-          (onInput)="onYieldFilterChange()"
         />
       </th>
       <th></th>
@@ -76,17 +75,17 @@ showGridlines [rowTrackBy]="trackById"
       <th>Risk Group</th>
       <th>Distribution</th>
       <th>Distributions / Year</th>
-      <th (click)="onSort('yield_percent')" class="cursor-pointer select-none">Yield % <i [class]="getSortIcon('yield_percent')"></i></th>
+      <th (click)="onSort('yield_percent')" class="cursor-pointer select-none">Yield % <i [class]="yieldPercentSortIcon$()"></i></th>
       <th>Last Price</th>
-      <th (click)="onSort('ex_date')" class="cursor-pointer select-none">Ex-Date <i [class]="getSortIcon('ex_date')"></i></th>
-      <th (click)="onSort('most_recent_sell_date')" class="cursor-pointer select-none">Mst Rcnt Sll Dt <i [class]="getSortIcon('most_recent_sell_date')"></i></th>
-      <th (click)="onSort('most_recent_sell_price')" class="cursor-pointer select-none">Mst Rcnt Sell $ <i [class]="getSortIcon('most_recent_sell_price')"></i></th>
+      <th (click)="onSort('ex_date')" class="cursor-pointer select-none">Ex-Date <i [class]="exDateSortIcon$()"></i></th>
+      <th (click)="onSort('most_recent_sell_date')" class="cursor-pointer select-none">Mst Rcnt Sll Dt <i [class]="mostRecentSellDateSortIcon$()"></i></th>
+      <th (click)="onSort('most_recent_sell_price')" class="cursor-pointer select-none">Mst Rcnt Sell $ <i [class]="mostRecentSellPriceSortIcon$()"></i></th>
       <th>Position</th>
       <th>Expired</th>
     </tr>
   </ng-template>
   <ng-template pTemplate="body" let-row>
-    <tr [ngClass]="isDimmed(row) ? 'text-gray-400 dark:text-gray-600' : ''">
+    <tr [ngClass]="row.isDimmed ? 'text-gray-400 dark:text-gray-600' : ''">
       <td>{{ row.symbol }}</td>
       <td>{{ row.riskGroup }}</td>
       <td [pEditableColumn]="'distribution'" class="bg-gray-200 dark:bg-gray-800">

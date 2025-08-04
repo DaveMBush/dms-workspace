@@ -1,19 +1,20 @@
-import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ToolbarModule } from 'primeng/toolbar';
-import { TableModule } from 'primeng/table';
-import { ButtonModule } from 'primeng/button';
-import { InputTextModule } from 'primeng/inputtext';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ScreenerService } from './screener.service';
+import { ButtonModule } from 'primeng/button';
+import { CheckboxModule } from 'primeng/checkbox';
+import { InputTextModule } from 'primeng/inputtext';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { SelectModule } from 'primeng/select';
+import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
-import { CheckboxModule } from 'primeng/checkbox';
+import { ToolbarModule } from 'primeng/toolbar';
+
 import { Screen } from '../../store/screen/screen.interface';
+import { ScreenerService } from './screener.service';
 
 @Component({
-  selector: 'app-screener',
+  selector: 'rms-screener',
   imports: [
     CheckboxModule,
     CommonModule,
@@ -29,10 +30,11 @@ import { Screen } from '../../store/screen/screen.interface';
   viewProviders: [ScreenerService],
   templateUrl: './screener.html',
   styleUrl: './screener.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Screener {
   screenerService = inject(ScreenerService);
-  showOverlay = signal(false);
+  showOverlay$ = signal<boolean>(false);
 
   riskGroups = [
     { label: 'Equities', value: 'Equities' },
@@ -42,32 +44,36 @@ export class Screener {
 
   selectedRiskGroup = signal<{ label: string; value: string } | null>(null);
 
-  filteredScreenerData = computed(() => {
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- hides this
+  protected filteredScreenerData$ = computed(() => {
     const data = this.screenerService.screens();
     const selectedRiskGroup = this.selectedRiskGroup();
-    if (!selectedRiskGroup) return data;
-    return data.filter(row => row.risk_group === selectedRiskGroup.value);
+    if (!selectedRiskGroup) {
+      return data;
+    }
+    return data.filter(function screenerFilter(row) {
+      return row.risk_group === selectedRiskGroup.value
+    });
   });
 
-  trackById(index: number, item: any): number {
+  protected trackById(index: number, item: Screen): string {
     return item.id;
   }
 
-  refresh() {
-    this.showOverlay.set(true);
+  protected refresh(): void {
+    const self = this;
+    this.showOverlay$.set(true);
     this.screenerService.refresh().subscribe({
-      next: (data) => {
-        console.log(data);
-        this.showOverlay.set(false);
+      next: function refreshSubscribeNext() {
+        self.showOverlay$.set(false);
       },
-      error: (error) => {
-        console.error('Refresh failed:', error);
-        this.showOverlay.set(false);
+      error: function refreshSubscribeError() {
+        self.showOverlay$.set(false);
       }
     });
   }
 
-  updateScreener(id: string, field: keyof Screen, value: boolean) {
+  protected updateScreener(id: string, field: keyof Screen, value: boolean): void {
     this.screenerService.updateScreener(id, field, value);
   }
 }

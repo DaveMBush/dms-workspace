@@ -1,34 +1,33 @@
+import { provideHttpClient, withFetch, withInterceptorsFromDi } from '@angular/common/http';
 import {
   ApplicationConfig,
   provideBrowserGlobalErrorListeners,
-  Provider,
-  provideZoneChangeDetection,
   provideZonelessChangeDetection,
 } from '@angular/core';
-import { provideRouter } from '@angular/router';
-import { appRoutes } from './app.routes';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { providePrimeNG } from 'primeng/config';
-import Aura from '@primeng/themes/aura';
-import { TopEffectsService } from './store/top/top-effect.service';
-import { topEffectsServiceToken } from './store/top/top-effect-service-token';
-import { accountEffectsServiceToken } from './store/accounts/account-effect-service-token';
-import { AccountEffectsService } from './store/accounts/account-effect.service';
-import { provideHttpClient, withFetch, withInterceptorsFromDi } from '@angular/common/http';
+import { provideRouter } from '@angular/router';
+import aura from '@primeng/themes/aura';
 import { provideSmartNgRX, smartErrorHandlerToken } from '@smarttools/smart-signals';
+import { providePrimeNG } from 'primeng/config';
+
+import { appRoutes } from './app.routes';
 import { ErrorHandlerService } from './error-handler/error-handler.service';
+import { AccountEffectsService } from './store/accounts/account-effect.service';
+import { accountEffectsServiceToken } from './store/accounts/account-effect-service-token';
+import { DivDepositTypesEffectsService } from './store/div-deposit-types/div-deposit-types-effect.service';
+import { divDepositTypesEffectsServiceToken } from './store/div-deposit-types/div-deposit-types-effect-service-token';
+import { DivDepositsEffectsService } from './store/div-deposits/div-deposits-effect.service';
+import { divDepositsEffectsServiceToken } from './store/div-deposits/div-deposits-effect-service-token';
 import { RiskGroupEffectsService } from './store/risk-group/risk-group-effect.service';
 import { riskGroupEffectsServiceToken } from './store/risk-group/risk-group-effect-service-token';
-import { universeEffectsServiceToken } from './store/universe/universe-effect-service-token';
-import { UniverseEffectsService } from './store/universe/universe-effect.service';
-import { tradeEffectsServiceToken } from './store/trades/trade-effect-service-token';
-import { TradeEffectsService } from './store/trades/trade-effect.service';
-import { divDepositsEffectsServiceToken } from './store/div-deposits/div-deposits-effect-service-token';
-import { DivDepositsEffectsService } from './store/div-deposits/div-deposits-effect.service';
-import { divDepositTypesEffectsServiceToken } from './store/div-deposit-types/div-deposit-types-effect-service-token';
-import { DivDepositTypesEffectsService } from './store/div-deposit-types/div-deposit-types-effect.service';
 import { ScreenEffectsService } from './store/screen/screen-effect.service';
 import { screenEffectsServiceToken } from './store/screen/screen-effect-service-token';
+import { TopEffectsService } from './store/top/top-effect.service';
+import { topEffectsServiceToken } from './store/top/top-effect-service-token';
+import { TradeEffectsService } from './store/trades/trade-effect.service';
+import { tradeEffectsServiceToken } from './store/trades/trade-effect-service-token';
+import { UniverseEffectsService } from './store/universe/universe-effect.service';
+import { universeEffectsServiceToken } from './store/universe/universe-effect-service-token';
 
 export const appConfig: ApplicationConfig = {
   providers: [{
@@ -66,7 +65,7 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     providePrimeNG({
       theme: {
-        preset: Aura,
+        preset: aura,
         options: {
           cssLayer: {
             name: 'primeng',

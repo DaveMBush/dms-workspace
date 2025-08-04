@@ -1,25 +1,22 @@
-import { Component, ElementRef, inject, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TableModule } from 'primeng/table';
-import { selectTrades } from '../../store/trades/trade.selectors';
-import { RowProxyDelete } from '@smarttools/smart-signals';
-import { ButtonModule } from 'primeng/button';
-import { InputNumberModule } from 'primeng/inputnumber';
-import { DatePickerModule } from 'primeng/datepicker';
+import { ChangeDetectionStrategy,Component, ElementRef, inject, signal,viewChild  } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Trade } from '../../store/trades/trade.interface';
-import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
-import { signal } from '@angular/core';
-import { selectUniverses } from '../../store/universe/universe.selectors';
-import { OpenPositionsComponentService } from './open-positions-component.service';
-import { selectCurrentAccountSignal } from '../../store/current-account/select-current-account.signal';
-import { OpenPosition } from './open-position.interface';
+import { ButtonModule } from 'primeng/button';
+import { DatePickerModule } from 'primeng/datepicker';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { TableModule } from 'primeng/table';
+import { ToastModule } from 'primeng/toast';
 
-type EditableTradeField = 'buy' | 'buyDate' | 'quantity' | 'sell' | 'sellDate';
+import { Trade } from '../../store/trades/trade.interface';
+import { selectUniverses } from '../../store/universe/selectors/select-universes.function';
+import { Universe } from '../../store/universe/universe.interface';
+import { OpenPosition } from './open-position.interface';
+import { OpenPositionsComponentService } from './open-positions-component.service';
 
 @Component({
-  selector: 'app-open-positions',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  selector: 'rms-open-positions',
   standalone: true,
   imports: [CommonModule, TableModule, ButtonModule, InputNumberModule, DatePickerModule, FormsModule, ToastModule],
   templateUrl: './open-positions.component.html',
@@ -29,20 +26,117 @@ type EditableTradeField = 'buy' | 'buyDate' | 'quantity' | 'sell' | 'sellDate';
 export class OpenPositionsComponent {
   private scrollTopSignal = signal(0);
   private openPositionsService = inject(OpenPositionsComponentService);
-  positions = this.openPositionsService.selectOpenPositions;
+  positions$ = this.openPositionsService.selectOpenPositions;
   toastMessages = signal<{ severity: string; summary: string; detail: string }[]>([]);
-  constructor(private messageService: MessageService) {}
-  trash(position: OpenPosition) {
+  private messageService = inject(MessageService);
+  trash(position: OpenPosition): void {
     this.openPositionsService.deleteOpenPosition(position);
   }
 
-  public trackById(index: number, row: OpenPosition) {
+  trackById(index: number, row: OpenPosition): string {
     return row.id;
   }
 
+  stopArrowKeyPropagation(event: KeyboardEvent): void {
+    if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+      event.stopPropagation();
+    }
+  }
+
+  onEditCommit(row: OpenPosition, field: string): void {
+    this.setCurrentScrollPosition();
+    const trade = this.findTradeForRow(row);
+    const universe = this.findUniverseForSymbol(row.symbol);
+    if (trade === undefined && universe === undefined) {
+      return;
+    }
+    const tradeField = this.validateTradeField(field, row, trade!, universe!);
+    if (tradeField === '') {
+      return;
+    }
+    (trade as Record<keyof Trade, unknown>)[tradeField as keyof Trade] = row[field as keyof OpenPosition];
+  }
+
+  private validateTradeField(field: string, row: OpenPosition, trade: Trade, universe: Universe): string {
+    let tradeField = field;
+    switch (field) {
+      case 'sell':
+        universe.most_recent_sell_price = row.sell;
+        break;
+      case 'sellDate':
+        tradeField = 'sell_date';
+        if (!this.isDateRangeValid(row.buyDate, row.sellDate, 'sellDate')) {
+          this.messageService.add({ severity: 'error', summary: 'Invalid Date', detail: 'Sell date cannot be before buy date.' });
+          // revert row.sellDate to previous value
+          row.sellDate = trade.sell_date !== undefined ? new Date(trade.sell_date).toISOString() : '';
+          return '';
+        }
+        if (universe.most_recent_sell_date !== null || row.sellDate > universe.most_recent_sell_date!) {
+          universe.most_recent_sell_date = row.sellDate;
+        }
+        break;
+      case 'buyDate':
+        tradeField = 'buy_date';
+        if (!this.isDateRangeValid(row.buyDate, row.sellDate, 'buyDate')) {
+          this.messageService.add({ severity: 'error', summary: 'Invalid Date', detail: 'Buy date cannot be after sell date.' });
+          // revert row.buyDate to previous value
+          row.buyDate = trade.buy_date ? new Date(trade.buy_date).toISOString() : '';
+          return '';
+        }
+        break;
+      default:
+        break;
+    }
+    return tradeField;
+  }
+
+  private findTradeForRow(row: OpenPosition): Trade | undefined {
+    const trades = this.openPositionsService.trades();
+    for (let i = 0; i < trades.length; i++) {
+      if (trades[i].id === row.id) {
+        return trades[i];
+      }
+    }
+    return undefined;
+  }
+
+  private findUniverseForSymbol(symbol: string): Universe | undefined {
+    const universes = selectUniverses();
+    for (let i = 0; i < universes.length; i++) {
+      if (universes[i].symbol === symbol) {
+        return universes[i];
+      }
+    }
+    return undefined;
+  }
+
+  private setCurrentScrollPosition(): void {
+    let scrollContainer = this.getScrollContainer();
+    if (scrollContainer) {
+      scrollContainer.scrollTop = this.scrollTopSignal();
+    }
+    const self = this;
+    setTimeout(function resetScrollPosition() {
+      scrollContainer = self.getScrollContainer();
+      if (scrollContainer) {
+        scrollContainer.scrollTop = self.scrollTopSignal();
+      }
+    }, 200);
+  }
+
+  private possibleDateToDate(date: unknown): Date | undefined {
+    if (date instanceof Date) {
+      return date;
+    }
+    if (typeof date === 'string') {
+      return new Date(date);
+    }
+    return undefined;
+  }
+
   private isDateRangeValid(buyDate: unknown, sellDate: unknown, editing: 'buyDate' | 'sellDate'): boolean {
-    const buy = buyDate instanceof Date ? buyDate : buyDate ? new Date(buyDate as string) : undefined;
-    const sell = sellDate instanceof Date ? sellDate : sellDate ? new Date(sellDate as string) : undefined;
+    const buy = this.possibleDateToDate(buyDate);
+    const sell = this.possibleDateToDate(sellDate);
     if (editing === 'buyDate' && buy && sell) {
       return buy <= sell;
     }
@@ -52,75 +146,11 @@ export class OpenPositionsComponent {
     return true;
   }
 
-  onEditCommit(row: OpenPosition, field: string) {
-    const scrollContainer = this.getScrollContainer();
-    if (scrollContainer) {
-      this.scrollTopSignal.set(scrollContainer.scrollTop);
-    }
-    const trades = this.openPositionsService.trades();
-    for (let i = 0; i < trades.length; i++) {
-      let tradeField = field;
-      if (trades[i].id === row.id) {
-        if (field === 'sell') {
-          const universe = selectUniverses();
-          for (let j = 0; j < universe.length; j++) {
-            if (universe[j].symbol === row.symbol) {
-              universe[j].most_recent_sell_price = row.sell;
-              break;
-            }
-          }
-        }
-        if (field === 'sellDate') {
-          tradeField = 'sell_date';
-          if (!this.isDateRangeValid(row.buyDate, row.sellDate, 'sellDate')) {
-            this.messageService.add({ severity: 'error', summary: 'Invalid Date', detail: 'Sell date cannot be before buy date.' });
-            // revert row.sellDate to previous value
-            row.sellDate = trades[i].sell_date ? new Date(trades[i].sell_date as string).toISOString() : '';
-            return;
-          }
-          const universe = selectUniverses();
-          for (let j = 0; j < universe.length; j++) {
-            if (universe[j].symbol === row.symbol) {
-              if (universe[j].most_recent_sell_date !== null || row.sellDate > universe[j].most_recent_sell_date!) {
-                universe[j].most_recent_sell_date = row.sellDate;
-              }
-              break;
-            }
-          }
-        }
-        if (field === 'buyDate') {
-          tradeField = 'buy_date';
-          if (!this.isDateRangeValid(row.buyDate, row.sellDate, 'buyDate')) {
-            this.messageService.add({ severity: 'error', summary: 'Invalid Date', detail: 'Buy date cannot be after sell date.' });
-            // revert row.buyDate to previous value
-            row.buyDate = trades[i].buy_date ? new Date(trades[i].buy_date as string).toISOString() : '';
-            return;
-          }
-        }
-        const trade = trades[i];
-        (trade as Record<keyof Trade, unknown>)[tradeField as keyof Trade] = row[field as keyof OpenPosition];
-        break;
-      }
-    }
-    setTimeout(() => {
-      const scrollContainer = this.getScrollContainer();
-      if (scrollContainer) {
-        scrollContainer.scrollTop = this.scrollTopSignal();
-      }
-    }, 200);
-  }
-
-  stopArrowKeyPropagation(event: KeyboardEvent) {
-    if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
-      event.stopPropagation();
-    }
-  }
-
   tableRef = viewChild('tableRef', { read: ElementRef });
 
   private getScrollContainer(): HTMLElement | null {
     const tableEl = this.tableRef()?.nativeElement as HTMLElement;
-    return tableEl?.querySelector('.p-datatable-table-container') as HTMLElement | null;
+    return tableEl?.querySelector('.p-datatable-table-container');
   }
 
 }

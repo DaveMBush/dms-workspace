@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import {
   EffectService,
   PartialArrayDefinition,
@@ -11,9 +11,7 @@ import { Screen } from './screen.interface';
 @Injectable()
 export class ScreenEffectsService extends EffectService<Screen> {
   apiScreen = './api/screener/rows';
-  constructor(private http: HttpClient) {
-    super();
-  }
+  private http = inject(HttpClient);
 
   override loadByIds(ids: string[]): Observable<Screen[]> {
     return this.http.post<Screen[]>(this.apiScreen, ids);
@@ -23,11 +21,11 @@ export class ScreenEffectsService extends EffectService<Screen> {
     return this.http.put<Screen[]>(this.apiScreen, newRow);
   }
 
-  override add(row: Screen): Observable<Screen[]> {
+  override add(_: Screen): Observable<Screen[]> {
     throw new Error('Not implemented');
   }
 
-  override delete(id: string): Observable<void> {
+  override delete(_: string): Observable<void> {
     throw new Error('Not implemented');
   }
 

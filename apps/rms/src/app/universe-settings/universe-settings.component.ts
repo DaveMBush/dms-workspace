@@ -1,19 +1,21 @@
-import { Component, inject, ViewChild, ElementRef } from '@angular/core';
-import { DialogModule } from 'primeng/dialog';
-import { ButtonModule } from 'primeng/button';
-import { UniverseSettingsService } from './universe-settings.service';
-import { Textarea } from 'primeng/textarea';
+import { ChangeDetectionStrategy, Component, ElementRef,inject, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { UpdateUniverseSettingsService } from './update-universe.service';
+import { ButtonModule } from 'primeng/button';
+import { DialogModule } from 'primeng/dialog';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { Textarea } from 'primeng/textarea';
+
+import { UniverseSettingsService } from './universe-settings.service';
+import { UpdateUniverseSettingsService } from './update-universe.service';
 
 @Component({
-  selector: 'app-universe-settings',
+  selector: 'rms-universe-settings',
   templateUrl: './universe-settings.component.html',
   styleUrls: ['./universe-settings.component.scss'],
   standalone: true,
   imports: [DialogModule, ButtonModule, Textarea, FormsModule, ProgressSpinnerModule],
-  viewProviders: [UpdateUniverseSettingsService]
+  viewProviders: [UpdateUniverseSettingsService],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UniverseSettingsComponent {
   protected readonly settingsService = inject(UniverseSettingsService);
@@ -24,41 +26,44 @@ export class UniverseSettingsComponent {
   taxFreeIncomeSymbols = '';
   loading = false;
 
-  updateUniverse() {
+  updateUniverse(): void {
+    const self = this;
     this.loading = true;
     this.updateUniverseService.updateUniverse(this.equitySymbols, this.incomeSymbols, this.taxFreeIncomeSymbols)
       .subscribe({
-        next: () => {
-          this.settingsService.hide();
+        next: function updateUniverseNext() {
+          self.settingsService.hide();
         },
-        complete: () => {
-          this.loading = false;
+        complete: function updateUniverseComplete() {
+          self.loading = false;
         },
-        error: () => {
-          this.loading = false;
+        error: function updateUniverseError() {
+          self.loading = false;
         }
       });
   }
 
-  updateFields() {
+  updateFields(): void {
+    const self = this;
     this.loading = true;
     this.updateUniverseService.updateFields()
       .subscribe({
-        next: () => {
-          this.settingsService.hide();
+        next: function updateFieldsNext() {
+          self.settingsService.hide();
         },
-        complete: () => {
-          this.loading = false;
+        complete: function updateFieldsComplete() {
+          self.loading = false;
         },
-        error: () => {
-          this.loading = false;
+        error: function updateFieldsError() {
+          self.loading = false;
         }
       });
   }
 
-  onDialogShow() {
-    setTimeout(() => {
-      this.equitySymbolsTextarea.nativeElement.focus();
+  onDialogShow(): void {
+    const self = this;
+    setTimeout(function onDialogShowTimeout() {
+      self.equitySymbolsTextarea.nativeElement.focus();
     });
   }
 }

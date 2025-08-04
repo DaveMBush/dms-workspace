@@ -20,3 +20,48 @@ p-listbox {
     flex: 1 1 auto;
   }
 }
+
+// Custom styling for selected account items
+.selected-account {
+  background-color: #3b82f6 !important;
+  color: white !important;
+  font-weight: 600 !important;
+  padding: 8px 12px !important;
+  border-radius: 4px !important;
+  margin: 2px 4px !important;
+}
+
+// Override the text-color class for selected items
+.selected-account .text-color {
+  color: white !important;
+}
+
+// Hover effect for selected items
+.selected-account:hover {
+  background-color: #2563eb !important;
+  color: white !important;
+}
+
+// Default styling for non-selected items
+.group {
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin: 2px 4px;
+  transition: all 0.2s ease;
+  background-color: transparent;
+}
+
+// Hover effect for non-selected items
+.group:not(.selected-account):hover {
+  background-color: var(--surface-hover);
+}
+
+// Ensure hover states are cleared when mouse leaves
+.group:not(.selected-account) {
+  background-color: transparent !important;
+}
+
+// Force reset of hover states
+.group:not(.selected-account):not(:hover) {
+  background-color: transparent !important;
+}

@@ -1,5 +1,3 @@
-New Position Works!
-
 <form class="flex flex-col gap-4 p-2">
   <div class="flex flex-row gap-4">
     <div class="flex flex-col flex-1 min-w-0">
@@ -7,7 +5,7 @@ New Position Works!
       <p-autoComplete
         inputId="symbol"
         [(ngModel)]="symbol"
-        [suggestions]="filteredSymbols()"
+        [suggestions]="filteredSymbols$()"
         (completeMethod)="filterSymbols($event)"
         [forceSelection]="true"
         [dropdown]="true"
@@ -19,7 +17,7 @@ New Position Works!
         class="w-full"
         placeholder="Select symbol..."
       ></p-autoComplete>
-      @if (selectedSymbolExpired()) {
+      @if (selectedSymbolExpired$()) {
       <div class="text-yellow-600 text-xs mt-1">
         Warning: This symbol is expired and not currently active in the universe. Use this for retroactive entries
       </div>
@@ -60,7 +58,7 @@ New Position Works!
     </div>
   </div>
   <div class="flex flex-row justify-end gap-2 mt-4">
-    <button type="button" class="p-button p-component p-button-secondary" (click)="onCancel()">Cancel</button>
-    <button type="button" class="p-button p-component p-button-primary" (click)="onSave()" [disabled]="!canSave()">Save</button>
+    <button type="button" class="p-button p-component p-button-secondary" (click)="handleCancel()">Cancel</button>
+    <button type="button" class="p-button p-component p-button-primary" (click)="handleSave()" [disabled]="!canSave$()">Save</button>
   </div>
 </form>

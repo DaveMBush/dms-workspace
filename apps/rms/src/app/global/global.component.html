@@ -12,8 +12,8 @@
   class="mt-0"
 >
   <ng-template pTemplate="item" let-global>
-    <div class="group flex flex-row basis-full">
-      <div class="flex-auto text-color hover:text-color-emphasis whitespace-nowrap truncate">{{ global.name }}</div>
+    <div class="group flex flex-row basis-full" [class.selected-global]="selectedId === global.id">
+      <div class="flex-auto text-color hover:text-color-emphasis whitespace-nowrap truncate flex items-center">{{ global.name }}</div>
     </div>
   </ng-template>
 </p-listbox>

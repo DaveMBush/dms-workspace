@@ -1,5 +1,5 @@
-import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+  import { HttpClient } from '@angular/common/http';
+import { inject, Injectable } from '@angular/core';
 import {
   EffectService,
   PartialArrayDefinition,
@@ -11,9 +11,7 @@ import { RiskGroup } from './risk-group.interface';
 @Injectable()
 export class RiskGroupEffectsService extends EffectService<RiskGroup> {
   apiRiskGroup = './api/risk-group';
-  constructor(private http: HttpClient) {
-    super();
-  }
+  private http = inject(HttpClient);
 
   override loadByIds(ids: string[]): Observable<RiskGroup[]> {
     return this.http.post<RiskGroup[]>(this.apiRiskGroup , ids);

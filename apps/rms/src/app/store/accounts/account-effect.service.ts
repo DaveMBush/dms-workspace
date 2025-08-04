@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import {
   EffectService,
   PartialArrayDefinition,
@@ -11,9 +11,7 @@ import { Account } from './account.interface';
 @Injectable()
 export class AccountEffectsService extends EffectService<Account> {
   apiAccount = './api/accounts';
-  constructor(private http: HttpClient) {
-    super();
-  }
+  private http = inject(HttpClient);
 
   override loadByIds(ids: string[]): Observable<Account[]> {
     return this.http.post<Account[]>(this.apiAccount , ids);

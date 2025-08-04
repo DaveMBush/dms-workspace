@@ -1,18 +1,21 @@
 import { isPlatformBrowser } from '@angular/common';
-import { Component, inject, Inject, OnInit, PLATFORM_ID } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
+import { NavigationEnd,Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
+import { PanelModule } from 'primeng/panel';
 import { SplitterModule } from 'primeng/splitter';
 import { ToolbarModule } from 'primeng/toolbar';
-import { PanelModule } from 'primeng/panel';
 import { TooltipModule } from 'primeng/tooltip';
+import { filter, Subscription } from 'rxjs';
+
+import { GlobalComponent } from '../global/global.component';
 import { UniverseSettingsComponent } from '../universe-settings/universe-settings.component';
 import { UniverseSettingsService } from '../universe-settings/universe-settings.service';
-import { GlobalComponent } from '../global/global.component';
 
 const DARK_MODE_KEY = 'rms-dark';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ButtonModule,
     PanelModule,
@@ -23,17 +26,19 @@ const DARK_MODE_KEY = 'rms-dark';
     UniverseSettingsComponent,
     GlobalComponent,
   ],
-  selector: 'app-shell',
+  selector: 'rms-shell',
   templateUrl: './shell.component.html',
   styleUrl: './shell.component.scss',
   standalone: true,
 })
-export class ShellComponent implements OnInit {
+export class ShellComponent implements OnInit, OnDestroy {
   themeIcon = 'pi-moon';
   themeTooltip = 'Dark Mode';
   platformId = inject(PLATFORM_ID);
   isBrowser = isPlatformBrowser(this.platformId);
   protected readonly settingsService = inject(UniverseSettingsService);
+  private router = inject(Router);
+  private routeSubscription?: Subscription;
   selectedId: string | null = null;
 
   ngOnInit(): void {
@@ -41,12 +46,57 @@ export class ShellComponent implements OnInit {
       if (document.readyState === 'complete') {
         this.afterPageLoad();
       } else {
-        window.addEventListener('load', () => this.afterPageLoad());
+        const self = this;
+        window.addEventListener('load', function afterLoad() {
+          self.afterPageLoad();
+        });
       }
+    }
+
+    // Set initial selection based on current route
+    this.updateSelectionFromRoute(this.router.url);
+
+    // Listen for route changes
+    const self = this;
+    this.routeSubscription = this.router.events
+      .pipe(filter(function filterNavigationEnd(event) {
+        return event instanceof NavigationEnd;
+      }))
+      .subscribe(function routeChangeSubscription() {
+        self.updateSelectionFromRoute(self.router.url);
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.routeSubscription?.unsubscribe();
+  }
+
+  protected toggleTheme(): void {
+    const isDark = localStorage.getItem(DARK_MODE_KEY) === 'true';
+    document.querySelector('html')?.classList.toggle('p-dark', !isDark);
+    localStorage.setItem(DARK_MODE_KEY, !isDark ? 'true' : 'false');
+    this.themeIcon = !isDark ? 'pi-sun' : 'pi-moon';
+    this.themeTooltip = !isDark ? 'Light Mode' : 'Dark Mode';
+  }
+
+  protected onSelectionChange(e: {id: string, name: string}): void {
+    this.selectedId = e.id;
+  }
+
+
+  private updateSelectionFromRoute(url: string): void {
+    const globalMatch = /\/global\/([^/]+)/.exec(url);
+    const globalId = globalMatch?.[1];
+
+    if (globalId !== undefined && globalId !== '') {
+      this.selectedId = globalId;
+    } else {
+      // Clear selection if not on a global route
+      this.selectedId = null;
     }
   }
 
-  private afterPageLoad() {
+  private afterPageLoad(): void {
     let darkValue = localStorage.getItem(DARK_MODE_KEY);
     if (darkValue === null) {
       // find the system preference for dark mode
@@ -64,15 +114,4 @@ export class ShellComponent implements OnInit {
     }
   }
 
-  protected toggleTheme() {
-    const isDark = localStorage.getItem(DARK_MODE_KEY) === 'true';
-    document.querySelector('html')?.classList.toggle('p-dark', !isDark);
-    localStorage.setItem(DARK_MODE_KEY, !isDark ? 'true' : 'false');
-    this.themeIcon = !isDark ? 'pi-sun' : 'pi-moon';
-    this.themeTooltip = !isDark ? 'Light Mode' : 'Dark Mode';
-  }
-
-  onSelectionChange(e: {id: string, name: string}) {
-    this.selectedId = e.id;
-  }
 }

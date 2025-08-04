@@ -32,7 +32,7 @@
     Dividends & Deposits
   </a>
   <span class="flex-1"></span>
-  @if (router.url.endsWith('/account/' + accountId + '/open')) {
+  @if (isOpenPositionsRoute$()) {
     <p-button
       pTooltip="Add New Position"
       aria-label="Add Open Position"
@@ -42,7 +42,7 @@
       (onClick)="openNewPositionDialog()"
     ></p-button>
   }
-  @if (router.url.endsWith('/account/' + accountId + '/div-dep')) {
+  @if (isDivDepRoute$()) {
     <p-button
       pTooltip="Add New Dividend or Deposit"
       aria-label="Add Dividend or Deposit"
@@ -62,7 +62,7 @@
   styleClass="w-full max-w-lg"
 >
 @if (showNewPositionDialog) {
-  <app-new-position (close)="closeNewPositionDialog()" />
+  <rms-new-position (close)="closeNewPositionDialog()" />
 }
 </p-dialog>
 <p-dialog
@@ -74,7 +74,7 @@
   styleClass="w-full max-w-lg"
 >
 @if (showNewDivDepDialog) {
-  <app-div-dep-modal (close)="closeNewDivDepDialog()" />
+  <rms-div-dep-modal (close)="closeNewDivDepDialog()" />
 }
 </p-dialog>
 

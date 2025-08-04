@@ -1,7 +1,7 @@
 import { FastifyInstance } from 'fastify';
 
-export default async function (fastify: FastifyInstance) {
-  fastify.get('/', async function () {
+export default function registerRootRoutes(fastify: FastifyInstance): void {
+  fastify.get('/', function handleRootRequest(): { message: string } {
     return { message: 'Hello API' };
   });
 }
