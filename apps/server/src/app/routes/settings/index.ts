@@ -134,7 +134,6 @@ async function updateExistingUniverse(data: UpdateUniverseData): Promise<void> {
       last_price: data.lastPrice ?? 0,
       most_recent_sell_date: null,
       ex_date: data.exDateToSet,
-      risk: 0,
       expired: false,
     },
   });
@@ -150,7 +149,6 @@ async function createNewUniverse(symbol: string, riskGroupId: string, lastPrice:
       last_price: lastPrice ?? 0,
       most_recent_sell_date: null,
       ex_date: distribution?.ex_date ?? new Date(),
-      risk: 0,
       expired: false,
     },
   });
