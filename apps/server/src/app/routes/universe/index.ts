@@ -12,7 +12,6 @@ interface UniverseWithTrades {
   most_recent_sell_price: number | null;
   symbol: string;
   ex_date: Date | null;
-  risk: number;
   risk_group_id: string;
   trades: Array<{ buy: number; quantity: number }>;
   expired: boolean;
@@ -28,7 +27,6 @@ function mapUniverseToResponse(u: UniverseWithTrades): Universe {
     most_recent_sell_price: u.most_recent_sell_price ?? null,
     symbol: u.symbol,
     ex_date: u.ex_date?.toISOString() ?? '',
-    risk: u.risk,
     risk_group_id: u.risk_group_id,
     position: u.trades.reduce(function sumTradePosition(acc: number, trade: { buy: number; quantity: number }): number {
       return acc + trade.buy * trade.quantity;
@@ -162,7 +160,6 @@ function handleUpdateUniverseRoute(fastify: FastifyInstance): void {
           most_recent_sell_price: u.most_recent_sell_price ?? null,
           symbol: u.symbol,
           ex_date: u.ex_date?.toISOString() ?? '',
-          risk: u.risk,
           risk_group_id: u.risk_group_id,
           position: calculatePosition(u.trades),
           expired: u.expired
