@@ -93,7 +93,6 @@ function handleAddUniverseRoute(fastify: FastifyInstance): void {
           most_recent_sell_price: result.most_recent_sell_price ?? null,
           symbol: result.symbol,
           ex_date: result.ex_date?.toISOString() ?? '',
-          risk: result.risk,
           risk_group_id: result.risk_group_id,
           position: 0,
           expired: result.expired
@@ -124,7 +123,6 @@ async function updateUniverseData(id: string, data: Omit<Universe, 'id'>): Promi
       most_recent_sell_price: data.most_recent_sell_price,
       symbol: data.symbol,
       ex_date: data.ex_date,
-      risk: data.risk,
       risk_group_id: data.risk_group_id,
       expired: data.expired
     },
