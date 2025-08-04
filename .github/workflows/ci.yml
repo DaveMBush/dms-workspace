@@ -36,8 +36,8 @@ jobs:
           node-version: 22
           cache: 'pnpm'
 
-      - run: pnpm ci --legacy-peer-deps
-      - run: pnpm playwright install --with-deps
+      - run: pnpm i
+      #- run: pnpm playwright install --with-deps
       - uses: nrwl/nx-set-shas@v4
 
       # Prepend any command with "nx-cloud record --" to record its logs to Nx Cloud
