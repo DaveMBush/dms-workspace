@@ -209,7 +209,7 @@ function handleUpdateAccountRoute(fastify: FastifyInstance): void {
   );
 }
 
-export function registerAccountRoutes(fastify: FastifyInstance): void {
+export default function registerAccountRoutes(fastify: FastifyInstance): void {
   handleGetAccountsRoute(fastify);
   handleAddAccountRoute(fastify);
   handleDeleteAccountRoute(fastify);

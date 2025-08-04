@@ -35,6 +35,6 @@ function handleGetDivDepositTypesRoute(fastify: FastifyInstance): void {
   );
 }
 
-export function registerDivDepositTypeRoutes(fastify: FastifyInstance): void {
+export default function registerDivDepositTypeRoutes(fastify: FastifyInstance): void {
   handleGetDivDepositTypesRoute(fastify);
 }

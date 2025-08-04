@@ -284,7 +284,7 @@ async function cleanupOldSymbols(qualifyingSymbols: QualifyingSymbol[]): Promise
   });
 }
 
-export function registerScreenerRoutes(fastify: FastifyInstance): void {
+export default function registerScreenerRoutes(fastify: FastifyInstance): void {
   fastify.get('/',
     async function handleScreenerRequest(_request, _reply): Promise<void> {
       const riskGroups = await loadRiskGroups();

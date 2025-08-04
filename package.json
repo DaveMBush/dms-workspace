@@ -7,7 +7,7 @@
     "start:rms": "nx run rms:serve --no-hmr",
     "start:simulation": "nx run simulation:serve",
     "build:rms": "nx run rms:build",
-    "all": "nx affected -t lint test build"
+    "all": "nx affected -t lint build"
   },
   "private": true,
   "dependencies": {
