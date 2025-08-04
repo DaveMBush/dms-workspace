@@ -1,52 +1,97 @@
 import { FastifyInstance } from "fastify";
+
 import { prisma } from "../../../prisma/prisma-client";
-import { getLastPrice } from "../common/get-last-price.function";
 import { getDistributions } from "../common/get-distributions.function";
+import { getLastPrice } from "../common/get-last-price.function";
 
-export default async function (fastify: FastifyInstance): Promise<void> {
+interface Distribution {
+  distribution: number;
+  distributions_per_year: number;
+  ex_date: Date;
+}
 
-  // Route to fetch accounts by IDs
-  // Path: POST /api/accounts
-  fastify.get<{ Body: void, Reply: void }>('/',
-    async function (request, reply): Promise<void> {
-      console.log('HANDLER: GET /api/settings/update');
+function getCurrentDistribution(universe: Awaited<ReturnType<typeof prisma.universe.findMany>>[number]): Distribution {
+  return {
+    distribution: universe.distribution,
+    distributions_per_year: universe.distributions_per_year,
+    ex_date: universe.ex_date!,
+  };
+}
 
-      const universes = await prisma.universe.findMany();
+async function checkForNewDistribution(universe: Awaited<ReturnType<typeof prisma.universe.findMany>>[number]): Promise<Distribution | null> {
+  if (!universe.ex_date || universe.ex_date >= new Date()) {
+    return null;
+  }
 
-      for (let i = 0; i < universes.length; i++) {
-        const universe = universes[i];
-        const lastPrice = await getLastPrice(universe.symbol);
-        let distribution = {
-          distribution: universe.distribution,
-          distributions_per_year: universe.distributions_per_year,
-          ex_date: universe.ex_date,
-        }
-        // skip if we already have an ex-date after today
-        if (universe.ex_date < new Date()) {
-          distribution = await getDistributions(universe.symbol);
-          if (!distribution === undefined) {
-            console.log(`No distribution found for ${universe.symbol}`);
-          }
-        }
-        if (distribution != null && distribution.ex_date > universe.ex_date) {
-          await prisma.universe.update({
-            where: { id: universe.id },
-            data: {
-              last_price: lastPrice,
-              ex_date: distribution.ex_date,
-              distributions_per_year: distribution.distributions_per_year,
-              distribution: distribution.distribution,
-            },
-          });
-        } else {
-          await prisma.universe.update({
-            where: { id: universe.id },
-            data: {
-              last_price: lastPrice,
-            },
-          });
-        }
-      }
+  const newDistribution = await getDistributions(universe.symbol);
+  if (newDistribution === undefined) {
+    return null;
+  }
+
+  return newDistribution;
+}
+
+function shouldUpdateDistribution(distribution: Distribution, universe: Awaited<ReturnType<typeof prisma.universe.findMany>>[number]): boolean {
+  return Boolean(universe.ex_date &&
+         distribution.ex_date > universe.ex_date);
+}
+
+async function updateUniverseWithDistribution(universe: Awaited<ReturnType<typeof prisma.universe.findMany>>[number], lastPrice: number, distribution: Distribution): Promise<void> {
+  await prisma.universe.update({
+    where: { id: universe.id },
+    data: {
+      last_price: lastPrice ?? 0,
+      ex_date: distribution.ex_date,
+      distributions_per_year: distribution.distributions_per_year,
+      distribution: distribution.distribution,
+    },
+  });
+}
+
+async function updateUniverseWithoutDistribution(universe: Awaited<ReturnType<typeof prisma.universe.findMany>>[number], lastPrice: number): Promise<void> {
+  await prisma.universe.update({
+    where: { id: universe.id },
+    data: {
+      last_price: lastPrice ?? 0,
+    },
+  });
+}
+
+async function processUniverse(universe: Awaited<ReturnType<typeof prisma.universe.findMany>>[number]): Promise<void> {
+  const lastPrice = await getLastPrice(universe.symbol);
+  let distribution = getCurrentDistribution(universe);
+
+  const newDistribution = await checkForNewDistribution(universe);
+  if (newDistribution !== null) {
+    distribution = newDistribution;
+  }
+
+  const lastPriceValue = lastPrice ?? 0;
+
+  if (shouldUpdateDistribution(distribution, universe)) {
+    await updateUniverseWithDistribution(universe, lastPriceValue, distribution);
+  } else {
+    await updateUniverseWithoutDistribution(universe, lastPriceValue);
+  }
+}
+
+async function updateAllUniverses(): Promise<void> {
+  const universes = await prisma.universe.findMany();
+
+  for (let i = 0; i < universes.length; i++) {
+    const universe = universes[i];
+    await processUniverse(universe);
+  }
+}
+
+function handleUpdateRoute(fastify: FastifyInstance): void {
+  fastify.get('/',
+    async function handleUpdateRequest(_, __): Promise<void> {
+      await updateAllUniverses();
     }
   );
+}
+
+export default function registerUpdateRoutes(fastify: FastifyInstance): void {
+  handleUpdateRoute(fastify);
 }

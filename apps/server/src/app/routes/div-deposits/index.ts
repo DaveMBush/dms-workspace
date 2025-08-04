@@ -1,10 +1,29 @@
 import { FastifyInstance } from 'fastify';
+
 import { prisma } from '../../prisma/prisma-client';
 import { DivDeposit } from './div-deposits.interface';
 
-export default async function (fastify: FastifyInstance): Promise<void> {
-  // Route to fetch universes by IDs
-  // Path: POST /api/universe
+interface DivDepositFromDb {
+  id: string;
+  date: Date;
+  amount: number;
+  accountId: string;
+  divDepositTypeId: string;
+  universeId: string | null;
+}
+
+function mapDivDepositToResponse(u: DivDepositFromDb): DivDeposit {
+  return {
+    id: u.id,
+    date: u.date,
+    amount: u.amount,
+    accountId: u.accountId,
+    divDepositTypeId: u.divDepositTypeId,
+    universeId: u.universeId
+  };
+}
+
+function handleGetDivDepositsRoute(fastify: FastifyInstance): void {
   fastify.post<{ Body: string[]; Reply: DivDeposit[] }>('/',
     {
       schema: {
@@ -14,29 +33,25 @@ export default async function (fastify: FastifyInstance): Promise<void> {
         },
       },
     },
-    async function (request, reply): Promise<DivDeposit[]> {
+    async function handleGetDivDepositsRequest(request, _): Promise<DivDeposit[]> {
       const ids = request.body;
-      if (!ids || ids.length === 0) {
+      if (ids.length === 0) {
         return [];
       }
       const divDeposits = await prisma.divDeposits.findMany({
         where: { id: { in: ids } }
       });
 
-      return divDeposits.map((u) => ({
-        id: u.id,
-        date: u.date,
-        amount: u.amount,
-        accountId: u.accountId,
-        divDepositTypeId: u.divDepositTypeId,
-        universeId: u.universeId
-      }));
+      return divDeposits.map(function mapDivDeposit(u) {
+        return mapDivDepositToResponse(u);
+      });
     }
   );
+}
 
-  // Add
+function handleAddDivDepositRoute(fastify: FastifyInstance): void {
   fastify.post<{ Body: Omit<DivDeposit, 'id' >, Reply: DivDeposit[] }>('/add',
-    async function (request, reply): Promise<void> {
+    async function handleAddDivDepositRequest(request, reply): Promise<void> {
       const { ...rest } = request.body;
       const result = await prisma.divDeposits.create({
         data: {
@@ -48,30 +63,26 @@ export default async function (fastify: FastifyInstance): Promise<void> {
         }
       });
       reply.status(200).send([
-        {
-          id: result.id,
-          date: result.date,
-          amount: result.amount,
-          accountId: result.accountId,
-          divDepositTypeId: result.divDepositTypeId,
-          universeId: result.universeId
-        },
+        mapDivDepositToResponse(result)
       ]);
     }
   );
+}
 
-  // Delete
-  fastify.delete<{ Params: { id: string }, Reply: void }>('/:id',
-    async function (request, reply): Promise<void> {
-      var { id } = request.params;
+function handleDeleteDivDepositRoute(fastify: FastifyInstance): void {
+  fastify.delete<{ Params: { id: string }, Reply: { success: boolean } }>('/:id',
+    async function handleDeleteDivDepositRequest(request, reply): Promise<{ success: boolean }> {
+      const { id } = request.params;
       await prisma.divDeposits.delete({ where: { id } });
-      reply.status(200).send();
+      reply.status(200).send({ success: true });
+      return { success: true };
     }
   );
+}
 
-  // Update
+function handleUpdateDivDepositRoute(fastify: FastifyInstance): void {
   fastify.put<{ Body: DivDeposit, Reply: DivDeposit[] }>('/',
-    async function (request, reply): Promise<void> {
+    async function handleUpdateDivDepositRequest(request, reply): Promise<void> {
       const { id,
         date,
         amount,
@@ -92,15 +103,17 @@ export default async function (fastify: FastifyInstance): Promise<void> {
       const divDeposits = await prisma.divDeposits.findMany({
         where: { id }
       });
-      const result = divDeposits.map((u) => ({
-        id: u.id,
-        date: u.date,
-        amount: u.amount,
-        accountId: u.accountId,
-        divDepositTypeId: u.divDepositTypeId,
-        universeId: u.universeId
-      }));
+      const result = divDeposits.map(function mapUpdatedDivDeposit(u) {
+        return mapDivDepositToResponse(u);
+      });
       reply.status(200).send(result);
     }
   );
+}
+
+export default function registerDivDepositRoutes(fastify: FastifyInstance): void {
+  handleGetDivDepositsRoute(fastify);
+  handleAddDivDepositRoute(fastify);
+  handleDeleteDivDepositRoute(fastify);
+  handleUpdateDivDepositRoute(fastify);
 }

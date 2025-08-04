@@ -1,10 +1,49 @@
 import { FastifyInstance } from 'fastify';
-import { Universe } from './universe.interface';
-import { prisma } from '../../prisma/prisma-client';
 
-export default async function (fastify: FastifyInstance): Promise<void> {
-  // Route to fetch universes by IDs
-  // Path: POST /api/universe
+import { prisma } from '../../prisma/prisma-client';
+import { Universe } from './universe.interface';
+
+interface UniverseWithTrades {
+  id: string;
+  distribution: number;
+  distributions_per_year: number;
+  last_price: number;
+  most_recent_sell_date: Date | null;
+  most_recent_sell_price: number | null;
+  symbol: string;
+  ex_date: Date | null;
+  risk: number;
+  risk_group_id: string;
+  trades: Array<{ buy: number; quantity: number }>;
+  expired: boolean;
+}
+
+function mapUniverseToResponse(u: UniverseWithTrades): Universe {
+  return {
+    id: u.id,
+    distribution: u.distribution,
+    distributions_per_year: u.distributions_per_year,
+    last_price: u.last_price,
+    most_recent_sell_date: u.most_recent_sell_date?.toISOString() ?? null,
+    most_recent_sell_price: u.most_recent_sell_price ?? null,
+    symbol: u.symbol,
+    ex_date: u.ex_date?.toISOString() ?? '',
+    risk: u.risk,
+    risk_group_id: u.risk_group_id,
+    position: u.trades.reduce(function sumTradePosition(acc: number, trade: { buy: number; quantity: number }): number {
+      return acc + trade.buy * trade.quantity;
+    }, 0),
+    expired: u.expired
+  };
+}
+
+function calculatePosition(trades: Array<{ buy: number; quantity: number }>): number {
+  return trades.reduce(function sumPosition(acc: number, trade: { buy: number; quantity: number }): number {
+    return acc + trade.buy * trade.quantity;
+  }, 0);
+}
+
+function handleGetUniversesRoute(fastify: FastifyInstance): void {
   fastify.post<{ Body: string[]; Reply: Universe[] }>('/',
     {
       schema: {
@@ -14,9 +53,9 @@ export default async function (fastify: FastifyInstance): Promise<void> {
         },
       },
     },
-    async function (request, reply): Promise<Universe[]> {
+    async function handleGetUniverses(request, _): Promise<Universe[]> {
       const ids = request.body;
-      if (!ids || ids.length === 0) {
+      if (ids === null || ids === undefined || ids.length === 0) {
         return [];
       }
       const universes = await prisma.universe.findMany({
@@ -28,26 +67,16 @@ export default async function (fastify: FastifyInstance): Promise<void> {
           }
         },
       });
-      return universes.map((u) => ({
-        id: u.id,
-        distribution: u.distribution,
-        distributions_per_year: u.distributions_per_year,
-        last_price: u.last_price,
-        most_recent_sell_date: u.most_recent_sell_date?.toISOString() ?? null,
-        most_recent_sell_price: u.most_recent_sell_price ?? null,
-        symbol: u.symbol,
-        ex_date: u.ex_date?.toISOString(),
-        risk: u.risk,
-        risk_group_id: u.risk_group_id,
-        position: u.trades.reduce((acc, trade) => acc + trade.buy * trade.quantity, 0),
-        expired: u.expired
-      }));
+      return universes.map(function mapUniverse(u) {
+        return mapUniverseToResponse(u as UniverseWithTrades);
+      });
     }
   );
+}
 
-  // Add
-  fastify.post<{ Body: Omit<Universe, 'id' >, Reply: Universe[] }>('/add',
-    async function (request, reply): Promise<void> {
+function handleAddUniverseRoute(fastify: FastifyInstance): void {
+  fastify.post<{ Body: Omit<Universe, 'id' >; Reply: Universe[] }>('/add',
+    async function handleAddUniverse(request, reply): Promise<void> {
       const { ...rest } = request.body;
       const result = await prisma.universe.create({
         data: {
@@ -63,7 +92,7 @@ export default async function (fastify: FastifyInstance): Promise<void> {
           most_recent_sell_date: result.most_recent_sell_date?.toISOString() ?? null,
           most_recent_sell_price: result.most_recent_sell_price ?? null,
           symbol: result.symbol,
-          ex_date: result.ex_date.toISOString(),
+          ex_date: result.ex_date?.toISOString() ?? '',
           risk: result.risk,
           risk_group_id: result.risk_group_id,
           position: 0,
@@ -72,73 +101,84 @@ export default async function (fastify: FastifyInstance): Promise<void> {
       ]);
     }
   );
+}
 
-  // Delete
-  fastify.delete<{ Params: { id: string }, Reply: void }>('/:id',
-    async function (request, reply): Promise<void> {
-      var { id } = request.params;
+function handleDeleteUniverseRoute(fastify: FastifyInstance): void {
+  fastify.delete<{ Params: { id: string }; }>('/:id',
+    async function handleDeleteUniverse(request, reply): Promise<void> {
+      const { id } = request.params;
       await prisma.universe.delete({ where: { id } });
       reply.status(200).send();
     }
   );
+}
 
-  // Update
-  fastify.put<{ Body: Universe, Reply: Universe[] }>('/',
-    async function (request, reply): Promise<void> {
-      const { id,
-        distribution,
-        distributions_per_year,
-        last_price,
-        most_recent_sell_date,
-        most_recent_sell_price,
-        symbol,
-        ex_date,
-        risk,
-        risk_group_id,
-        expired
-      } = request.body;
-      await prisma.universe.update({
-        where: { id },
-        data: {
-          distribution,
-          distributions_per_year,
-          last_price,
-          most_recent_sell_date,
-          most_recent_sell_price,
-          symbol,
-          ex_date,
-          risk,
-          risk_group_id,
-          expired
-        },
-      });
-      const universes = await prisma.universe.findMany({
-        where: { id },
-        include: {
-          trades: {
-            where: {
-              sell_date: {
-                equals: null
-              }
-            }
+async function updateUniverseData(id: string, data: Omit<Universe, 'id'>): Promise<unknown> {
+  return prisma.universe.update({
+    where: { id },
+    data: {
+      distribution: data.distribution,
+      distributions_per_year: data.distributions_per_year,
+      last_price: data.last_price,
+      most_recent_sell_date: data.most_recent_sell_date,
+      most_recent_sell_price: data.most_recent_sell_price,
+      symbol: data.symbol,
+      ex_date: data.ex_date,
+      risk: data.risk,
+      risk_group_id: data.risk_group_id,
+      expired: data.expired
+    },
+  });
+}
+
+async function fetchUpdatedUniverse(id: string): Promise<UniverseWithTrades[]> {
+  return prisma.universe.findMany({
+    where: { id },
+    include: {
+      trades: {
+        where: {
+          sell_date: {
+            equals: null
           }
         }
+      }
+    }
+  });
+}
+
+function handleUpdateUniverseRoute(fastify: FastifyInstance): void {
+  fastify.put<{ Body: Universe; Reply: Universe[] }>('/',
+    async function handleUpdateUniverse(request, reply): Promise<void> {
+      const { id, ...updateData } = request.body;
+
+      await updateUniverseData(id, updateData);
+      const universes = await fetchUpdatedUniverse(id);
+
+      const result = universes.map(function mapUpdatedUniverse(u) {
+        return {
+          id: u.id,
+          distribution: u.distribution,
+          distributions_per_year: u.distributions_per_year,
+          last_price: u.last_price,
+          most_recent_sell_date: u.most_recent_sell_date?.toISOString() ?? null,
+          most_recent_sell_price: u.most_recent_sell_price ?? null,
+          symbol: u.symbol,
+          ex_date: u.ex_date?.toISOString() ?? '',
+          risk: u.risk,
+          risk_group_id: u.risk_group_id,
+          position: calculatePosition(u.trades),
+          expired: u.expired
+        };
       });
-      const result = universes.map((u) => ({
-        id: u.id,
-        distribution: u.distribution,
-        distributions_per_year: u.distributions_per_year,
-        last_price: u.last_price,
-        most_recent_sell_date: u.most_recent_sell_date?.toISOString() ?? null,
-        most_recent_sell_price: u.most_recent_sell_price ?? null,
-        symbol: u.symbol,
-        ex_date: u.ex_date.toISOString(),
-        risk: u.risk,
-        risk_group_id: u.risk_group_id,
-        position: u.trades.reduce((acc, trade) => acc + trade.buy * trade.quantity, 0),
-        expired: u.expired
-      }));
+
       reply.status(200).send(result);
     }
   );
+}
+
+export default function registerUniverseRoutes(fastify: FastifyInstance): void {
+  handleGetUniversesRoute(fastify);
+  handleAddUniverseRoute(fastify);
+  handleDeleteUniverseRoute(fastify);
+  handleUpdateUniverseRoute(fastify);
 }

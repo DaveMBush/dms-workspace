@@ -1,11 +1,10 @@
-import * as path from 'path';
+import autoLoad from '@fastify/autoload';
 import { FastifyInstance } from 'fastify';
-import AutoLoad from '@fastify/autoload';
+import * as path from 'path';
 
-/* eslint-disable-next-line */
-export interface AppOptions {}
+type AppOptions = Record<string, unknown>;
 
-export async function app(fastify: FastifyInstance, opts: AppOptions) {
+export function configureApp(fastify: FastifyInstance, opts: AppOptions): void {
   // Place here your custom code!
 
   // Do not touch the following lines
@@ -13,14 +12,14 @@ export async function app(fastify: FastifyInstance, opts: AppOptions) {
   // This loads all plugins defined in plugins
   // those should be support plugins that are reused
   // through your application
-  fastify.register(AutoLoad, {
+  fastify.register(autoLoad, {
     dir: path.join(__dirname, 'plugins'),
     options: { ...opts },
   });
 
   // This loads all plugins defined in routes
   // define your routes in one of these
-  fastify.register(AutoLoad, {
+  fastify.register(autoLoad, {
     dir: path.join(__dirname, 'routes'),
     options: { ...opts, prefix: '/api' },
   });
