@@ -1,5 +1,5 @@
 import { DatePipe, DecimalPipe , NgClass } from '@angular/common';
-import { ChangeDetectionStrategy,Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy,Component, computed, inject, signal, AfterViewInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { DatePickerModule } from 'primeng/datepicker';
@@ -29,11 +29,17 @@ import { selectUniverse } from './universe.selector';
   templateUrl: './global-universe.component.html',
   styleUrls: ['./global-universe.component.scss'],
 })
-export class GlobalUniverseComponent {
+export class GlobalUniverseComponent implements AfterViewInit {
   readonly today = new Date();
-  sortCriteria = signal<Array<{field: string, order: number}>>([]);
-  minYieldFilter = signal<number | null>(null);
-  selectedAccountId = signal<string>('all');
+  private readonly STORAGE_KEY = 'global-universe-sort-criteria';
+  private readonly FILTERS_STORAGE_KEY = 'global-universe-filters';
+  @ViewChild('dataTable') dataTable: any;
+  sortCriteria = signal<Array<{field: string, order: number}>>(this.loadSortCriteria());
+  minYieldFilter = signal<number | null>(this.loadMinYieldFilter());
+  selectedAccountId = signal<string>(this.loadSelectedAccountId());
+  riskGroupFilter = signal<string | null>(this.loadRiskGroupFilter());
+  expiredFilter = signal<boolean | null>(this.loadExpiredFilter());
+  symbolFilter = signal<string>(this.loadSymbolFilter());
   riskGroups = [
     { label: 'Equities', value: 'Equities' },
     { label: 'Income', value: 'Income' },
@@ -73,12 +79,22 @@ export class GlobalUniverseComponent {
     const currentSortCriteria = this.sortCriteria();
     const minYield = this.minYieldFilter();
     const selectedAccount = this.selectedAccountId();
+    const symbolFilter = this.symbolFilter();
     const self = this;
 
-    // Apply yield filter first
+    // Apply filters
     let filteredData = rawData;
+
+    // Apply symbol filter
+    if (symbolFilter && symbolFilter.trim() !== '') {
+      filteredData = filteredData.filter(function filterSymbol(item) {
+        return item.symbol.toLowerCase().includes(symbolFilter.toLowerCase());
+      });
+    }
+
+    // Apply yield filter
     if (minYield !== null && minYield > 0) {
-      filteredData = rawData.filter(function filterYield(item) {
+      filteredData = filteredData.filter(function filterYield(item) {
         return (item.yield_percent || 0) >= minYield;
       });
     }
@@ -186,8 +202,9 @@ export class GlobalUniverseComponent {
     }
   }
 
-  /**
+    /**
    * Handles column sorting with multi-column support
+   * Cycles through: ascending → descending → no sort (removed)
    */
   protected onSort(field: string): void {
     const currentCriteria = this.sortCriteria();
@@ -195,15 +212,341 @@ export class GlobalUniverseComponent {
       function findCriteria(criteria) { return criteria.field === field });
 
     if (existingIndex >= 0) {
-      // Toggle order for existing field
+      // Field exists in sort criteria - cycle through states
       const updatedCriteria = [...currentCriteria];
-      updatedCriteria[existingIndex].order = updatedCriteria[existingIndex].order === 1 ? -1 : 1;
-      this.sortCriteria.set(updatedCriteria);
+      const currentOrder = updatedCriteria[existingIndex].order;
+
+      if (currentOrder === 1) {
+        // Currently ascending, change to descending
+        updatedCriteria[existingIndex].order = -1;
+        this.sortCriteria.set(updatedCriteria);
+        this.saveSortCriteria(updatedCriteria);
+      } else {
+        // Currently descending, remove from sort criteria
+        updatedCriteria.splice(existingIndex, 1);
+        this.sortCriteria.set(updatedCriteria);
+        this.saveSortCriteria(updatedCriteria);
+      }
     } else {
-      // Add new field to sort criteria
-      this.sortCriteria.set([...currentCriteria, { field, order: 1 }]);
+      // Field not in sort criteria, add as ascending
+      const newCriteria = [...currentCriteria, { field, order: 1 }];
+      this.sortCriteria.set(newCriteria);
+      this.saveSortCriteria(newCriteria);
     }
     // The computed signal will automatically re-evaluate and apply sorting
+  }
+
+    /**
+   * Gets the sort order (1, 2, 3, etc.) for a field in multi-column sort
+   */
+  protected getSortOrder(field: string): number | null {
+    const currentCriteria = this.sortCriteria();
+    const index = currentCriteria.findIndex(
+      function findCriteria(criteria) { return criteria.field === field });
+
+    return index >= 0 ? index + 1 : null;
+  }
+
+  /**
+   * Saves sort criteria to localStorage
+   */
+  private saveSortCriteria(criteria: Array<{field: string, order: number}>): void {
+    try {
+      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(criteria));
+    } catch (error) {
+      // Silently fail if localStorage is not available
+      console.warn('Failed to save sort criteria to localStorage:', error);
+    }
+  }
+
+  /**
+   * Loads sort criteria from localStorage
+   */
+  private loadSortCriteria(): Array<{field: string, order: number}> {
+    try {
+      const saved = localStorage.getItem(this.STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        // Validate that the parsed data is an array of objects with field and order properties
+        if (Array.isArray(parsed) && parsed.every(item =>
+          typeof item === 'object' &&
+          item !== null &&
+          typeof item.field === 'string' &&
+          typeof item.order === 'number'
+        )) {
+          return parsed;
+        }
+      }
+    } catch (error) {
+      // Silently fail if localStorage is not available or data is invalid
+      console.warn('Failed to load sort criteria from localStorage:', error);
+    }
+    return [];
+  }
+
+  /**
+   * Saves min yield filter to localStorage
+   */
+  private saveMinYieldFilter(value: number | null): void {
+    try {
+      localStorage.setItem(`${this.FILTERS_STORAGE_KEY}-minYield`, JSON.stringify(value));
+    } catch (error) {
+      console.warn('Failed to save min yield filter to localStorage:', error);
+    }
+  }
+
+  /**
+   * Loads min yield filter from localStorage
+   */
+  private loadMinYieldFilter(): number | null {
+    try {
+      const saved = localStorage.getItem(`${this.FILTERS_STORAGE_KEY}-minYield`);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (typeof parsed === 'number' || parsed === null) {
+          return parsed;
+        }
+      }
+    } catch (error) {
+      console.warn('Failed to load min yield filter from localStorage:', error);
+    }
+    return null;
+  }
+
+  /**
+   * Handles min yield filter changes and saves to localStorage
+   */
+  protected onMinYieldFilterChange(): void {
+    this.saveMinYieldFilter(this.minYieldFilter());
+  }
+
+  /**
+   * Saves risk group filter to localStorage
+   */
+  private saveRiskGroupFilter(value: string | null): void {
+    try {
+      localStorage.setItem(`${this.FILTERS_STORAGE_KEY}-riskGroup`, JSON.stringify(value));
+    } catch (error) {
+      console.warn('Failed to save risk group filter to localStorage:', error);
+    }
+  }
+
+  /**
+   * Loads risk group filter from localStorage
+   */
+  private loadRiskGroupFilter(): string | null {
+    try {
+      const saved = localStorage.getItem(`${this.FILTERS_STORAGE_KEY}-riskGroup`);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (typeof parsed === 'string' || parsed === null) {
+          return parsed;
+        }
+      }
+    } catch (error) {
+      console.warn('Failed to load risk group filter from localStorage:', error);
+    }
+    return null;
+  }
+
+  /**
+   * Handles risk group filter changes and saves to localStorage
+   */
+  protected onRiskGroupFilterChange(): void {
+    this.saveRiskGroupFilter(this.riskGroupFilter());
+  }
+
+  /**
+   * Handles risk group filter changes from PrimeNG filter
+   */
+  protected onRiskGroupFilterChangeFromPrimeNG(value: string | null): void {
+    this.riskGroupFilter.set(value);
+    this.saveRiskGroupFilter(value);
+  }
+
+  /**
+   * Saves expired filter to localStorage
+   */
+  private saveExpiredFilter(value: boolean | null): void {
+    try {
+      localStorage.setItem(`${this.FILTERS_STORAGE_KEY}-expired`, JSON.stringify(value));
+    } catch (error) {
+      console.warn('Failed to save expired filter to localStorage:', error);
+    }
+  }
+
+  /**
+   * Loads expired filter from localStorage
+   */
+  private loadExpiredFilter(): boolean | null {
+    try {
+      const saved = localStorage.getItem(`${this.FILTERS_STORAGE_KEY}-expired`);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (typeof parsed === 'boolean' || parsed === null) {
+          return parsed;
+        }
+      }
+    } catch (error) {
+      console.warn('Failed to load expired filter from localStorage:', error);
+    }
+    return null;
+  }
+
+  /**
+   * Handles expired filter changes and saves to localStorage
+   */
+  protected onExpiredFilterChange(): void {
+    this.saveExpiredFilter(this.expiredFilter());
+  }
+
+  /**
+   * Handles expired filter changes from PrimeNG filter
+   */
+  protected onExpiredFilterChangeFromPrimeNG(value: boolean | null): void {
+    this.expiredFilter.set(value);
+    this.saveExpiredFilter(value);
+  }
+
+  /**
+   * Saves symbol filter to localStorage
+   */
+  private saveSymbolFilter(value: string): void {
+    try {
+      localStorage.setItem(`${this.FILTERS_STORAGE_KEY}-symbol`, JSON.stringify(value));
+    } catch (error) {
+      console.warn('Failed to save symbol filter to localStorage:', error);
+    }
+  }
+
+  /**
+   * Loads symbol filter from localStorage
+   */
+  private loadSymbolFilter(): string {
+    try {
+      const saved = localStorage.getItem(`${this.FILTERS_STORAGE_KEY}-symbol`);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (typeof parsed === 'string') {
+          return parsed;
+        }
+      }
+    } catch (error) {
+      console.warn('Failed to load symbol filter from localStorage:', error);
+    }
+    return '';
+  }
+
+  /**
+   * Handles symbol filter changes and saves to localStorage
+   */
+  protected onSymbolFilterChange(): void {
+    this.saveSymbolFilter(this.symbolFilter());
+    // The filtering is handled by the computed signal universe$
+  }
+
+
+
+  /**
+   * Saves selected account ID to localStorage
+   */
+  private saveSelectedAccountId(value: string): void {
+    try {
+      localStorage.setItem(`${this.FILTERS_STORAGE_KEY}-selectedAccountId`, JSON.stringify(value));
+    } catch (error) {
+      console.warn('Failed to save selected account ID to localStorage:', error);
+    }
+  }
+
+  /**
+   * Loads selected account ID from localStorage
+   */
+  private loadSelectedAccountId(): string {
+    try {
+      const saved = localStorage.getItem(`${this.FILTERS_STORAGE_KEY}-selectedAccountId`);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (typeof parsed === 'string') {
+          return parsed;
+        }
+      }
+    } catch (error) {
+      console.warn('Failed to load selected account ID from localStorage:', error);
+    }
+    return 'all';
+  }
+
+  /**
+   * Handles selected account ID changes and saves to localStorage
+   */
+  protected onSelectedAccountIdChange(): void {
+    this.saveSelectedAccountId(this.selectedAccountId());
+  }
+
+  /**
+   * Initializes filters with saved values
+   */
+  protected initializeFilters(): void {
+    // This method will be called after view init to apply saved filters
+    const symbolValue = this.symbolFilter();
+    const riskGroupValue = this.riskGroupFilter();
+    const expiredValue = this.expiredFilter();
+
+    // We'll need to trigger the filter application here
+    // This will be called from the template after the view is initialized
+  }
+
+  /**
+   * Called after view is initialized to apply saved filters
+   */
+  ngAfterViewInit(): void {
+    // Apply saved filters after view is initialized
+    setTimeout(() => {
+      this.applySavedFilters();
+    }, 0);
+  }
+
+  /**
+   * Applies saved filters to the table
+   */
+  private applySavedFilters(): void {
+    // Trigger the filter application for saved values
+    const symbolValue = this.symbolFilter();
+    const riskGroupValue = this.riskGroupFilter();
+    const expiredValue = this.expiredFilter();
+
+    // Apply saved filters to the table
+    if (this.dataTable) {
+      if (symbolValue) {
+        // Trigger symbol filter
+        this.dataTable.filter(symbolValue, 'symbol', 'contains');
+      }
+      if (riskGroupValue) {
+        // Trigger risk group filter
+        this.dataTable.filter(riskGroupValue, 'riskGroup', 'equals');
+      }
+      if (expiredValue !== null) {
+        // Trigger expired filter
+        this.dataTable.filter(expiredValue, 'expired', 'equals');
+      }
+    }
+  }
+
+  /**
+   * Triggers filter application for saved values
+   */
+  protected triggerFilter(filterType: 'symbol' | 'riskGroup' | 'expired'): void {
+    switch (filterType) {
+      case 'symbol':
+        // Trigger symbol filter
+        break;
+      case 'riskGroup':
+        // Trigger risk group filter
+        break;
+      case 'expired':
+        // Trigger expired filter
+        break;
+    }
   }
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
@@ -224,6 +567,26 @@ export class GlobalUniverseComponent {
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
   mostRecentSellPriceSortIcon$ = computed(() => {
     return getSortIcon('most_recent_sell_price', this.sortCriteria);
+  });
+
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
+  yieldPercentSortOrder$ = computed(() => {
+    return this.getSortOrder('yield_percent');
+  });
+
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
+  exDateSortOrder$ = computed(() => {
+    return this.getSortOrder('ex_date');
+  });
+
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
+  mostRecentSellDateSortOrder$ = computed(() => {
+    return this.getSortOrder('most_recent_sell_date');
+  });
+
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
+  mostRecentSellPriceSortOrder$ = computed(() => {
+    return this.getSortOrder('most_recent_sell_price');
   });
 
   /**
