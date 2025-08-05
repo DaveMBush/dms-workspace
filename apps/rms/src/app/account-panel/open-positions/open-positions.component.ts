@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy,Component, ElementRef, inject, signal,viewChild  } from '@angular/core';
+import { ChangeDetectionStrategy,Component, ElementRef, inject, signal,viewChild, computed  } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
@@ -8,6 +8,8 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { TableModule } from 'primeng/table';
 import { ToastModule } from 'primeng/toast';
 
+import { currentAccountSignalStore } from '../../store/current-account/current-account.signal-store';
+import { selectCurrentAccountSignal } from '../../store/current-account/select-current-account.signal';
 import { Trade } from '../../store/trades/trade.interface';
 import { selectUniverses } from '../../store/universe/selectors/select-universes.function';
 import { Universe } from '../../store/universe/universe.interface';
@@ -24,11 +26,26 @@ import { OpenPositionsComponentService } from './open-positions-component.servic
   viewProviders: [OpenPositionsComponentService],
 })
 export class OpenPositionsComponent {
+  private readonly FILTERS_STORAGE_KEY = 'open-positions-filters';
   private scrollTopSignal = signal(0);
   private openPositionsService = inject(OpenPositionsComponentService);
-  positions$ = this.openPositionsService.selectOpenPositions;
+  private currentAccountSignalStore = inject(currentAccountSignalStore);
+  positions$ = computed(() => {
+    const rawPositions = this.openPositionsService.selectOpenPositions();
+    const symbolFilter = this.symbolFilter();
+
+    // Apply symbol filter
+    if (symbolFilter && symbolFilter.trim() !== '') {
+      return rawPositions.filter(function filterSymbol(position) {
+        return position.symbol.toLowerCase().includes(symbolFilter.toLowerCase());
+      });
+    }
+
+    return rawPositions;
+  });
   toastMessages = signal<{ severity: string; summary: string; detail: string }[]>([]);
   private messageService = inject(MessageService);
+  symbolFilter = signal<string>(this.loadSymbolFilter());
   trash(position: OpenPosition): void {
     this.openPositionsService.deleteOpenPosition(position);
   }
@@ -153,4 +170,43 @@ export class OpenPositionsComponent {
     return tableEl?.querySelector('.p-datatable-table-container');
   }
 
+  /**
+   * Saves symbol filter to localStorage
+   */
+  private saveSymbolFilter(value: string): void {
+    try {
+      const currentAccount = selectCurrentAccountSignal(this.currentAccountSignalStore);
+      const accountId = currentAccount().id;
+      localStorage.setItem(`${this.FILTERS_STORAGE_KEY}-${accountId}-symbolFilter`, JSON.stringify(value));
+    } catch (error) {
+      console.warn('Failed to save symbol filter to localStorage:', error);
+    }
+  }
+
+  /**
+   * Loads symbol filter from localStorage
+   */
+  private loadSymbolFilter(): string {
+    try {
+      const currentAccount = selectCurrentAccountSignal(this.currentAccountSignalStore);
+      const accountId = currentAccount().id;
+      const saved = localStorage.getItem(`${this.FILTERS_STORAGE_KEY}-${accountId}-symbolFilter`);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (typeof parsed === 'string') {
+          return parsed;
+        }
+      }
+    } catch (error) {
+      console.warn('Failed to load symbol filter from localStorage:', error);
+    }
+    return ''; // Default value if nothing is saved or an error occurs
+  }
+
+  /**
+   * Handles symbol filter changes and saves to localStorage
+   */
+  protected onSymbolFilterChange(): void {
+    this.saveSymbolFilter(this.symbolFilter());
+  }
 }

@@ -11,8 +11,14 @@
   <ng-template pTemplate="header">
     <tr class="bg-gray-100 dark:bg-slate-800">
       <th class="min-w-16 max-w-16">
-        <p-columnFilter [style]="{'max-width': '100%'}" field="symbol" matchMode="contains" [showMenu]="false">
-        </p-columnFilter>
+        <input
+          pInputText
+          type="text"
+          [(ngModel)]="symbolFilter"
+          (ngModelChange)="onSymbolFilterChange()"
+          placeholder="Search Symbol"
+          class="w-20 p-input p-component p-inputwrapper p-inputtext"
+        />
       </th>
       <th class="min-w-32 max-w-32">Ex-Date</th>
       <th class="min-w-16 max-w-16">Buy</th>
