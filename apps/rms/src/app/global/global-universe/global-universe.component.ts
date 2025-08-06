@@ -1,5 +1,5 @@
 import { DatePipe, DecimalPipe , NgClass } from '@angular/common';
-import { AfterViewInit, ChangeDetectionStrategy,Component, computed, inject, signal, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { DatePickerModule } from 'primeng/datepicker';
@@ -17,8 +17,10 @@ import { selectUniverses } from '../../store/universe/selectors/select-universes
 import { Universe } from '../../store/universe/universe.interface';
 import { UniverseSettingsService } from '../../universe-settings/universe-settings.service';
 import { compareForSort } from './compare-for-sort.function';
-import { getSortIcon } from './get-sort-icon.function';
+import { getLocalStorageItem } from './get-local-storage-item.function';
 import { isRowDimmed } from './is-row-dimmed.function';
+import { setLocalStorageItem } from './set-local-storage-item.function';
+import { createSortComputedSignals } from './sort-computed-signals.function';
 import { selectUniverse } from './universe.selector';
 
 const STORAGE_KEY = 'global-universe-sort-criteria';
@@ -294,36 +296,31 @@ export class GlobalUniverseComponent {
   }
 
   /**
+   * Handles selected account ID changes and saves to localStorage
+   */
+  protected onSelectedAccountIdChange(): void {
+    this.saveSelectedAccountId(this.selectedAccountId());
+  }
+
+  /**
    * Saves sort criteria to localStorage
    */
   private saveSortCriteria(criteria: Array<{field: string, order: number}>): void {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(criteria));
-    } catch {
-      // Silently fail if localStorage is not available
-    }
+    setLocalStorageItem(STORAGE_KEY, criteria);
   }
 
   /**
    * Loads sort criteria from localStorage
    */
   private loadSortCriteria(): Array<{field: string, order: number}> {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved === null) {
-        return [];
-      }
-      const parsed = JSON.parse(saved) as Array<{field: string, order: number}> | null;
-      // Validate that the parsed data is an array of objects with field and order properties
-      if (Array.isArray(parsed) && parsed.every(function itemCheck(item) {
-        return typeof item === 'object' &&
-          typeof item.field === 'string' &&
-          typeof item.order === 'number';
-      })) {
-        return parsed;
-      }
-    } catch {
-      // Silently fail if localStorage is not available or data is invalid
+    const saved = getLocalStorageItem<Array<{field: string, order: number}>>(STORAGE_KEY, []);
+    // Validate that the parsed data is an array of objects with field and order properties
+    if (Array.isArray(saved) && saved.every(function itemCheck(item) {
+      return typeof item === 'object' &&
+        typeof item.field === 'string' &&
+        typeof item.order === 'number';
+    })) {
+      return saved;
     }
     return [];
   }
@@ -332,28 +329,16 @@ export class GlobalUniverseComponent {
    * Saves min yield filter to localStorage
    */
   private saveMinYieldFilter(value: number | null): void {
-    try {
-      localStorage.setItem(`${FILTERS_STORAGE_KEY}-minYield`, JSON.stringify(value));
-    } catch {
-      // Silently fail if localStorage is not available
-    }
+    setLocalStorageItem(`${FILTERS_STORAGE_KEY}-minYield`, value);
   }
 
   /**
    * Loads min yield filter from localStorage
    */
   private loadMinYieldFilter(): number | null {
-    try {
-      const saved = localStorage.getItem(`${FILTERS_STORAGE_KEY}-minYield`);
-      if (saved === null) {
-        return null;
-      }
-      const parsed = JSON.parse(saved) as number | null;
-      if (typeof parsed === 'number' || parsed === null) {
-        return parsed;
-      }
-    } catch {
-      // Silently fail if localStorage is not available
+    const saved = getLocalStorageItem<number | null>(`${FILTERS_STORAGE_KEY}-minYield`, null);
+    if (typeof saved === 'number' || saved === null) {
+      return saved;
     }
     return null;
   }
@@ -362,28 +347,16 @@ export class GlobalUniverseComponent {
    * Saves risk group filter to localStorage
    */
   private saveRiskGroupFilter(value: string | null): void {
-    try {
-      localStorage.setItem(`${FILTERS_STORAGE_KEY}-riskGroup`, JSON.stringify(value));
-    } catch {
-      // Silently fail if localStorage is not available
-    }
+    setLocalStorageItem(`${FILTERS_STORAGE_KEY}-riskGroup`, value);
   }
 
   /**
    * Loads risk group filter from localStorage
    */
   private loadRiskGroupFilter(): string | null {
-    try {
-      const saved = localStorage.getItem(`${FILTERS_STORAGE_KEY}-riskGroup`);
-      if (saved === null) {
-        return null;
-      }
-      const parsed = JSON.parse(saved) as string | null;
-      if (typeof parsed === 'string' || parsed === null) {
-        return parsed;
-      }
-    } catch {
-      // Silently fail if localStorage is not available
+    const saved = getLocalStorageItem<string | null>(`${FILTERS_STORAGE_KEY}-riskGroup`, null);
+    if (typeof saved === 'string' || saved === null) {
+      return saved;
     }
     return null;
   }
@@ -392,28 +365,16 @@ export class GlobalUniverseComponent {
    * Saves expired filter to localStorage
    */
   private saveExpiredFilter(value: boolean | null): void {
-    try {
-      localStorage.setItem(`${FILTERS_STORAGE_KEY}-expired`, JSON.stringify(value));
-    } catch {
-      // Silently fail if localStorage is not available
-    }
+    setLocalStorageItem(`${FILTERS_STORAGE_KEY}-expired`, value);
   }
 
   /**
    * Loads expired filter from localStorage
    */
   private loadExpiredFilter(): boolean | null {
-    try {
-      const saved = localStorage.getItem(`${FILTERS_STORAGE_KEY}-expired`);
-      if (saved === null) {
-        return null;
-      }
-      const parsed = JSON.parse(saved) as boolean | null;
-      if (typeof parsed === 'boolean' || parsed === null) {
-        return parsed;
-      }
-    } catch {
-      // Silently fail if localStorage is not available
+    const saved = getLocalStorageItem<boolean | null>(`${FILTERS_STORAGE_KEY}-expired`, null);
+    if (typeof saved === 'boolean' || saved === null) {
+      return saved;
     }
     return null;
   }
@@ -422,28 +383,16 @@ export class GlobalUniverseComponent {
    * Saves symbol filter to localStorage
    */
   private saveSymbolFilter(value: string): void {
-    try {
-      localStorage.setItem(`${FILTERS_STORAGE_KEY}-symbol`, JSON.stringify(value));
-    } catch {
-      // Silently fail if localStorage is not available
-    }
+    setLocalStorageItem(`${FILTERS_STORAGE_KEY}-symbol`, value);
   }
 
   /**
    * Loads symbol filter from localStorage
    */
   private loadSymbolFilter(): string {
-    try {
-      const saved = localStorage.getItem(`${FILTERS_STORAGE_KEY}-symbol`);
-      if (saved === null) {
-        return '';
-      }
-      const parsed = JSON.parse(saved) as string;
-      if (typeof parsed === 'string') {
-        return parsed;
-      }
-    } catch {
-      // Silently fail if localStorage is not available
+    const saved = getLocalStorageItem<string>(`${FILTERS_STORAGE_KEY}-symbol`, '');
+    if (typeof saved === 'string') {
+      return saved;
     }
     return '';
   }
@@ -452,90 +401,23 @@ export class GlobalUniverseComponent {
    * Saves selected account ID to localStorage
    */
   private saveSelectedAccountId(value: string): void {
-    try {
-      localStorage.setItem(`${FILTERS_STORAGE_KEY}-selectedAccountId`, JSON.stringify(value));
-    } catch (error) {
-      console.warn('Failed to save selected account ID to localStorage:', error);
-    }
+    setLocalStorageItem(`${FILTERS_STORAGE_KEY}-selectedAccountId`, value);
   }
 
   /**
    * Loads selected account ID from localStorage
    */
   private loadSelectedAccountId(): string {
-    try {
-      const saved = localStorage.getItem(`${FILTERS_STORAGE_KEY}-selectedAccountId`);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (typeof parsed === 'string') {
-          return parsed;
-        }
-      }
-    } catch (error) {
-      console.warn('Failed to load selected account ID from localStorage:', error);
+    const saved = getLocalStorageItem<string>(`${FILTERS_STORAGE_KEY}-selectedAccountId`, 'all');
+    if (typeof saved === 'string') {
+      return saved;
     }
     return 'all';
   }
 
-  /**
-   * Handles selected account ID changes and saves to localStorage
-   */
-  protected onSelectedAccountIdChange(): void {
-    this.saveSelectedAccountId(this.selectedAccountId());
-  }
 
-  /**
-   * Initializes filters with saved values
-   */
-  protected initializeFilters(): void {
-    // This method will be called after view init to apply saved filters
-    const symbolValue = this.symbolFilter();
-    const riskGroupValue = this.riskGroupFilter();
-    const expiredValue = this.expiredFilter();
-
-    // We'll need to trigger the filter application here
-    // This will be called from the template after the view is initialized
-  }
-
-  // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
-  yieldPercentSortIcon$ = computed(() => {
-    return getSortIcon('yield_percent', this.sortCriteria);
-  });
-
-  // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
-  exDateSortIcon$ = computed(() => {
-    return getSortIcon('ex_date', this.sortCriteria);
-  });
-
-  // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
-  mostRecentSellDateSortIcon$ = computed(() => {
-    return getSortIcon('most_recent_sell_date', this.sortCriteria);
-  });
-
-  // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
-  mostRecentSellPriceSortIcon$ = computed(() => {
-    return getSortIcon('most_recent_sell_price', this.sortCriteria);
-  });
-
-  // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
-  yieldPercentSortOrder$ = computed(() => {
-    return this.getSortOrder('yield_percent');
-  });
-
-  // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
-  exDateSortOrder$ = computed(() => {
-    return this.getSortOrder('ex_date');
-  });
-
-  // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
-  mostRecentSellDateSortOrder$ = computed(() => {
-    return this.getSortOrder('most_recent_sell_date');
-  });
-
-  // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
-  mostRecentSellPriceSortOrder$ = computed(() => {
-    return this.getSortOrder('most_recent_sell_price');
-  });
+  // Create sort computed signals
+  readonly sortSignals = createSortComputedSignals(this.sortCriteria, this.getSortOrder.bind(this));
 
   /**
    * Gets the value of a field from the display data object
@@ -599,6 +481,12 @@ export class GlobalUniverseComponent {
     return exDate;
   }
 
+
+
+  /**
+   * Computed signal that returns universe data with dimmed state included
+   */
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
   /**
    * Gets account-specific data for a symbol
    */
@@ -666,17 +554,15 @@ export class GlobalUniverseComponent {
     };
   }
 
-  /**
-   * Computed signal that returns universe data with dimmed state included
-   */
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
   readonly universeWithDimmedState$ = computed(() => {
     const universes = this.universe$() as unknown as Universe[];
-    // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
-    return universes.map(universe => ({
-      ...universe,
-      isDimmed: isRowDimmed(universe)
-    }));
+    return universes.map(function mapUniverse(universe) {
+      return {
+        ...universe,
+        isDimmed: isRowDimmed(universe)
+      };
+    });
   });
 
 

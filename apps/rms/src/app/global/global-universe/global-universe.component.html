@@ -98,38 +98,38 @@ showGridlines [rowTrackBy]="trackById"
       <th>Distributions / Year</th>
       <th (click)="onSort('yield_percent')" class="cursor-pointer select-none w-32">
         Yield %
-        <i [class]="yieldPercentSortIcon$()"></i>
-        @if (yieldPercentSortOrder$()) {
+        <i [class]="sortSignals.yieldPercentSortIcon$()"></i>
+        @if (sortSignals.yieldPercentSortOrder$()) {
           <span class="text-xs text-gray-500">
-            {{ yieldPercentSortOrder$() }}
+            {{ sortSignals.yieldPercentSortOrder$() }}
           </span>
         }
       </th>
       <th>Last Price</th>
       <th (click)="onSort('ex_date')" class="cursor-pointer select-none">
         Ex-Date
-        <i [class]="exDateSortIcon$()"></i>
-        @if (exDateSortOrder$()) {
+        <i [class]="sortSignals.exDateSortIcon$()"></i>
+        @if (sortSignals.exDateSortOrder$()) {
           <span class="text-xs text-gray-500">
-            {{ exDateSortOrder$() }}
+            {{ sortSignals.exDateSortOrder$() }}
           </span>
         }
       </th>
       <th (click)="onSort('most_recent_sell_date')" class="cursor-pointer select-none">
         Mst Rcnt Sll Dt
-        <i [class]="mostRecentSellDateSortIcon$()"></i>
-        @if (mostRecentSellDateSortOrder$()) {
+        <i [class]="sortSignals.mostRecentSellDateSortIcon$()"></i>
+        @if (sortSignals.mostRecentSellDateSortOrder$()) {
           <span class="text-xs text-gray-500">
-            {{ mostRecentSellDateSortOrder$() }}
+            {{ sortSignals.mostRecentSellDateSortOrder$() }}
           </span>
         }
       </th>
       <th (click)="onSort('most_recent_sell_price')" class="cursor-pointer select-none">
         Mst Rcnt Sell $
-        <i [class]="mostRecentSellPriceSortIcon$()"></i>
-        @if (mostRecentSellPriceSortOrder$()) {
+        <i [class]="sortSignals.mostRecentSellPriceSortIcon$()"></i>
+        @if (sortSignals.mostRecentSellPriceSortOrder$()) {
           <span class="text-xs text-gray-500">
-            {{ mostRecentSellPriceSortOrder$() }}
+            {{ sortSignals.mostRecentSellPriceSortOrder$() }}
           </span>
         }
       </th>

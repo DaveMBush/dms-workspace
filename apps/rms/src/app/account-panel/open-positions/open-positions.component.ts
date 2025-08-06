@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy,Component, ElementRef, inject, signal,viewChild, computed  } from '@angular/core';
+import { ChangeDetectionStrategy,Component, computed,ElementRef, inject, signal,viewChild  } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
@@ -16,6 +16,9 @@ import { Universe } from '../../store/universe/universe.interface';
 import { OpenPosition } from './open-position.interface';
 import { OpenPositionsComponentService } from './open-positions-component.service';
 
+const FILTERS_STORAGE_KEY = 'open-positions-filters';
+
+
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'rms-open-positions',
@@ -26,10 +29,10 @@ import { OpenPositionsComponentService } from './open-positions-component.servic
   viewProviders: [OpenPositionsComponentService],
 })
 export class OpenPositionsComponent {
-  private readonly FILTERS_STORAGE_KEY = 'open-positions-filters';
   private scrollTopSignal = signal(0);
   private openPositionsService = inject(OpenPositionsComponentService);
   private currentAccountSignalStore = inject(currentAccountSignalStore);
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
   positions$ = computed(() => {
     const rawPositions = this.openPositionsService.selectOpenPositions();
     const symbolFilter = this.symbolFilter();
@@ -43,6 +46,7 @@ export class OpenPositionsComponent {
 
     return rawPositions;
   });
+
   toastMessages = signal<{ severity: string; summary: string; detail: string }[]>([]);
   private messageService = inject(MessageService);
   symbolFilter = signal<string>(this.loadSymbolFilter());
@@ -72,6 +76,13 @@ export class OpenPositionsComponent {
       return;
     }
     (trade as Record<keyof Trade, unknown>)[tradeField as keyof Trade] = row[field as keyof OpenPosition];
+  }
+
+  /**
+   * Handles symbol filter changes and saves to localStorage
+   */
+  protected onSymbolFilterChange(): void {
+    this.saveSymbolFilter(this.symbolFilter());
   }
 
   private validateTradeField(field: string, row: OpenPosition, trade: Trade, universe: Universe): string {
@@ -177,9 +188,9 @@ export class OpenPositionsComponent {
     try {
       const currentAccount = selectCurrentAccountSignal(this.currentAccountSignalStore);
       const accountId = currentAccount().id;
-      localStorage.setItem(`${this.FILTERS_STORAGE_KEY}-${accountId}-symbolFilter`, JSON.stringify(value));
-    } catch (error) {
-      console.warn('Failed to save symbol filter to localStorage:', error);
+      localStorage.setItem(`${FILTERS_STORAGE_KEY}-${accountId}-symbolFilter`, JSON.stringify(value));
+    } catch {
+      // fail silently
     }
   }
 
@@ -190,23 +201,14 @@ export class OpenPositionsComponent {
     try {
       const currentAccount = selectCurrentAccountSignal(this.currentAccountSignalStore);
       const accountId = currentAccount().id;
-      const saved = localStorage.getItem(`${this.FILTERS_STORAGE_KEY}-${accountId}-symbolFilter`);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (typeof parsed === 'string') {
-          return parsed;
-        }
+      const saved = localStorage.getItem(`${FILTERS_STORAGE_KEY}-${accountId}-symbolFilter`);
+      if (saved !== null) {
+        return JSON.parse(saved) as string;
       }
-    } catch (error) {
-      console.warn('Failed to load symbol filter from localStorage:', error);
+    } catch {
+      // fail silently
     }
     return ''; // Default value if nothing is saved or an error occurs
   }
 
-  /**
-   * Handles symbol filter changes and saves to localStorage
-   */
-  protected onSymbolFilterChange(): void {
-    this.saveSymbolFilter(this.symbolFilter());
-  }
 }

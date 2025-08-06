@@ -1,0 +1,88 @@
+---
+description: Prefer functions over static methods for utility operations
+globs: **/*.ts
+alwaysApply: true
+---
+# Prefer Functions Over Static Methods
+
+When creating utility functions or helper operations, always use standalone functions instead of static methods in classes.
+
+## Why Functions Over Static Methods
+
+1. **Simpler**: No class overhead, just pure functions
+2. **More functional**: Follows functional programming principles
+3. **Better tree-shaking**: Each function can be imported independently
+4. **Cleaner imports**: More explicit about what's being imported
+5. **Follows project conventions**: Matches existing function file pattern
+
+## Guidelines
+
+### ✅ DO: Use standalone functions
+
+```typescript
+// Good: Standalone function
+export function formatDate(date: Date): string {
+  return date.toISOString();
+}
+
+// Good: Multiple related functions in separate files
+// format-date.function.ts
+export function formatDate(date: Date): string {
+  return date.toISOString();
+}
+
+// parse-date.function.ts
+export function parseDate(dateString: string): Date {
+  return new Date(dateString);
+}
+```
+
+### ❌ DON'T: Use static methods in classes
+
+```typescript
+// Bad: Static methods in class
+export class DateHelper {
+  static formatDate(date: Date): string {
+    return date.toISOString();
+  }
+
+  static parseDate(dateString: string): Date {
+    return new Date(dateString);
+  }
+}
+```
+
+## File Naming Convention
+
+When creating utility functions, follow this naming pattern:
+- `function-name.function.ts` for single-purpose functions
+- Use kebab-case for filenames
+- Always use `.function.ts` extension
+
+## Import Pattern
+
+```typescript
+// Good: Import specific functions
+import { formatDate } from './format-date.function';
+import { parseDate } from './parse-date.function';
+
+// Bad: Import class with static methods
+import { DateHelper } from './date-helper';
+```
+
+## Examples from This Project
+
+See these examples in the codebase:
+- `set-local-storage-item.function.ts`
+- `get-local-storage-item.function.ts`
+- `is-row-dimmed.function.ts`
+- `compare-for-sort.function.ts`
+
+## When to Break This Rule
+
+Only use static methods when:
+1. The method is truly part of a class's behavior (not a utility)
+2. The method needs access to instance state
+3. You're implementing a design pattern that requires class methods
+4. Working with third-party libraries that require class methods
+
