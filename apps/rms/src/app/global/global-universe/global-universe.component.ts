@@ -1,5 +1,5 @@
 import { DatePipe, DecimalPipe , NgClass } from '@angular/common';
-import { ChangeDetectionStrategy,Component, computed, inject, signal, AfterViewInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy,Component, computed, inject, signal, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { DatePickerModule } from 'primeng/datepicker';
@@ -21,6 +21,10 @@ import { getSortIcon } from './get-sort-icon.function';
 import { isRowDimmed } from './is-row-dimmed.function';
 import { selectUniverse } from './universe.selector';
 
+const STORAGE_KEY = 'global-universe-sort-criteria';
+const FILTERS_STORAGE_KEY = 'global-universe-filters';
+
+
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'rms-global-universe',
@@ -29,11 +33,8 @@ import { selectUniverse } from './universe.selector';
   templateUrl: './global-universe.component.html',
   styleUrls: ['./global-universe.component.scss'],
 })
-export class GlobalUniverseComponent implements AfterViewInit {
+export class GlobalUniverseComponent {
   readonly today = new Date();
-  private readonly STORAGE_KEY = 'global-universe-sort-criteria';
-  private readonly FILTERS_STORAGE_KEY = 'global-universe-filters';
-  @ViewChild('dataTable') dataTable: any;
   sortCriteria = signal<Array<{field: string, order: number}>>(this.loadSortCriteria());
   minYieldFilter = signal<number | null>(this.loadMinYieldFilter());
   selectedAccountId = signal<string>(this.loadSelectedAccountId());
@@ -247,106 +248,11 @@ export class GlobalUniverseComponent implements AfterViewInit {
     return index >= 0 ? index + 1 : null;
   }
 
-  /**
-   * Saves sort criteria to localStorage
-   */
-  private saveSortCriteria(criteria: Array<{field: string, order: number}>): void {
-    try {
-      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(criteria));
-    } catch (error) {
-      // Silently fail if localStorage is not available
-      console.warn('Failed to save sort criteria to localStorage:', error);
-    }
-  }
-
-  /**
-   * Loads sort criteria from localStorage
-   */
-  private loadSortCriteria(): Array<{field: string, order: number}> {
-    try {
-      const saved = localStorage.getItem(this.STORAGE_KEY);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        // Validate that the parsed data is an array of objects with field and order properties
-        if (Array.isArray(parsed) && parsed.every(item =>
-          typeof item === 'object' &&
-          item !== null &&
-          typeof item.field === 'string' &&
-          typeof item.order === 'number'
-        )) {
-          return parsed;
-        }
-      }
-    } catch (error) {
-      // Silently fail if localStorage is not available or data is invalid
-      console.warn('Failed to load sort criteria from localStorage:', error);
-    }
-    return [];
-  }
-
-  /**
-   * Saves min yield filter to localStorage
-   */
-  private saveMinYieldFilter(value: number | null): void {
-    try {
-      localStorage.setItem(`${this.FILTERS_STORAGE_KEY}-minYield`, JSON.stringify(value));
-    } catch (error) {
-      console.warn('Failed to save min yield filter to localStorage:', error);
-    }
-  }
-
-  /**
-   * Loads min yield filter from localStorage
-   */
-  private loadMinYieldFilter(): number | null {
-    try {
-      const saved = localStorage.getItem(`${this.FILTERS_STORAGE_KEY}-minYield`);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (typeof parsed === 'number' || parsed === null) {
-          return parsed;
-        }
-      }
-    } catch (error) {
-      console.warn('Failed to load min yield filter from localStorage:', error);
-    }
-    return null;
-  }
-
-  /**
+    /**
    * Handles min yield filter changes and saves to localStorage
    */
   protected onMinYieldFilterChange(): void {
     this.saveMinYieldFilter(this.minYieldFilter());
-  }
-
-  /**
-   * Saves risk group filter to localStorage
-   */
-  private saveRiskGroupFilter(value: string | null): void {
-    try {
-      localStorage.setItem(`${this.FILTERS_STORAGE_KEY}-riskGroup`, JSON.stringify(value));
-    } catch (error) {
-      console.warn('Failed to save risk group filter to localStorage:', error);
-    }
-  }
-
-  /**
-   * Loads risk group filter from localStorage
-   */
-  private loadRiskGroupFilter(): string | null {
-    try {
-      const saved = localStorage.getItem(`${this.FILTERS_STORAGE_KEY}-riskGroup`);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (typeof parsed === 'string' || parsed === null) {
-          return parsed;
-        }
-      }
-    } catch (error) {
-      console.warn('Failed to load risk group filter from localStorage:', error);
-    }
-    return null;
   }
 
   /**
@@ -356,7 +262,7 @@ export class GlobalUniverseComponent implements AfterViewInit {
     this.saveRiskGroupFilter(this.riskGroupFilter());
   }
 
-  /**
+    /**
    * Handles risk group filter changes from PrimeNG filter
    */
   protected onRiskGroupFilterChangeFromPrimeNG(value: string | null): void {
@@ -364,14 +270,132 @@ export class GlobalUniverseComponent implements AfterViewInit {
     this.saveRiskGroupFilter(value);
   }
 
+    /**
+   * Handles expired filter changes and saves to localStorage
+   */
+  protected onExpiredFilterChange(): void {
+    this.saveExpiredFilter(this.expiredFilter());
+  }
+
+    /**
+   * Handles expired filter changes from PrimeNG filter
+   */
+  protected onExpiredFilterChangeFromPrimeNG(value: boolean | null): void {
+    this.expiredFilter.set(value);
+    this.saveExpiredFilter(value);
+  }
+
+    /**
+   * Handles symbol filter changes and saves to localStorage
+   */
+  protected onSymbolFilterChange(): void {
+    this.saveSymbolFilter(this.symbolFilter());
+    // The filtering is handled by the computed signal universe$
+  }
+
+  /**
+   * Saves sort criteria to localStorage
+   */
+  private saveSortCriteria(criteria: Array<{field: string, order: number}>): void {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(criteria));
+    } catch {
+      // Silently fail if localStorage is not available
+    }
+  }
+
+  /**
+   * Loads sort criteria from localStorage
+   */
+  private loadSortCriteria(): Array<{field: string, order: number}> {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved === null) {
+        return [];
+      }
+      const parsed = JSON.parse(saved) as Array<{field: string, order: number}> | null;
+      // Validate that the parsed data is an array of objects with field and order properties
+      if (Array.isArray(parsed) && parsed.every(function itemCheck(item) {
+        return typeof item === 'object' &&
+          typeof item.field === 'string' &&
+          typeof item.order === 'number';
+      })) {
+        return parsed;
+      }
+    } catch {
+      // Silently fail if localStorage is not available or data is invalid
+    }
+    return [];
+  }
+
+  /**
+   * Saves min yield filter to localStorage
+   */
+  private saveMinYieldFilter(value: number | null): void {
+    try {
+      localStorage.setItem(`${FILTERS_STORAGE_KEY}-minYield`, JSON.stringify(value));
+    } catch {
+      // Silently fail if localStorage is not available
+    }
+  }
+
+  /**
+   * Loads min yield filter from localStorage
+   */
+  private loadMinYieldFilter(): number | null {
+    try {
+      const saved = localStorage.getItem(`${FILTERS_STORAGE_KEY}-minYield`);
+      if (saved === null) {
+        return null;
+      }
+      const parsed = JSON.parse(saved) as number | null;
+      if (typeof parsed === 'number' || parsed === null) {
+        return parsed;
+      }
+    } catch {
+      // Silently fail if localStorage is not available
+    }
+    return null;
+  }
+
+  /**
+   * Saves risk group filter to localStorage
+   */
+  private saveRiskGroupFilter(value: string | null): void {
+    try {
+      localStorage.setItem(`${FILTERS_STORAGE_KEY}-riskGroup`, JSON.stringify(value));
+    } catch {
+      // Silently fail if localStorage is not available
+    }
+  }
+
+  /**
+   * Loads risk group filter from localStorage
+   */
+  private loadRiskGroupFilter(): string | null {
+    try {
+      const saved = localStorage.getItem(`${FILTERS_STORAGE_KEY}-riskGroup`);
+      if (saved === null) {
+        return null;
+      }
+      const parsed = JSON.parse(saved) as string | null;
+      if (typeof parsed === 'string' || parsed === null) {
+        return parsed;
+      }
+    } catch {
+      // Silently fail if localStorage is not available
+    }
+    return null;
+  }
+
   /**
    * Saves expired filter to localStorage
    */
   private saveExpiredFilter(value: boolean | null): void {
     try {
-      localStorage.setItem(`${this.FILTERS_STORAGE_KEY}-expired`, JSON.stringify(value));
-    } catch (error) {
-      console.warn('Failed to save expired filter to localStorage:', error);
+      localStorage.setItem(`${FILTERS_STORAGE_KEY}-expired`, JSON.stringify(value));
+    } catch {
+      // Silently fail if localStorage is not available
     }
   }
 
@@ -380,32 +404,18 @@ export class GlobalUniverseComponent implements AfterViewInit {
    */
   private loadExpiredFilter(): boolean | null {
     try {
-      const saved = localStorage.getItem(`${this.FILTERS_STORAGE_KEY}-expired`);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (typeof parsed === 'boolean' || parsed === null) {
-          return parsed;
-        }
+      const saved = localStorage.getItem(`${FILTERS_STORAGE_KEY}-expired`);
+      if (saved === null) {
+        return null;
       }
-    } catch (error) {
-      console.warn('Failed to load expired filter from localStorage:', error);
+      const parsed = JSON.parse(saved) as boolean | null;
+      if (typeof parsed === 'boolean' || parsed === null) {
+        return parsed;
+      }
+    } catch {
+      // Silently fail if localStorage is not available
     }
     return null;
-  }
-
-  /**
-   * Handles expired filter changes and saves to localStorage
-   */
-  protected onExpiredFilterChange(): void {
-    this.saveExpiredFilter(this.expiredFilter());
-  }
-
-  /**
-   * Handles expired filter changes from PrimeNG filter
-   */
-  protected onExpiredFilterChangeFromPrimeNG(value: boolean | null): void {
-    this.expiredFilter.set(value);
-    this.saveExpiredFilter(value);
   }
 
   /**
@@ -413,9 +423,9 @@ export class GlobalUniverseComponent implements AfterViewInit {
    */
   private saveSymbolFilter(value: string): void {
     try {
-      localStorage.setItem(`${this.FILTERS_STORAGE_KEY}-symbol`, JSON.stringify(value));
-    } catch (error) {
-      console.warn('Failed to save symbol filter to localStorage:', error);
+      localStorage.setItem(`${FILTERS_STORAGE_KEY}-symbol`, JSON.stringify(value));
+    } catch {
+      // Silently fail if localStorage is not available
     }
   }
 
@@ -424,35 +434,26 @@ export class GlobalUniverseComponent implements AfterViewInit {
    */
   private loadSymbolFilter(): string {
     try {
-      const saved = localStorage.getItem(`${this.FILTERS_STORAGE_KEY}-symbol`);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (typeof parsed === 'string') {
-          return parsed;
-        }
+      const saved = localStorage.getItem(`${FILTERS_STORAGE_KEY}-symbol`);
+      if (saved === null) {
+        return '';
       }
-    } catch (error) {
-      console.warn('Failed to load symbol filter from localStorage:', error);
+      const parsed = JSON.parse(saved) as string;
+      if (typeof parsed === 'string') {
+        return parsed;
+      }
+    } catch {
+      // Silently fail if localStorage is not available
     }
     return '';
   }
-
-  /**
-   * Handles symbol filter changes and saves to localStorage
-   */
-  protected onSymbolFilterChange(): void {
-    this.saveSymbolFilter(this.symbolFilter());
-    // The filtering is handled by the computed signal universe$
-  }
-
-
 
   /**
    * Saves selected account ID to localStorage
    */
   private saveSelectedAccountId(value: string): void {
     try {
-      localStorage.setItem(`${this.FILTERS_STORAGE_KEY}-selectedAccountId`, JSON.stringify(value));
+      localStorage.setItem(`${FILTERS_STORAGE_KEY}-selectedAccountId`, JSON.stringify(value));
     } catch (error) {
       console.warn('Failed to save selected account ID to localStorage:', error);
     }
@@ -463,7 +464,7 @@ export class GlobalUniverseComponent implements AfterViewInit {
    */
   private loadSelectedAccountId(): string {
     try {
-      const saved = localStorage.getItem(`${this.FILTERS_STORAGE_KEY}-selectedAccountId`);
+      const saved = localStorage.getItem(`${FILTERS_STORAGE_KEY}-selectedAccountId`);
       if (saved) {
         const parsed = JSON.parse(saved);
         if (typeof parsed === 'string') {
@@ -494,59 +495,6 @@ export class GlobalUniverseComponent implements AfterViewInit {
 
     // We'll need to trigger the filter application here
     // This will be called from the template after the view is initialized
-  }
-
-  /**
-   * Called after view is initialized to apply saved filters
-   */
-  ngAfterViewInit(): void {
-    // Apply saved filters after view is initialized
-    setTimeout(() => {
-      this.applySavedFilters();
-    }, 0);
-  }
-
-  /**
-   * Applies saved filters to the table
-   */
-  private applySavedFilters(): void {
-    // Trigger the filter application for saved values
-    const symbolValue = this.symbolFilter();
-    const riskGroupValue = this.riskGroupFilter();
-    const expiredValue = this.expiredFilter();
-
-    // Apply saved filters to the table
-    if (this.dataTable) {
-      if (symbolValue) {
-        // Trigger symbol filter
-        this.dataTable.filter(symbolValue, 'symbol', 'contains');
-      }
-      if (riskGroupValue) {
-        // Trigger risk group filter
-        this.dataTable.filter(riskGroupValue, 'riskGroup', 'equals');
-      }
-      if (expiredValue !== null) {
-        // Trigger expired filter
-        this.dataTable.filter(expiredValue, 'expired', 'equals');
-      }
-    }
-  }
-
-  /**
-   * Triggers filter application for saved values
-   */
-  protected triggerFilter(filterType: 'symbol' | 'riskGroup' | 'expired'): void {
-    switch (filterType) {
-      case 'symbol':
-        // Trigger symbol filter
-        break;
-      case 'riskGroup':
-        // Trigger risk group filter
-        break;
-      case 'expired':
-        // Trigger expired filter
-        break;
-    }
   }
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
