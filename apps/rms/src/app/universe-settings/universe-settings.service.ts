@@ -4,13 +4,13 @@ import { Injectable, signal } from '@angular/core';
   providedIn: 'root',
 })
 export class UniverseSettingsService {
-  readonly visible = signal(false);
+  readonly visible$ = signal<boolean>(false);
 
-  show() {
-    this.visible.set(true);
+  show(): void {
+    this.visible$.set(true);
   }
 
-  hide() {
-    this.visible.set(false);
+  hide(): void {
+    this.visible$.set(false);
   }
 }

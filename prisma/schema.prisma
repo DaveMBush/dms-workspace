@@ -27,7 +27,6 @@ model universe {
   most_recent_sell_price Float?
   symbol                 String
   ex_date                DateTime?
-  risk_score             Int
   risk_group_id          String
   risk_group             risk_group @relation(fields: [risk_group_id], references: [id])
   expired                Boolean    @default(false)

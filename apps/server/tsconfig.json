@@ -8,6 +8,8 @@
     }
   ],
   "compilerOptions": {
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true,
     "lib": ["esnext"]
   }

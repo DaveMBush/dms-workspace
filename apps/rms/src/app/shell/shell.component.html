@@ -14,7 +14,7 @@
   [panelSizes]="[20, 80]">
     <ng-template #panel>
       <div class="h-full w-full">
-        <app-global
+        <rms-global
           [selectedId]="selectedId"
           (selectedIdChange)="onSelectionChange($event)"
         />
@@ -28,6 +28,6 @@
       </div>
     </ng-template>
 </p-splitter>
-@defer (when settingsService.visible()) {
-  <app-universe-settings />
+@defer (when settingsService.visible$()) {
+  <rms-universe-settings />
 }

@@ -1,18 +1,19 @@
 import { Route } from '@angular/router';
-import { topDefinition } from './store/top/top-definition.const';
-import { accountsDefinition } from './store/accounts/accounts-definition.const';
 import { provideSmartFeatureSignalEntities } from '@smarttools/smart-signals';
-import { riskGroupDefinition } from './store/risk-group/risk-group-definition.const';
-import { universeDefinition } from './store/universe/universe-definition.const';
-import { tradesDefinition } from './store/trades/trades-definition.const';
+
+import { accountsDefinition } from './store/accounts/accounts-definition.const';
 import { divDepositTypesDefinition } from './store/div-deposit-types/div-deposit-types-definition.const';
 import { divDepositDefinition } from './store/div-deposits/div-deposit-definition.const';
+import { riskGroupDefinition } from './store/risk-group/risk-group-definition.const';
 import { screenDefinition } from './store/screen/screen-definition.const';
+import { topDefinition } from './store/top/top-definition.const';
+import { tradesDefinition } from './store/trades/trades-definition.const';
+import { universeDefinition } from './store/universe/universe-definition.const';
 
 export const appRoutes: Route[] = [
   {
     path: '',
-    loadComponent: () => import('./shell/shell.component').then((m) => m.ShellComponent),
+    loadComponent: async () => import('./shell/shell.component').then((m) => m.ShellComponent),
     providers: [
       provideSmartFeatureSignalEntities('app', [
         topDefinition,
@@ -26,7 +27,7 @@ export const appRoutes: Route[] = [
       {
         path: '',
         outlet: 'accounts',
-        loadComponent: () => import('./accounts/account').then((m) => m.Account),
+        loadComponent: async () => import('./accounts/account').then((m) => m.Account),
         providers: [
           provideSmartFeatureSignalEntities('app', [
             accountsDefinition
@@ -35,11 +36,11 @@ export const appRoutes: Route[] = [
       },
       {
         path: 'account/:accountId',
-        loadComponent: () => import('./account-panel/account-panel.component').then(m => m.AccountPanelComponent),
+        loadComponent: async () => import('./account-panel/account-panel.component').then(m => m.AccountPanelComponent),
         children: [
           {
             path: '',
-            loadComponent: () => import('./account-panel/account-detail.component').then(m => m.AccountDetailComponent),
+            loadComponent: async () => import('./account-panel/account-detail.component').then(m => m.AccountDetailComponent),
             providers: [
               provideSmartFeatureSignalEntities('app', [
                 tradesDefinition
@@ -48,19 +49,19 @@ export const appRoutes: Route[] = [
             children: [
               {
                 path: '',
-                loadComponent: () => import('./account-panel/summary/summary.component').then(m => m.SummaryComponent),
+                loadComponent: async () => import('./account-panel/summary/summary.component').then(m => m.SummaryComponent),
               },
               {
                 path: 'open',
-                loadComponent: () => import('./account-panel/open-positions/open-positions.component').then(m => m.OpenPositionsComponent),
+                loadComponent: async () => import('./account-panel/open-positions/open-positions.component').then(m => m.OpenPositionsComponent),
               },
               {
                 path: 'sold',
-                loadComponent: () => import('./account-panel/sold-positions/sold-positions.component').then(m => m.SoldPositionsComponent),
+                loadComponent: async () => import('./account-panel/sold-positions/sold-positions.component').then(m => m.SoldPositionsComponent),
               },
               {
                 path: 'div-dep',
-                loadComponent: () => import('./account-panel/dividend-deposits/dividend-deposits').then(m => m.DividendDeposits),
+                loadComponent: async () => import('./account-panel/dividend-deposits/dividend-deposits').then(m => m.DividendDeposits),
               }
             ]
           }
@@ -68,10 +69,10 @@ export const appRoutes: Route[] = [
       },
       {
         path: 'global/universe',
-        loadComponent: () => import('./global/global-universe/global-universe.component').then(m => m.GlobalUniverseComponent),
+        loadComponent: async () => import('./global/global-universe/global-universe.component').then(m => m.GlobalUniverseComponent),
       }, {
         path: 'global/screener',
-        loadComponent: () => import('./global/screener/screener').then(m => m.Screener),
+        loadComponent: async () => import('./global/screener/screener').then(m => m.Screener),
         providers: [
           provideSmartFeatureSignalEntities('app', [
             screenDefinition

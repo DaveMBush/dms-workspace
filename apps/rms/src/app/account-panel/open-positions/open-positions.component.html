@@ -1,30 +1,57 @@
 <p-table #tableRef
-  [value]="positions()"
+  [value]="positions$()"
   class="flex-1 min-w-full max-h-full min-h-full rounded-lg shadow-sm table-fixed"
   [responsiveLayout]="'scroll'"
   size="small"
   [scrollable]="true"
-  [scrollHeight]="'calc(100vh - 172px)'"
+  [scrollHeight]="'calc(100vh - 184px)'"
   showGridlines
   [rowTrackBy]="trackById"
 >
   <ng-template pTemplate="header">
     <tr class="bg-gray-100 dark:bg-slate-800">
       <th class="min-w-16 max-w-16">
-        <p-columnFilter field="symbol" matchMode="contains" [showMenu]="false">
-          <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-            <input pInputText type="text" (input)="filter($any($event.target).value)" placeholder="Filter..." class="p-column-filter min-w-16 max-w-16" />
-          </ng-template>
-        </p-columnFilter>
+        <input
+          pInputText
+          type="text"
+          [(ngModel)]="symbolFilter"
+          (ngModelChange)="onSymbolFilterChange()"
+          placeholder="Search Symbol"
+          class="w-20 p-input p-component p-inputwrapper p-inputtext"
+        />
       </th>
       <th class="min-w-32 max-w-32">Ex-Date</th>
       <th class="min-w-16 max-w-16">Buy</th>
-      <th class="min-w-32 max-w-32" pSortableColumn="buyDate">Buy Date <p-sortIcon field="buyDate"></p-sortIcon></th>
+      <th class="min-w-32 max-w-32 cursor-pointer select-none" (click)="onSort('buyDate')">
+        Buy Date
+        <i [class]="sortSignals.buyDateSortIcon$()"></i>
+        @if (sortSignals.buyDateSortOrder$()) {
+          <span class="text-xs text-gray-500">
+            {{ sortSignals.buyDateSortOrder$() }}
+          </span>
+        }
+      </th>
       <th class="min-w-32 max-w-32">Quantity</th>
       <th>Expected&nbsp;$</th>
       <th>Last&nbsp;$</th>
-      <th pSortableColumn="unrealizedGainPercent">Unrlz Gain % <p-sortIcon field="unrealizedGainPercent"></p-sortIcon></th>
-      <th pSortableColumn="unrealizedGain">Unrlz Gain$ <p-sortIcon field="unrealizedGain"></p-sortIcon></th>
+      <th class="cursor-pointer select-none" (click)="onSort('unrealizedGainPercent')">
+        Unrlz Gain %
+        <i [class]="sortSignals.unrealizedGainPercentSortIcon$()"></i>
+        @if (sortSignals.unrealizedGainPercentSortOrder$()) {
+          <span class="text-xs text-gray-500">
+            {{ sortSignals.unrealizedGainPercentSortOrder$() }}
+          </span>
+        }
+      </th>
+      <th class="cursor-pointer select-none" (click)="onSort('unrealizedGain')">
+        Unrlz Gain$
+        <i [class]="sortSignals.unrealizedGainSortIcon$()"></i>
+        @if (sortSignals.unrealizedGainSortOrder$()) {
+          <span class="text-xs text-gray-500">
+            {{ sortSignals.unrealizedGainSortOrder$() }}
+          </span>
+        }
+      </th>
       <th>Sell</th>
       <th>Sell Date</th>
       <th>Days Held</th>

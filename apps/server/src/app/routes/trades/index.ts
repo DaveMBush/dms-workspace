@@ -1,7 +1,8 @@
 import { FastifyInstance } from 'fastify';
+
 import { prisma } from '../../prisma/prisma-client';
 
-export interface Trade {
+interface Trade {
   id: string;
   universeId: string;
   accountId: string;
@@ -12,7 +13,18 @@ export interface Trade {
   quantity: number;
 }
 
-export interface NewTrade {
+interface TradeWithDates {
+  id: string;
+  universeId: string;
+  accountId: string;
+  buy: number;
+  sell: number;
+  buy_date: Date;
+  sell_date?: Date | null;
+  quantity: number;
+}
+
+interface NewTrade {
   universeId: string;
   accountId: string;
   buy: number;
@@ -22,8 +34,20 @@ export interface NewTrade {
   quantity: number;
 }
 
-export default async function (fastify: FastifyInstance): Promise<void> {
-  // POST /api/trades - fetch trades by IDs
+function mapTradeToResponse(trade: TradeWithDates): Trade {
+  return {
+    id: trade.id,
+    universeId: trade.universeId,
+    accountId: trade.accountId,
+    buy: trade.buy,
+    sell: trade.sell,
+    buy_date: trade.buy_date.toISOString(),
+    sell_date: trade.sell_date?.toISOString(),
+    quantity: trade.quantity,
+  };
+}
+
+function handleGetTradesRoute(fastify: FastifyInstance): void {
   fastify.post<{ Body: string[]; Reply: Trade[] }>('/',
     {
       schema: {
@@ -33,30 +57,24 @@ export default async function (fastify: FastifyInstance): Promise<void> {
         },
       },
     },
-    async function (request, reply): Promise<Trade[]> {
+    async function handleGetTrades(request, _): Promise<Trade[]> {
       const ids = request.body;
-      if (!ids || ids.length === 0) {
+      if (ids === null || ids === undefined || ids.length === 0) {
         return [];
       }
       const trades = await prisma.trades.findMany({
         where: { id: { in: ids } },
       });
-      return trades.map((trade) => ({
-        id: trade.id,
-        universeId: trade.universeId,
-        accountId: trade.accountId,
-        buy: trade.buy,
-        sell: trade.sell,
-        buy_date: trade.buy_date.toISOString(),
-        sell_date: trade.sell_date?.toISOString(),
-        quantity: trade.quantity,
-      }));
+      return trades.map(function mapTrade(trade) {
+        return mapTradeToResponse(trade);
+      });
     }
   );
+}
 
-  // POST /api/trades/add - add a new trade
+function handleAddTradeRoute(fastify: FastifyInstance): void {
   fastify.post<{ Body: NewTrade; Reply: Trade[] }>('/add',
-    async function (request, reply): Promise<void> {
+    async function handleAddTrade(request, reply): Promise<void> {
       const result = await prisma.trades.create({
         data: {
           universeId: request.body.universeId,
@@ -64,38 +82,33 @@ export default async function (fastify: FastifyInstance): Promise<void> {
           buy: request.body.buy,
           sell: request.body.sell,
           buy_date: new Date(request.body.buy_date),
-          sell_date: request.body.sell_date ? new Date(request.body.sell_date) : undefined,
+          sell_date: request.body.sell_date !== null && request.body.sell_date !== undefined ? new Date(request.body.sell_date) : undefined,
           quantity: request.body.quantity,
         },
       });
       const trade = await prisma.trades.findMany({
         where: { id: { in: [result.id] } },
       });
-      reply.status(200).send(trade.map((t) => ({
-        id: t.id,
-        universeId: t.universeId,
-        accountId: t.accountId,
-        buy: t.buy,
-        sell: t.sell,
-        buy_date: t.buy_date.toISOString(),
-        sell_date: t.sell_date?.toISOString(),
-        quantity: t.quantity,
-      })));
+      reply.status(200).send(trade.map(function mapCreatedTrade(t) {
+        return mapTradeToResponse(t);
+      }));
     }
   );
+}
 
-  // DELETE /api/trades/:id - delete a trade
-  fastify.delete<{ Params: { id: string }; Reply: void }>('/:id',
-    async function (request, reply): Promise<void> {
+function handleDeleteTradeRoute(fastify: FastifyInstance): void {
+  fastify.delete<{ Params: { id: string } }>('/:id',
+    async function handleDeleteTrade(request, reply): Promise<void> {
       const { id } = request.params;
       await prisma.trades.delete({ where: { id } });
       reply.status(200).send();
     }
   );
+}
 
-  // PUT /api/trades - update a trade
+function handleUpdateTradeRoute(fastify: FastifyInstance): void {
   fastify.put<{ Body: Trade; Reply: Trade[] }>('/',
-    async function (request, reply): Promise<void> {
+    async function handleUpdateTrade(request, reply): Promise<void> {
       const { id, universeId, accountId, buy, sell, buy_date, sell_date, quantity } = request.body;
       await prisma.trades.update({
         where: { id },
@@ -105,23 +118,23 @@ export default async function (fastify: FastifyInstance): Promise<void> {
           buy,
           sell,
           buy_date: new Date(buy_date),
-          sell_date: sell_date ? new Date(sell_date) : undefined,
+          sell_date: sell_date !== null && sell_date !== undefined ? new Date(sell_date) : undefined,
           quantity,
         },
       });
       const trades = await prisma.trades.findMany({
         where: { id },
       });
-      reply.status(200).send(trades.map((t) => ({
-        id: t.id,
-        universeId: t.universeId,
-        accountId: t.accountId,
-        buy: t.buy,
-        sell: t.sell,
-        buy_date: t.buy_date.toISOString(),
-        sell_date: t.sell_date?.toISOString(),
-        quantity: t.quantity,
-      })));
+      reply.status(200).send(trades.map(function mapUpdatedTrade(t) {
+        return mapTradeToResponse(t);
+      }));
     }
   );
+}
+
+export default function registerTradeRoutes(fastify: FastifyInstance): void {
+  handleGetTradesRoute(fastify);
+  handleAddTradeRoute(fastify);
+  handleDeleteTradeRoute(fastify);
+  handleUpdateTradeRoute(fastify);
 }

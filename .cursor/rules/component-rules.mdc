@@ -7,3 +7,12 @@ alwaysApply: false
 - Do not specify `standalone: true` in component decorators, as it is the default.
 - Use signals for all inputs, outputs, and any variable accessed by the template.
 - Never use inline HTML or SCSS in components; always use external files.
+
+# Component Architecture Rules
+When components exceed 250 lines or contain multiple private utility methods, extract functionality into viewProvider services:
+- Move localStorage operations to dedicated storage services
+- Extract complex validation logic into validation services
+- Separate data transformation logic into transformer services
+- Use viewProviders array to inject services: `viewProviders: [MyService]`
+- Keep components focused on UI logic and user interactions
+- Services should handle business logic, data persistence, and utility operations

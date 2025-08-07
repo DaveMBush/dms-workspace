@@ -7,7 +7,6 @@ export interface Universe {
   most_recent_sell_price: number | null;
   symbol: string;
   ex_date: string;
-  risk: number;
   risk_group_id: string;
   expired: boolean;
   position: number;

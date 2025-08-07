@@ -1,12 +1,82 @@
 import { FastifyInstance } from 'fastify';
-import { Account } from './account.interface';
+
 import { prisma } from '../../prisma/prisma-client';
+import { Account } from './account.interface';
 import { NewAccount } from './new-account.interface';
 
-export default async function (fastify: FastifyInstance): Promise<void> {
+interface AccountWithTrades {
+  id: string;
+  name: string;
+  trades: Array<{ id: string }>;
+}
 
-  // Route to fetch accounts by IDs
-  // Path: POST /api/accounts
+interface MonthData {
+  year: number;
+  month: number;
+}
+
+function extractMonthsFromTrades(trades: Array<{ sell_date: Date | null }>): Set<string> {
+  return new Set(
+    trades
+      .filter(function filterSoldTrades(trade) {
+        return trade.sell_date !== null;
+      })
+      .map(function mapTradeToMonth(trade) {
+        const d = new Date(trade.sell_date!);
+        return `${d.getFullYear()}-${d.getMonth() + 1}`;
+      })
+  );
+}
+
+function extractMonthsFromDivDeposits(divDeposits: Array<{ date: Date }>): Set<string> {
+  return new Set(
+    divDeposits.map(function mapDivDepositToMonth(divDeposit) {
+      const d = new Date(divDeposit.date);
+      return `${d.getFullYear()}-${d.getMonth() + 1}`;
+    })
+  );
+}
+
+function combineAndSortMonths(months1: Set<string>, months2: Set<string>): MonthData[] {
+  const combinedMonths = [...months1].concat([...months2]);
+  const sortedMonths = combinedMonths.toSorted(function sortMonthsDescending(a: string, b: string) {
+    return b.localeCompare(a);
+  });
+  return sortedMonths.map(function parseMonth(m) {
+    const [year, month] = m.split('-');
+    return { year: parseInt(year, 10), month: parseInt(month, 10) };
+  });
+}
+
+interface PrismaAccountResult {
+  id: string;
+  name: string;
+  trades?: Array<{ id: string; sell_date: Date | null }>;
+  divDeposits?: Array<{ id: string; date: Date }>;
+}
+
+function mapAccountToResponse(account: PrismaAccountResult): Account {
+  const trades = account.trades ?? [];
+  const divDeposits = account.divDeposits ?? [];
+
+  const months1 = extractMonthsFromTrades(trades);
+  const months2 = extractMonthsFromDivDeposits(divDeposits);
+  const months = combineAndSortMonths(months1, months2);
+
+  return {
+    id: account.id,
+    name: account.name,
+    trades: trades.map(function mapTradeToId(trade) {
+      return trade.id;
+    }),
+    divDeposits: divDeposits.map(function mapDivDepositToId(divDeposit) {
+      return divDeposit.id;
+    }),
+    months,
+  };
+}
+
+function handleGetAccountsRoute(fastify: FastifyInstance): void {
   fastify.post<{ Body: string[]; Reply: Account[] }>('/',
     {
       schema: {
@@ -16,103 +86,99 @@ export default async function (fastify: FastifyInstance): Promise<void> {
         },
       },
     },
-    async function (request, reply): Promise<Account[]> {
-      console.log('HANDLER: POST /api/accounts');
+    async function handleGetAccountsRequest(request, _): Promise<Account[]> {
       const ids = request.body;
-      if (!ids || ids.length === 0) {
+      if (ids.length === 0) {
         return [];
       }
 
       const accounts = await prisma.accounts.findMany({
-        where: { id: { in: ids } },
+    where: { id: { in: ids } },
+    select: {
+      id: true,
+      name: true,
+      trades: {
         select: {
           id: true,
-          name: true,
-          trades: {
-            select: {
-              id: true,
-              sell_date: true,
-            },
-            orderBy: {
-              buy_date: 'asc',
-            },
-          },
-          divDeposits: {
-            select: {
-              id: true,
-              date: true,
-            },
-            orderBy: {
-              date: 'asc',
-            },
-          },
+          sell_date: true,
         },
         orderBy: {
-          name: 'asc',
+          buy_date: 'asc' as const,
         },
-      });
-
-      return accounts.map((account) => {
-        const months1 = new Set(account.trades.filter((trade) => trade.sell_date !== null).map((trade) => {
-          const d = new Date(trade.sell_date);
-          return `${d.getFullYear()}-${d.getMonth() + 1}`;
-        }));
-        const months2 = new Set(account.divDeposits.map((divDeposit) => {
-          const d = new Date(divDeposit.date);
-          return `${d.getFullYear()}-${d.getMonth() + 1}`;
-        }));
-        const months = [...months1.union(months2)].sort((a: string, b: string) => b.localeCompare(a))
-          .map((m) => {
-            const [year, month] = m.split('-');
-            return {year: parseInt(year), month: parseInt(month)};
-          });
-
-
-        return {
-          id: account.id,
-          name: account.name,
-          trades: account.trades.map((trade) => trade.id),
-          divDeposits: account.divDeposits.map((divDeposit) => divDeposit.id),
-          months,
-        }
+      },
+      divDeposits: {
+        select: {
+          id: true,
+          date: true,
+        },
+        orderBy: {
+          date: 'asc' as const,
+        },
+      },
+    },
+    orderBy: {
+      name: 'asc' as const,
+    },
+  });
+      return accounts.map(function mapAccount(account) {
+        return mapAccountToResponse(account);
       });
     }
   );
-  console.log('registering /api/accounts/add route');
-  fastify.post<{ Body: NewAccount, Reply: Account[]; }>('/add',
-    async function (request, reply): Promise<void> {
+}
+
+function handleAddAccountRoute(fastify: FastifyInstance): void {
+  fastify.post<{ Body: NewAccount; Reply: Account[] }>('/add',
+    async function handleAddAccountRequest(request, reply): Promise<Account[]> {
       const result = await prisma.accounts.create({
         data: {
           name: request.body.name,
         },
       });
-      var account = await prisma.accounts.findMany({
+      const account = await prisma.accounts.findMany({
         where: { id: { in: [result.id] } },
         include: {
           trades: true,
         },
       });
-      reply.status(200).send(account.map((account) => ({
-        id: account.id,
-        name: account.name,
-        trades: account.trades.map((trade) => trade.id),
-        divDeposits: [],
-        months: [],
-      })));
+      function mapTradeToId(trade: { id: string }): string {
+        return trade.id;
+      }
+
+
+
+      function mapNewAccount(accountItem: AccountWithTrades): Account {
+        return {
+          id: accountItem.id,
+          name: accountItem.name,
+          trades: accountItem.trades.map(mapTradeToId),
+          divDeposits: [],
+          months: [],
+        };
+      }
+
+      const response = account.map(mapNewAccount);
+      reply.status(200).send(response);
+      return response;
     }
   );
-  console.log('registering /api/accounts/delete route');
-  fastify.delete<{ Params: { id: string }, Reply: void }>('/:id',
-    async function (request, reply): Promise<void> {
-      var { id } = request.params;
+}
+
+function handleDeleteAccountRoute(fastify: FastifyInstance): void {
+  fastify.delete<{ Params: { id: string }; Reply: { success: boolean } }>('/:id',
+    async function handleDeleteAccountRequest(request, reply): Promise<{ success: boolean }> {
+      const { id } = request.params;
       await prisma.accounts.delete({ where: { id } });
-      reply.status(200).send();
+      reply.status(200).send({ success: true });
+      return { success: true };
     }
   );
-  console.log('registering /api/accounts/update route');
-  fastify.put<{ Body: { id: string, name: string }, Reply: void }>('/',
-    async function (request, reply): Promise<void> {
-      var { id, name } = request.body;
+}
+
+function handleUpdateAccountRoute(fastify: FastifyInstance): void {
+  fastify.put<{ Body: { id: string; name: string }; Reply: Account[] }>('/',
+    async function handleUpdateAccountRequest(request, reply): Promise<Account[]> {
+      const { id, name } = request.body;
       await prisma.accounts.update({
         where: { id },
         data: { name }
@@ -122,13 +188,32 @@ export default async function (fastify: FastifyInstance): Promise<void> {
         include: { trades: true },
       });
 
-      var result = accounts.map((account) => ({
-        ...account,
-        trades: account.trades.map((trade) => trade.id),
-      }));
+      function mapTradeToIdForUpdate(trade: { id: string }): string {
+        return trade.id;
+      }
+
+      function mapUpdatedAccount(accountItem: AccountWithTrades): Account {
+        return {
+          id: accountItem.id,
+          name: accountItem.name,
+          trades: accountItem.trades.map(mapTradeToIdForUpdate),
+          divDeposits: [],
+          months: [],
+        };
+      }
+
+      const result = accounts.map(mapUpdatedAccount);
       reply.status(200).send(result);
+      return result;
     }
   );
+}
+
+export default function registerAccountRoutes(fastify: FastifyInstance): void {
+  handleGetAccountsRoute(fastify);
+  handleAddAccountRoute(fastify);
+  handleDeleteAccountRoute(fastify);
+  handleUpdateAccountRoute(fastify);
 }
 
 

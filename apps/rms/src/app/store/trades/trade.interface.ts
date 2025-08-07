@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention -- matching server */
 export interface Trade {
   id: string;
   universeId: string;

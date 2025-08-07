@@ -1,22 +1,39 @@
 <p-table #tableRef
-  [value]="positions()"
+  [value]="positions$()"
   class="min-w-full max-h-full min-h-full rounded-lg shadow-sm table-fixed"
   [responsiveLayout]="'scroll'"
   size="small"
   [scrollable]="true"
-  [scrollHeight]="'calc(100vh - 172px)'"
+  [scrollHeight]="'calc(100vh - 184px)'"
   showGridlines
   [rowTrackBy]="trackById"
   [dataKey]="'id'"
 >
   <ng-template pTemplate="header">
     <tr class="bg-gray-100">
-      <th>Symbol</th>
+      <th class="min-w-16 max-w-16">
+        <input
+          pInputText
+          type="text"
+          [(ngModel)]="symbolFilter"
+          (ngModelChange)="onSymbolFilterChange()"
+          placeholder="Search Symbol"
+          class="w-20 p-input p-component p-inputwrapper p-inputtext"
+        />
+      </th>
       <th>Buy</th>
       <th>Buy Date</th>
       <th>Quantity</th>
       <th>Sell</th>
-      <th pSortableColumn="sellDate">Sell Date <p-sortIcon field="sellDate"></p-sortIcon></th>
+      <th class="cursor-pointer select-none" (click)="onSort('sellDate')">
+        Sell Date
+        <i [class]="sortSignals.sellDateSortIcon$()"></i>
+        @if (sortSignals.sellDateSortOrder$()) {
+          <span class="text-xs text-gray-500">
+            {{ sortSignals.sellDateSortOrder$() }}
+          </span>
+        }
+      </th>
       <th>Days Held</th>
       <th>Cap Gains$</th>
       <th>Cap Gains%</th>

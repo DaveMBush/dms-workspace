@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import {
   EffectService,
   PartialArrayDefinition,
@@ -11,9 +11,7 @@ import { Trade } from './trade.interface';
 @Injectable()
 export class TradeEffectsService extends EffectService<Trade> {
   apiTrade = './api/trades';
-  constructor(private http: HttpClient) {
-    super();
-  }
+  private http = inject(HttpClient);
 
   override loadByIds(ids: string[]): Observable<Trade[]> {
     return this.http.post<Trade[]>(this.apiTrade, ids);

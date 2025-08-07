@@ -1,14 +1,16 @@
-import { HttpClient, HttpParams, httpResource } from '@angular/common/http';
+import { httpResource } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
+
 import { currentAccountSignalStore } from '../../store/current-account/current-account.signal-store';
 import { selectCurrentAccountSignal } from '../../store/current-account/select-current-account.signal';
-import { Summary } from './summary.interface';
 import { Graph } from './graph.interface';
+import { Summary } from './summary.interface';
 
 @Injectable()
 export class SummaryComponentService {
   currentAccount = inject(currentAccountSignalStore)
   selectedMonth = signal<string | null>(null);
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- can't get at this otherwise
   httpSummary = httpResource<Summary>(() => {
     const currentAccount = selectCurrentAccountSignal(this.currentAccount);
     const month = this.selectedMonth() ?? '';
@@ -25,6 +27,7 @@ export class SummaryComponentService {
     };
   });
 
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- can't get at this otherwise
   httpGraph = httpResource<Graph[]>(() => {
     const currentAccount = selectCurrentAccountSignal(this.currentAccount);
     const year = (new Date()).getFullYear();
@@ -39,27 +42,17 @@ export class SummaryComponentService {
     };
   });
 
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- can't get at this otherwise
   months = computed(() => {
     const currentAccount = selectCurrentAccountSignal(this.currentAccount);
     const account = currentAccount();
-    if (!account || !account.months) {
-      return [];
-    }
-    return account.months.map((month) => ({label: `${month.month}/${month.year}`, value: `${month.year}-${month.month}`}));
-  })
+    return account.months.map(function accountMonthsMap(month) {
+      return { label: `${month.month}/${month.year}`, value: `${month.year}-${month.month}` };
+    });
+  });
 
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
   summary = computed((): Summary => {
-    const currentAccount = selectCurrentAccountSignal(this.currentAccount);
-    if (!this.selectedMonth() || !currentAccount()) {
-      return {
-        deposits: 0,
-        dividends: 0,
-        capitalGains: 0,
-        equities: 0,
-        income: 0,
-        tax_free_income: 0,
-      };
-    }
     const httpValue = this.httpSummary.value();
     // Return default value if new data is loading to prevent flash
     if (httpValue === undefined && this.httpSummary.isLoading()) {
@@ -82,11 +75,8 @@ export class SummaryComponentService {
     };
   });
 
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
   graph = computed((): Graph[] => {
-    const currentAccount = selectCurrentAccountSignal(this.currentAccount);
-    if (!currentAccount()) {
-      return [];
-    }
     const httpValue = this.httpGraph.value();
     // Return empty array if new data is loading to prevent flash
     if (httpValue === undefined && this.httpGraph.isLoading()) {

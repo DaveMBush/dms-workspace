@@ -1,18 +1,199 @@
 import { FastifyInstance } from 'fastify';
-import { prisma } from '../../prisma/prisma-client';
-import { Settings } from './settings.interface';
-import { RiskGroup } from './common/risk-group.interface';
 import yahooFinance from 'yahoo-finance2';
-import { getLastPrice } from './common/get-last-price.function';
+
+import { prisma } from '../../prisma/prisma-client';
 import { getDistributions } from './common/get-distributions.function';
+import { getLastPrice } from './common/get-last-price.function';
+import { Settings } from './settings.interface';
+
+type PrismaRiskGroup = Awaited<ReturnType<typeof prisma.risk_group.findMany>>[number];
+type PrismaUniverse = Awaited<ReturnType<typeof prisma.universe.findFirst>>;
+
+interface Distribution {
+  distribution: number;
+  distributions_per_year: number;
+  ex_date: Date;
+}
+
 
 yahooFinance.suppressNotices(['yahooSurvey']);
 
-export default async function (fastify: FastifyInstance): Promise<void> {
+async function ensureRiskGroupsExist(): Promise<PrismaRiskGroup[]> {
+  const riskGroups = await prisma.risk_group.findMany();
 
-  // Route to fetch accounts by IDs
-  // Path: POST /api/accounts
-  fastify.post<{ Body: Settings, Reply: void }>('/',
+  if (riskGroups.length === 0) {
+    const equities = await prisma.risk_group.create({
+      data: { name: 'Equities' },
+    });
+    const income = await prisma.risk_group.create({
+      data: { name: 'Income' },
+    });
+    const taxFreeIncome = await prisma.risk_group.create({
+      data: { name: 'Tax Free Income' },
+    });
+    return [equities, income, taxFreeIncome];
+  }
+
+  const equities = riskGroups.find(function findEquities(riskGroup) {
+    return riskGroup.name === 'Equities';
+  })!;
+  const income = riskGroups.find(function findIncome(riskGroup) {
+    return riskGroup.name === 'Income';
+  })!;
+  const taxFreeIncome = riskGroups.find(function findTaxFreeIncome(riskGroup) {
+    return riskGroup.name === 'Tax Free Income';
+  })!;
+
+  return [equities, income, taxFreeIncome];
+}
+
+function parseSymbols(value: string): string[] {
+  return value
+    .split(/\r?\n/)
+    .map(function trimSymbol(s) {
+      return s.trim();
+    })
+    .filter(function filterEmpty(v) {
+      return v;
+    });
+}
+
+function getAllSymbols(groupValues: string[]): string[] {
+  return groupValues
+    .flatMap(function processValue(groupValue) {
+      if (!groupValue) {
+        return [];
+      }
+      return parseSymbols(groupValue);
+    });
+}
+
+async function processSymbolGroup(symbols: string[], riskGroupId: string): Promise<void> {
+  for (const symbol of symbols) {
+    await addOrUpdateSymbol(symbol, riskGroupId);
+  }
+}
+
+async function processAllSymbolGroups(groupValues: string[], riskGroups: PrismaRiskGroup[]): Promise<void> {
+  for (let index = 0; index < groupValues.length; index++) {
+    const groupValue = groupValues[index];
+    if (!groupValue || groupValue.length === 0) {
+      continue;
+    }
+    const symbols = parseSymbols(groupValue);
+    await processSymbolGroup(symbols, riskGroups[index].id);
+  }
+}
+
+async function markExpiredSymbols(allSymbols: string[]): Promise<void> {
+  await prisma.universe.updateMany({
+    where: {
+      symbol: {
+        notIn: allSymbols,
+      },
+      expired: false,
+    },
+    data: {
+      expired: true,
+    },
+  });
+}
+
+function shouldSetExDate(distribution: Distribution | undefined, today: Date): boolean {
+  return Boolean(distribution?.ex_date &&
+         distribution.ex_date instanceof Date &&
+         !isNaN(distribution.ex_date.valueOf()) &&
+         distribution.ex_date > today);
+}
+
+function getExDateToSet(distribution: Distribution | undefined, today: Date): Date | undefined {
+  if (shouldSetExDate(distribution, today)) {
+    return distribution!.ex_date;
+  }
+  return undefined;
+}
+
+interface UpdateUniverseData {
+  universe: PrismaUniverse;
+  riskGroupId: string;
+  lastPrice: number | null | undefined;
+  distribution: Distribution | undefined;
+  exDateToSet: Date | undefined;
+}
+
+async function updateExistingUniverse(data: UpdateUniverseData): Promise<void> {
+  if (data.distribution === undefined || !data.universe) {
+    return;
+  }
+  await prisma.universe.update({
+    where: { id: data.universe.id },
+    data: {
+      risk_group_id: data.riskGroupId,
+      distribution: data.distribution.distribution,
+      distributions_per_year: data.distribution.distributions_per_year,
+      last_price: data.lastPrice ?? 0,
+      most_recent_sell_date: null,
+      ex_date: data.exDateToSet,
+      expired: false,
+    },
+  });
+}
+
+async function createNewUniverse(symbol: string, riskGroupId: string, lastPrice: number | null | undefined, distribution: Distribution | undefined): Promise<void> {
+  await prisma.universe.create({
+    data: {
+      symbol,
+      risk_group_id: riskGroupId,
+      distribution: distribution?.distribution ?? 0,
+      distributions_per_year: distribution?.distributions_per_year ?? 0,
+      last_price: lastPrice ?? 0,
+      most_recent_sell_date: null,
+      ex_date: distribution?.ex_date ?? new Date(),
+      expired: false,
+    },
+  });
+}
+
+async function addOrUpdateSymbol(symbol: string, riskGroupId: string): Promise<void> {
+  const universe = await prisma.universe.findFirst({
+    where: { symbol },
+  });
+
+  const lastPrice = await getLastPrice(symbol);
+  const distribution = await getDistributions(symbol);
+  const today = new Date();
+  const exDateToSet = getExDateToSet(distribution, today);
+
+  if (universe) {
+    await updateExistingUniverse({
+      universe,
+      riskGroupId,
+      lastPrice,
+      distribution,
+      exDateToSet
+    });
+  } else {
+    await createNewUniverse(symbol, riskGroupId, lastPrice, distribution);
+  }
+}
+
+async function handleSettingsRequest(request: { body: Settings }, reply: { status(code: number): { send(data: { error: string }): void } }): Promise<void> {
+  const { equities, income, taxFreeIncome } = request.body;
+
+  const riskGroups = await ensureRiskGroupsExist();
+  const groupValues = [equities, income, taxFreeIncome];
+  const allSymbols = getAllSymbols(groupValues);
+
+  try {
+    await processAllSymbolGroups(groupValues, riskGroups);
+    await markExpiredSymbols(allSymbols);
+  } catch {
+    reply.status(500).send({ error: 'Internal server error' });
+  }
+}
+
+function handleSettingsRoute(fastify: FastifyInstance): void {
+  fastify.post<{ Body: Settings }>('/',
     {
       schema: {
         body: {
@@ -25,125 +206,10 @@ export default async function (fastify: FastifyInstance): Promise<void> {
         },
       },
     },
-    async function (request, reply): Promise<void> {
-      console.log('HANDLER: POST /api/settings');
-      const { equities, income, taxFreeIncome } = request.body;
-
-      const riskGroup: RiskGroup[] = [];
-      const riskGroups = await prisma.risk_group.findMany();
-      if (riskGroups.length === 0) {
-        riskGroup[0] = await prisma.risk_group.create({
-          data: {
-            name: 'Equities'
-          },
-        });
-        riskGroup[1] = await prisma.risk_group.create({
-          data: {
-            name: 'Income'
-          },
-        });
-        riskGroup[2] = await prisma.risk_group.create({
-          data: {
-            name: 'Tax Free Income'
-          },
-        });
-      } else {
-        riskGroup[0] = riskGroups.find(riskGroup => riskGroup.name === 'Equities')!;
-        riskGroup[1] = riskGroups.find(riskGroup => riskGroup.name === 'Income')!;
-        riskGroup[2] = riskGroups.find(riskGroup => riskGroup.name === 'Tax Free Income')!;
-      }
-      try {
-        const groupValues = [equities, income, taxFreeIncome];
-
-        // Gather all symbols from all groups
-        const allSymbols = groupValues
-          .flatMap(value =>
-            value
-              ? value.split(/\r?\n/).map(s => s.trim()).filter(Boolean)
-              : []
-          );
-
-        for (let index = 0; index < groupValues.length; index++) {
-          const value = groupValues[index];
-          if (!value || value.length === 0) {
-            continue;
-          }
-          const symbols = value
-            .split(/\r?\n/)
-            .map(s => s.trim())
-            .filter(Boolean);
-          for (const symbol of symbols) {
-            await addOrUpdateSymbol(symbol, riskGroup[index].id);
-          }
-        }
-
-        // Mark all other symbols as expired, but only if not already expired
-        await prisma.universe.updateMany({
-          where: {
-            symbol: {
-              notIn: allSymbols,
-            },
-            expired: false,
-          },
-          data: {
-            expired: true,
-          },
-        });
-      } catch (error) {
-        reply.status(500).send({ error: 'Internal server error' });
-      }
-    }
+    handleSettingsRequest
   );
 }
 
-async function addOrUpdateSymbol(symbol: string, riskGroupId: string) {
-  const universe = await prisma.universe.findFirst({
-    where: {
-      symbol: symbol,
-    },
-  });
-  const lastPrice = await getLastPrice(symbol);
-  const distribution = await getDistributions(symbol);
-  const today = new Date();
-  let exDateToSet = undefined;
-  if (
-    distribution?.ex_date &&
-    distribution.ex_date instanceof Date &&
-    !isNaN(distribution.ex_date.valueOf()) &&
-    distribution.ex_date > today
-  ) {
-    exDateToSet = distribution?.ex_date;
-  }
-  if (universe) {
-    if (distribution === undefined) {
-      return;
-    }
-    await prisma.universe.update({
-      where: { id: universe.id },
-      data: {
-        risk_group_id: riskGroupId,
-        distribution: distribution?.distribution,
-        distributions_per_year: distribution?.distributions_per_year,
-        last_price: lastPrice,
-        most_recent_sell_date: null,
-        ex_date: exDateToSet,
-        risk: 0,
-        expired: false,
-      },
-    });
-  } else {
-    await prisma.universe.create({
-      data: {
-        symbol: symbol,
-        risk_group_id: riskGroupId,
-        distribution: distribution?.distribution,
-        distributions_per_year: distribution?.distributions_per_year,
-        last_price: lastPrice,
-        most_recent_sell_date: null,
-        ex_date: distribution.ex_date,
-        risk: 0,
-        expired: false,
-      },
-    });
-  }
+export default function registerSettingsRoutes(fastify: FastifyInstance): void {
+  handleSettingsRoute(fastify);
 }

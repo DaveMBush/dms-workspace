@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import {
   EffectService,
   PartialArrayDefinition,
@@ -10,10 +10,8 @@ import { Universe } from './universe.interface';
 
 @Injectable()
 export class UniverseEffectsService extends EffectService<Universe> {
+  private http = inject(HttpClient);
   apiUniverse = './api/universe';
-  constructor(private http: HttpClient) {
-    super();
-  }
 
   override loadByIds(ids: string[]): Observable<Universe[]> {
     return this.http.post<Universe[]>(this.apiUniverse, ids);

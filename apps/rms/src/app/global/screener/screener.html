@@ -8,7 +8,7 @@
   </ng-template>
 </p-toolbar>
 
-<p-table [value]="filteredScreenerData()"
+<p-table [value]="filteredScreenerData$()"
   size="small"
   [scrollable]="true"
   class="flex-1 overflow-auto min-h-0"
@@ -61,7 +61,7 @@
 </p-table>
 
 <!-- Overlay -->
-@if (showOverlay()) {
+@if (showOverlay$()) {
   <div class="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
     <div class="text-center">
       <p-progressSpinner
