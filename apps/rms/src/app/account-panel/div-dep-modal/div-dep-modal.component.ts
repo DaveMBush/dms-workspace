@@ -100,13 +100,7 @@ export class DivDepModalComponent {
       accountId: act.id,
       divDepositTypeId: this.type$()!,
       universeId: this.symbol$()!,
-    },{
-      id: this.accountId()!,
-      name: 'New Account',
-      trades: [],
-      divDeposits: [],
-      months: []
-    });
+    },act);
     this.close.emit();
   }
 }

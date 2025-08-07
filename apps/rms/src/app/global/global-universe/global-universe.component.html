@@ -8,6 +8,7 @@
       <p-select
         [options]="accountOptions$()"
         [(ngModel)]="selectedAccountId"
+        (onChange)="onSelectedAccountIdChange()"
         placeholder="Select Account"
         class="w-48"
       />
@@ -17,21 +18,35 @@
     <p-button (click)="settingsService.show()" icon="pi pi-cog" text severity="secondary" pTooltip="Settings" tooltipPosition="bottom" />
   </ng-template>
 </p-toolbar>
-<p-table [value]="universeWithDimmedState$()"
+<p-table #dataTable [value]="universeWithDimmedState$()"
 size="small"
-[scrollable]="true" class="flex-1 overflow-auto min-h-0"
+[scrollable]="true" class="min-w-full max-h-full min-h-full rounded-lg shadow-sm table-fixed"
+[responsiveLayout]="'scroll'"
 showGridlines [rowTrackBy]="trackById"
+[scrollHeight]="'calc(100vh - 145px)'"
 >
   <ng-template pTemplate="header">
-    <tr>
+    <tr class="bg-gray-100 dark:bg-slate-800">
       <th>
-        <p-columnFilter field="symbol" [showMenu]="false">
-        </p-columnFilter>
+        <input
+          pInputText
+          type="text"
+          [(ngModel)]="symbolFilter"
+          (ngModelChange)="onSymbolFilterChange()"
+          placeholder="Search Symbol"
+          class="w-20 p-input p-component p-inputwrapper p-inputtext"
+        />
       </th>
       <th>
         <p-columnFilter field="riskGroup" matchMode="equals" [showMenu]="false">
           <ng-template #filter let-value let-filter="filterCallback">
-            <p-select [options]="riskGroups" (onChange)="filter($event.value)" placeholder="Select One" [showClear]="true">
+            <p-select
+              [options]="riskGroups"
+              [ngModel]="value"
+              (onChange)="onRiskGroupFilterChangeFromPrimeNG($event.value); filter($event.value)"
+              placeholder="Select One"
+              [showClear]="true"
+            >
               <ng-template let-option #item>
                 <p-tag [value]="option.value" />
               </ng-template>
@@ -50,7 +65,9 @@ showGridlines [rowTrackBy]="trackById"
           [minFractionDigits]="1"
           [maxFractionDigits]="2"
           placeholder="Min Yield %"
-          class="w-full"
+          inputStyleClass="w-32"
+          class="w-32"
+          (onInput)="onMinYieldFilterChange()"
         />
       </th>
       <th></th>
@@ -61,7 +78,13 @@ showGridlines [rowTrackBy]="trackById"
       <th>
       <p-columnFilter field="expired" matchMode="equals" [showMenu]="false">
           <ng-template #filter let-value let-filter="filterCallback">
-            <p-select [options]="expiredOptions" (onChange)="filter($event.value)" placeholder="Select One" [showClear]="true">
+            <p-select
+              [options]="expiredOptions"
+              [ngModel]="value"
+              (onChange)="onExpiredFilterChangeFromPrimeNG($event.value); filter($event.value)"
+              placeholder="Select One"
+              [showClear]="true"
+            >
               <ng-template let-option #item>
                 {{ option.label }}
               </ng-template>
@@ -70,16 +93,48 @@ showGridlines [rowTrackBy]="trackById"
         </p-columnFilter>
       </th>
     </tr>
-    <tr>
+    <tr class="bg-gray-100 dark:bg-slate-800">
       <th>Symbol</th>
       <th>Risk Group</th>
       <th>Distribution</th>
       <th>Distributions / Year</th>
-      <th (click)="onSort('yield_percent')" class="cursor-pointer select-none">Yield % <i [class]="yieldPercentSortIcon$()"></i></th>
+      <th (click)="onSort('yield_percent')" class="cursor-pointer select-none w-32">
+        Yield %
+        <i [class]="sortSignals.yieldPercentSortIcon$()"></i>
+        @if (sortSignals.yieldPercentSortOrder$()) {
+          <span class="text-xs text-gray-500">
+            {{ sortSignals.yieldPercentSortOrder$() }}
+          </span>
+        }
+      </th>
       <th>Last Price</th>
-      <th (click)="onSort('ex_date')" class="cursor-pointer select-none">Ex-Date <i [class]="exDateSortIcon$()"></i></th>
-      <th (click)="onSort('most_recent_sell_date')" class="cursor-pointer select-none">Mst Rcnt Sll Dt <i [class]="mostRecentSellDateSortIcon$()"></i></th>
-      <th (click)="onSort('most_recent_sell_price')" class="cursor-pointer select-none">Mst Rcnt Sell $ <i [class]="mostRecentSellPriceSortIcon$()"></i></th>
+      <th (click)="onSort('ex_date')" class="cursor-pointer select-none">
+        Ex-Date
+        <i [class]="sortSignals.exDateSortIcon$()"></i>
+        @if (sortSignals.exDateSortOrder$()) {
+          <span class="text-xs text-gray-500">
+            {{ sortSignals.exDateSortOrder$() }}
+          </span>
+        }
+      </th>
+      <th (click)="onSort('most_recent_sell_date')" class="cursor-pointer select-none">
+        Mst Rcnt Sll Dt
+        <i [class]="sortSignals.mostRecentSellDateSortIcon$()"></i>
+        @if (sortSignals.mostRecentSellDateSortOrder$()) {
+          <span class="text-xs text-gray-500">
+            {{ sortSignals.mostRecentSellDateSortOrder$() }}
+          </span>
+        }
+      </th>
+      <th (click)="onSort('most_recent_sell_price')" class="cursor-pointer select-none">
+        Mst Rcnt Sell $
+        <i [class]="sortSignals.mostRecentSellPriceSortIcon$()"></i>
+        @if (sortSignals.mostRecentSellPriceSortOrder$()) {
+          <span class="text-xs text-gray-500">
+            {{ sortSignals.mostRecentSellPriceSortOrder$() }}
+          </span>
+        }
+      </th>
       <th>Position</th>
       <th>Expired</th>
     </tr>

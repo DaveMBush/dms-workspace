@@ -11,6 +11,9 @@ import { Universe } from "../../store/universe/universe.interface";
       return false;
     }
     const today = new Date();
+    if (row.most_recent_sell_date.length < 10) {
+      return false;
+    }
     const mostRecent = new Date(row.most_recent_sell_date);
     // Normalize to yyyy-mm-dd
     function toYMD(d: Date): string {

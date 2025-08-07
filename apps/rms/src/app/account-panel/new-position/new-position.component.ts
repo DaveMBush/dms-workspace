@@ -105,13 +105,7 @@ export class NewPositionComponent {
       buy_date: this.buyDate()!.toISOString(),
       sell_date: undefined,
       sell: 0,
-    },{
-      id: this.accountId()!,
-      name: 'New Account',
-      trades: [],
-      divDeposits: [],
-      months: []
-    });
+    },act);
     this.close.emit();
   }
 
