@@ -13,10 +13,11 @@ import { selectCurrentAccountSignal } from '../../store/current-account/select-c
 import { Trade } from '../../store/trades/trade.interface';
 import { selectUniverses } from '../../store/universe/selectors/select-universes.function';
 import { Universe } from '../../store/universe/universe.interface';
-import { OpenPosition } from './open-position.interface';
+import { OpenPosition } from '../../store/trades/open-position.interface';
 import { OpenPositionsComponentService } from './open-positions-component.service';
 
 const FILTERS_STORAGE_KEY = 'open-positions-filters';
+const SORT_STORAGE_KEY = 'open-positions-sort';
 
 
 @Component({
@@ -36,22 +37,101 @@ export class OpenPositionsComponent {
   positions$ = computed(() => {
     const rawPositions = this.openPositionsService.selectOpenPositions();
     const symbolFilter = this.symbolFilter();
+    const sortField = this.sortField();
+    const sortOrder = this.sortOrder();
 
     // Apply symbol filter
+    let filteredPositions = rawPositions;
     if (symbolFilter && symbolFilter.trim() !== '') {
-      return rawPositions.filter(function filterSymbol(position) {
+      filteredPositions = rawPositions.filter(function filterSymbol(position) {
         return position.symbol.toLowerCase().includes(symbolFilter.toLowerCase());
       });
     }
 
-    return rawPositions;
+    // Apply sorting
+    if (sortField && sortOrder !== 0) {
+      filteredPositions = [...filteredPositions].sort((a, b) => this.comparePositions(a, b, sortField, sortOrder));
+    }
+
+    return filteredPositions;
   });
 
   toastMessages = signal<{ severity: string; summary: string; detail: string }[]>([]);
   private messageService = inject(MessageService);
   symbolFilter = signal<string>(this.loadSymbolFilter());
+
+  // Sort state signals
+  private sortField = signal<string>(this.loadSortField());
+  private sortOrder = signal<number>(this.loadSortOrder());
+
+  // Sort signals for UI
+  readonly sortSignals = {
+    buyDateSortIcon$: computed(() => {
+      const field = this.sortField();
+      const order = this.sortOrder();
+      if (field === 'buyDate') {
+        return order === 1 ? 'pi pi-sort-up' : 'pi pi-sort-down';
+      }
+      return 'pi pi-sort';
+    }),
+    buyDateSortOrder$: computed(() => {
+      const field = this.sortField();
+      const order = this.sortOrder();
+      if (field === 'buyDate') {
+        return order === 1 ? '1' : '2';
+      }
+      return '';
+    }),
+    unrealizedGainPercentSortIcon$: computed(() => {
+      const field = this.sortField();
+      const order = this.sortOrder();
+      if (field === 'unrealizedGainPercent') {
+        return order === 1 ? 'pi pi-sort-up' : 'pi pi-sort-down';
+      }
+      return 'pi pi-sort';
+    }),
+    unrealizedGainPercentSortOrder$: computed(() => {
+      const field = this.sortField();
+      const order = this.sortOrder();
+      if (field === 'unrealizedGainPercent') {
+        return order === 1 ? '1' : '2';
+      }
+      return '';
+    }),
+    unrealizedGainSortIcon$: computed(() => {
+      const field = this.sortField();
+      const order = this.sortOrder();
+      if (field === 'unrealizedGain') {
+        return order === 1 ? 'pi pi-sort-up' : 'pi pi-sort-down';
+      }
+      return 'pi pi-sort';
+    }),
+    unrealizedGainSortOrder$: computed(() => {
+      const field = this.sortField();
+      const order = this.sortOrder();
+      if (field === 'unrealizedGain') {
+        return order === 1 ? '1' : '2';
+      }
+      return '';
+    })
+  };
   trash(position: OpenPosition): void {
-    this.openPositionsService.deleteOpenPosition(position);
+    // Convert store OpenPosition to component OpenPosition for deletion
+    const positionForDeletion = {
+      id: position.id,
+      symbol: position.symbol,
+      exDate: position.exDate,
+      buy: position.buy,
+      buyDate: position.buyDate.toISOString(),
+      quantity: position.quantity,
+      expectedYield: position.expectedYield,
+      sell: position.sell,
+      sellDate: position.sellDate?.toISOString() ?? '',
+      daysHeld: position.daysHeld,
+      targetGain: position.targetGain,
+      targetSell: position.targetSell
+    };
+    this.openPositionsService.deleteOpenPosition(positionForDeletion);
   }
 
   trackById(index: number, row: OpenPosition): string {
@@ -85,6 +165,71 @@ export class OpenPositionsComponent {
     this.saveSymbolFilter(this.symbolFilter());
   }
 
+  /**
+   * Handles sort changes and saves to localStorage
+   */
+  protected onSort(field: string): void {
+    const currentField = this.sortField();
+    const currentOrder = this.sortOrder();
+
+    if (currentField === field) {
+      // Toggle order if same field
+      this.sortOrder.set(currentOrder === 1 ? -1 : 1);
+    } else {
+      // Set new field with ascending order
+      this.sortField.set(field);
+      this.sortOrder.set(1);
+    }
+
+    this.saveSortState();
+  }
+
+    /**
+   * Compares two positions for sorting
+   */
+  private comparePositions(a: OpenPosition, b: OpenPosition, sortField: string, sortOrder: number): number {
+    let aValue: unknown;
+    let bValue: unknown;
+
+    switch (sortField) {
+      case 'buyDate':
+        aValue = a.buyDate;
+        bValue = b.buyDate;
+        break;
+      case 'unrealizedGainPercent':
+        aValue = a.unrealizedGainPercent;
+        bValue = b.unrealizedGainPercent;
+        break;
+      case 'unrealizedGain':
+        aValue = a.unrealizedGain;
+        bValue = b.unrealizedGain;
+        break;
+      default:
+        return 0;
+    }
+
+    if (aValue === bValue) {
+      return 0;
+    }
+    if (aValue === null || aValue === undefined) {
+      return sortOrder;
+    }
+    if (bValue === null || bValue === undefined) {
+      return -sortOrder;
+    }
+
+    let comparison: number;
+    if (aValue < bValue) {
+      comparison = -1;
+    } else if (aValue > bValue) {
+      comparison = 1;
+    } else {
+      comparison = 0;
+    }
+
+    return comparison * sortOrder;
+  }
+
   private validateTradeField(field: string, row: OpenPosition, trade: Trade, universe: Universe): string {
     let tradeField = field;
     switch (field) {
@@ -96,11 +241,11 @@ export class OpenPositionsComponent {
         if (!this.isDateRangeValid(row.buyDate, row.sellDate, 'sellDate')) {
           this.messageService.add({ severity: 'error', summary: 'Invalid Date', detail: 'Sell date cannot be before buy date.' });
           // revert row.sellDate to previous value
-          row.sellDate = trade.sell_date !== undefined ? new Date(trade.sell_date).toISOString() : '';
+          row.sellDate = trade.sell_date ? new Date(trade.sell_date) : undefined;
           return '';
         }
-        if (universe.most_recent_sell_date !== null || row.sellDate > universe.most_recent_sell_date!) {
-          universe.most_recent_sell_date = row.sellDate;
+        if (universe.most_recent_sell_date !== null || (row.sellDate && row.sellDate > new Date(universe.most_recent_sell_date!))) {
+          universe.most_recent_sell_date = row.sellDate?.toISOString() ?? null;
         }
         break;
       case 'buyDate':
@@ -108,7 +253,7 @@ export class OpenPositionsComponent {
         if (!this.isDateRangeValid(row.buyDate, row.sellDate, 'buyDate')) {
           this.messageService.add({ severity: 'error', summary: 'Invalid Date', detail: 'Buy date cannot be after sell date.' });
           // revert row.buyDate to previous value
-          row.buyDate = trade.buy_date ? new Date(trade.buy_date).toISOString() : '';
+          row.buyDate = trade.buy_date ? new Date(trade.buy_date) : new Date();
           return '';
         }
         break;
@@ -209,6 +354,54 @@ export class OpenPositionsComponent {
       // fail silently
     }
     return ''; // Default value if nothing is saved or an error occurs
+  }
+
+  /**
+   * Loads sort field from localStorage
+   */
+  private loadSortField(): string {
+    try {
+      const currentAccount = selectCurrentAccountSignal(this.currentAccountSignalStore);
+      const accountId = currentAccount().id;
+      const saved = localStorage.getItem(`${SORT_STORAGE_KEY}-${accountId}-field`);
+      if (saved !== null) {
+        return JSON.parse(saved) as string;
+      }
+    } catch {
+      // fail silently
+    }
+    return ''; // Default value if nothing is saved or an error occurs
+  }
+
+  /**
+   * Loads sort order from localStorage
+   */
+  private loadSortOrder(): number {
+    try {
+      const currentAccount = selectCurrentAccountSignal(this.currentAccountSignalStore);
+      const accountId = currentAccount().id;
+      const saved = localStorage.getItem(`${SORT_STORAGE_KEY}-${accountId}-order`);
+      if (saved !== null) {
+        return JSON.parse(saved) as number;
+      }
+    } catch {
+      // fail silently
+    }
+    return 1; // Default value if nothing is saved or an error occurs
+  }
+
+  /**
+   * Saves sort state to localStorage
+   */
+  private saveSortState(): void {
+    try {
+      const currentAccount = selectCurrentAccountSignal(this.currentAccountSignalStore);
+      const accountId = currentAccount().id;
+      localStorage.setItem(`${SORT_STORAGE_KEY}-${accountId}-field`, JSON.stringify(this.sortField()));
+      localStorage.setItem(`${SORT_STORAGE_KEY}-${accountId}-order`, JSON.stringify(this.sortOrder()));
+    } catch {
+      // fail silently
+    }
   }
 
 }
