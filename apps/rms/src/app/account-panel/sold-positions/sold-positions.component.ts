@@ -10,14 +10,11 @@ import { TableModule } from 'primeng/table';
 import { ToastModule } from 'primeng/toast';
 
 import { currentAccountSignalStore } from '../../store/current-account/current-account.signal-store';
-import { selectCurrentAccountSignal } from '../../store/current-account/select-current-account.signal';
 import { Trade } from '../../store/trades/trade.interface';
 import { selectUniverses } from '../../store/universe/selectors/select-universes.function';
 import { Universe } from '../../store/universe/universe.interface';
 import { SoldPositionsComponentService } from './sold-positions-component.service';
-
-const SORT_STORAGE_KEY = 'sold-positions-sort';
-const FILTERS_STORAGE_KEY = 'sold-positions-filters';
+import { SoldPositionsStorageService } from './sold-positions-storage.service';
 
 interface SoldPosition {
   id: string;
@@ -41,20 +38,23 @@ interface SoldPosition {
   imports: [CommonModule, TableModule, ButtonModule, InputNumberModule, DatePickerModule, FormsModule, ToastModule],
   templateUrl: './sold-positions.component.html',
   styleUrls: ['./sold-positions.component.scss'],
+  viewProviders: [SoldPositionsStorageService],
 })
 export class SoldPositionsComponent {
   private soldPositionsService = inject(SoldPositionsComponentService);
   private currentAccountSignalStore = inject(currentAccountSignalStore);
+  private storageService = inject(SoldPositionsStorageService);
 
   // Sort state signals
-  private sortField = signal<string>(this.loadSortField());
-  private sortOrder = signal<number>(this.loadSortOrder());
+  private sortField = signal<string>(this.storageService.loadSortField());
+  private sortOrder = signal<number>(this.storageService.loadSortOrder());
 
   // Filter signals
-  symbolFilter = signal<string>(this.loadSymbolFilter());
+  symbolFilter = signal<string>(this.storageService.loadSymbolFilter());
 
   // Sort signals for UI
   readonly sortSignals = {
+    // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
     sellDateSortIcon$: computed(() => {
       const field = this.sortField();
       const order = this.sortOrder();
@@ -63,6 +63,7 @@ export class SoldPositionsComponent {
       }
       return 'pi pi-sort';
     }),
+    // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
     sellDateSortOrder$: computed(() => {
       const field = this.sortField();
       const order = this.sortOrder();
@@ -108,6 +109,7 @@ export class SoldPositionsComponent {
 
     // Apply sorting
     if (sortField && sortOrder !== 0) {
+      // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
       return filteredPositions.sort((a, b) => this.comparePositions(a, b, sortField, sortOrder));
     }
 
@@ -155,14 +157,28 @@ export class SoldPositionsComponent {
       this.sortOrder.set(1);
     }
 
-    this.saveSortState();
+    this.storageService.saveSortState(this.sortField(), this.sortOrder());
   }
 
   /**
    * Handles symbol filter changes and saves to localStorage
    */
   protected onSymbolFilterChange(): void {
-    this.saveSymbolFilter(this.symbolFilter());
+    this.storageService.saveSymbolFilter(this.symbolFilter());
+  }
+
+  protected onEditCommit(row: SoldPosition, field: string): void {
+    this.setCurrentScrollPosition();
+    const trade = this.findTradeForRow(row);
+    const universe = this.findUniverseForSymbol(row.symbol);
+    if (trade === undefined && universe === undefined) {
+      return;
+    }
+    const tradeField = this.validateTradeField(field, row, trade!, universe!);
+    if (tradeField === '') {
+      return;
+    }
+    (trade as Record<keyof Trade, unknown>)[tradeField as keyof Trade] = row[field as keyof SoldPosition];
   }
 
   /**
@@ -201,42 +217,6 @@ export class SoldPositionsComponent {
     }
 
     return comparison * sortOrder;
-  }
-
-  onEditCommit(row: SoldPosition, field: string): void {
-    this.setCurrentScrollPosition();
-    const trade = this.findTradeForRow(row);
-    const universe = this.findUniverseForSymbol(row.symbol);
-    if (trade === undefined && universe === undefined) {
-      return;
-    }
-    const tradeField = this.validateTradeField(field, row, trade!, universe!);
-    if (tradeField === '') {
-      return;
-    }
-    (trade as Record<keyof Trade, unknown>)[tradeField as keyof Trade] = row[field as keyof SoldPosition];
-  }
-
-  private possibleDateToDate(date: unknown): Date | undefined {
-    if (date instanceof Date) {
-      return date;
-    }
-    if (typeof date === 'string') {
-      return new Date(date);
-    }
-    return undefined;
-  }
-
-  private isDateRangeValid(buyDate: unknown, sellDate: unknown, editing: 'buyDate' | 'sellDate'): boolean {
-    const buy = this.possibleDateToDate(buyDate);
-    const sell = this.possibleDateToDate(sellDate);
-    if (editing === 'buyDate' && buy && sell) {
-      return buy <= sell;
-    }
-    if (editing === 'sellDate' && buy && sell) {
-      return sell >= buy;
-    }
-    return true;
   }
 
   private getScrollContainer(): HTMLElement | null {
@@ -278,110 +258,28 @@ export class SoldPositionsComponent {
   }
 
   private validateTradeField(field: string, row: SoldPosition, trade: Trade, universe: Universe): string {
-    let tradeField = field;
     switch (field) {
       case 'sell':
         universe.most_recent_sell_price = row.sell;
-        break;
+        return 'sell';
       case 'sellDate':
-        tradeField = 'sell_date';
-        if (!this.isDateRangeValid(row.buyDate, row.sellDate, 'sellDate')) {
+        if (!this.storageService.isDateRangeValid(row.buyDate, row.sellDate, 'sellDate')) {
           this.messageService.add({ severity: 'error', summary: 'Invalid Date', detail: 'Sell date cannot be before buy date.' });
-          // revert row.sellDate to previous value
           row.sellDate = trade.sell_date ?? '';
           return '';
         }
-        break;
+        return 'sell_date';
       case 'buyDate':
-        tradeField = 'buy_date';
-        if (!this.isDateRangeValid(row.buyDate, row.sellDate, 'buyDate')) {
+        if (!this.storageService.isDateRangeValid(row.buyDate, row.sellDate, 'buyDate')) {
           this.messageService.add({ severity: 'error', summary: 'Invalid Date', detail: 'Buy date cannot be after sell date.' });
-          // revert row.buyDate to previous value
           row.buyDate = trade.buy_date ?? '';
           return '';
         }
-        break;
+        return 'buy_date';
       default:
-        break;
-    }
-    return tradeField;
-  }
-
-  /**
-   * Loads sort field from localStorage
-   */
-  private loadSortField(): string {
-    try {
-      const currentAccount = selectCurrentAccountSignal(this.currentAccountSignalStore);
-      const accountId = currentAccount().id;
-      const saved = localStorage.getItem(`${SORT_STORAGE_KEY}-${accountId}-field`);
-      if (saved !== null) {
-        return JSON.parse(saved) as string;
-      }
-    } catch {
-      // fail silently
-    }
-    return ''; // Default value if nothing is saved or an error occurs
-  }
-
-  /**
-   * Loads sort order from localStorage
-   */
-  private loadSortOrder(): number {
-    try {
-      const currentAccount = selectCurrentAccountSignal(this.currentAccountSignalStore);
-      const accountId = currentAccount().id;
-      const saved = localStorage.getItem(`${SORT_STORAGE_KEY}-${accountId}-order`);
-      if (saved !== null) {
-        return JSON.parse(saved) as number;
-      }
-    } catch {
-      // fail silently
-    }
-    return 1; // Default value if nothing is saved or an error occurs
-  }
-
-  /**
-   * Saves sort state to localStorage
-   */
-  private saveSortState(): void {
-    try {
-      const currentAccount = selectCurrentAccountSignal(this.currentAccountSignalStore);
-      const accountId = currentAccount().id;
-      localStorage.setItem(`${SORT_STORAGE_KEY}-${accountId}-field`, JSON.stringify(this.sortField()));
-      localStorage.setItem(`${SORT_STORAGE_KEY}-${accountId}-order`, JSON.stringify(this.sortOrder()));
-    } catch {
-      // fail silently
+        return field;
     }
   }
 
-  /**
-   * Saves symbol filter to localStorage
-   */
-  private saveSymbolFilter(value: string): void {
-    try {
-      const currentAccount = selectCurrentAccountSignal(this.currentAccountSignalStore);
-      const accountId = currentAccount().id;
-      localStorage.setItem(`${FILTERS_STORAGE_KEY}-${accountId}-symbolFilter`, JSON.stringify(value));
-    } catch {
-      // fail silently
-    }
-  }
 
-  /**
-   * Loads symbol filter from localStorage
-   */
-  private loadSymbolFilter(): string {
-    try {
-      const currentAccount = selectCurrentAccountSignal(this.currentAccountSignalStore);
-      const accountId = currentAccount().id;
-      const saved = localStorage.getItem(`${FILTERS_STORAGE_KEY}-${accountId}-symbolFilter`);
-      if (saved !== null) {
-        return JSON.parse(saved) as string;
-      }
-    } catch {
-      // fail silently
-    }
-    return ''; // Default value if nothing is saved or an error occurs
-  }
 }
