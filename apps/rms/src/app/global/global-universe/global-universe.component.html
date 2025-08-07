@@ -20,11 +20,13 @@
 </p-toolbar>
 <p-table #dataTable [value]="universeWithDimmedState$()"
 size="small"
-[scrollable]="true" class="flex-1 overflow-auto min-h-0"
+[scrollable]="true" class="min-w-full max-h-full min-h-full rounded-lg shadow-sm table-fixed"
+[responsiveLayout]="'scroll'"
 showGridlines [rowTrackBy]="trackById"
+[scrollHeight]="'calc(100vh - 145px)'"
 >
   <ng-template pTemplate="header">
-    <tr>
+    <tr class="bg-gray-100 dark:bg-slate-800">
       <th>
         <input
           pInputText
@@ -91,7 +93,7 @@ showGridlines [rowTrackBy]="trackById"
         </p-columnFilter>
       </th>
     </tr>
-    <tr>
+    <tr class="bg-gray-100 dark:bg-slate-800">
       <th>Symbol</th>
       <th>Risk Group</th>
       <th>Distribution</th>
