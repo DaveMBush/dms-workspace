@@ -22,6 +22,7 @@ export class GlobalComponent implements OnInit, OnDestroy {
   globals = [
     { id: 'universe', name: 'Universe' },
     { id: 'screener', name: 'Screener' },
+    { id: 'summary', name: 'Summary' },
   ];
 
   ngOnInit(): void {

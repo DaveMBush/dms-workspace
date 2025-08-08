@@ -1,6 +1,7 @@
 import { FastifyInstance } from "fastify";
 
 import { prisma } from "../../prisma/prisma-client";
+import { aggregateAccountData } from "./aggregate-account-data.function";
 import { Summary } from "./summary.interface";
 import { SummaryRequest } from "./summary-request.interface";
 
@@ -50,7 +51,7 @@ function createSummarySchema(): SummarySchema {
         month: { type: 'string' },
         account_id: { type: 'string' },
       },
-      required: ['month', 'account_id'],
+      required: ['month'],
     },
     response: {
       200: {
@@ -129,42 +130,16 @@ async function getAccountPriorMonths(accountId: string, sellDateStart: Date): Pr
   });
 }
 
-function calculateDeposits(divDeposits: DivDeposit[]): number {
-  return divDeposits.filter(function filterDeposits(dd: DivDeposit): boolean {
-    return dd.universeId === null;
-  }).reduce(function sumDeposits(acc: number, deposit: DivDeposit): number {
-    return acc + deposit.amount;
-  }, 0);
-}
 
-function calculateDividends(divDeposits: DivDeposit[]): number {
-  return divDeposits.filter(function filterDividends(dd: DivDeposit): boolean {
-    return dd.universeId !== null;
-  }).reduce(function sumDividends(acc: number, deposit: DivDeposit): number {
-    return acc + deposit.amount;
-  }, 0);
-}
-
-function calculateCapitalGains(trades: Trade[]): number {
-  return trades.reduce(function sumCapitalGains(acc: number, trade: Trade): number {
-    return acc + (trade.sell - trade.buy) * trade.quantity;
-  }, 0);
-}
 
 function calculatePriorDivDeposits(accounts: AccountWithTradesAndDeposits[]): number {
-  return accounts.reduce(function sumAccountDeposits(accountAcc: number, account: AccountWithTradesAndDeposits): number {
-    return accountAcc + account.divDeposits.reduce(function sumDeposits(depositAcc: number, deposit: DivDeposit): number {
-      return depositAcc + deposit.amount;
-    }, 0);
-  }, 0);
+  const aggregatedData = aggregateAccountData(accounts);
+  return aggregatedData.deposits + aggregatedData.dividends;
 }
 
 function calculatePriorCapitalGains(accounts: AccountWithTradesAndDeposits[]): number {
-  return accounts.reduce(function sumAccountTrades(accountAcc: number, account: AccountWithTradesAndDeposits): number {
-    return accountAcc + account.trades.reduce(function sumTrades(tradeAcc: number, trade: Trade): number {
-      return tradeAcc + (trade.sell - trade.buy) * trade.quantity;
-    }, 0);
-  }, 0);
+  const aggregatedData = aggregateAccountData(accounts);
+  return aggregatedData.capitalGains;
 }
 
 async function getRiskGroupData(year: number, monthNum: number): Promise<RiskGroupResult[]> {
@@ -192,6 +167,98 @@ function createRiskGroupMap(result: RiskGroupResult[]): Map<string, number> {
   return riskGroupMap;
 }
 
+async function calculateSummaryData(accountId: string | undefined, sellDateStart: Date, sellDateEnd: Date): Promise<{
+  deposits: number;
+  dividends: number;
+  capitalGains: number;
+  priorDivDeposit: number;
+  priorCapitalGains: number;
+}> {
+  let deposits: number;
+  let dividends: number;
+  let capitalGains: number;
+  let priorDivDeposit: number;
+  let priorCapitalGains: number;
+
+  if (accountId !== undefined) {
+    // Single account summary
+    const accountThisMonth = await getAccountThisMonth(accountId, sellDateStart, sellDateEnd);
+    if (!accountThisMonth) {
+      throw new Error('Account not found');
+    }
+
+    const accountPriorMonths = await getAccountPriorMonths(accountId, sellDateStart);
+
+    const singleAccountData = aggregateAccountData([accountThisMonth]);
+    deposits = singleAccountData.deposits;
+    dividends = singleAccountData.dividends;
+    capitalGains = singleAccountData.capitalGains;
+
+    priorDivDeposit = calculatePriorDivDeposits(accountPriorMonths);
+    priorCapitalGains = calculatePriorCapitalGains(accountPriorMonths);
+  } else {
+    // Global summary - aggregate across all accounts
+    const allAccountsThisMonth = await getAllAccountsThisMonth(sellDateStart, sellDateEnd);
+    const allAccountsPriorMonths = await getAllAccountsPriorMonths(sellDateStart);
+
+    const thisMonthData = aggregateAccountData(allAccountsThisMonth);
+    deposits = thisMonthData.deposits;
+    dividends = thisMonthData.dividends;
+    capitalGains = thisMonthData.capitalGains;
+
+    priorDivDeposit = calculatePriorDivDeposits(allAccountsPriorMonths);
+    priorCapitalGains = calculatePriorCapitalGains(allAccountsPriorMonths);
+  }
+
+  return { deposits, dividends, capitalGains, priorDivDeposit, priorCapitalGains };
+}
+
+async function getAllAccountsThisMonth(sellDateStart: Date, sellDateEnd: Date): Promise<AccountWithTradesAndDeposits[]> {
+  return prisma.accounts.findMany({
+    include: {
+      trades: {
+        where: {
+          sell_date: {
+            gte: sellDateStart,
+            lt: sellDateEnd,
+          },
+        },
+      },
+      divDeposits: {
+        where: {
+          date: {
+            gte: sellDateStart,
+            lt: sellDateEnd,
+          },
+        },
+      },
+    },
+  });
+}
+
+async function getAllAccountsPriorMonths(sellDateStart: Date): Promise<AccountWithTradesAndDeposits[]> {
+  return prisma.accounts.findMany({
+    include: {
+      trades: {
+        where: {
+          sell_date: {
+            lt: sellDateStart
+          },
+        },
+      },
+      divDeposits: {
+        where: {
+          date: {
+            lt: sellDateStart,
+          },
+        },
+      },
+    },
+  });
+}
+
+
+
 function handleSummaryRoute(fastify: FastifyInstance): void {
   fastify.get<{ Body: SummaryRequest, Reply: Summary }>('/',
     {
@@ -203,19 +270,7 @@ function handleSummaryRoute(fastify: FastifyInstance): void {
       const { year, monthNum } = parseMonthString(month);
       const { start: sellDateStart, end: sellDateEnd } = calculateDateRange(year, monthNum);
 
-      const accountThisMonth = await getAccountThisMonth(account_id, sellDateStart, sellDateEnd);
-      if (!accountThisMonth) {
-        throw new Error('Account not found');
-      }
-
-      const accountPriorMonths = await getAccountPriorMonths(account_id, sellDateStart);
-
-      const deposits = calculateDeposits(accountThisMonth.divDeposits);
-      const dividends = calculateDividends(accountThisMonth.divDeposits);
-      const capitalGains = calculateCapitalGains(accountThisMonth.trades);
-
-      const priorDivDeposit = calculatePriorDivDeposits(accountPriorMonths);
-      const priorCapitalGains = calculatePriorCapitalGains(accountPriorMonths);
+      const summaryData = await calculateSummaryData(account_id, sellDateStart, sellDateEnd);
 
       const result = await getRiskGroupData(year, monthNum);
       const riskGroupMap = createRiskGroupMap(result);
@@ -225,9 +280,9 @@ function handleSummaryRoute(fastify: FastifyInstance): void {
       const taxFreeIncomeValue = riskGroupMap.get('Tax Free Income');
 
       reply.send({
-        deposits: deposits + priorDivDeposit + priorCapitalGains,
-        dividends,
-        capitalGains,
+        deposits: summaryData.deposits + summaryData.priorDivDeposit + summaryData.priorCapitalGains,
+        dividends: summaryData.dividends,
+        capitalGains: summaryData.capitalGains,
         equities: equitiesValue !== undefined ? equitiesValue : 0,
         income: incomeValue !== undefined ? incomeValue : 0,
         tax_free_income: taxFreeIncomeValue !== undefined ? taxFreeIncomeValue : 0,

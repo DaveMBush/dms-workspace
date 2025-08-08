@@ -1,6 +1,7 @@
 import { FastifyInstance } from "fastify";
 
 import { prisma } from "../../../prisma/prisma-client";
+import { aggregateAccountData } from "../aggregate-account-data.function";
 import { SummaryRequest } from "../summary-request.interface";
 import { GraphResponse } from "./graph.interface";
 
@@ -25,7 +26,7 @@ function createGraphSchema(): Record<string, unknown> {
         year: { type: 'string' },
         time_period: { type: 'string', enum: ['year'] },
       },
-      required: ['account_id', 'year'],
+      required: ['year'],
     },
     response: {
       200: {
@@ -69,27 +70,30 @@ async function getAccountForMonth(accountId: string, monthStart: Date, monthEnd:
   });
 }
 
-function calculateMonthDeposits(divDeposits: Array<{ universeId: string | null; amount: number }>): number {
-  return divDeposits.filter(function filterDeposits(dd) {
-    return dd.universeId === null;
-  }).reduce(function sumDeposits(acc, d) {
-    return acc + d.amount;
-  }, 0);
+async function getAllAccountsForMonth(monthStart: Date, monthEnd: Date): Promise<AccountWithData[]> {
+  return prisma.accounts.findMany({
+    include: {
+      divDeposits: {
+        where: {
+          date: {
+            gte: monthStart,
+            lt: monthEnd,
+          },
+        },
+      },
+      trades: {
+        where: {
+          sell_date: {
+            gte: monthStart,
+            lt: monthEnd,
+          },
+        },
+      },
+    },
+  });
 }
 
-function calculateMonthDividends(divDeposits: Array<{ universeId: string | null; amount: number }>): number {
-  return divDeposits.filter(function filterDividends(dd) {
-    return dd.universeId !== null;
-  }).reduce(function sumDividends(acc, d) {
-    return acc + d.amount;
-  }, 0);
-}
 
-function calculateMonthCapitalGains(trades: Array<{ sell: number; buy: number; quantity: number }>): number {
-  return trades.reduce(function sumCapitalGains(acc, t) {
-    return acc + (t.sell - t.buy) * t.quantity;
-  }, 0);
-}
 
 function formatMonthString(month: number, year: number): string {
   return `${(month + 1).toString().padStart(2, '0')}-${year}`;
@@ -109,9 +113,28 @@ async function processMonthData(accountId: string, year: number, month: number):
     return { monthDeposits: 0, monthDividends: 0, monthCapitalGains: 0 };
   }
 
-  const monthDeposits = calculateMonthDeposits(account.divDeposits);
-  const monthDividends = calculateMonthDividends(account.divDeposits);
-  const monthCapitalGains = calculateMonthCapitalGains(account.trades);
+  const monthData = aggregateAccountData([account]);
+  return {
+    monthDeposits: monthData.deposits,
+    monthDividends: monthData.dividends,
+    monthCapitalGains: monthData.capitalGains
+  };
+}
+
+async function processGlobalMonthData(year: number, month: number): Promise<{
+  monthDeposits: number;
+  monthDividends: number;
+  monthCapitalGains: number;
+}> {
+  const monthStart = new Date(year, month, 1);
+  const monthEnd = new Date(year, month + 1, 1);
+
+  const allAccounts = await getAllAccountsForMonth(monthStart, monthEnd);
+
+  const monthData = aggregateAccountData(allAccounts);
+  const monthDeposits = monthData.deposits;
+  const monthDividends = monthData.dividends;
+  const monthCapitalGains = monthData.capitalGains;
 
   return { monthDeposits, monthDividends, monthCapitalGains };
 }
@@ -137,15 +160,43 @@ async function generateGraphData(accountId: string, year: number): Promise<Graph
   return results;
 }
 
+async function generateGlobalGraphData(year: number): Promise<GraphResponse[]> {
+  const results: GraphResponse[] = [];
+  let runningTotal = 0;
+  let pending = 0;
+
+  for (let m = 0; m < 12; m++) {
+    const { monthDeposits, monthDividends, monthCapitalGains } = await processGlobalMonthData(year, m);
+
+    runningTotal += pending + monthDeposits;
+    results.push({
+      month: formatMonthString(m, year),
+      deposits: runningTotal,
+      dividends: monthDividends,
+      capitalGains: monthCapitalGains,
+    });
+    pending = monthDividends + monthCapitalGains;
+  }
+
+  return results;
+}
+
 function handleGraphRoute(fastify: FastifyInstance): void {
   fastify.get<{ Body: SummaryRequest, Reply: GraphResponse[] }>('/',
     {
       schema: createGraphSchema(),
     },
     async function handleGraphRequest(request, reply): Promise<void> {
-      const { account_id: accountId, year } = request.query as { account_id: string; year: string };
+      const { account_id: accountId, year } = request.query as { account_id?: string; year: string };
       const yearNum = parseInt(year, 10);
-              const results = await generateGraphData(accountId, yearNum);
+
+      let results: GraphResponse[];
+      if (accountId !== undefined) {
+        results = await generateGraphData(accountId, yearNum);
+      } else {
+        results = await generateGlobalGraphData(yearNum);
+      }
+
       reply.send(results);
     }
   );

@@ -80,7 +80,9 @@ export class GlobalUniverseComponent {
       sortCriteria: this.sortCriteria(),
       minYield: this.minYieldFilter(),
       selectedAccount: this.selectedAccountId(),
-      symbolFilter: this.symbolFilter()
+      symbolFilter: this.symbolFilter(),
+      riskGroupFilter: this.riskGroupFilter(),
+      expiredFilter: this.expiredFilter()
     });
   });
 
