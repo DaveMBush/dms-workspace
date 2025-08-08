@@ -40,6 +40,8 @@ interface FilterAndSortParams {
   minYield: number | null;
   selectedAccount: string;
   symbolFilter: string;
+  riskGroupFilter: string | null;
+  expiredFilter: boolean | null;
 }
 
 @Injectable({
@@ -187,13 +189,11 @@ export class UniverseDataService {
   }
 
   /**
-   * Filters and sorts universe data based on criteria
+   * Applies filters to universe data
    */
-  filterAndSortUniverses(params: FilterAndSortParams): UniverseDisplayData[] {
-    const { rawData, sortCriteria, minYield, selectedAccount, symbolFilter } = params;
-
-    // Apply filters
-    let filteredData = rawData;
+  applyFilters(data: UniverseDisplayData[], params: FilterAndSortParams): UniverseDisplayData[] {
+    const { minYield, selectedAccount, symbolFilter, riskGroupFilter, expiredFilter } = params;
+    let filteredData = data;
 
     // Apply symbol filter
     if (symbolFilter && symbolFilter.trim() !== '') {
@@ -206,6 +206,20 @@ export class UniverseDataService {
     if (minYield !== null && minYield > 0) {
       filteredData = filteredData.filter(function filterYield(item: UniverseDisplayData) {
         return Boolean(item.yield_percent) && item.yield_percent >= minYield;
+      });
+    }
+
+    // Apply risk group filter
+    if (riskGroupFilter !== null && riskGroupFilter.trim() !== '') {
+      filteredData = filteredData.filter(function filterRiskGroup(item: UniverseDisplayData) {
+        return item.riskGroup === riskGroupFilter;
+      });
+    }
+
+    // Apply expired filter
+    if (expiredFilter !== null) {
+      filteredData = filteredData.filter(function filterExpired(item: UniverseDisplayData) {
+        return item.expired === expiredFilter;
       });
     }
 
@@ -223,6 +237,18 @@ export class UniverseDataService {
         };
       });
     }
+
+    return filteredData;
+  }
+
+  /**
+   * Filters and sorts universe data based on criteria
+   */
+  filterAndSortUniverses(params: FilterAndSortParams): UniverseDisplayData[] {
+    const { rawData, sortCriteria } = params;
+
+    // Apply filters
+    const filteredData = this.applyFilters(rawData, params);
 
     if (sortCriteria.length === 0) {
       return filteredData;
