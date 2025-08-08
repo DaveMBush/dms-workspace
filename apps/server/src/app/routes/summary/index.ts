@@ -50,7 +50,7 @@ function createSummarySchema(): SummarySchema {
         month: { type: 'string' },
         account_id: { type: 'string' },
       },
-      required: ['month', 'account_id'],
+      required: ['month'],
     },
     response: {
       200: {
@@ -192,6 +192,96 @@ function createRiskGroupMap(result: RiskGroupResult[]): Map<string, number> {
   return riskGroupMap;
 }
 
+async function getAllAccountsThisMonth(sellDateStart: Date, sellDateEnd: Date): Promise<AccountWithTradesAndDeposits[]> {
+  return prisma.accounts.findMany({
+    include: {
+      trades: {
+        where: {
+          sell_date: {
+            gte: sellDateStart,
+            lt: sellDateEnd,
+          },
+        },
+      },
+      divDeposits: {
+        where: {
+          date: {
+            gte: sellDateStart,
+            lt: sellDateEnd,
+          },
+        },
+      },
+    },
+  });
+}
+
+async function getAllAccountsPriorMonths(sellDateStart: Date): Promise<AccountWithTradesAndDeposits[]> {
+  return prisma.accounts.findMany({
+    include: {
+      trades: {
+        where: {
+          sell_date: {
+            lt: sellDateStart
+          },
+        },
+      },
+      divDeposits: {
+        where: {
+          date: {
+            lt: sellDateStart,
+          },
+        },
+      },
+    },
+  });
+}
+
+async function getAvailableMonths(): Promise<Array<{ month: string; label: string }>> {
+  // Get all divDeposits with dates
+  const divDeposits = await prisma.divDeposits.findMany({
+    where: { date: { not: undefined } },
+    select: { date: true }
+  });
+
+  // Get all trades with sell dates
+  const trades = await prisma.trades.findMany({
+    where: { sell_date: { not: null } },
+    select: { sell_date: true }
+  });
+
+  // Extract months from divDeposits
+  const divDepositMonths = new Set<string>();
+  divDeposits.forEach(function extractDivDepositMonth(deposit) {
+    const d = new Date(deposit.date);
+    const monthStr = `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}`;
+    divDepositMonths.add(monthStr);
+  });
+
+  // Extract months from trades
+  const tradeMonths = new Set<string>();
+  trades.forEach(function extractTradeMonth(trade) {
+    const d = new Date(trade.sell_date!);
+    const monthStr = `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}`;
+    tradeMonths.add(monthStr);
+  });
+
+  // Combine and sort months
+  const allMonths = [...divDepositMonths, ...tradeMonths];
+  const uniqueMonths = [...new Set(allMonths)];
+  const sortedMonths = uniqueMonths.toSorted(function sortMonthsDescending(a, b) {
+    return b.localeCompare(a);
+  });
+
+  // Format for response
+  return sortedMonths.map(function formatMonth(monthStr) {
+    const [year, month] = monthStr.split('-');
+    return {
+      month: monthStr,
+      label: `${month}/${year}`
+    };
+  });
+}
+
 function handleSummaryRoute(fastify: FastifyInstance): void {
   fastify.get<{ Body: SummaryRequest, Reply: Summary }>('/',
     {
@@ -203,19 +293,39 @@ function handleSummaryRoute(fastify: FastifyInstance): void {
       const { year, monthNum } = parseMonthString(month);
       const { start: sellDateStart, end: sellDateEnd } = calculateDateRange(year, monthNum);
 
-      const accountThisMonth = await getAccountThisMonth(account_id, sellDateStart, sellDateEnd);
-      if (!accountThisMonth) {
-        throw new Error('Account not found');
+      let deposits: number;
+      let dividends: number;
+      let capitalGains: number;
+      let priorDivDeposit: number;
+      let priorCapitalGains: number;
+
+      if (account_id) {
+        // Single account summary
+        const accountThisMonth = await getAccountThisMonth(account_id, sellDateStart, sellDateEnd);
+        if (!accountThisMonth) {
+          throw new Error('Account not found');
+        }
+
+        const accountPriorMonths = await getAccountPriorMonths(account_id, sellDateStart);
+
+        deposits = calculateDeposits(accountThisMonth.divDeposits);
+        dividends = calculateDividends(accountThisMonth.divDeposits);
+        capitalGains = calculateCapitalGains(accountThisMonth.trades);
+
+        priorDivDeposit = calculatePriorDivDeposits(accountPriorMonths);
+        priorCapitalGains = calculatePriorCapitalGains(accountPriorMonths);
+      } else {
+        // Global summary - aggregate across all accounts
+        const allAccountsThisMonth = await getAllAccountsThisMonth(sellDateStart, sellDateEnd);
+        const allAccountsPriorMonths = await getAllAccountsPriorMonths(sellDateStart);
+
+        deposits = allAccountsThisMonth.reduce((acc, account) => acc + calculateDeposits(account.divDeposits), 0);
+        dividends = allAccountsThisMonth.reduce((acc, account) => acc + calculateDividends(account.divDeposits), 0);
+        capitalGains = allAccountsThisMonth.reduce((acc, account) => acc + calculateCapitalGains(account.trades), 0);
+
+        priorDivDeposit = calculatePriorDivDeposits(allAccountsPriorMonths);
+        priorCapitalGains = calculatePriorCapitalGains(allAccountsPriorMonths);
       }
-
-      const accountPriorMonths = await getAccountPriorMonths(account_id, sellDateStart);
-
-      const deposits = calculateDeposits(accountThisMonth.divDeposits);
-      const dividends = calculateDividends(accountThisMonth.divDeposits);
-      const capitalGains = calculateCapitalGains(accountThisMonth.trades);
-
-      const priorDivDeposit = calculatePriorDivDeposits(accountPriorMonths);
-      const priorCapitalGains = calculatePriorCapitalGains(accountPriorMonths);
 
       const result = await getRiskGroupData(year, monthNum);
       const riskGroupMap = createRiskGroupMap(result);
@@ -236,6 +346,33 @@ function handleSummaryRoute(fastify: FastifyInstance): void {
   );
 }
 
+function handleAvailableMonthsRoute(fastify: FastifyInstance): void {
+  fastify.get('/months',
+    {
+      schema: {
+        response: {
+          200: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                month: { type: 'string' },
+                label: { type: 'string' },
+              },
+              required: ['month', 'label'],
+            },
+          },
+        },
+      },
+    },
+    async function handleAvailableMonthsRequest(request, reply): Promise<void> {
+      const months = await getAvailableMonths();
+      reply.send(months);
+    }
+  );
+}
+
 export default function registerSummaryRoutes(fastify: FastifyInstance): void {
   handleSummaryRoute(fastify);
+  handleAvailableMonthsRoute(fastify);
 }

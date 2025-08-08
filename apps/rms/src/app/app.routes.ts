@@ -78,6 +78,9 @@ export const appRoutes: Route[] = [
             screenDefinition
           ])
         ]
+      }, {
+        path: 'global/summary',
+        loadComponent: async () => import('./global/global-summary/global-summary.component').then(m => m.GlobalSummaryComponent),
       }
     ]
   },
