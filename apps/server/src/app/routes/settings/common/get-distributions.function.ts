@@ -1,5 +1,4 @@
-import axios from 'axios';
-
+import { axiosGetWithBackoff } from '../../common/axios-get-with-backoff.function';
 import { sleep } from './sleep.function';
 
 let lastRequestTime = 0;
@@ -126,11 +125,16 @@ export async function getDistributions(symbol: string): Promise<DistributionResu
   const url = buildRequestUrl(symbol, oneYearAgo, today);
 
   try {
-    const response = await axios.get(url, {
-      headers: createRequestHeaders(symbol),
-    });
+    const response = await axiosGetWithBackoff<{ Data?: DistributionRow[] }>(
+      url,
+      { headers: createRequestHeaders(symbol) },
+      {
 
-    const responseData = response.data as { Data?: DistributionRow[] } | undefined;
+      }
+    );
+
+    const responseData = response.data as
+      { Data?: DistributionRow[] } | undefined;
     const data = responseData?.Data ?? [];
     if (data.length === 0) {
       return undefined;

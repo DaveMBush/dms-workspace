@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/naming-convention -- API compatibility */
 /* eslint-disable @typescript-eslint/no-explicit-any -- Cheerio element types */
-import axios from 'axios';
 import * as cheerio from 'cheerio';
 import { FastifyInstance } from 'fastify';
 
 import { prisma } from '../../prisma/prisma-client';
+import { axiosGetWithBackoff } from '../common/axios-get-with-backoff.function';
 import { getConsistentDistributions } from './get-consistent-distributions.function';
 import { ScreeningData } from './screening-data.interface';
 
@@ -51,9 +51,10 @@ async function loadRiskGroups(): Promise<RiskGroupMap> {
 
 async function fetchScreeningData(): Promise<ScreeningData[]> {
   const url = 'https://www.cefconnect.com/api/v3/dailypricing';
-  const response = await axios.get<ScreeningData[]>(url, {
-    headers: createRequestHeaders(),
-  });
+  const response = await axiosGetWithBackoff<ScreeningData[]>(
+    url,
+    { headers: createRequestHeaders() }
+  );
 
   const data = response.data;
   if (data.length === 0) {
@@ -153,21 +154,25 @@ function determineRiskGroupId(symbol: QualifyingSymbol, riskGroups: RiskGroupMap
 }
 
 async function fetchCefPage(symbol: string): Promise<cheerio.CheerioAPI> {
-  const cefPage = await axios.get(`https://www.cefconnect.com/fund/${symbol}`, {
-    headers: {
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-      'Accept': 'application/json, text/html, */*',
-      'Accept-Language': 'en-US,en;q=0.9',
-      'Accept-Encoding': 'gzip, deflate, br',
-      'Connection': 'keep-alive',
-      'Referer': '',
-      'Sec-Fetch-Dest': 'empty',
-      'Sec-Fetch-Mode': 'cors',
-      'Sec-Fetch-Site': 'same-origin',
+  const cefPage = await axiosGetWithBackoff<string>(
+    `https://www.cefconnect.com/fund/${symbol}`,
+    {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'application/json, text/html, */*',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Accept-Encoding': 'gzip, deflate, br',
+        'Connection': 'keep-alive',
+        'Referer': '',
+        'Sec-Fetch-Dest': 'empty',
+        'Sec-Fetch-Mode': 'cors',
+        'Sec-Fetch-Site': 'same-origin',
+      },
     },
-  });
+    {}
+  );
 
-  return cheerio.load(cefPage.data as string);
+  return cheerio.load(cefPage.data);
 }
 
 function extractHoldingsCount($: cheerio.CheerioAPI): number {
@@ -221,7 +226,6 @@ function shouldDeleteExistingSymbol(holdings: number, totalPercentTopHoldings: n
 
 function createScreenerData(symbol: QualifyingSymbol, riskGroupId: string): ScreenerRecord {
   return {
-    id: '',
     symbol: symbol.Ticker,
     risk_group_id: riskGroupId,
     has_volitility: false,
@@ -231,15 +235,17 @@ function createScreenerData(symbol: QualifyingSymbol, riskGroupId: string): Scre
     last_price: symbol.Price,
     ex_date: null,
     distributions_per_year: symbol.DistributionFrequency === 'Monthly' ? 12 : 4,
-  };
+  } as ScreenerRecord;
 }
 
 async function processSymbol(
   symbol: QualifyingSymbol,
   riskGroups: RiskGroupMap
 ): Promise<void> {
+  // processing symbol
   const riskGroupId = determineRiskGroupId(symbol, riskGroups);
   if (riskGroupId === null) {
+    // skip: no risk group
     return;
   }
 
@@ -295,7 +301,6 @@ export default function registerScreenerRoutes(fastify: FastifyInstance): void {
       }
 
       const qualifyingSymbols = filterQualifyingSymbols(data);
-
       for (const symbol of qualifyingSymbols) {
         await processSymbol(symbol, riskGroups);
       }
