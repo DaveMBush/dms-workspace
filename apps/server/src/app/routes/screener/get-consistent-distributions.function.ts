@@ -1,4 +1,4 @@
-import axios from "axios";
+import { axiosGetWithBackoff } from "../common/axios-get-with-backoff.function";
 
 // Global rate limiting - track last API call time
 let lastApiCallTime = 0;
@@ -81,9 +81,17 @@ export async function getConsistentDistributions(symbol: string): Promise<boolea
   const oneYearAgo = new Date(today.valueOf() - 365 * 24 * 60 * 60 * 1000);
   const url = `https://www.cefconnect.com/api/v3/distributionhistory/fund/${symbol}/${formatDate(oneYearAgo)}/${formatDate(today)}`;
 
-  const response = await axios.get(url, {
-    headers: createRequestHeaders(symbol),
-  });
+  const maxRetries = 3;
+  const baseDelay = 5000; // 5 seconds in milliseconds
+
+  const response = await axiosGetWithBackoff<{ Data?: DistributionRow[] }>(
+    url,
+    { headers: createRequestHeaders(symbol) },
+    {
+      baseDelayMs: baseDelay,
+      maxRetries,
+    }
+  );
 
   const responseData = response.data as { Data?: DistributionRow[] } | undefined;
   const data = responseData?.Data ?? [];
