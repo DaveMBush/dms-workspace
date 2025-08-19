@@ -1,13 +1,13 @@
----
+# Front-end UX Specification
 
-### **UI/UX Specification**
+## **UI/UX Specification**
 
 * **Project Title**: Universe Update Process Enhancement
 * **Agent**: @ux
 
 ---
 
-### **1\. User Flow**
+### **1. User Flow**
 
 The user flow for updating the universe will be streamlined to a single-step action within the modal dialog.
 
@@ -20,7 +20,7 @@ The user flow for updating the universe will be streamlined to a single-step act
 
 ---
 
-### **2\. UI Changes**
+### **2. UI Changes**
 
 The primary change to the user interface involves simplifying the modal dialog.
 
@@ -30,7 +30,7 @@ The primary change to the user interface involves simplifying the modal dialog.
 
 ---
 
-### **3\. Behavioral Requirements**
+### **3. Behavioral Requirements**
 
 The "Update Universe" button's behavior will be modified to reflect the new backend logic:
 
@@ -40,3 +40,56 @@ The "Update Universe" button's behavior will be modified to reflect the new back
 
 ---
 
+### **4. Loading and Error States**
+
+* Loading
+  * While the update request is in flight, show a spinner inside the dialog.
+  * Disable action buttons during the request.
+* Error
+  * On failure, keep the dialog open and show an inline error message (non-blocking) with retry guidance.
+  * Provide a retry button; re-enable all actions when the request settles.
+* Success
+  * On success, close the dialog and refresh the relevant stores/data.
+
+---
+
+### **5. Notifications**
+
+* Success toast (non-intrusive): "Universe updated from Screener"
+* Error toast: concise failure reason; link to logs if available.
+
+---
+
+### **6. Accessibility (PrimeNG + Tailwind)**
+
+* Focus management
+  * Focus the first actionable element when the dialog opens.
+  * Return focus to the triggering button on close.
+* Keyboard
+  * Ensure Esc closes the dialog; Tab order is logical and trapped inside.
+  * Buttons are reachable and clearly labeled.
+* ARIA
+  * Dialog uses role=dialog and has aria-labelledby bound to the header.
+  * Spinner has aria-live=polite, and error text is announced.
+* Contrast
+  * Buttons and text follow WCAG AA contrast.
+
+---
+
+### **7. Feature flag visibility**
+
+* When `USE_SCREENER_FOR_UNIVERSE=false` (default), hide or disable the "Use Screener" action if present.
+* Manual symbol fields remain visible and functional when the flag is off.
+
+---
+
+### **8. Edge cases**
+
+* No eligible Screener rows
+  * Show success toast with note: "No symbols qualified; nothing changed".
+* Partial updates (network/API hiccups)
+  * Show error; allow retry. Do not close the dialog automatically.
+* Timeout
+  * Show timeout error with retry. Keep the dialog open.
+* Backend validation error
+  * Show inline message; do not clear user context (keep dialog state).

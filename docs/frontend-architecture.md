@@ -1,6 +1,10 @@
----
+# Front-end Architecture
 
-### **UI/UX Specification**
+---
+See extended UX flows, loading/error, accessibility, and edge cases in
+[front-end-spec.md](./front-end-spec.md).
+
+## **UI/UX Specification**
 
 * **Project Title**: Universe Update Process Enhancement
 * **Agent**: @ux
@@ -40,3 +44,5 @@ The "Update Universe" button's behavior will be modified to reflect the new back
 
 ---
 
+See extended UX flows, loading/error, accessibility, and edge cases in
+[front-end-spec.md](./front-end-spec.md).
