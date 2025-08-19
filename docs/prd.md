@@ -1,24 +1,24 @@
 Here is the finalized Product Requirements Document (PRD) for your project.
 
-### **Product Requirements Document (PRD)**
+## **Product Requirements Document (PRD)**
 
 * **Project Title**: Enhancement to the Universe Update Process
 
 ---
 
-### **1\. Introduction**
+## **1. Introduction**
 
 This PRD outlines the requirements for a brownfield enhancement to the existing application. The goal is to modernize the process for updating the universe of tradable Closed End Funds (CEFs) by replacing the manual symbol input fields with an automated process that leverages the results of the Screener. This enhancement will streamline the user workflow and improve efficiency while retaining the existing dialog functionality.
 
 ---
 
-### **2\. Problem Statement**
+## **2. Problem Statement**
 
 The current method for updating the universe of CEFs relies on a manual modal dialog where the user must input a list of symbols. This process is inefficient, prone to manual error, and disconnected from the Screener functionality, which already provides a filtered list of potential CEFs.
 
 ---
 
-### **3\. Proposed Solution**
+## **3. Proposed Solution**
 
 The manual symbol input fields on the modal dialog will be removed. The universe of tradable CEFs will now be updated automatically based on the results of the "Screener" screen. The buttons on the modal dialog, including the one that triggers the universe update, will remain in place.
 
@@ -31,13 +31,13 @@ The specific requirements for this solution are:
 
 ---
 
-### **4\. Target Audience**
+## **4. Target Audience**
 
 This enhancement is intended for the application's sole user, the product owner and developer, for personal use.
 
 ---
 
-### **5\. Technical Requirements & Constraints**
+## **5. Technical Requirements & Constraints**
 
 * **Frontend**: The frontend code for this enhancement must be written in **Angular 20** using **signals**. The use of **RxJS should be avoided**. The user interface will leverage the existing **PrimeNG component library** and **Tailwind CSS** for styling and layout.
 * **Backend**: The backend services must integrate with the existing stack, which uses the **Prisma ORM framework** with **Sqlite3** and the **better-sqlite3** driver. The API interface is built with the **Fastify framework**.
