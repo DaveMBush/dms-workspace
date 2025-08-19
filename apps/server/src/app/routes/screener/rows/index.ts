@@ -108,7 +108,7 @@ export default function registerScreenerRoutes(fastify: FastifyInstance): void {
   fastify.put<{
     Body: {
       id: string;
-      has_volatility: boolean;
+      has_volitility: boolean;
       objectives_understood: boolean;
       graph_higher_before_2008: boolean;
     };
