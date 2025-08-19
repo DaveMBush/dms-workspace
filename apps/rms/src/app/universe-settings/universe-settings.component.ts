@@ -60,6 +60,7 @@ export class UniverseSettingsComponent {
       });
   }
 
+
   onDialogShow(): void {
     const self = this;
     setTimeout(function onDialogShowTimeout() {
