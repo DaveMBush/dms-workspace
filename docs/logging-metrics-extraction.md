@@ -133,10 +133,10 @@ function analyzeSyncLogs(): void {
     for (const logFile of logFiles) {
       const logPath = join(logsDir, logFile);
       const content = readFileSync(logPath, 'utf-8');
-      
+
       for (const line of content.split('\n')) {
         if (!line.trim()) continue;
-        
+
         try {
           const entry: LogEntry = JSON.parse(line);
           if (entry.message === 'Sync from screener operation completed successfully' && entry.data?.summary) {
@@ -158,8 +158,8 @@ function analyzeSyncLogs(): void {
     const totalInserted = metrics.inserted.reduce((sum, count) => sum + count, 0);
     const totalUpdated = metrics.updated.reduce((sum, count) => sum + count, 0);
     const totalExpired = metrics.expired.reduce((sum, count) => sum + count, 0);
-    const avgDuration = totalOperations > 0 
-      ? metrics.duration.reduce((sum, duration) => sum + duration, 0) / totalOperations 
+    const avgDuration = totalOperations > 0
+      ? metrics.duration.reduce((sum, duration) => sum + duration, 0) / totalOperations
       : 0;
 
     console.log('Sync Operation Metrics:');
