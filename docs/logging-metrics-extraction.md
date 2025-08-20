@@ -90,38 +90,91 @@ grep '"message":"Sync from screener operation completed successfully"' logs/sync
 
 ### Using Scripts
 
-#### Python Script Example
-```python
-import json
-import glob
-from collections import defaultdict
+#### TypeScript/Node.js Script Example
+```typescript
+import { readFileSync, readdirSync } from 'fs';
+import { join } from 'path';
 
-def analyze_sync_logs():
-    metrics = defaultdict(list)
+interface LogEntry {
+  timestamp: string;
+  correlationId: string;
+  level: 'error' | 'info' | 'warn';
+  message: string;
+  data?: {
+    summary?: {
+      inserted: number;
+      updated: number;
+      markedExpired: number;
+    };
+    duration?: number;
+  };
+}
 
-    for log_file in glob.glob('logs/sync-*.log'):
-        with open(log_file, 'r') as f:
-            for line in f:
-                try:
-                    entry = json.loads(line.strip())
-                    if entry['message'] == 'Sync from screener operation completed successfully':
-                        data = entry['data']
-                        metrics['inserted'].append(data['summary']['inserted'])
-                        metrics['updated'].append(data['summary']['updated'])
-                        metrics['expired'].append(data['summary']['markedExpired'])
-                        metrics['duration'].append(data['duration'])
-                except json.JSONDecodeError:
-                    continue
+interface Metrics {
+  inserted: number[];
+  updated: number[];
+  expired: number[];
+  duration: number[];
+}
 
-    print("Sync Operation Metrics:")
-    print(f"Total Operations: {len(metrics['duration'])}")
-    print(f"Total Inserted: {sum(metrics['inserted'])}")
-    print(f"Total Updated: {sum(metrics['updated'])}")
-    print(f"Total Expired: {sum(metrics['expired'])}")
-    print(f"Average Duration: {sum(metrics['duration']) / len(metrics['duration']):.2f}ms")
+function analyzeSyncLogs(): void {
+  const logsDir = join(process.cwd(), 'logs');
+  const metrics: Metrics = {
+    inserted: [],
+    updated: [],
+    expired: [],
+    duration: [],
+  };
 
-if __name__ == '__main__':
-    analyze_sync_logs()
+  try {
+    const logFiles = readdirSync(logsDir)
+      .filter(file => file.startsWith('sync-') && file.endsWith('.log'));
+
+    for (const logFile of logFiles) {
+      const logPath = join(logsDir, logFile);
+      const content = readFileSync(logPath, 'utf-8');
+      
+      for (const line of content.split('\n')) {
+        if (!line.trim()) continue;
+        
+        try {
+          const entry: LogEntry = JSON.parse(line);
+          if (entry.message === 'Sync from screener operation completed successfully' && entry.data?.summary) {
+            metrics.inserted.push(entry.data.summary.inserted);
+            metrics.updated.push(entry.data.summary.updated);
+            metrics.expired.push(entry.data.summary.markedExpired);
+            if (entry.data.duration) {
+              metrics.duration.push(entry.data.duration);
+            }
+          }
+        } catch (parseError) {
+          // Skip malformed JSON lines
+          continue;
+        }
+      }
+    }
+
+    const totalOperations = metrics.duration.length;
+    const totalInserted = metrics.inserted.reduce((sum, count) => sum + count, 0);
+    const totalUpdated = metrics.updated.reduce((sum, count) => sum + count, 0);
+    const totalExpired = metrics.expired.reduce((sum, count) => sum + count, 0);
+    const avgDuration = totalOperations > 0 
+      ? metrics.duration.reduce((sum, duration) => sum + duration, 0) / totalOperations 
+      : 0;
+
+    console.log('Sync Operation Metrics:');
+    console.log(`Total Operations: ${totalOperations}`);
+    console.log(`Total Inserted: ${totalInserted}`);
+    console.log(`Total Updated: ${totalUpdated}`);
+    console.log(`Total Expired: ${totalExpired}`);
+    console.log(`Average Duration: ${avgDuration.toFixed(2)}ms`);
+  } catch (error) {
+    console.error('Error analyzing logs:', error);
+  }
+}
+
+// Run the analysis
+analyzeSyncLogs();
 ```
 
 ## Error Analysis
