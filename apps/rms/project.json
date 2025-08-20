@@ -82,7 +82,8 @@
         "{options.reportsDirectory}"
       ],
       "options": {
-        "reportsDirectory": "../../coverage/apps/rms"
+        "reportsDirectory": "../../coverage/apps/rms",
+        "passWithNoTests": true
       }
     },
     "serve-static": {
