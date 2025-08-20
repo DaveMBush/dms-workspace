@@ -32,6 +32,26 @@ const eslintConfig = async () => {
 
   return [
     {
+      ignores: [
+        '**/dist/**',
+        'dist/**',
+        '**/node_modules/**',
+        'node_modules/**',
+        '**/jest.config.ts',
+        'jest.config.ts',
+        '**/test-setup.ts',
+        'test-setup.ts',
+        '**/global-teardown.ts',
+        'global-teardown.ts',
+        '**/global-setup.ts',
+        'global-setup.ts',
+        '**/vite.config.ts',
+        'vite.config.ts',
+        '**/vitest.config.ts',
+        'vitest.config.ts',
+      ],
+    },
+    {
       plugins: {
         jsdoc: eslintPluginJsdoc,
         '@nx': nxEslintPlugin,
