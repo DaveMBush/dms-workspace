@@ -2,12 +2,14 @@ import { HttpClient } from '@angular/common/http';
 import { computed, inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
+import { UniverseSyncService } from '../../shared/services/universe-sync.service';
 import { Screen } from '../../store/screen/screen.interface';
 import { selectScreen } from '../../store/screen/selectors/select-screen.function';
 
 @Injectable()
 export class ScreenerService {
   private http = inject(HttpClient);
+  private universeSync = inject(UniverseSyncService);
 
   screens = computed(function screensCompute() {
     const screens = selectScreen();
@@ -38,5 +40,26 @@ export class ScreenerService {
         break;
       }
     }
+  }
+  
+  // Delegate to universe sync service
+  get isSyncing() { 
+    return this.universeSync.isSyncing; 
+  }
+  
+  get lastSyncResult() { 
+    return this.universeSync.lastSyncResult; 
+  }
+  
+  get lastSyncError() { 
+    return this.universeSync.lastSyncError; 
+  }
+  
+  async syncFromScreener(): Promise<void> {
+    await this.universeSync.syncFromScreener();
+  }
+  
+  clearSyncState(): void {
+    this.universeSync.clearSyncState();
   }
 }
