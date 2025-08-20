@@ -7,3 +7,14 @@
   - [Story A2: Idempotency and transaction safety](./story-a2-idempotency-and-transaction-safety.md)
   - [Story A3: Logging and metrics](./story-a3-logging-and-metrics.md)
   - [Story A4: UI action "Use Screener"](./story-a4-ui-action-use-screener.md)
+
+## Future Considerations
+
+### Log Viewer Implementation
+With Story A3 implementing structured logging, consider adding a log viewer to the backlog for:
+- Real-time log monitoring
+- Metrics dashboard
+- Error analysis and alerting
+- Historical trend analysis
+
+This would complement the logging infrastructure and provide operational visibility.
