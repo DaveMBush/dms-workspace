@@ -98,7 +98,7 @@ from collections import defaultdict
 
 def analyze_sync_logs():
     metrics = defaultdict(list)
-    
+
     for log_file in glob.glob('logs/sync-*.log'):
         with open(log_file, 'r') as f:
             for line in f:
@@ -112,7 +112,7 @@ def analyze_sync_logs():
                         metrics['duration'].append(data['duration'])
                 except json.JSONDecodeError:
                     continue
-    
+
     print("Sync Operation Metrics:")
     print(f"Total Operations: {len(metrics['duration'])}")
     print(f"Total Inserted: {sum(metrics['inserted'])}")

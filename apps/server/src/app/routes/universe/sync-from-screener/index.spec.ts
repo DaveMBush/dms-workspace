@@ -80,11 +80,11 @@ function createFastify(): FastifyInstance {
 
 describe('sync-from-screener route', () => {
   let registerSyncFromScreener: (f: FastifyInstance) => void;
-  
-  const expectedEmptyResponse = { 
-    inserted: 0, 
-    updated: 0, 
-    markedExpired: 0, 
+
+  const expectedEmptyResponse = {
+    inserted: 0,
+    updated: 0,
+    markedExpired: 0,
     selectedCount: 0,
     correlationId: 'test-correlation-id',
     logFilePath: '/test/log/path.log'
@@ -99,10 +99,10 @@ describe('sync-from-screener route', () => {
     h.client.universe.create.mockReset();
     h.client.universe.updateMany.mockReset();
     h.client.$transaction.mockReset();
-    
+
     // Reset logger mocks
     vi.clearAllMocks();
-    
+
     // Set up default transaction mock
     h.client.$transaction.mockImplementation(async <T>(fn: (client: unknown) => Promise<T>) => fn(h.client));
   });

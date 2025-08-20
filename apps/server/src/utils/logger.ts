@@ -13,7 +13,7 @@ class SyncLogger {
     this.correlationId = randomUUID();
     this.logsDir = join(process.cwd(), 'logs');
     this.ensureLogsDirectory();
-    
+
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     this.logFilePath = join(this.logsDir, `sync-${timestamp}-${this.correlationId}.log`);
   }

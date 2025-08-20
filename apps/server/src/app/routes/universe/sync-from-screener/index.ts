@@ -94,7 +94,7 @@ function logUpdateError(logger: SyncLogger, existing: UniverseExistingSubset, ri
 
 async function updateExistingUniverse(params: UpdateUniverseParams): Promise<void> {
   const { client, existing, riskGroupId, values, logger } = params;
-  
+
   try {
     await client.universe.update({
       where: { id: existing.id },
@@ -142,7 +142,7 @@ function logCreateError(logger: SyncLogger, symbol: string, riskGroupId: string,
 
 async function createNewUniverse(params: CreateUniverseParams): Promise<void> {
   const { client, symbol, riskGroupId, values, logger } = params;
-  
+
   try {
     await client.universe.create({
       data: {
@@ -172,7 +172,7 @@ interface UpsertUniverseParams {
 
 async function upsertUniverse(params: UpsertUniverseParams): Promise<'inserted' | 'updated'> {
   const { client, symbol, riskGroupId, logger } = params;
-  
+
   const existing = await client.universe.findFirst({ where: { symbol } });
   const lastPrice = await getLastPrice(symbol);
   const distribution = await getDistributions(symbol);
@@ -194,7 +194,7 @@ interface MarkExpiredParams {
 
 async function markExpired(params: MarkExpiredParams): Promise<number> {
   const { client, notInSymbols, logger } = params;
-  
+
   try {
     const result = await client.universe.updateMany({
       where: {
@@ -205,12 +205,12 @@ async function markExpired(params: MarkExpiredParams): Promise<number> {
     });
     const count = (result as { count?: number } | undefined)?.count;
     const expiredCount = typeof count === 'number' ? count : 0;
-    
+
     logger.info('Marked universe records as expired', {
       expiredCount,
       totalSymbols: notInSymbols.length,
     });
-    
+
     return expiredCount;
   } catch (error) {
     logger.error('Failed to mark universe records as expired', {
@@ -225,12 +225,12 @@ async function processSyncTransaction(logger: SyncLogger): Promise<Omit<SyncSumm
   return prisma.$transaction(async function processSyncTransactionInner(client) {
     const selected = await selectEligibleScreener(client);
     const selectedCount = Array.isArray(selected) ? selected.length : 0;
-    
+
     logger.info('Selected eligible screener records', {
       selectedCount,
       symbols: selected.map(function extractSymbol(row) { return row.symbol; }),
     });
-    
+
     const selectedSymbols: string[] = [];
     let inserted = 0;
     let updated = 0;
@@ -261,7 +261,7 @@ async function processSyncTransaction(logger: SyncLogger): Promise<Omit<SyncSumm
 
 async function handleSyncRequest(logger: SyncLogger): Promise<SyncSummary> {
   const startTime = Date.now();
-  
+
   logger.info('Sync from screener operation started', {
     featureEnabled: isFeatureEnabled(),
     timestamp: new Date().toISOString(),
@@ -282,7 +282,7 @@ async function handleSyncRequest(logger: SyncLogger): Promise<SyncSummary> {
   try {
     const summary = await processSyncTransaction(logger);
     const duration = Date.now() - startTime;
-    
+
     logger.info('Sync from screener operation completed successfully', {
       summary,
       duration,
@@ -296,7 +296,7 @@ async function handleSyncRequest(logger: SyncLogger): Promise<SyncSummary> {
     };
   } catch (error) {
     const duration = Date.now() - startTime;
-    
+
     logger.error('Sync from screener operation failed', {
       error: error instanceof Error ? error.message : String(error),
       duration,
@@ -321,7 +321,7 @@ export default function registerSyncFromScreener(
     async function handleSyncRequestHandler(_, reply): Promise<void> {
       const logger = new SyncLogger();
       const summary = await handleSyncRequest(logger);
-      
+
       if (!isFeatureEnabled()) {
         reply.status(403).send(summary);
       } else {
