@@ -301,7 +301,7 @@ describe('sync-from-screener route', () => {
     
     expect(mockLogger.info).toHaveBeenCalledWith('Sync from screener operation started', {
       featureEnabled: true,
-      timestamp: expect.any(String),
+      timestamp: expect.any(String) as string,
     });
     
     expect(mockLogger.info).toHaveBeenCalledWith('Selected eligible screener records', {
@@ -321,7 +321,7 @@ describe('sync-from-screener route', () => {
         markedExpired: 1,
         selectedCount: 1,
       },
-      duration: expect.any(Number),
+      duration: expect.any(Number) as number,
       correlationId: 'test-correlation-id',
     });
   });
@@ -339,7 +339,7 @@ describe('sync-from-screener route', () => {
     
     expect(mockLogger.error).toHaveBeenCalledWith('Sync from screener operation failed', {
       error: 'Transaction failed',
-      duration: expect.any(Number),
+      duration: expect.any(Number) as number,
       correlationId: 'test-correlation-id',
     });
   });
@@ -468,7 +468,7 @@ describe('sync-from-screener route', () => {
     
     expect(mockLogger.error).toHaveBeenCalledWith('Sync from screener operation failed', {
       error: 'Database connection lost',
-      duration: expect.any(Number),
+      duration: expect.any(Number) as number,
       correlationId: 'test-correlation-id',
     });
   });
