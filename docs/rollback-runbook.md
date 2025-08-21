@@ -46,6 +46,8 @@ verify system health, and recover data if needed.
 
 > **📖 For detailed configuration instructions, see [Feature Flag Configuration](./configuration/feature-flags.md)**
 
+> **📖 For detailed configuration instructions, see [Feature Flag Configuration](../configuration/feature-flags.md)**
+
 ## Verification checklist
 
 ### Manual Universe Management Verification
