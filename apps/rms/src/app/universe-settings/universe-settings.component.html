@@ -1,23 +1,32 @@
 <p-dialog header="Universe Settings" [(visible)]="settingsService.visible$" [modal]="true" [style]="{ width: '25vw' }" (onShow)="onDialogShow()">
-  <h4 class="mt-0">Current Universe</h4>
-  <div class="universe-fields-row">
-    <div class="universe-field">
-      <label for="equitySymbols">Equity</label>
-      <textarea #equitySymbolsTextarea id="equitySymbols" pInputTextarea [rows]="5" [(ngModel)]="equitySymbols" class="universe-textarea"></textarea>
+    <h4 class="mt-0">Current Universe</h4>
+
+  <!-- Manual input fields - only visible when feature flag is disabled -->
+  @if (!isFeatureEnabled$()) {
+    <div class="universe-fields-row">
+      <div class="universe-field">
+        <label for="equitySymbols">Equity</label>
+        <textarea #equitySymbolsTextarea id="equitySymbols" pInputTextarea [rows]="5" [(ngModel)]="equitySymbols" class="universe-textarea"></textarea>
+      </div>
+      <div class="universe-field">
+        <label for="incomeSymbols">Income</label>
+        <textarea id="incomeSymbols" pInputTextarea [rows]="5" [(ngModel)]="incomeSymbols" class="universe-textarea"></textarea>
+      </div>
+      <div class="universe-field">
+        <label for="taxFreeIncomeSymbols">Tax Free Income</label>
+        <textarea id="taxFreeIncomeSymbols" pInputTextarea [rows]="5" [(ngModel)]="taxFreeIncomeSymbols" class="universe-textarea"></textarea>
+      </div>
     </div>
-    <div class="universe-field">
-      <label for="incomeSymbols">Income</label>
-      <textarea id="incomeSymbols" pInputTextarea [rows]="5" [(ngModel)]="incomeSymbols" class="universe-textarea"></textarea>
-    </div>
-    <div class="universe-field">
-      <label for="taxFreeIncomeSymbols">Tax Free Income</label>
-      <textarea id="taxFreeIncomeSymbols" pInputTextarea [rows]="5" [(ngModel)]="taxFreeIncomeSymbols" class="universe-textarea"></textarea>
-    </div>
-  </div>
+  }
   <ng-template pTemplate="footer">
     <p-button (click)="settingsService.hide()" label="Cancel" severity="secondary"></p-button>
     <p-button label="Update Fields" (click)="updateFields()"></p-button>
-    <p-button (click)="updateUniverse()" label="Update Universe" [disabled]="!equitySymbols && !incomeSymbols && !taxFreeIncomeSymbols" class="update-universe-btn"></p-button>
+    <!-- Update Universe button - behavior changes based on feature flag -->
+    @if (isFeatureEnabled$()) {
+      <p-button (click)="useScreener$()" label="Update Universe" [loading]="isSyncing$()" [disabled]="isSyncing$()" class="update-universe-btn"></p-button>
+    } @else {
+      <p-button (click)="updateUniverse$()" label="Update Universe" [disabled]="!equitySymbols && !incomeSymbols && !taxFreeIncomeSymbols" class="update-universe-btn"></p-button>
+    }
   </ng-template>
   @if (loading) {
     <div class="modal-spinner-overlay">
@@ -25,3 +34,6 @@
     </div>
   }
 </p-dialog>
+
+<!-- Toast for notifications -->
+<p-toast></p-toast>

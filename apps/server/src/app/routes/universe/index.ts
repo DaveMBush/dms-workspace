@@ -1,6 +1,7 @@
 import { FastifyInstance } from 'fastify';
 
 import { prisma } from '../../prisma/prisma-client';
+import registerSyncFromScreener from './sync-from-screener';
 import { Universe } from './universe.interface';
 
 interface UniverseWithTrades {
@@ -176,4 +177,5 @@ export default function registerUniverseRoutes(fastify: FastifyInstance): void {
   handleAddUniverseRoute(fastify);
   handleDeleteUniverseRoute(fastify);
   handleUpdateUniverseRoute(fastify);
+  registerSyncFromScreener(fastify);
 }

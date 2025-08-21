@@ -2,10 +2,15 @@ import autoLoad from '@fastify/autoload';
 import { FastifyInstance } from 'fastify';
 import * as path from 'path';
 
+import registerFeatureFlagsRoutes from './routes/feature-flags';
+
 type AppOptions = Record<string, unknown>;
 
 export function configureApp(fastify: FastifyInstance, opts: AppOptions): void {
   // Place here your custom code!
+
+  // Manually register feature flags routes
+  registerFeatureFlagsRoutes(fastify);
 
   // Do not touch the following lines
 

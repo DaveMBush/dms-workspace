@@ -52,138 +52,120 @@ async function selectEligibleScreener(client: PrismaClientLike): Promise<
   });
 }
 
-interface UniverseDerivedValues {
-  lastPrice: number | null | undefined;
-  distribution: Awaited<ReturnType<typeof getDistributions>>;
+
+
+
+
+interface ProcessSymbolsResult {
+  selectedSymbols: string[];
+  inserted: number;
+  updated: number;
 }
 
-interface UniverseExistingSubset {
-  id: string;
-  symbol: string;
-  last_price: number;
-  distribution: number;
-  distributions_per_year: number;
-  ex_date: Date | null;
-  expired: boolean;
-}
-
-interface UpdateUniverseParams {
-  client: PrismaClientLike;
-  existing: UniverseExistingSubset;
-  riskGroupId: string;
-  values: UniverseDerivedValues;
-  logger: SyncLogger;
-}
-
-function logUpdateSuccess(logger: SyncLogger, existing: UniverseExistingSubset, riskGroupId: string, values: UniverseDerivedValues): void {
-  logger.info('Updated existing universe record', {
-    symbol: existing.symbol,
-    riskGroupId,
-    lastPrice: values.lastPrice,
-    distribution: values.distribution?.distribution,
-  });
-}
-
-function logUpdateError(logger: SyncLogger, existing: UniverseExistingSubset, riskGroupId: string, error: unknown): void {
-  logger.error('Failed to update existing universe record', {
-    symbol: existing.symbol,
-    riskGroupId,
-    error: error instanceof Error ? error.message : String(error),
-  });
-}
-
-async function updateExistingUniverse(params: UpdateUniverseParams): Promise<void> {
-  const { client, existing, riskGroupId, values, logger } = params;
-
-  try {
-    await client.universe.update({
-      where: { id: existing.id },
-      data: {
-        risk_group_id: riskGroupId,
-        last_price: values.lastPrice ?? existing.last_price,
-        distribution: values.distribution?.distribution ?? existing.distribution,
-        distributions_per_year:
-          values.distribution?.distributions_per_year ?? existing.distributions_per_year,
-        ex_date: values.distribution?.ex_date ?? existing.ex_date ?? null,
-        expired: false,
-      },
-    });
-    logUpdateSuccess(logger, existing, riskGroupId, values);
-  } catch (error) {
-    logUpdateError(logger, existing, riskGroupId, error);
-    throw error;
+function getExDateToSet(distribution: Awaited<ReturnType<typeof getDistributions>>, today: Date): Date | undefined {
+  if (distribution?.ex_date && distribution.ex_date instanceof Date && !isNaN(distribution.ex_date.valueOf()) && distribution.ex_date > today) {
+    return distribution.ex_date;
   }
+  return undefined;
 }
 
-interface CreateUniverseParams {
-  client: PrismaClientLike;
-  symbol: string;
-  riskGroupId: string;
-  values: UniverseDerivedValues;
-  logger: SyncLogger;
-}
+async function upsertUniverse(params: { symbol: string; riskGroupId: string }): Promise<'inserted' | 'updated'> {
+  const { symbol, riskGroupId } = params;
 
-function logCreateSuccess(logger: SyncLogger, symbol: string, riskGroupId: string, values: UniverseDerivedValues): void {
-  logger.info('Created new universe record', {
-    symbol,
-    riskGroupId,
-    lastPrice: values.lastPrice,
-    distribution: values.distribution?.distribution,
-  });
-}
-
-function logCreateError(logger: SyncLogger, symbol: string, riskGroupId: string, error: unknown): void {
-  logger.error('Failed to create new universe record', {
-    symbol,
-    riskGroupId,
-    error: error instanceof Error ? error.message : String(error),
-  });
-}
-
-async function createNewUniverse(params: CreateUniverseParams): Promise<void> {
-  const { client, symbol, riskGroupId, values, logger } = params;
-
-  try {
-    await client.universe.create({
-      data: {
-        symbol,
-        risk_group_id: riskGroupId,
-        distribution: values.distribution?.distribution ?? 0,
-        distributions_per_year: values.distribution?.distributions_per_year ?? 0,
-        last_price: values.lastPrice ?? 0,
-        most_recent_sell_date: null,
-        ex_date: values.distribution?.ex_date ?? new Date(),
-        expired: false,
-      },
-    });
-    logCreateSuccess(logger, symbol, riskGroupId, values);
-  } catch (error) {
-    logCreateError(logger, symbol, riskGroupId, error);
-    throw error;
-  }
-}
-
-interface UpsertUniverseParams {
-  client: PrismaClientLike;
-  symbol: string;
-  riskGroupId: string;
-  logger: SyncLogger;
-}
-
-async function upsertUniverse(params: UpsertUniverseParams): Promise<'inserted' | 'updated'> {
-  const { client, symbol, riskGroupId, logger } = params;
-
-  const existing = await client.universe.findFirst({ where: { symbol } });
+  const existing = await prisma.universe.findFirst({ where: { symbol } });
   const lastPrice = await getLastPrice(symbol);
   const distribution = await getDistributions(symbol);
+  const today = new Date();
+  const exDateToSet = getExDateToSet(distribution, today);
 
   if (existing) {
-    await updateExistingUniverse({ client, existing, riskGroupId, values: { lastPrice, distribution }, logger });
+    await updateExistingUniverseRecord({ existing, riskGroupId, lastPrice, distribution, exDateToSet });
     return 'updated';
   }
 
-  await createNewUniverse({ client, symbol, riskGroupId, values: { lastPrice, distribution }, logger });
+  await createNewUniverseRecord({ symbol, riskGroupId, lastPrice, distribution, exDateToSet });
   return 'inserted';
+}
+
+interface UpdateRecordParams {
+  existing: { id: string; last_price: number; distribution: number; distributions_per_year: number; ex_date: Date | null };
+  riskGroupId: string;
+  lastPrice: number | null | undefined;
+  distribution: Awaited<ReturnType<typeof getDistributions>>;
+  exDateToSet: Date | undefined;
+}
+
+interface CreateRecordParams {
+  symbol: string;
+  riskGroupId: string;
+  lastPrice: number | null | undefined;
+  distribution: Awaited<ReturnType<typeof getDistributions>>;
+  exDateToSet: Date | undefined;
+}
+
+async function updateExistingUniverseRecord(params: UpdateRecordParams): Promise<void> {
+  const { existing, riskGroupId, lastPrice, distribution, exDateToSet } = params;
+  await prisma.universe.update({
+    where: { id: existing.id },
+    data: {
+      risk_group_id: riskGroupId,
+      last_price: lastPrice ?? existing.last_price,
+      distribution: distribution?.distribution ?? existing.distribution,
+      distributions_per_year: distribution?.distributions_per_year ?? existing.distributions_per_year,
+      ex_date: exDateToSet ?? existing.ex_date ?? null,
+      expired: false,
+    },
+  });
+}
+
+async function createNewUniverseRecord(params: CreateRecordParams): Promise<void> {
+  const { symbol, riskGroupId, lastPrice, distribution, exDateToSet } = params;
+  await prisma.universe.create({
+    data: {
+      symbol,
+      risk_group_id: riskGroupId,
+      distribution: distribution?.distribution ?? 0,
+      distributions_per_year: distribution?.distributions_per_year ?? 0,
+      last_price: lastPrice ?? 0,
+      most_recent_sell_date: null,
+      ex_date: exDateToSet ?? new Date(),
+      expired: false,
+    },
+  });
+}
+
+async function processSingleSymbolSafely(row: { symbol: string; risk_group_id: string }, logger: SyncLogger): Promise<'failed' | 'inserted' | 'updated'> {
+  try {
+    return await upsertUniverse({ symbol: row.symbol, riskGroupId: row.risk_group_id });
+  } catch (error) {
+    logger.error('Failed to process symbol', {
+      symbol: row.symbol,
+      error: error instanceof Error ? error.message : String(error),
+    });
+    return 'failed';
+  }
+}
+
+async function processSymbols(selected: Array<{ symbol: string; risk_group_id: string }>, logger: SyncLogger): Promise<ProcessSymbolsResult> {
+  const selectedSymbols: string[] = [];
+  let inserted = 0;
+  let updated = 0;
+
+  for (const row of selected) {
+    if (row === undefined || row === null) {
+      continue;
+    }
+    selectedSymbols.push(row.symbol);
+
+    const result = await processSingleSymbolSafely(row, logger);
+    if (result === 'inserted') {
+      inserted++;
+    } else if (result === 'updated') {
+      updated++;
+    }
+  }
+
+  return { selectedSymbols, inserted, updated };
 }
 
 interface MarkExpiredParams {
@@ -191,6 +173,8 @@ interface MarkExpiredParams {
   notInSymbols: string[];
   logger: SyncLogger;
 }
+
+
 
 async function markExpired(params: MarkExpiredParams): Promise<number> {
   const { client, notInSymbols, logger } = params;
@@ -222,41 +206,32 @@ async function markExpired(params: MarkExpiredParams): Promise<number> {
 }
 
 async function processSyncTransaction(logger: SyncLogger): Promise<Omit<SyncSummary, 'correlationId' | 'logFilePath'>> {
-  return prisma.$transaction(async function processSyncTransactionInner(client) {
-    const selected = await selectEligibleScreener(client);
-    const selectedCount = Array.isArray(selected) ? selected.length : 0;
-
-    logger.info('Selected eligible screener records', {
-      selectedCount,
-      symbols: selected.map(function extractSymbol(row) { return row.symbol; }),
-    });
-
-    const selectedSymbols: string[] = [];
-    let inserted = 0;
-    let updated = 0;
-
-    for (const row of selected) {
-      if (row === undefined || row === null) {
-        continue;
-      }
-      selectedSymbols.push(row.symbol);
-      const result = await upsertUniverse({ client, symbol: row.symbol, riskGroupId: row.risk_group_id, logger });
-      if (result === 'inserted') {
-        inserted++;
-      } else {
-        updated++;
-      }
-    }
-
-    const markedExpired = await markExpired({ client, notInSymbols: selectedSymbols, logger });
-
-    return {
-      inserted,
-      updated,
-      markedExpired,
-      selectedCount,
-    };
+  // Step 1: Select eligible symbols in a transaction
+  const selected = await prisma.$transaction(async function selectSymbolsTransaction(client) {
+    return selectEligibleScreener(client);
   });
+
+  const selectedCount = Array.isArray(selected) ? selected.length : 0;
+
+  logger.info('Selected eligible screener records', {
+    selectedCount,
+    symbols: selected.map(function extractSymbol(row) { return row.symbol; }),
+  });
+
+  // Step 2: Process each symbol individually (outside transaction due to rate limiting)
+  const { selectedSymbols, inserted, updated } = await processSymbols(selected, logger);
+
+  // Step 3: Mark expired symbols in a final transaction
+  const markedExpired = await prisma.$transaction(async function markExpiredTransaction(client) {
+    return markExpired({ client, notInSymbols: selectedSymbols, logger });
+  });
+
+  return {
+    inserted,
+    updated,
+    markedExpired,
+    selectedCount,
+  };
 }
 
 async function handleSyncRequest(logger: SyncLogger): Promise<SyncSummary> {
@@ -330,5 +305,6 @@ export default function registerSyncFromScreener(
     }
   );
 }
+
 
 
