@@ -53,3 +53,4 @@ database.db-journal
 prisma/migrations/migration_lock.toml
 CLAUDE.md
 .claude
+database copy.db

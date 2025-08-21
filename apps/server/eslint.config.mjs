@@ -87,4 +87,10 @@ export default [
       'no-console': 'off',
     },
   },
+  {
+    files: ['**/*.spec.ts', '**/*.test.ts'],
+    rules: {
+      'sonarjs/no-duplicate-string': 'off'
+    },
+  },
 ];
