@@ -5,21 +5,8 @@
   <ng-template #end>
     <p-button icon="pi pi-refresh" class="mr-2" text severity="secondary"
       pTooltip="Refresh" tooltipPosition="bottom" (click)="refresh()"/>
-    
-    <!-- Use Screener button - only visible when feature flag is enabled -->
-    @if (isFeatureEnabled()) {
-      <p-button 
-        icon="pi pi-sync" 
-        [loading]="isSyncing"
-        [disabled]="isSyncing"
-        class="mr-2" 
-        severity="success"
-        pTooltip="Use Screener to update Universe" 
-        tooltipPosition="bottom" 
-        (click)="syncFromScreener()">
-        Use Screener
-      </p-button>
-    }
+
+
   </ng-template>
 </p-toolbar>
 
@@ -90,5 +77,4 @@
   </div>
 }
 
-<!-- Toast for sync notifications -->
-<p-toast></p-toast>
+

@@ -12,6 +12,7 @@ import { providePrimeNG } from 'primeng/config';
 
 import { appRoutes } from './app.routes';
 import { ErrorHandlerService } from './error-handler/error-handler.service';
+import { UniverseSyncService } from './shared/services/universe-sync.service';
 import { AccountEffectsService } from './store/accounts/account-effect.service';
 import { accountEffectsServiceToken } from './store/accounts/account-effect-service-token';
 import { DivDepositTypesEffectsService } from './store/div-deposit-types/div-deposit-types-effect.service';
@@ -57,7 +58,10 @@ export const appConfig: ApplicationConfig = {
     }, {
     provide: screenEffectsServiceToken,
     useClass: ScreenEffectsService,
-    },
+  }, {
+    provide: UniverseSyncService,
+    useClass: UniverseSyncService,
+  },
 
     // provideClientHydration(withEventReplay()),
     provideBrowserGlobalErrorListeners(),
