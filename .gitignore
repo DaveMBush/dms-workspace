@@ -51,3 +51,4 @@ vitest.config.*.timestamp*
 database.db
 database.db-journal
 prisma/migrations/migration_lock.toml
+CLAUDE.md
