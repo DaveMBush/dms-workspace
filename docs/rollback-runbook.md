@@ -21,6 +21,8 @@ verify system health, and recover data if needed.
 3) Confirm the new sync action is not accessible (UI button hidden or disabled,
    endpoint guarded if present in future).
 
+> **📖 For detailed configuration instructions, see [Feature Flag Configuration](../configuration/feature-flags.md)**
+
 ## Verification checklist
 
 - UI
