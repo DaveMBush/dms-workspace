@@ -118,7 +118,7 @@ export class GlobalUniverseComponent {
 
   syncUniverse(): void {
     this.universeSyncService.syncFromScreener().subscribe({
-      // eslint-disable-next-line @smarttools/no-anonymous-functions -- callback functions for subscribe
+      // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
       next: (summary) => {
         this.messageService.add({
           severity: 'success',
@@ -126,7 +126,7 @@ export class GlobalUniverseComponent {
           detail: `Successfully updated universe from Screener. ${summary.inserted} inserted, ${summary.updated} updated, ${summary.markedExpired} expired.`
         });
       },
-      // eslint-disable-next-line @smarttools/no-anonymous-functions -- callback functions for subscribe
+      // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
       error: () => {
         this.messageService.add({
           severity: 'error',
