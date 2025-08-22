@@ -24,6 +24,20 @@ import { selectUniverse } from './universe.selector';
 import { UniverseDataService } from './universe-data.service';
 
 
+/**
+ * Global Universe Component
+ * 
+ * Displays and manages the universe of securities with icon-based controls for data updates.
+ * Features direct access to universe field updates and full universe synchronization through
+ * toolbar icons without modal dialogs.
+ * 
+ * Key Features:
+ * - Icon-based update controls (pi-refresh for fields, pi-sync for universe)
+ * - Real-time data synchronization with external screener
+ * - Sortable table with dimmed overlay during updates
+ * - Toast notifications for operation feedback
+ * - Always-enabled universe sync (no feature flag dependency)
+ */
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'rms-global-universe',
