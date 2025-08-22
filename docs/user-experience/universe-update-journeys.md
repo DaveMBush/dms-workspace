@@ -1,124 +1,112 @@
 # Universe Update User Journeys
 
-This document outlines the user journeys for updating the universe data in the RMS application, covering both manual updates and screener-based updates.
+This document outlines the user journeys for updating the universe data in the RMS application using the new icon-based controls in the Universe toolbar.
 
-## Journey 1: Manual Universe Update Flow
+## Overview
+
+As of Epic H, universe updates are managed directly from the Universe screen through dedicated icon buttons in the toolbar. The previous modal-based Universe Settings dialog has been removed in favor of a streamlined, direct-action approach.
+
+## Journey 1: Update Fields Flow
 
 ### Overview
-When the "Use Screener for Universe" feature flag is **disabled**, users can manually update the universe by entering stock symbols in text areas.
+Users can update individual fields in the universe using the dedicated Update Fields icon button.
 
 ### User Journey Steps
 
-1. **Entry Point**: User clicks "Universe Settings" button in the application
-2. **Dialog Opens**: Universe Settings dialog appears with manual input fields
-3. **Input Phase**:
-   - Dialog displays three text areas: "Equity", "Income", "Tax Free Income"
-   - User can enter stock symbols (one per line) in any or all text areas
-   - Auto-focus is set on the "Equity" text area for immediate input
-4. **Action Phase**:
-   - User has two action options:
-     - **Update Fields**: Updates just the metadata/fields
-     - **Update Universe**: Updates the universe with entered symbols
-   - "Update Universe" button is disabled if all text areas are empty
-5. **Loading State**:
-   - Loading spinner overlay appears on the dialog
-   - "Update Universe" button shows loading state
-   - User cannot interact with form during processing
-6. **Success State**:
-   - Dialog automatically closes
-   - User returns to main application view
-   - Changes are reflected in the universe data
-7. **Error State**:
-   - Loading state clears
-   - User remains in dialog
-   - Error message is displayed (implementation needed)
+1. **Entry Point**: User navigates to the Universe screen
+2. **Icon Discovery**: User sees Update Fields icon (`pi-refresh`) in the Universe title bar
+3. **Action Trigger**: User clicks the Update Fields icon
+4. **Loading State**:
+   - Icon shows loading indicator
+   - User cannot trigger another operation while processing
+   - Other icons remain available for different operations
+5. **Success State**:
+   - Loading indicator clears
+   - Universe fields are refreshed with latest data
+   - Changes are immediately visible in the universe display
+6. **Error State**:
+   - Loading indicator clears
+   - Error toast notification appears
+   - User can retry the operation
 
 ### Key Behaviors
-- **Validation**: "Update Universe" disabled when no symbols entered
-- **Focus Management**: Auto-focus on equity symbols textarea when dialog opens
-- **Loading Feedback**: Clear visual indication during processing
-- **Modal Behavior**: Dialog blocks interaction with main application
+- **Direct Action**: No dialog or modal required
+- **Immediate Feedback**: Loading states and results are instantly visible
+- **Non-blocking**: User can continue using the application during processing
+- **Retry Friendly**: Failed operations can be immediately retried
 
-## Journey 2: "Use Screener" Update Flow
+## Journey 2: Update Universe Flow
 
 ### Overview
-When the "Use Screener for Universe" feature flag is **enabled**, users can update the universe automatically from an external screener service.
+Users can perform a full universe synchronization using the dedicated Update Universe icon button.
 
 ### User Journey Steps
 
-1. **Entry Point**: User clicks "Universe Settings" button in the application
-2. **Dialog Opens**: Universe Settings dialog appears in screener mode
-3. **Simplified Interface**:
-   - Manual input fields are hidden
-   - Only action buttons are available
-4. **Action Phase**:
-   - User has two action options:
-     - **Update Fields**: Updates just the metadata/fields
-     - **Update Universe**: Syncs universe from screener service
-   - "Update Universe" button shows "Use Screener" functionality
-5. **Loading State**:
-   - "Update Universe" button shows loading spinner and becomes disabled
-   - Button text may change to indicate syncing status
-   - User cannot trigger sync while one is in progress
-6. **Success State**:
+1. **Entry Point**: User navigates to the Universe screen
+2. **Icon Discovery**: User sees Update Universe icon (`pi-sync`) in the Universe title bar
+3. **Action Trigger**: User clicks the Update Universe icon
+4. **Loading State**:
+   - Icon shows loading spinner
+   - Icon becomes disabled during processing
+   - Update cannot be triggered while sync is in progress
+5. **Success State**:
    - Success toast notification appears with sync summary
    - Shows detailed results: "X inserted, Y updated, Z expired"
-   - Dialog automatically closes
-   - User returns to main application view
-7. **Error State**:
+   - Loading state clears
+   - Universe data reflects latest screener information
+6. **Error State**:
    - Error toast notification appears
    - Message: "Failed to update universe from Screener. Please try again."
-   - Dialog remains open for user to retry
    - Loading state clears
+   - User can retry the operation
 
 ### Key Behaviors
-- **Automatic Data**: No manual input required
+- **Automatic Sync**: Universe data is synchronized from screener service
 - **Rich Feedback**: Detailed success/error messages via toast notifications
-- **Retry Capability**: User can retry failed operations
-- **Non-blocking Errors**: Errors don't close the dialog
+- **Progress Indication**: Clear visual feedback during processing
+- **Always Available**: No feature flag configuration required
 
 ## Common Elements
 
-### Cancel Action
-- Available in both flows
-- Closes dialog without saving changes
-- Returns user to main application
+### Icon-Based Interface
+- Both update operations are accessible via dedicated icons in the Universe toolbar
+- Icons provide immediate visual recognition of functionality
+- No modals or dialogs interrupt the user workflow
 
-### Update Fields Action
-- Available in both flows
-- Updates metadata/field information
-- Shows loading state during processing
-- Closes dialog on success
+### Loading States
+- Each icon shows individual loading indicators during processing
+- Operations are clearly isolated - one loading doesn't affect the other
+- Users can identify which specific operation is in progress
 
 ## User Experience Considerations
 
 ### Accessibility
-- Proper ARIA labels on all form controls
-- Keyboard navigation support
-- Screen reader friendly error messages
-- Focus management (auto-focus, focus trapping)
+- Proper ARIA labels on all icon buttons
+- Keyboard navigation support for toolbar icons
+- Screen reader friendly button descriptions
+- Focus management for icon interactions
 
 ### Loading States
-- Clear visual feedback during all operations
-- Disabled states prevent multiple submissions
-- Loading indicators are consistent across flows
+- Clear visual feedback on individual icons during operations
+- Disabled states prevent multiple concurrent operations
+- Loading indicators are consistent across both update types
 
 ### Error Handling
-- User-friendly error messages
-- Clear recovery paths (retry options)
-- Consistent error presentation
+- User-friendly error messages via toast notifications
+- Clear recovery paths (immediate retry capability)
+- Consistent error presentation across both operations
 
 ### Mobile Responsiveness
-- Dialog adapts to smaller screen sizes
-- Touch-friendly button sizes
-- Readable text in all viewports
+- Touch-friendly icon sizes in toolbar
+- Icons remain accessible on all screen sizes
+- Toast notifications adapt to mobile viewports
 
 ## Technical Implementation Notes
 
 ### State Management
 - Loading states managed via component properties and services
 - Sync service tracks operation status via signals
-- Feature flag determines which UI mode to display
+- No feature flag dependency - universe sync is always enabled
 
 ### Error Boundaries
 - HTTP errors handled at service level
@@ -126,6 +114,23 @@ When the "Use Screener for Universe" feature flag is **enabled**, users can upda
 - Toast notifications for user-facing messages
 
 ### Performance
-- Lazy loading of dialog content
-- Efficient form validation
-- Minimal re-renders during state changes
+- Minimal DOM updates for icon state changes
+- Efficient service calls for universe operations
+- Optimized rendering during loading states
+
+## Benefits of the New Approach
+
+### Simplified User Experience
+- **No Modals**: Users can trigger updates without interrupting their workflow
+- **Direct Access**: Icon-based controls provide immediate access to functionality
+- **Visual Clarity**: Clear separation between different update operations
+
+### Improved Performance
+- **Reduced DOM Complexity**: No modal rendering overhead
+- **Faster Interactions**: Direct action triggers without dialog setup
+- **Better Mobile Experience**: Touch-friendly icons work better than modal dialogs
+
+### Enhanced Discoverability
+- **Always Visible**: Update controls are always available in the toolbar
+- **Intuitive Icons**: `pi-refresh` and `pi-sync` clearly communicate their purpose
+- **Consistent Location**: Users always know where to find update controls

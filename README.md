@@ -1,82 +1,149 @@
-# RmsWorkspace
+# RMS Workspace
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+Risk Management System (RMS) - A comprehensive portfolio management application built with Angular and Node.js.
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is almost ready ✨.
+## Overview
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/getting-started/tutorials/angular-monorepo-tutorial?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
+RMS Workspace is a financial portfolio management system that helps users track and manage their investment portfolios with real-time data synchronization, universe management, and comprehensive reporting capabilities.
 
-## Finish your CI setup
+## Features
 
-[Click here to finish setting up your workspace!](https://cloud.nx.app/connect/4WSvKr1A11)
+- **Portfolio Management**: Track and manage investment portfolios across multiple accounts
+- **Universe Management**: Maintain and synchronize investment universe data with real-time screener integration
+- **Risk Group Analysis**: Categorize investments by risk groups (Equities, Income, Tax Free Income)
+- **Real-time Sync**: Automatic synchronization with external data sources
+- **Interactive UI**: Modern Angular-based interface with icon-driven operations
 
+## Architecture
 
-## Run tasks
+This is an Nx monorepo containing:
 
-To run the dev server for your app, use:
+- **Frontend (`apps/rms`)**: Angular 20 application with PrimeNG components
+- **Backend (`apps/server`)**: Node.js/Fastify API server
+- **Shared Libraries**: Common utilities and type definitions
 
-```sh
-npx nx serve rms
+## Quick Start
+
+### Prerequisites
+- Node.js (LTS version)
+- pnpm package manager
+
+### Development Setup
+
+1. **Clone the repository**:
+   ```bash
+   git clone <repository-url>
+   cd rms-workspace
+   ```
+
+2. **Install dependencies**:
+   ```bash
+   pnpm install
+   ```
+
+3. **Set up environment**:
+   ```bash
+   # Create .env file in root directory
+   echo "DATABASE_URL=file:./database.db" > .env
+   ```
+
+4. **Start development servers**:
+   ```bash
+   # Start both frontend and backend
+   pnpm nx run-many --target=serve --all
+
+   # Or start individually
+   pnpm nx serve rms      # Frontend (http://localhost:4200)
+   pnpm nx serve server   # Backend (http://localhost:3000)
+   ```
+
+## Available Commands
+
+### Development
+- `pnpm nx serve rms` - Start frontend development server
+- `pnpm nx serve server` - Start backend development server
+- `pnpm nx run-many --target=serve --all` - Start all services
+
+### Building
+- `pnpm nx build rms` - Build frontend for production
+- `pnpm nx build server` - Build backend for production
+- `pnpm nx run-many --target=build --all` - Build all projects
+
+### Testing
+- `pnpm nx test rms` - Run frontend tests
+- `pnpm nx test server` - Run backend tests
+- `pnpm nx run-many --target=test --all` - Run all tests
+
+### Code Quality
+- `pnpm nx lint rms` - Lint frontend code
+- `pnpm nx lint server` - Lint backend code
+- `pnpm nx run-many --target=lint --all` - Lint all projects
+
+## Key Features
+
+### Universe Management
+The Universe screen provides direct access to portfolio universe management through icon-based controls:
+
+- **Update Fields** (`pi-refresh` icon): Refresh individual universe fields
+- **Update Universe** (`pi-sync` icon): Perform full universe synchronization with screener data
+
+### Portfolio Tracking
+- **Accounts**: Manage multiple investment accounts
+- **Positions**: Track open and sold positions
+- **Risk Groups**: Categorize investments by risk profile
+
+### Data Synchronization
+- **Always-On Sync**: Universe synchronization is always enabled (no configuration required)
+- **Real-time Updates**: Automatic data refresh from external screener services
+- **Background Processing**: Non-blocking operations with progress indicators
+
+## Technology Stack
+
+### Frontend
+- **Angular 20**: Latest Angular framework with signals
+- **PrimeNG 20**: UI component library
+- **TailwindCSS**: Utility-first CSS framework
+- **TypeScript**: Type-safe development
+
+### Backend
+- **Node.js**: JavaScript runtime
+- **Fastify**: Fast and efficient web framework
+- **Prisma**: Database ORM
+- **SQLite**: Local development database
+
+### Development Tools
+- **Nx 21.2.0**: Monorepo management and build system
+- **pnpm**: Fast, disk space efficient package manager
+- **Vitest**: Unit testing framework
+- **ESLint**: Code linting
+- **Prettier**: Code formatting
+
+## Project Structure
+
+```
+rms-workspace/
+├── apps/
+│   ├── rms/           # Angular frontend application
+│   └── server/        # Node.js backend application
+├── docs/              # Project documentation
+├── libs/              # Shared libraries (if any)
+└── tools/             # Build and development tools
 ```
 
-To create a production bundle:
+## Documentation
 
-```sh
-npx nx build rms
-```
+- [Architecture Overview](./docs/architecture.md)
+- [Feature Configuration](./docs/configuration/feature-flags.md)
+- [User Experience Guide](./docs/user-experience/universe-update-journeys.md)
+- [Development Guidelines](./CLAUDE.md)
 
-To see all available targets to run for a project, run:
+## Contributing
 
-```sh
-npx nx show project rms
-```
+1. Create a feature branch from `main`
+2. Make your changes following the coding standards in `CLAUDE.md`
+3. Run tests and linting: `pnpm nx run-many --target=test,lint --all`
+4. Create a pull request with a clear description
 
-These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
+## License
 
-[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Add new projects
-
-While you could add new projects to your workspace manually, you might want to leverage [Nx plugins](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) and their [code generation](https://nx.dev/features/generate-code?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) feature.
-
-Use the plugin's generator to create new projects.
-
-To generate a new application, use:
-
-```sh
-npx nx g @nx/angular:app demo
-```
-
-To generate a new library, use:
-
-```sh
-npx nx g @nx/angular:lib mylib
-```
-
-You can use `npx nx list` to get a list of installed plugins. Then, run `npx nx list <plugin-name>` to learn about more specific capabilities of a particular plugin. Alternatively, [install Nx Console](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) to browse plugins and generators in your IDE.
-
-[Learn more about Nx plugins &raquo;](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) | [Browse the plugin registry &raquo;](https://nx.dev/plugin-registry?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-
-[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Install Nx Console
-
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
-
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Useful links
-
-Learn more:
-
-- [Learn more about this workspace setup](https://nx.dev/getting-started/tutorials/angular-monorepo-tutorial?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects)
-- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-And join the Nx community:
-- [Discord](https://go.nx.dev/community)
-- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
-- [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+[Add your license information here]
