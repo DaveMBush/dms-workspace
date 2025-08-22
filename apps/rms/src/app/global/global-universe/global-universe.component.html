@@ -16,6 +16,17 @@
   </ng-template>
   <ng-template #end>
     <p-button 
+      (click)="syncUniverse()" 
+      icon="pi pi-sync" 
+      text 
+      severity="secondary" 
+      pTooltip="Update Universe" 
+      tooltipPosition="bottom"
+      [loading]="isSyncingUniverse$()"
+      [disabled]="isSyncingUniverse$()"
+      ariaLabel="Update Universe"
+    />
+    <p-button 
       (click)="updateFields()" 
       icon="pi pi-refresh" 
       text 
@@ -200,3 +211,4 @@ showGridlines [rowTrackBy]="trackById"
     </tr>
   </ng-template>
 </p-table>
+<p-toast />
