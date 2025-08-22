@@ -17,6 +17,7 @@ Welcome to the RMS workspace documentation. This documentation covers the archit
 ### 🚀 Operations
 - [Rollback Runbook](./rollback-runbook.md) - Emergency rollback procedures
 - [Logging and Metrics](./logging-metrics-extraction.md) - System monitoring and logging
+- [Documentation Sync Process](./documentation-sync-process.md) - Keeping architecture and backlog synchronized
 
 ### 📋 Product & Planning
 - [Product Requirements](./prd.md) - Product requirements document
@@ -56,6 +57,7 @@ For detailed configuration, see the [Feature Flags Guide](./configuration/featur
 
 ## 🔄 Recent Updates
 
+- **Story F2**: Documentation synchronization process implemented
 - **Story B1**: Feature flag configuration and documentation completed
 - **Epic A**: Universe sync from screener feature implemented
 - **Feature Flags**: Comprehensive configuration and operational guides added
