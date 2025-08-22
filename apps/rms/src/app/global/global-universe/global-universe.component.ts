@@ -5,6 +5,7 @@ import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { DatePickerModule } from 'primeng/datepicker';
 import { InputNumberModule } from 'primeng/inputnumber';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { SelectModule } from 'primeng/select';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
@@ -28,7 +29,7 @@ import { UniverseDataService } from './universe-data.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'rms-global-universe',
   standalone: true,
-  imports: [TagModule, InputNumberModule, SelectModule, DatePipe, DecimalPipe, ToolbarModule, TableModule, DatePickerModule, FormsModule, ButtonModule, TooltipModule, NgClass, ToastModule],
+  imports: [TagModule, InputNumberModule, SelectModule, DatePipe, DecimalPipe, ToolbarModule, TableModule, DatePickerModule, FormsModule, ButtonModule, TooltipModule, NgClass, ToastModule, ProgressSpinnerModule],
   templateUrl: './global-universe.component.html',
   styleUrls: ['./global-universe.component.scss'],
   viewProviders: [GlobalUniverseStorageService, UpdateUniverseSettingsService, MessageService]
@@ -45,6 +46,10 @@ export class GlobalUniverseComponent {
   readonly isUpdatingFields$ = computed(() => this.isUpdatingFields());
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signals work better with arrow functions
   readonly isSyncingUniverse$ = computed(() => this.universeSyncService.isSyncing());
+  readonly showOverlay$ = signal<boolean>(false);
+  readonly overlayText = signal<string>('');
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signals work better with arrow functions
+  readonly overlayText$ = computed(() => this.overlayText());
   sortCriteria = signal<Array<{field: string, order: number}>>(this.storageService.loadSortCriteria());
   minYieldFilter = signal<number | null>(this.storageService.loadMinYieldFilter());
   selectedAccountId = signal<string>(this.storageService.loadSelectedAccountId());
@@ -101,25 +106,35 @@ export class GlobalUniverseComponent {
   updateFields(): void {
     const self = this;
     this.isUpdatingFields.set(true);
+    this.showOverlay$.set(true);
+    this.overlayText.set('Updating field information...');
     
     this.updateUniverseService.updateFields()
       .subscribe({
         next: function updateFieldsNext() {
           self.isUpdatingFields.set(false);
+          self.showOverlay$.set(false);
         },
         complete: function updateFieldsComplete() {
           self.isUpdatingFields.set(false);
+          self.showOverlay$.set(false);
         },
         error: function updateFieldsError() {
           self.isUpdatingFields.set(false);
+          self.showOverlay$.set(false);
         }
       });
   }
 
   syncUniverse(): void {
+    const self = this;
+    this.showOverlay$.set(true);
+    this.overlayText.set('Updating universe from screener...');
+    
     this.universeSyncService.syncFromScreener().subscribe({
       // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
       next: (summary) => {
+        self.showOverlay$.set(false);
         this.messageService.add({
           severity: 'success',
           summary: 'Universe Updated',
@@ -128,6 +143,7 @@ export class GlobalUniverseComponent {
       },
       // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
       error: () => {
+        self.showOverlay$.set(false);
         this.messageService.add({
           severity: 'error',
           summary: 'Update Failed',
