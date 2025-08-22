@@ -15,6 +15,17 @@
     </div>
   </ng-template>
   <ng-template #end>
+    <p-button 
+      (click)="updateFields()" 
+      icon="pi pi-refresh" 
+      text 
+      severity="secondary" 
+      pTooltip="Update Fields" 
+      tooltipPosition="bottom"
+      [loading]="isUpdatingFields$()"
+      [disabled]="isUpdatingFields$()"
+      ariaLabel="Update Fields"
+    />
     <p-button (click)="settingsService.show()" icon="pi pi-cog" text severity="secondary" pTooltip="Settings" tooltipPosition="bottom" />
   </ng-template>
 </p-toolbar>

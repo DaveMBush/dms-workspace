@@ -13,6 +13,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { selectAccounts } from '../../store/accounts/selectors/select-accounts.function';
 import { Universe } from '../../store/universe/universe.interface';
 import { UniverseSettingsService } from '../../universe-settings/universe-settings.service';
+import { UpdateUniverseSettingsService } from '../../universe-settings/update-universe.service';
 import { GlobalUniverseStorageService } from './global-universe-storage.service';
 import { isRowDimmed } from './is-row-dimmed.function';
 import { createSortComputedSignals } from './sort-computed-signals.function';
@@ -27,12 +28,16 @@ import { UniverseDataService } from './universe-data.service';
   imports: [TagModule, InputNumberModule, SelectModule, DatePipe, DecimalPipe, ToolbarModule, TableModule, DatePickerModule, FormsModule, ButtonModule, TooltipModule, NgClass],
   templateUrl: './global-universe.component.html',
   styleUrls: ['./global-universe.component.scss'],
-  viewProviders: [GlobalUniverseStorageService]
+  viewProviders: [GlobalUniverseStorageService, UpdateUniverseSettingsService]
 })
 export class GlobalUniverseComponent {
   private readonly storageService = inject(GlobalUniverseStorageService);
   private readonly dataService = inject(UniverseDataService);
+  private readonly updateUniverseService = inject(UpdateUniverseSettingsService);
   readonly today = new Date();
+  readonly isUpdatingFields = signal<boolean>(false);
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signals work better with arrow functions
+  readonly isUpdatingFields$ = computed(() => this.isUpdatingFields());
   sortCriteria = signal<Array<{field: string, order: number}>>(this.storageService.loadSortCriteria());
   minYieldFilter = signal<number | null>(this.storageService.loadMinYieldFilter());
   selectedAccountId = signal<string>(this.storageService.loadSelectedAccountId());
@@ -85,6 +90,24 @@ export class GlobalUniverseComponent {
       expiredFilter: this.expiredFilter()
     });
   });
+
+  updateFields(): void {
+    const self = this;
+    this.isUpdatingFields.set(true);
+    
+    this.updateUniverseService.updateFields()
+      .subscribe({
+        next: function updateFieldsNext() {
+          self.isUpdatingFields.set(false);
+        },
+        complete: function updateFieldsComplete() {
+          self.isUpdatingFields.set(false);
+        },
+        error: function updateFieldsError() {
+          self.isUpdatingFields.set(false);
+        }
+      });
+  }
 
   onEditDistributionComplete(row: Universe): void {
     const universe = this.dataService.findUniverseBySymbol(row.symbol);
@@ -249,4 +272,5 @@ export class GlobalUniverseComponent {
       };
     });
   });
+
 }
