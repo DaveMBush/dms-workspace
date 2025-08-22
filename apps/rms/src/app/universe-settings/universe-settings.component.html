@@ -1,36 +1,140 @@
-<p-dialog header="Universe Settings" [(visible)]="settingsService.visible$" [modal]="true" [style]="{ width: '25vw' }" (onShow)="onDialogShow()">
-    <h4 class="mt-0">Current Universe</h4>
+<p-dialog 
+  header="Universe Settings" 
+  [(visible)]="settingsService.visible$" 
+  [modal]="true" 
+  [style]="{ width: '25vw' }" 
+  (onShow)="onDialogShow()"
+  [attr.aria-labelledby]="'universe-dialog-header'"
+  [attr.aria-describedby]="'universe-dialog-description'"
+  role="dialog">
+  
+  <div id="universe-dialog-description" class="sr-only">
+    Dialog for updating universe stock symbols manually or via screener service
+  </div>
+    
+  <h4 id="universe-dialog-header" class="mt-0">Current Universe</h4>
+
+  <!-- Error message display -->
+  @if (hasError$()) {
+    <div role="alert" aria-live="assertive" class="error-container">
+      <p-message severity="error" [text]="errorText$()"></p-message>
+    </div>
+  }
 
   <!-- Manual input fields - only visible when feature flag is disabled -->
   @if (!isFeatureEnabled$()) {
     <div class="universe-fields-row">
       <div class="universe-field">
-        <label for="equitySymbols">Equity</label>
-        <textarea #equitySymbolsTextarea id="equitySymbols" pInputTextarea [rows]="5" [(ngModel)]="equitySymbols" class="universe-textarea"></textarea>
+        <label for="equitySymbols">
+          Equity Symbols
+          <span class="field-hint">(Enter one symbol per line)</span>
+        </label>
+        <textarea 
+          #equitySymbolsTextarea 
+          id="equitySymbols" 
+          pInputTextarea 
+          [rows]="5" 
+          [(ngModel)]="equitySymbols" 
+          class="universe-textarea"
+          [attr.aria-describedby]="'equity-help'"
+          placeholder="e.g. AAPL, MSFT, GOOGL">
+        </textarea>
+        <div id="equity-help" class="field-help">
+          Enter stock symbols for equity positions, one per line
+        </div>
       </div>
       <div class="universe-field">
-        <label for="incomeSymbols">Income</label>
-        <textarea id="incomeSymbols" pInputTextarea [rows]="5" [(ngModel)]="incomeSymbols" class="universe-textarea"></textarea>
+        <label for="incomeSymbols">
+          Income Symbols
+          <span class="field-hint">(Enter one symbol per line)</span>
+        </label>
+        <textarea 
+          id="incomeSymbols" 
+          pInputTextarea 
+          [rows]="5" 
+          [(ngModel)]="incomeSymbols" 
+          class="universe-textarea"
+          [attr.aria-describedby]="'income-help'"
+          placeholder="e.g. VTI, SPY, QQQ">
+        </textarea>
+        <div id="income-help" class="field-help">
+          Enter stock symbols for income-generating positions, one per line
+        </div>
       </div>
       <div class="universe-field">
-        <label for="taxFreeIncomeSymbols">Tax Free Income</label>
-        <textarea id="taxFreeIncomeSymbols" pInputTextarea [rows]="5" [(ngModel)]="taxFreeIncomeSymbols" class="universe-textarea"></textarea>
+        <label for="taxFreeIncomeSymbols">
+          Tax Free Income Symbols
+          <span class="field-hint">(Enter one symbol per line)</span>
+        </label>
+        <textarea 
+          id="taxFreeIncomeSymbols" 
+          pInputTextarea 
+          [rows]="5" 
+          [(ngModel)]="taxFreeIncomeSymbols" 
+          class="universe-textarea"
+          [attr.aria-describedby]="'tax-free-help'"
+          placeholder="e.g. MUB, TFI, VTEB">
+        </textarea>
+        <div id="tax-free-help" class="field-help">
+          Enter stock symbols for tax-free income positions, one per line
+        </div>
       </div>
     </div>
   }
   <ng-template pTemplate="footer">
-    <p-button (click)="settingsService.hide()" label="Cancel" severity="secondary"></p-button>
-    <p-button label="Update Fields" (click)="updateFields()"></p-button>
+    <p-button 
+      (click)="settingsService.hide()" 
+      label="Cancel" 
+      severity="secondary"
+      [attr.aria-label]="'Cancel and close dialog'">
+    </p-button>
+    <p-button 
+      label="Update Fields" 
+      (click)="updateFields()"
+      [loading]="loading && !isSyncing$()"
+      [disabled]="loading"
+      [attr.aria-label]="'Update metadata and field information'">
+    </p-button>
     <!-- Update Universe button - behavior changes based on feature flag -->
     @if (isFeatureEnabled$()) {
-      <p-button (click)="useScreener$()" label="Update Universe" [loading]="isSyncing$()" [disabled]="isSyncing$()" class="update-universe-btn"></p-button>
+      <p-button 
+        (click)="useScreener$()" 
+        label="Update Universe" 
+        [loading]="isSyncing$()" 
+        [disabled]="isSyncing$()" 
+        [attr.aria-label]="updateButtonAriaLabel$()"
+        [attr.aria-describedby]="'screener-update-help'"
+        class="update-universe-btn">
+      </p-button>
+      <div id="screener-update-help" class="sr-only">
+        Updates universe data automatically from screener service
+      </div>
     } @else {
-      <p-button (click)="updateUniverse$()" label="Update Universe" [disabled]="!equitySymbols && !incomeSymbols && !taxFreeIncomeSymbols" class="update-universe-btn"></p-button>
+      <p-button 
+        (click)="updateUniverse$()" 
+        label="Update Universe" 
+        [loading]="loading && !isSyncing$()"
+        [disabled]="loading || (!equitySymbols && !incomeSymbols && !taxFreeIncomeSymbols)" 
+        [attr.aria-label]="manualUpdateButtonAriaLabel$()"
+        [attr.aria-describedby]="'manual-update-help'"
+        class="update-universe-btn">
+      </p-button>
+      <div id="manual-update-help" class="sr-only">
+        Updates universe with manually entered stock symbols. At least one category is required.
+      </div>
     }
   </ng-template>
   @if (loading) {
-    <div class="modal-spinner-overlay">
-      <p-progressSpinner styleClass="modal-spinner" strokeWidth="4" animationDuration=".7s"/>
+    <div class="modal-spinner-overlay" 
+         role="status" 
+         aria-live="polite" 
+         [attr.aria-label]="loadingAriaLabel$()">
+      <p-progressSpinner 
+        styleClass="modal-spinner" 
+        strokeWidth="4" 
+        animationDuration=".7s"
+        [attr.aria-label]="'Loading indicator'"/>
+      <span class="sr-only">{{loadingAriaLabel$()}}</span>
     </div>
   }
 </p-dialog>
