@@ -1,21 +1,28 @@
-<p-toolbar class="text-lg font-semibold flex-none">
+<p-toolbar class="text-lg font-semibold flex-none" aria-label="Screener data management">
   <ng-template #start>
     <div class="whitespace-nowrap truncate">Screener</div>
   </ng-template>
   <ng-template #end>
-    <p-button icon="pi pi-refresh" class="mr-2" text severity="secondary"
-      pTooltip="Refresh" tooltipPosition="bottom" (click)="refresh()"/>
-
-
+    <p-button 
+      icon="pi pi-refresh" 
+      class="mr-2" 
+      text 
+      severity="secondary"
+      pTooltip="Refresh" 
+      tooltipPosition="bottom" 
+      (click)="refresh()"
+      aria-label="Refresh screener data"/>
   </ng-template>
 </p-toolbar>
 
-<p-table [value]="filteredScreenerData$()"
+<p-table 
+  [value]="filteredScreenerData$()"
   size="small"
   [scrollable]="true"
   class="flex-1 overflow-auto min-h-0"
   showGridlines
-  [rowTrackBy]="trackById">
+  [rowTrackBy]="trackById"
+  ariaLabel="Stock screener data table">
   <ng-template pTemplate="header">
     <tr>
       <th></th>
@@ -27,6 +34,7 @@
           [showClear]="true"
           optionLabel="label"
           class="w-40"
+          ariaLabel="Filter by risk group"
         >
           <ng-template let-option #item>
             <p-tag [value]="option.value" />
@@ -65,14 +73,19 @@
 <!-- Overlay -->
 @if (showOverlay$()) {
   <div class="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-    <div class="text-center">
+    <div class="text-center" 
+         role="status" 
+         aria-live="polite" 
+         aria-label="Refreshing screener data">
       <p-progressSpinner
         styleClass="w-12 h-12"
         strokeWidth="4"
         fill="var(--surface-ground)"
-        animationDuration=".5s">
+        animationDuration=".5s"
+        [attr.aria-label]="'Loading indicator'">
       </p-progressSpinner>
       <p class="mt-4 text-white font-medium">Refreshing data...</p>
+      <span class="sr-only">Refreshing screener data, please wait</span>
     </div>
   </div>
 }

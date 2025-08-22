@@ -1,4 +1,4 @@
-<p-toolbar class="text-lg font-semibold">
+<p-toolbar class="text-lg font-semibold" aria-label="Global portfolio selection">
   <ng-template #start>
     <div class="whitespace-nowrap truncate">Global</div>
   </ng-template>
@@ -10,6 +10,7 @@
   [ngModel]="selectedId"
   (ngModelChange)="onSelect($event)"
   class="mt-0"
+  ariaLabel="Global portfolio options"
 >
   <ng-template pTemplate="item" let-global>
     <div class="group flex flex-row basis-full" [class.selected-global]="selectedId === global.id">
