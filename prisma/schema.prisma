@@ -14,8 +14,8 @@ model accounts {
   updatedAt   DateTime      @updatedAt
   deletedAt   DateTime?
   version     Int           @default(1)
-  trades      trades[]
   divDeposits divDeposits[]
+  trades      trades[]
 }
 
 model universe {
@@ -25,36 +25,37 @@ model universe {
   last_price             Float
   most_recent_sell_date  DateTime?
   most_recent_sell_price Float?
-  symbol                 String
+  symbol                 String        @unique
   ex_date                DateTime?
   risk_group_id          String
-  risk_group             risk_group    @relation(fields: [risk_group_id], references: [id])
   expired                Boolean       @default(false)
   createdAt              DateTime      @default(now())
   updatedAt              DateTime      @updatedAt
   deletedAt              DateTime?
   version                Int           @default(1)
-  trades                 trades[]
   divDeposits            divDeposits[]
+  trades                 trades[]
+  risk_group             risk_group    @relation(fields: [risk_group_id], references: [id])
+
+  @@index([expired])
+  @@index([risk_group_id])
 }
 
 model risk_group {
   id        String     @id @default(uuid())
-  name      String
+  name      String     @unique
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   deletedAt DateTime?
   version   Int        @default(1)
-  universe  universe[]
   screener  screener[]
+  universe  universe[]
 }
 
 model trades {
   id         String    @id @default(uuid())
   universeId String
-  universe   universe  @relation(fields: [universeId], references: [id])
   accountId  String
-  account    accounts  @relation(fields: [accountId], references: [id])
   buy        Float
   sell       Float
   buy_date   DateTime
@@ -63,6 +64,8 @@ model trades {
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
   deletedAt  DateTime?
+  account    accounts  @relation(fields: [accountId], references: [id])
+  universe   universe  @relation(fields: [universeId], references: [id])
 }
 
 model holidays {
@@ -89,15 +92,15 @@ model divDeposits {
   date             DateTime
   amount           Float
   accountId        String
-  account          accounts       @relation(fields: [accountId], references: [id])
   divDepositTypeId String
-  divDepositType   divDepositType @relation(fields: [divDepositTypeId], references: [id])
   universeId       String?
-  universe         universe?      @relation(fields: [universeId], references: [id])
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
   deletedAt        DateTime?
   version          Int            @default(1)
+  universe         universe?      @relation(fields: [universeId], references: [id])
+  divDepositType   divDepositType @relation(fields: [divDepositTypeId], references: [id])
+  account          accounts       @relation(fields: [accountId], references: [id])
 }
 
 model screener {
@@ -108,7 +111,6 @@ model screener {
   last_price               Float
   ex_date                  DateTime?
   risk_group_id            String
-  risk_group               risk_group @relation(fields: [risk_group_id], references: [id])
   has_volitility           Boolean
   objectives_understood    Boolean
   graph_higher_before_2008 Boolean
@@ -116,4 +118,8 @@ model screener {
   updatedAt                DateTime   @updatedAt
   deletedAt                DateTime?
   version                  Int        @default(1)
+  risk_group               risk_group @relation(fields: [risk_group_id], references: [id])
+
+  @@index([has_volitility, objectives_understood, graph_higher_before_2008])
+  @@index([risk_group_id])
 }
