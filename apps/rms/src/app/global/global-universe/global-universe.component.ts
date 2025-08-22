@@ -16,7 +16,6 @@ import { TooltipModule } from 'primeng/tooltip';
 import { UniverseSyncService } from '../../shared/services/universe-sync.service';
 import { selectAccounts } from '../../store/accounts/selectors/select-accounts.function';
 import { Universe } from '../../store/universe/universe.interface';
-import { UniverseSettingsService } from '../../universe-settings/universe-settings.service';
 import { UpdateUniverseSettingsService } from '../../universe-settings/update-universe.service';
 import { GlobalUniverseStorageService } from './global-universe-storage.service';
 import { isRowDimmed } from './is-row-dimmed.function';
@@ -68,7 +67,6 @@ export class GlobalUniverseComponent {
   ];
 
   searchSymbol = '';
-  protected readonly settingsService = inject(UniverseSettingsService);
 
   // Account options for the dropdown
   accountOptions$ = computed(function accountOptionsComputed() {

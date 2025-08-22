@@ -37,7 +37,6 @@
       [disabled]="isUpdatingFields$()"
       ariaLabel="Update Fields"
     />
-    <p-button (click)="settingsService.show()" icon="pi pi-cog" text severity="secondary" pTooltip="Settings" tooltipPosition="bottom" />
   </ng-template>
 </p-toolbar>
 <p-table #dataTable [value]="universeWithDimmedState$()"

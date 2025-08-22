@@ -9,8 +9,6 @@ import { TooltipModule } from 'primeng/tooltip';
 import { filter, Subscription } from 'rxjs';
 
 import { GlobalComponent } from '../global/global.component';
-import { UniverseSettingsComponent } from '../universe-settings/universe-settings.component';
-import { UniverseSettingsService } from '../universe-settings/universe-settings.service';
 
 const DARK_MODE_KEY = 'rms-dark';
 
@@ -23,7 +21,6 @@ const DARK_MODE_KEY = 'rms-dark';
     ToolbarModule,
     SplitterModule,
     TooltipModule,
-    UniverseSettingsComponent,
     GlobalComponent,
   ],
   selector: 'rms-shell',
@@ -36,7 +33,6 @@ export class ShellComponent implements OnInit, OnDestroy {
   themeTooltip = 'Dark Mode';
   platformId = inject(PLATFORM_ID);
   isBrowser = isPlatformBrowser(this.platformId);
-  protected readonly settingsService = inject(UniverseSettingsService);
   private router = inject(Router);
   private routeSubscription?: Subscription;
   selectedId: string | null = null;
