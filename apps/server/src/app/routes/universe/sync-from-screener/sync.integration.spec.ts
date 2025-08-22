@@ -3,6 +3,8 @@ import { existsSync, unlinkSync } from 'fs';
 import { join } from 'path';
 import { afterAll, beforeAll, beforeEach, describe, expect, test } from 'vitest';
 
+import { SyncLogger } from '../../../../utils/logger';
+
 /**
  * Integration tests for sync-from-screener functionality
  * 
@@ -15,8 +17,12 @@ describe('sync-from-screener database integration tests', () => {
   let testDbPath: string;
   let riskGroupId1: string;
   let riskGroupId2: string;
+  let logger: SyncLogger;
 
   beforeAll(async () => {
+    // Initialize logger for test cleanup warnings
+    logger = new SyncLogger();
+    
     // Use dedicated test.db file for database isolation
     testDbPath = join(process.cwd(), 'test.db');
     const testDbUrl = `file:${testDbPath}`;
@@ -74,7 +80,7 @@ describe('sync-from-screener database integration tests', () => {
       }
     } catch (error) {
       // Log cleanup error but don't fail tests
-      console.warn(`Warning: Could not clean up test.db file: ${error}`);
+      logger.warn('Could not clean up test.db file', { error: String(error) });
     }
   });
 
