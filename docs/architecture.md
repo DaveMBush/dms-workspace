@@ -91,40 +91,61 @@ Non‑selected symbols handling:
 
 ### API schema (examples)
 
-- Request
-  - Method: POST
-  - Path: `/api/universe/sync-from-screener`
-  - Headers: `Content-Type: application/json`
-  - Body: `{}` (empty object) or no body
+#### Request Schema
 
-- 200 OK
+- **Method**: POST
+- **Path**: `/api/universe/sync-from-screener`
+- **Headers**: `Content-Type: application/json`
+- **Body**: `{}` (empty object) or no body required
+
+#### Response Schema
+
+**Success Response (200 OK)**
 
 ```json
 {
   "inserted": 12,
   "updated": 34,
   "markedExpired": 5,
-  "selectedCount": 46
+  "selectedCount": 46,
+  "correlationId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "logFilePath": "logs/sync-2025-08-22T17-30-45-123Z-a1b2c3d4-e5f6-7890-abcd-ef1234567890.log"
 }
 ```
 
-- 403 Forbidden (feature disabled)
+**Field Descriptions**:
+- `inserted` (number): Count of new universe records created
+- `updated` (number): Count of existing universe records updated
+- `markedExpired` (number): Count of universe records marked as expired
+- `selectedCount` (number): Total count of screener records that met selection criteria
+- `correlationId` (string): Unique identifier for tracking this sync operation across logs
+- `logFilePath` (string): Path to the detailed log file for this sync operation
+
+**Feature Disabled Response (403 Forbidden)**
+
+When `USE_SCREENER_FOR_UNIVERSE` environment variable is not set to `true`:
 
 ```json
 {
-  "error": "Feature disabled",
   "inserted": 0,
   "updated": 0,
   "markedExpired": 0,
-  "selectedCount": 0
+  "selectedCount": 0,
+  "correlationId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "logFilePath": "logs/sync-2025-08-22T17-30-45-123Z-a1b2c3d4-e5f6-7890-abcd-ef1234567890.log"
 }
 ```
 
-- 500 Internal Server Error
+**Error Response (500 Internal Server Error)**
 
 ```json
 {
-  "error": "Internal server error"
+  "inserted": 0,
+  "updated": 0,
+  "markedExpired": 0,
+  "selectedCount": 0,
+  "correlationId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "logFilePath": "logs/sync-2025-08-22T17-30-45-123Z-a1b2c3d4-e5f6-7890-abcd-ef1234567890.log"
 }
 ```
 
