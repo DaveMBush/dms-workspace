@@ -1,15 +1,18 @@
 import { DatePipe, DecimalPipe , NgClass } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { DatePickerModule } from 'primeng/datepicker';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { SelectModule } from 'primeng/select';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
+import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
 import { TooltipModule } from 'primeng/tooltip';
 
+import { UniverseSyncService } from '../../shared/services/universe-sync.service';
 import { selectAccounts } from '../../store/accounts/selectors/select-accounts.function';
 import { Universe } from '../../store/universe/universe.interface';
 import { UniverseSettingsService } from '../../universe-settings/universe-settings.service';
@@ -25,19 +28,23 @@ import { UniverseDataService } from './universe-data.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'rms-global-universe',
   standalone: true,
-  imports: [TagModule, InputNumberModule, SelectModule, DatePipe, DecimalPipe, ToolbarModule, TableModule, DatePickerModule, FormsModule, ButtonModule, TooltipModule, NgClass],
+  imports: [TagModule, InputNumberModule, SelectModule, DatePipe, DecimalPipe, ToolbarModule, TableModule, DatePickerModule, FormsModule, ButtonModule, TooltipModule, NgClass, ToastModule],
   templateUrl: './global-universe.component.html',
   styleUrls: ['./global-universe.component.scss'],
-  viewProviders: [GlobalUniverseStorageService, UpdateUniverseSettingsService]
+  viewProviders: [GlobalUniverseStorageService, UpdateUniverseSettingsService, MessageService]
 })
 export class GlobalUniverseComponent {
   private readonly storageService = inject(GlobalUniverseStorageService);
   private readonly dataService = inject(UniverseDataService);
   private readonly updateUniverseService = inject(UpdateUniverseSettingsService);
+  private readonly universeSyncService = inject(UniverseSyncService);
+  private readonly messageService = inject(MessageService);
   readonly today = new Date();
   readonly isUpdatingFields = signal<boolean>(false);
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signals work better with arrow functions
   readonly isUpdatingFields$ = computed(() => this.isUpdatingFields());
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signals work better with arrow functions
+  readonly isSyncingUniverse$ = computed(() => this.universeSyncService.isSyncing());
   sortCriteria = signal<Array<{field: string, order: number}>>(this.storageService.loadSortCriteria());
   minYieldFilter = signal<number | null>(this.storageService.loadMinYieldFilter());
   selectedAccountId = signal<string>(this.storageService.loadSelectedAccountId());
@@ -107,6 +114,27 @@ export class GlobalUniverseComponent {
           self.isUpdatingFields.set(false);
         }
       });
+  }
+
+  syncUniverse(): void {
+    this.universeSyncService.syncFromScreener().subscribe({
+      // eslint-disable-next-line @smarttools/no-anonymous-functions -- callback functions for subscribe
+      next: (summary) => {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Universe Updated',
+          detail: `Successfully updated universe from Screener. ${summary.inserted} inserted, ${summary.updated} updated, ${summary.markedExpired} expired.`
+        });
+      },
+      // eslint-disable-next-line @smarttools/no-anonymous-functions -- callback functions for subscribe
+      error: () => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Update Failed',
+          detail: 'Failed to update universe from Screener. Please try again.'
+        });
+      }
+    });
   }
 
   onEditDistributionComplete(row: Universe): void {
