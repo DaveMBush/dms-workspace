@@ -1,8 +1,9 @@
 import { PrismaClient } from '@prisma/client';
-import { randomUUID } from 'crypto';
-import { existsSync,unlinkSync } from 'fs';
+import { existsSync, unlinkSync } from 'fs';
 import { join } from 'path';
 import { afterAll, beforeAll, beforeEach, describe, expect, test } from 'vitest';
+
+import { SyncLogger } from '../../../../utils/logger';
 
 /**
  * Integration tests for sync-from-screener functionality
@@ -16,13 +17,22 @@ describe('sync-from-screener database integration tests', () => {
   let testDbPath: string;
   let riskGroupId1: string;
   let riskGroupId2: string;
+  let logger: SyncLogger;
 
   beforeAll(async () => {
-    // Create unique test database file
-    testDbPath = join(process.cwd(), `test-db-integration-${randomUUID()}.db`);
+    // Initialize logger for test cleanup warnings
+    logger = new SyncLogger();
+    
+    // Use dedicated test.db file for database isolation
+    testDbPath = join(process.cwd(), 'test.db');
     const testDbUrl = `file:${testDbPath}`;
     
-    // Apply migrations to test database
+    // Delete existing test.db if it exists to ensure clean state
+    if (existsSync(testDbPath)) {
+      unlinkSync(testDbPath);
+    }
+    
+    // Apply migrations to test database with isolated DATABASE_URL
     const { execSync } = await import('child_process');
     execSync(`npx prisma migrate deploy --schema=./prisma/schema.prisma`, {
       env: { ...process.env, DATABASE_URL: testDbUrl },
@@ -60,11 +70,17 @@ describe('sync-from-screener database integration tests', () => {
   });
 
   afterAll(async () => {
+    // Ensure Prisma client is disconnected before cleanup
     await prisma.$disconnect();
     
-    // Clean up test database file
-    if (existsSync(testDbPath)) {
-      unlinkSync(testDbPath);
+    // Clean up test.db file with error handling to ensure cleanup always occurs
+    try {
+      if (existsSync(testDbPath)) {
+        unlinkSync(testDbPath);
+      }
+    } catch (error) {
+      // Log cleanup error but don't fail tests
+      logger.warn('Could not clean up test.db file', { error: String(error) });
     }
   });
 
