@@ -15,15 +15,9 @@ export class UniverseSyncService {
   // Loading state
   readonly isSyncing = signal<boolean>(false);
 
-  // Last sync result
-  readonly lastSyncResult = signal<SyncSummary | null>(null);
-
-  // Last sync error
-  readonly lastSyncError = signal<string | null>(null);
 
   syncFromScreener(): Observable<SyncSummary> {
     this.isSyncing.set(true);
-    this.lastSyncError.set(null);
 
     return this.http.post<SyncSummary>('/api/universe/sync-from-screener', {}).pipe(
       // eslint-disable-next-line @smarttools/no-anonymous-functions -- map function for RxJS pipe
@@ -34,16 +28,10 @@ export class UniverseSyncService {
         return result;
       }),
       // eslint-disable-next-line @smarttools/no-anonymous-functions -- tap function for RxJS pipe
-      tap(result => {
-        this.lastSyncResult.set(result);
+      tap(() => {
         this.isSyncing.set(false);
       })
     );
   }
 
-  // Clear last sync result and error
-  clearSyncState(): void {
-    this.lastSyncResult.set(null);
-    this.lastSyncError.set(null);
-  }
 }
