@@ -2,6 +2,7 @@ import { FastifyInstance } from 'fastify';
 import yahooFinance from 'yahoo-finance2';
 
 import { prisma } from '../../prisma/prisma-client';
+import { ensureRiskGroupsExist } from './common/ensure-risk-groups-exist.function';
 import { getDistributions } from './common/get-distributions.function';
 import { getLastPrice } from './common/get-last-price.function';
 import { Settings } from './settings.interface';
@@ -18,34 +19,6 @@ interface Distribution {
 
 yahooFinance.suppressNotices(['yahooSurvey']);
 
-async function ensureRiskGroupsExist(): Promise<PrismaRiskGroup[]> {
-  const riskGroups = await prisma.risk_group.findMany();
-
-  if (riskGroups.length === 0) {
-    const equities = await prisma.risk_group.create({
-      data: { name: 'Equities' },
-    });
-    const income = await prisma.risk_group.create({
-      data: { name: 'Income' },
-    });
-    const taxFreeIncome = await prisma.risk_group.create({
-      data: { name: 'Tax Free Income' },
-    });
-    return [equities, income, taxFreeIncome];
-  }
-
-  const equities = riskGroups.find(function findEquities(riskGroup) {
-    return riskGroup.name === 'Equities';
-  })!;
-  const income = riskGroups.find(function findIncome(riskGroup) {
-    return riskGroup.name === 'Income';
-  })!;
-  const taxFreeIncome = riskGroups.find(function findTaxFreeIncome(riskGroup) {
-    return riskGroup.name === 'Tax Free Income';
-  })!;
-
-  return [equities, income, taxFreeIncome];
-}
 
 function parseSymbols(value: string): string[] {
   return value
