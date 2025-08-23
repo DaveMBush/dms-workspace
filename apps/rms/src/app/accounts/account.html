@@ -12,6 +12,7 @@
   dataKey="id"
   class="mt-0 accounts-listbox"
   [ngModel]="selectedAccountId$()"
+  scrollHeight="100%"
   (ngModelChange)="onAccountSelect($event)">
   <ng-template pTemplate="item" let-account>
     @if(addingNode === account.id || editingNode === account.id) {
