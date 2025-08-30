@@ -659,10 +659,8 @@ const eslintConfig = async () => {
           'unused-imports/no-unused-vars': [
             'error',
             {
-              vars: 'all',
-              varsIgnorePattern: '^_',
               args: 'after-used',
-              argsIgnorePattern: '^_',
+              argsIgnorePattern: '^_+',
             },
           ],
           '@ngrx/avoid-combining-selectors': 'error',
