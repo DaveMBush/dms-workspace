@@ -1,3 +1,4 @@
+# <!-- Powered by BMAD™ Core -->
 markdownExploder: true
 qa:
   qaLocation: docs/qa
@@ -18,5 +19,5 @@ devLoadAlwaysFiles:
   - docs/architecture/implementation-sequence.md
   - docs/architecture/testing-plan.md
 devDebugLog: .ai/debug-log.md
-devStoryLocation: docs/backlog
+devStoryLocation: docs/stories
 slashPrefix: BMad
