@@ -1,6 +1,19 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
-import { ActivatedRoute, NavigationEnd, Router, RouterModule } from '@angular/router';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  OnDestroy,
+  OnInit,
+  signal,
+} from '@angular/core';
+import {
+  ActivatedRoute,
+  NavigationEnd,
+  Router,
+  RouterModule,
+} from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { TooltipModule } from 'primeng/tooltip';
@@ -13,9 +26,17 @@ import { NewPositionComponent } from './new-position/new-position.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'rms-account-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, TooltipModule, ButtonModule, DialogModule, NewPositionComponent, DivDepModalComponent],
+  imports: [
+    CommonModule,
+    RouterModule,
+    TooltipModule,
+    ButtonModule,
+    DialogModule,
+    NewPositionComponent,
+    DivDepModalComponent,
+  ],
   templateUrl: './account-detail.component.html',
-  styleUrls: ['./account-detail.component.scss']
+  styleUrls: ['./account-detail.component.scss'],
 })
 export class AccountDetailComponent implements OnInit, OnDestroy {
   showNewPositionDialog = false;
@@ -46,8 +67,13 @@ export class AccountDetailComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.routeSubscription = this.router.events
-      .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd)) // eslint-disable-line @smarttools/no-anonymous-functions -- standard RxJS pattern
-      .subscribe(() => { // eslint-disable-line @smarttools/no-anonymous-functions -- standard RxJS pattern
+      .pipe(
+        filter(function isNavigationEnd(event): event is NavigationEnd {
+          return event instanceof NavigationEnd;
+        })
+      )
+      // eslint-disable-next-line @smarttools/no-anonymous-functions -- preserves this context
+      .subscribe(() => {
         this.currentUrl$.set(this.router.url);
       });
 

@@ -15,7 +15,7 @@ export const topDefinition: SmartEntityDefinition<Top> = {
       universes: [],
       divDepositTypes: [],
       holidays: [],
-      screens: []
+      screens: [],
     };
   },
 };

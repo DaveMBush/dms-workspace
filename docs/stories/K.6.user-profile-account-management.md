@@ -1,9 +1,11 @@
 # Story K.6: User Profile and Account Management
 
 ## Status
+
 Draft
 
 ## Story
+
 **As a** single-user application owner,  
 **I want** to have a comprehensive user profile management interface with account settings and security controls,  
 **so that** I can manage my account information, change passwords, and monitor my authentication sessions from within the application.
@@ -22,6 +24,7 @@ Draft
 ## Tasks / Subtasks
 
 - [ ] **Task 1: Create user profile component structure** (AC: 1, 7, 8)
+
   - [ ] Generate profile component: `/apps/rms/src/app/auth/profile/profile.ts`
   - [ ] Create responsive profile template: `profile.html`
   - [ ] Add profile styles matching PrimeNG theme: `profile.scss`
@@ -30,6 +33,7 @@ Draft
   - [ ] Add proper ARIA labels and accessibility features for profile management
 
 - [ ] **Task 2: Display user information and attributes** (AC: 1, 5)
+
   - [ ] Fetch and display user attributes from AWS Cognito (email, username, name)
   - [ ] Show account creation date and last login timestamp
   - [ ] Display current session information and token expiration times
@@ -38,6 +42,7 @@ Draft
   - [ ] Add loading states and error handling for profile data
 
 - [ ] **Task 3: Implement password change functionality** (AC: 2)
+
   - [ ] Create password change form with current and new password fields
   - [ ] Add password strength validation matching Cognito password policy
   - [ ] Implement real-time password validation feedback
@@ -46,6 +51,7 @@ Draft
   - [ ] Add proper form validation and security measures
 
 - [ ] **Task 4: Add email verification and change workflow** (AC: 3)
+
   - [ ] Create email change form with new email input and verification
   - [ ] Implement email change request through Cognito user attributes
   - [ ] Add email verification code input and confirmation flow
@@ -54,6 +60,7 @@ Draft
   - [ ] Create user-friendly guidance for email verification process
 
 - [ ] **Task 5: Implement logout functionality with confirmation** (AC: 4)
+
   - [ ] Add logout button with confirmation dialog
   - [ ] Create logout confirmation component with session information
   - [ ] Implement complete session cleanup on logout confirmation
@@ -62,6 +69,7 @@ Draft
   - [ ] Handle logout errors and network failures gracefully
 
 - [ ] **Task 6: Add password reset functionality** (AC: 6)
+
   - [ ] Create "Forgot Password" link and workflow
   - [ ] Implement password reset request through Cognito
   - [ ] Add verification code input for password reset confirmation
@@ -70,6 +78,7 @@ Draft
   - [ ] Add security messaging about password reset process
 
 - [ ] **Task 7: Display session and security information** (AC: 5)
+
   - [ ] Show current session start time and duration
   - [ ] Display access token and refresh token expiration times
   - [ ] Add last login IP address and browser information (if available)
@@ -88,24 +97,30 @@ Draft
 ## Dev Notes
 
 ### Previous Story Context
-**Dependencies:** 
+
+**Dependencies:**
+
 - Story K.1 (AWS Cognito Setup) provides user pool and user management foundation
 - Story K.3 (Frontend Login Component) provides AuthService with user state
 - Story K.5 (Token Refresh) provides session information and token management
 
 ### Data Models and Architecture
+
 **Source: [apps/rms/src/app/auth/auth.service.ts from Story K.3]**
+
 - Existing authentication service with current user state management
 - AWS Cognito integration for user attribute management
 - Token storage and session management capabilities
 
 **Source: [CLAUDE.md - Angular Development Standards]**
+
 - Use standalone components with external HTML/SCSS files
 - Use `inject()` pattern for service dependencies
 - Use signals for reactive state management
 - Follow PrimeNG theming and TailwindCSS utility patterns
 
 **User Profile Architecture:**
+
 ```
 Profile Component -> AuthService -> AWS Cognito -> User Attributes
        ↓                ↓              ↓              ↓
@@ -113,7 +128,9 @@ Profile Component -> AuthService -> AWS Cognito -> User Attributes
 ```
 
 ### File Locations
+
 **Primary Files to Create:**
+
 1. `/apps/rms/src/app/auth/profile/profile.ts` - Main profile component
 2. `/apps/rms/src/app/auth/profile/profile.html` - Profile template
 3. `/apps/rms/src/app/auth/profile/profile.scss` - Profile styles
@@ -122,17 +139,20 @@ Profile Component -> AuthService -> AWS Cognito -> User Attributes
 6. `/apps/rms/src/app/auth/components/password-change/password-change.ts` - Password change form
 
 **Primary Files to Modify:**
+
 1. `/apps/rms/src/app/app.routes.ts` - Add profile route
 2. `/apps/rms/src/app/auth/auth.service.ts` - Add profile management methods
 3. Main navigation component - Add profile link
 
 **Test Files to Create:**
+
 1. `/apps/rms/src/app/auth/profile/profile.spec.ts` - Profile component tests
 2. `/apps/rms/src/app/auth/services/profile.service.spec.ts` - Profile service tests
 
 ### Technical Implementation Details
 
 **Profile Service:**
+
 ```typescript
 // apps/rms/src/app/auth/services/profile.service.ts
 import { Injectable, signal } from '@angular/core';
@@ -153,7 +173,7 @@ export interface UserProfile {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ProfileService {
   private userProfile = signal<UserProfile | null>(null);
@@ -171,7 +191,7 @@ export class ProfileService {
     try {
       const user = await Auth.currentAuthenticatedUser();
       const session = await Auth.currentSession();
-      
+
       const profile: UserProfile = {
         username: user.username,
         email: user.attributes.email,
@@ -182,8 +202,8 @@ export class ProfileService {
         sessionInfo: {
           loginTime: new Date(session.getIdToken().payload.iat * 1000),
           tokenExpiration: new Date(session.getAccessToken().getExpiration() * 1000),
-          sessionDuration: Date.now() - (session.getIdToken().payload.iat * 1000)
-        }
+          sessionDuration: Date.now() - session.getIdToken().payload.iat * 1000,
+        },
       };
 
       this.userProfile.set(profile);
@@ -219,7 +239,7 @@ export class ProfileService {
     try {
       const user = await Auth.currentAuthenticatedUser();
       await Auth.updateUserAttributes(user, {
-        email: newEmail
+        email: newEmail,
       });
       console.log('Email update initiated, verification required');
     } catch (error) {
@@ -268,6 +288,7 @@ export class ProfileService {
 ```
 
 **Profile Component:**
+
 ```typescript
 // apps/rms/src/app/auth/profile/profile.ts
 import { Component, OnInit, signal } from '@angular/core';
@@ -287,19 +308,9 @@ import { AuthService } from '../auth.service';
 
 @Component({
   selector: 'app-profile',
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    CardModule,
-    ButtonModule,
-    InputTextModule,
-    PasswordModule,
-    MessageModule,
-    TabViewModule,
-    ConfirmDialogModule
-  ],
+  imports: [CommonModule, ReactiveFormsModule, CardModule, ButtonModule, InputTextModule, PasswordModule, MessageModule, TabViewModule, ConfirmDialogModule],
   templateUrl: './profile.html',
-  styleUrls: ['./profile.scss']
+  styleUrls: ['./profile.scss'],
 })
 export class Profile implements OnInit {
   private profileService = inject(ProfileService);
@@ -312,17 +323,20 @@ export class Profile implements OnInit {
   activeTab = signal(0);
 
   constructor() {
-    this.passwordChangeForm = this.fb.group({
-      currentPassword: ['', Validators.required],
-      newPassword: ['', [Validators.required, Validators.minLength(8)]],
-      confirmPassword: ['', Validators.required]
-    }, {
-      validators: this.passwordMatchValidator
-    });
+    this.passwordChangeForm = this.fb.group(
+      {
+        currentPassword: ['', Validators.required],
+        newPassword: ['', [Validators.required, Validators.minLength(8)]],
+        confirmPassword: ['', Validators.required],
+      },
+      {
+        validators: this.passwordMatchValidator,
+      }
+    );
 
     this.emailChangeForm = this.fb.group({
       newEmail: ['', [Validators.required, Validators.email]],
-      verificationCode: ['']
+      verificationCode: [''],
     });
   }
 
@@ -337,10 +351,9 @@ export class Profile implements OnInit {
       try {
         const { currentPassword, newPassword } = this.passwordChangeForm.value;
         await this.profileService.changePassword(currentPassword, newPassword);
-        
+
         this.passwordChangeForm.reset();
         // Show success message
-        
       } catch (error) {
         console.error('Password change failed:', error);
       } finally {
@@ -356,9 +369,8 @@ export class Profile implements OnInit {
       try {
         const { newEmail } = this.emailChangeForm.value;
         await this.profileService.updateEmail(newEmail);
-        
+
         // Show verification step
-        
       } catch (error) {
         console.error('Email change failed:', error);
       } finally {
@@ -369,7 +381,7 @@ export class Profile implements OnInit {
 
   async onVerifyEmail(): Promise<void> {
     const { verificationCode } = this.emailChangeForm.value;
-    
+
     try {
       await this.profileService.verifyEmailChange(verificationCode);
       this.emailChangeForm.reset();
@@ -387,11 +399,11 @@ export class Profile implements OnInit {
   private passwordMatchValidator(form: FormGroup) {
     const newPassword = form.get('newPassword');
     const confirmPassword = form.get('confirmPassword');
-    
+
     if (newPassword?.value !== confirmPassword?.value) {
       return { passwordMismatch: true };
     }
-    
+
     return null;
   }
 
@@ -404,13 +416,14 @@ export class Profile implements OnInit {
 ```
 
 **Profile Template:**
+
 ```html
 <!-- apps/rms/src/app/auth/profile/profile.html -->
 <div class="profile-container p-4">
   <div class="grid">
     <div class="col-12">
       <h1 class="text-3xl font-bold text-900 mb-4">User Profile</h1>
-      
+
       <p-tabView [(activeIndex)]="activeTab">
         <!-- Profile Information Tab -->
         <p-tabPanel header="Profile" leftIcon="pi pi-user">
@@ -422,18 +435,12 @@ export class Profile implements OnInit {
                     <label class="block text-900 font-medium mb-2">Username</label>
                     <span class="text-900">{{ profileService.profile()?.username }}</span>
                   </div>
-                  
+
                   <div class="field">
                     <label class="block text-900 font-medium mb-2">Email Address</label>
                     <div class="flex align-items-center gap-2">
                       <span class="text-900">{{ profileService.profile()?.email }}</span>
-                      <i 
-                        class="pi"
-                        [class.pi-check-circle]="profileService.profile()?.emailVerified"
-                        [class.pi-exclamation-triangle]="!profileService.profile()?.emailVerified"
-                        [class.text-green-500]="profileService.profile()?.emailVerified"
-                        [class.text-orange-500]="!profileService.profile()?.emailVerified">
-                      </i>
+                      <i class="pi" [class.pi-check-circle]="profileService.profile()?.emailVerified" [class.pi-exclamation-triangle]="!profileService.profile()?.emailVerified" [class.text-green-500]="profileService.profile()?.emailVerified" [class.text-orange-500]="!profileService.profile()?.emailVerified"> </i>
                     </div>
                   </div>
 
@@ -482,50 +489,22 @@ export class Profile implements OnInit {
                 <form [formGroup]="passwordChangeForm" (ngSubmit)="onChangePassword()">
                   <div class="field">
                     <label for="currentPassword" class="block text-900 font-medium mb-2">Current Password</label>
-                    <p-password
-                      inputId="currentPassword"
-                      formControlName="currentPassword"
-                      [feedback]="false"
-                      [toggleMask]="true"
-                      styleClass="w-full">
-                    </p-password>
+                    <p-password inputId="currentPassword" formControlName="currentPassword" [feedback]="false" [toggleMask]="true" styleClass="w-full"> </p-password>
                   </div>
 
                   <div class="field">
                     <label for="newPassword" class="block text-900 font-medium mb-2">New Password</label>
-                    <p-password
-                      inputId="newPassword"
-                      formControlName="newPassword"
-                      [feedback]="true"
-                      [toggleMask]="true"
-                      styleClass="w-full">
-                    </p-password>
+                    <p-password inputId="newPassword" formControlName="newPassword" [feedback]="true" [toggleMask]="true" styleClass="w-full"> </p-password>
                   </div>
 
                   <div class="field">
                     <label for="confirmPassword" class="block text-900 font-medium mb-2">Confirm New Password</label>
-                    <p-password
-                      inputId="confirmPassword"
-                      formControlName="confirmPassword"
-                      [feedback]="false"
-                      [toggleMask]="true"
-                      styleClass="w-full">
-                    </p-password>
+                    <p-password inputId="confirmPassword" formControlName="confirmPassword" [feedback]="false" [toggleMask]="true" styleClass="w-full"> </p-password>
                   </div>
 
-                  <p-message 
-                    *ngIf="passwordChangeForm.errors?.['passwordMismatch']"
-                    severity="error"
-                    text="Passwords do not match">
-                  </p-message>
+                  <p-message *ngIf="passwordChangeForm.errors?.['passwordMismatch']" severity="error" text="Passwords do not match"> </p-message>
 
-                  <p-button
-                    type="submit"
-                    label="Change Password"
-                    styleClass="w-full mt-3"
-                    [disabled]="passwordChangeForm.invalid || isSubmitting()"
-                    [loading]="isSubmitting()">
-                  </p-button>
+                  <p-button type="submit" label="Change Password" styleClass="w-full mt-3" [disabled]="passwordChangeForm.invalid || isSubmitting()" [loading]="isSubmitting()"> </p-button>
                 </form>
               </p-card>
             </div>
@@ -533,19 +512,9 @@ export class Profile implements OnInit {
             <div class="col-12 md:col-6">
               <p-card header="Account Actions">
                 <div class="flex flex-column gap-3">
-                  <p-button
-                    label="Logout"
-                    icon="pi pi-sign-out"
-                    styleClass="p-button-outlined"
-                    (onClick)="onLogout()">
-                  </p-button>
+                  <p-button label="Logout" icon="pi pi-sign-out" styleClass="p-button-outlined" (onClick)="onLogout()"> </p-button>
 
-                  <p-button
-                    label="Logout All Devices"
-                    icon="pi pi-power-off"
-                    styleClass="p-button-outlined p-button-danger"
-                    (onClick)="onLogout()">
-                  </p-button>
+                  <p-button label="Logout All Devices" icon="pi pi-power-off" styleClass="p-button-outlined p-button-danger" (onClick)="onLogout()"> </p-button>
                 </div>
               </p-card>
             </div>
@@ -558,6 +527,7 @@ export class Profile implements OnInit {
 ```
 
 **Route Integration:**
+
 ```typescript
 // Update to apps/rms/src/app/app.routes.ts
 export const routes: Routes = [
@@ -569,14 +539,15 @@ export const routes: Routes = [
       // ... existing protected routes
       {
         path: 'profile',
-        loadComponent: () => import('./auth/profile/profile').then(m => m.Profile)
-      }
-    ]
-  }
+        loadComponent: () => import('./auth/profile/profile').then((m) => m.Profile),
+      },
+    ],
+  },
 ];
 ```
 
 ### Testing Standards
+
 **Source: [docs/architecture/ci-and-testing.md]**
 
 **Testing Framework:** Vitest with Angular TestBed and AWS Amplify mocking
@@ -584,12 +555,14 @@ export const routes: Routes = [
 **Coverage Requirements:** Lines: 85%, Branches: 75%, Functions: 85%
 
 **Testing Strategy:**
+
 - **Unit Tests:** Test profile component interactions and form validation
 - **Service Tests:** Test profile service methods with mocked AWS Cognito
 - **Integration Tests:** Test complete profile management workflow
 - **UI Tests:** Test profile display and user interactions
 
 **Key Test Scenarios:**
+
 - Profile data loading and display
 - Password change form validation and submission
 - Email change and verification workflow
@@ -600,24 +573,30 @@ export const routes: Routes = [
 
 ## Change Log
 
-| Date | Version | Description | Author |
-|------|---------|-------------|---------|
-| 2024-08-30 | 1.0 | Initial story creation | Scrum Master Bob |
+| Date       | Version | Description            | Author           |
+| ---------- | ------- | ---------------------- | ---------------- |
+| 2024-08-30 | 1.0     | Initial story creation | Scrum Master Bob |
 
 ## Dev Agent Record
-*This section will be populated by the development agent during implementation*
+
+_This section will be populated by the development agent during implementation_
 
 ### Agent Model Used
-*To be filled by dev agent*
 
-### Debug Log References  
-*To be filled by dev agent*
+_To be filled by dev agent_
+
+### Debug Log References
+
+_To be filled by dev agent_
 
 ### Completion Notes List
-*To be filled by dev agent*
+
+_To be filled by dev agent_
 
 ### File List
-*To be filled by dev agent*
+
+_To be filled by dev agent_
 
 ## QA Results
-*Results from QA Agent review will be populated here after implementation*
+
+_Results from QA Agent review will be populated here after implementation_

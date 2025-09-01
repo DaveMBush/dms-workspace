@@ -1,8 +1,11 @@
-import yahooFinance from "yahoo-finance2";
+import yahooFinance from 'yahoo-finance2';
 
-import { sleep } from "./sleep.function";
+import { sleep } from './sleep.function';
 
-export async function getLastPrice(symbol: string, retryCount: number = 0): Promise<number | undefined> {
+export async function getLastPrice(
+  symbol: string,
+  retryCount: number = 0
+): Promise<number | undefined> {
   try {
     if (retryCount > 0) {
       await sleep(1000);

@@ -1,5 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy,Component, computed, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+} from '@angular/core';
 import { RowProxyDelete, SmartArray } from '@smarttools/smart-signals';
 import { ButtonModule } from 'primeng/button';
 import { TableModule } from 'primeng/table';
@@ -38,13 +43,15 @@ export class DividendDeposits {
     const account = selectCurrentAccountSignal(this.currentAccount);
     const act = account();
     const divDeposits = [];
-    const divDepositsArray = act.divDeposits as DivDeposit[] & SmartArray<Account, DivDeposit>;
+    const divDepositsArray = act.divDeposits as DivDeposit[] &
+      SmartArray<Account, DivDeposit>;
     for (let i = 0; i < divDepositsArray.length; i++) {
       divDeposits.push({
         id: divDepositsArray[i].id,
         date: divDepositsArray[i].date,
         amount: divDepositsArray[i].amount,
-        divDeposit: divDepositTypesMap.get(divDepositsArray[i].divDepositTypeId)?.name,
+        divDeposit: divDepositTypesMap.get(divDepositsArray[i].divDepositTypeId)
+          ?.name,
         symbol: this.symbolsMap.get(divDepositsArray[i].universeId),
       });
     }
@@ -54,7 +61,8 @@ export class DividendDeposits {
   deleteDeposit(row: DivDeposit): void {
     const account = selectCurrentAccountSignal(this.currentAccount);
     const act = account();
-    const divDepositsArray = act.divDeposits as DivDeposit[] & SmartArray<Account, DivDeposit>;
+    const divDepositsArray = act.divDeposits as DivDeposit[] &
+      SmartArray<Account, DivDeposit>;
     for (let i = 0; i < divDepositsArray.length; i++) {
       const divDeposit = divDepositsArray[i] as DivDeposit & RowProxyDelete;
       if (divDeposit.id === row.id) {

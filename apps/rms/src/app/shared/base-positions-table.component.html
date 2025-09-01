@@ -1,0 +1,14 @@
+<p-table
+  #tableRef
+  [value]="data"
+  [class]="tableClass"
+  [responsiveLayout]="'scroll'"
+  size="small"
+  [scrollable]="true"
+  [scrollHeight]="scrollHeight"
+  showGridlines
+  [rowTrackBy]="trackById"
+>
+  <ng-content select="[slot=header]"></ng-content>
+  <ng-content select="[slot=body]"></ng-content>
+</p-table>

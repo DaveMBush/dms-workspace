@@ -1,9 +1,11 @@
 # Story J.3: Backend Deployment with ECS Fargate
 
 ## Status
+
 Draft
 
 ## Story
+
 **As a** DevOps engineer,  
 **I want** to containerize the Fastify backend application and deploy it to ECS Fargate with auto-scaling and load balancing,  
 **so that** the RMS API server runs reliably on AWS with proper container orchestration, health monitoring, and scalability.
@@ -23,6 +25,7 @@ Draft
 ## Tasks / Subtasks
 
 - [ ] **Task 1: Create optimized Dockerfile for Fastify application** (AC: 1)
+
   - [ ] Create multi-stage Dockerfile with Node.js 22 Alpine base image
   - [ ] Implement build stage for dependency installation and application build
   - [ ] Create production stage with minimal runtime dependencies
@@ -31,6 +34,7 @@ Draft
   - [ ] Add health check command for container health monitoring
 
 - [ ] **Task 2: Setup Amazon ECR repository and lifecycle policies** (AC: 2)
+
   - [ ] Create ECR repository using Terraform with proper naming convention
   - [ ] Configure lifecycle policies to manage image retention (keep 10 latest)
   - [ ] Setup repository policies for cross-account access if needed
@@ -39,6 +43,7 @@ Draft
   - [ ] Add repository URI output for deployment pipeline integration
 
 - [ ] **Task 3: Create ECS Terraform module** (AC: 3, 7)
+
   - [ ] Create `infrastructure/modules/ecs/main.tf` with cluster configuration
   - [ ] Define ECS task definition with Fargate launch type
   - [ ] Configure task definition with appropriate CPU and memory limits
@@ -47,6 +52,7 @@ Draft
   - [ ] Add proper IAM roles for task execution and application access
 
 - [ ] **Task 4: Configure Application Load Balancer** (AC: 4)
+
   - [ ] Create ALB using existing ALB security group from Story J.1
   - [ ] Configure target group with health check endpoint (/health)
   - [ ] Setup ALB listener rules for HTTP and HTTPS traffic
@@ -55,6 +61,7 @@ Draft
   - [ ] Setup proper target group attributes for connection handling
 
 - [ ] **Task 5: Implement auto-scaling configuration** (AC: 5)
+
   - [ ] Create Application Auto Scaling target for ECS service
   - [ ] Configure scaling policies for CPU utilization (target 70%)
   - [ ] Configure scaling policies for memory utilization (target 80%)
@@ -63,6 +70,7 @@ Draft
   - [ ] Configure scale-out and scale-in cooldown periods
 
 - [ ] **Task 6: Environment variable and secrets management** (AC: 6)
+
   - [ ] Create task definition environment variables for non-sensitive config
   - [ ] Setup AWS Systems Manager Parameter Store integration for secrets
   - [ ] Configure database connection string from RDS outputs
@@ -71,6 +79,7 @@ Draft
   - [ ] Add runtime environment variable validation
 
 - [ ] **Task 7: Configure monitoring and logging** (AC: 7)
+
   - [ ] Setup CloudWatch log groups with appropriate retention periods
   - [ ] Configure structured logging format for better searchability
   - [ ] Add custom CloudWatch metrics for application-specific monitoring
@@ -89,26 +98,34 @@ Draft
 ## Dev Notes
 
 ### Previous Story Context
-**Dependencies:** 
+
+**Dependencies:**
+
 - Story J.1 (Infrastructure Foundation) - requires VPC, security groups, IAM roles
 - Story J.2 (Database Migration) - requires RDS connection configuration
 
 ### Data Models and Architecture
+
 **Source: [apps/server/src/main.ts]**
+
 - Fastify server entry point with plugin loading and configuration
 - Current port configuration and startup procedures
 
 **Source: [apps/server/project.json]**
+
 - Nx build configuration with output to `dist/apps/server`
 - Build targets and development server setup
 
 **Source: [package.json]**
+
 - Node.js 22 runtime requirement
 - Fastify framework with associated plugins
 - Production dependencies for containerized deployment
 
 ### File Locations
+
 **Primary Files to Create:**
+
 1. `/apps/server/Dockerfile` - Multi-stage Docker build configuration
 2. `/apps/server/.dockerignore` - Exclude unnecessary files from Docker context
 3. `/infrastructure/modules/ecs/main.tf` - ECS cluster and service configuration
@@ -119,11 +136,13 @@ Draft
 8. `/apps/server/src/app/routes/health/index.ts` - Health check endpoint
 
 **Primary Files to Modify:**
+
 1. `/apps/server/src/main.ts` - Add health check endpoint and graceful shutdown
 2. `/infrastructure/environments/dev/main.tf` - Include ECS and ALB modules
 3. `/apps/server/src/app/prisma/prisma-client.ts` - Add connection retry for ECS
 
 **Test Files to Create:**
+
 1. `/apps/server/src/app/routes/health/index.spec.ts` - Health check endpoint tests
 2. `/infrastructure/modules/ecs/main.tf.spec.ts` - Terraform module tests
 3. `/scripts/build-and-deploy.spec.sh` - Deployment script validation
@@ -131,6 +150,7 @@ Draft
 ### Technical Implementation Details
 
 **Dockerfile Multi-Stage Build:**
+
 ```dockerfile
 # Build stage
 FROM node:22-alpine AS builder
@@ -157,6 +177,7 @@ CMD ["node", "main.js"]
 ```
 
 **ECS Task Definition:**
+
 ```hcl
 resource "aws_ecs_task_definition" "rms_backend" {
   family                   = "rms-backend-${var.environment}"
@@ -171,14 +192,14 @@ resource "aws_ecs_task_definition" "rms_backend" {
     {
       name  = "rms-backend"
       image = "${var.ecr_repository_url}:${var.image_tag}"
-      
+
       portMappings = [
         {
           containerPort = 3000
           protocol      = "tcp"
         }
       ]
-      
+
       environment = [
         {
           name  = "NODE_ENV"
@@ -189,14 +210,14 @@ resource "aws_ecs_task_definition" "rms_backend" {
           value = "3000"
         }
       ]
-      
+
       secrets = [
         {
           name      = "DATABASE_URL"
           valueFrom = var.database_url_parameter_arn
         }
       ]
-      
+
       logConfiguration = {
         logDriver = "awslogs"
         options = {
@@ -205,7 +226,7 @@ resource "aws_ecs_task_definition" "rms_backend" {
           "awslogs-stream-prefix" = "ecs"
         }
       }
-      
+
       healthCheck = {
         command = ["CMD-SHELL", "curl -f http://localhost:3000/health || exit 1"]
         interval = 30
@@ -219,6 +240,7 @@ resource "aws_ecs_task_definition" "rms_backend" {
 ```
 
 **ALB Configuration:**
+
 ```hcl
 resource "aws_lb" "rms_backend" {
   name               = "rms-backend-alb-${var.environment}"
@@ -226,9 +248,9 @@ resource "aws_lb" "rms_backend" {
   load_balancer_type = "application"
   security_groups    = [var.alb_security_group_id]
   subnets           = var.public_subnet_ids
-  
+
   enable_deletion_protection = var.environment == "prod"
-  
+
   access_logs {
     bucket  = var.alb_logs_bucket
     prefix  = "rms-backend-alb"
@@ -242,7 +264,7 @@ resource "aws_lb_target_group" "rms_backend" {
   protocol = "HTTP"
   vpc_id   = var.vpc_id
   target_type = "ip"
-  
+
   health_check {
     enabled             = true
     healthy_threshold   = 2
@@ -258,6 +280,7 @@ resource "aws_lb_target_group" "rms_backend" {
 ```
 
 **Health Check Endpoint:**
+
 ```typescript
 // apps/server/src/app/routes/health/index.ts
 import { FastifyPluginAsync } from 'fastify';
@@ -268,7 +291,7 @@ const healthRoutes: FastifyPluginAsync = async (fastify) => {
     try {
       // Check database connectivity
       await prismaClient.$queryRaw`SELECT 1`;
-      
+
       return {
         status: 'healthy',
         timestamp: new Date().toISOString(),
@@ -292,6 +315,7 @@ export default healthRoutes;
 ```
 
 **Auto-Scaling Configuration:**
+
 ```hcl
 resource "aws_appautoscaling_target" "rms_backend" {
   max_capacity       = 10
@@ -318,6 +342,7 @@ resource "aws_appautoscaling_policy" "rms_backend_cpu" {
 ```
 
 **Deployment Script:**
+
 ```bash
 #!/bin/bash
 # scripts/build-and-deploy.sh
@@ -355,6 +380,7 @@ echo "Deployment completed successfully!"
 ```
 
 ### Testing Standards
+
 **Source: [architecture/ci-and-testing.md]**
 
 **Testing Framework:** Vitest for unit tests, Docker for integration testing
@@ -362,12 +388,14 @@ echo "Deployment completed successfully!"
 **Coverage Requirements:** Lines: 85%, Branches: 75%, Functions: 85%
 
 **Testing Strategy:**
+
 - **Unit Tests:** Test health check endpoint and application startup logic
 - **Integration Tests:** Test complete ECS deployment with real AWS services
 - **Container Tests:** Validate Docker image builds and runs correctly
 - **Load Tests:** Test auto-scaling behavior under various load conditions
 
 **Key Test Scenarios:**
+
 - Docker image builds successfully and runs without errors
 - Health check endpoint returns correct status for healthy/unhealthy states
 - ECS service deploys and achieves stable state
@@ -376,6 +404,7 @@ echo "Deployment completed successfully!"
 - Deployment pipeline completes without manual intervention
 
 **Performance Benchmarks:**
+
 - Container startup time should be < 30 seconds
 - Health check response time should be < 200ms
 - Auto-scaling should trigger within 5 minutes of threshold breach
@@ -383,6 +412,7 @@ echo "Deployment completed successfully!"
 - Application should handle 100+ concurrent requests without errors
 
 **Security Testing:**
+
 - Container runs as non-root user
 - No sensitive information exposed in environment variables
 - Secrets properly retrieved from AWS Systems Manager
@@ -390,24 +420,30 @@ echo "Deployment completed successfully!"
 
 ## Change Log
 
-| Date | Version | Description | Author |
-|------|---------|-------------|---------|
-| 2024-08-30 | 1.0 | Initial story creation | Scrum Master Bob |
+| Date       | Version | Description            | Author           |
+| ---------- | ------- | ---------------------- | ---------------- |
+| 2024-08-30 | 1.0     | Initial story creation | Scrum Master Bob |
 
 ## Dev Agent Record
-*This section will be populated by the development agent during implementation*
+
+_This section will be populated by the development agent during implementation_
 
 ### Agent Model Used
-*To be filled by dev agent*
 
-### Debug Log References  
-*To be filled by dev agent*
+_To be filled by dev agent_
+
+### Debug Log References
+
+_To be filled by dev agent_
 
 ### Completion Notes List
-*To be filled by dev agent*
+
+_To be filled by dev agent_
 
 ### File List
-*To be filled by dev agent*
+
+_To be filled by dev agent_
 
 ## QA Results
-*Results from QA Agent review will be populated here after implementation*
+
+_Results from QA Agent review will be populated here after implementation_

@@ -1,5 +1,11 @@
-import { DatePipe, DecimalPipe , NgClass } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { DatePipe, DecimalPipe, NgClass } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
@@ -13,6 +19,7 @@ import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
 import { TooltipModule } from 'primeng/tooltip';
 
+import { EditableDateCellComponent } from '../../shared/editable-date-cell.component';
 import { UniverseSyncService } from '../../shared/services/universe-sync.service';
 import { selectAccounts } from '../../store/accounts/selectors/select-accounts.function';
 import { Universe } from '../../store/universe/universe.interface';
@@ -23,14 +30,13 @@ import { createSortComputedSignals } from './sort-computed-signals.function';
 import { selectUniverse } from './universe.selector';
 import { UniverseDataService } from './universe-data.service';
 
-
 /**
  * Global Universe Component
- * 
+ *
  * Displays and manages the universe of securities with icon-based controls for data updates.
  * Features direct access to universe field updates and full universe synchronization through
  * toolbar icons without modal dialogs.
- * 
+ *
  * Key Features:
  * - Icon-based update controls (pi-refresh for fields, pi-sync for universe)
  * - Real-time data synchronization with external screener
@@ -42,15 +48,38 @@ import { UniverseDataService } from './universe-data.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'rms-global-universe',
   standalone: true,
-  imports: [TagModule, InputNumberModule, SelectModule, DatePipe, DecimalPipe, ToolbarModule, TableModule, DatePickerModule, FormsModule, ButtonModule, TooltipModule, NgClass, ToastModule, ProgressSpinnerModule],
+  imports: [
+    TagModule,
+    InputNumberModule,
+    SelectModule,
+    DatePipe,
+    DecimalPipe,
+    ToolbarModule,
+    TableModule,
+    DatePickerModule,
+    FormsModule,
+    ButtonModule,
+    TooltipModule,
+    NgClass,
+    ToastModule,
+    ProgressSpinnerModule,
+    EditableDateCellComponent,
+  ],
   templateUrl: './global-universe.component.html',
   styleUrls: ['./global-universe.component.scss'],
-  viewProviders: [GlobalUniverseStorageService, UpdateUniverseSettingsService, MessageService]
+  viewProviders: [
+    GlobalUniverseStorageService,
+    UpdateUniverseSettingsService,
+    MessageService,
+  ],
 })
 export class GlobalUniverseComponent {
   private readonly storageService = inject(GlobalUniverseStorageService);
   private readonly dataService = inject(UniverseDataService);
-  private readonly updateUniverseService = inject(UpdateUniverseSettingsService);
+  private readonly updateUniverseService = inject(
+    UpdateUniverseSettingsService
+  );
+
   private readonly universeSyncService = inject(UniverseSyncService);
   private readonly messageService = inject(MessageService);
   readonly today = new Date();
@@ -58,26 +87,44 @@ export class GlobalUniverseComponent {
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signals work better with arrow functions
   readonly isUpdatingFields$ = computed(() => this.isUpdatingFields());
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signals work better with arrow functions
-  readonly isSyncingUniverse$ = computed(() => this.universeSyncService.isSyncing());
+  readonly isSyncingUniverse$ = computed(() =>
+    this.universeSyncService.isSyncing()
+  );
+
   readonly showOverlay$ = signal<boolean>(false);
   readonly overlayText = signal<string>('');
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signals work better with arrow functions
   readonly overlayText$ = computed(() => this.overlayText());
-  sortCriteria = signal<Array<{field: string, order: number}>>(this.storageService.loadSortCriteria());
-  minYieldFilter = signal<number | null>(this.storageService.loadMinYieldFilter());
-  selectedAccountId = signal<string>(this.storageService.loadSelectedAccountId());
-  riskGroupFilter = signal<string | null>(this.storageService.loadRiskGroupFilter());
-  expiredFilter = signal<boolean | null>(this.storageService.loadExpiredFilter());
+  sortCriteria = signal<Array<{ field: string; order: number }>>(
+    this.storageService.loadSortCriteria()
+  );
+
+  minYieldFilter = signal<number | null>(
+    this.storageService.loadMinYieldFilter()
+  );
+
+  selectedAccountId = signal<string>(
+    this.storageService.loadSelectedAccountId()
+  );
+
+  riskGroupFilter = signal<string | null>(
+    this.storageService.loadRiskGroupFilter()
+  );
+
+  expiredFilter = signal<boolean | null>(
+    this.storageService.loadExpiredFilter()
+  );
+
   symbolFilter = signal<string>(this.storageService.loadSymbolFilter());
   riskGroups = [
     { label: 'Equities', value: 'Equities' },
     { label: 'Income', value: 'Income' },
-    { label: 'Tax Free', value: 'Tax Free Income' }
+    { label: 'Tax Free', value: 'Tax Free Income' },
   ];
 
   expiredOptions = [
     { label: 'Yes', value: true },
-    { label: 'No', value: false }
+    { label: 'No', value: false },
   ];
 
   searchSymbol = '';
@@ -85,15 +132,13 @@ export class GlobalUniverseComponent {
   // Account options for the dropdown
   accountOptions$ = computed(function accountOptionsComputed() {
     const accounts = selectAccounts();
-    const options = [
-      { label: 'All Accounts', value: 'all' }
-    ];
+    const options = [{ label: 'All Accounts', value: 'all' }];
 
     for (let i = 0; i < accounts.length; i++) {
       const account = accounts[i];
       options.push({
         label: account.name,
-        value: account.id
+        value: account.id,
       });
     }
 
@@ -111,7 +156,7 @@ export class GlobalUniverseComponent {
       selectedAccount: this.selectedAccountId(),
       symbolFilter: this.symbolFilter(),
       riskGroupFilter: this.riskGroupFilter(),
-      expiredFilter: this.expiredFilter()
+      expiredFilter: this.expiredFilter(),
     });
   });
 
@@ -120,29 +165,28 @@ export class GlobalUniverseComponent {
     this.isUpdatingFields.set(true);
     this.showOverlay$.set(true);
     this.overlayText.set('Updating field information...');
-    
-    this.updateUniverseService.updateFields()
-      .subscribe({
-        next: function updateFieldsNext() {
-          self.isUpdatingFields.set(false);
-          self.showOverlay$.set(false);
-        },
-        complete: function updateFieldsComplete() {
-          self.isUpdatingFields.set(false);
-          self.showOverlay$.set(false);
-        },
-        error: function updateFieldsError() {
-          self.isUpdatingFields.set(false);
-          self.showOverlay$.set(false);
-        }
-      });
+
+    this.updateUniverseService.updateFields().subscribe({
+      next: function updateFieldsNext() {
+        self.isUpdatingFields.set(false);
+        self.showOverlay$.set(false);
+      },
+      complete: function updateFieldsComplete() {
+        self.isUpdatingFields.set(false);
+        self.showOverlay$.set(false);
+      },
+      error: function updateFieldsError() {
+        self.isUpdatingFields.set(false);
+        self.showOverlay$.set(false);
+      },
+    });
   }
 
   syncUniverse(): void {
     const self = this;
     this.showOverlay$.set(true);
     this.overlayText.set('Updating universe from screener...');
-    
+
     this.universeSyncService.syncFromScreener().subscribe({
       // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
       next: (summary) => {
@@ -150,7 +194,7 @@ export class GlobalUniverseComponent {
         this.messageService.add({
           severity: 'success',
           summary: 'Universe Updated',
-          detail: `Successfully updated universe from Screener. ${summary.inserted} inserted, ${summary.updated} updated, ${summary.markedExpired} expired.`
+          detail: `Successfully updated universe from Screener. ${summary.inserted} inserted, ${summary.updated} updated, ${summary.markedExpired} expired.`,
         });
       },
       // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
@@ -159,9 +203,9 @@ export class GlobalUniverseComponent {
         this.messageService.add({
           severity: 'error',
           summary: 'Update Failed',
-          detail: 'Failed to update universe from Screener. Please try again.'
+          detail: 'Failed to update universe from Screener. Please try again.',
         });
-      }
+      },
     });
   }
 
@@ -182,20 +226,29 @@ export class GlobalUniverseComponent {
   onEditDateComplete(row: Universe): void {
     const universe = this.dataService.findUniverseBySymbol(row.symbol);
     if (universe) {
-      universe.ex_date = (typeof row.ex_date === 'object' && row.ex_date !== null && (row.ex_date as unknown) instanceof Date)
-        ? (row.ex_date as Date).toISOString()
-        : row.ex_date;
+      universe.ex_date =
+        typeof row.ex_date === 'object' &&
+        row.ex_date !== null &&
+        (row.ex_date as unknown) instanceof Date
+          ? (row.ex_date as Date).toISOString()
+          : row.ex_date;
     }
   }
 
-  onEditComplete(event: {data: Record<string, unknown>, field: string}): void {
+  onEditComplete(event: {
+    data: Record<string, unknown>;
+    field: string;
+  }): void {
     // event.data: the row object
     // event.field: the field name (e.g., 'distribution')
     // event.originalEvent: the DOM event
-    const universe = this.dataService.findUniverseBySymbol(event.data['symbol'] as string);
+    const universe = this.dataService.findUniverseBySymbol(
+      event.data['symbol'] as string
+    );
     if (universe) {
       // Update the field that was edited
-      (universe as unknown as Record<string, unknown>)[event.field] = event.data[event.field];
+      (universe as unknown as Record<string, unknown>)[event.field] =
+        event.data[event.field];
     }
   }
 
@@ -204,7 +257,9 @@ export class GlobalUniverseComponent {
   }
 
   protected onEditCommit(row: Record<string, unknown>, field: string): void {
-    const universe = this.dataService.findUniverseBySymbol(row['symbol'] as string);
+    const universe = this.dataService.findUniverseBySymbol(
+      row['symbol'] as string
+    );
     if (universe) {
       (universe as unknown as Record<string, unknown>)[field] = row[field];
     }
@@ -216,14 +271,17 @@ export class GlobalUniverseComponent {
     }
   }
 
-    /**
+  /**
    * Handles column sorting with multi-column support
    * Cycles through: ascending → descending → no sort (removed)
    */
   protected onSort(field: string): void {
     const currentCriteria = this.sortCriteria();
-    const existingIndex = currentCriteria.findIndex(
-      function findCriteria(criteria) { return criteria.field === field });
+    const existingIndex = currentCriteria.findIndex(function findCriteria(
+      criteria
+    ) {
+      return criteria.field === field;
+    });
 
     if (existingIndex >= 0) {
       // Field exists in sort criteria - cycle through states
@@ -250,18 +308,19 @@ export class GlobalUniverseComponent {
     // The computed signal will automatically re-evaluate and apply sorting
   }
 
-    /**
+  /**
    * Gets the sort order (1, 2, 3, etc.) for a field in multi-column sort
    */
   protected getSortOrder(field: string): number | null {
     const currentCriteria = this.sortCriteria();
-    const index = currentCriteria.findIndex(
-      function findCriteria(criteria) { return criteria.field === field });
+    const index = currentCriteria.findIndex(function findCriteria(criteria) {
+      return criteria.field === field;
+    });
 
     return index >= 0 ? index + 1 : null;
   }
 
-    /**
+  /**
    * Handles min yield filter changes and saves to localStorage
    */
   protected onMinYieldFilterChange(): void {
@@ -275,7 +334,7 @@ export class GlobalUniverseComponent {
     this.storageService.saveRiskGroupFilter(this.riskGroupFilter());
   }
 
-    /**
+  /**
    * Handles risk group filter changes from PrimeNG filter
    */
   protected onRiskGroupFilterChangeFromPrimeNG(value: string | null): void {
@@ -283,14 +342,14 @@ export class GlobalUniverseComponent {
     this.storageService.saveRiskGroupFilter(value);
   }
 
-    /**
+  /**
    * Handles expired filter changes and saves to localStorage
    */
   protected onExpiredFilterChange(): void {
     this.storageService.saveExpiredFilter(this.expiredFilter());
   }
 
-    /**
+  /**
    * Handles expired filter changes from PrimeNG filter
    */
   protected onExpiredFilterChangeFromPrimeNG(value: boolean | null): void {
@@ -298,7 +357,7 @@ export class GlobalUniverseComponent {
     this.storageService.saveExpiredFilter(value);
   }
 
-    /**
+  /**
    * Handles symbol filter changes and saves to localStorage
    */
   protected onSymbolFilterChange(): void {
@@ -314,9 +373,10 @@ export class GlobalUniverseComponent {
   }
 
   // Create sort computed signals
-  readonly sortSignals = createSortComputedSignals(this.sortCriteria, this.getSortOrder.bind(this));
-
-
+  readonly sortSignals = createSortComputedSignals(
+    this.sortCriteria,
+    this.getSortOrder.bind(this)
+  );
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
   readonly universeWithDimmedState$ = computed(() => {
@@ -324,9 +384,8 @@ export class GlobalUniverseComponent {
     return universes.map(function mapUniverse(universe) {
       return {
         ...universe,
-        isDimmed: isRowDimmed(universe)
+        isDimmed: isRowDimmed(universe),
       };
     });
   });
-
 }

@@ -1,5 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
@@ -25,7 +31,7 @@ import { ScreenerService } from './screener.service';
     FormsModule,
     ProgressSpinnerModule,
     SelectModule,
-    TagModule
+    TagModule,
   ],
   viewProviders: [ScreenerService],
   templateUrl: './screener.html',
@@ -39,7 +45,7 @@ export class Screener {
   riskGroups = [
     { label: 'Equities', value: 'Equities' },
     { label: 'Income', value: 'Income' },
-    { label: 'Tax Free Income', value: 'Tax Free Income' }
+    { label: 'Tax Free Income', value: 'Tax Free Income' },
   ];
 
   selectedRiskGroup = signal<{ label: string; value: string } | null>(null);
@@ -52,7 +58,7 @@ export class Screener {
       return data;
     }
     return data.filter(function screenerFilter(row) {
-      return row.risk_group === selectedRiskGroup.value
+      return row.risk_group === selectedRiskGroup.value;
     });
   });
 
@@ -69,11 +75,15 @@ export class Screener {
       },
       error: function refreshSubscribeError() {
         self.showOverlay$.set(false);
-      }
+      },
     });
   }
 
-  protected updateScreener(id: string, field: keyof Screen, value: boolean): void {
+  protected updateScreener(
+    id: string,
+    field: keyof Screen,
+    value: boolean
+  ): void {
     this.screenerService.updateScreener(id, field, value);
   }
 }

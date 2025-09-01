@@ -3,15 +3,19 @@ import { FastifyInstance } from 'fastify';
 import { prisma } from '../../prisma/prisma-client';
 import { DivDepositType } from './div-deposits-type.interface';
 
-function mapDivDepositTypeToResponse(u: { id: string; name: string }): DivDepositType {
+function mapDivDepositTypeToResponse(u: {
+  id: string;
+  name: string;
+}): DivDepositType {
   return {
     id: u.id,
-    name: u.name
+    name: u.name,
   };
 }
 
 function handleGetDivDepositTypesRoute(fastify: FastifyInstance): void {
-  fastify.post<{ Body: string[]; Reply: DivDepositType[] }>('/',
+  fastify.post<{ Body: string[]; Reply: DivDepositType[] }>(
+    '/',
     {
       schema: {
         body: {
@@ -20,13 +24,16 @@ function handleGetDivDepositTypesRoute(fastify: FastifyInstance): void {
         },
       },
     },
-    async function handleGetDivDepositTypesRequest(request, _): Promise<DivDepositType[]> {
+    async function handleGetDivDepositTypesRequest(
+      request,
+      _
+    ): Promise<DivDepositType[]> {
       const ids = request.body;
       if (ids.length === 0) {
         return [];
       }
       const divDepositTypes = await prisma.divDepositType.findMany({
-        where: { id: { in: ids } }
+        where: { id: { in: ids } },
       });
       return divDepositTypes.map(function mapDivDepositType(u) {
         return mapDivDepositTypeToResponse(u);
@@ -35,6 +42,8 @@ function handleGetDivDepositTypesRoute(fastify: FastifyInstance): void {
   );
 }
 
-export default function registerDivDepositTypeRoutes(fastify: FastifyInstance): void {
+export default function registerDivDepositTypeRoutes(
+  fastify: FastifyInstance
+): void {
   handleGetDivDepositTypesRoute(fastify);
 }

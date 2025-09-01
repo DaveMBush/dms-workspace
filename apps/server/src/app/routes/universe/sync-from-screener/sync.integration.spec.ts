@@ -1,13 +1,20 @@
 import { PrismaClient } from '@prisma/client';
 import { existsSync, unlinkSync } from 'fs';
 import { join } from 'path';
-import { afterAll, beforeAll, beforeEach, describe, expect, test } from 'vitest';
+import {
+  afterAll,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  test,
+} from 'vitest';
 
 import { SyncLogger } from '../../../../utils/logger';
 
 /**
  * Integration tests for sync-from-screener functionality
- * 
+ *
  * These tests focus on database operations and business logic
  * rather than HTTP endpoints, avoiding complex mocking issues
  * while still providing comprehensive integration test coverage.
@@ -22,16 +29,16 @@ describe('sync-from-screener database integration tests', () => {
   beforeAll(async () => {
     // Initialize logger for test cleanup warnings
     logger = new SyncLogger();
-    
+
     // Use dedicated test.db file for database isolation
     testDbPath = join(process.cwd(), 'test.db');
     const testDbUrl = `file:${testDbPath}`;
-    
+
     // Delete existing test.db if it exists to ensure clean state
     if (existsSync(testDbPath)) {
       unlinkSync(testDbPath);
     }
-    
+
     // Apply migrations to test database with isolated DATABASE_URL
     const { execSync } = await import('child_process');
     execSync(`npx prisma migrate deploy --schema=./prisma/schema.prisma`, {
@@ -72,7 +79,7 @@ describe('sync-from-screener database integration tests', () => {
   afterAll(async () => {
     // Ensure Prisma client is disconnected before cleanup
     await prisma.$disconnect();
-    
+
     // Clean up test.db file with error handling to ensure cleanup always occurs
     try {
       if (existsSync(testDbPath)) {
@@ -162,7 +169,7 @@ describe('sync-from-screener database integration tests', () => {
     });
 
     expect(eligibleScreener).toHaveLength(2);
-    expect(eligibleScreener.map(s => s.symbol)).toEqual(
+    expect(eligibleScreener.map((s) => s.symbol)).toEqual(
       expect.arrayContaining(['AAPL', 'GOOGL'])
     );
   });
@@ -253,7 +260,7 @@ describe('sync-from-screener database integration tests', () => {
     });
 
     expect(activeRecords).toHaveLength(2);
-    expect(activeRecords.every(r => !r.expired)).toBe(true);
+    expect(activeRecords.every((r) => !r.expired)).toBe(true);
   });
 
   test('verifies idempotency through repeated operations', async () => {
@@ -295,7 +302,7 @@ describe('sync-from-screener database integration tests', () => {
 
   test('preserves trading history during universe updates', async () => {
     const TRADE_SELL_DATE = '2024-01-01';
-    
+
     // Create account for trading history
     const account = await prisma.accounts.create({
       data: { name: 'Test Account' },
@@ -346,7 +353,9 @@ describe('sync-from-screener database integration tests', () => {
 
     expect(updatedUniverse).toBeTruthy();
     expect(updatedUniverse!.trades).toHaveLength(1);
-    expect(updatedUniverse!.most_recent_sell_date).toEqual(new Date(TRADE_SELL_DATE));
+    expect(updatedUniverse!.most_recent_sell_date).toEqual(
+      new Date(TRADE_SELL_DATE)
+    );
     expect(updatedUniverse!.most_recent_sell_price).toBe(80.0);
 
     // Verify updates were applied
@@ -361,16 +370,19 @@ describe('sync-from-screener database integration tests', () => {
   test('handles concurrent database operations', async () => {
     // Create multiple screener records for concurrent processing
     const CONCURRENT_BATCH_SIZE = 10;
-    const screenerData = Array.from({ length: CONCURRENT_BATCH_SIZE }, (_, i) => ({
-      symbol: `CONCURRENT_${i.toString().padStart(2, '0')}`,
-      distribution: 1.0 + (i * 0.1), // Deterministic values instead of Math.random()
-      distributions_per_year: (i % 12) + 1, // Deterministic values
-      last_price: 100.0 + (i * 10), // Deterministic values
-      risk_group_id: i % 2 === 0 ? riskGroupId1 : riskGroupId2,
-      has_volitility: true,
-      objectives_understood: true,
-      graph_higher_before_2008: true,
-    }));
+    const screenerData = Array.from(
+      { length: CONCURRENT_BATCH_SIZE },
+      (_, i) => ({
+        symbol: `CONCURRENT_${i.toString().padStart(2, '0')}`,
+        distribution: 1.0 + i * 0.1, // Deterministic values instead of Math.random()
+        distributions_per_year: (i % 12) + 1, // Deterministic values
+        last_price: 100.0 + i * 10, // Deterministic values
+        risk_group_id: i % 2 === 0 ? riskGroupId1 : riskGroupId2,
+        has_volitility: true,
+        objectives_understood: true,
+        graph_higher_before_2008: true,
+      })
+    );
 
     await prisma.screener.createMany({ data: screenerData });
 
@@ -391,7 +403,7 @@ describe('sync-from-screener database integration tests', () => {
     const createdUniverses = await Promise.all(universeCreationPromises);
 
     expect(createdUniverses).toHaveLength(CONCURRENT_BATCH_SIZE);
-    expect(createdUniverses.every(u => !u.expired)).toBe(true);
+    expect(createdUniverses.every((u) => !u.expired)).toBe(true);
 
     // Verify all records were created successfully
     const finalCount = await prisma.universe.count();
@@ -402,7 +414,7 @@ describe('sync-from-screener database integration tests', () => {
     const STANDARD_DISTRIBUTION = 1.0;
     const STANDARD_DISTRIBUTIONS_PER_YEAR = 4;
     const STANDARD_PRICE = 100.0;
-    
+
     // Test foreign key constraint (universe -> risk_group)
     await expect(
       prisma.universe.create({

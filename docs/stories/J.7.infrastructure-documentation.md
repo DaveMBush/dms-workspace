@@ -1,9 +1,11 @@
 # Story J.7: Infrastructure Documentation and Runbook
 
 ## Status
+
 Draft
 
 ## Story
+
 **As a** DevOps engineer and team member,  
 **I want** comprehensive documentation covering deployment procedures, operational tasks, troubleshooting guides, and architectural decisions,  
 **so that** the team can effectively maintain, operate, and evolve the AWS infrastructure with confidence and consistency.
@@ -11,7 +13,7 @@ Draft
 ## Acceptance Criteria
 
 1. Create comprehensive deployment guide with step-by-step Terraform procedures
-2. Document operational runbook for common maintenance and troubleshooting tasks  
+2. Document operational runbook for common maintenance and troubleshooting tasks
 3. Create architecture documentation with diagrams and decision records
 4. Document environment variable configuration and secrets management procedures
 5. Create disaster recovery and backup procedures documentation
@@ -23,6 +25,7 @@ Draft
 ## Tasks / Subtasks
 
 - [ ] **Task 1: Create deployment and setup documentation** (AC: 1, 4)
+
   - [ ] Document Terraform installation and AWS CLI setup requirements
   - [ ] Create step-by-step infrastructure deployment guide for each environment
   - [ ] Document environment variable configuration and AWS parameter setup
@@ -31,6 +34,7 @@ Draft
   - [ ] Document CI/CD pipeline configuration and usage
 
 - [ ] **Task 2: Create operational runbook** (AC: 2)
+
   - [ ] Document daily, weekly, and monthly operational tasks
   - [ ] Create procedures for scaling applications and managing resources
   - [ ] Document log analysis and monitoring procedures
@@ -39,6 +43,7 @@ Draft
   - [ ] Document incident response and escalation procedures
 
 - [ ] **Task 3: Create architecture documentation** (AC: 3)
+
   - [ ] Create system architecture diagrams (network, application, data flow)
   - [ ] Document component interactions and dependencies
   - [ ] Add architecture decision records (ADRs) for major design decisions
@@ -47,6 +52,7 @@ Draft
   - [ ] Add capacity planning and scalability considerations
 
 - [ ] **Task 4: Document disaster recovery and backup procedures** (AC: 5)
+
   - [ ] Create RDS backup and point-in-time recovery procedures
   - [ ] Document infrastructure restoration from Terraform state
   - [ ] Add application data backup and recovery procedures
@@ -55,6 +61,7 @@ Draft
   - [ ] Add cross-region failover procedures if applicable
 
 - [ ] **Task 5: Create cost optimization guide** (AC: 6)
+
   - [ ] Document current cost structure and optimization opportunities
   - [ ] Add resource rightsizing recommendations for each environment
   - [ ] Create cost monitoring and alerting configuration guide
@@ -63,6 +70,7 @@ Draft
   - [ ] Create monthly cost review and optimization procedures
 
 - [ ] **Task 6: Document security best practices** (AC: 7)
+
   - [ ] Create security configuration checklist for all AWS services
   - [ ] Document IAM roles, policies, and access management procedures
   - [ ] Add network security and VPC configuration guidelines
@@ -71,6 +79,7 @@ Draft
   - [ ] Add compliance documentation for relevant standards
 
 - [ ] **Task 7: Create troubleshooting guide** (AC: 8)
+
   - [ ] Document common application errors and resolution steps
   - [ ] Add infrastructure troubleshooting procedures (ECS, RDS, ALB)
   - [ ] Create networking and connectivity issue resolution guide
@@ -89,16 +98,21 @@ Draft
 ## Dev Notes
 
 ### Previous Story Context
+
 **Dependencies:** All previous stories J.1-J.6 - documentation covers the complete AWS infrastructure
 
 ### Data Models and Architecture
+
 **Source: [All J.x stories]**
+
 - Complete AWS architecture: VPC, ECS, RDS, CloudFront, Route53, monitoring
 - Terraform Infrastructure as Code with modular structure
 - Angular 20 frontend and Fastify backend applications
 
 ### File Locations
+
 **Primary Files to Create:**
+
 1. `/docs/deployment/README.md` - Main deployment guide
 2. `/docs/deployment/terraform-setup.md` - Terraform installation and setup
 3. `/docs/deployment/environment-setup.md` - Environment configuration
@@ -113,6 +127,7 @@ Draft
 12. `/docs/monitoring/monitoring-guide.md` - Monitoring and alerting
 
 **Files to Update:**
+
 1. `/README.md` - Add links to documentation sections
 2. `/infrastructure/README.md` - Infrastructure-specific documentation
 3. `/.github/workflows/` - Add documentation validation workflows
@@ -120,12 +135,14 @@ Draft
 ### Technical Implementation Details
 
 **Main Deployment Guide:**
+
 ```markdown
 # RMS AWS Deployment Guide
 
 ## Prerequisites
 
 ### Required Tools
+
 - [Terraform](https://terraform.io) >= 1.5.0
 - [AWS CLI](https://aws.amazon.com/cli/) >= 2.0
 - [Docker](https://docker.com) >= 20.0
@@ -133,6 +150,7 @@ Draft
 - [pnpm](https://pnpm.io) >= 8.0
 
 ### AWS Setup
+
 1. Create AWS account and configure billing alerts
 2. Create IAM user with programmatic access
 3. Attach required policies for deployment
@@ -141,6 +159,7 @@ Draft
 ## Environment Setup
 
 ### Development Environment
+
 1. Clone repository
 2. Install dependencies: `pnpm install`
 3. Configure environment variables
@@ -149,6 +168,7 @@ Draft
 6. Apply infrastructure: `terraform apply`
 
 ### Production Deployment
+
 1. Review and update production variables
 2. Validate configuration with `terraform validate`
 3. Create deployment plan and review
@@ -171,18 +191,21 @@ Draft
 ```
 
 **Operational Runbook:**
-```markdown
+
+````markdown
 # RMS Operations Runbook
 
 ## Daily Tasks
 
 ### Morning Checks (5 minutes)
+
 1. Review CloudWatch dashboard for overnight alerts
 2. Check application health endpoints
 3. Verify backup completion from previous night
 4. Review cost dashboard for anomalies
 
 ### Health Check Script
+
 ```bash
 #!/bin/bash
 # scripts/daily-health-check.sh
@@ -206,10 +229,12 @@ aws rds describe-db-instances --region us-east-1 \
 
 echo "Health check completed."
 ```
+````
 
 ## Weekly Tasks
 
 ### Infrastructure Review (30 minutes)
+
 1. Review and analyze CloudWatch metrics
 2. Check for security updates and patches
 3. Review cost optimization opportunities
@@ -219,12 +244,14 @@ echo "Health check completed."
 ## Monthly Tasks
 
 ### Comprehensive Review (2 hours)
+
 1. Conduct cost optimization review
 2. Security audit and vulnerability assessment
 3. Performance analysis and optimization
 4. Disaster recovery testing
 5. Infrastructure documentation updates
-```
+
+````
 
 **Architecture Documentation:**
 ```markdown
@@ -244,9 +271,11 @@ The RMS application follows a modern cloud-native architecture deployed on AWS:
 
 ### Network Architecture
 
-```
+````
+
 Internet → CloudFront → S3 (Frontend)
 Internet → Route53 → ALB → ECS Fargate (Backend) → RDS
+
 ```
 
 ### Security Architecture
@@ -259,7 +288,7 @@ Internet → Route53 → ALB → ECS Fargate (Backend) → RDS
 ## Architecture Decision Records
 
 ### ADR-001: Container Orchestration Platform
-**Status**: Accepted  
+**Status**: Accepted
 **Date**: 2024-08-30
 
 **Context**: Need container orchestration for backend deployment
@@ -279,19 +308,23 @@ Internet → Route53 → ALB → ECS Fargate (Backend) → RDS
 ```
 
 **Troubleshooting Guide:**
-```markdown
+
+````markdown
 # RMS Troubleshooting Guide
 
 ## Application Issues
 
 ### Frontend Not Loading
+
 **Symptoms**: Blank page or 404 errors
 **Possible Causes**:
+
 1. CloudFront cache issues
 2. S3 bucket permissions
 3. DNS resolution problems
 
 **Resolution Steps**:
+
 1. Check CloudFront distribution status
 2. Invalidate CloudFront cache
 3. Verify S3 bucket policy
@@ -306,15 +339,19 @@ aws cloudfront create-invalidation \
 # Test DNS
 dig A rms-app.com
 ```
+````
 
 ### API Returning 5xx Errors
+
 **Symptoms**: Backend API returning server errors
 **Possible Causes**:
+
 1. Database connectivity issues
 2. Application container problems
 3. Resource exhaustion
 
 **Resolution Steps**:
+
 1. Check ECS service health
 2. Review application logs
 3. Verify database connectivity
@@ -331,13 +368,16 @@ aws logs tail /aws/ecs/rms-backend-prod --follow
 ```
 
 ### Database Connection Issues
+
 **Symptoms**: Application can't connect to database
 **Possible Causes**:
+
 1. RDS instance down
 2. Security group misconfiguration
 3. Connection pool exhaustion
 
 **Resolution Steps**:
+
 1. Check RDS instance status
 2. Verify security group rules
 3. Test connectivity from ECS tasks
@@ -346,19 +386,24 @@ aws logs tail /aws/ecs/rms-backend-prod --follow
 ## Infrastructure Issues
 
 ### High Cost Alerts
+
 **Investigation Steps**:
+
 1. Review AWS Cost Explorer
 2. Check for unused resources
 3. Analyze usage patterns
 4. Review auto-scaling policies
 
 ### SSL Certificate Issues
+
 **Symptoms**: Certificate warnings or HTTPS errors
 **Resolution**:
+
 1. Check certificate status in ACM
 2. Verify DNS validation records
 3. Update CloudFront distribution if needed
-```
+
+````
 
 **Cost Optimization Guide:**
 ```markdown
@@ -407,9 +452,10 @@ aws logs tail /aws/ecs/rms-backend-prod --follow
 - Weekly cost review dashboard
 - Monthly optimization assessment
 - Quarterly Reserved Instance evaluation
-```
+````
 
 ### Testing Standards
+
 **Source: [architecture/ci-and-testing.md]**
 
 **Testing Framework:** Automated documentation validation with markdown linters
@@ -417,12 +463,14 @@ aws logs tail /aws/ecs/rms-backend-prod --follow
 **Coverage Requirements:** All documentation should be validated and up-to-date
 
 **Testing Strategy:**
+
 - **Link Validation**: Test all internal and external links
 - **Content Testing**: Validate code examples and commands work correctly
 - **Currency Testing**: Ensure documentation matches current infrastructure
 - **Accessibility Testing**: Validate documentation is accessible and clear
 
 **Key Test Scenarios:**
+
 - All deployment procedures work from fresh environment
 - Troubleshooting steps resolve documented issues
 - Architecture diagrams accurately reflect current infrastructure
@@ -430,6 +478,7 @@ aws logs tail /aws/ecs/rms-backend-prod --follow
 - Security procedures meet compliance requirements
 
 **Documentation Standards:**
+
 - Use consistent markdown formatting
 - Include code examples for all procedures
 - Add screenshots for complex UI operations
@@ -438,24 +487,30 @@ aws logs tail /aws/ecs/rms-backend-prod --follow
 
 ## Change Log
 
-| Date | Version | Description | Author |
-|------|---------|-------------|---------|
-| 2024-08-30 | 1.0 | Initial story creation | Scrum Master Bob |
+| Date       | Version | Description            | Author           |
+| ---------- | ------- | ---------------------- | ---------------- |
+| 2024-08-30 | 1.0     | Initial story creation | Scrum Master Bob |
 
 ## Dev Agent Record
-*This section will be populated by the development agent during implementation*
+
+_This section will be populated by the development agent during implementation_
 
 ### Agent Model Used
-*To be filled by dev agent*
 
-### Debug Log References  
-*To be filled by dev agent*
+_To be filled by dev agent_
+
+### Debug Log References
+
+_To be filled by dev agent_
 
 ### Completion Notes List
-*To be filled by dev agent*
+
+_To be filled by dev agent_
 
 ### File List
-*To be filled by dev agent*
+
+_To be filled by dev agent_
 
 ## QA Results
-*Results from QA Agent review will be populated here after implementation*
+
+_Results from QA Agent review will be populated here after implementation_

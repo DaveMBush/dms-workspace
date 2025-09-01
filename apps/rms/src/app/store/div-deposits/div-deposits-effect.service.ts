@@ -14,7 +14,7 @@ export class DivDepositsEffectsService extends EffectService<DivDeposit> {
   private http = inject(HttpClient);
 
   override loadByIds(ids: string[]): Observable<DivDeposit[]> {
-    return this.http.post<DivDeposit[]>(this.apiDivDeposits , ids);
+    return this.http.post<DivDeposit[]>(this.apiDivDeposits, ids);
   }
 
   override update(newRow: DivDeposit): Observable<DivDeposit[]> {

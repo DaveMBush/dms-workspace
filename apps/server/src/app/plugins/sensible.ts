@@ -7,6 +7,8 @@ import fp from 'fastify-plugin';
  *
  * @see https://github.com/fastify/fastify-sensible
  */
-export default fp(function registerSensiblePlugin(fastify: FastifyInstance): void {
+export default fp(function registerSensiblePlugin(
+  fastify: FastifyInstance
+): void {
   fastify.register(sensible);
 });

@@ -5,13 +5,14 @@ Comprehensive guide for backing up and restoring the SQLite database before depl
 ## Prerequisites
 
 - **SQLite3 CLI**: Required for integrity checks and advanced operations
+
   ```bash
   # Install on Ubuntu/Debian
   sudo apt-get install sqlite3
-  
+
   # Install on macOS
   brew install sqlite3
-  
+
   # Install on Windows
   # Download from https://sqlite.org/download.html
   ```
@@ -22,6 +23,7 @@ Comprehensive guide for backing up and restoring the SQLite database before depl
 ## Quick Reference
 
 ### Pre-Deployment Backup
+
 ```bash
 # 1. Stop the server
 ./scripts/stop-server.sh
@@ -34,6 +36,7 @@ sqlite3 "backups/database_$(date +%Y%m%d_%H%M%S).db" "PRAGMA integrity_check;"
 ```
 
 ### Emergency Restore
+
 ```bash
 # 1. Stop the server
 ./scripts/stop-server.sh
@@ -50,6 +53,7 @@ sqlite3 database.db "PRAGMA integrity_check;" && ./scripts/start-server.sh
 ### Backup Process
 
 #### 1. Determine Database Location
+
 The database file location is specified in the `DATABASE_URL` environment variable:
 
 ```bash
@@ -59,11 +63,13 @@ echo $DATABASE_URL
 ```
 
 For different environments:
+
 - **Development**: Usually `file:./database.db` (in project root)
 - **Production**: May be `file:./production.db` or absolute path
 - **Testing**: Temporary files like `file:./test.db`
 
 #### 2. Pre-Backup Checklist
+
 - [ ] Identify the correct database file from `DATABASE_URL`
 - [ ] Ensure sufficient disk space for backup
 - [ ] Verify backup directory exists: `mkdir -p backups/`
@@ -72,6 +78,7 @@ For different environments:
 #### 3. Create Backup
 
 **Manual Backup:**
+
 ```bash
 # Stop the server first
 pkill -f "node.*server" || ./scripts/stop-server.sh
@@ -92,6 +99,7 @@ fi
 
 **Automated Backup Script:**
 Create `/scripts/backup-database.sh`:
+
 ```bash
 #!/bin/bash
 set -e
@@ -132,6 +140,7 @@ echo "Backup process completed. You can now restart the server."
 ```
 
 Make it executable:
+
 ```bash
 chmod +x scripts/backup-database.sh
 ```
@@ -139,6 +148,7 @@ chmod +x scripts/backup-database.sh
 ### Restore Process
 
 #### 1. Pre-Restore Checklist
+
 - [ ] Identify the backup file to restore from
 - [ ] Verify backup file integrity
 - [ ] Stop all server processes
@@ -147,6 +157,7 @@ chmod +x scripts/backup-database.sh
 #### 2. Restore Steps
 
 **Standard Restore:**
+
 ```bash
 #!/bin/bash
 set -e
@@ -210,6 +221,7 @@ echo "Database restored. You can now restart the server."
 ### Verification and Testing
 
 #### Database Integrity Check
+
 ```bash
 # Check database integrity
 sqlite3 database.db "PRAGMA integrity_check;"
@@ -218,12 +230,13 @@ sqlite3 database.db "PRAGMA integrity_check;"
 ```
 
 #### Quick Data Validation
+
 ```bash
 # Check table counts
 sqlite3 database.db "
-SELECT 
+SELECT
     'accounts' as table_name, count(*) as records FROM accounts
-UNION ALL SELECT 'universe', count(*) FROM universe  
+UNION ALL SELECT 'universe', count(*) FROM universe
 UNION ALL SELECT 'trades', count(*) FROM trades
 UNION ALL SELECT 'risk_group', count(*) FROM risk_group
 UNION ALL SELECT 'screener', count(*) FROM screener;
@@ -231,6 +244,7 @@ UNION ALL SELECT 'screener', count(*) FROM screener;
 ```
 
 #### Post-Restore Application Test
+
 ```bash
 # Start server in test mode
 NODE_ENV=test npm start &
@@ -249,18 +263,21 @@ kill $SERVER_PID
 ## Best Practices
 
 ### Backup Frequency
+
 - **Before deployments**: Always
 - **Scheduled backups**: Daily at minimum
 - **Before schema migrations**: Required
 - **Before data imports**: Recommended
 
 ### Backup Storage
+
 - **Local**: Keep recent backups in `./backups/` directory
 - **Retention**: Keep last 10 local backups automatically
 - **External**: Consider copying critical backups to cloud storage
 - **Naming**: Use timestamp format: `database_YYYYMMDD_HHMMSS.db`
 
 ### Security Considerations
+
 - Backup files contain sensitive data - secure appropriately
 - Set proper file permissions: `chmod 600 backups/*.db`
 - Consider encryption for backups stored externally
@@ -269,6 +286,7 @@ kill $SERVER_PID
 ### Recovery Scenarios
 
 #### Scenario 1: Deployment Rollback
+
 ```bash
 # Use most recent pre-deployment backup
 ./scripts/backup-database.sh  # Current state backup first
@@ -276,6 +294,7 @@ cp backups/database_YYYYMMDD_HHMMSS.db database.db
 ```
 
 #### Scenario 2: Data Corruption
+
 ```bash
 # Restore from last known good backup
 sqlite3 database.db "PRAGMA integrity_check;"  # Confirm corruption
@@ -283,6 +302,7 @@ cp backups/database_YYYYMMDD_HHMMSS.db database.db
 ```
 
 #### Scenario 3: Accidental Data Loss
+
 ```bash
 # Point-in-time recovery using most recent backup
 # Note: SQLite doesn't have point-in-time recovery
@@ -296,6 +316,7 @@ cp backups/database_YYYYMMDD_HHMMSS.db database.db
 If `sqlite3` command-line tool is not available, you can still create backups using:
 
 **Simple File Copy (Basic Backup):**
+
 ```bash
 # Stop server first
 ./scripts/stop-server.sh
@@ -311,23 +332,25 @@ ls -lh "$BACKUP_FILE"
 
 **Using Node.js Script for Integrity Check:**
 Create a simple Node.js script to verify database:
+
 ```javascript
 // scripts/verify-db.js
 const Database = require('better-sqlite3');
 
 const dbPath = process.argv[2] || 'database.db';
 try {
-    const db = new Database(dbPath, { readonly: true });
-    const result = db.pragma('integrity_check');
-    console.log('Database integrity:', result[0].integrity_check);
-    db.close();
+  const db = new Database(dbPath, { readonly: true });
+  const result = db.pragma('integrity_check');
+  console.log('Database integrity:', result[0].integrity_check);
+  db.close();
 } catch (error) {
-    console.error('Database verification failed:', error.message);
-    process.exit(1);
+  console.error('Database verification failed:', error.message);
+  process.exit(1);
 }
 ```
 
 **Using Prisma for Database Operations:**
+
 ```bash
 # Check database schema
 pnpm exec prisma db pull --print
@@ -341,6 +364,7 @@ pnpm exec prisma db execute --file sql/check-integrity.sql
 ### Common Issues
 
 **Database locked error:**
+
 ```bash
 # Check for running processes
 lsof database.db
@@ -348,6 +372,7 @@ lsof database.db
 ```
 
 **Backup file corrupted:**
+
 ```bash
 # Check integrity
 sqlite3 backup_file.db "PRAGMA integrity_check;"
@@ -355,6 +380,7 @@ sqlite3 backup_file.db "PRAGMA integrity_check;"
 ```
 
 **Insufficient disk space:**
+
 ```bash
 # Check available space
 df -h .
@@ -363,6 +389,7 @@ ls -t backups/database_*.db | tail -n +6 | xargs rm -f
 ```
 
 **Permission denied:**
+
 ```bash
 # Fix file permissions
 chmod 644 database.db
@@ -374,7 +401,7 @@ chmod 600 backups/*.db
 When schema migrations are involved:
 
 1. **Pre-migration backup** is critical
-2. **Test migration** on backup copy first  
+2. **Test migration** on backup copy first
 3. **Rollback plan** must include schema downgrade
 4. **Data validation** after migration completion
 

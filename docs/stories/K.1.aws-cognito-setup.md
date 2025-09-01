@@ -1,9 +1,11 @@
 # Story K.1: AWS Cognito Setup and Configuration
 
 ## Status
+
 Draft
 
 ## Story
+
 **As a** single-user application owner,  
 **I want** to have AWS Cognito User Pool configured with appropriate security settings and a single admin user account,  
 **so that** I can protect my RMS application with enterprise-grade authentication without managing user credentials myself.
@@ -22,6 +24,7 @@ Draft
 ## Tasks / Subtasks
 
 - [ ] **Task 1: Create AWS Cognito User Pool with security configuration** (AC: 1, 5)
+
   - [ ] Create User Pool with descriptive name (e.g., "rms-user-pool-prod")
   - [ ] Configure password policy: minimum 8 characters, require uppercase, lowercase, numbers, symbols
   - [ ] Enable MFA requirements (SMS or TOTP) for enhanced security
@@ -30,6 +33,7 @@ Draft
   - [ ] Set email verification requirements and templates
 
 - [ ] **Task 2: Configure User Pool App Client** (AC: 2, 7)
+
   - [ ] Create App Client for RMS Angular application
   - [ ] Configure OAuth 2.0 flows: Authorization Code Grant with PKCE
   - [ ] Set allowed OAuth scopes: openid, email, profile, aws.cognito.signin.user.admin
@@ -38,6 +42,7 @@ Draft
   - [ ] Set JWT token expiration: access token 1 hour, ID token 1 hour, refresh token 30 days
 
 - [ ] **Task 3: Setup User Pool Domain and Hosted UI** (AC: 3, 6)
+
   - [ ] Create custom domain or use Cognito domain for hosted UI
   - [ ] Configure hosted UI appearance and branding
   - [ ] Test hosted login flow to ensure proper redirect behavior
@@ -45,6 +50,7 @@ Draft
   - [ ] Configure sign-up settings (admin-only user creation)
 
 - [ ] **Task 4: Create admin user account** (AC: 4)
+
   - [ ] Use AWS CLI or Console to create single admin user
   - [ ] Set temporary password and force password change on first login
   - [ ] Confirm user email address to bypass email verification
@@ -52,6 +58,7 @@ Draft
   - [ ] Document user management procedures for account maintenance
 
 - [ ] **Task 5: Configure environment variables and documentation** (AC: 6, 7)
+
   - [ ] Create environment configuration template with Cognito settings
   - [ ] Document User Pool ID, App Client ID, region, and domain configuration
   - [ ] Add environment variables to both Angular and Fastify applications
@@ -68,34 +75,42 @@ Draft
 ## Dev Notes
 
 ### Previous Story Context
+
 This is the first story in Epic K, establishing the foundation for AWS-based authentication system.
 
 ### Data Models and Architecture
+
 **Source: [docs/backlog/epic-k-authentication-security.md]**
+
 - Current state: No authentication, all routes and API endpoints are open
 - Target state: AWS Cognito-based authentication with JWT tokens
 - Integration points: Angular frontend + Fastify backend + AWS Cognito
 
 **Architecture Pattern:**
+
 ```
 Frontend (Angular 20) <---> AWS Cognito <---> Backend (Fastify)
                           JWT Tokens
 ```
 
 **AWS Cognito Components:**
+
 - **User Pool**: Central user directory and authentication service
 - **App Client**: Application registration with OAuth 2.0 configuration
 - **Hosted UI**: Pre-built authentication interface (optional)
 - **Custom Domain**: Professional branded login experience
 
 ### File Locations
+
 **Configuration Files to Create:**
+
 1. `/apps/rms/src/environments/environment.cognito.ts` - Angular Cognito configuration
 2. `/apps/server/src/config/cognito.config.ts` - Fastify JWT validation configuration
 3. `/infrastructure/cognito/` - Terraform/CDK infrastructure files (optional)
 4. `/docs/setup/cognito-setup-guide.md` - Setup and maintenance documentation
 
 **Environment Variables:**
+
 ```typescript
 // Angular environment configuration
 export const cognitoConfig = {
@@ -105,7 +120,7 @@ export const cognitoConfig = {
   domain: 'rms-auth.auth.us-east-1.amazoncognito.com',
   redirectSignIn: 'http://localhost:4200/auth/callback',
   redirectSignOut: 'http://localhost:4200/auth/signout',
-  scopes: ['openid', 'email', 'profile', 'aws.cognito.signin.user.admin']
+  scopes: ['openid', 'email', 'profile', 'aws.cognito.signin.user.admin'],
 };
 
 // Fastify server configuration
@@ -113,13 +128,14 @@ export const jwtConfig = {
   region: 'us-east-1',
   userPoolId: 'us-east-1_xxxxxxxxx',
   audience: 'xxxxxxxxxxxxxxxxxxxxxxxxxx',
-  issuer: 'https://cognito-idp.us-east-1.amazonaws.com/us-east-1_xxxxxxxxx'
+  issuer: 'https://cognito-idp.us-east-1.amazonaws.com/us-east-1_xxxxxxxxx',
 };
 ```
 
 ### Technical Implementation Details
 
 **User Pool Configuration:**
+
 ```json
 {
   "PoolName": "rms-user-pool-prod",
@@ -148,6 +164,7 @@ export const jwtConfig = {
 ```
 
 **App Client Configuration:**
+
 ```json
 {
   "ClientName": "rms-angular-client",
@@ -157,13 +174,10 @@ export const jwtConfig = {
   "IdTokenValidity": 60,
   "TokenValidityUnits": {
     "AccessToken": "minutes",
-    "IdToken": "minutes", 
+    "IdToken": "minutes",
     "RefreshToken": "days"
   },
-  "ExplicitAuthFlows": [
-    "ALLOW_USER_SRP_AUTH",
-    "ALLOW_REFRESH_TOKEN_AUTH"
-  ],
+  "ExplicitAuthFlows": ["ALLOW_USER_SRP_AUTH", "ALLOW_REFRESH_TOKEN_AUTH"],
   "SupportedIdentityProviders": ["COGNITO"],
   "AllowedOAuthFlows": ["code"],
   "AllowedOAuthScopes": ["openid", "email", "profile", "aws.cognito.signin.user.admin"],
@@ -173,6 +187,7 @@ export const jwtConfig = {
 ```
 
 **Security Considerations:**
+
 - Use HTTPS for all Cognito interactions in production
 - Enable CloudTrail logging for Cognito API calls
 - Configure appropriate CORS policies for Cognito hosted UI
@@ -180,12 +195,14 @@ export const jwtConfig = {
 - Consider using AWS WAF to protect Cognito endpoints
 
 **Cost Management:**
+
 - Cognito pricing: $0.0055 per MAU (Monthly Active User)
 - Single user estimated cost: ~$0.01 per month
 - Free tier available: 50,000 MAUs per month
 - JWT token validation has no additional AWS costs
 
 ### Testing Standards
+
 **Source: [docs/architecture/ci-and-testing.md]**
 
 **Testing Framework:** Vitest for Angular components, Jest for infrastructure testing
@@ -193,12 +210,14 @@ export const jwtConfig = {
 **Coverage Requirements:** Lines: 85%, Branches: 75%, Functions: 85%
 
 **Testing Strategy:**
+
 - **Configuration Tests:** Validate environment variable structure and required values
 - **Infrastructure Tests:** Test Terraform/CDK deployment and configuration
 - **Integration Tests:** Validate AWS Cognito service connectivity and configuration
 - **Security Tests:** Test password policy enforcement and token expiration
 
 **Key Test Scenarios:**
+
 - User Pool creation with correct security policies
 - App Client configuration matches requirements
 - Admin user creation and email confirmation
@@ -207,6 +226,7 @@ export const jwtConfig = {
 - Hosted UI accessibility and redirect flow
 
 **Manual Testing Checklist:**
+
 - [ ] AWS Console shows User Pool with correct configuration
 - [ ] Admin user can be created and confirmed
 - [ ] Password policy enforcement works correctly
@@ -216,24 +236,30 @@ export const jwtConfig = {
 
 ## Change Log
 
-| Date | Version | Description | Author |
-|------|---------|-------------|---------|
-| 2024-08-30 | 1.0 | Initial story creation | Scrum Master Bob |
+| Date       | Version | Description            | Author           |
+| ---------- | ------- | ---------------------- | ---------------- |
+| 2024-08-30 | 1.0     | Initial story creation | Scrum Master Bob |
 
 ## Dev Agent Record
-*This section will be populated by the development agent during implementation*
+
+_This section will be populated by the development agent during implementation_
 
 ### Agent Model Used
-*To be filled by dev agent*
 
-### Debug Log References  
-*To be filled by dev agent*
+_To be filled by dev agent_
+
+### Debug Log References
+
+_To be filled by dev agent_
 
 ### Completion Notes List
-*To be filled by dev agent*
+
+_To be filled by dev agent_
 
 ### File List
-*To be filled by dev agent*
+
+_To be filled by dev agent_
 
 ## QA Results
-*Results from QA Agent review will be populated here after implementation*
+
+_Results from QA Agent review will be populated here after implementation_

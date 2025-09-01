@@ -8,17 +8,20 @@ The universe table currently shows all symbols including those marked as `expire
 
 ## Technical Context
 
-**Current Implementation:** 
+**Current Implementation:**
+
 - Database: `universe.expired` boolean flag with index
 - Filtering: `UniverseDataService.applyFilters()` with `expiredFilter` parameter
 - Display: Universe table shows all records regardless of expired status
 
 **Data Model Dependencies:**
+
 - `universe` table: `expired` field, existing index
 - `trades` table: open positions determined by `sell_date IS NULL`
 - Account relationship: `trades.accountId` and `trades.universeId`
 
 **Business Rules:**
+
 - Keep expired entries in database (historical dividends, trade records)
 - Show expired entries ONLY if they have open positions in selected account
 - Default behavior: hide expired entries with no positions
@@ -100,23 +103,27 @@ Dependencies: Stories I1, I2, I3, I4
 ## Technical Notes
 
 **Architecture Dependencies:**
+
 - Frontend: Existing filter system in `UniverseDataService`
 - No database changes required (leveraging existing `expired` index)
 - Position calculation: Reuse existing `getAccountSpecificData` logic
 
 **File Modification Scope (Minimal Changes):**
+
 1. `universe-data.service.ts` - Modify `applyFilters()` method
 2. `global-universe.component.*` - Add optional "Show All Expired" toggle
 3. Filter state management (if toggle is implemented)
 4. Related test files
 
 **Performance Considerations:**
+
 - Leverage existing `universe.expired` index
 - Optimize position calculations to run only for expired symbols
 - Consider caching position data during filtering operations
 - Monitor performance impact with large expired datasets
 
 **Business Impact:**
+
 - Cleaner default view focusing on actionable investments
 - Preserves all historical data integrity
 - Reduces cognitive load for daily investment decisions

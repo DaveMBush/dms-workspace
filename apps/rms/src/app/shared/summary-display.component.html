@@ -1,0 +1,34 @@
+<div class="grid grid-cols-2 gap-6 w-full max-w-md mb-8">
+  <div class="flex flex-col">
+    <span class="text-xs text-gray-500">Base</span>
+    <span class="text-lg font-semibold">{{
+      summary$().deposits | currency
+    }}</span>
+  </div>
+  <div class="flex flex-col">
+    <span class="text-xs text-gray-500">Dividends</span>
+    <span class="text-lg font-semibold">{{
+      summary$().dividends | currency
+    }}</span>
+  </div>
+  <div class="flex flex-col">
+    <span class="text-xs text-gray-500">Capital Gain</span>
+    <span class="text-lg font-semibold">{{
+      summary$().capitalGains | currency
+    }}</span>
+  </div>
+  <div class="flex flex-col">
+    <span class="text-xs text-gray-500">% Increase</span>
+    <span class="text-lg font-semibold">{{
+      percentIncrease$() | percent : '1.2-2'
+    }}</span>
+  </div>
+</div>
+<div class="w-full max-w-md">
+  <p-chart
+    type="pie"
+    [data]="compositionData$()"
+    [options]="compositionOptions$()"
+    class="w-[20rem] h-[20rem]"
+  ></p-chart>
+</div>

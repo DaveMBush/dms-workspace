@@ -1,0 +1,19 @@
+{
+  "silent": false,
+  "threshold": "0.0",
+  "mode": "weak",
+  "pattern": "**/*.{js,ts,html,css,scss,json,md}",
+  "//": "ignore spec files for now",
+  "ignore": [
+    "**/docs/**",
+    "**/*.test.ts",
+    "**/eslint.config.mjs",
+    "**/jest.config.ts",
+    "**/*.spec.ts",
+    "**/jest.config.ts",
+    "**/tsconfig.json",
+    "**/tsconfig.lib.json",
+    "**/node_modules/**",
+    "**/{.*,coverage,dist,tmp}/**"
+  ]
+}

@@ -375,6 +375,14 @@ const eslintConfig = async () => {
               style: 'kebab-case',
             },
           ],
+          '@angular-eslint/component-max-inline-declarations': [
+            'error',
+            {
+              template: 0,
+              styles: 0,
+              animations: 0,
+            },
+          ],
           '@angular-eslint/contextual-decorator': 'error',
           '@angular-eslint/contextual-lifecycle': 'error',
           '@angular-eslint/directive-class-suffix': 'error',
@@ -572,9 +580,12 @@ const eslintConfig = async () => {
             },
           ],
           '@typescript-eslint/no-invalid-this': 'error',
-          '@typescript-eslint/no-invalid-void-type': ['error', {
-            allowInGenericTypeArguments: true,
-          }],
+          '@typescript-eslint/no-invalid-void-type': [
+            'error',
+            {
+              allowInGenericTypeArguments: true,
+            },
+          ],
           '@typescript-eslint/no-loop-func': 'error',
           '@typescript-eslint/no-loss-of-precision': 'error',
           '@typescript-eslint/no-meaningless-void-operator': 'error',

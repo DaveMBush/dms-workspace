@@ -1,9 +1,15 @@
-import { FastifyInstance } from "fastify";
+import { FastifyInstance } from 'fastify';
 
-import { prisma } from "../../prisma/prisma-client";
-import { aggregateAccountData } from "./aggregate-account-data.function";
-import { Summary } from "./summary.interface";
-import { SummaryRequest } from "./summary-request.interface";
+import { prisma } from '../../prisma/prisma-client';
+import { createAccountQuery } from '../common/query-utils.function';
+import { aggregateAccountData } from './aggregate-account-data.function';
+import { calculateDateRange } from './calculate-date-range.function';
+import { calculatePriorCapitalGains } from './calculate-prior-capital-gains.function';
+import { calculatePriorDivDeposits } from './calculate-prior-div-deposits.function';
+import { createRiskGroupMap } from './create-risk-group-map.function';
+import { parseMonthString } from './parse-month-string.function';
+import { Summary } from './summary.interface';
+import { SummaryRequest } from './summary-request.interface';
 
 interface RiskGroupResult {
   riskGroupId: string;
@@ -69,44 +75,21 @@ function createSummarySchema(): SummarySchema {
   };
 }
 
-function parseMonthString(month: string): { year: number; monthNum: number } {
-  const [yearStr, monthStr] = month.split('-');
-  const year = parseInt(yearStr, 10);
-  const monthNum = parseInt(monthStr, 10);
-  return { year, monthNum };
-}
-
-function calculateDateRange(year: number, monthNum: number): { start: Date; end: Date } {
-  const sellDateStart = new Date(year, monthNum - 1, 1);
-  const sellDateEnd = new Date(year, monthNum, 1);
-  return { start: sellDateStart, end: sellDateEnd };
-}
-
-async function getAccountThisMonth(accountId: string, sellDateStart: Date, sellDateEnd: Date): Promise<AccountWithTradesAndDeposits | null> {
+async function getAccountThisMonth(
+  accountId: string,
+  sellDateStart: Date,
+  sellDateEnd: Date
+): Promise<AccountWithTradesAndDeposits | null> {
   return prisma.accounts.findUnique({
     where: { id: accountId },
-    include: {
-      trades: {
-        where: {
-          sell_date: {
-            gte: sellDateStart,
-            lt: sellDateEnd,
-          },
-        },
-      },
-      divDeposits: {
-        where: {
-          date: {
-            gte: sellDateStart,
-            lt: sellDateEnd,
-          },
-        },
-      },
-    },
+    ...createAccountQuery(sellDateStart, sellDateEnd),
   });
 }
 
-async function getAccountPriorMonths(accountId: string, sellDateStart: Date): Promise<AccountWithTradesAndDeposits[]> {
+async function getAccountPriorMonths(
+  accountId: string,
+  sellDateStart: Date
+): Promise<AccountWithTradesAndDeposits[]> {
   return prisma.accounts.findMany({
     where: {
       id: accountId,
@@ -115,7 +98,7 @@ async function getAccountPriorMonths(accountId: string, sellDateStart: Date): Pr
       trades: {
         where: {
           sell_date: {
-            lt: sellDateStart
+            lt: sellDateStart,
           },
         },
       },
@@ -130,19 +113,10 @@ async function getAccountPriorMonths(accountId: string, sellDateStart: Date): Pr
   });
 }
 
-
-
-function calculatePriorDivDeposits(accounts: AccountWithTradesAndDeposits[]): number {
-  const aggregatedData = aggregateAccountData(accounts);
-  return aggregatedData.deposits + aggregatedData.dividends;
-}
-
-function calculatePriorCapitalGains(accounts: AccountWithTradesAndDeposits[]): number {
-  const aggregatedData = aggregateAccountData(accounts);
-  return aggregatedData.capitalGains;
-}
-
-async function getRiskGroupData(year: number, monthNum: number): Promise<RiskGroupResult[]> {
+async function getRiskGroupData(
+  year: number,
+  monthNum: number
+): Promise<RiskGroupResult[]> {
   return prisma.$queryRaw<RiskGroupResult[]>`
     SELECT
       rg.id as riskGroupId,
@@ -159,90 +133,112 @@ async function getRiskGroupData(year: number, monthNum: number): Promise<RiskGro
   `;
 }
 
-function createRiskGroupMap(result: RiskGroupResult[]): Map<string, number> {
-  const riskGroupMap = new Map<string, number>();
-  result.forEach(function mapRiskGroup(r: RiskGroupResult): void {
-    riskGroupMap.set(r.riskGroupName, r.totalCostBasis);
-  });
-  return riskGroupMap;
-}
-
-async function calculateSummaryData(accountId: string | undefined, sellDateStart: Date, sellDateEnd: Date): Promise<{
+async function calculateSingleAccountSummaryData(
+  accountId: string,
+  sellDateStart: Date,
+  sellDateEnd: Date
+): Promise<{
   deposits: number;
   dividends: number;
   capitalGains: number;
   priorDivDeposit: number;
   priorCapitalGains: number;
 }> {
-  let deposits: number;
-  let dividends: number;
-  let capitalGains: number;
-  let priorDivDeposit: number;
-  let priorCapitalGains: number;
-
-  if (accountId !== undefined) {
-    // Single account summary
-    const accountThisMonth = await getAccountThisMonth(accountId, sellDateStart, sellDateEnd);
-    if (!accountThisMonth) {
-      throw new Error('Account not found');
-    }
-
-    const accountPriorMonths = await getAccountPriorMonths(accountId, sellDateStart);
-
-    const singleAccountData = aggregateAccountData([accountThisMonth]);
-    deposits = singleAccountData.deposits;
-    dividends = singleAccountData.dividends;
-    capitalGains = singleAccountData.capitalGains;
-
-    priorDivDeposit = calculatePriorDivDeposits(accountPriorMonths);
-    priorCapitalGains = calculatePriorCapitalGains(accountPriorMonths);
-  } else {
-    // Global summary - aggregate across all accounts
-    const allAccountsThisMonth = await getAllAccountsThisMonth(sellDateStart, sellDateEnd);
-    const allAccountsPriorMonths = await getAllAccountsPriorMonths(sellDateStart);
-
-    const thisMonthData = aggregateAccountData(allAccountsThisMonth);
-    deposits = thisMonthData.deposits;
-    dividends = thisMonthData.dividends;
-    capitalGains = thisMonthData.capitalGains;
-
-    priorDivDeposit = calculatePriorDivDeposits(allAccountsPriorMonths);
-    priorCapitalGains = calculatePriorCapitalGains(allAccountsPriorMonths);
+  const accountThisMonth = await getAccountThisMonth(
+    accountId,
+    sellDateStart,
+    sellDateEnd
+  );
+  if (!accountThisMonth) {
+    throw new Error('Account not found');
   }
 
-  return { deposits, dividends, capitalGains, priorDivDeposit, priorCapitalGains };
+  const accountPriorMonths = await getAccountPriorMonths(
+    accountId,
+    sellDateStart
+  );
+
+  const singleAccountData = aggregateAccountData([accountThisMonth]);
+  const priorDivDeposit = calculatePriorDivDeposits(accountPriorMonths);
+  const priorCapitalGains = calculatePriorCapitalGains(accountPriorMonths);
+
+  return {
+    deposits: singleAccountData.deposits,
+    dividends: singleAccountData.dividends,
+    capitalGains: singleAccountData.capitalGains,
+    priorDivDeposit,
+    priorCapitalGains,
+  };
 }
 
-async function getAllAccountsThisMonth(sellDateStart: Date, sellDateEnd: Date): Promise<AccountWithTradesAndDeposits[]> {
+async function calculateGlobalSummaryData(
+  sellDateStart: Date,
+  sellDateEnd: Date
+): Promise<{
+  deposits: number;
+  dividends: number;
+  capitalGains: number;
+  priorDivDeposit: number;
+  priorCapitalGains: number;
+}> {
+  const allAccountsThisMonth = await getAllAccountsThisMonth(
+    sellDateStart,
+    sellDateEnd
+  );
+  const allAccountsPriorMonths = await getAllAccountsPriorMonths(sellDateStart);
+
+  const thisMonthData = aggregateAccountData(allAccountsThisMonth);
+  const priorDivDeposit = calculatePriorDivDeposits(allAccountsPriorMonths);
+  const priorCapitalGains = calculatePriorCapitalGains(allAccountsPriorMonths);
+
+  return {
+    deposits: thisMonthData.deposits,
+    dividends: thisMonthData.dividends,
+    capitalGains: thisMonthData.capitalGains,
+    priorDivDeposit,
+    priorCapitalGains,
+  };
+}
+
+async function calculateSummaryData(
+  accountId: string | undefined,
+  sellDateStart: Date,
+  sellDateEnd: Date
+): Promise<{
+  deposits: number;
+  dividends: number;
+  capitalGains: number;
+  priorDivDeposit: number;
+  priorCapitalGains: number;
+}> {
+  if (accountId !== undefined) {
+    return calculateSingleAccountSummaryData(
+      accountId,
+      sellDateStart,
+      sellDateEnd
+    );
+  }
+  return calculateGlobalSummaryData(sellDateStart, sellDateEnd);
+}
+
+async function getAllAccountsThisMonth(
+  sellDateStart: Date,
+  sellDateEnd: Date
+): Promise<AccountWithTradesAndDeposits[]> {
+  return prisma.accounts.findMany(
+    createAccountQuery(sellDateStart, sellDateEnd)
+  );
+}
+
+async function getAllAccountsPriorMonths(
+  sellDateStart: Date
+): Promise<AccountWithTradesAndDeposits[]> {
   return prisma.accounts.findMany({
     include: {
       trades: {
         where: {
           sell_date: {
-            gte: sellDateStart,
-            lt: sellDateEnd,
-          },
-        },
-      },
-      divDeposits: {
-        where: {
-          date: {
-            gte: sellDateStart,
-            lt: sellDateEnd,
-          },
-        },
-      },
-    },
-  });
-}
-
-async function getAllAccountsPriorMonths(sellDateStart: Date): Promise<AccountWithTradesAndDeposits[]> {
-  return prisma.accounts.findMany({
-    include: {
-      trades: {
-        where: {
-          sell_date: {
-            lt: sellDateStart
+            lt: sellDateStart,
           },
         },
       },
@@ -257,10 +253,9 @@ async function getAllAccountsPriorMonths(sellDateStart: Date): Promise<AccountWi
   });
 }
 
-
-
 function handleSummaryRoute(fastify: FastifyInstance): void {
-  fastify.get<{ Body: SummaryRequest, Reply: Summary }>('/',
+  fastify.get<{ Body: SummaryRequest; Reply: Summary }>(
+    '/',
     {
       schema: createSummarySchema(),
     },
@@ -268,9 +263,16 @@ function handleSummaryRoute(fastify: FastifyInstance): void {
       const { month, account_id } = request.query as SummaryRequest;
 
       const { year, monthNum } = parseMonthString(month);
-      const { start: sellDateStart, end: sellDateEnd } = calculateDateRange(year, monthNum);
+      const { start: sellDateStart, end: sellDateEnd } = calculateDateRange(
+        year,
+        monthNum
+      );
 
-      const summaryData = await calculateSummaryData(account_id, sellDateStart, sellDateEnd);
+      const summaryData = await calculateSummaryData(
+        account_id,
+        sellDateStart,
+        sellDateEnd
+      );
 
       const result = await getRiskGroupData(year, monthNum);
       const riskGroupMap = createRiskGroupMap(result);
@@ -280,12 +282,16 @@ function handleSummaryRoute(fastify: FastifyInstance): void {
       const taxFreeIncomeValue = riskGroupMap.get('Tax Free Income');
 
       reply.send({
-        deposits: summaryData.deposits + summaryData.priorDivDeposit + summaryData.priorCapitalGains,
+        deposits:
+          summaryData.deposits +
+          summaryData.priorDivDeposit +
+          summaryData.priorCapitalGains,
         dividends: summaryData.dividends,
         capitalGains: summaryData.capitalGains,
         equities: equitiesValue !== undefined ? equitiesValue : 0,
         income: incomeValue !== undefined ? incomeValue : 0,
-        tax_free_income: taxFreeIncomeValue !== undefined ? taxFreeIncomeValue : 0,
+        tax_free_income:
+          taxFreeIncomeValue !== undefined ? taxFreeIncomeValue : 0,
       });
     }
   );

@@ -1,9 +1,12 @@
-<p-toolbar class="text-lg font-semibold flex-none" aria-label="Account management">
+<p-toolbar
+  class="text-lg font-semibold flex-none"
+  aria-label="Account management"
+>
   <ng-template #start>
     <div class="whitespace-nowrap truncate">{{ accountName$() }}</div>
   </ng-template>
   <ng-template #end></ng-template>
 </p-toolbar>
 <div class="flex-1 min-h-0 flex flex-col">
-<router-outlet></router-outlet>
+  <router-outlet></router-outlet>
 </div>

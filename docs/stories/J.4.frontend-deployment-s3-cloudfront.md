@@ -1,9 +1,11 @@
 # Story J.4: Frontend Deployment to S3 + CloudFront
 
 ## Status
+
 Draft
 
 ## Story
+
 **As a** frontend developer,  
 **I want** to deploy the Angular 20 SPA to S3 with CloudFront CDN distribution and proper routing configuration,  
 **so that** the RMS frontend application is globally distributed, performs well, and handles Angular routing correctly with HTTPS security.
@@ -23,6 +25,7 @@ Draft
 ## Tasks / Subtasks
 
 - [ ] **Task 1: Create S3 bucket for static website hosting** (AC: 1)
+
   - [ ] Create S3 bucket using Terraform with unique naming convention
   - [ ] Configure bucket for static website hosting with index.html as default
   - [ ] Setup bucket policy for public read access to website content
@@ -31,6 +34,7 @@ Draft
   - [ ] Configure lifecycle policies for old version cleanup
 
 - [ ] **Task 2: Create CloudFront distribution with S3 origin** (AC: 2, 5)
+
   - [ ] Create CloudFront distribution using Terraform configuration
   - [ ] Configure S3 as origin with Origin Access Control (OAC)
   - [ ] Setup SSL certificate via ACM for custom domain support
@@ -39,6 +43,7 @@ Draft
   - [ ] Configure geographic restrictions if required for compliance
 
 - [ ] **Task 3: Configure caching and invalidation strategies** (AC: 3, 8)
+
   - [ ] Setup cache behaviors for different asset types (HTML, JS, CSS, images)
   - [ ] Configure short TTL for HTML files (5 minutes) and long TTL for assets (1 year)
   - [ ] Implement cache busting with Angular build hash in filenames
@@ -47,6 +52,7 @@ Draft
   - [ ] Add Gzip compression for text-based assets
 
 - [ ] **Task 4: Handle Angular client-side routing** (AC: 4)
+
   - [ ] Configure CloudFront custom error pages for SPA routing
   - [ ] Setup 404 error page to redirect to index.html with 200 status
   - [ ] Configure 403 error page handling for unauthorized access
@@ -55,6 +61,7 @@ Draft
   - [ ] Add proper canonical URL handling for SEO considerations
 
 - [ ] **Task 5: Configure CORS and API integration** (AC: 6)
+
   - [ ] Update Angular environment configuration for production API endpoints
   - [ ] Configure CORS headers in CloudFront responses for API calls
   - [ ] Setup API Gateway or ALB CORS configuration for backend integration
@@ -63,6 +70,7 @@ Draft
   - [ ] Add retry logic for failed API requests due to network issues
 
 - [ ] **Task 6: Implement security headers and CSP** (AC: 9)
+
   - [ ] Configure security headers in CloudFront response headers policy
   - [ ] Add Content Security Policy (CSP) headers for XSS protection
   - [ ] Configure X-Frame-Options and X-Content-Type-Options headers
@@ -71,6 +79,7 @@ Draft
   - [ ] Test security headers with online security scanners
 
 - [ ] **Task 7: Create automated deployment pipeline** (AC: 7)
+
   - [ ] Create build script for Angular production build with optimizations
   - [ ] Add S3 sync command for uploading built assets to bucket
   - [ ] Implement CloudFront cache invalidation after successful deployment
@@ -89,25 +98,33 @@ Draft
 ## Dev Notes
 
 ### Previous Story Context
-**Dependencies:** 
+
+**Dependencies:**
+
 - Story J.1 (Infrastructure Foundation) - requires basic AWS infrastructure
 - Story J.3 (Backend Deployment) - requires backend API endpoints for configuration
 
 ### Data Models and Architecture
+
 **Source: [apps/rms/project.json]**
+
 - Angular 20 application with build output to `dist/apps/rms`
 - SSR configuration available but static deployment preferred for CDN
 
 **Source: [apps/rms/src/environments/]**
+
 - Environment configuration files for API endpoints and feature flags
 - Production environment needs backend API URL configuration
 
 **Source: [package.json]**
+
 - Build command: `nx run rms:build` produces optimized production build
 - Angular 20 with PrimeNG components and modern build system
 
 ### File Locations
+
 **Primary Files to Create:**
+
 1. `/infrastructure/modules/s3-website/main.tf` - S3 bucket for static website
 2. `/infrastructure/modules/s3-website/variables.tf` - S3 module input variables
 3. `/infrastructure/modules/s3-website/outputs.tf` - S3 bucket information
@@ -118,11 +135,13 @@ Draft
 8. `/apps/rms/src/environments/environment.prod.ts` - Production environment config
 
 **Primary Files to Modify:**
+
 1. `/infrastructure/environments/dev/main.tf` - Include S3 and CloudFront modules
 2. `/apps/rms/angular.json` - Add production build optimizations
 3. `/apps/rms/src/main.ts` - Add production-specific configurations
 
 **Test Files to Create:**
+
 1. `/scripts/deploy-frontend.spec.sh` - Deployment script validation
 2. `/apps/rms/src/environments/environment.prod.spec.ts` - Environment config tests
 3. `/e2e/frontend-deployment.spec.ts` - End-to-end deployment validation
@@ -130,10 +149,11 @@ Draft
 ### Technical Implementation Details
 
 **S3 Bucket Configuration:**
+
 ```hcl
 resource "aws_s3_bucket" "rms_frontend" {
   bucket = "rms-frontend-${var.environment}-${random_string.bucket_suffix.result}"
-  
+
   tags = var.common_tags
 }
 
@@ -176,12 +196,13 @@ resource "aws_s3_bucket_policy" "rms_frontend" {
 ```
 
 **CloudFront Distribution:**
+
 ```hcl
 resource "aws_cloudfront_distribution" "rms_frontend" {
   origin {
     domain_name = aws_s3_bucket_website_configuration.rms_frontend.website_endpoint
     origin_id   = "S3-${aws_s3_bucket.rms_frontend.id}"
-    
+
     custom_origin_config {
       http_port              = 80
       https_port             = 443
@@ -193,7 +214,7 @@ resource "aws_cloudfront_distribution" "rms_frontend" {
   enabled             = true
   is_ipv6_enabled     = true
   default_root_object = "index.html"
-  
+
   aliases = var.domain_name != "" ? [var.domain_name] : []
 
   default_cache_behavior {
@@ -265,6 +286,7 @@ resource "aws_cloudfront_distribution" "rms_frontend" {
 ```
 
 **Security Headers Policy:**
+
 ```hcl
 resource "aws_cloudfront_response_headers_policy" "rms_frontend" {
   name    = "rms-frontend-security-headers-${var.environment}"
@@ -276,15 +298,15 @@ resource "aws_cloudfront_response_headers_policy" "rms_frontend" {
       include_subdomains         = true
       preload                    = true
     }
-    
+
     content_type_options {
       override = true
     }
-    
+
     frame_options {
       frame_option = "DENY"
     }
-    
+
     referrer_policy {
       referrer_policy = "strict-origin-when-cross-origin"
     }
@@ -301,6 +323,7 @@ resource "aws_cloudfront_response_headers_policy" "rms_frontend" {
 ```
 
 **Angular Production Environment:**
+
 ```typescript
 // apps/rms/src/environments/environment.prod.ts
 export const environment = {
@@ -319,11 +342,12 @@ export const environment = {
   security: {
     enableCSP: true,
     strictSSL: true,
-  }
+  },
 };
 ```
 
 **Angular Build Configuration:**
+
 ```json
 // apps/rms/angular.json (production configuration)
 {
@@ -335,13 +359,8 @@ export const environment = {
       "main": "apps/rms/src/main.ts",
       "polyfills": "apps/rms/src/polyfills.ts",
       "tsConfig": "apps/rms/tsconfig.app.json",
-      "assets": [
-        "apps/rms/src/favicon.ico",
-        "apps/rms/src/assets"
-      ],
-      "styles": [
-        "apps/rms/src/styles.scss"
-      ],
+      "assets": ["apps/rms/src/favicon.ico", "apps/rms/src/assets"],
+      "styles": ["apps/rms/src/styles.scss"],
       "scripts": []
     },
     "configurations": {
@@ -368,6 +387,7 @@ export const environment = {
 ```
 
 **Deployment Script:**
+
 ```bash
 #!/bin/bash
 # scripts/deploy-frontend.sh
@@ -422,6 +442,7 @@ echo "Application available at: https://${DOMAIN_NAME}"
 ```
 
 **Service Worker Configuration:**
+
 ```typescript
 // apps/rms/src/app/service-worker.config.ts
 import { isDevMode } from '@angular/core';
@@ -435,6 +456,7 @@ export const swConfig = {
 ```
 
 ### Testing Standards
+
 **Source: [architecture/ci-and-testing.md]**
 
 **Testing Framework:** Cypress for E2E testing, Playwright for cross-browser testing
@@ -442,12 +464,14 @@ export const swConfig = {
 **Coverage Requirements:** Lines: 85%, Branches: 75%, Functions: 85%
 
 **Testing Strategy:**
+
 - **Unit Tests:** Test Angular components and services work correctly
 - **Integration Tests:** Test complete frontend deployment and CDN behavior
 - **E2E Tests:** Test application functionality through CloudFront
 - **Performance Tests:** Validate load times and CDN cache effectiveness
 
 **Key Test Scenarios:**
+
 - Angular application builds successfully for production
 - All routes work correctly after CloudFront deployment
 - API calls work correctly through CORS configuration
@@ -456,6 +480,7 @@ export const swConfig = {
 - Service worker functions correctly for offline capability
 
 **Performance Benchmarks:**
+
 - Initial page load time should be < 3 seconds on 3G connection
 - Cached page load time should be < 1 second
 - Bundle size should be < 2MB for initial load
@@ -463,6 +488,7 @@ export const swConfig = {
 - Time to Interactive (TTI) should be < 5 seconds
 
 **Security Testing:**
+
 - Security headers properly configured and enforced
 - Content Security Policy prevents XSS attacks
 - HTTPS enforcement works correctly
@@ -471,24 +497,30 @@ export const swConfig = {
 
 ## Change Log
 
-| Date | Version | Description | Author |
-|------|---------|-------------|---------|
-| 2024-08-30 | 1.0 | Initial story creation | Scrum Master Bob |
+| Date       | Version | Description            | Author           |
+| ---------- | ------- | ---------------------- | ---------------- |
+| 2024-08-30 | 1.0     | Initial story creation | Scrum Master Bob |
 
 ## Dev Agent Record
-*This section will be populated by the development agent during implementation*
+
+_This section will be populated by the development agent during implementation_
 
 ### Agent Model Used
-*To be filled by dev agent*
 
-### Debug Log References  
-*To be filled by dev agent*
+_To be filled by dev agent_
+
+### Debug Log References
+
+_To be filled by dev agent_
 
 ### Completion Notes List
-*To be filled by dev agent*
+
+_To be filled by dev agent_
 
 ### File List
-*To be filled by dev agent*
+
+_To be filled by dev agent_
 
 ## QA Results
-*Results from QA Agent review will be populated here after implementation*
+
+_Results from QA Agent review will be populated here after implementation_

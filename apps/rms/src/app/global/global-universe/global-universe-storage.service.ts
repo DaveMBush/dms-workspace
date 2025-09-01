@@ -11,21 +11,29 @@ export class GlobalUniverseStorageService {
   /**
    * Saves sort criteria to localStorage
    */
-  saveSortCriteria(criteria: Array<{field: string, order: number}>): void {
+  saveSortCriteria(criteria: Array<{ field: string; order: number }>): void {
     setLocalStorageItem(STORAGE_KEY, criteria);
   }
 
   /**
    * Loads sort criteria from localStorage
    */
-  loadSortCriteria(): Array<{field: string, order: number}> {
-    const saved = getLocalStorageItem<Array<{field: string, order: number}>>(STORAGE_KEY, []);
+  loadSortCriteria(): Array<{ field: string; order: number }> {
+    const saved = getLocalStorageItem<Array<{ field: string; order: number }>>(
+      STORAGE_KEY,
+      []
+    );
     // Validate that the parsed data is an array of objects with field and order properties
-    if (Array.isArray(saved) && saved.every(function itemCheck(item) {
-      return typeof item === 'object' &&
-        typeof item.field === 'string' &&
-        typeof item.order === 'number';
-    })) {
+    if (
+      Array.isArray(saved) &&
+      saved.every(function itemCheck(item) {
+        return (
+          typeof item === 'object' &&
+          typeof item.field === 'string' &&
+          typeof item.order === 'number'
+        );
+      })
+    ) {
       return saved;
     }
     return [];
@@ -42,7 +50,10 @@ export class GlobalUniverseStorageService {
    * Loads min yield filter from localStorage
    */
   loadMinYieldFilter(): number | null {
-    const saved = getLocalStorageItem<number | null>(`${FILTERS_STORAGE_KEY}-minYield`, null);
+    const saved = getLocalStorageItem<number | null>(
+      `${FILTERS_STORAGE_KEY}-minYield`,
+      null
+    );
     if (typeof saved === 'number' || saved === null) {
       return saved;
     }
@@ -60,7 +71,10 @@ export class GlobalUniverseStorageService {
    * Loads risk group filter from localStorage
    */
   loadRiskGroupFilter(): string | null {
-    const saved = getLocalStorageItem<string | null>(`${FILTERS_STORAGE_KEY}-riskGroup`, null);
+    const saved = getLocalStorageItem<string | null>(
+      `${FILTERS_STORAGE_KEY}-riskGroup`,
+      null
+    );
     if (typeof saved === 'string' || saved === null) {
       return saved;
     }
@@ -78,7 +92,10 @@ export class GlobalUniverseStorageService {
    * Loads expired filter from localStorage
    */
   loadExpiredFilter(): boolean | null {
-    const saved = getLocalStorageItem<boolean | null>(`${FILTERS_STORAGE_KEY}-expired`, null);
+    const saved = getLocalStorageItem<boolean | null>(
+      `${FILTERS_STORAGE_KEY}-expired`,
+      null
+    );
     if (typeof saved === 'boolean' || saved === null) {
       return saved;
     }
@@ -96,7 +113,10 @@ export class GlobalUniverseStorageService {
    * Loads symbol filter from localStorage
    */
   loadSymbolFilter(): string {
-    const saved = getLocalStorageItem<string>(`${FILTERS_STORAGE_KEY}-symbol`, '');
+    const saved = getLocalStorageItem<string>(
+      `${FILTERS_STORAGE_KEY}-symbol`,
+      ''
+    );
     if (typeof saved === 'string') {
       return saved;
     }
@@ -114,7 +134,10 @@ export class GlobalUniverseStorageService {
    * Loads selected account ID from localStorage
    */
   loadSelectedAccountId(): string {
-    const saved = getLocalStorageItem<string>(`${FILTERS_STORAGE_KEY}-selectedAccountId`, 'all');
+    const saved = getLocalStorageItem<string>(
+      `${FILTERS_STORAGE_KEY}-selectedAccountId`,
+      'all'
+    );
     if (typeof saved === 'string') {
       return saved;
     }

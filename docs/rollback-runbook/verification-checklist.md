@@ -1,10 +1,12 @@
 # Verification checklist
 
 - UI
+
   - Universe Settings dialog still shows manual fields and can update universe.
   - Universe table renders and sorts as before.
 
 - API
+
   - Manual endpoints respond as expected:
     - POST `/api/settings`
     - GET `/api/settings/update`

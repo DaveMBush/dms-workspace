@@ -19,12 +19,14 @@ This document describes the feature flag system implemented in the RMS workspace
 ### Local Development
 
 1. **Create Environment File**: Create a `.env` file in the workspace root:
+
    ```bash
    # .env
    DATABASE_URL=file:./database.db
    ```
 
 2. **Server Configuration**: The server automatically reads environment variables from:
+
    - `.env` file (if present)
    - System environment variables
    - Process environment variables
@@ -34,11 +36,13 @@ This document describes the feature flag system implemented in the RMS workspace
 ### Development Environment
 
 1. **Environment Variables**: Only database configuration is required:
+
    ```bash
    export DATABASE_URL=your_database_url
    ```
 
 2. **Docker/Container**: Database configuration only:
+
    ```dockerfile
    ENV DATABASE_URL=your_database_url
    ```
@@ -56,18 +60,21 @@ This document describes the feature flag system implemented in the RMS workspace
 ## Behavior by Environment
 
 ### Local Development
+
 - **Universe Sync**: Always enabled
 - **Database**: Uses local SQLite database
 - **UI Controls**: Update icons available in Universe toolbar
 - **Testing**: Safe to test sync operations
 
 ### Development/Staging
+
 - **Universe Sync**: Always enabled
 - **Database**: Separate development database
 - **UI Controls**: Update icons available in Universe toolbar
 - **Testing**: Safe to test sync behavior
 
 ### Production
+
 - **Universe Sync**: Always enabled
 - **Database**: Production database with real data
 - **UI Controls**: Update icons available in Universe toolbar
@@ -80,6 +87,7 @@ This document describes the feature flag system implemented in the RMS workspace
 Universe updates are now managed directly from the Universe screen through two icon buttons in the toolbar:
 
 1. **Update Fields Icon** (`pi-refresh`):
+
    - Updates individual fields in the universe
    - Performs targeted data refresh
    - Located in the Universe title bar
@@ -92,6 +100,7 @@ Universe updates are now managed directly from the Universe screen through two i
 ### Operation Verification
 
 After triggering updates via the toolbar icons:
+
 - [ ] Universe data reflects latest screener information
 - [ ] UI updates show progress indicators
 - [ ] Sync operations complete successfully
@@ -100,16 +109,19 @@ After triggering updates via the toolbar icons:
 ## System Behavior
 
 ### Server Behavior
+
 - **Universe Sync**: Always enabled automatically
 - **Default Behavior**: Screener-driven universe management
 - **No Configuration Required**: Sync functionality is built-in
 
 ### Frontend Behavior
+
 - **UI State**: Update icons visible in Universe toolbar
 - **Functionality**: Direct access to universe update operations
 - **User Experience**: Simplified workflow without settings modal
 
 ### Database Impact
+
 - **Automatic Sync**: Universe data stays current with screener
 - **Update Operations**: Available through toolbar controls
 - **Data Integrity**: Continuous synchronization ensures accuracy
@@ -117,6 +129,7 @@ After triggering updates via the toolbar icons:
 ## System Architecture
 
 ### Universe Sync Service
+
 Universe synchronization is handled by dedicated services:
 
 ```typescript
@@ -125,6 +138,7 @@ Universe synchronization is handled by dedicated services:
 ```
 
 ### Frontend Implementation
+
 The frontend provides direct access to universe operations through toolbar controls:
 
 ```typescript
@@ -137,11 +151,13 @@ The frontend provides direct access to universe operations through toolbar contr
 ### Common Issues
 
 1. **Universe Update Icons Not Visible**:
+
    - Verify you're on the Universe screen
    - Check that the toolbar is properly rendered
    - Refresh the browser if icons don't appear
 
 2. **Sync Operations Not Working**:
+
    - Check browser developer tools for API errors
    - Verify server connection is active
    - Check server logs for sync-related errors
@@ -176,6 +192,3 @@ curl http://localhost:3000/api/universe/sync-from-screener
 - [Architecture Overview](../architecture/index.md) - System architecture
 - [Universe Sync Implementation](../architecture/sequence-sync-from-screener.md) - Technical implementation details
 - [User Guide](../user-experience/universe-update-journeys.md) - How to use universe update controls
-
-
-

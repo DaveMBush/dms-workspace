@@ -8,6 +8,9 @@ export const prisma =
     // log: ['query', 'info', 'warn', 'error'], // optional: enable logging
   });
 
-if (process.env.NODE_ENV === undefined || process.env.NODE_ENV !== 'production') {
+if (
+  process.env.NODE_ENV === undefined ||
+  process.env.NODE_ENV !== 'production'
+) {
   globalForPrisma.prisma = prisma;
 }

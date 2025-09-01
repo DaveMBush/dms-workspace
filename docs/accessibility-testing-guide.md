@@ -18,18 +18,21 @@ This guide provides comprehensive testing procedures to ensure the RMS Workspace
 ### Required Tools
 
 **Automated Testing Tools:**
+
 - **axe DevTools**: Browser extension for accessibility auditing
 - **Lighthouse**: Built-in Chrome DevTools accessibility audit
 - **Pa11y**: Command-line accessibility testing tool
 - **axe-core**: JavaScript library for automated testing
 
 **Screen Readers:**
+
 - **NVDA** (Windows) - Free and widely used
 - **JAWS** (Windows) - Industry standard (requires license)
 - **VoiceOver** (macOS) - Built-in macOS screen reader
 - **Orca** (Linux) - Free Linux screen reader
 
 **Color Contrast Tools:**
+
 - **WebAIM Contrast Checker**: https://webaim.org/resources/contrastchecker/
 - **Colour Contrast Analyser**: Desktop application
 - **axe DevTools**: Includes contrast checking
@@ -69,7 +72,9 @@ expect.extend(toHaveNoViolations);
 describe('Component Accessibility', () => {
   test('should not have accessibility violations', async () => {
     const { container } = await render(Component, {
-      imports: [/* required imports */],
+      imports: [
+        /* required imports */
+      ],
     });
 
     const results = await axe(container);
@@ -78,7 +83,7 @@ describe('Component Accessibility', () => {
 
   test('should have proper ARIA labels', async () => {
     const { getByRole } = await render(Component);
-    
+
     expect(getByRole('button')).toHaveAttribute('aria-label');
     expect(getByRole('dialog')).toHaveAttribute('aria-labelledby');
   });
@@ -119,18 +124,21 @@ lighthouse http://localhost:4200 --only-categories=accessibility --output=json -
 ### Component Testing Workflow
 
 **Before Component Development:**
+
 1. Review accessibility requirements for component type
 2. Identify required ARIA attributes and roles
 3. Plan keyboard navigation flow
 4. Consider screen reader announcements
 
 **During Component Development:**
+
 1. Test with keyboard navigation
 2. Verify focus management
 3. Check ARIA labels and roles
 4. Test with browser zoom (up to 200%)
 
 **After Component Development:**
+
 1. Run automated accessibility tests
 2. Test with screen reader
 3. Verify color contrast compliance
@@ -139,6 +147,7 @@ lighthouse http://localhost:4200 --only-categories=accessibility --output=json -
 ### Page-Level Testing
 
 **Complete Page Audit Process:**
+
 1. Load page in browser
 2. Run axe DevTools scan
 3. Fix critical and serious violations
@@ -152,6 +161,7 @@ lighthouse http://localhost:4200 --only-categories=accessibility --output=json -
 ### Testing Procedures by Screen Reader
 
 **NVDA (Windows):**
+
 1. Start NVDA (Ctrl + Alt + N)
 2. Navigate to application
 3. Use browse mode (default) to read page structure
@@ -164,12 +174,14 @@ lighthouse http://localhost:4200 --only-categories=accessibility --output=json -
    - T: Navigate by tables
 
 **VoiceOver (macOS):**
+
 1. Enable VoiceOver (Cmd + F5)
 2. Navigate using VoiceOver cursor
 3. Test web rotor navigation (Ctrl + Option + U)
 4. Use quick navigation (arrows) vs. VoiceOver navigation (Ctrl + Option + arrows)
 
 **Testing Scenarios:**
+
 1. **Page Structure**: Verify headings, landmarks, and navigation
 2. **Forms**: Test field labels, error messages, required fields
 3. **Interactive Elements**: Buttons, links, dropdowns, modals
@@ -179,24 +191,28 @@ lighthouse http://localhost:4200 --only-categories=accessibility --output=json -
 ### Screen Reader Testing Checklist
 
 **Content Structure:**
+
 - [ ] Page has proper heading hierarchy (H1 → H2 → H3)
 - [ ] Landmarks are properly identified (header, nav, main, aside, footer)
 - [ ] Lists are properly marked up (ul, ol, dl)
 - [ ] Links have descriptive text or aria-label
 
 **Forms:**
+
 - [ ] All form fields have associated labels
 - [ ] Required fields are indicated
 - [ ] Error messages are announced
 - [ ] Fieldsets and legends used for grouped fields
 
 **Interactive Elements:**
+
 - [ ] Buttons have accessible names
 - [ ] Custom components have proper roles
 - [ ] State changes are announced (expanded/collapsed, selected)
 - [ ] Modal dialogs manage focus properly
 
 **Dynamic Content:**
+
 - [ ] Live regions announce changes appropriately
 - [ ] Loading states are communicated
 - [ ] Error messages use assertive live regions
@@ -207,6 +223,7 @@ lighthouse http://localhost:4200 --only-categories=accessibility --output=json -
 ### Standard Keyboard Testing
 
 **Basic Navigation:**
+
 - **Tab**: Move to next focusable element
 - **Shift + Tab**: Move to previous focusable element
 - **Enter**: Activate buttons and links
@@ -217,23 +234,27 @@ lighthouse http://localhost:4200 --only-categories=accessibility --output=json -
 **Component-Specific Testing:**
 
 **Modals/Dialogs:**
+
 - [ ] Tab focus trapped within modal
 - [ ] Escape closes modal
 - [ ] Focus returns to trigger element when closed
 - [ ] First focusable element receives focus when opened
 
 **Dropdown/Select Components:**
+
 - [ ] Arrow keys navigate options
 - [ ] Enter/Space selects option
 - [ ] Escape closes dropdown
 - [ ] Typing searches/filters options
 
 **Tables:**
+
 - [ ] Tab moves between interactive table elements
 - [ ] Arrow keys navigate table cells (if implemented)
 - [ ] Sort controls are keyboard accessible
 
 **Forms:**
+
 - [ ] Tab order follows logical sequence
 - [ ] All form controls reachable via keyboard
 - [ ] Form validation doesn't break keyboard navigation
@@ -242,17 +263,20 @@ lighthouse http://localhost:4200 --only-categories=accessibility --output=json -
 ### Focus Management Testing
 
 **Focus Indicators:**
+
 - [ ] All focused elements have visible focus indicators
 - [ ] Focus indicators have sufficient contrast (3:1 minimum)
 - [ ] Focus indicators are not removed by CSS
 - [ ] Custom focus styles are consistent
 
 **Focus Traps:**
+
 - [ ] Modal dialogs trap focus appropriately
 - [ ] Users can always escape focus traps
 - [ ] Focus returns to logical location after trap closes
 
 **Skip Navigation:**
+
 - [ ] Skip links provided for main content
 - [ ] Skip links are keyboard accessible
 - [ ] Skip links work correctly in screen readers
@@ -262,12 +286,14 @@ lighthouse http://localhost:4200 --only-categories=accessibility --output=json -
 ### Automated Contrast Testing
 
 **Using axe DevTools:**
+
 1. Open axe DevTools panel
 2. Run full scan
 3. Review "Color Contrast" issues
 4. Fix violations and retest
 
 **Using WebAIM Contrast Checker:**
+
 1. Navigate to https://webaim.org/resources/contrastchecker/
 2. Enter foreground and background colors
 3. Verify compliance with WCAG AA (4.5:1 normal text, 3:1 large text)
@@ -276,6 +302,7 @@ lighthouse http://localhost:4200 --only-categories=accessibility --output=json -
 ### Manual Contrast Testing
 
 **Theme Testing:**
+
 1. Test all text colors in light theme
 2. Switch to dark theme (click theme toggle)
 3. Verify all text remains readable in dark theme
@@ -283,8 +310,9 @@ lighthouse http://localhost:4200 --only-categories=accessibility --output=json -
 5. Test UI component states (hover, active, disabled)
 
 **Component State Testing:**
+
 - [ ] Normal text has 4.5:1 contrast minimum
-- [ ] Large text has 3:1 contrast minimum  
+- [ ] Large text has 3:1 contrast minimum
 - [ ] Focus indicators have 3:1 contrast minimum
 - [ ] UI components have 3:1 contrast minimum
 - [ ] Error states maintain proper contrast
@@ -293,12 +321,14 @@ lighthouse http://localhost:4200 --only-categories=accessibility --output=json -
 ## Testing Checklist
 
 ### Pre-Development Checklist
+
 - [ ] Accessibility requirements documented
 - [ ] Component accessibility patterns identified
 - [ ] Keyboard navigation flow planned
 - [ ] Screen reader announcements planned
 
 ### Development Checklist
+
 - [ ] Semantic HTML elements used where appropriate
 - [ ] ARIA labels and roles implemented correctly
 - [ ] Keyboard event handlers added
@@ -307,6 +337,7 @@ lighthouse http://localhost:4200 --only-categories=accessibility --output=json -
 - [ ] Automated tests written and passing
 
 ### Pre-Release Checklist
+
 - [ ] All automated accessibility tests passing
 - [ ] Manual keyboard testing completed
 - [ ] Screen reader testing completed
@@ -317,24 +348,28 @@ lighthouse http://localhost:4200 --only-categories=accessibility --output=json -
 ### Component-Specific Checklists
 
 **Form Components:**
+
 - [ ] Labels properly associated with inputs
 - [ ] Required fields indicated
 - [ ] Error states accessible
 - [ ] Keyboard navigation works correctly
 
 **Navigation Components:**
+
 - [ ] Proper ARIA roles (menubar, menu, menuitem)
 - [ ] Keyboard navigation implemented
 - [ ] Current page indicated
 - [ ] Skip navigation provided
 
 **Data Display Components:**
+
 - [ ] Tables have proper headers
 - [ ] Complex data has accessible descriptions
 - [ ] Sort states announced
 - [ ] Filter states accessible
 
 **Modal/Dialog Components:**
+
 - [ ] Focus management implemented
 - [ ] ARIA roles and attributes correct
 - [ ] Escape key functionality
@@ -356,6 +391,7 @@ lighthouse http://localhost:4200 --only-categories=accessibility --output=json -
 [Clear description of the accessibility issue]
 
 **Steps to Reproduce:**
+
 1. [Step 1]
 2. [Step 2]
 3. [Step 3]
@@ -367,6 +403,7 @@ lighthouse http://localhost:4200 --only-categories=accessibility --output=json -
 [What actually happens]
 
 **Testing Environment:**
+
 - Browser: [Browser and version]
 - Screen Reader: [If applicable]
 - Operating System: [OS and version]
@@ -381,39 +418,46 @@ lighthouse http://localhost:4200 --only-categories=accessibility --output=json -
 ### Priority Guidelines
 
 **Critical Issues:**
+
 - Keyboard traps that prevent navigation
 - Missing form labels
 - Contrast ratios below 3:1
 - Focus management breaking functionality
 
 **High Priority:**
+
 - Missing ARIA labels on interactive elements
 - Improper heading hierarchy
 - Contrast ratios below 4.5:1 for normal text
 - Screen reader announcements missing
 
 **Medium Priority:**
+
 - Suboptimal focus indicators
 - Missing skip navigation
 - Inconsistent keyboard shortcuts
 
 **Low Priority:**
+
 - Enhanced ARIA descriptions
 - Non-essential animations not respecting prefers-reduced-motion
 
 ### Testing Schedule
 
 **During Development:**
+
 - Run automated tests on every commit
 - Manual keyboard testing for new components
 - Screen reader spot testing for complex components
 
 **Before Feature Release:**
+
 - Complete accessibility audit of new features
 - Cross-browser accessibility testing
 - User acceptance testing with assistive technologies
 
 **Regular Maintenance:**
+
 - Monthly full-site accessibility audit
 - Quarterly screen reader testing
 - Annual accessibility compliance review
@@ -421,18 +465,21 @@ lighthouse http://localhost:4200 --only-categories=accessibility --output=json -
 ## Resources
 
 ### Testing Tools
+
 - [axe DevTools](https://www.deque.com/axe/browser-extensions/)
 - [WAVE Web Accessibility Evaluation Tool](https://wave.webaim.org/)
 - [Pa11y Command Line Tool](https://pa11y.org/)
 - [WebAIM Contrast Checker](https://webaim.org/resources/contrastchecker/)
 
 ### Documentation
+
 - [WCAG 2.1 Quick Reference](https://www.w3.org/WAI/WCAG21/quickref/)
 - [PrimeNG Accessibility Guide](https://primeng.org/guides/accessibility)
 - [MDN Accessibility Documentation](https://developer.mozilla.org/en-US/docs/Web/Accessibility)
 - [WebAIM Screen Reader Testing](https://webaim.org/articles/screenreader_testing/)
 
 ### Screen Reader Resources
+
 - [NVDA Download](https://www.nvaccess.org/download/)
 - [NVDA User Guide](https://www.nvaccess.org/files/nvda/documentation/userGuide.html)
 - [VoiceOver User Guide](https://support.apple.com/guide/voiceover/welcome/mac)

@@ -1,4 +1,8 @@
-import { provideHttpClient, withFetch, withInterceptorsFromDi } from '@angular/common/http';
+import {
+  provideHttpClient,
+  withFetch,
+  withInterceptorsFromDi,
+} from '@angular/common/http';
 import {
   ApplicationConfig,
   provideBrowserGlobalErrorListeners,
@@ -7,7 +11,10 @@ import {
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter } from '@angular/router';
 import aura from '@primeng/themes/aura';
-import { provideSmartNgRX, smartErrorHandlerToken } from '@smarttools/smart-signals';
+import {
+  provideSmartNgRX,
+  smartErrorHandlerToken,
+} from '@smarttools/smart-signals';
 import { providePrimeNG } from 'primeng/config';
 
 import { appRoutes } from './app.routes';
@@ -31,37 +38,47 @@ import { UniverseEffectsService } from './store/universe/universe-effect.service
 import { universeEffectsServiceToken } from './store/universe/universe-effect-service-token';
 
 export const appConfig: ApplicationConfig = {
-  providers: [{
-    provide: topEffectsServiceToken,
-    useClass: TopEffectsService,
-  }, {
-    provide: accountEffectsServiceToken,
-    useClass: AccountEffectsService,
-  }, {
-    provide: riskGroupEffectsServiceToken,
-    useClass: RiskGroupEffectsService,
-  }, {
-    provide: universeEffectsServiceToken,
-    useClass: UniverseEffectsService,
-  }, {
-    provide: tradeEffectsServiceToken,
-    useClass: TradeEffectsService,
-  }, {
-    provide: divDepositsEffectsServiceToken,
-    useClass: DivDepositsEffectsService,
-    }, {
-    provide: divDepositTypesEffectsServiceToken,
-    useClass: DivDepositTypesEffectsService,
-    }, {
-    provide: smartErrorHandlerToken,
-    useClass: ErrorHandlerService,
-    }, {
-    provide: screenEffectsServiceToken,
-    useClass: ScreenEffectsService,
-  }, {
-    provide: UniverseSyncService,
-    useClass: UniverseSyncService,
-  },
+  providers: [
+    {
+      provide: topEffectsServiceToken,
+      useClass: TopEffectsService,
+    },
+    {
+      provide: accountEffectsServiceToken,
+      useClass: AccountEffectsService,
+    },
+    {
+      provide: riskGroupEffectsServiceToken,
+      useClass: RiskGroupEffectsService,
+    },
+    {
+      provide: universeEffectsServiceToken,
+      useClass: UniverseEffectsService,
+    },
+    {
+      provide: tradeEffectsServiceToken,
+      useClass: TradeEffectsService,
+    },
+    {
+      provide: divDepositsEffectsServiceToken,
+      useClass: DivDepositsEffectsService,
+    },
+    {
+      provide: divDepositTypesEffectsServiceToken,
+      useClass: DivDepositTypesEffectsService,
+    },
+    {
+      provide: smartErrorHandlerToken,
+      useClass: ErrorHandlerService,
+    },
+    {
+      provide: screenEffectsServiceToken,
+      useClass: ScreenEffectsService,
+    },
+    {
+      provide: UniverseSyncService,
+      useClass: UniverseSyncService,
+    },
 
     // provideClientHydration(withEventReplay()),
     provideBrowserGlobalErrorListeners(),
@@ -75,12 +92,12 @@ export const appConfig: ApplicationConfig = {
             name: 'primeng',
             order: 'tailwind-base, primeng, tailwind-utilities',
           },
-          darkModeSelector: '.p-dark'
+          darkModeSelector: '.p-dark',
         },
       },
     }),
-    provideHttpClient(withInterceptorsFromDi(),withFetch()),
+    provideHttpClient(withInterceptorsFromDi(), withFetch()),
     provideRouter(appRoutes),
-    provideSmartNgRX()
+    provideSmartNgRX(),
   ],
 };

@@ -1,4 +1,4 @@
-import { createSmartSignal } from "@smarttools/smart-signals";
+import { createSmartSignal } from '@smarttools/smart-signals';
 
 import { Top } from '../top.interface';
 

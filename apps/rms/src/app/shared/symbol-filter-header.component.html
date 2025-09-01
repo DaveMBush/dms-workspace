@@ -1,0 +1,10 @@
+<th class="min-w-16 max-w-16">
+  <input
+    pInputText
+    type="text"
+    [(ngModel)]="symbolFilter"
+    (ngModelChange)="filterChange.emit()"
+    placeholder="Search Symbol"
+    class="w-20 p-input p-component p-inputwrapper p-inputtext"
+  />
+</th>

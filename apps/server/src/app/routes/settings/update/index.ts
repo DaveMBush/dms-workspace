@@ -1,8 +1,8 @@
-import { FastifyInstance } from "fastify";
+import { FastifyInstance } from 'fastify';
 
-import { prisma } from "../../../prisma/prisma-client";
-import { getDistributions } from "../common/get-distributions.function";
-import { getLastPrice } from "../common/get-last-price.function";
+import { prisma } from '../../../prisma/prisma-client';
+import { getDistributions } from '../common/get-distributions.function';
+import { getLastPrice } from '../common/get-last-price.function';
 
 interface Distribution {
   distribution: number;
@@ -10,7 +10,9 @@ interface Distribution {
   ex_date: Date;
 }
 
-function getCurrentDistribution(universe: Awaited<ReturnType<typeof prisma.universe.findMany>>[number]): Distribution {
+function getCurrentDistribution(
+  universe: Awaited<ReturnType<typeof prisma.universe.findMany>>[number]
+): Distribution {
   return {
     distribution: universe.distribution,
     distributions_per_year: universe.distributions_per_year,
@@ -18,7 +20,9 @@ function getCurrentDistribution(universe: Awaited<ReturnType<typeof prisma.unive
   };
 }
 
-async function checkForNewDistribution(universe: Awaited<ReturnType<typeof prisma.universe.findMany>>[number]): Promise<Distribution | null> {
+async function checkForNewDistribution(
+  universe: Awaited<ReturnType<typeof prisma.universe.findMany>>[number]
+): Promise<Distribution | null> {
   if (!universe.ex_date || universe.ex_date >= new Date()) {
     return null;
   }
@@ -31,12 +35,18 @@ async function checkForNewDistribution(universe: Awaited<ReturnType<typeof prism
   return newDistribution;
 }
 
-function shouldUpdateDistribution(distribution: Distribution, universe: Awaited<ReturnType<typeof prisma.universe.findMany>>[number]): boolean {
-  return Boolean(universe.ex_date &&
-         distribution.ex_date > universe.ex_date);
+function shouldUpdateDistribution(
+  distribution: Distribution,
+  universe: Awaited<ReturnType<typeof prisma.universe.findMany>>[number]
+): boolean {
+  return Boolean(universe.ex_date && distribution.ex_date > universe.ex_date);
 }
 
-async function updateUniverseWithDistribution(universe: Awaited<ReturnType<typeof prisma.universe.findMany>>[number], lastPrice: number, distribution: Distribution): Promise<void> {
+async function updateUniverseWithDistribution(
+  universe: Awaited<ReturnType<typeof prisma.universe.findMany>>[number],
+  lastPrice: number,
+  distribution: Distribution
+): Promise<void> {
   await prisma.universe.update({
     where: { id: universe.id },
     data: {
@@ -48,7 +58,10 @@ async function updateUniverseWithDistribution(universe: Awaited<ReturnType<typeo
   });
 }
 
-async function updateUniverseWithoutDistribution(universe: Awaited<ReturnType<typeof prisma.universe.findMany>>[number], lastPrice: number): Promise<void> {
+async function updateUniverseWithoutDistribution(
+  universe: Awaited<ReturnType<typeof prisma.universe.findMany>>[number],
+  lastPrice: number
+): Promise<void> {
   await prisma.universe.update({
     where: { id: universe.id },
     data: {
@@ -57,7 +70,9 @@ async function updateUniverseWithoutDistribution(universe: Awaited<ReturnType<ty
   });
 }
 
-async function processUniverse(universe: Awaited<ReturnType<typeof prisma.universe.findMany>>[number]): Promise<void> {
+async function processUniverse(
+  universe: Awaited<ReturnType<typeof prisma.universe.findMany>>[number]
+): Promise<void> {
   const lastPrice = await getLastPrice(universe.symbol);
   let distribution = getCurrentDistribution(universe);
 
@@ -69,7 +84,11 @@ async function processUniverse(universe: Awaited<ReturnType<typeof prisma.univer
   const lastPriceValue = lastPrice ?? 0;
 
   if (shouldUpdateDistribution(distribution, universe)) {
-    await updateUniverseWithDistribution(universe, lastPriceValue, distribution);
+    await updateUniverseWithDistribution(
+      universe,
+      lastPriceValue,
+      distribution
+    );
   } else {
     await updateUniverseWithoutDistribution(universe, lastPriceValue);
   }
@@ -85,11 +104,9 @@ async function updateAllUniverses(): Promise<void> {
 }
 
 function handleUpdateRoute(fastify: FastifyInstance): void {
-  fastify.get('/',
-    async function handleUpdateRequest(_, __): Promise<void> {
-      await updateAllUniverses();
-    }
-  );
+  fastify.get('/', async function handleUpdateRequest(_, __): Promise<void> {
+    await updateAllUniverses();
+  });
 }
 
 export default function registerUpdateRoutes(fastify: FastifyInstance): void {

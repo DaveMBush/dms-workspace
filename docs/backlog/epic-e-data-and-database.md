@@ -24,6 +24,6 @@ Acceptance Criteria:
   `screener(risk_group_id)`.
 - Rename plan documented: `has_volitility` → `has_volatility` with 3‑phase
   migration plan and rollback steps.
-Acceptance Criteria:
+  Acceptance Criteria:
 
 - Doc steps to back up SQLite db before rollout; restore procedure included.

@@ -7,7 +7,10 @@
     "start:rms": "nx run rms:serve --no-hmr",
     "start:simulation": "nx run simulation:serve",
     "build:rms": "nx run rms:build",
-    "all": "nx affected -t lint build test"
+    "all": "nx affected -t lint build test",
+    "dupcheck": "pnpm jscpd",
+    "format": "nx format:write",
+    "format:check": "nx format:check"
   },
   "private": true,
   "dependencies": {
@@ -103,6 +106,7 @@
     "eslint-plugin-unused-imports": "4.1.4",
     "htmlhint": "^1.3.0",
     "jiti": "2.4.2",
+    "jscpd": "~4.0.5",
     "jsdom": "~22.1.0",
     "nx": "21.4.1",
     "postcss": "^8.4.35",

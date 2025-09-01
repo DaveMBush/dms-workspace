@@ -15,12 +15,12 @@ This directory contains configuration guides and documentation for the RMS works
 
 ## Environment Variables Reference
 
-| Variable | Default | Description | Required |
-|----------|---------|-------------|----------|
-| `USE_SCREENER_FOR_UNIVERSE` | `false` | Enable screener-driven universe sync | No |
-| `DATABASE_URL` | `file:./database.db` | Database connection string | Yes |
-| `HOST` | `localhost` | Server host binding | No |
-| `PORT` | `3000` | Server port | No |
+| Variable                    | Default              | Description                          | Required |
+| --------------------------- | -------------------- | ------------------------------------ | -------- |
+| `USE_SCREENER_FOR_UNIVERSE` | `false`              | Enable screener-driven universe sync | No       |
+| `DATABASE_URL`              | `file:./database.db` | Database connection string           | Yes      |
+| `HOST`                      | `localhost`          | Server host binding                  | No       |
+| `PORT`                      | `3000`               | Server port                          | No       |
 
 ## Configuration by Environment
 
@@ -33,6 +33,3 @@ This directory contains configuration guides and documentation for the RMS works
 - Check the [Troubleshooting](./feature-flags.md#troubleshooting) section
 - Review the [Architecture Documentation](../architecture/index.md)
 - Consult the [Rollback Runbook](../rollback-runbook.md) for emergency procedures
-
-
-

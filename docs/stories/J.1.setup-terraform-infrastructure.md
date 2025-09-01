@@ -1,9 +1,11 @@
 # Story J.1: Setup Terraform Infrastructure Foundation
 
 ## Status
+
 Draft
 
 ## Story
+
 **As a** DevOps engineer,  
 **I want** to establish the core AWS infrastructure foundation using Terraform,  
 **so that** I can deploy the RMS application to AWS with Infrastructure as Code best practices and proper state management.
@@ -23,6 +25,7 @@ Draft
 ## Tasks / Subtasks
 
 - [ ] **Task 1: Create Terraform directory structure and configuration** (AC: 1, 2)
+
   - [ ] Create `infrastructure/` root directory with modules and environments
   - [ ] Setup `versions.tf` with Terraform and AWS provider version constraints
   - [ ] Create `main.tf` with AWS provider configuration and common tags
@@ -30,6 +33,7 @@ Draft
   - [ ] Setup environment-specific directories (dev, staging, prod)
 
 - [ ] **Task 2: Configure Terraform state management** (AC: 3)
+
   - [ ] Create S3 bucket for Terraform state storage with versioning
   - [ ] Setup DynamoDB table for Terraform state locking
   - [ ] Configure backend.tf with S3 backend configuration
@@ -37,6 +41,7 @@ Draft
   - [ ] Document state management procedures and recovery process
 
 - [ ] **Task 3: Design and implement VPC networking** (AC: 4, 5)
+
   - [ ] Create VPC module with configurable CIDR blocks
   - [ ] Define public subnets (2 AZs) for load balancers and NAT gateways
   - [ ] Define private subnets (2 AZs) for ECS tasks and RDS instances
@@ -45,6 +50,7 @@ Draft
   - [ ] Configure route tables for public and private subnet routing
 
 - [ ] **Task 4: Configure security groups for application tiers** (AC: 6)
+
   - [ ] Create ALB security group (HTTP/HTTPS from internet)
   - [ ] Create ECS security group (HTTP from ALB, outbound for database)
   - [ ] Create RDS security group (PostgreSQL from ECS only)
@@ -53,6 +59,7 @@ Draft
   - [ ] Document security group purposes and traffic flows
 
 - [ ] **Task 5: Setup IAM roles and policies** (AC: 7)
+
   - [ ] Create ECS task execution role with ECR and CloudWatch permissions
   - [ ] Create ECS task role with RDS, S3, and application-specific permissions
   - [ ] Create RDS monitoring role for CloudWatch metrics and logs
@@ -70,21 +77,27 @@ Draft
 ## Dev Notes
 
 ### Previous Story Context
+
 This is the first story in Epic J, establishing the foundational infrastructure for AWS deployment.
 
 ### Data Models and Architecture
+
 **Source: [Epic J: AWS Deployment Infrastructure]**
+
 - Target architecture: CloudFront + S3 (frontend), ECS Fargate (backend), RDS PostgreSQL
 - Current local setup: Angular 20 SPA + Fastify Node.js API + SQLite database
 - Nx monorepo with build outputs: `dist/apps/rms` (frontend), `dist/apps/server` (backend)
 
 **Source: [package.json]**
+
 - Tech stack: Angular 20, Fastify, Node.js 22, Prisma ORM
 - Build commands: `nx run rms:build`, `nx run server:build`
 - Package manager: pnpm
 
 ### File Locations
+
 **Primary Files to Create:**
+
 1. `/infrastructure/versions.tf` - Terraform and provider version constraints
 2. `/infrastructure/main.tf` - AWS provider and common configuration
 3. `/infrastructure/variables.tf` - Input variables for infrastructure
@@ -99,6 +112,7 @@ This is the first story in Epic J, establishing the foundational infrastructure 
 ### Technical Implementation Details
 
 **Directory Structure:**
+
 ```
 infrastructure/
 ├── modules/
@@ -131,6 +145,7 @@ infrastructure/
 ```
 
 **Terraform Version Configuration:**
+
 ```hcl
 terraform {
   required_version = ">= 1.5.0"
@@ -144,6 +159,7 @@ terraform {
 ```
 
 **VPC Configuration:**
+
 ```hcl
 # CIDR blocks for RMS application
 variable "vpc_cidr" {
@@ -160,19 +176,20 @@ variable "availability_zones" {
 ```
 
 **Security Group Rules:**
+
 ```hcl
 # ALB security group - Internet facing
 resource "aws_security_group" "alb" {
   name_prefix = "rms-alb-"
   vpc_id      = var.vpc_id
-  
+
   ingress {
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-  
+
   ingress {
     from_port   = 443
     to_port     = 443
@@ -183,11 +200,12 @@ resource "aws_security_group" "alb" {
 ```
 
 **IAM Role Configuration:**
+
 ```hcl
 # ECS Task Execution Role
 resource "aws_iam_role" "ecs_task_execution" {
   name = "rms-ecs-task-execution-role"
-  
+
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -204,18 +222,21 @@ resource "aws_iam_role" "ecs_task_execution" {
 ```
 
 **State Management:**
+
 - S3 bucket with versioning enabled for state storage
 - DynamoDB table for state locking to prevent concurrent modifications
 - Encryption at rest and in transit for state files
 - Cross-region replication for disaster recovery
 
 **Cost Optimization Considerations:**
+
 - Use t3.micro/t3.small instances for development
 - Single NAT Gateway for development (multi-AZ for production)
 - VPC endpoints for AWS services to reduce data transfer costs
 - CloudWatch log retention periods to control storage costs
 
 ### Testing Standards
+
 **Source: [architecture/ci-and-testing.md]**
 
 **Testing Framework:** Terratest for infrastructure testing
@@ -223,12 +244,14 @@ resource "aws_iam_role" "ecs_task_execution" {
 **Coverage Requirements:** All modules should have basic smoke tests
 
 **Testing Strategy:**
+
 - **Unit Tests:** Test individual Terraform modules with terratest
 - **Integration Tests:** Test complete infrastructure deployment
 - **Security Tests:** Validate security group rules and IAM policies
 - **Cost Tests:** Validate resource configurations stay within budget
 
 **Test Scenarios:**
+
 - VPC and subnet creation across multiple AZs
 - Security group rules allow only intended traffic
 - IAM roles have minimum required permissions
@@ -236,6 +259,7 @@ resource "aws_iam_role" "ecs_task_execution" {
 - Variable validation prevents invalid configurations
 
 **Infrastructure Validation:**
+
 ```bash
 # Terraform validation commands
 terraform fmt -check=true -recursive
@@ -244,6 +268,7 @@ terraform plan -detailed-exitcode
 ```
 
 **Security Testing:**
+
 - Use checkov or tfsec for Terraform security scanning
 - Validate no hardcoded secrets in configurations
 - Check for overly permissive security groups
@@ -251,24 +276,30 @@ terraform plan -detailed-exitcode
 
 ## Change Log
 
-| Date | Version | Description | Author |
-|------|---------|-------------|---------|
-| 2024-08-30 | 1.0 | Initial story creation | Scrum Master Bob |
+| Date       | Version | Description            | Author           |
+| ---------- | ------- | ---------------------- | ---------------- |
+| 2024-08-30 | 1.0     | Initial story creation | Scrum Master Bob |
 
 ## Dev Agent Record
-*This section will be populated by the development agent during implementation*
+
+_This section will be populated by the development agent during implementation_
 
 ### Agent Model Used
-*To be filled by dev agent*
 
-### Debug Log References  
-*To be filled by dev agent*
+_To be filled by dev agent_
+
+### Debug Log References
+
+_To be filled by dev agent_
 
 ### Completion Notes List
-*To be filled by dev agent*
+
+_To be filled by dev agent_
 
 ### File List
-*To be filled by dev agent*
+
+_To be filled by dev agent_
 
 ## QA Results
-*Results from QA Agent review will be populated here after implementation*
+
+_Results from QA Agent review will be populated here after implementation_

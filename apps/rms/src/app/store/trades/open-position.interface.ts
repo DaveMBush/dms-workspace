@@ -14,4 +14,5 @@ export interface OpenPosition {
   lastPrice: number;
   unrealizedGainPercent: number;
   unrealizedGain: number;
+  [key: string]: unknown;
 }

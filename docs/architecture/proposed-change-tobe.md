@@ -40,6 +40,7 @@ Non‑selected symbols handling:
 ## API schema (examples)
 
 - Request
+
   - Method: POST
   - Path: `/api/universe/sync-from-screener`
   - Headers: `Content-Type: application/json`

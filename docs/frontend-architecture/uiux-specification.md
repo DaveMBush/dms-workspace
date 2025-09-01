@@ -1,7 +1,7 @@
 # **UI/UX Specification**
 
-* **Project Title**: Universe Update Process Enhancement
-* **Agent**: @ux
+- **Project Title**: Universe Update Process Enhancement
+- **Agent**: @ux
 
 ---
 
@@ -22,9 +22,9 @@ The user flow for updating the universe will be streamlined to a single-step act
 
 The primary change to the user interface involves simplifying the modal dialog.
 
-* **Removal of Elements**: The input fields for symbols (equities, income, and tax-free) will be removed from the modal dialog. This simplifies the dialog's appearance and interaction model.
-* **Button State**: The "Update Universe" button will be enabled by default when the dialog loads. It will no longer depend on the symbol input fields to be in a valid state.
-* **Modal Buttons**: The other existing buttons in the modal will be retained.
+- **Removal of Elements**: The input fields for symbols (equities, income, and tax-free) will be removed from the modal dialog. This simplifies the dialog's appearance and interaction model.
+- **Button State**: The "Update Universe" button will be enabled by default when the dialog loads. It will no longer depend on the symbol input fields to be in a valid state.
+- **Modal Buttons**: The other existing buttons in the modal will be retained.
 
 ---
 
@@ -32,9 +32,9 @@ The primary change to the user interface involves simplifying the modal dialog.
 
 The "Update Universe" button's behavior will be modified to reflect the new backend logic:
 
-* **API Call**: When the "Update Universe" button is clicked, it will initiate a request to the server.
-* **No Payload**: The frontend will no longer send a list of symbols in the API request payload. The request will be triggered by a simple button click.
-* **Server-Side Data Source**: The server-side code is responsible for retrieving the symbols directly from the screener database table and filtering them based on the true boolean fields, as described in the PRD.
+- **API Call**: When the "Update Universe" button is clicked, it will initiate a request to the server.
+- **No Payload**: The frontend will no longer send a list of symbols in the API request payload. The request will be triggered by a simple button click.
+- **Server-Side Data Source**: The server-side code is responsible for retrieving the symbols directly from the screener database table and filtering them based on the true boolean fields, as described in the PRD.
 
 ---
 

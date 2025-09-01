@@ -7,30 +7,18 @@
     {
       "name": "Launch server via PNPM",
       "request": "launch",
-      "runtimeArgs": [
-        "start:server",
-        "--",
-        "--inspect-brk"
-      ],
+      "runtimeArgs": ["start:server", "--", "--inspect-brk"],
       "runtimeExecutable": "pnpm",
-      "skipFiles": [
-        "<node_internals>/**"
-      ],
+      "skipFiles": ["<node_internals>/**"],
       "console": "integratedTerminal",
       "type": "node"
     },
     {
       "name": "Launch simulation via PNPM",
       "request": "launch",
-      "runtimeArgs": [
-        "start:simulation",
-        "--",
-        "--inspect-brk"
-      ],
+      "runtimeArgs": ["start:simulation", "--", "--inspect-brk"],
       "runtimeExecutable": "pnpm",
-      "skipFiles": [
-        "<node_internals>/**"
-      ],
+      "skipFiles": ["<node_internals>/**"],
       "console": "integratedTerminal",
       "type": "node"
     },

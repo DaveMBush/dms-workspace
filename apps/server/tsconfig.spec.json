@@ -5,9 +5,5 @@
     "module": "esnext",
     "types": ["vitest/globals", "node", "vitest"]
   },
-  "include": [
-    "vitest.config.ts",
-    "src/**/*.test.ts",
-    "src/**/*.spec.ts"
-  ]
+  "include": ["vitest.config.ts", "src/**/*.test.ts", "src/**/*.spec.ts"]
 }

@@ -1,6 +1,8 @@
 import { prisma } from '../../../prisma/prisma-client';
 
-type PrismaRiskGroup = Awaited<ReturnType<typeof prisma.risk_group.findMany>>[number];
+type PrismaRiskGroup = Awaited<
+  ReturnType<typeof prisma.risk_group.findMany>
+>[number];
 
 export async function ensureRiskGroupsExist(): Promise<PrismaRiskGroup[]> {
   const existingRiskGroups = await prisma.risk_group.findMany();

@@ -1,9 +1,16 @@
 <p-toolbar class="text-xl font-semibold toolbar flex-none">
-  <ng-template #start>
-    RMS Manager
-  </ng-template>
+  <ng-template #start> RMS Manager </ng-template>
   <ng-template #end>
-    <p-button ngSkipHydration icon="pi {{ isBrowser ? themeIcon : '' }}" class="mr-2" text severity="secondary" (onClick)="toggleTheme()" [pTooltip]="themeTooltip" tooltipPosition="bottom" />
+    <p-button
+      ngSkipHydration
+      icon="pi {{ isBrowser ? themeIcon : '' }}"
+      class="mr-2"
+      text
+      severity="secondary"
+      (onClick)="toggleTheme()"
+      [pTooltip]="themeTooltip"
+      tooltipPosition="bottom"
+    />
   </ng-template>
 </p-toolbar>
 <p-splitter
@@ -11,20 +18,21 @@
   [style]="{ height: '100%' }"
   stateStorage="local"
   stateKey="rms-splitter-state"
-  [panelSizes]="[20, 80]">
-    <ng-template #panel>
-      <div class="h-full w-full">
-        <rms-global
-          [selectedId]="selectedId"
-          (selectedIdChange)="onSelectionChange($event)"
-        />
-        <!-- TODO: Pass selection to accounts component if not using router-outlet -->
-        <router-outlet name="accounts"></router-outlet>
-      </div>
-    </ng-template>
-    <ng-template #panel>
-      <div class="h-full w-full">
-        <router-outlet></router-outlet>
-      </div>
-    </ng-template>
+  [panelSizes]="[20, 80]"
+>
+  <ng-template #panel>
+    <div class="h-full w-full">
+      <rms-global
+        [selectedId]="selectedId"
+        (selectedIdChange)="onSelectionChange($event)"
+      />
+      <!-- TODO: Pass selection to accounts component if not using router-outlet -->
+      <router-outlet name="accounts"></router-outlet>
+    </div>
+  </ng-template>
+  <ng-template #panel>
+    <div class="h-full w-full">
+      <router-outlet></router-outlet>
+    </div>
+  </ng-template>
 </p-splitter>

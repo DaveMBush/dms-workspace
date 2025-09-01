@@ -2,7 +2,7 @@ Here is the finalized Product Requirements Document (PRD) for your project.
 
 ## **Product Requirements Document (PRD)**
 
-* **Project Title**: Enhancement to the Universe Update Process
+- **Project Title**: Enhancement to the Universe Update Process
 
 ---
 
@@ -24,10 +24,10 @@ The manual symbol input fields on the modal dialog will be removed. The universe
 
 The specific requirements for this solution are:
 
-* The system will access the screener database table.
-* It will identify all entries in the table where the three boolean fields are set to true.
-* The symbol from each of these identified entries will be used to populate and update the universe of tradable CEFs.
-* The existing functionality that consumes the universe (e.g., the trading screen) must be updated to use this new data source.
+- The system will access the screener database table.
+- It will identify all entries in the table where the three boolean fields are set to true.
+- The symbol from each of these identified entries will be used to populate and update the universe of tradable CEFs.
+- The existing functionality that consumes the universe (e.g., the trading screen) must be updated to use this new data source.
 
 ---
 
@@ -39,9 +39,8 @@ This enhancement is intended for the application's sole user, the product owner 
 
 ## **5. Technical Requirements & Constraints**
 
-* **Frontend**: The frontend code for this enhancement must be written in **Angular 20** using **signals**. The use of **RxJS should be avoided**. The user interface will leverage the existing **PrimeNG component library** and **Tailwind CSS** for styling and layout.
-* **Backend**: The backend services must integrate with the existing stack, which uses the **Prisma ORM framework** with **Sqlite3** and the **better-sqlite3** driver. The API interface is built with the **Fastify framework**.
-* **General**: All new and modified code must strictly adhere to the project's established **lint rules** for both the frontend and backend.
+- **Frontend**: The frontend code for this enhancement must be written in **Angular 20** using **signals**. The use of **RxJS should be avoided**. The user interface will leverage the existing **PrimeNG component library** and **Tailwind CSS** for styling and layout.
+- **Backend**: The backend services must integrate with the existing stack, which uses the **Prisma ORM framework** with **Sqlite3** and the **better-sqlite3** driver. The API interface is built with the **Fastify framework**.
+- **General**: All new and modified code must strictly adhere to the project's established **lint rules** for both the frontend and backend.
 
 ---
-

@@ -1,4 +1,5 @@
-<p-table #tableRef
+<p-table
+  #tableRef
   [value]="positions$()"
   class="min-w-full max-h-full min-h-full rounded-lg shadow-sm table-fixed"
   [responsiveLayout]="'scroll'"
@@ -11,16 +12,10 @@
 >
   <ng-template pTemplate="header">
     <tr class="bg-gray-100">
-      <th class="min-w-16 max-w-16">
-        <input
-          pInputText
-          type="text"
-          [(ngModel)]="symbolFilter"
-          (ngModelChange)="onSymbolFilterChange()"
-          placeholder="Search Symbol"
-          class="w-20 p-input p-component p-inputwrapper p-inputtext"
-        />
-      </th>
+      <rms-symbol-filter-header
+        [(symbolFilter)]="symbolFilter"
+        (filterChange)="onSymbolFilterChange()"
+      ></rms-symbol-filter-header>
       <th>Buy</th>
       <th>Buy Date</th>
       <th>Quantity</th>
@@ -29,9 +24,9 @@
         Sell Date
         <i [class]="sortSignals.sellDateSortIcon$()"></i>
         @if (sortSignals.sellDateSortOrder$()) {
-          <span class="text-xs text-gray-500">
-            {{ sortSignals.sellDateSortOrder$() }}
-          </span>
+        <span class="text-xs text-gray-500">
+          {{ sortSignals.sellDateSortOrder$() }}
+        </span>
         }
       </th>
       <th>Days Held</th>
@@ -44,11 +39,10 @@
     <tr>
       <td>{{ row.symbol }}</td>
       <td class="w-100 overflow-hidden" [pEditableColumn]="'buy'">
-        <p-cellEditor
-        >
+        <p-cellEditor>
           <ng-template #input>
             <p-inputNumber
-              [style]="{'width': '100px'}"
+              [style]="{ width: '100px' }"
               [(ngModel)]="row.buy"
               (keydown.enter)="onEditCommit(row, 'buy')"
               (keydown)="stopArrowKeyPropagation($event)"
@@ -61,7 +55,7 @@
             ></p-inputNumber>
           </ng-template>
           <ng-template #output>
-            {{ row.buy | currency:'USD':'symbol':'1.2-4' }}
+            {{ row.buy | currency : 'USD' : 'symbol' : '1.2-4' }}
           </ng-template>
         </p-cellEditor>
       </td>
@@ -79,7 +73,7 @@
             ></p-datepicker>
           </ng-template>
           <ng-template #output>
-            {{ row.buyDate | date:'MM/dd/yyyy' }}
+            {{ row.buyDate | date : 'MM/dd/yyyy' }}
           </ng-template>
         </p-cellEditor>
       </td>
@@ -135,13 +129,13 @@
             ></p-datepicker>
           </ng-template>
           <ng-template #output>
-            {{ row.sellDate | date:'MM/dd/yyyy' }}
+            {{ row.sellDate | date : 'MM/dd/yyyy' }}
           </ng-template>
         </p-cellEditor>
       </td>
       <td>{{ row.daysHeld }}</td>
-      <td>{{ row.capitalGain | currency:'USD':'symbol':'1.2-4' }}</td>
-      <td>{{ row.capitalGainPercentage | number:'1.2-2' }}%</td>
+      <td>{{ row.capitalGain | currency : 'USD' : 'symbol' : '1.2-4' }}</td>
+      <td>{{ row.capitalGainPercentage | number : '1.2-2' }}%</td>
       <td>
         <p-button icon="pi pi-trash" severity="danger" (onClick)="trash(row)" />
       </td>

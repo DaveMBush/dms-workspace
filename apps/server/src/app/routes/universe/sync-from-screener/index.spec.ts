@@ -58,9 +58,21 @@ vi.mock('../../../prisma/prisma-client', () => ({
 }));
 
 function createFastify(): FastifyInstance {
-  const routes = new Map<string, (req: unknown, reply: { status(code: number): unknown; send(data: unknown): void }) => Promise<void>>();
+  const routes = new Map<
+    string,
+    (
+      req: unknown,
+      reply: { status(code: number): unknown; send(data: unknown): void }
+    ) => Promise<void>
+  >();
   return {
-    post(path: string, handler: (req: unknown, reply: { status(code: number): unknown; send(data: unknown): void }) => Promise<void>) {
+    post(
+      path: string,
+      handler: (
+        req: unknown,
+        reply: { status(code: number): unknown; send(data: unknown): void }
+      ) => Promise<void>
+    ) {
       routes.set(path, handler);
     },
     async invoke(path: string) {
@@ -89,18 +101,22 @@ describe('sync-from-screener route', () => {
   const RISK_GROUP_1 = 'risk1';
   const RISK_GROUP_2 = 'risk2';
   const EXISTING_ID = 'existing-id';
-  
+
   const expectedEmptyResponse = {
     inserted: 0,
     updated: 0,
     markedExpired: 0,
     selectedCount: 0,
     correlationId: TEST_CORRELATION_ID,
-    logFilePath: TEST_LOG_PATH
+    logFilePath: TEST_LOG_PATH,
   };
 
-  function createApiInstance(f: FastifyInstance): { invoke(p: string): Promise<{ statusCode: number; payload: unknown }> } {
-    return f as unknown as { invoke(p: string): Promise<{ statusCode: number; payload: unknown }> };
+  function createApiInstance(f: FastifyInstance): {
+    invoke(p: string): Promise<{ statusCode: number; payload: unknown }>;
+  } {
+    return f as unknown as {
+      invoke(p: string): Promise<{ statusCode: number; payload: unknown }>;
+    };
   }
 
   beforeEach(() => {
@@ -117,7 +133,9 @@ describe('sync-from-screener route', () => {
     vi.clearAllMocks();
 
     // Set up default transaction mock
-    h.client.$transaction.mockImplementation(async <T>(fn: (client: unknown) => Promise<T>) => fn(h.client));
+    h.client.$transaction.mockImplementation(
+      async <T>(fn: (client: unknown) => Promise<T>) => fn(h.client)
+    );
   });
 
   beforeEach(async () => {
@@ -151,17 +169,17 @@ describe('sync-from-screener route', () => {
       { symbol: 'TEST1', risk_group_id: RISK_GROUP_1 },
       { symbol: 'TEST2', risk_group_id: RISK_GROUP_2 },
     ];
-    
+
     h.client.screener.findMany.mockResolvedValueOnce(mockSymbols);
     h.client.universe.findFirst.mockResolvedValue(null); // No existing records
     h.client.universe.create.mockResolvedValue({});
     h.client.universe.updateMany.mockResolvedValueOnce({ count: 0 });
-    
+
     const f = createFastify();
     registerSyncFromScreener(f);
     const api = createApiInstance(f);
     const result = await api.invoke(SYNC_PATH);
-    
+
     expect(result.statusCode).toBe(200);
     expect(result.payload).toEqual({
       inserted: 2,
@@ -171,7 +189,7 @@ describe('sync-from-screener route', () => {
       correlationId: 'test-correlation-id',
       logFilePath: '/test/log/path.log',
     });
-    
+
     expect(h.client.universe.create).toHaveBeenCalledTimes(2);
   });
 
@@ -186,17 +204,17 @@ describe('sync-from-screener route', () => {
       ex_date: new Date('2024-01-01'),
       expired: false,
     };
-    
+
     h.client.screener.findMany.mockResolvedValueOnce(mockSymbols);
     h.client.universe.findFirst.mockResolvedValueOnce(existingRecord);
     h.client.universe.update.mockResolvedValue({});
     h.client.universe.updateMany.mockResolvedValueOnce({ count: 0 });
-    
+
     const f = createFastify();
     registerSyncFromScreener(f);
     const api = createApiInstance(f);
     const result = await api.invoke(SYNC_PATH);
-    
+
     expect(result.statusCode).toBe(200);
     expect(result.payload).toEqual({
       inserted: 0,
@@ -206,7 +224,7 @@ describe('sync-from-screener route', () => {
       correlationId: 'test-correlation-id',
       logFilePath: '/test/log/path.log',
     });
-    
+
     expect(h.client.universe.update).toHaveBeenCalledWith({
       where: { id: EXISTING_ID },
       data: {
@@ -222,17 +240,17 @@ describe('sync-from-screener route', () => {
 
   test('marks symbols as expired when not in screener', async () => {
     const mockSymbols = [{ symbol: 'ACTIVE', risk_group_id: RISK_GROUP_1 }];
-    
+
     h.client.screener.findMany.mockResolvedValueOnce(mockSymbols);
     h.client.universe.findFirst.mockResolvedValue(null);
     h.client.universe.create.mockResolvedValue({});
     h.client.universe.updateMany.mockResolvedValueOnce({ count: 3 });
-    
+
     const f = createFastify();
     registerSyncFromScreener(f);
     const api = createApiInstance(f);
     const result = await api.invoke(SYNC_PATH);
-    
+
     expect(result.statusCode).toBe(200);
     expect(result.payload).toEqual({
       inserted: 1,
@@ -242,7 +260,7 @@ describe('sync-from-screener route', () => {
       correlationId: 'test-correlation-id',
       logFilePath: '/test/log/path.log',
     });
-    
+
     expect(h.client.universe.updateMany).toHaveBeenCalledWith({
       where: {
         symbol: { notIn: ['ACTIVE'] },
@@ -257,19 +275,19 @@ describe('sync-from-screener route', () => {
       { symbol: 'GOOD', risk_group_id: RISK_GROUP_1 },
       { symbol: 'BAD', risk_group_id: RISK_GROUP_2 },
     ];
-    
+
     h.client.screener.findMany.mockResolvedValueOnce(mockSymbols);
     h.client.universe.findFirst
       .mockResolvedValueOnce(null) // GOOD symbol - no existing record
       .mockRejectedValueOnce(new Error('Database error')); // BAD symbol - error
     h.client.universe.create.mockResolvedValue({});
     h.client.universe.updateMany.mockResolvedValueOnce({ count: 0 });
-    
+
     const f = createFastify();
     registerSyncFromScreener(f);
     const api = createApiInstance(f);
     const result = await api.invoke(SYNC_PATH);
-    
+
     expect(result.statusCode).toBe(200);
     expect(result.payload).toEqual({
       inserted: 1,
@@ -279,7 +297,7 @@ describe('sync-from-screener route', () => {
       correlationId: 'test-correlation-id',
       logFilePath: '/test/log/path.log',
     });
-    
+
     expect(mockLogger.error).toHaveBeenCalledWith('Failed to process symbol', {
       symbol: 'BAD',
       error: 'Database error',
@@ -288,75 +306,92 @@ describe('sync-from-screener route', () => {
 
   test('logs appropriate messages during sync operation', async () => {
     const mockSymbols = [{ symbol: 'TEST', risk_group_id: RISK_GROUP_1 }];
-    
+
     h.client.screener.findMany.mockResolvedValueOnce(mockSymbols);
     h.client.universe.findFirst.mockResolvedValue(null);
     h.client.universe.create.mockResolvedValue({});
     h.client.universe.updateMany.mockResolvedValueOnce({ count: 1 });
-    
+
     const f = createFastify();
     registerSyncFromScreener(f);
     const api = createApiInstance(f);
     await api.invoke(SYNC_PATH);
-    
-    expect(mockLogger.info).toHaveBeenCalledWith('Sync from screener operation started', {
-      featureEnabled: true,
-      timestamp: expect.any(String) as string,
-    });
-    
-    expect(mockLogger.info).toHaveBeenCalledWith('Selected eligible screener records', {
-      selectedCount: 1,
-      symbols: ['TEST'],
-    });
-    
-    expect(mockLogger.info).toHaveBeenCalledWith('Marked universe records as expired', {
-      expiredCount: 1,
-      totalSymbols: 1,
-    });
-    
-    expect(mockLogger.info).toHaveBeenCalledWith('Sync from screener operation completed successfully', {
-      summary: {
-        inserted: 1,
-        updated: 0,
-        markedExpired: 1,
+
+    expect(mockLogger.info).toHaveBeenCalledWith(
+      'Sync from screener operation started',
+      {
+        featureEnabled: true,
+        timestamp: expect.any(String) as string,
+      }
+    );
+
+    expect(mockLogger.info).toHaveBeenCalledWith(
+      'Selected eligible screener records',
+      {
         selectedCount: 1,
-      },
-      duration: expect.any(Number) as number,
-      correlationId: 'test-correlation-id',
-    });
+        symbols: ['TEST'],
+      }
+    );
+
+    expect(mockLogger.info).toHaveBeenCalledWith(
+      'Marked universe records as expired',
+      {
+        expiredCount: 1,
+        totalSymbols: 1,
+      }
+    );
+
+    expect(mockLogger.info).toHaveBeenCalledWith(
+      'Sync from screener operation completed successfully',
+      {
+        summary: {
+          inserted: 1,
+          updated: 0,
+          markedExpired: 1,
+          selectedCount: 1,
+        },
+        duration: expect.any(Number) as number,
+        correlationId: 'test-correlation-id',
+      }
+    );
   });
 
   test('handles transaction failure in sync operation', async () => {
-    h.client.screener.findMany.mockRejectedValueOnce(new Error('Transaction failed'));
-    
+    h.client.screener.findMany.mockRejectedValueOnce(
+      new Error('Transaction failed')
+    );
+
     const f = createFastify();
     registerSyncFromScreener(f);
     const api = createApiInstance(f);
     const result = await api.invoke(SYNC_PATH);
-    
+
     expect(result.statusCode).toBe(200);
     expect(result.payload).toEqual(expectedEmptyResponse);
-    
-    expect(mockLogger.error).toHaveBeenCalledWith('Sync from screener operation failed', {
-      error: 'Transaction failed',
-      duration: expect.any(Number) as number,
-      correlationId: 'test-correlation-id',
-    });
+
+    expect(mockLogger.error).toHaveBeenCalledWith(
+      'Sync from screener operation failed',
+      {
+        error: 'Transaction failed',
+        duration: expect.any(Number) as number,
+        correlationId: 'test-correlation-id',
+      }
+    );
   });
 
   test('selects eligible screener records with correct criteria', async () => {
     const mockSymbols = [{ symbol: 'ELIGIBLE', risk_group_id: RISK_GROUP_1 }];
-    
+
     h.client.screener.findMany.mockResolvedValueOnce(mockSymbols);
     h.client.universe.findFirst.mockResolvedValue(null);
     h.client.universe.create.mockResolvedValue({});
     h.client.universe.updateMany.mockResolvedValueOnce({ count: 0 });
-    
+
     const f = createFastify();
     registerSyncFromScreener(f);
     const api = createApiInstance(f);
     await api.invoke(SYNC_PATH);
-    
+
     expect(h.client.screener.findMany).toHaveBeenCalledWith({
       where: {
         has_volitility: true,
@@ -378,21 +413,21 @@ describe('sync-from-screener route', () => {
       ex_date: new Date('2024-06-01'),
       expired: false,
     };
-    
+
     h.client.screener.findMany.mockResolvedValue(mockSymbols);
     h.client.universe.findFirst.mockResolvedValue(existingRecord);
     h.client.universe.update.mockResolvedValue({});
     h.client.universe.updateMany.mockResolvedValue({ count: 0 });
-    
+
     const f = createFastify();
     registerSyncFromScreener(f);
     const api = createApiInstance(f);
-    
+
     // First sync
     const result1 = await api.invoke(SYNC_PATH);
     // Second sync
     const result2 = await api.invoke(SYNC_PATH);
-    
+
     expect(result1.payload).toEqual(result2.payload);
     expect(h.client.universe.update).toHaveBeenCalledTimes(2);
     expect(h.client.universe.update).toHaveBeenCalledWith({
@@ -422,7 +457,7 @@ describe('sync-from-screener route', () => {
       ex_date: new Date('2024-03-01'),
       expired: false,
     };
-    
+
     h.client.screener.findMany.mockResolvedValueOnce(mockSymbols);
     h.client.universe.findFirst
       .mockResolvedValueOnce(null) // NEW symbol - no existing record
@@ -430,12 +465,12 @@ describe('sync-from-screener route', () => {
     h.client.universe.create.mockResolvedValue({});
     h.client.universe.update.mockResolvedValue({});
     h.client.universe.updateMany.mockResolvedValueOnce({ count: 2 });
-    
+
     const f = createFastify();
     registerSyncFromScreener(f);
     const api = createApiInstance(f);
     const result = await api.invoke(SYNC_PATH);
-    
+
     expect(result.statusCode).toBe(200);
     expect(result.payload).toEqual({
       inserted: 1,
@@ -445,32 +480,37 @@ describe('sync-from-screener route', () => {
       correlationId: 'test-correlation-id',
       logFilePath: '/test/log/path.log',
     });
-    
+
     expect(h.client.universe.create).toHaveBeenCalledTimes(1);
     expect(h.client.universe.update).toHaveBeenCalledTimes(1);
   });
 
   test('handles expire operation failure', async () => {
     const mockSymbols = [{ symbol: 'TEST', risk_group_id: RISK_GROUP_1 }];
-    
+
     h.client.screener.findMany.mockResolvedValueOnce(mockSymbols);
     h.client.universe.findFirst.mockResolvedValue(null);
     h.client.universe.create.mockResolvedValue({});
-    h.client.universe.updateMany.mockRejectedValueOnce(new Error('Database connection lost'));
-    
+    h.client.universe.updateMany.mockRejectedValueOnce(
+      new Error('Database connection lost')
+    );
+
     const f = createFastify();
     registerSyncFromScreener(f);
     const api = createApiInstance(f);
     const result = await api.invoke(SYNC_PATH);
-    
+
     expect(result.statusCode).toBe(200);
     expect(result.payload).toEqual(expectedEmptyResponse);
-    
-    expect(mockLogger.error).toHaveBeenCalledWith('Sync from screener operation failed', {
-      error: 'Database connection lost',
-      duration: expect.any(Number) as number,
-      correlationId: 'test-correlation-id',
-    });
+
+    expect(mockLogger.error).toHaveBeenCalledWith(
+      'Sync from screener operation failed',
+      {
+        error: 'Database connection lost',
+        duration: expect.any(Number) as number,
+        correlationId: 'test-correlation-id',
+      }
+    );
   });
 
   test('processes only valid symbols and skips null/undefined', async () => {
@@ -478,17 +518,17 @@ describe('sync-from-screener route', () => {
       { symbol: 'VALID1', risk_group_id: RISK_GROUP_1 },
       { symbol: 'VALID2', risk_group_id: RISK_GROUP_2 },
     ];
-    
+
     h.client.screener.findMany.mockResolvedValueOnce(mockSymbols);
     h.client.universe.findFirst.mockResolvedValue(null);
     h.client.universe.create.mockResolvedValue({});
     h.client.universe.updateMany.mockResolvedValueOnce({ count: 0 });
-    
+
     const f = createFastify();
     registerSyncFromScreener(f);
     const api = createApiInstance(f);
     const result = await api.invoke(SYNC_PATH);
-    
+
     expect(result.statusCode).toBe(200);
     expect(result.payload).toEqual({
       inserted: 2,
@@ -498,9 +538,7 @@ describe('sync-from-screener route', () => {
       correlationId: 'test-correlation-id',
       logFilePath: '/test/log/path.log',
     });
-    
+
     expect(h.client.universe.create).toHaveBeenCalledTimes(2);
   });
 });
-
-

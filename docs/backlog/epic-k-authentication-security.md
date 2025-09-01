@@ -7,6 +7,7 @@ Goal: Implement AWS-based authentication system to secure the application for si
 Currently, there is no authentication system. User mentioned they are the only one who will use this application, but want proper security to prevent unauthorized access. They correctly identified that AWS provides authentication services.
 
 **AWS Authentication Options:**
+
 - **AWS Cognito**: Managed user identity service (recommended for this use case)
 - **AWS IAM**: Identity and Access Management (more complex, enterprise-focused)
 - **Third-party**: Auth0, Firebase Auth, etc. (but user specifically wants AWS)
@@ -15,12 +16,14 @@ Currently, there is no authentication system. User mentioned they are the only o
 
 **Current State:** No authentication, all routes/API endpoints are open
 **Target State:** AWS Cognito-based authentication with:
+
 - Login screen protecting the application
 - JWT token-based API authentication
 - Single user management (user's personal account)
 - Session management and token refresh
 
 **Integration Points:**
+
 - Angular frontend: Login component, auth guard, HTTP interceptor
 - Fastify backend: JWT validation middleware, protected routes
 - AWS Cognito: User pool, app client, hosted UI (optional)
@@ -164,6 +167,7 @@ Dependencies: Stories K1-K7
 ## Technical Notes
 
 **Architecture Integration:**
+
 ```
 Frontend (Angular) → AWS Cognito → Backend (Fastify) → RDS Database
                    ↓
@@ -171,12 +175,14 @@ Frontend (Angular) → AWS Cognito → Backend (Fastify) → RDS Database
 ```
 
 **AWS Cognito Configuration:**
+
 - User Pool: Manages user accounts and authentication
 - App Client: Application registration with Cognito
 - Hosted UI: Optional pre-built login interface
 - Custom Domain: Professional appearance for login pages
 
 **Security Considerations:**
+
 - Use HTTPS everywhere (required for production)
 - Secure token storage (consider HTTP-only cookies)
 - Implement proper CORS policies
@@ -184,6 +190,7 @@ Frontend (Angular) → AWS Cognito → Backend (Fastify) → RDS Database
 - Audit logging for compliance
 
 **File Modifications (Minimal Changes):**
+
 1. New: `auth/` module with login component and service
 2. New: Authentication guard and HTTP interceptor
 3. Modify: App routing to include auth guard
@@ -192,12 +199,14 @@ Frontend (Angular) → AWS Cognito → Backend (Fastify) → RDS Database
 6. Update: Environment configuration for Cognito settings
 
 **Cost Considerations:**
+
 - Cognito pricing: $0.0055 per MAU (Monthly Active User)
 - Single user cost: ~$0.01 per month
 - JWT validation has no additional AWS costs
 - Consider Cognito free tier (50,000 MAUs)
 
 **Resume Value:**
+
 - AWS Cognito expertise
 - JWT authentication implementation
 - Angular authentication patterns

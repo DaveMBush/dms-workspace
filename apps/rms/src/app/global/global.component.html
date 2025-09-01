@@ -1,4 +1,7 @@
-<p-toolbar class="text-lg font-semibold" aria-label="Global portfolio selection">
+<p-toolbar
+  class="text-lg font-semibold"
+  aria-label="Global portfolio selection"
+>
   <ng-template #start>
     <div class="whitespace-nowrap truncate">Global</div>
   </ng-template>
@@ -13,8 +16,15 @@
   ariaLabel="Global portfolio options"
 >
   <ng-template pTemplate="item" let-global>
-    <div class="group flex flex-row basis-full" [class.selected-global]="selectedId === global.id">
-      <div class="flex-auto text-color hover:text-color-emphasis whitespace-nowrap truncate flex items-center">{{ global.name }}</div>
+    <div
+      class="group flex flex-row basis-full"
+      [class.selected-global]="selectedId === global.id"
+    >
+      <div
+        class="flex-auto text-color hover:text-color-emphasis whitespace-nowrap truncate flex items-center"
+      >
+        {{ global.name }}
+      </div>
     </div>
   </ng-template>
 </p-listbox>

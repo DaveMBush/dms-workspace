@@ -18,11 +18,13 @@ This directory contains scripts for database backup, restore, and server managem
 ## Usage Examples
 
 ### Basic Backup
+
 ```bash
 ./scripts/backup-database.sh
 ```
 
 ### Pre-Deployment Backup
+
 ```bash
 # With automatic timestamp
 ./scripts/pre-deployment-backup.sh
@@ -32,6 +34,7 @@ This directory contains scripts for database backup, restore, and server managem
 ```
 
 ### Restore Database
+
 ```bash
 # List available backups
 ./scripts/restore-database.sh
@@ -41,6 +44,7 @@ This directory contains scripts for database backup, restore, and server managem
 ```
 
 ### Server Control
+
 ```bash
 # Stop server
 ./scripts/stop-server.sh
@@ -81,6 +85,7 @@ backups/
 ## Error Handling
 
 All scripts include comprehensive error handling and will:
+
 - Exit with error codes on failure
 - Create safety backups when appropriate
 - Provide clear error messages

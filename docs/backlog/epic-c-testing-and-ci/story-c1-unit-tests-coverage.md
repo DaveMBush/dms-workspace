@@ -1,13 +1,16 @@
 # Story C1: Unit tests coverage
 
 ## Story
+
 Implement comprehensive unit test coverage for the Universe sync from Screener feature, including tests for all core business logic functions and proper coverage thresholds.
 
 ## Acceptance Criteria
+
 - Unit tests for selection, upsert mapping, expire logic, idempotency helper
 - Coverage thresholds documented; tests run in CI
 
 ## Tasks
+
 - [x] Extend existing sync endpoint tests with comprehensive scenarios
 - [x] Create unit tests for getDistributions utility function
 - [x] Create unit tests for getLastPrice utility function
@@ -16,15 +19,18 @@ Implement comprehensive unit test coverage for the Universe sync from Screener f
 - [x] Document coverage thresholds and CI requirements
 
 ## Dependencies
+
 - Story A1 (completed) - Backend sync endpoint implementation
 - Story A2 (completed) - Idempotency and transaction safety
 
 ## Dev Agent Record
 
 ### Agent Model Used
+
 Claude Sonnet 4 (claude-sonnet-4-20250514)
 
 ### File List
+
 - apps/server/src/app/routes/universe/sync-from-screener/index.spec.ts (enhanced - comprehensive endpoint tests)
 - apps/server/src/app/routes/settings/common/get-distributions.function.spec.ts (created - utility function tests)
 - apps/server/src/app/routes/settings/common/get-last-price.function.spec.ts (created - utility function tests)
@@ -33,6 +39,7 @@ Claude Sonnet 4 (claude-sonnet-4-20250514)
 - docs/testing/unit-test-coverage.md (created - coverage standards and CI requirements)
 
 ### Change Log
+
 - Enhanced sync endpoint tests with 7 additional comprehensive test scenarios
 - Added tests for new symbol insertion, existing symbol updates, mixed operations
 - Created tests for error handling, graceful failures, and idempotency validation
@@ -44,6 +51,7 @@ Claude Sonnet 4 (claude-sonnet-4-20250514)
 - Defined CI pipeline requirements and test execution standards
 
 ### Completion Notes
+
 - All acceptance criteria met with comprehensive unit test coverage
 - Tests cover selection logic (screener eligibility criteria)
 - Tests cover upsert mapping (insert/update decision logic and data transformation)
@@ -54,4 +62,5 @@ Claude Sonnet 4 (claude-sonnet-4-20250514)
 - Integrated with existing Vitest testing framework and mocking patterns
 
 ### Status
+
 Completed

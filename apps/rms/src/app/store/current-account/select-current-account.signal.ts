@@ -4,12 +4,11 @@ import { Account } from '../accounts/account.interface';
 import { selectAccountChildren } from '../trades/selectors/select-account-children.function';
 import { currentAccountSignalStore } from './current-account.signal-store';
 
-
 // Define the store instance type to properly type the parameter
 type CurrentAccountStore = InstanceType<typeof currentAccountSignalStore>;
 
 export function selectCurrentAccountSignal(
-  store: CurrentAccountStore,
+  store: CurrentAccountStore
 ): Signal<Account> {
   return computed(function selectCurrentAccount() {
     const currentAccountId = store.selectCurrentAccountId();

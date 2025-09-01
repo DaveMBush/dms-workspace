@@ -19,19 +19,18 @@ vi.mock('./sleep.function', () => ({
 }));
 
 describe('getLastPrice', () => {
-
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   test('returns regular market price for valid symbol', async () => {
     mockQuote.mockResolvedValueOnce({
-      regularMarketPrice: 25.50,
+      regularMarketPrice: 25.5,
     });
 
     const result = await getLastPrice('AAPL');
 
-    expect(result).toBe(25.50);
+    expect(result).toBe(25.5);
     expect(mockQuote).toHaveBeenCalledWith('AAPL');
   });
 

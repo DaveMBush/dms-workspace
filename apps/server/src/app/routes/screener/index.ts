@@ -1,12 +1,16 @@
 /* eslint-disable @typescript-eslint/naming-convention -- API compatibility */
-/* eslint-disable @typescript-eslint/no-explicit-any -- Cheerio element types */
-import * as cheerio from 'cheerio';
 import { FastifyInstance } from 'fastify';
 
 import { prisma } from '../../prisma/prisma-client';
 import { axiosGetWithBackoff } from '../common/axios-get-with-backoff.function';
+import {
+  extractHoldingsCount,
+  extractTopHoldingsPercent,
+  fetchCefPage,
+} from './cef-page-scraping.function';
 import { getConsistentDistributions } from './get-consistent-distributions.function';
 import { ScreeningData } from './screening-data.interface';
+import { filterQualifyingSymbols } from './screening-requirements.function';
 
 interface RiskGroupMap {
   equities: string;
@@ -14,16 +18,15 @@ interface RiskGroupMap {
   taxFree: string;
 }
 
-type QualifyingSymbol = ScreeningData;
-
 function createRequestHeaders(): Record<string, string> {
   return {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-    'Accept': 'application/json, text/plain, */*',
+    'User-Agent':
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+    Accept: 'application/json, text/plain, */*',
     'Accept-Language': 'en-US,en;q=0.9',
     'Accept-Encoding': 'gzip, deflate, br',
-    'Connection': 'keep-alive',
-    'Referer': 'https://www.cefconnect.com/closed-end-funds-screener',
+    Connection: 'keep-alive',
+    Referer: 'https://www.cefconnect.com/closed-end-funds-screener',
     'Sec-Fetch-Dest': 'empty',
     'Sec-Fetch-Mode': 'cors',
     'Sec-Fetch-Site': 'same-origin',
@@ -51,10 +54,9 @@ async function loadRiskGroups(): Promise<RiskGroupMap> {
 
 async function fetchScreeningData(): Promise<ScreeningData[]> {
   const url = 'https://www.cefconnect.com/api/v3/dailypricing';
-  const response = await axiosGetWithBackoff<ScreeningData[]>(
-    url,
-    { headers: createRequestHeaders() }
-  );
+  const response = await axiosGetWithBackoff<ScreeningData[]>(url, {
+    headers: createRequestHeaders(),
+  });
 
   const data = response.data;
   if (data.length === 0) {
@@ -64,84 +66,15 @@ async function fetchScreeningData(): Promise<ScreeningData[]> {
   return data;
 }
 
-function isSymbolTooNew(inceptionDate: string, fiveYearsAgo: Date): boolean {
-  return new Date(inceptionDate) > fiveYearsAgo;
-}
-
-function calculateAnnualizedYield(distribution: number, price: number, frequency: string): number {
-  if (frequency === 'Monthly') {
-    return 12 * distribution / price;
-  }
-  if (frequency === 'Quarterly') {
-    return 4 * distribution / price;
-  }
-  return 0;
-}
-
-function isEquityCategory(categoryId: number): boolean {
-  return categoryId <= 10 || categoryId === 25 || categoryId === 26;
-}
-
-function isFixedIncomeCategory(categoryId: number): boolean {
-  return categoryId >= 11 && categoryId <= 20;
-}
-
-function isTaxFreeCategory(categoryId: number): boolean {
-  return categoryId >= 21 && categoryId <= 24;
-}
-
-function meetsEquityRequirements(annualizedYield: number): boolean {
-  return annualizedYield >= 0.05;
-}
-
-function meetsFixedIncomeRequirements(annualizedYield: number): boolean {
-  return annualizedYield >= 0.06;
-}
-
-function meetsTaxFreeRequirements(annualizedYield: number): boolean {
-  return annualizedYield >= 0.04;
-}
-
-function meetsDistributionRequirements(symbol: ScreeningData): boolean {
-  const annualizedYield = calculateAnnualizedYield(
-    symbol.CurrentDistribution,
-    symbol.Price,
-    symbol.DistributionFrequency
-  );
-
-  if (symbol.DistributionFrequency !== 'Monthly' && symbol.DistributionFrequency !== 'Quarterly') {
-    return false;
-  }
-
-  if (isEquityCategory(symbol.CategoryId)) {
-    return meetsEquityRequirements(annualizedYield);
-  }
-
-  if (isFixedIncomeCategory(symbol.CategoryId)) {
-    return meetsFixedIncomeRequirements(annualizedYield);
-  }
-
-  if (isTaxFreeCategory(symbol.CategoryId)) {
-    return meetsTaxFreeRequirements(annualizedYield);
-  }
-
-  return false;
-}
-
-function filterQualifyingSymbols(data: ScreeningData[]): QualifyingSymbol[] {
-  const fiveYearsAgo = new Date(Date.now() - 5 * 365 * 24 * 60 * 60 * 1000);
-
-  return data.filter(function filterSymbol(symbol: ScreeningData): boolean {
-    if (isSymbolTooNew(symbol.InceptionDate, fiveYearsAgo)) {
-      return false;
-    }
-
-    return meetsDistributionRequirements(symbol);
-  });
-}
-
-function determineRiskGroupId(symbol: QualifyingSymbol, riskGroups: RiskGroupMap): string | null {
-  if (symbol.CategoryId <= 10 || symbol.CategoryId === 25 || symbol.CategoryId === 26) {
+function determineRiskGroupId(
+  symbol: ScreeningData,
+  riskGroups: RiskGroupMap
+): string | null {
+  if (
+    symbol.CategoryId <= 10 ||
+    symbol.CategoryId === 25 ||
+    symbol.CategoryId === 26
+  ) {
     return riskGroups.equities;
   }
   if (symbol.CategoryId >= 11 && symbol.CategoryId <= 20) {
@@ -151,56 +84,6 @@ function determineRiskGroupId(symbol: QualifyingSymbol, riskGroups: RiskGroupMap
     return riskGroups.taxFree;
   }
   return null;
-}
-
-async function fetchCefPage(symbol: string): Promise<cheerio.CheerioAPI> {
-  const cefPage = await axiosGetWithBackoff<string>(
-    `https://www.cefconnect.com/fund/${symbol}`,
-    {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept': 'application/json, text/html, */*',
-        'Accept-Language': 'en-US,en;q=0.9',
-        'Accept-Encoding': 'gzip, deflate, br',
-        'Connection': 'keep-alive',
-        'Referer': '',
-        'Sec-Fetch-Dest': 'empty',
-        'Sec-Fetch-Mode': 'cors',
-        'Sec-Fetch-Site': 'same-origin',
-      },
-    },
-    {}
-  );
-
-  return cheerio.load(cefPage.data);
-}
-
-function extractHoldingsCount($: cheerio.CheerioAPI): number {
-  return $('#ContentPlaceHolder1_cph_main_cph_main_ucPortChar_pcSummaryGrid tr')
-    .map(function mapHoldingsRow(i: number, el: any): number {
-      if ($(el).find('td:nth-child(1) strong').text().trim() !== 'Number of Holdings:') {
-        return 0;
-      }
-      return parseInt($(el).find('td:nth-child(2)').text().trim(), 10);
-    })
-    .get()
-    .reduce(function sumHoldings(a: number, b: number): number {
-      return a + b;
-    }, 0);
-}
-
-function extractTopHoldingsPercent($: cheerio.CheerioAPI): number {
-  return $('#ContentPlaceHolder1_cph_main_cph_main_ucPortChar_TopHoldingsGrid tbody tr')
-    .map(function mapTopHoldingsRow(i: number, el: any): number {
-      if (i === 0) {
-        return 0;
-      }
-      return parseFloat($(el).find('td:nth-child(3)').text());
-    })
-    .get()
-    .reduce(function sumTopHoldings(a: number, b: number): number {
-      return a + b;
-    }, 0);
 }
 
 interface ScreenerRecord {
@@ -216,15 +99,34 @@ interface ScreenerRecord {
   distributions_per_year: number;
 }
 
-function shouldSkipNewSymbol(holdings: number, totalPercentTopHoldings: number, consistentDistributions: boolean, existingSymbol: ScreenerRecord | null): boolean {
-  return existingSymbol === null && (holdings < 50 || totalPercentTopHoldings > 40 || !consistentDistributions);
+function shouldSkipNewSymbol(
+  holdings: number,
+  totalPercentTopHoldings: number,
+  consistentDistributions: boolean,
+  existingSymbol: ScreenerRecord | null
+): boolean {
+  return (
+    existingSymbol === null &&
+    (holdings < 50 || totalPercentTopHoldings > 40 || !consistentDistributions)
+  );
 }
 
-function shouldDeleteExistingSymbol(holdings: number, totalPercentTopHoldings: number, consistentDistributions: boolean, existingSymbol: ScreenerRecord | null): boolean {
-  return existingSymbol !== null && (holdings < 50 || totalPercentTopHoldings > 40 || !consistentDistributions);
+function shouldDeleteExistingSymbol(
+  holdings: number,
+  totalPercentTopHoldings: number,
+  consistentDistributions: boolean,
+  existingSymbol: ScreenerRecord | null
+): boolean {
+  return (
+    existingSymbol !== null &&
+    (holdings < 50 || totalPercentTopHoldings > 40 || !consistentDistributions)
+  );
 }
 
-function createScreenerData(symbol: QualifyingSymbol, riskGroupId: string): ScreenerRecord {
+function createScreenerData(
+  symbol: ScreeningData,
+  riskGroupId: string
+): ScreenerRecord {
   return {
     symbol: symbol.Ticker,
     risk_group_id: riskGroupId,
@@ -239,7 +141,7 @@ function createScreenerData(symbol: QualifyingSymbol, riskGroupId: string): Scre
 }
 
 async function processSymbol(
-  symbol: QualifyingSymbol,
+  symbol: ScreeningData,
   riskGroups: RiskGroupMap
 ): Promise<void> {
   // processing symbol
@@ -256,13 +158,29 @@ async function processSymbol(
   const $ = await fetchCefPage(symbol.Ticker);
   const holdings = extractHoldingsCount($);
   const totalPercentTopHoldings = extractTopHoldingsPercent($);
-  const consistentDistributions = await getConsistentDistributions(symbol.Ticker);
+  const consistentDistributions = await getConsistentDistributions(
+    symbol.Ticker
+  );
 
-  if (shouldSkipNewSymbol(holdings, totalPercentTopHoldings, consistentDistributions, existingSymbol)) {
+  if (
+    shouldSkipNewSymbol(
+      holdings,
+      totalPercentTopHoldings,
+      consistentDistributions,
+      existingSymbol
+    )
+  ) {
     return;
   }
 
-  if (shouldDeleteExistingSymbol(holdings, totalPercentTopHoldings, consistentDistributions, existingSymbol)) {
+  if (
+    shouldDeleteExistingSymbol(
+      holdings,
+      totalPercentTopHoldings,
+      consistentDistributions,
+      existingSymbol
+    )
+  ) {
     await prisma.screener.delete({
       where: { symbol: symbol.Ticker },
     });
@@ -278,11 +196,15 @@ async function processSymbol(
   });
 }
 
-async function cleanupOldSymbols(qualifyingSymbols: QualifyingSymbol[]): Promise<void> {
+async function cleanupOldSymbols(
+  qualifyingSymbols: ScreeningData[]
+): Promise<void> {
   await prisma.screener.deleteMany({
     where: {
       symbol: {
-        notIn: qualifyingSymbols.map(function mapToTicker(symbol: QualifyingSymbol): string {
+        notIn: qualifyingSymbols.map(function mapToTicker(
+          symbol: ScreeningData
+        ): string {
           return symbol.Ticker;
         }),
       },
@@ -291,7 +213,8 @@ async function cleanupOldSymbols(qualifyingSymbols: QualifyingSymbol[]): Promise
 }
 
 export default function registerScreenerRoutes(fastify: FastifyInstance): void {
-  fastify.get('/',
+  fastify.get(
+    '/',
     async function handleScreenerRequest(_request, _reply): Promise<void> {
       const riskGroups = await loadRiskGroups();
       const data = await fetchScreeningData();
@@ -309,4 +232,3 @@ export default function registerScreenerRoutes(fastify: FastifyInstance): void {
     }
   );
 }
-

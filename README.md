@@ -25,29 +25,34 @@ This is an Nx monorepo containing:
 ## Quick Start
 
 ### Prerequisites
+
 - Node.js (LTS version)
 - pnpm package manager
 
 ### Development Setup
 
 1. **Clone the repository**:
+
    ```bash
    git clone <repository-url>
    cd rms-workspace
    ```
 
 2. **Install dependencies**:
+
    ```bash
    pnpm install
    ```
 
 3. **Set up environment**:
+
    ```bash
    # Create .env file in root directory
    echo "DATABASE_URL=file:./database.db" > .env
    ```
 
 4. **Start development servers**:
+
    ```bash
    # Start both frontend and backend
    pnpm nx run-many --target=serve --all
@@ -60,21 +65,25 @@ This is an Nx monorepo containing:
 ## Available Commands
 
 ### Development
+
 - `pnpm nx serve rms` - Start frontend development server
 - `pnpm nx serve server` - Start backend development server
 - `pnpm nx run-many --target=serve --all` - Start all services
 
 ### Building
+
 - `pnpm nx build rms` - Build frontend for production
 - `pnpm nx build server` - Build backend for production
 - `pnpm nx run-many --target=build --all` - Build all projects
 
 ### Testing
+
 - `pnpm nx test rms` - Run frontend tests
 - `pnpm nx test server` - Run backend tests
 - `pnpm nx run-many --target=test --all` - Run all tests
 
 ### Code Quality
+
 - `pnpm nx lint rms` - Lint frontend code
 - `pnpm nx lint server` - Lint backend code
 - `pnpm nx run-many --target=lint --all` - Lint all projects
@@ -82,17 +91,20 @@ This is an Nx monorepo containing:
 ## Key Features
 
 ### Universe Management
+
 The Universe screen provides direct access to portfolio universe management through icon-based controls:
 
 - **Update Fields** (`pi-refresh` icon): Refresh individual universe fields
 - **Update Universe** (`pi-sync` icon): Perform full universe synchronization with screener data
 
 ### Portfolio Tracking
+
 - **Accounts**: Manage multiple investment accounts
 - **Positions**: Track open and sold positions
 - **Risk Groups**: Categorize investments by risk profile
 
 ### Data Synchronization
+
 - **Always-On Sync**: Universe synchronization is always enabled (no configuration required)
 - **Real-time Updates**: Automatic data refresh from external screener services
 - **Background Processing**: Non-blocking operations with progress indicators
@@ -100,18 +112,21 @@ The Universe screen provides direct access to portfolio universe management thro
 ## Technology Stack
 
 ### Frontend
+
 - **Angular 20**: Latest Angular framework with signals
 - **PrimeNG 20**: UI component library
 - **TailwindCSS**: Utility-first CSS framework
 - **TypeScript**: Type-safe development
 
 ### Backend
+
 - **Node.js**: JavaScript runtime
 - **Fastify**: Fast and efficient web framework
 - **Prisma**: Database ORM
 - **SQLite**: Local development database
 
 ### Development Tools
+
 - **Nx 21.2.0**: Monorepo management and build system
 - **pnpm**: Fast, disk space efficient package manager
 - **Vitest**: Unit testing framework

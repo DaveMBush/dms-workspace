@@ -15,7 +15,9 @@ interface MonthData {
   month: number;
 }
 
-function extractMonthsFromTrades(trades: Array<{ sell_date: Date | null }>): Set<string> {
+function extractMonthsFromTrades(
+  trades: Array<{ sell_date: Date | null }>
+): Set<string> {
   return new Set(
     trades
       .filter(function filterSoldTrades(trade) {
@@ -28,7 +30,9 @@ function extractMonthsFromTrades(trades: Array<{ sell_date: Date | null }>): Set
   );
 }
 
-function extractMonthsFromDivDeposits(divDeposits: Array<{ date: Date }>): Set<string> {
+function extractMonthsFromDivDeposits(
+  divDeposits: Array<{ date: Date }>
+): Set<string> {
   return new Set(
     divDeposits.map(function mapDivDepositToMonth(divDeposit) {
       const d = new Date(divDeposit.date);
@@ -37,9 +41,15 @@ function extractMonthsFromDivDeposits(divDeposits: Array<{ date: Date }>): Set<s
   );
 }
 
-function combineAndSortMonths(months1: Set<string>, months2: Set<string>): MonthData[] {
+function combineAndSortMonths(
+  months1: Set<string>,
+  months2: Set<string>
+): MonthData[] {
   const combinedMonths = [...months1].concat([...months2]);
-  const sortedMonths = combinedMonths.toSorted(function sortMonthsDescending(a: string, b: string) {
+  const sortedMonths = combinedMonths.toSorted(function sortMonthsDescending(
+    a: string,
+    b: string
+  ) {
     return b.localeCompare(a);
   });
   return sortedMonths.map(function parseMonth(m) {
@@ -77,7 +87,8 @@ function mapAccountToResponse(account: PrismaAccountResult): Account {
 }
 
 function handleGetAccountsRoute(fastify: FastifyInstance): void {
-  fastify.post<{ Body: string[]; Reply: Account[] }>('/',
+  fastify.post<{ Body: string[]; Reply: Account[] }>(
+    '/',
     {
       schema: {
         body: {
@@ -93,33 +104,33 @@ function handleGetAccountsRoute(fastify: FastifyInstance): void {
       }
 
       const accounts = await prisma.accounts.findMany({
-    where: { id: { in: ids } },
-    select: {
-      id: true,
-      name: true,
-      trades: {
+        where: { id: { in: ids } },
         select: {
           id: true,
-          sell_date: true,
+          name: true,
+          trades: {
+            select: {
+              id: true,
+              sell_date: true,
+            },
+            orderBy: {
+              buy_date: 'asc' as const,
+            },
+          },
+          divDeposits: {
+            select: {
+              id: true,
+              date: true,
+            },
+            orderBy: {
+              date: 'asc' as const,
+            },
+          },
         },
         orderBy: {
-          buy_date: 'asc' as const,
+          name: 'asc' as const,
         },
-      },
-      divDeposits: {
-        select: {
-          id: true,
-          date: true,
-        },
-        orderBy: {
-          date: 'asc' as const,
-        },
-      },
-    },
-    orderBy: {
-      name: 'asc' as const,
-    },
-  });
+      });
       return accounts.map(function mapAccount(account) {
         return mapAccountToResponse(account);
       });
@@ -128,7 +139,8 @@ function handleGetAccountsRoute(fastify: FastifyInstance): void {
 }
 
 function handleAddAccountRoute(fastify: FastifyInstance): void {
-  fastify.post<{ Body: NewAccount; Reply: Account[] }>('/add',
+  fastify.post<{ Body: NewAccount; Reply: Account[] }>(
+    '/add',
     async function handleAddAccountRequest(request, reply): Promise<Account[]> {
       const result = await prisma.accounts.create({
         data: {
@@ -144,8 +156,6 @@ function handleAddAccountRoute(fastify: FastifyInstance): void {
       function mapTradeToId(trade: { id: string }): string {
         return trade.id;
       }
-
-
 
       function mapNewAccount(accountItem: AccountWithTrades): Account {
         return {
@@ -165,8 +175,12 @@ function handleAddAccountRoute(fastify: FastifyInstance): void {
 }
 
 function handleDeleteAccountRoute(fastify: FastifyInstance): void {
-  fastify.delete<{ Params: { id: string }; Reply: { success: boolean } }>('/:id',
-    async function handleDeleteAccountRequest(request, reply): Promise<{ success: boolean }> {
+  fastify.delete<{ Params: { id: string }; Reply: { success: boolean } }>(
+    '/:id',
+    async function handleDeleteAccountRequest(
+      request,
+      reply
+    ): Promise<{ success: boolean }> {
       const { id } = request.params;
       await prisma.accounts.delete({ where: { id } });
       reply.status(200).send({ success: true });
@@ -176,12 +190,16 @@ function handleDeleteAccountRoute(fastify: FastifyInstance): void {
 }
 
 function handleUpdateAccountRoute(fastify: FastifyInstance): void {
-  fastify.put<{ Body: { id: string; name: string }; Reply: Account[] }>('/',
-    async function handleUpdateAccountRequest(request, reply): Promise<Account[]> {
+  fastify.put<{ Body: { id: string; name: string }; Reply: Account[] }>(
+    '/',
+    async function handleUpdateAccountRequest(
+      request,
+      reply
+    ): Promise<Account[]> {
       const { id, name } = request.body;
       await prisma.accounts.update({
         where: { id },
-        data: { name }
+        data: { name },
       });
       const accounts = await prisma.accounts.findMany({
         where: { id },
@@ -215,5 +233,3 @@ export default function registerAccountRoutes(fastify: FastifyInstance): void {
   handleDeleteAccountRoute(fastify);
   handleUpdateAccountRoute(fastify);
 }
-
-

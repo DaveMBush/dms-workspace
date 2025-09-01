@@ -35,8 +35,10 @@ describe('ensureRiskGroupsExist', () => {
     expect(mockCreate).toHaveBeenCalledTimes(3);
     expect(mockCreate).toHaveBeenCalledWith({ data: { name: 'Equities' } });
     expect(mockCreate).toHaveBeenCalledWith({ data: { name: 'Income' } });
-    expect(mockCreate).toHaveBeenCalledWith({ data: { name: 'Tax Free Income' } });
-    
+    expect(mockCreate).toHaveBeenCalledWith({
+      data: { name: 'Tax Free Income' },
+    });
+
     expect(result).toHaveLength(3);
     expect(result[0]).toEqual({ id: 1, name: 'Equities' });
     expect(result[1]).toEqual({ id: 2, name: 'Income' });
@@ -55,7 +57,7 @@ describe('ensureRiskGroupsExist', () => {
 
     expect(mockFindMany).toHaveBeenCalledTimes(1);
     expect(mockCreate).not.toHaveBeenCalled();
-    
+
     expect(result).toHaveLength(3);
     expect(result[0]).toEqual({ id: 1, name: 'Equities' });
     expect(result[1]).toEqual({ id: 2, name: 'Income' });
@@ -74,7 +76,7 @@ describe('ensureRiskGroupsExist', () => {
 
     expect(mockFindMany).toHaveBeenCalledTimes(1);
     expect(mockCreate).not.toHaveBeenCalled();
-    
+
     expect(result).toHaveLength(3);
     expect(result[0]).toEqual({ id: 1, name: 'Equities' });
     expect(result[1]).toEqual({ id: 2, name: 'Income' });
@@ -82,9 +84,7 @@ describe('ensureRiskGroupsExist', () => {
   });
 
   test('creates missing risk groups when some exist', async () => {
-    const existingGroups = [
-      { id: 1, name: 'Equities' },
-    ];
+    const existingGroups = [{ id: 1, name: 'Equities' }];
     mockFindMany.mockResolvedValueOnce(existingGroups);
     mockCreate
       .mockResolvedValueOnce({ id: 2, name: 'Income' })
@@ -95,8 +95,10 @@ describe('ensureRiskGroupsExist', () => {
     expect(mockFindMany).toHaveBeenCalledTimes(1);
     expect(mockCreate).toHaveBeenCalledTimes(2);
     expect(mockCreate).toHaveBeenCalledWith({ data: { name: 'Income' } });
-    expect(mockCreate).toHaveBeenCalledWith({ data: { name: 'Tax Free Income' } });
-    
+    expect(mockCreate).toHaveBeenCalledWith({
+      data: { name: 'Tax Free Income' },
+    });
+
     expect(result).toHaveLength(3);
     expect(result[0]).toEqual({ id: 1, name: 'Equities' });
     expect(result[1]).toEqual({ id: 2, name: 'Income' });
@@ -107,7 +109,9 @@ describe('ensureRiskGroupsExist', () => {
     const dbError = new Error('Database connection failed');
     mockFindMany.mockRejectedValueOnce(dbError);
 
-    await expect(ensureRiskGroupsExist()).rejects.toThrow('Database connection failed');
+    await expect(ensureRiskGroupsExist()).rejects.toThrow(
+      'Database connection failed'
+    );
     expect(mockFindMany).toHaveBeenCalledTimes(1);
     expect(mockCreate).not.toHaveBeenCalled();
   });
@@ -117,16 +121,33 @@ describe('ensureRiskGroupsExist', () => {
     const dbError = new Error('Create operation failed');
     mockCreate.mockRejectedValueOnce(dbError);
 
-    await expect(ensureRiskGroupsExist()).rejects.toThrow('Create operation failed');
+    await expect(ensureRiskGroupsExist()).rejects.toThrow(
+      'Create operation failed'
+    );
     expect(mockFindMany).toHaveBeenCalledTimes(1);
     expect(mockCreate).toHaveBeenCalledTimes(1);
   });
 
   test('ensures correct order when existing groups have extra properties', async () => {
     const existingGroups = [
-      { id: 1, name: 'Equities', created_at: '2024-01-01', updated_at: '2024-01-01' },
-      { id: 2, name: 'Income', created_at: '2024-01-01', updated_at: '2024-01-01' },
-      { id: 3, name: 'Tax Free Income', created_at: '2024-01-01', updated_at: '2024-01-01' },
+      {
+        id: 1,
+        name: 'Equities',
+        created_at: '2024-01-01',
+        updated_at: '2024-01-01',
+      },
+      {
+        id: 2,
+        name: 'Income',
+        created_at: '2024-01-01',
+        updated_at: '2024-01-01',
+      },
+      {
+        id: 3,
+        name: 'Tax Free Income',
+        created_at: '2024-01-01',
+        updated_at: '2024-01-01',
+      },
     ];
     mockFindMany.mockResolvedValueOnce(existingGroups);
 

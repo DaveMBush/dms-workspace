@@ -1,0 +1,18 @@
+<td [pEditableColumn]="field$()" [class]="cellClass$()">
+  <p-cellEditor>
+    <ng-template #input>
+      <p-datepicker
+        [(ngModel)]="value"
+        (onSelect)="editCommit.emit()"
+        (keydown.enter)="editCommit.emit()"
+        (keydown)="stopArrowKeyPropagation($event)"
+        appendTo="body"
+        class="w-32 block"
+        dateFormat="mm/dd/yy"
+      ></p-datepicker>
+    </ng-template>
+    <ng-template #output>
+      {{ value$() | date : 'MM/dd/yyyy' }}
+    </ng-template>
+  </p-cellEditor>
+</td>
