@@ -17,11 +17,12 @@ function calculateAveragePurchaseData(universeId: string): {
   let totalQuantity = 0;
 
   for (const account of accounts) {
-    if (!account?.trades || !Array.isArray(account.trades)) {
+    if (!account?.trades) {
       continue;
     }
 
-    const trades = account.trades as Trade[];
+    // Handle Proxy arrays - convert to regular array if needed
+    const trades = Array.from(account.trades as Trade[]);
     const openTrades = trades.filter(function filterOpenTrades(trade) {
       return trade.universeId === universeId && trade.sell_date === undefined;
     });
