@@ -92,7 +92,7 @@
           (onInput)="onMinYieldFilterChange()"
         />
       </th>
-      <th [ngClass]="!isAvgYieldColumnVisible$() ? 'hidden' : ''"></th>
+      <th></th>
       <th></th>
       <th></th>
       <th></th>
@@ -133,7 +133,6 @@
       <th
         (click)="onSort('avg_purchase_yield_percent')"
         class="cursor-pointer select-none w-32"
-[ngClass]="!isAvgYieldColumnVisible$() ? 'hidden' : ''"
       >
         Avg Purchase Yield%
         <i [class]="sortSignals.avgPurchaseYieldSortIcon$()"></i>
@@ -230,7 +229,7 @@
         </p-cellEditor>
       </td>
       <td>{{ row.yield_percent | number : '1.2-2' }}%</td>
-      <td [ngClass]="!isAvgYieldColumnVisible$() ? 'hidden' : ''">
+      <td>
         {{ row.avg_purchase_yield_percent | number : '1.2-2' }}%
       </td>
       <td>{{ row.last_price }}</td>

@@ -5,7 +5,14 @@ import { SortSignals } from './sort-signals.interface';
 
 function createSortIconSignals(
   sortCriteria: Signal<Array<{ field: string; order: number }>>
-): Pick<SortSignals, 'avgPurchaseYieldSortIcon$' | 'exDateSortIcon$' | 'mostRecentSellDateSortIcon$' | 'mostRecentSellPriceSortIcon$' | 'yieldPercentSortIcon$'> {
+): Pick<
+  SortSignals,
+  | 'avgPurchaseYieldSortIcon$'
+  | 'exDateSortIcon$'
+  | 'mostRecentSellDateSortIcon$'
+  | 'mostRecentSellPriceSortIcon$'
+  | 'yieldPercentSortIcon$'
+> {
   return {
     yieldPercentSortIcon$: computed(function yieldPercentSortIconComputed() {
       return getSortIcon('yield_percent', sortCriteria);
@@ -37,7 +44,14 @@ function createSortIconSignals(
 
 function createSortOrderSignals(
   getSortOrder: (field: string) => number | null
-): Pick<SortSignals, 'avgPurchaseYieldSortOrder$' | 'exDateSortOrder$' | 'mostRecentSellDateSortOrder$' | 'mostRecentSellPriceSortOrder$' | 'yieldPercentSortOrder$'> {
+): Pick<
+  SortSignals,
+  | 'avgPurchaseYieldSortOrder$'
+  | 'exDateSortOrder$'
+  | 'mostRecentSellDateSortOrder$'
+  | 'mostRecentSellPriceSortOrder$'
+  | 'yieldPercentSortOrder$'
+> {
   return {
     yieldPercentSortOrder$: computed(function yieldPercentSortOrderComputed() {
       return getSortOrder('yield_percent');
@@ -76,7 +90,7 @@ export function createSortComputedSignals(
 ): SortSignals {
   const iconSignals = createSortIconSignals(sortCriteria);
   const orderSignals = createSortOrderSignals(getSortOrder);
-  
+
   return {
     ...iconSignals,
     ...orderSignals,

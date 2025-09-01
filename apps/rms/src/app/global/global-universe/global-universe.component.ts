@@ -160,11 +160,6 @@ export class GlobalUniverseComponent {
     });
   });
 
-  // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signals work better with arrow functions
-  readonly isAvgYieldColumnVisible$ = computed(() => 
-    this.selectedAccountId() !== 'all'
-  );
-
   updateFields(): void {
     const self = this;
     this.isUpdatingFields.set(true);
