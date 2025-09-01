@@ -92,6 +92,7 @@
           (onInput)="onMinYieldFilterChange()"
         />
       </th>
+      <th [ngClass]="!isAvgYieldColumnVisible$() ? 'hidden' : ''"></th>
       <th></th>
       <th></th>
       <th></th>
@@ -126,6 +127,19 @@
         @if (sortSignals.yieldPercentSortOrder$()) {
         <span class="text-xs text-gray-500">
           {{ sortSignals.yieldPercentSortOrder$() }}
+        </span>
+        }
+      </th>
+      <th
+        (click)="onSort('avg_purchase_yield_percent')"
+        class="cursor-pointer select-none w-32"
+[ngClass]="!isAvgYieldColumnVisible$() ? 'hidden' : ''"
+      >
+        Avg Purchase Yield%
+        <i [class]="sortSignals.avgPurchaseYieldSortIcon$()"></i>
+        @if (sortSignals.avgPurchaseYieldSortOrder$()) {
+        <span class="text-xs text-gray-500">
+          {{ sortSignals.avgPurchaseYieldSortOrder$() }}
         </span>
         }
       </th>
@@ -216,6 +230,9 @@
         </p-cellEditor>
       </td>
       <td>{{ row.yield_percent | number : '1.2-2' }}%</td>
+      <td [ngClass]="!isAvgYieldColumnVisible$() ? 'hidden' : ''">
+        {{ row.avg_purchase_yield_percent | number : '1.2-2' }}%
+      </td>
       <td>{{ row.last_price }}</td>
       <rms-editable-date-cell
         [field]="'ex_date'"
@@ -232,6 +249,7 @@
 </p-table>
 <p-toast />
 
+<!-- eslint-disable @angular-eslint/template/cyclomatic-complexity -->
 @if (showOverlay$()) {
 <div class="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
   <div class="text-center" role="status" aria-live="polite">
