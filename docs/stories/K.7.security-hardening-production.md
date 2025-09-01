@@ -1,9 +1,11 @@
 # Story K.7: Security Hardening and Production Readiness
 
 ## Status
+
 Draft
 
 ## Story
+
 **As a** single-user application owner,  
 **I want** to have comprehensive security hardening and production-ready authentication configurations,  
 **so that** my RMS application is protected against common security vulnerabilities and meets enterprise security standards for production deployment.
@@ -22,6 +24,7 @@ Draft
 ## Tasks / Subtasks
 
 - [ ] **Task 1: Implement secure HTTP-only cookie authentication** (AC: 1)
+
   - [ ] Create secure cookie service for token storage instead of sessionStorage/localStorage
   - [ ] Configure cookie attributes: HttpOnly, Secure, SameSite=Strict, proper expiration
   - [ ] Update authentication service to use secure cookies for token storage
@@ -30,6 +33,7 @@ Draft
   - [ ] Test secure cookie functionality across different browsers and scenarios
 
 - [ ] **Task 2: Implement Content Security Policy (CSP) headers** (AC: 2)
+
   - [ ] Configure CSP headers in Fastify server to prevent XSS attacks
   - [ ] Define allowed sources for scripts, styles, images, and other resources
   - [ ] Add nonce-based CSP for inline scripts and styles in Angular application
@@ -38,6 +42,7 @@ Draft
   - [ ] Document CSP policy and maintenance procedures for future updates
 
 - [ ] **Task 3: Add rate limiting for authentication endpoints** (AC: 3)
+
   - [ ] Implement rate limiting middleware for login, password reset, and token refresh endpoints
   - [ ] Configure adaptive rate limits: stricter limits after failed attempts
   - [ ] Add IP-based rate limiting with Redis or in-memory storage
@@ -46,6 +51,7 @@ Draft
   - [ ] Create monitoring and alerting for suspicious authentication patterns
 
 - [ ] **Task 4: Configure production CORS policies** (AC: 4)
+
   - [ ] Update CORS configuration with production domain whitelist
   - [ ] Implement environment-specific CORS settings (dev, staging, prod)
   - [ ] Configure proper preflight handling for authenticated requests
@@ -54,6 +60,7 @@ Draft
   - [ ] Test CORS configuration with production domains and subdomains
 
 - [ ] **Task 5: Implement secure logout with token revocation** (AC: 5)
+
   - [ ] Add server-side token blacklisting for immediate token invalidation
   - [ ] Implement AWS Cognito global sign out for all user sessions
   - [ ] Add secure logout endpoint with proper session cleanup
@@ -62,6 +69,7 @@ Draft
   - [ ] Test logout functionality across multiple browser tabs and devices
 
 - [ ] **Task 6: Add comprehensive audit logging and monitoring** (AC: 6)
+
   - [ ] Implement structured logging for all authentication events
   - [ ] Add security event logging: failed logins, token refresh, logout events
   - [ ] Create audit trail for user actions and administrative operations
@@ -70,6 +78,7 @@ Draft
   - [ ] Implement log retention policies and secure log storage
 
 - [ ] **Task 7: Perform security testing and vulnerability assessment** (AC: 7)
+
   - [ ] Conduct automated security testing with tools like OWASP ZAP or similar
   - [ ] Test for XSS vulnerabilities in all user input and output scenarios
   - [ ] Verify CSRF protection for all state-changing operations
@@ -88,18 +97,23 @@ Draft
 ## Dev Notes
 
 ### Previous Story Context
-**Dependencies:** 
+
+**Dependencies:**
+
 - Stories K.1-K.6 provide complete authentication system foundation
 - All previous authentication components must be hardened for production
 - Existing token storage, session management, and user profile systems
 
 ### Data Models and Architecture
+
 **Source: [docs/backlog/epic-k-authentication-security.md]**
+
 - Production deployment requirements and security considerations
 - AWS Cognito integration with enterprise security standards
 - Single-user application with high security requirements
 
 **Security Architecture:**
+
 ```
 Production Environment -> WAF/CDN -> Load Balancer -> Application
          ↓                  ↓           ↓              ↓
@@ -107,13 +121,16 @@ Production Environment -> WAF/CDN -> Load Balancer -> Application
 ```
 
 **Authentication Security Layers:**
+
 ```
-Browser Security (CSP, Secure Cookies) -> Application Security (Rate Limiting, CORS) 
+Browser Security (CSP, Secure Cookies) -> Application Security (Rate Limiting, CORS)
 -> AWS Cognito Security -> Backend Security (JWT Validation, Audit Logging)
 ```
 
 ### File Locations
+
 **Primary Files to Create:**
+
 1. `/apps/server/src/app/middleware/security.middleware.ts` - Security headers and CSP
 2. `/apps/server/src/app/middleware/rate-limit.middleware.ts` - Rate limiting implementation
 3. `/apps/server/src/app/services/audit-log.service.ts` - Audit logging service
@@ -122,12 +139,14 @@ Browser Security (CSP, Secure Cookies) -> Application Security (Rate Limiting, C
 6. `/docs/security/security-architecture.md` - Security documentation
 
 **Primary Files to Modify:**
+
 1. `/apps/server/src/app/app.ts` - Add security middleware and configuration
 2. `/apps/rms/src/app/auth/auth.service.ts` - Update to use secure cookies
 3. `/apps/server/src/app/middleware/auth.middleware.ts` - Add audit logging
 4. `/apps/rms/src/environments/environment.prod.ts` - Production security config
 
 **Configuration Files:**
+
 1. `/apps/server/src/config/security.config.ts` - Security configuration
 2. `/infrastructure/security/csp.config.ts` - CSP policy configuration
 3. `/infrastructure/security/rate-limits.config.ts` - Rate limiting rules
@@ -135,6 +154,7 @@ Browser Security (CSP, Secure Cookies) -> Application Security (Rate Limiting, C
 ### Technical Implementation Details
 
 **Security Middleware with CSP:**
+
 ```typescript
 // apps/server/src/app/middleware/security.middleware.ts
 import { FastifyRequest, FastifyReply } from 'fastify';
@@ -167,50 +187,34 @@ export const securityConfig: SecurityConfig = {
       'img-src': ["'self'", 'data:', 'https:'],
       'connect-src': ["'self'", 'https://*.amazonaws.com', 'https://api.rms-app.com'],
       'frame-ancestors': ["'none'"],
-      'form-action': ["'self'"]
+      'form-action': ["'self'"],
     },
     reportUri: '/api/csp-report',
-    reportOnly: false
+    reportOnly: false,
   },
   hsts: {
     maxAge: 31536000, // 1 year
     includeSubDomains: true,
-    preload: true
+    preload: true,
   },
   cors: {
-    origin: [
-      process.env.FRONTEND_URL || 'https://rms.yourdomain.com',
-      ...(process.env.NODE_ENV === 'development' ? ['http://localhost:4200'] : [])
-    ],
+    origin: [process.env.FRONTEND_URL || 'https://rms.yourdomain.com', ...(process.env.NODE_ENV === 'development' ? ['http://localhost:4200'] : [])],
     credentials: true,
-    allowedHeaders: [
-      'Content-Type',
-      'Authorization',
-      'X-Requested-With',
-      'X-CSRF-Token'
-    ]
-  }
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-CSRF-Token'],
+  },
 };
 
-export async function securityHeaders(
-  request: FastifyRequest,
-  reply: FastifyReply
-): Promise<void> {
+export async function securityHeaders(request: FastifyRequest, reply: FastifyReply): Promise<void> {
   // Content Security Policy
   const cspValue = Object.entries(securityConfig.csp.directives)
     .map(([directive, sources]) => `${directive} ${sources.join(' ')}`)
     .join('; ');
 
-  reply.header(
-    securityConfig.csp.reportOnly ? 'Content-Security-Policy-Report-Only' : 'Content-Security-Policy',
-    cspValue
-  );
+  reply.header(securityConfig.csp.reportOnly ? 'Content-Security-Policy-Report-Only' : 'Content-Security-Policy', cspValue);
 
   // HSTS Header
-  const hstsValue = `max-age=${securityConfig.hsts.maxAge}${
-    securityConfig.hsts.includeSubDomains ? '; includeSubDomains' : ''
-  }${securityConfig.hsts.preload ? '; preload' : ''}`;
-  
+  const hstsValue = `max-age=${securityConfig.hsts.maxAge}${securityConfig.hsts.includeSubDomains ? '; includeSubDomains' : ''}${securityConfig.hsts.preload ? '; preload' : ''}`;
+
   reply.header('Strict-Transport-Security', hstsValue);
 
   // Additional Security Headers
@@ -223,6 +227,7 @@ export async function securityHeaders(
 ```
 
 **Rate Limiting Middleware:**
+
 ```typescript
 // apps/server/src/app/middleware/rate-limit.middleware.ts
 import { FastifyRequest, FastifyReply } from 'fastify';
@@ -239,34 +244,34 @@ const rateLimitConfigs = {
   login: {
     windowMs: 15 * 60 * 1000, // 15 minutes
     maxRequests: 5, // 5 attempts per window
-    skipSuccessfulRequests: true
+    skipSuccessfulRequests: true,
   },
   passwordReset: {
     windowMs: 60 * 60 * 1000, // 1 hour
     maxRequests: 3, // 3 attempts per hour
-    skipSuccessfulRequests: false
+    skipSuccessfulRequests: false,
   },
   tokenRefresh: {
     windowMs: 60 * 1000, // 1 minute
     maxRequests: 10, // 10 refreshes per minute
-    skipSuccessfulRequests: true
-  }
+    skipSuccessfulRequests: true,
+  },
 };
 
 // In-memory rate limiter (use Redis in production)
 const rateLimiters = {
   login: new RateLimiterMemory({
     points: rateLimitConfigs.login.maxRequests,
-    duration: rateLimitConfigs.login.windowMs / 1000
+    duration: rateLimitConfigs.login.windowMs / 1000,
   }),
   passwordReset: new RateLimiterMemory({
     points: rateLimitConfigs.passwordReset.maxRequests,
-    duration: rateLimitConfigs.passwordReset.windowMs / 1000
+    duration: rateLimitConfigs.passwordReset.windowMs / 1000,
   }),
   tokenRefresh: new RateLimiterMemory({
     points: rateLimitConfigs.tokenRefresh.maxRequests,
-    duration: rateLimitConfigs.tokenRefresh.windowMs / 1000
-  })
+    duration: rateLimitConfigs.tokenRefresh.windowMs / 1000,
+  }),
 };
 
 export function createRateLimiter(type: keyof typeof rateLimiters) {
@@ -280,12 +285,15 @@ export function createRateLimiter(type: keyof typeof rateLimiters) {
       const remainingPoints = rateLimiterRes.remainingPoints || 0;
       const msBeforeNext = rateLimiterRes.msBeforeNext || 0;
 
-      request.log.warn({
-        ip: request.ip,
-        rateLimitType: type,
-        remainingPoints,
-        msBeforeNext
-      }, 'Rate limit exceeded');
+      request.log.warn(
+        {
+          ip: request.ip,
+          rateLimitType: type,
+          remainingPoints,
+          msBeforeNext,
+        },
+        'Rate limit exceeded'
+      );
 
       reply.header('Retry-After', Math.round(msBeforeNext / 1000));
       reply.header('X-RateLimit-Limit', rateLimitConfigs[type].maxRequests);
@@ -295,7 +303,7 @@ export function createRateLimiter(type: keyof typeof rateLimiters) {
       return reply.code(429).send({
         error: 'Too Many Requests',
         message: `Rate limit exceeded for ${type}. Try again in ${Math.ceil(msBeforeNext / 1000)} seconds.`,
-        retryAfter: msBeforeNext
+        retryAfter: msBeforeNext,
       });
     }
   };
@@ -303,12 +311,13 @@ export function createRateLimiter(type: keyof typeof rateLimiters) {
 ```
 
 **Secure Cookie Service:**
+
 ```typescript
 // apps/rms/src/app/auth/services/secure-cookie.service.ts
 import { Injectable } from '@angular/core';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SecureCookieService {
   private readonly SECURE_TOKEN_NAME = '__Secure-auth-token';
@@ -323,9 +332,9 @@ export class SecureCookieService {
     try {
       const response = await fetch('/api/csrf-token', {
         method: 'GET',
-        credentials: 'include'
+        credentials: 'include',
       });
-      
+
       const data = await response.json();
       return data.csrfToken;
     } catch (error) {
@@ -337,18 +346,18 @@ export class SecureCookieService {
   private async sendTokenToServer(token: string, expirationDate: Date): Promise<void> {
     try {
       const csrfToken = await this.getCSRFToken();
-      
+
       await fetch('/api/auth/set-secure-cookie', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-CSRF-Token': csrfToken
+          'X-CSRF-Token': csrfToken,
         },
         credentials: 'include',
         body: JSON.stringify({
           token,
-          expirationDate: expirationDate.toISOString()
-        })
+          expirationDate: expirationDate.toISOString(),
+        }),
       });
     } catch (error) {
       console.error('Failed to set secure cookie:', error);
@@ -359,13 +368,13 @@ export class SecureCookieService {
   async clearSecureTokens(): Promise<void> {
     try {
       const csrfToken = await this.getCSRFToken();
-      
+
       await fetch('/api/auth/clear-cookies', {
         method: 'POST',
         headers: {
-          'X-CSRF-Token': csrfToken
+          'X-CSRF-Token': csrfToken,
         },
-        credentials: 'include'
+        credentials: 'include',
       });
     } catch (error) {
       console.error('Failed to clear secure cookies:', error);
@@ -375,6 +384,7 @@ export class SecureCookieService {
 ```
 
 **Audit Logging Service:**
+
 ```typescript
 // apps/server/src/app/services/audit-log.service.ts
 import { Injectable } from '@angular/core';
@@ -391,7 +401,7 @@ export interface AuditEvent {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuditLogService {
   private readonly LOG_ENDPOINT = process.env.AUDIT_LOG_ENDPOINT || 'cloudwatch';
@@ -407,11 +417,11 @@ export class AuditLogService {
         source: {
           ipAddress: this.hashIP(event.ipAddress),
           userAgent: event.userAgent,
-          origin: 'rms-application'
+          origin: 'rms-application',
         },
         details: event.details,
         riskLevel: event.riskLevel,
-        correlationId: this.generateCorrelationId()
+        correlationId: this.generateCorrelationId(),
       };
 
       // Send to logging service (CloudWatch, Splunk, etc.)
@@ -421,7 +431,6 @@ export class AuditLogService {
       if (event.riskLevel === 'HIGH' || event.riskLevel === 'CRITICAL') {
         await this.triggerSecurityAlert(logEntry);
       }
-
     } catch (error) {
       console.error('Failed to log audit event:', error);
       // Fallback to local logging
@@ -451,6 +460,7 @@ export class AuditLogService {
 ```
 
 **Production Environment Configuration:**
+
 ```typescript
 // apps/rms/src/environments/environment.prod.ts
 export const environment = {
@@ -460,28 +470,29 @@ export const environment = {
     userPoolId: process.env['COGNITO_USER_POOL_ID']!,
     userPoolWebClientId: process.env['COGNITO_USER_POOL_CLIENT_ID']!,
     mandatorySignIn: true,
-    authenticationFlowType: 'USER_SRP_AUTH'
+    authenticationFlowType: 'USER_SRP_AUTH',
   },
   security: {
     useSecureCookies: true,
     csrfProtection: true,
     rateLimitingEnabled: true,
     auditLoggingEnabled: true,
-    cspEnabled: true
+    cspEnabled: true,
   },
   api: {
     baseUrl: process.env['API_BASE_URL'] || 'https://api.rms-app.com',
-    timeout: 30000
+    timeout: 30000,
   },
   monitoring: {
     enablePerformanceMonitoring: true,
     enableSecurityMonitoring: true,
-    logLevel: 'warn'
-  }
+    logLevel: 'warn',
+  },
 };
 ```
 
 ### Testing Standards
+
 **Source: [docs/architecture/ci-and-testing.md]**
 
 **Testing Framework:** Vitest for unit tests, OWASP ZAP for security testing
@@ -489,12 +500,14 @@ export const environment = {
 **Coverage Requirements:** Lines: 85%, Branches: 75%, Functions: 85%
 
 **Security Testing Strategy:**
+
 - **Automated Security Testing:** OWASP ZAP integration in CI/CD pipeline
 - **Manual Penetration Testing:** Quarterly security assessments
 - **Vulnerability Scanning:** Regular dependency and infrastructure scans
 - **Compliance Testing:** GDPR, SOC 2, and other regulatory requirements
 
 **Key Security Test Scenarios:**
+
 - CSP policy enforcement and violation reporting
 - Rate limiting effectiveness under load
 - Secure cookie configuration and HttpOnly attributes
@@ -506,24 +519,30 @@ export const environment = {
 
 ## Change Log
 
-| Date | Version | Description | Author |
-|------|---------|-------------|---------|
-| 2024-08-30 | 1.0 | Initial story creation | Scrum Master Bob |
+| Date       | Version | Description            | Author           |
+| ---------- | ------- | ---------------------- | ---------------- |
+| 2024-08-30 | 1.0     | Initial story creation | Scrum Master Bob |
 
 ## Dev Agent Record
-*This section will be populated by the development agent during implementation*
+
+_This section will be populated by the development agent during implementation_
 
 ### Agent Model Used
-*To be filled by dev agent*
 
-### Debug Log References  
-*To be filled by dev agent*
+_To be filled by dev agent_
+
+### Debug Log References
+
+_To be filled by dev agent_
 
 ### Completion Notes List
-*To be filled by dev agent*
+
+_To be filled by dev agent_
 
 ### File List
-*To be filled by dev agent*
+
+_To be filled by dev agent_
 
 ## QA Results
-*Results from QA Agent review will be populated here after implementation*
+
+_Results from QA Agent review will be populated here after implementation_

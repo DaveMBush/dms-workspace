@@ -5,18 +5,18 @@ import {
   computed,
   inject,
   OnDestroy,
-OnInit,
+  OnInit,
   Signal,
   signal,
-  ViewEncapsulation, } from '@angular/core';
+  ViewEncapsulation,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { NavigationEnd,Router } from '@angular/router';
 import { SmartArray } from '@smarttools/smart-signals';
 import { ButtonModule } from 'primeng/button';
 import { ListboxModule } from 'primeng/listbox';
 import { ToolbarModule } from 'primeng/toolbar';
-import { filter, Subscription } from 'rxjs';
 
+import { BaseRouteComponent } from '../shared/base-route-component';
 import { NodeEditorComponent } from '../shared/components/edit/node-editor.component';
 import { Account as AccountInterface } from '../store/accounts/account.interface';
 import { selectAccounts } from '../store/accounts/selectors/select-accounts.function';
@@ -25,7 +25,14 @@ import { Top } from '../store/top/top.interface';
 import { AccountComponentService } from './account-component.service';
 
 @Component({
-  imports: [CommonModule, ButtonModule, FormsModule, NodeEditorComponent, ListboxModule, ToolbarModule],
+  imports: [
+    CommonModule,
+    ButtonModule,
+    FormsModule,
+    NodeEditorComponent,
+    ListboxModule,
+    ToolbarModule,
+  ],
   templateUrl: './account.html',
   styleUrl: './account.scss',
   selector: 'rms-account',
@@ -33,32 +40,22 @@ import { AccountComponentService } from './account-component.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   viewProviders: [AccountComponentService],
 })
-export class Account implements OnInit, OnDestroy {
+export class Account extends BaseRouteComponent implements OnInit, OnDestroy {
   private accountService = inject(AccountComponentService);
-  private router = inject(Router);
-  private routeSubscription?: Subscription;
-  accounts$ = selectAccounts as Signal<AccountInterface[] & SmartArray<Top, AccountInterface>>;
+  accounts$ = selectAccounts as Signal<
+    AccountInterface[] & SmartArray<Top, AccountInterface>
+  >;
+
   top = selectTopEntities().entities;
 
-  ngOnInit(): void {
+  override ngOnInit(): void {
     this.accountService.init(this);
 
-    // Set initial selection based on current route
-    this.updateSelectionFromRoute(this.router.url);
-
-    // Listen for route changes
-    const self = this;
-    this.routeSubscription = this.router.events
-      .pipe(filter(function filterNavigationEnd(event) {
-        return event instanceof NavigationEnd;
-      }))
-      .subscribe(function routeChangeSubscription() {
-        self.updateSelectionFromRoute(self.router.url);
-      });
+    super.ngOnInit();
   }
 
-  ngOnDestroy(): void {
-    this.routeSubscription?.unsubscribe();
+  override ngOnDestroy(): void {
+    super.ngOnDestroy();
   }
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- making this a function hides this
@@ -74,6 +71,18 @@ export class Account implements OnInit, OnDestroy {
   addingNode = '';
   editingNode = '';
   editingContent = '';
+
+  updateSelectionFromRoute(url: string): void {
+    const accountMatch = /\/account\/([^/]+)/.exec(url);
+    const accountId = accountMatch?.[1];
+
+    if (accountId !== undefined && accountId !== '') {
+      this.selectedAccountId$.set(accountId);
+    } else {
+      // Clear selection if not on an account route
+      this.selectedAccountId$.set(null);
+    }
+  }
 
   protected addAccount(): void {
     this.accountService.addAccount();
@@ -97,23 +106,8 @@ export class Account implements OnInit, OnDestroy {
 
   selectedAccountId$ = signal<string | null>(null);
 
-
-
   protected onAccountSelect(account: AccountInterface): void {
     this.selectedAccountId$.set(account.id);
     void this.router.navigate(['/account', account.id]);
   }
-
-  private updateSelectionFromRoute(url: string): void {
-    const accountMatch = /\/account\/([^/]+)/.exec(url);
-    const accountId = accountMatch?.[1];
-
-    if (accountId !== undefined && accountId !== '') {
-      this.selectedAccountId$.set(accountId);
-    } else {
-      // Clear selection if not on an account route
-      this.selectedAccountId$.set(null);
-    }
-  }
-
 }

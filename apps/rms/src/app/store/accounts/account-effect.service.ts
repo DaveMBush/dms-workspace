@@ -14,7 +14,7 @@ export class AccountEffectsService extends EffectService<Account> {
   private http = inject(HttpClient);
 
   override loadByIds(ids: string[]): Observable<Account[]> {
-    return this.http.post<Account[]>(this.apiAccount , ids);
+    return this.http.post<Account[]>(this.apiAccount, ids);
   }
 
   override update(newRow: Account): Observable<Account[]> {

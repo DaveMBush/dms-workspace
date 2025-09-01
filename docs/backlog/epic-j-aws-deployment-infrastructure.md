@@ -5,8 +5,9 @@ Goal: Deploy the RMS application to AWS using Infrastructure as Code (Terraform)
 ## Context
 
 Currently the application runs locally with:
+
 - **Frontend**: Angular 20 SPA (build: `apps/rms` → `dist/apps/rms`)
-- **Backend**: Node.js Fastify API server (build: `apps/server` → `dist/apps/server`) 
+- **Backend**: Node.js Fastify API server (build: `apps/server` → `dist/apps/server`)
 - **Database**: SQLite with Prisma (production will need PostgreSQL/MySQL)
 - **Tech Stack**: Nx monorepo, pnpm, Node.js 22
 
@@ -15,15 +16,17 @@ User wants to deploy to AWS using Infrastructure as Code with the most popular f
 ## Technical Context
 
 **Current Architecture:**
+
 - Frontend: Angular SPA served via development server
 - Backend: Fastify server on Node.js with SQLite
 - Build outputs: Static files for frontend, Node.js app for backend
 - No authentication currently implemented
 
 **AWS Target Architecture:**
+
 - **Frontend**: CloudFront + S3 for static hosting
 - **Backend**: ECS Fargate containers or Lambda functions
-- **Database**: RDS PostgreSQL 
+- **Database**: RDS PostgreSQL
 - **Infrastructure**: Terraform for IaC
 - **Optional**: Route53 for custom domain, ALB for load balancing
 
@@ -144,12 +147,14 @@ Dependencies: Stories J1-J6
 ## Technical Notes
 
 **Infrastructure as Code (Terraform):**
+
 - Use Terraform modules for reusable components
 - Organize by environment (dev, staging, prod)
 - State file management with versioning
 - Cost-conscious resource selection
 
 **File Structure:**
+
 ```
 infrastructure/
 ├── modules/
@@ -165,6 +170,7 @@ infrastructure/
 ```
 
 **Deployment Pipeline:**
+
 1. Build applications (frontend + backend)
 2. Push Docker image to ECR
 3. Deploy static files to S3
@@ -172,12 +178,14 @@ infrastructure/
 5. Invalidate CloudFront cache
 
 **Cost Considerations:**
+
 - Use AWS Free Tier where possible
 - Implement auto-scaling to minimize costs
 - Regular cost monitoring and optimization
 - Consider spot instances for development environments
 
 **Resume Value:**
+
 - Terraform experience (most popular IaC tool)
 - AWS services: ECS, RDS, CloudFront, S3, Route53
 - Container orchestration with Docker

@@ -7,7 +7,9 @@ import { getDistributions } from './common/get-distributions.function';
 import { getLastPrice } from './common/get-last-price.function';
 import { Settings } from './settings.interface';
 
-type PrismaRiskGroup = Awaited<ReturnType<typeof prisma.risk_group.findMany>>[number];
+type PrismaRiskGroup = Awaited<
+  ReturnType<typeof prisma.risk_group.findMany>
+>[number];
 type PrismaUniverse = Awaited<ReturnType<typeof prisma.universe.findFirst>>;
 
 interface Distribution {
@@ -16,9 +18,7 @@ interface Distribution {
   ex_date: Date;
 }
 
-
 yahooFinance.suppressNotices(['yahooSurvey']);
-
 
 function parseSymbols(value: string): string[] {
   return value
@@ -32,22 +32,27 @@ function parseSymbols(value: string): string[] {
 }
 
 function getAllSymbols(groupValues: string[]): string[] {
-  return groupValues
-    .flatMap(function processValue(groupValue) {
-      if (!groupValue) {
-        return [];
-      }
-      return parseSymbols(groupValue);
-    });
+  return groupValues.flatMap(function processValue(groupValue) {
+    if (!groupValue) {
+      return [];
+    }
+    return parseSymbols(groupValue);
+  });
 }
 
-async function processSymbolGroup(symbols: string[], riskGroupId: string): Promise<void> {
+async function processSymbolGroup(
+  symbols: string[],
+  riskGroupId: string
+): Promise<void> {
   for (const symbol of symbols) {
     await addOrUpdateSymbol(symbol, riskGroupId);
   }
 }
 
-async function processAllSymbolGroups(groupValues: string[], riskGroups: PrismaRiskGroup[]): Promise<void> {
+async function processAllSymbolGroups(
+  groupValues: string[],
+  riskGroups: PrismaRiskGroup[]
+): Promise<void> {
   for (let index = 0; index < groupValues.length; index++) {
     const groupValue = groupValues[index];
     if (!groupValue || groupValue.length === 0) {
@@ -72,14 +77,22 @@ async function markExpiredSymbols(allSymbols: string[]): Promise<void> {
   });
 }
 
-function shouldSetExDate(distribution: Distribution | undefined, today: Date): boolean {
-  return Boolean(distribution?.ex_date &&
-         distribution.ex_date instanceof Date &&
-         !isNaN(distribution.ex_date.valueOf()) &&
-         distribution.ex_date > today);
+function shouldSetExDate(
+  distribution: Distribution | undefined,
+  today: Date
+): boolean {
+  return Boolean(
+    distribution?.ex_date &&
+      distribution.ex_date instanceof Date &&
+      !isNaN(distribution.ex_date.valueOf()) &&
+      distribution.ex_date > today
+  );
 }
 
-function getExDateToSet(distribution: Distribution | undefined, today: Date): Date | undefined {
+function getExDateToSet(
+  distribution: Distribution | undefined,
+  today: Date
+): Date | undefined {
   if (shouldSetExDate(distribution, today)) {
     return distribution!.ex_date;
   }
@@ -112,22 +125,22 @@ async function updateExistingUniverse(data: UpdateUniverseData): Promise<void> {
   });
 }
 
-async function createNewUniverse(symbol: string, riskGroupId: string, lastPrice: number | null | undefined, distribution: Distribution | undefined): Promise<void> {
-  await prisma.universe.create({
-    data: {
-      symbol,
-      risk_group_id: riskGroupId,
-      distribution: distribution?.distribution ?? 0,
-      distributions_per_year: distribution?.distributions_per_year ?? 0,
-      last_price: lastPrice ?? 0,
-      most_recent_sell_date: null,
-      ex_date: distribution?.ex_date ?? new Date(),
-      expired: false,
-    },
-  });
+async function createNewUniverse(
+  symbol: string,
+  riskGroupId: string,
+  lastPrice: number | null | undefined,
+  distribution: Distribution | undefined
+): Promise<void> {
+  const { createUniverseRecord } = await import(
+    '../common/universe-operations.function'
+  );
+  await createUniverseRecord({ symbol, riskGroupId, lastPrice, distribution });
 }
 
-async function addOrUpdateSymbol(symbol: string, riskGroupId: string): Promise<void> {
+async function addOrUpdateSymbol(
+  symbol: string,
+  riskGroupId: string
+): Promise<void> {
   const universe = await prisma.universe.findFirst({
     where: { symbol },
   });
@@ -143,14 +156,17 @@ async function addOrUpdateSymbol(symbol: string, riskGroupId: string): Promise<v
       riskGroupId,
       lastPrice,
       distribution,
-      exDateToSet
+      exDateToSet,
     });
   } else {
     await createNewUniverse(symbol, riskGroupId, lastPrice, distribution);
   }
 }
 
-async function handleSettingsRequest(request: { body: Settings }, reply: { status(code: number): { send(data: { error: string }): void } }): Promise<void> {
+async function handleSettingsRequest(
+  request: { body: Settings },
+  reply: { status(code: number): { send(data: { error: string }): void } }
+): Promise<void> {
   const { equities, income, taxFreeIncome } = request.body;
 
   const riskGroups = await ensureRiskGroupsExist();
@@ -166,7 +182,8 @@ async function handleSettingsRequest(request: { body: Settings }, reply: { statu
 }
 
 function handleSettingsRoute(fastify: FastifyInstance): void {
-  fastify.post<{ Body: Settings }>('/',
+  fastify.post<{ Body: Settings }>(
+    '/',
     {
       schema: {
         body: {

@@ -100,17 +100,20 @@ The Test Architect (Quinn) provides comprehensive quality assurance throughout t
 **What Happens During Review:**
 
 1. **Deep Code Analysis**
+
    - Architecture pattern compliance
    - Code quality and maintainability
    - Security vulnerability scanning
    - Performance bottleneck detection
 
 2. **Active Refactoring**
+
    - Improves code directly when safe
    - Fixes obvious issues immediately
    - Suggests complex refactoring for dev
 
 3. **Test Validation**
+
    - Coverage at all levels (unit/integration/E2E)
    - Test quality (no flaky tests, proper assertions)
    - Regression test adequacy

@@ -13,11 +13,13 @@ This guide covers setting up the RMS workspace environment for different deploym
 ### Basic Setup
 
 1. **Install Dependencies**:
+
    ```bash
    pnpm install
    ```
 
 2. **Create Environment File**:
+
    ```bash
    # Create .env file in workspace root
    cat > .env << EOF
@@ -29,6 +31,7 @@ This guide covers setting up the RMS workspace environment for different deploym
    ```
 
 3. **Start Development Servers**:
+
    ```bash
    # Terminal 1: Start backend server
    pnpm nx run server:serve
@@ -52,6 +55,7 @@ PORT=3000                               # Server port
 ### Docker Setup
 
 1. **Dockerfile**:
+
    ```dockerfile
    FROM node:18-alpine
 
@@ -79,7 +83,7 @@ PORT=3000                               # Server port
      rms-server:
        build: .
        ports:
-         - "3000:3000"
+         - '3000:3000'
        environment:
          - USE_SCREENER_FOR_UNIVERSE=false
          - DATABASE_URL=file:./database.db
@@ -90,16 +94,17 @@ PORT=3000                               # Server port
 ### Kubernetes Setup
 
 1. **ConfigMap**:
+
    ```yaml
    apiVersion: v1
    kind: ConfigMap
    metadata:
      name: rms-config
    data:
-     USE_SCREENER_FOR_UNIVERSE: "false"
-     DATABASE_URL: "file:./database.db"
-     HOST: "0.0.0.0"
-     PORT: "3000"
+     USE_SCREENER_FOR_UNIVERSE: 'false'
+     DATABASE_URL: 'file:./database.db'
+     HOST: '0.0.0.0'
+     PORT: '3000'
    ```
 
 2. **Deployment**:
@@ -119,13 +124,13 @@ PORT=3000                               # Server port
            app: rms-server
        spec:
          containers:
-         - name: rms-server
-           image: rms-server:latest
-           ports:
-           - containerPort: 3000
-           envFrom:
-           - configMapRef:
-               name: rms-config
+           - name: rms-server
+             image: rms-server:latest
+             ports:
+               - containerPort: 3000
+             envFrom:
+               - configMapRef:
+                   name: rms-config
    ```
 
 ## Production Environment
@@ -152,6 +157,7 @@ NODE_ENV=production                     # Production mode
 ### Safe Feature Flag Toggle
 
 1. **Enable Feature**:
+
    ```bash
    # Set feature flag
    export USE_SCREENER_FOR_UNIVERSE=true
@@ -165,6 +171,7 @@ NODE_ENV=production                     # Production mode
    ```
 
 2. **Verify Feature**:
+
    ```bash
    # Check feature flag endpoint
    curl https://your-domain.com/api/feature-flags
@@ -180,18 +187,21 @@ NODE_ENV=production                     # Production mode
 ## Environment-Specific Behaviors
 
 ### Local Development
+
 - **Feature Flag**: Easy to toggle via `.env` file
 - **Database**: Local SQLite file
 - **Restart Required**: Yes, after `.env` changes
 - **Testing**: Safe to experiment
 
 ### Development/Staging
+
 - **Feature Flag**: Set via environment variables
 - **Database**: Separate development database
 - **Restart Required**: Yes, after environment changes
 - **Testing**: Safe to test features
 
 ### Production
+
 - **Feature Flag**: Set via environment variables
 - **Database**: Production database with real data
 - **Restart Required**: Yes, after environment changes
@@ -203,11 +213,13 @@ NODE_ENV=production                     # Production mode
 ### Common Issues
 
 1. **Environment Variable Not Read**:
+
    - Verify variable name spelling
    - Check for extra spaces or quotes
    - Restart server after changes
 
 2. **Database Connection Issues**:
+
    - Verify `DATABASE_URL` format
    - Check file permissions
    - Ensure database file exists
@@ -245,6 +257,3 @@ ls -la database.db
 - [Feature Flags Guide](./feature-flags.md) - Detailed feature flag configuration
 - [Architecture Documentation](../architecture/index.md) - System architecture overview
 - [Rollback Runbook](../rollback-runbook.md) - Emergency procedures
-
-
-

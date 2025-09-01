@@ -5,7 +5,10 @@ import { getSortIcon } from './get-sort-icon.function';
 /**
  * Creates computed signals for sort icons and orders
  */
-export function createSortComputedSignals(sortCriteria: Signal<Array<{field: string, order: number}>>, getSortOrder: (field: string) => number | null): {
+export function createSortComputedSignals(
+  sortCriteria: Signal<Array<{ field: string; order: number }>>,
+  getSortOrder: (field: string) => number | null
+): {
   yieldPercentSortIcon$: Signal<string>;
   exDateSortIcon$: Signal<string>;
   mostRecentSellDateSortIcon$: Signal<string>;
@@ -24,13 +27,17 @@ export function createSortComputedSignals(sortCriteria: Signal<Array<{field: str
       return getSortIcon('ex_date', sortCriteria);
     }),
 
-    mostRecentSellDateSortIcon$: computed(function mostRecentSellDateSortIconComputed() {
-      return getSortIcon('most_recent_sell_date', sortCriteria);
-    }),
+    mostRecentSellDateSortIcon$: computed(
+      function mostRecentSellDateSortIconComputed() {
+        return getSortIcon('most_recent_sell_date', sortCriteria);
+      }
+    ),
 
-    mostRecentSellPriceSortIcon$: computed(function mostRecentSellPriceSortIconComputed() {
-      return getSortIcon('most_recent_sell_price', sortCriteria);
-    }),
+    mostRecentSellPriceSortIcon$: computed(
+      function mostRecentSellPriceSortIconComputed() {
+        return getSortIcon('most_recent_sell_price', sortCriteria);
+      }
+    ),
 
     yieldPercentSortOrder$: computed(function yieldPercentSortOrderComputed() {
       return getSortOrder('yield_percent');
@@ -40,12 +47,16 @@ export function createSortComputedSignals(sortCriteria: Signal<Array<{field: str
       return getSortOrder('ex_date');
     }),
 
-    mostRecentSellDateSortOrder$: computed(function mostRecentSellDateSortOrderComputed() {
-      return getSortOrder('most_recent_sell_date');
-    }),
+    mostRecentSellDateSortOrder$: computed(
+      function mostRecentSellDateSortOrderComputed() {
+        return getSortOrder('most_recent_sell_date');
+      }
+    ),
 
-    mostRecentSellPriceSortOrder$: computed(function mostRecentSellPriceSortOrderComputed() {
-      return getSortOrder('most_recent_sell_price');
-    })
+    mostRecentSellPriceSortOrder$: computed(
+      function mostRecentSellPriceSortOrderComputed() {
+        return getSortOrder('most_recent_sell_price');
+      }
+    ),
   };
 }

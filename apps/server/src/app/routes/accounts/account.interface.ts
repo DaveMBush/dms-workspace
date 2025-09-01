@@ -3,5 +3,5 @@ export interface Account {
   name: string;
   trades: string[];
   divDeposits: string[];
-  months: {month: number, year: number}[];
+  months: { month: number; year: number }[];
 }

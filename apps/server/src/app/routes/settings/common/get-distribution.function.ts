@@ -1,6 +1,6 @@
-import yahooFinance from "yahoo-finance2";
+import yahooFinance from 'yahoo-finance2';
 
-import { sleep } from "./sleep.function";
+import { sleep } from './sleep.function';
 
 interface Dividend {
   date: Date;
@@ -24,8 +24,8 @@ interface YahooFinanceResult {
 
 function createDateRange(): { oneYearAgo: Date; oneMonthFromNow: Date } {
   const exDate = new Date();
-  const oneYearAgo = new Date(exDate.valueOf() - (365 * 24 * 60 * 60 * 1000));
-  const oneMonthFromNow = new Date(exDate.valueOf() + (31 * 24 * 60 * 60 * 1000));
+  const oneYearAgo = new Date(exDate.valueOf() - 365 * 24 * 60 * 60 * 1000);
+  const oneMonthFromNow = new Date(exDate.valueOf() + 31 * 24 * 60 * 60 * 1000);
   return { oneYearAgo, oneMonthFromNow };
 }
 
@@ -49,7 +49,9 @@ function processDividends(result: YahooFinanceResult): Dividend[] | null {
 }
 
 function findCurrentDividend(dividends: Dividend[]): Dividend {
-  const currentDividend = dividends.find(function findCurrentDividendPredicate(d: Dividend): boolean {
+  const currentDividend = dividends.find(function findCurrentDividendPredicate(
+    d: Dividend
+  ): boolean {
     return d.date.valueOf() >= Date.now().valueOf();
   });
 
@@ -60,8 +62,13 @@ function findCurrentDividend(dividends: Dividend[]): Dividend {
   return dividends[dividends.length - 1];
 }
 
-function calculateDistributionsPerYear(dividends: Dividend[], currentDividend: Dividend): number {
-  const currentIndex = dividends.findIndex(function findCurrentIndex(d: Dividend): boolean {
+function calculateDistributionsPerYear(
+  dividends: Dividend[],
+  currentDividend: Dividend
+): number {
+  const currentIndex = dividends.findIndex(function findCurrentIndex(
+    d: Dividend
+  ): boolean {
     return d.date.valueOf() === currentDividend.date.valueOf();
   });
   const previousIndex = currentIndex - 1;
@@ -81,7 +88,10 @@ function calculateDistributionsPerYear(dividends: Dividend[], currentDividend: D
   return 12;
 }
 
-export async function getDistribution(symbol: string, retryCount: number = 0): Promise<DistributionResult | null> {
+export async function getDistribution(
+  symbol: string,
+  retryCount: number = 0
+): Promise<DistributionResult | null> {
   try {
     if (retryCount > 0) {
       await sleep(1000);

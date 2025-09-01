@@ -22,7 +22,7 @@ export class AccountComponentService {
         id: 'new',
         trades: [],
         divDeposits: [],
-        months: []
+        months: [],
       },
       this.component.top['1']!
     );
@@ -34,8 +34,9 @@ export class AccountComponentService {
   }
 
   cancelEdit(item: AccountInterface): void {
-    if(this.component.addingNode.length > 0) {
-      (this.component.accounts$() as SmartArray<Top, AccountInterface>).removeFromStore!(item, this.component.top['1']!);
+    if (this.component.addingNode.length > 0) {
+      (this.component.accounts$() as SmartArray<Top, AccountInterface>)
+        .removeFromStore!(item, this.component.top['1']!);
     }
     this.component.addingNode = '';
     this.component.editingNode = '';
@@ -50,7 +51,8 @@ export class AccountComponentService {
     if (this.component.editingContent === '') {
       return;
     }
-    const account = this.component.accountsArray$()
+    const account = this.component
+      .accountsArray$()
       .find(function findAccount(n: AccountInterface) {
         return n.id === item.id;
       });

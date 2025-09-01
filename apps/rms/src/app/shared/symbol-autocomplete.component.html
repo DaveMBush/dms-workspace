@@ -1,0 +1,14 @@
+<p-autoComplete
+  [(ngModel)]="selectedSymbol"
+  [suggestions]="suggestions$()"
+  (completeMethod)="filterSymbols.emit($event)"
+  [forceSelection]="true"
+  [dropdown]="true"
+  [minLength]="1"
+  [ngModelOptions]="{ standalone: true }"
+  [optionLabel]="'label'"
+  [optionValue]="'value'"
+  appendTo="body"
+  class="w-full"
+  placeholder="Select symbol..."
+></p-autoComplete>

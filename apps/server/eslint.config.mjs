@@ -58,7 +58,7 @@ export default [
         },
         {
           selector: 'typeProperty',
-          format: ['camelCase', 'snake_case', 'PascalCase',]
+          format: ['camelCase', 'snake_case', 'PascalCase'],
         },
         {
           selector: 'variable',
@@ -90,7 +90,7 @@ export default [
   {
     files: ['**/*.spec.ts', '**/*.test.ts'],
     rules: {
-      'sonarjs/no-duplicate-string': 'off'
+      'sonarjs/no-duplicate-string': 'off',
     },
   },
 ];

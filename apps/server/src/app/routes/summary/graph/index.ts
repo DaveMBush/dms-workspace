@@ -1,9 +1,10 @@
-import { FastifyInstance } from "fastify";
+import { FastifyInstance } from 'fastify';
 
-import { prisma } from "../../../prisma/prisma-client";
-import { aggregateAccountData } from "../aggregate-account-data.function";
-import { SummaryRequest } from "../summary-request.interface";
-import { GraphResponse } from "./graph.interface";
+import { prisma } from '../../../prisma/prisma-client';
+import { createAccountQuery } from '../../common/query-utils.function';
+import { aggregateAccountData } from '../aggregate-account-data.function';
+import { SummaryRequest } from '../summary-request.interface';
+import { GraphResponse } from './graph.interface';
 
 interface AccountWithData {
   divDeposits: Array<{
@@ -15,6 +16,32 @@ interface AccountWithData {
     buy: number;
     quantity: number;
   }>;
+}
+
+function getMonthBounds(
+  year: number,
+  month: number
+): { monthStart: Date; monthEnd: Date } {
+  return {
+    monthStart: new Date(year, month, 1),
+    monthEnd: new Date(year, month + 1, 1),
+  };
+}
+
+function extractMonthData(aggregatedData: {
+  deposits: number;
+  dividends: number;
+  capitalGains: number;
+}): {
+  monthDeposits: number;
+  monthDividends: number;
+  monthCapitalGains: number;
+} {
+  return {
+    monthDeposits: aggregatedData.deposits,
+    monthDividends: aggregatedData.dividends,
+    monthCapitalGains: aggregatedData.capitalGains,
+  };
 }
 
 function createGraphSchema(): Record<string, unknown> {
@@ -46,7 +73,11 @@ function createGraphSchema(): Record<string, unknown> {
   };
 }
 
-async function getAccountForMonth(accountId: string, monthStart: Date, monthEnd: Date): Promise<AccountWithData | null> {
+async function getAccountForMonth(
+  accountId: string,
+  monthStart: Date,
+  monthEnd: Date
+): Promise<AccountWithData | null> {
   return prisma.accounts.findUnique({
     where: { id: accountId },
     include: {
@@ -70,36 +101,24 @@ async function getAccountForMonth(accountId: string, monthStart: Date, monthEnd:
   });
 }
 
-async function getAllAccountsForMonth(monthStart: Date, monthEnd: Date): Promise<AccountWithData[]> {
+async function getAllAccountsForMonth(
+  monthStart: Date,
+  monthEnd: Date
+): Promise<AccountWithData[]> {
   return prisma.accounts.findMany({
-    include: {
-      divDeposits: {
-        where: {
-          date: {
-            gte: monthStart,
-            lt: monthEnd,
-          },
-        },
-      },
-      trades: {
-        where: {
-          sell_date: {
-            gte: monthStart,
-            lt: monthEnd,
-          },
-        },
-      },
-    },
+    ...createAccountQuery(monthStart, monthEnd),
   });
 }
-
-
 
 function formatMonthString(month: number, year: number): string {
   return `${(month + 1).toString().padStart(2, '0')}-${year}`;
 }
 
-async function processMonthData(accountId: string, year: number, month: number): Promise<{
+async function processMonthData(
+  accountId: string,
+  year: number,
+  month: number
+): Promise<{
   monthDeposits: number;
   monthDividends: number;
   monthCapitalGains: number;
@@ -117,35 +136,41 @@ async function processMonthData(accountId: string, year: number, month: number):
   return {
     monthDeposits: monthData.deposits,
     monthDividends: monthData.dividends,
-    monthCapitalGains: monthData.capitalGains
+    monthCapitalGains: monthData.capitalGains,
   };
 }
 
-async function processGlobalMonthData(year: number, month: number): Promise<{
+async function processGlobalMonthData(
+  year: number,
+  month: number
+): Promise<{
   monthDeposits: number;
   monthDividends: number;
   monthCapitalGains: number;
 }> {
-  const monthStart = new Date(year, month, 1);
-  const monthEnd = new Date(year, month + 1, 1);
-
+  const { monthStart, monthEnd } = getMonthBounds(year, month);
   const allAccounts = await getAllAccountsForMonth(monthStart, monthEnd);
-
-  const monthData = aggregateAccountData(allAccounts);
-  const monthDeposits = monthData.deposits;
-  const monthDividends = monthData.dividends;
-  const monthCapitalGains = monthData.capitalGains;
-
-  return { monthDeposits, monthDividends, monthCapitalGains };
+  return extractMonthData(aggregateAccountData(allAccounts));
 }
 
-async function generateGraphData(accountId: string, year: number): Promise<GraphResponse[]> {
+async function generateGraphDataInternal(
+  year: number,
+  monthProcessor: (
+    year: number,
+    month: number
+  ) => Promise<{
+    monthDeposits: number;
+    monthDividends: number;
+    monthCapitalGains: number;
+  }>
+): Promise<GraphResponse[]> {
   const results: GraphResponse[] = [];
   let runningTotal = 0;
   let pending = 0;
 
   for (let m = 0; m < 12; m++) {
-    const { monthDeposits, monthDividends, monthCapitalGains } = await processMonthData(accountId, year, m);
+    const { monthDeposits, monthDividends, monthCapitalGains } =
+      await monthProcessor(year, m);
 
     runningTotal += pending + monthDeposits;
     results.push({
@@ -158,36 +183,32 @@ async function generateGraphData(accountId: string, year: number): Promise<Graph
   }
 
   return results;
+}
+
+async function generateGraphData(
+  accountId: string,
+  year: number
+): Promise<GraphResponse[]> {
+  return generateGraphDataInternal(year, async function processMonth(y, m) {
+    return processMonthData(accountId, y, m);
+  });
 }
 
 async function generateGlobalGraphData(year: number): Promise<GraphResponse[]> {
-  const results: GraphResponse[] = [];
-  let runningTotal = 0;
-  let pending = 0;
-
-  for (let m = 0; m < 12; m++) {
-    const { monthDeposits, monthDividends, monthCapitalGains } = await processGlobalMonthData(year, m);
-
-    runningTotal += pending + monthDeposits;
-    results.push({
-      month: formatMonthString(m, year),
-      deposits: runningTotal,
-      dividends: monthDividends,
-      capitalGains: monthCapitalGains,
-    });
-    pending = monthDividends + monthCapitalGains;
-  }
-
-  return results;
+  return generateGraphDataInternal(year, processGlobalMonthData);
 }
 
 function handleGraphRoute(fastify: FastifyInstance): void {
-  fastify.get<{ Body: SummaryRequest, Reply: GraphResponse[] }>('/',
+  fastify.get<{ Body: SummaryRequest; Reply: GraphResponse[] }>(
+    '/',
     {
       schema: createGraphSchema(),
     },
     async function handleGraphRequest(request, reply): Promise<void> {
-      const { account_id: accountId, year } = request.query as { account_id?: string; year: string };
+      const { account_id: accountId, year } = request.query as {
+        account_id?: string;
+        year: string;
+      };
       const yearNum = parseInt(year, 10);
 
       let results: GraphResponse[];

@@ -1,4 +1,4 @@
-  import { HttpClient } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import {
   EffectService,
@@ -14,7 +14,7 @@ export class RiskGroupEffectsService extends EffectService<RiskGroup> {
   private http = inject(HttpClient);
 
   override loadByIds(ids: string[]): Observable<RiskGroup[]> {
-    return this.http.post<RiskGroup[]>(this.apiRiskGroup , ids);
+    return this.http.post<RiskGroup[]>(this.apiRiskGroup, ids);
   }
 
   override update(newRow: RiskGroup): Observable<RiskGroup[]> {

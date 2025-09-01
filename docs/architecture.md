@@ -23,13 +23,15 @@ See `prisma/schema.prisma` for the full schema.
 
 ## Current data flow (as‑is)
 
-1) Screener refresh and curation
+1. Screener refresh and curation
+
    - GET `/api/screener` scrapes + filters and upserts `screener` entries.
      Source: `apps/server/src/app/routes/screener/index.ts`.
    - POST `/api/screener/rows` returns selected screener rows by ids.
    - PUT `/api/screener/rows` updates booleans on a screener row.
 
-2) Manual universe management
+2. Manual universe management
+
    - UI dialog allows pasting symbols per risk group and triggers:
      - POST `/api/settings` to upsert `universe`, mark non‑listed symbols
        as `expired=true`.
@@ -37,13 +39,13 @@ See `prisma/schema.prisma` for the full schema.
      - GET `/api/settings/update` refreshes prices/distributions for all
        universes.
 
-3) Universe read & trading consumers
+3. Universe read & trading consumers
    - Universe CRUD:
      - POST `/api/universe` (load by ids)
      - POST `/api/universe/add`
      - PUT `/api/universe`
      - DELETE `/api/universe/:id`
-     Source: `routes/universe/index.ts`.
+       Source: `routes/universe/index.ts`.
    - Frontend consumes Universe via `UniverseEffectsService` and renders/sorts
      via `UniverseDataService`.
 
@@ -114,6 +116,7 @@ Non‑selected symbols handling:
 ```
 
 **Field Descriptions**:
+
 - `inserted` (number): Count of new universe records created
 - `updated` (number): Count of existing universe records updated
 - `markedExpired` (number): Count of universe records marked as expired
@@ -177,11 +180,13 @@ No changes to Universe read paths are required; consumers already read
 ## Testing plan
 
 - Unit
+
   - Selector that builds the set of eligible Screener ids.
   - Upsert function maps fields correctly and preserves history.
   - Expire function only marks symbols not present.
 
 - Integration (server)
+
   - Seed `risk_group`, `screener`, `universe` records, run sync, assert
     upserted rows and expirations. Re‑run to verify idempotency.
 
@@ -191,6 +196,7 @@ No changes to Universe read paths are required; consumers already read
 ## Deployment & configuration
 
 - Env
+
   - `DATABASE_URL` (existing)
   - `USE_SCREENER_FOR_UNIVERSE` (new)
 
@@ -204,16 +210,19 @@ These changes improve integrity and performance; apply via migrations after
 review. A phased approach avoids downtime and allows safe rollback.
 
 - Unique constraints
+
   - Add unique on `universe.symbol` (dedupe first; see below).
   - Add unique on `risk_group.name` to prevent duplicates.
 
 - Indexes
+
   - `universe`: index on `expired`, index on `risk_group_id`.
   - `screener`: composite index on
     `(has_volitility, objectives_understood, graph_higher_before_2008)` and
     an index on `risk_group_id`.
 
 - Phased rename (typo)
+
   - Field: `screener.has_volitility` → `has_volatility`.
   - Phase 1: Add new column `has_volatility` nullable, backfill from
     `has_volitility`, keep both updated in code (toggle via feature flag).
@@ -221,6 +230,7 @@ review. A phased approach avoids downtime and allows safe rollback.
   - Phase 3: Backfill verification, drop `has_volitility` column.
 
 - Dedupe plan for `universe.symbol`
+
   - Report current duplicates with a query and decide retention rule
     (keep most recent `updatedAt`).
   - Mark others as expired or archive before adding the unique.
@@ -235,37 +245,44 @@ Define quality gates and automation to protect existing functionality while
 adding the Screener→Universe sync.
 
 - Strategy
+
   - Unit: pure logic (selection, mapping, expire rules).
   - Integration (server): Fastify + Prisma on a temp SQLite file.
   - E2E (optional): UI smoke for dialog and table render.
   - Coverage thresholds: lines 85%, branches 75%, functions 85%.
 
 - Frameworks
+
   - Angular app: Jest (Nx preset), TestBed for components/services.
   - Server: Jest with ts-jest or swc, supertest for HTTP, Prisma test db.
 
 - Nx targets
+
   - `nx run-many -t lint` for all projects.
   - `nx run-many -t test --ci --code-coverage`.
   - `nx run-many -t build` (affected on PRs).
 
 - Test data and db
+
   - Use a per-test SQLite file via `DATABASE_URL=file:./test.db`.
   - Migrate before tests, wipe file after suite.
   - Seed minimal `risk_group` rows for server tests.
 
 - Server integration tests must cover
+
   - Select eligible screener rows (three booleans true).
   - Upsert new, update existing without losing history fields.
   - Mark non-selected as `expired=true`.
   - Idempotency: second run produces no changes.
 
 - Regression focus areas (manual checklist)
+
   - Trading views: positions and sell history unaffected.
   - Universe table sorting/filtering unchanged for existing symbols.
   - Settings manual update flow still works.
 
 - CI pipeline (high level)
+
   - Setup Node 20.x and pnpm; cache pnpm store and Nx cache.
   - Install, lint, test with coverage, build.
   - Upload coverage summary and fail under thresholds.
@@ -287,10 +304,10 @@ See detailed procedures in the [Rollback runbook](./rollback-runbook.md).
 
 ## Implementation sequence
 
-1) Server: implement POST `/api/universe/sync-from-screener`.
-2) UI: add "Use Screener" button and service call.
-3) Tests: unit + integration.
-4) Optional: job to schedule Screener refresh.
+1. Server: implement POST `/api/universe/sync-from-screener`.
+2. UI: add "Use Screener" button and service call.
+3. Tests: unit + integration.
+4. Optional: job to schedule Screener refresh.
 
 ## References (source of truth)
 

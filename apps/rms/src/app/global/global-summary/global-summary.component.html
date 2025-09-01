@@ -1,54 +1,40 @@
 <div class="flex flex-col h-full">
   <!-- Toolbar -->
   <div class="flex-none p-4 border-b border-gray-200 dark:border-gray-700">
-    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Global Summary</h1>
+    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+      Global Summary
+    </h1>
   </div>
 
   <!-- Content -->
   <div class="flex flex-col md:flex-row items-start p-8 w-full flex-1 gap-8">
     <!-- Left: Dropdown, stats, pie chart -->
     <div class="flex flex-col items-start w-full md:w-1/2 max-w-md">
-    <div class="mb-4">
-      <p-select
-        [options]="months$()"
-        [(ngModel)]="selectedMonth"
-        placeholder="Select Month"
-        class="w-48"
-        styleClass="w-48"
-      ></p-select>
+      <div class="mb-4">
+        <p-select
+          [options]="months$()"
+          [(ngModel)]="selectedMonth"
+          placeholder="Select Month"
+          class="w-48"
+          styleClass="w-48"
+        ></p-select>
+      </div>
+      <rms-summary-display
+        [summary]="summary$()"
+        [compositionData]="compositionData$()"
+        [compositionOptions]="compositionOptions"
+      >
+      </rms-summary-display>
     </div>
-    <div class="grid grid-cols-2 gap-6 w-full max-w-md mb-8">
-      <div class="flex flex-col">
-        <span class="text-xs text-gray-500">Base</span>
-        <span class="text-lg font-semibold">{{summary$().deposits | currency}}</span>
-      </div>
-      <div class="flex flex-col">
-        <span class="text-xs text-gray-500">Dividends</span>
-        <span class="text-lg font-semibold">{{summary$().dividends | currency}}</span>
-      </div>
-      <div class="flex flex-col">
-        <span class="text-xs text-gray-500">Capital Gain</span>
-        <span class="text-lg font-semibold">{{summary$().capitalGains | currency}}</span>
-      </div>
-      <div class="flex flex-col">
-        <span class="text-xs text-gray-500">% Increase</span>
-        <span class="text-lg font-semibold">{{
-          12 * (summary$().capitalGains + summary$().dividends) /
-            summary$().deposits | percent:'1.2-2'}}</span>
-      </div>
+    <!-- Right: Line chart -->
+    <div class="flex-1 w-full h-full">
+      <p-chart
+        type="line"
+        [data]="lineChartData$()"
+        [options]="lineChartOptions"
+        [height]="'100%'"
+        [width]="'100%'"
+      ></p-chart>
     </div>
-    <div class="w-full max-w-md">
-      <p-chart type="pie" [data]="compositionData$()" [options]="compositionOptions" styleClass="w-full h-72"/>
-    </div>
-  </div>
-  <!-- Right: Line chart -->
-  <div class="flex-1 w-full h-full">
-    <p-chart
-      type="line"
-      [data]="lineChartData$()"
-      [options]="lineChartOptions"
-      [height]="'100%'"
-      [width]="'100%'"
-    ></p-chart>
   </div>
 </div>

@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy,Component, computed, inject,model, output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  model,
+  output,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SmartArray } from '@smarttools/smart-signals';
@@ -6,19 +13,29 @@ import { AutoCompleteModule } from 'primeng/autocomplete';
 import { DatePickerModule } from 'primeng/datepicker';
 import { InputNumberModule } from 'primeng/inputnumber';
 
+import { SymbolAutocompleteComponent } from '../../shared/symbol-autocomplete.component';
+import {
+  createFilteredSymbolsSignal,
+  createSelectedSymbolExpiredSignal,
+} from '../../shared/symbol-filtering.function';
 import { Account } from '../../store/accounts/account.interface';
 import { currentAccountSignalStore } from '../../store/current-account/current-account.signal-store';
 import { selectCurrentAccountSignal } from '../../store/current-account/select-current-account.signal';
 import { Trade } from '../../store/trades/trade.interface';
-import { selectUniverses } from '../../store/universe/selectors/select-universes.function';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'rms-new-position',
   standalone: true,
-  imports: [AutoCompleteModule, InputNumberModule, DatePickerModule, FormsModule],
+  imports: [
+    AutoCompleteModule,
+    InputNumberModule,
+    DatePickerModule,
+    FormsModule,
+    SymbolAutocompleteComponent,
+  ],
   templateUrl: './new-position.component.html',
-  styleUrls: ['./new-position.component.scss']
+  styleUrls: ['./new-position.component.scss'],
 })
 export class NewPositionComponent {
   // eslint-disable-next-line @angular-eslint/no-output-native -- it is the only thing that make sense and it does not conflict
@@ -37,50 +54,25 @@ export class NewPositionComponent {
   buyDate = model<Date | null>(null);
   filter = model<string>('');
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- will hide this
-  filteredSymbols$ = computed(() => {
-    const symbols = selectUniverses();
-    const returnedSymbols = [] as { label: string; value: string; expired: boolean }[];
-    const selectedId = this.symbol();
-    let selectedSymbol: { label: string; value: string; expired: boolean } | undefined;
-    for (let i = 0; i < symbols.length; i++) {
-      const symbol = symbols[i];
-      const entry = {
-        label: symbol.symbol,
-        value: symbol.id,
-        expired: symbol.expired,
-      };
-      if (symbol.id === selectedId) {
-        selectedSymbol = entry;
-      }
-      returnedSymbols.push(entry);
-    }
-    const query = this.filter().toLowerCase();
-    let filtered = returnedSymbols.filter(function symbolFilter(r) {
-      return r.label.toLowerCase().includes(query);
-    });
-    // Ensure the selected symbol is always present
-    if (selectedSymbol && !filtered.some(function symbolValueFilter(r) {
-      return r.value === selectedSymbol.value;
-    })) {
-      filtered = [selectedSymbol, ...filtered];
-    }
-    return filtered;
-  });
+  symbolAsString = computed(() => this.symbol() ?? '');
+  filteredSymbols$ = createFilteredSymbolsSignal(
+    this.filter,
+    this.symbolAsString
+  );
 
-  // eslint-disable-next-line @smarttools/no-anonymous-functions -- will hide this
-  selectedSymbolExpired$ = computed(() => {
-    const symbols = selectUniverses();
-    for (let i = 0; i < symbols.length; i++) {
-      if (symbols[i].id === this.symbol()) {
-        return symbols[i].expired;
-      }
-    }
-    return false;
-  });
+  selectedSymbolExpired$ = createSelectedSymbolExpiredSignal(
+    this.symbolAsString
+  );
 
-  // eslint-disable-next-line @smarttools/no-anonymous-functions -- will hide this
-  canSave$ = computed(() =>
-    !!(this.symbol() !== null && this.buy() !== null && this.quantity() !== null && this.buyDate() !== null )
+  canSave$ = computed(
+    // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
+    () =>
+      !!(
+        this.symbol() !== null &&
+        this.buy() !== null &&
+        this.quantity() !== null &&
+        this.buyDate() !== null
+      )
   );
 
   filterSymbols(event: { query: string }): void {
@@ -89,23 +81,25 @@ export class NewPositionComponent {
     this.filter.set(event.query + '');
   }
 
-  private currentAccount = inject(currentAccountSignalStore)
-
+  private currentAccount = inject(currentAccountSignalStore);
 
   handleSave(): void {
     const account = selectCurrentAccountSignal(this.currentAccount);
     const act = account();
     const trades = act.trades as SmartArray<Account, Trade> & Trade[];
-    trades.add!({
-      id: 'new',
-      universeId: this.symbol()!,
-      accountId: this.accountId()!,
-      buy: Number(this.buy()!),
-      quantity: Number(this.quantity()!),
-      buy_date: this.buyDate()!.toISOString(),
-      sell_date: undefined,
-      sell: 0,
-    },act);
+    trades.add!(
+      {
+        id: 'new',
+        universeId: this.symbol()!,
+        accountId: this.accountId()!,
+        buy: Number(this.buy()!),
+        quantity: Number(this.quantity()!),
+        buy_date: this.buyDate()!.toISOString(),
+        sell_date: undefined,
+        sell: 0,
+      },
+      act
+    );
     this.close.emit();
   }
 

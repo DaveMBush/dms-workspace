@@ -1,9 +1,11 @@
 # Story J.5: Domain Setup and SSL Configuration
 
 ## Status
+
 Draft
 
 ## Story
+
 **As a** DevOps engineer,  
 **I want** to configure a custom domain with Route53 DNS and SSL certificates for both frontend and backend services,  
 **so that** the RMS application is accessible via professional domain names with secure HTTPS encryption and proper DNS management.
@@ -23,6 +25,7 @@ Draft
 ## Tasks / Subtasks
 
 - [ ] **Task 1: Setup Route53 hosted zone and domain configuration** (AC: 1)
+
   - [ ] Create Route53 hosted zone using Terraform for custom domain
   - [ ] Configure NS records and delegate domain to Route53 name servers
   - [ ] Setup domain health checks for DNS resolution monitoring
@@ -31,6 +34,7 @@ Draft
   - [ ] Document name server configuration for domain registrar
 
 - [ ] **Task 2: Request and validate SSL certificates** (AC: 2, 7)
+
   - [ ] Create ACM certificate requests for primary domain and subdomains
   - [ ] Configure DNS validation method for automated certificate validation
   - [ ] Setup certificate for CloudFront in us-east-1 region (required)
@@ -39,6 +43,7 @@ Draft
   - [ ] Configure automatic certificate renewal and monitoring
 
 - [ ] **Task 3: Configure frontend DNS records** (AC: 3, 5)
+
   - [ ] Create A and AAAA records for primary domain pointing to CloudFront
   - [ ] Configure www subdomain with redirect to primary domain
   - [ ] Setup app subdomain for application access if required
@@ -47,6 +52,7 @@ Draft
   - [ ] Test DNS propagation and resolution from multiple locations
 
 - [ ] **Task 4: Configure backend API DNS records** (AC: 4, 5)
+
   - [ ] Create A and AAAA records for API subdomain pointing to ALB
   - [ ] Configure api.domain.com subdomain for backend API access
   - [ ] Setup health checks for API domain resolution and SSL validation
@@ -55,6 +61,7 @@ Draft
   - [ ] Test API accessibility through custom domain
 
 - [ ] **Task 5: Associate certificates with AWS services** (AC: 6)
+
   - [ ] Update CloudFront distribution to use ACM certificate
   - [ ] Update ALB listeners to use SSL certificate for HTTPS traffic
   - [ ] Configure HTTPS-only policies and HTTP to HTTPS redirects
@@ -63,6 +70,7 @@ Draft
   - [ ] Test SSL configuration with SSL testing tools
 
 - [ ] **Task 6: Implement monitoring and health checks** (AC: 8)
+
   - [ ] Create CloudWatch alarms for certificate expiration monitoring
   - [ ] Setup Route53 health checks for domain and subdomain availability
   - [ ] Configure SNS notifications for SSL certificate and DNS issues
@@ -71,6 +79,7 @@ Draft
   - [ ] Setup automated testing for SSL configuration and domain access
 
 - [ ] **Task 7: Environment-specific domain configuration** (AC: 5, 9)
+
   - [ ] Configure development subdomain (dev.app.domain.com)
   - [ ] Setup staging subdomain (staging.app.domain.com)
   - [ ] Configure environment-specific SSL certificates if required
@@ -89,26 +98,34 @@ Draft
 ## Dev Notes
 
 ### Previous Story Context
-**Dependencies:** 
+
+**Dependencies:**
+
 - Story J.3 (Backend ECS) - requires ALB endpoint for API domain configuration
 - Story J.4 (Frontend S3/CloudFront) - requires CloudFront distribution for app domain
 
 ### Data Models and Architecture
+
 **Source: [Epic J Technical Notes]**
+
 - Domain architecture: app.domain.com (frontend), api.domain.com (backend)
 - SSL certificates required for CloudFront (us-east-1) and ALB (deployment region)
 - Route53 for DNS management and health monitoring
 
 **Source: [infrastructure/modules/cloudfront/]**
+
 - CloudFront distribution needs certificate ARN for custom domain
 - Aliases configuration for domain mapping
 
 **Source: [infrastructure/modules/alb/]**
+
 - ALB listeners need SSL certificate for HTTPS termination
 - Security group updates for HTTPS traffic (port 443)
 
 ### File Locations
+
 **Primary Files to Create:**
+
 1. `/infrastructure/modules/route53/main.tf` - Route53 hosted zone and DNS records
 2. `/infrastructure/modules/route53/variables.tf` - DNS module input variables
 3. `/infrastructure/modules/route53/outputs.tf` - DNS configuration outputs
@@ -119,12 +136,14 @@ Draft
 8. `/scripts/check-ssl.sh` - SSL certificate validation script
 
 **Primary Files to Modify:**
+
 1. `/infrastructure/modules/cloudfront/main.tf` - Add certificate and domain configuration
 2. `/infrastructure/modules/alb/main.tf` - Add HTTPS listener with certificate
 3. `/infrastructure/environments/dev/main.tf` - Include Route53 and ACM modules
 4. `/apps/rms/src/environments/environment.prod.ts` - Update API endpoint URLs
 
 **Test Files to Create:**
+
 1. `/e2e/domain-ssl-validation.spec.ts` - End-to-end domain and SSL testing
 2. `/infrastructure/modules/route53/main.tf.spec.ts` - Terraform module tests
 3. `/scripts/validate-dns.spec.sh` - DNS validation script tests
@@ -132,11 +151,12 @@ Draft
 ### Technical Implementation Details
 
 **Route53 Hosted Zone Configuration:**
+
 ```hcl
 resource "aws_route53_zone" "main" {
   name    = var.domain_name
   comment = "Hosted zone for RMS application"
-  
+
   tags = var.common_tags
 }
 
@@ -190,6 +210,7 @@ resource "aws_route53_record" "www" {
 ```
 
 **ACM Certificate Configuration:**
+
 ```hcl
 # Certificate for CloudFront (must be in us-east-1)
 resource "aws_acm_certificate" "frontend" {
@@ -257,6 +278,7 @@ resource "aws_acm_certificate_validation" "frontend" {
 ```
 
 **CloudFront Distribution Update:**
+
 ```hcl
 resource "aws_cloudfront_distribution" "rms_frontend" {
   # ... existing configuration ...
@@ -275,6 +297,7 @@ resource "aws_cloudfront_distribution" "rms_frontend" {
 ```
 
 **ALB HTTPS Listener Configuration:**
+
 ```hcl
 resource "aws_lb_listener" "rms_backend_https" {
   load_balancer_arn = aws_lb.rms_backend.arn
@@ -308,6 +331,7 @@ resource "aws_lb_listener" "rms_backend_http_redirect" {
 ```
 
 **DNS Health Checks:**
+
 ```hcl
 resource "aws_route53_health_check" "frontend" {
   fqdn                            = var.domain_name
@@ -341,6 +365,7 @@ resource "aws_route53_health_check" "api" {
 ```
 
 **Certificate Monitoring:**
+
 ```hcl
 resource "aws_cloudwatch_metric_alarm" "certificate_expiry" {
   alarm_name          = "rms-certificate-expiry-${var.environment}"
@@ -363,6 +388,7 @@ resource "aws_cloudwatch_metric_alarm" "certificate_expiry" {
 ```
 
 **DNS Validation Script:**
+
 ```bash
 #!/bin/bash
 # scripts/validate-dns.sh
@@ -404,6 +430,7 @@ echo "DNS and SSL validation completed successfully!"
 ```
 
 **Environment Configuration:**
+
 ```typescript
 // apps/rms/src/environments/environment.prod.ts
 export const environment = {
@@ -420,11 +447,12 @@ export const environment = {
   cors: {
     allowedOrigins: ['https://rms-app.com', 'https://www.rms-app.com'],
     credentials: true,
-  }
+  },
 };
 ```
 
 ### Testing Standards
+
 **Source: [architecture/ci-and-testing.md]**
 
 **Testing Framework:** Cypress for E2E testing, custom scripts for DNS/SSL validation
@@ -432,12 +460,14 @@ export const environment = {
 **Coverage Requirements:** All domain endpoints must be accessible and secure
 
 **Testing Strategy:**
+
 - **DNS Tests:** Validate all DNS records resolve correctly
 - **SSL Tests:** Verify SSL certificates are valid and properly configured
 - **E2E Tests:** Test complete application flow through custom domains
 - **Security Tests:** Validate HTTPS enforcement and security headers
 
 **Key Test Scenarios:**
+
 - All DNS records resolve to correct IP addresses/aliases
 - SSL certificates are valid and trusted
 - HTTP to HTTPS redirects work correctly
@@ -446,12 +476,14 @@ export const environment = {
 - Certificate expiration monitoring works correctly
 
 **Performance Benchmarks:**
+
 - DNS resolution time should be < 100ms
 - SSL handshake time should be < 500ms
 - Certificate validation should be automatic
 - Health check response time should be < 2 seconds
 
 **Security Testing:**
+
 - SSL configuration rated A+ on SSL Labs
 - HSTS headers properly configured
 - Certificate chain validation passes
@@ -460,24 +492,30 @@ export const environment = {
 
 ## Change Log
 
-| Date | Version | Description | Author |
-|------|---------|-------------|---------|
-| 2024-08-30 | 1.0 | Initial story creation | Scrum Master Bob |
+| Date       | Version | Description            | Author           |
+| ---------- | ------- | ---------------------- | ---------------- |
+| 2024-08-30 | 1.0     | Initial story creation | Scrum Master Bob |
 
 ## Dev Agent Record
-*This section will be populated by the development agent during implementation*
+
+_This section will be populated by the development agent during implementation_
 
 ### Agent Model Used
-*To be filled by dev agent*
 
-### Debug Log References  
-*To be filled by dev agent*
+_To be filled by dev agent_
+
+### Debug Log References
+
+_To be filled by dev agent_
 
 ### Completion Notes List
-*To be filled by dev agent*
+
+_To be filled by dev agent_
 
 ### File List
-*To be filled by dev agent*
+
+_To be filled by dev agent_
 
 ## QA Results
-*Results from QA Agent review will be populated here after implementation*
+
+_Results from QA Agent review will be populated here after implementation_

@@ -25,29 +25,33 @@ function mapScreenerToScreen(s: ScreenerSelect): Screen {
   };
 }
 
-async function handleGetScreenerRequest(request: { body: string[] }): Promise<Screen[]> {
+async function handleGetScreenerRequest(request: {
+  body: string[];
+}): Promise<Screen[]> {
   const ids = request.body;
   if (ids.length === 0) {
     return Promise.resolve([]);
   }
 
-  return prisma.screener.findMany({
-    where: { id: { in: ids } },
-    select: {
-    id: true,
-    symbol: true,
-    risk_group: {
+  return prisma.screener
+    .findMany({
+      where: { id: { in: ids } },
       select: {
-        name: true,
+        id: true,
+        symbol: true,
+        risk_group: {
+          select: {
+            name: true,
+          },
+        },
+        has_volitility: true,
+        objectives_understood: true,
+        graph_higher_before_2008: true,
       },
-    },
-    has_volitility: true,
-    objectives_understood: true,
-    graph_higher_before_2008: true,
-  },
-  }).then(function mapScreenerResults(screen: ScreenerSelect[]): Screen[] {
-    return screen.map(mapScreenerToScreen);
-  });
+    })
+    .then(function mapScreenerResults(screen: ScreenerSelect[]): Screen[] {
+      return screen.map(mapScreenerToScreen);
+    });
 }
 
 async function handleUpdateScreenerRequest(request: {
@@ -58,40 +62,49 @@ async function handleUpdateScreenerRequest(request: {
     graph_higher_before_2008: boolean;
   };
 }): Promise<Screen[]> {
-  const { id, has_volitility, objectives_understood, graph_higher_before_2008 } = request.body;
+  const {
+    id,
+    has_volitility,
+    objectives_understood,
+    graph_higher_before_2008,
+  } = request.body;
 
-  return prisma.screener.update({
-    where: { id },
-    data: {
-      has_volitility,
-      objectives_understood,
-      graph_higher_before_2008,
-    },
-  }).then(async function findUpdatedScreener(): Promise<ScreenerSelect[]> {
-    return prisma.screener.findMany({
+  return prisma.screener
+    .update({
       where: { id },
-      select: {
-    id: true,
-    symbol: true,
-    risk_group: {
-      select: {
-        name: true,
+      data: {
+        has_volitility,
+        objectives_understood,
+        graph_higher_before_2008,
       },
-    },
-    has_volitility: true,
-    objectives_understood: true,
-    graph_higher_before_2008: true,
-  },
+    })
+    .then(async function findUpdatedScreener(): Promise<ScreenerSelect[]> {
+      return prisma.screener.findMany({
+        where: { id },
+        select: {
+          id: true,
+          symbol: true,
+          risk_group: {
+            select: {
+              name: true,
+            },
+          },
+          has_volitility: true,
+          objectives_understood: true,
+          graph_higher_before_2008: true,
+        },
+      });
+    })
+    .then(function mapUpdatedResults(screen: ScreenerSelect[]): Screen[] {
+      return screen.map(mapScreenerToScreen);
     });
-  }).then(function mapUpdatedResults(screen: ScreenerSelect[]): Screen[] {
-    return screen.map(mapScreenerToScreen);
-  });
 }
 
 export default function registerScreenerRoutes(fastify: FastifyInstance): void {
   // Route to fetch accounts by IDs
   // Path: POST /api/accounts
-  fastify.post<{ Body: string[]; Reply: Screen[] }>('/',
+  fastify.post<{ Body: string[]; Reply: Screen[] }>(
+    '/',
     {
       schema: {
         body: {
@@ -113,11 +126,7 @@ export default function registerScreenerRoutes(fastify: FastifyInstance): void {
       graph_higher_before_2008: boolean;
     };
     Reply: Screen[];
-  }>('/',
-    async function handlePutRequest(request, _): Promise<Screen[]> {
-      return handleUpdateScreenerRequest(request);
-    }
-  );
+  }>('/', async function handlePutRequest(request, _): Promise<Screen[]> {
+    return handleUpdateScreenerRequest(request);
+  });
 }
-
-

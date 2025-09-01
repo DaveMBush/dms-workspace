@@ -1,9 +1,11 @@
 # Database Backup and Restore Procedures
 
 ## Overview
+
 This document provides comprehensive procedures for backing up and restoring the SQLite database before and during schema rollouts.
 
 ## Prerequisites
+
 - Access to the server environment where the database is located
 - Sufficient disk space (minimum 2x database size for safe operations)
 - Write permissions to backup directory
@@ -12,6 +14,7 @@ This document provides comprehensive procedures for backing up and restoring the
 ## Backup Procedures
 
 ### 1. Pre-Rollout Backup (Mandatory)
+
 **When**: Before any schema migration or major deployment
 
 ```bash
@@ -37,11 +40,11 @@ sqlite3 "$DB_PATH" ".backup $BACKUP_FILE"
 if sqlite3 "$BACKUP_FILE" "PRAGMA integrity_check;" | grep -q "ok"; then
     echo "✅ Backup created successfully: $BACKUP_FILE"
     echo "Backup size: $(du -h $BACKUP_FILE | cut -f1)"
-    
+
     # Create checksums
     md5sum "$DB_PATH" > "${BACKUP_FILE}.md5"
     md5sum "$BACKUP_FILE" >> "${BACKUP_FILE}.md5"
-    
+
     echo "✅ Checksums created: ${BACKUP_FILE}.md5"
 else
     echo "❌ Backup verification failed"
@@ -54,6 +57,7 @@ fi
 ```
 
 ### 2. Automated Daily Backups
+
 **When**: Daily at 2 AM (low usage period)
 
 ```bash
@@ -81,6 +85,7 @@ echo "Daily backup completed: ${BACKUP_FILE}.gz"
 ```
 
 ### 3. Hot Backup (During Operation)
+
 **When**: Need backup while application is running
 
 ```bash
@@ -112,6 +117,7 @@ fi
 ## Restore Procedures
 
 ### 1. Full Database Restore
+
 **When**: Complete system failure or data corruption
 
 ```bash
@@ -155,7 +161,7 @@ cp "$BACKUP_FILE" "$DB_PATH"
 # Verify restored database
 if sqlite3 "$DB_PATH" "PRAGMA integrity_check;" | grep -q "ok"; then
     echo "✅ Database restored successfully from: $BACKUP_FILE"
-    
+
     # Run quick smoke test
     echo "Running smoke test..."
     if sqlite3 "$DB_PATH" "SELECT COUNT(*) FROM universe; SELECT COUNT(*) FROM risk_group; SELECT COUNT(*) FROM screener;" > /dev/null; then
@@ -176,6 +182,7 @@ echo "✅ Restore completed successfully"
 ```
 
 ### 2. Point-in-Time Restore
+
 **When**: Need to restore to specific point in time
 
 ```bash
@@ -191,6 +198,7 @@ echo "Contact DBA for assistance with point-in-time recovery"
 ```
 
 ### 3. Selective Data Restore
+
 **When**: Only specific tables need restoration
 
 ```bash
@@ -224,6 +232,7 @@ rm -f "$TEMP_DB"
 ## Verification Procedures
 
 ### 1. Backup Verification
+
 ```bash
 #!/bin/bash
 # Verify backup integrity
@@ -276,6 +285,7 @@ echo "✅ Backup verification completed"
 ```
 
 ### 2. Post-Restore Verification
+
 ```bash
 #!/bin/bash
 # Verify database after restore
@@ -315,6 +325,7 @@ echo "✅ Post-restore verification completed"
 ```
 
 ## Backup Retention Policy
+
 - **Pre-rollout backups**: Keep indefinitely (manual cleanup)
 - **Daily backups**: Keep for 30 days
 - **Hot backups**: Keep for 7 days
@@ -322,6 +333,7 @@ echo "✅ Post-restore verification completed"
 - **Monthly backups**: Keep for 12 months
 
 ## Monitoring and Alerts
+
 1. Monitor backup job success/failure
 2. Alert on backup size changes > 20%
 3. Alert on backup verification failures
@@ -329,11 +341,13 @@ echo "✅ Post-restore verification completed"
 5. Regular backup restore testing (monthly)
 
 ## Emergency Contacts
+
 - Database Administrator: [Contact Info]
 - System Administrator: [Contact Info]
 - On-call Engineer: [Contact Info]
 
 ## Testing Schedule
+
 - **Backup verification**: Daily (automated)
 - **Restore testing**: Weekly (automated, test environment)
 - **Disaster recovery drill**: Monthly (manual)
@@ -342,12 +356,15 @@ echo "✅ Post-restore verification completed"
 ## Troubleshooting
 
 ### Common Issues
+
 1. **Backup file corrupted**
+
    - Check disk space during backup
    - Verify source database integrity
    - Check for I/O errors in system logs
 
 2. **Restore fails**
+
    - Verify backup file integrity
    - Check target database permissions
    - Ensure application is stopped during restore
@@ -358,10 +375,12 @@ echo "✅ Post-restore verification completed"
    - Check query performance
 
 ### Recovery Time Objectives (RTO)
+
 - **Full restore**: < 30 minutes
 - **Selective restore**: < 15 minutes
 - **Point-in-time restore**: < 2 hours
 
 ### Recovery Point Objectives (RPO)
+
 - **Maximum data loss**: < 1 hour (with daily backups)
 - **With transaction log**: < 15 minutes

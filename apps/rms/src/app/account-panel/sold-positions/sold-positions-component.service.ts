@@ -1,11 +1,11 @@
-import { computed, inject,Injectable } from '@angular/core';
+import { computed, inject, Injectable } from '@angular/core';
 
+import { buildUniverseMap } from '../../shared/universe-utils.function';
 import { currentAccountSignalStore } from '../../store/current-account/current-account.signal-store';
 import { selectCurrentAccountSignal } from '../../store/current-account/select-current-account.signal';
 import { ClosedPosition } from '../../store/trades/closed-position.interface';
 import { differenceInTradingDays } from '../../store/trades/difference-in-trading-days.function';
 import { Trade } from '../../store/trades/trade.interface';
-import { selectUniverses } from '../../store/universe/selectors/select-universes.function';
 import { Universe } from '../../store/universe/universe.interface';
 
 @Injectable({ providedIn: 'root' })
@@ -15,14 +15,16 @@ export class SoldPositionsComponentService {
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
   trades = computed(() => {
-    const currentAccount = selectCurrentAccountSignal(this.currentAccountSignalStore);
+    const currentAccount = selectCurrentAccountSignal(
+      this.currentAccountSignalStore
+    );
     return currentAccount().trades as Trade[];
   });
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
   selectClosedPositions = computed(() => {
     const trades = this.trades();
-    const universeMap = this.buildUniverseMap();
+    const universeMap = this.buildUniverseMapPrivate();
     const closedPositions = [] as ClosedPosition[];
     const seenIds = new Set<string>();
 
@@ -51,23 +53,17 @@ export class SoldPositionsComponentService {
 
   getClosedPositions = this.selectClosedPositions;
 
-  private buildUniverseMap(): Map<string, Universe> {
-    const universes = selectUniverses();
-    const universeMap = new Map<string, Universe>();
-
-    for (let j = 0; j < universes.length; j++) {
-      const universe = universes[j];
-      if (universe.symbol.length === 0) {
-        continue;
-      }
-      universeMap.set(universe.id, universe);
-    }
-
-    return universeMap;
+  private buildUniverseMapPrivate(): Map<string, Universe> {
+    return buildUniverseMap();
   }
 
   private isValidSoldTrade(trade: Trade): boolean {
-    return trade.sell !== 0 && trade.sell_date !== undefined && trade.sell_date !== null && trade.sell_date !== '';
+    return (
+      trade.sell !== 0 &&
+      trade.sell_date !== undefined &&
+      trade.sell_date !== null &&
+      trade.sell_date !== ''
+    );
   }
 
   private calculateNextExDate(universe: Universe): Date {
@@ -78,10 +74,16 @@ export class SoldPositionsComponentService {
       return formulaExDate;
     }
 
-    return this.adjustExDateForFrequency(formulaExDate, universe.distributions_per_year);
+    return this.adjustExDateForFrequency(
+      formulaExDate,
+      universe.distributions_per_year
+    );
   }
 
-  private adjustExDateForFrequency(exDate: Date, distributionsPerYear: number): Date {
+  private adjustExDateForFrequency(
+    exDate: Date,
+    distributionsPerYear: number
+  ): Date {
     const today = new Date();
     const adjustedDate = new Date(exDate);
 
@@ -102,8 +104,15 @@ export class SoldPositionsComponentService {
     return adjustedDate;
   }
 
-  private createClosedPosition(trade: Trade, universe: Universe): ClosedPosition | null {
-    if (trade.sell_date === undefined || trade.sell_date === null || trade.sell_date === '') {
+  private createClosedPosition(
+    trade: Trade,
+    universe: Universe
+  ): ClosedPosition | null {
+    if (
+      trade.sell_date === undefined ||
+      trade.sell_date === null ||
+      trade.sell_date === ''
+    ) {
       return null;
     }
 
@@ -119,7 +128,7 @@ export class SoldPositionsComponentService {
       daysHeld,
       quantity: trade.quantity,
       capitalGain: (trade.sell - trade.buy) * trade.quantity,
-      capitalGainPercentage: (trade.sell - trade.buy) / trade.buy * 100,
+      capitalGainPercentage: ((trade.sell - trade.buy) / trade.buy) * 100,
     };
   }
 

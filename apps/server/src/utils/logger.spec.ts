@@ -19,7 +19,7 @@ describe('SyncLogger', () => {
   const TEST_UUID = 'test-uuid-123';
   const TEST_TIMESTAMP = '2025-08-21T15:30:45.123Z';
   const TEST_LOG_FILENAME = 'sync-2025-08-21T15-30-45-123Z-test-uuid-123.log';
-  
+
   const mockExistsSync = vi.mocked(existsSync);
   const mockMkdirSync = vi.mocked(mkdirSync);
   const mockWriteFileSync = vi.mocked(writeFileSync);
@@ -58,10 +58,9 @@ describe('SyncLogger', () => {
     const logger = new SyncLogger();
     expectLoggerToBeValid(logger);
 
-    expect(mockMkdirSync).toHaveBeenCalledWith(
-      join(process.cwd(), 'logs'),
-      { recursive: true }
-    );
+    expect(mockMkdirSync).toHaveBeenCalledWith(join(process.cwd(), 'logs'), {
+      recursive: true,
+    });
   });
 
   test('does not create logs directory if it exists', () => {
@@ -152,7 +151,17 @@ describe('SyncLogger', () => {
     logger.warn('Second message');
 
     expect(mockWriteFileSync).toHaveBeenCalledTimes(2);
-    expect(mockWriteFileSync).toHaveBeenNthCalledWith(1, expect.any(String), expect.any(String), { flag: 'a' });
-    expect(mockWriteFileSync).toHaveBeenNthCalledWith(2, expect.any(String), expect.any(String), { flag: 'a' });
+    expect(mockWriteFileSync).toHaveBeenNthCalledWith(
+      1,
+      expect.any(String),
+      expect.any(String),
+      { flag: 'a' }
+    );
+    expect(mockWriteFileSync).toHaveBeenNthCalledWith(
+      2,
+      expect.any(String),
+      expect.any(String),
+      { flag: 'a' }
+    );
   });
 });

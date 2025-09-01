@@ -23,9 +23,7 @@ export async function axiosGetWithBackoff<T>(
   }
 
   for (let attempt = 0; attempt < maxRetries; attempt++) {
-    const response = await axios
-      .get<T>(url, config)
-      .catch(swallowError);
+    const response = await axios.get<T>(url, config).catch(swallowError);
 
     if (response !== undefined) {
       return response;
@@ -41,5 +39,3 @@ export async function axiosGetWithBackoff<T>(
 
   return axios.get<T>(url, config);
 }
-
-

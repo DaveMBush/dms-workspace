@@ -1,9 +1,9 @@
 /**
  * Sync Summary Interface
- * 
+ *
  * Defines the structure of the response returned from universe synchronization operations.
  * This interface represents the detailed results of syncing universe data with the external screener.
- * 
+ *
  * Used by the UniverseSyncService to provide feedback on sync operations and display
  * detailed results to users via toast notifications.
  */

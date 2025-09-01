@@ -5,21 +5,25 @@ Welcome to the RMS workspace documentation. This documentation covers the archit
 ## 📚 Documentation Sections
 
 ### 🏗️ Architecture
+
 - [Architecture Overview](./architecture.md) - High-level system architecture
 - [Frontend Architecture](./frontend-architecture.md) - Frontend system design
 - [Frontend Specifications](./front-end-spec.md) - UI/UX specifications
 
 ### ⚙️ Configuration
+
 - [Configuration Guide](./configuration/index.md) - System configuration and setup
 - [Feature Flags](./configuration/feature-flags.md) - Feature flag management
 - [Environment Setup](./configuration/environment-setup.md) - Environment configuration
 
 ### 🚀 Operations
+
 - [Rollback Runbook](./rollback-runbook.md) - Emergency rollback procedures
 - [Logging and Metrics](./logging-metrics-extraction.md) - System monitoring and logging
 - [Documentation Sync Process](./documentation-sync-process.md) - Keeping architecture and backlog synchronized
 
 ### 📋 Product & Planning
+
 - [Product Requirements](./prd.md) - Product requirements document
 - [Backlog](./backlog.md) - Development backlog and roadmap
 
@@ -61,6 +65,3 @@ For detailed configuration, see the [Feature Flags Guide](./configuration/featur
 - **Story B1**: Feature flag configuration and documentation completed
 - **Epic A**: Universe sync from screener feature implemented
 - **Feature Flags**: Comprehensive configuration and operational guides added
-
-
-

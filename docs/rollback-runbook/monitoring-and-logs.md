@@ -1,6 +1,7 @@
 # Monitoring and logs
 
 - Check for errors related to:
+
   - Yahoo requests (network, rate limits).
   - Prisma upserts and transactions.
   - Unusual counts of `expired=true` in `universe`.

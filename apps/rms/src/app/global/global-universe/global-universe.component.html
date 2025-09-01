@@ -15,23 +15,23 @@
     </div>
   </ng-template>
   <ng-template #end>
-    <p-button 
-      (click)="syncUniverse()" 
-      icon="pi pi-sync" 
-      text 
-      severity="secondary" 
-      pTooltip="Update Universe" 
+    <p-button
+      (click)="syncUniverse()"
+      icon="pi pi-sync"
+      text
+      severity="secondary"
+      pTooltip="Update Universe"
       tooltipPosition="bottom"
       [loading]="isSyncingUniverse$()"
       [disabled]="isSyncingUniverse$()"
       ariaLabel="Update Universe"
     />
-    <p-button 
-      (click)="updateFields()" 
-      icon="pi pi-refresh" 
-      text 
-      severity="secondary" 
-      pTooltip="Update Fields" 
+    <p-button
+      (click)="updateFields()"
+      icon="pi pi-refresh"
+      text
+      severity="secondary"
+      pTooltip="Update Fields"
       tooltipPosition="bottom"
       [loading]="isUpdatingFields$()"
       [disabled]="isUpdatingFields$()"
@@ -39,12 +39,16 @@
     />
   </ng-template>
 </p-toolbar>
-<p-table #dataTable [value]="universeWithDimmedState$()"
-size="small"
-[scrollable]="true" class="min-w-full max-h-full min-h-full rounded-lg shadow-sm table-fixed"
-[responsiveLayout]="'scroll'"
-showGridlines [rowTrackBy]="trackById"
-[scrollHeight]="'calc(100vh - 145px)'"
+<p-table
+  #dataTable
+  [value]="universeWithDimmedState$()"
+  size="small"
+  [scrollable]="true"
+  class="min-w-full max-h-full min-h-full rounded-lg shadow-sm table-fixed"
+  [responsiveLayout]="'scroll'"
+  showGridlines
+  [rowTrackBy]="trackById"
+  [scrollHeight]="'calc(100vh - 145px)'"
 >
   <ng-template pTemplate="header">
     <tr class="bg-gray-100 dark:bg-slate-800">
@@ -113,13 +117,16 @@ showGridlines [rowTrackBy]="trackById"
       <th>Risk Group</th>
       <th>Distribution</th>
       <th>Distributions / Year</th>
-      <th (click)="onSort('yield_percent')" class="cursor-pointer select-none w-32">
+      <th
+        (click)="onSort('yield_percent')"
+        class="cursor-pointer select-none w-32"
+      >
         Yield %
         <i [class]="sortSignals.yieldPercentSortIcon$()"></i>
         @if (sortSignals.yieldPercentSortOrder$()) {
-          <span class="text-xs text-gray-500">
-            {{ sortSignals.yieldPercentSortOrder$() }}
-          </span>
+        <span class="text-xs text-gray-500">
+          {{ sortSignals.yieldPercentSortOrder$() }}
+        </span>
         }
       </th>
       <th>Last Price</th>
@@ -127,27 +134,33 @@ showGridlines [rowTrackBy]="trackById"
         Ex-Date
         <i [class]="sortSignals.exDateSortIcon$()"></i>
         @if (sortSignals.exDateSortOrder$()) {
-          <span class="text-xs text-gray-500">
-            {{ sortSignals.exDateSortOrder$() }}
-          </span>
+        <span class="text-xs text-gray-500">
+          {{ sortSignals.exDateSortOrder$() }}
+        </span>
         }
       </th>
-      <th (click)="onSort('most_recent_sell_date')" class="cursor-pointer select-none">
+      <th
+        (click)="onSort('most_recent_sell_date')"
+        class="cursor-pointer select-none"
+      >
         Mst Rcnt Sll Dt
         <i [class]="sortSignals.mostRecentSellDateSortIcon$()"></i>
         @if (sortSignals.mostRecentSellDateSortOrder$()) {
-          <span class="text-xs text-gray-500">
-            {{ sortSignals.mostRecentSellDateSortOrder$() }}
-          </span>
+        <span class="text-xs text-gray-500">
+          {{ sortSignals.mostRecentSellDateSortOrder$() }}
+        </span>
         }
       </th>
-      <th (click)="onSort('most_recent_sell_price')" class="cursor-pointer select-none">
+      <th
+        (click)="onSort('most_recent_sell_price')"
+        class="cursor-pointer select-none"
+      >
         Mst Rcnt Sell $
         <i [class]="sortSignals.mostRecentSellPriceSortIcon$()"></i>
         @if (sortSignals.mostRecentSellPriceSortOrder$()) {
-          <span class="text-xs text-gray-500">
-            {{ sortSignals.mostRecentSellPriceSortOrder$() }}
-          </span>
+        <span class="text-xs text-gray-500">
+          {{ sortSignals.mostRecentSellPriceSortOrder$() }}
+        </span>
         }
       </th>
       <th>Position</th>
@@ -158,67 +171,78 @@ showGridlines [rowTrackBy]="trackById"
     <tr [ngClass]="row.isDimmed ? 'text-gray-400 dark:text-gray-600' : ''">
       <td>{{ row.symbol }}</td>
       <td>{{ row.riskGroup }}</td>
-      <td [pEditableColumn]="'distribution'" class="bg-gray-200 dark:bg-gray-800">
+      <td
+        [pEditableColumn]="'distribution'"
+        class="bg-gray-200 dark:bg-gray-800"
+      >
         <p-cellEditor>
           <ng-template #input>
-            <p-inputNumber mode="decimal" [minFractionDigits]="2" [maxFractionDigits]="5" [(ngModel)]="row.distribution" [min]="0" [step]="0.01" (keydown.enter)="onEditCommit(row, 'distribution')" (keydown)="stopArrowKeyPropagation($event)" class="w-32 block"></p-inputNumber>
+            <p-inputNumber
+              mode="decimal"
+              [minFractionDigits]="2"
+              [maxFractionDigits]="5"
+              [(ngModel)]="row.distribution"
+              [min]="0"
+              [step]="0.01"
+              (keydown.enter)="onEditCommit(row, 'distribution')"
+              (keydown)="stopArrowKeyPropagation($event)"
+              class="w-32 block"
+            ></p-inputNumber>
           </ng-template>
           <ng-template #output>
             {{ row.distribution }}
           </ng-template>
         </p-cellEditor>
       </td>
-      <td [pEditableColumn]="'distributions_per_year'" class="bg-gray-200 dark:bg-gray-800">
+      <td
+        [pEditableColumn]="'distributions_per_year'"
+        class="bg-gray-200 dark:bg-gray-800"
+      >
         <p-cellEditor>
           <ng-template #input>
-            <p-inputNumber [(ngModel)]="row.distributions_per_year" [min]="1" [max]="12" [step]="1" (keydown.enter)="onEditCommit(row, 'distributions_per_year')" (keydown)="stopArrowKeyPropagation($event)" class="w-32 block"></p-inputNumber>
+            <p-inputNumber
+              [(ngModel)]="row.distributions_per_year"
+              [min]="1"
+              [max]="12"
+              [step]="1"
+              (keydown.enter)="onEditCommit(row, 'distributions_per_year')"
+              (keydown)="stopArrowKeyPropagation($event)"
+              class="w-32 block"
+            ></p-inputNumber>
           </ng-template>
           <ng-template #output>
             {{ row.distributions_per_year }}
           </ng-template>
         </p-cellEditor>
       </td>
-      <td>{{ row.yield_percent | number:'1.2-2' }}%</td>
+      <td>{{ row.yield_percent | number : '1.2-2' }}%</td>
       <td>{{ row.last_price }}</td>
-      @if (row.ex_date && row.ex_date >= today) {
-        <td [pEditableColumn]="'ex_date'" class="bg-gray-300 dark:bg-gray-700">
-          <p-cellEditor>
-            <ng-template #input>
-              <p-datepicker [(ngModel)]="row.ex_date" (onSelect)="onEditCommit(row, 'ex_date')" (keydown.enter)="onEditCommit(row, 'ex_date')" (keydown)="stopArrowKeyPropagation($event)" appendTo="body" class="w-32 block" dateFormat="mm/dd/yy"></p-datepicker>
-            </ng-template>
-            <ng-template #output>
-              {{ row.ex_date | date:'MM/dd/yyyy' }}
-            </ng-template>
-          </p-cellEditor>
-        </td>
-      } @else {
-        <td [pEditableColumn]="'ex_date'" class="bg-red-300 dark:bg-red-700">
-          <p-cellEditor>
-            <ng-template #input>
-              <p-datepicker [(ngModel)]="row.ex_date" (onSelect)="onEditCommit(row, 'ex_date')" (keydown.enter)="onEditCommit(row, 'ex_date')" (keydown)="stopArrowKeyPropagation($event)" appendTo="body" class="w-32 block" dateFormat="mm/dd/yy"></p-datepicker>
-            </ng-template>
-            <ng-template #output>
-              {{ row.ex_date | date:'MM/dd/yyyy' }}
-            </ng-template>
-          </p-cellEditor>
-        </td>
-      }
-      <td>{{ row.most_recent_sell_date | date:'MM/dd/yyyy' }}</td>
-      <td>{{ row.most_recent_sell_price | number:'1.2-4' }}</td>
-      <td>{{  row.position === 0 ? '' : row.position | number:'1.2-4' }}</td>
+      <rms-editable-date-cell
+        [field]="'ex_date'"
+        [(value)]="row.ex_date"
+        [isExpired]="!row.ex_date || row.ex_date < today"
+        (onEditCommit)="onEditCommit(row, 'ex_date')"
+      ></rms-editable-date-cell>
+      <td>{{ row.most_recent_sell_date | date : 'MM/dd/yyyy' }}</td>
+      <td>{{ row.most_recent_sell_price | number : '1.2-4' }}</td>
+      <td>{{ row.position === 0 ? '' : (row.position | number : '1.2-4') }}</td>
       <td class="text-center">{{ row.expired ? '*' : '' }}</td>
     </tr>
   </ng-template>
 </p-table>
 <p-toast />
 
-<!-- eslint-disable-next-line @angular-eslint/template/cyclomatic-complexity -->
 @if (showOverlay$()) {
-  <div class="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-    <div class="text-center" role="status" aria-live="polite">
-      <p-progressSpinner styleClass="w-12 h-12" strokeWidth="4" fill="var(--surface-ground)" animationDuration=".5s" />
-      <p class="mt-4 text-white font-medium">{{ overlayText$() }}</p>
-      <span class="sr-only">Updating data, please wait</span>
-    </div>
+<div class="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+  <div class="text-center" role="status" aria-live="polite">
+    <p-progressSpinner
+      styleClass="w-12 h-12"
+      strokeWidth="4"
+      fill="var(--surface-ground)"
+      animationDuration=".5s"
+    />
+    <p class="mt-4 text-white font-medium">{{ overlayText$() }}</p>
+    <span class="sr-only">Updating data, please wait</span>
   </div>
+</div>
 }

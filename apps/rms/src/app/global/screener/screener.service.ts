@@ -12,15 +12,25 @@ export class ScreenerService {
   screens = computed(function screensCompute() {
     const screens = selectScreen();
     const screenReturn = [] as Screen[];
-    for(let i = 0; i < screens.length; i++) {
+    for (let i = 0; i < screens.length; i++) {
       const screen = screens[i];
       screenReturn.push(screen);
     }
     screenReturn.sort(function screenSort(a, b) {
-      const aScore = (a.graph_higher_before_2008 && a.has_volitility && a.objectives_understood ? 'z' : 'a') + a.symbol;
-      const bScore = (b.graph_higher_before_2008 && b.has_volitility && b.objectives_understood ? 'z' : 'a') + b.symbol;
+      const aScore =
+        (a.graph_higher_before_2008 &&
+        a.has_volitility &&
+        a.objectives_understood
+          ? 'z'
+          : 'a') + a.symbol;
+      const bScore =
+        (b.graph_higher_before_2008 &&
+        b.has_volitility &&
+        b.objectives_understood
+          ? 'z'
+          : 'a') + b.symbol;
 
-      return aScore.localeCompare(bScore)
+      return aScore.localeCompare(bScore);
     });
     return screenReturn;
   });
@@ -31,9 +41,12 @@ export class ScreenerService {
 
   updateScreener(id: string, field: keyof Screen, value: boolean): void {
     const screens = selectScreen();
-    for(let i = 0; i < screens.length; i++) {
-      const screen = screens[i]  as unknown as Record<keyof Screen, boolean | string>;
-      if(screen.id === id) {
+    for (let i = 0; i < screens.length; i++) {
+      const screen = screens[i] as unknown as Record<
+        keyof Screen,
+        boolean | string
+      >;
+      if (screen.id === id) {
         screen[field] = value;
         break;
       }

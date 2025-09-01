@@ -174,7 +174,7 @@ Acceptance Criteria:
   `screener(risk_group_id)`.
 - Rename plan documented: `has_volitility` → `has_volatility` with 3‑phase
   migration plan and rollback steps.
-Acceptance Criteria:
+  Acceptance Criteria:
 
 - Doc steps to back up SQLite db before rollout; restore procedure included.
 
@@ -196,7 +196,7 @@ Acceptance Criteria:
 Acceptance Criteria:
 
 - [x] Architecture and backlog kept in sync during delivery; changes reviewed
-- [x] Documentation synchronization process documented and implemented  
+- [x] Documentation synchronization process documented and implemented
 - [x] Cross-reference system established between architecture and backlog
 - [x] Review checklist created for documentation updates
 - [x] Quality gates defined for documentation consistency
@@ -207,7 +207,7 @@ Acceptance Criteria:
 
 **Status**: Planned  
 **Priority**: High  
-**Dependencies**: Epic F must be complete and stable  
+**Dependencies**: Epic F must be complete and stable
 
 Goal: Remove the feature flag for sync functionality now that it's stable and working correctly.
 
@@ -216,6 +216,7 @@ Goal: Remove the feature flag for sync functionality now that it's stable and wo
 Description: Remove all feature flag conditional logic from Universe Settings component and related frontend code.
 
 Acceptance Criteria:
+
 - Remove `isFeatureEnabled$` computed signal from UniverseSettingsComponent
 - Remove conditional rendering in universe-settings.component.html
 - Always show screener-based "Update Universe" button
@@ -227,6 +228,7 @@ Acceptance Criteria:
 Description: Update or remove the backend feature flag endpoint since the sync feature flag is no longer needed.
 
 Acceptance Criteria:
+
 - Update `/api/feature-flags` endpoint implementation
 - Ensure backward compatibility during transition
 - Update API documentation if applicable
@@ -237,6 +239,7 @@ Acceptance Criteria:
 Description: Clean up the FeatureFlagsService to remove unused sync feature flag logic while maintaining service structure for potential future use.
 
 Acceptance Criteria:
+
 - Remove `isUseScreenerForUniverseEnabled` computed signal
 - Simplify or remove feature flag HTTP resource
 - Update service interface and methods
@@ -246,7 +249,7 @@ Acceptance Criteria:
 
 **Status**: Planned  
 **Priority**: High  
-**Dependencies**: Epic G must be complete  
+**Dependencies**: Epic G must be complete
 
 Goal: Reorganize the Universe screen by moving "Update Fields" and "Update Universe" buttons from the Universe Settings modal to the Universe title bar as intuitive icons with tooltips and overlays.
 
@@ -255,6 +258,7 @@ Goal: Reorganize the Universe screen by moving "Update Fields" and "Update Unive
 Description: Add an "Update Fields" icon to the Universe screen title bar that triggers the same functionality as the current "Update Fields" button in the Universe Settings modal.
 
 Acceptance Criteria:
+
 - Add "Update Fields" icon to Universe title bar in the `#end` template section
 - Position icon to the left of the existing settings icon
 - Use appropriate PrimeNG icon (e.g., `pi-database`)
@@ -266,6 +270,7 @@ Acceptance Criteria:
 Description: Add an "Update Universe" sync icon to the Universe screen title bar that triggers the same screener sync functionality as the current "Update Universe" button in the Universe Settings modal.
 
 Acceptance Criteria:
+
 - Add "Update Universe" sync icon to Universe title bar
 - Position icon to the left of the "Update Fields" icon
 - Use sync icon (`pi-sync`)
@@ -277,6 +282,7 @@ Acceptance Criteria:
 Description: Add a translucent overlay to the Universe screen during "Update Fields" and "Update Universe" operations, similar to the overlay used in the Screener refresh functionality.
 
 Acceptance Criteria:
+
 - Add overlay signal to track loading state
 - Show overlay during both "Update Fields" and "Update Universe" operations
 - Use same overlay styling as Screener screen
@@ -288,6 +294,7 @@ Acceptance Criteria:
 Description: Remove the Universe Settings modal and all related components since the "Update Fields" and "Update Universe" functionality has been moved to the Universe title bar.
 
 Acceptance Criteria:
+
 - Remove settings icon from Universe title bar
 - Remove Universe Settings modal component files
 - Remove Universe Settings service
@@ -298,7 +305,7 @@ Acceptance Criteria:
 
 **Status**: Planned  
 **Priority**: Medium  
-**Dependencies**: Epics G and H must be complete  
+**Dependencies**: Epics G and H must be complete
 
 Goal: Perform comprehensive cleanup of unused code after removing the feature flag and Universe Settings modal, ensuring a clean and maintainable codebase.
 
@@ -307,6 +314,7 @@ Goal: Perform comprehensive cleanup of unused code after removing the feature fl
 Description: Remove all unused imports and dependencies from files modified during Epic G and Epic H, ensuring clean and optimized imports.
 
 Acceptance Criteria:
+
 - Remove unused imports from all modified components
 - Clean up import statements to follow project conventions
 - Run ESLint to catch any unused import warnings
@@ -317,6 +325,7 @@ Acceptance Criteria:
 Description: Clean up unused methods, properties, and service logic that is no longer needed after feature flag removal and UI reorganization.
 
 Acceptance Criteria:
+
 - Remove unused methods from remaining services
 - Clean up unused properties and signals
 - Remove unused service dependencies
@@ -327,6 +336,7 @@ Acceptance Criteria:
 Description: Identify and remove dead code paths, unused utility functions, and any other code that is no longer reachable or needed after the changes.
 
 Acceptance Criteria:
+
 - Remove unused utility functions
 - Clean up dead code paths in conditional logic
 - Remove unused constants and configuration
@@ -337,6 +347,7 @@ Acceptance Criteria:
 Description: Update documentation, README files, and type definitions to reflect the changes made during Epic G and Epic H, ensuring accurate and current project documentation.
 
 Acceptance Criteria:
+
 - Update component documentation comments
 - Update service documentation and JSDoc comments
 - Revise README files if they reference removed features
@@ -347,7 +358,8 @@ Acceptance Criteria:
 **Overview**: [Epics G, H, I: UI Cleanup and Enhancement](./epic-g-h-i-ui-cleanup-and-enhancement.md)
 
 These three epics work together to:
-1. **Epic G**: Remove feature flag complexity 
+
+1. **Epic G**: Remove feature flag complexity
 2. **Epic H**: Improve Universe screen UX with direct icon controls
 3. **Epic I**: Clean up and maintain code quality
 

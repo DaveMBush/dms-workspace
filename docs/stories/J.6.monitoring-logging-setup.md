@@ -1,9 +1,11 @@
 # Story J.6: Monitoring and Logging Setup
 
 ## Status
+
 Draft
 
 ## Story
+
 **As a** DevOps engineer,  
 **I want** to implement comprehensive monitoring, logging, and alerting for the RMS AWS infrastructure and applications,  
 **so that** I can proactively identify issues, track performance metrics, and maintain system reliability with proper observability.
@@ -23,6 +25,7 @@ Draft
 ## Tasks / Subtasks
 
 - [ ] **Task 1: Configure CloudWatch log groups and retention** (AC: 1, 7)
+
   - [ ] Create log groups for ECS containers with appropriate retention periods
   - [ ] Setup ALB access logs with S3 storage and lifecycle policies
   - [ ] Configure CloudFront logs for frontend access patterns
@@ -31,6 +34,7 @@ Draft
   - [ ] Configure log retention based on environment (dev: 7 days, prod: 90 days)
 
 - [ ] **Task 2: Implement structured logging in applications** (AC: 6)
+
   - [ ] Update Fastify backend to use structured JSON logging format
   - [ ] Add correlation IDs for request tracing across services
   - [ ] Configure log levels and filtering for different environments
@@ -39,6 +43,7 @@ Draft
   - [ ] Add security event logging for authentication and authorization
 
 - [ ] **Task 3: Setup CloudWatch metrics and custom metrics** (AC: 2)
+
   - [ ] Configure ECS service metrics (CPU, memory, task count)
   - [ ] Setup ALB metrics (request count, latency, error rates)
   - [ ] Add RDS performance metrics (connections, CPU, disk I/O)
@@ -47,6 +52,7 @@ Draft
   - [ ] Setup billing and cost metrics for budget monitoring
 
 - [ ] **Task 4: Create comprehensive CloudWatch dashboards** (AC: 3)
+
   - [ ] Build infrastructure overview dashboard (ECS, RDS, ALB, CloudFront)
   - [ ] Create application performance dashboard (response times, error rates)
   - [ ] Setup business metrics dashboard (user activity, feature usage)
@@ -55,6 +61,7 @@ Draft
   - [ ] Create environment-specific dashboards (dev, staging, prod)
 
 - [ ] **Task 5: Configure CloudWatch alarms and thresholds** (AC: 4)
+
   - [ ] Create high-priority alarms for service availability (>1% error rate)
   - [ ] Setup performance alarms for response time degradation (>2s avg)
   - [ ] Configure resource utilization alarms (CPU >80%, memory >85%)
@@ -63,6 +70,7 @@ Draft
   - [ ] Setup composite alarms for complex failure scenarios
 
 - [ ] **Task 6: Setup SNS topics and notification routing** (AC: 5)
+
   - [ ] Create SNS topics for different alert severities (critical, warning, info)
   - [ ] Configure email notifications for development team
   - [ ] Setup Slack integration for real-time team notifications
@@ -71,6 +79,7 @@ Draft
   - [ ] Setup notification templates and message formatting
 
 - [ ] **Task 7: Implement AWS X-Ray distributed tracing** (AC: 8)
+
   - [ ] Enable X-Ray tracing for ECS containers and ALB
   - [ ] Add X-Ray SDK to Fastify backend application
   - [ ] Configure tracing for database operations and external API calls
@@ -89,21 +98,28 @@ Draft
 ## Dev Notes
 
 ### Previous Story Context
-**Dependencies:** 
+
+**Dependencies:**
+
 - All previous stories J.1-J.5 - monitoring requires deployed infrastructure and applications
 - Specifically needs ECS services, ALB, RDS, CloudFront distributions
 
 ### Data Models and Architecture
+
 **Source: [apps/server/src/utils/logger.ts]**
+
 - Existing logger implementation using Winston or similar framework
 - Need to enhance for structured logging and CloudWatch integration
 
 **Source: [Epic J Technical Notes]**
+
 - CloudWatch as primary monitoring solution
 - Cost-conscious approach with appropriate retention and sampling
 
 ### File Locations
+
 **Primary Files to Create:**
+
 1. `/infrastructure/modules/monitoring/main.tf` - CloudWatch resources and alarms
 2. `/infrastructure/modules/monitoring/variables.tf` - Monitoring module variables
 3. `/infrastructure/modules/monitoring/outputs.tf` - Monitoring resource outputs
@@ -114,12 +130,14 @@ Draft
 8. `/monitoring/alerts.yaml` - Alert configuration definitions
 
 **Primary Files to Modify:**
+
 1. `/apps/server/src/utils/logger.ts` - Enhance with structured logging
 2. `/apps/server/src/main.ts` - Add tracing and monitoring middleware
 3. `/infrastructure/environments/dev/main.tf` - Include monitoring module
 4. `/apps/server/package.json` - Add X-Ray and monitoring dependencies
 
 **Test Files to Create:**
+
 1. `/apps/server/src/utils/structured-logger.spec.ts` - Test logging functionality
 2. `/apps/server/src/middleware/tracing.spec.ts` - Test tracing implementation
 3. `/e2e/monitoring-validation.spec.ts` - End-to-end monitoring tests
@@ -127,6 +145,7 @@ Draft
 ### Technical Implementation Details
 
 **CloudWatch Log Groups Configuration:**
+
 ```hcl
 resource "aws_cloudwatch_log_group" "ecs_application" {
   name              = "/aws/ecs/rms-backend-${var.environment}"
@@ -151,6 +170,7 @@ resource "aws_cloudwatch_log_group" "rds_performance" {
 ```
 
 **Structured Logging Implementation:**
+
 ```typescript
 // apps/server/src/utils/structured-logger.ts
 import { createLogger, format, transports } from 'winston';
@@ -188,13 +208,7 @@ export class StructuredLogger {
           });
         })
       ),
-      transports: [
-        new transports.Console(),
-        ...(process.env.NODE_ENV === 'production' 
-          ? [new transports.File({ filename: '/var/log/app.log' })]
-          : []
-        ),
-      ],
+      transports: [new transports.Console(), ...(process.env.NODE_ENV === 'production' ? [new transports.File({ filename: '/var/log/app.log' })] : [])],
     });
   }
 
@@ -207,15 +221,17 @@ export class StructuredLogger {
   }
 
   error(message: string, error?: Error, meta?: any) {
-    this.logger.error(message, { 
-      meta: { 
-        ...meta, 
-        error: error ? {
-          name: error.name,
-          message: error.message,
-          stack: error.stack,
-        } : undefined 
-      } 
+    this.logger.error(message, {
+      meta: {
+        ...meta,
+        error: error
+          ? {
+              name: error.name,
+              message: error.message,
+              stack: error.stack,
+            }
+          : undefined,
+      },
     });
   }
 
@@ -232,6 +248,7 @@ export const logger = new StructuredLogger();
 ```
 
 **CloudWatch Alarms Configuration:**
+
 ```hcl
 # High error rate alarm
 resource "aws_cloudwatch_metric_alarm" "high_error_rate" {
@@ -300,6 +317,7 @@ resource "aws_cloudwatch_metric_alarm" "ecs_cpu_high" {
 ```
 
 **CloudWatch Dashboard Configuration:**
+
 ```json
 {
   "widgets": [
@@ -311,10 +329,10 @@ resource "aws_cloudwatch_metric_alarm" "ecs_cpu_high" {
       "height": 6,
       "properties": {
         "metrics": [
-          [ "AWS/ApplicationELB", "RequestCount", "LoadBalancer", "${alb_name}" ],
-          [ ".", "HTTPCode_Target_2XX_Count", ".", "." ],
-          [ ".", "HTTPCode_Target_4XX_Count", ".", "." ],
-          [ ".", "HTTPCode_Target_5XX_Count", ".", "." ]
+          ["AWS/ApplicationELB", "RequestCount", "LoadBalancer", "${alb_name}"],
+          [".", "HTTPCode_Target_2XX_Count", ".", "."],
+          [".", "HTTPCode_Target_4XX_Count", ".", "."],
+          [".", "HTTPCode_Target_5XX_Count", ".", "."]
         ],
         "view": "timeSeries",
         "stacked": false,
@@ -331,9 +349,7 @@ resource "aws_cloudwatch_metric_alarm" "ecs_cpu_high" {
       "width": 12,
       "height": 6,
       "properties": {
-        "metrics": [
-          [ "AWS/ApplicationELB", "TargetResponseTime", "LoadBalancer", "${alb_name}" ]
-        ],
+        "metrics": [["AWS/ApplicationELB", "TargetResponseTime", "LoadBalancer", "${alb_name}"]],
         "view": "timeSeries",
         "stacked": false,
         "region": "${aws_region}",
@@ -350,8 +366,8 @@ resource "aws_cloudwatch_metric_alarm" "ecs_cpu_high" {
       "height": 6,
       "properties": {
         "metrics": [
-          [ "AWS/ECS", "CPUUtilization", "ServiceName", "${ecs_service_name}", "ClusterName", "${ecs_cluster_name}" ],
-          [ ".", "MemoryUtilization", ".", ".", ".", "." ]
+          ["AWS/ECS", "CPUUtilization", "ServiceName", "${ecs_service_name}", "ClusterName", "${ecs_cluster_name}"],
+          [".", "MemoryUtilization", ".", ".", ".", "."]
         ],
         "view": "timeSeries",
         "stacked": false,
@@ -366,34 +382,29 @@ resource "aws_cloudwatch_metric_alarm" "ecs_cpu_high" {
 ```
 
 **X-Ray Tracing Middleware:**
+
 ```typescript
 // apps/server/src/middleware/tracing.ts
 import * as AWSXRay from 'aws-xray-sdk-core';
 import { FastifyRequest, FastifyReply } from 'fastify';
 
 // Configure X-Ray
-AWSXRay.config([
-  AWSXRay.plugins.ECSPlugin,
-  AWSXRay.plugins.ElasticBeanstalkPlugin,
-]);
+AWSXRay.config([AWSXRay.plugins.ECSPlugin, AWSXRay.plugins.ElasticBeanstalkPlugin]);
 
-export const tracingMiddleware = async (
-  request: FastifyRequest,
-  reply: FastifyReply
-) => {
+export const tracingMiddleware = async (request: FastifyRequest, reply: FastifyReply) => {
   const segment = AWSXRay.getSegment();
-  
+
   if (segment) {
     // Add request metadata
     segment.addAnnotation('method', request.method);
     segment.addAnnotation('url', request.url);
     segment.addAnnotation('user_agent', request.headers['user-agent'] || '');
-    
+
     // Add custom business context
     if (request.headers.authorization) {
       segment.addAnnotation('authenticated', true);
     }
-    
+
     // Add request ID for correlation
     const requestId = request.id || `req-${Date.now()}-${Math.random()}`;
     segment.addAnnotation('request_id', requestId);
@@ -407,14 +418,14 @@ export const captureDBQuery = (query: string, params?: any[]) => {
     const subsegment = segment.addNewSubsegment('database_query');
     subsegment.addAnnotation('query_type', query.split(' ')[0].toUpperCase());
     subsegment.addMetadata('query', { sql: query, params });
-    
+
     return {
       close: (error?: Error) => {
         if (error) {
           subsegment.addError(error);
         }
         subsegment.close();
-      }
+      },
     };
   }
   return { close: () => {} };
@@ -422,6 +433,7 @@ export const captureDBQuery = (query: string, params?: any[]) => {
 ```
 
 **Cost Monitoring Configuration:**
+
 ```hcl
 resource "aws_budgets_budget" "monthly_cost" {
   name         = "rms-monthly-budget-${var.environment}"
@@ -471,6 +483,7 @@ resource "aws_ce_anomaly_detector" "cost_anomaly" {
 ```
 
 **SNS Topic and Notifications:**
+
 ```hcl
 resource "aws_sns_topic" "alerts" {
   name = "rms-alerts-${var.environment}"
@@ -495,6 +508,7 @@ resource "aws_sns_topic_subscription" "slack_alerts" {
 ```
 
 ### Testing Standards
+
 **Source: [architecture/ci-and-testing.md]**
 
 **Testing Framework:** Jest/Vitest for unit tests, custom scripts for monitoring validation
@@ -502,12 +516,14 @@ resource "aws_sns_topic_subscription" "slack_alerts" {
 **Coverage Requirements:** All monitoring components should have validation tests
 
 **Testing Strategy:**
+
 - **Unit Tests:** Test logging functionality and tracing middleware
 - **Integration Tests:** Test CloudWatch metrics and alarm functionality
 - **Monitoring Tests:** Validate dashboards display correct data
 - **Alert Tests:** Test notification delivery and escalation
 
 **Key Test Scenarios:**
+
 - Structured logging produces correct JSON format
 - X-Ray traces are captured and transmitted correctly
 - CloudWatch alarms trigger when thresholds are exceeded
@@ -516,12 +532,14 @@ resource "aws_sns_topic_subscription" "slack_alerts" {
 - Cost alerts trigger at configured thresholds
 
 **Performance Benchmarks:**
+
 - Logging overhead should be < 5% of request processing time
 - Tracing should add < 10ms to request latency
 - Metric collection should not impact application performance
 - Alert notification latency should be < 5 minutes
 
 **Monitoring Validation:**
+
 - All services have appropriate health checks
 - Error rates and response times are within acceptable ranges
 - Resource utilization metrics are collected and displayed
@@ -529,24 +547,30 @@ resource "aws_sns_topic_subscription" "slack_alerts" {
 
 ## Change Log
 
-| Date | Version | Description | Author |
-|------|---------|-------------|---------|
-| 2024-08-30 | 1.0 | Initial story creation | Scrum Master Bob |
+| Date       | Version | Description            | Author           |
+| ---------- | ------- | ---------------------- | ---------------- |
+| 2024-08-30 | 1.0     | Initial story creation | Scrum Master Bob |
 
 ## Dev Agent Record
-*This section will be populated by the development agent during implementation*
+
+_This section will be populated by the development agent during implementation_
 
 ### Agent Model Used
-*To be filled by dev agent*
 
-### Debug Log References  
-*To be filled by dev agent*
+_To be filled by dev agent_
+
+### Debug Log References
+
+_To be filled by dev agent_
 
 ### Completion Notes List
-*To be filled by dev agent*
+
+_To be filled by dev agent_
 
 ### File List
-*To be filled by dev agent*
+
+_To be filled by dev agent_
 
 ## QA Results
-*Results from QA Agent review will be populated here after implementation*
+
+_Results from QA Agent review will be populated here after implementation_

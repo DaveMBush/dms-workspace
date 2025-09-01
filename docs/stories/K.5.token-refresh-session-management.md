@@ -1,9 +1,11 @@
 # Story K.5: Token Refresh and Session Management
 
 ## Status
+
 Draft
 
 ## Story
+
 **As a** single-user application owner,  
 **I want** to have automatic token refresh and intelligent session management that maintains my login state seamlessly,  
 **so that** I can work uninterrupted without constant re-authentication while maintaining security best practices.
@@ -22,6 +24,7 @@ Draft
 ## Tasks / Subtasks
 
 - [ ] **Task 1: Implement automatic token refresh mechanism** (AC: 1, 6)
+
   - [ ] Create `TokenRefreshService` in `/apps/rms/src/app/auth/services/token-refresh.service.ts`
   - [ ] Add automatic refresh logic 5 minutes before access token expiration
   - [ ] Implement mutex/semaphore pattern to prevent concurrent refresh requests
@@ -30,6 +33,7 @@ Draft
   - [ ] Add proper error handling for network failures and service outages
 
 - [ ] **Task 2: Handle token refresh failures and error scenarios** (AC: 2)
+
   - [ ] Implement graceful logout when refresh token is expired or invalid
   - [ ] Add user notification system for authentication errors
   - [ ] Handle refresh token rotation and update stored tokens
@@ -38,6 +42,7 @@ Draft
   - [ ] Create user-friendly error messages for different failure scenarios
 
 - [ ] **Task 3: Add session timeout warnings and user notifications** (AC: 3)
+
   - [ ] Create `SessionWarningComponent` with countdown timer
   - [ ] Show warning dialog 10 minutes before session expiration
   - [ ] Add "Extend Session" button to refresh tokens on user request
@@ -46,6 +51,7 @@ Draft
   - [ ] Add sound notification option for session warnings
 
 - [ ] **Task 4: Implement activity-based session management** (AC: 5)
+
   - [ ] Create `ActivityTrackingService` to monitor user interactions
   - [ ] Track mouse movements, keyboard input, and API requests as activity
   - [ ] Reset session timeout on detected user activity
@@ -54,6 +60,7 @@ Draft
   - [ ] Add debugging and monitoring for activity tracking
 
 - [ ] **Task 5: Add "Remember Me" functionality** (AC: 4)
+
   - [ ] Add "Remember Me" checkbox to login component
   - [ ] Implement extended refresh token lifetime (90 days vs 30 days)
   - [ ] Store "Remember Me" preference securely in encrypted storage
@@ -62,6 +69,7 @@ Draft
   - [ ] Document security implications and user privacy considerations
 
 - [ ] **Task 6: Implement client-side user state management** (AC: 7)
+
   - [ ] Create `UserStateService` with signal-based state management
   - [ ] Store minimal user profile information (username, email, permissions)
   - [ ] Add session metadata (login time, last activity, expiration)
@@ -70,6 +78,7 @@ Draft
   - [ ] Create proper cleanup and garbage collection for user state
 
 - [ ] **Task 7: Integrate with existing authentication services** (AC: 1, 2)
+
   - [ ] Update `AuthService` to use token refresh service
   - [ ] Integrate session management with HTTP interceptor
   - [ ] Add token refresh to route guard validation
@@ -88,18 +97,23 @@ Draft
 ## Dev Notes
 
 ### Previous Story Context
-**Dependencies:** 
+
+**Dependencies:**
+
 - Story K.1 (AWS Cognito Setup) provides JWT token configuration
 - Story K.3 (Frontend Login Component) provides AuthService foundation
 - Story K.4 (Route Protection) provides HTTP interceptor for token injection
 
 ### Data Models and Architecture
+
 **Source: [apps/rms/src/app/auth/auth.service.ts from Story K.3]**
+
 - Existing authentication service with token storage and management
 - Signal-based state management for reactive UI updates
 - Current token handling: access, ID, and refresh tokens in sessionStorage
 
 **Token Refresh Flow:**
+
 ```
 Timer Check -> Token Expiry -> Refresh Request -> Update Tokens -> Continue Session
      ↓              ↓              ↓               ↓              ↓
@@ -107,6 +121,7 @@ Monitor Expiration  5min Before   AWS Cognito    Store New Tokens  Reset Timer
 ```
 
 **Session Management Architecture:**
+
 ```
 User Activity -> Activity Service -> Session Extension -> Token Refresh
       ↓              ↓                   ↓                    ↓
@@ -114,7 +129,9 @@ Mouse/Keyboard   Track Activity     Reset Timeout        Extend Session
 ```
 
 ### File Locations
+
 **Primary Files to Create:**
+
 1. `/apps/rms/src/app/auth/services/token-refresh.service.ts` - Token refresh logic
 2. `/apps/rms/src/app/auth/services/activity-tracking.service.ts` - User activity monitoring
 3. `/apps/rms/src/app/auth/services/user-state.service.ts` - Client-side user state
@@ -122,11 +139,13 @@ Mouse/Keyboard   Track Activity     Reset Timeout        Extend Session
 5. `/apps/rms/src/app/auth/services/session-manager.service.ts` - Orchestrates session management
 
 **Primary Files to Modify:**
+
 1. `/apps/rms/src/app/auth/auth.service.ts` - Integrate token refresh and session management
 2. `/apps/rms/src/app/auth/login/login.ts` - Add "Remember Me" functionality
 3. `/apps/rms/src/app/auth/interceptors/auth.interceptor.ts` - Handle token refresh during requests
 
 **Test Files to Create:**
+
 1. `/apps/rms/src/app/auth/services/token-refresh.service.spec.ts` - Token refresh tests
 2. `/apps/rms/src/app/auth/services/session-manager.service.spec.ts` - Session management tests
 3. `/apps/rms/src/app/auth/auth-session.integration.spec.ts` - Integration tests
@@ -134,6 +153,7 @@ Mouse/Keyboard   Track Activity     Reset Timeout        Extend Session
 ### Technical Implementation Details
 
 **Token Refresh Service:**
+
 ```typescript
 // apps/rms/src/app/auth/services/token-refresh.service.ts
 import { Injectable, signal } from '@angular/core';
@@ -142,7 +162,7 @@ import { BehaviorSubject, timer, Observable, NEVER } from 'rxjs';
 import { switchMap, tap, catchError } from 'rxjs/operators';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class TokenRefreshService {
   private refreshInProgress = signal(false);
@@ -155,21 +175,19 @@ export class TokenRefreshService {
 
   startTokenRefreshTimer(): void {
     this.stopTokenRefreshTimer();
-    
+
     const tokenInfo = this.getTokenExpirationInfo();
     if (!tokenInfo) return;
 
     const timeUntilRefresh = tokenInfo.expiresAt - Date.now() - this.REFRESH_BUFFER_TIME;
-    
+
     if (timeUntilRefresh <= 0) {
       // Token already needs refresh
       this.refreshToken();
       return;
     }
 
-    this.refreshTimer = timer(timeUntilRefresh).pipe(
-      switchMap(() => this.performTokenRefresh())
-    );
+    this.refreshTimer = timer(timeUntilRefresh).pipe(switchMap(() => this.performTokenRefresh()));
 
     this.refreshTimer.subscribe({
       next: () => {
@@ -179,7 +197,7 @@ export class TokenRefreshService {
       error: (error) => {
         console.error('Token refresh failed:', error);
         this.handleRefreshFailure(error);
-      }
+      },
     });
   }
 
@@ -219,21 +237,20 @@ export class TokenRefreshService {
   private async attemptRefreshWithRetry(attempt: number): Promise<boolean> {
     try {
       const session = await Auth.currentSession();
-      
+
       // Store refreshed tokens
       const accessToken = session.getAccessToken().getJwtToken();
       const idToken = session.getIdToken().getJwtToken();
       const refreshToken = session.getRefreshToken().getToken();
 
       this.storeTokens(accessToken, idToken, refreshToken);
-      
-      console.log('Token refresh successful', { 
+
+      console.log('Token refresh successful', {
         attempt: attempt + 1,
-        expiresAt: session.getAccessToken().getExpiration() * 1000
+        expiresAt: session.getAccessToken().getExpiration() * 1000,
       });
 
       return true;
-
     } catch (error) {
       console.warn(`Token refresh attempt ${attempt + 1} failed:`, error);
 
@@ -265,7 +282,7 @@ export class TokenRefreshService {
   }
 
   private async delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   private handleRefreshFailure(error: any): void {
@@ -282,37 +299,30 @@ export class TokenRefreshService {
 ```
 
 **Activity Tracking Service:**
+
 ```typescript
 // apps/rms/src/app/auth/services/activity-tracking.service.ts
 import { Injectable, signal, NgZone } from '@angular/core';
 import { fromEvent, merge, throttleTime, debounceTime } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ActivityTrackingService {
   private lastActivity = signal<Date>(new Date());
   private activityThreshold = 30000; // 30 seconds
-  
-  private readonly ACTIVITY_EVENTS = [
-    'mousedown', 'mousemove', 'keypress', 'scroll', 
-    'touchstart', 'click', 'focus'
-  ];
+
+  private readonly ACTIVITY_EVENTS = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click', 'focus'];
 
   constructor(private ngZone: NgZone) {}
 
   startActivityTracking(): void {
     // Run outside Angular zone for performance
     this.ngZone.runOutsideAngular(() => {
-      const activityStreams = this.ACTIVITY_EVENTS.map(event => 
-        fromEvent(document, event)
-      );
+      const activityStreams = this.ACTIVITY_EVENTS.map((event) => fromEvent(document, event));
 
       merge(...activityStreams)
-        .pipe(
-          throttleTime(this.activityThreshold),
-          debounceTime(1000)
-        )
+        .pipe(throttleTime(this.activityThreshold), debounceTime(1000))
         .subscribe(() => {
           // Run in Angular zone to update signals
           this.ngZone.run(() => {
@@ -343,6 +353,7 @@ export class ActivityTrackingService {
 ```
 
 **Session Warning Component:**
+
 ```typescript
 // apps/rms/src/app/auth/components/session-warning/session-warning.ts
 import { Component, signal, computed, OnInit, OnDestroy } from '@angular/core';
@@ -355,13 +366,7 @@ import { timer, Subscription } from 'rxjs';
   selector: 'app-session-warning',
   imports: [CommonModule, DialogModule, ButtonModule],
   template: `
-    <p-dialog 
-      [(visible)]="showWarning"
-      [modal]="true"
-      [closable]="false"
-      [draggable]="false"
-      styleClass="session-warning-dialog">
-      
+    <p-dialog [(visible)]="showWarning" [modal]="true" [closable]="false" [draggable]="false" styleClass="session-warning-dialog">
       <ng-template pTemplate="header">
         <h3>Session Expiring</h3>
       </ng-template>
@@ -373,33 +378,21 @@ import { timer, Subscription } from 'rxjs';
             {{ formatTime(timeRemaining()) }}
           </span>
         </div>
-        <p class="text-sm text-600">
-          Click "Extend Session" to continue working, or you will be automatically logged out.
-        </p>
+        <p class="text-sm text-600">Click "Extend Session" to continue working, or you will be automatically logged out.</p>
       </div>
 
       <ng-template pTemplate="footer">
-        <p-button 
-          label="Extend Session"
-          icon="pi pi-refresh"
-          styleClass="p-button-success"
-          (onClick)="extendSession()">
-        </p-button>
-        <p-button 
-          label="Logout Now"
-          icon="pi pi-sign-out"
-          styleClass="p-button-secondary"
-          (onClick)="logoutNow()">
-        </p-button>
+        <p-button label="Extend Session" icon="pi pi-refresh" styleClass="p-button-success" (onClick)="extendSession()"> </p-button>
+        <p-button label="Logout Now" icon="pi pi-sign-out" styleClass="p-button-secondary" (onClick)="logoutNow()"> </p-button>
       </ng-template>
     </p-dialog>
   `,
-  styleUrls: ['./session-warning.scss']
+  styleUrls: ['./session-warning.scss'],
 })
 export class SessionWarning implements OnInit, OnDestroy {
   showWarning = signal(false);
   timeRemaining = signal(0);
-  
+
   private countdownSubscription?: Subscription;
   private readonly WARNING_DURATION = 10 * 60 * 1000; // 10 minutes
 
@@ -417,7 +410,7 @@ export class SessionWarning implements OnInit, OnDestroy {
 
     this.countdownSubscription = timer(0, 1000).subscribe(() => {
       const remaining = this.timeRemaining() - 1000;
-      
+
       if (remaining <= 0) {
         this.handleTimeout();
       } else {
@@ -454,6 +447,7 @@ export class SessionWarning implements OnInit, OnDestroy {
 ```
 
 **Remember Me Integration:**
+
 ```typescript
 // Update to login component
 export class Login {
@@ -463,7 +457,7 @@ export class Login {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(8)]],
-      rememberMe: [false] // Add remember me checkbox
+      rememberMe: [false], // Add remember me checkbox
     });
   }
 
@@ -473,17 +467,16 @@ export class Login {
 
       try {
         const { email, password, rememberMe } = this.loginForm.value;
-        
+
         // Configure extended session if remember me is checked
         if (rememberMe) {
           await this.authService.signInWithRememberMe(email, password);
         } else {
           await this.authService.signIn(email, password);
         }
-        
+
         const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
         await this.router.navigateByUrl(returnUrl);
-        
       } catch (error) {
         console.error('Login failed:', error);
       } finally {
@@ -495,6 +488,7 @@ export class Login {
 ```
 
 ### Testing Standards
+
 **Source: [docs/architecture/ci-and-testing.md]**
 
 **Testing Framework:** Vitest with RxJS testing utilities and Angular TestBed
@@ -502,12 +496,14 @@ export class Login {
 **Coverage Requirements:** Lines: 85%, Branches: 75%, Functions: 85%
 
 **Testing Strategy:**
+
 - **Unit Tests:** Test token refresh logic, activity tracking, and session management
 - **Integration Tests:** Test complete session lifecycle and user interactions
 - **Timer Tests:** Test RxJS timer-based functionality with fake timers
 - **Race Condition Tests:** Test concurrent operations and state consistency
 
 **Key Test Scenarios:**
+
 - Automatic token refresh before expiration
 - Token refresh failure handling and retry logic
 - Concurrent token refresh request prevention
@@ -519,24 +515,30 @@ export class Login {
 
 ## Change Log
 
-| Date | Version | Description | Author |
-|------|---------|-------------|---------|
-| 2024-08-30 | 1.0 | Initial story creation | Scrum Master Bob |
+| Date       | Version | Description            | Author           |
+| ---------- | ------- | ---------------------- | ---------------- |
+| 2024-08-30 | 1.0     | Initial story creation | Scrum Master Bob |
 
 ## Dev Agent Record
-*This section will be populated by the development agent during implementation*
+
+_This section will be populated by the development agent during implementation_
 
 ### Agent Model Used
-*To be filled by dev agent*
 
-### Debug Log References  
-*To be filled by dev agent*
+_To be filled by dev agent_
+
+### Debug Log References
+
+_To be filled by dev agent_
 
 ### Completion Notes List
-*To be filled by dev agent*
+
+_To be filled by dev agent_
 
 ### File List
-*To be filled by dev agent*
+
+_To be filled by dev agent_
 
 ## QA Results
-*Results from QA Agent review will be populated here after implementation*
+
+_Results from QA Agent review will be populated here after implementation_

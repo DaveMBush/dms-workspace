@@ -10,7 +10,6 @@ import {
 import { selectAccounts } from '../accounts/selectors/select-accounts.function';
 import { CurrentAccount } from './current-account.interface';
 
-
 export const currentAccountSignalStore = signalStore(
   { providedIn: 'root' },
   withState({
@@ -18,9 +17,7 @@ export const currentAccountSignalStore = signalStore(
   } as CurrentAccount),
   withMethods(function withMethodsFunction(store) {
     return {
-      setCurrentAccountId: function setCurrentAccountId(
-        id: string,
-      ): void {
+      setCurrentAccountId: function setCurrentAccountId(id: string): void {
         patchState(store, function setCurrentAccountIdPatch(state) {
           return { ...state, id };
         });
@@ -41,8 +38,8 @@ export const currentAccountSignalStore = signalStore(
             return accounts[0].id;
           }
           return '';
-        },
+        }
       ),
     };
-  }),
+  })
 );

@@ -14,7 +14,7 @@ export class DivDepositTypesEffectsService extends EffectService<DivDepositType>
   private http = inject(HttpClient);
 
   override loadByIds(ids: string[]): Observable<DivDepositType[]> {
-    return this.http.post<DivDepositType[]>(this.apiDivDepositTypes , ids);
+    return this.http.post<DivDepositType[]>(this.apiDivDepositTypes, ids);
   }
 
   override update(newRow: DivDepositType): Observable<DivDepositType[]> {
@@ -22,7 +22,10 @@ export class DivDepositTypesEffectsService extends EffectService<DivDepositType>
   }
 
   override add(row: DivDepositType): Observable<DivDepositType[]> {
-    return this.http.post<DivDepositType[]>(this.apiDivDepositTypes + '/add', row);
+    return this.http.post<DivDepositType[]>(
+      this.apiDivDepositTypes + '/add',
+      row
+    );
   }
 
   override delete(id: string): Observable<void> {

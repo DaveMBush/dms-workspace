@@ -1,0 +1,51 @@
+<p-cellEditor>
+  <ng-template #input>
+    @if (type === 'number' || type === 'currency') { @if (max !== undefined) {
+    <p-inputNumber
+      [(ngModel)]="value"
+      (keydown.enter)="onCommit()"
+      (keydown)="stopArrowKeyPropagation($event)"
+      (onBlur)="onCommit()"
+      [class]="inputClass"
+      [min]="min"
+      [max]="max"
+      [step]="step"
+      [mode]="mode"
+      [minFractionDigits]="minFractionDigits"
+      [maxFractionDigits]="maxFractionDigits"
+    />
+    } @else {
+    <p-inputNumber
+      [(ngModel)]="value"
+      (keydown.enter)="onCommit()"
+      (keydown)="stopArrowKeyPropagation($event)"
+      (onBlur)="onCommit()"
+      [class]="inputClass"
+      [min]="min"
+      [step]="step"
+      [mode]="mode"
+      [minFractionDigits]="minFractionDigits"
+      [maxFractionDigits]="maxFractionDigits"
+    />
+    } } @else if (type === 'date') {
+    <p-datepicker
+      [(ngModel)]="value"
+      (onSelect)="onCommit()"
+      (keydown.enter)="onCommit()"
+      (keydown)="stopArrowKeyPropagation($event)"
+      appendTo="body"
+      [class]="inputClass"
+      dateFormat="mm/dd/yy"
+    />
+    }
+  </ng-template>
+  <ng-template #output>
+    @if (type === 'currency') {
+    {{ currencyValue$() | currency : 'USD' : 'symbol' : currencyFormat }}
+    } @else if (type === 'date') {
+    {{ dateValue$() | date : 'MM/dd/yyyy' }}
+    } @else {
+    {{ value }}
+    }
+  </ng-template>
+</p-cellEditor>

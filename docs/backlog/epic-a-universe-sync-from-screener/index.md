@@ -11,7 +11,9 @@
 ## Future Considerations
 
 ### Log Viewer Implementation
+
 With Story A3 implementing structured logging, consider adding a log viewer to the backlog for:
+
 - Real-time log monitoring
 - Metrics dashboard
 - Error analysis and alerting

@@ -9,6 +9,7 @@ As of Epic H, universe updates are managed directly from the Universe screen thr
 ## Journey 1: Update Fields Flow
 
 ### Overview
+
 Users can update individual fields in the universe using the dedicated Update Fields icon button.
 
 ### User Journey Steps
@@ -30,6 +31,7 @@ Users can update individual fields in the universe using the dedicated Update Fi
    - User can retry the operation
 
 ### Key Behaviors
+
 - **Direct Action**: No dialog or modal required
 - **Immediate Feedback**: Loading states and results are instantly visible
 - **Non-blocking**: User can continue using the application during processing
@@ -38,6 +40,7 @@ Users can update individual fields in the universe using the dedicated Update Fi
 ## Journey 2: Update Universe Flow
 
 ### Overview
+
 Users can perform a full universe synchronization using the dedicated Update Universe icon button.
 
 ### User Journey Steps
@@ -61,6 +64,7 @@ Users can perform a full universe synchronization using the dedicated Update Uni
    - User can retry the operation
 
 ### Key Behaviors
+
 - **Automatic Sync**: Universe data is synchronized from screener service
 - **Rich Feedback**: Detailed success/error messages via toast notifications
 - **Progress Indication**: Clear visual feedback during processing
@@ -69,11 +73,13 @@ Users can perform a full universe synchronization using the dedicated Update Uni
 ## Common Elements
 
 ### Icon-Based Interface
+
 - Both update operations are accessible via dedicated icons in the Universe toolbar
 - Icons provide immediate visual recognition of functionality
 - No modals or dialogs interrupt the user workflow
 
 ### Loading States
+
 - Each icon shows individual loading indicators during processing
 - Operations are clearly isolated - one loading doesn't affect the other
 - Users can identify which specific operation is in progress
@@ -81,22 +87,26 @@ Users can perform a full universe synchronization using the dedicated Update Uni
 ## User Experience Considerations
 
 ### Accessibility
+
 - Proper ARIA labels on all icon buttons
 - Keyboard navigation support for toolbar icons
 - Screen reader friendly button descriptions
 - Focus management for icon interactions
 
 ### Loading States
+
 - Clear visual feedback on individual icons during operations
 - Disabled states prevent multiple concurrent operations
 - Loading indicators are consistent across both update types
 
 ### Error Handling
+
 - User-friendly error messages via toast notifications
 - Clear recovery paths (immediate retry capability)
 - Consistent error presentation across both operations
 
 ### Mobile Responsiveness
+
 - Touch-friendly icon sizes in toolbar
 - Icons remain accessible on all screen sizes
 - Toast notifications adapt to mobile viewports
@@ -104,16 +114,19 @@ Users can perform a full universe synchronization using the dedicated Update Uni
 ## Technical Implementation Notes
 
 ### State Management
+
 - Loading states managed via component properties and services
 - Sync service tracks operation status via signals
 - No feature flag dependency - universe sync is always enabled
 
 ### Error Boundaries
+
 - HTTP errors handled at service level
 - UI errors handled at component level
 - Toast notifications for user-facing messages
 
 ### Performance
+
 - Minimal DOM updates for icon state changes
 - Efficient service calls for universe operations
 - Optimized rendering during loading states
@@ -121,16 +134,19 @@ Users can perform a full universe synchronization using the dedicated Update Uni
 ## Benefits of the New Approach
 
 ### Simplified User Experience
+
 - **No Modals**: Users can trigger updates without interrupting their workflow
 - **Direct Access**: Icon-based controls provide immediate access to functionality
 - **Visual Clarity**: Clear separation between different update operations
 
 ### Improved Performance
+
 - **Reduced DOM Complexity**: No modal rendering overhead
 - **Faster Interactions**: Direct action triggers without dialog setup
 - **Better Mobile Experience**: Touch-friendly icons work better than modal dialogs
 
 ### Enhanced Discoverability
+
 - **Always Visible**: Update controls are always available in the toolbar
 - **Intuitive Icons**: `pi-refresh` and `pi-sync` clearly communicate their purpose
 - **Consistent Location**: Users always know where to find update controls

@@ -1,9 +1,11 @@
 # Story H2: Add "Update Universe" Sync Icon to Universe Title Bar
 
 ## Summary
+
 Add an "Update Universe" sync icon to the Universe screen title bar that triggers the same screener sync functionality as the current "Update Universe" button in the Universe Settings modal.
 
 ## Acceptance Criteria
+
 - [ ] Add "Update Universe" sync icon to Universe title bar in the `#end` template section
 - [ ] Position icon to the left of the "Update Fields" icon
 - [ ] Use sync icon (`pi-sync`)
@@ -15,11 +17,14 @@ Add an "Update Universe" sync icon to the Universe screen title bar that trigger
 - [ ] Integrate with existing sync service
 
 ## Technical Details
+
 ### Files to Modify
+
 - `apps/rms/src/app/global/global-universe/global-universe.component.html`
 - `apps/rms/src/app/global/global-universe/global-universe.component.ts`
 
 ### Implementation Notes
+
 - Import and inject `UniverseSyncService`
 - Add method to handle universe sync operation
 - Use `p-button` with `icon="pi-sync"`
@@ -29,14 +34,16 @@ Add an "Update Universe" sync icon to the Universe screen title bar that trigger
 - Add toast notifications for feedback
 
 ### Service Integration
+
 - Use existing `UniverseSyncService.syncFromScreener()` method
 - Handle observable subscription properly
 - Use same success/error handling as current modal implementation
 - Show appropriate user feedback
 
 ## Definition of Done
+
 - Sync icon appears in Universe title bar
-- Tooltip shows "Update Universe" 
+- Tooltip shows "Update Universe"
 - Clicking icon triggers universe sync from screener
 - Loading state properly handled
 - Success/error feedback provided

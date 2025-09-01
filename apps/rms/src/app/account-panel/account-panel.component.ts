@@ -1,6 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
-import { ActivatedRoute , Params, RouterModule } from '@angular/router';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+} from '@angular/core';
+import { ActivatedRoute, Params, RouterModule } from '@angular/router';
 import { ToolbarModule } from 'primeng/toolbar';
 
 import { currentAccountSignalStore } from '../store/current-account/current-account.signal-store';
@@ -12,11 +17,11 @@ import { selectCurrentAccountSignal } from '../store/current-account/select-curr
   standalone: true,
   imports: [CommonModule, ToolbarModule, RouterModule],
   templateUrl: './account-panel.component.html',
-  styleUrls: ['./account-panel.component.scss']
+  styleUrls: ['./account-panel.component.scss'],
 })
 export class AccountPanelComponent {
   private route = inject(ActivatedRoute);
-  private currentAccount = inject(currentAccountSignalStore)
+  private currentAccount = inject(currentAccountSignalStore);
 
   accountId = '';
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- will hide this

@@ -12,7 +12,9 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function checkDuplicates() {
-  console.log('🔍 Checking for duplicates before adding unique constraints...\n');
+  console.log(
+    '🔍 Checking for duplicates before adding unique constraints...\n'
+  );
 
   // Check for duplicate universe symbols
   console.log('📊 Checking universe.symbol duplicates:');
@@ -56,15 +58,21 @@ async function checkDuplicates() {
     console.log('✅ No duplicate names found in risk_group table');
   }
 
-  const hasAnyDuplicates = 
+  const hasAnyDuplicates =
     universeSymbolDuplicates.length > 0 || riskGroupNameDuplicates.length > 0;
 
   if (hasAnyDuplicates) {
-    console.log('\n⚠️  Manual deduplication required before applying unique constraints');
-    console.log('Consider merging or removing duplicate records based on business logic');
+    console.log(
+      '\n⚠️  Manual deduplication required before applying unique constraints'
+    );
+    console.log(
+      'Consider merging or removing duplicate records based on business logic'
+    );
     process.exit(1);
   } else {
-    console.log('\n🎉 No duplicates found - safe to proceed with unique constraints');
+    console.log(
+      '\n🎉 No duplicates found - safe to proceed with unique constraints'
+    );
   }
 }
 

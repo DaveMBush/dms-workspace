@@ -1,5 +1,5 @@
 import { randomUUID } from 'crypto';
-import { existsSync,mkdirSync, writeFileSync } from 'fs';
+import { existsSync, mkdirSync, writeFileSync } from 'fs';
 import { join } from 'path';
 
 import type { LogEntry } from './logger.types';
@@ -15,7 +15,10 @@ class SyncLogger {
     this.ensureLogsDirectory();
 
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    this.logFilePath = join(this.logsDir, `sync-${timestamp}-${this.correlationId}.log`);
+    this.logFilePath = join(
+      this.logsDir,
+      `sync-${timestamp}-${this.correlationId}.log`
+    );
   }
 
   info(message: string, data?: Record<string, unknown>): void {

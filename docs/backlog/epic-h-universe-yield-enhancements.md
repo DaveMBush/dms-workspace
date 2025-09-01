@@ -4,7 +4,8 @@ Goal: Add average purchase price yield calculation to provide better investment 
 
 ## Context
 
-The universe screen currently displays a Yield% column calculated using `last_price`: 
+The universe screen currently displays a Yield% column calculated using `last_price`:
+
 ```
 yield_percent = 100 * distributions_per_year * (distribution / last_price)
 ```
@@ -16,6 +17,7 @@ Users need to compare this market-based yield with their actual cost basis yield
 **Current Implementation:** `/apps/rms/src/app/global/global-universe/universe.selector.ts:yield_percent`
 
 **Data Model Dependencies:**
+
 - `universe` table: `distribution`, `distributions_per_year`, `last_price`
 - `trades` table: `buy`, `quantity`, `universeId`, `accountId`, `sell_date` (null for open positions)
 
@@ -59,7 +61,7 @@ Acceptance Criteria:
 
 - Test weighted average calculation with multiple trades at different prices
 - Test edge cases: no open positions, single trade, all positions sold
-- Test account-specific filtering behavior 
+- Test account-specific filtering behavior
 - Test sort functionality for new yield column
 - Test display formatting and null handling
 - Maintain existing test coverage for original yield calculations
@@ -84,11 +86,13 @@ Dependencies: Stories H1, H2, H3
 ## Technical Notes
 
 **Architecture Dependencies:**
+
 - Frontend: Angular signals, computed properties, PrimeNG table
 - Data flow: Universe selector → Display data service → Component
 - Testing: Vitest for unit tests, existing test patterns
 
 **File Modification Scope (Minimal Changes):**
+
 1. `universe.selector.ts` - Add avg_purchase_yield_percent calculation
 2. `universe-data.service.ts` - Add field handling for sorting/filtering
 3. `global-universe.component.*` - Add column to table
@@ -96,6 +100,7 @@ Dependencies: Stories H1, H2, H3
 5. Related test files
 
 **Performance Considerations:**
+
 - Calculation should leverage existing position data from `getAccountSpecificData`
 - No additional database queries required
 - Computed values cached per account selection change

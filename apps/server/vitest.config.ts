@@ -16,5 +16,3 @@ export default defineConfig({
   },
   // Avoid eslint parserOptions.project errors by keeping this file simple
 });
-
-

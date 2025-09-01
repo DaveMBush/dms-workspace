@@ -1,5 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy,Component, computed, inject,output, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  output,
+  signal,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { SmartArray } from '@smarttools/smart-signals';
@@ -9,18 +16,28 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { SelectModule } from 'primeng/select';
 
+import { SymbolAutocompleteComponent } from '../../shared/symbol-autocomplete.component';
+import { createFilteredSymbolsSignal } from '../../shared/symbol-filtering.function';
 import { Account } from '../../store/accounts/account.interface';
 import { currentAccountSignalStore } from '../../store/current-account/current-account.signal-store';
 import { selectCurrentAccountSignal } from '../../store/current-account/select-current-account.signal';
 import { DivDepositType } from '../../store/div-deposit-types/div-deposit-type.interface';
 import { selectDivDepositTypes } from '../../store/div-deposit-types/selectors/select-div-deposit-types.function';
 import { DivDeposit } from '../../store/div-deposits/div-deposit.interface';
-import { selectUniverses } from '../../store/universe/selectors/select-universes.function';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'rms-div-dep-modal',
-  imports: [CommonModule, FormsModule, InputNumberModule, DatePickerModule, SelectModule, ButtonModule, AutoCompleteModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    InputNumberModule,
+    DatePickerModule,
+    SelectModule,
+    ButtonModule,
+    AutoCompleteModule,
+    SymbolAutocompleteComponent,
+  ],
   templateUrl: './div-dep-modal.component.html',
   styleUrl: './div-dep-modal.component.scss',
 })
@@ -28,7 +45,7 @@ export class DivDepModalComponent {
   // eslint-disable-next-line @angular-eslint/no-output-native -- it is the only thing that make sense and it does not conflict
   readonly close = output();
   route = inject(ActivatedRoute);
-  private currentAccount = inject(currentAccountSignalStore)
+  private currentAccount = inject(currentAccountSignalStore);
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- will hide this
   accountId = computed(() => {
     return this.route.snapshot.paramMap.get('accountId');
@@ -38,34 +55,11 @@ export class DivDepModalComponent {
   symbol$ = signal<string | null>(null);
   filter = signal<string>('');
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- will hide this
-  filteredSymbols$ = computed(() => {
-    const symbols = selectUniverses();
-    const returnedSymbols = [] as { label: string; value: string; expired: boolean }[];
-    const selectedId = this.symbol$();
-    let selectedSymbol: { label: string; value: string; expired: boolean } | undefined;
-    for (let i = 0; i < symbols.length; i++) {
-      const symbol = symbols[i];
-      const entry = {
-        label: symbol.symbol,
-        value: symbol.id,
-        expired: symbol.expired,
-      };
-      if (symbol.id === selectedId) {
-        selectedSymbol = entry;
-      }
-      returnedSymbols.push(entry);
-    }
-    const query = this.filter().toLowerCase();
-    let filtered = returnedSymbols.filter(function symbolFilter(r) {
-      return r.label.toLowerCase().includes(query);
-    });
-    if (selectedSymbol && !filtered.some(function symbolValueFilter(r) {
-      return r.value === selectedSymbol.value;
-    })) {
-      filtered = [selectedSymbol, ...filtered];
-    }
-    return filtered;
-  });
+  symbolAsString = computed(() => this.symbol$() ?? '');
+  filteredSymbols$ = createFilteredSymbolsSignal(
+    this.filter,
+    this.symbolAsString
+  );
 
   filterSymbols(event: { query: string }): void {
     this.filter.set(event.query + 'a');
@@ -79,7 +73,7 @@ export class DivDepModalComponent {
   types$ = computed(() => {
     const types = selectDivDepositTypes();
     const returnTypes = [] as DivDepositType[];
-    for(let i = 0; i < types.length; i++) {
+    for (let i = 0; i < types.length; i++) {
       returnTypes.push({ id: types[i].id, name: types[i].name });
     }
     return returnTypes;
@@ -92,15 +86,19 @@ export class DivDepModalComponent {
   handleSave(): void {
     const account = selectCurrentAccountSignal(this.currentAccount);
     const act = account();
-    const divDeposits = act.divDeposits as DivDeposit[] & SmartArray<Account, DivDeposit>;
-    divDeposits.add!({
-      id: 'new',
-      date: this.date$()!,
-      amount: this.amount$()!,
-      accountId: act.id,
-      divDepositTypeId: this.type$()!,
-      universeId: this.symbol$()!,
-    },act);
+    const divDeposits = act.divDeposits as DivDeposit[] &
+      SmartArray<Account, DivDeposit>;
+    divDeposits.add!(
+      {
+        id: 'new',
+        date: this.date$()!,
+        amount: this.amount$()!,
+        accountId: act.id,
+        divDepositTypeId: this.type$()!,
+        universeId: this.symbol$()!,
+      },
+      act
+    );
     this.close.emit();
   }
 }
