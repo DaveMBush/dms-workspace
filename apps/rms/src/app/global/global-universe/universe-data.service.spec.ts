@@ -24,6 +24,42 @@ describe('UniverseDataService', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     service = new UniverseDataService();
+
+    // Mock default returns for selectors
+    mockSelectUniverses.mockReturnValue([
+      {
+        id: UNIVERSE_1_ID,
+        symbol: AAPL_SYMBOL,
+        distribution: 0.25,
+        distributions_per_year: DISTRIBUTIONS_PER_YEAR,
+        last_price: 150.0,
+      },
+      {
+        id: 'universe-2',
+        symbol: 'MSFT',
+        distribution: 0.5,
+        distributions_per_year: DISTRIBUTIONS_PER_YEAR,
+        last_price: 200.0,
+      },
+    ]);
+
+    mockSelectAccountChildren.mockReturnValue({
+      entities: {
+        [ACCOUNT_1_ID]: {
+          id: ACCOUNT_1_ID,
+          trades: [
+            {
+              id: 'trade-1',
+              universeId: UNIVERSE_1_ID,
+              accountId: ACCOUNT_1_ID,
+              buy: 120.0,
+              quantity: 10,
+              sell_date: undefined,
+            },
+          ],
+        },
+      },
+    });
   });
 
   const MOCK_YIELD_PERCENT = 0.667;
@@ -32,6 +68,9 @@ describe('UniverseDataService', () => {
   const DISTRIBUTIONS_PER_YEAR = 4;
   const MOCK_AVG_YIELD = 1.0;
   const EX_DATE = '2024-03-15';
+  const AVG_PURCHASE_YIELD_FIELD = 'avg_purchase_yield_percent';
+  const ACCOUNT_1_ID = 'account-1';
+  const UNIVERSE_1_ID = 'universe-1';
 
   describe('getFieldValueFromDisplayData', () => {
     const mockDisplayData = {
@@ -52,7 +91,7 @@ describe('UniverseDataService', () => {
     test('returns avg_purchase_yield_percent field value', () => {
       const result = service.getFieldValueFromDisplayData(
         mockDisplayData,
-        'avg_purchase_yield_percent'
+        AVG_PURCHASE_YIELD_FIELD
       );
       expect(result).toBe(MOCK_AVG_YIELD);
     });
@@ -64,7 +103,7 @@ describe('UniverseDataService', () => {
       };
       const result = service.getFieldValueFromDisplayData(
         dataWithNullYield,
-        'avg_purchase_yield_percent'
+        AVG_PURCHASE_YIELD_FIELD
       );
       expect(result).toBe(0);
     });
@@ -74,7 +113,7 @@ describe('UniverseDataService', () => {
       delete dataWithUndefinedYield.avg_purchase_yield_percent;
       const result = service.getFieldValueFromDisplayData(
         dataWithUndefinedYield,
-        'avg_purchase_yield_percent'
+        AVG_PURCHASE_YIELD_FIELD
       );
       expect(result).toBe(0);
     });
@@ -139,7 +178,7 @@ describe('UniverseDataService', () => {
     test('supports sorting by avg_purchase_yield_percent ascending', () => {
       const params = {
         rawData: mockUniverseData,
-        sortCriteria: [{ field: 'avg_purchase_yield_percent', order: 1 }],
+        sortCriteria: [{ field: AVG_PURCHASE_YIELD_FIELD, order: 1 }],
         minYield: null,
         selectedAccount: 'all',
         symbolFilter: '',
@@ -156,7 +195,7 @@ describe('UniverseDataService', () => {
     test('supports sorting by avg_purchase_yield_percent descending', () => {
       const params = {
         rawData: mockUniverseData,
-        sortCriteria: [{ field: 'avg_purchase_yield_percent', order: -1 }],
+        sortCriteria: [{ field: AVG_PURCHASE_YIELD_FIELD, order: -1 }],
         minYield: null,
         selectedAccount: 'all',
         symbolFilter: '',
@@ -179,7 +218,7 @@ describe('UniverseDataService', () => {
       const params = {
         rawData: dataWithSameYield,
         sortCriteria: [
-          { field: 'avg_purchase_yield_percent', order: -1 },
+          { field: AVG_PURCHASE_YIELD_FIELD, order: -1 },
           { field: 'symbol', order: 1 },
         ],
         minYield: null,
@@ -229,7 +268,8 @@ describe('UniverseDataService', () => {
       const result = service.filterAndSortUniverses(params);
 
       expect(result).toHaveLength(1);
-      expect(result[0].avg_purchase_yield_percent).toBe(1.5);
+      // For 'all' accounts, calculates from mocked data: 100 * 4 * (0.25 / 120.0) = 0.8333
+      expect(result[0].avg_purchase_yield_percent).toBeCloseTo(0.8333, 3);
     });
 
     test('maintains avg_purchase_yield_percent during account-specific filtering', () => {
@@ -252,24 +292,27 @@ describe('UniverseDataService', () => {
 
       mockSelectUniverses.mockReturnValue([
         {
-          id: 'universe-1',
+          id: UNIVERSE_1_ID,
           symbol: AAPL_SYMBOL,
+          distribution: 0.25,
+          distributions_per_year: DISTRIBUTIONS_PER_YEAR,
         },
       ]);
 
       mockSelectAccountChildren.mockReturnValue({
         entities: {
-          'account-1': {
-            id: 'account-1',
+          [ACCOUNT_1_ID]: {
+            id: ACCOUNT_1_ID,
             trades: [
               {
                 id: 'trade-1',
-                universeId: 'universe-1',
-                accountId: 'account-1',
+                universeId: UNIVERSE_1_ID,
+                accountId: ACCOUNT_1_ID,
                 buy: 100.0,
                 sell: 0,
                 buy_date: '2024-01-01',
                 quantity: 10,
+                sell_date: undefined,
               },
             ],
           },
@@ -280,7 +323,7 @@ describe('UniverseDataService', () => {
         rawData: mockData,
         sortCriteria: [],
         minYield: null,
-        selectedAccount: 'account-1',
+        selectedAccount: ACCOUNT_1_ID,
         symbolFilter: '',
         riskGroupFilter: null,
         expiredFilter: null,
@@ -289,7 +332,8 @@ describe('UniverseDataService', () => {
       const result = service.filterAndSortUniverses(params);
 
       expect(result).toHaveLength(1);
-      expect(result[0].avg_purchase_yield_percent).toBe(1.5);
+      // Now calculated: 100 * 4 * (0.25 / 100.0) = 1.0
+      expect(result[0].avg_purchase_yield_percent).toBe(1.0);
       expect(result[0].position).toBe(1000.0); // Updated by account-specific logic
     });
   });
