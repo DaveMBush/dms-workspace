@@ -90,15 +90,11 @@ export class GlobalUniverseStorageService {
 
   /**
    * Loads expired filter from localStorage
+   * Always returns null to enable expired-with-positions filtering by default
    */
   loadExpiredFilter(): boolean | null {
-    const saved = getLocalStorageItem<boolean | null>(
-      `${FILTERS_STORAGE_KEY}-expired`,
-      null
-    );
-    if (typeof saved === 'boolean' || saved === null) {
-      return saved;
-    }
+    // Always return null to activate expired-with-positions filtering by default
+    // This ensures consistent default behavior regardless of previously saved settings
     return null;
   }
 
