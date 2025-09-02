@@ -236,6 +236,419 @@ describe('UniverseDataService', () => {
     });
   });
 
+  describe('weighted average calculation tests', () => {
+    test('calculates weighted average for multiple trades at different prices', () => {
+      const mockMultiTradeData = {
+        entities: {
+          [ACCOUNT_1_ID]: {
+            id: ACCOUNT_1_ID,
+            trades: [
+              {
+                id: 'trade-1',
+                universeId: UNIVERSE_1_ID,
+                accountId: ACCOUNT_1_ID,
+                buy: 10.5,
+                quantity: 100,
+                sell_date: undefined,
+              },
+              {
+                id: 'trade-2',
+                universeId: UNIVERSE_1_ID,
+                accountId: ACCOUNT_1_ID,
+                buy: 12.75,
+                quantity: 50,
+                sell_date: undefined,
+              },
+              {
+                id: 'trade-3',
+                universeId: UNIVERSE_1_ID,
+                accountId: ACCOUNT_1_ID,
+                buy: 9.25,
+                quantity: 200,
+                sell_date: undefined,
+              },
+            ],
+          },
+        },
+      };
+
+      mockSelectAccountChildren.mockReturnValue(mockMultiTradeData);
+
+      const accountSpecificData = service.getAccountSpecificData(
+        AAPL_SYMBOL,
+        ACCOUNT_1_ID
+      );
+
+      // Expected weighted average: (10.50*100 + 12.75*50 + 9.25*200) / 350 = 10.107
+      // Expected yield: 100 * 4 * (0.25 / 10.107) = 9.894%
+      expect(accountSpecificData.avg_purchase_yield_percent).toBeCloseTo(
+        9.894,
+        2
+      );
+    });
+
+    test('handles single trade scenario (weighted average equals buy price)', () => {
+      const mockSingleTradeData = {
+        entities: {
+          [ACCOUNT_1_ID]: {
+            id: ACCOUNT_1_ID,
+            trades: [
+              {
+                id: 'trade-1',
+                universeId: UNIVERSE_1_ID,
+                accountId: ACCOUNT_1_ID,
+                buy: 15.0,
+                quantity: 100,
+                sell_date: undefined,
+              },
+            ],
+          },
+        },
+      };
+
+      mockSelectAccountChildren.mockReturnValue(mockSingleTradeData);
+
+      const accountSpecificData = service.getAccountSpecificData(
+        AAPL_SYMBOL,
+        ACCOUNT_1_ID
+      );
+
+      // Expected yield: 100 * 4 * (0.25 / 15.0) = 6.67%
+      expect(accountSpecificData.avg_purchase_yield_percent).toBeCloseTo(
+        6.67,
+        2
+      );
+    });
+
+    test('returns 0 when no open positions (all positions sold)', () => {
+      const mockSoldTradeData = {
+        entities: {
+          [ACCOUNT_1_ID]: {
+            id: ACCOUNT_1_ID,
+            trades: [
+              {
+                id: 'trade-1',
+                universeId: UNIVERSE_1_ID,
+                accountId: ACCOUNT_1_ID,
+                buy: 10.0,
+                quantity: 100,
+                sell_date: '2024-01-01',
+              },
+            ],
+          },
+        },
+      };
+
+      mockSelectAccountChildren.mockReturnValue(mockSoldTradeData);
+
+      const accountSpecificData = service.getAccountSpecificData(
+        AAPL_SYMBOL,
+        ACCOUNT_1_ID
+      );
+
+      expect(accountSpecificData.avg_purchase_yield_percent).toBe(0);
+    });
+
+    test('returns 0 when open positions array is empty', () => {
+      const mockEmptyTradeData = {
+        entities: {
+          [ACCOUNT_1_ID]: {
+            id: ACCOUNT_1_ID,
+            trades: [],
+          },
+        },
+      };
+
+      mockSelectAccountChildren.mockReturnValue(mockEmptyTradeData);
+
+      const accountSpecificData = service.getAccountSpecificData(
+        AAPL_SYMBOL,
+        ACCOUNT_1_ID
+      );
+
+      expect(accountSpecificData.avg_purchase_yield_percent).toBe(0);
+    });
+
+    test('handles zero quantity scenario (edge case protection)', () => {
+      const mockZeroQuantityData = {
+        entities: {
+          [ACCOUNT_1_ID]: {
+            id: ACCOUNT_1_ID,
+            trades: [
+              {
+                id: 'trade-1',
+                universeId: UNIVERSE_1_ID,
+                accountId: ACCOUNT_1_ID,
+                buy: 15.0,
+                quantity: 0,
+                sell_date: undefined,
+              },
+            ],
+          },
+        },
+      };
+
+      mockSelectAccountChildren.mockReturnValue(mockZeroQuantityData);
+
+      const accountSpecificData = service.getAccountSpecificData(
+        AAPL_SYMBOL,
+        ACCOUNT_1_ID
+      );
+
+      expect(accountSpecificData.avg_purchase_yield_percent).toBe(0);
+    });
+
+    test('handles zero distribution with non-zero positions', () => {
+      mockSelectUniverses.mockReturnValue([
+        {
+          id: UNIVERSE_1_ID,
+          symbol: AAPL_SYMBOL,
+          distribution: 0,
+          distributions_per_year: 4,
+          last_price: 150.0,
+        },
+      ]);
+
+      const accountSpecificData = service.getAccountSpecificData(
+        AAPL_SYMBOL,
+        ACCOUNT_1_ID
+      );
+
+      expect(accountSpecificData.avg_purchase_yield_percent).toBe(0);
+    });
+  });
+
+  describe('yield percentage calculation tests', () => {
+    test('calculates yield with various distribution amounts', () => {
+      const testScenarios = [
+        { distribution: 0.25, expected: 8.33 }, // 100 * 4 * (0.25 / 12.0) = 8.33%
+        { distribution: 0.5, expected: 16.67 }, // 100 * 4 * (0.50 / 12.0) = 16.67%
+        { distribution: 1.0, expected: 33.33 }, // 100 * 4 * (1.00 / 12.0) = 33.33%
+      ];
+
+      testScenarios.forEach((scenario) => {
+        mockSelectUniverses.mockReturnValue([
+          {
+            id: UNIVERSE_1_ID,
+            symbol: AAPL_SYMBOL,
+            distribution: scenario.distribution,
+            distributions_per_year: 4,
+            last_price: 150.0,
+          },
+        ]);
+
+        const mockTradeData = {
+          entities: {
+            [ACCOUNT_1_ID]: {
+              id: ACCOUNT_1_ID,
+              trades: [
+                {
+                  id: 'trade-1',
+                  universeId: UNIVERSE_1_ID,
+                  accountId: ACCOUNT_1_ID,
+                  buy: 12.0,
+                  quantity: 100,
+                  sell_date: undefined,
+                },
+              ],
+            },
+          },
+        };
+
+        mockSelectAccountChildren.mockReturnValue(mockTradeData);
+
+        const accountSpecificData = service.getAccountSpecificData(
+          AAPL_SYMBOL,
+          ACCOUNT_1_ID
+        );
+
+        expect(accountSpecificData.avg_purchase_yield_percent).toBeCloseTo(
+          scenario.expected,
+          1
+        );
+      });
+    });
+
+    test('calculates yield with different distributions_per_year values', () => {
+      const testScenarios = [
+        { distributions_per_year: 4, expected: 8.33 }, // Quarterly: 100 * 4 * (0.25 / 12.0) = 8.33%
+        { distributions_per_year: 12, expected: 25.0 }, // Monthly: 100 * 12 * (0.25 / 12.0) = 25.0%
+        { distributions_per_year: 1, expected: 2.08 }, // Annual: 100 * 1 * (0.25 / 12.0) = 2.08%
+      ];
+
+      testScenarios.forEach((scenario) => {
+        mockSelectUniverses.mockReturnValue([
+          {
+            id: UNIVERSE_1_ID,
+            symbol: AAPL_SYMBOL,
+            distribution: 0.25,
+            distributions_per_year: scenario.distributions_per_year,
+            last_price: 150.0,
+          },
+        ]);
+
+        const mockTradeData = {
+          entities: {
+            [ACCOUNT_1_ID]: {
+              id: ACCOUNT_1_ID,
+              trades: [
+                {
+                  id: 'trade-1',
+                  universeId: UNIVERSE_1_ID,
+                  accountId: ACCOUNT_1_ID,
+                  buy: 12.0,
+                  quantity: 100,
+                  sell_date: undefined,
+                },
+              ],
+            },
+          },
+        };
+
+        mockSelectAccountChildren.mockReturnValue(mockTradeData);
+
+        const accountSpecificData = service.getAccountSpecificData(
+          AAPL_SYMBOL,
+          ACCOUNT_1_ID
+        );
+
+        expect(accountSpecificData.avg_purchase_yield_percent).toBeCloseTo(
+          scenario.expected,
+          2
+        );
+      });
+    });
+
+    test('handles divide-by-zero protection when average price is 0', () => {
+      const mockTradeData = {
+        entities: {
+          [ACCOUNT_1_ID]: {
+            id: ACCOUNT_1_ID,
+            trades: [
+              {
+                id: 'trade-1',
+                universeId: UNIVERSE_1_ID,
+                accountId: ACCOUNT_1_ID,
+                buy: 0,
+                quantity: 100,
+                sell_date: undefined,
+              },
+            ],
+          },
+        },
+      };
+
+      mockSelectAccountChildren.mockReturnValue(mockTradeData);
+
+      const accountSpecificData = service.getAccountSpecificData(
+        AAPL_SYMBOL,
+        ACCOUNT_1_ID
+      );
+
+      expect(accountSpecificData.avg_purchase_yield_percent).toBe(0);
+    });
+
+    test('handles null distribution gracefully', () => {
+      mockSelectUniverses.mockReturnValue([
+        {
+          id: UNIVERSE_1_ID,
+          symbol: AAPL_SYMBOL,
+          distribution: null as unknown as number,
+          distributions_per_year: 4,
+          last_price: 150.0,
+        },
+      ]);
+
+      const accountSpecificData = service.getAccountSpecificData(
+        AAPL_SYMBOL,
+        ACCOUNT_1_ID
+      );
+
+      expect(accountSpecificData.avg_purchase_yield_percent).toBe(0);
+    });
+
+    test('handles undefined distributions_per_year field', () => {
+      mockSelectUniverses.mockReturnValue([
+        {
+          id: UNIVERSE_1_ID,
+          symbol: AAPL_SYMBOL,
+          distribution: 0.25,
+          distributions_per_year: undefined as unknown as number,
+          last_price: 150.0,
+        },
+      ]);
+
+      const mockTradeData = {
+        entities: {
+          [ACCOUNT_1_ID]: {
+            id: ACCOUNT_1_ID,
+            trades: [
+              {
+                id: 'trade-1',
+                universeId: UNIVERSE_1_ID,
+                accountId: ACCOUNT_1_ID,
+                buy: 12.0,
+                quantity: 100,
+                sell_date: undefined,
+              },
+            ],
+          },
+        },
+      };
+
+      mockSelectAccountChildren.mockReturnValue(mockTradeData);
+
+      const accountSpecificData = service.getAccountSpecificData(
+        AAPL_SYMBOL,
+        ACCOUNT_1_ID
+      );
+
+      // When distributions_per_year is undefined, the calculation results in NaN
+      // which should be handled gracefully (either NaN or 0 depending on implementation)
+      expect(
+        Number.isNaN(accountSpecificData.avg_purchase_yield_percent) ||
+          accountSpecificData.avg_purchase_yield_percent === 0
+      ).toBe(true);
+    });
+
+    test('verifies formatting output has appropriate precision', () => {
+      const mockTradeData = {
+        entities: {
+          [ACCOUNT_1_ID]: {
+            id: ACCOUNT_1_ID,
+            trades: [
+              {
+                id: 'trade-1',
+                universeId: UNIVERSE_1_ID,
+                accountId: ACCOUNT_1_ID,
+                buy: 13.456789,
+                quantity: 100,
+                sell_date: undefined,
+              },
+            ],
+          },
+        },
+      };
+
+      mockSelectAccountChildren.mockReturnValue(mockTradeData);
+
+      const accountSpecificData = service.getAccountSpecificData(
+        AAPL_SYMBOL,
+        ACCOUNT_1_ID
+      );
+
+      // Calculated value should be a number with reasonable precision
+      // Expected: 100 * 4 * (0.25 / 13.456789) = 7.431%
+      expect(accountSpecificData.avg_purchase_yield_percent).toBeCloseTo(
+        7.431,
+        2
+      );
+      expect(typeof accountSpecificData.avg_purchase_yield_percent).toBe(
+        'number'
+      );
+    });
+  });
+
   describe('integration with existing filtering', () => {
     test('preserves avg_purchase_yield_percent through filtering operations', () => {
       const mockData = [

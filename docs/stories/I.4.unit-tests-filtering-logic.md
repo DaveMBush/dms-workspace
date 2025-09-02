@@ -6,8 +6,8 @@ Draft
 
 ## Story
 
-**As a** development team,  
-**I want** comprehensive unit tests for the expired-with-positions filtering logic and toggle functionality,  
+**As a** development team,
+**I want** comprehensive unit tests for the expired-with-positions filtering logic and toggle functionality,
 **so that** I can ensure the filtering behaves correctly in all scenarios and regressions are prevented.
 
 ## Acceptance Criteria
@@ -18,6 +18,17 @@ Draft
 4. Test "Show All Expired" toggle functionality in all states
 5. Test performance with large datasets containing many expired symbols
 6. Maintain existing test coverage for other filtering functionality
+7. Ensure the following commands run without errors:
+
+- `pnpm format`
+- `pnpm dupcheck`
+- `pnpm nx run rms:test --code-coverage`
+- `pnpm nx run server:build:production`
+- `pnpm nx run server:test --code-coverage`
+- `pnpm nx run server:lint`
+- `pnpm nx run rms:lint`
+- `pnpm nx run rms:build:production`
+- `pnpm nx run rms-e2e:lint`
 
 ## Tasks / Subtasks
 

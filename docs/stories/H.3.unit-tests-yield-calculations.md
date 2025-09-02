@@ -2,12 +2,12 @@
 
 ## Status
 
-Draft
+Ready for Review
 
 ## Story
 
-**As a** development team,  
-**I want** comprehensive unit tests for the average purchase price yield calculations,  
+**As a** development team,
+**I want** comprehensive unit tests for the average purchase price yield calculations,
 **so that** I can ensure the calculations are accurate and handle edge cases properly.
 
 ## Acceptance Criteria
@@ -18,51 +18,62 @@ Draft
 4. Test sort functionality for new yield column
 5. Test display formatting and null handling
 6. Maintain existing test coverage for original yield calculations
+7. Ensure the following commands run without errors:
+
+- `pnpm format`
+- `pnpm dupcheck`
+- `pnpm nx run rms:test --code-coverage`
+- `pnpm nx run server:build:production`
+- `pnpm nx run server:test --code-coverage`
+- `pnpm nx run server:lint`
+- `pnpm nx run rms:lint`
+- `pnpm nx run rms:build:production`
+- `pnpm nx run rms-e2e:lint`
 
 ## Tasks / Subtasks
 
-- [ ] **Task 1: Create unit tests for weighted average calculation** (AC: 1, 2)
+- [x] **Task 1: Create unit tests for weighted average calculation** (AC: 1, 2)
 
-  - [ ] Test multiple trades at different buy prices with different quantities
-  - [ ] Test single trade scenario (weighted average should equal buy price)
-  - [ ] Test no open positions (should return 0 or appropriate default)
-  - [ ] Test all positions sold (open positions array is empty)
-  - [ ] Test zero quantity scenario (edge case protection)
+  - [x] Test multiple trades at different buy prices with different quantities
+  - [x] Test single trade scenario (weighted average should equal buy price)
+  - [x] Test no open positions (should return 0 or appropriate default)
+  - [x] Test all positions sold (open positions array is empty)
+  - [x] Test zero quantity scenario (edge case protection)
 
-- [ ] **Task 2: Create unit tests for yield percentage calculation** (AC: 3, 5)
+- [x] **Task 2: Create unit tests for yield percentage calculation** (AC: 3, 5)
 
-  - [ ] Test yield calculation with various distribution amounts
-  - [ ] Test yield calculation with different distributions_per_year values
-  - [ ] Test divide-by-zero protection when average price is 0
-  - [ ] Test null/undefined handling for distribution fields
-  - [ ] Test formatting output (2 decimal places, percentage display)
+  - [x] Test yield calculation with various distribution amounts
+  - [x] Test yield calculation with different distributions_per_year values
+  - [x] Test divide-by-zero protection when average price is 0
+  - [x] Test null/undefined handling for distribution fields
+  - [x] Test formatting output (2 decimal places, percentage display)
 
-- [ ] **Task 3: Create tests for data service field handling** (AC: 4, 5)
+- [x] **Task 3: Create tests for data service field handling** (AC: 4, 5)
 
-  - [ ] Test `getFieldValueFromDisplayData()` with 'avg_purchase_yield_percent' field
-  - [ ] Test default value returns when field is null/undefined
-  - [ ] Test field handling in sorting scenarios
-  - [ ] Test account-specific filtering behavior with new field
+  - [x] Test `getFieldValueFromDisplayData()` with 'avg_purchase_yield_percent' field
+  - [x] Test default value returns when field is null/undefined
+  - [x] Test field handling in sorting scenarios
+  - [x] Test account-specific filtering behavior with new field
 
-- [ ] **Task 4: Create tests for sort functionality** (AC: 4)
+- [x] **Task 4: Create tests for sort functionality** (AC: 4)
 
-  - [ ] Test sorting by average purchase yield (ascending/descending)
-  - [ ] Test sort signal computations for new yield column
-  - [ ] Test multi-column sorting scenarios including both yield columns
-  - [ ] Test sort icon display logic for average purchase yield
+  - [x] Test sorting by average purchase yield (ascending/descending)
+  - [x] Test sort signal computations for new yield column
+  - [x] Test multi-column sorting scenarios including both yield columns
+  - [x] Test sort icon display logic for average purchase yield
 
-- [ ] **Task 5: Create integration tests for complete data flow** (AC: 1, 3)
+- [x] **Task 5: Create integration tests for complete data flow** (AC: 1, 3)
 
-  - [ ] Test end-to-end calculation from trade data to display
-  - [ ] Test account filtering impact on yield calculations
-  - [ ] Test switching between accounts and recalculation behavior
-  - [ ] Test data transformation from selector to component
+  - [x] Test end-to-end calculation from trade data to display
+  - [x] Test account filtering impact on yield calculations
+  - [x] Test switching between accounts and recalculation behavior
+  - [x] Test data transformation from selector to component
 
-- [ ] **Task 6: Ensure existing test coverage is maintained** (AC: 6)
-  - [ ] Verify no regression in existing yield calculation tests
-  - [ ] Update existing tests if interfaces have changed
-  - [ ] Ensure overall coverage thresholds are met (85% lines, 75% branches)
-  - [ ] Add missing tests for any uncovered scenarios
+- [x] **Task 6: Ensure existing test coverage is maintained** (AC: 6)
+  - [x] Verify no regression in existing yield calculation tests
+  - [x] Update existing tests if interfaces have changed
+  - [x] Ensure overall coverage thresholds are met (85% lines, 75% branches)
+  - [x] Add missing tests for any uncovered scenarios
 
 ## Dev Notes
 
@@ -189,19 +200,35 @@ _This section will be populated by the development agent during implementation_
 
 ### Agent Model Used
 
-_To be filled by dev agent_
+Sonnet 4 (claude-sonnet-4-20250514)
 
 ### Debug Log References
 
-_To be filled by dev agent_
+N/A - No debug issues encountered during implementation
 
 ### Completion Notes List
 
-_To be filled by dev agent_
+- All 6 tasks completed successfully with comprehensive test coverage
+- Created new test file: `sort-computed-signals.function.spec.ts` for sort functionality
+- Created new test file: `global-universe.component.spec.ts` for integration tests
+- Enhanced existing test file: `universe-data.service.spec.ts` with weighted average and yield calculation tests
+- All acceptance criteria commands pass: format, dupcheck, lint, build, and test commands
+- Fixed all ESLint violations including import sorting and duplicate string literals
+- Tests cover edge cases: zero quantities, sold positions, null distributions, division by zero protection
+- Integration tests verify complete data flow from trades through selectors to display
+- Sort functionality tests ensure proper signal computation and icon display logic
 
 ### File List
 
-_To be filled by dev agent_
+**Files Modified:**
+
+- `docs/stories/H.3.unit-tests-yield-calculations.md` - Updated story status and task completion
+- `apps/rms/src/app/global/global-universe/universe-data.service.spec.ts` - Enhanced with weighted average and yield calculation tests
+
+**Files Created:**
+
+- `apps/rms/src/app/global/global-universe/sort-computed-signals.function.spec.ts` - Sort functionality tests
+- `apps/rms/src/app/global/global-universe/global-universe.component.spec.ts` - Integration tests for complete data flow
 
 ## QA Results
 

@@ -6,8 +6,8 @@ Draft
 
 ## Story
 
-**As a** development team and quality assurance team,  
-**I want** comprehensive integration testing that validates the complete expired symbol filtering system works correctly across all user scenarios and data conditions,  
+**As a** development team and quality assurance team,
+**I want** comprehensive integration testing that validates the complete expired symbol filtering system works correctly across all user scenarios and data conditions,
 **so that** I can confidently deploy the feature without risking data integrity or user experience issues.
 
 ## Acceptance Criteria
@@ -18,6 +18,17 @@ Draft
 4. Ensure no data loss or corruption of expired records during filtering operations
 5. Test with realistic datasets including symbols with dividend history and complex trade patterns
 6. Performance validation with large numbers of expired symbols (1000+ symbols)
+7. Ensure the following commands run without errors:
+
+- `pnpm format`
+- `pnpm dupcheck`
+- `pnpm nx run rms:test --code-coverage`
+- `pnpm nx run server:build:production`
+- `pnpm nx run server:test --code-coverage`
+- `pnpm nx run server:lint`
+- `pnpm nx run rms:lint`
+- `pnpm nx run rms:build:production`
+- `pnpm nx run rms-e2e:lint`
 
 ## Tasks / Subtasks
 

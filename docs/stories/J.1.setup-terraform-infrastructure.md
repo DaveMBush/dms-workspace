@@ -6,8 +6,8 @@ Draft
 
 ## Story
 
-**As a** DevOps engineer,  
-**I want** to establish the core AWS infrastructure foundation using Terraform,  
+**As a** DevOps engineer,
+**I want** to establish the core AWS infrastructure foundation using Terraform,
 **so that** I can deploy the RMS application to AWS with Infrastructure as Code best practices and proper state management.
 
 ## Acceptance Criteria
@@ -21,6 +21,17 @@ Draft
 7. Setup IAM roles and policies for ECS tasks, RDS access, and CloudWatch logging
 8. Include terraform.tfvars.example file with all configurable variables
 9. Add .gitignore rules for Terraform state files and sensitive variables
+10. Ensure the following commands run without errors:
+
+- `pnpm format`
+- `pnpm dupcheck`
+- `pnpm nx run rms:test --code-coverage`
+- `pnpm nx run server:build:production`
+- `pnpm nx run server:test --code-coverage`
+- `pnpm nx run server:lint`
+- `pnpm nx run rms:lint`
+- `pnpm nx run rms:build:production`
+- `pnpm nx run rms-e2e:lint`
 
 ## Tasks / Subtasks
 

@@ -2,12 +2,12 @@
 
 ## Status
 
-Draft
+Approved
 
 ## Story
 
-**As a** portfolio manager,  
-**I want** expired symbols to be automatically excluded from the universe display unless they have open positions in my selected account,  
+**As a** portfolio manager,
+**I want** expired symbols to be automatically excluded from the universe display unless they have open positions in my selected account,
 **so that** I can focus on actionable investments while preserving access to positions I still hold in expired securities.
 
 ## Acceptance Criteria
@@ -18,6 +18,17 @@ Draft
 4. When account = "all": show expired symbols if ANY account has open positions
 5. Maintain existing explicit expired filter functionality for advanced users
 6. No database schema changes required (leverage existing universe.expired field and index)
+7. Ensure the following commands run without errors:
+
+- `pnpm format`
+- `pnpm dupcheck`
+- `pnpm nx run rms:test --code-coverage`
+- `pnpm nx run server:build:production`
+- `pnpm nx run server:test --code-coverage`
+- `pnpm nx run server:lint`
+- `pnpm nx run rms:lint`
+- `pnpm nx run rms:build:production`
+- `pnpm nx run rms-e2e:lint`
 
 ## Tasks / Subtasks
 

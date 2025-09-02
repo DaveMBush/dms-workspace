@@ -6,8 +6,8 @@ Draft
 
 ## Story
 
-**As a** backend developer,  
-**I want** to migrate from SQLite to PostgreSQL RDS with proper schema migration and data preservation,  
+**As a** backend developer,
+**I want** to migrate from SQLite to PostgreSQL RDS with proper schema migration and data preservation,
 **so that** the RMS application can run on AWS with a production-ready database that supports concurrent access and better performance.
 
 ## Acceptance Criteria
@@ -21,6 +21,17 @@ Draft
 7. Add environment variable management for database credentials and connection
 8. Implement connection pooling and retry logic for production reliability
 9. Create database initialization and seeding scripts for new environments
+10. Ensure the following commands run without errors:
+
+- `pnpm format`
+- `pnpm dupcheck`
+- `pnpm nx run rms:test --code-coverage`
+- `pnpm nx run server:build:production`
+- `pnpm nx run server:test --code-coverage`
+- `pnpm nx run server:lint`
+- `pnpm nx run rms:lint`
+- `pnpm nx run rms:build:production`
+- `pnpm nx run rms-e2e:lint`
 
 ## Tasks / Subtasks
 

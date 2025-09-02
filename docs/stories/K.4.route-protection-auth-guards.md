@@ -6,8 +6,8 @@ Draft
 
 ## Story
 
-**As a** single-user application owner,  
-**I want** to have all application routes protected by authentication guards with automatic redirects and HTTP request token injection,  
+**As a** single-user application owner,
+**I want** to have all application routes protected by authentication guards with automatic redirects and HTTP request token injection,
 **so that** unauthorized access is prevented and my authenticated sessions work seamlessly across the entire application.
 
 ## Acceptance Criteria
@@ -20,6 +20,17 @@ Draft
 6. Create HTTP interceptor to automatically add JWT tokens to all API requests
 7. Handle 401/403 responses with automatic logout and redirect to prevent stale authentication
 8. Create comprehensive integration tests covering all route protection scenarios
+9. Ensure the following commands run without errors:
+
+- `pnpm format`
+- `pnpm dupcheck`
+- `pnpm nx run rms:test --code-coverage`
+- `pnpm nx run server:build:production`
+- `pnpm nx run server:test --code-coverage`
+- `pnpm nx run server:lint`
+- `pnpm nx run rms:lint`
+- `pnpm nx run rms:build:production`
+- `pnpm nx run rms-e2e:lint`
 
 ## Tasks / Subtasks
 

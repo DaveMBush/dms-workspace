@@ -6,8 +6,8 @@ Draft
 
 ## Story
 
-**As a** DevOps engineer,  
-**I want** to implement comprehensive monitoring, logging, and alerting for the RMS AWS infrastructure and applications,  
+**As a** DevOps engineer,
+**I want** to implement comprehensive monitoring, logging, and alerting for the RMS AWS infrastructure and applications,
 **so that** I can proactively identify issues, track performance metrics, and maintain system reliability with proper observability.
 
 ## Acceptance Criteria
@@ -21,6 +21,17 @@ Draft
 7. Configure log retention policies and cost optimization for log storage
 8. Setup AWS X-Ray for distributed tracing and performance analysis
 9. Create cost monitoring and budgeting alerts for AWS resource usage
+10. Ensure the following commands run without errors:
+
+- `pnpm format`
+- `pnpm dupcheck`
+- `pnpm nx run rms:test --code-coverage`
+- `pnpm nx run server:build:production`
+- `pnpm nx run server:test --code-coverage`
+- `pnpm nx run server:lint`
+- `pnpm nx run rms:lint`
+- `pnpm nx run rms:build:production`
+- `pnpm nx run rms-e2e:lint`
 
 ## Tasks / Subtasks
 

@@ -7,8 +7,10 @@
 
 ::ng-deep {
   input {
-    max-width: calc(100% - 40px);
     padding: 2px;
+    padding-left: 8px;
+    padding-right: 4px;
     margin: 0;
+    width: 100%;
   }
 }
