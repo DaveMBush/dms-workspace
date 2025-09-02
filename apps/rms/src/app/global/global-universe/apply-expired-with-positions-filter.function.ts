@@ -32,7 +32,7 @@ export function applyExpiredWithPositionsFilter(
       return hasPositionsInAnyAccount(item.symbol);
     }
 
-    // Check specific account position (position is already calculated for account)
+    // For specific account, position field is already set correctly by account-specific filter
     return item.position > 0;
   });
 }

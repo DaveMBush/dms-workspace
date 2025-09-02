@@ -772,6 +772,34 @@ describe('UniverseDataService', () => {
     });
 
     test('shows expired symbols with positions for specific account', () => {
+      // Set up mock universes and trades for the test
+      mockSelectUniverses.mockReturnValue([
+        { id: 'universe-expired-with-pos', symbol: 'EXPIRED_WITH_POS', distribution: 0.25, distributions_per_year: 4, last_price: 150.0 },
+        { id: 'universe-expired-no-pos', symbol: 'EXPIRED_NO_POS', distribution: 0.25, distributions_per_year: 4, last_price: 150.0 },
+        { id: 'universe-not-expired-no-pos', symbol: 'NOT_EXPIRED_NO_POS', distribution: 0.25, distributions_per_year: 4, last_price: 150.0 },
+        { id: 'universe-not-expired-with-pos', symbol: 'NOT_EXPIRED_WITH_POS', distribution: 0.25, distributions_per_year: 4, last_price: 150.0 },
+      ]);
+
+      mockSelectAccountChildren.mockReturnValue({
+        entities: {
+          [ACCOUNT_1_ID]: {
+            id: ACCOUNT_1_ID,
+            account: ACCOUNT_1_ID,
+            trades: [
+              {
+                id: 'trade-1',
+                universeId: 'universe-expired-with-pos',
+                accountId: ACCOUNT_1_ID,
+                buy: 100.0,
+                quantity: 10,
+                sell_date: undefined, // Open position
+              },
+              // No trade for EXPIRED_NO_POS - so it has no position
+            ],
+          },
+        },
+      });
+
       const mockData = [
         createMockData(true, 1000, 'EXPIRED_WITH_POS'),
         createMockData(true, 0, 'EXPIRED_NO_POS'),
@@ -796,6 +824,42 @@ describe('UniverseDataService', () => {
       expect(result.map((r) => r.symbol)).not.toContain('EXPIRED_NO_POS');
       expect(result.map((r) => r.symbol)).toContain('NOT_EXPIRED_NO_POS');
       expect(result.map((r) => r.symbol)).toContain('NOT_EXPIRED_WITH_POS');
+
+      // Reset mocks to default state for other tests
+      mockSelectUniverses.mockReturnValue([
+        {
+          id: UNIVERSE_1_ID,
+          symbol: AAPL_SYMBOL,
+          distribution: 0.25,
+          distributions_per_year: DISTRIBUTIONS_PER_YEAR,
+          last_price: 150.0,
+        },
+        {
+          id: 'universe-2',
+          symbol: 'MSFT',
+          distribution: 0.5,
+          distributions_per_year: DISTRIBUTIONS_PER_YEAR,
+          last_price: 200.0,
+        },
+      ]);
+
+      mockSelectAccountChildren.mockReturnValue({
+        entities: {
+          [ACCOUNT_1_ID]: {
+            id: ACCOUNT_1_ID,
+            trades: [
+              {
+                id: 'trade-1',
+                universeId: UNIVERSE_1_ID,
+                accountId: ACCOUNT_1_ID,
+                buy: 120.0,
+                quantity: 10,
+                sell_date: undefined,
+              },
+            ],
+          },
+        },
+      });
     });
 
     test('shows expired symbols with positions in ANY account when selectedAccount is "all"', () => {
@@ -923,6 +987,40 @@ describe('UniverseDataService', () => {
     });
 
     test('shows all non-expired symbols regardless of position (maintains existing behavior)', () => {
+      // Set up mock universes for the test
+      mockSelectUniverses.mockReturnValue([
+        { id: 'universe-not-expired-no-pos', symbol: 'NOT_EXPIRED_NO_POS', distribution: 0.25, distributions_per_year: 4, last_price: 150.0 },
+        { id: 'universe-not-expired-with-pos', symbol: 'NOT_EXPIRED_WITH_POS', distribution: 0.25, distributions_per_year: 4, last_price: 150.0 },
+        { id: 'universe-expired-with-pos', symbol: 'EXPIRED_WITH_POS', distribution: 0.25, distributions_per_year: 4, last_price: 150.0 },
+      ]);
+
+      mockSelectAccountChildren.mockReturnValue({
+        entities: {
+          [ACCOUNT_1_ID]: {
+            id: ACCOUNT_1_ID,
+            account: ACCOUNT_1_ID,
+            trades: [
+              {
+                id: 'trade-expired-with-pos',
+                universeId: 'universe-expired-with-pos',
+                accountId: ACCOUNT_1_ID,
+                buy: 120.0,
+                quantity: 10,
+                sell_date: undefined, // Open position
+              },
+              {
+                id: 'trade-not-expired-with-pos',
+                universeId: 'universe-not-expired-with-pos',
+                accountId: ACCOUNT_1_ID,
+                buy: 120.0,
+                quantity: 10,
+                sell_date: undefined, // Open position
+              },
+            ],
+          },
+        },
+      });
+
       const mockData = [
         createMockData(false, 0, 'NOT_EXPIRED_NO_POS'),
         createMockData(false, 1000, 'NOT_EXPIRED_WITH_POS'),
@@ -998,6 +1096,32 @@ describe('UniverseDataService', () => {
     });
 
     test('handles zero and negative positions correctly', () => {
+      // Set up mock universes for the test
+      mockSelectUniverses.mockReturnValue([
+        { id: 'universe-zero', symbol: 'ZERO_POSITION', distribution: 0.25, distributions_per_year: 4, last_price: 150.0 },
+        { id: 'universe-negative', symbol: 'NEGATIVE_POSITION', distribution: 0.25, distributions_per_year: 4, last_price: 150.0 },
+        { id: 'universe-small-pos', symbol: 'SMALL_POSITIVE_POSITION', distribution: 0.25, distributions_per_year: 4, last_price: 150.0 },
+      ]);
+
+      mockSelectAccountChildren.mockReturnValue({
+        entities: {
+          [ACCOUNT_1_ID]: {
+            id: ACCOUNT_1_ID,
+            account: ACCOUNT_1_ID,
+            trades: [
+              {
+                id: 'trade-small-pos',
+                universeId: 'universe-small-pos',
+                accountId: ACCOUNT_1_ID,
+                buy: 120.0,
+                quantity: 0.1,
+                sell_date: undefined, // Open position with small positive value
+              },
+            ],
+          },
+        },
+      });
+
       const mockData = [
         createMockData(true, 0, 'ZERO_POSITION'),
         createMockData(true, -100, 'NEGATIVE_POSITION'),

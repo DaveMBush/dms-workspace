@@ -185,17 +185,18 @@ export class UniverseDataService {
     filteredData = applyRiskGroupFilter(filteredData, params.riskGroupFilter);
     filteredData = applyExpiredFilter(filteredData, params.expiredFilter);
 
-    // Apply expired-with-positions filter (unless explicit expired filter is set)
+    filteredData = this.applyAccountSpecificFilter(
+      filteredData,
+      params.selectedAccount
+    );
+
+    // Apply expired-with-positions filter AFTER account-specific filtering
+    // so that position field is correctly set for the selected account
     filteredData = applyExpiredWithPositionsFilter(
       filteredData,
       params.expiredFilter,
       params.selectedAccount,
       this.hasPositionsInAnyAccount.bind(this)
-    );
-
-    filteredData = this.applyAccountSpecificFilter(
-      filteredData,
-      params.selectedAccount
     );
 
     return filteredData;
