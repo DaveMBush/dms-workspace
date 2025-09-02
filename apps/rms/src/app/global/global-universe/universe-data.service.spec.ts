@@ -774,10 +774,34 @@ describe('UniverseDataService', () => {
     test('shows expired symbols with positions for specific account', () => {
       // Set up mock universes and trades for the test
       mockSelectUniverses.mockReturnValue([
-        { id: 'universe-expired-with-pos', symbol: 'EXPIRED_WITH_POS', distribution: 0.25, distributions_per_year: 4, last_price: 150.0 },
-        { id: 'universe-expired-no-pos', symbol: 'EXPIRED_NO_POS', distribution: 0.25, distributions_per_year: 4, last_price: 150.0 },
-        { id: 'universe-not-expired-no-pos', symbol: 'NOT_EXPIRED_NO_POS', distribution: 0.25, distributions_per_year: 4, last_price: 150.0 },
-        { id: 'universe-not-expired-with-pos', symbol: 'NOT_EXPIRED_WITH_POS', distribution: 0.25, distributions_per_year: 4, last_price: 150.0 },
+        {
+          id: 'universe-expired-with-pos',
+          symbol: 'EXPIRED_WITH_POS',
+          distribution: 0.25,
+          distributions_per_year: 4,
+          last_price: 150.0,
+        },
+        {
+          id: 'universe-expired-no-pos',
+          symbol: 'EXPIRED_NO_POS',
+          distribution: 0.25,
+          distributions_per_year: 4,
+          last_price: 150.0,
+        },
+        {
+          id: 'universe-not-expired-no-pos',
+          symbol: 'NOT_EXPIRED_NO_POS',
+          distribution: 0.25,
+          distributions_per_year: 4,
+          last_price: 150.0,
+        },
+        {
+          id: 'universe-not-expired-with-pos',
+          symbol: 'NOT_EXPIRED_WITH_POS',
+          distribution: 0.25,
+          distributions_per_year: 4,
+          last_price: 150.0,
+        },
       ]);
 
       mockSelectAccountChildren.mockReturnValue({
@@ -989,9 +1013,27 @@ describe('UniverseDataService', () => {
     test('shows all non-expired symbols regardless of position (maintains existing behavior)', () => {
       // Set up mock universes for the test
       mockSelectUniverses.mockReturnValue([
-        { id: 'universe-not-expired-no-pos', symbol: 'NOT_EXPIRED_NO_POS', distribution: 0.25, distributions_per_year: 4, last_price: 150.0 },
-        { id: 'universe-not-expired-with-pos', symbol: 'NOT_EXPIRED_WITH_POS', distribution: 0.25, distributions_per_year: 4, last_price: 150.0 },
-        { id: 'universe-expired-with-pos', symbol: 'EXPIRED_WITH_POS', distribution: 0.25, distributions_per_year: 4, last_price: 150.0 },
+        {
+          id: 'universe-not-expired-no-pos',
+          symbol: 'NOT_EXPIRED_NO_POS',
+          distribution: 0.25,
+          distributions_per_year: 4,
+          last_price: 150.0,
+        },
+        {
+          id: 'universe-not-expired-with-pos',
+          symbol: 'NOT_EXPIRED_WITH_POS',
+          distribution: 0.25,
+          distributions_per_year: 4,
+          last_price: 150.0,
+        },
+        {
+          id: 'universe-expired-with-pos',
+          symbol: 'EXPIRED_WITH_POS',
+          distribution: 0.25,
+          distributions_per_year: 4,
+          last_price: 150.0,
+        },
       ]);
 
       mockSelectAccountChildren.mockReturnValue({
@@ -1098,9 +1140,27 @@ describe('UniverseDataService', () => {
     test('handles zero and negative positions correctly', () => {
       // Set up mock universes for the test
       mockSelectUniverses.mockReturnValue([
-        { id: 'universe-zero', symbol: 'ZERO_POSITION', distribution: 0.25, distributions_per_year: 4, last_price: 150.0 },
-        { id: 'universe-negative', symbol: 'NEGATIVE_POSITION', distribution: 0.25, distributions_per_year: 4, last_price: 150.0 },
-        { id: 'universe-small-pos', symbol: 'SMALL_POSITIVE_POSITION', distribution: 0.25, distributions_per_year: 4, last_price: 150.0 },
+        {
+          id: 'universe-zero',
+          symbol: 'ZERO_POSITION',
+          distribution: 0.25,
+          distributions_per_year: 4,
+          last_price: 150.0,
+        },
+        {
+          id: 'universe-negative',
+          symbol: 'NEGATIVE_POSITION',
+          distribution: 0.25,
+          distributions_per_year: 4,
+          last_price: 150.0,
+        },
+        {
+          id: 'universe-small-pos',
+          symbol: 'SMALL_POSITIVE_POSITION',
+          distribution: 0.25,
+          distributions_per_year: 4,
+          last_price: 150.0,
+        },
       ]);
 
       mockSelectAccountChildren.mockReturnValue({
