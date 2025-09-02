@@ -750,4 +750,275 @@ describe('UniverseDataService', () => {
       expect(result[0].position).toBe(1000.0); // Updated by account-specific logic
     });
   });
+
+  describe('expired-with-positions filtering', () => {
+    const createMockData = (
+      expired: boolean,
+      position: number,
+      symbol = 'TEST'
+    ) => ({
+      symbol,
+      riskGroup: 'Growth',
+      distribution: 0.25,
+      distributions_per_year: 4,
+      last_price: 150.0,
+      most_recent_sell_date: null,
+      most_recent_sell_price: null,
+      ex_date: new Date('2024-03-15'),
+      yield_percent: 1.0,
+      avg_purchase_yield_percent: 1.0,
+      expired,
+      position,
+    });
+
+    test('shows expired symbols with positions for specific account', () => {
+      const mockData = [
+        createMockData(true, 1000, 'EXPIRED_WITH_POS'),
+        createMockData(true, 0, 'EXPIRED_NO_POS'),
+        createMockData(false, 0, 'NOT_EXPIRED_NO_POS'),
+        createMockData(false, 1000, 'NOT_EXPIRED_WITH_POS'),
+      ];
+
+      const params = {
+        rawData: mockData,
+        sortCriteria: [],
+        minYield: null,
+        selectedAccount: ACCOUNT_1_ID,
+        symbolFilter: '',
+        riskGroupFilter: null,
+        expiredFilter: null,
+      };
+
+      const result = service.filterAndSortUniverses(params);
+
+      expect(result).toHaveLength(3);
+      expect(result.map((r) => r.symbol)).toContain('EXPIRED_WITH_POS');
+      expect(result.map((r) => r.symbol)).not.toContain('EXPIRED_NO_POS');
+      expect(result.map((r) => r.symbol)).toContain('NOT_EXPIRED_NO_POS');
+      expect(result.map((r) => r.symbol)).toContain('NOT_EXPIRED_WITH_POS');
+    });
+
+    test('shows expired symbols with positions in ANY account when selectedAccount is "all"', () => {
+      const mockData = [createMockData(true, 0, 'EXPIRED_SYMBOL')];
+
+      // Mock multiple accounts where one has positions
+      mockSelectAccountChildren.mockReturnValue({
+        entities: {
+          'account-1': {
+            id: 'account-1',
+            account: 'account-1',
+            trades: [],
+          },
+          'account-2': {
+            id: 'account-2',
+            account: 'account-2',
+            trades: [
+              {
+                id: 'trade-1',
+                universeId: 'universe-expired',
+                accountId: 'account-2',
+                buy: 100.0,
+                quantity: 10,
+                sell_date: undefined,
+              },
+            ],
+          },
+        },
+      });
+
+      mockSelectUniverses.mockReturnValue([
+        {
+          id: 'universe-expired',
+          symbol: 'EXPIRED_SYMBOL',
+          distribution: 0.25,
+          distributions_per_year: 4,
+          last_price: 150.0,
+        },
+      ]);
+
+      const params = {
+        rawData: mockData,
+        sortCriteria: [],
+        minYield: null,
+        selectedAccount: 'all',
+        symbolFilter: '',
+        riskGroupFilter: null,
+        expiredFilter: null,
+      };
+
+      const result = service.filterAndSortUniverses(params);
+
+      expect(result).toHaveLength(1);
+      expect(result[0].symbol).toBe('EXPIRED_SYMBOL');
+    });
+
+    test('hides expired symbols with no positions in any account when selectedAccount is "all"', () => {
+      const mockData = [createMockData(true, 0, 'EXPIRED_NO_POSITIONS')];
+
+      // Mock multiple accounts with no positions for this symbol
+      mockSelectAccountChildren.mockReturnValue({
+        entities: {
+          'account-1': {
+            id: 'account-1',
+            account: 'account-1',
+            trades: [],
+          },
+          'account-2': {
+            id: 'account-2',
+            account: 'account-2',
+            trades: [],
+          },
+        },
+      });
+
+      mockSelectUniverses.mockReturnValue([
+        {
+          id: 'universe-expired-no-pos',
+          symbol: 'EXPIRED_NO_POSITIONS',
+          distribution: 0.25,
+          distributions_per_year: 4,
+          last_price: 150.0,
+        },
+      ]);
+
+      const params = {
+        rawData: mockData,
+        sortCriteria: [],
+        minYield: null,
+        selectedAccount: 'all',
+        symbolFilter: '',
+        riskGroupFilter: null,
+        expiredFilter: null,
+      };
+
+      const result = service.filterAndSortUniverses(params);
+
+      expect(result).toHaveLength(0);
+    });
+
+    test('preserves explicit expired filter functionality (overrides expired-with-positions logic)', () => {
+      const mockData = [
+        createMockData(true, 1000, 'EXPIRED_WITH_POS'),
+        createMockData(true, 0, 'EXPIRED_NO_POS'),
+        createMockData(false, 1000, 'NOT_EXPIRED'),
+      ];
+
+      const params = {
+        rawData: mockData,
+        sortCriteria: [],
+        minYield: null,
+        selectedAccount: ACCOUNT_1_ID,
+        symbolFilter: '',
+        riskGroupFilter: null,
+        expiredFilter: true, // Explicit filter to show only expired
+      };
+
+      const result = service.filterAndSortUniverses(params);
+
+      // When explicit expired filter is set, should show ALL expired symbols regardless of position
+      expect(result).toHaveLength(2);
+      expect(result.map((r) => r.symbol)).toContain('EXPIRED_WITH_POS');
+      expect(result.map((r) => r.symbol)).toContain('EXPIRED_NO_POS');
+      expect(result.map((r) => r.symbol)).not.toContain('NOT_EXPIRED');
+    });
+
+    test('shows all non-expired symbols regardless of position (maintains existing behavior)', () => {
+      const mockData = [
+        createMockData(false, 0, 'NOT_EXPIRED_NO_POS'),
+        createMockData(false, 1000, 'NOT_EXPIRED_WITH_POS'),
+        createMockData(true, 1000, 'EXPIRED_WITH_POS'),
+      ];
+
+      const params = {
+        rawData: mockData,
+        sortCriteria: [],
+        minYield: null,
+        selectedAccount: ACCOUNT_1_ID,
+        symbolFilter: '',
+        riskGroupFilter: null,
+        expiredFilter: null,
+      };
+
+      const result = service.filterAndSortUniverses(params);
+
+      expect(result).toHaveLength(3);
+      expect(result.map((r) => r.symbol)).toContain('NOT_EXPIRED_NO_POS');
+      expect(result.map((r) => r.symbol)).toContain('NOT_EXPIRED_WITH_POS');
+      expect(result.map((r) => r.symbol)).toContain('EXPIRED_WITH_POS');
+    });
+
+    test('handles edge cases with null/undefined expired flag', () => {
+      const mockData = [
+        {
+          symbol: 'NULL_EXPIRED',
+          riskGroup: 'Growth',
+          distribution: 0.25,
+          distributions_per_year: 4,
+          last_price: 150.0,
+          most_recent_sell_date: null,
+          most_recent_sell_price: null,
+          ex_date: new Date('2024-03-15'),
+          yield_percent: 1.0,
+          avg_purchase_yield_percent: 1.0,
+          expired: null as unknown as boolean,
+          position: 0,
+        },
+        {
+          symbol: 'UNDEFINED_EXPIRED',
+          riskGroup: 'Growth',
+          distribution: 0.25,
+          distributions_per_year: 4,
+          last_price: 150.0,
+          most_recent_sell_date: null,
+          most_recent_sell_price: null,
+          ex_date: new Date('2024-03-15'),
+          yield_percent: 1.0,
+          avg_purchase_yield_percent: 1.0,
+          expired: undefined as unknown as boolean,
+          position: 0,
+        },
+      ];
+
+      const params = {
+        rawData: mockData,
+        sortCriteria: [],
+        minYield: null,
+        selectedAccount: ACCOUNT_1_ID,
+        symbolFilter: '',
+        riskGroupFilter: null,
+        expiredFilter: null,
+      };
+
+      const result = service.filterAndSortUniverses(params);
+
+      // Null/undefined expired should be treated as non-expired (show)
+      expect(result).toHaveLength(2);
+      expect(result.map((r) => r.symbol)).toContain('NULL_EXPIRED');
+      expect(result.map((r) => r.symbol)).toContain('UNDEFINED_EXPIRED');
+    });
+
+    test('handles zero and negative positions correctly', () => {
+      const mockData = [
+        createMockData(true, 0, 'ZERO_POSITION'),
+        createMockData(true, -100, 'NEGATIVE_POSITION'),
+        createMockData(true, 0.1, 'SMALL_POSITIVE_POSITION'),
+      ];
+
+      const params = {
+        rawData: mockData,
+        sortCriteria: [],
+        minYield: null,
+        selectedAccount: ACCOUNT_1_ID,
+        symbolFilter: '',
+        riskGroupFilter: null,
+        expiredFilter: null,
+      };
+
+      const result = service.filterAndSortUniverses(params);
+
+      // Only positive positions should show for expired symbols
+      expect(result).toHaveLength(1);
+      expect(result[0].symbol).toBe('SMALL_POSITIVE_POSITION');
+    });
+  });
 });

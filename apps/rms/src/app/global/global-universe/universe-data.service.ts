@@ -8,6 +8,7 @@ import type { Universe } from '../../store/universe/universe.interface';
 import { calculateTradeTotals } from './account-data-calculator.function';
 import { applyAllAccountsFilter } from './apply-all-accounts-filter.function';
 import { applyExpiredFilter } from './apply-expired-filter.function';
+import { applyExpiredWithPositionsFilter } from './apply-expired-with-positions-filter.function';
 import { applyRiskGroupFilter } from './apply-risk-group-filter.function';
 import { applySpecificAccountFilter } from './apply-specific-account-filter.function';
 import { applySymbolFilter } from './apply-symbol-filter.function';
@@ -183,6 +184,15 @@ export class UniverseDataService {
     filteredData = applyYieldFilter(filteredData, params.minYield);
     filteredData = applyRiskGroupFilter(filteredData, params.riskGroupFilter);
     filteredData = applyExpiredFilter(filteredData, params.expiredFilter);
+
+    // Apply expired-with-positions filter (unless explicit expired filter is set)
+    filteredData = applyExpiredWithPositionsFilter(
+      filteredData,
+      params.expiredFilter,
+      params.selectedAccount,
+      this.hasPositionsInAnyAccount.bind(this)
+    );
+
     filteredData = this.applyAccountSpecificFilter(
       filteredData,
       params.selectedAccount
@@ -334,5 +344,39 @@ export class UniverseDataService {
       data,
       this.calculateAveragePurchaseYield.bind(this)
     );
+  }
+
+  /**
+   * Checks if a symbol has positions in any account
+   * Used for expired-with-positions filtering when selectedAccount = "all"
+   */
+  private hasPositionsInAnyAccount(symbol: string): boolean {
+    const universeId = this.findUniverseIdBySymbol(symbol);
+    if (universeId === undefined || universeId === null) {
+      return false;
+    }
+
+    const accountsState = selectAccountChildren();
+    const accounts = Object.values(accountsState.entities);
+
+    const self = this;
+    return accounts.some(function hasPositionsInAccountCheck(account: unknown) {
+      if (
+        account === null ||
+        account === undefined ||
+        typeof account !== 'object'
+      ) {
+        return false;
+      }
+
+      // The account object has both Account interface properties and an 'account' field
+      const accountWithId = account as Account & { account: string };
+      const accountId: string = accountWithId.account;
+      const accountSpecificData = self.getAccountSpecificData(
+        symbol,
+        accountId
+      );
+      return accountSpecificData.position > 0;
+    });
   }
 }
