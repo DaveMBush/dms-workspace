@@ -18,6 +18,17 @@ Approved
 4. When account = "all": show expired symbols if ANY account has open positions
 5. Maintain existing explicit expired filter functionality for advanced users
 6. No database schema changes required (leverage existing universe.expired field and index)
+7. Ensure the following commands run without errors:
+
+- `pnpm format`
+- `pnpm dupcheck`
+- `pnpm nx run rms:test --code-coverage`
+- `pnpm nx run server:build:production`
+- `pnpm nx run server:test --code-coverage`
+- `pnpm nx run server:lint`
+- `pnpm nx run rms:lint`
+- `pnpm nx run rms:build:production`
+- `pnpm nx run rms-e2e:lint`
 
 ## Tasks / Subtasks
 

@@ -6,8 +6,8 @@ Draft
 
 ## Story
 
-**As a** portfolio manager,  
-**I want** the universe display to automatically apply the expired-with-positions filter by default without requiring any user interaction,  
+**As a** portfolio manager,
+**I want** the universe display to automatically apply the expired-with-positions filter by default without requiring any user interaction,
 **so that** I see a clean, actionable view of my investments immediately upon loading the application.
 
 ## Acceptance Criteria
@@ -18,6 +18,17 @@ Draft
 4. Performance optimization: avoid position calculations for non-expired symbols
 5. Maintain backward compatibility with existing URL parameters and application state
 6. Default behavior is immediately active on application load without user configuration
+7. Ensure the following commands run without errors:
+
+- `pnpm format`
+- `pnpm dupcheck`
+- `pnpm nx run rms:test --code-coverage`
+- `pnpm nx run server:build:production`
+- `pnpm nx run server:test --code-coverage`
+- `pnpm nx run server:lint`
+- `pnpm nx run rms:lint`
+- `pnpm nx run rms:build:production`
+- `pnpm nx run rms-e2e:lint`
 
 ## Tasks / Subtasks
 

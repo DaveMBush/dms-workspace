@@ -6,8 +6,8 @@ Draft
 
 ## Story
 
-**As a** frontend developer,  
-**I want** to deploy the Angular 20 SPA to S3 with CloudFront CDN distribution and proper routing configuration,  
+**As a** frontend developer,
+**I want** to deploy the Angular 20 SPA to S3 with CloudFront CDN distribution and proper routing configuration,
 **so that** the RMS frontend application is globally distributed, performs well, and handles Angular routing correctly with HTTPS security.
 
 ## Acceptance Criteria
@@ -21,6 +21,17 @@ Draft
 7. Implement automated build and deployment pipeline for frontend updates
 8. Setup cache busting strategy for application updates and versioning
 9. Configure security headers and CSP policies for enhanced security
+10. Ensure the following commands run without errors:
+
+- `pnpm format`
+- `pnpm dupcheck`
+- `pnpm nx run rms:test --code-coverage`
+- `pnpm nx run server:build:production`
+- `pnpm nx run server:test --code-coverage`
+- `pnpm nx run server:lint`
+- `pnpm nx run rms:lint`
+- `pnpm nx run rms:build:production`
+- `pnpm nx run rms-e2e:lint`
 
 ## Tasks / Subtasks
 
