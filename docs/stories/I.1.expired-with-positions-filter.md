@@ -2,12 +2,12 @@
 
 ## Status
 
-Draft
+Approved
 
 ## Story
 
-**As a** portfolio manager,  
-**I want** expired symbols to be automatically excluded from the universe display unless they have open positions in my selected account,  
+**As a** portfolio manager,
+**I want** expired symbols to be automatically excluded from the universe display unless they have open positions in my selected account,
 **so that** I can focus on actionable investments while preserving access to positions I still hold in expired securities.
 
 ## Acceptance Criteria
