@@ -11,11 +11,19 @@
   [dataKey]="'id'"
 >
   <ng-template pTemplate="header">
-    <tr class="bg-gray-100">
-      <rms-symbol-filter-header
-        [(symbolFilter)]="symbolFilter"
-        (filterChange)="onSymbolFilterChange()"
-      ></rms-symbol-filter-header>
+    <tr class="bg-gray-100 dark:bg-slate-800">
+      <!--
+      // jscpd:ignore-start
+      -->
+      <th class="min-w-16 max-w-16">
+        <rms-symbol-filter-header
+          [(symbolFilter)]="symbolFilter"
+          (filterChange)="onSymbolFilterChange()"
+        ></rms-symbol-filter-header>
+      </th>
+      <!--
+      // jscpd:ignore-end
+      -->
       <th>Buy</th>
       <th>Buy Date</th>
       <th>Quantity</th>
@@ -37,7 +45,7 @@
   </ng-template>
   <ng-template pTemplate="body" let-row>
     <tr>
-      <td>{{ row.symbol }}</td>
+      <td class="min-w-16 max-w-16">{{ row.symbol }}</td>
       <td class="w-100 overflow-hidden" [pEditableColumn]="'buy'">
         <p-cellEditor>
           <ng-template #input>
