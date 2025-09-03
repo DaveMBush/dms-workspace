@@ -166,10 +166,10 @@ describe('Filtering Performance Tests', () => {
       // More lenient scaling check - focus on ensuring it's not exponential
       const ratio1000to100 = executionTimes[2] / executionTimes[0];
       console.log(`Scaling ratio (1000/100): ${ratio1000to100.toFixed(2)}x`);
-      
+
       // Very generous limit - just ensure it's not completely unreasonable
       expect(ratio1000to100).toBeLessThan(100); // 10x data should not be more than 100x slower
-      
+
       // Additional sanity check - all operations should complete in reasonable time
       executionTimes.forEach((time, index) => {
         expect(time).toBeLessThan(200); // No single operation should take more than 200ms
@@ -392,9 +392,13 @@ describe('Filtering Performance Tests', () => {
 
       // Remove outliers (top and bottom 10%) for more stable results
       times.sort((a, b) => a - b);
-      const trimmed = times.slice(Math.floor(times.length * 0.1), Math.floor(times.length * 0.9));
-      
-      const avgTime = trimmed.reduce((sum, time) => sum + time, 0) / trimmed.length;
+      const trimmed = times.slice(
+        Math.floor(times.length * 0.1),
+        Math.floor(times.length * 0.9)
+      );
+
+      const avgTime =
+        trimmed.reduce((sum, time) => sum + time, 0) / trimmed.length;
       const maxTime = Math.max(...trimmed);
       const variance =
         trimmed.reduce((sum, time) => sum + Math.pow(time - avgTime, 2), 0) /
@@ -408,7 +412,7 @@ describe('Filtering Performance Tests', () => {
       // More lenient performance expectations for CI stability
       expect(maxTime).toBeLessThan(Math.max(avgTime * 15, 5.0)); // At least 5ms tolerance
       expect(Math.sqrt(variance)).toBeLessThan(Math.max(avgTime * 3, 2.0)); // At least 2ms tolerance
-      
+
       // Basic sanity check that operations complete in reasonable time
       expect(avgTime).toBeLessThan(10.0); // Should average less than 10ms
     });
