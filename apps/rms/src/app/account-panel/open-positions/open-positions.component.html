@@ -24,7 +24,7 @@
       // jscpd:ignore-end
       -->
       <th class="min-w-32 max-w-32">Ex-Date</th>
-      <th class="min-w-16 max-w-16">Buy</th>
+      <th class="min-w-20 max-w-20">Buy</th>
       <th
         class="min-w-32 max-w-32 cursor-pointer select-none"
         (click)="onSort('buyDate')"
@@ -67,62 +67,124 @@
     <tr>
       <td class="min-w-16 max-w-16">{{ row.symbol }}</td>
       <td>{{ row.exDate | date : 'MM/dd/yyyy' }}</td>
-      <td [pEditableColumn]="'buy'" class="w-100 overflow-hidden">
-        <rms-editable-cell
-          field="buy"
-          [value]="row.buy"
-          type="currency"
-          inputClass="w-100 block"
-          [minFractionDigits]="2"
-          [maxFractionDigits]="4"
-          [step]="0.01"
-          (commit)="onEditCommit(row, 'buy')"
-        />
+      <td class="min-w-20 max-w-20 overflow-hidden" [pEditableColumn]="'buy'">
+        <p-cellEditor>
+          <ng-template #input>
+            <p-inputNumber
+              [(ngModel)]="row.buy"
+              (onBlur)="onEditCommit(row, 'buy')"
+              (keydown.enter)="onEditCommit(row, 'buy')"
+              (keydown)="stopArrowKeyPropagation($event)"
+              class="w-full block"
+              [min]="0"
+              [step]="0.01"
+              [mode]="'decimal'"
+              [minFractionDigits]="2"
+              [maxFractionDigits]="4"
+            />
+          </ng-template>
+          <ng-template #output>
+            {{ row.buy | currency : 'USD' : 'symbol' : '1.2-4' }}
+          </ng-template>
+        </p-cellEditor>
       </td>
-      <td [pEditableColumn]="'buyDate'" class="w-32 overflow-hidden">
-        <rms-editable-cell
-          field="buyDate"
-          [value]="row.buyDate"
-          type="date"
-          inputClass="w-32 block"
-          (commit)="onEditCommit(row, 'buyDate')"
-        />
-      </td>
-      <td [pEditableColumn]="'quantity'" class="w-32 overflow-hidden">
-        <rms-editable-cell
-          field="quantity"
-          [value]="row.quantity"
-          type="number"
-          inputClass="w-32 block"
-          [step]="1"
-          (commit)="onEditCommit(row, 'quantity')"
-        />
-      </td>
+      <!--
+      // jscpd:ignore-start
+      -->
+      <td class="w-32 overflow-hidden" [pEditableColumn]="'buyDate'">
+        <p-cellEditor>
+          <ng-template #input>
+            <p-datepicker
+              [(ngModel)]="row.buyDate"
+              (onSelect)="onEditCommit(row, 'buyDate')"
+              (keydown.enter)="onEditCommit(row, 'buyDate')"
+              (keydown)="stopArrowKeyPropagation($event)"
+              appendTo="body"
+              class="w-32 block"
+              dateFormat="mm/dd/yy"
+            />
+          </ng-template>
+          <ng-template #output>
+            {{ row.buyDate | date : 'MM/dd/yyyy' }}
+          </ng-template>
+        </p-cellEditor>
+        <!--
+      // jscpd:ignore-end
+      --></td>
+      <!--
+      // jscpd:ignore-start
+      -->
+      <td class="w-32 overflow-hidden" [pEditableColumn]="'quantity'">
+        <p-cellEditor>
+          <ng-template #input>
+            <p-inputNumber
+              [(ngModel)]="row.quantity"
+              (onBlur)="onEditCommit(row, 'quantity')"
+              (keydown.enter)="onEditCommit(row, 'quantity')"
+              (keydown)="stopArrowKeyPropagation($event)"
+              class="w-32 block"
+              [min]="0"
+              [step]="1"
+              [mode]="'decimal'"
+              [minFractionDigits]="0"
+              [maxFractionDigits]="0"
+            />
+          </ng-template>
+          <ng-template #output>
+            {{ row.quantity }}
+          </ng-template>
+        </p-cellEditor>
+        <!--
+      // jscpd:ignore-end
+      --></td>
       <td>{{ row.expectedYield | currency : 'USD' : 'symbol' : '1.2-2' }}</td>
       <td>{{ row.lastPrice | currency : 'USD' : 'symbol' : '1.2-4' }}</td>
       <td>{{ row.unrealizedGainPercent | number : '1.2-2' }}%</td>
       <td>{{ row.unrealizedGain | currency : 'USD' : 'symbol' : '1.2-4' }}</td>
-      <td [pEditableColumn]="'sell'" class="w-32 overflow-hidden">
-        <rms-editable-cell
-          field="sell"
-          [value]="row.sell"
-          type="number"
-          inputClass="w-32 block"
-          [minFractionDigits]="2"
-          [maxFractionDigits]="4"
-          [step]="0.01"
-          (commit)="onEditCommit(row, 'sell')"
-        />
+      <td class="w-32 overflow-hidden" [pEditableColumn]="'sell'">
+        <p-cellEditor>
+          <ng-template #input>
+            <p-inputNumber
+              [(ngModel)]="row.sell"
+              (onBlur)="onEditCommit(row, 'sell')"
+              (keydown.enter)="onEditCommit(row, 'sell')"
+              (keydown)="stopArrowKeyPropagation($event)"
+              class="w-32 block"
+              [min]="0"
+              [step]="0.01"
+              [mode]="'decimal'"
+              [minFractionDigits]="2"
+              [maxFractionDigits]="4"
+            />
+          </ng-template>
+          <ng-template #output>
+            {{ row.sell | currency : 'USD' : 'symbol' : '1.2-4' }}
+          </ng-template>
+        </p-cellEditor>
       </td>
-      <td [pEditableColumn]="'sellDate'" class="w-32 overflow-hidden">
-        <rms-editable-cell
-          field="sellDate"
-          [value]="row.sellDate"
-          type="date"
-          inputClass="w-32 block"
-          (commit)="onEditCommit(row, 'sellDate')"
-        />
-      </td>
+      <!--
+      // jscpd:ignore-start
+      -->
+      <td class="w-32 overflow-hidden" [pEditableColumn]="'sellDate'">
+        <p-cellEditor>
+          <ng-template #input>
+            <p-datepicker
+              [(ngModel)]="row.sellDate"
+              (onSelect)="onEditCommit(row, 'sellDate')"
+              (keydown.enter)="onEditCommit(row, 'sellDate')"
+              (keydown)="stopArrowKeyPropagation($event)"
+              appendTo="body"
+              class="w-32 block"
+              dateFormat="mm/dd/yy"
+            />
+          </ng-template>
+          <ng-template #output>
+            {{ row.sellDate | date : 'MM/dd/yyyy' }}
+          </ng-template>
+        </p-cellEditor>
+        <!--
+      // jscpd:ignore-end
+      --></td>
       <td>{{ row.daysHeld }}</td>
       <td>{{ row.targetGain | currency : 'USD' : 'symbol' : '1.2-4' }}</td>
       <td>{{ row.targetSell | currency : 'USD' : 'symbol' : '1.2-4' }}</td>
