@@ -6,8 +6,8 @@ Draft
 
 ## Story
 
-**As a** DevOps engineer,  
-**I want** to containerize the Fastify backend application and deploy it to ECS Fargate with auto-scaling and load balancing,  
+**As a** DevOps engineer,
+**I want** to containerize the Fastify backend application and deploy it to ECS Fargate with auto-scaling and load balancing,
 **so that** the RMS API server runs reliably on AWS with proper container orchestration, health monitoring, and scalability.
 
 ## Acceptance Criteria
@@ -21,6 +21,17 @@ Draft
 7. Configure CloudWatch logging for container logs and application metrics
 8. Create CI/CD pipeline integration for automated deployment
 9. Implement rolling deployment strategy with zero-downtime updates
+10. Ensure the following commands run without errors:
+
+- `pnpm format`
+- `pnpm dupcheck`
+- `pnpm nx run rms:test --code-coverage`
+- `pnpm nx run server:build:production`
+- `pnpm nx run server:test --code-coverage`
+- `pnpm nx run server:lint`
+- `pnpm nx run rms:lint`
+- `pnpm nx run rms:build:production`
+- `pnpm nx run rms-e2e:lint`
 
 ## Tasks / Subtasks
 

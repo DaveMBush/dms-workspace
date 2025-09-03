@@ -5,7 +5,17 @@ import { selectAccountChildren } from '../../store/trades/selectors/select-accou
 import type { Trade } from '../../store/trades/trade.interface';
 import { selectUniverses } from '../../store/universe/selectors/select-universes.function';
 import type { Universe } from '../../store/universe/universe.interface';
+import { calculateTradeTotals } from './account-data-calculator.function';
+import { applyAllAccountsFilter } from './apply-all-accounts-filter.function';
+import { applyExpiredFilter } from './apply-expired-filter.function';
+import { applyExpiredWithPositionsFilter } from './apply-expired-with-positions-filter.function';
+import { applyRiskGroupFilter } from './apply-risk-group-filter.function';
+import { applySpecificAccountFilter } from './apply-specific-account-filter.function';
+import { applySymbolFilter } from './apply-symbol-filter.function';
+import { applyYieldFilter } from './apply-yield-filter.function';
 import { compareForSort } from './compare-for-sort.function';
+import { findUniverseIdBySymbol } from './find-universe-id-by-symbol.function';
+import type { UniverseDisplayData } from './universe-display-data.interface';
 
 interface AccountSpecificData {
   position: number;
@@ -13,28 +23,8 @@ interface AccountSpecificData {
   most_recent_sell_date: string | null;
   // eslint-disable-next-line @typescript-eslint/naming-convention -- matching source
   most_recent_sell_price: number | null;
-}
-
-interface UniverseDisplayData {
-  symbol: string;
-  riskGroup: string;
-  distribution: number;
-  // eslint-disable-next-line @typescript-eslint/naming-convention -- matching source
-  distributions_per_year: number;
-  // eslint-disable-next-line @typescript-eslint/naming-convention -- matching source
-  last_price: number;
-  // eslint-disable-next-line @typescript-eslint/naming-convention -- matching source
-  most_recent_sell_date: string | null;
-  // eslint-disable-next-line @typescript-eslint/naming-convention -- matching source
-  most_recent_sell_price: number | null;
-  // eslint-disable-next-line @typescript-eslint/naming-convention -- matching source
-  ex_date: Date | string;
-  // eslint-disable-next-line @typescript-eslint/naming-convention -- matching source
-  yield_percent: number;
   // eslint-disable-next-line @typescript-eslint/naming-convention -- matching source
   avg_purchase_yield_percent: number;
-  expired: boolean;
-  position: number;
 }
 
 interface FilterAndSortParams {
@@ -156,7 +146,7 @@ export class UniverseDataService {
     symbol: string,
     accountId: string
   ): AccountSpecificData {
-    const universeId = this.findUniverseIdBySymbol(symbol);
+    const universeId = findUniverseIdBySymbol(symbol);
     const account = this.getAccountFromState(accountId);
 
     if (account === null || account === undefined) {
@@ -169,11 +159,16 @@ export class UniverseDataService {
     );
     const position = this.calculatePosition(symbolTrades);
     const mostRecentSell = this.getMostRecentSell(symbolTrades);
+    const avgPurchaseYieldPercent = this.calculateAveragePurchaseYield(
+      symbol,
+      accountId
+    );
 
     return {
       position,
       most_recent_sell_date: mostRecentSell?.sell_date ?? null,
       most_recent_sell_price: mostRecentSell?.sell ?? null,
+      avg_purchase_yield_percent: avgPurchaseYieldPercent,
     };
   }
 
@@ -186,16 +181,21 @@ export class UniverseDataService {
   ): UniverseDisplayData[] {
     let filteredData = data;
 
-    filteredData = this.applySymbolFilter(filteredData, params.symbolFilter);
-    filteredData = this.applyYieldFilter(filteredData, params.minYield);
-    filteredData = this.applyRiskGroupFilter(
-      filteredData,
-      params.riskGroupFilter
-    );
-    filteredData = this.applyExpiredFilter(filteredData, params.expiredFilter);
+    filteredData = applySymbolFilter(filteredData, params.symbolFilter);
+    filteredData = applyYieldFilter(filteredData, params.minYield);
+    filteredData = applyRiskGroupFilter(filteredData, params.riskGroupFilter);
+    filteredData = applyExpiredFilter(filteredData, params.expiredFilter);
+
     filteredData = this.applyAccountSpecificFilter(
       filteredData,
       params.selectedAccount
+    );
+
+    // Apply expired-with-positions filter AFTER account-specific filtering
+    // so that position field is correctly set for the selected account
+    filteredData = applyExpiredWithPositionsFilter(
+      filteredData,
+      params.expiredFilter
     );
 
     return filteredData;
@@ -237,16 +237,6 @@ export class UniverseDataService {
     return sortedData;
   }
 
-  private findUniverseIdBySymbol(symbol: string): string | undefined {
-    const universes = selectUniverses();
-    for (let i = 0; i < universes.length; i++) {
-      if (universes[i].symbol === symbol) {
-        return universes[i].id;
-      }
-    }
-    return undefined;
-  }
-
   private getAccountFromState(accountId: string): unknown {
     const accountsState = selectAccountChildren();
     return accountsState.entities[accountId];
@@ -257,6 +247,7 @@ export class UniverseDataService {
       position: 0,
       most_recent_sell_date: null,
       most_recent_sell_price: null,
+      avg_purchase_yield_percent: 0,
     };
   }
 
@@ -298,52 +289,33 @@ export class UniverseDataService {
     return soldTrades[0];
   }
 
-  private applySymbolFilter(
-    data: UniverseDisplayData[],
-    symbolFilter: string
-  ): UniverseDisplayData[] {
-    if (symbolFilter && symbolFilter.trim() !== '') {
-      return data.filter(function filterSymbol(item: UniverseDisplayData) {
-        return item.symbol.toLowerCase().includes(symbolFilter.toLowerCase());
-      });
+  /**
+   * Calculates the average purchase yield percentage for a symbol
+   * based on open positions in the specified account or all accounts
+   */
+  private calculateAveragePurchaseYield(
+    symbol: string,
+    selectedAccount: string
+  ): number {
+    const universe = this.findUniverseBySymbol(symbol);
+    if (!universe || universe.distribution <= 0) {
+      return 0;
     }
-    return data;
-  }
 
-  private applyYieldFilter(
-    data: UniverseDisplayData[],
-    minYield: number | null
-  ): UniverseDisplayData[] {
-    if (minYield !== null && minYield > 0) {
-      return data.filter(function filterYield(item: UniverseDisplayData) {
-        return Boolean(item.yield_percent) && item.yield_percent >= minYield;
-      });
-    }
-    return data;
-  }
+    const { totalCost, totalQuantity } = calculateTradeTotals(
+      universe.id,
+      selectedAccount
+    );
 
-  private applyRiskGroupFilter(
-    data: UniverseDisplayData[],
-    riskGroupFilter: string | null
-  ): UniverseDisplayData[] {
-    if (riskGroupFilter !== null && riskGroupFilter.trim() !== '') {
-      return data.filter(function filterRiskGroup(item: UniverseDisplayData) {
-        return item.riskGroup === riskGroupFilter;
-      });
-    }
-    return data;
-  }
+    const avgPurchasePrice = totalQuantity > 0 ? totalCost / totalQuantity : 0;
+    const avgPurchaseYieldPercent =
+      avgPurchasePrice > 0 && universe.distribution > 0
+        ? 100 *
+          universe.distributions_per_year *
+          (universe.distribution / avgPurchasePrice)
+        : 0;
 
-  private applyExpiredFilter(
-    data: UniverseDisplayData[],
-    expiredFilter: boolean | null
-  ): UniverseDisplayData[] {
-    if (expiredFilter !== null) {
-      return data.filter(function filterExpired(item: UniverseDisplayData) {
-        return item.expired === expiredFilter;
-      });
-    }
-    return data;
+    return avgPurchaseYieldPercent;
   }
 
   private applyAccountSpecificFilter(
@@ -351,22 +323,16 @@ export class UniverseDataService {
     selectedAccount: string
   ): UniverseDisplayData[] {
     if (selectedAccount !== 'all') {
-      const self = this;
-      return data.map(function mapAccountSpecificData(
-        item: UniverseDisplayData
-      ) {
-        const accountSpecificData = self.getAccountSpecificData(
-          item.symbol,
-          selectedAccount
-        );
-        return {
-          ...item,
-          position: accountSpecificData.position,
-          most_recent_sell_date: accountSpecificData.most_recent_sell_date,
-          most_recent_sell_price: accountSpecificData.most_recent_sell_price,
-        };
-      });
+      return applySpecificAccountFilter(
+        data,
+        selectedAccount,
+        this.getAccountSpecificData.bind(this)
+      );
     }
-    return data;
+
+    return applyAllAccountsFilter(
+      data,
+      this.calculateAveragePurchaseYield.bind(this)
+    );
   }
 }

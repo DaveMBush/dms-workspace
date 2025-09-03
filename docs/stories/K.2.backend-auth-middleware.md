@@ -6,8 +6,8 @@ Draft
 
 ## Story
 
-**As a** application security administrator,  
-**I want** to have JWT validation middleware protecting all Fastify API endpoints using AWS Cognito tokens,  
+**As a** application security administrator,
+**I want** to have JWT validation middleware protecting all Fastify API endpoints using AWS Cognito tokens,
 **so that** unauthorized users cannot access any application data or functionality through direct API calls.
 
 ## Acceptance Criteria
@@ -20,6 +20,17 @@ Draft
 6. Add structured logging for authentication events, failures, and security incidents
 7. Create unit tests covering all authentication scenarios and error conditions
 8. Ensure middleware performance does not significantly impact API response times
+9. Ensure the following commands run without errors:
+
+- `pnpm format`
+- `pnpm dupcheck`
+- `pnpm nx run rms:test --code-coverage`
+- `pnpm nx run server:build:production`
+- `pnpm nx run server:test --code-coverage`
+- `pnpm nx run server:lint`
+- `pnpm nx run rms:lint`
+- `pnpm nx run rms:build:production`
+- `pnpm nx run rms-e2e:lint`
 
 ## Tasks / Subtasks
 

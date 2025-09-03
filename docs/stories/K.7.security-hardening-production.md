@@ -6,8 +6,8 @@ Draft
 
 ## Story
 
-**As a** single-user application owner,  
-**I want** to have comprehensive security hardening and production-ready authentication configurations,  
+**As a** single-user application owner,
+**I want** to have comprehensive security hardening and production-ready authentication configurations,
 **so that** my RMS application is protected against common security vulnerabilities and meets enterprise security standards for production deployment.
 
 ## Acceptance Criteria
@@ -20,6 +20,17 @@ Draft
 6. Add comprehensive audit logging for authentication events, security incidents, and user actions
 7. Perform security testing for common vulnerabilities including XSS, CSRF, and session fixation
 8. Document security configuration, incident response procedures, and compliance considerations
+9. Ensure the following commands run without errors:
+
+- `pnpm format`
+- `pnpm dupcheck`
+- `pnpm nx run rms:test --code-coverage`
+- `pnpm nx run server:build:production`
+- `pnpm nx run server:test --code-coverage`
+- `pnpm nx run server:lint`
+- `pnpm nx run rms:lint`
+- `pnpm nx run rms:build:production`
+- `pnpm nx run rms-e2e:lint`
 
 ## Tasks / Subtasks
 

@@ -2,12 +2,12 @@
 
 ## Status
 
-Draft
+Complete
 
 ## Story
 
-**As a** portfolio manager,  
-**I want** to see the average purchase yield percentage displayed as a new column in the universe table,  
+**As a** portfolio manager,
+**I want** to see the average purchase yield percentage displayed as a new column in the universe table,
 **so that** I can compare market yield with my actual investment performance side-by-side.
 
 ## Acceptance Criteria

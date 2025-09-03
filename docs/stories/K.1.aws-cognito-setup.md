@@ -6,8 +6,8 @@ Draft
 
 ## Story
 
-**As a** single-user application owner,  
-**I want** to have AWS Cognito User Pool configured with appropriate security settings and a single admin user account,  
+**As a** single-user application owner,
+**I want** to have AWS Cognito User Pool configured with appropriate security settings and a single admin user account,
 **so that** I can protect my RMS application with enterprise-grade authentication without managing user credentials myself.
 
 ## Acceptance Criteria
@@ -20,6 +20,17 @@ Draft
 6. Document Cognito configuration including User Pool ID, App Client ID, and domain settings
 7. Add environment variables and configuration structure for RMS application integration
 8. Optional: Configure Terraform/CDK infrastructure-as-code for Cognito resources
+9. Ensure the following commands run without errors:
+
+- `pnpm format`
+- `pnpm dupcheck`
+- `pnpm nx run rms:test --code-coverage`
+- `pnpm nx run server:build:production`
+- `pnpm nx run server:test --code-coverage`
+- `pnpm nx run server:lint`
+- `pnpm nx run rms:lint`
+- `pnpm nx run rms:build:production`
+- `pnpm nx run rms-e2e:lint`
 
 ## Tasks / Subtasks
 

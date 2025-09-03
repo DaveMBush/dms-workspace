@@ -6,8 +6,8 @@ Draft
 
 ## Story
 
-**As a** single-user application owner,  
-**I want** to have automatic token refresh and intelligent session management that maintains my login state seamlessly,  
+**As a** single-user application owner,
+**I want** to have automatic token refresh and intelligent session management that maintains my login state seamlessly,
 **so that** I can work uninterrupted without constant re-authentication while maintaining security best practices.
 
 ## Acceptance Criteria
@@ -20,6 +20,17 @@ Draft
 6. Handle concurrent token refresh requests to prevent race conditions and duplicate refreshes
 7. Store minimal user information in client state (username, email, session metadata)
 8. Create comprehensive unit and integration tests for all token refresh and session scenarios
+9. Ensure the following commands run without errors:
+
+- `pnpm format`
+- `pnpm dupcheck`
+- `pnpm nx run rms:test --code-coverage`
+- `pnpm nx run server:build:production`
+- `pnpm nx run server:test --code-coverage`
+- `pnpm nx run server:lint`
+- `pnpm nx run rms:lint`
+- `pnpm nx run rms:build:production`
+- `pnpm nx run rms-e2e:lint`
 
 ## Tasks / Subtasks
 

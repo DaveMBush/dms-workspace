@@ -6,8 +6,8 @@ Draft
 
 ## Story
 
-**As a** single-user application owner,  
-**I want** to have a comprehensive user profile management interface with account settings and security controls,  
+**As a** single-user application owner,
+**I want** to have a comprehensive user profile management interface with account settings and security controls,
 **so that** I can manage my account information, change passwords, and monitor my authentication sessions from within the application.
 
 ## Acceptance Criteria
@@ -20,6 +20,17 @@ Draft
 6. Handle password reset flow through Cognito with email-based verification
 7. Add navigation to user profile from main application with proper breadcrumbs and accessibility
 8. Style profile management to match existing PrimeNG application theme with responsive design
+9. Ensure the following commands run without errors:
+
+- `pnpm format`
+- `pnpm dupcheck`
+- `pnpm nx run rms:test --code-coverage`
+- `pnpm nx run server:build:production`
+- `pnpm nx run server:test --code-coverage`
+- `pnpm nx run server:lint`
+- `pnpm nx run rms:lint`
+- `pnpm nx run rms:build:production`
+- `pnpm nx run rms-e2e:lint`
 
 ## Tasks / Subtasks
 

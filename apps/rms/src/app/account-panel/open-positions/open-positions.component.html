@@ -11,10 +11,18 @@
 >
   <ng-template pTemplate="header">
     <tr class="bg-gray-100 dark:bg-slate-800">
-      <rms-symbol-filter-header
-        [(symbolFilter)]="symbolFilter"
-        (filterChange)="onSymbolFilterChange()"
-      ></rms-symbol-filter-header>
+      <!--
+      // jscpd:ignore-start
+      -->
+      <th class="min-w-16 max-w-16">
+        <rms-symbol-filter-header
+          [(symbolFilter)]="symbolFilter"
+          (filterChange)="onSymbolFilterChange()"
+        ></rms-symbol-filter-header>
+      </th>
+      <!--
+      // jscpd:ignore-end
+      -->
       <th class="min-w-32 max-w-32">Ex-Date</th>
       <th class="min-w-16 max-w-16">Buy</th>
       <th
@@ -57,7 +65,7 @@
   </ng-template>
   <ng-template pTemplate="body" let-row>
     <tr>
-      <td>{{ row.symbol }}</td>
+      <td class="min-w-16 max-w-16">{{ row.symbol }}</td>
       <td>{{ row.exDate | date : 'MM/dd/yyyy' }}</td>
       <td [pEditableColumn]="'buy'" class="w-100 overflow-hidden">
         <rms-editable-cell

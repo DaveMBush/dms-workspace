@@ -6,8 +6,8 @@ Draft
 
 ## Story
 
-**As a** DevOps engineer,  
-**I want** to configure a custom domain with Route53 DNS and SSL certificates for both frontend and backend services,  
+**As a** DevOps engineer,
+**I want** to configure a custom domain with Route53 DNS and SSL certificates for both frontend and backend services,
 **so that** the RMS application is accessible via professional domain names with secure HTTPS encryption and proper DNS management.
 
 ## Acceptance Criteria
@@ -21,6 +21,17 @@ Draft
 7. Implement domain validation automation and certificate renewal monitoring
 8. Add health checks and monitoring for DNS resolution and SSL certificate status
 9. Document DNS propagation procedures and certificate management processes
+10. Ensure the following commands run without errors:
+
+- `pnpm format`
+- `pnpm dupcheck`
+- `pnpm nx run rms:test --code-coverage`
+- `pnpm nx run server:build:production`
+- `pnpm nx run server:test --code-coverage`
+- `pnpm nx run server:lint`
+- `pnpm nx run rms:lint`
+- `pnpm nx run rms:build:production`
+- `pnpm nx run rms-e2e:lint`
 
 ## Tasks / Subtasks
 

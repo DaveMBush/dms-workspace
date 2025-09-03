@@ -6,8 +6,8 @@ Draft
 
 ## Story
 
-**As a** single-user application owner,  
-**I want** to have a polished login component and authentication service integrated with AWS Cognito,  
+**As a** single-user application owner,
+**I want** to have a polished login component and authentication service integrated with AWS Cognito,
 **so that** I can securely log into my RMS application with a professional user experience and proper token management.
 
 ## Acceptance Criteria
@@ -20,6 +20,17 @@ Draft
 6. Add loading states, user feedback, and proper error handling throughout authentication flow
 7. Style login form to match existing PrimeNG theme with responsive design for mobile devices
 8. Create comprehensive unit tests for authentication service and login component interactions
+9. Ensure the following commands run without errors:
+
+- `pnpm format`
+- `pnpm dupcheck`
+- `pnpm nx run rms:test --code-coverage`
+- `pnpm nx run server:build:production`
+- `pnpm nx run server:test --code-coverage`
+- `pnpm nx run server:lint`
+- `pnpm nx run rms:lint`
+- `pnpm nx run rms:build:production`
+- `pnpm nx run rms-e2e:lint`
 
 ## Tasks / Subtasks
 

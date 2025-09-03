@@ -6,8 +6,8 @@ Draft
 
 ## Story
 
-**As a** DevOps engineer and team member,  
-**I want** comprehensive documentation covering deployment procedures, operational tasks, troubleshooting guides, and architectural decisions,  
+**As a** DevOps engineer and team member,
+**I want** comprehensive documentation covering deployment procedures, operational tasks, troubleshooting guides, and architectural decisions,
 **so that** the team can effectively maintain, operate, and evolve the AWS infrastructure with confidence and consistency.
 
 ## Acceptance Criteria
@@ -21,6 +21,17 @@ Draft
 7. Document security best practices and compliance requirements
 8. Create troubleshooting guide for common infrastructure and application issues
 9. Setup automated documentation updates and version control procedures
+10. Ensure the following commands run without errors:
+
+- `pnpm format`
+- `pnpm dupcheck`
+- `pnpm nx run rms:test --code-coverage`
+- `pnpm nx run server:build:production`
+- `pnpm nx run server:test --code-coverage`
+- `pnpm nx run server:lint`
+- `pnpm nx run rms:lint`
+- `pnpm nx run rms:build:production`
+- `pnpm nx run rms-e2e:lint`
 
 ## Tasks / Subtasks
 
