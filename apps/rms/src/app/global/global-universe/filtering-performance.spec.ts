@@ -377,7 +377,8 @@ describe('Filtering Performance Tests', () => {
       }
 
       // Simulate high load with sequential operations (reduced for CI performance)
-      for (let i = 0; i < 15; i++) { // Reduced from 30 to 15 iterations
+      for (let i = 0; i < 15; i++) {
+        // Reduced from 30 to 15 iterations
         const startTime = performance.now();
         service.applyFilters(dataset, {
           selectedAccount: 'account-1',
@@ -428,7 +429,8 @@ describe('Filtering Performance Tests', () => {
       );
 
       // Create fewer short-lived filtering operations for CI performance
-      for (let i = 0; i < 20; i++) { // Reduced from 100 to 20 iterations
+      for (let i = 0; i < 20; i++) {
+        // Reduced from 100 to 20 iterations
         const result = service.applyFilters(dataset, {
           selectedAccount: 'account-1',
           expiredFilter: null,
@@ -459,7 +461,8 @@ describe('Filtering Performance Tests', () => {
       });
 
       // Simulate rapid account switching (reduced iterations for CI performance)
-      for (let i = 0; i < 20; i++) { // Reduced from 100 to 20 iterations
+      for (let i = 0; i < 20; i++) {
+        // Reduced from 100 to 20 iterations
         const selectedAccount = accounts[i % accounts.length];
         mockSelectAccountChildren.mockReturnValue(
           createMockAccountData(selectedAccount, 200)
