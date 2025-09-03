@@ -14,11 +14,10 @@ Draft
 
 1. Verify default behavior hides expired symbols without positions across all data scenarios
 2. Test account switching with mixed expired/active portfolios maintains correct filtering
-3. Validate toggle functionality works correctly in different account contexts
-4. Ensure no data loss or corruption of expired records during filtering operations
-5. Test with realistic datasets including symbols with dividend history and complex trade patterns
-6. Performance validation with large numbers of expired symbols (1000+ symbols)
-7. Ensure the following commands run without errors:
+3. Ensure no data loss or corruption of expired records during filtering operations
+4. Test with realistic datasets including symbols with dividend history and complex trade patterns
+5. Performance validation with large numbers of expired symbols (1000+ symbols)
+6. Ensure the following commands run without errors:
 
 - `pnpm format`
 - `pnpm dupcheck`
@@ -48,15 +47,7 @@ Draft
   - [ ] Validate smooth UI transitions and data loading during account changes
   - [ ] Test account-specific filtering with complex multi-account trade scenarios
 
-- [ ] **Task 3: Create toggle integration tests across account contexts** (AC: 3)
-
-  - [ ] Test "Show All Expired" toggle behavior in single account view
-  - [ ] Test toggle behavior in "all accounts" view
-  - [ ] Verify toggle state persistence across account switching
-  - [ ] Test toggle visibility updates when switching between accounts with/without expired symbols
-  - [ ] Validate toggle interaction with URL parameters and deep linking
-
-- [ ] **Task 4: Create data integrity validation tests** (AC: 4)
+- [ ] **Task 3: Create data integrity validation tests** (AC: 4)
 
   - [ ] Verify no expired records are deleted or modified during filtering
   - [ ] Test database queries maintain proper indexing and performance
@@ -64,7 +55,7 @@ Draft
   - [ ] Test concurrent user scenarios (if applicable) don't corrupt filtered results
   - [ ] Ensure historical dividend data remains accessible for expired symbols
 
-- [ ] **Task 5: Create realistic dataset integration tests** (AC: 5)
+- [ ] **Task 4: Create realistic dataset integration tests** (AC: 5)
 
   - [ ] Test with real-world dividend distribution patterns and frequencies
   - [ ] Validate complex trade scenarios: partial sells, multiple buy/sell cycles
@@ -72,7 +63,7 @@ Draft
   - [ ] Verify correct handling of symbols with gaps in trade history
   - [ ] Test filtering with symbols having various ex-date patterns
 
-- [ ] **Task 6: Create performance validation and load testing** (AC: 6)
+- [ ] **Task 5: Create performance validation and load testing** (AC: 6)
   - [ ] Test filtering performance with 1000+ expired symbols
   - [ ] Validate UI responsiveness during large dataset filtering
   - [ ] Test memory usage patterns with repeated filtering operations

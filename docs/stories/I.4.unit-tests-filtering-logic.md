@@ -15,10 +15,9 @@ Draft
 1. Test expired symbols with open positions (should show by default)
 2. Test expired symbols without positions (should hide by default)
 3. Test account-specific filtering behavior with mixed portfolios
-4. Test "Show All Expired" toggle functionality in all states
-5. Test performance with large datasets containing many expired symbols
-6. Maintain existing test coverage for other filtering functionality
-7. Ensure the following commands run without errors:
+4. Test performance with large datasets containing many expired symbols
+5. Maintain existing test coverage for other filtering functionality
+6. Ensure the following commands run without errors:
 
 - `pnpm format`
 - `pnpm dupcheck`
@@ -48,15 +47,7 @@ Draft
   - [ ] Test account switching behavior with cached vs recalculated data
   - [ ] Test multiple accounts with varying position distributions
 
-- [ ] **Task 3: Create unit tests for "Show All Expired" toggle functionality** (AC: 4)
-
-  - [ ] Test toggle OFF: default expired-with-positions behavior
-  - [ ] Test toggle ON: shows all expired symbols regardless of positions
-  - [ ] Test toggle state persistence across component lifecycle
-  - [ ] Test toggle visibility based on expired symbols presence
-  - [ ] Test toggle interaction with existing explicit expired filter
-
-- [ ] **Task 4: Create performance tests for filtering optimization** (AC: 5)
+- [ ] **Task 3: Create performance tests for filtering optimization** (AC: 5)
 
   - [ ] Test filtering performance with large datasets (1000+ symbols)
   - [ ] Test that position calculations only run for expired symbols
@@ -64,7 +55,7 @@ Draft
   - [ ] Compare performance before/after optimization implementation
   - [ ] Test concurrent filtering operations (if applicable)
 
-- [ ] **Task 5: Create integration tests for complete filtering pipeline** (AC: 1, 2, 3, 4)
+- [ ] **Task 4: Create integration tests for complete filtering pipeline** (AC: 1, 2, 3, 4)
 
   - [ ] Test end-to-end filtering from raw data to display
   - [ ] Test filter parameter mapping and precedence hierarchy
