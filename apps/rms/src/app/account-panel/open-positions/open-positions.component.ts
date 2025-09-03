@@ -9,7 +9,6 @@ import {
 } from '@angular/core';
 
 import { BasePositionsComponent } from '../../shared/base-positions.component';
-import { EditableCellComponent } from '../../shared/editable-cell.component';
 import { POSITIONS_COMMON_IMPORTS } from '../../shared/positions-common-imports.const';
 import { SortableHeaderComponent } from '../../shared/sortable-header.component';
 import { currentAccountSignalStore } from '../../store/current-account/current-account.signal-store';
@@ -23,11 +22,7 @@ import { OpenPositionsStorageService } from './open-positions-storage.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'rms-open-positions',
   standalone: true,
-  imports: [
-    ...POSITIONS_COMMON_IMPORTS,
-    EditableCellComponent,
-    SortableHeaderComponent,
-  ],
+  imports: [...POSITIONS_COMMON_IMPORTS, SortableHeaderComponent],
   templateUrl: './open-positions.component.html',
   styleUrls: ['./open-positions.component.scss'],
   viewProviders: [OpenPositionsComponentService, OpenPositionsStorageService],
