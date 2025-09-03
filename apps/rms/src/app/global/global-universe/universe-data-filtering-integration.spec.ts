@@ -304,7 +304,10 @@ describe('UniverseDataService - Expired With Positions Filtering Integration', (
       // EXPIRED_NO_POS: matches symbol filter but no position in account-1 → filtered out
       // NOT_EXPIRED: matches symbol filter + not expired → included
       expect(result).toHaveLength(2);
-      expect(result.map((r) => r.symbol)).toEqual(['EXPIRED_WITH_POS', 'NOT_EXPIRED']);
+      expect(result.map((r) => r.symbol)).toEqual([
+        'EXPIRED_WITH_POS',
+        'NOT_EXPIRED',
+      ]);
     });
 
     test('combines expired-with-positions filtering with risk group filtering', () => {
