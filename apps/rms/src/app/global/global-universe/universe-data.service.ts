@@ -14,6 +14,7 @@ import { applySpecificAccountFilter } from './apply-specific-account-filter.func
 import { applySymbolFilter } from './apply-symbol-filter.function';
 import { applyYieldFilter } from './apply-yield-filter.function';
 import { compareForSort } from './compare-for-sort.function';
+import { findUniverseIdBySymbol } from './find-universe-id-by-symbol.function';
 import type { UniverseDisplayData } from './universe-display-data.interface';
 
 interface AccountSpecificData {
@@ -145,7 +146,7 @@ export class UniverseDataService {
     symbol: string,
     accountId: string
   ): AccountSpecificData {
-    const universeId = this.findUniverseIdBySymbol(symbol);
+    const universeId = findUniverseIdBySymbol(symbol);
     const account = this.getAccountFromState(accountId);
 
     if (account === null || account === undefined) {
@@ -194,9 +195,7 @@ export class UniverseDataService {
     // so that position field is correctly set for the selected account
     filteredData = applyExpiredWithPositionsFilter(
       filteredData,
-      params.expiredFilter,
-      params.selectedAccount,
-      this.hasPositionsInAnyAccount.bind(this)
+      params.expiredFilter
     );
 
     return filteredData;
@@ -236,16 +235,6 @@ export class UniverseDataService {
     });
 
     return sortedData;
-  }
-
-  private findUniverseIdBySymbol(symbol: string): string | undefined {
-    const universes = selectUniverses();
-    for (let i = 0; i < universes.length; i++) {
-      if (universes[i].symbol === symbol) {
-        return universes[i].id;
-      }
-    }
-    return undefined;
   }
 
   private getAccountFromState(accountId: string): unknown {
@@ -345,39 +334,5 @@ export class UniverseDataService {
       data,
       this.calculateAveragePurchaseYield.bind(this)
     );
-  }
-
-  /**
-   * Checks if a symbol has positions in any account
-   * Used for expired-with-positions filtering when selectedAccount = "all"
-   */
-  private hasPositionsInAnyAccount(symbol: string): boolean {
-    const universeId = this.findUniverseIdBySymbol(symbol);
-    if (universeId === undefined || universeId === null) {
-      return false;
-    }
-
-    const accountsState = selectAccountChildren();
-    const accounts = Object.values(accountsState.entities);
-
-    const self = this;
-    return accounts.some(function hasPositionsInAccountCheck(account: unknown) {
-      if (
-        account === null ||
-        account === undefined ||
-        typeof account !== 'object'
-      ) {
-        return false;
-      }
-
-      // The account object has both Account interface properties and an 'account' field
-      const accountWithId = account as Account & { account: string };
-      const accountId: string = accountWithId.account;
-      const accountSpecificData = self.getAccountSpecificData(
-        symbol,
-        accountId
-      );
-      return accountSpecificData.position > 0;
-    });
   }
 }

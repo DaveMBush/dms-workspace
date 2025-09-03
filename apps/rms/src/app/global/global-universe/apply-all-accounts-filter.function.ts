@@ -1,3 +1,5 @@
+import { calculateTradeTotals } from './account-data-calculator.function';
+import { findUniverseIdBySymbol } from './find-universe-id-by-symbol.function';
 import type { UniverseDisplayData } from './universe-display-data.interface';
 
 type CalculateAveragePurchaseYieldFn = (
@@ -17,9 +19,15 @@ export function applyAllAccountsFilter(
       item.symbol,
       'all'
     );
+
+    // Calculate total position across all accounts
+    const universeId = findUniverseIdBySymbol(item.symbol);
+    const { totalCost } = calculateTradeTotals(universeId ?? '', 'all');
+
     return {
       ...item,
       avg_purchase_yield_percent: avgPurchaseYieldPercent,
+      position: totalCost, // Total cost across all accounts represents total position value
     };
   });
 }

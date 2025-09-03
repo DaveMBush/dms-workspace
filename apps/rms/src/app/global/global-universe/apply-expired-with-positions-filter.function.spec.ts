@@ -1,4 +1,4 @@
-import { describe, expect, test, vi } from 'vitest';
+import { describe, expect, test } from 'vitest';
 
 import { applyExpiredWithPositionsFilter } from './apply-expired-with-positions-filter.function';
 import type { UniverseDisplayData } from './universe-display-data.interface';
@@ -23,26 +23,29 @@ describe('applyExpiredWithPositionsFilter', () => {
     position,
   });
 
-  const mockHasPositionsInAnyAccount = vi.fn();
-
-  test('returns original data when explicit expired filter is set (null bypass)', () => {
+  test('returns original data when explicit expired filter is set (bypass)', () => {
     const data = [
       createMockData(true, 0, 'EXPIRED_NO_POS'),
       createMockData(false, 1000, 'NOT_EXPIRED'),
     ];
 
-    const result = applyExpiredWithPositionsFilter(
-      data,
-      true, // expiredFilter explicitly set
-      'account-1',
-      mockHasPositionsInAnyAccount
-    );
+    const result = applyExpiredWithPositionsFilter(data, true);
 
     expect(result).toEqual(data);
-    expect(mockHasPositionsInAnyAccount).not.toHaveBeenCalled();
   });
 
-  test('filters expired symbols without positions for specific account', () => {
+  test('returns original data when explicit expired filter is false', () => {
+    const data = [
+      createMockData(true, 0, 'EXPIRED_NO_POS'),
+      createMockData(false, 1000, 'NOT_EXPIRED'),
+    ];
+
+    const result = applyExpiredWithPositionsFilter(data, false);
+
+    expect(result).toEqual(data);
+  });
+
+  test('filters expired symbols without positions (basic case)', () => {
     const data = [
       createMockData(true, 1000, 'EXPIRED_WITH_POS'),
       createMockData(true, 0, 'EXPIRED_NO_POS'),
@@ -50,12 +53,7 @@ describe('applyExpiredWithPositionsFilter', () => {
       createMockData(false, 1000, 'NOT_EXPIRED_WITH_POS'),
     ];
 
-    const result = applyExpiredWithPositionsFilter(
-      data,
-      null, // no explicit filter
-      'account-1',
-      mockHasPositionsInAnyAccount
-    );
+    const result = applyExpiredWithPositionsFilter(data, null);
 
     expect(result).toHaveLength(3);
     expect(result.map((r) => r.symbol)).toContain('EXPIRED_WITH_POS');
@@ -71,45 +69,12 @@ describe('applyExpiredWithPositionsFilter', () => {
       createMockData(false, -100, 'NOT_EXPIRED_NEGATIVE_POS'),
     ];
 
-    const result = applyExpiredWithPositionsFilter(
-      data,
-      null,
-      'account-1',
-      mockHasPositionsInAnyAccount
-    );
+    const result = applyExpiredWithPositionsFilter(data, null);
 
     expect(result).toHaveLength(3);
     expect(result.map((r) => r.symbol)).toContain('NOT_EXPIRED_NO_POS');
     expect(result.map((r) => r.symbol)).toContain('NOT_EXPIRED_WITH_POS');
     expect(result.map((r) => r.symbol)).toContain('NOT_EXPIRED_NEGATIVE_POS');
-  });
-
-  test('uses hasPositionsInAnyAccount function when selectedAccount is "all"', () => {
-    mockHasPositionsInAnyAccount.mockClear();
-
-    const data = [
-      createMockData(true, 0, 'EXPIRED_SYMBOL_1'),
-      createMockData(true, 0, 'EXPIRED_SYMBOL_2'),
-    ];
-
-    mockHasPositionsInAnyAccount.mockReturnValueOnce(true); // First symbol has positions
-    mockHasPositionsInAnyAccount.mockReturnValueOnce(false); // Second symbol has no positions
-
-    const result = applyExpiredWithPositionsFilter(
-      data,
-      null,
-      'all',
-      mockHasPositionsInAnyAccount
-    );
-
-    expect(result).toHaveLength(1);
-    expect(result[0].symbol).toBe('EXPIRED_SYMBOL_1');
-    expect(mockHasPositionsInAnyAccount).toHaveBeenCalledWith(
-      'EXPIRED_SYMBOL_1'
-    );
-    expect(mockHasPositionsInAnyAccount).toHaveBeenCalledWith(
-      'EXPIRED_SYMBOL_2'
-    );
   });
 
   test('handles zero and negative positions correctly', () => {
@@ -120,12 +85,7 @@ describe('applyExpiredWithPositionsFilter', () => {
       createMockData(true, 1000, 'LARGE_POSITIVE_POSITION'),
     ];
 
-    const result = applyExpiredWithPositionsFilter(
-      data,
-      null,
-      'account-1',
-      mockHasPositionsInAnyAccount
-    );
+    const result = applyExpiredWithPositionsFilter(data, null);
 
     expect(result).toHaveLength(2);
     expect(result.map((r) => r.symbol)).not.toContain('ZERO_POSITION');
@@ -166,45 +126,12 @@ describe('applyExpiredWithPositionsFilter', () => {
       },
     ];
 
-    const result = applyExpiredWithPositionsFilter(
-      data,
-      null,
-      'account-1',
-      mockHasPositionsInAnyAccount
-    );
+    const result = applyExpiredWithPositionsFilter(data, null);
 
     // null/undefined expired should be treated as non-expired (show)
     expect(result).toHaveLength(2);
     expect(result.map((r) => r.symbol)).toContain('NULL_EXPIRED');
     expect(result.map((r) => r.symbol)).toContain('UNDEFINED_EXPIRED');
-  });
-
-  test('does not call hasPositionsInAnyAccount for non-expired symbols when selectedAccount is "all"', () => {
-    mockHasPositionsInAnyAccount.mockClear();
-
-    const data = [
-      createMockData(false, 0, 'NOT_EXPIRED_1'),
-      createMockData(false, 1000, 'NOT_EXPIRED_2'),
-      createMockData(true, 0, 'EXPIRED'),
-    ];
-
-    mockHasPositionsInAnyAccount.mockReturnValue(false);
-
-    const result = applyExpiredWithPositionsFilter(
-      data,
-      null,
-      'all',
-      mockHasPositionsInAnyAccount
-    );
-
-    expect(result).toHaveLength(2); // Two non-expired symbols
-    expect(result.map((r) => r.symbol)).toContain('NOT_EXPIRED_1');
-    expect(result.map((r) => r.symbol)).toContain('NOT_EXPIRED_2');
-    expect(result.map((r) => r.symbol)).not.toContain('EXPIRED');
-
-    // Should only be called once for the expired symbol
-    expect(mockHasPositionsInAnyAccount).toHaveBeenCalledTimes(1);
-    expect(mockHasPositionsInAnyAccount).toHaveBeenCalledWith('EXPIRED');
   });
 
   test('handles mixed expired and non-expired data correctly', () => {
@@ -215,17 +142,28 @@ describe('applyExpiredWithPositionsFilter', () => {
       createMockData(false, 1000, 'NOT_EXPIRED_WITH_POS'),
     ];
 
-    const result = applyExpiredWithPositionsFilter(
-      data,
-      null,
-      'account-1',
-      mockHasPositionsInAnyAccount
-    );
+    const result = applyExpiredWithPositionsFilter(data, null);
 
     expect(result).toHaveLength(3);
     expect(result.map((r) => r.symbol)).toContain('EXPIRED_WITH_POS');
     expect(result.map((r) => r.symbol)).not.toContain('EXPIRED_NO_POS');
     expect(result.map((r) => r.symbol)).toContain('NOT_EXPIRED_NO_POS');
     expect(result.map((r) => r.symbol)).toContain('NOT_EXPIRED_WITH_POS');
+  });
+
+  test('works correctly with "All Accounts" data where position represents total across accounts', () => {
+    // This test simulates data after applyAllAccountsFilter has set position to total across all accounts
+    const data = [
+      createMockData(true, 5000, 'EXPIRED_WITH_TOTAL_POS'), // Has positions across accounts
+      createMockData(true, 0, 'EXPIRED_NO_TOTAL_POS'), // No positions in any account
+      createMockData(false, 0, 'NOT_EXPIRED_NO_TOTAL_POS'), // Non-expired, no positions
+    ];
+
+    const result = applyExpiredWithPositionsFilter(data, null);
+
+    expect(result).toHaveLength(2);
+    expect(result.map((r) => r.symbol)).toContain('EXPIRED_WITH_TOTAL_POS');
+    expect(result.map((r) => r.symbol)).not.toContain('EXPIRED_NO_TOTAL_POS');
+    expect(result.map((r) => r.symbol)).toContain('NOT_EXPIRED_NO_TOTAL_POS');
   });
 });
