@@ -100,3 +100,19 @@ output "cloudfront_domain_name" {
   description = "CloudFront distribution domain name"
   value       = module.cloudfront.distribution_domain_name
 }
+
+# Monitoring Outputs
+output "monitoring_sns_topic_arn" {
+  description = "SNS topic ARN for monitoring alerts"
+  value       = module.monitoring.sns_topic_arn
+}
+
+output "monitoring_dashboard_name" {
+  description = "CloudWatch dashboard name"
+  value       = module.monitoring.dashboard_name
+}
+
+output "monitoring_log_groups" {
+  description = "CloudWatch log group names"
+  value       = module.monitoring.log_group_names
+}
