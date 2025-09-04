@@ -136,18 +136,18 @@ Draft
 
 **Primary Files to Create:**
 
-1. `/infrastructure/modules/s3-website/main.tf` - S3 bucket for static website
-2. `/infrastructure/modules/s3-website/variables.tf` - S3 module input variables
-3. `/infrastructure/modules/s3-website/outputs.tf` - S3 bucket information
-4. `/infrastructure/modules/cloudfront/main.tf` - CloudFront distribution
-5. `/infrastructure/modules/cloudfront/variables.tf` - CloudFront module variables
-6. `/infrastructure/modules/cloudfront/outputs.tf` - CloudFront distribution info
+1. `/apps/infrastructure/modules/s3-website/main.tf` - S3 bucket for static website
+2. `/apps/infrastructure/modules/s3-website/variables.tf` - S3 module input variables
+3. `/apps/infrastructure/modules/s3-website/outputs.tf` - S3 bucket information
+4. `/apps/infrastructure/modules/cloudfront/main.tf` - CloudFront distribution
+5. `/apps/infrastructure/modules/cloudfront/variables.tf` - CloudFront module variables
+6. `/apps/infrastructure/modules/cloudfront/outputs.tf` - CloudFront distribution info
 7. `/scripts/deploy-frontend.sh` - Frontend deployment automation script
 8. `/apps/rms/src/environments/environment.prod.ts` - Production environment config
 
 **Primary Files to Modify:**
 
-1. `/infrastructure/environments/dev/main.tf` - Include S3 and CloudFront modules
+1. `/apps/infrastructure/environments/dev/main.tf` - Include S3 and CloudFront modules
 2. `/apps/rms/angular.json` - Add production build optimizations
 3. `/apps/rms/src/main.ts` - Add production-specific configurations
 

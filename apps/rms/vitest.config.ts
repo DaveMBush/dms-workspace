@@ -14,5 +14,10 @@ export default defineConfig({
       reportsDirectory: '../../coverage/apps/rms',
       provider: 'v8' as const,
     },
+    env: {
+      DATABASE_PROVIDER: 'sqlite',
+      DATABASE_URL: 'file:./test-database.db',
+      NODE_ENV: 'test',
+    },
   },
 });

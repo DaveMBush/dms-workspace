@@ -55,7 +55,7 @@ Draft
 
 - [ ] **Task 3: Create ECS Terraform module** (AC: 3, 7)
 
-  - [ ] Create `infrastructure/modules/ecs/main.tf` with cluster configuration
+  - [ ] Create `apps/infrastructure/modules/ecs/main.tf` with cluster configuration
   - [ ] Define ECS task definition with Fargate launch type
   - [ ] Configure task definition with appropriate CPU and memory limits
   - [ ] Setup ECS service with desired count and deployment configuration
@@ -139,23 +139,23 @@ Draft
 
 1. `/apps/server/Dockerfile` - Multi-stage Docker build configuration
 2. `/apps/server/.dockerignore` - Exclude unnecessary files from Docker context
-3. `/infrastructure/modules/ecs/main.tf` - ECS cluster and service configuration
-4. `/infrastructure/modules/ecs/variables.tf` - ECS module input variables
-5. `/infrastructure/modules/ecs/outputs.tf` - ECS service information outputs
-6. `/infrastructure/modules/alb/main.tf` - Application Load Balancer configuration
+3. `/apps/infrastructure/modules/ecs/main.tf` - ECS cluster and service configuration
+4. `/apps/infrastructure/modules/ecs/variables.tf` - ECS module input variables
+5. `/apps/infrastructure/modules/ecs/outputs.tf` - ECS service information outputs
+6. `/apps/infrastructure/modules/alb/main.tf` - Application Load Balancer configuration
 7. `/scripts/build-and-deploy.sh` - Deployment automation script
 8. `/apps/server/src/app/routes/health/index.ts` - Health check endpoint
 
 **Primary Files to Modify:**
 
 1. `/apps/server/src/main.ts` - Add health check endpoint and graceful shutdown
-2. `/infrastructure/environments/dev/main.tf` - Include ECS and ALB modules
+2. `/apps/infrastructure/environments/dev/main.tf` - Include ECS and ALB modules
 3. `/apps/server/src/app/prisma/prisma-client.ts` - Add connection retry for ECS
 
 **Test Files to Create:**
 
 1. `/apps/server/src/app/routes/health/index.spec.ts` - Health check endpoint tests
-2. `/infrastructure/modules/ecs/main.tf.spec.ts` - Terraform module tests
+2. `/apps/infrastructure/modules/ecs/main.tf.spec.ts` - Terraform module tests
 3. `/scripts/build-and-deploy.spec.sh` - Deployment script validation
 
 ### Technical Implementation Details

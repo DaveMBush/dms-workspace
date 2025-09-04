@@ -1,0 +1,87 @@
+{
+  "name": "infrastructure",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/infrastructure",
+  "projectType": "application",
+  "tags": ["infrastructure", "terraform"],
+  "targets": {
+    "plan": {
+      "executor": "nx:run-commands",
+      "outputs": [],
+      "options": {
+        "command": "terraform plan",
+        "cwd": "apps/infrastructure"
+      },
+      "configurations": {
+        "dev": {
+          "command": "terraform plan -var-file=environments/dev/terraform.tfvars",
+          "cwd": "apps/infrastructure"
+        },
+        "prod": {
+          "command": "terraform plan -var-file=environments/prod/terraform.tfvars",
+          "cwd": "apps/infrastructure"
+        }
+      }
+    },
+    "deploy": {
+      "executor": "nx:run-commands",
+      "outputs": [],
+      "options": {
+        "command": "terraform apply -auto-approve",
+        "cwd": "apps/infrastructure"
+      },
+      "configurations": {
+        "dev": {
+          "command": "terraform apply -var-file=environments/dev/terraform.tfvars -auto-approve",
+          "cwd": "apps/infrastructure"
+        },
+        "prod": {
+          "command": "terraform apply -var-file=environments/prod/terraform.tfvars -auto-approve",
+          "cwd": "apps/infrastructure"
+        }
+      }
+    },
+    "destroy": {
+      "executor": "nx:run-commands",
+      "outputs": [],
+      "options": {
+        "command": "terraform destroy -auto-approve",
+        "cwd": "apps/infrastructure"
+      },
+      "configurations": {
+        "dev": {
+          "command": "terraform destroy -var-file=environments/dev/terraform.tfvars -auto-approve",
+          "cwd": "apps/infrastructure"
+        },
+        "prod": {
+          "command": "terraform destroy -var-file=environments/prod/terraform.tfvars -auto-approve",
+          "cwd": "apps/infrastructure"
+        }
+      }
+    },
+    "init": {
+      "executor": "nx:run-commands",
+      "outputs": [],
+      "options": {
+        "command": "terraform init",
+        "cwd": "apps/infrastructure"
+      }
+    },
+    "validate": {
+      "executor": "nx:run-commands",
+      "outputs": [],
+      "options": {
+        "command": "terraform validate",
+        "cwd": "apps/infrastructure"
+      }
+    },
+    "fmt": {
+      "executor": "nx:run-commands",
+      "outputs": [],
+      "options": {
+        "command": "terraform fmt -recursive",
+        "cwd": "apps/infrastructure"
+      }
+    }
+  }
+}

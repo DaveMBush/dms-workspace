@@ -249,6 +249,18 @@ data "aws_iam_policy_document" "ecs_task" {
     ]
     resources = ["*"]
   }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "ssm:GetParameter",
+      "ssm:GetParameters",
+      "ssm:GetParametersByPath"
+    ]
+    resources = [
+      "arn:aws:ssm:*:*:parameter/rms/${var.environment}/*"
+    ]
+  }
 }
 
 resource "aws_iam_policy" "ecs_task" {

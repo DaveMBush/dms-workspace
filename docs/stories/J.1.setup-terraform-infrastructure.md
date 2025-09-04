@@ -12,7 +12,7 @@ Ready for Review
 
 ## Acceptance Criteria
 
-1. Create `infrastructure/` directory structure with Terraform modules and environments
+1. Create `apps/infrastructure/` directory structure with Terraform modules and environments
 2. Configure Terraform AWS provider with version constraints and required_version
 3. Setup S3 backend for Terraform state with DynamoDB table for state locking
 4. Define VPC with public and private subnets across 2 Availability Zones
@@ -37,7 +37,7 @@ Ready for Review
 
 - [x] **Task 1: Create Terraform directory structure and configuration** (AC: 1, 2)
 
-  - [x] Create `infrastructure/` root directory with modules and environments
+  - [x] Create `apps/infrastructure/` root directory with modules and environments
   - [x] Setup `versions.tf` with Terraform and AWS provider version constraints
   - [x] Create `main.tf` with AWS provider configuration and common tags
   - [x] Add `variables.tf` and `outputs.tf` files for core infrastructure

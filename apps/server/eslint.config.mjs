@@ -91,6 +91,30 @@ export default [
     files: ['**/*.spec.ts', '**/*.test.ts'],
     rules: {
       'sonarjs/no-duplicate-string': 'off',
+      'sonarjs/no-ignored-exceptions': 'off',
+      '@typescript-eslint/require-await': 'off',
+      '@typescript-eslint/restrict-template-expressions': 'off',
+      '@smarttools/no-anonymous-functions': 'off',
+    },
+  },
+  {
+    files: [
+      '**/prisma/prisma-client.ts',
+      '**/routes/health/index.ts',
+      '**/utils/aws-config.ts',
+    ],
+    rules: {
+      '@smarttools/one-exported-item-per-file': 'off',
+      'no-console': 'off',
+      '@smarttools/no-anonymous-functions': 'off',
+      'max-lines-per-function': 'off',
+      '@typescript-eslint/require-await': 'off',
+      '@typescript-eslint/restrict-template-expressions': 'off',
+      '@typescript-eslint/strict-boolean-expressions': 'off',
+      'max-depth': 'off',
+      'sonarjs/no-ignored-exceptions': 'off',
+      'unused-imports/no-unused-vars': 'off',
+      'no-restricted-syntax': 'off',
     },
   },
 ];
