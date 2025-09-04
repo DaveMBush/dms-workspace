@@ -1,0 +1,97 @@
+# Docker ignore file for RMS Fastify Backend
+
+# Node modules (will be reinstalled in container)
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Build outputs and cache directories
+dist
+coverage
+.nyc_output
+.cache
+.parcel-cache
+.nx
+.angular
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE and editor files
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Docker files
+Dockerfile*
+.dockerignore
+docker-compose*
+
+# Testing
+*.test.ts
+*.spec.ts
+test/
+tests/
+
+# Documentation
+README.md
+docs/
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.travis.yml
+.circleci/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+
+# Logs
+logs/
+*.log
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Database files
+*.sqlite
+*.sqlite3
+*.db
+
+# Terraform files (infrastructure should be deployed separately)
+*.tf
+*.tfvars
+terraform.tfstate*
+
+# Nx and build tools
+.nx/
+apps/*/src
+libs/*/src
