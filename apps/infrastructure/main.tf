@@ -40,3 +40,10 @@ module "security" {
   vpc_id           = module.vpc.vpc_id
   vpc_cidr_block   = module.vpc.vpc_cidr_block
 }
+
+module "ecr" {
+  source = "./modules/ecr"
+
+  project_name = var.project_name
+  environment  = var.environment
+}
