@@ -35,6 +35,15 @@ Draft
 
 ## Tasks / Subtasks
 
+- [ ] **Task 0: Infrastructure Retrofit to Nx App Structure** (Prerequisite)
+
+  - [ ] Move existing `/infrastructure/` directory to `/apps/infrastructure/`
+  - [ ] Create `apps/infrastructure/project.json` with Nx targets (plan, deploy, destroy)
+  - [ ] Update any active J.2 GitHub task references to use `apps/infrastructure/` paths
+  - [ ] Test Nx commands work: `nx plan infrastructure`
+  - [ ] Update all remaining J.x stories (J.3-J.7) to use `apps/infrastructure/` paths
+  - [ ] Validate story cross-references and path consistency
+
 - [ ] **Task 1: Update Prisma schema for PostgreSQL compatibility** (AC: 1, 6)
 
   - [ ] Change datasource provider from "sqlite" to "postgresql"
@@ -45,7 +54,7 @@ Draft
 
 - [ ] **Task 2: Create RDS Terraform module** (AC: 2, 3, 4)
 
-  - [ ] Create `infrastructure/modules/rds/main.tf` with PostgreSQL RDS instance
+  - [ ] Create `apps/infrastructure/modules/rds/main.tf` with PostgreSQL RDS instance
   - [ ] Configure DB subnet group using private subnets from VPC module
   - [ ] Setup DB parameter group with optimized PostgreSQL settings
   - [ ] Integrate with security group allowing access only from ECS security group
@@ -125,9 +134,9 @@ Draft
 
 **Primary Files to Create:**
 
-1. `/infrastructure/modules/rds/main.tf` - RDS PostgreSQL instance configuration
-2. `/infrastructure/modules/rds/variables.tf` - RDS module variables
-3. `/infrastructure/modules/rds/outputs.tf` - RDS connection information
+1. `/apps/infrastructure/modules/rds/main.tf` - RDS PostgreSQL instance configuration
+2. `/apps/infrastructure/modules/rds/variables.tf` - RDS module variables
+3. `/apps/infrastructure/modules/rds/outputs.tf` - RDS connection information
 4. `/scripts/migrate-sqlite-to-postgres.ts` - Data migration script
 5. `/scripts/seed-postgres.ts` - Database seeding for new environments
 6. `/apps/server/.env.example` - PostgreSQL environment variables template
@@ -137,7 +146,7 @@ Draft
 1. `/prisma/schema.prisma` - Update database provider and data types
 2. `/apps/server/src/app/prisma/prisma-client.ts` - Add connection pooling
 3. `/apps/server/src/main.ts` - Add database health checks
-4. `/infrastructure/environments/dev/main.tf` - Include RDS module
+4. `/apps/infrastructure/environments/dev/main.tf` - Include RDS module
 
 **Test Files to Create:**
 
