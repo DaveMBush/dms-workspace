@@ -68,3 +68,16 @@ variable "api_endpoint" {
   type        = string
   default     = ""
 }
+
+variable "alert_emails" {
+  description = "List of email addresses for monitoring alerts"
+  type        = list(string)
+  default     = []
+}
+
+variable "slack_webhook_url" {
+  description = "Slack webhook URL for notifications"
+  type        = string
+  default     = ""
+  sensitive   = true
+}

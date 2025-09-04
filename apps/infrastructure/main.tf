@@ -74,3 +74,26 @@ module "cloudfront" {
     Application = "rms"
   }
 }
+
+module "monitoring" {
+  source = "./modules/monitoring"
+
+  environment                 = var.environment
+  aws_region                 = var.aws_region
+  vpc_id                     = module.vpc.vpc_id
+  enable_vpc_flow_logs       = true
+  alert_emails               = var.alert_emails
+  slack_webhook_url          = var.slack_webhook_url
+  alb_arn_suffix             = try(module.alb.arn_suffix, "")
+  alb_name                   = try(module.alb.name, "")
+  ecs_service_name           = try(module.ecs.service_name, "")
+  ecs_cluster_name           = try(module.ecs.cluster_name, "")
+  rds_instance_identifier    = try(module.rds.instance_identifier, "")
+  cloudfront_distribution_id = module.cloudfront.distribution_id
+  common_tags = {
+    Project     = var.project_name
+    Environment = var.environment
+    ManagedBy   = "terraform"
+    Application = "rms"
+  }
+}
