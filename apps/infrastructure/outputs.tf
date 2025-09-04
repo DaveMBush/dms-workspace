@@ -78,3 +78,25 @@ output "ecr_repository_arn" {
   description = "ARN of the ECR repository"
   value       = module.ecr.repository_arn
 }
+
+# Frontend S3 Website Outputs
+output "s3_website_bucket_name" {
+  description = "Name of the S3 bucket hosting the frontend"
+  value       = module.s3_website.bucket_name
+}
+
+output "s3_website_endpoint" {
+  description = "S3 website endpoint URL"
+  value       = module.s3_website.website_endpoint
+}
+
+# CloudFront Distribution Outputs
+output "cloudfront_distribution_id" {
+  description = "CloudFront distribution ID"
+  value       = module.cloudfront.distribution_id
+}
+
+output "cloudfront_domain_name" {
+  description = "CloudFront distribution domain name"
+  value       = module.cloudfront.distribution_domain_name
+}

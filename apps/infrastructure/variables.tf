@@ -62,3 +62,9 @@ variable "enable_dns_support" {
   type        = bool
   default     = true
 }
+
+variable "api_endpoint" {
+  description = "API endpoint URL for frontend configuration"
+  type        = string
+  default     = ""
+}
