@@ -47,3 +47,30 @@ module "ecr" {
   project_name = var.project_name
   environment  = var.environment
 }
+
+module "s3_website" {
+  source = "./modules/s3-website"
+
+  environment = var.environment
+  common_tags = {
+    Project     = var.project_name
+    Environment = var.environment
+    ManagedBy   = "terraform"
+    Application = "rms"
+  }
+}
+
+module "cloudfront" {
+  source = "./modules/cloudfront"
+
+  environment                      = var.environment
+  s3_bucket_name                   = module.s3_website.bucket_name
+  s3_bucket_regional_domain_name   = module.s3_website.bucket_regional_domain_name
+  api_endpoint                     = var.api_endpoint != "" ? var.api_endpoint : "https://api.rms-app.com"
+  common_tags = {
+    Project     = var.project_name
+    Environment = var.environment
+    ManagedBy   = "terraform"
+    Application = "rms"
+  }
+}
