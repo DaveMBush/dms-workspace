@@ -36,7 +36,7 @@ Description: Initialize Terraform configuration for core AWS infrastructure incl
 
 Acceptance Criteria:
 
-- Create `infrastructure/` directory with Terraform configuration
+- Create `apps/infrastructure/` directory with Terraform configuration
 - Setup AWS provider and required versions
 - Define VPC with public/private subnets across 2 AZs
 - Configure security groups for web traffic, database access
@@ -156,7 +156,7 @@ Dependencies: Stories J1-J6
 **File Structure:**
 
 ```
-infrastructure/
+apps/infrastructure/
 ├── modules/
 │   ├── vpc/
 │   ├── ecs/

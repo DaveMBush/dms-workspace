@@ -137,26 +137,26 @@ Draft
 
 **Primary Files to Create:**
 
-1. `/infrastructure/modules/route53/main.tf` - Route53 hosted zone and DNS records
-2. `/infrastructure/modules/route53/variables.tf` - DNS module input variables
-3. `/infrastructure/modules/route53/outputs.tf` - DNS configuration outputs
-4. `/infrastructure/modules/acm/main.tf` - SSL certificate management
-5. `/infrastructure/modules/acm/variables.tf` - Certificate module variables
-6. `/infrastructure/modules/acm/outputs.tf` - Certificate ARN outputs
+1. `/apps/infrastructure/modules/route53/main.tf` - Route53 hosted zone and DNS records
+2. `/apps/infrastructure/modules/route53/variables.tf` - DNS module input variables
+3. `/apps/infrastructure/modules/route53/outputs.tf` - DNS configuration outputs
+4. `/apps/infrastructure/modules/acm/main.tf` - SSL certificate management
+5. `/apps/infrastructure/modules/acm/variables.tf` - Certificate module variables
+6. `/apps/infrastructure/modules/acm/outputs.tf` - Certificate ARN outputs
 7. `/scripts/validate-dns.sh` - DNS validation and testing script
 8. `/scripts/check-ssl.sh` - SSL certificate validation script
 
 **Primary Files to Modify:**
 
-1. `/infrastructure/modules/cloudfront/main.tf` - Add certificate and domain configuration
-2. `/infrastructure/modules/alb/main.tf` - Add HTTPS listener with certificate
-3. `/infrastructure/environments/dev/main.tf` - Include Route53 and ACM modules
+1. `/apps/infrastructure/modules/cloudfront/main.tf` - Add certificate and domain configuration
+2. `/apps/infrastructure/modules/alb/main.tf` - Add HTTPS listener with certificate
+3. `/apps/infrastructure/environments/dev/main.tf` - Include Route53 and ACM modules
 4. `/apps/rms/src/environments/environment.prod.ts` - Update API endpoint URLs
 
 **Test Files to Create:**
 
 1. `/e2e/domain-ssl-validation.spec.ts` - End-to-end domain and SSL testing
-2. `/infrastructure/modules/route53/main.tf.spec.ts` - Terraform module tests
+2. `/apps/infrastructure/modules/route53/main.tf.spec.ts` - Terraform module tests
 3. `/scripts/validate-dns.spec.sh` - DNS validation script tests
 
 ### Technical Implementation Details

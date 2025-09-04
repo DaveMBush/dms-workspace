@@ -131,10 +131,10 @@ Draft
 
 **Primary Files to Create:**
 
-1. `/infrastructure/modules/monitoring/main.tf` - CloudWatch resources and alarms
-2. `/infrastructure/modules/monitoring/variables.tf` - Monitoring module variables
-3. `/infrastructure/modules/monitoring/outputs.tf` - Monitoring resource outputs
-4. `/infrastructure/modules/monitoring/dashboards.json` - Dashboard configurations
+1. `/apps/infrastructure/modules/monitoring/main.tf` - CloudWatch resources and alarms
+2. `/apps/infrastructure/modules/monitoring/variables.tf` - Monitoring module variables
+3. `/apps/infrastructure/modules/monitoring/outputs.tf` - Monitoring resource outputs
+4. `/apps/infrastructure/modules/monitoring/dashboards.json` - Dashboard configurations
 5. `/apps/server/src/utils/structured-logger.ts` - Enhanced logging utility
 6. `/apps/server/src/middleware/tracing.ts` - X-Ray tracing middleware
 7. `/scripts/setup-monitoring.sh` - Monitoring setup automation
@@ -144,7 +144,7 @@ Draft
 
 1. `/apps/server/src/utils/logger.ts` - Enhance with structured logging
 2. `/apps/server/src/main.ts` - Add tracing and monitoring middleware
-3. `/infrastructure/environments/dev/main.tf` - Include monitoring module
+3. `/apps/infrastructure/environments/dev/main.tf` - Include monitoring module
 4. `/apps/server/package.json` - Add X-Ray and monitoring dependencies
 
 **Test Files to Create:**

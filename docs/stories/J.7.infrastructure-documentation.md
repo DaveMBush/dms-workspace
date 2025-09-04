@@ -140,7 +140,7 @@ Draft
 **Files to Update:**
 
 1. `/README.md` - Add links to documentation sections
-2. `/infrastructure/README.md` - Infrastructure-specific documentation
+2. `/apps/infrastructure/README.md` - Infrastructure-specific documentation
 3. `/.github/workflows/` - Add documentation validation workflows
 
 ### Technical Implementation Details
