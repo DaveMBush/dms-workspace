@@ -3,7 +3,9 @@
 import { FastifyRequest } from 'fastify';
 
 // Helper functions
-export function extractUserIdFromRequest(request: FastifyRequest): string | undefined {
+export function extractUserIdFromRequest(
+  request: FastifyRequest
+): string | undefined {
   const authHeader = request.headers.authorization;
   if (authHeader?.startsWith('Bearer ')) {
     try {

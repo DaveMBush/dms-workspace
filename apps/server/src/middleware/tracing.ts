@@ -7,10 +7,17 @@ import { FastifyReply, FastifyRequest } from 'fastify';
 
 import { logger } from '../utils/structured-logger';
 import { LogContext } from '../utils/structured-logger-types';
-import { captureDBQuery, captureHTTPCall, segmentStorage } from './capture-functions';
+import {
+  captureDBQuery,
+  captureHTTPCall,
+  segmentStorage,
+} from './capture-functions';
 import { MockXRaySegment, XRaySegment } from './mock-xray-segment';
 import { XRaySubsegment } from './mock-xray-subsegment';
-import { extractSessionIdFromRequest, extractUserIdFromRequest } from './tracing-helpers';
+import {
+  extractSessionIdFromRequest,
+  extractUserIdFromRequest,
+} from './tracing-helpers';
 
 const USER_AGENT_HEADER = 'user-agent';
 
@@ -79,7 +86,11 @@ function addRequestMetadata(
   segment.addAnnotation('trace_id', traceId);
 }
 
-function addAuthMetadata(segment: MockXRaySegment, request: FastifyRequest, userId?: string): void {
+function addAuthMetadata(
+  segment: MockXRaySegment,
+  request: FastifyRequest,
+  userId?: string
+): void {
   const hasAuth = Boolean(request.headers.authorization);
   if (hasAuth) {
     segment.addAnnotation('authenticated', true);

@@ -30,7 +30,11 @@ export function captureDBQuery(query: string, params?: unknown[]): QueryTracer {
   return createFallbackDBQuery(query);
 }
 
-function createTracedDBQuery(segment: XRaySegment, query: string, params?: unknown[]): QueryTracer {
+function createTracedDBQuery(
+  segment: XRaySegment,
+  query: string,
+  params?: unknown[]
+): QueryTracer {
   const subsegment = segment.addNewSubsegment('database_query');
   const queryType = query.trim().split(' ')[0].toUpperCase();
 
@@ -76,7 +80,12 @@ function createFallbackDBQuery(query: string): QueryTracer {
   };
 }
 
-function setupDBSubsegment(subsegment: XRaySubsegment, queryType: string, query: string, params?: unknown[]): void {
+function setupDBSubsegment(
+  subsegment: XRaySubsegment,
+  queryType: string,
+  query: string,
+  params?: unknown[]
+): void {
   subsegment.addAnnotation('query_type', queryType);
   subsegment.addAnnotation('has_params', Boolean(params));
   subsegment.addMetadata('database', {
@@ -90,7 +99,6 @@ function setupDBSubsegment(subsegment: XRaySubsegment, queryType: string, query:
     queryLength: query.length,
   });
 }
-
 
 // HTTP client tracing helper
 export function captureHTTPCall(url: string, method = 'GET'): HTTPTracer {

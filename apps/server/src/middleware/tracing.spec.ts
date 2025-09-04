@@ -136,7 +136,6 @@ describe('Tracing Middleware', () => {
       const contextCall = loggerSpy.setContextAsync.mock.calls[0][0];
       expect(contextCall.traceId).toMatch(/^Root=1-[0-9a-f]{8}-[0-9a-f]{24}$/);
     });
-
   });
 
   describe('captureDBQuery', () => {
