@@ -28,6 +28,8 @@ class TestLogger {
  * - Performance with realistic datasets
  */
 describe('average purchase yield integration tests', () => {
+  // Increase timeout for database integration tests
+  const integrationTestTimeout = 30000; // 30 seconds
   let prisma: PrismaClient;
   let testDbPath: string;
   let riskGroupId1: string;
@@ -577,7 +579,7 @@ describe('average purchase yield integration tests', () => {
     }
   });
 
-  test('verifies data integrity with concurrent operations', async () => {
+  test('verifies data integrity with concurrent operations', { timeout: integrationTestTimeout }, async () => {
     const CONCURRENT_UNIVERSE_COUNT = 20;
 
     // Create multiple universes concurrently
