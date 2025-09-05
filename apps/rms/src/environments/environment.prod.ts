@@ -1,3 +1,5 @@
+import { cognitoConfigProd } from './cognito-config-prod';
+
 // Production Environment Configuration
 export const environment = {
   production: true,
@@ -16,4 +18,5 @@ export const environment = {
     enableCSP: true,
     strictSSL: true,
   },
+  cognito: cognitoConfigProd,
 };

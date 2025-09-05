@@ -16,12 +16,19 @@ export interface DatabaseConfig {
   password?: string;
 }
 
+export interface CognitoConfig {
+  region: string;
+  userPoolId: string;
+  userPoolWebClientId: string;
+  jwtIssuer: string;
+}
+
 export interface AwsConfigOptions {
   region?: string;
   environment?: string;
 }
 
-class AwsConfigManager {
+export class AwsConfigManager {
   private ssmClient: SSMClient;
   private environment: string;
 
@@ -151,6 +158,122 @@ class AwsConfigManager {
       console.error('Failed to get parameters:', error);
       return new Map();
     }
+  }
+
+  /**
+   * Get Cognito configuration from AWS Parameter Store or environment variables
+   */
+  async getCognitoConfig(): Promise<CognitoConfig> {
+    return this.isDevOrTest()
+      ? this.getDevCognitoConfig()
+      : this.getProdCognitoConfig();
+  }
+
+  /**
+   * Check if environment is development or test
+   */
+  private isDevOrTest(): boolean {
+    return (
+      process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
+    );
+  }
+
+  /**
+   * Get Cognito configuration for development/test environment
+   */
+  private getDevCognitoConfig(): CognitoConfig {
+    return {
+      region: process.env.AWS_REGION || 'us-east-1',
+      userPoolId:
+        process.env.COGNITO_USER_POOL_ID || 'REPLACE_WITH_DEV_USER_POOL_ID',
+      userPoolWebClientId:
+        process.env.COGNITO_USER_POOL_CLIENT_ID || 'REPLACE_WITH_DEV_CLIENT_ID',
+      jwtIssuer:
+        process.env.COGNITO_JWT_ISSUER || 'REPLACE_WITH_DEV_JWT_ISSUER',
+    };
+  }
+
+  /**
+   * Get Cognito configuration for production environment
+   */
+  private async getProdCognitoConfig(): Promise<CognitoConfig> {
+    try {
+      const params = await this.getCognitoParametersFromStore();
+      return this.buildCognitoConfigFromParams(params);
+    } catch (error) {
+      console.error(
+        'Failed to fetch Cognito config from AWS Parameter Store:',
+        error
+      );
+      return this.getFallbackCognitoConfig();
+    }
+  }
+
+  /**
+   * Get Cognito parameters from Parameter Store
+   */
+  private async getCognitoParametersFromStore(): Promise<Map<string, string>> {
+    const parameterNames = [
+      `/rms/${this.environment}/cognito-user-pool-id`,
+      `/rms/${this.environment}/cognito-user-pool-client-id`,
+      `/rms/${this.environment}/cognito-jwt-issuer`,
+      `/rms/${this.environment}/aws-region`,
+    ];
+
+    return this.getParameters(parameterNames, false);
+  }
+
+  /**
+   * Build Cognito config from Parameter Store parameters
+   */
+  private buildCognitoConfigFromParams(
+    params: Map<string, string>
+  ): CognitoConfig {
+    const region =
+      params.get(`/rms/${this.environment}/aws-region`) || 'us-east-1';
+    const userPoolId = params.get(
+      `/rms/${this.environment}/cognito-user-pool-id`
+    );
+    const userPoolWebClientId = params.get(
+      `/rms/${this.environment}/cognito-user-pool-client-id`
+    );
+    const jwtIssuer = params.get(`/rms/${this.environment}/cognito-jwt-issuer`);
+
+    if (!userPoolId || !userPoolWebClientId || !jwtIssuer) {
+      throw new Error('Missing required Cognito parameters in Parameter Store');
+    }
+
+    return {
+      region,
+      userPoolId,
+      userPoolWebClientId,
+      jwtIssuer,
+    };
+  }
+
+  /**
+   * Get fallback Cognito configuration from environment variables
+   */
+  private getFallbackCognitoConfig(): CognitoConfig {
+    const fallbackUserPoolId = process.env.COGNITO_USER_POOL_ID;
+    const fallbackClientId = process.env.COGNITO_USER_POOL_CLIENT_ID;
+    const fallbackJwtIssuer = process.env.COGNITO_JWT_ISSUER;
+
+    if (fallbackUserPoolId && fallbackClientId && fallbackJwtIssuer) {
+      console.warn(
+        'Using fallback Cognito configuration from environment variables'
+      );
+      return {
+        region: process.env.AWS_REGION || 'us-east-1',
+        userPoolId: fallbackUserPoolId,
+        userPoolWebClientId: fallbackClientId,
+        jwtIssuer: fallbackJwtIssuer,
+      };
+    }
+
+    throw new Error(
+      'Unable to get Cognito configuration from Parameter Store or environment variables'
+    );
   }
 }
 
