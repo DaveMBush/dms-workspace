@@ -81,3 +81,28 @@ variable "slack_webhook_url" {
   default     = ""
   sensitive   = true
 }
+
+variable "admin_email" {
+  description = "Email address for the Cognito admin user"
+  type        = string
+  validation {
+    condition     = can(regex("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", var.admin_email))
+    error_message = "Admin email must be a valid email address."
+  }
+}
+
+variable "admin_temp_password" {
+  description = "Temporary password for Cognito admin user (must be changed on first login)"
+  type        = string
+  sensitive   = true
+  validation {
+    condition     = length(var.admin_temp_password) >= 8
+    error_message = "Temporary password must be at least 8 characters long."
+  }
+}
+
+variable "production_domain" {
+  description = "Production domain for Cognito callback URLs (optional)"
+  type        = string
+  default     = ""
+}

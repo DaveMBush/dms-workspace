@@ -116,3 +116,40 @@ output "monitoring_log_groups" {
   description = "CloudWatch log group names"
   value       = module.monitoring.log_group_names
 }
+
+# Cognito Outputs
+output "cognito_user_pool_id" {
+  description = "ID of the Cognito User Pool"
+  value       = module.cognito.user_pool_id
+}
+
+output "cognito_user_pool_client_id" {
+  description = "ID of the Cognito User Pool Client"
+  value       = module.cognito.user_pool_client_id
+}
+
+output "cognito_user_pool_domain" {
+  description = "Domain of the Cognito User Pool"
+  value       = module.cognito.user_pool_domain
+}
+
+output "cognito_hosted_ui_url" {
+  description = "Hosted UI URL for the Cognito User Pool"
+  value       = module.cognito.user_pool_hosted_ui_url
+}
+
+output "cognito_admin_username" {
+  description = "Username of the Cognito admin user"
+  value       = module.cognito.admin_username
+  sensitive   = true
+}
+
+output "cognito_jwt_issuer" {
+  description = "JWT issuer URL for token validation"
+  value       = module.cognito.jwt_issuer
+}
+
+output "cognito_config" {
+  description = "Complete Cognito configuration for applications"
+  value       = module.cognito.cognito_config
+}

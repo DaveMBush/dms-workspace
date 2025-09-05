@@ -1,3 +1,5 @@
+import { cognitoConfigDev } from './cognito-config-dev';
+
 // Development Environment Configuration
 export const environment = {
   production: false,
@@ -16,4 +18,5 @@ export const environment = {
     enableCSP: false,
     strictSSL: false,
   },
+  cognito: cognitoConfigDev,
 };

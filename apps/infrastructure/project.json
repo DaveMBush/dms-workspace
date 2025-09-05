@@ -82,6 +82,13 @@
         "command": "terraform fmt -recursive",
         "cwd": "apps/infrastructure"
       }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "outputs": [],
+      "options": {
+        "command": "echo 'Infrastructure project uses Terraform files - no linting required for JS/TS files'"
+      }
     }
   }
 }

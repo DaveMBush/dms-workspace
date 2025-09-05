@@ -75,6 +75,22 @@ module "cloudfront" {
   }
 }
 
+module "cognito" {
+  source = "./modules/cognito"
+
+  project_name        = var.project_name
+  environment         = var.environment
+  admin_email         = var.admin_email
+  admin_temp_password = var.admin_temp_password
+  production_domain   = var.production_domain
+  common_tags = {
+    Project     = var.project_name
+    Environment = var.environment
+    ManagedBy   = "terraform"
+    Application = "rms"
+  }
+}
+
 module "monitoring" {
   source = "./modules/monitoring"
 
