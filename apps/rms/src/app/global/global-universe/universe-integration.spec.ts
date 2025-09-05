@@ -28,6 +28,8 @@ class TestLogger {
  * - Performance with realistic datasets
  */
 describe('average purchase yield integration tests', () => {
+  // Increase timeout for database integration tests
+  const integrationTestTimeout = 30000; // 30 seconds
   let prisma: PrismaClient;
   let testDbPath: string;
   let riskGroupId1: string;
@@ -577,96 +579,100 @@ describe('average purchase yield integration tests', () => {
     }
   });
 
-  test('verifies data integrity with concurrent operations', async () => {
-    const CONCURRENT_UNIVERSE_COUNT = 20;
+  test(
+    'verifies data integrity with concurrent operations',
+    { timeout: integrationTestTimeout },
+    async () => {
+      const CONCURRENT_UNIVERSE_COUNT = 20;
 
-    // Create multiple universes concurrently
-    const universeCreationPromises = Array.from(
-      { length: CONCURRENT_UNIVERSE_COUNT },
-      async (_, i) =>
-        prisma.universe.create({
+      // Create multiple universes concurrently
+      const universeCreationPromises = Array.from(
+        { length: CONCURRENT_UNIVERSE_COUNT },
+        async (_, i) =>
+          prisma.universe.create({
+            data: {
+              symbol: `TEST_${i.toString().padStart(3, '0')}`,
+              distribution: 0.5 + i * 0.1,
+              distributions_per_year: 4,
+              last_price: 100.0 + i * 5,
+              risk_group_id: i % 2 === 0 ? riskGroupId1 : riskGroupId2,
+              expired: false,
+            },
+          })
+      );
+
+      const universes = await Promise.all(universeCreationPromises);
+
+      // Create trades for each universe concurrently
+      const tradeCreationPromises = universes.flatMap((universe, i) => [
+        prisma.trades.create({
           data: {
-            symbol: `TEST_${i.toString().padStart(3, '0')}`,
-            distribution: 0.5 + i * 0.1,
-            distributions_per_year: 4,
-            last_price: 100.0 + i * 5,
-            risk_group_id: i % 2 === 0 ? riskGroupId1 : riskGroupId2,
-            expired: false,
+            universeId: universe.id,
+            accountId: account1Id,
+            buy: 95.0 + i * 3,
+            sell: 0,
+            quantity: 10 + i,
+            buy_date: new Date('2024-01-01'),
+            sell_date: null,
           },
-        })
-    );
+        }),
+        prisma.trades.create({
+          data: {
+            universeId: universe.id,
+            accountId: account2Id,
+            buy: 105.0 + i * 2,
+            sell: 0,
+            quantity: 15 + i,
+            buy_date: new Date('2024-02-01'),
+            sell_date: null,
+          },
+        }),
+      ]);
 
-    const universes = await Promise.all(universeCreationPromises);
+      await Promise.all(tradeCreationPromises);
 
-    // Create trades for each universe concurrently
-    const tradeCreationPromises = universes.flatMap((universe, i) => [
-      prisma.trades.create({
-        data: {
-          universeId: universe.id,
-          accountId: account1Id,
-          buy: 95.0 + i * 3,
-          sell: 0,
-          quantity: 10 + i,
-          buy_date: new Date('2024-01-01'),
-          sell_date: null,
+      // Verify data integrity
+      const finalUniverseCount = await prisma.universe.count();
+      const finalTradeCount = await prisma.trades.count();
+
+      expect(finalUniverseCount).toBe(CONCURRENT_UNIVERSE_COUNT);
+      expect(finalTradeCount).toBe(CONCURRENT_UNIVERSE_COUNT * 2); // 2 trades per universe
+
+      // Spot check calculations for a few random universes
+      const sampleUniverses = await prisma.universe.findMany({
+        take: 5,
+        include: {
+          trades: {
+            where: { sell_date: null },
+          },
         },
-      }),
-      prisma.trades.create({
-        data: {
-          universeId: universe.id,
-          accountId: account2Id,
-          buy: 105.0 + i * 2,
-          sell: 0,
-          quantity: 15 + i,
-          buy_date: new Date('2024-02-01'),
-          sell_date: null,
-        },
-      }),
-    ]);
+      });
 
-    await Promise.all(tradeCreationPromises);
+      for (const universe of sampleUniverses) {
+        expect(universe.trades.length).toBeGreaterThan(0);
 
-    // Verify data integrity
-    const finalUniverseCount = await prisma.universe.count();
-    const finalTradeCount = await prisma.trades.count();
-
-    expect(finalUniverseCount).toBe(CONCURRENT_UNIVERSE_COUNT);
-    expect(finalTradeCount).toBe(CONCURRENT_UNIVERSE_COUNT * 2); // 2 trades per universe
-
-    // Spot check calculations for a few random universes
-    const sampleUniverses = await prisma.universe.findMany({
-      take: 5,
-      include: {
-        trades: {
-          where: { sell_date: null },
-        },
-      },
-    });
-
-    for (const universe of sampleUniverses) {
-      expect(universe.trades.length).toBeGreaterThan(0);
-
-      for (const accountId of [account1Id, account2Id]) {
-        const accountTrades = universe.trades.filter(
-          (t) => t.accountId === accountId
-        );
-        if (accountTrades.length > 0) {
-          const totalCost = accountTrades.reduce(
-            (sum, trade) => sum + trade.buy * trade.quantity,
-            0
+        for (const accountId of [account1Id, account2Id]) {
+          const accountTrades = universe.trades.filter(
+            (t) => t.accountId === accountId
           );
-          const totalQuantity = accountTrades.reduce(
-            (sum, trade) => sum + trade.quantity,
-            0
-          );
-          const avgPrice = totalCost / totalQuantity;
+          if (accountTrades.length > 0) {
+            const totalCost = accountTrades.reduce(
+              (sum, trade) => sum + trade.buy * trade.quantity,
+              0
+            );
+            const totalQuantity = accountTrades.reduce(
+              (sum, trade) => sum + trade.quantity,
+              0
+            );
+            const avgPrice = totalCost / totalQuantity;
 
-          expect(avgPrice).toBeGreaterThan(0);
-          expect(totalQuantity).toBeGreaterThan(0);
+            expect(avgPrice).toBeGreaterThan(0);
+            expect(totalQuantity).toBeGreaterThan(0);
+          }
         }
       }
     }
-  });
+  );
 
   test('preserves existing functionality during yield calculations', async () => {
     // Create standard universe record

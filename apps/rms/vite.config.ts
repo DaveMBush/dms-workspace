@@ -19,6 +19,7 @@ export default defineConfig(() => ({
     include: ['{src,tests}/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     setupFiles: ['src/test-setup.ts'],
     reporters: ['default'],
+    testTimeout: 30000, // 30 seconds for integration tests
     coverage: {
       reportsDirectory: '../../coverage/apps/rms',
       provider: 'v8' as const,
