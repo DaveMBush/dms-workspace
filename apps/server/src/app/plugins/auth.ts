@@ -5,13 +5,20 @@ import { authenticateJWT } from '../middleware/authenticate-jwt.function';
 import { AuthenticatedRequest } from '../middleware/authenticated-request.interface';
 
 function shouldSkipAuth(url: string): boolean {
-  return (
+  // Skip authentication for health checks
+  if (
     url === '/health' ||
     url === '/ready' ||
     url === '/live' ||
     url.startsWith('/health/') ||
     url === '/'
-  );
+  ) {
+    return true;
+  }
+
+  // Skip authentication in development/test environments
+  const nodeEnv = process.env.NODE_ENV ?? 'development';
+  return nodeEnv === 'development' || nodeEnv === 'test';
 }
 
 async function onRequestHook(
