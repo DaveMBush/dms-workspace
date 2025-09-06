@@ -1,0 +1,170 @@
+:host {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+}
+
+// Responsive design for mobile devices
+@media (max-width: 768px) {
+  :host {
+    padding: 1rem;
+  }
+
+  .surface-card {
+    padding: 1.5rem !important;
+    margin: 0;
+    min-width: unset;
+    max-width: 100%;
+  }
+
+  h1 {
+    font-size: 1.75rem !important;
+  }
+}
+
+// Form field styling
+.field {
+  position: relative;
+
+  label {
+    font-weight: 500;
+    color: var(--text-color);
+
+    .text-red-500 {
+      color: var(--red-500);
+    }
+  }
+
+  input:focus,
+  ::ng-deep .p-password-input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem var(--primary-color-text);
+  }
+
+  // Invalid field styling
+  .ng-invalid.ng-dirty,
+  .ng-invalid.ng-touched {
+    border-color: var(--red-500) !important;
+
+    &:focus {
+      box-shadow: 0 0 0 0.2rem rgba(239, 68, 68, 0.2) !important;
+    }
+  }
+}
+
+// Error message styling
+small {
+  font-size: 0.75rem;
+  line-height: 1.25rem;
+  font-weight: 400;
+}
+
+// Loading overlay positioning
+.absolute {
+  position: absolute;
+}
+
+.inset-0 {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.z-50 {
+  z-index: 50;
+}
+
+// Custom button styling
+::ng-deep {
+  .p-button {
+    transition: all 0.2s ease;
+
+    &:not(:disabled):hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    &.p-button-loading {
+      opacity: 0.8;
+    }
+  }
+
+  // Password field styling
+  .p-password {
+    width: 100%;
+
+    .p-password-input {
+      width: 100%;
+    }
+
+    .p-password-toggle-mask-icon {
+      color: var(--text-color-secondary);
+    }
+  }
+
+  // Message styling
+  .p-message {
+    .p-message-wrapper {
+      padding: 0.75rem;
+    }
+
+    .p-message-text {
+      font-size: 0.875rem;
+    }
+  }
+
+  // Progress spinner styling
+  .p-progress-spinner {
+    width: 2rem;
+    height: 2rem;
+  }
+}
+
+// Accessibility improvements
+@media (prefers-reduced-motion: reduce) {
+  ::ng-deep .p-button {
+    transition: none;
+
+    &:not(:disabled):hover {
+      transform: none;
+    }
+  }
+}
+
+// High contrast mode support
+@media (prefers-contrast: high) {
+  .field {
+    label {
+      font-weight: 600;
+    }
+  }
+
+  ::ng-deep {
+    .p-button {
+      border-width: 2px;
+    }
+
+    .p-inputtext,
+    .p-password-input {
+      border-width: 2px;
+    }
+  }
+}
+
+// Dark mode adjustments
+@media (prefers-color-scheme: dark) {
+  .bg-surface-ground {
+    background-color: var(--surface-ground);
+  }
+
+  .surface-card {
+    background-color: var(--surface-card);
+    border: 1px solid var(--surface-border);
+  }
+}

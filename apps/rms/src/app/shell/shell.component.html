@@ -1,6 +1,29 @@
 <p-toolbar class="text-xl font-semibold toolbar flex-none">
   <ng-template #start> RMS Manager </ng-template>
   <ng-template #end>
+    <!-- User Info and Actions -->
+    @if (isAuthenticated$()) {
+    <div class="flex items-center gap-3">
+      <!-- User Display Name -->
+      <span class="text-color-secondary text-sm font-medium">
+        Welcome, {{ getUserDisplayName$() }}
+      </span>
+
+      <!-- Logout Button -->
+      <p-button
+        icon="pi pi-sign-out"
+        class="mr-2"
+        text
+        severity="secondary"
+        (onClick)="logout()"
+        pTooltip="Sign Out"
+        tooltipPosition="bottom"
+        [loading]="authLoading"
+      />
+    </div>
+    }
+
+    <!-- Theme Toggle Button -->
     <p-button
       ngSkipHydration
       icon="pi {{ isBrowser ? themeIcon : '' }}"
@@ -36,3 +59,6 @@
     </div>
   </ng-template>
 </p-splitter>
+
+<!-- Confirmation Dialog -->
+<p-confirmDialog></p-confirmDialog>
