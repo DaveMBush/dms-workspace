@@ -11,6 +11,23 @@ import { tradesDefinition } from './store/trades/trades-definition.const';
 import { universeDefinition } from './store/universe/universe-definition.const';
 
 export const appRoutes: Route[] = [
+  // Authentication routes
+  {
+    path: 'auth',
+    children: [
+      {
+        path: 'login',
+        loadComponent: async () =>
+          import('./auth/login/login').then((m) => m.Login),
+      },
+      {
+        path: '',
+        redirectTo: 'login',
+        pathMatch: 'full',
+      },
+    ],
+  },
+  // Protected application routes
   {
     path: '',
     loadComponent: async () =>

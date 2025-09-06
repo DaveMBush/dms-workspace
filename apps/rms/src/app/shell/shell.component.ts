@@ -2,16 +2,20 @@ import { isPlatformBrowser } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   inject,
   PLATFORM_ID,
 } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { ConfirmationService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { PanelModule } from 'primeng/panel';
 import { SplitterModule } from 'primeng/splitter';
 import { ToolbarModule } from 'primeng/toolbar';
 import { TooltipModule } from 'primeng/tooltip';
 
+import { AuthService } from '../auth/auth.service';
 import { GlobalComponent } from '../global/global.component';
 import { BaseRouteComponent } from '../shared/base-route-component';
 
@@ -21,6 +25,7 @@ const DARK_MODE_KEY = 'rms-dark';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ButtonModule,
+    ConfirmDialogModule,
     PanelModule,
     RouterModule,
     ToolbarModule,
@@ -28,26 +33,45 @@ const DARK_MODE_KEY = 'rms-dark';
     TooltipModule,
     GlobalComponent,
   ],
+  providers: [ConfirmationService],
   selector: 'rms-shell',
   templateUrl: './shell.component.html',
   styleUrl: './shell.component.scss',
-  standalone: true,
 })
 export class ShellComponent extends BaseRouteComponent {
+  private authService = inject(AuthService);
+  private confirmationService = inject(ConfirmationService);
+
   themeIcon = 'pi-moon';
   themeTooltip = 'Dark Mode';
   platformId = inject(PLATFORM_ID);
   isBrowser = isPlatformBrowser(this.platformId);
   selectedId: string | null = null;
 
+  // Authentication computed signals
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- Arrow function required for proper this binding
+  private currentUserComputed = computed(() => this.authService.currentUser());
+
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- Arrow function required for proper this binding
+  isAuthenticated$ = computed(() => this.authService.isAuthenticated());
+
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- Arrow function required for proper this binding
+  authLoading = computed(() => this.authService.isLoading());
+
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- Arrow function required for proper this binding
+  getUserDisplayName$ = computed(() => {
+    const user = this.currentUserComputed();
+    return user?.email ?? 'User';
+  });
+
   override ngOnInit(): void {
     if (this.isBrowser) {
       if (document.readyState === 'complete') {
         this.afterPageLoad();
       } else {
-        const self = this;
-        window.addEventListener('load', function afterLoad() {
-          self.afterPageLoad();
+        // eslint-disable-next-line @smarttools/no-anonymous-functions -- Arrow function required for proper this binding
+        window.addEventListener('load', () => {
+          this.afterPageLoad();
         });
       }
     }
@@ -81,6 +105,26 @@ export class ShellComponent extends BaseRouteComponent {
 
   protected onSelectionChange(e: { id: string; name: string }): void {
     this.selectedId = e.id;
+  }
+
+  protected logout(): void {
+    this.confirmationService.confirm({
+      message: 'Are you sure you want to sign out?',
+      header: 'Confirm Sign Out',
+      icon: 'pi pi-sign-out',
+      acceptIcon: 'pi pi-check',
+      rejectIcon: 'pi pi-times',
+      acceptLabel: 'Yes, Sign Out',
+      rejectLabel: 'Cancel',
+      // eslint-disable-next-line @smarttools/no-anonymous-functions -- Arrow function required for proper this binding
+      accept: async () => {
+        try {
+          await this.authService.signOut();
+        } catch {
+          // AuthService handles the logout even on error
+        }
+      },
+    });
   }
 
   private afterPageLoad(): void {
