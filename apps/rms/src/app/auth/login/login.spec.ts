@@ -463,7 +463,7 @@ describe('Login Component', () => {
       );
       expect(loginContainer).toBeTruthy();
 
-      const loginCard = fixture.debugElement.query(By.css('.max-w-md'));
+      const loginCard = fixture.debugElement.query(By.css('.max-w-xl'));
       expect(loginCard).toBeTruthy();
     });
   });

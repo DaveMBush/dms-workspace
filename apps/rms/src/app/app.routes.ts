@@ -1,6 +1,7 @@
 import { Route } from '@angular/router';
 import { provideSmartFeatureSignalEntities } from '@smarttools/smart-signals';
 
+import { authGuard, guestGuard } from './auth/guards/auth.guard';
 import { accountsDefinition } from './store/accounts/accounts-definition.const';
 import { divDepositTypesDefinition } from './store/div-deposit-types/div-deposit-types-definition.const';
 import { divDepositDefinition } from './store/div-deposits/div-deposit-definition.const';
@@ -14,6 +15,7 @@ export const appRoutes: Route[] = [
   // Authentication routes
   {
     path: 'auth',
+    canActivate: [guestGuard],
     children: [
       {
         path: 'login',
@@ -30,6 +32,7 @@ export const appRoutes: Route[] = [
   // Protected application routes
   {
     path: '',
+    canActivate: [authGuard],
     loadComponent: async () =>
       import('./shell/shell.component').then((m) => m.ShellComponent),
     providers: [
@@ -123,5 +126,10 @@ export const appRoutes: Route[] = [
           ),
       },
     ],
+  },
+  // Catch-all route - redirect to login for unauthenticated users
+  {
+    path: '**',
+    redirectTo: '/auth/login',
   },
 ];
