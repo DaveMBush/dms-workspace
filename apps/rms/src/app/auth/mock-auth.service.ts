@@ -127,7 +127,10 @@ export class MockAuthService extends BaseAuthService {
   /**
    * Perform mock authentication
    */
-  protected async performAuthentication(username: string, password: string): Promise<void> {
+  protected async performAuthentication(
+    username: string,
+    password: string
+  ): Promise<void> {
     // Simulate network delay
     // eslint-disable-next-line no-restricted-syntax -- Promise required for async simulation
     await new Promise(function simulateDelay(resolve) {

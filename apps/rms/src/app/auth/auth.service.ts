@@ -8,12 +8,7 @@ import {
 import { Amplify } from '@aws-amplify/core';
 
 import { environment } from '../../environments/environment';
-import {
-  AuthError,
-  AuthErrorCode,
-  AuthSession,
-  AuthUser,
-} from './auth.types';
+import { AuthError, AuthErrorCode, AuthSession, AuthUser } from './auth.types';
 import { BaseAuthService } from './base-auth-service.abstract';
 
 @Injectable({
@@ -100,7 +95,10 @@ export class AuthService extends BaseAuthService {
   /**
    * Perform AWS Cognito authentication
    */
-  protected async performAuthentication(username: string, password: string): Promise<void> {
+  protected async performAuthentication(
+    username: string,
+    password: string
+  ): Promise<void> {
     try {
       // Perform sign in
       const signInOutput = await signIn({

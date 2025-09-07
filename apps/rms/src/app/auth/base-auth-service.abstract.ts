@@ -63,7 +63,10 @@ export abstract class BaseAuthService implements BaseAuthInterface {
   }
 
   // Abstract methods that must be implemented by subclasses
-  protected abstract performAuthentication(username: string, password: string): Promise<void>;
+  protected abstract performAuthentication(
+    username: string,
+    password: string
+  ): Promise<void>;
   abstract signUp(email: string, password: string, name: string): Promise<void>;
   abstract signOut(): Promise<void>;
   abstract getAccessToken(): Promise<string | null>;
