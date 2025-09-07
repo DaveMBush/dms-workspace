@@ -67,6 +67,7 @@ export abstract class BaseAuthService implements BaseAuthInterface {
     username: string,
     password: string
   ): Promise<void>;
+  
   abstract signUp(email: string, password: string, name: string): Promise<void>;
   abstract signOut(): Promise<void>;
   abstract getAccessToken(): Promise<string | null>;
