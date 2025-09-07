@@ -1,6 +1,6 @@
 {
   "silent": false,
-  "threshold": "0.5",
+  "threshold": "0.0",
   "mode": "weak",
   "pattern": "**/*.{js,ts,html,css,scss,json,md}",
   "//": "ignore spec files for now",
