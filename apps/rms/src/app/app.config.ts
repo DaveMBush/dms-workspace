@@ -1,6 +1,7 @@
 import {
   provideHttpClient,
   withFetch,
+  withInterceptors,
   withInterceptorsFromDi,
 } from '@angular/common/http';
 import {
@@ -17,7 +18,11 @@ import {
 } from '@smarttools/smart-signals';
 import { providePrimeNG } from 'primeng/config';
 
+import { environment } from '../environments/environment';
 import { appRoutes } from './app.routes';
+import { AuthService } from './auth/auth.service';
+import { authInterceptor } from './auth/interceptors/auth.interceptor';
+import { MockAuthService } from './auth/mock-auth.service';
 import { ErrorHandlerService } from './error-handler/error-handler.service';
 import { UniverseSyncService } from './shared/services/universe-sync.service';
 import { AccountEffectsService } from './store/accounts/account-effect.service';
@@ -39,6 +44,11 @@ import { universeEffectsServiceToken } from './store/universe/universe-effect-se
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    // Conditional auth service provider
+    {
+      provide: AuthService,
+      useClass: environment.auth?.useMockAuth ? MockAuthService : AuthService,
+    },
     {
       provide: topEffectsServiceToken,
       useClass: TopEffectsService,
@@ -96,7 +106,11 @@ export const appConfig: ApplicationConfig = {
         },
       },
     }),
-    provideHttpClient(withInterceptorsFromDi(), withFetch()),
+    provideHttpClient(
+      withInterceptors([authInterceptor]),
+      withInterceptorsFromDi(),
+      withFetch()
+    ),
     provideRouter(appRoutes),
     provideSmartNgRX(),
   ],

@@ -15,23 +15,28 @@ export const authGuard: CanActivateFn = async (__, state) => {
   const router = inject(Router);
 
   // Check if user is authenticated
-  if (authService.isAuthenticated()) {
-    // Verify session is still valid
-    const isValid = await authService.isSessionValid();
-    if (isValid) {
-      return true;
-    }
-    // Session expired, sign out and redirect to login
-    await authService.signOut();
+  let isAuthenticated = false;
+  try {
+    isAuthenticated = authService.isAuthenticated();
+  } catch {
+    // Auth service error, treat as unauthenticated
+    isAuthenticated = false;
+  }
+
+  // If not authenticated, redirect to login
+  if (!isAuthenticated) {
+    await redirectToLogin(router, state.url);
     return false;
   }
 
-  // Not authenticated, redirect to login
-  // Access denied: User not authenticated, redirecting to login
-  await router.navigate(['/auth/login'], {
-    queryParams: { returnUrl: state.url },
-  });
+  // User is authenticated, verify session is still valid
+  const isSessionValid = await checkSessionValidity(authService);
+  if (isSessionValid) {
+    return true;
+  }
 
+  // Session expired or validation failed, sign out
+  await performSignOut(authService);
   return false;
 };
 
@@ -45,12 +50,72 @@ export const guestGuard: CanActivateFn = async () => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
+  // Check if user is authenticated
+  let isAuthenticated = false;
+  try {
+    isAuthenticated = authService.isAuthenticated();
+  } catch {
+    // Auth service error, allow access (treat as unauthenticated)
+    isAuthenticated = false;
+  }
+
   // If user is authenticated, redirect to dashboard
-  if (authService.isAuthenticated()) {
-    // Already authenticated, redirecting to dashboard
-    await router.navigate(['/']);
+  if (isAuthenticated) {
+    await redirectToDashboard(router);
     return false;
   }
 
   return true;
 };
+
+/**
+ * Helper function to redirect to login page
+ */
+async function redirectToLogin(
+  router: Router,
+  returnUrl: string
+): Promise<void> {
+  try {
+    await router.navigate(['/auth/login'], {
+      queryParams: { returnUrl },
+    });
+  } catch {
+    // Navigation error, but continue
+  }
+}
+
+/**
+ * Helper function to redirect to dashboard
+ */
+async function redirectToDashboard(router: Router): Promise<void> {
+  try {
+    await router.navigate(['/']);
+  } catch {
+    // Navigation error, but continue
+  }
+}
+
+/**
+ * Helper function to check session validity
+ */
+async function checkSessionValidity(
+  authService: AuthService
+): Promise<boolean> {
+  try {
+    return await authService.isSessionValid();
+  } catch {
+    // Session validation failed, treat as expired
+    return false;
+  }
+}
+
+/**
+ * Helper function to perform sign out
+ */
+async function performSignOut(authService: AuthService): Promise<void> {
+  try {
+    await authService.signOut();
+  } catch {
+    // Ignore signOut errors
+  }
+}

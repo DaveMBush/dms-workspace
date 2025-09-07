@@ -1,5 +1,4 @@
-import { computed, inject, Injectable, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import { Injectable } from '@angular/core';
 import {
   fetchAuthSession,
   getCurrentUser,
@@ -14,38 +13,15 @@ import {
   AuthErrorCode,
   AuthSession,
   AuthUser,
-  SignInRequest,
 } from './auth.types';
+import { BaseAuthService } from './base-auth-service.abstract';
 
 @Injectable({
   providedIn: 'root',
 })
-export class AuthService {
-  private router = inject(Router);
-
-  // Private signals for internal state management
-  private currentUserSignal = signal<AuthUser | null>(null);
-  private isLoadingSignal = signal(false);
-  private errorSignal = signal<string | null>(null);
-
-  // Public readonly signals
-  readonly currentUser = this.currentUserSignal.asReadonly();
-  readonly isLoading = this.isLoadingSignal.asReadonly();
-  readonly error = this.errorSignal.asReadonly();
-
-  // Computed signals
-  // eslint-disable-next-line @smarttools/no-anonymous-functions -- Arrow function required for proper this binding in computed signal
-  readonly isAuthenticated = computed(() => this.currentUserSignal() !== null);
-
-  // eslint-disable-next-line @smarttools/no-anonymous-functions -- Arrow function required for proper this binding in computed signal
-  readonly authState = computed(() => ({
-    user: this.currentUserSignal(),
-    isLoading: this.isLoadingSignal(),
-    error: this.errorSignal(),
-    isAuthenticated: this.currentUserSignal() !== null,
-  }));
-
+export class AuthService extends BaseAuthService {
   constructor() {
+    super();
     // Initialize auth in the next tick to avoid async constructor
     // eslint-disable-next-line @smarttools/no-anonymous-functions -- Arrow function required for proper this binding
     setTimeout(() => {
@@ -57,53 +33,10 @@ export class AuthService {
   }
 
   /**
-   * Sign in user with email and password
+   * Sign up new user with email, password and name
    */
-  async signIn(credentials: SignInRequest): Promise<void> {
-    this.isLoadingSignal.set(true);
-    this.errorSignal.set(null);
-
-    try {
-      const { username, password } = credentials;
-
-      // Perform sign in
-      const signInOutput = await signIn({
-        username,
-        password,
-        options: {
-          authFlowType: 'USER_SRP_AUTH',
-        },
-      });
-
-      // Handle different sign-in states
-      if (signInOutput.isSignedIn) {
-        // Get the current user and session
-        const [user, session] = await Promise.all([
-          getCurrentUser(),
-          fetchAuthSession(),
-        ]);
-
-        const authUser = this.mapAmplifyUserToAuthUser(user);
-        this.currentUserSignal.set(authUser);
-
-        // Store session tokens
-        this.handleSessionTokens(session);
-
-        // User signed in successfully
-      } else {
-        // Handle incomplete sign-in (e.g., requires confirmation)
-        throw new Error(
-          'Sign-in incomplete. Please check your email for confirmation.'
-        );
-      }
-    } catch (error) {
-      const errorMessage = this.getErrorMessage(error as AuthError);
-      this.errorSignal.set(errorMessage);
-      // Sign in failed, error already set
-      throw error;
-    } finally {
-      this.isLoadingSignal.set(false);
-    }
+  async signUp(_: string, __: string, ___: string): Promise<void> {
+    return Promise.reject(new Error('Sign up not implemented yet'));
   }
 
   /**
@@ -114,20 +47,10 @@ export class AuthService {
 
     try {
       await signOut();
-      this.currentUserSignal.set(null);
-      this.errorSignal.set(null);
-      this.clearTokens();
-
-      // User signed out successfully
-
-      // Navigate to login page
-      await this.router.navigate(['/auth/login']);
+      await this.performSignOutCleanup();
     } catch {
       // Sign out error, but continue with cleanup
-      // Force local cleanup even if server signout fails
-      this.currentUserSignal.set(null);
-      this.clearTokens();
-      await this.router.navigate(['/auth/login']);
+      await this.performSignOutCleanup();
     } finally {
       this.isLoadingSignal.set(false);
     }
@@ -175,10 +98,60 @@ export class AuthService {
   }
 
   /**
-   * Clear authentication error
+   * Perform AWS Cognito authentication
    */
-  clearError(): void {
-    this.errorSignal.set(null);
+  protected async performAuthentication(username: string, password: string): Promise<void> {
+    try {
+      // Perform sign in
+      const signInOutput = await signIn({
+        username,
+        password,
+        options: {
+          authFlowType: 'USER_SRP_AUTH',
+        },
+      });
+
+      // Handle different sign-in states
+      if (signInOutput.isSignedIn) {
+        // Get the current user and session
+        const [user, session] = await Promise.all([
+          getCurrentUser(),
+          fetchAuthSession(),
+        ]);
+
+        const authUser = this.mapAmplifyUserToAuthUser(user);
+        this.currentUserSignal.set(authUser);
+
+        // Store session tokens
+        this.handleSessionTokens(session);
+
+        // User signed in successfully
+      } else {
+        // Handle incomplete sign-in (e.g., requires confirmation)
+        throw new Error(
+          'Sign-in incomplete. Please check your email for confirmation.'
+        );
+      }
+    } catch (error) {
+      // Transform AWS Cognito errors to user-friendly messages
+      const errorMessage = this.getErrorMessage(error as AuthError);
+      throw new Error(errorMessage);
+    }
+  }
+
+  /**
+   * Clear stored authentication tokens
+   */
+  protected clearTokens(): void {
+    try {
+      sessionStorage.removeItem('rms_access_token');
+      sessionStorage.removeItem('rms_id_token');
+      sessionStorage.removeItem('rms_refresh_token');
+      sessionStorage.removeItem('rms_token_expiration');
+      // Tokens cleared successfully
+    } catch {
+      // Failed to clear tokens
+    }
   }
 
   /**
@@ -258,21 +231,6 @@ export class AuthService {
       // Tokens stored successfully
     } catch {
       // Failed to store tokens
-    }
-  }
-
-  /**
-   * Clear stored authentication tokens
-   */
-  private clearTokens(): void {
-    try {
-      sessionStorage.removeItem('rms_access_token');
-      sessionStorage.removeItem('rms_id_token');
-      sessionStorage.removeItem('rms_refresh_token');
-      sessionStorage.removeItem('rms_token_expiration');
-      // Tokens cleared successfully
-    } catch {
-      // Failed to clear tokens
     }
   }
 

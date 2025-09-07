@@ -1,9 +1,9 @@
 <!-- eslint-disable @angular-eslint/template/no-call-expression -->
 <!-- Login Container -->
 <div
-  class="min-h-screen flex items-center justify-center p-4 bg-surface-ground"
+  class="min-h-screen min-w-full flex items-center justify-center p-4 bg-surface-ground"
 >
-  <div class="w-full max-w-md">
+  <div class="w-full max-w-xl mx-4">
     <!-- Login Card -->
     <div class="surface-card border-round shadow-3 p-6">
       <!-- Header -->
@@ -42,6 +42,13 @@
             {{ getEmailErrorMessage() }}
           </small>
           }
+
+          <!-- Form Help Text -->
+          <div class="mt-3">
+            <small class="text-color-secondary">
+              Need help? Contact your system administrator.
+            </small>
+          </div>
         </div>
 
         <!-- Password Field -->
@@ -70,6 +77,19 @@
             {{ getPasswordErrorMessage() }}
           </small>
           }
+
+          <!-- Submit Button -->
+          <div class="mt-4 flex justify-end">
+            <p-button
+              type="submit"
+              label="Sign In"
+              icon="pi pi-sign-in"
+              [disabled]="isFormInvalid()"
+              [loading]="isLoading$()"
+              loadingIcon="pi pi-spin pi-spinner"
+            >
+            </p-button>
+          </div>
         </div>
 
         <!-- Authentication Error Message -->
@@ -84,27 +104,6 @@
           </p-message>
         </div>
         }
-
-        <!-- Submit Button -->
-        <div class="mt-4">
-          <p-button
-            type="submit"
-            label="Sign In"
-            icon="pi pi-sign-in"
-            styleClass="w-full"
-            [disabled]="isFormInvalid()"
-            [loading]="isLoading$()"
-            loadingIcon="pi pi-spin pi-spinner"
-          >
-          </p-button>
-        </div>
-
-        <!-- Form Help Text -->
-        <div class="text-center mt-4">
-          <small class="text-color-secondary">
-            Need help? Contact your system administrator.
-          </small>
-        </div>
       </form>
     </div>
 

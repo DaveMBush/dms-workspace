@@ -18,5 +18,8 @@ export const environment = {
     enableCSP: false,
     strictSSL: false,
   },
+  auth: {
+    useMockAuth: true, // Set to false when using real AWS Cognito
+  },
   cognito: cognitoConfigDev,
 };
