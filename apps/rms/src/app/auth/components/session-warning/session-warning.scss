@@ -1,0 +1,145 @@
+:host {
+  .session-warning-dialog {
+    .p-dialog-header {
+      background: linear-gradient(135deg, #f97316, #ea580c);
+      color: white;
+      border-radius: 6px 6px 0 0;
+
+      .p-dialog-title {
+        font-weight: 600;
+        font-size: 1.1rem;
+      }
+    }
+
+    .p-dialog-content {
+      padding: 0;
+      border-radius: 0 0 6px 6px;
+    }
+
+    .p-dialog-footer {
+      padding: 1rem 1.5rem;
+      border-radius: 0 0 6px 6px;
+      background-color: #fafafa;
+    }
+  }
+
+  // Progress bar color variants
+  ::ng-deep {
+    .progress-warning .p-progressbar-value {
+      background: linear-gradient(to right, #f59e0b, #d97706);
+      transition: background 0.3s ease;
+    }
+
+    .progress-danger .p-progressbar-value {
+      background: linear-gradient(to right, #ef4444, #dc2626);
+      transition: background 0.3s ease;
+      animation: pulse-danger 1s infinite;
+    }
+
+    @keyframes pulse-danger {
+      0%,
+      100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.8;
+      }
+    }
+  }
+
+  // Button styling
+  .p-button {
+    transition: all 0.2s ease;
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+
+  // Animation for dialog appearance
+  ::ng-deep .session-warning-dialog.p-dialog {
+    animation: slideInDown 0.3s ease-out;
+  }
+
+  @keyframes slideInDown {
+    from {
+      opacity: 0;
+      transform: translate(-50%, -60%) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+  }
+
+  // Accessibility improvements
+  .countdown-display {
+    .time-remaining {
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.05em;
+    }
+  }
+
+  // High contrast mode support
+  @media (prefers-contrast: high) {
+    .session-warning-dialog {
+      .p-dialog-header {
+        background: #000;
+        border: 2px solid #fff;
+      }
+
+      .time-remaining {
+        color: #000;
+        background: #fff;
+        border: 1px solid #000;
+      }
+    }
+  }
+
+  // Reduced motion support
+  @media (prefers-reduced-motion: reduce) {
+    ::ng-deep .session-warning-dialog.p-dialog {
+      animation: none;
+    }
+
+    ::ng-deep .progress-danger .p-progressbar-value {
+      animation: none;
+    }
+
+    .p-button {
+      transition: none;
+
+      &:hover {
+        transform: none;
+        box-shadow: none;
+      }
+    }
+  }
+
+  // Mobile responsive adjustments
+  @media (max-width: 768px) {
+    .session-warning-dialog {
+      width: 95vw !important;
+      max-width: 350px !important;
+      margin: 0 auto;
+
+      .p-dialog-content {
+        padding: 1rem;
+      }
+
+      .p-dialog-footer {
+        padding: 0.75rem 1rem;
+
+        .p-button {
+          font-size: 0.875rem;
+          padding: 0.5rem 1rem;
+        }
+      }
+    }
+  }
+}

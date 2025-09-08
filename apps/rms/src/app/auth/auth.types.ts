@@ -54,6 +54,13 @@ export interface AuthSession {
   idToken: string;
   refreshToken: string;
   expiration?: number;
+  tokens?: SessionTokens;
+}
+
+export interface SessionTokens {
+  accessToken: string | null;
+  idToken: string | null;
+  refreshToken?: string | null;
 }
 
 export interface SignInRequest {
