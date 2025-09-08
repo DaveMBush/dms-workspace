@@ -1,0 +1,276 @@
+<div class="profile-container p-4 max-w-6xl mx-auto">
+  <div class="mb-4">
+    <h1 class="text-3xl font-bold text-900 mb-2">User Profile</h1>
+    <p class="text-600">Manage your account settings and preferences</p>
+  </div>
+
+  <p-tabView [(activeIndex)]="activeTab" class="w-full">
+    <!-- Profile Information Tab -->
+    <p-tabPanel header="Profile" leftIcon="pi pi-user">
+      <div class="grid">
+        <div class="col-12 md:col-6">
+          <p-card header="User Information" class="h-full">
+            <div *ngIf="hasProfile(); else profileLoading">
+              <div class="field mb-4">
+                <label class="block text-900 font-medium mb-2">Username</label>
+                <span class="text-900 text-lg">{{ getProfileUsername() }}</span>
+              </div>
+
+              <div class="field mb-4">
+                <label class="block text-900 font-medium mb-2"
+                  >Email Address</label
+                >
+                <div class="flex align-items-center gap-2">
+                  <span class="text-900 text-lg">{{ getProfileEmail() }}</span>
+                  <i
+                    class="pi"
+                    [class.pi-check-circle]="isEmailVerified()"
+                    [class.pi-exclamation-triangle]="!isEmailVerified()"
+                    [class.text-green-500]="isEmailVerified()"
+                    [class.text-orange-500]="!isEmailVerified()"
+                  ></i>
+                </div>
+              </div>
+
+              <div class="field mb-4">
+                <label class="block text-900 font-medium mb-2"
+                  >Account Created</label
+                >
+                <span class="text-900"
+                  >{{ getAccountCreated() | date:'medium' }}</span
+                >
+              </div>
+
+              <div class="field">
+                <label class="block text-900 font-medium mb-2"
+                  >Last Modified</label
+                >
+                <span class="text-900"
+                  >{{ getLastModified() | date:'medium' }}</span
+                >
+              </div>
+            </div>
+
+            <ng-template #profileLoading>
+              <div class="text-center p-4">
+                <i class="pi pi-spin pi-spinner text-2xl text-primary"></i>
+                <p class="mt-2 text-600">Loading profile information...</p>
+              </div>
+            </ng-template>
+          </p-card>
+        </div>
+
+        <div class="col-12 md:col-6">
+          <p-card header="Session Information" class="h-full">
+            <div *ngIf="hasProfile()">
+              <div class="field mb-4">
+                <label class="block text-900 font-medium mb-2"
+                  >Login Time</label
+                >
+                <span class="text-900"
+                  >{{ getLoginTime() | date:'medium' }}</span
+                >
+              </div>
+
+              <div class="field mb-4">
+                <label class="block text-900 font-medium mb-2"
+                  >Session Duration</label
+                >
+                <span class="text-900">{{ getSessionDuration() }}</span>
+              </div>
+
+              <div class="field mb-4">
+                <label class="block text-900 font-medium mb-2"
+                  >Token Expires</label
+                >
+                <span class="text-900"
+                  >{{ getTokenExpiration() | date:'medium' }}</span
+                >
+              </div>
+
+              <div class="field">
+                <label class="block text-900 font-medium mb-2"
+                  >Session Status</label
+                >
+                <span class="text-green-500 font-medium">
+                  <i class="pi pi-check-circle mr-1"></i>Active
+                </span>
+              </div>
+            </div>
+          </p-card>
+        </div>
+      </div>
+    </p-tabPanel>
+
+    <!-- Security Tab -->
+    <p-tabPanel header="Security" leftIcon="pi pi-shield">
+      <div class="grid">
+        <div class="col-12 md:col-6">
+          <p-card header="Change Password" class="h-full">
+            <form
+              [formGroup]="passwordChangeForm"
+              (ngSubmit)="onChangePassword()"
+            >
+              <div class="field mb-3">
+                <label
+                  for="currentPassword"
+                  class="block text-900 font-medium mb-2"
+                >
+                  Current Password <span class="text-red-500">*</span>
+                </label>
+                <p-password
+                  inputId="currentPassword"
+                  formControlName="currentPassword"
+                  [feedback]="false"
+                  [toggleMask]="true"
+                  styleClass="w-full"
+                  placeholder="Enter your current password"
+                ></p-password>
+                <small *ngIf="isCurrentPasswordInvalid()" class="text-red-500">
+                  Current password is required
+                </small>
+              </div>
+
+              <div class="field mb-3">
+                <label
+                  for="newPassword"
+                  class="block text-900 font-medium mb-2"
+                >
+                  New Password <span class="text-red-500">*</span>
+                </label>
+                <p-password
+                  inputId="newPassword"
+                  formControlName="newPassword"
+                  [feedback]="true"
+                  [toggleMask]="true"
+                  styleClass="w-full"
+                  placeholder="Enter your new password"
+                  promptLabel="Choose a password"
+                  weakLabel="Too simple"
+                  mediumLabel="Average complexity"
+                  strongLabel="Complex password"
+                ></p-password>
+                <small *ngIf="isNewPasswordInvalid()" class="text-red-500">
+                  Password must be at least 8 characters with uppercase,
+                  lowercase, number, and special character
+                </small>
+              </div>
+
+              <div class="field mb-4">
+                <label
+                  for="confirmPassword"
+                  class="block text-900 font-medium mb-2"
+                >
+                  Confirm New Password <span class="text-red-500">*</span>
+                </label>
+                <p-password
+                  inputId="confirmPassword"
+                  formControlName="confirmPassword"
+                  [feedback]="false"
+                  [toggleMask]="true"
+                  styleClass="w-full"
+                  placeholder="Confirm your new password"
+                ></p-password>
+                <small *ngIf="hasPasswordMismatch()" class="text-red-500">
+                  Passwords do not match
+                </small>
+              </div>
+
+              <p-button
+                type="submit"
+                label="Change Password"
+                icon="pi pi-key"
+                styleClass="w-full"
+                [disabled]="isPasswordFormDisabled()"
+                [loading]="isSubmitting()"
+              ></p-button>
+            </form>
+          </p-card>
+        </div>
+
+        <div class="col-12 md:col-6">
+          <p-card header="Email Settings" class="mb-4">
+            <form [formGroup]="emailChangeForm">
+              <div class="field mb-3">
+                <label for="newEmail" class="block text-900 font-medium mb-2">
+                  New Email Address <span class="text-red-500">*</span>
+                </label>
+                <input
+                  pInputText
+                  id="newEmail"
+                  formControlName="newEmail"
+                  class="w-full"
+                  placeholder="Enter new email address"
+                />
+                <small *ngIf="isNewEmailInvalid()" class="text-red-500">
+                  Please enter a valid email address
+                </small>
+              </div>
+
+              <div *ngIf="showEmailVerification()" class="field mb-3">
+                <label
+                  for="verificationCode"
+                  class="block text-900 font-medium mb-2"
+                >
+                  Verification Code <span class="text-red-500">*</span>
+                </label>
+                <input
+                  pInputText
+                  id="verificationCode"
+                  formControlName="verificationCode"
+                  class="w-full"
+                  placeholder="Enter verification code from email"
+                />
+              </div>
+
+              <div class="flex gap-2">
+                <p-button
+                  *ngIf="!showEmailVerification()"
+                  label="Update Email"
+                  icon="pi pi-envelope"
+                  styleClass="flex-1"
+                  [disabled]="isEmailFormDisabled()"
+                  [loading]="isSubmitting()"
+                  (onClick)="onChangeEmail()"
+                ></p-button>
+
+                <p-button
+                  *ngIf="showEmailVerification()"
+                  label="Verify Email"
+                  icon="pi pi-check"
+                  styleClass="flex-1"
+                  [disabled]="isVerificationCodeEmpty()"
+                  (onClick)="onVerifyEmail()"
+                ></p-button>
+              </div>
+            </form>
+          </p-card>
+
+          <p-card header="Account Actions">
+            <div class="flex flex-column gap-3">
+              <p-button
+                label="Sign Out"
+                icon="pi pi-sign-out"
+                styleClass="p-button-outlined"
+                (onClick)="onLogout()"
+              ></p-button>
+
+              <p-button
+                label="Sign Out All Devices"
+                icon="pi pi-power-off"
+                styleClass="p-button-outlined p-button-danger"
+                (onClick)="onLogoutAllDevices()"
+              ></p-button>
+            </div>
+          </p-card>
+        </div>
+      </div>
+    </p-tabPanel>
+  </p-tabView>
+</div>
+
+<!-- Confirmation Dialog -->
+<p-confirmDialog></p-confirmDialog>
+
+<!-- Toast Messages -->
+<p-toast></p-toast>
