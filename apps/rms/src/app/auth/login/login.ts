@@ -16,6 +16,7 @@ import {
 } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
+import { CheckboxModule } from 'primeng/checkbox';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
 import { PasswordModule } from 'primeng/password';
@@ -29,6 +30,7 @@ import { LoginFormData } from '../auth.types';
     CommonModule,
     ReactiveFormsModule,
     ButtonModule,
+    CheckboxModule,
     InputTextModule,
     MessageModule,
     PasswordModule,
@@ -52,6 +54,9 @@ export class Login implements OnInit {
   private emailTouched = signal(false);
   private passwordTouched = signal(false);
   private formValid = signal(false);
+
+  // Remember Me state
+  private rememberMeChecked = signal(false);
 
   // Computed signals for reactive UI
   isLoading$ = computed(
@@ -82,6 +87,10 @@ export class Login implements OnInit {
     Boolean(!this.formValid() || this.isLoading$())
   );
 
+  // Remember Me computed signal
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- Arrow function required for proper this binding in computed signal
+  isRememberMeEnabled = computed(() => this.rememberMeChecked());
+
   ngOnInit(): void {
     this.initializeForm();
     this.clearAuthError();
@@ -96,6 +105,12 @@ export class Login implements OnInit {
     | import('@angular/forms').AbstractControl<unknown>
     | null {
     return this.loginForm.get('password');
+  }
+
+  get rememberMeControl():
+    | import('@angular/forms').AbstractControl<unknown>
+    | null {
+    return this.loginForm.get('rememberMe');
   }
 
   // Email validation error messages
@@ -130,11 +145,11 @@ export class Login implements OnInit {
       this.clearAuthError();
 
       try {
-        const formData = this.loginForm.value as LoginFormData;
-        await this.authService.signIn({
-          username: formData.email,
-          password: formData.password,
-        });
+        const formData = this.loginForm.value as LoginFormData & {
+          rememberMe: boolean;
+        };
+
+        await this.performSignIn(formData);
 
         // Navigate to dashboard or return URL
         const returnUrl = this.getReturnUrl();
@@ -149,15 +164,48 @@ export class Login implements OnInit {
     }
   }
 
+  /**
+   * Handle remember me checkbox change
+   */
+  onRememberMeChange(checked: boolean): void {
+    this.rememberMeChecked.set(checked);
+    const rememberMeControl = this.loginForm.get('rememberMe');
+    if (rememberMeControl) {
+      rememberMeControl.setValue(checked);
+    }
+  }
+
+  private async performSignIn(
+    formData: LoginFormData & { rememberMe: boolean }
+  ): Promise<void> {
+    if (formData.rememberMe) {
+      await this.authService.signInWithRememberMe(
+        formData.email,
+        formData.password
+      );
+    } else {
+      await this.authService.signIn({
+        username: formData.email,
+        password: formData.password,
+      });
+    }
+  }
+
   private initializeForm(): void {
+    // Check if remember me was previously enabled
+    const previousRememberMe =
+      localStorage.getItem('rms_remember_me') === 'true';
+
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(8)]],
+      rememberMe: [previousRememberMe], // Default to previous preference
     });
 
     // Subscribe to form control state changes
     const emailControl = this.loginForm.get('email');
     const passwordControl = this.loginForm.get('password');
+    const rememberMeControl = this.loginForm.get('rememberMe');
 
     // eslint-disable-next-line @smarttools/no-anonymous-functions -- Subscription callback required for form control state tracking
     emailControl?.statusChanges.subscribe(() => {
@@ -168,6 +216,15 @@ export class Login implements OnInit {
     passwordControl?.statusChanges.subscribe(() => {
       this.passwordTouched.set(passwordControl.touched);
     });
+
+    // Track remember me changes
+    // eslint-disable-next-line @smarttools/no-anonymous-functions -- Subscription callback required for form control state tracking
+    rememberMeControl?.valueChanges.subscribe((value: unknown) => {
+      this.rememberMeChecked.set(Boolean(value));
+    });
+
+    // Set initial remember me state
+    this.rememberMeChecked.set(Boolean(rememberMeControl?.value ?? false));
 
     // Subscribe to form validity changes
     // eslint-disable-next-line @smarttools/no-anonymous-functions -- Subscription callback required for form validity tracking

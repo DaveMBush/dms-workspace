@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   fetchAuthSession,
   getCurrentUser,
@@ -6,17 +7,36 @@ import {
   signOut,
 } from '@aws-amplify/auth';
 import { Amplify } from '@aws-amplify/core';
+import { filter } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
 import { AuthError, AuthErrorCode, AuthSession, AuthUser } from './auth.types';
 import { BaseAuthService } from './base-auth-service.abstract';
+import {
+  SessionEvent,
+  SessionEventType,
+  SessionManagerService,
+  SessionStatus,
+} from './services/session-manager.service';
+import { TokenRefreshService } from './services/token-refresh.service';
+import { UserProfile } from './services/user-state.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService extends BaseAuthService {
+  private sessionManager = inject(SessionManagerService);
+  private tokenRefresh = inject(TokenRefreshService);
+
+  // Session-related signals
+  private rememberMePreference = signal(false);
+
   constructor() {
     super();
+
+    // Set up session event listeners
+    this.setupSessionEventListeners();
+
     // Initialize auth in the next tick to avoid async constructor
     // eslint-disable-next-line @smarttools/no-anonymous-functions -- Arrow function required for proper this binding
     setTimeout(() => {
@@ -35,12 +55,23 @@ export class AuthService extends BaseAuthService {
   }
 
   /**
+   * Sign in with remember me functionality
+   */
+  async signInWithRememberMe(email: string, password: string): Promise<void> {
+    this.rememberMePreference.set(true);
+    await this.signIn(email, password);
+  }
+
+  /**
    * Sign out current user
    */
   async signOut(): Promise<void> {
     this.isLoadingSignal.set(true);
 
     try {
+      // Expire session in session manager
+      this.sessionManager.expireSession(true);
+
       await signOut();
       await this.performSignOutCleanup();
     } catch {
@@ -69,10 +100,18 @@ export class AuthService extends BaseAuthService {
    */
   async refreshTokens(): Promise<void> {
     try {
-      const session = await fetchAuthSession();
-      this.handleSessionTokens(session);
+      const success = await this.tokenRefresh.refreshToken();
+      if (!success) {
+        throw new Error('Token refresh failed');
+      }
+
+      // Update session with new token expiration
+      const tokenExpiration = this.tokenRefresh.getTokenExpiration();
+      if (tokenExpiration) {
+        this.sessionManager.getSessionStats();
+      }
     } catch {
-      // Token refresh failed
+      // Token refresh failed, sign out user
       await this.signOut();
     }
   }
@@ -82,6 +121,11 @@ export class AuthService extends BaseAuthService {
    */
   async isSessionValid(): Promise<boolean> {
     try {
+      // Check session manager status first
+      if (!this.sessionManager.isActive()) {
+        return false;
+      }
+
       const session = await fetchAuthSession();
       return (
         session.tokens?.accessToken?.payload.exp !== undefined &&
@@ -90,6 +134,27 @@ export class AuthService extends BaseAuthService {
     } catch {
       return false;
     }
+  }
+
+  /**
+   * Extend current session
+   */
+  async extendSession(): Promise<boolean> {
+    return this.sessionManager.extendSession();
+  }
+
+  /**
+   * Get session manager instance for component access
+   */
+  getSessionManager(): SessionManagerService {
+    return this.sessionManager;
+  }
+
+  /**
+   * Check if remember me is enabled for current session
+   */
+  isRememberMeSession(): boolean {
+    return this.sessionManager.isRememberMeSession();
   }
 
   /**
@@ -122,6 +187,20 @@ export class AuthService extends BaseAuthService {
 
         // Store session tokens
         this.handleSessionTokens(session);
+
+        // Create user profile for session manager
+        const userProfile: UserProfile = {
+          username: authUser.username,
+          email: authUser.email,
+          permissions: [], // Add permissions logic as needed
+          attributes: authUser.attributes ?? {},
+        };
+
+        // Start session management
+        this.sessionManager.startSession(
+          userProfile,
+          this.rememberMePreference()
+        );
 
         // User signed in successfully
       } else {
@@ -179,7 +258,19 @@ export class AuthService extends BaseAuthService {
       // Check for existing authenticated user
       const user = await getCurrentUser();
       if (user !== null) {
-        this.currentUserSignal.set(this.mapAmplifyUserToAuthUser(user));
+        const authUser = this.mapAmplifyUserToAuthUser(user);
+        this.currentUserSignal.set(authUser);
+
+        // Create user profile for session manager
+        const userProfile: UserProfile = {
+          username: authUser.username,
+          email: authUser.email,
+          permissions: [], // Add permissions logic as needed
+          attributes: authUser.attributes ?? {},
+        };
+
+        this.restoreUserSession(userProfile);
+
         await this.refreshTokens();
       }
     } catch {
@@ -250,6 +341,42 @@ export class AuthService extends BaseAuthService {
         sub: user.userId ?? '',
       },
     };
+  }
+
+  /**
+   * Restore user session if it exists
+   */
+  private restoreUserSession(userProfile: UserProfile): void {
+    const userState = this.sessionManager.getSessionStats();
+    if (userState.status === SessionStatus.Expired) {
+      const rememberMe = localStorage.getItem('rms_remember_me') === 'true';
+      this.sessionManager.startSession(userProfile, rememberMe);
+    }
+  }
+
+  /**
+   * Set up session event listeners
+   */
+  private setupSessionEventListeners(): void {
+    this.sessionManager.sessionEvents
+      .pipe(
+        takeUntilDestroyed(),
+        filter(function filterSessionEvents(event: SessionEvent) {
+          return (
+            event.type === SessionEventType.SessionExpired ||
+            event.type === SessionEventType.TokenRefreshFailed
+          );
+        })
+      )
+      .subscribe(
+        function handleSessionEvent(this: AuthService, event: SessionEvent) {
+          if (event.type === SessionEventType.SessionExpired) {
+            void this.performSignOutCleanup();
+          } else if (event.type === SessionEventType.TokenRefreshFailed) {
+            void this.signOut();
+          }
+        }.bind(this)
+      );
   }
 
   /**
