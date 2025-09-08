@@ -64,6 +64,7 @@ describe('Login Component', () => {
       expect(component.loginForm.value).toEqual({
         email: '',
         password: '',
+        rememberMe: false,
       });
     });
 
@@ -463,7 +464,7 @@ describe('Login Component', () => {
       );
       expect(loginContainer).toBeTruthy();
 
-      const loginCard = fixture.debugElement.query(By.css('.max-w-xl'));
+      const loginCard = fixture.debugElement.query(By.css('.max-w-md'));
       expect(loginCard).toBeTruthy();
     });
   });
