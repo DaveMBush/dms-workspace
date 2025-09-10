@@ -245,19 +245,3 @@
   </ng-template>
 </p-table>
 <p-toast />
-
-<!-- eslint-disable @angular-eslint/template/cyclomatic-complexity -->
-@if (showOverlay$()) {
-<div class="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-  <div class="text-center" role="status" aria-live="polite">
-    <p-progressSpinner
-      styleClass="w-12 h-12"
-      strokeWidth="4"
-      fill="var(--surface-ground)"
-      animationDuration=".5s"
-    />
-    <p class="mt-4 text-white font-medium">{{ overlayText$() }}</p>
-    <span class="sr-only">Updating data, please wait</span>
-  </div>
-</div>
-}

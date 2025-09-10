@@ -1,0 +1,58 @@
+<p-card header="User Information" class="h-full">
+  <div *ngIf="hasProfile$(); else profileState">
+    <div class="field mb-4">
+      <label for="username" class="block text-900 font-medium mb-2"
+        >Username</label
+      >
+      <span id="username" class="text-900 text-lg"
+        >{{ profileUsername$() }}</span
+      >
+    </div>
+
+    <div class="field mb-4">
+      <label for="email" class="block text-900 font-medium mb-2"
+        >Email Address</label
+      >
+      <div class="flex align-items-center gap-2">
+        <span id="email" class="text-900 text-lg">{{ profileEmail$() }}</span>
+        <i
+          class="pi"
+          [ngClass]="{
+            'pi-check-circle text-green-500': emailVerified$(),
+            'pi-exclamation-triangle text-orange-500': !emailVerified$()
+          }"
+        ></i>
+      </div>
+    </div>
+
+    <div class="field mb-4">
+      <label for="account-created" class="block text-900 font-medium mb-2"
+        >Account Created</label
+      >
+      <span id="account-created" class="text-900"
+        >{{ accountCreated$() | date : 'medium' }}</span
+      >
+    </div>
+
+    <div class="field">
+      <label for="last-modified" class="block text-900 font-medium mb-2"
+        >Last Modified</label
+      >
+      <span id="last-modified" class="text-900"
+        >{{ lastModified$() | date : 'medium' }}</span
+      >
+    </div>
+  </div>
+
+  <ng-template #profileState>
+    <div class="text-center p-4" *ngIf="isLoading$()">
+      <i class="pi pi-spin pi-spinner text-2xl text-primary"></i>
+      <p class="mt-2 text-600">Loading profile information...</p>
+    </div>
+
+    <div class="text-center p-4" *ngIf="hasError$()">
+      <i class="pi pi-exclamation-triangle text-2xl text-orange-500"></i>
+      <p class="mt-2 text-600">{{ errorMessage$() }}</p>
+    </div>
+  </ng-template>
+</p-card>

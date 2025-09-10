@@ -22,6 +22,7 @@ import { MessageModule } from 'primeng/message';
 import { PasswordModule } from 'primeng/password';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
+import { GlobalLoadingService } from '../../shared/services/global-loading.service';
 import { AuthService } from '../auth.service';
 import { LoginFormData } from '../auth.types';
 
@@ -46,6 +47,7 @@ export class Login implements OnInit {
   private authService = inject(AuthService);
   private router = inject(Router);
   private fb = inject(FormBuilder);
+  private globalLoading = inject(GlobalLoadingService);
 
   loginForm!: FormGroup;
   isSubmitting = signal(false);
@@ -142,6 +144,7 @@ export class Login implements OnInit {
   async onSubmit(): Promise<void> {
     if (this.loginForm.valid && !this.isLoading$()) {
       this.isSubmitting.set(true);
+      this.globalLoading.show('Signing you in...');
       this.clearAuthError();
 
       try {
@@ -158,6 +161,7 @@ export class Login implements OnInit {
         // Error is handled by AuthService and displayed via reactive signals
       } finally {
         this.isSubmitting.set(false);
+        this.globalLoading.hide();
       }
     } else {
       this.markFormGroupTouched();

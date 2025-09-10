@@ -6,10 +6,8 @@ import {
   signIn,
   signOut,
 } from '@aws-amplify/auth';
-import { Amplify } from '@aws-amplify/core';
 import { filter } from 'rxjs/operators';
 
-import { environment } from '../../environments/environment';
 import { AuthError, AuthErrorCode, AuthSession, AuthUser } from './auth.types';
 import { BaseAuthService } from './base-auth-service.abstract';
 import {
@@ -232,29 +230,10 @@ export class AuthService extends BaseAuthService {
   }
 
   /**
-   * Initialize Amplify Auth configuration and check for existing session
+   * Initialize Auth and check for existing session
    */
   private async initializeAuth(): Promise<void> {
     try {
-      // Configure Amplify with Cognito settings
-      Amplify.configure({
-        Auth: {
-          Cognito: {
-            userPoolId: environment.cognito.userPoolId,
-            userPoolClientId: environment.cognito.userPoolWebClientId,
-            loginWith: {
-              oauth: {
-                domain: environment.cognito.domain,
-                scopes: environment.cognito.scopes,
-                redirectSignIn: [environment.cognito.redirectSignIn],
-                redirectSignOut: [environment.cognito.redirectSignOut],
-                responseType: 'code',
-              },
-            },
-          },
-        },
-      });
-
       // Check for existing authenticated user
       const user = await getCurrentUser();
       if (user !== null) {

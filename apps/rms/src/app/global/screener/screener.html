@@ -94,26 +94,3 @@
     </tr>
   </ng-template>
 </p-table>
-
-<!-- Overlay -->
-@if (showOverlay$()) {
-<div class="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-  <div
-    class="text-center"
-    role="status"
-    aria-live="polite"
-    aria-label="Refreshing screener data"
-  >
-    <p-progressSpinner
-      styleClass="w-12 h-12"
-      strokeWidth="4"
-      fill="var(--surface-ground)"
-      animationDuration=".5s"
-      [attr.aria-label]="'Loading indicator'"
-    >
-    </p-progressSpinner>
-    <p class="mt-4 text-white font-medium">Refreshing data...</p>
-    <span class="sr-only">Refreshing screener data, please wait</span>
-  </div>
-</div>
-}

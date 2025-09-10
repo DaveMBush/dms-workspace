@@ -19,10 +19,13 @@ import {
 import { providePrimeNG } from 'primeng/config';
 
 import { environment } from '../environments/environment';
+import { configureAmplify } from './amplify.config';
 import { appRoutes } from './app.routes';
 import { AuthService } from './auth/auth.service';
 import { authInterceptor } from './auth/interceptors/auth.interceptor';
 import { MockAuthService } from './auth/mock-auth.service';
+import { MockProfileService } from './auth/services/mock-profile.service';
+import { ProfileService } from './auth/services/profile.service';
 import { ErrorHandlerService } from './error-handler/error-handler.service';
 import { UniverseSyncService } from './shared/services/universe-sync.service';
 import { AccountEffectsService } from './store/accounts/account-effect.service';
@@ -42,12 +45,22 @@ import { tradeEffectsServiceToken } from './store/trades/trade-effect-service-to
 import { UniverseEffectsService } from './store/universe/universe-effect.service';
 import { universeEffectsServiceToken } from './store/universe/universe-effect-service-token';
 
+// Configure Amplify before app initialization
+configureAmplify();
+
 export const appConfig: ApplicationConfig = {
   providers: [
     // Conditional auth service provider
     {
       provide: AuthService,
       useClass: environment.auth?.useMockAuth ? MockAuthService : AuthService,
+    },
+    // Conditional profile service provider
+    {
+      provide: ProfileService,
+      useClass: environment.auth?.useMockAuth
+        ? MockProfileService
+        : ProfileService,
     },
     {
       provide: topEffectsServiceToken,

@@ -9,6 +9,17 @@
         Welcome, {{ getUserDisplayName$() }}
       </span>
 
+      <!-- Profile Button -->
+      <p-button
+        icon="pi pi-user"
+        class="mr-2"
+        text
+        severity="secondary"
+        routerLink="/profile"
+        pTooltip="User Profile"
+        tooltipPosition="bottom"
+      />
+
       <!-- Logout Button -->
       <p-button
         icon="pi pi-sign-out"
@@ -18,7 +29,6 @@
         (onClick)="logout()"
         pTooltip="Sign Out"
         tooltipPosition="bottom"
-        [loading]="authLoading"
       />
     </div>
     }
