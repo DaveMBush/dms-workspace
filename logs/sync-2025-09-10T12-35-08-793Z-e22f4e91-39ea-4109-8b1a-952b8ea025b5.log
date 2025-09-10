@@ -1,0 +1,2 @@
+{"timestamp":"2025-09-10T12:35:08.793Z","correlationId":"e22f4e91-39ea-4109-8b1a-952b8ea025b5","level":"info","message":"Sync from screener operation started","data":{"featureEnabled":false,"timestamp":"2025-09-10T12:35:08.793Z"}}
+{"timestamp":"2025-09-10T12:35:08.793Z","correlationId":"e22f4e91-39ea-4109-8b1a-952b8ea025b5","level":"warn","message":"Sync operation blocked - feature flag disabled"}

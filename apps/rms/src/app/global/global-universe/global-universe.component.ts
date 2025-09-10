@@ -20,6 +20,7 @@ import { ToolbarModule } from 'primeng/toolbar';
 import { TooltipModule } from 'primeng/tooltip';
 
 import { EditableDateCellComponent } from '../../shared/editable-date-cell.component';
+import { GlobalLoadingService } from '../../shared/services/global-loading.service';
 import { UniverseSyncService } from '../../shared/services/universe-sync.service';
 import { selectAccounts } from '../../store/accounts/selectors/select-accounts.function';
 import { Universe } from '../../store/universe/universe.interface';
@@ -82,6 +83,7 @@ export class GlobalUniverseComponent {
 
   private readonly universeSyncService = inject(UniverseSyncService);
   private readonly messageService = inject(MessageService);
+  private readonly globalLoading = inject(GlobalLoadingService);
   readonly today = new Date();
   readonly isUpdatingFields = signal<boolean>(false);
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signals work better with arrow functions
@@ -91,10 +93,6 @@ export class GlobalUniverseComponent {
     this.universeSyncService.isSyncing()
   );
 
-  readonly showOverlay$ = signal<boolean>(false);
-  readonly overlayText = signal<string>('');
-  // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signals work better with arrow functions
-  readonly overlayText$ = computed(() => this.overlayText());
   sortCriteria = signal<Array<{ field: string; order: number }>>(
     this.storageService.loadSortCriteria()
   );
@@ -163,34 +161,32 @@ export class GlobalUniverseComponent {
   updateFields(): void {
     const self = this;
     this.isUpdatingFields.set(true);
-    this.showOverlay$.set(true);
-    this.overlayText.set('Updating field information...');
+    this.globalLoading.show('Updating field information...');
 
     this.updateUniverseService.updateFields().subscribe({
       next: function updateFieldsNext() {
         self.isUpdatingFields.set(false);
-        self.showOverlay$.set(false);
+        self.globalLoading.hide();
       },
       complete: function updateFieldsComplete() {
         self.isUpdatingFields.set(false);
-        self.showOverlay$.set(false);
+        self.globalLoading.hide();
       },
       error: function updateFieldsError() {
         self.isUpdatingFields.set(false);
-        self.showOverlay$.set(false);
+        self.globalLoading.hide();
       },
     });
   }
 
   syncUniverse(): void {
     const self = this;
-    this.showOverlay$.set(true);
-    this.overlayText.set('Updating universe from screener...');
+    this.globalLoading.show('Updating universe from screener...');
 
     this.universeSyncService.syncFromScreener().subscribe({
       // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
       next: (summary) => {
-        self.showOverlay$.set(false);
+        self.globalLoading.hide();
         this.messageService.add({
           severity: 'success',
           summary: 'Universe Updated',
@@ -199,7 +195,7 @@ export class GlobalUniverseComponent {
       },
       // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
       error: () => {
-        self.showOverlay$.set(false);
+        self.globalLoading.hide();
         this.messageService.add({
           severity: 'error',
           summary: 'Update Failed',

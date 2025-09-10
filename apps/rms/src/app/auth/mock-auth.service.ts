@@ -53,6 +53,17 @@ export class MockAuthService extends BaseAuthService {
   }
 
   /**
+   * Mock sign in with remember me functionality
+   */
+  async signInWithRememberMe(email: string, password: string): Promise<void> {
+    // Store remember me preference
+    localStorage.setItem('rms_remember_me', 'true');
+
+    // Perform normal sign in
+    await this.signIn({ username: email, password });
+  }
+
+  /**
    * Mock sign out
    */
   async signOut(): Promise<void> {

@@ -1,0 +1,17 @@
+<p-card header="Account Actions">
+  <div class="flex flex-column gap-3">
+    <p-button
+      label="Sign Out"
+      icon="pi pi-sign-out"
+      styleClass="p-button-outlined"
+      (onClick)="onLogout()"
+    ></p-button>
+
+    <p-button
+      label="Sign Out All Devices"
+      icon="pi pi-sign-out"
+      styleClass="p-button-outlined p-button-danger"
+      (onClick)="onLogoutAllDevices()"
+    ></p-button>
+  </div>
+</p-card>

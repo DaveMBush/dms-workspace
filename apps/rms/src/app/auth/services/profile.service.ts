@@ -1,33 +1,25 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable } from '@angular/core';
 import {
-  changePassword,
   confirmResetPassword,
+  confirmUserAttribute,
   fetchAuthSession,
   getCurrentUser,
   resetPassword,
+  sendUserAttributeVerificationCode,
+  updatePassword,
   updateUserAttributes,
-  verifyUserAttribute,
 } from '@aws-amplify/auth';
 
 import { UserProfile } from '../types/profile.types';
+import { BaseProfileService } from './base-profile.service';
 
 @Injectable({
   providedIn: 'root',
 })
-export class ProfileService {
-  private userProfile = signal<UserProfile | null>(null);
-  private isLoading = signal(false);
-  private error = signal<string | null>(null);
-
-  public readonly profile = this.userProfile.asReadonly();
-  public readonly loading = this.isLoading.asReadonly();
-  public readonly profileError = this.error.asReadonly();
-
-  public async loadUserProfile(): Promise<void> {
-    this.isLoading.set(true);
-    this.error.set(null);
-
-    try {
+export class ProfileService extends BaseProfileService {
+  async loadUserProfile(): Promise<void> {
+    // eslint-disable-next-line @smarttools/no-anonymous-functions -- Required for async operation wrapper
+    return this.executeLoadProfile(async () => {
       const [user, session] = await Promise.all([
         getCurrentUser(),
         fetchAuthSession(),
@@ -35,22 +27,90 @@ export class ProfileService {
 
       const profile = this.buildUserProfile(user, session);
       this.userProfile.set(profile);
-    } catch (error) {
-      this.error.set('Failed to load profile information');
-    } finally {
-      this.isLoading.set(false);
-    }
+    });
   }
 
-  private buildUserProfile(user: any, session: any): UserProfile {
-    const iat = session.tokens?.idToken?.payload.iat ?? 0;
-    const exp = session.tokens?.accessToken?.payload.exp ?? 0;
-    
+  async changeUserPassword(
+    oldPassword: string,
+    newPassword: string
+  ): Promise<void> {
+    // eslint-disable-next-line @smarttools/no-anonymous-functions -- Required for async operation wrapper
+    return this.executeWithErrorHandling(async () => {
+      await updatePassword({
+        oldPassword,
+        newPassword,
+      });
+      // Password changed successfully
+    });
+  }
+
+  async updateEmail(newEmail: string): Promise<void> {
+    // eslint-disable-next-line @smarttools/no-anonymous-functions -- Required for async operation wrapper
+    return this.executeWithErrorHandling(async () => {
+      await updateUserAttributes({
+        userAttributes: {
+          email: newEmail,
+        },
+      });
+      // Email update initiated, verification required
+    });
+  }
+
+  async verifyEmailChange(verificationCode: string): Promise<void> {
+    await confirmUserAttribute({
+      userAttributeKey: 'email',
+      confirmationCode: verificationCode,
+    });
+    // Email verification successful
+    await this.loadUserProfile(); // Refresh profile
+  }
+
+  async sendEmailVerificationCode(): Promise<void> {
+    await sendUserAttributeVerificationCode({
+      userAttributeKey: 'email',
+    });
+  }
+
+  async initiatePasswordReset(username: string): Promise<void> {
+    await resetPassword({
+      username,
+    });
+    // Password reset initiated
+  }
+
+  async confirmPasswordReset(
+    username: string,
+    confirmationCode: string,
+    newPassword: string
+  ): Promise<void> {
+    await confirmResetPassword({
+      username,
+      confirmationCode,
+      newPassword,
+    });
+    // Password reset confirmed
+  }
+
+  private buildUserProfile(user: unknown, session: unknown): UserProfile {
+    const userObj = user as {
+      username: string;
+      signInDetails?: { loginId?: string };
+    };
+    const sessionObj = session as {
+      tokens?: {
+        idToken?: { payload: { iat?: number } };
+        accessToken?: { payload: { exp?: number } };
+      };
+    };
+
+    const iat = sessionObj.tokens?.idToken?.payload.iat ?? 0;
+    const exp = sessionObj.tokens?.accessToken?.payload.exp ?? 0;
+
     return {
-      username: user.username,
-      email: user.signInDetails?.loginId ?? '',
+      username: userObj.username,
+      email: userObj.signInDetails?.loginId ?? '',
       emailVerified: true,
-      name: user.username,
+      name: userObj.username,
       createdAt: new Date(),
       lastModified: new Date(),
       sessionInfo: {
@@ -59,106 +119,5 @@ export class ProfileService {
         sessionDuration: Date.now() - iat * 1000,
       },
     };
-  }
-
-  public async changeUserPassword(
-    oldPassword: string,
-    newPassword: string
-  ): Promise<void> {
-    this.isLoading.set(true);
-    this.error.set(null);
-
-    try {
-      await getCurrentUser();
-      await changePassword({
-        oldPassword,
-        newPassword,
-      });
-      // Password changed successfully
-    } catch (error) {
-      this.error.set(this.getErrorMessage(error));
-      throw error;
-    } finally {
-      this.isLoading.set(false);
-    }
-  }
-
-  public async updateEmail(newEmail: string): Promise<void> {
-    this.isLoading.set(true);
-    this.error.set(null);
-
-    try {
-      await updateUserAttributes({
-        userAttributes: {
-          email: newEmail,
-        },
-      });
-      // Email update initiated, verification required
-    } catch (error) {
-      this.error.set(this.getErrorMessage(error));
-      throw error;
-    } finally {
-      this.isLoading.set(false);
-    }
-  }
-
-  public async verifyEmailChange(verificationCode: string): Promise<void> {
-    try {
-      await verifyUserAttribute({
-        userAttributeKey: 'email',
-        confirmationCode: verificationCode,
-      });
-      // Email verification successful
-      await this.loadUserProfile(); // Refresh profile
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  public async initiatePasswordReset(username: string): Promise<void> {
-    try {
-      await resetPassword({
-        username,
-      });
-      // Password reset initiated
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  public async confirmPasswordReset(
-    username: string,
-    confirmationCode: string,
-    newPassword: string
-  ): Promise<void> {
-    try {
-      await confirmResetPassword({
-        username,
-        confirmationCode,
-        newPassword,
-      });
-      // Password reset confirmed
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  private getErrorMessage(error: unknown): string {
-    const err = error as { name?: string; message?: string };
-    switch (err.name ?? 'UnknownError') {
-      case 'NotAuthorizedException':
-        return 'Current password is incorrect';
-      case 'InvalidPasswordException':
-        return 'New password does not meet requirements';
-      case 'LimitExceededException':
-        return 'Too many attempts. Please try again later';
-      case 'UserNotConfirmedException':
-        return 'User account is not confirmed';
-      case 'InvalidParameterException':
-        return 'Invalid input parameters';
-      case undefined:
-      default:
-        return err.message ?? 'Operation failed. Please try again';
-    }
   }
 }

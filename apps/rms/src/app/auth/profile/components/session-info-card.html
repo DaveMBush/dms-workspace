@@ -1,0 +1,39 @@
+<p-card header="Session Information" class="h-full">
+  <div *ngIf="hasProfile$()">
+    <div class="field mb-4">
+      <label for="login-time" class="block text-900 font-medium mb-2"
+        >Login Time</label
+      >
+      <span id="login-time" class="text-900"
+        >{{ loginTime$() | date : 'medium' }}</span
+      >
+    </div>
+
+    <div class="field mb-4">
+      <label for="session-duration" class="block text-900 font-medium mb-2"
+        >Session Duration</label
+      >
+      <span id="session-duration" class="text-900"
+        >{{ sessionDuration$() }}</span
+      >
+    </div>
+
+    <div class="field mb-4">
+      <label for="token-expires" class="block text-900 font-medium mb-2"
+        >Token Expires</label
+      >
+      <span id="token-expires" class="text-900"
+        >{{ tokenExpiration$() | date : 'medium' }}</span
+      >
+    </div>
+
+    <div class="field">
+      <label for="session-status" class="block text-900 font-medium mb-2"
+        >Session Status</label
+      >
+      <span id="session-status" class="text-green-500 font-medium">
+        <i class="pi pi-check-circle mr-1"></i>Active
+      </span>
+    </div>
+  </div>
+</p-card>

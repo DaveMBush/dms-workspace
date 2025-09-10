@@ -7,9 +7,10 @@ import { ProfileService } from './profile.service';
 vi.mock('@aws-amplify/auth', () => ({
   getCurrentUser: vi.fn(),
   fetchAuthSession: vi.fn(),
-  changePassword: vi.fn(),
+  updatePassword: vi.fn(),
   updateUserAttributes: vi.fn(),
-  verifyUserAttribute: vi.fn(),
+  confirmUserAttribute: vi.fn(),
+  sendUserAttributeVerificationCode: vi.fn(),
   resetPassword: vi.fn(),
   confirmResetPassword: vi.fn(),
 }));
@@ -76,19 +77,15 @@ describe('ProfileService', () => {
 
   describe('changeUserPassword', () => {
     it('should change password successfully', async () => {
-      const { changePassword, getCurrentUser } = await import(
-        '@aws-amplify/auth'
-      );
-      const mockUser = { username: 'testuser' };
+      const { updatePassword } = await import('@aws-amplify/auth');
 
-      vi.mocked(getCurrentUser).mockResolvedValue(mockUser);
-      vi.mocked(changePassword).mockResolvedValue(undefined);
+      vi.mocked(updatePassword).mockResolvedValue(undefined);
 
       await expect(
         service.changeUserPassword('oldpass', 'newpass')
       ).resolves.not.toThrow();
 
-      expect(changePassword).toHaveBeenCalledWith({
+      expect(updatePassword).toHaveBeenCalledWith({
         oldPassword: 'oldpass',
         newPassword: 'newpass',
       });
@@ -97,17 +94,13 @@ describe('ProfileService', () => {
     });
 
     it('should handle password change error', async () => {
-      const { changePassword, getCurrentUser } = await import(
-        '@aws-amplify/auth'
-      );
-      const mockUser = { username: 'testuser' };
+      const { updatePassword } = await import('@aws-amplify/auth');
       const error = {
         name: 'NotAuthorizedException',
         message: 'Incorrect password',
       };
 
-      vi.mocked(getCurrentUser).mockResolvedValue(mockUser);
-      vi.mocked(changePassword).mockRejectedValue(error);
+      vi.mocked(updatePassword).mockRejectedValue(error);
 
       await expect(
         service.changeUserPassword('oldpass', 'newpass')
@@ -154,8 +147,8 @@ describe('ProfileService', () => {
 
   describe('verifyEmailChange', () => {
     it('should verify email change successfully', async () => {
-      const { verifyUserAttribute } = await import('@aws-amplify/auth');
-      vi.mocked(verifyUserAttribute).mockResolvedValue();
+      const { confirmUserAttribute } = await import('@aws-amplify/auth');
+      vi.mocked(confirmUserAttribute).mockResolvedValue();
 
       // Mock loadUserProfile to avoid actual profile loading
       const loadProfileSpy = vi
@@ -164,7 +157,7 @@ describe('ProfileService', () => {
 
       await expect(service.verifyEmailChange('123456')).resolves.not.toThrow();
 
-      expect(verifyUserAttribute).toHaveBeenCalledWith({
+      expect(confirmUserAttribute).toHaveBeenCalledWith({
         userAttributeKey: 'email',
         confirmationCode: '123456',
       });
@@ -172,10 +165,10 @@ describe('ProfileService', () => {
     });
 
     it('should handle verify email error', async () => {
-      const { verifyUserAttribute } = await import('@aws-amplify/auth');
+      const { confirmUserAttribute } = await import('@aws-amplify/auth');
       const error = { name: 'CodeMismatchException', message: 'Invalid code' };
 
-      vi.mocked(verifyUserAttribute).mockRejectedValue(error);
+      vi.mocked(confirmUserAttribute).mockRejectedValue(error);
 
       await expect(service.verifyEmailChange('wrong-code')).rejects.toThrow();
     });
@@ -248,10 +241,12 @@ describe('ProfileService', () => {
 
   describe('getErrorMessage', () => {
     it('should return correct error messages for known error types', () => {
-      const service = TestBed.inject(ProfileService);
+      const profileService = TestBed.inject(ProfileService);
 
       // Access private method for testing
-      const getErrorMessage = (service as any).getErrorMessage.bind(service);
+      const getErrorMessage = (profileService as any).getErrorMessage.bind(
+        profileService
+      );
 
       expect(getErrorMessage({ name: 'NotAuthorizedException' })).toBe(
         'Current password is incorrect'
