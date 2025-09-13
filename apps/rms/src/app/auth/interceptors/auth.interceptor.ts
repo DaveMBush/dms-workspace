@@ -8,9 +8,10 @@ import {
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { EMPTY, from, Observable, throwError } from 'rxjs';
-import { catchError, switchMap } from 'rxjs/operators';
+import { catchError, switchMap, tap } from 'rxjs/operators';
 
 import { AuthService } from '../auth.service';
+import { AuthMetricsService } from '../services/auth-metrics.service';
 import { TokenRefreshService } from '../services/token-refresh.service';
 
 // Auth endpoints path prefix
@@ -35,42 +36,104 @@ export const authInterceptor: HttpInterceptorFn = function authInterceptorImpl(
 };
 
 /**
+ * Get error type string from error object
+ */
+function getErrorType(error: unknown, defaultType = 'unknown-error'): string {
+  return error instanceof HttpErrorResponse
+    ? `http-${error.status}`
+    : defaultType;
+}
+
+/**
  * Process authenticated request with token handling
  */
 function processAuthenticatedRequest(
   req: HttpRequest<unknown>,
   next: HttpHandlerFn
 ): Observable<HttpEvent<unknown>> {
-  const authService = inject(AuthService);
-  const tokenRefreshService = inject(TokenRefreshService);
-  const router = inject(Router);
-
-  // Skip authentication for public endpoints
-  if (isPublicEndpoint(req.url)) {
+  // Skip authentication for public and auth endpoints
+  if (isPublicEndpoint(req.url) || isAuthEndpoint(req.url)) {
     return next(req);
   }
 
-  // Skip authentication for auth-related endpoints
-  if (isAuthEndpoint(req.url)) {
-    return next(req);
-  }
+  const services = injectAuthServices();
+  return executeAuthenticatedRequest(req, next, services);
+}
 
-  // Add authorization header with token and handle refresh if needed
-  return from(getTokenWithRefresh(authService, tokenRefreshService)).pipe(
+/**
+ * Inject required authentication services
+ */
+function injectAuthServices(): {
+  authService: AuthService;
+  tokenRefreshService: TokenRefreshService;
+  authMetrics: AuthMetricsService;
+  router: Router;
+} {
+  return {
+    authService: inject(AuthService),
+    tokenRefreshService: inject(TokenRefreshService),
+    authMetrics: inject(AuthMetricsService),
+    router: inject(Router),
+  };
+}
+
+/**
+ * Execute authenticated request with timing and error handling
+ */
+function executeAuthenticatedRequest(
+  req: HttpRequest<unknown>,
+  next: HttpHandlerFn,
+  services: ReturnType<typeof injectAuthServices>
+): Observable<HttpEvent<unknown>> {
+  const requestId = req.headers.get('X-Request-ID');
+  const endTiming = services.authMetrics.startOperation(
+    'interceptor',
+    requestId === null ? undefined : requestId
+  );
+
+  return from(
+    getTokenWithRefresh(services.authService, services.tokenRefreshService)
+  ).pipe(
     switchMap(function handleToken(token) {
       const authReq = createAuthenticatedRequest(req, token);
       return handleRequestExecution(
         authReq,
         next,
-        { authService, tokenRefreshService },
-        router
+        {
+          authService: services.authService,
+          tokenRefreshService: services.tokenRefreshService,
+        },
+        services.router
       );
     }),
-    catchError(function handleTokenError(_: unknown) {
-      // Failed to get token, proceed without authentication
+    tap(createTapHandlers(endTiming, services.authService)),
+    catchError(function handleTokenError(error: unknown) {
+      const errorType = getErrorType(error, 'token-error');
+      endTiming(false, errorType);
       return next(req);
     })
   );
+}
+
+/**
+ * Create tap handlers for success and error cases
+ */
+function createTapHandlers(
+  endTiming: (success: boolean, errorType?: string, cacheHit?: boolean) => void,
+  authService: AuthService
+): {
+  next(): void;
+  error(error: unknown): void;
+} {
+  return {
+    next: function onSuccess() {
+      endTiming(true, undefined, authService.getCachedAccessToken() !== null);
+    },
+    error: function onError(error: unknown) {
+      const errorType = getErrorType(error);
+      endTiming(false, errorType);
+    },
+  };
 }
 
 /**
