@@ -1,8 +1,8 @@
-# Story L.6: Database Connection and Query Optimization
+# Story L.3: Database Connection and Query Optimization
 
 ## Status
 
-Draft
+Approved
 
 ## Story
 
@@ -62,7 +62,7 @@ Draft
 
 ### Dependencies
 
-Depends on Stories L.1-L.5 for complete authentication performance optimization context.
+Based on completed authentication performance optimizations (token caching, interceptor optimization, lazy loading, and token refresh scheduling) to provide final database-level performance improvements.
 
 ### Current Database Architecture Analysis
 
@@ -126,7 +126,7 @@ interface DatabaseMetrics {
 
 **Performance Monitoring Integration**:
 
-- Integrate with performance monitoring from L.4
+- Integrate with performance monitoring from L.2
 - Add database-specific metrics to overall auth performance
 - Monitor query execution times
 - Track connection pool efficiency
