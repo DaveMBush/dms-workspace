@@ -63,11 +63,7 @@ describe('ProfileService', () => {
       const { getCurrentUser } = await import('@aws-amplify/auth');
       vi.mocked(getCurrentUser).mockRejectedValue(new Error('Load failed'));
 
-      try {
-        await service.loadUserProfile();
-      } catch {
-        // Expected error
-      }
+      await service.loadUserProfile(); // No expect rejection, it handles error internally
 
       expect(service.profile()).toBe(null);
       expect(service.loading()).toBe(false);

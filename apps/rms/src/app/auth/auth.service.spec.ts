@@ -261,6 +261,10 @@ describe('AuthService', () => {
 
     it('should return null when token fetch fails', async () => {
       // Arrange
+      // Clear any cached tokens to test AWS failure scenario
+      service.getTokenCacheStats(); // Access the service to ensure it's initialized
+      // Use a fresh service instance or clear cache via signOut
+      await service.signOut();
       mockFetchAuthSession.mockRejectedValue(new Error('Session expired'));
 
       // Act

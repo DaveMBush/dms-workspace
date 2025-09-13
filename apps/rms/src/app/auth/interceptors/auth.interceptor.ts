@@ -166,67 +166,36 @@ function isAuthEndpoint(url: string): boolean {
 }
 
 /**
- * Global refresh state to prevent multiple concurrent refresh attempts
- */
-let refreshInProgress = false;
-let refreshPromise: Promise<string | null> | null = null;
-
-/**
  * Get token with automatic refresh if needed
+ * Fast path: only use cached token, don't wait for expensive fetches
  */
 async function getTokenWithRefresh(
   authService: AuthService,
   tokenRefreshService: TokenRefreshService
 ): Promise<string | null> {
-  const token = await authService.getAccessToken();
+  // Fast path: check cache first without triggering expensive AWS calls
+  const cachedToken = authService.getCachedAccessToken();
 
-  // Check if token needs refresh
-  const hasValidToken =
-    token !== null && token !== undefined && token.length > 0;
-  if (hasValidToken && tokenRefreshService.isTokenNearExpiry()) {
-    // Token near expiry, refreshing before request
-    return handleTokenRefresh(tokenRefreshService, token);
-  }
-
-  return token;
-}
-
-/**
- * Handle token refresh process
- */
-async function handleTokenRefresh(
-  tokenRefreshService: TokenRefreshService,
-  fallbackToken: string
-): Promise<string | null> {
-  if (!refreshInProgress) {
-    refreshInProgress = true;
-    refreshPromise = performTokenRefresh(tokenRefreshService);
-  }
-
-  // Wait for refresh to complete
-  const refreshedToken = await refreshPromise;
-  refreshInProgress = false;
-  refreshPromise = null;
-
-  return refreshedToken ?? fallbackToken;
-}
-
-/**
- * Perform token refresh
- */
-async function performTokenRefresh(
-  tokenRefreshService: TokenRefreshService
-): Promise<string | null> {
-  try {
-    const success = await tokenRefreshService.refreshToken();
-    if (success) {
-      // Get the new token after successful refresh
-      return sessionStorage.getItem('rms_access_token');
+  if (
+    cachedToken !== null &&
+    cachedToken !== undefined &&
+    cachedToken.length > 0
+  ) {
+    // We have a cached token, check if it needs refresh
+    if (tokenRefreshService.isTokenNearExpiry()) {
+      // Token near expiry, trigger background refresh but return current token
+      tokenRefreshService
+        .refreshToken()
+        .catch(function ignoreBackgroundRefreshError() {
+          // Background refresh failed, ignore for now
+        });
     }
-  } catch {
-    // Token refresh failed in interceptor
+    return cachedToken;
   }
-  return null;
+
+  // No cached token, fall back to expensive fetch
+  // This should only happen on first load
+  return authService.getAccessToken();
 }
 
 /**
