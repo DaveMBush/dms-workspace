@@ -131,7 +131,6 @@ export class GlobalUniverseComponent {
   accountOptions$ = computed(function accountOptionsComputed() {
     const accounts = selectAccounts();
     const options = [{ label: 'All Accounts', value: 'all' }];
-
     for (let i = 0; i < accounts.length; i++) {
       const account = accounts[i];
       options.push({
@@ -139,7 +138,6 @@ export class GlobalUniverseComponent {
         value: account.id,
       });
     }
-
     return options;
   });
 

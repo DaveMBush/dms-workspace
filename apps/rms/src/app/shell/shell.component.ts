@@ -39,8 +39,16 @@ const DARK_MODE_KEY = 'rms-dark';
   styleUrl: './shell.component.scss',
 })
 export class ShellComponent extends BaseRouteComponent {
-  private authService = inject(AuthService);
-  private confirmationService = inject(ConfirmationService);
+  constructor() {
+    super();
+    const authService = inject(AuthService);
+    this.authService = authService;
+
+    this.confirmationService = inject(ConfirmationService);
+  }
+
+  private authService!: AuthService;
+  private confirmationService!: ConfirmationService;
 
   themeIcon = 'pi-moon';
   themeTooltip = 'Dark Mode';

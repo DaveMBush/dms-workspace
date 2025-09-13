@@ -50,7 +50,6 @@ export class Account extends BaseRouteComponent implements OnInit, OnDestroy {
 
   override ngOnInit(): void {
     this.accountService.init(this);
-
     super.ngOnInit();
   }
 
@@ -58,14 +57,11 @@ export class Account extends BaseRouteComponent implements OnInit, OnDestroy {
     super.ngOnDestroy();
   }
 
-  // eslint-disable-next-line @smarttools/no-anonymous-functions -- making this a function hides this
+  // Convert SmartArray to regular array for PrimeNG compatibility
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- Computed signals require arrow functions for proper this binding
   accountsArray$ = computed(() => {
-    const accounts = this.accounts$() as SmartArray<Top, AccountInterface>;
-    const accountsArray = [] as AccountInterface[];
-    for (let i = 0; i < accounts.length; i++) {
-      accountsArray.push(accounts[i] as AccountInterface);
-    }
-    return accountsArray;
+    const accounts = this.accounts$();
+    return [...accounts] as AccountInterface[];
   });
 
   addingNode = '';

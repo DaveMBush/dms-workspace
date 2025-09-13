@@ -14,6 +14,7 @@ import { authInterceptor } from './auth.interceptor';
 describe('authInterceptor', () => {
   let mockAuthService: {
     getAccessToken: ReturnType<typeof vi.fn>;
+    getCachedAccessToken: ReturnType<typeof vi.fn>;
     signOut: ReturnType<typeof vi.fn>;
   };
   let mockRouter: {
@@ -26,6 +27,7 @@ describe('authInterceptor', () => {
   beforeEach(() => {
     mockAuthService = {
       getAccessToken: vi.fn(),
+      getCachedAccessToken: vi.fn(),
       signOut: vi.fn(),
     };
     mockRouter = {
@@ -99,12 +101,12 @@ describe('authInterceptor', () => {
   });
 
   describe('protected endpoints', () => {
-    it('should add authorization header when token exists', async () => {
+    it('should add authorization header when cached token exists', async () => {
       const token = 'valid-jwt-token';
       const req = new HttpRequest('GET', '/api/protected');
       const response = new HttpResponse({ status: 200 });
 
-      mockAuthService.getAccessToken.mockResolvedValue(token);
+      mockAuthService.getCachedAccessToken.mockReturnValue(token);
       mockNext.handle.mockReturnValue(of(response));
 
       const result = TestBed.runInInjectionContext(() =>
@@ -115,7 +117,8 @@ describe('authInterceptor', () => {
         result.subscribe(() => resolve(undefined));
       });
 
-      expect(mockAuthService.getAccessToken).toHaveBeenCalled();
+      expect(mockAuthService.getCachedAccessToken).toHaveBeenCalled();
+      expect(mockAuthService.getAccessToken).not.toHaveBeenCalled();
 
       // Check that the request was called with proper headers
       const calledRequest = mockNext.handle.mock
@@ -126,10 +129,11 @@ describe('authInterceptor', () => {
       expect(calledRequest.headers.get('X-Request-ID')).toBeTruthy();
     });
 
-    it('should proceed without token when getAccessToken returns null', async () => {
+    it('should fallback to getAccessToken when no cached token', async () => {
       const req = new HttpRequest('GET', '/api/protected');
       const response = new HttpResponse({ status: 200 });
 
+      mockAuthService.getCachedAccessToken.mockReturnValue(null);
       mockAuthService.getAccessToken.mockResolvedValue(null);
       mockNext.handle.mockReturnValue(of(response));
 
@@ -141,6 +145,7 @@ describe('authInterceptor', () => {
         result.subscribe(() => resolve(undefined));
       });
 
+      expect(mockAuthService.getCachedAccessToken).toHaveBeenCalled();
       expect(mockAuthService.getAccessToken).toHaveBeenCalled();
       expect(mockNext.handle).toHaveBeenCalledWith(req);
     });

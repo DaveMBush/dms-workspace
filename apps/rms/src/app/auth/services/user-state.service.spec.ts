@@ -146,7 +146,7 @@ describe('UserStateService', () => {
 
       expect(newService.profile()).toBeNull();
       // State should be cleared on initialization error
-      expect(newService.userState().isAuthenticated).toBe(false);
+      expect(newService.isAuthenticated()).toBe(false);
     });
   });
 
@@ -397,7 +397,7 @@ describe('UserStateService', () => {
       service.setUserProfile(mockUserProfile);
       service.setSessionMetadata(mockSessionMetadata);
 
-      const userState = service.userState();
+      const userState = service.getUserState();
 
       expect(userState.profile).toEqual(mockUserProfile);
       expect(userState.session).toEqual(mockSessionMetadata);
@@ -416,6 +416,9 @@ describe('UserStateService', () => {
 
   describe('cross-tab synchronization', () => {
     it('should handle storage events for profile updates', () => {
+      // Set up a session first to enable cross-tab sync
+      service.createSession(mockUserProfile, false);
+
       const newProfile = { ...mockUserProfile, username: 'updated' };
       const storageEvent = new MockStorageEvent(
         'storage',
@@ -429,6 +432,9 @@ describe('UserStateService', () => {
     });
 
     it('should handle storage events for session updates', () => {
+      // Set up a session first to enable cross-tab sync
+      service.createSession(mockUserProfile, false);
+
       const newSession = { ...mockSessionMetadata, sessionId: 'new-session' };
       const storageEvent = new MockStorageEvent(
         'storage',
@@ -442,7 +448,8 @@ describe('UserStateService', () => {
     });
 
     it('should handle null values in storage events', () => {
-      service.setUserProfile(mockUserProfile);
+      // Set up a session first to enable cross-tab sync
+      service.createSession(mockUserProfile, false);
 
       const storageEvent = new MockStorageEvent(
         'storage',
@@ -491,7 +498,7 @@ describe('UserStateService', () => {
       window.dispatchEvent(invalidStorageEvent);
 
       // Service should handle sync errors gracefully
-      expect(service.userState().isAuthenticated).toBe(false);
+      expect(service.isAuthenticated()).toBe(false);
     });
   });
 });
