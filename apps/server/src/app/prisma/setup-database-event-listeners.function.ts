@@ -25,7 +25,7 @@ export function setupDatabaseEventListeners(
     if (isDevelopment) {
       client.$on('info', function handleInfoEvent(e: LogEvent): void {
         if (e.message.includes('connection') || e.message.includes('pool')) {
-          throw new Error(`Database connection info: ${e.message}`);
+          console.log(`Database connection info: ${e.message}`);
         }
       });
 
