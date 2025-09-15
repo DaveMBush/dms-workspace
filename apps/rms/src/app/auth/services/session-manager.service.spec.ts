@@ -59,9 +59,11 @@ const mockUserStateService = {
   updateActivity: vi.fn(),
   updateExpiration: vi.fn(),
   clearState: vi.fn(),
-  userState: vi.fn().mockReturnValue({
+  getUserState: vi.fn().mockReturnValue({
     isAuthenticated: false,
     session: null,
+    profile: null,
+    lastSyncTime: new Date(),
   }),
   session: vi.fn().mockReturnValue(null),
 };
@@ -150,11 +152,11 @@ describe('SessionManagerService', () => {
       expect(service.isActive()).toBe(false);
     });
 
-    it('should start activity tracking on initialization', () => {
-      // These should have been called during service construction
+    it('should set up activity callback without starting tracking on initialization', () => {
+      // Only onActivity should be called during construction, not startActivityTracking
       expect(
         mockActivityTrackingService.startActivityTracking
-      ).toHaveBeenCalledTimes(1);
+      ).toHaveBeenCalledTimes(0);
       expect(mockActivityTrackingService.onActivity).toHaveBeenCalledTimes(1);
     });
   });
@@ -171,6 +173,9 @@ describe('SessionManagerService', () => {
         false
       );
       expect(mockTokenRefreshService.startTokenRefreshTimer).toHaveBeenCalled();
+      expect(
+        mockActivityTrackingService.startActivityTracking
+      ).toHaveBeenCalled();
     });
 
     it('should start a remember me session', () => {
@@ -287,6 +292,9 @@ describe('SessionManagerService', () => {
       expect(service.startTime()).toBeNull();
       expect(mockTokenRefreshService.stopTokenRefreshTimer).toHaveBeenCalled();
       expect(mockUserStateService.clearState).toHaveBeenCalled();
+      expect(
+        mockActivityTrackingService.stopActivityTracking
+      ).toHaveBeenCalled();
     });
 
     it('should expire session forcefully', () => {
@@ -485,9 +493,11 @@ describe('SessionManagerService', () => {
             provide: UserStateService,
             useValue: {
               ...mockUserStateService,
-              userState: vi.fn().mockReturnValue({
+              getUserState: vi.fn().mockReturnValue({
                 isAuthenticated: true,
                 session: validSession,
+                profile: null,
+                lastSyncTime: new Date(),
               }),
             },
           },
@@ -538,9 +548,11 @@ describe('SessionManagerService', () => {
             provide: UserStateService,
             useValue: {
               ...mockUserStateService,
-              userState: vi.fn().mockReturnValue({
+              getUserState: vi.fn().mockReturnValue({
                 isAuthenticated: true,
                 session: expiredSession,
+                profile: null,
+                lastSyncTime: new Date(),
               }),
             },
           },

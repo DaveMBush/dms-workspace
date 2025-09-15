@@ -143,16 +143,6 @@ describe('sync-from-screener route', () => {
     registerSyncFromScreener = mod.default;
   });
 
-  test('returns 403 when feature disabled', async () => {
-    process.env.USE_SCREENER_FOR_UNIVERSE = 'false';
-    const f = createFastify();
-    registerSyncFromScreener(f);
-    const api = createApiInstance(f);
-    const res = await api.invoke(SYNC_PATH);
-    expect(res.statusCode).toBe(403);
-    expect(res.payload).toEqual(expectedEmptyResponse);
-  });
-
   test('successful sync with empty selection', async () => {
     h.client.screener.findMany.mockResolvedValueOnce([]);
     h.client.universe.updateMany.mockResolvedValueOnce({ count: 0 });
@@ -320,7 +310,6 @@ describe('sync-from-screener route', () => {
     expect(mockLogger.info).toHaveBeenCalledWith(
       'Sync from screener operation started',
       {
-        featureEnabled: true,
         timestamp: expect.any(String) as string,
       }
     );

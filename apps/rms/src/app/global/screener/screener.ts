@@ -16,6 +16,7 @@ import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ToolbarModule } from 'primeng/toolbar';
 
+import { GlobalLoadingService } from '../../shared/services/global-loading.service';
 import { Screen } from '../../store/screen/screen.interface';
 import { ScreenerService } from './screener.service';
 
@@ -40,7 +41,7 @@ import { ScreenerService } from './screener.service';
 })
 export class Screener {
   screenerService = inject(ScreenerService);
-  showOverlay$ = signal<boolean>(false);
+  globalLoading = inject(GlobalLoadingService);
 
   riskGroups = [
     { label: 'Equities', value: 'Equities' },
@@ -68,13 +69,13 @@ export class Screener {
 
   protected refresh(): void {
     const self = this;
-    this.showOverlay$.set(true);
+    this.globalLoading.show('Refreshing data...');
     this.screenerService.refresh().subscribe({
       next: function refreshSubscribeNext() {
-        self.showOverlay$.set(false);
+        self.globalLoading.hide();
       },
       error: function refreshSubscribeError() {
-        self.showOverlay$.set(false);
+        self.globalLoading.hide();
       },
     });
   }

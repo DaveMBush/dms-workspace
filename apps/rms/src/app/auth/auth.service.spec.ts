@@ -1,5 +1,4 @@
 /* eslint-disable sonarjs/no-hardcoded-passwords -- Test passwords needed for authentication testing */
-/* eslint-disable @typescript-eslint/unbound-method -- Testing requires mocking bound methods */
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import {
@@ -8,7 +7,6 @@ import {
   getCurrentUser,
   fetchAuthSession,
 } from '@aws-amplify/auth';
-import { Amplify } from '@aws-amplify/core';
 import { describe, it, expect, beforeEach, vi, Mock } from 'vitest';
 
 import { AuthService } from './auth.service';
@@ -20,12 +18,6 @@ vi.mock('@aws-amplify/auth', () => ({
   signOut: vi.fn(),
   getCurrentUser: vi.fn(),
   fetchAuthSession: vi.fn(),
-}));
-
-vi.mock('@aws-amplify/core', () => ({
-  Amplify: {
-    configure: vi.fn(),
-  },
 }));
 
 // Mock Router
@@ -101,29 +93,6 @@ describe('AuthService', () => {
   describe('Service Initialization', () => {
     it('should be created', () => {
       expect(service).toBeTruthy();
-    });
-
-    it('should configure Amplify on initialization', async () => {
-      // Wait for the setTimeout to complete
-      await vi.waitFor(() => {
-        expect(Amplify.configure).toHaveBeenCalledWith({
-          Auth: {
-            Cognito: {
-              userPoolId: 'us-east-1_test123',
-              userPoolClientId: 'test-client-id',
-              loginWith: {
-                oauth: {
-                  domain: 'test.auth.us-east-1.amazoncognito.com',
-                  scopes: ['openid', 'email', 'profile'],
-                  redirectSignIn: ['http://localhost:4200'],
-                  redirectSignOut: ['http://localhost:4200/auth/signout'],
-                  responseType: 'code',
-                },
-              },
-            },
-          },
-        });
-      });
     });
 
     it('should initialize with no authenticated user', () => {
@@ -292,6 +261,10 @@ describe('AuthService', () => {
 
     it('should return null when token fetch fails', async () => {
       // Arrange
+      // Clear any cached tokens to test AWS failure scenario
+      service.getTokenCacheStats(); // Access the service to ensure it's initialized
+      // Use a fresh service instance or clear cache via signOut
+      await service.signOut();
       mockFetchAuthSession.mockRejectedValue(new Error('Session expired'));
 
       // Act

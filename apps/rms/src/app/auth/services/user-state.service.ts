@@ -60,6 +60,9 @@ export class UserStateService {
   private sessionMetadata = signal<SessionMetadata | null>(null);
   private lastSyncTime = signal<Date>(new Date());
 
+  // Cross-tab sync state
+  private crossTabSyncActive = false;
+
   // Public readonly signals
   readonly profile = this.userProfile.asReadonly();
   readonly session = this.sessionMetadata.asReadonly();
@@ -72,25 +75,11 @@ export class UserStateService {
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- Computed signal callback
   readonly isSessionActive = computed(() => {
     const session = this.sessionMetadata();
-    if (!session) {
-      return false;
+    if (!session?.expirationTime) {
+      return session !== null;
     }
-
-    if (session.expirationTime) {
-      return new Date() < session.expirationTime;
-    }
-    return true;
+    return Date.now() < session.expirationTime.getTime();
   });
-
-  readonly userState = computed(
-    // eslint-disable-next-line @smarttools/no-anonymous-functions -- Computed signal callback
-    (): UserState => ({
-      profile: this.userProfile(),
-      session: this.sessionMetadata(),
-      isAuthenticated: this.isAuthenticated(),
-      lastSyncTime: this.lastSyncTime(),
-    })
-  );
 
   // Storage keys
   private readonly storageKeys = {
@@ -102,7 +91,20 @@ export class UserStateService {
 
   constructor() {
     this.initializeState();
-    this.setupCrossTabSync();
+    // Cross-tab sync will be started when a session is created
+  }
+
+  /**
+   * Get current user state snapshot
+   * Note: Use individual signals instead of this method for reactive updates
+   */
+  getUserState(): UserState {
+    return {
+      profile: this.userProfile(),
+      session: this.sessionMetadata(),
+      isAuthenticated: this.isAuthenticated(),
+      lastSyncTime: this.lastSyncTime(),
+    };
   }
 
   /**
@@ -132,6 +134,12 @@ export class UserStateService {
       }
 
       this.lastSyncTime.set(new Date());
+
+      // Set up cross-tab sync if we have an existing session
+      if (this.userProfile() !== null && this.sessionMetadata() !== null) {
+        this.setupCrossTabSync();
+      }
+
       // User state initialized from storage
     } catch {
       // Failed to initialize user state from storage
@@ -212,6 +220,11 @@ export class UserStateService {
       localStorage.setItem(this.storageKeys.rememberMe, 'true');
     } else {
       localStorage.removeItem(this.storageKeys.rememberMe);
+    }
+
+    // Set up cross-tab sync when session is created
+    if (!this.crossTabSyncActive) {
+      this.setupCrossTabSync();
     }
 
     // New session created - comment placeholder
@@ -297,6 +310,10 @@ export class UserStateService {
    * Sync state across browser tabs using storage events
    */
   private setupCrossTabSync(): void {
+    if (this.crossTabSyncActive) {
+      return;
+    }
+
     const storageEvents = fromEvent<StorageEvent>(window, 'storage');
     const relevantEvents = storageEvents.pipe(
       filter(
@@ -336,6 +353,8 @@ export class UserStateService {
           // Failed to sync user state across tabs
         }
       });
+
+    this.crossTabSyncActive = true;
   }
 
   /**

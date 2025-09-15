@@ -347,11 +347,11 @@ describe('ActivityTrackingService', () => {
       // Record activity, then wait to ensure time passes
       service.recordActivity();
 
-      // Wait 1ms to ensure some time has passed
-      await new Promise((resolve) => setTimeout(resolve, 1));
+      // Wait 10ms to ensure some time has passed
+      await new Promise((resolve) => setTimeout(resolve, 10));
 
       const timeSince = service.getTimeSinceLastActivity();
-      expect(timeSince).toBeGreaterThan(0);
+      expect(timeSince).toBeGreaterThanOrEqual(5); // Allow for at least 5ms to have passed
     });
   });
 });

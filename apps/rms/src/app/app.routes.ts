@@ -125,6 +125,11 @@ export const appRoutes: Route[] = [
             (m) => m.GlobalSummaryComponent
           ),
       },
+      {
+        path: 'profile',
+        loadComponent: async () =>
+          import('./auth/profile/profile').then((m) => m.Profile),
+      },
     ],
   },
   // Catch-all route - redirect to login for unauthenticated users

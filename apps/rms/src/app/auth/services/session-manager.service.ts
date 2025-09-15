@@ -124,6 +124,10 @@ export class SessionManagerService {
     this.sessionStartTime.set(now);
     this.lastExtensionTime.set(now);
     this.sessionStatus.set(SessionStatus.Active);
+
+    // Start activity tracking when session begins
+    this.activityTrackingService.startActivityTracking();
+
     this.sessionTimerService.startTimers({
       sessionTimeoutMinutes: this.config.sessionTimeoutMinutes,
       warningTimeMinutes: this.config.warningTimeMinutes,
@@ -173,6 +177,10 @@ export class SessionManagerService {
     this.sessionStatus.set(SessionStatus.Expired);
     this.sessionTimerService.stopTimers();
     this.tokenRefreshService.stopTokenRefreshTimer();
+
+    // Stop activity tracking when session expires
+    this.activityTrackingService.stopActivityTracking();
+
     this.userStateService.clearState();
     this.sessionStartTime.set(null);
     this.lastExtensionTime.set(null);
@@ -225,7 +233,7 @@ export class SessionManagerService {
   }
 
   private initializeSessionManagement(): void {
-    this.activityTrackingService.startActivityTracking();
+    // Set up activity callback without starting tracking yet
     this.activityTrackingService.onActivity(
       // eslint-disable-next-line @smarttools/no-anonymous-functions -- Activity callback
       (activityTime: Date) => {
@@ -233,7 +241,7 @@ export class SessionManagerService {
       }
     );
 
-    const userState = this.userStateService.userState();
+    const userState = this.userStateService.getUserState();
     if (userState.isAuthenticated && userState.session) {
       this.restoreSession(userState.session);
     }
@@ -305,6 +313,10 @@ export class SessionManagerService {
     this.sessionStartTime.set(sessionMetadata.loginTime);
     this.lastExtensionTime.set(sessionMetadata.lastActivity);
     this.sessionStatus.set(restorationResult.status);
+
+    // Start activity tracking for restored session
+    this.activityTrackingService.startActivityTracking();
+
     if (restorationResult.shouldStartTimers) {
       this.sessionTimerService.startTimers({
         sessionTimeoutMinutes: this.config.sessionTimeoutMinutes,

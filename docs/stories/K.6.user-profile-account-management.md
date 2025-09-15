@@ -31,6 +31,7 @@ Draft
 - `pnpm nx run rms:lint`
 - `pnpm nx run rms:build:production`
 - `pnpm nx run rms-e2e:lint`
+- `pnpm nx run infrastructure:lint`
 
 ## Tasks / Subtasks
 

@@ -1,0 +1,131 @@
+:host {
+  display: block;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.profile-container {
+  min-height: calc(100vh - 200px);
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+
+  h1 {
+    margin-bottom: 0.5rem;
+  }
+
+  .field {
+    margin-bottom: 1rem;
+
+    label {
+      font-weight: 500;
+      color: var(--text-color);
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    .text-red-500 {
+      color: #ef4444;
+    }
+  }
+
+  p-card {
+    height: 100%;
+
+    .p-card {
+      height: 100%;
+
+      .p-card-content {
+        padding: 1.5rem;
+      }
+    }
+  }
+
+  p-tabview {
+    .p-tabview-panels {
+      padding: 1.5rem 0;
+    }
+  }
+
+  .session-info-grid {
+    display: grid;
+    gap: 1rem;
+
+    @media (min-width: 768px) {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .password-form {
+    .p-password {
+      width: 100%;
+    }
+  }
+
+  .account-actions {
+    .p-button {
+      width: 100%;
+      margin-bottom: 0.75rem;
+    }
+  }
+
+  .verification-step {
+    background: var(--primary-50);
+    border: 1px solid var(--primary-200);
+    border-radius: 6px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+
+    .pi-info-circle {
+      color: var(--primary-500);
+    }
+  }
+
+  .session-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    &.active {
+      color: var(--green-500);
+    }
+
+    &.warning {
+      color: var(--orange-500);
+    }
+
+    &.expired {
+      color: var(--red-500);
+    }
+  }
+
+  small.text-red-500 {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 0.75rem;
+  }
+
+  .loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem;
+
+    .pi-spinner {
+      font-size: 2rem;
+      color: var(--primary-color);
+    }
+
+    p {
+      margin-top: 1rem;
+      color: var(--text-color-secondary);
+    }
+  }
+
+  // Dark mode adjustments
+  :host-context(.p-dark) {
+    .verification-step {
+      background: var(--primary-900);
+      border-color: var(--primary-700);
+    }
+  }
+}
