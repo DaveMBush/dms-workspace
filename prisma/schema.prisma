@@ -16,6 +16,11 @@ model accounts {
   version     Int           @default(1)
   divDeposits divDeposits[]
   trades      trades[]
+
+  // Indexes for authentication and user lookup optimization
+  @@index([name])
+  @@index([createdAt])
+  @@index([deletedAt])
 }
 
 model universe {
@@ -66,6 +71,13 @@ model trades {
   deletedAt  DateTime?
   account    accounts  @relation(fields: [accountId], references: [id])
   universe   universe  @relation(fields: [universeId], references: [id])
+
+  // Indexes for authentication and session data optimization
+  @@index([accountId])
+  @@index([buy_date])
+  @@index([sell_date])
+  @@index([accountId, buy_date])
+  @@index([accountId, sell_date])
 }
 
 model holidays {
@@ -101,6 +113,11 @@ model divDeposits {
   universe         universe?      @relation(fields: [universeId], references: [id])
   divDepositType   divDepositType @relation(fields: [divDepositTypeId], references: [id])
   account          accounts       @relation(fields: [accountId], references: [id])
+
+  // Indexes for session data and account-related queries
+  @@index([accountId])
+  @@index([date])
+  @@index([accountId, date])
 }
 
 model screener {

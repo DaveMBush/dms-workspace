@@ -15,10 +15,6 @@ interface SyncSummary {
   logFilePath: string;
 }
 
-function isFeatureEnabled(): boolean {
-  return process.env.USE_SCREENER_FOR_UNIVERSE === 'true';
-}
-
 interface PrismaClientLike {
   screener: {
     findMany(
@@ -225,21 +221,8 @@ async function handleSyncRequest(logger: SyncLogger): Promise<SyncSummary> {
   const startTime = Date.now();
 
   logger.info('Sync from screener operation started', {
-    featureEnabled: isFeatureEnabled(),
     timestamp: new Date().toISOString(),
   });
-
-  if (!isFeatureEnabled()) {
-    logger.warn('Sync operation blocked - feature flag disabled');
-    return {
-      inserted: 0,
-      updated: 0,
-      markedExpired: 0,
-      selectedCount: 0,
-      correlationId: logger.getCorrelationId(),
-      logFilePath: logger.getLogFilePath(),
-    };
-  }
 
   try {
     const summary = await processSyncTransaction(logger);
@@ -285,11 +268,7 @@ export default function registerSyncFromScreener(
       const logger = new SyncLogger();
       const summary = await handleSyncRequest(logger);
 
-      if (!isFeatureEnabled()) {
-        reply.status(403).send(summary);
-      } else {
-        reply.status(200).send(summary);
-      }
+      reply.status(200).send(summary);
     }
   );
 }

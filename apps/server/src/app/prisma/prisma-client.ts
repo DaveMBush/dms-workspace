@@ -1,29 +1,25 @@
 import { PrismaClient } from '@prisma/client';
 
+import { createBasePrismaConfig } from './create-base-prisma-config.function';
+import type { ClientWithEvents } from './database-event-types';
+import { setupDatabaseEventListeners } from './setup-database-event-listeners.function';
+
 const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
 
-// Connection pool configuration for PostgreSQL
 const createPrismaClient = (): PrismaClient => {
-  return new PrismaClient({
-    // Enable query logging in development
-    log:
-      process.env.NODE_ENV === 'development'
-        ? ['query', 'info', 'warn', 'error']
-        : ['error'],
+  const isDevelopment = process.env.NODE_ENV === 'development';
+  const config = createBasePrismaConfig(isDevelopment);
 
-    // PostgreSQL connection pool configuration
-    datasources: {
-      db: {
-        url: process.env.DATABASE_URL,
-      },
-    },
-
-    // Error formatting for better debugging
-    errorFormat: 'minimal',
-  });
+  return new PrismaClient(config);
 };
 
 export const prisma = globalForPrisma.prisma || createPrismaClient();
+
+// Setup database event listeners
+setupDatabaseEventListeners(
+  prisma as ClientWithEvents & PrismaClient,
+  process.env.NODE_ENV === 'development'
+);
 
 // Prevent multiple instances in development
 if (process.env.NODE_ENV !== 'production') {
