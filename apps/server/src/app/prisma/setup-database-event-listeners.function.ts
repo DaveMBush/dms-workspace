@@ -1,5 +1,6 @@
 import type { PrismaClient } from '@prisma/client';
 
+import { logger } from '../../utils/structured-logger';
 import type {
   ClientWithEvents,
   LogEvent,
@@ -14,7 +15,7 @@ export function setupDatabaseEventListeners(
     client.$on('query', function handleQueryEvent(e: QueryEvent): void {
       const duration = e.duration;
       if (duration > 50 && isDevelopment) {
-        throw new Error(
+        logger.warn(
           `Slow query detected (${duration}ms): ${e.query.substring(0, 100)}${
             e.query.length > 100 ? '...' : ''
           }`
@@ -25,7 +26,7 @@ export function setupDatabaseEventListeners(
     if (isDevelopment) {
       client.$on('info', function handleInfoEvent(e: LogEvent): void {
         if (e.message.includes('connection') || e.message.includes('pool')) {
-          console.log(`Database connection info: ${e.message}`);
+          logger.info(`Database connection info: ${e.message}`);
         }
       });
 

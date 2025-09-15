@@ -55,3 +55,4 @@ CLAUDE.md
 .claude
 database copy.dbbackups/
 database*.db
+logs
