@@ -5,7 +5,10 @@
     @if (isAuthenticated$()) {
     <div class="flex items-center gap-3">
       <!-- User Display Name -->
-      <span class="text-color-secondary text-sm font-medium">
+      <span
+        class="text-color-secondary text-sm font-medium"
+        data-testid="user-menu"
+      >
         Welcome, {{ getUserDisplayName$() }}
       </span>
 
@@ -29,6 +32,7 @@
         (onClick)="logout()"
         pTooltip="Sign Out"
         tooltipPosition="bottom"
+        data-testid="logout-button"
       />
     </div>
     }
@@ -71,4 +75,4 @@
 </p-splitter>
 
 <!-- Confirmation Dialog -->
-<p-confirmDialog></p-confirmDialog>
+<p-confirmDialog data-testid="confirm-dialog"></p-confirmDialog>
