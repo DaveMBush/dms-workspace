@@ -6,10 +6,12 @@ import {
   signIn,
   signOut,
 } from '@aws-amplify/auth';
+import { firstValueFrom, Observable } from 'rxjs';
 import { filter } from 'rxjs/operators';
 
 import { AuthError } from './auth.types';
 import { BaseAuthService } from './base-auth-service.abstract';
+import { SecureCookieService } from './services/secure-cookie.service';
 import {
   SessionEvent,
   SessionEventType,
@@ -17,12 +19,12 @@ import {
   SessionStatus,
 } from './services/session-manager.service';
 import { TokenCacheService } from './services/token-cache.service';
+import { TokenHandlerService } from './services/token-handler.service';
 import { TokenRefreshService } from './services/token-refresh.service';
 import { UserProfile } from './services/user-state.service';
 import { mapAmplifyUserToAuthUser } from './utils/amplify-user-mapper.function';
 import { getAuthErrorMessage } from './utils/auth-error-handler.function';
 import { clearAuthTokens } from './utils/clear-auth-tokens.function';
-import { storeAuthTokens } from './utils/store-auth-tokens.function';
 
 @Injectable({
   providedIn: 'root',
@@ -31,6 +33,8 @@ export class AuthService extends BaseAuthService {
   private sessionManager!: SessionManagerService;
   private tokenCache!: TokenCacheService;
   private tokenRefresh!: TokenRefreshService;
+  private secureCookieService!: SecureCookieService;
+  private tokenHandler!: TokenHandlerService;
 
   // Session-related signals
   private rememberMePreference = signal(false);
@@ -40,10 +44,12 @@ export class AuthService extends BaseAuthService {
     this.sessionManager = inject(SessionManagerService);
     this.tokenCache = inject(TokenCacheService);
     this.tokenRefresh = inject(TokenRefreshService);
+    this.secureCookieService = inject(SecureCookieService);
+    this.tokenHandler = inject(TokenHandlerService);
     this.setupSessionEventListeners();
-    // eslint-disable-next-line @smarttools/no-anonymous-functions -- Arrow function required for proper this binding
-    setTimeout(() => {
-      this.initializeAuth().catch(function ignoreError() {
+    const context = this;
+    setTimeout(function initializeAuth() {
+      context.initializeAuth().catch(function ignoreError() {
         // Initialization errors are handled by the service
       });
     }, 0);
@@ -64,9 +70,14 @@ export class AuthService extends BaseAuthService {
     try {
       this.tokenCache.clear();
       this.sessionManager.expireSession(true);
+
+      // Clear secure cookies if enabled
+      await this.clearSecureCookiesIfEnabled();
+
       await signOut();
       await this.performSignOutCleanup();
     } catch {
+      // Ensure cleanup happens even if signOut fails
       await this.performSignOutCleanup();
     } finally {
       this.isLoadingSignal.set(false);
@@ -151,7 +162,7 @@ export class AuthService extends BaseAuthService {
         ]);
         const authUser = mapAmplifyUserToAuthUser(user);
         this.currentUserSignal.set(authUser);
-        this.handleSessionTokens(session);
+        await this.tokenHandler.handleSessionTokens(session);
         const userProfile: UserProfile = {
           username: authUser.username,
           email: authUser.email,
@@ -251,21 +262,16 @@ export class AuthService extends BaseAuthService {
     }
   }
 
-  private handleSessionTokens(session: unknown): void {
-    const sessionData = session as {
-      tokens?: {
-        accessToken?: { toString(): string; payload: { exp: number } };
-        idToken?: { toString(): string };
-        refreshToken?: { toString(): string };
-      };
-    };
-    if (sessionData.tokens) {
-      storeAuthTokens({
-        accessToken: sessionData.tokens.accessToken?.toString() ?? '',
-        idToken: sessionData.tokens.idToken?.toString() ?? '',
-        refreshToken: sessionData.tokens.refreshToken?.toString() ?? '',
-        expiration: sessionData.tokens.accessToken?.payload.exp,
-      });
+  private async clearSecureCookiesIfEnabled(): Promise<void> {
+    if (this.secureCookieService.isSecureCookiesEnabled()) {
+      try {
+        const clearCookiesObservable: Observable<unknown> =
+          this.secureCookieService.clearSecureTokens();
+        // eslint-disable-next-line no-restricted-syntax -- AWS Amplify integration requires Promise handling
+        await firstValueFrom(clearCookiesObservable);
+      } catch {
+        // Ignore cookie clearing errors during signout
+      }
     }
   }
 

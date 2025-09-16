@@ -17,9 +17,39 @@ export const environment = {
   security: {
     enableCSP: true,
     strictSSL: true,
+    useSecureCookies: true,
+    csrfProtection: true,
+    rateLimitingEnabled: true,
+    auditLoggingEnabled: true,
+    cspEnabled: true,
+    hstsEnabled: true,
+    securityHeaders: true,
   },
   auth: {
     useMockAuth: false, // Production should always use real AWS Cognito
+    tokenStorage: 'secure-cookies', // Use secure HTTP-only cookies
+    sessionTimeout: 3600000, // 1 hour
+    refreshTokenGracePeriod: 300000, // 5 minutes
+  },
+  api: {
+    baseUrl: 'PLACEHOLDER_API_URL',
+    timeout: 30000,
+    retryAttempts: 3,
+    retryDelay: 1000,
+  },
+  monitoring: {
+    enablePerformanceMonitoring: true,
+    enableSecurityMonitoring: true,
+    logLevel: 'warn',
+    errorReporting: {
+      enabled: true,
+      sampleRate: 1.0,
+    },
+  },
+  rateLimit: {
+    enabled: true,
+    requests: 1000,
+    windowMs: 900000, // 15 minutes
   },
   cognito: cognitoConfigProd,
 };
