@@ -119,8 +119,7 @@ async function sendCSRFTokenMismatchError(
 async function validateStoredToken(
   request: FastifyRequest,
   reply: FastifyReply,
-  // eslint-disable-next-line @typescript-eslint/naming-convention -- Parameter intentionally unused
-  _token: string
+  _: string
 ): Promise<boolean> {
   const sessionId = generateSessionId(request);
   const storedData = csrfTokenStore.get(sessionId);
