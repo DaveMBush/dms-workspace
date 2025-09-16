@@ -1,4 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { vi } from 'vitest';
 import { signal } from '@angular/core';
@@ -39,6 +41,8 @@ describe('Profile', () => {
     await TestBed.configureTestingModule({
       imports: [Profile, NoopAnimationsModule],
       providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
         { provide: ProfileService, useValue: profileServiceMock },
         { provide: ProfileActionsService, useValue: profileActionsServiceMock },
         { provide: ConfirmationService, useValue: confirmationServiceMock },

@@ -144,20 +144,19 @@ export class TokenRefreshService {
   private performTokenRefresh(): Observable<boolean> {
     this.refreshInProgress.set(true);
 
-    // eslint-disable-next-line @smarttools/no-anonymous-functions -- Observable constructor requires function
-    return new Observable<boolean>((observer) => {
-      this.attemptRefreshWithRetry(0)
-        // eslint-disable-next-line @smarttools/no-anonymous-functions -- Promise then/catch callbacks
-        .then((success) => {
-          this.refreshInProgress.set(false);
-          this.refreshSubject.next(success);
+    const context = this;
+    return new Observable<boolean>(function createRefreshObservable(observer) {
+      context
+        .attemptRefreshWithRetry(0)
+        .then(function handleRefreshSuccess(success) {
+          context.refreshInProgress.set(false);
+          context.refreshSubject.next(success);
           observer.next(success);
           observer.complete();
         })
-        // eslint-disable-next-line @smarttools/no-anonymous-functions -- Promise then/catch callbacks
-        .catch((error) => {
-          this.refreshInProgress.set(false);
-          this.refreshSubject.next(false);
+        .catch(function handleRefreshError(error) {
+          context.refreshInProgress.set(false);
+          context.refreshSubject.next(false);
           observer.error(error);
         });
     });

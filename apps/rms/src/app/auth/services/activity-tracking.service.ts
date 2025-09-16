@@ -48,22 +48,22 @@ export class ActivityTrackingService {
     // Starting activity tracking - comment placeholder
 
     // Run outside Angular zone for performance
-    // eslint-disable-next-line @smarttools/no-anonymous-functions -- NgZone callback function
-    this.ngZone.runOutsideAngular(() => {
-      // eslint-disable-next-line @smarttools/no-anonymous-functions -- Array map callback
-      const activityStreams = this.activityEvents.map((event) =>
-        fromEvent(document, event, { passive: true })
+    const context = this;
+    this.ngZone.runOutsideAngular(function setupActivityTracking() {
+      const activityStreams = context.activityEvents.map(
+        function createEventStream(event) {
+          return fromEvent(document, event, { passive: true });
+        }
       );
 
       merge(...activityStreams)
         .pipe(
-          throttleTime(this.activityThreshold), // Limit updates to once per threshold period
-          debounceTime(this.debounceTime), // Wait for event burst to settle
-          takeUntilDestroyed(this.destroyRef)
+          throttleTime(context.activityThreshold), // Limit updates to once per threshold period
+          debounceTime(context.debounceTime), // Wait for event burst to settle
+          takeUntilDestroyed(context.destroyRef)
         )
-        // eslint-disable-next-line @smarttools/no-anonymous-functions -- RxJS subscribe callback
-        .subscribe(() => {
-          this.runActivityUpdate();
+        .subscribe(function handleActivityEvent() {
+          context.runActivityUpdate();
         });
     });
 
@@ -201,9 +201,9 @@ export class ActivityTrackingService {
    * Run activity update inside Angular zone
    */
   private runActivityUpdate(): void {
-    // eslint-disable-next-line @smarttools/no-anonymous-functions -- NgZone.run callback
-    this.ngZone.run(() => {
-      this.updateLastActivity();
+    const context = this;
+    this.ngZone.run(function updateActivity() {
+      context.updateLastActivity();
     });
   }
 
@@ -211,8 +211,7 @@ export class ActivityTrackingService {
    * Notify all registered activity callbacks
    */
   private notifyActivityCallbacks(now: Date): void {
-    // eslint-disable-next-line @smarttools/no-anonymous-functions -- Array forEach callback
-    this.activityCallbacks.forEach((callback) => {
+    this.activityCallbacks.forEach(function executeCallback(callback) {
       try {
         callback(now);
       } catch {
