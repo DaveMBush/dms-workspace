@@ -1,5 +1,7 @@
 /* eslint-disable sonarjs/no-hardcoded-passwords -- Test passwords needed for authentication testing */
 import { TestBed } from '@angular/core/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import {
   signIn,
@@ -84,7 +86,12 @@ describe('AuthService', () => {
 
     // Configure TestBed
     TestBed.configureTestingModule({
-      providers: [AuthService, { provide: Router, useValue: mockRouter }],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        AuthService,
+        { provide: Router, useValue: mockRouter },
+      ],
     });
 
     service = TestBed.inject(AuthService);

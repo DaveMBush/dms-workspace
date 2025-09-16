@@ -28,6 +28,7 @@
     "@aws-amplify/core": "^6.13.1",
     "@aws-sdk/client-ssm": "^3.879.0",
     "@fastify/autoload": "~6.0.3",
+    "@fastify/cookie": "^11.0.2",
     "@fastify/cors": "^11.1.0",
     "@fastify/sensible": "~6.0.2",
     "@primeng/themes": "^19.1.3",

@@ -1,4 +1,6 @@
 import { TestBed } from '@angular/core/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
 import { AuthService } from './auth.service';
 import { TokenCacheService } from './services/token-cache.service';
 import { SessionManagerService } from './services/session-manager.service';
@@ -38,6 +40,8 @@ describe('AuthService Performance Benchmarks', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
         AuthService,
         TokenCacheService,
         {

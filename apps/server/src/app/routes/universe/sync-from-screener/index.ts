@@ -130,7 +130,7 @@ async function createNewUniverseRecord(
 ): Promise<void> {
   const { symbol, riskGroupId, lastPrice, distribution, exDateToSet } = params;
   const { createUniverseRecord } = await import(
-    '../../common/universe-operations.function'
+    '../../common/universe-operations.function.js'
   );
   await createUniverseRecord({
     symbol,
