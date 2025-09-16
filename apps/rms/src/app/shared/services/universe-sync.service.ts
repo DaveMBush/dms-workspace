@@ -34,8 +34,7 @@ export class UniverseSyncService {
     return this.http
       .post<SyncSummary>('/api/universe/sync-from-screener', {})
       .pipe(
-        // eslint-disable-next-line @smarttools/no-anonymous-functions -- map function for RxJS pipe
-        map((result) => {
+        map(function validateSyncResult(result) {
           if (result === null || result === undefined) {
             throw new Error('No response from sync operation');
           }

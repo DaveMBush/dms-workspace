@@ -50,9 +50,10 @@ export class ActivityTrackingService {
     // Run outside Angular zone for performance
     // eslint-disable-next-line @smarttools/no-anonymous-functions -- NgZone callback function
     this.ngZone.runOutsideAngular(() => {
-      // eslint-disable-next-line @smarttools/no-anonymous-functions -- Array map callback
-      const activityStreams = this.activityEvents.map((event) =>
-        fromEvent(document, event, { passive: true })
+      const activityStreams = this.activityEvents.map(
+        function createEventStream(event) {
+          return fromEvent(document, event, { passive: true });
+        }
       );
 
       merge(...activityStreams)
@@ -211,8 +212,7 @@ export class ActivityTrackingService {
    * Notify all registered activity callbacks
    */
   private notifyActivityCallbacks(now: Date): void {
-    // eslint-disable-next-line @smarttools/no-anonymous-functions -- Array forEach callback
-    this.activityCallbacks.forEach((callback) => {
+    this.activityCallbacks.forEach(function executeCallback(callback) {
       try {
         callback(now);
       } catch {

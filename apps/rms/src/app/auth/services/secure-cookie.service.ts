@@ -16,10 +16,10 @@ export class SecureCookieService {
   private readonly clearCookiesEndpoint = `${environment.apiUrl}/api/auth/clear-cookies`;
 
   setSecureToken(token: string, expirationDate: Date): Observable<unknown> {
-    // eslint-disable-next-line @smarttools/no-anonymous-functions -- Arrow function needed for proper this context
-    const makeSetCookieRequest = (csrfToken: string): Observable<unknown> =>
-      this.http.post<unknown>(
-        this.setCookieEndpoint,
+    const context = this;
+    function makeSetCookieRequest(csrfToken: string): Observable<unknown> {
+      return context.http.post<unknown>(
+        context.setCookieEndpoint,
         {
           token,
           expirationDate: expirationDate.toISOString(),
@@ -31,18 +31,18 @@ export class SecureCookieService {
           withCredentials: true,
         }
       );
+    }
 
     return this.getCSRFToken().pipe(switchMap(makeSetCookieRequest));
   }
 
   getCSRFToken(): Observable<string> {
-    // eslint-disable-next-line @smarttools/no-anonymous-functions -- Arrow function needed for proper this context
-    const validateAndExtractToken = (response: CSRFTokenResponse): string => {
+    function validateAndExtractToken(response: CSRFTokenResponse): string {
       if (!response?.csrfToken || response.csrfToken.length === 0) {
         throw new Error('No CSRF token received');
       }
       return response.csrfToken;
-    };
+    }
 
     return this.http
       .get<CSRFTokenResponse>(this.csrfEndpoint, { withCredentials: true })
@@ -50,10 +50,10 @@ export class SecureCookieService {
   }
 
   clearSecureTokens(): Observable<unknown> {
-    // eslint-disable-next-line @smarttools/no-anonymous-functions -- Arrow function needed for proper this context
-    const makeClearCookiesRequest = (csrfToken: string): Observable<unknown> =>
-      this.http.post<unknown>(
-        this.clearCookiesEndpoint,
+    const context = this;
+    function makeClearCookiesRequest(csrfToken: string): Observable<unknown> {
+      return context.http.post<unknown>(
+        context.clearCookiesEndpoint,
         {},
         {
           headers: {
@@ -62,12 +62,12 @@ export class SecureCookieService {
           withCredentials: true,
         }
       );
+    }
 
-    // eslint-disable-next-line @smarttools/no-anonymous-functions -- Arrow function needed for proper this context
-    const handleClearCookiesError = (): Observable<never> => {
+    function handleClearCookiesError(): Observable<never> {
       // Don't throw here as logout should proceed even if cookie clearing fails
       return EMPTY;
-    };
+    }
 
     return this.getCSRFToken().pipe(
       switchMap(makeClearCookiesRequest),

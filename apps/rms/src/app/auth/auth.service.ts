@@ -47,9 +47,9 @@ export class AuthService extends BaseAuthService {
     this.secureCookieService = inject(SecureCookieService);
     this.tokenHandler = inject(TokenHandlerService);
     this.setupSessionEventListeners();
-    // eslint-disable-next-line @smarttools/no-anonymous-functions -- Arrow function required for proper this binding
-    setTimeout(() => {
-      this.initializeAuth().catch(function ignoreError() {
+    const context = this;
+    setTimeout(function initializeAuth() {
+      context.initializeAuth().catch(function ignoreError() {
         // Initialization errors are handled by the service
       });
     }, 0);
