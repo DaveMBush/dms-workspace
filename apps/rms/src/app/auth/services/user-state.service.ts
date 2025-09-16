@@ -322,32 +322,33 @@ export class UserStateService {
           event.key === this.storageKeys.userProfile ||
           event.key === this.storageKeys.sessionMetadata
       ),
-      // eslint-disable-next-line @smarttools/no-anonymous-functions -- RxJS map callback
-      map((event) => ({ key: event.key, newValue: event.newValue }))
+      map(function extractEventData(event) {
+        return { key: event.key, newValue: event.newValue };
+      })
     );
 
+    const context = this;
     relevantEvents
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      // eslint-disable-next-line @smarttools/no-anonymous-functions -- RxJS subscribe callback
-      .subscribe((event) => {
+      .pipe(takeUntilDestroyed(context.destroyRef))
+      .subscribe(function handleStorageEvent(event) {
         try {
-          if (event.key === this.storageKeys.userProfile) {
+          if (event.key === context.storageKeys.userProfile) {
             const profile =
               event.newValue !== null && event.newValue.length > 0
                 ? (JSON.parse(event.newValue) as UserProfile)
                 : null;
-            this.userProfile.set(profile);
-          } else if (event.key === this.storageKeys.sessionMetadata) {
+            context.userProfile.set(profile);
+          } else if (event.key === context.storageKeys.sessionMetadata) {
             const session =
               event.newValue !== null && event.newValue.length > 0
                 ? (JSON.parse(
                     event.newValue,
-                    this.dateReviver.bind(this)
+                    context.dateReviver.bind(context)
                   ) as SessionMetadata)
                 : null;
-            this.sessionMetadata.set(session);
+            context.sessionMetadata.set(session);
           }
-          this.updateSyncTime();
+          context.updateSyncTime();
           // User state synchronized across tabs
         } catch {
           // Failed to sync user state across tabs
