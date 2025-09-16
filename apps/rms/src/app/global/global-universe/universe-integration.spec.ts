@@ -75,7 +75,7 @@ describe('average purchase yield integration tests', () => {
         },
       },
     });
-  });
+  }, integrationTestTimeout); // Increase timeout to 30 seconds for CI database setup
 
   beforeEach(async () => {
     // Clean database in correct order (respecting foreign key constraints)

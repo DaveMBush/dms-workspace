@@ -19,6 +19,7 @@
     <div
       class="group flex flex-row basis-full"
       [class.selected-global]="selectedId === global.id"
+      [attr.data-testid]="global.id + '-link'"
     >
       <div
         class="flex-auto text-color hover:text-color-emphasis whitespace-nowrap truncate flex items-center"

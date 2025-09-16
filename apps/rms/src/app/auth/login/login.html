@@ -32,9 +32,14 @@
             [class.ng-dirty]="emailControl?.dirty"
             autocomplete="email"
             aria-describedby="email-error"
+            data-testid="email-input"
           />
           @if (emailInvalid()) {
-          <small id="email-error" class="text-red-500 mt-1 block">
+          <small
+            id="email-error"
+            class="text-red-500 mt-1 block"
+            data-testid="email-error-message"
+          >
             {{ getEmailErrorMessage() }}
           </small>
           }
@@ -59,10 +64,15 @@
             [weakLabel]="''"
             [mediumLabel]="''"
             [strongLabel]="''"
+            data-testid="password-input"
           >
           </p-password>
           @if (passwordInvalid()) {
-          <small id="password-error" class="text-red-500 mt-1 block">
+          <small
+            id="password-error"
+            class="text-red-500 mt-1 block"
+            data-testid="password-error-message"
+          >
             {{ getPasswordErrorMessage() }}
           </small>
           }
@@ -76,6 +86,7 @@
               formControlName="rememberMe"
               binary="true"
               (onChange)="onRememberMeChange($event.checked)"
+              data-testid="remember-me-checkbox"
             >
             </p-checkbox>
             <label
@@ -100,6 +111,7 @@
               [disabled]="isFormInvalid()"
               [loading]="isLoading$()"
               loadingIcon="pi pi-spin pi-spinner"
+              data-testid="login-button"
             >
             </p-button>
           </div>
@@ -113,6 +125,7 @@
             [text]="authError$()!"
             class="w-full"
             [closable]="false"
+            data-testid="error-message"
           >
           </p-message>
         </div>
