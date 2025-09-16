@@ -70,7 +70,9 @@ export default fp<SecurityPluginOptions>(
     }
 
     // Add security hooks using helper function
-    const { createSecurityHooks } = await import('./security-hooks.function.js');
+    const { createSecurityHooks } = await import(
+      './security-hooks.function.js'
+    );
     createSecurityHooks(fastify, enableAuditLogging, enableRateLimit);
 
     // Register security information endpoint (development only)
