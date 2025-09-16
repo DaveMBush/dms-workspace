@@ -55,7 +55,10 @@ describe('average purchase yield integration tests', () => {
     const { execSync } = await import('child_process');
     // Find workspace root by looking for package.json with workspace config
     let workspaceRoot = process.cwd();
-    while (workspaceRoot !== '/' && !existsSync(join(workspaceRoot, 'prisma', 'schema.prisma'))) {
+    while (
+      workspaceRoot !== '/' &&
+      !existsSync(join(workspaceRoot, 'prisma', 'schema.prisma'))
+    ) {
       workspaceRoot = join(workspaceRoot, '..');
     }
     const schemaPath = join(workspaceRoot, 'prisma', 'schema.prisma');
