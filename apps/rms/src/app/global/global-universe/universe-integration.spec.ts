@@ -53,8 +53,15 @@ describe('average purchase yield integration tests', () => {
 
     // Apply migrations to test database with isolated DATABASE_URL
     const { execSync } = await import('child_process');
-    execSync(`npx prisma migrate deploy --schema=./prisma/schema.prisma`, {
+    // Find workspace root by looking for package.json with workspace config
+    let workspaceRoot = process.cwd();
+    while (workspaceRoot !== '/' && !existsSync(join(workspaceRoot, 'prisma', 'schema.prisma'))) {
+      workspaceRoot = join(workspaceRoot, '..');
+    }
+    const schemaPath = join(workspaceRoot, 'prisma', 'schema.prisma');
+    execSync(`npx prisma migrate deploy --schema=${schemaPath}`, {
       env: { ...process.env, DATABASE_URL: testDbUrl },
+      cwd: workspaceRoot,
     });
 
     // Initialize Prisma client with test database
