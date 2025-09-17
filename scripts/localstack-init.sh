@@ -92,6 +92,8 @@ USER_POOL_ID=$(aws --endpoint-url=http://localhost:4566 cognito-idp create-user-
     }
   }' \
   --auto-verified-attributes email \
+  --username-attributes email \
+  --alias-attributes email \
   --query 'UserPool.Id' \
   --output text 2>/dev/null || echo "us-east-1_LOCAL123")
 
@@ -99,9 +101,55 @@ USER_POOL_ID=$(aws --endpoint-url=http://localhost:4566 cognito-idp create-user-
 CLIENT_ID=$(aws --endpoint-url=http://localhost:4566 cognito-idp create-user-pool-client \
   --user-pool-id "$USER_POOL_ID" \
   --client-name "rms-local-client" \
-  --explicit-auth-flows ADMIN_NO_SRP_AUTH USER_PASSWORD_AUTH \
+  --explicit-auth-flows ADMIN_NO_SRP_AUTH USER_PASSWORD_AUTH ALLOW_USER_PASSWORD_AUTH ALLOW_REFRESH_TOKEN_AUTH \
+  --generate-secret \
+  --token-validity-units '{
+    "AccessToken": "hours",
+    "IdToken": "hours",
+    "RefreshToken": "days"
+  }' \
+  --access-token-validity 24 \
+  --id-token-validity 24 \
+  --refresh-token-validity 30 \
   --query 'UserPoolClient.ClientId' \
   --output text 2>/dev/null || echo "local-client-id-123")
+
+# Update SSM parameters with actual Cognito values
+echo "🔧 Updating SSM parameters with actual Cognito values..."
+aws --endpoint-url=http://localhost:4566 ssm put-parameter \
+  --name "/rms/local/cognito-user-pool-id" \
+  --value "$USER_POOL_ID" \
+  --type "String" \
+  --overwrite || true
+
+aws --endpoint-url=http://localhost:4566 ssm put-parameter \
+  --name "/rms/local/cognito-user-pool-client-id" \
+  --value "$CLIENT_ID" \
+  --type "String" \
+  --overwrite || true
+
+aws --endpoint-url=http://localhost:4566 ssm put-parameter \
+  --name "/rms/local/cognito-jwt-issuer" \
+  --value "http://localhost:4566/cognito-idp/us-east-1/$USER_POOL_ID" \
+  --type "String" \
+  --overwrite || true
+
+# Create test users for local development
+echo "👥 Creating test users..."
+aws --endpoint-url=http://localhost:4566 cognito-idp admin-create-user \
+  --user-pool-id "$USER_POOL_ID" \
+  --username "testuser@example.com" \
+  --user-attributes Name=email,Value=testuser@example.com Name=email_verified,Value=true \
+  --temporary-password "TempPass123!" \
+  --message-action SUPPRESS \
+  2>/dev/null || echo "Test user may already exist"
+
+aws --endpoint-url=http://localhost:4566 cognito-idp admin-set-user-password \
+  --user-pool-id "$USER_POOL_ID" \
+  --username "testuser@example.com" \
+  --password "TestPass123!" \
+  --permanent \
+  2>/dev/null || echo "Password setting may have failed"
 
 echo "🎉 LocalStack initialization complete!"
 echo "📋 Local AWS Services Summary:"
