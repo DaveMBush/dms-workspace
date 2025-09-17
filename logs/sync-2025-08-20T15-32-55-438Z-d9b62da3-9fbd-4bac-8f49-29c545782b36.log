@@ -1,2 +1,0 @@
-{"timestamp":"2025-08-20T15:32:55.438Z","correlationId":"d9b62da3-9fbd-4bac-8f49-29c545782b36","level":"info","message":"Sync from screener operation started","data":{"featureEnabled":true,"timestamp":"2025-08-20T15:32:55.438Z"}}
-{"timestamp":"2025-08-20T15:32:55.439Z","correlationId":"d9b62da3-9fbd-4bac-8f49-29c545782b36","level":"error","message":"Sync from screener operation failed","data":{"error":"Cannot read properties of undefined (reading 'map')","duration":1,"correlationId":"d9b62da3-9fbd-4bac-8f49-29c545782b36"}}

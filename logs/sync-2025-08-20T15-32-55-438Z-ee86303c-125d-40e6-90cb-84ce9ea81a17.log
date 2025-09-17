@@ -1,4 +1,0 @@
-{"timestamp":"2025-08-20T15:32:55.438Z","correlationId":"ee86303c-125d-40e6-90cb-84ce9ea81a17","level":"info","message":"Sync from screener operation started","data":{"featureEnabled":true,"timestamp":"2025-08-20T15:32:55.438Z"}}
-{"timestamp":"2025-08-20T15:32:55.438Z","correlationId":"ee86303c-125d-40e6-90cb-84ce9ea81a17","level":"info","message":"Selected eligible screener records","data":{"selectedCount":0,"symbols":[]}}
-{"timestamp":"2025-08-20T15:32:55.438Z","correlationId":"ee86303c-125d-40e6-90cb-84ce9ea81a17","level":"info","message":"Marked universe records as expired","data":{"expiredCount":0,"totalSymbols":0}}
-{"timestamp":"2025-08-20T15:32:55.438Z","correlationId":"ee86303c-125d-40e6-90cb-84ce9ea81a17","level":"info","message":"Sync from screener operation completed successfully","data":{"summary":{"inserted":0,"updated":0,"markedExpired":0,"selectedCount":0},"duration":0,"correlationId":"ee86303c-125d-40e6-90cb-84ce9ea81a17"}}
