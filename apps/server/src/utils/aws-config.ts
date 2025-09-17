@@ -9,6 +9,7 @@ import {
   GetParameterCommand,
   GetParametersCommand,
   SSMClient,
+  type SSMClientConfig,
 } from '@aws-sdk/client-ssm';
 
 export interface DatabaseConfig {
@@ -34,103 +35,16 @@ export class AwsConfigManager {
 
   constructor(options: AwsConfigOptions = {}) {
     this.environment = options.environment || process.env.NODE_ENV || 'dev';
-
-    // Configure AWS client for LocalStack if in local environment
-    const ssmConfig: any = {
-      region: options.region || process.env.AWS_REGION || 'us-east-1',
-    };
-
-    // Use LocalStack endpoints if available
-    if (this.isLocalEnvironment()) {
-      ssmConfig.endpoint = process.env.AWS_SSM_ENDPOINT || process.env.AWS_ENDPOINT_URL || 'http://localhost:4566';
-      ssmConfig.credentials = {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID || 'test',
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || 'test',
-      };
-      ssmConfig.forcePathStyle = true;
-    }
-
-    this.ssmClient = new SSMClient(ssmConfig);
-  }
-
-  /**
-   * Check if running in local containerized environment with LocalStack
-   */
-  private isLocalEnvironment(): boolean {
-    return (
-      process.env.USE_LOCAL_SERVICES === 'true' ||
-      !!process.env.AWS_ENDPOINT_URL
-    );
+    this.ssmClient = new SSMClient(this.createSSMConfig(options));
   }
 
   /**
    * Get database configuration from AWS Parameter Store
    */
   async getDatabaseConfig(): Promise<DatabaseConfig> {
-    if (
-      process.env.NODE_ENV === 'development' ||
-      process.env.NODE_ENV === 'test' ||
-      process.env.NODE_ENV === 'local'
-    ) {
-      // Use local environment variables in development/test/local
-      return {
-        url: process.env.DATABASE_URL || '',
-      };
-    }
-
-    try {
-      // Use 'local' environment for LocalStack parameters
-      const env = this.isLocalEnvironment() ? 'local' : this.environment;
-      const parameterNames = [
-        `/rms/${env}/database-url`,
-        `/rms/${env}/database-password`,
-      ];
-
-      const command = new GetParametersCommand({
-        Names: parameterNames,
-        WithDecryption: true,
-      });
-
-      const response = await this.ssmClient.send(command);
-
-      if (!response.Parameters || response.Parameters.length === 0) {
-        throw new Error('No database parameters found in Parameter Store');
-      }
-
-      const params = new Map(
-        response.Parameters.map((param) => [param.Name, param.Value])
-      );
-
-      const databaseUrl = params.get(`/rms/${env}/database-url`);
-      const databasePassword = params.get(
-        `/rms/${env}/database-password`
-      );
-
-      if (!databaseUrl) {
-        throw new Error('Database URL not found in Parameter Store');
-      }
-
-      return {
-        url: databaseUrl,
-        password: databasePassword,
-      };
-    } catch (error) {
-      console.error(
-        'Failed to fetch database config from AWS Parameter Store:',
-        error
-      );
-
-      // Fallback to environment variables
-      const fallbackUrl = process.env.DATABASE_URL;
-      if (fallbackUrl) {
-        console.warn('Using fallback DATABASE_URL from environment variables');
-        return { url: fallbackUrl };
-      }
-
-      throw new Error(
-        'Unable to get database configuration from Parameter Store or environment variables'
-      );
-    }
+    return this.isDevEnvironment()
+      ? this.getLocalDatabaseConfig()
+      : this.getParameterStoreDatabaseConfig();
   }
 
   /**
@@ -193,6 +107,121 @@ export class AwsConfigManager {
     return this.isDevOrTest()
       ? this.getDevCognitoConfig()
       : this.getProdCognitoConfig();
+  }
+
+  private createSSMConfig(options: AwsConfigOptions): SSMClientConfig {
+    const baseConfig: SSMClientConfig = {
+      region: options.region || process.env.AWS_REGION || 'us-east-1',
+    };
+
+    return this.isLocalEnvironment()
+      ? this.addLocalStackConfig(baseConfig)
+      : baseConfig;
+  }
+
+  private addLocalStackConfig(config: SSMClientConfig): SSMClientConfig {
+    return {
+      ...config,
+      endpoint:
+        process.env.AWS_SSM_ENDPOINT ||
+        process.env.AWS_ENDPOINT_URL ||
+        'http://localhost:4566',
+      credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID || 'test',
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || 'test',
+      },
+    };
+  }
+
+  /**
+   * Check if running in local containerized environment with LocalStack
+   */
+  private isLocalEnvironment(): boolean {
+    return (
+      process.env.USE_LOCAL_SERVICES === 'true' ||
+      Boolean(process.env.AWS_ENDPOINT_URL)
+    );
+  }
+
+  private isDevEnvironment(): boolean {
+    return (
+      process.env.NODE_ENV === 'development' ||
+      process.env.NODE_ENV === 'test' ||
+      process.env.NODE_ENV === 'local'
+    );
+  }
+
+  private getLocalDatabaseConfig(): DatabaseConfig {
+    return {
+      url: process.env.DATABASE_URL || '',
+    };
+  }
+
+  private async getParameterStoreDatabaseConfig(): Promise<DatabaseConfig> {
+    try {
+      const env = this.isLocalEnvironment() ? 'local' : this.environment;
+      const params = await this.getDatabaseParameters(env);
+      return this.buildDatabaseConfig(params, env);
+    } catch (error) {
+      console.error(
+        'Failed to fetch database config from AWS Parameter Store:',
+        error
+      );
+      return this.getFallbackDatabaseConfig();
+    }
+  }
+
+  private async getDatabaseParameters(
+    env: string
+  ): Promise<Map<string, string>> {
+    const parameterNames = [
+      `/rms/${env}/database-url`,
+      `/rms/${env}/database-password`,
+    ];
+
+    const command = new GetParametersCommand({
+      Names: parameterNames,
+      WithDecryption: true,
+    });
+
+    const response = await this.ssmClient.send(command);
+
+    if (!response.Parameters || response.Parameters.length === 0) {
+      throw new Error('No database parameters found in Parameter Store');
+    }
+
+    return new Map(
+      response.Parameters.map((param) => [param.Name!, param.Value!])
+    );
+  }
+
+  private buildDatabaseConfig(
+    params: Map<string, string>,
+    env: string
+  ): DatabaseConfig {
+    const databaseUrl = params.get(`/rms/${env}/database-url`);
+    const databasePassword = params.get(`/rms/${env}/database-password`);
+
+    if (!databaseUrl) {
+      throw new Error('Database URL not found in Parameter Store');
+    }
+
+    return {
+      url: databaseUrl,
+      password: databasePassword,
+    };
+  }
+
+  private getFallbackDatabaseConfig(): DatabaseConfig {
+    const fallbackUrl = process.env.DATABASE_URL;
+    if (fallbackUrl) {
+      console.warn('Using fallback DATABASE_URL from environment variables');
+      return { url: fallbackUrl };
+    }
+
+    throw new Error(
+      'Unable to get database configuration from Parameter Store or environment variables'
+    );
   }
 
   /**
@@ -261,11 +290,8 @@ export class AwsConfigManager {
   ): CognitoConfig {
     // Use 'local' environment for LocalStack parameters
     const env = this.isLocalEnvironment() ? 'local' : this.environment;
-    const region =
-      params.get(`/rms/${env}/aws-region`) || 'us-east-1';
-    const userPoolId = params.get(
-      `/rms/${env}/cognito-user-pool-id`
-    );
+    const region = params.get(`/rms/${env}/aws-region`) || 'us-east-1';
+    const userPoolId = params.get(`/rms/${env}/cognito-user-pool-id`);
     const userPoolWebClientId = params.get(
       `/rms/${env}/cognito-user-pool-client-id`
     );

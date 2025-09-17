@@ -18,6 +18,7 @@ pnpm nx serve rms
 ```
 
 This approach:
+
 - ✅ Fast startup and iteration
 - ✅ Uses SQLite for simplicity
 - ✅ No Docker dependencies
@@ -52,6 +53,7 @@ The local deployment environment provides:
 ```
 
 This script will:
+
 - Start Docker containers for LocalStack and PostgreSQL
 - Initialize AWS services in LocalStack
 - Set up database with proper schema
@@ -65,6 +67,7 @@ pnpm nx serve server:local
 ```
 
 The backend will connect to:
+
 - Local PostgreSQL database
 - LocalStack for AWS services
 - Use environment variables from `.env.local`
@@ -99,11 +102,14 @@ The backend will connect to:
 **Dashboard**: https://app.localstack.cloud (optional web UI)
 
 #### S3 Configuration
+
 - Bucket: `rms-local-bucket`
 - Endpoint: `http://localhost:4566`
 
 #### SSM Parameter Store
+
 Parameters created automatically:
+
 - `/rms/local/database-url`
 - `/rms/local/database-password`
 - `/rms/local/cognito-user-pool-id`
@@ -112,6 +118,7 @@ Parameters created automatically:
 - `/rms/local/aws-region`
 
 #### Cognito
+
 - User Pool: `rms-local-pool`
 - User Pool ID: `us-east-1_LOCAL123`
 - Client ID: `local-client-id-123`
@@ -130,6 +137,7 @@ Parameters created automatically:
 **Password**: `admin`
 
 To enable PgAdmin:
+
 ```bash
 docker-compose -f docker-compose.local.yml --profile admin up -d
 ```
@@ -253,6 +261,7 @@ If ports 4566, 5432, or 8080 are in use:
 ## Integration with Existing Workflow
 
 This local environment:
+
 - ✅ Maintains compatibility with existing cloud development
 - ✅ Follows Nx workspace patterns
 - ✅ Uses same Prisma schema and migrations

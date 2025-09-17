@@ -13,53 +13,59 @@ type CorsOriginHandler = (
   callback: CorsCallback
 ) => void;
 
-/**
- * CORS origin validation handler
- */
-export function createCorsOriginHandler(
+function createNoOriginHandler(
+  isProduction: boolean,
+  isDevelopment: boolean,
+  isLocalDevelopment: boolean,
+  nodeEnv: string
+) {
+  return function handleNoOrigin(callback: CorsCallback): void {
+    if (isProduction) {
+      logSecurityViolation('cors_no_origin_production', nodeEnv);
+      callback(new Error('Origin required in production'), false);
+    } else if (isDevelopment || isLocalDevelopment) {
+      callback(null, true);
+    }
+  };
+}
+
+function createOriginValidator(
+  allowedOrigins: string[],
+  isDevelopment: boolean,
+  isLocalDevelopment: boolean
+) {
+  return function handleValidOrigin(
+    origin: string,
+    callback: CorsCallback
+  ): boolean {
+    if (!isValidOrigin(origin)) {
+      callback(new Error('Invalid origin'), false);
+      return true;
+    }
+
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+      return true;
+    }
+
+    if ((isDevelopment || isLocalDevelopment) && isLocalhostPattern(origin)) {
+      callback(null, true);
+      return true;
+    }
+
+    return false;
+  };
+}
+
+function createOriginRejector(
   allowedOrigins: string[],
   nodeEnv: string,
   logger: Logger
-): CorsOriginHandler {
-  const isProduction = nodeEnv === 'production';
-  const isDevelopment = nodeEnv === 'development';
-  const isLocalDevelopment = nodeEnv === 'local' && !process.env.USE_LOCAL_SERVICES;
-
-  function corsOriginHandler(
+) {
+  return function rejectUnauthorizedOrigin(
     origin: string | undefined,
     callback: CorsCallback
   ): void {
-    // In production, be strict about origins
-    if (isProduction && origin === undefined) {
-      logSecurityViolation('cors_no_origin_production', nodeEnv);
-      callback(new Error('Origin required in production'), false);
-      return;
-    }
-
-    // Allow requests with no origin in development/local development (mobile apps, server-to-server)
-    if ((isDevelopment || isLocalDevelopment) && origin === undefined) {
-      callback(null, true);
-      return;
-    }
-
-    if (!isValidOrigin(origin)) {
-      callback(new Error('Invalid origin'), false);
-      return;
-    }
-
-    // Exact match for configured origins
-    if (allowedOrigins.includes(origin!)) {
-      callback(null, true);
-      return;
-    }
-
-    // Allow localhost patterns in development and local development
-    if ((isDevelopment || isLocalDevelopment) && isLocalhostPattern(origin!)) {
-      callback(null, true);
-      return;
-    }
-
-    // Log and reject unauthorized origins
     logger.warn(
       {
         origin,
@@ -75,7 +81,52 @@ export function createCorsOriginHandler(
     });
 
     callback(new Error('Not allowed by CORS'), false);
-  }
+  };
+}
 
-  return corsOriginHandler;
+/**
+ * CORS origin validation handler
+ */
+export function createCorsOriginHandler(
+  allowedOrigins: string[],
+  nodeEnv: string,
+  logger: Logger
+): CorsOriginHandler {
+  const isProduction = nodeEnv === 'production';
+  const isDevelopment = nodeEnv === 'development';
+  const isLocalDevelopment =
+    nodeEnv === 'local' && !(process.env.USE_LOCAL_SERVICES ?? '');
+
+  const handleNoOrigin = createNoOriginHandler(
+    isProduction,
+    isDevelopment,
+    isLocalDevelopment,
+    nodeEnv
+  );
+  const handleValidOrigin = createOriginValidator(
+    allowedOrigins,
+    isDevelopment,
+    isLocalDevelopment
+  );
+  const rejectUnauthorizedOrigin = createOriginRejector(
+    allowedOrigins,
+    nodeEnv,
+    logger
+  );
+
+  return function corsOriginHandler(
+    origin: string | undefined,
+    callback: CorsCallback
+  ): void {
+    if (origin === undefined) {
+      handleNoOrigin(callback);
+      return;
+    }
+
+    if (handleValidOrigin(origin, callback)) {
+      return;
+    }
+
+    rejectUnauthorizedOrigin(origin, callback);
+  };
 }
