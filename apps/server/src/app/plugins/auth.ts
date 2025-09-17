@@ -16,9 +16,13 @@ function shouldSkipAuth(url: string): boolean {
     return true;
   }
 
-  // Skip authentication in development/test environments
+  // Skip authentication in development/test environments, or local development (not containerized)
   const nodeEnv = process.env.NODE_ENV ?? 'development';
-  return nodeEnv === 'development' || nodeEnv === 'test';
+  return (
+    nodeEnv === 'development' ||
+    nodeEnv === 'test' ||
+    (nodeEnv === 'local' && !process.env.USE_LOCAL_SERVICES)
+  );
 }
 
 async function onRequestHook(

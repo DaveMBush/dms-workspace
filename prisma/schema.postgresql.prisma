@@ -1,0 +1,142 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model accounts {
+  id          String        @id @default(uuid())
+  name        String        @unique
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  deletedAt   DateTime?
+  version     Int           @default(1)
+  divDeposits divDeposits[]
+  trades      trades[]
+
+  // Indexes for authentication and user lookup optimization
+  @@index([name])
+  @@index([createdAt])
+  @@index([deletedAt])
+}
+
+model universe {
+  id                     String        @id @default(uuid())
+  distribution           Float
+  distributions_per_year Int
+  last_price             Float
+  most_recent_sell_date  DateTime?
+  most_recent_sell_price Float?
+  symbol                 String        @unique
+  ex_date                DateTime?
+  risk_group_id          String
+  expired                Boolean       @default(false)
+  createdAt              DateTime      @default(now())
+  updatedAt              DateTime      @updatedAt
+  deletedAt              DateTime?
+  version                Int           @default(1)
+  divDeposits            divDeposits[]
+  trades                 trades[]
+  risk_group             risk_group    @relation(fields: [risk_group_id], references: [id])
+
+  @@index([expired])
+  @@index([risk_group_id])
+}
+
+model risk_group {
+  id        String     @id @default(uuid())
+  name      String     @unique
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  deletedAt DateTime?
+  version   Int        @default(1)
+  screener  screener[]
+  universe  universe[]
+}
+
+model trades {
+  id         String    @id @default(uuid())
+  universeId String
+  accountId  String
+  buy        Float
+  sell       Float
+  buy_date   DateTime
+  quantity   Int
+  sell_date  DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  deletedAt  DateTime?
+  account    accounts  @relation(fields: [accountId], references: [id])
+  universe   universe  @relation(fields: [universeId], references: [id])
+
+  // Indexes for authentication and session data optimization
+  @@index([accountId])
+  @@index([buy_date])
+  @@index([sell_date])
+  @@index([accountId, buy_date])
+  @@index([accountId, sell_date])
+}
+
+model holidays {
+  id        String    @id @default(uuid())
+  date      DateTime  @unique
+  name      String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  version   Int       @default(1)
+}
+
+model divDepositType {
+  id          String        @id @default(uuid())
+  name        String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  deletedAt   DateTime?
+  divDeposits divDeposits[]
+}
+
+model divDeposits {
+  id               String         @id @default(uuid())
+  date             DateTime
+  amount           Float
+  accountId        String
+  divDepositTypeId String
+  universeId       String?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  deletedAt        DateTime?
+  version          Int            @default(1)
+  universe         universe?      @relation(fields: [universeId], references: [id])
+  divDepositType   divDepositType @relation(fields: [divDepositTypeId], references: [id])
+  account          accounts       @relation(fields: [accountId], references: [id])
+
+  // Indexes for session data and account-related queries
+  @@index([accountId])
+  @@index([date])
+  @@index([accountId, date])
+}
+
+model screener {
+  id                       String     @id @default(uuid())
+  symbol                   String     @unique
+  distribution             Float
+  distributions_per_year   Int
+  last_price               Float
+  ex_date                  DateTime?
+  risk_group_id            String
+  has_volitility           Boolean
+  objectives_understood    Boolean
+  graph_higher_before_2008 Boolean
+  createdAt                DateTime   @default(now())
+  updatedAt                DateTime   @updatedAt
+  deletedAt                DateTime?
+  version                  Int        @default(1)
+  risk_group               risk_group @relation(fields: [risk_group_id], references: [id])
+
+  @@index([has_volitility, objectives_understood, graph_higher_before_2008])
+  @@index([risk_group_id])
+}

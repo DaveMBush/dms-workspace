@@ -23,6 +23,7 @@ export function createCorsOriginHandler(
 ): CorsOriginHandler {
   const isProduction = nodeEnv === 'production';
   const isDevelopment = nodeEnv === 'development';
+  const isLocalDevelopment = nodeEnv === 'local' && !process.env.USE_LOCAL_SERVICES;
 
   function corsOriginHandler(
     origin: string | undefined,
@@ -35,8 +36,8 @@ export function createCorsOriginHandler(
       return;
     }
 
-    // Allow requests with no origin in development (mobile apps, server-to-server)
-    if (!isProduction && origin === undefined) {
+    // Allow requests with no origin in development/local development (mobile apps, server-to-server)
+    if ((isDevelopment || isLocalDevelopment) && origin === undefined) {
       callback(null, true);
       return;
     }
@@ -52,8 +53,8 @@ export function createCorsOriginHandler(
       return;
     }
 
-    // Allow localhost patterns in development only
-    if (isDevelopment && isLocalhostPattern(origin!)) {
+    // Allow localhost patterns in development and local development
+    if ((isDevelopment || isLocalDevelopment) && isLocalhostPattern(origin!)) {
       callback(null, true);
       return;
     }

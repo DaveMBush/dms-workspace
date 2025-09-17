@@ -35,9 +35,32 @@ export class AwsConfigManager {
   constructor(options: AwsConfigOptions = {}) {
     this.environment = options.environment || process.env.NODE_ENV || 'dev';
 
-    this.ssmClient = new SSMClient({
+    // Configure AWS client for LocalStack if in local environment
+    const ssmConfig: any = {
       region: options.region || process.env.AWS_REGION || 'us-east-1',
-    });
+    };
+
+    // Use LocalStack endpoints if available
+    if (this.isLocalEnvironment()) {
+      ssmConfig.endpoint = process.env.AWS_SSM_ENDPOINT || process.env.AWS_ENDPOINT_URL || 'http://localhost:4566';
+      ssmConfig.credentials = {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID || 'test',
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || 'test',
+      };
+      ssmConfig.forcePathStyle = true;
+    }
+
+    this.ssmClient = new SSMClient(ssmConfig);
+  }
+
+  /**
+   * Check if running in local containerized environment with LocalStack
+   */
+  private isLocalEnvironment(): boolean {
+    return (
+      process.env.USE_LOCAL_SERVICES === 'true' ||
+      !!process.env.AWS_ENDPOINT_URL
+    );
   }
 
   /**
@@ -46,18 +69,21 @@ export class AwsConfigManager {
   async getDatabaseConfig(): Promise<DatabaseConfig> {
     if (
       process.env.NODE_ENV === 'development' ||
-      process.env.NODE_ENV === 'test'
+      process.env.NODE_ENV === 'test' ||
+      process.env.NODE_ENV === 'local'
     ) {
-      // Use local environment variables in development/test
+      // Use local environment variables in development/test/local
       return {
         url: process.env.DATABASE_URL || '',
       };
     }
 
     try {
+      // Use 'local' environment for LocalStack parameters
+      const env = this.isLocalEnvironment() ? 'local' : this.environment;
       const parameterNames = [
-        `/rms/${this.environment}/database-url`,
-        `/rms/${this.environment}/database-password`,
+        `/rms/${env}/database-url`,
+        `/rms/${env}/database-password`,
       ];
 
       const command = new GetParametersCommand({
@@ -75,9 +101,9 @@ export class AwsConfigManager {
         response.Parameters.map((param) => [param.Name, param.Value])
       );
 
-      const databaseUrl = params.get(`/rms/${this.environment}/database-url`);
+      const databaseUrl = params.get(`/rms/${env}/database-url`);
       const databasePassword = params.get(
-        `/rms/${this.environment}/database-password`
+        `/rms/${env}/database-password`
       );
 
       if (!databaseUrl) {
@@ -170,11 +196,13 @@ export class AwsConfigManager {
   }
 
   /**
-   * Check if environment is development or test
+   * Check if environment is development, test, or local development
    */
   private isDevOrTest(): boolean {
     return (
-      process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
+      process.env.NODE_ENV === 'development' ||
+      process.env.NODE_ENV === 'test' ||
+      (process.env.NODE_ENV === 'local' && !this.isLocalEnvironment())
     );
   }
 
@@ -213,11 +241,13 @@ export class AwsConfigManager {
    * Get Cognito parameters from Parameter Store
    */
   private async getCognitoParametersFromStore(): Promise<Map<string, string>> {
+    // Use 'local' environment for LocalStack parameters
+    const env = this.isLocalEnvironment() ? 'local' : this.environment;
     const parameterNames = [
-      `/rms/${this.environment}/cognito-user-pool-id`,
-      `/rms/${this.environment}/cognito-user-pool-client-id`,
-      `/rms/${this.environment}/cognito-jwt-issuer`,
-      `/rms/${this.environment}/aws-region`,
+      `/rms/${env}/cognito-user-pool-id`,
+      `/rms/${env}/cognito-user-pool-client-id`,
+      `/rms/${env}/cognito-jwt-issuer`,
+      `/rms/${env}/aws-region`,
     ];
 
     return this.getParameters(parameterNames, false);
@@ -229,15 +259,17 @@ export class AwsConfigManager {
   private buildCognitoConfigFromParams(
     params: Map<string, string>
   ): CognitoConfig {
+    // Use 'local' environment for LocalStack parameters
+    const env = this.isLocalEnvironment() ? 'local' : this.environment;
     const region =
-      params.get(`/rms/${this.environment}/aws-region`) || 'us-east-1';
+      params.get(`/rms/${env}/aws-region`) || 'us-east-1';
     const userPoolId = params.get(
-      `/rms/${this.environment}/cognito-user-pool-id`
+      `/rms/${env}/cognito-user-pool-id`
     );
     const userPoolWebClientId = params.get(
-      `/rms/${this.environment}/cognito-user-pool-client-id`
+      `/rms/${env}/cognito-user-pool-client-id`
     );
-    const jwtIssuer = params.get(`/rms/${this.environment}/cognito-jwt-issuer`);
+    const jwtIssuer = params.get(`/rms/${env}/cognito-jwt-issuer`);
 
     if (!userPoolId || !userPoolWebClientId || !jwtIssuer) {
       throw new Error('Missing required Cognito parameters in Parameter Store');
