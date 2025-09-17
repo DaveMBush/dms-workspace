@@ -2,19 +2,9 @@ import { PrismaClient } from '@prisma/client';
 
 import { authDatabaseOptimizerService } from './auth-database-optimizer.service';
 import { databasePerformanceService } from './database-performance.service';
+import { PerformanceTest } from './performance-test.interface';
 
-/* eslint-disable @smarttools/one-exported-item-per-file -- Interface and service are closely related */
-
-export interface PerformanceTest {
-  name: string;
-  description: string;
-  baselineTime: number;
-  optimizedTime: number;
-  improvement: number;
-  passed: boolean;
-}
-
-export class BenchmarkHelpersService {
+class BenchmarkHelpersService {
   private readonly targetImprovement = 30;
   private readonly testAccountName = 'test-account';
 

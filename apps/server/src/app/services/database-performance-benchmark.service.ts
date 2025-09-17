@@ -2,12 +2,10 @@ import { PrismaClient } from '@prisma/client';
 
 import { authDatabaseMonitorService } from './auth-database-monitor.service';
 import { authDatabaseOptimizerService } from './auth-database-optimizer.service';
-import {
-  benchmarkHelpersService,
-  PerformanceTest,
-} from './benchmark-helpers.service';
+import { benchmarkHelpersService } from './benchmark-helpers.service';
 import { DatabaseMetrics } from './database-metrics.interface';
 import { databasePerformanceService } from './database-performance.service';
+import { PerformanceTest } from './performance-test.interface';
 
 interface BenchmarkResult {
   baseline: DatabaseMetrics;

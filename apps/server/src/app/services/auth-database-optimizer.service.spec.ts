@@ -198,8 +198,7 @@ describe('AuthDatabaseOptimizerService', () => {
       expect(result).toBeNull();
     });
 
-    it.skip('should track performance metrics', async () => {
-      // Skip this test - performance metrics tracking has integration issues in test environment
+    it('should track performance metrics', async () => {
       await authDatabaseOptimizerService.optimizedUserLookup(
         testClient,
         'auth-user-1'
@@ -408,9 +407,8 @@ describe('AuthDatabaseOptimizerService', () => {
     });
   });
 
-  describe.skip('performance tracking', () => {
+  describe('performance tracking', () => {
     it('should track authentication query statistics', async () => {
-      // Skip - performance tracking has integration issues in test environment
       await authDatabaseOptimizerService.optimizedUserLookup(
         testClient,
         'auth-user-1'
@@ -436,7 +434,6 @@ describe('AuthDatabaseOptimizerService', () => {
     });
 
     it('should clear metrics properly', async () => {
-      // Skip - performance tracking has integration issues in test environment
       await authDatabaseOptimizerService.optimizedUserLookup(
         testClient,
         'auth-user-1'
