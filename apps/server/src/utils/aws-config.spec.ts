@@ -148,6 +148,9 @@ describe('AWS Configuration', () => {
       beforeEach(() => {
         process.env.NODE_ENV = 'production';
         process.env.AWS_REGION = 'us-east-1';
+        // Clear local environment flags to ensure production behavior
+        delete process.env.USE_LOCAL_SERVICES;
+        delete process.env.AWS_ENDPOINT_URL;
         // Create instance after setting environment variables
         awsConfig = new AwsConfigManager({ environment: 'production' });
       });
@@ -204,6 +207,11 @@ describe('AWS Configuration', () => {
           ],
         });
 
+        // Clear environment variables to ensure no fallback
+        delete process.env.COGNITO_USER_POOL_ID;
+        delete process.env.COGNITO_USER_POOL_CLIENT_ID;
+        delete process.env.COGNITO_JWT_ISSUER;
+
         await expect(awsConfig.getCognitoConfig()).rejects.toThrow(
           'Unable to get Cognito configuration from Parameter Store or environment variables'
         );
@@ -211,6 +219,11 @@ describe('AWS Configuration', () => {
 
       it('should fallback to environment variables when Parameter Store fails', async () => {
         mockSend.mockRejectedValue(new Error('Parameter Store error'));
+
+        // Clear any existing environment variables first
+        delete process.env.COGNITO_USER_POOL_ID;
+        delete process.env.COGNITO_USER_POOL_CLIENT_ID;
+        delete process.env.COGNITO_JWT_ISSUER;
 
         process.env.COGNITO_USER_POOL_ID = 'us-east-1_fallback';
         process.env.COGNITO_USER_POOL_CLIENT_ID = 'fallbackclient';

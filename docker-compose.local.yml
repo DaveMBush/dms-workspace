@@ -1,0 +1,109 @@
+version: '3.8'
+
+services:
+  # LocalStack for AWS service emulation
+  localstack:
+    container_name: rms-localstack
+    image: localstack/localstack:3.8
+    ports:
+      - '4566:4566'
+      - '4510-4559:4510-4559'
+    environment:
+      - SERVICES=s3,ssm,cognito-idp
+      - DEBUG=1
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - LOCALSTACK_HOST=localhost.localstack.cloud
+      - PERSISTENCE=1
+      - DISABLE_EVENTS=1
+    volumes:
+      - './localstack-data:/var/lib/localstack'
+      - '/var/run/docker.sock:/var/run/docker.sock'
+      - './scripts/localstack-init.sh:/etc/localstack/init/ready.d/init-aws.sh'
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:4566/health']
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  # PostgreSQL database for local development
+  postgres:
+    container_name: rms-postgres
+    image: postgres:16-alpine
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_DB=rms_local
+      - POSTGRES_USER=rms_user
+      - POSTGRES_PASSWORD=rms_password
+      - POSTGRES_INITDB_ARGS=--encoding=UTF-8 --lc-collate=C --lc-ctype=C
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./scripts/postgres-init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U rms_user -d rms_local']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # RMS Backend Application
+  rms-backend:
+    container_name: rms-backend
+    build:
+      context: .
+      dockerfile: apps/server/Dockerfile
+    ports:
+      - '3000:3000'
+    environment:
+      - NODE_ENV=local
+      - USE_LOCAL_SERVICES=true
+      - DATABASE_URL=postgresql://rms_user:rms_password@postgres:5432/rms_local?schema=public
+      - AWS_REGION=us-east-1
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - AWS_ENDPOINT_URL=http://localstack:4566
+      - PORT=3000
+      - HOST=0.0.0.0
+    depends_on:
+      postgres:
+        condition: service_healthy
+      localstack:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:3000/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - default
+
+  # PgAdmin for database management (optional)
+  pgadmin:
+    container_name: rms-pgadmin
+    image: dpage/pgadmin4:8
+    ports:
+      - '8080:80'
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@rms.local
+      - PGADMIN_DEFAULT_PASSWORD=admin
+      - PGADMIN_CONFIG_SERVER_MODE=False
+      - PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED=False
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    depends_on:
+      postgres:
+        condition: service_healthy
+    profiles:
+      - admin
+
+volumes:
+  postgres-data:
+    driver: local
+  pgadmin-data:
+    driver: local
+
+networks:
+  default:
+    name: rms-local-network

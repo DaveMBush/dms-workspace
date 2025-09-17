@@ -4,21 +4,27 @@ import fp from 'fastify-plugin';
 import { authenticateJWT } from '../middleware/authenticate-jwt.function';
 import { AuthenticatedRequest } from '../middleware/authenticated-request.interface';
 
-function shouldSkipAuth(url: string): boolean {
-  // Skip authentication for health checks
-  if (
+function isHealthCheckEndpoint(url: string): boolean {
+  return (
     url === '/health' ||
     url === '/ready' ||
     url === '/live' ||
     url.startsWith('/health/') ||
     url === '/'
-  ) {
-    return true;
-  }
+  );
+}
 
-  // Skip authentication in development/test environments
+function isDevEnvironment(): boolean {
   const nodeEnv = process.env.NODE_ENV ?? 'development';
-  return nodeEnv === 'development' || nodeEnv === 'test';
+  return (
+    nodeEnv === 'development' ||
+    nodeEnv === 'test' ||
+    (nodeEnv === 'local' && !(process.env.USE_LOCAL_SERVICES ?? ''))
+  );
+}
+
+function shouldSkipAuth(url: string): boolean {
+  return isHealthCheckEndpoint(url) || isDevEnvironment();
 }
 
 async function onRequestHook(

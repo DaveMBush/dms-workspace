@@ -52,6 +52,13 @@
         },
         "production": {
           "buildTarget": "server:build:production"
+        },
+        "local": {
+          "buildTarget": "server:build:development",
+          "env": {
+            "NODE_ENV": "local"
+          },
+          "envFile": ".env.local"
         }
       }
     },

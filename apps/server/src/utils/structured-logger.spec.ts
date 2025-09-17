@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/unbound-method -- Test mocking requires unbound methods */
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { StructuredLogger, logger } from './structured-logger';
 import type { LogContext } from './structured-logger-types';
 
@@ -69,9 +69,11 @@ describe('StructuredLogger', () => {
 
     it('should only log debug messages in development', () => {
       const originalEnv = process.env.NODE_ENV;
+      const originalLogLevel = process.env.LOG_LEVEL;
 
       // Test debug disabled in production
       process.env.NODE_ENV = 'production';
+      delete process.env.LOG_LEVEL; // Clear LOG_LEVEL to ensure it doesn't force debug logging
       const prodLogger = new StructuredLogger('prod-service');
       prodLogger.debug('Debug message');
       expect(consoleMock).not.toHaveBeenCalled();
@@ -83,6 +85,9 @@ describe('StructuredLogger', () => {
       expect(consoleMock).toHaveBeenCalledTimes(1);
 
       process.env.NODE_ENV = originalEnv;
+      if (originalLogLevel) {
+        process.env.LOG_LEVEL = originalLogLevel;
+      }
     });
   });
 
