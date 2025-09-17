@@ -187,7 +187,7 @@ class DatabasePerformanceService {
     }[] = [];
 
     for (const [name, metrics] of this.queryMetrics.entries()) {
-      if (queryName !== null && name !== queryName) {
+      if (queryName !== undefined && name !== queryName) {
         continue;
       }
 
