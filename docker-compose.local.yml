@@ -3,6 +3,7 @@ services:
   postgres:
     container_name: rms-postgres
     image: postgres:16-alpine
+    restart: unless-stopped
     ports:
       - '5432:5432'
     environment:
@@ -26,6 +27,7 @@ services:
     build:
       context: .
       dockerfile: apps/server/Dockerfile
+    restart: unless-stopped
     ports:
       - '8000:3000'
     environment:
@@ -56,6 +58,7 @@ services:
     build:
       context: .
       dockerfile: apps/rms/Dockerfile
+    restart: unless-stopped
     ports:
       - '8080:80'
     depends_on:
