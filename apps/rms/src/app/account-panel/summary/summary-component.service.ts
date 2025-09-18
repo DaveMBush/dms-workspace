@@ -24,7 +24,7 @@ export class SummaryComponentService {
       return undefined;
     }
     return {
-      url: 'http://localhost:4200/api/summary',
+      url: '/api/summary',
       params: {
         month,
         account_id: accountId,
@@ -38,7 +38,7 @@ export class SummaryComponentService {
     const year = new Date().getFullYear();
     const accountId = currentAccount()?.id ?? '';
     return {
-      url: 'http://localhost:4200/api/summary/graph',
+      url: '/api/summary/graph',
       params: {
         year,
         account_id: accountId,

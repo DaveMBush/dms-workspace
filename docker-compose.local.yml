@@ -1,31 +1,4 @@
-version: '3.8'
-
 services:
-  # LocalStack for AWS service emulation
-  localstack:
-    container_name: rms-localstack
-    image: localstack/localstack:3.8
-    ports:
-      - '4566:4566'
-      - '4510-4559:4510-4559'
-    environment:
-      - SERVICES=s3,ssm,cognito-idp
-      - DEBUG=1
-      - DOCKER_HOST=unix:///var/run/docker.sock
-      - LOCALSTACK_HOST=localhost.localstack.cloud
-      - PERSISTENCE=1
-      - DISABLE_EVENTS=1
-    volumes:
-      - './localstack-data:/var/lib/localstack'
-      - '/var/run/docker.sock:/var/run/docker.sock'
-      - './scripts/localstack-init.sh:/etc/localstack/init/ready.d/init-aws.sh'
-    healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:4566/health']
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 60s
-
   # PostgreSQL database for local development
   postgres:
     container_name: rms-postgres
@@ -54,28 +27,46 @@ services:
       context: .
       dockerfile: apps/server/Dockerfile
     ports:
-      - '3000:3000'
+      - '8000:3000'
     environment:
-      - NODE_ENV=local
-      - USE_LOCAL_SERVICES=true
-      - DATABASE_URL=postgresql://rms_user:rms_password@postgres:5432/rms_local?schema=public
+      - NODE_ENV=development
+      - DATABASE_PROVIDER=postgresql
+      - DATABASE_URL=postgresql://rms_user:rms_password@postgres:5432/rms_local
+      - PRISMA_SCHEMA_PATH=prisma/schema.postgresql.prisma
       - AWS_REGION=us-east-1
-      - AWS_ACCESS_KEY_ID=test
-      - AWS_SECRET_ACCESS_KEY=test
-      - AWS_ENDPOINT_URL=http://localstack:4566
+      - COGNITO_USER_POOL_ID=us-east-1_LOCALTEST
+      - COGNITO_USER_POOL_CLIENT_ID=local-test-client
       - PORT=3000
       - HOST=0.0.0.0
     depends_on:
       postgres:
         condition: service_healthy
-      localstack:
-        condition: service_healthy
     healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:3000/health']
+      test: ['CMD', 'curl', '--max-time', '5', 'http://localhost:3000/']
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 60s
+    networks:
+      - default
+
+  # RMS Frontend Application
+  rms-frontend:
+    container_name: rms-frontend
+    build:
+      context: .
+      dockerfile: apps/rms/Dockerfile
+    ports:
+      - '8080:80'
+    depends_on:
+      rms-backend:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:80']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
     networks:
       - default
 
@@ -84,7 +75,7 @@ services:
     container_name: rms-pgadmin
     image: dpage/pgadmin4:8
     ports:
-      - '8080:80'
+      - '8081:80'
     environment:
       - PGADMIN_DEFAULT_EMAIL=admin@rms.local
       - PGADMIN_DEFAULT_PASSWORD=admin
