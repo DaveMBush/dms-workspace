@@ -26,8 +26,8 @@ RUN pnpm install --frozen-lockfile
 COPY apps/server/src ./apps/server/src
 COPY prisma ./prisma
 
-# Generate Prisma client
-RUN pnpm prisma generate
+# Generate Prisma client - use PostgreSQL schema for production builds
+RUN pnpm prisma generate --schema=prisma/schema.postgresql.prisma
 
 # Build the server application
 RUN pnpm nx build server --configuration=production
@@ -44,6 +44,9 @@ RUN addgroup -g 1001 -S nodejs && \
 
 # Set working directory
 WORKDIR /app
+
+# Create logs directory with proper permissions
+RUN mkdir -p /app/logs && chown fastify:nodejs /app/logs
 
 # Copy built application from builder stage
 COPY --from=builder --chown=fastify:nodejs /app/dist/apps/server ./
@@ -65,7 +68,7 @@ EXPOSE 3000
 
 # Add health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-  CMD curl -f http://localhost:3000/health || exit 1
+  CMD curl --max-time 5 http://localhost:3000/ || exit 1
 
 # Set environment variables
 ENV NODE_ENV=production
@@ -73,4 +76,4 @@ ENV PORT=3000
 
 # Use dumb-init to handle signals properly and start the application
 ENTRYPOINT ["dumb-init", "--"]
-CMD ["node", "main.js"]
+CMD ["sh", "-c", "./node_modules/.bin/prisma generate --schema=prisma/schema.postgresql.prisma && node main.js"]

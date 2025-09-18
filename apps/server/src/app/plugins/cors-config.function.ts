@@ -11,6 +11,7 @@ export function buildAllowedOrigins(): string[] {
       ? [
           'http://localhost:4200', // Development Angular app
           'http://localhost:3000', // Alternative dev port
+          'http://localhost:8080', // Docker containerized frontend
           'http://127.0.0.1:4200', // Explicit localhost IP
         ]
       : []),
