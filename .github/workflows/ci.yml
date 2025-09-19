@@ -13,6 +13,20 @@ permissions:
 jobs:
   main:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: ci_password
+          POSTGRES_USER: ci_user
+          POSTGRES_DB: ci_rms
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
     steps:
       - uses: actions/checkout@v4
         with:
@@ -38,6 +52,9 @@ jobs:
 
       - run: pnpm i
       - run: pnpm prisma migrate dev
+        env:
+          DATABASE_PROVIDER: postgresql
+          DATABASE_URL: "postgresql://ci_user:ci_password@localhost:5432/ci_rms?schema=public"
       #- run: pnpm playwright install --with-deps
       - uses: nrwl/nx-set-shas@v4
 
@@ -48,3 +65,6 @@ jobs:
       - run: pnpm format:check
       - run: pnpm dupcheck
       - run: pnpm nx affected -t lint build test --no-cloud
+        env:
+          DATABASE_PROVIDER: postgresql
+          DATABASE_URL: "postgresql://ci_user:ci_password@localhost:5432/ci_rms?schema=public"
