@@ -17,7 +17,7 @@ jobs:
       postgres:
         image: postgres:15
         env:
-          POSTGRES_PASSWORD: ci_password
+          POSTGRES_PASSWORD: ${{ secrets.CI_POSTGRES_PASSWORD || 'test_password' }}
           POSTGRES_USER: ci_user
           POSTGRES_DB: ci_rms
         options: >-
@@ -54,7 +54,7 @@ jobs:
       - run: pnpm prisma migrate dev
         env:
           DATABASE_PROVIDER: postgresql
-          DATABASE_URL: "postgresql://ci_user:ci_password@localhost:5432/ci_rms?schema=public"
+          DATABASE_URL: "postgresql://ci_user:${{ secrets.CI_POSTGRES_PASSWORD || 'test_password' }}@localhost:5432/ci_rms?schema=public"
       #- run: pnpm playwright install --with-deps
       - uses: nrwl/nx-set-shas@v4
 
@@ -67,4 +67,4 @@ jobs:
       - run: pnpm nx affected -t lint build test --no-cloud
         env:
           DATABASE_PROVIDER: postgresql
-          DATABASE_URL: "postgresql://ci_user:ci_password@localhost:5432/ci_rms?schema=public"
+          DATABASE_URL: "postgresql://ci_user:${{ secrets.CI_POSTGRES_PASSWORD || 'test_password' }}@localhost:5432/ci_rms?schema=public"
