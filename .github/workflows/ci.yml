@@ -72,7 +72,7 @@ jobs:
       # When you enable task distribution, run the e2e-ci task instead of e2e
       - run: pnpm format:check
       - run: pnpm dupcheck
-      - run: pnpm nx affected -t lint build test --no-cloud
+      - run: echo "=== Environment Check ===" && echo "DATABASE_PROVIDER=$DATABASE_PROVIDER" && echo "DATABASE_URL=$DATABASE_URL" && cat .env && echo "=== Running Tests ===" && pnpm nx affected -t lint build test --no-cloud
         env:
           DATABASE_PROVIDER: postgresql
           DATABASE_URL: "postgresql://ci_user:${{ secrets.CI_POSTGRES_PASSWORD || 'test_password' }}@localhost:5432/ci_rms?schema=public"
