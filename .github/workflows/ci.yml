@@ -51,6 +51,7 @@ jobs:
           cache: 'pnpm'
 
       - run: pnpm i
+      - run: cp -r prisma/migrations-postgresql prisma/migrations
       - run: pnpm prisma generate --schema=prisma/schema.postgresql.prisma
         env:
           DATABASE_PROVIDER: postgresql
