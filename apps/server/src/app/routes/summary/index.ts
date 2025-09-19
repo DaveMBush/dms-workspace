@@ -133,11 +133,11 @@ async function getRiskGroupData(
   `;
 
   // Convert PostgreSQL string results to numbers and handle column name differences
-  return rawResults.map(row => ({
+  return rawResults.map((row) => ({
     riskGroupId: row.riskGroupId || row.riskgroupid,
     riskGroupName: row.riskGroupName || row.riskgroupname,
     totalCostBasis: Number(row.totalCostBasis || row.totalcostbasis),
-    tradeCount: Number(row.tradeCount || row.tradecount)
+    tradeCount: Number(row.tradeCount || row.tradecount),
   }));
 }
 
