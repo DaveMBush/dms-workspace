@@ -51,16 +51,15 @@ jobs:
           cache: 'pnpm'
 
       - run: pnpm i
-      - run: pnpm prisma generate --schema=prisma/schema.postgresql.prisma
+      - run: cp prisma/schema.postgresql.prisma prisma/schema.prisma
+      - run: pnpm prisma generate
         env:
           DATABASE_PROVIDER: postgresql
           DATABASE_URL: "postgresql://ci_user:${{ secrets.CI_POSTGRES_PASSWORD || 'test_password' }}@localhost:5432/ci_rms?schema=public"
-          PRISMA_SCHEMA_PATH: 'prisma/schema.postgresql.prisma'
-      - run: pnpm prisma db push --schema=prisma/schema.postgresql.prisma --accept-data-loss
+      - run: pnpm prisma db push --accept-data-loss
         env:
           DATABASE_PROVIDER: postgresql
           DATABASE_URL: "postgresql://ci_user:${{ secrets.CI_POSTGRES_PASSWORD || 'test_password' }}@localhost:5432/ci_rms?schema=public"
-          PRISMA_SCHEMA_PATH: 'prisma/schema.postgresql.prisma'
       #- run: pnpm playwright install --with-deps
       - uses: nrwl/nx-set-shas@v4
 
@@ -74,4 +73,3 @@ jobs:
         env:
           DATABASE_PROVIDER: postgresql
           DATABASE_URL: "postgresql://ci_user:${{ secrets.CI_POSTGRES_PASSWORD || 'test_password' }}@localhost:5432/ci_rms?schema=public"
-          PRISMA_SCHEMA_PATH: 'prisma/schema.postgresql.prisma'
