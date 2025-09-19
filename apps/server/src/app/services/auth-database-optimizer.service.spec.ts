@@ -5,7 +5,9 @@ import { databasePerformanceService } from './database-performance.service';
 
 describe('AuthDatabaseOptimizerService', () => {
   let testClient: PrismaClient;
-  const testDbUrl = 'file:./test-auth-optimizer.db';
+  const testDbUrl = process.env.DATABASE_PROVIDER === 'postgresql'
+    ? process.env.DATABASE_URL || 'postgresql://ci_user:test_password@localhost:5432/ci_rms?schema=public'
+    : 'file:./test-auth-optimizer.db';
 
   beforeAll(async () => {
     testClient = new PrismaClient({
@@ -18,70 +20,72 @@ describe('AuthDatabaseOptimizerService', () => {
 
     await testClient.$connect();
 
-    // Apply migrations/schema
-    await testClient.$executeRawUnsafe(`
-      CREATE TABLE IF NOT EXISTS "accounts" (
-        "id" TEXT NOT NULL PRIMARY KEY,
-        "name" TEXT NOT NULL UNIQUE,
-        "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        "deletedAt" DATETIME,
-        "version" INTEGER NOT NULL DEFAULT 1
-      );
-    `);
+    // Apply migrations/schema only for SQLite (PostgreSQL schema is already set up in CI)
+    if (process.env.DATABASE_PROVIDER !== 'postgresql') {
+      await testClient.$executeRawUnsafe(`
+        CREATE TABLE IF NOT EXISTS "accounts" (
+          "id" TEXT NOT NULL PRIMARY KEY,
+          "name" TEXT NOT NULL UNIQUE,
+          "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          "deletedAt" DATETIME,
+          "version" INTEGER NOT NULL DEFAULT 1
+        );
+      `);
 
-    await testClient.$executeRawUnsafe(`
-      CREATE TABLE IF NOT EXISTS "risk_group" (
-        "id" TEXT NOT NULL PRIMARY KEY,
-        "name" TEXT NOT NULL UNIQUE,
-        "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        "deletedAt" DATETIME,
-        "version" INTEGER NOT NULL DEFAULT 1
-      );
-    `);
+      await testClient.$executeRawUnsafe(`
+        CREATE TABLE IF NOT EXISTS "risk_group" (
+          "id" TEXT NOT NULL PRIMARY KEY,
+          "name" TEXT NOT NULL UNIQUE,
+          "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          "deletedAt" DATETIME,
+          "version" INTEGER NOT NULL DEFAULT 1
+        );
+      `);
 
-    await testClient.$executeRawUnsafe(`
-      CREATE TABLE IF NOT EXISTS "universe" (
-        "id" TEXT NOT NULL PRIMARY KEY,
-        "distribution" REAL NOT NULL,
-        "distributions_per_year" INTEGER NOT NULL,
-        "last_price" REAL NOT NULL,
-        "most_recent_sell_date" DATETIME,
-        "most_recent_sell_price" REAL,
-        "symbol" TEXT NOT NULL UNIQUE,
-        "ex_date" DATETIME,
-        "risk_group_id" TEXT NOT NULL,
-        "expired" BOOLEAN NOT NULL DEFAULT false,
-        "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        "deletedAt" DATETIME,
-        "version" INTEGER NOT NULL DEFAULT 1,
-        FOREIGN KEY ("risk_group_id") REFERENCES "risk_group"("id") ON DELETE RESTRICT ON UPDATE CASCADE
-      );
-    `);
+      await testClient.$executeRawUnsafe(`
+        CREATE TABLE IF NOT EXISTS "universe" (
+          "id" TEXT NOT NULL PRIMARY KEY,
+          "distribution" REAL NOT NULL,
+          "distributions_per_year" INTEGER NOT NULL,
+          "last_price" REAL NOT NULL,
+          "most_recent_sell_date" DATETIME,
+          "most_recent_sell_price" REAL,
+          "symbol" TEXT NOT NULL UNIQUE,
+          "ex_date" DATETIME,
+          "risk_group_id" TEXT NOT NULL,
+          "expired" BOOLEAN NOT NULL DEFAULT false,
+          "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          "deletedAt" DATETIME,
+          "version" INTEGER NOT NULL DEFAULT 1,
+          FOREIGN KEY ("risk_group_id") REFERENCES "risk_group"("id") ON DELETE RESTRICT ON UPDATE CASCADE
+        );
+      `);
 
-    await testClient.$executeRawUnsafe(`
-      CREATE TABLE IF NOT EXISTS "trades" (
-        "id" TEXT NOT NULL PRIMARY KEY,
-        "universeId" TEXT NOT NULL,
-        "accountId" TEXT NOT NULL,
-        "buy" REAL NOT NULL,
-        "sell" REAL NOT NULL,
-        "buy_date" DATETIME NOT NULL,
-        "quantity" INTEGER NOT NULL,
-        "sell_date" DATETIME,
-        "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        "deletedAt" DATETIME,
-        FOREIGN KEY ("accountId") REFERENCES "accounts"("id") ON DELETE RESTRICT ON UPDATE CASCADE,
-        FOREIGN KEY ("universeId") REFERENCES "universe"("id") ON DELETE RESTRICT ON UPDATE CASCADE
-      );
-    `);
+      await testClient.$executeRawUnsafe(`
+        CREATE TABLE IF NOT EXISTS "trades" (
+          "id" TEXT NOT NULL PRIMARY KEY,
+          "universeId" TEXT NOT NULL,
+          "accountId" TEXT NOT NULL,
+          "buy" REAL NOT NULL,
+          "sell" REAL NOT NULL,
+          "buy_date" DATETIME NOT NULL,
+          "quantity" INTEGER NOT NULL,
+          "sell_date" DATETIME,
+          "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          "deletedAt" DATETIME,
+          FOREIGN KEY ("accountId") REFERENCES "accounts"("id") ON DELETE RESTRICT ON UPDATE CASCADE,
+          FOREIGN KEY ("universeId") REFERENCES "universe"("id") ON DELETE RESTRICT ON UPDATE CASCADE
+        );
+      `);
 
-    await testClient.$executeRawUnsafe(`
-      CREATE INDEX IF NOT EXISTS "accounts_name_idx" ON "accounts"("name");
-    `);
+      await testClient.$executeRawUnsafe(`
+        CREATE INDEX IF NOT EXISTS "accounts_name_idx" ON "accounts"("name");
+      `);
+    }
 
     // Clear existing test data first
     await testClient.trades.deleteMany({

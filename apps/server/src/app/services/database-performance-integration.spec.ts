@@ -7,7 +7,9 @@ import { databasePerformanceService } from './database-performance.service';
 
 describe('Database Performance Integration Tests', () => {
   let testClient: PrismaClient;
-  const testDbUrl = 'file:./test-db-performance.db';
+  const testDbUrl = process.env.DATABASE_PROVIDER === 'postgresql'
+    ? process.env.DATABASE_URL || 'postgresql://ci_user:test_password@localhost:5432/ci_rms?schema=public'
+    : 'file:./test-db-performance.db';
 
   beforeAll(async () => {
     testClient = new PrismaClient({
