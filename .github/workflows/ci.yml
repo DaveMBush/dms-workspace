@@ -53,7 +53,7 @@ jobs:
       - run: pnpm i
       - run: cp prisma/schema.postgresql.prisma prisma/schema.prisma
       - run: echo "DATABASE_PROVIDER=postgresql" > .env
-      - run: echo "DATABASE_URL=\"postgresql://ci_user:${{ secrets.CI_POSTGRES_PASSWORD || 'test_password' }}@localhost:5432/ci_rms?schema=public\"" >> .env
+      - run: echo "DATABASE_URL=postgresql://ci_user:${{ secrets.CI_POSTGRES_PASSWORD || 'test_password' }}@localhost:5432/ci_rms?schema=public" >> .env
       - run: pnpm prisma generate
         env:
           DATABASE_PROVIDER: postgresql
