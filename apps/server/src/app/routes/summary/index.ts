@@ -113,11 +113,22 @@ async function getAccountPriorMonths(
   });
 }
 
+interface RawRiskGroupResult {
+  riskGroupId?: string;
+  riskgroupid?: string;
+  riskGroupName?: string;
+  riskgroupname?: string;
+  totalCostBasis?: number | string;
+  totalcostbasis?: number | string;
+  tradeCount?: number | string;
+  tradecount?: number | string;
+}
+
 async function getRiskGroupData(
   year: number,
   monthNum: number
 ): Promise<RiskGroupResult[]> {
-  const rawResults = await prisma.$queryRaw<any[]>`
+  const rawResults = await prisma.$queryRaw<RawRiskGroupResult[]>`
     SELECT
       rg.id as riskGroupId,
       rg.name as riskGroupName,
@@ -133,12 +144,16 @@ async function getRiskGroupData(
   `;
 
   // Convert PostgreSQL string results to numbers and handle column name differences
-  return rawResults.map((row) => ({
-    riskGroupId: row.riskGroupId || row.riskgroupid,
-    riskGroupName: row.riskGroupName || row.riskgroupname,
-    totalCostBasis: Number(row.totalCostBasis || row.totalcostbasis),
-    tradeCount: Number(row.tradeCount || row.tradecount),
-  }));
+  function transformRiskGroupResult(row: RawRiskGroupResult): RiskGroupResult {
+    return {
+      riskGroupId: row.riskGroupId ?? row.riskgroupid ?? '',
+      riskGroupName: row.riskGroupName ?? row.riskgroupname ?? '',
+      totalCostBasis: Number(row.totalCostBasis ?? row.totalcostbasis ?? 0),
+      tradeCount: Number(row.tradeCount ?? row.tradecount ?? 0),
+    };
+  }
+
+  return rawResults.map(transformRiskGroupResult);
 }
 
 async function calculateSingleAccountSummaryData(
