@@ -7,9 +7,11 @@ import { databasePerformanceService } from './database-performance.service';
 
 describe('Database Performance Integration Tests', () => {
   let testClient: PrismaClient;
-  const testDbUrl = process.env.DATABASE_PROVIDER === 'postgresql'
-    ? process.env.DATABASE_URL || 'postgresql://ci_user:test_password@localhost:5432/ci_rms?schema=public'
-    : 'file:./test-db-performance.db';
+  const testDbUrl =
+    process.env.DATABASE_PROVIDER === 'postgresql'
+      ? process.env.DATABASE_URL ||
+        'postgresql://ci_user:test_password@localhost:5432/ci_rms?schema=public'
+      : 'file:./test-db-performance.db';
 
   beforeAll(async () => {
     testClient = new PrismaClient({
@@ -35,7 +37,7 @@ describe('Database Performance Integration Tests', () => {
       );
     `);
 
-    await testClient.$executeRawUnsafe(`
+      await testClient.$executeRawUnsafe(`
       CREATE TABLE IF NOT EXISTS "risk_group" (
         "id" TEXT NOT NULL PRIMARY KEY,
         "name" TEXT NOT NULL UNIQUE,
@@ -46,7 +48,7 @@ describe('Database Performance Integration Tests', () => {
       );
     `);
 
-    await testClient.$executeRawUnsafe(`
+      await testClient.$executeRawUnsafe(`
       CREATE TABLE IF NOT EXISTS "universe" (
         "id" TEXT NOT NULL PRIMARY KEY,
         "distribution" REAL NOT NULL,
@@ -66,7 +68,7 @@ describe('Database Performance Integration Tests', () => {
       );
     `);
 
-    await testClient.$executeRawUnsafe(`
+      await testClient.$executeRawUnsafe(`
       CREATE TABLE IF NOT EXISTS "trades" (
         "id" TEXT NOT NULL PRIMARY KEY,
         "universeId" TEXT NOT NULL,
