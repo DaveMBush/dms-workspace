@@ -22,9 +22,10 @@ describe('Database Performance Integration Tests', () => {
 
     await testClient.$connect();
 
-    // Apply migrations/schema
-    await testClient.$executeRawUnsafe(`
-      CREATE TABLE IF NOT EXISTS "accounts" (
+    // Apply migrations/schema only for SQLite (PostgreSQL schema is already set up in CI)
+    if (process.env.DATABASE_PROVIDER !== 'postgresql') {
+      await testClient.$executeRawUnsafe(`
+        CREATE TABLE IF NOT EXISTS "accounts" (
         "id" TEXT NOT NULL PRIMARY KEY,
         "name" TEXT NOT NULL UNIQUE,
         "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -83,9 +84,10 @@ describe('Database Performance Integration Tests', () => {
       );
     `);
 
-    await testClient.$executeRawUnsafe(`
-      CREATE INDEX IF NOT EXISTS "accounts_name_idx" ON "accounts"("name");
-    `);
+      await testClient.$executeRawUnsafe(`
+        CREATE INDEX IF NOT EXISTS "accounts_name_idx" ON "accounts"("name");
+      `);
+    }
 
     // Clear existing test data first
     await testClient.trades.deleteMany({
