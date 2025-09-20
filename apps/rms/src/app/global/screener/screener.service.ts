@@ -36,7 +36,7 @@ export class ScreenerService {
   });
 
   refresh(): Observable<object> {
-    return this.http.get('http://localhost:3000/api/screener');
+    return this.http.get('/api/screener');
   }
 
   updateScreener(id: string, field: keyof Screen, value: boolean): void {

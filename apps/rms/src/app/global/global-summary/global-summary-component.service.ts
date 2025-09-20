@@ -25,7 +25,7 @@ export class GlobalSummaryComponentService {
       return undefined;
     }
     return {
-      url: 'http://localhost:4200/api/summary',
+      url: '/api/summary',
       params: {
         month,
         // No account_id means global data
@@ -37,7 +37,7 @@ export class GlobalSummaryComponentService {
   httpGraph = httpResource<Graph[]>(() => {
     const year = new Date().getFullYear();
     return {
-      url: 'http://localhost:4200/api/summary/graph',
+      url: '/api/summary/graph',
       params: {
         year,
         time_period: 'year',
@@ -49,7 +49,7 @@ export class GlobalSummaryComponentService {
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- can't get at this otherwise
   httpAvailableMonths = httpResource<AvailableMonth[]>(() => {
     return {
-      url: 'http://localhost:4200/api/summary/months',
+      url: '/api/summary/months',
     };
   });
 

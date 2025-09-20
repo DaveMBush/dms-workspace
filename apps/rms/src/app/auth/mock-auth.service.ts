@@ -59,8 +59,8 @@ export class MockAuthService extends BaseAuthService {
     // Store remember me preference
     localStorage.setItem('rms_remember_me', 'true');
 
-    // Perform normal sign in
-    await this.signIn({ username: email, password });
+    // Perform sign in with remember me flag
+    await this.performSignInWithRememberMe(email, password);
   }
 
   /**
@@ -105,11 +105,14 @@ export class MockAuthService extends BaseAuthService {
     try {
       const currentUser = this.currentUserSignal();
       if (currentUser) {
+        const isRememberMe = localStorage.getItem('rms_remember_me') === 'true';
+        const expiration = this.calculateTokenExpiration(isRememberMe);
+
         const mockSession: AuthSession = {
-          accessToken: this.generateMockJWT(currentUser),
-          idToken: this.generateMockJWT(currentUser),
+          accessToken: this.generateMockJWT(currentUser, isRememberMe),
+          idToken: this.generateMockJWT(currentUser, isRememberMe),
           refreshToken: 'mock-refresh-token-refreshed',
-          expiration: Math.floor(Date.now() / 1000) + 3600,
+          expiration,
         };
         this.storeTokens(mockSession);
       }
@@ -142,6 +145,42 @@ export class MockAuthService extends BaseAuthService {
     username: string,
     password: string
   ): Promise<void> {
+    await this.performAuthenticationWithOptions(username, password, false);
+  }
+
+  /**
+   * Clear stored mock tokens
+   */
+  protected clearTokens(): void {
+    try {
+      localStorage.removeItem('rms_mock_access_token');
+      localStorage.removeItem('rms_mock_id_token');
+      localStorage.removeItem('rms_mock_refresh_token');
+      localStorage.removeItem('rms_mock_token_expiration');
+      localStorage.removeItem('rms_mock_user');
+    } catch {
+      // Failed to clear tokens
+    }
+  }
+
+  /**
+   * Perform mock authentication with remember me
+   */
+  private async performSignInWithRememberMe(
+    username: string,
+    password: string
+  ): Promise<void> {
+    await this.performAuthenticationWithOptions(username, password, true);
+  }
+
+  /**
+   * Perform mock authentication with options
+   */
+  private async performAuthenticationWithOptions(
+    username: string,
+    password: string,
+    rememberMe: boolean
+  ): Promise<void> {
     // Simulate network delay
     // eslint-disable-next-line no-restricted-syntax -- Promise required for async simulation
     await new Promise(function simulateDelay(resolve) {
@@ -173,12 +212,13 @@ export class MockAuthService extends BaseAuthService {
 
     this.currentUserSignal.set(mockUser);
 
-    // Store mock session
+    // Store mock session with appropriate expiration
+    const expiration = this.calculateTokenExpiration(rememberMe);
     const mockSession: AuthSession = {
-      accessToken: this.generateMockJWT(mockUser),
-      idToken: this.generateMockJWT(mockUser),
+      accessToken: this.generateMockJWT(mockUser, rememberMe),
+      idToken: this.generateMockJWT(mockUser, rememberMe),
       refreshToken: 'mock-refresh-token',
-      expiration: Math.floor(Date.now() / 1000) + 3600, // 1 hour from now
+      expiration,
     };
 
     this.storeTokens(mockSession);
@@ -187,18 +227,16 @@ export class MockAuthService extends BaseAuthService {
   }
 
   /**
-   * Clear stored mock tokens
+   * Calculate token expiration time
    */
-  protected clearTokens(): void {
-    try {
-      localStorage.removeItem('rms_mock_access_token');
-      localStorage.removeItem('rms_mock_id_token');
-      localStorage.removeItem('rms_mock_refresh_token');
-      localStorage.removeItem('rms_mock_token_expiration');
-      localStorage.removeItem('rms_mock_user');
-    } catch {
-      // Failed to clear tokens
+  private calculateTokenExpiration(rememberMe: boolean): number {
+    const now = Math.floor(Date.now() / 1000);
+    if (rememberMe) {
+      // 90 days in seconds
+      return now + 90 * 24 * 60 * 60;
     }
+    // 1 hour in seconds
+    return now + 3600;
   }
 
   /**
@@ -246,7 +284,9 @@ export class MockAuthService extends BaseAuthService {
   /**
    * Generate a mock JWT token
    */
-  private generateMockJWT(user: AuthUser): string {
+  private generateMockJWT(user: AuthUser, rememberMe: boolean = false): string {
+    const expiration = this.calculateTokenExpiration(rememberMe);
+
     // Create a simple mock JWT-like token (not cryptographically secure)
     // Using btoa for base64 encoding in browser environment only
     // eslint-disable-next-line sonarjs/deprecation, @typescript-eslint/no-deprecated -- btoa acceptable for mock JWT in browser
@@ -257,9 +297,10 @@ export class MockAuthService extends BaseAuthService {
         sub: user.attributes.sub,
         email: user.email,
         username: user.username,
-        exp: Math.floor(Date.now() / 1000) + 3600,
+        exp: expiration,
         iat: Math.floor(Date.now() / 1000),
         iss: 'mock-auth-service',
+        remember_me: rememberMe,
       })
     );
     // eslint-disable-next-line sonarjs/deprecation, @typescript-eslint/no-deprecated -- btoa acceptable for mock JWT in browser

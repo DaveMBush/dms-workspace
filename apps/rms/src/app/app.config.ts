@@ -45,22 +45,23 @@ import { tradeEffectsServiceToken } from './store/trades/trade-effect-service-to
 import { UniverseEffectsService } from './store/universe/universe-effect.service';
 import { universeEffectsServiceToken } from './store/universe/universe-effect-service-token';
 
-// Configure Amplify before app initialization
-configureAmplify();
+// Configure Amplify before app initialization only if not using mock auth
+const shouldUseMockAuth = environment.auth?.useMockAuth;
+if (!shouldUseMockAuth) {
+  configureAmplify();
+}
 
 export const appConfig: ApplicationConfig = {
   providers: [
     // Conditional auth service provider
     {
       provide: AuthService,
-      useClass: environment.auth?.useMockAuth ? MockAuthService : AuthService,
+      useClass: shouldUseMockAuth ? MockAuthService : AuthService,
     },
     // Conditional profile service provider
     {
       provide: ProfileService,
-      useClass: environment.auth?.useMockAuth
-        ? MockProfileService
-        : ProfileService,
+      useClass: shouldUseMockAuth ? MockProfileService : ProfileService,
     },
     {
       provide: topEffectsServiceToken,
