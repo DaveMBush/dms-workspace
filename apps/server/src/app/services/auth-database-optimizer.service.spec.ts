@@ -53,6 +53,7 @@ describe('AuthDatabaseOptimizerService', () => {
         "ex_date" DATETIME,
         "risk_group_id" TEXT NOT NULL,
         "expired" BOOLEAN NOT NULL DEFAULT false,
+        "is_closed_end_fund" BOOLEAN NOT NULL DEFAULT true,
         "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
         "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
         "deletedAt" DATETIME,
@@ -131,6 +132,7 @@ describe('AuthDatabaseOptimizerService', () => {
         last_price: 30.75,
         symbol: 'AUTH',
         risk_group_id: 'auth-risk-group-1',
+        is_closed_end_fund: true,
       },
     });
 

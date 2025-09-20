@@ -38,6 +38,7 @@ export const selectUniverse = computed(function selectUniverseFunction() {
         (universe.distribution / universe.last_price),
       avg_purchase_yield_percent: avgPurchaseYieldPercent,
       expired: universe.expired,
+      is_closed_end_fund: universe.is_closed_end_fund,
       position: universe.position,
     });
   }

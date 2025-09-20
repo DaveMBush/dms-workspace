@@ -142,6 +142,7 @@ describe.skipIf(process.env.CI)(
             last_price: 140.0,
             risk_group_id: riskGroupId1,
             expired: false,
+            is_closed_end_fund: true,
           },
           {
             symbol: 'MSFT', // Will be expired (not in eligible screener)
@@ -150,6 +151,7 @@ describe.skipIf(process.env.CI)(
             last_price: 300.0,
             risk_group_id: riskGroupId2,
             expired: false,
+            is_closed_end_fund: true,
           },
         ],
       });
@@ -188,6 +190,7 @@ describe.skipIf(process.env.CI)(
           last_price: 50.0,
           risk_group_id: riskGroupId1,
           expired: false,
+          is_closed_end_fund: true,
         },
       });
 
@@ -219,6 +222,7 @@ describe.skipIf(process.env.CI)(
             last_price: 100.0,
             risk_group_id: riskGroupId1,
             expired: false,
+            is_closed_end_fund: true,
           },
           {
             symbol: 'ACTIVE2',
@@ -227,6 +231,7 @@ describe.skipIf(process.env.CI)(
             last_price: 200.0,
             risk_group_id: riskGroupId1,
             expired: false,
+            is_closed_end_fund: true,
           },
           {
             symbol: 'TO_EXPIRE',
@@ -235,6 +240,7 @@ describe.skipIf(process.env.CI)(
             last_price: 300.0,
             risk_group_id: riskGroupId2,
             expired: false,
+            is_closed_end_fund: true,
           },
         ],
       });
@@ -277,6 +283,7 @@ describe.skipIf(process.env.CI)(
           last_price: 100.0,
           risk_group_id: riskGroupId1,
           expired: false,
+          is_closed_end_fund: true,
         },
       });
 
@@ -323,6 +330,7 @@ describe.skipIf(process.env.CI)(
           most_recent_sell_date: new Date(TRADE_SELL_DATE),
           most_recent_sell_price: 80.0,
           expired: false,
+          is_closed_end_fund: true,
         },
       });
 
@@ -400,6 +408,7 @@ describe.skipIf(process.env.CI)(
             last_price: screener.last_price,
             risk_group_id: screener.risk_group_id,
             expired: false,
+            is_closed_end_fund: true,
           },
         });
       });
@@ -429,6 +438,7 @@ describe.skipIf(process.env.CI)(
             last_price: STANDARD_PRICE,
             risk_group_id: 'non-existent-id',
             expired: false,
+            is_closed_end_fund: true,
           },
         })
       ).rejects.toThrow();
@@ -442,6 +452,7 @@ describe.skipIf(process.env.CI)(
           last_price: STANDARD_PRICE,
           risk_group_id: riskGroupId1,
           expired: false,
+          is_closed_end_fund: true,
         },
       });
 

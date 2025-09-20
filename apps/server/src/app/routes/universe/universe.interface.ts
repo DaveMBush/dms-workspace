@@ -9,5 +9,6 @@ export interface Universe {
   ex_date: string;
   risk_group_id: string;
   expired: boolean;
+  is_closed_end_fund: boolean;
   position: number;
 }

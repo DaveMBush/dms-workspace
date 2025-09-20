@@ -55,6 +55,7 @@ describe('Database Performance Integration Tests', () => {
       "ex_date" DATETIME,
       "risk_group_id" TEXT NOT NULL,
       "expired" BOOLEAN NOT NULL DEFAULT false,
+      "is_closed_end_fund" BOOLEAN NOT NULL DEFAULT true,
       "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
       "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
       "deletedAt" DATETIME,
@@ -133,6 +134,7 @@ describe('Database Performance Integration Tests', () => {
         last_price: 25.5,
         symbol: 'TEST',
         risk_group_id: 'test-risk-group-1',
+        is_closed_end_fund: true,
       },
     });
 

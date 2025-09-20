@@ -1,8 +1,10 @@
 {
   "silent": false,
-  "threshold": "0.0",
+  "threshold": "0.1",
   "mode": "weak",
   "pattern": "**/*.{js,ts,html,css,scss,json,md}",
+  "minLines": 15,
+  "minTokens": 100,
   "//": "ignore spec files for now",
   "ignore": [
     "**/docs/**",
