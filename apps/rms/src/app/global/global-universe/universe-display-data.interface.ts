@@ -17,5 +17,7 @@ export interface UniverseDisplayData {
   // eslint-disable-next-line @typescript-eslint/naming-convention -- matching source
   avg_purchase_yield_percent: number;
   expired: boolean;
+  // eslint-disable-next-line @typescript-eslint/naming-convention -- matching source
+  is_closed_end_fund: boolean;
   position: number;
 }

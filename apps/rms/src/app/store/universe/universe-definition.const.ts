@@ -19,6 +19,7 @@ export const universeDefinition: SmartEntityDefinition<Universe> = {
       ex_date: '',
       risk_group_id: '',
       expired: false,
+      is_closed_end_fund: true,
       position: 0,
     };
   },

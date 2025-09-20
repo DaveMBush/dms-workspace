@@ -16,6 +16,7 @@ interface UniverseWithTrades {
   risk_group_id: string;
   trades: Array<{ buy: number; quantity: number }>;
   expired: boolean;
+  is_closed_end_fund: boolean;
 }
 
 function mapUniverseToResponse(u: UniverseWithTrades): Universe {
@@ -31,6 +32,7 @@ function mapUniverseToResponse(u: UniverseWithTrades): Universe {
     risk_group_id: u.risk_group_id,
     position: calculatePosition(u.trades),
     expired: u.expired,
+    is_closed_end_fund: u.is_closed_end_fund,
   };
 }
 
@@ -102,6 +104,7 @@ function handleAddUniverseRoute(fastify: FastifyInstance): void {
           risk_group_id: result.risk_group_id,
           position: 0,
           expired: result.expired,
+          is_closed_end_fund: result.is_closed_end_fund,
         },
       ]);
     }

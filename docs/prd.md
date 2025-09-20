@@ -31,7 +31,20 @@ The specific requirements for this solution are:
 
 ---
 
-## **4. Target Audience**
+## **4. ETF Universe Management**
+
+Beyond the screener-driven CEF universe, the application needs to support trading symbols that are not part of that universe, primarily ETFs. Users require the ability to add symbols directly to the universe via the Universe screen, with proper flagging to distinguish between closed-end funds and other symbol types to prevent incorrect expiration during screener synchronization.
+
+**Requirements for ETF Management:**
+
+- Add capability to manually insert symbols into the universe through the UI
+- Implement database flag (`is_closed_end_fund`) to distinguish between screener-derived CEFs and manually-added symbols
+- Ensure manually-added symbols (ETFs) are not marked as expired during screener-to-universe sync operations
+- Maintain all existing functionality for CEF universe management from screener data
+
+---
+
+## **5. Target Audience**
 
 This enhancement is intended for the application's sole user, the product owner and developer, for personal use.
 
