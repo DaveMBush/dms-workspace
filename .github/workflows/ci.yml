@@ -51,10 +51,11 @@ jobs:
           cache: 'pnpm'
 
       - run: pnpm i
+      # Backup the original SQLite schema
+      - run: cp prisma/schema.prisma prisma/schema.sqlite.backup
+
+      # Setup PostgreSQL schema for application build/deployment
       - run: cp prisma/schema.postgresql.prisma prisma/schema.prisma
-      - run: rm -f .env
-      - run: echo "DATABASE_PROVIDER=postgresql" > .env
-      - run: echo "DATABASE_URL=postgresql://ci_user:${{ secrets.CI_POSTGRES_PASSWORD || 'test_password' }}@localhost:5432/ci_rms?schema=public" >> .env
       - run: pnpm prisma generate
         env:
           DATABASE_PROVIDER: postgresql
@@ -63,6 +64,11 @@ jobs:
         env:
           DATABASE_PROVIDER: postgresql
           DATABASE_URL: "postgresql://ci_user:${{ secrets.CI_POSTGRES_PASSWORD || 'test_password' }}@localhost:5432/ci_rms?schema=public"
+
+      # Restore SQLite schema for tests
+      - run: cp prisma/schema.sqlite.backup prisma/schema.prisma
+      - run: pnpm prisma generate
+
       #- run: pnpm playwright install --with-deps
       - uses: nrwl/nx-set-shas@v4
 
@@ -72,7 +78,5 @@ jobs:
       # When you enable task distribution, run the e2e-ci task instead of e2e
       - run: pnpm format:check
       - run: pnpm dupcheck
-      - run: echo "=== Environment Check ===" && echo "DATABASE_PROVIDER=$DATABASE_PROVIDER" && echo "DATABASE_URL=$DATABASE_URL" && cat .env && echo "=== Running Tests ===" && pnpm nx affected -t lint build test --no-cloud
-        env:
-          DATABASE_PROVIDER: postgresql
-          DATABASE_URL: "postgresql://ci_user:${{ secrets.CI_POSTGRES_PASSWORD || 'test_password' }}@localhost:5432/ci_rms?schema=public"
+      # Tests run with SQLite (default environment), builds use PostgreSQL schema
+      - run: pnpm nx affected -t lint build test --no-cloud
