@@ -1,6 +1,8 @@
 {
   "nxConsole.generateAiAgentRules": true,
-  "cSpell.words": ["primeng"],
+  "cSpell.words": [
+    "primeng"
+  ],
   "eslint.experimental.useFlatConfig": true,
   "eslint.workingDirectories": [
     {
@@ -19,18 +21,5 @@
   },
   "eslint.quiet": false,
   "eslint.lintTask.enable": true,
-  "eslint.run": "onType",
-  "sqltools.connections": [
-    {
-      "ssh": "Disabled",
-      "previewLimit": 50,
-      "server": "localhost",
-      "port": 5432,
-      "driver": "PostgreSQL",
-      "name": "rms-postgres localhost",
-      "database": "rms_local",
-      "username": "rms_user",
-      "password": "rms_password"
-    }
-  ]
+  "eslint.run": "onType"
 }
