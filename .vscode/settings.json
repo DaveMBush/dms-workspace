@@ -1,8 +1,6 @@
 {
   "nxConsole.generateAiAgentRules": true,
-  "cSpell.words": [
-    "primeng"
-  ],
+  "cSpell.words": ["primeng"],
   "eslint.experimental.useFlatConfig": true,
   "eslint.workingDirectories": [
     {
