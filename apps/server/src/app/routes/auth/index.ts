@@ -7,12 +7,12 @@ import { handleSetSecureCookie } from './handle-set-secure-cookie.function';
 
 export default function authRoutes(fastify: FastifyInstance): void {
   // CSRF token endpoint
-  fastify.get('/auth/csrf-token', generateCSRFTokenHandler);
+  fastify.get('/csrf-token', generateCSRFTokenHandler);
 
   // Secure cookie management
-  fastify.post('/auth/set-secure-cookie', handleSetSecureCookie);
-  fastify.post('/auth/clear-cookies', handleClearCookies);
+  fastify.post('/set-secure-cookie', handleSetSecureCookie);
+  fastify.post('/clear-cookies', handleClearCookies);
 
   // Token revocation
-  fastify.post('/auth/revoke-token', handleRevokeToken);
+  fastify.post('/revoke-token', handleRevokeToken);
 }

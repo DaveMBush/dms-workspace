@@ -17,8 +17,8 @@ COPY . .
 # Replace environment file for Docker deployment
 RUN cp apps/rms/src/environments/environment.docker.ts apps/rms/src/environments/environment.ts
 
-# Build the application using production configuration
-RUN pnpm nx run rms:build:production
+# Build the application using development configuration to preserve Docker environment
+RUN pnpm nx run rms:build:development
 
 # Production stage
 FROM nginx:alpine
