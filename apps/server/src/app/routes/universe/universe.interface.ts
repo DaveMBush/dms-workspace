@@ -11,5 +11,4 @@ export interface Universe {
   expired: boolean;
   is_closed_end_fund: boolean;
   position: number;
-  name: string;
 }
