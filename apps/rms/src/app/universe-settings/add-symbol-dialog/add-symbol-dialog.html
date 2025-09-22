@@ -1,0 +1,70 @@
+<!-- eslint-disable @angular-eslint/template/no-call-expression -->
+<p-dialog
+  [(visible)]="visible"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [closable]="true"
+  [closeOnEscape]="true"
+  header="Add Symbol to Universe"
+  [style]="{width: '400px'}"
+>
+  <div class="flex flex-col gap-4">
+    <div class="flex flex-col gap-2">
+      <label for="symbol-input" class="text-sm font-medium">Symbol</label>
+      <input
+        id="symbol-input"
+        type="text"
+        pInputText
+        [(ngModel)]="symbolInput"
+        placeholder="Enter symbol (e.g., SPY)"
+        [maxlength]="5"
+        class="w-full"
+        [disabled]="isLoading()"
+        (input)="onSymbolInput($event)"
+      />
+      <small class="text-gray-600"> 1-5 uppercase letters only </small>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label for="risk-group-select" class="text-sm font-medium"
+        >Risk Group</label
+      >
+      <p-select
+        id="risk-group-select"
+        [options]="riskGroupOptions()"
+        [(ngModel)]="selectedRiskGroup"
+        placeholder="Select risk group"
+        class="w-full"
+        [disabled]="isLoading()"
+        appendTo="body"
+      />
+    </div>
+
+    <p-message
+      *ngIf="errorMessage()"
+      severity="error"
+      [text]="errorMessage()!"
+      class="w-full"
+    />
+  </div>
+
+  <ng-template #footer>
+    <div class="flex justify-end gap-2">
+      <p-button
+        label="Cancel"
+        icon="pi pi-times"
+        text
+        (onClick)="hide()"
+        [disabled]="isLoading()"
+      />
+      <p-button
+        label="Add Symbol"
+        icon="pi pi-plus"
+        (onClick)="onSubmit()"
+        [disabled]="!isFormValid() || isLoading()"
+        [loading]="isLoading()"
+      />
+    </div>
+  </ng-template>
+</p-dialog>
