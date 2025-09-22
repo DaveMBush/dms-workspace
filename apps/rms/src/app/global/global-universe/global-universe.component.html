@@ -16,6 +16,15 @@
   </ng-template>
   <ng-template #end>
     <p-button
+      (click)="showAddSymbolDialog()"
+      icon="pi pi-plus"
+      text
+      severity="secondary"
+      pTooltip="Add Symbol"
+      tooltipPosition="bottom"
+      ariaLabel="Add Symbol"
+    />
+    <p-button
       (click)="syncUniverse()"
       icon="pi pi-sync"
       text
@@ -245,3 +254,5 @@
   </ng-template>
 </p-table>
 <p-toast />
+
+<rms-add-symbol-dialog />

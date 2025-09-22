@@ -1,6 +1,8 @@
 import { FastifyInstance } from 'fastify';
 
 import { prisma } from '../../prisma/prisma-client';
+import registerAddSymbol from './add-symbol';
+import { addSymbol } from './add-symbol/add-symbol.function';
 import registerSyncFromScreener from './sync-from-screener';
 import { Universe } from './universe.interface';
 
@@ -33,6 +35,7 @@ function mapUniverseToResponse(u: UniverseWithTrades): Universe {
     position: calculatePosition(u.trades),
     expired: u.expired,
     is_closed_end_fund: u.is_closed_end_fund,
+    name: u.symbol,
   };
 }
 
@@ -81,30 +84,41 @@ function handleGetUniversesRoute(fastify: FastifyInstance): void {
 }
 
 function handleAddUniverseRoute(fastify: FastifyInstance): void {
-  fastify.post<{ Body: Omit<Universe, 'id'>; Reply: Universe[] }>(
+  fastify.post<{
+    Body: { symbol: string; risk_group_id: string };
+    Reply: Universe[];
+  }>(
     '/add',
-    async function handleAddUniverse(request, reply): Promise<void> {
-      const { ...rest } = request.body;
-      const result = await prisma.universe.create({
-        data: {
-          ...rest,
+    {
+      schema: {
+        body: {
+          type: 'object',
+          required: ['symbol', 'risk_group_id'],
+          properties: {
+            symbol: { type: 'string' },
+            risk_group_id: { type: 'string' },
+          },
         },
-      });
+      },
+    },
+    async function handleAddUniverse(request, reply): Promise<void> {
+      const { symbol, risk_group_id } = request.body;
+      const result = await addSymbol({ symbol, risk_group_id });
       reply.status(200).send([
         {
           id: result.id,
-          distribution: result.distribution,
-          distributions_per_year: result.distributions_per_year,
-          last_price: result.last_price,
-          most_recent_sell_date:
-            result.most_recent_sell_date?.toISOString() ?? null,
-          most_recent_sell_price: result.most_recent_sell_price ?? null,
+          distribution: result.distribution ?? 0,
+          distributions_per_year: result.distributions_per_year ?? 0,
+          last_price: result.last_price ?? 0,
+          most_recent_sell_date: result.most_recent_sell_date,
+          most_recent_sell_price: null,
           symbol: result.symbol,
-          ex_date: result.ex_date?.toISOString() ?? '',
+          ex_date: result.ex_date ?? '',
           risk_group_id: result.risk_group_id,
           position: 0,
           expired: result.expired,
           is_closed_end_fund: result.is_closed_end_fund,
+          name: result.symbol,
         },
       ]);
     }
@@ -178,5 +192,6 @@ export default function registerUniverseRoutes(fastify: FastifyInstance): void {
   handleAddUniverseRoute(fastify);
   handleDeleteUniverseRoute(fastify);
   handleUpdateUniverseRoute(fastify);
+  registerAddSymbol(fastify);
   registerSyncFromScreener(fastify);
 }

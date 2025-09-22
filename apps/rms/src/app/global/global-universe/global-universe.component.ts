@@ -5,6 +5,7 @@ import {
   computed,
   inject,
   signal,
+  viewChild,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MessageService } from 'primeng/api';
@@ -24,6 +25,7 @@ import { GlobalLoadingService } from '../../shared/services/global-loading.servi
 import { UniverseSyncService } from '../../shared/services/universe-sync.service';
 import { selectAccounts } from '../../store/accounts/selectors/select-accounts.function';
 import { Universe } from '../../store/universe/universe.interface';
+import { AddSymbolDialog } from '../../universe-settings/add-symbol-dialog/add-symbol-dialog';
 import { UpdateUniverseSettingsService } from '../../universe-settings/update-universe.service';
 import { GlobalUniverseStorageService } from './global-universe-storage.service';
 import { isRowDimmed } from './is-row-dimmed.function';
@@ -65,6 +67,7 @@ import { UniverseDataService } from './universe-data.service';
     ToastModule,
     ProgressSpinnerModule,
     EditableDateCellComponent,
+    AddSymbolDialog,
   ],
   templateUrl: './global-universe.component.html',
   styleUrls: ['./global-universe.component.scss'],
@@ -80,6 +83,8 @@ export class GlobalUniverseComponent {
   private readonly updateUniverseService = inject(
     UpdateUniverseSettingsService
   );
+
+  readonly addSymbolDialog = viewChild.required(AddSymbolDialog);
 
   private readonly universeSyncService = inject(UniverseSyncService);
   private readonly messageService = inject(MessageService);
@@ -201,6 +206,10 @@ export class GlobalUniverseComponent {
         });
       },
     });
+  }
+
+  showAddSymbolDialog(): void {
+    this.addSymbolDialog().show();
   }
 
   onEditDistributionComplete(row: Universe): void {
