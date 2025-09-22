@@ -273,6 +273,203 @@ describe.skipIf(process.env.CI)(
       expect(activeRecords.every((r) => !r.expired)).toBe(true);
     });
 
+    test('preserves ETF symbols during CEF expiration operations', async () => {
+      // Create mixed universe with CEF and ETF symbols
+      await prisma.universe.createMany({
+        data: [
+          {
+            symbol: 'SPY', // ETF - should be preserved
+            distribution: 1.5,
+            distributions_per_year: 4,
+            last_price: 400.0,
+            risk_group_id: riskGroupId1,
+            expired: false,
+            is_closed_end_fund: false,
+          },
+          {
+            symbol: 'QQQ', // ETF - should be preserved
+            distribution: 2.0,
+            distributions_per_year: 4,
+            last_price: 350.0,
+            risk_group_id: riskGroupId1,
+            expired: false,
+            is_closed_end_fund: false,
+          },
+          {
+            symbol: 'CEF1', // CEF in screener - should remain active
+            distribution: 3.0,
+            distributions_per_year: 12,
+            last_price: 25.0,
+            risk_group_id: riskGroupId1,
+            expired: false,
+            is_closed_end_fund: true,
+          },
+          {
+            symbol: 'CEF2', // CEF not in screener - should expire
+            distribution: 2.5,
+            distributions_per_year: 6,
+            last_price: 20.0,
+            risk_group_id: riskGroupId2,
+            expired: false,
+            is_closed_end_fund: true,
+          },
+        ],
+      });
+
+      // Create screener data with only CEF1 as eligible
+      await prisma.screener.create({
+        data: {
+          symbol: 'CEF1',
+          distribution: 3.0,
+          distributions_per_year: 12,
+          last_price: 25.0,
+          risk_group_id: riskGroupId1,
+          has_volitility: true,
+          objectives_understood: true,
+          graph_higher_before_2008: true,
+        },
+      });
+
+      // Simulate new ETF preservation logic - only expire CEF symbols not in screener
+      const activeScreenerSymbols = ['CEF1'];
+      const expireResult = await prisma.universe.updateMany({
+        where: {
+          symbol: { notIn: activeScreenerSymbols },
+          expired: false,
+          is_closed_end_fund: true, // Only expire CEF symbols
+        },
+        data: { expired: true },
+      });
+
+      expect(expireResult.count).toBe(1); // Only CEF2 should expire
+
+      // Count preserved ETF symbols
+      const preservedEtfSymbols = await prisma.universe.findMany({
+        where: {
+          is_closed_end_fund: false,
+          expired: false,
+        },
+        select: { symbol: true },
+      });
+
+      expect(preservedEtfSymbols).toHaveLength(2);
+      expect(preservedEtfSymbols.map((s) => s.symbol)).toEqual(
+        expect.arrayContaining(['SPY', 'QQQ'])
+      );
+
+      // Verify CEF1 remains active (in screener)
+      const activeCef = await prisma.universe.findFirst({
+        where: { symbol: 'CEF1' },
+      });
+      expect(activeCef?.expired).toBe(false);
+
+      // Verify CEF2 is expired (not in screener)
+      const expiredCef = await prisma.universe.findFirst({
+        where: { symbol: 'CEF2' },
+      });
+      expect(expiredCef?.expired).toBe(true);
+
+      // Verify ETF symbols remain unexpired regardless of screener status
+      const etfSymbols = await prisma.universe.findMany({
+        where: { is_closed_end_fund: false },
+      });
+      expect(etfSymbols.every((etf) => !etf.expired)).toBe(true);
+    });
+
+    test('verifies ETF preservation is idempotent across multiple sync operations', async () => {
+      // Setup mixed universe
+      await prisma.universe.createMany({
+        data: [
+          {
+            symbol: 'VTI', // ETF
+            distribution: 1.8,
+            distributions_per_year: 4,
+            last_price: 200.0,
+            risk_group_id: riskGroupId1,
+            expired: false,
+            is_closed_end_fund: false,
+          },
+          {
+            symbol: 'BND', // ETF
+            distribution: 2.2,
+            distributions_per_year: 12,
+            last_price: 80.0,
+            risk_group_id: riskGroupId2,
+            expired: false,
+            is_closed_end_fund: false,
+          },
+          {
+            symbol: 'ABC_CEF', // CEF not in screener
+            distribution: 4.0,
+            distributions_per_year: 12,
+            last_price: 15.0,
+            risk_group_id: riskGroupId1,
+            expired: false,
+            is_closed_end_fund: true,
+          },
+        ],
+      });
+
+      // No eligible screener symbols (empty selection)
+      const activeScreenerSymbols: string[] = [];
+
+      // First sync operation - expire CEF symbols
+      const firstExpire = await prisma.universe.updateMany({
+        where: {
+          symbol: { notIn: activeScreenerSymbols },
+          expired: false,
+          is_closed_end_fund: true,
+        },
+        data: { expired: true },
+      });
+
+      expect(firstExpire.count).toBe(1); // ABC_CEF expires
+
+      // Count ETFs after first sync
+      const etfsAfterFirst = await prisma.universe.count({
+        where: {
+          is_closed_end_fund: false,
+          expired: false,
+        },
+      });
+
+      expect(etfsAfterFirst).toBe(2);
+
+      // Second sync operation (idempotent)
+      const secondExpire = await prisma.universe.updateMany({
+        where: {
+          symbol: { notIn: activeScreenerSymbols },
+          expired: false,
+          is_closed_end_fund: true,
+        },
+        data: { expired: true },
+      });
+
+      expect(secondExpire.count).toBe(0); // No additional changes
+
+      // Count ETFs after second sync (should be same)
+      const etfsAfterSecond = await prisma.universe.count({
+        where: {
+          is_closed_end_fund: false,
+          expired: false,
+        },
+      });
+
+      expect(etfsAfterSecond).toBe(2);
+      expect(etfsAfterSecond).toBe(etfsAfterFirst); // Idempotent
+
+      // Verify specific ETF symbols remain preserved
+      const preservedEtfs = await prisma.universe.findMany({
+        where: {
+          symbol: { in: ['VTI', 'BND'] },
+        },
+      });
+
+      expect(preservedEtfs).toHaveLength(2);
+      expect(preservedEtfs.every((etf) => !etf.expired)).toBe(true);
+      expect(preservedEtfs.every((etf) => !etf.is_closed_end_fund)).toBe(true);
+    });
+
     test('verifies idempotency through repeated operations', async () => {
       // Create initial data
       const initialUniverse = await prisma.universe.create({
