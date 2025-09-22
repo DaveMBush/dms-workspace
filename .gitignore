@@ -50,5 +50,5 @@ prisma/migrations/migration_lock.toml
 CLAUDE.md
 .claude
 database copy.dbbackups/
-database*.db
+*.db
 logs
