@@ -10,6 +10,7 @@ interface SyncSummary {
   inserted: number;
   updated: number;
   markedExpired: number;
+  preservedEtfCount: number;
   selectedCount: number;
   correlationId: string;
   logFilePath: string;
@@ -31,6 +32,7 @@ interface PrismaClientLike {
       ex_date: Date | null;
       expired: boolean;
     } | null>;
+    findMany(args: unknown): Promise<Array<{ symbol: string }>>;
     update(args: unknown): Promise<unknown>;
     create(args: unknown): Promise<unknown>;
     updateMany(args: unknown): Promise<unknown | { count: number }>;
@@ -147,6 +149,43 @@ interface MarkExpiredParams {
   logger: SyncLogger;
 }
 
+interface CountPreservedEtfParams {
+  client: PrismaClientLike;
+  logger: SyncLogger;
+}
+
+async function countPreservedEtf(
+  params: CountPreservedEtfParams
+): Promise<number> {
+  const { client, logger } = params;
+
+  try {
+    const etfSymbols = await client.universe.findMany({
+      where: {
+        is_closed_end_fund: false,
+        expired: false,
+      },
+      select: { symbol: true },
+    });
+
+    const preservedCount = Array.isArray(etfSymbols) ? etfSymbols.length : 0;
+
+    logger.info('Counted preserved ETF symbols during sync', {
+      preservedEtfCount: preservedCount,
+      etfSymbols: etfSymbols.map(function extractSymbol(record) {
+        return record.symbol;
+      }),
+    });
+
+    return preservedCount;
+  } catch (error) {
+    logger.error('Failed to count preserved ETF symbols', {
+      error: error instanceof Error ? error.message : String(error),
+    });
+    throw error;
+  }
+}
+
 async function markExpired(params: MarkExpiredParams): Promise<number> {
   const { client, notInSymbols, logger } = params;
 
@@ -155,20 +194,21 @@ async function markExpired(params: MarkExpiredParams): Promise<number> {
       where: {
         symbol: { notIn: notInSymbols },
         expired: false,
+        is_closed_end_fund: true,
       },
       data: { expired: true },
     });
     const count = (result as { count?: number } | undefined)?.count;
     const expiredCount = typeof count === 'number' ? count : 0;
 
-    logger.info('Marked universe records as expired', {
+    logger.info('Marked CEF universe records as expired', {
       expiredCount,
       totalSymbols: notInSymbols.length,
     });
 
     return expiredCount;
   } catch (error) {
-    logger.error('Failed to mark universe records as expired', {
+    logger.error('Failed to mark CEF universe records as expired', {
       notInSymbols,
       error: error instanceof Error ? error.message : String(error),
     });
@@ -202,10 +242,23 @@ async function processSyncTransaction(
     upsertUniverse
   );
 
-  // Step 3: Mark expired symbols in a final transaction
-  const markedExpired = await prisma.$transaction(
-    async function markExpiredTransaction(client) {
-      return markExpired({ client, notInSymbols: selectedSymbols, logger });
+  // Step 3: Mark expired symbols and count preserved ETFs in a final transaction
+  const { markedExpired, preservedEtfCount } = await prisma.$transaction(
+    async function finalSyncTransaction(client) {
+      const expired = await markExpired({
+        client,
+        notInSymbols: selectedSymbols,
+        logger,
+      });
+      const etfCount = await countPreservedEtf({ client, logger });
+
+      logger.info('ETF preservation sync transaction completed', {
+        cefSymbolsExpired: expired,
+        etfSymbolsPreserved: etfCount,
+        correlationId: logger.getCorrelationId(),
+      });
+
+      return { markedExpired: expired, preservedEtfCount: etfCount };
     }
   );
 
@@ -213,6 +266,7 @@ async function processSyncTransaction(
     inserted,
     updated,
     markedExpired,
+    preservedEtfCount,
     selectedCount,
   };
 }
@@ -231,6 +285,11 @@ async function handleSyncRequest(logger: SyncLogger): Promise<SyncSummary> {
     logger.info('Sync from screener operation completed successfully', {
       summary,
       duration,
+      etfPreservationDetails: {
+        preservedEtfCount: summary.preservedEtfCount,
+        cefSymbolsProcessed: summary.selectedCount,
+        cefSymbolsExpired: summary.markedExpired,
+      },
       correlationId: logger.getCorrelationId(),
     });
 
@@ -252,6 +311,7 @@ async function handleSyncRequest(logger: SyncLogger): Promise<SyncSummary> {
       inserted: 0,
       updated: 0,
       markedExpired: 0,
+      preservedEtfCount: 0,
       selectedCount: 0,
       correlationId: logger.getCorrelationId(),
       logFilePath: logger.getLogFilePath(),

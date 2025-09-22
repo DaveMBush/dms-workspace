@@ -7,6 +7,7 @@ const h = vi.hoisted(() => {
     screener: { findMany: ReturnType<typeof vi.fn> };
     universe: {
       findFirst: ReturnType<typeof vi.fn>;
+      findMany: ReturnType<typeof vi.fn>;
       update: ReturnType<typeof vi.fn>;
       create: ReturnType<typeof vi.fn>;
       updateMany: ReturnType<typeof vi.fn>;
@@ -16,6 +17,7 @@ const h = vi.hoisted(() => {
     screener: { findMany: vi.fn() },
     universe: {
       findFirst: vi.fn(),
+      findMany: vi.fn(),
       update: vi.fn(),
       create: vi.fn(),
       updateMany: vi.fn(),
@@ -106,6 +108,7 @@ describe('sync-from-screener route', () => {
     inserted: 0,
     updated: 0,
     markedExpired: 0,
+    preservedEtfCount: 0,
     selectedCount: 0,
     correlationId: TEST_CORRELATION_ID,
     logFilePath: TEST_LOG_PATH,
@@ -124,6 +127,7 @@ describe('sync-from-screener route', () => {
     // Reset mocks
     h.client.screener.findMany.mockReset();
     h.client.universe.findFirst.mockReset();
+    h.client.universe.findMany.mockReset();
     h.client.universe.update.mockReset();
     h.client.universe.create.mockReset();
     h.client.universe.updateMany.mockReset();
@@ -132,9 +136,11 @@ describe('sync-from-screener route', () => {
     // Reset logger mocks
     vi.clearAllMocks();
 
-    // Set up default transaction mock
+    // Set up default transaction mock that handles the new structure
     h.client.$transaction.mockImplementation(
-      async <T>(fn: (client: unknown) => Promise<T>) => fn(h.client)
+      async <T>(fn: (client: unknown) => Promise<T>) => {
+        return fn(h.client);
+      }
     );
   });
 
@@ -145,6 +151,7 @@ describe('sync-from-screener route', () => {
 
   test('successful sync with empty selection', async () => {
     h.client.screener.findMany.mockResolvedValueOnce([]);
+    h.client.universe.findMany.mockResolvedValueOnce([]);
     h.client.universe.updateMany.mockResolvedValueOnce({ count: 0 });
     const f = createFastify();
     registerSyncFromScreener(f);
@@ -162,6 +169,8 @@ describe('sync-from-screener route', () => {
 
     h.client.screener.findMany.mockResolvedValueOnce(mockSymbols);
     h.client.universe.findFirst.mockResolvedValue(null); // No existing records
+    h.client.universe.findMany.mockResolvedValueOnce([]);
+    h.client.universe.findMany.mockResolvedValueOnce([]);
     h.client.universe.create.mockResolvedValue({});
     h.client.universe.updateMany.mockResolvedValueOnce({ count: 0 });
 
@@ -175,6 +184,7 @@ describe('sync-from-screener route', () => {
       inserted: 2,
       updated: 0,
       markedExpired: 0,
+      preservedEtfCount: 0,
       selectedCount: 2,
       correlationId: 'test-correlation-id',
       logFilePath: '/test/log/path.log',
@@ -197,6 +207,7 @@ describe('sync-from-screener route', () => {
 
     h.client.screener.findMany.mockResolvedValueOnce(mockSymbols);
     h.client.universe.findFirst.mockResolvedValueOnce(existingRecord);
+    h.client.universe.findMany.mockResolvedValueOnce([]);
     h.client.universe.update.mockResolvedValue({});
     h.client.universe.updateMany.mockResolvedValueOnce({ count: 0 });
 
@@ -210,6 +221,7 @@ describe('sync-from-screener route', () => {
       inserted: 0,
       updated: 1,
       markedExpired: 0,
+      preservedEtfCount: 0,
       selectedCount: 1,
       correlationId: 'test-correlation-id',
       logFilePath: '/test/log/path.log',
@@ -233,6 +245,7 @@ describe('sync-from-screener route', () => {
 
     h.client.screener.findMany.mockResolvedValueOnce(mockSymbols);
     h.client.universe.findFirst.mockResolvedValue(null);
+    h.client.universe.findMany.mockResolvedValueOnce([]); // For ETF count
     h.client.universe.create.mockResolvedValue({});
     h.client.universe.updateMany.mockResolvedValueOnce({ count: 3 });
 
@@ -246,6 +259,7 @@ describe('sync-from-screener route', () => {
       inserted: 1,
       updated: 0,
       markedExpired: 3,
+      preservedEtfCount: 0,
       selectedCount: 1,
       correlationId: 'test-correlation-id',
       logFilePath: '/test/log/path.log',
@@ -255,6 +269,7 @@ describe('sync-from-screener route', () => {
       where: {
         symbol: { notIn: ['ACTIVE'] },
         expired: false,
+        is_closed_end_fund: true,
       },
       data: { expired: true },
     });
@@ -270,6 +285,7 @@ describe('sync-from-screener route', () => {
     h.client.universe.findFirst
       .mockResolvedValueOnce(null) // GOOD symbol - no existing record
       .mockRejectedValueOnce(new Error('Database error')); // BAD symbol - error
+    h.client.universe.findMany.mockResolvedValueOnce([]);
     h.client.universe.create.mockResolvedValue({});
     h.client.universe.updateMany.mockResolvedValueOnce({ count: 0 });
 
@@ -283,6 +299,7 @@ describe('sync-from-screener route', () => {
       inserted: 1,
       updated: 0,
       markedExpired: 0,
+      preservedEtfCount: 0,
       selectedCount: 2,
       correlationId: 'test-correlation-id',
       logFilePath: '/test/log/path.log',
@@ -299,6 +316,7 @@ describe('sync-from-screener route', () => {
 
     h.client.screener.findMany.mockResolvedValueOnce(mockSymbols);
     h.client.universe.findFirst.mockResolvedValue(null);
+    h.client.universe.findMany.mockResolvedValueOnce([]); // For ETF count
     h.client.universe.create.mockResolvedValue({});
     h.client.universe.updateMany.mockResolvedValueOnce({ count: 1 });
 
@@ -323,10 +341,27 @@ describe('sync-from-screener route', () => {
     );
 
     expect(mockLogger.info).toHaveBeenCalledWith(
-      'Marked universe records as expired',
+      'Marked CEF universe records as expired',
       {
         expiredCount: 1,
         totalSymbols: 1,
+      }
+    );
+
+    expect(mockLogger.info).toHaveBeenCalledWith(
+      'Counted preserved ETF symbols during sync',
+      {
+        preservedEtfCount: 0,
+        etfSymbols: [],
+      }
+    );
+
+    expect(mockLogger.info).toHaveBeenCalledWith(
+      'ETF preservation sync transaction completed',
+      {
+        cefSymbolsExpired: 1,
+        etfSymbolsPreserved: 0,
+        correlationId: 'test-correlation-id',
       }
     );
 
@@ -337,9 +372,15 @@ describe('sync-from-screener route', () => {
           inserted: 1,
           updated: 0,
           markedExpired: 1,
+          preservedEtfCount: 0,
           selectedCount: 1,
         },
         duration: expect.any(Number) as number,
+        etfPreservationDetails: {
+          preservedEtfCount: 0,
+          cefSymbolsProcessed: 1,
+          cefSymbolsExpired: 1,
+        },
         correlationId: 'test-correlation-id',
       }
     );
@@ -373,6 +414,7 @@ describe('sync-from-screener route', () => {
 
     h.client.screener.findMany.mockResolvedValueOnce(mockSymbols);
     h.client.universe.findFirst.mockResolvedValue(null);
+    h.client.universe.findMany.mockResolvedValueOnce([]);
     h.client.universe.create.mockResolvedValue({});
     h.client.universe.updateMany.mockResolvedValueOnce({ count: 0 });
 
@@ -451,6 +493,7 @@ describe('sync-from-screener route', () => {
     h.client.universe.findFirst
       .mockResolvedValueOnce(null) // NEW symbol - no existing record
       .mockResolvedValueOnce(existingRecord); // EXISTING symbol
+    h.client.universe.findMany.mockResolvedValueOnce([]); // For ETF count
     h.client.universe.create.mockResolvedValue({});
     h.client.universe.update.mockResolvedValue({});
     h.client.universe.updateMany.mockResolvedValueOnce({ count: 2 });
@@ -465,6 +508,7 @@ describe('sync-from-screener route', () => {
       inserted: 1,
       updated: 1,
       markedExpired: 2,
+      preservedEtfCount: 0,
       selectedCount: 2,
       correlationId: 'test-correlation-id',
       logFilePath: '/test/log/path.log',
@@ -510,6 +554,7 @@ describe('sync-from-screener route', () => {
 
     h.client.screener.findMany.mockResolvedValueOnce(mockSymbols);
     h.client.universe.findFirst.mockResolvedValue(null);
+    h.client.universe.findMany.mockResolvedValueOnce([]);
     h.client.universe.create.mockResolvedValue({});
     h.client.universe.updateMany.mockResolvedValueOnce({ count: 0 });
 
@@ -523,6 +568,7 @@ describe('sync-from-screener route', () => {
       inserted: 2,
       updated: 0,
       markedExpired: 0,
+      preservedEtfCount: 0,
       selectedCount: 2,
       correlationId: 'test-correlation-id',
       logFilePath: '/test/log/path.log',
