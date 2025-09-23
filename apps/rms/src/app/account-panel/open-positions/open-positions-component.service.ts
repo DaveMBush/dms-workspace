@@ -64,7 +64,7 @@ export class OpenPositionsComponentService {
       openPositions.push({
         id: trade.id,
         symbol: universe!.symbol,
-        exDate: universe!.ex_date,
+        exDate: universe!.ex_date || null,
         buy: trade.buy,
         buyDate: new Date(trade.buy_date),
         sell: trade.sell,
@@ -92,7 +92,11 @@ export class OpenPositionsComponentService {
   }
 
   private getFormulaExDate(universe: Universe): Date {
-    const formulaExDate = new Date(universe?.ex_date);
+    if (!universe?.ex_date) {
+      // Return current date as fallback when ex_date is null
+      return new Date();
+    }
+    const formulaExDate = new Date(universe.ex_date);
     if (formulaExDate.valueOf() >= new Date().valueOf()) {
       return formulaExDate;
     }
