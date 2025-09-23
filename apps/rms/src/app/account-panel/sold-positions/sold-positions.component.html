@@ -143,7 +143,13 @@
       </td>
       <td>{{ row.daysHeld }}</td>
       <td>{{ row.capitalGain | currency : 'USD' : 'symbol' : '1.2-4' }}</td>
-      <td>{{ row.capitalGainPercentage | number : '1.2-2' }}%</td>
+      <td>
+        {{
+          row.buy === 0
+            ? 'N/A'
+            : (row.capitalGainPercentage | number : '1.2-2') + '%'
+        }}
+      </td>
       <td>
         <p-button icon="pi pi-trash" severity="danger" (onClick)="trash(row)" />
       </td>
