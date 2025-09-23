@@ -14,6 +14,7 @@ import { POSITIONS_COMMON_IMPORTS } from '../../shared/positions-common-imports.
 import { currentAccountSignalStore } from '../../store/current-account/current-account.signal-store';
 import { Trade } from '../../store/trades/trade.interface';
 import { Universe } from '../../store/universe/universe.interface';
+import { calculateCapitalGains } from './capital-gains-calculator.function';
 import { SoldPositionsComponentService } from './sold-positions-component.service';
 import { SoldPositionsStorageService } from './sold-positions-storage.service';
 
@@ -30,6 +31,8 @@ interface SoldPosition {
   daysHeld: number;
   targetGain: number;
   targetSell: number;
+  capitalGain: number;
+  capitalGainPercentage: number;
   [key: string]: unknown;
 }
 
@@ -120,6 +123,13 @@ export class SoldPositionsComponent extends BasePositionsComponent<
 
     // Convert ClosedPosition to SoldPosition
     const soldPositions = rawPositions.map(function convertToSoldPosition(pos) {
+      // Recalculate capital gains to ensure they reflect current buy/sell prices
+      const capitalGains = calculateCapitalGains({
+        buy: pos.buy,
+        sell: pos.sell,
+        quantity: pos.quantity,
+      });
+
       return {
         id: pos.id,
         symbol: pos.symbol,
@@ -133,6 +143,8 @@ export class SoldPositionsComponent extends BasePositionsComponent<
         daysHeld: pos.daysHeld,
         targetGain: 0, // Not available in ClosedPosition
         targetSell: 0, // Not available in ClosedPosition
+        capitalGain: capitalGains.capitalGain,
+        capitalGainPercentage: capitalGains.capitalGainPercentage,
       } as SoldPosition;
     });
 

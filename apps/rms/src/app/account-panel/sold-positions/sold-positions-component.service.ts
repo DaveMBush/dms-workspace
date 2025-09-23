@@ -7,6 +7,7 @@ import { ClosedPosition } from '../../store/trades/closed-position.interface';
 import { differenceInTradingDays } from '../../store/trades/difference-in-trading-days.function';
 import { Trade } from '../../store/trades/trade.interface';
 import { Universe } from '../../store/universe/universe.interface';
+import { calculateCapitalGains } from './capital-gains-calculator.function';
 
 @Injectable({ providedIn: 'root' })
 export class SoldPositionsComponentService {
@@ -117,6 +118,11 @@ export class SoldPositionsComponentService {
     }
 
     const daysHeld = differenceInTradingDays(trade.buy_date, trade.sell_date);
+    const capitalGainsResult = calculateCapitalGains({
+      buy: trade.buy,
+      sell: trade.sell,
+      quantity: trade.quantity,
+    });
 
     return {
       id: trade.id,
@@ -127,8 +133,8 @@ export class SoldPositionsComponentService {
       sellDate: new Date(trade.sell_date),
       daysHeld,
       quantity: trade.quantity,
-      capitalGain: (trade.sell - trade.buy) * trade.quantity,
-      capitalGainPercentage: ((trade.sell - trade.buy) / trade.buy) * 100,
+      capitalGain: capitalGainsResult.capitalGain,
+      capitalGainPercentage: capitalGainsResult.capitalGainPercentage,
     };
   }
 

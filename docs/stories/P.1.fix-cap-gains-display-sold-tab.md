@@ -2,7 +2,7 @@
 
 ## Status
 
-Draft
+Ready for Review
 
 ## Story
 
@@ -21,39 +21,39 @@ Draft
 
 ## Tasks / Subtasks
 
-- [ ] **Task 1: Investigate current capital gains calculation issues** (AC: 1, 2, 5)
+- [x] **Task 1: Investigate current capital gains calculation issues** (AC: 1, 2, 5)
 
-  - [ ] Debug why capital gains might not be displaying correctly
-  - [ ] Check for data issues causing NaN or undefined calculations
-  - [ ] Verify the calculation logic in createClosedPosition method
-  - [ ] Test with various buy/sell price combinations
+  - [x] Debug why capital gains might not be displaying correctly
+  - [x] Check for data issues causing NaN or undefined calculations
+  - [x] Verify the calculation logic in createClosedPosition method
+  - [x] Test with various buy/sell price combinations
 
-- [ ] **Task 2: Fix calculation edge cases** (AC: 3, 5)
+- [x] **Task 2: Fix calculation edge cases** (AC: 3, 5)
 
-  - [ ] Handle division by zero in percentage calculations (buy price = 0)
-  - [ ] Handle negative buy prices or sell prices appropriately
-  - [ ] Add guards against NaN and Infinity values
-  - [ ] Implement fallback values for invalid calculations
+  - [x] Handle division by zero in percentage calculations (buy price = 0)
+  - [x] Handle negative buy prices or sell prices appropriately
+  - [x] Add guards against NaN and Infinity values
+  - [x] Implement fallback values for invalid calculations
 
-- [ ] **Task 3: Ensure real-time updates** (AC: 4)
+- [x] **Task 3: Ensure real-time updates** (AC: 4)
 
-  - [ ] Verify calculations update when buy price is edited
-  - [ ] Verify calculations update when sell price is edited
-  - [ ] Test inline editing doesn't break calculations
-  - [ ] Confirm quantity changes recalculate properly
+  - [x] Verify calculations update when buy price is edited
+  - [x] Verify calculations update when sell price is edited
+  - [x] Test inline editing doesn't break calculations
+  - [x] Confirm quantity changes recalculate properly
 
-- [ ] **Task 4: Improve display formatting** (AC: 6)
+- [x] **Task 4: Improve display formatting** (AC: 6)
 
-  - [ ] Ensure proper currency formatting for Cap Gains$
-  - [ ] Ensure proper percentage formatting for Cap Gains%
-  - [ ] Handle very large and very small numbers appropriately
-  - [ ] Add appropriate decimal places for readability
+  - [x] Ensure proper currency formatting for Cap Gains$
+  - [x] Ensure proper percentage formatting for Cap Gains%
+  - [x] Handle very large and very small numbers appropriately
+  - [x] Add appropriate decimal places for readability
 
-- [ ] **Task 5: Add comprehensive testing** (AC: 1-6)
-  - [ ] Test calculations with various trade scenarios
-  - [ ] Test edge cases (zero, negative, very large values)
-  - [ ] Test inline editing updates
-  - [ ] Regression test to ensure other columns still work
+- [x] **Task 5: Add comprehensive testing** (AC: 1-6)
+  - [x] Test calculations with various trade scenarios
+  - [x] Test edge cases (zero, negative, very large values)
+  - [x] Test inline editing updates
+  - [x] Regression test to ensure other columns still work
 
 ## Dev Notes
 
@@ -177,19 +177,43 @@ _This section will be populated by the development agent during implementation_
 
 ### Agent Model Used
 
-_To be filled by dev agent_
+Claude Sonnet 4 (claude-sonnet-4-20250514)
 
 ### Debug Log References
 
-_To be filled by dev agent_
+Investigation findings:
+
+- Capital gains calculated once in createClosedPosition() method
+- No recalculation when buy/sell prices edited inline
+- Division by zero when buy price is 0 causing Infinity values
+- No error handling for NaN or invalid calculations
 
 ### Completion Notes List
 
-_To be filled by dev agent_
+- Task 1: Investigation complete - identified calculation and update issues
+- Task 2: Created safe calculation helper functions with proper error handling
+- Task 3: Implemented real-time recalculation on edits via computed signals
+- Task 4: Added proper error handling and formatting including N/A for zero buy price
+- Task 5: Added comprehensive tests for all edge cases and integration scenarios
 
 ### File List
 
-_To be filled by dev agent_
+Modified:
+
+- apps/rms/src/app/account-panel/sold-positions/sold-positions-component.service.ts
+- apps/rms/src/app/account-panel/sold-positions/sold-positions.component.ts
+- apps/rms/src/app/account-panel/sold-positions/sold-positions.component.html
+
+Created:
+
+- apps/rms/src/app/account-panel/sold-positions/capital-gains-calculator.function.ts
+- apps/rms/src/app/account-panel/sold-positions/capital-gains-result.interface.ts
+- apps/rms/src/app/account-panel/sold-positions/trade-data.interface.ts
+- apps/rms/src/app/account-panel/sold-positions/is-valid-number.function.ts
+- apps/rms/src/app/account-panel/sold-positions/format-capital-gains-percentage.function.ts
+- apps/rms/src/app/account-panel/sold-positions/format-capital-gains-dollar.function.ts
+- apps/rms/src/app/account-panel/sold-positions/capital-gains-calculator.function.spec.ts
+- apps/rms/src/app/account-panel/sold-positions/sold-positions.component.spec.ts
 
 ## QA Results
 
