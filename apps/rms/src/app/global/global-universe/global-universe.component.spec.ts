@@ -1,14 +1,33 @@
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { MessageService } from 'primeng/api';
+import { of, throwError } from 'rxjs';
+import { provideHttpClient } from '@angular/common/http';
 
 import type { Account } from '../../store/accounts/account.interface';
 import type { Trade } from '../../store/trades/trade.interface';
 import { calculateTradeTotals } from './account-data-calculator.function';
 import { UniverseDataService } from './universe-data.service';
+import { GlobalUniverseComponent } from './global-universe.component';
+import { UniverseSyncService } from '../../shared/services/universe-sync.service';
+import { UpdateUniverseSettingsService } from '../../universe-settings/update-universe.service';
+import { GlobalLoadingService } from '../../shared/services/global-loading.service';
 
 // Mock the selector functions
-const { mockSelectAccountChildren, mockSelectUniverses } = vi.hoisted(() => ({
+const {
+  mockSelectAccountChildren,
+  mockSelectUniverses,
+  mockSelectAccounts,
+  mockSelectUniverse,
+  mockSelectTopEntities,
+  mockSelectRiskGroup,
+} = vi.hoisted(() => ({
   mockSelectAccountChildren: vi.fn(),
   mockSelectUniverses: vi.fn(),
+  mockSelectAccounts: vi.fn(() => []),
+  mockSelectUniverse: vi.fn(() => []),
+  mockSelectTopEntities: vi.fn(() => ({})),
+  mockSelectRiskGroup: vi.fn(() => []),
 }));
 
 vi.mock(
@@ -20,6 +39,22 @@ vi.mock(
 
 vi.mock('../../store/universe/selectors/select-universes.function', () => ({
   selectUniverses: mockSelectUniverses,
+}));
+
+vi.mock('../../store/accounts/selectors/select-accounts.function', () => ({
+  selectAccounts: mockSelectAccounts,
+}));
+
+vi.mock('./universe.selector', () => ({
+  selectUniverse: mockSelectUniverse,
+}));
+
+vi.mock('../../store/top/selectors/select-top-entities.function', () => ({
+  selectTopEntities: mockSelectTopEntities,
+}));
+
+vi.mock('../../store/risk-group/selectors/select-risk-group.function', () => ({
+  selectRiskGroup: mockSelectRiskGroup,
 }));
 
 describe('Integration Tests - End-to-End Data Flow', () => {
@@ -315,6 +350,162 @@ describe('Integration Tests - End-to-End Data Flow', () => {
         ACCOUNT_2_ID
       );
       expect(account2Data.avg_purchase_yield_percent).toBeCloseTo(0.5, 1); // 100 * 4 * (0.25 / 200)
+    });
+  });
+});
+
+describe('GlobalUniverseComponent Toast Notifications', () => {
+  let component: GlobalUniverseComponent;
+  let fixture: ComponentFixture<GlobalUniverseComponent>;
+  let messageService: MessageService;
+  let universeSyncService: UniverseSyncService;
+  let updateUniverseService: UpdateUniverseSettingsService;
+  let globalLoadingService: GlobalLoadingService;
+
+  beforeEach(async () => {
+    const universeSyncServiceSpy = {
+      syncFromScreener: vi.fn(),
+      isSyncing: vi.fn().mockReturnValue(false),
+    };
+    const globalLoadingServiceSpy = {
+      show: vi.fn(),
+      hide: vi.fn(),
+    };
+
+    await TestBed.configureTestingModule({
+      imports: [GlobalUniverseComponent],
+      providers: [
+        provideHttpClient(),
+        { provide: UniverseSyncService, useValue: universeSyncServiceSpy },
+        { provide: GlobalLoadingService, useValue: globalLoadingServiceSpy },
+      ],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(GlobalUniverseComponent);
+    component = fixture.componentInstance;
+    // Get the MessageService from the component's own injector (viewProviders)
+    messageService = fixture.debugElement.injector.get(MessageService);
+    // Spy on the add method of the component's messageService instance
+    vi.spyOn(component.messageService, 'add');
+    universeSyncService = TestBed.inject(UniverseSyncService);
+    // Get UpdateUniverseSettingsService from component's own injector too
+    updateUniverseService = fixture.debugElement.injector.get(
+      UpdateUniverseSettingsService
+    );
+    globalLoadingService = TestBed.inject(GlobalLoadingService);
+  });
+
+  describe('syncUniverse persistent toast notifications', () => {
+    test('should show persistent success toast on successful universe sync', () => {
+      const mockSummary = { inserted: 5, updated: 3, markedExpired: 1 };
+      const syncFromScreenerSpy = vi.fn().mockReturnValue(of(mockSummary));
+      universeSyncService.syncFromScreener = syncFromScreenerSpy;
+
+      component.syncUniverse();
+
+      // Wait for the observable to complete by checking if the spy was called
+      expect(syncFromScreenerSpy).toHaveBeenCalled();
+
+      // eslint-disable-next-line @typescript-eslint/unbound-method -- Test spy access
+      expect(component.messageService.add).toHaveBeenCalledWith(
+        expect.objectContaining({
+          severity: 'success',
+          summary: 'Universe Updated',
+          sticky: true,
+        })
+      );
+    });
+
+    test('should show persistent error toast on universe sync failure', () => {
+      const syncFromScreenerSpy = vi
+        .fn()
+        .mockReturnValue(throwError(() => new Error('Sync failed')));
+      universeSyncService.syncFromScreener = syncFromScreenerSpy;
+
+      component.syncUniverse();
+
+      // eslint-disable-next-line @typescript-eslint/unbound-method -- Test spy access
+      expect(component.messageService.add).toHaveBeenCalledWith(
+        expect.objectContaining({
+          severity: 'error',
+          summary: 'Update Failed',
+          sticky: true,
+        })
+      );
+    });
+  });
+
+  describe('updateFields persistent toast notifications', () => {
+    test('should show persistent success toast on successful fields update', () => {
+      const updateFieldsSpy = vi.fn().mockReturnValue(of({}));
+      // Spy on the component's own updateUniverseService instance
+      vi.spyOn(updateUniverseService, 'updateFields').mockReturnValue(of({}));
+
+      component.updateFields();
+
+      // Verify that updateFields service method was called
+      // eslint-disable-next-line @typescript-eslint/unbound-method -- Test spy access
+      expect(updateUniverseService.updateFields).toHaveBeenCalled();
+
+      // eslint-disable-next-line @typescript-eslint/unbound-method -- Test spy access
+      expect(component.messageService.add).toHaveBeenCalledWith(
+        expect.objectContaining({
+          severity: 'success',
+          summary: 'Fields Updated',
+          sticky: true,
+        })
+      );
+    });
+
+    test('should show persistent error toast on fields update failure', () => {
+      // Spy on the component's own updateUniverseService instance
+      vi.spyOn(updateUniverseService, 'updateFields').mockReturnValue(
+        throwError(() => new Error('Update failed'))
+      );
+
+      component.updateFields();
+
+      // eslint-disable-next-line @typescript-eslint/unbound-method -- Test spy access
+      expect(component.messageService.add).toHaveBeenCalledWith(
+        expect.objectContaining({
+          severity: 'error',
+          summary: 'Update Failed',
+          sticky: true,
+        })
+      );
+    });
+  });
+
+  describe('persistent toast behavior verification', () => {
+    test('should verify sticky property is set to true for all operation toasts', () => {
+      // Test universe sync success
+      vi.spyOn(universeSyncService, 'syncFromScreener').mockReturnValue(
+        of({ inserted: 1, updated: 1, markedExpired: 1 })
+      );
+      component.syncUniverse();
+
+      // Test universe sync error
+      vi.spyOn(universeSyncService, 'syncFromScreener').mockReturnValue(
+        throwError(() => new Error('Error'))
+      );
+      component.syncUniverse();
+
+      // Test fields update success
+      vi.spyOn(updateUniverseService, 'updateFields').mockReturnValue(of({}));
+      component.updateFields();
+
+      // Test fields update error
+      vi.spyOn(updateUniverseService, 'updateFields').mockReturnValue(
+        throwError(() => new Error('Error'))
+      );
+      component.updateFields();
+
+      // Verify all toast calls include sticky: true
+      const allCalls = (component.messageService.add as any).mock.calls;
+      expect(allCalls.length).toBe(4);
+      allCalls.forEach((call: any) => {
+        expect(call[0]).toHaveProperty('sticky', true);
+      });
     });
   });
 });
