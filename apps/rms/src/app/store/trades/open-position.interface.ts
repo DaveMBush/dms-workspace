@@ -1,7 +1,7 @@
 export interface OpenPosition {
   id: string;
   symbol: string;
-  exDate: string;
+  exDate: string | null;
   buy: number;
   buyDate: Date;
   quantity: number;
