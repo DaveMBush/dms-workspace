@@ -27,9 +27,12 @@ import { selectAccounts } from '../../store/accounts/selectors/select-accounts.f
 import { Universe } from '../../store/universe/universe.interface';
 import { AddSymbolDialog } from '../../universe-settings/add-symbol-dialog/add-symbol-dialog';
 import { UpdateUniverseSettingsService } from '../../universe-settings/update-universe.service';
+import { createEditHandlers } from './edit-handlers.function';
+import { createFilterHandlers } from './filter-handlers.function';
 import { GlobalUniverseStorageService } from './global-universe-storage.service';
 import { isRowDimmed } from './is-row-dimmed.function';
 import { createSortComputedSignals } from './sort-computed-signals.function';
+import { createSortingHandlers } from './sorting-handlers.function';
 import { selectUniverse } from './universe.selector';
 import { UniverseDataService } from './universe-data.service';
 
@@ -87,7 +90,7 @@ export class GlobalUniverseComponent {
   readonly addSymbolDialog = viewChild.required(AddSymbolDialog);
 
   private readonly universeSyncService = inject(UniverseSyncService);
-  private readonly messageService = inject(MessageService);
+  protected readonly messageService = inject(MessageService);
   private readonly globalLoading = inject(GlobalLoadingService);
   readonly today = new Date();
   readonly isUpdatingFields = signal<boolean>(false);
@@ -174,10 +177,23 @@ export class GlobalUniverseComponent {
       complete: function updateFieldsComplete() {
         self.isUpdatingFields.set(false);
         self.globalLoading.hide();
+        self.messageService.add({
+          severity: 'success',
+          summary: 'Fields Updated',
+          detail:
+            'Successfully updated field information from external sources.',
+          sticky: true,
+        });
       },
       error: function updateFieldsError() {
         self.isUpdatingFields.set(false);
         self.globalLoading.hide();
+        self.messageService.add({
+          severity: 'error',
+          summary: 'Update Failed',
+          detail: 'Failed to update field information. Please try again.',
+          sticky: true,
+        });
       },
     });
   }
@@ -194,6 +210,7 @@ export class GlobalUniverseComponent {
           severity: 'success',
           summary: 'Universe Updated',
           detail: `Successfully updated universe from Screener. ${summary.inserted} inserted, ${summary.updated} updated, ${summary.markedExpired} expired.`,
+          sticky: true,
         });
       },
       // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
@@ -203,6 +220,7 @@ export class GlobalUniverseComponent {
           severity: 'error',
           summary: 'Update Failed',
           detail: 'Failed to update universe from Screener. Please try again.',
+          sticky: true,
         });
       },
     });
@@ -212,60 +230,88 @@ export class GlobalUniverseComponent {
     this.addSymbolDialog().show();
   }
 
-  onEditDistributionComplete(row: Universe): void {
-    const universe = this.dataService.findUniverseBySymbol(row.symbol);
-    if (universe) {
-      universe.distribution = row.distribution;
-    }
-  }
+  // Create filter handlers
+  readonly filterHandlers = createFilterHandlers(this.storageService, {
+    minYieldFilter: this.minYieldFilter,
+    riskGroupFilter: this.riskGroupFilter,
+    expiredFilter: this.expiredFilter,
+    symbolFilter: this.symbolFilter,
+    selectedAccountId: this.selectedAccountId,
+  });
 
-  onEditDistributionsPerYearComplete(row: Universe): void {
-    const universe = this.dataService.findUniverseBySymbol(row.symbol);
-    if (universe) {
-      universe.distributions_per_year = row.distributions_per_year;
-    }
-  }
+  // Create edit handlers
+  readonly editHandlers = createEditHandlers(this.dataService);
 
-  onEditDateComplete(row: Universe): void {
-    const universe = this.dataService.findUniverseBySymbol(row.symbol);
-    if (universe) {
-      universe.ex_date =
-        typeof row.ex_date === 'object' &&
-        row.ex_date !== null &&
-        (row.ex_date as unknown) instanceof Date
-          ? (row.ex_date as Date).toISOString()
-          : row.ex_date;
-    }
-  }
+  // Create sorting handlers
+  readonly sortingHandlers = createSortingHandlers(
+    this.sortCriteria,
+    this.storageService
+  );
 
-  onEditComplete(event: {
-    data: Record<string, unknown>;
-    field: string;
-  }): void {
-    // event.data: the row object
-    // event.field: the field name (e.g., 'distribution')
-    // event.originalEvent: the DOM event
-    const universe = this.dataService.findUniverseBySymbol(
-      event.data['symbol'] as string
+  // Create sort computed signals
+  readonly sortSignals = createSortComputedSignals(
+    this.sortCriteria,
+    this.sortingHandlers.getSortOrder.bind(this.sortingHandlers)
+  );
+
+  // Edit handlers are now provided by editHandlers object
+  readonly onEditDistributionComplete =
+    this.editHandlers.onEditDistributionComplete.bind(this.editHandlers);
+
+  readonly onEditDistributionsPerYearComplete =
+    this.editHandlers.onEditDistributionsPerYearComplete.bind(
+      this.editHandlers
     );
-    if (universe) {
-      // Update the field that was edited
-      (universe as unknown as Record<string, unknown>)[event.field] =
-        event.data[event.field];
-    }
-  }
+
+  readonly onEditDateComplete = this.editHandlers.onEditDateComplete.bind(
+    this.editHandlers
+  );
+
+  readonly onEditComplete = this.editHandlers.onEditComplete.bind(
+    this.editHandlers
+  );
+
+  protected readonly onEditCommit = this.editHandlers.onEditCommit.bind(
+    this.editHandlers
+  );
+
+  // Sorting handlers are now provided by sortingHandlers object
+  protected readonly onSort = this.sortingHandlers.onSort.bind(
+    this.sortingHandlers
+  );
+
+  protected readonly getSortOrder = this.sortingHandlers.getSortOrder.bind(
+    this.sortingHandlers
+  );
+
+  // Filter handlers are now provided by filterHandlers object
+  protected readonly onMinYieldFilterChange =
+    this.filterHandlers.onMinYieldFilterChange.bind(this.filterHandlers);
+
+  protected readonly onRiskGroupFilterChange =
+    this.filterHandlers.onRiskGroupFilterChange.bind(this.filterHandlers);
+
+  protected readonly onRiskGroupFilterChangeFromPrimeNG =
+    this.filterHandlers.onRiskGroupFilterChangeFromPrimeNG.bind(
+      this.filterHandlers
+    );
+
+  protected readonly onExpiredFilterChange =
+    this.filterHandlers.onExpiredFilterChange.bind(this.filterHandlers);
+
+  protected readonly onExpiredFilterChangeFromPrimeNG =
+    this.filterHandlers.onExpiredFilterChangeFromPrimeNG.bind(
+      this.filterHandlers
+    );
+
+  protected readonly onSymbolFilterChange =
+    this.filterHandlers.onSymbolFilterChange.bind(this.filterHandlers);
+
+  protected readonly onSelectedAccountIdChange =
+    this.filterHandlers.onSelectedAccountIdChange.bind(this.filterHandlers);
 
   protected trackById(index: number, row: Universe): string {
     return row.id;
-  }
-
-  protected onEditCommit(row: Record<string, unknown>, field: string): void {
-    const universe = this.dataService.findUniverseBySymbol(
-      row['symbol'] as string
-    );
-    if (universe) {
-      (universe as unknown as Record<string, unknown>)[field] = row[field];
-    }
   }
 
   protected stopArrowKeyPropagation(event: KeyboardEvent): void {
@@ -273,113 +319,6 @@ export class GlobalUniverseComponent {
       event.stopPropagation();
     }
   }
-
-  /**
-   * Handles column sorting with multi-column support
-   * Cycles through: ascending → descending → no sort (removed)
-   */
-  protected onSort(field: string): void {
-    const currentCriteria = this.sortCriteria();
-    const existingIndex = currentCriteria.findIndex(function findCriteria(
-      criteria
-    ) {
-      return criteria.field === field;
-    });
-
-    if (existingIndex >= 0) {
-      // Field exists in sort criteria - cycle through states
-      const updatedCriteria = [...currentCriteria];
-      const currentOrder = updatedCriteria[existingIndex].order;
-
-      if (currentOrder === 1) {
-        // Currently ascending, change to descending
-        updatedCriteria[existingIndex].order = -1;
-        this.sortCriteria.set(updatedCriteria);
-        this.storageService.saveSortCriteria(updatedCriteria);
-      } else {
-        // Currently descending, remove from sort criteria
-        updatedCriteria.splice(existingIndex, 1);
-        this.sortCriteria.set(updatedCriteria);
-        this.storageService.saveSortCriteria(updatedCriteria);
-      }
-    } else {
-      // Field not in sort criteria, add as ascending
-      const newCriteria = [...currentCriteria, { field, order: 1 }];
-      this.sortCriteria.set(newCriteria);
-      this.storageService.saveSortCriteria(newCriteria);
-    }
-    // The computed signal will automatically re-evaluate and apply sorting
-  }
-
-  /**
-   * Gets the sort order (1, 2, 3, etc.) for a field in multi-column sort
-   */
-  protected getSortOrder(field: string): number | null {
-    const currentCriteria = this.sortCriteria();
-    const index = currentCriteria.findIndex(function findCriteria(criteria) {
-      return criteria.field === field;
-    });
-
-    return index >= 0 ? index + 1 : null;
-  }
-
-  /**
-   * Handles min yield filter changes and saves to localStorage
-   */
-  protected onMinYieldFilterChange(): void {
-    this.storageService.saveMinYieldFilter(this.minYieldFilter());
-  }
-
-  /**
-   * Handles risk group filter changes and saves to localStorage
-   */
-  protected onRiskGroupFilterChange(): void {
-    this.storageService.saveRiskGroupFilter(this.riskGroupFilter());
-  }
-
-  /**
-   * Handles risk group filter changes from PrimeNG filter
-   */
-  protected onRiskGroupFilterChangeFromPrimeNG(value: string | null): void {
-    this.riskGroupFilter.set(value);
-    this.storageService.saveRiskGroupFilter(value);
-  }
-
-  /**
-   * Handles expired filter changes and saves to localStorage
-   */
-  protected onExpiredFilterChange(): void {
-    this.storageService.saveExpiredFilter(this.expiredFilter());
-  }
-
-  /**
-   * Handles expired filter changes from PrimeNG filter
-   */
-  protected onExpiredFilterChangeFromPrimeNG(value: boolean | null): void {
-    this.expiredFilter.set(value);
-    this.storageService.saveExpiredFilter(value);
-  }
-
-  /**
-   * Handles symbol filter changes and saves to localStorage
-   */
-  protected onSymbolFilterChange(): void {
-    this.storageService.saveSymbolFilter(this.symbolFilter());
-    // The filtering is handled by the computed signal universe$
-  }
-
-  /**
-   * Handles selected account ID changes and saves to localStorage
-   */
-  protected onSelectedAccountIdChange(): void {
-    this.storageService.saveSelectedAccountId(this.selectedAccountId());
-  }
-
-  // Create sort computed signals
-  readonly sortSignals = createSortComputedSignals(
-    this.sortCriteria,
-    this.getSortOrder.bind(this)
-  );
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
   readonly universeWithDimmedState$ = computed(() => {

@@ -51,4 +51,6 @@ CLAUDE.md
 .claude
 database copy.dbbackups/
 *.db
+*.db-journal
 logs
+postgres-backup-*.sql
