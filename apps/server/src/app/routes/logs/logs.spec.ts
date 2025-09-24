@@ -12,7 +12,7 @@ import fastify, { FastifyInstance } from 'fastify';
 
 import registerLogsRoutes from './index';
 
-const testLogsDir = join(process.cwd(), 'test-logs');
+const testLogsDir = join(process.cwd(), 'logs');
 
 function setupTestLogs(): void {
   if (existsSync(testLogsDir)) {
@@ -45,13 +45,14 @@ describe('Logs API', () => {
   let app: FastifyInstance;
 
   beforeEach(async () => {
-    // Mock process.cwd to point to test directory
-    vi.spyOn(process, 'cwd').mockReturnValue(testLogsDir.replace('/test-logs', ''));
+    // Mock process.cwd to point to test directory parent
+    const mockCwd = testLogsDir.replace('/logs', '');
+    vi.spyOn(process, 'cwd').mockReturnValue(mockCwd);
 
     setupTestLogs();
 
     app = fastify();
-    registerLogsRoutes(app);
+    await app.register(registerLogsRoutes, { prefix: '/api/logs' });
     await app.ready();
   });
 
@@ -65,7 +66,7 @@ describe('Logs API', () => {
     test('should return error logs with default pagination', async () => {
       const response = await app.inject({
         method: 'GET',
-        url: '/logs/errors',
+        url: '/api/logs/errors',
       });
 
       expect(response.statusCode).toBe(200);
@@ -84,7 +85,7 @@ describe('Logs API', () => {
     test('should filter logs by level', async () => {
       const response = await app.inject({
         method: 'GET',
-        url: '/logs/errors?level=error',
+        url: '/api/logs/errors?level=error',
       });
 
       expect(response.statusCode).toBe(200);
@@ -98,7 +99,7 @@ describe('Logs API', () => {
     test('should handle pagination parameters', async () => {
       const response = await app.inject({
         method: 'GET',
-        url: '/logs/errors?page=1&limit=2',
+        url: '/api/logs/errors?page=1&limit=2',
       });
 
       expect(response.statusCode).toBe(200);
@@ -111,7 +112,7 @@ describe('Logs API', () => {
     test('should return 400 for invalid pagination parameters', async () => {
       const response = await app.inject({
         method: 'GET',
-        url: '/logs/errors?page=0&limit=0',
+        url: '/api/logs/errors?page=0&limit=0',
       });
 
       expect(response.statusCode).toBe(400);
@@ -122,7 +123,7 @@ describe('Logs API', () => {
     test('should filter logs by search term', async () => {
       const response = await app.inject({
         method: 'GET',
-        url: '/logs/errors?search=Test%20error',
+        url: '/api/logs/errors?search=Test%20error',
       });
 
       expect(response.statusCode).toBe(200);
@@ -136,7 +137,7 @@ describe('Logs API', () => {
     test('should handle empty results', async () => {
       const response = await app.inject({
         method: 'GET',
-        url: '/logs/errors?search=nonexistent',
+        url: '/api/logs/errors?search=nonexistent',
       });
 
       expect(response.statusCode).toBe(200);
