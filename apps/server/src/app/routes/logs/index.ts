@@ -83,7 +83,7 @@ function handleDeleteLogFile(
     Params: { filename: string };
   }>,
   reply: FastifyReply
-): { success: boolean; message: string } | { error: string; message: string } {
+): { error: string; message: string } | { success: boolean; message: string } {
   try {
     const { filename } = request.params;
     const result = deleteLogFile(filename);
@@ -169,6 +169,8 @@ const logs: FastifyPluginAsync = async function logsPlugin(fastify) {
       file?: string;
     };
   }>('/errors', handleErrorLogsRequest);
+
+  await Promise.resolve();
 };
 
 export default logs;
