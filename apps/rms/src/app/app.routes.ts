@@ -126,6 +126,13 @@ export const appRoutes: Route[] = [
           ),
       },
       {
+        path: 'global/error-logs',
+        loadComponent: async () =>
+          import('./global/global-error-logs/global-error-logs.component').then(
+            (m) => m.GlobalErrorLogsComponent
+          ),
+      },
+      {
         path: 'profile',
         loadComponent: async () =>
           import('./auth/profile/profile').then((m) => m.Profile),

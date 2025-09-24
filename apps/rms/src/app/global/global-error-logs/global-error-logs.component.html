@@ -1,0 +1,182 @@
+<!-- eslint-disable @angular-eslint/template/no-call-expression, @angular-eslint/template/cyclomatic-complexity -- Signal-based component with computed properties -->
+<div class="error-logs-container">
+  <!-- Filter Toolbar -->
+  <p-toolbar>
+    <div class="flex gap-3 align-items-center flex-wrap">
+      <!-- File Selection -->
+      <p-select
+        [options]="fileOptions()"
+        [ngModel]="selectedFileName()"
+        (ngModelChange)="onFileChange($event)"
+        placeholder="Select log file"
+        [style]="{ 'min-width': '200px' }"
+      />
+
+      <!-- Delete File Button -->
+      @if (selectedFileName()) {
+      <p-button
+        icon="pi pi-trash"
+        severity="danger"
+        size="small"
+        (onClick)="deleteLogFile(selectedFileName()!)"
+        pTooltip="Delete selected log file"
+      />
+      }
+
+      <!-- Level Filter -->
+      <p-select
+        [options]="levelOptions"
+        [ngModel]="filterLevel()"
+        (ngModelChange)="onLevelChange($event)"
+        placeholder="Filter by level"
+        [style]="{ 'min-width': '150px' }"
+      />
+
+      <!-- Date From -->
+      <input
+        type="date"
+        [ngModel]="filterDateFrom()"
+        (ngModelChange)="onDateFromChange($event)"
+        placeholder="From date"
+        class="p-inputtext"
+        style="min-width: 150px"
+      />
+
+      <!-- Date To -->
+      <input
+        type="date"
+        [ngModel]="filterDateTo()"
+        (ngModelChange)="onDateToChange($event)"
+        placeholder="To date"
+        class="p-inputtext"
+        style="min-width: 150px"
+      />
+
+      <!-- Search -->
+      <input
+        type="text"
+        pInputText
+        [ngModel]="filterSearch()"
+        (ngModelChange)="onSearchChange($event)"
+        placeholder="Search messages..."
+        class="flex-grow-1"
+        style="min-width: 200px"
+      />
+
+      <!-- Action Buttons -->
+      <p-button
+        icon="pi pi-filter-slash"
+        severity="secondary"
+        size="small"
+        (onClick)="clearFilters()"
+        pTooltip="Clear all filters"
+      />
+
+      <p-button
+        icon="pi pi-refresh"
+        severity="info"
+        size="small"
+        (onClick)="refreshLogs()"
+        [loading]="isCurrentlyLoading()"
+        pTooltip="Refresh logs"
+      />
+    </div>
+  </p-toolbar>
+
+  <!-- Error Message -->
+  @if (hasError()) {
+  <p-message severity="error" [text]="errorMessage()!" />
+  }
+
+  <!-- Loading State -->
+  @if (isLoadingWithoutLogs()) {
+  <div class="text-center p-4">
+    <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+    <p>Loading error logs...</p>
+  </div>
+  }
+
+  <!-- Error Logs Table -->
+  @if (shouldShowTable()) {
+  <p-table
+    [value]="currentLogs()"
+    [loading]="isCurrentlyLoading()"
+    [scrollable]="true"
+    scrollHeight="calc(100vh - 300px)"
+    [tableStyle]="{ 'min-width': '100%' }"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th style="width: 180px">Timestamp</th>
+        <th style="width: 80px">Level</th>
+        <th style="min-width: 300px">Message</th>
+        <th style="width: 120px">Request ID</th>
+        <th style="width: 100px">User ID</th>
+        <th style="min-width: 300px; width: 30%">Context</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-log>
+      <tr>
+        <td>{{ getFormattedTimestamp(log.timestamp) }}</td>
+        <td>
+          <span
+            [class]="
+              'inline-flex align-items-center px-2 py-1 text-xs font-medium rounded ' +
+              getLevelSeverityClass(log.level)
+            "
+          >
+            {{ getUpperCaseLevel(log.level) }}
+          </span>
+        </td>
+        <td>
+          <div class="max-w-md overflow-hidden text-ellipsis">
+            {{ log.message }}
+          </div>
+        </td>
+        <td>
+          <code class="text-xs">{{ log.requestId || '-' }}</code>
+        </td>
+        <td>
+          <code class="text-xs">{{ log.userId || '-' }}</code>
+        </td>
+        <td>
+          @if (log.context) {
+          <div class="context-container">
+            <pre
+              class="text-xs max-h-32 overflow-y-auto whitespace-pre-wrap break-words"
+              >{{ getFormattedContext(log.context) }}</pre
+            >
+          </div>
+          } @else {
+          <span class="text-gray-400">-</span>
+          }
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="6" class="text-center p-4">
+          @if (hasError()) {
+          <span>Failed to load error logs</span>
+          } @else {
+          <span>No error logs found</span>
+          }
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+  }
+
+  <!-- Pagination -->
+  @if (shouldShowPaginator()) {
+  <p-paginator
+    [first]="paginatorFirst()"
+    [rows]="pageSize()"
+    [totalRecords]="totalRecords()"
+    [rowsPerPageOptions]="[25, 50, 100]"
+    (onPageChange)="onPageChange($event)"
+    [showCurrentPageReport]="true"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+  />
+  }
+</div>

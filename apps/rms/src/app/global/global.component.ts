@@ -31,6 +31,7 @@ export class GlobalComponent extends BaseRouteComponent {
     { id: 'universe', name: 'Universe' },
     { id: 'screener', name: 'Screener' },
     { id: 'summary', name: 'Summary' },
+    { id: 'error-logs', name: 'Error Logs' },
   ];
 
   updateSelectionFromRoute(url: string): void {

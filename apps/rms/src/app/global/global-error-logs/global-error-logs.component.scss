@@ -1,0 +1,54 @@
+.error-logs-container {
+  padding: 1rem;
+
+  .p-toolbar {
+    margin-bottom: 1rem;
+  }
+
+  .p-message {
+    margin-bottom: 1rem;
+  }
+
+  .p-table {
+    .p-datatable-thead > tr > th {
+      background-color: var(--surface-100);
+      font-weight: 600;
+    }
+
+    .p-datatable-tbody > tr {
+      &:hover {
+        background-color: var(--surface-50);
+      }
+    }
+  }
+
+  .p-paginator {
+    margin-top: 1rem;
+  }
+
+  .context-container {
+    max-width: 400px;
+    min-width: 250px;
+
+    pre {
+      white-space: pre-wrap;
+      word-break: break-word;
+      margin: 0;
+      padding: 0.5rem;
+      background-color: var(--surface-50);
+      border-radius: 0.25rem;
+      border: 1px solid var(--surface-200);
+      font-size: 0.75rem;
+      line-height: 1.2;
+      max-height: 8rem;
+      overflow-y: auto;
+    }
+  }
+
+  code {
+    background-color: var(--surface-100);
+    padding: 0.125rem 0.25rem;
+    border-radius: 0.25rem;
+    font-family: 'Courier New', Courier, monospace;
+  }
+}
