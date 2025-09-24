@@ -11,6 +11,7 @@ import { FormsModule } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { DatePickerModule } from 'primeng/datepicker';
+import { DialogModule } from 'primeng/dialog';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { SelectModule } from 'primeng/select';
@@ -27,6 +28,7 @@ import { selectAccounts } from '../../store/accounts/selectors/select-accounts.f
 import { Universe } from '../../store/universe/universe.interface';
 import { AddSymbolDialog } from '../../universe-settings/add-symbol-dialog/add-symbol-dialog';
 import { UpdateUniverseSettingsService } from '../../universe-settings/update-universe.service';
+import { DeleteUniverseHelper } from './delete-universe.helper';
 import { createEditHandlers } from './edit-handlers.function';
 import { createFilterHandlers } from './filter-handlers.function';
 import { GlobalUniverseStorageService } from './global-universe-storage.service';
@@ -69,6 +71,7 @@ import { UniverseDataService } from './universe-data.service';
     NgClass,
     ToastModule,
     ProgressSpinnerModule,
+    DialogModule,
     EditableDateCellComponent,
     AddSymbolDialog,
   ],
@@ -78,6 +81,7 @@ import { UniverseDataService } from './universe-data.service';
     GlobalUniverseStorageService,
     UpdateUniverseSettingsService,
     MessageService,
+    DeleteUniverseHelper,
   ],
 })
 export class GlobalUniverseComponent {
@@ -92,6 +96,7 @@ export class GlobalUniverseComponent {
   private readonly universeSyncService = inject(UniverseSyncService);
   protected readonly messageService = inject(MessageService);
   private readonly globalLoading = inject(GlobalLoadingService);
+  readonly deleteHelper = inject(DeleteUniverseHelper);
   readonly today = new Date();
   readonly isUpdatingFields = signal<boolean>(false);
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signals work better with arrow functions
@@ -122,6 +127,7 @@ export class GlobalUniverseComponent {
   );
 
   symbolFilter = signal<string>(this.storageService.loadSymbolFilter());
+
   riskGroups = [
     { label: 'Equities', value: 'Equities' },
     { label: 'Income', value: 'Income' },
@@ -309,6 +315,14 @@ export class GlobalUniverseComponent {
 
   protected readonly onSelectedAccountIdChange =
     this.filterHandlers.onSelectedAccountIdChange.bind(this.filterHandlers);
+
+  // Bind helper methods to avoid function calls in template
+  readonly shouldShowDeleteButton =
+    this.deleteHelper.shouldShowDeleteButton.bind(this.deleteHelper);
+
+  readonly confirmDelete = this.deleteHelper.confirmDelete.bind(
+    this.deleteHelper
+  );
 
   protected trackById(index: number, row: Universe): string {
     return row.id;
