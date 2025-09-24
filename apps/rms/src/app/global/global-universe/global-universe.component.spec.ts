@@ -12,6 +12,7 @@ import { GlobalUniverseComponent } from './global-universe.component';
 import { UniverseSyncService } from '../../shared/services/universe-sync.service';
 import { UpdateUniverseSettingsService } from '../../universe-settings/update-universe.service';
 import { GlobalLoadingService } from '../../shared/services/global-loading.service';
+import { universeEffectsServiceToken } from '../../store/universe/universe-effect-service-token';
 
 // Mock the selector functions
 const {
@@ -378,6 +379,10 @@ describe('GlobalUniverseComponent Toast Notifications', () => {
         provideHttpClient(),
         { provide: UniverseSyncService, useValue: universeSyncServiceSpy },
         { provide: GlobalLoadingService, useValue: globalLoadingServiceSpy },
+        {
+          provide: universeEffectsServiceToken,
+          useValue: { delete: vi.fn() },
+        },
       ],
     }).compileComponents();
 
@@ -506,6 +511,85 @@ describe('GlobalUniverseComponent Toast Notifications', () => {
       allCalls.forEach((call: any) => {
         expect(call[0]).toHaveProperty('sticky', true);
       });
+    });
+  });
+});
+
+describe('GlobalUniverseComponent Delete Functionality', () => {
+  let component: GlobalUniverseComponent;
+  let fixture: ComponentFixture<GlobalUniverseComponent>;
+  let universeEffectsService: any;
+
+  const mockUniverse = {
+    id: 'universe-1',
+    symbol: 'AAPL',
+    riskGroup: 'Growth',
+    distribution: 0.25,
+    distributions_per_year: 4,
+    last_price: 150.0,
+    most_recent_sell_date: null,
+    most_recent_sell_price: null,
+    ex_date: new Date('2024-03-15'),
+    yield_percent: 0.667,
+    avg_purchase_yield_percent: 8.33,
+    expired: false,
+    is_closed_end_fund: false,
+    position: 0, // No position = eligible for deletion
+  };
+
+  const mockCEFUniverse = {
+    ...mockUniverse,
+    id: 'universe-2',
+    symbol: 'CEF1',
+    is_closed_end_fund: true, // CEF = not eligible for deletion
+  };
+
+  const mockUniverseWithPosition = {
+    ...mockUniverse,
+    id: 'universe-3',
+    symbol: 'MSFT',
+    position: 1000, // Has position = not eligible for deletion
+  };
+
+  beforeEach(async () => {
+    universeEffectsService = {
+      delete: vi.fn(),
+    };
+
+    await TestBed.configureTestingModule({
+      imports: [GlobalUniverseComponent],
+      providers: [
+        provideHttpClient(),
+        {
+          provide: universeEffectsServiceToken,
+          useValue: universeEffectsService,
+        },
+      ],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(GlobalUniverseComponent);
+    component = fixture.componentInstance;
+    vi.spyOn(component.messageService, 'add');
+  });
+
+  describe('deleteHelper integration', () => {
+    test('should provide delete helper with correct configuration', () => {
+      expect(component.deleteHelper).toBeDefined();
+      expect(typeof component.deleteHelper.shouldShowDeleteButton).toBe(
+        'function'
+      );
+      expect(typeof component.deleteHelper.confirmDelete).toBe('function');
+      expect(typeof component.deleteHelper.cancelDelete).toBe('function');
+      expect(typeof component.deleteHelper.deleteUniverse).toBe('function');
+    });
+
+    test('should delegate delete operations to helper', () => {
+      const helper = component.deleteHelper;
+      const helperSpy = vi.spyOn(helper, 'shouldShowDeleteButton');
+
+      helper.shouldShowDeleteButton(mockUniverse);
+
+      expect(helperSpy).toHaveBeenCalledWith(mockUniverse);
     });
   });
 });

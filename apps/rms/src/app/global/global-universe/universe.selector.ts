@@ -24,6 +24,7 @@ export const selectUniverse = computed(function selectUniverseFunction() {
     const avgPurchaseYieldPercent = 0;
 
     result.push({
+      id: universe.id,
       symbol: universe.symbol,
       riskGroup: riskGroup?.name ?? '',
       distribution: universe.distribution,

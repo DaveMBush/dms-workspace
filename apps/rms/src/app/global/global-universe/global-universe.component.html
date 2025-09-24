@@ -187,6 +187,7 @@
       </th>
       <th>Position</th>
       <th>Expired</th>
+      <th>Actions</th>
     </tr>
   </ng-template>
   <ng-template pTemplate="body" let-row>
@@ -250,9 +251,51 @@
       <td>{{ row.most_recent_sell_price | number : '1.2-4' }}</td>
       <td>{{ row.position === 0 ? '' : (row.position | number : '1.2-4') }}</td>
       <td class="text-center">{{ row.expired ? '*' : '' }}</td>
+      <td class="text-center">
+        <!-- eslint-disable @angular-eslint/template/cyclomatic-complexity, @angular-eslint/template/no-call-expression -->
+        @if (shouldShowDeleteButton(row)) {
+        <p-button
+          icon="pi pi-trash"
+          severity="danger"
+          size="small"
+          (onClick)="confirmDelete(row)"
+          pTooltip="Delete unused symbol"
+          tooltipPosition="top"
+        />
+        }
+        <!-- eslint-enable @angular-eslint/template/cyclomatic-complexity, @angular-eslint/template/no-call-expression -->
+      </td>
     </tr>
   </ng-template>
 </p-table>
 <p-toast />
+
+<p-dialog
+  header="Confirm Delete"
+  [modal]="true"
+  [(visible)]="deleteHelper.showDeleteDialog"
+  [style]="{ width: '450px' }"
+>
+  <p class="mb-4">
+    Are you sure you want to permanently delete the symbol
+    <strong>{{ deleteHelper.symbolToDelete()?.symbol }}</strong
+    >?
+  </p>
+  <p class="text-sm text-gray-600 dark:text-gray-400">
+    This action cannot be undone.
+  </p>
+  <ng-template pTemplate="footer">
+    <p-button
+      label="Cancel"
+      severity="secondary"
+      (onClick)="deleteHelper.cancelDelete()"
+    />
+    <p-button
+      label="Delete"
+      severity="danger"
+      (onClick)="deleteHelper.deleteUniverse()"
+    />
+  </ng-template>
+</p-dialog>
 
 <rms-add-symbol-dialog />

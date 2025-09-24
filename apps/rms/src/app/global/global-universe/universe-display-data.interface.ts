@@ -1,4 +1,5 @@
 export interface UniverseDisplayData {
+  id: string;
   symbol: string;
   riskGroup: string;
   distribution: number;
