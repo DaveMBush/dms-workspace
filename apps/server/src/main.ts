@@ -16,6 +16,8 @@ const port = process.env.PORT !== undefined ? Number(process.env.PORT) : 3000;
 // Instantiate Fastify with some config
 const server = fastify({
   logger: true,
+  // Set request timeout to 8 hours for long-running operations like Update Fields
+  requestTimeout: 28800000, // 8 hours in milliseconds
 });
 
 // Register your application as a normal plugin.

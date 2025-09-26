@@ -37,6 +37,7 @@ import { createSortComputedSignals } from './sort-computed-signals.function';
 import { createSortingHandlers } from './sorting-handlers.function';
 import { selectUniverse } from './universe.selector';
 import { UniverseDataService } from './universe-data.service';
+import { UpdateFieldsErrorHandler } from './update-fields-error-handler.service';
 
 /**
  * Global Universe Component
@@ -82,6 +83,7 @@ import { UniverseDataService } from './universe-data.service';
     UpdateUniverseSettingsService,
     MessageService,
     DeleteUniverseHelper,
+    UpdateFieldsErrorHandler,
   ],
 })
 export class GlobalUniverseComponent {
@@ -97,6 +99,7 @@ export class GlobalUniverseComponent {
   protected readonly messageService = inject(MessageService);
   private readonly globalLoading = inject(GlobalLoadingService);
   readonly deleteHelper = inject(DeleteUniverseHelper);
+  private readonly errorHandler = inject(UpdateFieldsErrorHandler);
   readonly today = new Date();
   readonly isUpdatingFields = signal<boolean>(false);
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signals work better with arrow functions
@@ -191,15 +194,8 @@ export class GlobalUniverseComponent {
           sticky: true,
         });
       },
-      error: function updateFieldsError() {
-        self.isUpdatingFields.set(false);
-        self.globalLoading.hide();
-        self.messageService.add({
-          severity: 'error',
-          summary: 'Update Failed',
-          detail: 'Failed to update field information. Please try again.',
-          sticky: true,
-        });
+      error: function updateFieldsError(error: unknown) {
+        self.handleUpdateFieldsError(error);
       },
     });
   }
@@ -344,4 +340,19 @@ export class GlobalUniverseComponent {
       };
     });
   });
+
+  private handleUpdateFieldsError(error: unknown): void {
+    this.isUpdatingFields.set(false);
+    this.globalLoading.hide();
+
+    const errorInfo = this.errorHandler.extractErrorInfo(error);
+    const detail = this.errorHandler.buildErrorDetail(errorInfo);
+
+    this.messageService.add({
+      severity: 'error',
+      summary: 'Update Failed',
+      detail,
+      sticky: true,
+    });
+  }
 }
