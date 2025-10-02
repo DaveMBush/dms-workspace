@@ -66,6 +66,11 @@ logs
 *.sqlite
 *.sqlite3
 
+# Prisma migration directories not needed for Docker PostgreSQL deployment
+prisma/migrations/
+prisma/migrations-sqlite/
+prisma/migrations-backup/
+
 # Docker files
 Dockerfile*
 docker-compose*.yml

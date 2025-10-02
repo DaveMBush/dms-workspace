@@ -24,10 +24,6 @@ function getCurrentDistribution(
 async function checkForNewDistribution(
   universe: Awaited<ReturnType<typeof prisma.universe.findMany>>[number]
 ): Promise<Distribution | null> {
-  if (!universe.ex_date || universe.ex_date >= new Date()) {
-    return null;
-  }
-
   const newDistribution = await getDistributions(universe.symbol);
   if (newDistribution === undefined) {
     return null;
@@ -40,7 +36,13 @@ function shouldUpdateDistribution(
   distribution: Distribution,
   universe: Awaited<ReturnType<typeof prisma.universe.findMany>>[number]
 ): boolean {
-  return Boolean(universe.ex_date && distribution.ex_date > universe.ex_date);
+  // Update if no existing ex_date (for manually added symbols)
+  if (!universe.ex_date) {
+    return true;
+  }
+
+  // Update if new ex_date is greater than existing
+  return distribution.ex_date > universe.ex_date;
 }
 
 async function updateUniverseWithDistribution(
@@ -153,7 +155,9 @@ async function updateAllUniverses(
   for (let i = 0; i < universes.length; i++) {
     const universe = universes[i];
     summary.totalProcessed += 1;
-
+    if (i === universes.length - 1) {
+      logger.info('Processing last universe entry');
+    }
     const result = await processUniverse(universe, logger);
     if (result.success) {
       summary.successful += 1;
