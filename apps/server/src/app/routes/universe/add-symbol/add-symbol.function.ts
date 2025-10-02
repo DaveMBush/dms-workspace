@@ -1,5 +1,5 @@
 import { prisma } from '../../../prisma/prisma-client';
-import { getDistribution } from '../../settings/common/get-distribution.function';
+import { getDistributions } from '../../settings/common/get-distributions.function';
 import { getLastPrice } from '../../settings/common/get-last-price.function';
 
 interface AddSymbolRequest {
@@ -91,7 +91,7 @@ export async function addSymbol(
 
   const [lastPrice, distributionData] = await Promise.all([
     getLastPrice(upperSymbol),
-    getDistribution(upperSymbol),
+    getDistributions(upperSymbol),
   ]);
 
   const universeRecord = await prisma.universe.create({
