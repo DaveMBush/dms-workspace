@@ -70,6 +70,7 @@ async function markExpiredSymbols(allSymbols: string[]): Promise<void> {
         notIn: allSymbols,
       },
       expired: false,
+      is_closed_end_fund: true,
     },
     data: {
       expired: true,

@@ -48,7 +48,9 @@ function calculateDistributionsPerYear(
   const intervals: number[] = [];
   for (let i = 1; i < recentRows.length; i++) {
     intervals.push(
-      (recentRows[i - 1].date.valueOf() - recentRows[i].date.valueOf()) /
+      Math.abs(
+        recentRows[i].date.valueOf() - recentRows[i - 1].date.valueOf()
+      ) /
         (1000 * 60 * 60 * 24)
     );
   }
@@ -58,12 +60,16 @@ function calculateDistributionsPerYear(
       return a + b;
     }, 0) / intervals.length;
 
+  if (avgInterval < 10) {
+    return 52; // weekly
+  }
+
   if (avgInterval < 40) {
-    return 12;
+    return 12; // monthly
   }
 
   if (avgInterval < 120) {
-    return 4;
+    return 4; // quarterly
   }
 
   return 1;

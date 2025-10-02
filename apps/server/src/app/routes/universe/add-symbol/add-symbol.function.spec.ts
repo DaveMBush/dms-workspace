@@ -1,6 +1,6 @@
 import { addSymbol } from './add-symbol.function';
 import { prisma } from '../../../prisma/prisma-client';
-import { getDistribution } from '../../settings/common/get-distribution.function';
+import { getDistributions } from '../../settings/common/get-distributions.function';
 import { getLastPrice } from '../../settings/common/get-last-price.function';
 import { vi } from 'vitest';
 
@@ -18,11 +18,11 @@ vi.mock('../../../prisma/prisma-client', function () {
   };
 });
 
-vi.mock('../../settings/common/get-distribution.function');
+vi.mock('../../settings/common/get-distributions.function');
 vi.mock('../../settings/common/get-last-price.function');
 
 const mockPrisma = prisma as any;
-const mockGetDistribution = getDistribution as any;
+const mockGetDistributions = getDistributions as any;
 const mockGetLastPrice = getLastPrice as any;
 
 describe('addSymbol', function () {
@@ -63,7 +63,7 @@ describe('addSymbol', function () {
       name: 'Conservative',
     });
     mockGetLastPrice.mockResolvedValue(150.25);
-    mockGetDistribution.mockResolvedValue(mockDistributionData);
+    mockGetDistributions.mockResolvedValue(mockDistributionData);
     mockPrisma.universe.create.mockResolvedValue(mockCreatedRecord as any);
 
     const result = await addSymbol(request);
@@ -154,7 +154,7 @@ describe('addSymbol', function () {
       name: 'Conservative',
     });
     mockGetLastPrice.mockResolvedValue(undefined);
-    mockGetDistribution.mockResolvedValue(null);
+    mockGetDistributions.mockResolvedValue(null);
     mockPrisma.universe.create.mockResolvedValue(mockCreatedRecord as any);
 
     const result = await addSymbol(request);
@@ -192,7 +192,7 @@ describe('addSymbol', function () {
       name: 'Conservative',
     });
     mockGetLastPrice.mockResolvedValue(undefined);
-    mockGetDistribution.mockResolvedValue(null);
+    mockGetDistributions.mockResolvedValue(null);
     mockPrisma.universe.create.mockResolvedValue(mockCreatedRecord as any);
 
     await addSymbol(request);
