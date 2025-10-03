@@ -8,10 +8,10 @@ import {
   viewChild,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RowProxyDelete, SmartArray } from '@smarttools/smart-signals';
 import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { DatePickerModule } from 'primeng/datepicker';
-import { DialogModule } from 'primeng/dialog';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { SelectModule } from 'primeng/select';
@@ -25,10 +25,11 @@ import { EditableDateCellComponent } from '../../shared/editable-date-cell.compo
 import { GlobalLoadingService } from '../../shared/services/global-loading.service';
 import { UniverseSyncService } from '../../shared/services/universe-sync.service';
 import { selectAccounts } from '../../store/accounts/selectors/select-accounts.function';
+import { Top } from '../../store/top/top.interface';
+import { selectUniverses } from '../../store/universe/selectors/select-universes.function';
 import { Universe } from '../../store/universe/universe.interface';
 import { AddSymbolDialog } from '../../universe-settings/add-symbol-dialog/add-symbol-dialog';
 import { UpdateUniverseSettingsService } from '../../universe-settings/update-universe.service';
-import { DeleteUniverseHelper } from './delete-universe.helper';
 import { createEditHandlers } from './edit-handlers.function';
 import { createFilterHandlers } from './filter-handlers.function';
 import { GlobalUniverseStorageService } from './global-universe-storage.service';
@@ -37,6 +38,7 @@ import { createSortComputedSignals } from './sort-computed-signals.function';
 import { createSortingHandlers } from './sorting-handlers.function';
 import { selectUniverse } from './universe.selector';
 import { UniverseDataService } from './universe-data.service';
+import type { UniverseDisplayData } from './universe-display-data.interface';
 import { UpdateFieldsErrorHandler } from './update-fields-error-handler.service';
 
 /**
@@ -72,7 +74,6 @@ import { UpdateFieldsErrorHandler } from './update-fields-error-handler.service'
     NgClass,
     ToastModule,
     ProgressSpinnerModule,
-    DialogModule,
     EditableDateCellComponent,
     AddSymbolDialog,
   ],
@@ -82,7 +83,6 @@ import { UpdateFieldsErrorHandler } from './update-fields-error-handler.service'
     GlobalUniverseStorageService,
     UpdateUniverseSettingsService,
     MessageService,
-    DeleteUniverseHelper,
     UpdateFieldsErrorHandler,
   ],
 })
@@ -98,7 +98,6 @@ export class GlobalUniverseComponent {
   private readonly universeSyncService = inject(UniverseSyncService);
   protected readonly messageService = inject(MessageService);
   private readonly globalLoading = inject(GlobalLoadingService);
-  readonly deleteHelper = inject(DeleteUniverseHelper);
   private readonly errorHandler = inject(UpdateFieldsErrorHandler);
   readonly today = new Date();
   readonly isUpdatingFields = signal<boolean>(false);
@@ -312,13 +311,23 @@ export class GlobalUniverseComponent {
   protected readonly onSelectedAccountIdChange =
     this.filterHandlers.onSelectedAccountIdChange.bind(this.filterHandlers);
 
-  // Bind helper methods to avoid function calls in template
-  readonly shouldShowDeleteButton =
-    this.deleteHelper.shouldShowDeleteButton.bind(this.deleteHelper);
+  // Delete functionality methods
+  shouldShowDeleteButton(row: UniverseDisplayData): boolean {
+    return !row.is_closed_end_fund && row.position === 0;
+  }
 
-  readonly confirmDelete = this.deleteHelper.confirmDelete.bind(
-    this.deleteHelper
-  );
+  deleteUniverse(row: UniverseDisplayData): void {
+    const universes = selectUniverses();
+    const universesArray = universes as SmartArray<Top, Universe> & Universe[];
+
+    for (let i = 0; i < universesArray.length; i++) {
+      const universe = universesArray[i] as RowProxyDelete & Universe;
+      if (universe.id === row.id) {
+        universe.delete!();
+        break;
+      }
+    }
+  }
 
   protected trackById(index: number, row: Universe): string {
     return row.id;
