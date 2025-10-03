@@ -258,7 +258,7 @@
           icon="pi pi-trash"
           severity="danger"
           size="small"
-          (onClick)="confirmDelete(row)"
+          (onClick)="deleteUniverse(row)"
           pTooltip="Delete unused symbol"
           tooltipPosition="top"
         />
@@ -269,33 +269,5 @@
   </ng-template>
 </p-table>
 <p-toast />
-
-<p-dialog
-  header="Confirm Delete"
-  [modal]="true"
-  [(visible)]="deleteHelper.showDeleteDialog"
-  [style]="{ width: '450px' }"
->
-  <p class="mb-4">
-    Are you sure you want to permanently delete the symbol
-    <strong>{{ deleteHelper.symbolToDelete()?.symbol }}</strong
-    >?
-  </p>
-  <p class="text-sm text-gray-600 dark:text-gray-400">
-    This action cannot be undone.
-  </p>
-  <ng-template pTemplate="footer">
-    <p-button
-      label="Cancel"
-      severity="secondary"
-      (onClick)="deleteHelper.cancelDelete()"
-    />
-    <p-button
-      label="Delete"
-      severity="danger"
-      (onClick)="deleteHelper.deleteUniverse()"
-    />
-  </ng-template>
-</p-dialog>
 
 <rms-add-symbol-dialog />

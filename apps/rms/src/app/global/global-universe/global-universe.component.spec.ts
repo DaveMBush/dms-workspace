@@ -572,24 +572,40 @@ describe('GlobalUniverseComponent Delete Functionality', () => {
     vi.spyOn(component.messageService, 'add');
   });
 
-  describe('deleteHelper integration', () => {
-    test('should provide delete helper with correct configuration', () => {
-      expect(component.deleteHelper).toBeDefined();
-      expect(typeof component.deleteHelper.shouldShowDeleteButton).toBe(
-        'function'
-      );
-      expect(typeof component.deleteHelper.confirmDelete).toBe('function');
-      expect(typeof component.deleteHelper.cancelDelete).toBe('function');
-      expect(typeof component.deleteHelper.deleteUniverse).toBe('function');
+  describe('delete functionality', () => {
+    test('should have shouldShowDeleteButton method', () => {
+      expect(typeof component.shouldShowDeleteButton).toBe('function');
     });
 
-    test('should delegate delete operations to helper', () => {
-      const helper = component.deleteHelper;
-      const helperSpy = vi.spyOn(helper, 'shouldShowDeleteButton');
+    test('should have deleteUniverse method', () => {
+      expect(typeof component.deleteUniverse).toBe('function');
+    });
 
-      helper.shouldShowDeleteButton(mockUniverse);
+    test('shouldShowDeleteButton should return true for non-CEF with zero position', () => {
+      const testRow = {
+        ...mockUniverse,
+        is_closed_end_fund: false,
+        position: 0,
+      };
+      expect(component.shouldShowDeleteButton(testRow)).toBe(true);
+    });
 
-      expect(helperSpy).toHaveBeenCalledWith(mockUniverse);
+    test('shouldShowDeleteButton should return false for CEF', () => {
+      const testRow = {
+        ...mockUniverse,
+        is_closed_end_fund: true,
+        position: 0,
+      };
+      expect(component.shouldShowDeleteButton(testRow)).toBe(false);
+    });
+
+    test('shouldShowDeleteButton should return false for non-zero position', () => {
+      const testRow = {
+        ...mockUniverse,
+        is_closed_end_fund: false,
+        position: 100,
+      };
+      expect(component.shouldShowDeleteButton(testRow)).toBe(false);
     });
   });
 });
