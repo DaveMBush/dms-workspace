@@ -51,12 +51,18 @@ export class SummaryComponentService {
   months = computed(() => {
     const currentAccount = selectCurrentAccountSignal(this.currentAccount);
     const account = currentAccount();
-    return account.months.map(function accountMonthsMap(month) {
-      return {
-        label: `${month.month}/${month.year}`,
-        value: `${month.year}-${month.month}`,
-      };
-    });
+    return account.months
+      .map(function accountMonthsMap(month) {
+        const paddedMonth = month.month.toString().padStart(2, '0');
+        return {
+          label: `${paddedMonth}/${month.year}`,
+          value: `${month.year}-${paddedMonth}`,
+          sortKey: `${month.year}-${paddedMonth}`,
+        };
+      })
+      .sort(function sortMonthsDescending(a, b) {
+        return b.sortKey.localeCompare(a.sortKey);
+      });
   });
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
