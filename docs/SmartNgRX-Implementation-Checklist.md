@@ -1,6 +1,6 @@
 # SmartNgRX Signals Implementation Checklist
 
-*Step-by-step checklist for implementing SmartNgRX Signals in any project*
+_Step-by-step checklist for implementing SmartNgRX Signals in any project_
 
 ## Pre-Implementation Checklist
 
@@ -12,6 +12,7 @@
 ## 1. Global Setup
 
 ### App Configuration
+
 - [ ] Add `provideSmartNgRX({})` to app.config.ts providers
 - [ ] Set up any global mark and delete configuration if needed
 - [ ] Verify NgRX Store DevTools are configured (optional but recommended)
@@ -21,12 +22,13 @@
 providers: [
   provideSmartNgRX({}),
   // ... other providers
-]
+];
 ```
 
 ## 2. For Each Entity
 
 ### Step 1: Define Entity Interface
+
 - [ ] Create TypeScript interface for the entity
 - [ ] Include `id: string` field
 - [ ] Define all required properties
@@ -41,6 +43,7 @@ interface MyEntity {
 ```
 
 ### Step 2: Create Effects Service
+
 - [ ] Create injection token for the effects service
 - [ ] Implement effects service extending `EffectService<T>`
 - [ ] Implement required methods: `loadByIds`, `update`
@@ -63,6 +66,7 @@ export class MyEntityEffectsService extends EffectService<MyEntity> {
 ```
 
 ### Step 3: Create Entity Definition
+
 - [ ] Create entity definition object
 - [ ] Set `entityName` (should match feature name)
 - [ ] Assign `effectServiceToken`
@@ -78,18 +82,18 @@ export const myEntityDefinition: SmartEntityDefinition<MyEntity> = {
 ```
 
 ### Step 4: Register Entity
+
 - [ ] Add entity definition to feature registration
 - [ ] Use `provideSmartFeatureSignalEntities` in appropriate module/config
 
 ```typescript
-providers: [
-  provideSmartFeatureSignalEntities([myEntityDefinition])
-]
+providers: [provideSmartFeatureSignalEntities([myEntityDefinition])];
 ```
 
 ## 3. Create Selectors
 
 ### Basic Selectors
+
 - [ ] Create basic selector using `createSmartSignal`
 - [ ] Use correct feature and entity names
 - [ ] Test selector in a component
@@ -99,6 +103,7 @@ const selectMyEntities = createSmartSignal('feature', 'myEntities');
 ```
 
 ### Child Relationship Selectors
+
 - [ ] Identify parent-child relationships
 - [ ] Create child selectors first (bottom-up approach)
 - [ ] Chain selectors properly
@@ -120,6 +125,7 @@ const selectMyEntitiesWithChildren = createSmartSignal(selectMyEntities, [
 ## 4. Component Integration
 
 ### Basic Component Setup
+
 - [ ] Inject selectors using `inject()`
 - [ ] Use signals directly in templates
 - [ ] Add effect() for reactive logic if needed
@@ -127,7 +133,7 @@ const selectMyEntitiesWithChildren = createSmartSignal(selectMyEntities, [
 
 ```typescript
 @Component({
-  template: `<div *ngFor="let item of items()">{{ item.name }}</div>`
+  template: `<div *ngFor="let item of items()">{{ item.name }}</div>`,
 })
 export class MyComponent {
   items = inject(selectMyEntities);
@@ -135,6 +141,7 @@ export class MyComponent {
 ```
 
 ### CRUD Operations
+
 - [ ] Inject effects service for write operations
 - [ ] Implement create, update, delete methods
 - [ ] Handle loading states and errors
@@ -154,18 +161,21 @@ export class MyComponent {
 ## 5. Testing Checklist
 
 ### Unit Tests
+
 - [ ] Test effects service methods
 - [ ] Test entity definition configuration
 - [ ] Test selector functions
 - [ ] Test component logic
 
 ### Integration Tests
+
 - [ ] Test complete CRUD workflows
 - [ ] Test parent-child relationship loading
 - [ ] Test signal chaining
 - [ ] Test error handling
 
 ### Manual Testing
+
 - [ ] Verify data loads correctly
 - [ ] Confirm UI updates reactively
 - [ ] Test all user interactions
@@ -174,12 +184,14 @@ export class MyComponent {
 ## 6. Performance Verification
 
 ### Optimization Checks
+
 - [ ] Verify only necessary data is loaded
 - [ ] Check for unnecessary re-renders
 - [ ] Implement virtual scrolling for large lists if needed
 - [ ] Use @Defer() decorator where appropriate
 
 ### Monitoring
+
 - [ ] Use NgRX DevTools to monitor state changes
 - [ ] Check network requests are optimized
 - [ ] Verify cache behavior

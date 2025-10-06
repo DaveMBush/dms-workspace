@@ -1,8 +1,9 @@
 # SmartNgRX Signals Reference Guide
 
-*Complete API reference and implementation patterns for @smarttools/smart-signals*
+_Complete API reference and implementation patterns for @smarttools/smart-signals_
 
 ## Table of Contents
+
 1. [Core Concepts](#core-concepts)
 2. [Installation & Setup](#installation--setup)
 3. [Entity Definitions](#entity-definitions)
@@ -23,6 +24,7 @@ SmartNgRX Signals is built on NgRX SignalStore and provides:
 - **Performance Optimization**: Virtual scrolling, @Defer() decorators, minimal data loading
 
 ### Key Principles
+
 - Structure data to minimize unnecessary loading
 - Use virtual scrolling for large datasets
 - Only load data when absolutely necessary
@@ -39,18 +41,20 @@ npm install @smarttools/smart-signals
 Entity definitions configure how entities are managed in the SmartNgRX Signal Store.
 
 ### API Structure
+
 ```typescript
 interface SmartEntityDefinition<T> {
-  entityName: string;                    // Feature name for reducers and actions
+  entityName: string; // Feature name for reducers and actions
   effectServiceToken: InjectionToken<EffectService<T>>;
-  defaultRow: (id: string) => T;         // Function returning default row
-  selectId?: (entity: T) => string;      // Optional ID selector
-  markAndDelete?: MarkAndDeleteConfig;   // Optional mark/delete configuration
-  isInitialRow?: boolean;                // Indicates top-level rows for initial data
+  defaultRow: (id: string) => T; // Function returning default row
+  selectId?: (entity: T) => string; // Optional ID selector
+  markAndDelete?: MarkAndDeleteConfig; // Optional mark/delete configuration
+  isInitialRow?: boolean; // Indicates top-level rows for initial data
 }
 ```
 
 ### Implementation Example
+
 ```typescript
 // user.definition.ts
 export const usersDefinition: SmartEntityDefinition<User> = {
@@ -65,6 +69,7 @@ export const usersDefinition: SmartEntityDefinition<User> = {
 ```
 
 ### Best Practices
+
 - Create entity definitions in separate files
 - Import and register using `provideSmartFeatureSignalEntities`
 - Use descriptive entity names that match your domain
@@ -74,6 +79,7 @@ export const usersDefinition: SmartEntityDefinition<User> = {
 Effects Services handle CRUD operations against the server.
 
 ### API Structure
+
 ```typescript
 abstract class EffectService<T> {
   abstract loadByIds(ids: string[]): Observable<T[]>;
@@ -83,6 +89,7 @@ abstract class EffectService<T> {
 ```
 
 ### Implementation Example
+
 ```typescript
 @Injectable()
 export class UserEffectsService extends EffectService<User> {
@@ -101,14 +108,13 @@ export class UserEffectsService extends EffectService<User> {
 ```
 
 ### Service Registration
+
 ```typescript
 // Create injection token
 export const userEffectsServiceToken = new InjectionToken<UserEffectsService>('UserEffectsService');
 
 // Register in providers
-providers: [
-  { provide: userEffectsServiceToken, useClass: UserEffectsService }
-]
+providers: [{ provide: userEffectsServiceToken, useClass: UserEffectsService }];
 ```
 
 ## Smart Signals
@@ -116,6 +122,7 @@ providers: [
 Smart Signals create selectors for retrieving child entities from parent entities.
 
 ### API Structure
+
 ```typescript
 // Basic signal creation
 const rawSignal = createSmartSignal('feature', 'entity');
@@ -134,11 +141,13 @@ const selectUserChildren = createSmartSignal(selectUser, [
 ```
 
 ### Important Rules
+
 1. All signals used in a SmartSignal must be SmartSignals
 2. Signals need to be "chained" - child selectors must point to smart signals
 3. Complex nested relationships require proper signal chaining
 
 ### Usage in Components
+
 ```typescript
 export class UserComponent {
   users = selectUsers();
@@ -158,6 +167,7 @@ export class UserComponent {
 Set up SmartNgRX in your application configuration.
 
 ### Basic Setup
+
 ```typescript
 // app.config.ts
 import { provideSmartNgRX } from '@smarttools/smart-signals';
@@ -171,6 +181,7 @@ export const appConfig: ApplicationConfig = {
 ```
 
 ### With Mark and Delete Configuration
+
 ```typescript
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -178,7 +189,7 @@ export const appConfig: ApplicationConfig = {
       // MarkAndDeleteInit configuration
       markAndDeleteInit: {
         // Configuration options
-      }
+      },
     }),
     // ... other providers
   ],
@@ -186,6 +197,7 @@ export const appConfig: ApplicationConfig = {
 ```
 
 ### Entity Registration
+
 ```typescript
 // Register entities at the feature level
 providers: [
@@ -193,13 +205,14 @@ providers: [
     usersDefinition,
     departmentsDefinition,
     // ... other entity definitions
-  ])
-]
+  ]),
+];
 ```
 
 ## Component Integration
 
 ### Injecting and Using Signals
+
 ```typescript
 @Component({
   selector: 'app-user-list',
@@ -207,7 +220,7 @@ providers: [
     <div *ngFor="let user of users()">
       {{ user.name }}
     </div>
-  `
+  `,
 })
 export class UserListComponent {
   users = inject(selectUsers);
@@ -228,6 +241,7 @@ export class UserListComponent {
 ```
 
 ### CRUD Operations
+
 ```typescript
 export class UserManagementComponent {
   users = inject(selectUsers);
@@ -249,6 +263,7 @@ export class UserManagementComponent {
 Based on the demo app at `/apps/demo-ngrx-signals`:
 
 ### App Configuration Pattern
+
 ```typescript
 // From demo app.config.ts
 export const appConfig: ApplicationConfig = {
@@ -265,6 +280,7 @@ export const appConfig: ApplicationConfig = {
 ```
 
 ### Shared Directory Structure
+
 ```
 shared/
 ├── entities/           # Entity definitions
@@ -280,6 +296,7 @@ shared/
 ### Common Tasks
 
 #### 1. Create a New Entity
+
 ```typescript
 // 1. Define the entity interface
 interface MyEntity {
@@ -308,6 +325,7 @@ export const myEntityDefinition: SmartEntityDefinition<MyEntity> = {
 ```
 
 #### 2. Create a Selector
+
 ```typescript
 // Basic selector
 const selectMyEntities = createSmartSignal('feature', 'myEntities');
@@ -326,13 +344,14 @@ const selectMyEntitiesWithChildren = createSmartSignal(selectMyEntities, [
 ```
 
 #### 3. Use in Components
+
 ```typescript
 @Component({
   template: `
     <div *ngFor="let item of items()">
       {{ item.name }}
     </div>
-  `
+  `,
 })
 export class MyComponent {
   items = inject(selectMyEntities);
@@ -341,13 +360,13 @@ export class MyComponent {
 
 ### Key APIs Summary
 
-| Function | Purpose | Usage |
-|----------|---------|-------|
-| `provideSmartNgRX()` | Global setup | App configuration |
-| `createSmartSignal()` | Create selectors | Signal creation |
-| `EffectService<T>` | Base effects class | Service inheritance |
-| `SmartEntityDefinition<T>` | Entity configuration | Entity setup |
-| `provideSmartFeatureSignalEntities()` | Register entities | Feature providers |
+| Function                              | Purpose              | Usage               |
+| ------------------------------------- | -------------------- | ------------------- |
+| `provideSmartNgRX()`                  | Global setup         | App configuration   |
+| `createSmartSignal()`                 | Create selectors     | Signal creation     |
+| `EffectService<T>`                    | Base effects class   | Service inheritance |
+| `SmartEntityDefinition<T>`            | Entity configuration | Entity setup        |
+| `provideSmartFeatureSignalEntities()` | Register entities    | Feature providers   |
 
 ### Common Patterns
 
@@ -358,4 +377,4 @@ export class MyComponent {
 
 ---
 
-*This reference guide should be consulted whenever implementing SmartNgRX Signals functionality. Always prefer the Signals version over classic NgRX patterns.*
+_This reference guide should be consulted whenever implementing SmartNgRX Signals functionality. Always prefer the Signals version over classic NgRX patterns._
