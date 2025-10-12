@@ -44,6 +44,7 @@ Draft
 ## Tasks / Subtasks
 
 - [ ] **Task 1: Update Backend API Endpoint** (AC: 1)
+
   - [ ] Read current `/api/div-deposits` endpoint implementation
   - [ ] Update request signature to accept `QueryParams | string[]` (backward compatible)
   - [ ] Define `DivDepositQueryParams` interface with `ids`, `sortField`, `sortOrder`, `accountId`
@@ -53,6 +54,7 @@ Draft
   - [ ] Update API documentation/comments
 
 - [ ] **Task 2: Create Database Indexes** (AC: 1)
+
   - [ ] Create migration script or document index creation SQL
   - [ ] Add index: `CREATE INDEX idx_div_deposits_date ON div_deposits(date DESC);`
   - [ ] Add index: `CREATE INDEX idx_div_deposits_account_date ON div_deposits(account_id, date DESC);`
@@ -60,6 +62,7 @@ Draft
   - [ ] Document index rationale in migration file
 
 - [ ] **Task 3: Write Backend Tests** (AC: 1)
+
   - [ ] Test new API accepts query params object
   - [ ] Test backward compatibility with string[] format
   - [ ] Test sorting by date ascending
@@ -70,6 +73,7 @@ Draft
   - [ ] Test accountId filter works correctly
 
 - [ ] **Task 4: Create/Update DivDepositEffectsService** (AC: 2)
+
   - [ ] Check if DivDepositEffectsService exists, create if needed
   - [ ] Extend `EffectService<DivDeposit>` from SmartNgRX
   - [ ] Inject HttpClient
@@ -80,6 +84,7 @@ Draft
   - [ ] Register service in entity definition and providers
 
 - [ ] **Task 5: Add PrimeNG lazy loading attributes to p-table** (AC: 2)
+
   - [ ] Add `[lazy]="true"` attribute to p-table in dividend-deposits.html
   - [ ] Add `[virtualScroll]="true"` attribute for virtual scrolling
   - [ ] Configure `[rows]="10"` for 10-row buffer size
@@ -90,6 +95,7 @@ Draft
   - [ ] Preserve existing sort configuration `[sortField]="'date'"` `[sortOrder]="-1"`
 
 - [ ] **Task 6: Implement onLazyLoad event handler** (AC: 2)
+
   - [ ] Inject DivDepositEffectsService in component
   - [ ] Create `onLazyLoad(event: LazyLoadEvent): void` method in component
   - [ ] Extract `first`, `rows`, `sortField`, `sortOrder` from event
@@ -99,6 +105,7 @@ Draft
   - [ ] Create `totalRecords$` computed signal for total record count (after filtering)
 
 - [ ] **Task 7: Update computed signal to remove client-side sorting** (AC: 2)
+
   - [ ] Update `deposits$` computed signal
   - [ ] Remove any client-side `.sort()` calls (sorting now server-side)
   - [ ] Keep data transformation logic (symbol lookup, divDepositType mapping)
@@ -107,6 +114,7 @@ Draft
   - [ ] Maintain existing `trackById` function
 
 - [ ] **Task 8: Verify delete functionality with lazy loading** (AC: 2)
+
   - [ ] Test `deleteDeposit()` method with lazy-loaded rows on first page
   - [ ] Test delete on middle pages
   - [ ] Test delete on last page
@@ -115,6 +123,7 @@ Draft
   - [ ] Verify `totalRecords$` updates after delete
 
 - [ ] **Task 9: Update frontend unit tests** (AC: 3)
+
   - [ ] Update existing component tests in dividend-deposits.spec.ts (if exists)
   - [ ] Mock DivDepositEffectsService
   - [ ] Test onLazyLoad event handler calls setSortParams correctly
@@ -125,6 +134,7 @@ Draft
   - [ ] Verify server-side sorting (no client-side sort logic)
 
 - [ ] **Task 10: Write integration tests** (AC: 3)
+
   - [ ] Test end-to-end lazy loading flow
   - [ ] Test user clicks sort header → backend receives sort params
   - [ ] Test server returns sorted data → frontend displays correctly
@@ -152,11 +162,13 @@ This story implements lazy loading with virtual scrolling for the Dividend Depos
 **Reference**: `/docs/architecture/server-side-sorting-api-design.md`
 
 **Why Server-Side Sorting is Required:**
+
 - SmartNgRX Signals lazy loading only loads a subset of entity IDs
 - Cannot sort all data client-side when we don't have all records
 - Backend must return **sorted** entity IDs for the frontend to display
 
 **Implementation Pattern:**
+
 1. Backend API accepts sort parameters (`sortField`, `sortOrder`)
 2. Prisma orderBy clause sorts data at database level
 3. Backend returns sorted entities
@@ -168,6 +180,7 @@ This story implements lazy loading with virtual scrolling for the Dividend Depos
 **Source: [apps/rms/src/app/account-panel/dividend-deposits/dividend-deposits.ts]**
 
 **Current Component Structure:**
+
 ```typescript
 export class DividendDeposits {
   private currentAccount = inject(currentAccountSignalStore);
@@ -193,15 +206,9 @@ export class DividendDeposits {
 ```
 
 **Current Template Structure:**
+
 ```html
-<p-table
-  [value]="deposits$()"
-  [scrollable]="true"
-  [scrollHeight]="'calc(100vh - 184px)'"
-  [sortField]="'date'"
-  [sortOrder]="-1"
-  [rowTrackBy]="trackById"
->
+<p-table [value]="deposits$()" [scrollable]="true" [scrollHeight]="'calc(100vh - 184px)'" [sortField]="'date'" [sortOrder]="-1" [rowTrackBy]="trackById"></p-table>
 ```
 
 ### PrimeNG Lazy Loading Pattern
@@ -209,35 +216,25 @@ export class DividendDeposits {
 **Source: [PrimeNG 20 Table Documentation - Virtual Scroll with Lazy Loading]**
 
 **Required Template Changes:**
+
 ```html
-<p-table
-  [value]="deposits$()"
-  [lazy]="true"
-  [virtualScroll]="true"
-  [rows]="10"
-  [totalRecords]="totalRecords$()"
-  (onLazyLoad)="onLazyLoad($event)"
-  [dataKey]="'id'"
-  [scrollable]="true"
-  [scrollHeight]="'calc(100vh - 184px)'"
-  [sortField]="'date'"
-  [sortOrder]="-1"
-  [rowTrackBy]="trackById"
->
+<p-table [value]="deposits$()" [lazy]="true" [virtualScroll]="true" [rows]="10" [totalRecords]="totalRecords$()" (onLazyLoad)="onLazyLoad($event)" [dataKey]="'id'" [scrollable]="true" [scrollHeight]="'calc(100vh - 184px)'" [sortField]="'date'" [sortOrder]="-1" [rowTrackBy]="trackById"></p-table>
 ```
 
 **LazyLoadEvent Interface:**
+
 ```typescript
 interface LazyLoadEvent {
-  first: number;      // Index of first row to load
-  rows: number;       // Number of rows to load
+  first: number; // Index of first row to load
+  rows: number; // Number of rows to load
   sortField?: string; // Field to sort by
   sortOrder?: number; // Sort order (1 or -1)
-  filters?: any;      // Filter metadata
+  filters?: any; // Filter metadata
 }
 ```
 
 **Backend API Implementation (NEW)**:
+
 ```typescript
 interface DivDepositQueryParams {
   ids: string[];
@@ -247,41 +244,41 @@ interface DivDepositQueryParams {
 }
 
 function handleGetDivDepositsRoute(fastify: FastifyInstance): void {
-  fastify.post<{ Body: string[] | DivDepositQueryParams; Reply: DivDeposit[] }>(
-    '/',
-    async function handleGetDivDepositsRequest(request, _): Promise<DivDeposit[]> {
-      // Backward compatibility
-      if (Array.isArray(request.body)) {
-        const ids = request.body;
-        return prisma.divDeposits.findMany({ where: { id: { in: ids } } });
-      }
-
-      const { ids, sortField, sortOrder, accountId } = request.body;
-
-      if (ids.length === 0) return [];
-
-      const whereClause: any = {
-        id: { in: ids },
-        ...(accountId && { accountId })
-      };
-
-      // Server-side sorting with Prisma
-      const orderBy = sortField ? {
-        [sortField]: sortOrder === -1 ? 'desc' : 'asc'
-      } : undefined;
-
-      const divDeposits = await prisma.divDeposits.findMany({
-        where: whereClause,
-        orderBy,
-      });
-
-      return divDeposits.map(mapDivDepositToResponse);
+  fastify.post<{ Body: string[] | DivDepositQueryParams; Reply: DivDeposit[] }>('/', async function handleGetDivDepositsRequest(request, _): Promise<DivDeposit[]> {
+    // Backward compatibility
+    if (Array.isArray(request.body)) {
+      const ids = request.body;
+      return prisma.divDeposits.findMany({ where: { id: { in: ids } } });
     }
-  );
+
+    const { ids, sortField, sortOrder, accountId } = request.body;
+
+    if (ids.length === 0) return [];
+
+    const whereClause: any = {
+      id: { in: ids },
+      ...(accountId && { accountId }),
+    };
+
+    // Server-side sorting with Prisma
+    const orderBy = sortField
+      ? {
+          [sortField]: sortOrder === -1 ? 'desc' : 'asc',
+        }
+      : undefined;
+
+    const divDeposits = await prisma.divDeposits.findMany({
+      where: whereClause,
+      orderBy,
+    });
+
+    return divDeposits.map(mapDivDepositToResponse);
+  });
 }
 ```
 
 **Frontend EffectsService Implementation (NEW)**:
+
 ```typescript
 @Injectable()
 export class DivDepositEffectsService extends EffectService<DivDeposit> {
@@ -307,6 +304,7 @@ export class DivDepositEffectsService extends EffectService<DivDeposit> {
 ```
 
 **Frontend Component Implementation (UPDATED)**:
+
 ```typescript
 // Add signal for total records
 totalRecords$ = computed(() => {
@@ -354,12 +352,14 @@ onLazyLoad(event: LazyLoadEvent): void {
 **Source: [CLAUDE.md - SmartNgRX Signals State Management]**
 
 **Current State Management:**
+
 - Uses `selectCurrentAccountSignal(currentAccountSignalStore)` for account data
 - Uses `selectUniverses()` for symbol mapping
 - Uses `selectDivDepositTypes()` for type mapping
 - SmartArray proxy methods for delete operations
 
 **Lazy Loading Considerations:**
+
 - SmartNgRX signals remain unchanged
 - Computed signal must still access full dataset for total count
 - Lazy loading only affects what's rendered, not state management
@@ -370,11 +370,13 @@ onLazyLoad(event: LazyLoadEvent): void {
 **Source: [Epic U - Integration Points]**
 
 **Files to Modify:**
+
 - `/apps/rms/src/app/account-panel/dividend-deposits/dividend-deposits.html` - Add lazy loading attributes
 - `/apps/rms/src/app/account-panel/dividend-deposits/dividend-deposits.ts` - Implement lazy load logic
 - `/apps/rms/src/app/account-panel/dividend-deposits/dividend-deposits.spec.ts` - Update tests (if exists)
 
 **Related Files (Read-Only):**
+
 - `/apps/rms/src/app/store/current-account/select-current-account.signal.ts` - Current account selector
 - `/apps/rms/src/app/store/universe/selectors/select-universes.function.ts` - Universe selector
 - `/apps/rms/src/app/store/div-deposit-types/selectors/select-div-deposit-types.function.ts` - Div deposit types selector
@@ -384,12 +386,14 @@ onLazyLoad(event: LazyLoadEvent): void {
 **Source: [CLAUDE.md - Component Guidelines]**
 
 **Angular 20 Standards:**
+
 - Use `inject()` for dependency injection (already followed)
 - Use signals for all template-accessed variables
 - External files for HTML and SCSS (already followed)
 - OnPush change detection (already configured)
 
 **Performance Optimization:**
+
 - `[virtualScroll]="true"` - Only renders visible rows plus buffer
 - `[rows]="10"` - Loads 10 rows at a time
 - `[dataKey]="'id'"` - Efficient row tracking for updates
@@ -400,17 +404,20 @@ onLazyLoad(event: LazyLoadEvent): void {
 **Source: [CLAUDE.md - Code Quality Standards]**
 
 **Line Length and Function Rules:**
+
 - Maximum 80 characters per line
 - Maximum 50 executable lines per function
 - Maximum 4 parameters per function
 - No more than 2 levels of nesting
 
 **Anonymous Function Handling:**
+
 - For computed signals: Use context pattern if referencing `this`
 - For event handlers: Named functions preferred
 - Exception: Computed signals may use arrow functions with eslint-disable
 
 **Quality Gates (AC: 9):**
+
 ```bash
 pnpm format                                    # Code formatting
 pnpm dupcheck                                  # Duplicate detection
@@ -428,28 +435,34 @@ pnpm nx run rms-e2e:lint                      # E2E linting
 **Source: [CLAUDE.md - Testing Requirements]**
 
 **Testing Framework:**
+
 - Use Vitest for all testing
 - Follow existing test patterns in codebase
 - Ensure tests pass before committing
 
 **Test Scenarios:**
+
 1. **Lazy Load Event Handling:**
+
    - Test onLazyLoad receives correct event parameters
    - Test lazyLoadParams signal updates correctly
    - Test deposits$ recomputes with new slice
 
 2. **Total Records Calculation:**
+
    - Test totalRecords$ returns correct count
    - Test with empty dataset (0 records)
    - Test with small dataset (< 10 records)
    - Test with large dataset (> 100 records)
 
 3. **Data Slicing:**
+
    - Test first page loads rows 0-9
    - Test second page loads rows 10-19
    - Test last page with partial rows
 
 4. **Delete Functionality:**
+
    - Test delete on first page
    - Test delete on middle page
    - Test delete on last page
@@ -460,14 +473,15 @@ pnpm nx run rms-e2e:lint                      # E2E linting
    - Verify sorting maintained with lazy loading
 
 **Test File Location:**
+
 - `/apps/rms/src/app/account-panel/dividend-deposits/dividend-deposits.spec.ts` (create if doesn't exist)
 
 ## Change Log
 
-| Date | Version | Description | Author |
-|------|---------|-------------|--------|
-| 2025-10-11 | 1.0 | Initial story creation for Epic U.1 lazy loading | BMad Scrum Master |
-| 2025-10-12 | 2.0 | Added server-side sorting requirements (backend API, database indexes, EffectsService) | Product Management (John) |
+| Date       | Version | Description                                                                            | Author                    |
+| ---------- | ------- | -------------------------------------------------------------------------------------- | ------------------------- |
+| 2025-10-11 | 1.0     | Initial story creation for Epic U.1 lazy loading                                       | BMad Scrum Master         |
+| 2025-10-12 | 2.0     | Added server-side sorting requirements (backend API, database indexes, EffectsService) | Product Management (John) |
 
 ## Dev Agent Record
 

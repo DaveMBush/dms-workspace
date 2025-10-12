@@ -9,6 +9,7 @@ Implement PrimeNG p-table lazy loading with virtual scrolling for the Global Uni
 ### Existing System Context
 
 **Current relevant functionality:**
+
 - Global Universe component displays all universe stocks across accounts
 - Loads all records at once via computed signal with complex filtering
 - Supports multiple filters:
@@ -29,6 +30,7 @@ Implement PrimeNG p-table lazy loading with virtual scrolling for the Global Uni
 - Sync and update operations
 
 **Technology stack:**
+
 - Angular 20 with standalone components
 - PrimeNG 20 Table module with CellEditor
 - SmartNgRX Signals for entity state
@@ -37,6 +39,7 @@ Implement PrimeNG p-table lazy loading with virtual scrolling for the Global Uni
 - Vitest for testing
 
 **Integration points:**
+
 - `apps/rms/src/app/global/global-universe/` component files
 - `createFilterHandlers` function for filter logic
 - `createEditHandlers` function for edit logic
@@ -48,6 +51,7 @@ Implement PrimeNG p-table lazy loading with virtual scrolling for the Global Uni
 ### Enhancement Details
 
 **What's being added/changed:**
+
 - Add lazy loading attributes to p-table (`[lazy]="true"`, `[virtualScroll]="true"`)
 - Implement `(onLazyLoad)` event handler
 - Configure 10-row buffer with virtual scrolling
@@ -63,6 +67,7 @@ Implement PrimeNG p-table lazy loading with virtual scrolling for the Global Uni
 - Preserve delete functionality with conditional display
 
 **How it integrates:**
+
 - Works with existing computed signals and complex filtering logic
 - Maintains SmartNgRX state management
 - Preserves all handler functions (edit, filter, sort)
@@ -72,6 +77,7 @@ Implement PrimeNG p-table lazy loading with virtual scrolling for the Global Uni
 - Preserves sync and update operations
 
 **Success criteria:**
+
 - Table loads only visible rows plus 10-row buffer
 - Scrolling is smooth without lag
 - All filters work correctly with lazy loading:
@@ -141,6 +147,7 @@ Implement PrimeNG p-table lazy loading with virtual scrolling for the Global Uni
 **Primary Risk:** Most complex hybrid filtering/sorting pattern - server and client filters/sorts combined
 
 **Mitigation:**
+
 - Add database indexes for all server-filterable and sortable fields before deployment
 - Implement backward-compatible API (accepts old and new formats)
 - Monitor database query performance with CloudWatch
@@ -156,6 +163,7 @@ Implement PrimeNG p-table lazy loading with virtual scrolling for the Global Uni
 - Integration tests for complex server/client filter and sort combinations
 
 **Rollback Plan:**
+
 - **Backend Rollback**: API continues accepting new params but ignores filters/sort, returns all data unsorted (backward compatible)
 - **Frontend Rollback**: Revert EffectsService and UniverseDataService changes, restore full client-side filtering and sorting
 - **Full Rollback**: Git revert both backend and frontend changes

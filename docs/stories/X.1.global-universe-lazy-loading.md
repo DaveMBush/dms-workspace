@@ -39,6 +39,7 @@ Draft
 ## Tasks / Subtasks
 
 - [ ] **Task 1: Add PrimeNG lazy loading attributes to p-table** (AC: 1, 3, 11)
+
   - [ ] Add `[lazy]="true"` attribute to p-table in global-universe.component.html
   - [ ] Add `[virtualScroll]="true"` attribute for virtual scrolling
   - [ ] Configure `[rows]="10"` for 10-row buffer size
@@ -49,6 +50,7 @@ Draft
   - [ ] Preserve existing `[rowTrackBy]="trackById"`
 
 - [ ] **Task 2: Implement onLazyLoad event handler with complex filtering** (AC: 2, 4)
+
   - [ ] Create `onLazyLoad(event: LazyLoadEvent): void` method in component
   - [ ] Extract `first`, `rows`, `sortField`, `sortOrder` from event
   - [ ] Create `lazyLoadParams` signal to store load parameters
@@ -63,6 +65,7 @@ Draft
   - [ ] Add lazy load slice after filtering and sorting
 
 - [ ] **Task 3: Integrate UniverseDataService with lazy loading** (AC: 4)
+
   - [ ] Review UniverseDataService.filterAndSortUniverses method
   - [ ] Ensure service method remains unchanged (no breaking changes)
   - [ ] Call service method with all filter criteria
@@ -70,6 +73,7 @@ Draft
   - [ ] Maintain row dimming logic from universeWithDimmedState$ computed
 
 - [ ] **Task 4: Preserve all five filter types with lazy loading** (AC: 6)
+
   - [ ] Test symbol text filter with lazy loading
   - [ ] Test risk group dropdown filter with lazy loading
   - [ ] Test minimum yield number filter with lazy loading
@@ -79,6 +83,7 @@ Draft
   - [ ] Verify totalRecords$ updates correctly with each filter
 
 - [ ] **Task 5: Preserve multi-column sorting with lazy loading** (AC: 7)
+
   - [ ] Verify sortingHandlers.onSort method integration
   - [ ] Test yield_percent sorting with lazy loading
   - [ ] Test avg_purchase_yield_percent sorting with lazy loading
@@ -89,6 +94,7 @@ Draft
   - [ ] Test sorting with filters active
 
 - [ ] **Task 6: Ensure inline editing works on lazy-loaded rows** (AC: 5)
+
   - [ ] Test distribution editing with p-inputNumber on lazy-loaded rows
   - [ ] Test distributions_per_year editing with p-inputNumber on lazy-loaded rows
   - [ ] Test ex_date editing with rms-editable-date-cell on lazy-loaded rows
@@ -99,6 +105,7 @@ Draft
   - [ ] Test stopArrowKeyPropagation works in inline editors
 
 - [ ] **Task 7: Ensure row dimming logic works with lazy loading** (AC: 8)
+
   - [ ] Verify universeWithDimmedState$ computed includes lazy-loaded rows
   - [ ] Test isRowDimmed function evaluation on lazy-loaded data
   - [ ] Verify expired rows display with dimmed styling
@@ -106,6 +113,7 @@ Draft
   - [ ] Test dimming updates when ex_date edited
 
 - [ ] **Task 8: Verify conditional delete button display** (AC: 9)
+
   - [ ] Test shouldShowDeleteButton method with lazy-loaded rows
   - [ ] Verify delete button hidden for closed-end funds (is_closed_end_fund=true)
   - [ ] Verify delete button hidden when position > 0
@@ -113,6 +121,7 @@ Draft
   - [ ] Test deleteUniverse method with lazy-loaded rows
 
 - [ ] **Task 9: Test sync and update operations** (AC: 10)
+
   - [ ] Test syncUniverse() method with lazy loading active
   - [ ] Test updateFields() method with lazy loading active
   - [ ] Verify table updates correctly after sync operation
@@ -120,6 +129,7 @@ Draft
   - [ ] Test loading states (isSyncingUniverse$, isUpdatingFields$) display correctly
 
 - [ ] **Task 10: Update unit tests for lazy loading** (AC: 12, 13)
+
   - [ ] Update existing tests in global-universe.component.spec.ts
   - [ ] Add test for onLazyLoad event handler
   - [ ] Add test for totalRecords$ with all filter combinations
@@ -150,6 +160,7 @@ This story implements lazy loading for the Global Universe table (Epic X). This 
 **Source: [apps/rms/src/app/global/global-universe/global-universe.component.ts]**
 
 **Component Structure:**
+
 ```typescript
 export class GlobalUniverseComponent {
   // Multiple filter signals
@@ -160,9 +171,7 @@ export class GlobalUniverseComponent {
   symbolFilter = signal<string>(this.storageService.loadSymbolFilter());
 
   // Sorting
-  sortCriteria = signal<Array<{ field: string; order: number }>>(
-    this.storageService.loadSortCriteria()
-  );
+  sortCriteria = signal<Array<{ field: string; order: number }>>(this.storageService.loadSortCriteria());
 
   // Main data computed signal
   readonly universe$ = computed(() => {
@@ -196,29 +205,34 @@ export class GlobalUniverseComponent {
 **Source: [apps/rms/src/app/global/global-universe/universe-data.service.ts]**
 
 **filterAndSortUniverses Method:**
+
 ```typescript
 @Injectable()
 export class UniverseDataService {
-  filterAndSortUniverses(params: {
-    rawData: Universe[];
-    sortCriteria: Array<{ field: string; order: number }>;
-    minYield: number | null;
-    selectedAccount: string;
-    symbolFilter: string;
-    riskGroupFilter: string | null;
-    expiredFilter: boolean | null;
-  }): Universe[] {
+  filterAndSortUniverses(params: { rawData: Universe[]; sortCriteria: Array<{ field: string; order: number }>; minYield: number | null; selectedAccount: string; symbolFilter: string; riskGroupFilter: string | null; expiredFilter: boolean | null }): Universe[] {
     let filtered = params.rawData;
 
     // Apply all filters
-    if (params.symbolFilter) { /* filter by symbol */ }
-    if (params.riskGroupFilter) { /* filter by risk group */ }
-    if (params.minYield !== null) { /* filter by min yield */ }
-    if (params.expiredFilter !== null) { /* filter by expired */ }
-    if (params.selectedAccount !== 'all') { /* filter by account */ }
+    if (params.symbolFilter) {
+      /* filter by symbol */
+    }
+    if (params.riskGroupFilter) {
+      /* filter by risk group */
+    }
+    if (params.minYield !== null) {
+      /* filter by min yield */
+    }
+    if (params.expiredFilter !== null) {
+      /* filter by expired */
+    }
+    if (params.selectedAccount !== 'all') {
+      /* filter by account */
+    }
 
     // Apply sorting
-    if (params.sortCriteria.length > 0) { /* multi-column sort */ }
+    if (params.sortCriteria.length > 0) {
+      /* multi-column sort */
+    }
 
     return filtered;
   }
@@ -228,6 +242,7 @@ export class UniverseDataService {
 ### Lazy Loading Implementation Strategy
 
 **Updated Component with Lazy Loading:**
+
 ```typescript
 // Add lazy load params signal
 private lazyLoadParams = signal<{first: number; rows: number}>({
@@ -296,6 +311,7 @@ onLazyLoad(event: LazyLoadEvent): void {
 **Source: [apps/rms/src/app/global/global-universe/filter-handlers.function.ts]**
 
 **createFilterHandlers Function:**
+
 ```typescript
 export function createFilterHandlers(
   storageService: GlobalUniverseStorageService,
@@ -320,6 +336,7 @@ export function createFilterHandlers(
 ```
 
 **Lazy Loading Impact:**
+
 - Filter handlers remain unchanged
 - Each filter update triggers universe$ recomputation
 - totalRecords$ updates automatically with filter changes
@@ -330,11 +347,9 @@ export function createFilterHandlers(
 **Source: [apps/rms/src/app/global/global-universe/sorting-handlers.function.ts]**
 
 **createSortingHandlers Function:**
+
 ```typescript
-export function createSortingHandlers(
-  sortCriteria: WritableSignal<Array<{ field: string; order: number }>>,
-  storageService: GlobalUniverseStorageService
-) {
+export function createSortingHandlers(sortCriteria: WritableSignal<Array<{ field: string; order: number }>>, storageService: GlobalUniverseStorageService) {
   return {
     onSort: (field: string) => {
       const currentCriteria = sortCriteria();
@@ -343,7 +358,7 @@ export function createSortingHandlers(
       sortCriteria.set(newCriteria);
     },
     getSortOrder: (field: string): number => {
-      const criteria = sortCriteria().find(c => c.field === field);
+      const criteria = sortCriteria().find((c) => c.field === field);
       return criteria?.order ?? 0;
     },
   };
@@ -351,6 +366,7 @@ export function createSortingHandlers(
 ```
 
 **Lazy Loading Impact:**
+
 - Sorting handlers remain unchanged
 - Sort updates trigger universe$ recomputation via sortCriteria signal
 - UniverseDataService applies multi-column sort before lazy load slice
@@ -360,6 +376,7 @@ export function createSortingHandlers(
 **Source: [apps/rms/src/app/global/global-universe/edit-handlers.function.ts]**
 
 **createEditHandlers Function:**
+
 ```typescript
 export function createEditHandlers(dataService: UniverseDataService) {
   return {
@@ -380,6 +397,7 @@ export function createEditHandlers(dataService: UniverseDataService) {
 ```
 
 **Lazy Loading Impact:**
+
 - Edit handlers work with individual rows, not affected by lazy loading
 - SmartNgRX updates trigger universe$ recomputation
 - Edited rows remain visible in current lazy-loaded page
@@ -389,6 +407,7 @@ export function createEditHandlers(dataService: UniverseDataService) {
 **Source: [apps/rms/src/app/global/global-universe/is-row-dimmed.function.ts]**
 
 **isRowDimmed Function:**
+
 ```typescript
 export function isRowDimmed(universe: Universe): boolean {
   const today = new Date();
@@ -406,6 +425,7 @@ export function isRowDimmed(universe: Universe): boolean {
 ```
 
 **Lazy Loading Impact:**
+
 - Dimming function evaluates each row independently
 - Works correctly with lazy-loaded rows
 - universeWithDimmedState$ applies dimming to sliced data
@@ -415,6 +435,7 @@ export function isRowDimmed(universe: Universe): boolean {
 **Source: [GlobalUniverseComponent]**
 
 **shouldShowDeleteButton Method:**
+
 ```typescript
 shouldShowDeleteButton(row: UniverseDisplayData): boolean {
   return !row.is_closed_end_fund && row.position === 0;
@@ -422,6 +443,7 @@ shouldShowDeleteButton(row: UniverseDisplayData): boolean {
 ```
 
 **Lazy Loading Impact:**
+
 - Conditional logic evaluates per row, unaffected by lazy loading
 - Delete button display works correctly on all pages
 
@@ -430,6 +452,7 @@ shouldShowDeleteButton(row: UniverseDisplayData): boolean {
 **Source: [GlobalUniverseComponent]**
 
 **Sync Universe:**
+
 ```typescript
 syncUniverse(): void {
   const self = this;
@@ -458,6 +481,7 @@ syncUniverse(): void {
 ```
 
 **Update Fields:**
+
 ```typescript
 updateFields(): void {
   const self = this;
@@ -471,6 +495,7 @@ updateFields(): void {
 ```
 
 **Lazy Loading Impact:**
+
 - Sync/update operations modify SmartNgRX state
 - universe$ recomputes automatically after state changes
 - Lazy-loaded view updates to reflect new data
@@ -481,11 +506,13 @@ updateFields(): void {
 **Source: [Epic X - Integration Points]**
 
 **Files to Modify:**
+
 - `/apps/rms/src/app/global/global-universe/global-universe.component.html` - Add lazy loading attributes
 - `/apps/rms/src/app/global/global-universe/global-universe.component.ts` - Implement lazy load logic
 - `/apps/rms/src/app/global/global-universe/global-universe.component.spec.ts` - Update tests
 
 **Files to Reference (Read-Only):**
+
 - `/apps/rms/src/app/global/global-universe/filter-handlers.function.ts` - Filter logic
 - `/apps/rms/src/app/global/global-universe/edit-handlers.function.ts` - Edit logic
 - `/apps/rms/src/app/global/global-universe/sorting-handlers.function.ts` - Sort logic
@@ -499,23 +526,27 @@ updateFields(): void {
 **Source: [CLAUDE.md - Testing Requirements]**
 
 **Testing Framework:**
+
 - Use Vitest for all testing
 - Follow existing test patterns in global-universe.component.spec.ts
 
 **Test Scenarios:**
 
 1. **Lazy Load Event Handling:**
+
    - Test onLazyLoad receives correct parameters
    - Test lazyLoadParams signal updates
    - Test universe$ recomputes with new slice
 
 2. **Total Records with Filters:**
+
    - Test totalRecords$ with no filters
    - Test totalRecords$ with each individual filter
    - Test totalRecords$ with multiple filters combined
    - Test totalRecords$ updates when filters change
 
 3. **Five Filter Types:**
+
    - Symbol text filter
    - Risk group dropdown filter (Equities, Income, Tax Free)
    - Min yield number filter
@@ -525,6 +556,7 @@ updateFields(): void {
    - Test filter combinations
 
 4. **Multi-Column Sorting:**
+
    - yield_percent sorting
    - avg_purchase_yield_percent sorting
    - ex_date sorting
@@ -533,17 +565,20 @@ updateFields(): void {
    - Test with filters active
 
 5. **Inline Editing:**
+
    - distribution editing
    - distributions_per_year editing
    - ex_date editing
    - Test on different lazy-loaded pages
 
 6. **Row Dimming:**
+
    - Test dimming on expired rows
    - Test dimming updates when ex_date edited
    - Test across lazy-loaded pages
 
 7. **Conditional Delete:**
+
    - Test button hidden for CEF
    - Test button hidden when position > 0
    - Test button shown when allowed
@@ -556,13 +591,14 @@ updateFields(): void {
    - Test table updates after operations
 
 **Test File Location:**
+
 - `/apps/rms/src/app/global/global-universe/global-universe.component.spec.ts`
 
 ## Change Log
 
-| Date | Version | Description | Author |
-|------|---------|-------------|--------|
-| 2025-10-11 | 1.0 | Initial story creation for Epic X.1 lazy loading | BMad Scrum Master |
+| Date       | Version | Description                                      | Author            |
+| ---------- | ------- | ------------------------------------------------ | ----------------- |
+| 2025-10-11 | 1.0     | Initial story creation for Epic X.1 lazy loading | BMad Scrum Master |
 
 ## Dev Agent Record
 

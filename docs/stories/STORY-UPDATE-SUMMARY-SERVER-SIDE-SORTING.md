@@ -18,13 +18,16 @@ All stories follow this pattern (already implemented in U.1):
 ### 1. Update Acceptance Criteria
 
 **Add these sections**:
+
 1. **Backend API Changes:**
+
    - Update endpoint to accept query params object (backward compatible)
    - Implement server-side sorting with Prisma orderBy
    - Add database indexes
    - Write backend tests
 
 2. **Frontend Changes:**
+
    - Lazy loading attributes
    - Create/Update EffectsService
    - Update computed signals
@@ -38,6 +41,7 @@ All stories follow this pattern (already implemented in U.1):
 ### 2. Expand Tasks / Subtasks
 
 **Add these task groups**:
+
 - Task 1: Update Backend API Endpoint
 - Task 2: Create Database Indexes
 - Task 3: Write Backend Tests
@@ -47,6 +51,7 @@ All stories follow this pattern (already implemented in U.1):
 ### 3. Add Dev Notes Section
 
 **Add**:
+
 - Server-Side Sorting Architecture explanation
 - Backend API implementation example
 - Frontend EffectsService implementation example
@@ -63,6 +68,7 @@ Add entry: "2.0 | Added server-side sorting requirements | Product Management (J
 ### Complexity: MEDIUM (Hybrid Sorting)
 
 **Key Differences from U.1:**
+
 - **Hybrid sorting approach**: Server for `buyDate`, client for `unrealizedGain` (calculated)
 - Uses **TradeEffectsService** (shared with W.1)
 - Closed filter parameter: `false` (open positions)
@@ -72,6 +78,7 @@ Add entry: "2.0 | Added server-side sorting requirements | Product Management (J
 
 ```markdown
 1. **Backend API Changes:**
+
    - Update `/api/trades` endpoint to accept query params object
    - Add `closed` filter parameter (false for open positions)
    - Implement server-side sorting for buyDate field only
@@ -79,6 +86,7 @@ Add entry: "2.0 | Added server-side sorting requirements | Product Management (J
    - Write backend tests for trades API with closed filter
 
 2. **Frontend Changes:**
+
    - Create/update TradeEffectsService with sort params
    - Implement HYBRID sorting: server for buyDate, client for unrealizedGain
    - Update computed signal to handle both server and client sorting
@@ -95,16 +103,19 @@ Add entry: "2.0 | Added server-side sorting requirements | Product Management (J
 ### Task Updates
 
 **Task 1: Update Backend API Endpoint**
+
 - Update `/api/trades` endpoint
 - Add `closed?: boolean` parameter
 - For open positions: `closed: false` or `sell_date: null`
 
 **Task 4: Create/Update TradeEffectsService**
+
 - Check if TradeEffectsService exists
 - Add `closed: false` to API call for open positions
 - Shared with W.1 (sold positions uses `closed: true`)
 
 **Task 7: Update computed signal - HYBRID APPROACH**
+
 ```typescript
 positions$ = computed(() => {
   const params = this.lazyLoadParams();
@@ -114,12 +125,9 @@ positions$ = computed(() => {
   // Apply CLIENT-SIDE sort ONLY for calculated fields
   let results = rawPositions;
 
-  if (params.sortField === 'unrealizedGainPercent' ||
-      params.sortField === 'unrealizedGain') {
+  if (params.sortField === 'unrealizedGainPercent' || params.sortField === 'unrealizedGain') {
     // Client-side sort for calculated field
-    results = [...results].sort((a, b) =>
-      this.compareCalculatedField(a, b, params.sortField, params.sortOrder)
-    );
+    results = [...results].sort((a, b) => this.compareCalculatedField(a, b, params.sortField, params.sortOrder));
   }
 
   // Slice for lazy loading
@@ -130,18 +138,20 @@ positions$ = computed(() => {
 ### Dev Notes Additions
 
 **Hybrid Sorting Strategy:**
+
 - Server sorts: `buyDate` (database field)
 - Client sorts: `unrealizedGainPercent`, `unrealizedGain` (calculated fields)
 - Why: Calculated fields require all position data + current prices
 
 **Backend Implementation:**
+
 ```typescript
 interface TradeQueryParams {
   ids: string[];
   sortField?: string;
   sortOrder?: 1 | -1;
   accountId?: string;
-  closed?: boolean;  // false for open, true for sold
+  closed?: boolean; // false for open, true for sold
 }
 
 // In handleGetTradesRoute
@@ -149,8 +159,8 @@ const whereClause: any = {
   id: { in: ids },
   ...(accountId && { accountId }),
   ...(closed !== undefined && {
-    sell_date: closed ? { not: null } : null
-  })
+    sell_date: closed ? { not: null } : null,
+  }),
 };
 ```
 
@@ -161,6 +171,7 @@ const whereClause: any = {
 ### Complexity: MEDIUM-HIGH (Server Sorting + Client Calculations)
 
 **Key Differences from U.1:**
+
 - Uses **TradeEffectsService** (shared with V.1)
 - Closed filter parameter: `true` (sold positions)
 - **Capital gains calculations** happen client-side AFTER server sort
@@ -171,12 +182,14 @@ const whereClause: any = {
 
 ```markdown
 1. **Backend API Changes:**
+
    - Update `/api/trades` endpoint (shared with V.1)
    - Add `closed` filter parameter (true for sold positions)
    - Implement server-side sorting for sellDate and buyDate
    - Database indexes shared with V.1
 
 2. **Frontend Changes:**
+
    - Use TradeEffectsService (shared with V.1)
    - Server sorts data by sellDate/buyDate
    - Client applies capital gains calculations AFTER server sort
@@ -193,14 +206,17 @@ const whereClause: any = {
 ### Task Updates
 
 **Task 1: Update Backend API Endpoint**
+
 - Same as V.1 (shared `/api/trades` endpoint)
 - Sortable fields: `sell_date`, `buy_date`
 
 **Task 4: Use TradeEffectsService**
+
 - Same service as V.1
 - Add `closed: true` to API call for sold positions
 
 **Task 7: Update computed signal for calculations AFTER server sort**
+
 ```typescript
 positions$ = computed(() => {
   const params = this.lazyLoadParams();
@@ -208,7 +224,7 @@ positions$ = computed(() => {
 
   // Data is ALREADY SORTED by server (sellDate)
   // Apply capital gains calculations to sorted data
-  const soldPositions = rawPositions.map(pos => {
+  const soldPositions = rawPositions.map((pos) => {
     const capitalGains = calculateCapitalGains({
       buy: pos.buy,
       sell: pos.sell,
@@ -230,6 +246,7 @@ positions$ = computed(() => {
 ### Dev Notes Additions
 
 **Server Sorting + Client Calculations Pattern:**
+
 1. Server sorts trades by `sellDate` or `buyDate`
 2. Frontend receives sorted trade entities
 3. Client applies `calculateCapitalGains()` function to each row
@@ -237,12 +254,9 @@ positions$ = computed(() => {
 5. Capital gains recalculate when values change (reactive)
 
 **Capital Gains Calculator (Preserved):**
+
 ```typescript
-export function calculateCapitalGains(params: {
-  buy: number;
-  sell: number;
-  quantity: number;
-}): { capitalGain: number; capitalGainPercentage: number } {
+export function calculateCapitalGains(params: { buy: number; sell: number; quantity: number }): { capitalGain: number; capitalGainPercentage: number } {
   const { buy, sell, quantity } = params;
   const capitalGain = (sell - buy) * quantity;
   const capitalGainPercentage = buy === 0 ? 0 : ((sell - buy) / buy) * 100;
@@ -257,6 +271,7 @@ export function calculateCapitalGains(params: {
 ### Complexity: HIGH (Hybrid Filtering + Hybrid Sorting)
 
 **Key Differences from U.1:**
+
 - **Most complex**: 5 filters + 5 sortable columns
 - **Hybrid filtering**: 3 server-side, 2 client-side
 - **Hybrid sorting**: 3 server-side, 2 client-side
@@ -267,6 +282,7 @@ export function calculateCapitalGains(params: {
 
 ```markdown
 1. **Backend API Changes:**
+
    - Update `/api/universe` endpoint with filters and sort params
    - Implement server-side filtering: symbol, riskGroupId, expired
    - Implement server-side sorting: ex_date, most_recent_sell_date, most_recent_sell_price, distribution
@@ -274,6 +290,7 @@ export function calculateCapitalGains(params: {
    - Write backend tests for complex filter/sort combinations
 
 2. **Frontend Changes:**
+
    - Update UniverseEffectsService with filter and sort params
    - Update UniverseDataService for hybrid approach
    - Server filters: symbol, riskGroup, expired
@@ -292,26 +309,29 @@ export function calculateCapitalGains(params: {
 ### Task Updates
 
 **Task 1: Update Backend API Endpoint**
+
 ```typescript
 interface UniverseQueryParams {
   ids: string[];
   sortField?: string;
   sortOrder?: 1 | -1;
   filters?: {
-    symbol?: string;          // Server-side (text search)
-    riskGroupId?: string;     // Server-side
-    expired?: boolean;        // Server-side
+    symbol?: string; // Server-side (text search)
+    riskGroupId?: string; // Server-side
+    expired?: boolean; // Server-side
     // minYield and accountId handled client-side
   };
 }
 ```
 
 **Task 4: Update UniverseEffectsService**
+
 - Pass both filter and sort params
 - Server handles: symbol, riskGroupId, expired filters
 - Client handles: minYield, accountId filters
 
 **Task 5: Update UniverseDataService**
+
 - New method: `filterAndSortHybrid()`
 - Apply server filters first
 - Then client filters (minYield, accountId)
@@ -319,6 +339,7 @@ interface UniverseQueryParams {
 - Then client sorting (yield_percent fields)
 
 **Task 7: Update computed signal - COMPLEX HYBRID**
+
 ```typescript
 universe$ = computed(() => {
   const params = this.lazyLoadParams();
@@ -331,23 +352,16 @@ universe$ = computed(() => {
   let filtered = rawUniverses;
 
   if (this.minYieldFilter()) {
-    filtered = filtered.filter(u =>
-      this.calculateYieldPercent(u) >= this.minYieldFilter()
-    );
+    filtered = filtered.filter((u) => this.calculateYieldPercent(u) >= this.minYieldFilter());
   }
 
   if (this.accountIdFilter()) {
-    filtered = filtered.filter(u =>
-      this.hasTradesForAccount(u, this.accountIdFilter())
-    );
+    filtered = filtered.filter((u) => this.hasTradesForAccount(u, this.accountIdFilter()));
   }
 
   // Step 4: Apply CLIENT-SIDE sorting for calculated fields
-  if (params.sortField === 'yield_percent' ||
-      params.sortField === 'avg_purchase_yield_percent') {
-    filtered = [...filtered].sort((a, b) =>
-      this.compareCalculatedYields(a, b, params.sortField, params.sortOrder)
-    );
+  if (params.sortField === 'yield_percent' || params.sortField === 'avg_purchase_yield_percent') {
+    filtered = [...filtered].sort((a, b) => this.compareCalculatedYields(a, b, params.sortField, params.sortOrder));
   }
 
   // Step 5: Slice for lazy loading
@@ -360,39 +374,45 @@ universe$ = computed(() => {
 **Complex Hybrid Pattern:**
 
 **Server-Side Operations:**
+
 - **Filters**: symbol (LIKE/ILIKE), riskGroupId (=), expired (boolean)
 - **Sorting**: ex_date, most_recent_sell_date, most_recent_sell_price, distribution
 
 **Client-Side Operations:**
+
 - **Filters**: minYield (calculated), accountId (requires trades join)
 - **Sorting**: yield_percent, avg_purchase_yield_percent (both calculated)
 
 **Why Hybrid Approach:**
+
 - `minYield` requires calculation: `(distribution * distributions_per_year) / last_price * 100`
 - `accountId` filter requires checking if universe has trades for specific account
 - `yield_percent` fields are calculated from multiple database fields
 - Server can't efficiently calculate these without complex queries
 
 **Backend Implementation:**
+
 ```typescript
 const whereClause: any = {
   id: { in: ids },
   ...(filters?.symbol && {
-    symbol: { contains: filters.symbol, mode: 'insensitive' }
+    symbol: { contains: filters.symbol, mode: 'insensitive' },
   }),
   ...(filters?.riskGroupId && { risk_group_id: filters.riskGroupId }),
-  ...(filters?.expired !== undefined && { expired: filters.expired })
+  ...(filters?.expired !== undefined && { expired: filters.expired }),
 };
 
-const orderBy = sortField ? {
-  [sortField]: sortOrder === -1 ? 'desc' : 'asc'
-} : undefined;
+const orderBy = sortField
+  ? {
+      [sortField]: sortOrder === -1 ? 'desc' : 'asc',
+    }
+  : undefined;
 
 const universes = await prisma.universe.findMany({
   where: whereClause,
   include: {
     risk_group: true,
-    trades: { where: { sell_date: null } }
+    trades: { where: { sell_date: null } },
   },
   orderBy,
 });
@@ -405,16 +425,19 @@ const universes = await prisma.universe.findMany({
 Based on complexity and dependencies:
 
 1. ✅ **Story U.1** - COMPLETED
+
    - Simplest pattern
    - Full server-side sorting
    - No dependencies
 
 2. **Story V.1** - Next (2-3 days)
+
    - Moderate complexity
    - Hybrid sorting (template for W.1)
    - Creates TradeEffectsService (shared with W.1)
 
 3. **Story W.1** - After V.1 (2-3 days)
+
    - Uses TradeEffectsService from V.1
    - Server sort + client calculations
    - Validates capital gains pattern

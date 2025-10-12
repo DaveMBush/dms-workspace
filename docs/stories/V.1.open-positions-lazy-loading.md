@@ -36,6 +36,7 @@ Draft
 ## Tasks / Subtasks
 
 - [ ] **Task 1: Add PrimeNG lazy loading attributes to p-table** (AC: 1, 3, 8)
+
   - [ ] Add `[lazy]="true"` attribute to p-table in open-positions.component.html
   - [ ] Add `[virtualScroll]="true"` attribute for virtual scrolling
   - [ ] Configure `[rows]="10"` for 10-row buffer size
@@ -46,6 +47,7 @@ Draft
   - [ ] Preserve existing `[rowTrackBy]="trackById"`
 
 - [ ] **Task 2: Implement onLazyLoad event handler with filtering** (AC: 2, 4)
+
   - [ ] Create `onLazyLoad(event: LazyLoadEvent): void` method in component
   - [ ] Extract `first`, `rows`, `sortField`, `sortOrder` from event
   - [ ] Create `lazyLoadParams` signal to store load parameters
@@ -55,6 +57,7 @@ Draft
   - [ ] Preserve existing sort signals integration
 
 - [ ] **Task 3: Preserve multi-column sorting with lazy loading** (AC: 7)
+
   - [ ] Verify `onSort()` method updates sort state correctly
   - [ ] Test buyDate sorting with lazy-loaded data
   - [ ] Test unrealizedGainPercent sorting with lazy-loaded data
@@ -63,6 +66,7 @@ Draft
   - [ ] Verify sorting works across all lazy-loaded pages
 
 - [ ] **Task 4: Ensure inline editing works on lazy-loaded rows** (AC: 5, 6)
+
   - [ ] Test buy price editing on various lazy-loaded pages
   - [ ] Test buyDate editing with p-datepicker on lazy-loaded rows
   - [ ] Test quantity editing with p-inputNumber on lazy-loaded rows
@@ -74,6 +78,7 @@ Draft
   - [ ] Test `stopArrowKeyPropagation()` works in inline editors
 
 - [ ] **Task 5: Test delete functionality with lazy loading** (AC: 5)
+
   - [ ] Test `trash()` method with lazy-loaded rows on first page
   - [ ] Test delete on middle pages
   - [ ] Test delete on last page
@@ -81,6 +86,7 @@ Draft
   - [ ] Ensure totalRecords$ updates after delete
 
 - [ ] **Task 6: Update unit tests for lazy loading** (AC: 9, 10)
+
   - [ ] Update existing tests in open-positions.component.spec.ts
   - [ ] Add test for onLazyLoad event handler
   - [ ] Add test for totalRecords$ signal calculation with filtering
@@ -110,11 +116,9 @@ This story implements lazy loading for the Open Positions table (Epic V). This i
 **Source: [apps/rms/src/app/account-panel/open-positions/open-positions.component.ts]**
 
 **Component Inheritance:**
+
 ```typescript
-export class OpenPositionsComponent extends BasePositionsComponent<
-  OpenPosition,
-  OpenPositionsStorageService
-> {
+export class OpenPositionsComponent extends BasePositionsComponent<OpenPosition, OpenPositionsStorageService> {
   // Inherits filtering and sorting from BasePositionsComponent
   // Has symbol filter integration
   // Multi-column sorting support
@@ -123,6 +127,7 @@ export class OpenPositionsComponent extends BasePositionsComponent<
 ```
 
 **Current Computed Signal with Filtering:**
+
 ```typescript
 positions$ = computed(() => {
   const rawPositions = this.openPositionsService.selectOpenPositions();
@@ -134,17 +139,13 @@ positions$ = computed(() => {
   let filteredPositions = rawPositions;
   if (symbolFilter && symbolFilter.trim() !== '') {
     filteredPositions = rawPositions.filter(function filterSymbol(position) {
-      return position.symbol
-        .toLowerCase()
-        .includes(symbolFilter.toLowerCase());
+      return position.symbol.toLowerCase().includes(symbolFilter.toLowerCase());
     });
   }
 
   // Apply sorting
   if (sortField && sortOrder !== 0) {
-    filteredPositions = [...filteredPositions].sort((a, b) =>
-      this.comparePositions(a, b, sortField, sortOrder)
-    );
+    filteredPositions = [...filteredPositions].sort((a, b) => this.comparePositions(a, b, sortField, sortOrder));
   }
 
   return filteredPositions;
@@ -152,6 +153,7 @@ positions$ = computed(() => {
 ```
 
 **Inline Editing Methods:**
+
 ```typescript
 onEditCommit(row: OpenPosition, field: string): void {
   // Calls BasePositionsComponent.onEditCommit
@@ -176,6 +178,7 @@ validateTradeField(field: string, row: OpenPosition, trade: Trade, universe: Uni
 ### Lazy Loading Implementation Strategy
 
 **Updated Computed Signal with Lazy Loading:**
+
 ```typescript
 // Add lazy load params signal
 private lazyLoadParams = signal<{first: number; rows: number; sortField?: string; sortOrder?: number}>({
@@ -242,12 +245,14 @@ onLazyLoad(event: LazyLoadEvent): void {
 **Source: [PrimeNG 20 Table Documentation - Cell Editing]**
 
 **Critical Configuration for Inline Editing:**
+
 - `[dataKey]="'id'"` - Required for proper row identification during editing
 - `[rowTrackBy]="trackById"` - Performance optimization for row updates
 - `pEditableColumn` directive - Works with lazy-loaded rows
 - p-cellEditor - Maintains state across lazy load updates
 
 **Inline Editing Consideration:**
+
 - PrimeNG CellEditor works with lazy-loaded data when dataKey is set
 - Row identification via dataKey ensures edits target correct entity
 - Validation logic must work with partial dataset visible
@@ -258,6 +263,7 @@ onLazyLoad(event: LazyLoadEvent): void {
 **Source: [apps/rms/src/app/shared/base-positions.component.ts]**
 
 **Inherited Methods to Preserve:**
+
 - `onSort(field: string)` - Updates sort state
 - `onSymbolFilterChange()` - Triggers filter update
 - `onEditCommit(row, field)` - Handles cell edits
@@ -266,6 +272,7 @@ onLazyLoad(event: LazyLoadEvent): void {
 - `getSortOrder()` - Current sort order
 
 **Storage Service Integration:**
+
 - `OpenPositionsStorageService` - Stores filter/sort state in localStorage
 - `isDateRangeValid()` - Date validation helper
 - Component uses `storageService.loadSortCriteria()` for initial state
@@ -273,6 +280,7 @@ onLazyLoad(event: LazyLoadEvent): void {
 ### Sort Signals Integration
 
 **Current Sort Signals:**
+
 ```typescript
 readonly sortSignals = {
   buyDateSortIcon$: computed(() => this.getSortIcon('buyDate')),
@@ -291,6 +299,7 @@ readonly sortSignals = {
 ```
 
 **Lazy Loading Impact:**
+
 - Sort signals remain unchanged
 - `onSort()` method updates both component state and lazy load params
 - PrimeNG handles sort via `onLazyLoad` event when `[lazy]="true"`
@@ -301,11 +310,13 @@ readonly sortSignals = {
 **Source: [Epic V - Integration Points]**
 
 **Files to Modify:**
+
 - `/apps/rms/src/app/account-panel/open-positions/open-positions.component.html` - Add lazy loading attributes
 - `/apps/rms/src/app/account-panel/open-positions/open-positions.component.ts` - Implement lazy load logic
 - `/apps/rms/src/app/account-panel/open-positions/open-positions.component.spec.ts` - Update tests
 
 **Files to Reference (Read-Only):**
+
 - `/apps/rms/src/app/shared/base-positions.component.ts` - Base class with shared logic
 - `/apps/rms/src/app/account-panel/open-positions/open-positions-component.service.ts` - Business logic
 - `/apps/rms/src/app/account-panel/open-positions/open-positions-storage.service.ts` - State persistence
@@ -313,6 +324,7 @@ readonly sortSignals = {
 ### Inline Editing Validation Flows
 
 **Buy Date Validation:**
+
 ```typescript
 private validateBuyDateField(row: OpenPosition, trade: Trade): string {
   if (!this.storageService.isDateRangeValid(row.buyDate, row.sellDate, 'buyDate')) {
@@ -329,6 +341,7 @@ private validateBuyDateField(row: OpenPosition, trade: Trade): string {
 ```
 
 **Sell Date Validation:**
+
 ```typescript
 private validateSellDateField(row: OpenPosition, trade: Trade, universe: Universe): string {
   if (!this.storageService.isDateRangeValid(row.buyDate, row.sellDate, 'sellDate')) {
@@ -347,6 +360,7 @@ private validateSellDateField(row: OpenPosition, trade: Trade, universe: Univers
 ```
 
 **Lazy Loading Impact:**
+
 - Validation methods work on individual rows, not full dataset
 - Error messages display correctly regardless of scroll position
 - Revert logic accesses Trade entity from SmartNgRX store
@@ -357,11 +371,13 @@ private validateSellDateField(row: OpenPosition, trade: Trade, universe: Univers
 **Source: [CLAUDE.md - SmartNgRX Signals State Management]**
 
 **Current State Access:**
+
 - `this.openPositionsService.selectOpenPositions()` - Returns all open positions
 - `this.openPositionsService.trades()` - Full trades array for validation
 - SmartArray proxy methods for delete operations
 
 **Lazy Loading Considerations:**
+
 - SmartNgRX signals provide full dataset
 - Lazy loading only affects rendered rows
 - Edit/delete operations work on full dataset via signals
@@ -370,6 +386,7 @@ private validateSellDateField(row: OpenPosition, trade: Trade, universe: Univers
 ### Symbol Filter Header Component
 
 **Integration:**
+
 - `<rms-symbol-filter-header>` component in template
 - Two-way binding: `[(symbolFilter)]="symbolFilter"`
 - Event: `(filterChange)="onSymbolFilterChange()"`
@@ -381,23 +398,27 @@ private validateSellDateField(row: OpenPosition, trade: Trade, universe: Univers
 **Source: [CLAUDE.md - Testing Requirements]**
 
 **Testing Framework:**
+
 - Use Vitest for all testing
 - Follow existing test patterns in open-positions.component.spec.ts
 
 **Test Scenarios:**
 
 1. **Lazy Load Event Handling:**
+
    - Test onLazyLoad receives correct event parameters
    - Test lazyLoadParams signal updates correctly
    - Test positions$ recomputes with new slice
    - Test with symbol filter active
 
 2. **Total Records Calculation:**
+
    - Test totalRecords$ without filter
    - Test totalRecords$ with symbol filter applied
    - Test totalRecords$ updates after delete
 
 3. **Multi-Column Sorting:**
+
    - Test buyDate sorting with lazy load
    - Test unrealizedGainPercent sorting with lazy load
    - Test unrealizedGain sorting with lazy load
@@ -405,6 +426,7 @@ private validateSellDateField(row: OpenPosition, trade: Trade, universe: Univers
    - Test sorting across lazy-loaded pages
 
 4. **Inline Editing:**
+
    - Test buy price edit on lazy-loaded row
    - Test buyDate edit with validation
    - Test quantity edit
@@ -415,6 +437,7 @@ private validateSellDateField(row: OpenPosition, trade: Trade, universe: Univers
    - Test edit revert on validation failure
 
 5. **Symbol Filtering:**
+
    - Test filter reduces totalRecords$
    - Test filter with lazy loading
    - Test filter clear resets lazy load
@@ -426,13 +449,14 @@ private validateSellDateField(row: OpenPosition, trade: Trade, universe: Univers
    - Test totalRecords$ updates
 
 **Test File Location:**
+
 - `/apps/rms/src/app/account-panel/open-positions/open-positions.component.spec.ts`
 
 ## Change Log
 
-| Date | Version | Description | Author |
-|------|---------|-------------|--------|
-| 2025-10-11 | 1.0 | Initial story creation for Epic V.1 lazy loading | BMad Scrum Master |
+| Date       | Version | Description                                      | Author            |
+| ---------- | ------- | ------------------------------------------------ | ----------------- |
+| 2025-10-11 | 1.0     | Initial story creation for Epic V.1 lazy loading | BMad Scrum Master |
 
 ## Dev Agent Record
 

@@ -23,9 +23,7 @@ positions$ = computed(() => {
   const sortOrder = this.getSortOrder();
 
   // Client sorts ALL data
-  let sorted = [...rawPositions].sort((a, b) =>
-    this.comparePositions(a, b, sortField, sortOrder)
-  );
+  let sorted = [...rawPositions].sort((a, b) => this.comparePositions(a, b, sortField, sortOrder));
 
   // Then slice for lazy loading
   return sorted.slice(params.first, params.first + params.rows);
@@ -33,18 +31,16 @@ positions$ = computed(() => {
 ```
 
 **Current Backend API Pattern**:
+
 ```typescript
 // Backend: POST /api/trades (receives IDs, returns entities)
-fastify.post<{ Body: string[]; Reply: Trade[] }>(
-  '/',
-  async function handleGetTrades(request, _): Promise<Trade[]> {
-    const ids = request.body;
-    const trades = await prisma.trades.findMany({
-      where: { id: { in: ids } },
-    });
-    return trades.map(mapTradeToResponse);
-  }
-);
+fastify.post<{ Body: string[]; Reply: Trade[] }>('/', async function handleGetTrades(request, _): Promise<Trade[]> {
+  const ids = request.body;
+  const trades = await prisma.trades.findMany({
+    where: { id: { in: ids } },
+  });
+  return trades.map(mapTradeToResponse);
+});
 ```
 
 ### Problem Statement
@@ -59,15 +55,12 @@ With lazy loading, we cannot sort all data on the client because we only have a 
 // Frontend: EffectsService calls backend with sort params
 @Injectable()
 export class TradeEffectsService extends EffectService<Trade> {
-  override loadByIds = (
-    ids: string[],
-    sortParams?: SortParams
-  ): Observable<Trade[]> => {
+  override loadByIds = (ids: string[], sortParams?: SortParams): Observable<Trade[]> => {
     // Backend returns sorted IDs, then fetch entities
     return this.http.post<Trade[]>('/api/trades', {
       ids,
       sortField: sortParams?.sortField,
-      sortOrder: sortParams?.sortOrder
+      sortOrder: sortParams?.sortOrder,
     });
   };
 }
@@ -78,6 +71,7 @@ export class TradeEffectsService extends EffectService<Trade> {
 ### 1. Dividend Deposits API (`/api/div-deposits`)
 
 #### Current Signature
+
 ```typescript
 POST /api/div-deposits
 Body: string[]                  // Array of IDs
@@ -85,6 +79,7 @@ Reply: DivDeposit[]             // Array of entities
 ```
 
 #### Proposed Signature
+
 ```typescript
 POST /api/div-deposits
 Body: {
@@ -97,6 +92,7 @@ Reply: DivDeposit[]             // Array of sorted entities
 ```
 
 #### Implementation Pattern
+
 ```typescript
 interface DivDepositQueryParams {
   ids: string[];
@@ -106,46 +102,44 @@ interface DivDepositQueryParams {
 }
 
 function handleGetDivDepositsRoute(fastify: FastifyInstance): void {
-  fastify.post<{ Body: DivDepositQueryParams; Reply: DivDeposit[] }>(
-    '/',
-    async function handleGetDivDepositsRequest(
-      request,
-      _
-    ): Promise<DivDeposit[]> {
-      const { ids, sortField, sortOrder, accountId } = request.body;
+  fastify.post<{ Body: DivDepositQueryParams; Reply: DivDeposit[] }>('/', async function handleGetDivDepositsRequest(request, _): Promise<DivDeposit[]> {
+    const { ids, sortField, sortOrder, accountId } = request.body;
 
-      if (ids.length === 0) {
-        return [];
-      }
-
-      const whereClause: any = {
-        id: { in: ids },
-        ...(accountId && { accountId })
-      };
-
-      // Build orderBy clause based on sort params
-      const orderBy = sortField ? {
-        [sortField]: sortOrder === -1 ? 'desc' : 'asc'
-      } : undefined;
-
-      const divDeposits = await prisma.divDeposits.findMany({
-        where: whereClause,
-        orderBy,
-      });
-
-      return divDeposits.map(mapDivDepositToResponse);
+    if (ids.length === 0) {
+      return [];
     }
-  );
+
+    const whereClause: any = {
+      id: { in: ids },
+      ...(accountId && { accountId }),
+    };
+
+    // Build orderBy clause based on sort params
+    const orderBy = sortField
+      ? {
+          [sortField]: sortOrder === -1 ? 'desc' : 'asc',
+        }
+      : undefined;
+
+    const divDeposits = await prisma.divDeposits.findMany({
+      where: whereClause,
+      orderBy,
+    });
+
+    return divDeposits.map(mapDivDepositToResponse);
+  });
 }
 ```
 
 #### Sort Fields Supported
+
 - `date` (Date) - Primary sort field
 - `amount` (number)
 
 ### 2. Trades API (`/api/trades`)
 
 #### Current Signature
+
 ```typescript
 POST /api/trades
 Body: string[]                  // Array of IDs
@@ -153,6 +147,7 @@ Reply: Trade[]                  // Array of entities
 ```
 
 #### Proposed Signature
+
 ```typescript
 POST /api/trades
 Body: {
@@ -166,6 +161,7 @@ Reply: Trade[]                  // Array of sorted entities
 ```
 
 #### Implementation Pattern
+
 ```typescript
 interface TradeQueryParams {
   ids: string[];
@@ -176,52 +172,54 @@ interface TradeQueryParams {
 }
 
 function handleGetTradesRoute(fastify: FastifyInstance): void {
-  fastify.post<{ Body: TradeQueryParams; Reply: Trade[] }>(
-    '/',
-    async function handleGetTrades(request, _): Promise<Trade[]> {
-      const { ids, sortField, sortOrder, accountId, closed } = request.body;
+  fastify.post<{ Body: TradeQueryParams; Reply: Trade[] }>('/', async function handleGetTrades(request, _): Promise<Trade[]> {
+    const { ids, sortField, sortOrder, accountId, closed } = request.body;
 
-      if (!ids || ids.length === 0) {
-        return [];
-      }
-
-      const whereClause: any = {
-        id: { in: ids },
-        ...(accountId && { accountId }),
-        ...(closed !== undefined && {
-          sell_date: closed ? { not: null } : null
-        })
-      };
-
-      // Build orderBy clause
-      const orderBy = sortField ? {
-        [sortField]: sortOrder === -1 ? 'desc' : 'asc'
-      } : undefined;
-
-      const trades = await prisma.trades.findMany({
-        where: whereClause,
-        orderBy,
-      });
-
-      return trades.map(mapTradeToResponse);
+    if (!ids || ids.length === 0) {
+      return [];
     }
-  );
+
+    const whereClause: any = {
+      id: { in: ids },
+      ...(accountId && { accountId }),
+      ...(closed !== undefined && {
+        sell_date: closed ? { not: null } : null,
+      }),
+    };
+
+    // Build orderBy clause
+    const orderBy = sortField
+      ? {
+          [sortField]: sortOrder === -1 ? 'desc' : 'asc',
+        }
+      : undefined;
+
+    const trades = await prisma.trades.findMany({
+      where: whereClause,
+      orderBy,
+    });
+
+    return trades.map(mapTradeToResponse);
+  });
 }
 ```
 
 #### Sort Fields Supported
 
 **Open Positions (V.1)**:
+
 - `buy_date` (Date)
 - `sell` (number) - unrealized gain calculations done client-side
 
 **Sold Positions (W.1)**:
+
 - `sell_date` (Date) - Primary sort field
 - `buy_date` (Date)
 
 ### 3. Universe API (`/api/universe`)
 
 #### Current Signature
+
 ```typescript
 POST /api/universe
 Body: string[]                  // Array of IDs
@@ -229,6 +227,7 @@ Reply: Universe[]               // Array of entities
 ```
 
 #### Proposed Signature
+
 ```typescript
 POST /api/universe
 Body: {
@@ -247,6 +246,7 @@ Reply: Universe[]               // Array of sorted entities
 ```
 
 #### Implementation Pattern
+
 ```typescript
 interface UniverseQueryParams {
   ids: string[];
@@ -262,53 +262,53 @@ interface UniverseQueryParams {
 }
 
 function handleGetUniversesRoute(fastify: FastifyInstance): void {
-  fastify.post<{ Body: UniverseQueryParams; Reply: Universe[] }>(
-    '/',
-    async function handleGetUniverses(request, _): Promise<Universe[]> {
-      const { ids, sortField, sortOrder, filters } = request.body;
+  fastify.post<{ Body: UniverseQueryParams; Reply: Universe[] }>('/', async function handleGetUniverses(request, _): Promise<Universe[]> {
+    const { ids, sortField, sortOrder, filters } = request.body;
 
-      if (!ids || ids.length === 0) {
-        return [];
-      }
-
-      // Build where clause with filters
-      const whereClause: any = {
-        id: { in: ids },
-        ...(filters?.symbol && {
-          symbol: { contains: filters.symbol, mode: 'insensitive' }
-        }),
-        ...(filters?.riskGroupId && { risk_group_id: filters.riskGroupId }),
-        ...(filters?.expired !== undefined && { expired: filters.expired })
-      };
-
-      // Note: minYield filter requires calculation, done client-side
-      // Note: accountId filter requires join with trades, done via query
-
-      // Build orderBy clause
-      const orderBy = sortField ? {
-        [sortField]: sortOrder === -1 ? 'desc' : 'asc'
-      } : undefined;
-
-      const universes = await prisma.universe.findMany({
-        where: whereClause,
-        include: {
-          risk_group: true,
-          trades: {
-            where: { sell_date: null },
-          },
-        },
-        orderBy,
-      });
-
-      return universes.map(u => mapUniverseToResponse(u as UniverseWithTrades));
+    if (!ids || ids.length === 0) {
+      return [];
     }
-  );
+
+    // Build where clause with filters
+    const whereClause: any = {
+      id: { in: ids },
+      ...(filters?.symbol && {
+        symbol: { contains: filters.symbol, mode: 'insensitive' },
+      }),
+      ...(filters?.riskGroupId && { risk_group_id: filters.riskGroupId }),
+      ...(filters?.expired !== undefined && { expired: filters.expired }),
+    };
+
+    // Note: minYield filter requires calculation, done client-side
+    // Note: accountId filter requires join with trades, done via query
+
+    // Build orderBy clause
+    const orderBy = sortField
+      ? {
+          [sortField]: sortOrder === -1 ? 'desc' : 'asc',
+        }
+      : undefined;
+
+    const universes = await prisma.universe.findMany({
+      where: whereClause,
+      include: {
+        risk_group: true,
+        trades: {
+          where: { sell_date: null },
+        },
+      },
+      orderBy,
+    });
+
+    return universes.map((u) => mapUniverseToResponse(u as UniverseWithTrades));
+  });
 }
 ```
 
 #### Sort Fields Supported
 
 **Global Universe (X.1)**:
+
 - `distribution` (number) - For yield_percent calculation
 - `ex_date` (Date)
 - `most_recent_sell_date` (Date)
@@ -356,11 +356,11 @@ const queryParamsSchema = {
     },
     sortField: {
       type: 'string',
-      enum: ['date', 'amount', 'buy_date', 'sell_date'] // Per endpoint
+      enum: ['date', 'amount', 'buy_date', 'sell_date'], // Per endpoint
     },
     sortOrder: {
       type: 'number',
-      enum: [1, -1]
+      enum: [1, -1],
     },
   },
   required: ['ids'],
@@ -380,7 +380,7 @@ const queryParamsSchema = {
 if (sortField && !VALID_SORT_FIELDS.includes(sortField)) {
   reply.status(400).send({
     error: 'Invalid sort field',
-    validFields: VALID_SORT_FIELDS
+    validFields: VALID_SORT_FIELDS,
   });
   return;
 }
@@ -415,7 +415,7 @@ export class TradeEffectsService extends EffectService<Trade> {
       sortField: params?.sortField,
       sortOrder: params?.sortOrder,
       accountId: this.currentAccountId(),
-      closed: false // For open positions
+      closed: false, // For open positions
     });
   };
 }
@@ -428,7 +428,7 @@ export class OpenPositionsComponent {
     // Update sort params in effects service
     this.effectsService.setSortParams({
       sortField: event.sortField,
-      sortOrder: event.sortOrder
+      sortOrder: event.sortOrder,
     });
 
     // Update lazy load params triggers reload via computed signal
@@ -436,7 +436,7 @@ export class OpenPositionsComponent {
       first: event.first || 0,
       rows: event.rows || 10,
       sortField: event.sortField,
-      sortOrder: event.sortOrder
+      sortOrder: event.sortOrder,
     });
   }
 }
@@ -468,21 +468,25 @@ CREATE INDEX idx_universe_distribution ON universe(distribution DESC);
 ### Backend API Tests
 
 1. **Sort Parameter Validation**
+
    - Valid sort fields accepted
    - Invalid sort fields rejected with 400
    - Missing sort params default to no ordering
 
 2. **Sort Order Verification**
+
    - Ascending sort returns correct order
    - Descending sort returns correct order
    - Multi-record datasets sorted correctly
 
 3. **Filter + Sort Combinations**
+
    - Symbol filter with date sort
    - Account filter with amount sort
    - Multiple filters with sort
 
 4. **Backward Compatibility**
+
    - Old API format (string[]) still works
    - New API format works correctly
    - Both return same data structure
@@ -495,6 +499,7 @@ CREATE INDEX idx_universe_distribution ON universe(distribution DESC);
 ### Integration Tests
 
 1. **SmartNgRX Integration**
+
    - EffectService calls API with sort params
    - Computed signals react to sort changes
    - Lazy loading triggers correct API calls

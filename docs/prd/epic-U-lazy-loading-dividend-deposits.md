@@ -9,6 +9,7 @@ Implement PrimeNG p-table lazy loading with virtual scrolling for the Dividend D
 ### Existing System Context
 
 **Current relevant functionality:**
+
 - Dividend Deposits component displays all dividends/deposits for selected account
 - Loads all records at once via computed signal
 - Supports sorting by date (default descending) - **CLIENT-SIDE SORTING**
@@ -16,12 +17,14 @@ Implement PrimeNG p-table lazy loading with virtual scrolling for the Dividend D
 - Uses SmartNgRX Signals for state management
 
 **Technology stack:**
+
 - Angular 20 with standalone components
 - PrimeNG 20 Table module
 - SmartNgRX Signals for entity state
 - Vitest for testing
 
 **Integration points:**
+
 - `apps/rms/src/app/account-panel/dividend-deposits/` component files
 - SmartNgRX Signals: `selectCurrentAccountSignal`, `selectUniverses`, `selectDivDepositTypes`
 - Computed signal transforms data for display
@@ -30,6 +33,7 @@ Implement PrimeNG p-table lazy loading with virtual scrolling for the Dividend D
 ### Enhancement Details
 
 **What's being added/changed:**
+
 - Add lazy loading attributes to p-table (`[lazy]="true"`, `[virtualScroll]="true"`)
 - Implement `(onLazyLoad)` event handler
 - Configure 10-row buffer with virtual scrolling
@@ -40,12 +44,14 @@ Implement PrimeNG p-table lazy loading with virtual scrolling for the Dividend D
 - Preserve delete operations
 
 **How it integrates:**
+
 - Works with existing computed signals
 - Maintains SmartNgRX state management
 - Uses `[dataKey]="'id'"` for row tracking
 - Preserves existing `trackById` function
 
 **Success criteria:**
+
 - Table loads only visible rows plus 10-row buffer
 - Scrolling is smooth without lag
 - Delete functionality continues to work
@@ -91,6 +97,7 @@ Implement PrimeNG p-table lazy loading with virtual scrolling for the Dividend D
 **Primary Risk:** Server-side sorting adds complexity and potential performance issues
 
 **Mitigation:**
+
 - Add database indexes for all sortable fields before deployment
 - Implement backward-compatible API (accepts old and new formats)
 - Monitor database query performance with CloudWatch
@@ -101,6 +108,7 @@ Implement PrimeNG p-table lazy loading with virtual scrolling for the Dividend D
 - Implement comprehensive unit tests for both backend and frontend
 
 **Rollback Plan:**
+
 - **Backend Rollback**: API continues accepting new params but ignores sort, returns unsorted (backward compatible)
 - **Frontend Rollback**: Revert EffectsService changes, restore client-side sorting in computed signals
 - **Full Rollback**: Git revert both backend and frontend changes

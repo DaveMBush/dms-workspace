@@ -32,6 +32,7 @@ Identify, assess, and prioritize risks in the story implementation. Provide risk
 - `OPS`: Operational Risks
 
 1. **Technical Risks (TECH)**
+
    - Architecture complexity
    - Integration challenges
    - Technical debt
@@ -39,6 +40,7 @@ Identify, assess, and prioritize risks in the story implementation. Provide risk
    - System dependencies
 
 2. **Security Risks (SEC)**
+
    - Authentication/authorization flaws
    - Data exposure vulnerabilities
    - Injection attacks
@@ -46,6 +48,7 @@ Identify, assess, and prioritize risks in the story implementation. Provide risk
    - Cryptographic weaknesses
 
 3. **Performance Risks (PERF)**
+
    - Response time degradation
    - Throughput bottlenecks
    - Resource exhaustion
@@ -53,6 +56,7 @@ Identify, assess, and prioritize risks in the story implementation. Provide risk
    - Caching failures
 
 4. **Data Risks (DATA)**
+
    - Data loss potential
    - Data corruption
    - Privacy violations
@@ -60,6 +64,7 @@ Identify, assess, and prioritize risks in the story implementation. Provide risk
    - Backup/recovery gaps
 
 5. **Business Risks (BUS)**
+
    - Feature doesn't meet user needs
    - Revenue impact
    - Reputation damage
@@ -309,16 +314,19 @@ Maximum score = 100 (minimal risk)
 Based on risk profile, recommend:
 
 1. **Testing Priority**
+
    - Which tests to run first
    - Additional test types needed
    - Test environment requirements
 
 2. **Development Focus**
+
    - Code review emphasis areas
    - Additional validation needed
    - Security controls to implement
 
 3. **Deployment Strategy**
+
    - Phased rollout for high-risk changes
    - Feature flags for risky features
    - Rollback procedures

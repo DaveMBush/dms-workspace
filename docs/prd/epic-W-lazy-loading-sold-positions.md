@@ -9,6 +9,7 @@ Implement PrimeNG p-table lazy loading with virtual scrolling for the Sold Posit
 ### Existing System Context
 
 **Current relevant functionality:**
+
 - Sold Positions component displays all closed positions for selected account
 - Loads all records at once via computed signal with filtering
 - Supports symbol filtering
@@ -19,6 +20,7 @@ Implement PrimeNG p-table lazy loading with virtual scrolling for the Sold Posit
 - Delete functionality for positions
 
 **Technology stack:**
+
 - Angular 20 with standalone components
 - PrimeNG 20 Table module with CellEditor
 - SmartNgRX Signals for entity state
@@ -27,6 +29,7 @@ Implement PrimeNG p-table lazy loading with virtual scrolling for the Sold Posit
 - Vitest for testing
 
 **Integration points:**
+
 - `apps/rms/src/app/account-panel/sold-positions/` component files
 - Extends `BasePositionsComponent<SoldPosition, SoldPositionsStorageService>`
 - `SoldPositionsComponentService` for business logic
@@ -36,6 +39,7 @@ Implement PrimeNG p-table lazy loading with virtual scrolling for the Sold Posit
 ### Enhancement Details
 
 **What's being added/changed:**
+
 - Add lazy loading attributes to p-table (`[lazy]="true"`, `[virtualScroll]="true"`)
 - Implement `(onLazyLoad)` event handler
 - Configure 10-row buffer with virtual scrolling
@@ -48,6 +52,7 @@ Implement PrimeNG p-table lazy loading with virtual scrolling for the Sold Posit
 - Preserve date validation logic
 
 **How it integrates:**
+
 - Works with existing computed signals that transform and calculate data
 - Maintains SmartNgRX state management
 - Preserves BasePositionsComponent inheritance
@@ -56,6 +61,7 @@ Implement PrimeNG p-table lazy loading with virtual scrolling for the Sold Posit
 - Ensures `calculateCapitalGains` function works on lazy-loaded data
 
 **Success criteria:**
+
 - Table loads only visible rows plus 10-row buffer
 - Scrolling is smooth without lag
 - Symbol filtering works correctly with lazy loading
@@ -114,6 +120,7 @@ Implement PrimeNG p-table lazy loading with virtual scrolling for the Sold Posit
 **Primary Risk:** Server-side sorting with client-side calculations adds complexity
 
 **Mitigation:**
+
 - Add database indexes for sortable fields before deployment
 - Implement backward-compatible API (accepts old and new formats)
 - Monitor database query performance with CloudWatch
@@ -127,6 +134,7 @@ Implement PrimeNG p-table lazy loading with virtual scrolling for the Sold Posit
 - Test that calculations update immediately when values change
 
 **Rollback Plan:**
+
 - **Backend Rollback**: API continues accepting new params but ignores sort, returns unsorted (backward compatible)
 - **Frontend Rollback**: Revert EffectsService changes, restore client-side sorting in computed signals
 - **Full Rollback**: Git revert both backend and frontend changes

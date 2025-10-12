@@ -9,6 +9,7 @@ Implement PrimeNG p-table lazy loading with virtual scrolling for the Open Posit
 ### Existing System Context
 
 **Current relevant functionality:**
+
 - Open Positions component displays all open positions for selected account
 - Loads all records at once via computed signal with filtering
 - Supports symbol filtering
@@ -18,6 +19,7 @@ Implement PrimeNG p-table lazy loading with virtual scrolling for the Open Posit
 - Delete functionality for positions
 
 **Technology stack:**
+
 - Angular 20 with standalone components
 - PrimeNG 20 Table module with CellEditor
 - SmartNgRX Signals for entity state
@@ -25,6 +27,7 @@ Implement PrimeNG p-table lazy loading with virtual scrolling for the Open Posit
 - Vitest for testing
 
 **Integration points:**
+
 - `apps/rms/src/app/account-panel/open-positions/` component files
 - Extends `BasePositionsComponent<OpenPosition, OpenPositionsStorageService>`
 - `OpenPositionsComponentService` for business logic
@@ -34,6 +37,7 @@ Implement PrimeNG p-table lazy loading with virtual scrolling for the Open Posit
 ### Enhancement Details
 
 **What's being added/changed:**
+
 - Add lazy loading attributes to p-table (`[lazy]="true"`, `[virtualScroll]="true"`)
 - Implement `(onLazyLoad)` event handler
 - Configure 10-row buffer with virtual scrolling
@@ -46,6 +50,7 @@ Implement PrimeNG p-table lazy loading with virtual scrolling for the Open Posit
 - Ensure validation logic continues to work
 
 **How it integrates:**
+
 - Works with existing computed signals and filtering logic
 - Maintains SmartNgRX state management
 - Preserves BasePositionsComponent inheritance
@@ -53,6 +58,7 @@ Implement PrimeNG p-table lazy loading with virtual scrolling for the Open Posit
 - Maintains existing `trackById` function
 
 **Success criteria:**
+
 - Table loads only visible rows plus 10-row buffer
 - Scrolling is smooth without lag
 - Symbol filtering works correctly with lazy loading
@@ -108,6 +114,7 @@ Implement PrimeNG p-table lazy loading with virtual scrolling for the Open Posit
 **Primary Risk:** Hybrid sorting (server for buyDate, client for unrealizedGain) adds complexity
 
 **Mitigation:**
+
 - Add database indexes for sortable fields before deployment
 - Implement backward-compatible API (accepts old and new formats)
 - Monitor database query performance with CloudWatch
@@ -120,6 +127,7 @@ Implement PrimeNG p-table lazy loading with virtual scrolling for the Open Posit
 - Test hybrid sorting (server + client) with lazy-loaded data
 
 **Rollback Plan:**
+
 - **Backend Rollback**: API continues accepting new params but ignores sort, returns unsorted (backward compatible)
 - **Frontend Rollback**: Revert EffectsService changes, restore full client-side sorting in computed signals
 - **Full Rollback**: Git revert both backend and frontend changes

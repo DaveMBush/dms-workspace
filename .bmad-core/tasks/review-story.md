@@ -244,14 +244,17 @@ recommendations:
 If risk_summary exists, apply its thresholds first (≥9 → FAIL, ≥6 → CONCERNS), then NFR statuses, then top_issues severity.
 
 1. **Risk thresholds (if risk_summary present):**
+
    - If any risk score ≥ 9 → Gate = FAIL (unless waived)
    - Else if any score ≥ 6 → Gate = CONCERNS
 
 2. **Test coverage gaps (if trace available):**
+
    - If any P0 test from test-design is missing → Gate = CONCERNS
    - If security/data-loss P0 test missing → Gate = FAIL
 
 3. **Issue severity:**
+
    - If any `top_issues.severity == high` → Gate = FAIL (unless waived)
    - Else if any `severity == medium` → Gate = CONCERNS
 
