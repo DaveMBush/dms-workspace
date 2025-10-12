@@ -601,9 +601,9 @@ The server-side sorting requirement is **critical for lazy loading to function c
 
 ## Approval
 
-**Product Owner**: ********\_\_\_******** Date: ****\_\_****
-**Tech Lead**: **********\_********** Date: ****\_\_****
-**Scrum Master**: ********\_\_******** Date: ****\_\_****
+**Product Owner**: **\*\*\*\***\_\_\_**\*\*\*\*** Date: \***\*\_\_\*\***
+**Tech Lead**: ****\*\*****\_****\*\***** Date: \***\*\_\_\*\***
+**Scrum Master**: **\*\*\*\***\_\_**\*\*\*\*** Date: \***\*\_\_\*\***
 
 ---
 
