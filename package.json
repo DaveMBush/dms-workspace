@@ -23,7 +23,7 @@
     "@angular/platform-browser": "20.1.8",
     "@angular/platform-server": "20.3.0",
     "@angular/router": "20.1.8",
-    "@angular/ssr": "20.3.1",
+    "@angular/ssr": "20.3.6",
     "@aws-amplify/auth": "^6.15.0",
     "@aws-amplify/core": "^6.13.1",
     "@aws-sdk/client-ssm": "^3.879.0",
@@ -127,7 +127,7 @@
     "tslib": "^2.3.0",
     "typescript": "~5.8.2",
     "typescript-eslint": "^8.29.0",
-    "vite": "^7.1.5",
+    "vite": "^7.1.6",
     "vitest": "^3.0.0"
   },
   "packageManager": "pnpm@10.12.1",
