@@ -38,41 +38,34 @@ function calculateDistributionsPerYear(
     .filter(function filterPastDistributions(row: ProcessedRow): boolean {
       return row.date < today;
     })
-    .reverse() // oldest to newest
-    .slice(-4);
+    .slice(-2); // Use last 2 distributions only (most recent)
 
   if (recentRows.length <= 1) {
     return 1;
   }
 
-  const intervals: number[] = [];
-  for (let i = 1; i < recentRows.length; i++) {
-    intervals.push(
-      Math.abs(
-        recentRows[i].date.valueOf() - recentRows[i - 1].date.valueOf()
-      ) /
-        (1000 * 60 * 60 * 24)
-    );
-  }
+  // Calculate single interval between last 2 distributions
+  const daysBetween =
+    Math.abs(recentRows[1].date.valueOf() - recentRows[0].date.valueOf()) /
+    (1000 * 60 * 60 * 24);
 
-  const avgInterval =
-    intervals.reduce(function sumIntervals(a: number, b: number): number {
-      return a + b;
-    }, 0) / intervals.length;
-
-  if (avgInterval < 10) {
+  // Detect frequency based on interval
+  // ≤7 days accounts for weekly distributions with holiday/weekend shifts
+  if (daysBetween <= 7) {
     return 52; // weekly
   }
 
-  if (avgInterval < 40) {
+  // >27 and ≤45 days accounts for monthly with holiday variations
+  if (daysBetween > 27 && daysBetween <= 45) {
     return 12; // monthly
   }
 
-  if (avgInterval < 120) {
+  // >45 days for quarterly (allows for holiday shifts)
+  if (daysBetween > 45) {
     return 4; // quarterly
   }
 
-  return 1;
+  return 1; // annual/default
 }
 
 export async function getDistributions(
