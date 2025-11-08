@@ -3,11 +3,15 @@
   class="min-w-full rounded-lg shadow-sm table-fixed"
   size="small"
   showGridlines
-  [rowTrackBy]="trackById"
   [scrollable]="true"
   [scrollHeight]="'calc(100vh - 184px)'"
   [sortField]="'date'"
   [sortOrder]="-1"
+  [rows]="rows"
+  [virtualScroll]="true"
+  [virtualScrollItemSize]="55"
+  [lazy]="true"
+  (onLazyLoad)="loadDepositsLazy($event)"
 >
   <ng-template pTemplate="header">
     <tr class="bg-gray-100 dark:bg-slate-800">
@@ -19,7 +23,7 @@
     </tr>
   </ng-template>
   <ng-template pTemplate="body" let-row>
-    <tr>
+    <tr [ngStyle]="{ height: '55px' }">
       <td>{{ row.symbol }}</td>
       <td>{{ row.date | date:'MM/dd/yyyy' }}</td>
       <td>{{ row.amount | currency:'USD':'symbol':'1.2-2' }}</td>
