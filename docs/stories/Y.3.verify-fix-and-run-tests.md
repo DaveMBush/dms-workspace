@@ -9,17 +9,20 @@ Description: Perform manual verification that the bug is resolved and run the co
 Perform the following manual tests in the running application:
 
 - **View Account A summary screen:**
+
   - Navigate to Account A summary page
   - Verify pie chart shows allocation percentages specific to Account A's holdings
   - Note the specific percentages (e.g., 70% Equities, 20% Income, 10% Tax Free)
 
 - **View Account B summary screen:**
+
   - Navigate to Account B summary page
   - Verify pie chart shows allocation percentages specific to Account B's holdings
   - Verify percentages are DIFFERENT from Account A when holdings differ
   - Specifically test with accounts that have only one fund type to see 100%/0%/0% splits
 
 - **View Global summary screen:**
+
   - Navigate to Global summary page
   - Verify pie chart shows combined allocations across all accounts
   - Verify percentages represent the aggregate of all accounts
@@ -47,6 +50,7 @@ pnpm nx run rms-e2e:lint
 ### Success Criteria
 
 - **All commands succeed with no errors:**
+
   - `pnpm format` - Code formatting passes
   - `pnpm dupcheck` - No duplicate code detected
   - `pnpm nx run rms:test --code-coverage` - All frontend tests pass
@@ -68,6 +72,7 @@ pnpm nx run rms-e2e:lint
 ### Pre-Verification Checklist
 
 Before running tests, ensure:
+
 - Story Y1 implementation is complete and committed
 - Story Y2 tests are implemented and committed
 - All file changes have been saved
@@ -76,6 +81,7 @@ Before running tests, ensure:
 ### Manual Test Data Requirements
 
 For effective manual testing, ensure test database has:
+
 - At least 2 accounts with different risk group allocations
 - At least 1 account with single risk group (100% in one category)
 - Example scenario:
@@ -86,6 +92,7 @@ For effective manual testing, ensure test database has:
 ### Test Failure Handling
 
 If any test fails:
+
 - Document the specific failure message
 - Identify which story (Y1 or Y2) introduced the issue
 - Fix the issue before proceeding
@@ -95,6 +102,7 @@ If any test fails:
 ### Rollback Plan
 
 If critical issues are discovered:
+
 - Revert commits from Stories Y1 and Y2
 - Document the issue for future analysis
 - Re-assess the implementation approach

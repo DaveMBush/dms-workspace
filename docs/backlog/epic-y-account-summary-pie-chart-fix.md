@@ -17,6 +17,7 @@ Ensure account-specific summary screens display correct risk group allocation da
 **Root Cause:** The `getRiskGroupData()` function in `/apps/server/src/app/routes/summary/index.ts:127-157` does not filter by `account_id`. The SQL query aggregates risk group data across ALL accounts globally, ignoring the account context.
 
 **Evidence:**
+
 - User observation: Two accounts invested in single, different funds show identical pie charts
 - Code analysis: `getRiskGroupData()` SQL query lacks `WHERE t.accountId = ?` clause
 - Comparison: Other summary data (deposits, dividends, capitalGains) correctly filters by account via `calculateSummaryData()` pattern

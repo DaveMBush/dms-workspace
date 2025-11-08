@@ -5,14 +5,17 @@ Description: Modify the `getRiskGroupData()` function to accept an optional `acc
 ## Acceptance Criteria
 
 - `getRiskGroupData()` signature updated to accept optional `accountId` parameter:
+
   - From: `getRiskGroupData(year: number, monthNum: number)`
   - To: `getRiskGroupData(year: number, monthNum: number, accountId?: string)`
 
 - SQL query conditionally filters by account:
+
   - When `accountId` is provided: Query includes `AND t.accountId = ?` clause
   - When `accountId` is undefined/null: Query returns data for all accounts (global view)
 
 - `handleSummaryRoute()` passes `account_id` from request to `getRiskGroupData()`:
+
   - Update line ~300: `const result = await getRiskGroupData(year, monthNum, account_id);`
 
 - Query uses Prisma's `Prisma.sql` for safe parameterization to prevent SQL injection
@@ -28,6 +31,7 @@ Description: Modify the `getRiskGroupData()` function to accept an optional `acc
 **File:** `/apps/server/src/app/routes/summary/index.ts` (line ~127-130)
 
 From:
+
 ```typescript
 async function getRiskGroupData(
   year: number,
@@ -36,6 +40,7 @@ async function getRiskGroupData(
 ```
 
 To:
+
 ```typescript
 async function getRiskGroupData(
   year: number,
@@ -49,6 +54,7 @@ async function getRiskGroupData(
 **File:** `/apps/server/src/app/routes/summary/index.ts` (top of file)
 
 Add to imports section:
+
 ```typescript
 import { Prisma } from '@prisma/client';
 ```
@@ -58,6 +64,7 @@ import { Prisma } from '@prisma/client';
 **File:** `/apps/server/src/app/routes/summary/index.ts` (line ~131-144)
 
 From:
+
 ```typescript
 const rawResults = await prisma.$queryRaw<RawRiskGroupResult[]>`
   SELECT
@@ -76,6 +83,7 @@ const rawResults = await prisma.$queryRaw<RawRiskGroupResult[]>`
 ```
 
 To:
+
 ```typescript
 const rawResults = await prisma.$queryRaw<RawRiskGroupResult[]>`
   SELECT
@@ -99,11 +107,13 @@ const rawResults = await prisma.$queryRaw<RawRiskGroupResult[]>`
 **File:** `/apps/server/src/app/routes/summary/index.ts` (line ~300)
 
 From:
+
 ```typescript
 const result = await getRiskGroupData(year, monthNum);
 ```
 
 To:
+
 ```typescript
 const result = await getRiskGroupData(year, monthNum, account_id);
 ```
