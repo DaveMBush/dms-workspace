@@ -30,12 +30,19 @@ export class AccountEffectsService extends EffectService<Account> {
   }
 
   override loadByIndexes(
-    _: string,
-    __: string,
-    ___: number,
-    ____: number
+    parentId: string,
+    childField: string,
+    startIndex: number,
+    length: number
   ): Observable<PartialArrayDefinition> {
-    // intentionally unimplemented
-    throw new Error('Method not implemented.');
+    return this.http.post<PartialArrayDefinition>(
+      `${this.apiAccount}/indexes`,
+      {
+        parentId,
+        childField,
+        startIndex,
+        length,
+      }
+    );
   }
 }

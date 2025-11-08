@@ -61,6 +61,10 @@ function combineAndSortMonths(
 interface PrismaAccountResult {
   id: string;
   name: string;
+  // eslint-disable-next-line @typescript-eslint/naming-convention -- prisma field
+  _count: {
+    divDeposits: number;
+  };
   trades?: Array<{ id: string; sell_date: Date | null }>;
   divDeposits?: Array<{ id: string; date: Date }>;
 }
@@ -79,10 +83,64 @@ function mapAccountToResponse(account: PrismaAccountResult): Account {
     trades: trades.map(function mapTradeToId(trade) {
       return trade.id;
     }),
-    divDeposits: divDeposits.map(function mapDivDepositToId(divDeposit) {
-      return divDeposit.id;
-    }),
+    divDeposits: {
+      startIndex: 0,
+      indexes: divDeposits.map(function mapDivDepositToIndex(divDeposit) {
+        return divDeposit.id;
+      }),
+      // eslint-disable-next-line no-underscore-dangle -- prisma field
+      length: account._count.divDeposits,
+    },
     months,
+  };
+}
+
+function getHandleGetAccountsRouteFindManyJson(ids: string[]): {
+  where: { id: { in: string[] } };
+  select: {
+    id: boolean;
+    name: boolean;
+    // eslint-disable-next-line @typescript-eslint/naming-convention -- prisma field
+    _count: { select: { divDeposits: boolean } };
+    trades: { select: { id: boolean; sell_date: boolean } };
+    divDeposits: {
+      take: number;
+      select: { id: boolean; date: boolean };
+      orderBy: { date: 'desc' };
+    };
+  };
+  orderBy: { name: 'asc' };
+} {
+  return {
+    where: { id: { in: ids } },
+    select: {
+      id: true,
+      name: true,
+      _count: {
+        select: {
+          divDeposits: true,
+        },
+      },
+      trades: {
+        select: {
+          id: true,
+          sell_date: true,
+        },
+      },
+      divDeposits: {
+        take: 10,
+        select: {
+          id: true,
+          date: true,
+        },
+        orderBy: {
+          date: 'desc' as const,
+        },
+      },
+    },
+    orderBy: {
+      name: 'asc' as const,
+    },
   };
 }
 
@@ -103,34 +161,9 @@ function handleGetAccountsRoute(fastify: FastifyInstance): void {
         return [];
       }
 
-      const accounts = await prisma.accounts.findMany({
-        where: { id: { in: ids } },
-        select: {
-          id: true,
-          name: true,
-          trades: {
-            select: {
-              id: true,
-              sell_date: true,
-            },
-            orderBy: {
-              buy_date: 'asc' as const,
-            },
-          },
-          divDeposits: {
-            select: {
-              id: true,
-              date: true,
-            },
-            orderBy: {
-              date: 'asc' as const,
-            },
-          },
-        },
-        orderBy: {
-          name: 'asc' as const,
-        },
-      });
+      const accounts = await prisma.accounts.findMany(
+        getHandleGetAccountsRouteFindManyJson(ids)
+      );
       return accounts.map(function mapAccount(account) {
         return mapAccountToResponse(account);
       });
@@ -162,7 +195,11 @@ function handleAddAccountRoute(fastify: FastifyInstance): void {
           id: accountItem.id,
           name: accountItem.name,
           trades: accountItem.trades.map(mapTradeToId),
-          divDeposits: [],
+          divDeposits: {
+            startIndex: 0,
+            indexes: [],
+            length: 0,
+          },
           months: [],
         };
       }
@@ -215,7 +252,11 @@ function handleUpdateAccountRoute(fastify: FastifyInstance): void {
           id: accountItem.id,
           name: accountItem.name,
           trades: accountItem.trades.map(mapTradeToIdForUpdate),
-          divDeposits: [],
+          divDeposits: {
+            startIndex: 0,
+            indexes: [],
+            length: 0,
+          },
           months: [],
         };
       }
