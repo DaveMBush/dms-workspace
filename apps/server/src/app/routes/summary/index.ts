@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import { FastifyInstance } from 'fastify';
 
 import { prisma } from '../../prisma/prisma-client';
@@ -126,7 +127,8 @@ interface RawRiskGroupResult {
 
 async function getRiskGroupData(
   year: number,
-  monthNum: number
+  monthNum: number,
+  accountId?: string
 ): Promise<RiskGroupResult[]> {
   const rawResults = await prisma.$queryRaw<RawRiskGroupResult[]>`
     SELECT
@@ -140,6 +142,7 @@ async function getRiskGroupData(
     WHERE (t.sell_date IS NULL OR
           (t.sell_date >= ${new Date(year, monthNum - 1, 1)} AND
             t.sell_date < ${new Date(year, monthNum, 0)}))
+      ${accountId ? Prisma.sql`AND t."accountId" = ${accountId}` : Prisma.empty}
     GROUP BY rg.id, rg.name
   `;
 
@@ -297,7 +300,7 @@ function handleSummaryRoute(fastify: FastifyInstance): void {
         sellDateEnd
       );
 
-      const result = await getRiskGroupData(year, monthNum);
+      const result = await getRiskGroupData(year, monthNum, account_id);
       const riskGroupMap = createRiskGroupMap(result);
 
       const equitiesValue = riskGroupMap.get('Equities');
