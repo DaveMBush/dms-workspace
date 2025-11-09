@@ -54,3 +54,4 @@ database copy.dbbackups/
 *.db-journal
 logs
 postgres-backup-*.sql
+lint-output.txt
