@@ -1,4 +1,3 @@
-import { Prisma } from '@prisma/client';
 import { FastifyInstance } from 'fastify';
 
 import { prisma } from '../../prisma/prisma-client';
@@ -8,16 +7,10 @@ import { calculateDateRange } from './calculate-date-range.function';
 import { calculatePriorCapitalGains } from './calculate-prior-capital-gains.function';
 import { calculatePriorDivDeposits } from './calculate-prior-div-deposits.function';
 import { createRiskGroupMap } from './create-risk-group-map.function';
+import { getRiskGroupData } from './get-risk-group-data.function';
 import { parseMonthString } from './parse-month-string.function';
 import { Summary } from './summary.interface';
 import { SummaryRequest } from './summary-request.interface';
-
-interface RiskGroupResult {
-  riskGroupId: string;
-  riskGroupName: string;
-  totalCostBasis: number;
-  tradeCount: number;
-}
 
 interface DivDeposit {
   universeId: string | null;
@@ -112,49 +105,6 @@ async function getAccountPriorMonths(
       },
     },
   });
-}
-
-interface RawRiskGroupResult {
-  riskGroupId?: string;
-  riskGroupName?: string;
-  totalCostBasis?: number | string;
-  tradeCount?: number | string;
-}
-
-async function getRiskGroupData(
-  year: number,
-  monthNum: number,
-  accountId?: string
-): Promise<RiskGroupResult[]> {
-  const rawResults = await prisma.$queryRaw<RawRiskGroupResult[]>`
-    SELECT
-      rg.id as riskGroupId,
-      rg.name as riskGroupName,
-      SUM(t.buy * t.quantity) as totalCostBasis,
-      COUNT(t.id) as tradeCount
-    FROM trades t
-    JOIN universe u ON t."universeId" = u.id
-    JOIN risk_group rg ON u.risk_group_id = rg.id
-    WHERE (t.sell_date IS NULL OR
-          (t.sell_date >= ${new Date(year, monthNum - 1, 1)} AND
-            t.sell_date < ${new Date(year, monthNum, 0)}))
-      ${
-        accountId! ? Prisma.sql`AND t."accountId" = ${accountId}` : Prisma.empty
-      }
-    GROUP BY rg.id, rg.name
-  `;
-
-  // Convert PostgreSQL string results to numbers and handle column name differences
-  function transformRiskGroupResult(row: RawRiskGroupResult): RiskGroupResult {
-    return {
-      riskGroupId: row.riskGroupId ?? row.riskGroupId ?? '',
-      riskGroupName: row.riskGroupName ?? row.riskGroupName ?? '',
-      totalCostBasis: Number(row.totalCostBasis ?? row.totalCostBasis ?? 0),
-      tradeCount: Number(row.tradeCount ?? row.tradeCount ?? 0),
-    };
-  }
-
-  return rawResults.map(transformRiskGroupResult);
 }
 
 async function calculateSingleAccountSummaryData(
