@@ -116,13 +116,9 @@ async function getAccountPriorMonths(
 
 interface RawRiskGroupResult {
   riskGroupId?: string;
-  riskgroupid?: string;
   riskGroupName?: string;
-  riskgroupname?: string;
   totalCostBasis?: number | string;
-  totalcostbasis?: number | string;
   tradeCount?: number | string;
-  tradecount?: number | string;
 }
 
 async function getRiskGroupData(
@@ -142,17 +138,17 @@ async function getRiskGroupData(
     WHERE (t.sell_date IS NULL OR
           (t.sell_date >= ${new Date(year, monthNum - 1, 1)} AND
             t.sell_date < ${new Date(year, monthNum, 0)}))
-      ${accountId ? Prisma.sql`AND t."accountId" = ${accountId}` : Prisma.empty}
+      ${accountId! ? Prisma.sql`AND t."accountId" = ${accountId}` : Prisma.empty}
     GROUP BY rg.id, rg.name
   `;
 
   // Convert PostgreSQL string results to numbers and handle column name differences
   function transformRiskGroupResult(row: RawRiskGroupResult): RiskGroupResult {
     return {
-      riskGroupId: row.riskGroupId ?? row.riskgroupid ?? '',
-      riskGroupName: row.riskGroupName ?? row.riskgroupname ?? '',
-      totalCostBasis: Number(row.totalCostBasis ?? row.totalcostbasis ?? 0),
-      tradeCount: Number(row.tradeCount ?? row.tradecount ?? 0),
+      riskGroupId: row.riskGroupId ?? row.riskGroupId ?? '',
+      riskGroupName: row.riskGroupName ?? row.riskGroupName ?? '',
+      totalCostBasis: Number(row.totalCostBasis ?? row.totalCostBasis ?? 0),
+      tradeCount: Number(row.tradeCount ?? row.tradeCount ?? 0),
     };
   }
 
