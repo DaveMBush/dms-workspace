@@ -209,4 +209,71 @@ describe('getDistributions', () => {
 
     expect(mockFetchDistributionData).toHaveBeenCalledTimes(1);
   });
+
+  test('detects frequency change from monthly to weekly', async () => {
+    const mockRows: ProcessedRow[] = [
+      { amount: 0.1, date: new Date('2025-05-15') }, // Old monthly
+      { amount: 0.1, date: new Date('2025-06-15') }, // Old monthly
+      { amount: 0.025, date: new Date('2025-08-07') }, // New weekly
+      { amount: 0.025, date: new Date('2025-08-14') }, // New weekly (7 days)
+    ];
+
+    mockFetchDistributionData.mockResolvedValueOnce(mockRows);
+
+    const result = await getDistributions('FREQ_CHANGE');
+
+    expect(result?.distributions_per_year).toBe(52); // Should detect weekly
+  });
+
+  test('handles exactly 2 distributions correctly', async () => {
+    const mockRows: ProcessedRow[] = [
+      { amount: 0.5, date: new Date('2025-06-15') },
+      { amount: 0.5, date: new Date('2025-07-22') }, // 37 days apart
+    ];
+
+    mockFetchDistributionData.mockResolvedValueOnce(mockRows);
+
+    const result = await getDistributions('TWO_ONLY');
+
+    expect(result?.distributions_per_year).toBe(12); // Monthly
+  });
+
+  test('correctly identifies weekly at 7-day threshold', async () => {
+    const mockRows: ProcessedRow[] = [
+      { amount: 0.1, date: new Date('2025-08-14') },
+      { amount: 0.1, date: new Date('2025-08-21') }, // Exactly 7 days
+    ];
+
+    mockFetchDistributionData.mockResolvedValueOnce(mockRows);
+
+    const result = await getDistributions('WEEKLY_BOUNDARY');
+
+    expect(result?.distributions_per_year).toBe(52);
+  });
+
+  test('correctly identifies weekly with 6-day interval (holiday shift)', async () => {
+    const mockRows: ProcessedRow[] = [
+      { amount: 0.1, date: new Date('2025-08-14') },
+      { amount: 0.1, date: new Date('2025-08-20') }, // 6 days (holiday)
+    ];
+
+    mockFetchDistributionData.mockResolvedValueOnce(mockRows);
+
+    const result = await getDistributions('WEEKLY_HOLIDAY');
+
+    expect(result?.distributions_per_year).toBe(52);
+  });
+
+  test('correctly identifies monthly at 30-day interval', async () => {
+    const mockRows: ProcessedRow[] = [
+      { amount: 0.25, date: new Date('2025-07-15') },
+      { amount: 0.25, date: new Date('2025-08-14') }, // 30 days
+    ];
+
+    mockFetchDistributionData.mockResolvedValueOnce(mockRows);
+
+    const result = await getDistributions('MONTHLY_BOUNDARY');
+
+    expect(result?.distributions_per_year).toBe(12);
+  });
 });
