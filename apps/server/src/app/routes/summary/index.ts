@@ -138,7 +138,9 @@ async function getRiskGroupData(
     WHERE (t.sell_date IS NULL OR
           (t.sell_date >= ${new Date(year, monthNum - 1, 1)} AND
             t.sell_date < ${new Date(year, monthNum, 0)}))
-      ${accountId! ? Prisma.sql`AND t."accountId" = ${accountId}` : Prisma.empty}
+      ${
+        accountId! ? Prisma.sql`AND t."accountId" = ${accountId}` : Prisma.empty
+      }
     GROUP BY rg.id, rg.name
   `;
 
