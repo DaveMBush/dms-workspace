@@ -3,11 +3,23 @@ import { Prisma, PrismaClient } from '@prisma/client';
 import { prisma as defaultPrisma } from '../../prisma/prisma-client';
 import { RiskGroupResult } from './risk-group-result.interface';
 
+/**
+ * IMPORTANT: This interface must include both camelCase and lowercase versions
+ * of property names. SQLite returns camelCase (as defined in SELECT aliases),
+ * but PostgreSQL returns all lowercase regardless of alias casing.
+ * Do not remove the lowercase properties - they are required for PostgreSQL.
+ */
 interface RawRiskGroupResult {
+  // SQLite column names (camelCase)
   riskGroupId?: string;
   riskGroupName?: string;
   totalCostBasis?: number | string;
   tradeCount?: number | string;
+  // PostgreSQL column names (lowercase)
+  riskgroupid?: string;
+  riskgroupname?: string;
+  totalcostbasis?: number | string;
+  tradecount?: number | string;
 }
 
 export async function getRiskGroupData(
@@ -36,14 +48,18 @@ export async function getRiskGroupData(
     GROUP BY rg.id, rg.name
   `;
 
-  // Convert PostgreSQL string results to numbers
-  // and handle column name differences
+  /**
+   * Transform raw database results to typed RiskGroupResult.
+   * CRITICAL: Uses nullish coalescing to check both camelCase (SQLite)
+   * and lowercase (PostgreSQL) property names. Do not simplify - both
+   * checks are required for cross-database compatibility.
+   */
   function transformRiskGroupResult(row: RawRiskGroupResult): RiskGroupResult {
     return {
-      riskGroupId: row.riskGroupId ?? row.riskGroupId ?? '',
-      riskGroupName: row.riskGroupName ?? row.riskGroupName ?? '',
-      totalCostBasis: Number(row.totalCostBasis ?? row.totalCostBasis ?? 0),
-      tradeCount: Number(row.tradeCount ?? row.tradeCount ?? 0),
+      riskGroupId: row.riskGroupId ?? row.riskgroupid ?? '',
+      riskGroupName: row.riskGroupName ?? row.riskgroupname ?? '',
+      totalCostBasis: Number(row.totalCostBasis ?? row.totalcostbasis ?? 0),
+      tradeCount: Number(row.tradeCount ?? row.tradecount ?? 0),
     };
   }
 
