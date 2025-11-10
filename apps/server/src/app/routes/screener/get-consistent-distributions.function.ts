@@ -3,6 +3,42 @@ import {
   type ProcessedRow,
 } from '../common/distribution-api.function';
 
+function filterPastDistributions(rows: ProcessedRow[]): ProcessedRow[] {
+  const today = new Date();
+  return rows.filter(function isPastDistribution(row: ProcessedRow): boolean {
+    return row.date <= today;
+  });
+}
+
+function removeDuplicateDates(rows: ProcessedRow[]): ProcessedRow[] {
+  const seen = new Set<number>();
+  const unique: ProcessedRow[] = [];
+
+  for (const row of rows) {
+    const dateValue = row.date.valueOf();
+    if (!seen.has(dateValue)) {
+      seen.add(dateValue);
+      unique.push(row);
+    }
+  }
+
+  return unique;
+}
+
+function isProperlyOrdered(rows: ProcessedRow[]): boolean {
+  if (rows.length < 2) {
+    return true; // Single row or empty is considered ordered
+  }
+
+  for (let i = 0; i < rows.length - 1; i++) {
+    if (rows[i].date >= rows[i + 1].date) {
+      return false; // Found out-of-order pair
+    }
+  }
+
+  return true;
+}
+
 function hasDecliningTrend(recentExDates: ProcessedRow[]): boolean {
   if (recentExDates.length < 3) {
     return false; // Not enough data to determine trend
@@ -27,11 +63,22 @@ export async function getConsistentDistributions(
     return false;
   }
 
-  const recentExDates = rows.slice(-3);
+  // Filter to only include past distributions (exclude future dividends)
+  const pastDistributions = filterPastDistributions(rows);
 
-  if (recentExDates.length < 3) {
-    return true; // Not enough data to determine trend
+  // Remove duplicate dates to ensure we're analyzing unique distributions
+  const uniqueDistributions = removeDuplicateDates(pastDistributions);
+
+  if (uniqueDistributions.length < 3) {
+    return true; // Not enough unique past data to determine trend
   }
+
+  // Validate that distributions are properly ordered (oldest to newest)
+  if (!isProperlyOrdered(uniqueDistributions)) {
+    return false; // Cannot determine trend with invalid data ordering
+  }
+
+  const recentExDates = uniqueDistributions.slice(-3);
 
   return !hasDecliningTrend(recentExDates);
 }
