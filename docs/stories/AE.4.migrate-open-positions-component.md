@@ -166,6 +166,8 @@ export class OpenPositionsComponent {
 
 When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
 
+### Core Functionality
+
 - [ ] Open positions table displays all positions
 - [ ] Inline editing works for quantity, price, date
 - [ ] Add position button opens dialog
@@ -174,5 +176,21 @@ When this story is complete, ensure the following e2e tests exist in `apps/rms-m
 - [ ] Sell position removes from open positions
 - [ ] Sorting by columns works
 - [ ] Data updates reflect immediately
+
+### Edge Cases
+
+- [ ] Empty positions table shows appropriate message
+- [ ] Edit validation prevents negative quantities
+- [ ] Edit validation prevents future purchase dates
+- [ ] Partial sell (quantity < total) works correctly
+- [ ] Sell all (full quantity) moves to sold positions
+- [ ] Cancel add position dialog preserves no state
+- [ ] Add position with existing symbol creates new lot
+- [ ] Current value calculates with real-time prices
+- [ ] Gain/loss updates on price changes
+- [ ] Large position counts (100+) perform well
+- [ ] Export positions to CSV works
+- [ ] Print view formats table correctly
+- [ ] Concurrent edits to same position handled
 
 Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.

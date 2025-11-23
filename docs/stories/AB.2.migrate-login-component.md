@@ -415,6 +415,8 @@ Add login route to `apps/rms-material/src/app/app.routes.ts`:
 
 When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
 
+### Core Functionality
+
 - [ ] Login page renders correctly
 - [ ] Email validation shows error for invalid format
 - [ ] Password validation shows error for too short
@@ -423,5 +425,21 @@ When this story is complete, ensure the following e2e tests exist in `apps/rms-m
 - [ ] Invalid credentials show error message
 - [ ] Loading spinner shows during authentication
 - [ ] Authenticated users redirected away from login
+
+### Edge Cases
+
+- [ ] Form submit prevented when fields are empty
+- [ ] Multiple rapid form submissions are debounced
+- [ ] Network timeout shows appropriate error message
+- [ ] Server 500 error shows generic error message
+- [ ] Session expired during login attempt is handled gracefully
+- [ ] XSS attempt in email field is sanitized
+- [ ] SQL injection attempt in email field is sanitized
+- [ ] Very long email address is handled (max length validation)
+- [ ] Password field does not autocomplete sensitive data
+- [ ] Tab order follows logical flow (email → password → submit)
+- [ ] Enter key submits form from password field
+- [ ] Form state resets after failed login attempt
+- [ ] Error message cleared when user starts typing again
 
 Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.

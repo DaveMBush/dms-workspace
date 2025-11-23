@@ -354,6 +354,8 @@ Create `apps/rms-material/src/app/account-panel/div-dep-modal/div-dep-modal.comp
 
 When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
 
+### Core Functionality
+
 - [ ] Modal opens for add mode with empty fields
 - [ ] Modal opens for edit mode with pre-filled data
 - [ ] Symbol field validates required
@@ -365,5 +367,24 @@ When this story is complete, ensure the following e2e tests exist in `apps/rms-m
 - [ ] Submit saves data and closes modal
 - [ ] Cancel closes modal without saving
 - [ ] Datepickers open and select dates
+
+### Edge Cases
+
+- [ ] Symbol field readonly in edit mode
+- [ ] Pay-date optional (can be empty)
+- [ ] Amount accepts decimal values (0.01 precision)
+- [ ] Amount max value handled (very large dividends)
+- [ ] Shares accepts only integers
+- [ ] Tab order follows logical flow through fields
+- [ ] Enter key submits form (when valid)
+- [ ] Escape key cancels modal
+- [ ] Modal prevents interaction with background
+- [ ] Modal focus trapped within dialog
+- [ ] Network error during submit shows error and allows retry
+- [ ] Duplicate submission prevented during loading
+- [ ] Form dirty state tracked (unsaved changes warning)
+- [ ] Validation errors cleared on field correction
+- [ ] Modal responsive on mobile screens
+- [ ] Screen reader announces modal title and errors
 
 Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.

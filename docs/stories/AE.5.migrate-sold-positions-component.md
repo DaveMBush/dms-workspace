@@ -153,11 +153,29 @@ export class SoldPositionsComponent {
 
 When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
 
+### Core Functionality
+
 - [ ] Sold positions table displays all sold positions
 - [ ] Inline editing works for sell price, sell date
 - [ ] Realized gain/loss calculates correctly
 - [ ] Holding period displays correctly
 - [ ] Sorting by columns works
 - [ ] Data updates reflect immediately
+
+### Edge Cases
+
+- [ ] Empty sold positions shows appropriate message
+- [ ] Edit validation prevents sell date before purchase date
+- [ ] Holding period calculates correctly (including leap years)
+- [ ] Short-term vs long-term gain indicator (1 year boundary)
+- [ ] Negative gain (loss) displayed in red
+- [ ] Very old positions (years) display correctly
+- [ ] Same-day sale (0 days holding) handled
+- [ ] Filter by date range works
+- [ ] Filter by gain/loss type works
+- [ ] Tax lot identification displayed correctly
+- [ ] Export for tax reporting works (CSV format)
+- [ ] Aggregated totals displayed at bottom
+- [ ] Wash sale indicator (if applicable)
 
 Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.

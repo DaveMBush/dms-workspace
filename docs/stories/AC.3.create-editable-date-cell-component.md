@@ -193,10 +193,29 @@ export class EditableDateCellComponent {
 
 When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
 
+### Core Functionality
+
 - [ ] Clicking date cell opens datepicker
 - [ ] Selecting date updates displayed value
 - [ ] Datepicker closes after selection
 - [ ] Date displays in configured format
 - [ ] Cancel/close without selection preserves original value
+
+### Edge Cases
+
+- [ ] Keyboard date entry works (typing MM/DD/YYYY)
+- [ ] Invalid date format shows validation error
+- [ ] Date min/max constraints enforced (if configured)
+- [ ] Future dates disabled (when configured)
+- [ ] Past dates disabled (when configured)
+- [ ] Leap year dates (Feb 29) handled correctly
+- [ ] Date boundaries (Dec 31 → Jan 1) work correctly
+- [ ] Timezone handling consistent (UTC vs local)
+- [ ] Empty/null date displayed correctly
+- [ ] Datepicker positions correctly near viewport edges
+- [ ] Datepicker keyboard navigation (arrows, Enter, Escape)
+- [ ] Month/year selection works in datepicker
+- [ ] Today button works in datepicker
+- [ ] Clear button removes date value
 
 Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.

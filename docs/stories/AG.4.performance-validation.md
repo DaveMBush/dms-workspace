@@ -302,4 +302,55 @@ When this story is complete, ensure the following e2e tests exist in `apps/rms-m
 - [ ] Navigate 20x between pages without crash
 - [ ] Memory does not grow > 20% after navigation cycles
 
+### Edge Cases - Virtual Scrolling (CRITICAL)
+
+- [ ] 5000 rows maintains >= 50fps scrolling
+- [ ] 10000 rows does not crash browser
+- [ ] Rapid scroll to bottom and back to top works correctly
+- [ ] Scroll position maintained after data update
+- [ ] No blank rows during scroll (buffer size adequate)
+- [ ] Row recycling works correctly (no stale data displayed)
+- [ ] Scroll to specific row by index works
+- [ ] Keyboard scroll (Page Up/Down, Home/End) works
+- [ ] Touch scroll on mobile works smoothly
+- [ ] Scroll momentum on mobile feels natural
+- [ ] No jank during rapid direction changes
+
+### Edge Cases - Lazy Loading
+
+- [ ] Debounced requests prevent API spam during scroll
+- [ ] Cancelled requests during rapid scroll don't cause errors
+- [ ] Network timeout handled gracefully
+- [ ] Partial data load displays correctly
+- [ ] Retry logic works on failed requests
+- [ ] Loading indicator shows during fetch
+- [ ] Empty state handled when no more data
+- [ ] Error state handled when API fails
+
+### Edge Cases - Memory Management
+
+- [ ] Component cleanup on route change (no orphaned subscriptions)
+- [ ] Large image cleanup when scrolled out of view
+- [ ] Form data cleared after dialog close
+- [ ] Event listeners removed on component destroy
+- [ ] Observable subscriptions unsubscribed
+- [ ] No detached DOM nodes accumulating
+- [ ] Service worker cache bounded
+
+### Edge Cases - Network Conditions
+
+- [ ] Slow 3G simulation still usable
+- [ ] Offline mode shows appropriate message
+- [ ] Reconnection resumes data loading
+- [ ] Large payload handled without timeout
+- [ ] Concurrent requests limited to prevent browser limits
+
+### Edge Cases - Device Performance
+
+- [ ] Works on 4GB RAM device
+- [ ] Works on mobile CPU (throttled)
+- [ ] Works on low-end GPU
+- [ ] Battery usage reasonable on mobile
+- [ ] No excessive repaints (DevTools paint flashing)
+
 Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.

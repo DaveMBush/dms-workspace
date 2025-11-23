@@ -56,9 +56,154 @@
 - [ ] No CSS conflicts between Material and TailwindCSS
 - [ ] Builds successfully with theme files
 
+## Test-Driven Development Approach
+
+**Write tests BEFORE implementation code.**
+
+### Step 1: Create Unit Tests First
+
+Create `apps/rms-material/src/app/shared/services/theme.service.spec.ts`:
+
+```typescript
+import { TestBed } from '@angular/core/testing';
+import { ThemeService } from './theme.service';
+
+describe('ThemeService', () => {
+  let service: ThemeService;
+  let localStorageSpy: ReturnType<typeof vi.spyOn>;
+  let matchMediaSpy: ReturnType<typeof vi.spyOn>;
+
+  beforeEach(() => {
+    // Mock localStorage
+    localStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
+    vi.spyOn(Storage.prototype, 'setItem');
+
+    // Mock matchMedia
+    matchMediaSpy = vi.spyOn(window, 'matchMedia');
+    matchMediaSpy.mockReturnValue({ matches: false } as MediaQueryList);
+
+    TestBed.configureTestingModule({});
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+    document.body.classList.remove('dark-theme');
+  });
+
+  describe('initialization', () => {
+    it('should load light theme when localStorage is empty and system prefers light', () => {
+      localStorageSpy.mockReturnValue(null);
+      matchMediaSpy.mockReturnValue({ matches: false } as MediaQueryList);
+
+      service = TestBed.inject(ThemeService);
+
+      expect(service.isDarkMode()).toBe(false);
+      expect(document.body.classList.contains('dark-theme')).toBe(false);
+    });
+
+    it('should load dark theme when localStorage has dark preference', () => {
+      localStorageSpy.mockReturnValue('dark');
+
+      service = TestBed.inject(ThemeService);
+
+      expect(service.isDarkMode()).toBe(true);
+      expect(document.body.classList.contains('dark-theme')).toBe(true);
+    });
+
+    it('should load light theme when localStorage has light preference', () => {
+      localStorageSpy.mockReturnValue('light');
+
+      service = TestBed.inject(ThemeService);
+
+      expect(service.isDarkMode()).toBe(false);
+    });
+
+    it('should respect system preference when no localStorage value', () => {
+      localStorageSpy.mockReturnValue(null);
+      matchMediaSpy.mockReturnValue({ matches: true } as MediaQueryList);
+
+      service = TestBed.inject(ThemeService);
+
+      expect(service.isDarkMode()).toBe(true);
+    });
+  });
+
+  describe('toggleTheme', () => {
+    beforeEach(() => {
+      localStorageSpy.mockReturnValue(null);
+      service = TestBed.inject(ThemeService);
+    });
+
+    it('should toggle from light to dark', () => {
+      expect(service.isDarkMode()).toBe(false);
+
+      service.toggleTheme();
+
+      expect(service.isDarkMode()).toBe(true);
+      expect(document.body.classList.contains('dark-theme')).toBe(true);
+    });
+
+    it('should toggle from dark to light', () => {
+      service.toggleTheme(); // Now dark
+
+      service.toggleTheme(); // Back to light
+
+      expect(service.isDarkMode()).toBe(false);
+      expect(document.body.classList.contains('dark-theme')).toBe(false);
+    });
+
+    it('should persist theme preference to localStorage', () => {
+      service.toggleTheme();
+
+      expect(localStorage.setItem).toHaveBeenCalledWith('rms-theme', 'dark');
+    });
+
+    it('should persist light theme preference to localStorage', () => {
+      service.toggleTheme(); // dark
+      service.toggleTheme(); // light
+
+      expect(localStorage.setItem).toHaveBeenLastCalledWith('rms-theme', 'light');
+    });
+  });
+
+  describe('edge cases', () => {
+    it('should handle localStorage throwing error gracefully', () => {
+      localStorageSpy.mockImplementation(() => {
+        throw new Error('localStorage not available');
+      });
+
+      expect(() => TestBed.inject(ThemeService)).not.toThrow();
+    });
+
+    it('should handle matchMedia not available', () => {
+      localStorageSpy.mockReturnValue(null);
+      matchMediaSpy.mockReturnValue(undefined as unknown as MediaQueryList);
+
+      expect(() => TestBed.inject(ThemeService)).not.toThrow();
+    });
+
+    it('should apply theme immediately on toggle without delay', () => {
+      localStorageSpy.mockReturnValue(null);
+      service = TestBed.inject(ThemeService);
+
+      service.toggleTheme();
+
+      // Verify immediate application (no async delay)
+      expect(document.body.classList.contains('dark-theme')).toBe(true);
+    });
+  });
+});
+```
+
+**TDD Cycle:**
+
+1. Run `pnpm nx run rms-material:test` - tests should fail (RED)
+2. Implement minimal code to pass tests (GREEN)
+3. Refactor while keeping tests passing (REFACTOR)
+
 ## Technical Approach
 
-### Step 1: Create Theme Variables
+### Step 2: Create Theme Variables
 
 Create `apps/rms-material/src/themes/_theme-variables.scss`:
 
@@ -99,7 +244,7 @@ Create `apps/rms-material/src/themes/_theme-variables.scss`:
 }
 ```
 
-### Step 2: Create Light Theme
+### Step 3: Create Light Theme
 
 Create `apps/rms-material/src/themes/_light-theme.scss`:
 
@@ -140,7 +285,7 @@ $light-theme: mat.m3-define-theme(
 }
 ```
 
-### Step 3: Create Dark Theme
+### Step 4: Create Dark Theme
 
 Create `apps/rms-material/src/themes/_dark-theme.scss`:
 
@@ -181,7 +326,7 @@ $dark-theme: mat.m3-define-theme(
 }
 ```
 
-### Step 4: Update Main Styles
+### Step 5: Update Main Styles
 
 Update `apps/rms-material/src/styles.scss`:
 
@@ -255,7 +400,7 @@ body {
 }
 ```
 
-### Step 5: Create Theme Toggle Service
+### Step 6: Create Theme Toggle Service
 
 Create `apps/rms-material/src/app/shared/services/theme.service.ts`:
 
@@ -304,7 +449,7 @@ export class ThemeService {
 }
 ```
 
-### Step 6: Verify Theme Toggle
+### Step 7: Verify Theme Toggle
 
 Update `apps/rms-material/src/app/app.component.ts` to test theme:
 
@@ -381,10 +526,23 @@ export class AppComponent {
 
 When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
 
+### Core Functionality
+
 - [ ] Theme toggle switches between light and dark mode
 - [ ] Theme preference persists across page refreshes
 - [ ] All Material components display correctly in both themes
 - [ ] No visual regressions in theme colors
+
+### Edge Cases
+
+- [ ] First-time visitor with system dark mode preference sees dark theme
+- [ ] First-time visitor with system light mode preference sees light theme
+- [ ] User preference overrides system preference after toggle
+- [ ] Theme transitions smoothly without flash of wrong theme on page load
+- [ ] Theme toggle works correctly after multiple rapid clicks
+- [ ] Theme persists after browser close and reopen (localStorage)
+- [ ] Clearing localStorage reverts to system preference
+- [ ] All text has sufficient contrast ratio in both themes (WCAG AA)
 
 Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.
 

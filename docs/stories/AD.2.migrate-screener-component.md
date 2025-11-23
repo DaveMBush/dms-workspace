@@ -165,6 +165,8 @@ export class Screener {
 
 When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
 
+### Core Functionality
+
 - [ ] Screener table displays screened stocks
 - [ ] Risk group filter filters table data
 - [ ] Frequency filter filters table data
@@ -172,5 +174,20 @@ When this story is complete, ensure the following e2e tests exist in `apps/rms-m
 - [ ] Add to universe action adds symbol
 - [ ] Success notification shows after adding
 - [ ] Sorting by columns works
+
+### Edge Cases
+
+- [ ] Multiple filters combined correctly (AND logic)
+- [ ] Clear all filters returns to unfiltered state
+- [ ] Filter state preserved during refresh
+- [ ] No results state displays appropriate message
+- [ ] Add already-existing symbol shows warning
+- [ ] Bulk add multiple symbols works correctly
+- [ ] Refresh during data load handled gracefully
+- [ ] Network error during refresh shows retry
+- [ ] Screener criteria changes trigger auto-refresh (if configured)
+- [ ] Large result sets (1000+) perform well
+- [ ] Export filtered results to CSV works
+- [ ] Screen reader announces filter changes
 
 Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.

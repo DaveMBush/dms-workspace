@@ -156,11 +156,28 @@ export class SummaryComponent {
 
 When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
 
+### Core Functionality
+
 - [ ] Allocation pie chart shows account-specific data
 - [ ] Performance line chart shows account history
 - [ ] Total value statistic displays correctly
 - [ ] Total gain/loss displays correctly
 - [ ] Percentage gain displays correctly
 - [ ] Data is scoped to selected account
+
+### Edge Cases
+
+- [ ] Empty account (no positions) shows appropriate empty state
+- [ ] Account with single position renders correctly
+- [ ] Very large gain/loss values formatted correctly
+- [ ] Negative gain displayed in red
+- [ ] Percentage gain calculation handles edge cases (division by zero)
+- [ ] Account switch updates all charts and statistics
+- [ ] Real-time price updates reflected in statistics
+- [ ] Print view renders charts and statistics correctly
+- [ ] Dark theme applies correct colors
+- [ ] Charts responsive on mobile viewport
+- [ ] Statistics match detailed position calculations
+- [ ] Historical performance data handles missing data points
 
 Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.

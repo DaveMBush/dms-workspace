@@ -101,6 +101,8 @@ describe('ConfirmDialogService', () => {
 
 When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
 
+### Core Functionality
+
 - [ ] Confirm dialog displays with title and message
 - [ ] Custom button labels display correctly
 - [ ] Confirm button returns true
@@ -108,5 +110,21 @@ When this story is complete, ensure the following e2e tests exist in `apps/rms-m
 - [ ] Dialog closes on button click
 - [ ] Focus trapped within dialog
 - [ ] Escape key closes dialog (returns false)
+
+### Edge Cases
+
+- [ ] Dialog blocks interaction with background content
+- [ ] Multiple dialogs stack correctly (rare but possible)
+- [ ] Very long title/message text wraps correctly
+- [ ] Dialog centered on screen at all viewport sizes
+- [ ] Dialog accessible via screen reader (role="dialog")
+- [ ] Enter key triggers confirm (when confirm button focused)
+- [ ] Tab cycles through dialog buttons correctly
+- [ ] Dialog animation completes before result returned
+- [ ] Clicking backdrop does not close dialog (modal behavior)
+- [ ] Dialog handles rapid confirm/cancel clicks gracefully
+- [ ] Custom icon support works correctly
+- [ ] Danger/destructive action styling option works
+- [ ] Dialog content with HTML is escaped (XSS prevention)
 
 Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.

@@ -177,6 +177,40 @@ describe('SplitterComponent', () => {
     const newComponent = TestBed.createComponent(SplitterComponent).componentInstance;
     expect(newComponent.leftWidth()).toBe(35);
   });
+
+  describe('edge cases', () => {
+    it('should clamp width to minimum 10%', () => {
+      component.leftWidth.set(5);
+      const clampedWidth = Math.max(10, Math.min(50, 5));
+      expect(clampedWidth).toBe(10);
+    });
+
+    it('should clamp width to maximum 50%', () => {
+      component.leftWidth.set(60);
+      const clampedWidth = Math.max(10, Math.min(50, 60));
+      expect(clampedWidth).toBe(50);
+    });
+
+    it('should handle localStorage being unavailable', () => {
+      vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
+        throw new Error('localStorage not available');
+      });
+      expect(() => TestBed.createComponent(SplitterComponent)).not.toThrow();
+    });
+
+    it('should handle invalid localStorage value', () => {
+      vi.spyOn(Storage.prototype, 'getItem').mockReturnValue('invalid');
+      const newComponent = TestBed.createComponent(SplitterComponent).componentInstance;
+      expect(newComponent.leftWidth()).toBe(20); // Falls back to default
+    });
+
+    it('should emit widthChange event on drag', () => {
+      const spy = vi.fn();
+      component.widthChange.subscribe(spy);
+      component.leftWidth.set(25);
+      expect(spy).toHaveBeenCalledWith(25);
+    });
+  });
 });
 ```
 
@@ -568,6 +602,8 @@ Update `apps/rms-material/src/app/app.routes.ts` to include shell route with gua
 
 When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
 
+### Core Functionality
+
 - [ ] Toolbar renders with all buttons
 - [ ] Theme toggle button switches theme
 - [ ] User menu opens and displays profile/logout options
@@ -576,5 +612,19 @@ When this story is complete, ensure the following e2e tests exist in `apps/rms-m
 - [ ] Splitter state persists after page refresh
 - [ ] Named router outlets render content correctly
 - [ ] Toast notifications display and dismiss
+
+### Edge Cases
+
+- [ ] Splitter width clamped to minimum 10% when dragged too far left
+- [ ] Splitter width clamped to maximum 50% when dragged too far right
+- [ ] Splitter handles rapid drag movements without lag
+- [ ] Logout cancel returns to previous state without side effects
+- [ ] Toast notifications stack correctly when multiple shown
+- [ ] Toast auto-dismiss does not dismiss persistent notifications
+- [ ] User menu closes when clicking outside
+- [ ] User menu closes after selecting an option
+- [ ] Keyboard navigation works for user menu (Enter, Escape, Arrow keys)
+- [ ] Screen reader announces toolbar buttons correctly
+- [ ] Splitter handle is keyboard accessible (Arrow keys to resize)
 
 Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.

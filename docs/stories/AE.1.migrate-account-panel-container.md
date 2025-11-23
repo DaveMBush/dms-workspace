@@ -144,10 +144,25 @@ export class AccountPanelComponent {}
 
 When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
 
+### Core Functionality
+
 - [ ] Tab bar displays Summary, Open, Sold, Div-Dep tabs
 - [ ] Active tab is visually highlighted
 - [ ] Clicking tab navigates to correct route
 - [ ] Tab content renders in router outlet
 - [ ] Direct URL navigation highlights correct tab
+
+### Edge Cases
+
+- [ ] Tab keyboard navigation works (Arrow keys, Enter, Tab)
+- [ ] Tab indicator animation is smooth
+- [ ] Tab content preserved when switching tabs and back
+- [ ] Deep linking to specific tab works correctly
+- [ ] Browser back/forward navigates between tabs correctly
+- [ ] Tab scroll (if more tabs than fit) works correctly
+- [ ] Mobile swipe gesture switches tabs (if supported)
+- [ ] Screen reader announces active tab correctly
+- [ ] Tab bar responsive on small screens
+- [ ] Focus management correct on tab change
 
 Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.

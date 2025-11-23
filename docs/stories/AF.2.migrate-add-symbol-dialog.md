@@ -298,6 +298,8 @@ Create `apps/rms-material/src/app/universe-settings/add-symbol-dialog/add-symbol
 
 When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
 
+### Core Functionality
+
 - [ ] Dialog opens from universe settings
 - [ ] Symbol search displays matching results
 - [ ] Selecting symbol populates field
@@ -308,5 +310,33 @@ When this story is complete, ensure the following e2e tests exist in `apps/rms-m
 - [ ] Submit adds symbol to universe
 - [ ] Success notification displays after add
 - [ ] Cancel closes dialog without adding
+
+### Edge Cases
+
+- [ ] Empty search query shows appropriate message
+- [ ] No matching symbols shows "no results" message
+- [ ] API timeout during search shows error state
+- [ ] Partial symbol match returns relevant results (e.g., "APP" finds "AAPL")
+- [ ] Symbol already in universe shows warning/prevents duplicate
+- [ ] Special characters in search handled safely (no injection)
+- [ ] Very long company names truncated with tooltip
+- [ ] Search debounced to prevent API spam
+- [ ] Rapid typing doesn't cause race conditions
+- [ ] Clear search resets results
+- [ ] Tab order follows logical flow (search -> risk group -> buttons)
+- [ ] Enter key submits form (when valid)
+- [ ] Escape key closes dialog
+- [ ] Modal prevents interaction with background
+- [ ] Modal focus trapped within dialog
+- [ ] Network error during submit shows error and allows retry
+- [ ] Duplicate submission prevented during loading
+- [ ] Risk group list empty shows appropriate message
+- [ ] Very long risk group names handled correctly
+- [ ] Screen reader announces selected symbol
+- [ ] Mobile keyboard doesn't obscure search results
+- [ ] Dialog responsive on mobile screens
+- [ ] Symbol case insensitive (aapl == AAPL)
+- [ ] Whitespace trimmed from symbol search
+- [ ] Dialog state cleared on reopen (no stale data)
 
 Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.

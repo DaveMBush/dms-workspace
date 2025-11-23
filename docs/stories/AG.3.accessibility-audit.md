@@ -196,6 +196,8 @@ Create accessibility report with:
 
 When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
 
+### Core Functionality
+
 - [ ] axe-core audit passes on login page
 - [ ] axe-core audit passes on dashboard
 - [ ] axe-core audit passes on all major routes
@@ -203,5 +205,54 @@ When this story is complete, ensure the following e2e tests exist in `apps/rms-m
 - [ ] Keyboard navigation opens/closes dialogs
 - [ ] Tab order is logical on all pages
 - [ ] Focus returns to trigger after dialog close
+
+### Edge Cases - Keyboard Navigation
+
+- [ ] Tab navigation skips disabled elements
+- [ ] Shift+Tab moves backwards through elements
+- [ ] Arrow keys navigate within dropdowns/menus
+- [ ] Enter activates focused buttons/links
+- [ ] Space toggles checkboxes
+- [ ] Escape closes modals/dropdowns
+- [ ] Tab trapped within modal dialogs
+- [ ] Focus visible on all interactive elements
+- [ ] Skip link jumps to main content
+- [ ] Keyboard shortcuts don't conflict with screen reader shortcuts
+
+### Edge Cases - Screen Reader
+
+- [ ] Form labels announced correctly
+- [ ] Error messages announced when shown
+- [ ] Loading states announced
+- [ ] Live regions update correctly (aria-live)
+- [ ] Table headers associated with cells
+- [ ] Row/column count announced for tables
+- [ ] Expandable sections announce state (expanded/collapsed)
+- [ ] Progress indicators announced
+- [ ] Toast notifications announced
+- [ ] Dialog title announced on open
+
+### Edge Cases - Visual
+
+- [ ] 200% zoom maintains usable layout
+- [ ] 400% zoom (single column) maintains usable layout
+- [ ] High contrast mode colors correct
+- [ ] Reduced motion preference respected
+- [ ] Dark mode maintains contrast ratios
+- [ ] Focus indicators visible in all themes
+- [ ] Error states not conveyed by color alone
+- [ ] Required fields indicated beyond asterisk
+- [ ] Charts have text alternatives
+- [ ] Images have appropriate alt text
+
+### Edge Cases - Forms
+
+- [ ] Autocomplete attributes correct
+- [ ] Password fields have proper autocomplete
+- [ ] Error messages associated via aria-describedby
+- [ ] Required fields marked with aria-required
+- [ ] Invalid fields marked with aria-invalid
+- [ ] Form groups have fieldset/legend or role="group"
+- [ ] Multi-step forms indicate progress
 
 Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.

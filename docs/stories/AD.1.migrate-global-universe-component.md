@@ -275,6 +275,8 @@ Create `apps/rms-material/src/app/global/global-universe/global-universe.compone
 
 When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
 
+### Core Functionality
+
 - [ ] Universe table displays all columns correctly
 - [ ] Inline editing works for yield, purchase price, ex-date, div amount
 - [ ] Sync Universe button triggers sync with notification
@@ -284,5 +286,22 @@ When this story is complete, ensure the following e2e tests exist in `apps/rms-m
 - [ ] Sorting by columns works
 - [ ] Virtual scrolling performs well with large datasets
 - [ ] Data updates reflect immediately in UI
+
+### Edge Cases
+
+- [ ] Sync during pending edits warns or saves first
+- [ ] Delete with no selection shows appropriate message
+- [ ] Delete all rows shows confirmation with count
+- [ ] Edit validation prevents invalid values (negative prices)
+- [ ] Concurrent edits from multiple users handled (optimistic locking)
+- [ ] Network error during sync shows retry option
+- [ ] Partial sync failure (some symbols fail) handled gracefully
+- [ ] Symbol search/filter works correctly
+- [ ] Column resize state persisted
+- [ ] Column order can be customized and persisted
+- [ ] Export to CSV/Excel works correctly
+- [ ] Print view formats table correctly
+- [ ] Empty universe displays appropriate message
+- [ ] Adding duplicate symbol prevented with error message
 
 Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.

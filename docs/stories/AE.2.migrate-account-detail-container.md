@@ -133,9 +133,24 @@ export class AccountDetailComponent implements OnInit {
 
 When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
 
+### Core Functionality
+
 - [ ] Account detail loads correct account data
 - [ ] Account ID in URL matches displayed account
 - [ ] Child routes render within container
 - [ ] SmartNgRX trades entity loads for account
+
+### Edge Cases
+
+- [ ] Invalid account ID shows 404 or redirect
+- [ ] Account ID not found shows appropriate error
+- [ ] Account data loading shows skeleton/spinner
+- [ ] Account data error shows retry option
+- [ ] Account switch preserves scroll position (or resets appropriately)
+- [ ] Real-time account data updates reflected
+- [ ] Account permissions respected (view-only vs edit)
+- [ ] Deep linking to account/:id/specific-tab works
+- [ ] Browser refresh reloads account data correctly
+- [ ] Concurrent account data requests deduplicated
 
 Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.

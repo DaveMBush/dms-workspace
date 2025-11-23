@@ -552,6 +552,8 @@ export class MyTableComponent implements OnInit {
 
 When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
 
+### Core Functionality
+
 - [ ] Table renders with virtual scrolling enabled
 - [ ] Only visible rows plus buffer are in DOM
 - [ ] Scrolling loads more data (lazy loading)
@@ -560,5 +562,41 @@ When this story is complete, ensure the following e2e tests exist in `apps/rms-m
 - [ ] Row click triggers row selection
 - [ ] Multi-select checkbox works correctly
 - [ ] Performance test with 1000+ rows maintains 60fps
+
+### Edge Cases - Virtual Scrolling
+
+- [ ] Rapid scroll to end of list loads all required data
+- [ ] Scroll position maintained after data refresh
+- [ ] Empty state displayed when no data exists
+- [ ] Single row renders correctly (boundary case)
+- [ ] Exactly buffer-size rows renders correctly
+- [ ] Variable row heights handled correctly (if supported)
+- [ ] Scroll to specific index via API works correctly
+- [ ] Memory usage stable after scrolling through entire dataset
+- [ ] No duplicate rows rendered during fast scrolling
+
+### Edge Cases - Lazy Loading
+
+- [ ] Concurrent data requests are properly debounced
+- [ ] Failed data load shows error and retry option
+- [ ] Network timeout handled gracefully with retry
+- [ ] Partial data load (some rows fail) handled gracefully
+- [ ] Data source update during scroll handled correctly
+- [ ] Sort change during lazy load cancels pending request
+
+### Edge Cases - Selection
+
+- [ ] Select all with virtual scroll selects all data (not just visible)
+- [ ] Shift+click range selection works across scroll boundaries
+- [ ] Selection state preserved after scroll and return
+- [ ] Deselect all clears selection including non-visible rows
+- [ ] Selection count displays correctly for large selections
+
+### Edge Cases - Accessibility
+
+- [ ] Keyboard navigation works (Arrow keys, Page Up/Down, Home/End)
+- [ ] Screen reader announces row count and current position
+- [ ] Focus management correct during lazy load
+- [ ] ARIA attributes updated during virtual scroll
 
 Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.

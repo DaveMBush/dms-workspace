@@ -164,10 +164,26 @@ export class SymbolFilterHeaderComponent {
 
 When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
 
+### Core Functionality
+
 - [ ] Filter dropdown displays all options
 - [ ] Selecting option filters table data
 - [ ] "All" option shows all data
 - [ ] Filter fits within table header cell
 - [ ] Filter selection persists during session
+
+### Edge Cases
+
+- [ ] Filter dropdown keyboard navigation (arrows, Enter, Escape)
+- [ ] Filter with many options (50+) renders performantly
+- [ ] Filter options with long names truncated with tooltip
+- [ ] Multiple filters applied simultaneously work correctly
+- [ ] Clear filter returns to "All" state
+- [ ] Filter state preserved after page refresh (localStorage)
+- [ ] Filter handles options added/removed dynamically
+- [ ] Filter dropdown positions correctly near viewport edges
+- [ ] Filter dropdown closes when clicking outside
+- [ ] Filter indicator shows when filter is active (not "All")
+- [ ] Screen reader announces filter selection changes
 
 Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.

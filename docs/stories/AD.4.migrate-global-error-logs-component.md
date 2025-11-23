@@ -237,6 +237,8 @@ export class GlobalErrorLogsComponent implements OnInit {
 
 When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
 
+### Core Functionality
+
 - [ ] Error logs table displays error entries
 - [ ] Pagination controls navigate pages
 - [ ] Page size selector changes results per page
@@ -244,5 +246,22 @@ When this story is complete, ensure the following e2e tests exist in `apps/rms-m
 - [ ] Clear error button marks error as resolved
 - [ ] Loading indicator shows during fetch
 - [ ] Empty state shows when no errors
+
+### Edge Cases
+
+- [ ] Very long error messages truncated with expand option
+- [ ] Stack trace displayed in collapsible section
+- [ ] Timestamp displays in local timezone
+- [ ] Date range filter works correctly
+- [ ] Clear all errors shows confirmation dialog
+- [ ] Bulk clear selected errors works
+- [ ] Network error during clear shows retry option
+- [ ] Real-time error updates appear without refresh
+- [ ] Export error logs to CSV works
+- [ ] Error severity levels displayed with distinct colors
+- [ ] Pagination state preserved when filtering
+- [ ] First/last page navigation works at boundaries
+- [ ] Search within error messages works
+- [ ] Copy error details to clipboard works
 
 Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.

@@ -159,11 +159,28 @@ export class GlobalSummaryComponent {
 
 When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
 
+### Core Functionality
+
 - [ ] Allocation pie chart displays risk group breakdown
 - [ ] Performance line chart displays over time
 - [ ] Account filter changes displayed data
 - [ ] Summary statistics display correctly
 - [ ] Charts resize on window resize
 - [ ] Navigation to global summary works
+
+### Edge Cases
+
+- [ ] Empty portfolio (no positions) displays appropriate state
+- [ ] Single position portfolio renders charts correctly
+- [ ] Date range selector changes performance chart data
+- [ ] Performance chart handles gaps in data (weekends/holidays)
+- [ ] Very large portfolio values formatted correctly (abbreviations)
+- [ ] Negative performance values displayed correctly (red)
+- [ ] Real-time data updates reflected in charts
+- [ ] Print view renders charts correctly
+- [ ] Dark theme applies correct chart colors
+- [ ] Account filter persists during navigation
+- [ ] "All Accounts" aggregates data correctly
+- [ ] Statistics calculations match detail pages
 
 Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.

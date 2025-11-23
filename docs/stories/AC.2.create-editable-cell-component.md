@@ -222,6 +222,8 @@ export class EditableCellComponent {
 
 When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
 
+### Core Functionality
+
 - [ ] Clicking cell enters edit mode
 - [ ] Input field displays current value
 - [ ] Enter key saves and exits edit mode
@@ -229,5 +231,22 @@ When this story is complete, ensure the following e2e tests exist in `apps/rms-m
 - [ ] Clicking outside (blur) saves value
 - [ ] Currency format displays correctly
 - [ ] Decimal format displays correctly
+
+### Edge Cases
+
+- [ ] Double-click enters edit mode (not duplicate events)
+- [ ] Tab key moves to next editable cell
+- [ ] Shift+Tab moves to previous editable cell
+- [ ] Invalid numeric input rejected (letters in number field)
+- [ ] Negative numbers handled correctly (when allowed)
+- [ ] Zero value saved correctly (not treated as empty)
+- [ ] Very large numbers formatted correctly
+- [ ] Very small decimals (0.0001) displayed correctly
+- [ ] Empty value handling (null vs empty string)
+- [ ] Concurrent edits in multiple cells handled
+- [ ] Edit mode cancelled when cell scrolls out of view
+- [ ] Copy/paste values work correctly
+- [ ] Undo (Ctrl+Z) works within edit mode
+- [ ] Touch devices can enter edit mode via tap
 
 Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.

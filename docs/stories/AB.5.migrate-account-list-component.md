@@ -381,6 +381,8 @@ Ensure the account list is loaded in the named outlet. Update `apps/rms-material
 
 When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
 
+### Core Functionality
+
 - [ ] Account list displays all user accounts
 - [ ] Clicking account navigates to account detail
 - [ ] Active account is visually highlighted
@@ -388,5 +390,20 @@ When this story is complete, ensure the following e2e tests exist in `apps/rms-m
 - [ ] Active global link is visually highlighted
 - [ ] Empty state displays when no accounts exist
 - [ ] Account list scrolls when many accounts present
+
+### Edge Cases
+
+- [ ] Account list handles 100+ accounts without performance degradation
+- [ ] Long account names are truncated with ellipsis and tooltip
+- [ ] Account list updates in real-time when account added/removed
+- [ ] Keyboard navigation works through account list (Arrow keys, Enter)
+- [ ] Screen reader announces account selection changes
+- [ ] Double-click on account does not cause navigation issues
+- [ ] Account list scroll position preserved on navigation return
+- [ ] Loading skeleton displays while accounts are fetching
+- [ ] Error state displays when account fetch fails
+- [ ] Retry button available when account fetch fails
+- [ ] Account list correctly filters/sorts when applied
+- [ ] Touch gestures work on mobile for account selection
 
 Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.

@@ -229,11 +229,32 @@ export class SymbolAutocompleteComponent implements OnInit {
 
 When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
 
+### Core Functionality
+
 - [ ] Typing minimum characters triggers search
 - [ ] Dropdown displays matching suggestions
 - [ ] Clicking suggestion populates input
 - [ ] Loading spinner shows during search
 - [ ] No suggestions message when no matches
 - [ ] Force selection prevents custom values (when enabled)
+
+### Edge Cases
+
+- [ ] Debounce prevents excessive API calls during rapid typing
+- [ ] Search cancelled when input cleared before results return
+- [ ] Stale search results not displayed (out-of-order responses)
+- [ ] Arrow key navigation through suggestions works
+- [ ] Enter key selects highlighted suggestion
+- [ ] Escape key closes dropdown without selection
+- [ ] Tab key selects highlighted suggestion and moves focus
+- [ ] Case-insensitive search matches correctly
+- [ ] Special characters in symbol handled (BRK.A, BRK.B)
+- [ ] Long company names truncated with tooltip
+- [ ] Dropdown positions correctly near viewport edges
+- [ ] Dropdown closes when clicking outside
+- [ ] Search handles API timeout gracefully
+- [ ] Search handles API error gracefully
+- [ ] Clear button resets input and closes dropdown
+- [ ] Re-opening dropdown shows previous results if unchanged
 
 Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.

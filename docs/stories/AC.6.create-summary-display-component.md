@@ -211,11 +211,30 @@ pieChartData: ChartData<'pie'> = {
 
 When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
 
+### Core Functionality
+
 - [ ] Line chart renders with data
 - [ ] Pie chart renders with data
 - [ ] Hovering shows tooltip with values
 - [ ] Legend displays and is clickable
 - [ ] Charts resize on window resize
 - [ ] Charts update when data changes
+
+### Edge Cases
+
+- [ ] Empty data displays appropriate message (no data available)
+- [ ] Single data point renders correctly
+- [ ] Large dataset (1000+ points) renders performantly
+- [ ] Very small values displayed correctly (not rounded to zero)
+- [ ] Very large values displayed with appropriate abbreviations (K, M, B)
+- [ ] Negative values handled correctly in charts
+- [ ] Chart animation completes smoothly
+- [ ] Legend click toggles series visibility
+- [ ] Tooltip positions correctly near viewport edges
+- [ ] Chart handles data update during animation
+- [ ] Print/export renders charts correctly
+- [ ] Dark theme colors applied correctly to charts
+- [ ] Accessible color contrast for chart elements
+- [ ] Screen reader announces chart summary
 
 Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.

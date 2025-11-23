@@ -206,4 +206,27 @@ This story IS the e2e test story. Ensure all e2e tests from previous stories are
 - [ ] Scroll large dividend deposits list (1000+ rows)
 - [ ] Lazy loading verification
 
+### Edge Cases
+
+- [ ] Tests pass in CI environment with different browsers (Chrome, Firefox)
+- [ ] Tests handle slow network conditions (throttled)
+- [ ] Tests recover from intermittent network failures
+- [ ] Tests work with different viewport sizes (mobile, tablet, desktop)
+- [ ] Tests handle authentication token expiry during test
+- [ ] Tests properly clean up state between runs
+- [ ] Screenshots captured on test failure for debugging
+- [ ] Video recording available for failed tests
+- [ ] Tests handle modal dialogs properly (no stale element references)
+- [ ] Tests handle dynamic content loading (waitFor patterns)
+- [ ] Tests work with different locales/languages
+- [ ] Tests handle browser back/forward navigation
+- [ ] Tests work in incognito mode (no cached state)
+- [ ] Tests handle concurrent user scenarios
+- [ ] Tests verify error boundaries catch component errors
+- [ ] Tests handle WebSocket disconnection gracefully
+- [ ] Flaky test detection and retry logic works
+- [ ] Test timeouts appropriate for CI environment
+- [ ] Database seeding works correctly before tests
+- [ ] Database cleanup works correctly after tests
+
 Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.

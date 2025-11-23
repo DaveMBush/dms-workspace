@@ -463,6 +463,8 @@ export class EmailChangeCard {
 
 When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
 
+### Core Functionality
+
 - [ ] Profile page displays user name and email
 - [ ] Password change validates current password required
 - [ ] Password change validates new passwords match
@@ -471,5 +473,21 @@ When this story is complete, ensure the following e2e tests exist in `apps/rms-m
 - [ ] Email change success updates displayed email
 - [ ] Navigation from user menu to profile works
 - [ ] Loading states display during form submission
+
+### Edge Cases
+
+- [ ] Password change fails gracefully when current password is wrong
+- [ ] Password strength indicator updates as user types
+- [ ] Password with special characters is accepted
+- [ ] Password at minimum length boundary (8 chars) is accepted
+- [ ] Password at maximum length boundary is handled
+- [ ] Email change to same email shows appropriate message
+- [ ] Email change to already-used email shows error
+- [ ] Concurrent profile updates from different tabs handled
+- [ ] Network error during password change shows retry option
+- [ ] Form state preserved when navigating away and back
+- [ ] Cancel button resets form to original values
+- [ ] Copy-paste into password fields works correctly
+- [ ] Screen reader announces form errors properly
 
 Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.

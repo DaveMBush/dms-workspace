@@ -118,8 +118,25 @@ export class UniverseSettings {}
 
 When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
 
+### Core Functionality
+
 - [ ] Universe settings route accessible
 - [ ] Container renders child routes
 - [ ] Navigation to universe settings works
+
+### Edge Cases
+
+- [ ] Deep link to universe settings loads correctly
+- [ ] Back navigation from universe settings works
+- [ ] Browser refresh on universe settings maintains state
+- [ ] Unauthorized user redirected to login
+- [ ] Container handles child route errors gracefully
+- [ ] Loading state shown while child route resolves
+- [ ] Route guard prevents access without authentication
+- [ ] Mobile viewport renders container correctly
+- [ ] Print view excludes navigation elements
+- [ ] Screen reader announces route changes
+- [ ] Keyboard navigation through child routes works
+- [ ] Browser history correctly tracks navigation
 
 Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.

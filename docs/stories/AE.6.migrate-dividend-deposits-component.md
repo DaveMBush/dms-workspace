@@ -334,6 +334,8 @@ When this story is complete, ensure the following e2e tests exist in `apps/rms-m
 
 **CRITICAL: This is the PRIMARY DRIVER for migration - extensive e2e testing required**
 
+### Core Functionality
+
 - [ ] Virtual scrolling renders only visible rows in DOM
 - [ ] Scrolling triggers lazy loading of additional data
 - [ ] Loading indicator shows during data fetch
@@ -346,6 +348,48 @@ When this story is complete, ensure the following e2e tests exist in `apps/rms-m
 - [ ] Performance test: 1000+ rows scrolls at 60fps
 - [ ] Performance test: lazy load completes < 200ms
 - [ ] Performance test: no memory leaks after navigation cycles
+
+### Edge Cases - Virtual Scrolling (CRITICAL)
+
+- [ ] Rapid scroll to end loads all required data correctly
+- [ ] Scroll position maintained after add/edit/delete operations
+- [ ] Scroll position maintained after modal close
+- [ ] No duplicate rows during fast scrolling
+- [ ] Buffer renders correctly at list boundaries
+- [ ] Single dividend renders correctly (boundary)
+- [ ] Exactly viewport-height dividends renders correctly
+- [ ] Variable network latency handled gracefully
+
+### Edge Cases - CRUD Operations
+
+- [ ] Add dividend with duplicate symbol/date warns or prevents
+- [ ] Edit dividend optimistic update with rollback on error
+- [ ] Delete multiple dividends sequentially works
+- [ ] Delete during scroll handled correctly
+- [ ] Add dividend scroll position behavior (scroll to new or not)
+- [ ] Cancel edit preserves original data
+- [ ] Network error during save shows retry option
+- [ ] Concurrent edits to same dividend handled
+
+### Edge Cases - Data Integrity
+
+- [ ] Ex-date before pay-date validation
+- [ ] Future ex-date allowed (upcoming dividends)
+- [ ] Amount validation (positive numbers only)
+- [ ] Shares validation (positive integers)
+- [ ] Total calculation (amount \* shares) displayed correctly
+- [ ] Filter by symbol works with virtual scroll
+- [ ] Sort maintains correct order during lazy load
+- [ ] Date range filter works correctly
+
+### Edge Cases - Performance (CRITICAL)
+
+- [ ] 5000 rows maintains smooth scrolling
+- [ ] 10000 rows does not crash browser
+- [ ] CPU usage stable during scrolling
+- [ ] Memory growth bounded during scrolling
+- [ ] GC pauses minimal during scrolling
+- [ ] First contentful paint < 500ms
 
 Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.
 

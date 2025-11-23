@@ -398,6 +398,8 @@ The auth service should call `sessionWarningService.showWarning()` when session 
 
 When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
 
+### Core Functionality
+
 - [ ] Session warning dialog appears before timeout
 - [ ] Countdown timer displays and decrements
 - [ ] Progress bar decreases with time
@@ -405,5 +407,20 @@ When this story is complete, ensure the following e2e tests exist in `apps/rms-m
 - [ ] Logout button ends session and redirects to login
 - [ ] Dialog cannot be dismissed by clicking backdrop
 - [ ] Auto-logout occurs when timer reaches zero
+
+### Edge Cases
+
+- [ ] Dialog handles system clock changes gracefully
+- [ ] Dialog handles browser tab becoming inactive and reactivated
+- [ ] Multiple extend session clicks are debounced
+- [ ] Timer continues correctly after browser regains focus
+- [ ] Dialog displays correctly on small screens (mobile)
+- [ ] Keyboard focus trapped within dialog
+- [ ] Escape key does not close dialog (non-dismissible)
+- [ ] Dialog handles network error during extend session
+- [ ] Extend session failure shows error and keeps dialog open
+- [ ] Timer format handles edge values (0:00, 0:01)
+- [ ] Progress bar animation is smooth without jitter
+- [ ] Dialog z-index correctly overlays all other content
 
 Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.
