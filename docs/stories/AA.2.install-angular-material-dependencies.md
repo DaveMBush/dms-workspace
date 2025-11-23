@@ -67,22 +67,22 @@ pnpm add @angular/material@^20.0.0 @angular/cdk@^20.0.0 ng2-charts@^7.0.0
 Add Material Icons font to `apps/rms-material/src/index.html`:
 
 ```html
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>RMS Material</title>
-  <base href="/">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
-  <!-- Material Icons -->
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <!-- Roboto Font (Material Design typography) -->
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
-</head>
-<body class="mat-typography">
-  <rms-root></rms-root>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <title>RMS Material</title>
+    <base href="/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <!-- Roboto Font (Material Design typography) -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet" />
+  </head>
+  <body class="mat-typography">
+    <rms-root></rms-root>
+  </body>
 </html>
 ```
 
@@ -98,11 +98,7 @@ import { provideRouter } from '@angular/router';
 import { appRoutes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
-  providers: [
-    provideZonelessChangeDetection(),
-    provideAnimationsAsync(),
-    provideRouter(appRoutes),
-  ],
+  providers: [provideZonelessChangeDetection(), provideAnimationsAsync(), provideRouter(appRoutes)],
 };
 ```
 
@@ -134,20 +130,20 @@ pnpm nx run rms-material:serve
 
 ## Files Modified
 
-| File | Changes |
-|------|---------|
-| `package.json` | Add Material, CDK, ng2-charts dependencies |
-| `apps/rms-material/src/index.html` | Add Material Icons and Roboto font links |
-| `apps/rms-material/src/app/app.config.ts` | Add provideAnimationsAsync |
-| `apps/rms-material/src/app/app.component.ts` | Test Material button (temporary) |
+| File                                         | Changes                                    |
+| -------------------------------------------- | ------------------------------------------ |
+| `package.json`                               | Add Material, CDK, ng2-charts dependencies |
+| `apps/rms-material/src/index.html`           | Add Material Icons and Roboto font links   |
+| `apps/rms-material/src/app/app.config.ts`    | Add provideAnimationsAsync                 |
+| `apps/rms-material/src/app/app.component.ts` | Test Material button (temporary)           |
 
 ## Package Versions
 
-| Package | Version | Purpose |
-|---------|---------|---------|
-| `@angular/material` | ^20.0.0 | Material Design components |
-| `@angular/cdk` | ^20.0.0 | Component Development Kit |
-| `ng2-charts` | ^7.0.0 | Chart.js wrapper for Angular |
+| Package             | Version | Purpose                      |
+| ------------------- | ------- | ---------------------------- |
+| `@angular/material` | ^20.0.0 | Material Design components   |
+| `@angular/cdk`      | ^20.0.0 | Component Development Kit    |
+| `ng2-charts`        | ^7.0.0  | Chart.js wrapper for Angular |
 
 ## Definition of Done
 

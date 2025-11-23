@@ -230,20 +230,20 @@ pnpm nx run rms-material:lint
 
 ## Files Created
 
-| File | Purpose |
-|------|---------|
-| `apps/rms-material/project.json` | Nx project configuration |
-| `apps/rms-material/tsconfig.json` | Base TypeScript configuration |
-| `apps/rms-material/tsconfig.app.json` | App-specific TypeScript configuration |
-| `apps/rms-material/tsconfig.spec.json` | Test TypeScript configuration |
-| `apps/rms-material/proxy.conf.json` | API proxy configuration |
-| `apps/rms-material/src/main.ts` | Application entry point |
-| `apps/rms-material/src/index.html` | HTML template |
-| `apps/rms-material/src/styles.scss` | Global styles (placeholder) |
-| `apps/rms-material/src/app/app.component.ts` | Root component |
-| `apps/rms-material/src/app/app.config.ts` | App configuration |
-| `apps/rms-material/src/app/app.routes.ts` | Routing configuration |
-| `apps/rms-material/public/.gitkeep` | Static assets directory |
+| File                                         | Purpose                               |
+| -------------------------------------------- | ------------------------------------- |
+| `apps/rms-material/project.json`             | Nx project configuration              |
+| `apps/rms-material/tsconfig.json`            | Base TypeScript configuration         |
+| `apps/rms-material/tsconfig.app.json`        | App-specific TypeScript configuration |
+| `apps/rms-material/tsconfig.spec.json`       | Test TypeScript configuration         |
+| `apps/rms-material/proxy.conf.json`          | API proxy configuration               |
+| `apps/rms-material/src/main.ts`              | Application entry point               |
+| `apps/rms-material/src/index.html`           | HTML template                         |
+| `apps/rms-material/src/styles.scss`          | Global styles (placeholder)           |
+| `apps/rms-material/src/app/app.component.ts` | Root component                        |
+| `apps/rms-material/src/app/app.config.ts`    | App configuration                     |
+| `apps/rms-material/src/app/app.routes.ts`    | Routing configuration                 |
+| `apps/rms-material/public/.gitkeep`          | Static assets directory               |
 
 ## Definition of Done
 
