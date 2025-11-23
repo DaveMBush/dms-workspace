@@ -54,6 +54,127 @@
 - [ ] Lazy load requests debounced
 - [ ] No memory leaks on destroy
 
+## Test-Driven Development Approach
+
+**Write tests BEFORE implementation code.**
+
+### Step 1: Create Unit Tests First
+
+**VirtualTableDataSource Tests** - `apps/rms-material/src/app/shared/components/base-table/virtual-table-data-source.spec.ts`:
+
+```typescript
+import { VirtualTableDataSource, LazyLoadEvent } from './virtual-table-data-source';
+import { of } from 'rxjs';
+
+describe('VirtualTableDataSource', () => {
+  let dataSource: VirtualTableDataSource<{ id: string; name: string }>;
+  let mockLoadFn: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    mockLoadFn = vi.fn().mockReturnValue(of({ data: [], total: 0 }));
+    dataSource = new VirtualTableDataSource(mockLoadFn);
+  });
+
+  afterEach(() => {
+    dataSource.disconnect();
+  });
+
+  it('should call loadFn on loadInitialData', () => {
+    dataSource.loadInitialData();
+    expect(mockLoadFn).toHaveBeenCalledWith({ first: 0, rows: 50 });
+  });
+
+  it('should emit loading state', (done) => {
+    mockLoadFn.mockReturnValue(of({ data: [{ id: '1', name: 'Test' }], total: 1 }));
+    dataSource.loading$.subscribe((loading) => {
+      if (!loading) done();
+    });
+    dataSource.loadInitialData();
+  });
+
+  it('should cache loaded data', () => {
+    mockLoadFn.mockReturnValue(of({ data: [{ id: '1', name: 'Test' }], total: 10 }));
+    dataSource.loadInitialData();
+    expect(dataSource.getData().length).toBe(1);
+  });
+
+  it('should return total records', () => {
+    mockLoadFn.mockReturnValue(of({ data: [], total: 100 }));
+    dataSource.loadInitialData();
+    expect(dataSource.getTotalRecords()).toBe(100);
+  });
+
+  it('should update single row', () => {
+    mockLoadFn.mockReturnValue(of({ data: [{ id: '1', name: 'Test' }], total: 1 }));
+    dataSource.loadInitialData();
+    dataSource.updateRow(0, { id: '1', name: 'Updated' });
+    expect(dataSource.getData()[0].name).toBe('Updated');
+  });
+});
+```
+
+**BaseTableComponent Tests** - `apps/rms-material/src/app/shared/components/base-table/base-table.component.spec.ts`:
+
+```typescript
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { BaseTableComponent, ColumnDef } from './base-table.component';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+
+describe('BaseTableComponent', () => {
+  let component: BaseTableComponent<{ id: string; name: string }>;
+  let fixture: ComponentFixture<BaseTableComponent<{ id: string; name: string }>>;
+
+  const columns: ColumnDef[] = [{ field: 'name', header: 'Name', sortable: true }];
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [BaseTableComponent, NoopAnimationsModule],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(BaseTableComponent);
+    component = fixture.componentInstance;
+    fixture.componentRef.setInput('columns', columns);
+  });
+
+  it('should compute displayed columns', () => {
+    expect(component.displayedColumns()).toContain('name');
+  });
+
+  it('should include select column when selectable', () => {
+    fixture.componentRef.setInput('selectable', true);
+    expect(component.displayedColumns()).toContain('select');
+  });
+
+  it('should emit sortChange on sort', () => {
+    const spy = vi.spyOn(component.sortChange, 'emit');
+    component.onSort({ active: 'name', direction: 'asc' });
+    expect(spy).toHaveBeenCalled();
+  });
+
+  it('should emit rowClick on row click', () => {
+    const spy = vi.spyOn(component.rowClick, 'emit');
+    component.onRowClick({ id: '1', name: 'Test' });
+    expect(spy).toHaveBeenCalledWith({ id: '1', name: 'Test' });
+  });
+
+  it('should toggle selection', () => {
+    const row = { id: '1', name: 'Test' };
+    component.toggleSelection(row);
+    expect(component.selection.isSelected(row)).toBe(true);
+  });
+
+  it('should track by id', () => {
+    expect(component.trackByFn(0, { id: '123', name: 'Test' })).toBe('123');
+  });
+});
+```
+
+**TDD Cycle:**
+
+1. Run `pnpm nx run rms-material:test` - tests should fail (RED)
+2. Implement minimal code to pass tests (GREEN)
+3. Refactor while keeping tests passing (REFACTOR)
+
 ## Technical Approach
 
 ### Step 1: Create Virtual Table Data Source
@@ -83,23 +204,16 @@ export class VirtualTableDataSource<T> extends DataSource<T> {
   private pageSize = 50;
   private loadThreshold = 10; // Load more when within 10 rows of boundary
 
-  constructor(
-    private loadFn: (event: LazyLoadEvent) => Observable<{ data: T[]; total: number }>
-  ) {
+  constructor(private loadFn: (event: LazyLoadEvent) => Observable<{ data: T[]; total: number }>) {
     super();
   }
 
   connect(collectionViewer: CollectionViewer): Observable<T[]> {
     const context = this;
 
-    this.subscription = collectionViewer.viewChange
-      .pipe(
-        debounceTime(100),
-        takeUntil(this.destroy$)
-      )
-      .subscribe(function onViewChange(range) {
-        context.checkAndLoadData(range.start, range.end);
-      });
+    this.subscription = collectionViewer.viewChange.pipe(debounceTime(100), takeUntil(this.destroy$)).subscribe(function onViewChange(range) {
+      context.checkAndLoadData(range.start, range.end);
+    });
 
     return this.dataSubject.asObservable();
   }
@@ -183,17 +297,7 @@ export class VirtualTableDataSource<T> extends DataSource<T> {
 Create `apps/rms-material/src/app/shared/components/base-table/base-table.component.ts`:
 
 ```typescript
-import {
-  Component,
-  input,
-  output,
-  contentChildren,
-  AfterContentInit,
-  signal,
-  computed,
-  TemplateRef,
-  ContentChild,
-} from '@angular/core';
+import { Component, input, output, contentChildren, AfterContentInit, signal, computed, TemplateRef, ContentChild } from '@angular/core';
 import { CdkVirtualScrollViewport, ScrollingModule } from '@angular/cdk/scrolling';
 import { MatTableModule } from '@angular/material/table';
 import { MatSortModule, Sort } from '@angular/material/sort';
@@ -214,13 +318,7 @@ export interface ColumnDef {
 
 @Component({
   selector: 'rms-base-table',
-  imports: [
-    ScrollingModule,
-    MatTableModule,
-    MatSortModule,
-    MatProgressBarModule,
-    MatCheckboxModule,
-  ],
+  imports: [ScrollingModule, MatTableModule, MatSortModule, MatProgressBarModule, MatCheckboxModule],
   templateUrl: './base-table.component.html',
   styleUrl: './base-table.component.scss',
 })
@@ -311,96 +409,43 @@ Create `apps/rms-material/src/app/shared/components/base-table/base-table.compon
 ```html
 <div class="table-container">
   @if (dataSource?.loading$ | async) {
-    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
   }
 
-  <cdk-virtual-scroll-viewport
-    [itemSize]="rowHeight()"
-    [minBufferPx]="rowHeight() * bufferSize()"
-    [maxBufferPx]="rowHeight() * bufferSize() * 2"
-    class="virtual-scroll-viewport"
-  >
-    <table
-      mat-table
-      [dataSource]="dataSource"
-      matSort
-      (matSortChange)="onSort($event)"
-      [trackBy]="trackByFn"
-    >
+  <cdk-virtual-scroll-viewport [itemSize]="rowHeight()" [minBufferPx]="rowHeight() * bufferSize()" [maxBufferPx]="rowHeight() * bufferSize() * 2" class="virtual-scroll-viewport">
+    <table mat-table [dataSource]="dataSource" matSort (matSortChange)="onSort($event)" [trackBy]="trackByFn">
       <!-- Selection Column -->
       @if (selectable()) {
-        <ng-container matColumnDef="select">
-          <th mat-header-cell *matHeaderCellDef>
-            @if (multiSelect()) {
-              <mat-checkbox
-                [checked]="isAllSelected()"
-                [indeterminate]="selection.hasValue() && !isAllSelected()"
-                (change)="toggleAllRows()"
-              ></mat-checkbox>
-            }
-          </th>
-          <td mat-cell *matCellDef="let row">
-            <mat-checkbox
-              [checked]="selection.isSelected(row)"
-              (click)="$event.stopPropagation()"
-              (change)="toggleSelection(row)"
-            ></mat-checkbox>
-          </td>
-        </ng-container>
+      <ng-container matColumnDef="select">
+        <th mat-header-cell *matHeaderCellDef>
+          @if (multiSelect()) {
+          <mat-checkbox [checked]="isAllSelected()" [indeterminate]="selection.hasValue() && !isAllSelected()" (change)="toggleAllRows()"></mat-checkbox>
+          }
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <mat-checkbox [checked]="selection.isSelected(row)" (click)="$event.stopPropagation()" (change)="toggleSelection(row)"></mat-checkbox>
+        </td>
+      </ng-container>
       }
 
       <!-- Dynamic Columns -->
       @for (column of columns(); track column.field) {
-        <ng-container [matColumnDef]="column.field">
-          <th
-            mat-header-cell
-            *matHeaderCellDef
-            [mat-sort-header]="column.sortable ? column.field : ''"
-            [disabled]="!column.sortable"
-            [style.width]="column.width"
-          >
-            {{ column.header }}
-          </th>
-          <td
-            mat-cell
-            *matCellDef="let row"
-            (click)="onRowClick(row)"
-          >
-            <ng-container
-              [ngTemplateOutlet]="cellTemplate || defaultCell"
-              [ngTemplateOutletContext]="{ $implicit: row, column: column }"
-            ></ng-container>
-          </td>
-        </ng-container>
+      <ng-container [matColumnDef]="column.field">
+        <th mat-header-cell *matHeaderCellDef [mat-sort-header]="column.sortable ? column.field : ''" [disabled]="!column.sortable" [style.width]="column.width">{{ column.header }}</th>
+        <td mat-cell *matCellDef="let row" (click)="onRowClick(row)">
+          <ng-container [ngTemplateOutlet]="cellTemplate || defaultCell" [ngTemplateOutletContext]="{ $implicit: row, column: column }"></ng-container>
+        </td>
+      </ng-container>
       }
 
       <tr mat-header-row *matHeaderRowDef="displayedColumns(); sticky: true"></tr>
-      <tr
-        mat-row
-        *matRowDef="let row; columns: displayedColumns()"
-        [class.selected]="selection.isSelected(row)"
-      ></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns()" [class.selected]="selection.isSelected(row)"></tr>
     </table>
   </cdk-virtual-scroll-viewport>
 </div>
 
 <!-- Default cell template -->
-<ng-template #defaultCell let-row let-column="column">
-  @switch (column.type) {
-    @case ('currency') {
-      {{ row[column.field] | currency }}
-    }
-    @case ('date') {
-      {{ row[column.field] | date:'shortDate' }}
-    }
-    @case ('number') {
-      {{ row[column.field] | number }}
-    }
-    @default {
-      {{ row[column.field] }}
-    }
-  }
-</ng-template>
+<ng-template #defaultCell let-row let-column="column"> @switch (column.type) { @case ('currency') { {{ row[column.field] | currency }} } @case ('date') { {{ row[column.field] | date:'shortDate' }} } @case ('number') { {{ row[column.field] | number }} } @default { {{ row[column.field] }} } } </ng-template>
 ```
 
 ### Step 4: Create Base Table Styles
@@ -465,12 +510,12 @@ td.mat-mdc-cell {
 
 ## Files Created
 
-| File | Purpose |
-|------|---------|
+| File                                                        | Purpose                              |
+| ----------------------------------------------------------- | ------------------------------------ |
 | `shared/components/base-table/virtual-table-data-source.ts` | Custom data source with lazy loading |
-| `shared/components/base-table/base-table.component.ts` | Base table component |
-| `shared/components/base-table/base-table.component.html` | Table template |
-| `shared/components/base-table/base-table.component.scss` | Table styles |
+| `shared/components/base-table/base-table.component.ts`      | Base table component                 |
+| `shared/components/base-table/base-table.component.html`    | Table template                       |
+| `shared/components/base-table/base-table.component.scss`    | Table styles                         |
 
 ## Usage Example
 
@@ -486,9 +531,7 @@ export class MyTableComponent implements OnInit {
   ];
 
   ngOnInit(): void {
-    this.table.initDataSource((event) =>
-      this.myService.loadData(event.first, event.rows)
-    );
+    this.table.initDataSource((event) => this.myService.loadData(event.first, event.rows));
   }
 }
 ```
@@ -504,3 +547,18 @@ export class MyTableComponent implements OnInit {
 - [ ] Custom cell templates supported
 - [ ] Performance verified with 1000+ rows
 - [ ] All validation commands pass
+
+## E2E Test Requirements
+
+When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
+
+- [ ] Table renders with virtual scrolling enabled
+- [ ] Only visible rows plus buffer are in DOM
+- [ ] Scrolling loads more data (lazy loading)
+- [ ] Loading indicator shows during data fetch
+- [ ] Column header click triggers sort
+- [ ] Row click triggers row selection
+- [ ] Multi-select checkbox works correctly
+- [ ] Performance test with 1000+ rows maintains 60fps
+
+Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.

@@ -48,6 +48,132 @@
 - [ ] Consistent spacing between cards
 - [ ] Match current profile page layout
 
+## Test-Driven Development Approach
+
+**Write tests BEFORE implementation code.**
+
+### Step 1: Create Unit Tests First
+
+**Profile Component Tests** - `apps/rms-material/src/app/auth/profile/profile.spec.ts`:
+
+```typescript
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Profile } from './profile';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { of } from 'rxjs';
+
+describe('Profile', () => {
+  let component: Profile;
+  let fixture: ComponentFixture<Profile>;
+  let mockProfileService: { getCurrentUser: ReturnType<typeof vi.fn> };
+
+  beforeEach(async () => {
+    mockProfileService = {
+      getCurrentUser: vi.fn().mockResolvedValue({ name: 'Test User', email: 'test@test.com' }),
+    };
+
+    await TestBed.configureTestingModule({
+      imports: [Profile, NoopAnimationsModule],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(Profile);
+    component = fixture.componentInstance;
+  });
+
+  it('should display user name after load', async () => {
+    await component.ngOnInit();
+    fixture.detectChanges();
+    expect(component.userName()).toBe('Test User');
+  });
+
+  it('should display user email after load', async () => {
+    await component.ngOnInit();
+    fixture.detectChanges();
+    expect(component.userEmail()).toBe('test@test.com');
+  });
+
+  it('should render password change card', () => {
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('rms-password-change-card')).toBeTruthy();
+  });
+
+  it('should render email change card', () => {
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('rms-email-change-card')).toBeTruthy();
+  });
+
+  it('should update email when onEmailChanged called', () => {
+    component.onEmailChanged('new@test.com');
+    expect(component.userEmail()).toBe('new@test.com');
+  });
+});
+```
+
+**Password Change Card Tests** - `apps/rms-material/src/app/auth/profile/components/password-change-card.spec.ts`:
+
+```typescript
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { PasswordChangeCard } from './password-change-card';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+
+describe('PasswordChangeCard', () => {
+  let component: PasswordChangeCard;
+  let fixture: ComponentFixture<PasswordChangeCard>;
+  let mockProfileService: { changePassword: ReturnType<typeof vi.fn> };
+  let mockNotification: { success: ReturnType<typeof vi.fn>; error: ReturnType<typeof vi.fn> };
+
+  beforeEach(async () => {
+    mockProfileService = { changePassword: vi.fn() };
+    mockNotification = { success: vi.fn(), error: vi.fn() };
+
+    await TestBed.configureTestingModule({
+      imports: [PasswordChangeCard, NoopAnimationsModule],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(PasswordChangeCard);
+    component = fixture.componentInstance;
+  });
+
+  it('should validate current password required', () => {
+    component.passwordForm.get('currentPassword')?.markAsTouched();
+    expect(component.passwordForm.get('currentPassword')?.hasError('required')).toBe(true);
+  });
+
+  it('should validate new password min length', () => {
+    component.passwordForm.patchValue({ newPassword: '123' });
+    component.passwordForm.get('newPassword')?.markAsTouched();
+    expect(component.passwordForm.get('newPassword')?.hasError('minlength')).toBe(true);
+  });
+
+  it('should show error when passwords do not match', async () => {
+    component.passwordForm.patchValue({
+      currentPassword: 'current',
+      newPassword: 'newpassword123',
+      confirmPassword: 'different123',
+    });
+    await component.onSubmit();
+    expect(mockNotification.error).toHaveBeenCalledWith('New passwords do not match');
+  });
+
+  it('should call profile service on valid submit', async () => {
+    mockProfileService.changePassword.mockResolvedValue({});
+    component.passwordForm.patchValue({
+      currentPassword: 'current',
+      newPassword: 'newpassword123',
+      confirmPassword: 'newpassword123',
+    });
+    await component.onSubmit();
+    expect(mockProfileService.changePassword).toHaveBeenCalled();
+  });
+});
+```
+
+**TDD Cycle:**
+
+1. Run `pnpm nx run rms-material:test` - tests should fail (RED)
+2. Implement minimal code to pass tests (GREEN)
+3. Refactor while keeping tests passing (REFACTOR)
+
 ## Technical Approach
 
 ### Step 1: Create Profile Container
@@ -116,10 +242,7 @@ Create `apps/rms-material/src/app/auth/profile/profile.html`:
 
   <div class="profile-cards">
     <rms-password-change-card />
-    <rms-email-change-card
-      [currentEmail]="userEmail()"
-      (emailChanged)="onEmailChanged($event)"
-    />
+    <rms-email-change-card [currentEmail]="userEmail()" (emailChanged)="onEmailChanged($event)" />
   </div>
 </div>
 ```
@@ -143,15 +266,7 @@ import { NotificationService } from '../../../shared/services/notification.servi
 
 @Component({
   selector: 'rms-password-change-card',
-  imports: [
-    ReactiveFormsModule,
-    MatCardModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatIconModule,
-    MatProgressSpinnerModule,
-  ],
+  imports: [ReactiveFormsModule, MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, MatProgressSpinnerModule],
   templateUrl: './password-change-card.html',
   styleUrl: './password-change-card.scss',
 })
@@ -191,9 +306,7 @@ export class PasswordChangeCard {
       this.notification.success('Password changed successfully');
       this.passwordForm.reset();
     } catch (error) {
-      this.notification.error(
-        error instanceof Error ? error.message : 'Failed to change password'
-      );
+      this.notification.error(error instanceof Error ? error.message : 'Failed to change password');
     } finally {
       this.isLoading.set(false);
     }
@@ -215,81 +328,43 @@ Create `apps/rms-material/src/app/auth/profile/components/password-change-card.h
     <form [formGroup]="passwordForm" (ngSubmit)="onSubmit()">
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Current Password</mat-label>
-        <input
-          matInput
-          [type]="hideCurrentPassword() ? 'password' : 'text'"
-          formControlName="currentPassword"
-          autocomplete="current-password"
-        />
-        <button
-          mat-icon-button
-          matSuffix
-          type="button"
-          (click)="hideCurrentPassword.set(!hideCurrentPassword())"
-        >
+        <input matInput [type]="hideCurrentPassword() ? 'password' : 'text'" formControlName="currentPassword" autocomplete="current-password" />
+        <button mat-icon-button matSuffix type="button" (click)="hideCurrentPassword.set(!hideCurrentPassword())">
           <mat-icon>{{ hideCurrentPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
         </button>
         @if (passwordForm.get('currentPassword')?.hasError('required')) {
-          <mat-error>Current password is required</mat-error>
+        <mat-error>Current password is required</mat-error>
         }
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>New Password</mat-label>
-        <input
-          matInput
-          [type]="hideNewPassword() ? 'password' : 'text'"
-          formControlName="newPassword"
-          autocomplete="new-password"
-        />
-        <button
-          mat-icon-button
-          matSuffix
-          type="button"
-          (click)="hideNewPassword.set(!hideNewPassword())"
-        >
+        <input matInput [type]="hideNewPassword() ? 'password' : 'text'" formControlName="newPassword" autocomplete="new-password" />
+        <button mat-icon-button matSuffix type="button" (click)="hideNewPassword.set(!hideNewPassword())">
           <mat-icon>{{ hideNewPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
         </button>
         @if (passwordForm.get('newPassword')?.hasError('required')) {
-          <mat-error>New password is required</mat-error>
-        }
-        @if (passwordForm.get('newPassword')?.hasError('minlength')) {
-          <mat-error>Password must be at least 8 characters</mat-error>
+        <mat-error>New password is required</mat-error>
+        } @if (passwordForm.get('newPassword')?.hasError('minlength')) {
+        <mat-error>Password must be at least 8 characters</mat-error>
         }
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Confirm New Password</mat-label>
-        <input
-          matInput
-          [type]="hideConfirmPassword() ? 'password' : 'text'"
-          formControlName="confirmPassword"
-          autocomplete="new-password"
-        />
-        <button
-          mat-icon-button
-          matSuffix
-          type="button"
-          (click)="hideConfirmPassword.set(!hideConfirmPassword())"
-        >
+        <input matInput [type]="hideConfirmPassword() ? 'password' : 'text'" formControlName="confirmPassword" autocomplete="new-password" />
+        <button mat-icon-button matSuffix type="button" (click)="hideConfirmPassword.set(!hideConfirmPassword())">
           <mat-icon>{{ hideConfirmPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
         </button>
         @if (passwordForm.get('confirmPassword')?.hasError('required')) {
-          <mat-error>Please confirm your new password</mat-error>
+        <mat-error>Please confirm your new password</mat-error>
         }
       </mat-form-field>
 
-      <button
-        mat-raised-button
-        color="primary"
-        type="submit"
-        [disabled]="isLoading()"
-      >
+      <button mat-raised-button color="primary" type="submit" [disabled]="isLoading()">
         @if (isLoading()) {
-          <mat-spinner diameter="20"></mat-spinner>
-        } @else {
-          Change Password
-        }
+        <mat-spinner diameter="20"></mat-spinner>
+        } @else { Change Password }
       </button>
     </form>
   </mat-card-content>
@@ -315,15 +390,7 @@ import { NotificationService } from '../../../shared/services/notification.servi
 
 @Component({
   selector: 'rms-email-change-card',
-  imports: [
-    ReactiveFormsModule,
-    MatCardModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatIconModule,
-    MatProgressSpinnerModule,
-  ],
+  imports: [ReactiveFormsModule, MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, MatProgressSpinnerModule],
   templateUrl: './email-change-card.html',
   styleUrl: './email-change-card.scss',
 })
@@ -357,9 +424,7 @@ export class EmailChangeCard {
       this.emailChanged.emit(newEmail!);
       this.emailForm.reset();
     } catch (error) {
-      this.notification.error(
-        error instanceof Error ? error.message : 'Failed to change email'
-      );
+      this.notification.error(error instanceof Error ? error.message : 'Failed to change email');
     } finally {
       this.isLoading.set(false);
     }
@@ -369,17 +434,17 @@ export class EmailChangeCard {
 
 ## Files Created
 
-| File | Purpose |
-|------|---------|
-| `auth/profile/profile.ts` | Profile container |
-| `auth/profile/profile.html` | Profile template |
-| `auth/profile/profile.scss` | Profile styles |
-| `auth/profile/components/password-change-card.ts` | Password change component |
-| `auth/profile/components/password-change-card.html` | Password change template |
-| `auth/profile/components/password-change-card.scss` | Password change styles |
-| `auth/profile/components/email-change-card.ts` | Email change component |
-| `auth/profile/components/email-change-card.html` | Email change template |
-| `auth/profile/components/email-change-card.scss` | Email change styles |
+| File                                                | Purpose                   |
+| --------------------------------------------------- | ------------------------- |
+| `auth/profile/profile.ts`                           | Profile container         |
+| `auth/profile/profile.html`                         | Profile template          |
+| `auth/profile/profile.scss`                         | Profile styles            |
+| `auth/profile/components/password-change-card.ts`   | Password change component |
+| `auth/profile/components/password-change-card.html` | Password change template  |
+| `auth/profile/components/password-change-card.scss` | Password change styles    |
+| `auth/profile/components/email-change-card.ts`      | Email change component    |
+| `auth/profile/components/email-change-card.html`    | Email change template     |
+| `auth/profile/components/email-change-card.scss`    | Email change styles       |
 
 ## Definition of Done
 
@@ -393,3 +458,18 @@ export class EmailChangeCard {
 - [ ] Loading states show during submission
 - [ ] Route `/profile` accessible from shell
 - [ ] All validation commands pass
+
+## E2E Test Requirements
+
+When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
+
+- [ ] Profile page displays user name and email
+- [ ] Password change validates current password required
+- [ ] Password change validates new passwords match
+- [ ] Password change success shows notification
+- [ ] Email change validates email format
+- [ ] Email change success updates displayed email
+- [ ] Navigation from user menu to profile works
+- [ ] Loading states display during form submission
+
+Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.

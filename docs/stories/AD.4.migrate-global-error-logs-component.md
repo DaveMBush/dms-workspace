@@ -35,6 +35,75 @@
 - [ ] Server-side pagination
 - [ ] Loading states during fetch
 
+## Test-Driven Development Approach
+
+**Write tests BEFORE implementation code.**
+
+### Step 1: Create Unit Tests First
+
+Create `apps/rms-material/src/app/global/global-error-logs/global-error-logs.component.spec.ts`:
+
+```typescript
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { GlobalErrorLogsComponent } from './global-error-logs.component';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+
+describe('GlobalErrorLogsComponent', () => {
+  let component: GlobalErrorLogsComponent;
+  let fixture: ComponentFixture<GlobalErrorLogsComponent>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [GlobalErrorLogsComponent, NoopAnimationsModule],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(GlobalErrorLogsComponent);
+    component = fixture.componentInstance;
+  });
+
+  it('should define displayed columns', () => {
+    expect(component.displayedColumns).toContain('timestamp');
+    expect(component.displayedColumns).toContain('type');
+    expect(component.displayedColumns).toContain('message');
+    expect(component.displayedColumns).toContain('actions');
+  });
+
+  it('should initialize with default pagination', () => {
+    expect(component.pageSize()).toBe(25);
+    expect(component.pageIndex()).toBe(0);
+  });
+
+  it('should update pagination on page change', () => {
+    component.onPageChange({ pageIndex: 2, pageSize: 50, length: 100 });
+    expect(component.pageIndex()).toBe(2);
+    expect(component.pageSize()).toBe(50);
+  });
+
+  it('should reset page on type filter', () => {
+    component.pageIndex.set(5);
+    component.onTypeFilter('API Error');
+    expect(component.selectedType()).toBe('API Error');
+    expect(component.pageIndex()).toBe(0);
+  });
+
+  it('should have error types defined', () => {
+    expect(component.errorTypes.length).toBeGreaterThan(0);
+    expect(component.errorTypes).toContain('All');
+  });
+
+  it('should set loading state during fetch', () => {
+    component.loadErrorLogs();
+    expect(component.isLoading()).toBe(true);
+  });
+});
+```
+
+**TDD Cycle:**
+
+1. Run `pnpm nx run rms-material:test` - tests should fail (RED)
+2. Implement minimal code to pass tests (GREEN)
+3. Refactor while keeping tests passing (REFACTOR)
+
 ## Technical Approach
 
 Create `apps/rms-material/src/app/global/global-error-logs/global-error-logs.component.ts`:
@@ -61,16 +130,7 @@ interface ErrorLog {
 
 @Component({
   selector: 'rms-global-error-logs',
-  imports: [
-    MatTableModule,
-    MatPaginatorModule,
-    MatToolbarModule,
-    MatButtonModule,
-    MatIconModule,
-    MatSelectModule,
-    MatExpansionModule,
-    DatePipe,
-  ],
+  imports: [MatTableModule, MatPaginatorModule, MatToolbarModule, MatButtonModule, MatIconModule, MatSelectModule, MatExpansionModule, DatePipe],
   templateUrl: './global-error-logs.component.html',
   styleUrl: './global-error-logs.component.scss',
 })
@@ -125,7 +185,7 @@ export class GlobalErrorLogsComponent implements OnInit {
       <mat-label>Type</mat-label>
       <mat-select [value]="selectedType()" (selectionChange)="onTypeFilter($event.value)">
         @for (type of errorTypes; track type) {
-          <mat-option [value]="type">{{ type }}</mat-option>
+        <mat-option [value]="type">{{ type }}</mat-option>
         }
       </mat-select>
     </mat-form-field>
@@ -160,13 +220,7 @@ export class GlobalErrorLogsComponent implements OnInit {
     <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
   </table>
 
-  <mat-paginator
-    [length]="totalRecords()"
-    [pageSize]="pageSize()"
-    [pageIndex]="pageIndex()"
-    [pageSizeOptions]="[10, 25, 50, 100]"
-    (page)="onPageChange($event)"
-  ></mat-paginator>
+  <mat-paginator [length]="totalRecords()" [pageSize]="pageSize()" [pageIndex]="pageIndex()" [pageSizeOptions]="[10, 25, 50, 100]" (page)="onPageChange($event)"></mat-paginator>
 </div>
 ```
 
@@ -178,3 +232,17 @@ export class GlobalErrorLogsComponent implements OnInit {
 - [ ] Clear error action works
 - [ ] Loading states show
 - [ ] All validation commands pass
+
+## E2E Test Requirements
+
+When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
+
+- [ ] Error logs table displays error entries
+- [ ] Pagination controls navigate pages
+- [ ] Page size selector changes results per page
+- [ ] Error type filter filters logs
+- [ ] Clear error button marks error as resolved
+- [ ] Loading indicator shows during fetch
+- [ ] Empty state shows when no errors
+
+Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.

@@ -74,6 +74,7 @@ test('should have no accessibility violations on dashboard', async ({ page }) =>
 ### Step 2: Manual Testing Checklist
 
 **Keyboard Navigation:**
+
 - [ ] Tab through all interactive elements
 - [ ] Shift+Tab to go backwards
 - [ ] Enter/Space to activate buttons
@@ -81,6 +82,7 @@ test('should have no accessibility violations on dashboard', async ({ page }) =>
 - [ ] Escape to close dialogs
 
 **Screen Reader Testing:**
+
 - [ ] VoiceOver (Mac)
 - [ ] NVDA (Windows)
 - [ ] Test form labels announced
@@ -88,6 +90,7 @@ test('should have no accessibility violations on dashboard', async ({ page }) =>
 - [ ] Test error messages announced
 
 **Visual Testing:**
+
 - [ ] Zoom to 200% - layout remains usable
 - [ ] High contrast mode
 - [ ] Color blindness simulation
@@ -97,6 +100,7 @@ test('should have no accessibility violations on dashboard', async ({ page }) =>
 **Common fixes needed:**
 
 1. **Missing form labels:**
+
 ```html
 <!-- Bad -->
 <input matInput placeholder="Email" />
@@ -109,6 +113,7 @@ test('should have no accessibility violations on dashboard', async ({ page }) =>
 ```
 
 2. **Missing button labels:**
+
 ```html
 <!-- Bad -->
 <button mat-icon-button><mat-icon>delete</mat-icon></button>
@@ -120,6 +125,7 @@ test('should have no accessibility violations on dashboard', async ({ page }) =>
 ```
 
 3. **Table accessibility:**
+
 ```html
 <table mat-table [dataSource]="data" aria-label="Investment positions">
   ...
@@ -127,7 +133,8 @@ test('should have no accessibility violations on dashboard', async ({ page }) =>
 ```
 
 4. **Dialog focus management:**
-Material dialogs handle this automatically, but verify:
+   Material dialogs handle this automatically, but verify:
+
 - Focus moves to dialog on open
 - Focus trapped within dialog
 - Focus returns to trigger on close
@@ -135,6 +142,7 @@ Material dialogs handle this automatically, but verify:
 ### Step 4: Document Findings
 
 Create accessibility report with:
+
 - Issues found
 - Severity
 - Remediation steps
@@ -143,28 +151,33 @@ Create accessibility report with:
 ## Audit Checklist
 
 ### Forms
+
 - [ ] All inputs have labels
 - [ ] Required fields indicated
 - [ ] Error messages associated with inputs
 - [ ] Instructions provided where needed
 
 ### Navigation
+
 - [ ] Skip to main content link
 - [ ] Consistent navigation
 - [ ] Breadcrumbs where appropriate
 - [ ] Current page indicated
 
 ### Tables
+
 - [ ] Table headers properly marked
 - [ ] Caption or aria-label present
 - [ ] Sort indicators announced
 
 ### Dialogs
+
 - [ ] Focus managed correctly
 - [ ] Escape closes dialog
 - [ ] Title announced
 
 ### Colors
+
 - [ ] Text contrast >= 4.5:1
 - [ ] Large text contrast >= 3:1
 - [ ] Focus indicators visible
@@ -178,3 +191,17 @@ Create accessibility report with:
 - [ ] All critical issues fixed
 - [ ] Accessibility report documented
 - [ ] WCAG 2.1 AA compliance verified
+
+## E2E Test Requirements
+
+When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
+
+- [ ] axe-core audit passes on login page
+- [ ] axe-core audit passes on dashboard
+- [ ] axe-core audit passes on all major routes
+- [ ] Keyboard navigation completes login flow
+- [ ] Keyboard navigation opens/closes dialogs
+- [ ] Tab order is logical on all pages
+- [ ] Focus returns to trigger after dialog close
+
+Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.

@@ -62,6 +62,195 @@
 - [ ] Logout clears session and redirects
 - [ ] All validation commands pass
 
+## Test-Driven Development Approach
+
+**Write tests BEFORE implementation code.**
+
+### Step 1: Create Unit Tests First
+
+Create test files before implementing components. Run tests to see them fail (RED), then implement to make them pass (GREEN), then refactor (REFACTOR).
+
+**Notification Service Tests** - `apps/rms-material/src/app/shared/services/notification.service.spec.ts`:
+
+```typescript
+import { TestBed } from '@angular/core/testing';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { NotificationService } from './notification.service';
+
+describe('NotificationService', () => {
+  let service: NotificationService;
+  let mockSnackBar: { open: ReturnType<typeof vi.fn> };
+
+  beforeEach(() => {
+    mockSnackBar = { open: vi.fn() };
+    TestBed.configureTestingModule({
+      providers: [{ provide: MatSnackBar, useValue: mockSnackBar }],
+    });
+    service = TestBed.inject(NotificationService);
+  });
+
+  it('should call snackBar.open with success class', () => {
+    service.success('Test message');
+    expect(mockSnackBar.open).toHaveBeenCalledWith('Test message', 'Close', expect.objectContaining({ panelClass: ['snackbar-success'] }));
+  });
+
+  it('should call snackBar.open with error class', () => {
+    service.error('Error message');
+    expect(mockSnackBar.open).toHaveBeenCalledWith('Error message', 'Close', expect.objectContaining({ panelClass: ['snackbar-error'] }));
+  });
+
+  it('should show persistent notification with duration 0', () => {
+    service.showPersistent('Persistent', 'info');
+    expect(mockSnackBar.open).toHaveBeenCalledWith('Persistent', 'Dismiss', expect.objectContaining({ duration: 0 }));
+  });
+});
+```
+
+**Confirm Dialog Service Tests** - `apps/rms-material/src/app/shared/services/confirm-dialog.service.spec.ts`:
+
+```typescript
+import { TestBed } from '@angular/core/testing';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { of } from 'rxjs';
+import { ConfirmDialogService } from './confirm-dialog.service';
+
+describe('ConfirmDialogService', () => {
+  let service: ConfirmDialogService;
+  let mockDialog: { open: ReturnType<typeof vi.fn> };
+
+  beforeEach(() => {
+    mockDialog = {
+      open: vi.fn().mockReturnValue({ afterClosed: () => of(true) }),
+    };
+    TestBed.configureTestingModule({
+      providers: [{ provide: MatDialog, useValue: mockDialog }],
+    });
+    service = TestBed.inject(ConfirmDialogService);
+  });
+
+  it('should open dialog with provided data', () => {
+    service.confirm({ title: 'Test', message: 'Confirm?' });
+    expect(mockDialog.open).toHaveBeenCalled();
+  });
+
+  it('should return observable of boolean', (done) => {
+    service.confirm({ title: 'Test', message: 'Confirm?' }).subscribe((result) => {
+      expect(result).toBe(true);
+      done();
+    });
+  });
+});
+```
+
+**Splitter Component Tests** - `apps/rms-material/src/app/shared/components/splitter/splitter.component.spec.ts`:
+
+```typescript
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { SplitterComponent } from './splitter.component';
+
+describe('SplitterComponent', () => {
+  let component: SplitterComponent;
+  let fixture: ComponentFixture<SplitterComponent>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [SplitterComponent],
+    }).compileComponents();
+    fixture = TestBed.createComponent(SplitterComponent);
+    component = fixture.componentInstance;
+  });
+
+  it('should use initialLeftWidth by default', () => {
+    fixture.componentRef.setInput('initialLeftWidth', 25);
+    fixture.detectChanges();
+    expect(component.leftWidth()).toBe(25);
+  });
+
+  it('should persist width to localStorage', () => {
+    const spy = vi.spyOn(Storage.prototype, 'setItem');
+    component.leftWidth.set(30);
+    expect(spy).toHaveBeenCalledWith('splitter-state', '30');
+  });
+
+  it('should load width from localStorage', () => {
+    vi.spyOn(Storage.prototype, 'getItem').mockReturnValue('35');
+    const newComponent = TestBed.createComponent(SplitterComponent).componentInstance;
+    expect(newComponent.leftWidth()).toBe(35);
+  });
+});
+```
+
+**Shell Component Tests** - `apps/rms-material/src/app/shell/shell.component.spec.ts`:
+
+```typescript
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ShellComponent } from './shell.component';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { RouterTestingModule } from '@angular/router/testing';
+import { of } from 'rxjs';
+
+describe('ShellComponent', () => {
+  let component: ShellComponent;
+  let fixture: ComponentFixture<ShellComponent>;
+  let mockConfirmDialog: { confirm: ReturnType<typeof vi.fn> };
+  let mockAuthService: { logout: ReturnType<typeof vi.fn> };
+  let mockRouter: { navigate: ReturnType<typeof vi.fn> };
+
+  beforeEach(async () => {
+    mockConfirmDialog = { confirm: vi.fn().mockReturnValue(of(true)) };
+    mockAuthService = { logout: vi.fn() };
+    mockRouter = { navigate: vi.fn() };
+
+    await TestBed.configureTestingModule({
+      imports: [ShellComponent, NoopAnimationsModule, RouterTestingModule],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(ShellComponent);
+    component = fixture.componentInstance;
+  });
+
+  it('should render toolbar', () => {
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('mat-toolbar')).toBeTruthy();
+  });
+
+  it('should render theme toggle button', () => {
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('[aria-label="Toggle theme"]')).toBeTruthy();
+  });
+
+  it('should render user menu button', () => {
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('[aria-label="User menu"]')).toBeTruthy();
+  });
+
+  it('should render splitter with two panels', () => {
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('rms-splitter')).toBeTruthy();
+  });
+
+  describe('onLogout', () => {
+    it('should show confirmation dialog', () => {
+      component.onLogout();
+      expect(mockConfirmDialog.confirm).toHaveBeenCalled();
+    });
+
+    it('should logout and navigate on confirm', () => {
+      component.onLogout();
+      expect(mockAuthService.logout).toHaveBeenCalled();
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/auth/login']);
+    });
+  });
+});
+```
+
+**TDD Cycle:**
+
+1. Run `pnpm nx run rms-material:test` - tests should fail (RED)
+2. Implement minimal code to pass tests (GREEN)
+3. Refactor while keeping tests passing (REFACTOR)
+4. Repeat for each component/service
+
 ## Technical Approach
 
 ### Step 1: Create Notification Service
@@ -128,11 +317,7 @@ Create `apps/rms-material/src/app/shared/components/confirm-dialog/confirm-dialo
 ```typescript
 import { Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import {
-  MAT_DIALOG_DATA,
-  MatDialogModule,
-  MatDialogRef,
-} from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 
 export interface ConfirmDialogData {
   title: string;
@@ -182,10 +367,7 @@ import { inject, Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
 
-import {
-  ConfirmDialogComponent,
-  ConfirmDialogData,
-} from '../components/confirm-dialog/confirm-dialog.component';
+import { ConfirmDialogComponent, ConfirmDialogData } from '../components/confirm-dialog/confirm-dialog.component';
 
 @Injectable({
   providedIn: 'root',
@@ -219,12 +401,7 @@ import { CdkDrag, CdkDragMove } from '@angular/cdk/drag-drop';
       <div class="splitter-panel left-panel" [style.width.%]="leftWidth()">
         <ng-content select="[leftPanel]"></ng-content>
       </div>
-      <div
-        class="splitter-handle"
-        cdkDrag
-        cdkDragLockAxis="x"
-        (cdkDragMoved)="onDragMove($event, container)"
-      >
+      <div class="splitter-handle" cdkDrag cdkDragLockAxis="x" (cdkDragMoved)="onDragMove($event, container)">
         <div class="handle-bar"></div>
       </div>
       <div class="splitter-panel right-panel" [style.width.%]="100 - leftWidth()">
@@ -285,14 +462,7 @@ import { ConfirmDialogService } from '../shared/services/confirm-dialog.service'
 
 @Component({
   selector: 'rms-shell',
-  imports: [
-    RouterOutlet,
-    MatToolbarModule,
-    MatButtonModule,
-    MatIconModule,
-    MatMenuModule,
-    SplitterComponent,
-  ],
+  imports: [RouterOutlet, MatToolbarModule, MatButtonModule, MatIconModule, MatMenuModule, SplitterComponent],
   templateUrl: './shell.component.html',
   styleUrl: './shell.component.scss',
 })
@@ -371,16 +541,16 @@ Update `apps/rms-material/src/app/app.routes.ts` to include shell route with gua
 
 ## Files Created
 
-| File | Purpose |
-|------|---------|
-| `shared/services/notification.service.ts` | Toast notification wrapper |
-| `shared/components/confirm-dialog/confirm-dialog.component.ts` | Confirm dialog |
-| `shared/services/confirm-dialog.service.ts` | Confirm dialog service |
-| `shared/components/splitter/splitter.component.ts` | Custom splitter |
-| `shared/components/splitter/splitter.component.scss` | Splitter styles |
-| `shell/shell.component.ts` | Main shell component |
-| `shell/shell.component.html` | Shell template |
-| `shell/shell.component.scss` | Shell styles |
+| File                                                           | Purpose                    |
+| -------------------------------------------------------------- | -------------------------- |
+| `shared/services/notification.service.ts`                      | Toast notification wrapper |
+| `shared/components/confirm-dialog/confirm-dialog.component.ts` | Confirm dialog             |
+| `shared/services/confirm-dialog.service.ts`                    | Confirm dialog service     |
+| `shared/components/splitter/splitter.component.ts`             | Custom splitter            |
+| `shared/components/splitter/splitter.component.scss`           | Splitter styles            |
+| `shell/shell.component.ts`                                     | Main shell component       |
+| `shell/shell.component.html`                                   | Shell template             |
+| `shell/shell.component.scss`                                   | Shell styles               |
 
 ## Definition of Done
 
@@ -393,3 +563,18 @@ Update `apps/rms-material/src/app/app.routes.ts` to include shell route with gua
 - [ ] Confirm dialog service working
 - [ ] Router outlets rendering correctly
 - [ ] All validation commands pass
+
+## E2E Test Requirements
+
+When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
+
+- [ ] Toolbar renders with all buttons
+- [ ] Theme toggle button switches theme
+- [ ] User menu opens and displays profile/logout options
+- [ ] Logout confirms and redirects to login
+- [ ] Splitter can be resized by dragging
+- [ ] Splitter state persists after page refresh
+- [ ] Named router outlets render content correctly
+- [ ] Toast notifications display and dismiss
+
+Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.

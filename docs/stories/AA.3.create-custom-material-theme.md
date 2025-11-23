@@ -111,20 +111,24 @@ $light-primary: mat.m3-define-palette(mat.$m3-blue-palette);
 $light-accent: mat.m3-define-palette(mat.$m3-azure-palette);
 $light-warn: mat.m3-define-palette(mat.$m3-red-palette);
 
-$light-theme: mat.m3-define-theme((
-  color: (
-    theme-type: light,
-    primary: $light-primary,
-    tertiary: $light-accent,
-  ),
-  typography: mat.m3-define-typography((
-    brand-family: 'Roboto, sans-serif',
-    plain-family: 'Roboto, sans-serif',
-  )),
-  density: (
-    scale: 0,
-  ),
-));
+$light-theme: mat.m3-define-theme(
+  (
+    color: (
+      theme-type: light,
+      primary: $light-primary,
+      tertiary: $light-accent,
+    ),
+    typography: mat.m3-define-typography(
+        (
+          brand-family: 'Roboto, sans-serif',
+          plain-family: 'Roboto, sans-serif',
+        )
+      ),
+    density: (
+      scale: 0,
+    ),
+  )
+);
 
 // Light theme specific CSS custom properties
 :root {
@@ -148,20 +152,24 @@ $dark-primary: mat.m3-define-palette(mat.$m3-blue-palette);
 $dark-accent: mat.m3-define-palette(mat.$m3-azure-palette);
 $dark-warn: mat.m3-define-palette(mat.$m3-red-palette);
 
-$dark-theme: mat.m3-define-theme((
-  color: (
-    theme-type: dark,
-    primary: $dark-primary,
-    tertiary: $dark-accent,
-  ),
-  typography: mat.m3-define-typography((
-    brand-family: 'Roboto, sans-serif',
-    plain-family: 'Roboto, sans-serif',
-  )),
-  density: (
-    scale: 0,
-  ),
-));
+$dark-theme: mat.m3-define-theme(
+  (
+    color: (
+      theme-type: dark,
+      primary: $dark-primary,
+      tertiary: $dark-accent,
+    ),
+    typography: mat.m3-define-typography(
+        (
+          brand-family: 'Roboto, sans-serif',
+          plain-family: 'Roboto, sans-serif',
+        )
+      ),
+    density: (
+      scale: 0,
+    ),
+  )
+);
 
 // Dark theme specific CSS custom properties
 .dark-theme {
@@ -336,25 +344,25 @@ export class AppComponent {
 
 ## Files Created/Modified
 
-| File | Purpose |
-|------|---------|
-| `apps/rms-material/src/themes/_theme-variables.scss` | CSS custom properties for colors |
-| `apps/rms-material/src/themes/_light-theme.scss` | Light theme Material configuration |
-| `apps/rms-material/src/themes/_dark-theme.scss` | Dark theme Material configuration |
-| `apps/rms-material/src/styles.scss` | Global styles with theme imports |
-| `apps/rms-material/src/app/shared/services/theme.service.ts` | Theme toggle service |
-| `apps/rms-material/src/app/app.component.ts` | Updated with theme test |
+| File                                                         | Purpose                            |
+| ------------------------------------------------------------ | ---------------------------------- |
+| `apps/rms-material/src/themes/_theme-variables.scss`         | CSS custom properties for colors   |
+| `apps/rms-material/src/themes/_light-theme.scss`             | Light theme Material configuration |
+| `apps/rms-material/src/themes/_dark-theme.scss`              | Dark theme Material configuration  |
+| `apps/rms-material/src/styles.scss`                          | Global styles with theme imports   |
+| `apps/rms-material/src/app/shared/services/theme.service.ts` | Theme toggle service               |
+| `apps/rms-material/src/app/app.component.ts`                 | Updated with theme test            |
 
 ## Color Mapping Reference
 
-| PrimeNG Aura | Material Equivalent | CSS Variable |
-|--------------|---------------------|--------------|
-| Primary blue | Primary palette | `--rms-primary-500` |
-| Surface ground | Background | `--rms-background` |
-| Surface card | Surface | `--rms-surface` |
-| Text color | Text primary | `--rms-text-primary` |
-| Text secondary | Text secondary | `--rms-text-secondary` |
-| Border color | Border | `--rms-border` |
+| PrimeNG Aura   | Material Equivalent | CSS Variable           |
+| -------------- | ------------------- | ---------------------- |
+| Primary blue   | Primary palette     | `--rms-primary-500`    |
+| Surface ground | Background          | `--rms-background`     |
+| Surface card   | Surface             | `--rms-surface`        |
+| Text color     | Text primary        | `--rms-text-primary`   |
+| Text secondary | Text secondary      | `--rms-text-secondary` |
+| Border color   | Border              | `--rms-border`         |
 
 ## Definition of Done
 
@@ -368,6 +376,17 @@ export class AppComponent {
 - [ ] All Material components respect theme colors
 - [ ] Smooth transitions between themes
 - [ ] Build succeeds with theme files
+
+## E2E Test Requirements
+
+When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
+
+- [ ] Theme toggle switches between light and dark mode
+- [ ] Theme preference persists across page refreshes
+- [ ] All Material components display correctly in both themes
+- [ ] No visual regressions in theme colors
+
+Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.
 
 ## Notes
 

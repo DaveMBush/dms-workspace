@@ -32,6 +32,64 @@
 - [ ] Uses `provideSmartFeatureSignalEntities` in route
 - [ ] Passes account context to children
 
+## Test-Driven Development Approach
+
+**Write tests BEFORE implementation code.**
+
+### Step 1: Create Unit Tests First
+
+Create `apps/rms-material/src/app/account-panel/account-detail.component.spec.ts`:
+
+```typescript
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { AccountDetailComponent } from './account-detail.component';
+import { RouterTestingModule } from '@angular/router/testing';
+import { ActivatedRoute } from '@angular/router';
+import { of } from 'rxjs';
+
+describe('AccountDetailComponent', () => {
+  let component: AccountDetailComponent;
+  let fixture: ComponentFixture<AccountDetailComponent>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [AccountDetailComponent, RouterTestingModule],
+      providers: [
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            parent: { paramMap: of({ get: () => 'account-123' }) },
+          },
+        },
+      ],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(AccountDetailComponent);
+    component = fixture.componentInstance;
+  });
+
+  it('should initialize with empty accountId', () => {
+    expect(component.accountId()).toBe('');
+  });
+
+  it('should set accountId from route params on init', () => {
+    component.ngOnInit();
+    expect(component.accountId()).toBe('account-123');
+  });
+
+  it('should render router outlet', () => {
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('router-outlet')).toBeTruthy();
+  });
+});
+```
+
+**TDD Cycle:**
+
+1. Run `pnpm nx run rms-material:test` - tests should fail (RED)
+2. Implement minimal code to pass tests (GREEN)
+3. Refactor while keeping tests passing (REFACTOR)
+
 ## Technical Approach
 
 Create `apps/rms-material/src/app/account-panel/account-detail.component.ts`:
@@ -70,3 +128,14 @@ export class AccountDetailComponent implements OnInit {
 - [ ] Entity context provided via route
 - [ ] Child components render
 - [ ] All validation commands pass
+
+## E2E Test Requirements
+
+When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
+
+- [ ] Account detail loads correct account data
+- [ ] Account ID in URL matches displayed account
+- [ ] Child routes render within container
+- [ ] SmartNgRX trades entity loads for account
+
+Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.

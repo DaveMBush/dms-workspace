@@ -36,6 +36,139 @@
 - [ ] Reactive forms with validation
 - [ ] Mode-aware (add vs edit)
 
+## Test-Driven Development Approach
+
+**Write tests BEFORE implementation code.**
+
+### Step 1: Create Unit Tests First
+
+Create `apps/rms-material/src/app/account-panel/div-dep-modal/div-dep-modal.component.spec.ts`:
+
+```typescript
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { DivDepModal, DivDepModalData } from './div-dep-modal.component';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MatNativeDateModule } from '@angular/material/core';
+
+describe('DivDepModal', () => {
+  let component: DivDepModal;
+  let fixture: ComponentFixture<DivDepModal>;
+  let mockDialogRef: { close: ReturnType<typeof vi.fn> };
+
+  const createComponent = (data: DivDepModalData) => {
+    mockDialogRef = { close: vi.fn() };
+    TestBed.configureTestingModule({
+      imports: [DivDepModal, NoopAnimationsModule, MatNativeDateModule],
+      providers: [
+        { provide: MatDialogRef, useValue: mockDialogRef },
+        { provide: MAT_DIALOG_DATA, useValue: data },
+      ],
+    });
+    fixture = TestBed.createComponent(DivDepModal);
+    component = fixture.componentInstance;
+  };
+
+  describe('add mode', () => {
+    beforeEach(() => createComponent({ mode: 'add' }));
+
+    it('should have empty form', () => {
+      expect(component.form.get('symbol')?.value).toBe('');
+    });
+
+    it('should return false for isEditMode', () => {
+      expect(component.isEditMode).toBe(false);
+    });
+
+    it('should have title "Add Dividend Deposit"', () => {
+      expect(component.title).toBe('Add Dividend Deposit');
+    });
+  });
+
+  describe('edit mode', () => {
+    const dividend = { id: '1', symbol: 'AAPL', amount: 0.25, shares: 100 };
+
+    beforeEach(() => createComponent({ mode: 'edit', dividend: dividend as any }));
+
+    it('should populate form with dividend data', () => {
+      component.ngOnInit();
+      expect(component.form.get('symbol')?.value).toBe('AAPL');
+      expect(component.form.get('amount')?.value).toBe(0.25);
+    });
+
+    it('should return true for isEditMode', () => {
+      expect(component.isEditMode).toBe(true);
+    });
+
+    it('should have title "Edit Dividend Deposit"', () => {
+      expect(component.title).toBe('Edit Dividend Deposit');
+    });
+  });
+
+  describe('validation', () => {
+    beforeEach(() => createComponent({ mode: 'add' }));
+
+    it('should require symbol', () => {
+      component.form.get('symbol')?.markAsTouched();
+      expect(component.form.get('symbol')?.hasError('required')).toBe(true);
+    });
+
+    it('should require exDate', () => {
+      component.form.get('exDate')?.markAsTouched();
+      expect(component.form.get('exDate')?.hasError('required')).toBe(true);
+    });
+
+    it('should require amount > 0', () => {
+      component.form.patchValue({ amount: 0 });
+      expect(component.form.get('amount')?.hasError('min')).toBe(true);
+    });
+
+    it('should require shares >= 1', () => {
+      component.form.patchValue({ shares: 0 });
+      expect(component.form.get('shares')?.hasError('min')).toBe(true);
+    });
+  });
+
+  describe('submit', () => {
+    beforeEach(() => createComponent({ mode: 'add' }));
+
+    it('should not submit invalid form', () => {
+      component.onSubmit();
+      expect(mockDialogRef.close).not.toHaveBeenCalled();
+    });
+
+    it('should close dialog with data on valid submit', async () => {
+      component.form.patchValue({
+        symbol: 'AAPL',
+        exDate: new Date(),
+        amount: 0.25,
+        shares: 100,
+        type: 'Regular',
+      });
+      component.onSubmit();
+      // Wait for async operation
+      await new Promise((r) => setTimeout(r, 600));
+      expect(mockDialogRef.close).toHaveBeenCalled();
+    });
+  });
+
+  describe('cancel', () => {
+    beforeEach(() => createComponent({ mode: 'add' }));
+
+    it('should close dialog with null', () => {
+      component.onCancel();
+      expect(mockDialogRef.close).toHaveBeenCalledWith(null);
+    });
+  });
+});
+```
+
+**TDD Cycle:**
+
+1. Run `pnpm nx run rms-material:test` - tests should fail (RED)
+2. Implement minimal code to pass tests (GREEN)
+3. Refactor while keeping tests passing (REFACTOR)
+
 ## Technical Approach
 
 Create `apps/rms-material/src/app/account-panel/div-dep-modal/div-dep-modal.component.ts`:
@@ -61,17 +194,7 @@ export interface DivDepModalData {
 
 @Component({
   selector: 'rms-div-dep-modal',
-  imports: [
-    ReactiveFormsModule,
-    MatDialogModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
-    MatDatepickerModule,
-    MatButtonModule,
-    MatProgressSpinnerModule,
-    SymbolAutocompleteComponent,
-  ],
+  imports: [ReactiveFormsModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatDatepickerModule, MatButtonModule, MatProgressSpinnerModule, SymbolAutocompleteComponent],
   templateUrl: './div-dep-modal.component.html',
   styleUrl: './div-dep-modal.component.scss',
 })
@@ -154,7 +277,7 @@ Create `apps/rms-material/src/app/account-panel/div-dep-modal/div-dep-modal.comp
       <mat-label>Symbol</mat-label>
       <input matInput formControlName="symbol" [readonly]="isEditMode" />
       @if (form.get('symbol')?.hasError('required')) {
-        <mat-error>Symbol is required</mat-error>
+      <mat-error>Symbol is required</mat-error>
       }
     </mat-form-field>
 
@@ -165,7 +288,7 @@ Create `apps/rms-material/src/app/account-panel/div-dep-modal/div-dep-modal.comp
         <mat-datepicker-toggle matSuffix [for]="exPicker"></mat-datepicker-toggle>
         <mat-datepicker #exPicker></mat-datepicker>
         @if (form.get('exDate')?.hasError('required')) {
-          <mat-error>Ex-Date is required</mat-error>
+        <mat-error>Ex-Date is required</mat-error>
         }
       </mat-form-field>
 
@@ -183,7 +306,7 @@ Create `apps/rms-material/src/app/account-panel/div-dep-modal/div-dep-modal.comp
         <input matInput type="number" formControlName="amount" step="0.01" />
         <span matPrefix>$&nbsp;</span>
         @if (form.get('amount')?.hasError('required')) {
-          <mat-error>Amount is required</mat-error>
+        <mat-error>Amount is required</mat-error>
         }
       </mat-form-field>
 
@@ -191,7 +314,7 @@ Create `apps/rms-material/src/app/account-panel/div-dep-modal/div-dep-modal.comp
         <mat-label>Shares</mat-label>
         <input matInput type="number" formControlName="shares" />
         @if (form.get('shares')?.hasError('required')) {
-          <mat-error>Shares is required</mat-error>
+        <mat-error>Shares is required</mat-error>
         }
       </mat-form-field>
     </div>
@@ -200,7 +323,7 @@ Create `apps/rms-material/src/app/account-panel/div-dep-modal/div-dep-modal.comp
       <mat-label>Type</mat-label>
       <mat-select formControlName="type">
         @for (type of depositTypes; track type) {
-          <mat-option [value]="type">{{ type }}</mat-option>
+        <mat-option [value]="type">{{ type }}</mat-option>
         }
       </mat-select>
     </mat-form-field>
@@ -211,10 +334,8 @@ Create `apps/rms-material/src/app/account-panel/div-dep-modal/div-dep-modal.comp
   <button mat-button (click)="onCancel()">Cancel</button>
   <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="isLoading()">
     @if (isLoading()) {
-      <mat-spinner diameter="20"></mat-spinner>
-    } @else {
-      {{ isEditMode ? 'Update' : 'Add' }}
-    }
+    <mat-spinner diameter="20"></mat-spinner>
+    } @else { {{ isEditMode ? 'Update' : 'Add' }} }
   </button>
 </mat-dialog-actions>
 ```
@@ -228,3 +349,21 @@ Create `apps/rms-material/src/app/account-panel/div-dep-modal/div-dep-modal.comp
 - [ ] Submit saves and closes
 - [ ] Cancel closes without saving
 - [ ] All validation commands pass
+
+## E2E Test Requirements
+
+When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
+
+- [ ] Modal opens for add mode with empty fields
+- [ ] Modal opens for edit mode with pre-filled data
+- [ ] Symbol field validates required
+- [ ] Ex-Date field validates required
+- [ ] Amount field validates required and min value
+- [ ] Shares field validates required and min value
+- [ ] Type dropdown displays all options
+- [ ] Submit button disabled while loading
+- [ ] Submit saves data and closes modal
+- [ ] Cancel closes modal without saving
+- [ ] Datepickers open and select dates
+
+Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.

@@ -89,14 +89,14 @@ export default defineConfig({
 
 Material components have different selectors:
 
-| PrimeNG Selector | Material Selector |
-|------------------|-------------------|
-| `p-button` | `button[mat-button], button[mat-raised-button]` |
-| `p-inputText` | `input[matInput]` |
-| `p-password` | `input[matInput][type="password"]` |
-| `p-table` | `table[mat-table]` |
-| `p-dialog` | `mat-dialog-container` |
-| `p-select` | `mat-select` |
+| PrimeNG Selector | Material Selector                               |
+| ---------------- | ----------------------------------------------- |
+| `p-button`       | `button[mat-button], button[mat-raised-button]` |
+| `p-inputText`    | `input[matInput]`                               |
+| `p-password`     | `input[matInput][type="password"]`              |
+| `p-table`        | `table[mat-table]`                              |
+| `p-dialog`       | `mat-dialog-container`                          |
+| `p-select`       | `mat-select`                                    |
 
 ### Step 4: Migrate Test Files
 
@@ -140,6 +140,7 @@ pnpm nx run rms-material-e2e:e2e
 ## Test Scenarios
 
 ### Authentication
+
 - [ ] Login with valid credentials
 - [ ] Login with invalid credentials
 - [ ] Logout
@@ -147,12 +148,14 @@ pnpm nx run rms-material-e2e:e2e
 - [ ] Profile update
 
 ### Navigation
+
 - [ ] Navigate between accounts
 - [ ] Navigate to global features
 - [ ] Tab navigation in account panel
 - [ ] Theme toggle
 
 ### Data Management
+
 - [ ] View open positions
 - [ ] Edit position
 - [ ] Add dividend deposit
@@ -160,6 +163,7 @@ pnpm nx run rms-material-e2e:e2e
 - [ ] Add symbol to universe
 
 ### Performance
+
 - [ ] Scroll large dividend deposits list
 - [ ] Lazy loading triggers
 
@@ -170,3 +174,36 @@ pnpm nx run rms-material-e2e:e2e
 - [ ] All tests pass
 - [ ] CI configuration updated
 - [ ] `pnpm nx run rms-material-e2e:e2e` succeeds
+
+## E2E Test Requirements
+
+This story IS the e2e test story. Ensure all e2e tests from previous stories are implemented:
+
+**Authentication Flow:**
+
+- [ ] Login with valid/invalid credentials
+- [ ] Logout flow
+- [ ] Session timeout warning and extend
+- [ ] Profile update
+
+**Navigation:**
+
+- [ ] Navigate between accounts
+- [ ] Navigate to global features
+- [ ] Tab navigation in account panel
+- [ ] Theme toggle
+
+**Data Management:**
+
+- [ ] View/edit open positions
+- [ ] View/edit sold positions
+- [ ] Add/edit/delete dividend deposits
+- [ ] Screener filtering and add to universe
+- [ ] Universe management (sync, delete)
+
+**Performance:**
+
+- [ ] Scroll large dividend deposits list (1000+ rows)
+- [ ] Lazy loading verification
+
+Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.

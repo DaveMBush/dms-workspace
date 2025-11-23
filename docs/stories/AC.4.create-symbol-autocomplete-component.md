@@ -34,6 +34,94 @@
 - [ ] Debounced search requests
 - [ ] Loading indicator during search
 
+## Test-Driven Development Approach
+
+**Write tests BEFORE implementation code.**
+
+### Step 1: Create Unit Tests First
+
+Create `apps/rms-material/src/app/shared/components/symbol-autocomplete/symbol-autocomplete.component.spec.ts`:
+
+```typescript
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { SymbolAutocompleteComponent, SymbolOption } from './symbol-autocomplete.component';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+
+describe('SymbolAutocompleteComponent', () => {
+  let component: SymbolAutocompleteComponent;
+  let fixture: ComponentFixture<SymbolAutocompleteComponent>;
+  let mockSearchFn: ReturnType<typeof vi.fn>;
+
+  beforeEach(async () => {
+    mockSearchFn = vi.fn().mockResolvedValue([
+      { symbol: 'AAPL', name: 'Apple Inc.' },
+      { symbol: 'AMZN', name: 'Amazon.com Inc.' },
+    ]);
+
+    await TestBed.configureTestingModule({
+      imports: [SymbolAutocompleteComponent, NoopAnimationsModule],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(SymbolAutocompleteComponent);
+    component = fixture.componentInstance;
+    fixture.componentRef.setInput('searchFn', mockSearchFn);
+  });
+
+  it('should render input field', () => {
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('input')).toBeTruthy();
+  });
+
+  it('should not search below min length', fakeAsync(() => {
+    fixture.detectChanges();
+    component.searchControl.setValue('A');
+    tick(300);
+    expect(mockSearchFn).not.toHaveBeenCalled();
+  }));
+
+  it('should search after min length and debounce', fakeAsync(() => {
+    fixture.detectChanges();
+    component.searchControl.setValue('AA');
+    tick(300);
+    expect(mockSearchFn).toHaveBeenCalledWith('AA');
+  }));
+
+  it('should set loading during search', fakeAsync(() => {
+    fixture.detectChanges();
+    component.searchControl.setValue('AAP');
+    tick(100);
+    expect(component.isLoading()).toBe(true);
+    tick(200);
+    expect(component.isLoading()).toBe(false);
+  }));
+
+  it('should emit selected option', () => {
+    const spy = vi.spyOn(component.symbolSelected, 'emit');
+    const option: SymbolOption = { symbol: 'AAPL', name: 'Apple' };
+    component.onOptionSelected(option);
+    expect(spy).toHaveBeenCalledWith(option);
+  });
+
+  it('should display symbol in displayFn', () => {
+    expect(component.displayFn({ symbol: 'AAPL', name: 'Apple' })).toBe('AAPL');
+  });
+
+  it('should reset control and options', () => {
+    component.filteredOptions.set([{ symbol: 'A', name: 'Test' }]);
+    component.searchControl.setValue('test');
+    component.reset();
+    expect(component.searchControl.value).toBeFalsy();
+    expect(component.filteredOptions().length).toBe(0);
+  });
+});
+```
+
+**TDD Cycle:**
+
+1. Run `pnpm nx run rms-material:test` - tests should fail (RED)
+2. Implement minimal code to pass tests (GREEN)
+3. Refactor while keeping tests passing (REFACTOR)
+
 ## Technical Approach
 
 Create `apps/rms-material/src/app/shared/components/symbol-autocomplete/symbol-autocomplete.component.ts`:
@@ -54,39 +142,30 @@ export interface SymbolOption {
 
 @Component({
   selector: 'rms-symbol-autocomplete',
-  imports: [
-    ReactiveFormsModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatAutocompleteModule,
-    MatProgressSpinnerModule,
-  ],
+  imports: [ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatAutocompleteModule, MatProgressSpinnerModule],
   template: `
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>{{ label() }}</mat-label>
-      <input
-        matInput
-        [formControl]="searchControl"
-        [matAutocomplete]="auto"
-        [placeholder]="placeholder()"
-      />
+      <input matInput [formControl]="searchControl" [matAutocomplete]="auto" [placeholder]="placeholder()" />
       @if (isLoading()) {
-        <mat-spinner matSuffix diameter="20"></mat-spinner>
+      <mat-spinner matSuffix diameter="20"></mat-spinner>
       }
-      <mat-autocomplete
-        #auto="matAutocomplete"
-        [displayWith]="displayFn"
-        (optionSelected)="onOptionSelected($event.option.value)"
-      >
+      <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="onOptionSelected($event.option.value)">
         @for (option of filteredOptions(); track option.symbol) {
-          <mat-option [value]="option">
-            <strong>{{ option.symbol }}</strong> - {{ option.name }}
-          </mat-option>
+        <mat-option [value]="option">
+          <strong>{{ option.symbol }}</strong> - {{ option.name }}
+        </mat-option>
         }
       </mat-autocomplete>
     </mat-form-field>
   `,
-  styles: [`.full-width { width: 100%; }`],
+  styles: [
+    `
+      .full-width {
+        width: 100%;
+      }
+    `,
+  ],
 })
 export class SymbolAutocompleteComponent implements OnInit {
   label = input<string>('Symbol');
@@ -145,3 +224,16 @@ export class SymbolAutocompleteComponent implements OnInit {
 - [ ] Selection emits chosen symbol
 - [ ] Loading indicator shows during search
 - [ ] All validation commands pass
+
+## E2E Test Requirements
+
+When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
+
+- [ ] Typing minimum characters triggers search
+- [ ] Dropdown displays matching suggestions
+- [ ] Clicking suggestion populates input
+- [ ] Loading spinner shows during search
+- [ ] No suggestions message when no matches
+- [ ] Force selection prevents custom values (when enabled)
+
+Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.
