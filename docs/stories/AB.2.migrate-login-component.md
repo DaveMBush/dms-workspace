@@ -60,6 +60,122 @@
 - [ ] Login fails gracefully with invalid credentials
 - [ ] All validation commands pass
 
+## Test-Driven Development Approach
+
+**Write tests BEFORE implementation code.**
+
+### Step 1: Create Unit Tests First
+
+Create `apps/rms-material/src/app/auth/login/login.spec.ts`:
+
+```typescript
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Login } from './login';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { Router } from '@angular/router';
+import { of, throwError } from 'rxjs';
+
+describe('Login', () => {
+  let component: Login;
+  let fixture: ComponentFixture<Login>;
+  let mockAuthService: { login: ReturnType<typeof vi.fn> };
+  let mockRouter: { navigate: ReturnType<typeof vi.fn> };
+
+  beforeEach(async () => {
+    mockAuthService = { login: vi.fn() };
+    mockRouter = { navigate: vi.fn() };
+
+    await TestBed.configureTestingModule({
+      imports: [Login, NoopAnimationsModule],
+      providers: [{ provide: Router, useValue: mockRouter }],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(Login);
+    component = fixture.componentInstance;
+  });
+
+  describe('form rendering', () => {
+    it('should render email input', () => {
+      fixture.detectChanges();
+      expect(fixture.nativeElement.querySelector('input[formControlName="email"]')).toBeTruthy();
+    });
+
+    it('should render password input', () => {
+      fixture.detectChanges();
+      expect(fixture.nativeElement.querySelector('input[formControlName="password"]')).toBeTruthy();
+    });
+
+    it('should render submit button', () => {
+      fixture.detectChanges();
+      expect(fixture.nativeElement.querySelector('button[type="submit"]')).toBeTruthy();
+    });
+  });
+
+  describe('validation', () => {
+    it('should show error for invalid email', () => {
+      component.loginForm.patchValue({ email: 'invalid' });
+      component.loginForm.get('email')?.markAsTouched();
+      expect(component.loginForm.get('email')?.hasError('email')).toBe(true);
+    });
+
+    it('should show error for empty email', () => {
+      component.loginForm.get('email')?.markAsTouched();
+      expect(component.loginForm.get('email')?.hasError('required')).toBe(true);
+    });
+
+    it('should show error for short password', () => {
+      component.loginForm.patchValue({ password: '123' });
+      component.loginForm.get('password')?.markAsTouched();
+      expect(component.loginForm.get('password')?.hasError('minlength')).toBe(true);
+    });
+  });
+
+  describe('password visibility', () => {
+    it('should toggle password visibility', () => {
+      expect(component.hidePassword()).toBe(true);
+      component.togglePasswordVisibility();
+      expect(component.hidePassword()).toBe(false);
+    });
+  });
+
+  describe('form submission', () => {
+    it('should not submit if form is invalid', async () => {
+      await component.onSubmit();
+      expect(mockAuthService.login).not.toHaveBeenCalled();
+    });
+
+    it('should set loading state during submission', async () => {
+      mockAuthService.login.mockResolvedValue({});
+      component.loginForm.patchValue({ email: 'test@test.com', password: 'password123' });
+
+      const submitPromise = component.onSubmit();
+      expect(component.isLoading()).toBe(true);
+      await submitPromise;
+    });
+
+    it('should navigate on successful login', async () => {
+      mockAuthService.login.mockResolvedValue({});
+      component.loginForm.patchValue({ email: 'test@test.com', password: 'password123' });
+      await component.onSubmit();
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/']);
+    });
+
+    it('should show error on failed login', async () => {
+      mockAuthService.login.mockRejectedValue(new Error('Invalid credentials'));
+      component.loginForm.patchValue({ email: 'test@test.com', password: 'password123' });
+      await component.onSubmit();
+      expect(component.errorMessage()).toBeTruthy();
+    });
+  });
+});
+```
+
+**TDD Cycle:**
+
+1. Run `pnpm nx run rms-material:test` - tests should fail (RED)
+2. Implement minimal code to pass tests (GREEN)
+3. Refactor while keeping tests passing (REFACTOR)
+
 ## Technical Approach
 
 ### Step 1: Create Login Component
@@ -81,15 +197,7 @@ import { AuthService } from '../auth.service';
 
 @Component({
   selector: 'rms-login',
-  imports: [
-    ReactiveFormsModule,
-    MatCardModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatIconModule,
-    MatProgressSpinnerModule,
-  ],
+  imports: [ReactiveFormsModule, MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, MatProgressSpinnerModule],
   templateUrl: './login.html',
   styleUrl: './login.scss',
 })
@@ -126,9 +234,7 @@ export class Login {
       await this.authService.login(email!, password!);
       this.router.navigate(['/']);
     } catch (error) {
-      this.errorMessage.set(
-        error instanceof Error ? error.message : 'Login failed. Please try again.'
-      );
+      this.errorMessage.set(error instanceof Error ? error.message : 'Login failed. Please try again.');
     } finally {
       this.isLoading.set(false);
     }
@@ -151,69 +257,41 @@ Create `apps/rms-material/src/app/auth/login/login.html`:
     <mat-card-content>
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
         @if (errorMessage()) {
-          <div class="error-banner">
-            <mat-icon>error</mat-icon>
-            <span>{{ errorMessage() }}</span>
-          </div>
+        <div class="error-banner">
+          <mat-icon>error</mat-icon>
+          <span>{{ errorMessage() }}</span>
+        </div>
         }
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Email</mat-label>
-          <input
-            matInput
-            type="email"
-            formControlName="email"
-            placeholder="Enter your email"
-            autocomplete="email"
-          />
+          <input matInput type="email" formControlName="email" placeholder="Enter your email" autocomplete="email" />
           <mat-icon matPrefix>email</mat-icon>
           @if (loginForm.get('email')?.hasError('required')) {
-            <mat-error>Email is required</mat-error>
-          }
-          @if (loginForm.get('email')?.hasError('email')) {
-            <mat-error>Please enter a valid email</mat-error>
+          <mat-error>Email is required</mat-error>
+          } @if (loginForm.get('email')?.hasError('email')) {
+          <mat-error>Please enter a valid email</mat-error>
           }
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Password</mat-label>
-          <input
-            matInput
-            [type]="hidePassword() ? 'password' : 'text'"
-            formControlName="password"
-            placeholder="Enter your password"
-            autocomplete="current-password"
-          />
+          <input matInput [type]="hidePassword() ? 'password' : 'text'" formControlName="password" placeholder="Enter your password" autocomplete="current-password" />
           <mat-icon matPrefix>lock</mat-icon>
-          <button
-            mat-icon-button
-            matSuffix
-            type="button"
-            (click)="togglePasswordVisibility()"
-            [attr.aria-label]="hidePassword() ? 'Show password' : 'Hide password'"
-          >
+          <button mat-icon-button matSuffix type="button" (click)="togglePasswordVisibility()" [attr.aria-label]="hidePassword() ? 'Show password' : 'Hide password'">
             <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
           </button>
           @if (loginForm.get('password')?.hasError('required')) {
-            <mat-error>Password is required</mat-error>
-          }
-          @if (loginForm.get('password')?.hasError('minlength')) {
-            <mat-error>Password must be at least 8 characters</mat-error>
+          <mat-error>Password is required</mat-error>
+          } @if (loginForm.get('password')?.hasError('minlength')) {
+          <mat-error>Password must be at least 8 characters</mat-error>
           }
         </mat-form-field>
 
-        <button
-          mat-raised-button
-          color="primary"
-          type="submit"
-          class="full-width submit-button"
-          [disabled]="isLoading()"
-        >
+        <button mat-raised-button color="primary" type="submit" class="full-width submit-button" [disabled]="isLoading()">
           @if (isLoading()) {
-            <mat-spinner diameter="20"></mat-spinner>
-          } @else {
-            Sign In
-          }
+          <mat-spinner diameter="20"></mat-spinner>
+          } @else { Sign In }
         </button>
       </form>
     </mat-card-content>
@@ -314,11 +392,11 @@ Add login route to `apps/rms-material/src/app/app.routes.ts`:
 
 ## Files Created
 
-| File | Purpose |
-|------|---------|
-| `auth/login/login.ts` | Login component |
-| `auth/login/login.html` | Login template |
-| `auth/login/login.scss` | Login styles |
+| File                    | Purpose         |
+| ----------------------- | --------------- |
+| `auth/login/login.ts`   | Login component |
+| `auth/login/login.html` | Login template  |
+| `auth/login/login.scss` | Login styles    |
 
 ## Definition of Done
 
@@ -332,3 +410,36 @@ Add login route to `apps/rms-material/src/app/app.routes.ts`:
 - [ ] Successful login redirects to home
 - [ ] Guest guard prevents authenticated users from accessing
 - [ ] All validation commands pass
+
+## E2E Test Requirements
+
+When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
+
+### Core Functionality
+
+- [ ] Login page renders correctly
+- [ ] Email validation shows error for invalid format
+- [ ] Password validation shows error for too short
+- [ ] Password visibility toggle shows/hides password
+- [ ] Valid credentials redirect to home page
+- [ ] Invalid credentials show error message
+- [ ] Loading spinner shows during authentication
+- [ ] Authenticated users redirected away from login
+
+### Edge Cases
+
+- [ ] Form submit prevented when fields are empty
+- [ ] Multiple rapid form submissions are debounced
+- [ ] Network timeout shows appropriate error message
+- [ ] Server 500 error shows generic error message
+- [ ] Session expired during login attempt is handled gracefully
+- [ ] XSS attempt in email field is sanitized
+- [ ] SQL injection attempt in email field is sanitized
+- [ ] Very long email address is handled (max length validation)
+- [ ] Password field does not autocomplete sensitive data
+- [ ] Tab order follows logical flow (email → password → submit)
+- [ ] Enter key submits form from password field
+- [ ] Form state resets after failed login attempt
+- [ ] Error message cleared when user starts typing again
+
+Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.

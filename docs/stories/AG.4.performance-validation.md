@@ -27,13 +27,13 @@ The primary driver for this migration is improved virtual scrolling with lazy lo
 
 ### Performance Benchmarks
 
-| Metric | Target | Method |
-|--------|--------|--------|
-| Initial Load (FCP) | < 1.5s | Lighthouse |
-| Time to Interactive | < 3.0s | Lighthouse |
-| Scroll FPS (1000 rows) | >= 55fps | DevTools |
-| Lazy Load Trigger | < 200ms | Custom |
-| Memory (after 10min use) | No growth | DevTools |
+| Metric                   | Target    | Method     |
+| ------------------------ | --------- | ---------- |
+| Initial Load (FCP)       | < 1.5s    | Lighthouse |
+| Time to Interactive      | < 3.0s    | Lighthouse |
+| Scroll FPS (1000 rows)   | >= 55fps  | DevTools   |
+| Lazy Load Trigger        | < 200ms   | Custom     |
+| Memory (after 10min use) | No growth | DevTools   |
 
 ## Technical Approach
 
@@ -54,6 +54,7 @@ ls -la dist/apps/rms-material/browser/*.js
 ### Step 2: Lighthouse Audit
 
 Run Lighthouse on key pages:
+
 - Login page
 - Dashboard (with data)
 - Dividend deposits (with 1000+ records)
@@ -64,6 +65,7 @@ lighthouse http://localhost:4201 --output html --output-path ./lighthouse-report
 ```
 
 **Metrics to capture:**
+
 - First Contentful Paint
 - Largest Contentful Paint
 - Time to Interactive
@@ -202,12 +204,12 @@ async function testMemoryLeaks() {
 
 Run same benchmarks on original RMS application and compare:
 
-| Metric | RMS (PrimeNG) | RMS-Material | Improvement |
-|--------|---------------|--------------|-------------|
-| Bundle Size | TBD | TBD | TBD |
-| Initial Load | TBD | TBD | TBD |
-| Scroll FPS | TBD | TBD | TBD |
-| Lazy Load Time | TBD | TBD | TBD |
+| Metric         | RMS (PrimeNG) | RMS-Material | Improvement |
+| -------------- | ------------- | ------------ | ----------- |
+| Bundle Size    | TBD           | TBD          | TBD         |
+| Initial Load   | TBD           | TBD          | TBD         |
+| Scroll FPS     | TBD           | TBD          | TBD         |
+| Lazy Load Time | TBD           | TBD          | TBD         |
 
 ## Performance Report Template
 
@@ -217,40 +219,47 @@ Run same benchmarks on original RMS application and compare:
 ## Date: [DATE]
 
 ## Summary
+
 [Overall assessment of performance migration success]
 
 ## Bundle Size Comparison
-| Bundle | RMS | RMS-Material | Delta |
-|--------|-----|--------------|-------|
-| main.js | X KB | Y KB | Z% |
-| Total | X KB | Y KB | Z% |
+
+| Bundle  | RMS  | RMS-Material | Delta |
+| ------- | ---- | ------------ | ----- |
+| main.js | X KB | Y KB         | Z%    |
+| Total   | X KB | Y KB         | Z%    |
 
 ## Lighthouse Scores
-| Page | RMS | RMS-Material |
-|------|-----|--------------|
-| Login | X | Y |
-| Dashboard | X | Y |
-| Dividend Deposits | X | Y |
+
+| Page              | RMS | RMS-Material |
+| ----------------- | --- | ------------ |
+| Login             | X   | Y            |
+| Dashboard         | X   | Y            |
+| Dividend Deposits | X   | Y            |
 
 ## Virtual Scrolling Performance
-| Metric | RMS | RMS-Material | Target |
-|--------|-----|--------------|--------|
-| Avg FPS | X | Y | >= 55 |
-| Min FPS | X | Y | >= 30 |
+
+| Metric  | RMS | RMS-Material | Target |
+| ------- | --- | ------------ | ------ |
+| Avg FPS | X   | Y            | >= 55  |
+| Min FPS | X   | Y            | >= 30  |
 
 ## Lazy Loading
-| Metric | RMS | RMS-Material |
-|--------|-----|--------------|
-| Initial Load | X ms | Y ms |
-| Subsequent Load | X ms | Y ms |
+
+| Metric          | RMS  | RMS-Material |
+| --------------- | ---- | ------------ |
+| Initial Load    | X ms | Y ms         |
+| Subsequent Load | X ms | Y ms         |
 
 ## Memory Usage
-| Scenario | RMS | RMS-Material |
-|----------|-----|--------------|
-| Initial | X MB | Y MB |
-| After 10 min | X MB | Y MB |
+
+| Scenario     | RMS  | RMS-Material |
+| ------------ | ---- | ------------ |
+| Initial      | X MB | Y MB         |
+| After 10 min | X MB | Y MB         |
 
 ## Conclusion
+
 [Migration success/failure assessment]
 [Recommendations]
 ```
@@ -265,3 +274,83 @@ Run same benchmarks on original RMS application and compare:
 - [ ] Performance report documented
 - [ ] Comparison with RMS shows improvement or parity
 - [ ] PRIMARY DRIVER VALIDATED: Virtual scrolling with lazy loading works correctly
+
+## E2E Test Requirements
+
+When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
+
+**Bundle & Load Performance:**
+
+- [ ] Initial page load completes < 3 seconds
+- [ ] Lighthouse FCP < 1.5 seconds
+- [ ] Lighthouse TTI < 3.0 seconds
+
+**Virtual Scrolling Performance:**
+
+- [ ] Dividend deposits with 1000 rows loads successfully
+- [ ] Scrolling maintains >= 55fps average
+- [ ] DOM contains only visible rows plus buffer
+
+**Lazy Loading:**
+
+- [ ] Initial load makes single API request
+- [ ] Scrolling triggers additional API requests
+- [ ] Lazy load response < 200ms
+
+**Memory:**
+
+- [ ] Navigate 20x between pages without crash
+- [ ] Memory does not grow > 20% after navigation cycles
+
+### Edge Cases - Virtual Scrolling (CRITICAL)
+
+- [ ] 5000 rows maintains >= 50fps scrolling
+- [ ] 10000 rows does not crash browser
+- [ ] Rapid scroll to bottom and back to top works correctly
+- [ ] Scroll position maintained after data update
+- [ ] No blank rows during scroll (buffer size adequate)
+- [ ] Row recycling works correctly (no stale data displayed)
+- [ ] Scroll to specific row by index works
+- [ ] Keyboard scroll (Page Up/Down, Home/End) works
+- [ ] Touch scroll on mobile works smoothly
+- [ ] Scroll momentum on mobile feels natural
+- [ ] No jank during rapid direction changes
+
+### Edge Cases - Lazy Loading
+
+- [ ] Debounced requests prevent API spam during scroll
+- [ ] Cancelled requests during rapid scroll don't cause errors
+- [ ] Network timeout handled gracefully
+- [ ] Partial data load displays correctly
+- [ ] Retry logic works on failed requests
+- [ ] Loading indicator shows during fetch
+- [ ] Empty state handled when no more data
+- [ ] Error state handled when API fails
+
+### Edge Cases - Memory Management
+
+- [ ] Component cleanup on route change (no orphaned subscriptions)
+- [ ] Large image cleanup when scrolled out of view
+- [ ] Form data cleared after dialog close
+- [ ] Event listeners removed on component destroy
+- [ ] Observable subscriptions unsubscribed
+- [ ] No detached DOM nodes accumulating
+- [ ] Service worker cache bounded
+
+### Edge Cases - Network Conditions
+
+- [ ] Slow 3G simulation still usable
+- [ ] Offline mode shows appropriate message
+- [ ] Reconnection resumes data loading
+- [ ] Large payload handled without timeout
+- [ ] Concurrent requests limited to prevent browser limits
+
+### Edge Cases - Device Performance
+
+- [ ] Works on 4GB RAM device
+- [ ] Works on mobile CPU (throttled)
+- [ ] Works on low-end GPU
+- [ ] Battery usage reasonable on mobile
+- [ ] No excessive repaints (DevTools paint flashing)
+
+Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.

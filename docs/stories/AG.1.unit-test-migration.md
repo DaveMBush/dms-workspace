@@ -48,6 +48,7 @@
 ### Step 1: Copy Test Infrastructure
 
 Copy test configuration files:
+
 - `apps/rms-material/tsconfig.spec.json`
 - `apps/rms-material/vitest.config.ts` (if separate)
 
@@ -145,6 +146,7 @@ pnpm nx run rms-material:test --code-coverage
 ## Test Categories
 
 ### Component Tests (migrate)
+
 - Shell component
 - Login component
 - Profile components
@@ -156,6 +158,7 @@ pnpm nx run rms-material:test --code-coverage
 - Dialogs
 
 ### Service Tests (copy unchanged)
+
 - Auth service
 - Profile service
 - Effect services
@@ -163,6 +166,7 @@ pnpm nx run rms-material:test --code-coverage
 - Theme service
 
 ### Utility Tests (copy unchanged)
+
 - Function utilities
 - Validators
 - Formatters
@@ -175,3 +179,35 @@ pnpm nx run rms-material:test --code-coverage
 - [ ] All tests pass
 - [ ] Coverage >= 85%
 - [ ] `pnpm nx run rms-material:test --code-coverage` succeeds
+
+## E2E Test Requirements
+
+When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
+
+### Core Functionality
+
+- [ ] Unit tests can be run from command line
+- [ ] Coverage report generates correctly
+- [ ] No flaky tests (run 3x to verify)
+
+### Edge Cases
+
+- [ ] Tests pass in CI environment (headless)
+- [ ] Tests pass with different timezones configured
+- [ ] Tests handle async operations correctly (no race conditions)
+- [ ] Mock services reset between tests (no state leakage)
+- [ ] Large test suites complete within timeout (< 5 minutes)
+- [ ] Parallel test execution works correctly
+- [ ] Coverage thresholds enforced on PR
+- [ ] Failed tests provide clear error messages
+- [ ] Snapshot tests updated correctly on component changes
+- [ ] Tests work with Angular Material test harnesses
+- [ ] Dialog mock properly isolates tests
+- [ ] Zone.js async operations properly awaited
+- [ ] Tests pass after dependency updates
+- [ ] Test isolation (each test can run independently)
+- [ ] Random test order execution passes
+
+Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.
+
+**Note:** This story primarily focuses on unit tests, but e2e tests should verify the CI/CD pipeline runs unit tests correctly.

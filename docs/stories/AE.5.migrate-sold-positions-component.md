@@ -34,6 +34,70 @@
 - [ ] Uses editable cells from AC.2/AC.3
 - [ ] SmartNgRX trades signal (sold filter)
 
+## Test-Driven Development Approach
+
+**Write tests BEFORE implementation code.**
+
+### Step 1: Create Unit Tests First
+
+Create `apps/rms-material/src/app/account-panel/sold-positions/sold-positions.component.spec.ts`:
+
+```typescript
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { SoldPositionsComponent } from './sold-positions.component';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+
+describe('SoldPositionsComponent', () => {
+  let component: SoldPositionsComponent;
+  let fixture: ComponentFixture<SoldPositionsComponent>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [SoldPositionsComponent, NoopAnimationsModule],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(SoldPositionsComponent);
+    component = fixture.componentInstance;
+  });
+
+  it('should define columns', () => {
+    expect(component.columns.length).toBeGreaterThan(0);
+    expect(component.columns.find((c) => c.field === 'symbol')).toBeTruthy();
+  });
+
+  it('should have sell price editable', () => {
+    const col = component.columns.find((c) => c.field === 'sellPrice');
+    expect(col?.editable).toBe(true);
+  });
+
+  it('should have sell date editable', () => {
+    const col = component.columns.find((c) => c.field === 'sellDate');
+    expect(col?.editable).toBe(true);
+  });
+
+  it('should have realizedGain column', () => {
+    const col = component.columns.find((c) => c.field === 'realizedGain');
+    expect(col).toBeTruthy();
+  });
+
+  it('should have holdingPeriod column', () => {
+    const col = component.columns.find((c) => c.field === 'holdingPeriod');
+    expect(col).toBeTruthy();
+  });
+
+  it('should call onCellEdit without error', () => {
+    const trade = { id: '1', symbol: 'AAPL' } as any;
+    expect(() => component.onCellEdit(trade, 'sellPrice', 150)).not.toThrow();
+  });
+});
+```
+
+**TDD Cycle:**
+
+1. Run `pnpm nx run rms-material:test` - tests should fail (RED)
+2. Implement minimal code to pass tests (GREEN)
+3. Refactor while keeping tests passing (REFACTOR)
+
 ## Technical Approach
 
 Create `apps/rms-material/src/app/account-panel/sold-positions/sold-positions.component.ts`:
@@ -52,10 +116,7 @@ import { Trade } from '../../store/trades/trade.interface';
 
 @Component({
   selector: 'rms-sold-positions',
-  imports: [
-    MatToolbarModule, MatButtonModule, MatIconModule,
-    BaseTableComponent, EditableCellComponent, EditableDateCellComponent,
-  ],
+  imports: [MatToolbarModule, MatButtonModule, MatIconModule, BaseTableComponent, EditableCellComponent, EditableDateCellComponent],
   templateUrl: './sold-positions.component.html',
   styleUrl: './sold-positions.component.scss',
 })
@@ -87,3 +148,34 @@ export class SoldPositionsComponent {
 - [ ] Gain/loss shows correctly
 - [ ] SmartNgRX updates
 - [ ] All validation commands pass
+
+## E2E Test Requirements
+
+When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
+
+### Core Functionality
+
+- [ ] Sold positions table displays all sold positions
+- [ ] Inline editing works for sell price, sell date
+- [ ] Realized gain/loss calculates correctly
+- [ ] Holding period displays correctly
+- [ ] Sorting by columns works
+- [ ] Data updates reflect immediately
+
+### Edge Cases
+
+- [ ] Empty sold positions shows appropriate message
+- [ ] Edit validation prevents sell date before purchase date
+- [ ] Holding period calculates correctly (including leap years)
+- [ ] Short-term vs long-term gain indicator (1 year boundary)
+- [ ] Negative gain (loss) displayed in red
+- [ ] Very old positions (years) display correctly
+- [ ] Same-day sale (0 days holding) handled
+- [ ] Filter by date range works
+- [ ] Filter by gain/loss type works
+- [ ] Tax lot identification displayed correctly
+- [ ] Export for tax reporting works (CSV format)
+- [ ] Aggregated totals displayed at bottom
+- [ ] Wash sale indicator (if applicable)
+
+Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.

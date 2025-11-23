@@ -34,6 +34,68 @@
 - [ ] SmartNgRX signals for data
 - [ ] Responsive chart sizing
 
+## Test-Driven Development Approach
+
+**Write tests BEFORE implementation code.**
+
+### Step 1: Create Unit Tests First
+
+Create `apps/rms-material/src/app/global/global-summary/global-summary.component.spec.ts`:
+
+```typescript
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { GlobalSummaryComponent } from './global-summary.component';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+
+describe('GlobalSummaryComponent', () => {
+  let component: GlobalSummaryComponent;
+  let fixture: ComponentFixture<GlobalSummaryComponent>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [GlobalSummaryComponent, NoopAnimationsModule],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(GlobalSummaryComponent);
+    component = fixture.componentInstance;
+  });
+
+  it('should compute allocation chart data', () => {
+    fixture.detectChanges();
+    const chartData = component.allocationChartData();
+    expect(chartData.labels).toBeDefined();
+    expect(chartData.datasets.length).toBeGreaterThan(0);
+  });
+
+  it('should compute performance chart data', () => {
+    fixture.detectChanges();
+    const chartData = component.performanceChartData();
+    expect(chartData.labels).toBeDefined();
+    expect(chartData.datasets.length).toBeGreaterThan(0);
+  });
+
+  it('should have correct allocation labels', () => {
+    fixture.detectChanges();
+    const chartData = component.allocationChartData();
+    expect(chartData.labels).toContain('Low Risk');
+    expect(chartData.labels).toContain('Medium Risk');
+    expect(chartData.labels).toContain('High Risk');
+  });
+
+  it('should render summary display components', () => {
+    fixture.detectChanges();
+    const charts = fixture.nativeElement.querySelectorAll('rms-summary-display');
+    expect(charts.length).toBe(2); // pie and line
+  });
+});
+```
+
+**TDD Cycle:**
+
+1. Run `pnpm nx run rms-material:test` - tests should fail (RED)
+2. Implement minimal code to pass tests (GREEN)
+3. Refactor while keeping tests passing (REFACTOR)
+
 ## Technical Approach
 
 Create `apps/rms-material/src/app/global/global-summary/global-summary.component.ts`:
@@ -92,3 +154,33 @@ export class GlobalSummaryComponent {
 - [ ] Account filter works
 - [ ] Charts responsive to container
 - [ ] All validation commands pass
+
+## E2E Test Requirements
+
+When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
+
+### Core Functionality
+
+- [ ] Allocation pie chart displays risk group breakdown
+- [ ] Performance line chart displays over time
+- [ ] Account filter changes displayed data
+- [ ] Summary statistics display correctly
+- [ ] Charts resize on window resize
+- [ ] Navigation to global summary works
+
+### Edge Cases
+
+- [ ] Empty portfolio (no positions) displays appropriate state
+- [ ] Single position portfolio renders charts correctly
+- [ ] Date range selector changes performance chart data
+- [ ] Performance chart handles gaps in data (weekends/holidays)
+- [ ] Very large portfolio values formatted correctly (abbreviations)
+- [ ] Negative performance values displayed correctly (red)
+- [ ] Real-time data updates reflected in charts
+- [ ] Print view renders charts correctly
+- [ ] Dark theme applies correct chart colors
+- [ ] Account filter persists during navigation
+- [ ] "All Accounts" aggregates data correctly
+- [ ] Statistics calculations match detail pages
+
+Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.

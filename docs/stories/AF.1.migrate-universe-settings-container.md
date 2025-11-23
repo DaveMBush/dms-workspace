@@ -31,6 +31,56 @@
 - [ ] Standalone component
 - [ ] Router outlet if needed
 
+## Test-Driven Development Approach
+
+**Note:** This is a simple container component with no business logic. Unit tests are minimal and focus on component creation and router outlet presence.
+
+### Step 1: Create Unit Tests First
+
+Create `apps/rms-material/src/app/universe-settings/universe-settings.spec.ts`:
+
+```typescript
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { UniverseSettings } from './universe-settings';
+import { RouterTestingModule } from '@angular/router/testing';
+
+describe('UniverseSettings', () => {
+  let component: UniverseSettings;
+  let fixture: ComponentFixture<UniverseSettings>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [UniverseSettings, RouterTestingModule],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(UniverseSettings);
+    component = fixture.componentInstance;
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+
+  it('should have router outlet', () => {
+    fixture.detectChanges();
+    const outlet = fixture.nativeElement.querySelector('router-outlet');
+    expect(outlet).toBeTruthy();
+  });
+
+  it('should have container class', () => {
+    fixture.detectChanges();
+    const container = fixture.nativeElement.querySelector('.universe-settings-container');
+    expect(container).toBeTruthy();
+  });
+});
+```
+
+**TDD Cycle:**
+
+1. Run `pnpm nx run rms-material:test` - tests should fail (RED)
+2. Implement minimal code to pass tests (GREEN)
+3. Refactor while keeping tests passing (REFACTOR)
+
 ## Technical Approach
 
 Create `apps/rms-material/src/app/universe-settings/universe-settings.ts`:
@@ -47,11 +97,13 @@ import { RouterOutlet } from '@angular/router';
       <router-outlet></router-outlet>
     </div>
   `,
-  styles: [`
-    .universe-settings-container {
-      padding: 1rem;
-    }
-  `],
+  styles: [
+    `
+      .universe-settings-container {
+        padding: 1rem;
+      }
+    `,
+  ],
 })
 export class UniverseSettings {}
 ```
@@ -61,3 +113,30 @@ export class UniverseSettings {}
 - [ ] Container component created
 - [ ] Routing configured
 - [ ] All validation commands pass
+
+## E2E Test Requirements
+
+When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
+
+### Core Functionality
+
+- [ ] Universe settings route accessible
+- [ ] Container renders child routes
+- [ ] Navigation to universe settings works
+
+### Edge Cases
+
+- [ ] Deep link to universe settings loads correctly
+- [ ] Back navigation from universe settings works
+- [ ] Browser refresh on universe settings maintains state
+- [ ] Unauthorized user redirected to login
+- [ ] Container handles child route errors gracefully
+- [ ] Loading state shown while child route resolves
+- [ ] Route guard prevents access without authentication
+- [ ] Mobile viewport renders container correctly
+- [ ] Print view excludes navigation elements
+- [ ] Screen reader announces route changes
+- [ ] Keyboard navigation through child routes works
+- [ ] Browser history correctly tracks navigation
+
+Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.

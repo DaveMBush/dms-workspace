@@ -46,6 +46,114 @@
 - [ ] Visible countdown
 - [ ] Prominent action buttons
 
+## Test-Driven Development Approach
+
+**Write tests BEFORE implementation code.**
+
+### Step 1: Create Unit Tests First
+
+Create `apps/rms-material/src/app/auth/components/session-warning/session-warning.spec.ts`:
+
+```typescript
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { SessionWarning } from './session-warning';
+import { MatDialogRef } from '@angular/material/dialog';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+
+describe('SessionWarning', () => {
+  let component: SessionWarning;
+  let fixture: ComponentFixture<SessionWarning>;
+  let mockDialogRef: { close: ReturnType<typeof vi.fn> };
+  let mockAuthService: { refreshSession: ReturnType<typeof vi.fn>; logout: ReturnType<typeof vi.fn> };
+
+  beforeEach(async () => {
+    mockDialogRef = { close: vi.fn() };
+    mockAuthService = {
+      refreshSession: vi.fn().mockResolvedValue({}),
+      logout: vi.fn(),
+    };
+
+    await TestBed.configureTestingModule({
+      imports: [SessionWarning, NoopAnimationsModule],
+      providers: [{ provide: MatDialogRef, useValue: mockDialogRef }],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(SessionWarning);
+    component = fixture.componentInstance;
+  });
+
+  describe('countdown', () => {
+    it('should start with 60 seconds', () => {
+      expect(component.secondsRemaining()).toBe(60);
+    });
+
+    it('should decrement each second', fakeAsync(() => {
+      fixture.detectChanges();
+      tick(1000);
+      expect(component.secondsRemaining()).toBe(59);
+      tick(1000);
+      expect(component.secondsRemaining()).toBe(58);
+      component.ngOnDestroy(); // cleanup
+    }));
+
+    it('should calculate progress percentage', () => {
+      component.secondsRemaining.set(30);
+      expect(component.progressValue()).toBe(50);
+    });
+  });
+
+  describe('formatTime', () => {
+    it('should format 65 seconds as 1:05', () => {
+      expect(component.formatTime(65)).toBe('1:05');
+    });
+
+    it('should format 5 seconds as 0:05', () => {
+      expect(component.formatTime(5)).toBe('0:05');
+    });
+  });
+
+  describe('extend session', () => {
+    it('should call auth service to refresh', async () => {
+      await component.onExtendSession();
+      expect(mockAuthService.refreshSession).toHaveBeenCalled();
+    });
+
+    it('should close dialog with extended', async () => {
+      await component.onExtendSession();
+      expect(mockDialogRef.close).toHaveBeenCalledWith('extended');
+    });
+  });
+
+  describe('logout', () => {
+    it('should call auth service logout', () => {
+      component.onLogout();
+      expect(mockAuthService.logout).toHaveBeenCalled();
+    });
+
+    it('should close dialog with logout', () => {
+      component.onLogout();
+      expect(mockDialogRef.close).toHaveBeenCalledWith('logout');
+    });
+  });
+
+  describe('auto-logout', () => {
+    it('should auto-logout when countdown reaches zero', fakeAsync(() => {
+      component.secondsRemaining.set(1);
+      fixture.detectChanges();
+      tick(1000);
+      expect(mockAuthService.logout).toHaveBeenCalled();
+      component.ngOnDestroy();
+    }));
+  });
+});
+```
+
+**TDD Cycle:**
+
+1. Run `pnpm nx run rms-material:test` - tests should fail (RED)
+2. Implement minimal code to pass tests (GREEN)
+3. Refactor while keeping tests passing (REFACTOR)
+
 ## Technical Approach
 
 ### Step 1: Create Session Warning Dialog Component
@@ -65,12 +173,7 @@ import { AuthService } from '../../auth.service';
 
 @Component({
   selector: 'rms-session-warning',
-  imports: [
-    MatDialogModule,
-    MatButtonModule,
-    MatIconModule,
-    MatProgressBarModule,
-  ],
+  imports: [MatDialogModule, MatButtonModule, MatIconModule, MatProgressBarModule],
   templateUrl: './session-warning.html',
   styleUrl: './session-warning.scss',
 })
@@ -96,9 +199,11 @@ export class SessionWarning implements OnInit, OnDestroy {
   private startCountdown(): void {
     const context = this;
     this.timerSubscription = interval(1000)
-      .pipe(takeWhile(function checkRemaining() {
-        return context.secondsRemaining() > 0;
-      }))
+      .pipe(
+        takeWhile(function checkRemaining() {
+          return context.secondsRemaining() > 0;
+        })
+      )
       .subscribe(function onTick() {
         const remaining = context.secondsRemaining() - 1;
         context.secondsRemaining.set(remaining);
@@ -152,18 +257,10 @@ Create `apps/rms-material/src/app/auth/components/session-warning/session-warnin
 </h2>
 
 <mat-dialog-content>
-  <p class="warning-message">
-    Your session will expire in <strong>{{ formatTime(secondsRemaining()) }}</strong>.
-  </p>
-  <p class="warning-subtext">
-    Would you like to extend your session or log out?
-  </p>
+  <p class="warning-message">Your session will expire in <strong>{{ formatTime(secondsRemaining()) }}</strong>.</p>
+  <p class="warning-subtext">Would you like to extend your session or log out?</p>
 
-  <mat-progress-bar
-    mode="determinate"
-    [value]="progressValue()"
-    color="warn"
-  ></mat-progress-bar>
+  <mat-progress-bar mode="determinate" [value]="progressValue()" color="warn"></mat-progress-bar>
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
@@ -277,12 +374,12 @@ The auth service should call `sessionWarningService.showWarning()` when session 
 
 ## Files Created
 
-| File | Purpose |
-|------|---------|
-| `auth/components/session-warning/session-warning.ts` | Session warning dialog |
-| `auth/components/session-warning/session-warning.html` | Dialog template |
-| `auth/components/session-warning/session-warning.scss` | Dialog styles |
-| `auth/services/session-warning.service.ts` | Service to show/hide warning |
+| File                                                   | Purpose                      |
+| ------------------------------------------------------ | ---------------------------- |
+| `auth/components/session-warning/session-warning.ts`   | Session warning dialog       |
+| `auth/components/session-warning/session-warning.html` | Dialog template              |
+| `auth/components/session-warning/session-warning.scss` | Dialog styles                |
+| `auth/services/session-warning.service.ts`             | Service to show/hide warning |
 
 ## Definition of Done
 
@@ -296,3 +393,34 @@ The auth service should call `sessionWarningService.showWarning()` when session 
 - [ ] SessionWarningService can show/hide dialog
 - [ ] Integration with auth service timer
 - [ ] All validation commands pass
+
+## E2E Test Requirements
+
+When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
+
+### Core Functionality
+
+- [ ] Session warning dialog appears before timeout
+- [ ] Countdown timer displays and decrements
+- [ ] Progress bar decreases with time
+- [ ] Extend session button extends session and closes dialog
+- [ ] Logout button ends session and redirects to login
+- [ ] Dialog cannot be dismissed by clicking backdrop
+- [ ] Auto-logout occurs when timer reaches zero
+
+### Edge Cases
+
+- [ ] Dialog handles system clock changes gracefully
+- [ ] Dialog handles browser tab becoming inactive and reactivated
+- [ ] Multiple extend session clicks are debounced
+- [ ] Timer continues correctly after browser regains focus
+- [ ] Dialog displays correctly on small screens (mobile)
+- [ ] Keyboard focus trapped within dialog
+- [ ] Escape key does not close dialog (non-dismissible)
+- [ ] Dialog handles network error during extend session
+- [ ] Extend session failure shows error and keeps dialog open
+- [ ] Timer format handles edge values (0:00, 0:01)
+- [ ] Progress bar animation is smooth without jitter
+- [ ] Dialog z-index correctly overlays all other content
+
+Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.

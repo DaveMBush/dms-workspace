@@ -109,6 +109,7 @@ No changes needed.
 For each entity store directory, copy all files:
 
 **accounts/**
+
 - `account-effect.service.ts`
 - `account-effect-service-token.ts`
 - `accounts-definition.const.ts`
@@ -117,6 +118,7 @@ For each entity store directory, copy all files:
 - Any additional files
 
 **Pattern for each store:**
+
 ```
 {entity}-effect.service.ts      # Effects service extending EffectService<T>
 {entity}-effect-service-token.ts # InjectionToken for effects service
@@ -159,39 +161,45 @@ pnpm nx run rms-material:lint
 ## Files to Copy
 
 ### Environment Files
-| Source | Destination |
-|--------|-------------|
-| `apps/rms/src/environments/environment.ts` | `apps/rms-material/src/environments/environment.ts` |
+
+| Source                                          | Destination                                              |
+| ----------------------------------------------- | -------------------------------------------------------- |
+| `apps/rms/src/environments/environment.ts`      | `apps/rms-material/src/environments/environment.ts`      |
 | `apps/rms/src/environments/environment.prod.ts` | `apps/rms-material/src/environments/environment.prod.ts` |
 
 ### Configuration Files
-| Source | Destination |
-|--------|-------------|
+
+| Source                               | Destination                                   |
+| ------------------------------------ | --------------------------------------------- |
 | `apps/rms/src/app/amplify.config.ts` | `apps/rms-material/src/app/amplify.config.ts` |
 
 ### Store Files (per entity)
-| Source | Destination |
-|--------|-------------|
+
+| Source                              | Destination                                  |
+| ----------------------------------- | -------------------------------------------- |
 | `apps/rms/src/app/store/{entity}/*` | `apps/rms-material/src/app/store/{entity}/*` |
 
 ### Auth Files
-| Source | Destination |
-|--------|-------------|
-| `apps/rms/src/app/auth/auth.service.ts` | `apps/rms-material/src/app/auth/auth.service.ts` |
-| `apps/rms/src/app/auth/mock-auth.service.ts` | `apps/rms-material/src/app/auth/mock-auth.service.ts` |
-| `apps/rms/src/app/auth/guards/auth.guard.ts` | `apps/rms-material/src/app/auth/guards/auth.guard.ts` |
+
+| Source                                                   | Destination                                                       |
+| -------------------------------------------------------- | ----------------------------------------------------------------- |
+| `apps/rms/src/app/auth/auth.service.ts`                  | `apps/rms-material/src/app/auth/auth.service.ts`                  |
+| `apps/rms/src/app/auth/mock-auth.service.ts`             | `apps/rms-material/src/app/auth/mock-auth.service.ts`             |
+| `apps/rms/src/app/auth/guards/auth.guard.ts`             | `apps/rms-material/src/app/auth/guards/auth.guard.ts`             |
 | `apps/rms/src/app/auth/interceptors/auth.interceptor.ts` | `apps/rms-material/src/app/auth/interceptors/auth.interceptor.ts` |
-| `apps/rms/src/app/auth/services/profile.service.ts` | `apps/rms-material/src/app/auth/services/profile.service.ts` |
+| `apps/rms/src/app/auth/services/profile.service.ts`      | `apps/rms-material/src/app/auth/services/profile.service.ts`      |
 | `apps/rms/src/app/auth/services/mock-profile.service.ts` | `apps/rms-material/src/app/auth/services/mock-profile.service.ts` |
 
 ### Error Handler
-| Source | Destination |
-|--------|-------------|
+
+| Source                                                    | Destination                                                        |
+| --------------------------------------------------------- | ------------------------------------------------------------------ |
 | `apps/rms/src/app/error-handler/error-handler.service.ts` | `apps/rms-material/src/app/error-handler/error-handler.service.ts` |
 
 ### Shared Services
-| Source | Destination |
-|--------|-------------|
+
+| Source                               | Destination                                   |
+| ------------------------------------ | --------------------------------------------- |
 | `apps/rms/src/app/shared/services/*` | `apps/rms-material/src/app/shared/services/*` |
 
 ## Directory Structure After Copy
@@ -242,6 +250,17 @@ apps/rms-material/src/
 - [ ] No TypeScript compilation errors
 - [ ] Lint passes on all new files
 - [ ] Build succeeds
+
+## E2E Test Requirements
+
+When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
+
+- [ ] Application bootstraps without errors
+- [ ] SmartNgRX state management initializes correctly
+- [ ] Auth services work (mock or real based on environment)
+- [ ] Environment configuration loads correctly
+
+Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.
 
 ## Notes
 

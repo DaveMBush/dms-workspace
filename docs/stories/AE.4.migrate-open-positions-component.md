@@ -35,6 +35,74 @@
 - [ ] Uses editable cells from AC.2/AC.3
 - [ ] SmartNgRX trades signal
 
+## Test-Driven Development Approach
+
+**Write tests BEFORE implementation code.**
+
+### Step 1: Create Unit Tests First
+
+Create `apps/rms-material/src/app/account-panel/open-positions/open-positions.component.spec.ts`:
+
+```typescript
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { OpenPositionsComponent } from './open-positions.component';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+
+describe('OpenPositionsComponent', () => {
+  let component: OpenPositionsComponent;
+  let fixture: ComponentFixture<OpenPositionsComponent>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [OpenPositionsComponent, NoopAnimationsModule],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(OpenPositionsComponent);
+    component = fixture.componentInstance;
+  });
+
+  it('should define columns', () => {
+    expect(component.columns.length).toBeGreaterThan(0);
+    expect(component.columns.find((c) => c.field === 'symbol')).toBeTruthy();
+  });
+
+  it('should have editable quantity column', () => {
+    const col = component.columns.find((c) => c.field === 'quantity');
+    expect(col?.editable).toBe(true);
+  });
+
+  it('should have editable price column', () => {
+    const col = component.columns.find((c) => c.field === 'purchasePrice');
+    expect(col?.editable).toBe(true);
+  });
+
+  it('should have editable date column', () => {
+    const col = component.columns.find((c) => c.field === 'purchaseDate');
+    expect(col?.editable).toBe(true);
+  });
+
+  it('should call onAddPosition without error', () => {
+    expect(() => component.onAddPosition()).not.toThrow();
+  });
+
+  it('should call onSellPosition without error', () => {
+    const trade = { id: '1', symbol: 'AAPL' } as any;
+    expect(() => component.onSellPosition(trade)).not.toThrow();
+  });
+
+  it('should call onCellEdit without error', () => {
+    const trade = { id: '1', symbol: 'AAPL' } as any;
+    expect(() => component.onCellEdit(trade, 'quantity', 100)).not.toThrow();
+  });
+});
+```
+
+**TDD Cycle:**
+
+1. Run `pnpm nx run rms-material:test` - tests should fail (RED)
+2. Implement minimal code to pass tests (GREEN)
+3. Refactor while keeping tests passing (REFACTOR)
+
 ## Technical Approach
 
 Create `apps/rms-material/src/app/account-panel/open-positions/open-positions.component.ts`:
@@ -53,10 +121,7 @@ import { Trade } from '../../store/trades/trade.interface';
 
 @Component({
   selector: 'rms-open-positions',
-  imports: [
-    MatToolbarModule, MatButtonModule, MatIconModule,
-    BaseTableComponent, EditableCellComponent, EditableDateCellComponent,
-  ],
+  imports: [MatToolbarModule, MatButtonModule, MatIconModule, BaseTableComponent, EditableCellComponent, EditableDateCellComponent],
   templateUrl: './open-positions.component.html',
   styleUrl: './open-positions.component.scss',
 })
@@ -96,3 +161,36 @@ export class OpenPositionsComponent {
 - [ ] Sell position action
 - [ ] SmartNgRX updates
 - [ ] All validation commands pass
+
+## E2E Test Requirements
+
+When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
+
+### Core Functionality
+
+- [ ] Open positions table displays all positions
+- [ ] Inline editing works for quantity, price, date
+- [ ] Add position button opens dialog
+- [ ] Add position saves new position
+- [ ] Sell position button opens sell dialog
+- [ ] Sell position removes from open positions
+- [ ] Sorting by columns works
+- [ ] Data updates reflect immediately
+
+### Edge Cases
+
+- [ ] Empty positions table shows appropriate message
+- [ ] Edit validation prevents negative quantities
+- [ ] Edit validation prevents future purchase dates
+- [ ] Partial sell (quantity < total) works correctly
+- [ ] Sell all (full quantity) moves to sold positions
+- [ ] Cancel add position dialog preserves no state
+- [ ] Add position with existing symbol creates new lot
+- [ ] Current value calculates with real-time prices
+- [ ] Gain/loss updates on price changes
+- [ ] Large position counts (100+) perform well
+- [ ] Export positions to CSV works
+- [ ] Print view formats table correctly
+- [ ] Concurrent edits to same position handled
+
+Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.

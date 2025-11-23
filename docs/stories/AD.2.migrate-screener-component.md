@@ -36,6 +36,71 @@
 - [ ] SmartNgRX signal for screen data
 - [ ] Filter controls in toolbar
 
+## Test-Driven Development Approach
+
+**Write tests BEFORE implementation code.**
+
+### Step 1: Create Unit Tests First
+
+Create `apps/rms-material/src/app/global/screener/screener.spec.ts`:
+
+```typescript
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Screener } from './screener';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+
+describe('Screener', () => {
+  let component: Screener;
+  let fixture: ComponentFixture<Screener>;
+  let mockNotification: { info: ReturnType<typeof vi.fn>; success: ReturnType<typeof vi.fn> };
+
+  beforeEach(async () => {
+    mockNotification = { info: vi.fn(), success: vi.fn() };
+
+    await TestBed.configureTestingModule({
+      imports: [Screener, NoopAnimationsModule],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(Screener);
+    component = fixture.componentInstance;
+  });
+
+  it('should define columns for screener', () => {
+    expect(component.columns.length).toBeGreaterThan(0);
+    expect(component.columns.find((c) => c.field === 'symbol')).toBeTruthy();
+  });
+
+  it('should initialize filters to null', () => {
+    expect(component.riskGroupFilter()).toBeNull();
+    expect(component.frequencyFilter()).toBeNull();
+  });
+
+  it('should show notification on refresh', () => {
+    component.onRefresh();
+    expect(mockNotification.info).toHaveBeenCalledWith('Refreshing screener...');
+  });
+
+  it('should show success notification when adding to universe', () => {
+    component.onAddToUniverse('AAPL');
+    expect(mockNotification.success).toHaveBeenCalledWith('Added AAPL to universe');
+  });
+
+  it('should have risk groups defined', () => {
+    expect(component.riskGroups.length).toBeGreaterThan(0);
+  });
+
+  it('should have frequencies defined', () => {
+    expect(component.frequencies.length).toBeGreaterThan(0);
+  });
+});
+```
+
+**TDD Cycle:**
+
+1. Run `pnpm nx run rms-material:test` - tests should fail (RED)
+2. Implement minimal code to pass tests (GREEN)
+3. Refactor while keeping tests passing (REFACTOR)
+
 ## Technical Approach
 
 Create `apps/rms-material/src/app/global/screener/screener.ts`:
@@ -53,13 +118,7 @@ import { NotificationService } from '../../shared/services/notification.service'
 
 @Component({
   selector: 'rms-screener',
-  imports: [
-    MatToolbarModule,
-    MatButtonModule,
-    MatIconModule,
-    MatSelectModule,
-    BaseTableComponent,
-  ],
+  imports: [MatToolbarModule, MatButtonModule, MatIconModule, MatSelectModule, BaseTableComponent],
   templateUrl: './screener.html',
   styleUrl: './screener.scss',
 })
@@ -101,3 +160,34 @@ export class Screener {
 - [ ] Refresh triggers screener update
 - [ ] Add to universe works
 - [ ] All validation commands pass
+
+## E2E Test Requirements
+
+When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
+
+### Core Functionality
+
+- [ ] Screener table displays screened stocks
+- [ ] Risk group filter filters table data
+- [ ] Frequency filter filters table data
+- [ ] Refresh button updates screener results
+- [ ] Add to universe action adds symbol
+- [ ] Success notification shows after adding
+- [ ] Sorting by columns works
+
+### Edge Cases
+
+- [ ] Multiple filters combined correctly (AND logic)
+- [ ] Clear all filters returns to unfiltered state
+- [ ] Filter state preserved during refresh
+- [ ] No results state displays appropriate message
+- [ ] Add already-existing symbol shows warning
+- [ ] Bulk add multiple symbols works correctly
+- [ ] Refresh during data load handled gracefully
+- [ ] Network error during refresh shows retry
+- [ ] Screener criteria changes trigger auto-refresh (if configured)
+- [ ] Large result sets (1000+) perform well
+- [ ] Export filtered results to CSV works
+- [ ] Screen reader announces filter changes
+
+Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.

@@ -45,6 +45,115 @@
 - [ ] Initial render < 100ms
 - [ ] Lazy load requests properly debounced
 
+## Test-Driven Development Approach
+
+**Write tests BEFORE implementation code.**
+
+**CRITICAL: This is the PRIMARY DRIVER for migration - TDD is essential for comprehensive test coverage.**
+
+### Step 1: Create Unit Tests First
+
+Create `apps/rms-material/src/app/account-panel/dividend-deposits/dividend-deposits.spec.ts`:
+
+```typescript
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { DividendDeposits } from './dividend-deposits';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { MatDialog } from '@angular/material/dialog';
+import { of } from 'rxjs';
+
+describe('DividendDeposits', () => {
+  let component: DividendDeposits;
+  let fixture: ComponentFixture<DividendDeposits>;
+  let mockDialog: { open: ReturnType<typeof vi.fn> };
+  let mockNotification: { success: ReturnType<typeof vi.fn> };
+  let mockConfirmDialog: { confirm: ReturnType<typeof vi.fn> };
+
+  beforeEach(async () => {
+    mockDialog = { open: vi.fn().mockReturnValue({ afterClosed: () => of(true) }) };
+    mockNotification = { success: vi.fn() };
+    mockConfirmDialog = { confirm: vi.fn().mockReturnValue(of(true)) };
+
+    await TestBed.configureTestingModule({
+      imports: [DividendDeposits, NoopAnimationsModule],
+      providers: [{ provide: MatDialog, useValue: mockDialog }],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(DividendDeposits);
+    component = fixture.componentInstance;
+  });
+
+  describe('columns', () => {
+    it('should define columns', () => {
+      expect(component.columns.length).toBeGreaterThan(0);
+    });
+
+    it('should have symbol column', () => {
+      expect(component.columns.find((c) => c.field === 'symbol')).toBeTruthy();
+    });
+
+    it('should have exDate column', () => {
+      expect(component.columns.find((c) => c.field === 'exDate')).toBeTruthy();
+    });
+
+    it('should have amount column', () => {
+      expect(component.columns.find((c) => c.field === 'amount')).toBeTruthy();
+    });
+  });
+
+  describe('onAddDividend', () => {
+    it('should open dialog in add mode', () => {
+      component.onAddDividend();
+      expect(mockDialog.open).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ data: { mode: 'add' } }));
+    });
+
+    it('should show success notification on add', () => {
+      component.onAddDividend();
+      expect(mockNotification.success).toHaveBeenCalledWith('Dividend added successfully');
+    });
+  });
+
+  describe('onEditDividend', () => {
+    it('should open dialog in edit mode', () => {
+      const dividend = { id: '1', symbol: 'AAPL' } as any;
+      component.onEditDividend(dividend);
+      expect(mockDialog.open).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ data: { mode: 'edit', dividend } }));
+    });
+  });
+
+  describe('onDeleteDividend', () => {
+    it('should show confirm dialog', () => {
+      const dividend = { id: '1', symbol: 'AAPL' } as any;
+      component.onDeleteDividend(dividend);
+      expect(mockConfirmDialog.confirm).toHaveBeenCalled();
+    });
+
+    it('should show success notification on delete confirm', () => {
+      const dividend = { id: '1', symbol: 'AAPL' } as any;
+      component.onDeleteDividend(dividend);
+      expect(mockNotification.success).toHaveBeenCalledWith('Dividend deleted');
+    });
+  });
+
+  describe('loadDividends', () => {
+    it('should return observable of data', (done) => {
+      const event = { first: 0, rows: 10 };
+      component['loadDividends'](event).subscribe((result) => {
+        expect(result.data).toBeDefined();
+        expect(result.total).toBeDefined();
+        done();
+      });
+    });
+  });
+});
+```
+
+**TDD Cycle:**
+
+1. Run `pnpm nx run rms-material:test` - tests should fail (RED)
+2. Implement minimal code to pass tests (GREEN)
+3. Refactor while keeping tests passing (REFACTOR)
+
 ## Technical Approach
 
 ### Step 1: Create Dividend Deposits Component
@@ -69,12 +178,7 @@ import { ConfirmDialogService } from '../../shared/services/confirm-dialog.servi
 
 @Component({
   selector: 'rms-dividend-deposits',
-  imports: [
-    MatToolbarModule,
-    MatButtonModule,
-    MatIconModule,
-    BaseTableComponent,
-  ],
+  imports: [MatToolbarModule, MatButtonModule, MatIconModule, BaseTableComponent],
   templateUrl: './dividend-deposits.html',
   styleUrl: './dividend-deposits.scss',
 })
@@ -179,36 +283,16 @@ Create `apps/rms-material/src/app/account-panel/dividend-deposits/dividend-depos
     </button>
   </mat-toolbar>
 
-  <rms-base-table
-    [columns]="columns"
-    [rowHeight]="48"
-    [bufferSize]="20"
-    (rowClick)="onEditDividend($event)"
-  >
+  <rms-base-table [columns]="columns" [rowHeight]="48" [bufferSize]="20" (rowClick)="onEditDividend($event)">
     <ng-template #cellTemplate let-row let-column="column">
-      @switch (column.field) {
-        @case ('actions') {
-          <button mat-icon-button (click)="onEditDividend(row); $event.stopPropagation()">
-            <mat-icon>edit</mat-icon>
-          </button>
-          <button mat-icon-button color="warn" (click)="onDeleteDividend(row); $event.stopPropagation()">
-            <mat-icon>delete</mat-icon>
-          </button>
-        }
-        @default {
-          @switch (column.type) {
-            @case ('currency') {
-              {{ row[column.field] | currency }}
-            }
-            @case ('date') {
-              {{ row[column.field] | date:'MM/dd/yyyy' }}
-            }
-            @default {
-              {{ row[column.field] }}
-            }
-          }
-        }
-      }
+      @switch (column.field) { @case ('actions') {
+      <button mat-icon-button (click)="onEditDividend(row); $event.stopPropagation()">
+        <mat-icon>edit</mat-icon>
+      </button>
+      <button mat-icon-button color="warn" (click)="onDeleteDividend(row); $event.stopPropagation()">
+        <mat-icon>delete</mat-icon>
+      </button>
+      } @default { @switch (column.type) { @case ('currency') { {{ row[column.field] | currency }} } @case ('date') { {{ row[column.field] | date:'MM/dd/yyyy' }} } @default { {{ row[column.field] }} } } } }
     </ng-template>
   </rms-base-table>
 </div>
@@ -216,11 +300,11 @@ Create `apps/rms-material/src/app/account-panel/dividend-deposits/dividend-depos
 
 ## Files Created
 
-| File | Purpose |
-|------|---------|
-| `account-panel/dividend-deposits/dividend-deposits.ts` | Main component |
-| `account-panel/dividend-deposits/dividend-deposits.html` | Template |
-| `account-panel/dividend-deposits/dividend-deposits.scss` | Styles |
+| File                                                     | Purpose        |
+| -------------------------------------------------------- | -------------- |
+| `account-panel/dividend-deposits/dividend-deposits.ts`   | Main component |
+| `account-panel/dividend-deposits/dividend-deposits.html` | Template       |
+| `account-panel/dividend-deposits/dividend-deposits.scss` | Styles         |
 
 ## Performance Testing Checklist
 
@@ -243,6 +327,71 @@ Create `apps/rms-material/src/app/account-panel/dividend-deposits/dividend-depos
 - [ ] Performance tested with large datasets
 - [ ] SmartNgRX integration working
 - [ ] All validation commands pass
+
+## E2E Test Requirements
+
+When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
+
+**CRITICAL: This is the PRIMARY DRIVER for migration - extensive e2e testing required**
+
+### Core Functionality
+
+- [ ] Virtual scrolling renders only visible rows in DOM
+- [ ] Scrolling triggers lazy loading of additional data
+- [ ] Loading indicator shows during data fetch
+- [ ] Add dividend button opens modal
+- [ ] Add dividend modal saves and closes
+- [ ] Clicking row opens edit modal
+- [ ] Edit dividend modal updates and closes
+- [ ] Delete dividend shows confirmation
+- [ ] Delete removes row after confirmation
+- [ ] Performance test: 1000+ rows scrolls at 60fps
+- [ ] Performance test: lazy load completes < 200ms
+- [ ] Performance test: no memory leaks after navigation cycles
+
+### Edge Cases - Virtual Scrolling (CRITICAL)
+
+- [ ] Rapid scroll to end loads all required data correctly
+- [ ] Scroll position maintained after add/edit/delete operations
+- [ ] Scroll position maintained after modal close
+- [ ] No duplicate rows during fast scrolling
+- [ ] Buffer renders correctly at list boundaries
+- [ ] Single dividend renders correctly (boundary)
+- [ ] Exactly viewport-height dividends renders correctly
+- [ ] Variable network latency handled gracefully
+
+### Edge Cases - CRUD Operations
+
+- [ ] Add dividend with duplicate symbol/date warns or prevents
+- [ ] Edit dividend optimistic update with rollback on error
+- [ ] Delete multiple dividends sequentially works
+- [ ] Delete during scroll handled correctly
+- [ ] Add dividend scroll position behavior (scroll to new or not)
+- [ ] Cancel edit preserves original data
+- [ ] Network error during save shows retry option
+- [ ] Concurrent edits to same dividend handled
+
+### Edge Cases - Data Integrity
+
+- [ ] Ex-date before pay-date validation
+- [ ] Future ex-date allowed (upcoming dividends)
+- [ ] Amount validation (positive numbers only)
+- [ ] Shares validation (positive integers)
+- [ ] Total calculation (amount \* shares) displayed correctly
+- [ ] Filter by symbol works with virtual scroll
+- [ ] Sort maintains correct order during lazy load
+- [ ] Date range filter works correctly
+
+### Edge Cases - Performance (CRITICAL)
+
+- [ ] 5000 rows maintains smooth scrolling
+- [ ] 10000 rows does not crash browser
+- [ ] CPU usage stable during scrolling
+- [ ] Memory growth bounded during scrolling
+- [ ] GC pauses minimal during scrolling
+- [ ] First contentful paint < 500ms
+
+Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.
 
 ## Notes
 

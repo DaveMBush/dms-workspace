@@ -63,23 +63,11 @@
 Create/update `apps/rms-material/src/app/app.config.ts`:
 
 ```typescript
-import {
-  provideHttpClient,
-  withFetch,
-  withInterceptors,
-  withInterceptorsFromDi,
-} from '@angular/common/http';
-import {
-  ApplicationConfig,
-  provideBrowserGlobalErrorListeners,
-  provideZonelessChangeDetection,
-} from '@angular/core';
+import { provideHttpClient, withFetch, withInterceptors, withInterceptorsFromDi } from '@angular/common/http';
+import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection } from '@angular/core';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter } from '@angular/router';
-import {
-  provideSmartNgRX,
-  smartErrorHandlerToken,
-} from '@smarttools/smart-signals';
+import { provideSmartNgRX, smartErrorHandlerToken } from '@smarttools/smart-signals';
 
 import { environment } from '../environments/environment';
 import { configureAmplify } from './amplify.config';
@@ -174,11 +162,7 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
 
     // HTTP client with auth interceptor
-    provideHttpClient(
-      withInterceptors([authInterceptor]),
-      withInterceptorsFromDi(),
-      withFetch()
-    ),
+    provideHttpClient(withInterceptors([authInterceptor]), withInterceptorsFromDi(), withFetch()),
 
     // Router
     provideRouter(appRoutes),
@@ -200,8 +184,7 @@ import { Route } from '@angular/router';
 export const appRoutes: Route[] = [
   {
     path: '',
-    loadComponent: async () =>
-      import('./app.component').then((m) => m.AppComponent),
+    loadComponent: async () => import('./app.component').then((m) => m.AppComponent),
   },
   {
     path: '**',
@@ -220,9 +203,7 @@ import { bootstrapApplication } from '@angular/platform-browser';
 import { AppComponent } from './app/app.component';
 import { appConfig } from './app/app.config';
 
-bootstrapApplication(AppComponent, appConfig).catch((err) =>
-  console.error(err)
-);
+bootstrapApplication(AppComponent, appConfig).catch((err) => console.error(err));
 ```
 
 ### Step 4: Verify Bootstrap
@@ -235,26 +216,26 @@ Check browser console for any bootstrap errors.
 
 ## Comparison: RMS vs RMS-Material Config
 
-| Provider | RMS | RMS-Material |
-|----------|-----|--------------|
-| `provideZonelessChangeDetection()` | ✅ | ✅ |
-| `provideBrowserGlobalErrorListeners()` | ✅ | ✅ |
-| `provideAnimationsAsync()` | ✅ | ✅ |
-| `providePrimeNG()` | ✅ | ❌ Removed |
-| `provideHttpClient()` | ✅ | ✅ |
-| `provideRouter()` | ✅ | ✅ |
-| `provideSmartNgRX()` | ✅ | ✅ |
-| Effect service tokens (8) | ✅ | ✅ |
-| Auth service tokens | ✅ | ✅ |
-| Error handler token | ✅ | ✅ |
+| Provider                               | RMS | RMS-Material |
+| -------------------------------------- | --- | ------------ |
+| `provideZonelessChangeDetection()`     | ✅  | ✅           |
+| `provideBrowserGlobalErrorListeners()` | ✅  | ✅           |
+| `provideAnimationsAsync()`             | ✅  | ✅           |
+| `providePrimeNG()`                     | ✅  | ❌ Removed   |
+| `provideHttpClient()`                  | ✅  | ✅           |
+| `provideRouter()`                      | ✅  | ✅           |
+| `provideSmartNgRX()`                   | ✅  | ✅           |
+| Effect service tokens (8)              | ✅  | ✅           |
+| Auth service tokens                    | ✅  | ✅           |
+| Error handler token                    | ✅  | ✅           |
 
 ## Files Modified
 
-| File | Changes |
-|------|---------|
+| File                                      | Changes                                   |
+| ----------------------------------------- | ----------------------------------------- |
 | `apps/rms-material/src/app/app.config.ts` | Complete configuration with all providers |
-| `apps/rms-material/src/app/app.routes.ts` | Initial routing configuration |
-| `apps/rms-material/src/main.ts` | Verify bootstrap configuration |
+| `apps/rms-material/src/app/app.routes.ts` | Initial routing configuration             |
+| `apps/rms-material/src/main.ts`           | Verify bootstrap configuration            |
 
 ## Definition of Done
 
@@ -268,6 +249,17 @@ Check browser console for any bootstrap errors.
 - [ ] No console errors on load
 - [ ] Build succeeds
 - [ ] Lint passes
+
+## E2E Test Requirements
+
+When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
+
+- [ ] Application bootstraps with all providers configured
+- [ ] Router navigates correctly
+- [ ] HTTP interceptor attaches auth tokens
+- [ ] Animations are enabled and working
+
+Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.
 
 ## Notes
 

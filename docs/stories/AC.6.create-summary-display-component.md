@@ -35,6 +35,83 @@
 - [ ] Same data format accepted
 - [ ] Theme-aware colors
 
+## Test-Driven Development Approach
+
+**Write tests BEFORE implementation code.**
+
+### Step 1: Create Unit Tests First
+
+Create `apps/rms-material/src/app/shared/components/summary-display/summary-display.component.spec.ts`:
+
+```typescript
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { SummaryDisplayComponent } from './summary-display.component';
+import { ChartData } from 'chart.js';
+
+describe('SummaryDisplayComponent', () => {
+  let component: SummaryDisplayComponent;
+  let fixture: ComponentFixture<SummaryDisplayComponent>;
+
+  const mockPieData: ChartData<'pie'> = {
+    labels: ['A', 'B'],
+    datasets: [{ data: [50, 50] }],
+  };
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [SummaryDisplayComponent],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(SummaryDisplayComponent);
+    component = fixture.componentInstance;
+    fixture.componentRef.setInput('data', mockPieData);
+  });
+
+  it('should render chart container', () => {
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.chart-container')).toBeTruthy();
+  });
+
+  it('should render canvas element', () => {
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('canvas')).toBeTruthy();
+  });
+
+  it('should apply custom height', () => {
+    fixture.componentRef.setInput('height', '400px');
+    fixture.detectChanges();
+    const container = fixture.nativeElement.querySelector('.chart-container');
+    expect(container.style.height).toBe('400px');
+  });
+
+  it('should compute chart data from input', () => {
+    fixture.detectChanges();
+    expect(component.chartData()).toEqual(mockPieData);
+  });
+
+  it('should merge default options with provided options', () => {
+    fixture.componentRef.setInput('options', { plugins: { legend: { position: 'top' } } });
+    fixture.detectChanges();
+    expect(component.chartOptions().plugins?.legend?.position).toBe('top');
+  });
+
+  it('should default to pie chart type', () => {
+    expect(component.chartType()).toBe('pie');
+  });
+
+  it('should allow line chart type', () => {
+    fixture.componentRef.setInput('chartType', 'line');
+    expect(component.chartType()).toBe('line');
+  });
+});
+```
+
+**TDD Cycle:**
+
+1. Run `pnpm nx run rms-material:test` - tests should fail (RED)
+2. Implement minimal code to pass tests (GREEN)
+3. Refactor while keeping tests passing (REFACTOR)
+
 ## Technical Approach
 
 Create `apps/rms-material/src/app/shared/components/summary-display/summary-display.component.ts`:
@@ -49,20 +126,17 @@ import { ChartConfiguration, ChartType, ChartData } from 'chart.js';
   imports: [BaseChartDirective],
   template: `
     <div class="chart-container" [style.height]="height()">
-      <canvas
-        baseChart
-        [type]="chartType()"
-        [data]="chartData()"
-        [options]="chartOptions()"
-      ></canvas>
+      <canvas baseChart [type]="chartType()" [data]="chartData()" [options]="chartOptions()"></canvas>
     </div>
   `,
-  styles: [`
-    .chart-container {
-      position: relative;
-      width: 100%;
-    }
-  `],
+  styles: [
+    `
+      .chart-container {
+        position: relative;
+        width: 100%;
+      }
+    `,
+  ],
 })
 export class SummaryDisplayComponent {
   chartType = input<ChartType>('pie');
@@ -132,3 +206,35 @@ pieChartData: ChartData<'pie'> = {
 - [ ] Charts resize responsively
 - [ ] Theme colors applied
 - [ ] All validation commands pass
+
+## E2E Test Requirements
+
+When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
+
+### Core Functionality
+
+- [ ] Line chart renders with data
+- [ ] Pie chart renders with data
+- [ ] Hovering shows tooltip with values
+- [ ] Legend displays and is clickable
+- [ ] Charts resize on window resize
+- [ ] Charts update when data changes
+
+### Edge Cases
+
+- [ ] Empty data displays appropriate message (no data available)
+- [ ] Single data point renders correctly
+- [ ] Large dataset (1000+ points) renders performantly
+- [ ] Very small values displayed correctly (not rounded to zero)
+- [ ] Very large values displayed with appropriate abbreviations (K, M, B)
+- [ ] Negative values handled correctly in charts
+- [ ] Chart animation completes smoothly
+- [ ] Legend click toggles series visibility
+- [ ] Tooltip positions correctly near viewport edges
+- [ ] Chart handles data update during animation
+- [ ] Print/export renders charts correctly
+- [ ] Dark theme colors applied correctly to charts
+- [ ] Accessible color contrast for chart elements
+- [ ] Screen reader announces chart summary
+
+Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.
