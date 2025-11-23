@@ -1,1 +1,65 @@
-/* You can add global styles to this file, and also import other style files */
+@use '@angular/material' as mat;
+@use './themes/theme-variables';
+@use './themes/light-theme' as light;
+@use './themes/dark-theme' as dark;
+
+// CSS Layer ordering for proper specificity
+@layer tailwind-base, material, tailwind-utilities;
+
+@layer tailwind-base {
+  @tailwind base;
+}
+
+@layer tailwind-utilities {
+  @tailwind components;
+  @tailwind utilities;
+}
+
+// Apply light theme by default
+@layer material {
+  html {
+    @include mat.theme(light.$light-theme);
+  }
+
+  // Apply dark theme when .dark-theme class is present
+  .dark-theme {
+    @include mat.theme(dark.$dark-theme);
+  }
+}
+
+// Global styles
+html,
+body {
+  margin: 0;
+  font-family: Roboto, sans-serif;
+  height: 100%;
+  background-color: var(--rms-background);
+  color: var(--rms-text-primary);
+}
+
+// Smooth theme transitions
+* {
+  transition: background-color 0.2s ease, color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+// Custom utility classes for theming
+.surface-ground {
+  background-color: var(--rms-background);
+}
+
+.surface-card {
+  background-color: var(--rms-surface);
+}
+
+.text-primary {
+  color: var(--rms-text-primary);
+}
+
+.text-secondary {
+  color: var(--rms-text-secondary);
+}
+
+.border-default {
+  border-color: var(--rms-border);
+}
