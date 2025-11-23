@@ -289,9 +289,7 @@ export class MockAuthService extends BaseAuthService {
 
     // Create a simple mock JWT-like token (not cryptographically secure)
     // Using btoa for base64 encoding in browser environment only
-    // eslint-disable-next-line sonarjs/deprecation, @typescript-eslint/no-deprecated -- btoa acceptable for mock JWT in browser
     const header = btoa(JSON.stringify({ alg: 'MOCK', typ: 'JWT' }));
-    // eslint-disable-next-line sonarjs/deprecation, @typescript-eslint/no-deprecated -- btoa acceptable for mock JWT in browser
     const payload = btoa(
       JSON.stringify({
         sub: user.attributes.sub,
@@ -303,7 +301,6 @@ export class MockAuthService extends BaseAuthService {
         remember_me: rememberMe,
       })
     );
-    // eslint-disable-next-line sonarjs/deprecation, @typescript-eslint/no-deprecated -- btoa acceptable for mock JWT in browser
     const signature = btoa('mock-signature');
 
     return `${header}.${payload}.${signature}`;
