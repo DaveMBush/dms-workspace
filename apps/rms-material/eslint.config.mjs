@@ -28,4 +28,10 @@ export default [
     // Override or add rules here
     rules: {},
   },
+  {
+    files: ['**/error-handler.service.ts'],
+    rules: {
+      'no-console': 'off',
+    },
+  },
 ];
