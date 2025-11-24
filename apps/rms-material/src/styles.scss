@@ -3,6 +3,9 @@
 @use './themes/light-theme' as light;
 @use './themes/dark-theme' as dark;
 
+// Include Material core styles (required once)
+@include mat.core();
+
 // CSS Layer ordering for proper specificity
 @layer tailwind-base, material, tailwind-utilities;
 
@@ -18,12 +21,68 @@
 // Apply light theme by default
 @layer material {
   html {
-    @include mat.theme(light.$light-theme);
+    @include mat.all-component-themes(light.$light-theme);
+
+    // Button color variants for light theme
+    .btn-primary {
+      @include mat.button-overrides(
+        (
+          filled-container-color: #2563eb,
+          filled-label-text-color: #ffffff,
+        )
+      );
+    }
+
+    .btn-tertiary {
+      @include mat.button-overrides(
+        (
+          filled-container-color: #f59e0b,
+          filled-label-text-color: #000000,
+        )
+      );
+    }
+
+    .btn-error {
+      @include mat.button-overrides(
+        (
+          filled-container-color: #ef4444,
+          filled-label-text-color: #ffffff,
+        )
+      );
+    }
   }
 
   // Apply dark theme when .dark-theme class is present
   .dark-theme {
-    @include mat.theme(dark.$dark-theme);
+    @include mat.all-component-themes(dark.$dark-theme);
+
+    // Button color variants for dark theme
+    .btn-primary {
+      @include mat.button-overrides(
+        (
+          filled-container-color: #3b82f6,
+          filled-label-text-color: #ffffff,
+        )
+      );
+    }
+
+    .btn-tertiary {
+      @include mat.button-overrides(
+        (
+          filled-container-color: #fbbf24,
+          filled-label-text-color: #000000,
+        )
+      );
+    }
+
+    .btn-error {
+      @include mat.button-overrides(
+        (
+          filled-container-color: #ef4444,
+          filled-label-text-color: #ffffff,
+        )
+      );
+    }
   }
 }
 
@@ -62,4 +121,41 @@ body {
 
 .border-default {
   border-color: var(--rms-border);
+}
+
+// Snackbar (toast notification) styles
+.snackbar-success {
+  background-color: #22c55e !important;
+  color: white !important;
+
+  button {
+    color: white !important;
+  }
+}
+
+.snackbar-info {
+  background-color: #3b82f6 !important;
+  color: white !important;
+
+  button {
+    color: white !important;
+  }
+}
+
+.snackbar-warn {
+  background-color: #f59e0b !important;
+  color: #000000 !important;
+
+  button {
+    color: #000000 !important;
+  }
+}
+
+.snackbar-error {
+  background-color: #ef4444 !important;
+  color: white !important;
+
+  button {
+    color: white !important;
+  }
 }
