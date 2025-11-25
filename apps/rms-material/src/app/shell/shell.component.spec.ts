@@ -1,10 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { Router } from '@angular/router';
+import { signal } from '@angular/core';
 import { of } from 'rxjs';
 
 import { AuthService } from '../auth/auth.service';
 import { ConfirmDialogService } from '../shared/services/confirm-dialog.service';
+import { ThemeService } from '../shared/services/theme.service';
 import { ShellComponent } from './shell.component';
 
 describe('ShellComponent', () => {
@@ -15,13 +17,25 @@ describe('ShellComponent', () => {
   };
   let mockAuthService: { signOut: ReturnType<typeof vi.fn> };
   let mockRouter: { navigate: ReturnType<typeof vi.fn> };
+  let mockThemeService: {
+    isDarkMode$: ReturnType<typeof signal<boolean>>;
+    toggleTheme: ReturnType<typeof vi.fn>;
+  };
 
   beforeEach(async () => {
     mockConfirmDialog = {
       confirm: vi.fn().mockReturnValue(of(true)),
     };
-    mockAuthService = { signOut: vi.fn() };
-    mockRouter = { navigate: vi.fn() };
+    mockAuthService = {
+      signOut: vi.fn().mockReturnValue(Promise.resolve())
+    };
+    mockRouter = {
+      navigate: vi.fn().mockReturnValue(Promise.resolve(true))
+    };
+    mockThemeService = {
+      isDarkMode$: signal(false),
+      toggleTheme: vi.fn(),
+    };
 
     await TestBed.configureTestingModule({
       imports: [ShellComponent, NoopAnimationsModule],
@@ -32,6 +46,7 @@ describe('ShellComponent', () => {
         },
         { provide: AuthService, useValue: mockAuthService },
         { provide: Router, useValue: mockRouter },
+        { provide: ThemeService, useValue: mockThemeService },
       ],
     }).compileComponents();
 

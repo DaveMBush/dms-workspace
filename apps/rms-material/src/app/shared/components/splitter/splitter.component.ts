@@ -24,17 +24,11 @@ export class SplitterComponent {
   readonly widthChange = output<number>();
   private initialized = false;
 
-  currentLeftWidth = computed(function computeLeftWidth(
-    this: SplitterComponent
-  ) {
-    return this.leftWidth();
-  });
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- Computed signal requires arrow function for lexical this binding
+  currentLeftWidth = computed(() => this.leftWidth());
 
-  currentRightWidth = computed(function computeRightWidth(
-    this: SplitterComponent
-  ) {
-    return 100 - this.leftWidth();
-  });
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- Computed signal requires arrow function for lexical this binding
+  currentRightWidth = computed(() => 100 - this.leftWidth());
 
   constructor() {
     const context = this;
