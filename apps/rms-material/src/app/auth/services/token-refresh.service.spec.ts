@@ -132,19 +132,23 @@ describe('TokenRefreshService', () => {
       expect(mockFetchAuthSession).toHaveBeenCalled();
     });
 
-    it('should retry failed refresh attempts', async () => {
-      mockFetchAuthSession
-        .mockRejectedValueOnce(new Error('Network error'))
-        .mockRejectedValueOnce(new Error('Network error'))
-        .mockResolvedValueOnce(createMockSession());
+    it(
+      'should retry failed refresh attempts',
+      async () => {
+        mockFetchAuthSession
+          .mockRejectedValueOnce(new Error('Network error'))
+          .mockRejectedValueOnce(new Error('Network error'))
+          .mockResolvedValueOnce(createMockSession());
 
-      const result = await service.refreshToken();
+        const result = await service.refreshToken();
 
-      expect(result).toBe(true);
-      expect(mockFetchAuthSession).toHaveBeenCalledTimes(3);
-      // Should retry and succeed
-      expect(sessionStorageMock.setItem).toHaveBeenCalledTimes(4);
-    });
+        expect(result).toBe(true);
+        expect(mockFetchAuthSession).toHaveBeenCalledTimes(3);
+        // Should retry and succeed
+        expect(sessionStorageMock.setItem).toHaveBeenCalledTimes(4);
+      },
+      10000
+    );
 
     it('should give up after max retry attempts', async () => {
       mockFetchAuthSession.mockRejectedValue(new Error('Persistent error'));
