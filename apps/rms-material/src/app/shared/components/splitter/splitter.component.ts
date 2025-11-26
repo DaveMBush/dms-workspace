@@ -25,10 +25,10 @@ export class SplitterComponent {
   private initialized = false;
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- Computed signal requires arrow function for lexical this binding
-  currentLeftWidth = computed(() => this.leftWidth());
+  currentLeftWidth$ = computed(() => this.leftWidth());
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- Computed signal requires arrow function for lexical this binding
-  currentRightWidth = computed(() => 100 - this.leftWidth());
+  currentRightWidth$ = computed(() => 100 - this.leftWidth());
 
   constructor() {
     const context = this;

@@ -1,5 +1,5 @@
 <div class="splitter-container" #container>
-  <div class="splitter-panel left-panel" [style.width.%]="currentLeftWidth()">
+  <div class="splitter-panel left-panel" [style.width.%]="currentLeftWidth$()">
     <ng-content select="[leftPanel]"></ng-content>
   </div>
   <div
@@ -10,7 +10,7 @@
   >
     <div class="handle-bar"></div>
   </div>
-  <div class="splitter-panel right-panel" [style.width.%]="currentRightWidth()">
+  <div class="splitter-panel right-panel" [style.width.%]="currentRightWidth$()">
     <ng-content select="[rightPanel]"></ng-content>
   </div>
 </div>

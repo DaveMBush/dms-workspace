@@ -37,7 +37,7 @@ export class ShellComponent {
   protected themeService = inject(ThemeService);
   protected isDarkMode = this.themeService.isDarkMode$;
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- Computed signal requires arrow function for lexical this binding
-  protected darkModeIcon = computed(() => {
+  protected darkModeIcon$ = computed(() => {
     return this.isDarkMode() ? 'light_mode' : 'dark_mode';
   });
 
