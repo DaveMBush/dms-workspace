@@ -27,10 +27,10 @@ describe('ShellComponent', () => {
       confirm: vi.fn().mockReturnValue(of(true)),
     };
     mockAuthService = {
-      signOut: vi.fn().mockReturnValue(Promise.resolve())
+      signOut: vi.fn().mockReturnValue(Promise.resolve()),
     };
     mockRouter = {
-      navigate: vi.fn().mockReturnValue(Promise.resolve(true))
+      navigate: vi.fn().mockReturnValue(Promise.resolve(true)),
     };
     mockThemeService = {
       isDarkMode$: signal(false),

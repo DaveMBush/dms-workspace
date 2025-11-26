@@ -258,37 +258,33 @@ describe('authInterceptor', () => {
       expect(mockRouter.navigate).not.toHaveBeenCalled();
     });
 
-    it(
-      'should handle signOut errors gracefully',
-      async () => {
-        const token = 'expired-token';
-        const req = new HttpRequest('GET', '/api/protected');
-        const error = new HttpErrorResponse({
-          status: 401,
-          statusText: 'Unauthorized',
+    it('should handle signOut errors gracefully', async () => {
+      const token = 'expired-token';
+      const req = new HttpRequest('GET', '/api/protected');
+      const error = new HttpErrorResponse({
+        status: 401,
+        statusText: 'Unauthorized',
+      });
+
+      mockAuthService.getAccessToken.mockResolvedValue(token);
+      mockAuthService.signOut.mockRejectedValue(new Error('SignOut failed'));
+      mockRouter.navigate.mockResolvedValue(true);
+      mockNext.handle.mockReturnValue(throwError(() => error));
+
+      const result = TestBed.runInInjectionContext(() =>
+        authInterceptor(req, mockNext.handle)
+      );
+
+      await new Promise((resolve) => {
+        result.subscribe({
+          complete: () => resolve(undefined),
+          error: () => resolve(undefined),
         });
+      });
 
-        mockAuthService.getAccessToken.mockResolvedValue(token);
-        mockAuthService.signOut.mockRejectedValue(new Error('SignOut failed'));
-        mockRouter.navigate.mockResolvedValue(true);
-        mockNext.handle.mockReturnValue(throwError(() => error));
-
-        const result = TestBed.runInInjectionContext(() =>
-          authInterceptor(req, mockNext.handle)
-        );
-
-        await new Promise((resolve) => {
-          result.subscribe({
-            complete: () => resolve(undefined),
-            error: () => resolve(undefined),
-          });
-        });
-
-        expect(mockAuthService.signOut).toHaveBeenCalled();
-        expect(mockRouter.navigate).toHaveBeenCalledWith(['/auth/login']);
-      },
-      10000
-    );
+      expect(mockAuthService.signOut).toHaveBeenCalled();
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/auth/login']);
+    }, 10000);
 
     it('should handle navigation errors gracefully', async () => {
       const token = 'expired-token';
