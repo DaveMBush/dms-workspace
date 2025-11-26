@@ -8,7 +8,7 @@
     (click)="themeService.toggleTheme()"
     aria-label="Toggle theme"
   >
-    <mat-icon>{{ darkModeIcon }}</mat-icon>
+    <mat-icon>{{ darkModeIcon() }}</mat-icon>
   </button>
 
   <button mat-icon-button [matMenuTriggerFor]="userMenu" aria-label="User menu">
