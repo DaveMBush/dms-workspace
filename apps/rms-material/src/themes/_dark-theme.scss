@@ -3,14 +3,14 @@
 // Dark theme configuration using Material 3 theming
 // Uses blue palette to match current RMS styling
 
-$dark-theme: (
-  color: (
-    primary: mat.$blue-palette,
-    tertiary: mat.$azure-palette,
-    theme-type: dark,
-  ),
-  typography: Roboto,
-  density: 0,
+$dark-theme: mat.define-theme(
+  (
+    color: (
+      primary: mat.$blue-palette,
+      tertiary: mat.$yellow-palette,
+      theme-type: dark,
+    ),
+  )
 );
 
 // Dark theme specific CSS custom properties

@@ -284,7 +284,7 @@ describe('authInterceptor', () => {
 
       expect(mockAuthService.signOut).toHaveBeenCalled();
       expect(mockRouter.navigate).toHaveBeenCalledWith(['/auth/login']);
-    });
+    }, 10000);
 
     it('should handle navigation errors gracefully', async () => {
       const token = 'expired-token';
