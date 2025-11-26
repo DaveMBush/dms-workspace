@@ -10,7 +10,10 @@
   >
     <div class="handle-bar"></div>
   </div>
-  <div class="splitter-panel right-panel" [style.width.%]="currentRightWidth$()">
+  <div
+    class="splitter-panel right-panel"
+    [style.width.%]="currentRightWidth$()"
+  >
     <ng-content select="[rightPanel]"></ng-content>
   </div>
 </div>
