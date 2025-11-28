@@ -13,14 +13,18 @@ test.describe('Theme Switching', () => {
     await expect(body).not.toHaveClass(/dark-theme/);
   });
 
-  test('should toggle to dark theme when clicking theme button', async ({ page }) => {
+  test('should toggle to dark theme when clicking theme button', async ({
+    page,
+  }) => {
     await page.goto('/');
 
     const themeButton = page.locator('button[aria-label="Toggle theme"]');
     await expect(themeButton).toBeVisible();
 
     // Verify light theme icon
-    await expect(page.locator('mat-icon', { hasText: 'dark_mode' })).toBeVisible();
+    await expect(
+      page.locator('mat-icon', { hasText: 'dark_mode' })
+    ).toBeVisible();
 
     // Click to switch to dark theme
     await themeButton.click();
@@ -29,7 +33,9 @@ test.describe('Theme Switching', () => {
     await expect(body).toHaveClass(/dark-theme/);
 
     // Verify dark theme icon changed
-    await expect(page.locator('mat-icon', { hasText: 'light_mode' })).toBeVisible();
+    await expect(
+      page.locator('mat-icon', { hasText: 'light_mode' })
+    ).toBeVisible();
   });
 
   test('should toggle back to light theme', async ({ page }) => {
@@ -72,10 +78,14 @@ test.describe('Theme Switching', () => {
 
     // Theme should still be dark
     await expect(body).toHaveClass(/dark-theme/);
-    await expect(page.locator('mat-icon', { hasText: 'light_mode' })).toBeVisible();
+    await expect(
+      page.locator('mat-icon', { hasText: 'light_mode' })
+    ).toBeVisible();
   });
 
-  test('should apply theme before content loads (no flash)', async ({ page }) => {
+  test('should apply theme before content loads (no flash)', async ({
+    page,
+  }) => {
     // Set dark theme in localStorage first
     await page.goto('/');
     await page.evaluate(() => localStorage.setItem('rms-theme', 'dark'));

@@ -22,8 +22,12 @@ test.describe('Logout', () => {
     await expect(menu).toBeVisible();
 
     // Menu items should be visible
-    await expect(page.locator('button[mat-menu-item]', { hasText: 'Profile' })).toBeVisible();
-    await expect(page.locator('button[mat-menu-item]', { hasText: 'Logout' })).toBeVisible();
+    await expect(
+      page.locator('button[mat-menu-item]', { hasText: 'Profile' })
+    ).toBeVisible();
+    await expect(
+      page.locator('button[mat-menu-item]', { hasText: 'Logout' })
+    ).toBeVisible();
   });
 
   test('should show profile and logout options', async ({ page }) => {

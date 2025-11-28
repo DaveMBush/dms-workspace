@@ -22,7 +22,10 @@ describe('SplitterComponent', () => {
     const spy = vi.spyOn(Storage.prototype, 'setItem');
     const containerEl = component.container();
     if (containerEl) {
-      vi.spyOn(containerEl.nativeElement, 'getBoundingClientRect').mockReturnValue({
+      vi.spyOn(
+        containerEl.nativeElement,
+        'getBoundingClientRect'
+      ).mockReturnValue({
         width: 1000,
         left: 0,
         top: 0,
@@ -77,8 +80,9 @@ describe('SplitterComponent', () => {
       fixture.detectChanges();
       await fixture.whenStable();
 
-      const container =
-        fixture.nativeElement.querySelector('.splitter-container');
+      const container = fixture.nativeElement.querySelector(
+        '.splitter-container'
+      );
       component.leftWidthPixels.set(350);
       fixture.detectChanges();
       await fixture.whenStable();
@@ -119,8 +123,8 @@ describe('SplitterComponent', () => {
           x: 0,
           y: 0,
           toJSON: () => {
-          // Empty method required by DOMRect interface
-        },
+            // Empty method required by DOMRect interface
+          },
         });
       }
 
@@ -167,8 +171,8 @@ describe('SplitterComponent', () => {
           x: 0,
           y: 0,
           toJSON: () => {
-          // Empty method required by DOMRect interface
-        },
+            // Empty method required by DOMRect interface
+          },
         });
       }
 

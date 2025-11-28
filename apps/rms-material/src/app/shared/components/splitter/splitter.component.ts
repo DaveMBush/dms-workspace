@@ -54,8 +54,7 @@ export class SplitterComponent {
         if (containerEl) {
           const containerWidth =
             containerEl.nativeElement.getBoundingClientRect().width;
-          const percentage =
-            (context.leftWidthPixels() / containerWidth) * 100;
+          const percentage = (context.leftWidthPixels() / containerWidth) * 100;
           context.saveState(percentage);
           context.widthChange.emit(percentage);
         }
@@ -85,8 +84,7 @@ export class SplitterComponent {
 
       const containerEl = context.container();
       if (containerEl) {
-        const containerRect =
-          containerEl.nativeElement.getBoundingClientRect();
+        const containerRect = containerEl.nativeElement.getBoundingClientRect();
         const mouseX = e.clientX - containerRect.left;
 
         const minWidth = containerRect.width * 0.1;

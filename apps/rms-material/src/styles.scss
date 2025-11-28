@@ -166,12 +166,7 @@ body {
 
 // Dim placeholder text using Material form field variables
 mat-form-field {
-  --mat-form-field-outlined-input-text-placeholder-color: rgba(
-    0,
-    0,
-    0,
-    0.38
-  );
+  --mat-form-field-outlined-input-text-placeholder-color: rgba(0, 0, 0, 0.38);
 }
 
 .dark-theme mat-form-field {
