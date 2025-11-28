@@ -6,6 +6,8 @@ import {
 } from '@angular/common/http';
 import {
   ApplicationConfig,
+  inject,
+  provideAppInitializer,
   provideBrowserGlobalErrorListeners,
   provideZonelessChangeDetection,
 } from '@angular/core';
@@ -25,6 +27,7 @@ import { MockAuthService } from './auth/mock-auth.service';
 import { MockProfileService } from './auth/services/mock-profile.service';
 import { ProfileService } from './auth/services/profile.service';
 import { ErrorHandlerService } from './error-handler/error-handler.service';
+import { ThemeService } from './shared/services/theme.service';
 import { UniverseSyncService } from './shared/services/universe-sync.service';
 import { AccountEffectsService } from './store/accounts/account-effect.service';
 import { accountEffectsServiceToken } from './store/accounts/account-effect-service-token';
@@ -51,6 +54,13 @@ if (!shouldUseMockAuth) {
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    // Initialize theme on app startup - inject to ensure constructor runs
+    provideAppInitializer(function initializeTheme() {
+      // Inject theme service to trigger constructor which loads and applies theme
+      inject(ThemeService);
+      // Theme service constructor already initializes the theme
+      // This just ensures it's instantiated before app renders
+    }),
     // Conditional auth service provider
     {
       provide: AuthService,

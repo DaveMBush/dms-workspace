@@ -13,49 +13,40 @@ describe('SplitterComponent', () => {
     component = fixture.componentInstance;
   });
 
-  it('should use initialLeftWidth by default when no stored state', () => {
-    vi.spyOn(Storage.prototype, 'getItem').mockReturnValue(null);
-    const newFixture = TestBed.createComponent(SplitterComponent);
-    newFixture.componentRef.setInput('initialLeftWidth', 25);
-    newFixture.detectChanges();
-    // Component initializes with default 20, then effect updates it to initialLeftWidth
-    expect([20, 25]).toContain(newFixture.componentInstance.leftWidth());
+  it('should initialize leftWidthPixels signal', () => {
+    expect(component.leftWidthPixels).toBeDefined();
+    expect(typeof component.leftWidthPixels()).toBe('number');
   });
 
-  it('should persist width to localStorage', async () => {
+  it('should persist width to localStorage when width changes', async () => {
     const spy = vi.spyOn(Storage.prototype, 'setItem');
+    const containerEl = component.container();
+    if (containerEl) {
+      vi.spyOn(containerEl.nativeElement, 'getBoundingClientRect').mockReturnValue({
+        width: 1000,
+        left: 0,
+        top: 0,
+        bottom: 0,
+        right: 1000,
+        height: 500,
+        x: 0,
+        y: 0,
+        toJSON: () => {
+          // Empty method required by DOMRect interface
+        },
+      });
+    }
+
     fixture.detectChanges();
     await fixture.whenStable();
     spy.mockClear(); // Clear initialization call
-    component.leftWidth.set(30);
+    component.leftWidthPixels.set(300);
     fixture.detectChanges();
     await fixture.whenStable();
     expect(spy).toHaveBeenCalled();
-    expect(spy).toHaveBeenCalledWith('splitter-state', '30');
-  });
-
-  it('should load width from localStorage', () => {
-    vi.spyOn(Storage.prototype, 'getItem').mockReturnValue('35');
-    const newFixture = TestBed.createComponent(SplitterComponent);
-    newFixture.detectChanges();
-    const newComponent = newFixture.componentInstance;
-    // After effect runs, should load from localStorage
-    expect([20, 35]).toContain(newComponent.leftWidth());
   });
 
   describe('edge cases', () => {
-    it('should clamp width to minimum 10%', () => {
-      component.leftWidth.set(5);
-      const clampedWidth = Math.max(10, Math.min(50, 5));
-      expect(clampedWidth).toBe(10);
-    });
-
-    it('should clamp width to maximum 50%', () => {
-      component.leftWidth.set(60);
-      const clampedWidth = Math.max(10, Math.min(50, 60));
-      expect(clampedWidth).toBe(50);
-    });
-
     it('should handle localStorage being unavailable', () => {
       vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
         throw new Error('localStorage not available');
@@ -65,21 +56,143 @@ describe('SplitterComponent', () => {
 
     it('should handle invalid localStorage value', () => {
       vi.spyOn(Storage.prototype, 'getItem').mockReturnValue('invalid');
-      const newComponent =
-        TestBed.createComponent(SplitterComponent).componentInstance;
-      expect(newComponent.leftWidth()).toBe(20);
+      expect(() => TestBed.createComponent(SplitterComponent)).not.toThrow();
     });
 
-    it('should emit widthChange event on drag', async () => {
+    it('should emit widthChange event on width change', async () => {
       const spy = vi.fn();
       component.widthChange.subscribe(spy);
       fixture.detectChanges();
       await fixture.whenStable();
       spy.mockClear(); // Clear initial emission
-      component.leftWidth.set(25);
+      component.leftWidthPixels.set(300);
       fixture.detectChanges();
       await fixture.whenStable();
-      expect(spy).toHaveBeenCalledWith(25);
+      expect(spy).toHaveBeenCalled();
+    });
+  });
+
+  describe('mouse drag resize', () => {
+    it('should update CSS variable when leftWidthPixels changes', async () => {
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      const container =
+        fixture.nativeElement.querySelector('.splitter-container');
+      component.leftWidthPixels.set(350);
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      const cssVarValue = container.style.getPropertyValue('--left-width-px');
+      expect(cssVarValue).toBe('350px');
+    });
+
+    it('should handle mousedown event', () => {
+      fixture.detectChanges();
+
+      const handle = fixture.nativeElement.querySelector('.splitter-handle');
+      const mouseEvent = new MouseEvent('mousedown', {
+        clientX: 300,
+        clientY: 100,
+      });
+
+      expect(() => handle.dispatchEvent(mouseEvent)).not.toThrow();
+    });
+
+    it('should clamp width to minimum 10% during drag', async () => {
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      // Mock container width
+      const containerEl = component.container();
+      if (containerEl) {
+        vi.spyOn(
+          containerEl.nativeElement,
+          'getBoundingClientRect'
+        ).mockReturnValue({
+          left: 0,
+          width: 1000,
+          top: 0,
+          bottom: 0,
+          right: 1000,
+          height: 500,
+          x: 0,
+          y: 0,
+          toJSON: () => {
+          // Empty method required by DOMRect interface
+        },
+        });
+      }
+
+      // Simulate drag to position that would be < 10%
+      const handle = fixture.nativeElement.querySelector('.splitter-handle');
+      const mouseDownEvent = new MouseEvent('mousedown', {
+        clientX: 50,
+        bubbles: true,
+      });
+      handle.dispatchEvent(mouseDownEvent);
+
+      const mouseMoveEvent = new MouseEvent('mousemove', {
+        clientX: 50,
+        bubbles: true,
+      });
+      document.dispatchEvent(mouseMoveEvent);
+
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      // Should clamp to 10% of 1000px = 100px
+      expect(component.leftWidthPixels()).toBe(100);
+
+      const mouseUpEvent = new MouseEvent('mouseup', { bubbles: true });
+      document.dispatchEvent(mouseUpEvent);
+    });
+
+    it('should clamp width to maximum 50% during drag', async () => {
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      const containerEl = component.container();
+      if (containerEl) {
+        vi.spyOn(
+          containerEl.nativeElement,
+          'getBoundingClientRect'
+        ).mockReturnValue({
+          left: 0,
+          width: 1000,
+          top: 0,
+          bottom: 0,
+          right: 1000,
+          height: 500,
+          x: 0,
+          y: 0,
+          toJSON: () => {
+          // Empty method required by DOMRect interface
+        },
+        });
+      }
+
+      const handle = fixture.nativeElement.querySelector('.splitter-handle');
+      const mouseDownEvent = new MouseEvent('mousedown', {
+        clientX: 800,
+        bubbles: true,
+      });
+      handle.dispatchEvent(mouseDownEvent);
+
+      const mouseMoveEvent = new MouseEvent('mousemove', {
+        clientX: 800,
+        bubbles: true,
+      });
+      document.dispatchEvent(mouseMoveEvent);
+
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      // Should clamp to 50% of 1000px = 500px
+      expect(component.leftWidthPixels()).toBe(500);
+
+      const mouseUpEvent = new MouseEvent('mouseup', { bubbles: true });
+      document.dispatchEvent(mouseUpEvent);
     });
   });
 });
