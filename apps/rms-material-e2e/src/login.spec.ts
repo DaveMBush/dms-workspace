@@ -116,4 +116,112 @@ test.describe('Login', () => {
     );
     expect(rememberMe).toBe('true');
   });
+
+  test('should successfully login with valid credentials', async ({ page }) => {
+    await page.locator('input[type="email"]').fill('test@example.com');
+    await page.locator('input[type="password"]').fill('password123');
+    await page.locator('button[type="submit"]').click();
+
+    // Should navigate to dashboard after successful login
+    await expect(page).toHaveURL(/\/dashboard/);
+  });
+
+  test('should allow form submission even with invalid data', async ({
+    page,
+  }) => {
+    const submitButton = page.locator('button[type="submit"]');
+
+    // Button should always be enabled (validation happens on blur/submit)
+    await expect(submitButton).toBeEnabled();
+
+    // Fill with invalid email
+    await page.locator('input[type="email"]').fill('invalid');
+    await page.locator('input[type="password"]').fill('password123');
+
+    // Button should still be enabled (form allows submission attempt)
+    await expect(submitButton).toBeEnabled();
+  });
+
+  test('should clear validation errors when correcting input', async ({
+    page,
+  }) => {
+    // Trigger validation errors
+    await page.locator('input[type="email"]').fill('invalid-email');
+    await page.locator('input[type="password"]').click();
+    await expect(page.locator('mat-error')).toContainText(
+      'Please enter a valid email'
+    );
+
+    // Correct the email
+    await page.locator('input[type="email"]').clear();
+    await page.locator('input[type="email"]').fill('valid@example.com');
+    await page.locator('input[type="password"]').click();
+
+    // Error should disappear
+    await expect(
+      page.locator('mat-error', { hasText: 'Please enter a valid email' })
+    ).not.toBeVisible();
+  });
+
+  test('should handle checkbox toggle correctly', async ({ page }) => {
+    const checkbox = page.locator('mat-checkbox input');
+
+    // Initially unchecked (no localStorage value)
+    await expect(checkbox).not.toBeChecked();
+
+    // Click to check
+    await page.locator('mat-checkbox').click();
+    await expect(checkbox).toBeChecked();
+
+    // Click to uncheck
+    await page.locator('mat-checkbox').click();
+    await expect(checkbox).not.toBeChecked();
+  });
+
+  test('should show email field is required after blur on empty field', async ({
+    page,
+  }) => {
+    // Focus then blur email field without entering anything
+    await page.locator('input[type="email"]').focus();
+    await page.locator('input[type="password"]').click();
+
+    await expect(page.getByText('Email is required')).toBeVisible();
+  });
+
+  test('should show password field is required after blur on empty field', async ({
+    page,
+  }) => {
+    // Focus then blur password field without entering anything
+    await page.locator('input[type="password"]').focus();
+    await page.locator('input[type="email"]').click();
+
+    await expect(page.getByText('Password is required')).toBeVisible();
+  });
+
+  test('should trim email with leading/trailing spaces', async ({ page }) => {
+    const emailInput = page.locator('input[type="email"]');
+
+    await emailInput.fill('  test@example.com  ');
+    await page.locator('input[type="password"]').fill('password123');
+    await page.locator('button[type="submit"]').click();
+
+    // Should successfully login (email gets trimmed)
+    await expect(page).toHaveURL(/\/dashboard/);
+  });
+
+  test('should accept exactly 8 character password', async ({ page }) => {
+    const submitButton = page.locator('button[type="submit"]');
+
+    await page.locator('input[type="email"]').fill('test@example.com');
+    await page.locator('input[type="password"]').fill('12345678');
+    await page.locator('input[type="email"]').click();
+
+    // No validation error should appear
+    await expect(
+      page.locator('mat-error', {
+        hasText: 'Password must be at least 8 characters',
+      })
+    ).not.toBeVisible();
+    await expect(submitButton).toBeEnabled();
+  });
 });
