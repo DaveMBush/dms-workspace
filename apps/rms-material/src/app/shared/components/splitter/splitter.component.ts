@@ -1,64 +1,113 @@
-import { CdkDrag, CdkDragMove } from '@angular/cdk/drag-drop';
 import {
   ChangeDetectionStrategy,
   Component,
-  computed,
+  DestroyRef,
   effect,
+  ElementRef,
+  inject,
   input,
   output,
   signal,
+  viewChild,
 } from '@angular/core';
 
 @Component({
   selector: 'rms-splitter',
-  imports: [CdkDrag],
+  imports: [],
   templateUrl: './splitter.html',
   styleUrl: './splitter.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SplitterComponent {
+  private destroyRef = inject(DestroyRef);
+  container = viewChild<ElementRef<HTMLElement>>('container');
+
   stateKey = input<string>('splitter-state');
   initialLeftWidth = input<number>(20);
 
-  leftWidth = signal(20);
+  leftWidthPixels = signal(0);
   readonly widthChange = output<number>();
   private initialized = false;
-
-  // eslint-disable-next-line @smarttools/no-anonymous-functions -- Computed signal requires arrow function for lexical this binding
-  currentLeftWidth$ = computed(() => this.leftWidth());
-
-  // eslint-disable-next-line @smarttools/no-anonymous-functions -- Computed signal requires arrow function for lexical this binding
-  currentRightWidth$ = computed(() => 100 - this.leftWidth());
+  private isDragging = false;
 
   constructor() {
     const context = this;
     effect(function initializeWidth() {
       if (!context.initialized) {
-        const stored = context.loadState();
-        if (stored !== null) {
-          context.leftWidth.set(stored);
-        } else {
-          context.leftWidth.set(context.initialLeftWidth());
+        const containerEl = context.container();
+        if (containerEl) {
+          const containerWidth =
+            containerEl.nativeElement.getBoundingClientRect().width;
+          const storedPercent = context.loadState();
+          const percent =
+            storedPercent !== null ? storedPercent : context.initialLeftWidth();
+          const pixels = (percent / 100) * containerWidth;
+          context.leftWidthPixels.set(pixels);
+          context.initialized = true;
         }
-        context.initialized = true;
       }
     });
 
     effect(function persistWidth() {
       if (context.initialized) {
-        context.saveState(context.leftWidth());
-        context.widthChange.emit(context.leftWidth());
+        const containerEl = context.container();
+        if (containerEl) {
+          const containerWidth =
+            containerEl.nativeElement.getBoundingClientRect().width;
+          const percentage = (context.leftWidthPixels() / containerWidth) * 100;
+          context.saveState(percentage);
+          context.widthChange.emit(percentage);
+        }
+      }
+    });
+
+    effect(function updateCssVariable() {
+      const containerEl = context.container();
+      if (containerEl) {
+        containerEl.nativeElement.style.setProperty(
+          '--left-width-px',
+          `${context.leftWidthPixels()}px`
+        );
       }
     });
   }
 
-  onDragMove(event: CdkDragMove, container: HTMLElement): void {
-    const containerRect = container.getBoundingClientRect();
-    const newLeftWidth =
-      ((event.pointerPosition.x - containerRect.left) / containerRect.width) *
-      100;
-    const clampedWidth = Math.max(10, Math.min(50, newLeftWidth));
-    this.leftWidth.set(clampedWidth);
+  onMouseDown(event: MouseEvent): void {
+    event.preventDefault();
+    this.isDragging = true;
+
+    const context = this;
+    function onMouseMove(e: MouseEvent): void {
+      if (!context.isDragging) {
+        return;
+      }
+
+      const containerEl = context.container();
+      if (containerEl) {
+        const containerRect = containerEl.nativeElement.getBoundingClientRect();
+        const mouseX = e.clientX - containerRect.left;
+
+        const minWidth = containerRect.width * 0.1;
+        const maxWidth = containerRect.width * 0.5;
+        const clampedWidth = Math.max(minWidth, Math.min(maxWidth, mouseX));
+
+        context.leftWidthPixels.set(clampedWidth);
+      }
+    }
+
+    function onMouseUp(): void {
+      context.isDragging = false;
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+    }
+
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+
+    this.destroyRef.onDestroy(function cleanupListeners() {
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+    });
   }
 
   private loadState(): number | null {

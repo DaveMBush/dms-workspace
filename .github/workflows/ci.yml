@@ -69,7 +69,8 @@ jobs:
       - run: cp prisma/schema.sqlite.backup prisma/schema.prisma
       - run: pnpm prisma generate
 
-      #- run: pnpm playwright install --with-deps
+      # Install Playwright browsers for e2e tests
+      - run: pnpm playwright install --with-deps
       - uses: nrwl/nx-set-shas@v4
 
       # Prepend any command with "nx-cloud record --" to record its logs to Nx Cloud
@@ -80,3 +81,8 @@ jobs:
       - run: pnpm dupcheck
       # Tests run with SQLite (default environment), builds use PostgreSQL schema
       - run: pnpm nx affected -t lint build test --no-cloud
+
+      # Run e2e tests for rms-material
+      - run: pnpm nx run rms-material-e2e:e2e --no-cloud
+        env:
+          CI: true

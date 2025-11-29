@@ -11,7 +11,9 @@
     "all": "nx affected -t lint build test",
     "dupcheck": "pnpm jscpd",
     "format": "nx format:write",
-    "format:check": "nx format:check"
+    "format:check": "nx format:check",
+    "e2e:rms-material": "nx run rms-material-e2e:e2e",
+    "e2e:rms-material:ui": "nx run rms-material-e2e:e2e --ui"
   },
   "private": true,
   "dependencies": {

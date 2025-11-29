@@ -17,12 +17,11 @@ describe('App', () => {
     document.body.classList.remove('dark-theme');
   });
 
-  it('should render title', () => {
+  it('should have router outlet', () => {
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain(
-      'RMS Material - Theme Test'
-    );
+    const routerOutlet = compiled.querySelector('router-outlet');
+    expect(routerOutlet).toBeTruthy();
   });
 });

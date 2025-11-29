@@ -18,6 +18,10 @@
   @tailwind utilities;
 }
 
+.mdc-notched-outline__notch {
+  border-right: none;
+}
+
 // Apply light theme by default
 @layer material {
   html {
@@ -158,4 +162,18 @@ body {
   button {
     color: white !important;
   }
+}
+
+// Dim placeholder text using Material form field variables
+mat-form-field {
+  --mat-form-field-outlined-input-text-placeholder-color: rgba(0, 0, 0, 0.38);
+}
+
+.dark-theme mat-form-field {
+  --mat-form-field-outlined-input-text-placeholder-color: rgba(
+    255,
+    255,
+    255,
+    0.38
+  );
 }
