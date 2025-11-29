@@ -67,9 +67,7 @@ test.describe('Login', () => {
     page,
   }) => {
     // Set remember me in localStorage before loading page
-    await page.evaluate(() =>
-      localStorage.setItem('rms_remember_me', 'true')
-    );
+    await page.evaluate(() => localStorage.setItem('rms_remember_me', 'true'));
 
     // Reload the page
     await page.reload();
@@ -98,9 +96,7 @@ test.describe('Login', () => {
     context,
   }) => {
     // Set localStorage value
-    await page.evaluate(() =>
-      localStorage.setItem('rms_remember_me', 'true')
-    );
+    await page.evaluate(() => localStorage.setItem('rms_remember_me', 'true'));
 
     // Close page and create new one
     await page.close();

@@ -217,12 +217,13 @@ test.describe('Splitter', () => {
     const newContainerBox = await newContainer.boundingBox();
     const afterRestartWidth = afterRestartBox?.width || 0;
     const newContainerWidth = newContainerBox?.width || 1;
-    const afterRestartPercentage = (afterRestartWidth / newContainerWidth) * 100;
+    const afterRestartPercentage =
+      (afterRestartWidth / newContainerWidth) * 100;
 
     // Visual position should be restored (allow 2% variance)
-    expect(Math.abs(afterRestartPercentage - beforeRestartPercentage)).toBeLessThan(
-      2
-    );
+    expect(
+      Math.abs(afterRestartPercentage - beforeRestartPercentage)
+    ).toBeLessThan(2);
   });
 
   test('should not resize when clicking handle without dragging', async ({
@@ -292,8 +293,7 @@ test.describe('Splitter', () => {
 
     // Rapid drag sequence
     for (let i = 0; i < 3; i++) {
-      const targetX =
-        containerBox!.x + containerBox!.width * (0.2 + i * 0.1);
+      const targetX = containerBox!.x + containerBox!.width * (0.2 + i * 0.1);
       await handle.hover();
       await page.mouse.down();
       await page.mouse.move(targetX, containerBox!.y);
@@ -330,4 +330,3 @@ test.describe('Splitter', () => {
     expect(percentage).toBeLessThan(22);
   });
 });
-
