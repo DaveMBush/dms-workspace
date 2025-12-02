@@ -24,6 +24,7 @@
 
 ### Functional Requirements
 
+- [ ] All GUI look as close to the existing RMS app as possible
 - [ ] Dividend deposits display in table
 - [ ] Virtual scrolling renders only visible rows
 - [ ] Lazy loading fetches more data on scroll

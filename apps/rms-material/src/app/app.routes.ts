@@ -19,6 +19,11 @@ export const appRoutes: Route[] = [
         loadChildren: async () =>
           import('./dashboard/dashboard.routes').then((m) => m.dashboardRoutes),
       },
+      {
+        path: 'profile',
+        loadComponent: async () =>
+          import('./auth/profile/profile').then((m) => m.Profile),
+      },
     ],
   },
   {

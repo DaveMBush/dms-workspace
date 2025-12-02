@@ -23,6 +23,7 @@
 
 ### Functional Requirements
 
+- [ ] All GUI look as close to the existing RMS app as possible
 - [ ] Sold positions display in table
 - [ ] Editable cells for sell price, sell date
 - [ ] Gain/loss calculations displayed

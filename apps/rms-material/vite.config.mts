@@ -23,6 +23,12 @@ export default defineConfig(() => ({
     coverage: {
       reportsDirectory: '../../coverage/apps/rms-material',
       provider: 'v8' as const,
+      thresholds: {
+        statements: 0,
+        branches: 100,
+        functions: 0,
+        lines: 0,
+      },
     },
   },
 }));

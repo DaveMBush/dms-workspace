@@ -22,6 +22,7 @@
 
 ### Functional Requirements
 
+- [ ] All GUI look as close to the existing RMS app as possible
 - [ ] Modal opens for add/edit mode
 - [ ] Symbol selection (autocomplete or select)
 - [ ] Date inputs for ex-date and pay-date

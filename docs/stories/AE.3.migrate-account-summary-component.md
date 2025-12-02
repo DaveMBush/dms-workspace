@@ -23,6 +23,7 @@
 
 ### Functional Requirements
 
+- [ ] All GUI look as close to the existing RMS app as possible
 - [ ] Pie chart shows account allocation
 - [ ] Line chart shows account performance
 - [ ] Summary statistics displayed

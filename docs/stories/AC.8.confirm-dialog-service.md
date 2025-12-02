@@ -20,6 +20,7 @@ See the following files created in AB.1:
 ## Features Implemented
 
 - [ ] `confirm(data)` - Opens confirmation dialog
+- [ ] All GUI look as close to the existing RMS app as possible
 - [ ] Customizable title and message
 - [ ] Customizable button labels
 - [ ] Returns Observable<boolean> with user choice

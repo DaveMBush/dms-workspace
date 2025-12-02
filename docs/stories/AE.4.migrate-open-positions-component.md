@@ -23,6 +23,7 @@
 
 ### Functional Requirements
 
+- [ ] All GUI look as close to the existing RMS app as possible
 - [ ] Open positions display in table
 - [ ] Editable cells for quantity, price, dates
 - [ ] Add new position action

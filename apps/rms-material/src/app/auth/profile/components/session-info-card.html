@@ -1,0 +1,32 @@
+<!-- eslint-disable @angular-eslint/template/no-call-expression -->
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Session Information</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    @if (hasProfile()) {
+    <div class="info-field">
+      <div class="field-label">Login Time</div>
+      <span class="field-value">{{ loginTime() | date: 'medium' }}</span>
+    </div>
+
+    <div class="info-field">
+      <div class="field-label">Session Duration</div>
+      <span class="field-value">{{ sessionDuration() }}</span>
+    </div>
+
+    <div class="info-field">
+      <div class="field-label">Token Expires</div>
+      <span class="field-value">{{ tokenExpiration() | date: 'medium' }}</span>
+    </div>
+
+    <div class="info-field">
+      <div class="field-label">Session Status</div>
+      <span class="status-active">
+        <mat-icon class="status-active">check_circle</mat-icon>
+        Active
+      </span>
+    </div>
+    }
+  </mat-card-content>
+</mat-card>

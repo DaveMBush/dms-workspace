@@ -30,6 +30,7 @@
 ### Functional Requirements
 
 - [ ] Table renders with virtual scrolling enabled
+- [ ] All GUI look as close to the existing RMS app as possible
 - [ ] Only visible rows + buffer rendered in DOM
 - [ ] Lazy loading triggers when scrolling near data boundary
 - [ ] Loading indicator shown during data fetch

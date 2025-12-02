@@ -21,7 +21,7 @@ test.describe('Logout', () => {
 
     // Menu items should be visible in the CDK overlay
     await expect(
-      page.locator('button[mat-menu-item]', { hasText: 'Profile' })
+      page.locator('a[mat-menu-item]', { hasText: 'Profile' })
     ).toBeVisible();
     await expect(
       page.locator('button[mat-menu-item]', { hasText: 'Logout' })
@@ -35,7 +35,7 @@ test.describe('Logout', () => {
 
     await page.locator('button[aria-label="User menu"]').click();
 
-    const profileItem = page.locator('button[mat-menu-item]', {
+    const profileItem = page.locator('a[mat-menu-item]', {
       hasText: 'Profile',
     });
     const logoutItem = page.locator('button[mat-menu-item]', {

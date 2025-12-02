@@ -8,7 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { Router, RouterOutlet } from '@angular/router';
+import { Router, RouterLink, RouterOutlet } from '@angular/router';
 
 import { AuthService } from '../auth/auth.service';
 import { SplitterComponent } from '../shared/components/splitter/splitter.component';
@@ -19,6 +19,7 @@ import { ThemeService } from '../shared/services/theme.service';
   selector: 'rms-shell',
   imports: [
     RouterOutlet,
+    RouterLink,
     MatToolbarModule,
     MatButtonModule,
     MatIconModule,

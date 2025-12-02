@@ -26,6 +26,7 @@
 ### Functional Requirements
 
 - [ ] Account list displays all user accounts
+- [ ] All GUI look as close to the existing RMS app as possible
 - [ ] Accounts show name and relevant info
 - [ ] Clicking account navigates to account detail
 - [ ] Current account highlighted

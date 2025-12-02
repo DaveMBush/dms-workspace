@@ -22,6 +22,7 @@
 
 ### Functional Requirements
 
+- [ ] All GUI look as close to the existing RMS app as possible
 - [ ] Tab bar displays: Summary, Open, Sold, Div-Dep
 - [ ] Active tab highlighted
 - [ ] Tab click navigates to route

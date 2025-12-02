@@ -192,7 +192,6 @@ npx bmad-method install
 BMAD integrates with OpenCode via a project-level `opencode.jsonc`/`opencode.json` (JSON-only, no Markdown fallback).
 
 - Installation:
-
   - Run `npx bmad-method install` and choose `OpenCode` in the IDE list.
   - The installer will detect an existing `opencode.jsonc`/`opencode.json` or create a minimal `opencode.jsonc` if missing.
   - It will:
@@ -201,12 +200,10 @@ BMAD integrates with OpenCode via a project-level `opencode.jsonc`/`opencode.jso
     - Preserve other top-level fields and user-defined entries.
 
 - Prefixes and collisions:
-
   - You can opt-in to prefix agent keys with `bmad-` and command keys with `bmad:tasks:` to avoid name collisions.
   - If a key already exists and is not BMAD-managed, the installer will skip it and suggest enabling prefixes.
 
 - What gets added:
-
   - `instructions`: `.bmad-core/core-config.yaml` plus any selected expansion pack `config.yaml` files.
   - `agent`: BMAD agents from core and selected packs.
     - `prompt`: `{file:./.bmad-core/agents/<id>.md}` (or pack path)
@@ -218,11 +215,9 @@ BMAD integrates with OpenCode via a project-level `opencode.jsonc`/`opencode.jso
     - `description`: extracted from the task’s “Purpose” section
 
 - Selected Packages Only:
-
   - The installer includes agents and tasks only from the packages you selected in the earlier step (core and chosen packs).
 
 - Refresh after changes:
-
   - Re-run:
     ```bash
     npx bmad-method install -f -i opencode
@@ -244,14 +239,12 @@ BMAD integrates with OpenCode via a project-level `opencode.jsonc`/`opencode.jso
 BMAD integrates with OpenAI Codex via `AGENTS.md` and committed core agent files.
 
 - Two installation modes:
-
   - Codex (local only): keeps `.bmad-core/` ignored for local dev.
     - `npx bmad-method install -f -i codex -d .`
   - Codex Web Enabled: ensures `.bmad-core/` is tracked so you can commit it for Codex Web.
     - `npx bmad-method install -f -i codex-web -d .`
 
 - What gets generated:
-
   - `AGENTS.md` at the project root with a BMAD section containing
     - How-to-use with Codex (CLI & Web)
     - Agent Directory (Title, ID, When To Use)
@@ -261,7 +254,6 @@ BMAD integrates with OpenAI Codex via `AGENTS.md` and committed core agent files
     - `bmad:refresh`, `bmad:list`, `bmad:validate`
 
 - Using Codex:
-
   - CLI: run `codex` in the project root and prompt naturally, e.g., “As dev, implement …”.
   - Web: commit `.bmad-core/` and `AGENTS.md`, then open the repo in Codex and prompt the same way.
 

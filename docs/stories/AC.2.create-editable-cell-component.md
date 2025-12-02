@@ -25,6 +25,7 @@
 ### Functional Requirements
 
 - [ ] Click cell to enter edit mode
+- [ ] All GUI look as close to the existing RMS app as possible
 - [ ] Number input with proper formatting
 - [ ] Enter key saves value
 - [ ] Escape key cancels edit

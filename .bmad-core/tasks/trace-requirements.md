@@ -131,7 +131,6 @@ Create a traceability report with:
 Given-When-Then Mappings:
 
 - **Unit Test**: `auth.service.test.ts::validateCredentials`
-
   - Given: Valid user credentials
   - When: Validation method called
   - Then: Returns true with user object
@@ -150,7 +149,6 @@ Given-When-Then Mappings:
 ### Critical Gaps
 
 1. **Performance Requirements**
-
    - Gap: No load testing for concurrent users
    - Risk: High - Could fail under production load
    - Action: Implement load tests using k6 or similar

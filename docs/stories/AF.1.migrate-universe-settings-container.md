@@ -22,6 +22,7 @@
 
 ### Functional Requirements
 
+- [ ] All GUI look as close to the existing RMS app as possible
 - [ ] Container renders correctly
 - [ ] Navigation to universe settings works
 - [ ] Child components load
