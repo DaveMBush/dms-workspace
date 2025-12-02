@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-import { login } from './helpers/auth.helper';
+import { login } from './helpers/login.helper';
 
 test.describe('Splitter', () => {
   test.beforeEach(async ({ page }) => {

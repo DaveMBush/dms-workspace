@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 
-import { login, navigateToProfile } from './helpers/auth.helper';
+import { login } from './helpers/login.helper';
+import { navigateToProfile } from './helpers/navigate-to-profile.helper';
 
 test.describe('Profile', () => {
   test.beforeEach(async ({ page }) => {

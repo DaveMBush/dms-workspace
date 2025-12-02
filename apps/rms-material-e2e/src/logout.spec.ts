@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-import { login } from './helpers/auth.helper';
+import { login } from './helpers/login.helper';
 
 test.describe('Logout', () => {
   test('should display user menu button in toolbar', async ({ page }) => {
