@@ -16,15 +16,11 @@ test.describe('Profile', () => {
     });
 
     // Wait for navigation to complete
-    await Promise.all([
-      page.waitForURL('/profile'),
-      profileMenuItem.click(),
-    ]);
+    await Promise.all([page.waitForURL('/profile'), profileMenuItem.click()]);
 
     await expect(page).toHaveURL('/profile');
     await expect(page.locator('.profile-title')).toContainText('User Profile');
   });
-
 
   test('should display user name and email', async ({ page }) => {
     await navigateToProfile(page);

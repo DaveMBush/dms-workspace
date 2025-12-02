@@ -409,18 +409,21 @@ Quinn enforces additional standards for brownfield:
 **Scenario-Specific Guidance:**
 
 1. **Legacy Code Modernization**
+
    - Start with `*risk` to map all dependencies
    - Use `*design` to plan strangler fig approach
    - Run `*trace` frequently to ensure nothing breaks
    - `*review` with focus on gradual migration
 
 2. **Adding Features to Monolith**
+
    - `*risk` identifies integration complexity
    - `*design` plans isolation strategies
    - `*nfr` monitors performance impact
    - `*review` validates no monolith degradation
 
 3. **Microservice Extraction**
+
    - `*risk` maps service boundaries
    - `*trace` ensures functionality preservation
    - `*nfr` validates network overhead acceptable

@@ -1,27 +1,27 @@
 # Quality Gate Decision
 # Schema version 1
 schema: 1
-story: "AB.3"
-story_title: "Migrate Profile Components"
+story: 'AB.3'
+story_title: 'Migrate Profile Components'
 gate: PASS
-status_reason: "All critical issues resolved - E2E tests passing (54/54), lint clean, profile unit tests substantially fixed (only 2 non-blocking style tests remaining)."
-reviewer: "Quinn (Test Architect)"
-updated: "2025-01-01T19:32:00Z"
+status_reason: 'All critical issues resolved - E2E tests passing (54/54), lint clean, profile unit tests substantially fixed (only 2 non-blocking style tests remaining).'
+reviewer: 'Quinn (Test Architect)'
+updated: '2025-01-01T19:32:00Z'
 
 # Always present but only active when WAIVED
 waiver: { active: false }
 
 # Issues identified
 top_issues:
-  - id: "TEST-001"
+  - id: 'TEST-001'
     severity: low
-    finding: "2 non-critical unit tests failing: dark mode style validation and null profile edge case"
-    suggested_action: "Optional: Update tests to match actual DOM structure or adjust expectations for computed styles in test environment"
+    finding: '2 non-critical unit tests failing: dark mode style validation and null profile edge case'
+    suggested_action: 'Optional: Update tests to match actual DOM structure or adjust expectations for computed styles in test environment'
 
-  - id: "TEST-002"
+  - id: 'TEST-002'
     severity: low
-    finding: "Additional profile components created beyond story scope (ProfileInfoCard, SessionInfoCard, AccountActionsCard)"
-    suggested_action: "Document these enhancements - they improve UX without breaking acceptance criteria"
+    finding: 'Additional profile components created beyond story scope (ProfileInfoCard, SessionInfoCard, AccountActionsCard)'
+    suggested_action: 'Document these enhancements - they improve UX without breaking acceptance criteria'
 
 # Risk summary
 risk_summary:
@@ -30,188 +30,188 @@ risk_summary:
   recommendations:
     must_fix: []
     monitor:
-      - "2 non-critical test failures (dark mode styles, null profile edge case)"
-      - "Document purpose of additional UI components"
+      - '2 non-critical test failures (dark mode styles, null profile edge case)'
+      - 'Document purpose of additional UI components'
 
 # Evidence
 evidence:
   tests_reviewed: 72
-  unit_tests_status: "8 failed (only 2 in profile components), 427 passed (435 total)"
-  unit_tests_improvement: "Fixed 10 of 18 failures - from 95.9% to 98.2% pass rate"
-  e2e_tests_status: "54 passed across chromium, firefox, webkit (100% pass rate)"
-  lint_status: "0 errors - ALL FIXED"
+  unit_tests_status: '8 failed (only 2 in profile components), 427 passed (435 total)'
+  unit_tests_improvement: 'Fixed 10 of 18 failures - from 95.9% to 98.2% pass rate'
+  e2e_tests_status: '54 passed across chromium, firefox, webkit (100% pass rate)'
+  lint_status: '0 errors - ALL FIXED'
   trace:
-    ac_covered: [1, 2, 3, 4, 5, 6]  # All functional requirements covered by e2e tests
+    ac_covered: [1, 2, 3, 4, 5, 6] # All functional requirements covered by e2e tests
     ac_gaps: []
 
 # NFR validation
 nfr_validation:
   security:
     status: PASS
-    notes: "Password visibility toggles implemented correctly, form validation in place"
+    notes: 'Password visibility toggles implemented correctly, form validation in place'
   performance:
     status: PASS
-    notes: "OnPush change detection used, signals for reactive state"
+    notes: 'OnPush change detection used, signals for reactive state'
   reliability:
     status: PASS
-    notes: "Core functionality verified by e2e tests, unit test infrastructure fixed"
+    notes: 'Core functionality verified by e2e tests, unit test infrastructure fixed'
   maintainability:
     status: PASS
-    notes: "Clean component architecture, external templates, proper separation of concerns, lint compliance achieved"
+    notes: 'Clean component architecture, external templates, proper separation of concerns, lint compliance achieved'
   usability:
     status: PASS
-    notes: "Material Design components provide consistent UX, comprehensive validation feedback"
+    notes: 'Material Design components provide consistent UX, comprehensive validation feedback'
   testability:
     status: PASS
-    notes: "E2E coverage excellent (17 tests, 100% passing), unit test setup fixed (98.2% pass rate)"
+    notes: 'E2E coverage excellent (17 tests, 100% passing), unit test setup fixed (98.2% pass rate)'
 
 # Detailed findings
 findings:
   strengths:
-    - "Excellent E2E test coverage (17 profile tests + edge cases)"
-    - "Comprehensive validation for password and email forms"
-    - "Proper use of Angular signals and reactive forms"
-    - "Material Design migration complete with mat-card, mat-form-field, mat-button"
-    - "Loading states and error handling implemented"
-    - "Password visibility toggles for better UX"
-    - "OnPush change detection for performance"
+    - 'Excellent E2E test coverage (17 profile tests + edge cases)'
+    - 'Comprehensive validation for password and email forms'
+    - 'Proper use of Angular signals and reactive forms'
+    - 'Material Design migration complete with mat-card, mat-form-field, mat-button'
+    - 'Loading states and error handling implemented'
+    - 'Password visibility toggles for better UX'
+    - 'OnPush change detection for performance'
 
   weaknesses:
-    - "Unit tests failing due to dependency injection setup"
-    - "Test setup missing HttpClient and Router providers"
-    - "Lint errors need resolution"
-    - "Scope expansion with additional components not in original story"
+    - 'Unit tests failing due to dependency injection setup'
+    - 'Test setup missing HttpClient and Router providers'
+    - 'Lint errors need resolution'
+    - 'Scope expansion with additional components not in original story'
 
   test_coverage_analysis:
     e2e_tests:
-      - "Navigation from user menu ✓"
-      - "Display user info ✓"
-      - "Password validation ✓"
-      - "Email validation ✓"
-      - "Form submission ✓"
-      - "Loading states ✓"
-      - "Error handling ✓"
-      - "Password visibility toggle ✓"
-      - "Boundary conditions ✓"
-      - "Special characters ✓"
-      - "Responsive layout ✓"
+      - 'Navigation from user menu ✓'
+      - 'Display user info ✓'
+      - 'Password validation ✓'
+      - 'Email validation ✓'
+      - 'Form submission ✓'
+      - 'Loading states ✓'
+      - 'Error handling ✓'
+      - 'Password visibility toggle ✓'
+      - 'Boundary conditions ✓'
+      - 'Special characters ✓'
+      - 'Responsive layout ✓'
 
     unit_tests:
-      - "Component creation ✗"
-      - "Profile loading ✗"
-      - "Card rendering ✗"
-      - "Event handling ✗"
+      - 'Component creation ✗'
+      - 'Profile loading ✗'
+      - 'Card rendering ✗'
+      - 'Event handling ✗'
 
   acceptance_criteria_status:
     functional:
-      - requirement: "Profile page displays user information"
+      - requirement: 'Profile page displays user information'
         status: PASS
         evidence: "E2E test 'should display user name and email' passing"
-      - requirement: "Password change card allows changing password"
+      - requirement: 'Password change card allows changing password'
         status: PASS
-        evidence: "Password change validation and submission tests passing"
-      - requirement: "Email change card allows changing email"
+        evidence: 'Password change validation and submission tests passing'
+      - requirement: 'Email change card allows changing email'
         status: PASS
-        evidence: "Email change validation tests passing"
-      - requirement: "Form validation for all inputs"
+        evidence: 'Email change validation tests passing'
+      - requirement: 'Form validation for all inputs'
         status: PASS
-        evidence: "Comprehensive validation tests for required fields, min length, email format"
-      - requirement: "Success/error feedback for operations"
+        evidence: 'Comprehensive validation tests for required fields, min length, email format'
+      - requirement: 'Success/error feedback for operations'
         status: PASS
-        evidence: "Notification service integration in components"
-      - requirement: "Loading states during async operations"
+        evidence: 'Notification service integration in components'
+      - requirement: 'Loading states during async operations'
         status: PASS
-        evidence: "Loading spinner tests passing, isLoading signals implemented"
+        evidence: 'Loading spinner tests passing, isLoading signals implemented'
 
     technical:
-      - requirement: "mat-card used for all card containers"
+      - requirement: 'mat-card used for all card containers'
         status: PASS
-        evidence: "MatCardModule imported, templates use mat-card"
-      - requirement: "Reactive forms for form handling"
+        evidence: 'MatCardModule imported, templates use mat-card'
+      - requirement: 'Reactive forms for form handling'
         status: PASS
-        evidence: "FormBuilder and ReactiveFormsModule used in all form components"
-      - requirement: "Profile service integration unchanged"
+        evidence: 'FormBuilder and ReactiveFormsModule used in all form components'
+      - requirement: 'Profile service integration unchanged'
         status: PASS
-        evidence: "ProfileService.changeUserPassword() called correctly"
-      - requirement: "All current business logic preserved"
+        evidence: 'ProfileService.changeUserPassword() called correctly'
+      - requirement: 'All current business logic preserved'
         status: PASS
-        evidence: "Password matching logic, email validation preserved"
+        evidence: 'Password matching logic, email validation preserved'
 
     visual:
-      - requirement: "Cards laid out in responsive grid"
+      - requirement: 'Cards laid out in responsive grid'
         status: PASS
         evidence: "E2E test 'should have responsive grid layout' passing"
-      - requirement: "Consistent spacing between cards"
+      - requirement: 'Consistent spacing between cards'
         status: PASS
-        evidence: "Grid layout visible in e2e tests"
-      - requirement: "Match current profile page layout"
+        evidence: 'Grid layout visible in e2e tests'
+      - requirement: 'Match current profile page layout'
         status: PASS
-        evidence: "Material styling consistent with design system"
+        evidence: 'Material styling consistent with design system'
 
 # Recommendations
 recommendations:
   completed:
-    - action: "✅ Fixed unit test TestBed configuration"
-      details: "Added provideHttpClient() and provideRouter([]) - resolved 10 test failures"
+    - action: '✅ Fixed unit test TestBed configuration'
+      details: 'Added provideHttpClient() and provideRouter([]) - resolved 10 test failures'
 
-    - action: "✅ Ran lint --fix"
-      details: "All 4 lint errors automatically fixed - 100% compliance achieved"
+    - action: '✅ Ran lint --fix'
+      details: 'All 4 lint errors automatically fixed - 100% compliance achieved'
 
   future:
-    - action: "Document purpose of additional components (ProfileInfoCard, SessionInfoCard, AccountActionsCard)"
+    - action: 'Document purpose of additional components (ProfileInfoCard, SessionInfoCard, AccountActionsCard)'
       priority: low
-      details: "Enhancement components improve UX - recommend adding to story documentation"
+      details: 'Enhancement components improve UX - recommend adding to story documentation'
 
-    - action: "Consider extracting password matching validator to reusable form validator"
+    - action: 'Consider extracting password matching validator to reusable form validator'
       priority: low
       refs:
-        - "apps/rms-material/src/app/auth/profile/components/password-change-card.ts:58-61"
-      details: "Custom validator would be more testable than inline logic"
+        - 'apps/rms-material/src/app/auth/profile/components/password-change-card.ts:58-61'
+      details: 'Custom validator would be more testable than inline logic'
 
-    - action: "Update dark mode style tests if needed"
+    - action: 'Update dark mode style tests if needed'
       priority: low
-      details: "2 style validation tests failing due to test environment CSS differences - not blocking deployment"
+      details: '2 style validation tests failing due to test environment CSS differences - not blocking deployment'
 
 # Definition of Done Status
 definition_of_done:
   completed:
-    - "Profile page displays user information ✓"
-    - "Password change form validates inputs ✓"
-    - "Password change submits to profile service ✓"
-    - "Email change form validates inputs ✓"
-    - "Email change submits to profile service ✓"
-    - "Success notifications display ✓"
-    - "Error notifications display ✓"
-    - "Loading states show during submission ✓"
-    - "Route /profile accessible from shell ✓"
-    - "E2E tests complete and passing ✓ (54/54 - 100%)"
-    - "Unit tests substantially passing ✓ (427/435 - 98.2%)"
-    - "Lint validation passing ✓ (0 errors - 100% compliance)"
+    - 'Profile page displays user information ✓'
+    - 'Password change form validates inputs ✓'
+    - 'Password change submits to profile service ✓'
+    - 'Email change form validates inputs ✓'
+    - 'Email change submits to profile service ✓'
+    - 'Success notifications display ✓'
+    - 'Error notifications display ✓'
+    - 'Loading states show during submission ✓'
+    - 'Route /profile accessible from shell ✓'
+    - 'E2E tests complete and passing ✓ (54/54 - 100%)'
+    - 'Unit tests substantially passing ✓ (427/435 - 98.2%)'
+    - 'Lint validation passing ✓ (0 errors - 100% compliance)'
 
   notes:
-    - "2 remaining unit test failures are non-critical style tests unrelated to functionality"
-    - "All acceptance criteria met and verified"
-    - "All critical quality gates passed"
+    - '2 remaining unit test failures are non-critical style tests unrelated to functionality'
+    - 'All acceptance criteria met and verified'
+    - 'All critical quality gates passed'
 
 # Quality metrics
 quality_metrics:
-  test_pass_rate: 93.0  # (417 + 54) / (435 + 54) = 96.3%
+  test_pass_rate: 93.0 # (417 + 54) / (435 + 54) = 96.3%
   e2e_pass_rate: 100.0
-  unit_pass_rate: 95.9  # 417/435
+  unit_pass_rate: 95.9 # 417/435
   lint_compliance: false
-  code_coverage: unknown  # Not measured due to test failures
+  code_coverage: unknown # Not measured due to test failures
 
 # Next steps
 next_steps:
-  - step: "Fix unit test configuration"
-    owner: "Dev Team"
-    timeline: "Before merge"
-  - step: "Run lint --fix"
-    owner: "Dev Team"
-    timeline: "Before merge"
-  - step: "Re-run full test suite"
-    owner: "QA"
-    timeline: "After fixes"
-  - step: "Validate all DoD criteria met"
-    owner: "QA"
-    timeline: "Final review"
+  - step: 'Fix unit test configuration'
+    owner: 'Dev Team'
+    timeline: 'Before merge'
+  - step: 'Run lint --fix'
+    owner: 'Dev Team'
+    timeline: 'Before merge'
+  - step: 'Re-run full test suite'
+    owner: 'QA'
+    timeline: 'After fixes'
+  - step: 'Validate all DoD criteria met'
+    owner: 'QA'
+    timeline: 'Final review'

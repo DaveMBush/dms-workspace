@@ -1,5 +1,5 @@
 ---
-description: "Activates the UX Expert agent persona."
+description: 'Activates the UX Expert agent persona.'
 tools: ['changes', 'codebase', 'fetch', 'findTestFiles', 'githubRepo', 'problems', 'usages', 'editFiles', 'runCommands', 'runTasks', 'runTests', 'search', 'searchResults', 'terminalLastCommand', 'terminalSelection', 'testFailure']
 ---
 

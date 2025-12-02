@@ -1,4 +1,5 @@
 # Requirements Traceability Matrix
+
 # Story AB.3: Migrate Profile Components
 
 **Generated**: 2025-01-01
@@ -16,12 +17,12 @@
 
 ### Coverage Distribution
 
-| Requirement Type | Total | Covered | Coverage % |
-|------------------|-------|---------|------------|
-| Functional | 6 | 6 | 100% |
-| Technical | 4 | 4 | 100% |
-| Visual | 3 | 3 | 100% |
-| **TOTAL** | **13** | **13** | **100%** |
+| Requirement Type | Total  | Covered | Coverage % |
+| ---------------- | ------ | ------- | ---------- |
+| Functional       | 6      | 6       | 100%       |
+| Technical        | 4      | 4       | 100%       |
+| Visual           | 3      | 3       | 100%       |
+| **TOTAL**        | **13** | **13**  | **100%**   |
 
 ---
 
@@ -35,16 +36,17 @@
 
 **Test Evidence**:
 
-| Test ID | Test Name | Type | File | Line | Status |
-|---------|-----------|------|------|------|--------|
-| E2E-001 | should navigate to profile from user menu | E2E | profile.spec.ts | 10-26 | ✅ PASS |
-| E2E-002 | should display user name and email | E2E | profile.spec.ts | 29-42 | ✅ PASS |
-| UNIT-001 | should display user name after load | Unit | profile.spec.ts | 55-58 | ✅ PASS |
-| UNIT-002 | should display user email after load | Unit | profile.spec.ts | 60-63 | ✅ PASS |
-| UNIT-003 | should use email as username if name not provided | Unit | profile.spec.ts | 82-97 | ✅ PASS |
-| UNIT-004 | should handle null profile | Unit | profile.spec.ts | 99-104 | ✅ PASS |
+| Test ID  | Test Name                                         | Type | File            | Line   | Status  |
+| -------- | ------------------------------------------------- | ---- | --------------- | ------ | ------- |
+| E2E-001  | should navigate to profile from user menu         | E2E  | profile.spec.ts | 10-26  | ✅ PASS |
+| E2E-002  | should display user name and email                | E2E  | profile.spec.ts | 29-42  | ✅ PASS |
+| UNIT-001 | should display user name after load               | Unit | profile.spec.ts | 55-58  | ✅ PASS |
+| UNIT-002 | should display user email after load              | Unit | profile.spec.ts | 60-63  | ✅ PASS |
+| UNIT-003 | should use email as username if name not provided | Unit | profile.spec.ts | 82-97  | ✅ PASS |
+| UNIT-004 | should handle null profile                        | Unit | profile.spec.ts | 99-104 | ✅ PASS |
 
 **Verification Methods**:
+
 - E2E tests verify actual DOM rendering of user information
 - Unit tests verify component computed properties (userName, userEmail)
 - Edge cases covered: missing name, null profile
@@ -59,24 +61,26 @@
 
 **Test Evidence**:
 
-| Test ID | Test Name | Type | File | Line | Status |
-|---------|-----------|------|------|------|--------|
-| E2E-003 | should render password change card | E2E | profile.spec.ts | 44-58 | ✅ PASS |
-| E2E-004 | should validate current password required | E2E | profile.spec.ts | 74-83 | ✅ PASS |
-| E2E-005 | should validate new password min length | E2E | profile.spec.ts | 85-94 | ✅ PASS |
-| E2E-006 | should require new password confirmation | E2E | profile.spec.ts | 213-231 | ✅ PASS |
-| E2E-007 | should toggle password visibility | E2E | profile.spec.ts | 96-116 | ✅ PASS |
-| E2E-008 | should accept password at minimum length boundary | E2E | profile.spec.ts | 183-196 | ✅ PASS |
-| E2E-009 | should accept password with special characters | E2E | profile.spec.ts | 198-211 | ✅ PASS |
-| UNIT-005 | should render password change card | Unit | profile.spec.ts | 65-69 | ✅ PASS |
+| Test ID  | Test Name                                         | Type | File            | Line    | Status  |
+| -------- | ------------------------------------------------- | ---- | --------------- | ------- | ------- |
+| E2E-003  | should render password change card                | E2E  | profile.spec.ts | 44-58   | ✅ PASS |
+| E2E-004  | should validate current password required         | E2E  | profile.spec.ts | 74-83   | ✅ PASS |
+| E2E-005  | should validate new password min length           | E2E  | profile.spec.ts | 85-94   | ✅ PASS |
+| E2E-006  | should require new password confirmation          | E2E  | profile.spec.ts | 213-231 | ✅ PASS |
+| E2E-007  | should toggle password visibility                 | E2E  | profile.spec.ts | 96-116  | ✅ PASS |
+| E2E-008  | should accept password at minimum length boundary | E2E  | profile.spec.ts | 183-196 | ✅ PASS |
+| E2E-009  | should accept password with special characters    | E2E  | profile.spec.ts | 198-211 | ✅ PASS |
+| UNIT-005 | should render password change card                | Unit | profile.spec.ts | 65-69   | ✅ PASS |
 
 **Verification Methods**:
+
 - E2E tests verify form rendering, validation messages, and password visibility toggles
 - Unit tests verify component structure
 - Boundary testing: 8-character minimum, special characters support
 - Security feature: password visibility toggle tested
 
 **Business Logic Verified**:
+
 - Current password required
 - New password minimum 8 characters
 - Password confirmation required
@@ -93,22 +97,24 @@
 
 **Test Evidence**:
 
-| Test ID | Test Name | Type | File | Line | Status |
-|---------|-----------|------|------|------|--------|
-| E2E-010 | should render email change card | E2E | profile.spec.ts | 60-72 | ✅ PASS |
-| E2E-011 | should validate email format | E2E | profile.spec.ts | 118-127 | ✅ PASS |
-| E2E-012 | should accept valid email format | E2E | profile.spec.ts | 129-141 | ✅ PASS |
-| E2E-013 | should clear email form errors when correcting input | E2E | profile.spec.ts | 258-280 | ✅ PASS |
-| UNIT-006 | should render email change card | Unit | profile.spec.ts | 71-75 | ✅ PASS |
-| UNIT-007 | should reload profile when onEmailChanged called | Unit | profile.spec.ts | 77-80 | ✅ PASS |
+| Test ID  | Test Name                                            | Type | File            | Line    | Status  |
+| -------- | ---------------------------------------------------- | ---- | --------------- | ------- | ------- |
+| E2E-010  | should render email change card                      | E2E  | profile.spec.ts | 60-72   | ✅ PASS |
+| E2E-011  | should validate email format                         | E2E  | profile.spec.ts | 118-127 | ✅ PASS |
+| E2E-012  | should accept valid email format                     | E2E  | profile.spec.ts | 129-141 | ✅ PASS |
+| E2E-013  | should clear email form errors when correcting input | E2E  | profile.spec.ts | 258-280 | ✅ PASS |
+| UNIT-006 | should render email change card                      | Unit | profile.spec.ts | 71-75   | ✅ PASS |
+| UNIT-007 | should reload profile when onEmailChanged called     | Unit | profile.spec.ts | 77-80   | ✅ PASS |
 
 **Verification Methods**:
+
 - E2E tests verify email format validation (invalid formats rejected)
 - E2E tests verify valid emails accepted
 - E2E tests verify error clearing on correction
 - Unit tests verify component structure and event handling
 
 **Business Logic Verified**:
+
 - Email format validation
 - Current email display
 - Email change triggers profile reload
@@ -124,17 +130,18 @@
 
 **Test Evidence**:
 
-| Test ID | Test Name | Type | File | Line | Status |
-|---------|-----------|------|------|------|--------|
-| E2E-004 | should validate current password required | E2E | profile.spec.ts | 74-83 | ✅ PASS |
-| E2E-005 | should validate new password min length | E2E | profile.spec.ts | 85-94 | ✅ PASS |
-| E2E-006 | should require new password confirmation | E2E | profile.spec.ts | 213-231 | ✅ PASS |
-| E2E-011 | should validate email format | E2E | profile.spec.ts | 118-127 | ✅ PASS |
-| E2E-012 | should accept valid email format | E2E | profile.spec.ts | 129-141 | ✅ PASS |
-| E2E-014 | should clear password form errors when correcting input | E2E | profile.spec.ts | 233-256 | ✅ PASS |
-| E2E-013 | should clear email form errors when correcting input | E2E | profile.spec.ts | 258-280 | ✅ PASS |
+| Test ID | Test Name                                               | Type | File            | Line    | Status  |
+| ------- | ------------------------------------------------------- | ---- | --------------- | ------- | ------- |
+| E2E-004 | should validate current password required               | E2E  | profile.spec.ts | 74-83   | ✅ PASS |
+| E2E-005 | should validate new password min length                 | E2E  | profile.spec.ts | 85-94   | ✅ PASS |
+| E2E-006 | should require new password confirmation                | E2E  | profile.spec.ts | 213-231 | ✅ PASS |
+| E2E-011 | should validate email format                            | E2E  | profile.spec.ts | 118-127 | ✅ PASS |
+| E2E-012 | should accept valid email format                        | E2E  | profile.spec.ts | 129-141 | ✅ PASS |
+| E2E-014 | should clear password form errors when correcting input | E2E  | profile.spec.ts | 233-256 | ✅ PASS |
+| E2E-013 | should clear email form errors when correcting input    | E2E  | profile.spec.ts | 258-280 | ✅ PASS |
 
 **Validation Rules Tested**:
+
 - Required field validation (current password, new password, confirm password, email)
 - Minimum length validation (password ≥ 8 characters)
 - Email format validation (valid email pattern)
@@ -154,15 +161,16 @@
 
 **Test Evidence**:
 
-| Test ID | Test Name | Type | File | Line | Implementation |
-|---------|-----------|------|------|------|----------------|
-| CODE-001 | Password change success notification | Code Review | password-change-card.ts | 306 | `this.notification.success('Password changed successfully')` |
-| CODE-002 | Password change error notification | Code Review | password-change-card.ts | 309 | `this.notification.error(error.message)` |
-| CODE-003 | Password mismatch notification | Code Review | password-change-card.ts | 298 | `this.notification.error('New passwords do not match')` |
-| CODE-004 | Email change success notification | Code Review | email-change-card.ts | 423 | `this.notification.success('Email changed successfully')` |
-| CODE-005 | Email change error notification | Code Review | email-change-card.ts | 427 | `this.notification.error(error.message)` |
+| Test ID  | Test Name                            | Type        | File                    | Line | Implementation                                               |
+| -------- | ------------------------------------ | ----------- | ----------------------- | ---- | ------------------------------------------------------------ |
+| CODE-001 | Password change success notification | Code Review | password-change-card.ts | 306  | `this.notification.success('Password changed successfully')` |
+| CODE-002 | Password change error notification   | Code Review | password-change-card.ts | 309  | `this.notification.error(error.message)`                     |
+| CODE-003 | Password mismatch notification       | Code Review | password-change-card.ts | 298  | `this.notification.error('New passwords do not match')`      |
+| CODE-004 | Email change success notification    | Code Review | email-change-card.ts    | 423  | `this.notification.success('Email changed successfully')`    |
+| CODE-005 | Email change error notification      | Code Review | email-change-card.ts    | 427  | `this.notification.error(error.message)`                     |
 
 **Notification Scenarios Covered**:
+
 - ✅ Password change success
 - ✅ Password change failure (network/auth error)
 - ✅ Password mismatch error
@@ -171,6 +179,7 @@
 - ✅ Form validation errors (mat-error messages)
 
 **Notes**:
+
 - NotificationService integration verified in implementation
 - E2E tests verify button disable states (indirect validation verification)
 - Material Design error messages tested in validation tests
@@ -185,21 +194,23 @@
 
 **Test Evidence**:
 
-| Test ID | Test Name | Type | File | Line | Status |
-|---------|-----------|------|------|------|--------|
-| E2E-015 | should show loading spinner during password change | E2E | profile.spec.ts | 143-165 | ✅ PASS |
-| E2E-016 | should show loading spinner during email change | E2E | profile.spec.ts | 167-181 | ✅ PASS |
-| CODE-006 | Password form isLoading signal | Code Review | password-change-card.ts | 281, 302, 311 | `isLoading = signal(false)` |
-| CODE-007 | Email form isLoading signal | Code Review | email-change-card.ts | 405, 419, 429 | `isLoading = signal(false)` |
-| CODE-008 | Button disabled during loading | Code Review | password-change-card.html | 364 | `[disabled]="isLoading()"` |
+| Test ID  | Test Name                                          | Type        | File                      | Line          | Status                      |
+| -------- | -------------------------------------------------- | ----------- | ------------------------- | ------------- | --------------------------- |
+| E2E-015  | should show loading spinner during password change | E2E         | profile.spec.ts           | 143-165       | ✅ PASS                     |
+| E2E-016  | should show loading spinner during email change    | E2E         | profile.spec.ts           | 167-181       | ✅ PASS                     |
+| CODE-006 | Password form isLoading signal                     | Code Review | password-change-card.ts   | 281, 302, 311 | `isLoading = signal(false)` |
+| CODE-007 | Email form isLoading signal                        | Code Review | email-change-card.ts      | 405, 419, 429 | `isLoading = signal(false)` |
+| CODE-008 | Button disabled during loading                     | Code Review | password-change-card.html | 364           | `[disabled]="isLoading()"`  |
 
 **Loading State Coverage**:
+
 - ✅ Password change operation (button disabled during submit)
 - ✅ Email change operation (button disabled during submit)
 - ✅ Loading signal management (set true → operation → set false in finally)
 - ✅ UI feedback (button disabled state tested in E2E)
 
 **Implementation Pattern**:
+
 ```typescript
 this.isLoading.set(true);
 try {
@@ -222,6 +233,7 @@ try {
 **Verification**: Code review + E2E rendering tests
 
 **Evidence**:
+
 - E2E-003: Password change card renders (verifies mat-card-title)
 - E2E-010: Email change card renders (verifies mat-card-title)
 - E2E-017: Responsive grid layout test verifies all cards visible
@@ -235,6 +247,7 @@ try {
 **Verification**: Code review + unit/E2E validation tests
 
 **Evidence**:
+
 - Password form: `passwordForm = this.fb.group({...})` with validators
 - Email form: `emailForm = this.fb.group({...})` with validators
 - All validation tests verify ReactiveFormsModule behavior
@@ -248,6 +261,7 @@ try {
 **Verification**: Unit test mocking + code review
 
 **Evidence**:
+
 - UNIT-008: `should call loadUserProfile on init` (profile.spec.ts:106-109)
 - UNIT-007: `should reload profile when onEmailChanged called` (profile.spec.ts:77-80)
 - ProfileService methods: `loadUserProfile()`, `changeUserPassword()`, `updateUserEmail()`
@@ -261,6 +275,7 @@ try {
 **Verification**: Comprehensive test coverage + code review
 
 **Evidence**:
+
 - Password validation logic: min length, matching, required fields
 - Email validation logic: format validation, required field
 - Form submission logic: validation → service call → notification → reset
@@ -277,6 +292,7 @@ try {
 **Status**: ✅ COVERED
 
 **Evidence**:
+
 - E2E-017: `should have responsive grid layout` (profile.spec.ts:282-291)
 - Verifies: `.grid` container, all 5 cards visible (ProfileInfoCard, SessionInfoCard, PasswordChangeCard, EmailChangeCard, AccountActionsCard)
 
@@ -287,6 +303,7 @@ try {
 **Status**: ✅ COVERED
 
 **Evidence**:
+
 - E2E-017: Grid layout test verifies card positioning
 - CSS implementation uses Material Design spacing
 - Grid gap applied consistently
@@ -298,6 +315,7 @@ try {
 **Status**: ✅ COVERED
 
 **Evidence**:
+
 - E2E-002: Profile title "User Profile" displayed
 - E2E-017: All expected components render in grid
 - Material Design components maintain visual consistency
@@ -315,16 +333,17 @@ try {
 
 **Enhancement Tests** (not in original scope):
 
-| Test | Purpose | Justification |
-|------|---------|---------------|
-| UNIT-003 | Email as username fallback | Edge case handling - good practice |
-| UNIT-004 | Null profile handling | Error resilience - defensive coding |
-| E2E-008 | Password boundary testing (8 chars) | Quality assurance - boundary analysis |
-| E2E-009 | Special character passwords | Real-world usage - comprehensive validation |
-| E2E-014 | Clear password errors on correction | UX improvement - error recovery |
-| E2E-013 | Clear email errors on correction | UX improvement - error recovery |
+| Test     | Purpose                             | Justification                               |
+| -------- | ----------------------------------- | ------------------------------------------- |
+| UNIT-003 | Email as username fallback          | Edge case handling - good practice          |
+| UNIT-004 | Null profile handling               | Error resilience - defensive coding         |
+| E2E-008  | Password boundary testing (8 chars) | Quality assurance - boundary analysis       |
+| E2E-009  | Special character passwords         | Real-world usage - comprehensive validation |
+| E2E-014  | Clear password errors on correction | UX improvement - error recovery             |
+| E2E-013  | Clear email errors on correction    | UX improvement - error recovery             |
 
 **Additional Components** (TEST-002 from gate):
+
 - ProfileInfoCard
 - SessionInfoCard
 - AccountActionsCard
@@ -368,6 +387,7 @@ All critical paths have E2E + unit test coverage:
 **Execution**: `pnpm nx run rms-material-e2e:e2e`
 
 **Profile Test Suite Breakdown**:
+
 - Navigation: 1 test
 - Display: 2 tests
 - Password validation: 7 tests
@@ -381,6 +401,7 @@ All critical paths have E2E + unit test coverage:
 **Execution**: `pnpm nx run rms-material:test`
 
 **Profile Component Tests**:
+
 - Component creation: 1 test
 - User info display: 4 tests
 - Card rendering: 2 tests
@@ -393,20 +414,20 @@ All critical paths have E2E + unit test coverage:
 
 ### Definition of Done Checklist
 
-| Criterion | Status | Evidence |
-|-----------|--------|----------|
-| Profile page displays user information | ✅ | FR-1: 6 tests |
-| Password change form validates inputs | ✅ | FR-2: 8 tests |
-| Password change submits to profile service | ✅ | CODE-001, CODE-002 |
-| Email change form validates inputs | ✅ | FR-3: 6 tests |
-| Email change submits to profile service | ✅ | CODE-004, CODE-005 |
-| Success notifications display | ✅ | FR-5: 5 code reviews |
-| Error notifications display | ✅ | FR-5: 5 code reviews |
-| Loading states show during submission | ✅ | FR-6: 2 E2E + 3 code reviews |
-| Route /profile accessible from shell | ✅ | E2E-001 |
-| E2E tests complete and passing | ✅ | 54/54 (100%) |
-| Unit tests substantially passing | ✅ | 427/435 (98.2%) |
-| Lint validation passing | ✅ | 0 errors |
+| Criterion                                  | Status | Evidence                     |
+| ------------------------------------------ | ------ | ---------------------------- |
+| Profile page displays user information     | ✅     | FR-1: 6 tests                |
+| Password change form validates inputs      | ✅     | FR-2: 8 tests                |
+| Password change submits to profile service | ✅     | CODE-001, CODE-002           |
+| Email change form validates inputs         | ✅     | FR-3: 6 tests                |
+| Email change submits to profile service    | ✅     | CODE-004, CODE-005           |
+| Success notifications display              | ✅     | FR-5: 5 code reviews         |
+| Error notifications display                | ✅     | FR-5: 5 code reviews         |
+| Loading states show during submission      | ✅     | FR-6: 2 E2E + 3 code reviews |
+| Route /profile accessible from shell       | ✅     | E2E-001                      |
+| E2E tests complete and passing             | ✅     | 54/54 (100%)                 |
+| Unit tests substantially passing           | ✅     | 427/435 (98.2%)              |
+| Lint validation passing                    | ✅     | 0 errors                     |
 
 **DoD Status**: ✅ 12/12 COMPLETE (100%)
 
@@ -414,13 +435,13 @@ All critical paths have E2E + unit test coverage:
 
 ## Quality Metrics
 
-| Metric | Target | Actual | Status |
-|--------|--------|--------|--------|
-| Requirements Coverage | ≥95% | 100% | ✅ EXCEEDS |
-| E2E Test Pass Rate | 100% | 100% | ✅ MEETS |
-| Unit Test Pass Rate | ≥90% | 98.2% | ✅ EXCEEDS |
-| Lint Compliance | 100% | 100% | ✅ MEETS |
-| Critical Path Coverage | 100% | 100% | ✅ MEETS |
+| Metric                 | Target | Actual | Status     |
+| ---------------------- | ------ | ------ | ---------- |
+| Requirements Coverage  | ≥95%   | 100%   | ✅ EXCEEDS |
+| E2E Test Pass Rate     | 100%   | 100%   | ✅ MEETS   |
+| Unit Test Pass Rate    | ≥90%   | 98.2%  | ✅ EXCEEDS |
+| Lint Compliance        | 100%   | 100%   | ✅ MEETS   |
+| Critical Path Coverage | 100%   | 100%   | ✅ MEETS   |
 
 ---
 
@@ -429,11 +450,13 @@ All critical paths have E2E + unit test coverage:
 ### Test Suite Maintenance
 
 1. **Dark Mode Style Tests** (Low Priority)
+
    - 2 unit tests failing due to test environment CSS differences
    - Not blocking - functionality works in E2E tests
    - Consider updating test assertions or adding visual regression testing
 
 2. **Enhanced Error Scenarios** (Future Enhancement)
+
    - Network timeout handling
    - Concurrent update conflicts
    - Session expiration during form submission
