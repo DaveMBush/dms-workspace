@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-// TODO: These tests require a mechanism to trigger the session warning dialog
+// FIX: These tests require a mechanism to trigger the session warning dialog
 // Currently, the dialog is only shown automatically before session timeout,
 // and there's no test hook to manually trigger it. These tests should be
 // re-enabled once a test trigger mechanism is implemented.
