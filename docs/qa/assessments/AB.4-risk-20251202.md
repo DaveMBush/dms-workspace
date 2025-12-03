@@ -42,6 +42,7 @@ This is an exceptionally low-risk implementation. The session warning dialog mig
 
 **Category:** Performance
 **Affected Components:**
+
 - `SessionWarning.startCountdown()`
 - RxJS interval subscription
 
@@ -49,12 +50,14 @@ This is an exceptionally low-risk implementation. The session warning dialog mig
 If the dialog component were to be instantiated multiple times without proper cleanup, interval subscriptions could accumulate, causing minor memory leaks and unnecessary timer ticks.
 
 **Probability Reasoning:** Low (1)
+
 - Component implements proper `ngOnDestroy` cleanup
 - Subscription is tracked and unsubscribed explicitly
 - Service prevents multiple dialog instances (`if (dialogRef) return`)
 - Comprehensive unit tests verify cleanup behavior
 
 **Impact Reasoning:** Medium (2)
+
 - If occurred, would cause minor memory usage increase
 - Multiple timers would waste CPU cycles
 - Would not cause system failure, only performance degradation
@@ -62,12 +65,14 @@ If the dialog component were to be instantiated multiple times without proper cl
 
 **Mitigation Implemented:**
 ✅ **Preventive Controls:**
+
 - `ngOnDestroy()` properly stops countdown and unsubscribes
 - `timerSubscription !== null` defensive check before unsubscribe
 - Service-level guard prevents multiple dialog instances
 - `takeWhile()` operator provides additional safety
 
 ✅ **Testing Coverage:**
+
 - Unit test: "should stop countdown on destroy" verifies cleanup
 - Unit test verifies timer stops after ngOnDestroy
 - fakeAsync testing validates subscription management
@@ -84,6 +89,7 @@ If the dialog component were to be instantiated multiple times without proper cl
 
 **Category:** Technical
 **Affected Components:**
+
 - `SessionWarning` countdown timer
 - RxJS interval behavior
 
@@ -91,12 +97,14 @@ If the dialog component were to be instantiated multiple times without proper cl
 When browser tabs become inactive (backgrounded), JavaScript timers may be throttled by the browser, causing the countdown to drift from real wall-clock time. Timer could appear frozen or jump when tab regains focus.
 
 **Probability Reasoning:** Low (1)
+
 - Modern browsers handle intervals reasonably well
 - Session expiration is based on server-side token time, not client timer
 - Client timer is for UI only, not authoritative
 - Impact minimized by short warning window (60 seconds)
 
 **Impact Reasoning:** Medium (2)
+
 - Could cause user confusion if countdown appears incorrect
 - Might auto-logout slightly early or late from user perspective
 - Server-side session timeout is authoritative (client display only)
@@ -104,17 +112,20 @@ When browser tabs become inactive (backgrounded), JavaScript timers may be throt
 
 **Mitigation Implemented:**
 ✅ **Architectural Controls:**
+
 - Server-side auth token expiration is authoritative
 - Client timer is advisory/UI-only
 - Auto-logout calls server immediately (bypasses timer)
 - Short warning window (60s) limits drift exposure
 
 ✅ **Testing Coverage:**
+
 - E2E test planned for tab visibility handling (marked for future)
 - Unit tests cover timer behavior in controlled environment
 - Auto-logout behavior tested independently of timer
 
 **Recommendations for Enhancement:**
+
 - Consider using `document.visibilityState` to pause/resume timer
 - Consider WebWorker-based timer for more reliable background behavior
 - Add integration test with simulated tab switching
@@ -130,6 +141,7 @@ When browser tabs become inactive (backgrounded), JavaScript timers may be throt
 ### Security Risks: NONE IDENTIFIED ✅
 
 **Investigated Areas:**
+
 - ✅ **Session hijacking:** Dialog uses existing auth service, no new session handling
 - ✅ **XSS vulnerabilities:** Angular templates provide automatic sanitization
 - ✅ **CSRF concerns:** Dialog is read-only display, actions use existing auth endpoints
@@ -143,6 +155,7 @@ When browser tabs become inactive (backgrounded), JavaScript timers may be throt
 ### Data Risks: NONE IDENTIFIED ✅
 
 **Investigated Areas:**
+
 - ✅ **Data loss:** No data persistence or storage
 - ✅ **Data corruption:** No data mutation
 - ✅ **Privacy violations:** No PII handled
@@ -155,6 +168,7 @@ When browser tabs become inactive (backgrounded), JavaScript timers may be throt
 ### Business Risks: NONE IDENTIFIED ✅
 
 **Investigated Areas:**
+
 - ✅ **User experience disruption:** Warning improves UX by preventing unexpected logouts
 - ✅ **Feature completeness:** All ACs met, comprehensive testing
 - ✅ **Accessibility:** Material Design components have built-in a11y
@@ -167,6 +181,7 @@ When browser tabs become inactive (backgrounded), JavaScript timers may be throt
 ### Operational Risks: NONE IDENTIFIED ✅
 
 **Investigated Areas:**
+
 - ✅ **Deployment complexity:** Standard component deployment, no special steps
 - ✅ **Monitoring requirements:** No special monitoring needed (UI component)
 - ✅ **Rollback capability:** Simple rollback via version control
@@ -183,6 +198,7 @@ When browser tabs become inactive (backgrounded), JavaScript timers may be throt
 **Current Coverage:** ✅ EXCELLENT
 
 **Unit Tests (14 tests):**
+
 - ✅ Timer countdown behavior
 - ✅ Progress calculation
 - ✅ Time formatting (edge values)
@@ -193,6 +209,7 @@ When browser tabs become inactive (backgrounded), JavaScript timers may be throt
 - ✅ Error handling (refresh failure)
 
 **E2E Tests (13 test cases):**
+
 - ✅ Dialog appearance and visibility
 - ✅ Countdown display
 - ✅ Progress bar animation
@@ -203,22 +220,26 @@ When browser tabs become inactive (backgrounded), JavaScript timers may be throt
 - ✅ Icon visibility
 
 **Risk Mitigation Tests:**
+
 - PERF-001: ✅ "should stop countdown on destroy" (unit test)
 - TECH-001: ⚠️ Future enhancement - tab visibility test (acceptable gap)
 
 ### Test Priority Matrix
 
 **Priority 1 - Critical (Already Covered):** ✅
+
 - Session lifecycle (extend/logout)
 - Auto-logout behavior
 - Dialog lifecycle management
 
 **Priority 2 - High (Already Covered):** ✅
+
 - Timer accuracy and cleanup
 - Error handling
 - Non-dismissible behavior
 
 **Priority 3 - Medium (Already Covered):** ✅
+
 - UI responsiveness
 - Accessibility
 - Edge case formatting
@@ -226,6 +247,7 @@ When browser tabs become inactive (backgrounded), JavaScript timers may be throt
 ### Additional Testing Recommendations
 
 **Optional Enhancements (not blocking):**
+
 1. Tab visibility integration test (TECH-001 mitigation)
 2. Long-running session test with actual timeout
 3. Network failure simulation during extend
@@ -243,12 +265,14 @@ When browser tabs become inactive (backgrounded), JavaScript timers may be throt
 ### Can Deploy with Mitigation ✅
 
 **All Risks Mitigated:**
+
 - PERF-001: ✅ Proper cleanup implemented and tested
 - TECH-001: ✅ Acceptable (server-side timeout is authoritative)
 
 ### Accepted Risks ✅
 
 **TECH-001: Browser Tab Visibility Edge Cases**
+
 - **Accepted By:** Quinn (Test Architect)
 - **Rationale:** Server-side timeout is authoritative; client timer is UI-only
 - **Compensating Control:** Short warning window (60s) limits drift
@@ -280,11 +304,13 @@ Final Risk Score: 96/100 (Very Low Risk)
 **None Required** - Standard application monitoring is sufficient.
 
 **Optional Observability:**
+
 - Session extension rate (business metric)
 - Dialog appearance frequency (UX metric)
 - Logout action selection rate (UX metric)
 
 **Alert Thresholds:**
+
 - None required (low-risk component)
 
 ---
@@ -292,6 +318,7 @@ Final Risk Score: 96/100 (Very Low Risk)
 ## Risk Review Triggers
 
 Re-evaluate risk profile if:
+
 - Auth service is modified or replaced
 - Session timeout policies change significantly
 - Browser compatibility requirements expand
@@ -322,6 +349,7 @@ risk_summary:
 ```
 
 **Gate Impact:** ✅ **PASS**
+
 - No critical risks (score 9)
 - No high risks (score 6)
 - All identified risks mitigated
@@ -334,6 +362,7 @@ risk_summary:
 **Risk Verdict:** ✅ **VERY LOW RISK - READY FOR PRODUCTION**
 
 This implementation represents best-practice risk management:
+
 - Proactive identification of potential issues
 - Comprehensive preventive controls
 - Excellent test coverage

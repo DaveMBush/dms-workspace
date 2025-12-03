@@ -18,13 +18,15 @@ import { SessionWarningService } from './auth/services/session-warning.service';
       </button>
     </div>
   `,
-  styles: [`
-    :host {
-      display: block;
-      max-width: 600px;
-      margin: 2rem auto;
-    }
-  `],
+  styles: [
+    `
+      :host {
+        display: block;
+        max-width: 600px;
+        margin: 2rem auto;
+      }
+    `,
+  ],
 })
 export class TestSessionWarningComponent {
   private sessionWarningService = inject(SessionWarningService);

@@ -398,14 +398,17 @@ The auth service should call `sessionWarningService.showWarning()` when session 
 ## Dev Agent Record
 
 ### Agent Model Used
+
 - Claude Sonnet 4.5 (claude-sonnet-4-5-20250929)
 
 ### Debug Log References
+
 - No critical issues encountered
 - All unit tests passing (449 tests)
 - All validation commands passing
 
 ### Completion Notes
+
 - Implemented session warning dialog using Angular Material
 - Created comprehensive unit tests (14 tests)
 - Created e2e tests for dialog functionality
@@ -415,7 +418,9 @@ The auth service should call `sessionWarningService.showWarning()` when session 
 - Dialog properly disables close via backdrop/escape key
 
 ### File List
+
 **Created:**
+
 - `apps/rms-material/src/app/auth/components/session-warning/session-warning.ts`
 - `apps/rms-material/src/app/auth/components/session-warning/session-warning.html`
 - `apps/rms-material/src/app/auth/components/session-warning/session-warning.scss`
@@ -424,6 +429,7 @@ The auth service should call `sessionWarningService.showWarning()` when session 
 - `apps/rms-material-e2e/src/session-warning.spec.ts`
 
 ### Change Log
+
 - Created session warning dialog component with countdown timer
 - Implemented progress bar to show time remaining
 - Added extend session and logout buttons
@@ -485,6 +491,7 @@ This implementation demonstrates exceptional quality across all dimensions:
 **No refactoring needed** - The implementation is production-ready as-is.
 
 The developer made excellent technical choices:
+
 - Used computed signals to avoid template function calls
 - Implemented proper cleanup in ngOnDestroy
 - Used appropriate eslint-disable comments with justifications
@@ -494,6 +501,7 @@ The developer made excellent technical choices:
 ### Compliance Check
 
 - **Coding Standards**: ✓ **PASS**
+
   - Component naming: `session-warning.*` (no .component suffix) ✓
   - Service injection via `inject()` ✓
   - External template and styles ✓
@@ -502,11 +510,13 @@ The developer made excellent technical choices:
   - Line length < 80 characters ✓
 
 - **Project Structure**: ✓ **PASS**
+
   - Files in correct location: `auth/components/session-warning/` ✓
   - Service in: `auth/services/` ✓
   - E2E tests in: `rms-material-e2e/src/` ✓
 
 - **Testing Strategy**: ✓ **PASS**
+
   - TDD approach followed ✓
   - Unit tests: 14 tests with full coverage ✓
   - E2E tests: 13 test cases ✓
@@ -519,48 +529,56 @@ The developer made excellent technical choices:
 **Given-When-Then Mapping:**
 
 1. **AC: Dialog appears before session timeout**
+
    - **Given** user session is approaching expiration
    - **When** warning threshold is reached
    - **Then** SessionWarningService.showWarning() displays dialog
    - **Tests**: E2E test "should display session warning dialog before timeout"
 
 2. **AC: Countdown timer displays remaining time**
+
    - **Given** dialog is displayed
    - **When** timer is running
    - **Then** formattedTime() computed signal shows MM:SS format
    - **Tests**: Unit tests for formatTime (4 tests), E2E "should display countdown timer"
 
 3. **AC: Countdown timer decrements**
+
    - **Given** dialog is visible
    - **When** each second passes
    - **Then** secondsRemaining signal decrements by 1
    - **Tests**: Unit "should decrement each second", E2E "should display progress bar that decreases"
 
 4. **AC: Extend Session button extends session**
+
    - **Given** user clicks "Extend Session"
    - **When** onExtendSession() is called
    - **Then** authService.refreshTokens() is called and dialog closes with 'extended'
    - **Tests**: Unit "should call auth service to refresh", E2E "should extend session when clicking Extend Session button"
 
 5. **AC: Logout button ends session**
+
    - **Given** user clicks "Logout Now"
    - **When** onLogout() is called
    - **Then** authService.signOut() is called and dialog closes with 'logout'
    - **Tests**: Unit "should call auth service logout", E2E "should logout when clicking Logout Now button"
 
 6. **AC: Dialog closes on action**
+
    - **Given** user takes action (extend or logout)
    - **When** action completes
    - **Then** dialogRef.close() is called
    - **Tests**: Unit tests verify close() called, E2E tests verify dialog not visible after action
 
 7. **AC: Session extends/ends based on action**
+
    - **Given** user chooses extend or logout
    - **When** action is processed
    - **Then** appropriate auth service method is invoked
    - **Tests**: All unit tests for onExtendSession/onLogout verify service calls
 
 8. **AC: disableClose prevents backdrop dismissal**
+
    - **Given** dialog is displayed with disableClose: true
    - **When** user clicks backdrop or presses Escape
    - **Then** dialog remains visible
@@ -577,24 +595,28 @@ The developer made excellent technical choices:
 ### Non-Functional Requirements Assessment
 
 **Security**: ✓ **PASS**
+
 - No sensitive data exposure
 - Proper auth service integration
 - Silent error handling (no stack traces to user)
 - Session lifecycle properly managed
 
 **Performance**: ✓ **PASS**
+
 - OnPush change detection minimizes change detection cycles
 - Computed signals prevent unnecessary recalculations
 - Proper RxJS cleanup prevents memory leaks
 - Efficient interval management (stops on destroy)
 
 **Reliability**: ✓ **PASS**
+
 - Comprehensive error handling in onExtendSession
 - Graceful fallback to logout on refresh failure
 - Proper subscription cleanup in ngOnDestroy
 - Defensive null checks (timerSubscription !== null)
 
 **Maintainability**: ✓ **EXCELLENT**
+
 - Self-documenting code with clear method names
 - Appropriate eslint-disable comments with justifications
 - Consistent with project patterns
@@ -604,18 +626,21 @@ The developer made excellent technical choices:
 ### Testability Evaluation
 
 **Controllability**: ✓ **EXCELLENT**
+
 - All inputs controllable via signals
 - Timer can be manipulated in tests (fakeAsync/tick)
 - Auth service fully mockable
 - Dialog ref fully mockable
 
 **Observability**: ✓ **EXCELLENT**
+
 - All state exposed via public signals
 - Dialog close results observable
 - Auth service calls verifiable
 - Timer countdown observable
 
 **Debuggability**: ✓ **EXCELLENT**
+
 - Named functions aid debugging
 - Clear error handling
 - Proper test descriptions
@@ -626,6 +651,7 @@ The developer made excellent technical choices:
 **NONE IDENTIFIED**
 
 This is a clean implementation with:
+
 - No shortcuts taken
 - Comprehensive test coverage
 - Proper documentation via test names
@@ -647,6 +673,7 @@ This is a clean implementation with:
 ✓ **OPTIMIZED**
 
 Excellent performance characteristics:
+
 - OnPush change detection strategy
 - Computed signals prevent unnecessary function calls in template
 - Subscription properly cleaned up
@@ -658,6 +685,7 @@ Excellent performance characteristics:
 ✓ **COMPREHENSIVE**
 
 All critical edge cases covered:
+
 - Timer reaches zero (auto-logout) ✓
 - Refresh fails (fallback to logout) ✓
 - Component destroyed mid-countdown (cleanup) ✓
@@ -669,6 +697,7 @@ All critical edge cases covered:
 ### Files Modified During Review
 
 **E2E Test Lint Fixes** (minor corrections):
+
 - `apps/rms-material-e2e/src/session-warning.spec.ts`
   - Fixed regex complexity warning (simplified `/\d+:\d{2}/` to `/\d:\d\d/`)
   - Removed unnecessary `async` from skipped test
@@ -684,6 +713,7 @@ All critical edge cases covered:
 **Risk Profile:** docs/qa/assessments/AB.4-risk-20251202.md
 
 This implementation exceeds all quality thresholds:
+
 - Zero critical issues
 - Zero medium issues
 - Zero minor issues
