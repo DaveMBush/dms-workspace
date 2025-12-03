@@ -23,6 +23,7 @@
 
 ### Functional Requirements
 
+- [ ] All GUI look as close to the existing RMS app as possible
 - [ ] Pie chart shows allocation by risk group
 - [ ] Line chart shows performance over time
 - [ ] Filter by account or view all

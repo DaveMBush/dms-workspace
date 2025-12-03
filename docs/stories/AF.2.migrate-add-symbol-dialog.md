@@ -23,6 +23,7 @@
 
 ### Functional Requirements
 
+- [ ] All GUI look as close to the existing RMS app as possible
 - [ ] Dialog opens for adding symbol
 - [ ] Symbol search with autocomplete
 - [ ] Risk group selection

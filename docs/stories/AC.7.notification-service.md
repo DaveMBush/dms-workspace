@@ -16,6 +16,7 @@ See `apps/rms-material/src/app/shared/services/notification.service.ts` created 
 
 ## Features Implemented
 
+- [ ] All GUI look as close to the existing RMS app as possible
 - [ ] `show(message, severity)` - Generic notification
 - [ ] `success(message)` - Success notification
 - [ ] `info(message)` - Info notification

@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { Router } from '@angular/router';
+import { Router, provideRouter } from '@angular/router';
 import { signal } from '@angular/core';
 import { of } from 'rxjs';
 
@@ -12,11 +12,11 @@ import { ShellComponent } from './shell.component';
 describe('ShellComponent', () => {
   let component: ShellComponent;
   let fixture: ComponentFixture<ShellComponent>;
+  let router: Router;
   let mockConfirmDialog: {
     confirm: ReturnType<typeof vi.fn>;
   };
   let mockAuthService: { signOut: ReturnType<typeof vi.fn> };
-  let mockRouter: { navigate: ReturnType<typeof vi.fn> };
   let mockThemeService: {
     isDarkMode$: ReturnType<typeof signal<boolean>>;
     toggleTheme: ReturnType<typeof vi.fn>;
@@ -28,9 +28,6 @@ describe('ShellComponent', () => {
     };
     mockAuthService = {
       signOut: vi.fn().mockReturnValue(Promise.resolve()),
-    };
-    mockRouter = {
-      navigate: vi.fn().mockReturnValue(Promise.resolve(true)),
     };
     mockThemeService = {
       isDarkMode$: signal(false),
@@ -45,13 +42,14 @@ describe('ShellComponent', () => {
           useValue: mockConfirmDialog,
         },
         { provide: AuthService, useValue: mockAuthService },
-        { provide: Router, useValue: mockRouter },
         { provide: ThemeService, useValue: mockThemeService },
+        provideRouter([]),
       ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ShellComponent);
     component = fixture.componentInstance;
+    router = TestBed.inject(Router);
   });
 
   it('should render toolbar', () => {
@@ -85,10 +83,11 @@ describe('ShellComponent', () => {
     });
 
     it('should logout and navigate on confirm', async () => {
+      const navigateSpy = vi.spyOn(router, 'navigate').mockResolvedValue(true);
       component.onLogout();
       await vi.waitFor(() => {
         expect(mockAuthService.signOut).toHaveBeenCalled();
-        expect(mockRouter.navigate).toHaveBeenCalledWith(['/auth/login']);
+        expect(navigateSpy).toHaveBeenCalledWith(['/auth/login']);
       });
     });
   });

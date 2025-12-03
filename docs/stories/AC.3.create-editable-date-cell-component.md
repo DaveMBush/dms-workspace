@@ -23,6 +23,7 @@
 ### Functional Requirements
 
 - [ ] Click cell to open datepicker
+- [ ] All GUI look as close to the existing RMS app as possible
 - [ ] Select date to update value
 - [ ] Close picker cancels if no selection
 - [ ] Date formatted according to configuration

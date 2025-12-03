@@ -1,0 +1,29 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Account Actions</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <div class="actions-container">
+      <button
+        mat-stroked-button
+        aria-label="Sign Out"
+        (click)="onLogout()"
+        class="action-button"
+      >
+        <mat-icon>logout</mat-icon>
+        Sign Out
+      </button>
+
+      <button
+        mat-stroked-button
+        color="warn"
+        aria-label="Sign Out All Devices"
+        (click)="onLogoutAllDevices()"
+        class="action-button"
+      >
+        <mat-icon>logout</mat-icon>
+        Sign Out All Devices
+      </button>
+    </div>
+  </mat-card-content>
+</mat-card>

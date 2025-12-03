@@ -23,6 +23,7 @@
 ### Functional Requirements
 
 - [ ] Type to filter suggestions
+- [ ] All GUI look as close to the existing RMS app as possible
 - [ ] Dropdown shows matching symbols
 - [ ] Select suggestion to populate input
 - [ ] Force selection option (no custom values)

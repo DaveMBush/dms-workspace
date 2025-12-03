@@ -26,6 +26,7 @@
 ### Functional Requirements
 
 - [ ] Dialog appears before session timeout
+- [ ] DAll GUI look as close to the existing RMS app as possible
 - [ ] Countdown timer displays remaining time
 - [ ] "Extend Session" button extends session
 - [ ] "Logout" button ends session

@@ -23,6 +23,7 @@
 
 ### Functional Requirements
 
+- [ ] All GUI look as close to the existing RMS app as possible
 - [ ] Error logs display in table
 - [ ] Pagination controls work
 - [ ] Filter by error type, date range

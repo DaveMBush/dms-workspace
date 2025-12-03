@@ -1,0 +1,39 @@
+<!-- eslint-disable @angular-eslint/template/no-call-expression -->
+<div class="profile-container">
+  <div class="header-section">
+    <h1 class="profile-title">User Profile</h1>
+    <p class="profile-subtitle">Manage your account settings and preferences</p>
+  </div>
+
+  <!-- Profile Information Section -->
+  <div class="section">
+    <h2 class="section-title">Profile Information</h2>
+    <div class="grid">
+      <div class="grid-col-half">
+        <rms-profile-info-card />
+      </div>
+      <div class="grid-col-half">
+        <rms-session-info-card />
+      </div>
+    </div>
+  </div>
+
+  <!-- Security Section -->
+  <div class="section">
+    <h2 class="section-title">Security Settings</h2>
+    <div class="grid">
+      <div class="grid-col-half">
+        <rms-password-change-card />
+      </div>
+      <div class="grid-col-half">
+        <div class="nested-grid">
+          <rms-email-change-card
+            [currentEmail]="userEmail()"
+            (emailChanged)="onEmailChanged()"
+          />
+          <rms-account-actions-card />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

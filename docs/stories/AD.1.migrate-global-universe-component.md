@@ -26,6 +26,7 @@
 ### Functional Requirements
 
 - [ ] All columns display correctly
+- [ ] All GUI look as close to the existing RMS app as possible
 - [ ] Editable cells for: yield, purchase price, ex-date, div amount, etc.
 - [ ] Row selection for batch operations
 - [ ] Toolbar actions (sync, update, delete)

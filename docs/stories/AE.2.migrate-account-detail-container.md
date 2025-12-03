@@ -23,6 +23,7 @@
 
 ### Functional Requirements
 
+- [ ] All GUI look as close to the existing RMS app as possible
 - [ ] Account ID read from route
 - [ ] SmartNgRX trades entity provided
 - [ ] Child routes render correctly

@@ -1,17 +1,20 @@
 import { inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { ConfirmationService, MessageService } from 'primeng/api';
 
+import { ConfirmDialogService } from '../../shared/services/confirm-dialog.service';
+import { NotificationService } from '../../shared/services/notification.service';
 import { AuthService } from '../auth.service';
 import { ProfileService } from './profile.service';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class ProfileActionsService {
   private authService = inject(AuthService);
   private profileService = inject(ProfileService);
   private router = inject(Router);
-  private confirmationService = inject(ConfirmationService);
-  private messageService = inject(MessageService);
+  private confirmDialog = inject(ConfirmDialogService);
+  private notification = inject(NotificationService);
 
   async changePassword(
     currentPassword: string,
@@ -22,18 +25,10 @@ export class ProfileActionsService {
         currentPassword,
         newPassword
       );
-      this.messageService.add({
-        severity: 'success',
-        summary: 'Success',
-        detail: 'Password changed successfully',
-      });
+      this.notification.success('Password changed successfully');
       return true;
     } catch {
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Error',
-        detail: 'Password change failed. Please try again.',
-      });
+      this.notification.error('Password change failed. Please try again.');
       return false;
     }
   }
@@ -41,82 +36,66 @@ export class ProfileActionsService {
   async updateEmail(newEmail: string): Promise<boolean> {
     try {
       await this.profileService.updateEmail(newEmail);
-      this.messageService.add({
-        severity: 'info',
-        summary: 'Verification Required',
-        detail: 'Please check your email for the verification code',
-      });
+      this.notification.info(
+        'Please check your email for the verification code'
+      );
       return true;
     } catch {
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Error',
-        detail: 'Email change failed. Please try again.',
-      });
+      this.notification.error('Email change failed. Please try again.');
       return false;
     }
   }
 
   async verifyEmailChange(verificationCode: string): Promise<boolean> {
     if (!verificationCode) {
-      this.messageService.add({
-        severity: 'warn',
-        summary: 'Warning',
-        detail: 'Please enter the verification code',
-      });
+      this.notification.warn('Please enter the verification code');
       return false;
     }
 
     try {
       await this.profileService.verifyEmailChange(verificationCode);
-      this.messageService.add({
-        severity: 'success',
-        summary: 'Success',
-        detail: 'Email address updated successfully',
-      });
+      this.notification.success('Email address updated successfully');
       return true;
     } catch {
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Error',
-        detail: 'Email verification failed. Please check the code.',
-      });
+      this.notification.error(
+        'Email verification failed. Please check the code.'
+      );
       return false;
     }
   }
 
   confirmSignOut(): void {
-    this.confirmationService.confirm({
-      message:
-        'Are you sure you want to sign out? You will need to log in again.',
-      header: 'Confirm Sign Out',
-      icon: 'pi pi-sign-out',
-      acceptIcon: 'pi pi-check',
-      rejectIcon: 'pi pi-times',
-      acceptLabel: 'Yes, Sign Out',
-      rejectLabel: 'Cancel',
-      // eslint-disable-next-line @smarttools/no-anonymous-functions -- PrimeNG callback requires arrow function
-      accept: () => {
-        void this.handleSignOut();
-      },
-    });
+    const context = this;
+    this.confirmDialog
+      .confirm({
+        title: 'Confirm Sign Out',
+        message:
+          'Are you sure you want to sign out? You will need to log in again.',
+        confirmText: 'Yes, Sign Out',
+        cancelText: 'Cancel',
+      })
+      .subscribe(function handleConfirmation(confirmed: boolean) {
+        if (confirmed) {
+          void context.handleSignOut();
+        }
+      });
   }
 
   confirmSignOutAllDevices(): void {
-    this.confirmationService.confirm({
-      message:
-        'This will sign you out from all devices and browsers. Continue?',
-      header: 'Confirm Sign Out All Devices',
-      icon: 'pi pi-power-off',
-      acceptIcon: 'pi pi-check',
-      rejectIcon: 'pi pi-times',
-      acceptLabel: 'Yes, Sign Out All',
-      rejectLabel: 'Cancel',
-      // eslint-disable-next-line @smarttools/no-anonymous-functions -- PrimeNG callback requires arrow function
-      accept: () => {
-        void this.handleSignOutAllDevices();
-      },
-    });
+    const context = this;
+    this.confirmDialog
+      .confirm({
+        title: 'Confirm Sign Out All Devices',
+        message:
+          'This will sign you out from all devices and browsers. Continue?',
+        confirmText: 'Yes, Sign Out All',
+        cancelText: 'Cancel',
+      })
+      .subscribe(function handleConfirmation(confirmed: boolean) {
+        if (confirmed) {
+          void context.handleSignOutAllDevices();
+        }
+      });
   }
 
   private async handleSignOut(): Promise<void> {
@@ -124,11 +103,7 @@ export class ProfileActionsService {
       await this.authService.signOut();
       void this.router.navigate(['/auth/login']);
     } catch {
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Error',
-        detail: 'Sign out failed. Please try again.',
-      });
+      this.notification.error('Sign out failed. Please try again.');
     }
   }
 
@@ -136,17 +111,9 @@ export class ProfileActionsService {
     try {
       await this.authService.signOut();
       void this.router.navigate(['/auth/login']);
-      this.messageService.add({
-        severity: 'success',
-        summary: 'Success',
-        detail: 'Signed out from all devices',
-      });
+      this.notification.success('Signed out from all devices');
     } catch {
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Error',
-        detail: 'Sign out failed. Please try again.',
-      });
+      this.notification.error('Sign out failed. Please try again.');
     }
   }
 }

@@ -1,0 +1,53 @@
+.profile-container {
+  padding: 1rem;
+  max-width: 1536px;
+  margin: 0 auto;
+}
+
+.header-section {
+  margin-bottom: 1rem;
+}
+
+.profile-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.profile-subtitle {
+  opacity: 0.7;
+  margin: 0;
+}
+
+.section {
+  margin-bottom: 1rem;
+}
+
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.grid-col-half {
+  display: flex;
+  flex-direction: column;
+}
+
+.nested-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}

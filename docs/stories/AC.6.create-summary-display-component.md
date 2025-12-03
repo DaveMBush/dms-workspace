@@ -23,6 +23,7 @@
 ### Functional Requirements
 
 - [ ] Line charts display performance over time
+- [ ] All GUI look as close to the existing RMS app as possible
 - [ ] Pie charts display allocation by category
 - [ ] Charts respond to data changes
 - [ ] Tooltips show data on hover

@@ -25,6 +25,7 @@
 ### Functional Requirements
 
 - [ ] Screener data displays in table
+- [ ] All GUI look as close to the existing RMS app as possible
 - [ ] Filter by risk group, frequency, etc.
 - [ ] Sortable columns
 - [ ] Refresh button to re-run screener

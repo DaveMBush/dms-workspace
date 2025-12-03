@@ -1,0 +1,32 @@
+mat-card {
+  height: 100%;
+}
+
+.info-field {
+  margin-bottom: 1rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.field-label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.field-value {
+}
+
+.status-active {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: #4caf50;
+  font-weight: 500;
+
+  mat-icon {
+    color: #4caf50;
+  }
+}

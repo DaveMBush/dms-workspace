@@ -23,6 +23,7 @@
 ### Functional Requirements
 
 - [ ] Dropdown displays filter options
+- [ ] All GUI look as close to the existing RMS app as possible
 - [ ] Selection filters table data
 - [ ] Clear option to show all
 - [ ] Compact display in header cell
