@@ -24,6 +24,13 @@ export const appRoutes: Route[] = [
         loadComponent: async () =>
           import('./auth/profile/profile').then((m) => m.Profile),
       },
+      {
+        path: 'test-session-warning',
+        loadComponent: async () =>
+          import('./test-session-warning.component').then(
+            (m) => m.TestSessionWarningComponent
+          ),
+      },
     ],
   },
   {
