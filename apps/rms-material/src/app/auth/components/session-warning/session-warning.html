@@ -1,0 +1,32 @@
+<!-- eslint-disable @angular-eslint/template/no-call-expression -->
+<h2 mat-dialog-title class="warning-title">
+  <mat-icon color="warn">warning</mat-icon>
+  Session Expiring Soon
+</h2>
+
+<mat-dialog-content>
+  <p class="warning-message">
+    Your session will expire in
+    <strong>{{ formattedTime() }}</strong>.
+  </p>
+  <p class="warning-subtext">
+    Would you like to extend your session or log out?
+  </p>
+
+  <mat-progress-bar
+    mode="determinate"
+    [value]="progressValue()"
+    color="warn"
+  ></mat-progress-bar>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button color="warn" (click)="onLogout()">
+    <mat-icon>logout</mat-icon>
+    Logout Now
+  </button>
+  <button mat-raised-button color="primary" (click)="onExtendSession()">
+    <mat-icon>refresh</mat-icon>
+    Extend Session
+  </button>
+</mat-dialog-actions>
