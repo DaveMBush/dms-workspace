@@ -61,6 +61,7 @@ Approved
   - [ ] Implement auto-dismiss functionality if user becomes active
   - [ ] Style warning component with PrimeNG dialog and proper accessibility
   - [ ] Add sound notification option for session warnings
+  - [ ] **IMPORTANT**: Re-enable the skipped e2e tests in `apps/rms-material-e2e/src/session-warning.spec.ts` by removing `test.describe.skip` and implementing a test hook to manually trigger the session warning dialog for testing
 
 - [ ] **Task 4: Implement activity-based session management** (AC: 5)
 
