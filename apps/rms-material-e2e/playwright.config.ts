@@ -25,15 +25,12 @@ export default defineConfig({
   /* Run your local dev server before starting the tests */
   webServer: [
     {
-      command: 'pnpm exec nx run server:serve',
+      command:
+        'NODE_ENV=test DATABASE_URL="file:./database.db" pnpm exec nx run server:serve',
       url: 'http://localhost:3000',
       reuseExistingServer: !process.env.CI,
       cwd: workspaceRoot,
       timeout: 180000,
-      env: {
-        DATABASE_URL: 'file:./database.db',
-        NODE_ENV: 'test',
-      },
     },
     {
       command: 'pnpm exec nx run rms-material:serve',
