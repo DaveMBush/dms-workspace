@@ -1,0 +1,54 @@
+.accounts-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--rms-surface);
+}
+
+.accounts-toolbar,
+.global-toolbar {
+  font-size: 0.875rem;
+  font-weight: 500;
+  min-height: 40px;
+  padding: 0 16px;
+  background-color: transparent;
+  color: var(--rms-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.accounts-list {
+  flex: 1;
+  overflow-y: auto;
+  padding-top: 0;
+}
+
+.global-list {
+  padding-top: 0;
+}
+
+.account-item {
+  border-left: 3px solid transparent;
+
+  &.active-account {
+    background-color: rgba(var(--rms-primary-500), 0.1);
+    border-left-color: var(--rms-primary-500);
+  }
+}
+
+.empty-message {
+  color: var(--rms-text-secondary);
+  font-style: italic;
+}
+
+.active-link {
+  background-color: rgba(var(--rms-primary-500), 0.1);
+
+  mat-icon {
+    color: var(--rms-primary-500);
+  }
+}
+
+mat-divider {
+  margin: 8px 0;
+}
