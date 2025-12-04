@@ -30,7 +30,10 @@ export default defineConfig({
       url: 'http://localhost:3000/api/health',
       reuseExistingServer: !process.env.CI,
       cwd: workspaceRoot,
-      timeout: 120000,
+      timeout: 180000,
+      env: {
+        DATABASE_URL: 'file:./database.db',
+      },
     },
     {
       command: 'pnpm exec nx run rms-material:serve',
