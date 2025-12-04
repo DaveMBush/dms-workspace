@@ -26,7 +26,7 @@ export default defineConfig({
   webServer: [
     {
       command: 'pnpm exec nx run server:serve',
-      url: 'http://localhost:3000/api/health',
+      url: 'http://localhost:3000',
       reuseExistingServer: !process.env.CI,
       cwd: workspaceRoot,
       timeout: 180000,
