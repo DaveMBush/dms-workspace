@@ -23,22 +23,13 @@ export default defineConfig({
     trace: 'on-first-retry',
   },
   /* Run your local dev server before starting the tests */
-  webServer: [
-    {
-      command: './scripts/start-server-for-e2e.sh',
-      url: 'http://localhost:3000',
-      reuseExistingServer: !process.env.CI,
-      cwd: workspaceRoot,
-      timeout: 180000,
-    },
-    {
-      command: 'pnpm exec nx run rms-material:serve',
-      url: 'http://localhost:4201',
-      reuseExistingServer: !process.env.CI,
-      cwd: workspaceRoot,
-      timeout: 120000,
-    },
-  ],
+  webServer: {
+    command: 'pnpm exec nx run rms-material:serve',
+    url: 'http://localhost:4201',
+    reuseExistingServer: !process.env.CI,
+    cwd: workspaceRoot,
+    timeout: 120000,
+  },
   projects: [
     {
       name: 'chromium',
