@@ -64,9 +64,7 @@ export const appRoutes: Route[] = [
       {
         path: 'global/error-logs',
         loadComponent: async () =>
-          import('./global/global-error-logs').then(
-            (m) => m.GlobalErrorLogs
-          ),
+          import('./global/global-error-logs').then((m) => m.GlobalErrorLogs),
       },
     ],
   },
