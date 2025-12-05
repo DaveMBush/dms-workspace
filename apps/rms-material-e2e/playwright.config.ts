@@ -25,8 +25,7 @@ export default defineConfig({
   /* Run your local dev server before starting the tests */
   webServer: [
     {
-      command:
-        'NODE_ENV=test DATABASE_URL="file:./database.db" pnpm exec nx run server:serve',
+      command: './scripts/start-server-for-e2e.sh',
       url: 'http://localhost:3000',
       reuseExistingServer: !process.env.CI,
       cwd: workspaceRoot,
