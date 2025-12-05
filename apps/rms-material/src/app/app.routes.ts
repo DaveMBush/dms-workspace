@@ -46,6 +46,28 @@ export const appRoutes: Route[] = [
             (m) => m.TestSessionWarningComponent
           ),
       },
+      {
+        path: 'global/summary',
+        loadComponent: async () =>
+          import('./global/global-summary').then((m) => m.GlobalSummary),
+      },
+      {
+        path: 'global/universe',
+        loadComponent: async () =>
+          import('./global/global-universe').then((m) => m.GlobalUniverse),
+      },
+      {
+        path: 'global/screener',
+        loadComponent: async () =>
+          import('./global/global-screener').then((m) => m.GlobalScreener),
+      },
+      {
+        path: 'global/error-logs',
+        loadComponent: async () =>
+          import('./global/global-error-logs').then(
+            (m) => m.GlobalErrorLogs
+          ),
+      },
     ],
   },
   {
