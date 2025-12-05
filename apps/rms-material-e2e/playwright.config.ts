@@ -28,6 +28,7 @@ export default defineConfig({
     url: 'http://localhost:4201',
     reuseExistingServer: !process.env.CI,
     cwd: workspaceRoot,
+    timeout: 120000,
   },
   projects: [
     {

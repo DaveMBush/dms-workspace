@@ -1,14 +1,29 @@
 import { Route } from '@angular/router';
+import { provideSmartFeatureSignalEntities } from '@smarttools/smart-signals';
 
 import { authGuard } from './auth/guards/auth.guard';
 import { ShellComponent } from './shell/shell.component';
+import { accountsDefinition } from './store/accounts/accounts-definition.const';
+import { topDefinition } from './store/top/top-definition.const';
 
 export const appRoutes: Route[] = [
   {
     path: '',
     component: ShellComponent,
     canActivate: [authGuard],
+    providers: [
+      provideSmartFeatureSignalEntities('app', [
+        topDefinition,
+        accountsDefinition,
+      ]),
+    ],
     children: [
+      {
+        path: '',
+        outlet: 'accounts',
+        loadComponent: async () =>
+          import('./accounts/account').then((m) => m.Account),
+      },
       {
         path: '',
         pathMatch: 'full',
@@ -30,6 +45,26 @@ export const appRoutes: Route[] = [
           import('./test-session-warning.component').then(
             (m) => m.TestSessionWarningComponent
           ),
+      },
+      {
+        path: 'global/summary',
+        loadComponent: async () =>
+          import('./global/global-summary').then((m) => m.GlobalSummary),
+      },
+      {
+        path: 'global/universe',
+        loadComponent: async () =>
+          import('./global/global-universe').then((m) => m.GlobalUniverse),
+      },
+      {
+        path: 'global/screener',
+        loadComponent: async () =>
+          import('./global/global-screener').then((m) => m.GlobalScreener),
+      },
+      {
+        path: 'global/error-logs',
+        loadComponent: async () =>
+          import('./global/global-error-logs').then((m) => m.GlobalErrorLogs),
       },
     ],
   },
