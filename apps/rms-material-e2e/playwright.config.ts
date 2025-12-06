@@ -26,11 +26,11 @@ export default defineConfig({
   webServer: [
     {
       command:
-        'DATABASE_URL="file:./database.db" node dist/apps/server/main.js',
+        'cd dist/apps/server && pnpm install --prod && cd ../../.. && DATABASE_URL="file:./database.db" node dist/apps/server/main.js',
       url: 'http://localhost:3000/health',
       reuseExistingServer: !process.env.CI,
       cwd: workspaceRoot,
-      timeout: 60000,
+      timeout: 120000,
     },
     {
       command: 'pnpm exec nx run rms-material:serve',
