@@ -25,12 +25,11 @@ export default defineConfig({
   /* Run your local dev server before starting the tests */
   webServer: [
     {
-      command:
-        'DATABASE_URL="file:./database.db" NODE_OPTIONS="--max-old-space-size=4096" pnpm exec nx run server:serve',
+      command: 'DATABASE_URL="file:./database.db" node dist/apps/server/main.js',
       url: 'http://localhost:3000/health',
       reuseExistingServer: !process.env.CI,
       cwd: workspaceRoot,
-      timeout: 180000,
+      timeout: 60000,
     },
     {
       command: 'pnpm exec nx run rms-material:serve',
