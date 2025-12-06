@@ -1,0 +1,34 @@
+@if (isEditing$()) {
+<mat-form-field appearance="outline" class="edit-field">
+  <input
+    #inputRef
+    matInput
+    type="number"
+    [ngModel]="editValue$()"
+    (ngModelChange)="onValueChange($event)"
+    (keydown.enter)="saveEdit()"
+    (keydown.escape)="cancelEdit()"
+    (blur)="saveEdit()"
+    [min]="min$()"
+    [max]="max$()"
+    [step]="step$()"
+  />
+</mat-form-field>
+} @else {
+<span
+  class="display-value"
+  (click)="startEdit()"
+  (keydown.enter)="startEdit()"
+  (keydown.space)="startEdit()"
+  role="button"
+  tabindex="0"
+>
+  @if (formatType$() === 'currency') {
+  {{ displayValue$() | currency }}
+  } @else if (formatType$() === 'decimal') {
+  {{ displayValue$() | number : decimalFormat() }}
+  } @else {
+  {{ displayValue$() }}
+  }
+</span>
+}
