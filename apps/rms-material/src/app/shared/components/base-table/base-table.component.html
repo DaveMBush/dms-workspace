@@ -1,0 +1,75 @@
+<!-- eslint-disable @angular-eslint/template/no-call-expression -->
+<!-- eslint-disable @angular-eslint/template/cyclomatic-complexity -->
+<div class="table-container">
+  @if (dataSource.loadingObservable | async) {
+  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  }
+
+  <cdk-virtual-scroll-viewport
+    class="virtual-scroll-viewport"
+    [itemSize]="rowHeight()"
+    [minBufferPx]="rowHeight() * bufferSize()"
+    [maxBufferPx]="rowHeight() * bufferSize() * 2"
+  >
+    <table mat-table [dataSource]="dataSource" matSort>
+      <!-- Selection Column -->
+      @if (selectable()) {
+      <ng-container matColumnDef="select">
+        <th mat-header-cell *matHeaderCellDef>
+          @if (multiSelect()) {
+          <mat-checkbox
+            [checked]="isAllSelected()"
+            [indeterminate]="selection.hasValue() && !isAllSelected()"
+          ></mat-checkbox>
+          }
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <mat-checkbox
+            [checked]="selection.isSelected(row)"
+            (click)="$event.stopPropagation()"
+          ></mat-checkbox>
+        </td>
+      </ng-container>
+      }
+
+      <!-- Dynamic Columns -->
+      @for (column of columns(); track column.field) {
+      <ng-container [matColumnDef]="column.field">
+        <th
+          mat-header-cell
+          *matHeaderCellDef
+          [mat-sort-header]="column.sortable ? column.field : ''"
+          [disabled]="!column.sortable"
+          [style.width]="column.width"
+        >
+          {{ column.header }}
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <ng-container
+            [ngTemplateOutlet]="cellTemplate || defaultCell"
+            [ngTemplateOutletContext]="{ $implicit: row, column: column }"
+          ></ng-container>
+        </td>
+      </ng-container>
+      }
+
+      <tr
+        mat-header-row
+        *matHeaderRowDef="displayedColumns(); sticky: true"
+      ></tr>
+      <tr
+        mat-row
+        *matRowDef="let row; columns: displayedColumns()"
+        [class.selected]="selection.isSelected(row)"
+      ></tr>
+    </table>
+  </cdk-virtual-scroll-viewport>
+</div>
+
+<!-- Default cell template -->
+<ng-template #defaultCell let-row let-column="column">
+  @switch (column.type) { @case ('currency') {
+  {{ row[column.field] | currency }} } @case ('date') {
+  {{ row[column.field] | date : 'shortDate' }} } @case ('number') {
+  {{ row[column.field] | number }} } @default { {{ row[column.field] }} } }
+</ng-template>
