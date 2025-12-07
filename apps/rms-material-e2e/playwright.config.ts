@@ -25,7 +25,8 @@ export default defineConfig({
   /* Run your local dev server before starting the tests */
   webServer: [
     {
-      command: 'DATABASE_URL="file:./database.db" pnpm exec nx run server:serve',
+      command:
+        'DATABASE_URL="file:./database.db" pnpm exec nx run server:serve',
       url: 'http://localhost:3000/health',
       reuseExistingServer: !process.env.CI,
       cwd: workspaceRoot,
