@@ -9,7 +9,11 @@ function isHealthCheckEndpoint(url: string): boolean {
     url === '/health' ||
     url === '/ready' ||
     url === '/live' ||
+    url === '/api/health' ||
+    url === '/api/ready' ||
+    url === '/api/live' ||
     url.startsWith('/health/') ||
+    url.startsWith('/api/health/') ||
     url === '/'
   );
 }
@@ -19,6 +23,7 @@ function isDevEnvironment(): boolean {
   return (
     nodeEnv === 'development' ||
     nodeEnv === 'test' ||
+    nodeEnv === 'ci' ||
     (nodeEnv === 'local' && !(process.env.USE_LOCAL_SERVICES ?? ''))
   );
 }

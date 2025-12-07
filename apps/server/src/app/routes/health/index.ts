@@ -4,12 +4,12 @@ import { checkDatabaseHealth } from '../../prisma/prisma-client.js';
 
 const health: FastifyPluginAsync = async (fastify) => {
   // Basic health check endpoint
-  fastify.get('/health', async (request, reply) => {
+  fastify.get('/', async (request, reply) => {
     return { status: 'ok', timestamp: new Date().toISOString() };
   });
 
   // Detailed health check with database connectivity
-  fastify.get('/health/detailed', async (request, reply) => {
+  fastify.get('/detailed', async (request, reply) => {
     const startTime = Date.now();
 
     try {
@@ -62,7 +62,7 @@ const health: FastifyPluginAsync = async (fastify) => {
   });
 
   // Database-specific health check
-  fastify.get('/health/database', async (request, reply) => {
+  fastify.get('/database', async (request, reply) => {
     try {
       const dbHealth = await checkDatabaseHealth();
 

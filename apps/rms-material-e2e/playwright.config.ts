@@ -26,12 +26,17 @@ export default defineConfig({
   webServer: [
     {
       command: process.env.CI
-        ? 'DATABASE_URL="file:./database.db" node dist/apps/server/main.js'
+        ? 'node dist/apps/server/main.js'
         : 'DATABASE_URL="file:./database.db" pnpm exec nx run server:serve',
       url: 'http://localhost:3000/health',
       reuseExistingServer: !process.env.CI,
       cwd: workspaceRoot,
       timeout: 120000,
+      env: {
+        ...process.env,
+        NODE_ENV: process.env.CI ? 'ci' : 'development',
+        DATABASE_URL: 'file:./database.db',
+      },
     },
     {
       command: 'pnpm exec nx run rms-material:serve',
