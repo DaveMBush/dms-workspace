@@ -23,7 +23,6 @@ function isDevEnvironment(): boolean {
   return (
     nodeEnv === 'development' ||
     nodeEnv === 'test' ||
-    nodeEnv === 'ci' ||
     (nodeEnv === 'local' && !(process.env.USE_LOCAL_SERVICES ?? ''))
   );
 }

@@ -34,8 +34,10 @@ export default defineConfig({
       timeout: 120000,
       env: {
         ...process.env,
-        NODE_ENV: process.env.CI ? 'ci' : 'development',
-        DATABASE_URL: 'file:./database.db',
+        NODE_ENV: process.env.CI ? 'local' : 'development',
+        DATABASE_URL: process.env.CI ? 'file:../database.db' : 'file:./database.db',
+        AWS_ENDPOINT_URL: 'http://localhost:4566',
+        SKIP_AWS_AUTH: 'true',
       },
     },
     {

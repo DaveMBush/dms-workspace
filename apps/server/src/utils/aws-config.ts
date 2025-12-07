@@ -147,8 +147,7 @@ export class AwsConfigManager {
     return (
       process.env.NODE_ENV === 'development' ||
       process.env.NODE_ENV === 'test' ||
-      process.env.NODE_ENV === 'local' ||
-      process.env.NODE_ENV === 'ci'
+      process.env.NODE_ENV === 'local'
     );
   }
 
