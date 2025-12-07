@@ -23,23 +23,13 @@ export default defineConfig({
     trace: 'on-first-retry',
   },
   /* Run your local dev server before starting the tests */
-  webServer: [
-    {
-      command:
-        'cd dist/apps/server && pnpm install --prod && pnpm add @prisma/client && cd ../../.. && DATABASE_URL="file:./database.db" node dist/apps/server/main.js',
-      url: 'http://localhost:3000/health',
-      reuseExistingServer: !process.env.CI,
-      cwd: workspaceRoot,
-      timeout: 120000,
-    },
-    {
-      command: 'pnpm exec nx run rms-material:serve',
-      url: 'http://localhost:4201',
-      reuseExistingServer: !process.env.CI,
-      cwd: workspaceRoot,
-      timeout: 120000,
-    },
-  ],
+  webServer: {
+    command: 'pnpm exec nx run rms-material:serve',
+    url: 'http://localhost:4201',
+    reuseExistingServer: !process.env.CI,
+    cwd: workspaceRoot,
+    timeout: 120000,
+  },
   projects: [
     {
       name: 'chromium',
