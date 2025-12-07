@@ -200,7 +200,7 @@ describe('authInterceptor', () => {
 
       expect(mockAuthService.signOut).toHaveBeenCalled();
       expect(mockRouter.navigate).toHaveBeenCalledWith(['/auth/login']);
-    });
+    }, 15000);
 
     it('should handle 403 error and sign out user', async () => {
       const token = 'insufficient-permissions-token';

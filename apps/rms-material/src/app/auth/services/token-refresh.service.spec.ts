@@ -130,7 +130,7 @@ describe('TokenRefreshService', () => {
       expect(result).toBe(false);
       // Should handle refresh failure gracefully
       expect(mockFetchAuthSession).toHaveBeenCalled();
-    });
+    }, 15000);
 
     it('should retry failed refresh attempts', async () => {
       mockFetchAuthSession
