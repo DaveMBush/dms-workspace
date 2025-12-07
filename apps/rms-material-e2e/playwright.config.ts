@@ -28,7 +28,7 @@ export default defineConfig({
       command: process.env.CI
         ? 'node dist/apps/server/main.js'
         : 'DATABASE_URL="file:./database.db" pnpm exec nx run server:serve',
-      url: 'http://localhost:3000/health',
+      url: 'http://localhost:3000/api/health',
       reuseExistingServer: !process.env.CI,
       cwd: workspaceRoot,
       timeout: 120000,
