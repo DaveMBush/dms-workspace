@@ -5,6 +5,12 @@ import { defineConfig, devices } from '@playwright/test';
 // For CI, you may want to set BASE_URL to the deployed application.
 const baseURL = process.env['BASE_URL'] || 'http://localhost:4201';
 
+// Use PostgreSQL in CI (server is built with PostgreSQL schema)
+// Use SQLite locally
+const databaseUrl = process.env.CI
+  ? 'postgresql://ci_user:test_password@localhost:5432/ci_rms?schema=public'
+  : 'file:./database.db';
+
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
@@ -23,13 +29,33 @@ export default defineConfig({
     trace: 'on-first-retry',
   },
   /* Run your local dev server before starting the tests */
-  webServer: {
-    command: 'pnpm exec nx run rms-material:serve',
-    url: 'http://localhost:4201',
-    reuseExistingServer: !process.env.CI,
-    cwd: workspaceRoot,
-    timeout: 120000,
-  },
+  webServer: process.env.CI
+    ? [
+        // In CI: start backend server with PostgreSQL
+        {
+          command: `DATABASE_URL="${databaseUrl}" pnpm exec nx run server:serve`,
+          url: 'http://localhost:3000/health',
+          reuseExistingServer: false,
+          cwd: workspaceRoot,
+          timeout: 120000,
+        },
+        // Start frontend server
+        {
+          command: 'pnpm exec nx run rms-material:serve',
+          url: 'http://localhost:4201',
+          reuseExistingServer: false,
+          cwd: workspaceRoot,
+          timeout: 120000,
+        },
+      ]
+    : // Locally: just frontend (assumes backend running separately if needed)
+      {
+        command: 'pnpm exec nx run rms-material:serve',
+        url: 'http://localhost:4201',
+        reuseExistingServer: true,
+        cwd: workspaceRoot,
+        timeout: 120000,
+      },
   projects: [
     {
       name: 'chromium',
