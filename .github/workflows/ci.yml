@@ -67,6 +67,9 @@ jobs:
       # Tests run with SQLite (default environment), builds use PostgreSQL schema
       - run: pnpm nx affected -t lint build test --no-cloud
 
+      # Install server dependencies for e2e tests
+      - run: cd dist/apps/server && pnpm install --prod
+
       # Run e2e tests for rms-material
       - run: pnpm nx run rms-material-e2e:e2e --no-cloud
         env:
