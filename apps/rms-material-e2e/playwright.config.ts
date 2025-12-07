@@ -23,13 +23,33 @@ export default defineConfig({
     trace: 'on-first-retry',
   },
   /* Run your local dev server before starting the tests */
-  webServer: {
-    command: 'pnpm exec nx run rms-material:serve',
-    url: 'http://localhost:4201',
-    reuseExistingServer: !process.env.CI,
-    cwd: workspaceRoot,
-    timeout: 120000,
-  },
+  webServer: [
+    {
+      command: process.env.CI
+        ? 'node dist/apps/server/main.js'
+        : 'DATABASE_URL="file:./database.db" pnpm exec nx run server:serve',
+      url: 'http://localhost:3000/api/health',
+      reuseExistingServer: !process.env.CI,
+      cwd: workspaceRoot,
+      timeout: 120000,
+      env: {
+        ...process.env,
+        NODE_ENV: process.env.CI ? 'local' : 'development',
+        DATABASE_URL: process.env.CI
+          ? 'file:../database.db'
+          : 'file:./database.db',
+        AWS_ENDPOINT_URL: 'http://localhost:4566',
+        SKIP_AWS_AUTH: 'true',
+      },
+    },
+    {
+      command: 'pnpm exec nx run rms-material:serve',
+      url: 'http://localhost:4201',
+      reuseExistingServer: !process.env.CI,
+      cwd: workspaceRoot,
+      timeout: 120000,
+    },
+  ],
   projects: [
     {
       name: 'chromium',

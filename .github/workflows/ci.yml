@@ -51,22 +51,7 @@ jobs:
           cache: 'pnpm'
 
       - run: pnpm i
-      # Backup the original SQLite schema
-      - run: cp prisma/schema.prisma prisma/schema.sqlite.backup
-
-      # Setup PostgreSQL schema for application build/deployment
-      - run: cp prisma/schema.postgresql.prisma prisma/schema.prisma
-      - run: pnpm prisma generate
-        env:
-          DATABASE_PROVIDER: postgresql
-          DATABASE_URL: "postgresql://ci_user:${{ secrets.CI_POSTGRES_PASSWORD || 'test_password' }}@localhost:5432/ci_rms?schema=public"
-      - run: pnpm prisma db push --accept-data-loss
-        env:
-          DATABASE_PROVIDER: postgresql
-          DATABASE_URL: "postgresql://ci_user:${{ secrets.CI_POSTGRES_PASSWORD || 'test_password' }}@localhost:5432/ci_rms?schema=public"
-
-      # Restore SQLite schema for tests
-      - run: cp prisma/schema.sqlite.backup prisma/schema.prisma
+      # Generate Prisma client for SQLite (used by tests and e2e)
       - run: pnpm prisma generate
 
       # Install Playwright browsers for e2e tests

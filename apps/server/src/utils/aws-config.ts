@@ -374,7 +374,11 @@ export function validateEnvironmentVariables(): void {
   }
 
   // Validate database URL based on environment
-  if (process.env.NODE_ENV !== 'test' && !process.env.DATABASE_URL) {
+  if (
+    process.env.NODE_ENV !== 'test' &&
+    process.env.NODE_ENV !== 'ci' &&
+    !process.env.DATABASE_URL
+  ) {
     console.warn(
       '⚠️ DATABASE_URL not set, will attempt to fetch from Parameter Store'
     );
