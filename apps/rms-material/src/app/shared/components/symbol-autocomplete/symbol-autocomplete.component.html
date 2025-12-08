@@ -1,0 +1,23 @@
+<mat-form-field appearance="outline" class="full-width">
+  <mat-label>{{ labelValue }}</mat-label>
+  <input
+    matInput
+    [formControl]="searchControl"
+    [matAutocomplete]="auto"
+    [placeholder]="placeholderValue"
+    aria-label="Symbol search"
+  />
+  <mat-spinner *ngIf="isLoadingValue" matSuffix diameter="20"></mat-spinner>
+  <mat-autocomplete
+    #auto="matAutocomplete"
+    [displayWith]="displayFnRef"
+    (optionSelected)="onOptionSelected($event.option.value)"
+  >
+    <mat-option
+      *ngFor="let option of filteredOptionsValue; trackBy: trackBySymbol"
+      [value]="option"
+    >
+      <strong>{{ option.symbol }}</strong> - {{ option.name }}
+    </mat-option>
+  </mat-autocomplete>
+</mat-form-field>
