@@ -68,6 +68,8 @@ jobs:
       - run: pnpm nx affected -t lint build test --no-cloud
 
       # Run e2e tests for rms-material
+      # Ensure the server is built in CI (affected may skip it for unrelated changes)
+      - run: pnpm nx run server:build:production --no-cloud
       - run: pnpm nx run rms-material-e2e:e2e --no-cloud
         env:
           CI: true
