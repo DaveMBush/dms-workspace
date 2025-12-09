@@ -1,0 +1,14 @@
+<mat-form-field appearance="outline" class="filter-field">
+  <mat-label>{{ labelValue }}</mat-label>
+  <mat-select
+    [value]="selectedValueValue"
+    (selectionChange)="onSelectionChange($event.value)"
+  >
+    <mat-option [value]="null">All</mat-option>
+    @for (option of optionsValue; track option.value) {
+    <mat-option [value]="option.value">
+      {{ option.label }}
+    </mat-option>
+    }
+  </mat-select>
+</mat-form-field>
