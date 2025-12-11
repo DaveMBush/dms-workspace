@@ -40,4 +40,58 @@ describe('NotificationService', () => {
       expect.objectContaining({ duration: 0 })
     );
   });
+
+  it('should call snackBar.open with info class', () => {
+    service.info('Info message');
+    expect(mockSnackBar.open).toHaveBeenCalledWith(
+      'Info message',
+      'Close',
+      expect.objectContaining({ panelClass: ['snackbar-info'] })
+    );
+  });
+
+  it('should call snackBar.open with warn class', () => {
+    service.warn('Warning message');
+    expect(mockSnackBar.open).toHaveBeenCalledWith(
+      'Warning message',
+      'Close',
+      expect.objectContaining({ panelClass: ['snackbar-warn'] })
+    );
+  });
+
+  it('should use default info severity when no severity specified', () => {
+    service.show('Generic message');
+    expect(mockSnackBar.open).toHaveBeenCalledWith(
+      'Generic message',
+      'Close',
+      expect.objectContaining({ panelClass: ['snackbar-info'] })
+    );
+  });
+
+  it('should configure horizontal position to end', () => {
+    service.info('Test');
+    expect(mockSnackBar.open).toHaveBeenCalledWith(
+      'Test',
+      'Close',
+      expect.objectContaining({ horizontalPosition: 'end' })
+    );
+  });
+
+  it('should configure vertical position to top', () => {
+    service.info('Test');
+    expect(mockSnackBar.open).toHaveBeenCalledWith(
+      'Test',
+      'Close',
+      expect.objectContaining({ verticalPosition: 'top' })
+    );
+  });
+
+  it('should set default duration to 3000ms', () => {
+    service.success('Test');
+    expect(mockSnackBar.open).toHaveBeenCalledWith(
+      'Test',
+      'Close',
+      expect.objectContaining({ duration: 3000 })
+    );
+  });
 });
