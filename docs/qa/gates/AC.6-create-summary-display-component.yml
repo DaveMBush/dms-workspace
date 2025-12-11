@@ -51,9 +51,18 @@ evidence:
 
 nfr_validation:
   security: { status: PASS, notes: 'No user input processing, chart data only' }
-  performance: { status: PASS, notes: 'Supports 100+ data points, uses ChartJS efficiently' }
-  reliability: { status: PASS, notes: 'Empty data handling, graceful degradation' }
-  maintainability: { status: PASS, notes: 'Clean signals-based architecture, proper separation' }
+  performance:
+    {
+      status: PASS,
+      notes: 'Supports 100+ data points, uses ChartJS efficiently',
+    }
+  reliability:
+    { status: PASS, notes: 'Empty data handling, graceful degradation' }
+  maintainability:
+    {
+      status: PASS,
+      notes: 'Clean signals-based architecture, proper separation',
+    }
 
 quality_assessment:
   code_quality:
