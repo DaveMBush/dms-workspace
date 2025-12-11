@@ -47,7 +47,7 @@ test.describe('Summary Display Component (Charts)', () => {
 
         // Tooltip should appear - Chart.js creates a tooltip element
         // The tooltip is visible when it has content
-        const tooltip = page.locator('#pie-chart-card canvas').first();
+        const tooltip = page.locator('[data-testid="pie-chart-card"] canvas').first();
         await expect(tooltip).toBeVisible();
       }
     });
