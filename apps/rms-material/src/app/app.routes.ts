@@ -66,6 +66,11 @@ export const appRoutes: Route[] = [
         loadComponent: async () =>
           import('./global/global-error-logs').then((m) => m.GlobalErrorLogs),
       },
+      {
+        path: 'demo/charts',
+        loadComponent: async () =>
+          import('./demo/chart-demo').then((m) => m.ChartDemo),
+      },
     ],
   },
   {
