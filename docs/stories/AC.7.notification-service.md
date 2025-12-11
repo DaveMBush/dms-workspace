@@ -175,16 +175,16 @@ E2E Tests (10 scenarios x 3 browsers = 30 tests):
 
 **Requirements Traceability**
 
-| Feature | Unit Test | E2E Test |
-| --- | --- | --- |
-| show(message, severity) | default severity test | implicit via error tests |
-| success(message) | snackbar-success class | styling verification |
-| info(message) | snackbar-info class | - |
-| warn(message) | snackbar-warn class | - |
-| error(message) | snackbar-error class | red styling test |
-| showPersistent() | duration: 0 test | manual dismiss test |
-| Position config | horizontal/vertical tests | position test |
-| Duration config | 3000ms test | auto-dismiss test |
+| Feature                 | Unit Test                 | E2E Test                 |
+| ----------------------- | ------------------------- | ------------------------ |
+| show(message, severity) | default severity test     | implicit via error tests |
+| success(message)        | snackbar-success class    | styling verification     |
+| info(message)           | snackbar-info class       | -                        |
+| warn(message)           | snackbar-warn class       | -                        |
+| error(message)          | snackbar-error class      | red styling test         |
+| showPersistent()        | duration: 0 test          | manual dismiss test      |
+| Position config         | horizontal/vertical tests | position test            |
+| Duration config         | 3000ms test               | auto-dismiss test        |
 
 ### Gate Status
 
