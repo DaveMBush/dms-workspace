@@ -1,0 +1,12 @@
+<div class="chart-container" [style.height]="height$()">
+  @if (hasData$()) {
+  <canvas
+    baseChart
+    [type]="chartType$()"
+    [data]="chartData$()"
+    [options]="chartOptions$()"
+  ></canvas>
+  } @else {
+  <div class="no-data-message">No data available</div>
+  }
+</div>
