@@ -399,8 +399,8 @@ test.describe('Confirm Dialog Service', () => {
       const dialog = page.locator('mat-dialog-container');
       await expect(dialog).toBeVisible();
 
-      // The overlay pane should have a high z-index
-      const overlayPane = page.locator('.cdk-overlay-pane');
+      // The overlay pane should have a high z-index (use dialog-specific class)
+      const overlayPane = page.locator('.cdk-overlay-pane.mat-mdc-dialog-panel');
       await expect(overlayPane).toBeVisible();
     });
 
