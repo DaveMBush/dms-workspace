@@ -198,8 +198,10 @@ test.describe('Confirm Dialog Service', () => {
         .locator('button[mat-menu-item]', { hasText: 'Logout' })
         .click();
 
-      // Verify backdrop is visible
-      await expect(page.locator('.cdk-overlay-backdrop')).toBeVisible();
+      // Verify backdrop is visible (use dark backdrop specific to dialog)
+      await expect(
+        page.locator('.cdk-overlay-backdrop.cdk-overlay-dark-backdrop')
+      ).toBeVisible();
     });
 
     test('should not close when clicking backdrop', async ({ page }) => {
@@ -212,9 +214,9 @@ test.describe('Confirm Dialog Service', () => {
       // Verify dialog is visible
       await expect(page.getByText('Confirm Logout')).toBeVisible();
 
-      // Click on backdrop
+      // Click on backdrop (use dark backdrop specific to dialog)
       await page
-        .locator('.cdk-overlay-backdrop')
+        .locator('.cdk-overlay-backdrop.cdk-overlay-dark-backdrop')
         .click({ position: { x: 10, y: 10 } });
 
       // Dialog should still be visible (modal behavior)
@@ -238,7 +240,9 @@ test.describe('Confirm Dialog Service', () => {
 
       // The button should not be interactable while dialog is open
       // (cdk-overlay-backdrop blocks clicks)
-      await expect(page.locator('.cdk-overlay-backdrop')).toBeVisible();
+      await expect(
+        page.locator('.cdk-overlay-backdrop.cdk-overlay-dark-backdrop')
+      ).toBeVisible();
     });
   });
 
