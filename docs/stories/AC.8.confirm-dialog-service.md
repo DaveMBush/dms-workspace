@@ -142,24 +142,24 @@ Story AC.8 implements a confirmation dialog service using Angular Material Dialo
 
 ### Test Coverage Analysis
 
-| Category | Tests | Status |
-|----------|-------|--------|
-| Service Unit Tests | 14 | PASS |
-| Component Unit Tests | 25 | PASS |
-| E2E Tests | 22 | PASS |
-| **Total** | **61** | **PASS** |
+| Category             | Tests  | Status   |
+| -------------------- | ------ | -------- |
+| Service Unit Tests   | 14     | PASS     |
+| Component Unit Tests | 25     | PASS     |
+| E2E Tests            | 22     | PASS     |
+| **Total**            | **61** | **PASS** |
 
 ### Acceptance Criteria Traceability
 
-| AC | Description | Unit Test | E2E Test |
-|----|-------------|-----------|----------|
-| 1 | `confirm(data)` opens dialog | ✅ | ✅ |
-| 2 | Customizable title/message | ✅ | ✅ |
-| 3 | Customizable button labels | ✅ | ✅ |
-| 4 | Returns Observable<boolean> | ✅ | ✅ |
-| 5 | Modal with backdrop | ✅ | ✅ |
-| 6 | Focus management | ✅ | ✅ |
-| 7 | XSS prevention | ✅ | N/A |
+| AC  | Description                  | Unit Test | E2E Test |
+| --- | ---------------------------- | --------- | -------- |
+| 1   | `confirm(data)` opens dialog | ✅        | ✅       |
+| 2   | Customizable title/message   | ✅        | ✅       |
+| 3   | Customizable button labels   | ✅        | ✅       |
+| 4   | Returns Observable<boolean>  | ✅        | ✅       |
+| 5   | Modal with backdrop          | ✅        | ✅       |
+| 6   | Focus management             | ✅        | ✅       |
+| 7   | XSS prevention               | ✅        | N/A      |
 
 ### Security Assessment
 
@@ -170,6 +170,7 @@ Story AC.8 implements a confirmation dialog service using Angular Material Dialo
 ### Uncovered Edge Cases
 
 The following edge cases from requirements are not covered (noted as acceptable gaps):
+
 - Multiple dialogs stacking (rare scenario)
 - Enter key triggers confirm
 - Dialog animation timing
