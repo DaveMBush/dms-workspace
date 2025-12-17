@@ -60,74 +60,75 @@
       [rowHeight]="48"
       (sortChange)="onSortChange($event)"
     >
-      <!-- Custom header template with filter row -->
-      <ng-template #headerTemplate>
-        <!-- Filter row -->
-        <tr class="filter-header-row">
-          <th class="filter-cell">
-            <mat-form-field appearance="outline" class="header-filter">
-              <input
-                matInput
-                #symbolInput
-                [value]="symbolFilter$()"
-                (input)="onSymbolFilterChange(symbolInput.value)"
-                placeholder="Search Symbol"
-              />
-            </mat-form-field>
-          </th>
-          <th class="filter-cell">
-            <mat-form-field appearance="outline" class="header-filter">
-              <mat-select
-                [value]="riskGroupFilter$()"
-                (selectionChange)="onRiskGroupFilterChange($event.value)"
-                placeholder="Select One"
-              >
-                <mat-option [value]="null">All</mat-option>
-                @for (group of riskGroups; track group.value) {
-                <mat-option [value]="group.value">{{ group.label }}</mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
-          </th>
-          <th class="filter-cell"></th>
-          <th class="filter-cell"></th>
-          <th class="filter-cell">
-            <mat-form-field appearance="outline" class="header-filter">
-              <input
-                matInput
-                #yieldInput
-                type="number"
-                [value]="minYieldFilter$()"
-                (input)="onMinYieldFilterChange(yieldInput.valueAsNumber)"
-                placeholder="Min Yield %"
-              />
-            </mat-form-field>
-          </th>
-          <th class="filter-cell"></th>
-          <th class="filter-cell"></th>
-          <th class="filter-cell"></th>
-          <th class="filter-cell"></th>
-          <th class="filter-cell"></th>
-          <th class="filter-cell"></th>
-          <th class="filter-cell">
-            <mat-form-field appearance="outline" class="header-filter">
-              <mat-select
-                [value]="expiredFilter$()"
-                (selectionChange)="onExpiredFilterChange($event.value)"
-                placeholder="Select One"
-              >
-                <mat-option [value]="null">All</mat-option>
-                @for (option of expiredOptions; track option.value) {
-                <mat-option [value]="option.value">{{
-                  option.label
-                }}</mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
-          </th>
-          <th class="filter-cell"></th>
-        </tr>
+      <!-- Filter row template - receives column definition -->
+      <!-- eslint-disable @angular-eslint/template/cyclomatic-complexity -->
+      <ng-template #filterRowTemplate let-column>
+        @switch (column.field) { @case ('symbol') {
+        <mat-form-field
+          appearance="outline"
+          subscriptSizing="dynamic"
+          class="header-filter w-24"
+        >
+          <input
+            matInput
+            #symbolInput
+            [value]="symbolFilter$()"
+            (input)="onSymbolFilterChange(symbolInput.value)"
+            placeholder="Search Symbol"
+          />
+        </mat-form-field>
+        } @case ('risk_group_id') {
+        <mat-form-field
+          appearance="outline"
+          subscriptSizing="dynamic"
+          class="header-filter w-24"
+        >
+          <mat-select
+            [value]="riskGroupFilter$()"
+            (selectionChange)="onRiskGroupFilterChange($event.value)"
+            placeholder="Select One"
+          >
+            <mat-option [value]="null">All</mat-option>
+            @for (group of riskGroups; track group.value) {
+            <mat-option [value]="group.value">{{ group.label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        } @case ('yield_percent') {
+        <mat-form-field
+          appearance="outline"
+          subscriptSizing="dynamic"
+          class="header-filter w-24"
+        >
+          <input
+            matInput
+            #yieldInput
+            type="number"
+            [value]="minYieldFilter$()"
+            (input)="onMinYieldFilterChange(yieldInput.valueAsNumber)"
+            placeholder="Min Yield %"
+          />
+        </mat-form-field>
+        } @case ('expired') {
+        <mat-form-field
+          appearance="outline"
+          subscriptSizing="dynamic"
+          class="header-filter w-24"
+        >
+          <mat-select
+            [value]="expiredFilter$()"
+            (selectionChange)="onExpiredFilterChange($event.value)"
+            placeholder="Select One"
+          >
+            <mat-option [value]="null">All</mat-option>
+            @for (option of expiredOptions; track option.value) {
+            <mat-option [value]="option.value">{{ option.label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        } }
       </ng-template>
+      <!-- eslint-enable @angular-eslint/template/cyclomatic-complexity -->
 
       <!-- Custom cell template for editable fields -->
       <!-- eslint-disable @angular-eslint/template/cyclomatic-complexity -->

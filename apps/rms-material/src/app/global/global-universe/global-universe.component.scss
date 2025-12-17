@@ -52,6 +52,34 @@
   }
 }
 
+.header-filter {
+  margin: 0;
+
+  ::ng-deep {
+    .mat-mdc-text-field-wrapper {
+      padding: 0 8px;
+    }
+
+    .mat-mdc-form-field-infix {
+      padding-top: 8px;
+      padding-bottom: 8px;
+      min-height: unset;
+    }
+
+    .mdc-text-field--outlined .mdc-notched-outline {
+      --mdc-outlined-text-field-container-shape: 4px;
+    }
+
+    input.mat-mdc-input-element {
+      font-size: 12px;
+    }
+
+    .mat-mdc-select-value {
+      font-size: 12px;
+    }
+  }
+}
+
 .table-wrapper {
   flex: 1;
   overflow: hidden;

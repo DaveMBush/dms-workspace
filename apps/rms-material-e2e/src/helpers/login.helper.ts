@@ -15,5 +15,5 @@ export async function login(
   await page.locator('button[type="submit"]').click();
 
   // Wait for navigation to complete (should redirect to dashboard)
-  await page.waitForURL('**/');
+  await page.waitForURL('**/dashboard');
 }

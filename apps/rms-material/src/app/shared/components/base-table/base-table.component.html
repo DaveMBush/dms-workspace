@@ -1,9 +1,9 @@
 <!-- eslint-disable @angular-eslint/template/no-call-expression -->
 <!-- eslint-disable @angular-eslint/template/cyclomatic-complexity -->
 <div class="table-container">
-  @if (dataSource?.loadingObservable | async) {
+  @if (dataSource) { @if (dataSource.loadingObservable | async) {
   <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-  }
+  } }
 
   <cdk-virtual-scroll-viewport
     class="virtual-scroll-viewport"
@@ -33,6 +33,13 @@
       </ng-container>
       }
 
+      <!-- Selection Filter Column (empty placeholder) -->
+      @if (selectable() && filterRowTemplate) {
+      <ng-container matColumnDef="selectFilter">
+        <th mat-header-cell *matHeaderCellDef></th>
+      </ng-container>
+      }
+
       <!-- Dynamic Columns -->
       @for (column of columns(); track column.field) {
       <ng-container [matColumnDef]="column.field">
@@ -54,6 +61,27 @@
       </ng-container>
       }
 
+      <!-- Filter Columns -->
+      @if (filterRowTemplate) { @for (column of columns(); track column.field) {
+      <ng-container [matColumnDef]="column.field + 'Filter'">
+        <th mat-header-cell *matHeaderCellDef [style.width]="column.width">
+          <ng-container
+            [ngTemplateOutlet]="filterRowTemplate"
+            [ngTemplateOutletContext]="{ $implicit: column }"
+          ></ng-container>
+        </th>
+      </ng-container>
+      } }
+
+      <!-- Filter Row -->
+      @if (filterRowTemplate) {
+      <tr
+        mat-header-row
+        *matHeaderRowDef="filterColumns(); sticky: true"
+        class="filter-row"
+      ></tr>
+      }
+      <!-- Column Headers Row -->
       <tr
         mat-header-row
         *matHeaderRowDef="displayedColumns(); sticky: true"

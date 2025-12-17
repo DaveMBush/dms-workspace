@@ -11,8 +11,10 @@ test.describe('Global Universe Component', () => {
 
   test.describe('Core Display', () => {
     test('should display universe page with toolbar', async ({ page }) => {
-      await expect(page.locator('mat-toolbar')).toBeVisible();
-      await expect(page.getByText('Universe')).toBeVisible();
+      await expect(page.locator('.universe-toolbar')).toBeVisible();
+      await expect(
+        page.locator('.universe-toolbar').getByText('Universe')
+      ).toBeVisible();
     });
 
     test('should display table wrapper', async ({ page }) => {
@@ -21,7 +23,7 @@ test.describe('Global Universe Component', () => {
 
     test('should display account selector in toolbar', async ({ page }) => {
       await expect(
-        page.locator('mat-toolbar mat-form-field mat-select')
+        page.locator('.universe-toolbar mat-form-field mat-select')
       ).toBeVisible();
     });
   });
@@ -82,7 +84,7 @@ test.describe('Global Universe Component', () => {
 
     test('should display Yield column header', async ({ page }) => {
       await expect(
-        page.getByRole('columnheader', { name: 'Yield %' })
+        page.getByRole('columnheader', { name: 'Yield %', exact: true })
       ).toBeVisible();
     });
 
@@ -123,29 +125,27 @@ test.describe('Global Universe Component', () => {
 
   test.describe('Account Selection', () => {
     test('should open account dropdown when clicked', async ({ page }) => {
-      await page.locator('mat-toolbar mat-form-field mat-select').click();
-      await expect(page.locator('mat-option')).toBeVisible();
+      await page.locator('.universe-toolbar mat-form-field mat-select').click();
+      await expect(page.locator('mat-option').first()).toBeVisible();
     });
 
     test('should show All Accounts option', async ({ page }) => {
-      await page.locator('mat-toolbar mat-form-field mat-select').click();
-      await expect(page.getByText('All Accounts')).toBeVisible();
+      await page.locator('.universe-toolbar mat-form-field mat-select').click();
+      await expect(
+        page.getByRole('option', { name: 'All Accounts' })
+      ).toBeVisible();
     });
   });
 
   test.describe('Risk Group Filter', () => {
     test('should show All option for risk group', async ({ page }) => {
-      const riskGroupSelect = page
-        .locator('.filter-header-row mat-select')
-        .first();
+      const riskGroupSelect = page.locator('.filter-row mat-select').first();
       await riskGroupSelect.click();
       await expect(page.getByRole('option', { name: 'All' })).toBeVisible();
     });
 
     test('should show Equities option', async ({ page }) => {
-      const riskGroupSelect = page
-        .locator('.filter-header-row mat-select')
-        .first();
+      const riskGroupSelect = page.locator('.filter-row mat-select').first();
       await riskGroupSelect.click();
       await expect(
         page.getByRole('option', { name: 'Equities' })
@@ -153,9 +153,7 @@ test.describe('Global Universe Component', () => {
     });
 
     test('should show Income option', async ({ page }) => {
-      const riskGroupSelect = page
-        .locator('.filter-header-row mat-select')
-        .first();
+      const riskGroupSelect = page.locator('.filter-row mat-select').first();
       await riskGroupSelect.click();
       await expect(page.getByRole('option', { name: 'Income' })).toBeVisible();
     });
@@ -163,25 +161,19 @@ test.describe('Global Universe Component', () => {
 
   test.describe('Expired Filter', () => {
     test('should show All option for expired filter', async ({ page }) => {
-      const expiredSelect = page
-        .locator('.filter-header-row mat-select')
-        .last();
+      const expiredSelect = page.locator('.filter-row mat-select').last();
       await expiredSelect.click();
       await expect(page.getByRole('option', { name: 'All' })).toBeVisible();
     });
 
     test('should show Yes option', async ({ page }) => {
-      const expiredSelect = page
-        .locator('.filter-header-row mat-select')
-        .last();
+      const expiredSelect = page.locator('.filter-row mat-select').last();
       await expiredSelect.click();
       await expect(page.getByRole('option', { name: 'Yes' })).toBeVisible();
     });
 
     test('should show No option', async ({ page }) => {
-      const expiredSelect = page
-        .locator('.filter-header-row mat-select')
-        .last();
+      const expiredSelect = page.locator('.filter-row mat-select').last();
       await expiredSelect.click();
       await expect(page.getByRole('option', { name: 'No' })).toBeVisible();
     });
@@ -191,7 +183,7 @@ test.describe('Global Universe Component', () => {
     test('should display correctly at desktop viewport', async ({ page }) => {
       await page.setViewportSize({ width: 1920, height: 1080 });
       await expect(page.locator('.universe-container')).toBeVisible();
-      await expect(page.locator('mat-toolbar')).toBeVisible();
+      await expect(page.locator('.universe-toolbar')).toBeVisible();
     });
 
     test('should display correctly at tablet viewport', async ({ page }) => {

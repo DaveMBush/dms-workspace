@@ -14,6 +14,11 @@ const baseURL = process.env['BASE_URL'] || 'http://localhost:4201';
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
+// Unset DISPLAY in WSL to prevent headless browser issues
+if (process.env.WSL_DISTRO_NAME && !process.env.CI) {
+  delete process.env.DISPLAY;
+}
+
 export default defineConfig({
   ...nxE2EPreset(__filename, { testDir: './src' }),
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
