@@ -5,6 +5,7 @@ import { authGuard } from './auth/guards/auth.guard';
 import { ShellComponent } from './shell/shell.component';
 import { accountsDefinition } from './store/accounts/accounts-definition.const';
 import { topDefinition } from './store/top/top-definition.const';
+import { universeDefinition } from './store/universe/universe-definition.const';
 
 export const appRoutes: Route[] = [
   {
@@ -15,6 +16,7 @@ export const appRoutes: Route[] = [
       provideSmartFeatureSignalEntities('app', [
         topDefinition,
         accountsDefinition,
+        universeDefinition,
       ]),
     ],
     children: [

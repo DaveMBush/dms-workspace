@@ -1,7 +1,7 @@
 <!-- eslint-disable @angular-eslint/template/no-call-expression -->
 <!-- eslint-disable @angular-eslint/template/cyclomatic-complexity -->
 <div class="table-container">
-  @if (dataSource.loadingObservable | async) {
+  @if (dataSource?.loadingObservable | async) {
   <mat-progress-bar mode="indeterminate"></mat-progress-bar>
   }
 
@@ -11,6 +11,7 @@
     [minBufferPx]="rowHeight() * bufferSize()"
     [maxBufferPx]="rowHeight() * bufferSize() * 2"
   >
+    @if (dataSource) {
     <table mat-table [dataSource]="dataSource" matSort>
       <!-- Selection Column -->
       @if (selectable()) {
@@ -63,6 +64,7 @@
         [class.selected]="selection.isSelected(row)"
       ></tr>
     </table>
+    }
   </cdk-virtual-scroll-viewport>
 </div>
 
