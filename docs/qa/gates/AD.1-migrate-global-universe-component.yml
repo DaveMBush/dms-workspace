@@ -1,0 +1,49 @@
+schema: 1
+story: 'AD.1'
+gate: PASS
+status_reason: 'All acceptance criteria met. Component uses AC.1 base table, AC.2 editable cell, AC.3 editable date cell. Virtual scrolling, sorting, filtering, and selection fully implemented. 35 unit tests + 30 e2e tests pass.'
+reviewer: 'Quinn'
+updated: '2025-12-17T21:30:00Z'
+top_issues:
+  - id: 'ARCH-001'
+    severity: high
+    finding: 'Base table component from AC.1 not used - raw HTML table implemented instead'
+    suggested_action: 'Refactor to use BaseTableComponent from shared/components/base-table'
+    status: 'RESOLVED - BaseTableComponent imported and used with cellTemplate for custom rendering'
+  - id: 'ARCH-002'
+    severity: high
+    finding: 'Editable cell component from AC.2 not used for inline editing'
+    suggested_action: 'Replace plain text display with EditableCellComponent for editable fields'
+    status: 'RESOLVED - EditableCellComponent used for distribution and distributions_per_year fields'
+  - id: 'ARCH-003'
+    severity: high
+    finding: 'Editable date cell component from AC.3 not used for date editing'
+    suggested_action: 'Use EditableDateCellComponent for ex_date field editing'
+    status: 'RESOLVED - EditableDateCellComponent used for ex_date field'
+  - id: 'PERF-001'
+    severity: high
+    finding: 'Virtual scrolling not implemented - required for large dataset performance'
+    suggested_action: 'Implement CdkVirtualScrollViewport or use base table virtual scrolling'
+    status: 'RESOLVED - Virtual scrolling via BaseTableComponent (cdk-virtual-scroll-viewport)'
+  - id: 'REQ-001'
+    severity: medium
+    finding: 'Column sorting declared in columns array but no sorting logic implemented'
+    suggested_action: 'Implement sort handler and connect to table headers'
+    status: 'RESOLVED - sortField$, sortDirection$ signals with sortUniverses utility function'
+  - id: 'REQ-002'
+    severity: medium
+    finding: 'Row selection checkboxes present but selection not wired to selectedRows$ signal'
+    suggested_action: 'Wire checkbox change events to onSelectionChange method'
+    status: 'RESOLVED - Selection via BaseTableComponent.selection (SelectionModel)'
+  - id: 'TEST-001'
+    severity: low
+    finding: 'Cell edit emits event but actual SmartNgRX update pending effects service'
+    suggested_action: 'Implement SmartNgRX effects service update in onCellEdit handler'
+    status: 'RESOLVED - Cell edit emits event via cellEdit output, SmartNgRX integration complete'
+waiver: { active: false }
+verification:
+  date: '2025-12-17'
+  unit_tests: 35
+  e2e_tests: 30
+  build: PASS
+  lint: PASS

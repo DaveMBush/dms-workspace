@@ -42,6 +42,11 @@ th.mat-mdc-header-cell {
   z-index: 1;
 }
 
+tr.filter-row th.mat-mdc-header-cell {
+  padding: 4px 8px;
+  font-weight: normal;
+}
+
 td.mat-mdc-cell {
   padding: 8px 16px;
 }

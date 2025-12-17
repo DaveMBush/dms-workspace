@@ -45,7 +45,7 @@ export class BaseTableComponent<T extends { id: string }> {
   readonly selectionChange = output<T[]>();
   readonly lazyLoad = output<LazyLoadEvent>();
 
-  dataSource!: VirtualTableDataSource<T>;
+  dataSource?: VirtualTableDataSource<T>;
 
   selection = new SelectionModel<T>(true, []);
 
@@ -65,8 +65,24 @@ export class BaseTableComponent<T extends { id: string }> {
     }
   );
 
+  filterColumns = computed(
+    // eslint-disable-next-line @smarttools/no-anonymous-functions -- Required for computed signal
+    () => {
+      const context = this;
+      const columnsValue = context.columns();
+      const cols = columnsValue.map(function getFilterField(c) {
+        return c.field + 'Filter';
+      });
+      const selectableValue = context.selectable();
+      if (selectableValue) {
+        return ['selectFilter', ...cols];
+      }
+      return cols;
+    }
+  );
+
   @ContentChild('cellTemplate') cellTemplate?: TemplateRef<unknown>;
-  @ContentChild('headerTemplate') headerTemplate?: TemplateRef<unknown>;
+  @ContentChild('filterRowTemplate') filterRowTemplate?: TemplateRef<unknown>;
 
   initDataSource(
     loadFn: (
@@ -100,7 +116,7 @@ export class BaseTableComponent<T extends { id: string }> {
     const allSelected = this.isAllSelected();
     if (allSelected) {
       this.selection.clear();
-    } else {
+    } else if (this.dataSource) {
       this.selection.select(...this.dataSource.getData());
     }
     this.selectionChange.emit(this.selection.selected);
