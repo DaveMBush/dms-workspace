@@ -1,0 +1,76 @@
+<div class="screener-container">
+  <mat-toolbar class="screener-toolbar">
+    <span class="toolbar-title">Screener</span>
+
+    <span class="toolbar-spacer"></span>
+
+    <button mat-icon-button matTooltip="Refresh" (click)="onRefresh()">
+      <mat-icon>refresh</mat-icon>
+    </button>
+  </mat-toolbar>
+
+  <div class="table-wrapper">
+    <rms-base-table
+      [columns]="columns"
+      [selectable]="false"
+      [rowHeight]="48"
+      (sortChange)="onSortChange($event)"
+    >
+      <!-- Filter row template - receives column definition -->
+      <ng-template #filterRowTemplate let-column>
+        @if (column.field === 'risk_group') {
+        <mat-form-field
+          appearance="outline"
+          subscriptSizing="dynamic"
+          class="header-filter w-28"
+        >
+          <mat-select
+            [value]="riskGroupFilter$()"
+            (selectionChange)="onRiskGroupFilterChange($event.value)"
+            placeholder="Select One"
+          >
+            <mat-option [value]="null">All</mat-option>
+            @for (group of riskGroups; track group.value) {
+            <mat-option [value]="group.value">{{ group.label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        }
+      </ng-template>
+
+      <!-- Custom cell template -->
+      <!-- eslint-disable @angular-eslint/template/cyclomatic-complexity -->
+      <!-- eslint-disable @angular-eslint/template/no-call-expression -->
+      <ng-template #cellTemplate let-row let-column="column">
+        @switch (column.field) { @case ('symbol') {
+        <a
+          [href]="getCefConnectUrl(row.symbol)"
+          target="_blank"
+          class="symbol-link"
+        >
+          {{ row.symbol }}
+        </a>
+        } @case ('has_volitility') {
+        <mat-checkbox
+          [checked]="row.has_volitility"
+          (change)="onCellEdit(row, 'has_volitility', $event.checked)"
+        />
+        } @case ('objectives_understood') {
+        <mat-checkbox
+          [checked]="row.objectives_understood"
+          (change)="onCellEdit(row, 'objectives_understood', $event.checked)"
+        />
+        } @case ('graph_higher_before_2008') {
+        <mat-checkbox
+          [checked]="row.graph_higher_before_2008"
+          (change)="onCellEdit(row, 'graph_higher_before_2008', $event.checked)"
+        />
+        } @default {
+        {{ row[column.field] }}
+        } }
+      </ng-template>
+      <!-- eslint-enable @angular-eslint/template/cyclomatic-complexity -->
+      <!-- eslint-enable @angular-eslint/template/no-call-expression -->
+    </rms-base-table>
+  </div>
+</div>
