@@ -4,6 +4,7 @@ import { provideSmartFeatureSignalEntities } from '@smarttools/smart-signals';
 import { authGuard } from './auth/guards/auth.guard';
 import { ShellComponent } from './shell/shell.component';
 import { accountsDefinition } from './store/accounts/accounts-definition.const';
+import { screenDefinition } from './store/screen/screen-definition.const';
 import { topDefinition } from './store/top/top-definition.const';
 import { universeDefinition } from './store/universe/universe-definition.const';
 
@@ -17,6 +18,7 @@ export const appRoutes: Route[] = [
         topDefinition,
         accountsDefinition,
         universeDefinition,
+        screenDefinition,
       ]),
     ],
     children: [

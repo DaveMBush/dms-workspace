@@ -1,0 +1,53 @@
+schema: 1
+story: 'AD.2'
+gate: PASS
+status_reason: 'Implementation correctly mirrors original RMS screener. Uses AC.1 base table, SmartNgRX signals, and has comprehensive unit (25) and E2E (22) tests. All E2E tests verified passing.'
+reviewer: 'Quinn'
+updated: '2025-12-18T07:45:00Z'
+top_issues:
+  - id: 'REQ-001'
+    severity: low
+    finding: 'Story mentions frequency filter and add-to-universe which do not exist in original RMS screener'
+    suggested_action: 'Update story acceptance criteria to match actual original implementation scope'
+    status: 'ACKNOWLEDGED - Story spec mismatch, not implementation defect'
+  - id: 'TEST-001'
+    severity: low
+    finding: 'E2E tests had strict mode violations with Income option selector'
+    suggested_action: 'Fixed by adding exact: true to option selectors'
+    status: 'VERIFIED RESOLVED - 78/78 E2E tests passing'
+waiver: { active: false }
+verification:
+  date: '2025-12-18'
+  unit_tests: 25
+  e2e_tests: 22
+  build: PASS
+  lint: PASS
+  validation_commands:
+    - 'pnpm format: PASS'
+    - 'pnpm dupcheck: PASS (0 clones)'
+    - 'pnpm nx run rms-material:test: PASS (614 tests)'
+    - 'pnpm nx run rms-material:lint: PASS'
+    - 'pnpm nx run rms-material:build:production: PASS'
+    - 'pnpm nx run rms:test: PASS (625 tests)'
+    - 'pnpm nx run rms:lint: PASS'
+    - 'pnpm nx run rms:build:production: PASS'
+    - 'pnpm nx run server:test: PASS (259 tests)'
+    - 'pnpm nx run server:lint: PASS'
+    - 'pnpm nx run server:build:production: PASS'
+technical_assessment:
+  uses_base_table: true
+  uses_smartngrx: true
+  has_filter_controls: true
+  matches_original_rms: true
+  columns_implemented:
+    - 'Symbol (with cefconnect.com link)'
+    - 'Risk Group'
+    - 'Has Volatility (checkbox)'
+    - 'Objectives Understood (checkbox)'
+    - 'Graph Higher Before 2008 (checkbox)'
+  features_implemented:
+    - 'Risk group filter dropdown'
+    - 'Refresh button with loading indicator'
+    - 'Checkbox editing for boolean fields'
+    - 'Custom sorting (all-checked-first then alphabetical)'
+    - 'Virtual scrolling via BaseTableComponent'
