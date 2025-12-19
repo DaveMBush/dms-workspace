@@ -1,0 +1,112 @@
+<mat-card>
+  <mat-card-content>
+    <div class="error-logs-container">
+      <!-- Filter Toolbar -->
+      <mat-toolbar class="filter-toolbar">
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-select [value]="selectedFile$()" (selectionChange)="onFileFilter($event.value)">
+            @for (file of fileTypes; track file) {
+              <mat-option [value]="file">{{ file }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-select [value]="selectedLevel$()" (selectionChange)="onLevelFilter($event.value)">
+            @for (level of levels; track level) {
+              <mat-option [value]="level">{{ level }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="filter-field date-field">
+          <input
+            matInput
+            [matDatepicker]="startPicker"
+            placeholder="mm/dd/yyyy"
+            [value]="startDate$()"
+            (dateChange)="onStartDateChange($event.value)"
+          />
+          <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+          <mat-datepicker #startPicker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="filter-field date-field">
+          <input
+            matInput
+            [matDatepicker]="endPicker"
+            placeholder="mm/dd/yyyy"
+            [value]="endDate$()"
+            (dateChange)="onEndDateChange($event.value)"
+          />
+          <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+          <mat-datepicker #endPicker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="filter-field search-field">
+          <input
+            matInput
+            placeholder="Search messages..."
+            [(ngModel)]="searchMessage"
+          />
+        </mat-form-field>
+
+        <button mat-icon-button (click)="onApplyFilters()" class="filter-button">
+          <mat-icon>filter_list</mat-icon>
+        </button>
+
+        <button mat-icon-button color="primary" (click)="onSearch()" class="search-button">
+          <mat-icon>search</mat-icon>
+        </button>
+      </mat-toolbar>
+
+      <!-- Error Logs Table -->
+      <table mat-table [dataSource]="errorLogs$()">
+        <ng-container matColumnDef="timestamp">
+          <th mat-header-cell *matHeaderCellDef>Timestamp</th>
+          <td mat-cell *matCellDef="let row">{{ row.timestamp | date:'M/d/yyyy, h:mm:ss a' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="level">
+          <th mat-header-cell *matHeaderCellDef>Level</th>
+          <td mat-cell *matCellDef="let row">
+            <span class="level-badge" [class.level-warning]="row.level === 'WARNING'" [class.level-error]="row.level === 'ERROR'" [class.level-info]="row.level === 'INFO'" [class.level-debug]="row.level === 'DEBUG'">{{ row.level }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="message">
+          <th mat-header-cell *matHeaderCellDef>Message</th>
+          <td mat-cell *matCellDef="let row" class="message-cell">{{ row.message }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="requestId">
+          <th mat-header-cell *matHeaderCellDef>Request ID</th>
+          <td mat-cell *matCellDef="let row">{{ row.requestId }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="userId">
+          <th mat-header-cell *matHeaderCellDef>User ID</th>
+          <td mat-cell *matCellDef="let row">{{ row.userId }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="context">
+          <th mat-header-cell *matHeaderCellDef>Context</th>
+          <td mat-cell *matCellDef="let row">{{ row.context }}</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+
+      <!-- Pagination -->
+      <mat-paginator
+        [length]="totalRecords$()"
+        [pageSize]="pageSize$()"
+        [pageIndex]="pageIndex$()"
+        [pageSizeOptions]="pageSizeOptions"
+        (page)="onPageChange($event)"
+        showFirstLastButtons
+      ></mat-paginator>
+    </div>
+  </mat-card-content>
+</mat-card>

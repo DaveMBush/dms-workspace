@@ -1,4 +1,5 @@
 ---
+model: GPT-5.1-Codex-Mini (Preview) (copilot)
 agent: dev
 ---
 
