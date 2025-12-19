@@ -4,17 +4,23 @@
       <!-- Filter Toolbar -->
       <mat-toolbar class="filter-toolbar">
         <mat-form-field appearance="outline" class="filter-field">
-          <mat-select [value]="selectedFile$()" (selectionChange)="onFileFilter($event.value)">
+          <mat-select
+            [value]="selectedFile$()"
+            (selectionChange)="onFileFilter($event.value)"
+          >
             @for (file of fileTypes; track file) {
-              <mat-option [value]="file">{{ file }}</mat-option>
+            <mat-option [value]="file">{{ file }}</mat-option>
             }
           </mat-select>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="filter-field">
-          <mat-select [value]="selectedLevel$()" (selectionChange)="onLevelFilter($event.value)">
+          <mat-select
+            [value]="selectedLevel$()"
+            (selectionChange)="onLevelFilter($event.value)"
+          >
             @for (level of levels; track level) {
-              <mat-option [value]="level">{{ level }}</mat-option>
+            <mat-option [value]="level">{{ level }}</mat-option>
             }
           </mat-select>
         </mat-form-field>
@@ -27,7 +33,10 @@
             [value]="startDate$()"
             (dateChange)="onStartDateChange($event.value)"
           />
-          <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+          <mat-datepicker-toggle
+            matSuffix
+            [for]="startPicker"
+          ></mat-datepicker-toggle>
           <mat-datepicker #startPicker></mat-datepicker>
         </mat-form-field>
 
@@ -39,7 +48,10 @@
             [value]="endDate$()"
             (dateChange)="onEndDateChange($event.value)"
           />
-          <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+          <mat-datepicker-toggle
+            matSuffix
+            [for]="endPicker"
+          ></mat-datepicker-toggle>
           <mat-datepicker #endPicker></mat-datepicker>
         </mat-form-field>
 
@@ -51,11 +63,20 @@
           />
         </mat-form-field>
 
-        <button mat-icon-button (click)="onApplyFilters()" class="filter-button">
+        <button
+          mat-icon-button
+          (click)="onApplyFilters()"
+          class="filter-button"
+        >
           <mat-icon>filter_list</mat-icon>
         </button>
 
-        <button mat-icon-button color="primary" (click)="onSearch()" class="search-button">
+        <button
+          mat-icon-button
+          color="primary"
+          (click)="onSearch()"
+          class="search-button"
+        >
           <mat-icon>search</mat-icon>
         </button>
       </mat-toolbar>
@@ -64,19 +85,30 @@
       <table mat-table [dataSource]="errorLogs$()">
         <ng-container matColumnDef="timestamp">
           <th mat-header-cell *matHeaderCellDef>Timestamp</th>
-          <td mat-cell *matCellDef="let row">{{ row.timestamp | date:'M/d/yyyy, h:mm:ss a' }}</td>
+          <td mat-cell *matCellDef="let row">
+            {{ row.timestamp | date:'M/d/yyyy, h:mm:ss a' }}
+          </td>
         </ng-container>
 
         <ng-container matColumnDef="level">
           <th mat-header-cell *matHeaderCellDef>Level</th>
           <td mat-cell *matCellDef="let row">
-            <span class="level-badge" [class.level-warning]="row.level === 'WARNING'" [class.level-error]="row.level === 'ERROR'" [class.level-info]="row.level === 'INFO'" [class.level-debug]="row.level === 'DEBUG'">{{ row.level }}</span>
+            <span
+              class="level-badge"
+              [class.level-warning]="row.level === 'WARNING'"
+              [class.level-error]="row.level === 'ERROR'"
+              [class.level-info]="row.level === 'INFO'"
+              [class.level-debug]="row.level === 'DEBUG'"
+              >{{ row.level }}</span
+            >
           </td>
         </ng-container>
 
         <ng-container matColumnDef="message">
           <th mat-header-cell *matHeaderCellDef>Message</th>
-          <td mat-cell *matCellDef="let row" class="message-cell">{{ row.message }}</td>
+          <td mat-cell *matCellDef="let row" class="message-cell">
+            {{ row.message }}
+          </td>
         </ng-container>
 
         <ng-container matColumnDef="requestId">

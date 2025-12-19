@@ -1,5 +1,10 @@
 import { DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -45,7 +50,14 @@ interface ErrorLog {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GlobalErrorLogs implements OnInit {
-  displayedColumns = ['timestamp', 'level', 'message', 'requestId', 'userId', 'context'];
+  displayedColumns = [
+    'timestamp',
+    'level',
+    'message',
+    'requestId',
+    'userId',
+    'context',
+  ];
   pageSizeOptions = [10, 25, 50, 100];
 
   errorLogs$ = signal<ErrorLog[]>([]);

@@ -16,7 +16,9 @@ test.describe('Global Error Logs Component', () => {
     });
 
     test('should display page title', async ({ page }) => {
-      await expect(page.getByRole('heading', { name: 'Error Logs' })).toBeVisible();
+      await expect(
+        page.getByRole('heading', { name: 'Error Logs' })
+      ).toBeVisible();
     });
 
     test('should display error logs table', async ({ page }) => {
@@ -44,13 +46,19 @@ test.describe('Global Error Logs Component', () => {
 
   test.describe('Pagination', () => {
     test('should have page size options', async ({ page }) => {
-      const pageSizeSelect = page.locator('mat-paginator .mat-mdc-paginator-page-size-select');
+      const pageSizeSelect = page.locator(
+        'mat-paginator .mat-mdc-paginator-page-size-select'
+      );
       await expect(pageSizeSelect).toBeVisible();
     });
 
     test('should display navigation buttons', async ({ page }) => {
-      const nextButton = page.locator('mat-paginator button[aria-label*="Next"]');
-      const previousButton = page.locator('mat-paginator button[aria-label*="Previous"]');
+      const nextButton = page.locator(
+        'mat-paginator button[aria-label*="Next"]'
+      );
+      const previousButton = page.locator(
+        'mat-paginator button[aria-label*="Previous"]'
+      );
       await expect(nextButton).toBeVisible();
       await expect(previousButton).toBeVisible();
     });
@@ -60,7 +68,7 @@ test.describe('Global Error Logs Component', () => {
     test('should have proper card styling', async ({ page }) => {
       const card = page.locator('mat-card').first();
       await expect(card).toBeVisible();
-      
+
       const boundingBox = await card.boundingBox();
       expect(boundingBox?.height).toBeGreaterThan(0);
       expect(boundingBox?.width).toBeGreaterThan(0);
@@ -71,18 +79,20 @@ test.describe('Global Error Logs Component', () => {
       await expect(toolbar).toBeVisible();
     });
 
-    test('should maintain layout on different screen sizes', async ({ page }) => {
+    test('should maintain layout on different screen sizes', async ({
+      page,
+    }) => {
       // Test on desktop
       await page.setViewportSize({ width: 1920, height: 1080 });
       await page.waitForTimeout(300);
-      
+
       let table = page.locator('table[mat-table]');
       await expect(table).toBeVisible();
-      
+
       // Test on tablet
       await page.setViewportSize({ width: 768, height: 1024 });
       await page.waitForTimeout(300);
-      
+
       table = page.locator('table[mat-table]');
       await expect(table).toBeVisible();
     });
@@ -92,7 +102,7 @@ test.describe('Global Error Logs Component', () => {
     test('should have accessible table structure', async ({ page }) => {
       const table = page.locator('table[mat-table]');
       await expect(table).toBeVisible();
-      
+
       // Verify table has headers
       const headers = table.locator('th');
       await expect(headers).toHaveCount(4);
