@@ -16,10 +16,14 @@ test.describe('Global Summary Component', () => {
     });
 
     test('should display page title', async ({ page }) => {
-      await expect(page.getByRole('heading', { name: 'Global Summary' })).toBeVisible();
+      await expect(
+        page.getByRole('heading', { name: 'Global Summary' })
+      ).toBeVisible();
     });
 
-    test('allocation pie chart displays risk group breakdown', async ({ page }) => {
+    test('allocation pie chart displays risk group breakdown', async ({
+      page,
+    }) => {
       const allocationChart = page.locator('rms-summary-display').first();
       await expect(allocationChart).toBeVisible();
       // Verify the chart container is present
@@ -49,7 +53,9 @@ test.describe('Global Summary Component', () => {
   });
 
   test.describe('Chart Rendering', () => {
-    test('allocation pie chart should have visible canvas', async ({ page }) => {
+    test('allocation pie chart should have visible canvas', async ({
+      page,
+    }) => {
       const firstChart = page.locator('rms-summary-display').first();
       const canvas = firstChart.locator('canvas');
 
@@ -59,7 +65,9 @@ test.describe('Global Summary Component', () => {
       expect(boundingBox?.width).toBeGreaterThan(0);
     });
 
-    test('performance line chart should have visible canvas', async ({ page }) => {
+    test('performance line chart should have visible canvas', async ({
+      page,
+    }) => {
       const secondChart = page.locator('rms-summary-display').nth(1);
       const canvas = secondChart.locator('canvas');
 
@@ -145,7 +153,9 @@ test.describe('Global Summary Component', () => {
       await expect(charts).toHaveCount(2);
     });
 
-    test('should maintain layout on different screen sizes', async ({ page }) => {
+    test('should maintain layout on different screen sizes', async ({
+      page,
+    }) => {
       // Test on desktop
       await page.setViewportSize({ width: 1920, height: 1080 });
       await page.waitForTimeout(300);

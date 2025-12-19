@@ -44,7 +44,10 @@ function computePerformanceChartData(): ChartData<'line'> {
     datasets: [
       {
         label: 'Base',
-        data: [40000, 40200, 40500, 40800, 41000, 41200, 41400, 41600, 41800, 42000, 42100, 42200],
+        data: [
+          40000, 40200, 40500, 40800, 41000, 41200, 41400, 41600, 41800, 42000,
+          42100, 42200,
+        ],
         borderColor: '#3B82F6',
         tension: 0.2,
       },
@@ -76,7 +79,11 @@ function createMonthOptions(): Array<{ label: string; value: string }> {
   return months;
 }
 
-function computePercentIncrease(basis: number, gains: number, divs: number): number {
+function computePercentIncrease(
+  basis: number,
+  gains: number,
+  divs: number
+): number {
   return (12 * (gains + divs)) / basis;
 }
 
@@ -103,13 +110,17 @@ export class GlobalSummary {
   readonly allocationChartData = computed(computeAllocationChartData);
   readonly performanceChartData = computed(computePerformanceChartData);
 
-  readonly basis$ = signal(40500.00);
-  readonly capitalGain$ = signal(1000.00);
-  readonly dividends$ = signal(525.00);
+  readonly basis$ = signal(40500.0);
+  readonly capitalGain$ = signal(1000.0);
+  readonly dividends$ = signal(525.0);
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- need access to this
   readonly percentIncrease$ = computed(() => {
-    return computePercentIncrease(this.basis$(), this.capitalGain$(), this.dividends$());
+    return computePercentIncrease(
+      this.basis$(),
+      this.capitalGain$(),
+      this.dividends$()
+    );
   });
 
   get monthOptions(): Array<{ label: string; value: string }> {
