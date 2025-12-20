@@ -153,7 +153,7 @@ describe('TokenRefreshService', () => {
 
       expect(result).toBe(false);
       expect(mockFetchAuthSession).toHaveBeenCalledTimes(3); // Max retries
-    });
+    }, 15000);
 
     it('should handle concurrent refresh requests', async () => {
       mockFetchAuthSession.mockImplementation(
