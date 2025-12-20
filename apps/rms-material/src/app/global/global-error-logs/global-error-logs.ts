@@ -58,6 +58,7 @@ export class GlobalErrorLogs implements OnInit {
     'userId',
     'context',
   ];
+
   pageSizeOptions = [10, 25, 50, 100];
 
   errorLogs$ = signal<ErrorLog[]>([]);

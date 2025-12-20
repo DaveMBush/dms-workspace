@@ -16,9 +16,7 @@ test.describe('Global Error Logs Component', () => {
     });
 
     test('should display page title', async ({ page }) => {
-      await expect(
-        page.getByRole('heading', { name: 'Error Logs' })
-      ).toBeVisible();
+      await expect(page.locator('mat-card-title h1')).toHaveText('Error Logs');
     });
 
     test('should display error logs table', async ({ page }) => {
@@ -31,16 +29,30 @@ test.describe('Global Error Logs Component', () => {
       await expect(paginator).toBeVisible();
     });
 
-    test('should display type filter', async ({ page }) => {
-      const typeFilter = page.locator('mat-select');
-      await expect(typeFilter).toBeVisible();
+    test('should display filter controls', async ({ page }) => {
+      await expect(
+        page.getByRole('combobox', { name: 'All Files' })
+      ).toBeVisible();
+      await expect(
+        page.getByRole('combobox', { name: 'All Levels' })
+      ).toBeVisible();
+      await expect(page.getByPlaceholder('mm/dd/yyyy').first()).toBeVisible();
+      await expect(page.getByPlaceholder('Search messages...')).toBeVisible();
     });
 
     test('should display table headers', async ({ page }) => {
-      await expect(page.locator('th:has-text("Timestamp")')).toBeVisible();
-      await expect(page.locator('th:has-text("Type")')).toBeVisible();
-      await expect(page.locator('th:has-text("Message")')).toBeVisible();
-      await expect(page.locator('th:has-text("Actions")')).toBeVisible();
+      const headers = [
+        'Timestamp',
+        'Level',
+        'Message',
+        'Request ID',
+        'User ID',
+        'Context',
+      ];
+
+      for (const header of headers) {
+        await expect(page.locator(`th:has-text("${header}")`)).toBeVisible();
+      }
     });
   });
 
@@ -75,7 +87,7 @@ test.describe('Global Error Logs Component', () => {
     });
 
     test('should have toolbar styled correctly', async ({ page }) => {
-      const toolbar = page.locator('mat-toolbar');
+      const toolbar = page.locator('.filter-toolbar');
       await expect(toolbar).toBeVisible();
     });
 
@@ -105,10 +117,10 @@ test.describe('Global Error Logs Component', () => {
 
       // Verify table has headers
       const headers = table.locator('th');
-      await expect(headers).toHaveCount(4);
+      await expect(headers).toHaveCount(6);
     });
 
-    test('should have navigation context', async ({ page }) => {
+    test('should have navigation context', ({ page }) => {
       const currentUrl = page.url();
       expect(currentUrl).toContain('/global/error-logs');
     });
