@@ -191,6 +191,12 @@ Create accessibility report with:
 - [ ] All critical issues fixed
 - [ ] Accessibility report documented
 - [ ] WCAG 2.1 AA compliance verified
+- [ ] All validation commands pass
+  - Run `pnpm all`
+  - Run `pnpm e2e:rms-material`
+  - Run `pnpm dupcheck`
+  - Run `pnpm format`
+  - Repeat all of these if any fail until they all pass
 
 ## E2E Test Requirements
 
