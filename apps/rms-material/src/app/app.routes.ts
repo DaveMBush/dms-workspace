@@ -73,6 +73,43 @@ export const appRoutes: Route[] = [
           ),
       },
       {
+        path: 'account/:accountId',
+        loadComponent: async () =>
+          import('./account-panel/account-panel.component').then(
+            (m) => m.AccountPanelComponent
+          ),
+        children: [
+          {
+            path: '',
+            loadComponent: async () =>
+              import('./accounts/account-summary/account-summary').then(
+                (m) => m.AccountSummary
+              ),
+          },
+          {
+            path: 'open',
+            loadComponent: async () =>
+              import('./accounts/open-positions/open-positions').then(
+                (m) => m.OpenPositions
+              ),
+          },
+          {
+            path: 'sold',
+            loadComponent: async () =>
+              import('./accounts/sold-positions/sold-positions').then(
+                (m) => m.SoldPositions
+              ),
+          },
+          {
+            path: 'div-dep',
+            loadComponent: async () =>
+              import('./accounts/dividend-deposits/dividend-deposits').then(
+                (m) => m.DividendDeposits
+              ),
+          },
+        ],
+      },
+      {
         path: 'demo/charts',
         loadComponent: async () =>
           import('./demo/chart-demo').then((m) => m.ChartDemo),

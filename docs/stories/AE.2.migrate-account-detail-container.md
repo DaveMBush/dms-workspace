@@ -23,7 +23,7 @@
 
 ### Functional Requirements
 
-- [ ] All GUI look as close to the existing RMS app as possible
+- [ ] **CRITICAL** All GUI look as close to the existing RMS app as possible
 - [ ] Account ID read from route
 - [ ] SmartNgRX trades entity provided
 - [ ] Child routes render correctly
@@ -32,10 +32,11 @@
 
 - [ ] Uses `provideSmartFeatureSignalEntities` in route
 - [ ] Passes account context to children
+- [ ] Uses Tailwind CSS for layout.
 
 ## Test-Driven Development Approach
 
-**Write tests BEFORE implementation code.**
+**CRITICAL: Write tests BEFORE implementation code.**
 
 ### Step 1: Create Unit Tests First
 
@@ -129,6 +130,11 @@ export class AccountDetailComponent implements OnInit {
 - [ ] Entity context provided via route
 - [ ] Child components render
 - [ ] All validation commands pass
+  - Run `pnpm all`
+  - Run `pnpm e2e:rms-material`
+  - Run `pnpm dupcheck`
+  - Run `pnpm format`
+  - Repeat all of these if any fail until they all pass
 
 ## E2E Test Requirements
 

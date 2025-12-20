@@ -22,21 +22,23 @@
 
 ### Functional Requirements
 
-- [ ] All GUI look as close to the existing RMS app as possible
+- [ ] **CRITICAL** All GUI look as close to the existing RMS app as possible
 - [ ] Tab bar displays: Summary, Open, Sold, Div-Dep
 - [ ] Active tab highlighted
 - [ ] Tab click navigates to route
 - [ ] Content renders in outlet
+- [ ] Refreshing the page keeps the correct tab active.
 
 ### Technical Requirements
 
 - [ ] Uses `mat-tab-nav-bar` with `mat-tab-link`
 - [ ] Router integration for navigation
 - [ ] Route matching for active state
+- [ ] Uses Tailwind CSS for layout.
 
 ## Test-Driven Development Approach
 
-**Write tests BEFORE implementation code.**
+**CRITICAL: Write tests BEFORE implementation code.**
 
 ### Step 1: Create Unit Tests First
 
@@ -140,6 +142,11 @@ export class AccountPanelComponent {}
 - [ ] Navigation works
 - [ ] Content renders
 - [ ] All validation commands pass
+  - Run `pnpm all`
+  - Run `pnpm e2e:rms-material`
+  - Run `pnpm dupcheck`
+  - Run `pnpm format`
+  - Repeat all of these if any fail until they all pass
 
 ## E2E Test Requirements
 
@@ -167,3 +174,74 @@ When this story is complete, ensure the following e2e tests exist in `apps/rms-m
 - [ ] Focus management correct on tab change
 
 Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.
+
+---
+
+## Dev Agent Record
+
+### Status
+
+Ready for Review
+
+### Agent Model Used
+
+Claude Sonnet 4.5
+
+### Tasks Completed
+
+- [x] Created test file with TDD approach (RED phase)
+- [x] Implemented AccountPanelComponent with Material tabs
+- [x] Created HTML template for component
+- [x] Updated routes to include account-panel
+- [x] Created placeholder child components for routing
+- [x] Fixed all linting errors
+- [x] All tests passing
+
+### Debug Log References
+
+None
+
+### Completion Notes
+
+- Successfully implemented Material Design tab navigation for account panel
+- Used TDD approach: tests created first, then implementation
+- Fixed deprecated RouterTestingModule to use provideRouter
+- Added proper change detection strategy (OnPush) to all components
+- Moved inline templates to external HTML files per coding standards
+- Created placeholder components for child routes (to be migrated in future stories)
+- All validation commands pass: lint, build, test, e2e, dupcheck, format
+
+### File List
+
+#### New Files
+
+- apps/rms-material/src/app/account-panel/account-panel.component.ts
+- apps/rms-material/src/app/account-panel/account-panel.component.html
+- apps/rms-material/src/app/account-panel/account-panel.component.scss
+- apps/rms-material/src/app/account-panel/account-panel.component.spec.ts
+- apps/rms-material/src/app/accounts/account-summary/account-summary.ts
+- apps/rms-material/src/app/accounts/account-summary/account-summary.html
+- apps/rms-material/src/app/accounts/open-positions/open-positions.ts
+- apps/rms-material/src/app/accounts/open-positions/open-positions.html
+- apps/rms-material/src/app/accounts/sold-positions/sold-positions.ts
+- apps/rms-material/src/app/accounts/sold-positions/sold-positions.html
+- apps/rms-material/src/app/accounts/dividend-deposits/dividend-deposits.ts
+- apps/rms-material/src/app/accounts/dividend-deposits/dividend-deposits.html
+
+#### Modified Files
+
+- apps/rms-material/src/app/app.routes.ts
+
+### Change Log
+
+- Implemented Material tab navigation container for account details
+- Added routing for account/:accountId with child routes
+- Created placeholder components for future migration of child views
+- All acceptance criteria met
+- All validation commands passing
+
+## QA Results
+
+### Gate Status
+
+Gate: PASS → docs/qa/gates/AE.1-migrate-account-panel-container.yml

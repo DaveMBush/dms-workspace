@@ -23,7 +23,7 @@
 
 ### Functional Requirements
 
-- [ ] All GUI look as close to the existing RMS app as possible
+- [ ] **CRITICAL** All GUI look as close to the existing RMS app as possible
 - [ ] Dialog opens for adding symbol
 - [ ] Symbol search with autocomplete
 - [ ] Risk group selection
@@ -36,10 +36,11 @@
 - [ ] Uses MatDialog
 - [ ] Uses SymbolAutocompleteComponent from AC.4
 - [ ] Reactive forms with validation
+- [ ] Uses Tailwind CSS for layout.
 
 ## Test-Driven Development Approach
 
-**Write tests BEFORE implementation code.**
+**CRITICAL: Write tests BEFORE implementation code.**
 
 ### Step 1: Create Unit Tests First
 
@@ -294,6 +295,11 @@ Create `apps/rms-material/src/app/universe-settings/add-symbol-dialog/add-symbol
 - [ ] Submit adds to universe
 - [ ] Cancel closes dialog
 - [ ] All validation commands pass
+  - Run `pnpm all`
+  - Run `pnpm e2e:rms-material`
+  - Run `pnpm dupcheck`
+  - Run `pnpm format`
+  - Repeat all of these if any fail until they all pass
 
 ## E2E Test Requirements
 

@@ -23,7 +23,7 @@
 
 ### Functional Requirements
 
-- [ ] All GUI look as close to the existing RMS app as possible
+- [ ] **CRITICAL** All GUI look as close to the existing RMS app as possible
 - [ ] Pie chart shows account allocation
 - [ ] Line chart shows account performance
 - [ ] Summary statistics displayed
@@ -34,10 +34,11 @@
 - [ ] Uses summary display from AC.6
 - [ ] SmartNgRX signals filtered by account
 - [ ] Account ID from route/context
+- [ ] Uses Tailwind CSS for layout.
 
 ## Test-Driven Development Approach
 
-**Write tests BEFORE implementation code.**
+**CRITICAL: Write tests BEFORE implementation code.**
 
 ### Step 1: Create Unit Tests First
 
@@ -152,6 +153,11 @@ export class SummaryComponent {
 - [ ] Data scoped to account
 - [ ] Summary stats display
 - [ ] All validation commands pass
+  - Run `pnpm all`
+  - Run `pnpm e2e:rms-material`
+  - Run `pnpm dupcheck`
+  - Run `pnpm format`
+  - Repeat all of these if any fail until they all pass
 
 ## E2E Test Requirements
 

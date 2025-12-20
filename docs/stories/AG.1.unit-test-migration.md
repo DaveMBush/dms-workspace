@@ -179,6 +179,12 @@ pnpm nx run rms-material:test --code-coverage
 - [ ] All tests pass
 - [ ] Coverage >= 85%
 - [ ] `pnpm nx run rms-material:test --code-coverage` succeeds
+- [ ] All validation commands pass
+  - Run `pnpm all`
+  - Run `pnpm e2e:rms-material`
+  - Run `pnpm dupcheck`
+  - Run `pnpm format`
+  - Repeat all of these if any fail until they all pass
 
 ## E2E Test Requirements
 

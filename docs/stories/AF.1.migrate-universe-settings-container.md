@@ -22,7 +22,7 @@
 
 ### Functional Requirements
 
-- [ ] All GUI look as close to the existing RMS app as possible
+- [ ] **CRITICAL** All GUI look as close to the existing RMS app as possible
 - [ ] Container renders correctly
 - [ ] Navigation to universe settings works
 - [ ] Child components load
@@ -31,6 +31,7 @@
 
 - [ ] Standalone component
 - [ ] Router outlet if needed
+- [ ] Uses Tailwind CSS for layout.
 
 ## Test-Driven Development Approach
 
@@ -114,6 +115,11 @@ export class UniverseSettings {}
 - [ ] Container component created
 - [ ] Routing configured
 - [ ] All validation commands pass
+  - Run `pnpm all`
+  - Run `pnpm e2e:rms-material`
+  - Run `pnpm dupcheck`
+  - Run `pnpm format`
+  - Repeat all of these if any fail until they all pass
 
 ## E2E Test Requirements
 

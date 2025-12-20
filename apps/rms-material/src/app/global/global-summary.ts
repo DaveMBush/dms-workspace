@@ -1,4 +1,4 @@
-import { CurrencyPipe, DecimalPipe, PercentPipe } from '@angular/common';
+import { CurrencyPipe, PercentPipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -91,7 +91,6 @@ function computePercentIncrease(
   selector: 'rms-global-summary',
   imports: [
     CurrencyPipe,
-    DecimalPipe,
     MatCardModule,
     MatOptionModule,
     MatSelectModule,

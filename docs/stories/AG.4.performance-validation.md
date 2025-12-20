@@ -274,6 +274,12 @@ Run same benchmarks on original RMS application and compare:
 - [ ] Performance report documented
 - [ ] Comparison with RMS shows improvement or parity
 - [ ] PRIMARY DRIVER VALIDATED: Virtual scrolling with lazy loading works correctly
+- [ ] All validation commands pass
+  - Run `pnpm all`
+  - Run `pnpm e2e:rms-material`
+  - Run `pnpm dupcheck`
+  - Run `pnpm format`
+  - Repeat all of these if any fail until they all pass
 
 ## E2E Test Requirements
 

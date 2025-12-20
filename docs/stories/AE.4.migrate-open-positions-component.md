@@ -23,7 +23,7 @@
 
 ### Functional Requirements
 
-- [ ] All GUI look as close to the existing RMS app as possible
+- [ ] **CRITICAL** All GUI look as close to the existing RMS app as possible
 - [ ] Open positions display in table
 - [ ] Editable cells for quantity, price, dates
 - [ ] Add new position action
@@ -35,10 +35,11 @@
 - [ ] Uses base table from AC.1
 - [ ] Uses editable cells from AC.2/AC.3
 - [ ] SmartNgRX trades signal
+- [ ] Uses Tailwind CSS for layout.
 
 ## Test-Driven Development Approach
 
-**Write tests BEFORE implementation code.**
+**CRITICAL: Write tests BEFORE implementation code.**
 
 ### Step 1: Create Unit Tests First
 
@@ -162,6 +163,11 @@ export class OpenPositionsComponent {
 - [ ] Sell position action
 - [ ] SmartNgRX updates
 - [ ] All validation commands pass
+  - Run `pnpm all`
+  - Run `pnpm e2e:rms-material`
+  - Run `pnpm dupcheck`
+  - Run `pnpm format`
+  - Repeat all of these if any fail until they all pass
 
 ## E2E Test Requirements
 

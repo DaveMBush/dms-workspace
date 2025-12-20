@@ -24,7 +24,7 @@
 
 ### Functional Requirements
 
-- [ ] All GUI look as close to the existing RMS app as possible
+- [ ] **CRITICAL** All GUI look as close to the existing RMS app as possible
 - [ ] Dividend deposits display in table
 - [ ] Virtual scrolling renders only visible rows
 - [ ] Lazy loading fetches more data on scroll
@@ -38,6 +38,7 @@
 - [ ] Uses VirtualTableDataSource for lazy loading
 - [ ] SmartNgRX divDeposits signal
 - [ ] Debounced scroll loading
+- [ ] Uses Tailwind CSS for layout.
 
 ### Performance Requirements
 
@@ -328,6 +329,11 @@ Create `apps/rms-material/src/app/account-panel/dividend-deposits/dividend-depos
 - [ ] Performance tested with large datasets
 - [ ] SmartNgRX integration working
 - [ ] All validation commands pass
+  - Run `pnpm all`
+  - Run `pnpm e2e:rms-material`
+  - Run `pnpm dupcheck`
+  - Run `pnpm format`
+  - Repeat all of these if any fail until they all pass
 
 ## E2E Test Requirements
 

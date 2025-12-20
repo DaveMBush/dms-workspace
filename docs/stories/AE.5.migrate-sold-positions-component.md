@@ -23,7 +23,7 @@
 
 ### Functional Requirements
 
-- [ ] All GUI look as close to the existing RMS app as possible
+- [ ] **CRITICAL** All GUI look as close to the existing RMS app as possible
 - [ ] Sold positions display in table
 - [ ] Editable cells for sell price, sell date
 - [ ] Gain/loss calculations displayed
@@ -34,10 +34,11 @@
 - [ ] Uses base table from AC.1
 - [ ] Uses editable cells from AC.2/AC.3
 - [ ] SmartNgRX trades signal (sold filter)
+- [ ] Uses Tailwind CSS for layout.
 
 ## Test-Driven Development Approach
 
-**Write tests BEFORE implementation code.**
+**CRITICAL: Write tests BEFORE implementation code.**
 
 ### Step 1: Create Unit Tests First
 
@@ -149,6 +150,11 @@ export class SoldPositionsComponent {
 - [ ] Gain/loss shows correctly
 - [ ] SmartNgRX updates
 - [ ] All validation commands pass
+  - Run `pnpm all`
+  - Run `pnpm e2e:rms-material`
+  - Run `pnpm dupcheck`
+  - Run `pnpm format`
+  - Repeat all of these if any fail until they all pass
 
 ## E2E Test Requirements
 
