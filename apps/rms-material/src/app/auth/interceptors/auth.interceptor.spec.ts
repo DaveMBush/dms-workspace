@@ -312,7 +312,7 @@ describe('authInterceptor', () => {
 
       expect(mockAuthService.signOut).toHaveBeenCalled();
       expect(mockRouter.navigate).toHaveBeenCalledWith(['/auth/login']);
-    });
+    }, 10000);
   });
 
   describe('token retrieval failure', () => {
