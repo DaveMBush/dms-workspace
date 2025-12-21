@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from 'playwright/test';
 
 test.describe('Theme Switching', () => {
   test.beforeEach(async ({ page }) => {

@@ -1,4 +1,4 @@
-import { Page } from '@playwright/test';
+import { Page } from 'playwright/test';
 
 /**
  * Navigate to profile page via the user menu
