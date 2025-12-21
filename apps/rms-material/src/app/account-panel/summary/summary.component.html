@@ -1,6 +1,18 @@
 <div class="flex flex-col md:flex-row items-stretch flex-1 gap-8 p-8">
   <!-- Left: Stats and pie chart -->
   <div class="flex flex-col items-start w-full md:w-1/2 max-w-md flex-shrink-0">
+    <div class="mb-4">
+      <mat-select
+        [formControl]="selectedMonth"
+        class="w-48"
+        panelClass="month-select-panel"
+      >
+        @for (month of monthOptions; track month.value) {
+        <mat-option [value]="month.value">{{ month.label }}</mat-option>
+        }
+      </mat-select>
+    </div>
+
     <!-- Stats Grid -->
     <div class="grid grid-cols-2 gap-6 w-full max-w-md mb-8">
       <div class="flex flex-col">
@@ -17,7 +29,11 @@
         </span>
       </div>
       <div class="flex flex-col">
-        <span class="text-xs text-gray-500">Gain %</span>
+        <span class="text-xs text-gray-500">Capital Gain</span>
+        <span class="text-lg font-semibold">{{ capitalGain | currency }}</span>
+      </div>
+      <div class="flex flex-col">
+        <span class="text-xs text-gray-500">% Increase</span>
         <span
           class="text-lg font-semibold"
           [class.text-red-500]="gainPercent < 0"

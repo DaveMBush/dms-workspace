@@ -1,15 +1,33 @@
 import { CurrencyPipe, PercentPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed } from '@angular/core';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
+import { MatOptionModule } from '@angular/material/core';
+import { MatSelectModule } from '@angular/material/select';
 import { ChartData } from 'chart.js';
 
 import { SummaryDisplayComponent } from '../../shared/components/summary-display/summary-display';
 import { selectTrades } from '../../store/trades/selectors/select-trades.function';
 
+function createMonthOptions(): Array<{ label: string; value: string }> {
+  return Array.from({ length: 12 }, function buildMonthOption(_, index) {
+    const month = (index + 1).toString().padStart(2, '0');
+    return { label: `${month}/2025`, value: `2025-${month}` };
+  });
+}
+
 @Component({
   selector: 'rms-summary',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatCardModule, SummaryDisplayComponent, CurrencyPipe, PercentPipe],
+  imports: [
+    MatCardModule,
+    MatOptionModule,
+    MatSelectModule,
+    ReactiveFormsModule,
+    SummaryDisplayComponent,
+    CurrencyPipe,
+    PercentPipe,
+  ],
   templateUrl: './summary.component.html',
   styleUrl: './summary.component.scss',
 })
@@ -65,6 +83,9 @@ export class SummaryComponent {
     }
   );
 
+  readonly selectedMonth = new FormControl('2025-03');
+  private monthOptionsSignal = computed(createMonthOptions);
+
   private totalValueSignal = computed(function computeTotalValue() {
     return 11500;
   });
@@ -75,6 +96,10 @@ export class SummaryComponent {
 
   private gainPercentSignal = computed(function computeGainPercent() {
     return 0.15;
+  });
+
+  private capitalGainSignal = computed(function computeCapitalGain() {
+    return 1200;
   });
 
   // Getters for template
@@ -92,6 +117,14 @@ export class SummaryComponent {
 
   get totalGain(): number {
     return this.totalGainSignal();
+  }
+
+  get capitalGain(): number {
+    return this.capitalGainSignal();
+  }
+
+  get monthOptions(): Array<{ label: string; value: string }> {
+    return this.monthOptionsSignal();
   }
 
   get gainPercent(): number {
