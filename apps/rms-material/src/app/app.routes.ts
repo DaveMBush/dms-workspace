@@ -6,6 +6,7 @@ import { ShellComponent } from './shell/shell.component';
 import { accountsDefinition } from './store/accounts/accounts-definition.const';
 import { screenDefinition } from './store/screen/screen-definition.const';
 import { topDefinition } from './store/top/top-definition.const';
+import { tradesDefinition } from './store/trades/trades-definition.const';
 import { universeDefinition } from './store/universe/universe-definition.const';
 
 export const appRoutes: Route[] = [
@@ -82,30 +83,42 @@ export const appRoutes: Route[] = [
           {
             path: '',
             loadComponent: async () =>
-              import('./accounts/account-summary/account-summary').then(
-                (m) => m.AccountSummary
+              import('./account-panel/account-detail.component').then(
+                (m) => m.AccountDetailComponent
               ),
-          },
-          {
-            path: 'open',
-            loadComponent: async () =>
-              import('./accounts/open-positions/open-positions').then(
-                (m) => m.OpenPositions
-              ),
-          },
-          {
-            path: 'sold',
-            loadComponent: async () =>
-              import('./accounts/sold-positions/sold-positions').then(
-                (m) => m.SoldPositions
-              ),
-          },
-          {
-            path: 'div-dep',
-            loadComponent: async () =>
-              import('./accounts/dividend-deposits/dividend-deposits').then(
-                (m) => m.DividendDeposits
-              ),
+            providers: [
+              provideSmartFeatureSignalEntities('app', [tradesDefinition]),
+            ],
+            children: [
+              {
+                path: '',
+                loadComponent: async () =>
+                  import('./accounts/account-summary/account-summary').then(
+                    (m) => m.AccountSummary
+                  ),
+              },
+              {
+                path: 'open',
+                loadComponent: async () =>
+                  import('./accounts/open-positions/open-positions').then(
+                    (m) => m.OpenPositions
+                  ),
+              },
+              {
+                path: 'sold',
+                loadComponent: async () =>
+                  import('./accounts/sold-positions/sold-positions').then(
+                    (m) => m.SoldPositions
+                  ),
+              },
+              {
+                path: 'div-dep',
+                loadComponent: async () =>
+                  import('./accounts/dividend-deposits/dividend-deposits').then(
+                    (m) => m.DividendDeposits
+                  ),
+              },
+            ],
           },
         ],
       },
