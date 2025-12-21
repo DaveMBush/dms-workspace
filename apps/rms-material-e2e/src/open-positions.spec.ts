@@ -32,12 +32,4 @@ test.describe('Open Positions', () => {
     }); // Adjust based on actual icon/button
     await expect(addButton).toBeVisible();
   });
-
-  // TODO: Add more tests once functionality is implemented
-  // - Inline editing tests
-  // - Add position dialog tests
-  // - Sell position tests
-  // - Sorting tests
-  // - Validation tests
-  // - Edge case tests
 });
