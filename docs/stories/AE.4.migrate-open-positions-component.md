@@ -201,3 +201,118 @@ When this story is complete, ensure the following e2e tests exist in `apps/rms-m
 - [ ] Concurrent edits to same position handled
 
 Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.
+
+---
+
+## Dev Agent Record
+
+### Status
+
+In Progress - Component structure matches RMS app layout, all validations passing
+
+### Tasks
+
+- [x] Create GitHub issue #248
+- [x] Create GitHub branch 248-ae4-migrate-open-positions-component
+- [x] Create component test file (TDD RED phase)
+- [x] Create component TypeScript, HTML, and SCSS files
+- [x] Verify tests pass (TDD GREEN phase)
+- [x] Fix linting errors
+- [x] Run all validation commands (pnpm all, dupcheck, format)
+- [x] Fix routing integration in app.routes.ts
+- [x] Implement table structure with column definitions
+- [x] Move Add Position button to account-panel component (matches RMS layout)
+- [x] Match exact column structure from RMS app (14 columns)
+- [x] Simplify component to just table (no internal toolbar)
+- [ ] Implement data binding with SmartNgRX (deferred - needs provider architecture review)
+- [ ] Add toolbar actions (Add/Sell position)
+- [ ] Implement editable cells functionality
+- [ ] Add sorting and filtering
+- [ ] Create E2E tests
+- [ ] Full integration testing
+
+### File List
+
+- apps/rms-material/src/app/account-panel/open-positions/open-positions.component.ts
+- apps/rms-material/src/app/account-panel/open-positions/open-positions.component.html
+- apps/rms-material/src/app/account-panel/open-positions/open-positions.component.scss
+- apps/rms-material/src/app/account-panel/open-positions/open-positions.component.spec.ts
+- apps/rms-material/src/app/account-panel/account-panel.component.ts (added Add button)
+- apps/rms-material/src/app/account-panel/account-panel.component.html (added Add button)
+- apps/rms-material/src/app/app.routes.ts (updated routing)
+- apps/rms-material/src/app/shared/components/base-table/base-table.component.scss (table-layout and overflow fixes)
+- apps/rms-material/src/app/shell/shell.scss (overflow fixes to prevent horizontal scrollbar)
+
+### Change Log
+
+- Created initial component structure with Material Design
+- Implemented complete column definitions matching RMS app exactly:
+  - Symbol (universeId, width: 120px) with search filter input, Ex-Date, Buy (editable), Buy Date (sortable, editable), Quantity (editable)
+  - Expected $, Last $, Unrlz Gain % (sortable), Unrlz Gain$ (sortable)
+  - Sell (editable), Sell Date (editable), Days Held, Target Gain, Target Sell
+- Added unit tests following TDD approach (all 7 tests passing)
+- Fixed linting issues (ChangeDetectionStrategy, naming conventions)
+- Fixed routing path in app.routes.ts to point to correct component location
+- Moved "Add Position" button to account-panel component (parent level) with mat-icon-button and tooltip
+- Simplified open-positions component to just display the table (removed internal toolbar)
+- Updated account-panel to include button after tabs, matching RMS app layout structure
+- **Added symbol search filter input field** in first column using filterRowTemplate with Material form field and ngModel binding
+- **Changed column header from "Search" to "Symbol"** and set column width to 120px for compact display
+- **Fixed horizontal scrollbar issue** by:
+  - Setting `table-layout: fixed` on the table to constrain columns to viewport width
+  - Changing `.virtual-scroll-viewport` to `overflow-y: auto` and `overflow-x: hidden`
+  - Changing `.content-panel` in shell.scss to `overflow-y: auto` and `overflow-x: hidden`
+- All validation commands passing (lint, test, build)
+
+### Debug Log References
+
+N/A
+
+### Completion Notes
+
+Component structure now matches RMS app layout exactly:
+
+- **Table structure**: Just the base-table component without internal toolbar
+- **Parent integration**: "Add Position" button moved to account-panel component at tab level
+- **Column structure**: 14 columns matching RMS app exactly:
+  1. Symbol (universeId, 120px width with search input filter)
+  2. Ex-Date
+  3. Buy (editable)
+  4. Buy Date (sortable, editable)
+  5. Quantity (editable)
+  6. Expected $
+  7. Last $
+  8. Unrlz Gain % (sortable)
+  9. Unrlz Gain$ (sortable)
+  10. Sell (editable)
+  11. Sell Date (editable)
+  12. Days Held
+  13. Target Gain
+  14. Target Sell
+- **Symbol search filter**: Functional text input field in first column header using Material form field with placeholder "Search Symbol"
+- **No horizontal scrollbar**: Table constrained to viewport width using `table-layout: fixed` and proper overflow settings
+- **All tests passing** (7/7)
+- **All validation commands passing** (lint, test, build)
+- **Routing integrated** (navigates correctly to Open Positions tab)
+
+**Comparison with RMS App:**
+Used Playwright to inspect the original RMS app at `http://localhost:4200/account/1677e04f-ef9b-4372-adb3-b740443088dc/open`. The Material Design version now has the same layout structure:
+
+- Tabs at parent level with "+" button inline
+- Table component as simple child displaying just the data grid
+- All 14 columns in the same order as original
+- Search input field in Symbol column header
+- No horizontal scrollbar, table fits within viewport
+
+**Data Binding Deferred:** SmartNgRX integration was attempted but encountered provider registration timing issues in tests. The computed signal approach causes selectAccountsEntity to be created at module load time before test providers can register facades. This needs architectural review before proceeding. Component currently shows empty table structure with proper column headers.
+
+**Next Steps:**
+
+- Review SmartNgRX provider architecture for test compatibility
+- Wire up trades data once provider pattern resolved
+- Implement add/sell position dialogs
+- Enable inline editing for editable columns
+- Add symbol filter functionality (input field is in place, needs filtering logic)
+- Add sorting indicators for sortable columns
+
+Claude Sonnet 4.5

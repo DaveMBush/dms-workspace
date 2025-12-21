@@ -106,9 +106,9 @@ export const appRoutes: Route[] = [
               {
                 path: 'open',
                 loadComponent: async () =>
-                  import('./accounts/open-positions/open-positions').then(
-                    (m) => m.OpenPositions
-                  ),
+                  import(
+                    './account-panel/open-positions/open-positions.component'
+                  ).then((m) => m.OpenPositionsComponent),
               },
               {
                 path: 'sold',
