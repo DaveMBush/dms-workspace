@@ -262,6 +262,7 @@ In Progress - Component structure matches RMS app layout, all validations passin
   - Setting `table-layout: fixed` on the table to constrain columns to viewport width
   - Changing `.virtual-scroll-viewport` to `overflow-y: auto` and `overflow-x: hidden`
   - Changing `.content-panel` in shell.scss to `overflow-y: auto` and `overflow-x: hidden`
+- Added e2e tests covering the table shell, column headers, and add-position button visibility
 - All validation commands passing (lint, test, build)
 
 ### Debug Log References

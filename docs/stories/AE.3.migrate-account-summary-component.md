@@ -246,6 +246,7 @@ None
 6. All tests passing
 7. All validation commands pass
 8. Updated app.routes.ts to load SummaryComponent instead of placeholder AccountSummary
+9. Added e2e tests verifying chart visibility and total value stat
 
 ### Status
 
