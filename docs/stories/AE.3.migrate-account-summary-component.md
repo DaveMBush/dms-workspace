@@ -201,6 +201,7 @@ Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.
 - [x] Create SCSS file
 - [x] Verify tests pass
 - [x] Wire component into routing
+- [x] Create E2E tests
 
 ### Agent Model Used
 
@@ -222,6 +223,7 @@ None
 - Line chart displays 3 datasets: Base, Capital Gains, Dividends (as per original RMS)
 - Fixed height cascade issue by adding :host styling to AccountDetailComponent and AccountPanelComponent
 - Layout now properly fills height from tabs to bottom without scrollbar
+- E2E tests added for chart visibility and total value display
 - Chart fills full available height as expected
 
 ### File List
@@ -244,6 +246,7 @@ None
 6. All tests passing
 7. All validation commands pass
 8. Updated app.routes.ts to load SummaryComponent instead of placeholder AccountSummary
+9. Added e2e tests verifying chart visibility and total value stat
 
 ### Status
 

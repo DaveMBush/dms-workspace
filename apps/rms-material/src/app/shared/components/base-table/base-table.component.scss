@@ -3,11 +3,13 @@
   height: 100%;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .virtual-scroll-viewport {
   flex: 1;
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 mat-progress-bar {
@@ -20,6 +22,7 @@ mat-progress-bar {
 
 table {
   width: 100%;
+  table-layout: fixed;
 }
 
 tr.mat-mdc-row {
