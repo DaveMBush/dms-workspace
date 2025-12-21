@@ -1,0 +1,24 @@
+schema: 1
+story: 'AE.4'
+gate: FAIL
+status_reason: 'Acceptance criteria not met - data binding, editable cells, and actions not implemented'
+reviewer: 'Quinn'
+updated: '2025-12-21T12:00:00Z'
+top_issues:
+  - id: 'REQ-001'
+    severity: high
+    finding: 'Open positions data not displayed - SmartNgRX trades signal not wired'
+    suggested_action: 'Implement data binding with selectTrades signal'
+  - id: 'REQ-002'
+    severity: high
+    finding: 'Editable cells not functional - EditableCellComponent and EditableDateCellComponent not integrated'
+    suggested_action: 'Integrate editable cell components from AC.2 and AC.3'
+  - id: 'REQ-003'
+    severity: medium
+    finding: 'Add and sell position actions not implemented'
+    suggested_action: 'Implement add position and sell position dialog actions'
+  - id: 'REQ-004'
+    severity: low
+    finding: 'Component uses SCSS instead of Tailwind CSS for layout'
+    suggested_action: 'Migrate styling to Tailwind CSS or update acceptance criteria'
+waiver: { active: false }

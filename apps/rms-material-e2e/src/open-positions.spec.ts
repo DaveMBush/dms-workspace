@@ -1,0 +1,43 @@
+import { test, expect } from 'playwright/test';
+
+import { login } from './helpers/login.helper';
+
+test.describe('Open Positions', () => {
+  test.beforeEach(async ({ page }) => {
+    await login(page);
+    // Navigate to open positions tab
+    await page.goto('/account/1677e04f-ef9b-4372-adb3-b740443088dc/open');
+  });
+
+  test('should display open positions table', async ({ page }) => {
+    const table = page.locator('rms-base-table');
+    await expect(table).toBeVisible();
+  });
+
+  test('should display table columns', async ({ page }) => {
+    // Check for specific column headers
+    const symbolHeader = page.locator('th', { hasText: 'Symbol' });
+    await expect(symbolHeader).toBeVisible();
+
+    const quantityHeader = page.locator('th', { hasText: 'Quantity' });
+    await expect(quantityHeader).toBeVisible();
+
+    const buyHeader = page.locator('th', { hasText: 'Buy' });
+    await expect(buyHeader).toBeVisible();
+  });
+
+  test('should display add position button', async ({ page }) => {
+    const addButton = page.locator('button[mat-icon-button]', {
+      hasText: 'add',
+    }); // Adjust based on actual icon/button
+    await expect(addButton).toBeVisible();
+  });
+
+  // TODO: Add more tests once functionality is implemented
+  // - Inline editing tests
+  // - Add position dialog tests
+  // - Sell position tests
+  // - Sorting tests
+  // - Validation tests
+  // - Edge case tests
+});
