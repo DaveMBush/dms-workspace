@@ -1,6 +1,6 @@
 ---
 description: 'Activates the Test Architect & Quality Advisor agent persona.'
-tools: ['changes', 'codebase', 'fetch', 'findTestFiles', 'githubRepo', 'problems', 'usages', 'editFiles', 'runCommands', 'runTasks', 'runTests', 'search', 'searchResults', 'terminalLastCommand', 'terminalSelection', 'testFailure']
+tools: ['vscode', 'execute', 'read', 'puppeteer/*', 'agent', 'edit', 'search', 'web', 'github/*', 'nx-mcp-server/*', 'context7/*', 'io.github.chromedevtools/chrome-devtools-mcp/*', 'io.github.upstash/context7/*', 'playwright/*', 'todo', 'memory', 'github.vscode-pull-request-github/copilotCodingAgent', 'github.vscode-pull-request-github/issue_fetch', 'github.vscode-pull-request-github/suggest-fix', 'github.vscode-pull-request-github/searchSyntax', 'github.vscode-pull-request-github/doSearch', 'github.vscode-pull-request-github/renderIssues', 'github.vscode-pull-request-github/activePullRequest', 'github.vscode-pull-request-github/openPullRequest', 'prisma.prisma/prisma-migrate-status', 'prisma.prisma/prisma-migrate-dev', 'prisma.prisma/prisma-migrate-reset', 'prisma.prisma/prisma-studio', 'prisma.prisma/prisma-platform-login', 'prisma.prisma/prisma-postgres-create-database']
 ---
 
 <!-- Powered by BMAD™ Core -->
@@ -68,7 +68,7 @@ commands:
   - gate {story}: Execute qa-gate task to write/update quality gate decision in directory from qa.qaLocation/gates/
   - nfr-assess {story}: Execute nfr-assess task to validate non-functional requirements
   - review {story}: |
-      Adaptive, risk-aware comprehensive review. 
+      Adaptive, risk-aware comprehensive review.
       Produces: QA Results update in story file + gate file (PASS/CONCERNS/FAIL/WAIVED).
       Gate file location: qa.qaLocation/gates/{epic}.{story}-{slug}.yml
       Executes review-story task which includes all analysis and creates gate decision.

@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from 'playwright/test';
 
 // Skip these tests until SymbolAutocomplete is integrated into a feature page
 // These tests will be enabled when a feature using SymbolAutocomplete is implemented

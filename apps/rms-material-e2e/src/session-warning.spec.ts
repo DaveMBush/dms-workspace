@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from 'playwright/test';
 
 // FIX: These tests require a mechanism to trigger the session warning dialog
 // Currently, the dialog is only shown automatically before session timeout,

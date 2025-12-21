@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from 'playwright/test';
 
 test.describe('Symbol Filter Header Component', () => {
   test.beforeEach(async ({ page }) => {
