@@ -1,9 +1,7 @@
 :host {
   display: flex;
   flex-direction: column;
+  width: 100%;
   height: 100%;
-}
-
-.account-detail-container {
-  @apply flex flex-col h-full;
+  overflow: hidden;
 }

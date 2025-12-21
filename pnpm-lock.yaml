@@ -326,6 +326,9 @@ importers:
       nx:
         specifier: 21.4.1
         version: 21.4.1(@swc-node/register@1.9.2(@swc/core@1.5.29(@swc/helpers@0.5.17))(@swc/types@0.1.23)(typescript@5.8.3))(@swc/core@1.5.29(@swc/helpers@0.5.17))
+      playwright:
+        specifier: ^1.57.0
+        version: 1.57.0
       postcss:
         specifier: ^8.4.35
         version: 8.4.35
@@ -12649,10 +12652,26 @@ packages:
     engines: { node: '>=18' }
     hasBin: true
 
+  playwright-core@1.57.0:
+    resolution:
+      {
+        integrity: sha512-agTcKlMw/mjBWOnD6kFZttAAGHgi/Nw0CZ2o6JqWSbMlI219lAFLZZCyqByTsvVAJq5XA5H8cA6PrvBRpBWEuQ==,
+      }
+    engines: { node: '>=18' }
+    hasBin: true
+
   playwright@1.53.0:
     resolution:
       {
         integrity: sha512-ghGNnIEYZC4E+YtclRn4/p6oYbdPiASELBIYkBXfaTVKreQUYbMUYQDwS12a8F0/HtIjr/CkGjtwABeFPGcS4Q==,
+      }
+    engines: { node: '>=18' }
+    hasBin: true
+
+  playwright@1.57.0:
+    resolution:
+      {
+        integrity: sha512-ilYQj1s8sr2ppEJ2YVadYBN0Mb3mdo9J0wQ+UuDhzYqURwSoW4n1Xs5vs7ORwgDGmyEh33tRMeS8KhdkMoLXQw==,
       }
     engines: { node: '>=18' }
     hasBin: true
@@ -25846,9 +25865,17 @@ snapshots:
 
   playwright-core@1.53.0: {}
 
+  playwright-core@1.57.0: {}
+
   playwright@1.53.0:
     dependencies:
       playwright-core: 1.53.0
+    optionalDependencies:
+      fsevents: 2.3.2
+
+  playwright@1.57.0:
+    dependencies:
+      playwright-core: 1.57.0
     optionalDependencies:
       fsevents: 2.3.2
 
