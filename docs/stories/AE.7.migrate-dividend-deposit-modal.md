@@ -23,6 +23,8 @@
 ### Functional Requirements
 
 - [ ] **CRITICAL** All GUI look as close to the existing RMS app as possible
+- [ ] **CRITICAL** Use the playwright mcp server to verify that the new screen matches the existing screen in terms of layout and functionality, but not necessarily pixel-perfect visual design.
+- [ ] **CRITICAL** Use the playwright mcp server to check for
 - [ ] Modal opens for add/edit mode
 - [ ] Symbol selection (autocomplete or select)
 - [ ] Date inputs for ex-date and pay-date

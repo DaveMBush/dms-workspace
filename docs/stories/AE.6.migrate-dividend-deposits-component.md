@@ -25,6 +25,8 @@
 ### Functional Requirements
 
 - [ ] **CRITICAL** All GUI look as close to the existing RMS app as possible
+- [ ] **CRITICAL** Use the playwright mcp server to verify that the new screen matches the existing screen in terms of layout and functionality, but not necessarily pixel-perfect visual design.
+- [ ] **CRITICAL** Use the playwright mcp server to check for
 - [ ] Dividend deposits display in table
 - [ ] Virtual scrolling renders only visible rows
 - [ ] Lazy loading fetches more data on scroll

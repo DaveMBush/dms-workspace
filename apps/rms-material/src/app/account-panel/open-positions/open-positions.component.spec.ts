@@ -18,7 +18,9 @@ describe('OpenPositionsComponent', () => {
 
   it('should define columns', () => {
     expect(component.columns.length).toBeGreaterThan(0);
-    expect(component.columns.find((c) => c.field === 'universeId')).toBeTruthy();
+    expect(
+      component.columns.find((c) => c.field === 'universeId')
+    ).toBeTruthy();
   });
 
   it('should have editable quantity column', () => {

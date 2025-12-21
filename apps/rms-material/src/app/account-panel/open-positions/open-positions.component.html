@@ -1,7 +1,11 @@
 <rms-base-table [columns]="columns">
   <ng-template #filterRowTemplate let-column>
     @if (column.field === 'universeId') {
-    <mat-form-field appearance="outline" class="w-full max-w-[120px]" subscriptSizing="dynamic">
+    <mat-form-field
+      appearance="outline"
+      class="w-full max-w-[120px]"
+      subscriptSizing="dynamic"
+    >
       <input
         matInput
         type="text"
