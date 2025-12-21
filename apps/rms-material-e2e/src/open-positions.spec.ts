@@ -16,13 +16,13 @@ test.describe('Open Positions', () => {
 
   test('should display table columns', async ({ page }) => {
     // Check for specific column headers
-    const symbolHeader = page.locator('th', { hasText: 'Symbol' });
+    const symbolHeader = page.getByRole('columnheader', { name: 'Symbol' });
     await expect(symbolHeader).toBeVisible();
 
-    const quantityHeader = page.locator('th', { hasText: 'Quantity' });
+    const quantityHeader = page.getByRole('columnheader', { name: 'Quantity' });
     await expect(quantityHeader).toBeVisible();
 
-    const buyHeader = page.locator('th', { hasText: 'Buy' });
+    const buyHeader = page.locator('th.mat-column-buy');
     await expect(buyHeader).toBeVisible();
   });
 

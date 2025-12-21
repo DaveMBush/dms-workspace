@@ -20,8 +20,12 @@ test.describe('Account Summary', () => {
   });
 
   test('should display total value statistic', async ({ page }) => {
-    const totalValue = page.locator('.total-value'); // Adjust selector based on actual implementation
-    await expect(totalValue).toBeVisible();
-    await expect(totalValue).toContainText('$'); // Assuming it shows currency
+    const totalValueLabel = page.getByText('Total Value');
+    await expect(totalValueLabel).toBeVisible();
+    const totalValueAmount = totalValueLabel
+      .locator('..')
+      .locator('span')
+      .nth(1);
+    await expect(totalValueAmount).toContainText('$');
   });
 });
