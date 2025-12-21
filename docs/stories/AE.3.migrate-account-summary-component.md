@@ -188,3 +188,73 @@ When this story is complete, ensure the following e2e tests exist in `apps/rms-m
 - [ ] Historical performance data handles missing data points
 
 Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.
+
+---
+
+## Dev Agent Record
+
+### Tasks
+
+- [x] Create test file with TDD approach
+- [x] Create TypeScript component file
+- [x] Create HTML template
+- [x] Create SCSS file
+- [x] Verify tests pass
+- [x] Wire component into routing
+
+### Agent Model Used
+
+- Claude Sonnet 4.5
+
+### Debug Log References
+
+None
+
+### Completion Notes
+
+- Component created following TDD approach
+- Tests passing with mocked SmartNgRX selectors
+- Using placeholder data for now (will be replaced with real account data)
+- Charts rendering via summary-display component from AC.6
+- All validation commands pass (lint, build, test, dupcheck, format)
+- Component wired into app routes at `/account/:accountId` path
+- Replaces placeholder AccountSummary component
+- Line chart displays 3 datasets: Base, Capital Gains, Dividends (as per original RMS)
+- Fixed height cascade issue by adding :host styling to AccountDetailComponent and AccountPanelComponent
+- Layout now properly fills height from tabs to bottom without scrollbar
+- Chart fills full available height as expected
+
+### File List
+
+- `apps/rms-material/src/app/account-panel/summary/summary.component.ts` - Created
+- `apps/rms-material/src/app/account-panel/summary/summary.component.html` - Created
+- `apps/rms-material/src/app/account-panel/summary/summary.component.scss` - Created
+- `apps/rms-material/src/app/account-panel/summary/summary.component.spec.ts` - Created
+- `apps/rms-material/src/app/app.routes.ts` - Modified (updated route to use new component)
+- `apps/rms-material/src/app/account-panel/account-detail.component.scss` - Modified (added :host styling)
+- `apps/rms-material/src/app/account-panel/account-panel.component.scss` - Modified (added :host styling)
+
+### Change Log
+
+1. Created summary component directory and files
+2. Implemented component with placeholder data
+3. Added tests with mocked selectors
+4. Fixed lint errors (added ChangeDetectionStrategy, named functions, import sorting)
+5. Fixed template to use getters instead of direct signal calls
+6. All tests passing
+7. All validation commands pass
+8. Updated app.routes.ts to load SummaryComponent instead of placeholder AccountSummary
+
+### Status
+
+Ready for Review
+
+## QA Results
+
+### Review Date: 2025-12-21
+
+### Reviewed By: Quinn (Test Architect)
+
+### Gate Status
+
+Gate: PASS → docs/qa/gates/AE.3-migrate-account-summary-component.yml
