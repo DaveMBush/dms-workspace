@@ -1,0 +1,12 @@
+schema: 1
+story: AE.5
+gate: CONCERNS
+status_reason: 'Component functionally complete with comprehensive testing, but SmartNgRX integration pending as technical requirement not fully met.'
+reviewer: Quinn
+updated: '2025-12-22T12:00:00Z'
+top_issues:
+  - id: 'TECH-001'
+    severity: medium
+    finding: 'SmartNgRX trades signal integration not implemented'
+    suggested_action: 'Complete SmartNgRX integration for sold positions data loading'
+waiver: { active: false }
