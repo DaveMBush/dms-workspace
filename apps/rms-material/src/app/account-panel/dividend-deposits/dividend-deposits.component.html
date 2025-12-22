@@ -1,0 +1,16 @@
+<rms-base-table
+  [columns]="columns"
+  [rowHeight]="48"
+  [bufferSize]="20"
+  (rowClick)="onEditDividend($event)"
+>
+  <ng-template #cellTemplate let-row let-column="column">
+    @switch (column.type) { @case ('currency') {
+    {{ row[column.field] | currency }}
+    } @case ('date') {
+    {{ row[column.field] | date : 'MM/dd/yyyy' }}
+    } @default {
+    {{ row[column.field] }}
+    } }
+  </ng-template>
+</rms-base-table>

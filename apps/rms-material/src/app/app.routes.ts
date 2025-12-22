@@ -120,9 +120,9 @@ export const appRoutes: Route[] = [
               {
                 path: 'div-dep',
                 loadComponent: async () =>
-                  import('./accounts/dividend-deposits/dividend-deposits').then(
-                    (m) => m.DividendDeposits
-                  ),
+                  import(
+                    './account-panel/dividend-deposits/dividend-deposits.component'
+                  ).then((m) => m.DividendDepositsComponent),
               },
             ],
           },
