@@ -113,9 +113,9 @@ export const appRoutes: Route[] = [
               {
                 path: 'sold',
                 loadComponent: async () =>
-                  import('./accounts/sold-positions/sold-positions').then(
-                    (m) => m.SoldPositions
-                  ),
+                  import(
+                    './account-panel/sold-positions/sold-positions.component'
+                  ).then((m) => m.SoldPositionsComponent),
               },
               {
                 path: 'div-dep',
