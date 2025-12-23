@@ -1,5 +1,5 @@
 ---
-model: GPT-5.1-Codex-Mini (Preview) (copilot)
+model: Claude Sonnet 4.5 (copilot)
 agent: dev
 ---
 
