@@ -16,6 +16,7 @@ import { ConfirmDialogService } from '../../shared/services/confirm-dialog.servi
 import { NotificationService } from '../../shared/services/notification.service';
 import { DivDeposit } from '../../store/div-deposits/div-deposit.interface';
 import { selectDivDepositEntity } from '../../store/div-deposits/div-deposits.selectors';
+import { DivDepModal } from '../div-dep-modal/div-dep-modal.component';
 
 @Component({
   selector: 'rms-dividend-deposits',
@@ -59,8 +60,7 @@ export class DividendDepositsComponent implements AfterViewInit {
 
   onAddDividend(): void {
     const context = this;
-    // FUTURE: Create DivDepModal component
-    const dialogRef = this.dialog.open(null as never, {
+    const dialogRef = this.dialog.open(DivDepModal, {
       width: '500px',
       data: { mode: 'add' },
     });
@@ -75,8 +75,7 @@ export class DividendDepositsComponent implements AfterViewInit {
 
   onEditDividend(dividend: DivDeposit): void {
     const context = this;
-    // FUTURE: Create DivDepModal component
-    const dialogRef = this.dialog.open(null as never, {
+    const dialogRef = this.dialog.open(DivDepModal, {
       width: '500px',
       data: { mode: 'edit', dividend },
     });
