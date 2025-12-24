@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { MatDialog } from '@angular/material/dialog';
 import { Sort } from '@angular/material/sort';
+import { provideSmartNgRX } from '@smarttools/smart-signals';
 import { of, throwError } from 'rxjs';
 
 import { NotificationService } from '../../shared/services/notification.service';
@@ -16,6 +18,24 @@ vi.mock('../../store/universe/selectors/select-universes.function', () => ({
 vi.mock('../../store/accounts/selectors/select-accounts.function', () => ({
   selectAccounts: vi.fn().mockReturnValue([]),
 }));
+
+vi.mock('../../store/top/selectors/select-top-entities.function', () => ({
+  selectTopEntities: vi.fn().mockReturnValue({ entities: {}, ids: [] }),
+}));
+
+vi.mock(
+  '../../store/risk-group/selectors/select-risk-group-entities.function',
+  () => ({
+    selectRiskGroupEntities: vi.fn().mockReturnValue({ entities: {}, ids: [] }),
+  })
+);
+
+vi.mock(
+  '../../store/risk-group/selectors/select-risk-group-entity.function',
+  () => ({
+    selectRiskGroupEntity: vi.fn().mockReturnValue({ id: '', name: '' }),
+  })
+);
 
 describe('GlobalUniverseComponent', () => {
   let component: GlobalUniverseComponent;
@@ -54,6 +74,7 @@ describe('GlobalUniverseComponent', () => {
     await TestBed.configureTestingModule({
       imports: [GlobalUniverseComponent, NoopAnimationsModule],
       providers: [
+        provideSmartNgRX(),
         { provide: UniverseSyncService, useValue: mockSyncService },
         { provide: NotificationService, useValue: mockNotification },
       ],
@@ -194,10 +215,21 @@ describe('GlobalUniverseComponent', () => {
   });
 
   describe('showAddSymbolDialog', () => {
-    it('should show info notification (placeholder)', () => {
+    it('should open the AddSymbolDialog', () => {
+      const mockDialogRef = {
+        afterClosed: vi.fn().mockReturnValue(of(null)),
+      };
+      const dialogSpy = vi
+        .spyOn(TestBed.inject(MatDialog), 'open')
+        .mockReturnValue(mockDialogRef as any);
+
       component.showAddSymbolDialog();
-      expect(mockNotification.info).toHaveBeenCalledWith(
-        expect.stringContaining('not yet implemented')
+
+      expect(dialogSpy).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({
+          width: '400px',
+        })
       );
     });
   });

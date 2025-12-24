@@ -6,6 +6,7 @@ import { ShellComponent } from './shell/shell.component';
 import { accountsDefinition } from './store/accounts/accounts-definition.const';
 import { divDepositTypesDefinition } from './store/div-deposit-types/div-deposit-types-definition.const';
 import { divDepositDefinition } from './store/div-deposits/div-deposit-definition.const';
+import { riskGroupDefinition } from './store/risk-group/risk-group-definition.const';
 import { screenDefinition } from './store/screen/screen-definition.const';
 import { topDefinition } from './store/top/top-definition.const';
 import { tradesDefinition } from './store/trades/trades-definition.const';
@@ -22,6 +23,7 @@ export const appRoutes: Route[] = [
         accountsDefinition,
         universeDefinition,
         screenDefinition,
+        riskGroupDefinition,
       ]),
     ],
     children: [
