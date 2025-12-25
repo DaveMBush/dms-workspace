@@ -26,9 +26,12 @@ Ensure that risk group data is properly initialized and validated when the top r
 
 ## Stories
 
-1. **Story AG.1:** Integrate risk group validation into top route handler
-2. **Story AG.2:** Add unit tests for risk group initialization in top route
-3. **Story AG.3:** Add e2e tests verifying risk groups load correctly
+1. **Story AG.1:** Integrate risk group validation into top route handler (includes comprehensive unit tests via TDD)
+2. **Story AG.2:** Add e2e tests verifying risk groups load correctly
+
+## Story Count
+
+2 stories (reduced from 3 by incorporating unit tests into AG.1's TDD approach)
 
 ## Dependencies
 

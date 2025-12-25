@@ -35,25 +35,115 @@
 
 ## Test-Driven Development Approach
 
-### Step 1: Create Unit Tests First
+### Step 1: Create Comprehensive Unit Tests First
 
 Create/update `apps/server/src/app/routes/top/index.spec.ts`:
 
 ```typescript
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
+import { ensureRiskGroupsExist } from '../settings/common/ensure-risk-groups-exist.function';
+
+vi.mock('../settings/common/ensure-risk-groups-exist.function');
 
 describe('Top Route Handler', () => {
-  describe('POST /', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  describe('POST / - Risk Group Validation', () => {
     it('should call ensureRiskGroupsExist before loading data', async () => {
-      // Test implementation
+      const mockEnsure = vi.mocked(ensureRiskGroupsExist);
+      mockEnsure.mockResolvedValueOnce([
+        { id: '1', name: 'Equities' },
+        { id: '2', name: 'Income' },
+        { id: '3', name: 'Tax Free Income' },
+      ]);
+
+      // Call top route handler
+      // Verify ensureRiskGroupsExist was called
+      expect(mockEnsure).toHaveBeenCalledTimes(1);
     });
 
     it('should return risk groups in response', async () => {
-      // Test implementation
+      const mockEnsure = vi.mocked(ensureRiskGroupsExist);
+      mockEnsure.mockResolvedValueOnce([
+        { id: '1', name: 'Equities' },
+        { id: '2', name: 'Income' },
+        { id: '3', name: 'Tax Free Income' },
+      ]);
+
+      // Call top route
+      // Verify response contains risk group IDs
     });
 
-    it('should handle ensureRiskGroupsExist failures gracefully', async () => {
-      // Test implementation
+    it('should handle ensureRiskGroupsExist failure gracefully', async () => {
+      const mockEnsure = vi.mocked(ensureRiskGroupsExist);
+      mockEnsure.mockRejectedValueOnce(new Error('Database connection failed'));
+
+      // Call top route
+      // Verify proper error response
+      // Verify error is logged
+    });
+
+    it('should proceed normally when risk groups already exist', async () => {
+      const mockEnsure = vi.mocked(ensureRiskGroupsExist);
+      mockEnsure.mockResolvedValueOnce([
+        { id: '1', name: 'Equities' },
+        { id: '2', name: 'Income' },
+        { id: '3', name: 'Tax Free Income' },
+      ]);
+
+      // Verify no additional database calls for creating groups
+      expect(mockEnsure).toHaveBeenCalledTimes(1);
+    });
+
+    it('should log risk group initialization', async () => {
+      const mockEnsure = vi.mocked(ensureRiskGroupsExist);
+      const mockLogger = vi.fn();
+
+      mockEnsure.mockResolvedValueOnce([
+        { id: '1', name: 'Equities' },
+        { id: '2', name: 'Income' },
+        { id: '3', name: 'Tax Free Income' },
+      ]);
+
+      // Call route
+      // Verify logging occurred
+    });
+  });
+
+  describe('Edge Cases', () => {
+    it('should handle partial risk group creation', async () => {
+      const mockEnsure = vi.mocked(ensureRiskGroupsExist);
+      mockEnsure.mockResolvedValueOnce([
+        { id: '1', name: 'Equities' },
+        { id: '2', name: 'Income' },
+      ]);
+
+      // Verify warning is logged about missing group
+    });
+
+    it('should handle network timeout during risk group check', async () => {
+      const mockEnsure = vi.mocked(ensureRiskGroupsExist);
+      mockEnsure.mockImplementationOnce(() => new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 100)));
+
+      // Verify timeout is handled gracefully
+    });
+
+    it('should handle concurrent top route calls', async () => {
+      const mockEnsure = vi.mocked(ensureRiskGroupsExist);
+      mockEnsure.mockResolvedValue([
+        { id: '1', name: 'Equities' },
+        { id: '2', name: 'Income' },
+        { id: '3', name: 'Tax Free Income' },
+      ]);
+
+      // Make multiple concurrent calls
+      // Verify all succeed without race conditions
     });
   });
 });
@@ -88,6 +178,14 @@ export default function registerTopRoutes(fastify: FastifyInstance): void {
 pnpm nx test server
 ```
 
+### Step 4.5: Verify Coverage
+
+```bash
+pnpm nx test server --coverage
+```
+
+Verify >80% coverage for top route handler.
+
 ### Step 5: Manual Testing
 
 ```bash
@@ -121,8 +219,9 @@ curl -X POST http://localhost:3000/api/top -H "Content-Type: application/json" -
 
 ## Definition of Done
 
-- [ ] Unit tests created and passing
-- [ ] Implementation complete
+- [ ] Comprehensive unit tests created (>80% coverage)
+- [ ] All tests passing (success, failure, edge cases)
+- [ ] Implementation complete with error handling and logging
 - [ ] All existing tests still pass
 - [ ] Lint passes
 - [ ] Manual testing confirms risk groups created

@@ -1,4 +1,4 @@
-# Story AH.6: Add End-to-End Tests for Account CRUD Operations
+# Story AH.5: Add End-to-End Tests for Account CRUD Operations
 
 ## Story
 
@@ -11,6 +11,7 @@
 **Current System:**
 
 - RMS app has Playwright E2E tests for account operations
+- AH.1-4 implemented account CRUD with comprehensive unit tests via TDD
 - Tests verify complete user workflows from start to finish
 - Tests run against real backend with database
 - Tests verify UI rendering and user interactions

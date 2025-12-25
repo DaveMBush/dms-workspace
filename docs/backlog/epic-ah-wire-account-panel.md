@@ -28,12 +28,15 @@ Enable users to add, edit, and delete accounts in the RMS-MATERIAL application b
 
 ## Stories
 
-1. **Story AH.1:** Wire account list to backend via SmartNgRX
-2. **Story AH.2:** Implement add account functionality with inline editing
-3. **Story AH.3:** Implement edit account name functionality
-4. **Story AH.4:** Implement delete account functionality
-5. **Story AH.5:** Add unit tests for account operations
-6. **Story AH.6:** Add e2e tests for account CRUD operations
+1. **Story AH.1:** Wire account list to backend via SmartNgRX (includes comprehensive unit tests via TDD)
+2. **Story AH.2:** Implement add account functionality with inline editing (includes comprehensive unit tests via TDD)
+3. **Story AH.3:** Implement edit account name functionality (includes comprehensive unit tests via TDD)
+4. **Story AH.4:** Implement delete account functionality (includes comprehensive unit tests via TDD)
+5. **Story AH.5:** Add e2e tests for account CRUD operations
+
+## Story Count
+
+5 stories (reduced from 6 by incorporating unit tests into each story's TDD approach)
 
 ## Dependencies
 

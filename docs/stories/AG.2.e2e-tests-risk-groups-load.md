@@ -1,4 +1,4 @@
-# Story AG.3: Add E2E Tests Verifying Risk Groups Load Correctly
+# Story AG.2: Add E2E Tests Verifying Risk Groups Load Correctly
 
 ## Story
 
@@ -10,8 +10,7 @@
 
 **Current System:**
 
-- AG.1 integrated risk group validation
-- AG.2 added unit tests
+- AG.1 integrated risk group validation with comprehensive unit tests
 - Need E2E tests to verify integration works end-to-end
 
 **Testing Target:**
