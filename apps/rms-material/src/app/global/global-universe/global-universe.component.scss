@@ -70,6 +70,28 @@
       --mdc-outlined-text-field-container-shape: 4px;
     }
 
+    // Ensure complete border on all sides for outline appearance
+    .mdc-notched-outline__leading {
+      border-left: 1px solid rgba(0, 0, 0, 0.38);
+      border-top: 1px solid rgba(0, 0, 0, 0.38);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.38);
+      border-right: none;
+    }
+
+    .mdc-notched-outline__notch {
+      border-top: 1px solid rgba(0, 0, 0, 0.38);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.38);
+      border-left: none;
+      border-right: none;
+    }
+
+    .mdc-notched-outline__trailing {
+      border-right: 1px solid rgba(0, 0, 0, 0.38);
+      border-top: 1px solid rgba(0, 0, 0, 0.38);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.38);
+      border-left: none;
+    }
+
     input.mat-mdc-input-element {
       font-size: 12px;
     }
@@ -78,6 +100,11 @@
       font-size: 12px;
     }
   }
+}
+
+// Fix for filter row cells to prevent clipping of form field borders
+::ng-deep tr.filter-row th.mat-mdc-header-cell {
+  overflow: visible;
 }
 
 .table-wrapper {
