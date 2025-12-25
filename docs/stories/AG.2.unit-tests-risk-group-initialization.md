@@ -9,11 +9,13 @@
 ## Context
 
 **Current System:**
+
 - AG.1 integrated `ensureRiskGroupsExist()` into top route
 - Need comprehensive test coverage for this integration
 - Tests should cover success, failure, and edge cases
 
 **Testing Target:**
+
 - Unit tests for top route handler with risk group validation
 - Mock risk group service calls
 - Verify proper error handling
@@ -105,7 +107,7 @@ describe('Top Route Handler', () => {
     it('should log risk group initialization', async () => {
       const mockEnsure = vi.mocked(ensureRiskGroupsExist);
       const mockLogger = vi.fn();
-      
+
       mockEnsure.mockResolvedValueOnce([
         { id: '1', name: 'Equities' },
         { id: '2', name: 'Income' },
@@ -130,11 +132,7 @@ describe('Top Route Handler', () => {
 
     it('should handle network timeout during risk group check', async () => {
       const mockEnsure = vi.mocked(ensureRiskGroupsExist);
-      mockEnsure.mockImplementationOnce(() => 
-        new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Timeout')), 100)
-        )
-      );
+      mockEnsure.mockImplementationOnce(() => new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 100)));
 
       // Verify timeout is handled gracefully
     });
@@ -165,6 +163,7 @@ Tests should fail initially as the implementation may not be complete.
 ### Step 3: Refine Implementation Based on Test Failures
 
 Review test failures and update `apps/server/src/app/routes/top/index.ts` as needed:
+
 - Add proper error handling
 - Add logging
 - Ensure risk groups are included in response
@@ -210,15 +209,15 @@ Verify >80% coverage for top route handler.
 
 ## Files Modified
 
-| File                                            | Changes                       |
-| ----------------------------------------------- | ----------------------------- |
+| File                                           | Changes                        |
+| ---------------------------------------------- | ------------------------------ |
 | `apps/server/src/app/routes/top/index.spec.ts` | Added comprehensive unit tests |
 | `apps/server/src/app/routes/top/index.ts`      | Refined error handling/logging |
 
 ## Definition of Done
 
 - [ ] All unit tests created and passing
-- [ ] >80% code coverage achieved
+- [ ] > 80% code coverage achieved
 - [ ] Success and failure paths tested
 - [ ] Edge cases covered
 - [ ] Logging verified

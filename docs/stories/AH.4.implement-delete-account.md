@@ -9,12 +9,14 @@
 ## Context
 
 **Current System:**
+
 - RMS app has delete button/icon for accounts
 - Confirmation dialog prevents accidental deletion
 - Deletion removes account and all associated data
 - Uses SmartNgRX removeFromStore
 
 **Migration Target:**
+
 - Replicate RMS delete in RMS-MATERIAL
 - Use Material Design dialog for confirmation
 - Integrate with SmartNgRX deletion
@@ -57,16 +59,16 @@ describe('Account - Delete Functionality', () => {
 
   it('should have delete button for each account', () => {
     fixture.detectChanges();
-    
+
     const deleteButtons = fixture.nativeElement.querySelectorAll('.delete-account-button');
     expect(deleteButtons.length).toBeGreaterThan(0);
   });
 
   it('should open confirmation dialog on delete click', () => {
     const account = { id: '123', name: 'Test Account' } as AccountInterface;
-    
+
     component.deleteAccount(account);
-    
+
     expect(dialogSpy).toHaveBeenCalled();
   });
 
@@ -74,12 +76,12 @@ describe('Account - Delete Functionality', () => {
     const account = { id: '123', name: 'Test Account' } as AccountInterface;
     const mockRemoveFromStore = vi.fn();
     (component.accounts$ as any).removeFromStore = mockRemoveFromStore;
-    
+
     component.deleteAccount(account);
-    
+
     // Wait for dialog to close
     await fixture.whenStable();
-    
+
     expect(mockRemoveFromStore).toHaveBeenCalledWith(account, component.top['1']);
   });
 
@@ -87,36 +89,36 @@ describe('Account - Delete Functionality', () => {
     dialogSpy.mockReturnValue({
       afterClosed: () => of(false),
     } as any);
-    
+
     const account = { id: '123', name: 'Test Account' } as AccountInterface;
     const mockRemoveFromStore = vi.fn();
     (component.accounts$ as any).removeFromStore = mockRemoveFromStore;
-    
+
     component.deleteAccount(account);
-    
+
     await fixture.whenStable();
-    
+
     expect(mockRemoveFromStore).not.toHaveBeenCalled();
   });
 
   it('should navigate away if deleted account is active', async () => {
     const navigateSpy = vi.spyOn(component['router'], 'navigate');
     component['route'].snapshot.params = { accountId: '123' };
-    
+
     const account = { id: '123', name: 'Test Account' } as AccountInterface;
     component.deleteAccount(account);
-    
+
     await fixture.whenStable();
-    
+
     expect(navigateSpy).toHaveBeenCalledWith(['/']);
   });
 
   it('should not allow delete while editing', () => {
     const account = { id: '123', name: 'Test Account' } as AccountInterface;
     component.editingNode.set('123');
-    
+
     component.deleteAccount(account);
-    
+
     expect(dialogSpy).not.toHaveBeenCalled();
   });
 });
@@ -152,17 +154,7 @@ import { ConfirmDialogComponent } from '../shared/components/confirm-dialog/conf
 
 @Component({
   selector: 'rms-account',
-  imports: [
-    RouterLink,
-    RouterLinkActive,
-    MatListModule,
-    MatToolbarModule,
-    MatButtonModule,
-    MatIconModule,
-    MatDividerModule,
-    MatDialogModule,
-    NodeEditorComponent,
-  ],
+  imports: [RouterLink, RouterLinkActive, MatListModule, MatToolbarModule, MatButtonModule, MatIconModule, MatDividerModule, MatDialogModule, NodeEditorComponent],
   templateUrl: './account.html',
   styleUrl: './account.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -171,10 +163,10 @@ export class Account {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private dialog = inject(MatDialog);
-  
+
   accountsList = selectAccounts();
   top = selectTopEntities().entities;
-  
+
   addingNode = signal('');
   editingNode = signal('');
   editingContent = signal('');
@@ -221,38 +213,16 @@ Update `apps/rms-material/src/app/accounts/account.html`:
 </mat-toolbar>
 
 <mat-nav-list>
-  @for (account of accountsList(); track account.id) {
-    @if (addingNode() === account.id || editingNode() === account.id) {
-      <rms-node-editor
-        [placeholder]="addingNode() ? 'New Account' : 'Edit Account'"
-        [(ngModel)]="editingContent"
-        (cancel)="cancelEdit(account)"
-        (save)="saveEdit(account)"
-      />
-    } @else {
-      <mat-list-item
-        [routerLink]="['/account', account.id]"
-        routerLinkActive="active-link"
-        class="account-item"
-      >
-        <span 
-          matListItemTitle 
-          (click)="editAccount(account); $event.stopPropagation()"
-          class="editable-name"
-        >
-          {{ account.name }}
-        </span>
-        <button
-          mat-icon-button
-          (click)="deleteAccount(account); $event.stopPropagation()"
-          class="delete-account-button"
-          matListItemMeta
-        >
-          <mat-icon>delete</mat-icon>
-        </button>
-      </mat-list-item>
-    }
-  }
+  @for (account of accountsList(); track account.id) { @if (addingNode() === account.id || editingNode() === account.id) {
+  <rms-node-editor [placeholder]="addingNode() ? 'New Account' : 'Edit Account'" [(ngModel)]="editingContent" (cancel)="cancelEdit(account)" (save)="saveEdit(account)" />
+  } @else {
+  <mat-list-item [routerLink]="['/account', account.id]" routerLinkActive="active-link" class="account-item">
+    <span matListItemTitle (click)="editAccount(account); $event.stopPropagation()" class="editable-name"> {{ account.name }} </span>
+    <button mat-icon-button (click)="deleteAccount(account); $event.stopPropagation()" class="delete-account-button" matListItemMeta>
+      <mat-icon>delete</mat-icon>
+    </button>
+  </mat-list-item>
+  } }
 </mat-nav-list>
 ```
 
@@ -335,12 +305,12 @@ pnpm nx test rms-material
 
 ## Files Modified
 
-| File                                        | Changes                           |
-| ------------------------------------------- | --------------------------------- |
-| `apps/rms-material/src/app/accounts/account.ts`   | Added deleteAccount() method      |
-| `apps/rms-material/src/app/accounts/account.html` | Added delete button               |
-| `apps/rms-material/src/app/accounts/account.spec.ts` | Added unit tests                  |
-| `apps/rms-material/src/app/shared/components/confirm-dialog/` | Created dialog component         |
+| File                                                          | Changes                      |
+| ------------------------------------------------------------- | ---------------------------- |
+| `apps/rms-material/src/app/accounts/account.ts`               | Added deleteAccount() method |
+| `apps/rms-material/src/app/accounts/account.html`             | Added delete button          |
+| `apps/rms-material/src/app/accounts/account.spec.ts`          | Added unit tests             |
+| `apps/rms-material/src/app/shared/components/confirm-dialog/` | Created dialog component     |
 
 ## Definition of Done
 

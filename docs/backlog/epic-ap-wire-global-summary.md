@@ -10,7 +10,7 @@ Connects Global/Summary screen to backend summary calculations with pie charts.
 
 ## Stories
 
-1. **Story AP.1:** Wire summary component to summary service  
+1. **Story AP.1:** Wire summary component to summary service
 2. **Story AP.2:** Implement pie chart display with ng2-charts
 3. **Story AP.3:** Add month/year selectors
 4. **Story AP.4:** Add unit tests

@@ -9,12 +9,14 @@
 ## Context
 
 **Current System:**
+
 - RMS app has inline account creation with add button
 - Clicking add creates temporary "new" account entry
 - User edits name inline, save commits to backend
 - Uses SmartNgRX addToStore and effect service
 
 **Migration Target:**
+
 - Replicate RMS inline add functionality in RMS-MATERIAL
 - Use Material Design patterns (inline editing, button styling)
 - Integrate with AccountEffectsService.add()
@@ -61,7 +63,7 @@ describe('Account - Add Functionality', () => {
   it('should show inline editor for new account', () => {
     component.addingNode = 'new';
     fixture.detectChanges();
-    
+
     const editor = fixture.nativeElement.querySelector('rms-node-editor');
     expect(editor).toBeTruthy();
   });
@@ -69,21 +71,21 @@ describe('Account - Add Functionality', () => {
   it('should add account to store on save', () => {
     const mockAddToStore = vi.fn();
     component.accounts$.addToStore = mockAddToStore;
-    
+
     component.addAccount();
     component.editingContent = 'My New Account';
     component.saveEdit({ id: 'new', name: 'New Account' } as any);
-    
+
     expect(mockAddToStore).toHaveBeenCalled();
   });
 
   it('should remove temporary account on cancel', () => {
     const mockRemoveFromStore = vi.fn();
     (component.accounts$ as any).removeFromStore = mockRemoveFromStore;
-    
+
     component.addAccount();
     component.cancelEdit({ id: 'new', name: 'New Account' } as any);
-    
+
     expect(mockRemoveFromStore).toHaveBeenCalled();
     expect(component.addingNode).toBe('');
   });
@@ -92,17 +94,17 @@ describe('Account - Add Functionality', () => {
     component.addAccount();
     component.editingContent = '';
     component.saveEdit({ id: 'new', name: '' } as any);
-    
+
     // Should not save empty name
     expect(component.addingNode).toBe('new');
   });
 
   it('should navigate to account after successful add', () => {
     const navigateSpy = vi.spyOn(component['router'], 'navigate');
-    
+
     component.addAccount();
     component.editingContent = 'New Account';
-    
+
     // Simulate successful save
     // Should navigate to new account
   });
@@ -137,26 +139,17 @@ import { NodeEditorComponent } from '../shared/components/node-editor/node-edito
 
 @Component({
   selector: 'rms-account',
-  imports: [
-    RouterLink,
-    RouterLinkActive,
-    MatListModule,
-    MatToolbarModule,
-    MatButtonModule,
-    MatIconModule,
-    MatDividerModule,
-    NodeEditorComponent,
-  ],
+  imports: [RouterLink, RouterLinkActive, MatListModule, MatToolbarModule, MatButtonModule, MatIconModule, MatDividerModule, NodeEditorComponent],
   templateUrl: './account.html',
   styleUrl: './account.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Account {
   private router = inject(Router);
-  
+
   accountsList = selectAccounts();
   top = selectTopEntities().entities;
-  
+
   addingNode = signal('');
   editingNode = signal('');
   editingContent = signal('');
@@ -164,7 +157,7 @@ export class Account {
   addAccount(): void {
     this.addingNode.set('new');
     this.editingContent.set('New Account');
-    
+
     const accounts = this.accountsList() as SmartArray<Top, AccountInterface>;
     accounts.addToStore!(
       {
@@ -182,15 +175,13 @@ export class Account {
     if (this.editingContent() === '') {
       return;
     }
-    
-    const account = this.accountsList().find(
-      (a: AccountInterface) => a.id === item.id
-    );
-    
+
+    const account = this.accountsList().find((a: AccountInterface) => a.id === item.id);
+
     if (account) {
       account.name = this.editingContent();
     }
-    
+
     this.editingNode.set('');
     this.addingNode.set('');
     this.editingContent.set('');
@@ -201,7 +192,7 @@ export class Account {
       const accounts = this.accountsList() as SmartArray<Top, AccountInterface>;
       accounts.removeFromStore!(item, this.top['1']!);
     }
-    
+
     this.addingNode.set('');
     this.editingNode.set('');
     this.editingContent.set('');
@@ -229,23 +220,13 @@ Update `apps/rms-material/src/app/accounts/account.html`:
 </mat-toolbar>
 
 <mat-nav-list>
-  @for (account of accountsList(); track account.id) {
-    @if (addingNode() === account.id || editingNode() === account.id) {
-      <rms-node-editor
-        placeholder="Edit Account"
-        [(ngModel)]="editingContent"
-        (cancel)="cancelEdit(account)"
-        (save)="saveEdit(account)"
-      />
-    } @else {
-      <mat-list-item
-        [routerLink]="['/account', account.id]"
-        routerLinkActive="active-link"
-      >
-        <span matListItemTitle>{{ account.name }}</span>
-      </mat-list-item>
-    }
-  }
+  @for (account of accountsList(); track account.id) { @if (addingNode() === account.id || editingNode() === account.id) {
+  <rms-node-editor placeholder="Edit Account" [(ngModel)]="editingContent" (cancel)="cancelEdit(account)" (save)="saveEdit(account)" />
+  } @else {
+  <mat-list-item [routerLink]="['/account', account.id]" routerLinkActive="active-link">
+    <span matListItemTitle>{{ account.name }}</span>
+  </mat-list-item>
+  } }
 </mat-nav-list>
 ```
 
@@ -286,11 +267,11 @@ pnpm nx test rms-material
 
 ## Files Modified
 
-| File                                        | Changes                           |
-| ------------------------------------------- | --------------------------------- |
-| `apps/rms-material/src/app/accounts/account.ts`   | Added add/save/cancel methods     |
-| `apps/rms-material/src/app/accounts/account.html` | Added add button and inline editor |
-| `apps/rms-material/src/app/accounts/account.spec.ts` | Added unit tests                  |
+| File                                                 | Changes                            |
+| ---------------------------------------------------- | ---------------------------------- |
+| `apps/rms-material/src/app/accounts/account.ts`      | Added add/save/cancel methods      |
+| `apps/rms-material/src/app/accounts/account.html`    | Added add button and inline editor |
+| `apps/rms-material/src/app/accounts/account.spec.ts` | Added unit tests                   |
 
 ## Definition of Done
 

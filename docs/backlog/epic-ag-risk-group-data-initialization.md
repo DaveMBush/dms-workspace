@@ -7,16 +7,19 @@ Ensure that risk group data is properly initialized and validated when the top r
 ## Epic Description
 
 **Existing System Context:**
+
 - Backend has logic to ensure risk groups exist (Equities, Income, Tax Free Income)
 - This logic may not be executing during the top route data load
 - Risk groups are critical for universe management and screener functionality
 
 **Enhancement Details:**
-- Integrate risk group validation into top route loading sequence  
+
+- Integrate risk group validation into top route loading sequence
 - Ensure all required risk groups exist before returning top data
 - Add proper error handling and logging
 
 **Success Criteria:**
+
 - Risk groups always exist when top data is loaded
 - Application handles missing risk groups gracefully
 - Tests verify risk group initialization
@@ -43,6 +46,6 @@ Ensure that risk group data is properly initialized and validated when the top r
 
 - [ ] Risk group validation integrated into top route
 - [ ] Unit tests pass
-- [ ] E2E tests pass  
+- [ ] E2E tests pass
 - [ ] All linting passes
 - [ ] Code reviewed and merged

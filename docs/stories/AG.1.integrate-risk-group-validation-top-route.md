@@ -9,11 +9,13 @@
 ## Context
 
 **Current System:**
+
 - `ensureRiskGroupsExist()` function exists in `apps/server/src/app/routes/settings/common/`
 - Top route handler in `apps/server/src/app/routes/top/index.ts` loads top-level data
 - Risk groups (Equities, Income, Tax Free Income) are required for universe and screener
 
 **Problem:**
+
 - Risk group validation may not be running when needed
 - Missing risk groups cause errors in universe/screener operations
 
@@ -71,15 +73,12 @@ Modify `apps/server/src/app/routes/top/index.ts`:
 import { ensureRiskGroupsExist } from '../settings/common/ensure-risk-groups-exist.function';
 
 export default function registerTopRoutes(fastify: FastifyInstance): void {
-  fastify.post<{ Body: string[]; Reply: Top[] }>(
-    '/',
-    async function handleTopRequest(request, reply): Promise<Top[]> {
-      // Ensure risk groups exist before proceeding
-      await ensureRiskGroupsExist();
+  fastify.post<{ Body: string[]; Reply: Top[] }>('/', async function handleTopRequest(request, reply): Promise<Top[]> {
+    // Ensure risk groups exist before proceeding
+    await ensureRiskGroupsExist();
 
-      // ... rest of existing logic
-    }
-  );
+    // ... rest of existing logic
+  });
 }
 ```
 
@@ -115,10 +114,10 @@ curl -X POST http://localhost:3000/api/top -H "Content-Type: application/json" -
 
 ## Files Modified
 
-| File | Changes |
-|------|---------|
-| `apps/server/src/app/routes/top/index.ts` | Added ensureRiskGroupsExist call |
-| `apps/server/src/app/routes/top/index.spec.ts` | Added unit tests |
+| File                                           | Changes                          |
+| ---------------------------------------------- | -------------------------------- |
+| `apps/server/src/app/routes/top/index.ts`      | Added ensureRiskGroupsExist call |
+| `apps/server/src/app/routes/top/index.spec.ts` | Added unit tests                 |
 
 ## Definition of Done
 

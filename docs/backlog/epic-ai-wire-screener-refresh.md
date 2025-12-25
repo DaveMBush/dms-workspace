@@ -7,17 +7,20 @@ Enable the screener refresh functionality in RMS-MATERIAL to populate universe d
 ## Epic Description
 
 **Existing System Context:**
+
 - RMS app has working screener refresh that calls GET `/api/screener`
 - Screener scrapes CEF data and populates screener table
 - This is critical for getting bulk symbol data
 
 **Enhancement Details:**
+
 - Wire refresh button to screener service
 - Show loading indicator during refresh
 - Handle success/error states
 - Update table after refresh completes
 
 **Success Criteria:**
+
 - Refresh button triggers backend screener scraping
 - Loading indicator shows during operation
 - Table updates with new data

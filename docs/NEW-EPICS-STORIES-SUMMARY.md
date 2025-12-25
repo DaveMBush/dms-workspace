@@ -73,6 +73,7 @@ Each story should include:
 2. **Update Story References**: Any stories referencing the old AG epic need their IDs updated
 
 3. **Create Detailed Stories**: Expand story outlines in epics into full story documents:
+
    - Start with critical path (AG, AH, AI, AJ, AK, AL, AM, AN)
    - Then feature completion (AO, AP, AQ, AR, AS, AT)
    - Finally integration & polish (AU, AV, AW, AX)
@@ -95,11 +96,13 @@ Within each epic, complete stories sequentially. Do not start next epic until cu
 ## Testing Strategy
 
 ### Unit Testing
+
 - **CRITICAL**: Write unit tests BEFORE implementation code
 - Tests must be in same story as implementation
 - Follow TDD red-green-refactor cycle
 
 ### E2E Testing
+
 - Can be separate story if it makes story more manageable
 - E2E story must immediately follow implementation story
 - Use Playwright MCP to verify no console errors and correct visual appearance
@@ -110,7 +113,7 @@ Within each epic, complete stories sequentially. Do not start next epic until cu
 # Run all unit tests
 pnpm nx test rms-material
 
-# Run all e2e tests  
+# Run all e2e tests
 pnpm nx e2e rms-material-e2e
 
 # Run all tests (unit + e2e + lint)
@@ -129,6 +132,7 @@ pnpm all
 ## Files Created
 
 ### Epics
+
 - `docs/backlog/epic-ag-risk-group-data-initialization.md`
 - `docs/backlog/epic-ah-wire-account-panel.md`
 - `docs/backlog/epic-ai-wire-screener-refresh.md`
@@ -149,6 +153,7 @@ pnpm all
 - `docs/backlog/epic-ax-virtual-scrolling.md`
 
 ### Stories
+
 - `docs/stories/AG.1.integrate-risk-group-validation-top-route.md`
 - `docs/stories/AH.1.wire-account-list-to-backend.md`
 

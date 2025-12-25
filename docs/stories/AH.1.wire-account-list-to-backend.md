@@ -9,11 +9,13 @@
 ## Context
 
 **Current System:**
+
 - RMS app loads accounts via SmartNgRX from AccountEffectsService
 - RMS-MATERIAL has account list UI but static/mock data
 - Account definition and effect service already exist
 
 **Migration Target:**
+
 - Connect account component to existing SmartNgRX account entities
 - Load accounts from backend on app initialization
 - Display accounts reactively
@@ -53,9 +55,7 @@ describe('Account Component', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [Account],
-      providers: [
-        provideSmartFeatureSignalEntities('app', [accountsDefinition]),
-      ],
+      providers: [provideSmartFeatureSignalEntities('app', [accountsDefinition])],
     }).compileComponents();
 
     fixture = TestBed.createComponent(Account);
@@ -104,15 +104,7 @@ import { Account as AccountInterface } from '../store/accounts/account.interface
 
 @Component({
   selector: 'rms-account',
-  imports: [
-    RouterLink,
-    RouterLinkActive,
-    MatListModule,
-    MatToolbarModule,
-    MatButtonModule,
-    MatIconModule,
-    MatDividerModule,
-  ],
+  imports: [RouterLink, RouterLinkActive, MatListModule, MatToolbarModule, MatButtonModule, MatIconModule, MatDividerModule],
   templateUrl: './account.html',
   styleUrl: './account.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -123,20 +115,16 @@ export class Account {
 
   onAccountSelect(account: AccountInterface): void {
     const context = this;
-    void context.router
-      .navigate(['/account', account.id])
-      .catch(function handleNavigationError() {
-        // Navigation errors are handled by router
-      });
+    void context.router.navigate(['/account', account.id]).catch(function handleNavigationError() {
+      // Navigation errors are handled by router
+    });
   }
 
   navigateToGlobal(path: string): void {
     const context = this;
-    void context.router
-      .navigate(['/global', path])
-      .catch(function handleNavigationError() {
-        // Navigation errors are handled by router
-      });
+    void context.router.navigate(['/global', path]).catch(function handleNavigationError() {
+      // Navigation errors are handled by router
+    });
   }
 }
 ```
@@ -150,6 +138,7 @@ pnpm nx test rms-material
 ### Step 5: Manual Testing with Playwright
 
 Use Playwright MCP to verify UI:
+
 1. Start app: `pnpm nx serve rms-material`
 2. Navigate to accounts view
 3. Verify accounts load from backend
@@ -157,11 +146,11 @@ Use Playwright MCP to verify UI:
 
 ## Files Modified
 
-| File | Changes |
-|------|---------|
-| `apps/rms-material/src/app/accounts/account.ts` | Wired to SmartNgRX selectAccounts |
-| `apps/rms-material/src/app/accounts/account.spec.ts` | Added unit tests |
-| `apps/rms-material/src/app/app.routes.ts` | Ensured accountsDefinition provided |
+| File                                                 | Changes                             |
+| ---------------------------------------------------- | ----------------------------------- |
+| `apps/rms-material/src/app/accounts/account.ts`      | Wired to SmartNgRX selectAccounts   |
+| `apps/rms-material/src/app/accounts/account.spec.ts` | Added unit tests                    |
+| `apps/rms-material/src/app/app.routes.ts`            | Ensured accountsDefinition provided |
 
 ## Definition of Done
 

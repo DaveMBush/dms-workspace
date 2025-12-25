@@ -9,12 +9,14 @@
 ## Context
 
 **Current System:**
+
 - RMS app has Playwright E2E tests for account operations
 - Tests verify complete user workflows from start to finish
 - Tests run against real backend with database
 - Tests verify UI rendering and user interactions
 
 **Migration Target:**
+
 - Create Playwright E2E tests for RMS-MATERIAL account operations
 - Verify complete CRUD workflows
 - Test cross-component navigation
@@ -80,9 +82,9 @@ test.describe('Account CRUD Operations', () => {
     test('should navigate to account on click', async ({ page }) => {
       const firstAccount = page.locator('[data-testid="account-item"]').first();
       const accountName = await firstAccount.textContent();
-      
+
       await firstAccount.click();
-      
+
       await expect(page).toHaveURL(/\/account\/.+/);
       await expect(page.locator('h1')).toContainText(accountName || '');
     });
@@ -106,13 +108,12 @@ test.describe('Account CRUD Operations', () => {
       await saveButton.click();
 
       // Verify account appears in list
-      await expect(page.locator('[data-testid="account-item"]').last())
-        .toContainText('Test Account');
+      await expect(page.locator('[data-testid="account-item"]').last()).toContainText('Test Account');
     });
 
     test('should cancel add account', async ({ page }) => {
       const initialCount = await page.locator('[data-testid="account-item"]').count();
-      
+
       const addButton = page.locator('[data-testid="add-account-button"]');
       await addButton.click();
 
@@ -172,7 +173,7 @@ test.describe('Account CRUD Operations', () => {
     test('should cancel edit account', async ({ page }) => {
       const accountItem = page.locator('[data-testid="account-item"]').first();
       const originalName = await accountItem.textContent();
-      
+
       const accountName = accountItem.locator('[data-testid="account-name"]');
       await accountName.click();
 
@@ -191,7 +192,7 @@ test.describe('Account CRUD Operations', () => {
     test('should not save empty account name on edit', async ({ page }) => {
       const accountItem = page.locator('[data-testid="account-item"]').first();
       const originalName = await accountItem.textContent();
-      
+
       const accountName = accountItem.locator('[data-testid="account-name"]');
       await accountName.click();
 
@@ -204,11 +205,11 @@ test.describe('Account CRUD Operations', () => {
 
       // Editor should still be visible
       await expect(editor).toBeVisible();
-      
+
       // Cancel to restore state
       const cancelButton = editor.locator('[data-testid="cancel-button"]');
       await cancelButton.click();
-      
+
       // Name should be unchanged
       await expect(accountItem).toContainText(originalName || '');
     });
@@ -219,18 +220,17 @@ test.describe('Account CRUD Operations', () => {
       // Add test account first
       const addButton = page.locator('[data-testid="add-account-button"]');
       await addButton.click();
-      
+
       const editor = page.locator('[data-testid="node-editor"]');
       const input = editor.locator('input');
       const testAccountName = 'Delete Test ' + Date.now();
       await input.fill(testAccountName);
-      
+
       const saveButton = editor.locator('[data-testid="save-button"]');
       await saveButton.click();
-      
+
       // Find the test account
-      const testAccount = page.locator('[data-testid="account-item"]')
-        .filter({ hasText: testAccountName });
+      const testAccount = page.locator('[data-testid="account-item"]').filter({ hasText: testAccountName });
       await expect(testAccount).toBeVisible();
 
       // Click delete button
@@ -274,13 +274,11 @@ test.describe('Account CRUD Operations', () => {
       // Navigate to first account
       const firstAccount = page.locator('[data-testid="account-item"]').first();
       await firstAccount.click();
-      
+
       await expect(page).toHaveURL(/\/account\/.+/);
 
       // Delete the account from side panel
-      const deleteButton = page.locator('[data-testid="accounts-panel"]')
-        .locator('[data-testid="account-item"]').first()
-        .locator('[data-testid="delete-account-button"]');
+      const deleteButton = page.locator('[data-testid="accounts-panel"]').locator('[data-testid="account-item"]').first().locator('[data-testid="delete-account-button"]');
       await deleteButton.click();
 
       // Confirm deletion
@@ -312,8 +310,7 @@ test.describe('Account CRUD Operations', () => {
       await page.waitForLoadState('networkidle');
 
       // Verify account still exists
-      const account = page.locator('[data-testid="account-item"]')
-        .filter({ hasText: accountName });
+      const account = page.locator('[data-testid="account-item"]').filter({ hasText: accountName });
       await expect(account).toBeVisible();
     });
 
@@ -344,12 +341,12 @@ test.describe('Account CRUD Operations', () => {
     test('should load account in screener when selected', async ({ page }) => {
       const accountItem = page.locator('[data-testid="account-item"]').first();
       const accountName = await accountItem.textContent();
-      
+
       await accountItem.click();
-      
+
       // Navigate to screener
-      await page.goto('/account/' + await page.url().split('/').pop() + '/screener');
-      
+      await page.goto('/account/' + (await page.url().split('/').pop()) + '/screener');
+
       // Verify account context in screener
       const breadcrumb = page.locator('[data-testid="account-breadcrumb"]');
       await expect(breadcrumb).toContainText(accountName || '');
@@ -358,15 +355,15 @@ test.describe('Account CRUD Operations', () => {
     test('should maintain account selection across navigation', async ({ page }) => {
       const accountItem = page.locator('[data-testid="account-item"]').nth(1);
       await accountItem.click();
-      
+
       const accountUrl = page.url();
-      
+
       // Navigate to universe
       await page.click('[data-testid="universe-link"]');
-      
+
       // Navigate back
       await page.goBack();
-      
+
       // Should still be on same account
       expect(page.url()).toBe(accountUrl);
     });
@@ -421,10 +418,10 @@ pnpm nx e2e rms-material-e2e --headed --debug
 
 ## Files Modified
 
-| File                                        | Changes                           |
-| ------------------------------------------- | --------------------------------- |
-| `apps/rms-material-e2e/src/accounts-crud.spec.ts` | Added E2E tests                   |
-| `apps/rms-material/src/app/accounts/account.html` | Added data-testid attributes      |
+| File                                                       | Changes                      |
+| ---------------------------------------------------------- | ---------------------------- |
+| `apps/rms-material-e2e/src/accounts-crud.spec.ts`          | Added E2E tests              |
+| `apps/rms-material/src/app/accounts/account.html`          | Added data-testid attributes |
 | `apps/rms-material/src/app/shared/components/node-editor/` | Added data-testid attributes |
 
 ## Definition of Done

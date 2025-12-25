@@ -12,7 +12,7 @@ Use localStorage or query params to persist UI state across page refreshes.
 
 1. **Story AV.1:** Implement state persistence service
 2. **Story AV.2:** Persist global tab selection
-3. **Story AV.3:** Persist account selection  
+3. **Story AV.3:** Persist account selection
 4. **Story AV.4:** Persist account tab selection
 5. **Story AV.5:** Restore state on app load
 6. **Story AV.6:** Add unit tests

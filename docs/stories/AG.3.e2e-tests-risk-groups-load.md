@@ -9,11 +9,13 @@
 ## Context
 
 **Current System:**
+
 - AG.1 integrated risk group validation
 - AG.2 added unit tests
 - Need E2E tests to verify integration works end-to-end
 
 **Testing Target:**
+
 - E2E tests that verify risk groups exist when app starts
 - Tests verify UI components can access risk groups
 - Tests verify data flows correctly through the stack
@@ -88,11 +90,11 @@ test.describe('Risk Group Initialization', () => {
 
     // Navigate to any screen using risk groups
     await page.goto('/global/screener');
-    
+
     // Risk groups should be immediately available (no loading delay)
     const riskGroupFilter = page.locator('mat-select');
     await riskGroupFilter.first().click();
-    
+
     // Should see options without additional waiting
     await expect(page.getByRole('option', { name: 'Equities' })).toBeVisible({ timeout: 1000 });
   });
@@ -147,9 +149,9 @@ test.describe('Risk Group Database Integrity', () => {
 
     expect(response.ok()).toBeTruthy();
     const riskGroups = await response.json();
-    
+
     expect(riskGroups).toHaveLength(3);
-    
+
     const names = riskGroups.map((rg: any) => rg.name).sort();
     expect(names).toEqual(['Equities', 'Income', 'Tax Free Income']);
   });
@@ -157,14 +159,14 @@ test.describe('Risk Group Database Integrity', () => {
   test('should create missing risk groups on first app load', async ({ request }) => {
     // This test would require database reset capability
     // Verify that if risk groups are missing, they are created
-    
+
     // Query top endpoint (which triggers risk group validation)
     const response = await request.post('http://localhost:3000/api/top', {
       data: ['1'],
     });
 
     expect(response.ok()).toBeTruthy();
-    
+
     // Verify response includes risk groups
     const topData = await response.json();
     expect(topData[0].riskGroups).toBeDefined();
@@ -197,6 +199,7 @@ All E2E tests should pass.
 ### Step 5: Verify with Playwright MCP
 
 Use Playwright MCP server to:
+
 1. Capture screenshots of risk group filters
 2. Verify no console errors
 3. Check network timing for risk group loading
@@ -227,8 +230,8 @@ Use Playwright MCP server to:
 
 ## Files Created
 
-| File                                           | Purpose                |
-| ---------------------------------------------- | ---------------------- |
+| File                                            | Purpose                   |
+| ----------------------------------------------- | ------------------------- |
 | `apps/rms-material-e2e/src/risk-groups.spec.ts` | E2E tests for risk groups |
 
 ## Definition of Done

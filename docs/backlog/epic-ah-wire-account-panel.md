@@ -7,20 +7,23 @@ Enable users to add, edit, and delete accounts in the RMS-MATERIAL application b
 ## Epic Description
 
 **Existing System Context:**
-- RMS app has full account CRUD functionality 
+
+- RMS app has full account CRUD functionality
 - RMS-MATERIAL has UI components but no backend integration
 - Account management is foundational for all account-specific features
 
 **Enhancement Details:**
+
 - Wire account list component to account effect service
 - Implement add account dialog/inline editing
 - Connect edit and delete operations
 - Ensure SmartNgRX signal updates work properly
 
 **Success Criteria:**
+
 - Users can add new accounts
 - Users can edit account names
-- Users can delete accounts  
+- Users can delete accounts
 - Account list updates reactively
 
 ## Stories

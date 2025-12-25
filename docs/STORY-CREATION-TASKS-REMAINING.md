@@ -6,7 +6,7 @@ The epic structure (AG-AX) has been created, but **only 2 detailed stories exist
 
 ## Completed
 
-- ✅ Created 18 epics (AG through AX) 
+- ✅ Created 18 epics (AG through AX)
 - ✅ Renamed old AG epic and stories to AY
 - ✅ Created AG.1 (Risk group validation) - COMPLETE
 - ✅ Created AH.1 (Wire account list) - COMPLETE
@@ -15,11 +15,13 @@ The epic structure (AG-AX) has been created, but **only 2 detailed stories exist
 ## Stories That Need to Be Created
 
 ### Epic AG (3 stories total, 2 remaining)
+
 - ✅ AG.1 - Integrate risk group validation (DONE)
 - ❌ AG.2 - Add unit tests for risk group initialization
 - ❌ AG.3 - Add e2e tests verifying risk groups load
 
 ### Epic AH (6 stories total, 5 remaining)
+
 - ✅ AH.1 - Wire account list to backend (DONE)
 - ❌ AH.2 - Implement add account functionality
 - ❌ AH.3 - Implement edit account name functionality
@@ -28,6 +30,7 @@ The epic structure (AG-AX) has been created, but **only 2 detailed stories exist
 - ❌ AH.6 - Add e2e tests for account CRUD
 
 ### Epic AI (5 stories)
+
 - ❌ AI.1 - Create screener service in RMS-MATERIAL
 - ❌ AI.2 - Wire refresh button to service
 - ❌ AI.3 - Add loading and error handling
@@ -35,6 +38,7 @@ The epic structure (AG-AX) has been created, but **only 2 detailed stories exist
 - ❌ AI.5 - Add e2e tests for screener refresh
 
 ### Epic AJ (5 stories)
+
 - ❌ AJ.1 - Wire screener table to SmartNgRX
 - ❌ AJ.2 - Implement checkbox editing
 - ❌ AJ.3 - Wire up risk group filter
@@ -42,18 +46,21 @@ The epic structure (AG-AX) has been created, but **only 2 detailed stories exist
 - ❌ AJ.5 - Add e2e tests
 
 ### Epic AK (4 stories)
+
 - ❌ AK.1 - Wire update universe button to UniverseSyncService
 - ❌ AK.2 - Add success/error notifications
 - ❌ AK.3 - Add unit tests
 - ❌ AK.4 - Add e2e tests
 
 ### Epic AL (4 stories)
+
 - ❌ AL.1 - Create UpdateUniverseFieldsService
 - ❌ AL.2 - Wire button with loading states
 - ❌ AL.3 - Add unit tests
 - ❌ AL.4 - Add e2e tests
 
 ### Epic AM (5 stories)
+
 - ❌ AM.1 - Wire add symbol dialog
 - ❌ AM.2 - Implement symbol search/autocomplete
 - ❌ AM.3 - Add validation and error handling
@@ -61,6 +68,7 @@ The epic structure (AG-AX) has been created, but **only 2 detailed stories exist
 - ❌ AM.5 - Add e2e tests
 
 ### Epic AN (7 stories)
+
 - ❌ AN.1 - Wire universe table to SmartNgRX
 - ❌ AN.2 - Implement editable cells for distribution
 - ❌ AN.3 - Implement date editing for ex_date
@@ -70,6 +78,7 @@ The epic structure (AG-AX) has been created, but **only 2 detailed stories exist
 - ❌ AN.7 - Add e2e tests
 
 ### Epic AO (8 stories)
+
 - ❌ AO.1 - Design Fidelity CSV parser
 - ❌ AO.2 - Create import service and endpoint
 - ❌ AO.3 - Build import UI dialog
@@ -80,6 +89,7 @@ The epic structure (AG-AX) has been created, but **only 2 detailed stories exist
 - ❌ AO.8 - Add e2e tests
 
 ### Epic AP (5 stories)
+
 - ❌ AP.1 - Wire summary component
 - ❌ AP.2 - Implement pie chart display
 - ❌ AP.3 - Add month/year selectors
@@ -87,6 +97,7 @@ The epic structure (AG-AX) has been created, but **only 2 detailed stories exist
 - ❌ AP.5 - Add e2e tests
 
 ### Epic AQ (5 stories)
+
 - ❌ AQ.1 - Wire account summary with filter
 - ❌ AQ.2 - Implement account-specific pie chart
 - ❌ AQ.3 - Add month/year selectors
@@ -94,6 +105,7 @@ The epic structure (AG-AX) has been created, but **only 2 detailed stories exist
 - ❌ AQ.5 - Add e2e tests
 
 ### Epic AR (6 stories)
+
 - ❌ AR.1 - Wire open positions table
 - ❌ AR.2 - Implement editable cells
 - ❌ AR.3 - Wire "Add New Position" button
@@ -102,6 +114,7 @@ The epic structure (AG-AX) has been created, but **only 2 detailed stories exist
 - ❌ AR.6 - Add e2e tests
 
 ### Epic AS (5 stories)
+
 - ❌ AS.1 - Wire sold positions table
 - ❌ AS.2 - Display capital gains calculations
 - ❌ AS.3 - Add filtering by date range
@@ -109,6 +122,7 @@ The epic structure (AG-AX) has been created, but **only 2 detailed stories exist
 - ❌ AS.5 - Add e2e tests
 
 ### Epic AT (6 stories)
+
 - ❌ AT.1 - Wire dividends table
 - ❌ AT.2 - Wire add dividend dialog
 - ❌ AT.3 - Implement edit functionality
@@ -117,6 +131,7 @@ The epic structure (AG-AX) has been created, but **only 2 detailed stories exist
 - ❌ AT.6 - Add e2e tests
 
 ### Epic AU (7 stories)
+
 - ❌ AU.1 - Implement account selection signal
 - ❌ AU.2 - Wire summary screen
 - ❌ AU.3 - Wire open positions
@@ -126,6 +141,7 @@ The epic structure (AG-AX) has been created, but **only 2 detailed stories exist
 - ❌ AU.7 - Add e2e tests
 
 ### Epic AV (7 stories)
+
 - ❌ AV.1 - Implement state persistence service
 - ❌ AV.2 - Persist global tab selection
 - ❌ AV.3 - Persist account selection
@@ -135,6 +151,7 @@ The epic structure (AG-AX) has been created, but **only 2 detailed stories exist
 - ❌ AV.7 - Add e2e tests
 
 ### Epic AW (6 stories)
+
 - ❌ AW.1 - Add sorting to universe endpoint
 - ❌ AW.2 - Add sorting to trades endpoints
 - ❌ AW.3 - Update frontend to send sort params
@@ -143,6 +160,7 @@ The epic structure (AG-AX) has been created, but **only 2 detailed stories exist
 - ❌ AW.6 - Add e2e tests
 
 ### Epic AX (10 stories)
+
 - ❌ AX.1 - Virtual scroll for universe
 - ❌ AX.2 - Virtual scroll for screener
 - ❌ AX.3 - Virtual scroll for open positions
@@ -165,6 +183,7 @@ The epic structure (AG-AX) has been created, but **only 2 detailed stories exist
 Each story MUST include:
 
 ### 1. Story Section
+
 ```markdown
 ## Story
 
@@ -174,72 +193,89 @@ Each story MUST include:
 ```
 
 ### 2. Context Section
+
 ```markdown
 ## Context
 
 **Current System:**
+
 - [Description of existing RMS app]
 
 **Migration Target:**
+
 - [What we're implementing in RMS-MATERIAL]
 ```
 
 ### 3. Acceptance Criteria
+
 ```markdown
 ## Acceptance Criteria
 
 ### Functional Requirements
+
 - [ ] Requirement 1
 - [ ] Requirement 2
 
 ### Technical Requirements
+
 - [ ] Requirement 1
 - [ ] Requirement 2
 ```
 
 ### 4. Test-Driven Development Approach
+
 ```markdown
 ## Test-Driven Development Approach
 
 ### Step 1: Create Unit Tests First
+
 [Test code example]
 
 ### Step 2: Run Tests (Should Fail)
+
 [Command to run tests]
 
 ### Step 3: Implement
+
 [Implementation code]
 
 ### Step 4: Run Tests Again (Should Pass)
+
 [Command to run tests]
 
 ### Step 5: Manual Testing with Playwright
+
 [Manual testing steps]
 ```
 
 ### 5. Technical Approach
+
 ```markdown
 ## Technical Approach
 
 ### Files to Modify
+
 - File 1 - Description
 - File 2 - Description
 
 ### Implementation Steps
+
 1. Step 1
 2. Step 2
 ```
 
 ### 6. Files Modified Table
+
 ```markdown
 ## Files Modified
 
-| File | Changes |
-|------|---------|
+| File         | Changes     |
+| ------------ | ----------- |
 | path/to/file | Description |
 ```
 
 ### 7. Definition of Done (CRITICAL - MUST INCLUDE)
+
 ```markdown
 ## Definition of Done
 
@@ -258,6 +294,7 @@ Each story MUST include:
 ```
 
 ### 8. Notes Section
+
 ```markdown
 ## Notes
 
@@ -269,19 +306,25 @@ Each story MUST include:
 ## Approach for Creating Stories
 
 ### Option 1: Just-in-Time Creation
+
 Create detailed stories as each epic is started. This allows for:
+
 - Learning from previous stories
 - Adjusting based on actual implementation challenges
 - Avoiding premature decisions
 
 ### Option 2: Batch Creation by Critical Path
+
 Create all critical path stories (AG-AN) first:
+
 - Ensures consistent approach for foundation work
 - Allows DEV to see full scope of critical work
 - Can adjust later epics based on lessons learned
 
 ### Option 3: Full Up-Front Creation
+
 Create all 98 stories now:
+
 - Complete visibility of all work
 - Consistent approach across all stories
 - Time-consuming and may require revisions
@@ -298,6 +341,7 @@ Create all 98 stories now:
 ## Script for Story Generation
 
 Due to the large number of stories, consider:
+
 - Creating a story generation script
 - Using BMad PM agent's `*create-story` command repeatedly
 - Or manually creating based on epic outlines + template

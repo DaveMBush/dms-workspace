@@ -9,12 +9,14 @@
 ## Context
 
 **Current System:**
+
 - RMS app has comprehensive test coverage for account operations
 - Tests cover list, add, edit, delete functionality
 - Tests cover edge cases, validation, error handling
 - Achieves >80% code coverage
 
 **Migration Target:**
+
 - Match or exceed RMS test coverage in RMS-MATERIAL
 - Test all account CRUD operations thoroughly
 - Cover happy paths, edge cases, and error scenarios
@@ -29,7 +31,7 @@
 - [ ] Edge cases and error scenarios covered
 - [ ] Mock all external dependencies
 - [ ] Tests are fast and reliable
-- [ ] >80% code coverage for account component
+- [ ] > 80% code coverage for account component
 
 ### Technical Requirements
 
@@ -132,7 +134,7 @@ describe('Account Component', () => {
     it('should show inline editor for new account', () => {
       component.addingNode.set('new');
       fixture.detectChanges();
-      
+
       const editor = fixture.nativeElement.querySelector('rms-node-editor');
       expect(editor).toBeTruthy();
     });
@@ -145,7 +147,7 @@ describe('Account Component', () => {
       component.addAccount();
       component.editingContent.set('');
       component.saveEdit(account);
-      
+
       expect(component.addingNode()).toBe('');
     });
 
@@ -157,7 +159,7 @@ describe('Account Component', () => {
       component.addAccount();
       component.editingContent.set('My Valid Account');
       component.saveEdit(account);
-      
+
       expect(account.name).toBe('My Valid Account');
       expect(component.addingNode()).toBe('');
     });
@@ -170,7 +172,7 @@ describe('Account Component', () => {
       component.addAccount();
       component.editingContent.set('Valid Name');
       component.saveEdit(account);
-      
+
       expect(component.addingNode()).toBe('');
       expect(component.editingNode()).toBe('');
       expect(component.editingContent()).toBe('');
@@ -185,7 +187,7 @@ describe('Account Component', () => {
       component.addAccount();
       component.addingNode.set('new');
       component.cancelEdit(account);
-      
+
       expect(mockRemoveFromStore).toHaveBeenCalledWith(account, component.top['1']);
       expect(component.addingNode()).toBe('');
     });
@@ -194,9 +196,9 @@ describe('Account Component', () => {
   describe('Edit Account Functionality', () => {
     it('should enter edit mode on editAccount call', () => {
       const account = { id: '123', name: 'Test Account' } as AccountInterface;
-      
+
       component.editAccount(account);
-      
+
       expect(component.editingNode()).toBe('123');
       expect(component.editingContent()).toBe('Test Account');
     });
@@ -204,9 +206,9 @@ describe('Account Component', () => {
     it('should not allow edit while adding', () => {
       const account = { id: '123', name: 'Test Account' } as AccountInterface;
       component.addingNode.set('new');
-      
+
       component.editAccount(account);
-      
+
       expect(component.editingNode()).toBe('');
     });
 
@@ -214,11 +216,11 @@ describe('Account Component', () => {
       const account = { id: '123', name: 'Old Name' } as AccountInterface;
       const mockAccounts = [account];
       vi.spyOn(component, 'accountsList').mockReturnValue(mockAccounts as any);
-      
+
       component.editAccount(account);
       component.editingContent.set('New Name');
       component.saveEdit(account);
-      
+
       expect(account.name).toBe('New Name');
       expect(component.editingNode()).toBe('');
     });
@@ -227,11 +229,11 @@ describe('Account Component', () => {
       const account = { id: '123', name: 'Original Name' } as AccountInterface;
       const mockAccounts = [account];
       vi.spyOn(component, 'accountsList').mockReturnValue(mockAccounts as any);
-      
+
       component.editAccount(account);
       component.editingContent.set('');
       component.saveEdit(account);
-      
+
       expect(account.name).toBe('Original Name');
     });
 
@@ -239,22 +241,22 @@ describe('Account Component', () => {
       const account = { id: '123', name: 'Test' } as AccountInterface;
       const mockAccounts = [account];
       vi.spyOn(component, 'accountsList').mockReturnValue(mockAccounts as any);
-      
+
       component.editAccount(account);
       component.editingContent.set('Updated');
       component.saveEdit(account);
-      
+
       expect(component.editingNode()).toBe('');
       expect(component.editingContent()).toBe('');
     });
 
     it('should revert on cancel', () => {
       const account = { id: '123', name: 'Original' } as AccountInterface;
-      
+
       component.editAccount(account);
       component.editingContent.set('Modified');
       component.cancelEdit(account);
-      
+
       expect(component.editingNode()).toBe('');
       expect(component.editingContent()).toBe('');
     });
@@ -263,18 +265,18 @@ describe('Account Component', () => {
   describe('Delete Account Functionality', () => {
     it('should open confirmation dialog on delete', () => {
       const account = { id: '123', name: 'Test Account' } as AccountInterface;
-      
+
       component.deleteAccount(account);
-      
+
       expect(mockDialog.open).toHaveBeenCalled();
     });
 
     it('should not delete while editing', () => {
       const account = { id: '123', name: 'Test Account' } as AccountInterface;
       component.editingNode.set('123');
-      
+
       component.deleteAccount(account);
-      
+
       expect(mockDialog.open).not.toHaveBeenCalled();
     });
 
@@ -283,11 +285,11 @@ describe('Account Component', () => {
       const mockRemoveFromStore = vi.fn();
       (component.accountsList as any).removeFromStore = mockRemoveFromStore;
       component.top = { '1': {} as any };
-      
+
       component.deleteAccount(account);
-      
+
       await fixture.whenStable();
-      
+
       expect(mockRemoveFromStore).toHaveBeenCalledWith(account, component.top['1']);
     });
 
@@ -295,43 +297,43 @@ describe('Account Component', () => {
       mockDialog.open.mockReturnValue({
         afterClosed: () => of(false),
       });
-      
+
       const account = { id: '123', name: 'Test Account' } as AccountInterface;
       const mockRemoveFromStore = vi.fn();
       (component.accountsList as any).removeFromStore = mockRemoveFromStore;
-      
+
       component.deleteAccount(account);
-      
+
       await fixture.whenStable();
-      
+
       expect(mockRemoveFromStore).not.toHaveBeenCalled();
     });
 
     it('should navigate away if deleting active account', async () => {
       mockRoute.snapshot.params = { accountId: '123' };
-      
+
       const account = { id: '123', name: 'Test Account' } as AccountInterface;
       (component.accountsList as any).removeFromStore = vi.fn();
       component.top = { '1': {} as any };
-      
+
       component.deleteAccount(account);
-      
+
       await fixture.whenStable();
-      
+
       expect(mockRouter.navigate).toHaveBeenCalledWith(['/']);
     });
 
     it('should not navigate if deleting non-active account', async () => {
       mockRoute.snapshot.params = { accountId: '456' };
-      
+
       const account = { id: '123', name: 'Test Account' } as AccountInterface;
       (component.accountsList as any).removeFromStore = vi.fn();
       component.top = { '1': {} as any };
-      
+
       component.deleteAccount(account);
-      
+
       await fixture.whenStable();
-      
+
       expect(mockRouter.navigate).not.toHaveBeenCalled();
     });
   });
@@ -339,15 +341,15 @@ describe('Account Component', () => {
   describe('Account Selection and Navigation', () => {
     it('should navigate to account on select', () => {
       const account = { id: '123', name: 'Test Account' } as AccountInterface;
-      
+
       component.onAccountSelect(account);
-      
+
       expect(mockRouter.navigate).toHaveBeenCalledWith(['/account', '123']);
     });
 
     it('should navigate to global route', () => {
       component.navigateToGlobal('screener');
-      
+
       expect(mockRouter.navigate).toHaveBeenCalledWith(['/global', 'screener']);
     });
   });
@@ -356,7 +358,7 @@ describe('Account Component', () => {
     it('should handle empty accounts list', () => {
       vi.spyOn(component, 'accountsList').mockReturnValue([] as any);
       fixture.detectChanges();
-      
+
       const listItems = fixture.nativeElement.querySelectorAll('mat-list-item');
       expect(listItems.length).toBe(0);
     });
@@ -364,19 +366,19 @@ describe('Account Component', () => {
     it('should handle missing account in saveEdit', () => {
       const account = { id: 'nonexistent', name: 'Test' } as AccountInterface;
       vi.spyOn(component, 'accountsList').mockReturnValue([] as any);
-      
+
       component.saveEdit(account);
-      
+
       // Should not throw error
       expect(component.editingNode()).toBe('');
     });
 
     it('should handle concurrent operations gracefully', () => {
       const account = { id: '123', name: 'Test' } as AccountInterface;
-      
+
       component.addAccount();
       component.editAccount(account);
-      
+
       expect(component.editingNode()).toBe('');
       expect(component.addingNode()).toBe('new');
     });
@@ -429,9 +431,9 @@ Continue adding tests until >80% code coverage achieved for account component.
 
 ## Files Modified
 
-| File                                        | Changes                           |
-| ------------------------------------------- | --------------------------------- |
-| `apps/rms-material/src/app/accounts/account.spec.ts` | Added comprehensive unit tests    |
+| File                                                 | Changes                        |
+| ---------------------------------------------------- | ------------------------------ |
+| `apps/rms-material/src/app/accounts/account.spec.ts` | Added comprehensive unit tests |
 
 ## Definition of Done
 
@@ -443,7 +445,7 @@ Continue adding tests until >80% code coverage achieved for account component.
 - [ ] Edge cases covered
 - [ ] Error scenarios handled
 - [ ] Mocks for all external dependencies
-- [ ] >80% code coverage achieved
+- [ ] > 80% code coverage achieved
 - [ ] All tests pass
 - [ ] Tests run fast (<1s)
 - [ ] Code reviewed

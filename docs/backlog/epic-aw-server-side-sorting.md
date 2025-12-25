@@ -11,7 +11,7 @@ Update backend endpoints to support sorting parameters for universe, positions, 
 ## Stories
 
 1. **Story AW.1:** Add sorting parameters to universe endpoint
-2. **Story AW.2:** Add sorting parameters to trades endpoints  
+2. **Story AW.2:** Add sorting parameters to trades endpoints
 3. **Story AW.3:** Update frontend to send sort parameters
 4. **Story AW.4:** Remove client-side sorting logic
 5. **Story AW.5:** Add unit tests for server sorting

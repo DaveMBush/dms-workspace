@@ -1,6 +1,6 @@
 # Epic AL: Wire Up Global/Universe Update Fields Button
 
-## Epic Goal  
+## Epic Goal
 
 Enable price and distribution updates for universe entries.
 

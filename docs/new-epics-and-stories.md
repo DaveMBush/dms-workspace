@@ -16,15 +16,15 @@ There are a number of things we need to do before we move on:
   7. Wire up the Global/Universe add button. Using existing logic from the RMS app.
   8. Wire up displaying the data in the Global/Universe table using existing logic from the RMS app.
   9. Implement the import routine for fidelity transactions and wire it up to the global/universe screen.
-  10.Wire up the Glocal/Summary screen using existing logic from the RMS app.
-  11.Wire up the Account/Summary screen using existing logic from the RMS app.
-  12.Wire up the Open Positions screen using the existing logic from the RMS app. Make sure to include the Add New Positions button functionality. And ensure that when the sell and sell date are filled in the position is closed and the row is removed from the open positions table.
-  13.Wire up the Account/Sold Positions screen using existing logic from the RMS app.
-  14.Wire up the Account/Dividends & Depositions screen using existing logic from the RMS app.
-  15.Ensure that when we select a different account from the account list, all the account specific screens update to reflect the newly selected account.
-  16.Make sure the selected button for the Global items (Screener/Universe/Summary) and the accounts list is persisted when after refreshing the screen with the browser refresh functionality. Just like in the RMS app, the selected button should be blue when it is the currently selected item.
-  17.There is sorting that has not been implemented in several of the tables (Global/Universe, Account/Open Positions, Account/Sold Positions) that I would like to leave until after we've implemented virtual scrolling because it will need to be implemented on the server instead of the client like it is now.
-  18.Finally implement Virtual Scrolling for all the tables and implement the sorting and filtering to work with virtual scrolling on the server.
+     10.Wire up the Glocal/Summary screen using existing logic from the RMS app.
+     11.Wire up the Account/Summary screen using existing logic from the RMS app.
+     12.Wire up the Open Positions screen using the existing logic from the RMS app. Make sure to include the Add New Positions button functionality. And ensure that when the sell and sell date are filled in the position is closed and the row is removed from the open positions table.
+     13.Wire up the Account/Sold Positions screen using existing logic from the RMS app.
+     14.Wire up the Account/Dividends & Depositions screen using existing logic from the RMS app.
+     15.Ensure that when we select a different account from the account list, all the account specific screens update to reflect the newly selected account.
+     16.Make sure the selected button for the Global items (Screener/Universe/Summary) and the accounts list is persisted when after refreshing the screen with the browser refresh functionality. Just like in the RMS app, the selected button should be blue when it is the currently selected item.
+     17.There is sorting that has not been implemented in several of the tables (Global/Universe, Account/Open Positions, Account/Sold Positions) that I would like to leave until after we've implemented virtual scrolling because it will need to be implemented on the server instead of the client like it is now.
+     18.Finally implement Virtual Scrolling for all the tables and implement the sorting and filtering to work with virtual scrolling on the server.
 
 Be sure to use Test Driven Development (TDD) practices as you implement these features. Write unit tests for each new piece of functionality to ensure reliability and maintainability of the codebase.
 
