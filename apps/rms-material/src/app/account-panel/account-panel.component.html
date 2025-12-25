@@ -38,13 +38,15 @@
       Dividend Deposits
     </a>
   </nav>
+  @if (showAddButton$()) {
   <button
     mat-icon-button
-    matTooltip="Add Open Position"
-    (click)="onAddPosition()"
+    [matTooltip]="buttonTooltip$()"
+    (click)="onAddClick()"
   >
     <mat-icon>add</mat-icon>
   </button>
+  }
 </div>
 <mat-tab-nav-panel #tabPanel>
   <router-outlet></router-outlet>

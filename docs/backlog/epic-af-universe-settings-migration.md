@@ -2,7 +2,7 @@
 
 ## Epic Goal
 
-Migrate the universe settings components (container and add symbol dialog) from PrimeNG to Angular Material.
+Migrate the add symbol dialog component from PrimeNG to Angular Material.
 
 ## Epic Description
 
@@ -20,8 +20,7 @@ Migrate the universe settings components (container and add symbol dialog) from 
 
 ## Stories
 
-1. **Story AF.1:** Migrate Universe Settings Container
-2. **Story AF.2:** Migrate Add Symbol Dialog
+1. **Story AF.1:** Migrate Add Symbol Dialog
 
 ## Compatibility Requirements
 
@@ -49,11 +48,10 @@ Migrate the universe settings components (container and add symbol dialog) from 
 
 ## Estimated Effort
 
-1 business day
+0.5 business days
 
 ## Definition of Done
 
-- [ ] Universe settings container migrated
 - [ ] Add symbol dialog works
 - [ ] Symbol search functional
 - [ ] All validation commands pass

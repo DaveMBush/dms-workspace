@@ -10,6 +10,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -29,6 +30,7 @@ import { UniverseSyncService } from '../../shared/services/universe-sync.service
 import { selectAccounts } from '../../store/accounts/selectors/select-accounts.function';
 import { selectUniverses } from '../../store/universe/selectors/select-universes.function';
 import { Universe } from '../../store/universe/universe.interface';
+import { AddSymbolDialog } from '../../universe-settings/add-symbol-dialog/add-symbol-dialog';
 import { calculateYieldPercent } from './calculate-yield-percent.function';
 import { CellEditEvent } from './cell-edit-event.interface';
 import { filterUniverses } from './filter-universes.function';
@@ -59,6 +61,7 @@ import { sortUniverses } from './sort-universes.function';
 export class GlobalUniverseComponent implements AfterViewInit {
   private readonly syncService = inject(UniverseSyncService);
   private readonly notification = inject(NotificationService);
+  private readonly dialog = inject(MatDialog);
 
   readonly cellEdit = output<CellEditEvent>();
   readonly symbolDeleted = output<Universe>();
@@ -143,7 +146,7 @@ export class GlobalUniverseComponent implements AfterViewInit {
       width: '110px',
     },
     { field: 'position', header: 'Position', type: 'number', width: '80px' },
-    { field: 'expired', header: 'Expired', width: '70px' },
+    { field: 'expired', header: 'Expired', width: '100px' },
     { field: 'actions', header: 'Actions', width: '70px' },
   ];
 
@@ -237,8 +240,17 @@ export class GlobalUniverseComponent implements AfterViewInit {
   }
 
   showAddSymbolDialog(): void {
-    // Placeholder: Add symbol dialog to be implemented in future story
-    this.notification.info('Add Symbol dialog not yet implemented');
+    const dialogRef = this.dialog.open(AddSymbolDialog, {
+      width: '400px',
+      disableClose: false,
+    });
+
+    const context = this;
+    dialogRef.afterClosed().subscribe({
+      next: function onDialogClosed() {
+        context.refreshTable();
+      },
+    });
   }
 
   shouldShowDeleteButton(row: Universe): boolean {

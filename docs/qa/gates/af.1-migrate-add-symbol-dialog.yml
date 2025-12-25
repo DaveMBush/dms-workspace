@@ -1,0 +1,14 @@
+schema: 1
+story: 'af.1'
+story_title: 'Migrate Add Symbol Dialog'
+gate: PASS
+status_reason: 'All acceptance criteria met with comprehensive test coverage. Migration from PrimeNG to Material components completed successfully with proper accessibility and validation.'
+reviewer: 'Quinn (Test Architect)'
+updated: '2025-12-24T07:30:00Z'
+waiver: { active: false }
+top_issues: []
+risk_summary:
+  totals: { critical: 0, high: 0, medium: 0, low: 0 }
+  recommendations:
+    must_fix: []
+    monitor: []

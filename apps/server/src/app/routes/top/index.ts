@@ -2,6 +2,7 @@ import { FastifyInstance } from 'fastify';
 import { getHolidays } from 'nyse-holidays';
 
 import { prisma } from '../../prisma/prisma-client';
+import { ensureRiskGroupsExist } from '../settings/common/ensure-risk-groups-exist.function';
 import { Top } from './top.interface';
 
 async function ensureHolidaysExist(): Promise<void> {
@@ -170,6 +171,9 @@ function handleTopRoute(fastify: FastifyInstance): void {
       if (ids.length === 0) {
         return reply.status(200).send([]);
       }
+
+      // Ensure risk groups exist before proceeding
+      await ensureRiskGroupsExist();
 
       await ensureHolidaysExist();
 
