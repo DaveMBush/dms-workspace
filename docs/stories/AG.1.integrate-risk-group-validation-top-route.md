@@ -23,15 +23,15 @@
 
 ### Functional Requirements
 
-- [ ] Top route calls `ensureRiskGroupsExist()` before loading risk group IDs
-- [ ] All three risk groups (Equities, Income, Tax Free Income) exist after top route completes
-- [ ] Risk group IDs returned in top response match created/existing groups
+- [x] Top route calls `ensureRiskGroupsExist()` before loading risk group IDs
+- [x] All three risk groups (Equities, Income, Tax Free Income) exist after top route completes
+- [x] Risk group IDs returned in top response match created/existing groups
 
 ### Technical Requirements
 
-- [ ] Import and call `ensureRiskGroupsExist()` in top route handler
-- [ ] Handle errors appropriately with logging
-- [ ] Maintain existing top route response structure
+- [x] Import and call `ensureRiskGroupsExist()` in top route handler
+- [x] Handle errors appropriately with logging
+- [x] Maintain existing top route response structure
 
 ## Test-Driven Development Approach
 
@@ -219,14 +219,14 @@ curl -X POST http://localhost:3000/api/top -H "Content-Type: application/json" -
 
 ## Definition of Done
 
-- [ ] Comprehensive unit tests created (>80% coverage)
-- [ ] All tests passing (success, failure, edge cases)
-- [ ] Implementation complete with error handling and logging
-- [ ] All existing tests still pass
-- [ ] Lint passes
-- [ ] Manual testing confirms risk groups created
+- [x] Comprehensive unit tests created (>80% coverage)
+- [x] All tests passing (success, failure, edge cases)
+- [x] Implementation complete with error handling and logging
+- [x] All existing tests still pass
+- [x] Lint passes
+- [x] Manual testing confirms risk groups created
 - [ ] Code reviewed
-- [ ] All validation commands pass
+- [x] All validation commands pass
   - Run `pnpm all`
   - Run `pnpm e2e:rms-material`
   - Run `pnpm dupcheck`
@@ -238,3 +238,9 @@ curl -X POST http://localhost:3000/api/top -H "Content-Type: application/json" -
 - This is a critical foundation for Epic AG
 - Ensures data integrity from the start
 - Follow existing patterns from screener route
+
+## QA Results
+
+### Gate Status
+
+Gate: PASS → docs/qa/gates/AG.1-integrate-risk-group-validation-top-route.yml
