@@ -1,0 +1,33 @@
+.chart-demo-container {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+
+  h1 {
+    margin-bottom: 24px;
+    color: var(--mat-app-text-color, #333);
+  }
+}
+
+.chart-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 24px;
+
+  mat-card {
+    mat-card-content {
+      padding: 16px;
+
+      button {
+        margin-top: 16px;
+        margin-right: 8px;
+      }
+
+      [data-testid='updated-indicator'] {
+        margin-left: 8px;
+        color: var(--mat-green-500, #22c55e);
+        font-weight: 500;
+      }
+    }
+  }
+}

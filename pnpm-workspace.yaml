@@ -4,9 +4,11 @@ onlyBuiltDependencies:
   - '@prisma/engines'
   - '@swc/core'
   - '@tailwindcss/oxide'
+  - aws-sdk
   - better-sqlite3
   - esbuild
   - lmdb
   - msgpackr-extract
   - nx
   - prisma
+  - unrs-resolver

@@ -1,0 +1,11 @@
+<div class="splitter-container" #container>
+  <div class="splitter-panel left-panel">
+    <ng-content select="[leftPanel]"></ng-content>
+  </div>
+  <div class="splitter-handle" (mousedown)="onMouseDown($event)">
+    <div class="handle-bar"></div>
+  </div>
+  <div class="splitter-panel right-panel">
+    <ng-content select="[rightPanel]"></ng-content>
+  </div>
+</div>

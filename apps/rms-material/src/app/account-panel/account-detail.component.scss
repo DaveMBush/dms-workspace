@@ -1,0 +1,9 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.account-detail-container {
+  @apply flex flex-col h-full;
+}

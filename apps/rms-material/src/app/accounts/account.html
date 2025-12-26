@@ -1,0 +1,65 @@
+<div class="accounts-container">
+  <mat-toolbar class="global-toolbar">
+    <span>Global</span>
+  </mat-toolbar>
+
+  <mat-nav-list class="global-list">
+    <a
+      mat-list-item
+      routerLink="/global/universe"
+      routerLinkActive="active-link"
+    >
+      <mat-icon matListItemIcon>public</mat-icon>
+      <span matListItemTitle>Universe</span>
+    </a>
+    <a
+      mat-list-item
+      routerLink="/global/screener"
+      routerLinkActive="active-link"
+    >
+      <mat-icon matListItemIcon>filter_list</mat-icon>
+      <span matListItemTitle>Screener</span>
+    </a>
+    <a
+      mat-list-item
+      routerLink="/global/summary"
+      routerLinkActive="active-link"
+    >
+      <mat-icon matListItemIcon>dashboard</mat-icon>
+      <span matListItemTitle>Summary</span>
+    </a>
+    <a
+      mat-list-item
+      routerLink="/global/error-logs"
+      routerLinkActive="active-link"
+    >
+      <mat-icon matListItemIcon>error</mat-icon>
+      <span matListItemTitle>Error Logs</span>
+    </a>
+  </mat-nav-list>
+
+  <mat-divider></mat-divider>
+
+  <mat-toolbar class="accounts-toolbar">
+    <span>Accounts</span>
+  </mat-toolbar>
+
+  <mat-nav-list class="accounts-list">
+    @for (account of accountsList; track account.id) {
+    <a
+      mat-list-item
+      [routerLink]="['/account', account.id]"
+      routerLinkActive="active-account"
+      class="account-item"
+    >
+      <mat-icon matListItemIcon>account_balance</mat-icon>
+      <span matListItemTitle>{{ account.name }}</span>
+    </a>
+    } @empty {
+    <mat-list-item class="empty-message">
+      <mat-icon matListItemIcon>info</mat-icon>
+      <span matListItemTitle>No accounts found</span>
+    </mat-list-item>
+    }
+  </mat-nav-list>
+</div>

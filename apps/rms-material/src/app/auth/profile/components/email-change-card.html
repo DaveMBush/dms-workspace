@@ -1,0 +1,40 @@
+<!-- eslint-disable @angular-eslint/template/no-call-expression -->
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Change Email</mat-card-title>
+  </mat-card-header>
+
+  <mat-card-content>
+    <p class="current-email">
+      <strong>Current Email:</strong> {{ currentEmail() }}
+    </p>
+
+    <form [formGroup]="emailForm" (ngSubmit)="onSubmit()">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>New Email</mat-label>
+        <input
+          matInput
+          type="email"
+          formControlName="newEmail"
+          autocomplete="email"
+        />
+        @if (emailForm.get('newEmail')?.hasError('required')) {
+        <mat-error>Email is required</mat-error>
+        } @if (emailForm.get('newEmail')?.hasError('email')) {
+        <mat-error>Please enter a valid email address</mat-error>
+        }
+      </mat-form-field>
+
+      <button
+        mat-raised-button
+        color="primary"
+        type="submit"
+        [disabled]="isLoading()"
+      >
+        @if (isLoading()) {
+        <mat-spinner diameter="20"></mat-spinner>
+        } @else { Change Email }
+      </button>
+    </form>
+  </mat-card-content>
+</mat-card>

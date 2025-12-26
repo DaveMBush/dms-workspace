@@ -51,25 +51,11 @@ jobs:
           cache: 'pnpm'
 
       - run: pnpm i
-      # Backup the original SQLite schema
-      - run: cp prisma/schema.prisma prisma/schema.sqlite.backup
-
-      # Setup PostgreSQL schema for application build/deployment
-      - run: cp prisma/schema.postgresql.prisma prisma/schema.prisma
-      - run: pnpm prisma generate
-        env:
-          DATABASE_PROVIDER: postgresql
-          DATABASE_URL: "postgresql://ci_user:${{ secrets.CI_POSTGRES_PASSWORD || 'test_password' }}@localhost:5432/ci_rms?schema=public"
-      - run: pnpm prisma db push --accept-data-loss
-        env:
-          DATABASE_PROVIDER: postgresql
-          DATABASE_URL: "postgresql://ci_user:${{ secrets.CI_POSTGRES_PASSWORD || 'test_password' }}@localhost:5432/ci_rms?schema=public"
-
-      # Restore SQLite schema for tests
-      - run: cp prisma/schema.sqlite.backup prisma/schema.prisma
+      # Generate Prisma client for SQLite (used by tests and e2e)
       - run: pnpm prisma generate
 
-      #- run: pnpm playwright install --with-deps
+      # Install Playwright browsers for e2e tests
+      - run: pnpm playwright install --with-deps
       - uses: nrwl/nx-set-shas@v4
 
       # Prepend any command with "nx-cloud record --" to record its logs to Nx Cloud
@@ -80,3 +66,10 @@ jobs:
       - run: pnpm dupcheck
       # Tests run with SQLite (default environment), builds use PostgreSQL schema
       - run: pnpm nx affected -t lint build test --no-cloud
+
+      # Run e2e tests for rms-material
+      # Ensure the server is built in CI (affected may skip it for unrelated changes)
+      - run: pnpm nx run server:build:production --no-cloud
+      - run: pnpm nx run rms-material-e2e:e2e --no-cloud
+        env:
+          CI: true

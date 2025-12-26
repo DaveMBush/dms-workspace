@@ -1,0 +1,52 @@
+<!-- eslint-disable @angular-eslint/template/no-call-expression -->
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>User Information</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    @if (hasProfile()) {
+    <div class="info-field">
+      <div class="field-label">Username</div>
+      <span class="field-value">{{ username() }}</span>
+    </div>
+
+    <div class="info-field">
+      <div class="field-label">Email Address</div>
+      <div class="email-container">
+        <span class="field-value">{{ email() }}</span>
+        <mat-icon
+          [ngClass]="{
+              verified: emailVerified(),
+              unverified: !emailVerified()
+            }"
+          [attr.aria-label]="
+              emailVerified() ? 'Email verified' : 'Email not verified'
+            "
+        >
+          {{ emailVerified() ? 'check_circle' : 'error' }}
+        </mat-icon>
+      </div>
+    </div>
+
+    <div class="info-field">
+      <div class="field-label">Account Created</div>
+      <span class="field-value">{{ accountCreated() | date: 'medium' }}</span>
+    </div>
+
+    <div class="info-field">
+      <div class="field-label">Last Modified</div>
+      <span class="field-value">{{ lastModified() | date: 'medium' }}</span>
+    </div>
+    } @else { @if (isLoading()) {
+    <div class="state-container">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p class="state-message">Loading profile information...</p>
+    </div>
+    } @if (hasError()) {
+    <div class="state-container error">
+      <mat-icon class="error-icon">error</mat-icon>
+      <p class="state-message">{{ errorMessage() }}</p>
+    </div>
+    } }
+  </mat-card-content>
+</mat-card>

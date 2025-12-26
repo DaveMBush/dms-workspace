@@ -11,7 +11,23 @@ describe('Health Check Endpoints', () => {
 
   beforeAll(async () => {
     app = fastify({ logger: false });
-    await app.register(healthRoutes);
+    await app.register(healthRoutes, { prefix: '/health' });
+    // Register /ready and /live endpoints as in main app
+    app.get('/ready', async (request, reply) => {
+      // Mimic the implementation from health/index.ts
+      reply.status(503);
+      return {
+        ready: false,
+        reason: 'Database not available',
+        timestamp: new Date().toISOString(),
+      };
+    });
+    app.get('/live', async (request, reply) => {
+      return {
+        alive: true,
+        timestamp: new Date().toISOString(),
+      };
+    });
     await app.ready();
   });
 

@@ -1,0 +1,70 @@
+.error-logs-container {
+  width: 100%;
+}
+
+.filter-toolbar {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 16px;
+  margin-bottom: 16px;
+  background-color: transparent;
+  flex-wrap: wrap;
+}
+
+.filter-field {
+  min-width: 150px;
+
+  &.date-field {
+    min-width: 180px;
+  }
+
+  &.search-field {
+    flex: 1;
+    min-width: 250px;
+  }
+}
+
+.filter-button,
+.search-button {
+  margin-left: 8px;
+}
+
+table {
+  width: 100%;
+}
+
+.message-cell {
+  max-width: 500px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.level-badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 12px;
+  text-transform: uppercase;
+
+  &.level-warning {
+    background-color: #fff3cd;
+    color: #856404;
+  }
+
+  &.level-error {
+    background-color: #f8d7da;
+    color: #721c24;
+  }
+
+  &.level-info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+  }
+
+  &.level-debug {
+    background-color: #d6d8db;
+    color: #383d41;
+  }
+}
