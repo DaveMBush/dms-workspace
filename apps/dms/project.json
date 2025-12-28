@@ -1,27 +1,27 @@
 {
-  "name": "rms",
+  "name": "dms",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
   "prefix": "rms",
-  "sourceRoot": "apps/rms/src",
+  "sourceRoot": "apps/dms/src",
   "tags": [],
   "targets": {
     "build": {
       "executor": "@angular/build:application",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/apps/rms",
-        "browser": "apps/rms/src/main.ts",
+        "outputPath": "dist/apps/dms",
+        "browser": "apps/dms/src/main.ts",
         "polyfills": [],
-        "tsConfig": "apps/rms/tsconfig.app.json",
+        "tsConfig": "apps/dms/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
         "assets": [
           {
             "glob": "**/*",
-            "input": "apps/rms/public"
+            "input": "apps/dms/public"
           }
         ],
-        "styles": ["apps/rms/src/styles.scss"]
+        "styles": ["apps/dms/src/styles.scss"]
       },
       "configurations": {
         "production": {
@@ -44,8 +44,8 @@
           "optimization": true,
           "fileReplacements": [
             {
-              "replace": "apps/rms/src/environments/environment.ts",
-              "with": "apps/rms/src/environments/environment.prod.ts"
+              "replace": "apps/dms/src/environments/environment.ts",
+              "with": "apps/dms/src/environments/environment.prod.ts"
             }
           ]
         },
@@ -62,21 +62,21 @@
       "executor": "@angular/build:dev-server",
       "configurations": {
         "production": {
-          "buildTarget": "rms:build:production"
+          "buildTarget": "dms:build:production"
         },
         "development": {
-          "buildTarget": "rms:build:development"
+          "buildTarget": "dms:build:development"
         }
       },
       "defaultConfiguration": "development",
       "options": {
-        "proxyConfig": "apps/rms/proxy.conf.json"
+        "proxyConfig": "apps/dms/proxy.conf.json"
       }
     },
     "extract-i18n": {
       "executor": "@angular/build:extract-i18n",
       "options": {
-        "buildTarget": "rms:build"
+        "buildTarget": "dms:build"
       }
     },
     "lint": {
@@ -86,7 +86,7 @@
       "executor": "@nx/vite:test",
       "outputs": ["{options.reportsDirectory}"],
       "options": {
-        "reportsDirectory": "../../coverage/apps/rms",
+        "reportsDirectory": "../../coverage/apps/dms",
         "passWithNoTests": true
       }
     },
@@ -94,9 +94,9 @@
       "continuous": true,
       "executor": "@nx/web:file-server",
       "options": {
-        "buildTarget": "rms:build",
+        "buildTarget": "dms:build",
         "port": 4200,
-        "staticFilePath": "dist/apps/rms/browser",
+        "staticFilePath": "dist/apps/dms/browser",
         "spa": true
       }
     }
