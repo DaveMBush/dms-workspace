@@ -12,7 +12,7 @@
   @tailwind utilities;
 }
 
-@custom-variant dark (&:where(.p-dark, .p-dark *));     //dark mode configuration
+@custom-variant dark (&:where(.p-dark, .p-dark *)); //dark mode configuration
 
 html,
 body {

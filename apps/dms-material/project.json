@@ -1,27 +1,27 @@
 {
-  "name": "rms-material",
+  "name": "dms-material",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
   "prefix": "rms",
-  "sourceRoot": "apps/rms-material/src",
+  "sourceRoot": "apps/dms-material/src",
   "tags": [],
   "targets": {
     "build": {
       "executor": "@angular/build:application",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/apps/rms-material",
-        "browser": "apps/rms-material/src/main.ts",
+        "outputPath": "dist/apps/dms-material",
+        "browser": "apps/dms-material/src/main.ts",
         "polyfills": [],
-        "tsConfig": "apps/rms-material/tsconfig.app.json",
+        "tsConfig": "apps/dms-material/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
         "assets": [
           {
             "glob": "**/*",
-            "input": "apps/rms-material/public"
+            "input": "apps/dms-material/public"
           }
         ],
-        "styles": ["apps/rms-material/src/styles.scss"]
+        "styles": ["apps/dms-material/src/styles.scss"]
       },
       "configurations": {
         "production": {
@@ -44,8 +44,8 @@
           "optimization": true,
           "fileReplacements": [
             {
-              "replace": "apps/rms-material/src/environments/environment.ts",
-              "with": "apps/rms-material/src/environments/environment.prod.ts"
+              "replace": "apps/dms-material/src/environments/environment.ts",
+              "with": "apps/dms-material/src/environments/environment.prod.ts"
             }
           ]
         },
@@ -62,22 +62,22 @@
       "executor": "@angular/build:dev-server",
       "configurations": {
         "production": {
-          "buildTarget": "rms-material:build:production"
+          "buildTarget": "dms-material:build:production"
         },
         "development": {
-          "buildTarget": "rms-material:build:development"
+          "buildTarget": "dms-material:build:development"
         }
       },
       "defaultConfiguration": "development",
       "options": {
         "port": 4201,
-        "proxyConfig": "apps/rms-material/proxy.conf.json"
+        "proxyConfig": "apps/dms-material/proxy.conf.json"
       }
     },
     "extract-i18n": {
       "executor": "@angular/build:extract-i18n",
       "options": {
-        "buildTarget": "rms-material:build"
+        "buildTarget": "dms-material:build"
       }
     },
     "lint": {
@@ -87,7 +87,7 @@
       "executor": "@nx/vite:test",
       "outputs": ["{options.reportsDirectory}"],
       "options": {
-        "reportsDirectory": "../../coverage/apps/rms-material",
+        "reportsDirectory": "../../coverage/apps/dms-material",
         "passWithNoTests": true
       }
     },
@@ -95,9 +95,9 @@
       "continuous": true,
       "executor": "@nx/web:file-server",
       "options": {
-        "buildTarget": "rms-material:build",
+        "buildTarget": "dms-material:build",
         "port": 4201,
-        "staticFilePath": "dist/apps/rms-material/browser",
+        "staticFilePath": "dist/apps/dms-material/browser",
         "spa": true
       }
     }

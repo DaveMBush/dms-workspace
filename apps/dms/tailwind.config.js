@@ -11,7 +11,5 @@ module.exports = {
   theme: {
     extend: {},
   },
-  plugins: [
-    require('tailwindcss-primeui')
-  ],
-}
+  plugins: [require('tailwindcss-primeui')],
+};
