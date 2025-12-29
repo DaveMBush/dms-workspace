@@ -65,11 +65,13 @@ jobs:
       - run: pnpm format:check
       - run: pnpm dupcheck
       # Tests run with SQLite (default environment), builds use PostgreSQL schema
-      - run: pnpm nx affected -t lint build test
+      # Clear Nx cache and skip remote cache to avoid platform mismatch
+      - run: pnpm nx reset
+      - run: pnpm nx affected -t lint build test --skip-nx-cache
 
       # Run e2e tests for dms-material
       # Ensure the server is built in CI (affected may skip it for unrelated changes)
-      - run: pnpm nx run server:build:production
-      - run: pnpm nx run dms-material-e2e:e2e
+      - run: pnpm nx run server:build:production --skip-nx-cache
+      - run: pnpm nx run dms-material-e2e:e2e --skip-nx-cache
         env:
           CI: true
