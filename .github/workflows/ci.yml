@@ -50,7 +50,9 @@ jobs:
           node-version: 22
           cache: 'pnpm'
 
-      - run: pnpm i
+      - run: pnpm i --frozen-lockfile
+      # Rebuild native modules for the current platform
+      - run: pnpm rebuild
       # Generate Prisma client for SQLite (used by tests and e2e)
       - run: pnpm prisma generate
 
