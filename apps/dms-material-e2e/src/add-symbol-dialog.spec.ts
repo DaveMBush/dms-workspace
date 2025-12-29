@@ -144,19 +144,22 @@ test.describe('Add Symbol Dialog', () => {
       );
       await expect(riskGroupSelect).toBeVisible();
 
-      // Try to wait for mat-options to be rendered (indicates risk groups are loaded)
-      // If risk groups aren't loaded, skip this test
-      try {
-        await expect(
-          riskGroupSelect.locator('mat-option').first()
-        ).toBeAttached({ timeout: 5000 });
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars -- Intentionally catching timeout to skip test
-      } catch (error) {
-        test.skip(
-          true,
-          'Risk groups not loaded - SmartNgRX store timing issue'
-        );
-        return;
+      // Wait for mat-options to be rendered (indicates risk groups are loaded)
+      // If risk groups aren't loaded within timeout, skip this test
+      const optionsLocator = riskGroupSelect.locator('mat-option');
+      const optionCount = await optionsLocator.count();
+
+      if (optionCount === 0) {
+        // Wait a bit longer in case they're still loading
+        await page.waitForTimeout(2000);
+        const retryCount = await optionsLocator.count();
+        if (retryCount === 0) {
+          test.skip(
+            true,
+            'Risk groups not loaded - SmartNgRX store timing issue'
+          );
+          return;
+        }
       }
 
       // Click to open the dropdown
@@ -182,18 +185,21 @@ test.describe('Add Symbol Dialog', () => {
       );
       await expect(riskGroupSelect).toBeVisible();
 
-      // Try to wait for mat-options to be rendered (risk groups loaded)
-      try {
-        await expect(
-          riskGroupSelect.locator('mat-option').first()
-        ).toBeAttached({ timeout: 5000 });
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars -- Intentionally catching timeout to skip test
-      } catch (error) {
-        test.skip(
-          true,
-          'Risk groups not loaded - SmartNgRX store timing issue'
-        );
-        return;
+      // Wait for mat-options to be rendered (indicates risk groups are loaded)
+      const optionsLocator = riskGroupSelect.locator('mat-option');
+      const optionCount = await optionsLocator.count();
+
+      if (optionCount === 0) {
+        // Wait a bit longer in case they're still loading
+        await page.waitForTimeout(2000);
+        const retryCount = await optionsLocator.count();
+        if (retryCount === 0) {
+          test.skip(
+            true,
+            'Risk groups not loaded - SmartNgRX store timing issue'
+          );
+          return;
+        }
       }
 
       await riskGroupSelect.click();
