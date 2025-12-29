@@ -155,11 +155,11 @@ Browser Security (CSP, Secure Cookies) -> Application Security (Rate Limiting, C
 2. `/apps/dms/src/app/auth/auth.service.ts` - Update to use secure cookies
 3. `/apps/server/src/app/middleware/auth.middleware.ts` - Add audit logging
 4. `/apps/dms/src/environments/environment.prod.ts` - Production security config
-**Configuration Files:**
+   **Configuration Files:**
 
-1. `/apps/server/src/config/security.config.ts` - Security configuration
-2. `/infrastructure/security/csp.config.ts` - CSP policy configuration
-3. `/infrastructure/security/rate-limits.config.ts` - Rate limiting rules
+5. `/apps/server/src/config/security.config.ts` - Security configuration
+6. `/infrastructure/security/csp.config.ts` - CSP policy configuration
+7. `/infrastructure/security/rate-limits.config.ts` - Rate limiting rules
 
 ### Technical Implementation Details
 

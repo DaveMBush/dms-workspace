@@ -150,11 +150,11 @@ Mouse/Keyboard   Track Activity     Reset Timeout        Extend Session
 3. `/apps/dms/src/app/auth/services/user-state.service.ts` - Client-side user state
 4. `/apps/dms/src/app/auth/components/session-warning/session-warning.ts` - Session timeout warning
 5. `/apps/dms/src/app/auth/services/session-manager.service.ts` - Orchestrates session management
-**Primary Files to Modify:**
+   **Primary Files to Modify:**
 
-1. `/apps/dms/src/app/auth/auth.service.ts` - Integrate token refresh and session management
-2. `/apps/dms/src/app/auth/login/login.ts` - Add "Remember Me" functionality
-3. `/apps/dms/src/app/auth/interceptors/auth.interceptor.ts` - Handle token refresh during requests
+6. `/apps/dms/src/app/auth/auth.service.ts` - Integrate token refresh and session management
+7. `/apps/dms/src/app/auth/login/login.ts` - Add "Remember Me" functionality
+8. `/apps/dms/src/app/auth/interceptors/auth.interceptor.ts` - Handle token refresh during requests
 
 **Test Files to Create:**
 

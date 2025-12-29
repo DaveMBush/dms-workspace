@@ -113,7 +113,7 @@ Currently no systematic performance monitoring for authentication:
 - Create: `apps/dms/src/app/auth/services/auth-metrics.service.ts`
 - Create: `apps/dms/src/app/shared/services/performance-logging.service.ts`
 - Update: `apps/dms/src/app/auth/interceptors/auth.interceptor.ts` (add timing)
-**Performance Interceptor Design**:
+  **Performance Interceptor Design**:
 
 ```typescript
 interface PerformanceMetric {
@@ -228,7 +228,7 @@ _To be populated by development agent_
 - `apps/dms/src/app/shared/services/performance-logging.service.ts` - Structured logging with alerts
 - `apps/dms/src/app/auth/interceptors/performance.interceptor.ts` - Request timing measurement
 - `apps/dms/src/app/auth/interceptors/auth.interceptor.ts` - Authentication with timing integration
-**Test Files (Verified Working):**
+  **Test Files (Verified Working):**
 
 - `apps/dms/src/app/auth/services/auth-metrics.service.spec.ts`
 - `apps/dms/src/app/auth/services/performance-monitoring.service.spec.ts`

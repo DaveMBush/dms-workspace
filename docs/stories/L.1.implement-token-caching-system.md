@@ -178,7 +178,7 @@ _To be populated by development agent_
 - `apps/dms/src/app/auth/services/cache-stats.interface.ts` - Cache statistics interface
 - `apps/dms/src/app/auth/services/token-cache-entry.interface.ts` - Cache entry structure
 - `apps/dms/src/app/auth/auth.service.ts` - Modified to use cache-first approach
-**Tests:**
+  **Tests:**
 
 - `apps/dms/src/app/auth/services/token-cache.service.spec.ts` - Comprehensive unit tests
 - `apps/dms/src/app/auth/auth-performance.benchmark.spec.ts` - Performance benchmarks

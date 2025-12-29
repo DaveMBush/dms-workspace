@@ -379,7 +379,7 @@ export async function getConsistentDistributions(symbol: string): Promise<boolea
 - ✅ All tests pass
   - ✅ `pnpm nx run server:test --code-coverage` - 237 tests passed
   - ✅ `pnpm nx run dms:test --code-coverage` - 625 tests passed
-  
+
 ### User Impact Success Criteria
 
 - ✅ Screener correctly identifies declining distributions

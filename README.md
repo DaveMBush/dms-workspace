@@ -12,7 +12,7 @@ What set this apart from typical systems is that we are not focused on "Total Re
 
 While this application serves a purpose for my own uses, and you are welcome to use it and modify it as you see fit, please be aware that:
 
-- The codebase is still a work in progress. In fact, the DMS application was my initial attempt at building this application using PrimeNg components. I found that they do not support the lazy loading of data very well so I'm moving to Angular Material components instead in DMS-Material. 
+- The codebase is still a work in progress. In fact, the DMS application was my initial attempt at building this application using PrimeNg components. I found that they do not support the lazy loading of data very well so I'm moving to Angular Material components instead in DMS-Material.
 - Aside from creating the application, I had several purposes for creating this application:
   - Learn PrimeNg and Tailwind CSS
   - Learn some more about AWS and Docker deployments

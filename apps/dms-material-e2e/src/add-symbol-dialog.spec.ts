@@ -139,16 +139,23 @@ test.describe('Add Symbol Dialog', () => {
       ).toBeVisible();
 
       // Find the mat-select within dialog
-      const riskGroupSelect = page.locator('mat-dialog-container mat-form-field mat-select');
+      const riskGroupSelect = page.locator(
+        'mat-dialog-container mat-form-field mat-select'
+      );
       await expect(riskGroupSelect).toBeVisible();
 
       // Try to wait for mat-options to be rendered (indicates risk groups are loaded)
       // If risk groups aren't loaded, skip this test
       try {
-        await expect(riskGroupSelect.locator('mat-option').first()).toBeAttached({ timeout: 5000 });
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars -- Intentionally catching timeout to skip test
+        await expect(
+          riskGroupSelect.locator('mat-option').first()
+        ).toBeAttached({ timeout: 5000 });
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars -- Intentionally catching timeout to skip test
       } catch (error) {
-        test.skip(true, 'Risk groups not loaded - SmartNgRX store timing issue');
+        test.skip(
+          true,
+          'Risk groups not loaded - SmartNgRX store timing issue'
+        );
         return;
       }
 
@@ -156,7 +163,9 @@ test.describe('Add Symbol Dialog', () => {
       await riskGroupSelect.click();
 
       // Wait for options to appear in the overlay
-      await expect(page.locator('.cdk-overlay-container mat-option').first()).toBeVisible();
+      await expect(
+        page.locator('.cdk-overlay-container mat-option').first()
+      ).toBeVisible();
     });
 
     test('should select risk group when option clicked', async ({ page }) => {
@@ -168,22 +177,31 @@ test.describe('Add Symbol Dialog', () => {
         page.getByRole('heading', { name: 'Add Symbol to Universe' })
       ).toBeVisible();
 
-      const riskGroupSelect = page.locator('mat-dialog-container mat-form-field mat-select');
+      const riskGroupSelect = page.locator(
+        'mat-dialog-container mat-form-field mat-select'
+      );
       await expect(riskGroupSelect).toBeVisible();
 
       // Try to wait for mat-options to be rendered (risk groups loaded)
       try {
-        await expect(riskGroupSelect.locator('mat-option').first()).toBeAttached({ timeout: 5000 });
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars -- Intentionally catching timeout to skip test
+        await expect(
+          riskGroupSelect.locator('mat-option').first()
+        ).toBeAttached({ timeout: 5000 });
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars -- Intentionally catching timeout to skip test
       } catch (error) {
-        test.skip(true, 'Risk groups not loaded - SmartNgRX store timing issue');
+        test.skip(
+          true,
+          'Risk groups not loaded - SmartNgRX store timing issue'
+        );
         return;
       }
 
       await riskGroupSelect.click();
 
       // Click first available option in the overlay
-      const firstOption = page.locator('.cdk-overlay-container mat-option').first();
+      const firstOption = page
+        .locator('.cdk-overlay-container mat-option')
+        .first();
       await expect(firstOption).toBeVisible();
       await firstOption.click();
 
