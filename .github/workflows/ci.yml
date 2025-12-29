@@ -49,8 +49,11 @@ jobs:
           node-version: 22
 
       # Clean install without cache to avoid platform mismatch issues
+      # Remove any cached darwin binaries
+      - run: rm -rf node_modules
       - run: pnpm store prune
-      - run: pnpm i --frozen-lockfile --force
+      # Don't use frozen lockfile in case it has darwin-specific entries
+      - run: pnpm i --no-frozen-lockfile
       # Generate Prisma client for SQLite (used by tests and e2e)
       - run: pnpm prisma generate
 
