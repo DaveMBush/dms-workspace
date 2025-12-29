@@ -3,7 +3,7 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background-color: var(--rms-background);
+  background-color: var(--dms-background);
   padding: 1rem;
 }
 
@@ -36,9 +36,9 @@
   padding: 0.75rem 1rem;
   margin-bottom: 1rem;
   background-color: rgba(239, 68, 68, 0.1);
-  border: 1px solid var(--rms-error);
+  border: 1px solid var(--dms-error);
   border-radius: 4px;
-  color: var(--rms-error);
+  color: var(--dms-error);
 
   mat-icon {
     font-size: 20px;

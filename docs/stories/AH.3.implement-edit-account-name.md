@@ -10,14 +10,14 @@
 
 **Current System:**
 
-- RMS app has inline edit for account names
+- DMS app has inline edit for account names
 - Click on account name to enter edit mode
 - Inline editor appears with current name
 - Save commits changes, cancel reverts
 
 **Migration Target:**
 
-- Replicate RMS inline edit in RMS-MATERIAL
+- Replicate DMS inline edit in DMS-MATERIAL
 - Use Material Design patterns
 - Integrate with SmartNgRX entity updates
 
@@ -25,7 +25,7 @@
 
 ### Functional Requirements
 
-- [ ] **CRITICAL** UI matches RMS app inline edit behavior exactly
+- [ ] **CRITICAL** UI matches DMS app inline edit behavior exactly
 - [ ] Click account name to enter edit mode
 - [ ] Inline editor shows current name
 - [ ] User can modify name
@@ -45,7 +45,7 @@
 
 ### Step 1: Create Unit Tests First
 
-Update `apps/rms-material/src/app/accounts/account.spec.ts`:
+Update `apps/dms-material/src/app/accounts/account.spec.ts`:
 
 ```typescript
 describe('Account - Edit Functionality', () => {
@@ -62,7 +62,7 @@ describe('Account - Edit Functionality', () => {
     component.editingNode.set('123');
     fixture.detectChanges();
 
-    const editor = fixture.nativeElement.querySelector('rms-node-editor');
+    const editor = fixture.nativeElement.querySelector('dms-node-editor');
     expect(editor).toBeTruthy();
   });
 
@@ -115,12 +115,12 @@ describe('Account - Edit Functionality', () => {
 ### Step 2: Run Tests (Should Fail)
 
 ```bash
-pnpm nx test rms-material
+pnpm nx test dms-material
 ```
 
 ### Step 3: Implement
 
-Update `apps/rms-material/src/app/accounts/account.ts`:
+Update `apps/dms-material/src/app/accounts/account.ts`:
 
 ```typescript
 export class Account {
@@ -164,7 +164,7 @@ export class Account {
 }
 ```
 
-Update `apps/rms-material/src/app/accounts/account.html`:
+Update `apps/dms-material/src/app/accounts/account.html`:
 
 ```html
 <mat-toolbar>
@@ -177,7 +177,7 @@ Update `apps/rms-material/src/app/accounts/account.html`:
 
 <mat-nav-list>
   @for (account of accountsList(); track account.id) { @if (addingNode() === account.id || editingNode() === account.id) {
-  <rms-node-editor [placeholder]="addingNode() ? 'New Account' : 'Edit Account'" [(ngModel)]="editingContent" (cancel)="cancelEdit(account)" (save)="saveEdit(account)" />
+  <dms-node-editor [placeholder]="addingNode() ? 'New Account' : 'Edit Account'" [(ngModel)]="editingContent" (cancel)="cancelEdit(account)" (save)="saveEdit(account)" />
   } @else {
   <mat-list-item [routerLink]="['/account', account.id]" routerLinkActive="active-link">
     <span matListItemTitle (click)="editAccount(account); $event.stopPropagation()" class="editable-name"> {{ account.name }} </span>
@@ -186,7 +186,7 @@ Update `apps/rms-material/src/app/accounts/account.html`:
 </mat-nav-list>
 ```
 
-Update `apps/rms-material/src/app/accounts/account.scss`:
+Update `apps/dms-material/src/app/accounts/account.scss`:
 
 ```scss
 .editable-name {
@@ -201,12 +201,12 @@ Update `apps/rms-material/src/app/accounts/account.scss`:
 ### Step 4: Run Tests (Should Pass)
 
 ```bash
-pnpm nx test rms-material
+pnpm nx test dms-material
 ```
 
 ### Step 5: Manual Testing with Playwright
 
-1. Start app: `pnpm nx serve rms-material`
+1. Start app: `pnpm nx serve dms-material`
 2. Navigate to accounts panel
 3. Click on an account name
 4. Verify inline editor appears with current name
@@ -218,10 +218,10 @@ pnpm nx test rms-material
 
 ### Files to Modify
 
-- `apps/rms-material/src/app/accounts/account.ts` - Edit account functionality
-- `apps/rms-material/src/app/accounts/account.html` - Click handler for edit
-- `apps/rms-material/src/app/accounts/account.scss` - Editable name styling
-- `apps/rms-material/src/app/accounts/account.spec.ts` - Unit tests
+- `apps/dms-material/src/app/accounts/account.ts` - Edit account functionality
+- `apps/dms-material/src/app/accounts/account.html` - Click handler for edit
+- `apps/dms-material/src/app/accounts/account.scss` - Editable name styling
+- `apps/dms-material/src/app/accounts/account.spec.ts` - Unit tests
 
 ### Implementation Steps
 
@@ -236,10 +236,10 @@ pnpm nx test rms-material
 
 | File                                                 | Changes                         |
 | ---------------------------------------------------- | ------------------------------- |
-| `apps/rms-material/src/app/accounts/account.ts`      | Added editAccount() method      |
-| `apps/rms-material/src/app/accounts/account.html`    | Added click handler and styling |
-| `apps/rms-material/src/app/accounts/account.scss`    | Added editable-name class       |
-| `apps/rms-material/src/app/accounts/account.spec.ts` | Added unit tests                |
+| `apps/dms-material/src/app/accounts/account.ts`      | Added editAccount() method      |
+| `apps/dms-material/src/app/accounts/account.html`    | Added click handler and styling |
+| `apps/dms-material/src/app/accounts/account.scss`    | Added editable-name class       |
+| `apps/dms-material/src/app/accounts/account.spec.ts` | Added unit tests                |
 
 ## Definition of Done
 
@@ -252,13 +252,13 @@ pnpm nx test rms-material
 - [ ] Hover feedback present
 - [ ] Unit tests pass
 - [ ] Manual Playwright verification complete
-- [ ] UI matches RMS app behavior
+- [ ] UI matches DMS app behavior
 - [ ] All existing tests pass
 - [ ] Lint passes
 - [ ] Code reviewed
 - [ ] All validation commands pass
   - Run `pnpm all`
-  - Run `pnpm e2e:rms-material`
+  - Run `pnpm e2e:dms-material`
   - Run `pnpm dupcheck`
   - Run `pnpm format`
   - Repeat all of these if any fail until they all pass

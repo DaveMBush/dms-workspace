@@ -7,7 +7,7 @@ test.describe('Login', () => {
 
   test('should display login form with all fields', async ({ page }) => {
     await expect(page.locator('mat-card-title')).toContainText(
-      'Welcome to RMS'
+      'Welcome to Dividend Management System'
     );
     await expect(page.locator('mat-card-subtitle')).toContainText(
       'Sign in to continue'
@@ -67,7 +67,7 @@ test.describe('Login', () => {
     page,
   }) => {
     // Set remember me in localStorage before loading page
-    await page.evaluate(() => localStorage.setItem('rms_remember_me', 'true'));
+    await page.evaluate(() => localStorage.setItem('dms_remember_me', 'true'));
 
     // Reload the page
     await page.reload();
@@ -96,7 +96,7 @@ test.describe('Login', () => {
     context,
   }) => {
     // Set localStorage value
-    await page.evaluate(() => localStorage.setItem('rms_remember_me', 'true'));
+    await page.evaluate(() => localStorage.setItem('dms_remember_me', 'true'));
 
     // Close page and create new one
     await page.close();
@@ -108,7 +108,7 @@ test.describe('Login', () => {
 
     // Verify localStorage value persists
     const rememberMe = await newPage.evaluate(() =>
-      localStorage.getItem('rms_remember_me')
+      localStorage.getItem('dms_remember_me')
     );
     expect(rememberMe).toBe('true');
   });

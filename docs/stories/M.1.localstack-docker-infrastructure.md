@@ -3,7 +3,7 @@
 ## User Story
 
 As a **developer**,
-I want **to run the RMS backend and database locally using Docker and LocalStack**,
+I want **to run the DMS backend and database locally using Docker and LocalStack**,
 So that **I can develop and test features without AWS costs or cloud dependencies**.
 
 ## Story Context

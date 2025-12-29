@@ -26,7 +26,7 @@ import { SymbolOption } from './symbol-option.interface';
     ReactiveFormsModule,
     CommonModule,
   ],
-  selector: 'rms-symbol-autocomplete',
+  selector: 'dms-symbol-autocomplete',
   standalone: true,
   styleUrls: ['./symbol-autocomplete.component.scss'],
   templateUrl: './symbol-autocomplete.component.html',

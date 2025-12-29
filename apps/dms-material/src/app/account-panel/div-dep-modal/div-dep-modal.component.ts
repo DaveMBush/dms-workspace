@@ -24,7 +24,7 @@ import { DivDeposit } from '../../store/div-deposits/div-deposit.interface';
 import { DivDepModalData } from './div-dep-modal-data.interface';
 
 @Component({
-  selector: 'rms-div-dep-modal',
+  selector: 'dms-div-dep-modal',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ReactiveFormsModule,

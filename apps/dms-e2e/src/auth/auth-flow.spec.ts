@@ -132,7 +132,7 @@ test.describe('Authentication Flow', () => {
 
     // Check that remember me preference is stored
     const rememberMeStored = await page.evaluate(
-      () => localStorage.getItem('rms_remember_me') === 'true'
+      () => localStorage.getItem('dms_remember_me') === 'true'
     );
     expect(rememberMeStored).toBe(true);
 

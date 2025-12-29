@@ -8,7 +8,7 @@ Ready for Review
 
 **As a** backend developer,
 **I want** to migrate from SQLite to PostgreSQL RDS with proper schema migration and data preservation,
-**so that** the RMS application can run on AWS with a production-ready database that supports concurrent access and better performance.
+**so that** the DMS application can run on AWS with a production-ready database that supports concurrent access and better performance.
 
 ## Acceptance Criteria
 
@@ -25,13 +25,13 @@ Ready for Review
 
 - `pnpm format`
 - `pnpm dupcheck`
-- `pnpm nx run rms:test --code-coverage`
+- `pnpm nx run dms:test --code-coverage`
 - `pnpm nx run server:build:production`
 - `pnpm nx run server:test --code-coverage`
 - `pnpm nx run server:lint`
-- `pnpm nx run rms:lint`
-- `pnpm nx run rms:build:production`
-- `pnpm nx run rms-e2e:lint`
+- `pnpm nx run dms:lint`
+- `pnpm nx run dms:build:production`
+- `pnpm nx run dms-e2e:lint`
 
 ## Tasks / Subtasks
 
@@ -182,8 +182,8 @@ model accounts {
 **RDS Terraform Configuration:**
 
 ```hcl
-resource "aws_db_instance" "rms_postgres" {
-  identifier     = "rms-postgres-${var.environment}"
+resource "aws_db_instance" "dms_postgres" {
+  identifier     = "dms-postgres-${var.environment}"
   engine         = "postgres"
   engine_version = "15.4"
   instance_class = "db.t3.micro"
@@ -192,12 +192,12 @@ resource "aws_db_instance" "rms_postgres" {
   max_allocated_storage = 100
   storage_encrypted     = true
 
-  db_name  = "rms"
-  username = "rms_user"
+  db_name  = "dms"
+  username = "dms_user"
   password = var.db_password
 
   vpc_security_group_ids = [aws_security_group.rds.id]
-  db_subnet_group_name   = aws_db_subnet_group.rms.name
+  db_subnet_group_name   = aws_db_subnet_group.dms.name
 
   backup_retention_period = 7
   backup_window          = "03:00-04:00"
@@ -257,7 +257,7 @@ async function getDatabaseUrl(): Promise<string> {
   const ssmClient = new SSMClient({ region: 'us-east-1' });
   const parameter = await ssmClient.send(
     new GetParameterCommand({
-      Name: `/rms/${process.env.ENVIRONMENT}/database-url`,
+      Name: `/dms/${process.env.ENVIRONMENT}/database-url`,
       WithDecryption: true,
     })
   );

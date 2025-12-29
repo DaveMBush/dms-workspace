@@ -15,7 +15,7 @@ import { ProfileInfoCard } from './components/profile-info-card';
 import { SessionInfoCard } from './components/session-info-card';
 
 @Component({
-  selector: 'rms-profile',
+  selector: 'dms-profile',
   imports: [
     PasswordChangeCard,
     EmailChangeCard,

@@ -15,7 +15,7 @@ import { TableModule } from 'primeng/table';
 type CellType = 'currency' | 'date' | 'number';
 
 @Component({
-  selector: 'rms-editable-cell',
+  selector: 'dms-editable-cell',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [

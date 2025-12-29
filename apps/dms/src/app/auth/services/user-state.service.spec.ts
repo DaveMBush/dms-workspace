@@ -113,10 +113,10 @@ describe('UserStateService', () => {
       const storedSession = JSON.stringify(mockSessionMetadata);
 
       sessionStorageMock.getItem.mockImplementation((key) => {
-        if (key === 'rms_user_profile') {
+        if (key === 'dms_user_profile') {
           return storedProfile;
         }
-        if (key === 'rms_session_metadata') {
+        if (key === 'dms_session_metadata') {
           return storedSession;
         }
         return null;
@@ -157,7 +157,7 @@ describe('UserStateService', () => {
       expect(service.profile()).toEqual(mockUserProfile);
       expect(service.isAuthenticated()).toBe(true);
       expect(sessionStorageMock.setItem).toHaveBeenCalledWith(
-        'rms_user_profile',
+        'dms_user_profile',
         JSON.stringify(mockUserProfile)
       );
     });
@@ -186,7 +186,7 @@ describe('UserStateService', () => {
 
       expect(service.session()).toEqual(mockSessionMetadata);
       expect(sessionStorageMock.setItem).toHaveBeenCalledWith(
-        'rms_session_metadata',
+        'dms_session_metadata',
         JSON.stringify(mockSessionMetadata)
       );
     });
@@ -224,7 +224,7 @@ describe('UserStateService', () => {
 
       expect(service.session()?.rememberMe).toBe(true);
       expect(localStorageMock.setItem).toHaveBeenCalledWith(
-        'rms_remember_me',
+        'dms_remember_me',
         'true'
       );
     });
@@ -238,7 +238,7 @@ describe('UserStateService', () => {
       expect(session?.sessionId).toMatch(/^sess_/);
       expect(session?.deviceId).toBeTruthy();
       expect(localStorageMock.setItem).toHaveBeenCalledWith(
-        'rms_device_id',
+        'dms_device_id',
         expect.any(String)
       );
     });
@@ -321,10 +321,10 @@ describe('UserStateService', () => {
       expect(service.session()).toBeNull();
       expect(service.isAuthenticated()).toBe(false);
       expect(sessionStorageMock.removeItem).toHaveBeenCalledWith(
-        'rms_user_profile'
+        'dms_user_profile'
       );
       expect(sessionStorageMock.removeItem).toHaveBeenCalledWith(
-        'rms_session_metadata'
+        'dms_session_metadata'
       );
     });
   });
@@ -422,7 +422,7 @@ describe('UserStateService', () => {
       const newProfile = { ...mockUserProfile, username: 'updated' };
       const storageEvent = new MockStorageEvent(
         'storage',
-        'rms_user_profile',
+        'dms_user_profile',
         JSON.stringify(newProfile)
       );
 
@@ -438,7 +438,7 @@ describe('UserStateService', () => {
       const newSession = { ...mockSessionMetadata, sessionId: 'new-session' };
       const storageEvent = new MockStorageEvent(
         'storage',
-        'rms_session_metadata',
+        'dms_session_metadata',
         JSON.stringify(newSession)
       );
 
@@ -453,7 +453,7 @@ describe('UserStateService', () => {
 
       const storageEvent = new MockStorageEvent(
         'storage',
-        'rms_user_profile',
+        'dms_user_profile',
         null
       );
 
@@ -491,7 +491,7 @@ describe('UserStateService', () => {
     it('should handle errors in cross-tab sync', () => {
       const invalidStorageEvent = new MockStorageEvent(
         'storage',
-        'rms_user_profile',
+        'dms_user_profile',
         'invalid-json'
       );
 

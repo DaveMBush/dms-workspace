@@ -53,7 +53,7 @@ describe('SummaryComponent', () => {
   it('should render summary display components', () => {
     fixture.detectChanges();
     const charts = fixture.nativeElement.querySelectorAll(
-      'rms-summary-display'
+      'dms-summary-display'
     );
     expect(charts.length).toBeGreaterThan(0);
   });

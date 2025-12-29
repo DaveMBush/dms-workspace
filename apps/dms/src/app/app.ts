@@ -15,7 +15,7 @@ import { GlobalLoadingService } from './shared/services/global-loading.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RouterModule, ToastModule, ProgressSpinnerModule],
   providers: [MessageService],
-  selector: 'rms-root',
+  selector: 'dms-root',
   templateUrl: './app.html',
 })
 export class App {

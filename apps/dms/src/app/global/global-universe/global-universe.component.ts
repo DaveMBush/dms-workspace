@@ -57,7 +57,7 @@ import { UpdateFieldsErrorHandler } from './update-fields-error-handler.service'
  */
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  selector: 'rms-global-universe',
+  selector: 'dms-global-universe',
   standalone: true,
   imports: [
     TagModule,

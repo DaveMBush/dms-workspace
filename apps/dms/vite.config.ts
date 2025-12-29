@@ -6,7 +6,7 @@ import { defineConfig } from 'vite';
 
 export default defineConfig(() => ({
   root: __dirname,
-  cacheDir: '../../node_modules/.vite/apps/rms',
+  cacheDir: '../../node_modules/.vite/apps/dms',
   plugins: [angular(), nxViteTsPaths(), nxCopyAssetsPlugin(['*.md'])],
   // Uncomment this if you are using workers.
   // worker: {
@@ -21,7 +21,7 @@ export default defineConfig(() => ({
     reporters: ['default'],
     testTimeout: 30000, // 30 seconds for integration tests
     coverage: {
-      reportsDirectory: '../../coverage/apps/rms',
+      reportsDirectory: '../../coverage/apps/dms',
       provider: 'v8' as const,
     },
   },

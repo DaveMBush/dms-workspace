@@ -25,7 +25,7 @@ test.describe('Add Symbol Dialog', () => {
       const addButton = page.locator('button[mattooltip="Add Symbol"]');
       await addButton.click();
 
-      await expect(page.locator('rms-symbol-autocomplete input')).toBeVisible();
+      await expect(page.locator('dms-symbol-autocomplete input')).toBeVisible();
     });
 
     test('should display risk group dropdown', async ({ page }) => {
@@ -99,7 +99,7 @@ test.describe('Add Symbol Dialog', () => {
       const addButton = page.locator('button[mattooltip="Add Symbol"]');
       await addButton.click();
 
-      const input = page.locator('rms-symbol-autocomplete input');
+      const input = page.locator('dms-symbol-autocomplete input');
       await expect(input).toHaveAttribute(
         'placeholder',
         'Search for a symbol...'
@@ -110,7 +110,7 @@ test.describe('Add Symbol Dialog', () => {
       const addButton = page.locator('button[mattooltip="Add Symbol"]');
       await addButton.click();
 
-      const input = page.locator('rms-symbol-autocomplete input');
+      const input = page.locator('dms-symbol-autocomplete input');
       await input.fill('AAPL');
 
       await expect(input).toHaveValue('AAPL');
@@ -120,7 +120,7 @@ test.describe('Add Symbol Dialog', () => {
       const addButton = page.locator('button[mattooltip="Add Symbol"]');
       await addButton.click();
 
-      const input = page.locator('rms-symbol-autocomplete input');
+      const input = page.locator('dms-symbol-autocomplete input');
       await input.fill('AAPL');
       await input.clear();
 
@@ -378,7 +378,7 @@ test.describe('Add Symbol Dialog', () => {
       ).toBeVisible();
 
       // Form fields should be visible
-      await expect(page.locator('rms-symbol-autocomplete')).toBeVisible();
+      await expect(page.locator('dms-symbol-autocomplete')).toBeVisible();
       await expect(
         page.locator(
           'mat-dialog-container mat-select[formcontrolname="riskGroupId"]'
@@ -407,7 +407,7 @@ test.describe('Add Symbol Dialog', () => {
       const addButton = page.locator('button[mattooltip="Add Symbol"]');
       await addButton.click();
 
-      const input = page.locator('rms-symbol-autocomplete input');
+      const input = page.locator('dms-symbol-autocomplete input');
       await input.focus();
 
       // Dialog title should still be visible
@@ -422,7 +422,7 @@ test.describe('Add Symbol Dialog', () => {
       const addButton = page.locator('button[mattooltip="Add Symbol"]');
       await addButton.click();
 
-      const input = page.locator('rms-symbol-autocomplete input');
+      const input = page.locator('dms-symbol-autocomplete input');
       await input.fill('');
       await input.press('Enter');
 
@@ -436,7 +436,7 @@ test.describe('Add Symbol Dialog', () => {
       const addButton = page.locator('button[mattooltip="Add Symbol"]');
       await addButton.click();
 
-      const input = page.locator('rms-symbol-autocomplete input');
+      const input = page.locator('dms-symbol-autocomplete input');
       await input.fill("<script>alert('xss')</script>");
       await page.waitForTimeout(500);
 
@@ -450,7 +450,7 @@ test.describe('Add Symbol Dialog', () => {
       await addButton.click();
 
       let input = page.locator(
-        'mat-dialog-container rms-symbol-autocomplete input'
+        'mat-dialog-container dms-symbol-autocomplete input'
       );
       await input.fill('TEST123');
 
@@ -474,7 +474,7 @@ test.describe('Add Symbol Dialog', () => {
 
       // Get input from the new dialog instance
       input = page.locator(
-        'mat-dialog-container rms-symbol-autocomplete input'
+        'mat-dialog-container dms-symbol-autocomplete input'
       );
 
       // Should be empty
@@ -486,7 +486,7 @@ test.describe('Add Symbol Dialog', () => {
       const addButton = page.locator('button[mattooltip="Add Symbol"]');
       await addButton.click();
 
-      const input = page.locator('rms-symbol-autocomplete input');
+      const input = page.locator('dms-symbol-autocomplete input');
 
       // Type rapidly
       await input.pressSequentially('AAPL', { delay: 50 });

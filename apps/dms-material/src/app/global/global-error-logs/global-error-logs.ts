@@ -29,7 +29,7 @@ interface ErrorLog {
 }
 
 @Component({
-  selector: 'rms-global-error-logs',
+  selector: 'dms-global-error-logs',
   imports: [
     DatePipe,
     FormsModule,

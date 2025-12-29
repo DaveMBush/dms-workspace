@@ -15,21 +15,21 @@ import { authInterceptor } from './interceptors/auth.interceptor';
 
 // Mock components for routing tests
 @Component({
-  selector: 'rms-mock-login',
+  selector: 'dms-mock-login',
   templateUrl: './mock-login.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 class MockLoginComponent {}
 
 @Component({
-  selector: 'rms-mock-protected',
+  selector: 'dms-mock-protected',
   templateUrl: './mock-protected.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 class MockProtectedComponent {}
 
 @Component({
-  selector: 'rms-mock-public',
+  selector: 'dms-mock-public',
   templateUrl: './mock-public.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

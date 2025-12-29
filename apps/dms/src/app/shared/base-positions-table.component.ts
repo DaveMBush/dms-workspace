@@ -21,7 +21,7 @@ interface PositionRow {
 }
 
 @Component({
-  selector: 'rms-base-positions-table',
+  selector: 'dms-base-positions-table',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [

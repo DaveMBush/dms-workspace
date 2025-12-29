@@ -4,7 +4,7 @@ test.describe('Theme Switching', () => {
   test.beforeEach(async ({ page }) => {
     // Clear theme preference
     await page.goto('/login');
-    await page.evaluate(() => localStorage.removeItem('rms-theme'));
+    await page.evaluate(() => localStorage.removeItem('dms-theme'));
   });
 
   test('should default to light theme on login page', async ({ page }) => {
@@ -18,7 +18,7 @@ test.describe('Theme Switching', () => {
   }) => {
     // Set dark theme in localStorage first
     await page.goto('/login');
-    await page.evaluate(() => localStorage.setItem('rms-theme', 'dark'));
+    await page.evaluate(() => localStorage.setItem('dms-theme', 'dark'));
 
     // Navigate and check theme is applied immediately
     await page.goto('/login');
@@ -29,7 +29,7 @@ test.describe('Theme Switching', () => {
   test('should apply theme to login page on reload', async ({ page }) => {
     // Set dark theme preference directly in localStorage (simulating user had dark theme)
     await page.goto('/login');
-    await page.evaluate(() => localStorage.setItem('rms-theme', 'dark'));
+    await page.evaluate(() => localStorage.setItem('dms-theme', 'dark'));
 
     // Reload login page - theme should be applied immediately
     await page.reload();
@@ -41,10 +41,10 @@ test.describe('Theme Switching', () => {
 
   test('should persist theme preference in localStorage', async ({ page }) => {
     await page.goto('/login');
-    await page.evaluate(() => localStorage.setItem('rms-theme', 'dark'));
+    await page.evaluate(() => localStorage.setItem('dms-theme', 'dark'));
 
     // Check localStorage
-    const theme = await page.evaluate(() => localStorage.getItem('rms-theme'));
+    const theme = await page.evaluate(() => localStorage.getItem('dms-theme'));
     expect(theme).toBe('dark');
   });
 
@@ -78,7 +78,7 @@ test.describe('Theme Switching', () => {
   }) => {
     // Set dark theme in localStorage before navigating
     await page.goto('/auth/login');
-    await page.evaluate(() => localStorage.setItem('rms-theme', 'dark'));
+    await page.evaluate(() => localStorage.setItem('dms-theme', 'dark'));
 
     // Navigate to login page
     await page.goto('/auth/login');
@@ -102,14 +102,14 @@ test.describe('Theme Switching', () => {
     await themeButton.click();
     await page.waitForTimeout(100);
 
-    let theme = await page.evaluate(() => localStorage.getItem('rms-theme'));
+    let theme = await page.evaluate(() => localStorage.getItem('dms-theme'));
     expect(theme).toBe('dark');
 
     // Toggle to light
     await themeButton.click();
     await page.waitForTimeout(100);
 
-    theme = await page.evaluate(() => localStorage.getItem('rms-theme'));
+    theme = await page.evaluate(() => localStorage.getItem('dms-theme'));
     expect(theme).toBe('light');
   });
 
@@ -137,7 +137,7 @@ test.describe('Theme Switching', () => {
     page,
   }) => {
     await page.goto('/login');
-    await page.evaluate(() => localStorage.setItem('rms-theme', 'invalid'));
+    await page.evaluate(() => localStorage.setItem('dms-theme', 'invalid'));
 
     await page.reload();
 
@@ -148,7 +148,7 @@ test.describe('Theme Switching', () => {
 
   test('should restore theme after app restart', async ({ page, context }) => {
     await page.goto('/auth/login');
-    await page.evaluate(() => localStorage.setItem('rms-theme', 'dark'));
+    await page.evaluate(() => localStorage.setItem('dms-theme', 'dark'));
 
     // Close and reopen
     await page.close();

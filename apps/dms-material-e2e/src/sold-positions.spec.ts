@@ -11,7 +11,7 @@ test.describe('Sold Positions', () => {
 
   test.describe('Core Functionality', () => {
     test('should display sold positions table', async ({ page }) => {
-      const table = page.locator('rms-base-table');
+      const table = page.locator('dms-base-table');
       await expect(table).toBeVisible();
     });
 
@@ -90,7 +90,7 @@ test.describe('Sold Positions', () => {
       await page.waitForTimeout(300);
 
       // Table should still be visible (even if no results)
-      const table = page.locator('rms-base-table');
+      const table = page.locator('dms-base-table');
       await expect(table).toBeVisible();
     });
   });
@@ -103,7 +103,7 @@ test.describe('Sold Positions', () => {
       await page.waitForTimeout(300);
 
       // Table should be visible but rows should be empty or show no results message
-      const table = page.locator('rms-base-table');
+      const table = page.locator('dms-base-table');
       await expect(table).toBeVisible();
     });
 
@@ -165,7 +165,7 @@ test.describe('Sold Positions', () => {
       await page.waitForTimeout(300);
 
       // Table should still be visible
-      const table = page.locator('rms-base-table');
+      const table = page.locator('dms-base-table');
       await expect(table).toBeVisible();
     });
 
@@ -173,7 +173,7 @@ test.describe('Sold Positions', () => {
       page,
     }) => {
       // Even with no data, headers should be visible
-      const table = page.locator('rms-base-table');
+      const table = page.locator('dms-base-table');
       await expect(table).toBeVisible();
 
       // All column headers should still be present
@@ -215,7 +215,7 @@ test.describe('Sold Positions', () => {
       await page.waitForTimeout(300);
 
       // Table should still be visible
-      const table = page.locator('rms-base-table');
+      const table = page.locator('dms-base-table');
       await expect(table).toBeVisible();
     });
 
@@ -227,7 +227,7 @@ test.describe('Sold Positions', () => {
       await page.waitForTimeout(300);
 
       // Table should still be visible and filter should work
-      const table = page.locator('rms-base-table');
+      const table = page.locator('dms-base-table');
       await expect(table).toBeVisible();
     });
 

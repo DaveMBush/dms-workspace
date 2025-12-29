@@ -74,7 +74,7 @@ describe('ShellComponent', () => {
 
   it('should render splitter with two panels', () => {
     fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector('rms-splitter')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('dms-splitter')).toBeTruthy();
   });
 
   describe('onLogout', () => {

@@ -9,7 +9,7 @@ import {
 import { ConfirmDialogData } from '../../types/confirm-dialog-data.interface';
 
 @Component({
-  selector: 'rms-confirm-dialog',
+  selector: 'dms-confirm-dialog',
   imports: [MatDialogModule, MatButtonModule],
   templateUrl: './confirm-dialog.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

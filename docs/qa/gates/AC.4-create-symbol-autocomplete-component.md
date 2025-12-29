@@ -19,7 +19,7 @@ AC.4 (Symbol Autocomplete Component) has successfully completed development foll
 ### Functional Requirements Met
 
 - ✅ Type to filter suggestions (RxJS debounceTime implementation)
-- ✅ GUI matches existing RMS app (Angular Material mat-autocomplete)
+- ✅ GUI matches existing DMS app (Angular Material mat-autocomplete)
 - ✅ Dropdown shows matching symbols (filtered options rendering)
 - ✅ Select suggestion populates input (optionSelected event handler)
 - ✅ Force selection option available (forceSelection input parameter)

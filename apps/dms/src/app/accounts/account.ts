@@ -35,7 +35,7 @@ import { AccountComponentService } from './account-component.service';
   ],
   templateUrl: './account.html',
   styleUrl: './account.scss',
-  selector: 'rms-account',
+  selector: 'dms-account',
   encapsulation: ViewEncapsulation.Emulated,
   changeDetection: ChangeDetectionStrategy.OnPush,
   viewProviders: [AccountComponentService],

@@ -1,5 +1,5 @@
 <mat-toolbar color="primary" class="shell-toolbar">
-  <span class="app-title">RMS Material</span>
+  <span class="app-title">Dividend Management System Material</span>
 
   <span class="toolbar-spacer"></span>
 
@@ -27,11 +27,11 @@
   </mat-menu>
 </mat-toolbar>
 
-<rms-splitter stateKey="rms-main-splitter" [initialLeftWidth]="20">
+<dms-splitter stateKey="dms-main-splitter" [initialLeftWidth]="20">
   <div leftPanel class="accounts-panel">
     <router-outlet name="accounts"></router-outlet>
   </div>
   <div rightPanel class="content-panel">
     <router-outlet></router-outlet>
   </div>
-</rms-splitter>
+</dms-splitter>

@@ -2,17 +2,17 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>RMS Manager</title>
+    <title>Dividend Management System</title>
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
   </head>
   <body>
-    <rms-root></rms-root>
+    <dms-root></dms-root>
   </body>
   <script>
     // set the theme before we load the app to avoid flash of white
-    const DARK_MODE_KEY = 'rms-dark';
+    const DARK_MODE_KEY = 'dms-dark';
     let darkValue = localStorage.getItem(DARK_MODE_KEY);
     if (darkValue === null) {
       // find the system preference for dark mode

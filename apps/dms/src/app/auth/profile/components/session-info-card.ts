@@ -11,7 +11,7 @@ import { ProfileService } from '../../services/profile.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  selector: 'rms-session-info-card',
+  selector: 'dms-session-info-card',
   imports: [CommonModule, CardModule],
   templateUrl: './session-info-card.html',
 })

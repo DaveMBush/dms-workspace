@@ -4,10 +4,10 @@
 export function clearAuthTokens(): void {
   try {
     [
-      'rms_access_token',
-      'rms_id_token',
-      'rms_refresh_token',
-      'rms_token_expiration',
+      'dms_access_token',
+      'dms_id_token',
+      'dms_refresh_token',
+      'dms_token_expiration',
     ].forEach(function removeStorageKey(key) {
       sessionStorage.removeItem(key);
     });

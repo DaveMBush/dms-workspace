@@ -11,7 +11,7 @@ import { AutoCompleteModule } from 'primeng/autocomplete';
 import { SymbolOption } from './symbol-filtering.function';
 
 @Component({
-  selector: 'rms-symbol-autocomplete',
+  selector: 'dms-symbol-autocomplete',
   templateUrl: './symbol-autocomplete.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [FormsModule, AutoCompleteModule],

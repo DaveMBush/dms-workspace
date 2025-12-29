@@ -23,7 +23,7 @@
 >
   <ng-template pTemplate="item" let-account>
     @if(addingNode === account.id || editingNode === account.id) {
-    <rms-node-editor
+    <dms-node-editor
       placeholder="Edit Account"
       [(ngModel)]="editingContent"
       (cancel)="cancelEdit(account)"

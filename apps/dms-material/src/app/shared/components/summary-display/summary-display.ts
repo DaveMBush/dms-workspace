@@ -9,7 +9,7 @@ import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
 
 @Component({
-  selector: 'rms-summary-display',
+  selector: 'dms-summary-display',
   imports: [BaseChartDirective],
   templateUrl: './summary-display.html',
   styleUrl: './summary-display.scss',

@@ -1,4 +1,4 @@
-# RMS Frontend Analysis - Complete Documentation Index
+# DMS Frontend Analysis - Complete Documentation Index
 
 ## Quick Start (5 minute overview)
 
@@ -26,7 +26,7 @@ Start with **ANALYSIS-SUMMARY.txt** for a quick overview of the application stru
 
 ---
 
-### 2. RMS-FRONTEND-ANALYSIS.md (22 KB, 552 lines)
+### 2. DMS-FRONTEND-ANALYSIS.md (22 KB, 552 lines)
 
 **Purpose:** Comprehensive architectural reference document
 
@@ -56,7 +56,7 @@ Start with **ANALYSIS-SUMMARY.txt** for a quick overview of the application stru
 
 ---
 
-### 3. RMS-MIGRATION-QUICK-REFERENCE.md (12 KB, 386 lines)
+### 3. DMS-MIGRATION-QUICK-REFERENCE.md (12 KB, 386 lines)
 
 **Purpose:** Practical migration guide with code examples
 
@@ -95,21 +95,21 @@ Start with **ANALYSIS-SUMMARY.txt** for a quick overview of the application stru
 ### For Architects / Technical Leads
 
 1. Read **ANALYSIS-SUMMARY.txt** (5 min)
-2. Study **RMS-FRONTEND-ANALYSIS.md** sections 1-5 (15 min)
+2. Study **DMS-FRONTEND-ANALYSIS.md** sections 1-5 (15 min)
 3. Review migration strategy and risk assessment
 4. Plan POC approach
 
 ### For Developers Doing the Migration
 
 1. Read **ANALYSIS-SUMMARY.txt** for context (5 min)
-2. Review **RMS-MIGRATION-QUICK-REFERENCE.md** for your specific component (10 min)
-3. Reference **RMS-FRONTEND-ANALYSIS.md** for component dependencies
+2. Review **DMS-MIGRATION-QUICK-REFERENCE.md** for your specific component (10 min)
+3. Reference **DMS-FRONTEND-ANALYSIS.md** for component dependencies
 4. Use mapping guide for PrimeNG → Material translation
 
 ### For QA / Testing Teams
 
 1. Read **ANALYSIS-SUMMARY.txt** testing section (3 min)
-2. Review **RMS-MIGRATION-QUICK-REFERENCE.md** testing implications
+2. Review **DMS-MIGRATION-QUICK-REFERENCE.md** testing implications
 3. Prepare test cases based on component complexity
 4. Plan regression test approach
 
@@ -159,8 +159,8 @@ Start with **ANALYSIS-SUMMARY.txt** for a quick overview of the application stru
 | Document                         | Size      | Lines     | Focus                      |
 | -------------------------------- | --------- | --------- | -------------------------- |
 | ANALYSIS-SUMMARY.txt             | 9.9 KB    | 279       | Executive overview         |
-| RMS-FRONTEND-ANALYSIS.md         | 22 KB     | 552       | Complete reference         |
-| RMS-MIGRATION-QUICK-REFERENCE.md | 12 KB     | 386       | Implementation guide       |
+| DMS-FRONTEND-ANALYSIS.md         | 22 KB     | 552       | Complete reference         |
+| DMS-MIGRATION-QUICK-REFERENCE.md | 12 KB     | 386       | Implementation guide       |
 | **Total**                        | **44 KB** | **1,217** | **Complete documentation** |
 
 ---
@@ -206,7 +206,7 @@ The documents provide everything needed to plan and execute the migration succes
 ## Version Information
 
 - **Analysis Date:** November 22, 2025
-- **RMS App Version:** Angular 20 + PrimeNG 20
+- **DMS App Version:** Angular 20 + PrimeNG 20
 - **Analysis Scope:** Complete frontend application
 - **Document Version:** 1.0
 

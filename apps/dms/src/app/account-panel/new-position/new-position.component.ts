@@ -25,7 +25,7 @@ import { Trade } from '../../store/trades/trade.interface';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  selector: 'rms-new-position',
+  selector: 'dms-new-position',
   standalone: true,
   imports: [
     AutoCompleteModule,

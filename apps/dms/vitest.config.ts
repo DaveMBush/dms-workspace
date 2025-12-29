@@ -2,7 +2,7 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   root: __dirname,
-  cacheDir: '../../node_modules/.vite/apps/rms',
+  cacheDir: '../../node_modules/.vite/apps/dms',
   plugins: [],
   test: {
     environment: 'jsdom',
@@ -11,7 +11,7 @@ export default defineConfig({
     reporters: ['default'],
     passWithNoTests: true, // Allow passing when no tests are found
     coverage: {
-      reportsDirectory: '../../coverage/apps/rms',
+      reportsDirectory: '../../coverage/apps/dms',
       provider: 'v8' as const,
     },
     env: {

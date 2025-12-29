@@ -6,7 +6,7 @@ import { ChartData } from 'chart.js';
 import { SummaryDisplayComponent } from '../shared/components/summary-display/summary-display';
 
 @Component({
-  selector: 'rms-chart-demo',
+  selector: 'dms-chart-demo',
   imports: [MatCardModule, MatButtonModule, SummaryDisplayComponent],
   templateUrl: './chart-demo.html',
   styleUrl: './chart-demo.scss',

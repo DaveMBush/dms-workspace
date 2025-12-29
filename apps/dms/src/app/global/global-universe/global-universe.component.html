@@ -240,12 +240,12 @@
       <td>{{ row.yield_percent | number : '1.2-2' }}%</td>
       <td>{{ row.avg_purchase_yield_percent | number : '1.2-2' }}%</td>
       <td>{{ row.last_price }}</td>
-      <rms-editable-date-cell
+      <dms-editable-date-cell
         [field]="'ex_date'"
         [(value)]="row.ex_date"
         [isExpired]="!row.ex_date || row.ex_date < today"
         (onEditCommit)="onEditCommit(row, 'ex_date')"
-      ></rms-editable-date-cell>
+      ></dms-editable-date-cell>
       <td>{{ row.most_recent_sell_date | date : 'MM/dd/yyyy' }}</td>
       <td>{{ row.most_recent_sell_price | number : '1.2-4' }}</td>
       <td>{{ row.position === 0 ? '' : (row.position | number : '1.2-4') }}</td>
@@ -269,4 +269,4 @@
 </p-table>
 <p-toast />
 
-<rms-add-symbol-dialog />
+<dms-add-symbol-dialog />

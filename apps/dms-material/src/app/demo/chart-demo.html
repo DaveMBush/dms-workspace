@@ -8,7 +8,7 @@
         <mat-card-title>Pie Chart - Portfolio Allocation</mat-card-title>
       </mat-card-header>
       <mat-card-content>
-        <rms-summary-display
+        <dms-summary-display
           data-testid="pie-chart"
           [data$]="pieChartData$()"
           [chartType$]="'pie'"
@@ -35,7 +35,7 @@
         <mat-card-title>Line Chart - Portfolio Performance</mat-card-title>
       </mat-card-header>
       <mat-card-content>
-        <rms-summary-display
+        <dms-summary-display
           data-testid="line-chart"
           [data$]="lineChartData$()"
           [chartType$]="'line'"
@@ -59,7 +59,7 @@
         <mat-card-title>Empty Data Handling</mat-card-title>
       </mat-card-header>
       <mat-card-content>
-        <rms-summary-display
+        <dms-summary-display
           data-testid="empty-chart"
           [data$]="emptyChartData$()"
           [chartType$]="'pie'"
@@ -74,7 +74,7 @@
         <mat-card-title>Single Data Point</mat-card-title>
       </mat-card-header>
       <mat-card-content>
-        <rms-summary-display
+        <dms-summary-display
           data-testid="single-point-chart"
           [data$]="singlePointData$()"
           [chartType$]="'line'"
@@ -89,7 +89,7 @@
         <mat-card-title>Large Dataset (100 points)</mat-card-title>
       </mat-card-header>
       <mat-card-content>
-        <rms-summary-display
+        <dms-summary-display
           data-testid="large-dataset-chart"
           [data$]="largeDataset$()"
           [chartType$]="'line'"
@@ -105,7 +105,7 @@
         <mat-card-title>Negative Values</mat-card-title>
       </mat-card-header>
       <mat-card-content>
-        <rms-summary-display
+        <dms-summary-display
           data-testid="negative-values-chart"
           [data$]="negativeValuesData$()"
           [chartType$]="'line'"
@@ -121,7 +121,7 @@
         <mat-card-title>Very Small Values</mat-card-title>
       </mat-card-header>
       <mat-card-content>
-        <rms-summary-display
+        <dms-summary-display
           data-testid="small-values-chart"
           [data$]="smallValuesData$()"
           [chartType$]="'pie'"
@@ -136,7 +136,7 @@
         <mat-card-title>Large Values (Billions)</mat-card-title>
       </mat-card-header>
       <mat-card-content>
-        <rms-summary-display
+        <dms-summary-display
           data-testid="large-values-chart"
           [data$]="largeValuesData$()"
           [chartType$]="'pie'"
@@ -151,7 +151,7 @@
         <mat-card-title>No Legend</mat-card-title>
       </mat-card-header>
       <mat-card-content>
-        <rms-summary-display
+        <dms-summary-display
           data-testid="no-legend-chart"
           [data$]="pieChartData$()"
           [chartType$]="'pie'"
@@ -167,7 +167,7 @@
         <mat-card-title>Legend Position: Top</mat-card-title>
       </mat-card-header>
       <mat-card-content>
-        <rms-summary-display
+        <dms-summary-display
           data-testid="legend-top-chart"
           [data$]="pieChartData$()"
           [chartType$]="'pie'"
@@ -183,7 +183,7 @@
         <mat-card-title>Doughnut Chart</mat-card-title>
       </mat-card-header>
       <mat-card-content>
-        <rms-summary-display
+        <dms-summary-display
           data-testid="doughnut-chart"
           [data$]="pieChartData$()"
           [chartType$]="'doughnut'"

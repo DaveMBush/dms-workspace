@@ -1,19 +1,19 @@
 {
-  "name": "@rms-workspace/source",
+  "name": "@dms-workspace/source",
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
     "start:server": "nx run server:serve",
-    "start:rms": "nx run rms:serve --no-hmr",
-    "start:rms-material": "nx run rms-material:serve --no-hmr",
+    "start:dms": "nx run dms:serve --no-hmr",
+    "start:dms-material": "nx run dms-material:serve --no-hmr",
     "start:simulation": "nx run simulation:serve",
-    "build:rms": "nx run rms:build",
+    "build:dms": "nx run dms:build",
     "all": "nx affected -t lint build test",
     "dupcheck": "pnpm jscpd",
     "format": "nx format:write",
     "format:check": "nx format:check",
-    "e2e:rms-material": "nx run rms-material-e2e:e2e",
-    "e2e:rms-material:ui": "nx run rms-material-e2e:e2e --ui"
+    "e2e:dms-material": "nx run dms-material-e2e:e2e",
+    "e2e:dms-material:ui": "nx run dms-material-e2e:e2e --ui"
   },
   "private": true,
   "dependencies": {

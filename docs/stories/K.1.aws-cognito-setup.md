@@ -8,7 +8,7 @@ Ready for Review
 
 **As a** single-user application owner,
 **I want** to have AWS Cognito User Pool configured with appropriate security settings and a single admin user account,
-**so that** I can protect my RMS application with enterprise-grade authentication without managing user credentials myself.
+**so that** I can protect my DMS application with enterprise-grade authentication without managing user credentials myself.
 
 ## Acceptance Criteria
 
@@ -18,25 +18,25 @@ Ready for Review
 4. Create admin user account for single-user access with confirmed email status
 5. Configure JWT token expiration (access: 1 hour, refresh: 30 days) and security settings
 6. Document Cognito configuration including User Pool ID, App Client ID, and domain settings
-7. Add environment variables and configuration structure for RMS application integration
+7. Add environment variables and configuration structure for DMS application integration
 8. Optional: Configure Terraform/CDK infrastructure-as-code for Cognito resources
 9. Ensure the following commands run without errors:
 
 - `pnpm format`
 - `pnpm dupcheck`
-- `pnpm nx run rms:test --code-coverage`
+- `pnpm nx run dms:test --code-coverage`
 - `pnpm nx run server:build:production`
 - `pnpm nx run server:test --code-coverage`
 - `pnpm nx run server:lint`
-- `pnpm nx run rms:lint`
-- `pnpm nx run rms:build:production`
-- `pnpm nx run rms-e2e:lint`
+- `pnpm nx run dms:lint`
+- `pnpm nx run dms:build:production`
+- `pnpm nx run dms-e2e:lint`
 
 ## Tasks / Subtasks
 
 - [x] **Task 1: Create AWS Cognito User Pool with security configuration** (AC: 1, 5)
 
-  - [x] Create User Pool with descriptive name (e.g., "rms-user-pool-prod")
+  - [x] Create User Pool with descriptive name (e.g., "dms-user-pool-prod")
   - [x] Configure password policy: minimum 8 characters, require uppercase, lowercase, numbers, symbols
   - [x] Enable MFA requirements (SMS or TOTP) for enhanced security
   - [x] Set account recovery options (email-based password reset)
@@ -45,7 +45,7 @@ Ready for Review
 
 - [x] **Task 2: Configure User Pool App Client** (AC: 2, 7)
 
-  - [x] Create App Client for RMS Angular application
+  - [x] Create App Client for DMS Angular application
   - [x] Configure OAuth 2.0 flows: Authorization Code Grant with PKCE
   - [x] Set allowed OAuth scopes: openid, email, profile, aws.cognito.signin.user.admin
   - [x] Configure callback URLs for local development and production
@@ -115,7 +115,7 @@ Frontend (Angular 20) <---> AWS Cognito <---> Backend (Fastify)
 
 **Configuration Files to Create:**
 
-1. `/apps/rms/src/environments/environment.cognito.ts` - Angular Cognito configuration
+1. `/apps/dms/src/environments/environment.cognito.ts` - Angular Cognito configuration
 2. `/apps/server/src/config/cognito.config.ts` - Fastify JWT validation configuration
 3. `/infrastructure/cognito/` - Terraform/CDK infrastructure files (optional)
 4. `/docs/setup/cognito-setup-guide.md` - Setup and maintenance documentation
@@ -128,7 +128,7 @@ export const cognitoConfig = {
   region: 'us-east-1',
   userPoolId: 'us-east-1_xxxxxxxxx',
   userPoolWebClientId: 'xxxxxxxxxxxxxxxxxxxxxxxxxx',
-  domain: 'rms-auth.auth.us-east-1.amazoncognito.com',
+  domain: 'dms-auth.auth.us-east-1.amazoncognito.com',
   redirectSignIn: 'http://localhost:4200/auth/callback',
   redirectSignOut: 'http://localhost:4200/auth/signout',
   scopes: ['openid', 'email', 'profile', 'aws.cognito.signin.user.admin'],
@@ -149,7 +149,7 @@ export const jwtConfig = {
 
 ```json
 {
-  "PoolName": "rms-user-pool-prod",
+  "PoolName": "dms-user-pool-prod",
   "Policies": {
     "PasswordPolicy": {
       "MinimumLength": 8,
@@ -178,7 +178,7 @@ export const jwtConfig = {
 
 ```json
 {
-  "ClientName": "rms-angular-client",
+  "ClientName": "dms-angular-client",
   "GenerateSecret": false,
   "RefreshTokenValidity": 30,
   "AccessTokenValidity": 60,
@@ -284,13 +284,13 @@ No debug issues encountered during implementation.
 
 **Frontend Configuration Files:**
 
-- `apps/rms/src/environments/cognito-config.interface.ts` - TypeScript interface definition
-- `apps/rms/src/environments/cognito-config-dev.ts` - Development configuration
-- `apps/rms/src/environments/cognito-config-prod.ts` - Production configuration
-- `apps/rms/src/environments/cognito-config-staging.ts` - Staging configuration
-- `apps/rms/src/environments/get-cognito-config.function.ts` - Configuration helper function
-- `apps/rms/src/environments/environment.ts` - Updated to include Cognito config
-- `apps/rms/src/environments/environment.prod.ts` - Updated to include Cognito config
+- `apps/dms/src/environments/cognito-config.interface.ts` - TypeScript interface definition
+- `apps/dms/src/environments/cognito-config-dev.ts` - Development configuration
+- `apps/dms/src/environments/cognito-config-prod.ts` - Production configuration
+- `apps/dms/src/environments/cognito-config-staging.ts` - Staging configuration
+- `apps/dms/src/environments/get-cognito-config.function.ts` - Configuration helper function
+- `apps/dms/src/environments/environment.ts` - Updated to include Cognito config
+- `apps/dms/src/environments/environment.prod.ts` - Updated to include Cognito config
 
 **Backend Configuration Files:**
 
@@ -298,7 +298,7 @@ No debug issues encountered during implementation.
 
 **Test Files:**
 
-- `apps/rms/src/environments/environment.cognito.spec.ts` - Frontend configuration tests
+- `apps/dms/src/environments/environment.cognito.spec.ts` - Frontend configuration tests
 - `apps/server/src/utils/aws-config.spec.ts` - Backend configuration tests
 - `apps/infrastructure/modules/cognito/main.tf.test.js` - Infrastructure validation tests
 

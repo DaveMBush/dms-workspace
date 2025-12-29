@@ -12,7 +12,7 @@ import {
 } from '@angular/core';
 
 @Component({
-  selector: 'rms-splitter',
+  selector: 'dms-splitter',
   imports: [],
   templateUrl: './splitter.html',
   styleUrl: './splitter.component.scss',

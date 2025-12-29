@@ -24,21 +24,21 @@ test.describe('Global Summary Component', () => {
     test('allocation pie chart displays risk group breakdown', async ({
       page,
     }) => {
-      const allocationChart = page.locator('rms-summary-display').first();
+      const allocationChart = page.locator('dms-summary-display').first();
       await expect(allocationChart).toBeVisible();
       // Verify the chart container is present
       await expect(allocationChart.locator('canvas')).toBeVisible();
     });
 
     test('performance line chart displays over time', async ({ page }) => {
-      const performanceChart = page.locator('rms-summary-display').nth(1);
+      const performanceChart = page.locator('dms-summary-display').nth(1);
       await expect(performanceChart).toBeVisible();
       // Verify the chart container is present
       await expect(performanceChart.locator('canvas')).toBeVisible();
     });
 
     test('should render two summary display components', async ({ page }) => {
-      const charts = page.locator('rms-summary-display');
+      const charts = page.locator('dms-summary-display');
       await expect(charts).toHaveCount(2);
     });
 
@@ -56,7 +56,7 @@ test.describe('Global Summary Component', () => {
     test('allocation pie chart should have visible canvas', async ({
       page,
     }) => {
-      const firstChart = page.locator('rms-summary-display').first();
+      const firstChart = page.locator('dms-summary-display').first();
       const canvas = firstChart.locator('canvas');
 
       const boundingBox = await canvas.boundingBox();
@@ -68,7 +68,7 @@ test.describe('Global Summary Component', () => {
     test('performance line chart should have visible canvas', async ({
       page,
     }) => {
-      const secondChart = page.locator('rms-summary-display').nth(1);
+      const secondChart = page.locator('dms-summary-display').nth(1);
       const canvas = secondChart.locator('canvas');
 
       const boundingBox = await canvas.boundingBox();
@@ -107,12 +107,12 @@ test.describe('Global Summary Component', () => {
       await page.waitForLoadState('networkidle');
 
       // Verify charts are still visible
-      const charts = page.locator('rms-summary-display');
+      const charts = page.locator('dms-summary-display');
       await expect(charts).toHaveCount(2);
     });
 
     test('should display legend for pie chart', async ({ page }) => {
-      const firstChart = page.locator('rms-summary-display').first();
+      const firstChart = page.locator('dms-summary-display').first();
       // Verify chart is rendered with canvas
       const canvas = firstChart.locator('canvas');
       await expect(canvas).toBeVisible();
@@ -128,7 +128,7 @@ test.describe('Global Summary Component', () => {
       await page.reload();
       await page.waitForLoadState('networkidle');
 
-      const charts = page.locator('rms-summary-display');
+      const charts = page.locator('dms-summary-display');
       await expect(charts).toHaveCount(2);
     });
   });
@@ -149,7 +149,7 @@ test.describe('Global Summary Component', () => {
       await expect(container).toBeVisible();
 
       // Verify it contains the charts
-      const charts = container.locator('rms-summary-display');
+      const charts = container.locator('dms-summary-display');
       await expect(charts).toHaveCount(2);
     });
 
@@ -160,28 +160,28 @@ test.describe('Global Summary Component', () => {
       await page.setViewportSize({ width: 1920, height: 1080 });
       await page.waitForTimeout(300);
 
-      let charts = page.locator('rms-summary-display');
+      let charts = page.locator('dms-summary-display');
       await expect(charts).toHaveCount(2);
 
       // Test on tablet
       await page.setViewportSize({ width: 768, height: 1024 });
       await page.waitForTimeout(300);
 
-      charts = page.locator('rms-summary-display');
+      charts = page.locator('dms-summary-display');
       await expect(charts).toHaveCount(2);
 
       // Test on mobile
       await page.setViewportSize({ width: 375, height: 667 });
       await page.waitForTimeout(300);
 
-      charts = page.locator('rms-summary-display');
+      charts = page.locator('dms-summary-display');
       await expect(charts).toHaveCount(2);
     });
   });
 
   test.describe('Accessibility', () => {
     test('charts should have accessible structure', async ({ page }) => {
-      const summaryDisplay = page.locator('rms-summary-display').first();
+      const summaryDisplay = page.locator('dms-summary-display').first();
       await expect(summaryDisplay).toBeVisible();
 
       // Verify the component has proper structure

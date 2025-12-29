@@ -3,7 +3,7 @@
 
 <mat-dialog-content>
   <form [formGroup]="form">
-    <rms-symbol-autocomplete
+    <dms-symbol-autocomplete
       [searchFn]="boundSearchSymbols"
       (symbolSelected)="onSymbolSelected($event)"
     />

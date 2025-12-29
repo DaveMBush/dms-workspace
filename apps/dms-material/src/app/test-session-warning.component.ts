@@ -8,7 +8,7 @@ import { SessionWarningService } from './auth/services/session-warning.service';
  * DELETE THIS FILE after testing
  */
 @Component({
-  selector: 'rms-test-session-warning',
+  selector: 'dms-test-session-warning',
   imports: [MatButtonModule],
   templateUrl: './test-session-warning.html',
   styleUrl: './test-session-warning.scss',

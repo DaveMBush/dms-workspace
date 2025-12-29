@@ -1,12 +1,12 @@
 # Epic J: AWS Deployment Infrastructure
 
-Goal: Deploy the RMS application to AWS using Infrastructure as Code (Terraform) for resume-worthy cloud deployment experience.
+Goal: Deploy the DMS application to AWS using Infrastructure as Code (Terraform) for resume-worthy cloud deployment experience.
 
 ## Context
 
 Currently the application runs locally with:
 
-- **Frontend**: Angular 20 SPA (build: `apps/rms` → `dist/apps/rms`)
+- **Frontend**: Angular 20 SPA (build: `apps/dms` → `dist/apps/dms`)
 - **Backend**: Node.js Fastify API server (build: `apps/server` → `dist/apps/server`)
 - **Database**: SQLite with Prisma (production will need PostgreSQL/MySQL)
 - **Tech Stack**: Nx monorepo, pnpm, Node.js 22

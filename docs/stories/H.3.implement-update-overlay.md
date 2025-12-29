@@ -19,8 +19,8 @@ Add a translucent overlay to the Universe screen during "Update Fields" and "Upd
 
 ### Files to Modify
 
-- `apps/rms/src/app/global/global-universe/global-universe.component.html`
-- `apps/rms/src/app/global/global-universe/global-universe.component.ts`
+- `apps/dms/src/app/global/global-universe/global-universe.component.html`
+- `apps/dms/src/app/global/global-universe/global-universe.component.ts`
 
 ### Implementation Notes
 

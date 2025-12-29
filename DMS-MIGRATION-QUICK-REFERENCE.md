@@ -1,4 +1,4 @@
-# RMS Frontend: PrimeNG → Angular Material Migration Quick Reference
+# DMS Frontend: PrimeNG → Angular Material Migration Quick Reference
 
 ## Component Mapping Guide
 
@@ -113,18 +113,18 @@ dialogRef.afterClosed().subscribe((result) => {
 
 ### High Priority (Heavy PrimeNG Usage)
 
-- `apps/rms/src/app/shared/base-positions-table.component.ts` - Table component
-- `apps/rms/src/app/global/global-universe/global-universe.component.ts` - Complex data table
-- `apps/rms/src/app/account-panel/open-positions/open-positions.component.ts` - Editable table
-- `apps/rms/src/app/shell/shell.component.ts` - Main layout (toolbar, panels)
-- `apps/rms/src/app/app.config.ts` - Theme configuration
+- `apps/dms/src/app/shared/base-positions-table.component.ts` - Table component
+- `apps/dms/src/app/global/global-universe/global-universe.component.ts` - Complex data table
+- `apps/dms/src/app/account-panel/open-positions/open-positions.component.ts` - Editable table
+- `apps/dms/src/app/shell/shell.component.ts` - Main layout (toolbar, panels)
+- `apps/dms/src/app/app.config.ts` - Theme configuration
 
 ### Medium Priority (Moderate Usage)
 
-- `apps/rms/src/app/auth/login/login.ts` - Forms
-- `apps/rms/src/app/auth/profile/profile.ts` - Cards, dialogs
-- `apps/rms/src/app/accounts/account.ts` - Listbox
-- `apps/rms/src/app/account-panel/div-dep-modal/div-dep-modal.component.ts` - Dialog
+- `apps/dms/src/app/auth/login/login.ts` - Forms
+- `apps/dms/src/app/auth/profile/profile.ts` - Cards, dialogs
+- `apps/dms/src/app/accounts/account.ts` - Listbox
+- `apps/dms/src/app/account-panel/div-dep-modal/div-dep-modal.component.ts` - Dialog
 
 ### Low Priority (Light Usage)
 

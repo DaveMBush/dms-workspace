@@ -6,7 +6,7 @@ import { ProfileActionsService } from '../../services/profile-actions.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  selector: 'rms-account-actions-card',
+  selector: 'dms-account-actions-card',
   imports: [ButtonModule, CardModule],
   templateUrl: './account-actions-card.html',
 })

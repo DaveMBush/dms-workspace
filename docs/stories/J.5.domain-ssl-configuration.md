@@ -8,7 +8,7 @@ Draft
 
 **As a** DevOps engineer,
 **I want** to configure a custom domain with Route53 DNS and SSL certificates for both frontend and backend services,
-**so that** the RMS application is accessible via professional domain names with secure HTTPS encryption and proper DNS management.
+**so that** the DMS application is accessible via professional domain names with secure HTTPS encryption and proper DNS management.
 
 ## Acceptance Criteria
 
@@ -25,13 +25,13 @@ Draft
 
 - `pnpm format`
 - `pnpm dupcheck`
-- `pnpm nx run rms:test --code-coverage`
+- `pnpm nx run dms:test --code-coverage`
 - `pnpm nx run server:build:production`
 - `pnpm nx run server:test --code-coverage`
 - `pnpm nx run server:lint`
-- `pnpm nx run rms:lint`
-- `pnpm nx run rms:build:production`
-- `pnpm nx run rms-e2e:lint`
+- `pnpm nx run dms:lint`
+- `pnpm nx run dms:build:production`
+- `pnpm nx run dms-e2e:lint`
 
 ## Tasks / Subtasks
 
@@ -151,7 +151,7 @@ Draft
 1. `/apps/infrastructure/modules/cloudfront/main.tf` - Add certificate and domain configuration
 2. `/apps/infrastructure/modules/alb/main.tf` - Add HTTPS listener with certificate
 3. `/apps/infrastructure/environments/dev/main.tf` - Include Route53 and ACM modules
-4. `/apps/rms/src/environments/environment.prod.ts` - Update API endpoint URLs
+4. `/apps/dms/src/environments/environment.prod.ts` - Update API endpoint URLs
 
 **Test Files to Create:**
 
@@ -166,7 +166,7 @@ Draft
 ```hcl
 resource "aws_route53_zone" "main" {
   name    = var.domain_name
-  comment = "Hosted zone for RMS application"
+  comment = "Hosted zone for DMS application"
 
   tags = var.common_tags
 }
@@ -291,7 +291,7 @@ resource "aws_acm_certificate_validation" "frontend" {
 **CloudFront Distribution Update:**
 
 ```hcl
-resource "aws_cloudfront_distribution" "rms_frontend" {
+resource "aws_cloudfront_distribution" "dms_frontend" {
   # ... existing configuration ...
 
   aliases = [var.domain_name, "www.${var.domain_name}"]
@@ -310,8 +310,8 @@ resource "aws_cloudfront_distribution" "rms_frontend" {
 **ALB HTTPS Listener Configuration:**
 
 ```hcl
-resource "aws_lb_listener" "rms_backend_https" {
-  load_balancer_arn = aws_lb.rms_backend.arn
+resource "aws_lb_listener" "dms_backend_https" {
+  load_balancer_arn = aws_lb.dms_backend.arn
   port              = "443"
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-TLS-1-2-2017-01"
@@ -319,13 +319,13 @@ resource "aws_lb_listener" "rms_backend_https" {
 
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.rms_backend.arn
+    target_group_arn = aws_lb_target_group.dms_backend.arn
   }
 }
 
 # HTTP to HTTPS redirect
-resource "aws_lb_listener" "rms_backend_http_redirect" {
-  load_balancer_arn = aws_lb.rms_backend.arn
+resource "aws_lb_listener" "dms_backend_http_redirect" {
+  load_balancer_arn = aws_lb.dms_backend.arn
   port              = "80"
   protocol          = "HTTP"
 
@@ -351,11 +351,11 @@ resource "aws_route53_health_check" "frontend" {
   resource_path                  = "/"
   failure_threshold              = "3"
   request_interval               = "30"
-  search_string                  = "<title>RMS"
+  search_string                  = "<title>DMS"
   cloudwatch_logs_region         = var.aws_region
 
   tags = merge(var.common_tags, {
-    Name = "RMS Frontend Health Check"
+    Name = "DMS Frontend Health Check"
   })
 }
 
@@ -370,7 +370,7 @@ resource "aws_route53_health_check" "api" {
   cloudwatch_logs_region         = var.aws_region
 
   tags = merge(var.common_tags, {
-    Name = "RMS API Health Check"
+    Name = "DMS API Health Check"
   })
 }
 ```
@@ -379,7 +379,7 @@ resource "aws_route53_health_check" "api" {
 
 ```hcl
 resource "aws_cloudwatch_metric_alarm" "certificate_expiry" {
-  alarm_name          = "rms-certificate-expiry-${var.environment}"
+  alarm_name          = "dms-certificate-expiry-${var.environment}"
   comparison_operator = "LessThanThreshold"
   evaluation_periods  = "1"
   metric_name         = "DaysToExpiry"
@@ -443,12 +443,12 @@ echo "DNS and SSL validation completed successfully!"
 **Environment Configuration:**
 
 ```typescript
-// apps/rms/src/environments/environment.prod.ts
+// apps/dms/src/environments/environment.prod.ts
 export const environment = {
   production: true,
-  apiUrl: 'https://api.rms-app.com/api/v1',
-  wsUrl: 'wss://api.rms-app.com/ws',
-  domain: 'rms-app.com',
+  apiUrl: 'https://api.dms-app.com/api/v1',
+  wsUrl: 'wss://api.dms-app.com/ws',
+  domain: 'dms-app.com',
   enableLogging: false,
   ssl: {
     enforceHttps: true,
@@ -456,7 +456,7 @@ export const environment = {
     certificateTransparency: true,
   },
   cors: {
-    allowedOrigins: ['https://rms-app.com', 'https://www.rms-app.com'],
+    allowedOrigins: ['https://dms-app.com', 'https://www.dms-app.com'],
     credentials: true,
   },
 };

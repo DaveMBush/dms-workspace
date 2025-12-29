@@ -159,19 +159,19 @@ describe('AWS Configuration', () => {
         mockSend.mockResolvedValue({
           Parameters: [
             {
-              Name: '/rms/production/cognito-user-pool-id',
+              Name: '/dms/production/cognito-user-pool-id',
               Value: 'us-east-1_prodpool',
             },
             {
-              Name: '/rms/production/cognito-user-pool-client-id',
+              Name: '/dms/production/cognito-user-pool-client-id',
               Value: 'prodclientid',
             },
             {
-              Name: '/rms/production/cognito-jwt-issuer',
+              Name: '/dms/production/cognito-jwt-issuer',
               Value:
                 'https://cognito-idp.us-east-1.amazonaws.com/us-east-1_prodpool',
             },
-            { Name: '/rms/production/aws-region', Value: 'us-east-1' },
+            { Name: '/dms/production/aws-region', Value: 'us-east-1' },
           ],
         });
 
@@ -187,10 +187,10 @@ describe('AWS Configuration', () => {
 
         expect(mockGetParametersCommand).toHaveBeenCalledWith({
           Names: [
-            '/rms/production/cognito-user-pool-id',
-            '/rms/production/cognito-user-pool-client-id',
-            '/rms/production/cognito-jwt-issuer',
-            '/rms/production/aws-region',
+            '/dms/production/cognito-user-pool-id',
+            '/dms/production/cognito-user-pool-client-id',
+            '/dms/production/cognito-jwt-issuer',
+            '/dms/production/aws-region',
           ],
           WithDecryption: false,
         });
@@ -200,7 +200,7 @@ describe('AWS Configuration', () => {
         mockSend.mockResolvedValue({
           Parameters: [
             {
-              Name: '/rms/production/cognito-user-pool-id',
+              Name: '/dms/production/cognito-user-pool-id',
               Value: 'us-east-1_prodpool',
             },
             // Missing other required parameters
@@ -245,15 +245,15 @@ describe('AWS Configuration', () => {
         mockSend.mockResolvedValue({
           Parameters: [
             {
-              Name: '/rms/production/cognito-user-pool-id',
+              Name: '/dms/production/cognito-user-pool-id',
               Value: 'us-east-1_prodpool',
             },
             {
-              Name: '/rms/production/cognito-user-pool-client-id',
+              Name: '/dms/production/cognito-user-pool-client-id',
               Value: 'prodclientid',
             },
             {
-              Name: '/rms/production/cognito-jwt-issuer',
+              Name: '/dms/production/cognito-jwt-issuer',
               Value:
                 'https://cognito-idp.us-east-1.amazonaws.com/us-east-1_prodpool',
             },

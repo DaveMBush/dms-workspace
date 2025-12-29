@@ -19,7 +19,7 @@ import { selectDivDepositEntity } from '../../store/div-deposits/div-deposits.se
 import { DivDepModal } from '../div-dep-modal/div-dep-modal.component';
 
 @Component({
-  selector: 'rms-dividend-deposits',
+  selector: 'dms-dividend-deposits',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [BaseTableComponent, DatePipe, CurrencyPipe],
   templateUrl: './dividend-deposits.component.html',

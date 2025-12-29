@@ -9,7 +9,7 @@ import { ActivatedRoute, RouterOutlet } from '@angular/router';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  selector: 'rms-account-detail',
+  selector: 'dms-account-detail',
   imports: [RouterOutlet],
   templateUrl: './account-detail.component.html',
   styleUrl: './account-detail.component.scss',

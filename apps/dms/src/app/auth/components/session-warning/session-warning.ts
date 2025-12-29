@@ -19,7 +19,7 @@ import { Subscription, timer } from 'rxjs';
  * Shows dialog with option to extend session or logout immediately
  */
 @Component({
-  selector: 'rms-session-warning',
+  selector: 'dms-session-warning',
   imports: [CommonModule, DialogModule, ButtonModule, ProgressBarModule],
   templateUrl: './session-warning.html',
   styleUrls: ['./session-warning.scss'],

@@ -10,14 +10,14 @@
 
 **Current System:**
 
-- RMS app has delete button/icon for accounts
+- DMS app has delete button/icon for accounts
 - Confirmation dialog prevents accidental deletion
 - Deletion removes account and all associated data
 - Uses SmartNgRX removeFromStore
 
 **Migration Target:**
 
-- Replicate RMS delete in RMS-MATERIAL
+- Replicate DMS delete in DMS-MATERIAL
 - Use Material Design dialog for confirmation
 - Integrate with SmartNgRX deletion
 
@@ -25,7 +25,7 @@
 
 ### Functional Requirements
 
-- [ ] **CRITICAL** UI matches RMS app delete behavior exactly
+- [ ] **CRITICAL** UI matches DMS app delete behavior exactly
 - [ ] Delete icon/button visible for each account
 - [ ] Confirmation dialog appears before deletion
 - [ ] User can confirm or cancel deletion
@@ -45,7 +45,7 @@
 
 ### Step 1: Create Unit Tests First
 
-Update `apps/rms-material/src/app/accounts/account.spec.ts`:
+Update `apps/dms-material/src/app/accounts/account.spec.ts`:
 
 ```typescript
 describe('Account - Delete Functionality', () => {
@@ -127,12 +127,12 @@ describe('Account - Delete Functionality', () => {
 ### Step 2: Run Tests (Should Fail)
 
 ```bash
-pnpm nx test rms-material
+pnpm nx test dms-material
 ```
 
 ### Step 3: Implement
 
-Update `apps/rms-material/src/app/accounts/account.ts`:
+Update `apps/dms-material/src/app/accounts/account.ts`:
 
 ```typescript
 import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
@@ -153,7 +153,7 @@ import { NodeEditorComponent } from '../shared/components/node-editor/node-edito
 import { ConfirmDialogComponent } from '../shared/components/confirm-dialog/confirm-dialog.component';
 
 @Component({
-  selector: 'rms-account',
+  selector: 'dms-account',
   imports: [RouterLink, RouterLinkActive, MatListModule, MatToolbarModule, MatButtonModule, MatIconModule, MatDividerModule, MatDialogModule, NodeEditorComponent],
   templateUrl: './account.html',
   styleUrl: './account.scss',
@@ -201,7 +201,7 @@ export class Account {
 }
 ```
 
-Update `apps/rms-material/src/app/accounts/account.html`:
+Update `apps/dms-material/src/app/accounts/account.html`:
 
 ```html
 <mat-toolbar>
@@ -214,7 +214,7 @@ Update `apps/rms-material/src/app/accounts/account.html`:
 
 <mat-nav-list>
   @for (account of accountsList(); track account.id) { @if (addingNode() === account.id || editingNode() === account.id) {
-  <rms-node-editor [placeholder]="addingNode() ? 'New Account' : 'Edit Account'" [(ngModel)]="editingContent" (cancel)="cancelEdit(account)" (save)="saveEdit(account)" />
+  <dms-node-editor [placeholder]="addingNode() ? 'New Account' : 'Edit Account'" [(ngModel)]="editingContent" (cancel)="cancelEdit(account)" (save)="saveEdit(account)" />
   } @else {
   <mat-list-item [routerLink]="['/account', account.id]" routerLinkActive="active-link" class="account-item">
     <span matListItemTitle (click)="editAccount(account); $event.stopPropagation()" class="editable-name"> {{ account.name }} </span>
@@ -226,7 +226,7 @@ Update `apps/rms-material/src/app/accounts/account.html`:
 </mat-nav-list>
 ```
 
-Create `apps/rms-material/src/app/shared/components/confirm-dialog/confirm-dialog.component.ts`:
+Create `apps/dms-material/src/app/shared/components/confirm-dialog/confirm-dialog.component.ts`:
 
 ```typescript
 import { Component, inject } from '@angular/core';
@@ -239,7 +239,7 @@ export interface ConfirmDialogData {
 }
 
 @Component({
-  selector: 'rms-confirm-dialog',
+  selector: 'dms-confirm-dialog',
   standalone: true,
   imports: [MatDialogModule, MatButtonModule],
   template: `
@@ -270,12 +270,12 @@ export class ConfirmDialogComponent {
 ### Step 4: Run Tests (Should Pass)
 
 ```bash
-pnpm nx test rms-material
+pnpm nx test dms-material
 ```
 
 ### Step 5: Manual Testing with Playwright
 
-1. Start app: `pnpm nx serve rms-material`
+1. Start app: `pnpm nx serve dms-material`
 2. Navigate to accounts panel
 3. Click delete icon on an account
 4. Verify confirmation dialog appears
@@ -288,10 +288,10 @@ pnpm nx test rms-material
 
 ### Files to Modify
 
-- `apps/rms-material/src/app/accounts/account.ts` - Delete account functionality
-- `apps/rms-material/src/app/accounts/account.html` - Delete button UI
-- `apps/rms-material/src/app/accounts/account.spec.ts` - Unit tests
-- `apps/rms-material/src/app/shared/components/confirm-dialog/` - Create dialog component
+- `apps/dms-material/src/app/accounts/account.ts` - Delete account functionality
+- `apps/dms-material/src/app/accounts/account.html` - Delete button UI
+- `apps/dms-material/src/app/accounts/account.spec.ts` - Unit tests
+- `apps/dms-material/src/app/shared/components/confirm-dialog/` - Create dialog component
 
 ### Implementation Steps
 
@@ -307,10 +307,10 @@ pnpm nx test rms-material
 
 | File                                                          | Changes                      |
 | ------------------------------------------------------------- | ---------------------------- |
-| `apps/rms-material/src/app/accounts/account.ts`               | Added deleteAccount() method |
-| `apps/rms-material/src/app/accounts/account.html`             | Added delete button          |
-| `apps/rms-material/src/app/accounts/account.spec.ts`          | Added unit tests             |
-| `apps/rms-material/src/app/shared/components/confirm-dialog/` | Created dialog component     |
+| `apps/dms-material/src/app/accounts/account.ts`               | Added deleteAccount() method |
+| `apps/dms-material/src/app/accounts/account.html`             | Added delete button          |
+| `apps/dms-material/src/app/accounts/account.spec.ts`          | Added unit tests             |
+| `apps/dms-material/src/app/shared/components/confirm-dialog/` | Created dialog component     |
 
 ## Definition of Done
 
@@ -323,13 +323,13 @@ pnpm nx test rms-material
 - [ ] Cannot delete while editing
 - [ ] Unit tests pass
 - [ ] Manual Playwright verification complete
-- [ ] UI matches RMS app behavior
+- [ ] UI matches DMS app behavior
 - [ ] All existing tests pass
 - [ ] Lint passes
 - [ ] Code reviewed
 - [ ] All validation commands pass
   - Run `pnpm all`
-  - Run `pnpm e2e:rms-material`
+  - Run `pnpm e2e:dms-material`
   - Run `pnpm dupcheck`
   - Run `pnpm format`
   - Repeat all of these if any fail until they all pass

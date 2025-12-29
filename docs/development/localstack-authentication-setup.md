@@ -1,6 +1,6 @@
 # LocalStack Authentication Configuration Guide
 
-This document describes the local authentication and configuration management setup using LocalStack for the RMS Workspace project.
+This document describes the local authentication and configuration management setup using LocalStack for the DMS Workspace project.
 
 ## Overview
 
@@ -64,7 +64,7 @@ AWS_SECRET_ACCESS_KEY=test
 AWS_ENDPOINT_URL=http://localhost:4566
 
 # Database
-DATABASE_URL=postgresql://rms_user:rms_password@localhost:5432/rms_local?schema=public
+DATABASE_URL=postgresql://dms_user:dms_password@localhost:5432/dms_local?schema=public
 ```
 
 ### 3. Cognito Configuration
@@ -80,12 +80,12 @@ LocalStack automatically creates:
 The following parameters are automatically populated:
 
 ```
-/rms/local/database-url
-/rms/local/database-password
-/rms/local/cognito-user-pool-id
-/rms/local/cognito-user-pool-client-id
-/rms/local/cognito-jwt-issuer
-/rms/local/aws-region
+/dms/local/database-url
+/dms/local/database-password
+/dms/local/cognito-user-pool-id
+/dms/local/cognito-user-pool-client-id
+/dms/local/cognito-jwt-issuer
+/dms/local/aws-region
 ```
 
 ## JWT Token Compatibility
@@ -112,7 +112,7 @@ The backend JWT validation middleware automatically:
 A specific configuration file for local development:
 
 ```typescript
-// apps/rms/src/environments/cognito-config-local.ts
+// apps/dms/src/environments/cognito-config-local.ts
 export const cognitoConfigLocal: CognitoConfig = {
   region: 'us-east-1',
   userPoolId: 'us-east-1_LOCAL123',
@@ -183,7 +183,7 @@ docker-compose -f docker-compose.local.yml logs -f localstack
 
 # Check parameter values
 aws --endpoint-url=http://localhost:4566 ssm get-parameter \
-  --name "/rms/local/cognito-user-pool-id" --with-decryption
+  --name "/dms/local/cognito-user-pool-id" --with-decryption
 
 # Verify JWKS endpoint
 curl http://localhost:4566/cognito-idp/us-east-1/us-east-1_LOCAL123/.well-known/jwks.json
@@ -212,7 +212,7 @@ curl http://localhost:4566/cognito-idp/us-east-1/us-east-1_LOCAL123/.well-known/
 After successful local setup:
 
 1. Start the backend: `pnpm nx run server:serve`
-2. Start the frontend: `pnpm nx run rms:serve`
+2. Start the frontend: `pnpm nx run dms:serve`
 3. Visit `http://localhost:4200`
 4. Log in with test credentials
 5. Verify authentication flows work end-to-end

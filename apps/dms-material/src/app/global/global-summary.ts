@@ -88,7 +88,7 @@ function computePercentIncrease(
 }
 
 @Component({
-  selector: 'rms-global-summary',
+  selector: 'dms-global-summary',
   imports: [
     CurrencyPipe,
     MatCardModule,

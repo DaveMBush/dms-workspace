@@ -8,7 +8,7 @@ import { FormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 
 @Component({
-  selector: 'rms-symbol-filter-header',
+  selector: 'dms-symbol-filter-header',
   templateUrl: './symbol-filter-header.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [FormsModule, InputTextModule],

@@ -219,7 +219,7 @@ test.describe('Summary Display Component (Charts)', () => {
   test.describe('Theme Support', () => {
     test('charts render in light theme', async ({ page }) => {
       // Ensure light theme
-      await page.evaluate(() => localStorage.setItem('rms-theme', 'light'));
+      await page.evaluate(() => localStorage.setItem('dms-theme', 'light'));
       await page.reload();
       await page.waitForLoadState('networkidle');
 
@@ -229,7 +229,7 @@ test.describe('Summary Display Component (Charts)', () => {
 
     test('charts render in dark theme', async ({ page }) => {
       // Switch to dark theme
-      await page.evaluate(() => localStorage.setItem('rms-theme', 'dark'));
+      await page.evaluate(() => localStorage.setItem('dms-theme', 'dark'));
       await page.reload();
       await page.waitForLoadState('networkidle');
 

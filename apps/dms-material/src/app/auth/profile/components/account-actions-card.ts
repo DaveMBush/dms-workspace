@@ -6,7 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { ProfileActionsService } from '../../services/profile-actions.service';
 
 @Component({
-  selector: 'rms-account-actions-card',
+  selector: 'dms-account-actions-card',
   imports: [MatCardModule, MatButtonModule, MatIconModule],
   templateUrl: './account-actions-card.html',
   styleUrl: './account-actions-card.scss',

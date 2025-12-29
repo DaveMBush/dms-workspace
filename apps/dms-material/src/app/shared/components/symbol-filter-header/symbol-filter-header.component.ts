@@ -10,7 +10,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { FilterOption } from './filter-option.interface';
 
 @Component({
-  selector: 'rms-symbol-filter-header',
+  selector: 'dms-symbol-filter-header',
   imports: [MatSelectModule, MatFormFieldModule],
   templateUrl: './symbol-filter-header.component.html',
   styleUrl: './symbol-filter-header.component.scss',

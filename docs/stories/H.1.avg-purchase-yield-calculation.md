@@ -67,13 +67,13 @@ This is the first story in Epic H, starting from a clean state.
 - Open positions identified by `sell_date IS NULL`
 - Position calculations already implemented in `UniverseDataService.getAccountSpecificData()`
 
-**Source: [apps/rms/src/app/global/global-universe/universe.selector.ts]**
+**Source: [apps/dms/src/app/global/global-universe/universe.selector.ts]**
 
 - Current yield calculation: `100 * universe.distributions_per_year * (universe.distribution / universe.last_price)`
 - Display data interface: `UniverseDisplayData` with existing `yield_percent` field
 - Existing position calculation available from trade data
 
-**Source: [apps/rms/src/app/global/global-universe/universe-data.service.ts]**
+**Source: [apps/dms/src/app/global/global-universe/universe-data.service.ts]**
 
 - `getAccountSpecificData()` method already calculates position as `sum(buy * quantity)` for open positions
 - Pattern to follow for implementing account-specific data calculations
@@ -83,14 +83,14 @@ This is the first story in Epic H, starting from a clean state.
 
 **Primary Files to Modify:**
 
-1. `/apps/rms/src/app/global/global-universe/universe.selector.ts` - Add avg_purchase_yield_percent calculation
-2. `/apps/rms/src/app/global/global-universe/universe-data.service.ts` - Add field handling for new column
-3. `/apps/rms/src/app/global/global-universe/universe-data.service.ts` (interfaces) - Update UniverseDisplayData interface
+1. `/apps/dms/src/app/global/global-universe/universe.selector.ts` - Add avg_purchase_yield_percent calculation
+2. `/apps/dms/src/app/global/global-universe/universe-data.service.ts` - Add field handling for new column
+3. `/apps/dms/src/app/global/global-universe/universe-data.service.ts` (interfaces) - Update UniverseDisplayData interface
 
 **Test Files to Create/Modify:**
 
-1. `/apps/rms/src/app/global/global-universe/universe.selector.spec.ts` - Test new calculation logic
-2. `/apps/rms/src/app/global/global-universe/universe-data.service.spec.ts` - Test field handling
+1. `/apps/dms/src/app/global/global-universe/universe.selector.spec.ts` - Test new calculation logic
+2. `/apps/dms/src/app/global/global-universe/universe-data.service.spec.ts` - Test field handling
 
 ### Technical Implementation Details
 
@@ -158,7 +158,7 @@ Claude Sonnet 4 (claude-sonnet-4-20250514)
 
 ### Debug Log References
 
-- GitHub Issue #91: https://github.com/DaveMBush/rms-workspace/issues/91
+- GitHub Issue #91: https://github.com/DaveMBush/dms-workspace/issues/91
 - Branch: story-h1-avg-purchase-yield
 
 ### Completion Notes List
@@ -174,13 +174,13 @@ Claude Sonnet 4 (claude-sonnet-4-20250514)
 
 **Modified Files:**
 
-- `/apps/rms/src/app/global/global-universe/universe.selector.ts` - Added calculateAveragePurchaseData() function and avg_purchase_yield_percent calculation
-- `/apps/rms/src/app/global/global-universe/universe-data.service.ts` - Added avg_purchase_yield_percent to UniverseDisplayData interface and getFieldValueFromDisplayData() method
+- `/apps/dms/src/app/global/global-universe/universe.selector.ts` - Added calculateAveragePurchaseData() function and avg_purchase_yield_percent calculation
+- `/apps/dms/src/app/global/global-universe/universe-data.service.ts` - Added avg_purchase_yield_percent to UniverseDisplayData interface and getFieldValueFromDisplayData() method
 
 **New Files:**
 
-- `/apps/rms/src/app/global/global-universe/universe.selector.spec.ts` - Comprehensive unit tests for selector logic
-- `/apps/rms/src/app/global/global-universe/universe-data.service.spec.ts` - Unit tests for data service field handling
+- `/apps/dms/src/app/global/global-universe/universe.selector.spec.ts` - Comprehensive unit tests for selector logic
+- `/apps/dms/src/app/global/global-universe/universe-data.service.spec.ts` - Unit tests for data service field handling
 
 ## QA Results
 

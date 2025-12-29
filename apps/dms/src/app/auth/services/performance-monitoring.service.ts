@@ -127,7 +127,7 @@ export class PerformanceMonitoringService {
       alerts: dashboardData.alerts,
       regressions,
       timestamp: dashboardData.timestamp,
-      format: 'rms-performance-v1',
+      format: 'dms-performance-v1',
     };
   }
 

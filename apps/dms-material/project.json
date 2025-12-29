@@ -2,7 +2,7 @@
   "name": "dms-material",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
-  "prefix": "rms",
+  "prefix": "dms",
   "sourceRoot": "apps/dms-material/src",
   "tags": [],
   "targets": {

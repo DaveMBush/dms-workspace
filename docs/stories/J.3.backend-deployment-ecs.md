@@ -8,7 +8,7 @@ Ready for Review
 
 **As a** DevOps engineer,
 **I want** to containerize the Fastify backend application and deploy it to ECS Fargate with auto-scaling and load balancing,
-**so that** the RMS API server runs reliably on AWS with proper container orchestration, health monitoring, and scalability.
+**so that** the DMS API server runs reliably on AWS with proper container orchestration, health monitoring, and scalability.
 
 ## Acceptance Criteria
 
@@ -25,13 +25,13 @@ Ready for Review
 
 - `pnpm format`
 - `pnpm dupcheck`
-- `pnpm nx run rms:test --code-coverage`
+- `pnpm nx run dms:test --code-coverage`
 - `pnpm nx run server:build:production`
 - `pnpm nx run server:test --code-coverage`
 - `pnpm nx run server:lint`
-- `pnpm nx run rms:lint`
-- `pnpm nx run rms:build:production`
-- `pnpm nx run rms-e2e:lint`
+- `pnpm nx run dms:lint`
+- `pnpm nx run dms:build:production`
+- `pnpm nx run dms-e2e:lint`
 
 ## Tasks / Subtasks
 
@@ -190,8 +190,8 @@ CMD ["node", "main.js"]
 **ECS Task Definition:**
 
 ```hcl
-resource "aws_ecs_task_definition" "rms_backend" {
-  family                   = "rms-backend-${var.environment}"
+resource "aws_ecs_task_definition" "dms_backend" {
+  family                   = "dms-backend-${var.environment}"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   cpu                      = 256
@@ -201,7 +201,7 @@ resource "aws_ecs_task_definition" "rms_backend" {
 
   container_definitions = jsonencode([
     {
-      name  = "rms-backend"
+      name  = "dms-backend"
       image = "${var.ecr_repository_url}:${var.image_tag}"
 
       portMappings = [
@@ -232,7 +232,7 @@ resource "aws_ecs_task_definition" "rms_backend" {
       logConfiguration = {
         logDriver = "awslogs"
         options = {
-          "awslogs-group"         = aws_cloudwatch_log_group.rms_backend.name
+          "awslogs-group"         = aws_cloudwatch_log_group.dms_backend.name
           "awslogs-region"        = var.aws_region
           "awslogs-stream-prefix" = "ecs"
         }
@@ -253,8 +253,8 @@ resource "aws_ecs_task_definition" "rms_backend" {
 **ALB Configuration:**
 
 ```hcl
-resource "aws_lb" "rms_backend" {
-  name               = "rms-backend-alb-${var.environment}"
+resource "aws_lb" "dms_backend" {
+  name               = "dms-backend-alb-${var.environment}"
   internal           = false
   load_balancer_type = "application"
   security_groups    = [var.alb_security_group_id]
@@ -264,13 +264,13 @@ resource "aws_lb" "rms_backend" {
 
   access_logs {
     bucket  = var.alb_logs_bucket
-    prefix  = "rms-backend-alb"
+    prefix  = "dms-backend-alb"
     enabled = true
   }
 }
 
-resource "aws_lb_target_group" "rms_backend" {
-  name     = "rms-backend-tg-${var.environment}"
+resource "aws_lb_target_group" "dms_backend" {
+  name     = "dms-backend-tg-${var.environment}"
   port     = 3000
   protocol = "HTTP"
   vpc_id   = var.vpc_id
@@ -328,20 +328,20 @@ export default healthRoutes;
 **Auto-Scaling Configuration:**
 
 ```hcl
-resource "aws_appautoscaling_target" "rms_backend" {
+resource "aws_appautoscaling_target" "dms_backend" {
   max_capacity       = 10
   min_capacity       = 1
-  resource_id        = "service/${aws_ecs_cluster.main.name}/${aws_ecs_service.rms_backend.name}"
+  resource_id        = "service/${aws_ecs_cluster.main.name}/${aws_ecs_service.dms_backend.name}"
   scalable_dimension = "ecs:service:DesiredCount"
   service_namespace  = "ecs"
 }
 
-resource "aws_appautoscaling_policy" "rms_backend_cpu" {
-  name               = "rms-backend-cpu-scaling"
+resource "aws_appautoscaling_policy" "dms_backend_cpu" {
+  name               = "dms-backend-cpu-scaling"
   policy_type        = "TargetTrackingScaling"
-  resource_id        = aws_appautoscaling_target.rms_backend.resource_id
-  scalable_dimension = aws_appautoscaling_target.rms_backend.scalable_dimension
-  service_namespace  = aws_appautoscaling_target.rms_backend.service_namespace
+  resource_id        = aws_appautoscaling_target.dms_backend.resource_id
+  scalable_dimension = aws_appautoscaling_target.dms_backend.scalable_dimension
+  service_namespace  = aws_appautoscaling_target.dms_backend.service_namespace
 
   target_tracking_scaling_policy_configuration {
     predefined_metric_specification {
@@ -364,27 +364,27 @@ AWS_REGION=${2:-us-east-1}
 IMAGE_TAG=${3:-latest}
 
 echo "Building Docker image..."
-docker build -t rms-backend:$IMAGE_TAG apps/server/
+docker build -t dms-backend:$IMAGE_TAG apps/server/
 
 echo "Authenticating to ECR..."
 aws ecr get-login-password --region $AWS_REGION | \
   docker login --username AWS --password-stdin $ECR_REPOSITORY_URI
 
 echo "Tagging and pushing image..."
-docker tag rms-backend:$IMAGE_TAG $ECR_REPOSITORY_URI:$IMAGE_TAG
+docker tag dms-backend:$IMAGE_TAG $ECR_REPOSITORY_URI:$IMAGE_TAG
 docker push $ECR_REPOSITORY_URI:$IMAGE_TAG
 
 echo "Updating ECS service..."
 aws ecs update-service \
-  --cluster rms-cluster-$ENVIRONMENT \
-  --service rms-backend-service-$ENVIRONMENT \
+  --cluster dms-cluster-$ENVIRONMENT \
+  --service dms-backend-service-$ENVIRONMENT \
   --force-new-deployment \
   --region $AWS_REGION
 
 echo "Waiting for deployment to complete..."
 aws ecs wait services-stable \
-  --cluster rms-cluster-$ENVIRONMENT \
-  --services rms-backend-service-$ENVIRONMENT \
+  --cluster dms-cluster-$ENVIRONMENT \
+  --services dms-backend-service-$ENVIRONMENT \
   --region $AWS_REGION
 
 echo "Deployment completed successfully!"

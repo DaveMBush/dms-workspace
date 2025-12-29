@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component({
-  selector: 'rms-sold-positions',
+  selector: 'dms-sold-positions',
   imports: [],
   templateUrl: './sold-positions.html',
   styles: [],

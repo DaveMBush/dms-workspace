@@ -384,7 +384,7 @@ All critical paths have E2E + unit test coverage:
 
 **Status**: ✅ 100% PASS (54 total tests across 3 browsers)
 **Browsers**: Chromium, Firefox, WebKit
-**Execution**: `pnpm nx run rms-material-e2e:e2e`
+**Execution**: `pnpm nx run dms-material-e2e:e2e`
 
 **Profile Test Suite Breakdown**:
 
@@ -398,7 +398,7 @@ All critical paths have E2E + unit test coverage:
 ### Unit Tests: 9 tests
 
 **Status**: ✅ 89% PASS (8/9 passing - 1 dark mode style test failing, non-blocking)
-**Execution**: `pnpm nx run rms-material:test`
+**Execution**: `pnpm nx run dms-material:test`
 
 **Profile Component Tests**:
 
@@ -481,8 +481,8 @@ All critical paths have E2E + unit test coverage:
 - **Quality Gate**: `/docs/qa/gates/AB.3-migrate-profile-components.yml` - PASS
 - **Risk Profile**: `/docs/qa/assessments/AB.3-risk-20251201.md` - 88/100 (Low Risk)
 - **Story**: `/docs/stories/AB.3.migrate-profile-components.md`
-- **E2E Tests**: `/apps/rms-material-e2e/src/profile.spec.ts`
-- **Unit Tests**: `/apps/rms-material/src/app/auth/profile/profile.spec.ts`
+- **E2E Tests**: `/apps/dms-material-e2e/src/profile.spec.ts`
+- **Unit Tests**: `/apps/dms-material/src/app/auth/profile/profile.spec.ts`
 
 ---
 

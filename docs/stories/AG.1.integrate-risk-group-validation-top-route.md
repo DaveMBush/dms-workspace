@@ -228,7 +228,7 @@ curl -X POST http://localhost:3000/api/top -H "Content-Type: application/json" -
 - [ ] Code reviewed
 - [x] All validation commands pass
   - Run `pnpm all`
-  - Run `pnpm e2e:rms-material`
+  - Run `pnpm e2e:dms-material`
   - Run `pnpm dupcheck`
   - Run `pnpm format`
   - Repeat all of these if any fail until they all pass

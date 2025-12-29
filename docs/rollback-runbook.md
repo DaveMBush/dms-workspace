@@ -36,7 +36,7 @@ verify system health, and recover data if needed.
 **Docker/Container Environment:**
 
 1. Update environment variables in container orchestration (Docker Compose, Kubernetes, etc.)
-2. Restart container: `docker-compose restart rms-server` (or equivalent)
+2. Restart container: `docker-compose restart dms-server` (or equivalent)
 3. Verify container logs show feature flag as disabled
 
 ### Verification of Disable

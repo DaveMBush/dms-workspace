@@ -4,7 +4,7 @@ import { Injectable, signal } from '@angular/core';
   providedIn: 'root',
 })
 export class ThemeService {
-  private readonly themeKey = 'rms-theme';
+  private readonly themeKey = 'dms-theme';
 
   isDarkMode$ = signal(this.loadThemePreference());
 

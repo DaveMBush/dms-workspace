@@ -1,6 +1,6 @@
-# RMS Disaster Recovery and Backup Procedures
+# DMS Disaster Recovery and Backup Procedures
 
-This document outlines comprehensive disaster recovery (DR) and backup procedures for the RMS (Risk Management System) application.
+This document outlines comprehensive disaster recovery (DR) and backup procedures for the DMS (Document Management System) application.
 
 ## Table of Contents
 
@@ -17,7 +17,7 @@ This document outlines comprehensive disaster recovery (DR) and backup procedure
 
 ## Overview
 
-The RMS disaster recovery strategy is designed to ensure business continuity and data protection against various failure scenarios including:
+The DMS disaster recovery strategy is designed to ensure business continuity and data protection against various failure scenarios including:
 
 - Regional AWS outages
 - Database corruption or failure
@@ -63,7 +63,7 @@ The RMS disaster recovery strategy is designed to ensure business continuity and
 ```bash
 # Current RDS backup configuration
 aws rds describe-db-instances \
-  --db-instance-identifier rms-db-prod \
+  --db-instance-identifier dms-db-prod \
   --query 'DBInstances[0].[BackupRetentionPeriod,PreferredBackupWindow,PreferredMaintenanceWindow]'
 
 # Expected output: [30, "03:00-04:00", "Sun:04:00-Sun:05:00"]
@@ -83,7 +83,7 @@ aws rds describe-db-instances \
 # scripts/create-manual-snapshot.sh
 
 ENVIRONMENT=${1:-production}
-DB_IDENTIFIER="rms-db-${ENVIRONMENT}"
+DB_IDENTIFIER="dms-db-${ENVIRONMENT}"
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 SNAPSHOT_ID="${DB_IDENTIFIER}-manual-${TIMESTAMP}"
 
@@ -116,11 +116,11 @@ echo "Cross-region copy initiated"
 
 ```bash
 # Backup container images to multiple registries
-docker tag rms-backend:latest 123456789012.dkr.ecr.us-east-1.amazonaws.com/rms-backend:latest
-docker tag rms-backend:latest 123456789012.dkr.ecr.us-west-2.amazonaws.com/rms-backend:latest
+docker tag dms-backend:latest 123456789012.dkr.ecr.us-east-1.amazonaws.com/dms-backend:latest
+docker tag dms-backend:latest 123456789012.dkr.ecr.us-west-2.amazonaws.com/dms-backend:latest
 
-docker push 123456789012.dkr.ecr.us-east-1.amazonaws.com/rms-backend:latest
-docker push 123456789012.dkr.ecr.us-west-2.amazonaws.com/rms-backend:latest
+docker push 123456789012.dkr.ecr.us-east-1.amazonaws.com/dms-backend:latest
+docker push 123456789012.dkr.ecr.us-west-2.amazonaws.com/dms-backend:latest
 ```
 
 #### Frontend Assets
@@ -128,12 +128,12 @@ docker push 123456789012.dkr.ecr.us-west-2.amazonaws.com/rms-backend:latest
 ```bash
 # Enable versioning and cross-region replication
 aws s3api put-bucket-versioning \
-  --bucket rms-frontend-prod \
+  --bucket dms-frontend-prod \
   --versioning-configuration Status=Enabled
 
 # Cross-region replication configuration
 aws s3api put-bucket-replication \
-  --bucket rms-frontend-prod \
+  --bucket dms-frontend-prod \
   --replication-configuration file://s3-replication-config.json
 ```
 
@@ -146,8 +146,8 @@ aws s3api put-bucket-replication \
 # scripts/backup-terraform-state.sh
 
 ENVIRONMENT=${1:-production}
-STATE_BUCKET="rms-terraform-state"
-BACKUP_BUCKET="rms-terraform-state-backup"
+STATE_BUCKET="dms-terraform-state"
+BACKUP_BUCKET="dms-terraform-state-backup"
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 
 echo "Backing up Terraform state for $ENVIRONMENT..."
@@ -158,7 +158,7 @@ aws s3 cp "s3://$STATE_BUCKET/terraform.tfstate" \
 
 # Copy lock table
 aws dynamodb scan \
-  --table-name rms-terraform-locks \
+  --table-name dms-terraform-locks \
   --output json > "terraform-locks-${TIMESTAMP}.json"
 
 aws s3 cp "terraform-locks-${TIMESTAMP}.json" \
@@ -218,7 +218,7 @@ Primary Region (us-east-1)          Secondary Region (us-west-2)
 set -e
 
 ENVIRONMENT="production"
-LOG_FILE="/var/log/rms/backup-$(date +%Y%m%d).log"
+LOG_FILE="/var/log/dms/backup-$(date +%Y%m%d).log"
 
 log() {
     echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" | tee -a "$LOG_FILE"
@@ -227,9 +227,9 @@ log() {
 # 1. Create manual RDS snapshot
 log "Starting daily backup routine for $ENVIRONMENT"
 
-SNAPSHOT_ID="rms-db-prod-daily-$(date +%Y%m%d)"
+SNAPSHOT_ID="dms-db-prod-daily-$(date +%Y%m%d)"
 aws rds create-db-snapshot \
-  --db-instance-identifier "rms-db-prod" \
+  --db-instance-identifier "dms-db-prod" \
   --db-snapshot-identifier "$SNAPSHOT_ID" \
   --tags Key=Type,Value=Daily Key=Environment,Value=production
 
@@ -238,10 +238,10 @@ log "RDS snapshot $SNAPSHOT_ID initiated"
 # 2. Export application logs
 log "Exporting application logs"
 aws logs create-export-task \
-  --log-group-name "/aws/ecs/rms-backend-prod" \
+  --log-group-name "/aws/ecs/dms-backend-prod" \
   --from $(($(date +%s) - 86400))000 \
   --to $(date +%s)000 \
-  --destination "rms-log-exports" \
+  --destination "dms-log-exports" \
   --destination-prefix "daily-backup/$(date +%Y/%m/%d)"
 
 # 3. Backup Terraform state
@@ -260,16 +260,16 @@ log "Cleaning up old backups"
 CUTOFF_DATE=$(date -d '30 days ago' +%Y%m%d)
 aws rds describe-db-snapshots \
   --snapshot-type manual \
-  --query "DBSnapshots[?starts_with(DBSnapshotIdentifier, 'rms-db-prod-daily-') && DBSnapshotIdentifier < 'rms-db-prod-daily-$CUTOFF_DATE'].DBSnapshotIdentifier" \
+  --query "DBSnapshots[?starts_with(DBSnapshotIdentifier, 'dms-db-prod-daily-') && DBSnapshotIdentifier < 'dms-db-prod-daily-$CUTOFF_DATE'].DBSnapshotIdentifier" \
   --output text | xargs -r -n1 aws rds delete-db-snapshot --db-snapshot-identifier
 
 log "Daily backup routine completed successfully"
 
 # 6. Send backup status notification
 aws sns publish \
-  --topic-arn "arn:aws:sns:us-east-1:123456789012:rms-operations" \
-  --message "RMS Daily backup completed successfully for $(date +%Y-%m-%d)" \
-  --subject "RMS Backup Status - Success"
+  --topic-arn "arn:aws:sns:us-east-1:123456789012:dms-operations" \
+  --message "DMS Daily backup completed successfully for $(date +%Y-%m-%d)" \
+  --subject "DMS Backup Status - Success"
 ```
 
 ### Weekly Backup Verification
@@ -279,13 +279,13 @@ aws sns publish \
 # scripts/weekly-backup-verification.sh
 
 ENVIRONMENT="production"
-TEST_DB_ID="rms-db-backup-test"
+TEST_DB_ID="dms-db-backup-test"
 
 echo "Starting weekly backup verification..."
 
 # Get latest snapshot
 LATEST_SNAPSHOT=$(aws rds describe-db-snapshots \
-  --db-instance-identifier "rms-db-prod" \
+  --db-instance-identifier "dms-db-prod" \
   --snapshot-type automated \
   --query 'DBSnapshots | sort_by(@, &SnapshotCreateTime) | [-1].DBSnapshotIdentifier' \
   --output text)
@@ -354,8 +354,8 @@ aws route53 change-resource-record-sets \
 
 # 5. Scale up ECS services in DR region
 aws ecs update-service \
-  --cluster "rms-cluster-$ENVIRONMENT" \
-  --service "rms-backend-service-$ENVIRONMENT" \
+  --cluster "dms-cluster-$ENVIRONMENT" \
+  --service "dms-backend-service-$ENVIRONMENT" \
   --desired-count 2
 
 echo "Infrastructure recovery completed in $DR_REGION"
@@ -369,8 +369,8 @@ echo "Infrastructure recovery completed in $DR_REGION"
 #!/bin/bash
 # Recover database to specific point in time
 
-SOURCE_DB="rms-db-prod"
-TARGET_DB="rms-db-prod-recovered"
+SOURCE_DB="dms-db-prod"
+TARGET_DB="dms-db-prod-recovered"
 RESTORE_TIME="2024-12-16T14:30:00.000Z"  # ISO 8601 format
 
 aws rds restore-db-instance-to-point-in-time \
@@ -389,8 +389,8 @@ echo "Point-in-time recovery completed"
 #!/bin/bash
 # Recover database from specific snapshot
 
-SNAPSHOT_ID="rms-db-prod-20241216"
-TARGET_DB="rms-db-prod-recovered"
+SNAPSHOT_ID="dms-db-prod-20241216"
+TARGET_DB="dms-db-prod-recovered"
 
 aws rds restore-db-instance-from-db-snapshot \
   --db-instance-identifier "$TARGET_DB" \
@@ -406,7 +406,7 @@ echo "Snapshot recovery completed"
 #!/bin/bash
 # Promote read replica to primary in DR region
 
-DR_REPLICA="rms-db-prod-replica-west"
+DR_REPLICA="dms-db-prod-replica-west"
 DR_REGION="us-west-2"
 
 # Promote read replica to standalone instance
@@ -430,8 +430,8 @@ echo "Cross-region database failover completed"
 #!/bin/bash
 # scripts/recover-ecs-service.sh
 
-CLUSTER_NAME="rms-cluster-prod"
-SERVICE_NAME="rms-backend-service-prod"
+CLUSTER_NAME="dms-cluster-prod"
+SERVICE_NAME="dms-backend-service-prod"
 
 # 1. Check current service status
 aws ecs describe-services \
@@ -460,16 +460,16 @@ echo "ECS service recovery completed"
 #!/bin/bash
 # scripts/recover-frontend.sh
 
-S3_BUCKET="rms-frontend-prod"
+S3_BUCKET="dms-frontend-prod"
 CLOUDFRONT_DISTRIBUTION="E123456789ABCD"
 
 # 1. Restore from backup or redeploy latest version
 echo "Redeploying frontend assets..."
-cd apps/rms
+cd apps/dms
 pnpm build:production
 
 # 2. Sync to S3
-aws s3 sync dist/rms/ "s3://$S3_BUCKET/" --delete
+aws s3 sync dist/dms/ "s3://$S3_BUCKET/" --delete
 
 # 3. Invalidate CloudFront cache
 aws cloudfront create-invalidation \
@@ -499,8 +499,8 @@ echo "Frontend recovery completed"
 # scripts/test-database-recovery.sh
 
 TEST_ENV="dr-test"
-SOURCE_SNAPSHOT="rms-db-prod-20241216"
-TEST_DB_ID="rms-db-${TEST_ENV}"
+SOURCE_SNAPSHOT="dms-db-prod-20241216"
+TEST_DB_ID="dms-db-${TEST_ENV}"
 
 echo "=== Database Recovery Test ==="
 START_TIME=$(date +%s)
@@ -592,9 +592,9 @@ echo "Incident: $INCIDENT_DESCRIPTION" > "dr-activation-$(date +%Y%m%d-%H%M%S).l
 
 # 2. Notify stakeholders
 aws sns publish \
-  --topic-arn "arn:aws:sns:us-east-1:123456789012:rms-emergency" \
+  --topic-arn "arn:aws:sns:us-east-1:123456789012:dms-emergency" \
   --message "DISASTER RECOVERY ACTIVATED: $INCIDENT_DESCRIPTION" \
-  --subject "RMS DR ACTIVATION - IMMEDIATE ATTENTION REQUIRED"
+  --subject "DMS DR ACTIVATION - IMMEDIATE ATTENTION REQUIRED"
 
 # 3. Execute recovery procedures
 echo "Starting infrastructure recovery..."
@@ -613,7 +613,7 @@ echo "DR activation completed. Coordinate with team for validation and communica
 #### Internal Emergency Notification
 
 ```
-🚨 DISASTER RECOVERY ACTIVATION - RMS Production
+🚨 DISASTER RECOVERY ACTIVATION - DMS Production
 
 Incident: [Brief description]
 Impact: [Service impact assessment]
@@ -633,9 +633,9 @@ Bridge: [Conference bridge details]
 #### Customer Communication
 
 ```
-Service Advisory: RMS Application
+Service Advisory: DMS Application
 
-We are currently experiencing an issue affecting the RMS application. Our technical team has been notified and is working to resolve this as quickly as possible.
+We are currently experiencing an issue affecting the DMS application. Our technical team has been notified and is working to resolve this as quickly as possible.
 
 Status: Investigating
 Impact: Service temporarily unavailable
@@ -685,7 +685,7 @@ We apologize for any inconvenience this may cause.
 
 ---
 
-**Last Updated**: 2024-12-16  
-**Version**: 1.0  
-**Next Review**: 2025-03-16  
+**Last Updated**: 2024-12-16
+**Version**: 1.0
+**Next Review**: 2025-03-16
 **Emergency Contact**: +1-555-0123 (24/7 on-call)

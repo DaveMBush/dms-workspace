@@ -1,4 +1,4 @@
-<rms-base-table [columns]="columns">
+<dms-base-table [columns]="columns">
   <ng-template #filterRowTemplate let-column>
     @if (column.field === 'universeId') {
     <mat-form-field
@@ -16,4 +16,4 @@
     </mat-form-field>
     }
   </ng-template>
-</rms-base-table>
+</dms-base-table>

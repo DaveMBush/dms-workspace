@@ -20,7 +20,7 @@ import { ProfileActionsService } from '../../services/profile-actions.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  selector: 'rms-email-change-card',
+  selector: 'dms-email-change-card',
   imports: [
     CommonModule,
     ReactiveFormsModule,

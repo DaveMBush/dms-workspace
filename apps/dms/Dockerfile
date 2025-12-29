@@ -15,19 +15,19 @@ RUN pnpm install --frozen-lockfile
 COPY . .
 
 # Replace environment file for Docker deployment
-RUN cp apps/rms/src/environments/environment.docker.ts apps/rms/src/environments/environment.ts
+RUN cp apps/dms/src/environments/environment.docker.ts apps/dms/src/environments/environment.ts
 
 # Build the application using development configuration to preserve Docker environment
-RUN pnpm nx run rms:build:development
+RUN pnpm nx run dms:build:development
 
 # Production stage
 FROM nginx:alpine
 
 # Copy built application
-COPY --from=builder /app/dist/apps/rms/browser /usr/share/nginx/html
+COPY --from=builder /app/dist/apps/dms/browser /usr/share/nginx/html
 
 # Copy nginx configuration
-COPY apps/rms/nginx.conf /etc/nginx/conf.d/default.conf
+COPY apps/dms/nginx.conf /etc/nginx/conf.d/default.conf
 
 # Expose port
 EXPOSE 80

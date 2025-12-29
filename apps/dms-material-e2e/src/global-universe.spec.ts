@@ -61,7 +61,7 @@ test.describe('Global Universe Component', () => {
 
   test.describe('Table Structure', () => {
     test('should display base table component', async ({ page }) => {
-      await expect(page.locator('rms-base-table')).toBeVisible();
+      await expect(page.locator('dms-base-table')).toBeVisible();
     });
 
     test('should display Symbol column header', async ({ page }) => {

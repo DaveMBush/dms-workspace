@@ -16,7 +16,7 @@ import { ConfirmDialogService } from '../shared/services/confirm-dialog.service'
 import { ThemeService } from '../shared/services/theme.service';
 
 @Component({
-  selector: 'rms-shell',
+  selector: 'dms-shell',
   imports: [
     RouterOutlet,
     RouterLink,

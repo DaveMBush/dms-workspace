@@ -83,10 +83,10 @@ export class UserStateService {
 
   // Storage keys
   private readonly storageKeys = {
-    userProfile: 'rms_user_profile',
-    sessionMetadata: 'rms_session_metadata',
-    deviceId: 'rms_device_id',
-    rememberMe: 'rms_remember_me',
+    userProfile: 'dms_user_profile',
+    sessionMetadata: 'dms_session_metadata',
+    deviceId: 'dms_device_id',
+    rememberMe: 'dms_remember_me',
   } as const;
 
   constructor() {

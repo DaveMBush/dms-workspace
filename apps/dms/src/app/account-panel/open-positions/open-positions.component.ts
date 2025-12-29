@@ -20,7 +20,7 @@ import { OpenPositionsStorageService } from './open-positions-storage.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  selector: 'rms-open-positions',
+  selector: 'dms-open-positions',
   standalone: true,
   imports: [...POSITIONS_COMMON_IMPORTS, SortableHeaderComponent],
   templateUrl: './open-positions.component.html',

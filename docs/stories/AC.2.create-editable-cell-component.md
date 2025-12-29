@@ -25,7 +25,7 @@
 ### Functional Requirements
 
 - [x] Click cell to enter edit mode
-- [x] All GUI look as close to the existing RMS app as possible
+- [x] All GUI look as close to the existing DMS app as possible
 - [x] Number input with proper formatting
 - [x] Enter key saves value
 - [x] Escape key cancels edit
@@ -45,7 +45,7 @@
 
 ### Step 1: Create Unit Tests First
 
-Create `apps/rms-material/src/app/shared/components/editable-cell/editable-cell.component.spec.ts`:
+Create `apps/dms-material/src/app/shared/components/editable-cell/editable-cell.component.spec.ts`:
 
 ```typescript
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -117,13 +117,13 @@ describe('EditableCellComponent', () => {
 
 **TDD Cycle:**
 
-1. Run `pnpm nx run rms-material:test` - tests should fail (RED)
+1. Run `pnpm nx run dms-material:test` - tests should fail (RED)
 2. Implement minimal code to pass tests (GREEN)
 3. Refactor while keeping tests passing (REFACTOR)
 
 ## Technical Approach
 
-Create `apps/rms-material/src/app/shared/components/editable-cell/editable-cell.component.ts`:
+Create `apps/dms-material/src/app/shared/components/editable-cell/editable-cell.component.ts`:
 
 ```typescript
 import { Component, input, output, signal, ElementRef, ViewChild } from '@angular/core';
@@ -133,7 +133,7 @@ import { MatInputModule } from '@angular/material/input';
 import { DecimalPipe, CurrencyPipe } from '@angular/common';
 
 @Component({
-  selector: 'rms-editable-cell',
+  selector: 'dms-editable-cell',
   imports: [FormsModule, MatFormFieldModule, MatInputModule, DecimalPipe, CurrencyPipe],
   template: `
     @if (isEditing()) {
@@ -221,7 +221,7 @@ export class EditableCellComponent {
 
 ## E2E Test Requirements
 
-When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
+When this story is complete, ensure the following e2e tests exist in `apps/dms-material-e2e/`:
 
 ### Core Functionality
 
@@ -250,7 +250,7 @@ When this story is complete, ensure the following e2e tests exist in `apps/rms-m
 - [x] Undo (Ctrl+Z) works within edit mode
 - [x] Touch devices can enter edit mode via tap
 
-Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.
+Run `pnpm nx run dms-material-e2e:e2e` to verify all e2e tests pass.
 
 ## QA Results
 
@@ -276,7 +276,7 @@ All acceptance criteria met with comprehensive test coverage and modern Angular 
 **Functional Requirements:** ✅ All 7 criteria met
 
 - Click cell to enter edit mode
-- GUI matches existing RMS app (Material Design)
+- GUI matches existing DMS app (Material Design)
 - Number input with currency/decimal/number formatting
 - Enter key saves, Escape cancels, Blur saves
 - Value change emission to parent

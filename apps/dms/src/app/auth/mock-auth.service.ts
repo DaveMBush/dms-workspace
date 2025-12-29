@@ -13,7 +13,7 @@ import { BaseAuthService } from './base-auth-service.abstract';
 export class MockAuthService extends BaseAuthService {
   // Mock credentials for development
   private readonly mockCredentials = {
-    username: 'dev@rms.local',
+    username: 'dev@dms.local',
     // Using a hardcoded password for development mock service only
     // eslint-disable-next-line sonarjs/no-hardcoded-passwords -- Required for mock auth development service
     password: 'DevPassword123!',
@@ -57,7 +57,7 @@ export class MockAuthService extends BaseAuthService {
    */
   async signInWithRememberMe(email: string, password: string): Promise<void> {
     // Store remember me preference
-    localStorage.setItem('rms_remember_me', 'true');
+    localStorage.setItem('dms_remember_me', 'true');
 
     // Perform sign in with remember me flag
     await this.performSignInWithRememberMe(email, password);
@@ -91,7 +91,7 @@ export class MockAuthService extends BaseAuthService {
   async getAccessToken(): Promise<string | null> {
     try {
       return await Promise.resolve(
-        localStorage.getItem('rms_mock_access_token')
+        localStorage.getItem('dms_mock_access_token')
       );
     } catch {
       return null;
@@ -105,7 +105,7 @@ export class MockAuthService extends BaseAuthService {
     try {
       const currentUser = this.currentUserSignal();
       if (currentUser) {
-        const isRememberMe = localStorage.getItem('rms_remember_me') === 'true';
+        const isRememberMe = localStorage.getItem('dms_remember_me') === 'true';
         const expiration = this.calculateTokenExpiration(isRememberMe);
 
         const mockSession: AuthSession = {
@@ -126,7 +126,7 @@ export class MockAuthService extends BaseAuthService {
    */
   async isSessionValid(): Promise<boolean> {
     try {
-      const expiration = localStorage.getItem('rms_mock_token_expiration');
+      const expiration = localStorage.getItem('dms_mock_token_expiration');
       if (expiration === null) {
         return false;
       }
@@ -153,11 +153,11 @@ export class MockAuthService extends BaseAuthService {
    */
   protected clearTokens(): void {
     try {
-      localStorage.removeItem('rms_mock_access_token');
-      localStorage.removeItem('rms_mock_id_token');
-      localStorage.removeItem('rms_mock_refresh_token');
-      localStorage.removeItem('rms_mock_token_expiration');
-      localStorage.removeItem('rms_mock_user');
+      localStorage.removeItem('dms_mock_access_token');
+      localStorage.removeItem('dms_mock_id_token');
+      localStorage.removeItem('dms_mock_refresh_token');
+      localStorage.removeItem('dms_mock_token_expiration');
+      localStorage.removeItem('dms_mock_user');
     } catch {
       // Failed to clear tokens
     }
@@ -244,8 +244,8 @@ export class MockAuthService extends BaseAuthService {
    */
   private initializeAuth(): void {
     try {
-      const storedUser = localStorage.getItem('rms_mock_user');
-      const storedToken = localStorage.getItem('rms_mock_access_token');
+      const storedUser = localStorage.getItem('dms_mock_user');
+      const storedToken = localStorage.getItem('dms_mock_access_token');
 
       if (storedUser !== null && storedToken !== null) {
         const user = JSON.parse(storedUser) as AuthUser;
@@ -261,20 +261,20 @@ export class MockAuthService extends BaseAuthService {
    */
   private storeTokens(session: AuthSession): void {
     try {
-      localStorage.setItem('rms_mock_access_token', session.accessToken);
-      localStorage.setItem('rms_mock_id_token', session.idToken);
-      localStorage.setItem('rms_mock_refresh_token', session.refreshToken);
+      localStorage.setItem('dms_mock_access_token', session.accessToken);
+      localStorage.setItem('dms_mock_id_token', session.idToken);
+      localStorage.setItem('dms_mock_refresh_token', session.refreshToken);
 
       if (session.expiration !== undefined) {
         localStorage.setItem(
-          'rms_mock_token_expiration',
+          'dms_mock_token_expiration',
           session.expiration.toString()
         );
       }
 
       const currentUser = this.currentUserSignal();
       if (currentUser) {
-        localStorage.setItem('rms_mock_user', JSON.stringify(currentUser));
+        localStorage.setItem('dms_mock_user', JSON.stringify(currentUser));
       }
     } catch {
       // Failed to store tokens

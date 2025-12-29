@@ -21,13 +21,13 @@ Ready for Review
 
 - `pnpm format`
 - `pnpm dupcheck`
-- `pnpm nx run rms:test --code-coverage`
+- `pnpm nx run dms:test --code-coverage`
 - `pnpm nx run server:build:production`
 - `pnpm nx run server:test --code-coverage`
 - `pnpm nx run server:lint`
-- `pnpm nx run rms:lint`
-- `pnpm nx run rms:build:production`
-- `pnpm nx run rms-e2e:lint`
+- `pnpm nx run dms:lint`
+- `pnpm nx run dms:build:production`
+- `pnpm nx run dms-e2e:lint`
 
 ## Tasks / Subtasks
 
@@ -95,8 +95,8 @@ Ready for Review
 
 **Test Files to Create/Modify:**
 
-1. `/apps/rms/src/app/global/global-universe/integration/universe-filtering.integration.spec.ts` - Main integration tests
-2. `/apps/rms/src/app/global/global-universe/integration/performance.integration.spec.ts` - Performance testing
+1. `/apps/dms/src/app/global/global-universe/integration/universe-filtering.integration.spec.ts` - Main integration tests
+2. `/apps/dms/src/app/global/global-universe/integration/performance.integration.spec.ts` - Performance testing
 3. Integration test utilities and mock data generators
 4. End-to-end test scenarios (if using Cypress/Playwright)
 
@@ -444,12 +444,11 @@ No significant debug issues encountered. Implementation proceeded smoothly follo
 
 **New Integration Test Files Created:**
 
-- `apps/rms/src/app/global/global-universe/integration/universe-filtering.integration.spec.ts` - Core default filtering behavior tests
-- `apps/rms/src/app/global/global-universe/integration/account-switching.integration.spec.ts` - Multi-account filtering tests
-- `apps/rms/src/app/global/global-universe/integration/data-integrity.integration.spec.ts` - Data integrity validation tests
-- `apps/rms/src/app/global/global-universe/integration/realistic-dataset.integration.spec.ts` - Real-world dataset testing
-- `apps/rms/src/app/global/global-universe/integration/performance.integration.spec.ts` - Performance and load testing
-
+- `apps/dms/src/app/global/global-universe/integration/universe-filtering.integration.spec.ts` - Core default filtering behavior tests
+- `apps/dms/src/app/global/global-universe/integration/account-switching.integration.spec.ts` - Multi-account filtering tests
+- `apps/dms/src/app/global/global-universe/integration/data-integrity.integration.spec.ts` - Data integrity validation tests
+- `apps/dms/src/app/global/global-universe/integration/realistic-dataset.integration.spec.ts` - Real-world dataset testing
+- `apps/dms/src/app/global/global-universe/integration/performance.integration.spec.ts` - Performance and load testing
 **Modified Files:**
 
 - `docs/stories/I.5.integration-testing-validation.md` - Updated status and task completion

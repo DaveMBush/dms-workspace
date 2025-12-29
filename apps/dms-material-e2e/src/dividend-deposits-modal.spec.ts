@@ -26,7 +26,7 @@ test.describe('Dividend Deposits Modal', () => {
     await addButton.click();
 
     // Verify modal is visible
-    await expect(page.locator('rms-div-dep-modal')).toBeVisible();
+    await expect(page.locator('dms-div-dep-modal')).toBeVisible();
     await expect(
       page.locator('h2:text("New Dividend or Deposit")')
     ).toBeVisible();
@@ -57,7 +57,7 @@ test.describe('Dividend Deposits Modal', () => {
     await page.locator('button').filter({ hasText: 'Cancel' }).click();
 
     // Verify modal is closed
-    await expect(page.locator('rms-div-dep-modal')).not.toBeVisible();
+    await expect(page.locator('dms-div-dep-modal')).not.toBeVisible();
   });
 
   test('should show validation errors for required fields', async ({

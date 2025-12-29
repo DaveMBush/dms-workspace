@@ -243,7 +243,7 @@ export class TokenRefreshService {
    * Get token expiration information from stored access token
    */
   private getTokenExpirationInfo(): { expiresAt: number } | null {
-    const token = sessionStorage.getItem('rms_access_token');
+    const token = sessionStorage.getItem('dms_access_token');
     if (token === null || token.length === 0) {
       return null;
     }
@@ -272,16 +272,16 @@ export class TokenRefreshService {
     refreshToken: string
   ): void {
     try {
-      sessionStorage.setItem('rms_access_token', accessToken);
-      sessionStorage.setItem('rms_id_token', idToken);
-      sessionStorage.setItem('rms_refresh_token', refreshToken);
+      sessionStorage.setItem('dms_access_token', accessToken);
+      sessionStorage.setItem('dms_id_token', idToken);
+      sessionStorage.setItem('dms_refresh_token', refreshToken);
 
       // Store expiration time for quick access
       const payload = JSON.parse(
         Buffer.from(accessToken.split('.')[1], 'base64').toString()
       ) as { exp?: number };
       if (typeof payload.exp === 'number' && payload.exp > 0) {
-        sessionStorage.setItem('rms_token_expiration', payload.exp.toString());
+        sessionStorage.setItem('dms_token_expiration', payload.exp.toString());
       }
 
       // Tokens stored successfully
@@ -321,10 +321,10 @@ export class TokenRefreshService {
    */
   private clearStoredTokens(): void {
     try {
-      sessionStorage.removeItem('rms_access_token');
-      sessionStorage.removeItem('rms_id_token');
-      sessionStorage.removeItem('rms_refresh_token');
-      sessionStorage.removeItem('rms_token_expiration');
+      sessionStorage.removeItem('dms_access_token');
+      sessionStorage.removeItem('dms_id_token');
+      sessionStorage.removeItem('dms_refresh_token');
+      sessionStorage.removeItem('dms_token_expiration');
       // Stored tokens cleared
     } catch {
       // Failed to clear stored tokens - warning placeholder

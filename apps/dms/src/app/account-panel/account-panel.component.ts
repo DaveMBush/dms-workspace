@@ -13,7 +13,7 @@ import { selectCurrentAccountSignal } from '../store/current-account/select-curr
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  selector: 'rms-account-panel',
+  selector: 'dms-account-panel',
   standalone: true,
   imports: [CommonModule, ToolbarModule, RouterModule],
   templateUrl: './account-panel.component.html',

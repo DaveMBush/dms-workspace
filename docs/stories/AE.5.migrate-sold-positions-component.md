@@ -10,7 +10,7 @@
 
 **Current System:**
 
-- Location: `apps/rms/src/app/account-panel/sold-positions/`
+- Location: `apps/dms/src/app/account-panel/sold-positions/`
 - PrimeNG components: `p-table` (editable), `p-toolbar`, `p-cellEditor`, `p-inputNumber`, `p-datepicker`
 - Similar to Open Positions with sell-specific fields
 
@@ -23,7 +23,7 @@
 
 ### Functional Requirements
 
-- [ ] **CRITICAL** All GUI look as close to the existing RMS app as possible
+- [ ] **CRITICAL** All GUI look as close to the existing DMS app as possible
 - [ ] **CRITICAL** Use the playwright mcp server to verify that the new screen matches the existing screen in terms of layout and functionality, but not necessarily pixel-perfect visual design.
 - [ ] **CRITICAL** Use the playwright mcp server to check for errors in the console caused by the new screen.
 - [ ] Sold positions display in table
@@ -44,7 +44,7 @@
 
 ### Step 1: Create Unit Tests First
 
-Create `apps/rms-material/src/app/account-panel/sold-positions/sold-positions.component.spec.ts`:
+Create `apps/dms-material/src/app/account-panel/sold-positions/sold-positions.component.spec.ts`:
 
 ```typescript
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -98,13 +98,13 @@ describe('SoldPositionsComponent', () => {
 
 **TDD Cycle:**
 
-1. Run `pnpm nx run rms-material:test` - tests should fail (RED)
+1. Run `pnpm nx run dms-material:test` - tests should fail (RED)
 2. Implement minimal code to pass tests (GREEN)
 3. Refactor while keeping tests passing (REFACTOR)
 
 ## Technical Approach
 
-Create `apps/rms-material/src/app/account-panel/sold-positions/sold-positions.component.ts`:
+Create `apps/dms-material/src/app/account-panel/sold-positions/sold-positions.component.ts`:
 
 ```typescript
 import { Component, inject, ViewChild } from '@angular/core';
@@ -119,7 +119,7 @@ import { selectTrades } from '../../store/trades/select-trades.function';
 import { Trade } from '../../store/trades/trade.interface';
 
 @Component({
-  selector: 'rms-sold-positions',
+  selector: 'dms-sold-positions',
   imports: [MatToolbarModule, MatButtonModule, MatIconModule, BaseTableComponent, EditableCellComponent, EditableDateCellComponent],
   templateUrl: './sold-positions.component.html',
   styleUrl: './sold-positions.component.scss',
@@ -153,14 +153,14 @@ export class SoldPositionsComponent {
 - [ ] SmartNgRX updates
 - [ ] All validation commands pass
   - Run `pnpm all`
-  - Run `pnpm e2e:rms-material`
+  - Run `pnpm e2e:dms-material`
   - Run `pnpm dupcheck`
   - Run `pnpm format`
   - Repeat all of these if any fail until they all pass
 
 ## E2E Test Requirements
 
-When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
+When this story is complete, ensure the following e2e tests exist in `apps/dms-material-e2e/`:
 
 ### Core Functionality
 
@@ -187,7 +187,7 @@ When this story is complete, ensure the following e2e tests exist in `apps/rms-m
 - [ ] Aggregated totals displayed at bottom
 - [ ] Wash sale indicator (if applicable)
 
-Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.
+Run `pnpm nx run dms-material-e2e:e2e` to verify all e2e tests pass.
 
 ---
 

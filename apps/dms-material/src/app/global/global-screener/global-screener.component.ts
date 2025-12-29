@@ -27,7 +27,7 @@ import { selectScreen } from '../../store/screen/selectors/select-screen.functio
 import { ScreenCellEditEvent } from './screen-cell-edit-event.interface';
 
 @Component({
-  selector: 'rms-global-screener',
+  selector: 'dms-global-screener',
   imports: [
     MatToolbarModule,
     MatButtonModule,

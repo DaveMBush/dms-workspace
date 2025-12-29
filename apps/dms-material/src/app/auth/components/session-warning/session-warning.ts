@@ -17,7 +17,7 @@ import { takeWhile } from 'rxjs/operators';
 import { AuthService } from '../../auth.service';
 
 @Component({
-  selector: 'rms-session-warning',
+  selector: 'dms-session-warning',
   imports: [
     MatDialogModule,
     MatButtonModule,

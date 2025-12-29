@@ -19,7 +19,7 @@ import { AuthService } from '../auth/auth.service';
 import { GlobalComponent } from '../global/global.component';
 import { BaseRouteComponent } from '../shared/base-route-component';
 
-const DARK_MODE_KEY = 'rms-dark';
+const DARK_MODE_KEY = 'dms-dark';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -34,7 +34,7 @@ const DARK_MODE_KEY = 'rms-dark';
     GlobalComponent,
   ],
   providers: [ConfirmationService],
-  selector: 'rms-shell',
+  selector: 'dms-shell',
   templateUrl: './shell.component.html',
   styleUrl: './shell.component.scss',
 })

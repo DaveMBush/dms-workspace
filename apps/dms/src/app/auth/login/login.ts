@@ -39,7 +39,7 @@ import { LoginFormData } from '../auth.types';
   ],
   templateUrl: './login.html',
   styleUrl: './login.scss',
-  selector: 'rms-login',
+  selector: 'dms-login',
   encapsulation: ViewEncapsulation.Emulated,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -198,7 +198,7 @@ export class Login implements OnInit {
   private initializeForm(): void {
     // Check if remember me was previously enabled
     const previousRememberMe =
-      localStorage.getItem('rms_remember_me') === 'true';
+      localStorage.getItem('dms_remember_me') === 'true';
 
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],

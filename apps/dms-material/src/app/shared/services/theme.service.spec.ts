@@ -91,7 +91,7 @@ describe('ThemeService', () => {
 
       service.toggleTheme();
 
-      expect(setItemSpy).toHaveBeenCalledWith('rms-theme', 'dark');
+      expect(setItemSpy).toHaveBeenCalledWith('dms-theme', 'dark');
     });
 
     it('should persist light theme preference to localStorage', () => {
@@ -100,7 +100,7 @@ describe('ThemeService', () => {
       service.toggleTheme(); // dark
       service.toggleTheme(); // light
 
-      expect(setItemSpy).toHaveBeenLastCalledWith('rms-theme', 'light');
+      expect(setItemSpy).toHaveBeenLastCalledWith('dms-theme', 'light');
     });
   });
 

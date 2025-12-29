@@ -19,18 +19,18 @@ Remove the Universe Settings modal and all related components since the "Update 
 
 ### Files to Remove
 
-- `apps/rms/src/app/universe-settings/universe-settings.component.ts`
-- `apps/rms/src/app/universe-settings/universe-settings.component.html`
-- `apps/rms/src/app/universe-settings/universe-settings.component.scss`
-- `apps/rms/src/app/universe-settings/universe-settings.service.ts`
+- `apps/dms/src/app/universe-settings/universe-settings.component.ts`
+- `apps/dms/src/app/universe-settings/universe-settings.component.html`
+- `apps/dms/src/app/universe-settings/universe-settings.component.scss`
+- `apps/dms/src/app/universe-settings/universe-settings.service.ts`
 - Related test files
 
 ### Files to Modify
 
-- `apps/rms/src/app/global/global-universe/global-universe.component.html`
+- `apps/dms/src/app/global/global-universe/global-universe.component.html`
   - Remove settings button from title bar
   - Remove any references to settings service
-- `apps/rms/src/app/global/global-universe/global-universe.component.ts`
+- `apps/dms/src/app/global/global-universe/global-universe.component.ts`
   - Remove UniverseSettingsService injection
   - Clean up imports
 

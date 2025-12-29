@@ -1,10 +1,10 @@
 # Local Authentication Setup
 
-This guide explains how to run the RMS application locally without requiring AWS Cognito infrastructure.
+This guide explains how to run the DMS application locally without requiring AWS Cognito infrastructure.
 
 ## Overview
 
-The RMS application includes a **Mock Authentication Service** for local development that simulates AWS Cognito behavior without requiring cloud infrastructure setup.
+The DMS application includes a **Mock Authentication Service** for local development that simulates AWS Cognito behavior without requiring cloud infrastructure setup.
 
 ## Quick Start
 
@@ -12,7 +12,7 @@ The RMS application includes a **Mock Authentication Service** for local develop
 
 The mock auth service accepts these default credentials:
 
-- **Email**: `dev@rms.local`
+- **Email**: `dev@dms.local`
 - **Password**: `DevPassword123!`
 
 ### Alternative Login Options
@@ -29,7 +29,7 @@ Examples:
 
 ### Enable Mock Authentication
 
-Mock authentication is enabled by default in development. The setting is controlled in `apps/rms/src/environments/environment.ts`:
+Mock authentication is enabled by default in development. The setting is controlled in `apps/dms/src/environments/environment.ts`:
 
 ```typescript
 export const environment = {
@@ -61,11 +61,11 @@ The mock authentication service:
 
 ## Features Supported
 
-✅ **Login/Logout flows**  
-✅ **Route protection** (auth guards work normally)  
-✅ **HTTP token injection** (mock JWT tokens sent with API calls)  
-✅ **Session persistence** (login survives page refreshes)  
-✅ **Token expiration** (mock tokens expire after 1 hour)  
+✅ **Login/Logout flows**
+✅ **Route protection** (auth guards work normally)
+✅ **HTTP token injection** (mock JWT tokens sent with API calls)
+✅ **Session persistence** (login survives page refreshes)
+✅ **Token expiration** (mock tokens expire after 1 hour)
 ✅ **Error handling** (invalid credentials, network errors)
 
 ## Development Workflow
@@ -73,7 +73,7 @@ The mock authentication service:
 ### Step 1: Start the Application
 
 ```bash
-pnpm nx serve rms
+pnpm nx serve dms
 ```
 
 ### Step 2: Navigate to Login
@@ -84,7 +84,7 @@ The app will redirect you to `http://localhost:4200/auth/login`
 
 Use either:
 
-- Default: `dev@rms.local` / `DevPassword123!`
+- Default: `dev@dms.local` / `DevPassword123!`
 - Custom: Any email format with 8+ character password
 
 ### Step 4: Access Protected Routes
@@ -128,11 +128,11 @@ For production deployments:
 
 Mock sessions store the following in localStorage:
 
-- `rms_mock_access_token`: Mock JWT access token
-- `rms_mock_id_token`: Mock JWT ID token
-- `rms_mock_refresh_token`: Mock refresh token
-- `rms_mock_token_expiration`: Token expiration timestamp
-- `rms_mock_user`: User profile data
+- `dms_mock_access_token`: Mock JWT access token
+- `dms_mock_id_token`: Mock JWT ID token
+- `dms_mock_refresh_token`: Mock refresh token
+- `dms_mock_token_expiration`: Token expiration timestamp
+- `dms_mock_user`: User profile data
 
 ## Mock JWT Token Structure
 

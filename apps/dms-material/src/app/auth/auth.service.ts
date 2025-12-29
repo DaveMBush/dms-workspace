@@ -253,7 +253,7 @@ export class AuthService extends BaseAuthService {
       };
       const userState = this.sessionManager.getSessionStats();
       if (userState.status === SessionStatus.Expired) {
-        const rememberMe = localStorage.getItem('rms_remember_me') === 'true';
+        const rememberMe = localStorage.getItem('dms_remember_me') === 'true';
         this.sessionManager.startSession(userProfile, rememberMe);
       }
       await this.refreshTokens();

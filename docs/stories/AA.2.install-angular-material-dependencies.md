@@ -2,7 +2,7 @@
 
 ## Story
 
-**As a** developer building the rms-material application
+**As a** developer building the dms-material application
 **I want** Angular Material and CDK properly installed and configured
 **So that** I can use Material components throughout the application
 
@@ -10,7 +10,7 @@
 
 **Current System:**
 
-- RMS application uses PrimeNG 20 for UI components
+- DMS application uses PrimeNG 20 for UI components
 - Chart.js 4.5.0 already installed for charting
 
 **New Dependencies:**
@@ -64,14 +64,14 @@ pnpm add @angular/material@^20.0.0 @angular/cdk@^20.0.0 ng2-charts@^7.0.0
 
 ### Step 2: Update index.html
 
-Add Material Icons font to `apps/rms-material/src/index.html`:
+Add Material Icons font to `apps/dms-material/src/index.html`:
 
 ```html
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>RMS Material</title>
+    <title>Dividend Management System Material</title>
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
@@ -81,14 +81,14 @@ Add Material Icons font to `apps/rms-material/src/index.html`:
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet" />
   </head>
   <body class="mat-typography">
-    <rms-root></rms-root>
+    <dms-root></dms-root>
   </body>
 </html>
 ```
 
 ### Step 3: Update App Configuration
 
-Update `apps/rms-material/src/app/app.config.ts` to include animations:
+Update `apps/dms-material/src/app/app.config.ts` to include animations:
 
 ```typescript
 import { ApplicationConfig, provideZonelessChangeDetection } from '@angular/core';
@@ -104,17 +104,17 @@ export const appConfig: ApplicationConfig = {
 
 ### Step 4: Verify Material Component Works
 
-Update `apps/rms-material/src/app/app.component.ts` temporarily to test:
+Update `apps/dms-material/src/app/app.component.ts` temporarily to test:
 
 ```typescript
 import { Component } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 
 @Component({
-  selector: 'rms-root',
+  selector: 'dms-root',
   imports: [MatButtonModule],
   template: `
-    <h1>RMS Material</h1>
+    <h1>DMS Material</h1>
     <button mat-raised-button color="primary">Test Button</button>
   `,
 })
@@ -124,8 +124,8 @@ export class AppComponent {}
 ### Step 5: Verify Build
 
 ```bash
-pnpm nx run rms-material:build
-pnpm nx run rms-material:serve
+pnpm nx run dms-material:build
+pnpm nx run dms-material:serve
 ```
 
 ## Files Modified
@@ -133,9 +133,9 @@ pnpm nx run rms-material:serve
 | File                                         | Changes                                    |
 | -------------------------------------------- | ------------------------------------------ |
 | `package.json`                               | Add Material, CDK, ng2-charts dependencies |
-| `apps/rms-material/src/index.html`           | Add Material Icons and Roboto font links   |
-| `apps/rms-material/src/app/app.config.ts`    | Add provideAnimationsAsync                 |
-| `apps/rms-material/src/app/app.component.ts` | Test Material button (temporary)           |
+| `apps/dms-material/src/index.html`           | Add Material Icons and Roboto font links   |
+| `apps/dms-material/src/app/app.config.ts`    | Add provideAnimationsAsync                 |
+| `apps/dms-material/src/app/app.component.ts` | Test Material button (temporary)           |
 
 ## Package Versions
 

@@ -2,11 +2,11 @@
   <div class="flex flex-row gap-4">
     <div class="flex flex-col w-1/2">
       <label for="symbol" class="mb-1 font-semibold">Symbol</label>
-      <rms-symbol-autocomplete
+      <dms-symbol-autocomplete
         [(selectedSymbol)]="symbol$"
         [suggestions]="filteredSymbols$()"
         (filterSymbols)="filterSymbols($event)"
-      ></rms-symbol-autocomplete>
+      ></dms-symbol-autocomplete>
     </div>
     <div class="flex flex-col w-1/2">
       <label for="date" class="mb-1 font-semibold">Date</label>

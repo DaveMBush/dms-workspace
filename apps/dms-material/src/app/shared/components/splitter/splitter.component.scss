@@ -13,29 +13,29 @@
 }
 
 .left-panel {
-  border-right: 1px solid var(--rms-border);
+  border-right: 1px solid var(--dms-border);
 }
 
 .splitter-handle {
   width: 8px;
   cursor: col-resize;
-  background-color: var(--rms-surface);
+  background-color: var(--dms-surface);
   display: flex;
   align-items: center;
   justify-content: center;
-  border-left: 1px solid var(--rms-border);
-  border-right: 1px solid var(--rms-border);
+  border-left: 1px solid var(--dms-border);
+  border-right: 1px solid var(--dms-border);
   user-select: none;
 
   &:hover {
-    background-color: var(--rms-primary-100);
+    background-color: var(--dms-primary-100);
   }
 }
 
 .handle-bar {
   width: 2px;
   height: 40px;
-  background-color: var(--rms-border);
+  background-color: var(--dms-border);
   border-radius: 1px;
 }
 

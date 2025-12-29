@@ -58,27 +58,27 @@ quality_score: 72 # Deductions: -10 skipped E2E, -8 missing force selection, -5 
 recommendations:
   immediate:
     - action: 'Enable E2E tests once component integrated into feature page'
-      refs: ['apps/rms-material-e2e/src/symbol-autocomplete.spec.ts:5']
+      refs: ['apps/dms-material-e2e/src/symbol-autocomplete.spec.ts:5']
     - action: 'Implement force selection validation logic'
       refs:
         [
-          'apps/rms-material/src/app/shared/components/symbol-autocomplete/symbol-autocomplete.component.ts:76-80',
+          'apps/dms-material/src/app/shared/components/symbol-autocomplete/symbol-autocomplete.component.ts:76-80',
         ]
     - action: 'Add error handling with catchError and user notification'
       refs:
         [
-          'apps/rms-material/src/app/shared/components/symbol-autocomplete/symbol-autocomplete.component.ts:78',
+          'apps/dms-material/src/app/shared/components/symbol-autocomplete/symbol-autocomplete.component.ts:78',
         ]
   future:
     - action: 'Add takeUntilDestroyed() to prevent memory leaks'
       refs:
         [
-          'apps/rms-material/src/app/shared/components/symbol-autocomplete/symbol-autocomplete.component.ts:73-80',
+          'apps/dms-material/src/app/shared/components/symbol-autocomplete/symbol-autocomplete.component.ts:73-80',
         ]
     - action: 'Add aria-live region for accessibility'
       refs:
         [
-          'apps/rms-material/src/app/shared/components/symbol-autocomplete/symbol-autocomplete.component.html:11-15',
+          'apps/dms-material/src/app/shared/components/symbol-autocomplete/symbol-autocomplete.component.html:11-15',
         ]
 
 nfr_validation:

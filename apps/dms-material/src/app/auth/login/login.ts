@@ -17,7 +17,7 @@ import { Router } from '@angular/router';
 import { AuthService } from '../auth.service';
 
 @Component({
-  selector: 'rms-login',
+  selector: 'dms-login',
   imports: [
     ReactiveFormsModule,
     MatCardModule,
@@ -52,7 +52,7 @@ export class Login {
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(8)]],
     rememberMe: [
-      localStorage.getItem('rms_remember_me') === 'true', // Default to previous preference
+      localStorage.getItem('dms_remember_me') === 'true', // Default to previous preference
     ],
   });
 
@@ -97,7 +97,7 @@ export class Login {
 
     try {
       // Store remember me preference
-      localStorage.setItem('rms_remember_me', String(rememberMe ?? false));
+      localStorage.setItem('dms_remember_me', String(rememberMe ?? false));
 
       if (rememberMe === true) {
         await this.authService.signInWithRememberMe(email!, password!);

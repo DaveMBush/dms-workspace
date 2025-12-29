@@ -1,6 +1,6 @@
 # Loading and Error States Design System
 
-This document defines consistent loading and error states across the RMS application, with focus on universe update operations.
+This document defines consistent loading and error states across the DMS application, with focus on universe update operations.
 
 ## Loading States
 

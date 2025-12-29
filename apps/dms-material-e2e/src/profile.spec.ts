@@ -72,7 +72,7 @@ test.describe('Profile', () => {
     await navigateToProfile(page);
 
     const submitButton = page
-      .locator('rms-password-change-card button[type="submit"]')
+      .locator('dms-password-change-card button[type="submit"]')
       .first();
     await submitButton.click();
 
@@ -97,7 +97,7 @@ test.describe('Profile', () => {
       'input[formControlName="currentPassword"]'
     );
     const toggleButton = page
-      .locator('rms-password-change-card button[matSuffix]')
+      .locator('dms-password-change-card button[matSuffix]')
       .first();
 
     await expect(currentPasswordInput).toHaveAttribute('type', 'password');
@@ -116,7 +116,7 @@ test.describe('Profile', () => {
     await navigateToProfile(page);
 
     await page.locator('input[formControlName="newEmail"]').fill('invalid');
-    await page.locator('rms-email-change-card button[type="submit"]').click();
+    await page.locator('dms-email-change-card button[type="submit"]').click();
 
     await expect(
       page.getByText('Please enter a valid email address')
@@ -153,7 +153,7 @@ test.describe('Profile', () => {
       .fill('newpass123');
 
     const submitButton = page.locator(
-      'rms-password-change-card button[type="submit"]'
+      'dms-password-change-card button[type="submit"]'
     );
     await submitButton.click();
 
@@ -169,7 +169,7 @@ test.describe('Profile', () => {
       .fill('new@example.com');
 
     const submitButton = page.locator(
-      'rms-email-change-card button[type="submit"]'
+      'dms-email-change-card button[type="submit"]'
     );
     await submitButton.click();
 
@@ -218,7 +218,7 @@ test.describe('Profile', () => {
       .fill('newpass123');
 
     const submitButton = page.locator(
-      'rms-password-change-card button[type="submit"]'
+      'dms-password-change-card button[type="submit"]'
     );
     await submitButton.click();
 
@@ -258,7 +258,7 @@ test.describe('Profile', () => {
     await navigateToProfile(page);
 
     await page.locator('input[formControlName="newEmail"]').fill('invalid');
-    await page.locator('rms-email-change-card button[type="submit"]').click();
+    await page.locator('dms-email-change-card button[type="submit"]').click();
 
     await expect(
       page.getByText('Please enter a valid email address')
@@ -280,10 +280,10 @@ test.describe('Profile', () => {
     await navigateToProfile(page);
 
     await expect(page.locator('.grid').first()).toBeVisible();
-    await expect(page.locator('rms-profile-info-card')).toBeVisible();
-    await expect(page.locator('rms-session-info-card')).toBeVisible();
-    await expect(page.locator('rms-password-change-card')).toBeVisible();
-    await expect(page.locator('rms-email-change-card')).toBeVisible();
-    await expect(page.locator('rms-account-actions-card')).toBeVisible();
+    await expect(page.locator('dms-profile-info-card')).toBeVisible();
+    await expect(page.locator('dms-session-info-card')).toBeVisible();
+    await expect(page.locator('dms-password-change-card')).toBeVisible();
+    await expect(page.locator('dms-email-change-card')).toBeVisible();
+    await expect(page.locator('dms-account-actions-card')).toBeVisible();
   });
 });

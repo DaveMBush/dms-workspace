@@ -22,7 +22,7 @@ import { LogFileInfo } from './log-file-info.interface';
 import { LogFilters } from './log-filters.interface';
 
 @Component({
-  selector: 'rms-global-error-logs',
+  selector: 'dms-global-error-logs',
   standalone: true,
   imports: [
     CommonModule,

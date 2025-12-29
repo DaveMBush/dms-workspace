@@ -16,7 +16,7 @@ import {
 } from '@angular/forms';
 
 @Component({
-  selector: 'rms-node-editor',
+  selector: 'dms-node-editor',
   standalone: true,
   imports: [FormsModule],
   templateUrl: './node-editor.component.html',

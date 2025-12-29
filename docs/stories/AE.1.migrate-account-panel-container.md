@@ -10,7 +10,7 @@
 
 **Current System:**
 
-- Location: `apps/rms/src/app/account-panel/account-panel.component.ts`
+- Location: `apps/dms/src/app/account-panel/account-panel.component.ts`
 - Contains tab navigation for sub-features
 
 **Migration Target:**
@@ -22,7 +22,7 @@
 
 ### Functional Requirements
 
-- [ ] **CRITICAL** All GUI look as close to the existing RMS app as possible
+- [ ] **CRITICAL** All GUI look as close to the existing DMS app as possible
 - [ ] Tab bar displays: Summary, Open, Sold, Div-Dep
 - [ ] Active tab highlighted
 - [ ] Tab click navigates to route
@@ -42,7 +42,7 @@
 
 ### Step 1: Create Unit Tests First
 
-Create `apps/rms-material/src/app/account-panel/account-panel.component.spec.ts`:
+Create `apps/dms-material/src/app/account-panel/account-panel.component.spec.ts`:
 
 ```typescript
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -103,13 +103,13 @@ describe('AccountPanelComponent', () => {
 
 **TDD Cycle:**
 
-1. Run `pnpm nx run rms-material:test` - tests should fail (RED)
+1. Run `pnpm nx run dms-material:test` - tests should fail (RED)
 2. Implement minimal code to pass tests (GREEN)
 3. Refactor while keeping tests passing (REFACTOR)
 
 ## Technical Approach
 
-Create `apps/rms-material/src/app/account-panel/account-panel.component.ts`:
+Create `apps/dms-material/src/app/account-panel/account-panel.component.ts`:
 
 ```typescript
 import { Component, inject } from '@angular/core';
@@ -117,7 +117,7 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { MatTabsModule } from '@angular/material/tabs';
 
 @Component({
-  selector: 'rms-account-panel',
+  selector: 'dms-account-panel',
   imports: [RouterOutlet, RouterLink, RouterLinkActive, MatTabsModule],
   template: `
     <nav mat-tab-nav-bar [tabPanel]="tabPanel">
@@ -143,14 +143,14 @@ export class AccountPanelComponent {}
 - [ ] Content renders
 - [ ] All validation commands pass
   - Run `pnpm all`
-  - Run `pnpm e2e:rms-material`
+  - Run `pnpm e2e:dms-material`
   - Run `pnpm dupcheck`
   - Run `pnpm format`
   - Repeat all of these if any fail until they all pass
 
 ## E2E Test Requirements
 
-When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
+When this story is complete, ensure the following e2e tests exist in `apps/dms-material-e2e/`:
 
 ### Core Functionality
 
@@ -173,7 +173,7 @@ When this story is complete, ensure the following e2e tests exist in `apps/rms-m
 - [ ] Tab bar responsive on small screens
 - [ ] Focus management correct on tab change
 
-Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.
+Run `pnpm nx run dms-material-e2e:e2e` to verify all e2e tests pass.
 
 ---
 
@@ -215,22 +215,22 @@ None
 
 #### New Files
 
-- apps/rms-material/src/app/account-panel/account-panel.component.ts
-- apps/rms-material/src/app/account-panel/account-panel.component.html
-- apps/rms-material/src/app/account-panel/account-panel.component.scss
-- apps/rms-material/src/app/account-panel/account-panel.component.spec.ts
-- apps/rms-material/src/app/accounts/account-summary/account-summary.ts
-- apps/rms-material/src/app/accounts/account-summary/account-summary.html
-- apps/rms-material/src/app/accounts/open-positions/open-positions.ts
-- apps/rms-material/src/app/accounts/open-positions/open-positions.html
-- apps/rms-material/src/app/accounts/sold-positions/sold-positions.ts
-- apps/rms-material/src/app/accounts/sold-positions/sold-positions.html
-- apps/rms-material/src/app/accounts/dividend-deposits/dividend-deposits.ts
-- apps/rms-material/src/app/accounts/dividend-deposits/dividend-deposits.html
+- apps/dms-material/src/app/account-panel/account-panel.component.ts
+- apps/dms-material/src/app/account-panel/account-panel.component.html
+- apps/dms-material/src/app/account-panel/account-panel.component.scss
+- apps/dms-material/src/app/account-panel/account-panel.component.spec.ts
+- apps/dms-material/src/app/accounts/account-summary/account-summary.ts
+- apps/dms-material/src/app/accounts/account-summary/account-summary.html
+- apps/dms-material/src/app/accounts/open-positions/open-positions.ts
+- apps/dms-material/src/app/accounts/open-positions/open-positions.html
+- apps/dms-material/src/app/accounts/sold-positions/sold-positions.ts
+- apps/dms-material/src/app/accounts/sold-positions/sold-positions.html
+- apps/dms-material/src/app/accounts/dividend-deposits/dividend-deposits.ts
+- apps/dms-material/src/app/accounts/dividend-deposits/dividend-deposits.html
 
 #### Modified Files
 
-- apps/rms-material/src/app/app.routes.ts
+- apps/dms-material/src/app/app.routes.ts
 
 ### Change Log
 

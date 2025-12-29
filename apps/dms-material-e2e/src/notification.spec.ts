@@ -27,7 +27,7 @@ test.describe('Notification Service', () => {
 
       // Submit the form
       await page
-        .locator('rms-password-change-card button[type="submit"]')
+        .locator('dms-password-change-card button[type="submit"]')
         .click();
 
       // Verify error notification appears - use broader selector
@@ -55,7 +55,7 @@ test.describe('Notification Service', () => {
         .fill('differentpassword');
 
       await page
-        .locator('rms-password-change-card button[type="submit"]')
+        .locator('dms-password-change-card button[type="submit"]')
         .click();
 
       const snackbar = page.locator('mat-snack-bar-container');
@@ -83,7 +83,7 @@ test.describe('Notification Service', () => {
         .fill('differentpassword');
 
       await page
-        .locator('rms-password-change-card button[type="submit"]')
+        .locator('dms-password-change-card button[type="submit"]')
         .click();
 
       const snackbar = page.locator('mat-snack-bar-container');
@@ -115,7 +115,7 @@ test.describe('Notification Service', () => {
         .fill('differentpassword');
 
       await page
-        .locator('rms-password-change-card button[type="submit"]')
+        .locator('dms-password-change-card button[type="submit"]')
         .click();
 
       // Verify snackbar container appears
@@ -139,7 +139,7 @@ test.describe('Notification Service', () => {
         .fill('differentpassword');
 
       await page
-        .locator('rms-password-change-card button[type="submit"]')
+        .locator('dms-password-change-card button[type="submit"]')
         .click();
 
       // Material snackbar should be visible
@@ -166,7 +166,7 @@ test.describe('Notification Service', () => {
         .fill('differentpassword');
 
       await page
-        .locator('rms-password-change-card button[type="submit"]')
+        .locator('dms-password-change-card button[type="submit"]')
         .click();
 
       // Error snackbar should have custom styling class
@@ -190,7 +190,7 @@ test.describe('Notification Service', () => {
         .fill('differentpassword');
 
       await page
-        .locator('rms-password-change-card button[type="submit"]')
+        .locator('dms-password-change-card button[type="submit"]')
         .click();
 
       const snackbar = page.locator('mat-snack-bar-container');
@@ -216,7 +216,7 @@ test.describe('Notification Service', () => {
         .fill('differentpassword');
 
       await page
-        .locator('rms-password-change-card button[type="submit"]')
+        .locator('dms-password-change-card button[type="submit"]')
         .click();
 
       // Verify exact message text
@@ -248,7 +248,7 @@ test.describe('Notification Service', () => {
         .fill('differentpassword');
 
       await page
-        .locator('rms-password-change-card button[type="submit"]')
+        .locator('dms-password-change-card button[type="submit"]')
         .click();
 
       // Error styling should still be applied in dark mode
@@ -272,7 +272,7 @@ test.describe('Notification Service', () => {
         .fill('differentpassword');
 
       await page
-        .locator('rms-password-change-card button[type="submit"]')
+        .locator('dms-password-change-card button[type="submit"]')
         .click();
 
       // Verify the snackbar is visible and not hidden behind other elements

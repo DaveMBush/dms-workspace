@@ -45,7 +45,7 @@
 
     <!-- Allocation Pie Chart -->
     <div class="w-full max-w-md">
-      <rms-summary-display
+      <dms-summary-display
         [chartType$]="'pie'"
         [data$]="allocationData"
         [title$]="'Account Allocation'"
@@ -56,7 +56,7 @@
 
   <!-- Right: Performance Line Chart -->
   <div class="flex-1 w-full min-h-0">
-    <rms-summary-display
+    <dms-summary-display
       [chartType$]="'line'"
       [data$]="performanceData"
       [title$]="'Account Performance'"

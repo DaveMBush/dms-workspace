@@ -10,7 +10,7 @@ import { Account as AccountInterface } from '../store/accounts/account.interface
 import { selectAccounts } from '../store/accounts/selectors/select-accounts.function';
 
 @Component({
-  selector: 'rms-account',
+  selector: 'dms-account',
   imports: [
     RouterLink,
     RouterLinkActive,

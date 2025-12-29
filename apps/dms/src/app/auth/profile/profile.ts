@@ -18,7 +18,7 @@ import { SessionInfoCard } from './components/session-info-card';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  selector: 'rms-profile',
+  selector: 'dms-profile',
   imports: [
     ConfirmDialogModule,
     ToastModule,

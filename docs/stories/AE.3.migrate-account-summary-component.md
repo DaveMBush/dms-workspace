@@ -10,7 +10,7 @@
 
 **Current System:**
 
-- Location: `apps/rms/src/app/account-panel/summary/`
+- Location: `apps/dms/src/app/account-panel/summary/`
 - PrimeNG components: `p-chart`, `p-select`
 - Shows allocation and performance for single account
 
@@ -23,7 +23,7 @@
 
 ### Functional Requirements
 
-- [ ] **CRITICAL** All GUI look as close to the existing RMS app as possible
+- [ ] **CRITICAL** All GUI look as close to the existing DMS app as possible
 - [ ] Pie chart shows account allocation
 - [ ] Line chart shows account performance
 - [ ] Summary statistics displayed
@@ -42,7 +42,7 @@
 
 ### Step 1: Create Unit Tests First
 
-Create `apps/rms-material/src/app/account-panel/summary/summary.component.spec.ts`:
+Create `apps/dms-material/src/app/account-panel/summary/summary.component.spec.ts`:
 
 ```typescript
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -93,7 +93,7 @@ describe('SummaryComponent', () => {
 
   it('should render summary display components', () => {
     fixture.detectChanges();
-    const charts = fixture.nativeElement.querySelectorAll('rms-summary-display');
+    const charts = fixture.nativeElement.querySelectorAll('dms-summary-display');
     expect(charts.length).toBeGreaterThan(0);
   });
 });
@@ -101,13 +101,13 @@ describe('SummaryComponent', () => {
 
 **TDD Cycle:**
 
-1. Run `pnpm nx run rms-material:test` - tests should fail (RED)
+1. Run `pnpm nx run dms-material:test` - tests should fail (RED)
 2. Implement minimal code to pass tests (GREEN)
 3. Refactor while keeping tests passing (REFACTOR)
 
 ## Technical Approach
 
-Create `apps/rms-material/src/app/account-panel/summary/summary.component.ts`:
+Create `apps/dms-material/src/app/account-panel/summary/summary.component.ts`:
 
 ```typescript
 import { Component, inject, computed } from '@angular/core';
@@ -118,7 +118,7 @@ import { selectTrades } from '../../store/trades/select-trades.function';
 import { ChartData } from 'chart.js';
 
 @Component({
-  selector: 'rms-summary',
+  selector: 'dms-summary',
   imports: [MatCardModule, SummaryDisplayComponent],
   templateUrl: './summary.component.html',
   styleUrl: './summary.component.scss',
@@ -154,14 +154,14 @@ export class SummaryComponent {
 - [ ] Summary stats display
 - [ ] All validation commands pass
   - Run `pnpm all`
-  - Run `pnpm e2e:rms-material`
+  - Run `pnpm e2e:dms-material`
   - Run `pnpm dupcheck`
   - Run `pnpm format`
   - Repeat all of these if any fail until they all pass
 
 ## E2E Test Requirements
 
-When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
+When this story is complete, ensure the following e2e tests exist in `apps/dms-material-e2e/`:
 
 ### Core Functionality
 
@@ -187,7 +187,7 @@ When this story is complete, ensure the following e2e tests exist in `apps/rms-m
 - [ ] Statistics match detailed position calculations
 - [ ] Historical performance data handles missing data points
 
-Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.
+Run `pnpm nx run dms-material-e2e:e2e` to verify all e2e tests pass.
 
 ---
 
@@ -220,7 +220,7 @@ None
 - All validation commands pass (lint, build, test, dupcheck, format)
 - Component wired into app routes at `/account/:accountId` path
 - Replaces placeholder AccountSummary component
-- Line chart displays 3 datasets: Base, Capital Gains, Dividends (as per original RMS)
+- Line chart displays 3 datasets: Base, Capital Gains, Dividends (as per original DMS)
 - Fixed height cascade issue by adding :host styling to AccountDetailComponent and AccountPanelComponent
 - Layout now properly fills height from tabs to bottom without scrollbar
 - E2E tests added for chart visibility and total value display
@@ -228,13 +228,13 @@ None
 
 ### File List
 
-- `apps/rms-material/src/app/account-panel/summary/summary.component.ts` - Created
-- `apps/rms-material/src/app/account-panel/summary/summary.component.html` - Created
-- `apps/rms-material/src/app/account-panel/summary/summary.component.scss` - Created
-- `apps/rms-material/src/app/account-panel/summary/summary.component.spec.ts` - Created
-- `apps/rms-material/src/app/app.routes.ts` - Modified (updated route to use new component)
-- `apps/rms-material/src/app/account-panel/account-detail.component.scss` - Modified (added :host styling)
-- `apps/rms-material/src/app/account-panel/account-panel.component.scss` - Modified (added :host styling)
+- `apps/dms-material/src/app/account-panel/summary/summary.component.ts` - Created
+- `apps/dms-material/src/app/account-panel/summary/summary.component.html` - Created
+- `apps/dms-material/src/app/account-panel/summary/summary.component.scss` - Created
+- `apps/dms-material/src/app/account-panel/summary/summary.component.spec.ts` - Created
+- `apps/dms-material/src/app/app.routes.ts` - Modified (updated route to use new component)
+- `apps/dms-material/src/app/account-panel/account-detail.component.scss` - Modified (added :host styling)
+- `apps/dms-material/src/app/account-panel/account-panel.component.scss` - Modified (added :host styling)
 
 ### Change Log
 

@@ -36,7 +36,7 @@ test.describe('Global Screener Component', () => {
 
   test.describe('Table Structure', () => {
     test('should display base table component', async ({ page }) => {
-      await expect(page.locator('rms-base-table')).toBeVisible();
+      await expect(page.locator('dms-base-table')).toBeVisible();
     });
 
     test('should display Symbol column header', async ({ page }) => {
@@ -137,7 +137,7 @@ test.describe('Global Screener Component', () => {
       // Wait for table data to potentially load
       await page.waitForTimeout(500);
       const checkboxes = page.locator(
-        'rms-base-table mat-checkbox[aria-label="Has Volatility"], rms-base-table mat-checkbox'
+        'dms-base-table mat-checkbox[aria-label="Has Volatility"], dms-base-table mat-checkbox'
       );
       // If there is data, there should be checkboxes
       const count = await checkboxes.count();
@@ -184,7 +184,7 @@ test.describe('Global Screener Component', () => {
     });
 
     test('should have accessible table structure', async ({ page }) => {
-      await expect(page.locator('rms-base-table')).toBeVisible();
+      await expect(page.locator('dms-base-table')).toBeVisible();
       // Table should have column headers
       const headers = page.locator('th');
       const count = await headers.count();

@@ -9,7 +9,7 @@
 
 ## System Overview
 
-RMS Workspace is a **Risk Management System** for financial portfolio management that tracks investment portfolios, manages universes of tradable Closed End Funds (CEFs), and provides risk group analysis with real-time data synchronization.
+DMS Workspace is a **Risk Management System** for financial portfolio management that tracks investment portfolios, manages universes of tradable Closed End Funds (CEFs), and provides risk group analysis with real-time data synchronization.
 
 ## Environment Configurations
 
@@ -18,18 +18,18 @@ RMS Workspace is a **Risk Management System** for financial portfolio management
 - **Database**: SQLite (`file:./database.db`)
 - **Authentication**: Mock authentication (`useMockAuth: true`)
 - **API**: Proxied to localhost:3000
-- **Environment File**: `apps/rms/src/environments/environment.ts`
+- **Environment File**: `apps/dms/src/environments/environment.ts`
 
 ### **Docker Local Environment** (Port 8080)
 
 - **Database**: PostgreSQL via docker-compose
 - **Authentication**: Mock authentication (`useMockAuth: true`)
 - **API**: Nginx proxy to backend container
-- **Environment File**: `apps/rms/src/environments/environment.docker.ts`
+- **Environment File**: `apps/dms/src/environments/environment.docker.ts`
 
 ### **Production Environment**
 
 - **Database**: PostgreSQL (AWS RDS or similar)
 - **Authentication**: AWS Cognito (`useMockAuth: false`)
 - **API**: Production API endpoints
-- **Environment File**: `apps/rms/src/environments/environment.prod.ts`
+- **Environment File**: `apps/dms/src/environments/environment.prod.ts`

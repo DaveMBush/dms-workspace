@@ -1,4 +1,4 @@
-# RMS Authentication Troubleshooting Guide
+# DMS Authentication Troubleshooting Guide
 
 ## Table of Contents
 
@@ -157,10 +157,10 @@ const tokenConfig = {
 
 ```bash
 # Check application health endpoint
-curl -X GET https://api.rms.company.com/health
+curl -X GET https://api.dms.company.com/health
 
 # Verify authentication token
-curl -X GET https://api.rms.company.com/api/profile \
+curl -X GET https://api.dms.company.com/api/profile \
   -H "Authorization: Bearer <token>"
 
 # Clear browser cache and cookies
@@ -330,13 +330,13 @@ observer.observe({ entryTypes: ['resource'] });
 
 ```bash
 # View authentication logs
-tail -f /var/log/rms/auth.log | grep ERROR
+tail -f /var/log/dms/auth.log | grep ERROR
 
 # Search for specific user
-grep "user@example.com" /var/log/rms/auth.log
+grep "user@example.com" /var/log/dms/auth.log
 
 # Monitor real-time authentication attempts
-journalctl -u rms-api -f | grep auth
+journalctl -u dms-api -f | grep auth
 ```
 
 ### Performance Diagnostics
@@ -364,12 +364,12 @@ console.log(`Token refresh took ${refreshEnd - refreshStart} milliseconds`);
 ```bash
 # Check response times
 curl -w "@curl-format.txt" \
-  -X POST https://api.rms.company.com/auth/login \
+  -X POST https://api.dms.company.com/auth/login \
   -H "Content-Type: application/json" \
   -d '{"username":"test","password":"test"}'
 
 # Monitor resource usage
-htop -p $(pgrep -f "rms-api")
+htop -p $(pgrep -f "dms-api")
 ```
 
 ## Performance Issues
@@ -394,7 +394,7 @@ htop -p $(pgrep -f "rms-api")
      --client-id XXXXXXXXXXXXXXXXXXXXXXXXXX
 
    # Test API response time
-   time curl -X GET https://api.rms.company.com/health
+   time curl -X GET https://api.dms.company.com/health
    ```
 
 2. **Check Network Latency:**
@@ -404,7 +404,7 @@ htop -p $(pgrep -f "rms-api")
    ping cognito-idp.us-east-1.amazonaws.com
 
    # Trace route to API
-   traceroute api.rms.company.com
+   traceroute api.dms.company.com
    ```
 
 3. **Monitor Resource Usage:**
@@ -595,7 +595,7 @@ done
 
    ```bash
    # Enable emergency access mode
-   echo "maintenance" > /var/www/rms/status
+   echo "maintenance" > /var/www/dms/status
 
    # Redirect to backup authentication
    nginx -s reload
@@ -627,7 +627,7 @@ dig @1.1.1.1 cognito-idp.us-east-1.amazonaws.com
 # Test from different locations
 for server in 8.8.8.8 1.1.1.1 208.67.222.222; do
   echo "Testing DNS server $server:"
-  dig @$server api.rms.company.com
+  dig @$server api.dms.company.com
 done
 ```
 
@@ -725,7 +725,7 @@ const cookieConfig = {
 
 // CORS configuration
 const corsOptions = {
-  origin: ['https://rms.company.com', 'https://admin.company.com', 'https://*.company.com'],
+  origin: ['https://dms.company.com', 'https://admin.company.com', 'https://*.company.com'],
   credentials: true,
 };
 ```
@@ -750,7 +750,7 @@ const corsOptions = {
    export ADMIN_OVERRIDE_TOKEN=$(openssl rand -hex 32)
 
    # Restart services with emergency configuration
-   systemctl restart rms-api
+   systemctl restart dms-api
    ```
 
 2. **User Communication:**
@@ -764,7 +764,7 @@ const corsOptions = {
    # Send emergency notification
    aws sns publish \
      --topic-arn "arn:aws:sns:us-east-1:123456789:emergency-alerts" \
-     --message "RMS authentication system is experiencing an outage"
+     --message "DMS authentication system is experiencing an outage"
    ```
 
 3. **Implement Workaround:**

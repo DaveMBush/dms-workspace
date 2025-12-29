@@ -2,7 +2,7 @@
 
 ## Story
 
-**As a** developer maintaining the rms-material application
+**As a** developer maintaining the dms-material application
 **I want** comprehensive unit test coverage
 **So that** I can confidently make changes without breaking functionality
 
@@ -10,13 +10,13 @@
 
 **Current System:**
 
-- RMS has 625+ unit tests (based on recent test run)
+- DMS has 625+ unit tests (based on recent test run)
 - Tests use Vitest
 - Tests mock PrimeNG components
 
 **Migration Target:**
 
-- Duplicate tests for rms-material
+- Duplicate tests for dms-material
 - Update mocks for Material components
 - Maintain or improve coverage
 
@@ -32,7 +32,7 @@
 
 ### Technical Requirements
 
-- [ ] Vitest configuration for rms-material
+- [ ] Vitest configuration for dms-material
 - [ ] Material testing utilities imported
 - [ ] Mock dialogs and snackbars properly
 - [ ] Test coverage maintained
@@ -49,12 +49,12 @@
 
 Copy test configuration files:
 
-- `apps/rms-material/tsconfig.spec.json`
-- `apps/rms-material/vitest.config.ts` (if separate)
+- `apps/dms-material/tsconfig.spec.json`
+- `apps/dms-material/vitest.config.ts` (if separate)
 
 ### Step 2: Create Material Testing Utilities
 
-Create `apps/rms-material/src/test-utils/material-test-utils.ts`:
+Create `apps/dms-material/src/test-utils/material-test-utils.ts`:
 
 ```typescript
 import { HarnessLoader } from '@angular/cdk/testing';
@@ -88,7 +88,7 @@ export async function typeInInput(loader: HarnessLoader, placeholder: string, va
 
 ### Step 3: Create Mock Services
 
-Create `apps/rms-material/src/test-utils/mock-services.ts`:
+Create `apps/dms-material/src/test-utils/mock-services.ts`:
 
 ```typescript
 import { of } from 'rxjs';
@@ -140,7 +140,7 @@ await clickButton(loader, 'Submit');
 ### Step 5: Run Tests
 
 ```bash
-pnpm nx run rms-material:test --code-coverage
+pnpm nx run dms-material:test --code-coverage
 ```
 
 ## Test Categories
@@ -173,22 +173,22 @@ pnpm nx run rms-material:test --code-coverage
 
 ## Definition of Done
 
-- [ ] All tests copied to rms-material
+- [ ] All tests copied to dms-material
 - [ ] Material mocks created
 - [ ] Test harness utilities created
 - [ ] All tests pass
 - [ ] Coverage >= 85%
-- [ ] `pnpm nx run rms-material:test --code-coverage` succeeds
+- [ ] `pnpm nx run dms-material:test --code-coverage` succeeds
 - [ ] All validation commands pass
   - Run `pnpm all`
-  - Run `pnpm e2e:rms-material`
+  - Run `pnpm e2e:dms-material`
   - Run `pnpm dupcheck`
   - Run `pnpm format`
   - Repeat all of these if any fail until they all pass
 
 ## E2E Test Requirements
 
-When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
+When this story is complete, ensure the following e2e tests exist in `apps/dms-material-e2e/`:
 
 ### Core Functionality
 
@@ -214,6 +214,6 @@ When this story is complete, ensure the following e2e tests exist in `apps/rms-m
 - [ ] Test isolation (each test can run independently)
 - [ ] Random test order execution passes
 
-Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.
+Run `pnpm nx run dms-material-e2e:e2e` to verify all e2e tests pass.
 
 **Note:** This story primarily focuses on unit tests, but e2e tests should verify the CI/CD pipeline runs unit tests correctly.

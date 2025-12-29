@@ -10,7 +10,7 @@ import { SummaryComponentService } from './summary-component.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  selector: 'rms-summary',
+  selector: 'dms-summary',
   standalone: true,
   imports: [SelectModule, FormsModule, ChartModule, SummaryDisplayComponent],
   templateUrl: './summary.component.html',

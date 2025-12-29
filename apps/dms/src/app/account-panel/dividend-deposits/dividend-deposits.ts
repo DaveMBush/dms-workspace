@@ -19,7 +19,7 @@ import { selectUniverses } from '../../store/universe/selectors/select-universes
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  selector: 'rms-dividend-deposits',
+  selector: 'dms-dividend-deposits',
   imports: [CommonModule, TableModule, ButtonModule],
   templateUrl: './dividend-deposits.html',
   styleUrl: './dividend-deposits.scss',

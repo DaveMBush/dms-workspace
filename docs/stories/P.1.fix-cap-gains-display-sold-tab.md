@@ -6,7 +6,7 @@ Ready for Review
 
 ## Story
 
-**As a** trader using the RMS system,
+**As a** trader using the DMS system,
 **I want** the Cap Gains$ and Cap Gains% columns in the Sold tab to display accurate calculations,
 **so that** I can clearly see the profit/loss for my completed trades.
 
@@ -94,10 +94,10 @@ capitalGainPercentage: number;
 
 **Affected Files:**
 
-- `apps/rms/src/app/account-panel/sold-positions/sold-positions-component.service.ts` - Calculation logic
-- `apps/rms/src/app/account-panel/sold-positions/sold-positions.component.html` - Display template
-- `apps/rms/src/app/store/trades/closed-position.interface.ts` - Type definitions
-- `apps/rms/src/app/account-panel/sold-positions/sold-positions.component.ts` - Component logic
+- `apps/dms/src/app/account-panel/sold-positions/sold-positions-component.service.ts` - Calculation logic
+- `apps/dms/src/app/account-panel/sold-positions/sold-positions.component.html` - Display template
+- `apps/dms/src/app/store/trades/closed-position.interface.ts` - Type definitions
+- `apps/dms/src/app/account-panel/sold-positions/sold-positions.component.ts` - Component logic
 
 **Key Methods:**
 
@@ -200,20 +200,20 @@ Investigation findings:
 
 Modified:
 
-- apps/rms/src/app/account-panel/sold-positions/sold-positions-component.service.ts
-- apps/rms/src/app/account-panel/sold-positions/sold-positions.component.ts
-- apps/rms/src/app/account-panel/sold-positions/sold-positions.component.html
+- apps/dms/src/app/account-panel/sold-positions/sold-positions-component.service.ts
+- apps/dms/src/app/account-panel/sold-positions/sold-positions.component.ts
+- apps/dms/src/app/account-panel/sold-positions/sold-positions.component.html
 
 Created:
 
-- apps/rms/src/app/account-panel/sold-positions/capital-gains-calculator.function.ts
-- apps/rms/src/app/account-panel/sold-positions/capital-gains-result.interface.ts
-- apps/rms/src/app/account-panel/sold-positions/trade-data.interface.ts
-- apps/rms/src/app/account-panel/sold-positions/is-valid-number.function.ts
-- apps/rms/src/app/account-panel/sold-positions/format-capital-gains-percentage.function.ts
-- apps/rms/src/app/account-panel/sold-positions/format-capital-gains-dollar.function.ts
-- apps/rms/src/app/account-panel/sold-positions/capital-gains-calculator.function.spec.ts
-- apps/rms/src/app/account-panel/sold-positions/sold-positions.component.spec.ts
+- apps/dms/src/app/account-panel/sold-positions/capital-gains-calculator.function.ts
+- apps/dms/src/app/account-panel/sold-positions/capital-gains-result.interface.ts
+- apps/dms/src/app/account-panel/sold-positions/trade-data.interface.ts
+- apps/dms/src/app/account-panel/sold-positions/is-valid-number.function.ts
+- apps/dms/src/app/account-panel/sold-positions/format-capital-gains-percentage.function.ts
+- apps/dms/src/app/account-panel/sold-positions/format-capital-gains-dollar.function.ts
+- apps/dms/src/app/account-panel/sold-positions/capital-gains-calculator.function.spec.ts
+- apps/dms/src/app/account-panel/sold-positions/sold-positions.component.spec.ts
 
 ## QA Results
 

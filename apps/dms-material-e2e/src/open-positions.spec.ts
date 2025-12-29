@@ -10,7 +10,7 @@ test.describe('Open Positions', () => {
   });
 
   test('should display open positions table', async ({ page }) => {
-    const table = page.locator('rms-base-table');
+    const table = page.locator('dms-base-table');
     await expect(table).toBeVisible();
   });
 

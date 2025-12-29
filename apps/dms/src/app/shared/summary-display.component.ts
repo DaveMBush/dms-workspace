@@ -14,7 +14,7 @@ interface SummaryData {
 }
 
 @Component({
-  selector: 'rms-summary-display',
+  selector: 'dms-summary-display',
   standalone: true,
   imports: [CurrencyPipe, PercentPipe, ChartModule],
   changeDetection: ChangeDetectionStrategy.OnPush,

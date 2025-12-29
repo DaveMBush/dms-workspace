@@ -52,20 +52,20 @@
         <!-- Pie Chart -->
         <div class="w-full max-w-md">
           <h2 class="text-lg font-semibold mb-2">Allocation by Risk Group</h2>
-          <rms-summary-display
+          <dms-summary-display
             [data$]="allocationData"
             [chartType$]="'pie'"
-          ></rms-summary-display>
+          ></dms-summary-display>
         </div>
       </div>
 
       <!-- Right: Line chart -->
       <div class="flex-1 w-full h-full">
         <h2 class="text-lg font-semibold mb-2">Portfolio Performance</h2>
-        <rms-summary-display
+        <dms-summary-display
           [data$]="performanceData"
           [chartType$]="'line'"
-        ></rms-summary-display>
+        ></dms-summary-display>
       </div>
     </div>
   </mat-card-content>

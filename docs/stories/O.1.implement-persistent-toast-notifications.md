@@ -6,7 +6,7 @@ Ready for Review
 
 ## Story
 
-**As a** trader using the RMS system,
+**As a** trader using the DMS system,
 **I want** toast notifications for Update Fields and Update Universe operations to remain visible until I manually dismiss them,
 **so that** I can see the success or error results even when I walk away from the screen during long-running operations.
 
@@ -145,7 +145,7 @@ this.messageService.add({
 
 **Affected Files:**
 
-- `apps/rms/src/app/global/global-universe/global-universe.component.ts` - Update toast configurations
+- `apps/dms/src/app/global/global-universe/global-universe.component.ts` - Update toast configurations
 - No template changes required (p-toast already configured)
 - No interface changes required (sticky is built-in PrimeNG property)
 
@@ -234,12 +234,11 @@ _To be filled by dev agent_
 
 ### File List
 
-- Modified: `apps/rms/src/app/global/global-universe/global-universe.component.ts`
-- Modified: `apps/rms/src/app/global/global-universe/global-universe.component.spec.ts`
-- Created: `apps/rms/src/app/global/global-universe/edit-handlers.function.ts`
-- Created: `apps/rms/src/app/global/global-universe/filter-handlers.function.ts`
-- Created: `apps/rms/src/app/global/global-universe/sorting-handlers.function.ts`
-
+- Modified: `apps/dms/src/app/global/global-universe/global-universe.component.ts`
+- Modified: `apps/dms/src/app/global/global-universe/global-universe.component.spec.ts`
+- Created: `apps/dms/src/app/global/global-universe/edit-handlers.function.ts`
+- Created: `apps/dms/src/app/global/global-universe/filter-handlers.function.ts`
+- Created: `apps/dms/src/app/global/global-universe/sorting-handlers.function.ts`
 ## QA Results
 
 _Results from QA Agent review will be populated here_

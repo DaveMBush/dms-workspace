@@ -96,8 +96,8 @@ body {
   margin: 0;
   font-family: Roboto, sans-serif;
   height: 100%;
-  background-color: var(--rms-background);
-  color: var(--rms-text-primary);
+  background-color: var(--dms-background);
+  color: var(--dms-text-primary);
 }
 
 // Smooth theme transitions
@@ -108,23 +108,23 @@ body {
 
 // Custom utility classes for theming
 .surface-ground {
-  background-color: var(--rms-background);
+  background-color: var(--dms-background);
 }
 
 .surface-card {
-  background-color: var(--rms-surface);
+  background-color: var(--dms-surface);
 }
 
 .text-primary {
-  color: var(--rms-text-primary);
+  color: var(--dms-text-primary);
 }
 
 .text-secondary {
-  color: var(--rms-text-secondary);
+  color: var(--dms-text-secondary);
 }
 
 .border-default {
-  border-color: var(--rms-border);
+  border-color: var(--dms-border);
 }
 
 // Snackbar (toast notification) styles

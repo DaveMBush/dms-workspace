@@ -1,10 +1,10 @@
 # New Epics and Stories Implementation Summary
 
-This document summarizes the epics and stories created for the RMS-MATERIAL backend integration work.
+This document summarizes the epics and stories created for the DMS-MATERIAL backend integration work.
 
 ## Overview
 
-Created **18 new epics (AG through AX)** with associated stories to implement backend integration for the RMS-MATERIAL application. These epics systematically address the 18 items outlined in the implementation plan.
+Created **18 new epics (AG through AX)** with associated stories to implement backend integration for the DMS-MATERIAL application. These epics systematically address the 18 items outlined in the implementation plan.
 
 ## Epic List
 
@@ -111,10 +111,10 @@ Within each epic, complete stories sequentially. Do not start next epic until cu
 
 ```bash
 # Run all unit tests
-pnpm nx test rms-material
+pnpm nx test dms-material
 
 # Run all e2e tests
-pnpm nx e2e rms-material-e2e
+pnpm nx e2e dms-material-e2e
 
 # Run all tests (unit + e2e + lint)
 pnpm all
@@ -125,7 +125,7 @@ pnpm all
 1. **TDD Mandatory**: All stories must follow test-driven development
 2. **Story Size**: Keep small enough DEV doesn't lose track
 3. **E2E Flexibility**: Can split e2e tests into separate story if needed
-4. **Reference RMS App**: Use existing RMS app as reference for all functionality
+4. **Reference DMS App**: Use existing DMS app as reference for all functionality
 5. **SmartNgRX Patterns**: Follow existing signal and effect patterns
 6. **Material Design**: Match Material Design patterns from migrated components
 
@@ -187,9 +187,9 @@ The implementation is complete when:
 1. All 18 epics are complete with their Definition of Done checked off
 2. All unit tests pass
 3. All e2e tests pass
-4. RMS-MATERIAL app has feature parity with RMS app for implemented screens
+4. DMS-MATERIAL app has feature parity with DMS app for implemented screens
 5. No console errors when using the application
-6. UI closely matches RMS app appearance and behavior
+6. UI closely matches DMS app appearance and behavior
 7. All linting passes
 8. Performance is acceptable (before virtual scrolling optimization)
 

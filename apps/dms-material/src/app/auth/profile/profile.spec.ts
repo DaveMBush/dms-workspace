@@ -67,13 +67,13 @@ describe('Profile', () => {
   it('should render password change card', () => {
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('rms-password-change-card')).toBeTruthy();
+    expect(compiled.querySelector('dms-password-change-card')).toBeTruthy();
   });
 
   it('should render email change card', () => {
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('rms-email-change-card')).toBeTruthy();
+    expect(compiled.querySelector('dms-email-change-card')).toBeTruthy();
   });
 
   it('should reload profile when onEmailChanged called', () => {

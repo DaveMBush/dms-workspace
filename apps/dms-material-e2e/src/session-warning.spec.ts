@@ -26,7 +26,7 @@ test.describe.skip('Session Warning Dialog', () => {
     // this or we'll need to wait for actual timeout
 
     // Check if dialog appears with expected content
-    const dialog = page.locator('rms-session-warning');
+    const dialog = page.locator('dms-session-warning');
 
     // Verify dialog exists and is visible
     await expect(dialog).toBeVisible();
@@ -41,7 +41,7 @@ test.describe.skip('Session Warning Dialog', () => {
   });
 
   test('should display countdown timer', async ({ page }) => {
-    const dialog = page.locator('rms-session-warning');
+    const dialog = page.locator('dms-session-warning');
 
     // Verify time is displayed in format like "1:00" or "0:45"
     // Simple regex - matches one or more digits, colon, exactly 2 digits
@@ -51,7 +51,7 @@ test.describe.skip('Session Warning Dialog', () => {
   });
 
   test('should display progress bar that decreases', async ({ page }) => {
-    const dialog = page.locator('rms-session-warning');
+    const dialog = page.locator('dms-session-warning');
     const progressBar = dialog.locator('mat-progress-bar');
 
     // Verify progress bar exists
@@ -73,7 +73,7 @@ test.describe.skip('Session Warning Dialog', () => {
   test('should extend session when clicking Extend Session button', async ({
     page,
   }) => {
-    const dialog = page.locator('rms-session-warning');
+    const dialog = page.locator('dms-session-warning');
 
     // Click extend session button
     await dialog
@@ -90,7 +90,7 @@ test.describe.skip('Session Warning Dialog', () => {
   });
 
   test('should logout when clicking Logout Now button', async ({ page }) => {
-    const dialog = page.locator('rms-session-warning');
+    const dialog = page.locator('dms-session-warning');
 
     // Click logout button
     await dialog.locator('button').filter({ hasText: 'Logout Now' }).click();
@@ -103,7 +103,7 @@ test.describe.skip('Session Warning Dialog', () => {
   });
 
   test('should not close when clicking backdrop', async ({ page }) => {
-    const dialog = page.locator('rms-session-warning');
+    const dialog = page.locator('dms-session-warning');
 
     // Try clicking backdrop (outside dialog)
     await page.locator('.cdk-overlay-backdrop').click({ force: true });
@@ -113,7 +113,7 @@ test.describe.skip('Session Warning Dialog', () => {
   });
 
   test('should not close when pressing Escape key', async ({ page }) => {
-    const dialog = page.locator('rms-session-warning');
+    const dialog = page.locator('dms-session-warning');
 
     // Press Escape key
     await page.keyboard.press('Escape');
@@ -136,7 +136,7 @@ test.describe.skip('Session Warning Dialog', () => {
     // Set mobile viewport
     await page.setViewportSize({ width: 375, height: 667 });
 
-    const dialog = page.locator('rms-session-warning');
+    const dialog = page.locator('dms-session-warning');
 
     // Dialog should be visible and responsive
     await expect(dialog).toBeVisible();
@@ -147,7 +147,7 @@ test.describe.skip('Session Warning Dialog', () => {
   });
 
   test('should trap keyboard focus within dialog', async ({ page }) => {
-    const dialog = page.locator('rms-session-warning');
+    const dialog = page.locator('dms-session-warning');
 
     // Tab through elements
     await page.keyboard.press('Tab');
@@ -167,7 +167,7 @@ test.describe.skip('Session Warning Dialog', () => {
   test('should handle rapid clicks on Extend Session button', async ({
     page,
   }) => {
-    const dialog = page.locator('rms-session-warning');
+    const dialog = page.locator('dms-session-warning');
     const extendButton = dialog
       .locator('button')
       .filter({ hasText: 'Extend Session' });
@@ -183,7 +183,7 @@ test.describe.skip('Session Warning Dialog', () => {
   test('should display refresh icon on Extend Session button', async ({
     page,
   }) => {
-    const dialog = page.locator('rms-session-warning');
+    const dialog = page.locator('dms-session-warning');
     const extendButton = dialog
       .locator('button')
       .filter({ hasText: 'Extend Session' });
@@ -195,7 +195,7 @@ test.describe.skip('Session Warning Dialog', () => {
   });
 
   test('should display logout icon on Logout Now button', async ({ page }) => {
-    const dialog = page.locator('rms-session-warning');
+    const dialog = page.locator('dms-session-warning');
     const logoutButton = dialog
       .locator('button')
       .filter({ hasText: 'Logout Now' });

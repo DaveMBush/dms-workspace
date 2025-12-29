@@ -11,7 +11,7 @@ import { ProfileService } from '../../services/profile.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  selector: 'rms-profile-info-card',
+  selector: 'dms-profile-info-card',
   imports: [CommonModule, CardModule],
   templateUrl: './profile-info-card.html',
 })

@@ -24,20 +24,20 @@ Approved
 
 - `pnpm format`
 - `pnpm dupcheck`
-- `pnpm nx run rms:test --code-coverage`
+- `pnpm nx run dms:test --code-coverage`
 - `pnpm nx run server:build:production`
 - `pnpm nx run server:test --code-coverage`
 - `pnpm nx run server:lint`
-- `pnpm nx run rms:lint`
-- `pnpm nx run rms:build:production`
-- `pnpm nx run rms-e2e:lint`
+- `pnpm nx run dms:lint`
+- `pnpm nx run dms:build:production`
+- `pnpm nx run dms-e2e:lint`
 - `pnpm nx run infrastructure:lint`
 
 ## Tasks / Subtasks
 
 - [ ] **Task 1: Implement automatic token refresh mechanism** (AC: 1, 6)
 
-  - [ ] Create `TokenRefreshService` in `/apps/rms/src/app/auth/services/token-refresh.service.ts`
+  - [ ] Create `TokenRefreshService` in `/apps/dms/src/app/auth/services/token-refresh.service.ts`
   - [ ] Add automatic refresh logic 5 minutes before access token expiration
   - [ ] Implement mutex/semaphore pattern to prevent concurrent refresh requests
   - [ ] Add retry logic with exponential backoff for failed refresh attempts
@@ -61,7 +61,7 @@ Approved
   - [ ] Implement auto-dismiss functionality if user becomes active
   - [ ] Style warning component with PrimeNG dialog and proper accessibility
   - [ ] Add sound notification option for session warnings
-  - [ ] **IMPORTANT**: Re-enable the skipped e2e tests in `apps/rms-material-e2e/src/session-warning.spec.ts` by removing `test.describe.skip` and implementing a test hook to manually trigger the session warning dialog for testing
+  - [ ] **IMPORTANT**: Re-enable the skipped e2e tests in `apps/dms-material-e2e/src/session-warning.spec.ts` by removing `test.describe.skip` and implementing a test hook to manually trigger the session warning dialog for testing
 
 - [ ] **Task 4: Implement activity-based session management** (AC: 5)
 
@@ -119,7 +119,7 @@ Approved
 
 ### Data Models and Architecture
 
-**Source: [apps/rms/src/app/auth/auth.service.ts from Story K.3]**
+**Source: [apps/dms/src/app/auth/auth.service.ts from Story K.3]**
 
 - Existing authentication service with token storage and management
 - Signal-based state management for reactive UI updates
@@ -145,30 +145,29 @@ Mouse/Keyboard   Track Activity     Reset Timeout        Extend Session
 
 **Primary Files to Create:**
 
-1. `/apps/rms/src/app/auth/services/token-refresh.service.ts` - Token refresh logic
-2. `/apps/rms/src/app/auth/services/activity-tracking.service.ts` - User activity monitoring
-3. `/apps/rms/src/app/auth/services/user-state.service.ts` - Client-side user state
-4. `/apps/rms/src/app/auth/components/session-warning/session-warning.ts` - Session timeout warning
-5. `/apps/rms/src/app/auth/services/session-manager.service.ts` - Orchestrates session management
-
+1. `/apps/dms/src/app/auth/services/token-refresh.service.ts` - Token refresh logic
+2. `/apps/dms/src/app/auth/services/activity-tracking.service.ts` - User activity monitoring
+3. `/apps/dms/src/app/auth/services/user-state.service.ts` - Client-side user state
+4. `/apps/dms/src/app/auth/components/session-warning/session-warning.ts` - Session timeout warning
+5. `/apps/dms/src/app/auth/services/session-manager.service.ts` - Orchestrates session management
 **Primary Files to Modify:**
 
-1. `/apps/rms/src/app/auth/auth.service.ts` - Integrate token refresh and session management
-2. `/apps/rms/src/app/auth/login/login.ts` - Add "Remember Me" functionality
-3. `/apps/rms/src/app/auth/interceptors/auth.interceptor.ts` - Handle token refresh during requests
+1. `/apps/dms/src/app/auth/auth.service.ts` - Integrate token refresh and session management
+2. `/apps/dms/src/app/auth/login/login.ts` - Add "Remember Me" functionality
+3. `/apps/dms/src/app/auth/interceptors/auth.interceptor.ts` - Handle token refresh during requests
 
 **Test Files to Create:**
 
-1. `/apps/rms/src/app/auth/services/token-refresh.service.spec.ts` - Token refresh tests
-2. `/apps/rms/src/app/auth/services/session-manager.service.spec.ts` - Session management tests
-3. `/apps/rms/src/app/auth/auth-session.integration.spec.ts` - Integration tests
+1. `/apps/dms/src/app/auth/services/token-refresh.service.spec.ts` - Token refresh tests
+2. `/apps/dms/src/app/auth/services/session-manager.service.spec.ts` - Session management tests
+3. `/apps/dms/src/app/auth/auth-session.integration.spec.ts` - Integration tests
 
 ### Technical Implementation Details
 
 **Token Refresh Service:**
 
 ```typescript
-// apps/rms/src/app/auth/services/token-refresh.service.ts
+// apps/dms/src/app/auth/services/token-refresh.service.ts
 import { Injectable, signal } from '@angular/core';
 import { Auth } from '@aws-amplify/auth';
 import { BehaviorSubject, timer, Observable, NEVER } from 'rxjs';
@@ -314,7 +313,7 @@ export class TokenRefreshService {
 **Activity Tracking Service:**
 
 ```typescript
-// apps/rms/src/app/auth/services/activity-tracking.service.ts
+// apps/dms/src/app/auth/services/activity-tracking.service.ts
 import { Injectable, signal, NgZone } from '@angular/core';
 import { fromEvent, merge, throttleTime, debounceTime } from 'rxjs';
 
@@ -368,7 +367,7 @@ export class ActivityTrackingService {
 **Session Warning Component:**
 
 ```typescript
-// apps/rms/src/app/auth/components/session-warning/session-warning.ts
+// apps/dms/src/app/auth/components/session-warning/session-warning.ts
 import { Component, signal, computed, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DialogModule } from 'primeng/dialog';

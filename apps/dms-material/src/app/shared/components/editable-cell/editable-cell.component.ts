@@ -14,7 +14,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
 @Component({
-  selector: 'rms-editable-cell',
+  selector: 'dms-editable-cell',
   imports: [
     FormsModule,
     MatFormFieldModule,

@@ -33,13 +33,13 @@ tr.mat-mdc-row {
   }
 
   &.selected {
-    background-color: rgba(var(--rms-primary-500), 0.1);
+    background-color: rgba(var(--dms-primary-500), 0.1);
   }
 }
 
 th.mat-mdc-header-cell {
   font-weight: 600;
-  background-color: var(--rms-surface);
+  background-color: var(--dms-surface);
   position: sticky;
   top: 0;
   z-index: 1;

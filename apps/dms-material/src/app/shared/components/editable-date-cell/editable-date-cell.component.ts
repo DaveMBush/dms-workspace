@@ -17,7 +17,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
 @Component({
-  selector: 'rms-editable-date-cell',
+  selector: 'dms-editable-date-cell',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [

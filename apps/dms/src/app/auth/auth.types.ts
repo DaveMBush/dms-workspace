@@ -1,4 +1,4 @@
-// Authentication type definitions for RMS Application
+// Authentication type definitions for DMS Application
 /* eslint-disable @typescript-eslint/naming-convention -- External API properties use snake_case */
 /* eslint-disable @smarttools/one-exported-item-per-file -- Auth types are closely related */
 

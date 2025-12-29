@@ -21,13 +21,13 @@ Draft
 
 - `pnpm format`
 - `pnpm dupcheck`
-- `pnpm nx run rms:test --code-coverage`
+- `pnpm nx run dms:test --code-coverage`
 - `pnpm nx run server:build:production`
 - `pnpm nx run server:test --code-coverage`
 - `pnpm nx run server:lint`
-- `pnpm nx run rms:lint`
-- `pnpm nx run rms:build:production`
-- `pnpm nx run rms-e2e:lint`
+- `pnpm nx run dms:lint`
+- `pnpm nx run dms:build:production`
+- `pnpm nx run dms-e2e:lint`
 
 ## Tasks / Subtasks
 
@@ -88,15 +88,15 @@ Draft
 **Source: [nx.json - test configuration]**
 
 - Test target: `@nx/vite:test` with coverage reporting
-- Test command: `nx run rms:test` for frontend components
-- Coverage output: `coverage/apps/rms` directory
+- Test command: `nx run dms:test` for frontend components
+- Coverage output: `coverage/apps/dms` directory
 
 ### File Locations for Tests
 
 **Test Files to Create/Modify:**
 
-1. `/apps/rms/src/app/global/global-universe/universe-data.service.spec.ts` - Core filtering logic tests
-2. `/apps/rms/src/app/global/global-universe/global-universe.component.spec.ts` - Toggle and UI integration tests
+1. `/apps/dms/src/app/global/global-universe/universe-data.service.spec.ts` - Core filtering logic tests
+2. `/apps/dms/src/app/global/global-universe/global-universe.component.spec.ts` - Toggle and UI integration tests
 3. Performance test utilities (if needed for large dataset testing)
 
 ### Technical Implementation Details

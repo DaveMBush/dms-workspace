@@ -25,7 +25,7 @@ import { filter, Subscription } from 'rxjs';
 import { DivDepModal } from './div-dep-modal/div-dep-modal.component';
 
 @Component({
-  selector: 'rms-account-panel',
+  selector: 'dms-account-panel',
   imports: [
     RouterOutlet,
     RouterLink,

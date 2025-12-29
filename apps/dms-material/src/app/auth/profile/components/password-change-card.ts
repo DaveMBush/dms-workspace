@@ -16,7 +16,7 @@ import { NotificationService } from '../../../shared/services/notification.servi
 import { ProfileService } from '../../services/profile.service';
 
 @Component({
-  selector: 'rms-password-change-card',
+  selector: 'dms-password-change-card',
   imports: [
     ReactiveFormsModule,
     MatCardModule,

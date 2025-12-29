@@ -1,4 +1,4 @@
-# RMS Authentication System Operational Runbook
+# DMS Authentication System Operational Runbook
 
 ## Table of Contents
 
@@ -18,7 +18,7 @@
 ### Service Components
 
 - **AWS Cognito User Pool**: Primary authentication service
-- **RMS API Authentication Middleware**: Token validation and API protection
+- **DMS API Authentication Middleware**: Token validation and API protection
 - **Frontend Authentication Service**: Angular-based client authentication
 - **Redis Cache**: Session and rate limiting data
 - **CloudWatch**: Monitoring and logging
@@ -46,13 +46,13 @@
 #!/bin/bash
 # Daily health check script
 
-echo "=== RMS Authentication Daily Health Check ==="
+echo "=== DMS Authentication Daily Health Check ==="
 echo "Date: $(date)"
 echo
 
 # 1. Check service status
 echo "1. Service Status Check:"
-systemctl status rms-api | grep "Active:"
+systemctl status dms-api | grep "Active:"
 systemctl status redis | grep "Active:"
 systemctl status nginx | grep "Active:"
 echo
@@ -60,10 +60,10 @@ echo
 # 2. Test authentication endpoints
 echo "2. Authentication Endpoint Tests:"
 curl -f -s -o /dev/null -w "Login endpoint: %{http_code} (%{time_total}s)\n" \
-  https://api.rms.company.com/health
+  https://api.dms.company.com/health
 
 curl -f -s -o /dev/null -w "API health: %{http_code} (%{time_total}s)\n" \
-  https://api.rms.company.com/api/health
+  https://api.dms.company.com/api/health
 echo
 
 # 3. Check Cognito user pool health
@@ -102,7 +102,7 @@ echo "=============================================="
 #!/bin/bash
 # Evening log review script
 
-echo "=== RMS Authentication Evening Log Review ==="
+echo "=== DMS Authentication Evening Log Review ==="
 echo "Date: $(date)"
 echo
 
@@ -193,7 +193,7 @@ echo "=============================================="
       "type": "metric",
       "properties": {
         "metrics": [
-          ["RMS/API", "AuthenticationLatency"],
+          ["DMS/API", "AuthenticationLatency"],
           [".", "TokenRefreshLatency"],
           [".", "TokenValidationLatency"]
         ],
@@ -214,7 +214,7 @@ echo "=============================================="
 ```bash
 # Create CloudWatch alarm for authentication failure rate
 aws cloudwatch put-metric-alarm \
-  --alarm-name "RMS-Auth-High-Failure-Rate" \
+  --alarm-name "DMS-Auth-High-Failure-Rate" \
   --alarm-description "Authentication failure rate exceeds 10%" \
   --metric-name "SignInFailures" \
   --namespace "AWS/Cognito" \
@@ -231,10 +231,10 @@ aws cloudwatch put-metric-alarm \
 ```bash
 # API health check alarm
 aws cloudwatch put-metric-alarm \
-  --alarm-name "RMS-API-Health-Check-Failed" \
+  --alarm-name "DMS-API-Health-Check-Failed" \
   --alarm-description "API health check failing" \
   --metric-name "HealthCheckFailed" \
-  --namespace "RMS/API" \
+  --namespace "DMS/API" \
   --statistic "Sum" \
   --period 60 \
   --threshold 3 \
@@ -250,7 +250,7 @@ aws cloudwatch put-metric-alarm \
 ```bash
 # Create custom log insights queries
 aws logs put-query-definition \
-  --name "RMS-Suspicious-Login-Activity" \
+  --name "DMS-Suspicious-Login-Activity" \
   --log-group-names "/aws/cognito/userpool" \
   --query-string '
     fields @timestamp, sourceIPAddress, username, eventName
@@ -269,17 +269,17 @@ aws logs put-query-definition \
 #!/bin/bash
 # Weekly maintenance script
 
-echo "=== RMS Authentication Weekly Maintenance ==="
+echo "=== DMS Authentication Weekly Maintenance ==="
 echo "Started: $(date)"
 
 # 1. Log rotation and cleanup
 echo "1. Log cleanup..."
-find /var/log/rms -name "*.log" -mtime +30 -delete
-find /var/log/rms -name "*.log.gz" -mtime +90 -delete
+find /var/log/dms -name "*.log" -mtime +30 -delete
+find /var/log/dms -name "*.log.gz" -mtime +90 -delete
 
 # 2. Update security certificates (if needed)
 echo "2. Certificate check..."
-openssl x509 -in /etc/ssl/certs/rms.crt -noout -dates | \
+openssl x509 -in /etc/ssl/certs/dms.crt -noout -dates | \
   awk '/notAfter/ {
     cmd = "date -d \"" substr($0, index($0, "=") + 1) "\" +%s"
     cmd | getline expiry
@@ -299,7 +299,7 @@ openssl x509 -in /etc/ssl/certs/rms.crt -noout -dates | \
 
 # 3. Database maintenance
 echo "3. Database cleanup..."
-psql -h localhost -U rms_user -d rms_db -c "
+psql -h localhost -U dms_user -d dms_db -c "
   DELETE FROM auth_sessions WHERE expires_at < NOW() - INTERVAL '7 days';
   DELETE FROM auth_audit_log WHERE created_at < NOW() - INTERVAL '90 days';
   VACUUM ANALYZE auth_sessions;
@@ -317,7 +317,7 @@ apt update && apt upgrade -y --security-only
 
 # 6. Backup verification
 echo "6. Backup verification..."
-if [ -f /backup/rms-config-$(date +%Y%m%d).tar.gz ]; then
+if [ -f /backup/dms-config-$(date +%Y%m%d).tar.gz ]; then
   echo "Configuration backup exists"
 else
   echo "WARNING: No recent configuration backup found"
@@ -333,7 +333,7 @@ echo "=============================================="
 #!/bin/bash
 # Monthly maintenance script
 
-echo "=== RMS Authentication Monthly Maintenance ==="
+echo "=== DMS Authentication Monthly Maintenance ==="
 echo "Started: $(date)"
 
 # 1. User account audit
@@ -352,7 +352,7 @@ END_DATE=$(date +%Y-%m-%d)
 
 # Generate monthly security report
 {
-  echo "RMS Authentication Security Report"
+  echo "DMS Authentication Security Report"
   echo "Period: $START_DATE to $END_DATE"
   echo "Generated: $(date)"
   echo
@@ -365,7 +365,7 @@ END_DATE=$(date +%Y-%m-%d)
 
   echo "=== Recommendations ==="
   # Add automated recommendations
-} > "/var/log/rms/security-report-$(date +%Y%m).txt"
+} > "/var/log/dms/security-report-$(date +%Y%m).txt"
 
 # 3. Performance baseline update
 echo "3. Updating performance baselines..."
@@ -373,9 +373,9 @@ echo "3. Updating performance baselines..."
 
 # 4. Configuration backup
 echo "4. Configuration backup..."
-tar -czf "/backup/rms-config-$(date +%Y%m%d).tar.gz" \
-  /etc/rms/ \
-  /etc/nginx/sites-available/rms \
+tar -czf "/backup/dms-config-$(date +%Y%m%d).tar.gz" \
+  /etc/dms/ \
+  /etc/nginx/sites-available/dms \
   /etc/redis/redis.conf
 
 echo "Monthly maintenance completed: $(date)"
@@ -394,12 +394,11 @@ echo "=============================================="
 
    ```bash
    # Check service status
-   curl -f https://api.rms.company.com/health || echo "API DOWN"
+   curl -f https://api.dms.company.com/health || echo "API DOWN"
 
    # Check Cognito status
    aws cognito-idp describe-user-pool-domain \
-     --domain rms-prod.auth.us-east-1.amazoncognito.com
-
+     --domain dms-prod.auth.us-east-1.amazoncognito.com
    # Check dependencies
    redis-cli ping
    systemctl status nginx
@@ -409,26 +408,26 @@ echo "=============================================="
 
    ```bash
    # Enable maintenance mode
-   touch /var/www/rms/maintenance.flag
+   touch /var/www/dms/maintenance.flag
 
    # Notify stakeholders
    curl -X POST https://slack.com/api/chat.postMessage \
      -H "Authorization: Bearer $SLACK_TOKEN" \
      -d "channel=#incidents" \
-     -d "text=🚨 RMS Authentication Service DOWN - Investigating"
+     -d "text=🚨 DMS Authentication Service DOWN - Investigating"
    ```
 
 3. **Initial Mitigation:**
 
    ```bash
    # Restart services
-   systemctl restart rms-api
+   systemctl restart dms-api
    systemctl restart redis
    systemctl restart nginx
 
    # Check if resolved
    sleep 30
-   curl -f https://api.rms.company.com/health
+   curl -f https://api.dms.company.com/health
    ```
 
 **Detailed Investigation (15-60 minutes):**
@@ -437,8 +436,7 @@ echo "=============================================="
 
    ```bash
    # Check application logs
-   tail -100 /var/log/rms/api.log | grep ERROR
-
+   tail -100 /var/log/dms/api.log | grep ERROR
    # Check Cognito events
    aws logs filter-log-events \
      --log-group-name "/aws/cognito/userpool" \
@@ -457,10 +455,10 @@ echo "=============================================="
    ping cognito-idp.us-east-1.amazonaws.com
 
    # SSL certificate status
-   openssl s_client -connect api.rms.company.com:443 -servername api.rms.company.com
+   openssl s_client -connect api.dms.company.com:443 -servername api.dms.company.com
 
    # Database connectivity
-   psql -h localhost -U rms_user -d rms_db -c "SELECT 1;"
+   psql -h localhost -U dms_user -d dms_db -c "SELECT 1;"
    ```
 
 #### Severity 2: Degraded Performance
@@ -472,12 +470,12 @@ echo "=============================================="
    ```bash
    # Check response times
    for i in {1..10}; do
-     time curl -s https://api.rms.company.com/health > /dev/null
+     time curl -s https://api.dms.company.com/health > /dev/null
      sleep 1
    done
 
    # Database performance
-   psql -h localhost -U rms_user -d rms_db -c "
+   psql -h localhost -U dms_user -d dms_db -c "
      SELECT query, mean_time, calls
      FROM pg_stat_statements
      ORDER BY mean_time DESC
@@ -491,7 +489,7 @@ echo "=============================================="
    redis-cli FLUSHDB
 
    # Restart application pool
-   systemctl reload rms-api
+   systemctl reload dms-api
 
    # Check for memory leaks
    ps aux --sort=-%mem | head -10
@@ -522,7 +520,7 @@ echo "=============================================="
 
    ```bash
    # Preserve logs
-   cp /var/log/rms/api.log "/forensics/api-$(date +%Y%m%d_%H%M).log"
+   cp /var/log/dms/api.log "/forensics/api-$(date +%Y%m%d_%H%M).log"
 
    # Export Cognito logs
    aws logs create-export-task \
@@ -547,11 +545,11 @@ BACKUP_DIR="/backup/config"
 mkdir -p "$BACKUP_DIR"
 
 # Backup application configuration
-tar -czf "$BACKUP_DIR/rms-config-$BACKUP_DATE.tar.gz" \
-  /etc/rms/ \
-  /etc/nginx/sites-available/rms \
+tar -czf "$BACKUP_DIR/dms-config-$BACKUP_DATE.tar.gz" \
+  /etc/dms/ \
+  /etc/nginx/sites-available/dms \
   /etc/redis/redis.conf \
-  /etc/ssl/certs/rms.crt
+  /etc/ssl/certs/dms.crt
 
 # Backup Cognito configuration
 aws cognito-idp describe-user-pool \
@@ -559,7 +557,7 @@ aws cognito-idp describe-user-pool \
   > "$BACKUP_DIR/cognito-config-$BACKUP_DATE.json"
 
 # Upload to S3
-aws s3 cp "$BACKUP_DIR/" s3://rms-backups/config/ --recursive
+aws s3 cp "$BACKUP_DIR/" s3://dms-backups/config/ --recursive
 
 # Cleanup old backups (keep 90 days)
 find "$BACKUP_DIR" -name "*.tar.gz" -mtime +90 -delete
@@ -586,10 +584,10 @@ find "$BACKUP_DIR" -name "*.json" -mtime +90 -delete
 
    ```bash
    # Download latest backup
-   aws s3 cp s3://rms-backups/config/latest/ /tmp/restore/ --recursive
+   aws s3 cp s3://dms-backups/config/latest/ /tmp/restore/ --recursive
 
    # Restore configuration files
-   tar -xzf /tmp/restore/rms-config-latest.tar.gz -C /
+   tar -xzf /tmp/restore/dms-config-latest.tar.gz -C /
 
    # Restore Cognito configuration
    # (Manual process - update app client settings)
@@ -616,7 +614,7 @@ find "$BACKUP_DIR" -name "*.json" -mtime +90 -delete
 #!/bin/bash
 # Daily security check routine
 
-echo "=== RMS Authentication Security Check ==="
+echo "=== DMS Authentication Security Check ==="
 echo "Date: $(date)"
 
 # 1. Check for unusual login patterns
@@ -651,7 +649,7 @@ fi
 
 # 3. Certificate expiration check
 echo "3. Certificate Status:"
-openssl x509 -in /etc/ssl/certs/rms.crt -noout -enddate
+openssl x509 -in /etc/ssl/certs/dms.crt -noout -enddate
 
 # 4. User account status review
 echo "4. User Account Review:"
@@ -675,10 +673,10 @@ echo "=============================================="
 # Monthly security audit
 
 AUDIT_DATE=$(date +%Y%m)
-REPORT_FILE="/var/log/rms/security-audit-$AUDIT_DATE.txt"
+REPORT_FILE="/var/log/dms/security-audit-$AUDIT_DATE.txt"
 
 {
-  echo "RMS Authentication Security Audit Report"
+  echo "DMS Authentication Security Audit Report"
   echo "Period: $(date -d "1 month ago" +%B\ %Y)"
   echo "Generated: $(date)"
   echo "=========================================="
@@ -743,20 +741,20 @@ echo "Security audit report generated: $REPORT_FILE"
 #!/bin/bash
 # Performance monitoring script
 
-echo "=== RMS Authentication Performance Monitor ==="
+echo "=== DMS Authentication Performance Monitor ==="
 echo "Timestamp: $(date)"
 
 # 1. API response time measurement
 echo "1. API Response Times:"
 for endpoint in /health /api/profile /api/universe; do
   response_time=$(curl -o /dev/null -s -w "%{time_total}" \
-    https://api.rms.company.com$endpoint 2>/dev/null)
+    https://api.dms.company.com$endpoint 2>/dev/null)
   echo "$endpoint: ${response_time}s"
 done
 
 # 2. Database performance
 echo "2. Database Performance:"
-psql -h localhost -U rms_user -d rms_db -t -c "
+psql -h localhost -U dms_user -d dms_db -t -c "
   SELECT
     'Avg query time: ' || round(avg(mean_time)::numeric, 2) || 'ms',
     'Total queries: ' || sum(calls),
@@ -764,7 +762,7 @@ psql -h localhost -U rms_user -d rms_db -t -c "
       (sum(blks_hit) * 100.0 / (sum(blks_hit) + sum(blks_read)))::numeric, 2
     ) || '%'
   FROM pg_stat_statements s
-  JOIN pg_stat_database d ON d.datname = 'rms_db';"
+  JOIN pg_stat_database d ON d.datname = 'dms_db';"
 
 # 3. Redis performance
 echo "3. Redis Performance:"
@@ -791,11 +789,11 @@ echo "=============================================="
 #!/bin/bash
 # Performance optimization script
 
-echo "=== RMS Authentication Performance Optimization ==="
+echo "=== DMS Authentication Performance Optimization ==="
 
 # 1. Database optimization
 echo "1. Database optimization..."
-psql -h localhost -U rms_user -d rms_db -c "
+psql -h localhost -U dms_user -d dms_db -c "
   -- Update table statistics
   ANALYZE;
 
@@ -816,8 +814,8 @@ redis-cli MEMORY PURGE
 
 # 3. Application cache warming
 echo "3. Cache warming..."
-curl -s https://api.rms.company.com/health > /dev/null
-curl -s https://api.rms.company.com/api/universe?warmup=true > /dev/null
+curl -s https://api.dms.company.com/health > /dev/null
+curl -s https://api.dms.company.com/api/universe?warmup=true > /dev/null
 
 # 4. Connection pool optimization
 echo "4. Connection pool tuning..."
@@ -862,18 +860,18 @@ aws cognito-idp admin-add-user-to-group \
 
 # 3. Send welcome email
 cat << EOF > /tmp/welcome_email.txt
-Subject: Welcome to RMS
+Subject: Welcome to DMS
 
 Dear User,
 
-Your RMS account has been created with email: $USER_EMAIL
+Your DMS account has been created with email: $USER_EMAIL
 Role: $USER_ROLE
 
-Please log in at: https://rms.company.com
+Please log in at: https://dms.company.com
 You will be prompted to set a permanent password on first login.
 
 Best regards,
-RMS Administration Team
+DMS Administration Team
 EOF
 
 # Send email using AWS SES
@@ -911,10 +909,10 @@ aws cognito-idp admin-user-global-sign-out \
   --username "$USER_EMAIL"
 
 # 3. Log the offboarding
-echo "$(date): User $USER_EMAIL offboarded" >> /var/log/rms/user-management.log
+echo "$(date): User $USER_EMAIL offboarded" >> /var/log/dms/user-management.log
 
 # 4. Clean up related data (if applicable)
-psql -h localhost -U rms_user -d rms_db -c "
+psql -h localhost -U dms_user -d dms_db -c "
   UPDATE user_sessions SET active = false
   WHERE user_email = '$USER_EMAIL';
 "
@@ -939,7 +937,7 @@ if [ -z "$VERSION" ] || [ -z "$ENVIRONMENT" ]; then
   exit 1
 fi
 
-echo "Deploying RMS Authentication v$VERSION to $ENVIRONMENT"
+echo "Deploying DMS Authentication v$VERSION to $ENVIRONMENT"
 
 # 1. Pre-deployment checks
 echo "1. Pre-deployment validation..."
@@ -980,32 +978,32 @@ fi
 
 ENVIRONMENT="$1"
 
-echo "EMERGENCY ROLLBACK - RMS Authentication ($ENVIRONMENT)"
+echo "EMERGENCY ROLLBACK - DMS Authentication ($ENVIRONMENT)"
 echo "Started: $(date)"
 
 # 1. Stop current services
-systemctl stop rms-api
+systemctl stop dms-api
 
 # 2. Restore previous version
 BACKUP_DIR="/backup/deployment/$(date -d '1 day ago' +%Y%m%d)"
 if [ -d "$BACKUP_DIR" ]; then
-  tar -xzf "$BACKUP_DIR/rms-api.tar.gz" -C /opt/rms/
-  tar -xzf "$BACKUP_DIR/config.tar.gz" -C /etc/rms/
+  tar -xzf "$BACKUP_DIR/dms-api.tar.gz" -C /opt/dms/
+  tar -xzf "$BACKUP_DIR/config.tar.gz" -C /etc/dms/
 else
   echo "ERROR: No backup found for rollback!"
   exit 1
 fi
 
 # 3. Restore database (if needed)
-# psql -h localhost -U rms_user -d rms_db < "$BACKUP_DIR/database.sql"
+# psql -h localhost -U dms_user -d dms_db < "$BACKUP_DIR/database.sql"
 
 # 4. Start services
-systemctl start rms-api
+systemctl start dms-api
 systemctl start nginx
 
 # 5. Verify rollback
 sleep 15
-curl -f https://api.rms.company.com/health
+curl -f https://api.dms.company.com/health
 
 if [ $? -eq 0 ]; then
   echo "Rollback successful!"

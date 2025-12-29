@@ -19,7 +19,7 @@ jobs:
         env:
           POSTGRES_PASSWORD: ${{ secrets.CI_POSTGRES_PASSWORD || 'test_password' }}
           POSTGRES_USER: ci_user
-          POSTGRES_DB: ci_rms
+          POSTGRES_DB: ci_dms
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -67,9 +67,9 @@ jobs:
       # Tests run with SQLite (default environment), builds use PostgreSQL schema
       - run: pnpm nx affected -t lint build test --no-cloud
 
-      # Run e2e tests for rms-material
+      # Run e2e tests for dms-material
       # Ensure the server is built in CI (affected may skip it for unrelated changes)
       - run: pnpm nx run server:build:production --no-cloud
-      - run: pnpm nx run rms-material-e2e:e2e --no-cloud
+      - run: pnpm nx run dms-material-e2e:e2e --no-cloud
         env:
           CI: true

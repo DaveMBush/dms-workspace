@@ -25,7 +25,7 @@ Implement PrimeNG p-table lazy loading with virtual scrolling for the Dividend D
 
 **Integration points:**
 
-- `apps/rms/src/app/account-panel/dividend-deposits/` component files
+- `apps/dms/src/app/account-panel/dividend-deposits/` component files
 - SmartNgRX Signals: `selectCurrentAccountSignal`, `selectUniverses`, `selectDivDepositTypes`
 - Computed signal transforms data for display
 - Delete functionality uses SmartArray proxy methods

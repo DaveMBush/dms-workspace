@@ -13,7 +13,7 @@ import { ToolbarModule } from 'primeng/toolbar';
 import { BaseRouteComponent } from '../shared/base-route-component';
 
 @Component({
-  selector: 'rms-global',
+  selector: 'dms-global',
   standalone: true,
   imports: [CommonModule, ToolbarModule, ListboxModule, FormsModule],
   templateUrl: './global.component.html',

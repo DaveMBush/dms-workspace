@@ -10,7 +10,7 @@ import { GlobalSummaryComponentService } from './global-summary-component.servic
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  selector: 'rms-global-summary',
+  selector: 'dms-global-summary',
   standalone: true,
   imports: [SelectModule, FormsModule, ChartModule, SummaryDisplayComponent],
   templateUrl: './global-summary.component.html',

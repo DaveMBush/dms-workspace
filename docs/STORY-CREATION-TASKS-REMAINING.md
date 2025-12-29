@@ -31,7 +31,7 @@ The epic structure (AG-AX) has been created, but **only 2 detailed stories exist
 
 ### Epic AI (5 stories)
 
-- ❌ AI.1 - Create screener service in RMS-MATERIAL
+- ❌ AI.1 - Create screener service in DMS-MATERIAL
 - ❌ AI.2 - Wire refresh button to service
 - ❌ AI.3 - Add loading and error handling
 - ❌ AI.4 - Add unit tests for screener service
@@ -199,11 +199,11 @@ Each story MUST include:
 
 **Current System:**
 
-- [Description of existing RMS app]
+- [Description of existing DMS app]
 
 **Migration Target:**
 
-- [What we're implementing in RMS-MATERIAL]
+- [What we're implementing in DMS-MATERIAL]
 ```
 
 ### 3. Acceptance Criteria
@@ -287,7 +287,7 @@ Each story MUST include:
 - [ ] Code reviewed
 - [ ] All validation commands pass
   - Run `pnpm all`
-  - Run `pnpm e2e:rms-material`
+  - Run `pnpm e2e:dms-material`
   - Run `pnpm dupcheck`
   - Run `pnpm format`
   - Repeat all of these if any fail until they all pass
@@ -299,7 +299,7 @@ Each story MUST include:
 ## Notes
 
 - Any special considerations
-- References to RMS app patterns
+- References to DMS app patterns
 - Known issues or limitations
 ```
 

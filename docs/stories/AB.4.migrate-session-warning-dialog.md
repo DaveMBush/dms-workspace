@@ -10,7 +10,7 @@
 
 **Current System:**
 
-- Location: `apps/rms/src/app/auth/components/session-warning/`
+- Location: `apps/dms/src/app/auth/components/session-warning/`
 - Uses `p-dialog` for modal display
 - Shows countdown timer
 - Allows extending session or logging out
@@ -26,7 +26,7 @@
 ### Functional Requirements
 
 - [ ] Dialog appears before session timeout
-- [ ] DAll GUI look as close to the existing RMS app as possible
+- [ ] DAll GUI look as close to the existing DMS app as possible
 - [ ] Countdown timer displays remaining time
 - [ ] "Extend Session" button extends session
 - [ ] "Logout" button ends session
@@ -53,7 +53,7 @@
 
 ### Step 1: Create Unit Tests First
 
-Create `apps/rms-material/src/app/auth/components/session-warning/session-warning.spec.ts`:
+Create `apps/dms-material/src/app/auth/components/session-warning/session-warning.spec.ts`:
 
 ```typescript
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
@@ -151,7 +151,7 @@ describe('SessionWarning', () => {
 
 **TDD Cycle:**
 
-1. Run `pnpm nx run rms-material:test` - tests should fail (RED)
+1. Run `pnpm nx run dms-material:test` - tests should fail (RED)
 2. Implement minimal code to pass tests (GREEN)
 3. Refactor while keeping tests passing (REFACTOR)
 
@@ -159,7 +159,7 @@ describe('SessionWarning', () => {
 
 ### Step 1: Create Session Warning Dialog Component
 
-Create `apps/rms-material/src/app/auth/components/session-warning/session-warning.ts`:
+Create `apps/dms-material/src/app/auth/components/session-warning/session-warning.ts`:
 
 ```typescript
 import { Component, inject, OnInit, OnDestroy, signal } from '@angular/core';
@@ -173,7 +173,7 @@ import { takeWhile } from 'rxjs/operators';
 import { AuthService } from '../../auth.service';
 
 @Component({
-  selector: 'rms-session-warning',
+  selector: 'dms-session-warning',
   imports: [MatDialogModule, MatButtonModule, MatIconModule, MatProgressBarModule],
   templateUrl: './session-warning.html',
   styleUrl: './session-warning.scss',
@@ -249,7 +249,7 @@ export class SessionWarning implements OnInit, OnDestroy {
 
 ### Step 2: Create Session Warning Template
 
-Create `apps/rms-material/src/app/auth/components/session-warning/session-warning.html`:
+Create `apps/dms-material/src/app/auth/components/session-warning/session-warning.html`:
 
 ```html
 <h2 mat-dialog-title class="warning-title">
@@ -278,7 +278,7 @@ Create `apps/rms-material/src/app/auth/components/session-warning/session-warnin
 
 ### Step 3: Create Session Warning Styles
 
-Create `apps/rms-material/src/app/auth/components/session-warning/session-warning.scss`:
+Create `apps/dms-material/src/app/auth/components/session-warning/session-warning.scss`:
 
 ```scss
 .warning-title {
@@ -299,12 +299,12 @@ Create `apps/rms-material/src/app/auth/components/session-warning/session-warnin
 
   strong {
     font-size: 1.3rem;
-    color: var(--rms-error);
+    color: var(--dms-error);
   }
 }
 
 .warning-subtext {
-  color: var(--rms-text-secondary);
+  color: var(--dms-text-secondary);
   margin-bottom: 1rem;
 }
 
@@ -323,7 +323,7 @@ mat-dialog-actions {
 
 ### Step 4: Create Session Warning Service
 
-Create `apps/rms-material/src/app/auth/services/session-warning.service.ts`:
+Create `apps/dms-material/src/app/auth/services/session-warning.service.ts`:
 
 ```typescript
 import { inject, Injectable } from '@angular/core';
@@ -421,12 +421,12 @@ The auth service should call `sessionWarningService.showWarning()` when session 
 
 **Created:**
 
-- `apps/rms-material/src/app/auth/components/session-warning/session-warning.ts`
-- `apps/rms-material/src/app/auth/components/session-warning/session-warning.html`
-- `apps/rms-material/src/app/auth/components/session-warning/session-warning.scss`
-- `apps/rms-material/src/app/auth/components/session-warning/session-warning.spec.ts`
-- `apps/rms-material/src/app/auth/services/session-warning.service.ts`
-- `apps/rms-material-e2e/src/session-warning.spec.ts`
+- `apps/dms-material/src/app/auth/components/session-warning/session-warning.ts`
+- `apps/dms-material/src/app/auth/components/session-warning/session-warning.html`
+- `apps/dms-material/src/app/auth/components/session-warning/session-warning.scss`
+- `apps/dms-material/src/app/auth/components/session-warning/session-warning.spec.ts`
+- `apps/dms-material/src/app/auth/services/session-warning.service.ts`
+- `apps/dms-material-e2e/src/session-warning.spec.ts`
 
 ### Change Log
 
@@ -439,7 +439,7 @@ The auth service should call `sessionWarningService.showWarning()` when session 
 
 ## E2E Test Requirements
 
-When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
+When this story is complete, ensure the following e2e tests exist in `apps/dms-material-e2e/`:
 
 ### Core Functionality
 
@@ -466,7 +466,7 @@ When this story is complete, ensure the following e2e tests exist in `apps/rms-m
 - [ ] Progress bar animation is smooth without jitter
 - [ ] Dialog z-index correctly overlays all other content
 
-Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.
+Run `pnpm nx run dms-material-e2e:e2e` to verify all e2e tests pass.
 
 ## QA Results
 
@@ -513,7 +513,7 @@ The developer made excellent technical choices:
 
   - Files in correct location: `auth/components/session-warning/` ✓
   - Service in: `auth/services/` ✓
-  - E2E tests in: `rms-material-e2e/src/` ✓
+  - E2E tests in: `dms-material-e2e/src/` ✓
 
 - **Testing Strategy**: ✓ **PASS**
 
@@ -698,7 +698,7 @@ All critical edge cases covered:
 
 **E2E Test Lint Fixes** (minor corrections):
 
-- `apps/rms-material-e2e/src/session-warning.spec.ts`
+- `apps/dms-material-e2e/src/session-warning.spec.ts`
   - Fixed regex complexity warning (simplified `/\d+:\d{2}/` to `/\d:\d\d/`)
   - Removed unnecessary `async` from skipped test
   - Changed type assertion to non-nullable assertion (`as string` → `!`)

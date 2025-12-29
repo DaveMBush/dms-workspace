@@ -1,7 +1,7 @@
 # Auto-scaling configuration for ECS service
 
 # Auto-scaling target
-resource "aws_appautoscaling_target" "rms_backend" {
+resource "aws_appautoscaling_target" "dms_backend" {
   max_capacity       = var.max_capacity
   min_capacity       = var.min_capacity
   resource_id        = "service/${var.ecs_cluster_name}/${var.ecs_service_name}"
@@ -15,12 +15,12 @@ resource "aws_appautoscaling_target" "rms_backend" {
 }
 
 # CPU-based scaling policy
-resource "aws_appautoscaling_policy" "rms_backend_cpu" {
+resource "aws_appautoscaling_policy" "dms_backend_cpu" {
   name               = "${var.project_name}-backend-cpu-scaling-${var.environment}"
   policy_type        = "TargetTrackingScaling"
-  resource_id        = aws_appautoscaling_target.rms_backend.resource_id
-  scalable_dimension = aws_appautoscaling_target.rms_backend.scalable_dimension
-  service_namespace  = aws_appautoscaling_target.rms_backend.service_namespace
+  resource_id        = aws_appautoscaling_target.dms_backend.resource_id
+  scalable_dimension = aws_appautoscaling_target.dms_backend.scalable_dimension
+  service_namespace  = aws_appautoscaling_target.dms_backend.service_namespace
 
   target_tracking_scaling_policy_configuration {
     predefined_metric_specification {
@@ -31,16 +31,16 @@ resource "aws_appautoscaling_policy" "rms_backend_cpu" {
     scale_in_cooldown  = var.scale_in_cooldown
   }
 
-  depends_on = [aws_appautoscaling_target.rms_backend]
+  depends_on = [aws_appautoscaling_target.dms_backend]
 }
 
 # Memory-based scaling policy
-resource "aws_appautoscaling_policy" "rms_backend_memory" {
+resource "aws_appautoscaling_policy" "dms_backend_memory" {
   name               = "${var.project_name}-backend-memory-scaling-${var.environment}"
   policy_type        = "TargetTrackingScaling"
-  resource_id        = aws_appautoscaling_target.rms_backend.resource_id
-  scalable_dimension = aws_appautoscaling_target.rms_backend.scalable_dimension
-  service_namespace  = aws_appautoscaling_target.rms_backend.service_namespace
+  resource_id        = aws_appautoscaling_target.dms_backend.resource_id
+  scalable_dimension = aws_appautoscaling_target.dms_backend.scalable_dimension
+  service_namespace  = aws_appautoscaling_target.dms_backend.service_namespace
 
   target_tracking_scaling_policy_configuration {
     predefined_metric_specification {
@@ -51,7 +51,7 @@ resource "aws_appautoscaling_policy" "rms_backend_memory" {
     scale_in_cooldown  = var.scale_in_cooldown
   }
 
-  depends_on = [aws_appautoscaling_target.rms_backend]
+  depends_on = [aws_appautoscaling_target.dms_backend]
 }
 
 # CloudWatch Alarms for monitoring scaling events
@@ -102,14 +102,14 @@ resource "aws_cloudwatch_metric_alarm" "high_memory" {
 }
 
 # ALB-based scaling policy (for request-based scaling)
-resource "aws_appautoscaling_policy" "rms_backend_request_count" {
+resource "aws_appautoscaling_policy" "dms_backend_request_count" {
   count = var.enable_request_based_scaling ? 1 : 0
 
   name               = "${var.project_name}-backend-request-scaling-${var.environment}"
   policy_type        = "TargetTrackingScaling"
-  resource_id        = aws_appautoscaling_target.rms_backend.resource_id
-  scalable_dimension = aws_appautoscaling_target.rms_backend.scalable_dimension
-  service_namespace  = aws_appautoscaling_target.rms_backend.service_namespace
+  resource_id        = aws_appautoscaling_target.dms_backend.resource_id
+  scalable_dimension = aws_appautoscaling_target.dms_backend.scalable_dimension
+  service_namespace  = aws_appautoscaling_target.dms_backend.service_namespace
 
   target_tracking_scaling_policy_configuration {
     predefined_metric_specification {
@@ -121,5 +121,5 @@ resource "aws_appautoscaling_policy" "rms_backend_request_count" {
     scale_in_cooldown  = var.scale_in_cooldown
   }
 
-  depends_on = [aws_appautoscaling_target.rms_backend]
+  depends_on = [aws_appautoscaling_target.dms_backend]
 }

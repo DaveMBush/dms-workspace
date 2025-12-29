@@ -14,7 +14,7 @@ import { ColumnDef } from '../../shared/components/base-table/column-def.interfa
 import { Trade } from '../../store/trades/trade.interface';
 
 @Component({
-  selector: 'rms-open-positions',
+  selector: 'dms-open-positions',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     BaseTableComponent,

@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# RMS Local Development Environment Stop Script
+# DMS Local Development Environment Stop Script
 # This script stops the Docker Compose services gracefully
 
 set -e
 
-echo "🛑 Stopping RMS Local Development Environment"
+echo "🛑 Stopping DMS Local Development Environment"
 echo "=============================================="
 
 # Colors for output

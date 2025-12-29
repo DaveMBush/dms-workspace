@@ -17,7 +17,7 @@ function createMonthOptions(): Array<{ label: string; value: string }> {
 }
 
 @Component({
-  selector: 'rms-summary',
+  selector: 'dms-summary',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     MatCardModule,

@@ -2,11 +2,11 @@
   <div class="flex flex-row gap-4">
     <div class="flex flex-col flex-1 min-w-0">
       <label for="symbol" class="mb-1 font-semibold">Symbol</label>
-      <rms-symbol-autocomplete
+      <dms-symbol-autocomplete
         [(selectedSymbol)]="symbol"
         [suggestions]="filteredSymbols$()"
         (filterSymbols)="filterSymbols($event)"
-      ></rms-symbol-autocomplete>
+      ></dms-symbol-autocomplete>
       @if (selectedSymbolExpired$()) {
       <div class="text-yellow-600 text-xs mt-1">
         Warning: This symbol is expired and not currently active in the

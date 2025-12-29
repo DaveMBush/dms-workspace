@@ -193,14 +193,14 @@ Create accessibility report with:
 - [ ] WCAG 2.1 AA compliance verified
 - [ ] All validation commands pass
   - Run `pnpm all`
-  - Run `pnpm e2e:rms-material`
+  - Run `pnpm e2e:dms-material`
   - Run `pnpm dupcheck`
   - Run `pnpm format`
   - Repeat all of these if any fail until they all pass
 
 ## E2E Test Requirements
 
-When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
+When this story is complete, ensure the following e2e tests exist in `apps/dms-material-e2e/`:
 
 ### Core Functionality
 
@@ -261,4 +261,4 @@ When this story is complete, ensure the following e2e tests exist in `apps/rms-m
 - [ ] Form groups have fieldset/legend or role="group"
 - [ ] Multi-step forms indicate progress
 
-Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.
+Run `pnpm nx run dms-material-e2e:e2e` to verify all e2e tests pass.

@@ -1,6 +1,6 @@
 # SmartNgRX Signals Implementation Checklist
 
-_Step-by-step checklist for implementing SmartNgRX Signals in the RMS/RMS-MATERIAL applications_
+_Step-by-step checklist for implementing SmartNgRX Signals in the DMS/DMS-MATERIAL applications_
 
 ## Pre-Implementation Checklist
 
@@ -795,4 +795,4 @@ store/
 
 ---
 
-**Note**: This checklist is specific to the RMS application's SmartNgRX Signals implementation patterns. Always refer to existing entity implementations in the codebase as examples.
+**Note**: This checklist is specific to the DMS application's SmartNgRX Signals implementation patterns. Always refer to existing entity implementations in the codebase as examples.

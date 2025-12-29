@@ -12,14 +12,14 @@ test.describe.skip('Symbol Autocomplete Component', () => {
     test('should render input field', async ({ page }) => {
       const input = page
         .locator('input[matInput]')
-        .filter({ has: page.locator('rms-symbol-autocomplete') })
+        .filter({ has: page.locator('dms-symbol-autocomplete') })
         .first();
       await expect(input).toBeVisible();
     });
 
     test('typing minimum characters triggers search', async ({ page }) => {
       const input = page
-        .locator('rms-symbol-autocomplete input[matInput]')
+        .locator('dms-symbol-autocomplete input[matInput]')
         .first();
       await input.click();
       await input.fill('AA');
@@ -30,7 +30,7 @@ test.describe.skip('Symbol Autocomplete Component', () => {
 
     test('dropdown displays matching suggestions', async ({ page }) => {
       const input = page
-        .locator('rms-symbol-autocomplete input[matInput]')
+        .locator('dms-symbol-autocomplete input[matInput]')
         .first();
       await input.click();
       await input.fill('AAPL');
@@ -40,7 +40,7 @@ test.describe.skip('Symbol Autocomplete Component', () => {
 
     test('clicking suggestion populates input', async ({ page }) => {
       const input = page
-        .locator('rms-symbol-autocomplete input[matInput]')
+        .locator('dms-symbol-autocomplete input[matInput]')
         .first();
       await input.click();
       await input.fill('AA');
@@ -52,7 +52,7 @@ test.describe.skip('Symbol Autocomplete Component', () => {
 
     test('loading spinner shows during search', async ({ page }) => {
       const input = page
-        .locator('rms-symbol-autocomplete input[matInput]')
+        .locator('dms-symbol-autocomplete input[matInput]')
         .first();
       await input.click();
       await input.fill('AA');
@@ -63,7 +63,7 @@ test.describe.skip('Symbol Autocomplete Component', () => {
 
     test('no suggestions message when no matches', async ({ page }) => {
       const input = page
-        .locator('rms-symbol-autocomplete input[matInput]')
+        .locator('dms-symbol-autocomplete input[matInput]')
         .first();
       await input.click();
       await input.fill('ZZZZZZZZ');
@@ -77,7 +77,7 @@ test.describe.skip('Symbol Autocomplete Component', () => {
       page,
     }) => {
       const input = page
-        .locator('rms-symbol-autocomplete input[matInput]')
+        .locator('dms-symbol-autocomplete input[matInput]')
         .first();
       await input.click();
       await input.fill('CUSTOM');
@@ -95,7 +95,7 @@ test.describe.skip('Symbol Autocomplete Component', () => {
       page,
     }) => {
       const input = page
-        .locator('rms-symbol-autocomplete input[matInput]')
+        .locator('dms-symbol-autocomplete input[matInput]')
         .first();
       await input.click();
       // Type rapidly
@@ -115,7 +115,7 @@ test.describe.skip('Symbol Autocomplete Component', () => {
       page,
     }) => {
       const input = page
-        .locator('rms-symbol-autocomplete input[matInput]')
+        .locator('dms-symbol-autocomplete input[matInput]')
         .first();
       await input.click();
       await input.fill('AA');
@@ -128,7 +128,7 @@ test.describe.skip('Symbol Autocomplete Component', () => {
 
     test('arrow key navigation through suggestions works', async ({ page }) => {
       const input = page
-        .locator('rms-symbol-autocomplete input[matInput]')
+        .locator('dms-symbol-autocomplete input[matInput]')
         .first();
       await input.click();
       await input.fill('AA');
@@ -143,7 +143,7 @@ test.describe.skip('Symbol Autocomplete Component', () => {
 
     test('enter key selects highlighted suggestion', async ({ page }) => {
       const input = page
-        .locator('rms-symbol-autocomplete input[matInput]')
+        .locator('dms-symbol-autocomplete input[matInput]')
         .first();
       await input.click();
       await input.fill('AA');
@@ -159,7 +159,7 @@ test.describe.skip('Symbol Autocomplete Component', () => {
 
     test('escape key closes dropdown without selection', async ({ page }) => {
       const input = page
-        .locator('rms-symbol-autocomplete input[matInput]')
+        .locator('dms-symbol-autocomplete input[matInput]')
         .first();
       await input.click();
       await input.fill('AA');
@@ -175,7 +175,7 @@ test.describe.skip('Symbol Autocomplete Component', () => {
       page,
     }) => {
       const input = page
-        .locator('rms-symbol-autocomplete input[matInput]')
+        .locator('dms-symbol-autocomplete input[matInput]')
         .first();
       await input.click();
       await input.fill('AA');
@@ -196,7 +196,7 @@ test.describe.skip('Symbol Autocomplete Component', () => {
 
     test('case-insensitive search matches correctly', async ({ page }) => {
       const input = page
-        .locator('rms-symbol-autocomplete input[matInput]')
+        .locator('dms-symbol-autocomplete input[matInput]')
         .first();
       await input.click();
       await input.fill('aapl');
@@ -209,7 +209,7 @@ test.describe.skip('Symbol Autocomplete Component', () => {
       page,
     }) => {
       const input = page
-        .locator('rms-symbol-autocomplete input[matInput]')
+        .locator('dms-symbol-autocomplete input[matInput]')
         .first();
       await input.click();
       await input.fill('BRK');
@@ -222,7 +222,7 @@ test.describe.skip('Symbol Autocomplete Component', () => {
 
     test('long company names truncated with tooltip', async ({ page }) => {
       const input = page
-        .locator('rms-symbol-autocomplete input[matInput]')
+        .locator('dms-symbol-autocomplete input[matInput]')
         .first();
       await input.click();
       await input.fill('AA');
@@ -242,7 +242,7 @@ test.describe.skip('Symbol Autocomplete Component', () => {
       page,
     }) => {
       const input = page
-        .locator('rms-symbol-autocomplete input[matInput]')
+        .locator('dms-symbol-autocomplete input[matInput]')
         .first();
       // Scroll to bottom of page
       await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
@@ -258,7 +258,7 @@ test.describe.skip('Symbol Autocomplete Component', () => {
 
     test('dropdown closes when clicking outside', async ({ page }) => {
       const input = page
-        .locator('rms-symbol-autocomplete input[matInput]')
+        .locator('dms-symbol-autocomplete input[matInput]')
         .first();
       await input.click();
       await input.fill('AA');
@@ -272,7 +272,7 @@ test.describe.skip('Symbol Autocomplete Component', () => {
 
     test('search handles API timeout gracefully', async ({ page }) => {
       const input = page
-        .locator('rms-symbol-autocomplete input[matInput]')
+        .locator('dms-symbol-autocomplete input[matInput]')
         .first();
       await input.click();
       await input.fill('AA');
@@ -284,7 +284,7 @@ test.describe.skip('Symbol Autocomplete Component', () => {
 
     test('search handles API error gracefully', async ({ page }) => {
       const input = page
-        .locator('rms-symbol-autocomplete input[matInput]')
+        .locator('dms-symbol-autocomplete input[matInput]')
         .first();
       await input.click();
       await input.fill('AA');
@@ -298,7 +298,7 @@ test.describe.skip('Symbol Autocomplete Component', () => {
 
     test('clear button resets input and closes dropdown', async ({ page }) => {
       const input = page
-        .locator('rms-symbol-autocomplete input[matInput]')
+        .locator('dms-symbol-autocomplete input[matInput]')
         .first();
       await input.click();
       await input.fill('AA');
@@ -321,7 +321,7 @@ test.describe.skip('Symbol Autocomplete Component', () => {
       page,
     }) => {
       const input = page
-        .locator('rms-symbol-autocomplete input[matInput]')
+        .locator('dms-symbol-autocomplete input[matInput]')
         .first();
       await input.click();
       await input.fill('AA');

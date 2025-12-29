@@ -1,27 +1,27 @@
-# Epic AA: RMS-Material Project Setup & Infrastructure
+# Epic AA: DMS-Material Project Setup & Infrastructure
 
 ## Epic Goal
 
-Establish the new `rms-material` Angular application with Angular Material, custom theming, and all foundational infrastructure required to support the migration from PrimeNG to Angular Material.
+Establish the new `dms-material` Angular application with Angular Material, custom theming, and all foundational infrastructure required to support the migration from PrimeNG to Angular Material.
 
 ## Epic Description
 
 **Existing System Context:**
 
-- Current relevant functionality: RMS frontend application using PrimeNG 20 for UI components
+- Current relevant functionality: DMS frontend application using PrimeNG 20 for UI components
 - Technology stack: Angular 20, PrimeNG, TailwindCSS, SmartNgRX Signals, Chart.js, AWS Amplify
 - Integration points: Backend API via proxy, SmartNgRX state management, authentication services
 - Problem: PrimeNG's virtual scrolling with lazy data fetching in tables does not meet requirements
 
 **Enhancement Details:**
 
-- What's being added: New Angular application `apps/rms-material` using Angular Material instead of PrimeNG
+- What's being added: New Angular application `apps/dms-material` using Angular Material instead of PrimeNG
 - How it integrates: Runs on port 4201, shares same backend API, duplicates all services and state management
 - Success criteria: Application scaffolded, themed to match current styling with light/dark mode, all infrastructure in place
 
 ## Stories
 
-1. **Story AA.1:** Generate new Angular application `rms-material` with Nx
+1. **Story AA.1:** Generate new Angular application `dms-material` with Nx
 2. **Story AA.2:** Install and configure Angular Material and CDK dependencies
 3. **Story AA.3:** Create custom Material theme matching current styling with light/dark mode
 4. **Story AA.4:** Copy and configure core infrastructure (environments, Amplify, state management)
@@ -30,7 +30,7 @@ Establish the new `rms-material` Angular application with Angular Material, cust
 ## Compatibility Requirements
 
 - [x] New application runs independently on port 4201
-- [x] Existing RMS application unchanged and continues to function on port 4200
+- [x] Existing DMS application unchanged and continues to function on port 4200
 - [x] Same backend API used via proxy configuration
 - [x] All SmartNgRX state management patterns preserved
 - [x] Authentication flow identical to existing application
@@ -72,11 +72,11 @@ Establish the new `rms-material` Angular application with Angular Material, cust
 
 **Files Created:**
 
-- `apps/rms-material/` - New application directory
-- `apps/rms-material/project.json` - Nx project configuration
-- `apps/rms-material/src/styles.scss` - Global styles with theme
-- `apps/rms-material/src/themes/` - Theme SCSS files
-- `apps/rms-material/src/app/` - Application source files
+- `apps/dms-material/` - New application directory
+- `apps/dms-material/project.json` - Nx project configuration
+- `apps/dms-material/src/styles.scss` - Global styles with theme
+- `apps/dms-material/src/themes/` - Theme SCSS files
+- `apps/dms-material/src/app/` - Application source files
 
 **Package.json Updates:**
 

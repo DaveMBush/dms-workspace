@@ -6,7 +6,7 @@ test.describe('Splitter', () => {
   test.beforeEach(async ({ page }) => {
     // Clear splitter state and login
     await page.goto('/auth/login');
-    await page.evaluate(() => localStorage.removeItem('rms-main-splitter'));
+    await page.evaluate(() => localStorage.removeItem('dms-main-splitter'));
     await login(page);
   });
 
@@ -46,7 +46,7 @@ test.describe('Splitter', () => {
 
     // Check localStorage value is clamped to minimum
     const stored = await page.evaluate(() =>
-      localStorage.getItem('rms-main-splitter')
+      localStorage.getItem('dms-main-splitter')
     );
     expect(stored).toBeTruthy();
     const percentage = parseFloat(stored!);
@@ -73,7 +73,7 @@ test.describe('Splitter', () => {
 
     // Check localStorage value is clamped to maximum
     const stored = await page.evaluate(() =>
-      localStorage.getItem('rms-main-splitter')
+      localStorage.getItem('dms-main-splitter')
     );
     expect(stored).toBeTruthy();
     const percentage = parseFloat(stored!);
@@ -138,7 +138,7 @@ test.describe('Splitter', () => {
 
     // Check localStorage
     const stored = await page.evaluate(() =>
-      localStorage.getItem('rms-main-splitter')
+      localStorage.getItem('dms-main-splitter')
     );
     expect(stored).toBeTruthy();
     const percentage = parseFloat(stored!);
@@ -163,7 +163,7 @@ test.describe('Splitter', () => {
 
     // Get the stored value before reload
     const storedBefore = await page.evaluate(() =>
-      localStorage.getItem('rms-main-splitter')
+      localStorage.getItem('dms-main-splitter')
     );
 
     // Reload page
@@ -172,7 +172,7 @@ test.describe('Splitter', () => {
 
     // Check the stored value after reload matches
     const storedAfter = await page.evaluate(() =>
-      localStorage.getItem('rms-main-splitter')
+      localStorage.getItem('dms-main-splitter')
     );
 
     expect(storedAfter).toBe(storedBefore);
@@ -303,7 +303,7 @@ test.describe('Splitter', () => {
 
     // Should have a valid stored value
     const stored = await page.evaluate(() =>
-      localStorage.getItem('rms-main-splitter')
+      localStorage.getItem('dms-main-splitter')
     );
     expect(stored).toBeTruthy();
     const percentage = parseFloat(stored!);

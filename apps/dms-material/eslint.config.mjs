@@ -9,7 +9,7 @@ export default [
         'error',
         {
           type: 'attribute',
-          prefix: 'rms',
+          prefix: 'dms',
           style: 'camelCase',
         },
       ],
@@ -17,7 +17,7 @@ export default [
         'error',
         {
           type: 'element',
-          prefix: 'rms',
+          prefix: 'dms',
           style: 'kebab-case',
         },
       ],

@@ -22,7 +22,7 @@ import { ProfileActionsService } from '../../services/profile-actions.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  selector: 'rms-password-change-card',
+  selector: 'dms-password-change-card',
   imports: [
     CommonModule,
     ReactiveFormsModule,

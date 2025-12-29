@@ -11,7 +11,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { ProfileService } from '../../services/profile.service';
 
 @Component({
-  selector: 'rms-session-info-card',
+  selector: 'dms-session-info-card',
   imports: [MatCardModule, MatIconModule, DatePipe],
   templateUrl: './session-info-card.html',
   styleUrl: './session-info-card.scss',

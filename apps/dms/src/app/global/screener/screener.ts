@@ -21,7 +21,7 @@ import { Screen } from '../../store/screen/screen.interface';
 import { ScreenerService } from './screener.service';
 
 @Component({
-  selector: 'rms-screener',
+  selector: 'dms-screener',
   imports: [
     CheckboxModule,
     CommonModule,

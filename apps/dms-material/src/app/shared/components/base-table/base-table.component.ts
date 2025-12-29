@@ -20,7 +20,7 @@ import { LazyLoadEvent } from './lazy-load-event.interface';
 import { VirtualTableDataSource } from './virtual-table-data-source';
 
 @Component({
-  selector: 'rms-base-table',
+  selector: 'dms-base-table',
   imports: [
     CommonModule,
     ScrollingModule,

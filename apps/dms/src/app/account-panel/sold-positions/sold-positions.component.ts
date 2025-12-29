@@ -38,7 +38,7 @@ interface SoldPosition {
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  selector: 'rms-sold-positions',
+  selector: 'dms-sold-positions',
   standalone: true,
   imports: [...POSITIONS_COMMON_IMPORTS],
   templateUrl: './sold-positions.component.html',

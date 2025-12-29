@@ -1,6 +1,6 @@
-# RMS Workspace - Accessibility Checklist for PrimeNG/Tailwind
+# DMS Workspace - Accessibility Checklist for PrimeNG/Tailwind
 
-This document provides comprehensive accessibility guidelines and standards for the RMS Workspace project, focusing on PrimeNG components and Tailwind CSS implementation.
+This document provides comprehensive accessibility guidelines and standards for the DMS Workspace project, focusing on PrimeNG components and Tailwind CSS implementation.
 
 ## Table of Contents
 

@@ -263,7 +263,7 @@ describe('PerformanceMonitoringService', () => {
       expect(exportedData).toHaveProperty('alerts');
       expect(exportedData).toHaveProperty('regressions');
       expect(exportedData).toHaveProperty('timestamp');
-      expect(exportedData.format).toBe('rms-performance-v1');
+      expect(exportedData.format).toBe('dms-performance-v1');
     });
   });
 

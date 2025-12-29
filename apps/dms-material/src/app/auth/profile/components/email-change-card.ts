@@ -18,7 +18,7 @@ import { NotificationService } from '../../../shared/services/notification.servi
 import { ProfileService } from '../../services/profile.service';
 
 @Component({
-  selector: 'rms-email-change-card',
+  selector: 'dms-email-change-card',
   imports: [
     ReactiveFormsModule,
     MatCardModule,

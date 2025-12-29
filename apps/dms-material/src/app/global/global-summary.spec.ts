@@ -65,7 +65,7 @@ describe('GlobalSummary', () => {
   it('should render summary display components', () => {
     fixture.detectChanges();
     const charts = fixture.nativeElement.querySelectorAll(
-      'rms-summary-display'
+      'dms-summary-display'
     );
     expect(charts.length).toBe(2); // pie and line
   });

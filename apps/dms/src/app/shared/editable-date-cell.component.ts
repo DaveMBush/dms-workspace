@@ -12,7 +12,7 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { TableModule } from 'primeng/table';
 
 @Component({
-  selector: 'rms-editable-date-cell',
+  selector: 'dms-editable-date-cell',
   templateUrl: './editable-date-cell.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, FormsModule, DatePickerModule, TableModule],

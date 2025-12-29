@@ -24,7 +24,7 @@ import { NewPositionComponent } from './new-position/new-position.component';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  selector: 'rms-account-detail',
+  selector: 'dms-account-detail',
   standalone: true,
   imports: [
     CommonModule,

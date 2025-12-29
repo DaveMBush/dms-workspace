@@ -25,7 +25,7 @@ import { Universe } from '../../store/universe/universe.interface';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  selector: 'rms-add-symbol-dialog',
+  selector: 'dms-add-symbol-dialog',
   imports: [
     ReactiveFormsModule,
     MatDialogModule,

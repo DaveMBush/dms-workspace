@@ -22,13 +22,13 @@ Ready for Review
 
 - `pnpm format`
 - `pnpm dupcheck`
-- `pnpm nx run rms:test --code-coverage`
+- `pnpm nx run dms:test --code-coverage`
 - `pnpm nx run server:build:production`
 - `pnpm nx run server:test --code-coverage`
 - `pnpm nx run server:lint`
-- `pnpm nx run rms:lint`
-- `pnpm nx run rms:build:production`
-- `pnpm nx run rms-e2e:lint`
+- `pnpm nx run dms:lint`
+- `pnpm nx run dms:build:production`
+- `pnpm nx run dms-e2e:lint`
 
 ## Tasks / Subtasks
 
@@ -81,7 +81,7 @@ Ready for Review
 
 ### Component Architecture and Initialization
 
-**Source: [apps/rms/src/app/global/global-universe/global-universe.component.ts]**
+**Source: [apps/dms/src/app/global/global-universe/global-universe.component.ts]**
 
 - Component initialization and default parameter setup
 - Current filter state management and default values
@@ -97,13 +97,13 @@ Ready for Review
 
 **Primary Files to Modify:**
 
-1. `/apps/rms/src/app/global/global-universe/global-universe.component.ts` - Update default filter parameters
-2. `/apps/rms/src/app/global/global-universe/universe-data.service.ts` - Ensure default parameter handling
+1. `/apps/dms/src/app/global/global-universe/global-universe.component.ts` - Update default filter parameters
+2. `/apps/dms/src/app/global/global-universe/universe-data.service.ts` - Ensure default parameter handling
 3. Filter state management files (if separate from component)
 
 **Test Files to Create/Modify:**
 
-1. `/apps/rms/src/app/global/global-universe/global-universe.component.spec.ts` - Test default initialization
+1. `/apps/dms/src/app/global/global-universe/global-universe.component.spec.ts` - Test default initialization
 2. Integration tests for complete filtering pipeline with defaults
 
 ### Technical Implementation Details
@@ -251,17 +251,17 @@ No debug issues encountered - implementation was straightforward as the filterin
 
 **Modified Files:**
 
-- `apps/rms/src/app/global/global-universe/global-universe-storage.service.ts` - Modified `loadExpiredFilter()` to always return `null`
+- `apps/dms/src/app/global/global-universe/global-universe-storage.service.ts` - Modified `loadExpiredFilter()` to always return `null`
 
 **Created Files:**
 
-- `apps/rms/src/app/global/global-universe/global-universe-storage.service.spec.ts` - New test file with 6 tests for storage service behavior
+- `apps/dms/src/app/global/global-universe/global-universe-storage.service.spec.ts` - New test file with 6 tests for storage service behavior
 
 **Existing Files (No Changes Needed):**
 
-- `apps/rms/src/app/global/global-universe/apply-expired-with-positions-filter.function.ts` - Filtering logic already implemented correctly
-- `apps/rms/src/app/global/global-universe/universe-data.service.ts` - Filter pipeline already implemented correctly
-- `apps/rms/src/app/global/global-universe/global-universe.component.ts` - UI controls already support explicit overrides
+- `apps/dms/src/app/global/global-universe/apply-expired-with-positions-filter.function.ts` - Filtering logic already implemented correctly
+- `apps/dms/src/app/global/global-universe/universe-data.service.ts` - Filter pipeline already implemented correctly
+- `apps/dms/src/app/global/global-universe/global-universe.component.ts` - UI controls already support explicit overrides
 
 ## QA Results
 

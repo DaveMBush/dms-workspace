@@ -10,10 +10,10 @@
     <h2 class="section-title">Profile Information</h2>
     <div class="grid">
       <div class="grid-col-half">
-        <rms-profile-info-card />
+        <dms-profile-info-card />
       </div>
       <div class="grid-col-half">
-        <rms-session-info-card />
+        <dms-session-info-card />
       </div>
     </div>
   </div>
@@ -23,15 +23,15 @@
     <h2 class="section-title">Security Settings</h2>
     <div class="grid">
       <div class="grid-col-half">
-        <rms-password-change-card />
+        <dms-password-change-card />
       </div>
       <div class="grid-col-half">
         <div class="nested-grid">
-          <rms-email-change-card
+          <dms-email-change-card
             [currentEmail]="userEmail()"
             (emailChanged)="onEmailChanged()"
           />
-          <rms-account-actions-card />
+          <dms-account-actions-card />
         </div>
       </div>
     </div>

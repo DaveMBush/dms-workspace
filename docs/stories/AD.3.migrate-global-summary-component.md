@@ -10,7 +10,7 @@
 
 **Current System:**
 
-- Location: `apps/rms/src/app/global/global-summary/`
+- Location: `apps/dms/src/app/global/global-summary/`
 - PrimeNG components: `p-chart`, `p-select`
 - Displays pie charts and line charts
 
@@ -23,7 +23,7 @@
 
 ### Functional Requirements
 
-- [ ] All GUI look as close to the existing RMS app as possible
+- [ ] All GUI look as close to the existing DMS app as possible
 - [ ] Pie chart shows allocation by risk group
 - [ ] Line chart shows performance over time
 - [ ] Filter by account or view all
@@ -41,7 +41,7 @@
 
 ### Step 1: Create Unit Tests First
 
-Create `apps/rms-material/src/app/global/global-summary/global-summary.component.spec.ts`:
+Create `apps/dms-material/src/app/global/global-summary/global-summary.component.spec.ts`:
 
 ```typescript
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -85,7 +85,7 @@ describe('GlobalSummaryComponent', () => {
 
   it('should render summary display components', () => {
     fixture.detectChanges();
-    const charts = fixture.nativeElement.querySelectorAll('rms-summary-display');
+    const charts = fixture.nativeElement.querySelectorAll('dms-summary-display');
     expect(charts.length).toBe(2); // pie and line
   });
 });
@@ -93,13 +93,13 @@ describe('GlobalSummaryComponent', () => {
 
 **TDD Cycle:**
 
-1. Run `pnpm nx run rms-material:test` - tests should fail (RED)
+1. Run `pnpm nx run dms-material:test` - tests should fail (RED)
 2. Implement minimal code to pass tests (GREEN)
 3. Refactor while keeping tests passing (REFACTOR)
 
 ## Technical Approach
 
-Create `apps/rms-material/src/app/global/global-summary/global-summary.component.ts`:
+Create `apps/dms-material/src/app/global/global-summary/global-summary.component.ts`:
 
 ```typescript
 import { Component, inject, computed } from '@angular/core';
@@ -111,7 +111,7 @@ import { selectAccounts } from '../../store/accounts/select-accounts.function';
 import { ChartData } from 'chart.js';
 
 @Component({
-  selector: 'rms-global-summary',
+  selector: 'dms-global-summary',
   imports: [MatCardModule, MatSelectModule, SummaryDisplayComponent],
   templateUrl: './global-summary.component.html',
   styleUrl: './global-summary.component.scss',
@@ -158,7 +158,7 @@ export class GlobalSummaryComponent {
 
 ## E2E Test Requirements
 
-When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
+When this story is complete, ensure the following e2e tests exist in `apps/dms-material-e2e/`:
 
 ### Core Functionality
 
@@ -184,4 +184,4 @@ When this story is complete, ensure the following e2e tests exist in `apps/rms-m
 - [ ] "All Accounts" aggregates data correctly
 - [ ] Statistics calculations match detail pages
 
-Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.
+Run `pnpm nx run dms-material-e2e:e2e` to verify all e2e tests pass.

@@ -1,4 +1,4 @@
-// AWS Cognito Configuration Interface for RMS Application
+// AWS Cognito Configuration Interface for DMS Application
 export interface CognitoConfig {
   region: string;
   userPoolId: string;

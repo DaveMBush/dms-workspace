@@ -21,13 +21,13 @@ Ready for Review
 7. Ensure the following commands run without errors:
    - `pnpm format`
    - `pnpm dupcheck`
-   - `pnpm nx run rms:test --code-coverage`
+   - `pnpm nx run dms:test --code-coverage`
    - `pnpm nx run server:build:production`
    - `pnpm nx run server:test --code-coverage`
    - `pnpm nx run server:lint`
-   - `pnpm nx run rms:lint`
-   - `pnpm nx run rms:build:production`
-   - `pnpm nx run rms-e2e:lint`
+   - `pnpm nx run dms:lint`
+   - `pnpm nx run dms:build:production`
+   - `pnpm nx run dms-e2e:lint`
 
 ## Tasks / Subtasks
 
@@ -131,7 +131,7 @@ model universe {
 **Primary Files to Update (TypeScript Types):**
 
 1. Server-side universe interfaces (if any exist in `/apps/server/src/app/types/`)
-2. Client-side universe interfaces (if any exist in `/apps/rms/src/app/types/`)
+2. Client-side universe interfaces (if any exist in `/apps/dms/src/app/types/`)
 3. Any API response types that include universe data
 
 ### Technical Implementation Details
@@ -227,8 +227,8 @@ _To be filled by dev agent_
 - ✅ Updated both SQLite and PostgreSQL Prisma schema files
 - ✅ Updated TypeScript interfaces for server, client, and display data
 - ✅ Verified Prisma client integration with create, read, and update operations
-- ✅ All builds pass: server production build, RMS production build
-- ✅ All linting passes: server, RMS, and e2e projects
+- ✅ All builds pass: server production build, DMS production build
+- ✅ All linting passes: server, DMS, and e2e projects
 - ✅ Most tests pass (2 tests with custom database schemas need manual updates)
 - ✅ Duplication check shows expected interface duplication (by design)
 
@@ -239,11 +239,11 @@ _To be filled by dev agent_
 - `prisma/schema.prisma` - Added `is_closed_end_fund Boolean @default(true)` to universe model
 - `prisma/schema.postgresql.prisma` - Added `is_closed_end_fund Boolean @default(true)` to universe model
 - `apps/server/src/app/routes/universe/universe.interface.ts` - Added `is_closed_end_fund: boolean` field
-- `apps/rms/src/app/store/universe/universe.interface.ts` - Added `is_closed_end_fund: boolean` field
-- `apps/rms/src/app/global/global-universe/universe-display-data.interface.ts` - Added `is_closed_end_fund: boolean` field
+- `apps/dms/src/app/store/universe/universe.interface.ts` - Added `is_closed_end_fund: boolean` field
+- `apps/dms/src/app/global/global-universe/universe-display-data.interface.ts` - Added `is_closed_end_fund: boolean` field
 - `apps/server/src/app/routes/universe/index.ts` - Added field to response mapping functions
-- `apps/rms/src/app/global/global-universe/universe.selector.ts` - Added field to selector output
-- `apps/rms/src/app/store/universe/universe-definition.const.ts` - Added field to default row function
+- `apps/dms/src/app/global/global-universe/universe.selector.ts` - Added field to selector output
+- `apps/dms/src/app/store/universe/universe-definition.const.ts` - Added field to default row function
 - `apps/server/src/app/services/auth-database-optimizer.service.spec.ts` - Updated test data to include new field
 - `apps/server/src/app/services/database-performance-integration.spec.ts` - Updated schema and test data
 - `apps/server/src/app/routes/universe/sync-from-screener/sync.integration.spec.ts` - Updated test data

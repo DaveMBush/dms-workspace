@@ -49,7 +49,7 @@ export default defineConfig({
       },
     },
     {
-      command: 'pnpm exec nx run rms-material:serve',
+      command: 'pnpm exec nx run dms-material:serve',
       url: 'http://localhost:4201',
       reuseExistingServer: !process.env.CI,
       cwd: workspaceRoot,

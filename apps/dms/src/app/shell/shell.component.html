@@ -1,5 +1,5 @@
 <p-toolbar class="text-xl font-semibold toolbar flex-none">
-  <ng-template #start> RMS Manager </ng-template>
+  <ng-template #start> Dividend Management System </ng-template>
   <ng-template #end>
     <!-- User Info and Actions -->
     @if (isAuthenticated$()) {
@@ -54,12 +54,12 @@
   class="flex-1 overflow-auto min-h-0"
   [style]="{ height: '100%' }"
   stateStorage="local"
-  stateKey="rms-splitter-state"
+  stateKey="dms-splitter-state"
   [panelSizes]="[20, 80]"
 >
   <ng-template #panel>
     <div class="h-full w-full">
-      <rms-global
+      <dms-global
         [selectedId]="selectedId"
         (selectedIdChange)="onSelectionChange($event)"
       />

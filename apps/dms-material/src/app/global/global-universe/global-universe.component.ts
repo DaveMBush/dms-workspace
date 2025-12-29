@@ -37,7 +37,7 @@ import { filterUniverses } from './filter-universes.function';
 import { sortUniverses } from './sort-universes.function';
 
 @Component({
-  selector: 'rms-global-universe',
+  selector: 'dms-global-universe',
   imports: [
     CurrencyPipe,
     DatePipe,

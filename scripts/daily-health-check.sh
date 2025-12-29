@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# RMS Daily Health Check Script
-# This script performs daily health checks on RMS infrastructure
+# DMS Daily Health Check Script
+# This script performs daily health checks on DMS infrastructure
 # Usage: ./scripts/daily-health-check.sh [environment]
 
 set -e
@@ -21,28 +21,28 @@ NC='\033[0m' # No Color
 # Environment-specific configuration
 case "$ENVIRONMENT" in
     "production"|"prod")
-        FRONTEND_URL="https://rms.example.com"
-        API_URL="https://api.rms.example.com"
-        DB_IDENTIFIER="rms-db-prod"
-        CLUSTER_NAME="rms-cluster-prod"
-        SERVICE_NAME="rms-backend-service-prod"
-        LOG_GROUP="/aws/ecs/rms-backend-prod"
+        FRONTEND_URL="https://dms.example.com"
+        API_URL="https://api.dms.example.com"
+        DB_IDENTIFIER="dms-db-prod"
+        CLUSTER_NAME="dms-cluster-prod"
+        SERVICE_NAME="dms-backend-service-prod"
+        LOG_GROUP="/aws/ecs/dms-backend-prod"
         ;;
     "staging")
-        FRONTEND_URL="https://rms-staging.example.com"
-        API_URL="https://api-staging.rms.example.com"
-        DB_IDENTIFIER="rms-db-staging"
-        CLUSTER_NAME="rms-cluster-staging"
-        SERVICE_NAME="rms-backend-service-staging"
-        LOG_GROUP="/aws/ecs/rms-backend-staging"
+        FRONTEND_URL="https://dms-staging.example.com"
+        API_URL="https://api-staging.dms.example.com"
+        DB_IDENTIFIER="dms-db-staging"
+        CLUSTER_NAME="dms-cluster-staging"
+        SERVICE_NAME="dms-backend-service-staging"
+        LOG_GROUP="/aws/ecs/dms-backend-staging"
         ;;
     "development"|"dev")
-        FRONTEND_URL="https://rms-dev.example.com"
-        API_URL="https://api-dev.rms.example.com"
-        DB_IDENTIFIER="rms-db-dev"
-        CLUSTER_NAME="rms-cluster-dev"
-        SERVICE_NAME="rms-backend-service-dev"
-        LOG_GROUP="/aws/ecs/rms-backend-dev"
+        FRONTEND_URL="https://dms-dev.example.com"
+        API_URL="https://api-dev.dms.example.com"
+        DB_IDENTIFIER="dms-db-dev"
+        CLUSTER_NAME="dms-cluster-dev"
+        SERVICE_NAME="dms-backend-service-dev"
+        LOG_GROUP="/aws/ecs/dms-backend-dev"
         ;;
     *)
         echo -e "${RED}❌ Unknown environment: $ENVIRONMENT${NC}"
@@ -77,7 +77,7 @@ check_http_endpoint() {
     local timeout=${3:-10}
 
     echo -e "${BLUE}Checking $name health...${NC}"
-    
+
     if command -v curl &> /dev/null; then
         response=$(curl -s -o /dev/null -w "%{http_code}" --max-time "$timeout" "$url/health" 2>/dev/null || echo "000")
     else
@@ -107,7 +107,7 @@ check_http_endpoint() {
 # Check RDS database
 check_database() {
     echo -e "${BLUE}Checking database health...${NC}"
-    
+
     local db_status
     db_status=$(aws rds describe-db-instances \
         --db-instance-identifier "$DB_IDENTIFIER" \
@@ -136,7 +136,7 @@ check_database() {
 # Check ECS service
 check_ecs_service() {
     echo -e "${BLUE}Checking ECS service health...${NC}"
-    
+
     local service_info
     service_info=$(aws ecs describe-services \
         --cluster "$CLUSTER_NAME" \
@@ -151,9 +151,9 @@ check_ecs_service() {
     fi
 
     read -r running desired pending <<< "$service_info"
-    
+
     echo "Running Tasks: $running/$desired (Pending: $pending)"
-    
+
     if [ "$running" = "$desired" ] && [ "$pending" = "0" ]; then
         echo -e "${GREEN}✅ ECS Service OK${NC}"
         log "ECS Service: OK ($running/$desired tasks running)"
@@ -172,11 +172,11 @@ check_ecs_service() {
 # Check recent errors in logs
 check_error_rate() {
     echo -e "${BLUE}Checking error rate...${NC}"
-    
+
     # Get timestamp for 1 hour ago in milliseconds
     local start_time
     start_time=$(($(date +%s) - 3600))000
-    
+
     local error_count
     error_count=$(aws logs filter-log-events \
         --log-group-name "$LOG_GROUP" \
@@ -192,7 +192,7 @@ check_error_rate() {
     fi
 
     echo "Errors in last hour: $error_count"
-    
+
     if [ "$error_count" -lt 10 ]; then
         echo -e "${GREEN}✅ Error Rate Normal${NC}"
         log "Error Rate: Normal ($error_count errors/hour)"
@@ -211,7 +211,7 @@ check_error_rate() {
 # Check CloudWatch alarms
 check_cloudwatch_alarms() {
     echo -e "${BLUE}Checking CloudWatch alarms...${NC}"
-    
+
     local alarm_count
     alarm_count=$(aws cloudwatch describe-alarms \
         --state-value ALARM \
@@ -225,7 +225,7 @@ check_cloudwatch_alarms() {
     fi
 
     echo "Active alarms: $alarm_count"
-    
+
     if [ "$alarm_count" = "0" ]; then
         echo -e "${GREEN}✅ No Active Alarms${NC}"
         log "CloudWatch Alarms: OK (0 active alarms)"
@@ -233,20 +233,20 @@ check_cloudwatch_alarms() {
     else
         echo -e "${RED}❌ Active Alarms Found${NC}"
         log "CloudWatch Alarms: WARNING ($alarm_count active alarms)"
-        
+
         # List active alarms
         aws cloudwatch describe-alarms \
             --state-value ALARM \
             --query 'MetricAlarms[*].[AlarmName,StateReason]' \
             --output table 2>/dev/null || true
-        
+
         return 1
     fi
 }
 
 # Main health check function
 main() {
-    echo -e "${BLUE}=== RMS Health Check ===${NC}"
+    echo -e "${BLUE}=== DMS Health Check ===${NC}"
     echo "Date: $(date)"
     echo "Environment: $ENVIRONMENT"
     echo "Log file: $LOG_FILE"
@@ -289,7 +289,7 @@ main() {
     fi
 
     echo "Full log available at: $LOG_FILE"
-    
+
     # Action recommendations
     if [ $exit_code -ne 0 ]; then
         echo

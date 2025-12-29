@@ -23,13 +23,13 @@ Ready for Review
 
 - `pnpm format`
 - `pnpm dupcheck`
-- `pnpm nx run rms:test --code-coverage`
+- `pnpm nx run dms:test --code-coverage`
 - `pnpm nx run server:build:production`
 - `pnpm nx run server:test --code-coverage`
 - `pnpm nx run server:lint`
-- `pnpm nx run rms:lint`
-- `pnpm nx run rms:build:production`
-- `pnpm nx run rms-e2e:lint`
+- `pnpm nx run dms:lint`
+- `pnpm nx run dms:build:production`
+- `pnpm nx run dms-e2e:lint`
 
 ## Tasks / Subtasks
 
@@ -108,12 +108,11 @@ Currently no systematic performance monitoring for authentication:
 
 **File Locations**:
 
-- Create: `apps/rms/src/app/auth/services/performance-monitoring.service.ts`
-- Create: `apps/rms/src/app/auth/interceptors/performance.interceptor.ts`
-- Create: `apps/rms/src/app/auth/services/auth-metrics.service.ts`
-- Create: `apps/rms/src/app/shared/services/performance-logging.service.ts`
-- Update: `apps/rms/src/app/auth/interceptors/auth.interceptor.ts` (add timing)
-
+- Create: `apps/dms/src/app/auth/services/performance-monitoring.service.ts`
+- Create: `apps/dms/src/app/auth/interceptors/performance.interceptor.ts`
+- Create: `apps/dms/src/app/auth/services/auth-metrics.service.ts`
+- Create: `apps/dms/src/app/shared/services/performance-logging.service.ts`
+- Update: `apps/dms/src/app/auth/interceptors/auth.interceptor.ts` (add timing)
 **Performance Interceptor Design**:
 
 ```typescript
@@ -207,13 +206,13 @@ _To be populated by development agent_
 - **CI/CD Pipeline Validated**: All required commands pass:
   - `pnpm format` ✓
   - `pnpm dupcheck` ✓
-  - `pnpm nx run rms:test --code-coverage` ✓
+  - `pnpm nx run dms:test --code-coverage` ✓
   - `pnpm nx run server:build:production` ✓
   - `pnpm nx run server:test --code-coverage` ✓
   - `pnpm nx run server:lint` ✓
-  - `pnpm nx run rms:lint` ✓
-  - `pnpm nx run rms:build:production` ✓
-  - `pnpm nx run rms-e2e:lint` ✓
+  - `pnpm nx run dms:lint` ✓
+  - `pnpm nx run dms:build:production` ✓
+  - `pnpm nx run dms-e2e:lint` ✓
 - **Performance Tests Passing**: Existing performance benchmarks show excellent metrics:
   - Authentication operations under threshold (<50ms)
   - Cache hit rates >90%
@@ -224,26 +223,25 @@ _To be populated by development agent_
 
 **Existing Performance Infrastructure (Already Implemented):**
 
-- `apps/rms/src/app/auth/services/auth-metrics.service.ts` - Authentication performance metrics
-- `apps/rms/src/app/auth/services/performance-monitoring.service.ts` - Dashboard and regression detection
-- `apps/rms/src/app/shared/services/performance-logging.service.ts` - Structured logging with alerts
-- `apps/rms/src/app/auth/interceptors/performance.interceptor.ts` - Request timing measurement
-- `apps/rms/src/app/auth/interceptors/auth.interceptor.ts` - Authentication with timing integration
-
+- `apps/dms/src/app/auth/services/auth-metrics.service.ts` - Authentication performance metrics
+- `apps/dms/src/app/auth/services/performance-monitoring.service.ts` - Dashboard and regression detection
+- `apps/dms/src/app/shared/services/performance-logging.service.ts` - Structured logging with alerts
+- `apps/dms/src/app/auth/interceptors/performance.interceptor.ts` - Request timing measurement
+- `apps/dms/src/app/auth/interceptors/auth.interceptor.ts` - Authentication with timing integration
 **Test Files (Verified Working):**
 
-- `apps/rms/src/app/auth/services/auth-metrics.service.spec.ts`
-- `apps/rms/src/app/auth/services/performance-monitoring.service.spec.ts`
-- `apps/rms/src/app/shared/services/performance-logging.service.spec.ts`
-- `apps/rms/src/app/auth/interceptors/performance.interceptor.spec.ts`
-- `apps/rms/src/app/auth/auth-performance.benchmark.spec.ts`
+- `apps/dms/src/app/auth/services/auth-metrics.service.spec.ts`
+- `apps/dms/src/app/auth/services/performance-monitoring.service.spec.ts`
+- `apps/dms/src/app/shared/services/performance-logging.service.spec.ts`
+- `apps/dms/src/app/auth/interceptors/performance.interceptor.spec.ts`
+- `apps/dms/src/app/auth/auth-performance.benchmark.spec.ts`
 
 **Interface Definitions:**
 
-- `apps/rms/src/app/auth/interfaces/auth-operation-metric.interface.ts`
-- `apps/rms/src/app/auth/interfaces/auth-performance-summary.interface.ts`
-- `apps/rms/src/app/shared/interfaces/performance-metric.interface.ts`
-- `apps/rms/src/app/shared/interfaces/performance-alert.interface.ts`
+- `apps/dms/src/app/auth/interfaces/auth-operation-metric.interface.ts`
+- `apps/dms/src/app/auth/interfaces/auth-performance-summary.interface.ts`
+- `apps/dms/src/app/shared/interfaces/performance-metric.interface.ts`
+- `apps/dms/src/app/shared/interfaces/performance-alert.interface.ts`
 
 ## QA Results
 

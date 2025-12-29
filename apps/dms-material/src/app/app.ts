@@ -4,10 +4,10 @@ import { RouterModule } from '@angular/router';
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RouterModule],
-  selector: 'rms-root',
+  selector: 'dms-root',
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
 export class App {
-  protected title = 'rms-material';
+  protected title = 'dms-material';
 }

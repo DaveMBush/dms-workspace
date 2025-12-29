@@ -54,7 +54,7 @@
   </mat-toolbar>
 
   <div class="table-wrapper">
-    <rms-base-table
+    <dms-base-table
       [columns]="columns"
       [selectable]="false"
       [rowHeight]="48"
@@ -135,7 +135,7 @@
       <!-- eslint-disable @angular-eslint/template/no-call-expression -->
       <ng-template #cellTemplate let-row let-column="column">
         @switch (column.field) { @case ('distribution') {
-        <rms-editable-cell
+        <dms-editable-cell
           [value]="row.distribution"
           format="decimal"
           decimalFormat="1.4-4"
@@ -143,7 +143,7 @@
           (valueChange)="onCellEdit(row, 'distribution', $event)"
         />
         } @case ('distributions_per_year') {
-        <rms-editable-cell
+        <dms-editable-cell
           [value]="row.distributions_per_year"
           format="number"
           [min]="0"
@@ -158,7 +158,7 @@
         @case ('last_price') {
         {{ row.last_price | currency }}
         } @case ('ex_date') {
-        <rms-editable-date-cell
+        <dms-editable-date-cell
           [value]="row.ex_date"
           (valueChange)="onCellEdit(row, 'ex_date', $event)"
         />
@@ -186,6 +186,6 @@
       </ng-template>
       <!-- eslint-enable @angular-eslint/template/cyclomatic-complexity -->
       <!-- eslint-enable @angular-eslint/template/no-call-expression -->
-    </rms-base-table>
+    </dms-base-table>
   </div>
 </div>

@@ -1,4 +1,4 @@
-# Story AA.1: Generate New Angular Application rms-material
+# Story AA.1: Generate New Angular Application dms-material
 
 ## Story
 
@@ -10,13 +10,13 @@
 
 **Current System:**
 
-- Location: `apps/rms/` - Existing PrimeNG-based application
+- Location: `apps/dms/` - Existing PrimeNG-based application
 - Technology: Angular 20, PrimeNG 20, TailwindCSS, SmartNgRX Signals
 - Port: 4200 for development server
 
 **New Application:**
 
-- Location: `apps/rms-material/` - New Material-based application
+- Location: `apps/dms-material/` - New Material-based application
 - Technology: Angular 20, Angular Material, TailwindCSS, SmartNgRX Signals
 - Port: 4201 for development server
 
@@ -24,8 +24,8 @@
 
 ### Functional Requirements
 
-- [ ] New Angular application generated at `apps/rms-material/`
-- [ ] Application uses `rms` prefix for component selectors
+- [ ] New Angular application generated at `apps/dms-material/`
+- [ ] Application uses `dms` prefix for component selectors
 - [ ] SCSS configured as stylesheet format
 - [ ] Routing enabled
 - [ ] Application serves on port 4201
@@ -49,12 +49,12 @@
     "serve": {
       "options": {
         "port": 4201,
-        "proxyConfig": "apps/rms-material/proxy.conf.json"
+        "proxyConfig": "apps/dms-material/proxy.conf.json"
       }
     }
   }
   ```
-- [ ] Proxy configuration mirrors existing RMS proxy:
+- [ ] Proxy configuration mirrors existing DMS proxy:
   ```json
   {
     "/api": {
@@ -66,9 +66,9 @@
 
 ### Validation Requirements
 
-- [ ] `pnpm nx run rms-material:serve` starts without errors
-- [ ] `pnpm nx run rms-material:build` completes successfully
-- [ ] `pnpm nx run rms-material:lint` passes
+- [ ] `pnpm nx run dms-material:serve` starts without errors
+- [ ] `pnpm nx run dms-material:build` completes successfully
+- [ ] `pnpm nx run dms-material:lint` passes
 - [ ] Application accessible at `http://localhost:4201`
 
 ## Technical Approach
@@ -76,43 +76,43 @@
 ### Step 1: Generate Application
 
 ```bash
-nx g @nx/angular:application rms-material \
-  --directory=apps/rms-material \
+nx g @nx/angular:application dms-material \
+  --directory=apps/dms-material \
   --style=scss \
   --routing=true \
-  --prefix=rms \
+  --prefix=dms \
   --standalone
 ```
 
 ### Step 2: Update project.json
 
-Modify `apps/rms-material/project.json` to configure port 4201:
+Modify `apps/dms-material/project.json` to configure port 4201:
 
 ```json
 {
-  "name": "rms-material",
+  "name": "dms-material",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
-  "prefix": "rms",
-  "sourceRoot": "apps/rms-material/src",
+  "prefix": "dms",
+  "sourceRoot": "apps/dms-material/src",
   "tags": [],
   "targets": {
     "build": {
       "executor": "@angular/build:application",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/apps/rms-material",
-        "browser": "apps/rms-material/src/main.ts",
+        "outputPath": "dist/apps/dms-material",
+        "browser": "apps/dms-material/src/main.ts",
         "polyfills": [],
-        "tsConfig": "apps/rms-material/tsconfig.app.json",
+        "tsConfig": "apps/dms-material/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
         "assets": [
           {
             "glob": "**/*",
-            "input": "apps/rms-material/public"
+            "input": "apps/dms-material/public"
           }
         ],
-        "styles": ["apps/rms-material/src/styles.scss"]
+        "styles": ["apps/dms-material/src/styles.scss"]
       },
       "configurations": {
         "production": {
@@ -135,8 +135,8 @@ Modify `apps/rms-material/project.json` to configure port 4201:
           "optimization": true,
           "fileReplacements": [
             {
-              "replace": "apps/rms-material/src/environments/environment.ts",
-              "with": "apps/rms-material/src/environments/environment.prod.ts"
+              "replace": "apps/dms-material/src/environments/environment.ts",
+              "with": "apps/dms-material/src/environments/environment.prod.ts"
             }
           ]
         },
@@ -153,22 +153,22 @@ Modify `apps/rms-material/project.json` to configure port 4201:
       "executor": "@angular/build:dev-server",
       "configurations": {
         "production": {
-          "buildTarget": "rms-material:build:production"
+          "buildTarget": "dms-material:build:production"
         },
         "development": {
-          "buildTarget": "rms-material:build:development"
+          "buildTarget": "dms-material:build:development"
         }
       },
       "defaultConfiguration": "development",
       "options": {
         "port": 4201,
-        "proxyConfig": "apps/rms-material/proxy.conf.json"
+        "proxyConfig": "apps/dms-material/proxy.conf.json"
       }
     },
     "extract-i18n": {
       "executor": "@angular/build:extract-i18n",
       "options": {
-        "buildTarget": "rms-material:build"
+        "buildTarget": "dms-material:build"
       }
     },
     "lint": {
@@ -178,7 +178,7 @@ Modify `apps/rms-material/project.json` to configure port 4201:
       "executor": "@nx/vite:test",
       "outputs": ["{options.reportsDirectory}"],
       "options": {
-        "reportsDirectory": "../../coverage/apps/rms-material",
+        "reportsDirectory": "../../coverage/apps/dms-material",
         "passWithNoTests": true
       }
     },
@@ -186,9 +186,9 @@ Modify `apps/rms-material/project.json` to configure port 4201:
       "continuous": true,
       "executor": "@nx/web:file-server",
       "options": {
-        "buildTarget": "rms-material:build",
+        "buildTarget": "dms-material:build",
         "port": 4201,
-        "staticFilePath": "dist/apps/rms-material/browser",
+        "staticFilePath": "dist/apps/dms-material/browser",
         "spa": true
       }
     }
@@ -198,7 +198,7 @@ Modify `apps/rms-material/project.json` to configure port 4201:
 
 ### Step 3: Create Proxy Configuration
 
-Create `apps/rms-material/proxy.conf.json`:
+Create `apps/dms-material/proxy.conf.json`:
 
 ```json
 {
@@ -211,7 +211,7 @@ Create `apps/rms-material/proxy.conf.json`:
 
 ### Step 4: Create Public Directory
 
-Create `apps/rms-material/public/.gitkeep` for static assets.
+Create `apps/dms-material/public/.gitkeep` for static assets.
 
 ### Step 5: Verify Generation
 
@@ -219,31 +219,31 @@ Run the following commands to verify:
 
 ```bash
 # Serve the application
-pnpm nx run rms-material:serve
+pnpm nx run dms-material:serve
 
 # Build the application
-pnpm nx run rms-material:build
+pnpm nx run dms-material:build
 
 # Lint the application
-pnpm nx run rms-material:lint
+pnpm nx run dms-material:lint
 ```
 
 ## Files Created
 
 | File                                         | Purpose                               |
 | -------------------------------------------- | ------------------------------------- |
-| `apps/rms-material/project.json`             | Nx project configuration              |
-| `apps/rms-material/tsconfig.json`            | Base TypeScript configuration         |
-| `apps/rms-material/tsconfig.app.json`        | App-specific TypeScript configuration |
-| `apps/rms-material/tsconfig.spec.json`       | Test TypeScript configuration         |
-| `apps/rms-material/proxy.conf.json`          | API proxy configuration               |
-| `apps/rms-material/src/main.ts`              | Application entry point               |
-| `apps/rms-material/src/index.html`           | HTML template                         |
-| `apps/rms-material/src/styles.scss`          | Global styles (placeholder)           |
-| `apps/rms-material/src/app/app.component.ts` | Root component                        |
-| `apps/rms-material/src/app/app.config.ts`    | App configuration                     |
-| `apps/rms-material/src/app/app.routes.ts`    | Routing configuration                 |
-| `apps/rms-material/public/.gitkeep`          | Static assets directory               |
+| `apps/dms-material/project.json`             | Nx project configuration              |
+| `apps/dms-material/tsconfig.json`            | Base TypeScript configuration         |
+| `apps/dms-material/tsconfig.app.json`        | App-specific TypeScript configuration |
+| `apps/dms-material/tsconfig.spec.json`       | Test TypeScript configuration         |
+| `apps/dms-material/proxy.conf.json`          | API proxy configuration               |
+| `apps/dms-material/src/main.ts`              | Application entry point               |
+| `apps/dms-material/src/index.html`           | HTML template                         |
+| `apps/dms-material/src/styles.scss`          | Global styles (placeholder)           |
+| `apps/dms-material/src/app/app.component.ts` | Root component                        |
+| `apps/dms-material/src/app/app.config.ts`    | App configuration                     |
+| `apps/dms-material/src/app/app.routes.ts`    | Routing configuration                 |
+| `apps/dms-material/public/.gitkeep`          | Static assets directory               |
 
 ## Definition of Done
 
@@ -259,4 +259,4 @@ pnpm nx run rms-material:lint
 
 - This is the first story in the migration - all other stories depend on this
 - The generated application will be minimal; subsequent stories add Material, theming, and infrastructure
-- Keep the existing RMS application unchanged and functional
+- Keep the existing DMS application unchanged and functional

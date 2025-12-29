@@ -12,7 +12,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ProfileService } from '../../services/profile.service';
 
 @Component({
-  selector: 'rms-profile-info-card',
+  selector: 'dms-profile-info-card',
   imports: [
     MatCardModule,
     MatIconModule,

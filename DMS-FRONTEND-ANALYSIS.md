@@ -1,8 +1,8 @@
-# RMS Frontend Application - Complete Structure Analysis
+# DMS Frontend Application - Complete Structure Analysis
 
 ## Executive Summary
 
-The RMS (Risk Management System) is an Angular 20 SPA with PrimeNG 20 UI components, using signals-based state management via SmartNgRX. The application requires comprehensive migration planning from PrimeNG to Angular Material.
+The DMS (Risk Management System) is an Angular 20 SPA with PrimeNG 20 UI components, using signals-based state management via SmartNgRX. The application requires comprehensive migration planning from PrimeNG to Angular Material.
 
 ---
 
@@ -31,7 +31,7 @@ The RMS (Risk Management System) is an Angular 20 SPA with PrimeNG 20 UI compone
 
 ## 2. Routing Structure
 
-### Main Routes (apps/rms/src/app/app.routes.ts)
+### Main Routes (apps/dms/src/app/app.routes.ts)
 
 ```
 /auth
@@ -468,7 +468,7 @@ The RMS (Risk Management System) is an Angular 20 SPA with PrimeNG 20 UI compone
 ### Directory Structure
 
 ```
-apps/rms/src/app/
+apps/dms/src/app/
 ├── account-panel/              (Account detail views)
 │   ├── summary/                (Portfolio summary)
 │   ├── open-positions/         (Open trades)

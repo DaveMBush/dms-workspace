@@ -27,7 +27,7 @@ interface SelectOption {
 }
 
 @Component({
-  selector: 'rms-add-symbol-dialog',
+  selector: 'dms-add-symbol-dialog',
   templateUrl: './add-symbol-dialog.html',
   styleUrls: ['./add-symbol-dialog.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

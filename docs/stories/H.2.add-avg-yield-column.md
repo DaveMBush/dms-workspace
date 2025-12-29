@@ -76,13 +76,13 @@ Complete
 - Field calculated in `universe.selector.ts` with proper edge case handling
 - Account-specific filtering compatibility already implemented
 
-**Source: [apps/rms/src/app/global/global-universe/global-universe.component.html]**
+**Source: [apps/dms/src/app/global/global-universe/global-universe.component.html]**
 
 - Existing table structure using PrimeNG p-table component
 - Current yield column: `{{ item.yield_percent | number:'1.2-2' }}%`
 - Sorting implemented via click handlers on column headers
 
-**Source: [apps/rms/src/app/global/global-universe/sort-computed-signals.function.ts]**
+**Source: [apps/dms/src/app/global/global-universe/sort-computed-signals.function.ts]**
 
 - Pattern for adding sort signals: `getSortIcon('field_name', sortCriteria)`
 - Existing yield column sort: `yieldPercentSortIcon$` and `yieldPercentSortOrder$`
@@ -92,15 +92,15 @@ Complete
 
 **Primary Files to Modify:**
 
-1. `/apps/rms/src/app/global/global-universe/global-universe.component.html` - Add new table column
-2. `/apps/rms/src/app/global/global-universe/global-universe.component.scss` - Column styling
-3. `/apps/rms/src/app/global/global-universe/sort-computed-signals.function.ts` - Add sorting support
-4. `/apps/rms/src/app/global/global-universe/universe-data.service.ts` - Field handling (if not already added in H.1)
+1. `/apps/dms/src/app/global/global-universe/global-universe.component.html` - Add new table column
+2. `/apps/dms/src/app/global/global-universe/global-universe.component.scss` - Column styling
+3. `/apps/dms/src/app/global/global-universe/sort-computed-signals.function.ts` - Add sorting support
+4. `/apps/dms/src/app/global/global-universe/universe-data.service.ts` - Field handling (if not already added in H.1)
 
 **Test Files to Create/Modify:**
 
-1. `/apps/rms/src/app/global/global-universe/global-universe.component.spec.ts` - Test column display and interactions
-2. `/apps/rms/src/app/global/global-universe/sort-computed-signals.function.spec.ts` - Test sorting functionality
+1. `/apps/dms/src/app/global/global-universe/global-universe.component.spec.ts` - Test column display and interactions
+2. `/apps/dms/src/app/global/global-universe/sort-computed-signals.function.spec.ts` - Test sorting functionality
 
 ### Technical Implementation Details
 

@@ -10,7 +10,7 @@
 
 **Current System:**
 
-- Location: `apps/rms/src/app/universe-settings/add-symbol-dialog/`
+- Location: `apps/dms/src/app/universe-settings/add-symbol-dialog/`
 - PrimeNG components: `p-dialog`, `p-autoComplete`, `p-select`, `p-message`, `p-button`
 
 **Migration Target:**
@@ -23,7 +23,7 @@
 
 ### Functional Requirements
 
-- [ ] **CRITICAL** All GUI look as close to the existing RMS app as possible
+- [ ] **CRITICAL** All GUI look as close to the existing DMS app as possible
 - [ ] Dialog opens for adding symbol
 - [ ] Symbol search with autocomplete
 - [ ] Risk group selection
@@ -44,7 +44,7 @@
 
 ### Step 1: Create Unit Tests First
 
-Create `apps/rms-material/src/app/universe-settings/add-symbol-dialog/add-symbol-dialog.spec.ts`:
+Create `apps/dms-material/src/app/universe-settings/add-symbol-dialog/add-symbol-dialog.spec.ts`:
 
 ```typescript
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -155,13 +155,13 @@ describe('AddSymbolDialog', () => {
 
 **TDD Cycle:**
 
-1. Run `pnpm nx run rms-material:test` - tests should fail (RED)
+1. Run `pnpm nx run dms-material:test` - tests should fail (RED)
 2. Implement minimal code to pass tests (GREEN)
 3. Refactor while keeping tests passing (REFACTOR)
 
 ## Technical Approach
 
-Create `apps/rms-material/src/app/universe-settings/add-symbol-dialog/add-symbol-dialog.ts`:
+Create `apps/dms-material/src/app/universe-settings/add-symbol-dialog/add-symbol-dialog.ts`:
 
 ```typescript
 import { Component, inject, signal } from '@angular/core';
@@ -177,7 +177,7 @@ import { selectRiskGroups } from '../../store/risk-group/select-risk-groups.func
 import { NotificationService } from '../../shared/services/notification.service';
 
 @Component({
-  selector: 'rms-add-symbol-dialog',
+  selector: 'dms-add-symbol-dialog',
   imports: [ReactiveFormsModule, MatDialogModule, MatFormFieldModule, MatSelectModule, MatButtonModule, MatProgressSpinnerModule, SymbolAutocompleteComponent],
   templateUrl: './add-symbol-dialog.html',
   styleUrl: './add-symbol-dialog.scss',
@@ -241,14 +241,14 @@ export class AddSymbolDialog {
 
 ### Template
 
-Create `apps/rms-material/src/app/universe-settings/add-symbol-dialog/add-symbol-dialog.html`:
+Create `apps/dms-material/src/app/universe-settings/add-symbol-dialog/add-symbol-dialog.html`:
 
 ```html
 <h2 mat-dialog-title>Add Symbol to Universe</h2>
 
 <mat-dialog-content>
   <form [formGroup]="form">
-    <rms-symbol-autocomplete label="Search Symbol" placeholder="Enter ticker or company name..." [searchFn]="searchSymbols.bind(this)" (symbolSelected)="onSymbolSelected($event)" />
+    <dms-symbol-autocomplete label="Search Symbol" placeholder="Enter ticker or company name..." [searchFn]="searchSymbols.bind(this)" (symbolSelected)="onSymbolSelected($event)" />
 
     @if (selectedSymbol()) {
     <div class="selected-symbol"><strong>{{ selectedSymbol()?.symbol }}</strong> - {{ selectedSymbol()?.name }}</div>
@@ -296,14 +296,14 @@ Create `apps/rms-material/src/app/universe-settings/add-symbol-dialog/add-symbol
 - [ ] Cancel closes dialog
 - [ ] All validation commands pass
   - Run `pnpm all`
-  - Run `pnpm e2e:rms-material`
+  - Run `pnpm e2e:dms-material`
   - Run `pnpm dupcheck`
   - Run `pnpm format`
   - Repeat all of these if any fail until they all pass
 
 ## E2E Test Requirements
 
-When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
+When this story is complete, ensure the following e2e tests exist in `apps/dms-material-e2e/`:
 
 ### Core Functionality
 
@@ -346,7 +346,7 @@ When this story is complete, ensure the following e2e tests exist in `apps/rms-m
 - [ ] Whitespace trimmed from symbol search
 - [ ] Dialog state cleared on reopen (no stale data)
 
-Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.
+Run `pnpm nx run dms-material-e2e:e2e` to verify all e2e tests pass.
 
 ## QA Results
 
@@ -382,7 +382,7 @@ The component uses efficient Angular signals and proper change detection strateg
 
 ### Files Modified During Review
 
-- `apps/rms-material-e2e/src/add-symbol-dialog.spec.ts` - Fixed timing and selector issues in e2e tests
+- `apps/dms-material-e2e/src/add-symbol-dialog.spec.ts` - Fixed timing and selector issues in e2e tests
 
 ### Gate Status
 
