@@ -8,8 +8,8 @@ const { mockQuote, mockSleep } = vi.hoisted(() => ({
   mockSleep: vi.fn(async () => Promise.resolve()),
 }));
 
-vi.mock('yahoo-finance2', () => ({
-  default: {
+vi.mock('../yahoo-finance.instance', () => ({
+  yahooFinance: {
     quote: mockQuote,
   },
 }));
