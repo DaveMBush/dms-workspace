@@ -24,13 +24,13 @@ Ready for Review
 
 - `pnpm format`
 - `pnpm dupcheck`
-- `pnpm nx run rms:test --code-coverage`
+- `pnpm nx run dms:test --code-coverage`
 - `pnpm nx run server:build:production`
 - `pnpm nx run server:test --code-coverage`
 - `pnpm nx run server:lint`
-- `pnpm nx run rms:lint`
-- `pnpm nx run rms:build:production`
-- `pnpm nx run rms-e2e:lint`
+- `pnpm nx run dms:lint`
+- `pnpm nx run dms:build:production`
+- `pnpm nx run dms-e2e:lint`
 
 ## Tasks / Subtasks
 
@@ -422,7 +422,7 @@ test.describe('Authentication Performance', () => {
 
 ### Logging In
 
-1. Navigate to the RMS application URL
+1. Navigate to the DMS application URL
 2. Enter your email address and password
 3. Click "Sign In" to access the application
 
@@ -481,7 +481,7 @@ test.describe('Authentication Performance', () => {
 
 ## Overview
 
-The RMS application uses AWS Cognito for user authentication with a multi-layered security approach.
+The DMS application uses AWS Cognito for user authentication with a multi-layered security approach.
 
 ## Architecture Components
 
@@ -582,12 +582,12 @@ No debug issues encountered during implementation. All tasks completed successfu
 
 **E2E Test Files:**
 
-- `apps/rms-e2e/src/utils/auth-test-helpers.ts` - Authentication testing utilities and helper functions
-- `apps/rms-e2e/src/auth/auth-flow.spec.ts` - Complete authentication flow E2E tests
-- `apps/rms-e2e/src/integration/auth-integration.spec.ts` - Authentication integration tests with existing features
-- `apps/rms-e2e/src/performance/auth-performance.spec.ts` - Authentication performance and load testing
-- `apps/rms-e2e/src/auth/auth-error-scenarios.spec.ts` - Error scenarios and edge case testing
-- `apps/rms-e2e/src/performance/auth-scalability.spec.ts` - System scalability and reliability testing
+- `apps/dms-e2e/src/utils/auth-test-helpers.ts` - Authentication testing utilities and helper functions
+- `apps/dms-e2e/src/auth/auth-flow.spec.ts` - Complete authentication flow E2E tests
+- `apps/dms-e2e/src/integration/auth-integration.spec.ts` - Authentication integration tests with existing features
+- `apps/dms-e2e/src/performance/auth-performance.spec.ts` - Authentication performance and load testing
+- `apps/dms-e2e/src/auth/auth-error-scenarios.spec.ts` - Error scenarios and edge case testing
+- `apps/dms-e2e/src/performance/auth-scalability.spec.ts` - System scalability and reliability testing
 
 **Documentation Files:**
 
@@ -598,9 +598,9 @@ No debug issues encountered during implementation. All tasks completed successfu
 
 **Modified UI Files:**
 
-- `apps/rms/src/app/auth/login/login.html` - Added data-testid attributes for E2E testing
-- `apps/rms/src/app/shell/shell.component.html` - Added data-testid attributes for user menu and logout
-- `apps/rms/src/app/global/global.component.html` - Added data-testid attributes for navigation links
+- `apps/dms/src/app/auth/login/login.html` - Added data-testid attributes for E2E testing
+- `apps/dms/src/app/shell/shell.component.html` - Added data-testid attributes for user menu and logout
+- `apps/dms/src/app/global/global.component.html` - Added data-testid attributes for navigation links
 
 ## QA Results
 

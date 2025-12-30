@@ -7,7 +7,7 @@ import { AuditLogEntry } from './audit-log-entry.interface';
 
 class AuditLogService {
   private readonly logEndpoint = process.env.AUDIT_LOG_ENDPOINT ?? 'console';
-  private readonly applicationName = 'rms-application';
+  private readonly applicationName = 'dms-application';
   private readonly logBuffer: AuditLogEntry[] = [];
   private readonly maxBufferSize = 100;
   private readonly flushInterval = 30000; // 30 seconds

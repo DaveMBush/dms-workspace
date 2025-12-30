@@ -1,6 +1,6 @@
-# RMS Workspace - Accessibility Testing Guide
+# DMS Workspace - Accessibility Testing Guide
 
-This guide provides comprehensive testing procedures to ensure the RMS Workspace meets accessibility standards and provides an inclusive user experience.
+This guide provides comprehensive testing procedures to ensure the DMS Workspace meets accessibility standards and provides an inclusive user experience.
 
 ## Table of Contents
 

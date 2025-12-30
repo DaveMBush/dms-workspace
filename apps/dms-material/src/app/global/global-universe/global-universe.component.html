@@ -1,0 +1,191 @@
+<div class="universe-container">
+  <mat-toolbar class="universe-toolbar">
+    <span class="toolbar-title">Universe</span>
+
+    <span class="toolbar-spacer"></span>
+
+    <mat-form-field appearance="outline" class="account-select">
+      <mat-label>Account</mat-label>
+      <mat-select
+        [value]="selectedAccountId$()"
+        (selectionChange)="onAccountChange($event.value)"
+      >
+        @for (option of accountOptions$(); track option.value) {
+        <mat-option [value]="option.value">{{ option.label }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <span class="toolbar-spacer"></span>
+
+    <button
+      mat-icon-button
+      matTooltip="Add Symbol"
+      (click)="showAddSymbolDialog()"
+    >
+      <mat-icon>add</mat-icon>
+    </button>
+
+    <button
+      mat-icon-button
+      matTooltip="Update Universe"
+      (click)="syncUniverse()"
+      [disabled]="isSyncingUniverse$()"
+    >
+      @if (isSyncingUniverse$()) {
+      <mat-spinner diameter="24"></mat-spinner>
+      } @else {
+      <mat-icon>sync</mat-icon>
+      }
+    </button>
+
+    <button
+      mat-icon-button
+      matTooltip="Update Fields"
+      (click)="updateFields()"
+      [disabled]="isUpdatingFields$()"
+    >
+      @if (isUpdatingFields$()) {
+      <mat-spinner diameter="24"></mat-spinner>
+      } @else {
+      <mat-icon>refresh</mat-icon>
+      }
+    </button>
+  </mat-toolbar>
+
+  <div class="table-wrapper">
+    <dms-base-table
+      [columns]="columns"
+      [selectable]="false"
+      [rowHeight]="48"
+      (sortChange)="onSortChange($event)"
+    >
+      <!-- Filter row template - receives column definition -->
+      <!-- eslint-disable @angular-eslint/template/cyclomatic-complexity -->
+      <ng-template #filterRowTemplate let-column>
+        @switch (column.field) { @case ('symbol') {
+        <mat-form-field
+          appearance="outline"
+          subscriptSizing="dynamic"
+          class="header-filter w-24"
+        >
+          <input
+            matInput
+            #symbolInput
+            [value]="symbolFilter$()"
+            (input)="onSymbolFilterChange(symbolInput.value)"
+            placeholder="Search Symbol"
+          />
+        </mat-form-field>
+        } @case ('risk_group_id') {
+        <mat-form-field
+          appearance="outline"
+          subscriptSizing="dynamic"
+          class="header-filter w-24"
+        >
+          <mat-select
+            [value]="riskGroupFilter$()"
+            (selectionChange)="onRiskGroupFilterChange($event.value)"
+            placeholder="Select One"
+          >
+            <mat-option [value]="null">All</mat-option>
+            @for (group of riskGroups; track group.value) {
+            <mat-option [value]="group.value">{{ group.label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        } @case ('yield_percent') {
+        <mat-form-field
+          appearance="outline"
+          subscriptSizing="dynamic"
+          class="header-filter w-24"
+        >
+          <input
+            matInput
+            #yieldInput
+            type="number"
+            [value]="minYieldFilter$()"
+            (input)="onMinYieldFilterChange(yieldInput.valueAsNumber)"
+            placeholder="Min Yield %"
+          />
+        </mat-form-field>
+        } @case ('expired') {
+        <mat-form-field
+          appearance="outline"
+          subscriptSizing="dynamic"
+          class="header-filter w-24"
+        >
+          <mat-select
+            [value]="expiredFilter$()"
+            (selectionChange)="onExpiredFilterChange($event.value)"
+            placeholder="Select One"
+          >
+            <mat-option [value]="null">All</mat-option>
+            @for (option of expiredOptions; track option.value) {
+            <mat-option [value]="option.value">{{ option.label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        } }
+      </ng-template>
+      <!-- eslint-enable @angular-eslint/template/cyclomatic-complexity -->
+
+      <!-- Custom cell template for editable fields -->
+      <!-- eslint-disable @angular-eslint/template/cyclomatic-complexity -->
+      <!-- eslint-disable @angular-eslint/template/no-call-expression -->
+      <ng-template #cellTemplate let-row let-column="column">
+        @switch (column.field) { @case ('distribution') {
+        <dms-editable-cell
+          [value]="row.distribution"
+          format="decimal"
+          decimalFormat="1.4-4"
+          [min]="0"
+          (valueChange)="onCellEdit(row, 'distribution', $event)"
+        />
+        } @case ('distributions_per_year') {
+        <dms-editable-cell
+          [value]="row.distributions_per_year"
+          format="number"
+          [min]="0"
+          [max]="12"
+          [step]="1"
+          (valueChange)="onCellEdit(row, 'distributions_per_year', $event)"
+        />
+        } @case ('yield_percent') {
+        {{ calculateYield(row) | number : '1.2-2' }}% } @case
+        ('avg_purchase_yield_percent') { @if (row.avg_purchase_yield_percent) {
+        {{ row.avg_purchase_yield_percent | number : '1.2-2' }}% } @else { - } }
+        @case ('last_price') {
+        {{ row.last_price | currency }}
+        } @case ('ex_date') {
+        <dms-editable-date-cell
+          [value]="row.ex_date"
+          (valueChange)="onCellEdit(row, 'ex_date', $event)"
+        />
+        } @case ('most_recent_sell_date') { @if (row.most_recent_sell_date) {
+        {{ row.most_recent_sell_date | date : 'MM/dd/yyyy' }}
+        } @else { - } } @case ('most_recent_sell_price') { @if
+        (row.most_recent_sell_price) {
+        {{ row.most_recent_sell_price | currency }}
+        } @else { - } } @case ('position') {
+        {{ row.position === 0 ? '' : row.position }}
+        } @case ('expired') {
+        <span class="expired-indicator">{{ row.expired ? '*' : '' }}</span>
+        } @case ('actions') { @if (shouldShowDeleteButton(row)) {
+        <button
+          mat-icon-button
+          color="warn"
+          matTooltip="Delete unused symbol"
+          (click)="deleteUniverse(row)"
+        >
+          <mat-icon>delete</mat-icon>
+        </button>
+        } } @default {
+        {{ row[column.field] }}
+        } }
+      </ng-template>
+      <!-- eslint-enable @angular-eslint/template/cyclomatic-complexity -->
+      <!-- eslint-enable @angular-eslint/template/no-call-expression -->
+    </dms-base-table>
+  </div>
+</div>

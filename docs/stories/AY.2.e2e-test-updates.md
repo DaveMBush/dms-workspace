@@ -11,13 +11,13 @@
 **Current System:**
 
 - E2E tests use Playwright
-- Tests in `apps/rms-e2e/`
-- Test against RMS on port 4200
+- Tests in `apps/dms-e2e/`
+- Test against DMS on port 4200
 
 **Migration Target:**
 
-- Create `apps/rms-material-e2e/`
-- Test against rms-material on port 4201
+- Create `apps/dms-material-e2e/`
+- Test against dms-material on port 4201
 - Update selectors for Material components
 
 ## Acceptance Criteria
@@ -50,12 +50,12 @@
 ### Step 1: Generate E2E Project
 
 ```bash
-nx g @nx/playwright:configuration rms-material-e2e --project=rms-material
+nx g @nx/playwright:configuration dms-material-e2e --project=dms-material
 ```
 
 ### Step 2: Update Playwright Configuration
 
-Update `apps/rms-material-e2e/playwright.config.ts`:
+Update `apps/dms-material-e2e/playwright.config.ts`:
 
 ```typescript
 import { defineConfig, devices } from '@playwright/test';
@@ -78,7 +78,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'pnpm nx run rms-material:serve',
+    command: 'pnpm nx run dms-material:serve',
     url: 'http://localhost:4201',
     reuseExistingServer: !process.env.CI,
   },
@@ -134,7 +134,7 @@ test.describe('Login', () => {
 ### Step 5: Run E2E Tests
 
 ```bash
-pnpm nx run rms-material-e2e:e2e
+pnpm nx run dms-material-e2e:e2e
 ```
 
 ## Test Scenarios
@@ -173,10 +173,10 @@ pnpm nx run rms-material-e2e:e2e
 - [ ] All tests migrated with updated selectors
 - [ ] All tests pass
 - [ ] CI configuration updated
-- [ ] `pnpm nx run rms-material-e2e:e2e` succeeds
+- [ ] `pnpm nx run dms-material-e2e:e2e` succeeds
 - [ ] All validation commands pass
   - Run `pnpm all`
-  - Run `pnpm e2e:rms-material`
+  - Run `pnpm e2e:dms-material`
   - Run `pnpm dupcheck`
   - Run `pnpm format`
   - Repeat all of these if any fail until they all pass
@@ -235,4 +235,4 @@ This story IS the e2e test story. Ensure all e2e tests from previous stories are
 - [ ] Database seeding works correctly before tests
 - [ ] Database cleanup works correctly after tests
 
-Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.
+Run `pnpm nx run dms-material-e2e:e2e` to verify all e2e tests pass.

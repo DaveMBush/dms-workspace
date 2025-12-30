@@ -19,7 +19,7 @@ class StructuredLogger {
   private environment: string;
   private service: string;
 
-  constructor(service: string = 'rms-backend') {
+  constructor(service: string = 'dms-backend') {
     this.service = service;
     this.environment = process.env.NODE_ENV ?? 'development';
     this.logsDir = join(process.cwd(), 'logs');

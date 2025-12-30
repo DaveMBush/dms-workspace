@@ -10,7 +10,7 @@
 
 **Current System:**
 
-- Location: `apps/rms/src/app/global/global-error-logs/`
+- Location: `apps/dms/src/app/global/global-error-logs/`
 - PrimeNG components: `p-table`, `p-toolbar`, `p-paginator`, `p-button`, `p-select`
 - Displays error logs with pagination and filtering
 
@@ -23,7 +23,7 @@
 
 ### Functional Requirements
 
-- [ ] All GUI look as close to the existing RMS app as possible
+- [ ] All GUI look as close to the existing DMS app as possible
 - [ ] Error logs display in table
 - [ ] Pagination controls work
 - [ ] Filter by error type, date range
@@ -42,7 +42,7 @@
 
 ### Step 1: Create Unit Tests First
 
-Create `apps/rms-material/src/app/global/global-error-logs/global-error-logs.component.spec.ts`:
+Create `apps/dms-material/src/app/global/global-error-logs/global-error-logs.component.spec.ts`:
 
 ```typescript
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -101,13 +101,13 @@ describe('GlobalErrorLogsComponent', () => {
 
 **TDD Cycle:**
 
-1. Run `pnpm nx run rms-material:test` - tests should fail (RED)
+1. Run `pnpm nx run dms-material:test` - tests should fail (RED)
 2. Implement minimal code to pass tests (GREEN)
 3. Refactor while keeping tests passing (REFACTOR)
 
 ## Technical Approach
 
-Create `apps/rms-material/src/app/global/global-error-logs/global-error-logs.component.ts`:
+Create `apps/dms-material/src/app/global/global-error-logs/global-error-logs.component.ts`:
 
 ```typescript
 import { Component, inject, signal, OnInit } from '@angular/core';
@@ -130,7 +130,7 @@ interface ErrorLog {
 }
 
 @Component({
-  selector: 'rms-global-error-logs',
+  selector: 'dms-global-error-logs',
   imports: [MatTableModule, MatPaginatorModule, MatToolbarModule, MatButtonModule, MatIconModule, MatSelectModule, MatExpansionModule, DatePipe],
   templateUrl: './global-error-logs.component.html',
   styleUrl: './global-error-logs.component.scss',
@@ -236,7 +236,7 @@ export class GlobalErrorLogsComponent implements OnInit {
 
 ## E2E Test Requirements
 
-When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
+When this story is complete, ensure the following e2e tests exist in `apps/dms-material-e2e/`:
 
 ### Core Functionality
 
@@ -265,7 +265,7 @@ When this story is complete, ensure the following e2e tests exist in `apps/rms-m
 - [ ] Search within error messages works
 - [ ] Copy error details to clipboard works
 
-Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.
+Run `pnpm nx run dms-material-e2e:e2e` to verify all e2e tests pass.
 
 ## QA Results
 
@@ -275,11 +275,11 @@ Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.
 
 #### Summary
 
-Component UI successfully replicates the existing RMS Error Logs page with proper Material Design implementation. All filter controls, table columns, and pagination match the reference image exactly. However, the component requires API integration and additional acceptance criteria features before production readiness.
+Component UI successfully replicates the existing DMS Error Logs page with proper Material Design implementation. All filter controls, table columns, and pagination match the reference image exactly. However, the component requires API integration and additional acceptance criteria features before production readiness.
 
 #### Strengths
 
-- ✅ UI matches existing RMS Error Logs page exactly with proper filter toolbar
+- ✅ UI matches existing DMS Error Logs page exactly with proper filter toolbar
 - ✅ All 6 table columns implemented (timestamp, level, message, requestId, userId, context)
 - ✅ Filter controls present: file type, log level, date range, search
 - ✅ Color-coded level badges (WARNING, ERROR, INFO, DEBUG)

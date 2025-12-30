@@ -10,7 +10,7 @@
 
 **Current System:**
 
-- Location: `apps/rms/src/app/auth/profile/`
+- Location: `apps/dms/src/app/auth/profile/`
 - Components:
   - `profile.ts` - Main profile container
   - `components/password-change-card.ts` - Password change form
@@ -54,7 +54,7 @@
 
 ### Step 1: Create Unit Tests First
 
-**Profile Component Tests** - `apps/rms-material/src/app/auth/profile/profile.spec.ts`:
+**Profile Component Tests** - `apps/dms-material/src/app/auth/profile/profile.spec.ts`:
 
 ```typescript
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -94,12 +94,12 @@ describe('Profile', () => {
 
   it('should render password change card', () => {
     fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector('rms-password-change-card')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('dms-password-change-card')).toBeTruthy();
   });
 
   it('should render email change card', () => {
     fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector('rms-email-change-card')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('dms-email-change-card')).toBeTruthy();
   });
 
   it('should update email when onEmailChanged called', () => {
@@ -109,7 +109,7 @@ describe('Profile', () => {
 });
 ```
 
-**Password Change Card Tests** - `apps/rms-material/src/app/auth/profile/components/password-change-card.spec.ts`:
+**Password Change Card Tests** - `apps/dms-material/src/app/auth/profile/components/password-change-card.spec.ts`:
 
 ```typescript
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -170,7 +170,7 @@ describe('PasswordChangeCard', () => {
 
 **TDD Cycle:**
 
-1. Run `pnpm nx run rms-material:test` - tests should fail (RED)
+1. Run `pnpm nx run dms-material:test` - tests should fail (RED)
 2. Implement minimal code to pass tests (GREEN)
 3. Refactor while keeping tests passing (REFACTOR)
 
@@ -178,7 +178,7 @@ describe('PasswordChangeCard', () => {
 
 ### Step 1: Create Profile Container
 
-Create `apps/rms-material/src/app/auth/profile/profile.ts`:
+Create `apps/dms-material/src/app/auth/profile/profile.ts`:
 
 ```typescript
 import { Component, inject, OnInit, signal } from '@angular/core';
@@ -189,7 +189,7 @@ import { PasswordChangeCard } from './components/password-change-card';
 import { EmailChangeCard } from './components/email-change-card';
 
 @Component({
-  selector: 'rms-profile',
+  selector: 'dms-profile',
   imports: [MatCardModule, PasswordChangeCard, EmailChangeCard],
   templateUrl: './profile.html',
   styleUrl: './profile.scss',
@@ -222,7 +222,7 @@ export class Profile implements OnInit {
 
 ### Step 2: Create Profile Template
 
-Create `apps/rms-material/src/app/auth/profile/profile.html`:
+Create `apps/dms-material/src/app/auth/profile/profile.html`:
 
 ```html
 <div class="profile-container">
@@ -241,15 +241,15 @@ Create `apps/rms-material/src/app/auth/profile/profile.html`:
   </div>
 
   <div class="profile-cards">
-    <rms-password-change-card />
-    <rms-email-change-card [currentEmail]="userEmail()" (emailChanged)="onEmailChanged($event)" />
+    <dms-password-change-card />
+    <dms-email-change-card [currentEmail]="userEmail()" (emailChanged)="onEmailChanged($event)" />
   </div>
 </div>
 ```
 
 ### Step 3: Create Password Change Card
 
-Create `apps/rms-material/src/app/auth/profile/components/password-change-card.ts`:
+Create `apps/dms-material/src/app/auth/profile/components/password-change-card.ts`:
 
 ```typescript
 import { Component, inject, signal } from '@angular/core';
@@ -265,7 +265,7 @@ import { ProfileService } from '../../services/profile.service';
 import { NotificationService } from '../../../shared/services/notification.service';
 
 @Component({
-  selector: 'rms-password-change-card',
+  selector: 'dms-password-change-card',
   imports: [ReactiveFormsModule, MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, MatProgressSpinnerModule],
   templateUrl: './password-change-card.html',
   styleUrl: './password-change-card.scss',
@@ -316,7 +316,7 @@ export class PasswordChangeCard {
 
 ### Step 4: Create Password Change Template
 
-Create `apps/rms-material/src/app/auth/profile/components/password-change-card.html`:
+Create `apps/dms-material/src/app/auth/profile/components/password-change-card.html`:
 
 ```html
 <mat-card>
@@ -373,7 +373,7 @@ Create `apps/rms-material/src/app/auth/profile/components/password-change-card.h
 
 ### Step 5: Create Email Change Card
 
-Create `apps/rms-material/src/app/auth/profile/components/email-change-card.ts`:
+Create `apps/dms-material/src/app/auth/profile/components/email-change-card.ts`:
 
 ```typescript
 import { Component, inject, input, output, signal } from '@angular/core';
@@ -389,7 +389,7 @@ import { ProfileService } from '../../services/profile.service';
 import { NotificationService } from '../../../shared/services/notification.service';
 
 @Component({
-  selector: 'rms-email-change-card',
+  selector: 'dms-email-change-card',
   imports: [ReactiveFormsModule, MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, MatProgressSpinnerModule],
   templateUrl: './email-change-card.html',
   styleUrl: './email-change-card.scss',
@@ -461,7 +461,7 @@ export class EmailChangeCard {
 
 ## E2E Test Requirements
 
-When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
+When this story is complete, ensure the following e2e tests exist in `apps/dms-material-e2e/`:
 
 ### Core Functionality
 
@@ -490,7 +490,7 @@ When this story is complete, ensure the following e2e tests exist in `apps/rms-m
 - [ ] Copy-paste into password fields works correctly
 - [ ] Screen reader announces form errors properly
 
-Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.
+Run `pnpm nx run dms-material-e2e:e2e` to verify all e2e tests pass.
 
 ## QA Results
 
@@ -521,7 +521,7 @@ Story AB.3 demonstrates strong functional implementation with excellent E2E test
 **MNT-001 (Low)**: 4 lint errors (all auto-fixable)
 
 - **Impact**: Code style compliance
-- **Action**: Run `pnpm nx run rms-material:lint --fix`
+- **Action**: Run `pnpm nx run dms-material:lint --fix`
 - **Timeline**: Before merge
 
 **TEST-002 (Medium)**: Additional components created beyond story scope
@@ -568,7 +568,7 @@ All functional acceptance criteria met:
 **Immediate (Before Merge)**:
 
 1. Fix unit test TestBed configuration - add HttpClient and Router providers
-2. Run `pnpm nx run rms-material:lint --fix` to resolve all lint errors
+2. Run `pnpm nx run dms-material:lint --fix` to resolve all lint errors
 3. Re-run full test suite to verify all tests passing
 4. Validate complete Definition of Done
 
@@ -595,7 +595,7 @@ Gate: **PASS** → docs/qa/gates/AB.3-migrate-profile-components.yml
 
 **✅ Lint Compliance** (Resolved MNT-001-Low):
 
-- Ran `pnpm nx run rms-material:lint --fix`
+- Ran `pnpm nx run dms-material:lint --fix`
 - All 4 lint errors automatically fixed
 - Achievement: 100% lint compliance
 

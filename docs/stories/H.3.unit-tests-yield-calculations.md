@@ -22,13 +22,13 @@ Ready for Review
 
 - `pnpm format`
 - `pnpm dupcheck`
-- `pnpm nx run rms:test --code-coverage`
+- `pnpm nx run dms:test --code-coverage`
 - `pnpm nx run server:build:production`
 - `pnpm nx run server:test --code-coverage`
 - `pnpm nx run server:lint`
-- `pnpm nx run rms:lint`
-- `pnpm nx run rms:build:production`
-- `pnpm nx run rms-e2e:lint`
+- `pnpm nx run dms:lint`
+- `pnpm nx run dms:build:production`
+- `pnpm nx run dms-e2e:lint`
 
 ## Tasks / Subtasks
 
@@ -93,17 +93,17 @@ Ready for Review
 **Source: [nx.json - test configuration]**
 
 - Test target: `@nx/vite:test` with coverage reporting
-- Test command: `nx run rms:test` for frontend components
-- Coverage output: `coverage/apps/rms` directory
+- Test command: `nx run dms:test` for frontend components
+- Coverage output: `coverage/apps/dms` directory
 
 ### File Locations for Tests
 
 **Test Files to Create/Modify:**
 
-1. `/apps/rms/src/app/global/global-universe/universe.selector.spec.ts` - Test yield calculations
-2. `/apps/rms/src/app/global/global-universe/universe-data.service.spec.ts` - Test field handling and sorting
-3. `/apps/rms/src/app/global/global-universe/sort-computed-signals.function.spec.ts` - Test sort signals
-4. `/apps/rms/src/app/global/global-universe/global-universe.component.spec.ts` - Test component integration
+1. `/apps/dms/src/app/global/global-universe/universe.selector.spec.ts` - Test yield calculations
+2. `/apps/dms/src/app/global/global-universe/universe-data.service.spec.ts` - Test field handling and sorting
+3. `/apps/dms/src/app/global/global-universe/sort-computed-signals.function.spec.ts` - Test sort signals
+4. `/apps/dms/src/app/global/global-universe/global-universe.component.spec.ts` - Test component integration
 
 ### Technical Implementation Details
 
@@ -223,12 +223,12 @@ N/A - No debug issues encountered during implementation
 **Files Modified:**
 
 - `docs/stories/H.3.unit-tests-yield-calculations.md` - Updated story status and task completion
-- `apps/rms/src/app/global/global-universe/universe-data.service.spec.ts` - Enhanced with weighted average and yield calculation tests
+- `apps/dms/src/app/global/global-universe/universe-data.service.spec.ts` - Enhanced with weighted average and yield calculation tests
 
 **Files Created:**
 
-- `apps/rms/src/app/global/global-universe/sort-computed-signals.function.spec.ts` - Sort functionality tests
-- `apps/rms/src/app/global/global-universe/global-universe.component.spec.ts` - Integration tests for complete data flow
+- `apps/dms/src/app/global/global-universe/sort-computed-signals.function.spec.ts` - Sort functionality tests
+- `apps/dms/src/app/global/global-universe/global-universe.component.spec.ts` - Integration tests for complete data flow
 
 ## QA Results
 

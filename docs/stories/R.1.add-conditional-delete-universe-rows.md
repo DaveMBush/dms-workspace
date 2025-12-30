@@ -6,7 +6,7 @@ Ready for Review
 
 ## Story
 
-**As a** trader using the RMS system,
+**As a** trader using the DMS system,
 **I want** to be able to delete non-CEF universe entries that aren't being used by any trades,
 **so that** I can maintain a clean trading universe and remove symbols I no longer need.
 
@@ -145,8 +145,8 @@ shouldShowDeleteButton(row: Universe): boolean {
 
 **Affected Files:**
 
-- `apps/rms/src/app/global/global-universe/global-universe.component.html` - Add delete button column
-- `apps/rms/src/app/global/global-universe/global-universe.component.ts` - Add delete methods
+- `apps/dms/src/app/global/global-universe/global-universe.component.html` - Add delete button column
+- `apps/dms/src/app/global/global-universe/global-universe.component.ts` - Add delete methods
 - `apps/server/src/app/routes/universe/` - Add delete endpoint (likely new file)
 - Backend route registration for new DELETE endpoint
 
@@ -226,17 +226,17 @@ No debug log entries required - implementation proceeded smoothly.
 
 **Modified Files:**
 
-- `apps/rms/src/app/global/global-universe/global-universe.component.html` - Added delete button column and confirmation dialog
-- `apps/rms/src/app/global/global-universe/global-universe.component.ts` - Integrated delete helper and bound methods
-- `apps/rms/src/app/global/global-universe/global-universe.component.spec.ts` - Updated tests for delete helper integration
-- `apps/rms/src/app/global/global-universe/universe.selector.ts` - Added id field to display data
-- `apps/rms/src/app/global/global-universe/universe-display-data.interface.ts` - Added id field
+- `apps/dms/src/app/global/global-universe/global-universe.component.html` - Added delete button column and confirmation dialog
+- `apps/dms/src/app/global/global-universe/global-universe.component.ts` - Integrated delete helper and bound methods
+- `apps/dms/src/app/global/global-universe/global-universe.component.spec.ts` - Updated tests for delete helper integration
+- `apps/dms/src/app/global/global-universe/universe.selector.ts` - Added id field to display data
+- `apps/dms/src/app/global/global-universe/universe-display-data.interface.ts` - Added id field
 - `apps/server/src/app/routes/universe/index.ts` - Enhanced delete endpoint with business validation
 
 **New Files:**
 
-- `apps/rms/src/app/global/global-universe/delete-universe.helper.ts` - Standalone helper for delete functionality
-- `apps/rms/src/app/global/global-universe/delete-universe.helper.spec.ts` - Comprehensive tests for delete helper
+- `apps/dms/src/app/global/global-universe/delete-universe.helper.ts` - Standalone helper for delete functionality
+- `apps/dms/src/app/global/global-universe/delete-universe.helper.spec.ts` - Comprehensive tests for delete helper
 - `apps/server/src/app/routes/universe/delete-universe.spec.ts` - Integration tests for delete API endpoint
 
 ## QA Results

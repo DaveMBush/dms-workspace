@@ -19,7 +19,7 @@ This document provides comprehensive procedures for backing up and restoring the
 
 ```bash
 #!/bin/bash
-# Backup script for RMS database
+# Backup script for DMS database
 
 # Configuration
 DB_PATH="../database.db"  # Adjust path based on DATABASE_URL
@@ -31,7 +31,7 @@ BACKUP_FILE="${BACKUP_DIR}/database_backup_${TIMESTAMP}.db"
 mkdir -p "$BACKUP_DIR"
 
 # Stop application (optional but recommended for consistency)
-# pm2 stop rms-server  # Adjust based on process manager
+# pm2 stop dms-server  # Adjust based on process manager
 
 # Create backup using SQLite backup command
 sqlite3 "$DB_PATH" ".backup $BACKUP_FILE"
@@ -53,7 +53,7 @@ else
 fi
 
 # Restart application if it was stopped
-# pm2 start rms-server
+# pm2 start dms-server
 ```
 
 ### 2. Automated Daily Backups
@@ -147,7 +147,7 @@ fi
 
 # Stop application
 echo "Stopping application..."
-# pm2 stop rms-server
+# pm2 stop dms-server
 
 # Backup current database (just in case)
 if [ -f "$DB_PATH" ]; then
@@ -176,7 +176,7 @@ fi
 
 # Restart application
 echo "Starting application..."
-# pm2 start rms-server
+# pm2 start dms-server
 
 echo "✅ Restore completed successfully"
 ```

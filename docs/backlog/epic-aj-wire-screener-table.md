@@ -2,13 +2,13 @@
 
 ## Epic Goal
 
-Connect the screener table in RMS-MATERIAL to backend data with full edit capabilities.
+Connect the screener table in DMS-MATERIAL to backend data with full edit capabilities.
 
 ## Epic Description
 
 **Existing System Context:**
 
-- RMS app displays screener data with editable checkboxes
+- DMS app displays screener data with editable checkboxes
 - Screen effect service handles backend communication
 - Three boolean fields: has_volatility, objectives_understood, graph_higher_before_2008
 

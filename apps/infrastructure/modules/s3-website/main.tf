@@ -1,4 +1,4 @@
-# S3 Static Website Module for RMS Frontend
+# S3 Static Website Module for DMS Frontend
 # Provides secure, scalable hosting for Angular SPA
 
 resource "random_string" "bucket_suffix" {
@@ -7,14 +7,14 @@ resource "random_string" "bucket_suffix" {
   upper   = false
 }
 
-resource "aws_s3_bucket" "rms_frontend" {
-  bucket = "rms-frontend-${var.environment}-${random_string.bucket_suffix.result}"
+resource "aws_s3_bucket" "dms_frontend" {
+  bucket = "dms-frontend-${var.environment}-${random_string.bucket_suffix.result}"
 
   tags = var.common_tags
 }
 
-resource "aws_s3_bucket_website_configuration" "rms_frontend" {
-  bucket = aws_s3_bucket.rms_frontend.id
+resource "aws_s3_bucket_website_configuration" "dms_frontend" {
+  bucket = aws_s3_bucket.dms_frontend.id
 
   index_document {
     suffix = "index.html"
@@ -25,8 +25,8 @@ resource "aws_s3_bucket_website_configuration" "rms_frontend" {
   }
 }
 
-resource "aws_s3_bucket_public_access_block" "rms_frontend" {
-  bucket = aws_s3_bucket.rms_frontend.id
+resource "aws_s3_bucket_public_access_block" "dms_frontend" {
+  bucket = aws_s3_bucket.dms_frontend.id
 
   block_public_acls       = false
   block_public_policy     = false
@@ -34,8 +34,8 @@ resource "aws_s3_bucket_public_access_block" "rms_frontend" {
   restrict_public_buckets = false
 }
 
-resource "aws_s3_bucket_policy" "rms_frontend" {
-  bucket = aws_s3_bucket.rms_frontend.id
+resource "aws_s3_bucket_policy" "dms_frontend" {
+  bucket = aws_s3_bucket.dms_frontend.id
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -44,23 +44,23 @@ resource "aws_s3_bucket_policy" "rms_frontend" {
         Effect    = "Allow"
         Principal = "*"
         Action    = "s3:GetObject"
-        Resource  = "${aws_s3_bucket.rms_frontend.arn}/*"
+        Resource  = "${aws_s3_bucket.dms_frontend.arn}/*"
       }
     ]
   })
 
-  depends_on = [aws_s3_bucket_public_access_block.rms_frontend]
+  depends_on = [aws_s3_bucket_public_access_block.dms_frontend]
 }
 
-resource "aws_s3_bucket_versioning" "rms_frontend" {
-  bucket = aws_s3_bucket.rms_frontend.id
+resource "aws_s3_bucket_versioning" "dms_frontend" {
+  bucket = aws_s3_bucket.dms_frontend.id
   versioning_configuration {
     status = "Enabled"
   }
 }
 
-resource "aws_s3_bucket_server_side_encryption_configuration" "rms_frontend" {
-  bucket = aws_s3_bucket.rms_frontend.id
+resource "aws_s3_bucket_server_side_encryption_configuration" "dms_frontend" {
+  bucket = aws_s3_bucket.dms_frontend.id
 
   rule {
     apply_server_side_encryption_by_default {
@@ -69,17 +69,17 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "rms_frontend" {
   }
 }
 
-resource "aws_s3_bucket_logging" "rms_frontend" {
+resource "aws_s3_bucket_logging" "dms_frontend" {
   count = var.access_logging_bucket != "" ? 1 : 0
 
-  bucket = aws_s3_bucket.rms_frontend.id
+  bucket = aws_s3_bucket.dms_frontend.id
 
   target_bucket = var.access_logging_bucket
-  target_prefix = "s3-access-logs/rms-frontend/"
+  target_prefix = "s3-access-logs/dms-frontend/"
 }
 
-resource "aws_s3_bucket_lifecycle_configuration" "rms_frontend" {
-  bucket = aws_s3_bucket.rms_frontend.id
+resource "aws_s3_bucket_lifecycle_configuration" "dms_frontend" {
+  bucket = aws_s3_bucket.dms_frontend.id
 
   rule {
     id     = "delete_old_versions"

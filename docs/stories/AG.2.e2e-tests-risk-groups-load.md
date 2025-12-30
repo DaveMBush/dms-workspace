@@ -39,7 +39,7 @@
 
 ### Step 1: Create E2E Tests
 
-Create `apps/rms-material-e2e/src/risk-groups.spec.ts`:
+Create `apps/dms-material-e2e/src/risk-groups.spec.ts`:
 
 ```typescript
 import { test, expect } from 'playwright/test';
@@ -177,7 +177,7 @@ test.describe('Risk Group Database Integrity', () => {
 ### Step 2: Run E2E Tests (Initial Run)
 
 ```bash
-pnpm nx e2e rms-material-e2e
+pnpm nx e2e dms-material-e2e
 ```
 
 ### Step 3: Debug and Fix Issues
@@ -190,7 +190,7 @@ pnpm nx e2e rms-material-e2e
 ### Step 4: Run E2E Tests (Should Pass)
 
 ```bash
-pnpm nx e2e rms-material-e2e
+pnpm nx e2e dms-material-e2e
 ```
 
 All E2E tests should pass.
@@ -207,7 +207,7 @@ Use Playwright MCP server to:
 
 ### Files to Create
 
-- `apps/rms-material-e2e/src/risk-groups.spec.ts` - E2E tests for risk groups
+- `apps/dms-material-e2e/src/risk-groups.spec.ts` - E2E tests for risk groups
 
 ### Implementation Steps
 
@@ -231,7 +231,7 @@ Use Playwright MCP server to:
 
 | File                                            | Purpose                   |
 | ----------------------------------------------- | ------------------------- |
-| `apps/rms-material-e2e/src/risk-groups.spec.ts` | E2E tests for risk groups |
+| `apps/dms-material-e2e/src/risk-groups.spec.ts` | E2E tests for risk groups |
 
 ## Definition of Done
 
@@ -247,7 +247,7 @@ Use Playwright MCP server to:
 - [ ] Code reviewed
 - [ ] All validation commands pass
   - Run `pnpm all`
-  - Run `pnpm e2e:rms-material`
+  - Run `pnpm e2e:dms-material`
   - Run `pnpm dupcheck`
   - Run `pnpm format`
   - Repeat all of these if any fail until they all pass

@@ -13,7 +13,7 @@
 
 ## Context
 
-The RMS application requires a container orchestration platform to manage the backend Node.js/Fastify API deployment. The system needs to handle:
+The DMS application requires a container orchestration platform to manage the backend Node.js/Fastify API deployment. The system needs to handle:
 
 - Automatic scaling based on demand
 - Health checks and service recovery
@@ -316,6 +316,6 @@ This decision will be reviewed in **6 months (February 2025)** or when:
 
 ---
 
-**Document Version**: 1.0  
-**Last Updated**: 2024-08-30  
+**Document Version**: 1.0
+**Last Updated**: 2024-08-30
 **Next Review**: 2025-02-28

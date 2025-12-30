@@ -1,4 +1,4 @@
-# Multi-stage Dockerfile for RMS Fastify Backend
+# Multi-stage Dockerfile for DMS Fastify Backend
 # Build stage - install dependencies and build application
 FROM node:22-alpine AS builder
 

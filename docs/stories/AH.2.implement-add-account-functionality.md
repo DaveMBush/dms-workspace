@@ -10,14 +10,14 @@
 
 **Current System:**
 
-- RMS app has inline account creation with add button
+- DMS app has inline account creation with add button
 - Clicking add creates temporary "new" account entry
 - User edits name inline, save commits to backend
 - Uses SmartNgRX addToStore and effect service
 
 **Migration Target:**
 
-- Replicate RMS inline add functionality in RMS-MATERIAL
+- Replicate DMS inline add functionality in DMS-MATERIAL
 - Use Material Design patterns (inline editing, button styling)
 - Integrate with AccountEffectsService.add()
 
@@ -25,7 +25,7 @@
 
 ### Functional Requirements
 
-- [ ] **CRITICAL** UI matches RMS app inline add behavior exactly
+- [ ] **CRITICAL** UI matches DMS app inline add behavior exactly
 - [ ] Add button creates temporary account entry in list
 - [ ] Inline editor appears for new account
 - [ ] User can type account name
@@ -35,7 +35,7 @@
 
 ### Technical Requirements
 
-- [ ] Use NodeEditorComponent pattern from RMS (or Material equivalent)
+- [ ] Use NodeEditorComponent pattern from DMS (or Material equivalent)
 - [ ] Use SmartNgRX `addToStore!()` method
 - [ ] Call `AccountEffectsService.add()` via SmartNgRX
 - [ ] Handle validation (non-empty name)
@@ -45,7 +45,7 @@
 
 ### Step 1: Create Unit Tests First
 
-Update `apps/rms-material/src/app/accounts/account.spec.ts`:
+Update `apps/dms-material/src/app/accounts/account.spec.ts`:
 
 ```typescript
 describe('Account - Add Functionality', () => {
@@ -64,7 +64,7 @@ describe('Account - Add Functionality', () => {
     component.addingNode = 'new';
     fixture.detectChanges();
 
-    const editor = fixture.nativeElement.querySelector('rms-node-editor');
+    const editor = fixture.nativeElement.querySelector('dms-node-editor');
     expect(editor).toBeTruthy();
   });
 
@@ -114,12 +114,12 @@ describe('Account - Add Functionality', () => {
 ### Step 2: Run Tests (Should Fail)
 
 ```bash
-pnpm nx test rms-material
+pnpm nx test dms-material
 ```
 
 ### Step 3: Implement
 
-Update `apps/rms-material/src/app/accounts/account.ts`:
+Update `apps/dms-material/src/app/accounts/account.ts`:
 
 ```typescript
 import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
@@ -138,7 +138,7 @@ import { Top } from '../store/top/top.interface';
 import { NodeEditorComponent } from '../shared/components/node-editor/node-editor.component';
 
 @Component({
-  selector: 'rms-account',
+  selector: 'dms-account',
   imports: [RouterLink, RouterLinkActive, MatListModule, MatToolbarModule, MatButtonModule, MatIconModule, MatDividerModule, NodeEditorComponent],
   templateUrl: './account.html',
   styleUrl: './account.scss',
@@ -208,7 +208,7 @@ export class Account {
 }
 ```
 
-Update `apps/rms-material/src/app/accounts/account.html`:
+Update `apps/dms-material/src/app/accounts/account.html`:
 
 ```html
 <mat-toolbar>
@@ -221,7 +221,7 @@ Update `apps/rms-material/src/app/accounts/account.html`:
 
 <mat-nav-list>
   @for (account of accountsList(); track account.id) { @if (addingNode() === account.id || editingNode() === account.id) {
-  <rms-node-editor placeholder="Edit Account" [(ngModel)]="editingContent" (cancel)="cancelEdit(account)" (save)="saveEdit(account)" />
+  <dms-node-editor placeholder="Edit Account" [(ngModel)]="editingContent" (cancel)="cancelEdit(account)" (save)="saveEdit(account)" />
   } @else {
   <mat-list-item [routerLink]="['/account', account.id]" routerLinkActive="active-link">
     <span matListItemTitle>{{ account.name }}</span>
@@ -233,12 +233,12 @@ Update `apps/rms-material/src/app/accounts/account.html`:
 ### Step 4: Run Tests (Should Pass)
 
 ```bash
-pnpm nx test rms-material
+pnpm nx test dms-material
 ```
 
 ### Step 5: Manual Testing with Playwright
 
-1. Start app: `pnpm nx serve rms-material`
+1. Start app: `pnpm nx serve dms-material`
 2. Navigate to accounts panel
 3. Click add button
 4. Verify inline editor appears
@@ -250,10 +250,10 @@ pnpm nx test rms-material
 
 ### Files to Modify
 
-- `apps/rms-material/src/app/accounts/account.ts` - Add account functionality
-- `apps/rms-material/src/app/accounts/account.html` - Add button and editor UI
-- `apps/rms-material/src/app/accounts/account.spec.ts` - Unit tests
-- `apps/rms-material/src/app/shared/components/node-editor/` - Create if needed
+- `apps/dms-material/src/app/accounts/account.ts` - Add account functionality
+- `apps/dms-material/src/app/accounts/account.html` - Add button and editor UI
+- `apps/dms-material/src/app/accounts/account.spec.ts` - Unit tests
+- `apps/dms-material/src/app/shared/components/node-editor/` - Create if needed
 
 ### Implementation Steps
 
@@ -269,9 +269,9 @@ pnpm nx test rms-material
 
 | File                                                 | Changes                            |
 | ---------------------------------------------------- | ---------------------------------- |
-| `apps/rms-material/src/app/accounts/account.ts`      | Added add/save/cancel methods      |
-| `apps/rms-material/src/app/accounts/account.html`    | Added add button and inline editor |
-| `apps/rms-material/src/app/accounts/account.spec.ts` | Added unit tests                   |
+| `apps/dms-material/src/app/accounts/account.ts`      | Added add/save/cancel methods      |
+| `apps/dms-material/src/app/accounts/account.html`    | Added add button and inline editor |
+| `apps/dms-material/src/app/accounts/account.spec.ts` | Added unit tests                   |
 
 ## Definition of Done
 
@@ -283,21 +283,21 @@ pnpm nx test rms-material
 - [ ] Validation prevents empty names
 - [ ] Unit tests pass
 - [ ] Manual Playwright verification complete
-- [ ] UI matches RMS app behavior
+- [ ] UI matches DMS app behavior
 - [ ] All existing tests pass
 - [ ] Lint passes
 - [ ] Code reviewed
 - [ ] All validation commands pass
   - Run `pnpm all`
-  - Run `pnpm e2e:rms-material`
+  - Run `pnpm e2e:dms-material`
   - Run `pnpm dupcheck`
   - Run `pnpm format`
   - Repeat all of these if any fail until they all pass
 
 ## Notes
 
-- Follow RMS app inline editing pattern exactly
-- NodeEditorComponent may need to be created or adapted from RMS
+- Follow DMS app inline editing pattern exactly
+- NodeEditorComponent may need to be created or adapted from DMS
 - Use Material Design button styling
 - Ensure keyboard navigation works (Enter to save, Escape to cancel)
 - Consider adding focus management for better UX

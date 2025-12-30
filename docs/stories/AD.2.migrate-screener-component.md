@@ -10,7 +10,7 @@
 
 **Current System:**
 
-- Location: `apps/rms/src/app/global/screener/`
+- Location: `apps/dms/src/app/global/screener/`
 - PrimeNG components: `p-table`, `p-toolbar`, `p-select`, `p-button`
 - Displays screened stocks with filtering by various criteria
 
@@ -25,7 +25,7 @@
 ### Functional Requirements
 
 - [ ] Screener data displays in table
-- [ ] All GUI look as close to the existing RMS app as possible
+- [ ] All GUI look as close to the existing DMS app as possible
 - [ ] Filter by risk group, frequency, etc.
 - [ ] Sortable columns
 - [ ] Refresh button to re-run screener
@@ -43,7 +43,7 @@
 
 ### Step 1: Create Unit Tests First
 
-Create `apps/rms-material/src/app/global/screener/screener.spec.ts`:
+Create `apps/dms-material/src/app/global/screener/screener.spec.ts`:
 
 ```typescript
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -98,13 +98,13 @@ describe('Screener', () => {
 
 **TDD Cycle:**
 
-1. Run `pnpm nx run rms-material:test` - tests should fail (RED)
+1. Run `pnpm nx run dms-material:test` - tests should fail (RED)
 2. Implement minimal code to pass tests (GREEN)
 3. Refactor while keeping tests passing (REFACTOR)
 
 ## Technical Approach
 
-Create `apps/rms-material/src/app/global/screener/screener.ts`:
+Create `apps/dms-material/src/app/global/screener/screener.ts`:
 
 ```typescript
 import { Component, inject, signal } from '@angular/core';
@@ -118,7 +118,7 @@ import { selectScreen } from '../../store/screen/select-screen.function';
 import { NotificationService } from '../../shared/services/notification.service';
 
 @Component({
-  selector: 'rms-screener',
+  selector: 'dms-screener',
   imports: [MatToolbarModule, MatButtonModule, MatIconModule, MatSelectModule, BaseTableComponent],
   templateUrl: './screener.html',
   styleUrl: './screener.scss',
@@ -164,7 +164,7 @@ export class Screener {
 
 ## E2E Test Requirements
 
-When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
+When this story is complete, ensure the following e2e tests exist in `apps/dms-material-e2e/`:
 
 ### Core Functionality
 
@@ -191,4 +191,4 @@ When this story is complete, ensure the following e2e tests exist in `apps/rms-m
 - [ ] Export filtered results to CSV works
 - [ ] Screen reader announces filter changes
 
-Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.
+Run `pnpm nx run dms-material-e2e:e2e` to verify all e2e tests pass.

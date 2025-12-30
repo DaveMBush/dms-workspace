@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Database setup script for RMS workspace
+# Database setup script for DMS workspace
 # This script helps switch between SQLite and PostgreSQL configurations
 
 set -e

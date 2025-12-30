@@ -10,7 +10,7 @@
 
 **Current System:**
 
-- RMS app has Playwright E2E tests for account operations
+- DMS app has Playwright E2E tests for account operations
 - AH.1-4 implemented account CRUD with comprehensive unit tests via TDD
 - Tests verify complete user workflows from start to finish
 - Tests run against real backend with database
@@ -18,7 +18,7 @@
 
 **Migration Target:**
 
-- Create Playwright E2E tests for RMS-MATERIAL account operations
+- Create Playwright E2E tests for DMS-MATERIAL account operations
 - Verify complete CRUD workflows
 - Test cross-component navigation
 - Ensure data persistence across page reloads
@@ -27,7 +27,7 @@
 
 ### Functional Requirements
 
-- [ ] **CRITICAL** E2E tests match RMS app coverage
+- [ ] **CRITICAL** E2E tests match DMS app coverage
 - [ ] Tests verify list, add, edit, delete workflows
 - [ ] Tests verify navigation between accounts
 - [ ] Tests verify data persistence
@@ -47,7 +47,7 @@
 
 ### Step 1: Create E2E Test File
 
-Create `apps/rms-material-e2e/src/accounts-crud.spec.ts`:
+Create `apps/dms-material-e2e/src/accounts-crud.spec.ts`:
 
 ```typescript
 import { test, expect } from '@playwright/test';
@@ -379,7 +379,7 @@ Update components to include `data-testid` attributes for testing.
 ### Step 3: Run E2E Tests
 
 ```bash
-pnpm nx e2e rms-material-e2e
+pnpm nx e2e dms-material-e2e
 ```
 
 ### Step 4: Verify Tests in CI
@@ -389,16 +389,16 @@ Run tests in CI environment to ensure reliability.
 ### Step 5: Manual Verification with Playwright Inspector
 
 ```bash
-pnpm nx e2e rms-material-e2e --headed --debug
+pnpm nx e2e dms-material-e2e --headed --debug
 ```
 
 ## Technical Approach
 
 ### Files to Modify
 
-- `apps/rms-material-e2e/src/accounts-crud.spec.ts` - E2E tests
-- `apps/rms-material/src/app/accounts/account.html` - Add data-testid attributes
-- `apps/rms-material/src/app/shared/components/node-editor/` - Add data-testid attributes
+- `apps/dms-material-e2e/src/accounts-crud.spec.ts` - E2E tests
+- `apps/dms-material/src/app/accounts/account.html` - Add data-testid attributes
+- `apps/dms-material/src/app/shared/components/node-editor/` - Add data-testid attributes
 
 ### Testing Strategy
 
@@ -421,9 +421,9 @@ pnpm nx e2e rms-material-e2e --headed --debug
 
 | File                                                       | Changes                      |
 | ---------------------------------------------------------- | ---------------------------- |
-| `apps/rms-material-e2e/src/accounts-crud.spec.ts`          | Added E2E tests              |
-| `apps/rms-material/src/app/accounts/account.html`          | Added data-testid attributes |
-| `apps/rms-material/src/app/shared/components/node-editor/` | Added data-testid attributes |
+| `apps/dms-material-e2e/src/accounts-crud.spec.ts`          | Added E2E tests              |
+| `apps/dms-material/src/app/accounts/account.html`          | Added data-testid attributes |
+| `apps/dms-material/src/app/shared/components/node-editor/` | Added data-testid attributes |
 
 ## Definition of Done
 
@@ -440,7 +440,7 @@ pnpm nx e2e rms-material-e2e --headed --debug
 - [ ] Code reviewed
 - [ ] All validation commands pass
   - Run `pnpm all`
-  - Run `pnpm e2e:rms-material`
+  - Run `pnpm e2e:dms-material`
   - Run `pnpm dupcheck`
   - Run `pnpm format`
   - Repeat all of these if any fail until they all pass

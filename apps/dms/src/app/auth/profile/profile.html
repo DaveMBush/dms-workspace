@@ -1,0 +1,45 @@
+<div class="profile-container p-4 max-w-6xl mx-auto">
+  <div class="mb-4">
+    <h1 class="text-3xl font-bold text-900 mb-2">User Profile</h1>
+    <p class="text-600">Manage your account settings and preferences</p>
+  </div>
+
+  <!-- Profile Information Section -->
+  <div class="grid mb-4">
+    <div class="col-12">
+      <h2 class="text-2xl font-semibold text-900 mb-3">Profile Information</h2>
+    </div>
+    <div class="col-12 md:col-6">
+      <dms-profile-info-card />
+    </div>
+    <div class="col-12 md:col-6">
+      <dms-session-info-card />
+    </div>
+  </div>
+
+  <!-- Security Section -->
+  <div class="grid">
+    <div class="col-12">
+      <h2 class="text-2xl font-semibold text-900 mb-3">Security Settings</h2>
+    </div>
+    <div class="col-12 md:col-6">
+      <dms-password-change-card />
+    </div>
+    <div class="col-12 md:col-6">
+      <div class="grid">
+        <div class="col-12">
+          <dms-email-change-card />
+        </div>
+        <div class="col-12">
+          <dms-account-actions-card />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Confirmation Dialog -->
+<p-confirmDialog></p-confirmDialog>
+
+<!-- Toast Messages -->
+<p-toast></p-toast>

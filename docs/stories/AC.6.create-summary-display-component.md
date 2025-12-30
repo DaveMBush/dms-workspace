@@ -23,7 +23,7 @@
 ### Functional Requirements
 
 - [ ] Line charts display performance over time
-- [ ] All GUI look as close to the existing RMS app as possible
+- [ ] All GUI look as close to the existing DMS app as possible
 - [ ] Pie charts display allocation by category
 - [ ] Charts respond to data changes
 - [ ] Tooltips show data on hover
@@ -42,7 +42,7 @@
 
 ### Step 1: Create Unit Tests First
 
-Create `apps/rms-material/src/app/shared/components/summary-display/summary-display.component.spec.ts`:
+Create `apps/dms-material/src/app/shared/components/summary-display/summary-display.component.spec.ts`:
 
 ```typescript
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -109,13 +109,13 @@ describe('SummaryDisplayComponent', () => {
 
 **TDD Cycle:**
 
-1. Run `pnpm nx run rms-material:test` - tests should fail (RED)
+1. Run `pnpm nx run dms-material:test` - tests should fail (RED)
 2. Implement minimal code to pass tests (GREEN)
 3. Refactor while keeping tests passing (REFACTOR)
 
 ## Technical Approach
 
-Create `apps/rms-material/src/app/shared/components/summary-display/summary-display.component.ts`:
+Create `apps/dms-material/src/app/shared/components/summary-display/summary-display.component.ts`:
 
 ```typescript
 import { Component, input, computed, effect, signal, ViewChild } from '@angular/core';
@@ -123,7 +123,7 @@ import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartType, ChartData } from 'chart.js';
 
 @Component({
-  selector: 'rms-summary-display',
+  selector: 'dms-summary-display',
   imports: [BaseChartDirective],
   template: `
     <div class="chart-container" [style.height]="height()">
@@ -210,7 +210,7 @@ pieChartData: ChartData<'pie'> = {
 
 ## E2E Test Requirements
 
-When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
+When this story is complete, ensure the following e2e tests exist in `apps/dms-material-e2e/`:
 
 ### Core Functionality
 
@@ -238,7 +238,7 @@ When this story is complete, ensure the following e2e tests exist in `apps/rms-m
 - [ ] Accessible color contrast for chart elements
 - [ ] Screen reader announces chart summary
 
-Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.
+Run `pnpm nx run dms-material-e2e:e2e` to verify all e2e tests pass.
 
 ## QA Results
 
@@ -257,7 +257,7 @@ Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.
 
 **E2E Test Status:**
 
-- E2E tests exist in `apps/rms-material-e2e/src/summary-display.spec.ts` (20 test cases)
+- E2E tests exist in `apps/dms-material-e2e/src/summary-display.spec.ts` (20 test cases)
 - Tests cover: core functionality, edge cases, chart configuration, theme support, responsive design
 - Note: E2E tests require proper auth configuration to run
 

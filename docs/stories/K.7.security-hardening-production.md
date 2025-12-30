@@ -8,7 +8,7 @@ Draft
 
 **As a** single-user application owner,
 **I want** to have comprehensive security hardening and production-ready authentication configurations,
-**so that** my RMS application is protected against common security vulnerabilities and meets enterprise security standards for production deployment.
+**so that** my DMS application is protected against common security vulnerabilities and meets enterprise security standards for production deployment.
 
 ## Acceptance Criteria
 
@@ -24,13 +24,13 @@ Draft
 
 - `pnpm format`
 - `pnpm dupcheck`
-- `pnpm nx run rms:test --code-coverage`
+- `pnpm nx run dms:test --code-coverage`
 - `pnpm nx run server:build:production`
 - `pnpm nx run server:test --code-coverage`
 - `pnpm nx run server:lint`
-- `pnpm nx run rms:lint`
-- `pnpm nx run rms:build:production`
-- `pnpm nx run rms-e2e:lint`
+- `pnpm nx run dms:lint`
+- `pnpm nx run dms:build:production`
+- `pnpm nx run dms-e2e:lint`
 
 ## Tasks / Subtasks
 
@@ -145,22 +145,21 @@ Browser Security (CSP, Secure Cookies) -> Application Security (Rate Limiting, C
 1. `/apps/server/src/app/middleware/security.middleware.ts` - Security headers and CSP
 2. `/apps/server/src/app/middleware/rate-limit.middleware.ts` - Rate limiting implementation
 3. `/apps/server/src/app/services/audit-log.service.ts` - Audit logging service
-4. `/apps/rms/src/app/auth/services/secure-cookie.service.ts` - Secure cookie management
+4. `/apps/dms/src/app/auth/services/secure-cookie.service.ts` - Secure cookie management
 5. `/apps/server/src/app/security/csrf.middleware.ts` - CSRF protection
 6. `/docs/security/security-architecture.md` - Security documentation
 
 **Primary Files to Modify:**
 
 1. `/apps/server/src/app/app.ts` - Add security middleware and configuration
-2. `/apps/rms/src/app/auth/auth.service.ts` - Update to use secure cookies
+2. `/apps/dms/src/app/auth/auth.service.ts` - Update to use secure cookies
 3. `/apps/server/src/app/middleware/auth.middleware.ts` - Add audit logging
-4. `/apps/rms/src/environments/environment.prod.ts` - Production security config
+4. `/apps/dms/src/environments/environment.prod.ts` - Production security config
+   **Configuration Files:**
 
-**Configuration Files:**
-
-1. `/apps/server/src/config/security.config.ts` - Security configuration
-2. `/infrastructure/security/csp.config.ts` - CSP policy configuration
-3. `/infrastructure/security/rate-limits.config.ts` - Rate limiting rules
+5. `/apps/server/src/config/security.config.ts` - Security configuration
+6. `/infrastructure/security/csp.config.ts` - CSP policy configuration
+7. `/infrastructure/security/rate-limits.config.ts` - Rate limiting rules
 
 ### Technical Implementation Details
 
@@ -196,7 +195,7 @@ export const securityConfig: SecurityConfig = {
       'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
       'font-src': ["'self'", 'https://fonts.gstatic.com'],
       'img-src': ["'self'", 'data:', 'https:'],
-      'connect-src': ["'self'", 'https://*.amazonaws.com', 'https://api.rms-app.com'],
+      'connect-src': ["'self'", 'https://*.amazonaws.com', 'https://api.dms-app.com'],
       'frame-ancestors': ["'none'"],
       'form-action': ["'self'"],
     },
@@ -209,7 +208,7 @@ export const securityConfig: SecurityConfig = {
     preload: true,
   },
   cors: {
-    origin: [process.env.FRONTEND_URL || 'https://rms.yourdomain.com', ...(process.env.NODE_ENV === 'development' ? ['http://localhost:4200'] : [])],
+    origin: [process.env.FRONTEND_URL || 'https://dms.yourdomain.com', ...(process.env.NODE_ENV === 'development' ? ['http://localhost:4200'] : [])],
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-CSRF-Token'],
   },
@@ -324,7 +323,7 @@ export function createRateLimiter(type: keyof typeof rateLimiters) {
 **Secure Cookie Service:**
 
 ```typescript
-// apps/rms/src/app/auth/services/secure-cookie.service.ts
+// apps/dms/src/app/auth/services/secure-cookie.service.ts
 import { Injectable } from '@angular/core';
 
 @Injectable({
@@ -428,7 +427,7 @@ export class AuditLogService {
         source: {
           ipAddress: this.hashIP(event.ipAddress),
           userAgent: event.userAgent,
-          origin: 'rms-application',
+          origin: 'dms-application',
         },
         details: event.details,
         riskLevel: event.riskLevel,
@@ -473,7 +472,7 @@ export class AuditLogService {
 **Production Environment Configuration:**
 
 ```typescript
-// apps/rms/src/environments/environment.prod.ts
+// apps/dms/src/environments/environment.prod.ts
 export const environment = {
   production: true,
   cognito: {
@@ -491,7 +490,7 @@ export const environment = {
     cspEnabled: true,
   },
   api: {
-    baseUrl: process.env['API_BASE_URL'] || 'https://api.rms-app.com',
+    baseUrl: process.env['API_BASE_URL'] || 'https://api.dms-app.com',
     timeout: 30000,
   },
   monitoring: {

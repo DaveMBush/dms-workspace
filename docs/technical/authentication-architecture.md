@@ -1,4 +1,4 @@
-# RMS Authentication Architecture
+# DMS Authentication Architecture
 
 ## Table of Contents
 
@@ -13,7 +13,7 @@
 
 ## Architecture Overview
 
-The RMS application implements a comprehensive authentication system using AWS Cognito as the identity provider, with a multi-layered security approach that includes frontend Angular components, backend Fastify middleware, and secure token management.
+The DMS application implements a comprehensive authentication system using AWS Cognito as the identity provider, with a multi-layered security approach that includes frontend Angular components, backend Fastify middleware, and secure token management.
 
 ### High-Level Architecture
 
@@ -381,7 +381,7 @@ export const environment = {
     userPoolId: 'us-east-1_XXXXXXXXX',
     userPoolWebClientId: 'xxxxxxxxxxxxxxxxxxxxxxxxxx',
     region: 'us-east-1',
-    domain: 'rms-dev.auth.us-east-1.amazoncognito.com',
+    domain: 'dms-dev.auth.us-east-1.amazoncognito.com',
   },
   api: {
     baseUrl: 'http://localhost:3000',
@@ -399,10 +399,10 @@ export const environment = {
     userPoolId: 'us-east-1_YYYYYYYYY',
     userPoolWebClientId: 'yyyyyyyyyyyyyyyyyyyyyyyyyy',
     region: 'us-east-1',
-    domain: 'rms-prod.auth.us-east-1.amazoncognito.com',
+    domain: 'dms-prod.auth.us-east-1.amazoncognito.com',
   },
   api: {
-    baseUrl: 'https://api.rms.company.com',
+    baseUrl: 'https://api.dms.company.com',
     timeout: 30000,
   },
 };
@@ -414,7 +414,7 @@ export const environment = {
 
 ```typescript
 const corsOptions = {
-  origin: ['https://rms.company.com', 'https://rms-staging.company.com'],
+  origin: ['https://dms.company.com', 'https://dms-staging.company.com'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
@@ -525,4 +525,4 @@ const rateLimitConfig = {
 
 ---
 
-_This architecture documentation is maintained as part of the RMS authentication system implementation and should be reviewed quarterly for accuracy and completeness._
+_This architecture documentation is maintained as part of the DMS authentication system implementation and should be reviewed quarterly for accuracy and completeness._

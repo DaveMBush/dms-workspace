@@ -70,13 +70,13 @@ Completed
   - [x] Test data refresh and real-time updates
 
 - [x] **Task 7: Production readiness validation** (AC: 5, 6)
-  - [x] Run full build process: `pnpm nx run rms:build:production`
-  - [x] Run linting: `pnpm nx run rms:lint`
-  - [x] Run all tests: `pnpm nx run rms:test`
+  - [x] Run full build process: `pnpm nx run dms:build:production`
+  - [x] Run linting: `pnpm nx run dms:lint`
+  - [x] Run all tests: `pnpm nx run dms:test`
   - [x] Run server tests: `pnpm nx run server:test`
   - [x] Run server lint: `pnpm nx run server:lint`
   - [x] Run server build: `pnpm nx run server:build:production`
-  - [x] Run e2e lint: `pnpm nx run rms-e2e:lint`
+  - [x] Run e2e lint: `pnpm nx run dms-e2e:lint`
 
 ## Dev Notes
 
@@ -103,9 +103,9 @@ Completed
 
 **Test Files to Create/Modify:**
 
-1. `/apps/rms/src/app/global/global-universe/universe-integration.spec.ts` - End-to-end feature testing
-2. `/apps/rms/src/app/global/global-universe/yield-calculation-performance.spec.ts` - Performance tests
-3. `/apps/rms-e2e/src/universe-yield.e2e-spec.ts` - E2E user workflow tests
+1. `/apps/dms/src/app/global/global-universe/universe-integration.spec.ts` - End-to-end feature testing
+2. `/apps/dms/src/app/global/global-universe/yield-calculation-performance.spec.ts` - Performance tests
+3. `/apps/dms-e2e/src/universe-yield.e2e-spec.ts` - E2E user workflow tests
 4. `/apps/server/src/app/routes/universe/universe-integration.spec.ts` - Server-side integration
 
 ### Technical Implementation Details
@@ -171,9 +171,9 @@ const testTrades = [
 
 ```bash
 # Frontend validation
-pnpm nx run rms:build:production    # Angular production build
-pnpm nx run rms:lint               # ESLint validation
-pnpm nx run rms:test               # Unit tests with coverage
+pnpm nx run dms:build:production    # Angular production build
+pnpm nx run dms:lint               # ESLint validation
+pnpm nx run dms:test               # Unit tests with coverage
 
 # Backend validation
 pnpm nx run server:test            # Server unit tests
@@ -181,7 +181,7 @@ pnpm nx run server:lint            # Server linting
 pnpm nx run server:build:production # Server production build
 
 # E2E validation
-pnpm nx run rms-e2e:lint          # E2E test linting
+pnpm nx run dms-e2e:lint          # E2E test linting
 ```
 
 **Build Validation Criteria:**
@@ -233,7 +233,7 @@ Claude Sonnet 4 (claude-sonnet-4-20250514)
 
 ### Debug Log References
 
-- GitHub Issue #97: https://github.com/DaveMBush/rms-workspace/issues/97
+- GitHub Issue #97: https://github.com/DaveMBush/dms-workspace/issues/97
 - Branch: story-h4-integration-testing
 
 ### Completion Notes List
@@ -253,12 +253,12 @@ Claude Sonnet 4 (claude-sonnet-4-20250514)
 
 **New Integration Test Files:**
 
-- `/apps/rms/src/app/global/global-universe/universe-integration.spec.ts` - Comprehensive database-level integration tests with manual calculation verification
-- `/apps/rms/src/app/global/global-universe/yield-sorting-integration.spec.ts` - Complete sorting functionality tests for both yield columns
-- `/apps/rms/src/app/global/global-universe/yield-filter-integration.spec.ts` - Filter behavior analysis and integration testing
-- `/apps/rms/src/app/global/global-universe/regression-testing.spec.ts` - Comprehensive regression test suite for existing functionality
-- `/apps/rms/src/app/global/global-universe/yield-calculation-performance.spec.ts` - Performance benchmarks and optimization analysis
-- `/apps/rms-e2e/src/universe-yield.e2e-spec.ts` - Complete end-to-end user workflow testing with accessibility and mobile support
+- `/apps/dms/src/app/global/global-universe/universe-integration.spec.ts` - Comprehensive database-level integration tests with manual calculation verification
+- `/apps/dms/src/app/global/global-universe/yield-sorting-integration.spec.ts` - Complete sorting functionality tests for both yield columns
+- `/apps/dms/src/app/global/global-universe/yield-filter-integration.spec.ts` - Filter behavior analysis and integration testing
+- `/apps/dms/src/app/global/global-universe/regression-testing.spec.ts` - Comprehensive regression test suite for existing functionality
+- `/apps/dms/src/app/global/global-universe/yield-calculation-performance.spec.ts` - Performance benchmarks and optimization analysis
+- `/apps/dms-e2e/src/universe-yield.e2e-spec.ts` - Complete end-to-end user workflow testing with accessibility and mobile support
 
 ## QA Results
 

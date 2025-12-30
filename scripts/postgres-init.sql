@@ -1,4 +1,4 @@
--- PostgreSQL initialization script for RMS Workspace
+-- PostgreSQL initialization script for DMS Workspace
 -- This script sets up the database for local development
 
 -- Ensure the database is created (handled by POSTGRES_DB env var)
@@ -14,9 +14,9 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 -- Log initialization completion
 DO $$
 BEGIN
-    RAISE NOTICE 'RMS Local Database initialized successfully';
-    RAISE NOTICE 'Database: rms_local';
-    RAISE NOTICE 'User: rms_user';
+    RAISE NOTICE 'DMS Local Database initialized successfully';
+    RAISE NOTICE 'Database: dms_local';
+    RAISE NOTICE 'User: dms_user';
     RAISE NOTICE 'Extensions: uuid-ossp, pgcrypto';
 END
 $$;

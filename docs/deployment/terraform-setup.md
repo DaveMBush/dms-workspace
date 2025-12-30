@@ -1,6 +1,6 @@
 # Terraform Setup and Prerequisites
 
-This guide covers the installation and configuration of required tools for RMS infrastructure deployment.
+This guide covers the installation and configuration of required tools for DMS infrastructure deployment.
 
 ## Required Tools and Versions
 
@@ -112,10 +112,10 @@ Create an IAM user with programmatic access:
 
 ```bash
 # Using AWS CLI (after initial setup)
-aws iam create-user --user-name rms-deploy-user
+aws iam create-user --user-name dms-deploy-user
 
 # Create access keys
-aws iam create-access-key --user-name rms-deploy-user
+aws iam create-access-key --user-name dms-deploy-user
 
 # Attach required policies (see Required Permissions section)
 ```
@@ -147,18 +147,18 @@ The deployment user requires these IAM policies:
 # Configure default profile
 aws configure
 
-# Or create named profile for RMS
-aws configure --profile rms
+# Or create named profile for DMS
+aws configure --profile dms
 
 # Set profile as default (optional)
-export AWS_PROFILE=rms
+export AWS_PROFILE=dms
 ```
 
 **Configuration Values:**
 
 - **AWS Access Key ID**: From IAM user creation
 - **AWS Secret Access Key**: From IAM user creation
-- **Default region**: `us-east-1` (recommended for RMS)
+- **Default region**: `us-east-1` (recommended for DMS)
 - **Default output format**: `json`
 
 ### Verify AWS Configuration
@@ -171,7 +171,7 @@ aws sts get-caller-identity
 {
     "UserId": "AIDACKCEVSQ6C2EXAMPLE",
     "Account": "123456789012",
-    "Arn": "arn:aws:iam::123456789012:user/rms-deploy-user"
+    "Arn": "arn:aws:iam::123456789012:user/dms-deploy-user"
 }
 ```
 
@@ -179,22 +179,22 @@ aws sts get-caller-identity
 
 ### Backend Configuration
 
-RMS uses S3 for Terraform state storage with DynamoDB for locking:
+DMS uses S3 for Terraform state storage with DynamoDB for locking:
 
 1. Create S3 bucket for Terraform state:
 
 ```bash
 # Create state bucket (replace with unique name)
-aws s3 mb s3://rms-terraform-state-unique-suffix
+aws s3 mb s3://dms-terraform-state-unique-suffix
 
 # Enable versioning
 aws s3api put-bucket-versioning \
-  --bucket rms-terraform-state-unique-suffix \
+  --bucket dms-terraform-state-unique-suffix \
   --versioning-configuration Status=Enabled
 
 # Enable encryption
 aws s3api put-bucket-encryption \
-  --bucket rms-terraform-state-unique-suffix \
+  --bucket dms-terraform-state-unique-suffix \
   --server-side-encryption-configuration '{
     "Rules": [
       {
@@ -210,7 +210,7 @@ aws s3api put-bucket-encryption \
 
 ```bash
 aws dynamodb create-table \
-  --table-name rms-terraform-locks \
+  --table-name dms-terraform-locks \
   --attribute-definitions AttributeName=LockID,AttributeType=S \
   --key-schema AttributeName=LockID,KeyType=HASH \
   --billing-mode PAY_PER_REQUEST
@@ -237,9 +237,9 @@ terraform fmt -check
 ### Clone Repository
 
 ```bash
-# Clone the RMS repository
-git clone https://github.com/your-org/rms-workspace.git
-cd rms-workspace
+# Clone the DMS repository
+git clone https://github.com/your-org/dms-workspace.git
+cd dms-workspace
 
 # Install dependencies
 pnpm install

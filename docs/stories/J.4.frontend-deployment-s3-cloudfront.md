@@ -8,7 +8,7 @@ Ready for Review
 
 **As a** frontend developer,
 **I want** to deploy the Angular 20 SPA to S3 with CloudFront CDN distribution and proper routing configuration,
-**so that** the RMS frontend application is globally distributed, performs well, and handles Angular routing correctly with HTTPS security.
+**so that** the DMS frontend application is globally distributed, performs well, and handles Angular routing correctly with HTTPS security.
 
 ## Acceptance Criteria
 
@@ -25,13 +25,13 @@ Ready for Review
 
 - `pnpm format`
 - `pnpm dupcheck`
-- `pnpm nx run rms:test --code-coverage`
+- `pnpm nx run dms:test --code-coverage`
 - `pnpm nx run server:build:production`
 - `pnpm nx run server:test --code-coverage`
 - `pnpm nx run server:lint`
-- `pnpm nx run rms:lint`
-- `pnpm nx run rms:build:production`
-- `pnpm nx run rms-e2e:lint`
+- `pnpm nx run dms:lint`
+- `pnpm nx run dms:build:production`
+- `pnpm nx run dms-e2e:lint`
 
 ## Tasks / Subtasks
 
@@ -117,19 +117,19 @@ Ready for Review
 
 ### Data Models and Architecture
 
-**Source: [apps/rms/project.json]**
+**Source: [apps/dms/project.json]**
 
-- Angular 20 application with build output to `dist/apps/rms`
+- Angular 20 application with build output to `dist/apps/dms`
 - SSR configuration available but static deployment preferred for CDN
 
-**Source: [apps/rms/src/environments/]**
+**Source: [apps/dms/src/environments/]**
 
 - Environment configuration files for API endpoints and feature flags
 - Production environment needs backend API URL configuration
 
 **Source: [package.json]**
 
-- Build command: `nx run rms:build` produces optimized production build
+- Build command: `nx run dms:build` produces optimized production build
 - Angular 20 with PrimeNG components and modern build system
 
 ### File Locations
@@ -143,18 +143,18 @@ Ready for Review
 5. `/apps/infrastructure/modules/cloudfront/variables.tf` - CloudFront module variables
 6. `/apps/infrastructure/modules/cloudfront/outputs.tf` - CloudFront distribution info
 7. `/scripts/deploy-frontend.sh` - Frontend deployment automation script
-8. `/apps/rms/src/environments/environment.prod.ts` - Production environment config
+8. `/apps/dms/src/environments/environment.prod.ts` - Production environment config
 
 **Primary Files to Modify:**
 
 1. `/apps/infrastructure/environments/dev/main.tf` - Include S3 and CloudFront modules
-2. `/apps/rms/angular.json` - Add production build optimizations
-3. `/apps/rms/src/main.ts` - Add production-specific configurations
+2. `/apps/dms/angular.json` - Add production build optimizations
+3. `/apps/dms/src/main.ts` - Add production-specific configurations
 
 **Test Files to Create:**
 
 1. `/scripts/deploy-frontend.spec.sh` - Deployment script validation
-2. `/apps/rms/src/environments/environment.prod.spec.ts` - Environment config tests
+2. `/apps/dms/src/environments/environment.prod.spec.ts` - Environment config tests
 3. `/e2e/frontend-deployment.spec.ts` - End-to-end deployment validation
 
 ### Technical Implementation Details
@@ -162,14 +162,13 @@ Ready for Review
 **S3 Bucket Configuration:**
 
 ```hcl
-resource "aws_s3_bucket" "rms_frontend" {
-  bucket = "rms-frontend-${var.environment}-${random_string.bucket_suffix.result}"
-
+resource "aws_s3_bucket" "dms_frontend" {
+  bucket = "dms-frontend-${var.environment}-${random_string.bucket_suffix.result}"
   tags = var.common_tags
 }
 
-resource "aws_s3_bucket_website_configuration" "rms_frontend" {
-  bucket = aws_s3_bucket.rms_frontend.id
+resource "aws_s3_bucket_website_configuration" "dms_frontend" {
+  bucket = aws_s3_bucket.dms_frontend.id
 
   index_document {
     suffix = "index.html"
@@ -180,8 +179,8 @@ resource "aws_s3_bucket_website_configuration" "rms_frontend" {
   }
 }
 
-resource "aws_s3_bucket_public_access_block" "rms_frontend" {
-  bucket = aws_s3_bucket.rms_frontend.id
+resource "aws_s3_bucket_public_access_block" "dms_frontend" {
+  bucket = aws_s3_bucket.dms_frontend.id
 
   block_public_acls       = false
   block_public_policy     = false
@@ -189,8 +188,8 @@ resource "aws_s3_bucket_public_access_block" "rms_frontend" {
   restrict_public_buckets = false
 }
 
-resource "aws_s3_bucket_policy" "rms_frontend" {
-  bucket = aws_s3_bucket.rms_frontend.id
+resource "aws_s3_bucket_policy" "dms_frontend" {
+  bucket = aws_s3_bucket.dms_frontend.id
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -199,7 +198,7 @@ resource "aws_s3_bucket_policy" "rms_frontend" {
         Effect    = "Allow"
         Principal = "*"
         Action    = "s3:GetObject"
-        Resource  = "${aws_s3_bucket.rms_frontend.arn}/*"
+        Resource  = "${aws_s3_bucket.dms_frontend.arn}/*"
       }
     ]
   })
@@ -209,10 +208,10 @@ resource "aws_s3_bucket_policy" "rms_frontend" {
 **CloudFront Distribution:**
 
 ```hcl
-resource "aws_cloudfront_distribution" "rms_frontend" {
+resource "aws_cloudfront_distribution" "dms_frontend" {
   origin {
-    domain_name = aws_s3_bucket_website_configuration.rms_frontend.website_endpoint
-    origin_id   = "S3-${aws_s3_bucket.rms_frontend.id}"
+    domain_name = aws_s3_bucket_website_configuration.dms_frontend.website_endpoint
+    origin_id   = "S3-${aws_s3_bucket.dms_frontend.id}"
 
     custom_origin_config {
       http_port              = 80
@@ -231,7 +230,7 @@ resource "aws_cloudfront_distribution" "rms_frontend" {
   default_cache_behavior {
     allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
     cached_methods   = ["GET", "HEAD"]
-    target_origin_id = "S3-${aws_s3_bucket.rms_frontend.id}"
+    target_origin_id = "S3-${aws_s3_bucket.dms_frontend.id}"
     compress         = true
 
     forwarded_values {
@@ -246,7 +245,7 @@ resource "aws_cloudfront_distribution" "rms_frontend" {
     default_ttl            = 300
     max_ttl                = 86400
 
-    response_headers_policy_id = aws_cloudfront_response_headers_policy.rms_frontend.id
+    response_headers_policy_id = aws_cloudfront_response_headers_policy.dms_frontend.id
   }
 
   # Cache behavior for static assets
@@ -254,7 +253,7 @@ resource "aws_cloudfront_distribution" "rms_frontend" {
     path_pattern     = "*.js"
     allowed_methods  = ["GET", "HEAD"]
     cached_methods   = ["GET", "HEAD"]
-    target_origin_id = "S3-${aws_s3_bucket.rms_frontend.id}"
+    target_origin_id = "S3-${aws_s3_bucket.dms_frontend.id}"
     compress         = true
 
     forwarded_values {
@@ -299,9 +298,9 @@ resource "aws_cloudfront_distribution" "rms_frontend" {
 **Security Headers Policy:**
 
 ```hcl
-resource "aws_cloudfront_response_headers_policy" "rms_frontend" {
-  name    = "rms-frontend-security-headers-${var.environment}"
-  comment = "Security headers for RMS frontend application"
+resource "aws_cloudfront_response_headers_policy" "dms_frontend" {
+  name    = "dms-frontend-security-headers-${var.environment}"
+  comment = "Security headers for DMS frontend application"
 
   security_headers_config {
     strict_transport_security {
@@ -336,10 +335,10 @@ resource "aws_cloudfront_response_headers_policy" "rms_frontend" {
 **Angular Production Environment:**
 
 ```typescript
-// apps/rms/src/environments/environment.prod.ts
+// apps/dms/src/environments/environment.prod.ts
 export const environment = {
   production: true,
-  apiUrl: 'https://api.rms-app.com', // Will be replaced during build
+  apiUrl: 'https://api.dms-app.com', // Will be replaced during build
   enableLogging: false,
   features: {
     enableAnalytics: true,
@@ -360,18 +359,18 @@ export const environment = {
 **Angular Build Configuration:**
 
 ```json
-// apps/rms/angular.json (production configuration)
+// apps/dms/angular.json (production configuration)
 {
   "build": {
     "builder": "@angular-devkit/build-angular:browser",
     "options": {
-      "outputPath": "dist/apps/rms",
-      "index": "apps/rms/src/index.html",
-      "main": "apps/rms/src/main.ts",
-      "polyfills": "apps/rms/src/polyfills.ts",
-      "tsConfig": "apps/rms/tsconfig.app.json",
-      "assets": ["apps/rms/src/favicon.ico", "apps/rms/src/assets"],
-      "styles": ["apps/rms/src/styles.scss"],
+      "outputPath": "dist/apps/dms",
+      "index": "apps/dms/src/index.html",
+      "main": "apps/dms/src/main.ts",
+      "polyfills": "apps/dms/src/polyfills.ts",
+      "tsConfig": "apps/dms/tsconfig.app.json",
+      "assets": ["apps/dms/src/favicon.ico", "apps/dms/src/assets"],
+      "styles": ["apps/dms/src/styles.scss"],
       "scripts": []
     },
     "configurations": {
@@ -409,27 +408,27 @@ AWS_REGION=${2:-us-east-1}
 BUILD_VERSION=${3:-$(date +%Y%m%d-%H%M%S)}
 
 echo "Building Angular application for production..."
-pnpm nx build rms --configuration=production
+pnpm nx build dms --configuration=production
 
 echo "Updating API endpoint in environment..."
 API_ENDPOINT=$(aws ssm get-parameter \
-  --name "/rms/${ENVIRONMENT}/api-endpoint" \
+  --name "/dms/${ENVIRONMENT}/api-endpoint" \
   --query 'Parameter.Value' \
   --output text \
   --region $AWS_REGION)
 
 # Replace API endpoint in built files
-find dist/apps/rms -name "*.js" -exec sed -i "s|PLACEHOLDER_API_URL|${API_ENDPOINT}|g" {} \;
+find dist/apps/dms -name "*.js" -exec sed -i "s|PLACEHOLDER_API_URL|${API_ENDPOINT}|g" {} \;
 
 echo "Syncing files to S3..."
-aws s3 sync dist/apps/rms/ s3://${S3_BUCKET_NAME}/ \
+aws s3 sync dist/apps/dms/ s3://${S3_BUCKET_NAME}/ \
   --delete \
   --cache-control "max-age=31536000" \
   --exclude "*.html" \
   --region $AWS_REGION
 
 # Upload HTML files with short cache
-aws s3 sync dist/apps/rms/ s3://${S3_BUCKET_NAME}/ \
+aws s3 sync dist/apps/dms/ s3://${S3_BUCKET_NAME}/ \
   --cache-control "max-age=300" \
   --include "*.html" \
   --region $AWS_REGION
@@ -455,7 +454,7 @@ echo "Application available at: https://${DOMAIN_NAME}"
 **Service Worker Configuration:**
 
 ```typescript
-// apps/rms/src/app/service-worker.config.ts
+// apps/dms/src/app/service-worker.config.ts
 import { isDevMode } from '@angular/core';
 
 export const swConfig = {
@@ -543,17 +542,17 @@ No debugging issues encountered during implementation.
 - `/apps/infrastructure/modules/cloudfront/variables.tf` - CloudFront module variables
 - `/apps/infrastructure/modules/cloudfront/outputs.tf` - CloudFront distribution info
 - `/scripts/deploy-frontend.sh` - Frontend deployment automation script
-- `/apps/rms/src/environments/environment.ts` - Development environment config
-- `/apps/rms/src/environments/environment.prod.ts` - Production environment config
+- `/apps/dms/src/environments/environment.ts` - Development environment config
+- `/apps/dms/src/environments/environment.prod.ts` - Production environment config
 - `/scripts/deploy-frontend.spec.sh` - Deployment script validation tests
-- `/apps/rms/src/environments/environment.prod.spec.ts` - Environment config tests
+- `/apps/dms/src/environments/environment.prod.spec.ts` - Environment config tests
 
 **Modified Files:**
 
 - `/apps/infrastructure/main.tf` - Added S3 and CloudFront modules
 - `/apps/infrastructure/outputs.tf` - Added frontend infrastructure outputs
 - `/apps/infrastructure/variables.tf` - Added api_endpoint variable
-- `/apps/rms/project.json` - Updated production build configuration
+- `/apps/dms/project.json` - Updated production build configuration
 
 ## QA Results
 

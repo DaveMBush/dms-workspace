@@ -1,6 +1,6 @@
-# RMS Security Best Practices Guide
+# DMS Security Best Practices Guide
 
-This document outlines comprehensive security best practices, configurations, and procedures for the RMS (Risk Management System) application on AWS.
+This document outlines comprehensive security best practices, configurations, and procedures for the DMS (Document Management System) application on AWS.
 
 ## Table of Contents
 
@@ -17,7 +17,7 @@ This document outlines comprehensive security best practices, configurations, an
 
 ## Security Overview
 
-The RMS application implements a defense-in-depth security strategy with multiple layers of protection:
+The DMS application implements a defense-in-depth security strategy with multiple layers of protection:
 
 ### Security Architecture Layers
 
@@ -95,11 +95,11 @@ Internet Gateway
 
 #### Security Groups Configuration
 
-**ALB Security Group (rms-alb-sg)**:
+**ALB Security Group (dms-alb-sg)**:
 
 ```hcl
 resource "aws_security_group" "alb" {
-  name_prefix = "rms-alb-sg"
+  name_prefix = "dms-alb-sg"
   vpc_id      = aws_vpc.main.id
 
   # HTTPS traffic from internet
@@ -130,16 +130,16 @@ resource "aws_security_group" "alb" {
   }
 
   tags = {
-    Name = "rms-alb-sg"
+    Name = "dms-alb-sg"
   }
 }
 ```
 
-**ECS Tasks Security Group (rms-ecs-sg)**:
+**ECS Tasks Security Group (dms-ecs-sg)**:
 
 ```hcl
 resource "aws_security_group" "ecs_tasks" {
-  name_prefix = "rms-ecs-sg"
+  name_prefix = "dms-ecs-sg"
   vpc_id      = aws_vpc.main.id
 
   # Application port from ALB only
@@ -170,16 +170,16 @@ resource "aws_security_group" "ecs_tasks" {
   }
 
   tags = {
-    Name = "rms-ecs-sg"
+    Name = "dms-ecs-sg"
   }
 }
 ```
 
-**RDS Security Group (rms-rds-sg)**:
+**RDS Security Group (dms-rds-sg)**:
 
 ```hcl
 resource "aws_security_group" "rds" {
-  name_prefix = "rms-rds-sg"
+  name_prefix = "dms-rds-sg"
   vpc_id      = aws_vpc.main.id
 
   # PostgreSQL from ECS only
@@ -193,7 +193,7 @@ resource "aws_security_group" "rds" {
 
   # No outbound rules (default deny)
   tags = {
-    Name = "rms-rds-sg"
+    Name = "dms-rds-sg"
   }
 }
 ```
@@ -203,8 +203,8 @@ resource "aws_security_group" "rds" {
 #### WAF Configuration
 
 ```hcl
-resource "aws_wafv2_web_acl" "rms_waf" {
-  name  = "rms-waf-${var.environment}"
+resource "aws_wafv2_web_acl" "dms_waf" {
+  name  = "dms-waf-${var.environment}"
   scope = "CLOUDFRONT"
 
   default_action {
@@ -303,7 +303,7 @@ resource "aws_wafv2_web_acl" "rms_waf" {
   }
 
   tags = {
-    Name        = "rms-waf-${var.environment}"
+    Name        = "dms-waf-${var.environment}"
     Environment = var.environment
   }
 }
@@ -375,7 +375,7 @@ resource "aws_network_acl" "public" {
   }
 
   tags = {
-    Name = "rms-public-nacl"
+    Name = "dms-public-nacl"
   }
 }
 ```
@@ -388,7 +388,7 @@ resource "aws_network_acl" "public" {
 
 ```hcl
 resource "aws_iam_role" "ecs_task_role" {
-  name = "rms-ecs-task-role-${var.environment}"
+  name = "dms-ecs-task-role-${var.environment}"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -405,7 +405,7 @@ resource "aws_iam_role" "ecs_task_role" {
 }
 
 resource "aws_iam_role_policy" "ecs_task_policy" {
-  name = "rms-ecs-task-policy"
+  name = "dms-ecs-task-policy"
   role = aws_iam_role.ecs_task_role.id
 
   policy = jsonencode({
@@ -418,7 +418,7 @@ resource "aws_iam_role_policy" "ecs_task_policy" {
           "logs:CreateLogStream",
           "logs:PutLogEvents"
         ]
-        Resource = "arn:aws:logs:${var.aws_region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/ecs/rms-backend-${var.environment}:*"
+        Resource = "arn:aws:logs:${var.aws_region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/ecs/dms-backend-${var.environment}:*"
       },
       # X-Ray Tracing
       {
@@ -438,7 +438,7 @@ resource "aws_iam_role_policy" "ecs_task_policy" {
           "ssm:GetParametersByPath"
         ]
         Resource = [
-          "arn:aws:ssm:${var.aws_region}:${data.aws_caller_identity.current.account_id}:parameter/rms/${var.environment}/*"
+          "arn:aws:ssm:${var.aws_region}:${data.aws_caller_identity.current.account_id}:parameter/dms/${var.environment}/*"
         ]
       },
       # KMS for decryption
@@ -448,7 +448,7 @@ resource "aws_iam_role_policy" "ecs_task_policy" {
           "kms:Decrypt"
         ]
         Resource = [
-          aws_kms_key.rms.arn
+          aws_kms_key.dms.arn
         ]
       }
     ]
@@ -460,7 +460,7 @@ resource "aws_iam_role_policy" "ecs_task_policy" {
 
 ```hcl
 resource "aws_iam_role" "deployment_role" {
-  name = "rms-deployment-role"
+  name = "dms-deployment-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -482,7 +482,7 @@ resource "aws_iam_role" "deployment_role" {
 }
 
 resource "aws_iam_role_policy" "deployment_policy" {
-  name = "rms-deployment-policy"
+  name = "dms-deployment-policy"
   role = aws_iam_role.deployment_role.id
 
   policy = jsonencode({
@@ -500,7 +500,7 @@ resource "aws_iam_role_policy" "deployment_policy" {
         Resource = "*"
         Condition = {
           StringEquals = {
-            "aws:ResourceTag/Project" = "rms"
+            "aws:ResourceTag/Project" = "dms"
           }
         }
       },
@@ -610,8 +610,8 @@ const jwtConfig: JWTConfig = {
   refreshTokenSecret: process.env.JWT_REFRESH_SECRET!,
   accessTokenExpiry: '15m', // Short-lived access tokens
   refreshTokenExpiry: '7d', // Longer-lived refresh tokens
-  issuer: 'rms-api',
-  audience: 'rms-client',
+  issuer: 'dms-api',
+  audience: 'dms-client',
 };
 
 // Generate secure random secret (for initialization)
@@ -852,16 +852,16 @@ export async function getCustomReport(userId: string, reportType: string) {
   }
 
   return await prisma.$queryRaw`
-    SELECT 
+    SELECT
       DATE_TRUNC('month', created_at) as month,
       COUNT(*) as assessment_count,
-      AVG(CASE 
+      AVG(CASE
         WHEN risk_level = 'low' THEN 1
-        WHEN risk_level = 'medium' THEN 2  
+        WHEN risk_level = 'medium' THEN 2
         WHEN risk_level = 'high' THEN 3
         WHEN risk_level = 'critical' THEN 4
       END) as avg_risk_score
-    FROM risk_assessments 
+    FROM risk_assessments
     WHERE user_id = ${userId}
       AND created_at >= NOW() - INTERVAL '1 year'
     GROUP BY DATE_TRUNC('month', created_at)
@@ -892,7 +892,7 @@ export function securityHeaders() {
         "style-src 'self' 'unsafe-inline'", // Angular/PrimeNG inline styles
         "img-src 'self' data: https:",
         "font-src 'self' https:",
-        "connect-src 'self' https://api.rms.example.com",
+        "connect-src 'self' https://api.dms.example.com",
         "frame-ancestors 'none'",
         "base-uri 'self'",
         "form-action 'self'",
@@ -928,7 +928,7 @@ export function securityHeaders() {
 ```hcl
 # RDS with encryption at rest
 resource "aws_db_instance" "main" {
-  identifier = "rms-db-${var.environment}"
+  identifier = "dms-db-${var.environment}"
 
   # Encryption configuration
   storage_encrypted   = true
@@ -944,7 +944,7 @@ resource "aws_db_instance" "main" {
   skip_final_snapshot = var.environment != "production"
 
   tags = {
-    Name        = "rms-db-${var.environment}"
+    Name        = "dms-db-${var.environment}"
     Environment = var.environment
     Encrypted   = "true"
   }
@@ -952,7 +952,7 @@ resource "aws_db_instance" "main" {
 
 # KMS Key for RDS encryption
 resource "aws_kms_key" "rds" {
-  description             = "RMS RDS encryption key"
+  description             = "DMS RDS encryption key"
   deletion_window_in_days = 30
 
   policy = jsonencode({
@@ -984,7 +984,7 @@ resource "aws_kms_key" "rds" {
   })
 
   tags = {
-    Name = "rms-rds-key"
+    Name = "dms-rds-key"
   }
 }
 ```
@@ -994,10 +994,10 @@ resource "aws_kms_key" "rds" {
 ```hcl
 # S3 bucket with encryption
 resource "aws_s3_bucket" "frontend" {
-  bucket = "rms-frontend-${var.environment}-${random_string.bucket_suffix.result}"
+  bucket = "dms-frontend-${var.environment}-${random_string.bucket_suffix.result}"
 
   tags = {
-    Name        = "rms-frontend"
+    Name        = "dms-frontend"
     Environment = var.environment
   }
 }
@@ -1041,27 +1041,27 @@ resource "aws_s3_bucket_public_access_block" "frontend" {
 ```hcl
 # Database password in Parameter Store
 resource "aws_ssm_parameter" "db_password" {
-  name  = "/rms/${var.environment}/db_password"
+  name  = "/dms/${var.environment}/db_password"
   type  = "SecureString"
   value = var.db_password
   key_id = aws_kms_key.ssm.arn
 
   tags = {
     Environment = var.environment
-    Service     = "rms"
+    Service     = "dms"
   }
 }
 
 # JWT secrets
 resource "aws_ssm_parameter" "jwt_access_secret" {
-  name  = "/rms/${var.environment}/jwt_access_secret"
+  name  = "/dms/${var.environment}/jwt_access_secret"
   type  = "SecureString"
   value = var.jwt_access_secret
   key_id = aws_kms_key.ssm.arn
 
   tags = {
     Environment = var.environment
-    Service     = "rms"
+    Service     = "dms"
   }
 }
 ```
@@ -1084,7 +1084,7 @@ class SecretsManager {
 
   async getSecret(name: string): Promise<string> {
     const command = new GetParameterCommand({
-      Name: `/rms/${this.environment}/${name}`,
+      Name: `/dms/${this.environment}/${name}`,
       WithDecryption: true,
     });
 
@@ -1101,7 +1101,7 @@ class SecretsManager {
     const newValue = generateNew();
 
     const command = new PutParameterCommand({
-      Name: `/rms/${this.environment}/${name}`,
+      Name: `/dms/${this.environment}/${name}`,
       Value: newValue,
       Type: 'SecureString',
       Overwrite: true,
@@ -1146,12 +1146,12 @@ export async function rotateSecrets(): Promise<void> {
 #### Container Image Security
 
 ```dockerfile
-# Secure Dockerfile for RMS backend
+# Secure Dockerfile for DMS backend
 FROM node:22-alpine AS base
 
 # Create non-root user
 RUN addgroup -g 1001 -S nodejs && \
-    adduser -S rms -u 1001
+    adduser -S dms -u 1001
 
 # Security updates
 RUN apk update && apk upgrade && \
@@ -1169,7 +1169,7 @@ RUN npm install -g pnpm@^8.0.0 && \
     pnpm store prune
 
 # Copy application code
-COPY --chown=rms:nodejs . .
+COPY --chown=dms:nodejs . .
 
 # Build application
 RUN pnpm build
@@ -1180,7 +1180,7 @@ RUN pnpm install --frozen-lockfile --production && \
     pnpm store prune
 
 # Switch to non-root user
-USER rms
+USER dms
 
 # Use dumb-init for proper signal handling
 ENTRYPOINT ["dumb-init", "--"]
@@ -1200,7 +1200,7 @@ CMD ["node", "dist/main.js"]
 #!/bin/bash
 # scripts/container-security-scan.sh
 
-IMAGE_NAME="rms-backend"
+IMAGE_NAME="dms-backend"
 IMAGE_TAG=${1:-latest}
 FULL_IMAGE="$IMAGE_NAME:$IMAGE_TAG"
 
@@ -1282,7 +1282,7 @@ echo "Terraform security scan completed"
 
 ```hcl
 resource "aws_cloudwatch_dashboard" "security" {
-  dashboard_name = "RMS-Security-${var.environment}"
+  dashboard_name = "DMS-Security-${var.environment}"
 
   dashboard_body = jsonencode({
     widgets = [
@@ -1292,7 +1292,7 @@ resource "aws_cloudwatch_dashboard" "security" {
         height = 6
         properties = {
           metrics = [
-            ["AWS/WAF", "BlockedRequests", "WebACL", aws_wafv2_web_acl.rms_waf.name],
+            ["AWS/WAF", "BlockedRequests", "WebACL", aws_wafv2_web_acl.dms_waf.name],
             [".", "AllowedRequests", ".", "."]
           ]
           period = 300
@@ -1306,7 +1306,7 @@ resource "aws_cloudwatch_dashboard" "security" {
         width  = 12
         height = 6
         properties = {
-          query = "SOURCE '/aws/ecs/rms-backend-${var.environment}'\n| fields @timestamp, @message\n| filter @message like /ERROR/\n| sort @timestamp desc\n| limit 100"
+          query = "SOURCE '/aws/ecs/dms-backend-${var.environment}'\n| fields @timestamp, @message\n| filter @message like /ERROR/\n| sort @timestamp desc\n| limit 100"
           region = var.aws_region
           title  = "Application Errors"
         }
@@ -1336,7 +1336,7 @@ resource "aws_cloudwatch_dashboard" "security" {
 ```hcl
 # CloudWatch Alarms for security events
 resource "aws_cloudwatch_metric_alarm" "high_4xx_errors" {
-  alarm_name          = "rms-high-4xx-errors-${var.environment}"
+  alarm_name          = "dms-high-4xx-errors-${var.environment}"
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = "2"
   metric_name        = "HTTPCode_Target_4XX_Count"
@@ -1353,7 +1353,7 @@ resource "aws_cloudwatch_metric_alarm" "high_4xx_errors" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "waf_blocked_requests" {
-  alarm_name          = "rms-waf-high-blocked-requests-${var.environment}"
+  alarm_name          = "dms-waf-high-blocked-requests-${var.environment}"
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = "2"
   metric_name        = "BlockedRequests"
@@ -1365,7 +1365,7 @@ resource "aws_cloudwatch_metric_alarm" "waf_blocked_requests" {
   alarm_actions      = [aws_sns_topic.security_alerts.arn]
 
   dimensions = {
-    WebACL = aws_wafv2_web_acl.rms_waf.name
+    WebACL = aws_wafv2_web_acl.dms_waf.name
   }
 }
 ```
@@ -1376,8 +1376,8 @@ resource "aws_cloudwatch_metric_alarm" "waf_blocked_requests" {
 
 ```hcl
 # AWS Config for compliance monitoring
-resource "aws_config_configuration_recorder" "rms" {
-  name     = "rms-config-recorder"
+resource "aws_config_configuration_recorder" "dms" {
+  name     = "dms-config-recorder"
   role_arn = aws_iam_role.config.arn
 
   recording_group {
@@ -1395,7 +1395,7 @@ resource "aws_config_config_rule" "s3_bucket_public_access_prohibited" {
     source_identifier = "S3_BUCKET_PUBLIC_ACCESS_PROHIBITED"
   }
 
-  depends_on = [aws_config_configuration_recorder.rms]
+  depends_on = [aws_config_configuration_recorder.dms]
 }
 
 resource "aws_config_config_rule" "rds_storage_encrypted" {
@@ -1406,7 +1406,7 @@ resource "aws_config_config_rule" "rds_storage_encrypted" {
     source_identifier = "RDS_STORAGE_ENCRYPTED"
   }
 
-  depends_on = [aws_config_configuration_recorder.rms]
+  depends_on = [aws_config_configuration_recorder.dms]
 }
 
 resource "aws_config_config_rule" "encrypted_volumes" {
@@ -1417,7 +1417,7 @@ resource "aws_config_config_rule" "encrypted_volumes" {
     source_identifier = "ENCRYPTED_VOLUMES"
   }
 
-  depends_on = [aws_config_configuration_recorder.rms]
+  depends_on = [aws_config_configuration_recorder.dms]
 }
 ```
 
@@ -1459,13 +1459,13 @@ if [ "$SEVERITY" = "critical" ]; then
 
     # Scale down services to minimal capacity
     aws ecs update-service \
-        --cluster rms-cluster-prod \
-        --service rms-backend-service-prod \
+        --cluster dms-cluster-prod \
+        --service dms-backend-service-prod \
         --desired-count 1
 
     # Enable enhanced logging
     aws logs put-retention-policy \
-        --log-group-name "/aws/ecs/rms-backend-prod" \
+        --log-group-name "/aws/ecs/dms-backend-prod" \
         --retention-in-days 90
 fi
 
@@ -1475,29 +1475,29 @@ mkdir -p "incident-$INCIDENT_ID"
 
 # Collect CloudTrail logs
 aws logs filter-log-events \
-    --log-group-name "CloudTrail/RMS" \
+    --log-group-name "CloudTrail/DMS" \
     --start-time $(($(date +%s) - 3600))000 \
     --output json > "incident-$INCIDENT_ID/cloudtrail.json"
 
 # Collect application logs
 aws logs filter-log-events \
-    --log-group-name "/aws/ecs/rms-backend-prod" \
+    --log-group-name "/aws/ecs/dms-backend-prod" \
     --start-time $(($(date +%s) - 3600))000 \
     --filter-pattern "ERROR" \
     --output json > "incident-$INCIDENT_ID/app-errors.json"
 
 # Collect WAF logs
 aws logs filter-log-events \
-    --log-group-name "/aws/wafv2/rms-waf" \
+    --log-group-name "/aws/wafv2/dms-waf" \
     --start-time $(($(date +%s) - 3600))000 \
     --output json > "incident-$INCIDENT_ID/waf-logs.json"
 
 # 3. Notification
 echo "Sending notifications..."
 aws sns publish \
-    --topic-arn "arn:aws:sns:us-east-1:123456789012:rms-security-alerts" \
+    --topic-arn "arn:aws:sns:us-east-1:123456789012:dms-security-alerts" \
     --message "Security incident $INCIDENT_ID ($SEVERITY) detected. Response initiated." \
-    --subject "RMS Security Incident - $INCIDENT_ID"
+    --subject "DMS Security Incident - $INCIDENT_ID"
 
 # 4. Create incident ticket
 echo "Creating incident documentation..."
@@ -1568,7 +1568,7 @@ esac
 # 2. Audit recent activity
 echo "Auditing recent activity..."
 aws logs filter-log-events \
-    --log-group-name "CloudTrail/RMS" \
+    --log-group-name "CloudTrail/DMS" \
     --start-time $(($(date +%s) - 86400))000 \
     --filter-pattern "{ $.userIdentity.userName = \"$USER_ID\" }" \
     --output table
@@ -1599,9 +1599,9 @@ echo "Compromised credentials playbook completed"
 # scripts/security-testing.sh
 
 ENVIRONMENT=${1:-staging}
-TARGET_URL="https://api-$ENVIRONMENT.rms.example.com"
+TARGET_URL="https://api-$ENVIRONMENT.dms.example.com"
 
-echo "=== RMS Security Testing Suite ==="
+echo "=== DMS Security Testing Suite ==="
 echo "Environment: $ENVIRONMENT"
 echo "Target: $TARGET_URL"
 
@@ -1828,7 +1828,7 @@ export class GDPRService {
 
 ---
 
-**Last Updated**: 2024-12-16  
-**Version**: 1.0  
-**Next Review**: 2025-06-16  
+**Last Updated**: 2024-12-16
+**Version**: 1.0
+**Next Review**: 2025-06-16
 **Compliance Officer**: security@example.com

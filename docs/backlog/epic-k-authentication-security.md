@@ -36,7 +36,7 @@ Acceptance Criteria:
 
 - Create Cognito User Pool with email/password authentication
 - Configure password policy (minimum security requirements)
-- Setup App Client for the RMS application
+- Setup App Client for the DMS application
 - Configure User Pool domain for hosted authentication (optional)
 - Setup Admin user account for the single user
 - Configure JWT token expiration and refresh token policies

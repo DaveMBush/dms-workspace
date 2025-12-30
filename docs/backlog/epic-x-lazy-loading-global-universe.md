@@ -40,7 +40,7 @@ Implement PrimeNG p-table lazy loading with virtual scrolling for the Global Uni
 
 **Integration points:**
 
-- `apps/rms/src/app/global/global-universe/` component files
+- `apps/dms/src/app/global/global-universe/` component files
 - `createFilterHandlers` function for filter logic
 - `createEditHandlers` function for edit logic
 - `createSortingHandlers` function for sort logic

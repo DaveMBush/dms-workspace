@@ -1,6 +1,6 @@
 # Configuration Documentation
 
-This directory contains configuration guides and documentation for the RMS workspace.
+This directory contains configuration guides and documentation for the DMS workspace.
 
 ## Available Guides
 

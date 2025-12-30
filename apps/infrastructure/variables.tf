@@ -1,7 +1,7 @@
 variable "project_name" {
   description = "Name of the project"
   type        = string
-  default     = "rms"
+  default     = "dms"
 }
 
 variable "environment" {

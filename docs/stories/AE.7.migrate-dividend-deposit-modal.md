@@ -10,7 +10,7 @@
 
 **Current System:**
 
-- Location: `apps/rms/src/app/account-panel/div-dep-modal/`
+- Location: `apps/dms/src/app/account-panel/div-dep-modal/`
 - PrimeNG components: `p-dialog`, `p-select`, `p-inputNumber`, `p-datepicker`, `p-button`
 
 **Migration Target:**
@@ -22,7 +22,7 @@
 
 ### Functional Requirements
 
-- [ ] **CRITICAL** All GUI look as close to the existing RMS app as possible
+- [ ] **CRITICAL** All GUI look as close to the existing DMS app as possible
 - [ ] **CRITICAL** Use the playwright mcp server to verify that the new screen matches the existing screen in terms of layout and functionality, but not necessarily pixel-perfect visual design.
 - [ ] **CRITICAL** Use the playwright mcp server to check for
 - [ ] Modal opens for add/edit mode
@@ -46,7 +46,7 @@
 
 ### Step 1: Create Unit Tests First
 
-Create `apps/rms-material/src/app/account-panel/div-dep-modal/div-dep-modal.component.spec.ts`:
+Create `apps/dms-material/src/app/account-panel/div-dep-modal/div-dep-modal.component.spec.ts`:
 
 ```typescript
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -169,13 +169,13 @@ describe('DivDepModal', () => {
 
 **TDD Cycle:**
 
-1. Run `pnpm nx run rms-material:test` - tests should fail (RED)
+1. Run `pnpm nx run dms-material:test` - tests should fail (RED)
 2. Implement minimal code to pass tests (GREEN)
 3. Refactor while keeping tests passing (REFACTOR)
 
 ## Technical Approach
 
-Create `apps/rms-material/src/app/account-panel/div-dep-modal/div-dep-modal.component.ts`:
+Create `apps/dms-material/src/app/account-panel/div-dep-modal/div-dep-modal.component.ts`:
 
 ```typescript
 import { Component, inject, OnInit, signal } from '@angular/core';
@@ -197,7 +197,7 @@ export interface DivDepModalData {
 }
 
 @Component({
-  selector: 'rms-div-dep-modal',
+  selector: 'dms-div-dep-modal',
   imports: [ReactiveFormsModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatDatepickerModule, MatButtonModule, MatProgressSpinnerModule, SymbolAutocompleteComponent],
   templateUrl: './div-dep-modal.component.html',
   styleUrl: './div-dep-modal.component.scss',
@@ -270,7 +270,7 @@ export class DivDepModal implements OnInit {
 
 ### Template
 
-Create `apps/rms-material/src/app/account-panel/div-dep-modal/div-dep-modal.component.html`:
+Create `apps/dms-material/src/app/account-panel/div-dep-modal/div-dep-modal.component.html`:
 
 ```html
 <h2 mat-dialog-title>{{ title }}</h2>
@@ -354,14 +354,14 @@ Create `apps/rms-material/src/app/account-panel/div-dep-modal/div-dep-modal.comp
 - [ ] Cancel closes without saving
 - [ ] All validation commands pass
   - Run `pnpm all`
-  - Run `pnpm e2e:rms-material`
+  - Run `pnpm e2e:dms-material`
   - Run `pnpm dupcheck`
   - Run `pnpm format`
   - Repeat all of these if any fail until they all pass
 
 ## E2E Test Requirements
 
-When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
+When this story is complete, ensure the following e2e tests exist in `apps/dms-material-e2e/`:
 
 ### Core Functionality
 
@@ -396,7 +396,7 @@ When this story is complete, ensure the following e2e tests exist in `apps/rms-m
 - [ ] Modal responsive on mobile screens
 - [ ] Screen reader announces modal title and errors
 
-Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.
+Run `pnpm nx run dms-material-e2e:e2e` to verify all e2e tests pass.
 
 ## QA Results
 
@@ -421,7 +421,7 @@ Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.
 ### Test Coverage
 
 - **Unit Tests**: Comprehensive spec file covering add/edit modes, validation, and form submission.
-- **E2E Tests**: NOT IMPLEMENTED - Story requires e2e tests but none exist in rms-material-e2e.
+- **E2E Tests**: NOT IMPLEMENTED - Story requires e2e tests but none exist in dms-material-e2e.
 - **Test Quality**: Unit tests follow good practices with proper mocking.
 
 ### Non-Functional Requirements
@@ -463,7 +463,7 @@ Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.
 
 ### Recommendations
 
-1. **MEDIUM PRIORITY**: Implement required e2e tests in rms-material-e2e.
+1. **MEDIUM PRIORITY**: Implement required e2e tests in dms-material-e2e.
 
 ### Risk Assessment
 

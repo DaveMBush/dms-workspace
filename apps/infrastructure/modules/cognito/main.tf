@@ -17,7 +17,7 @@ resource "aws_cognito_user_pool" "main" {
 
   # MFA configuration
   mfa_configuration = "OPTIONAL"
-  
+
   # Software token MFA configuration
   software_token_mfa_configuration {
     enabled = true
@@ -39,8 +39,8 @@ resource "aws_cognito_user_pool" "main" {
   # Verification message template
   verification_message_template {
     default_email_option = "CONFIRM_WITH_CODE"
-    email_subject        = "RMS Account Verification Code"
-    email_message        = "Your RMS verification code is {####}. Please enter this code to complete your account setup."
+    email_subject        = "DMS Account Verification Code"
+    email_message        = "Your DMS verification code is {####}. Please enter this code to complete your account setup."
   }
 
   # User pool add-ons
@@ -57,10 +57,10 @@ resource "aws_cognito_user_pool" "main" {
   # Admin create user configuration
   admin_create_user_config {
     allow_admin_create_user_only = true
-    
+
     invite_message_template {
-      email_subject = "Welcome to RMS - Your temporary password"
-      email_message = "Your RMS username is {username} and temporary password is {####}. Please sign in and change your password."
+      email_subject = "Welcome to DMS - Your temporary password"
+      email_message = "Your DMS username is {username} and temporary password is {####}. Please sign in and change your password."
     }
   }
 
@@ -82,12 +82,12 @@ resource "aws_cognito_user_pool_client" "main" {
 
   # Token validity
   access_token_validity  = 60   # 1 hour
-  id_token_validity     = 60   # 1 hour  
+  id_token_validity     = 60   # 1 hour
   refresh_token_validity = 30   # 30 days
 
   token_validity_units {
     access_token  = "minutes"
-    id_token      = "minutes" 
+    id_token      = "minutes"
     refresh_token = "days"
   }
 
@@ -100,7 +100,7 @@ resource "aws_cognito_user_pool_client" "main" {
   allowed_oauth_flows = ["code"]
   allowed_oauth_scopes = [
     "openid",
-    "email", 
+    "email",
     "profile",
     "aws.cognito.signin.user.admin"
   ]

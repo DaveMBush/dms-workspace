@@ -2,22 +2,22 @@
 
 output "autoscaling_target_resource_id" {
   description = "Resource ID of the auto-scaling target"
-  value       = aws_appautoscaling_target.rms_backend.resource_id
+  value       = aws_appautoscaling_target.dms_backend.resource_id
 }
 
 output "cpu_scaling_policy_arn" {
   description = "ARN of the CPU-based scaling policy"
-  value       = aws_appautoscaling_policy.rms_backend_cpu.arn
+  value       = aws_appautoscaling_policy.dms_backend_cpu.arn
 }
 
 output "memory_scaling_policy_arn" {
   description = "ARN of the memory-based scaling policy"
-  value       = aws_appautoscaling_policy.rms_backend_memory.arn
+  value       = aws_appautoscaling_policy.dms_backend_memory.arn
 }
 
 output "request_scaling_policy_arn" {
   description = "ARN of the request-based scaling policy"
-  value       = var.enable_request_based_scaling ? aws_appautoscaling_policy.rms_backend_request_count[0].arn : null
+  value       = var.enable_request_based_scaling ? aws_appautoscaling_policy.dms_backend_request_count[0].arn : null
 }
 
 output "high_cpu_alarm_arn" {

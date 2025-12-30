@@ -19,13 +19,13 @@ variable "common_tags" {
 variable "database_name" {
   description = "The name of the database to create"
   type        = string
-  default     = "rms"
+  default     = "dms"
 }
 
 variable "database_username" {
   description = "Username for the RDS instance"
   type        = string
-  default     = "rms_user"
+  default     = "dms_user"
 }
 
 # Instance configuration

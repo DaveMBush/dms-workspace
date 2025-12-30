@@ -10,7 +10,7 @@
 
 **Current System:**
 
-- Location: `apps/rms/src/app/account-panel/dividend-deposits/`
+- Location: `apps/dms/src/app/account-panel/dividend-deposits/`
 - PrimeNG components: `p-table` with `[virtualScroll]="true"`, `[lazy]="true"`
 - Problem: PrimeNG's virtual scrolling with lazy data fetching does not meet requirements
 
@@ -24,7 +24,7 @@
 
 ### Functional Requirements
 
-- [ ] **CRITICAL** All GUI look as close to the existing RMS app as possible
+- [ ] **CRITICAL** All GUI look as close to the existing DMS app as possible
 - [ ] **CRITICAL** Use the playwright mcp server to verify that the new screen matches the existing screen in terms of layout and functionality, but not necessarily pixel-perfect visual design.
 - [ ] **CRITICAL** Use the playwright mcp server to check for
 - [ ] Dividend deposits display in table
@@ -57,7 +57,7 @@
 
 ### Step 1: Create Unit Tests First
 
-Create `apps/rms-material/src/app/account-panel/dividend-deposits/dividend-deposits.spec.ts`:
+Create `apps/dms-material/src/app/account-panel/dividend-deposits/dividend-deposits.spec.ts`:
 
 ```typescript
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -154,7 +154,7 @@ describe('DividendDeposits', () => {
 
 **TDD Cycle:**
 
-1. Run `pnpm nx run rms-material:test` - tests should fail (RED)
+1. Run `pnpm nx run dms-material:test` - tests should fail (RED)
 2. Implement minimal code to pass tests (GREEN)
 3. Refactor while keeping tests passing (REFACTOR)
 
@@ -162,7 +162,7 @@ describe('DividendDeposits', () => {
 
 ### Step 1: Create Dividend Deposits Component
 
-Create `apps/rms-material/src/app/account-panel/dividend-deposits/dividend-deposits.ts`:
+Create `apps/dms-material/src/app/account-panel/dividend-deposits/dividend-deposits.ts`:
 
 ```typescript
 import { Component, inject, OnInit, ViewChild, signal } from '@angular/core';
@@ -181,7 +181,7 @@ import { NotificationService } from '../../shared/services/notification.service'
 import { ConfirmDialogService } from '../../shared/services/confirm-dialog.service';
 
 @Component({
-  selector: 'rms-dividend-deposits',
+  selector: 'dms-dividend-deposits',
   imports: [MatToolbarModule, MatButtonModule, MatIconModule, BaseTableComponent],
   templateUrl: './dividend-deposits.html',
   styleUrl: './dividend-deposits.scss',
@@ -274,7 +274,7 @@ export class DividendDeposits implements OnInit {
 
 ### Step 2: Create Template
 
-Create `apps/rms-material/src/app/account-panel/dividend-deposits/dividend-deposits.html`:
+Create `apps/dms-material/src/app/account-panel/dividend-deposits/dividend-deposits.html`:
 
 ```html
 <div class="dividend-deposits-container">
@@ -287,7 +287,7 @@ Create `apps/rms-material/src/app/account-panel/dividend-deposits/dividend-depos
     </button>
   </mat-toolbar>
 
-  <rms-base-table [columns]="columns" [rowHeight]="48" [bufferSize]="20" (rowClick)="onEditDividend($event)">
+  <dms-base-table [columns]="columns" [rowHeight]="48" [bufferSize]="20" (rowClick)="onEditDividend($event)">
     <ng-template #cellTemplate let-row let-column="column">
       @switch (column.field) { @case ('actions') {
       <button mat-icon-button (click)="onEditDividend(row); $event.stopPropagation()">
@@ -298,7 +298,7 @@ Create `apps/rms-material/src/app/account-panel/dividend-deposits/dividend-depos
       </button>
       } @default { @switch (column.type) { @case ('currency') { {{ row[column.field] | currency }} } @case ('date') { {{ row[column.field] | date:'MM/dd/yyyy' }} } @default { {{ row[column.field] }} } } } }
     </ng-template>
-  </rms-base-table>
+  </dms-base-table>
 </div>
 ```
 
@@ -332,14 +332,14 @@ Create `apps/rms-material/src/app/account-panel/dividend-deposits/dividend-depos
 - [ ] SmartNgRX integration working
 - [ ] All validation commands pass
   - Run `pnpm all`
-  - Run `pnpm e2e:rms-material`
+  - Run `pnpm e2e:dms-material`
   - Run `pnpm dupcheck`
   - Run `pnpm format`
   - Repeat all of these if any fail until they all pass
 
 ## E2E Test Requirements
 
-When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
+When this story is complete, ensure the following e2e tests exist in `apps/dms-material-e2e/`:
 
 **CRITICAL: This is the PRIMARY DRIVER for migration - extensive e2e testing required**
 
@@ -400,7 +400,7 @@ When this story is complete, ensure the following e2e tests exist in `apps/rms-m
 - [ ] GC pauses minimal during scrolling
 - [ ] First contentful paint < 500ms
 
-Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.
+Run `pnpm nx run dms-material-e2e:e2e` to verify all e2e tests pass.
 
 ## Notes
 

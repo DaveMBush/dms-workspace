@@ -71,7 +71,6 @@ const eslintConfig = async () => {
         // jest: eslintPluginJest, // Removed - using Vitest instead
         '@stylistic': stylisticEslintPlugin,
         playwright,
-        //deprecation,
       },
     },
     { languageOptions: { parser: typescriptEslintParser } },
@@ -130,16 +129,16 @@ const eslintConfig = async () => {
       languageOptions: {
         parserOptions: {
           project: [
-            'apps/rms/tsconfig.json',
-            'apps/rms/tsconfig.app.json',
-            'apps/rms/tsconfig.spec.json',
-            'apps/rms-material/tsconfig.json',
-            'apps/rms-material/tsconfig.app.json',
-            'apps/rms-material/tsconfig.spec.json',
+            'apps/dms/tsconfig.json',
+            'apps/dms/tsconfig.app.json',
+            'apps/dms/tsconfig.spec.json',
+            'apps/dms-material/tsconfig.json',
+            'apps/dms-material/tsconfig.app.json',
+            'apps/dms-material/tsconfig.spec.json',
             'apps/server/tsconfig.app.json',
             'apps/server/tsconfig.spec.json',
-            'apps/rms-e2e/tsconfig.json',
-            'apps/rms-material-e2e/tsconfig.json',
+            'apps/dms-e2e/tsconfig.json',
+            'apps/dms-material-e2e/tsconfig.json',
           ],
         },
       },
@@ -157,15 +156,15 @@ const eslintConfig = async () => {
           parserOptions: {
             ...config.languageOptions?.parserOptions,
             project: [
-              'apps/rms/tsconfig.json',
-              'apps/rms/tsconfig.app.json',
-              'apps/rms/tsconfig.spec.json',
-              'apps/rms-material/tsconfig.json',
-              'apps/rms-material/tsconfig.app.json',
-              'apps/rms-material/tsconfig.spec.json',
+              'apps/dms/tsconfig.json',
+              'apps/dms/tsconfig.app.json',
+              'apps/dms/tsconfig.spec.json',
+              'apps/dms-material/tsconfig.json',
+              'apps/dms-material/tsconfig.app.json',
+              'apps/dms-material/tsconfig.spec.json',
               'apps/server/tsconfig.app.json',
-              'apps/rms-e2e/tsconfig.json',
-              'apps/rms-material-e2e/tsconfig.json',
+              'apps/dms-e2e/tsconfig.json',
+              'apps/dms-material-e2e/tsconfig.json',
             ],
           },
         },
@@ -203,15 +202,15 @@ const eslintConfig = async () => {
           parserOptions: {
             ...config.languageOptions?.parserOptions,
             project: [
-              'apps/rms/tsconfig.json',
-              'apps/rms/tsconfig.app.json',
-              'apps/rms/tsconfig.spec.json',
-              'apps/rms-material/tsconfig.json',
-              'apps/rms-material/tsconfig.app.json',
-              'apps/rms-material/tsconfig.spec.json',
+              'apps/dms/tsconfig.json',
+              'apps/dms/tsconfig.app.json',
+              'apps/dms/tsconfig.spec.json',
+              'apps/dms-material/tsconfig.json',
+              'apps/dms-material/tsconfig.app.json',
+              'apps/dms-material/tsconfig.spec.json',
               'apps/server/tsconfig.app.json',
-              'apps/rms-e2e/tsconfig.json',
-              'apps/rms-material-e2e/tsconfig.json',
+              'apps/dms-e2e/tsconfig.json',
+              'apps/dms-material-e2e/tsconfig.json',
             ],
           },
         },
@@ -384,7 +383,7 @@ const eslintConfig = async () => {
             'error',
             {
               type: 'element',
-              prefix: ['rms'],
+              prefix: ['dms'],
               style: 'kebab-case',
             },
           ],
@@ -403,7 +402,7 @@ const eslintConfig = async () => {
             'error',
             {
               type: 'attribute',
-              prefix: ['rms'],
+              prefix: ['dms'],
               style: 'camelCase',
             },
           ],
@@ -419,7 +418,7 @@ const eslintConfig = async () => {
           '@angular-eslint/pipe-prefix': [
             'error',
             {
-              prefixes: ['rms'],
+              prefixes: ['dms'],
             },
           ],
           '@angular-eslint/prefer-on-push-component-change-detection': 'error',
@@ -801,6 +800,15 @@ const eslintConfig = async () => {
       },
     },
     {
+      // we are going to remove dms anyhow so turn off
+      // these deprecation warnings for now
+      files: ['**/apps/dms/**/*.ts'],
+      rules: {
+        '@typescript-eslint/no-deprecated': 'off',
+        'sonarjs/deprecation': 'off',
+      },
+    },
+    {
       files: ['**/*.routes.ts'],
       rules: {
         '@smarttools/no-anonymous-functions': 'off',
@@ -890,16 +898,16 @@ const eslintConfig = async () => {
       languageOptions: {
         parserOptions: {
           project: [
-            'apps/rms/tsconfig.json',
-            'apps/rms/tsconfig.app.json',
-            'apps/rms/tsconfig.spec.json',
-            'apps/rms-material/tsconfig.json',
-            'apps/rms-material/tsconfig.app.json',
-            'apps/rms-material/tsconfig.spec.json',
+            'apps/dms/tsconfig.json',
+            'apps/dms/tsconfig.app.json',
+            'apps/dms/tsconfig.spec.json',
+            'apps/dms-material/tsconfig.json',
+            'apps/dms-material/tsconfig.app.json',
+            'apps/dms-material/tsconfig.spec.json',
             'apps/server/tsconfig.app.json',
             'apps/server/tsconfig.spec.json',
-            'apps/rms-e2e/tsconfig.json',
-            'apps/rms-material-e2e/tsconfig.json',
+            'apps/dms-e2e/tsconfig.json',
+            'apps/dms-material-e2e/tsconfig.json',
           ],
         },
       },

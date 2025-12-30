@@ -23,7 +23,7 @@
 
 ```bash
 # Start development servers
-pnpm nx serve rms      # Frontend: http://localhost:4200
+pnpm nx serve dms      # Frontend: http://localhost:4200
 pnpm nx serve server   # Backend: http://localhost:3000
 ```
 
@@ -70,20 +70,20 @@ docker-compose -f docker-compose.local.yml up
 ```bash
 pnpm format              # Code formatting
 pnpm dupcheck           # Duplicate code detection
-pnpm nx run rms:test --code-coverage
+pnpm nx run dms:test --code-coverage
 pnpm nx run server:build:production
 pnpm nx run server:test --code-coverage
 pnpm nx run server:lint
-pnpm nx run rms:lint
-pnpm nx run rms:build:production
-pnpm nx run rms-e2e:lint
+pnpm nx run dms:lint
+pnpm nx run dms:build:production
+pnpm nx run dms-e2e:lint
 ```
 
 ### Development Servers
 
 ```bash
 # Individual services
-pnpm nx serve rms               # Frontend dev server
+pnpm nx serve dms               # Frontend dev server
 pnpm nx serve server            # Backend dev server
 
 # All services

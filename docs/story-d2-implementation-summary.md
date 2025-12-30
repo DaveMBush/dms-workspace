@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document summarizes the implementation of Story D2, which focused on creating comprehensive accessibility guidelines and improvements for the RMS Workspace application using PrimeNG components and Tailwind CSS.
+This document summarizes the implementation of Story D2, which focused on creating comprehensive accessibility guidelines and improvements for the DMS Workspace application using PrimeNG components and Tailwind CSS.
 
 ## Acceptance Criteria Completed
 
@@ -44,17 +44,17 @@ This document summarizes the implementation of Story D2, which focused on creati
 
 **Enhanced Components:**
 
-- **Screener Component** (`apps/rms/src/app/global/screener/screener.html`):
+- **Screener Component** (`apps/dms/src/app/global/screener/screener.html`):
 
   - Added `aria-label` to toolbar and refresh button
   - Enhanced progress spinner with proper ARIA attributes and screen reader text
   - Added `ariaLabel` to data table and filter select
 
-- **Global Component** (`apps/rms/src/app/global/global.component.html`):
+- **Global Component** (`apps/dms/src/app/global/global.component.html`):
 
   - Added `aria-label` to toolbar and listbox components
 
-- **Account Panel Component** (`apps/rms/src/app/account-panel/account-panel.component.html`):
+- **Account Panel Component** (`apps/dms/src/app/account-panel/account-panel.component.html`):
   - Added `aria-label` to account management toolbar
 
 ## Technical Implementation Details
@@ -146,9 +146,9 @@ test('component should be accessible', async () => {
 
 **Files Modified:**
 
-- `apps/rms/src/app/global/screener/screener.html` - Enhanced spinner and toolbar accessibility
-- `apps/rms/src/app/global/global.component.html` - Added ARIA labels
-- `apps/rms/src/app/account-panel/account-panel.component.html` - Improved toolbar accessibility
+- `apps/dms/src/app/global/screener/screener.html` - Enhanced spinner and toolbar accessibility
+- `apps/dms/src/app/global/global.component.html` - Added ARIA labels
+- `apps/dms/src/app/account-panel/account-panel.component.html` - Improved toolbar accessibility
 
 **Files Created:**
 
@@ -205,7 +205,7 @@ test('component should be accessible', async () => {
 
 ## Conclusion
 
-Story D2 successfully delivered a comprehensive accessibility foundation for the RMS Workspace application. The implementation provides:
+Story D2 successfully delivered a comprehensive accessibility foundation for the DMS Workspace application. The implementation provides:
 
 - **Clear Standards**: Well-defined accessibility guidelines and best practices
 - **Practical Implementation**: Real improvements to existing components
@@ -220,4 +220,4 @@ The deliverables establish a solid foundation for maintaining and improving acce
 2. **[Accessibility Testing Guide](./accessibility-testing-guide.md)** - Detailed testing procedures and tools
 3. **Component Improvements** - Enhanced ARIA labels and screen reader support across key components
 
-This implementation satisfies all acceptance criteria and provides a robust foundation for ongoing accessibility compliance in the RMS Workspace application.
+This implementation satisfies all acceptance criteria and provides a robust foundation for ongoing accessibility compliance in the DMS Workspace application.

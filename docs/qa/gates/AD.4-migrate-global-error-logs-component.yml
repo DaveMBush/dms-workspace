@@ -3,7 +3,7 @@ schema: 1
 story: 'AD.4'
 story_title: 'Migrate Global Error Logs Component'
 gate: CONCERNS
-status_reason: 'Component matches RMS UI with proper filters/pagination, but lacks API integration and expandable error details functionality.'
+status_reason: 'Component matches DMS UI with proper filters/pagination, but lacks API integration and expandable error details functionality.'
 reviewer: 'Quinn (Test Architect)'
 updated: '2025-12-19T17:15:00Z'
 
@@ -46,7 +46,7 @@ risk_summary:
       - 'Confirmation dialogs for destructive actions'
 
 strengths:
-  - 'UI matches existing RMS Error Logs page exactly with proper filter toolbar'
+  - 'UI matches existing DMS Error Logs page exactly with proper filter toolbar'
   - 'All 6 table columns implemented (timestamp, level, message, requestId, userId, context)'
   - 'Filter controls present: file type, log level, date range, search'
   - 'Color-coded level badges (WARNING, ERROR, INFO, DEBUG)'
@@ -56,7 +56,7 @@ strengths:
   - 'Responsive layout with proper Material Design components'
 
 notes: |
-  Component structure is solid and UI correctly replicates RMS app. Main blockers are:
+  Component structure is solid and UI correctly replicates DMS app. Main blockers are:
   1. Need real API integration to be functional
   2. Missing expandable details panel (core requirement)
   3. E2E tests need expansion to cover story scenarios

@@ -1,0 +1,272 @@
+<p-toolbar class="text-lg font-semibold flex-none">
+  <ng-template #start>
+    <div class="whitespace-nowrap truncate">Universe</div>
+  </ng-template>
+  <ng-template #center>
+    <div class="flex items-center gap-2">
+      <span class="text-sm text-gray-600 dark:text-gray-400">Account:</span>
+      <p-select
+        [options]="accountOptions$()"
+        [(ngModel)]="selectedAccountId"
+        (onChange)="onSelectedAccountIdChange()"
+        placeholder="Select Account"
+        class="w-48"
+      />
+    </div>
+  </ng-template>
+  <ng-template #end>
+    <p-button
+      (click)="showAddSymbolDialog()"
+      icon="pi pi-plus"
+      text
+      severity="secondary"
+      pTooltip="Add Symbol"
+      tooltipPosition="bottom"
+      ariaLabel="Add Symbol"
+    />
+    <p-button
+      (click)="syncUniverse()"
+      icon="pi pi-sync"
+      text
+      severity="secondary"
+      pTooltip="Update Universe"
+      tooltipPosition="bottom"
+      [loading]="isSyncingUniverse$()"
+      [disabled]="isSyncingUniverse$()"
+      ariaLabel="Update Universe"
+    />
+    <p-button
+      (click)="updateFields()"
+      icon="pi pi-refresh"
+      text
+      severity="secondary"
+      pTooltip="Update Fields"
+      tooltipPosition="bottom"
+      [loading]="isUpdatingFields$()"
+      [disabled]="isUpdatingFields$()"
+      ariaLabel="Update Fields"
+    />
+  </ng-template>
+</p-toolbar>
+<p-table
+  #dataTable
+  [value]="universeWithDimmedState$()"
+  size="small"
+  [scrollable]="true"
+  class="min-w-full max-h-full min-h-full rounded-lg shadow-sm table-fixed"
+  [responsiveLayout]="'scroll'"
+  showGridlines
+  [rowTrackBy]="trackById"
+  [scrollHeight]="'calc(100vh - 145px)'"
+>
+  <ng-template pTemplate="header">
+    <tr class="bg-gray-100 dark:bg-slate-800">
+      <th>
+        <input
+          pInputText
+          type="text"
+          [(ngModel)]="symbolFilter"
+          (ngModelChange)="onSymbolFilterChange()"
+          placeholder="Search Symbol"
+          class="w-20 p-input p-component p-inputwrapper p-inputtext"
+        />
+      </th>
+      <th>
+        <p-select
+          [options]="riskGroups"
+          [(ngModel)]="riskGroupFilter"
+          (onChange)="onRiskGroupFilterChange()"
+          placeholder="Select One"
+          [showClear]="true"
+          class="w-32"
+        >
+          <ng-template let-option #item>
+            <p-tag [value]="option.value" />
+          </ng-template>
+        </p-select>
+      </th>
+      <th></th>
+      <th></th>
+      <th>
+        <p-inputNumber
+          [(ngModel)]="minYieldFilter"
+          [min]="0"
+          [max]="100"
+          [step]="0.1"
+          [minFractionDigits]="1"
+          [maxFractionDigits]="2"
+          placeholder="Min Yield %"
+          inputStyleClass="w-32"
+          class="w-32"
+          (onInput)="onMinYieldFilterChange()"
+        />
+      </th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th>
+        <p-select
+          [options]="expiredOptions"
+          [(ngModel)]="expiredFilter"
+          (onChange)="onExpiredFilterChange()"
+          placeholder="Select One"
+          [showClear]="true"
+          class="w-32"
+        >
+          <ng-template let-option #item>
+            {{ option.label }}
+          </ng-template>
+        </p-select>
+      </th>
+    </tr>
+    <tr class="bg-gray-100 dark:bg-slate-800">
+      <th>Symbol</th>
+      <th>Risk Group</th>
+      <th>Distribution</th>
+      <th>Distributions / Year</th>
+      <th
+        (click)="onSort('yield_percent')"
+        class="cursor-pointer select-none w-32"
+      >
+        Yield %
+        <i [class]="sortSignals.yieldPercentSortIcon$()"></i>
+        @if (sortSignals.yieldPercentSortOrder$()) {
+        <span class="text-xs text-gray-500">
+          {{ sortSignals.yieldPercentSortOrder$() }}
+        </span>
+        }
+      </th>
+      <th
+        (click)="onSort('avg_purchase_yield_percent')"
+        class="cursor-pointer select-none w-32"
+      >
+        Avg Purchase Yield%
+        <i [class]="sortSignals.avgPurchaseYieldSortIcon$()"></i>
+        @if (sortSignals.avgPurchaseYieldSortOrder$()) {
+        <span class="text-xs text-gray-500">
+          {{ sortSignals.avgPurchaseYieldSortOrder$() }}
+        </span>
+        }
+      </th>
+      <th>Last Price</th>
+      <th (click)="onSort('ex_date')" class="cursor-pointer select-none">
+        Ex-Date
+        <i [class]="sortSignals.exDateSortIcon$()"></i>
+        @if (sortSignals.exDateSortOrder$()) {
+        <span class="text-xs text-gray-500">
+          {{ sortSignals.exDateSortOrder$() }}
+        </span>
+        }
+      </th>
+      <th
+        (click)="onSort('most_recent_sell_date')"
+        class="cursor-pointer select-none"
+      >
+        Mst Rcnt Sll Dt
+        <i [class]="sortSignals.mostRecentSellDateSortIcon$()"></i>
+        @if (sortSignals.mostRecentSellDateSortOrder$()) {
+        <span class="text-xs text-gray-500">
+          {{ sortSignals.mostRecentSellDateSortOrder$() }}
+        </span>
+        }
+      </th>
+      <th
+        (click)="onSort('most_recent_sell_price')"
+        class="cursor-pointer select-none"
+      >
+        Mst Rcnt Sell $
+        <i [class]="sortSignals.mostRecentSellPriceSortIcon$()"></i>
+        @if (sortSignals.mostRecentSellPriceSortOrder$()) {
+        <span class="text-xs text-gray-500">
+          {{ sortSignals.mostRecentSellPriceSortOrder$() }}
+        </span>
+        }
+      </th>
+      <th>Position</th>
+      <th>Expired</th>
+      <th>Actions</th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-row>
+    <tr [ngClass]="row.isDimmed ? 'text-gray-400 dark:text-gray-600' : ''">
+      <td>{{ row.symbol }}</td>
+      <td>{{ row.riskGroup }}</td>
+      <td
+        [pEditableColumn]="'distribution'"
+        class="bg-gray-200 dark:bg-gray-800"
+      >
+        <p-cellEditor>
+          <ng-template #input>
+            <p-inputNumber
+              mode="decimal"
+              [minFractionDigits]="2"
+              [maxFractionDigits]="5"
+              [(ngModel)]="row.distribution"
+              [min]="0"
+              [step]="0.01"
+              (keydown.enter)="onEditCommit(row, 'distribution')"
+              (keydown)="stopArrowKeyPropagation($event)"
+              class="w-32 block"
+            ></p-inputNumber>
+          </ng-template>
+          <ng-template #output>
+            {{ row.distribution }}
+          </ng-template>
+        </p-cellEditor>
+      </td>
+      <td
+        [pEditableColumn]="'distributions_per_year'"
+        class="bg-gray-200 dark:bg-gray-800"
+      >
+        <p-cellEditor>
+          <ng-template #input>
+            <p-inputNumber
+              [(ngModel)]="row.distributions_per_year"
+              [min]="1"
+              [step]="1"
+              (keydown.enter)="onEditCommit(row, 'distributions_per_year')"
+              (keydown)="stopArrowKeyPropagation($event)"
+              class="w-32 block"
+            ></p-inputNumber>
+          </ng-template>
+          <ng-template #output>
+            {{ row.distributions_per_year }}
+          </ng-template>
+        </p-cellEditor>
+      </td>
+      <td>{{ row.yield_percent | number : '1.2-2' }}%</td>
+      <td>{{ row.avg_purchase_yield_percent | number : '1.2-2' }}%</td>
+      <td>{{ row.last_price }}</td>
+      <dms-editable-date-cell
+        [field]="'ex_date'"
+        [(value)]="row.ex_date"
+        [isExpired]="!row.ex_date || row.ex_date < today"
+        (onEditCommit)="onEditCommit(row, 'ex_date')"
+      ></dms-editable-date-cell>
+      <td>{{ row.most_recent_sell_date | date : 'MM/dd/yyyy' }}</td>
+      <td>{{ row.most_recent_sell_price | number : '1.2-4' }}</td>
+      <td>{{ row.position === 0 ? '' : (row.position | number : '1.2-4') }}</td>
+      <td class="text-center">{{ row.expired ? '*' : '' }}</td>
+      <td class="text-center">
+        <!-- eslint-disable @angular-eslint/template/cyclomatic-complexity, @angular-eslint/template/no-call-expression -->
+        @if (shouldShowDeleteButton(row)) {
+        <p-button
+          icon="pi pi-trash"
+          severity="danger"
+          size="small"
+          (onClick)="deleteUniverse(row)"
+          pTooltip="Delete unused symbol"
+          tooltipPosition="top"
+        />
+        }
+        <!-- eslint-enable @angular-eslint/template/cyclomatic-complexity, @angular-eslint/template/no-call-expression -->
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+<p-toast />
+
+<dms-add-symbol-dialog />

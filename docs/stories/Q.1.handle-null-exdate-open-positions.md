@@ -6,7 +6,7 @@ Ready for Review
 
 ## Story
 
-**As a** trader using the RMS system,
+**As a** trader using the DMS system,
 **I want** the Open Positions tab to function correctly when universe entries have null ex-dates,
 **so that** I can view my open positions without errors and all calculated columns display appropriate values.
 
@@ -62,9 +62,9 @@ The issue occurs in three specific locations where null ex_date values cause err
 
 **Affected Files:**
 
-- `apps/rms/src/app/account-panel/open-positions/open-positions.component.html` - Template rendering ex-date
-- `apps/rms/src/app/account-panel/open-positions/open-positions-component.service.ts` - Service calculations
-- `apps/rms/src/app/store/trades/open-position.interface.ts` - OpenPosition interface (may need exDate field type update)
+- `apps/dms/src/app/account-panel/open-positions/open-positions.component.html` - Template rendering ex-date
+- `apps/dms/src/app/account-panel/open-positions/open-positions-component.service.ts` - Service calculations
+- `apps/dms/src/app/store/trades/open-position.interface.ts` - OpenPosition interface (may need exDate field type update)
 
 **Database Schema Context:**
 
@@ -121,8 +121,8 @@ When ex_date is null, the calculations should either:
 
 **Test File Locations:**
 
-- Component tests: `apps/rms/src/app/account-panel/open-positions/open-positions.component.spec.ts`
-- Service tests: `apps/rms/src/app/account-panel/open-positions/open-positions-component.service.spec.ts`
+- Component tests: `apps/dms/src/app/account-panel/open-positions/open-positions.component.spec.ts`
+- Service tests: `apps/dms/src/app/account-panel/open-positions/open-positions-component.service.spec.ts`
 
 **Testing Framework:** Vitest with Angular Testing Library
 
@@ -179,13 +179,13 @@ None - implementation was straightforward without major debugging needs.
 
 **Modified Files:**
 
-- `apps/rms/src/app/account-panel/open-positions/open-positions.component.html` - Template null handling
-- `apps/rms/src/app/account-panel/open-positions/open-positions-component.service.ts` - Service null handling
-- `apps/rms/src/app/store/trades/open-position.interface.ts` - Interface type update
+- `apps/dms/src/app/account-panel/open-positions/open-positions.component.html` - Template null handling
+- `apps/dms/src/app/account-panel/open-positions/open-positions-component.service.ts` - Service null handling
+- `apps/dms/src/app/store/trades/open-position.interface.ts` - Interface type update
 
 **Created Files:**
 
-- `apps/rms/src/app/account-panel/open-positions/open-positions.component.spec.ts` - Unit tests for template logic
+- `apps/dms/src/app/account-panel/open-positions/open-positions.component.spec.ts` - Unit tests for template logic
 
 ## QA Results
 

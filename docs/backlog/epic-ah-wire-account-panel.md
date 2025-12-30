@@ -2,14 +2,14 @@
 
 ## Epic Goal
 
-Enable users to add, edit, and delete accounts in the RMS-MATERIAL application by connecting the UI to existing backend services.
+Enable users to add, edit, and delete accounts in the DMS-MATERIAL application by connecting the UI to existing backend services.
 
 ## Epic Description
 
 **Existing System Context:**
 
-- RMS app has full account CRUD functionality
-- RMS-MATERIAL has UI components but no backend integration
+- DMS app has full account CRUD functionality
+- DMS-MATERIAL has UI components but no backend integration
 - Account management is foundational for all account-specific features
 
 **Enhancement Details:**
@@ -55,5 +55,5 @@ Enable users to add, edit, and delete accounts in the RMS-MATERIAL application b
 - [ ] All account CRUD operations functional
 - [ ] Unit tests pass
 - [ ] E2E tests pass
-- [ ] UI matches RMS app behavior
+- [ ] UI matches DMS app behavior
 - [ ] All linting passes

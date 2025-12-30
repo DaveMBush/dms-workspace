@@ -6,7 +6,7 @@ Approved
 
 ## Story
 
-**As a** system administrator or developer using the RMS system,
+**As a** system administrator or developer using the DMS system,
 **I want** to view backend error logs through a web interface accessible from the Global navigation,
 **so that** I can troubleshoot issues and monitor system health without requiring direct server access.
 
@@ -32,7 +32,7 @@ Approved
 
 - [x] **Task 2: Create error log viewing component** (AC: 2, 7, 8)
 
-  - [x] Generate new component in apps/rms/src/app/global/global-error-logs/
+  - [x] Generate new component in apps/dms/src/app/global/global-error-logs/
   - [x] Implement table display using PrimeNG Table component
   - [x] Design columns for timestamp, level, message, and context
   - [x] Apply consistent styling with existing global components
@@ -83,7 +83,7 @@ Approved
 
 **Global Navigation Structure:**
 
-- `GlobalComponent` in `apps/rms/src/app/global/global.component.ts`
+- `GlobalComponent` in `apps/dms/src/app/global/global.component.ts`
 - Navigation options defined in `globals` array (lines 30-34)
 - Current options: Universe, Screener, Summary
 - Routing pattern: `/global/{option-id}`
@@ -105,7 +105,7 @@ globals = [
 **Component Structure:**
 
 ```
-apps/rms/src/app/global/global-error-logs/
+apps/dms/src/app/global/global-error-logs/
 ├── global-error-logs.component.ts
 ├── global-error-logs.component.html
 ├── global-error-logs.component.scss
@@ -272,7 +272,7 @@ Claude Sonnet 4 (claude-sonnet-4-20250514)
 ### Debug Log References
 
 - Backend API tests: `apps/server/src/app/routes/logs/logs.spec.ts` (6 tests passing)
-- Frontend component tests: `apps/rms/src/app/global/global-error-logs/global-error-logs.component.spec.ts` (pending PrimeNG datepicker fixes)
+- Frontend component tests: `apps/dms/src/app/global/global-error-logs/global-error-logs.component.spec.ts` (pending PrimeNG datepicker fixes)
 
 ### Completion Notes List
 
@@ -290,19 +290,19 @@ Claude Sonnet 4 (claude-sonnet-4-20250514)
 
 **New Files Created:**
 
-- `apps/rms/src/app/global/global-error-logs/error-log.interface.ts` - TypeScript interfaces for log data structures
-- `apps/rms/src/app/global/global-error-logs/global-error-logs.service.ts` - Angular service for API communication
-- `apps/rms/src/app/global/global-error-logs/global-error-logs.component.ts` - Main component implementation
-- `apps/rms/src/app/global/global-error-logs/global-error-logs.component.html` - Component template with PrimeNG table and filters
-- `apps/rms/src/app/global/global-error-logs/global-error-logs.component.scss` - Component styling
-- `apps/rms/src/app/global/global-error-logs/global-error-logs.component.spec.ts` - Component unit tests
+- `apps/dms/src/app/global/global-error-logs/error-log.interface.ts` - TypeScript interfaces for log data structures
+- `apps/dms/src/app/global/global-error-logs/global-error-logs.service.ts` - Angular service for API communication
+- `apps/dms/src/app/global/global-error-logs/global-error-logs.component.ts` - Main component implementation
+- `apps/dms/src/app/global/global-error-logs/global-error-logs.component.html` - Component template with PrimeNG table and filters
+- `apps/dms/src/app/global/global-error-logs/global-error-logs.component.scss` - Component styling
+- `apps/dms/src/app/global/global-error-logs/global-error-logs.component.spec.ts` - Component unit tests
 - `apps/server/src/app/routes/logs/index.ts` - Backend API endpoint implementation
 - `apps/server/src/app/routes/logs/logs.spec.ts` - Backend API integration tests
 
 **Modified Files:**
 
-- `apps/rms/src/app/global/global.component.ts` - Added 'error-logs' to globals array
-- `apps/rms/src/app/app.routes.ts` - Added route configuration for error logs component
+- `apps/dms/src/app/global/global.component.ts` - Added 'error-logs' to globals array
+- `apps/dms/src/app/app.routes.ts` - Added route configuration for error logs component
 
 ## QA Results
 

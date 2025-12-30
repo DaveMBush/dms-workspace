@@ -4,7 +4,7 @@
     "formats": {
       "typescript": {
         "sources": {
-          "/home/dave/code/rms-workspace/apps/server/src/app/routes/universe/sync-from-screener/symbol-processing.function.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/routes/universe/sync-from-screener/symbol-processing.function.ts": {
             "lines": 73,
             "tokens": 635,
             "sources": 1,
@@ -16,7 +16,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/routes/universe/sync-from-screener/index.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/routes/universe/sync-from-screener/index.ts": {
             "lines": 294,
             "tokens": 2350,
             "sources": 1,
@@ -28,7 +28,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/routes/summary/months/index.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/routes/summary/months/index.ts": {
             "lines": 88,
             "tokens": 787,
             "sources": 1,
@@ -40,7 +40,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/routes/summary/graph/index.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/routes/summary/graph/index.ts": {
             "lines": 227,
             "tokens": 1826,
             "sources": 1,
@@ -52,7 +52,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/routes/summary/graph/graph.interface.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/routes/summary/graph/graph.interface.ts": {
             "lines": 5,
             "tokens": 36,
             "sources": 1,
@@ -64,7 +64,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/routes/settings/update/index.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/routes/settings/update/index.ts": {
             "lines": 113,
             "tokens": 944,
             "sources": 1,
@@ -76,7 +76,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/routes/settings/common/sleep.function.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/routes/settings/common/sleep.function.ts": {
             "lines": 4,
             "tokens": 53,
             "sources": 1,
@@ -88,7 +88,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/routes/settings/common/get-last-price.function.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/routes/settings/common/get-last-price.function.ts": {
             "lines": 20,
             "tokens": 167,
             "sources": 1,
@@ -100,7 +100,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/routes/settings/common/get-distributions.function.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/routes/settings/common/get-distributions.function.ts": {
             "lines": 97,
             "tokens": 726,
             "sources": 1,
@@ -112,7 +112,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/routes/settings/common/get-distribution.function.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/routes/settings/common/get-distribution.function.ts": {
             "lines": 125,
             "tokens": 1041,
             "sources": 1,
@@ -124,7 +124,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/routes/settings/common/ensure-risk-groups-exist.function.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/routes/settings/common/ensure-risk-groups-exist.function.ts": {
             "lines": 27,
             "tokens": 236,
             "sources": 1,
@@ -136,7 +136,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/routes/screener/rows/screen.interface.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/routes/screener/rows/screen.interface.ts": {
             "lines": 7,
             "tokens": 50,
             "sources": 1,
@@ -148,7 +148,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/routes/screener/rows/index.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/routes/screener/rows/index.ts": {
             "lines": 131,
             "tokens": 964,
             "sources": 1,
@@ -160,7 +160,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/store/universe/selectors/select-universes.function.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/store/universe/selectors/select-universes.function.ts": {
             "lines": 9,
             "tokens": 79,
             "sources": 1,
@@ -172,7 +172,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/store/universe/selectors/select-universe-entity.function.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/store/universe/selectors/select-universe-entity.function.ts": {
             "lines": 7,
             "tokens": 50,
             "sources": 1,
@@ -184,7 +184,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/store/universe/selectors/select-top-universes.function.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/store/universe/selectors/select-top-universes.function.ts": {
             "lines": 14,
             "tokens": 107,
             "sources": 1,
@@ -196,7 +196,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/store/trades/selectors/select-trades.function.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/store/trades/selectors/select-trades.function.ts": {
             "lines": 9,
             "tokens": 79,
             "sources": 1,
@@ -208,7 +208,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/store/trades/selectors/select-trades-entity.function.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/store/trades/selectors/select-trades-entity.function.ts": {
             "lines": 4,
             "tokens": 46,
             "sources": 1,
@@ -220,7 +220,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/store/trades/selectors/select-account-children.function.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/store/trades/selectors/select-account-children.function.ts": {
             "lines": 29,
             "tokens": 222,
             "sources": 1,
@@ -232,7 +232,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/store/top/selectors/select-top-entities.function.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/store/top/selectors/select-top-entities.function.ts": {
             "lines": 4,
             "tokens": 46,
             "sources": 1,
@@ -244,7 +244,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/store/top/selectors/select-holidays.function.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/store/top/selectors/select-holidays.function.ts": {
             "lines": 7,
             "tokens": 80,
             "sources": 1,
@@ -256,7 +256,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/store/screen/selectors/select-top-screen.function.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/store/screen/selectors/select-top-screen.function.ts": {
             "lines": 14,
             "tokens": 107,
             "sources": 1,
@@ -268,7 +268,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/store/screen/selectors/select-screen.function.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/store/screen/selectors/select-screen.function.ts": {
             "lines": 9,
             "tokens": 79,
             "sources": 1,
@@ -280,7 +280,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/store/screen/selectors/select-screen-entity.function.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/store/screen/selectors/select-screen-entity.function.ts": {
             "lines": 4,
             "tokens": 46,
             "sources": 1,
@@ -292,7 +292,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/store/risk-group/selectors/select-top-risk-group.function.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/store/risk-group/selectors/select-top-risk-group.function.ts": {
             "lines": 14,
             "tokens": 107,
             "sources": 1,
@@ -304,7 +304,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/store/risk-group/selectors/select-risk-group.function.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/store/risk-group/selectors/select-risk-group.function.ts": {
             "lines": 9,
             "tokens": 79,
             "sources": 1,
@@ -316,7 +316,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/store/risk-group/selectors/select-risk-group-entity.function.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/store/risk-group/selectors/select-risk-group-entity.function.ts": {
             "lines": 7,
             "tokens": 50,
             "sources": 1,
@@ -328,7 +328,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/store/div-deposit-types/selectors/select-top-div-deposit-types.function.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/store/div-deposit-types/selectors/select-top-div-deposit-types.function.ts": {
             "lines": 14,
             "tokens": 107,
             "sources": 1,
@@ -340,7 +340,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/store/div-deposit-types/selectors/select-div-deposit-types.function.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/store/div-deposit-types/selectors/select-div-deposit-types.function.ts": {
             "lines": 9,
             "tokens": 79,
             "sources": 1,
@@ -352,7 +352,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/store/div-deposit-types/selectors/select-div-deposit-type-entity.function.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/store/div-deposit-types/selectors/select-div-deposit-type-entity.function.ts": {
             "lines": 7,
             "tokens": 50,
             "sources": 1,
@@ -364,7 +364,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/store/accounts/selectors/select-top-accounts.function.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/store/accounts/selectors/select-top-accounts.function.ts": {
             "lines": 14,
             "tokens": 107,
             "sources": 1,
@@ -376,7 +376,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/store/accounts/selectors/select-accounts.function.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/store/accounts/selectors/select-accounts.function.ts": {
             "lines": 9,
             "tokens": 79,
             "sources": 1,
@@ -388,7 +388,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/store/accounts/selectors/select-accounts-entity.function.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/store/accounts/selectors/select-accounts-entity.function.ts": {
             "lines": 7,
             "tokens": 50,
             "sources": 1,
@@ -400,7 +400,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/shared/components/edit/node-editor.component.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/shared/components/edit/node-editor.component.ts": {
             "lines": 79,
             "tokens": 520,
             "sources": 1,
@@ -412,7 +412,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/routes/universe/universe.interface.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/routes/universe/universe.interface.ts": {
             "lines": 12,
             "tokens": 93,
             "sources": 1,
@@ -424,7 +424,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/routes/universe/index.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/routes/universe/index.ts": {
             "lines": 178,
             "tokens": 1595,
             "sources": 1,
@@ -436,7 +436,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/routes/trades/index.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/routes/trades/index.ts": {
             "lines": 163,
             "tokens": 1370,
             "sources": 1,
@@ -448,7 +448,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/routes/top/top.interface.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/routes/top/top.interface.ts": {
             "lines": 8,
             "tokens": 69,
             "sources": 1,
@@ -460,7 +460,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/routes/top/index.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/routes/top/index.ts": {
             "lines": 208,
             "tokens": 1779,
             "sources": 1,
@@ -472,7 +472,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/routes/summary/summary.interface.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/routes/summary/summary.interface.ts": {
             "lines": 7,
             "tokens": 50,
             "sources": 1,
@@ -484,7 +484,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/routes/summary/summary-request.interface.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/routes/summary/summary-request.interface.ts": {
             "lines": 3,
             "tokens": 22,
             "sources": 1,
@@ -496,7 +496,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/routes/summary/parse-month-string.function.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/routes/summary/parse-month-string.function.ts": {
             "lines": 8,
             "tokens": 98,
             "sources": 1,
@@ -508,7 +508,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/routes/summary/index.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/routes/summary/index.ts": {
             "lines": 301,
             "tokens": 2041,
             "sources": 1,
@@ -520,7 +520,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/routes/summary/create-risk-group-map.function.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/routes/summary/create-risk-group-map.function.ts": {
             "lines": 15,
             "tokens": 132,
             "sources": 1,
@@ -532,7 +532,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/routes/summary/calculate-prior-div-deposits.function.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/routes/summary/calculate-prior-div-deposits.function.ts": {
             "lines": 8,
             "tokens": 76,
             "sources": 1,
@@ -544,7 +544,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/routes/summary/calculate-prior-capital-gains.function.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/routes/summary/calculate-prior-capital-gains.function.ts": {
             "lines": 8,
             "tokens": 70,
             "sources": 1,
@@ -556,7 +556,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/routes/summary/calculate-date-range.function.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/routes/summary/calculate-date-range.function.ts": {
             "lines": 7,
             "tokens": 105,
             "sources": 1,
@@ -568,7 +568,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/routes/summary/aggregate-account-data.function.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/routes/summary/aggregate-account-data.function.ts": {
             "lines": 85,
             "tokens": 689,
             "sources": 1,
@@ -580,7 +580,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/routes/summary/account-with-trades-and-deposits.interface.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/routes/summary/account-with-trades-and-deposits.interface.ts": {
             "lines": 10,
             "tokens": 73,
             "sources": 1,
@@ -592,7 +592,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/routes/settings/settings.interface.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/routes/settings/settings.interface.ts": {
             "lines": 4,
             "tokens": 29,
             "sources": 1,
@@ -604,7 +604,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/routes/settings/index.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/routes/settings/index.ts": {
             "lines": 204,
             "tokens": 1663,
             "sources": 1,
@@ -616,7 +616,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/routes/screener/screening-requirements.function.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/routes/screener/screening-requirements.function.ts": {
             "lines": 88,
             "tokens": 688,
             "sources": 1,
@@ -628,7 +628,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/routes/screener/screening-data.interface.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/routes/screener/screening-data.interface.ts": {
             "lines": 9,
             "tokens": 68,
             "sources": 1,
@@ -640,7 +640,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/routes/screener/index.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/routes/screener/index.ts": {
             "lines": 232,
             "tokens": 1679,
             "sources": 1,
@@ -652,7 +652,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/routes/screener/get-consistent-distributions.function.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/routes/screener/get-consistent-distributions.function.ts": {
             "lines": 36,
             "tokens": 266,
             "sources": 1,
@@ -664,7 +664,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/routes/screener/cef-page-scraping.function.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/routes/screener/cef-page-scraping.function.ts": {
             "lines": 60,
             "tokens": 515,
             "sources": 1,
@@ -676,7 +676,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/routes/risk-group/risk-group.interface.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/routes/risk-group/risk-group.interface.ts": {
             "lines": 3,
             "tokens": 22,
             "sources": 1,
@@ -688,7 +688,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/routes/risk-group/index.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/routes/risk-group/index.ts": {
             "lines": 36,
             "tokens": 312,
             "sources": 1,
@@ -700,7 +700,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/routes/health/index.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/routes/health/index.ts": {
             "lines": 130,
             "tokens": 1041,
             "sources": 1,
@@ -712,7 +712,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/routes/feature-flags/index.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/routes/feature-flags/index.ts": {
             "lines": 10,
             "tokens": 75,
             "sources": 1,
@@ -724,7 +724,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/routes/div-deposits/index.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/routes/div-deposits/index.ts": {
             "lines": 126,
             "tokens": 1083,
             "sources": 1,
@@ -736,7 +736,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/routes/div-deposits/div-deposits.interface.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/routes/div-deposits/div-deposits.interface.ts": {
             "lines": 7,
             "tokens": 54,
             "sources": 1,
@@ -748,7 +748,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/routes/div-deposit-types/index.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/routes/div-deposit-types/index.ts": {
             "lines": 48,
             "tokens": 372,
             "sources": 1,
@@ -760,7 +760,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/routes/div-deposit-types/div-deposits-type.interface.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/routes/div-deposit-types/div-deposits-type.interface.ts": {
             "lines": 3,
             "tokens": 22,
             "sources": 1,
@@ -772,7 +772,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/routes/common/universe-operations.function.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/routes/common/universe-operations.function.ts": {
             "lines": 33,
             "tokens": 270,
             "sources": 1,
@@ -784,7 +784,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/routes/common/query-utils.function.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/routes/common/query-utils.function.ts": {
             "lines": 29,
             "tokens": 214,
             "sources": 1,
@@ -796,7 +796,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/routes/common/distribution-api.function.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/routes/common/distribution-api.function.ts": {
             "lines": 109,
             "tokens": 881,
             "sources": 1,
@@ -808,7 +808,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/routes/common/axios-get-with-backoff.function.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/routes/common/axios-get-with-backoff.function.ts": {
             "lines": 40,
             "tokens": 392,
             "sources": 1,
@@ -820,7 +820,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/routes/accounts/new-account.interface.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/routes/accounts/new-account.interface.ts": {
             "lines": 3,
             "tokens": 22,
             "sources": 1,
@@ -832,7 +832,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/routes/accounts/index.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/routes/accounts/index.ts": {
             "lines": 234,
             "tokens": 2097,
             "sources": 1,
@@ -844,7 +844,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/routes/accounts/account.interface.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/routes/accounts/account.interface.ts": {
             "lines": 6,
             "tokens": 62,
             "sources": 1,
@@ -856,7 +856,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/store/universe/universe.interface.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/store/universe/universe.interface.ts": {
             "lines": 13,
             "tokens": 104,
             "sources": 1,
@@ -868,7 +868,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/store/universe/universe-effect.service.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/store/universe/universe-effect.service.ts": {
             "lines": 40,
             "tokens": 378,
             "sources": 1,
@@ -880,7 +880,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/store/universe/universe-effect-service-token.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/store/universe/universe-effect-service-token.ts": {
             "lines": 5,
             "tokens": 46,
             "sources": 1,
@@ -892,7 +892,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/store/universe/universe-definition.const.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/store/universe/universe-definition.const.ts": {
             "lines": 24,
             "tokens": 179,
             "sources": 1,
@@ -904,7 +904,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/store/trades/trades-definition.const.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/store/trades/trades-definition.const.ts": {
             "lines": 20,
             "tokens": 151,
             "sources": 1,
@@ -916,7 +916,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/store/trades/trade.interface.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/store/trades/trade.interface.ts": {
             "lines": 9,
             "tokens": 65,
             "sources": 1,
@@ -928,7 +928,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/store/trades/trade-effect.service.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/store/trades/trade-effect.service.ts": {
             "lines": 40,
             "tokens": 378,
             "sources": 1,
@@ -940,7 +940,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/store/trades/trade-effect-service-token.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/store/trades/trade-effect-service-token.ts": {
             "lines": 6,
             "tokens": 48,
             "sources": 1,
@@ -952,7 +952,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/store/trades/open-position.interface.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/store/trades/open-position.interface.ts": {
             "lines": 17,
             "tokens": 126,
             "sources": 1,
@@ -964,7 +964,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/store/trades/difference-in-trading-days.function.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/store/trades/difference-in-trading-days.function.ts": {
             "lines": 27,
             "tokens": 276,
             "sources": 1,
@@ -976,7 +976,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/store/trades/closed-position.interface.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/store/trades/closed-position.interface.ts": {
             "lines": 11,
             "tokens": 79,
             "sources": 1,
@@ -988,7 +988,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/store/top/top.interface.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/store/top/top.interface.ts": {
             "lines": 10,
             "tokens": 83,
             "sources": 1,
@@ -1000,7 +1000,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/store/top/top-effect.service.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/store/top/top-effect.service.ts": {
             "lines": 41,
             "tokens": 336,
             "sources": 1,
@@ -1012,7 +1012,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/store/top/top-effect-service-token.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/store/top/top-effect-service-token.ts": {
             "lines": 6,
             "tokens": 48,
             "sources": 1,
@@ -1024,7 +1024,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/store/top/top-definition.const.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/store/top/top-definition.const.ts": {
             "lines": 20,
             "tokens": 157,
             "sources": 1,
@@ -1036,7 +1036,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/store/screen/screen.interface.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/store/screen/screen.interface.ts": {
             "lines": 7,
             "tokens": 50,
             "sources": 1,
@@ -1048,7 +1048,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/store/screen/screen-effect.service.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/store/screen/screen-effect.service.ts": {
             "lines": 40,
             "tokens": 347,
             "sources": 1,
@@ -1060,7 +1060,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/store/screen/screen-effect-service-token.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/store/screen/screen-effect-service-token.ts": {
             "lines": 5,
             "tokens": 46,
             "sources": 1,
@@ -1072,7 +1072,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/store/screen/screen-definition.const.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/store/screen/screen-definition.const.ts": {
             "lines": 18,
             "tokens": 137,
             "sources": 1,
@@ -1084,7 +1084,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/store/risk-group/risk-group.interface.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/store/risk-group/risk-group.interface.ts": {
             "lines": 3,
             "tokens": 22,
             "sources": 1,
@@ -1096,7 +1096,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/store/risk-group/risk-group-effect.service.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/store/risk-group/risk-group-effect.service.ts": {
             "lines": 40,
             "tokens": 378,
             "sources": 1,
@@ -1108,7 +1108,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/store/risk-group/risk-group-effect-service-token.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/store/risk-group/risk-group-effect-service-token.ts": {
             "lines": 6,
             "tokens": 48,
             "sources": 1,
@@ -1120,7 +1120,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/store/risk-group/risk-group-definition.const.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/store/risk-group/risk-group-definition.const.ts": {
             "lines": 15,
             "tokens": 109,
             "sources": 1,
@@ -1132,7 +1132,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/store/div-deposits/div-deposits.selectors.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/store/div-deposits/div-deposits.selectors.ts": {
             "lines": 7,
             "tokens": 50,
             "sources": 1,
@@ -1144,7 +1144,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/store/div-deposits/div-deposits-effect.service.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/store/div-deposits/div-deposits-effect.service.ts": {
             "lines": 40,
             "tokens": 378,
             "sources": 1,
@@ -1156,7 +1156,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/store/div-deposits/div-deposits-effect-service-token.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/store/div-deposits/div-deposits-effect-service-token.ts": {
             "lines": 5,
             "tokens": 46,
             "sources": 1,
@@ -1168,7 +1168,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/store/div-deposits/div-deposit.interface.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/store/div-deposits/div-deposit.interface.ts": {
             "lines": 7,
             "tokens": 50,
             "sources": 1,
@@ -1180,7 +1180,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/store/div-deposits/div-deposit-definition.const.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/store/div-deposits/div-deposit-definition.const.ts": {
             "lines": 18,
             "tokens": 141,
             "sources": 1,
@@ -1192,7 +1192,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/store/div-deposit-types/div-deposit-types-effect.service.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/store/div-deposit-types/div-deposit-types-effect.service.ts": {
             "lines": 43,
             "tokens": 383,
             "sources": 1,
@@ -1204,7 +1204,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/store/div-deposit-types/div-deposit-types-effect-service-token.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/store/div-deposit-types/div-deposit-types-effect-service-token.ts": {
             "lines": 7,
             "tokens": 50,
             "sources": 1,
@@ -1216,7 +1216,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/store/div-deposit-types/div-deposit-types-definition.const.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/store/div-deposit-types/div-deposit-types-definition.const.ts": {
             "lines": 15,
             "tokens": 111,
             "sources": 1,
@@ -1228,7 +1228,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/store/div-deposit-types/div-deposit-type.interface.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/store/div-deposit-types/div-deposit-type.interface.ts": {
             "lines": 3,
             "tokens": 22,
             "sources": 1,
@@ -1240,7 +1240,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/store/current-account/select-current-account.signal.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/store/current-account/select-current-account.signal.ts": {
             "lines": 38,
             "tokens": 276,
             "sources": 1,
@@ -1252,7 +1252,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/store/current-account/current-account.signal-store.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/store/current-account/current-account.signal-store.ts": {
             "lines": 44,
             "tokens": 353,
             "sources": 1,
@@ -1264,7 +1264,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/store/accounts/accounts-definition.const.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/store/accounts/accounts-definition.const.ts": {
             "lines": 17,
             "tokens": 133,
             "sources": 1,
@@ -1276,7 +1276,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/store/accounts/account.interface.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/store/accounts/account.interface.ts": {
             "lines": 9,
             "tokens": 101,
             "sources": 1,
@@ -1288,7 +1288,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/store/accounts/account-effect.service.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/store/accounts/account-effect.service.ts": {
             "lines": 40,
             "tokens": 378,
             "sources": 1,
@@ -1300,7 +1300,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/store/accounts/account-effect-service-token.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/store/accounts/account-effect-service-token.ts": {
             "lines": 5,
             "tokens": 46,
             "sources": 1,
@@ -1312,7 +1312,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/shared/services/universe-sync.types.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/shared/services/universe-sync.types.ts": {
             "lines": 13,
             "tokens": 68,
             "sources": 1,
@@ -1324,7 +1324,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/shared/services/universe-sync.service.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/shared/services/universe-sync.service.ts": {
             "lines": 49,
             "tokens": 273,
             "sources": 1,
@@ -1336,7 +1336,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/shared/services/feature-flags.service.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/shared/services/feature-flags.service.ts": {
             "lines": 16,
             "tokens": 42,
             "sources": 1,
@@ -1348,7 +1348,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/global/screener/screener.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/global/screener/screener.ts": {
             "lines": 88,
             "tokens": 723,
             "sources": 1,
@@ -1360,7 +1360,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/global/screener/screener.service.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/global/screener/screener.service.ts": {
             "lines": 54,
             "tokens": 508,
             "sources": 1,
@@ -1372,7 +1372,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/global/global-universe/universe.selector.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/global/global-universe/universe.selector.ts": {
             "lines": 44,
             "tokens": 446,
             "sources": 1,
@@ -1384,7 +1384,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/global/global-universe/universe-display-data.interface.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/global/global-universe/universe-display-data.interface.ts": {
             "lines": 20,
             "tokens": 125,
             "sources": 1,
@@ -1396,7 +1396,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/global/global-universe/universe-data.service.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/global/global-universe/universe-data.service.ts": {
             "lines": 337,
             "tokens": 2577,
             "sources": 1,
@@ -1408,7 +1408,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/global/global-universe/sort-signals.interface.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/global/global-universe/sort-signals.interface.ts": {
             "lines": 13,
             "tokens": 142,
             "sources": 1,
@@ -1420,7 +1420,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/global/global-universe/sort-computed-signals.function.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/global/global-universe/sort-computed-signals.function.ts": {
             "lines": 97,
             "tokens": 632,
             "sources": 1,
@@ -1432,7 +1432,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/global/global-universe/set-local-storage-item.function.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/global/global-universe/set-local-storage-item.function.ts": {
             "lines": 6,
             "tokens": 58,
             "sources": 1,
@@ -1444,7 +1444,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/global/global-universe/is-row-dimmed.function.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/global/global-universe/is-row-dimmed.function.ts": {
             "lines": 32,
             "tokens": 293,
             "sources": 1,
@@ -1456,7 +1456,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/global/global-universe/global-universe.component.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/global/global-universe/global-universe.component.ts": {
             "lines": 390,
             "tokens": 3023,
             "sources": 1,
@@ -1468,7 +1468,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/global/global-universe/global-universe-storage.service.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/global/global-universe/global-universe-storage.service.ts": {
             "lines": 141,
             "tokens": 845,
             "sources": 1,
@@ -1480,7 +1480,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/global/global-universe/get-sort-icon.function.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/global/global-universe/get-sort-icon.function.ts": {
             "lines": 22,
             "tokens": 157,
             "sources": 1,
@@ -1492,7 +1492,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/global/global-universe/get-local-storage-item.function.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/global/global-universe/get-local-storage-item.function.ts": {
             "lines": 12,
             "tokens": 112,
             "sources": 1,
@@ -1504,7 +1504,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/global/global-universe/find-universe-id-by-symbol.function.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/global/global-universe/find-universe-id-by-symbol.function.ts": {
             "lines": 13,
             "tokens": 118,
             "sources": 1,
@@ -1516,7 +1516,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/global/global-universe/compare-for-sort.function.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/global/global-universe/compare-for-sort.function.ts": {
             "lines": 11,
             "tokens": 148,
             "sources": 1,
@@ -1528,7 +1528,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/global/global-universe/apply-yield-filter.function.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/global/global-universe/apply-yield-filter.function.ts": {
             "lines": 15,
             "tokens": 128,
             "sources": 1,
@@ -1540,7 +1540,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/global/global-universe/apply-symbol-filter.function.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/global/global-universe/apply-symbol-filter.function.ts": {
             "lines": 15,
             "tokens": 124,
             "sources": 1,
@@ -1552,7 +1552,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/global/global-universe/apply-specific-account-filter.function.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/global/global-universe/apply-specific-account-filter.function.ts": {
             "lines": 39,
             "tokens": 237,
             "sources": 1,
@@ -1564,7 +1564,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/global/global-universe/apply-risk-group-filter.function.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/global/global-universe/apply-risk-group-filter.function.ts": {
             "lines": 15,
             "tokens": 123,
             "sources": 1,
@@ -1576,7 +1576,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/global/global-universe/apply-expired-with-positions-filter.function.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/global/global-universe/apply-expired-with-positions-filter.function.ts": {
             "lines": 30,
             "tokens": 150,
             "sources": 1,
@@ -1588,7 +1588,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/global/global-universe/apply-expired-filter.function.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/global/global-universe/apply-expired-filter.function.ts": {
             "lines": 15,
             "tokens": 111,
             "sources": 1,
@@ -1600,7 +1600,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/global/global-universe/apply-all-accounts-filter.function.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/global/global-universe/apply-all-accounts-filter.function.ts": {
             "lines": 32,
             "tokens": 226,
             "sources": 1,
@@ -1612,7 +1612,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/global/global-universe/account-data-calculator.function.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/global/global-universe/account-data-calculator.function.ts": {
             "lines": 37,
             "tokens": 321,
             "sources": 1,
@@ -1624,7 +1624,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/global/global-summary/global-summary.component.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/global/global-summary/global-summary.component.ts": {
             "lines": 28,
             "tokens": 273,
             "sources": 1,
@@ -1636,7 +1636,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/global/global-summary/global-summary-component.service.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/global/global-summary/global-summary-component.service.ts": {
             "lines": 70,
             "tokens": 525,
             "sources": 1,
@@ -1648,7 +1648,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/account-panel/summary/summary.interface.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/account-panel/summary/summary.interface.ts": {
             "lines": 8,
             "tokens": 53,
             "sources": 1,
@@ -1660,7 +1660,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/account-panel/summary/summary.component.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/account-panel/summary/summary.component.ts": {
             "lines": 28,
             "tokens": 273,
             "sources": 1,
@@ -1672,7 +1672,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/account-panel/summary/summary-component.service.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/account-panel/summary/summary-component.service.ts": {
             "lines": 65,
             "tokens": 577,
             "sources": 1,
@@ -1684,7 +1684,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/account-panel/summary/graph.interface.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/account-panel/summary/graph.interface.ts": {
             "lines": 5,
             "tokens": 36,
             "sources": 1,
@@ -1696,7 +1696,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/account-panel/sold-positions/sold-positions.component.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/account-panel/sold-positions/sold-positions.component.ts": {
             "lines": 212,
             "tokens": 1651,
             "sources": 1,
@@ -1708,7 +1708,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/account-panel/sold-positions/sold-positions-storage.service.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/account-panel/sold-positions/sold-positions-storage.service.ts": {
             "lines": 10,
             "tokens": 69,
             "sources": 1,
@@ -1720,7 +1720,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/account-panel/sold-positions/sold-positions-component.service.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/account-panel/sold-positions/sold-positions-component.service.ts": {
             "lines": 151,
             "tokens": 1343,
             "sources": 1,
@@ -1732,7 +1732,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/account-panel/open-positions/open-positions.component.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/account-panel/open-positions/open-positions.component.ts": {
             "lines": 236,
             "tokens": 1883,
             "sources": 1,
@@ -1744,7 +1744,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/account-panel/open-positions/open-positions-storage.service.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/account-panel/open-positions/open-positions-storage.service.ts": {
             "lines": 10,
             "tokens": 69,
             "sources": 1,
@@ -1756,7 +1756,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/account-panel/open-positions/open-positions-component.service.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/account-panel/open-positions/open-positions-component.service.ts": {
             "lines": 145,
             "tokens": 1454,
             "sources": 1,
@@ -1768,7 +1768,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/account-panel/new-position/new-position.component.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/account-panel/new-position/new-position.component.ts": {
             "lines": 108,
             "tokens": 891,
             "sources": 1,
@@ -1780,7 +1780,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/account-panel/dividend-deposits/dividend-deposits.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/account-panel/dividend-deposits/dividend-deposits.ts": {
             "lines": 77,
             "tokens": 825,
             "sources": 1,
@@ -1792,7 +1792,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/account-panel/div-dep-modal/div-dep-modal.component.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/account-panel/div-dep-modal/div-dep-modal.component.ts": {
             "lines": 103,
             "tokens": 937,
             "sources": 1,
@@ -1804,7 +1804,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/utils/verify-jwt-token.function.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/utils/verify-jwt-token.function.ts": {
             "lines": 68,
             "tokens": 432,
             "sources": 1,
@@ -1816,7 +1816,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/utils/validate-jwt-token.function.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/utils/validate-jwt-token.function.ts": {
             "lines": 33,
             "tokens": 230,
             "sources": 1,
@@ -1828,7 +1828,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/utils/get-signing-key.function.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/utils/get-signing-key.function.ts": {
             "lines": 30,
             "tokens": 236,
             "sources": 1,
@@ -1840,7 +1840,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/utils/extract-user-from-payload.function.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/utils/extract-user-from-payload.function.ts": {
             "lines": 11,
             "tokens": 90,
             "sources": 1,
@@ -1852,7 +1852,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/utils/extract-token-from-header.function.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/utils/extract-token-from-header.function.ts": {
             "lines": 20,
             "tokens": 135,
             "sources": 1,
@@ -1864,7 +1864,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/types/cognito-jwt-payload.interface.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/types/cognito-jwt-payload.interface.ts": {
             "lines": 11,
             "tokens": 73,
             "sources": 1,
@@ -1876,7 +1876,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/types/cognito-config.interface.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/types/cognito-config.interface.ts": {
             "lines": 6,
             "tokens": 43,
             "sources": 1,
@@ -1888,7 +1888,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/types/authenticated-user.interface.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/types/authenticated-user.interface.ts": {
             "lines": 5,
             "tokens": 38,
             "sources": 1,
@@ -1900,7 +1900,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/types/auth.types.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/types/auth.types.ts": {
             "lines": 5,
             "tokens": 76,
             "sources": 1,
@@ -1912,7 +1912,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/types/auth-error.class.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/types/auth-error.class.ts": {
             "lines": 11,
             "tokens": 79,
             "sources": 1,
@@ -1924,7 +1924,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/types/auth-error-type.enum.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/types/auth-error-type.enum.ts": {
             "lines": 8,
             "tokens": 64,
             "sources": 1,
@@ -1936,7 +1936,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/types/auth-error-response.interface.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/types/auth-error-response.interface.ts": {
             "lines": 5,
             "tokens": 37,
             "sources": 1,
@@ -1948,7 +1948,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/routes/root.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/routes/root.ts": {
             "lines": 6,
             "tokens": 77,
             "sources": 1,
@@ -1960,7 +1960,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/prisma/prisma-client.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/prisma/prisma-client.ts": {
             "lines": 127,
             "tokens": 856,
             "sources": 1,
@@ -1972,7 +1972,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/plugins/sensible.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/plugins/sensible.ts": {
             "lines": 13,
             "tokens": 69,
             "sources": 1,
@@ -1984,7 +1984,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/plugins/cors.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/plugins/cors.ts": {
             "lines": 66,
             "tokens": 414,
             "sources": 1,
@@ -1996,7 +1996,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/plugins/auth.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/plugins/auth.ts": {
             "lines": 53,
             "tokens": 378,
             "sources": 1,
@@ -2008,7 +2008,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/middleware/reset-auth-failures.function.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/middleware/reset-auth-failures.function.ts": {
             "lines": 4,
             "tokens": 38,
             "sources": 1,
@@ -2020,7 +2020,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/middleware/record-auth-failure.function.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/middleware/record-auth-failure.function.ts": {
             "lines": 17,
             "tokens": 164,
             "sources": 1,
@@ -2032,7 +2032,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/middleware/log-authentication-success.function.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/middleware/log-authentication-success.function.ts": {
             "lines": 24,
             "tokens": 169,
             "sources": 1,
@@ -2044,7 +2044,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/middleware/is-rate-limited.function.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/middleware/is-rate-limited.function.ts": {
             "lines": 20,
             "tokens": 164,
             "sources": 1,
@@ -2056,7 +2056,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/middleware/is-authenticated.function.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/middleware/is-authenticated.function.ts": {
             "lines": 8,
             "tokens": 80,
             "sources": 1,
@@ -2068,7 +2068,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/middleware/handle-rate-limiting.function.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/middleware/handle-rate-limiting.function.ts": {
             "lines": 32,
             "tokens": 198,
             "sources": 1,
@@ -2080,7 +2080,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/middleware/handle-authentication-error.function.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/middleware/handle-authentication-error.function.ts": {
             "lines": 65,
             "tokens": 442,
             "sources": 1,
@@ -2092,7 +2092,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/middleware/get-authenticated-user.function.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/middleware/get-authenticated-user.function.ts": {
             "lines": 9,
             "tokens": 84,
             "sources": 1,
@@ -2104,7 +2104,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/middleware/create-error-response.function.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/middleware/create-error-response.function.ts": {
             "lines": 13,
             "tokens": 85,
             "sources": 1,
@@ -2116,7 +2116,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/middleware/authenticated-request.interface.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/middleware/authenticated-request.interface.ts": {
             "lines": 6,
             "tokens": 47,
             "sources": 1,
@@ -2128,7 +2128,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/middleware/authenticate-jwt.function.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/middleware/authenticate-jwt.function.ts": {
             "lines": 40,
             "tokens": 355,
             "sources": 1,
@@ -2140,7 +2140,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/middleware/auth-failure-store.function.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/middleware/auth-failure-store.function.ts": {
             "lines": 12,
             "tokens": 158,
             "sources": 1,
@@ -2152,7 +2152,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/config/cognito.config.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/config/cognito.config.ts": {
             "lines": 12,
             "tokens": 131,
             "sources": 1,
@@ -2164,7 +2164,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/config/cognito-validation.function.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/config/cognito-validation.function.ts": {
             "lines": 24,
             "tokens": 178,
             "sources": 1,
@@ -2176,7 +2176,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/universe-settings/update-universe.service.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/universe-settings/update-universe.service.ts": {
             "lines": 12,
             "tokens": 105,
             "sources": 1,
@@ -2188,7 +2188,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/shell/shell.component.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/shell/shell.component.ts": {
             "lines": 100,
             "tokens": 864,
             "sources": 1,
@@ -2200,7 +2200,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/shared/universe-utils.function.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/shared/universe-utils.function.ts": {
             "lines": 16,
             "tokens": 168,
             "sources": 1,
@@ -2212,7 +2212,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/shared/symbol-filtering.function.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/shared/symbol-filtering.function.ts": {
             "lines": 72,
             "tokens": 580,
             "sources": 1,
@@ -2224,7 +2224,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/shared/symbol-filter-header.component.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/shared/symbol-filter-header.component.ts": {
             "lines": 18,
             "tokens": 132,
             "sources": 1,
@@ -2236,7 +2236,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/shared/symbol-autocomplete.component.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/shared/symbol-autocomplete.component.ts": {
             "lines": 25,
             "tokens": 195,
             "sources": 1,
@@ -2248,7 +2248,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/shared/summary-display.component.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/shared/summary-display.component.ts": {
             "lines": 37,
             "tokens": 292,
             "sources": 1,
@@ -2260,7 +2260,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/shared/sortable-header.component.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/shared/sortable-header.component.ts": {
             "lines": 14,
             "tokens": 127,
             "sources": 1,
@@ -2272,7 +2272,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/shared/positions-utils.function.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/shared/positions-utils.function.ts": {
             "lines": 74,
             "tokens": 606,
             "sources": 1,
@@ -2284,7 +2284,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/shared/positions-common-imports.const.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/shared/positions-common-imports.const.ts": {
             "lines": 22,
             "tokens": 155,
             "sources": 1,
@@ -2296,7 +2296,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/shared/position-operations.function.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/shared/position-operations.function.ts": {
             "lines": 49,
             "tokens": 450,
             "sources": 1,
@@ -2308,7 +2308,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/shared/editable-date-cell.component.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/shared/editable-date-cell.component.ts": {
             "lines": 41,
             "tokens": 320,
             "sources": 1,
@@ -2320,7 +2320,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/shared/editable-cell.component.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/shared/editable-cell.component.ts": {
             "lines": 59,
             "tokens": 496,
             "sources": 1,
@@ -2332,7 +2332,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/shared/chart-utils.function.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/shared/chart-utils.function.ts": {
             "lines": 276,
             "tokens": 1877,
             "sources": 1,
@@ -2344,7 +2344,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/shared/base-summary.component.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/shared/base-summary.component.ts": {
             "lines": 65,
             "tokens": 473,
             "sources": 1,
@@ -2356,7 +2356,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/shared/base-summary-component.service.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/shared/base-summary-component.service.ts": {
             "lines": 63,
             "tokens": 489,
             "sources": 1,
@@ -2368,7 +2368,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/shared/base-route-component.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/shared/base-route-component.ts": {
             "lines": 31,
             "tokens": 262,
             "sources": 1,
@@ -2380,7 +2380,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/shared/base-positions.component.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/shared/base-positions.component.ts": {
             "lines": 133,
             "tokens": 1257,
             "sources": 1,
@@ -2392,7 +2392,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/shared/base-positions-table.component.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/shared/base-positions-table.component.ts": {
             "lines": 61,
             "tokens": 499,
             "sources": 1,
@@ -2404,7 +2404,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/shared/base-positions-storage.service.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/shared/base-positions-storage.service.ts": {
             "lines": 262,
             "tokens": 1825,
             "sources": 1,
@@ -2416,7 +2416,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/shared/base-position.interface.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/shared/base-position.interface.ts": {
             "lines": 9,
             "tokens": 82,
             "sources": 1,
@@ -2428,7 +2428,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/global/global.component.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/global/global.component.ts": {
             "lines": 52,
             "tokens": 494,
             "sources": 1,
@@ -2440,7 +2440,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/error-handler/error-handler.service.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/error-handler/error-handler.service.ts": {
             "lines": 8,
             "tokens": 79,
             "sources": 1,
@@ -2452,7 +2452,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/accounts/account.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/accounts/account.ts": {
             "lines": 112,
             "tokens": 917,
             "sources": 1,
@@ -2464,7 +2464,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/accounts/account-component.service.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/accounts/account-component.service.ts": {
             "lines": 65,
             "tokens": 588,
             "sources": 1,
@@ -2476,7 +2476,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/account-panel/account-panel.component.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/account-panel/account-panel.component.ts": {
             "lines": 39,
             "tokens": 329,
             "sources": 1,
@@ -2488,7 +2488,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/account-panel/account-detail.component.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/account-panel/account-detail.component.ts": {
             "lines": 102,
             "tokens": 734,
             "sources": 1,
@@ -2500,7 +2500,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/utils/structured-logger.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/utils/structured-logger.ts": {
             "lines": 201,
             "tokens": 1808,
             "sources": 1,
@@ -2512,7 +2512,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/utils/structured-logger-types.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/utils/structured-logger-types.ts": {
             "lines": 25,
             "tokens": 182,
             "sources": 1,
@@ -2524,7 +2524,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/utils/logger.types.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/utils/logger.types.ts": {
             "lines": 6,
             "tokens": 62,
             "sources": 1,
@@ -2536,7 +2536,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/utils/logger.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/utils/logger.ts": {
             "lines": 73,
             "tokens": 620,
             "sources": 1,
@@ -2548,7 +2548,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/utils/aws-config.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/utils/aws-config.ts": {
             "lines": 318,
             "tokens": 2123,
             "sources": 1,
@@ -2560,7 +2560,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/middleware/tracing.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/middleware/tracing.ts": {
             "lines": 99,
             "tokens": 844,
             "sources": 1,
@@ -2572,7 +2572,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/middleware/tracing-helpers.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/middleware/tracing-helpers.ts": {
             "lines": 37,
             "tokens": 290,
             "sources": 1,
@@ -2584,7 +2584,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/middleware/mock-xray-subsegment.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/middleware/mock-xray-subsegment.ts": {
             "lines": 50,
             "tokens": 440,
             "sources": 1,
@@ -2596,7 +2596,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/middleware/mock-xray-segment.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/middleware/mock-xray-segment.ts": {
             "lines": 59,
             "tokens": 534,
             "sources": 1,
@@ -2608,7 +2608,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/middleware/capture-functions.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/middleware/capture-functions.ts": {
             "lines": 153,
             "tokens": 1308,
             "sources": 1,
@@ -2620,7 +2620,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/app/app.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/app/app.ts": {
             "lines": 30,
             "tokens": 210,
             "sources": 1,
@@ -2632,7 +2632,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/environments/get-cognito-config.function.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/environments/get-cognito-config.function.ts": {
             "lines": 21,
             "tokens": 171,
             "sources": 1,
@@ -2644,7 +2644,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/environments/environment.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/environments/environment.ts": {
             "lines": 21,
             "tokens": 134,
             "sources": 1,
@@ -2656,7 +2656,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/environments/environment.prod.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/environments/environment.prod.ts": {
             "lines": 21,
             "tokens": 136,
             "sources": 1,
@@ -2668,7 +2668,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/environments/cognito-config.interface.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/environments/cognito-config.interface.ts": {
             "lines": 10,
             "tokens": 73,
             "sources": 1,
@@ -2680,7 +2680,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/environments/cognito-config-staging.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/environments/cognito-config-staging.ts": {
             "lines": 21,
             "tokens": 140,
             "sources": 1,
@@ -2692,7 +2692,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/environments/cognito-config-prod.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/environments/cognito-config-prod.ts": {
             "lines": 21,
             "tokens": 140,
             "sources": 1,
@@ -2704,7 +2704,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/environments/cognito-config-dev.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/environments/cognito-config-dev.ts": {
             "lines": 21,
             "tokens": 140,
             "sources": 1,
@@ -2716,7 +2716,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/app.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/app.ts": {
             "lines": 12,
             "tokens": 115,
             "sources": 1,
@@ -2728,7 +2728,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/app.routes.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/app.routes.ts": {
             "lines": 109,
             "tokens": 821,
             "sources": 1,
@@ -2740,7 +2740,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/app.routes.server.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/app.routes.server.ts": {
             "lines": 7,
             "tokens": 56,
             "sources": 1,
@@ -2752,7 +2752,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/app.config.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/app.config.ts": {
             "lines": 102,
             "tokens": 713,
             "sources": 1,
@@ -2764,7 +2764,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/app.config.server.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/app.config.server.ts": {
             "lines": 10,
             "tokens": 105,
             "sources": 1,
@@ -2776,7 +2776,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/src/main.ts": {
+          "/home/dave/code/dms-workspace/apps/server/src/main.ts": {
             "lines": 74,
             "tokens": 515,
             "sources": 1,
@@ -2788,7 +2788,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms-e2e/src/universe-yield.e2e-spec.ts": {
+          "/home/dave/code/dms-workspace/apps/dms-e2e/src/universe-yield.e2e-spec.ts": {
             "lines": 687,
             "tokens": 5240,
             "sources": 1,
@@ -2800,7 +2800,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/test-setup.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/test-setup.ts": {
             "lines": 12,
             "tokens": 61,
             "sources": 1,
@@ -2812,7 +2812,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/server.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/server.ts": {
             "lines": 68,
             "tokens": 357,
             "sources": 1,
@@ -2824,7 +2824,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/main.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/main.ts": {
             "lines": 5,
             "tokens": 54,
             "sources": 1,
@@ -2836,7 +2836,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/main.server.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/src/main.server.ts": {
             "lines": 8,
             "tokens": 75,
             "sources": 1,
@@ -2848,7 +2848,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/vitest.config.ts": {
+          "/home/dave/code/dms-workspace/apps/server/vitest.config.ts": {
             "lines": 22,
             "tokens": 150,
             "sources": 1,
@@ -2860,7 +2860,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms-e2e/playwright.config.ts": {
+          "/home/dave/code/dms-workspace/apps/dms-e2e/playwright.config.ts": {
             "lines": 67,
             "tokens": 280,
             "sources": 1,
@@ -2872,7 +2872,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/vitest.config.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/vitest.config.ts": {
             "lines": 22,
             "tokens": 159,
             "sources": 1,
@@ -2884,7 +2884,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/vite.config.ts": {
+          "/home/dave/code/dms-workspace/apps/dms/vite.config.ts": {
             "lines": 25,
             "tokens": 202,
             "sources": 1,
@@ -2896,7 +2896,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/scripts/test-constraints.ts": {
+          "/home/dave/code/dms-workspace/scripts/test-constraints.ts": {
             "lines": 194,
             "tokens": 1262,
             "sources": 1,
@@ -2908,7 +2908,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/scripts/seed-postgres.ts": {
+          "/home/dave/code/dms-workspace/scripts/seed-postgres.ts": {
             "lines": 331,
             "tokens": 2722,
             "sources": 1,
@@ -2920,7 +2920,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/scripts/migrate-sqlite-to-postgres.ts": {
+          "/home/dave/code/dms-workspace/scripts/migrate-sqlite-to-postgres.ts": {
             "lines": 312,
             "tokens": 2577,
             "sources": 1,
@@ -2932,7 +2932,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/scripts/check-duplicates.ts": {
+          "/home/dave/code/dms-workspace/scripts/check-duplicates.ts": {
             "lines": 85,
             "tokens": 494,
             "sources": 1,
@@ -2944,7 +2944,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/vitest.config.ts": {
+          "/home/dave/code/dms-workspace/vitest.config.ts": {
             "lines": 71,
             "tokens": 364,
             "sources": 1,
@@ -2972,7 +2972,7 @@
       },
       "markup": {
         "sources": {
-          "/home/dave/code/rms-workspace/apps/rms/src/app/shared/components/edit/node-editor.component.html": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/shared/components/edit/node-editor.component.html": {
             "lines": 10,
             "tokens": 53,
             "sources": 1,
@@ -2984,7 +2984,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/global/screener/screener.html": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/global/screener/screener.html": {
             "lines": 118,
             "tokens": 726,
             "sources": 1,
@@ -2996,7 +2996,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/global/global-universe/global-universe.component.html": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/global/global-universe/global-universe.component.html": {
             "lines": 262,
             "tokens": 1815,
             "sources": 1,
@@ -3008,7 +3008,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/global/global-summary/global-summary.component.html": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/global/global-summary/global-summary.component.html": {
             "lines": 39,
             "tokens": 237,
             "sources": 1,
@@ -3020,7 +3020,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/account-panel/summary/summary.component.html": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/account-panel/summary/summary.component.html": {
             "lines": 29,
             "tokens": 177,
             "sources": 1,
@@ -3032,7 +3032,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/account-panel/sold-positions/sold-positions.component.html": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/account-panel/sold-positions/sold-positions.component.html": {
             "lines": 151,
             "tokens": 1101,
             "sources": 1,
@@ -3044,7 +3044,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/account-panel/open-positions/open-positions.component.html": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/account-panel/open-positions/open-positions.component.html": {
             "lines": 195,
             "tokens": 1025,
             "sources": 1,
@@ -3056,7 +3056,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/account-panel/new-position/new-position.component.html": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/account-panel/new-position/new-position.component.html": {
             "lines": 68,
             "tokens": 500,
             "sources": 1,
@@ -3068,7 +3068,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/account-panel/dividend-deposits/dividend-deposits.html": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/account-panel/dividend-deposits/dividend-deposits.html": {
             "lines": 35,
             "tokens": 259,
             "sources": 1,
@@ -3080,7 +3080,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/account-panel/div-dep-modal/div-dep-modal.component.html": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/account-panel/div-dep-modal/div-dep-modal.component.html": {
             "lines": 65,
             "tokens": 466,
             "sources": 1,
@@ -3092,7 +3092,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/shell/shell.component.html": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/shell/shell.component.html": {
             "lines": 37,
             "tokens": 230,
             "sources": 1,
@@ -3104,7 +3104,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/shared/symbol-filter-header.component.html": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/shared/symbol-filter-header.component.html": {
             "lines": 7,
             "tokens": 35,
             "sources": 1,
@@ -3116,7 +3116,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/shared/symbol-autocomplete.component.html": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/shared/symbol-autocomplete.component.html": {
             "lines": 13,
             "tokens": 82,
             "sources": 1,
@@ -3128,7 +3128,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/shared/summary-display.component.html": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/shared/summary-display.component.html": {
             "lines": 33,
             "tokens": 291,
             "sources": 1,
@@ -3140,7 +3140,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/shared/sortable-header.component.html": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/shared/sortable-header.component.html": {
             "lines": 6,
             "tokens": 46,
             "sources": 1,
@@ -3152,7 +3152,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/shared/editable-date-cell.component.html": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/shared/editable-date-cell.component.html": {
             "lines": 17,
             "tokens": 118,
             "sources": 1,
@@ -3164,7 +3164,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/shared/editable-cell.component.html": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/shared/editable-cell.component.html": {
             "lines": 50,
             "tokens": 353,
             "sources": 1,
@@ -3176,7 +3176,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/shared/base-positions-table.component.html": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/shared/base-positions-table.component.html": {
             "lines": 13,
             "tokens": 83,
             "sources": 1,
@@ -3188,7 +3188,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/global/global.component.html": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/global/global.component.html": {
             "lines": 29,
             "tokens": 157,
             "sources": 1,
@@ -3200,7 +3200,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/accounts/account.html": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/accounts/account.html": {
             "lines": 58,
             "tokens": 315,
             "sources": 1,
@@ -3212,7 +3212,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/account-panel/account-panel.component.html": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/account-panel/account-panel.component.html": {
             "lines": 11,
             "tokens": 82,
             "sources": 1,
@@ -3224,7 +3224,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/account-panel/account-detail.component.html": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/account-panel/account-detail.component.html": {
             "lines": 83,
             "tokens": 467,
             "sources": 1,
@@ -3236,7 +3236,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/index.html": {
+          "/home/dave/code/dms-workspace/apps/dms/src/index.html": {
             "lines": 28,
             "tokens": 273,
             "sources": 1,
@@ -3264,7 +3264,7 @@
       },
       "css": {
         "sources": {
-          "/home/dave/code/rms-workspace/apps/rms/src/app/shared/components/edit/node-editor.component.css": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/shared/components/edit/node-editor.component.css": {
             "lines": 22,
             "tokens": 137,
             "sources": 1,
@@ -3292,7 +3292,7 @@
       },
       "scss": {
         "sources": {
-          "/home/dave/code/rms-workspace/apps/rms/src/app/global/screener/screener.scss": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/global/screener/screener.scss": {
             "lines": 5,
             "tokens": 31,
             "sources": 1,
@@ -3304,7 +3304,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/global/global-universe/global-universe.component.scss": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/global/global-universe/global-universe.component.scss": {
             "lines": 16,
             "tokens": 71,
             "sources": 1,
@@ -3316,7 +3316,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/account-panel/sold-positions/sold-positions.component.scss": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/account-panel/sold-positions/sold-positions.component.scss": {
             "lines": 15,
             "tokens": 79,
             "sources": 1,
@@ -3328,7 +3328,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/account-panel/open-positions/open-positions.component.scss": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/account-panel/open-positions/open-positions.component.scss": {
             "lines": 15,
             "tokens": 79,
             "sources": 1,
@@ -3340,7 +3340,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/shell/shell.component.scss": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/shell/shell.component.scss": {
             "lines": 4,
             "tokens": 24,
             "sources": 1,
@@ -3352,7 +3352,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/global/global.component.scss": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/global/global.component.scss": {
             "lines": 50,
             "tokens": 261,
             "sources": 1,
@@ -3364,7 +3364,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/accounts/account.scss": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/accounts/account.scss": {
             "lines": 66,
             "tokens": 342,
             "sources": 1,
@@ -3376,7 +3376,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/account-panel/account-panel.component.scss": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/account-panel/account-panel.component.scss": {
             "lines": 5,
             "tokens": 31,
             "sources": 1,
@@ -3388,7 +3388,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/app/account-panel/account-detail.component.scss": {
+          "/home/dave/code/dms-workspace/apps/dms/src/app/account-panel/account-detail.component.scss": {
             "lines": 5,
             "tokens": 35,
             "sources": 1,
@@ -3400,7 +3400,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/src/styles.scss": {
+          "/home/dave/code/dms-workspace/apps/dms/src/styles.scss": {
             "lines": 20,
             "tokens": 87,
             "sources": 1,
@@ -3428,7 +3428,7 @@
       },
       "javascript": {
         "sources": {
-          "/home/dave/code/rms-workspace/apps/infrastructure/modules/cognito/main.tf.test.js": {
+          "/home/dave/code/dms-workspace/apps/infrastructure/modules/cognito/main.tf.test.js": {
             "lines": 281,
             "tokens": 2219,
             "sources": 1,
@@ -3440,7 +3440,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/tailwind.config.js": {
+          "/home/dave/code/dms-workspace/apps/dms/tailwind.config.js": {
             "lines": 16,
             "tokens": 117,
             "sources": 1,
@@ -3452,7 +3452,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/postcss.config.js": {
+          "/home/dave/code/dms-workspace/apps/dms/postcss.config.js": {
             "lines": 5,
             "tokens": 34,
             "sources": 1,
@@ -3480,7 +3480,7 @@
       },
       "json": {
         "sources": {
-          "/home/dave/code/rms-workspace/apps/server/tsconfig.spec.json": {
+          "/home/dave/code/dms-workspace/apps/server/tsconfig.spec.json": {
             "lines": 8,
             "tokens": 61,
             "sources": 1,
@@ -3492,7 +3492,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/tsconfig.app.json": {
+          "/home/dave/code/dms-workspace/apps/server/tsconfig.app.json": {
             "lines": 9,
             "tokens": 61,
             "sources": 1,
@@ -3504,7 +3504,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/server/project.json": {
+          "/home/dave/code/dms-workspace/apps/server/project.json": {
             "lines": 66,
             "tokens": 386,
             "sources": 1,
@@ -3516,7 +3516,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms-e2e/project.json": {
+          "/home/dave/code/dms-workspace/apps/dms-e2e/project.json": {
             "lines": 8,
             "tokens": 53,
             "sources": 1,
@@ -3528,7 +3528,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/tsconfig.spec.json": {
+          "/home/dave/code/dms-workspace/apps/dms/tsconfig.spec.json": {
             "lines": 28,
             "tokens": 123,
             "sources": 1,
@@ -3540,7 +3540,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/tsconfig.app.json": {
+          "/home/dave/code/dms-workspace/apps/dms/tsconfig.app.json": {
             "lines": 24,
             "tokens": 111,
             "sources": 1,
@@ -3552,7 +3552,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/proxy.conf.json": {
+          "/home/dave/code/dms-workspace/apps/dms/proxy.conf.json": {
             "lines": 5,
             "tokens": 24,
             "sources": 1,
@@ -3564,7 +3564,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/rms/project.json": {
+          "/home/dave/code/dms-workspace/apps/dms/project.json": {
             "lines": 103,
             "tokens": 586,
             "sources": 1,
@@ -3576,7 +3576,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/apps/infrastructure/project.json": {
+          "/home/dave/code/dms-workspace/apps/infrastructure/project.json": {
             "lines": 93,
             "tokens": 537,
             "sources": 1,
@@ -3588,7 +3588,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/tsconfig.base.json": {
+          "/home/dave/code/dms-workspace/tsconfig.base.json": {
             "lines": 19,
             "tokens": 133,
             "sources": 1,
@@ -3600,7 +3600,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/package.json": {
+          "/home/dave/code/dms-workspace/package.json": {
             "lines": 135,
             "tokens": 919,
             "sources": 1,
@@ -3612,7 +3612,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/nx.json": {
+          "/home/dave/code/dms-workspace/nx.json": {
             "lines": 68,
             "tokens": 375,
             "sources": 1,
@@ -3624,7 +3624,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/.jscpd.json": {
+          "/home/dave/code/dms-workspace/.jscpd.json": {
             "lines": 18,
             "tokens": 85,
             "sources": 1,
@@ -3652,7 +3652,7 @@
       },
       "markdown": {
         "sources": {
-          "/home/dave/code/rms-workspace/scripts/README.md": {
+          "/home/dave/code/dms-workspace/scripts/README.md": {
             "lines": 97,
             "tokens": 599,
             "sources": 1,
@@ -3664,7 +3664,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/README.md": {
+          "/home/dave/code/dms-workspace/README.md": {
             "lines": 161,
             "tokens": 1153,
             "sources": 1,
@@ -3676,7 +3676,7 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/home/dave/code/rms-workspace/CLAUDE.md": {
+          "/home/dave/code/dms-workspace/CLAUDE.md": {
             "lines": 242,
             "tokens": 2291,
             "sources": 1,

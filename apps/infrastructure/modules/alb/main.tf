@@ -1,7 +1,7 @@
-# Application Load Balancer Configuration for RMS Backend
+# Application Load Balancer Configuration for DMS Backend
 
 # Application Load Balancer
-resource "aws_lb" "rms_backend" {
+resource "aws_lb" "dms_backend" {
   name               = "${var.project_name}-backend-alb-${var.environment}"
   internal           = false
   load_balancer_type = "application"
@@ -12,7 +12,7 @@ resource "aws_lb" "rms_backend" {
 
   access_logs {
     bucket  = aws_s3_bucket.alb_logs.bucket
-    prefix  = "rms-backend-alb"
+    prefix  = "dms-backend-alb"
     enabled = true
   }
 
@@ -91,7 +91,7 @@ data "aws_iam_policy_document" "alb_logs_bucket_policy" {
     ]
 
     resources = [
-      "${aws_s3_bucket.alb_logs.arn}/rms-backend-alb/AWSLogs/${data.aws_caller_identity.current.account_id}/*",
+      "${aws_s3_bucket.alb_logs.arn}/dms-backend-alb/AWSLogs/${data.aws_caller_identity.current.account_id}/*",
     ]
 
     condition {
@@ -126,7 +126,7 @@ resource "aws_s3_bucket_policy" "alb_logs" {
 }
 
 # Target Group
-resource "aws_lb_target_group" "rms_backend" {
+resource "aws_lb_target_group" "dms_backend" {
   name        = "${var.project_name}-backend-tg-${var.environment}"
   port        = 3000
   protocol    = "HTTP"
@@ -159,7 +159,7 @@ resource "aws_lb_target_group" "rms_backend" {
 
 # HTTP Listener (redirect to HTTPS)
 resource "aws_lb_listener" "http" {
-  load_balancer_arn = aws_lb.rms_backend.arn
+  load_balancer_arn = aws_lb.dms_backend.arn
   port              = "80"
   protocol          = "HTTP"
 
@@ -181,7 +181,7 @@ resource "aws_lb_listener" "http" {
 
 # HTTPS Listener
 resource "aws_lb_listener" "https" {
-  load_balancer_arn = aws_lb.rms_backend.arn
+  load_balancer_arn = aws_lb.dms_backend.arn
   port              = "443"
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-TLS-1-2-2017-01"
@@ -189,7 +189,7 @@ resource "aws_lb_listener" "https" {
 
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.rms_backend.arn
+    target_group_arn = aws_lb_target_group.dms_backend.arn
   }
 
   tags = {
@@ -205,7 +205,7 @@ resource "aws_lb_listener_rule" "api" {
 
   action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.rms_backend.arn
+    target_group_arn = aws_lb_target_group.dms_backend.arn
   }
 
   condition {

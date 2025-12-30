@@ -258,7 +258,7 @@ data "aws_iam_policy_document" "ecs_task" {
       "ssm:GetParametersByPath"
     ]
     resources = [
-      "arn:aws:ssm:*:*:parameter/rms/${var.environment}/*"
+      "arn:aws:ssm:*:*:parameter/dms/${var.environment}/*"
     ]
   }
 }

@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document outlines the procedures for responding to security incidents in the RMS application, including detection, analysis, containment, eradication, recovery, and lessons learned.
+This document outlines the procedures for responding to security incidents in the DMS application, including detection, analysis, containment, eradication, recovery, and lessons learned.
 
 ## Incident Classification
 

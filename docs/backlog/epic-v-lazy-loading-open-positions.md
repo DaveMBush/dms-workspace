@@ -28,7 +28,7 @@ Implement PrimeNG p-table lazy loading with virtual scrolling for the Open Posit
 
 **Integration points:**
 
-- `apps/rms/src/app/account-panel/open-positions/` component files
+- `apps/dms/src/app/account-panel/open-positions/` component files
 - Extends `BasePositionsComponent<OpenPosition, OpenPositionsStorageService>`
 - `OpenPositionsComponentService` for business logic
 - Symbol filter header component integration

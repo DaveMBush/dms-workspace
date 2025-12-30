@@ -3,26 +3,26 @@ We've been working on stories AA.1 through AF.1 I think the intention might have
 There are a number of things we need to do before we move on:
 
 - We need to implement an import routine that can be accessed from the global/universe screen which will allow us to load the transactions from fidelity's application.
-- We need to move and attach the code from the RMS app that connects the components to the server so that the RMS-MATERIAL app is functional. That is, we need to implement what was left out in stories AA.1 through AF.1
+- We need to move and attach the code from the DMS app that connects the components to the server so that the DMS-MATERIAL app is functional. That is, we need to implement what was left out in stories AA.1 through AF.1
 - We currently have backend code that checks to make sure the data for the risk groups have been created. I'm not sure where this is but it needs to be executed when we get the risk groups as part of the top route. I have reason to believe this is not occurring at this point.
 - There are some minor GUI issues we need to address
 - The order that we need to address the above backend integrations, fixes and additional features is as follows:
   1. Make sure the risk group data creation code is executed when we get the risk groups in the top route.
-  2. Wire up the Account panel so we can add account and see them in the account list. Use existing logic from the RMS app.
+  2. Wire up the Account panel so we can add account and see them in the account list. Use existing logic from the DMS app.
   3. Wire up the Global/Screener refresh button. This is important because this is what populates the the Universe data which is what we use to get the bulk of the symbols we will be working with.
-  4. Wire up the Global/Screener table using existing logic from the RMS app. We will move this to virtual scroll at a later time, right now we are only interested in getting the application functional.
-  5. Wire up the Global/Universe update universe button. Using existing logic from the RMS app.
-  6. Wire up the Global/Universe update fields button. Using existing logic from the RMS app.
-  7. Wire up the Global/Universe add button. Using existing logic from the RMS app.
-  8. Wire up displaying the data in the Global/Universe table using existing logic from the RMS app.
+  4. Wire up the Global/Screener table using existing logic from the DMS app. We will move this to virtual scroll at a later time, right now we are only interested in getting the application functional.
+  5. Wire up the Global/Universe update universe button. Using existing logic from the DMS app.
+  6. Wire up the Global/Universe update fields button. Using existing logic from the DMS app.
+  7. Wire up the Global/Universe add button. Using existing logic from the DMS app.
+  8. Wire up displaying the data in the Global/Universe table using existing logic from the DMS app.
   9. Implement the import routine for fidelity transactions and wire it up to the global/universe screen.
-     10.Wire up the Glocal/Summary screen using existing logic from the RMS app.
-     11.Wire up the Account/Summary screen using existing logic from the RMS app.
-     12.Wire up the Open Positions screen using the existing logic from the RMS app. Make sure to include the Add New Positions button functionality. And ensure that when the sell and sell date are filled in the position is closed and the row is removed from the open positions table.
-     13.Wire up the Account/Sold Positions screen using existing logic from the RMS app.
-     14.Wire up the Account/Dividends & Depositions screen using existing logic from the RMS app.
+     10.Wire up the Glocal/Summary screen using existing logic from the DMS app.
+     11.Wire up the Account/Summary screen using existing logic from the DMS app.
+     12.Wire up the Open Positions screen using the existing logic from the DMS app. Make sure to include the Add New Positions button functionality. And ensure that when the sell and sell date are filled in the position is closed and the row is removed from the open positions table.
+     13.Wire up the Account/Sold Positions screen using existing logic from the DMS app.
+     14.Wire up the Account/Dividends & Depositions screen using existing logic from the DMS app.
      15.Ensure that when we select a different account from the account list, all the account specific screens update to reflect the newly selected account.
-     16.Make sure the selected button for the Global items (Screener/Universe/Summary) and the accounts list is persisted when after refreshing the screen with the browser refresh functionality. Just like in the RMS app, the selected button should be blue when it is the currently selected item.
+     16.Make sure the selected button for the Global items (Screener/Universe/Summary) and the accounts list is persisted when after refreshing the screen with the browser refresh functionality. Just like in the DMS app, the selected button should be blue when it is the currently selected item.
      17.There is sorting that has not been implemented in several of the tables (Global/Universe, Account/Open Positions, Account/Sold Positions) that I would like to leave until after we've implemented virtual scrolling because it will need to be implemented on the server instead of the client like it is now.
      18.Finally implement Virtual Scrolling for all the tables and implement the sorting and filtering to work with virtual scrolling on the server.
 

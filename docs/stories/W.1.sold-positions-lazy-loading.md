@@ -27,13 +27,13 @@ Draft
 13. Ensure the following commands run without errors:
     - `pnpm format`
     - `pnpm dupcheck`
-    - `pnpm nx run rms:test --code-coverage`
+    - `pnpm nx run dms:test --code-coverage`
     - `pnpm nx run server:build:production`
     - `pnpm nx run server:test --code-coverage`
     - `pnpm nx run server:lint`
-    - `pnpm nx run rms:lint`
-    - `pnpm nx run rms:build:production`
-    - `pnpm nx run rms-e2e:lint`
+    - `pnpm nx run dms:lint`
+    - `pnpm nx run dms:build:production`
+    - `pnpm nx run dms-e2e:lint`
 
 ## Tasks / Subtasks
 
@@ -128,7 +128,7 @@ This story implements lazy loading for the Sold Positions table (Epic W). This c
 
 ### Current Implementation Analysis
 
-**Source: [apps/rms/src/app/account-panel/sold-positions/sold-positions.component.ts]**
+**Source: [apps/dms/src/app/account-panel/sold-positions/sold-positions.component.ts]**
 
 **Component Structure:**
 
@@ -170,7 +170,7 @@ export class SoldPositionsComponent extends BasePositionsComponent<SoldPosition,
 
 ### Capital Gains Calculator Function
 
-**Source: [apps/rms/src/app/account-panel/sold-positions/capital-gains-calculator.function.ts]**
+**Source: [apps/dms/src/app/account-panel/sold-positions/capital-gains-calculator.function.ts]**
 
 **Calculator Function:**
 
@@ -358,16 +358,16 @@ protected validateTradeField(
 
 **Files to Modify:**
 
-- `/apps/rms/src/app/account-panel/sold-positions/sold-positions.component.html` - Add lazy loading attributes
-- `/apps/rms/src/app/account-panel/sold-positions/sold-positions.component.ts` - Implement lazy load logic
-- `/apps/rms/src/app/account-panel/sold-positions/sold-positions.component.spec.ts` - Update tests
+- `/apps/dms/src/app/account-panel/sold-positions/sold-positions.component.html` - Add lazy loading attributes
+- `/apps/dms/src/app/account-panel/sold-positions/sold-positions.component.ts` - Implement lazy load logic
+- `/apps/dms/src/app/account-panel/sold-positions/sold-positions.component.spec.ts` - Update tests
 
 **Files to Reference (Read-Only):**
 
-- `/apps/rms/src/app/shared/base-positions.component.ts` - Base class with shared logic
-- `/apps/rms/src/app/account-panel/sold-positions/sold-positions-component.service.ts` - Business logic
-- `/apps/rms/src/app/account-panel/sold-positions/sold-positions-storage.service.ts` - State persistence
-- `/apps/rms/src/app/account-panel/sold-positions/capital-gains-calculator.function.ts` - Calculation logic
+- `/apps/dms/src/app/shared/base-positions.component.ts` - Base class with shared logic
+- `/apps/dms/src/app/account-panel/sold-positions/sold-positions-component.service.ts` - Business logic
+- `/apps/dms/src/app/account-panel/sold-positions/sold-positions-storage.service.ts` - State persistence
+- `/apps/dms/src/app/account-panel/sold-positions/capital-gains-calculator.function.ts` - Calculation logic
 
 ### Testing
 
@@ -428,7 +428,7 @@ protected validateTradeField(
 
 **Test File Location:**
 
-- `/apps/rms/src/app/account-panel/sold-positions/sold-positions.component.spec.ts`
+- `/apps/dms/src/app/account-panel/sold-positions/sold-positions.component.spec.ts`
 
 ## Change Log
 

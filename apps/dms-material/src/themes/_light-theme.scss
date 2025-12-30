@@ -1,0 +1,23 @@
+@use '@angular/material' as mat;
+
+// Light theme configuration using Material 3 theming
+// Uses blue palette to match current DMS styling
+
+$light-theme: mat.define-theme(
+  (
+    color: (
+      primary: mat.$blue-palette,
+      tertiary: mat.$yellow-palette,
+      theme-type: light,
+    ),
+  )
+);
+
+// Light theme specific CSS custom properties
+:root {
+  --dms-background: #fff;
+  --dms-surface: #f9fafb;
+  --dms-text-primary: #111827;
+  --dms-text-secondary: #6b7280;
+  --dms-border: #e5e7eb;
+}

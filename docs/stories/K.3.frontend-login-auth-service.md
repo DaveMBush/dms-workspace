@@ -8,7 +8,7 @@ Ready for Review
 
 **As a** single-user application owner,
 **I want** to have a polished login component and authentication service integrated with AWS Cognito,
-**so that** I can securely log into my RMS application with a professional user experience and proper token management.
+**so that** I can securely log into my DMS application with a professional user experience and proper token management.
 
 ## Acceptance Criteria
 
@@ -24,13 +24,13 @@ Ready for Review
 
 - `pnpm format`
 - `pnpm dupcheck`
-- `pnpm nx run rms:test --code-coverage`
+- `pnpm nx run dms:test --code-coverage`
 - `pnpm nx run server:build:production`
 - `pnpm nx run server:test --code-coverage`
 - `pnpm nx run server:lint`
-- `pnpm nx run rms:lint`
-- `pnpm nx run rms:build:production`
-- `pnpm nx run rms-e2e:lint`
+- `pnpm nx run dms:lint`
+- `pnpm nx run dms:build:production`
+- `pnpm nx run dms-e2e:lint`
 - `pnpm nx run infrastructure:lint`
 
 ## Tasks / Subtasks
@@ -45,7 +45,7 @@ Ready for Review
 
 - [x] **Task 2: Create authentication service with Cognito integration** (AC: 2, 4, 5)
 
-  - [x] Create `AuthService` in `/apps/rms/src/app/auth/auth.service.ts` using `inject()` pattern
+  - [x] Create `AuthService` in `/apps/dms/src/app/auth/auth.service.ts` using `inject()` pattern
   - [x] Implement `signIn()` method with Cognito authentication
   - [x] Implement `signOut()` method with complete token cleanup
   - [x] Add `getCurrentUser()` method for user profile retrieval
@@ -54,7 +54,7 @@ Ready for Review
 
 - [x] **Task 3: Create login component with PrimeNG styling** (AC: 1, 6, 7)
 
-  - [x] Generate login component: `apps/rms/src/app/auth/login/login.ts`
+  - [x] Generate login component: `apps/dms/src/app/auth/login/login.ts`
   - [x] Create responsive login form template: `login.html`
   - [x] Add PrimeNG form components (InputText, Password, Button, Message)
   - [x] Implement loading states with PrimeNG ProgressSpinner
@@ -113,7 +113,7 @@ Ready for Review
 
 ### Data Models and Architecture
 
-**Source: [apps/rms/src/app/global/global-universe/global-universe.component.html]**
+**Source: [apps/dms/src/app/global/global-universe/global-universe.component.html]**
 
 - Existing PrimeNG component patterns: p-table, p-button, p-dropdown
 - Current styling approach: PrimeNG theme with TailwindCSS utilities
@@ -138,30 +138,30 @@ Login Component ---> AuthService ---> AWS Cognito ---> Token Storage ---> API Re
 
 **Primary Files to Create:**
 
-1. `/apps/rms/src/app/auth/auth.service.ts` - Main authentication service
-2. `/apps/rms/src/app/auth/login/login.ts` - Login component
-3. `/apps/rms/src/app/auth/login/login.html` - Login template
-4. `/apps/rms/src/app/auth/login/login.scss` - Login styles
-5. `/apps/rms/src/app/auth/auth.types.ts` - Authentication type definitions
-6. `/apps/rms/src/app/auth/guards/auth.guard.ts` - Route guard (preparation for K.4)
+1. `/apps/dms/src/app/auth/auth.service.ts` - Main authentication service
+2. `/apps/dms/src/app/auth/login/login.ts` - Login component
+3. `/apps/dms/src/app/auth/login/login.html` - Login template
+4. `/apps/dms/src/app/auth/login/login.scss` - Login styles
+5. `/apps/dms/src/app/auth/auth.types.ts` - Authentication type definitions
+6. `/apps/dms/src/app/auth/guards/auth.guard.ts` - Route guard (preparation for K.4)
 
 **Primary Files to Modify:**
 
-1. `/apps/rms/src/app/app.routes.ts` - Add login route
-2. `/apps/rms/src/environments/environment.ts` - Add Cognito configuration
-3. `/apps/rms/package.json` - Add AWS Amplify dependencies
+1. `/apps/dms/src/app/app.routes.ts` - Add login route
+2. `/apps/dms/src/environments/environment.ts` - Add Cognito configuration
+3. `/apps/dms/package.json` - Add AWS Amplify dependencies
 
 **Test Files to Create:**
 
-1. `/apps/rms/src/app/auth/auth.service.spec.ts` - Service unit tests
-2. `/apps/rms/src/app/auth/login/login.spec.ts` - Component unit tests
+1. `/apps/dms/src/app/auth/auth.service.spec.ts` - Service unit tests
+2. `/apps/dms/src/app/auth/login/login.spec.ts` - Component unit tests
 
 ### Technical Implementation Details
 
 **Authentication Service Structure:**
 
 ```typescript
-// apps/rms/src/app/auth/auth.service.ts
+// apps/dms/src/app/auth/auth.service.ts
 import { Injectable, signal, computed } from '@angular/core';
 import { Auth } from '@aws-amplify/auth';
 import { environment } from '../../environments/environment';
@@ -268,7 +268,7 @@ export class AuthService {
 **Login Component Implementation:**
 
 ```typescript
-// apps/rms/src/app/auth/login/login.ts
+// apps/dms/src/app/auth/login/login.ts
 import { Component, signal } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -336,11 +336,11 @@ export class Login {
 **Login Template:**
 
 ```html
-<!-- apps/rms/src/app/auth/login/login.html -->
+<!-- apps/dms/src/app/auth/login/login.html -->
 <div class="login-container min-h-screen flex align-items-center justify-content-center p-4">
   <div class="login-card surface-card p-6 border-round shadow-2 w-full max-w-md">
     <div class="text-center mb-5">
-      <h1 class="text-3xl font-bold text-900 mb-2">RMS Login</h1>
+      <h1 class="text-3xl font-bold text-900 mb-2">DMS Login</h1>
       <span class="text-600 font-medium">Sign in to your account</span>
     </div>
 
@@ -377,7 +377,7 @@ export class Login {
 **Environment Configuration:**
 
 ```typescript
-// apps/rms/src/environments/environment.ts
+// apps/dms/src/environments/environment.ts
 export const environment = {
   production: false,
   cognito: {
@@ -458,7 +458,7 @@ Claude Sonnet 4 (claude-sonnet-4-20250514) - James Development Agent
 ### Debug Log References
 
 - Story K.3 implementation started on 2025-09-05
-- GitHub Issue #124 created: https://github.com/DaveMBush/rms-workspace/issues/124
+- GitHub Issue #124 created: https://github.com/DaveMBush/dms-workspace/issues/124
 - Branch: feature/124-frontend-login-auth-service
 
 ### Completion Notes List
@@ -478,21 +478,21 @@ Claude Sonnet 4 (claude-sonnet-4-20250514) - James Development Agent
 
 **New Files Created:**
 
-- `apps/rms/src/app/auth/auth.types.ts` - TypeScript interfaces for authentication
-- `apps/rms/src/app/auth/auth.service.ts` - Core authentication service with Cognito integration
-- `apps/rms/src/app/auth/auth.service.spec.ts` - Comprehensive AuthService unit tests
-- `apps/rms/src/app/auth/guards/auth.guard.ts` - Route guards for authentication
-- `apps/rms/src/app/auth/login/login.ts` - Login component with PrimeNG styling
-- `apps/rms/src/app/auth/login/login.html` - Responsive login template
-- `apps/rms/src/app/auth/login/login.scss` - Login component styles with mobile support
-- `apps/rms/src/app/auth/login/login.spec.ts` - Login component unit tests
+- `apps/dms/src/app/auth/auth.types.ts` - TypeScript interfaces for authentication
+- `apps/dms/src/app/auth/auth.service.ts` - Core authentication service with Cognito integration
+- `apps/dms/src/app/auth/auth.service.spec.ts` - Comprehensive AuthService unit tests
+- `apps/dms/src/app/auth/guards/auth.guard.ts` - Route guards for authentication
+- `apps/dms/src/app/auth/login/login.ts` - Login component with PrimeNG styling
+- `apps/dms/src/app/auth/login/login.html` - Responsive login template
+- `apps/dms/src/app/auth/login/login.scss` - Login component styles with mobile support
+- `apps/dms/src/app/auth/login/login.spec.ts` - Login component unit tests
 
 **Modified Files:**
 
 - `package.json` - Added AWS Amplify dependencies (@aws-amplify/auth, @aws-amplify/core)
-- `apps/rms/src/app/app.routes.ts` - Added authentication routes
-- `apps/rms/src/app/shell/shell.component.ts` - Added logout functionality and user display
-- `apps/rms/src/app/shell/shell.component.html` - Added logout button and confirmation dialog
+- `apps/dms/src/app/app.routes.ts` - Added authentication routes
+- `apps/dms/src/app/shell/shell.component.ts` - Added logout functionality and user display
+- `apps/dms/src/app/shell/shell.component.html` - Added logout button and confirmation dialog
 
 ## QA Results
 

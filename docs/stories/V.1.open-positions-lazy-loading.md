@@ -25,13 +25,13 @@ Draft
 11. Ensure the following commands run without errors:
     - `pnpm format`
     - `pnpm dupcheck`
-    - `pnpm nx run rms:test --code-coverage`
+    - `pnpm nx run dms:test --code-coverage`
     - `pnpm nx run server:build:production`
     - `pnpm nx run server:test --code-coverage`
     - `pnpm nx run server:lint`
-    - `pnpm nx run rms:lint`
-    - `pnpm nx run rms:build:production`
-    - `pnpm nx run rms-e2e:lint`
+    - `pnpm nx run dms:lint`
+    - `pnpm nx run dms:build:production`
+    - `pnpm nx run dms-e2e:lint`
 
 ## Tasks / Subtasks
 
@@ -113,7 +113,7 @@ This story implements lazy loading for the Open Positions table (Epic V). This i
 
 ### Current Implementation Analysis
 
-**Source: [apps/rms/src/app/account-panel/open-positions/open-positions.component.ts]**
+**Source: [apps/dms/src/app/account-panel/open-positions/open-positions.component.ts]**
 
 **Component Inheritance:**
 
@@ -260,7 +260,7 @@ onLazyLoad(event: LazyLoadEvent): void {
 
 ### BasePositionsComponent Integration
 
-**Source: [apps/rms/src/app/shared/base-positions.component.ts]**
+**Source: [apps/dms/src/app/shared/base-positions.component.ts]**
 
 **Inherited Methods to Preserve:**
 
@@ -311,15 +311,15 @@ readonly sortSignals = {
 
 **Files to Modify:**
 
-- `/apps/rms/src/app/account-panel/open-positions/open-positions.component.html` - Add lazy loading attributes
-- `/apps/rms/src/app/account-panel/open-positions/open-positions.component.ts` - Implement lazy load logic
-- `/apps/rms/src/app/account-panel/open-positions/open-positions.component.spec.ts` - Update tests
+- `/apps/dms/src/app/account-panel/open-positions/open-positions.component.html` - Add lazy loading attributes
+- `/apps/dms/src/app/account-panel/open-positions/open-positions.component.ts` - Implement lazy load logic
+- `/apps/dms/src/app/account-panel/open-positions/open-positions.component.spec.ts` - Update tests
 
 **Files to Reference (Read-Only):**
 
-- `/apps/rms/src/app/shared/base-positions.component.ts` - Base class with shared logic
-- `/apps/rms/src/app/account-panel/open-positions/open-positions-component.service.ts` - Business logic
-- `/apps/rms/src/app/account-panel/open-positions/open-positions-storage.service.ts` - State persistence
+- `/apps/dms/src/app/shared/base-positions.component.ts` - Base class with shared logic
+- `/apps/dms/src/app/account-panel/open-positions/open-positions-component.service.ts` - Business logic
+- `/apps/dms/src/app/account-panel/open-positions/open-positions-storage.service.ts` - State persistence
 
 ### Inline Editing Validation Flows
 
@@ -387,7 +387,7 @@ private validateSellDateField(row: OpenPosition, trade: Trade, universe: Univers
 
 **Integration:**
 
-- `<rms-symbol-filter-header>` component in template
+- `<dms-symbol-filter-header>` component in template
 - Two-way binding: `[(symbolFilter)]="symbolFilter"`
 - Event: `(filterChange)="onSymbolFilterChange()"`
 - Filter updates trigger `positions$` recomputation
@@ -450,7 +450,7 @@ private validateSellDateField(row: OpenPosition, trade: Trade, universe: Univers
 
 **Test File Location:**
 
-- `/apps/rms/src/app/account-panel/open-positions/open-positions.component.spec.ts`
+- `/apps/dms/src/app/account-panel/open-positions/open-positions.component.spec.ts`
 
 ## Change Log
 

@@ -2,13 +2,13 @@
 
 ## Story
 
-**As a** developer building the rms-material application
+**As a** developer building the dms-material application
 **I want** the app.config.ts properly configured with all required providers
 **So that** the application has all dependencies wired correctly for runtime
 
 ## Context
 
-**Current System (RMS):**
+**Current System (DMS):**
 
 - `app.config.ts` configures PrimeNG, SmartNgRX, HTTP client, routing
 - Uses `providePrimeNG()` for PrimeNG configuration
@@ -33,7 +33,7 @@
 
 ### Technical Requirements
 
-- [ ] `app.config.ts` mirrors RMS configuration minus PrimeNG
+- [ ] `app.config.ts` mirrors DMS configuration minus PrimeNG
 - [ ] All injection tokens properly configured
 - [ ] Zoneless change detection enabled
 - [ ] Browser global error listeners enabled
@@ -60,7 +60,7 @@
 
 ### Step 1: Create App Configuration
 
-Create/update `apps/rms-material/src/app/app.config.ts`:
+Create/update `apps/dms-material/src/app/app.config.ts`:
 
 ```typescript
 import { provideHttpClient, withFetch, withInterceptors, withInterceptorsFromDi } from '@angular/common/http';
@@ -175,7 +175,7 @@ export const appConfig: ApplicationConfig = {
 
 ### Step 2: Create Initial Routes
 
-Create `apps/rms-material/src/app/app.routes.ts`:
+Create `apps/dms-material/src/app/app.routes.ts`:
 
 ```typescript
 import { Route } from '@angular/router';
@@ -195,7 +195,7 @@ export const appRoutes: Route[] = [
 
 ### Step 3: Update Main Entry Point
 
-Verify `apps/rms-material/src/main.ts`:
+Verify `apps/dms-material/src/main.ts`:
 
 ```typescript
 import { bootstrapApplication } from '@angular/platform-browser';
@@ -209,14 +209,14 @@ bootstrapApplication(AppComponent, appConfig).catch((err) => console.error(err))
 ### Step 4: Verify Bootstrap
 
 ```bash
-pnpm nx run rms-material:serve
+pnpm nx run dms-material:serve
 ```
 
 Check browser console for any bootstrap errors.
 
-## Comparison: RMS vs RMS-Material Config
+## Comparison: DMS vs DMS-Material Config
 
-| Provider                               | RMS | RMS-Material |
+| Provider                               | DMS | DMS-Material |
 | -------------------------------------- | --- | ------------ |
 | `provideZonelessChangeDetection()`     | ✅  | ✅           |
 | `provideBrowserGlobalErrorListeners()` | ✅  | ✅           |
@@ -233,9 +233,9 @@ Check browser console for any bootstrap errors.
 
 | File                                      | Changes                                   |
 | ----------------------------------------- | ----------------------------------------- |
-| `apps/rms-material/src/app/app.config.ts` | Complete configuration with all providers |
-| `apps/rms-material/src/app/app.routes.ts` | Initial routing configuration             |
-| `apps/rms-material/src/main.ts`           | Verify bootstrap configuration            |
+| `apps/dms-material/src/app/app.config.ts` | Complete configuration with all providers |
+| `apps/dms-material/src/app/app.routes.ts` | Initial routing configuration             |
+| `apps/dms-material/src/main.ts`           | Verify bootstrap configuration            |
 
 ## Definition of Done
 
@@ -252,18 +252,18 @@ Check browser console for any bootstrap errors.
 
 ## E2E Test Requirements
 
-When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
+When this story is complete, ensure the following e2e tests exist in `apps/dms-material-e2e/`:
 
 - [ ] Application bootstraps with all providers configured
 - [ ] Router navigates correctly
 - [ ] HTTP interceptor attaches auth tokens
 - [ ] Animations are enabled and working
 
-Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.
+Run `pnpm nx run dms-material-e2e:e2e` to verify all e2e tests pass.
 
 ## Notes
 
-- The only difference from RMS config is removal of `providePrimeNG()`
+- The only difference from DMS config is removal of `providePrimeNG()`
 - All SmartNgRX patterns remain identical
 - Auth conditional logic preserved for mock development
 - Routes will be fully implemented in later stories (AB.1+)

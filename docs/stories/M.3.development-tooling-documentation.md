@@ -4,7 +4,7 @@
 
 As a **developer**,
 I want **comprehensive tooling, scripts, and documentation for the local development environment**,
-So that **I can easily set up, start, and manage the complete local RMS stack with minimal effort**.
+So that **I can easily set up, start, and manage the complete local DMS stack with minimal effort**.
 
 ## Story Context
 

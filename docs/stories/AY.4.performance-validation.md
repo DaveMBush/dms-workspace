@@ -21,7 +21,7 @@ The primary driver for this migration is improved virtual scrolling with lazy lo
 
 ### Technical Requirements
 
-- [ ] Bundle size comparable to RMS
+- [ ] Bundle size comparable to DMS
 - [ ] No memory leaks detected
 - [ ] Efficient change detection
 
@@ -41,15 +41,15 @@ The primary driver for this migration is improved virtual scrolling with lazy lo
 
 ```bash
 # Build production bundles
-pnpm nx run rms:build:production
-pnpm nx run rms-material:build:production
+pnpm nx run dms:build:production
+pnpm nx run dms-material:build:production
 
 # Compare sizes
-ls -la dist/apps/rms/browser/*.js
-ls -la dist/apps/rms-material/browser/*.js
+ls -la dist/apps/dms/browser/*.js
+ls -la dist/apps/dms-material/browser/*.js
 ```
 
-**Target:** rms-material bundle within 10% of rms bundle.
+**Target:** dms-material bundle within 10% of dms bundle.
 
 ### Step 2: Lighthouse Audit
 
@@ -200,11 +200,11 @@ async function testMemoryLeaks() {
 }
 ```
 
-### Step 6: Compare with Original RMS
+### Step 6: Compare with Original DMS
 
-Run same benchmarks on original RMS application and compare:
+Run same benchmarks on original DMS application and compare:
 
-| Metric         | RMS (PrimeNG) | RMS-Material | Improvement |
+| Metric         | DMS (PrimeNG) | DMS-Material | Improvement |
 | -------------- | ------------- | ------------ | ----------- |
 | Bundle Size    | TBD           | TBD          | TBD         |
 | Initial Load   | TBD           | TBD          | TBD         |
@@ -214,7 +214,7 @@ Run same benchmarks on original RMS application and compare:
 ## Performance Report Template
 
 ```markdown
-# RMS-Material Performance Validation Report
+# DMS-Material Performance Validation Report
 
 ## Date: [DATE]
 
@@ -224,14 +224,14 @@ Run same benchmarks on original RMS application and compare:
 
 ## Bundle Size Comparison
 
-| Bundle  | RMS  | RMS-Material | Delta |
+| Bundle  | DMS  | DMS-Material | Delta |
 | ------- | ---- | ------------ | ----- |
 | main.js | X KB | Y KB         | Z%    |
 | Total   | X KB | Y KB         | Z%    |
 
 ## Lighthouse Scores
 
-| Page              | RMS | RMS-Material |
+| Page              | DMS | DMS-Material |
 | ----------------- | --- | ------------ |
 | Login             | X   | Y            |
 | Dashboard         | X   | Y            |
@@ -239,21 +239,21 @@ Run same benchmarks on original RMS application and compare:
 
 ## Virtual Scrolling Performance
 
-| Metric  | RMS | RMS-Material | Target |
+| Metric  | DMS | DMS-Material | Target |
 | ------- | --- | ------------ | ------ |
 | Avg FPS | X   | Y            | >= 55  |
 | Min FPS | X   | Y            | >= 30  |
 
 ## Lazy Loading
 
-| Metric          | RMS  | RMS-Material |
+| Metric          | DMS  | DMS-Material |
 | --------------- | ---- | ------------ |
 | Initial Load    | X ms | Y ms         |
 | Subsequent Load | X ms | Y ms         |
 
 ## Memory Usage
 
-| Scenario     | RMS  | RMS-Material |
+| Scenario     | DMS  | DMS-Material |
 | ------------ | ---- | ------------ |
 | Initial      | X MB | Y MB         |
 | After 10 min | X MB | Y MB         |
@@ -272,18 +272,18 @@ Run same benchmarks on original RMS application and compare:
 - [ ] Lazy loading works correctly
 - [ ] No memory leaks detected
 - [ ] Performance report documented
-- [ ] Comparison with RMS shows improvement or parity
+- [ ] Comparison with DMS shows improvement or parity
 - [ ] PRIMARY DRIVER VALIDATED: Virtual scrolling with lazy loading works correctly
 - [ ] All validation commands pass
   - Run `pnpm all`
-  - Run `pnpm e2e:rms-material`
+  - Run `pnpm e2e:dms-material`
   - Run `pnpm dupcheck`
   - Run `pnpm format`
   - Repeat all of these if any fail until they all pass
 
 ## E2E Test Requirements
 
-When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
+When this story is complete, ensure the following e2e tests exist in `apps/dms-material-e2e/`:
 
 **Bundle & Load Performance:**
 
@@ -359,4 +359,4 @@ When this story is complete, ensure the following e2e tests exist in `apps/rms-m
 - [ ] Battery usage reasonable on mobile
 - [ ] No excessive repaints (DevTools paint flashing)
 
-Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.
+Run `pnpm nx run dms-material-e2e:e2e` to verify all e2e tests pass.

@@ -14,14 +14,14 @@ Users need to compare this market-based yield with their actual cost basis yield
 
 ## Technical Context
 
-**Current Implementation:** `/apps/rms/src/app/global/global-universe/universe.selector.ts:yield_percent`
+**Current Implementation:** `/apps/dms/src/app/global/global-universe/universe.selector.ts:yield_percent`
 
 **Data Model Dependencies:**
 
 - `universe` table: `distribution`, `distributions_per_year`, `last_price`
 - `trades` table: `buy`, `quantity`, `universeId`, `accountId`, `sell_date` (null for open positions)
 
-**Display Location:** `/apps/rms/src/app/global/global-universe/global-universe.component.*`
+**Display Location:** `/apps/dms/src/app/global/global-universe/global-universe.component.*`
 
 ## Story H1: Add average purchase price yield calculation
 
