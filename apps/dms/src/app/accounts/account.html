@@ -1,0 +1,59 @@
+<p-toolbar class="text-lg font-semibold">
+  <ng-template #start>
+    <div class="whitespace-nowrap truncate">Accounts</div>
+  </ng-template>
+  <ng-template #end>
+    <p-button
+      icon="pi pi-plus"
+      class="mr-2"
+      text
+      severity="secondary"
+      (onClick)="addAccount()"
+    />
+  </ng-template>
+</p-toolbar>
+
+<p-listbox
+  [options]="accountsArray$()"
+  dataKey="id"
+  class="mt-0 accounts-listbox"
+  [ngModel]="selectedAccountId$()"
+  scrollHeight="100%"
+  (ngModelChange)="onAccountSelect($event)"
+>
+  <ng-template pTemplate="item" let-account>
+    @if(addingNode === account.id || editingNode === account.id) {
+    <dms-node-editor
+      placeholder="Edit Account"
+      [(ngModel)]="editingContent"
+      (cancel)="cancelEdit(account)"
+      (save)="saveEdit(account)"
+    />
+    } @else {
+    <div
+      class="group flex flex-row basis-full"
+      [class.selected-account]="selectedAccountId$() === account.id"
+    >
+      <div
+        class="flex-auto text-color hover:text-color-emphasis whitespace-nowrap truncate flex items-center"
+      >
+        {{ account.name }}
+      </div>
+      <p-button
+        icon="pi pi-pencil"
+        class="flex-none invisible group-hover:visible"
+        text
+        severity="secondary"
+        (click)="editAccount(account)"
+      />
+      <p-button
+        icon="pi pi-trash"
+        class="flex-none invisible group-hover:visible"
+        text
+        severity="secondary"
+        (click)="deleteAccount(account)"
+      />
+    </div>
+    }
+  </ng-template>
+</p-listbox>

@@ -10,7 +10,7 @@
 
 **Current System:**
 
-- Location: `apps/rms/src/app/account-panel/open-positions/`
+- Location: `apps/dms/src/app/account-panel/open-positions/`
 - PrimeNG components: `p-table` (editable), `p-toolbar`, `p-cellEditor`, `p-inputNumber`, `p-datepicker`
 - Similar complexity to Global Universe
 
@@ -23,7 +23,7 @@
 
 ### Functional Requirements
 
-- [ ] **CRITICAL** All GUI look as close to the existing RMS app as possible
+- [ ] **CRITICAL** All GUI look as close to the existing DMS app as possible
 - [ ] Open positions display in table
 - [ ] Editable cells for quantity, price, dates
 - [ ] Add new position action
@@ -43,7 +43,7 @@
 
 ### Step 1: Create Unit Tests First
 
-Create `apps/rms-material/src/app/account-panel/open-positions/open-positions.component.spec.ts`:
+Create `apps/dms-material/src/app/account-panel/open-positions/open-positions.component.spec.ts`:
 
 ```typescript
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -101,13 +101,13 @@ describe('OpenPositionsComponent', () => {
 
 **TDD Cycle:**
 
-1. Run `pnpm nx run rms-material:test` - tests should fail (RED)
+1. Run `pnpm nx run dms-material:test` - tests should fail (RED)
 2. Implement minimal code to pass tests (GREEN)
 3. Refactor while keeping tests passing (REFACTOR)
 
 ## Technical Approach
 
-Create `apps/rms-material/src/app/account-panel/open-positions/open-positions.component.ts`:
+Create `apps/dms-material/src/app/account-panel/open-positions/open-positions.component.ts`:
 
 ```typescript
 import { Component, inject, ViewChild } from '@angular/core';
@@ -122,7 +122,7 @@ import { selectTrades } from '../../store/trades/select-trades.function';
 import { Trade } from '../../store/trades/trade.interface';
 
 @Component({
-  selector: 'rms-open-positions',
+  selector: 'dms-open-positions',
   imports: [MatToolbarModule, MatButtonModule, MatIconModule, BaseTableComponent, EditableCellComponent, EditableDateCellComponent],
   templateUrl: './open-positions.component.html',
   styleUrl: './open-positions.component.scss',
@@ -164,14 +164,14 @@ export class OpenPositionsComponent {
 - [ ] SmartNgRX updates
 - [ ] All validation commands pass
   - Run `pnpm all`
-  - Run `pnpm e2e:rms-material`
+  - Run `pnpm e2e:dms-material`
   - Run `pnpm dupcheck`
   - Run `pnpm format`
   - Repeat all of these if any fail until they all pass
 
 ## E2E Test Requirements
 
-When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
+When this story is complete, ensure the following e2e tests exist in `apps/dms-material-e2e/`:
 
 ### Core Functionality
 
@@ -200,7 +200,7 @@ When this story is complete, ensure the following e2e tests exist in `apps/rms-m
 - [ ] Print view formats table correctly
 - [ ] Concurrent edits to same position handled
 
-Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.
+Run `pnpm nx run dms-material-e2e:e2e` to verify all e2e tests pass.
 
 ---
 
@@ -208,7 +208,7 @@ Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.
 
 ### Status
 
-In Progress - Component structure matches RMS app layout, all validations passing
+In Progress - Component structure matches DMS app layout, all validations passing
 
 ### Tasks
 
@@ -221,8 +221,8 @@ In Progress - Component structure matches RMS app layout, all validations passin
 - [x] Run all validation commands (pnpm all, dupcheck, format)
 - [x] Fix routing integration in app.routes.ts
 - [x] Implement table structure with column definitions
-- [x] Move Add Position button to account-panel component (matches RMS layout)
-- [x] Match exact column structure from RMS app (14 columns)
+- [x] Move Add Position button to account-panel component (matches DMS layout)
+- [x] Match exact column structure from DMS app (14 columns)
 - [x] Simplify component to just table (no internal toolbar)
 - [ ] Implement data binding with SmartNgRX (deferred - needs provider architecture review)
 - [ ] Add toolbar actions (Add/Sell position)
@@ -233,20 +233,20 @@ In Progress - Component structure matches RMS app layout, all validations passin
 
 ### File List
 
-- apps/rms-material/src/app/account-panel/open-positions/open-positions.component.ts
-- apps/rms-material/src/app/account-panel/open-positions/open-positions.component.html
-- apps/rms-material/src/app/account-panel/open-positions/open-positions.component.scss
-- apps/rms-material/src/app/account-panel/open-positions/open-positions.component.spec.ts
-- apps/rms-material/src/app/account-panel/account-panel.component.ts (added Add button)
-- apps/rms-material/src/app/account-panel/account-panel.component.html (added Add button)
-- apps/rms-material/src/app/app.routes.ts (updated routing)
-- apps/rms-material/src/app/shared/components/base-table/base-table.component.scss (table-layout and overflow fixes)
-- apps/rms-material/src/app/shell/shell.scss (overflow fixes to prevent horizontal scrollbar)
+- apps/dms-material/src/app/account-panel/open-positions/open-positions.component.ts
+- apps/dms-material/src/app/account-panel/open-positions/open-positions.component.html
+- apps/dms-material/src/app/account-panel/open-positions/open-positions.component.scss
+- apps/dms-material/src/app/account-panel/open-positions/open-positions.component.spec.ts
+- apps/dms-material/src/app/account-panel/account-panel.component.ts (added Add button)
+- apps/dms-material/src/app/account-panel/account-panel.component.html (added Add button)
+- apps/dms-material/src/app/app.routes.ts (updated routing)
+- apps/dms-material/src/app/shared/components/base-table/base-table.component.scss (table-layout and overflow fixes)
+- apps/dms-material/src/app/shell/shell.scss (overflow fixes to prevent horizontal scrollbar)
 
 ### Change Log
 
 - Created initial component structure with Material Design
-- Implemented complete column definitions matching RMS app exactly:
+- Implemented complete column definitions matching DMS app exactly:
   - Symbol (universeId, width: 120px) with search filter input, Ex-Date, Buy (editable), Buy Date (sortable, editable), Quantity (editable)
   - Expected $, Last $, Unrlz Gain % (sortable), Unrlz Gain$ (sortable)
   - Sell (editable), Sell Date (editable), Days Held, Target Gain, Target Sell
@@ -255,7 +255,7 @@ In Progress - Component structure matches RMS app layout, all validations passin
 - Fixed routing path in app.routes.ts to point to correct component location
 - Moved "Add Position" button to account-panel component (parent level) with mat-icon-button and tooltip
 - Simplified open-positions component to just display the table (removed internal toolbar)
-- Updated account-panel to include button after tabs, matching RMS app layout structure
+- Updated account-panel to include button after tabs, matching DMS app layout structure
 - **Added symbol search filter input field** in first column using filterRowTemplate with Material form field and ngModel binding
 - **Changed column header from "Search" to "Symbol"** and set column width to 120px for compact display
 - **Fixed horizontal scrollbar issue** by:
@@ -271,11 +271,11 @@ N/A
 
 ### Completion Notes
 
-Component structure now matches RMS app layout exactly:
+Component structure now matches DMS app layout exactly:
 
 - **Table structure**: Just the base-table component without internal toolbar
 - **Parent integration**: "Add Position" button moved to account-panel component at tab level
-- **Column structure**: 14 columns matching RMS app exactly:
+- **Column structure**: 14 columns matching DMS app exactly:
   1. Symbol (universeId, 120px width with search input filter)
   2. Ex-Date
   3. Buy (editable)
@@ -296,8 +296,8 @@ Component structure now matches RMS app layout exactly:
 - **All validation commands passing** (lint, test, build)
 - **Routing integrated** (navigates correctly to Open Positions tab)
 
-**Comparison with RMS App:**
-Used Playwright to inspect the original RMS app at `http://localhost:4200/account/1677e04f-ef9b-4372-adb3-b740443088dc/open`. The Material Design version now has the same layout structure:
+**Comparison with DMS App:**
+Used Playwright to inspect the original DMS app at `http://localhost:4200/account/1677e04f-ef9b-4372-adb3-b740443088dc/open`. The Material Design version now has the same layout structure:
 
 - Tabs at parent level with "+" button inline
 - Table component as simple child displaying just the data grid
@@ -327,7 +327,7 @@ Claude Sonnet 4.5
 
 ### Code Quality Assessment
 
-Component structure is well-implemented with proper TypeScript types, Angular best practices, and clean separation of concerns. Column definitions accurately match the RMS app specifications. Unit tests follow TDD approach and provide good coverage for component structure.
+Component structure is well-implemented with proper TypeScript types, Angular best practices, and clean separation of concerns. Column definitions accurately match the DMS app specifications. Unit tests follow TDD approach and provide good coverage for component structure.
 
 ### Refactoring Performed
 

@@ -1,10 +1,10 @@
 # Environment Configuration
 
-This guide covers the configuration of environment variables and AWS parameters for RMS infrastructure deployment across different environments.
+This guide covers the configuration of environment variables and AWS parameters for DMS infrastructure deployment across different environments.
 
 ## Environment Overview
 
-RMS supports three deployment environments:
+DMS supports three deployment environments:
 
 - **Development** (`dev`) - Feature development and testing
 - **Staging** (`staging`) - Pre-production integration testing
@@ -37,19 +37,19 @@ All environments require these core variables:
 # apps/infrastructure/environments/{env}/terraform.tfvars
 
 # Basic Configuration
-project_name = "rms"
+project_name = "dms"
 environment  = "dev"  # or "staging", "prod"
 aws_region   = "us-east-1"
 
 # Domain Configuration
-domain_name    = "rms-dev.example.com"  # Environment-specific domain
+domain_name    = "dms-dev.example.com"  # Environment-specific domain
 api_subdomain  = "api-dev"              # API subdomain prefix
 
 # Database Configuration
 db_instance_class    = "db.t3.micro"    # Adjust for environment
 db_allocated_storage = 20               # GB, adjust for environment
-db_name             = "rms_dev"         # Environment-specific DB name
-db_username         = "rms_admin"       # Database admin username
+db_name             = "dms_dev"         # Environment-specific DB name
+db_username         = "dms_admin"       # Database admin username
 
 # Application Configuration
 app_port        = 3000
@@ -98,7 +98,7 @@ slack_webhook_url = "https://hooks.slack.com/services/..."  # Sensitive
 ```hcl
 # apps/infrastructure/environments/dev/terraform.tfvars
 
-project_name = "rms"
+project_name = "dms"
 environment  = "dev"
 aws_region   = "us-east-1"
 
@@ -113,9 +113,9 @@ desired_count       = 1
 
 # Development-specific
 app_environment = "development"
-domain_name     = "rms-dev.example.com"
+domain_name     = "dms-dev.example.com"
 api_subdomain   = "api-dev"
-db_name         = "rms_dev"
+db_name         = "dms_dev"
 
 # Relaxed security for development
 allowed_cidr_blocks     = ["0.0.0.0/0"]
@@ -131,7 +131,7 @@ alert_emails = ["dev-team@example.com"]
 ```hcl
 # apps/infrastructure/environments/staging/terraform.tfvars
 
-project_name = "rms"
+project_name = "dms"
 environment  = "staging"
 aws_region   = "us-east-1"
 
@@ -146,9 +146,9 @@ desired_count       = 1
 
 # Staging-specific
 app_environment = "staging"
-domain_name     = "rms-staging.example.com"
+domain_name     = "dms-staging.example.com"
 api_subdomain   = "api-staging"
-db_name         = "rms_staging"
+db_name         = "dms_staging"
 
 # Production-like security
 allowed_cidr_blocks        = ["10.0.0.0/8", "172.16.0.0/12"]
@@ -164,7 +164,7 @@ alert_emails = ["devops@example.com", "qa-team@example.com"]
 ```hcl
 # apps/infrastructure/environments/prod/terraform.tfvars
 
-project_name = "rms"
+project_name = "dms"
 environment  = "prod"
 aws_region   = "us-east-1"
 
@@ -179,9 +179,9 @@ desired_count       = 2
 
 # Production configuration
 app_environment = "production"
-domain_name     = "rms.example.com"
+domain_name     = "dms.example.com"
 api_subdomain   = "api"
-db_name         = "rms_prod"
+db_name         = "dms_prod"
 
 # Production security
 allowed_cidr_blocks        = ["10.0.0.0/8"]  # VPN/office IPs only
@@ -209,17 +209,17 @@ For sensitive variables like database passwords and API keys:
 ```bash
 # Store database password
 aws ssm put-parameter \
-  --name "/rms/dev/db_password" \
+  --name "/dms/dev/db_password" \
   --value "secure-random-password" \
   --type "SecureString" \
-  --description "RMS dev database password"
+  --description "DMS dev database password"
 
 # Store Slack webhook URL
 aws ssm put-parameter \
-  --name "/rms/prod/slack_webhook_url" \
+  --name "/dms/prod/slack_webhook_url" \
   --value "https://hooks.slack.com/services/..." \
   --type "SecureString" \
-  --description "RMS prod Slack webhook URL"
+  --description "DMS prod Slack webhook URL"
 ```
 
 ### Environment Variable File (.env)
@@ -233,8 +233,8 @@ For local development, create a `.env` file in the project root:
 DB_PASSWORD=dev-password-here
 DB_HOST=localhost
 DB_PORT=5432
-DB_NAME=rms_dev
-DB_USER=rms_admin
+DB_NAME=dms_dev
+DB_USER=dms_admin
 
 # API Configuration
 API_PORT=3000
@@ -259,8 +259,8 @@ If using a custom domain:
 ```bash
 # Request SSL certificate
 aws acm request-certificate \
-  --domain-name "rms.example.com" \
-  --subject-alternative-names "*.rms.example.com" \
+  --domain-name "dms.example.com" \
+  --subject-alternative-names "*.dms.example.com" \
   --validation-method DNS \
   --region us-east-1
 ```
@@ -274,7 +274,7 @@ ssl_certificate_arn = "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1
 
 ### Without Custom Domain
 
-RMS can be deployed without a custom domain using AWS-provided URLs:
+DMS can be deployed without a custom domain using AWS-provided URLs:
 
 ```hcl
 # Leave domain_name empty to use AWS-provided URLs
@@ -311,7 +311,7 @@ Before deployment, ensure these AWS resources exist:
 aws s3 ls s3://your-terraform-state-bucket
 
 # Check DynamoDB table for locks
-aws dynamodb describe-table --table-name rms-terraform-locks
+aws dynamodb describe-table --table-name dms-terraform-locks
 
 # Verify SSL certificate (if using custom domain)
 aws acm list-certificates --region us-east-1
@@ -423,7 +423,7 @@ terraform plan -var-file="environments/dev/terraform.tfvars"
 
 ```bash
 # Check AWS Parameter Store
-aws ssm get-parameters --names "/rms/dev/db_password" --with-decryption
+aws ssm get-parameters --names "/dms/dev/db_password" --with-decryption
 ```
 
 **SSL certificate issues:**
@@ -459,5 +459,5 @@ After configuring environment variables:
 
 ---
 
-**Last Updated**: 2024-12-16  
+**Last Updated**: 2024-12-16
 **Version**: 1.0

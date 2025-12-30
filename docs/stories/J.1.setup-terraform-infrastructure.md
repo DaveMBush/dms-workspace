@@ -8,7 +8,7 @@ Ready for Review
 
 **As a** DevOps engineer,
 **I want** to establish the core AWS infrastructure foundation using Terraform,
-**so that** I can deploy the RMS application to AWS with Infrastructure as Code best practices and proper state management.
+**so that** I can deploy the DMS application to AWS with Infrastructure as Code best practices and proper state management.
 
 ## Acceptance Criteria
 
@@ -25,13 +25,13 @@ Ready for Review
 
 - `pnpm format`
 - `pnpm dupcheck`
-- `pnpm nx run rms:test --code-coverage`
+- `pnpm nx run dms:test --code-coverage`
 - `pnpm nx run server:build:production`
 - `pnpm nx run server:test --code-coverage`
 - `pnpm nx run server:lint`
-- `pnpm nx run rms:lint`
-- `pnpm nx run rms:build:production`
-- `pnpm nx run rms-e2e:lint`
+- `pnpm nx run dms:lint`
+- `pnpm nx run dms:build:production`
+- `pnpm nx run dms-e2e:lint`
 
 ## Tasks / Subtasks
 
@@ -97,12 +97,12 @@ This is the first story in Epic J, establishing the foundational infrastructure 
 
 - Target architecture: CloudFront + S3 (frontend), ECS Fargate (backend), RDS PostgreSQL
 - Current local setup: Angular 20 SPA + Fastify Node.js API + SQLite database
-- Nx monorepo with build outputs: `dist/apps/rms` (frontend), `dist/apps/server` (backend)
+- Nx monorepo with build outputs: `dist/apps/dms` (frontend), `dist/apps/server` (backend)
 
 **Source: [package.json]**
 
 - Tech stack: Angular 20, Fastify, Node.js 22, Prisma ORM
-- Build commands: `nx run rms:build`, `nx run server:build`
+- Build commands: `nx run dms:build`, `nx run server:build`
 - Package manager: pnpm
 
 ### File Locations
@@ -172,7 +172,7 @@ terraform {
 **VPC Configuration:**
 
 ```hcl
-# CIDR blocks for RMS application
+# CIDR blocks for DMS application
 variable "vpc_cidr" {
   description = "CIDR block for VPC"
   type        = string
@@ -191,7 +191,7 @@ variable "availability_zones" {
 ```hcl
 # ALB security group - Internet facing
 resource "aws_security_group" "alb" {
-  name_prefix = "rms-alb-"
+  name_prefix = "dms-alb-"
   vpc_id      = var.vpc_id
 
   ingress {
@@ -215,7 +215,7 @@ resource "aws_security_group" "alb" {
 ```hcl
 # ECS Task Execution Role
 resource "aws_iam_role" "ecs_task_execution" {
-  name = "rms-ecs-task-execution-role"
+  name = "dms-ecs-task-execution-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"

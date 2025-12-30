@@ -23,7 +23,7 @@
 ### Functional Requirements
 
 - [ ] Dropdown displays filter options
-- [ ] All GUI look as close to the existing RMS app as possible
+- [ ] All GUI look as close to the existing DMS app as possible
 - [ ] Selection filters table data
 - [ ] Clear option to show all
 - [ ] Compact display in header cell
@@ -40,7 +40,7 @@
 
 ### Step 1: Create Unit Tests First
 
-Create `apps/rms-material/src/app/shared/components/symbol-filter-header/symbol-filter-header.component.spec.ts`:
+Create `apps/dms-material/src/app/shared/components/symbol-filter-header/symbol-filter-header.component.spec.ts`:
 
 ```typescript
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -93,13 +93,13 @@ describe('SymbolFilterHeaderComponent', () => {
 
 **TDD Cycle:**
 
-1. Run `pnpm nx run rms-material:test` - tests should fail (RED)
+1. Run `pnpm nx run dms-material:test` - tests should fail (RED)
 2. Implement minimal code to pass tests (GREEN)
 3. Refactor while keeping tests passing (REFACTOR)
 
 ## Technical Approach
 
-Create `apps/rms-material/src/app/shared/components/symbol-filter-header/symbol-filter-header.component.ts`:
+Create `apps/dms-material/src/app/shared/components/symbol-filter-header/symbol-filter-header.component.ts`:
 
 ```typescript
 import { Component, input, output } from '@angular/core';
@@ -112,7 +112,7 @@ export interface FilterOption {
 }
 
 @Component({
-  selector: 'rms-symbol-filter-header',
+  selector: 'dms-symbol-filter-header',
   imports: [MatSelectModule, MatFormFieldModule],
   template: `
     <mat-form-field appearance="outline" class="filter-field">
@@ -163,7 +163,7 @@ export class SymbolFilterHeaderComponent {
 
 ## E2E Test Requirements
 
-When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
+When this story is complete, ensure the following e2e tests exist in `apps/dms-material-e2e/`:
 
 ### Core Functionality
 
@@ -187,21 +187,21 @@ When this story is complete, ensure the following e2e tests exist in `apps/rms-m
 - [ ] Filter indicator shows when filter is active (not "All")
 - [ ] Screen reader announces filter selection changes
 
-Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.
+Run `pnpm nx run dms-material-e2e:e2e` to verify all e2e tests pass.
 
 ## File List
 
 ### Component Files
 
-- `apps/rms-material/src/app/shared/components/symbol-filter-header/symbol-filter-header.component.ts`
-- `apps/rms-material/src/app/shared/components/symbol-filter-header/symbol-filter-header.component.html`
-- `apps/rms-material/src/app/shared/components/symbol-filter-header/symbol-filter-header.component.scss`
-- `apps/rms-material/src/app/shared/components/symbol-filter-header/symbol-filter-header.component.spec.ts`
-- `apps/rms-material/src/app/shared/components/symbol-filter-header/filter-option.interface.ts`
+- `apps/dms-material/src/app/shared/components/symbol-filter-header/symbol-filter-header.component.ts`
+- `apps/dms-material/src/app/shared/components/symbol-filter-header/symbol-filter-header.component.html`
+- `apps/dms-material/src/app/shared/components/symbol-filter-header/symbol-filter-header.component.scss`
+- `apps/dms-material/src/app/shared/components/symbol-filter-header/symbol-filter-header.component.spec.ts`
+- `apps/dms-material/src/app/shared/components/symbol-filter-header/filter-option.interface.ts`
 
 ### E2E Test Files
 
-- `apps/rms-material-e2e/src/symbol-filter-header.spec.ts`
+- `apps/dms-material-e2e/src/symbol-filter-header.spec.ts`
 
 ## Status
 
@@ -226,13 +226,13 @@ Claude Sonnet 4.5
 - All validation commands passing:
   - pnpm format ✅
   - pnpm dupcheck ✅
-  - rms-material:test --code-coverage ✅
+  - dms-material:test --code-coverage ✅
   - server:build:production ✅
   - server:test --code-coverage ✅
   - server:lint ✅
-  - rms-material:lint ✅
-  - rms-material:build:production ✅
-  - rms-e2e:lint ✅
+  - dms-material:lint ✅
+  - dms-material:build:production ✅
+  - dms-material-e2e:lint ✅
 
 ### Change Log
 

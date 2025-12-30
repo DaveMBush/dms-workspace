@@ -1,6 +1,6 @@
-# ECR Repository for RMS Backend Application
+# ECR Repository for DMS Backend Application
 
-resource "aws_ecr_repository" "rms_backend" {
+resource "aws_ecr_repository" "dms_backend" {
   name                 = "${var.project_name}-backend-${var.environment}"
   image_tag_mutability = "MUTABLE"
 
@@ -20,8 +20,8 @@ resource "aws_ecr_repository" "rms_backend" {
 }
 
 # Lifecycle policy to manage image retention
-resource "aws_ecr_lifecycle_policy" "rms_backend_policy" {
-  repository = aws_ecr_repository.rms_backend.name
+resource "aws_ecr_lifecycle_policy" "dms_backend_policy" {
+  repository = aws_ecr_repository.dms_backend.name
 
   policy = jsonencode({
     rules = [
@@ -56,8 +56,8 @@ resource "aws_ecr_lifecycle_policy" "rms_backend_policy" {
 }
 
 # Repository policy for cross-account access (if needed)
-resource "aws_ecr_repository_policy" "rms_backend_policy" {
-  repository = aws_ecr_repository.rms_backend.name
+resource "aws_ecr_repository_policy" "dms_backend_policy" {
+  repository = aws_ecr_repository.dms_backend.name
 
   policy = jsonencode({
     Version = "2012-10-17"

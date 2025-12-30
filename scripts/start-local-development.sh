@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# Local Development Startup Script for RMS Workspace
+# Local Development Startup Script for DMS Workspace
 # This script starts the complete local development environment with LocalStack
 
 set -e
 
-echo "🚀 Starting RMS Local Development Environment..."
+echo "🚀 Starting DMS Local Development Environment..."
 
 # Check if Docker is running
 if ! docker info > /dev/null 2>&1; then
@@ -23,12 +23,12 @@ timeout 120 bash -c 'until curl -s http://localhost:4566/health | grep -q "runni
 
 # Wait for PostgreSQL to be ready
 echo "⏳ Waiting for PostgreSQL to be ready..."
-timeout 60 bash -c 'until docker exec rms-postgres pg_isready -U rms_user -d rms_local; do echo "Waiting for PostgreSQL..."; sleep 3; done'
+timeout 60 bash -c 'until docker exec dms-postgres pg_isready -U dms_user -d dms_local; do echo "Waiting for PostgreSQL..."; sleep 3; done'
 
 # Set up environment for local development
 export NODE_ENV=local
 export USE_LOCAL_SERVICES=true
-export DATABASE_URL="postgresql://rms_user:rms_password@localhost:5432/rms_local?schema=public"
+export DATABASE_URL="postgresql://dms_user:dms_password@localhost:5432/dms_local?schema=public"
 export AWS_REGION=us-east-1
 export AWS_ACCESS_KEY_ID=test
 export AWS_SECRET_ACCESS_KEY=test
@@ -48,7 +48,7 @@ echo "✅ Local development environment is ready!"
 echo ""
 echo "📖 Next steps:"
 echo "   1. Run 'pnpm nx run server:serve' to start the backend"
-echo "   2. Run 'pnpm nx run rms:serve' to start the frontend"
+echo "   2. Run 'pnpm nx run dms:serve' to start the frontend"
 echo "   3. Visit http://localhost:4200 to access the application"
 echo ""
 echo "🛠️  Useful commands:"

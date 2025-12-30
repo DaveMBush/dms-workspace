@@ -25,13 +25,13 @@ Draft
 
 - `pnpm format`
 - `pnpm dupcheck`
-- `pnpm nx run rms:test --code-coverage`
+- `pnpm nx run dms:test --code-coverage`
 - `pnpm nx run server:build:production`
 - `pnpm nx run server:test --code-coverage`
 - `pnpm nx run server:lint`
-- `pnpm nx run rms:lint`
-- `pnpm nx run rms:build:production`
-- `pnpm nx run rms-e2e:lint`
+- `pnpm nx run dms:lint`
+- `pnpm nx run dms:build:production`
+- `pnpm nx run dms-e2e:lint`
 
 ## Tasks / Subtasks
 
@@ -148,7 +148,7 @@ Draft
 **Main Deployment Guide:**
 
 ```markdown
-# RMS AWS Deployment Guide
+# DMS AWS Deployment Guide
 
 ## Prerequisites
 
@@ -204,7 +204,7 @@ Draft
 **Operational Runbook:**
 
 ````markdown
-# RMS Operations Runbook
+# DMS Operations Runbook
 
 ## Daily Tasks
 
@@ -221,17 +221,17 @@ Draft
 #!/bin/bash
 # scripts/daily-health-check.sh
 
-echo "=== RMS Daily Health Check ==="
+echo "=== DMS Daily Health Check ==="
 echo "Date: $(date)"
 echo
 
 # Check frontend
 echo "Frontend Status:"
-curl -s -o /dev/null -w "%{http_code}\n" https://rms-app.com/health
+curl -s -o /dev/null -w "%{http_code}\n" https://dms-app.com/health
 
 # Check API
 echo "API Status:"
-curl -s -o /dev/null -w "%{http_code}\n" https://api.rms-app.com/health
+curl -s -o /dev/null -w "%{http_code}\n" https://api.dms-app.com/health
 
 # Check database connectivity
 echo "Database Status:"
@@ -266,11 +266,11 @@ echo "Health check completed."
 
 **Architecture Documentation:**
 ```markdown
-# RMS Architecture Overview
+# DMS Architecture Overview
 
 ## System Architecture
 
-The RMS application follows a modern cloud-native architecture deployed on AWS:
+The DMS application follows a modern cloud-native architecture deployed on AWS:
 
 ### High-Level Components
 
@@ -321,7 +321,7 @@ Internet → Route53 → ALB → ECS Fargate (Backend) → RDS
 **Troubleshooting Guide:**
 
 ````markdown
-# RMS Troubleshooting Guide
+# DMS Troubleshooting Guide
 
 ## Application Issues
 
@@ -348,7 +348,7 @@ aws cloudfront create-invalidation \
   --paths "/*"
 
 # Test DNS
-dig A rms-app.com
+dig A dms-app.com
 ```
 ````
 
@@ -371,11 +371,11 @@ dig A rms-app.com
 ```bash
 # Check ECS service status
 aws ecs describe-services \
-  --cluster rms-cluster-prod \
-  --services rms-backend-service-prod
+  --cluster dms-cluster-prod \
+  --services dms-backend-service-prod
 
 # View recent logs
-aws logs tail /aws/ecs/rms-backend-prod --follow
+aws logs tail /aws/ecs/dms-backend-prod --follow
 ```
 
 ### Database Connection Issues

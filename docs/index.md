@@ -1,6 +1,6 @@
-# RMS Workspace Documentation
+# DMS Workspace Documentation
 
-Welcome to the RMS workspace documentation. This documentation covers the architecture, configuration, and operational procedures for the RMS system.
+Welcome to the DMS workspace documentation. This documentation covers the architecture, configuration, and operational procedures for the DMS system.
 
 ## 📚 Documentation Sections
 
@@ -43,7 +43,7 @@ Welcome to the RMS workspace documentation. This documentation covers the archit
 
 ## 📖 Feature Flag System
 
-The RMS workspace uses a feature flag system to control the rollout of new features:
+The DMS workspace uses a feature flag system to control the rollout of new features:
 
 - **`USE_SCREENER_FOR_UNIVERSE`**: Controls screener-driven universe synchronization
 - **Default Behavior**: Manual universe management (flag = `false`)

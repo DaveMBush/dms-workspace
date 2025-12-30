@@ -4,14 +4,14 @@
 
 **As a** user
 **I want** to see my accounts load from the backend
-**So that** I can view and select accounts in the RMS-MATERIAL app
+**So that** I can view and select accounts in the DMS-MATERIAL app
 
 ## Context
 
 **Current System:**
 
-- RMS app loads accounts via SmartNgRX from AccountEffectsService
-- RMS-MATERIAL has account list UI but static/mock data
+- DMS app loads accounts via SmartNgRX from AccountEffectsService
+- DMS-MATERIAL has account list UI but static/mock data
 - Account definition and effect service already exist
 
 **Migration Target:**
@@ -24,7 +24,7 @@
 
 ### Functional Requirements
 
-- [ ] **CRITICAL** Account list matches RMS app behavior exactly
+- [ ] **CRITICAL** Account list matches DMS app behavior exactly
 - [ ] Accounts load from backend when app starts
 - [ ] Account list updates reactively when data changes
 - [ ] Selected account persists across navigation
@@ -40,7 +40,7 @@
 
 ### Step 1: Create Unit Tests First
 
-Create/update `apps/rms-material/src/app/accounts/account.spec.ts`:
+Create/update `apps/dms-material/src/app/accounts/account.spec.ts`:
 
 ```typescript
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -83,12 +83,12 @@ describe('Account Component', () => {
 ### Step 2: Run Tests (Should Fail)
 
 ```bash
-pnpm nx test rms-material
+pnpm nx test dms-material
 ```
 
 ### Step 3: Implement
 
-Modify `apps/rms-material/src/app/accounts/account.ts`:
+Modify `apps/dms-material/src/app/accounts/account.ts`:
 
 ```typescript
 import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
@@ -103,7 +103,7 @@ import { selectAccounts } from '../store/accounts/selectors/select-accounts.func
 import { Account as AccountInterface } from '../store/accounts/account.interface';
 
 @Component({
-  selector: 'rms-account',
+  selector: 'dms-account',
   imports: [RouterLink, RouterLinkActive, MatListModule, MatToolbarModule, MatButtonModule, MatIconModule, MatDividerModule],
   templateUrl: './account.html',
   styleUrl: './account.scss',
@@ -132,14 +132,14 @@ export class Account {
 ### Step 4: Run Tests Again (Should Pass)
 
 ```bash
-pnpm nx test rms-material
+pnpm nx test dms-material
 ```
 
 ### Step 5: Manual Testing with Playwright
 
 Use Playwright MCP to verify UI:
 
-1. Start app: `pnpm nx serve rms-material`
+1. Start app: `pnpm nx serve dms-material`
 2. Navigate to accounts view
 3. Verify accounts load from backend
 4. Verify clicking account navigates properly
@@ -148,22 +148,22 @@ Use Playwright MCP to verify UI:
 
 | File                                                 | Changes                             |
 | ---------------------------------------------------- | ----------------------------------- |
-| `apps/rms-material/src/app/accounts/account.ts`      | Wired to SmartNgRX selectAccounts   |
-| `apps/rms-material/src/app/accounts/account.spec.ts` | Added unit tests                    |
-| `apps/rms-material/src/app/app.routes.ts`            | Ensured accountsDefinition provided |
+| `apps/dms-material/src/app/accounts/account.ts`      | Wired to SmartNgRX selectAccounts   |
+| `apps/dms-material/src/app/accounts/account.spec.ts` | Added unit tests                    |
+| `apps/dms-material/src/app/app.routes.ts`            | Ensured accountsDefinition provided |
 
 ## Definition of Done
 
 - [ ] Unit tests pass
 - [ ] Accounts load from backend
-- [ ] UI matches RMS app
+- [ ] UI matches DMS app
 - [ ] All existing tests pass
 - [ ] Lint passes
 - [ ] Manual Playwright verification complete
 - [ ] Code reviewed
 - [ ] All validation commands pass
   - Run `pnpm all`
-  - Run `pnpm e2e:rms-material`
+  - Run `pnpm e2e:dms-material`
   - Run `pnpm dupcheck`
   - Run `pnpm format`
   - Repeat all of these if any fail until they all pass

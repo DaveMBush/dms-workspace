@@ -1,18 +1,18 @@
-# RMS Troubleshooting Guide
+# DMS Troubleshooting Guide
 
-This guide provides systematic approaches to diagnosing and resolving common issues in the RMS system.
+This guide provides systematic approaches to diagnosing and resolving common issues in the DMS system.
 
 ## Quick Reference
 
 ### Emergency Contacts
 
-- **DevOps Team**: slack://rms-devops or +1-800-RMS-HELP
+- **DevOps Team**: slack://dms-devops or +1-800-DMS-HELP
 - **Database Issues**: dba@company.com
 - **Security Issues**: security@company.com
 
 ### Critical System Status
 
-- **Health Dashboard**: https://status.rms.company.com
+- **Health Dashboard**: https://status.dms.company.com
 - **CloudWatch Dashboards**: https://console.aws.amazon.com/cloudwatch/home#dashboards:
 - **X-Ray Traces**: https://console.aws.amazon.com/xray/home
 
@@ -38,14 +38,14 @@ This guide provides systematic approaches to diagnosing and resolving common iss
 
    ```bash
    aws ecs describe-services \
-     --cluster rms-production \
-     --services rms-backend rms-frontend
+     --cluster dms-production \
+     --services dms-backend dms-frontend
    ```
 
 3. Check ALB target health:
    ```bash
    aws elbv2 describe-target-health \
-     --target-group-arn arn:aws:elasticloadbalancing:us-east-1:ACCOUNT:targetgroup/rms-backend/xxx
+     --target-group-arn arn:aws:elasticloadbalancing:us-east-1:ACCOUNT:targetgroup/dms-backend/xxx
    ```
 
 #### Resolution
@@ -54,8 +54,8 @@ This guide provides systematic approaches to diagnosing and resolving common iss
 
   ```bash
   aws ecs update-service \
-    --cluster rms-production \
-    --service rms-backend \
+    --cluster dms-production \
+    --service dms-backend \
     --force-new-deployment
   ```
 
@@ -76,7 +76,7 @@ This guide provides systematic approaches to diagnosing and resolving common iss
 
    ```bash
    aws rds describe-db-instances \
-     --db-instance-identifier rms-production-db
+     --db-instance-identifier dms-production-db
    ```
 
 2. Monitor active connections:
@@ -111,7 +111,7 @@ This guide provides systematic approaches to diagnosing and resolving common iss
    aws cloudwatch get-metric-statistics \
      --namespace AWS/ECS \
      --metric-name MemoryUtilization \
-     --dimensions Name=ServiceName,Value=rms-backend \
+     --dimensions Name=ServiceName,Value=dms-backend \
      --start-time 2024-01-01T00:00:00Z \
      --end-time 2024-01-01T23:59:59Z \
      --period 300 \
@@ -146,7 +146,7 @@ This guide provides systematic approaches to diagnosing and resolving common iss
 2. Verify ALB listener configuration:
    ```bash
    aws elbv2 describe-listeners \
-     --load-balancer-arn arn:aws:elasticloadbalancing:us-east-1:ACCOUNT:loadbalancer/app/rms-alb/xxx
+     --load-balancer-arn arn:aws:elasticloadbalancing:us-east-1:ACCOUNT:loadbalancer/app/dms-alb/xxx
    ```
 
 #### Resolution
@@ -168,7 +168,7 @@ This guide provides systematic approaches to diagnosing and resolving common iss
 
    ```bash
    aws cloudfront list-distributions \
-     --query 'DistributionList.Items[?Comment==`RMS Frontend`]'
+     --query 'DistributionList.Items[?Comment==`DMS Frontend`]'
    ```
 
 2. Test asset accessibility:
@@ -265,8 +265,8 @@ ORDER BY size DESC;
 
    ```bash
    aws ecs describe-services \
-     --cluster rms-production \
-     --services rms-backend \
+     --cluster dms-production \
+     --services dms-backend \
      --query 'services[0].events[0:10]'
    ```
 
@@ -274,7 +274,7 @@ ORDER BY size DESC;
 
    ```bash
    aws ecs describe-task-definition \
-     --task-definition rms-backend:LATEST
+     --task-definition dms-backend:LATEST
    ```
 
 3. Check CloudWatch logs for startup errors
@@ -313,13 +313,13 @@ ORDER BY size DESC;
 ```bash
 # Search for errors in the last hour
 aws logs filter-log-events \
-  --log-group-name /ecs/rms-backend \
+  --log-group-name /ecs/dms-backend \
   --start-time $(date -d '1 hour ago' +%s)000 \
   --filter-pattern 'ERROR'
 
 # Count requests by status code
 aws logs filter-log-events \
-  --log-group-name /ecs/rms-backend \
+  --log-group-name /ecs/dms-backend \
   --filter-pattern '[timestamp, level="INFO", status_code=4*]' \
   | jq '.events | length'
 ```
@@ -329,7 +329,7 @@ aws logs filter-log-events \
 ```bash
 # Check for connection issues
 aws logs filter-log-events \
-  --log-group-name /aws/rds/instance/rms-production-db/postgresql \
+  --log-group-name /aws/rds/instance/dms-production-db/postgresql \
   --filter-pattern 'connection'
 ```
 
@@ -350,7 +350,7 @@ aws logs filter-log-events \
 
    ```bash
    aws logs filter-log-events \
-     --log-group-name aws-waf-logs-rms-production \
+     --log-group-name aws-waf-logs-dms-production \
      --filter-pattern 'BLOCK'
    ```
 
@@ -382,13 +382,13 @@ aws logs filter-log-events \
 ```bash
 # Restore from automated backup
 aws rds restore-db-instance-from-db-snapshot \
-  --db-instance-identifier rms-recovery-$(date +%Y%m%d) \
-  --db-snapshot-identifier rms-production-db-snapshot-2024-01-01
+  --db-instance-identifier dms-recovery-$(date +%Y%m%d) \
+  --db-snapshot-identifier dms-production-db-snapshot-2024-01-01
 
 # Point-in-time restore
 aws rds restore-db-instance-to-point-in-time \
-  --source-db-instance-identifier rms-production-db \
-  --target-db-instance-identifier rms-recovery-$(date +%Y%m%d) \
+  --source-db-instance-identifier dms-production-db \
+  --target-db-instance-identifier dms-recovery-$(date +%Y%m%d) \
   --restore-time 2024-01-01T12:00:00.000Z
 ```
 
@@ -399,9 +399,9 @@ aws rds restore-db-instance-to-point-in-time \
 ```bash
 # Rollback to previous task definition
 aws ecs update-service \
-  --cluster rms-production \
-  --service rms-backend \
-  --task-definition rms-backend:123  # Previous working version
+  --cluster dms-production \
+  --service dms-backend \
+  --task-definition dms-backend:123  # Previous working version
 ```
 
 #### Configuration Recovery
@@ -473,20 +473,20 @@ terraform apply
 ./scripts/daily-health-check.sh
 
 # Quick service status
-curl -f https://api.rms.company.com/health || echo "API Down"
-curl -f https://rms.company.com || echo "Frontend Down"
+curl -f https://api.dms.company.com/health || echo "API Down"
+curl -f https://dms.company.com || echo "Frontend Down"
 ```
 
 ### Log Aggregation
 
 ```bash
 # Tail all service logs
-aws logs tail /ecs/rms-backend --follow
-aws logs tail /ecs/rms-frontend --follow
+aws logs tail /ecs/dms-backend --follow
+aws logs tail /ecs/dms-frontend --follow
 
 # Search across all logs
 aws logs start-query \
-  --log-group-names "/ecs/rms-backend" "/ecs/rms-frontend" \
+  --log-group-names "/ecs/dms-backend" "/ecs/dms-frontend" \
   --start-time $(date -d '1 hour ago' +%s) \
   --end-time $(date +%s) \
   --query-string 'fields @timestamp, @message | filter @message like /ERROR/ | sort @timestamp desc'
@@ -497,15 +497,15 @@ aws logs start-query \
 ```bash
 # ECS resource utilization
 aws ecs describe-services \
-  --cluster rms-production \
-  --services rms-backend rms-frontend \
+  --cluster dms-production \
+  --services dms-backend dms-frontend \
   --query 'services[*].{Name:serviceName,Running:runningCount,Pending:pendingCount,Desired:desiredCount}'
 
 # RDS performance
 aws cloudwatch get-metric-statistics \
   --namespace AWS/RDS \
   --metric-name CPUUtilization \
-  --dimensions Name=DBInstanceIdentifier,Value=rms-production-db \
+  --dimensions Name=DBInstanceIdentifier,Value=dms-production-db \
   --start-time $(date -d '1 hour ago' --iso-8601) \
   --end-time $(date --iso-8601) \
   --period 300 \
@@ -537,6 +537,6 @@ aws cloudwatch get-metric-statistics \
 
 ---
 
-**Last Updated**: 2024-09-05  
-**Next Review**: 2024-12-05  
-**Contact**: DevOps Team - slack://rms-devops
+**Last Updated**: 2024-09-05
+**Next Review**: 2024-12-05
+**Contact**: DevOps Team - slack://dms-devops

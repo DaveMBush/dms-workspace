@@ -1,6 +1,6 @@
 # Universe Update User Journeys
 
-This document outlines the user journeys for updating the universe data in the RMS application using the new icon-based controls in the Universe toolbar.
+This document outlines the user journeys for updating the universe data in the DMS application using the new icon-based controls in the Universe toolbar.
 
 ## Overview
 

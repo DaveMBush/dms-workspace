@@ -1,18 +1,18 @@
-# RDS PostgreSQL module for RMS application
-resource "aws_db_subnet_group" "rms" {
-  name       = "rms-db-subnet-group-${var.environment}"
+# RDS PostgreSQL module for DMS application
+resource "aws_db_subnet_group" "dms" {
+  name       = "dms-db-subnet-group-${var.environment}"
   subnet_ids = var.private_subnet_ids
 
   tags = merge(var.common_tags, {
-    Name = "RMS DB Subnet Group"
+    Name = "DMS DB Subnet Group"
   })
 }
 
-resource "aws_db_parameter_group" "rms_postgres" {
+resource "aws_db_parameter_group" "dms_postgres" {
   family = "postgres15"
-  name   = "rms-postgres-params-${var.environment}"
+  name   = "dms-postgres-params-${var.environment}"
 
-  # PostgreSQL optimizations for RMS application
+  # PostgreSQL optimizations for DMS application
   parameter {
     name  = "shared_preload_libraries"
     value = "pg_stat_statements"
@@ -44,7 +44,7 @@ resource "random_password" "db_password" {
 
 # Store password in AWS Systems Manager Parameter Store
 resource "aws_ssm_parameter" "db_password" {
-  name        = "/rms/${var.environment}/database-password"
+  name        = "/dms/${var.environment}/database-password"
   description = "RDS PostgreSQL password for ${var.environment} environment"
   type        = "SecureString"
   value       = random_password.db_password.result
@@ -53,8 +53,8 @@ resource "aws_ssm_parameter" "db_password" {
 }
 
 # RDS PostgreSQL instance
-resource "aws_db_instance" "rms_postgres" {
-  identifier             = "rms-postgres-${var.environment}"
+resource "aws_db_instance" "dms_postgres" {
+  identifier             = "dms-postgres-${var.environment}"
   allocated_storage      = var.allocated_storage
   max_allocated_storage  = var.max_allocated_storage
   storage_type           = "gp3"
@@ -64,14 +64,14 @@ resource "aws_db_instance" "rms_postgres" {
   engine                 = "postgres"
   engine_version         = var.postgres_version
   instance_class         = var.instance_class
-  
+
   db_name  = var.database_name
   username = var.database_username
   password = random_password.db_password.result
 
   vpc_security_group_ids = [var.rds_security_group_id]
-  db_subnet_group_name   = aws_db_subnet_group.rms.name
-  parameter_group_name   = aws_db_parameter_group.rms_postgres.name
+  db_subnet_group_name   = aws_db_subnet_group.dms.name
+  parameter_group_name   = aws_db_parameter_group.dms_postgres.name
 
   # Backup configuration
   backup_retention_period = var.backup_retention_period
@@ -94,7 +94,7 @@ resource "aws_db_instance" "rms_postgres" {
 
   # Snapshots
   skip_final_snapshot       = var.skip_final_snapshot
-  final_snapshot_identifier = var.skip_final_snapshot ? null : "rms-postgres-${var.environment}-final-snapshot-${formatdate("YYYY-MM-DD-hhmm", timestamp())}"
+  final_snapshot_identifier = var.skip_final_snapshot ? null : "dms-postgres-${var.environment}-final-snapshot-${formatdate("YYYY-MM-DD-hhmm", timestamp())}"
 
   # Enable automated minor version upgrades
   auto_minor_version_upgrade = true
@@ -103,7 +103,7 @@ resource "aws_db_instance" "rms_postgres" {
   copy_tags_to_snapshot = true
 
   tags = merge(var.common_tags, {
-    Name = "RMS PostgreSQL Database"
+    Name = "DMS PostgreSQL Database"
   })
 
   lifecycle {
@@ -113,17 +113,17 @@ resource "aws_db_instance" "rms_postgres" {
 
 # Store database connection URL in Parameter Store
 resource "aws_ssm_parameter" "database_url" {
-  name        = "/rms/${var.environment}/database-url"
+  name        = "/dms/${var.environment}/database-url"
   description = "PostgreSQL connection string for ${var.environment} environment"
   type        = "SecureString"
-  value = "postgresql://${var.database_username}:${random_password.db_password.result}@${aws_db_instance.rms_postgres.endpoint}:5432/${var.database_name}?schema=public&sslmode=require"
+  value = "postgresql://${var.database_username}:${random_password.db_password.result}@${aws_db_instance.dms_postgres.endpoint}:5432/${var.database_name}?schema=public&sslmode=require"
 
   tags = var.common_tags
 }
 
 # CloudWatch alarms for monitoring
 resource "aws_cloudwatch_metric_alarm" "database_cpu" {
-  alarm_name          = "rms-postgres-high-cpu-${var.environment}"
+  alarm_name          = "dms-postgres-high-cpu-${var.environment}"
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = "2"
   metric_name         = "CPUUtilization"
@@ -135,14 +135,14 @@ resource "aws_cloudwatch_metric_alarm" "database_cpu" {
   alarm_actions       = var.alarm_actions
 
   dimensions = {
-    DBInstanceIdentifier = aws_db_instance.rms_postgres.id
+    DBInstanceIdentifier = aws_db_instance.dms_postgres.id
   }
 
   tags = var.common_tags
 }
 
 resource "aws_cloudwatch_metric_alarm" "database_connections" {
-  alarm_name          = "rms-postgres-high-connections-${var.environment}"
+  alarm_name          = "dms-postgres-high-connections-${var.environment}"
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = "2"
   metric_name         = "DatabaseConnections"
@@ -154,7 +154,7 @@ resource "aws_cloudwatch_metric_alarm" "database_connections" {
   alarm_actions       = var.alarm_actions
 
   dimensions = {
-    DBInstanceIdentifier = aws_db_instance.rms_postgres.id
+    DBInstanceIdentifier = aws_db_instance.dms_postgres.id
   }
 
   tags = var.common_tags

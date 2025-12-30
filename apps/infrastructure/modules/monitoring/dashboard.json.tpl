@@ -136,7 +136,7 @@
       "width": 24,
       "height": 6,
       "properties": {
-        "query": "SOURCE '/aws/ecs/rms-backend-${environment}'\n| fields @timestamp, @message\n| filter @message like /ERROR/\n| sort @timestamp desc\n| limit 20",
+        "query": "SOURCE '/aws/ecs/dms-backend-${environment}'\n| fields @timestamp, @message\n| filter @message like /ERROR/\n| sort @timestamp desc\n| limit 20",
         "region": "${aws_region}",
         "title": "Recent Application Errors",
         "view": "table"

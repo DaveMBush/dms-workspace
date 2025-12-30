@@ -22,13 +22,13 @@ Ready for Review
 
 - `pnpm format`
 - `pnpm dupcheck`
-- `pnpm nx run rms:test --code-coverage`
+- `pnpm nx run dms:test --code-coverage`
 - `pnpm nx run server:build:production`
 - `pnpm nx run server:test --code-coverage`
 - `pnpm nx run server:lint`
-- `pnpm nx run rms:lint`
-- `pnpm nx run rms:build:production`
-- `pnpm nx run rms-e2e:lint`
+- `pnpm nx run dms:lint`
+- `pnpm nx run dms:build:production`
+- `pnpm nx run dms-e2e:lint`
 
 ## Tasks / Subtasks
 
@@ -89,7 +89,7 @@ This is the first story in Epic I, implementing the core filtering logic that ot
 - Open positions identified by `sell_date IS NULL`
 - Position value calculated as `sum(buy * quantity)` for open positions
 
-**Source: [apps/rms/src/app/global/global-universe/universe-data.service.ts]**
+**Source: [apps/dms/src/app/global/global-universe/universe-data.service.ts]**
 
 - Current filtering in `applyFilters()` method (lines 194-242)
 - Existing `expiredFilter` parameter handles explicit expired filtering
@@ -106,12 +106,12 @@ This is the first story in Epic I, implementing the core filtering logic that ot
 
 **Primary Files to Modify:**
 
-1. `/apps/rms/src/app/global/global-universe/universe-data.service.ts` - Add expired-with-positions logic to `applyFilters()`
-2. `/apps/rms/src/app/global/global-universe/universe-data.service.ts` (interfaces) - Update FilterAndSortParams if needed
+1. `/apps/dms/src/app/global/global-universe/universe-data.service.ts` - Add expired-with-positions logic to `applyFilters()`
+2. `/apps/dms/src/app/global/global-universe/universe-data.service.ts` (interfaces) - Update FilterAndSortParams if needed
 
 **Test Files to Create/Modify:**
 
-1. `/apps/rms/src/app/global/global-universe/universe-data.service.spec.ts` - Test new filtering logic
+1. `/apps/dms/src/app/global/global-universe/universe-data.service.spec.ts` - Test new filtering logic
 2. Create comprehensive test scenarios for all filtering combinations
 
 ### Technical Implementation Details
@@ -239,7 +239,7 @@ None required - implementation completed successfully with all tests passing.
 - [x] File locations follow existing patterns in global-universe directory
 - [x] Uses signals, standalone functions pattern per tech stack
 - [x] No hardcoded secrets or security issues
-- [x] All linting passes (verified with pnpm nx run rms:lint)
+- [x] All linting passes (verified with pnpm nx run dms:lint)
 - [x] Code commented where necessary for filter precedence logic
 
 **3. Testing:**
@@ -265,7 +265,7 @@ None required - implementation completed successfully with all tests passing.
 **6. Dependencies, Build & Configuration:**
 
 - [x] Project builds successfully (verified with production build)
-- [x] All linting passes (server, rms, e2e)
+- [x] All linting passes (server, dms, e2e)
 - [x] No new dependencies added - only used existing codebase patterns
 - [x] All validation commands from AC 7 pass successfully
 
@@ -324,13 +324,13 @@ None required - implementation completed successfully with all tests passing.
 
 **Modified Files:**
 
-- `/apps/rms/src/app/global/global-universe/universe-data.service.ts` - Added expired-with-positions filter integration and hasPositionsInAnyAccount method
-- `/apps/rms/src/app/global/global-universe/universe-data.service.spec.ts` - Added comprehensive test cases for expired-with-positions filtering
+- `/apps/dms/src/app/global/global-universe/universe-data.service.ts` - Added expired-with-positions filter integration and hasPositionsInAnyAccount method
+- `/apps/dms/src/app/global/global-universe/universe-data.service.spec.ts` - Added comprehensive test cases for expired-with-positions filtering
 
 **New Files Created:**
 
-- `/apps/rms/src/app/global/global-universe/apply-expired-with-positions-filter.function.ts` - Core filtering logic for expired-with-positions functionality
-- `/apps/rms/src/app/global/global-universe/apply-expired-with-positions-filter.function.spec.ts` - Unit tests for the new filtering function
+- `/apps/dms/src/app/global/global-universe/apply-expired-with-positions-filter.function.ts` - Core filtering logic for expired-with-positions functionality
+- `/apps/dms/src/app/global/global-universe/apply-expired-with-positions-filter.function.spec.ts` - Unit tests for the new filtering function
 
 ## QA Results
 

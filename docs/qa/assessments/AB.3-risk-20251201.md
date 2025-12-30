@@ -369,7 +369,7 @@ Profile components have comprehensive unit tests that mock dependencies (Profile
 
 **UX-001: Password Mismatch Validation**
 
-- ✅ Test Implemented: `apps/rms-material-e2e/src/profile.spec.ts`
+- ✅ Test Implemented: `apps/dms-material-e2e/src/profile.spec.ts`
 - Scenario: User enters non-matching passwords
 - Expected: Error message displays after submit
 - Status: PASSING

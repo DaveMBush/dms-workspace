@@ -24,20 +24,20 @@ Draft
 
 - `pnpm format`
 - `pnpm dupcheck`
-- `pnpm nx run rms:test --code-coverage`
+- `pnpm nx run dms:test --code-coverage`
 - `pnpm nx run server:build:production`
 - `pnpm nx run server:test --code-coverage`
 - `pnpm nx run server:lint`
-- `pnpm nx run rms:lint`
-- `pnpm nx run rms:build:production`
-- `pnpm nx run rms-e2e:lint`
+- `pnpm nx run dms:lint`
+- `pnpm nx run dms:build:production`
+- `pnpm nx run dms-e2e:lint`
 - `pnpm nx run infrastructure:lint`
 
 ## Tasks / Subtasks
 
 - [ ] **Task 1: Create user profile component structure** (AC: 1, 7, 8)
 
-  - [ ] Generate profile component: `/apps/rms/src/app/auth/profile/profile.ts`
+  - [ ] Generate profile component: `/apps/dms/src/app/auth/profile/profile.ts`
   - [ ] Create responsive profile template: `profile.html`
   - [ ] Add profile styles matching PrimeNG theme: `profile.scss`
   - [ ] Add user profile route to application routing
@@ -118,7 +118,7 @@ Draft
 
 ### Data Models and Architecture
 
-**Source: [apps/rms/src/app/auth/auth.service.ts from Story K.3]**
+**Source: [apps/dms/src/app/auth/auth.service.ts from Story K.3]**
 
 - Existing authentication service with current user state management
 - AWS Cognito integration for user attribute management
@@ -143,30 +143,30 @@ Profile Component -> AuthService -> AWS Cognito -> User Attributes
 
 **Primary Files to Create:**
 
-1. `/apps/rms/src/app/auth/profile/profile.ts` - Main profile component
-2. `/apps/rms/src/app/auth/profile/profile.html` - Profile template
-3. `/apps/rms/src/app/auth/profile/profile.scss` - Profile styles
-4. `/apps/rms/src/app/auth/services/profile.service.ts` - Profile data management
-5. `/apps/rms/src/app/auth/components/logout-confirmation/logout-confirmation.ts` - Logout dialog
-6. `/apps/rms/src/app/auth/components/password-change/password-change.ts` - Password change form
+1. `/apps/dms/src/app/auth/profile/profile.ts` - Main profile component
+2. `/apps/dms/src/app/auth/profile/profile.html` - Profile template
+3. `/apps/dms/src/app/auth/profile/profile.scss` - Profile styles
+4. `/apps/dms/src/app/auth/services/profile.service.ts` - Profile data management
+5. `/apps/dms/src/app/auth/components/logout-confirmation/logout-confirmation.ts` - Logout dialog
+6. `/apps/dms/src/app/auth/components/password-change/password-change.ts` - Password change form
 
 **Primary Files to Modify:**
 
-1. `/apps/rms/src/app/app.routes.ts` - Add profile route
-2. `/apps/rms/src/app/auth/auth.service.ts` - Add profile management methods
+1. `/apps/dms/src/app/app.routes.ts` - Add profile route
+2. `/apps/dms/src/app/auth/auth.service.ts` - Add profile management methods
 3. Main navigation component - Add profile link
 
 **Test Files to Create:**
 
-1. `/apps/rms/src/app/auth/profile/profile.spec.ts` - Profile component tests
-2. `/apps/rms/src/app/auth/services/profile.service.spec.ts` - Profile service tests
+1. `/apps/dms/src/app/auth/profile/profile.spec.ts` - Profile component tests
+2. `/apps/dms/src/app/auth/services/profile.service.spec.ts` - Profile service tests
 
 ### Technical Implementation Details
 
 **Profile Service:**
 
 ```typescript
-// apps/rms/src/app/auth/services/profile.service.ts
+// apps/dms/src/app/auth/services/profile.service.ts
 import { Injectable, signal } from '@angular/core';
 import { Auth } from '@aws-amplify/auth';
 
@@ -302,7 +302,7 @@ export class ProfileService {
 **Profile Component:**
 
 ```typescript
-// apps/rms/src/app/auth/profile/profile.ts
+// apps/dms/src/app/auth/profile/profile.ts
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
@@ -430,7 +430,7 @@ export class Profile implements OnInit {
 **Profile Template:**
 
 ```html
-<!-- apps/rms/src/app/auth/profile/profile.html -->
+<!-- apps/dms/src/app/auth/profile/profile.html -->
 <div class="profile-container p-4">
   <div class="grid">
     <div class="col-12">
@@ -541,7 +541,7 @@ export class Profile implements OnInit {
 **Route Integration:**
 
 ```typescript
-// Update to apps/rms/src/app/app.routes.ts
+// Update to apps/dms/src/app/app.routes.ts
 export const routes: Routes = [
   // ... existing routes
   {

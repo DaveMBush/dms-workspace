@@ -1,29 +1,29 @@
 services:
   # PostgreSQL database for local development
   postgres:
-    container_name: rms-postgres
+    container_name: dms-postgres
     image: postgres:16-alpine
     restart: unless-stopped
     ports:
       - '5432:5432'
     environment:
-      - POSTGRES_DB=rms_local
-      - POSTGRES_USER=rms_user
-      - POSTGRES_PASSWORD=rms_password
+      - POSTGRES_DB=dms_local
+      - POSTGRES_USER=dms_user
+      - POSTGRES_PASSWORD=dms_password
       - POSTGRES_INITDB_ARGS=--encoding=UTF-8 --lc-collate=C --lc-ctype=C
     volumes:
       - postgres-data:/var/lib/postgresql/data
       - ./scripts/postgres-init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U rms_user -d rms_local']
+      test: ['CMD-SHELL', 'pg_isready -U dms_user -d dms_local']
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 30s
 
-  # RMS Backend Application
-  rms-backend:
-    container_name: rms-backend
+  # DMS Backend Application
+  dms-backend:
+    container_name: dms-backend
     build:
       context: .
       dockerfile: apps/server/Dockerfile
@@ -33,7 +33,7 @@ services:
     environment:
       - NODE_ENV=development
       - DATABASE_PROVIDER=postgresql
-      - DATABASE_URL=postgresql://rms_user:rms_password@postgres:5432/rms_local
+      - DATABASE_URL=postgresql://dms_user:dms_password@postgres:5432/dms_local
       - PRISMA_SCHEMA_PATH=prisma/schema.postgresql.prisma
       - AWS_REGION=us-east-1
       - COGNITO_USER_POOL_ID=us-east-1_LOCALTEST
@@ -52,17 +52,17 @@ services:
     networks:
       - default
 
-  # RMS Frontend Application
-  rms-frontend:
-    container_name: rms-frontend
+  # DMS Frontend Application
+  dms-frontend:
+    container_name: dms-frontend
     build:
       context: .
-      dockerfile: apps/rms/Dockerfile
+      dockerfile: apps/dms/Dockerfile
     restart: unless-stopped
     ports:
       - '8080:80'
     depends_on:
-      rms-backend:
+      dms-backend:
         condition: service_healthy
     healthcheck:
       test: ['CMD', 'curl', '-f', 'http://localhost:80']
@@ -75,12 +75,12 @@ services:
 
   # PgAdmin for database management (optional)
   pgadmin:
-    container_name: rms-pgadmin
+    container_name: dms-pgadmin
     image: dpage/pgadmin4:8
     ports:
       - '8081:80'
     environment:
-      - PGADMIN_DEFAULT_EMAIL=admin@rms.local
+      - PGADMIN_DEFAULT_EMAIL=admin@dms.local
       - PGADMIN_DEFAULT_PASSWORD=admin
       - PGADMIN_CONFIG_SERVER_MODE=False
       - PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED=False
@@ -100,4 +100,4 @@ volumes:
 
 networks:
   default:
-    name: rms-local-network
+    name: dms-local-network

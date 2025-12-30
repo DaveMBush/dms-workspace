@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document defines unit test coverage requirements for the RMS Workspace project, specifically for the Universe sync from Screener feature implementation.
+This document defines unit test coverage requirements for the DMS Workspace project, specifically for the Universe sync from Screener feature implementation.
 
 ## Coverage Thresholds
 

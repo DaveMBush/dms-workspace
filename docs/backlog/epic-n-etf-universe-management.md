@@ -8,7 +8,7 @@ Extend the symbol universe management capabilities to support trading symbols be
 
 **Existing System Context:**
 
-- Current relevant functionality: RMS application manages a universe of tradable symbols derived from screener results where three boolean criteria are met (CEFs only)
+- Current relevant functionality: DMS application manages a universe of tradable symbols derived from screener results where three boolean criteria are met (CEFs only)
 - Technology stack: Angular 20 frontend with PrimeNG, Fastify backend with Prisma ORM, SQLite database
 - Integration points: Screener table for CEF discovery, Universe table for tradable symbols, Settings dialog for universe updates
 

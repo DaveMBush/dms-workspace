@@ -18,8 +18,8 @@ Remove all feature flag conditional logic from Universe Settings component and r
 
 ### Files to Modify
 
-- `apps/rms/src/app/universe-settings/universe-settings.component.ts`
-- `apps/rms/src/app/universe-settings/universe-settings.component.html`
+- `apps/dms/src/app/universe-settings/universe-settings.component.ts`
+- `apps/dms/src/app/universe-settings/universe-settings.component.html`
 - Related test files
 
 ### Implementation Notes

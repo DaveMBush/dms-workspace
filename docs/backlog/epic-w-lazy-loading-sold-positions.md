@@ -30,7 +30,7 @@ Implement PrimeNG p-table lazy loading with virtual scrolling for the Sold Posit
 
 **Integration points:**
 
-- `apps/rms/src/app/account-panel/sold-positions/` component files
+- `apps/dms/src/app/account-panel/sold-positions/` component files
 - Extends `BasePositionsComponent<SoldPosition, SoldPositionsStorageService>`
 - `SoldPositionsComponentService` for business logic
 - `calculateCapitalGains` function for real-time calculations

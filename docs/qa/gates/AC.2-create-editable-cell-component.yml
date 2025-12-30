@@ -61,7 +61,7 @@ acceptance_criteria:
     - criterion: 'Click cell to enter edit mode'
       status: PASS
       evidence: 'Unit test line 24-28, E2E test line 19-25'
-    - criterion: 'GUI matches existing RMS app'
+    - criterion: 'GUI matches existing DMS app'
       status: PASS
       evidence: 'Material Design components with outline appearance'
     - criterion: 'Number input with proper formatting'
@@ -100,4 +100,4 @@ architecture_notes:
   - 'Signal-based reactivity with $ naming convention'
   - 'Computed signals used to avoid template call expressions'
   - 'Proper separation of concerns (component/template/styles)'
-  - 'Material Design integration consistent with rms-material app'
+  - 'Material Design integration consistent with dms-material app'

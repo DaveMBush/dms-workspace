@@ -165,7 +165,7 @@ recommendations:
     - action: 'Consider extracting password matching validator to reusable form validator'
       priority: low
       refs:
-        - 'apps/rms-material/src/app/auth/profile/components/password-change-card.ts:58-61'
+        - 'apps/dms-material/src/app/auth/profile/components/password-change-card.ts:58-61'
       details: 'Custom validator would be more testable than inline logic'
 
     - action: 'Update dark mode style tests if needed'

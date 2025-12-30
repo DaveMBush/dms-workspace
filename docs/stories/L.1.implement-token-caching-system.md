@@ -23,13 +23,13 @@ Ready for Review
 
 - `pnpm format`
 - `pnpm dupcheck`
-- `pnpm nx run rms:test --code-coverage`
+- `pnpm nx run dms:test --code-coverage`
 - `pnpm nx run server:build:production`
 - `pnpm nx run server:test --code-coverage`
 - `pnpm nx run server:lint`
-- `pnpm nx run rms:lint`
-- `pnpm nx run rms:build:production`
-- `pnpm nx run rms-e2e:lint`
+- `pnpm nx run dms:lint`
+- `pnpm nx run dms:build:production`
+- `pnpm nx run dms-e2e:lint`
 
 ## Tasks / Subtasks
 
@@ -75,8 +75,8 @@ Epic L addresses critical performance regression from K.5 token refresh implemen
 
 ### Current Authentication Architecture
 
-- **Auth Service**: `apps/rms/src/app/auth/auth.service.ts` - Main authentication service extending BaseAuthService
-- **Auth Interceptor**: `apps/rms/src/app/auth/interceptors/auth.interceptor.ts` - HTTP interceptor calling getAccessToken() for every request
+- **Auth Service**: `apps/dms/src/app/auth/auth.service.ts` - Main authentication service extending BaseAuthService
+- **Auth Interceptor**: `apps/dms/src/app/auth/interceptors/auth.interceptor.ts` - HTTP interceptor calling getAccessToken() for every request
 - **Token Refresh Service**: Session management with TokenRefreshService and SessionManagerService
 - **Current Flow**: HTTP Request → Auth Interceptor → getAccessToken() → fetchAuthSession() → AWS API Call (SLOW)
 
@@ -88,9 +88,9 @@ HTTP Request → Auth Interceptor → Cached Token Check → Fast Response (with
 
 **File Locations** [Source: Project structure analysis]:
 
-- Create `TokenCacheService`: `apps/rms/src/app/auth/services/token-cache.service.ts`
-- Modify `AuthService`: `apps/rms/src/app/auth/auth.service.ts`
-- Update imports in: `apps/rms/src/app/auth/interceptors/auth.interceptor.ts`
+- Create `TokenCacheService`: `apps/dms/src/app/auth/services/token-cache.service.ts`
+- Modify `AuthService`: `apps/dms/src/app/auth/auth.service.ts`
+- Update imports in: `apps/dms/src/app/auth/interceptors/auth.interceptor.ts`
 
 **Cache Interface Design**:
 
@@ -173,18 +173,17 @@ _To be populated by development agent_
 
 **Core Implementation:**
 
-- `apps/rms/src/app/auth/services/token-cache.service.ts` - Main cache service implementation
-- `apps/rms/src/app/auth/services/token-cache.interface.ts` - Cache interface definition
-- `apps/rms/src/app/auth/services/cache-stats.interface.ts` - Cache statistics interface
-- `apps/rms/src/app/auth/services/token-cache-entry.interface.ts` - Cache entry structure
-- `apps/rms/src/app/auth/auth.service.ts` - Modified to use cache-first approach
+- `apps/dms/src/app/auth/services/token-cache.service.ts` - Main cache service implementation
+- `apps/dms/src/app/auth/services/token-cache.interface.ts` - Cache interface definition
+- `apps/dms/src/app/auth/services/cache-stats.interface.ts` - Cache statistics interface
+- `apps/dms/src/app/auth/services/token-cache-entry.interface.ts` - Cache entry structure
+- `apps/dms/src/app/auth/auth.service.ts` - Modified to use cache-first approach
+  **Tests:**
 
-**Tests:**
-
-- `apps/rms/src/app/auth/services/token-cache.service.spec.ts` - Comprehensive unit tests
-- `apps/rms/src/app/auth/auth-performance.benchmark.spec.ts` - Performance benchmarks
-- `apps/rms/src/app/auth/auth-integration.spec.ts` - Integration tests
-- `apps/rms/src/app/auth/auth.service.spec.ts` - AuthService tests
+- `apps/dms/src/app/auth/services/token-cache.service.spec.ts` - Comprehensive unit tests
+- `apps/dms/src/app/auth/auth-performance.benchmark.spec.ts` - Performance benchmarks
+- `apps/dms/src/app/auth/auth-integration.spec.ts` - Integration tests
+- `apps/dms/src/app/auth/auth.service.spec.ts` - AuthService tests
 
 ## QA Results
 

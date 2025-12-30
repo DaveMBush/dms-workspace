@@ -10,7 +10,7 @@ Connects the "Update Fields" button to refresh price and distribution data from 
 
 ## Stories
 
-1. **Story AL.1:** Create UpdateUniverseFieldsService in RMS-MATERIAL
+1. **Story AL.1:** Create UpdateUniverseFieldsService in DMS-MATERIAL
 2. **Story AL.2:** Wire button to service with loading states
 3. **Story AL.3:** Add unit tests
 4. **Story AL.4:** Add e2e tests

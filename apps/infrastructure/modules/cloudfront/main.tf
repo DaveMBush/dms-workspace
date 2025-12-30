@@ -1,9 +1,9 @@
-# CloudFront Distribution Module for RMS Frontend
+# CloudFront Distribution Module for DMS Frontend
 # Provides global CDN with proper SPA routing and security headers
 
-resource "aws_cloudfront_response_headers_policy" "rms_frontend" {
-  name    = "rms-frontend-security-headers-${var.environment}"
-  comment = "Security headers for RMS frontend application"
+resource "aws_cloudfront_response_headers_policy" "dms_frontend" {
+  name    = "dms-frontend-security-headers-${var.environment}"
+  comment = "Security headers for DMS frontend application"
 
   security_headers_config {
     strict_transport_security {
@@ -40,25 +40,25 @@ resource "aws_cloudfront_response_headers_policy" "rms_frontend" {
   }
 }
 
-resource "aws_cloudfront_origin_access_control" "rms_frontend" {
-  name                              = "rms-frontend-oac-${var.environment}"
-  description                       = "OAC for RMS Frontend S3 bucket"
+resource "aws_cloudfront_origin_access_control" "dms_frontend" {
+  name                              = "dms-frontend-oac-${var.environment}"
+  description                       = "OAC for DMS Frontend S3 bucket"
   origin_access_control_origin_type = "s3"
   signing_behavior                  = "always"
   signing_protocol                  = "sigv4"
 }
 
-resource "aws_cloudfront_distribution" "rms_frontend" {
+resource "aws_cloudfront_distribution" "dms_frontend" {
   origin {
     domain_name              = var.s3_bucket_regional_domain_name
     origin_id                = "S3-${var.s3_bucket_name}"
-    origin_access_control_id = aws_cloudfront_origin_access_control.rms_frontend.id
+    origin_access_control_id = aws_cloudfront_origin_access_control.dms_frontend.id
   }
 
   enabled             = true
   is_ipv6_enabled     = true
   default_root_object = "index.html"
-  comment             = "RMS Frontend Distribution - ${var.environment}"
+  comment             = "DMS Frontend Distribution - ${var.environment}"
 
   aliases = var.domain_name != "" ? [var.domain_name] : []
 
@@ -67,7 +67,7 @@ resource "aws_cloudfront_distribution" "rms_frontend" {
     cached_methods             = ["GET", "HEAD"]
     target_origin_id           = "S3-${var.s3_bucket_name}"
     compress                   = true
-    response_headers_policy_id = aws_cloudfront_response_headers_policy.rms_frontend.id
+    response_headers_policy_id = aws_cloudfront_response_headers_policy.dms_frontend.id
 
     forwarded_values {
       query_string = false

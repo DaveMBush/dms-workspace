@@ -1,37 +1,37 @@
-# CloudWatch Monitoring Module for RMS
+# CloudWatch Monitoring Module for DMS
 # Provides comprehensive monitoring, logging, and alerting infrastructure
 
 # CloudWatch Log Groups
 resource "aws_cloudwatch_log_group" "ecs_application" {
-  name              = "/aws/ecs/rms-backend-${var.environment}"
+  name              = "/aws/ecs/dms-backend-${var.environment}"
   retention_in_days = var.environment == "prod" ? 90 : 7
 
   tags = var.common_tags
 }
 
 resource "aws_cloudwatch_log_group" "alb_access" {
-  name              = "/aws/applicationloadbalancer/rms-alb-${var.environment}"
+  name              = "/aws/applicationloadbalancer/dms-alb-${var.environment}"
   retention_in_days = var.environment == "prod" ? 30 : 7
 
   tags = var.common_tags
 }
 
 resource "aws_cloudwatch_log_group" "rds_performance" {
-  name              = "/aws/rds/instance/rms-postgres-${var.environment}/postgresql"
+  name              = "/aws/rds/instance/dms-postgres-${var.environment}/postgresql"
   retention_in_days = var.environment == "prod" ? 30 : 7
 
   tags = var.common_tags
 }
 
 resource "aws_cloudwatch_log_group" "cloudfront_access" {
-  name              = "/aws/cloudfront/rms-frontend-${var.environment}"
+  name              = "/aws/cloudfront/dms-frontend-${var.environment}"
   retention_in_days = var.environment == "prod" ? 14 : 7
 
   tags = var.common_tags
 }
 
 resource "aws_cloudwatch_log_group" "vpc_flow_logs" {
-  name              = "/aws/vpc/flowlogs/rms-${var.environment}"
+  name              = "/aws/vpc/flowlogs/dms-${var.environment}"
   retention_in_days = var.environment == "prod" ? 14 : 7
 
   tags = var.common_tags
@@ -50,7 +50,7 @@ resource "aws_flow_log" "vpc_flow_logs" {
 
 resource "aws_iam_role" "flow_logs" {
   count = var.enable_vpc_flow_logs ? 1 : 0
-  name  = "rms-vpc-flow-logs-role-${var.environment}"
+  name  = "dms-vpc-flow-logs-role-${var.environment}"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -70,7 +70,7 @@ resource "aws_iam_role" "flow_logs" {
 
 resource "aws_iam_role_policy" "flow_logs" {
   count = var.enable_vpc_flow_logs ? 1 : 0
-  name  = "rms-vpc-flow-logs-policy-${var.environment}"
+  name  = "dms-vpc-flow-logs-policy-${var.environment}"
   role  = aws_iam_role.flow_logs[0].id
 
   policy = jsonencode({
@@ -93,7 +93,7 @@ resource "aws_iam_role_policy" "flow_logs" {
 
 # SNS Topics for Alerts
 resource "aws_sns_topic" "alerts" {
-  name = "rms-alerts-${var.environment}"
+  name = "dms-alerts-${var.environment}"
 
   tags = var.common_tags
 }
@@ -114,7 +114,7 @@ resource "aws_sns_topic_subscription" "slack_alerts" {
 
 # CloudWatch Alarms
 resource "aws_cloudwatch_metric_alarm" "high_error_rate" {
-  alarm_name          = "rms-high-error-rate-${var.environment}"
+  alarm_name          = "dms-high-error-rate-${var.environment}"
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = "2"
   metric_name         = "HTTPCode_Target_5XX_Count"
@@ -135,7 +135,7 @@ resource "aws_cloudwatch_metric_alarm" "high_error_rate" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "high_response_time" {
-  alarm_name          = "rms-high-response-time-${var.environment}"
+  alarm_name          = "dms-high-response-time-${var.environment}"
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = "3"
   metric_name         = "TargetResponseTime"
@@ -156,7 +156,7 @@ resource "aws_cloudwatch_metric_alarm" "high_response_time" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "ecs_cpu_high" {
-  alarm_name          = "rms-ecs-cpu-high-${var.environment}"
+  alarm_name          = "dms-ecs-cpu-high-${var.environment}"
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = "2"
   metric_name         = "CPUUtilization"
@@ -177,7 +177,7 @@ resource "aws_cloudwatch_metric_alarm" "ecs_cpu_high" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "ecs_memory_high" {
-  alarm_name          = "rms-ecs-memory-high-${var.environment}"
+  alarm_name          = "dms-ecs-memory-high-${var.environment}"
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = "2"
   metric_name         = "MemoryUtilization"
@@ -198,7 +198,7 @@ resource "aws_cloudwatch_metric_alarm" "ecs_memory_high" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "rds_cpu_high" {
-  alarm_name          = "rms-rds-cpu-high-${var.environment}"
+  alarm_name          = "dms-rds-cpu-high-${var.environment}"
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = "3"
   metric_name         = "CPUUtilization"
@@ -218,7 +218,7 @@ resource "aws_cloudwatch_metric_alarm" "rds_cpu_high" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "rds_connections_high" {
-  alarm_name          = "rms-rds-connections-high-${var.environment}"
+  alarm_name          = "dms-rds-connections-high-${var.environment}"
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = "2"
   metric_name         = "DatabaseConnections"
@@ -239,7 +239,7 @@ resource "aws_cloudwatch_metric_alarm" "rds_connections_high" {
 
 # CloudWatch Dashboard
 resource "aws_cloudwatch_dashboard" "main" {
-  dashboard_name = "RMS-${var.environment}-Overview"
+  dashboard_name = "DMS-${var.environment}-Overview"
 
   dashboard_body = templatefile("${path.module}/dashboard.json.tpl", {
     environment           = var.environment
@@ -254,7 +254,7 @@ resource "aws_cloudwatch_dashboard" "main" {
 
 # Cost Monitoring
 resource "aws_budgets_budget" "monthly_cost" {
-  name         = "rms-monthly-budget-${var.environment}"
+  name         = "dms-monthly-budget-${var.environment}"
   budget_type  = "COST"
   limit_amount = var.environment == "prod" ? "100" : "20"
   limit_unit   = "USD"
@@ -290,7 +290,7 @@ resource "aws_budgets_budget" "monthly_cost" {
 }
 
 resource "aws_ce_anomaly_detector" "cost_anomaly" {
-  name     = "rms-cost-anomaly-${var.environment}"
+  name     = "dms-cost-anomaly-${var.environment}"
   type     = "DIMENSIONAL"
   frequency = "DAILY"
 
@@ -302,7 +302,7 @@ resource "aws_ce_anomaly_detector" "cost_anomaly" {
 }
 
 resource "aws_ce_anomaly_monitor" "cost_monitor" {
-  name         = "rms-cost-monitor-${var.environment}"
+  name         = "dms-cost-monitor-${var.environment}"
   monitor_type = "DIMENSIONAL"
 
   specification = jsonencode({
@@ -316,9 +316,9 @@ resource "aws_ce_anomaly_monitor" "cost_monitor" {
 }
 
 resource "aws_ce_anomaly_subscription" "cost_subscription" {
-  name      = "rms-cost-alerts-${var.environment}"
+  name      = "dms-cost-alerts-${var.environment}"
   frequency = "DAILY"
-  
+
   monitor_arn_list = [
     aws_ce_anomaly_monitor.cost_monitor.arn
   ]

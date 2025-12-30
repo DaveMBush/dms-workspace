@@ -22,13 +22,13 @@ Ready for Review
 8. Ensure the following commands run without errors:
    - `pnpm format`
    - `pnpm dupcheck`
-   - `pnpm nx run rms:test --code-coverage`
+   - `pnpm nx run dms:test --code-coverage`
    - `pnpm nx run server:build:production`
    - `pnpm nx run server:test --code-coverage`
    - `pnpm nx run server:lint`
-   - `pnpm nx run rms:lint`
-   - `pnpm nx run rms:build:production`
-   - `pnpm nx run rms-e2e:lint`
+   - `pnpm nx run dms:lint`
+   - `pnpm nx run dms:build:production`
+   - `pnpm nx run dms-e2e:lint`
 
 ## Tasks / Subtasks
 
@@ -289,12 +289,12 @@ All implementation completed successfully with comprehensive logging integrated 
 
 - ✅ Format: Passed
 - ✅ Duplicate check: Passed
-- ✅ RMS tests: Passed (577/577)
+- ✅ DMS tests: Passed (577/577)
 - ✅ Server build: Passed
 - ✅ Server lint: Passed
-- ✅ RMS lint: Passed
-- ✅ RMS build: Passed
-- ✅ RMS E2E lint: Passed
+- ✅ DMS lint: Passed
+- ✅ DMS build: Passed
+- ✅ DMS E2E lint: Passed
 - ⚠️ Server tests: Integration tests passed, unit test mocking issues only
 
 ### File List

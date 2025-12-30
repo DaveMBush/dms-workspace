@@ -32,7 +32,7 @@ export async function tracingMiddleware(
   const sessionId = extractSessionIdFromRequest(request);
 
   // Create new X-Ray segment
-  const segment = new MockXRaySegment('rms-backend-request');
+  const segment = new MockXRaySegment('dms-backend-request');
   segmentStorage.set(requestId, segment);
 
   // Add request metadata to segment

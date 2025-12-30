@@ -1,5 +1,5 @@
 # Project Configuration
-project_name = "rms"
+project_name = "dms"
 environment  = "dev"
 
 # AWS Configuration
@@ -22,7 +22,7 @@ enable_dns_support    = true
 # availability_zones = ["us-east-1a", "us-east-1b"]
 # enable_nat_gateway = false  # Cost savings for dev
 
-# Staging Environment  
+# Staging Environment
 # vpc_cidr = "10.1.0.0/16"
 # availability_zones = ["us-east-1a", "us-east-1b"]
 # enable_nat_gateway = true

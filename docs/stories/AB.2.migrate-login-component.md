@@ -2,7 +2,7 @@
 
 ## Story
 
-**As a** user of the rms-material application
+**As a** user of the dms-material application
 **I want** to log in using a Material-styled login form
 **So that** I can access the protected application features
 
@@ -10,7 +10,7 @@
 
 **Current System:**
 
-- Location: `apps/rms/src/app/auth/login/login.ts`
+- Location: `apps/dms/src/app/auth/login/login.ts`
 - PrimeNG components used:
   - `pInputText` - Email input
   - `p-password` - Password input with visibility toggle
@@ -66,7 +66,7 @@
 
 ### Step 1: Create Unit Tests First
 
-Create `apps/rms-material/src/app/auth/login/login.spec.ts`:
+Create `apps/dms-material/src/app/auth/login/login.spec.ts`:
 
 ```typescript
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -172,7 +172,7 @@ describe('Login', () => {
 
 **TDD Cycle:**
 
-1. Run `pnpm nx run rms-material:test` - tests should fail (RED)
+1. Run `pnpm nx run dms-material:test` - tests should fail (RED)
 2. Implement minimal code to pass tests (GREEN)
 3. Refactor while keeping tests passing (REFACTOR)
 
@@ -180,7 +180,7 @@ describe('Login', () => {
 
 ### Step 1: Create Login Component
 
-Create `apps/rms-material/src/app/auth/login/login.ts`:
+Create `apps/dms-material/src/app/auth/login/login.ts`:
 
 ```typescript
 import { Component, inject, signal } from '@angular/core';
@@ -196,7 +196,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuthService } from '../auth.service';
 
 @Component({
-  selector: 'rms-login',
+  selector: 'dms-login',
   imports: [ReactiveFormsModule, MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, MatProgressSpinnerModule],
   templateUrl: './login.html',
   styleUrl: './login.scss',
@@ -244,13 +244,13 @@ export class Login {
 
 ### Step 2: Create Login Template
 
-Create `apps/rms-material/src/app/auth/login/login.html`:
+Create `apps/dms-material/src/app/auth/login/login.html`:
 
 ```html
 <div class="login-container">
   <mat-card class="login-card">
     <mat-card-header>
-      <mat-card-title>Welcome to RMS</mat-card-title>
+      <mat-card-title>Welcome to DMS</mat-card-title>
       <mat-card-subtitle>Sign in to continue</mat-card-subtitle>
     </mat-card-header>
 
@@ -301,7 +301,7 @@ Create `apps/rms-material/src/app/auth/login/login.html`:
 
 ### Step 3: Create Login Styles
 
-Create `apps/rms-material/src/app/auth/login/login.scss`:
+Create `apps/dms-material/src/app/auth/login/login.scss`:
 
 ```scss
 .login-container {
@@ -309,7 +309,7 @@ Create `apps/rms-material/src/app/auth/login/login.scss`:
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background-color: var(--rms-background);
+  background-color: var(--dms-background);
   padding: 1rem;
 }
 
@@ -342,9 +342,9 @@ Create `apps/rms-material/src/app/auth/login/login.scss`:
   padding: 0.75rem 1rem;
   margin-bottom: 1rem;
   background-color: rgba(239, 68, 68, 0.1);
-  border: 1px solid var(--rms-error);
+  border: 1px solid var(--dms-error);
   border-radius: 4px;
-  color: var(--rms-error);
+  color: var(--dms-error);
 
   mat-icon {
     font-size: 20px;
@@ -369,7 +369,7 @@ mat-form-field {
 
 ### Step 4: Update Routes
 
-Add login route to `apps/rms-material/src/app/app.routes.ts`:
+Add login route to `apps/dms-material/src/app/app.routes.ts`:
 
 ```typescript
 {
@@ -413,7 +413,7 @@ Add login route to `apps/rms-material/src/app/app.routes.ts`:
 
 ## E2E Test Requirements
 
-When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
+When this story is complete, ensure the following e2e tests exist in `apps/dms-material-e2e/`:
 
 ### Core Functionality
 
@@ -442,4 +442,4 @@ When this story is complete, ensure the following e2e tests exist in `apps/rms-m
 - [ ] Form state resets after failed login attempt
 - [ ] Error message cleared when user starts typing again
 
-Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.
+Run `pnpm nx run dms-material-e2e:e2e` to verify all e2e tests pass.

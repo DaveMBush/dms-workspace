@@ -1,6 +1,6 @@
-# RMS Cost Optimization Guide
+# DMS Cost Optimization Guide
 
-This guide provides comprehensive cost optimization strategies, monitoring procedures, and recommendations for the RMS (Risk Management System) application on AWS.
+This guide provides comprehensive cost optimization strategies, monitoring procedures, and recommendations for the DMS (Data Management System) application on AWS.
 
 ## Table of Contents
 
@@ -69,8 +69,8 @@ aws ce get-cost-and-usage \
 
 #### 1. RDS Reserved Instances
 
-**Current**: On-demand RDS pricing  
-**Opportunity**: 30-50% savings with Reserved Instances  
+**Current**: On-demand RDS pricing
+**Opportunity**: 30-50% savings with Reserved Instances
 **Implementation**:
 
 ```bash
@@ -84,7 +84,7 @@ aws ce get-usage-forecast \
 # Purchase Reserved Instances for stable workloads
 aws rds purchase-reserved-db-instances-offering \
   --reserved-db-instances-offering-id "12345678-1234-1234-1234-123456789012" \
-  --reserved-db-instance-id "rms-db-prod-ri" \
+  --reserved-db-instance-id "dms-db-prod-ri" \
   --db-instance-count 1
 ```
 
@@ -92,8 +92,8 @@ aws rds purchase-reserved-db-instances-offering \
 
 #### 2. ECS Fargate Right-Sizing
 
-**Current**: Over-provisioned CPU/memory  
-**Opportunity**: 20-40% savings through proper sizing  
+**Current**: Over-provisioned CPU/memory
+**Opportunity**: 20-40% savings through proper sizing
 **Analysis**:
 
 ```bash
@@ -101,7 +101,7 @@ aws rds purchase-reserved-db-instances-offering \
 aws cloudwatch get-metric-statistics \
   --namespace AWS/ECS \
   --metric-name CPUUtilization \
-  --dimensions Name=ServiceName,Value=rms-backend-service-prod Name=ClusterName,Value=rms-cluster-prod \
+  --dimensions Name=ServiceName,Value=dms-backend-service-prod Name=ClusterName,Value=dms-cluster-prod \
   --start-time 2024-11-16T00:00:00Z \
   --end-time 2024-12-16T00:00:00Z \
   --period 3600 \
@@ -111,7 +111,7 @@ aws cloudwatch get-metric-statistics \
 aws cloudwatch get-metric-statistics \
   --namespace AWS/ECS \
   --metric-name MemoryUtilization \
-  --dimensions Name=ServiceName,Value=rms-backend-service-prod Name=ClusterName,Value=rms-cluster-prod \
+  --dimensions Name=ServiceName,Value=dms-backend-service-prod Name=ClusterName,Value=dms-cluster-prod \
   --start-time 2024-11-16T00:00:00Z \
   --end-time 2024-12-16T00:00:00Z \
   --period 3600 \
@@ -130,36 +130,36 @@ aws cloudwatch get-metric-statistics \
 
 #### 1. CloudWatch Log Retention
 
-**Current**: Indefinite log retention  
-**Opportunity**: 10-15% savings with lifecycle policies  
+**Current**: Indefinite log retention
+**Opportunity**: 10-15% savings with lifecycle policies
 **Implementation**:
 
 ```bash
 # Set log retention policies
 aws logs put-retention-policy \
-  --log-group-name "/aws/ecs/rms-backend-prod" \
+  --log-group-name "/aws/ecs/dms-backend-prod" \
   --retention-in-days 30
 
 aws logs put-retention-policy \
-  --log-group-name "/aws/ecs/rms-backend-staging" \
+  --log-group-name "/aws/ecs/dms-backend-staging" \
   --retention-in-days 14
 
 aws logs put-retention-policy \
-  --log-group-name "/aws/ecs/rms-backend-dev" \
+  --log-group-name "/aws/ecs/dms-backend-dev" \
   --retention-in-days 7
 ```
 
 #### 2. S3 Storage Optimization
 
-**Current**: Standard storage for all objects  
-**Opportunity**: 5-10% savings with storage classes  
+**Current**: Standard storage for all objects
+**Opportunity**: 5-10% savings with storage classes
 **Implementation**:
 
 ```json
 {
   "Rules": [
     {
-      "ID": "RMSLifecycleRule",
+      "ID": "DMSLifecycleRule",
       "Status": "Enabled",
       "Filter": { "Prefix": "" },
       "Transitions": [
@@ -224,7 +224,7 @@ resource "aws_appautoscaling_target" "ecs_target" {
 }
 
 resource "aws_appautoscaling_policy" "ecs_policy_up" {
-  name               = "rms-backend-scale-up"
+  name               = "dms-backend-scale-up"
   policy_type        = "TargetTrackingScaling"
   resource_id        = aws_appautoscaling_target.ecs_target.resource_id
   scalable_dimension = aws_appautoscaling_target.ecs_target.scalable_dimension
@@ -291,7 +291,7 @@ aws budgets create-budget \
 
 ```json
 {
-  "BudgetName": "RMS-Production-Monthly",
+  "BudgetName": "DMS-Production-Monthly",
   "BudgetLimit": {
     "Amount": "150",
     "Unit": "USD"
@@ -322,7 +322,7 @@ aws budgets create-budget \
 # Enable AWS Cost Anomaly Detection
 aws ce create-anomaly-detector \
   --anomaly-detector '{
-    "DetectorName": "RMS-Cost-Anomaly-Detector",
+    "DetectorName": "DMS-Cost-Anomaly-Detector",
     "MonitorType": "DIMENSIONAL",
     "DimensionKey": "SERVICE",
     "MonitorArnList": [],
@@ -380,13 +380,13 @@ shutdown_dev_environment() {
 
     # Scale down ECS services
     aws ecs update-service \
-        --cluster "rms-cluster-$ENVIRONMENT" \
-        --service "rms-backend-service-$ENVIRONMENT" \
+        --cluster "dms-cluster-$ENVIRONMENT" \
+        --service "dms-backend-service-$ENVIRONMENT" \
         --desired-count 0
 
     # Stop RDS instance
     aws rds stop-db-instance \
-        --db-instance-identifier "rms-db-$ENVIRONMENT"
+        --db-instance-identifier "dms-db-$ENVIRONMENT"
 
     echo "Development environment shutdown completed"
 }
@@ -396,16 +396,15 @@ startup_dev_environment() {
 
     # Start RDS instance
     aws rds start-db-instance \
-        --db-instance-identifier "rms-db-$ENVIRONMENT"
+        --db-instance-identifier "dms-db-$ENVIRONMENT"
 
     # Wait for RDS to be available
     aws rds wait db-instance-available \
-        --db-instance-identifier "rms-db-$ENVIRONMENT"
-
+        --db-instance-identifier "dms-db-$ENVIRONMENT"
     # Scale up ECS services
     aws ecs update-service \
-        --cluster "rms-cluster-$ENVIRONMENT" \
-        --service "rms-backend-service-$ENVIRONMENT" \
+        --cluster "dms-cluster-$ENVIRONMENT" \
+        --service "dms-backend-service-$ENVIRONMENT" \
         --desired-count 1
 
     echo "Development environment startup completed"
@@ -425,7 +424,7 @@ esac
 ```hcl
 # Terraform scheduled scaling for weekends
 resource "aws_appautoscaling_scheduled_action" "weekend_scale_down" {
-  name               = "rms-weekend-scale-down"
+  name               = "dms-weekend-scale-down"
   service_namespace  = "ecs"
   resource_id        = "service/${aws_ecs_cluster.dev.name}/${aws_ecs_service.backend_dev.name}"
   scalable_dimension = "ecs:service:DesiredCount"
@@ -438,7 +437,7 @@ resource "aws_appautoscaling_scheduled_action" "weekend_scale_down" {
 }
 
 resource "aws_appautoscaling_scheduled_action" "weekend_scale_up" {
-  name               = "rms-weekend-scale-up"
+  name               = "dms-weekend-scale-up"
   service_namespace  = "ecs"
   resource_id        = "service/${aws_ecs_cluster.dev.name}/${aws_ecs_service.backend_dev.name}"
   scalable_dimension = "ecs:service:DesiredCount"
@@ -512,8 +511,8 @@ aws ce get-reserved-instances-purchase-recommendation \
 
 ### Compute Savings Plans
 
-**Current ECS Fargate Usage**: ~$40-60/month  
-**Recommended**: Compute Savings Plan (1 year, no upfront)  
+**Current ECS Fargate Usage**: ~$40-60/month
+**Recommended**: Compute Savings Plan (1 year, no upfront)
 **Expected Savings**: 10-15% ($48-72/year)
 
 ```bash
@@ -539,7 +538,7 @@ aws ce get-savings-plans-purchase-recommendation \
 echo "Starting automated cost cleanup..."
 
 # 1. Delete old ECS task definitions (keep latest 5)
-aws ecs list-task-definitions --family rms-backend --status INACTIVE \
+aws ecs list-task-definitions --family dms-backend --status INACTIVE \
   --query 'taskDefinitionArns[5:]' --output text | \
   xargs -r -n1 aws ecs delete-task-definition --task-definition
 
@@ -593,8 +592,8 @@ def lambda_handler(event, context):
         # Take automated action
         # 1. Scale down non-production environments
         ecs_client.update_service(
-            cluster='rms-cluster-dev',
-            service='rms-backend-service-dev',
+            cluster='dms-cluster-dev',
+            service='dms-backend-service-dev',
             desiredCount=0
         )
 
@@ -602,7 +601,7 @@ def lambda_handler(event, context):
         sns_client.publish(
             TopicArn='arn:aws:sns:us-east-1:123456789012:cost-alerts',
             Message=f'Cost threshold exceeded: ${current_cost:.2f} / ${budget_limit:.2f}',
-            Subject='RMS Cost Alert - Automated Action Taken'
+            Subject='DMS Cost Alert - Automated Action Taken'
         )
 
     return {
@@ -771,7 +770,7 @@ Create CloudWatch dashboard for real-time cost tracking:
       "type": "metric",
       "properties": {
         "metrics": [
-          ["AWS/ECS", "CPUUtilization", "ServiceName", "rms-backend-service-prod"],
+          ["AWS/ECS", "CPUUtilization", "ServiceName", "dms-backend-service-prod"],
           [".", "MemoryUtilization", ".", "."]
         ],
         "period": 300,
@@ -842,7 +841,7 @@ Create CloudWatch dashboard for real-time cost tracking:
 
 ---
 
-**Last Updated**: 2024-12-16  
-**Version**: 1.0  
-**Next Review**: 2025-01-16  
+**Last Updated**: 2024-12-16
+**Version**: 1.0
+**Next Review**: 2025-01-16
 **Cost Target**: 20-30% reduction within 6 months

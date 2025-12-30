@@ -2,15 +2,15 @@
 
 ## Story
 
-**As a** developer building the rms-material application
-**I want** all core infrastructure copied from the existing RMS application
+**As a** developer building the dms-material application
+**I want** all core infrastructure copied from the existing DMS application
 **So that** the new application has identical business logic and state management
 
 ## Context
 
 **Current System:**
 
-- RMS application has established infrastructure:
+- DMS application has established infrastructure:
   - Environment configurations (dev, prod)
   - AWS Amplify configuration for authentication
   - SmartNgRX state management (8 entity stores)
@@ -20,7 +20,7 @@
 
 **Migration Approach:**
 
-- Duplicate all infrastructure code into rms-material
+- Duplicate all infrastructure code into dms-material
 - Update imports to reflect new file locations
 - Preserve all business logic unchanged
 
@@ -37,7 +37,7 @@
 
 ### Technical Requirements
 
-- [ ] Directory structure mirrors existing RMS application
+- [ ] Directory structure mirrors existing DMS application
 - [ ] All TypeScript imports updated for new paths
 - [ ] No circular dependency issues
 - [ ] All files pass lint checks
@@ -73,25 +73,25 @@
 ### Step 1: Create Directory Structure
 
 ```bash
-mkdir -p apps/rms-material/src/app/store/accounts
-mkdir -p apps/rms-material/src/app/store/div-deposits
-mkdir -p apps/rms-material/src/app/store/div-deposit-types
-mkdir -p apps/rms-material/src/app/store/risk-group
-mkdir -p apps/rms-material/src/app/store/screen
-mkdir -p apps/rms-material/src/app/store/top
-mkdir -p apps/rms-material/src/app/store/trades
-mkdir -p apps/rms-material/src/app/store/universe
-mkdir -p apps/rms-material/src/app/auth/guards
-mkdir -p apps/rms-material/src/app/auth/interceptors
-mkdir -p apps/rms-material/src/app/auth/services
-mkdir -p apps/rms-material/src/app/error-handler
-mkdir -p apps/rms-material/src/app/shared/services
-mkdir -p apps/rms-material/src/environments
+mkdir -p apps/dms-material/src/app/store/accounts
+mkdir -p apps/dms-material/src/app/store/div-deposits
+mkdir -p apps/dms-material/src/app/store/div-deposit-types
+mkdir -p apps/dms-material/src/app/store/risk-group
+mkdir -p apps/dms-material/src/app/store/screen
+mkdir -p apps/dms-material/src/app/store/top
+mkdir -p apps/dms-material/src/app/store/trades
+mkdir -p apps/dms-material/src/app/store/universe
+mkdir -p apps/dms-material/src/app/auth/guards
+mkdir -p apps/dms-material/src/app/auth/interceptors
+mkdir -p apps/dms-material/src/app/auth/services
+mkdir -p apps/dms-material/src/app/error-handler
+mkdir -p apps/dms-material/src/app/shared/services
+mkdir -p apps/dms-material/src/environments
 ```
 
 ### Step 2: Copy Environment Files
 
-Copy from `apps/rms/src/environments/`:
+Copy from `apps/dms/src/environments/`:
 
 - `environment.ts`
 - `environment.prod.ts`
@@ -100,7 +100,7 @@ No changes needed - these are configuration only.
 
 ### Step 3: Copy Amplify Configuration
 
-Copy `apps/rms/src/app/amplify.config.ts` to `apps/rms-material/src/app/amplify.config.ts`.
+Copy `apps/dms/src/app/amplify.config.ts` to `apps/dms-material/src/app/amplify.config.ts`.
 
 No changes needed.
 
@@ -138,11 +138,11 @@ select-{entities}.function.ts    # createSmartSignal selector
 
 ### Step 6: Copy Error Handler
 
-Copy `apps/rms/src/app/error-handler/error-handler.service.ts`.
+Copy `apps/dms/src/app/error-handler/error-handler.service.ts`.
 
 ### Step 7: Copy Shared Services
 
-Copy all services from `apps/rms/src/app/shared/services/`:
+Copy all services from `apps/dms/src/app/shared/services/`:
 
 - `universe-sync.service.ts`
 - Any other shared services
@@ -154,8 +154,8 @@ After copying, verify all import paths are correct. The relative paths should re
 ### Step 9: Verify Compilation
 
 ```bash
-pnpm nx run rms-material:build
-pnpm nx run rms-material:lint
+pnpm nx run dms-material:build
+pnpm nx run dms-material:lint
 ```
 
 ## Files to Copy
@@ -164,48 +164,48 @@ pnpm nx run rms-material:lint
 
 | Source                                          | Destination                                              |
 | ----------------------------------------------- | -------------------------------------------------------- |
-| `apps/rms/src/environments/environment.ts`      | `apps/rms-material/src/environments/environment.ts`      |
-| `apps/rms/src/environments/environment.prod.ts` | `apps/rms-material/src/environments/environment.prod.ts` |
+| `apps/dms/src/environments/environment.ts`      | `apps/dms-material/src/environments/environment.ts`      |
+| `apps/dms/src/environments/environment.prod.ts` | `apps/dms-material/src/environments/environment.prod.ts` |
 
 ### Configuration Files
 
 | Source                               | Destination                                   |
 | ------------------------------------ | --------------------------------------------- |
-| `apps/rms/src/app/amplify.config.ts` | `apps/rms-material/src/app/amplify.config.ts` |
+| `apps/dms/src/app/amplify.config.ts` | `apps/dms-material/src/app/amplify.config.ts` |
 
 ### Store Files (per entity)
 
 | Source                              | Destination                                  |
 | ----------------------------------- | -------------------------------------------- |
-| `apps/rms/src/app/store/{entity}/*` | `apps/rms-material/src/app/store/{entity}/*` |
+| `apps/dms/src/app/store/{entity}/*` | `apps/dms-material/src/app/store/{entity}/*` |
 
 ### Auth Files
 
 | Source                                                   | Destination                                                       |
 | -------------------------------------------------------- | ----------------------------------------------------------------- |
-| `apps/rms/src/app/auth/auth.service.ts`                  | `apps/rms-material/src/app/auth/auth.service.ts`                  |
-| `apps/rms/src/app/auth/mock-auth.service.ts`             | `apps/rms-material/src/app/auth/mock-auth.service.ts`             |
-| `apps/rms/src/app/auth/guards/auth.guard.ts`             | `apps/rms-material/src/app/auth/guards/auth.guard.ts`             |
-| `apps/rms/src/app/auth/interceptors/auth.interceptor.ts` | `apps/rms-material/src/app/auth/interceptors/auth.interceptor.ts` |
-| `apps/rms/src/app/auth/services/profile.service.ts`      | `apps/rms-material/src/app/auth/services/profile.service.ts`      |
-| `apps/rms/src/app/auth/services/mock-profile.service.ts` | `apps/rms-material/src/app/auth/services/mock-profile.service.ts` |
+| `apps/dms/src/app/auth/auth.service.ts`                  | `apps/dms-material/src/app/auth/auth.service.ts`                  |
+| `apps/dms/src/app/auth/mock-auth.service.ts`             | `apps/dms-material/src/app/auth/mock-auth.service.ts`             |
+| `apps/dms/src/app/auth/guards/auth.guard.ts`             | `apps/dms-material/src/app/auth/guards/auth.guard.ts`             |
+| `apps/dms/src/app/auth/interceptors/auth.interceptor.ts` | `apps/dms-material/src/app/auth/interceptors/auth.interceptor.ts` |
+| `apps/dms/src/app/auth/services/profile.service.ts`      | `apps/dms-material/src/app/auth/services/profile.service.ts`      |
+| `apps/dms/src/app/auth/services/mock-profile.service.ts` | `apps/dms-material/src/app/auth/services/mock-profile.service.ts` |
 
 ### Error Handler
 
 | Source                                                    | Destination                                                        |
 | --------------------------------------------------------- | ------------------------------------------------------------------ |
-| `apps/rms/src/app/error-handler/error-handler.service.ts` | `apps/rms-material/src/app/error-handler/error-handler.service.ts` |
+| `apps/dms/src/app/error-handler/error-handler.service.ts` | `apps/dms-material/src/app/error-handler/error-handler.service.ts` |
 
 ### Shared Services
 
 | Source                               | Destination                                   |
 | ------------------------------------ | --------------------------------------------- |
-| `apps/rms/src/app/shared/services/*` | `apps/rms-material/src/app/shared/services/*` |
+| `apps/dms/src/app/shared/services/*` | `apps/dms-material/src/app/shared/services/*` |
 
 ## Directory Structure After Copy
 
 ```
-apps/rms-material/src/
+apps/dms-material/src/
 ├── environments/
 │   ├── environment.ts
 │   └── environment.prod.ts
@@ -253,14 +253,14 @@ apps/rms-material/src/
 
 ## E2E Test Requirements
 
-When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
+When this story is complete, ensure the following e2e tests exist in `apps/dms-material-e2e/`:
 
 - [ ] Application bootstraps without errors
 - [ ] SmartNgRX state management initializes correctly
 - [ ] Auth services work (mock or real based on environment)
 - [ ] Environment configuration loads correctly
 
-Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.
+Run `pnpm nx run dms-material-e2e:e2e` to verify all e2e tests pass.
 
 ## Notes
 

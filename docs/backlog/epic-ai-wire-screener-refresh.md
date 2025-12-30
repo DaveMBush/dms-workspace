@@ -2,13 +2,13 @@
 
 ## Epic Goal
 
-Enable the screener refresh functionality in RMS-MATERIAL to populate universe data from external CEF sources.
+Enable the screener refresh functionality in DMS-MATERIAL to populate universe data from external CEF sources.
 
 ## Epic Description
 
 **Existing System Context:**
 
-- RMS app has working screener refresh that calls GET `/api/screener`
+- DMS app has working screener refresh that calls GET `/api/screener`
 - Screener scrapes CEF data and populates screener table
 - This is critical for getting bulk symbol data
 
@@ -28,7 +28,7 @@ Enable the screener refresh functionality in RMS-MATERIAL to populate universe d
 
 ## Stories
 
-1. **Story AI.1:** Create screener service in RMS-MATERIAL
+1. **Story AI.1:** Create screener service in DMS-MATERIAL
 2. **Story AI.2:** Wire refresh button to service
 3. **Story AI.3:** Add loading and error handling
 4. **Story AI.4:** Add unit tests for screener service

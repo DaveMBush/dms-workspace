@@ -23,7 +23,7 @@
 ### Functional Requirements
 
 - [ ] Click cell to open datepicker
-- [ ] All GUI look as close to the existing RMS app as possible
+- [ ] All GUI look as close to the existing DMS app as possible
 - [ ] Select date to update value
 - [ ] Close picker cancels if no selection
 - [ ] Date formatted according to configuration
@@ -40,7 +40,7 @@
 
 ### Step 1: Create Unit Tests First
 
-Create `apps/rms-material/src/app/shared/components/editable-date-cell/editable-date-cell.component.spec.ts`:
+Create `apps/dms-material/src/app/shared/components/editable-date-cell/editable-date-cell.component.spec.ts`:
 
 ```typescript
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -99,13 +99,13 @@ describe('EditableDateCellComponent', () => {
 
 **TDD Cycle:**
 
-1. Run `pnpm nx run rms-material:test` - tests should fail (RED)
+1. Run `pnpm nx run dms-material:test` - tests should fail (RED)
 2. Implement minimal code to pass tests (GREEN)
 3. Refactor while keeping tests passing (REFACTOR)
 
 ## Technical Approach
 
-Create `apps/rms-material/src/app/shared/components/editable-date-cell/editable-date-cell.component.ts`:
+Create `apps/dms-material/src/app/shared/components/editable-date-cell/editable-date-cell.component.ts`:
 
 ```typescript
 import { Component, input, output, signal, ViewChild } from '@angular/core';
@@ -117,7 +117,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { DatePipe } from '@angular/common';
 
 @Component({
-  selector: 'rms-editable-date-cell',
+  selector: 'dms-editable-date-cell',
   imports: [FormsModule, MatFormFieldModule, MatInputModule, MatDatepickerModule, MatNativeDateModule, DatePipe],
   template: `
     @if (isEditing()) {
@@ -192,7 +192,7 @@ export class EditableDateCellComponent {
 
 ## E2E Test Requirements
 
-When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
+When this story is complete, ensure the following e2e tests exist in `apps/dms-material-e2e/`:
 
 ### Core Functionality
 
@@ -219,4 +219,4 @@ When this story is complete, ensure the following e2e tests exist in `apps/rms-m
 - [ ] Today button works in datepicker
 - [ ] Clear button removes date value
 
-Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.
+Run `pnpm nx run dms-material-e2e:e2e` to verify all e2e tests pass.

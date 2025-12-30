@@ -10,7 +10,7 @@
 
 **Current System:**
 
-- Location: `apps/rms/src/app/global/global-universe/`
+- Location: `apps/dms/src/app/global/global-universe/`
 - PrimeNG components: `p-table` (editable), `p-toolbar`, `p-button`, `p-inputNumber`, `p-datepicker`, `p-select`, `p-cellEditor`
 - Most complex table in the application with ~15 columns, many editable
 - ~270 lines of template code
@@ -26,7 +26,7 @@
 ### Functional Requirements
 
 - [ ] All columns display correctly
-- [ ] All GUI look as close to the existing RMS app as possible
+- [ ] All GUI look as close to the existing DMS app as possible
 - [ ] Editable cells for: yield, purchase price, ex-date, div amount, etc.
 - [ ] Row selection for batch operations
 - [ ] Toolbar actions (sync, update, delete)
@@ -54,7 +54,7 @@
 
 ### Step 1: Create Unit Tests First
 
-Create `apps/rms-material/src/app/global/global-universe/global-universe.component.spec.ts`:
+Create `apps/dms-material/src/app/global/global-universe/global-universe.component.spec.ts`:
 
 ```typescript
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -118,7 +118,7 @@ describe('GlobalUniverseComponent', () => {
 
 **TDD Cycle:**
 
-1. Run `pnpm nx run rms-material:test` - tests should fail (RED)
+1. Run `pnpm nx run dms-material:test` - tests should fail (RED)
 2. Implement minimal code to pass tests (GREEN)
 3. Refactor while keeping tests passing (REFACTOR)
 
@@ -126,7 +126,7 @@ describe('GlobalUniverseComponent', () => {
 
 ### Step 1: Create Global Universe Component
 
-Create `apps/rms-material/src/app/global/global-universe/global-universe.component.ts`:
+Create `apps/dms-material/src/app/global/global-universe/global-universe.component.ts`:
 
 ```typescript
 import { Component, inject, OnInit, ViewChild } from '@angular/core';
@@ -145,7 +145,7 @@ import { NotificationService } from '../../shared/services/notification.service'
 import { ConfirmDialogService } from '../../shared/services/confirm-dialog.service';
 
 @Component({
-  selector: 'rms-global-universe',
+  selector: 'dms-global-universe',
   imports: [MatToolbarModule, MatButtonModule, MatIconModule, MatSelectModule, BaseTableComponent, EditableCellComponent, EditableDateCellComponent],
   templateUrl: './global-universe.component.html',
   styleUrl: './global-universe.component.scss',
@@ -218,7 +218,7 @@ export class GlobalUniverseComponent implements OnInit {
 
 ### Step 2: Create Global Universe Template
 
-Create `apps/rms-material/src/app/global/global-universe/global-universe.component.html`:
+Create `apps/dms-material/src/app/global/global-universe/global-universe.component.html`:
 
 ```html
 <div class="universe-container">
@@ -235,22 +235,22 @@ Create `apps/rms-material/src/app/global/global-universe/global-universe.compone
     </button>
   </mat-toolbar>
 
-  <rms-base-table [columns]="columns" [selectable]="true" [multiSelect]="true" [rowHeight]="48">
+  <dms-base-table [columns]="columns" [selectable]="true" [multiSelect]="true" [rowHeight]="48">
     <!-- Custom cell templates for editable fields -->
     <ng-template #cellTemplate let-row let-column="column">
       @switch (column.field) { @case ('currentYield') {
-      <rms-editable-cell [value]="row.currentYield" format="decimal" [decimalFormat]="'1.2-2'" (valueChange)="onCellEdit(row, 'currentYield', $event)" />
+      <dms-editable-cell [value]="row.currentYield" format="decimal" [decimalFormat]="'1.2-2'" (valueChange)="onCellEdit(row, 'currentYield', $event)" />
       } @case ('purchasePrice') {
-      <rms-editable-cell [value]="row.purchasePrice" format="currency" (valueChange)="onCellEdit(row, 'purchasePrice', $event)" />
+      <dms-editable-cell [value]="row.purchasePrice" format="currency" (valueChange)="onCellEdit(row, 'purchasePrice', $event)" />
       } @case ('exDate') {
-      <rms-editable-date-cell [value]="row.exDate" (valueChange)="onCellEdit(row, 'exDate', $event)" />
+      <dms-editable-date-cell [value]="row.exDate" (valueChange)="onCellEdit(row, 'exDate', $event)" />
       } @case ('divAmount') {
-      <rms-editable-cell [value]="row.divAmount" format="currency" (valueChange)="onCellEdit(row, 'divAmount', $event)" />
+      <dms-editable-cell [value]="row.divAmount" format="currency" (valueChange)="onCellEdit(row, 'divAmount', $event)" />
       } @case ('isActive') {
       <mat-icon [class.active]="row.isActive"> {{ row.isActive ? 'check_circle' : 'cancel' }} </mat-icon>
       } @default { {{ row[column.field] }} } }
     </ng-template>
-  </rms-base-table>
+  </dms-base-table>
 </div>
 ```
 
@@ -274,7 +274,7 @@ Create `apps/rms-material/src/app/global/global-universe/global-universe.compone
 
 ## E2E Test Requirements
 
-When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
+When this story is complete, ensure the following e2e tests exist in `apps/dms-material-e2e/`:
 
 ### Core Functionality
 
@@ -305,7 +305,7 @@ When this story is complete, ensure the following e2e tests exist in `apps/rms-m
 - [ ] Empty universe displays appropriate message
 - [ ] Adding duplicate symbol prevented with error message
 
-Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.
+Run `pnpm nx run dms-material-e2e:e2e` to verify all e2e tests pass.
 
 ## QA Results
 
@@ -401,16 +401,16 @@ Applied fixes for all QA gate issues:
 
 **New Files:**
 
-- `apps/rms-material/src/app/global/global-universe/calculate-yield-percent.function.ts`
-- `apps/rms-material/src/app/global/global-universe/filter-universes.function.ts`
-- `apps/rms-material/src/app/global/global-universe/sort-universes.function.ts`
+- `apps/dms-material/src/app/global/global-universe/calculate-yield-percent.function.ts`
+- `apps/dms-material/src/app/global/global-universe/filter-universes.function.ts`
+- `apps/dms-material/src/app/global/global-universe/sort-universes.function.ts`
 
 **Modified Files:**
 
-- `apps/rms-material/src/app/global/global-universe/global-universe.component.ts`
-- `apps/rms-material/src/app/global/global-universe/global-universe.component.html`
-- `apps/rms-material/src/app/global/global-universe/global-universe.component.scss`
-- `apps/rms-material/src/app/global/global-universe/global-universe.component.spec.ts`
+- `apps/dms-material/src/app/global/global-universe/global-universe.component.ts`
+- `apps/dms-material/src/app/global/global-universe/global-universe.component.html`
+- `apps/dms-material/src/app/global/global-universe/global-universe.component.scss`
+- `apps/dms-material/src/app/global/global-universe/global-universe.component.spec.ts`
 
 ### Completion Notes
 
@@ -418,7 +418,7 @@ Applied fixes for all QA gate issues:
 - Extracted filter/sort logic to separate utility functions for maintainability
 - Component uses shared components from AC.1, AC.2, AC.3 as required
 - Virtual scrolling implemented via BaseTableComponent/VirtualTableDataSource
-- All 586 rms-material unit tests pass
+- All 586 dms-material unit tests pass
 - All lint checks pass
 - Build succeeds
 
@@ -427,8 +427,8 @@ Applied fixes for all QA gate issues:
 ```
 pnpm format - PASS
 pnpm dupcheck - PASS (0 clones)
-pnpm nx run rms-material:lint - PASS
-pnpm nx run rms-material:test - PASS (586 tests)
-pnpm nx run rms-material:build:production - PASS
-pnpm nx run rms-material-e2e:lint - PASS
+pnpm nx run dms-material:lint - PASS
+pnpm nx run dms-material:test - PASS (586 tests)
+pnpm nx run dms-material:build:production - PASS
+pnpm nx run dms-material-e2e:lint - PASS
 ```

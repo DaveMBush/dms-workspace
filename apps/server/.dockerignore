@@ -1,4 +1,4 @@
-# Docker ignore file for RMS Fastify Backend
+# Docker ignore file for DMS Fastify Backend
 
 # Node modules (will be reinstalled in container)
 node_modules

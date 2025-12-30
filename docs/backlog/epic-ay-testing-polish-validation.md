@@ -2,13 +2,13 @@
 
 ## Epic Goal
 
-Ensure the migrated rms-material application is fully tested, polished, and validated against the original RMS application, confirming feature parity and performance improvements.
+Ensure the migrated dms-material application is fully tested, polished, and validated against the original DMS application, confirming feature parity and performance improvements.
 
 ## Epic Description
 
 **Existing System Context:**
 
-- Current relevant functionality: Complete RMS application with all features
+- Current relevant functionality: Complete DMS application with all features
 - Technology stack: Angular 20, PrimeNG, Vitest, Playwright
 - Test coverage: Unit tests and E2E tests exist
 

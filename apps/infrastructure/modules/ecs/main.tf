@@ -1,4 +1,4 @@
-# ECS Cluster and Service Configuration for RMS Backend
+# ECS Cluster and Service Configuration for DMS Backend
 
 # ECS Cluster
 resource "aws_ecs_cluster" "main" {
@@ -34,8 +34,8 @@ resource "aws_cloudwatch_log_group" "ecs_cluster" {
   }
 }
 
-# CloudWatch Log Group for RMS Backend Application
-resource "aws_cloudwatch_log_group" "rms_backend" {
+# CloudWatch Log Group for DMS Backend Application
+resource "aws_cloudwatch_log_group" "dms_backend" {
   name              = "/ecs/${var.project_name}/backend-${var.environment}"
   retention_in_days = var.log_retention_days
   kms_key_id        = aws_kms_key.ecs_logs.arn
@@ -64,7 +64,7 @@ resource "aws_kms_alias" "ecs_logs" {
 }
 
 # ECS Task Definition
-resource "aws_ecs_task_definition" "rms_backend" {
+resource "aws_ecs_task_definition" "dms_backend" {
   family                   = "${var.project_name}-backend-${var.environment}"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
@@ -116,7 +116,7 @@ resource "aws_ecs_task_definition" "rms_backend" {
       logConfiguration = {
         logDriver = "awslogs"
         options = {
-          "awslogs-group"         = aws_cloudwatch_log_group.rms_backend.name
+          "awslogs-group"         = aws_cloudwatch_log_group.dms_backend.name
           "awslogs-region"        = var.aws_region
           "awslogs-stream-prefix" = "ecs"
         }
@@ -143,10 +143,10 @@ resource "aws_ecs_task_definition" "rms_backend" {
 }
 
 # ECS Service
-resource "aws_ecs_service" "rms_backend" {
+resource "aws_ecs_service" "dms_backend" {
   name            = "${var.project_name}-backend-service-${var.environment}"
   cluster         = aws_ecs_cluster.main.id
-  task_definition = aws_ecs_task_definition.rms_backend.arn
+  task_definition = aws_ecs_task_definition.dms_backend.arn
   desired_count   = var.desired_count
   launch_type     = "FARGATE"
 
@@ -172,7 +172,7 @@ resource "aws_ecs_service" "rms_backend" {
   }
 
   service_registries {
-    registry_arn = aws_service_discovery_service.rms_backend.arn
+    registry_arn = aws_service_discovery_service.dms_backend.arn
   }
 
   depends_on = [
@@ -186,9 +186,9 @@ resource "aws_ecs_service" "rms_backend" {
 }
 
 # Service Discovery
-resource "aws_service_discovery_private_dns_namespace" "rms" {
+resource "aws_service_discovery_private_dns_namespace" "dms" {
   name        = "${var.project_name}.${var.environment}.local"
-  description = "Private DNS namespace for RMS services"
+  description = "Private DNS namespace for DMS services"
   vpc         = var.vpc_id
 
   tags = {
@@ -197,11 +197,11 @@ resource "aws_service_discovery_private_dns_namespace" "rms" {
   }
 }
 
-resource "aws_service_discovery_service" "rms_backend" {
+resource "aws_service_discovery_service" "dms_backend" {
   name = "backend"
 
   dns_config {
-    namespace_id = aws_service_discovery_private_dns_namespace.rms.id
+    namespace_id = aws_service_discovery_private_dns_namespace.dms.id
 
     dns_records {
       ttl  = 10

@@ -175,8 +175,8 @@ export class AwsConfigManager {
     env: string
   ): Promise<Map<string, string>> {
     const parameterNames = [
-      `/rms/${env}/database-url`,
-      `/rms/${env}/database-password`,
+      `/dms/${env}/database-url`,
+      `/dms/${env}/database-password`,
     ];
 
     const command = new GetParametersCommand({
@@ -199,8 +199,8 @@ export class AwsConfigManager {
     params: Map<string, string>,
     env: string
   ): DatabaseConfig {
-    const databaseUrl = params.get(`/rms/${env}/database-url`);
-    const databasePassword = params.get(`/rms/${env}/database-password`);
+    const databaseUrl = params.get(`/dms/${env}/database-url`);
+    const databasePassword = params.get(`/dms/${env}/database-password`);
 
     if (!databaseUrl) {
       throw new Error('Database URL not found in Parameter Store');
@@ -273,10 +273,10 @@ export class AwsConfigManager {
     // Use 'local' environment for LocalStack parameters
     const env = this.isLocalEnvironment() ? 'local' : this.environment;
     const parameterNames = [
-      `/rms/${env}/cognito-user-pool-id`,
-      `/rms/${env}/cognito-user-pool-client-id`,
-      `/rms/${env}/cognito-jwt-issuer`,
-      `/rms/${env}/aws-region`,
+      `/dms/${env}/cognito-user-pool-id`,
+      `/dms/${env}/cognito-user-pool-client-id`,
+      `/dms/${env}/cognito-jwt-issuer`,
+      `/dms/${env}/aws-region`,
     ];
 
     return this.getParameters(parameterNames, false);
@@ -290,12 +290,12 @@ export class AwsConfigManager {
   ): CognitoConfig {
     // Use 'local' environment for LocalStack parameters
     const env = this.isLocalEnvironment() ? 'local' : this.environment;
-    const region = params.get(`/rms/${env}/aws-region`) || 'us-east-1';
-    const userPoolId = params.get(`/rms/${env}/cognito-user-pool-id`);
+    const region = params.get(`/dms/${env}/aws-region`) || 'us-east-1';
+    const userPoolId = params.get(`/dms/${env}/cognito-user-pool-id`);
     const userPoolWebClientId = params.get(
-      `/rms/${env}/cognito-user-pool-client-id`
+      `/dms/${env}/cognito-user-pool-client-id`
     );
-    const jwtIssuer = params.get(`/rms/${env}/cognito-jwt-issuer`);
+    const jwtIssuer = params.get(`/dms/${env}/cognito-jwt-issuer`);
 
     if (!userPoolId || !userPoolWebClientId || !jwtIssuer) {
       throw new Error('Missing required Cognito parameters in Parameter Store');

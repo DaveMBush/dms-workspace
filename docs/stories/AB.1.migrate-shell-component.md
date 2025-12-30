@@ -2,7 +2,7 @@
 
 ## Story
 
-**As a** user of the rms-material application
+**As a** user of the dms-material application
 **I want** the main application shell with toolbar, navigation, and layout
 **So that** I can navigate the application and access all features
 
@@ -10,7 +10,7 @@
 
 **Current System:**
 
-- Location: `apps/rms/src/app/shell/shell.component.ts`
+- Location: `apps/dms/src/app/shell/shell.component.ts`
 - PrimeNG components used:
   - `p-toolbar` - Top navigation bar
   - `p-splitter` - Resizable split layout
@@ -70,7 +70,7 @@
 
 Create test files before implementing components. Run tests to see them fail (RED), then implement to make them pass (GREEN), then refactor (REFACTOR).
 
-**Notification Service Tests** - `apps/rms-material/src/app/shared/services/notification.service.spec.ts`:
+**Notification Service Tests** - `apps/dms-material/src/app/shared/services/notification.service.spec.ts`:
 
 ```typescript
 import { TestBed } from '@angular/core/testing';
@@ -106,7 +106,7 @@ describe('NotificationService', () => {
 });
 ```
 
-**Confirm Dialog Service Tests** - `apps/rms-material/src/app/shared/services/confirm-dialog.service.spec.ts`:
+**Confirm Dialog Service Tests** - `apps/dms-material/src/app/shared/services/confirm-dialog.service.spec.ts`:
 
 ```typescript
 import { TestBed } from '@angular/core/testing';
@@ -142,7 +142,7 @@ describe('ConfirmDialogService', () => {
 });
 ```
 
-**Splitter Component Tests** - `apps/rms-material/src/app/shared/components/splitter/splitter.component.spec.ts`:
+**Splitter Component Tests** - `apps/dms-material/src/app/shared/components/splitter/splitter.component.spec.ts`:
 
 ```typescript
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -214,7 +214,7 @@ describe('SplitterComponent', () => {
 });
 ```
 
-**Shell Component Tests** - `apps/rms-material/src/app/shell/shell.component.spec.ts`:
+**Shell Component Tests** - `apps/dms-material/src/app/shell/shell.component.spec.ts`:
 
 ```typescript
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -260,7 +260,7 @@ describe('ShellComponent', () => {
 
   it('should render splitter with two panels', () => {
     fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector('rms-splitter')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('dms-splitter')).toBeTruthy();
   });
 
   describe('onLogout', () => {
@@ -280,7 +280,7 @@ describe('ShellComponent', () => {
 
 **TDD Cycle:**
 
-1. Run `pnpm nx run rms-material:test` - tests should fail (RED)
+1. Run `pnpm nx run dms-material:test` - tests should fail (RED)
 2. Implement minimal code to pass tests (GREEN)
 3. Refactor while keeping tests passing (REFACTOR)
 4. Repeat for each component/service
@@ -289,7 +289,7 @@ describe('ShellComponent', () => {
 
 ### Step 1: Create Notification Service
 
-Create `apps/rms-material/src/app/shared/services/notification.service.ts`:
+Create `apps/dms-material/src/app/shared/services/notification.service.ts`:
 
 ```typescript
 import { inject, Injectable } from '@angular/core';
@@ -346,7 +346,7 @@ export class NotificationService {
 
 ### Step 2: Create Confirm Dialog Component
 
-Create `apps/rms-material/src/app/shared/components/confirm-dialog/confirm-dialog.component.ts`:
+Create `apps/dms-material/src/app/shared/components/confirm-dialog/confirm-dialog.component.ts`:
 
 ```typescript
 import { Component, inject } from '@angular/core';
@@ -361,7 +361,7 @@ export interface ConfirmDialogData {
 }
 
 @Component({
-  selector: 'rms-confirm-dialog',
+  selector: 'dms-confirm-dialog',
   imports: [MatDialogModule, MatButtonModule],
   template: `
     <h2 mat-dialog-title>{{ data.title }}</h2>
@@ -394,7 +394,7 @@ export class ConfirmDialogComponent {
 
 ### Step 3: Create Confirm Dialog Service
 
-Create `apps/rms-material/src/app/shared/services/confirm-dialog.service.ts`:
+Create `apps/dms-material/src/app/shared/services/confirm-dialog.service.ts`:
 
 ```typescript
 import { inject, Injectable } from '@angular/core';
@@ -421,14 +421,14 @@ export class ConfirmDialogService {
 
 ### Step 4: Create Custom Splitter Component
 
-Create `apps/rms-material/src/app/shared/components/splitter/splitter.component.ts`:
+Create `apps/dms-material/src/app/shared/components/splitter/splitter.component.ts`:
 
 ```typescript
 import { Component, input, output, signal, effect } from '@angular/core';
 import { CdkDrag, CdkDragMove } from '@angular/cdk/drag-drop';
 
 @Component({
-  selector: 'rms-splitter',
+  selector: 'dms-splitter',
   imports: [CdkDrag],
   template: `
     <div class="splitter-container" #container>
@@ -479,7 +479,7 @@ export class SplitterComponent {
 
 ### Step 5: Migrate Shell Component
 
-Create `apps/rms-material/src/app/shell/shell.component.ts`:
+Create `apps/dms-material/src/app/shell/shell.component.ts`:
 
 ```typescript
 import { Component, inject } from '@angular/core';
@@ -495,7 +495,7 @@ import { SplitterComponent } from '../shared/components/splitter/splitter.compon
 import { ConfirmDialogService } from '../shared/services/confirm-dialog.service';
 
 @Component({
-  selector: 'rms-shell',
+  selector: 'dms-shell',
   imports: [RouterOutlet, MatToolbarModule, MatButtonModule, MatIconModule, MatMenuModule, SplitterComponent],
   templateUrl: './shell.component.html',
   styleUrl: './shell.component.scss',
@@ -531,11 +531,11 @@ export class ShellComponent {
 
 ### Step 6: Create Shell Template
 
-Create `apps/rms-material/src/app/shell/shell.component.html`:
+Create `apps/dms-material/src/app/shell/shell.component.html`:
 
 ```html
 <mat-toolbar color="primary" class="shell-toolbar">
-  <span class="app-title">RMS</span>
+  <span class="app-title">DMS</span>
 
   <span class="toolbar-spacer"></span>
 
@@ -559,19 +559,19 @@ Create `apps/rms-material/src/app/shell/shell.component.html`:
   </mat-menu>
 </mat-toolbar>
 
-<rms-splitter stateKey="rms-main-splitter" [initialLeftWidth]="20">
+<dms-splitter stateKey="dms-main-splitter" [initialLeftWidth]="20">
   <div leftPanel class="accounts-panel">
     <router-outlet name="accounts"></router-outlet>
   </div>
   <div rightPanel class="content-panel">
     <router-outlet></router-outlet>
   </div>
-</rms-splitter>
+</dms-splitter>
 ```
 
 ### Step 7: Update Routes
 
-Update `apps/rms-material/src/app/app.routes.ts` to include shell route with guards.
+Update `apps/dms-material/src/app/app.routes.ts` to include shell route with guards.
 
 ## Files Created
 
@@ -600,7 +600,7 @@ Update `apps/rms-material/src/app/app.routes.ts` to include shell route with gua
 
 ## E2E Test Requirements
 
-When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
+When this story is complete, ensure the following e2e tests exist in `apps/dms-material-e2e/`:
 
 ### Core Functionality
 
@@ -627,4 +627,4 @@ When this story is complete, ensure the following e2e tests exist in `apps/rms-m
 - [ ] Screen reader announces toolbar buttons correctly
 - [ ] Splitter handle is keyboard accessible (Arrow keys to resize)
 
-Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.
+Run `pnpm nx run dms-material-e2e:e2e` to verify all e2e tests pass.

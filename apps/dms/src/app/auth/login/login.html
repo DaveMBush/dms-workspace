@@ -1,0 +1,138 @@
+<!-- eslint-disable @angular-eslint/template/no-call-expression -->
+<!-- Login Container -->
+<div
+  class="min-h-screen min-w-full flex items-center justify-center p-4 bg-surface-ground"
+>
+  <div class="w-full max-w-md mx-4">
+    <!-- Login Card -->
+    <div class="surface-card border-round shadow-3 p-6">
+      <!-- Header -->
+      <div class="text-center mb-6">
+        <h1 class="text-3xl font-bold text-primary mb-2">
+          Dividend Management System Login
+        </h1>
+        <span class="text-color-secondary font-medium"
+          >Sign in to your account</span
+        >
+      </div>
+
+      <!-- Login Form -->
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="w-full">
+        <!-- Email Field -->
+        <div class="field mb-4">
+          <label for="email" class="block text-color font-medium mb-2">
+            Email Address <span class="text-red-500">*</span>
+          </label>
+          <input
+            pInputText
+            id="email"
+            type="email"
+            formControlName="email"
+            placeholder="Enter your email address"
+            class="w-full"
+            [class.ng-invalid]="emailInvalid()"
+            [class.ng-dirty]="emailControl?.dirty"
+            autocomplete="email"
+            aria-describedby="email-error"
+            data-testid="email-input"
+          />
+          @if (emailInvalid()) {
+          <small
+            id="email-error"
+            class="text-red-500 mt-1 block"
+            data-testid="email-error-message"
+          >
+            {{ getEmailErrorMessage() }}
+          </small>
+          }
+        </div>
+
+        <!-- Password Field -->
+        <div class="field mb-4">
+          <label for="password" class="block text-color font-medium mb-2">
+            Password <span class="text-red-500">*</span>
+          </label>
+          <p-password
+            inputId="password"
+            formControlName="password"
+            placeholder="Enter your password"
+            [toggleMask]="true"
+            [feedback]="false"
+            styleClass="w-full"
+            [class.ng-invalid]="passwordInvalid()"
+            [class.ng-dirty]="passwordControl?.dirty"
+            autocomplete="current-password"
+            [promptLabel]="''"
+            [weakLabel]="''"
+            [mediumLabel]="''"
+            [strongLabel]="''"
+            data-testid="password-input"
+          >
+          </p-password>
+          @if (passwordInvalid()) {
+          <small
+            id="password-error"
+            class="text-red-500 mt-1 block"
+            data-testid="password-error-message"
+          >
+            {{ getPasswordErrorMessage() }}
+          </small>
+          }
+        </div>
+
+        <!-- Remember Me Field - on its own row -->
+        <div class="field mb-4">
+          <div class="flex align-items-center gap-2">
+            <p-checkbox
+              inputId="rememberMe"
+              formControlName="rememberMe"
+              binary="true"
+              (onChange)="onRememberMeChange($event.checked)"
+              data-testid="remember-me-checkbox"
+            >
+            </p-checkbox>
+            <label
+              for="rememberMe"
+              class="text-color font-medium cursor-pointer select-none"
+            >
+              Remember me for 90 days
+            </label>
+          </div>
+        </div>
+
+        <!-- Bottom Row: Help Text (left) and Sign In Button (right) -->
+        <div class="flex justify-content-between align-items-center w-full">
+          <small class="text-color-secondary">
+            Need help? Contact your system administrator.
+          </small>
+          <div class="ml-auto">
+            <p-button
+              type="submit"
+              label="Sign In"
+              icon="pi pi-sign-in"
+              [disabled]="isFormInvalid()"
+              [loading]="isLoading$()"
+              loadingIcon="pi pi-spin pi-spinner"
+              data-testid="login-button"
+            >
+            </p-button>
+          </div>
+        </div>
+
+        <!-- Authentication Error Message -->
+        @if (authError$()) {
+        <div class="mt-3">
+          <p-message
+            severity="error"
+            [text]="authError$()!"
+            class="w-full"
+            [closable]="false"
+            data-testid="error-message"
+          >
+          </p-message>
+        </div>
+        }
+      </form>
+    </div>
+  </div>
+</div>

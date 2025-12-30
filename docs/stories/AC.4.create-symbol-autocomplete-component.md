@@ -23,7 +23,7 @@
 ### Functional Requirements
 
 - [ ] Type to filter suggestions
-- [ ] All GUI look as close to the existing RMS app as possible
+- [ ] All GUI look as close to the existing DMS app as possible
 - [ ] Dropdown shows matching symbols
 - [ ] Select suggestion to populate input
 - [ ] Force selection option (no custom values)
@@ -41,7 +41,7 @@
 
 ### Step 1: Create Unit Tests First
 
-Create `apps/rms-material/src/app/shared/components/symbol-autocomplete/symbol-autocomplete.component.spec.ts`:
+Create `apps/dms-material/src/app/shared/components/symbol-autocomplete/symbol-autocomplete.component.spec.ts`:
 
 ```typescript
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
@@ -119,13 +119,13 @@ describe('SymbolAutocompleteComponent', () => {
 
 **TDD Cycle:**
 
-1. Run `pnpm nx run rms-material:test` - tests should fail (RED)
+1. Run `pnpm nx run dms-material:test` - tests should fail (RED)
 2. Implement minimal code to pass tests (GREEN)
 3. Refactor while keeping tests passing (REFACTOR)
 
 ## Technical Approach
 
-Create `apps/rms-material/src/app/shared/components/symbol-autocomplete/symbol-autocomplete.component.ts`:
+Create `apps/dms-material/src/app/shared/components/symbol-autocomplete/symbol-autocomplete.component.ts`:
 
 ```typescript
 import { Component, input, output, signal, inject, OnInit } from '@angular/core';
@@ -142,7 +142,7 @@ export interface SymbolOption {
 }
 
 @Component({
-  selector: 'rms-symbol-autocomplete',
+  selector: 'dms-symbol-autocomplete',
   imports: [ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatAutocompleteModule, MatProgressSpinnerModule],
   template: `
     <mat-form-field appearance="outline" class="full-width">
@@ -228,7 +228,7 @@ export class SymbolAutocompleteComponent implements OnInit {
 
 ## E2E Test Requirements
 
-When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
+When this story is complete, ensure the following e2e tests exist in `apps/dms-material-e2e/`:
 
 ### Core Functionality
 
@@ -258,20 +258,20 @@ When this story is complete, ensure the following e2e tests exist in `apps/rms-m
 - [ ] Clear button resets input and closes dropdown
 - [ ] Re-opening dropdown shows previous results if unchanged
 
-Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.
+Run `pnpm nx run dms-material-e2e:e2e` to verify all e2e tests pass.
 
 ## File List
 
 ### Component Files
 
-- `apps/rms-material/src/app/shared/components/symbol-autocomplete/symbol-autocomplete.component.ts`
-- `apps/rms-material/src/app/shared/components/symbol-autocomplete/symbol-autocomplete.component.html`
-- `apps/rms-material/src/app/shared/components/symbol-autocomplete/symbol-autocomplete.component.scss`
-- `apps/rms-material/src/app/shared/components/symbol-autocomplete/symbol-autocomplete.component.spec.ts`
+- `apps/dms-material/src/app/shared/components/symbol-autocomplete/symbol-autocomplete.component.ts`
+- `apps/dms-material/src/app/shared/components/symbol-autocomplete/symbol-autocomplete.component.html`
+- `apps/dms-material/src/app/shared/components/symbol-autocomplete/symbol-autocomplete.component.scss`
+- `apps/dms-material/src/app/shared/components/symbol-autocomplete/symbol-autocomplete.component.spec.ts`
 
 ### E2E Test Files
 
-- `apps/rms-material-e2e/src/symbol-autocomplete.spec.ts`
+- `apps/dms-material-e2e/src/symbol-autocomplete.spec.ts`
 
 ## Status
 

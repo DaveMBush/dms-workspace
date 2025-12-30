@@ -1,1 +1,1 @@
-module.exports = require('./apps/rms/postcss.config.js');
+module.exports = require('./apps/dms/postcss.config.js');

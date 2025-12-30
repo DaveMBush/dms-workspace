@@ -10,7 +10,7 @@
 
 **Current System:**
 
-- Location: `apps/rms/src/app/account-panel/account-detail.component.ts`
+- Location: `apps/dms/src/app/account-panel/account-detail.component.ts`
 - Container that provides SmartNgRX entity context
 - Reads accountId from route params
 
@@ -23,10 +23,10 @@
 
 ### Functional Requirements
 
-- [x] **CRITICAL** All GUI look as close to the existing RMS app as possible
+- [x] **CRITICAL** All GUI look as close to the existing DMS app as possible
 - [x] Account ID read from route
 - [x] SmartNgRX trades entity provided
-- [x] **CRITICAL** Use SmartNgRX/SmartSignals code from RMS app, don't try to recreate it.
+- [x] **CRITICAL** Use SmartNgRX/SmartSignals code from DMS app, don't try to recreate it.
 - [x] Child routes render correctly
 
 ### Technical Requirements
@@ -41,7 +41,7 @@
 
 ### Step 1: Create Unit Tests First
 
-Create `apps/rms-material/src/app/account-panel/account-detail.component.spec.ts`:
+Create `apps/dms-material/src/app/account-panel/account-detail.component.spec.ts`:
 
 ```typescript
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -89,20 +89,20 @@ describe('AccountDetailComponent', () => {
 
 **TDD Cycle:**
 
-1. Run `pnpm nx run rms-material:test` - tests should fail (RED)
+1. Run `pnpm nx run dms-material:test` - tests should fail (RED)
 2. Implement minimal code to pass tests (GREEN)
 3. Refactor while keeping tests passing (REFACTOR)
 
 ## Technical Approach
 
-Create `apps/rms-material/src/app/account-panel/account-detail.component.ts`:
+Create `apps/dms-material/src/app/account-panel/account-detail.component.ts`:
 
 ```typescript
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, RouterOutlet } from '@angular/router';
 
 @Component({
-  selector: 'rms-account-detail',
+  selector: 'dms-account-detail',
   imports: [RouterOutlet],
   template: `
     <div class="account-detail-container">
@@ -132,13 +132,13 @@ export class AccountDetailComponent implements OnInit {
 - [x] Child components render
 - [x] All validation commands pass
   - Run `pnpm all` - **PASSED** - all tests (639/639), lint, and build passed
-  - Run `pnpm e2e:rms-material` - e2e tests running but require longer execution time
+  - Run `pnpm e2e:dms-material` - e2e tests running but require longer execution time
   - Run `pnpm dupcheck` - **PASSED** - no duplicates found
   - Run `pnpm format` - **PASSED**
 
 ## E2E Test Requirements
 
-When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
+When this story is complete, ensure the following e2e tests exist in `apps/dms-material-e2e/`:
 
 ### Core Functionality
 
@@ -160,7 +160,7 @@ When this story is complete, ensure the following e2e tests exist in `apps/rms-m
 - [ ] Browser refresh reloads account data correctly
 - [ ] Concurrent account data requests deduplicated
 
-Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.
+Run `pnpm nx run dms-material-e2e:e2e` to verify all e2e tests pass.
 
 ---
 
@@ -188,15 +188,15 @@ Claude Sonnet 4.5
 
 **Created:**
 
-- apps/rms-material/src/app/account-panel/account-detail.component.ts
-- apps/rms-material/src/app/account-panel/account-detail.component.spec.ts
-- apps/rms-material/src/app/account-panel/account-detail.component.html
-- apps/rms-material/src/app/account-panel/account-detail.component.scss
+- apps/dms-material/src/app/account-panel/account-detail.component.ts
+- apps/dms-material/src/app/account-panel/account-detail.component.spec.ts
+- apps/dms-material/src/app/account-panel/account-detail.component.html
+- apps/dms-material/src/app/account-panel/account-detail.component.scss
 
 **Modified:**
 
-- apps/rms-material/src/app/app.routes.ts
-- apps/rms-material/src/app/auth/interceptors/auth.interceptor.spec.ts (timeout fix)
+- apps/dms-material/src/app/app.routes.ts
+- apps/dms-material/src/app/auth/interceptors/auth.interceptor.spec.ts (timeout fix)
 
 ### Completion Notes
 
@@ -213,7 +213,7 @@ Claude Sonnet 4.5
 ### Change Log
 
 1. Created AccountDetailComponent test file with 3 unit tests
-2. Implemented AccountDetailComponent following the pattern from RMS app
+2. Implemented AccountDetailComponent following the pattern from DMS app
 3. Created external HTML template file
 4. Created SCSS file with Tailwind flex utilities
 5. Updated app.routes.ts to add tradesDefinition import
