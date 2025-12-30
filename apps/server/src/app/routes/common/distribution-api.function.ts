@@ -1,6 +1,5 @@
-import yahooFinance from 'yahoo-finance2';
-
 import { logger } from '../../../utils/structured-logger';
+import { yahooFinance } from '../settings/yahoo-finance.instance';
 
 /* eslint-disable @smarttools/one-exported-item-per-file -- Utility file with related distribution API functions */
 
