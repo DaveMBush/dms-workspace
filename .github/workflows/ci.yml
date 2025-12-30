@@ -49,8 +49,8 @@ jobs:
           node-version: 22
 
       # Clean install without cache to avoid platform mismatch issues
-      # Remove any cached darwin binaries
-      - run: rm -rf node_modules
+      # Remove any cached darwin binaries and ALL caches
+      - run: rm -rf node_modules .nx coverage tmp
       - run: pnpm store prune
       # Don't use frozen lockfile in case it has darwin-specific entries
       - run: pnpm i --no-frozen-lockfile
@@ -73,6 +73,8 @@ jobs:
       - run: pnpm format:check
       - run: pnpm dupcheck
       # Tests run with SQLite (default environment), builds use PostgreSQL schema
+      # Clear all caches before running tests
+      - run: rm -rf apps/dms-material/.vitest apps/*/coverage apps/*/.nx
       # Clear Nx cache and skip remote cache to avoid platform mismatch
       - run: pnpm nx reset
       - run: pnpm nx affected -t lint build test --skip-nx-cache
