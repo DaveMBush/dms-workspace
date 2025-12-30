@@ -47,18 +47,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: 'pnpm'
 
-      # Clean install without cache to avoid platform mismatch issues
-      # Remove any cached darwin binaries and ALL caches including Angular build cache
-      - run: rm -rf node_modules .nx coverage tmp dist .angular apps/*/.angular
-      - run: pnpm store prune
-      # Don't use frozen lockfile in case it has darwin-specific entries
-      - run: pnpm i --no-frozen-lockfile
-
-      # Debug: Check what was actually installed
-      - run: find node_modules/.pnpm -name "*darwin*" -type d | head -10 || echo "No darwin directories found"
-      - run: uname -a
-      - run: echo "Node platform:" && node -p "process.platform + ' ' + process.arch"
+      - run: pnpm i --frozen-lockfile
       # Generate Prisma client for SQLite (used by tests and e2e)
       - run: pnpm prisma generate
 
@@ -73,15 +64,11 @@ jobs:
       - run: pnpm format:check
       - run: pnpm dupcheck
       # Tests run with SQLite (default environment), builds use PostgreSQL schema
-      # Clear all caches before running tests
-      - run: rm -rf apps/dms-material/.vitest apps/*/coverage apps/*/.nx
-      # Clear Nx cache and skip remote cache to avoid platform mismatch
-      - run: pnpm nx reset
-      - run: pnpm nx affected -t lint build test --skip-nx-cache
+      - run: pnpm nx affected -t lint build test
 
       # Run e2e tests for dms-material
       # Ensure the server is built in CI (affected may skip it for unrelated changes)
-      - run: pnpm nx run server:build:production --skip-nx-cache
-      - run: pnpm nx run dms-material-e2e:e2e --skip-nx-cache
+      - run: pnpm nx run server:build:production
+      - run: pnpm nx run dms-material-e2e:e2e
         env:
           CI: true
