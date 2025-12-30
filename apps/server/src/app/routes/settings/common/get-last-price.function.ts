@@ -1,5 +1,4 @@
-import yahooFinance from 'yahoo-finance2';
-
+import { yahooFinance } from '../yahoo-finance.instance';
 import { sleep } from './sleep.function';
 
 export async function getLastPrice(
@@ -11,7 +10,7 @@ export async function getLastPrice(
       await sleep(1000);
     }
     const quote = await yahooFinance.quote(symbol);
-    return quote.regularMarketPrice;
+    return quote.regularMarketPrice as number | undefined;
   } catch {
     if (retryCount < 3) {
       return getLastPrice(symbol, retryCount + 1);

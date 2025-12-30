@@ -1,5 +1,4 @@
 import { FastifyInstance } from 'fastify';
-import yahooFinance from 'yahoo-finance2';
 
 import { prisma } from '../../prisma/prisma-client';
 import { ensureRiskGroupsExist } from './common/ensure-risk-groups-exist.function';
@@ -17,8 +16,6 @@ interface Distribution {
   distributions_per_year: number;
   ex_date: Date;
 }
-
-yahooFinance.suppressNotices(['yahooSurvey']);
 
 function parseSymbols(value: string): string[] {
   return value

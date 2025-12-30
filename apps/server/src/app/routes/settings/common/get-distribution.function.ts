@@ -1,5 +1,4 @@
-import yahooFinance from 'yahoo-finance2';
-
+import { yahooFinance } from '../yahoo-finance.instance';
 import { sleep } from './sleep.function';
 
 interface Dividend {
