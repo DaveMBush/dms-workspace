@@ -5,7 +5,6 @@ import {
   tick,
 } from '@angular/core/testing';
 import { MatDialogRef } from '@angular/material/dialog';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { vi } from 'vitest';
 
 import { AuthService } from '../../auth.service';
@@ -30,7 +29,7 @@ describe('SessionWarning', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [SessionWarning, NoopAnimationsModule],
+      imports: [SessionWarning],
       providers: [
         {
           provide: MatDialogRef,

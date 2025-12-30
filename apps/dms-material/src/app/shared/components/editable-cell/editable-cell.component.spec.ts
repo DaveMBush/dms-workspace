@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { EditableCellComponent } from './editable-cell.component';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('EditableCellComponent', () => {
   let component: EditableCellComponent;
@@ -8,7 +7,7 @@ describe('EditableCellComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [EditableCellComponent, NoopAnimationsModule],
+      imports: [EditableCellComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(EditableCellComponent);

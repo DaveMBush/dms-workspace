@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { FilterOption } from './filter-option.interface';
 import { SymbolFilterHeaderComponent } from './symbol-filter-header.component';
@@ -15,7 +14,7 @@ describe('SymbolFilterHeaderComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SymbolFilterHeaderComponent, NoopAnimationsModule],
+      imports: [SymbolFilterHeaderComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(SymbolFilterHeaderComponent);

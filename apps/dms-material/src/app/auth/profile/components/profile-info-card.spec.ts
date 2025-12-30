@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { ProfileService } from '../../services/profile.service';
 import { UserProfile } from '../../types/profile.types';
@@ -37,7 +36,7 @@ describe('ProfileInfoCard', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [ProfileInfoCard, NoopAnimationsModule],
+      imports: [ProfileInfoCard],
       providers: [{ provide: ProfileService, useValue: mockProfileService }],
     }).compileComponents();
 

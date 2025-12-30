@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { Router, provideRouter } from '@angular/router';
 import { signal, NO_ERRORS_SCHEMA } from '@angular/core';
 import { of } from 'rxjs';
@@ -35,7 +34,7 @@ describe('ShellComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [ShellComponent, NoopAnimationsModule],
+      imports: [ShellComponent],
       providers: [
         {
           provide: ConfirmDialogService,

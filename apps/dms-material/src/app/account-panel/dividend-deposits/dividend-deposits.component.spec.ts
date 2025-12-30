@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { of } from 'rxjs';
 
 import { ColumnDef } from '../../shared/components/base-table/column-def.interface';
@@ -27,7 +26,7 @@ describe('DividendDepositsComponent', () => {
     mockConfirmDialog = { confirm: vi.fn().mockReturnValue(of(true)) };
 
     await TestBed.configureTestingModule({
-      imports: [DividendDepositsComponent, NoopAnimationsModule],
+      imports: [DividendDepositsComponent],
       providers: [
         { provide: MatDialog, useValue: mockDialog },
         { provide: NotificationService, useValue: mockNotification },

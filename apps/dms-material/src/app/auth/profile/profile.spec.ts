@@ -3,7 +3,6 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
 import { signal } from '@angular/core';
 import { Profile } from './profile';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ProfileService } from '../services/profile.service';
 import { UserProfile } from '../types/profile.types';
 
@@ -38,7 +37,7 @@ describe('Profile', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [Profile, NoopAnimationsModule],
+      imports: [Profile],
       providers: [
         { provide: ProfileService, useValue: mockProfileService },
         provideHttpClient(),

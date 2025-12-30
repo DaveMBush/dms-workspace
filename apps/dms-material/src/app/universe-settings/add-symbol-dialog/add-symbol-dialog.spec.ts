@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MatDialogRef } from '@angular/material/dialog';
 import { provideSmartNgRX } from '@smarttools/smart-signals';
 
@@ -40,7 +39,7 @@ describe('AddSymbolDialog', () => {
     mockUniverseAdd.mockClear();
 
     await TestBed.configureTestingModule({
-      imports: [AddSymbolDialog, NoopAnimationsModule],
+      imports: [AddSymbolDialog],
       providers: [
         provideSmartNgRX(),
         { provide: MatDialogRef, useValue: mockDialogRef },

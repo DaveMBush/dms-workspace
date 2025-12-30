@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { ProfileActionsService } from '../../services/profile-actions.service';
 import { AccountActionsCard } from './account-actions-card';
@@ -19,7 +18,7 @@ describe('AccountActionsCard', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [AccountActionsCard, NoopAnimationsModule],
+      imports: [AccountActionsCard],
       providers: [
         {
           provide: ProfileActionsService,

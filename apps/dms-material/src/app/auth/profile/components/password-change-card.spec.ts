@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { PasswordChangeCard } from './password-change-card';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ProfileService } from '../../services/profile.service';
 import { NotificationService } from '../../../shared/services/notification.service';
 
@@ -20,7 +19,7 @@ describe('PasswordChangeCard', () => {
     mockNotification = { success: vi.fn(), error: vi.fn() };
 
     await TestBed.configureTestingModule({
-      imports: [PasswordChangeCard, NoopAnimationsModule],
+      imports: [PasswordChangeCard],
       providers: [
         { provide: ProfileService, useValue: mockProfileService },
         {

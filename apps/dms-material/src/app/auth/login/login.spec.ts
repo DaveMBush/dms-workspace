@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Login } from './login';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth.service';
 
@@ -15,7 +14,7 @@ describe('Login', () => {
     mockRouter = { navigate: vi.fn() };
 
     await TestBed.configureTestingModule({
-      imports: [Login, NoopAnimationsModule],
+      imports: [Login],
       providers: [
         { provide: AuthService, useValue: mockAuthService },
         { provide: Router, useValue: mockRouter },

@@ -71,7 +71,6 @@ const eslintConfig = async () => {
         // jest: eslintPluginJest, // Removed - using Vitest instead
         '@stylistic': stylisticEslintPlugin,
         playwright,
-        //deprecation,
       },
     },
     { languageOptions: { parser: typescriptEslintParser } },
@@ -798,6 +797,15 @@ const eslintConfig = async () => {
         //   },
         // ],
         // 'functional/no-loop-statements': 'error',
+      },
+    },
+    {
+      // we are going to remove dms anyhow so turn off
+      // these deprecation warnings for now
+      files: ['**/apps/dms/**/*.ts'],
+      rules: {
+        '@typescript-eslint/no-deprecated': 'off',
+        'sonarjs/deprecation': 'off',
       },
     },
     {

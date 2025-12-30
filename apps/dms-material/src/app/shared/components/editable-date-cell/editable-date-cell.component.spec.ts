@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { EditableDateCellComponent } from './editable-date-cell.component';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MatNativeDateModule } from '@angular/material/core';
 
 describe('EditableDateCellComponent', () => {
@@ -9,11 +8,7 @@ describe('EditableDateCellComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        EditableDateCellComponent,
-        NoopAnimationsModule,
-        MatNativeDateModule,
-      ],
+      imports: [EditableDateCellComponent, MatNativeDateModule],
     }).compileComponents();
 
     fixture = TestBed.createComponent(EditableDateCellComponent);

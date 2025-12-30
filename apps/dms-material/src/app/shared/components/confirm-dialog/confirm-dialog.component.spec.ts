@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { ConfirmDialogData } from '../../types/confirm-dialog-data.interface';
 import { ConfirmDialogComponent } from './confirm-dialog.component';
@@ -18,7 +17,7 @@ describe('ConfirmDialogComponent', () => {
     mockDialogRef = { close: vi.fn() };
 
     await TestBed.configureTestingModule({
-      imports: [ConfirmDialogComponent, NoopAnimationsModule],
+      imports: [ConfirmDialogComponent],
       providers: [
         { provide: MAT_DIALOG_DATA, useValue: mockData },
         { provide: MatDialogRef, useValue: mockDialogRef },
@@ -147,7 +146,7 @@ describe('ConfirmDialogComponent', () => {
 
       TestBed.resetTestingModule();
       await TestBed.configureTestingModule({
-        imports: [ConfirmDialogComponent, NoopAnimationsModule],
+        imports: [ConfirmDialogComponent],
         providers: [
           { provide: MAT_DIALOG_DATA, useValue: customData },
           { provide: MatDialogRef, useValue: mockDialogRef },
@@ -173,7 +172,7 @@ describe('ConfirmDialogComponent', () => {
 
       TestBed.resetTestingModule();
       await TestBed.configureTestingModule({
-        imports: [ConfirmDialogComponent, NoopAnimationsModule],
+        imports: [ConfirmDialogComponent],
         providers: [
           { provide: MAT_DIALOG_DATA, useValue: customData },
           { provide: MatDialogRef, useValue: mockDialogRef },
@@ -201,7 +200,7 @@ describe('ConfirmDialogComponent', () => {
 
       TestBed.resetTestingModule();
       await TestBed.configureTestingModule({
-        imports: [ConfirmDialogComponent, NoopAnimationsModule],
+        imports: [ConfirmDialogComponent],
         providers: [
           { provide: MAT_DIALOG_DATA, useValue: customData },
           { provide: MatDialogRef, useValue: mockDialogRef },
@@ -224,7 +223,7 @@ describe('ConfirmDialogComponent', () => {
 
       TestBed.resetTestingModule();
       await TestBed.configureTestingModule({
-        imports: [ConfirmDialogComponent, NoopAnimationsModule],
+        imports: [ConfirmDialogComponent],
         providers: [
           { provide: MAT_DIALOG_DATA, useValue: customData },
           { provide: MatDialogRef, useValue: mockDialogRef },
@@ -249,7 +248,7 @@ describe('ConfirmDialogComponent', () => {
 
       TestBed.resetTestingModule();
       await TestBed.configureTestingModule({
-        imports: [ConfirmDialogComponent, NoopAnimationsModule],
+        imports: [ConfirmDialogComponent],
         providers: [
           { provide: MAT_DIALOG_DATA, useValue: customData },
           { provide: MatDialogRef, useValue: mockDialogRef },
@@ -277,7 +276,7 @@ describe('ConfirmDialogComponent', () => {
 
       TestBed.resetTestingModule();
       await TestBed.configureTestingModule({
-        imports: [ConfirmDialogComponent, NoopAnimationsModule],
+        imports: [ConfirmDialogComponent],
         providers: [
           { provide: MAT_DIALOG_DATA, useValue: customData },
           { provide: MatDialogRef, useValue: mockDialogRef },
@@ -301,7 +300,7 @@ describe('ConfirmDialogComponent', () => {
 
       TestBed.resetTestingModule();
       await TestBed.configureTestingModule({
-        imports: [ConfirmDialogComponent, NoopAnimationsModule],
+        imports: [ConfirmDialogComponent],
         providers: [
           { provide: MAT_DIALOG_DATA, useValue: customData },
           { provide: MatDialogRef, useValue: mockDialogRef },
@@ -324,7 +323,7 @@ describe('ConfirmDialogComponent', () => {
 
       TestBed.resetTestingModule();
       await TestBed.configureTestingModule({
-        imports: [ConfirmDialogComponent, NoopAnimationsModule],
+        imports: [ConfirmDialogComponent],
         providers: [
           { provide: MAT_DIALOG_DATA, useValue: customData },
           { provide: MatDialogRef, useValue: mockDialogRef },

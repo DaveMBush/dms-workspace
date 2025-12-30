@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { OpenPositionsComponent } from './open-positions.component';
 
@@ -9,7 +8,7 @@ describe('OpenPositionsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [OpenPositionsComponent, NoopAnimationsModule],
+      imports: [OpenPositionsComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(OpenPositionsComponent);

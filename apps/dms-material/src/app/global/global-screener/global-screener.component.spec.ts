@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Sort } from '@angular/material/sort';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { NotificationService } from '../../shared/services/notification.service';
 import { GlobalLoadingService } from '../../shared/services/global-loading.service';
@@ -39,7 +38,7 @@ describe('GlobalScreenerComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [GlobalScreenerComponent, NoopAnimationsModule],
+      imports: [GlobalScreenerComponent],
       providers: [
         { provide: NotificationService, useValue: mockNotification },
         { provide: GlobalLoadingService, useValue: mockGlobalLoading },

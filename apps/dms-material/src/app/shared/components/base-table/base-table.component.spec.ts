@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { BaseTableComponent } from './base-table.component';
 import { ColumnDef } from './column-def.interface';
@@ -16,7 +15,7 @@ describe('BaseTableComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [BaseTableComponent, NoopAnimationsModule],
+      imports: [BaseTableComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(BaseTableComponent);

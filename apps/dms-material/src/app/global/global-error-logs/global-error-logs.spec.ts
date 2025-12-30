@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { GlobalErrorLogs } from './global-error-logs';
 
@@ -9,7 +8,7 @@ describe('GlobalErrorLogs', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [GlobalErrorLogs, NoopAnimationsModule],
+      imports: [GlobalErrorLogs],
     }).compileComponents();
 
     fixture = TestBed.createComponent(GlobalErrorLogs);

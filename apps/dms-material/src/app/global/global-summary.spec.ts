@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { signal } from '@angular/core';
 import { provideSmartNgRX } from '@smarttools/smart-signals';
 
@@ -25,7 +24,7 @@ describe('GlobalSummary', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [GlobalSummary, NoopAnimationsModule],
+      imports: [GlobalSummary],
       providers: [
         provideSmartNgRX(),
         { provide: topEffectsServiceToken, useValue: {} },

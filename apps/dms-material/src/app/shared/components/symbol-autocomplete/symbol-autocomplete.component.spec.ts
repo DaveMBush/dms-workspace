@@ -1,7 +1,6 @@
 import { SymbolOption } from './symbol-option.interface';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { SymbolAutocompleteComponent } from './symbol-autocomplete.component';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 describe('SymbolAutocompleteComponent', () => {
@@ -16,7 +15,7 @@ describe('SymbolAutocompleteComponent', () => {
     ]);
 
     await TestBed.configureTestingModule({
-      imports: [SymbolAutocompleteComponent, NoopAnimationsModule],
+      imports: [SymbolAutocompleteComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(SymbolAutocompleteComponent);

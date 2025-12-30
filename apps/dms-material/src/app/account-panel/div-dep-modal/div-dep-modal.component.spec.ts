@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatNativeDateModule } from '@angular/material/core';
 
@@ -14,7 +13,7 @@ describe('DivDepModal', () => {
   const createComponent = (data: DivDepModalData) => {
     mockDialogRef = { close: vi.fn() };
     TestBed.configureTestingModule({
-      imports: [DivDepModal, NoopAnimationsModule, MatNativeDateModule],
+      imports: [DivDepModal, MatNativeDateModule],
       providers: [
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: MAT_DIALOG_DATA, useValue: data },

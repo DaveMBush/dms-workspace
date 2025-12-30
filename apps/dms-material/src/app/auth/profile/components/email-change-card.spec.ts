@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { EmailChangeCard } from './email-change-card';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ProfileService } from '../../services/profile.service';
 import { NotificationService } from '../../../shared/services/notification.service';
 
@@ -18,7 +17,7 @@ describe('EmailChangeCard', () => {
     mockNotification = { success: vi.fn(), error: vi.fn() };
 
     await TestBed.configureTestingModule({
-      imports: [EmailChangeCard, NoopAnimationsModule],
+      imports: [EmailChangeCard],
       providers: [
         { provide: ProfileService, useValue: mockProfileService },
         {
