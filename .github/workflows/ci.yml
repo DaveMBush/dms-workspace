@@ -49,8 +49,8 @@ jobs:
           node-version: 22
 
       # Clean install without cache to avoid platform mismatch issues
-      # Remove any cached darwin binaries and ALL caches
-      - run: rm -rf node_modules .nx coverage tmp
+      # Remove any cached darwin binaries and ALL caches including Angular build cache
+      - run: rm -rf node_modules .nx coverage tmp dist .angular apps/*/.angular
       - run: pnpm store prune
       # Don't use frozen lockfile in case it has darwin-specific entries
       - run: pnpm i --no-frozen-lockfile
