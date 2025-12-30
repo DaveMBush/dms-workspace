@@ -2,7 +2,7 @@
 
 ## Epic Goal
 
-Ensure that risk group data is properly initialized and validated when the top route is loaded, preventing downstream data integrity issues in the RMS-MATERIAL application.
+Ensure that risk group data is properly initialized and validated when the top route is loaded, preventing downstream data integrity issues in the DMS-MATERIAL application.
 
 ## Epic Description
 

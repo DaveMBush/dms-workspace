@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document describes the feature flag system implemented in the RMS workspace. As of Epic H, the screener-driven universe synchronization feature is now always enabled and no longer requires configuration.
+This document describes the feature flag system implemented in the DMS workspace. As of Epic H, the screener-driven universe synchronization feature is now always enabled and no longer requires configuration.
 
 ## Current Status
 

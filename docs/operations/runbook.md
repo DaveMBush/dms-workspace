@@ -1,6 +1,6 @@
-# RMS Operations Runbook
+# DMS Operations Runbook
 
-This runbook contains standard operating procedures for the RMS (Risk Management System) application on AWS.
+This runbook contains standard operating procedures for the DMS (Document Management System) application on AWS.
 
 ## Quick Reference
 
@@ -17,9 +17,9 @@ This runbook contains standard operating procedures for the RMS (Risk Management
 
 | Environment | Frontend                        | API                                 | Monitoring                                             |
 | ----------- | ------------------------------- | ----------------------------------- | ------------------------------------------------------ |
-| Production  | https://rms.example.com         | https://api.rms.example.com         | [Dashboard](https://console.aws.amazon.com/cloudwatch) |
-| Staging     | https://rms-staging.example.com | https://api-staging.rms.example.com | [Dashboard](https://console.aws.amazon.com/cloudwatch) |
-| Development | https://rms-dev.example.com     | https://api-dev.rms.example.com     | [Dashboard](https://console.aws.amazon.com/cloudwatch) |
+| Production  | https://dms.example.com         | https://api.dms.example.com         | [Dashboard](https://console.aws.amazon.com/cloudwatch) |
+| Staging     | https://dms-staging.example.com | https://api-staging.dms.example.com | [Dashboard](https://console.aws.amazon.com/cloudwatch) |
+| Development | https://dms-dev.example.com     | https://api-dev.dms.example.com     | [Dashboard](https://console.aws.amazon.com/cloudwatch) |
 
 ## Daily Operations
 
@@ -31,27 +31,27 @@ Perform these checks every morning before business hours:
 #!/bin/bash
 # scripts/daily-health-check.sh
 
-echo "=== RMS Daily Health Check ==="
+echo "=== DMS Daily Health Check ==="
 echo "Date: $(date)"
 echo "Environment: ${ENVIRONMENT:-production}"
 echo
 
 # Check frontend health
 echo "Frontend Health Check:"
-FRONTEND_STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://rms.example.com/health)
+FRONTEND_STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://dms.example.com/health)
 echo "Frontend Status: $FRONTEND_STATUS"
 [ "$FRONTEND_STATUS" = "200" ] && echo "✅ Frontend OK" || echo "❌ Frontend FAIL"
 
 # Check API health
 echo -e "\nAPI Health Check:"
-API_STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://api.rms.example.com/health)
+API_STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://api.dms.example.com/health)
 echo "API Status: $API_STATUS"
 [ "$API_STATUS" = "200" ] && echo "✅ API OK" || echo "❌ API FAIL"
 
 # Check database status
 echo -e "\nDatabase Status:"
 DB_STATUS=$(aws rds describe-db-instances \
-  --db-instance-identifier rms-db-prod \
+  --db-instance-identifier dms-db-prod \
   --query 'DBInstances[0].DBInstanceStatus' \
   --output text 2>/dev/null)
 echo "Database Status: $DB_STATUS"
@@ -60,13 +60,13 @@ echo "Database Status: $DB_STATUS"
 # Check ECS service health
 echo -e "\nECS Service Health:"
 HEALTHY_TASKS=$(aws ecs describe-services \
-  --cluster rms-cluster-prod \
-  --services rms-backend-service-prod \
+  --cluster dms-cluster-prod \
+  --services dms-backend-service-prod \
   --query 'services[0].runningCount' \
   --output text 2>/dev/null)
 DESIRED_TASKS=$(aws ecs describe-services \
-  --cluster rms-cluster-prod \
-  --services rms-backend-service-prod \
+  --cluster dms-cluster-prod \
+  --services dms-backend-service-prod \
   --query 'services[0].desiredCount' \
   --output text 2>/dev/null)
 echo "Running Tasks: $HEALTHY_TASKS/$DESIRED_TASKS"
@@ -75,7 +75,7 @@ echo "Running Tasks: $HEALTHY_TASKS/$DESIRED_TASKS"
 # Check recent errors in logs
 echo -e "\nRecent Error Check:"
 ERROR_COUNT=$(aws logs filter-log-events \
-  --log-group-name /aws/ecs/rms-backend-prod \
+  --log-group-name /aws/ecs/dms-backend-prod \
   --start-time $(($(date +%s) - 3600))000 \
   --filter-pattern "ERROR" \
   --query 'length(events)' \
@@ -116,7 +116,7 @@ Perform every Monday morning:
 aws cloudwatch get-metric-statistics \
   --namespace AWS/ECS \
   --metric-name CPUUtilization \
-  --dimensions Name=ServiceName,Value=rms-backend-service-prod Name=ClusterName,Value=rms-cluster-prod \
+  --dimensions Name=ServiceName,Value=dms-backend-service-prod Name=ClusterName,Value=dms-cluster-prod \
   --start-time $(date -d '7 days ago' -u +%Y-%m-%dT%H:%M:%S) \
   --end-time $(date -u +%Y-%m-%dT%H:%M:%S) \
   --period 3600 \
@@ -126,7 +126,7 @@ aws cloudwatch get-metric-statistics \
 aws cloudwatch get-metric-statistics \
   --namespace AWS/RDS \
   --metric-name DatabaseConnections \
-  --dimensions Name=DBInstanceIdentifier,Value=rms-db-prod \
+  --dimensions Name=DBInstanceIdentifier,Value=dms-db-prod \
   --start-time $(date -d '7 days ago' -u +%Y-%m-%dT%H:%M:%S) \
   --end-time $(date -u +%Y-%m-%dT%H:%M:%S) \
   --period 3600 \
@@ -141,7 +141,7 @@ aws inspector list-findings --max-results 50
 
 # Review CloudTrail for unusual activity
 aws logs filter-log-events \
-  --log-group-name CloudTrail/RMS \
+  --log-group-name CloudTrail/DMS \
   --start-time $(($(date +%s) - 604800))000 \
   --filter-pattern "{ $.errorCode = * }"
 ```
@@ -208,13 +208,13 @@ aws ec2 describe-instances --query 'Reservations[].Instances[?State.Name==`runni
 ```bash
 # Test database backup restoration (in staging environment)
 aws rds restore-db-instance-from-db-snapshot \
-  --db-instance-identifier rms-db-restore-test \
-  --db-snapshot-identifier rms-db-prod-$(date +%Y%m%d) \
+  --db-instance-identifier dms-db-restore-test \
+  --db-snapshot-identifier dms-db-prod-$(date +%Y%m%d) \
   --db-instance-class db.t3.micro
 
 # Validate backup integrity
 aws rds describe-db-snapshots \
-  --db-instance-identifier rms-db-prod \
+  --db-instance-identifier dms-db-prod \
   --snapshot-type automated \
   --max-records 7
 ```
@@ -240,14 +240,14 @@ aws rds describe-db-snapshots \
 ```bash
 # Scale up ECS service
 aws ecs update-service \
-  --cluster rms-cluster-prod \
-  --service rms-backend-service-prod \
+  --cluster dms-cluster-prod \
+  --service dms-backend-service-prod \
   --desired-count 5
 
 # Monitor scaling progress
 aws ecs describe-services \
-  --cluster rms-cluster-prod \
-  --services rms-backend-service-prod \
+  --cluster dms-cluster-prod \
+  --services dms-backend-service-prod \
   --query 'services[0].[desiredCount,runningCount,pendingCount]'
 ```
 
@@ -256,13 +256,13 @@ aws ecs describe-services \
 ```bash
 # Scale RDS instance (requires downtime)
 aws rds modify-db-instance \
-  --db-instance-identifier rms-db-prod \
+  --db-instance-identifier dms-db-prod \
   --db-instance-class db.t3.large \
   --apply-immediately
 
 # Monitor modification progress
 aws rds describe-db-instances \
-  --db-instance-identifier rms-db-prod \
+  --db-instance-identifier dms-db-prod \
   --query 'DBInstances[0].[DBInstanceStatus,DBInstanceClass]'
 ```
 
@@ -273,9 +273,9 @@ aws rds describe-db-instances \
 ```bash
 # Update target capacity
 aws application-autoscaling put-scaling-policy \
-  --policy-name rms-backend-scaling-policy \
+  --policy-name dms-backend-scaling-policy \
   --service-namespace ecs \
-  --resource-id service/rms-cluster-prod/rms-backend-service-prod \
+  --resource-id service/dms-cluster-prod/dms-backend-service-prod \
   --scalable-dimension ecs:service:DesiredCount \
   --policy-type TargetTrackingScaling \
   --target-tracking-scaling-policy-configuration '{
@@ -294,20 +294,20 @@ aws application-autoscaling put-scaling-policy \
 
 ```bash
 # View recent application logs
-aws logs tail /aws/ecs/rms-backend-prod --follow --since 1h
+aws logs tail /aws/ecs/dms-backend-prod --follow --since 1h
 
 # Search for specific errors
 aws logs filter-log-events \
-  --log-group-name /aws/ecs/rms-backend-prod \
+  --log-group-name /aws/ecs/dms-backend-prod \
   --filter-pattern "ERROR" \
   --start-time $(($(date +%s) - 3600))000
 
 # Export logs for analysis
 aws logs create-export-task \
-  --log-group-name /aws/ecs/rms-backend-prod \
+  --log-group-name /aws/ecs/dms-backend-prod \
   --from $(($(date +%s) - 86400))000 \
   --to $(date +%s)000 \
-  --destination s3://rms-log-exports \
+  --destination s3://dms-log-exports \
   --destination-prefix "backend-logs/$(date +%Y/%m/%d)"
 ```
 
@@ -315,7 +315,7 @@ aws logs create-export-task \
 
 ```bash
 # Check ALB access logs
-aws s3 ls s3://rms-alb-logs/AWSLogs/$(aws sts get-caller-identity --query Account --output text)/elasticloadbalancing/us-east-1/$(date +%Y)/$(date +%m)/$(date +%d)/
+aws s3 ls s3://dms-alb-logs/AWSLogs/$(aws sts get-caller-identity --query Account --output text)/elasticloadbalancing/us-east-1/$(date +%Y)/$(date +%m)/$(date +%d)/
 
 # VPC Flow Logs analysis
 aws logs filter-log-events \
@@ -334,7 +334,7 @@ AWS Certificate Manager automatically renews certificates, but verify:
 # Check certificate status
 aws acm list-certificates \
   --certificate-statuses ISSUED \
-  --query 'CertificateSummaryList[?DomainName==`rms.example.com`]'
+  --query 'CertificateSummaryList[?DomainName==`dms.example.com`]'
 
 # Check expiration dates
 aws acm describe-certificate \
@@ -354,7 +354,7 @@ aws cloudfront update-distribution \
 
 # Update ALB listener with new certificate
 aws elbv2 modify-listener \
-  --listener-arn arn:aws:elasticloadbalancing:us-east-1:123456789012:listener/app/rms-alb-prod/50dc6c495c0c9188/f2f7dc8efc522ab2 \
+  --listener-arn arn:aws:elasticloadbalancing:us-east-1:123456789012:listener/app/dms-alb-prod/50dc6c495c0c9188/f2f7dc8efc522ab2 \
   --certificates CertificateArn=arn:aws:acm:us-east-1:123456789012:certificate/new-cert-id
 ```
 
@@ -366,14 +366,14 @@ aws elbv2 modify-listener \
 # Check database performance insights
 aws pi get-resource-metrics \
   --service-type RDS \
-  --identifier rms-db-prod \
+  --identifier dms-db-prod \
   --metric-queries file://db-metrics.json \
   --start-time $(date -d '1 hour ago' -u +%Y-%m-%dT%H:%M:%S) \
   --end-time $(date -u +%Y-%m-%dT%H:%M:%S)
 
 # Review slow query logs
 aws rds download-db-log-file-portion \
-  --db-instance-identifier rms-db-prod \
+  --db-instance-identifier dms-db-prod \
   --log-file-name slowquery/mysql-slowquery.log
 ```
 
@@ -382,14 +382,14 @@ aws rds download-db-log-file-portion \
 ```bash
 # List recent automated backups
 aws rds describe-db-snapshots \
-  --db-instance-identifier rms-db-prod \
+  --db-instance-identifier dms-db-prod \
   --snapshot-type automated \
   --max-records 7
 
 # Create manual snapshot before maintenance
 aws rds create-db-snapshot \
-  --db-instance-identifier rms-db-prod \
-  --db-snapshot-identifier rms-db-prod-maintenance-$(date +%Y%m%d-%H%M)
+  --db-instance-identifier dms-db-prod \
+  --db-snapshot-identifier dms-db-prod-maintenance-$(date +%Y%m%d-%H%M)
 ```
 
 ## Incident Response Procedures
@@ -412,7 +412,7 @@ aws rds create-db-snapshot \
    ./scripts/health-check.sh
 
    # Check recent deployments
-   aws ecs list-tasks --cluster rms-cluster-prod --service-name rms-backend-service-prod
+   aws ecs list-tasks --cluster dms-cluster-prod --service-name dms-backend-service-prod
 
    # Check CloudWatch alarms
    aws cloudwatch describe-alarms --state-value ALARM
@@ -435,7 +435,7 @@ aws rds create-db-snapshot \
 **Critical Incident Notification:**
 
 ```
-🚨 CRITICAL INCIDENT - RMS Production Outage
+🚨 CRITICAL INCIDENT - DMS Production Outage
 Status: INVESTIGATING
 Impact: Complete service unavailable
 Start Time: 2024-12-16 14:30 UTC
@@ -448,7 +448,7 @@ Updates: #incidents channel
 **Resolution Notification:**
 
 ```
-✅ RESOLVED - RMS Production Outage
+✅ RESOLVED - DMS Production Outage
 Status: RESOLVED
 Resolution Time: 2024-12-16 15:15 UTC
 Duration: 45 minutes
@@ -497,6 +497,6 @@ Next Steps: Post-incident review scheduled for tomorrow 10 AM
 
 ---
 
-**Last Updated**: 2024-12-16  
-**Version**: 1.0  
+**Last Updated**: 2024-12-16
+**Version**: 1.0
 **Next Review**: 2025-01-16

@@ -56,8 +56,8 @@ So that **authentication flows and environment configuration work identically to
 
 **Frontend Configuration:**
 
-- `apps/rms/src/environments/cognito-config-local.ts` - New local environment config
-- `apps/rms/src/environments/get-cognito-config.function.ts` - Updated to support local environment
+- `apps/dms/src/environments/cognito-config-local.ts` - New local environment config
+- `apps/dms/src/environments/get-cognito-config.function.ts` - Updated to support local environment
 
 **Documentation:**
 

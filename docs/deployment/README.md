@@ -1,6 +1,6 @@
-# RMS AWS Deployment Guide
+# DMS AWS Deployment Guide
 
-This directory contains comprehensive deployment documentation for the RMS (Risk Management System) application on AWS.
+This directory contains comprehensive deployment documentation for the DMS (Document Management System) application on AWS.
 
 ## Quick Start
 
@@ -25,7 +25,7 @@ For immediate deployment, follow these steps:
 
 ## Environment Support
 
-The RMS application supports multiple deployment environments:
+The DMS application supports multiple deployment environments:
 
 - **Development** - For feature development and testing
 - **Staging** - Pre-production environment for integration testing
@@ -40,7 +40,7 @@ Internet → Route53 → CloudFront → S3 (Frontend)
 Internet → Route53 → ALB → ECS Fargate (Backend) → RDS PostgreSQL
 ```
 
-The RMS application follows a modern cloud-native architecture:
+The DMS application follows a modern cloud-native architecture:
 
 - **Frontend**: Angular 20 SPA hosted on CloudFront + S3
 - **Backend**: Node.js Fastify API running on ECS Fargate

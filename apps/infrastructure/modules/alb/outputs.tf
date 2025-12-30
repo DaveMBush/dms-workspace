@@ -2,22 +2,22 @@
 
 output "alb_arn" {
   description = "ARN of the Application Load Balancer"
-  value       = aws_lb.rms_backend.arn
+  value       = aws_lb.dms_backend.arn
 }
 
 output "alb_dns_name" {
   description = "DNS name of the Application Load Balancer"
-  value       = aws_lb.rms_backend.dns_name
+  value       = aws_lb.dms_backend.dns_name
 }
 
 output "alb_zone_id" {
   description = "Zone ID of the Application Load Balancer"
-  value       = aws_lb.rms_backend.zone_id
+  value       = aws_lb.dms_backend.zone_id
 }
 
 output "target_group_arn" {
   description = "ARN of the target group"
-  value       = aws_lb_target_group.rms_backend.arn
+  value       = aws_lb_target_group.dms_backend.arn
 }
 
 output "http_listener_arn" {

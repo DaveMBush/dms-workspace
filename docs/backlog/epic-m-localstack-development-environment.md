@@ -8,7 +8,7 @@ Implement a comprehensive local development environment using LocalStack and Doc
 
 **Existing System Context:**
 
-- Current relevant functionality: RMS application currently requires full AWS infrastructure for development, including ECS Fargate, RDS PostgreSQL, S3, CloudFront, Cognito, and supporting services
+- Current relevant functionality: DMS application currently requires full AWS infrastructure for development, including ECS Fargate, RDS PostgreSQL, S3, CloudFront, Cognito, and supporting services
 - Technology stack: Angular 20 frontend, Fastify backend, PostgreSQL database, AWS infrastructure managed via Terraform
 - Integration points: AWS Parameter Store for configuration, Cognito for authentication, S3 for static hosting, RDS for data persistence
 
@@ -16,7 +16,7 @@ Implement a comprehensive local development environment using LocalStack and Doc
 
 - What's being added/changed: Complete local development environment using LocalStack to emulate AWS services, Docker containers for databases, and local service configuration
 - How it integrates: Parallel development environment that mirrors production AWS services locally, with environment-specific configuration switching
-- Success criteria: Developers can run the entire RMS stack locally with zero AWS costs, maintaining feature parity with cloud environment
+- Success criteria: Developers can run the entire DMS stack locally with zero AWS costs, maintaining feature parity with cloud environment
 
 ## Stories
 

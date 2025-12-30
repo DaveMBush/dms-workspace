@@ -28,13 +28,13 @@ Draft
 14. Ensure the following commands run without errors:
     - `pnpm format`
     - `pnpm dupcheck`
-    - `pnpm nx run rms:test --code-coverage`
+    - `pnpm nx run dms:test --code-coverage`
     - `pnpm nx run server:build:production`
     - `pnpm nx run server:test --code-coverage`
     - `pnpm nx run server:lint`
-    - `pnpm nx run rms:lint`
-    - `pnpm nx run rms:build:production`
-    - `pnpm nx run rms-e2e:lint`
+    - `pnpm nx run dms:lint`
+    - `pnpm nx run dms:build:production`
+    - `pnpm nx run dms-e2e:lint`
 
 ## Tasks / Subtasks
 
@@ -97,7 +97,7 @@ Draft
 
   - [ ] Test distribution editing with p-inputNumber on lazy-loaded rows
   - [ ] Test distributions_per_year editing with p-inputNumber on lazy-loaded rows
-  - [ ] Test ex_date editing with rms-editable-date-cell on lazy-loaded rows
+  - [ ] Test ex_date editing with dms-editable-date-cell on lazy-loaded rows
   - [ ] Verify editHandlers.onEditCommit method works with lazy-loaded data
   - [ ] Test editHandlers.onEditDistributionComplete integration
   - [ ] Test editHandlers.onEditDistributionsPerYearComplete integration
@@ -157,7 +157,7 @@ This story implements lazy loading for the Global Universe table (Epic X). This 
 
 ### Current Implementation Analysis
 
-**Source: [apps/rms/src/app/global/global-universe/global-universe.component.ts]**
+**Source: [apps/dms/src/app/global/global-universe/global-universe.component.ts]**
 
 **Component Structure:**
 
@@ -202,7 +202,7 @@ export class GlobalUniverseComponent {
 
 ### UniverseDataService Integration
 
-**Source: [apps/rms/src/app/global/global-universe/universe-data.service.ts]**
+**Source: [apps/dms/src/app/global/global-universe/universe-data.service.ts]**
 
 **filterAndSortUniverses Method:**
 
@@ -308,7 +308,7 @@ onLazyLoad(event: LazyLoadEvent): void {
 
 ### Filter Handlers Integration
 
-**Source: [apps/rms/src/app/global/global-universe/filter-handlers.function.ts]**
+**Source: [apps/dms/src/app/global/global-universe/filter-handlers.function.ts]**
 
 **createFilterHandlers Function:**
 
@@ -344,7 +344,7 @@ export function createFilterHandlers(
 
 ### Sorting Handlers Integration
 
-**Source: [apps/rms/src/app/global/global-universe/sorting-handlers.function.ts]**
+**Source: [apps/dms/src/app/global/global-universe/sorting-handlers.function.ts]**
 
 **createSortingHandlers Function:**
 
@@ -373,7 +373,7 @@ export function createSortingHandlers(sortCriteria: WritableSignal<Array<{ field
 
 ### Edit Handlers Integration
 
-**Source: [apps/rms/src/app/global/global-universe/edit-handlers.function.ts]**
+**Source: [apps/dms/src/app/global/global-universe/edit-handlers.function.ts]**
 
 **createEditHandlers Function:**
 
@@ -404,7 +404,7 @@ export function createEditHandlers(dataService: UniverseDataService) {
 
 ### Row Dimming Logic
 
-**Source: [apps/rms/src/app/global/global-universe/is-row-dimmed.function.ts]**
+**Source: [apps/dms/src/app/global/global-universe/is-row-dimmed.function.ts]**
 
 **isRowDimmed Function:**
 
@@ -507,19 +507,19 @@ updateFields(): void {
 
 **Files to Modify:**
 
-- `/apps/rms/src/app/global/global-universe/global-universe.component.html` - Add lazy loading attributes
-- `/apps/rms/src/app/global/global-universe/global-universe.component.ts` - Implement lazy load logic
-- `/apps/rms/src/app/global/global-universe/global-universe.component.spec.ts` - Update tests
+- `/apps/dms/src/app/global/global-universe/global-universe.component.html` - Add lazy loading attributes
+- `/apps/dms/src/app/global/global-universe/global-universe.component.ts` - Implement lazy load logic
+- `/apps/dms/src/app/global/global-universe/global-universe.component.spec.ts` - Update tests
 
 **Files to Reference (Read-Only):**
 
-- `/apps/rms/src/app/global/global-universe/filter-handlers.function.ts` - Filter logic
-- `/apps/rms/src/app/global/global-universe/edit-handlers.function.ts` - Edit logic
-- `/apps/rms/src/app/global/global-universe/sorting-handlers.function.ts` - Sort logic
-- `/apps/rms/src/app/global/global-universe/sort-computed-signals.function.ts` - Sort UI signals
-- `/apps/rms/src/app/global/global-universe/universe-data.service.ts` - Data transformation
-- `/apps/rms/src/app/global/global-universe/is-row-dimmed.function.ts` - Dimming logic
-- `/apps/rms/src/app/global/global-universe/global-universe-storage.service.ts` - State persistence
+- `/apps/dms/src/app/global/global-universe/filter-handlers.function.ts` - Filter logic
+- `/apps/dms/src/app/global/global-universe/edit-handlers.function.ts` - Edit logic
+- `/apps/dms/src/app/global/global-universe/sorting-handlers.function.ts` - Sort logic
+- `/apps/dms/src/app/global/global-universe/sort-computed-signals.function.ts` - Sort UI signals
+- `/apps/dms/src/app/global/global-universe/universe-data.service.ts` - Data transformation
+- `/apps/dms/src/app/global/global-universe/is-row-dimmed.function.ts` - Dimming logic
+- `/apps/dms/src/app/global/global-universe/global-universe-storage.service.ts` - State persistence
 
 ### Testing
 
@@ -592,7 +592,7 @@ updateFields(): void {
 
 **Test File Location:**
 
-- `/apps/rms/src/app/global/global-universe/global-universe.component.spec.ts`
+- `/apps/dms/src/app/global/global-universe/global-universe.component.spec.ts`
 
 ## Change Log
 

@@ -1,6 +1,6 @@
 # Local Development and Deployment
 
-This guide explains two approaches for working with the RMS Workspace locally:
+This guide explains two approaches for working with the DMS Workspace locally:
 
 1. **Local Development**: Traditional development with `pnpm nx serve` (SQLite, no Docker required)
 2. **Local Deployment**: Full containerized stack with Docker Compose (PostgreSQL + LocalStack + Backend)
@@ -14,7 +14,7 @@ For day-to-day development work:
 pnpm nx serve server
 
 # Frontend development
-pnpm nx serve rms
+pnpm nx serve dms
 ```
 
 This approach:
@@ -103,37 +103,37 @@ The backend will connect to:
 
 #### S3 Configuration
 
-- Bucket: `rms-local-bucket`
+- Bucket: `dms-local-bucket`
 - Endpoint: `http://localhost:4566`
 
 #### SSM Parameter Store
 
 Parameters created automatically:
 
-- `/rms/local/database-url`
-- `/rms/local/database-password`
-- `/rms/local/cognito-user-pool-id`
-- `/rms/local/cognito-user-pool-client-id`
-- `/rms/local/cognito-jwt-issuer`
-- `/rms/local/aws-region`
+- `/dms/local/database-url`
+- `/dms/local/database-password`
+- `/dms/local/cognito-user-pool-id`
+- `/dms/local/cognito-user-pool-client-id`
+- `/dms/local/cognito-jwt-issuer`
+- `/dms/local/aws-region`
 
 #### Cognito
 
-- User Pool: `rms-local-pool`
+- User Pool: `dms-local-pool`
 - User Pool ID: `us-east-1_LOCAL123`
 - Client ID: `local-client-id-123`
 
 ### PostgreSQL Database
 
 **Port**: 5432
-**Database**: `rms_local`
-**User**: `rms_user`
-**Password**: `rms_password`
+**Database**: `dms_local`
+**User**: `dms_user`
+**Password**: `dms_password`
 
 ### PgAdmin (Optional)
 
 **Port**: 8080
-**Email**: `admin@rms.local`
+**Email**: `admin@dms.local`
 **Password**: `admin`
 
 To enable PgAdmin:
@@ -162,7 +162,7 @@ pnpm nx build server:production
 ```bash
 # Generate Prisma client for PostgreSQL
 export DATABASE_PROVIDER=postgresql
-export DATABASE_URL=postgresql://rms_user:rms_password@localhost:5432/rms_local?schema=public
+export DATABASE_URL=postgresql://dms_user:dms_password@localhost:5432/dms_local?schema=public
 pnpm prisma generate
 
 # Run migrations
@@ -213,7 +213,7 @@ docker-compose -f docker-compose.local.yml restart
 
 ```bash
 # Test PostgreSQL connection
-docker-compose -f docker-compose.local.yml exec postgres psql -U rms_user -d rms_local -c "SELECT version();"
+docker-compose -f docker-compose.local.yml exec postgres psql -U dms_user -d dms_local -c "SELECT version();"
 
 # Reset database
 pnpm prisma db push --force-reset

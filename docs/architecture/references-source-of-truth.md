@@ -23,21 +23,21 @@
 
 ## Frontend Components
 
-- Universe store: `apps/rms/src/app/store/universe/universe-effect.service.ts`
-- Universe data service: `apps/rms/src/app/global/global-universe/universe-data.service.ts`
-- Universe settings: `apps/rms/src/app/universe-settings/*`
-- Screener component: `apps/rms/src/app/global/screener/screener.ts`
+- Universe store: `apps/dms/src/app/store/universe/universe-effect.service.ts`
+- Universe data service: `apps/dms/src/app/global/global-universe/universe-data.service.ts`
+- Universe settings: `apps/dms/src/app/universe-settings/*`
+- Screener component: `apps/dms/src/app/global/screener/screener.ts`
 
 ## Environment Configuration
 
-- Development: `apps/rms/src/environments/environment.ts`
-- Docker: `apps/rms/src/environments/environment.docker.ts`
-- Production: `apps/rms/src/environments/environment.prod.ts`
-- Proxy config: `apps/rms/proxy.conf.json`
+- Development: `apps/dms/src/environments/environment.ts`
+- Docker: `apps/dms/src/environments/environment.docker.ts`
+- Production: `apps/dms/src/environments/environment.prod.ts`
+- Proxy config: `apps/dms/proxy.conf.json`
 
 ## Build & Deployment
 
 - Docker compose: `docker-compose.local.yml`
 - Server Dockerfile: `apps/server/Dockerfile`
-- Frontend Dockerfile: `apps/rms/Dockerfile`
+- Frontend Dockerfile: `apps/dms/Dockerfile`
 - Infrastructure: `apps/infrastructure/environments/`

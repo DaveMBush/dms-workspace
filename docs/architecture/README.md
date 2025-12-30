@@ -1,6 +1,6 @@
-# RMS Architecture Documentation
+# DMS Architecture Documentation
 
-This document provides a comprehensive overview of the RMS (Risk Management System) architecture, including system components, data flows, and architectural decisions.
+This document provides a comprehensive overview of the DMS (Data Management System) architecture, including system components, data flows, and architectural decisions.
 
 ## Table of Contents
 
@@ -17,7 +17,7 @@ This document provides a comprehensive overview of the RMS (Risk Management Syst
 
 ## System Overview
 
-RMS is a cloud-native risk management application built on AWS using modern microservices architecture principles. The system follows a three-tier architecture pattern with clear separation between presentation, application, and data layers.
+DMS is a cloud-native risk management application built on AWS using modern microservices architecture principles. The system follows a three-tier architecture pattern with clear separation between presentation, application, and data layers.
 
 ### High-Level Architecture
 
@@ -157,7 +157,7 @@ Internet Gateway
 
 ### Frontend (Angular 20 SPA)
 
-**Location**: `apps/rms/`
+**Location**: `apps/dms/`
 **Deployment**: CloudFront + S3
 **Key Features**:
 
@@ -338,8 +338,8 @@ Internet Gateway
 
 ### ADR-001: Container Orchestration Platform
 
-**Status**: Accepted  
-**Date**: 2024-08-30  
+**Status**: Accepted
+**Date**: 2024-08-30
 **Deciders**: DevOps Team, Architecture Committee
 
 **Context**: Need container orchestration for backend deployment with requirements for simplicity, cost-effectiveness, and AWS integration.
@@ -374,8 +374,8 @@ Internet Gateway
 
 ### ADR-002: Database Selection
 
-**Status**: Accepted  
-**Date**: 2024-08-15  
+**Status**: Accepted
+**Date**: 2024-08-15
 **Deciders**: Backend Team, DBA
 
 **Context**: Need robust relational database for risk management data with ACID properties, complex queries, and reporting capabilities.
@@ -404,8 +404,8 @@ Internet Gateway
 
 ### ADR-003: Frontend State Management
 
-**Status**: Accepted  
-**Date**: 2024-09-01  
+**Status**: Accepted
+**Date**: 2024-09-01
 **Deciders**: Frontend Team
 
 **Context**: Need reactive state management for Angular 20 application with real-time updates and complex component interactions.
@@ -434,8 +434,8 @@ Internet Gateway
 
 ### ADR-004: API Documentation Strategy
 
-**Status**: Accepted  
-**Date**: 2024-09-15  
+**Status**: Accepted
+**Date**: 2024-09-15
 **Deciders**: Backend Team, API Consumers
 
 **Context**: Need comprehensive API documentation for internal teams and potential external integrations.
@@ -586,6 +586,6 @@ Internet Gateway
 
 ---
 
-**Last Updated**: 2024-12-16  
-**Version**: 1.0  
+**Last Updated**: 2024-12-16
+**Version**: 1.0
 **Next Review**: 2025-03-16

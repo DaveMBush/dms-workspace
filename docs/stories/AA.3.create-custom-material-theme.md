@@ -2,15 +2,15 @@
 
 ## Story
 
-**As a** user of the rms-material application
-**I want** the application to match the current RMS styling with light/dark mode support
+**As a** user of the dms-material application
+**I want** the application to match the current DMS styling with light/dark mode support
 **So that** the migration provides a consistent visual experience
 
 ## Context
 
 **Current System:**
 
-- RMS uses PrimeNG Aura theme with TailwindCSS
+- DMS uses PrimeNG Aura theme with TailwindCSS
 - Dark mode controlled via `.p-dark` class on body
 - CSS layers: `tailwind-base, primeng, tailwind-utilities`
 - Colors: Primary blues, neutral grays, semantic colors for status
@@ -62,7 +62,7 @@
 
 ### Step 1: Create Unit Tests First
 
-Create `apps/rms-material/src/app/shared/services/theme.service.spec.ts`:
+Create `apps/dms-material/src/app/shared/services/theme.service.spec.ts`:
 
 ```typescript
 import { TestBed } from '@angular/core/testing';
@@ -155,14 +155,14 @@ describe('ThemeService', () => {
     it('should persist theme preference to localStorage', () => {
       service.toggleTheme();
 
-      expect(localStorage.setItem).toHaveBeenCalledWith('rms-theme', 'dark');
+      expect(localStorage.setItem).toHaveBeenCalledWith('dms-theme', 'dark');
     });
 
     it('should persist light theme preference to localStorage', () => {
       service.toggleTheme(); // dark
       service.toggleTheme(); // light
 
-      expect(localStorage.setItem).toHaveBeenLastCalledWith('rms-theme', 'light');
+      expect(localStorage.setItem).toHaveBeenLastCalledWith('dms-theme', 'light');
     });
   });
 
@@ -197,7 +197,7 @@ describe('ThemeService', () => {
 
 **TDD Cycle:**
 
-1. Run `pnpm nx run rms-material:test` - tests should fail (RED)
+1. Run `pnpm nx run dms-material:test` - tests should fail (RED)
 2. Implement minimal code to pass tests (GREEN)
 3. Refactor while keeping tests passing (REFACTOR)
 
@@ -205,7 +205,7 @@ describe('ThemeService', () => {
 
 ### Step 2: Create Theme Variables
 
-Create `apps/rms-material/src/themes/_theme-variables.scss`:
+Create `apps/dms-material/src/themes/_theme-variables.scss`:
 
 ```scss
 // Theme color definitions matching PrimeNG Aura theme
@@ -213,40 +213,40 @@ Create `apps/rms-material/src/themes/_theme-variables.scss`:
 
 :root {
   // Primary palette (blue)
-  --rms-primary-50: #eff6ff;
-  --rms-primary-100: #dbeafe;
-  --rms-primary-200: #bfdbfe;
-  --rms-primary-300: #93c5fd;
-  --rms-primary-400: #60a5fa;
-  --rms-primary-500: #3b82f6;
-  --rms-primary-600: #2563eb;
-  --rms-primary-700: #1d4ed8;
-  --rms-primary-800: #1e40af;
-  --rms-primary-900: #1e3a8a;
+  --dms-primary-50: #eff6ff;
+  --dms-primary-100: #dbeafe;
+  --dms-primary-200: #bfdbfe;
+  --dms-primary-300: #93c5fd;
+  --dms-primary-400: #60a5fa;
+  --dms-primary-500: #3b82f6;
+  --dms-primary-600: #2563eb;
+  --dms-primary-700: #1d4ed8;
+  --dms-primary-800: #1e40af;
+  --dms-primary-900: #1e3a8a;
 
   // Neutral palette (gray)
-  --rms-neutral-50: #f9fafb;
-  --rms-neutral-100: #f3f4f6;
-  --rms-neutral-200: #e5e7eb;
-  --rms-neutral-300: #d1d5db;
-  --rms-neutral-400: #9ca3af;
-  --rms-neutral-500: #6b7280;
-  --rms-neutral-600: #4b5563;
-  --rms-neutral-700: #374151;
-  --rms-neutral-800: #1f2937;
-  --rms-neutral-900: #111827;
+  --dms-neutral-50: #f9fafb;
+  --dms-neutral-100: #f3f4f6;
+  --dms-neutral-200: #e5e7eb;
+  --dms-neutral-300: #d1d5db;
+  --dms-neutral-400: #9ca3af;
+  --dms-neutral-500: #6b7280;
+  --dms-neutral-600: #4b5563;
+  --dms-neutral-700: #374151;
+  --dms-neutral-800: #1f2937;
+  --dms-neutral-900: #111827;
 
   // Semantic colors
-  --rms-success: #22c55e;
-  --rms-warning: #f59e0b;
-  --rms-error: #ef4444;
-  --rms-info: #3b82f6;
+  --dms-success: #22c55e;
+  --dms-warning: #f59e0b;
+  --dms-error: #ef4444;
+  --dms-info: #3b82f6;
 }
 ```
 
 ### Step 3: Create Light Theme
 
-Create `apps/rms-material/src/themes/_light-theme.scss`:
+Create `apps/dms-material/src/themes/_light-theme.scss`:
 
 ```scss
 @use '@angular/material' as mat;
@@ -277,17 +277,17 @@ $light-theme: mat.m3-define-theme(
 
 // Light theme specific CSS custom properties
 :root {
-  --rms-background: #ffffff;
-  --rms-surface: #f9fafb;
-  --rms-text-primary: #111827;
-  --rms-text-secondary: #6b7280;
-  --rms-border: #e5e7eb;
+  --dms-background: #ffffff;
+  --dms-surface: #f9fafb;
+  --dms-text-primary: #111827;
+  --dms-text-secondary: #6b7280;
+  --dms-border: #e5e7eb;
 }
 ```
 
 ### Step 4: Create Dark Theme
 
-Create `apps/rms-material/src/themes/_dark-theme.scss`:
+Create `apps/dms-material/src/themes/_dark-theme.scss`:
 
 ```scss
 @use '@angular/material' as mat;
@@ -318,17 +318,17 @@ $dark-theme: mat.m3-define-theme(
 
 // Dark theme specific CSS custom properties
 .dark-theme {
-  --rms-background: #111827;
-  --rms-surface: #1f2937;
-  --rms-text-primary: #f9fafb;
-  --rms-text-secondary: #9ca3af;
-  --rms-border: #374151;
+  --dms-background: #111827;
+  --dms-surface: #1f2937;
+  --dms-text-primary: #f9fafb;
+  --dms-text-secondary: #9ca3af;
+  --dms-border: #374151;
 }
 ```
 
 ### Step 5: Update Main Styles
 
-Update `apps/rms-material/src/styles.scss`:
+Update `apps/dms-material/src/styles.scss`:
 
 ```scss
 @use '@angular/material' as mat;
@@ -369,8 +369,8 @@ body {
   margin: 0;
   font-family: Roboto, sans-serif;
   height: 100%;
-  background-color: var(--rms-background);
-  color: var(--rms-text-primary);
+  background-color: var(--dms-background);
+  color: var(--dms-text-primary);
 }
 
 // Smooth theme transitions
@@ -380,29 +380,29 @@ body {
 
 // Custom utility classes for theming
 .surface-ground {
-  background-color: var(--rms-background);
+  background-color: var(--dms-background);
 }
 
 .surface-card {
-  background-color: var(--rms-surface);
+  background-color: var(--dms-surface);
 }
 
 .text-primary {
-  color: var(--rms-text-primary);
+  color: var(--dms-text-primary);
 }
 
 .text-secondary {
-  color: var(--rms-text-secondary);
+  color: var(--dms-text-secondary);
 }
 
 .border-default {
-  border-color: var(--rms-border);
+  border-color: var(--dms-border);
 }
 ```
 
 ### Step 6: Create Theme Toggle Service
 
-Create `apps/rms-material/src/app/shared/services/theme.service.ts`:
+Create `apps/dms-material/src/app/shared/services/theme.service.ts`:
 
 ```typescript
 import { Injectable, signal } from '@angular/core';
@@ -411,8 +411,7 @@ import { Injectable, signal } from '@angular/core';
   providedIn: 'root',
 })
 export class ThemeService {
-  private readonly THEME_KEY = 'rms-theme';
-
+  private readonly THEME_KEY = 'dms-theme';
   isDarkMode = signal(this.loadThemePreference());
 
   constructor() {
@@ -451,7 +450,7 @@ export class ThemeService {
 
 ### Step 7: Verify Theme Toggle
 
-Update `apps/rms-material/src/app/app.component.ts` to test theme:
+Update `apps/dms-material/src/app/app.component.ts` to test theme:
 
 ```typescript
 import { Component, inject } from '@angular/core';
@@ -461,11 +460,11 @@ import { MatIconModule } from '@angular/material/icon';
 import { ThemeService } from './shared/services/theme.service';
 
 @Component({
-  selector: 'rms-root',
+  selector: 'dms-root',
   imports: [MatButtonModule, MatIconModule],
   template: `
     <div class="p-4">
-      <h1 class="text-2xl mb-4">RMS Material - Theme Test</h1>
+      <h1 class="text-2xl mb-4">DMS Material - Theme Test</h1>
       <button mat-raised-button color="primary" (click)="themeService.toggleTheme()">
         <mat-icon>{{ themeService.isDarkMode() ? 'light_mode' : 'dark_mode' }}</mat-icon>
         Toggle Theme
@@ -491,23 +490,23 @@ export class AppComponent {
 
 | File                                                         | Purpose                            |
 | ------------------------------------------------------------ | ---------------------------------- |
-| `apps/rms-material/src/themes/_theme-variables.scss`         | CSS custom properties for colors   |
-| `apps/rms-material/src/themes/_light-theme.scss`             | Light theme Material configuration |
-| `apps/rms-material/src/themes/_dark-theme.scss`              | Dark theme Material configuration  |
-| `apps/rms-material/src/styles.scss`                          | Global styles with theme imports   |
-| `apps/rms-material/src/app/shared/services/theme.service.ts` | Theme toggle service               |
-| `apps/rms-material/src/app/app.component.ts`                 | Updated with theme test            |
+| `apps/dms-material/src/themes/_theme-variables.scss`         | CSS custom properties for colors   |
+| `apps/dms-material/src/themes/_light-theme.scss`             | Light theme Material configuration |
+| `apps/dms-material/src/themes/_dark-theme.scss`              | Dark theme Material configuration  |
+| `apps/dms-material/src/styles.scss`                          | Global styles with theme imports   |
+| `apps/dms-material/src/app/shared/services/theme.service.ts` | Theme toggle service               |
+| `apps/dms-material/src/app/app.component.ts`                 | Updated with theme test            |
 
 ## Color Mapping Reference
 
 | PrimeNG Aura   | Material Equivalent | CSS Variable           |
 | -------------- | ------------------- | ---------------------- |
-| Primary blue   | Primary palette     | `--rms-primary-500`    |
-| Surface ground | Background          | `--rms-background`     |
-| Surface card   | Surface             | `--rms-surface`        |
-| Text color     | Text primary        | `--rms-text-primary`   |
-| Text secondary | Text secondary      | `--rms-text-secondary` |
-| Border color   | Border              | `--rms-border`         |
+| Primary blue   | Primary palette     | `--dms-primary-500`    |
+| Surface ground | Background          | `--dms-background`     |
+| Surface card   | Surface             | `--dms-surface`        |
+| Text color     | Text primary        | `--dms-text-primary`   |
+| Text secondary | Text secondary      | `--dms-text-secondary` |
+| Border color   | Border              | `--dms-border`         |
 
 ## Definition of Done
 
@@ -524,7 +523,7 @@ export class AppComponent {
 
 ## E2E Test Requirements
 
-When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
+When this story is complete, ensure the following e2e tests exist in `apps/dms-material-e2e/`:
 
 ### Core Functionality
 
@@ -544,7 +543,7 @@ When this story is complete, ensure the following e2e tests exist in `apps/rms-m
 - [ ] Clearing localStorage reverts to system preference
 - [ ] All text has sufficient contrast ratio in both themes (WCAG AA)
 
-Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.
+Run `pnpm nx run dms-material-e2e:e2e` to verify all e2e tests pass.
 
 ## Notes
 

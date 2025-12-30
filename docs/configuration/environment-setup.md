@@ -1,6 +1,6 @@
 # Environment Setup Guide
 
-This guide covers setting up the RMS workspace environment for different deployment scenarios.
+This guide covers setting up the DMS workspace environment for different deployment scenarios.
 
 ## Local Development Setup
 
@@ -37,7 +37,7 @@ This guide covers setting up the RMS workspace environment for different deploym
    pnpm nx run server:serve
 
    # Terminal 2: Start frontend
-   pnpm nx run rms:serve
+   pnpm nx run dms:serve
    ```
 
 ### Environment File Structure
@@ -80,7 +80,7 @@ PORT=3000                               # Server port
    ```yaml
    version: '3.8'
    services:
-     rms-server:
+     dms-server:
        build: .
        ports:
          - '3000:3000'
@@ -99,7 +99,7 @@ PORT=3000                               # Server port
    apiVersion: v1
    kind: ConfigMap
    metadata:
-     name: rms-config
+     name: dms-config
    data:
      USE_SCREENER_FOR_UNIVERSE: 'false'
      DATABASE_URL: 'file:./database.db'
@@ -112,25 +112,25 @@ PORT=3000                               # Server port
    apiVersion: apps/v1
    kind: Deployment
    metadata:
-     name: rms-server
+     name: dms-server
    spec:
      replicas: 1
      selector:
        matchLabels:
-         app: rms-server
+         app: dms-server
      template:
        metadata:
          labels:
-           app: rms-server
+           app: dms-server
        spec:
          containers:
-           - name: rms-server
-             image: rms-server:latest
+           - name: dms-server
+             image: dms-server:latest
              ports:
                - containerPort: 3000
              envFrom:
                - configMapRef:
-                   name: rms-config
+                   name: dms-config
    ```
 
 ## Production Environment
@@ -163,11 +163,11 @@ NODE_ENV=production                     # Production mode
    export USE_SCREENER_FOR_UNIVERSE=true
 
    # Restart server
-   systemctl restart rms-server
+   systemctl restart dms-server
    # or
-   docker restart rms-server
+   docker restart dms-server
    # or
-   kubectl rollout restart deployment/rms-server
+   kubectl rollout restart deployment/dms-server
    ```
 
 2. **Verify Feature**:

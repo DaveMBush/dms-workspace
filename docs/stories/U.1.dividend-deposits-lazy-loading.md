@@ -33,13 +33,13 @@ Draft
 4. Ensure the following commands run without errors:
    - `pnpm format`
    - `pnpm dupcheck`
-   - `pnpm nx run rms:test --code-coverage`
+   - `pnpm nx run dms:test --code-coverage`
    - `pnpm nx run server:build:production`
    - `pnpm nx run server:test --code-coverage`
    - `pnpm nx run server:lint`
-   - `pnpm nx run rms:lint`
-   - `pnpm nx run rms:build:production`
-   - `pnpm nx run rms-e2e:lint`
+   - `pnpm nx run dms:lint`
+   - `pnpm nx run dms:build:production`
+   - `pnpm nx run dms-e2e:lint`
 
 ## Tasks / Subtasks
 
@@ -177,7 +177,7 @@ This story implements lazy loading with virtual scrolling for the Dividend Depos
 
 ### Current Implementation
 
-**Source: [apps/rms/src/app/account-panel/dividend-deposits/dividend-deposits.ts]**
+**Source: [apps/dms/src/app/account-panel/dividend-deposits/dividend-deposits.ts]**
 
 **Current Component Structure:**
 
@@ -371,15 +371,15 @@ onLazyLoad(event: LazyLoadEvent): void {
 
 **Files to Modify:**
 
-- `/apps/rms/src/app/account-panel/dividend-deposits/dividend-deposits.html` - Add lazy loading attributes
-- `/apps/rms/src/app/account-panel/dividend-deposits/dividend-deposits.ts` - Implement lazy load logic
-- `/apps/rms/src/app/account-panel/dividend-deposits/dividend-deposits.spec.ts` - Update tests (if exists)
+- `/apps/dms/src/app/account-panel/dividend-deposits/dividend-deposits.html` - Add lazy loading attributes
+- `/apps/dms/src/app/account-panel/dividend-deposits/dividend-deposits.ts` - Implement lazy load logic
+- `/apps/dms/src/app/account-panel/dividend-deposits/dividend-deposits.spec.ts` - Update tests (if exists)
 
 **Related Files (Read-Only):**
 
-- `/apps/rms/src/app/store/current-account/select-current-account.signal.ts` - Current account selector
-- `/apps/rms/src/app/store/universe/selectors/select-universes.function.ts` - Universe selector
-- `/apps/rms/src/app/store/div-deposit-types/selectors/select-div-deposit-types.function.ts` - Div deposit types selector
+- `/apps/dms/src/app/store/current-account/select-current-account.signal.ts` - Current account selector
+- `/apps/dms/src/app/store/universe/selectors/select-universes.function.ts` - Universe selector
+- `/apps/dms/src/app/store/div-deposit-types/selectors/select-div-deposit-types.function.ts` - Div deposit types selector
 
 ### Component Architecture
 
@@ -421,13 +421,13 @@ onLazyLoad(event: LazyLoadEvent): void {
 ```bash
 pnpm format                                    # Code formatting
 pnpm dupcheck                                  # Duplicate detection
-pnpm nx run rms:test --code-coverage          # Unit tests
+pnpm nx run dms:test --code-coverage          # Unit tests
 pnpm nx run server:build:production           # Server build
 pnpm nx run server:test --code-coverage       # Server tests
 pnpm nx run server:lint                       # Server linting
-pnpm nx run rms:lint                          # RMS linting
-pnpm nx run rms:build:production              # RMS build
-pnpm nx run rms-e2e:lint                      # E2E linting
+pnpm nx run dms:lint                          # DMS linting
+pnpm nx run dms:build:production              # DMS build
+pnpm nx run dms-e2e:lint                      # E2E linting
 ```
 
 ### Testing
@@ -474,7 +474,7 @@ pnpm nx run rms-e2e:lint                      # E2E linting
 
 **Test File Location:**
 
-- `/apps/rms/src/app/account-panel/dividend-deposits/dividend-deposits.spec.ts` (create if doesn't exist)
+- `/apps/dms/src/app/account-panel/dividend-deposits/dividend-deposits.spec.ts` (create if doesn't exist)
 
 ## Change Log
 

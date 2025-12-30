@@ -6,7 +6,7 @@ Approved
 
 ## Story
 
-**As a** trader using the RMS application,
+**As a** trader using the DMS application,
 **I want** to manually add symbols (primarily ETFs) to the universe through the Universe screen,
 **so that** I can trade symbols that are not available through the screener-driven CEF universe.
 
@@ -22,13 +22,13 @@ Approved
 8. Ensure the following commands run without errors:
    - `pnpm format`
    - `pnpm dupcheck`
-   - `pnpm nx run rms:test --code-coverage`
+   - `pnpm nx run dms:test --code-coverage`
    - `pnpm nx run server:build:production`
    - `pnpm nx run server:test --code-coverage`
    - `pnpm nx run server:lint`
-   - `pnpm nx run rms:lint`
-   - `pnpm nx run rms:build:production`
-   - `pnpm nx run rms-e2e:lint`
+   - `pnpm nx run dms:lint`
+   - `pnpm nx run dms:build:production`
+   - `pnpm nx run dms-e2e:lint`
 
 ## Tasks / Subtasks
 
@@ -172,16 +172,16 @@ model risk_group {
 
 **Primary Frontend Files to Modify:**
 
-1. Universe screen component (location from references: `/apps/rms/src/app/universe-settings/*`)
-2. Update `/apps/rms/src/app/store/universe/universe-effect.service.ts`
-3. Update `/apps/rms/src/app/global/global-universe/universe-data.service.ts`
+1. Universe screen component (location from references: `/apps/dms/src/app/universe-settings/*`)
+2. Update `/apps/dms/src/app/store/universe/universe-effect.service.ts`
+3. Update `/apps/dms/src/app/global/global-universe/universe-data.service.ts`
 4. Create add symbol dialog component in universe-settings directory
 
 **Files to Create:**
 
-1. `/apps/rms/src/app/universe-settings/add-symbol-dialog/add-symbol-dialog.ts`
-2. `/apps/rms/src/app/universe-settings/add-symbol-dialog/add-symbol-dialog.html`
-3. `/apps/rms/src/app/universe-settings/add-symbol-dialog/add-symbol-dialog.scss`
+1. `/apps/dms/src/app/universe-settings/add-symbol-dialog/add-symbol-dialog.ts`
+2. `/apps/dms/src/app/universe-settings/add-symbol-dialog/add-symbol-dialog.html`
+3. `/apps/dms/src/app/universe-settings/add-symbol-dialog/add-symbol-dialog.scss`
 
 ### Component Architecture
 
@@ -249,7 +249,7 @@ export class AddSymbolDialog {
 **Source: [docs/architecture/ci-and-testing.md]**
 
 **Testing Framework:** Jest with TestBed for Angular components
-**Test Location:** Tests alongside components in `/apps/rms/src/app/` structure
+**Test Location:** Tests alongside components in `/apps/dms/src/app/` structure
 **Coverage Requirements:** Lines 85%, branches 75%, functions 85%
 
 **Key Test Scenarios:**

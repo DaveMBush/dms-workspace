@@ -11,7 +11,7 @@ const client = jwksClient({
   rateLimit: true,
   jwksRequestsPerMinute: 10,
   requestHeaders: {
-    'User-Agent': 'RMS-Server/1.0',
+    'User-Agent': 'DMS-Server/1.0',
   },
 });
 

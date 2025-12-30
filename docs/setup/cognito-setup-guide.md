@@ -1,10 +1,10 @@
-# AWS Cognito Setup Guide for RMS Application
+# AWS Cognito Setup Guide for DMS Application
 
-This guide provides step-by-step instructions for setting up AWS Cognito authentication for the RMS application.
+This guide provides step-by-step instructions for setting up AWS Cognito authentication for the DMS application.
 
 ## Overview
 
-AWS Cognito provides enterprise-grade authentication for the RMS application with the following components:
+AWS Cognito provides enterprise-grade authentication for the DMS application with the following components:
 
 - **User Pool**: Central user directory and authentication service
 - **App Client**: Application registration with OAuth 2.0 configuration
@@ -49,7 +49,7 @@ admin_temp_password = "TempPassword123!"  # Min 8 chars, must include uppercase,
 
 # Optional variables
 production_domain = "app.yourcompany.com"  # For production callback URLs
-project_name = "rms"
+project_name = "dms"
 aws_region = "us-east-1"
 ```
 
@@ -103,16 +103,16 @@ terraform output cognito_jwt_issuer
    Replace placeholder values in the environment files with actual Terraform outputs:
 
    ```typescript
-   // apps/rms/src/environments/environment.cognito.ts
+   // apps/dms/src/environments/environment.cognito.ts
    export const cognitoConfigDev: CognitoConfig = {
      region: 'us-east-1',
      userPoolId: 'us-east-1_XXXXXXXXX', // From terraform output
      userPoolWebClientId: 'XXXXXXXXXXXXXXXXXXXXXXXXXX', // From terraform output
-     domain: 'rms-auth-dev.auth.us-east-1.amazoncognito.com', // From terraform output
+     domain: 'dms-auth-dev.auth.us-east-1.amazoncognito.com', // From terraform output
      redirectSignIn: 'http://localhost:4200',
      redirectSignOut: 'http://localhost:4200/auth/signout',
      scopes: ['openid', 'email', 'profile', 'aws.cognito.signin.user.admin'],
-     hostedUIUrl: 'https://rms-auth-dev.auth.us-east-1.amazoncognito.com', // From terraform output
+     hostedUIUrl: 'https://dms-auth-dev.auth.us-east-1.amazoncognito.com', // From terraform output
      jwtIssuer: 'https://cognito-idp.us-east-1.amazonaws.com/us-east-1_XXXXXXXXX', // From terraform output
    };
    ```
@@ -139,22 +139,22 @@ terraform output cognito_jwt_issuer
    ```bash
    # Store parameters (replace with actual values from terraform output)
    aws ssm put-parameter \
-     --name "/rms/prod/cognito-user-pool-id" \
+     --name "/dms/prod/cognito-user-pool-id" \
      --value "us-east-1_XXXXXXXXX" \
      --type "String"
 
    aws ssm put-parameter \
-     --name "/rms/prod/cognito-user-pool-client-id" \
+     --name "/dms/prod/cognito-user-pool-client-id" \
      --value "XXXXXXXXXXXXXXXXXXXXXXXXXX" \
      --type "String"
 
    aws ssm put-parameter \
-     --name "/rms/prod/cognito-jwt-issuer" \
+     --name "/dms/prod/cognito-jwt-issuer" \
      --value "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_XXXXXXXXX" \
      --type "String"
 
    aws ssm put-parameter \
-     --name "/rms/prod/aws-region" \
+     --name "/dms/prod/aws-region" \
      --value "us-east-1" \
      --type "String"
    ```
@@ -281,7 +281,7 @@ The Terraform state file contains all configuration. Ensure it's backed up:
 terraform {
   backend "s3" {
     bucket = "your-terraform-state-bucket"
-    key    = "rms/cognito/terraform.tfstate"
+    key    = "dms/cognito/terraform.tfstate"
     region = "us-east-1"
   }
 }
@@ -372,7 +372,7 @@ aws sts get-caller-identity
 aws cognito-idp describe-user-pool --user-pool-id us-east-1_XXXXXXXXX
 
 # Test Parameter Store access
-aws ssm get-parameter --name "/rms/dev/cognito-user-pool-id"
+aws ssm get-parameter --name "/dms/dev/cognito-user-pool-id"
 
 # Validate JWT token (using jwt.io or jwt-cli)
 jwt decode eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9...

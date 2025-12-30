@@ -19,8 +19,8 @@ Add an "Update Fields" icon to the Universe screen title bar that triggers the s
 
 ### Files to Modify
 
-- `apps/rms/src/app/global/global-universe/global-universe.component.html`
-- `apps/rms/src/app/global/global-universe/global-universe.component.ts`
+- `apps/dms/src/app/global/global-universe/global-universe.component.html`
+- `apps/dms/src/app/global/global-universe/global-universe.component.ts`
 
 ### Implementation Notes
 

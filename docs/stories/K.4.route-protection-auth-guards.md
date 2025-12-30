@@ -24,20 +24,20 @@ Ready for Review
 
 - `pnpm format`
 - `pnpm dupcheck`
-- `pnpm nx run rms:test --code-coverage`
+- `pnpm nx run dms:test --code-coverage`
 - `pnpm nx run server:build:production`
 - `pnpm nx run server:test --code-coverage`
 - `pnpm nx run server:lint`
-- `pnpm nx run rms:lint`
-- `pnpm nx run rms:build:production`
-- `pnpm nx run rms-e2e:lint`
+- `pnpm nx run dms:lint`
+- `pnpm nx run dms:build:production`
+- `pnpm nx run dms-e2e:lint`
 - `pnpm nx run infrastructure:lint`
 
 ## Tasks / Subtasks
 
 - [x] **Task 1: Create authentication guard with route protection logic** (AC: 1, 3, 4)
 
-  - [x] Create `AuthGuard` service in `/apps/rms/src/app/auth/guards/auth.guard.ts`
+  - [x] Create `AuthGuard` service in `/apps/dms/src/app/auth/guards/auth.guard.ts`
   - [x] Implement `canActivate` method with authentication status validation
   - [x] Add logic to redirect unauthenticated users to login page
   - [x] Implement return URL preservation using query parameters
@@ -46,7 +46,7 @@ Ready for Review
 
 - [x] **Task 2: Apply authentication guard to all application routes** (AC: 2)
 
-  - [x] Update main route configuration in `/apps/rms/src/app/app.routes.ts`
+  - [x] Update main route configuration in `/apps/dms/src/app/app.routes.ts`
   - [x] Apply `canActivate: [AuthGuard]` to all protected routes
   - [x] Ensure login route remains unprotected for initial access
   - [x] Test route protection across all application modules
@@ -64,7 +64,7 @@ Ready for Review
 
 - [x] **Task 4: Create HTTP interceptor for automatic token injection** (AC: 6)
 
-  - [x] Create `AuthInterceptor` in `/apps/rms/src/app/auth/interceptors/auth.interceptor.ts`
+  - [x] Create `AuthInterceptor` in `/apps/dms/src/app/auth/interceptors/auth.interceptor.ts`
   - [x] Implement automatic Authorization header injection for API requests
   - [x] Add logic to skip authentication for public endpoints (health checks)
   - [x] Handle requests during token refresh operations
@@ -118,13 +118,13 @@ Ready for Review
 
 ### Data Models and Architecture
 
-**Source: [apps/rms/src/app/app.routes.ts]**
+**Source: [apps/dms/src/app/app.routes.ts]**
 
 - Current route structure: main application routes without protection
 - Navigation patterns: direct routing and programmatic navigation
 - Route configuration: standalone components with lazy loading
 
-**Source: [apps/rms/src/app/auth/auth.service.ts from Story K.3]**
+**Source: [apps/dms/src/app/auth/auth.service.ts from Story K.3]**
 
 - Authentication service with signal-based state management
 - `isAuthenticated` computed signal for guard integration
@@ -150,28 +150,28 @@ HTTP Request -> AuthInterceptor -> Add JWT Token -> API Endpoint -> Response
 
 **Primary Files to Create:**
 
-1. `/apps/rms/src/app/auth/guards/auth.guard.ts` - Main authentication guard
-2. `/apps/rms/src/app/auth/interceptors/auth.interceptor.ts` - HTTP token interceptor
-3. `/apps/rms/src/app/auth/services/route.service.ts` - Route management utilities
+1. `/apps/dms/src/app/auth/guards/auth.guard.ts` - Main authentication guard
+2. `/apps/dms/src/app/auth/interceptors/auth.interceptor.ts` - HTTP token interceptor
+3. `/apps/dms/src/app/auth/services/route.service.ts` - Route management utilities
 
 **Primary Files to Modify:**
 
-1. `/apps/rms/src/app/app.routes.ts` - Add guard protection to all routes
-2. `/apps/rms/src/app/app.config.ts` - Register HTTP interceptor
-3. `/apps/rms/src/app/auth/login/login.ts` - Add return URL handling
+1. `/apps/dms/src/app/app.routes.ts` - Add guard protection to all routes
+2. `/apps/dms/src/app/app.config.ts` - Register HTTP interceptor
+3. `/apps/dms/src/app/auth/login/login.ts` - Add return URL handling
 
 **Test Files to Create:**
 
-1. `/apps/rms/src/app/auth/guards/auth.guard.spec.ts` - Guard unit tests
-2. `/apps/rms/src/app/auth/interceptors/auth.interceptor.spec.ts` - Interceptor tests
-3. `/apps/rms/src/app/auth/auth-integration.spec.ts` - Integration test suite
+1. `/apps/dms/src/app/auth/guards/auth.guard.spec.ts` - Guard unit tests
+2. `/apps/dms/src/app/auth/interceptors/auth.interceptor.spec.ts` - Interceptor tests
+3. `/apps/dms/src/app/auth/auth-integration.spec.ts` - Integration test suite
 
 ### Technical Implementation Details
 
 **Authentication Guard Implementation:**
 
 ```typescript
-// apps/rms/src/app/auth/guards/auth.guard.ts
+// apps/dms/src/app/auth/guards/auth.guard.ts
 import { Injectable, inject } from '@angular/core';
 import { CanActivate, Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { AuthService } from '../auth.service';
@@ -232,7 +232,7 @@ export class AuthGuard implements CanActivate {
 **HTTP Interceptor Implementation:**
 
 ```typescript
-// apps/rms/src/app/auth/interceptors/auth.interceptor.ts
+// apps/dms/src/app/auth/interceptors/auth.interceptor.ts
 import { Injectable, inject } from '@angular/core';
 import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError, EMPTY } from 'rxjs';
@@ -297,7 +297,7 @@ export class AuthInterceptor implements HttpInterceptor {
 **Route Configuration with Guards:**
 
 ```typescript
-// apps/rms/src/app/app.routes.ts
+// apps/dms/src/app/app.routes.ts
 import { Routes } from '@angular/router';
 import { AuthGuard } from './auth/guards/auth.guard';
 
@@ -343,7 +343,7 @@ export const routes: Routes = [
 **Updated Login Component with Return URL:**
 
 ```typescript
-// Update to apps/rms/src/app/auth/login/login.ts
+// Update to apps/dms/src/app/auth/login/login.ts
 async onSubmit(): Promise<void> {
   if (this.loginForm.valid && !this.isSubmitting()) {
     this.isSubmitting.set(true);
@@ -368,7 +368,7 @@ async onSubmit(): Promise<void> {
 **App Configuration with Interceptor:**
 
 ```typescript
-// apps/rms/src/app/app.config.ts
+// apps/dms/src/app/app.config.ts
 import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { AuthInterceptor } from './auth/interceptors/auth.interceptor';
@@ -478,7 +478,7 @@ _To be filled by dev agent_
 7. **Validation**: All acceptance criteria validation commands passed successfully:
    - ✅ `pnpm format` - Code formatted successfully
    - ✅ `pnpm dupcheck` - No duplicated code detected
-   - ✅ `pnpm nx run rms:build:production` - Production build successful (712.74 kB initial bundle)
+   - ✅ `pnpm nx run dms:build:production` - Production build successful (712.74 kB initial bundle)
 
 **Story Status**: All tasks completed. Route protection and authentication interceptors are fully implemented and integrated with existing auth infrastructure.
 
@@ -491,23 +491,23 @@ _To be filled by dev agent_
 
 **Modified Files:**
 
-- `/apps/rms/src/app/app.routes.ts` - Applied authGuard to protected routes, guestGuard to auth routes, added catch-all redirect
-- `/apps/rms/src/app/app.config.ts` - Registered authInterceptor in HTTP client configuration
-- `/apps/rms/src/app/auth/login/login.html` - Enhanced login container layout for proper width handling
-- `/apps/rms/src/app/auth/login/login.scss` - Fixed login component styling to prevent horizontal compression
+- `/apps/dms/src/app/app.routes.ts` - Applied authGuard to protected routes, guestGuard to auth routes, added catch-all redirect
+- `/apps/dms/src/app/app.config.ts` - Registered authInterceptor in HTTP client configuration
+- `/apps/dms/src/app/auth/login/login.html` - Enhanced login container layout for proper width handling
+- `/apps/dms/src/app/auth/login/login.scss` - Fixed login component styling to prevent horizontal compression
 
 **Created Files:**
 
-- `/apps/rms/src/app/auth/interceptors/auth.interceptor.ts` - HTTP interceptor for automatic JWT token injection
-- `/apps/rms/src/app/auth/interceptors/auth.interceptor.spec.ts` - Comprehensive tests for auth interceptor
-- `/apps/rms/src/app/auth/guards/auth.guard.spec.ts` - Unit tests for auth guards
-- `/apps/rms/src/app/auth/auth-integration.spec.ts` - Integration tests for complete auth flow
+- `/apps/dms/src/app/auth/interceptors/auth.interceptor.ts` - HTTP interceptor for automatic JWT token injection
+- `/apps/dms/src/app/auth/interceptors/auth.interceptor.spec.ts` - Comprehensive tests for auth interceptor
+- `/apps/dms/src/app/auth/guards/auth.guard.spec.ts` - Unit tests for auth guards
+- `/apps/dms/src/app/auth/auth-integration.spec.ts` - Integration tests for complete auth flow
 
 **Existing Files (Used):**
 
-- `/apps/rms/src/app/auth/guards/auth.guard.ts` - Already existed with authGuard and guestGuard
-- `/apps/rms/src/app/auth/auth.service.ts` - Already existed with authentication logic
-- `/apps/rms/src/app/auth/login/login.ts` - Already existed with return URL handling
+- `/apps/dms/src/app/auth/guards/auth.guard.ts` - Already existed with authGuard and guestGuard
+- `/apps/dms/src/app/auth/auth.service.ts` - Already existed with authentication logic
+- `/apps/dms/src/app/auth/login/login.ts` - Already existed with return URL handling
 
 ## QA Results
 

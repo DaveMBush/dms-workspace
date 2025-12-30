@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# RMS Local Deployment Environment Startup Script
+# DMS Local Deployment Environment Startup Script
 # This script starts the full containerized stack locally (PostgreSQL + LocalStack + Backend)
 
 set -e
 
-echo "🚀 Starting RMS Local Deployment Environment"
+echo "🚀 Starting DMS Local Deployment Environment"
 echo "=============================================="
 
 # Colors for output
@@ -54,7 +54,7 @@ print_status "Waiting for services to be healthy..."
 echo "⏳ LocalStack initialization may take 60-90 seconds on first run..."
 
 # Wait for PostgreSQL to be ready
-until docker-compose -f docker-compose.local.yml exec -T postgres pg_isready -U rms_user -d rms_local &> /dev/null; do
+until docker-compose -f docker-compose.local.yml exec -T postgres pg_isready -U dms_user -d dms_local &> /dev/null; do
     echo "Waiting for PostgreSQL..."
     sleep 2
 done
@@ -70,24 +70,24 @@ print_success "LocalStack is ready!"
 # Wait for backend to be ready
 print_status "Waiting for backend application to be ready..."
 until curl -s http://localhost:3000/health &> /dev/null; do
-    echo "Waiting for RMS Backend..."
+    echo "Waiting for DMS Backend..."
     sleep 5
 done
-print_success "RMS Backend is ready!"
+print_success "DMS Backend is ready!"
 
 print_success "Local deployment environment is ready!"
 echo ""
 echo "📋 Service Information:"
-echo "   🚀 RMS Backend: http://localhost:3000"
+echo "   🚀 DMS Backend: http://localhost:3000"
 echo "   💚 Health Check: http://localhost:3000/health"
 echo "   🐘 PostgreSQL: localhost:5432"
-echo "   📊 PgAdmin: http://localhost:8080 (admin@rms.local / admin)"
+echo "   📊 PgAdmin: http://localhost:8080 (admin@dms.local / admin)"
 echo "   ☁️  LocalStack: http://localhost:4566"
 echo "   📝 LocalStack Dashboard: https://app.localstack.cloud"
 echo ""
 echo "🔧 Available commands:"
 echo "   View logs: docker-compose -f docker-compose.local.yml logs -f"
-echo "   View backend logs: docker-compose -f docker-compose.local.yml logs -f rms-backend"
+echo "   View backend logs: docker-compose -f docker-compose.local.yml logs -f dms-backend"
 echo "   Stop services: docker-compose -f docker-compose.local.yml down"
 echo "   Rebuild and restart: docker-compose -f docker-compose.local.yml up -d --build"
 echo ""

@@ -63,7 +63,7 @@ All stories include the required validation commands section:
 
 ```bash
 - Run `pnpm all`
-- Run `pnpm e2e:rms-material`
+- Run `pnpm e2e:dms-material`
 - Run `pnpm dupcheck`
 - Run `pnpm format`
 - Repeat all of these if any fail until they all pass
@@ -85,7 +85,7 @@ Based on dependencies in NEW-EPICS-STORIES-SUMMARY.md:
 
 ## Story Creation Notes
 
-- Stories follow RMS app patterns closely
+- Stories follow DMS app patterns closely
 - All use SmartNgRX Signals for state management
 - **All include comprehensive unit tests in TDD Step 1 (>80% coverage)**
 - All reference Material Design components

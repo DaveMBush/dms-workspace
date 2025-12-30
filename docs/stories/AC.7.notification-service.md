@@ -12,11 +12,11 @@
 
 ## Reference
 
-See `apps/rms-material/src/app/shared/services/notification.service.ts` created in AB.1.
+See `apps/dms-material/src/app/shared/services/notification.service.ts` created in AB.1.
 
 ## Features Implemented
 
-- [x] All GUI look as close to the existing RMS app as possible
+- [x] All GUI look as close to the existing DMS app as possible
 - [x] `show(message, severity)` - Generic notification
 - [x] `success(message)` - Success notification
 - [x] `info(message)` - Info notification
@@ -30,7 +30,7 @@ See `apps/rms-material/src/app/shared/services/notification.service.ts` created 
 
 **Write tests BEFORE implementation code.**
 
-Create `apps/rms-material/src/app/shared/services/notification.service.spec.ts`:
+Create `apps/dms-material/src/app/shared/services/notification.service.spec.ts`:
 
 ```typescript
 import { TestBed } from '@angular/core/testing';
@@ -75,7 +75,7 @@ describe('NotificationService', () => {
 
 ## E2E Test Requirements
 
-When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
+When this story is complete, ensure the following e2e tests exist in `apps/dms-material-e2e/`:
 
 ### Core Functionality
 
@@ -94,7 +94,7 @@ When this story is complete, ensure the following e2e tests exist in `apps/rms-m
 - [x] Notification visible over all z-index layers
 - [x] Dark theme applies correct notification colors
 
-Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.
+Run `pnpm nx run dms-material-e2e:e2e` to verify all e2e tests pass.
 
 ## Dev Agent Record
 
@@ -104,11 +104,11 @@ Claude Opus 4.5
 
 ### File List
 
-- `apps/rms-material/src/app/shared/services/notification.service.ts` (existing - verified)
-- `apps/rms-material/src/app/shared/services/notification.service.spec.ts` (modified - added tests)
-- `apps/rms-material/src/app/shared/types/notification-severity.type.ts` (existing - verified)
-- `apps/rms-material/src/styles.scss` (existing - snackbar styles verified)
-- `apps/rms-material-e2e/src/notification.spec.ts` (new - e2e tests)
+- `apps/dms-material/src/app/shared/services/notification.service.ts` (existing - verified)
+- `apps/dms-material/src/app/shared/services/notification.service.spec.ts` (modified - added tests)
+- `apps/dms-material/src/app/shared/types/notification-severity.type.ts` (existing - verified)
+- `apps/dms-material/src/styles.scss` (existing - snackbar styles verified)
+- `apps/dms-material-e2e/src/notification.spec.ts` (new - e2e tests)
 
 ### Change Log
 

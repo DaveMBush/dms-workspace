@@ -6,10 +6,10 @@ Completed comprehensive analysis and cleanup of unused imports and dependencies 
 
 ## Files Analyzed
 
-1. `apps/rms/src/app/global/global-universe/global-universe.component.ts`
-2. `apps/rms/src/app/shell/shell.component.ts`
-3. `apps/rms/src/app/shared/services/feature-flags.service.ts`
-4. `apps/rms/src/app/universe-settings/update-universe.service.ts`
+1. `apps/dms/src/app/global/global-universe/global-universe.component.ts`
+2. `apps/dms/src/app/shell/shell.component.ts`
+3. `apps/dms/src/app/shared/services/feature-flags.service.ts`
+4. `apps/dms/src/app/universe-settings/update-universe.service.ts`
 5. `apps/server/src/app/routes/feature-flags/index.ts`
 
 ## Analysis Results

@@ -1,4 +1,4 @@
-# RMS Authentication User Guide
+# DMS Authentication User Guide
 
 ## Table of Contents
 
@@ -12,17 +12,17 @@
 
 ## Getting Started
 
-The RMS (Risk Management System) application provides secure access to your portfolio management tools through AWS Cognito authentication. This guide will help you understand how to use the authentication system effectively.
+The DMS (Dividend Management System) application provides secure access to your portfolio management tools through AWS Cognito authentication. This guide will help you understand how to use the authentication system effectively.
 
 ### System Requirements
 
 - Modern web browser (Chrome, Firefox, Safari, Edge)
 - Internet connection
-- Valid RMS user account
+- Valid DMS user account
 
 ### Accessing the Application
 
-Navigate to your RMS application URL. If you're not already logged in, you'll be automatically redirected to the login page.
+Navigate to your DMS application URL. If you're not already logged in, you'll be automatically redirected to the login page.
 
 ## Logging In
 
@@ -31,8 +31,8 @@ Navigate to your RMS application URL. If you're not already logged in, you'll be
 1. **Navigate to the Login Page**
 
    - Open your web browser
-   - Go to the RMS application URL
-   - You'll see the RMS Login page with the application logo
+   - Go to the DMS application URL
+   - You'll see the DMS Login page with the application logo
 
 2. **Enter Your Credentials**
 
@@ -128,7 +128,7 @@ Your profile displays:
 - **Automatic Logout**: Sessions expire after inactivity
 - **Token Refresh**: Authentication tokens refresh automatically in the background
 - **Secure Storage**: Session data is stored securely using HTTP-only cookies
-- **Single Sign-On**: One login provides access to all RMS features
+- **Single Sign-On**: One login provides access to all DMS features
 
 ### Managing Multiple Sessions
 
@@ -243,7 +243,7 @@ Your profile displays:
 
 ### Safe Browsing Practices
 
-- **Verify URLs**: Always check you're on the correct RMS domain
+- **Verify URLs**: Always check you're on the correct DMS domain
 - **HTTPS Security**: Ensure the login page uses HTTPS (look for the lock icon)
 - **Keep Browsers Updated**: Use the latest version of your browser
 - **Antivirus Software**: Keep your antivirus software up to date
@@ -267,7 +267,7 @@ A: Your session will automatically expire after the timeout period. For security
 A: This can happen due to session expiration, security policies, or system updates. Simply log in again to continue.
 
 **Q: Is my data secure?**
-A: Yes, RMS uses enterprise-grade security including encrypted connections, secure token storage, and AWS Cognito authentication.
+A: Yes, DMS uses enterprise-grade security including encrypted connections, secure token storage, and AWS Cognito authentication.
 
 **Q: Can I change my email address?**
 A: Contact your system administrator to change your email address, as this typically requires administrative access.
@@ -307,7 +307,7 @@ A: Check for Caps Lock, try typing in a text editor first, or use the "Forgot Pa
 ### Additional Resources
 
 - **System Status**: Check with your administrator for system maintenance schedules
-- **Training**: Ask about additional training resources for the RMS application
+- **Training**: Ask about additional training resources for the DMS application
 - **Documentation**: This user guide and other technical documentation are available in the docs folder
 
 ---

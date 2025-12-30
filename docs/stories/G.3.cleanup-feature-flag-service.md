@@ -17,7 +17,7 @@ Clean up the FeatureFlagsService to remove unused sync feature flag logic while 
 
 ### Files to Modify
 
-- `apps/rms/src/app/shared/services/feature-flags.service.ts`
+- `apps/dms/src/app/shared/services/feature-flags.service.ts`
 - Related test files
 - Any other components that might inject this service
 

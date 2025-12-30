@@ -7,7 +7,7 @@ Approved
 ## Story
 
 **As a** DevOps engineer,
-**I want** to implement comprehensive monitoring, logging, and alerting for the RMS AWS infrastructure and applications,
+**I want** to implement comprehensive monitoring, logging, and alerting for the DMS AWS infrastructure and applications,
 **so that** I can proactively identify issues, track performance metrics, and maintain system reliability with proper observability.
 
 ## Acceptance Criteria
@@ -25,13 +25,13 @@ Approved
 
 - `pnpm format`
 - `pnpm dupcheck`
-- `pnpm nx run rms:test --code-coverage`
+- `pnpm nx run dms:test --code-coverage`
 - `pnpm nx run server:build:production`
 - `pnpm nx run server:test --code-coverage`
 - `pnpm nx run server:lint`
-- `pnpm nx run rms:lint`
-- `pnpm nx run rms:build:production`
-- `pnpm nx run rms-e2e:lint`
+- `pnpm nx run dms:lint`
+- `pnpm nx run dms:build:production`
+- `pnpm nx run dms-e2e:lint`
 
 ## Tasks / Subtasks
 
@@ -159,21 +159,21 @@ Approved
 
 ```hcl
 resource "aws_cloudwatch_log_group" "ecs_application" {
-  name              = "/aws/ecs/rms-backend-${var.environment}"
+  name              = "/aws/ecs/dms-backend-${var.environment}"
   retention_in_days = var.environment == "prod" ? 90 : 7
 
   tags = var.common_tags
 }
 
 resource "aws_cloudwatch_log_group" "alb_access" {
-  name              = "/aws/applicationloadbalancer/rms-alb-${var.environment}"
+  name              = "/aws/applicationloadbalancer/dms-alb-${var.environment}"
   retention_in_days = var.environment == "prod" ? 30 : 7
 
   tags = var.common_tags
 }
 
 resource "aws_cloudwatch_log_group" "rds_performance" {
-  name              = "/aws/rds/instance/rms-postgres-${var.environment}/postgresql"
+  name              = "/aws/rds/instance/dms-postgres-${var.environment}/postgresql"
   retention_in_days = var.environment == "prod" ? 30 : 7
 
   tags = var.common_tags
@@ -211,7 +211,7 @@ export class StructuredLogger {
             timestamp: info.timestamp,
             level: info.level.toUpperCase(),
             message: info.message,
-            service: 'rms-backend',
+            service: 'dms-backend',
             environment: process.env.NODE_ENV || 'development',
             ...context,
             ...info.meta,
@@ -263,7 +263,7 @@ export const logger = new StructuredLogger();
 ```hcl
 # High error rate alarm
 resource "aws_cloudwatch_metric_alarm" "high_error_rate" {
-  alarm_name          = "rms-high-error-rate-${var.environment}"
+  alarm_name          = "dms-high-error-rate-${var.environment}"
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = "2"
   metric_name         = "HTTPCode_Target_5XX_Count"
@@ -285,7 +285,7 @@ resource "aws_cloudwatch_metric_alarm" "high_error_rate" {
 
 # High response time alarm
 resource "aws_cloudwatch_metric_alarm" "high_response_time" {
-  alarm_name          = "rms-high-response-time-${var.environment}"
+  alarm_name          = "dms-high-response-time-${var.environment}"
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = "3"
   metric_name         = "TargetResponseTime"
@@ -307,7 +307,7 @@ resource "aws_cloudwatch_metric_alarm" "high_response_time" {
 
 # ECS service CPU utilization
 resource "aws_cloudwatch_metric_alarm" "ecs_cpu_high" {
-  alarm_name          = "rms-ecs-cpu-high-${var.environment}"
+  alarm_name          = "dms-ecs-cpu-high-${var.environment}"
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = "2"
   metric_name         = "CPUUtilization"
@@ -447,7 +447,7 @@ export const captureDBQuery = (query: string, params?: any[]) => {
 
 ```hcl
 resource "aws_budgets_budget" "monthly_cost" {
-  name         = "rms-monthly-budget-${var.environment}"
+  name         = "dms-monthly-budget-${var.environment}"
   budget_type  = "COST"
   limit_amount = var.environment == "prod" ? "100" : "20"
   limit_unit   = "USD"
@@ -481,7 +481,7 @@ resource "aws_budgets_budget" "monthly_cost" {
 }
 
 resource "aws_ce_anomaly_detector" "cost_anomaly" {
-  name     = "rms-cost-anomaly-${var.environment}"
+  name     = "dms-cost-anomaly-${var.environment}"
   type     = "DIMENSIONAL"
   frequency = "DAILY"
 
@@ -497,7 +497,7 @@ resource "aws_ce_anomaly_detector" "cost_anomaly" {
 
 ```hcl
 resource "aws_sns_topic" "alerts" {
-  name = "rms-alerts-${var.environment}"
+  name = "dms-alerts-${var.environment}"
 
   tags = var.common_tags
 }

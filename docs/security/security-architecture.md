@@ -2,7 +2,7 @@
 
 ## Overview
 
-The RMS application implements comprehensive security hardening and production-ready authentication configurations to protect against common security vulnerabilities and meet enterprise security standards.
+The DMS application implements comprehensive security hardening and production-ready authentication configurations to protect against common security vulnerabilities and meet enterprise security standards.
 
 ## Security Architecture
 
@@ -46,7 +46,7 @@ The RMS application implements comprehensive security hardening and production-r
 
 ### 1. Secure HTTP-only Cookie Authentication
 
-**Location**: `apps/rms/src/app/auth/services/secure-cookie.service.ts`
+**Location**: `apps/dms/src/app/auth/services/secure-cookie.service.ts`
 
 - **HTTP-only cookies**: Prevents XSS attacks by making tokens inaccessible to JavaScript
 - **Secure flag**: Ensures cookies are only sent over HTTPS in production
@@ -164,7 +164,7 @@ Permissions-Policy: geolocation=(), microphone=(), camera=()
 
 ### Production Security Settings
 
-**File**: `apps/rms/src/environments/environment.prod.ts`
+**File**: `apps/dms/src/environments/environment.prod.ts`
 
 ```typescript
 security: {

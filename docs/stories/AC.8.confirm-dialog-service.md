@@ -14,13 +14,13 @@
 
 See the following files created in AB.1:
 
-- `apps/rms-material/src/app/shared/components/confirm-dialog/confirm-dialog.component.ts`
-- `apps/rms-material/src/app/shared/services/confirm-dialog.service.ts`
+- `apps/dms-material/src/app/shared/components/confirm-dialog/confirm-dialog.component.ts`
+- `apps/dms-material/src/app/shared/services/confirm-dialog.service.ts`
 
 ## Features Implemented
 
 - [x] `confirm(data)` - Opens confirmation dialog
-- [x] All GUI look as close to the existing RMS app as possible
+- [x] All GUI look as close to the existing DMS app as possible
 - [x] Customizable title and message
 - [x] Customizable button labels
 - [x] Returns Observable<boolean> with user choice
@@ -48,7 +48,7 @@ this.confirmDialog
 
 **Write tests BEFORE implementation code.**
 
-Create `apps/rms-material/src/app/shared/services/confirm-dialog.service.spec.ts`:
+Create `apps/dms-material/src/app/shared/services/confirm-dialog.service.spec.ts`:
 
 ```typescript
 import { TestBed } from '@angular/core/testing';
@@ -100,7 +100,7 @@ describe('ConfirmDialogService', () => {
 
 ## E2E Test Requirements
 
-When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
+When this story is complete, ensure the following e2e tests exist in `apps/dms-material-e2e/`:
 
 ### Core Functionality
 
@@ -128,7 +128,7 @@ When this story is complete, ensure the following e2e tests exist in `apps/rms-m
 - [ ] Danger/destructive action styling option works
 - [x] Dialog content with HTML is escaped (XSS prevention)
 
-Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.
+Run `pnpm nx run dms-material-e2e:e2e` to verify all e2e tests pass.
 
 ## QA Results
 

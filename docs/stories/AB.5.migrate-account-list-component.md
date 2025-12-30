@@ -10,7 +10,7 @@
 
 **Current System:**
 
-- Location: `apps/rms/src/app/accounts/account.ts`
+- Location: `apps/dms/src/app/accounts/account.ts`
 - PrimeNG components: `p-listbox`, `p-toolbar`, `p-button`
 - Displays list of accounts
 - Selection navigates to account detail
@@ -26,7 +26,7 @@
 ### Functional Requirements
 
 - [ ] Account list displays all user accounts
-- [ ] All GUI look as close to the existing RMS app as possible
+- [ ] All GUI look as close to the existing DMS app as possible
 - [ ] Accounts show name and relevant info
 - [ ] Clicking account navigates to account detail
 - [ ] Current account highlighted
@@ -52,7 +52,7 @@
 
 ### Step 1: Create Unit Tests First
 
-Create `apps/rms-material/src/app/accounts/account.spec.ts`:
+Create `apps/dms-material/src/app/accounts/account.spec.ts`:
 
 ```typescript
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -156,7 +156,7 @@ describe('Account', () => {
 
 **TDD Cycle:**
 
-1. Run `pnpm nx run rms-material:test` - tests should fail (RED)
+1. Run `pnpm nx run dms-material:test` - tests should fail (RED)
 2. Implement minimal code to pass tests (GREEN)
 3. Refactor while keeping tests passing (REFACTOR)
 
@@ -164,7 +164,7 @@ describe('Account', () => {
 
 ### Step 1: Create Account List Component
 
-Create `apps/rms-material/src/app/accounts/account.ts`:
+Create `apps/dms-material/src/app/accounts/account.ts`:
 
 ```typescript
 import { Component, inject, computed } from '@angular/core';
@@ -179,7 +179,7 @@ import { selectAccounts } from '../store/accounts/select-accounts.function';
 import { Account } from '../store/accounts/account.interface';
 
 @Component({
-  selector: 'rms-account',
+  selector: 'dms-account',
   imports: [RouterLink, RouterLinkActive, MatListModule, MatToolbarModule, MatButtonModule, MatIconModule, MatDividerModule],
   templateUrl: './account.html',
   styleUrl: './account.scss',
@@ -205,7 +205,7 @@ export class Account {
 
 ### Step 2: Create Account List Template
 
-Create `apps/rms-material/src/app/accounts/account.html`:
+Create `apps/dms-material/src/app/accounts/account.html`:
 
 ```html
 <div class="accounts-container">
@@ -259,14 +259,14 @@ Create `apps/rms-material/src/app/accounts/account.html`:
 
 ### Step 3: Create Account List Styles
 
-Create `apps/rms-material/src/app/accounts/account.scss`:
+Create `apps/dms-material/src/app/accounts/account.scss`:
 
 ```scss
 .accounts-container {
   height: 100%;
   display: flex;
   flex-direction: column;
-  background-color: var(--rms-surface);
+  background-color: var(--dms-surface);
 }
 
 .accounts-toolbar,
@@ -276,7 +276,7 @@ Create `apps/rms-material/src/app/accounts/account.scss`:
   min-height: 40px;
   padding: 0 16px;
   background-color: transparent;
-  color: var(--rms-text-secondary);
+  color: var(--dms-text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -295,26 +295,26 @@ Create `apps/rms-material/src/app/accounts/account.scss`:
   border-left: 3px solid transparent;
 
   &.active-account {
-    background-color: rgba(var(--rms-primary-500), 0.1);
-    border-left-color: var(--rms-primary-500);
+    background-color: rgba(var(--dms-primary-500), 0.1);
+    border-left-color: var(--dms-primary-500);
   }
 }
 
 .account-description {
   font-size: 0.75rem;
-  color: var(--rms-text-secondary);
+  color: var(--dms-text-secondary);
 }
 
 .empty-message {
-  color: var(--rms-text-secondary);
+  color: var(--dms-text-secondary);
   font-style: italic;
 }
 
 .active-link {
-  background-color: rgba(var(--rms-primary-500), 0.1);
+  background-color: rgba(var(--dms-primary-500), 0.1);
 
   mat-icon {
-    color: var(--rms-primary-500);
+    color: var(--dms-primary-500);
   }
 }
 
@@ -325,7 +325,7 @@ mat-divider {
 
 ### Step 4: Update Routes
 
-Ensure the account list is loaded in the named outlet. Update `apps/rms-material/src/app/app.routes.ts`:
+Ensure the account list is loaded in the named outlet. Update `apps/dms-material/src/app/app.routes.ts`:
 
 ```typescript
 {
@@ -380,7 +380,7 @@ Ensure the account list is loaded in the named outlet. Update `apps/rms-material
 
 ## E2E Test Requirements
 
-When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
+When this story is complete, ensure the following e2e tests exist in `apps/dms-material-e2e/`:
 
 ### Core Functionality
 
@@ -407,4 +407,4 @@ When this story is complete, ensure the following e2e tests exist in `apps/rms-m
 - [ ] Account list correctly filters/sorts when applied
 - [ ] Touch gestures work on mobile for account selection
 
-Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.
+Run `pnpm nx run dms-material-e2e:e2e` to verify all e2e tests pass.

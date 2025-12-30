@@ -38,13 +38,13 @@ Execute all commands from CLAUDE.md in sequence and verify all pass:
 ```bash
 pnpm format
 pnpm dupcheck
-pnpm nx run rms:test --code-coverage
+pnpm nx run dms:test --code-coverage
 pnpm nx run server:build:production
 pnpm nx run server:test --code-coverage
 pnpm nx run server:lint
-pnpm nx run rms:lint
-pnpm nx run rms:build:production
-pnpm nx run rms-e2e:lint
+pnpm nx run dms:lint
+pnpm nx run dms:build:production
+pnpm nx run dms-e2e:lint
 ```
 
 ### Success Criteria
@@ -53,13 +53,13 @@ pnpm nx run rms-e2e:lint
 
   - `pnpm format` - Code formatting passes
   - `pnpm dupcheck` - No duplicate code detected
-  - `pnpm nx run rms:test --code-coverage` - All frontend tests pass
+  - `pnpm nx run dms:test --code-coverage` - All frontend tests pass
   - `pnpm nx run server:build:production` - Backend builds successfully
   - `pnpm nx run server:test --code-coverage` - All backend tests pass (including new Y2 tests)
   - `pnpm nx run server:lint` - Backend linting passes
-  - `pnpm nx run rms:lint` - Frontend linting passes
-  - `pnpm nx run rms:build:production` - Frontend builds successfully
-  - `pnpm nx run rms-e2e:lint` - E2E linting passes
+  - `pnpm nx run dms:lint` - Frontend linting passes
+  - `pnpm nx run dms:build:production` - Frontend builds successfully
+  - `pnpm nx run dms-e2e:lint` - E2E linting passes
 
 - **Manual verification confirms:**
   - Account-specific pie charts display correctly filtered data

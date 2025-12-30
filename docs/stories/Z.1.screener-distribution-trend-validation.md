@@ -53,10 +53,10 @@
   - [x] `pnpm nx run server:build:production`
   - [x] `pnpm nx run server:lint`
   - [x] `pnpm nx run server:test --code-coverage`
-  - [x] `pnpm nx run rms:lint`
-  - [x] `pnpm nx run rms:test --code-coverage`
-  - [x] `pnpm nx run rms:build:production`
-  - [x] `pnpm nx run rms-e2e:lint`
+  - [x] `pnpm nx run dms:lint`
+  - [x] `pnpm nx run dms:test --code-coverage`
+  - [x] `pnpm nx run dms:build:production`
+  - [x] `pnpm nx run dms-e2e:lint`
 
 ### Validation Requirements
 
@@ -268,10 +268,10 @@ export async function getConsistentDistributions(symbol: string): Promise<boolea
 
    - [x] Run `pnpm nx run server:build:production` - verify build succeeds
    - [x] Run `pnpm nx run server:test --code-coverage` - all tests pass
-   - [x] Run `pnpm nx run rms:lint` - frontend lint passes
-   - [x] Run `pnpm nx run rms:test --code-coverage` - frontend tests pass
-   - [x] Run `pnpm nx run rms:build:production` - frontend build succeeds
-   - [x] Run `pnpm nx run rms-e2e:lint` - e2e lint passes
+   - [x] Run `pnpm nx run dms:lint` - frontend lint passes
+   - [x] Run `pnpm nx run dms:test --code-coverage` - frontend tests pass
+   - [x] Run `pnpm nx run dms:build:production` - frontend build succeeds
+   - [x] Run `pnpm nx run dms-e2e:lint` - e2e lint passes
 
 3. **Manual Verification**
    - [ ] Test with symbols known to have declining distributions
@@ -368,17 +368,17 @@ export async function getConsistentDistributions(symbol: string): Promise<boolea
   - ✅ `pnpm format` - No formatting issues
   - ✅ `pnpm dupcheck` - 0 duplicates found
   - ✅ `pnpm nx run server:lint` - All files pass
-  - ✅ `pnpm nx run rms:lint` - All files pass
-  - ✅ `pnpm nx run rms-e2e:lint` - All files pass
+  - ✅ `pnpm nx run dms:lint` - All files pass
+  - ✅ `pnpm nx run dms-e2e:lint` - All files pass
 
 - ✅ All builds succeed
 
   - ✅ `pnpm nx run server:build:production` - Build successful
-  - ✅ `pnpm nx run rms:build:production` - Build successful
+  - ✅ `pnpm nx run dms:build:production` - Build successful
 
 - ✅ All tests pass
   - ✅ `pnpm nx run server:test --code-coverage` - 237 tests passed
-  - ✅ `pnpm nx run rms:test --code-coverage` - 625 tests passed
+  - ✅ `pnpm nx run dms:test --code-coverage` - 625 tests passed
 
 ### User Impact Success Criteria
 

@@ -7,7 +7,7 @@ const { chromium } = require('./node_modules/playwright');
   });
 
   await page.goto('http://localhost:4201/auth/login');
-  await page.fill('input[type="email"]', 'dev@rms.local');
+  await page.fill('input[type="email"]', 'dev@dms.local');
   await page.fill('input[type="password"]', 'DevPassword123!');
   await page.click('button[type="submit"]');
   await page.waitForTimeout(2000);
@@ -16,7 +16,7 @@ const { chromium } = require('./node_modules/playwright');
   await page.waitForTimeout(2000);
 
   const metrics = await page.evaluate(() => {
-    const summary = document.querySelector('rms-summary');
+    const summary = document.querySelector('dms-summary');
     const tabPanel = document.querySelector('mat-tab-nav-panel');
     const outerDiv = summary?.querySelector('.flex');
 
@@ -29,7 +29,7 @@ const { chromium } = require('./node_modules/playwright');
   });
 
   console.log(JSON.stringify(metrics, null, 2));
-  await page.screenshot({ path: '/tmp/rms-ui.png' });
+  await page.screenshot({ path: '/tmp/dms-ui.png' });
   console.log('Screenshot saved');
 
   await browser.close();

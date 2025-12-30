@@ -22,7 +22,7 @@ risk_summary:
     must_fix: []
     monitor:
       - 'Implement e2e tests when child components are integrated'
-      - 'Verify GUI matches existing RMS app during integration testing'
+      - 'Verify GUI matches existing DMS app during integration testing'
 
 # Quality highlights
 quality_highlights:

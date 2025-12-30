@@ -2,7 +2,7 @@
 
 ## Epic Goal
 
-Enable universe synchronization from screener data in RMS-MATERIAL.
+Enable universe synchronization from screener data in DMS-MATERIAL.
 
 ## Epic Description
 

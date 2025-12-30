@@ -293,13 +293,13 @@ if (!isProperlyOrdered) {
 
 #### Frontend Validation
 
-- ✅ **`pnpm nx run rms:lint`** - All files pass linting
-- ✅ **`pnpm nx run rms:test --code-coverage`** - 625 tests passed
-- ✅ **`pnpm nx run rms:build:production`** - Build successful
+- ✅ **`pnpm nx run dms:lint`** - All files pass linting
+- ✅ **`pnpm nx run dms:test --code-coverage`** - 625 tests passed
+- ✅ **`pnpm nx run dms:build:production`** - Build successful
 
 #### E2E Validation
 
-- ✅ **`pnpm nx run rms-e2e:lint`** - All files pass linting
+- ✅ **`pnpm nx run dms-e2e:lint`** - All files pass linting
 
 ### Test Results Summary
 
@@ -487,14 +487,14 @@ $ pnpm nx run server:test --code-coverage
 ### Frontend
 
 ```bash
-$ pnpm nx run rms:lint
+$ pnpm nx run dms:lint
 ✅ All files pass linting
 
-$ pnpm nx run rms:test --code-coverage
+$ pnpm nx run dms:test --code-coverage
 ✅ Test Files: 46 passed (46)
 ✅ Tests: 625 passed (625)
 
-$ pnpm nx run rms:build:production
+$ pnpm nx run dms:build:production
 ✅ Application bundle generation complete
 ✅ Initial total: 763.99 kB | Estimated transfer size: 189.63 kB
 ```
@@ -502,7 +502,7 @@ $ pnpm nx run rms:build:production
 ### E2E
 
 ```bash
-$ pnpm nx run rms-e2e:lint
+$ pnpm nx run dms-e2e:lint
 ✅ All files pass linting
 ```
 

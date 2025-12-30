@@ -1,13 +1,13 @@
 schema: 1
 story: 'AD.2'
 gate: PASS
-status_reason: 'Implementation correctly mirrors original RMS screener. Uses AC.1 base table, SmartNgRX signals, and has comprehensive unit (25) and E2E (22) tests. All E2E tests verified passing.'
+status_reason: 'Implementation correctly mirrors original DMS screener. Uses AC.1 base table, SmartNgRX signals, and has comprehensive unit (25) and E2E (22) tests. All E2E tests verified passing.'
 reviewer: 'Quinn'
 updated: '2025-12-18T07:45:00Z'
 top_issues:
   - id: 'REQ-001'
     severity: low
-    finding: 'Story mentions frequency filter and add-to-universe which do not exist in original RMS screener'
+    finding: 'Story mentions frequency filter and add-to-universe which do not exist in original DMS screener'
     suggested_action: 'Update story acceptance criteria to match actual original implementation scope'
     status: 'ACKNOWLEDGED - Story spec mismatch, not implementation defect'
   - id: 'TEST-001'
@@ -25,12 +25,12 @@ verification:
   validation_commands:
     - 'pnpm format: PASS'
     - 'pnpm dupcheck: PASS (0 clones)'
-    - 'pnpm nx run rms-material:test: PASS (614 tests)'
-    - 'pnpm nx run rms-material:lint: PASS'
-    - 'pnpm nx run rms-material:build:production: PASS'
-    - 'pnpm nx run rms:test: PASS (625 tests)'
-    - 'pnpm nx run rms:lint: PASS'
-    - 'pnpm nx run rms:build:production: PASS'
+    - 'pnpm nx run dms-material:test: PASS (614 tests)'
+    - 'pnpm nx run dms-material:lint: PASS'
+    - 'pnpm nx run dms-material:build:production: PASS'
+    - 'pnpm nx run dms:test: PASS (625 tests)'
+    - 'pnpm nx run dms:lint: PASS'
+    - 'pnpm nx run dms:build:production: PASS'
     - 'pnpm nx run server:test: PASS (259 tests)'
     - 'pnpm nx run server:lint: PASS'
     - 'pnpm nx run server:build:production: PASS'
@@ -38,7 +38,7 @@ technical_assessment:
   uses_base_table: true
   uses_smartngrx: true
   has_filter_controls: true
-  matches_original_rms: true
+  matches_original_dms: true
   columns_implemented:
     - 'Symbol (with cefconnect.com link)'
     - 'Risk Group'

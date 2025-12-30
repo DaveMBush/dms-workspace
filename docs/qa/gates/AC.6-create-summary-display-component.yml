@@ -46,7 +46,7 @@ evidence:
       - 'Uses ng2-charts with BaseChartDirective'
       - 'Theme-aware colors'
     ac_gaps:
-      - 'GUI visual parity with existing RMS app (not fully verified)'
+      - 'GUI visual parity with existing DMS app (not fully verified)'
       - 'Same data format accepted (implementation differs from original)'
 
 nfr_validation:

@@ -1,8 +1,8 @@
-# RMS to RMS-Material Migration Plan
+# DMS to DMS-Material Migration Plan
 
 ## Executive Summary
 
-This document outlines the complete plan to migrate the RMS frontend application from PrimeNG to Angular Material, creating a new application `rms-material` on port 4201.
+This document outlines the complete plan to migrate the DMS frontend application from PrimeNG to Angular Material, creating a new application `dms-material` on port 4201.
 
 ### Primary Driver
 
@@ -10,11 +10,11 @@ PrimeNG's virtual scrolling with lazy data fetching in tables does not meet requ
 
 ### Scope
 
-- **Full feature parity** with existing RMS application
-- **New application**: `apps/rms-material` (port 4201)
+- **Full feature parity** with existing DMS application
+- **New application**: `apps/dms-material` (port 4201)
 - **Duplicated code**: All services, state management, and utilities copied
 - **Custom theme**: Match current styling with light/dark mode support
-- **Target**: Eventually deprecate and remove `apps/rms`
+- **Target**: Eventually deprecate and remove `apps/dms`
 
 ---
 
@@ -129,7 +129,7 @@ PrimeNG's virtual scrolling with lazy data fetching in tables does not meet requ
 #### Story 0.1: Generate New Application
 
 ```bash
-nx g @nx/angular:application rms-material --directory=apps/rms-material --style=scss --routing=true --prefix=rms
+nx g @nx/angular:application dms-material --directory=apps/dms-material --style=scss --routing=true --prefix=dms
 ```
 
 **Tasks:**
@@ -163,10 +163,10 @@ pnpm add @angular/material @angular/cdk
 
 **Files to create:**
 
-- `apps/rms-material/src/styles.scss`
-- `apps/rms-material/src/themes/_light-theme.scss`
-- `apps/rms-material/src/themes/_dark-theme.scss`
-- `apps/rms-material/src/themes/_theme-variables.scss`
+- `apps/dms-material/src/styles.scss`
+- `apps/dms-material/src/themes/_light-theme.scss`
+- `apps/dms-material/src/themes/_dark-theme.scss`
+- `apps/dms-material/src/themes/_theme-variables.scss`
 
 #### Story 0.4: Copy Core Infrastructure
 
@@ -527,7 +527,7 @@ pnpm add @angular/material @angular/cdk
 ## File Structure
 
 ```
-apps/rms-material/
+apps/dms-material/
 ├── src/
 │   ├── main.ts
 │   ├── styles.scss
@@ -645,7 +645,7 @@ apps/rms-material/
 
 ## Success Criteria
 
-1. All features from RMS work identically in RMS-Material
+1. All features from DMS work identically in DMS-Material
 2. Virtual scrolling with lazy loading works in dividend deposits table
 3. Light/dark theme toggle works correctly
 4. All unit tests pass

@@ -1,0 +1,34 @@
+// Theme color definitions matching PrimeNG Aura theme
+// These CSS custom properties enable dynamic theming
+
+:root {
+  // Primary palette (blue)
+  --dms-primary-50: #eff6ff;
+  --dms-primary-100: #dbeafe;
+  --dms-primary-200: #bfdbfe;
+  --dms-primary-300: #93c5fd;
+  --dms-primary-400: #60a5fa;
+  --dms-primary-500: #3b82f6;
+  --dms-primary-600: #2563eb;
+  --dms-primary-700: #1d4ed8;
+  --dms-primary-800: #1e40af;
+  --dms-primary-900: #1e3a8a;
+
+  // Neutral palette (gray)
+  --dms-neutral-50: #f9fafb;
+  --dms-neutral-100: #f3f4f6;
+  --dms-neutral-200: #e5e7eb;
+  --dms-neutral-300: #d1d5db;
+  --dms-neutral-400: #9ca3af;
+  --dms-neutral-500: #6b7280;
+  --dms-neutral-600: #4b5563;
+  --dms-neutral-700: #374151;
+  --dms-neutral-800: #1f2937;
+  --dms-neutral-900: #111827;
+
+  // Semantic colors
+  --dms-success: #22c55e;
+  --dms-warning: #f59e0b;
+  --dms-error: #ef4444;
+  --dms-info: #3b82f6;
+}

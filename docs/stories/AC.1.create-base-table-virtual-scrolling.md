@@ -30,7 +30,7 @@
 ### Functional Requirements
 
 - [ ] Table renders with virtual scrolling enabled
-- [ ] All GUI look as close to the existing RMS app as possible
+- [ ] All GUI look as close to the existing DMS app as possible
 - [ ] Only visible rows + buffer rendered in DOM
 - [ ] Lazy loading triggers when scrolling near data boundary
 - [ ] Loading indicator shown during data fetch
@@ -61,7 +61,7 @@
 
 ### Step 1: Create Unit Tests First
 
-**VirtualTableDataSource Tests** - `apps/rms-material/src/app/shared/components/base-table/virtual-table-data-source.spec.ts`:
+**VirtualTableDataSource Tests** - `apps/dms-material/src/app/shared/components/base-table/virtual-table-data-source.spec.ts`:
 
 ```typescript
 import { VirtualTableDataSource, LazyLoadEvent } from './virtual-table-data-source';
@@ -114,7 +114,7 @@ describe('VirtualTableDataSource', () => {
 });
 ```
 
-**BaseTableComponent Tests** - `apps/rms-material/src/app/shared/components/base-table/base-table.component.spec.ts`:
+**BaseTableComponent Tests** - `apps/dms-material/src/app/shared/components/base-table/base-table.component.spec.ts`:
 
 ```typescript
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -172,7 +172,7 @@ describe('BaseTableComponent', () => {
 
 **TDD Cycle:**
 
-1. Run `pnpm nx run rms-material:test` - tests should fail (RED)
+1. Run `pnpm nx run dms-material:test` - tests should fail (RED)
 2. Implement minimal code to pass tests (GREEN)
 3. Refactor while keeping tests passing (REFACTOR)
 
@@ -180,7 +180,7 @@ describe('BaseTableComponent', () => {
 
 ### Step 1: Create Virtual Table Data Source
 
-Create `apps/rms-material/src/app/shared/components/base-table/virtual-table-data-source.ts`:
+Create `apps/dms-material/src/app/shared/components/base-table/virtual-table-data-source.ts`:
 
 ```typescript
 import { DataSource, CollectionViewer } from '@angular/cdk/collections';
@@ -295,7 +295,7 @@ export class VirtualTableDataSource<T> extends DataSource<T> {
 
 ### Step 2: Create Base Table Component
 
-Create `apps/rms-material/src/app/shared/components/base-table/base-table.component.ts`:
+Create `apps/dms-material/src/app/shared/components/base-table/base-table.component.ts`:
 
 ```typescript
 import { Component, input, output, contentChildren, AfterContentInit, signal, computed, TemplateRef, ContentChild } from '@angular/core';
@@ -318,7 +318,7 @@ export interface ColumnDef {
 }
 
 @Component({
-  selector: 'rms-base-table',
+  selector: 'dms-base-table',
   imports: [ScrollingModule, MatTableModule, MatSortModule, MatProgressBarModule, MatCheckboxModule],
   templateUrl: './base-table.component.html',
   styleUrl: './base-table.component.scss',
@@ -405,7 +405,7 @@ export class BaseTableComponent<T extends { id: string }> implements AfterConten
 
 ### Step 3: Create Base Table Template
 
-Create `apps/rms-material/src/app/shared/components/base-table/base-table.component.html`:
+Create `apps/dms-material/src/app/shared/components/base-table/base-table.component.html`:
 
 ```html
 <div class="table-container">
@@ -451,7 +451,7 @@ Create `apps/rms-material/src/app/shared/components/base-table/base-table.compon
 
 ### Step 4: Create Base Table Styles
 
-Create `apps/rms-material/src/app/shared/components/base-table/base-table.component.scss`:
+Create `apps/dms-material/src/app/shared/components/base-table/base-table.component.scss`:
 
 ```scss
 .table-container {
@@ -486,13 +486,13 @@ tr.mat-mdc-row {
   }
 
   &.selected {
-    background-color: rgba(var(--rms-primary-500), 0.1);
+    background-color: rgba(var(--dms-primary-500), 0.1);
   }
 }
 
 th.mat-mdc-header-cell {
   font-weight: 600;
-  background-color: var(--rms-surface);
+  background-color: var(--dms-surface);
   position: sticky;
   top: 0;
   z-index: 1;
@@ -551,7 +551,7 @@ export class MyTableComponent implements OnInit {
 
 ## E2E Test Requirements
 
-When this story is complete, ensure the following e2e tests exist in `apps/rms-material-e2e/`:
+When this story is complete, ensure the following e2e tests exist in `apps/dms-material-e2e/`:
 
 ### Core Functionality
 
@@ -600,4 +600,4 @@ When this story is complete, ensure the following e2e tests exist in `apps/rms-m
 - [ ] Focus management correct during lazy load
 - [ ] ARIA attributes updated during virtual scroll
 
-Run `pnpm nx run rms-material-e2e:e2e` to verify all e2e tests pass.
+Run `pnpm nx run dms-material-e2e:e2e` to verify all e2e tests pass.

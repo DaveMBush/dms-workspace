@@ -1,0 +1,40 @@
+<div class="flex flex-col h-full">
+  <!-- Toolbar -->
+  <div class="flex-none p-4 border-b border-gray-200 dark:border-gray-700">
+    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+      Global Summary
+    </h1>
+  </div>
+
+  <!-- Content -->
+  <div class="flex flex-col md:flex-row items-start p-8 w-full flex-1 gap-8">
+    <!-- Left: Dropdown, stats, pie chart -->
+    <div class="flex flex-col items-start w-full md:w-1/2 max-w-md">
+      <div class="mb-4">
+        <p-select
+          [options]="months$()"
+          [(ngModel)]="selectedMonth"
+          placeholder="Select Month"
+          class="w-48"
+          styleClass="w-48"
+        ></p-select>
+      </div>
+      <dms-summary-display
+        [summary]="summary$()"
+        [compositionData]="compositionData$()"
+        [compositionOptions]="compositionOptions"
+      >
+      </dms-summary-display>
+    </div>
+    <!-- Right: Line chart -->
+    <div class="flex-1 w-full h-full">
+      <p-chart
+        type="line"
+        [data]="lineChartData$()"
+        [options]="lineChartOptions"
+        [height]="'100%'"
+        [width]="'100%'"
+      ></p-chart>
+    </div>
+  </div>
+</div>
