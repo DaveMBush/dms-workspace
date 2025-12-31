@@ -12,7 +12,9 @@ describe.skip('OptimizedPrismaClient', () => {
 
   beforeAll(async () => {
     // Create test client for comparison
-    const adapter = new PrismaBetterSqlite3({ url: 'file:./test-optimized-integration.db' });
+    const adapter = new PrismaBetterSqlite3({
+      url: 'file:./test-optimized-integration.db',
+    });
     testClient = new PrismaClient({ adapter });
 
     await testClient.$connect();

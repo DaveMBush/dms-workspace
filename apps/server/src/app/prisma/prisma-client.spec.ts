@@ -56,7 +56,9 @@ describe('Prisma Client - PostgreSQL', () => {
       // This test would be more appropriate for PostgreSQL or other network-based databases.
 
       // Create a new Prisma client with invalid URL
-      const adapter = new PrismaBetterSqlite3({ url: 'file:./invalid-test.db' });
+      const adapter = new PrismaBetterSqlite3({
+        url: 'file:./invalid-test.db',
+      });
       const invalidClient = new PrismaClient({
         adapter,
         log: [],
@@ -89,7 +91,9 @@ describe('Prisma Client - PostgreSQL', () => {
         maxRetries: number = 5,
         baseDelay: number = 1000
       ): Promise<void> => {
-        const adapter = new PrismaBetterSqlite3({ url: 'file:./invalid-retry-test.db' });
+        const adapter = new PrismaBetterSqlite3({
+          url: 'file:./invalid-retry-test.db',
+        });
         const invalidClient = new PrismaClient({
           adapter,
           log: [],

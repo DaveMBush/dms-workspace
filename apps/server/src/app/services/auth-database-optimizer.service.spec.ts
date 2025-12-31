@@ -450,7 +450,9 @@ describe('AuthDatabaseOptimizerService', () => {
   describe('error handling', () => {
     it('should handle database connection errors gracefully', async () => {
       // Create a client that will fail
-      const failAdapter = new PrismaBetterSqlite3({ url: 'file:./nonexistent-path/test.db' });
+      const failAdapter = new PrismaBetterSqlite3({
+        url: 'file:./nonexistent-path/test.db',
+      });
       const failingClient = new PrismaClient({ adapter: failAdapter });
 
       await expect(

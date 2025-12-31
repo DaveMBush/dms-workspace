@@ -8,7 +8,9 @@ describe.skip('DatabasePerformanceService', () => {
 
   beforeAll(async () => {
     // Create test database client
-    const adapter = new PrismaBetterSqlite3({ url: 'file:./test-performance.db' });
+    const adapter = new PrismaBetterSqlite3({
+      url: 'file:./test-performance.db',
+    });
     testClient = new PrismaClient({ adapter });
 
     // Ensure database is connected and migrated
