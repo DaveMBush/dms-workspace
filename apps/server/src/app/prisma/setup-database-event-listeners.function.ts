@@ -15,7 +15,7 @@ export function setupDatabaseEventListeners(
     // Cast to ClientWithEvents to enable event listeners
     // Prisma 7 with adapters has type issues with $on
     const eventClient = client as unknown as ClientWithEvents;
-    
+
     eventClient.$on('query', function handleQueryEvent(e: QueryEvent): void {
       const duration = e.duration;
       if (duration > 50 && isDevelopment) {
