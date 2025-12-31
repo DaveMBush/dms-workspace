@@ -9,35 +9,44 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 import { AuthService } from '../auth.service';
 import { Login } from './login';
+import { GlobalLoadingService } from '../../shared/services/global-loading.service';
 
 // Mock AuthService
 const createMockAuthService = () => ({
-  signIn: vi.fn(),
+  signIn: vi.fn().mockResolvedValue(undefined),
+  signInWithRememberMe: vi.fn().mockResolvedValue(undefined),
   isLoading: signal(false),
   error: signal(null),
   clearError: vi.fn(),
 });
 
-// Mock Router
-const mockRouter = {
-  navigate: vi.fn(),
-};
+// Mock Router - must use function implementation for proper spying
+const createMockRouter = () => ({
+  navigate: vi
+    .fn()
+    .mockImplementation((commands: any[]) => Promise.resolve(true)),
+});
 
-// Mock URLSearchParams for returnUrl testing
-global.URLSearchParams = vi.fn().mockImplementation((search) => ({
-  get: vi.fn((key) => (key === 'returnUrl' && search ? '/dashboard' : null)),
-}));
+// Mock GlobalLoadingService
+const createMockGlobalLoadingService = () => ({
+  show: vi.fn(),
+  hide: vi.fn(),
+});
 
 describe('Login Component', () => {
   let component: Login;
   let fixture: ComponentFixture<Login>;
   let mockAuthService: ReturnType<typeof createMockAuthService>;
+  let mockRouter: ReturnType<typeof createMockRouter>;
+  let mockGlobalLoadingService: ReturnType<
+    typeof createMockGlobalLoadingService
+  >;
   let router: Router;
 
   beforeEach(async () => {
     mockAuthService = createMockAuthService();
-    // Reset router mock
-    mockRouter.navigate.mockClear();
+    mockRouter = createMockRouter();
+    mockGlobalLoadingService = createMockGlobalLoadingService();
 
     await TestBed.configureTestingModule({
       imports: [Login, ReactiveFormsModule, NoopAnimationsModule],
@@ -45,6 +54,7 @@ describe('Login Component', () => {
         FormBuilder,
         { provide: AuthService, useValue: mockAuthService },
         { provide: Router, useValue: mockRouter },
+        { provide: GlobalLoadingService, useValue: mockGlobalLoadingService },
       ],
     }).compileComponents();
 
@@ -252,11 +262,8 @@ describe('Login Component', () => {
     });
 
     it('should navigate to return URL after successful login when provided', async () => {
-      // Mock URLSearchParams to return dashboard URL
-      const mockURLSearchParams = vi.fn().mockImplementation(() => ({
-        get: vi.fn((key) => (key === 'returnUrl' ? '/dashboard' : null)),
-      }));
-      vi.stubGlobal('URLSearchParams', mockURLSearchParams);
+      // Use history API to set query params
+      window.history.replaceState({}, '', '?returnUrl=%2Fdashboard');
 
       mockAuthService.signIn.mockResolvedValue(undefined);
 
@@ -264,8 +271,8 @@ describe('Login Component', () => {
 
       expect(mockRouter.navigate).toHaveBeenCalledWith(['/dashboard']);
 
-      // Restore URLSearchParams
-      vi.unstubAllGlobals();
+      // Clean up: reset location
+      window.history.replaceState({}, '', '');
     });
 
     it('should set loading state during form submission', async () => {

@@ -80,5 +80,6 @@ export async function getConsistentDistributions(
 
   const recentExDates = uniqueDistributions.slice(-3);
 
-  return !hasDecliningTrend(recentExDates);
+  const consistent = !hasDecliningTrend(recentExDates);
+  return consistent;
 }

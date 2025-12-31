@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -28,7 +27,6 @@ import { LoginFormData } from '../auth.types';
 
 @Component({
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     ButtonModule,
     CheckboxModule,

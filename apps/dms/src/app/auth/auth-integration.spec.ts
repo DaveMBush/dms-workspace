@@ -41,6 +41,13 @@ describe('Authentication Integration', () => {
   let location: Location;
   let httpMock: HttpTestingController;
 
+  // Helper function to wait for navigation to complete
+  const navigateAndWait = async (commands: any[], extras?: any) => {
+    await router.navigate(commands, extras);
+    // Wait for microtasks to resolve
+    await new Promise((resolve) => setTimeout(resolve, 0));
+  };
+
   const mockRoutes = [
     {
       path: 'auth/login',
@@ -82,6 +89,9 @@ describe('Authentication Integration', () => {
     location = TestBed.inject(Location);
     httpMock = TestBed.inject(HttpTestingController);
 
+    // Initialize router
+    router.initialNavigation();
+
     // Mock Amplify methods
     vi.spyOn(authService, 'isAuthenticated').mockReturnValue(false);
     vi.spyOn(authService, 'isSessionValid').mockResolvedValue(false);
@@ -101,7 +111,7 @@ describe('Authentication Integration', () => {
     it('should redirect unauthenticated user to login when accessing protected route', async () => {
       vi.spyOn(authService, 'isAuthenticated').mockReturnValue(false);
 
-      await router.navigate(['/protected']);
+      await navigateAndWait(['/protected']);
 
       expect(location.path()).toBe('/auth/login?returnUrl=%2Fprotected');
     });
@@ -155,7 +165,7 @@ describe('Authentication Integration', () => {
     it('should preserve complex return URLs with query params', async () => {
       vi.spyOn(authService, 'isAuthenticated').mockReturnValue(false);
 
-      await router.navigate(['/protected'], {
+      await navigateAndWait(['/protected'], {
         queryParams: { tab: 'details', filter: 'active' },
         fragment: 'section1',
       });
@@ -205,9 +215,12 @@ describe('Authentication Integration', () => {
       router = TestBed.inject(Router);
       location = TestBed.inject(Location);
 
+      // Initialize router
+      router.initialNavigation();
+
       vi.spyOn(authService, 'isAuthenticated').mockReturnValue(false);
 
-      await router.navigate(['/app/dashboard']);
+      await navigateAndWait(['/app/dashboard']);
 
       expect(location.path()).toBe('/auth/login?returnUrl=%2Fapp%2Fdashboard');
     });
@@ -259,7 +272,7 @@ describe('Authentication Integration', () => {
       });
 
       // Should not throw and should redirect to login
-      await router.navigate(['/protected']);
+      await navigateAndWait(['/protected']);
 
       expect(location.path()).toBe('/auth/login?returnUrl=%2Fprotected');
     });
@@ -299,14 +312,14 @@ describe('Authentication Integration', () => {
       vi.spyOn(authService, 'isSessionValid').mockResolvedValue(true);
 
       // First navigation - not authenticated
-      await router.navigate(['/protected']);
+      await navigateAndWait(['/protected']);
       expect(location.path()).toBe('/auth/login?returnUrl=%2Fprotected');
 
       // User logs in (simulate authentication state change)
       isAuthenticated = true;
 
       // Second navigation - now authenticated
-      await router.navigate(['/protected']);
+      await navigateAndWait(['/protected']);
       expect(location.path()).toBe('/protected');
     });
   });

@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -25,7 +24,6 @@ import { LogFilters } from './log-filters.interface';
   selector: 'dms-global-error-logs',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     TableModule,
     PaginatorModule,

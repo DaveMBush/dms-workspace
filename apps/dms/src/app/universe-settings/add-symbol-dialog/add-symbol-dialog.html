@@ -41,12 +41,9 @@
       />
     </div>
 
-    <p-message
-      *ngIf="errorMessage()"
-      severity="error"
-      [text]="errorMessage()!"
-      class="w-full"
-    />
+    @if (errorMessage()) {
+    <p-message severity="error" [text]="errorMessage()!" class="w-full" />
+    }
   </div>
 
   <ng-template #footer>

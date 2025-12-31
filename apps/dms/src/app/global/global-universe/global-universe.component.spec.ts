@@ -411,7 +411,6 @@ describe('GlobalUniverseComponent Toast Notifications', () => {
       // Wait for the observable to complete by checking if the spy was called
       expect(syncFromScreenerSpy).toHaveBeenCalled();
 
-      // eslint-disable-next-line @typescript-eslint/unbound-method -- Test spy access
       expect(component.messageService.add).toHaveBeenCalledWith(
         expect.objectContaining({
           severity: 'success',
@@ -429,7 +428,6 @@ describe('GlobalUniverseComponent Toast Notifications', () => {
 
       component.syncUniverse();
 
-      // eslint-disable-next-line @typescript-eslint/unbound-method -- Test spy access
       expect(component.messageService.add).toHaveBeenCalledWith(
         expect.objectContaining({
           severity: 'error',
@@ -449,10 +447,9 @@ describe('GlobalUniverseComponent Toast Notifications', () => {
       component.updateFields();
 
       // Verify that updateFields service method was called
-      // eslint-disable-next-line @typescript-eslint/unbound-method -- Test spy access
+
       expect(updateUniverseService.updateFields).toHaveBeenCalled();
 
-      // eslint-disable-next-line @typescript-eslint/unbound-method -- Test spy access
       expect(component.messageService.add).toHaveBeenCalledWith(
         expect.objectContaining({
           severity: 'success',
@@ -470,7 +467,6 @@ describe('GlobalUniverseComponent Toast Notifications', () => {
 
       component.updateFields();
 
-      // eslint-disable-next-line @typescript-eslint/unbound-method -- Test spy access
       expect(component.messageService.add).toHaveBeenCalledWith(
         expect.objectContaining({
           severity: 'error',

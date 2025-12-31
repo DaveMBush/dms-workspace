@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/unbound-method -- Test mocking requires unbound methods */
 import { describe, it, expect, beforeEach, vi, Mock } from 'vitest';
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { tracingMiddleware, captureDBQuery, captureHTTPCall } from './tracing';

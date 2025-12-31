@@ -136,7 +136,7 @@ describe('PasswordChangeCard', () => {
     const submitPromise = component.onSubmit();
     expect(component.isLoading()).toBe(true);
 
-    resolvePromise!(undefined);
+    resolvePromise(undefined);
     await submitPromise;
     expect(component.isLoading()).toBe(false);
   });

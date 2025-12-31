@@ -109,6 +109,7 @@ describe('Top Route Handler', () => {
 
   afterEach(() => {
     vi.restoreAllMocks();
+    vi.resetModules();
   });
 
   describe('POST / - Risk Group Validation', () => {

@@ -78,7 +78,7 @@ export class MockProfileService extends BaseProfileService {
       setTimeout(resolve, 600);
     });
 
-    if (!verificationCode || verificationCode.length !== 6) {
+    if (verificationCode?.length !== 6) {
       throw new Error('Please enter a valid 6-digit verification code');
     }
 
@@ -124,7 +124,7 @@ export class MockProfileService extends BaseProfileService {
       throw new Error('Invalid email address');
     }
 
-    if (!confirmationCode || confirmationCode.length !== 6) {
+    if (confirmationCode?.length !== 6) {
       throw new Error('Please enter a valid 6-digit confirmation code');
     }
 

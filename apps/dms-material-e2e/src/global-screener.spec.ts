@@ -121,10 +121,14 @@ test.describe('Global Screener Component', () => {
       const filterSelect = page.locator('.header-filter mat-select').first();
       // First select Equities
       await filterSelect.click();
+      await page.waitForTimeout(300); // Wait for dropdown animation
       await page.getByRole('option', { name: 'Equities' }).click();
+      await page.waitForTimeout(500); // Wait for selection to apply
       // Then select All to clear
       await filterSelect.click();
+      await page.waitForTimeout(300); // Wait for dropdown animation
       await page.getByRole('option', { name: 'All' }).click();
+      await page.waitForTimeout(500); // Wait for selection to apply
       // Should show placeholder or All
       await expect(filterSelect).toBeVisible();
     });
@@ -203,15 +207,21 @@ test.describe('Global Screener Component', () => {
     test('should handle multiple rapid filter changes', async ({ page }) => {
       const filterSelect = page.locator('.header-filter mat-select').first();
 
-      // Rapidly change filters
+      // Rapidly change filters with minimal waits to test robustness
       await filterSelect.click();
+      await page.waitForTimeout(200); // Minimal wait for dropdown
       await page.getByRole('option', { name: 'Equities' }).click();
+      await page.waitForTimeout(300); // Minimal wait for filter application
 
       await filterSelect.click();
+      await page.waitForTimeout(200);
       await page.getByRole('option', { name: 'Income', exact: true }).click();
+      await page.waitForTimeout(300);
 
       await filterSelect.click();
+      await page.waitForTimeout(200);
       await page.getByRole('option', { name: 'All' }).click();
+      await page.waitForTimeout(500); // Final wait for stabilization
 
       // Component should still be functional
       await expect(page.locator('.screener-container')).toBeVisible();

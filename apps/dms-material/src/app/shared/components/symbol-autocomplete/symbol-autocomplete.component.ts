@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -24,7 +23,6 @@ import { SymbolOption } from './symbol-option.interface';
     MatInputModule,
     MatProgressSpinnerModule,
     ReactiveFormsModule,
-    CommonModule,
   ],
   selector: 'dms-symbol-autocomplete',
   standalone: true,
@@ -69,15 +67,31 @@ export class SymbolAutocompleteComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const context = this;
+    const self = this;
+    function filterFn(value: string | null): boolean {
+      return self.filterMinLength(value);
+    }
+    function setLoadingFn(): void {
+      self.setLoading();
+    }
+    async function doSearchFn(value: string | null): Promise<SymbolOption[]> {
+      if (value === null) {
+        return Promise.resolve([]);
+      }
+      return self.doSearch(value);
+    }
+    function handleResultsFn(results: SymbolOption[]): void {
+      self.handleSearchResults(results);
+    }
+
     this.searchControl.valueChanges
       .pipe(
         debounceTime(300),
-        filter(this.filterMinLength.bind(context)),
-        tap(this.setLoading.bind(context)),
-        switchMap(this.doSearch.bind(context))
+        filter(filterFn),
+        tap(setLoadingFn),
+        switchMap(doSearchFn)
       )
-      .subscribe(this.handleSearchResults.bind(context));
+      .subscribe(handleResultsFn);
   }
 
   computeLabelValue(): string {

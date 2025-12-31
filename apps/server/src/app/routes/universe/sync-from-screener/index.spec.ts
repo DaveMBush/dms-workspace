@@ -52,7 +52,9 @@ const mockLogger = {
 };
 
 vi.mock('../../../../utils/logger', () => ({
-  SyncLogger: vi.fn(() => mockLogger),
+  SyncLogger: vi.fn().mockImplementation(function (this: any) {
+    Object.assign(this, mockLogger);
+  }),
 }));
 
 vi.mock('../../../prisma/prisma-client', () => ({
