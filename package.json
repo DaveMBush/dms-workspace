@@ -73,7 +73,7 @@
     "@ngrx/eslint-plugin": "19.2.0",
     "@ngrx/signals": "19.2.1",
     "@nx/angular": "21.4.1",
-    "@nx/devkit": "21.4.1",
+    "@nx/devkit": "22.3.3",
     "@nx/esbuild": "21.4.1",
     "@nx/eslint": "21.4.1",
     "@nx/eslint-plugin": "21.4.1",
