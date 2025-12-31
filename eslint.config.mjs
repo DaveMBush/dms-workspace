@@ -836,14 +836,7 @@ const eslintConfig = async () => {
         'sonarjs/deprecation': 'off',
       },
     },
-    {
-      // Turn off problematic rules for server source files
-      files: ['apps/server/**/*.ts'],
-      ignores: ['**/*.spec.ts', '**/*.test.ts'],
-      rules: {
-        '@typescript-eslint/return-await': 'off', // False positives with async functions returning non-promise values
-      },
-    },
+
     {
       files: ['**/*.routes.ts'],
       rules: {

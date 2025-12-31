@@ -80,6 +80,6 @@ export async function getConsistentDistributions(
 
   const recentExDates = uniqueDistributions.slice(-3);
 
-  // eslint-disable-next-line @typescript-eslint/return-await -- Async function returning boolean value
-  return !hasDecliningTrend(recentExDates);
+  const consistent = !hasDecliningTrend(recentExDates);
+  return consistent;
 }

@@ -23,10 +23,5 @@ export async function applySecurityValidation(
   }
 
   // Validate CSRF token
-  const isCSRFValid = await validateCSRFToken(request, reply);
-
-  // Return the result directly - if CSRF is valid (true), validations passed (false blocked)
-  // If CSRF is invalid (false), request is blocked (true blocked)
-  // eslint-disable-next-line @typescript-eslint/return-await -- Async function returning boolean value
-  return !isCSRFValid;
+  return validateCSRFToken(request, reply);
 }
