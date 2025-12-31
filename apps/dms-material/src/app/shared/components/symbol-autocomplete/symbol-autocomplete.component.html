@@ -7,17 +7,19 @@
     [placeholder]="placeholderValue"
     aria-label="Symbol search"
   />
-  <mat-spinner *ngIf="isLoadingValue" matSuffix diameter="20"></mat-spinner>
+  @if (isLoadingValue) {
+  <mat-spinner matSuffix diameter="20"></mat-spinner>
+  }
   <mat-autocomplete
     #auto="matAutocomplete"
     [displayWith]="displayFnRef"
     (optionSelected)="onOptionSelected($event.option.value)"
   >
-    <mat-option
-      *ngFor="let option of filteredOptionsValue; trackBy: trackBySymbol"
-      [value]="option"
-    >
+    <!-- eslint-disable-next-line @angular-eslint/template/no-call-expression -- trackBy function is standard Angular pattern -->
+    @for (option of filteredOptionsValue; track trackBySymbol($index, option)) {
+    <mat-option [value]="option">
       <strong>{{ option.symbol }}</strong> - {{ option.name }}
     </mat-option>
+    }
   </mat-autocomplete>
 </mat-form-field>

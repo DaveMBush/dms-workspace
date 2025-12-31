@@ -12,7 +12,8 @@ test.describe('Global Error Logs Component', () => {
   test.describe('Core Functionality', () => {
     test('should display error logs page', async ({ page }) => {
       const errorCard = page.locator('mat-card');
-      await expect(errorCard).toBeVisible();
+      await errorCard.waitFor({ state: 'attached' });
+      await expect(errorCard).toBeVisible({ timeout: 10000 });
     });
 
     test('should display page title', async ({ page }) => {

@@ -1,26 +1,25 @@
-<ng-container *ngIf="editing; else display">
-  <mat-form-field appearance="outline" class="edit-field">
-    <input
-      matInput
-      [matDatepicker]="picker"
-      [(ngModel)]="editValue"
-      (blur)="onBlur()"
-      placeholder="Date"
-      aria-label="Edit date"
-    />
-    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-    <mat-datepicker #picker (closed)="onPickerClosed()"></mat-datepicker>
-  </mat-form-field>
-</ng-container>
-<ng-template #display>
-  <span
-    class="display-value"
-    role="button"
-    tabindex="0"
-    (click)="startEdit()"
-    (keydown.enter)="startEdit()"
-    (keydown.space)="startEdit()"
-  >
-    {{ value ? (value | date : dateFormat) : '' }}
-  </span>
-</ng-template>
+@if (editing) {
+<mat-form-field appearance="outline" class="edit-field">
+  <input
+    matInput
+    [matDatepicker]="picker"
+    [(ngModel)]="editValue"
+    (blur)="onBlur()"
+    placeholder="Date"
+    aria-label="Edit date"
+  />
+  <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+  <mat-datepicker #picker (closed)="onPickerClosed()"></mat-datepicker>
+</mat-form-field>
+} @else {
+<span
+  class="display-value"
+  role="button"
+  tabindex="0"
+  (click)="startEdit()"
+  (keydown.enter)="startEdit()"
+  (keydown.space)="startEdit()"
+>
+  {{ value ? (value | date : dateFormat) : '' }}
+</span>
+}

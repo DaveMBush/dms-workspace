@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -15,7 +14,7 @@ import { selectCurrentAccountSignal } from '../store/current-account/select-curr
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'dms-account-panel',
   standalone: true,
-  imports: [CommonModule, ToolbarModule, RouterModule],
+  imports: [ToolbarModule, RouterModule],
   templateUrl: './account-panel.component.html',
   styleUrls: ['./account-panel.component.scss'],
 })

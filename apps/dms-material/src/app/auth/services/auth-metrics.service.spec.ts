@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/unbound-method -- Required for Vitest mocking in tests */
 import { TestBed } from '@angular/core/testing';
 import { firstValueFrom } from 'rxjs';
 import { vi } from 'vitest';

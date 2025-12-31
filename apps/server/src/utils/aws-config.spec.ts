@@ -2,28 +2,21 @@ import { AwsConfigManager, validateEnvironmentVariables } from './aws-config';
 import { vi, beforeEach, afterEach, describe, it, expect } from 'vitest';
 
 // Mock AWS SDK with factory functions to avoid hoisting issues
-vi.mock('@aws-sdk/client-ssm', () => {
+const { mockSend, mockSSMClient, mockGetParametersCommand } = vi.hoisted(() => {
   const mockSend = vi.fn();
-  const mockSSMClient = vi.fn().mockImplementation(() => ({ send: mockSend }));
+  const mockSSMClient = vi.fn().mockImplementation(function (this: any) {
+    this.send = mockSend;
+  });
   const mockGetParametersCommand = vi.fn();
 
-  return {
-    SSMClient: mockSSMClient,
-    GetParameterCommand: vi.fn(),
-    GetParametersCommand: mockGetParametersCommand,
-    // Export mocks for test access
-    __mockSend: mockSend,
-    __mockSSMClient: mockSSMClient,
-    __mockGetParametersCommand: mockGetParametersCommand,
-  };
+  return { mockSend, mockSSMClient, mockGetParametersCommand };
 });
 
-// Import mocks after vi.mock call
-import {
-  __mockSend as mockSend,
-  __mockSSMClient as mockSSMClient,
-  __mockGetParametersCommand as mockGetParametersCommand,
-} from '@aws-sdk/client-ssm';
+vi.mock('@aws-sdk/client-ssm', () => ({
+  SSMClient: mockSSMClient,
+  GetParameterCommand: vi.fn(),
+  GetParametersCommand: mockGetParametersCommand,
+}));
 
 describe('AWS Configuration', () => {
   let originalEnv: NodeJS.ProcessEnv;

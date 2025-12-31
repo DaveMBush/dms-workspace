@@ -11,12 +11,13 @@
         class="w-full"
         placeholder="Enter new email address"
       />
-      <small *ngIf="isNewEmailInvalid$()" class="text-red-500">
-        Please enter a valid email address
-      </small>
+      @if (isNewEmailInvalid$()) {
+      <small class="text-red-500"> Please enter a valid email address </small>
+      }
     </div>
 
-    <div *ngIf="showEmailVerification$()" class="field mb-3">
+    @if (showEmailVerification$()) {
+    <div class="field mb-3">
       <label for="verificationCode" class="block text-900 font-medium mb-2">
         Verification Code <span class="text-red-500">*</span>
       </label>
@@ -28,28 +29,27 @@
         placeholder="Enter verification code from email"
       />
     </div>
+    }
 
     <div class="flex gap-2">
-      <ng-container *ngIf="!showEmailVerification$()">
-        <p-button
-          label="Update Email"
-          icon="pi pi-envelope"
-          styleClass="flex-1"
-          [disabled]="isEmailFormDisabled$()"
-          [loading]="isSubmitting$()"
-          (onClick)="onChangeEmail()"
-        ></p-button>
-      </ng-container>
-
-      <ng-container *ngIf="showEmailVerification$()">
-        <p-button
-          label="Verify Email"
-          icon="pi pi-check"
-          styleClass="flex-1"
-          [disabled]="isVerificationCodeEmpty$()"
-          (onClick)="onVerifyEmail()"
-        ></p-button>
-      </ng-container>
+      @if (!showEmailVerification$()) {
+      <p-button
+        label="Update Email"
+        icon="pi pi-envelope"
+        styleClass="flex-1"
+        [disabled]="isEmailFormDisabled$()"
+        [loading]="isSubmitting$()"
+        (onClick)="onChangeEmail()"
+      ></p-button>
+      } @if (showEmailVerification$()) {
+      <p-button
+        label="Verify Email"
+        icon="pi pi-check"
+        styleClass="flex-1"
+        [disabled]="isVerificationCodeEmpty$()"
+        (onClick)="onVerifyEmail()"
+      ></p-button>
+      }
     </div>
   </form>
 </p-card>

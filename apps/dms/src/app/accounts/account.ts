@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -26,7 +25,6 @@ import { AccountComponentService } from './account-component.service';
 
 @Component({
   imports: [
-    CommonModule,
     ButtonModule,
     FormsModule,
     NodeEditorComponent,

@@ -666,12 +666,13 @@ const eslintConfig = async () => {
           '@typescript-eslint/switch-exhaustiveness-check': 'error',
           '@typescript-eslint/triple-slash-reference': 'error',
           '@typescript-eslint/typedef': 'error',
-          '@typescript-eslint/unbound-method': [
-            'error',
-            {
-              ignoreStatic: true,
-            },
-          ],
+          // Disabled due to ESLint crash bug with array methods in typescript-eslint 8.51.0
+          // '@typescript-eslint/unbound-method': [
+          //   'error',
+          //   {
+          //     ignoreStatic: true,
+          //   },
+          // ],
           '@typescript-eslint/unified-signatures': [
             'error',
             {
@@ -800,12 +801,47 @@ const eslintConfig = async () => {
       },
     },
     {
-      // we are going to remove dms anyhow so turn off
-      // these deprecation warnings for now
+      // Turn off deprecation warnings for dms app only (being deprecated)
       files: ['**/apps/dms/**/*.ts'],
       rules: {
         '@typescript-eslint/no-deprecated': 'off',
         'sonarjs/deprecation': 'off',
+      },
+    },
+    {
+      // Disable RxJS deprecation false positives in dms-material
+      // The typescript-eslint plugin incorrectly flags RxJS operators as using deprecated
+      // overloads even when they're not. These are false positives from RxJS 7's type definitions
+      // that mark certain overloads as deprecated for RxJS 8, but our code doesn't use those overloads.
+      // When upgrading to RxJS 8, re-enable this rule to catch real deprecations.
+      files: ['**/apps/dms-material/src/**/*.ts'],
+      ignores: ['**/*.spec.ts'],
+      rules: {
+        '@typescript-eslint/no-deprecated': 'off',
+      },
+    },
+    {
+      // Turn off false positive RxJS deprecation warnings in test files
+      // These are false positives from typescript-eslint detecting RxJS internal deprecations
+      files: ['**/apps/dms-material/**/*.spec.ts'],
+      rules: {
+        '@typescript-eslint/no-deprecated': 'off',
+      },
+    },
+    {
+      // Turn off deprecation warnings for e2e projects
+      files: ['**/apps/dms-material-e2e/**/*.ts', '**/apps/dms-e2e/**/*.ts'],
+      rules: {
+        '@typescript-eslint/no-deprecated': 'off',
+        'sonarjs/deprecation': 'off',
+      },
+    },
+    {
+      // Turn off problematic rules for server source files
+      files: ['apps/server/**/*.ts'],
+      ignores: ['**/*.spec.ts', '**/*.test.ts'],
+      rules: {
+        '@typescript-eslint/return-await': 'off', // False positives with async functions returning non-promise values
       },
     },
     {

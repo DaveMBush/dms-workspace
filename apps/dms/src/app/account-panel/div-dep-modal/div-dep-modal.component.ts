@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -29,7 +28,6 @@ import { DivDeposit } from '../../store/div-deposits/div-deposit.interface';
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'dms-div-dep-modal',
   imports: [
-    CommonModule,
     FormsModule,
     InputNumberModule,
     DatePickerModule,

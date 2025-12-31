@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -24,7 +23,6 @@ import { ScreenerService } from './screener.service';
   selector: 'dms-screener',
   imports: [
     CheckboxModule,
-    CommonModule,
     ToolbarModule,
     TableModule,
     ButtonModule,

@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -15,7 +14,7 @@ import { BaseRouteComponent } from '../shared/base-route-component';
 @Component({
   selector: 'dms-global',
   standalone: true,
-  imports: [CommonModule, ToolbarModule, ListboxModule, FormsModule],
+  imports: [ToolbarModule, ListboxModule, FormsModule],
   templateUrl: './global.component.html',
   styleUrl: './global.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

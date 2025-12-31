@@ -63,7 +63,7 @@ describe('Profile', () => {
 
   it('should load user profile on init', () => {
     component.ngOnInit();
-    // eslint-disable-next-line @typescript-eslint/unbound-method -- Testing service method call
+
     expect(profileService.loadUserProfile).toHaveBeenCalled();
   });
 });

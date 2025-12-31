@@ -57,10 +57,7 @@ export class EditableDateCellComponent {
   }
 
   onPickerClosed(): void {
-    if (
-      this.editValue &&
-      (!this.value || this.editValue.getTime() !== this.value.getTime())
-    ) {
+    if (this.editValue && this.editValue.getTime() !== this.value?.getTime()) {
       this.valueChange.emit(this.editValue);
     }
     this.editing = false;

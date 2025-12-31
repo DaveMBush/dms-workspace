@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -27,7 +26,6 @@ import { NewPositionComponent } from './new-position/new-position.component';
   selector: 'dms-account-detail',
   standalone: true,
   imports: [
-    CommonModule,
     RouterModule,
     TooltipModule,
     ButtonModule,

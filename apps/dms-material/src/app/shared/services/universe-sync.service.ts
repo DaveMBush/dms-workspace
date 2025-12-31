@@ -40,7 +40,7 @@ export class UniverseSyncService {
           }
           return result;
         }),
-        // eslint-disable-next-line @smarttools/no-anonymous-functions -- tap function for RxJS pipe
+        // eslint-disable-next-line @smarttools/no-anonymous-functions -- tap function for RxJS pipe, false positive deprecation warning
         tap(() => {
           this.isSyncing.set(false);
         })

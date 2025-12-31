@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/unbound-method -- Test mocking requires unbound methods */
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { StructuredLogger, logger } from './structured-logger';
 import type { LogContext } from './structured-logger-types';

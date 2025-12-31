@@ -95,6 +95,8 @@ export default [
       '@typescript-eslint/require-await': 'off',
       '@typescript-eslint/restrict-template-expressions': 'off',
       '@smarttools/no-anonymous-functions': 'off',
+      '@typescript-eslint/no-shadow': 'off', // Allow shadowing in vi.hoisted() pattern
+      '@typescript-eslint/return-await': 'off', // Allow returning non-promise values from async test functions
     },
   },
   {

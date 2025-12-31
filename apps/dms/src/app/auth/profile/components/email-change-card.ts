@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -21,13 +20,7 @@ import { ProfileActionsService } from '../../services/profile-actions.service';
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'dms-email-change-card',
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    CardModule,
-    ButtonModule,
-    InputTextModule,
-  ],
+  imports: [ReactiveFormsModule, CardModule, ButtonModule, InputTextModule],
   templateUrl: './email-change-card.html',
   styleUrls: ['./email-change-card.scss'],
 })

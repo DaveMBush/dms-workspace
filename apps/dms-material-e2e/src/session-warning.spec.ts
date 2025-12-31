@@ -158,7 +158,8 @@ test.describe.skip('Session Warning Dialog', () => {
       () => document.activeElement?.tagName
     );
     const dialogContainsFocus = await dialog.evaluate((node, focusedTag) => {
-      return node.contains(document.querySelector(focusedTag!));
+      const activeEl = document.activeElement;
+      return activeEl !== null && node.contains(activeEl);
     }, focusedElement);
 
     expect(dialogContainsFocus).toBe(true);
