@@ -7,6 +7,7 @@ import {
   afterAll,
 } from 'vitest';
 import { PrismaClient } from '@prisma/client';
+import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
 import { existsSync, unlinkSync } from 'fs';
 import { join } from 'path';
 import fastify, { FastifyInstance } from 'fastify';
@@ -115,13 +116,8 @@ describe.skipIf(process.env.CI)('DELETE /universe/:id', () => {
     });
 
     // Initialize Prisma client with test database
-    prisma = new PrismaClient({
-      datasources: {
-        db: {
-          url: testDbUrl,
-        },
-      },
-    });
+    const adapter = new PrismaBetterSqlite3({ url: testDbUrl });
+    prisma = new PrismaClient({ adapter });
 
     // Prisma client is now ready for use in tests
   });

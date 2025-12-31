@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
 
 import { authDatabaseMonitorService } from './auth-database-monitor.service';
 import { authDatabaseOptimizerService } from './auth-database-optimizer.service';
@@ -10,13 +11,8 @@ describe('Database Performance Integration Tests', () => {
   const testDbUrl = 'file:./test-db-performance.db';
 
   beforeAll(async () => {
-    testClient = new PrismaClient({
-      datasources: {
-        db: {
-          url: testDbUrl,
-        },
-      },
-    });
+    const adapter = new PrismaBetterSqlite3({ url: testDbUrl });
+    testClient = new PrismaClient({ adapter });
 
     await testClient.$connect();
 

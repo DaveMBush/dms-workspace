@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
 
 import { authDatabaseOptimizerService } from './auth-database-optimizer.service';
 import { databasePerformanceService } from './database-performance.service';
@@ -8,13 +9,8 @@ describe('AuthDatabaseOptimizerService', () => {
   const testDbUrl = 'file:./test-auth-optimizer.db';
 
   beforeAll(async () => {
-    testClient = new PrismaClient({
-      datasources: {
-        db: {
-          url: testDbUrl,
-        },
-      },
-    });
+    const adapter = new PrismaBetterSqlite3({ url: testDbUrl });
+    testClient = new PrismaClient({ adapter });
 
     await testClient.$connect();
 
@@ -454,13 +450,8 @@ describe('AuthDatabaseOptimizerService', () => {
   describe('error handling', () => {
     it('should handle database connection errors gracefully', async () => {
       // Create a client that will fail
-      const failingClient = new PrismaClient({
-        datasources: {
-          db: {
-            url: 'file:./nonexistent-path/test.db',
-          },
-        },
-      });
+      const failAdapter = new PrismaBetterSqlite3({ url: 'file:./nonexistent-path/test.db' });
+      const failingClient = new PrismaClient({ adapter: failAdapter });
 
       await expect(
         authDatabaseOptimizerService.optimizedUserLookup(

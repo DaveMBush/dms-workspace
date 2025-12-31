@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
 import { existsSync, unlinkSync } from 'fs';
 import { join } from 'path';
 import {
@@ -48,13 +49,8 @@ describe.skipIf(process.env.CI)(
       });
 
       // Initialize Prisma client with test database
-      prisma = new PrismaClient({
-        datasources: {
-          db: {
-            url: testDbUrl,
-          },
-        },
-      });
+      const adapter = new PrismaBetterSqlite3({ url: testDbUrl });
+      prisma = new PrismaClient({ adapter });
     });
 
     beforeEach(async () => {

@@ -8,11 +8,15 @@ import type {
 } from './database-event-types';
 
 export function setupDatabaseEventListeners(
-  client: ClientWithEvents & PrismaClient,
+  client: PrismaClient,
   isDevelopment: boolean = false
 ): void {
   try {
-    client.$on('query', function handleQueryEvent(e: QueryEvent): void {
+    // Cast to ClientWithEvents to enable event listeners
+    // Prisma 7 with adapters has type issues with $on
+    const eventClient = client as unknown as ClientWithEvents;
+    
+    eventClient.$on('query', function handleQueryEvent(e: QueryEvent): void {
       const duration = e.duration;
       if (duration > 50 && isDevelopment) {
         logger.warn(
@@ -24,18 +28,18 @@ export function setupDatabaseEventListeners(
     });
 
     if (isDevelopment) {
-      client.$on('info', function handleInfoEvent(e: LogEvent): void {
+      eventClient.$on('info', function handleInfoEvent(e: LogEvent): void {
         if (e.message.includes('connection') || e.message.includes('pool')) {
           logger.info(`Database connection info: ${e.message}`);
         }
       });
 
-      client.$on('warn', function handleWarnEvent(e: LogEvent): void {
+      eventClient.$on('warn', function handleWarnEvent(e: LogEvent): void {
         throw new Error(`Database warning: ${e.message}`);
       });
     }
 
-    client.$on('error', function handleErrorEvent(e: LogEvent): void {
+    eventClient.$on('error', function handleErrorEvent(e: LogEvent): void {
       throw new Error(`Database error: ${e.message} ${e.target ?? ''}`);
     });
   } catch (error) {
