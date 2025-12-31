@@ -1,0 +1,12 @@
+schema: 1
+story: 'AG.2'
+gate: CONCERNS
+status_reason: 'Core E2E test implementation complete with comprehensive coverage. All 63 risk group tests passing across browsers. Acceptance criteria met. However, several Definition of Done items remain incomplete: Playwright MCP verification (console errors), full test suite validation, code review, and validation commands.'
+reviewer: 'Quinn'
+updated: '2025-12-31T19:45:00Z'
+top_issues:
+  - 'Playwright MCP verification not complete - no console error checking performed'
+  - 'All existing tests not verified to still pass after changes'
+  - 'Code review not completed'
+  - 'Validation commands (pnpm all, pnpm e2e:dms-material, etc.) not run'
+waiver: { active: false }
