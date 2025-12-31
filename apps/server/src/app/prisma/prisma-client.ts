@@ -1,30 +1,48 @@
+import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
 import { PrismaClient } from '@prisma/client';
 
+import { buildDatabaseUrl } from './build-database-url.function';
 import { createBasePrismaConfig } from './create-base-prisma-config.function';
-import type { ClientWithEvents } from './database-event-types';
-import { setupDatabaseEventListeners } from './setup-database-event-listeners.function';
+import { createConnectionPoolConfig } from './create-connection-pool-config.function';
 
 const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
 
 const createPrismaClient = (): PrismaClient => {
   const isDevelopment = process.env.NODE_ENV === 'development';
-  const config = createBasePrismaConfig(isDevelopment);
+  const provider = process.env.DATABASE_PROVIDER ?? 'sqlite';
 
-  return new PrismaClient(config);
+  // Build database URL
+  const poolConfig = createConnectionPoolConfig(provider);
+  const databaseUrl = buildDatabaseUrl(
+    provider,
+    process.env.DATABASE_URL,
+    poolConfig
+  );
+
+  // Create adapter for SQLite
+  const adapter = new PrismaBetterSqlite3({ url: databaseUrl });
+
+  // Get base config
+  const baseConfig = createBasePrismaConfig(isDevelopment);
+
+  return new PrismaClient({
+    adapter,
+    log: baseConfig.log,
+    errorFormat: baseConfig.errorFormat,
+    transactionOptions: baseConfig.transactionOptions,
+  });
 };
 
-export const prisma = globalForPrisma.prisma || createPrismaClient();
+export const prisma = globalForPrisma.prisma ?? createPrismaClient();
 
-// Setup database event listeners
-setupDatabaseEventListeners(
-  prisma as ClientWithEvents & PrismaClient,
-  process.env.NODE_ENV === 'development'
-);
-
-// Prevent multiple instances in development
 if (process.env.NODE_ENV !== 'production') {
   globalForPrisma.prisma = prisma;
 }
+
+// Set up event listeners - commented out due to TypeScript issues with Prisma 7 adapters
+// The log configuration in PrismaClient still works, but the $on method type signature
+// doesn't work correctly with adapters
+// setupDatabaseEventListeners(prisma);
 
 // Connection health check function with specific client (for testing)
 export async function checkDatabaseHealthWithClient(

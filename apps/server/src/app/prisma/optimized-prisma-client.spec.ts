@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
 
 import { optimizedBatchAccountLoad } from './optimized-batch-account-load.function';
 import { closeOptimizedDatabaseConnection } from './close-optimized-database-connection.function';
@@ -11,13 +12,10 @@ describe.skip('OptimizedPrismaClient', () => {
 
   beforeAll(async () => {
     // Create test client for comparison
-    testClient = new PrismaClient({
-      datasources: {
-        db: {
-          url: 'file:./test-optimized-integration.db',
-        },
-      },
+    const adapter = new PrismaBetterSqlite3({
+      url: 'file:./test-optimized-integration.db',
     });
+    testClient = new PrismaClient({ adapter });
 
     await testClient.$connect();
   });

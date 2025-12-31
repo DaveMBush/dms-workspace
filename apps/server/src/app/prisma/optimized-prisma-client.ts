@@ -1,3 +1,4 @@
+import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
 import { PrismaClient } from '@prisma/client';
 
 import { buildDatabaseUrl } from './build-database-url.function';
@@ -28,13 +29,13 @@ function createOptimizedPrismaClient(): PrismaClient {
     optimizedPoolConfig
   );
 
+  // Create adapter for SQLite
+  const adapter = new PrismaBetterSqlite3({ url: optimizedDatabaseUrl });
+
   const client = new PrismaClient({
-    ...baseConfig,
-    datasources: {
-      db: {
-        url: optimizedDatabaseUrl,
-      },
-    },
+    adapter,
+    log: baseConfig.log,
+    errorFormat: baseConfig.errorFormat,
     // Shorter timeout for optimized client
     transactionOptions: {
       maxWait: 5000,

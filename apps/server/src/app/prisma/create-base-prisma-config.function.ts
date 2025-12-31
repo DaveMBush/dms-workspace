@@ -3,11 +3,7 @@ import { createConnectionPoolConfig } from './create-connection-pool-config.func
 
 interface PrismaConfig {
   log: Array<{ emit: 'event'; level: 'error' | 'info' | 'query' | 'warn' }>;
-  datasources: {
-    db: {
-      url: string;
-    };
-  };
+  datasourceUrl: string;
   errorFormat: 'minimal';
   transactionOptions: {
     maxWait: number;
@@ -36,11 +32,7 @@ export function createBasePrismaConfig(
         ]
       : [{ emit: 'event', level: 'error' }],
 
-    datasources: {
-      db: {
-        url: databaseUrl,
-      },
-    },
+    datasourceUrl: databaseUrl,
 
     errorFormat: 'minimal',
 

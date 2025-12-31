@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
 import { existsSync, unlinkSync } from 'fs';
 import { join } from 'path';
 import {
@@ -68,13 +69,8 @@ describe('average purchase yield integration tests', () => {
     });
 
     // Initialize Prisma client with test database
-    prisma = new PrismaClient({
-      datasources: {
-        db: {
-          url: testDbUrl,
-        },
-      },
-    });
+    const adapter = new PrismaBetterSqlite3({ url: testDbUrl });
+    prisma = new PrismaClient({ adapter });
   }, integrationTestTimeout); // Increase timeout to 30 seconds for CI database setup
 
   beforeEach(async () => {
@@ -598,7 +594,7 @@ describe('average purchase yield integration tests', () => {
       // Create multiple universes concurrently
       const universeCreationPromises = Array.from(
         { length: CONCURRENT_UNIVERSE_COUNT },
-        async (_, i) =>
+        (_, i) =>
           prisma.universe.create({
             data: {
               symbol: `TEST_${i.toString().padStart(3, '0')}`,

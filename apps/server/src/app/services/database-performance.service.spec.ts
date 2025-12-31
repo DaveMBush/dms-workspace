@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
 
 import { databasePerformanceService } from './database-performance.service';
 
@@ -7,13 +8,10 @@ describe.skip('DatabasePerformanceService', () => {
 
   beforeAll(async () => {
     // Create test database client
-    testClient = new PrismaClient({
-      datasources: {
-        db: {
-          url: 'file:./test-performance.db',
-        },
-      },
+    const adapter = new PrismaBetterSqlite3({
+      url: 'file:./test-performance.db',
     });
+    testClient = new PrismaClient({ adapter });
 
     // Ensure database is connected and migrated
     await testClient.$connect();
