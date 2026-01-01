@@ -45,7 +45,7 @@
   </mat-toolbar>
 
   <mat-nav-list class="accounts-list">
-    @for (account of accountsList; track account.id) {
+    @for (account of accountsArray$(); track account.id) {
     <a
       mat-list-item
       [routerLink]="['/account', account.id]"

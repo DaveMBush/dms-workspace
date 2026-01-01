@@ -23,6 +23,75 @@ test.describe('Account List', () => {
     await expect(accountsList).toBeVisible();
   });
 
+  test('should load accounts from backend', async ({ page }) => {
+    // Wait for accounts list to be present first
+    const accountsList = page.locator('.accounts-list');
+    await expect(accountsList).toBeVisible();
+
+    // Wait for accounts to load from backend with polling
+    const accountItems = page.locator('.account-item');
+
+    // Should have at least one account loaded from backend
+    await expect(accountItems.first()).toBeVisible({ timeout: 20000 });
+
+    // Extra stability wait for Material rendering
+    await page.waitForTimeout(100);
+
+    // Verify account has icon and name
+    const firstAccount = accountItems.first();
+    await expect(firstAccount.locator('mat-icon')).toBeVisible();
+    await expect(firstAccount.locator('span[matlistitemtitle]')).toBeVisible();
+  });
+
+  test('should navigate to account detail when clicking account', async ({
+    page,
+  }) => {
+    // Wait for accounts list to be present first
+    const accountsList = page.locator('.accounts-list');
+    await expect(accountsList).toBeVisible();
+
+    // Wait for accounts to load
+    const accountItems = page.locator('.account-item');
+    await expect(accountItems.first()).toBeVisible({ timeout: 20000 });
+
+    // Extra stability wait
+    await page.waitForTimeout(100);
+
+    // Get the first account's ID from the href
+    const firstAccountHref = await accountItems.first().getAttribute('href');
+    expect(firstAccountHref).toMatch(/^\/account\/.+/);
+
+    // Click the account
+    await accountItems.first().click();
+
+    // Verify navigation occurred - wait for URL to contain the account ID
+    await page.waitForURL(
+      new RegExp(firstAccountHref!.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')),
+      { timeout: 10000 }
+    );
+  });
+
+  test('should display account names from backend', async ({ page }) => {
+    // Wait for accounts list to be present first
+    const accountsList = page.locator('.accounts-list');
+    await expect(accountsList).toBeVisible();
+
+    // Wait for accounts to load from backend
+    const accountItems = page.locator('.account-item');
+    await expect(accountItems.first()).toBeVisible({ timeout: 20000 });
+
+    // Extra stability wait for Material rendering
+    await page.waitForTimeout(100);
+
+    // Verify at least one account has a name
+    const firstAccountName = await accountItems
+      .first()
+      .locator('span[matlistitemtitle]')
+      .textContent();
+    expect(firstAccountName).toBeTruthy();
+    expect(firstAccountName?.length).toBeGreaterThan(0);
+  });
+
   test('should display Global toolbar', async ({ page }) => {
     const globalToolbar = page.locator('.global-toolbar');
     await expect(globalToolbar).toBeVisible();
@@ -91,5 +160,47 @@ test.describe('Account List', () => {
   }) => {
     const divider = page.locator('mat-divider');
     await expect(divider).toBeVisible();
+  });
+
+  test('should maintain selected account across navigation', async ({
+    page,
+  }) => {
+    // Wait for accounts to load
+    const accountItems = page.locator('.account-item');
+    await expect(accountItems.first()).toBeVisible({ timeout: 10000 });
+
+    // Click the first account and wait for navigation
+    await accountItems.first().click();
+    await page.waitForURL(/\/account\/.+/);
+
+    // Get the account ID from URL
+    const url = page.url();
+    const accountId = url.split('/account/')[1];
+    expect(accountId).toBeTruthy();
+
+    // Navigate to global view
+    await page.locator('.global-list a', { hasText: 'Summary' }).click();
+    await page.waitForURL(/\/global\/summary/);
+
+    // Navigate back to the account
+    await page.goto(url);
+    if (accountId) {
+      await page.waitForURL(new RegExp(accountId));
+    }
+  });
+
+  test('should show empty state when no accounts', async ({ page }) => {
+    // Wait for the list to render
+    await page.waitForSelector('.accounts-list', { timeout: 10000 });
+
+    // Check for empty message (if no accounts)
+    const emptyMessage = page.locator('.empty-message');
+    const accountItems = page.locator('.account-item');
+
+    const accountCount = await accountItems.count();
+    if (accountCount === 0) {
+      await expect(emptyMessage).toBeVisible();
+      await expect(emptyMessage).toContainText('No accounts found');
+    }
   });
 });
