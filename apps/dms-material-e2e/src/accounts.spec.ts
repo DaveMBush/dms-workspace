@@ -14,10 +14,14 @@ test.describe('Account List', () => {
     await page.waitForSelector('.accounts-panel', { timeout: 10000 });
 
     // Wait for accounts to load - the API is called lazily when the component initializes
-    await page.waitForSelector('.account-item', { timeout: 30000 }).catch(async () => {
-      // If no accounts found after 30s, at least wait for the component to settle
-      await page.waitForSelector('text=No accounts found', { timeout: 5000 }).catch(() => null);
-    });
+    await page
+      .waitForSelector('.account-item', { timeout: 30000 })
+      .catch(async () => {
+        // If no accounts found after 30s, at least wait for the component to settle
+        await page
+          .waitForSelector('text=No accounts found', { timeout: 5000 })
+          .catch(() => null);
+      });
   });
 
   test('should display accounts panel in left sidebar', async ({ page }) => {
@@ -179,7 +183,9 @@ test.describe('Account List', () => {
     page,
   }) => {
     // Wait for accounts list to render
-    await expect(page.locator('.accounts-list')).toBeVisible({ timeout: 30000 });
+    await expect(page.locator('.accounts-list')).toBeVisible({
+      timeout: 30000,
+    });
     await page.waitForTimeout(100);
 
     // Wait for accounts to load

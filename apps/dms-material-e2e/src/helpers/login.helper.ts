@@ -9,10 +9,16 @@ export async function login(
   email = 'test@example.com',
   password = 'password123'
 ): Promise<void> {
-  await page.goto('/auth/login', { waitUntil: 'domcontentloaded', timeout: 45000 });
+  await page.goto('/auth/login', {
+    waitUntil: 'domcontentloaded',
+    timeout: 45000,
+  });
 
   // Wait for login form to be fully loaded
-  await page.waitForSelector('input[type="email"]', { state: 'visible', timeout: 30000 });
+  await page.waitForSelector('input[type="email"]', {
+    state: 'visible',
+    timeout: 30000,
+  });
 
   await page.locator('input[type="email"]').fill(email);
   await page.locator('input[type="password"]').fill(password);
