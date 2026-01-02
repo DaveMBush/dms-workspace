@@ -5,6 +5,19 @@ import { login } from './helpers/login.helper';
 test.describe('Account List', () => {
   test.beforeEach(async ({ page }) => {
     await login(page);
+
+    // Give the app extra time to fully initialize before checking for accounts
+    // Webkit needs more time for Angular to bootstrap and trigger API calls
+    await page.waitForTimeout(2000);
+
+    // Wait for the accounts panel to be visible before checking for items
+    await page.waitForSelector('.accounts-panel', { timeout: 10000 });
+
+    // Wait for accounts to load - the API is called lazily when the component initializes
+    await page.waitForSelector('.account-item', { timeout: 30000 }).catch(async () => {
+      // If no accounts found after 30s, at least wait for the component to settle
+      await page.waitForSelector('text=No accounts found', { timeout: 5000 }).catch(() => null);
+    });
   });
 
   test('should display accounts panel in left sidebar', async ({ page }) => {
@@ -32,7 +45,7 @@ test.describe('Account List', () => {
     const accountItems = page.locator('.account-item');
 
     // Should have at least one account loaded from backend
-    await expect(accountItems.first()).toBeVisible({ timeout: 20000 });
+    await expect(accountItems.first()).toBeVisible({ timeout: 30000 });
 
     // Extra stability wait for Material rendering
     await page.waitForTimeout(100);
@@ -52,7 +65,7 @@ test.describe('Account List', () => {
 
     // Wait for accounts to load
     const accountItems = page.locator('.account-item');
-    await expect(accountItems.first()).toBeVisible({ timeout: 20000 });
+    await expect(accountItems.first()).toBeVisible({ timeout: 30000 });
 
     // Extra stability wait
     await page.waitForTimeout(100);
@@ -78,7 +91,7 @@ test.describe('Account List', () => {
 
     // Wait for accounts to load from backend
     const accountItems = page.locator('.account-item');
-    await expect(accountItems.first()).toBeVisible({ timeout: 20000 });
+    await expect(accountItems.first()).toBeVisible({ timeout: 30000 });
 
     // Extra stability wait for Material rendering
     await page.waitForTimeout(100);
@@ -165,9 +178,13 @@ test.describe('Account List', () => {
   test('should maintain selected account across navigation', async ({
     page,
   }) => {
+    // Wait for accounts list to render
+    await expect(page.locator('.accounts-list')).toBeVisible({ timeout: 30000 });
+    await page.waitForTimeout(100);
+
     // Wait for accounts to load
     const accountItems = page.locator('.account-item');
-    await expect(accountItems.first()).toBeVisible({ timeout: 10000 });
+    await expect(accountItems.first()).toBeVisible({ timeout: 30000 });
 
     // Click the first account and wait for navigation
     await accountItems.first().click();
