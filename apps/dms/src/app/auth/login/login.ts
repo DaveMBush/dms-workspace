@@ -102,17 +102,13 @@ export class Login implements OnInit {
     return this.loginForm.get('email');
   }
 
-  get passwordControl():
-    // eslint-disable-next sonarjs/no-duplicate-string -- Required for imports
-    | import('@angular/forms').AbstractControl<unknown>
-    | null {
+  get passwordControl(): // eslint-disable-next sonarjs/no-duplicate-string -- Required for imports
+  import('@angular/forms').AbstractControl<unknown> | null {
     return this.loginForm.get('password');
   }
 
-  get rememberMeControl():
-    // eslint-disable-next sonarjs/no-duplicate-string -- Required for imports
-    | import('@angular/forms').AbstractControl<unknown>
-    | null {
+  get rememberMeControl(): // eslint-disable-next sonarjs/no-duplicate-string -- Required for imports
+  import('@angular/forms').AbstractControl<unknown> | null {
     return this.loginForm.get('rememberMe');
   }
 
