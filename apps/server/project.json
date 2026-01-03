@@ -15,8 +15,15 @@
         }
       },
       "dependsOn": [
+        "prepare-e2e-db",
         "build"
       ]
+    },
+    "prepare-e2e-db": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node tools/create-test-db.js test-database.db"
+      }
     },
     "build": {
       "executor": "@nx/esbuild:esbuild",

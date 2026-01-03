@@ -2,7 +2,8 @@ import { test, expect } from 'playwright/test';
 
 import { login } from './helpers/login.helper';
 
-test.describe('Account List', () => {
+// reimplement these once we can add an account via the UI
+test.describe.skip('Account List', () => {
   test.beforeEach(async ({ page }) => {
     await login(page);
 
