@@ -5,6 +5,16 @@
   "projectType": "application",
   "tags": [],
   "targets": {
+    "e2e-server": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node dist/apps/server/main.js",
+        "env": {
+          "PORT": "3001"
+        }
+    },
+      "dependsOn": ["build"]
+    },
     "build": {
       "executor": "@nx/esbuild:esbuild",
       "outputs": ["{options.outputPath}"],
@@ -52,13 +62,6 @@
         },
         "production": {
           "buildTarget": "server:build:production"
-        },
-        "local": {
-          "buildTarget": "server:build:development",
-          "env": {
-            "NODE_ENV": "local"
-          },
-          "envFile": ".env.local"
         }
       }
     },

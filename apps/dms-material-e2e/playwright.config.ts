@@ -3,7 +3,7 @@ import { nxE2EPreset } from '@nx/playwright/preset';
 import { defineConfig, devices } from '@playwright/test';
 
 // For CI, you may want to set BASE_URL to the deployed application.
-const baseURL = process.env['BASE_URL'] || 'http://localhost:4201';
+const baseURL = process.env['BASE_URL'] || 'http://localhost:4301';
 
 /**
  * Read environment variables from file.
@@ -37,27 +37,22 @@ export default defineConfig({
   /* Run your local dev server before starting the tests */
   webServer: [
     {
-      command: process.env.CI
-        ? 'node dist/apps/server/main.js'
-        : 'DATABASE_URL="file:./database.db" pnpm exec nx run server:serve',
-      url: 'http://localhost:3000/api/health',
-      reuseExistingServer: !process.env.CI,
+      command: 'pnpm nx run server:e2e-server',
+      url: 'http://localhost:3001/api/health',
+      reuseExistingServer: true,
       cwd: workspaceRoot,
       timeout: 120000,
       env: {
         ...process.env,
         NODE_ENV: process.env.CI ? 'local' : 'development',
-        DATABASE_URL: process.env.CI
-          ? 'file:./database.db'
-          : 'file:./database.db',
         AWS_ENDPOINT_URL: 'http://localhost:4566',
         SKIP_AWS_AUTH: 'true',
       },
     },
     {
-      command: 'pnpm exec nx run dms-material:serve',
-      url: 'http://localhost:4201',
-      reuseExistingServer: !process.env.CI,
+      command: 'pnpm nx run dms-material:serve:test',
+      url: 'http://localhost:4301',
+      reuseExistingServer: true,
       cwd: workspaceRoot,
       timeout: 120000,
     },
