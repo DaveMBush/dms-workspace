@@ -19,6 +19,12 @@ export function createRateLimiter(
     reply: FastifyReply,
     isSuccess?: boolean
   ): Promise<boolean> {
+    // Skip rate limiting in test and development environments
+    const nodeEnv = process.env.NODE_ENV ?? 'development';
+    if (nodeEnv === 'test' || nodeEnv === 'development') {
+      return false; // Not rate limited
+    }
+
     const config = rateLimitConfigs[type];
     const key = getClientKey(request, type);
     const entry = updateRateLimitEntry(key, config, isSuccess);
