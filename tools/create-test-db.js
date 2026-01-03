@@ -24,14 +24,14 @@ try {
   // Apply Prisma schema to the new SQLite file using Prisma CLI
   // This will push the schema (no migrations required) so the DB has the correct tables.
   const env = Object.assign({}, process.env, {
-    DATABASE_URL: `file:${destPath}`
+    DATABASE_URL: `file:${destPath}`,
   });
 
   console.log('Applying Prisma schema to test database...');
   // Use npx so local workspace Prisma is used if available
   child.execSync('npx prisma db push --schema=prisma/schema.prisma', {
     stdio: 'inherit',
-    env
+    env,
   });
 
   console.log('Prisma schema applied successfully.');

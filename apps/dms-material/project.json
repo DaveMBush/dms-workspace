@@ -65,7 +65,7 @@
           "buildTarget": "dms-material:build:production"
         },
         "development": {
-          "buildTarget": "dms-material:build:development",
+          "buildTarget": "dms-material:build:development"
         },
         "test": {
           "buildTarget": "dms-material:build:development",
@@ -74,7 +74,7 @@
           "hmr": false
         }
       },
-    "defaultConfiguration": "development",
+      "defaultConfiguration": "development",
       "options": {
         "port": 4201,
         "proxyConfig": "apps/dms-material/proxy.conf.json",

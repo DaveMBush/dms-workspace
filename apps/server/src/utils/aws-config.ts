@@ -352,7 +352,10 @@ export async function initializeDatabaseUrl(): Promise<string> {
     // Set the DATABASE_URL environment variable for Prisma
     process.env.DATABASE_URL = dbConfig.url;
 
-    console.log('✅ Database configuration loaded successfully: ', dbConfig.url);
+    console.log(
+      '✅ Database configuration loaded successfully: ',
+      dbConfig.url
+    );
     return dbConfig.url;
   } catch (error) {
     console.error('❌ Failed to initialize database URL:', error);
