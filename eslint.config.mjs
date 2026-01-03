@@ -602,7 +602,14 @@ const eslintConfig = async () => {
           '@typescript-eslint/no-loss-of-precision': 'error',
           '@typescript-eslint/no-meaningless-void-operator': 'error',
           '@typescript-eslint/no-misused-new': 'error',
-          '@typescript-eslint/no-misused-promises': 'error',
+          '@typescript-eslint/no-misused-promises': [
+            'error',
+            {
+              checksVoidReturn: {
+                arguments: false,
+              },
+            },
+          ],
           '@typescript-eslint/no-namespace': 'error',
           '@typescript-eslint/no-non-null-assertion': 'off',
           '@typescript-eslint/no-non-null-asserted-nullish-coalescing': 'error',
