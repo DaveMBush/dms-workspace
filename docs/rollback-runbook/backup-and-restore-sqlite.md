@@ -59,7 +59,7 @@ The database file location is specified in the `DATABASE_URL` environment variab
 ```bash
 # Check current database URL
 echo $DATABASE_URL
-# Expected output: file:./database.db or file:../database.db
+# Expected output: file:./database.db or file:./database.db
 ```
 
 For different environments:
