@@ -66,12 +66,19 @@
         },
         "development": {
           "buildTarget": "dms-material:build:development"
+        },
+        "test": {
+          "buildTarget": "dms-material:build:development",
+          "port": 4301,
+          "proxyConfig": "apps/dms-material/proxy.test-conf.json",
+          "hmr": false
         }
       },
       "defaultConfiguration": "development",
       "options": {
         "port": 4201,
-        "proxyConfig": "apps/dms-material/proxy.conf.json"
+        "proxyConfig": "apps/dms-material/proxy.conf.json",
+        "hmr": false
       }
     },
     "extract-i18n": {

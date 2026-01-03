@@ -8,6 +8,7 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {
+  AbstractControl,
   FormBuilder,
   FormGroup,
   ReactiveFormsModule,
@@ -97,19 +98,15 @@ export class Login implements OnInit {
   }
 
   // Getter methods for template access
-  get emailControl(): import('@angular/forms').AbstractControl<unknown> | null {
+  get emailControl(): AbstractControl<unknown> | null {
     return this.loginForm.get('email');
   }
 
-  get passwordControl():
-    | import('@angular/forms').AbstractControl<unknown>
-    | null {
+  get passwordControl(): AbstractControl<unknown> | null {
     return this.loginForm.get('password');
   }
 
-  get rememberMeControl():
-    | import('@angular/forms').AbstractControl<unknown>
-    | null {
+  get rememberMeControl(): AbstractControl<unknown> | null {
     return this.loginForm.get('rememberMe');
   }
 

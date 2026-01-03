@@ -4,8 +4,8 @@
   "license": "MIT",
   "scripts": {
     "start:server": "nx run server:serve",
-    "start:dms": "nx run dms:serve --no-hmr",
-    "start:dms-material": "nx run dms-material:serve --no-hmr",
+    "start:dms": "nx run dms:serve",
+    "start:dms-material": "nx run dms-material:serve",
     "start:simulation": "nx run simulation:serve",
     "build:dms": "nx run dms:build",
     "all": "nx affected -t lint build test",
