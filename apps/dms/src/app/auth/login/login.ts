@@ -8,6 +8,7 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {
+  AbstractControl,
   FormBuilder,
   FormGroup,
   ReactiveFormsModule,
@@ -97,18 +98,15 @@ export class Login implements OnInit {
   }
 
   // Getter methods for template access
-  // eslint-disable-next sonarjs/no-duplicate-string -- Required for imports
-  get emailControl(): import('@angular/forms').AbstractControl<unknown> | null {
+  get emailControl(): AbstractControl<unknown> | null {
     return this.loginForm.get('email');
   }
 
-  get passwordControl(): // eslint-disable-next sonarjs/no-duplicate-string -- Required for imports
-  import('@angular/forms').AbstractControl<unknown> | null {
+  get passwordControl(): AbstractControl<unknown> | null {
     return this.loginForm.get('password');
   }
 
-  get rememberMeControl(): // eslint-disable-next sonarjs/no-duplicate-string -- Required for imports
-  import('@angular/forms').AbstractControl<unknown> | null {
+  get rememberMeControl(): AbstractControl<unknown> | null {
     return this.loginForm.get('rememberMe');
   }
 
