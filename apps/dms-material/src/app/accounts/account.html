@@ -42,10 +42,29 @@
 
   <mat-toolbar class="accounts-toolbar">
     <span>Accounts</span>
+    <span class="spacer"></span>
+    <button
+      mat-icon-button
+      (click)="addAccount()"
+      aria-label="Add account"
+      class="add-button"
+    >
+      <mat-icon>add</mat-icon>
+    </button>
   </mat-toolbar>
 
   <mat-nav-list class="accounts-list">
-    @for (account of accountsList; track account.id) {
+    @for (account of accountsArray$(); track account.id) { @if(addingNode ===
+    account.id) {
+    <mat-list-item class="account-item editing-item">
+      <dms-node-editor
+        placeholder="Edit Account"
+        [(ngModel)]="editingContent"
+        (cancel)="cancelEdit(account)"
+        (save)="saveEdit(account)"
+      />
+    </mat-list-item>
+    } @else {
     <a
       mat-list-item
       [routerLink]="['/account', account.id]"
@@ -55,7 +74,7 @@
       <mat-icon matListItemIcon>account_balance</mat-icon>
       <span matListItemTitle>{{ account.name }}</span>
     </a>
-    } @empty {
+    } } @empty {
     <mat-list-item class="empty-message">
       <mat-icon matListItemIcon>info</mat-icon>
       <span matListItemTitle>No accounts found</span>

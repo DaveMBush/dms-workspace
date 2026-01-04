@@ -15,7 +15,7 @@ export class MockAuthService extends BaseAuthService {
   private readonly mockCredentials = {
     username: 'dev@dms.local',
     // Using a hardcoded password for development mock service only
-    // eslint-disable-next-line sonarjs/no-hardcoded-passwords -- Required for mock auth development service
+    // eslint-disable-next-line sonarjs/no-hardcoded-passwords -- dummy for testing
     password: 'DevPassword123!',
   };
 

@@ -67,7 +67,6 @@ describe('Login', () => {
     });
 
     it('should show error for short password', () => {
-      // eslint-disable-next-line sonarjs/no-hardcoded-passwords -- Test data
       component.loginForm.patchValue({ password: '123' });
       const passwordControl = component.loginForm.get('password');
       passwordControl?.markAsTouched();
@@ -93,7 +92,6 @@ describe('Login', () => {
       mockAuthService.signIn.mockResolvedValue({});
       component.loginForm.patchValue({
         email: 'test@test.com',
-        // eslint-disable-next-line sonarjs/no-hardcoded-passwords -- Test data
         password: 'password123',
       });
 
@@ -106,7 +104,6 @@ describe('Login', () => {
       mockAuthService.signIn.mockResolvedValue({});
       component.loginForm.patchValue({
         email: 'test@test.com',
-        // eslint-disable-next-line sonarjs/no-hardcoded-passwords -- Test data
         password: 'password123',
       });
       await component.onSubmit();
@@ -119,7 +116,6 @@ describe('Login', () => {
       );
       component.loginForm.patchValue({
         email: 'test@test.com',
-        // eslint-disable-next-line sonarjs/no-hardcoded-passwords -- Test data
         password: 'password123',
       });
       await component.onSubmit();
