@@ -923,6 +923,7 @@ const eslintConfig = async () => {
       })),
     {
       files: [
+        '**/auth-error-handler.function.ts',
         '**/*.{spec,test}.ts',
         '**/*.{spec,test}.tsx',
         '**/*.{spec,test}.js',

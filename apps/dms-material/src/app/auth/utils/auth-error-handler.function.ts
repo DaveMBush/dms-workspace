@@ -1,4 +1,3 @@
-// eslint-disable sonarjs/no-hardcoded-passwords -- no passwords in this file
 import { AuthError, AuthErrorCode } from '../auth.types';
 
 /**
