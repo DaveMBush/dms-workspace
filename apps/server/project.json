@@ -5,6 +5,23 @@
   "projectType": "application",
   "tags": [],
   "targets": {
+    "e2e-server": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node dist/apps/server/main.js",
+        "env": {
+          "PORT": "3001",
+          "DATABASE_URL": "file:./test-database.db"
+        }
+      },
+      "dependsOn": ["prepare-e2e-db", "build"]
+    },
+    "prepare-e2e-db": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node tools/create-test-db.js test-database.db"
+      }
+    },
     "build": {
       "executor": "@nx/esbuild:esbuild",
       "outputs": ["{options.outputPath}"],
@@ -52,13 +69,6 @@
         },
         "production": {
           "buildTarget": "server:build:production"
-        },
-        "local": {
-          "buildTarget": "server:build:development",
-          "env": {
-            "NODE_ENV": "local"
-          },
-          "envFile": ".env.local"
         }
       }
     },

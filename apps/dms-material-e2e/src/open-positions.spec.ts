@@ -27,9 +27,9 @@ test.describe('Open Positions', () => {
   });
 
   test('should display add position button', async ({ page }) => {
-    const addButton = page.locator('button[mat-icon-button]', {
+    const addButton = page.locator('.content-panel button[mat-icon-button]', {
       hasText: 'add',
-    }); // Adjust based on actual icon/button
+    });
     await expect(addButton).toBeVisible();
   });
 });
