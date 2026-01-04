@@ -1,4 +1,3 @@
-/* eslint-disable sonarjs/no-hardcoded-passwords -- Test passwords needed for form validation testing */
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';

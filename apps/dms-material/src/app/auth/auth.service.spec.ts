@@ -1,4 +1,3 @@
-/* eslint-disable sonarjs/no-hardcoded-passwords -- Test passwords needed for authentication testing */
 import { TestBed } from '@angular/core/testing';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient } from '@angular/common/http';
