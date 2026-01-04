@@ -949,6 +949,8 @@ const eslintConfig = async () => {
       rules: {
         '@smarttools/no-anonymous-functions': 'off',
         '@smarttools/one-exported-item-per-file': 'off',
+        'sonarjs/no-hardcoded-passwords': 'off',
+        'sonarjs/assertions-in-tests': 'off',
         'no-restricted-syntax': 'off',
         'max-lines': 'off',
         'max-lines-per-function': 'off',
