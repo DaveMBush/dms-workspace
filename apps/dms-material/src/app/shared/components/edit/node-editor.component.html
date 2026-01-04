@@ -1,0 +1,14 @@
+<mat-form-field appearance="outline" class="w-full">
+  <input
+    #input
+    matInput
+    [placeholder]="placeholder$()"
+    (keyup.enter)="save.emit(value)"
+    (keyup.escape)="cancel.emit()"
+    (keydown)="keydownHandler($event)"
+    (blur)="save.emit(value)"
+    [ngModel]="value"
+    (ngModelChange)="writeValue($event)"
+    [disabled]="disabled"
+  />
+</mat-form-field>

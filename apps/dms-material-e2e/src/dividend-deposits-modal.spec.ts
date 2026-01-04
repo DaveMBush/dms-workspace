@@ -19,9 +19,9 @@ test.describe('Dividend Deposits Modal', () => {
   test('should open modal when clicking + button on Dividend Deposits tab', async ({
     page,
   }) => {
-    // Click the + button
+    // Click the + button in the main content panel (not accounts sidebar)
     const addButton = page
-      .locator('button[mat-icon-button]')
+      .locator('.content-panel button[mat-icon-button]')
       .filter({ has: page.locator('mat-icon:text("add")') });
     await addButton.click();
 
@@ -35,7 +35,7 @@ test.describe('Dividend Deposits Modal', () => {
   test('modal should have all required fields', async ({ page }) => {
     // Open modal
     const addButton = page
-      .locator('button[mat-icon-button]')
+      .locator('.content-panel button[mat-icon-button]')
       .filter({ has: page.locator('mat-icon:text("add")') });
     await addButton.click();
 
@@ -49,7 +49,7 @@ test.describe('Dividend Deposits Modal', () => {
   test('should close modal when clicking Cancel', async ({ page }) => {
     // Open modal
     const addButton = page
-      .locator('button[mat-icon-button]')
+      .locator('.content-panel button[mat-icon-button]')
       .filter({ has: page.locator('mat-icon:text("add")') });
     await addButton.click();
 
@@ -65,7 +65,7 @@ test.describe('Dividend Deposits Modal', () => {
   }) => {
     // Open modal
     const addButton = page
-      .locator('button[mat-icon-button]')
+      .locator('.content-panel button[mat-icon-button]')
       .filter({ has: page.locator('mat-icon:text("add")') });
     await addButton.click();
 
@@ -89,7 +89,7 @@ test.describe('Dividend Deposits Modal', () => {
   test('should fill and submit form successfully', async ({ page }) => {
     // Open modal
     const addButton = page
-      .locator('button[mat-icon-button]')
+      .locator('.content-panel button[mat-icon-button]')
       .filter({ has: page.locator('mat-icon:text("add")') });
     await addButton.click();
 
