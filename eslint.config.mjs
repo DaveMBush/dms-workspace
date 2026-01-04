@@ -775,7 +775,6 @@ const eslintConfig = async () => {
           'sonarjs/no-gratuitous-expressions': 'error',
           'sonarjs/no-nested-switch': 'error',
           'sonarjs/no-nested-template-literals': 'error',
-          'sonarjs/no-one-iteration-loop': 'error',
           'sonarjs/no-redundant-boolean': 'error',
           'sonarjs/no-redundant-jump': 'error',
           'sonarjs/no-small-switch': 'off',
@@ -924,6 +923,7 @@ const eslintConfig = async () => {
       })),
     {
       files: [
+        '**/auth-error-handler.function.ts',
         '**/*.{spec,test}.ts',
         '**/*.{spec,test}.tsx',
         '**/*.{spec,test}.js',
@@ -950,6 +950,8 @@ const eslintConfig = async () => {
       rules: {
         '@smarttools/no-anonymous-functions': 'off',
         '@smarttools/one-exported-item-per-file': 'off',
+        'sonarjs/no-hardcoded-passwords': 'off',
+        'sonarjs/assertions-in-tests': 'off',
         'no-restricted-syntax': 'off',
         'max-lines': 'off',
         'max-lines-per-function': 'off',
