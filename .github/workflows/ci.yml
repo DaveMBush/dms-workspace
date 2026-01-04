@@ -64,7 +64,7 @@ jobs:
       - run: pnpm format:check
       - run: pnpm dupcheck
       # Tests run with SQLite (default environment), builds use PostgreSQL schema
-      - run: pnpm nx affected -t lint build test
+      - run: pnpm nx affected -t lint build test --skip-nx-cache
 
       # Run e2e tests for dms-material
       # Ensure the server is built in CI (affected may skip it for unrelated changes)
