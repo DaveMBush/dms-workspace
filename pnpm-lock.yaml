@@ -63,8 +63,8 @@ importers:
         specifier: ^11.1.0
         version: 11.1.0
       '@fastify/sensible':
-        specifier: ~6.0.2
-        version: 6.0.3
+        specifier: ~6.0.4
+        version: 6.0.4
       '@primeng/themes':
         specifier: ^19.1.3
         version: 19.1.3
@@ -2266,8 +2266,8 @@ packages:
   '@fastify/proxy-addr@5.0.0':
     resolution: {integrity: sha512-37qVVA1qZ5sgH7KpHkkC4z9SK6StIsIcOmpjvMPXNb3vx2GQxhZocogVYbr2PbbeLCQxYIPDok307xEvRZOzGA==}
 
-  '@fastify/sensible@6.0.3':
-    resolution: {integrity: sha512-Iyn8698hp/e5+v8SNBBruTa7UfrMEP52R16dc9jMpqSyEcPsvWFQo+R6WwHCUnJiLIsuci2ZoEZ7ilrSSCPIVg==}
+  '@fastify/sensible@6.0.4':
+    resolution: {integrity: sha512-1vxcCUlPMew6WroK8fq+LVOwbsLtX+lmuRuqpcp6eYqu6vmkLwbKTdBWAZwbeaSgCfW4tzUpTIHLLvTiQQ1BwQ==}
 
   '@hono/node-server@1.19.6':
     resolution: {integrity: sha512-Shz/KjlIeAhfiuE93NDKVdZ7HdBVLQAfdbaXEaoAVO3ic9ibRSLGIQGkcBbFyuLr+7/1D5ZCINM8B+6IvXeMtw==}
@@ -13390,14 +13390,14 @@ snapshots:
       '@fastify/forwarded': 3.0.0
       ipaddr.js: 2.2.0
 
-  '@fastify/sensible@6.0.3':
+  '@fastify/sensible@6.0.4':
     dependencies:
       '@lukeed/ms': 2.0.2
       dequal: 2.0.3
       fastify-plugin: 5.0.1
       forwarded: 0.2.0
-      http-errors: 2.0.0
-      type-is: 1.6.18
+      http-errors: 2.0.1
+      type-is: 2.0.1
       vary: 1.1.2
 
   '@hono/node-server@1.19.6(hono@4.10.6)':
