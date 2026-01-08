@@ -28,12 +28,21 @@ export class AccountComponentService {
     );
   }
 
+  editAccount(item: AccountInterface): void {
+    if (this.component.addingNode.length > 0) {
+      return; // Don't allow edit while adding
+    }
+    this.component.editingNode = item.id;
+    this.component.editingContent = item.name;
+  }
+
   cancelEdit(item: AccountInterface): void {
     if (this.component.addingNode.length > 0) {
       (this.component.accounts$() as SmartArray<Top, AccountInterface>)
         .removeFromStore!(item, this.component.top['1']!);
     }
     this.component.addingNode = '';
+    this.component.editingNode = '';
     this.component.editingContent = '';
   }
 
@@ -50,6 +59,7 @@ export class AccountComponentService {
       account.name = this.component.editingContent;
     }
     this.component.addingNode = '';
+    this.component.editingNode = '';
     this.component.editingContent = '';
   }
 }

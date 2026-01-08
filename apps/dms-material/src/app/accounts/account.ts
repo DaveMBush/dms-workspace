@@ -62,6 +62,7 @@ export class Account implements OnInit {
   });
 
   addingNode = '';
+  editingNode = '';
   editingContent = '';
 
   onAccountSelect(account: AccountInterface): void {
@@ -84,6 +85,10 @@ export class Account implements OnInit {
 
   protected addAccount(): void {
     this.accountService.addAccount();
+  }
+
+  protected editAccount(item: AccountInterface): void {
+    this.accountService.editAccount(item);
   }
 
   protected cancelEdit(item: AccountInterface): void {

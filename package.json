@@ -8,7 +8,7 @@
     "start:dms-material": "nx run dms-material:serve",
     "start:simulation": "nx run simulation:serve",
     "build:dms": "nx run dms:build",
-    "all": "nx affected -t lint build test",
+    "all": "nx affected -t lint build test --parallel=16",
     "dupcheck": "pnpm jscpd",
     "format": "nx format:write",
     "format:check": "nx format:check",

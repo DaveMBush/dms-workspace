@@ -46,7 +46,46 @@
   }
 
   &.editing-item {
-    padding: 8px 16px;
+    padding: 0;
+
+    // Override Material's overflow: hidden on the content wrapper
+    ::ng-deep .mdc-list-item__content {
+      overflow: visible;
+    }
+  }
+
+  &.account-item-with-actions {
+    .account-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      min-width: 0; // Allow text truncation
+    }
+
+    .account-name {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      margin-right: 8px;
+    }
+
+    .edit-button {
+      opacity: 0;
+      transition: opacity 0.2s;
+      flex-shrink: 0;
+
+      mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+      }
+    }
+
+    &:hover .edit-button {
+      opacity: 1;
+    }
   }
 }
 

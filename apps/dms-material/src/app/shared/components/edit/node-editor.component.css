@@ -1,8 +1,22 @@
 :host {
-  display: block;
-  width: 100%;
+  display: flex;
+  align-items: center;
+  width: calc(100% - 40px);
+  padding: 4px 0;
+  position: relative;
+  left: -12px;
+  z-index: 1;
+  margin-left: -10px;
+  overflow: visible;
 }
 
-mat-form-field {
+input {
+  left: 4px;
+  position: relative;
+  background-color: transparent;
   width: 100%;
+  margin-left: 10px;
+  padding: 4px 8px;
+  font-size: 16px;
+  letter-spacing: 0.496px;
 }
