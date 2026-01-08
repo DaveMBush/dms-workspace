@@ -30,6 +30,7 @@ describe('Account', () => {
     mockAccountService = {
       init: vi.fn(),
       addAccount: vi.fn(),
+      editAccount: vi.fn(),
       cancelEdit: vi.fn(),
       saveEdit: vi.fn(),
     };
@@ -134,6 +135,48 @@ describe('Account', () => {
 
     it('should have navigateToGlobal method', () => {
       expect(component.navigateToGlobal).toBeDefined();
+    });
+  });
+
+  describe('Edit Functionality', () => {
+    it('should have editAccount method', () => {
+      expect((component as any).editAccount).toBeDefined();
+    });
+
+    it('should delegate to service when editAccount is called', () => {
+      mockAccountService.editAccount = vi.fn();
+      const account = mockAccounts[0];
+      (component as any).editAccount(account);
+      expect(mockAccountService.editAccount).toHaveBeenCalledWith(account);
+    });
+
+    it('should render inline editor when editingNode is set', () => {
+      component.editingNode = '1';
+      fixture.detectChanges();
+
+      const editor = fixture.nativeElement.querySelector('dms-node-editor');
+      expect(editor).toBeTruthy();
+    });
+
+    it('should hide account link when editing that account', () => {
+      component.editingNode = '1';
+      fixture.detectChanges();
+
+      const accountLinks = fixture.nativeElement.querySelectorAll(
+        'a[routerlink*="/account/1"]'
+      );
+      expect(accountLinks.length).toBe(0);
+    });
+
+    it('should not allow editing while adding account', () => {
+      component.addingNode = 'new';
+      component.editingNode = '';
+
+      const account = mockAccounts[0];
+      (component as any).editAccount(account);
+
+      // Should not set editingNode when adding
+      expect(component.editingNode).toBe('');
     });
   });
 

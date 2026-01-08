@@ -55,9 +55,11 @@
 
   <mat-nav-list class="accounts-list">
     @for (account of accountsArray$(); track account.id) { @if(addingNode ===
-    account.id) {
-    <mat-list-item class="account-item editing-item">
+    account.id || editingNode === account.id) {
+    <mat-list-item class="account-item account-item-with-actions editing-item">
+      <mat-icon matListItemIcon>account_balance</mat-icon>
       <dms-node-editor
+        matListItemLine
         placeholder="Edit Account"
         [(ngModel)]="editingContent"
         (cancel)="cancelEdit(account)"
@@ -69,10 +71,20 @@
       mat-list-item
       [routerLink]="['/account', account.id]"
       routerLinkActive="active-account"
-      class="account-item"
+      class="account-item account-item-with-actions"
     >
       <mat-icon matListItemIcon>account_balance</mat-icon>
-      <span matListItemTitle>{{ account.name }}</span>
+      <div class="account-content">
+        <span class="account-name">{{ account.name }}</span>
+        <button
+          mat-icon-button
+          class="edit-button"
+          (click)="editAccount(account); $event.preventDefault(); $event.stopPropagation()"
+          aria-label="Edit account"
+        >
+          <mat-icon>edit</mat-icon>
+        </button>
+      </div>
     </a>
     } } @empty {
     <mat-list-item class="empty-message">
