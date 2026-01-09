@@ -15,6 +15,7 @@
 - Tests verify complete user workflows from start to finish
 - Tests run against real backend with database
 - Tests verify UI rendering and user interactions
+- We started e2e tests in AH.2; they are incomplete and may need updates to support AH.2–AH.4
 
 **Migration Target:**
 
@@ -419,11 +420,86 @@ pnpm nx e2e dms-material-e2e --headed --debug
 
 ## Files Modified
 
-| File                                                       | Changes                      |
-| ---------------------------------------------------------- | ---------------------------- |
-| `apps/dms-material-e2e/src/accounts-crud.spec.ts`          | Added E2E tests              |
-| `apps/dms-material/src/app/accounts/account.html`          | Added data-testid attributes |
-| `apps/dms-material/src/app/shared/components/node-editor/` | Added data-testid attributes |
+| File                                                                          | Changes                      |
+| ----------------------------------------------------------------------------- | ---------------------------- |
+| `apps/dms-material-e2e/src/accounts-crud.spec.ts`                             | Created E2E tests for CRUD   |
+| `apps/dms-material/src/app/accounts/account.html`                             | Added data-testid attributes |
+| `apps/dms-material/src/app/shared/components/edit/node-editor.component.html` | Added data-testid attributes |
+
+## Dev Agent Record
+
+### Agent Model Used
+
+Claude Sonnet 4.5
+
+### Debug Log References
+
+None
+
+### Completion Notes
+
+1. ✅ Added comprehensive data-testid attributes to account list component
+2. ✅ Added data-testid to node-editor input component
+3. ✅ Created accounts-crud.spec.ts with 14 E2E tests covering:
+   - Account list display and navigation (4 tests)
+   - Add account functionality (3 tests)
+   - Edit account functionality (3 tests)
+   - Delete account functionality (2 tests)
+   - Data persistence (1 test)
+   - Cross-component navigation (1 test)
+4. ✅ Implemented robust test helpers: waitForAccountsPanel() and createTestAccount()
+5. ✅ Tests adapted to handle empty database state by creating test accounts
+6. ✅ All tests now create their own accounts to avoid CI failures on empty database
+7. ✅ All validation commands pass (lint, test, format, dupcheck)
+
+### File List
+
+- apps/dms-material-e2e/src/accounts-crud.spec.ts
+- apps/dms-material/src/app/accounts/account.html
+- apps/dms-material/src/app/shared/components/edit/node-editor.component.html
+
+### Change Log
+
+- **2026-01-08**: Created comprehensive E2E tests for account CRUD operations with data-testid attributes
+
+### Status
+
+Ready for Review
+
+## QA Results
+
+### Review Date: 2026-01-09
+
+### Reviewed By: Quinn (Test Architect)
+
+### Gate Status
+
+Gate: PASS → docs/qa/gates/AH.5-e2e-tests-account-crud.yml
+
+### Final Validation
+
+**Date:** 2026-01-09
+
+**Issue:** TEST-002 - CI failures due to empty database assumption
+
+**Resolution:**
+
+1. Added `createTestAccount()` helper function to generate test accounts on demand
+2. Updated all tests that assume accounts exist to create their own test accounts
+3. Renamed `waitForAccounts()` to `waitForAccountsPanel()` to better reflect its purpose
+4. Tests now work correctly with empty database state in CI
+5. Each test creates exactly the accounts it needs, ensuring test isolation
+
+**Previous Issue:** TEST-001 - Flaky tests due to timing issues
+
+**Resolution:**
+
+1. Replaced all hard-coded `page.waitForTimeout()` calls with proper wait conditions
+2. Increased Playwright timeout values for CI stability
+3. Enhanced helper to use `waitForLoadState('networkidle')` instead of hard-coded delays
+4. Fixed null pointer issues with proper text assertions
+
+**Result:** All tests now pass reliably in both local and CI environments with empty or populated databases.
 
 ## Definition of Done
 

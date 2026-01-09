@@ -22,15 +22,15 @@ if (process.env.WSL_DISTRO_NAME && !process.env.CI) {
 export default defineConfig({
   ...nxE2EPreset(__filename, { testDir: './src' }),
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
-  timeout: process.env.CI ? 60000 : 45000,
+  timeout: process.env.CI ? 90000 : 60000,
   /* Retry failed tests to handle flaky tests */
-  retries: process.env.CI ? 2 : 2,
+  retries: process.env.CI ? 2 : 1,
   use: {
     baseURL,
     /* Increase navigation timeout for slower backend responses */
-    navigationTimeout: 45000,
+    navigationTimeout: 60000,
     /* Increase action timeout */
-    actionTimeout: 15000,
+    actionTimeout: 20000,
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
   },

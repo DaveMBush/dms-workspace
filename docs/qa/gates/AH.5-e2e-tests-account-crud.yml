@@ -1,0 +1,8 @@
+schema: 1
+story: 'AH.5'
+gate: PASS
+status_reason: 'E2E tests stabilized by replacing hard-coded timeouts with proper wait conditions and increasing Playwright timeout configurations.'
+reviewer: 'Quinn'
+updated: '2026-01-09T12:00:00Z'
+top_issues: []
+waiver: { active: false }

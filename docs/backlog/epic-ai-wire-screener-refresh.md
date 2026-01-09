@@ -28,11 +28,13 @@ Enable the screener refresh functionality in DMS-MATERIAL to populate universe d
 
 ## Stories
 
-1. **Story AI.1:** Create screener service in DMS-MATERIAL
-2. **Story AI.2:** Wire refresh button to service
-3. **Story AI.3:** Add loading and error handling
-4. **Story AI.4:** Add unit tests for screener service
-5. **Story AI.5:** Add e2e tests for screener refresh
+1. **Story AI.1:** TDD - Write unit tests for screener service
+2. **Story AI.2:** Implement screener service in DMS-MATERIAL
+3. **Story AI.3:** TDD - Write tests for refresh button integration
+4. **Story AI.4:** Wire refresh button to service
+5. **Story AI.5:** TDD - Write tests for loading and error handling
+6. **Story AI.6:** Add loading and error handling
+7. **Story AI.7:** Add e2e tests for screener refresh
 
 ## Dependencies
 
