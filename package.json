@@ -87,7 +87,7 @@
     "@nx/workspace": "22.3.3",
     "@playwright/test": "1.55.1",
     "@prisma/client": "^7.2.0",
-    "@schematics/angular": "21.0.4",
+    "@schematics/angular": "21.0.5",
     "@smarttools/eslint-plugin": "1.0.5",
     "@smarttools/eslint-plugin-rxjs": "^1.0.19",
     "@stylistic/eslint-plugin-js": "4.2.0",
