@@ -124,3 +124,9 @@ git commit -m "test: Add failing tests for refresh button integration (TDD red)"
 - [ ] Tests disabled with `.skip`
 - [ ] Tests fail when enabled
 - [ ] CI remains green
+- [ ] All validation commands pass
+  - Run `pnpm all`
+  - Run `pnpm e2e:dms-material`
+  - Run `pnpm dupcheck`
+  - Run `pnpm format`
+  - Repeat all of these if any fail until they all pass

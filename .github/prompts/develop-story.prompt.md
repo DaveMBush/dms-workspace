@@ -1,7 +1,7 @@
 ---
 description: Develop a story using the bmad method dev mode.
 agent: dev
-argument-hint: /develop-story story=AD.3
+argument-hint: story=AD.3
 model: Claude Sonnet 4.5 (copilot)
 ---
 

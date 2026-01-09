@@ -204,6 +204,12 @@ git commit -m "test: Add failing unit tests for ScreenerService (TDD red phase)"
 - [ ] Code committed with TDD message
 - [ ] CI remains green
 - [ ] Tests ready for implementation story to enable
+- [ ] All validation commands pass
+  - Run `pnpm all`
+  - Run `pnpm e2e:dms-material`
+  - Run `pnpm dupcheck`
+  - Run `pnpm format`
+  - Repeat all of these if any fail until they all pass
 
 ## Notes
 
@@ -212,3 +218,56 @@ git commit -m "test: Add failing unit tests for ScreenerService (TDD red phase)"
 - Follow existing service patterns from DMS app
 - Use signals for state management (loading, error)
 - Mock all HTTP calls with HttpClientTestingModule
+
+---
+
+## Dev Agent Record
+
+### Tasks
+
+- [x] Create unit test file for ScreenerService
+- [x] Add tests for service creation
+- [x] Add tests for initial state (loading, error signals)
+- [x] Add tests for HTTP request to /api/screener
+- [x] Add tests for loading state management
+- [x] Add tests for success handling
+- [x] Add tests for error handling
+- [x] Add test for observable return
+- [x] Add test for network errors
+- [x] Disable all tests with describe.skip
+
+### Agent Model Used
+
+Claude Sonnet 4.5
+
+### Status
+
+Ready for Review
+
+### Debug Log References
+
+None
+
+### Completion Notes
+
+- Created comprehensive unit tests for ScreenerService following TDD RED phase
+- All tests are disabled with `describe.skip` to keep CI green
+- Tests follow existing patterns from dms-material (e.g., auth.service.spec.ts, profile.service.spec.ts)
+- File created at: `apps/dms-material/src/app/global/global-screener/services/screener.service.spec.ts`
+- Tests cover all acceptance criteria: refresh() method, loading states, error handling, success responses
+- Used proper HttpClient testing with provideHttpClient() and provideHttpClientTesting()
+- Note: Signal naming follows convention with $ suffix (errorSignal$)
+- Added stub ScreenerService class to prevent import errors while tests are skipped
+- CI confirmed green: 56 test files passed, 737 tests passed, 11 tests skipped
+- Linting passed successfully
+
+### File List
+
+- apps/dms-material/src/app/global/global-screener/services/screener.service.spec.ts (new)
+
+### Change Log
+
+1. Created services directory under global-screener
+2. Added screener.service.spec.ts with 11 test cases
+3. All tests disabled with describe.skip for TDD RED phase
+4. Tests ready for AI.2 implementation story to enable

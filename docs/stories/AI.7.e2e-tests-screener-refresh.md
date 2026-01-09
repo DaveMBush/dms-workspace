@@ -123,3 +123,9 @@ pnpm e2e:dms-material
 - [ ] All tests passing
 - [ ] Tests run in CI
 - [ ] Coverage complete
+- [ ] All validation commands pass
+  - Run `pnpm all`
+  - Run `pnpm e2e:dms-material`
+  - Run `pnpm dupcheck`
+  - Run `pnpm format`
+  - Repeat all of these if any fail until they all pass

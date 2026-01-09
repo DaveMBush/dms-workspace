@@ -99,3 +99,9 @@ Ensure `describe.skip` present.
 - [ ] Tests written for loading/error states
 - [ ] Tests disabled
 - [ ] CI green
+- [ ] All validation commands pass
+  - Run `pnpm all`
+  - Run `pnpm e2e:dms-material`
+  - Run `pnpm dupcheck`
+  - Run `pnpm format`
+  - Repeat all of these if any fail until they all pass
