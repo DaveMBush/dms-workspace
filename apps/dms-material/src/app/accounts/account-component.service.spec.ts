@@ -1,9 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { of } from 'rxjs';
+
 import { AccountComponentService } from './account-component.service';
 import { Account } from './account';
 import { Account as AccountInterface } from '../store/accounts/account.interface';
 import { Top } from '../store/top/top.interface';
+import { ConfirmDialogService } from '../shared/services/confirm-dialog.service';
 
 describe('AccountComponentService', () => {
   let service: AccountComponentService;
@@ -11,10 +15,32 @@ describe('AccountComponentService', () => {
   let mockAccounts: AccountInterface[];
   let mockAddToStore: ReturnType<typeof vi.fn>;
   let mockRemoveFromStore: ReturnType<typeof vi.fn>;
+  let mockRouter: { navigate: ReturnType<typeof vi.fn> };
+  let mockActivatedRoute: { snapshot: { params: Record<string, string> } };
+  let mockConfirmDialogService: { confirm: ReturnType<typeof vi.fn> };
 
   beforeEach(() => {
+    mockRouter = {
+      navigate: vi.fn().mockResolvedValue(true),
+    };
+
+    mockActivatedRoute = {
+      snapshot: {
+        params: {},
+      },
+    };
+
+    mockConfirmDialogService = {
+      confirm: vi.fn().mockReturnValue(of(false)),
+    };
+
     TestBed.configureTestingModule({
-      providers: [AccountComponentService],
+      providers: [
+        AccountComponentService,
+        { provide: Router, useValue: mockRouter },
+        { provide: ActivatedRoute, useValue: mockActivatedRoute },
+        { provide: ConfirmDialogService, useValue: mockConfirmDialogService },
+      ],
     });
 
     service = TestBed.inject(AccountComponentService);
