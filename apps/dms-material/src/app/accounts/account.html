@@ -76,14 +76,24 @@
       <mat-icon matListItemIcon>account_balance</mat-icon>
       <div class="account-content">
         <span class="account-name">{{ account.name }}</span>
-        <button
-          mat-icon-button
-          class="edit-button"
-          (click)="editAccount(account); $event.preventDefault(); $event.stopPropagation()"
-          aria-label="Edit account"
-        >
-          <mat-icon>edit</mat-icon>
-        </button>
+        <div class="action-buttons">
+          <button
+            mat-icon-button
+            class="edit-button"
+            (click)="editAccount($event,account)"
+            aria-label="Edit account"
+          >
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            class="delete-button"
+            (click)="deleteAccount($event,account);"
+            aria-label="Delete account"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
       </div>
     </a>
     } } @empty {

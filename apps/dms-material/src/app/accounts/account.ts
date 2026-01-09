@@ -87,7 +87,9 @@ export class Account implements OnInit {
     this.accountService.addAccount();
   }
 
-  protected editAccount(item: AccountInterface): void {
+  protected editAccount(event: Event, item: AccountInterface): void {
+    event.preventDefault();
+    event.stopPropagation();
     this.accountService.editAccount(item);
   }
 
@@ -97,5 +99,11 @@ export class Account implements OnInit {
 
   protected saveEdit(item: AccountInterface): void {
     this.accountService.saveEdit(item);
+  }
+
+  protected deleteAccount(event: Event, item: AccountInterface): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.accountService.deleteAccount(item);
   }
 }

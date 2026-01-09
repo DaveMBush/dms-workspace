@@ -1,0 +1,8 @@
+schema: 1
+story: 'AH.4'
+gate: PASS
+status_reason: 'Delete functionality implemented successfully without confirmation requirement.'
+reviewer: 'Quinn'
+updated: '2026-01-08T13:00:00Z'
+top_issues: []
+waiver: { active: false }

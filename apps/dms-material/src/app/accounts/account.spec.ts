@@ -21,8 +21,10 @@ describe('Account', () => {
   let mockAccountService: {
     init: ReturnType<typeof vi.fn>;
     addAccount: ReturnType<typeof vi.fn>;
+    editAccount: ReturnType<typeof vi.fn>;
     cancelEdit: ReturnType<typeof vi.fn>;
     saveEdit: ReturnType<typeof vi.fn>;
+    deleteAccount: ReturnType<typeof vi.fn>;
   };
   let mockAccounts: AccountInterface[];
 
@@ -33,6 +35,7 @@ describe('Account', () => {
       editAccount: vi.fn(),
       cancelEdit: vi.fn(),
       saveEdit: vi.fn(),
+      deleteAccount: vi.fn(),
     };
 
     mockAccounts = [
@@ -146,7 +149,11 @@ describe('Account', () => {
     it('should delegate to service when editAccount is called', () => {
       mockAccountService.editAccount = vi.fn();
       const account = mockAccounts[0];
-      (component as any).editAccount(account);
+      const mockEvent = {
+        preventDefault: vi.fn(),
+        stopPropagation: vi.fn(),
+      } as any;
+      (component as any).editAccount(mockEvent, account);
       expect(mockAccountService.editAccount).toHaveBeenCalledWith(account);
     });
 
@@ -173,7 +180,11 @@ describe('Account', () => {
       component.editingNode = '';
 
       const account = mockAccounts[0];
-      (component as any).editAccount(account);
+      const mockEvent = {
+        preventDefault: vi.fn(),
+        stopPropagation: vi.fn(),
+      } as any;
+      (component as any).editAccount(mockEvent, account);
 
       // Should not set editingNode when adding
       expect(component.editingNode).toBe('');
@@ -196,6 +207,47 @@ describe('Account', () => {
       const emptyMessage =
         fixture.nativeElement.querySelector('.empty-message');
       expect(emptyMessage).toBeFalsy();
+    });
+  });
+
+  describe('Delete Functionality', () => {
+    it('should have delete button for each account', () => {
+      fixture.detectChanges();
+
+      const deleteButtons =
+        fixture.nativeElement.querySelectorAll('.delete-button');
+      expect(deleteButtons.length).toBeGreaterThan(0);
+    });
+
+    it('should delegate to service when deleteAccount is called', () => {
+      mockAccountService.deleteAccount = vi.fn();
+      const account = mockAccounts[0];
+      const mockEvent = {
+        preventDefault: vi.fn(),
+        stopPropagation: vi.fn(),
+      } as any;
+      (component as any).deleteAccount(mockEvent, account);
+      expect(mockAccountService.deleteAccount).toHaveBeenCalledWith(account);
+    });
+
+    it('should not show delete button when editing', () => {
+      component.editingNode = '1';
+      fixture.detectChanges();
+
+      const deleteButton = fixture.nativeElement.querySelector(
+        'a[routerlink*="/account/1"] .delete-button'
+      );
+      expect(deleteButton).toBeFalsy();
+    });
+
+    it('should not show delete button when adding', () => {
+      component.addingNode = '1';
+      fixture.detectChanges();
+
+      const deleteButton = fixture.nativeElement.querySelector(
+        'a[routerlink*="/account/1"] .delete-button'
+      );
+      expect(deleteButton).toBeFalsy();
     });
   });
 });

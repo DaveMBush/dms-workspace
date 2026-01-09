@@ -71,7 +71,14 @@
       margin-right: 8px;
     }
 
-    .edit-button {
+    .action-buttons {
+      display: flex;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    .edit-button,
+    .delete-button {
       opacity: 0;
       transition: opacity 0.2s;
       flex-shrink: 0;
@@ -83,7 +90,12 @@
       }
     }
 
-    &:hover .edit-button {
+    .delete-button mat-icon {
+      color: var(--dms-error);
+    }
+
+    &:hover .edit-button,
+    &:hover .delete-button {
       opacity: 1;
     }
   }

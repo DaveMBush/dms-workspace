@@ -1,6 +1,8 @@
-import { Injectable } from '@angular/core';
-import { SmartArray } from '@smarttools/smart-signals';
+import { inject, Injectable } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { RowProxyDelete, SmartArray } from '@smarttools/smart-signals';
 
+import { ConfirmDialogService } from '../shared/services/confirm-dialog.service';
 import { Account as AccountInterface } from '../store/accounts/account.interface';
 import { Top } from '../store/top/top.interface';
 import { Account } from './account';
@@ -8,6 +10,9 @@ import { Account } from './account';
 @Injectable()
 export class AccountComponentService {
   private component!: Account;
+  private confirmDialogService = inject(ConfirmDialogService);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
   init(component: Account): void {
     this.component = component;
@@ -61,5 +66,9 @@ export class AccountComponentService {
     this.component.addingNode = '';
     this.component.editingNode = '';
     this.component.editingContent = '';
+  }
+
+  deleteAccount(item: AccountInterface): void {
+    (item as RowProxyDelete).delete!();
   }
 }
