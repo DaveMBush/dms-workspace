@@ -67,25 +67,15 @@ export class UniverseComponent {
 Update template:
 
 ```html
-<button
-  mat-raised-button
-  color="primary"
-  data-testid="refresh-button"
-  (click)="onRefresh()"
-  [disabled]="loading()"
->
+<button mat-raised-button color="primary" data-testid="refresh-button" (click)="onRefresh()" [disabled]="loading()">
   <mat-icon>refresh</mat-icon>
   Refresh Universe
 </button>
 
 @if (loading()) {
-  <mat-progress-spinner mode="indeterminate" diameter="24"></mat-progress-spinner>
-}
-
-@if (error()) {
-  <div class="error-message" data-testid="error-message">
-    {{ error() }}
-  </div>
+<mat-progress-spinner mode="indeterminate" diameter="24"></mat-progress-spinner>
+} @if (error()) {
+<div class="error-message" data-testid="error-message">{{ error() }}</div>
 }
 ```
 

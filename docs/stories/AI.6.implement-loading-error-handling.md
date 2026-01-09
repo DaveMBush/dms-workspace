@@ -64,22 +64,18 @@ Update template:
 
 ```html
 @if (loading()) {
-  <div class="loading-overlay">
-    <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
-    <p>Refreshing universe data...</p>
-  </div>
-}
-
-@if (error()) {
-  <mat-card class="error-card" data-testid="error-message">
-    <mat-card-content>
-      <mat-icon color="warn">error</mat-icon>
-      <p>{{ error() }}</p>
-      <button mat-button data-testid="retry-button" (click)="onRefresh()">
-        Retry
-      </button>
-    </mat-card-content>
-  </mat-card>
+<div class="loading-overlay">
+  <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+  <p>Refreshing universe data...</p>
+</div>
+} @if (error()) {
+<mat-card class="error-card" data-testid="error-message">
+  <mat-card-content>
+    <mat-icon color="warn">error</mat-icon>
+    <p>{{ error() }}</p>
+    <button mat-button data-testid="retry-button" (click)="onRefresh()">Retry</button>
+  </mat-card-content>
+</mat-card>
 }
 ```
 

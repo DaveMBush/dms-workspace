@@ -47,7 +47,8 @@ In `apps/dms-material/src/app/services/screener/screener.service.spec.ts`:
 
 ```typescript
 // Remove .skip to enable tests
-describe('ScreenerService', () => {  // Was: describe.skip
+describe('ScreenerService', () => {
+  // Was: describe.skip
   // ... existing tests
 });
 ```
@@ -97,9 +98,7 @@ export class ScreenerService {
       }),
       catchError((error) => {
         this.loadingSignal.set(false);
-        this.errorSignal.set(
-          error.error?.message || 'Failed to refresh screener data'
-        );
+        this.errorSignal.set(error.error?.message || 'Failed to refresh screener data');
         return of(null);
       })
     );
@@ -134,12 +133,14 @@ Expected: All tests pass.
 ### Implementation Details
 
 1. **Service Structure**:
+
    - Injectable with providedIn: 'root'
    - Private signals for mutable state
    - Public readonly signals for consumers
    - Inject HttpClient
 
 2. **Refresh Method**:
+
    - Set loading to true at start
    - Clear any previous errors
    - Make HTTP GET to /api/screener
