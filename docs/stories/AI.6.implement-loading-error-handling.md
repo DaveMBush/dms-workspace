@@ -91,3 +91,9 @@ pnpm nx test dms-material
 - [ ] Error handling implemented
 - [ ] All tests passing
 - [ ] Manual testing complete
+- [ ] All validation commands pass
+  - Run `pnpm all`
+  - Run `pnpm e2e:dms-material`
+  - Run `pnpm dupcheck`
+  - Run `pnpm format`
+  - Repeat all of these if any fail until they all pass

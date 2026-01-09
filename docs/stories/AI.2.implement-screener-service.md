@@ -160,8 +160,12 @@ Expected: All tests pass.
 - [ ] Service uses signals for state
 - [ ] HTTP error handling works
 - [ ] Code follows project patterns
-- [ ] Run `pnpm nx test dms-material`
-- [ ] Run `pnpm nx lint dms-material`
+- [ ] All validation commands pass
+  - Run `pnpm all`
+  - Run `pnpm e2e:dms-material`
+  - Run `pnpm dupcheck`
+  - Run `pnpm format`
+  - Repeat all of these if any fail until they all pass
 
 ## Notes
 

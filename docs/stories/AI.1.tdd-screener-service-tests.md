@@ -204,6 +204,12 @@ git commit -m "test: Add failing unit tests for ScreenerService (TDD red phase)"
 - [ ] Code committed with TDD message
 - [ ] CI remains green
 - [ ] Tests ready for implementation story to enable
+- [ ] All validation commands pass
+  - Run `pnpm all`
+  - Run `pnpm e2e:dms-material`
+  - Run `pnpm dupcheck`
+  - Run `pnpm format`
+  - Repeat all of these if any fail until they all pass
 
 ## Notes
 

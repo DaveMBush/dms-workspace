@@ -18,6 +18,7 @@ class ScreenerService {
       return value; /* stub */
     },
   };
+
   refresh = () => ({
     subscribe: () => {
       /* stub */
