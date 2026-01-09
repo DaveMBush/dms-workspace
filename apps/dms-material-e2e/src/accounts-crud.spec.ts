@@ -3,32 +3,46 @@ import { test, expect, Page } from 'playwright/test';
 import { login } from './helpers/login.helper';
 
 /**
- * Wait for accounts to load with better error handling
+ * Wait for accounts to load or empty state to appear
  */
-async function waitForAccounts(page: Page): Promise<void> {
-  // Give Angular time to bootstrap
-  await page.waitForTimeout(2000);
-
+async function waitForAccountsPanel(page: Page): Promise<void> {
   // Wait for accounts panel to be visible
-  await page.waitForSelector('[data-testid="accounts-panel"]', {
-    timeout: 10000,
+  await expect(page.locator('[data-testid="accounts-panel"]')).toBeVisible({
+    timeout: 15000,
   });
 
-  // Wait for accounts to load - may take time for API call
-  await page
-    .waitForSelector('[data-testid="account-item"]', { timeout: 30000 })
-    .catch(async () => {
-      // If no accounts found, wait for empty state
-      await page
-        .waitForSelector('text=No accounts found', { timeout: 5000 })
-        .catch(() => null);
-    });
+  // Wait for either accounts to load OR the panel to be stable (networkidle)
+  await page.waitForLoadState('networkidle', { timeout: 30000 });
+}
+
+/**
+ * Create a test account and return its name
+ */
+async function createTestAccount(
+  page: Page,
+  nameSuffix: string
+): Promise<string> {
+  const addButton = page.locator('[data-testid="add-account-button"]');
+  await addButton.click();
+
+  const input = page.locator('[data-testid="node-editor-input"]');
+  const accountName = `Test Account ${nameSuffix} ${Date.now()}`;
+  await input.fill(accountName);
+  await input.press('Enter');
+
+  // Wait for account to appear in list
+  const newAccount = page
+    .locator('[data-testid="account-item"]')
+    .filter({ hasText: accountName });
+  await expect(newAccount).toBeVisible({ timeout: 10000 });
+
+  return accountName;
 }
 
 test.describe('Account CRUD Operations', () => {
   test.beforeEach(async ({ page }) => {
     await login(page);
-    await waitForAccounts(page);
+    await waitForAccountsPanel(page);
   });
 
   test.describe('Account List', () => {
@@ -37,7 +51,12 @@ test.describe('Account CRUD Operations', () => {
       await expect(accountsPanel).toBeVisible();
     });
 
-    test('should display account list items', async ({ page }) => {
+    test('should display account list items or handle empty state', async ({
+      page,
+    }) => {
+      // Create a test account first to ensure we have at least one
+      await createTestAccount(page, 'List');
+
       const accountItems = page.locator('[data-testid="account-item"]');
       await expect(accountItems.first()).toBeVisible();
     });
@@ -48,16 +67,16 @@ test.describe('Account CRUD Operations', () => {
     });
 
     test('should navigate to account on click', async ({ page }) => {
-      const firstAccount = page.locator('[data-testid="account-item"]').first();
-      const accountName = await firstAccount
-        .locator('[data-testid="account-name"]')
-        .textContent();
+      // Create a test account first
+      const accountName = await createTestAccount(page, 'Nav');
 
-      await firstAccount.click();
+      // Find and click the account
+      const testAccount = page
+        .locator('[data-testid="account-item"]')
+        .filter({ hasText: accountName });
+      await testAccount.click();
 
       await expect(page).toHaveURL(/\/account\/.+/);
-      // Verify we're on the account page (URL changed)
-      expect(accountName).toBeTruthy();
     });
   });
 
@@ -117,8 +136,13 @@ test.describe('Account CRUD Operations', () => {
 
   test.describe('Edit Account', () => {
     test('should edit account name successfully', async ({ page }) => {
-      // Click edit button on first account
-      const accountItem = page.locator('[data-testid="account-item"]').first();
+      // Create a test account first
+      const originalName = await createTestAccount(page, 'Edit');
+
+      // Click edit button on the created account
+      const accountItem = page
+        .locator('[data-testid="account-item"]')
+        .filter({ hasText: originalName });
       const editButton = accountItem.locator(
         '[data-testid="edit-account-button"]'
       );
@@ -148,10 +172,12 @@ test.describe('Account CRUD Operations', () => {
     });
 
     test('should cancel edit account', async ({ page }) => {
-      const accountItem = page.locator('[data-testid="account-item"]').first();
-      const originalName = await accountItem
-        .locator('[data-testid="account-name"]')
-        .textContent();
+      // Create a test account first
+      const originalName = await createTestAccount(page, 'EditCancel');
+
+      const accountItem = page
+        .locator('[data-testid="account-item"]')
+        .filter({ hasText: originalName });
 
       const editButton = accountItem.locator(
         '[data-testid="edit-account-button"]'
@@ -167,18 +193,19 @@ test.describe('Account CRUD Operations', () => {
       // Wait for editor to close
       await expect(input).not.toBeVisible({ timeout: 5000 });
 
-      // Verify name unchanged
-      const stillOriginalAccount = page
-        .locator('[data-testid="account-item"]')
-        .filter({ hasText: originalName || '' });
-      await expect(stillOriginalAccount).toBeVisible();
+      // Verify name unchanged by checking the same account item
+      await expect(
+        accountItem.locator('[data-testid="account-name"]')
+      ).toHaveText(originalName);
     });
 
     test('should not save empty account name on edit', async ({ page }) => {
-      const accountItem = page.locator('[data-testid="account-item"]').first();
-      const originalName = await accountItem
-        .locator('[data-testid="account-name"]')
-        .textContent();
+      // Create a test account first
+      const originalName = await createTestAccount(page, 'EditEmpty');
+
+      const accountItem = page
+        .locator('[data-testid="account-item"]')
+        .filter({ hasText: originalName });
 
       const editButton = accountItem.locator(
         '[data-testid="edit-account-button"]'
@@ -201,10 +228,9 @@ test.describe('Account CRUD Operations', () => {
       await expect(input).not.toBeVisible({ timeout: 5000 });
 
       // Name should be unchanged
-      const unchangedAccount = page
-        .locator('[data-testid="account-item"]')
-        .filter({ hasText: originalName || '' });
-      await expect(unchangedAccount).toBeVisible();
+      await expect(
+        accountItem.locator('[data-testid="account-name"]')
+      ).toHaveText(originalName);
     });
   });
 
@@ -239,32 +265,29 @@ test.describe('Account CRUD Operations', () => {
     test('should delete account from side panel while on account page', async ({
       page,
     }) => {
-      // Navigate to first account
-      const firstAccount = page.locator('[data-testid="account-item"]').first();
-      await firstAccount.click();
+      // Create a test account first
+      const accountName = await createTestAccount(page, 'DeleteFromPage');
+
+      // Navigate to the created account
+      const testAccount = page
+        .locator('[data-testid="account-item"]')
+        .filter({ hasText: accountName });
+      await testAccount.click();
 
       await expect(page).toHaveURL(/\/account\/.+/);
-
-      // Get account name before deletion
-      const accountName = await page
-        .locator('[data-testid="accounts-panel"]')
-        .locator('[data-testid="account-item"]')
-        .first()
-        .locator('[data-testid="account-name"]')
-        .textContent();
 
       // Delete the account from side panel
       const deleteButton = page
         .locator('[data-testid="accounts-panel"]')
         .locator('[data-testid="account-item"]')
-        .first()
+        .filter({ hasText: accountName })
         .locator('[data-testid="delete-account-button"]');
       await deleteButton.click();
 
       // Verify account is removed from list
       const deletedAccount = page
         .locator('[data-testid="account-item"]')
-        .filter({ hasText: accountName || '' });
+        .filter({ hasText: accountName });
       await expect(deletedAccount).not.toBeVisible({ timeout: 10000 });
     });
   });
@@ -289,7 +312,7 @@ test.describe('Account CRUD Operations', () => {
 
       // Reload page
       await page.reload();
-      await waitForAccounts(page);
+      await waitForAccountsPanel(page);
 
       // Verify account still exists
       const persistedAccount = page

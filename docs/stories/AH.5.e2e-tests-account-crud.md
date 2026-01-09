@@ -15,7 +15,7 @@
 - Tests verify complete user workflows from start to finish
 - Tests run against real backend with database
 - Tests verify UI rendering and user interactions
-- We stared e2e tests during AH.2 but they are incomplete and may need to be modified to support AH.2 - 4
+- We started e2e tests in AH.2; they are incomplete and may need updates to support AH.2–AH.4
 
 **Migration Target:**
 
@@ -441,15 +441,15 @@ None
 1. ✅ Added comprehensive data-testid attributes to account list component
 2. ✅ Added data-testid to node-editor input component
 3. ✅ Created accounts-crud.spec.ts with 14 E2E tests covering:
-   - Account list display and navigation (3 tests)
+   - Account list display and navigation (4 tests)
    - Add account functionality (3 tests)
    - Edit account functionality (3 tests)
    - Delete account functionality (2 tests)
    - Data persistence (1 test)
    - Cross-component navigation (1 test)
-4. ✅ Implemented robust test helper to handle account loading timing
-5. ✅ Tests adapted to match actual implementation behavior per user instructions
-6. ✅ 37/42 tests passing (88% success rate) with some flaky tests due to timing
+4. ✅ Implemented robust test helpers: waitForAccountsPanel() and createTestAccount()
+5. ✅ Tests adapted to handle empty database state by creating test accounts
+6. ✅ All tests now create their own accounts to avoid CI failures on empty database
 7. ✅ All validation commands pass (lint, test, format, dupcheck)
 
 ### File List
@@ -480,28 +480,26 @@ Gate: PASS → docs/qa/gates/AH.5-e2e-tests-account-crud.yml
 
 **Date:** 2026-01-09
 
-**Test Results:** All E2E tests passing (Exit Code: 0) with improved stability after timeout fixes.
-
-### Fixes Applied
-
-**Date:** 2026-01-09
-
-**Issue:** TEST-001 - Flaky tests due to timing issues
+**Issue:** TEST-002 - CI failures due to empty database assumption
 
 **Resolution:**
 
-1. Replaced all hard-coded `page.waitForTimeout()` calls with proper wait conditions using `expect().toBeVisible()` and `expect().not.toBeVisible()`
-2. Increased Playwright timeout values:
-   - Test timeout: 60s local, 90s CI (was 45s/60s)
-   - Navigation timeout: 60s (was 45s)
-   - Action timeout: 20s (was 15s)
-3. Enhanced `waitForAccounts()` helper:
-   - Uses `waitForLoadState('networkidle')` instead of hard-coded delays
-   - Increased selector timeouts from 10s/30s to 15s/45s
-   - Added proper error handling for empty states
-4. Reduced retries to 1 locally (2 in CI) since tests should be more stable
+1. Added `createTestAccount()` helper function to generate test accounts on demand
+2. Updated all tests that assume accounts exist to create their own test accounts
+3. Renamed `waitForAccounts()` to `waitForAccountsPanel()` to better reflect its purpose
+4. Tests now work correctly with empty database state in CI
+5. Each test creates exactly the accounts it needs, ensuring test isolation
 
-**Result:** Tests are now stable and passing consistently in both local and CI environments.
+**Previous Issue:** TEST-001 - Flaky tests due to timing issues
+
+**Resolution:**
+
+1. Replaced all hard-coded `page.waitForTimeout()` calls with proper wait conditions
+2. Increased Playwright timeout values for CI stability
+3. Enhanced helper to use `waitForLoadState('networkidle')` instead of hard-coded delays
+4. Fixed null pointer issues with proper text assertions
+
+**Result:** All tests now pass reliably in both local and CI environments with empty or populated databases.
 
 ## Definition of Done
 
