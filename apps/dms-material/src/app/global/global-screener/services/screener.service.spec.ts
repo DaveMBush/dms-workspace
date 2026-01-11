@@ -6,28 +6,11 @@ import {
 import { provideHttpClient } from '@angular/common/http';
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 
-// Commented out until implementation - uncomment in AI.2
-// import { ScreenerService } from './screener.service';
+// Import the actual service implementation
+import { ScreenerService } from './screener.service';
 
-// Stub class for skipped tests - remove when implementing
-class ScreenerService {
-  loading = () => false;
-  error = () => null;
-  errorSignal$ = {
-    set: (value: string) => {
-      return value; /* stub */
-    },
-  };
-
-  refresh = () => ({
-    subscribe: () => {
-      /* stub */
-    },
-  });
-}
-
-// DISABLE TESTS FOR CI - Will be enabled in implementation story
-describe.skip('ScreenerService', () => {
+// Tests enabled for AI.2 implementation
+describe('ScreenerService', () => {
   let service: ScreenerService;
   let httpMock: HttpTestingController;
 
@@ -61,7 +44,7 @@ describe.skip('ScreenerService', () => {
   });
 
   it('should call GET /api/screener on refresh()', () => {
-    service.refresh();
+    service.refresh().subscribe();
 
     const req = httpMock.expectOne('/api/screener');
     expect(req.request.method).toBe('GET');
@@ -70,7 +53,7 @@ describe.skip('ScreenerService', () => {
   });
 
   it('should set loading to true during refresh', () => {
-    service.refresh();
+    service.refresh().subscribe();
 
     expect(service.loading()).toBe(true);
 
@@ -79,7 +62,7 @@ describe.skip('ScreenerService', () => {
   });
 
   it('should set loading to false after successful refresh', () => {
-    service.refresh();
+    service.refresh().subscribe();
 
     const req = httpMock.expectOne('/api/screener');
     req.flush({ success: true });
@@ -91,7 +74,7 @@ describe.skip('ScreenerService', () => {
     // Set initial error
     service.errorSignal$.set('Previous error');
 
-    service.refresh();
+    service.refresh().subscribe();
 
     const req = httpMock.expectOne('/api/screener');
     req.flush({ success: true });
@@ -100,7 +83,7 @@ describe.skip('ScreenerService', () => {
   });
 
   it('should handle HTTP error responses', () => {
-    service.refresh();
+    service.refresh().subscribe();
 
     const req = httpMock.expectOne('/api/screener');
     req.flush('Error message', { status: 500, statusText: 'Server Error' });
@@ -110,7 +93,7 @@ describe.skip('ScreenerService', () => {
   });
 
   it('should set error message on failure', () => {
-    service.refresh();
+    service.refresh().subscribe();
 
     const req = httpMock.expectOne('/api/screener');
     req.flush(
@@ -126,12 +109,14 @@ describe.skip('ScreenerService', () => {
     expect(result).toBeDefined();
     expect(typeof result.subscribe).toBe('function');
 
+    result.subscribe();
+
     const req = httpMock.expectOne('/api/screener');
     req.flush({ success: true });
   });
 
   it('should handle network errors', () => {
-    service.refresh();
+    service.refresh().subscribe();
 
     const req = httpMock.expectOne('/api/screener');
     req.error(new ProgressEvent('error'));
