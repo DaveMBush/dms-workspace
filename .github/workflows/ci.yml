@@ -43,7 +43,8 @@ jobs:
       # IMPORTANT: Must run AFTER dependencies and Playwright installation
       # Distributed agents will also run postinstall to generate Prisma client
       # Learn more at https://nx.dev/ci/reference/nx-cloud-cli#npx-nxcloud-startcirun
-      - run: npx nx-cloud start-ci-run --distribute-on="3 linux-medium-js" --stop-agents-after="e2e-ci"
+      # Distribution is started right before e2e tests to avoid overloading agents
+      # with lint/build/test tasks that should run sequentially on main runner
 
       # Prepend any command with "nx-cloud record --" to record its logs to Nx Cloud
       # - run: npx nx-cloud record -- echo Hello World
@@ -53,6 +54,10 @@ jobs:
       - run: pnpm dupcheck
       # Tests run with SQLite (default environment), builds use PostgreSQL schema
       - run: pnpm all
+
+      # Start distribution for e2e tests only - this prevents lint/build/test
+      # from being distributed which would overload agents
+      - run: npx nx-cloud start-ci-run --distribute-on="3 linux-medium-js" --stop-agents-after="e2e-ci"
 
       # Run e2e tests for dms-material (using atomized CI target)
       # Ensure the server is built in CI (affected may skip it for unrelated changes)
