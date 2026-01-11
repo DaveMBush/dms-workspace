@@ -46,17 +46,16 @@ jobs:
           node-version: 22.21.1
           cache: 'pnpm'
 
+      # Prisma client is auto-generated via postinstall script
       - run: pnpm i --frozen-lockfile
-      # Generate Prisma client for SQLite (used by tests and e2e)
-      - run: pnpm prisma generate
 
       # Install Playwright browsers for e2e tests
       - run: pnpm playwright install --with-deps
       - uses: nrwl/nx-set-shas@v4
 
       # This enables task distribution via Nx Cloud
-      # IMPORTANT: Must run AFTER dependencies, Prisma generation, and Playwright installation
-      # so that distributed agents have all required dependencies
+      # IMPORTANT: Must run AFTER dependencies and Playwright installation
+      # Distributed agents will also run postinstall to generate Prisma client
       # Learn more at https://nx.dev/ci/reference/nx-cloud-cli#npx-nxcloud-startcirun
       - run: npx nx-cloud start-ci-run --distribute-on="3 linux-medium-js" --stop-agents-after="e2e-ci"
 
