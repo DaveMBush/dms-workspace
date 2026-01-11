@@ -55,3 +55,4 @@ database copy.dbbackups/
 logs
 postgres-backup-*.sql
 lint-output.txt
+test-database-*.db
