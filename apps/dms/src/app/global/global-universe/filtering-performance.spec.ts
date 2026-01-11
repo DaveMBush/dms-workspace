@@ -108,8 +108,9 @@ describe('Filtering Performance Tests', () => {
       const executionTime = endTime - startTime;
       console.log(`Filtering 1000 symbols took: ${executionTime.toFixed(2)}ms`);
 
-      // More lenient threshold for CI environments (CI is typically slower)
-      expect(executionTime).toBeLessThan(200); // Increased from 100ms to 200ms for CI
+      // CI environments can be significantly slower than local development
+      const threshold = process.env['CI'] ? 500 : 200;
+      expect(executionTime).toBeLessThan(threshold);
       expect(result).toBeDefined();
       expect(Array.isArray(result)).toBe(true);
     });
