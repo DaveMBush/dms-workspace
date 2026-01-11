@@ -3,7 +3,16 @@
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
     "module": "esnext",
-    "types": ["vitest/globals", "node", "vitest"]
+    "types": [
+      "vitest/globals",
+      "node",
+      "vitest"
+    ]
   },
-  "include": ["vitest.config.ts", "src/**/*.test.ts", "src/**/*.spec.ts"]
+  "include": [
+    "vitest.config.ts",
+    "vitest.teardown.ts",
+    "src/**/*.test.ts",
+    "src/**/*.spec.ts"
+  ]
 }

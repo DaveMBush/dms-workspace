@@ -49,6 +49,8 @@ const eslintConfig = async () => {
         'vite.config.ts',
         '**/vitest.config.ts',
         'vitest.config.ts',
+        '**/vitest.teardown.ts',
+        'vitest.teardown.ts',
         'apps/infrastructure/**/*.test.js',
       ],
     },
