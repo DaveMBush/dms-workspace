@@ -9,6 +9,8 @@ test.describe('Authentication Performance Tests', () => {
   test.beforeEach(async ({ page }) => {
     // Clear any existing session state
     await page.context().clearCookies();
+    // Navigate to the app first so sessionStorage/localStorage are accessible
+    await page.goto('/');
     await page.evaluate(() => {
       sessionStorage.clear();
       localStorage.clear();
