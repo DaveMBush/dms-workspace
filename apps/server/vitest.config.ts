@@ -17,7 +17,7 @@ export default defineConfig({
     // Vitest automatically provides a unique workerId for each worker
     env: {
       DATABASE_PROVIDER: 'sqlite',
-      DATABASE_URL: 'file:./test-database-{workerId}.db',
+      DATABASE_URL: 'file:./test-database.db',
       NODE_ENV: 'test',
     },
     // Ensure tests run in isolated pools to prevent database conflicts
