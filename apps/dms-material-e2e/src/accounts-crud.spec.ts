@@ -302,6 +302,15 @@ test.describe('Account CRUD Operations', () => {
       const accountName = 'Persist Test ' + Date.now();
       await input.fill(accountName);
 
+      // Wait for the account save API call to complete
+      const saveResponsePromise = page.waitForResponse(
+        (response) =>
+          response.url().includes('/api/accounts') &&
+          (response.request().method() === 'POST' ||
+            response.request().method() === 'PUT'),
+        { timeout: 10000 }
+      );
+
       await input.press('Enter');
 
       // Wait for account to appear
@@ -309,6 +318,9 @@ test.describe('Account CRUD Operations', () => {
         .locator('[data-testid="account-item"]')
         .filter({ hasText: accountName });
       await expect(newAccount).toBeVisible({ timeout: 10000 });
+
+      // Ensure the save API call completed before reloading
+      await saveResponsePromise;
 
       // Reload page
       await page.reload();
