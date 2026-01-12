@@ -8,7 +8,9 @@
   "targets": {
     "build": {
       "executor": "@angular/build:application",
-      "outputs": ["{options.outputPath}"],
+      "outputs": [
+        "{options.outputPath}"
+      ],
       "options": {
         "outputPath": "dist/apps/dms-material",
         "browser": "apps/dms-material/src/main.ts",
@@ -21,7 +23,9 @@
             "input": "apps/dms-material/public"
           }
         ],
-        "styles": ["apps/dms-material/src/styles.scss"]
+        "styles": [
+          "apps/dms-material/src/styles.scss"
+        ]
       },
       "configurations": {
         "production": {
@@ -92,7 +96,9 @@
     },
     "test": {
       "executor": "@nx/vitest:test",
-      "outputs": ["{options.reportsDirectory}"],
+      "outputs": [
+        "{options.reportsDirectory}"
+      ],
       "options": {
         "reportsDirectory": "../../coverage/apps/dms-material",
         "passWithNoTests": true
@@ -106,6 +112,16 @@
         "port": 4201,
         "staticFilePath": "dist/apps/dms-material/browser",
         "spa": true
+      }
+    },
+    "serve-e2e": {
+      "continuous": true,
+      "executor": "@angular/build:dev-server",
+      "options": {
+        "buildTarget": "dms-material:build:development",
+        "port": 4301,
+        "proxyConfig": "apps/dms-material/proxy.test-conf.json",
+        "hmr": false
       }
     }
   }
