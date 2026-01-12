@@ -8,9 +8,7 @@
   "targets": {
     "build": {
       "executor": "@angular/build:application",
-      "outputs": [
-        "{options.outputPath}"
-      ],
+      "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/dms-material",
         "browser": "apps/dms-material/src/main.ts",
@@ -23,9 +21,7 @@
             "input": "apps/dms-material/public"
           }
         ],
-        "styles": [
-          "apps/dms-material/src/styles.scss"
-        ]
+        "styles": ["apps/dms-material/src/styles.scss"]
       },
       "configurations": {
         "production": {
@@ -96,9 +92,7 @@
     },
     "test": {
       "executor": "@nx/vitest:test",
-      "outputs": [
-        "{options.reportsDirectory}"
-      ],
+      "outputs": ["{options.reportsDirectory}"],
       "options": {
         "reportsDirectory": "../../coverage/apps/dms-material",
         "passWithNoTests": true
