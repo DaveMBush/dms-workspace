@@ -139,7 +139,6 @@ const eslintConfig = async () => {
             'apps/dms-material/tsconfig.spec.json',
             'apps/server/tsconfig.app.json',
             'apps/server/tsconfig.spec.json',
-            'apps/dms-e2e/tsconfig.json',
             'apps/dms-material-e2e/tsconfig.json',
           ],
         },
@@ -165,7 +164,6 @@ const eslintConfig = async () => {
               'apps/dms-material/tsconfig.app.json',
               'apps/dms-material/tsconfig.spec.json',
               'apps/server/tsconfig.app.json',
-              'apps/dms-e2e/tsconfig.json',
               'apps/dms-material-e2e/tsconfig.json',
             ],
           },
@@ -211,7 +209,6 @@ const eslintConfig = async () => {
               'apps/dms-material/tsconfig.app.json',
               'apps/dms-material/tsconfig.spec.json',
               'apps/server/tsconfig.app.json',
-              'apps/dms-e2e/tsconfig.json',
               'apps/dms-material-e2e/tsconfig.json',
             ],
           },
@@ -838,7 +835,7 @@ const eslintConfig = async () => {
     },
     {
       // Turn off deprecation warnings for e2e projects
-      files: ['**/apps/dms-material-e2e/**/*.ts', '**/apps/dms-e2e/**/*.ts'],
+      files: ['**/apps/dms-material-e2e/**/*.ts'],
       rules: {
         '@typescript-eslint/no-deprecated': 'off',
         'sonarjs/deprecation': 'off',
@@ -944,7 +941,6 @@ const eslintConfig = async () => {
             'apps/dms-material/tsconfig.spec.json',
             'apps/server/tsconfig.app.json',
             'apps/server/tsconfig.spec.json',
-            'apps/dms-e2e/tsconfig.json',
             'apps/dms-material-e2e/tsconfig.json',
           ],
         },
