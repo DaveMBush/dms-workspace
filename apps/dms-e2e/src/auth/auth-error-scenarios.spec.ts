@@ -260,7 +260,8 @@ test.describe('Authentication Error Scenarios and Edge Cases', () => {
 
       // Clear form for next test
       await page.fill('[data-testid="email-input"]', '');
-      await page.fill('[data-testid="password-input"]', '');
+      // p-password is a PrimeNG component - target the input inside it
+      await page.fill('[data-testid="password-input"] input', '');
     }
   });
 

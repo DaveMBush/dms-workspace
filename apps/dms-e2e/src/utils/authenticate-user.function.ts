@@ -14,7 +14,8 @@ export async function authenticateUser(
 
   // Fill login form
   await page.fill('[data-testid="email-input"]', user.email);
-  await page.fill('[data-testid="password-input"]', user.password);
+  // p-password is a PrimeNG component - target the input inside it
+  await page.fill('[data-testid="password-input"] input', user.password);
 
   // Submit login
   await page.click('[data-testid="login-button"]');

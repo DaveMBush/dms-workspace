@@ -33,7 +33,8 @@ test.describe('Authentication Flow', () => {
 
     // Fill login form
     await page.fill('[data-testid="email-input"]', TEST_USER.email);
-    await page.fill('[data-testid="password-input"]', TEST_USER.password);
+    // p-password is a PrimeNG component - target the input inside it
+    await page.fill('[data-testid="password-input"] input', TEST_USER.password);
 
     // Submit login
     await page.click('[data-testid="login-button"]');
