@@ -55,6 +55,7 @@ jobs:
       - run: pnpm nx affected -t lint build test --parallel=1
 
       # Run e2e tests for dms-material (using atomized CI target)
-      # Ensure the server is built in CI (affected may skip it for unrelated changes)
+      # Ensure the server is built (e2e-server target depends on server:build)
+      - run: pnpm nx run server:build
       - run: pnpm nx run server:build:production
       - run: pnpm nx affected -t e2e-ci
