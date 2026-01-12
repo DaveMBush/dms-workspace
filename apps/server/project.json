@@ -15,27 +15,38 @@
           "DATABASE_URL": "file:./test-database.db"
         }
       },
-      "dependsOn": ["prepare-e2e-db", "build"]
+      "dependsOn": [
+        "prepare-e2e-db",
+        "build"
+      ]
     },
     "prepare-e2e-db": {
       "executor": "nx:run-commands",
-      "outputs": ["{workspaceRoot}/test-database.db"],
+      "outputs": [
+        "{workspaceRoot}/test-database.db"
+      ],
       "options": {
         "command": "node tools/create-test-db.js test-database.db"
       }
     },
     "build": {
       "executor": "@nx/esbuild:esbuild",
-      "outputs": ["{options.outputPath}"],
+      "outputs": [
+        "{options.outputPath}"
+      ],
       "defaultConfiguration": "production",
       "options": {
         "platform": "node",
         "outputPath": "dist/apps/server",
-        "format": ["cjs"],
+        "format": [
+          "cjs"
+        ],
         "bundle": false,
         "main": "apps/server/src/main.ts",
         "tsConfig": "apps/server/tsconfig.app.json",
-        "assets": ["apps/server/src/assets"],
+        "assets": [
+          "apps/server/src/assets"
+        ],
         "generatePackageJson": true,
         "esbuildOptions": {
           "sourcemap": true,
@@ -60,7 +71,9 @@
       "continuous": true,
       "executor": "@nx/js:node",
       "defaultConfiguration": "development",
-      "dependsOn": ["build"],
+      "dependsOn": [
+        "build"
+      ],
       "options": {
         "buildTarget": "server:build",
         "runBuildTargetDependencies": false
