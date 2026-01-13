@@ -16,6 +16,7 @@
     "sharedGlobals": ["{workspaceRoot}/.github/workflows/ci.yml"]
   },
   "nxCloudId": "6952f6b34addb1039e1419a7",
+  "parallel": 3,
   "targetDefaults": {
     "@angular/build:application": {
       "cache": true,
@@ -45,7 +46,8 @@
     {
       "plugin": "@nx/playwright/plugin",
       "options": {
-        "targetName": "e2e"
+        "targetName": "e2e",
+        "ciTargetName": "e2e-ci"
       }
     },
     {

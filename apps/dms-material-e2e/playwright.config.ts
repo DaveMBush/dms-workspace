@@ -50,7 +50,7 @@ export default defineConfig({
       },
     },
     {
-      command: 'pnpm nx run dms-material:serve:test',
+      command: 'pnpm nx run dms-material:serve-e2e',
       url: 'http://localhost:4301',
       reuseExistingServer: true,
       cwd: workspaceRoot,

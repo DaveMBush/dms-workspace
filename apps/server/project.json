@@ -7,6 +7,7 @@
   "targets": {
     "e2e-server": {
       "executor": "nx:run-commands",
+      "continuous": true,
       "options": {
         "command": "node dist/apps/server/main.js",
         "env": {
@@ -18,6 +19,7 @@
     },
     "prepare-e2e-db": {
       "executor": "nx:run-commands",
+      "outputs": ["{workspaceRoot}/test-database.db"],
       "options": {
         "command": "node tools/create-test-db.js test-database.db"
       }

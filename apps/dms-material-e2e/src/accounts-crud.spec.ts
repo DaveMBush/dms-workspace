@@ -302,23 +302,44 @@ test.describe('Account CRUD Operations', () => {
       const accountName = 'Persist Test ' + Date.now();
       await input.fill(accountName);
 
+      // Wait for the account save API call to complete
+      const saveResponsePromise = page.waitForResponse(
+        (response) =>
+          response.url().includes('/api/accounts') &&
+          (response.request().method() === 'POST' ||
+            response.request().method() === 'PUT'),
+        { timeout: 15000 }
+      );
+
       await input.press('Enter');
 
       // Wait for account to appear
       const newAccount = page
         .locator('[data-testid="account-item"]')
         .filter({ hasText: accountName });
-      await expect(newAccount).toBeVisible({ timeout: 10000 });
+      await expect(newAccount).toBeVisible({ timeout: 15000 });
 
-      // Reload page
+      // Ensure the save API call completed and was successful
+      const saveResponse = await saveResponsePromise;
+      expect(saveResponse.ok()).toBeTruthy();
+
+      // Wait for database write to fully commit
+      // (especially important in CI with potential SQLite locking)
+      await page.waitForTimeout(1000);
+
+      // Reload page and wait for accounts to load
       await page.reload();
+      await page.waitForLoadState('networkidle', { timeout: 30000 });
       await waitForAccountsPanel(page);
 
-      // Verify account still exists
+      // Give extra time for accounts list to populate in CI
+      await page.waitForTimeout(500);
+
+      // Verify account still exists with increased timeout for CI
       const persistedAccount = page
         .locator('[data-testid="account-item"]')
         .filter({ hasText: accountName });
-      await expect(persistedAccount).toBeVisible({ timeout: 10000 });
+      await expect(persistedAccount).toBeVisible({ timeout: 20000 });
     });
   });
 

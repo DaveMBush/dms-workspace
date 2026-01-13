@@ -107,6 +107,16 @@
         "staticFilePath": "dist/apps/dms-material/browser",
         "spa": true
       }
+    },
+    "serve-e2e": {
+      "continuous": true,
+      "executor": "@angular/build:dev-server",
+      "options": {
+        "buildTarget": "dms-material:build:development",
+        "port": 4301,
+        "proxyConfig": "apps/dms-material/proxy.test-conf.json",
+        "hmr": false
+      }
     }
   }
 }
