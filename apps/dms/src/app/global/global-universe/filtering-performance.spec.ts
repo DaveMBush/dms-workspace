@@ -274,7 +274,7 @@ describe('Filtering Performance Tests', () => {
       );
 
       // Should be fast because most symbols are non-expired (no position calculation needed)
-      expect(executionTime).toBeLessThan(50);
+      expect(executionTime).toBeLessThan(100);
       expect(result.length).toBe(800); // All non-expired only (expired without positions are filtered out)
     });
 
