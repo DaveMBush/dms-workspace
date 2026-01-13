@@ -1,9 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Sort } from '@angular/material/sort';
 import { provideSmartNgRX } from '@smarttools/smart-signals';
 import { of, throwError } from 'rxjs';
 
+import { ScreenerService } from '../global-screener/services/screener.service';
 import { NotificationService } from '../../shared/services/notification.service';
 import { UniverseSyncService } from '../../shared/services/universe-sync.service';
 import { Universe } from '../../store/universe/universe.interface';
@@ -384,5 +386,119 @@ describe('GlobalUniverseComponent', () => {
       const result = component.calculateYield(row);
       expect(result).toBe(0);
     });
+  });
+});
+
+// TDD: Tests for Refresh Button Integration
+// These tests are written before implementation (TDD red phase)
+// Will be enabled in implementation story
+describe.skip('GlobalUniverseComponent - Refresh Button', () => {
+  let component: GlobalUniverseComponent;
+  let fixture: ComponentFixture<GlobalUniverseComponent>;
+  let screenerService: ScreenerService;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [GlobalUniverseComponent],
+      providers: [
+        provideSmartNgRX(),
+        {
+          provide: ScreenerService,
+          useValue: {
+            refresh: vi.fn().mockReturnValue(of({})),
+            loading: signal(false),
+            error: signal(null),
+          },
+        },
+        {
+          provide: UniverseSyncService,
+          useValue: {
+            syncFromScreener: vi.fn().mockReturnValue(of({})),
+            isSyncing: vi.fn().mockReturnValue(false),
+          },
+        },
+        {
+          provide: NotificationService,
+          useValue: {
+            success: vi.fn(),
+            error: vi.fn(),
+            showPersistent: vi.fn(),
+          },
+        },
+      ],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(GlobalUniverseComponent);
+    component = fixture.componentInstance;
+    screenerService = TestBed.inject(ScreenerService);
+    fixture.detectChanges();
+  });
+
+  it('should have refresh button in template', () => {
+    const button = fixture.nativeElement.querySelector(
+      '[data-testid="refresh-button"]'
+    );
+    expect(button).toBeTruthy();
+  });
+
+  it('should call screenerService.refresh() on button click', () => {
+    component.onRefresh();
+    expect(screenerService.refresh).toHaveBeenCalled();
+  });
+
+  it('should show loading indicator during refresh', () => {
+    (screenerService.loading as any).set(true);
+    fixture.detectChanges();
+
+    const button = fixture.nativeElement.querySelector(
+      '[data-testid="refresh-button"]'
+    );
+    expect(button.disabled).toBe(true);
+  });
+
+  it('should trigger universe data reload after successful refresh', (done) => {
+    const refreshSpy = vi
+      .spyOn(screenerService, 'refresh')
+      .mockReturnValue(of({ success: true }));
+    const tableRefreshSpy = vi.fn();
+    component.table = { refresh: tableRefreshSpy } as never;
+
+    component.onRefresh();
+
+    setTimeout(() => {
+      expect(tableRefreshSpy).toHaveBeenCalled();
+      done();
+    }, 100);
+  });
+
+  it('should handle refresh errors gracefully', () => {
+    (screenerService.error as any).set('Failed to refresh');
+    fixture.detectChanges();
+
+    const errorEl = fixture.nativeElement.querySelector(
+      '[data-testid="error-message"]'
+    );
+    expect(errorEl).toBeTruthy();
+  });
+
+  it('should disable refresh button while loading', () => {
+    (screenerService.loading as any).set(true);
+    fixture.detectChanges();
+
+    const button = fixture.nativeElement.querySelector(
+      '[data-testid="refresh-button"]'
+    );
+    expect(button.disabled).toBe(true);
+  });
+
+  it('should display error message when refresh fails', () => {
+    const errorMessage = 'Network error occurred';
+    (screenerService.error as any).set(errorMessage);
+    fixture.detectChanges();
+
+    const errorEl = fixture.nativeElement.querySelector(
+      '[data-testid="error-message"]'
+    );
+    expect(errorEl.textContent).toContain(errorMessage);
   });
 });
