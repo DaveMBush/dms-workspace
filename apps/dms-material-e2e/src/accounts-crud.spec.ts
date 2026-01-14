@@ -21,7 +21,7 @@ async function waitForAccountsPanel(page: Page): Promise<void> {
       .locator('[data-testid="account-item"]')
       .first()
       .waitFor({ state: 'visible', timeout: 10000 })
-      .catch(() => {}),
+      .catch(() => {/* ignore timeout */}),
     page
       .locator('[data-testid="add-account-button"]')
       .waitFor({ state: 'visible', timeout: 10000 }),
