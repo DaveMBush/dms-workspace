@@ -10,6 +10,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -45,6 +46,7 @@ import { sortUniverses } from './sort-universes.function';
     DecimalPipe,
     MatToolbarModule,
     MatButtonModule,
+    MatCardModule,
     MatIconModule,
     MatSelectModule,
     MatFormFieldModule,
@@ -306,6 +308,7 @@ export class GlobalUniverseComponent implements AfterViewInit {
     const context = this;
     this.screenerService.refresh().subscribe({
       next: function onRefreshSuccess() {
+        context.notification.success('Universe data refreshed successfully');
         context.refreshTable();
       },
       error: function onRefreshError() {

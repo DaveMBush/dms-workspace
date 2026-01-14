@@ -502,13 +502,21 @@ describe('GlobalUniverseComponent - Refresh Button', () => {
 });
 
 // DISABLE TESTS FOR CI
-describe.skip('GlobalUniverseComponent - Loading and Error Handling', () => {
+describe('GlobalUniverseComponent - Loading and Error Handling', () => {
   let component: GlobalUniverseComponent;
   let fixture: ComponentFixture<GlobalUniverseComponent>;
   let screenerService: ScreenerService;
   let notificationService: NotificationService;
 
   beforeEach(async () => {
+    const loadingSignal = signal(false);
+    const errorSignal = signal<string | null>(null);
+    const refreshMock = vi.fn(() => {
+      // Simulate ScreenerService behavior: clear error on refresh
+      (errorSignal as any).set(null);
+      return of({});
+    });
+
     await TestBed.configureTestingModule({
       imports: [GlobalUniverseComponent],
       providers: [
@@ -516,9 +524,9 @@ describe.skip('GlobalUniverseComponent - Loading and Error Handling', () => {
         {
           provide: ScreenerService,
           useValue: {
-            refresh: vi.fn().mockReturnValue(of({})),
-            loading: signal(false),
-            error: signal(null),
+            refresh: refreshMock,
+            loading: loadingSignal,
+            error: errorSignal,
           },
         },
         {
