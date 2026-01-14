@@ -19,9 +19,13 @@ export function createRateLimiter(
     reply: FastifyReply,
     isSuccess?: boolean
   ): Promise<boolean> {
-    // Skip rate limiting in test and development environments
+    // Skip rate limiting in test, development, and local environments
     const nodeEnv = process.env.NODE_ENV ?? 'development';
-    if (nodeEnv === 'test' || nodeEnv === 'development') {
+    if (
+      nodeEnv === 'test' ||
+      nodeEnv === 'development' ||
+      nodeEnv === 'local'
+    ) {
       return false; // Not rate limited
     }
 

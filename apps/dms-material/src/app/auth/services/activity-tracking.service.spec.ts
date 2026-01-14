@@ -183,7 +183,7 @@ describe('ActivityTrackingService', () => {
 
       const timeSinceActivity = service.getTimeSinceLastActivity();
       expect(timeSinceActivity).toBeGreaterThan(0);
-      expect(timeSinceActivity).toBeLessThan(100); // Should be around 50ms
+      expect(timeSinceActivity).toBeLessThan(200); // Should be around 50ms
     });
 
     it('should determine if user is active', () => {

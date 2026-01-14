@@ -13,6 +13,21 @@ async function waitForAccountsPanel(page: Page): Promise<void> {
 
   // Wait for either accounts to load OR the panel to be stable (networkidle)
   await page.waitForLoadState('networkidle', { timeout: 30000 });
+
+  // Ensure the panel has fully loaded its content
+  // Wait for either account items OR add button to be present
+  await Promise.race([
+    page
+      .locator('[data-testid="account-item"]')
+      .first()
+      .waitFor({ state: 'visible', timeout: 10000 })
+      .catch(() => {
+        /* ignore timeout */
+      }),
+    page
+      .locator('[data-testid="add-account-button"]')
+      .waitFor({ state: 'visible', timeout: 10000 }),
+  ]);
 }
 
 /**
@@ -150,7 +165,7 @@ test.describe('Account CRUD Operations', () => {
 
       // Wait for editor to appear
       await page.waitForSelector('[data-testid="node-editor-input"]', {
-        timeout: 5000,
+        timeout: 7000,
       });
 
       // Change name
@@ -294,6 +309,8 @@ test.describe('Account CRUD Operations', () => {
 
   test.describe('Data Persistence', () => {
     test('should persist new account across page reload', async ({ page }) => {
+      test.setTimeout(90000); // Increase timeout for CI
+
       // Add account
       const addButton = page.locator('[data-testid="add-account-button"]');
       await addButton.click();
@@ -305,23 +322,29 @@ test.describe('Account CRUD Operations', () => {
       // Wait for the account save API call to complete
       const saveResponsePromise = page.waitForResponse(
         (response) =>
-          response.url().includes('/api/accounts') &&
-          (response.request().method() === 'POST' ||
-            response.request().method() === 'PUT'),
-        { timeout: 15000 }
+          response.url().includes('/api/accounts/add') &&
+          response.request().method() === 'POST',
+        { timeout: 20000 }
       );
 
       await input.press('Enter');
 
-      // Wait for account to appear
+      // Ensure the save API call completed and was successful
+      const saveResponse = await saveResponsePromise;
+      if (!saveResponse.ok()) {
+        const responseBody = await saveResponse
+          .text()
+          .catch(() => 'Unable to read response');
+        throw new Error(
+          `Account save failed: ${saveResponse.status()} - ${responseBody}`
+        );
+      }
+
+      // Wait for account to appear in UI
       const newAccount = page
         .locator('[data-testid="account-item"]')
         .filter({ hasText: accountName });
       await expect(newAccount).toBeVisible({ timeout: 15000 });
-
-      // Ensure the save API call completed and was successful
-      const saveResponse = await saveResponsePromise;
-      expect(saveResponse.ok()).toBeTruthy();
 
       // Wait for database write to fully commit
       // (especially important in CI with potential SQLite locking)
@@ -347,6 +370,17 @@ test.describe('Account CRUD Operations', () => {
     test('should maintain account selection across navigation', async ({
       page,
     }) => {
+      test.setTimeout(90000); // Increase timeout for CI
+
+      // Ensure at least one account exists
+      await createTestAccount(page, 'Navigation');
+
+      // Wait for accounts to be visible before clicking
+      await page
+        .locator('[data-testid="account-item"]')
+        .first()
+        .waitFor({ state: 'visible', timeout: 20000 });
+
       const accountItem = page.locator('[data-testid="account-item"]').first();
       await accountItem.click();
 

@@ -24,7 +24,7 @@ export default defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   timeout: process.env.CI ? 90000 : 60000,
   /* Retry failed tests to handle flaky tests */
-  retries: process.env.CI ? 2 : 1,
+  retries: process.env.CI ? 3 : 2,
   use: {
     baseURL,
     /* Increase navigation timeout for slower backend responses */

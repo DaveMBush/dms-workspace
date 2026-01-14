@@ -39,6 +39,22 @@
       }
     </button>
 
+    <!-- eslint-disable @angular-eslint/template/no-call-expression -- Signals require function call syntax -->
+    <button
+      mat-icon-button
+      matTooltip="Refresh from Screener"
+      data-testid="refresh-button"
+      (click)="onRefresh()"
+      [disabled]="screenerLoading()"
+    >
+      @if (screenerLoading()) {
+      <mat-spinner diameter="24"></mat-spinner>
+      } @else {
+      <mat-icon>cloud_download</mat-icon>
+      }
+    </button>
+    <!-- eslint-enable @angular-eslint/template/no-call-expression -->
+
     <button
       mat-icon-button
       matTooltip="Update Fields"
@@ -52,6 +68,14 @@
       }
     </button>
   </mat-toolbar>
+
+  <!-- eslint-disable @angular-eslint/template/no-call-expression -- Signals require function call syntax -->
+  @if (screenerError()) {
+  <div class="error-message" data-testid="error-message">
+    {{ screenerError() }}
+  </div>
+  }
+  <!-- eslint-enable @angular-eslint/template/no-call-expression -->
 
   <div class="table-wrapper">
     <dms-base-table

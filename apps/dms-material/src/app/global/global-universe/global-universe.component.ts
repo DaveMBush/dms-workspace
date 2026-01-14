@@ -31,6 +31,7 @@ import { selectAccounts } from '../../store/accounts/selectors/select-accounts.f
 import { selectUniverses } from '../../store/universe/selectors/select-universes.function';
 import { Universe } from '../../store/universe/universe.interface';
 import { AddSymbolDialog } from '../../universe-settings/add-symbol-dialog/add-symbol-dialog';
+import { ScreenerService } from '../global-screener/services/screener.service';
 import { calculateYieldPercent } from './calculate-yield-percent.function';
 import { CellEditEvent } from './cell-edit-event.interface';
 import { filterUniverses } from './filter-universes.function';
@@ -60,6 +61,7 @@ import { sortUniverses } from './sort-universes.function';
 })
 export class GlobalUniverseComponent implements AfterViewInit {
   private readonly syncService = inject(UniverseSyncService);
+  private readonly screenerService = inject(ScreenerService);
   private readonly notification = inject(NotificationService);
   private readonly dialog = inject(MatDialog);
 
@@ -78,6 +80,10 @@ export class GlobalUniverseComponent implements AfterViewInit {
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signal
   readonly isSyncingUniverse$ = computed(() => this.syncService.isSyncing());
+
+  // Expose screener service loading and error signals
+  readonly screenerLoading = this.screenerService.loading;
+  readonly screenerError = this.screenerService.error;
 
   @ViewChild(BaseTableComponent) table!: BaseTableComponent<Universe>;
 
@@ -294,5 +300,17 @@ export class GlobalUniverseComponent implements AfterViewInit {
 
   calculateYield(row: Universe): number {
     return calculateYieldPercent(row);
+  }
+
+  onRefresh(): void {
+    const context = this;
+    this.screenerService.refresh().subscribe({
+      next: function onRefreshSuccess() {
+        context.refreshTable();
+      },
+      error: function onRefreshError() {
+        // Error is already captured by ScreenerService error signal
+      },
+    });
   }
 }
