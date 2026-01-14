@@ -21,7 +21,11 @@ export function createRateLimiter(
   ): Promise<boolean> {
     // Skip rate limiting in test, development, and local environments
     const nodeEnv = process.env.NODE_ENV ?? 'development';
-    if (nodeEnv === 'test' || nodeEnv === 'development' || nodeEnv === 'local') {
+    if (
+      nodeEnv === 'test' ||
+      nodeEnv === 'development' ||
+      nodeEnv === 'local'
+    ) {
       return false; // Not rate limited
     }
 
