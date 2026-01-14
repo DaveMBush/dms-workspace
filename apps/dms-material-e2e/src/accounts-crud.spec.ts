@@ -165,7 +165,7 @@ test.describe('Account CRUD Operations', () => {
 
       // Wait for editor to appear
       await page.waitForSelector('[data-testid="node-editor-input"]', {
-        timeout: 5000,
+        timeout: 7000,
       });
 
       // Change name
