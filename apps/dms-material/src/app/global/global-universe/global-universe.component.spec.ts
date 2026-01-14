@@ -390,9 +390,8 @@ describe('GlobalUniverseComponent', () => {
 });
 
 // TDD: Tests for Refresh Button Integration
-// These tests are written before implementation (TDD red phase)
-// Will be enabled in implementation story
-describe.skip('GlobalUniverseComponent - Refresh Button', () => {
+// These tests are now enabled (TDD green phase)
+describe('GlobalUniverseComponent - Refresh Button', () => {
   let component: GlobalUniverseComponent;
   let fixture: ComponentFixture<GlobalUniverseComponent>;
   let screenerService: ScreenerService;
@@ -456,7 +455,7 @@ describe.skip('GlobalUniverseComponent - Refresh Button', () => {
     expect(button.disabled).toBe(true);
   });
 
-  it('should trigger universe data reload after successful refresh', (done) => {
+  it('should trigger universe data reload after successful refresh', async () => {
     const refreshSpy = vi
       .spyOn(screenerService, 'refresh')
       .mockReturnValue(of({ success: true }));
@@ -465,10 +464,9 @@ describe.skip('GlobalUniverseComponent - Refresh Button', () => {
 
     component.onRefresh();
 
-    setTimeout(() => {
+    await vi.waitFor(() => {
       expect(tableRefreshSpy).toHaveBeenCalled();
-      done();
-    }, 100);
+    });
   });
 
   it('should handle refresh errors gracefully', () => {
