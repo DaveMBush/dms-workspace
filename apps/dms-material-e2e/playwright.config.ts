@@ -23,6 +23,7 @@ export default defineConfig({
   ...nxE2EPreset(__filename, { testDir: './src' }),
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   timeout: process.env.CI ? 90000 : 60000,
+  reporter: process.env.CI ? [['github']] : [['list']],
   /* Retry failed tests to handle flaky tests */
   retries: process.env.CI ? 3 : 2,
   use: {
