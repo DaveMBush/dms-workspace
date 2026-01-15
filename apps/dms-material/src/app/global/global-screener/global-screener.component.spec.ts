@@ -1,10 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Sort } from '@angular/material/sort';
+import { of } from 'rxjs';
 
 import { NotificationService } from '../../shared/services/notification.service';
 import { GlobalLoadingService } from '../../shared/services/global-loading.service';
 import { Screen } from '../../store/screen/screen.interface';
 import { GlobalScreenerComponent } from './global-screener.component';
+import { ScreenerService } from './services/screener.service';
 
 // Mock SmartNgRX selectors
 vi.mock('../../store/screen/selectors/select-screen.function', () => ({
@@ -19,10 +21,16 @@ describe('GlobalScreenerComponent', () => {
     warn: ReturnType<typeof vi.fn>;
     error: ReturnType<typeof vi.fn>;
     info: ReturnType<typeof vi.fn>;
+    show: ReturnType<typeof vi.fn>;
   };
   let mockGlobalLoading: {
     show: ReturnType<typeof vi.fn>;
     hide: ReturnType<typeof vi.fn>;
+  };
+  let mockScreenerService: {
+    refresh: ReturnType<typeof vi.fn>;
+    loading: ReturnType<typeof vi.fn>;
+    error: ReturnType<typeof vi.fn>;
   };
 
   beforeEach(async () => {
@@ -31,10 +39,16 @@ describe('GlobalScreenerComponent', () => {
       warn: vi.fn(),
       error: vi.fn(),
       info: vi.fn(),
+      show: vi.fn(),
     };
     mockGlobalLoading = {
       show: vi.fn(),
       hide: vi.fn(),
+    };
+    mockScreenerService = {
+      refresh: vi.fn().mockReturnValue(of(null)),
+      loading: vi.fn().mockReturnValue(false),
+      error: vi.fn().mockReturnValue(null),
     };
 
     await TestBed.configureTestingModule({
@@ -42,6 +56,7 @@ describe('GlobalScreenerComponent', () => {
       providers: [
         { provide: NotificationService, useValue: mockNotification },
         { provide: GlobalLoadingService, useValue: mockGlobalLoading },
+        { provide: ScreenerService, useValue: mockScreenerService },
       ],
     }).compileComponents();
 
@@ -140,17 +155,16 @@ describe('GlobalScreenerComponent', () => {
   });
 
   describe('refresh', () => {
-    it('should show loading indicator on refresh', () => {
+    it('should call screener service refresh', () => {
       component.onRefresh();
-      expect(mockGlobalLoading.show).toHaveBeenCalledWith('Refreshing data...');
+      expect(mockScreenerService.refresh).toHaveBeenCalled();
     });
 
-    it('should hide loading indicator after refresh completes', () => {
-      vi.useFakeTimers();
+    it('should show notification on successful refresh', () => {
       component.onRefresh();
-      vi.advanceTimersByTime(100);
-      expect(mockGlobalLoading.hide).toHaveBeenCalled();
-      vi.useRealTimers();
+      expect(mockNotification.show).toHaveBeenCalledWith(
+        'Screener data refreshed successfully'
+      );
     });
   });
 
