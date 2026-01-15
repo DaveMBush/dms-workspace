@@ -14,7 +14,7 @@ Connect the screener table in DMS-MATERIAL to backend data with full edit capabi
 
 **Enhancement Details:**
 
-- Load screener data via SmartNgRX
+- Load screener data via SmartNgRX use ../SmartNgRX-Signals-References.md and ../SmartNgRX-Implementation-Checklist.md to help you implement the SmartNgRX entities and wiring.
 - Enable checkbox editing
 - Persist edits to backend
 - Apply risk group filtering

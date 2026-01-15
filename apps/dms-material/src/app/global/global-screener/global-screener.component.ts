@@ -25,6 +25,7 @@ import { NotificationService } from '../../shared/services/notification.service'
 import { Screen } from '../../store/screen/screen.interface';
 import { selectScreen } from '../../store/screen/selectors/select-screen.function';
 import { ScreenCellEditEvent } from './screen-cell-edit-event.interface';
+import { ScreenerService } from './services/screener.service';
 
 @Component({
   selector: 'dms-global-screener',
@@ -45,8 +46,11 @@ import { ScreenCellEditEvent } from './screen-cell-edit-event.interface';
 export class GlobalScreenerComponent implements AfterViewInit {
   private readonly globalLoading = inject(GlobalLoadingService);
   private readonly notification = inject(NotificationService);
+  private readonly screenerService = inject(ScreenerService);
 
   readonly cellEdit = output<ScreenCellEditEvent>();
+  readonly loading = this.screenerService.loading;
+  readonly error = this.screenerService.error;
 
   readonly riskGroupFilter$ = signal<string | null>(null);
   readonly sortField$ = signal<string>('symbol');
@@ -123,13 +127,21 @@ export class GlobalScreenerComponent implements AfterViewInit {
   }
 
   onRefresh(): void {
+    this.globalLoading.show('Refreshing screener data...');
     const context = this;
-    this.globalLoading.show('Refreshing data...');
-    // Simulate refresh - actual implementation would call an API
-    setTimeout(function simulateRefresh() {
-      context.globalLoading.hide();
-      context.refreshTable();
-    }, 100);
+    this.screenerService.refresh().subscribe({
+      next: function handleRefresh() {
+        const errorValue = context.screenerService.error();
+        if (errorValue === null || errorValue === '') {
+          context.notification.show('Screener data refreshed successfully');
+          context.refreshTable();
+        }
+        context.globalLoading.hide();
+      },
+      error: function handleError() {
+        context.globalLoading.hide();
+      },
+    });
   }
 
   onRiskGroupFilterChange(value: string | null): void {
