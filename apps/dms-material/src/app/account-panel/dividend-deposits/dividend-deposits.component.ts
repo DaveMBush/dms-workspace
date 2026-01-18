@@ -1,17 +1,14 @@
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import {
-  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
+  computed,
   inject,
-  ViewChild,
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { Observable, of } from 'rxjs';
 
 import { BaseTableComponent } from '../../shared/components/base-table/base-table.component';
 import { ColumnDef } from '../../shared/components/base-table/column-def.interface';
-import { LazyLoadEvent } from '../../shared/components/base-table/lazy-load-event.interface';
 import { ConfirmDialogService } from '../../shared/services/confirm-dialog.service';
 import { NotificationService } from '../../shared/services/notification.service';
 import { DivDeposit } from '../../store/div-deposits/div-deposit.interface';
@@ -25,12 +22,15 @@ import { DivDepModal } from '../div-dep-modal/div-dep-modal.component';
   templateUrl: './dividend-deposits.component.html',
   styleUrl: './dividend-deposits.component.scss',
 })
-export class DividendDepositsComponent implements AfterViewInit {
+export class DividendDepositsComponent {
   private dialog = inject(MatDialog);
   private notification = inject(NotificationService);
   private confirmDialog = inject(ConfirmDialogService);
 
-  @ViewChild(BaseTableComponent) table!: BaseTableComponent<DivDeposit>;
+  readonly dividends$ = computed(
+    // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signal
+    () => Object.values(selectDivDepositEntity()) as DivDeposit[]
+  );
 
   columns: ColumnDef[] = [
     { field: 'symbol', header: 'Symbol', sortable: true, width: '120px' },
@@ -51,13 +51,6 @@ export class DividendDepositsComponent implements AfterViewInit {
     { field: 'type', header: 'Type', width: '120px' },
   ];
 
-  ngAfterViewInit(): void {
-    const context = this;
-    this.table.initDataSource(function loadDividends(event: LazyLoadEvent) {
-      return context.loadDividends(event);
-    });
-  }
-
   onAddDividend(): void {
     const context = this;
     const dialogRef = this.dialog.open(DivDepModal, {
@@ -68,7 +61,6 @@ export class DividendDepositsComponent implements AfterViewInit {
     dialogRef.afterClosed().subscribe(function onClose(result: unknown) {
       if (result !== null && result !== undefined) {
         context.notification.success('Dividend added successfully');
-        context.table?.refresh();
       }
     });
   }
@@ -83,7 +75,6 @@ export class DividendDepositsComponent implements AfterViewInit {
     dialogRef.afterClosed().subscribe(function onClose(result: unknown) {
       if (result !== null && result !== undefined) {
         context.notification.success('Dividend updated successfully');
-        context.table?.refresh();
       }
     });
   }
@@ -100,19 +91,7 @@ export class DividendDepositsComponent implements AfterViewInit {
         if (confirmed) {
           // Delete via SmartNgRX
           context.notification.success('Dividend deleted');
-          context.table?.refresh();
         }
       });
-  }
-
-  private loadDividends(
-    event: LazyLoadEvent
-  ): Observable<{ data: DivDeposit[]; total: number }> {
-    // Fetch from API with pagination
-    // In real implementation, this calls the backend
-    // For now, simulate with signal data
-    const allData = Object.values(selectDivDepositEntity());
-    const data = allData.slice(event.first, event.first + event.rows);
-    return of({ data: data as DivDeposit[], total: allData.length });
   }
 }

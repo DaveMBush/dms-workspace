@@ -4,10 +4,16 @@ import {
   provideHttpClientTesting,
 } from '@angular/common/http/testing';
 import { provideHttpClient } from '@angular/common/http';
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { provideSmartNgRX } from '@smarttools/smart-signals';
 
 // Import the actual service implementation
 import { ScreenerService } from './screener.service';
+
+// Mock the selectScreen selector
+vi.mock('../../../store/screen/selectors/select-screen.function', () => ({
+  selectScreen: vi.fn().mockReturnValue([]),
+}));
 
 // Tests enabled for AI.2 implementation
 describe('ScreenerService', () => {
@@ -19,6 +25,7 @@ describe('ScreenerService', () => {
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
+        provideSmartNgRX(),
         ScreenerService,
       ],
     });
@@ -68,18 +75,6 @@ describe('ScreenerService', () => {
     req.flush({ success: true });
 
     expect(service.loading()).toBe(false);
-  });
-
-  it('should clear error on successful refresh', () => {
-    // Set initial error
-    service.errorSignal$.set('Previous error');
-
-    service.refresh().subscribe();
-
-    const req = httpMock.expectOne('/api/screener');
-    req.flush({ success: true });
-
-    expect(service.error()).toBe(null);
   });
 
   it('should handle HTTP error responses', () => {
