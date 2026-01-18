@@ -9,7 +9,7 @@
       mat-icon-button
       matTooltip="Refresh"
       data-testid="refresh-button"
-      [disabled]="loading()"
+      [disabled]="loading$()"
       (click)="onRefresh()"
     >
       <mat-icon>refresh</mat-icon>
@@ -29,7 +29,9 @@
 
   <div class="table-wrapper">
     <dms-base-table
+      [data]="filteredData$()"
       [columns]="columns"
+      [loading]="loading$()"
       [selectable]="false"
       [rowHeight]="48"
       (sortChange)="onSortChange($event)"

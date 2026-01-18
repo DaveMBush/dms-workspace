@@ -120,8 +120,8 @@ importers:
         specifier: ~7.8.0
         version: 7.8.2
       yahoo-finance2:
-        specifier: ^3.10.2
-        version: 3.10.2
+        specifier: ^3.11.2
+        version: 3.11.2
     devDependencies:
       '@analogjs/vite-plugin-angular':
         specifier: 2.1.3
@@ -10692,8 +10692,8 @@ packages:
     resolution: {integrity: sha512-0pfFzegeDWJHJIAmTLRP2DwHjdF5s7jo9tuztdQxAhINCdvS+3nGINqPd00AphqJR/0LhANUS6/+7SCb98YOfA==}
     engines: {node: '>=10'}
 
-  yahoo-finance2@3.10.2:
-    resolution: {integrity: sha512-MH4EdugRurygLTMd1UryPwfYR8aWSOeyh++JSarMrf+bROfvNGmE0lAi/C9TuTc3mH8ORuRdt+O9PEeCCmzTLg==}
+  yahoo-finance2@3.11.2:
+    resolution: {integrity: sha512-SIvMXjrOktBRD8m+qXAGCK+vR1vwBKuMgCnvmbxv29+t6LTDu0vAUxNYfbigsMRTmBzS4F9TQwbYF90g3Om4HA==}
     engines: {node: '>=20.0.0'}
     hasBin: true
 
@@ -23667,7 +23667,7 @@ snapshots:
 
   y18n@5.0.8: {}
 
-  yahoo-finance2@3.10.2:
+  yahoo-finance2@3.11.2:
     dependencies:
       '@deno/shim-deno': 0.18.2
       fetch-mock-cache: 2.3.1

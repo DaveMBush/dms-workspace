@@ -1,13 +1,7 @@
-import {
-  AfterViewInit,
-  ChangeDetectionStrategy,
-  Component,
-  ViewChild,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { of } from 'rxjs';
 
 import { BaseTableComponent } from '../../shared/components/base-table/base-table.component';
 import { ColumnDef } from '../../shared/components/base-table/column-def.interface';
@@ -25,8 +19,10 @@ import { Trade } from '../../store/trades/trade.interface';
   templateUrl: './open-positions.component.html',
   styleUrl: './open-positions.component.scss',
 })
-export class OpenPositionsComponent implements AfterViewInit {
-  @ViewChild(BaseTableComponent) table!: BaseTableComponent<Trade>;
+export class OpenPositionsComponent {
+  // FUTURE: Wire up SmartNgRX trades signal
+  // readonly trades = injectSignals('trades', tradesAdapter.getSelectors().selectAll);
+  readonly trades$ = signal<Trade[]>([]);
 
   searchText = '';
 
@@ -62,15 +58,6 @@ export class OpenPositionsComponent implements AfterViewInit {
     { field: 'targetGain', header: 'Target Gain', type: 'number' },
     { field: 'targetSell', header: 'Target Sell', type: 'currency' },
   ];
-
-  ngAfterViewInit(): void {
-    this.table.initDataSource(function loadTradesData() {
-      // FUTURE: Wire up SmartNgRX trades signal
-      // const data = selectTrades();
-      const data: Trade[] = [];
-      return of({ data, total: data.length });
-    });
-  }
 
   onAddPosition(): void {
     // Open new position dialog

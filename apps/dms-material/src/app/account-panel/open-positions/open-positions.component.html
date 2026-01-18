@@ -1,4 +1,4 @@
-<dms-base-table [columns]="columns">
+<dms-base-table [data]="trades$()" [columns]="columns">
   <ng-template #filterRowTemplate let-column>
     @if (column.field === 'universeId') {
     <mat-form-field

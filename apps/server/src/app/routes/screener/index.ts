@@ -134,7 +134,7 @@ function createScreenerData(
     objectives_understood: false,
     graph_higher_before_2008: false,
     distribution: symbol.CurrentDistribution,
-    last_price: symbol.Price,
+    last_price: symbol.Price ?? 0.0,
     ex_date: null,
     distributions_per_year: symbol.DistributionFrequency === 'Monthly' ? 12 : 4,
   } as ScreenerRecord;
