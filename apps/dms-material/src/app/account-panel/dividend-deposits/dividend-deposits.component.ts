@@ -27,8 +27,8 @@ export class DividendDepositsComponent {
   private notification = inject(NotificationService);
   private confirmDialog = inject(ConfirmDialogService);
 
-  // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signal
   readonly dividends$ = computed(
+    // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signal
     () => Object.values(selectDivDepositEntity()) as DivDeposit[]
   );
 
