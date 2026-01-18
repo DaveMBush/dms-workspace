@@ -1,13 +1,13 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { inject, Injectable, signal } from '@angular/core';
+import { computed, effect, inject, Injectable, signal } from '@angular/core';
 import { catchError, Observable, of, tap } from 'rxjs';
+
+import { Screen } from '../../../store/screen/screen.interface';
+import { selectScreen } from '../../../store/screen/selectors/select-screen.function';
 
 /**
  * Service for managing screener data refresh operations.
  * Handles communication with the backend to scrape CEF data from screener sources.
- *
- * NOTE: Additional methods (screens computed, updateScreener) from DMS app
- * will be added when store integration is complete.
  */
 @Injectable({
   providedIn: 'root',
@@ -18,14 +18,68 @@ export class ScreenerService {
   // Private writable signals for state management
   private readonly loadingSignal = signal(false);
   private readonly errorSignal$ = signal<string | null>(null);
+  private readonly cachedScreens = signal<Screen[]>([]);
 
   // Public readonly signals for consumers
   readonly loading = this.loadingSignal.asReadonly();
   readonly error = this.errorSignal$.asReadonly();
 
-  // Note: screens computed and updateScreener methods will be added when store is integrated
-  // These methods exist in DMS app but require SmartNgRX store initialization
-  // Reference: apps/dms/src/app/global/screener/screener.service.ts
+  constructor() {
+    // Cache non-empty screens to handle SmartNgRX temporary empty states during recalculation
+    effect(
+      // eslint-disable-next-line @smarttools/no-anonymous-functions -- Required for effect
+      () => {
+        const screens = selectScreen();
+
+        if (screens.length > 0) {
+          // Sort and cache when we have data
+          const screenReturn = [] as Screen[];
+          for (let i = 0; i < screens.length; i++) {
+            const screen = screens[i];
+            screenReturn.push(screen);
+          }
+          // Sort by completion status (complete ones to bottom), then by symbol
+          screenReturn.sort(function screenSort(a, b) {
+            const aScore =
+              (a.graph_higher_before_2008 &&
+              a.has_volitility &&
+              a.objectives_understood
+                ? 'z'
+                : 'a') + a.symbol;
+            const bScore =
+              (b.graph_higher_before_2008 &&
+              b.has_volitility &&
+              b.objectives_understood
+                ? 'z'
+                : 'a') + b.symbol;
+
+            return aScore.localeCompare(bScore);
+          });
+
+          this.cachedScreens.set(screenReturn);
+        }
+      }
+    );
+  }
+
+  /**
+   * Computed signal that provides sorted screens from SmartNgRX store.
+   * Uses cached data when SmartNgRX temporarily returns empty (during state recalculation).
+   * Screens are sorted by completion status (complete ones to bottom), then by symbol.
+   */
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- Arrow function required for proper 'this' binding in computed signal to access cachedScreens()
+  screens = computed(() => {
+    // Read selectScreen() to establish dependency and trigger updates
+    const current = selectScreen();
+
+    // Use current data if available, otherwise use cache
+    if (current.length > 0) {
+      return this.cachedScreens();
+    }
+
+    // Return cache when SmartNgRX returns empty
+    return this.cachedScreens();
+  });
 
   /**
    * Refresh screener data from backend.
@@ -65,7 +119,24 @@ export class ScreenerService {
       );
   }
 
-  // Note: updateScreener method will be implemented when store is integrated
-  // Reference: apps/dms/src/app/global/screener/screener.service.ts
-  // Signature: updateScreener(id: string, field: keyof Screen, value: boolean): void
+  /**
+   * Update a screen field in the store.
+   *
+   * @param id - The screen id to update
+   * @param field - The field to update
+   * @param value - The new value
+   */
+  updateScreener(id: string, field: keyof Screen, value: boolean): void {
+    const screens = selectScreen();
+    for (let i = 0; i < screens.length; i++) {
+      const screen = screens[i] as unknown as Record<
+        keyof Screen,
+        boolean | string
+      >;
+      if (screen.id === id) {
+        screen[field] = value;
+        break;
+      }
+    }
+  }
 }

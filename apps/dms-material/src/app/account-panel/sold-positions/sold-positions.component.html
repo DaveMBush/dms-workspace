@@ -1,4 +1,4 @@
-<dms-base-table [columns]="columns">
+<dms-base-table [data]="soldTrades$()" [columns]="columns">
   <ng-template #filterRowTemplate let-column>
     @if (column.field === 'symbol') {
     <mat-form-field

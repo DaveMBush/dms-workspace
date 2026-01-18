@@ -1,13 +1,7 @@
-import {
-  AfterViewInit,
-  ChangeDetectionStrategy,
-  Component,
-  ViewChild,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { of } from 'rxjs';
 
 import { BaseTableComponent } from '../../shared/components/base-table/base-table.component';
 import { ColumnDef } from '../../shared/components/base-table/column-def.interface';
@@ -25,8 +19,10 @@ import { Trade } from '../../store/trades/trade.interface';
   templateUrl: './sold-positions.component.html',
   styleUrl: './sold-positions.component.scss',
 })
-export class SoldPositionsComponent implements AfterViewInit {
-  @ViewChild(BaseTableComponent) table!: BaseTableComponent<Trade>;
+export class SoldPositionsComponent {
+  // FUTURE: Wire up SmartNgRX trades signal (sold filter)
+  // readonly soldTrades = computed(() => selectTrades().filter(t => t.sellDate !== null));
+  readonly soldTrades$ = signal<Trade[]>([]);
 
   searchText = '';
 
@@ -53,15 +49,6 @@ export class SoldPositionsComponent implements AfterViewInit {
     { field: 'capitalGain', header: 'Cap Gains$', type: 'currency' },
     { field: 'capitalGainPercentage', header: 'Cap Gains%', type: 'number' },
   ];
-
-  ngAfterViewInit(): void {
-    this.table.initDataSource(function loadSoldTradesData() {
-      // FUTURE: Wire up SmartNgRX trades signal (sold filter)
-      // const data = selectTrades().filter(t => t.sellDate !== null);
-      const data: Trade[] = [];
-      return of({ data, total: data.length });
-    });
-  }
 
   onCellEdit(__: Trade, ___: string, ____: unknown): void {
     // Update via SmartNgRX

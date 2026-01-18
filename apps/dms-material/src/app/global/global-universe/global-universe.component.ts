@@ -1,15 +1,14 @@
 import { CurrencyPipe, DatePipe, DecimalPipe } from '@angular/common';
 import {
-  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
   computed,
   inject,
   output,
   signal,
-  ViewChild,
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -19,7 +18,6 @@ import { MatSelectModule } from '@angular/material/select';
 import { Sort } from '@angular/material/sort';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { of } from 'rxjs';
 
 import { BaseTableComponent } from '../../shared/components/base-table/base-table.component';
 import { ColumnDef } from '../../shared/components/base-table/column-def.interface';
@@ -35,7 +33,6 @@ import { ScreenerService } from '../global-screener/services/screener.service';
 import { calculateYieldPercent } from './calculate-yield-percent.function';
 import { CellEditEvent } from './cell-edit-event.interface';
 import { filterUniverses } from './filter-universes.function';
-import { sortUniverses } from './sort-universes.function';
 
 @Component({
   selector: 'dms-global-universe',
@@ -45,6 +42,7 @@ import { sortUniverses } from './sort-universes.function';
     DecimalPipe,
     MatToolbarModule,
     MatButtonModule,
+    MatCardModule,
     MatIconModule,
     MatSelectModule,
     MatFormFieldModule,
@@ -59,7 +57,7 @@ import { sortUniverses } from './sort-universes.function';
   styleUrl: './global-universe.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class GlobalUniverseComponent implements AfterViewInit {
+export class GlobalUniverseComponent {
   private readonly syncService = inject(UniverseSyncService);
   private readonly screenerService = inject(ScreenerService);
   private readonly notification = inject(NotificationService);
@@ -74,8 +72,6 @@ export class GlobalUniverseComponent implements AfterViewInit {
   readonly expiredFilter$ = signal<boolean | null>(null);
   readonly selectedAccountId$ = signal<string>('all');
   readonly minYieldFilter$ = signal<number | null>(null);
-  readonly sortField$ = signal<string>('symbol');
-  readonly sortDirection$ = signal<'' | 'asc' | 'desc'>('asc');
   readonly isUpdatingFields$ = signal<boolean>(false);
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signal
@@ -84,8 +80,6 @@ export class GlobalUniverseComponent implements AfterViewInit {
   // Expose screener service loading and error signals
   readonly screenerLoading = this.screenerService.loading;
   readonly screenerError = this.screenerService.error;
-
-  @ViewChild(BaseTableComponent) table!: BaseTableComponent<Universe>;
 
   readonly columns: ColumnDef[] = [
     { field: 'symbol', header: 'Symbol', sortable: true, width: '80px' },
@@ -183,31 +177,16 @@ export class GlobalUniverseComponent implements AfterViewInit {
     if (!Array.isArray(rawData)) {
       return [];
     }
-    const filtered = filterUniverses(rawData, {
+    return filterUniverses(rawData, {
       symbolFilter: this.symbolFilter$(),
       riskGroupFilter: this.riskGroupFilter$(),
       expiredFilter: this.expiredFilter$(),
       minYieldFilter: this.minYieldFilter$(),
     });
-    return sortUniverses(filtered, this.sortField$(), this.sortDirection$());
   });
 
-  ngAfterViewInit(): void {
-    const context = this;
-    this.table.initDataSource(function loadUniverseData() {
-      const data = context.filteredData$();
-      return of({ data, total: data.length });
-    });
-  }
-
-  refreshTable(): void {
-    this.table?.refresh();
-  }
-
-  onSortChange(sort: Sort): void {
-    this.sortField$.set(sort.active);
-    this.sortDirection$.set(sort.direction);
-    this.refreshTable();
+  onSortChange(_: Sort): void {
+    // Sorting is handled automatically by the table
   }
 
   syncUniverse(): void {
@@ -219,7 +198,6 @@ export class GlobalUniverseComponent implements AfterViewInit {
             `${summary.updated} updated, ${summary.markedExpired} expired.`,
           'success'
         );
-        context.refreshTable();
       },
       error: function onSyncError() {
         context.notification.showPersistent(
@@ -241,7 +219,6 @@ export class GlobalUniverseComponent implements AfterViewInit {
         'Successfully updated field information from external sources.',
         'success'
       );
-      context.refreshTable();
     }, 1000);
   }
 
@@ -251,10 +228,9 @@ export class GlobalUniverseComponent implements AfterViewInit {
       disableClose: false,
     });
 
-    const context = this;
     dialogRef.afterClosed().subscribe({
       next: function onDialogClosed() {
-        context.refreshTable();
+        // Table will automatically update via signals
       },
     });
   }
@@ -266,7 +242,6 @@ export class GlobalUniverseComponent implements AfterViewInit {
   deleteUniverse(row: Universe): void {
     this.symbolDeleted.emit(row);
     this.notification.success(`Deleted symbol: ${row.symbol}`);
-    this.refreshTable();
   }
 
   onCellEdit(row: Universe, field: string, value: unknown): void {
@@ -275,27 +250,22 @@ export class GlobalUniverseComponent implements AfterViewInit {
 
   onSymbolFilterChange(value: string): void {
     this.symbolFilter$.set(value);
-    this.refreshTable();
   }
 
   onRiskGroupFilterChange(value: string | null): void {
     this.riskGroupFilter$.set(value);
-    this.refreshTable();
   }
 
   onExpiredFilterChange(value: boolean | null): void {
     this.expiredFilter$.set(value);
-    this.refreshTable();
   }
 
   onAccountChange(value: string): void {
     this.selectedAccountId$.set(value);
-    this.refreshTable();
   }
 
   onMinYieldFilterChange(value: number | null): void {
     this.minYieldFilter$.set(value);
-    this.refreshTable();
   }
 
   calculateYield(row: Universe): number {
@@ -306,7 +276,7 @@ export class GlobalUniverseComponent implements AfterViewInit {
     const context = this;
     this.screenerService.refresh().subscribe({
       next: function onRefreshSuccess() {
-        context.refreshTable();
+        context.notification.success('Universe data refreshed successfully');
       },
       error: function onRefreshError() {
         // Error is already captured by ScreenerService error signal

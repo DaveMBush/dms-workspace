@@ -38,6 +38,10 @@ vi.mock(
   })
 );
 
+vi.mock('../../store/screen/selectors/select-screen.function', () => ({
+  selectScreen: vi.fn().mockReturnValue([]),
+}));
+
 describe('GlobalUniverseComponent', () => {
   let component: GlobalUniverseComponent;
   let fixture: ComponentFixture<GlobalUniverseComponent>;
@@ -137,11 +141,6 @@ describe('GlobalUniverseComponent', () => {
       expect(col).toBeDefined();
       expect(col?.editable).toBe(true);
       expect(col?.type).toBe('date');
-    });
-
-    it('should initialize sort state with default values', () => {
-      expect(component.sortField$()).toBe('symbol');
-      expect(component.sortDirection$()).toBe('asc');
     });
   });
 
@@ -339,20 +338,11 @@ describe('GlobalUniverseComponent', () => {
   });
 
   describe('sorting', () => {
-    it('should update sort state on sort change', () => {
+    it('should handle sort change event', () => {
       const sort: Sort = { active: 'risk_group_id', direction: 'desc' };
-      component.table = { refresh: vi.fn() } as never;
-      component.onSortChange(sort);
-      expect(component.sortField$()).toBe('risk_group_id');
-      expect(component.sortDirection$()).toBe('desc');
-    });
-
-    it('should call refresh after sort change', () => {
-      const refreshMock = vi.fn();
-      component.table = { refresh: refreshMock } as never;
-      const sort: Sort = { active: 'symbol', direction: 'asc' };
-      component.onSortChange(sort);
-      expect(refreshMock).toHaveBeenCalled();
+      // Sorting is now handled automatically by BaseTableComponent
+      // onSortChange is just a placeholder method
+      expect(() => component.onSortChange(sort)).not.toThrow();
     });
   });
 
@@ -455,17 +445,20 @@ describe('GlobalUniverseComponent - Refresh Button', () => {
     expect(button.disabled).toBe(true);
   });
 
-  it('should trigger universe data reload after successful refresh', async () => {
+  it('should call screener service refresh and show success notification', async () => {
     const refreshSpy = vi
       .spyOn(screenerService, 'refresh')
       .mockReturnValue(of({ success: true }));
-    const tableRefreshSpy = vi.fn();
-    component.table = { refresh: tableRefreshSpy } as never;
+    const notificationService = TestBed.inject(NotificationService);
+    const notificationSpy = vi.spyOn(notificationService, 'success');
 
     component.onRefresh();
 
     await vi.waitFor(() => {
-      expect(tableRefreshSpy).toHaveBeenCalled();
+      expect(refreshSpy).toHaveBeenCalled();
+      expect(notificationSpy).toHaveBeenCalledWith(
+        'Universe data refreshed successfully'
+      );
     });
   });
 
@@ -502,13 +495,21 @@ describe('GlobalUniverseComponent - Refresh Button', () => {
 });
 
 // DISABLE TESTS FOR CI
-describe.skip('GlobalUniverseComponent - Loading and Error Handling', () => {
+describe('GlobalUniverseComponent - Loading and Error Handling', () => {
   let component: GlobalUniverseComponent;
   let fixture: ComponentFixture<GlobalUniverseComponent>;
   let screenerService: ScreenerService;
   let notificationService: NotificationService;
 
   beforeEach(async () => {
+    const loadingSignal = signal(false);
+    const errorSignal = signal<string | null>(null);
+    const refreshMock = vi.fn(() => {
+      // Simulate ScreenerService behavior: clear error on refresh
+      (errorSignal as any).set(null);
+      return of({});
+    });
+
     await TestBed.configureTestingModule({
       imports: [GlobalUniverseComponent],
       providers: [
@@ -516,9 +517,9 @@ describe.skip('GlobalUniverseComponent - Loading and Error Handling', () => {
         {
           provide: ScreenerService,
           useValue: {
-            refresh: vi.fn().mockReturnValue(of({})),
-            loading: signal(false),
-            error: signal(null),
+            refresh: refreshMock,
+            loading: loadingSignal,
+            error: errorSignal,
           },
         },
         {

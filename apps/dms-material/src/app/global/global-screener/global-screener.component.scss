@@ -17,6 +17,30 @@
   .toolbar-spacer {
     flex: 1;
   }
+
+  mat-progress-spinner {
+    margin-right: 8px;
+  }
+}
+
+.error-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background-color: var(--mat-app-error-container, #f44336);
+  color: var(--mat-app-on-error-container, #ffffff);
+  flex-shrink: 0;
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+
+  span {
+    flex: 1;
+  }
 }
 
 .header-filter {
