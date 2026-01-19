@@ -120,11 +120,6 @@ describe('GlobalScreenerComponent', () => {
     it('should initialize riskGroupFilter to null', () => {
       expect(component.riskGroupFilter$()).toBeNull();
     });
-
-    it('should initialize sort state with default values', () => {
-      expect(component.sortField$()).toBe('symbol');
-      expect(component.sortDirection$()).toBe('asc');
-    });
   });
 
   describe('riskGroups', () => {
@@ -182,20 +177,11 @@ describe('GlobalScreenerComponent', () => {
   });
 
   describe('sorting', () => {
-    it('should update sort state on sort change', () => {
+    it('should handle sort change event', () => {
       const sort: Sort = { active: 'risk_group', direction: 'desc' };
-      component.table = { refresh: vi.fn() } as never;
-      component.onSortChange(sort);
-      expect(component.sortField$()).toBe('risk_group');
-      expect(component.sortDirection$()).toBe('desc');
-    });
-
-    it('should call refresh after sort change', () => {
-      const refreshMock = vi.fn();
-      component.table = { refresh: refreshMock } as never;
-      const sort: Sort = { active: 'symbol', direction: 'asc' };
-      component.onSortChange(sort);
-      expect(refreshMock).toHaveBeenCalled();
+      // Sorting is now handled automatically by BaseTableComponent
+      // onSortChange is just a placeholder method
+      expect(() => component.onSortChange(sort)).not.toThrow();
     });
   });
 
@@ -250,56 +236,6 @@ describe('GlobalScreenerComponent', () => {
     it('should return correct cefconnect URL for symbol', () => {
       const url = component.getCefConnectUrl('TEST');
       expect(url).toBe('https://www.cefconnect.com/fund/TEST');
-    });
-  });
-
-  describe('sortScreens', () => {
-    it('should sort screens with all checks true first', () => {
-      const screens: Screen[] = [
-        {
-          id: '1',
-          symbol: 'AAA',
-          risk_group: 'Equities',
-          has_volitility: false,
-          objectives_understood: false,
-          graph_higher_before_2008: false,
-        },
-        {
-          id: '2',
-          symbol: 'ZZZ',
-          risk_group: 'Income',
-          has_volitility: true,
-          objectives_understood: true,
-          graph_higher_before_2008: true,
-        },
-      ];
-      const sorted = component.sortScreens(screens);
-      expect(sorted[0].symbol).toBe('ZZZ'); // all true, comes first
-      expect(sorted[1].symbol).toBe('AAA');
-    });
-
-    it('should sort alphabetically when all checks have same status', () => {
-      const screens: Screen[] = [
-        {
-          id: '1',
-          symbol: 'ZZZ',
-          risk_group: 'Equities',
-          has_volitility: true,
-          objectives_understood: true,
-          graph_higher_before_2008: true,
-        },
-        {
-          id: '2',
-          symbol: 'AAA',
-          risk_group: 'Income',
-          has_volitility: true,
-          objectives_understood: true,
-          graph_higher_before_2008: true,
-        },
-      ];
-      const sorted = component.sortScreens(screens);
-      expect(sorted[0].symbol).toBe('AAA');
-      expect(sorted[1].symbol).toBe('ZZZ');
     });
   });
 });

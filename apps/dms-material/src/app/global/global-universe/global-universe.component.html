@@ -92,6 +92,7 @@
 
   <div class="table-wrapper">
     <dms-base-table
+      [data]="filteredData$()"
       [columns]="columns"
       [selectable]="false"
       [rowHeight]="48"

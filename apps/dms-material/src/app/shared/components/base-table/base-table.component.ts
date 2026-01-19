@@ -1,14 +1,22 @@
 import { SelectionModel } from '@angular/cdk/collections';
-import { ScrollingModule } from '@angular/cdk/scrolling';
+import {
+  CdkVirtualScrollViewport,
+  ScrollingModule,
+} from '@angular/cdk/scrolling';
 import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   computed,
   ContentChild,
+  effect,
+  inject,
   input,
   output,
+  signal,
   TemplateRef,
+  viewChild,
 } from '@angular/core';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -16,8 +24,6 @@ import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 
 import { ColumnDef } from './column-def.interface';
-import { LazyLoadEvent } from './lazy-load-event.interface';
-import { VirtualTableDataSource } from './virtual-table-data-source';
 
 @Component({
   selector: 'dms-base-table',
@@ -34,20 +40,54 @@ import { VirtualTableDataSource } from './virtual-table-data-source';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BaseTableComponent<T extends { id: string }> {
+  // Inputs
+  data = input.required<T[]>(); // Signal-based data input
   columns = input.required<ColumnDef[]>();
   rowHeight = input<number>(48);
   bufferSize = input<number>(10);
   selectable = input<boolean>(false);
   multiSelect = input<boolean>(false);
+  loading = input<boolean>(false);
 
+  // Outputs
   readonly sortChange = output<Sort>();
   readonly rowClick = output<T>();
   readonly selectionChange = output<T[]>();
-  readonly lazyLoad = output<LazyLoadEvent>();
 
-  dataSource?: VirtualTableDataSource<T>;
+  // ViewChild for virtual scroll viewport
+  viewport = viewChild<CdkVirtualScrollViewport>('viewport');
 
+  // Internal state
   selection = new SelectionModel<T>(true, []);
+  private sortState = signal<Sort | null>(null);
+  private cdr = inject(ChangeDetectorRef);
+
+  constructor() {
+    // Force change detection when dataSource changes
+    // This ensures MatTable and virtual scroll viewport update properly
+    effect(
+      // eslint-disable-next-line @smarttools/no-anonymous-functions -- Required for effect
+      () => {
+        const context = this;
+        // Read the signal to track it
+        context.dataSource();
+        // Mark for check to trigger change detection in OnPush component
+        context.cdr.markForCheck();
+      }
+    );
+  }
+
+  // Data source - reactive to data() changes
+  // Returns sorted array directly - MatTable can work with arrays
+  dataSource = computed(
+    // eslint-disable-next-line @smarttools/no-anonymous-functions -- Required for computed signal
+    () => {
+      const context = this;
+      const dataValue = context.data();
+      const sortValue = context.sortState();
+      return context.applySortToData(dataValue, sortValue);
+    }
+  );
 
   displayedColumns = computed(
     // eslint-disable-next-line @smarttools/no-anonymous-functions -- Required for computed signal
@@ -84,16 +124,8 @@ export class BaseTableComponent<T extends { id: string }> {
   @ContentChild('cellTemplate') cellTemplate?: TemplateRef<unknown>;
   @ContentChild('filterRowTemplate') filterRowTemplate?: TemplateRef<unknown>;
 
-  initDataSource(
-    loadFn: (
-      event: LazyLoadEvent
-    ) => ReturnType<VirtualTableDataSource<T>['loadFn']>
-  ): void {
-    this.dataSource = new VirtualTableDataSource<T>(loadFn);
-    this.dataSource.loadInitialData();
-  }
-
   onSort(sort: Sort): void {
+    this.sortState.set(sort);
     this.sortChange.emit(sort);
   }
 
@@ -108,7 +140,7 @@ export class BaseTableComponent<T extends { id: string }> {
 
   isAllSelected(): boolean {
     const numSelected = this.selection.selected.length;
-    const numRows = this.dataSource?.getData().length ?? 0;
+    const numRows = this.dataSource().length;
     return numSelected === numRows && numRows > 0;
   }
 
@@ -116,8 +148,8 @@ export class BaseTableComponent<T extends { id: string }> {
     const allSelected = this.isAllSelected();
     if (allSelected) {
       this.selection.clear();
-    } else if (this.dataSource) {
-      this.selection.select(...this.dataSource.getData());
+    } else {
+      this.selection.select(...this.dataSource());
     }
     this.selectionChange.emit(this.selection.selected);
   }
@@ -126,7 +158,44 @@ export class BaseTableComponent<T extends { id: string }> {
     return item.id;
   }
 
-  refresh(): void {
-    this.dataSource?.refresh();
+  scrollToTop(): void {
+    const viewportValue = this.viewport();
+    if (viewportValue) {
+      viewportValue.scrollToIndex(0);
+    }
+  }
+
+  private applySortToData(dataValue: T[], sortValue: Sort | null): T[] {
+    if (
+      sortValue === null ||
+      sortValue.active.length === 0 ||
+      sortValue.direction.length === 0
+    ) {
+      return [...dataValue];
+    }
+
+    return this.sortData(dataValue, sortValue);
+  }
+
+  private sortData(dataValue: T[], sortValue: Sort): T[] {
+    return [...dataValue].sort(function compare(a: T, b: T) {
+      const aValue = (a as Record<string, unknown>)[sortValue.active];
+      const bValue = (b as Record<string, unknown>)[sortValue.active];
+
+      if (aValue === bValue) {
+        return 0;
+      }
+
+      if (aValue === null || aValue === undefined) {
+        return 1;
+      }
+      if (bValue === null || bValue === undefined) {
+        return -1;
+      }
+
+      const comparison =
+        (aValue as number | string) < (bValue as number | string) ? -1 : 1;
+      return sortValue.direction === 'asc' ? comparison : -comparison;
+    });
   }
 }

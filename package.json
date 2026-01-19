@@ -14,6 +14,7 @@
     "format:check": "nx format:check",
     "e2e:dms-material": "nx run dms-material-e2e:e2e",
     "e2e:dms-material:ui": "nx run dms-material-e2e:e2e --ui",
+    "db:create": "prisma generate && prisma migrate deploy",
     "postinstall": "if [ \"$CI\" = \"true\" ]; then prisma generate; fi"
   },
   "private": true,
@@ -32,7 +33,7 @@
     "@angular/ssr": "21.0.5",
     "@aws-amplify/auth": "^6.15.0",
     "@aws-amplify/core": "^6.13.1",
-    "@aws-sdk/client-ssm": "^3.879.0",
+    "@aws-sdk/client-ssm": "^3.970.0",
     "@fastify/autoload": "~6.3.1",
     "@fastify/cookie": "^11.0.2",
     "@fastify/cors": "^11.1.0",
@@ -42,7 +43,7 @@
     "@smarttools/smart-core": "2.1.4",
     "@smarttools/smart-signals": "^2.1.4",
     "axios": "^1.12.0",
-    "chart.js": "^4.5.0",
+    "chart.js": "^4.5.1",
     "cheerio": "^1.0.0",
     "dotenv": "^17.2.3",
     "express": "^4.21.2",
@@ -55,7 +56,7 @@
     "primeicons": "^7.0.0",
     "primeng": "^20.0.0",
     "rxjs": "~7.8.0",
-    "yahoo-finance2": "^3.10.2"
+    "yahoo-finance2": "^3.11.2"
   },
   "devDependencies": {
     "@analogjs/vite-plugin-angular": "2.1.3",
