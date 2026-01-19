@@ -121,20 +121,39 @@ SmartNgRX automatically calls this when the store is updated.
 - Redux DevTools: Verify store updates
 - Error testing: Simulate backend failure, verify error handling
 
+## QA Results
+
+### Review Date: 2026-01-19
+
+### Reviewed By: Quinn (Test Architect)
+
+### Gate Status
+
+Gate: CONCERNS → docs/qa/gates/aj.2-implement-checkbox-editing-with-backend-updates.yml
+
 ## Dev Agent Record
 
 ### Status
 
-Not Started
+Ready for Review
 
 ### File List
 
-(To be filled during implementation)
+- apps/dms-material/src/app/global/global-screener/global-screener.component.ts
+- apps/dms-material/src/app/global/global-screener/global-screener.component.spec.ts
+- apps/dms-material/src/app/global/global-screener/services/screener.service.ts
 
 ### Completion Notes
 
-(To be filled during implementation)
+- Updated `onCellEdit` method in GlobalScreenerComponent to call `updateScreener` for boolean fields
+- `updateScreener` method was already implemented in ScreenerService (matches DMS app pattern)
+- Added comprehensive tests for the new functionality
+- All validation commands passed successfully:
+  - ✅ `pnpm all` - All linting, building, and testing passed
+  - ✅ `pnpm format` - Code formatting completed
+  - ✅ `pnpm dupcheck` - No code duplication detected
 
 ### Change Log
 
-(To be filled during implementation)
+- **global-screener.component.ts**: Enhanced `onCellEdit` to update SmartNgRX store via `updateScreener` for boolean checkbox fields (has_volitility, objectives_understood, graph_higher_before_2008)
+- **global-screener.component.spec.ts**: Added tests for `updateScreener` calls for each boolean field and verification that non-boolean fields don't trigger updates

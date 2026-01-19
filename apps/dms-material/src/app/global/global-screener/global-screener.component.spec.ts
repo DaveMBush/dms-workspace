@@ -31,6 +31,7 @@ describe('GlobalScreenerComponent', () => {
     refresh: ReturnType<typeof vi.fn>;
     loading: ReturnType<typeof vi.fn>;
     error: ReturnType<typeof vi.fn>;
+    updateScreener: ReturnType<typeof vi.fn>;
   };
 
   beforeEach(async () => {
@@ -49,6 +50,7 @@ describe('GlobalScreenerComponent', () => {
       refresh: vi.fn().mockReturnValue(of(null)),
       loading: vi.fn().mockReturnValue(false),
       error: vi.fn().mockReturnValue(null),
+      updateScreener: vi.fn(),
     };
 
     await TestBed.configureTestingModule({
@@ -201,6 +203,20 @@ describe('GlobalScreenerComponent', () => {
       });
     });
 
+    it('should call updateScreener for has_volitility', () => {
+      const row = {
+        id: '1',
+        symbol: 'TST',
+        has_volitility: false,
+      } as Screen;
+      component.onCellEdit(row, 'has_volitility', true);
+      expect(mockScreenerService.updateScreener).toHaveBeenCalledWith(
+        '1',
+        'has_volitility',
+        true
+      );
+    });
+
     it('should emit cell edit event for objectives_understood', () => {
       const row = {
         id: '1',
@@ -216,6 +232,20 @@ describe('GlobalScreenerComponent', () => {
       });
     });
 
+    it('should call updateScreener for objectives_understood', () => {
+      const row = {
+        id: '1',
+        symbol: 'TST',
+        objectives_understood: false,
+      } as Screen;
+      component.onCellEdit(row, 'objectives_understood', true);
+      expect(mockScreenerService.updateScreener).toHaveBeenCalledWith(
+        '1',
+        'objectives_understood',
+        true
+      );
+    });
+
     it('should emit cell edit event for graph_higher_before_2008', () => {
       const row = {
         id: '1',
@@ -229,6 +259,29 @@ describe('GlobalScreenerComponent', () => {
         field: 'graph_higher_before_2008',
         value: true,
       });
+    });
+
+    it('should call updateScreener for graph_higher_before_2008', () => {
+      const row = {
+        id: '1',
+        symbol: 'TST',
+        graph_higher_before_2008: false,
+      } as Screen;
+      component.onCellEdit(row, 'graph_higher_before_2008', true);
+      expect(mockScreenerService.updateScreener).toHaveBeenCalledWith(
+        '1',
+        'graph_higher_before_2008',
+        true
+      );
+    });
+
+    it('should not call updateScreener for non-boolean fields', () => {
+      const row = {
+        id: '1',
+        symbol: 'TST',
+      } as Screen;
+      component.onCellEdit(row, 'symbol', 'NEW');
+      expect(mockScreenerService.updateScreener).not.toHaveBeenCalled();
     });
   });
 
