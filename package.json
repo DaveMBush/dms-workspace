@@ -33,7 +33,7 @@
     "@angular/ssr": "21.0.5",
     "@aws-amplify/auth": "^6.15.0",
     "@aws-amplify/core": "^6.13.1",
-    "@aws-sdk/client-ssm": "^3.879.0",
+    "@aws-sdk/client-ssm": "^3.970.0",
     "@fastify/autoload": "~6.3.1",
     "@fastify/cookie": "^11.0.2",
     "@fastify/cors": "^11.1.0",
