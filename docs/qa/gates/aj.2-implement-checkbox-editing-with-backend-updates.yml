@@ -1,0 +1,20 @@
+schema: 1
+story: 'aj.2'
+gate: CONCERNS
+status_reason: 'Core checkbox editing functionality implemented and tested, but missing visual feedback and error handling for backend updates.'
+reviewer: 'Quinn'
+updated: '2026-01-19T16:20:00Z'
+top_issues:
+  - id: 'UX-001'
+    severity: medium
+    finding: 'No visual feedback for update success/failure'
+    suggested_action: 'Add loading indicators and success/error notifications for checkbox updates'
+  - id: 'REL-001'
+    severity: medium
+    finding: 'No error handling for failed backend updates'
+    suggested_action: 'Implement error handling in ScreenEffectsService.update() and show user feedback'
+  - id: 'ARCH-001'
+    severity: low
+    finding: 'Optimistic updates may not be properly handled'
+    suggested_action: 'Verify SmartNgRX optimistic update behavior and add rollback on failure'
+waiver: { active: false }

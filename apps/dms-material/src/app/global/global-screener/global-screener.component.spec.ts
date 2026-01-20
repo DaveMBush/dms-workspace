@@ -31,6 +31,7 @@ describe('GlobalScreenerComponent', () => {
     refresh: ReturnType<typeof vi.fn>;
     loading: ReturnType<typeof vi.fn>;
     error: ReturnType<typeof vi.fn>;
+    updateScreener: ReturnType<typeof vi.fn>;
   };
 
   beforeEach(async () => {
@@ -49,6 +50,7 @@ describe('GlobalScreenerComponent', () => {
       refresh: vi.fn().mockReturnValue(of(null)),
       loading: vi.fn().mockReturnValue(false),
       error: vi.fn().mockReturnValue(null),
+      updateScreener: vi.fn(),
     };
 
     await TestBed.configureTestingModule({
@@ -201,6 +203,20 @@ describe('GlobalScreenerComponent', () => {
       });
     });
 
+    it('should call updateScreener for has_volitility', () => {
+      const row = {
+        id: '1',
+        symbol: 'TST',
+        has_volitility: false,
+      } as Screen;
+      component.onCellEdit(row, 'has_volitility', true);
+      expect(mockScreenerService.updateScreener).toHaveBeenCalledWith(
+        '1',
+        'has_volitility',
+        true
+      );
+    });
+
     it('should emit cell edit event for objectives_understood', () => {
       const row = {
         id: '1',
@@ -214,6 +230,20 @@ describe('GlobalScreenerComponent', () => {
         field: 'objectives_understood',
         value: true,
       });
+    });
+
+    it('should call updateScreener for objectives_understood', () => {
+      const row = {
+        id: '1',
+        symbol: 'TST',
+        objectives_understood: false,
+      } as Screen;
+      component.onCellEdit(row, 'objectives_understood', true);
+      expect(mockScreenerService.updateScreener).toHaveBeenCalledWith(
+        '1',
+        'objectives_understood',
+        true
+      );
     });
 
     it('should emit cell edit event for graph_higher_before_2008', () => {
@@ -230,12 +260,320 @@ describe('GlobalScreenerComponent', () => {
         value: true,
       });
     });
+
+    it('should call updateScreener for graph_higher_before_2008', () => {
+      const row = {
+        id: '1',
+        symbol: 'TST',
+        graph_higher_before_2008: false,
+      } as Screen;
+      component.onCellEdit(row, 'graph_higher_before_2008', true);
+      expect(mockScreenerService.updateScreener).toHaveBeenCalledWith(
+        '1',
+        'graph_higher_before_2008',
+        true
+      );
+    });
+
+    it('should not call updateScreener for non-boolean fields', () => {
+      const row = {
+        id: '1',
+        symbol: 'TST',
+      } as Screen;
+      component.onCellEdit(row, 'symbol', 'NEW');
+      expect(mockScreenerService.updateScreener).not.toHaveBeenCalled();
+    });
   });
 
   describe('getCefConnectUrl', () => {
     it('should return correct cefconnect URL for symbol', () => {
       const url = component.getCefConnectUrl('TEST');
       expect(url).toBe('https://www.cefconnect.com/fund/TEST');
+    });
+  });
+
+  describe('SmartNgRX Integration', () => {
+    beforeEach(() => {
+      // Reset the mock before each test
+      vi.clearAllMocks();
+    });
+
+    it('should display data from screenerService.screens()', () => {
+      const mockScreens: Screen[] = [
+        {
+          id: '1',
+          symbol: 'TEST',
+          risk_group: 'Equities',
+          has_volitility: true,
+          objectives_understood: true,
+          graph_higher_before_2008: true,
+        },
+      ];
+
+      mockScreenerService.screens = vi.fn().mockReturnValue(mockScreens);
+
+      fixture.detectChanges();
+
+      const filteredData = component.filteredData$();
+      expect(filteredData).toEqual(mockScreens);
+    });
+
+    it('should filter by Equities risk group', () => {
+      const mockScreens: Screen[] = [
+        {
+          id: '1',
+          symbol: 'A',
+          risk_group: 'Equities',
+          has_volitility: false,
+          objectives_understood: false,
+          graph_higher_before_2008: false,
+        },
+        {
+          id: '2',
+          symbol: 'B',
+          risk_group: 'Income',
+          has_volitility: false,
+          objectives_understood: false,
+          graph_higher_before_2008: false,
+        },
+      ];
+
+      mockScreenerService.screens = vi.fn().mockReturnValue(mockScreens);
+
+      component.riskGroupFilter$.set('Equities');
+      const filtered = component.filteredData$();
+
+      expect(filtered.length).toBe(1);
+      expect(filtered[0].symbol).toBe('A');
+      expect(filtered[0].risk_group).toBe('Equities');
+    });
+
+    it('should filter by Income risk group', () => {
+      const mockScreens: Screen[] = [
+        {
+          id: '1',
+          symbol: 'A',
+          risk_group: 'Equities',
+          has_volitility: false,
+          objectives_understood: false,
+          graph_higher_before_2008: false,
+        },
+        {
+          id: '2',
+          symbol: 'B',
+          risk_group: 'Income',
+          has_volitility: false,
+          objectives_understood: false,
+          graph_higher_before_2008: false,
+        },
+      ];
+
+      mockScreenerService.screens = vi.fn().mockReturnValue(mockScreens);
+
+      component.riskGroupFilter$.set('Income');
+      const filtered = component.filteredData$();
+
+      expect(filtered.length).toBe(1);
+      expect(filtered[0].symbol).toBe('B');
+      expect(filtered[0].risk_group).toBe('Income');
+    });
+
+    it('should filter by Tax Free Income risk group', () => {
+      const mockScreens: Screen[] = [
+        {
+          id: '1',
+          symbol: 'A',
+          risk_group: 'Equities',
+          has_volitility: false,
+          objectives_understood: false,
+          graph_higher_before_2008: false,
+        },
+        {
+          id: '2',
+          symbol: 'B',
+          risk_group: 'Tax Free Income',
+          has_volitility: false,
+          objectives_understood: false,
+          graph_higher_before_2008: false,
+        },
+      ];
+
+      mockScreenerService.screens = vi.fn().mockReturnValue(mockScreens);
+
+      component.riskGroupFilter$.set('Tax Free Income');
+      const filtered = component.filteredData$();
+
+      expect(filtered.length).toBe(1);
+      expect(filtered[0].symbol).toBe('B');
+      expect(filtered[0].risk_group).toBe('Tax Free Income');
+    });
+
+    it('should return all screens when risk group filter is null', () => {
+      const mockScreens: Screen[] = [
+        {
+          id: '1',
+          symbol: 'A',
+          risk_group: 'Equities',
+          has_volitility: false,
+          objectives_understood: false,
+          graph_higher_before_2008: false,
+        },
+        {
+          id: '2',
+          symbol: 'B',
+          risk_group: 'Income',
+          has_volitility: false,
+          objectives_understood: false,
+          graph_higher_before_2008: false,
+        },
+      ];
+
+      mockScreenerService.screens = vi.fn().mockReturnValue(mockScreens);
+
+      component.riskGroupFilter$.set(null);
+      const filtered = component.filteredData$();
+
+      expect(filtered.length).toBe(2);
+    });
+
+    it('should return empty array when no screens match filter', () => {
+      const mockScreens: Screen[] = [
+        {
+          id: '1',
+          symbol: 'A',
+          risk_group: 'Equities',
+          has_volitility: false,
+          objectives_understood: false,
+          graph_higher_before_2008: false,
+        },
+      ];
+
+      mockScreenerService.screens = vi.fn().mockReturnValue(mockScreens);
+
+      component.riskGroupFilter$.set('Income');
+      const filtered = component.filteredData$();
+
+      expect(filtered.length).toBe(0);
+    });
+
+    it('should update screener when checkbox clicked for has_volitility', () => {
+      const mockScreen: Screen = {
+        id: '1',
+        symbol: 'TEST',
+        risk_group: 'Equities',
+        has_volitility: false,
+        objectives_understood: false,
+        graph_higher_before_2008: false,
+      };
+
+      component.onCellEdit(mockScreen, 'has_volitility', true);
+
+      expect(mockScreenerService.updateScreener).toHaveBeenCalledWith(
+        '1',
+        'has_volitility',
+        true
+      );
+    });
+
+    it('should update screener when checkbox clicked for objectives_understood', () => {
+      const mockScreen: Screen = {
+        id: '1',
+        symbol: 'TEST',
+        risk_group: 'Equities',
+        has_volitility: false,
+        objectives_understood: false,
+        graph_higher_before_2008: false,
+      };
+
+      component.onCellEdit(mockScreen, 'objectives_understood', true);
+
+      expect(mockScreenerService.updateScreener).toHaveBeenCalledWith(
+        '1',
+        'objectives_understood',
+        true
+      );
+    });
+
+    it('should update screener when checkbox clicked for graph_higher_before_2008', () => {
+      const mockScreen: Screen = {
+        id: '1',
+        symbol: 'TEST',
+        risk_group: 'Equities',
+        has_volitility: false,
+        objectives_understood: false,
+        graph_higher_before_2008: false,
+      };
+
+      component.onCellEdit(mockScreen, 'graph_higher_before_2008', true);
+
+      expect(mockScreenerService.updateScreener).toHaveBeenCalledWith(
+        '1',
+        'graph_higher_before_2008',
+        true
+      );
+    });
+
+    it('should handle unchecking checkbox', () => {
+      const mockScreen: Screen = {
+        id: '1',
+        symbol: 'TEST',
+        risk_group: 'Equities',
+        has_volitility: true,
+        objectives_understood: false,
+        graph_higher_before_2008: false,
+      };
+
+      component.onCellEdit(mockScreen, 'has_volitility', false);
+
+      expect(mockScreenerService.updateScreener).toHaveBeenCalledWith(
+        '1',
+        'has_volitility',
+        false
+      );
+    });
+
+    it('should filter data reactively when risk group changes', () => {
+      const mockScreens: Screen[] = [
+        {
+          id: '1',
+          symbol: 'A',
+          risk_group: 'Equities',
+          has_volitility: false,
+          objectives_understood: false,
+          graph_higher_before_2008: false,
+        },
+        {
+          id: '2',
+          symbol: 'B',
+          risk_group: 'Income',
+          has_volitility: false,
+          objectives_understood: false,
+          graph_higher_before_2008: false,
+        },
+      ];
+
+      mockScreenerService.screens = vi.fn().mockReturnValue(mockScreens);
+
+      // Initially no filter
+      let filtered = component.filteredData$();
+      expect(filtered.length).toBe(2);
+
+      // Apply filter
+      component.riskGroupFilter$.set('Equities');
+      filtered = component.filteredData$();
+      expect(filtered.length).toBe(1);
+      expect(filtered[0].risk_group).toBe('Equities');
+
+      // Change filter
+      component.riskGroupFilter$.set('Income');
+      filtered = component.filteredData$();
+      expect(filtered.length).toBe(1);
+      expect(filtered[0].risk_group).toBe('Income');
+
+      // Clear filter
+      component.riskGroupFilter$.set(null);
+      filtered = component.filteredData$();
+      expect(filtered.length).toBe(2);
     });
   });
 });

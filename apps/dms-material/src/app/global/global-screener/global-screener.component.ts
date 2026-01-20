@@ -139,6 +139,18 @@ export class GlobalScreenerComponent {
   }
 
   onCellEdit(row: Screen, field: string, value: unknown): void {
+    if (
+      field === 'has_volitility' ||
+      field === 'objectives_understood' ||
+      field === 'graph_higher_before_2008'
+    ) {
+      this.screenerService.updateScreener(
+        row.id,
+        field as keyof Screen,
+        value as boolean
+      );
+    }
+
     this.cellEdit.emit({ row, field, value });
   }
 
