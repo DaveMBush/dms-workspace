@@ -29,18 +29,18 @@
 
 ### Functional Requirements
 
-- [ ] Dropdown displays three risk groups + "All" option
-- [ ] Selecting risk group filters table data
-- [ ] Selecting "All" shows all data
-- [ ] Filter persists during editing
-- [ ] Table refreshes correctly when filter changes
+- [x] Dropdown displays three risk groups + "All" option
+- [x] Selecting risk group filters table data
+- [x] Selecting "All" shows all data
+- [x] Filter persists during editing
+- [x] Table refreshes correctly when filter changes
 
 ### Technical Requirements
 
-- [ ] Use existing riskGroupFilter$ signal
-- [ ] filteredData$ computed signal already implements filtering
-- [ ] Ensure dropdown value binding works correctly
-- [ ] Handle null case for "All" option
+- [x] Use existing riskGroupFilter$ signal
+- [x] filteredData$ computed signal already implements filtering
+- [x] Ensure dropdown value binding works correctly
+- [x] Handle null case for "All" option
 
 ## Implementation Details
 
@@ -102,11 +102,11 @@ Verify dropdown in template is properly bound:
 
 ## Definition of Done
 
-- [ ] Dropdown filters data correctly
-- [ ] "All" option shows all data
-- [ ] Filter persists during editing
-- [ ] Table updates when filter changes
-- [ ] All validation commands pass
+- [x] Dropdown filters data correctly
+- [x] "All" option shows all data
+- [x] Filter persists during editing
+- [x] Table updates when filter changes
+- [x] All validation commands pass
   - Run `pnpm all`
   - Run `pnpm e2e:dms-material`
   - Run `pnpm dupcheck`
@@ -122,18 +122,41 @@ Verify dropdown in template is properly bound:
 
 ## Dev Agent Record
 
+### Agent Model Used
+
+Claude Sonnet 4.5
+
 ### Status
 
-Not Started
+Ready for Review
 
 ### File List
 
-(To be filled during implementation)
+- apps/dms-material/src/app/global/global-screener/global-screener.component.ts
+- apps/dms-material/src/app/global/global-screener/global-screener.component.html
 
 ### Completion Notes
 
-(To be filled during implementation)
+- Story was already fully implemented prior to gate review
+- Risk group filter dropdown is properly wired with riskGroupFilter$ signal
+- filteredData$ computed signal handles filtering logic correctly
+- All acceptance criteria verified and passing
+- All validation commands passed successfully (pnpm all, e2e tests, dupcheck, format)
+- QA gate review: PASS
 
 ### Change Log
 
-(To be filled during implementation)
+- 2026-01-19: Verified existing implementation meets all requirements
+- 2026-01-19: All validation tests passed
+- 2026-01-19: QA gate created and marked as PASS
+- 2026-01-19: Story marked Ready for Review
+
+## QA Results
+
+### Review Date: 2026-01-19
+
+### Reviewed By: Quinn (Test Architect)
+
+### Gate Status
+
+Gate: PASS → docs/qa/gates/AJ.3-wire-risk-group-filter.yml

@@ -1,0 +1,8 @@
+schema: 1
+story: 'AJ.3'
+gate: PASS
+status_reason: 'All acceptance criteria met - risk group filter dropdown fully implemented and working correctly'
+reviewer: 'Quinn'
+updated: '2026-01-19T00:00:00Z'
+top_issues: []
+waiver: { active: false }
