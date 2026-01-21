@@ -1,16 +1,26 @@
 import { test, expect } from 'playwright/test';
 
 import { login } from './helpers/login.helper';
+import { seedScreenerData } from './helpers/seed-screener-data.helper';
 
-// NOTE: These tests demonstrate proper E2E test structure following TDD principles
-// They are currently skipped because they require actual screener data in the database
-// The SmartNgRX data loading pattern doesn't easily support API mocking for list views
-// TODO: Implement database seeding in test setup or fixture files to populate screener data
-test.describe.skip('Screener Table', () => {
+test.describe('Screener Table', () => {
+  let cleanup: () => Promise<void>;
+
   test.beforeEach(async ({ page }) => {
+    // Seed test data for this test
+    const seeder = await seedScreenerData();
+    cleanup = seeder.cleanup;
+
     await login(page);
     await page.goto('/global/screener');
     await page.waitForLoadState('networkidle');
+  });
+
+  test.afterEach(async () => {
+    // Clean up test data after each test for isolation
+    if (cleanup) {
+      await cleanup();
+    }
   });
 
   test.describe('Data Display', () => {
