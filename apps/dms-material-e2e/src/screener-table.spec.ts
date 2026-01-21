@@ -2,10 +2,10 @@ import { test, expect } from 'playwright/test';
 
 import { login } from './helpers/login.helper';
 
-// ENABLED: Tests now active after AJ.1-AJ.3 implementation complete
-// These tests verify the screener table functionality following TDD approach
-// TODO: Tests currently disabled due to missing screener data in E2E test database
-// Need to seed screener data before these tests can run
+// NOTE: These tests demonstrate proper E2E test structure following TDD principles
+// They are currently skipped because they require actual screener data in the database
+// The SmartNgRX data loading pattern doesn't easily support API mocking for list views
+// TODO: Implement database seeding in test setup or fixture files to populate screener data
 test.describe.skip('Screener Table', () => {
   test.beforeEach(async ({ page }) => {
     await login(page);
