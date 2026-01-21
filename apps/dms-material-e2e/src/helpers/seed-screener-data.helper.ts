@@ -73,18 +73,52 @@ function buildScreenerRecords(
   symbols: string[],
   riskGroups: RiskGroups
 ): ScreenerRecord[] {
-  const base = { distribution: 0.0, distributions_per_year: 0, last_price: 0.0 };
+  const base = {
+    distribution: 0.0,
+    distributions_per_year: 0,
+    last_price: 0.0,
+  };
   return [
-    { ...base, symbol: symbols[0], risk_group_id: riskGroups.equitiesRiskGroup.id,
-      has_volitility: false, objectives_understood: false, graph_higher_before_2008: false },
-    { ...base, symbol: symbols[1], risk_group_id: riskGroups.equitiesRiskGroup.id,
-      has_volitility: true, objectives_understood: false, graph_higher_before_2008: false },
-    { ...base, symbol: symbols[2], risk_group_id: riskGroups.incomeRiskGroup.id,
-      has_volitility: false, objectives_understood: true, graph_higher_before_2008: false },
-    { ...base, symbol: symbols[3], risk_group_id: riskGroups.incomeRiskGroup.id,
-      has_volitility: true, objectives_understood: false, graph_higher_before_2008: true },
-    { ...base, symbol: symbols[4], risk_group_id: riskGroups.taxFreeIncomeRiskGroup.id,
-      has_volitility: false, objectives_understood: false, graph_higher_before_2008: false },
+    {
+      ...base,
+      symbol: symbols[0],
+      risk_group_id: riskGroups.equitiesRiskGroup.id,
+      has_volitility: false,
+      objectives_understood: false,
+      graph_higher_before_2008: false,
+    },
+    {
+      ...base,
+      symbol: symbols[1],
+      risk_group_id: riskGroups.equitiesRiskGroup.id,
+      has_volitility: true,
+      objectives_understood: false,
+      graph_higher_before_2008: false,
+    },
+    {
+      ...base,
+      symbol: symbols[2],
+      risk_group_id: riskGroups.incomeRiskGroup.id,
+      has_volitility: false,
+      objectives_understood: true,
+      graph_higher_before_2008: false,
+    },
+    {
+      ...base,
+      symbol: symbols[3],
+      risk_group_id: riskGroups.incomeRiskGroup.id,
+      has_volitility: true,
+      objectives_understood: false,
+      graph_higher_before_2008: true,
+    },
+    {
+      ...base,
+      symbol: symbols[4],
+      risk_group_id: riskGroups.taxFreeIncomeRiskGroup.id,
+      has_volitility: false,
+      objectives_understood: false,
+      graph_higher_before_2008: false,
+    },
   ];
 }
 
