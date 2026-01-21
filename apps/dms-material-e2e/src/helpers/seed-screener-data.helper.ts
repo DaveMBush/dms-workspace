@@ -1,13 +1,116 @@
+import type { PrismaClient } from '@prisma/client';
+
+interface SeederResult {
+  cleanup(): Promise<void>;
+  symbols: string[];
+}
+
+interface RiskGroups {
+  equitiesRiskGroup: { id: number };
+  incomeRiskGroup: { id: number };
+  taxFreeIncomeRiskGroup: { id: number };
+}
+
+// Snake case property names match database schema
+/* eslint-disable @typescript-eslint/naming-convention -- Property names match database column names */
+interface ScreenerRecord {
+  symbol: string;
+  risk_group_id: number;
+  has_volitility: boolean;
+  objectives_understood: boolean;
+  graph_higher_before_2008: boolean;
+  distribution: number;
+  distributions_per_year: number;
+  last_price: number;
+}
+/* eslint-enable @typescript-eslint/naming-convention -- Re-enable naming convention */
+
+/**
+ * Generate unique identifier using cryptographically secure random values
+ * @returns Unique ID string
+ */
+function generateUniqueId(): string {
+  // Use crypto for secure random values instead of Math.random()
+  const randomBytes = crypto.getRandomValues(new Uint8Array(4));
+  const randomStr = Array.from(randomBytes)
+    .map(function byteToString(b: number): string {
+      return b.toString(36);
+    })
+    .join('')
+    .substring(0, 5);
+  return `${Date.now()}-${randomStr}`;
+}
+
+/**
+ * Create risk groups in the database
+ */
+async function createRiskGroups(prisma: PrismaClient): Promise<RiskGroups> {
+  const equitiesRiskGroup = await prisma.risk_group.upsert({
+    where: { name: 'Equities' },
+    update: {},
+    create: { name: 'Equities' },
+  });
+
+  const incomeRiskGroup = await prisma.risk_group.upsert({
+    where: { name: 'Income' },
+    update: {},
+    create: { name: 'Income' },
+  });
+
+  const taxFreeIncomeRiskGroup = await prisma.risk_group.upsert({
+    where: { name: 'Tax Free Income' },
+    update: {},
+    create: { name: 'Tax Free Income' },
+  });
+
+  return { equitiesRiskGroup, incomeRiskGroup, taxFreeIncomeRiskGroup };
+}
+
+/**
+ * Build screener test data records
+ */
+function buildScreenerRecords(
+  symbols: string[],
+  riskGroups: RiskGroups
+): ScreenerRecord[] {
+  const base = { distribution: 0.0, distributions_per_year: 0, last_price: 0.0 };
+  return [
+    { ...base, symbol: symbols[0], risk_group_id: riskGroups.equitiesRiskGroup.id,
+      has_volitility: false, objectives_understood: false, graph_higher_before_2008: false },
+    { ...base, symbol: symbols[1], risk_group_id: riskGroups.equitiesRiskGroup.id,
+      has_volitility: true, objectives_understood: false, graph_higher_before_2008: false },
+    { ...base, symbol: symbols[2], risk_group_id: riskGroups.incomeRiskGroup.id,
+      has_volitility: false, objectives_understood: true, graph_higher_before_2008: false },
+    { ...base, symbol: symbols[3], risk_group_id: riskGroups.incomeRiskGroup.id,
+      has_volitility: true, objectives_understood: false, graph_higher_before_2008: true },
+    { ...base, symbol: symbols[4], risk_group_id: riskGroups.taxFreeIncomeRiskGroup.id,
+      has_volitility: false, objectives_understood: false, graph_higher_before_2008: false },
+  ];
+}
+
+/**
+ * Create screener records in database
+ */
+async function createScreenerRecords(
+  prisma: PrismaClient,
+  symbols: string[],
+  riskGroups: RiskGroups
+): Promise<void> {
+  const records = buildScreenerRecords(symbols, riskGroups);
+  await Promise.all(
+    records.map(async function createRecord(data) {
+      return prisma.screener.create({ data });
+    })
+  );
+}
+
 /**
  * Seed screener test data for E2E tests
  *
  * This function should be called in test.beforeEach to set up isolated test data
  * Each test gets its own clean dataset to avoid collisions
  */
-export async function seedScreenerData(): Promise<{
-  cleanup: () => Promise<void>;
-  symbols: string[];
-}> {
+export async function seedScreenerData(): Promise<SeederResult> {
   // Import Prisma and adapter dynamically to avoid bundling issues
   const { PrismaClient } = await import('@prisma/client');
   const { PrismaBetterSqlite3 } = await import(
@@ -15,15 +118,12 @@ export async function seedScreenerData(): Promise<{
   );
 
   // Connect to the same database that the E2E backend server uses
-  // The e2e-server target sets DATABASE_URL to file:./test-database.db
   const testDbUrl = 'file:./test-database.db';
   const adapter = new PrismaBetterSqlite3({ url: testDbUrl });
   const prisma = new PrismaClient({ adapter });
 
-  // Generate unique symbols for this test run using timestamp and random suffix
-  const uniqueId = `${Date.now()}-${Math.random()
-    .toString(36)
-    .substring(2, 7)}`;
+  // Generate unique symbols for this test run
+  const uniqueId = generateUniqueId();
   const symbols = [
     `AAPL-${uniqueId}`,
     `MSFT-${uniqueId}`,
@@ -33,107 +133,13 @@ export async function seedScreenerData(): Promise<{
   ];
 
   try {
-    // First, get or create risk groups
-    const equitiesRiskGroup = await prisma.risk_group.upsert({
-      where: { name: 'Equities' },
-      update: {},
-      create: { name: 'Equities' },
-    });
-
-    const incomeRiskGroup = await prisma.risk_group.upsert({
-      where: { name: 'Income' },
-      update: {},
-      create: { name: 'Income' },
-    });
-
-    const taxFreeIncomeRiskGroup = await prisma.risk_group.upsert({
-      where: { name: 'Tax Free Income' },
-      update: {},
-      create: { name: 'Tax Free Income' },
-    });
-
-    // Insert test screener data with unique symbols one by one to get IDs
-    const screenerRecords = [];
-
-    screenerRecords.push(
-      await prisma.screener.create({
-        data: {
-          symbol: symbols[0],
-          risk_group_id: equitiesRiskGroup.id,
-          has_volitility: false,
-          objectives_understood: false,
-          graph_higher_before_2008: false,
-          distribution: 0.0,
-          distributions_per_year: 0,
-          last_price: 0.0,
-        },
-      })
-    );
-
-    screenerRecords.push(
-      await prisma.screener.create({
-        data: {
-          symbol: symbols[1],
-          risk_group_id: equitiesRiskGroup.id,
-          has_volitility: true,
-          objectives_understood: false,
-          graph_higher_before_2008: false,
-          distribution: 0.0,
-          distributions_per_year: 0,
-          last_price: 0.0,
-        },
-      })
-    );
-
-    screenerRecords.push(
-      await prisma.screener.create({
-        data: {
-          symbol: symbols[2],
-          risk_group_id: incomeRiskGroup.id,
-          has_volitility: false,
-          objectives_understood: true,
-          graph_higher_before_2008: false,
-          distribution: 0.0,
-          distributions_per_year: 0,
-          last_price: 0.0,
-        },
-      })
-    );
-
-    screenerRecords.push(
-      await prisma.screener.create({
-        data: {
-          symbol: symbols[3],
-          risk_group_id: incomeRiskGroup.id,
-          has_volitility: true,
-          objectives_understood: false,
-          graph_higher_before_2008: true,
-          distribution: 0.0,
-          distributions_per_year: 0,
-          last_price: 0.0,
-        },
-      })
-    );
-
-    screenerRecords.push(
-      await prisma.screener.create({
-        data: {
-          symbol: symbols[4],
-          risk_group_id: taxFreeIncomeRiskGroup.id,
-          has_volitility: false,
-          objectives_understood: false,
-          graph_higher_before_2008: false,
-          distribution: 0.0,
-          distributions_per_year: 0,
-          last_price: 0.0,
-        },
-      })
-    );
+    const riskGroups = await createRiskGroups(prisma);
+    await createScreenerRecords(prisma, symbols, riskGroups);
 
     // Return cleanup function and symbols
     return {
       symbols,
-      cleanup: async () => {
+      cleanup: async function cleanupScreenerData(): Promise<void> {
         try {
           await prisma.screener.deleteMany({
             where: {
