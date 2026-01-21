@@ -67,26 +67,74 @@ async function createRiskGroups(prisma: PrismaClient): Promise<RiskGroups> {
 }
 
 /**
+ * Create test data array - compact format to meet line limit
+ */
+function createTestDataArray(
+  symbols: string[],
+  equitiesId: number,
+  incomeId: number,
+  taxFreeId: number
+): ScreenerRecord[] {
+  const b = { distribution: 0.0, distributions_per_year: 0, last_price: 0.0 };
+  return [
+    {
+      ...b,
+      symbol: symbols[0],
+      risk_group_id: equitiesId,
+      has_volitility: false,
+      objectives_understood: false,
+      graph_higher_before_2008: false,
+    },
+    {
+      ...b,
+      symbol: symbols[1],
+      risk_group_id: equitiesId,
+      has_volitility: true,
+      objectives_understood: false,
+      graph_higher_before_2008: false,
+    },
+    {
+      ...b,
+      symbol: symbols[2],
+      risk_group_id: incomeId,
+      has_volitility: false,
+      objectives_understood: true,
+      graph_higher_before_2008: false,
+    },
+    {
+      ...b,
+      symbol: symbols[3],
+      risk_group_id: incomeId,
+      has_volitility: true,
+      objectives_understood: false,
+      graph_higher_before_2008: true,
+    },
+    {
+      ...b,
+      symbol: symbols[4],
+      risk_group_id: taxFreeId,
+      has_volitility: false,
+      objectives_understood: false,
+      graph_higher_before_2008: false,
+    },
+  ];
+}
+
+/**
  * Build screener test data records
  */
 function buildScreenerRecords(
   symbols: string[],
   riskGroups: RiskGroups
 ): ScreenerRecord[] {
-  const base = { distribution: 0.0, distributions_per_year: 0, last_price: 0.0 };
-  const { equitiesRiskGroup, incomeRiskGroup, taxFreeIncomeRiskGroup } = riskGroups;
-  return [
-    { ...base, symbol: symbols[0], risk_group_id: equitiesRiskGroup.id,
-      has_volitility: false, objectives_understood: false, graph_higher_before_2008: false },
-    { ...base, symbol: symbols[1], risk_group_id: equitiesRiskGroup.id,
-      has_volitility: true, objectives_understood: false, graph_higher_before_2008: false },
-    { ...base, symbol: symbols[2], risk_group_id: incomeRiskGroup.id,
-      has_volitility: false, objectives_understood: true, graph_higher_before_2008: false },
-    { ...base, symbol: symbols[3], risk_group_id: incomeRiskGroup.id,
-      has_volitility: true, objectives_understood: false, graph_higher_before_2008: true },
-    { ...base, symbol: symbols[4], risk_group_id: taxFreeIncomeRiskGroup.id,
-      has_volitility: false, objectives_understood: false, graph_higher_before_2008: false },
-  ];
+  const { equitiesRiskGroup, incomeRiskGroup, taxFreeIncomeRiskGroup } =
+    riskGroups;
+  return createTestDataArray(
+    symbols,
+    equitiesRiskGroup.id,
+    incomeRiskGroup.id,
+    taxFreeIncomeRiskGroup.id
+  );
 }
 
 /**
