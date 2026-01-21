@@ -6,6 +6,7 @@
  */
 export async function seedScreenerData(): Promise<{
   cleanup: () => Promise<void>;
+  symbols: string[];
 }> {
   // Import Prisma and adapter dynamically to avoid bundling issues
   const { PrismaClient } = await import('@prisma/client');
@@ -16,6 +17,16 @@ export async function seedScreenerData(): Promise<{
   const testDbUrl = 'file:./test-database.db';
   const adapter = new PrismaBetterSqlite3({ url: testDbUrl });
   const prisma = new PrismaClient({ adapter });
+
+  // Generate unique symbols for this test run using timestamp and random suffix
+  const uniqueId = `${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+  const symbols = [
+    `AAPL-${uniqueId}`,
+    `MSFT-${uniqueId}`,
+    `BND-${uniqueId}`,
+    `VWOB-${uniqueId}`,
+    `VTEB-${uniqueId}`,
+  ];
 
   try {
     // First, get or create risk groups
@@ -37,79 +48,83 @@ export async function seedScreenerData(): Promise<{
       create: { name: 'Tax Free Income' },
     });
 
-    // Clean up any existing test screener data to avoid duplicates
-    await prisma.screener.deleteMany({
-      where: {
-        symbol: {
-          in: ['AAPL', 'MSFT', 'BND', 'VWOB', 'VTEB'],
-        },
+    // Insert test screener data with unique symbols one by one to get IDs
+    const screenerRecords = [];
+    
+    screenerRecords.push(await prisma.screener.create({
+      data: {
+        symbol: symbols[0],
+        risk_group_id: equitiesRiskGroup.id,
+        has_volitility: false,
+        objectives_understood: false,
+        graph_higher_before_2008: false,
+        distribution: 0.0,
+        distributions_per_year: 0,
+        last_price: 0.0,
       },
-    });
+    }));
+    
+    screenerRecords.push(await prisma.screener.create({
+      data: {
+        symbol: symbols[1],
+        risk_group_id: equitiesRiskGroup.id,
+        has_volitility: true,
+        objectives_understood: false,
+        graph_higher_before_2008: false,
+        distribution: 0.0,
+        distributions_per_year: 0,
+        last_price: 0.0,
+      },
+    }));
+    
+    screenerRecords.push(await prisma.screener.create({
+      data: {
+        symbol: symbols[2],
+        risk_group_id: incomeRiskGroup.id,
+        has_volitility: false,
+        objectives_understood: true,
+        graph_higher_before_2008: false,
+        distribution: 0.0,
+        distributions_per_year: 0,
+        last_price: 0.0,
+      },
+    }));
+    
+    screenerRecords.push(await prisma.screener.create({
+      data: {
+        symbol: symbols[3],
+        risk_group_id: incomeRiskGroup.id,
+        has_volitility: true,
+        objectives_understood: false,
+        graph_higher_before_2008: true,
+        distribution: 0.0,
+        distributions_per_year: 0,
+        last_price: 0.0,
+      },
+    }));
+    
+    screenerRecords.push(await prisma.screener.create({
+      data: {
+        symbol: symbols[4],
+        risk_group_id: taxFreeIncomeRiskGroup.id,
+        has_volitility: false,
+        objectives_understood: false,
+        graph_higher_before_2008: false,
+        distribution: 0.0,
+        distributions_per_year: 0,
+        last_price: 0.0,
+      },
+    }));
 
-    // Insert test screener data
-    await prisma.screener.createMany({
-      data: [
-        {
-          symbol: 'AAPL',
-          risk_group_id: equitiesRiskGroup.id,
-          has_volitility: false,
-          objectives_understood: false,
-          graph_higher_before_2008: false,
-          distribution: 0.0,
-          distributions_per_year: 0,
-          last_price: 0.0,
-        },
-        {
-          symbol: 'MSFT',
-          risk_group_id: equitiesRiskGroup.id,
-          has_volitility: true,
-          objectives_understood: false,
-          graph_higher_before_2008: false,
-          distribution: 0.0,
-          distributions_per_year: 0,
-          last_price: 0.0,
-        },
-        {
-          symbol: 'BND',
-          risk_group_id: incomeRiskGroup.id,
-          has_volitility: false,
-          objectives_understood: true,
-          graph_higher_before_2008: false,
-          distribution: 0.0,
-          distributions_per_year: 0,
-          last_price: 0.0,
-        },
-        {
-          symbol: 'VWOB',
-          risk_group_id: incomeRiskGroup.id,
-          has_volitility: true,
-          objectives_understood: false,
-          graph_higher_before_2008: true,
-          distribution: 0.0,
-          distributions_per_year: 0,
-          last_price: 0.0,
-        },
-        {
-          symbol: 'VTEB',
-          risk_group_id: taxFreeIncomeRiskGroup.id,
-          has_volitility: false,
-          objectives_understood: false,
-          graph_higher_before_2008: false,
-          distribution: 0.0,
-          distributions_per_year: 0,
-          last_price: 0.0,
-        },
-      ],
-    });
-
-    // Return cleanup function
+    // Return cleanup function and symbols
     return {
+      symbols,
       cleanup: async () => {
         try {
           await prisma.screener.deleteMany({
             where: {
               symbol: {
-                in: ['AAPL', 'MSFT', 'BND', 'VWOB', 'VTEB'],
+                in: symbols,
               },
             },
           });
