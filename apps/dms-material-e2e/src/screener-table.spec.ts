@@ -99,25 +99,40 @@ test.describe('Screener Table', () => {
     test('should persist checkbox change to backend', async ({ page }) => {
       let updateCalled = false;
 
+      // Set up route interception before any navigation
       await page.route('**/api/screener/rows', async (route) => {
         if (route.request().method() === 'PUT') {
           updateCalled = true;
+          // Fulfill with success
+          await route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify([]),
+          });
+        } else {
+          // Let other requests (POST for load) pass through
+          await route.continue();
         }
-        await route.fulfill({
-          status: 200,
-          json: [],
-        });
       });
+
+      // Wait for table to have data
+      await page
+        .locator('[data-testid="screener-table"] tbody tr')
+        .first()
+        .waitFor({ state: 'visible' });
 
       const checkbox = page
         .locator(
           '[data-testid="objectives-understood-checkbox"] input[type="checkbox"]'
         )
         .first();
+      
+      // Wait for checkbox to be ready
+      await checkbox.waitFor({ state: 'visible' });
       await checkbox.click();
 
-      // Wait for API call
-      await page.waitForTimeout(500);
+      // Wait for SmartNgRX to trigger the update
+      await page.waitForTimeout(1000);
 
       expect(updateCalled).toBe(true);
     });
