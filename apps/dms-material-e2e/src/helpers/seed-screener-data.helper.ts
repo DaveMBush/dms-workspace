@@ -6,9 +6,9 @@ interface SeederResult {
 }
 
 interface RiskGroups {
-  equitiesRiskGroup: { id: string };
-  incomeRiskGroup: { id: string };
-  taxFreeIncomeRiskGroup: { id: string };
+  equitiesRiskGroup: { id: number };
+  incomeRiskGroup: { id: number };
+  taxFreeIncomeRiskGroup: { id: number };
 }
 
 // Snake case property names match database schema

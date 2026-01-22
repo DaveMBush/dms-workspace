@@ -54,11 +54,11 @@ jobs:
       # Tests run with SQLite (default environment), builds use PostgreSQL schema
       - run: pnpm nx affected -t lint build test --parallel=1
 
-      # Run e2e tests for dms-material (using atomized CI target)
-      # Ensure the server is built (e2e-server target depends on server:build)
-      - run: pnpm nx run server:build
-      - run: pnpm nx run server:prepare-e2e-db
-      - run: pnpm nx run server:build:production
       # I'll look at running e2e on CI later
       # and run locally until then.
+      # Run e2e tests for dms-material (using atomized CI target)
+      # Ensure the server is built (e2e-server target depends on server:build)
+      #- run: pnpm nx run server:build
+      #- run: pnpm nx run server:prepare-e2e-db
+      #- run: pnpm nx run server:build:production
       #- run: pnpm nx affected -t e2e-ci
