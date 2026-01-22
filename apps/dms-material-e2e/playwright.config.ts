@@ -22,6 +22,7 @@ if (process.env.WSL_DISTRO_NAME && !process.env.CI) {
 export default defineConfig({
   ...nxE2EPreset(__filename, { testDir: './src' }),
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
+  globalSetup: './src/global-setup.ts',
   timeout: process.env.CI ? 90000 : 60000,
   reporter: process.env.CI ? [['github']] : [['list']],
   /* Retry failed tests to handle flaky tests */
