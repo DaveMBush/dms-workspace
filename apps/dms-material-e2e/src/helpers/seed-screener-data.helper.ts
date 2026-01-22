@@ -167,6 +167,8 @@ export async function seedScreenerData(): Promise<SeederResult> {
   );
 
   // Connect to the same database that the E2E backend server uses
+  // The test database is always at: file:./test-database.db (relative to workspace root)
+  // This matches apps/server/project.json e2e-server configuration
   const testDbUrl = 'file:./test-database.db';
   const adapter = new PrismaBetterSqlite3({ url: testDbUrl });
   const prisma = new PrismaClient({ adapter });
