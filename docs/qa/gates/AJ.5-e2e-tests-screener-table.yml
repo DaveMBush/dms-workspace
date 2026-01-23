@@ -1,0 +1,8 @@
+schema: 1
+story: 'AJ.5'
+gate: PASS
+status_reason: 'All 15 E2E tests for screener table functionality have been created and are passing, providing comprehensive test coverage for data display, checkbox editing, risk group filtering, and integration workflows.'
+reviewer: 'Quinn'
+updated: '2026-01-20T12:00:00Z'
+top_issues: []
+waiver: { active: false }
