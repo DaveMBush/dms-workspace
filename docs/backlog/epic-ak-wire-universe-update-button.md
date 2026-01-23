@@ -10,10 +10,20 @@ Connects the "Update Universe" button to sync universe data from screener select
 
 ## Stories
 
-1. **Story AK.1:** Wire update universe button to UniverseSyncService
-2. **Story AK.2:** Add success/error notifications
-3. **Story AK.3:** Add unit tests
-4. **Story AK.4:** Add e2e tests
+### TDD/Implementation Cycle 1: Wire Update Universe Button
+
+1. **Story AK.1 (TDD):** Write unit tests for universe button integration
+2. **Story AK.2 (Implementation):** Wire update universe button to UniverseSyncService
+
+### TDD/Implementation Cycle 2: Notifications
+
+3. **Story AK.3 (TDD):** Write unit tests for success/error notifications
+4. **Story AK.4 (Implementation):** Add success/error notifications
+
+### TDD/Implementation Cycle 3: E2E Testing
+
+5. **Story AK.5 (TDD):** Write e2e tests for universe update flow
+6. **Story AK.6 (Implementation):** Refine implementation based on e2e test results
 
 ## Dependencies
 
