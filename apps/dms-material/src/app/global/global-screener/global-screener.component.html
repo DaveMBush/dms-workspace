@@ -29,6 +29,7 @@
 
   <div class="table-wrapper">
     <dms-base-table
+      data-testid="screener-table"
       [data]="filteredData$()"
       [columns]="columns"
       [loading]="loading$()"
@@ -45,6 +46,7 @@
           class="header-filter w-28"
         >
           <mat-select
+            data-testid="risk-group-filter"
             [value]="riskGroupFilter$()"
             (selectionChange)="onRiskGroupFilterChange($event.value)"
             placeholder="Select One"
@@ -72,16 +74,19 @@
         </a>
         } @case ('has_volitility') {
         <mat-checkbox
+          data-testid="has-volitility-checkbox"
           [checked]="row.has_volitility"
           (change)="onCellEdit(row, 'has_volitility', $event.checked)"
         />
         } @case ('objectives_understood') {
         <mat-checkbox
+          data-testid="objectives-understood-checkbox"
           [checked]="row.objectives_understood"
           (change)="onCellEdit(row, 'objectives_understood', $event.checked)"
         />
         } @case ('graph_higher_before_2008') {
         <mat-checkbox
+          data-testid="graph-higher-checkbox"
           [checked]="row.graph_higher_before_2008"
           (change)="onCellEdit(row, 'graph_higher_before_2008', $event.checked)"
         />
