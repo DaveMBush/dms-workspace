@@ -190,6 +190,11 @@ export class GlobalUniverseComponent {
   }
 
   syncUniverse(): void {
+    // Don't sync if already syncing
+    if (this.syncService.isSyncing()) {
+      return;
+    }
+
     const context = this;
     this.syncService.syncFromScreener().subscribe({
       next: function onSyncSuccess(summary) {
@@ -199,9 +204,13 @@ export class GlobalUniverseComponent {
           'success'
         );
       },
-      error: function onSyncError() {
+      error: function onSyncError(error: unknown) {
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : (error as { message?: string })?.message ?? 'Unknown error';
         context.notification.showPersistent(
-          'Failed to update universe from Screener. Please try again.',
+          `Failed to update universe: ${errorMessage}`,
           'error'
         );
       },
