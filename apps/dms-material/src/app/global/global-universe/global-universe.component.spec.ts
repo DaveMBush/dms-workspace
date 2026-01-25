@@ -747,8 +747,7 @@ describe.skip('GlobalUniverseComponent - Universe Sync Notifications (TDD - Stor
     isSyncing: ReturnType<typeof vi.fn>;
   };
   let mockNotification: {
-    success: ReturnType<typeof vi.fn>;
-    error: ReturnType<typeof vi.fn>;
+    showPersistent: ReturnType<typeof vi.fn>;
   };
 
   beforeEach(async () => {
@@ -764,8 +763,7 @@ describe.skip('GlobalUniverseComponent - Universe Sync Notifications (TDD - Stor
     };
 
     mockNotification = {
-      success: vi.fn(),
-      error: vi.fn(),
+      showPersistent: vi.fn(),
     };
 
     await TestBed.configureTestingModule({
@@ -797,9 +795,9 @@ describe.skip('GlobalUniverseComponent - Universe Sync Notifications (TDD - Stor
     button.click();
     fixture.detectChanges();
 
-    expect(mockNotification.success).toHaveBeenCalled();
-    expect(mockNotification.success).toHaveBeenCalledWith(
-      expect.stringContaining('Universe updated')
+    expect(mockNotification.showPersistent).toHaveBeenCalledWith(
+      expect.stringContaining('Universe updated'),
+      'success'
     );
   });
 
@@ -817,9 +815,9 @@ describe.skip('GlobalUniverseComponent - Universe Sync Notifications (TDD - Stor
     button.click();
     fixture.detectChanges();
 
-    expect(mockNotification.error).toHaveBeenCalled();
-    expect(mockNotification.error).toHaveBeenCalledWith(
-      expect.stringContaining('failed')
+    expect(mockNotification.showPersistent).toHaveBeenCalledWith(
+      expect.stringContaining('failed'),
+      'error'
     );
   });
 
@@ -838,8 +836,9 @@ describe.skip('GlobalUniverseComponent - Universe Sync Notifications (TDD - Stor
     button.click();
     fixture.detectChanges();
 
-    expect(mockNotification.success).toHaveBeenCalledWith(
-      expect.stringMatching(/15.*inserted/i)
+    expect(mockNotification.showPersistent).toHaveBeenCalledWith(
+      expect.stringMatching(/15.*inserted/i),
+      'success'
     );
   });
 
@@ -858,8 +857,9 @@ describe.skip('GlobalUniverseComponent - Universe Sync Notifications (TDD - Stor
     button.click();
     fixture.detectChanges();
 
-    expect(mockNotification.success).toHaveBeenCalledWith(
-      expect.stringMatching(/25.*updated/i)
+    expect(mockNotification.showPersistent).toHaveBeenCalledWith(
+      expect.stringMatching(/25.*updated/i),
+      'success'
     );
   });
 
@@ -878,8 +878,9 @@ describe.skip('GlobalUniverseComponent - Universe Sync Notifications (TDD - Stor
     button.click();
     fixture.detectChanges();
 
-    expect(mockNotification.success).toHaveBeenCalledWith(
-      expect.stringMatching(/12.*expired/i)
+    expect(mockNotification.showPersistent).toHaveBeenCalledWith(
+      expect.stringMatching(/12.*expired/i),
+      'success'
     );
   });
 
@@ -897,8 +898,7 @@ describe.skip('GlobalUniverseComponent - Universe Sync Notifications (TDD - Stor
     }
     fixture.detectChanges();
 
-    expect(mockNotification.success).not.toHaveBeenCalled();
-    expect(mockNotification.error).not.toHaveBeenCalled();
+    expect(mockNotification.showPersistent).not.toHaveBeenCalled();
   });
 
   it('should include error message in error notification', () => {
@@ -915,8 +915,9 @@ describe.skip('GlobalUniverseComponent - Universe Sync Notifications (TDD - Stor
     button.click();
     fixture.detectChanges();
 
-    expect(mockNotification.error).toHaveBeenCalledWith(
-      expect.stringContaining(errorDetails)
+    expect(mockNotification.showPersistent).toHaveBeenCalledWith(
+      expect.stringContaining(errorDetails),
+      'error'
     );
   });
 
@@ -933,9 +934,9 @@ describe.skip('GlobalUniverseComponent - Universe Sync Notifications (TDD - Stor
     button.click();
     fixture.detectChanges();
 
-    expect(mockNotification.error).toHaveBeenCalled();
-    expect(mockNotification.error).toHaveBeenCalledWith(
-      expect.stringMatching(/failed|error/i)
+    expect(mockNotification.showPersistent).toHaveBeenCalledWith(
+      expect.stringMatching(/failed|error/i),
+      'error'
     );
   });
 
@@ -954,6 +955,9 @@ describe.skip('GlobalUniverseComponent - Universe Sync Notifications (TDD - Stor
     button.click();
     fixture.detectChanges();
 
-    expect(mockNotification.success).toHaveBeenCalled();
+    expect(mockNotification.showPersistent).toHaveBeenCalledWith(
+      expect.anything(),
+      'success'
+    );
   });
 });
