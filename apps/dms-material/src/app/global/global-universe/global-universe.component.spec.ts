@@ -494,6 +494,142 @@ describe('GlobalUniverseComponent - Refresh Button', () => {
   });
 });
 
+// STORY AK.1: TDD - Universe Update Button Integration Tests
+// STORY AK.2: Tests enabled - implementation complete
+describe('GlobalUniverseComponent - Universe Update Button Integration (TDD - Story AK.1)', () => {
+  let component: GlobalUniverseComponent;
+  let fixture: ComponentFixture<GlobalUniverseComponent>;
+  let mockSyncService: {
+    syncFromScreener: ReturnType<typeof vi.fn>;
+    isSyncing: ReturnType<typeof vi.fn>;
+  };
+
+  beforeEach(async () => {
+    mockSyncService = {
+      syncFromScreener: vi.fn().mockReturnValue(
+        of({
+          inserted: 5,
+          updated: 10,
+          markedExpired: 2,
+        })
+      ),
+      isSyncing: vi.fn().mockReturnValue(false),
+    };
+
+    await TestBed.configureTestingModule({
+      imports: [GlobalUniverseComponent],
+      providers: [
+        provideSmartNgRX(),
+        { provide: UniverseSyncService, useValue: mockSyncService },
+        {
+          provide: NotificationService,
+          useValue: {
+            success: vi.fn(),
+            warn: vi.fn(),
+            error: vi.fn(),
+            info: vi.fn(),
+            showPersistent: vi.fn(),
+          },
+        },
+      ],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(GlobalUniverseComponent);
+    component = fixture.componentInstance;
+  });
+
+  it('should call UniverseSyncService.syncFromScreener when update button is clicked', () => {
+    fixture.detectChanges();
+    const button = fixture.nativeElement.querySelector(
+      '[data-testid="update-universe-button"]'
+    );
+    button.click();
+    fixture.detectChanges();
+
+    expect(mockSyncService.syncFromScreener).toHaveBeenCalled();
+  });
+
+  it('should disable button during sync operation', () => {
+    mockSyncService.isSyncing.mockReturnValue(true);
+    fixture.detectChanges();
+
+    const button = fixture.nativeElement.querySelector(
+      '[data-testid="update-universe-button"]'
+    );
+    expect(button.disabled).toBe(true);
+  });
+
+  it('should enable button when not loading', () => {
+    mockSyncService.isSyncing.mockReturnValue(false);
+    fixture.detectChanges();
+
+    const button = fixture.nativeElement.querySelector(
+      '[data-testid="update-universe-button"]'
+    );
+    expect(button.disabled).toBe(false);
+  });
+
+  it('should show loading state during sync', () => {
+    mockSyncService.isSyncing.mockReturnValue(true);
+    fixture.detectChanges();
+
+    const button = fixture.nativeElement.querySelector(
+      '[data-testid="update-universe-button"]'
+    );
+    const spinner = button.querySelector('mat-spinner');
+    expect(spinner).toBeTruthy();
+  });
+
+  it('should show sync icon when not loading', () => {
+    mockSyncService.isSyncing.mockReturnValue(false);
+    fixture.detectChanges();
+
+    const button = fixture.nativeElement.querySelector(
+      '[data-testid="update-universe-button"]'
+    );
+    const icon = button.querySelector('mat-icon');
+    expect(icon).toBeTruthy();
+    expect(icon.textContent).toContain('sync');
+  });
+
+  it('should handle sync service errors gracefully', () => {
+    mockSyncService.syncFromScreener.mockReturnValue(
+      throwError(function createError() {
+        return new Error('Sync failed');
+      })
+    );
+
+    fixture.detectChanges();
+    const button = fixture.nativeElement.querySelector(
+      '[data-testid="update-universe-button"]'
+    );
+    button.click();
+    fixture.detectChanges();
+
+    // Should not throw, error handling is in place
+    expect(mockSyncService.syncFromScreener).toHaveBeenCalled();
+  });
+
+  it('should not trigger sync if already loading', () => {
+    mockSyncService.isSyncing.mockReturnValue(true);
+    mockSyncService.syncFromScreener.mockClear();
+    fixture.detectChanges();
+
+    const button = fixture.nativeElement.querySelector(
+      '[data-testid="update-universe-button"]'
+    );
+
+    // Button is disabled, but try to trigger click
+    if (!button.disabled) {
+      button.click();
+    }
+    fixture.detectChanges();
+
+    // Should not be called when disabled
+    expect(mockSyncService.syncFromScreener).not.toHaveBeenCalled();
+  });
+});
+
 // DISABLE TESTS FOR CI
 describe('GlobalUniverseComponent - Loading and Error Handling', () => {
   let component: GlobalUniverseComponent;
@@ -598,100 +734,5 @@ describe('GlobalUniverseComponent - Loading and Error Handling', () => {
     component.onRefresh();
 
     expect(screenerService.error()).toBe(null);
-  });
-
-  // STORY AK.1: TDD - Universe Update Button Integration Tests
-  // DISABLE TESTS FOR CI - Will be enabled in implementation story AK.2
-  describe.skip('Universe Update Button Integration (TDD - Story AK.1)', () => {
-    it('should call UniverseSyncService.syncFromScreener when update button is clicked', () => {
-      fixture.detectChanges();
-      const button = fixture.nativeElement.querySelector(
-        '[data-testid="update-universe-button"]'
-      );
-      button.click();
-      fixture.detectChanges();
-
-      expect(mockSyncService.syncFromScreener).toHaveBeenCalled();
-    });
-
-    it('should disable button during sync operation', () => {
-      mockSyncService.isSyncing.mockReturnValue(true);
-      fixture.detectChanges();
-
-      const button = fixture.nativeElement.querySelector(
-        '[data-testid="update-universe-button"]'
-      );
-      expect(button.disabled).toBe(true);
-    });
-
-    it('should enable button when not loading', () => {
-      mockSyncService.isSyncing.mockReturnValue(false);
-      fixture.detectChanges();
-
-      const button = fixture.nativeElement.querySelector(
-        '[data-testid="update-universe-button"]'
-      );
-      expect(button.disabled).toBe(false);
-    });
-
-    it('should show loading state during sync', () => {
-      mockSyncService.isSyncing.mockReturnValue(true);
-      fixture.detectChanges();
-
-      const button = fixture.nativeElement.querySelector(
-        '[data-testid="update-universe-button"]'
-      );
-      const spinner = button.querySelector('mat-spinner');
-      expect(spinner).toBeTruthy();
-    });
-
-    it('should show sync icon when not loading', () => {
-      mockSyncService.isSyncing.mockReturnValue(false);
-      fixture.detectChanges();
-
-      const button = fixture.nativeElement.querySelector(
-        '[data-testid="update-universe-button"]'
-      );
-      const icon = button.querySelector('mat-icon');
-      expect(icon).toBeTruthy();
-      expect(icon.textContent).toContain('sync');
-    });
-
-    it('should handle sync service errors gracefully', () => {
-      mockSyncService.syncFromScreener.mockReturnValue(
-        throwError(function createError() {
-          return new Error('Sync failed');
-        })
-      );
-
-      fixture.detectChanges();
-      const button = fixture.nativeElement.querySelector(
-        '[data-testid="update-universe-button"]'
-      );
-      button.click();
-      fixture.detectChanges();
-
-      // Should not throw, error handling is in place
-      expect(mockSyncService.syncFromScreener).toHaveBeenCalled();
-    });
-
-    it('should not trigger sync if already loading', () => {
-      mockSyncService.isSyncing.mockReturnValue(true);
-      mockSyncService.syncFromScreener.mockClear();
-      fixture.detectChanges();
-
-      const button = fixture.nativeElement.querySelector(
-        '[data-testid="update-universe-button"]'
-      );
-
-      // Button is disabled, but try to trigger click
-      if (!button.disabled) {
-        button.click();
-      }
-      fixture.detectChanges();
-
-      // Should not be called when disabled
-      expect(mockSyncService.syncFromScreener).not.toHaveBeenCalled();
-    });
   });
 });

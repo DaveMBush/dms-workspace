@@ -6,16 +6,16 @@ interface SeederResult {
 }
 
 interface RiskGroups {
-  equitiesRiskGroup: { id: number };
-  incomeRiskGroup: { id: number };
-  taxFreeIncomeRiskGroup: { id: number };
+  equitiesRiskGroup: { id: string };
+  incomeRiskGroup: { id: string };
+  taxFreeIncomeRiskGroup: { id: string };
 }
 
 // Snake case property names match database schema
 /* eslint-disable @typescript-eslint/naming-convention -- Property names match database column names */
 interface ScreenerRecord {
   symbol: string;
-  risk_group_id: number;
+  risk_group_id: string;
   has_volitility: boolean;
   objectives_understood: boolean;
   graph_higher_before_2008: boolean;
@@ -71,9 +71,9 @@ async function createRiskGroups(prisma: PrismaClient): Promise<RiskGroups> {
  */
 function createTestDataArray(
   symbols: string[],
-  equitiesId: number,
-  incomeId: number,
-  taxFreeId: number
+  equitiesId: string,
+  incomeId: string,
+  taxFreeId: string
 ): ScreenerRecord[] {
   const b = { distribution: 0.0, distributions_per_year: 0, last_price: 0.0 };
   return [

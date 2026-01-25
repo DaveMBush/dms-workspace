@@ -165,8 +165,8 @@ test.describe('Logout', () => {
     await userMenuButton.click();
     await expect(logoutMenuItem).toBeVisible();
 
-    // Close menu by clicking outside or waiting for it to close
-    await page.locator('body').click({ position: { x: 0, y: 0 } });
+    // Close menu by clicking the CDK overlay backdrop
+    await page.locator('.cdk-overlay-backdrop').click();
     await expect(logoutMenuItem).not.toBeVisible();
 
     // Open menu again
