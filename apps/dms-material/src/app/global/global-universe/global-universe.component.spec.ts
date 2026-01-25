@@ -738,8 +738,8 @@ describe('GlobalUniverseComponent - Loading and Error Handling', () => {
 });
 
 // STORY AK.3: TDD - Universe Sync Notifications Tests
-// These tests are DISABLED (RED phase) - will be enabled in Story AK.4
-describe.skip('GlobalUniverseComponent - Universe Sync Notifications (TDD - Story AK.3)', () => {
+// These tests are now ENABLED (GREEN phase) - Story AK.4
+describe('GlobalUniverseComponent - Universe Sync Notifications (TDD - Story AK.3)', () => {
   let component: GlobalUniverseComponent;
   let fixture: ComponentFixture<GlobalUniverseComponent>;
   let mockSyncService: {
