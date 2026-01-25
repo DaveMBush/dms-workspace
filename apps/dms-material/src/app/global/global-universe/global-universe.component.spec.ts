@@ -736,3 +736,228 @@ describe('GlobalUniverseComponent - Loading and Error Handling', () => {
     expect(screenerService.error()).toBe(null);
   });
 });
+
+// STORY AK.3: TDD - Universe Sync Notifications Tests
+// These tests are DISABLED (RED phase) - will be enabled in Story AK.4
+describe.skip('GlobalUniverseComponent - Universe Sync Notifications (TDD - Story AK.3)', () => {
+  let component: GlobalUniverseComponent;
+  let fixture: ComponentFixture<GlobalUniverseComponent>;
+  let mockSyncService: {
+    syncFromScreener: ReturnType<typeof vi.fn>;
+    isSyncing: ReturnType<typeof vi.fn>;
+  };
+  let mockNotification: {
+    showPersistent: ReturnType<typeof vi.fn>;
+  };
+
+  beforeEach(async () => {
+    mockSyncService = {
+      syncFromScreener: vi.fn().mockReturnValue(
+        of({
+          inserted: 5,
+          updated: 10,
+          markedExpired: 2,
+        })
+      ),
+      isSyncing: vi.fn().mockReturnValue(false),
+    };
+
+    mockNotification = {
+      showPersistent: vi.fn(),
+    };
+
+    await TestBed.configureTestingModule({
+      imports: [GlobalUniverseComponent],
+      providers: [
+        provideSmartNgRX(),
+        { provide: UniverseSyncService, useValue: mockSyncService },
+        { provide: NotificationService, useValue: mockNotification },
+      ],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(GlobalUniverseComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should show success notification when sync completes', () => {
+    mockSyncService.syncFromScreener.mockReturnValue(
+      of({
+        inserted: 5,
+        updated: 10,
+        markedExpired: 2,
+      })
+    );
+
+    const button = fixture.nativeElement.querySelector(
+      '[data-testid="update-universe-button"]'
+    );
+    button.click();
+    fixture.detectChanges();
+
+    expect(mockNotification.showPersistent).toHaveBeenCalledWith(
+      expect.stringContaining('Universe updated'),
+      'success'
+    );
+  });
+
+  it('should show error notification when sync fails', () => {
+    const errorMessage = 'Sync failed: Server error';
+    mockSyncService.syncFromScreener.mockReturnValue(
+      throwError(function createError() {
+        return new Error(errorMessage);
+      })
+    );
+
+    const button = fixture.nativeElement.querySelector(
+      '[data-testid="update-universe-button"]'
+    );
+    button.click();
+    fixture.detectChanges();
+
+    expect(mockNotification.showPersistent).toHaveBeenCalledWith(
+      expect.stringContaining('failed'),
+      'error'
+    );
+  });
+
+  it('should display count of inserted symbols in success message', () => {
+    mockSyncService.syncFromScreener.mockReturnValue(
+      of({
+        inserted: 15,
+        updated: 5,
+        markedExpired: 1,
+      })
+    );
+
+    const button = fixture.nativeElement.querySelector(
+      '[data-testid="update-universe-button"]'
+    );
+    button.click();
+    fixture.detectChanges();
+
+    expect(mockNotification.showPersistent).toHaveBeenCalledWith(
+      expect.stringMatching(/15.*inserted/i),
+      'success'
+    );
+  });
+
+  it('should display count of updated symbols in success message', () => {
+    mockSyncService.syncFromScreener.mockReturnValue(
+      of({
+        inserted: 3,
+        updated: 25,
+        markedExpired: 0,
+      })
+    );
+
+    const button = fixture.nativeElement.querySelector(
+      '[data-testid="update-universe-button"]'
+    );
+    button.click();
+    fixture.detectChanges();
+
+    expect(mockNotification.showPersistent).toHaveBeenCalledWith(
+      expect.stringMatching(/25.*updated/i),
+      'success'
+    );
+  });
+
+  it('should display count of expired symbols in success message', () => {
+    mockSyncService.syncFromScreener.mockReturnValue(
+      of({
+        inserted: 2,
+        updated: 8,
+        markedExpired: 12,
+      })
+    );
+
+    const button = fixture.nativeElement.querySelector(
+      '[data-testid="update-universe-button"]'
+    );
+    button.click();
+    fixture.detectChanges();
+
+    expect(mockNotification.showPersistent).toHaveBeenCalledWith(
+      expect.stringMatching(/12.*expired/i),
+      'success'
+    );
+  });
+
+  it('should not show notification if sync is cancelled (already loading)', () => {
+    mockSyncService.isSyncing.mockReturnValue(true);
+    fixture.detectChanges();
+
+    const button = fixture.nativeElement.querySelector(
+      '[data-testid="update-universe-button"]'
+    );
+
+    // Button should be disabled, but try to trigger handler directly if possible
+    if (!button.disabled) {
+      button.click();
+    }
+    fixture.detectChanges();
+
+    expect(mockNotification.showPersistent).not.toHaveBeenCalled();
+  });
+
+  it('should include error message in error notification', () => {
+    const errorDetails = 'Network timeout occurred';
+    mockSyncService.syncFromScreener.mockReturnValue(
+      throwError(function createError() {
+        return { message: errorDetails };
+      })
+    );
+
+    const button = fixture.nativeElement.querySelector(
+      '[data-testid="update-universe-button"]'
+    );
+    button.click();
+    fixture.detectChanges();
+
+    expect(mockNotification.showPersistent).toHaveBeenCalledWith(
+      expect.stringContaining(errorDetails),
+      'error'
+    );
+  });
+
+  it('should show generic error message when error has no message', () => {
+    mockSyncService.syncFromScreener.mockReturnValue(
+      throwError(function createError() {
+        return {};
+      })
+    );
+
+    const button = fixture.nativeElement.querySelector(
+      '[data-testid="update-universe-button"]'
+    );
+    button.click();
+    fixture.detectChanges();
+
+    expect(mockNotification.showPersistent).toHaveBeenCalledWith(
+      expect.stringMatching(/failed|error/i),
+      'error'
+    );
+  });
+
+  it('should show success notification even when all counts are zero', () => {
+    mockSyncService.syncFromScreener.mockReturnValue(
+      of({
+        inserted: 0,
+        updated: 0,
+        markedExpired: 0,
+      })
+    );
+
+    const button = fixture.nativeElement.querySelector(
+      '[data-testid="update-universe-button"]'
+    );
+    button.click();
+    fixture.detectChanges();
+
+    expect(mockNotification.showPersistent).toHaveBeenCalledWith(
+      expect.anything(),
+      'success'
+    );
+  });
+});
