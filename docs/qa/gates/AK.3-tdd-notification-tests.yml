@@ -1,0 +1,8 @@
+schema: 1
+story: 'AK.3'
+gate: PASS
+status_reason: 'All acceptance criteria met, TDD tests written and disabled for CI, no high-severity issues.'
+reviewer: 'Quinn'
+updated: '2026-01-25T12:00:00Z'
+top_issues: []
+waiver: { active: false }
