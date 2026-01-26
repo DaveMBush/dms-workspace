@@ -228,6 +228,9 @@ test.describe.skip('Universe Update Flow', () => {
       const testCounts = [1, 10, 100, 250];
 
       for (const count of testCounts) {
+        // Remove previous handler to avoid accumulation
+        await page.unroute('**/api/universe/sync-from-screener');
+
         // Mock API with specific count
         await page.route(
           '**/api/universe/sync-from-screener',
@@ -413,6 +416,9 @@ test.describe.skip('Universe Update Flow', () => {
       const errorCodes = [400, 401, 403, 404, 500, 502, 503];
 
       for (const statusCode of errorCodes) {
+        // Remove previous handler to avoid accumulation
+        await page.unroute('**/api/universe/sync-from-screener');
+
         // Mock API with specific error code
         await page.route(
           '**/api/universe/sync-from-screener',
