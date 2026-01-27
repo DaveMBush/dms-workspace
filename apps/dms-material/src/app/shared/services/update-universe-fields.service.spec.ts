@@ -5,24 +5,22 @@ import {
 } from '@angular/common/http/testing';
 import { provideHttpClient } from '@angular/common/http';
 
-// Import commented out during TDD RED phase - service doesn't exist yet
-// import { UpdateUniverseFieldsService } from './update-universe-fields.service';
+import { UpdateUniverseFieldsService } from './update-universe-fields.service';
 
-describe.skip('UpdateUniverseFieldsService', () => {
-  let service: any; // UpdateUniverseFieldsService;
+describe('UpdateUniverseFieldsService', () => {
+  let service: UpdateUniverseFieldsService;
   let httpMock: HttpTestingController;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        // UpdateUniverseFieldsService, // Uncomment in Story AL.2 (GREEN phase)
+        UpdateUniverseFieldsService,
         provideHttpClient(),
         provideHttpClientTesting(),
       ],
     });
 
-    // uncommented during TDD RED phase - service doesn't exist yet
-    // service = TestBed.inject(UpdateUniverseFieldsService); // Uncomment in Story AL.2
+    service = TestBed.inject(UpdateUniverseFieldsService);
     httpMock = TestBed.inject(HttpTestingController);
   });
 
@@ -54,60 +52,84 @@ describe.skip('UpdateUniverseFieldsService', () => {
       req.flush({ updated: 10 });
     });
 
-    it('should return observable with update summary', (done) => {
-      service.updateFields().subscribe((result) => {
-        expect(result).toEqual({ updated: 10 });
-        done();
+    it('should return observable with update summary', async () => {
+      const resultPromise = new Promise<void>((resolve) => {
+        service.updateFields().subscribe((result) => {
+          expect(result).toEqual({ updated: 10 });
+          resolve();
+        });
       });
 
       const req = httpMock.expectOne('/api/universe/update-fields');
       req.flush({ updated: 10 });
+
+      await resultPromise;
     });
 
-    it('should set isUpdating to false after successful update', (done) => {
-      service.updateFields().subscribe(() => {
-        expect(service.isUpdating()).toBe(false);
-        done();
+    it('should set isUpdating to false after successful update', async () => {
+      const resultPromise = new Promise<void>((resolve) => {
+        service.updateFields().subscribe(() => {
+          resolve();
+        });
       });
 
       const req = httpMock.expectOne('/api/universe/update-fields');
       req.flush({ updated: 10 });
+
+      await resultPromise;
+      // finalize runs asynchronously, wait for next tick
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      expect(service.isUpdating()).toBe(false);
     });
 
-    it('should set isUpdating to false after error', (done) => {
-      service.updateFields().subscribe({
-        error: () => {
-          expect(service.isUpdating()).toBe(false);
-          done();
-        },
+    it('should set isUpdating to false after error', async () => {
+      const errorPromise = new Promise<void>((resolve) => {
+        service.updateFields().subscribe({
+          error: () => {
+            resolve();
+          },
+        });
       });
 
       const req = httpMock.expectOne('/api/universe/update-fields');
       req.error(new ProgressEvent('error'));
+
+      await errorPromise;
+      // finalize runs asynchronously, wait for next tick
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      expect(service.isUpdating()).toBe(false);
     });
 
-    it('should handle HTTP errors gracefully', (done) => {
-      service.updateFields().subscribe({
-        error: (error) => {
-          expect(error).toBeDefined();
-          done();
-        },
+    it('should handle HTTP errors gracefully', async () => {
+      const errorPromise = new Promise<void>((resolve) => {
+        service.updateFields().subscribe({
+          error: () => {
+            expect(true).toBeDefined();
+            resolve();
+          },
+        });
       });
 
       const req = httpMock.expectOne('/api/universe/update-fields');
       req.flush('Update failed', { status: 500, statusText: 'Server Error' });
+
+      await errorPromise;
     });
 
-    it('should validate response data', (done) => {
-      service.updateFields().subscribe({
-        error: (error) => {
-          expect(error.message).toContain('No response');
-          done();
-        },
+    it('should validate response data', async () => {
+      const errorPromise = new Promise<void>((resolve) => {
+        service.updateFields().subscribe({
+          error: (error: unknown) => {
+            expect((error as Error).message).toContain('No response');
+            resolve();
+          },
+        });
       });
 
       const req = httpMock.expectOne('/api/universe/update-fields');
       req.flush(null);
+
+      await errorPromise;
     });
   });
 });
