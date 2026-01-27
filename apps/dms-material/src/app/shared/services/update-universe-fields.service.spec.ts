@@ -5,22 +5,23 @@ import {
 } from '@angular/common/http/testing';
 import { provideHttpClient } from '@angular/common/http';
 
-import { UpdateUniverseFieldsService } from './update-universe-fields.service';
+// Import commented out during TDD RED phase - service doesn't exist yet
+// import { UpdateUniverseFieldsService } from './update-universe-fields.service';
 
 describe.skip('UpdateUniverseFieldsService', () => {
-  let service: UpdateUniverseFieldsService;
+  let service: any; // UpdateUniverseFieldsService;
   let httpMock: HttpTestingController;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        UpdateUniverseFieldsService,
+        // UpdateUniverseFieldsService, // Uncomment in Story AL.2 (GREEN phase)
         provideHttpClient(),
         provideHttpClientTesting(),
       ],
     });
 
-    service = TestBed.inject(UpdateUniverseFieldsService);
+    // service = TestBed.inject(UpdateUniverseFieldsService); // Uncomment in Story AL.2
     httpMock = TestBed.inject(HttpTestingController);
   });
 
