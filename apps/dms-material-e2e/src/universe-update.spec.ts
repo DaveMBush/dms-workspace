@@ -3,11 +3,11 @@ import { test, expect } from 'playwright/test';
 import { login } from './helpers/login.helper';
 
 /**
- * Universe Update E2E Tests (TDD - RED Phase)
+ * Universe Update E2E Tests (TDD - GREEN Phase)
  *
- * These tests are written following TDD principles - they verify the expected
- * behavior but are currently disabled (.skip) as part of the RED phase.
- * Story AK.6 will refine the implementation to make these tests pass (GREEN phase).
+ * These tests verify the expected behavior of the universe update flow.
+ * Story AK.5 wrote these tests (RED phase).
+ * Story AK.6 enables and refines implementation to make tests pass (GREEN phase).
  *
  * Test Coverage:
  * - Universe sync button interaction
@@ -17,7 +17,26 @@ import { login } from './helpers/login.helper';
  * - Edge cases (concurrent operations, button state)
  */
 
-test.describe.skip('Universe Update Flow', () => {
+/**
+ * Helper to create mock SyncSummary response
+ * Matches the actual API response format
+ */
+function createMockSyncResponse(totalSymbols: number) {
+  const inserted = Math.floor(totalSymbols * 0.3);
+  const updated = Math.floor(totalSymbols * 0.5);
+  const markedExpired = totalSymbols - inserted - updated;
+
+  return {
+    inserted,
+    updated,
+    markedExpired,
+    selectedCount: totalSymbols,
+    correlationId: 'test-correlation-id',
+    logFilePath: 'test-sync.log',
+  };
+}
+
+test.describe('Universe Update Flow', () => {
   test.beforeEach(async ({ page }) => {
     await login(page);
     await page.goto('/global/universe');
@@ -35,7 +54,7 @@ test.describe.skip('Universe Update Flow', () => {
         syncCallCount++;
         await route.fulfill({
           status: 200,
-          json: { success: true, count: 42 },
+          json: createMockSyncResponse(42),
         });
       });
 
@@ -63,7 +82,7 @@ test.describe.skip('Universe Update Flow', () => {
         await new Promise((resolve) => setTimeout(resolve, 1000));
         await route.fulfill({
           status: 200,
-          json: { success: true, count: 42 },
+          json: createMockSyncResponse(42),
         });
       });
 
@@ -79,7 +98,7 @@ test.describe.skip('Universe Update Flow', () => {
       await page.route('**/api/universe/sync-from-screener', async (route) => {
         await route.fulfill({
           status: 200,
-          json: { success: true, count: 42 },
+          json: createMockSyncResponse(42),
         });
       });
 
@@ -103,7 +122,7 @@ test.describe.skip('Universe Update Flow', () => {
         await new Promise((resolve) => setTimeout(resolve, 1000));
         await route.fulfill({
           status: 200,
-          json: { success: true, count: 42 },
+          json: createMockSyncResponse(42),
         });
       });
 
@@ -125,7 +144,7 @@ test.describe.skip('Universe Update Flow', () => {
         await new Promise((resolve) => setTimeout(resolve, 1000));
         await route.fulfill({
           status: 200,
-          json: { success: true, count: 42 },
+          json: createMockSyncResponse(42),
         });
       });
 
@@ -145,7 +164,7 @@ test.describe.skip('Universe Update Flow', () => {
       await page.route('**/api/universe/sync-from-screener', async (route) => {
         await route.fulfill({
           status: 200,
-          json: { success: true, count: 42 },
+          json: createMockSyncResponse(42),
         });
       });
 
@@ -183,7 +202,7 @@ test.describe.skip('Universe Update Flow', () => {
       await page.route('**/api/universe/sync-from-screener', async (route) => {
         await route.fulfill({
           status: 200,
-          json: { success: true, count: 42 },
+          json: createMockSyncResponse(42),
         });
       });
 
@@ -207,7 +226,7 @@ test.describe.skip('Universe Update Flow', () => {
       await page.route('**/api/universe/sync-from-screener', async (route) => {
         await route.fulfill({
           status: 200,
-          json: { success: true, count: expectedCount },
+          json: createMockSyncResponse(expectedCount),
         });
       });
 
@@ -237,7 +256,7 @@ test.describe.skip('Universe Update Flow', () => {
           async (route) => {
             await route.fulfill({
               status: 200,
-              json: { success: true, count },
+              json: createMockSyncResponse(count),
             });
           }
         );
@@ -268,7 +287,7 @@ test.describe.skip('Universe Update Flow', () => {
       await page.route('**/api/universe/sync-from-screener', async (route) => {
         await route.fulfill({
           status: 200,
-          json: { success: true, count: 42 },
+          json: createMockSyncResponse(42),
         });
       });
 
@@ -290,7 +309,7 @@ test.describe.skip('Universe Update Flow', () => {
       await page.route('**/api/universe/sync-from-screener', async (route) => {
         await route.fulfill({
           status: 200,
-          json: { success: true, count: 42 },
+          json: createMockSyncResponse(42),
         });
       });
 
@@ -348,7 +367,8 @@ test.describe.skip('Universe Update Flow', () => {
       await expect(snackbar).toBeVisible({ timeout: 10000 });
 
       // Should contain error message
-      await expect(snackbar).toContainText('error');
+      await expect(snackbar).toContainText('Failed to update universe');
+      await expect(snackbar).toContainText('500');
     });
 
     test('should have close button in error notification', async ({ page }) => {
@@ -461,18 +481,22 @@ test.describe.skip('Universe Update Flow', () => {
         await new Promise((resolve) => setTimeout(resolve, 1000));
         await route.fulfill({
           status: 200,
-          json: { success: true, count: 42 },
+          json: createMockSyncResponse(42),
         });
       });
 
       const button = page.locator('[data-testid="update-universe-button"]');
 
-      // Click multiple times rapidly
+      // Click first time
       await button.click();
+
+      // Wait for button to be disabled before attempting second click
+      await expect(button).toBeDisabled();
+
+      // Try clicking while disabled (these should be ignored)
+      await button.click({ force: true }); // Force click to test guard logic
       await page.waitForTimeout(100);
-      await button.click();
-      await page.waitForTimeout(100);
-      await button.click();
+      await button.click({ force: true }); // Force click to test guard logic
 
       // Wait for operation to complete
       await page.waitForTimeout(2000);
@@ -505,7 +529,7 @@ test.describe.skip('Universe Update Flow', () => {
       await page.route('**/api/universe/sync-from-screener', async (route) => {
         await route.fulfill({
           status: 200,
-          json: { success: true, count: 42 },
+          json: createMockSyncResponse(42),
         });
       });
 
@@ -533,16 +557,14 @@ test.describe.skip('Universe Update Flow', () => {
       await page.route('**/api/universe/sync-from-screener', async (route) => {
         await route.fulfill({
           status: 200,
-          json: { success: true, count: expectedCount },
+          json: createMockSyncResponse(expectedCount),
         });
       });
 
       const button = page.locator('[data-testid="update-universe-button"]');
       await button.click();
 
-      const notification = page.locator(
-        '.notification-success, [role="alert"]'
-      );
+      const notification = page.locator('.snackbar-success, [role="alert"]');
       await expect(notification).toBeVisible({ timeout: 5000 });
       await expect(notification).toContainText(expectedCount.toString());
     });

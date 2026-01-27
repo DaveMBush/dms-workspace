@@ -10,10 +10,20 @@ Connects the "Update Fields" button to refresh price and distribution data from 
 
 ## Stories
 
-1. **Story AL.1:** Create UpdateUniverseFieldsService in DMS-MATERIAL
-2. **Story AL.2:** Wire button to service with loading states
-3. **Story AL.3:** Add unit tests
-4. **Story AL.4:** Add e2e tests
+### TDD/Implementation Cycle 1: Create UpdateUniverseFieldsService
+
+1. **Story AL.1 (TDD):** Write unit tests for UpdateUniverseFieldsService
+2. **Story AL.2 (Implementation):** Create UpdateUniverseFieldsService in DMS-MATERIAL
+
+### TDD/Implementation Cycle 2: Wire Button to Service
+
+3. **Story AL.3 (TDD):** Write unit tests for button integration with loading states
+4. **Story AL.4 (Implementation):** Wire button to service with loading states
+
+### TDD/Implementation Cycle 3: E2E Testing
+
+5. **Story AL.5 (TDD):** Write e2e tests for update fields flow
+6. **Story AL.6 (Implementation):** Refine implementation based on e2e test results
 
 ## Dependencies
 
