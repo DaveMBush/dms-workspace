@@ -21,6 +21,7 @@ describe.skip('UpdateUniverseFieldsService', () => {
       ],
     });
 
+    // uncommented during TDD RED phase - service doesn't exist yet
     // service = TestBed.inject(UpdateUniverseFieldsService); // Uncomment in Story AL.2
     httpMock = TestBed.inject(HttpTestingController);
   });
