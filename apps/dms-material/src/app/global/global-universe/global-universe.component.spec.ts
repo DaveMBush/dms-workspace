@@ -8,6 +8,8 @@ import { of, throwError } from 'rxjs';
 import { ScreenerService } from '../global-screener/services/screener.service';
 import { NotificationService } from '../../shared/services/notification.service';
 import { UniverseSyncService } from '../../shared/services/universe-sync.service';
+import { UpdateUniverseFieldsService } from '../../shared/services/update-universe-fields.service';
+import { GlobalLoadingService } from '../../shared/services/global-loading.service';
 import { Universe } from '../../store/universe/universe.interface';
 import { GlobalUniverseComponent } from './global-universe.component';
 
@@ -958,6 +960,158 @@ describe('GlobalUniverseComponent - Universe Sync Notifications (TDD - Story AK.
     expect(mockNotification.showPersistent).toHaveBeenCalledWith(
       expect.anything(),
       'success'
+    );
+  });
+});
+
+// TDD: Tests for Update Fields Button Integration (Story AL.3)
+// These tests are DISABLED (.skip) during RED phase - will be enabled in Story AL.4
+describe.skip('GlobalUniverseComponent - Update Fields Button Integration (TDD - Story AL.3)', () => {
+  let component: GlobalUniverseComponent;
+  let fixture: ComponentFixture<GlobalUniverseComponent>;
+  let mockUpdateFieldsService: {
+    updateFields: ReturnType<typeof vi.fn>;
+    isUpdating: ReturnType<typeof vi.fn>;
+  };
+  let mockGlobalLoading: {
+    show: ReturnType<typeof vi.fn>;
+    hide: ReturnType<typeof vi.fn>;
+  };
+  let mockNotification: {
+    showPersistent: ReturnType<typeof vi.fn>;
+  };
+
+  beforeEach(async () => {
+    mockUpdateFieldsService = {
+      updateFields: vi.fn().mockReturnValue(
+        of({
+          updated: 10,
+          correlationId: 'test-correlation-id',
+          logFilePath: '/logs/test.log',
+        })
+      ),
+      isUpdating: vi.fn().mockReturnValue(false),
+    };
+
+    mockGlobalLoading = {
+      show: vi.fn(),
+      hide: vi.fn(),
+    };
+
+    mockNotification = {
+      showPersistent: vi.fn(),
+    };
+
+    await TestBed.configureTestingModule({
+      imports: [GlobalUniverseComponent],
+      providers: [
+        provideSmartNgRX(),
+        {
+          provide: UpdateUniverseFieldsService,
+          useValue: mockUpdateFieldsService,
+        },
+        { provide: GlobalLoadingService, useValue: mockGlobalLoading },
+        { provide: NotificationService, useValue: mockNotification },
+        {
+          provide: UniverseSyncService,
+          useValue: {
+            syncFromScreener: vi.fn().mockReturnValue(of({})),
+            isSyncing: vi.fn().mockReturnValue(false),
+          },
+        },
+        {
+          provide: ScreenerService,
+          useValue: {
+            refresh: vi.fn().mockReturnValue(of({})),
+            loading: signal(false),
+            error: signal(null),
+          },
+        },
+      ],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(GlobalUniverseComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should not call service if already updating', () => {
+    mockUpdateFieldsService.isUpdating.mockReturnValue(true);
+
+    component.updateFields();
+
+    expect(mockUpdateFieldsService.updateFields).not.toHaveBeenCalled();
+  });
+
+  it('should show global loading overlay when update starts', () => {
+    component.updateFields();
+
+    expect(mockGlobalLoading.show).toHaveBeenCalledWith(
+      'Updating universe fields...'
+    );
+  });
+
+  it('should call updateFields service method', () => {
+    component.updateFields();
+
+    expect(mockUpdateFieldsService.updateFields).toHaveBeenCalled();
+  });
+
+  it('should hide loading overlay on success', () => {
+    component.updateFields();
+
+    expect(mockGlobalLoading.hide).toHaveBeenCalled();
+  });
+
+  it('should show success notification with count', () => {
+    component.updateFields();
+
+    expect(mockNotification.showPersistent).toHaveBeenCalledWith(
+      expect.stringContaining('10 entries updated'),
+      'success'
+    );
+  });
+
+  it('should hide loading overlay on error', () => {
+    mockUpdateFieldsService.updateFields.mockReturnValue(
+      throwError(function createError() {
+        return new Error('Update failed');
+      })
+    );
+
+    component.updateFields();
+
+    expect(mockGlobalLoading.hide).toHaveBeenCalled();
+  });
+
+  it('should show error notification on failure', () => {
+    mockUpdateFieldsService.updateFields.mockReturnValue(
+      throwError(function createError() {
+        return new Error('Update failed');
+      })
+    );
+
+    component.updateFields();
+
+    expect(mockNotification.showPersistent).toHaveBeenCalledWith(
+      expect.stringContaining('Failed to update'),
+      'error'
+    );
+  });
+
+  it('should include error message in error notification', () => {
+    const errorMessage = 'Network timeout occurred';
+    mockUpdateFieldsService.updateFields.mockReturnValue(
+      throwError(function createError() {
+        return { message: errorMessage };
+      })
+    );
+
+    component.updateFields();
+
+    expect(mockNotification.showPersistent).toHaveBeenCalledWith(
+      expect.stringContaining(errorMessage),
+      'error'
     );
   });
 });
