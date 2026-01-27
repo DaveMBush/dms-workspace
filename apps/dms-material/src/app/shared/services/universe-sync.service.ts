@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
-import { map, Observable, tap } from 'rxjs';
+import { finalize, map, Observable } from 'rxjs';
 
 import type { SyncSummary } from './universe-sync.types';
 
@@ -40,8 +40,8 @@ export class UniverseSyncService {
           }
           return result;
         }),
-        // eslint-disable-next-line @smarttools/no-anonymous-functions -- tap function for RxJS pipe, false positive deprecation warning
-        tap(() => {
+        // eslint-disable-next-line @smarttools/no-anonymous-functions -- finalize operator requires inline function
+        finalize(() => {
           this.isSyncing.set(false);
         })
       );

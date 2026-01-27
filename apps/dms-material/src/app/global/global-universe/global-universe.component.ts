@@ -23,6 +23,7 @@ import { BaseTableComponent } from '../../shared/components/base-table/base-tabl
 import { ColumnDef } from '../../shared/components/base-table/column-def.interface';
 import { EditableCellComponent } from '../../shared/components/editable-cell/editable-cell.component';
 import { EditableDateCellComponent } from '../../shared/components/editable-date-cell/editable-date-cell.component';
+import { GlobalLoadingService } from '../../shared/services/global-loading.service';
 import { NotificationService } from '../../shared/services/notification.service';
 import { UniverseSyncService } from '../../shared/services/universe-sync.service';
 import { selectAccounts } from '../../store/accounts/selectors/select-accounts.function';
@@ -60,6 +61,7 @@ import { filterUniverses } from './filter-universes.function';
 export class GlobalUniverseComponent {
   private readonly syncService = inject(UniverseSyncService);
   private readonly screenerService = inject(ScreenerService);
+  private readonly globalLoading = inject(GlobalLoadingService);
   private readonly notification = inject(NotificationService);
   private readonly dialog = inject(MatDialog);
 
@@ -73,9 +75,13 @@ export class GlobalUniverseComponent {
   readonly selectedAccountId$ = signal<string>('all');
   readonly minYieldFilter$ = signal<number | null>(null);
   readonly isUpdatingFields$ = signal<boolean>(false);
+  private readonly localSyncInProgress$ = signal<boolean>(false);
 
-  // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signal
-  readonly isSyncingUniverse$ = computed(() => this.syncService.isSyncing());
+  readonly isSyncingUniverse$ = computed(
+    function computeIsUniverseSyncing(this: GlobalUniverseComponent) {
+      return this.syncService.isSyncing() || this.localSyncInProgress$();
+    }.bind(this)
+  );
 
   // Expose screener service loading and error signals
   readonly screenerLoading = this.screenerService.loading;
@@ -190,25 +196,44 @@ export class GlobalUniverseComponent {
   }
 
   syncUniverse(): void {
-    // Don't sync if already syncing
-    if (this.syncService.isSyncing()) {
+    // Don't sync if already syncing (check both service and local guard)
+    // This check happens before subscription, preventing race conditions
+    if (this.syncService.isSyncing() || this.localSyncInProgress$()) {
       return;
     }
+
+    // Set local guard immediately to prevent concurrent calls before change detection
+    this.localSyncInProgress$.set(true);
+
+    // Double-check after setting the guard (for extra safety with rapid clicks)
+    if (this.syncService.isSyncing()) {
+      this.localSyncInProgress$.set(false);
+      return;
+    }
+
+    this.globalLoading.show('Updating universe from screener...');
 
     const context = this;
     this.syncService.syncFromScreener().subscribe({
       next: function onSyncSuccess(summary) {
+        context.localSyncInProgress$.set(false);
+        context.globalLoading.hide();
+        const totalSymbols =
+          summary.selectedCount ||
+          summary.inserted + summary.updated + summary.markedExpired;
         context.notification.showPersistent(
           `Universe updated: ${summary.inserted} inserted, ` +
-            `${summary.updated} updated, ${summary.markedExpired} expired.`,
+            `${summary.updated} updated, ${summary.markedExpired} expired ` +
+            `(${totalSymbols} symbols processed).`,
           'success'
         );
       },
       error: function onSyncError(error: unknown) {
-        const errorMessage =
-          error instanceof Error
-            ? error.message
-            : (error as { message?: string })?.message ?? 'Unknown error';
+        context.localSyncInProgress$.set(false);
+        context.globalLoading.hide();
+
+        const errorMessage = context.extractErrorMessage(error);
+
         context.notification.showPersistent(
           `Failed to update universe: ${errorMessage}`,
           'error'
@@ -291,5 +316,39 @@ export class GlobalUniverseComponent {
         // Error is already captured by ScreenerService error signal
       },
     });
+  }
+
+  /**
+   * Extract error message from various error formats
+   * @param error - Error object from HTTP request
+   * @returns Error message string
+   */
+  private extractErrorMessage(error: unknown): string {
+    const DEFAULT_ERROR_MESSAGE = 'Unknown error';
+
+    if (error instanceof Error) {
+      return error.message;
+    }
+
+    if (error === null || error === undefined || typeof error !== 'object') {
+      return DEFAULT_ERROR_MESSAGE;
+    }
+
+    const err = error as {
+      error?: { message?: string };
+      message?: string;
+      statusText?: string;
+    };
+
+    // Try nested error.message first, then message, then statusText
+    const candidates = [err.error?.message, err.message, err.statusText];
+
+    for (const candidate of candidates) {
+      if (candidate !== null && candidate !== undefined && candidate !== '') {
+        return candidate;
+      }
+    }
+
+    return DEFAULT_ERROR_MESSAGE;
   }
 }
