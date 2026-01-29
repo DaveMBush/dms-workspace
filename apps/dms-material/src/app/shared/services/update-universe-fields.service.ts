@@ -21,7 +21,7 @@ export class UpdateUniverseFieldsService {
     this.isUpdating.set(true);
 
     return this.http
-      .post<UpdateFieldsSummary>('/api/universe/update-fields', {})
+      .get<UpdateFieldsSummary>('/api/settings/update', {})
       .pipe(
         map(function validateUpdateResult(result) {
           if (result === null || result === undefined) {
