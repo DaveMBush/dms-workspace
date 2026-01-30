@@ -6,3 +6,5 @@ model: Grok Code Fast 1 (copilot)
 ---
 
 \*gate ${story}
+
+Do not commit until I say so.

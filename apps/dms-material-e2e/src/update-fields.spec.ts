@@ -1,92 +1,26 @@
-# Story AL.5: Write E2E Tests for Update Fields Flow (TDD)
-
-## Dev Agent Record
-
-### Tasks
-
-- [x] Create E2E test file for Update Fields flow
-- [x] Implement tests for button interaction
-- [x] Implement tests for loading states
-- [x] Implement tests for success notifications
-- [x] Implement tests for error notifications
-- [x] Implement tests for edge cases (concurrent operations)
-- [x] Disable tests with test.describe.skip
-- [x] Run validation commands (all passed)
-
-### Status
-
-Ready for Review (TDD RED phase - tests written, implementation refinement pending in AL.6)
-
-### File List
-
-- apps/dms-material-e2e/src/update-fields.spec.ts
-- docs/stories/AL.5.tdd-e2e-update-fields.md
-
-### Completion Notes
-
-- Created comprehensive E2E test suite with 11 test cases covering all acceptance criteria
-- Tests cover button interaction, loading overlay, success/error notifications, and concurrent operations
-- All tests wrapped in test.describe.skip() to allow CI to pass during RED phase
-- Followed the pattern from Story AK.5 (universe-update.spec.ts)
-- Used helper function createMockUpdateResponse() for consistent mock data
-- All validation commands passed: pnpm all, pnpm e2e:dms-material (653 passed, 186 skipped), pnpm dupcheck (0 duplicates), pnpm format
-- Tests properly skipped and ready for GREEN phase in Story AL.6
-
-### Agent Model Used
-
-Claude Sonnet 4.5
-
-## Story
-
-**As a** developer
-**I want** to write E2E tests for the Update Fields flow
-**So that** the complete user workflow is verified
-
-## Context
-
-**Current System:**
-
-- Update Fields button wired to service (Story AL.4)
-- Need comprehensive E2E test coverage
-- Tests will define expected end-to-end behavior
-
-**TDD Approach:**
-
-- Write E2E tests first (RED phase)
-- Define complete user workflow expectations
-- Disable failing tests to allow CI to pass
-- Story AL.6 will refine implementation (GREEN phase)
-
-## Acceptance Criteria
-
-### Functional Requirements
-
-- [x] E2E tests written for Update Fields flow
-- [x] Tests cover button interaction
-- [x] Tests cover loading overlay display
-- [x] Tests cover success notification
-- [x] Tests cover error notification
-- [x] Tests cover concurrent operation prevention
-- [x] Tests disabled with `.skip` to allow CI to pass
-
-### Technical Requirements
-
-- [x] Tests use Playwright
-- [x] Tests mock API responses
-- [x] Tests verify UI state changes
-- [x] Tests check notification content
-- [x] Tests follow existing E2E patterns
-
-## Implementation Details
-
-### Step 1: Create E2E Test File
-
-Create `apps/dms-material-e2e/src/update-fields.spec.ts`:
-
-```typescript
 import { test, expect } from 'playwright/test';
+
 import { login } from './helpers/login.helper';
 
+/**
+ * Update Fields E2E Tests (TDD - RED Phase)
+ *
+ * These tests verify the expected behavior of the Update Fields flow.
+ * Story AL.5 writes these tests (RED phase).
+ * Story AL.6 will refine implementation to make tests pass (GREEN phase).
+ *
+ * Test Coverage:
+ * - Update Fields button interaction
+ * - Global loading overlay display during operation
+ * - Success notification with accurate update count
+ * - Error notification on update failure
+ * - Edge cases (concurrent operations, button state)
+ */
+
+/**
+ * Helper to create mock UpdateFieldsResponse
+ * Matches the actual API response format
+ */
 function createMockUpdateResponse(updated: number) {
   return {
     updated,
@@ -103,7 +37,9 @@ test.describe.skip('Update Fields Flow', () => {
   });
 
   test.describe('Update Button', () => {
-    test('should trigger field update when button clicked', async ({ page }) => {
+    test('should trigger field update when button clicked', async ({
+      page,
+    }) => {
       let updateCallCount = 0;
 
       await page.route('**/api/universe/update-fields', async (route) => {
@@ -278,36 +214,3 @@ test.describe.skip('Update Fields Flow', () => {
     });
   });
 });
-```
-
-## Definition of Done
-
-- [x] E2E tests written for Update Fields flow
-- [x] Tests cover all acceptance criteria
-- [x] Tests disabled with `test.describe.skip`
-- [x] All validation commands pass:
-  - [x] Run `pnpm all`
-  - [x] Run `pnpm e2e:dms-material`
-  - [x] Run `pnpm dupcheck`
-  - [x] Run `pnpm format`
-  - [x] Repeat all of these if any fail until they all pass
-- [ ] Code reviewed and approved
-
-## Notes
-
-- This is the TDD RED phase for E2E tests
-- Tests disabled with `.skip` to allow CI to pass
-- Story AL.6 will refine implementation (GREEN phase)
-- Follow pattern from Story AK.5
-
-## Related Stories
-
-- **Prerequisite**: Story AL.4
-- **Next**: Story AL.6
-- **Epic**: Epic AL
-
-## QA Results
-
-### Gate Status
-
-Gate: PASS → docs/qa/gates/AL.5-tdd-e2e-update-fields.yml
