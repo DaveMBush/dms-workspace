@@ -107,7 +107,7 @@
     "@typescript-eslint/utils": "8.50.1",
     "@vitest/coverage-v8": "4.0.9",
     "@vitest/ui": "4.0.9",
-    "angular-eslint": "21.1.0",
+    "angular-eslint": "21.2.0",
     "autoprefixer": "^10.4.17",
     "better-sqlite3": "^12.6.0",
     "esbuild": "^0.25.7",
