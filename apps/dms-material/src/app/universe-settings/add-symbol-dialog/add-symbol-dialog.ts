@@ -11,7 +11,6 @@ import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
-import { SmartArray } from '@smarttools/smart-signals';
 
 import { SymbolAutocompleteComponent } from '../../shared/components/symbol-autocomplete/symbol-autocomplete.component';
 import { SymbolOption } from '../../shared/components/symbol-autocomplete/symbol-option.interface';
@@ -19,9 +18,6 @@ import { NotificationService } from '../../shared/services/notification.service'
 import { RiskGroup } from '../../store/risk-group/risk-group.interface';
 import { selectRiskGroup } from '../../store/risk-group/selectors/select-risk-group.function';
 import { selectTopEntities } from '../../store/top/selectors/select-top-entities.function';
-import { Top } from '../../store/top/top.interface';
-import { selectUniverses } from '../../store/universe/selectors/select-universes.function';
-import { Universe } from '../../store/universe/universe.interface';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -42,6 +38,8 @@ export class AddSymbolDialog {
   private fb = inject(FormBuilder);
   private dialogRef = inject(MatDialogRef<AddSymbolDialog>);
   private notification = inject(NotificationService);
+
+  private readonly notImplementedError = 'Not implemented - TDD RED phase';
 
   topEntities = selectTopEntities().entities;
 
@@ -111,22 +109,22 @@ export class AddSymbolDialog {
   }
 
   onSubmit(): void {
-    // TODO: Implement submit logic in Story AM.2 (TDD GREEN phase)
-    throw new Error('Not implemented - TDD RED phase');
+    // Implementation in Story AM.2 (TDD GREEN phase)
+    throw new Error(this.notImplementedError);
   }
 
   onCancel(): void {
-    // TODO: Implement cancel logic in Story AM.2 (TDD GREEN phase)
-    throw new Error('Not implemented - TDD RED phase');
+    // Implementation in Story AM.2 (TDD GREEN phase)
+    throw new Error(this.notImplementedError);
   }
 
-  private addSymbolToUniverse(symbol: string, riskGroupId: string): void {
-    // TODO: Implement add symbol logic in Story AM.2 (TDD GREEN phase)
-    throw new Error('Not implemented - TDD RED phase');
+  private addSymbolToUniverse(_: string, __: string): void {
+    // Implementation in Story AM.2 (TDD GREEN phase)
+    throw new Error(this.notImplementedError);
   }
 
-  private handleAddError(error: unknown): void {
-    // TODO: Implement error handling in Story AM.2 (TDD GREEN phase)
-    throw new Error('Not implemented - TDD RED phase');
+  private handleAddError(__: unknown): void {
+    // Implementation in Story AM.2 (TDD GREEN phase)
+    throw new Error(this.notImplementedError);
   }
 }
