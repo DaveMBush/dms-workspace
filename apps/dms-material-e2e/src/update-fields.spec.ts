@@ -3,11 +3,11 @@ import { test, expect } from 'playwright/test';
 import { login } from './helpers/login.helper';
 
 /**
- * Update Fields E2E Tests (TDD - RED Phase)
+ * Update Fields E2E Tests (TDD - GREEN Phase)
  *
  * These tests verify the expected behavior of the Update Fields flow.
- * Story AL.5 writes these tests (RED phase).
- * Story AL.6 will refine implementation to make tests pass (GREEN phase).
+ * Story AL.5 wrote these tests (RED phase).
+ * Story AL.6 refines implementation to make tests pass (GREEN phase).
  *
  * Test Coverage:
  * - Update Fields button interaction
@@ -29,7 +29,7 @@ function createMockUpdateResponse(updated: number) {
   };
 }
 
-test.describe.skip('Update Fields Flow', () => {
+test.describe('Update Fields Flow', () => {
   test.beforeEach(async ({ page }) => {
     await login(page);
     await page.goto('/global/universe');
@@ -42,7 +42,7 @@ test.describe.skip('Update Fields Flow', () => {
     }) => {
       let updateCallCount = 0;
 
-      await page.route('**/api/universe/update-fields', async (route) => {
+      await page.route('**/api/settings/update', async (route) => {
         updateCallCount++;
         await route.fulfill({
           status: 200,
@@ -58,7 +58,7 @@ test.describe.skip('Update Fields Flow', () => {
     });
 
     test('should disable button during update', async ({ page }) => {
-      await page.route('**/api/universe/update-fields', async (route) => {
+      await page.route('**/api/settings/update', async (route) => {
         await new Promise((resolve) => setTimeout(resolve, 1000));
         await route.fulfill({
           status: 200,
@@ -73,7 +73,7 @@ test.describe.skip('Update Fields Flow', () => {
     });
 
     test('should re-enable button after update completes', async ({ page }) => {
-      await page.route('**/api/universe/update-fields', async (route) => {
+      await page.route('**/api/settings/update', async (route) => {
         await route.fulfill({
           status: 200,
           json: createMockUpdateResponse(10),
@@ -90,7 +90,7 @@ test.describe.skip('Update Fields Flow', () => {
 
   test.describe('Loading States', () => {
     test('should show global loading overlay', async ({ page }) => {
-      await page.route('**/api/universe/update-fields', async (route) => {
+      await page.route('**/api/settings/update', async (route) => {
         await new Promise((resolve) => setTimeout(resolve, 1000));
         await route.fulfill({
           status: 200,
@@ -107,7 +107,7 @@ test.describe.skip('Update Fields Flow', () => {
     });
 
     test('should hide loading overlay after completion', async ({ page }) => {
-      await page.route('**/api/universe/update-fields', async (route) => {
+      await page.route('**/api/settings/update', async (route) => {
         await route.fulfill({
           status: 200,
           json: createMockUpdateResponse(10),
@@ -124,7 +124,7 @@ test.describe.skip('Update Fields Flow', () => {
 
   test.describe('Success Notifications', () => {
     test('should display success notification', async ({ page }) => {
-      await page.route('**/api/universe/update-fields', async (route) => {
+      await page.route('**/api/settings/update', async (route) => {
         await route.fulfill({
           status: 200,
           json: createMockUpdateResponse(10),
@@ -140,7 +140,7 @@ test.describe.skip('Update Fields Flow', () => {
     });
 
     test('should display update count in notification', async ({ page }) => {
-      await page.route('**/api/universe/update-fields', async (route) => {
+      await page.route('**/api/settings/update', async (route) => {
         await route.fulfill({
           status: 200,
           json: createMockUpdateResponse(25),
@@ -152,13 +152,15 @@ test.describe.skip('Update Fields Flow', () => {
 
       const snackbar = page.locator('mat-snack-bar-container');
       await expect(snackbar).toBeVisible({ timeout: 10000 });
-      await expect(snackbar).toContainText('25 entries updated');
+      await expect(snackbar).toContainText(
+        'Universe fields updated: 25 entries updated'
+      );
     });
   });
 
   test.describe('Error Notifications', () => {
     test('should display error notification on failure', async ({ page }) => {
-      await page.route('**/api/universe/update-fields', async (route) => {
+      await page.route('**/api/settings/update', async (route) => {
         await route.fulfill({
           status: 500,
           json: { error: { message: 'Internal Server Error' } },
@@ -174,7 +176,7 @@ test.describe.skip('Update Fields Flow', () => {
     });
 
     test('should re-enable button after error', async ({ page }) => {
-      await page.route('**/api/universe/update-fields', async (route) => {
+      await page.route('**/api/settings/update', async (route) => {
         await route.fulfill({
           status: 500,
           json: { error: { message: 'Internal Server Error' } },
@@ -193,7 +195,7 @@ test.describe.skip('Update Fields Flow', () => {
     test('should prevent concurrent update operations', async ({ page }) => {
       let updateCallCount = 0;
 
-      await page.route('**/api/universe/update-fields', async (route) => {
+      await page.route('**/api/settings/update', async (route) => {
         updateCallCount++;
         await new Promise((resolve) => setTimeout(resolve, 1000));
         await route.fulfill({
