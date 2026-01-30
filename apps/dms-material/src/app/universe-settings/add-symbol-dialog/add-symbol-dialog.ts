@@ -111,75 +111,22 @@ export class AddSymbolDialog {
   }
 
   onSubmit(): void {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      return;
-    }
-
-    this.isLoading.set(true);
-
-    const symbol = this.form.value.symbol!.trim().toUpperCase();
-    const riskGroupId = this.form.value.riskGroupId!;
-
-    this.addSymbolToUniverse(symbol, riskGroupId);
+    // TODO: Implement submit logic in Story AM.2 (TDD GREEN phase)
+    throw new Error('Not implemented - TDD RED phase');
   }
 
   onCancel(): void {
-    this.dialogRef.close(null);
+    // TODO: Implement cancel logic in Story AM.2 (TDD GREEN phase)
+    throw new Error('Not implemented - TDD RED phase');
   }
 
   private addSymbolToUniverse(symbol: string, riskGroupId: string): void {
-    const universeArray = selectUniverses() as SmartArray<Top, Universe> &
-      Universe[];
-    const top = this.topEntities['1']!;
-
-    const newUniverse: Universe = {
-      id: 'new',
-      symbol,
-      risk_group_id: riskGroupId,
-      distribution: 0,
-      distributions_per_year: 0,
-      last_price: 0,
-      most_recent_sell_date: null,
-      most_recent_sell_price: null,
-      ex_date: '',
-      expired: false,
-      is_closed_end_fund: false,
-      name: this.selectedSymbol()?.name ?? symbol,
-      position: 0,
-    };
-
-    try {
-      universeArray.add!(newUniverse, top);
-      this.isLoading.set(false);
-      this.notification.success(`Added ${symbol} to universe`);
-
-      const data = {
-        symbol,
-        riskGroupId,
-        name: this.selectedSymbol()?.name,
-      };
-
-      this.dialogRef.close(data);
-    } catch (error) {
-      this.handleAddError(error);
-    }
+    // TODO: Implement add symbol logic in Story AM.2 (TDD GREEN phase)
+    throw new Error('Not implemented - TDD RED phase');
   }
 
   private handleAddError(error: unknown): void {
-    this.isLoading.set(false);
-    let errorMsg = 'Failed to add symbol to universe';
-
-    if (
-      error !== null &&
-      error !== undefined &&
-      typeof error === 'object' &&
-      'message' in error &&
-      typeof error.message === 'string'
-    ) {
-      errorMsg = error.message;
-    }
-
-    this.notification.error(errorMsg);
+    // TODO: Implement error handling in Story AM.2 (TDD GREEN phase)
+    throw new Error('Not implemented - TDD RED phase');
   }
 }
