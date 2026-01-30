@@ -1,0 +1,70 @@
+import { ColumnDef } from '../../shared/components/base-table/column-def.interface';
+
+export const UNIVERSE_COLUMNS: ColumnDef[] = [
+  { field: 'symbol', header: 'Symbol', sortable: true, width: '80px' },
+  {
+    field: 'risk_group_id',
+    header: 'Risk Group',
+    sortable: true,
+    width: '90px',
+  },
+  {
+    field: 'distribution',
+    header: 'Distribution',
+    type: 'number',
+    editable: true,
+    width: '100px',
+  },
+  {
+    field: 'distributions_per_year',
+    header: 'Dist/Year',
+    type: 'number',
+    editable: true,
+    width: '80px',
+  },
+  {
+    field: 'yield_percent',
+    header: 'Yield %',
+    type: 'number',
+    sortable: true,
+    width: '90px',
+  },
+  {
+    field: 'avg_purchase_yield_percent',
+    header: 'Avg Purch Yield %',
+    type: 'number',
+    sortable: true,
+    width: '120px',
+  },
+  {
+    field: 'last_price',
+    header: 'Last Price',
+    type: 'currency',
+    width: '90px',
+  },
+  {
+    field: 'ex_date',
+    header: 'Ex-Date',
+    type: 'date',
+    editable: true,
+    sortable: true,
+    width: '100px',
+  },
+  {
+    field: 'most_recent_sell_date',
+    header: 'Mst Rcnt Sll Dt',
+    type: 'date',
+    sortable: true,
+    width: '110px',
+  },
+  {
+    field: 'most_recent_sell_price',
+    header: 'Mst Rcnt Sell $',
+    type: 'currency',
+    sortable: true,
+    width: '110px',
+  },
+  { field: 'position', header: 'Position', type: 'number', width: '80px' },
+  { field: 'expired', header: 'Expired', width: '100px' },
+  { field: 'actions', header: 'Actions', width: '70px' },
+];

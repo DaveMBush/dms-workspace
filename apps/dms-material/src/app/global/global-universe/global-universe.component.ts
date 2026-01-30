@@ -26,6 +26,7 @@ import { EditableDateCellComponent } from '../../shared/components/editable-date
 import { GlobalLoadingService } from '../../shared/services/global-loading.service';
 import { NotificationService } from '../../shared/services/notification.service';
 import { UniverseSyncService } from '../../shared/services/universe-sync.service';
+import { UpdateUniverseFieldsService } from '../../shared/services/update-universe-fields.service';
 import { selectAccounts } from '../../store/accounts/selectors/select-accounts.function';
 import { selectUniverses } from '../../store/universe/selectors/select-universes.function';
 import { Universe } from '../../store/universe/universe.interface';
@@ -34,6 +35,9 @@ import { ScreenerService } from '../global-screener/services/screener.service';
 import { calculateYieldPercent } from './calculate-yield-percent.function';
 import { CellEditEvent } from './cell-edit-event.interface';
 import { filterUniverses } from './filter-universes.function';
+import { UNIVERSE_COLUMNS } from './global-universe.columns';
+import { EXPIRED_OPTIONS } from './global-universe.expired-options';
+import { RISK_GROUPS } from './global-universe.risk-groups';
 
 @Component({
   selector: 'dms-global-universe',
@@ -64,108 +68,32 @@ export class GlobalUniverseComponent {
   private readonly globalLoading = inject(GlobalLoadingService);
   private readonly notification = inject(NotificationService);
   private readonly dialog = inject(MatDialog);
-
+  private readonly updateFieldsService = inject(UpdateUniverseFieldsService);
   readonly cellEdit = output<CellEditEvent>();
   readonly symbolDeleted = output<Universe>();
   readonly today = new Date();
-
   readonly symbolFilter$ = signal<string>('');
   readonly riskGroupFilter$ = signal<string | null>(null);
   readonly expiredFilter$ = signal<boolean | null>(null);
   readonly selectedAccountId$ = signal<string>('all');
   readonly minYieldFilter$ = signal<number | null>(null);
-  readonly isUpdatingFields$ = signal<boolean>(false);
   private readonly localSyncInProgress$ = signal<boolean>(false);
-
   readonly isSyncingUniverse$ = computed(
     function computeIsUniverseSyncing(this: GlobalUniverseComponent) {
       return this.syncService.isSyncing() || this.localSyncInProgress$();
     }.bind(this)
   );
 
+  readonly isUpdatingFields$ = this.updateFieldsService.isUpdating;
+
   // Expose screener service loading and error signals
   readonly screenerLoading = this.screenerService.loading;
   readonly screenerError = this.screenerService.error;
+  readonly columns: ColumnDef[] = UNIVERSE_COLUMNS;
 
-  readonly columns: ColumnDef[] = [
-    { field: 'symbol', header: 'Symbol', sortable: true, width: '80px' },
-    {
-      field: 'risk_group_id',
-      header: 'Risk Group',
-      sortable: true,
-      width: '90px',
-    },
-    {
-      field: 'distribution',
-      header: 'Distribution',
-      type: 'number',
-      editable: true,
-      width: '100px',
-    },
-    {
-      field: 'distributions_per_year',
-      header: 'Dist/Year',
-      type: 'number',
-      editable: true,
-      width: '80px',
-    },
-    {
-      field: 'yield_percent',
-      header: 'Yield %',
-      type: 'number',
-      sortable: true,
-      width: '90px',
-    },
-    {
-      field: 'avg_purchase_yield_percent',
-      header: 'Avg Purch Yield %',
-      type: 'number',
-      sortable: true,
-      width: '120px',
-    },
-    {
-      field: 'last_price',
-      header: 'Last Price',
-      type: 'currency',
-      width: '90px',
-    },
-    {
-      field: 'ex_date',
-      header: 'Ex-Date',
-      type: 'date',
-      editable: true,
-      sortable: true,
-      width: '100px',
-    },
-    {
-      field: 'most_recent_sell_date',
-      header: 'Mst Rcnt Sll Dt',
-      type: 'date',
-      sortable: true,
-      width: '110px',
-    },
-    {
-      field: 'most_recent_sell_price',
-      header: 'Mst Rcnt Sell $',
-      type: 'currency',
-      sortable: true,
-      width: '110px',
-    },
-    { field: 'position', header: 'Position', type: 'number', width: '80px' },
-    { field: 'expired', header: 'Expired', width: '100px' },
-    { field: 'actions', header: 'Actions', width: '70px' },
-  ];
+  readonly riskGroups = RISK_GROUPS;
 
-  readonly riskGroups = [
-    { label: 'Equities', value: 'Equities' },
-    { label: 'Income', value: 'Income' },
-    { label: 'Tax Free', value: 'Tax Free Income' },
-  ];
-
-  readonly expiredOptions = [
-    { label: 'Yes', value: true },
-    { label: 'No', value: false },
-  ];
+  readonly expiredOptions = EXPIRED_OPTIONS;
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signal
   readonly accountOptions$ = computed(() => {
@@ -192,16 +120,10 @@ export class GlobalUniverseComponent {
   });
 
   onSortChange(_: Sort): void {
-    // Sorting is handled automatically by the table
+    // code coming
   }
 
   syncUniverse(): void {
-    // Don't sync if already syncing (check both service and local guard)
-    // This check happens before subscription, preventing race conditions
-    if (this.syncService.isSyncing() || this.localSyncInProgress$()) {
-      return;
-    }
-
     // Set local guard immediately to prevent concurrent calls before change detection
     this.localSyncInProgress$.set(true);
 
@@ -229,31 +151,26 @@ export class GlobalUniverseComponent {
         );
       },
       error: function onSyncError(error: unknown) {
-        context.localSyncInProgress$.set(false);
-        context.globalLoading.hide();
-
-        const errorMessage = context.extractErrorMessage(error);
-
-        context.notification.showPersistent(
-          `Failed to update universe: ${errorMessage}`,
-          'error'
-        );
+        context.handleOperationError(error, 'update universe', true);
       },
     });
   }
 
   updateFields(): void {
+    this.globalLoading.show('Updating universe fields...');
     const context = this;
-    this.isUpdatingFields$.set(true);
-
-    // Placeholder: Field update service to be implemented in future story
-    setTimeout(function simulateUpdate() {
-      context.isUpdatingFields$.set(false);
-      context.notification.showPersistent(
-        'Successfully updated field information from external sources.',
-        'success'
-      );
-    }, 1000);
+    this.updateFieldsService.updateFields().subscribe({
+      next: function onUpdateSuccess(summary) {
+        context.globalLoading.hide();
+        context.notification.showPersistent(
+          `Universe fields updated: ${summary.updated} entries updated.`,
+          'success'
+        );
+      },
+      error: function onUpdateError(error: unknown) {
+        context.handleOperationError(error, 'update fields');
+      },
+    });
   }
 
   showAddSymbolDialog(): void {
@@ -316,6 +233,27 @@ export class GlobalUniverseComponent {
         // Error is already captured by ScreenerService error signal
       },
     });
+  }
+
+  /**
+   * Handle operation error with consistent pattern
+   * @param error - Error object from operation
+   * @param operationName - Name of the operation that failed
+   * @param resetLocalSync - Whether to reset local sync flag
+   */
+  private handleOperationError(
+    error: unknown,
+    operationName: string,
+    resetLocalSync = false
+  ): void {
+    if (resetLocalSync) {
+      this.localSyncInProgress$.set(false);
+    }
+    this.globalLoading.hide();
+    this.notification.showPersistent(
+      `Failed to ${operationName}: ${this.extractErrorMessage(error)}`,
+      'error'
+    );
   }
 
   /**

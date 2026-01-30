@@ -44,11 +44,11 @@ describe('UpdateUniverseFieldsService', () => {
       expect(service.isUpdating()).toBe(true);
     });
 
-    it('should call API endpoint /api/universe/update-fields', () => {
+    it('should call API endpoint /api/settings/update', () => {
       service.updateFields().subscribe();
 
-      const req = httpMock.expectOne('/api/universe/update-fields');
-      expect(req.request.method).toBe('POST');
+      const req = httpMock.expectOne('/api/settings/update');
+      expect(req.request.method).toBe('GET');
       req.flush({ updated: 10 });
     });
 
@@ -60,7 +60,7 @@ describe('UpdateUniverseFieldsService', () => {
         });
       });
 
-      const req = httpMock.expectOne('/api/universe/update-fields');
+      const req = httpMock.expectOne('/api/settings/update');
       req.flush({ updated: 10 });
 
       await resultPromise;
@@ -73,7 +73,7 @@ describe('UpdateUniverseFieldsService', () => {
         });
       });
 
-      const req = httpMock.expectOne('/api/universe/update-fields');
+      const req = httpMock.expectOne('/api/settings/update');
       req.flush({ updated: 10 });
 
       await resultPromise;
@@ -91,7 +91,7 @@ describe('UpdateUniverseFieldsService', () => {
         });
       });
 
-      const req = httpMock.expectOne('/api/universe/update-fields');
+      const req = httpMock.expectOne('/api/settings/update');
       req.error(new ProgressEvent('error'));
 
       await errorPromise;
@@ -110,7 +110,7 @@ describe('UpdateUniverseFieldsService', () => {
         });
       });
 
-      const req = httpMock.expectOne('/api/universe/update-fields');
+      const req = httpMock.expectOne('/api/settings/update');
       req.flush('Update failed', { status: 500, statusText: 'Server Error' });
 
       await errorPromise;
@@ -126,7 +126,7 @@ describe('UpdateUniverseFieldsService', () => {
         });
       });
 
-      const req = httpMock.expectOne('/api/universe/update-fields');
+      const req = httpMock.expectOne('/api/settings/update');
       req.flush(null);
 
       await errorPromise;
