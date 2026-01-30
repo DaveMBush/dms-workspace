@@ -35,6 +35,9 @@ jobs:
       # Prisma client is auto-generated via postinstall script
       - run: pnpm i --frozen-lockfile
 
+      # Fetch main branch for format:check comparison
+      - run: git fetch origin main:main
+
       # Install Playwright browsers for e2e tests
       # - run: pnpm playwright install --with-deps
       #- uses: nrwl/nx-set-shas@v4
