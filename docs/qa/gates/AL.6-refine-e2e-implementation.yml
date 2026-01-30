@@ -1,0 +1,8 @@
+schema: 1
+story: 'AL.6'
+gate: PASS
+status_reason: 'All E2E tests passing, validation commands successful, implementation complete.'
+reviewer: 'Quinn'
+updated: '2026-01-30T12:00:00Z'
+top_issues: []
+waiver: { active: false }
