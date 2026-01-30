@@ -54,19 +54,19 @@ Create or update test file for the dialog component:
 
 \`\`\`typescript
 describe('AddSymbolDialogComponent', () => {
-  // Test dialog initialization
-  it('should create dialog with correct configuration');
-  
-  // Test form validation
-  it('should require symbol input');
-  it('should validate symbol format');
-  
-  // Test submit behavior
-  it('should call addSymbol on valid submit');
-  it('should disable submit button when form invalid');
-  
-  // Test cancel behavior
-  it('should close dialog on cancel');
+// Test dialog initialization
+it('should create dialog with correct configuration');
+
+// Test form validation
+it('should require symbol input');
+it('should validate symbol format');
+
+// Test submit behavior
+it('should call addSymbol on valid submit');
+it('should disable submit button when form invalid');
+
+// Test cancel behavior
+it('should close dialog on cancel');
 });
 \`\`\`
 
@@ -74,12 +74,12 @@ describe('AddSymbolDialogComponent', () => {
 
 \`\`\`typescript
 describe('UniverseService', () => {
-  describe('addSymbol', () => {
-    it('should call POST /api/universe with symbol data');
-    it('should return universe entry on success');
-    it('should handle 409 conflict error');
-    it('should handle network errors');
-  });
+describe('addSymbol', () => {
+it('should call POST /api/universe with symbol data');
+it('should return universe entry on success');
+it('should handle 409 conflict error');
+it('should handle network errors');
+});
 });
 \`\`\`
 
@@ -97,7 +97,7 @@ Change \`it()\` to \`xit()\` or use \`.skip\`:
 
 \`\`\`typescript
 xit('should create dialog with correct configuration', () => {
-  // test code
+// test code
 });
 \`\`\`
 

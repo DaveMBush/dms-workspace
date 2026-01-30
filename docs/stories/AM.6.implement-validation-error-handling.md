@@ -51,21 +51,21 @@ Remove `x` prefix or `.skip` from tests written in AM.5.
 
 \`\`\`typescript
 form = this.fb.group({
-  symbol: ['', [
-    Validators.required,
-    Validators.pattern(/^[A-Z]{1,5}$/),
-    this.duplicateSymbolValidator()
-  ]]
+symbol: ['', [
+Validators.required,
+Validators.pattern(/^[A-Z]{1,5}$/),
+this.duplicateSymbolValidator()
+]]
 });
 
 duplicateSymbolValidator(): ValidatorFn {
-  return (control: AbstractControl): ValidationErrors | null => {
-    const symbol = control.value;
-    if (this.existingSymbols.includes(symbol)) {
-      return { duplicate: { value: symbol } };
-    }
-    return null;
-  };
+return (control: AbstractControl): ValidationErrors | null => {
+const symbol = control.value;
+if (this.existingSymbols.includes(symbol)) {
+return { duplicate: { value: symbol } };
+}
+return null;
+};
 }
 \`\`\`
 
@@ -73,39 +73,39 @@ duplicateSymbolValidator(): ValidatorFn {
 
 \`\`\`typescript
 onSubmit() {
-  if (this.form.valid) {
-    this.isLoading = true;
-    this.universeService.addSymbol(this.form.value.symbol!)
-      .subscribe({
-        next: () => {
-          this.dialogRef.close(true);
-          this.notification.showPersistent('Symbol added successfully');
-        },
-        error: (err) => {
-          this.isLoading = false;
-          this.handleError(err);
-        }
-      });
-  }
+if (this.form.valid) {
+this.isLoading = true;
+this.universeService.addSymbol(this.form.value.symbol!)
+.subscribe({
+next: () => {
+this.dialogRef.close(true);
+this.notification.showPersistent('Symbol added successfully');
+},
+error: (err) => {
+this.isLoading = false;
+this.handleError(err);
+}
+});
+}
 }
 
 private handleError(err: HttpErrorResponse) {
-  if (err.status === 409) {
-    this.notification.showPersistent(
-      'Symbol already exists in universe',
-      'error'
-    );
-  } else if (err.status >= 500) {
-    this.notification.showPersistent(
-      'Server error. Please try again later.',
-      'error'
-    );
-  } else {
-    this.notification.showPersistent(
-      'Failed to add symbol. Please try again.',
-      'error'
-    );
-  }
+if (err.status === 409) {
+this.notification.showPersistent(
+'Symbol already exists in universe',
+'error'
+);
+} else if (err.status >= 500) {
+this.notification.showPersistent(
+'Server error. Please try again later.',
+'error'
+);
+} else {
+this.notification.showPersistent(
+'Failed to add symbol. Please try again.',
+'error'
+);
+}
 }
 \`\`\`
 
@@ -113,13 +113,13 @@ private handleError(err: HttpErrorResponse) {
 
 \`\`\`html
 <mat-error *ngIf="form.get('symbol')?.hasError('required')">
-  Symbol is required
+Symbol is required
 </mat-error>
 <mat-error *ngIf="form.get('symbol')?.hasError('pattern')">
-  Invalid symbol format (1-5 uppercase letters)
+Invalid symbol format (1-5 uppercase letters)
 </mat-error>
-<mat-error *ngIf="form.get('symbol')?.hasError('duplicate')">
-  Symbol already in universe
+<mat-error \*ngIf="form.get('symbol')?.hasError('duplicate')">
+Symbol already in universe
 </mat-error>
 \`\`\`
 

@@ -51,7 +51,7 @@ Remove `x` prefix or `.skip` from tests written in AM.1:
 
 \`\`\`typescript
 it('should create dialog with correct configuration', () => {
-  // test code
+// test code
 });
 \`\`\`
 
@@ -59,59 +59,59 @@ it('should create dialog with correct configuration', () => {
 
 \`\`\`typescript
 @Component({
-  selector: 'app-add-symbol-dialog',
-  template: \`
-    <h2 mat-dialog-title>Add Symbol</h2>
-    <mat-dialog-content>
-      <form [formGroup]="form">
-        <mat-form-field>
-          <mat-label>Symbol</mat-label>
-          <input matInput formControlName="symbol" />
-          <mat-error *ngIf="form.get('symbol')?.hasError('required')">
-            Symbol is required
-          </mat-error>
-        </mat-form-field>
-      </form>
-    </mat-dialog-content>
-    <mat-dialog-actions>
-      <button mat-button (click)="onCancel()">Cancel</button>
-      <button mat-raised-button color="primary" 
-              [disabled]="form.invalid || isLoading"
-              (click)="onSubmit()">
-        Add
-      </button>
-    </mat-dialog-actions>
-  \`
+selector: 'app-add-symbol-dialog',
+template: \`
+<h2 mat-dialog-title>Add Symbol</h2>
+<mat-dialog-content>
+<form [formGroup]="form">
+<mat-form-field>
+<mat-label>Symbol</mat-label>
+<input matInput formControlName="symbol" />
+<mat-error \*ngIf="form.get('symbol')?.hasError('required')">
+Symbol is required
+</mat-error>
+</mat-form-field>
+</form>
+</mat-dialog-content>
+<mat-dialog-actions>
+<button mat-button (click)="onCancel()">Cancel</button>
+<button mat-raised-button color="primary"
+[disabled]="form.invalid || isLoading"
+(click)="onSubmit()">
+Add
+</button>
+</mat-dialog-actions>
+\`
 })
 export class AddSymbolDialogComponent {
-  form = this.fb.group({
-    symbol: ['', [Validators.required, Validators.pattern(/^[A-Z]+$/)]]
-  });
-  isLoading = false;
+form = this.fb.group({
+symbol: ['', [Validators.required, Validators.pattern(/^[A-Z]+$/)]]
+});
+isLoading = false;
 
-  constructor(
-    private fb: FormBuilder,
-    private dialogRef: MatDialogRef<AddSymbolDialogComponent>,
-    private universeService: UniverseService
-  ) {}
+constructor(
+private fb: FormBuilder,
+private dialogRef: MatDialogRef<AddSymbolDialogComponent>,
+private universeService: UniverseService
+) {}
 
-  onSubmit() {
-    if (this.form.valid) {
-      this.isLoading = true;
-      this.universeService.addSymbol(this.form.value.symbol!)
-        .subscribe({
-          next: () => this.dialogRef.close(true),
-          error: (err) => {
-            this.isLoading = false;
-            // Handle error
-          }
-        });
-    }
-  }
+onSubmit() {
+if (this.form.valid) {
+this.isLoading = true;
+this.universeService.addSymbol(this.form.value.symbol!)
+.subscribe({
+next: () => this.dialogRef.close(true),
+error: (err) => {
+this.isLoading = false;
+// Handle error
+}
+});
+}
+}
 
-  onCancel() {
-    this.dialogRef.close(false);
-  }
+onCancel() {
+this.dialogRef.close(false);
+}
 }
 \`\`\`
 
@@ -119,7 +119,7 @@ export class AddSymbolDialogComponent {
 
 \`\`\`typescript
 addSymbol(symbol: string): Observable<UniverseEntry> {
-  return this.http.post<UniverseEntry>('/api/universe', { symbol });
+return this.http.post<UniverseEntry>('/api/universe', { symbol });
 }
 \`\`\`
 
@@ -129,14 +129,14 @@ In GlobalUniverseComponent:
 
 \`\`\`typescript
 openAddSymbolDialog() {
-  this.dialog.open(AddSymbolDialogComponent, {
-    width: '400px'
-  }).afterClosed().subscribe(result => {
-    if (result) {
-      // Refresh table or handle success
-      this.notification.showPersistent('Symbol added successfully');
-    }
-  });
+this.dialog.open(AddSymbolDialogComponent, {
+width: '400px'
+}).afterClosed().subscribe(result => {
+if (result) {
+// Refresh table or handle success
+this.notification.showPersistent('Symbol added successfully');
+}
+});
 }
 \`\`\`
 

@@ -53,13 +53,13 @@ Remove `x` prefix or `.skip` from tests written in AM.3.
 \`\`\`typescript
 @Injectable({ providedIn: 'root' })
 export class SymbolSearchService {
-  constructor(private http: HttpClient) {}
+constructor(private http: HttpClient) {}
 
-  searchSymbols(query: string): Observable<SymbolSearchResult[]> {
-    return this.http.get<SymbolSearchResult[]>(
-      \`/api/symbols/search?q=\${query}\`
-    );
-  }
+searchSymbols(query: string): Observable<SymbolSearchResult[]> {
+return this.http.get<SymbolSearchResult[]>(
+\`/api/symbols/search?q=\${query}\`
+);
+}
 }
 \`\`\`
 
@@ -67,25 +67,25 @@ export class SymbolSearchService {
 
 \`\`\`typescript
 export class AddSymbolDialogComponent {
-  form = this.fb.group({
-    symbol: ['', Validators.required]
-  });
-  
-  filteredSymbols$: Observable<SymbolSearchResult[]>;
+form = this.fb.group({
+symbol: ['', Validators.required]
+});
 
-  constructor(
-    private fb: FormBuilder,
-    private symbolSearch: SymbolSearchService,
-    // ... other dependencies
-  ) {
-    this.filteredSymbols$ = this.form.get('symbol')!.valueChanges.pipe(
-      debounceTime(300),
-      distinctUntilChanged(),
-      switchMap(value => 
-        value ? this.symbolSearch.searchSymbols(value) : of([])
-      )
-    );
-  }
+filteredSymbols$: Observable<SymbolSearchResult[]>;
+
+constructor(
+private fb: FormBuilder,
+private symbolSearch: SymbolSearchService,
+// ... other dependencies
+) {
+this.filteredSymbols$ = this.form.get('symbol')!.valueChanges.pipe(
+debounceTime(300),
+distinctUntilChanged(),
+switchMap(value =>
+value ? this.symbolSearch.searchSymbols(value) : of([])
+)
+);
+}
 }
 \`\`\`
 
@@ -93,17 +93,17 @@ export class AddSymbolDialogComponent {
 
 \`\`\`html
 <mat-form-field>
-  <mat-label>Symbol</mat-label>
-  <input matInput 
-         formControlName="symbol"
-         [matAutocomplete]="auto" />
-  <mat-autocomplete #auto="matAutocomplete" 
-                    (optionSelected)="onSymbolSelected($event)">
-    <mat-option *ngFor="let symbol of filteredSymbols$ | async" 
-                [value]="symbol.symbol">
-      {{symbol.symbol}} - {{symbol.name}}
-    </mat-option>
-  </mat-autocomplete>
+<mat-label>Symbol</mat-label>
+<input matInput
+formControlName="symbol"
+[matAutocomplete]="auto" />
+<mat-autocomplete #auto="matAutocomplete"
+(optionSelected)="onSymbolSelected($event)">
+    <mat-option *ngFor="let symbol of filteredSymbols$ | async"
+[value]="symbol.symbol">
+{{symbol.symbol}} - {{symbol.name}}
+</mat-option>
+</mat-autocomplete>
 </mat-form-field>
 \`\`\`
 

@@ -46,10 +46,10 @@
 
 \`\`\`typescript
 describe('AddSymbolDialogComponent validation', () => {
-  it('should show error for duplicate symbol');
-  it('should show error for invalid symbol format');
-  it('should prevent submission with errors');
-  it('should clear errors on input change');
+it('should show error for duplicate symbol');
+it('should show error for invalid symbol format');
+it('should prevent submission with errors');
+it('should clear errors on input change');
 });
 \`\`\`
 
@@ -57,11 +57,11 @@ describe('AddSymbolDialogComponent validation', () => {
 
 \`\`\`typescript
 describe('AddSymbolDialogComponent error handling', () => {
-  it('should handle 409 Conflict error');
-  it('should handle 500 Server error');
-  it('should handle network errors');
-  it('should show appropriate error messages');
-  it('should keep dialog open on error');
+it('should handle 409 Conflict error');
+it('should handle 500 Server error');
+it('should handle network errors');
+it('should show appropriate error messages');
+it('should keep dialog open on error');
 });
 \`\`\`
 
@@ -75,7 +75,7 @@ pnpm test:dms-material
 
 \`\`\`typescript
 xit('should handle 409 Conflict error', () => {
-  // test code
+// test code
 });
 \`\`\`
 

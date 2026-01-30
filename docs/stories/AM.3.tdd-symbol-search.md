@@ -51,13 +51,13 @@
 
 \`\`\`typescript
 describe('SymbolSearchService', () => {
-  describe('searchSymbols', () => {
-    it('should call symbol search API');
-    it('should debounce requests by 300ms');
-    it('should return array of symbol results');
-    it('should handle empty results');
-    it('should handle API errors');
-  });
+describe('searchSymbols', () => {
+it('should call symbol search API');
+it('should debounce requests by 300ms');
+it('should return array of symbol results');
+it('should handle empty results');
+it('should handle API errors');
+});
 });
 \`\`\`
 
@@ -65,13 +65,13 @@ describe('SymbolSearchService', () => {
 
 \`\`\`typescript
 describe('AddSymbolDialogComponent', () => {
-  describe('symbol autocomplete', () => {
-    it('should show autocomplete dropdown on input');
-    it('should display search results');
-    it('should select symbol on click');
-    it('should show loading indicator during search');
-    it('should show "no results" message when appropriate');
-  });
+describe('symbol autocomplete', () => {
+it('should show autocomplete dropdown on input');
+it('should display search results');
+it('should select symbol on click');
+it('should show loading indicator during search');
+it('should show "no results" message when appropriate');
+});
 });
 \`\`\`
 
@@ -85,7 +85,7 @@ pnpm test:dms-material
 
 \`\`\`typescript
 xit('should call symbol search API', () => {
-  // test code
+// test code
 });
 \`\`\`
 

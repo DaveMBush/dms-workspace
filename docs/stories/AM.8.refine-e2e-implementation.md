@@ -49,7 +49,7 @@ Remove `.skip` from the test suite:
 \`\`\`typescript
 // Change from test.describe.skip to test.describe
 test.describe('Add Symbol Flow', () => {
-  // ... tests
+// ... tests
 });
 \`\`\`
 
