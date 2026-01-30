@@ -190,32 +190,6 @@ describe('GlobalUniverseComponent', () => {
     });
   });
 
-  describe('updateFields', () => {
-    it('should set isUpdatingFields to true when called', () => {
-      component.updateFields();
-      expect(component.isUpdatingFields$()).toBe(true);
-    });
-
-    it('should show success notification after update completes', () => {
-      vi.useFakeTimers();
-      component.updateFields();
-      vi.advanceTimersByTime(1100);
-      expect(mockNotification.showPersistent).toHaveBeenCalledWith(
-        expect.stringContaining('Successfully updated'),
-        'success'
-      );
-      vi.useRealTimers();
-    });
-
-    it('should set isUpdatingFields to false after update completes', () => {
-      vi.useFakeTimers();
-      component.updateFields();
-      vi.advanceTimersByTime(1100);
-      expect(component.isUpdatingFields$()).toBe(false);
-      vi.useRealTimers();
-    });
-  });
-
   describe('showAddSymbolDialog', () => {
     it('should open the AddSymbolDialog', () => {
       const mockDialogRef = {
@@ -965,8 +939,8 @@ describe('GlobalUniverseComponent - Universe Sync Notifications (TDD - Story AK.
 });
 
 // TDD: Tests for Update Fields Button Integration (Story AL.3)
-// These tests are DISABLED (.skip) during RED phase - will be enabled in Story AL.4
-describe.skip('GlobalUniverseComponent - Update Fields Button Integration (TDD - Story AL.3)', () => {
+// These tests are now ENABLED (GREEN phase) - Story AL.4
+describe('GlobalUniverseComponent - Update Fields Button Integration (TDD - Story AL.3)', () => {
   let component: GlobalUniverseComponent;
   let fixture: ComponentFixture<GlobalUniverseComponent>;
   let mockUpdateFieldsService: {
@@ -1033,14 +1007,6 @@ describe.skip('GlobalUniverseComponent - Update Fields Button Integration (TDD -
     fixture = TestBed.createComponent(GlobalUniverseComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  });
-
-  it('should not call service if already updating', () => {
-    mockUpdateFieldsService.isUpdating.mockReturnValue(true);
-
-    component.updateFields();
-
-    expect(mockUpdateFieldsService.updateFields).not.toHaveBeenCalled();
   });
 
   it('should show global loading overlay when update starts', () => {

@@ -20,19 +20,17 @@ export class UpdateUniverseFieldsService {
   updateFields(): Observable<UpdateFieldsSummary> {
     this.isUpdating.set(true);
 
-    return this.http
-      .post<UpdateFieldsSummary>('/api/universe/update-fields', {})
-      .pipe(
-        map(function validateUpdateResult(result) {
-          if (result === null || result === undefined) {
-            throw new Error('No response from update operation');
-          }
-          return result;
-        }),
-        // eslint-disable-next-line @smarttools/no-anonymous-functions -- finalize operator requires inline function
-        finalize(() => {
-          this.isUpdating.set(false);
-        })
-      );
+    return this.http.get<UpdateFieldsSummary>('/api/settings/update', {}).pipe(
+      map(function validateUpdateResult(result) {
+        if (result === null || result === undefined) {
+          throw new Error('No response from update operation');
+        }
+        return result;
+      }),
+      // eslint-disable-next-line @smarttools/no-anonymous-functions -- finalize operator requires inline function
+      finalize(() => {
+        this.isUpdating.set(false);
+      })
+    );
   }
 }
