@@ -35,8 +35,10 @@ jobs:
       # Prisma client is auto-generated via postinstall script
       - run: pnpm i --frozen-lockfile
 
-      # Fetch main branch for format:check comparison
-      - run: git fetch origin main:main
+      # Fetch main branch for format:check comparison (only needed on PR branches)
+      - name: Fetch main branch
+        if: github.ref != 'refs/heads/main'
+        run: git fetch origin main:main
 
       # Install Playwright browsers for e2e tests
       # - run: pnpm playwright install --with-deps
