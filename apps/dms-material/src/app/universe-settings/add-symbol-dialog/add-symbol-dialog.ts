@@ -11,7 +11,6 @@ import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
-import { SmartArray } from '@smarttools/smart-signals';
 
 import { SymbolAutocompleteComponent } from '../../shared/components/symbol-autocomplete/symbol-autocomplete.component';
 import { SymbolOption } from '../../shared/components/symbol-autocomplete/symbol-option.interface';
@@ -19,9 +18,6 @@ import { NotificationService } from '../../shared/services/notification.service'
 import { RiskGroup } from '../../store/risk-group/risk-group.interface';
 import { selectRiskGroup } from '../../store/risk-group/selectors/select-risk-group.function';
 import { selectTopEntities } from '../../store/top/selectors/select-top-entities.function';
-import { Top } from '../../store/top/top.interface';
-import { selectUniverses } from '../../store/universe/selectors/select-universes.function';
-import { Universe } from '../../store/universe/universe.interface';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -42,6 +38,8 @@ export class AddSymbolDialog {
   private fb = inject(FormBuilder);
   private dialogRef = inject(MatDialogRef<AddSymbolDialog>);
   private notification = inject(NotificationService);
+
+  private readonly notImplementedError = 'Not implemented - TDD RED phase';
 
   topEntities = selectTopEntities().entities;
 
@@ -111,75 +109,22 @@ export class AddSymbolDialog {
   }
 
   onSubmit(): void {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      return;
-    }
-
-    this.isLoading.set(true);
-
-    const symbol = this.form.value.symbol!.trim().toUpperCase();
-    const riskGroupId = this.form.value.riskGroupId!;
-
-    this.addSymbolToUniverse(symbol, riskGroupId);
+    // Implementation in Story AM.2 (TDD GREEN phase)
+    throw new Error(this.notImplementedError);
   }
 
   onCancel(): void {
-    this.dialogRef.close(null);
+    // Implementation in Story AM.2 (TDD GREEN phase)
+    throw new Error(this.notImplementedError);
   }
 
-  private addSymbolToUniverse(symbol: string, riskGroupId: string): void {
-    const universeArray = selectUniverses() as SmartArray<Top, Universe> &
-      Universe[];
-    const top = this.topEntities['1']!;
-
-    const newUniverse: Universe = {
-      id: 'new',
-      symbol,
-      risk_group_id: riskGroupId,
-      distribution: 0,
-      distributions_per_year: 0,
-      last_price: 0,
-      most_recent_sell_date: null,
-      most_recent_sell_price: null,
-      ex_date: '',
-      expired: false,
-      is_closed_end_fund: false,
-      name: this.selectedSymbol()?.name ?? symbol,
-      position: 0,
-    };
-
-    try {
-      universeArray.add!(newUniverse, top);
-      this.isLoading.set(false);
-      this.notification.success(`Added ${symbol} to universe`);
-
-      const data = {
-        symbol,
-        riskGroupId,
-        name: this.selectedSymbol()?.name,
-      };
-
-      this.dialogRef.close(data);
-    } catch (error) {
-      this.handleAddError(error);
-    }
+  private addSymbolToUniverse(_: string, __: string): void {
+    // Implementation in Story AM.2 (TDD GREEN phase)
+    throw new Error(this.notImplementedError);
   }
 
-  private handleAddError(error: unknown): void {
-    this.isLoading.set(false);
-    let errorMsg = 'Failed to add symbol to universe';
-
-    if (
-      error !== null &&
-      error !== undefined &&
-      typeof error === 'object' &&
-      'message' in error &&
-      typeof error.message === 'string'
-    ) {
-      errorMsg = error.message;
-    }
-
-    this.notification.error(errorMsg);
+  private handleAddError(__: unknown): void {
+    // Implementation in Story AM.2 (TDD GREEN phase)
+    throw new Error(this.notImplementedError);
   }
 }
