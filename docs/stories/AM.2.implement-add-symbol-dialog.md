@@ -61,6 +61,7 @@ it('should create dialog with correct configuration', () => {
 @Component({
 selector: 'app-add-symbol-dialog',
 template: \`
+
 <h2 mat-dialog-title>Add Symbol</h2>
 <mat-dialog-content>
 <form [formGroup]="form">
