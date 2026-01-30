@@ -11,6 +11,8 @@ Originally, we had bundled the TDD unit tests with the implementation of the fea
 
 Instead, break the stories into TDD story, implementation story, and repeat for as many implementation stories as exist in the original epic.
 
+We don't need a TDD story for e2e test stories
+
 In the TDD stories, in order to make the CI pass and allow us to merge, once you have a running "RED" test, disable the test and then in the implementation story reimplement it.
 
 Make sure the Definition of Done for each story includes:

@@ -10,11 +10,14 @@ Connects add symbol dialog to backend for creating new universe entries.
 
 ## Stories
 
-1. **Story AM.1:** Wire add symbol dialog to universe service
-2. **Story AM.2:** Implement symbol search/autocomplete
-3. **Story AM.3:** Add validation and error handling
-4. **Story AM.4:** Add unit tests
-5. **Story AM.5:** Add e2e tests
+1. **Story AM.1 (TDD):** Write Unit Tests for Add Symbol Dialog - TDD RED Phase
+2. **Story AM.2 (Implementation):** Wire Add Symbol Dialog to Universe Service - TDD GREEN Phase
+3. **Story AM.3 (TDD):** Write Unit Tests for Symbol Search/Autocomplete - TDD RED Phase
+4. **Story AM.4 (Implementation):** Implement Symbol Search/Autocomplete - TDD GREEN Phase
+5. **Story AM.5 (TDD):** Write Unit Tests for Validation and Error Handling - TDD RED Phase
+6. **Story AM.6 (Implementation):** Add Validation and Error Handling - TDD GREEN Phase
+7. **Story AM.7 (E2E Tests):** Write E2E Tests for Add Symbol Flow - TDD RED Phase
+8. **Story AM.8 (E2E Implementation):** Refine Implementation Based on E2E Test Results - TDD GREEN Phase
 
 ## Dependencies
 
@@ -26,4 +29,4 @@ Connects add symbol dialog to backend for creating new universe entries.
 
 ## Estimated Effort
 
-2-3 days
+4-5 days (TDD pattern with RED/GREEN phases)
