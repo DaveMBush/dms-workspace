@@ -17,10 +17,12 @@ import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
+import { firstValueFrom } from 'rxjs';
 
 import { SymbolAutocompleteComponent } from '../../shared/components/symbol-autocomplete/symbol-autocomplete.component';
 import { SymbolOption } from '../../shared/components/symbol-autocomplete/symbol-option.interface';
 import { NotificationService } from '../../shared/services/notification.service';
+import { SymbolSearchService } from '../../shared/services/symbol-search.service';
 import { RiskGroup } from '../../store/risk-group/risk-group.interface';
 import { selectRiskGroup } from '../../store/risk-group/selectors/select-risk-group.function';
 import { selectTopEntities } from '../../store/top/selectors/select-top-entities.function';
@@ -45,8 +47,7 @@ export class AddSymbolDialog {
   private fb = inject(FormBuilder);
   private dialogRef = inject(MatDialogRef<AddSymbolDialog>);
   private notification = inject(NotificationService);
-
-  private readonly notImplementedError = 'Not implemented - TDD RED phase';
+  private symbolSearchService = inject(SymbolSearchService);
 
   topEntities = selectTopEntities().entities;
 
@@ -119,10 +120,19 @@ export class AddSymbolDialog {
     return selectRiskGroup();
   }
 
-  async searchSymbols(): Promise<SymbolOption[]> {
-    // Simulate API call - in real implementation, this would call a service
-    // For now, return empty array to pass tests
-    return Promise.resolve([]);
+  async searchSymbols(query: string): Promise<SymbolOption[]> {
+    if (!query || query.trim().length === 0) {
+      return [];
+    }
+
+    try {
+      // eslint-disable-next-line no-restricted-syntax -- SymbolAutocompleteComponent requires Promise<SymbolOption[]> return type
+      return await firstValueFrom(
+        this.symbolSearchService.searchSymbols(query)
+      );
+    } catch {
+      return [];
+    }
   }
 
   onSymbolSelected(symbol: SymbolOption): void {
@@ -149,6 +159,10 @@ export class AddSymbolDialog {
 
   onCancel(): void {
     this.dialogRef.close(null);
+  }
+
+  onFormReset(): void {
+    this.selectedSymbol.set(null);
   }
 
   private addSymbolToUniverse(symbol: string, riskGroupId: string): void {
