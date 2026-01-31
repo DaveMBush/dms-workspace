@@ -31,7 +31,7 @@ describe('SymbolSearchService', () => {
   });
 
   describe('searchSymbols', () => {
-    it.skip('should call Yahoo Finance search API with correct query', async () => {
+    it('should call Yahoo Finance search API with correct query', async () => {
       const query = 'AAPL';
       const mockResponse: SymbolOption[] = [
         { symbol: 'AAPL', name: 'Apple Inc.' },
@@ -58,7 +58,7 @@ describe('SymbolSearchService', () => {
       expect(results[0].symbol).toBe('AAPL');
     });
 
-    it.skip('should return array of symbol results with correct structure', async () => {
+    it('should return array of symbol results with correct structure', async () => {
       const query = 'MSFT';
       const mockResponse: SymbolOption[] = [
         { symbol: 'MSFT', name: 'Microsoft Corporation' },
@@ -82,7 +82,7 @@ describe('SymbolSearchService', () => {
       expect(typeof results[0].name).toBe('string');
     });
 
-    it.skip('should handle empty results', async () => {
+    it('should handle empty results', async () => {
       const query = 'NONEXISTENT';
       const mockResponse: SymbolOption[] = [];
 
@@ -102,7 +102,7 @@ describe('SymbolSearchService', () => {
       expect(results.length).toBe(0);
     });
 
-    it.skip('should handle API errors gracefully', async () => {
+    it('should handle API errors gracefully', async () => {
       const query = 'TEST';
 
       const errorPromise = new Promise<unknown>((_, reject) => {
@@ -127,7 +127,7 @@ describe('SymbolSearchService', () => {
       }
     });
 
-    it.skip('should handle network errors', async () => {
+    it('should handle network errors', async () => {
       const query = 'TEST';
 
       const errorPromise = new Promise<unknown>((_, reject) => {
