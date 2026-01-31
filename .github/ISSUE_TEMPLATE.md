@@ -1,44 +1,34 @@
-# Story AM.2: Wire Add Symbol Dialog to Universe Service - TDD GREEN Phase
+# Story AM.3: Write Unit Tests for Symbol Search/Autocomplete - TDD RED Phase
 
 ## Story
 
-**As a** user
-**I want** to add new symbols to my universe tracking list
-**So that** I can manually expand my portfolio coverage
+**As a** developer
+**I want** to write comprehensive unit tests for symbol search and autocomplete functionality
+**So that** I have failing tests that define the expected behavior (TDD RED phase)
 
 ## Acceptance Criteria
 
-### Functional Requirements
+- [ ] Unit tests written for SymbolSearchService
+  - [ ] Test API call to symbol search endpoint
+  - [ ] Test debouncing of search requests
+  - [ ] Test result filtering and mapping
+  - [ ] Test error handling
+- [ ] Unit tests written for autocomplete in dialog
+  - [ ] Test autocomplete displays results
+  - [ ] Test selecting a result fills the form
+  - [ ] Test "no results" state
+  - [ ] Test loading state during search
+- [ ] All tests initially fail (RED phase)
+- [ ] Tests disabled with `xit()` or `.skip` to allow CI to pass
 
-- [ ] Add Symbol button opens dialog
-- [ ] Dialog contains symbol input field
-- [ ] Symbol field validates format (uppercase, valid ticker)
-- [ ] Submit button calls UniverseService.addSymbol()
-- [ ] Success adds symbol to table and closes dialog
-- [ ] Error displays appropriate message
-- [ ] Cancel button closes dialog without action
-- [ ] All unit tests from AM.1 re-enabled and passing
+## Implementation Approach
 
-### Technical Requirements
+1. Write unit tests for SymbolSearchService
+2. Write unit tests for autocomplete integration in dialog
+3. Disable tests after writing to allow CI to pass
+4. Tests will be re-enabled in Story AM.4
 
-- [ ] Dialog uses Material Dialog
-- [ ] Form uses Reactive Forms with validation
-- [ ] Service calls POST /api/universe
-- [ ] Proper error handling and user feedback
-- [ ] Loading state during API call
+## Related Stories
 
-## Definition of Done
-
-- [ ] All unit tests from AM.1 re-enabled
-- [ ] All unit tests passing
-- [ ] Add symbol dialog functional
-- [ ] Symbol validation working
-- [ ] API integration complete
-- [ ] Error handling implemented
-- [ ] Manual testing completed
-- [ ] All validation commands pass
-
-## Related
-
-- Prerequisite: Story AM.1
-- Pattern Reference: Story AK.4, AL.2
+- Prerequisite: Story AM.2
+- Next: Story AM.4 (Implementation)
