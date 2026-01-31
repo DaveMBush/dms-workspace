@@ -207,4 +207,176 @@ describe('AddSymbolDialog', () => {
       expect(Array.isArray(result)).toBe(true);
     });
   });
+
+  describe('symbol autocomplete integration', () => {
+    it.skip('should call SymbolSearchService when user types in autocomplete', async () => {
+      // This test will fail until we inject SymbolSearchService
+      const query = 'AAPL';
+      const mockResults = [
+        { symbol: 'AAPL', name: 'Apple Inc.' },
+        { symbol: 'AAPLW', name: 'Apple Warrants' },
+      ];
+
+      // Once SymbolSearchService is injected, verify it's called
+      const result = await component.searchSymbols(query);
+      expect(result).toBeDefined();
+      // Should eventually return results from service
+    });
+
+    it.skip('should display autocomplete dropdown with search results', () => {
+      // This test will fail until template has autocomplete dropdown
+      fixture.detectChanges();
+      const autocomplete = fixture.nativeElement.querySelector(
+        'dms-symbol-autocomplete'
+      );
+      expect(autocomplete).toBeTruthy();
+    });
+
+    it.skip('should show loading indicator during search', () => {
+      // This test will fail until loading state is properly managed
+      const query = 'AAPL';
+      void component.searchSymbols(query);
+      // Loading state should be true during search
+      // expect(component.isSearching()).toBe(true);
+    });
+
+    it.skip('should populate form when autocomplete option selected', () => {
+      // This test will fail until onSymbolSelected properly handles form population
+      const symbol = { symbol: 'AAPL', name: 'Apple Inc.' };
+      component.onSymbolSelected(symbol as any);
+
+      expect(component.form.get('symbol')?.value).toBe('AAPL');
+      expect(component.selectedSymbol()).toEqual(symbol);
+      // Should also enable submit button
+    });
+
+    it.skip('should show "no results" message when search returns empty', async () => {
+      // This test will fail until template handles empty results
+      const query = 'NONEXISTENT';
+      const results = await component.searchSymbols(query);
+
+      fixture.detectChanges();
+      const noResultsMsg = fixture.nativeElement.querySelector(
+        '.no-results-message'
+      );
+      // Should display no results message
+      // expect(noResultsMsg).toBeTruthy();
+    });
+
+    it.skip('should clear autocomplete when form is reset', () => {
+      // This test will fail until reset functionality is implemented
+      const symbol = { symbol: 'AAPL', name: 'Apple Inc.' };
+      component.onSymbolSelected(symbol as any);
+      component.form.reset();
+
+      expect(component.selectedSymbol()).toBeNull();
+      expect(component.form.get('symbol')?.value).toBeFalsy();
+    });
+
+    it.skip('should debounce autocomplete searches by 300ms', () => {
+      // This test will fail until debouncing is implemented
+      const query1 = 'AA';
+      const query2 = 'AAP';
+      const query3 = 'AAPL';
+
+      // Rapid fire searches
+      void component.searchSymbols(query1);
+      void component.searchSymbols(query2);
+      void component.searchSymbols(query3);
+
+      // Only last search should execute
+      // Verify through service spy or HTTP mock
+    });
+
+    it.skip('should validate symbol is selected before enabling submit', () => {
+      // This test will fail until validation logic is implemented
+      component.form.patchValue({
+        symbol: 'AAPL',
+        riskGroupId: 'rg1',
+      });
+
+      // Submit should be disabled if symbol not selected from autocomplete
+      expect(component.isSubmitDisabled()).toBe(true);
+
+      // Select symbol from autocomplete
+      component.onSymbolSelected({ symbol: 'AAPL', name: 'Apple Inc.' } as any);
+
+      // Now submit should be enabled
+      expect(component.isSubmitDisabled()).toBe(false);
+    });
+
+    it.skip('should handle autocomplete errors gracefully', async () => {
+      // This test will fail until error handling is implemented
+      const query = 'ERROR';
+
+      try {
+        await component.searchSymbols(query);
+        // Should not throw error to user, just return empty results
+      } catch (error: unknown) {
+        // If an error is thrown, test should fail
+        expect(error).toBeUndefined();
+      }
+    });
+
+    it.skip('should filter autocomplete results by query', async () => {
+      // This test will fail until filtering logic is implemented
+      const query = 'AP';
+      const results = await component.searchSymbols(query);
+
+      // All results should contain the query string
+      const allMatch = results.every(
+        (result: any) =>
+          result.symbol.includes(query.toUpperCase()) ||
+          result.name.toLowerCase().includes(query.toLowerCase())
+      );
+      expect(allMatch).toBe(true);
+    });
+
+    it.skip('should limit autocomplete results to 10 items', async () => {
+      // This test will fail until result limiting is implemented
+      const query = 'A';
+      const results = await component.searchSymbols(query);
+
+      expect(results.length).toBeLessThanOrEqual(10);
+    });
+
+    it.skip('should display symbol ticker and company name in autocomplete', () => {
+      // This test will fail until template displays both fields
+      fixture.detectChanges();
+      const symbol = { symbol: 'AAPL', name: 'Apple Inc.' };
+      component.onSymbolSelected(symbol as any);
+
+      fixture.detectChanges();
+      const autocompleteOption = fixture.nativeElement.querySelector(
+        '.autocomplete-option'
+      );
+      // Should display both symbol and name
+      // expect(autocompleteOption?.textContent).toContain('AAPL');
+      // expect(autocompleteOption?.textContent).toContain('Apple Inc.');
+    });
+
+    it.skip('should clear previous autocomplete results on new search', async () => {
+      // This test will fail until clearing logic is implemented
+      const query1 = 'AAPL';
+      const query2 = 'MSFT';
+
+      await component.searchSymbols(query1);
+      const results1 = await component.searchSymbols(query2);
+
+      // Should only contain MSFT results, not AAPL
+      expect(results1.every((r: any) => r.symbol.includes('MSFT'))).toBe(true);
+    });
+
+    it.skip('should maintain selected symbol when clicking outside autocomplete', () => {
+      // This test will fail until blur handling is implemented
+      const symbol = { symbol: 'AAPL', name: 'Apple Inc.' };
+      component.onSymbolSelected(symbol as any);
+
+      // Simulate blur event
+      // component.onAutocompleteBlur();
+
+      expect(component.selectedSymbol()).toEqual(symbol);
+      expect(component.form.get('symbol')?.value).toBe('AAPL');
+    });
+  });
 });
