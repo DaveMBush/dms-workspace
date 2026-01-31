@@ -53,16 +53,16 @@ describe('AddSymbolDialog', () => {
   });
 
   describe('dialog configuration', () => {
-    it.skip('should create dialog with correct MatDialogRef configuration', () => {
+    it('should create dialog with correct MatDialogRef configuration', () => {
       expect(mockDialogRef).toBeDefined();
       expect(component).toBeDefined();
     });
 
-    it.skip('should initialize with isLoading as false', () => {
+    it('should initialize with isLoading as false', () => {
       expect(component.isLoading()).toBe(false);
     });
 
-    it.skip('should initialize with empty selectedSymbol', () => {
+    it('should initialize with empty selectedSymbol', () => {
       expect(component.selectedSymbol()).toBeNull();
     });
   });
@@ -85,12 +85,12 @@ describe('AddSymbolDialog', () => {
       );
     });
 
-    it.skip('should validate symbol format to be uppercase', () => {
+    it('should validate symbol format to be uppercase', () => {
       component.form.patchValue({ symbol: 'aapl' });
       expect(component.form.get('symbol')?.hasError('uppercase')).toBe(true);
     });
 
-    it.skip('should accept valid uppercase symbol', () => {
+    it('should accept valid uppercase symbol', () => {
       component.form.patchValue({ symbol: 'AAPL' });
       expect(component.form.get('symbol')?.valid).toBe(true);
     });
@@ -111,18 +111,18 @@ describe('AddSymbolDialog', () => {
   });
 
   describe('onSubmit', () => {
-    it.skip('should not submit invalid form', () => {
+    it('should not submit invalid form', () => {
       component.onSubmit();
       expect(mockDialogRef.close).not.toHaveBeenCalled();
     });
 
-    it.skip('should mark form as touched on invalid submit', () => {
+    it('should mark form as touched on invalid submit', () => {
       const spy = vi.spyOn(component.form, 'markAllAsTouched');
       component.onSubmit();
       expect(spy).toHaveBeenCalled();
     });
 
-    it.skip('should set isLoading and call universeArray.add on valid submit', () => {
+    it('should set isLoading and call universeArray.add on valid submit', () => {
       const notifySpy = vi.spyOn(notificationService, 'success');
       component.form.patchValue({ symbol: 'AAPL', riskGroupId: 'rg1' });
       component.selectedSymbol.set({
@@ -134,7 +134,7 @@ describe('AddSymbolDialog', () => {
       expect(notifySpy).toHaveBeenCalledWith('Added AAPL to universe');
     });
 
-    it.skip('should close dialog with data on valid submit', () => {
+    it('should close dialog with data on valid submit', () => {
       component.form.patchValue({ symbol: 'AAPL', riskGroupId: 'rg1' });
       component.selectedSymbol.set({
         symbol: 'AAPL',
@@ -146,7 +146,7 @@ describe('AddSymbolDialog', () => {
       );
     });
 
-    it.skip('should handle API error with 409 conflict', () => {
+    it('should handle API error with 409 conflict', () => {
       mockUniverseAdd.mockRejectedValueOnce({ status: 409 });
       component.form.patchValue({ symbol: 'AAPL', riskGroupId: 'rg1' });
       component.selectedSymbol.set({
@@ -157,7 +157,7 @@ describe('AddSymbolDialog', () => {
       expect(component.isLoading()).toBe(false);
     });
 
-    it.skip('should handle network errors gracefully', () => {
+    it('should handle network errors gracefully', () => {
       mockUniverseAdd.mockRejectedValueOnce(new Error('Network error'));
       component.form.patchValue({ symbol: 'AAPL', riskGroupId: 'rg1' });
       component.selectedSymbol.set({
@@ -170,25 +170,25 @@ describe('AddSymbolDialog', () => {
   });
 
   describe('onCancel', () => {
-    it.skip('should close dialog with null', () => {
+    it('should close dialog with null', () => {
       component.onCancel();
       expect(mockDialogRef.close).toHaveBeenCalledWith(null);
     });
   });
 
   describe('submit button state', () => {
-    it.skip('should be disabled when form is invalid', () => {
+    it('should be disabled when form is invalid', () => {
       expect(component.form.invalid).toBe(true);
       // In real implementation, button should be disabled via template binding
     });
 
-    it.skip('should be enabled when form is valid', () => {
+    it('should be enabled when form is valid', () => {
       component.form.patchValue({ symbol: 'AAPL', riskGroupId: 'rg1' });
       expect(component.form.valid).toBe(true);
       // In real implementation, button should be enabled via template binding
     });
 
-    it.skip('should be disabled while isLoading is true', () => {
+    it('should be disabled while isLoading is true', () => {
       component.isLoading.set(true);
       expect(component.isLoading()).toBe(true);
       // In real implementation, button should be disabled via template binding
