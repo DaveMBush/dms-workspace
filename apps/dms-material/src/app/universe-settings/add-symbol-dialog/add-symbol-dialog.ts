@@ -153,7 +153,7 @@ export class AddSymbolDialog {
 
   private addSymbolToUniverse(symbol: string, riskGroupId: string): void {
     this.isLoading.set(true);
-    const universeArray = selectUniverses() as {
+    const universeArray = selectUniverses() as unknown as {
       add(data: { symbol: string; riskGroupId: string }): void;
     };
 
