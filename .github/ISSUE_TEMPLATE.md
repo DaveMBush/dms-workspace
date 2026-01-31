@@ -9,6 +9,7 @@
 ## Acceptance Criteria
 
 ### Functional Requirements
+
 - [ ] Add Symbol button opens dialog
 - [ ] Dialog contains symbol input field
 - [ ] Symbol field validates format (uppercase, valid ticker)
@@ -19,6 +20,7 @@
 - [ ] All unit tests from AM.1 re-enabled and passing
 
 ### Technical Requirements
+
 - [ ] Dialog uses Material Dialog
 - [ ] Form uses Reactive Forms with validation
 - [ ] Service calls POST /api/universe
@@ -26,6 +28,7 @@
 - [ ] Loading state during API call
 
 ## Definition of Done
+
 - [ ] All unit tests from AM.1 re-enabled
 - [ ] All unit tests passing
 - [ ] Add symbol dialog functional
@@ -36,5 +39,6 @@
 - [ ] All validation commands pass
 
 ## Related
+
 - Prerequisite: Story AM.1
 - Pattern Reference: Story AK.4, AL.2

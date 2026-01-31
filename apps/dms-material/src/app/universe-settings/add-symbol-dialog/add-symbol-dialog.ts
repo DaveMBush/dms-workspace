@@ -5,7 +5,13 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormBuilder,
+  ReactiveFormsModule,
+  ValidationErrors,
+  Validators,
+} from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -18,6 +24,7 @@ import { NotificationService } from '../../shared/services/notification.service'
 import { RiskGroup } from '../../store/risk-group/risk-group.interface';
 import { selectRiskGroup } from '../../store/risk-group/selectors/select-risk-group.function';
 import { selectTopEntities } from '../../store/top/selectors/select-top-entities.function';
+import { selectUniverses } from '../../store/universe/selectors/select-universes.function';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -47,7 +54,22 @@ export class AddSymbolDialog {
   selectedSymbol = signal<SymbolOption | null>(null);
 
   form = this.fb.group({
-    symbol: ['', Validators.required],
+    symbol: [
+      '',
+      [
+        Validators.required,
+        function uppercaseValidator(
+          control: AbstractControl
+        ): ValidationErrors | null {
+          const value = control.value as unknown;
+          if (typeof value !== 'string' || value.length === 0) {
+            return null;
+          }
+          const isUppercase = value === value.toUpperCase();
+          return isUppercase ? null : { uppercase: true };
+        },
+      ],
+    ],
     riskGroupId: ['', Validators.required],
   });
 
@@ -109,22 +131,50 @@ export class AddSymbolDialog {
   }
 
   onSubmit(): void {
-    // Implementation in Story AM.2 (TDD GREEN phase)
-    throw new Error(this.notImplementedError);
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    const { symbol, riskGroupId } = this.form.value;
+    if (
+      typeof symbol === 'string' &&
+      symbol.length > 0 &&
+      typeof riskGroupId === 'string' &&
+      riskGroupId.length > 0
+    ) {
+      this.addSymbolToUniverse(symbol, riskGroupId);
+    }
   }
 
   onCancel(): void {
-    // Implementation in Story AM.2 (TDD GREEN phase)
-    throw new Error(this.notImplementedError);
+    this.dialogRef.close(null);
   }
 
-  private addSymbolToUniverse(_: string, __: string): void {
-    // Implementation in Story AM.2 (TDD GREEN phase)
-    throw new Error(this.notImplementedError);
+  private addSymbolToUniverse(symbol: string, riskGroupId: string): void {
+    this.isLoading.set(true);
+    const universeArray = selectUniverses() as {
+      add(data: { symbol: string; riskGroupId: string }): void;
+    };
+
+    try {
+      universeArray.add({ symbol, riskGroupId });
+      this.notification.success(`Added ${symbol} to universe`);
+      this.dialogRef.close({ symbol, riskGroupId });
+      this.isLoading.set(false);
+    } catch (error: unknown) {
+      this.handleAddError(error);
+    }
   }
 
-  private handleAddError(__: unknown): void {
-    // Implementation in Story AM.2 (TDD GREEN phase)
-    throw new Error(this.notImplementedError);
+  private handleAddError(error: unknown): void {
+    this.isLoading.set(false);
+
+    const errorObj = error as { status?: number };
+    if (errorObj.status === 409) {
+      this.notification.error('Symbol already exists in universe');
+    } else {
+      this.notification.error('Failed to add symbol. Please try again.');
+    }
   }
 }

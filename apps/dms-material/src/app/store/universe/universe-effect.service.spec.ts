@@ -32,7 +32,7 @@ describe('UniverseEffectsService', () => {
   });
 
   describe('addSymbol', () => {
-    it.skip('should call POST /api/universe/add with symbol data', () => {
+    it('should call POST /api/universe/add with symbol data', () => {
       const mockSymbol: Partial<Universe> = {
         symbol: 'AAPL',
         risk_group_id: 'rg1',
@@ -45,7 +45,7 @@ describe('UniverseEffectsService', () => {
       expect(req.request.body).toEqual(mockSymbol);
     });
 
-    it.skip('should return universe entry on success', (done) => {
+    it('should return universe entry on success', (done) => {
       const mockSymbol: Partial<Universe> = {
         symbol: 'AAPL',
         risk_group_id: 'rg1',
@@ -80,7 +80,7 @@ describe('UniverseEffectsService', () => {
       req.flush(mockResponse);
     });
 
-    it.skip('should handle 409 conflict error when symbol exists', (done) => {
+    it('should handle 409 conflict error when symbol exists', (done) => {
       const mockSymbol: Partial<Universe> = {
         symbol: 'AAPL',
         risk_group_id: 'rg1',
@@ -104,7 +104,7 @@ describe('UniverseEffectsService', () => {
       );
     });
 
-    it.skip('should handle network errors', (done) => {
+    it('should handle network errors', (done) => {
       const mockSymbol: Partial<Universe> = {
         symbol: 'AAPL',
         risk_group_id: 'rg1',
@@ -125,7 +125,7 @@ describe('UniverseEffectsService', () => {
       req.error(new ProgressEvent('Network error'));
     });
 
-    it.skip('should send correct request payload structure', () => {
+    it('should send correct request payload structure', () => {
       const mockSymbol: Partial<Universe> = {
         symbol: 'MSFT',
         risk_group_id: 'rg2',
@@ -141,7 +141,7 @@ describe('UniverseEffectsService', () => {
       expect(requestBody).toHaveProperty('risk_group_id');
     });
 
-    it.skip('should handle 400 validation error', (done) => {
+    it('should handle 400 validation error', (done) => {
       const mockSymbol: Partial<Universe> = {
         symbol: '', // Invalid empty symbol
         risk_group_id: 'rg1',
@@ -165,7 +165,7 @@ describe('UniverseEffectsService', () => {
       );
     });
 
-    it.skip('should handle 404 error for invalid risk group', (done) => {
+    it('should handle 404 error for invalid risk group', (done) => {
       const mockSymbol: Partial<Universe> = {
         symbol: 'AAPL',
         risk_group_id: 'invalid-rg',
