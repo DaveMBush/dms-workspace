@@ -1,62 +1,67 @@
 <!-- eslint-disable @angular-eslint/template/no-call-expression, @angular-eslint/template/cyclomatic-complexity -->
-<h2 mat-dialog-title>Add Symbol to Universe</h2>
+<div data-testid="add-symbol-dialog">
+  <h2 mat-dialog-title>Add Symbol to Universe</h2>
 
-<mat-dialog-content>
-  <form [formGroup]="form">
-    <dms-symbol-autocomplete
-      [searchFn]="boundSearchSymbols"
-      (symbolSelected)="onSymbolSelected($event)"
-    />
+  <mat-dialog-content>
+    <form [formGroup]="form">
+      <dms-symbol-autocomplete
+        [searchFn]="boundSearchSymbols"
+        (symbolSelected)="onSymbolSelected($event)"
+      />
 
-    @if (hasSelectedSymbol()) {
-    <div class="selected-symbol">
-      <strong>{{ symbolValue() }}</strong> - {{ symbolName() }}
-    </div>
-    }
-
-    <!-- Display validation errors for symbol field -->
-    @if (showSymbolErrors()) {
-    <div
-      id="symbol-errors"
-      class="validation-errors"
-      role="alert"
-      aria-live="polite"
-      aria-atomic="true"
-    >
-      @if (symbolRequiredError()) {
-      <mat-error>Symbol is required</mat-error>
-      } @if (symbolPatternError()) {
-      <mat-error>Invalid symbol format (1-5 uppercase letters)</mat-error>
-      } @if (symbolDuplicateError()) {
-      <mat-error>Symbol already in universe</mat-error>
+      @if (hasSelectedSymbol()) {
+      <div class="selected-symbol">
+        <strong>{{ symbolValue() }}</strong> - {{ symbolName() }}
+      </div>
       }
-    </div>
-    }
 
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Risk Group</mat-label>
-      <mat-select formControlName="riskGroupId">
-        @for (group of riskGroups; track group.id) {
-        <mat-option [value]="group.id">{{ group.name }}</mat-option>
+      <!-- Display validation errors for symbol field -->
+      @if (showSymbolErrors()) {
+      <div
+        id="symbol-errors"
+        class="validation-errors"
+        role="alert"
+        aria-live="polite"
+        aria-atomic="true"
+      >
+        @if (symbolRequiredError()) {
+        <mat-error>Symbol is required</mat-error>
+        } @if (symbolPatternError()) {
+        <mat-error>Invalid symbol format (1-5 uppercase letters)</mat-error>
+        } @if (symbolDuplicateError()) {
+        <mat-error>Symbol already in universe</mat-error>
         }
-      </mat-select>
-      @if (riskGroupIdHasError()) {
-      <mat-error>Risk group is required</mat-error>
+      </div>
       }
-    </mat-form-field>
-  </form>
-</mat-dialog-content>
 
-<mat-dialog-actions align="end">
-  <button mat-button (click)="onCancel()">Cancel</button>
-  <button
-    mat-raised-button
-    color="primary"
-    (click)="onSubmit()"
-    [disabled]="isSubmitDisabled()"
-  >
-    @if (isLoading()) {
-    <mat-spinner diameter="20"></mat-spinner>
-    } @else { Add Symbol }
-  </button>
-</mat-dialog-actions>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Risk Group</mat-label>
+        <mat-select formControlName="riskGroupId">
+          @for (group of riskGroups; track group.id) {
+          <mat-option [value]="group.id">{{ group.name }}</mat-option>
+          }
+        </mat-select>
+        @if (riskGroupIdHasError()) {
+        <mat-error>Risk group is required</mat-error>
+        }
+      </mat-form-field>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button data-testid="cancel-button" (click)="onCancel()">
+      Cancel
+    </button>
+    <button
+      mat-raised-button
+      color="primary"
+      data-testid="submit-button"
+      (click)="onSubmit()"
+      [disabled]="isSubmitDisabled()"
+    >
+      @if (isLoading()) {
+      <mat-spinner diameter="20"></mat-spinner>
+      } @else { Add Symbol }
+    </button>
+  </mat-dialog-actions>
+</div>
