@@ -10,6 +10,7 @@ import {
   FormBuilder,
   ReactiveFormsModule,
   ValidationErrors,
+  ValidatorFn,
   Validators,
 } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -51,6 +52,20 @@ export class AddSymbolDialog {
 
   topEntities = selectTopEntities().entities;
 
+  // Track existing symbols for duplicate validation
+  existingSymbols = computed(
+    function existingSymbols(this: AddSymbolDialog) {
+      const universes = selectUniverses() as unknown as Array<{
+        symbol: string;
+      }>;
+      return Array.isArray(universes)
+        ? universes.map(function mapSymbol(u: { symbol: string }) {
+            return u.symbol;
+          })
+        : [];
+    }.bind(this)
+  );
+
   isLoading = signal(false);
   selectedSymbol = signal<SymbolOption | null>(null);
 
@@ -59,16 +74,8 @@ export class AddSymbolDialog {
       '',
       [
         Validators.required,
-        function uppercaseValidator(
-          control: AbstractControl
-        ): ValidationErrors | null {
-          const value = control.value as unknown;
-          if (typeof value !== 'string' || value.length === 0) {
-            return null;
-          }
-          const isUppercase = value === value.toUpperCase();
-          return isUppercase ? null : { uppercase: true };
-        },
+        Validators.pattern(/^[A-Z]{1,5}$/),
+        this.duplicateSymbolValidator(),
       ],
     ],
     riskGroupId: ['', Validators.required],
@@ -114,10 +121,56 @@ export class AddSymbolDialog {
     }.bind(this)
   );
 
+  // Computed signals for validation error display
+  showSymbolErrors = computed(
+    function showSymbolErrors(this: AddSymbolDialog) {
+      const control = this.form.get('symbol');
+      const touched = control?.touched ?? false;
+      const invalid = control?.invalid ?? false;
+      return touched && invalid;
+    }.bind(this)
+  );
+
+  symbolRequiredError = computed(
+    function symbolRequiredError(this: AddSymbolDialog) {
+      return Boolean(this.form.get('symbol')?.hasError('required'));
+    }.bind(this)
+  );
+
+  symbolPatternError = computed(
+    function symbolPatternError(this: AddSymbolDialog) {
+      return Boolean(this.form.get('symbol')?.hasError('pattern'));
+    }.bind(this)
+  );
+
+  symbolDuplicateError = computed(
+    function symbolDuplicateError(this: AddSymbolDialog) {
+      return Boolean(this.form.get('symbol')?.hasError('duplicate'));
+    }.bind(this)
+  );
+
   boundSearchSymbols = this.searchSymbols.bind(this);
 
   get riskGroups(): RiskGroup[] {
     return selectRiskGroup();
+  }
+
+  duplicateSymbolValidator(): ValidatorFn {
+    // Capture existingSymbols at validator creation time
+    const symbols = this.existingSymbols;
+    return function duplicateValidator(
+      control: AbstractControl
+    ): ValidationErrors | null {
+      const symbol = control.value as string;
+      if (!symbol || symbol.length === 0) {
+        return null;
+      }
+      const existingSymbols: string[] = symbols();
+      if (existingSymbols.includes(symbol)) {
+        return { duplicate: { value: symbol } };
+      }
+      return null;
+    };
   }
 
   async searchSymbols(query: string): Promise<SymbolOption[]> {
@@ -187,6 +240,8 @@ export class AddSymbolDialog {
     const errorObj = error as { status?: number };
     if (errorObj.status === 409) {
       this.notification.error('Symbol already exists in universe');
+    } else if (typeof errorObj.status === 'number' && errorObj.status >= 500) {
+      this.notification.error('Server error. Please try again later.');
     } else {
       this.notification.error('Failed to add symbol. Please try again.');
     }

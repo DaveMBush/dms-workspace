@@ -19,6 +19,16 @@ dms-symbol-autocomplete {
   font-size: 0.875rem;
 }
 
+.validation-errors {
+  margin: 0.5rem 0;
+
+  mat-error {
+    display: block;
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+  }
+}
+
 .full-width {
   width: 100%;
   margin-top: 1rem;
