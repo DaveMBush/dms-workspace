@@ -71,11 +71,10 @@ pnpm test:dms-material
 - This is the TDD GREEN phase
 - All tests should now pass
 - Follow patterns from similar stories
--
 
 ## Related Stories
 
 - **Previous**: Story AN.9
-- **Next**: Story AN.AN.11
+- **Next**: Story AN.11
 - **Epic**: Epic AN
 - **Pattern Reference**: Story AM.10 (Similar TDD pattern)

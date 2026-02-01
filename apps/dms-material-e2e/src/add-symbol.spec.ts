@@ -200,13 +200,23 @@ test.describe('Add Symbol Flow', () => {
       );
       await riskGroupOption.click();
 
+      // Mock server error response for add symbol endpoint
+      await page.route('**/api/universe/add-symbol', async (route) => {
+        await route.fulfill({
+          status: 500,
+          contentType: 'application/json',
+          body: JSON.stringify({ error: 'Internal Server Error' }),
+        });
+      });
+
       // Submit (SmartNgRX will handle the actual API call)
       const submitButton = page.locator('[data-testid="submit-button"]');
       await expect(submitButton).toBeEnabled();
       await submitButton.click();
 
-      // Verify submit succeeded (SmartNgRX handles submission)
-      await page.waitForTimeout(500);
+      // Verify error snackbar appears
+      const errorSnackbar = page.locator('.snackbar-error');
+      await expect(errorSnackbar).toBeVisible({ timeout: 5000 });
     });
   });
 });
