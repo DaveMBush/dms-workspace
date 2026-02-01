@@ -5,7 +5,6 @@
   <mat-dialog-content>
     <form [formGroup]="form">
       <dms-symbol-autocomplete
-        data-testid="symbol-input"
         [searchFn]="boundSearchSymbols"
         (symbolSelected)="onSymbolSelected($event)"
       />
