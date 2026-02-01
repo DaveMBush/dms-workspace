@@ -1,4 +1,4 @@
-<!-- eslint-disable @angular-eslint/template/no-call-expression -->
+<!-- eslint-disable @angular-eslint/template/no-call-expression, @angular-eslint/template/cyclomatic-complexity -->
 <h2 mat-dialog-title>Add Symbol to Universe</h2>
 
 <mat-dialog-content>
@@ -11,6 +11,25 @@
     @if (hasSelectedSymbol()) {
     <div class="selected-symbol">
       <strong>{{ symbolValue() }}</strong> - {{ symbolName() }}
+    </div>
+    }
+
+    <!-- Display validation errors for symbol field -->
+    @if (showSymbolErrors()) {
+    <div
+      id="symbol-errors"
+      class="validation-errors"
+      role="alert"
+      aria-live="polite"
+      aria-atomic="true"
+    >
+      @if (symbolRequiredError()) {
+      <mat-error>Symbol is required</mat-error>
+      } @if (symbolPatternError()) {
+      <mat-error>Invalid symbol format (1-5 uppercase letters)</mat-error>
+      } @if (symbolDuplicateError()) {
+      <mat-error>Symbol already in universe</mat-error>
+      }
     </div>
     }
 
