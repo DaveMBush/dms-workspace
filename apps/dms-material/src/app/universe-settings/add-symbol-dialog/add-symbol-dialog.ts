@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  effect,
   inject,
   signal,
 } from '@angular/core';
@@ -80,6 +81,16 @@ export class AddSymbolDialog {
     ],
     riskGroupId: ['', Validators.required],
   });
+
+  // Effect to revalidate symbol when universe data changes
+  private revalidateSymbolEffect = effect(
+    function revalidateSymbol(this: AddSymbolDialog) {
+      // Read existingSymbols to track changes
+      this.existingSymbols();
+      // Revalidate the symbol control when universe data updates
+      this.form.get('symbol')?.updateValueAndValidity();
+    }.bind(this)
+  );
 
   // Computed signals for template
   symbolValue = computed(
