@@ -1,0 +1,8 @@
+schema: 1
+story: 'AM.8'
+gate: PASS
+status_reason: 'All 20 E2E tests passing, full validation suite successful, add symbol workflow fully verified end-to-end.'
+reviewer: 'Quinn'
+updated: '2026-02-01T00:00:00Z'
+top_issues: []
+waiver: { active: false }
