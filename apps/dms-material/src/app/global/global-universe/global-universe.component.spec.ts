@@ -1081,3 +1081,83 @@ describe('GlobalUniverseComponent - Update Fields Button Integration (TDD - Stor
     );
   });
 });
+
+// TDD RED Phase - Story AN.1: SmartNgRX Integration Tests
+describe('GlobalUniverseComponent - SmartNgRX Integration (TDD RED)', () => {
+  describe('data loading', () => {
+    it.skip('should initialize universe data load on component init', () => {
+      // Test that component triggers load action from SmartNgRX store
+      expect(true).toBe(false);
+    });
+
+    it.skip('should select universe entries from SmartNgRX store', () => {
+      // Test that component uses selectUniverses selector
+      expect(true).toBe(false);
+    });
+
+    it.skip('should pass universe entries to table component', () => {
+      // Test that filteredData$ computed signal contains universe entries from store
+      expect(true).toBe(false);
+    });
+
+    it.skip('should display universe entries in correct sort order', () => {
+      // Test that entries are sorted appropriately (by symbol or other criteria)
+      expect(true).toBe(false);
+    });
+  });
+
+  describe('loading state handling', () => {
+    it.skip('should display loading indicator while universe data loads', () => {
+      // Test that loading state from store is reflected in component
+      expect(true).toBe(false);
+    });
+
+    it.skip('should hide loading indicator when data load completes', () => {
+      // Test that loading state clears after successful load
+      expect(true).toBe(false);
+    });
+  });
+
+  describe('empty state handling', () => {
+    it.skip('should display empty state when no universe entries exist', () => {
+      // Test that component shows appropriate message when store has no data
+      expect(true).toBe(false);
+    });
+
+    it.skip('should display empty state when all entries are filtered out', () => {
+      // Test that empty state shows when filters remove all entries
+      expect(true).toBe(false);
+    });
+  });
+
+  describe('error state handling', () => {
+    it.skip('should display error message when universe data load fails', () => {
+      // Test that error from store is displayed to user
+      expect(true).toBe(false);
+    });
+
+    it.skip('should provide retry mechanism on load failure', () => {
+      // Test that user can retry failed load operation
+      expect(true).toBe(false);
+    });
+  });
+});
+
+describe('Universe Selectors (TDD RED)', () => {
+  describe('selectAllUniverseEntries', () => {
+    it.skip('should return all universe entries from store', () => {
+      // Test that selector returns complete list of entries
+      expect(true).toBe(false);
+    });
+
+    it.skip('should return entries sorted by symbol', () => {
+      // Test that selector provides sorted data
+      expect(true).toBe(false);
+    });
+
+    it.skip('should return empty array when no universe entries exist', () => {
+      // Test that selector handles empty state gracefully
+      expect(true).toBe(false);
+    });
+  });
+});
