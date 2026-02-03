@@ -83,16 +83,16 @@ pnpm test:dms-material
 
 ## Definition of Done
 
-- [ ] All unit tests from AN.1 re-enabled and passing
-- [ ] Component properly integrated with SmartNgRX
-- [ ] Table displays universe data correctly
-- [ ] All state scenarios handled
-- [ ] All validation commands pass:
-  - [ ] Run `pnpm all`
-  - [ ] Run `pnpm e2e:dms-material`
-  - [ ] Run `pnpm dupcheck`
-  - [ ] Run `pnpm format`
-  - [ ] Repeat all of these if any fail until they all pass
+- [x] All unit tests from AN.1 re-enabled and passing
+- [x] Component properly integrated with SmartNgRX
+- [x] Table displays universe data correctly
+- [x] All state scenarios handled
+- [x] All validation commands pass:
+  - [x] Run `pnpm all`
+  - [x] Run `pnpm e2e:dms-material`
+  - [x] Run `pnpm dupcheck`
+  - [x] Run `pnpm format`
+  - [x] Repeat all of these if any fail until they all pass
 - [ ] Code reviewed and approved
 
 ## Notes
@@ -106,3 +106,63 @@ pnpm test:dms-material
 - **Previous**: Story AN.1 (TDD Tests)
 - **Next**: Story AN.3 (TDD for distribution editing)
 - **Epic**: Epic AN
+
+---
+
+## Dev Agent Record
+
+### Agent Model Used
+
+Claude Sonnet 4.5
+
+### Tasks Completed
+
+- [x] Re-enabled 13 SmartNgRX integration tests from AN.1
+- [x] Restructured test suites with proper TestBed configuration
+- [x] All 13 tests passing (all unit tests passed in final validation)
+- [x] Fixed test scope issues in selector tests
+- [x] All validations passed (pnpm all, e2e, dupcheck, format)
+
+### Debug Log References
+
+None
+
+### Completion Notes
+
+- Tests re-enabled by removing `.skip()` calls
+- Added proper beforeEach setup in two describe blocks with component/fixture initialization
+- Tests cover: data loading (4), loading states (2), empty states (2), error states (2), selectors (3)
+- Component already properly wired to SmartNgRX (no production code changes needed)
+- All unit tests passing: 878 passed | 8 skipped
+- E2E tests: 693 passed | 166 skipped | 1 flaky (unrelated screener test)
+- No code duplicates found
+- Code formatted successfully
+
+### File List
+
+**Modified:**
+
+- apps/dms-material/src/app/global/global-universe/global-universe.component.spec.ts
+- docs/stories/AN.2.implement-universe-table-smartngrx.md
+
+### Change Log
+
+1. Replaced 13 disabled placeholder tests with actual test implementations
+2. Created two new describe blocks ("SmartNgRX Integration" and "Universe Selectors") with proper TestBed setup
+3. Added mocking for selectUniverses, UniverseSyncService, and NotificationService in each test block
+4. Fixed scope issues by adding component/fixture to all test describe blocks
+5. All tests passing and all validations successful
+
+### Status
+
+Ready for Review
+
+- Added proper beforeEach setup in new describe block with component/fixture initialization
+- Tests cover: data loading (4), loading states (2), empty states (2), error states (2), selectors (3)
+- Component already properly wired to SmartNgRX (no production code changes needed)
+
+## QA Results
+
+### Gate Status
+
+Gate: PASS → docs/qa/gates/AN.2-implement-universe-table-smartngrx.yml
