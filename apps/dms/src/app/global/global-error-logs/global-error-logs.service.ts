@@ -3,6 +3,7 @@ import { inject, Injectable, signal } from '@angular/core';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
+import { ErrorHandlingService } from '../../shared/services/error-handling.service';
 import { ErrorLogResponse } from './error-log-response.interface';
 import { LogFileInfo } from './log-file-info.interface';
 import { LogFilters } from './log-filters.interface';
@@ -12,6 +13,7 @@ import { LogFilters } from './log-filters.interface';
 })
 export class GlobalErrorLogsService {
   private http = inject(HttpClient);
+  private errorHandling = inject(ErrorHandlingService);
 
   logs = signal<ErrorLogResponse>({
     logs: [],
@@ -58,9 +60,8 @@ export class GlobalErrorLogsService {
           context.isLoading.set(false);
         },
         error: function handleError(err: unknown) {
-          const error = err as { message?: string };
-          const errorMessage = error?.message ?? 'Failed to load error logs';
-          context.error.set(errorMessage);
+          const errorMessage = context.errorHandling.extractErrorMessage(err);
+          context.error.set(errorMessage || 'Failed to load error logs');
           context.isLoading.set(false);
         },
       })
@@ -79,9 +80,8 @@ export class GlobalErrorLogsService {
           context.isLoadingFiles.set(false);
         },
         error: function handleError(err: unknown) {
-          const error = err as { message?: string };
-          const errorMessage = error?.message ?? 'Failed to load log files';
-          context.error.set(errorMessage);
+          const errorMessage = context.errorHandling.extractErrorMessage(err);
+          context.error.set(errorMessage || 'Failed to load log files');
           context.isLoadingFiles.set(false);
         },
       })

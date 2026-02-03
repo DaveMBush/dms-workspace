@@ -1,0 +1,8 @@
+schema: 1
+story: 'AN.4'
+gate: PASS
+status_reason: 'All acceptance criteria met, unit tests passing, e2e tests passing, no issues found.'
+reviewer: 'Quinn'
+updated: '2026-02-03T12:00:00Z'
+top_issues: []
+waiver: { active: false }

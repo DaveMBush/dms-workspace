@@ -19,6 +19,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { BaseTableComponent } from '../../shared/components/base-table/base-table.component';
 import { ColumnDef } from '../../shared/components/base-table/column-def.interface';
+import { ErrorHandlingService } from '../../shared/services/error-handling.service';
 import { GlobalLoadingService } from '../../shared/services/global-loading.service';
 import { NotificationService } from '../../shared/services/notification.service';
 import { Screen } from '../../store/screen/screen.interface';
@@ -46,6 +47,7 @@ export class GlobalScreenerComponent {
   private readonly notification = inject(NotificationService);
   private readonly screenerService = inject(ScreenerService);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly errorHandling = inject(ErrorHandlingService);
 
   constructor() {
     // Force change detection when filteredData$ changes
@@ -128,8 +130,11 @@ export class GlobalScreenerComponent {
         }
         context.globalLoading.hide();
       },
-      error: function handleError() {
-        context.globalLoading.hide();
+      error: function handleError(error: unknown) {
+        context.errorHandling.handleOperationError(
+          error,
+          'refresh screener data'
+        );
       },
     });
   }
