@@ -1490,3 +1490,429 @@ describe('Universe Selectors', () => {
     });
   });
 });
+
+// STORY AN.3: TDD RED Phase - Distribution Fields Editing Tests
+// These tests define NEW validation behavior for editing distribution-related fields
+// Tests are currently disabled to allow CI to pass (TDD RED phase)
+// Tests will FAIL until validation logic is implemented in GlobalUniverseComponent
+describe.skip('GlobalUniverseComponent - Distribution Field Editing Validation (TDD - Story AN.3)', () => {
+  let component: GlobalUniverseComponent;
+  let fixture: ComponentFixture<GlobalUniverseComponent>;
+  let mockNotification: {
+    success: ReturnType<typeof vi.fn>;
+    error: ReturnType<typeof vi.fn>;
+    showPersistent: ReturnType<typeof vi.fn>;
+  };
+
+  beforeEach(async () => {
+    mockNotification = {
+      success: vi.fn(),
+      error: vi.fn(),
+      showPersistent: vi.fn(),
+    };
+
+    await TestBed.configureTestingModule({
+      imports: [GlobalUniverseComponent],
+      providers: [
+        provideSmartNgRX(),
+        {
+          provide: UniverseSyncService,
+          useValue: {
+            syncFromScreener: vi.fn().mockReturnValue(of({})),
+            isSyncing: vi.fn().mockReturnValue(false),
+          },
+        },
+        {
+          provide: NotificationService,
+          useValue: mockNotification,
+        },
+      ],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(GlobalUniverseComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  describe('distribution field validation', () => {
+    it('should reject negative distribution values and show error', () => {
+      const row = {
+        id: '1',
+        symbol: 'AAPL',
+        distribution: 0.5,
+      } as Universe;
+
+      const cellEditSpy = vi.spyOn(component.cellEdit, 'emit');
+      component.onCellEdit(row, 'distribution', -0.5);
+
+      // Should NOT emit cell edit event for invalid value
+      expect(cellEditSpy).not.toHaveBeenCalled();
+      // Should show error notification
+      expect(mockNotification.error).toHaveBeenCalledWith(
+        'Distribution value cannot be negative'
+      );
+    });
+
+    it('should accept zero as a valid distribution value', () => {
+      const row = {
+        id: '1',
+        symbol: 'AAPL',
+        distribution: 0.5,
+      } as Universe;
+
+      const cellEditSpy = vi.spyOn(component.cellEdit, 'emit');
+      component.onCellEdit(row, 'distribution', 0);
+
+      // Should emit for valid zero value
+      expect(cellEditSpy).toHaveBeenCalledWith({
+        row,
+        field: 'distribution',
+        value: 0,
+      });
+      expect(mockNotification.error).not.toHaveBeenCalled();
+    });
+
+    it('should accept positive distribution values', () => {
+      const row = {
+        id: '1',
+        symbol: 'AAPL',
+        distribution: 0.5,
+      } as Universe;
+
+      const cellEditSpy = vi.spyOn(component.cellEdit, 'emit');
+      component.onCellEdit(row, 'distribution', 1.25);
+
+      expect(cellEditSpy).toHaveBeenCalledWith({
+        row,
+        field: 'distribution',
+        value: 1.25,
+      });
+      expect(mockNotification.error).not.toHaveBeenCalled();
+    });
+
+    it('should reject extremely large negative values', () => {
+      const row = {
+        id: '1',
+        symbol: 'AAPL',
+        distribution: 0.5,
+      } as Universe;
+
+      const cellEditSpy = vi.spyOn(component.cellEdit, 'emit');
+      component.onCellEdit(row, 'distribution', -999.99);
+
+      expect(cellEditSpy).not.toHaveBeenCalled();
+      expect(mockNotification.error).toHaveBeenCalledWith(
+        'Distribution value cannot be negative'
+      );
+    });
+  });
+
+  describe('distributions_per_year field validation', () => {
+    it('should reject negative distributions_per_year and show error', () => {
+      const row = {
+        id: '1',
+        symbol: 'AAPL',
+        distributions_per_year: 4,
+      } as Universe;
+
+      const cellEditSpy = vi.spyOn(component.cellEdit, 'emit');
+      component.onCellEdit(row, 'distributions_per_year', -1);
+
+      expect(cellEditSpy).not.toHaveBeenCalled();
+      expect(mockNotification.error).toHaveBeenCalledWith(
+        'Distributions per year cannot be negative'
+      );
+    });
+
+    it('should reject non-integer distributions_per_year and show error', () => {
+      const row = {
+        id: '1',
+        symbol: 'AAPL',
+        distributions_per_year: 4,
+      } as Universe;
+
+      const cellEditSpy = vi.spyOn(component.cellEdit, 'emit');
+      component.onCellEdit(row, 'distributions_per_year', 4.5);
+
+      expect(cellEditSpy).not.toHaveBeenCalled();
+      expect(mockNotification.error).toHaveBeenCalledWith(
+        'Distributions per year must be a whole number'
+      );
+    });
+
+    it('should reject decimal values like 1.5', () => {
+      const row = {
+        id: '1',
+        symbol: 'AAPL',
+        distributions_per_year: 4,
+      } as Universe;
+
+      const cellEditSpy = vi.spyOn(component.cellEdit, 'emit');
+      component.onCellEdit(row, 'distributions_per_year', 1.5);
+
+      expect(cellEditSpy).not.toHaveBeenCalled();
+      expect(mockNotification.error).toHaveBeenCalledWith(
+        'Distributions per year must be a whole number'
+      );
+    });
+
+    it('should accept zero as distributions per year', () => {
+      const row = {
+        id: '1',
+        symbol: 'AAPL',
+        distributions_per_year: 4,
+      } as Universe;
+
+      const cellEditSpy = vi.spyOn(component.cellEdit, 'emit');
+      component.onCellEdit(row, 'distributions_per_year', 0);
+
+      expect(cellEditSpy).toHaveBeenCalledWith({
+        row,
+        field: 'distributions_per_year',
+        value: 0,
+      });
+      expect(mockNotification.error).not.toHaveBeenCalled();
+    });
+
+    it('should accept valid integer values (1, 4, 12)', () => {
+      const row = {
+        id: '1',
+        symbol: 'AAPL',
+        distributions_per_year: 4,
+      } as Universe;
+
+      const cellEditSpy = vi.spyOn(component.cellEdit, 'emit');
+
+      // Annual (1)
+      component.onCellEdit(row, 'distributions_per_year', 1);
+      expect(cellEditSpy).toHaveBeenCalledWith({
+        row,
+        field: 'distributions_per_year',
+        value: 1,
+      });
+
+      // Quarterly (4)
+      cellEditSpy.mockClear();
+      component.onCellEdit(row, 'distributions_per_year', 4);
+      expect(cellEditSpy).toHaveBeenCalledWith({
+        row,
+        field: 'distributions_per_year',
+        value: 4,
+      });
+
+      // Monthly (12)
+      cellEditSpy.mockClear();
+      component.onCellEdit(row, 'distributions_per_year', 12);
+      expect(cellEditSpy).toHaveBeenCalledWith({
+        row,
+        field: 'distributions_per_year',
+        value: 12,
+      });
+
+      expect(mockNotification.error).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('ex_date field validation', () => {
+    it('should reject invalid ISO date format and show error', () => {
+      const row = {
+        id: '1',
+        symbol: 'AAPL',
+        ex_date: '2024-01-15',
+      } as Universe;
+
+      const cellEditSpy = vi.spyOn(component.cellEdit, 'emit');
+      component.onCellEdit(row, 'ex_date', '2024-13-01'); // Invalid month
+
+      expect(cellEditSpy).not.toHaveBeenCalled();
+      expect(mockNotification.error).toHaveBeenCalledWith(
+        'Invalid date format. Please use YYYY-MM-DD'
+      );
+    });
+
+    it('should reject dates with invalid day values', () => {
+      const row = {
+        id: '1',
+        symbol: 'AAPL',
+        ex_date: '2024-01-15',
+      } as Universe;
+
+      const cellEditSpy = vi.spyOn(component.cellEdit, 'emit');
+      component.onCellEdit(row, 'ex_date', '2024-02-30'); // Feb 30 doesn't exist
+
+      expect(cellEditSpy).not.toHaveBeenCalled();
+      expect(mockNotification.error).toHaveBeenCalledWith(
+        'Invalid date format. Please use YYYY-MM-DD'
+      );
+    });
+
+    it('should reject non-ISO date formats like MM/DD/YYYY', () => {
+      const row = {
+        id: '1',
+        symbol: 'AAPL',
+        ex_date: '2024-01-15',
+      } as Universe;
+
+      const cellEditSpy = vi.spyOn(component.cellEdit, 'emit');
+      component.onCellEdit(row, 'ex_date', '01/15/2024');
+
+      expect(cellEditSpy).not.toHaveBeenCalled();
+      expect(mockNotification.error).toHaveBeenCalledWith(
+        'Invalid date format. Please use YYYY-MM-DD'
+      );
+    });
+
+    it('should reject completely invalid date strings', () => {
+      const row = {
+        id: '1',
+        symbol: 'AAPL',
+        ex_date: '2024-01-15',
+      } as Universe;
+
+      const cellEditSpy = vi.spyOn(component.cellEdit, 'emit');
+      component.onCellEdit(row, 'ex_date', 'not-a-date');
+
+      expect(cellEditSpy).not.toHaveBeenCalled();
+      expect(mockNotification.error).toHaveBeenCalledWith(
+        'Invalid date format. Please use YYYY-MM-DD'
+      );
+    });
+
+    it('should accept valid ISO date strings', () => {
+      const row = {
+        id: '1',
+        symbol: 'AAPL',
+        ex_date: '2024-01-15',
+      } as Universe;
+
+      const cellEditSpy = vi.spyOn(component.cellEdit, 'emit');
+      component.onCellEdit(row, 'ex_date', '2024-12-31');
+
+      expect(cellEditSpy).toHaveBeenCalledWith({
+        row,
+        field: 'ex_date',
+        value: '2024-12-31',
+      });
+      expect(mockNotification.error).not.toHaveBeenCalled();
+    });
+
+    it('should accept past dates', () => {
+      const row = {
+        id: '1',
+        symbol: 'AAPL',
+        ex_date: '2024-01-15',
+      } as Universe;
+
+      const cellEditSpy = vi.spyOn(component.cellEdit, 'emit');
+      component.onCellEdit(row, 'ex_date', '2020-06-15');
+
+      expect(cellEditSpy).toHaveBeenCalledWith({
+        row,
+        field: 'ex_date',
+        value: '2020-06-15',
+      });
+      expect(mockNotification.error).not.toHaveBeenCalled();
+    });
+
+    it('should accept future dates', () => {
+      const row = {
+        id: '1',
+        symbol: 'AAPL',
+        ex_date: '2024-01-15',
+      } as Universe;
+
+      const cellEditSpy = vi.spyOn(component.cellEdit, 'emit');
+      component.onCellEdit(row, 'ex_date', '2026-03-20');
+
+      expect(cellEditSpy).toHaveBeenCalledWith({
+        row,
+        field: 'ex_date',
+        value: '2026-03-20',
+      });
+      expect(mockNotification.error).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('validation error handling', () => {
+    it('should not emit cellEdit event when validation fails', () => {
+      const row = {
+        id: '1',
+        symbol: 'AAPL',
+        distribution: 0.5,
+      } as Universe;
+
+      const cellEditSpy = vi.spyOn(component.cellEdit, 'emit');
+
+      // Test multiple invalid values
+      component.onCellEdit(row, 'distribution', -1);
+      component.onCellEdit(row, 'distributions_per_year', -1);
+      component.onCellEdit(row, 'distributions_per_year', 1.5);
+      component.onCellEdit(row, 'ex_date', 'invalid');
+
+      // No events should be emitted for invalid values
+      expect(cellEditSpy).not.toHaveBeenCalled();
+    });
+
+    it('should show specific error messages for each field type', () => {
+      const row = {
+        id: '1',
+        symbol: 'AAPL',
+        distribution: 0.5,
+        distributions_per_year: 4,
+        ex_date: '2024-01-15',
+      } as Universe;
+
+      // Test distribution error
+      component.onCellEdit(row, 'distribution', -1);
+      expect(mockNotification.error).toHaveBeenCalledWith(
+        'Distribution value cannot be negative'
+      );
+
+      mockNotification.error.mockClear();
+
+      // Test distributions_per_year negative error
+      component.onCellEdit(row, 'distributions_per_year', -1);
+      expect(mockNotification.error).toHaveBeenCalledWith(
+        'Distributions per year cannot be negative'
+      );
+
+      mockNotification.error.mockClear();
+
+      // Test distributions_per_year decimal error
+      component.onCellEdit(row, 'distributions_per_year', 1.5);
+      expect(mockNotification.error).toHaveBeenCalledWith(
+        'Distributions per year must be a whole number'
+      );
+
+      mockNotification.error.mockClear();
+
+      // Test ex_date error
+      component.onCellEdit(row, 'ex_date', 'invalid');
+      expect(mockNotification.error).toHaveBeenCalledWith(
+        'Invalid date format. Please use YYYY-MM-DD'
+      );
+    });
+
+    it('should handle multiple validation failures independently', () => {
+      const row1 = {
+        id: '1',
+        symbol: 'AAPL',
+        distribution: 0.5,
+      } as Universe;
+
+      const row2 = {
+        id: '2',
+        symbol: 'MSFT',
+        distributions_per_year: 4,
+      } as Universe;
+
+      const cellEditSpy = vi.spyOn(component.cellEdit, 'emit');
+
+      component.onCellEdit(row1, 'distribution', -1);
+      component.onCellEdit(row2, 'distributions_per_year', 2.5);
+
+      expect(cellEditSpy).not.toHaveBeenCalled();
+      expect(mockNotification.error).toHaveBeenCalledTimes(2);
+    });
+  });
+});
