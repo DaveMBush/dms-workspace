@@ -23,6 +23,7 @@ import { BaseTableComponent } from '../../shared/components/base-table/base-tabl
 import { ColumnDef } from '../../shared/components/base-table/column-def.interface';
 import { EditableCellComponent } from '../../shared/components/editable-cell/editable-cell.component';
 import { EditableDateCellComponent } from '../../shared/components/editable-date-cell/editable-date-cell.component';
+import { ErrorHandlingService } from '../../shared/services/error-handling.service';
 import { GlobalLoadingService } from '../../shared/services/global-loading.service';
 import { NotificationService } from '../../shared/services/notification.service';
 import { UniverseSyncService } from '../../shared/services/universe-sync.service';
@@ -69,6 +70,7 @@ export class GlobalUniverseComponent {
   private readonly notification = inject(NotificationService);
   private readonly dialog = inject(MatDialog);
   private readonly updateFieldsService = inject(UpdateUniverseFieldsService);
+  private readonly errorHandling = inject(ErrorHandlingService);
   readonly cellEdit = output<CellEditEvent>();
   readonly symbolDeleted = output<Universe>();
   readonly today = new Date();
@@ -151,7 +153,8 @@ export class GlobalUniverseComponent {
         );
       },
       error: function onSyncError(error: unknown) {
-        context.handleOperationError(error, 'update universe', true);
+        context.localSyncInProgress$.set(false);
+        context.errorHandling.handleOperationError(error, 'update universe');
       },
     });
   }
@@ -168,7 +171,7 @@ export class GlobalUniverseComponent {
         );
       },
       error: function onUpdateError(error: unknown) {
-        context.handleOperationError(error, 'update fields');
+        context.errorHandling.handleOperationError(error, 'update fields');
       },
     });
   }
@@ -196,6 +199,9 @@ export class GlobalUniverseComponent {
   }
 
   onCellEdit(row: Universe, field: string, value: unknown): void {
+    if (!this.validateFieldValue(field, value)) {
+      return;
+    }
     this.cellEdit.emit({ row, field, value });
   }
 
@@ -235,58 +241,75 @@ export class GlobalUniverseComponent {
     });
   }
 
-  /**
-   * Handle operation error with consistent pattern
-   * @param error - Error object from operation
-   * @param operationName - Name of the operation that failed
-   * @param resetLocalSync - Whether to reset local sync flag
-   */
-  private handleOperationError(
-    error: unknown,
-    operationName: string,
-    resetLocalSync = false
-  ): void {
-    if (resetLocalSync) {
-      this.localSyncInProgress$.set(false);
+  private validateFieldValue(field: string, value: unknown): boolean {
+    if (field === 'distribution') {
+      return this.validateDistribution(value);
     }
-    this.globalLoading.hide();
-    this.notification.showPersistent(
-      `Failed to ${operationName}: ${this.extractErrorMessage(error)}`,
-      'error'
-    );
+    if (field === 'distributions_per_year') {
+      return this.validateDistributionsPerYear(value);
+    }
+    if (field === 'ex_date') {
+      return this.validateExDate(value);
+    }
+    return true;
   }
 
-  /**
-   * Extract error message from various error formats
-   * @param error - Error object from HTTP request
-   * @returns Error message string
-   */
-  private extractErrorMessage(error: unknown): string {
-    const DEFAULT_ERROR_MESSAGE = 'Unknown error';
+  private validateDistribution(value: unknown): boolean {
+    if (typeof value === 'number' && value < 0) {
+      this.notification.error('Distribution value cannot be negative');
+      return false;
+    }
+    return true;
+  }
 
-    if (error instanceof Error) {
-      return error.message;
+  private validateDistributionsPerYear(value: unknown): boolean {
+    if (typeof value !== 'number') {
+      return true;
+    }
+    if (value < 0) {
+      this.notification.error('Distributions per year cannot be negative');
+      return false;
+    }
+    if (!Number.isInteger(value)) {
+      this.notification.error('Distributions per year must be a whole number');
+      return false;
+    }
+    return true;
+  }
+
+  private validateExDate(value: unknown): boolean {
+    if (typeof value !== 'string') {
+      return true;
     }
 
-    if (error === null || error === undefined || typeof error !== 'object') {
-      return DEFAULT_ERROR_MESSAGE;
+    const ERROR_MESSAGE = 'Invalid date format. Please use YYYY-MM-DD';
+    const isoDateRegex = /^\d{4}-\d{2}-\d{2}$/;
+
+    if (!isoDateRegex.test(value)) {
+      this.notification.error(ERROR_MESSAGE);
+      return false;
     }
 
-    const err = error as {
-      error?: { message?: string };
-      message?: string;
-      statusText?: string;
-    };
-
-    // Try nested error.message first, then message, then statusText
-    const candidates = [err.error?.message, err.message, err.statusText];
-
-    for (const candidate of candidates) {
-      if (candidate !== null && candidate !== undefined && candidate !== '') {
-        return candidate;
-      }
+    const date = new Date(value + 'T00:00:00Z');
+    if (isNaN(date.getTime())) {
+      this.notification.error(ERROR_MESSAGE);
+      return false;
     }
 
-    return DEFAULT_ERROR_MESSAGE;
+    const parts = value.split('-');
+    const year = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10);
+    const day = parseInt(parts[2], 10);
+
+    if (
+      date.getUTCFullYear() !== year ||
+      date.getUTCMonth() + 1 !== month ||
+      date.getUTCDate() !== day
+    ) {
+      this.notification.error(ERROR_MESSAGE);
+      return false;
+    }
+
+    return true;
   }
 }

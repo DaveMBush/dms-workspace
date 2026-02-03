@@ -1495,7 +1495,7 @@ describe('Universe Selectors', () => {
 // These tests define NEW validation behavior for editing distribution-related fields
 // Tests are currently disabled to allow CI to pass (TDD RED phase)
 // Tests will FAIL until validation logic is implemented in GlobalUniverseComponent
-describe.skip('GlobalUniverseComponent - Distribution Field Editing Validation (TDD - Story AN.3)', () => {
+describe('GlobalUniverseComponent - Distribution Field Editing Validation (TDD - Story AN.3)', () => {
   let component: GlobalUniverseComponent;
   let fixture: ComponentFixture<GlobalUniverseComponent>;
   let mockNotification: {
