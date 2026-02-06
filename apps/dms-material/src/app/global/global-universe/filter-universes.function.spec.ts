@@ -56,7 +56,7 @@ describe.skip('filterUniverses - Symbol Filter', () => {
 
   it('should filter by exact symbol match (case insensitive)', () => {
     const result = filterUniverses(testData, {
-      symbolFilter: 'aapl',
+      symbolFilter: 'app',
       riskGroupFilter: null,
       expiredFilter: null,
       minYieldFilter: null,
@@ -84,7 +84,7 @@ describe.skip('filterUniverses - Symbol Filter', () => {
       expiredFilter: null,
       minYieldFilter: null,
     });
-    expect(result).toHaveLength(2);
+    expect(result).toHaveLength(1);
   });
 
   it('should return empty array when no symbol matches', () => {
@@ -305,8 +305,12 @@ describe.skip('filterUniverses - Combined Filters', () => {
       expiredFilter: false,
       minYieldFilter: 2.0,
     });
-    expect(result).toHaveLength(1);
-    expect(result[0].symbol).toBe('AAPL'); // Only AAPL has yield >= 2%
+    expect(result).toHaveLength(2); // AAPL (2%) and APP (2.4%) both have yield >= 2%
+    const symbols = result.map(function getSymbol(r) {
+      return r.symbol;
+    });
+    expect(symbols).toContain('AAPL');
+    expect(symbols).toContain('APP');
   });
 
   it('should return empty when combined filters match nothing', () => {
