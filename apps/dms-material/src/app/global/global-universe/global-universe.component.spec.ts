@@ -1916,3 +1916,387 @@ describe('GlobalUniverseComponent - Distribution Field Editing Validation (TDD -
     });
   });
 });
+
+// STORY AN.5: TDD RED Phase - Ex-Date Editing Additional Tests
+// These tests define additional date editing behaviors beyond basic validation
+// Tests re-enabled in Story AN.6 (TDD GREEN phase)
+describe('GlobalUniverseComponent - Ex-Date Editing Enhancements (TDD - Story AN.5)', () => {
+  let component: GlobalUniverseComponent;
+  let fixture: ComponentFixture<GlobalUniverseComponent>;
+  let mockNotification: {
+    success: ReturnType<typeof vi.fn>;
+    error: ReturnType<typeof vi.fn>;
+    showPersistent: ReturnType<typeof vi.fn>;
+  };
+
+  beforeEach(async () => {
+    mockNotification = {
+      success: vi.fn(),
+      error: vi.fn(),
+      showPersistent: vi.fn(),
+    };
+
+    await TestBed.configureTestingModule({
+      imports: [GlobalUniverseComponent],
+      providers: [
+        provideSmartNgRX(),
+        {
+          provide: UniverseSyncService,
+          useValue: {
+            syncFromScreener: vi.fn().mockReturnValue(of({})),
+            isSyncing: vi.fn().mockReturnValue(false),
+          },
+        },
+        {
+          provide: NotificationService,
+          useValue: mockNotification,
+        },
+      ],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(GlobalUniverseComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  describe('date object handling', () => {
+    it('should accept Date objects and convert to ISO string format', () => {
+      const row = {
+        id: '1',
+        symbol: 'AAPL',
+        ex_date: '2024-01-15',
+      } as Universe;
+
+      const cellEditSpy = vi.spyOn(component.cellEdit, 'emit');
+      const dateObject = new Date('2024-06-15');
+
+      component.onCellEdit(row, 'ex_date', dateObject);
+
+      expect(cellEditSpy).toHaveBeenCalledWith({
+        row,
+        field: 'ex_date',
+        value: '2024-06-15',
+      });
+      expect(mockNotification.error).not.toHaveBeenCalled();
+    });
+
+    it('should handle Date objects with time components by using date only', () => {
+      const row = {
+        id: '1',
+        symbol: 'AAPL',
+        ex_date: '2024-01-15',
+      } as Universe;
+
+      const cellEditSpy = vi.spyOn(component.cellEdit, 'emit');
+      const dateObject = new Date('2024-06-15T14:30:00Z');
+
+      component.onCellEdit(row, 'ex_date', dateObject);
+
+      expect(cellEditSpy).toHaveBeenCalledWith({
+        row,
+        field: 'ex_date',
+        value: '2024-06-15',
+      });
+      expect(mockNotification.error).not.toHaveBeenCalled();
+    });
+
+    it('should reject invalid Date objects', () => {
+      const row = {
+        id: '1',
+        symbol: 'AAPL',
+        ex_date: '2024-01-15',
+      } as Universe;
+
+      const cellEditSpy = vi.spyOn(component.cellEdit, 'emit');
+      const invalidDate = new Date('invalid');
+
+      component.onCellEdit(row, 'ex_date', invalidDate);
+
+      expect(cellEditSpy).not.toHaveBeenCalled();
+      expect(mockNotification.error).toHaveBeenCalledWith(
+        'Invalid date format. Please use YYYY-MM-DD'
+      );
+    });
+  });
+
+  describe('null and empty value handling', () => {
+    it('should accept null to clear ex_date', () => {
+      const row = {
+        id: '1',
+        symbol: 'AAPL',
+        ex_date: '2024-01-15',
+      } as Universe;
+
+      const cellEditSpy = vi.spyOn(component.cellEdit, 'emit');
+
+      component.onCellEdit(row, 'ex_date', null);
+
+      expect(cellEditSpy).toHaveBeenCalledWith({
+        row,
+        field: 'ex_date',
+        value: null,
+      });
+      expect(mockNotification.error).not.toHaveBeenCalled();
+    });
+
+    it('should accept empty string to clear ex_date', () => {
+      const row = {
+        id: '1',
+        symbol: 'AAPL',
+        ex_date: '2024-01-15',
+      } as Universe;
+
+      const cellEditSpy = vi.spyOn(component.cellEdit, 'emit');
+
+      component.onCellEdit(row, 'ex_date', '');
+
+      expect(cellEditSpy).toHaveBeenCalledWith({
+        row,
+        field: 'ex_date',
+        value: null,
+      });
+      expect(mockNotification.error).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('edge case date validations', () => {
+    it('should accept leap year dates', () => {
+      const row = {
+        id: '1',
+        symbol: 'AAPL',
+        ex_date: '2024-01-15',
+      } as Universe;
+
+      const cellEditSpy = vi.spyOn(component.cellEdit, 'emit');
+
+      component.onCellEdit(row, 'ex_date', '2024-02-29');
+
+      expect(cellEditSpy).toHaveBeenCalledWith({
+        row,
+        field: 'ex_date',
+        value: '2024-02-29',
+      });
+      expect(mockNotification.error).not.toHaveBeenCalled();
+    });
+
+    it('should reject Feb 29 on non-leap years', () => {
+      const row = {
+        id: '1',
+        symbol: 'AAPL',
+        ex_date: '2024-01-15',
+      } as Universe;
+
+      const cellEditSpy = vi.spyOn(component.cellEdit, 'emit');
+
+      component.onCellEdit(row, 'ex_date', '2023-02-29');
+
+      expect(cellEditSpy).not.toHaveBeenCalled();
+      expect(mockNotification.error).toHaveBeenCalledWith(
+        'Invalid date format. Please use YYYY-MM-DD'
+      );
+    });
+
+    it('should accept dates at year boundaries', () => {
+      const row = {
+        id: '1',
+        symbol: 'AAPL',
+        ex_date: '2024-01-15',
+      } as Universe;
+
+      const cellEditSpy = vi.spyOn(component.cellEdit, 'emit');
+
+      // Test first day of year
+      component.onCellEdit(row, 'ex_date', '2024-01-01');
+      expect(cellEditSpy).toHaveBeenCalledWith({
+        row,
+        field: 'ex_date',
+        value: '2024-01-01',
+      });
+
+      cellEditSpy.mockClear();
+
+      // Test last day of year
+      component.onCellEdit(row, 'ex_date', '2024-12-31');
+      expect(cellEditSpy).toHaveBeenCalledWith({
+        row,
+        field: 'ex_date',
+        value: '2024-12-31',
+      });
+
+      expect(mockNotification.error).not.toHaveBeenCalled();
+    });
+
+    it('should handle century boundary dates correctly', () => {
+      const row = {
+        id: '1',
+        symbol: 'AAPL',
+        ex_date: '2024-01-15',
+      } as Universe;
+
+      const cellEditSpy = vi.spyOn(component.cellEdit, 'emit');
+
+      component.onCellEdit(row, 'ex_date', '2000-01-01');
+      expect(cellEditSpy).toHaveBeenCalledWith({
+        row,
+        field: 'ex_date',
+        value: '2000-01-01',
+      });
+
+      cellEditSpy.mockClear();
+
+      component.onCellEdit(row, 'ex_date', '1999-12-31');
+      expect(cellEditSpy).toHaveBeenCalledWith({
+        row,
+        field: 'ex_date',
+        value: '1999-12-31',
+      });
+
+      expect(mockNotification.error).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('date format variations', () => {
+    it('should reject dates with extra whitespace', () => {
+      const row = {
+        id: '1',
+        symbol: 'AAPL',
+        ex_date: '2024-01-15',
+      } as Universe;
+
+      const cellEditSpy = vi.spyOn(component.cellEdit, 'emit');
+
+      component.onCellEdit(row, 'ex_date', ' 2024-06-15 ');
+
+      expect(cellEditSpy).not.toHaveBeenCalled();
+      expect(mockNotification.error).toHaveBeenCalledWith(
+        'Invalid date format. Please use YYYY-MM-DD'
+      );
+    });
+
+    it('should reject dates with time components in string', () => {
+      const row = {
+        id: '1',
+        symbol: 'AAPL',
+        ex_date: '2024-01-15',
+      } as Universe;
+
+      const cellEditSpy = vi.spyOn(component.cellEdit, 'emit');
+
+      component.onCellEdit(row, 'ex_date', '2024-06-15T10:30:00');
+
+      expect(cellEditSpy).not.toHaveBeenCalled();
+      expect(mockNotification.error).toHaveBeenCalledWith(
+        'Invalid date format. Please use YYYY-MM-DD'
+      );
+    });
+
+    it('should reject dates with single-digit month/day without zero padding', () => {
+      const row = {
+        id: '1',
+        symbol: 'AAPL',
+        ex_date: '2024-01-15',
+      } as Universe;
+
+      const cellEditSpy = vi.spyOn(component.cellEdit, 'emit');
+
+      component.onCellEdit(row, 'ex_date', '2024-6-5');
+
+      expect(cellEditSpy).not.toHaveBeenCalled();
+      expect(mockNotification.error).toHaveBeenCalledWith(
+        'Invalid date format. Please use YYYY-MM-DD'
+      );
+    });
+  });
+
+  describe('date comparison and business logic', () => {
+    it('should not prevent editing to dates far in the past', () => {
+      const row = {
+        id: '1',
+        symbol: 'AAPL',
+        ex_date: '2024-01-15',
+      } as Universe;
+
+      const cellEditSpy = vi.spyOn(component.cellEdit, 'emit');
+
+      component.onCellEdit(row, 'ex_date', '1990-01-01');
+
+      expect(cellEditSpy).toHaveBeenCalledWith({
+        row,
+        field: 'ex_date',
+        value: '1990-01-01',
+      });
+      expect(mockNotification.error).not.toHaveBeenCalled();
+    });
+
+    it('should not prevent editing to dates far in the future', () => {
+      const row = {
+        id: '1',
+        symbol: 'AAPL',
+        ex_date: '2024-01-15',
+      } as Universe;
+
+      const cellEditSpy = vi.spyOn(component.cellEdit, 'emit');
+
+      component.onCellEdit(row, 'ex_date', '2099-12-31');
+
+      expect(cellEditSpy).toHaveBeenCalledWith({
+        row,
+        field: 'ex_date',
+        value: '2099-12-31',
+      });
+      expect(mockNotification.error).not.toHaveBeenCalled();
+    });
+
+    it("should allow updating ex_date to today's date", () => {
+      const row = {
+        id: '1',
+        symbol: 'AAPL',
+        ex_date: '2024-01-15',
+      } as Universe;
+
+      const cellEditSpy = vi.spyOn(component.cellEdit, 'emit');
+      const today = new Date();
+      const todayISO = today.toISOString().split('T')[0];
+
+      component.onCellEdit(row, 'ex_date', todayISO);
+
+      expect(cellEditSpy).toHaveBeenCalledWith({
+        row,
+        field: 'ex_date',
+        value: todayISO,
+      });
+      expect(mockNotification.error).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('error message consistency', () => {
+    it('should show same error message for all invalid date formats', () => {
+      const row = {
+        id: '1',
+        symbol: 'AAPL',
+        ex_date: '2024-01-15',
+      } as Universe;
+
+      const expectedError = 'Invalid date format. Please use YYYY-MM-DD';
+
+      // Test various invalid formats
+      const invalidFormats = [
+        '01/15/2024',
+        '15-01-2024',
+        '2024/01/15',
+        '2024-13-01',
+        '2024-01-32',
+        'invalid',
+        '2024-1-1',
+        ' 2024-01-15',
+        '2024-01-15 ',
+      ];
+
+      invalidFormats.forEach((format) => {
+        mockNotification.error.mockClear();
+        component.onCellEdit(row, 'ex_date', format);
+        expect(mockNotification.error).toHaveBeenCalledWith(expectedError);
+      });
+    });
+  });
+});
