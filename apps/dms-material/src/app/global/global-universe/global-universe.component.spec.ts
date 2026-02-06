@@ -1968,7 +1968,8 @@ describe('GlobalUniverseComponent - Ex-Date Editing Enhancements (TDD - Story AN
       } as Universe;
 
       const cellEditSpy = vi.spyOn(component.cellEdit, 'emit');
-      const dateObject = new Date('2024-06-15');
+      // Use numeric constructor to create date in local timezone
+      const dateObject = new Date(2024, 5, 15); // month is 0-indexed
 
       component.onCellEdit(row, 'ex_date', dateObject);
 
@@ -1988,7 +1989,29 @@ describe('GlobalUniverseComponent - Ex-Date Editing Enhancements (TDD - Story AN
       } as Universe;
 
       const cellEditSpy = vi.spyOn(component.cellEdit, 'emit');
-      const dateObject = new Date('2024-06-15T14:30:00Z');
+      // Use UTC time to ensure consistent behavior across timezones
+      const dateObject = new Date('2024-06-15T12:00:00Z');
+
+      component.onCellEdit(row, 'ex_date', dateObject);
+
+      expect(cellEditSpy).toHaveBeenCalledWith({
+        row,
+        field: 'ex_date',
+        value: '2024-06-15',
+      });
+      expect(mockNotification.error).not.toHaveBeenCalled();
+    });
+
+    it('should handle Date objects constructed with numeric constructor in local timezone', () => {
+      const row = {
+        id: '1',
+        symbol: 'AAPL',
+        ex_date: '2024-01-15',
+      } as Universe;
+
+      const cellEditSpy = vi.spyOn(component.cellEdit, 'emit');
+      // Note: month is 0-indexed, so 5 = June
+      const dateObject = new Date(2024, 5, 15);
 
       component.onCellEdit(row, 'ex_date', dateObject);
 

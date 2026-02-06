@@ -343,8 +343,12 @@ export class GlobalUniverseComponent {
         // This triggers the error in validateExDate
         return 'INVALID_DATE';
       }
-      // Convert to ISO date string (YYYY-MM-DD)
-      return value.toISOString().split('T')[0];
+      // Convert to ISO date string (YYYY-MM-DD) using local date components
+      // to avoid timezone issues with toISOString()
+      const year = value.getFullYear();
+      const month = String(value.getMonth() + 1).padStart(2, '0');
+      const day = String(value.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
     }
 
     // Return string values as-is for validation
