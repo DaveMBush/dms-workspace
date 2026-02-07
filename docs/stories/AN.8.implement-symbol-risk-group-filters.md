@@ -1,5 +1,46 @@
 # Story AN.8: Wire Up Symbol and Risk Group Filters - TDD GREEN Phase
 
+## Dev Agent Record
+
+### Tasks
+
+- [x] Re-enable unit tests from AN.7
+- [x] Fix test expectations to match actual filter behavior
+- [x] Verify all tests pass
+- [x] Run validation commands
+
+### Status
+
+Ready for Review
+
+### Agent Model Used
+
+Claude Sonnet 4.5
+
+### Debug Log References
+
+None
+
+### Completion Notes
+
+- Re-enabled all 29 unit tests from Story AN.7 by removing `.skip` from describe blocks
+- Updated header comment to reflect GREEN phase
+- Fixed 2 test expectations that had incorrect assumptions about substring matching:
+  - 'app' filter only matches 'apple', not 'AAPL' (no consecutive 'app' in 'AAPL')
+  - 'APP' filter only matches 'APP', not 'AAPL' for same reason
+- All 29 tests now passing with existing filterUniverses implementation
+- No implementation changes needed - functionality already complete
+
+### File List
+
+- apps/dms-material/src/app/global/global-universe/filter-universes.function.spec.ts (modified - re-enabled tests and fixed expectations)
+
+### Change Log
+
+- Re-enabled 29 unit tests for TDD GREEN phase
+- Fixed test expectations to match actual substring matching behavior
+- All tests passing with existing implementation
+
 ## Story
 
 **As a** user
@@ -76,6 +117,12 @@ pnpm test:dms-material
 ## Related Stories
 
 - **Previous**: Story AN.7
-- **Next**: Story AN.AN.9
+- **Next**: Story AN.9
 - **Epic**: Epic AN
 - **Pattern Reference**: Story AM.8 (Similar TDD pattern)
+
+## QA Results
+
+### Gate Status
+
+Gate: PASS → docs/qa/gates/AN.8-wire-up-symbol-risk-group-filters-tdd-green-phase.yml
