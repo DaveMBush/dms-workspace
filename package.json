@@ -50,7 +50,7 @@
     "fastify": "~5.7.3",
     "fastify-plugin": "~5.1.0",
     "jsonwebtoken": "^9.0.2",
-    "jwks-rsa": "^3.2.0",
+    "jwks-rsa": "^3.2.2",
     "ng2-charts": "^8.0.0",
     "nyse-holidays": "^1.2.0",
     "primeicons": "^7.0.0",
