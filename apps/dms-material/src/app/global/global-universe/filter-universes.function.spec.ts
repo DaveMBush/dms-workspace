@@ -2,12 +2,11 @@ import { describe, it, expect } from 'vitest';
 import { filterUniverses } from './filter-universes.function';
 import { Universe } from '../../store/universe/universe.interface';
 
-// TDD RED Phase - Story AN.7
-// These tests define expected filtering behavior
-// Tests are disabled to allow CI to pass
-// Will be enabled in Story AN.8
+// TDD GREEN Phase - Story AN.8
+// Tests enabled and passing with implementation
+// Tests were written in Story AN.7 (RED phase)
 
-describe.skip('filterUniverses - Symbol Filter', () => {
+describe('filterUniverses - Symbol Filter', () => {
   const testData: Universe[] = [
     {
       id: '1',
@@ -61,9 +60,8 @@ describe.skip('filterUniverses - Symbol Filter', () => {
       expiredFilter: null,
       minYieldFilter: null,
     });
-    expect(result).toHaveLength(2); // Should match both 'AAPL' and 'apple'
-    expect(result[0].symbol).toBe('AAPL');
-    expect(result[1].symbol).toBe('apple');
+    expect(result).toHaveLength(1); // Should match only 'apple' ('AAPL' does not contain 'app')
+    expect(result[0].symbol).toBe('apple');
   });
 
   it('should filter by partial symbol match', () => {
@@ -122,7 +120,7 @@ describe.skip('filterUniverses - Symbol Filter', () => {
   });
 });
 
-describe.skip('filterUniverses - Risk Group Filter', () => {
+describe('filterUniverses - Risk Group Filter', () => {
   const testData: Universe[] = [
     {
       id: '1',
@@ -225,7 +223,7 @@ describe.skip('filterUniverses - Risk Group Filter', () => {
   });
 });
 
-describe.skip('filterUniverses - Combined Filters', () => {
+describe('filterUniverses - Combined Filters', () => {
   const testData: Universe[] = [
     {
       id: '1',
@@ -280,12 +278,8 @@ describe.skip('filterUniverses - Combined Filters', () => {
       expiredFilter: null,
       minYieldFilter: null,
     });
-    expect(result).toHaveLength(2); // AAPL and APP, both equity
-    const symbols = result.map(function getSymbol(r) {
-      return r.symbol;
-    });
-    expect(symbols).toContain('AAPL');
-    expect(symbols).toContain('APP');
+    expect(result).toHaveLength(1); // Only APP matches ('AAPL' does not contain 'APP')
+    expect(result[0].symbol).toBe('APP');
   });
 
   it('should apply symbol, risk group, and expired filters together', () => {
@@ -324,7 +318,7 @@ describe.skip('filterUniverses - Combined Filters', () => {
   });
 });
 
-describe.skip('filterUniverses - Expired Filter', () => {
+describe('filterUniverses - Expired Filter', () => {
   const testData: Universe[] = [
     {
       id: '1',
@@ -396,7 +390,7 @@ describe.skip('filterUniverses - Expired Filter', () => {
   });
 });
 
-describe.skip('filterUniverses - Min Yield Filter', () => {
+describe('filterUniverses - Min Yield Filter', () => {
   const testData: Universe[] = [
     {
       id: '1',
@@ -515,7 +509,7 @@ describe.skip('filterUniverses - Min Yield Filter', () => {
   });
 });
 
-describe.skip('filterUniverses - Edge Cases', () => {
+describe('filterUniverses - Edge Cases', () => {
   it('should handle empty data array', () => {
     const result = filterUniverses([], {
       symbolFilter: 'AAPL',
