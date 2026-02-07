@@ -199,10 +199,16 @@ export class GlobalUniverseComponent {
   }
 
   onCellEdit(row: Universe, field: string, value: unknown): void {
-    if (!this.validateFieldValue(field, value)) {
+    // Transform value based on field type before validation
+    let transformedValue = value;
+    if (field === 'ex_date') {
+      transformedValue = this.transformExDateValue(value);
+    }
+
+    if (!this.validateFieldValue(field, transformedValue)) {
       return;
     }
-    this.cellEdit.emit({ row, field, value });
+    this.cellEdit.emit({ row, field, value: transformedValue });
   }
 
   onSymbolFilterChange(value: string): void {
@@ -278,6 +284,11 @@ export class GlobalUniverseComponent {
   }
 
   private validateExDate(value: unknown): boolean {
+    // Allow null values to clear the date
+    if (value === null) {
+      return true;
+    }
+
     if (typeof value !== 'string') {
       return true;
     }
@@ -311,5 +322,36 @@ export class GlobalUniverseComponent {
     }
 
     return true;
+  }
+
+  private transformExDateValue(value: unknown): unknown {
+    // Handle null explicitly
+    if (value === null) {
+      return null;
+    }
+
+    // Handle empty string - convert to null
+    if (value === '') {
+      return null;
+    }
+
+    // Handle Date objects
+    if (value instanceof Date) {
+      // Check if date is valid
+      if (isNaN(value.getTime())) {
+        // Return a string that will fail validation
+        // This triggers the error in validateExDate
+        return 'INVALID_DATE';
+      }
+      // Convert to ISO date string (YYYY-MM-DD) using local date components
+      // to avoid timezone issues with toISOString()
+      const year = value.getFullYear();
+      const month = String(value.getMonth() + 1).padStart(2, '0');
+      const day = String(value.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    // Return string values as-is for validation
+    return value;
   }
 }

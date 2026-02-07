@@ -1,0 +1,8 @@
+schema: 1
+story: 'AN.6'
+gate: PASS
+status_reason: 'All acceptance criteria met, comprehensive test coverage achieved, and implementation handles all edge cases properly.'
+reviewer: 'Quinn'
+updated: '2026-02-06T00:00:00Z'
+top_issues: []
+waiver: { active: false }
