@@ -695,7 +695,7 @@ describe.skip('filterUniverses - Expired Filter Comprehensive Tests (Story AN.9)
         expiredFilter: true,
         minYieldFilter: 2,
       });
-      expect(result).toHaveLength(3); // MSFT (4%), TLT (15%), VNQ (4%)
+      expect(result).toHaveLength(2); // TLT (15%), VNQ (4%)
       expect(
         result.every(function checkExpired(r) {
           return r.expired;
