@@ -117,7 +117,7 @@ pnpm test:dms-material
 ## Related Stories
 
 - **Previous**: Story AN.7
-- **Next**: Story AN.AN.9
+- **Next**: Story AN.9
 - **Epic**: Epic AN
 - **Pattern Reference**: Story AM.8 (Similar TDD pattern)
 
