@@ -3,7 +3,7 @@ import { ColumnDef } from '../../shared/components/base-table/column-def.interfa
 export const UNIVERSE_COLUMNS: ColumnDef[] = [
   { field: 'symbol', header: 'Symbol', sortable: true, width: '80px' },
   {
-    field: 'risk_group_id',
+    field: 'risk_group',
     header: 'Risk Group',
     sortable: true,
     width: '90px',
@@ -13,7 +13,7 @@ export const UNIVERSE_COLUMNS: ColumnDef[] = [
     header: 'Distribution',
     type: 'number',
     editable: true,
-    width: '100px',
+    width: '120px',
   },
   {
     field: 'distributions_per_year',
@@ -48,7 +48,7 @@ export const UNIVERSE_COLUMNS: ColumnDef[] = [
     type: 'date',
     editable: true,
     sortable: true,
-    width: '100px',
+    width: '175px',
   },
   {
     field: 'most_recent_sell_date',

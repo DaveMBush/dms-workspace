@@ -3,6 +3,6 @@ story: 'AN.10'
 gate: PASS
 status_reason: 'All acceptance criteria met. 57 unit tests passing including comprehensive expired filter coverage. Implementation complete and functional.'
 reviewer: 'Quinn'
-updated: '2026-02-07T13:45:00Z'
+updated: '2026-02-08T00:00:00Z'
 top_issues: []
 waiver: { active: false }

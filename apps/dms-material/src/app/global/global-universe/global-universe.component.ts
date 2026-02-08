@@ -29,6 +29,7 @@ import { NotificationService } from '../../shared/services/notification.service'
 import { UniverseSyncService } from '../../shared/services/universe-sync.service';
 import { UpdateUniverseFieldsService } from '../../shared/services/update-universe-fields.service';
 import { selectAccounts } from '../../store/accounts/selectors/select-accounts.function';
+import { selectRiskGroup } from '../../store/risk-group/selectors/select-risk-group.function';
 import { selectUniverses } from '../../store/universe/selectors/select-universes.function';
 import { Universe } from '../../store/universe/universe.interface';
 import { AddSymbolDialog } from '../../universe-settings/add-symbol-dialog/add-symbol-dialog';
@@ -39,6 +40,7 @@ import { filterUniverses } from './filter-universes.function';
 import { UNIVERSE_COLUMNS } from './global-universe.columns';
 import { EXPIRED_OPTIONS } from './global-universe.expired-options';
 import { RISK_GROUPS } from './global-universe.risk-groups';
+import { UniverseService } from './services/universe.service';
 
 @Component({
   selector: 'dms-global-universe',
@@ -66,6 +68,7 @@ import { RISK_GROUPS } from './global-universe.risk-groups';
 export class GlobalUniverseComponent {
   private readonly syncService = inject(UniverseSyncService);
   private readonly screenerService = inject(ScreenerService);
+  private readonly universeService = inject(UniverseService);
   private readonly globalLoading = inject(GlobalLoadingService);
   private readonly notification = inject(NotificationService);
   private readonly dialog = inject(MatDialog);
@@ -109,11 +112,44 @@ export class GlobalUniverseComponent {
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signal
   readonly filteredData$ = computed(() => {
-    const rawData = selectUniverses();
+    const rawData = this.universeService.universes();
+    const riskGroups = selectRiskGroup();
+
+    // Create a map of risk group ID to name for fast lookup
+    const riskGroupMap = new Map<string, string>();
+    if (riskGroups && riskGroups.length > 0) {
+      for (let i = 0; i < riskGroups.length; i++) {
+        riskGroupMap.set(riskGroups[i].id, riskGroups[i].name);
+      }
+    }
+
     if (!Array.isArray(rawData)) {
       return [];
     }
-    return filterUniverses(rawData, {
+
+    // Enrich universe data with risk group name
+    // Must explicitly copy properties from Proxy to create plain objects
+    const enrichedData = rawData.map(function enrichWithRiskGroup(universe) {
+      return {
+        id: universe.id,
+        symbol: universe.symbol,
+        distribution: universe.distribution,
+        distributions_per_year: universe.distributions_per_year,
+        last_price: universe.last_price,
+        most_recent_sell_date: universe.most_recent_sell_date,
+        most_recent_sell_price: universe.most_recent_sell_price,
+        ex_date: universe.ex_date,
+        risk_group_id: universe.risk_group_id,
+        risk_group:
+          riskGroupMap.get(universe.risk_group_id) || universe.risk_group_id,
+        expired: universe.expired,
+        is_closed_end_fund: universe.is_closed_end_fund,
+        name: universe.name,
+        position: universe.position,
+      };
+    });
+
+    return filterUniverses(enrichedData, {
       symbolFilter: this.symbolFilter$(),
       riskGroupFilter: this.riskGroupFilter$(),
       expiredFilter: this.expiredFilter$(),
@@ -208,6 +244,20 @@ export class GlobalUniverseComponent {
     if (!this.validateFieldValue(field, transformedValue)) {
       return;
     }
+
+    // Find the actual universe object in the SmartNgRX store and update it
+    // This triggers SmartNgRX to automatically save the changes
+    const universes = selectUniverses();
+    for (let i = 0; i < universes.length; i++) {
+      if (universes[i].id === row.id) {
+        // Update the field directly on the SmartNgRX managed object
+        (universes[i] as unknown as Record<string, unknown>)[field] =
+          transformedValue;
+        break;
+      }
+    }
+
+    // Emit event for any listeners (optional, for compatibility)
     this.cellEdit.emit({ row, field, value: transformedValue });
   }
 
@@ -225,6 +275,14 @@ export class GlobalUniverseComponent {
 
   onAccountChange(value: string): void {
     this.selectedAccountId$.set(value);
+  }
+
+  parseYieldValue(value: string): number | null {
+    if (!value || value.trim() === '') {
+      return null;
+    }
+    const parsed = parseFloat(value);
+    return isNaN(parsed) ? null : parsed;
   }
 
   onMinYieldFilterChange(value: number | null): void {
@@ -293,31 +351,19 @@ export class GlobalUniverseComponent {
       return true;
     }
 
-    const ERROR_MESSAGE = 'Invalid date format. Please use YYYY-MM-DD';
-    const isoDateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    // Accept both YYYY-MM-DD and ISO DateTime formats
+    const isoDateRegex =
+      /^\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z)?$/;
 
     if (!isoDateRegex.test(value)) {
-      this.notification.error(ERROR_MESSAGE);
+      this.notification.error('Invalid date format');
       return false;
     }
 
-    const date = new Date(value + 'T00:00:00Z');
+    // Parse the date
+    const date = new Date(value);
     if (isNaN(date.getTime())) {
-      this.notification.error(ERROR_MESSAGE);
-      return false;
-    }
-
-    const parts = value.split('-');
-    const year = parseInt(parts[0], 10);
-    const month = parseInt(parts[1], 10);
-    const day = parseInt(parts[2], 10);
-
-    if (
-      date.getUTCFullYear() !== year ||
-      date.getUTCMonth() + 1 !== month ||
-      date.getUTCDate() !== day
-    ) {
-      this.notification.error(ERROR_MESSAGE);
+      this.notification.error('Invalid date value');
       return false;
     }
 
@@ -343,12 +389,20 @@ export class GlobalUniverseComponent {
         // This triggers the error in validateExDate
         return 'INVALID_DATE';
       }
-      // Convert to ISO date string (YYYY-MM-DD) using local date components
-      // to avoid timezone issues with toISOString()
-      const year = value.getFullYear();
-      const month = String(value.getMonth() + 1).padStart(2, '0');
-      const day = String(value.getDate()).padStart(2, '0');
-      return `${year}-${month}-${day}`;
+      // Convert to ISO DateTime string for Prisma
+      // Use UTC midnight to avoid timezone issues
+      const utcDate = new Date(
+        Date.UTC(
+          value.getFullYear(),
+          value.getMonth(),
+          value.getDate(),
+          0,
+          0,
+          0,
+          0
+        )
+      );
+      return utcDate.toISOString();
     }
 
     // Return string values as-is for validation

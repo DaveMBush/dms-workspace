@@ -62,8 +62,14 @@ export class EditableCellComponent {
     }, 0);
   }
 
-  onValueChange(newValue: number): void {
-    this.editValue$.set(newValue);
+  onValueChange(newValue: number | string): void {
+    // Parse string values to numbers since we use type="text" for the input
+    const numericValue =
+      typeof newValue === 'string' ? parseFloat(newValue) : newValue;
+    // Only set if it's a valid number
+    if (!isNaN(numericValue)) {
+      this.editValue$.set(numericValue);
+    }
   }
 
   saveEdit(): void {

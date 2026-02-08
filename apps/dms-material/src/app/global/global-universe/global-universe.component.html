@@ -144,9 +144,10 @@
           <input
             matInput
             #yieldInput
-            type="number"
+            type="text"
+            inputmode="decimal"
             [value]="minYieldFilter$()"
-            (input)="onMinYieldFilterChange(yieldInput.valueAsNumber)"
+            (input)="onMinYieldFilterChange(parseYieldValue(yieldInput.value))"
             placeholder="Min Yield %"
           />
         </mat-form-field>

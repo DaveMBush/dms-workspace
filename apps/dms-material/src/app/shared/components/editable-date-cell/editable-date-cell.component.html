@@ -4,8 +4,11 @@
     matInput
     [matDatepicker]="picker"
     [(ngModel)]="editValue"
+    (dateChange)="onDateSelected($event)"
     (blur)="onBlur()"
-    placeholder="Date"
+    (keydown.escape)="cancelEdit()"
+    (keydown.enter)="saveEdit()"
+    placeholder="MM/DD/YYYY"
     aria-label="Edit date"
   />
   <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>

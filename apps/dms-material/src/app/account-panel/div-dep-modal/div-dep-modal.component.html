@@ -28,7 +28,13 @@
     <div class="flex flex-row gap-4">
       <mat-form-field appearance="outline" class="flex-1">
         <mat-label>Amount</mat-label>
-        <input matInput type="number" formControlName="amount" step="0.01" />
+        <input
+          matInput
+          type="text"
+          inputmode="decimal"
+          formControlName="amount"
+          step="0.01"
+        />
         <span matPrefix>$&nbsp;</span>
         @if (amountHasError$()) {
         <mat-error>Amount is required</mat-error>
