@@ -118,7 +118,7 @@
             placeholder="Search Symbol"
           />
         </mat-form-field>
-        } @case ('risk_group_id') {
+        } @case ('risk_group') {
         <mat-form-field
           appearance="outline"
           subscriptSizing="dynamic"
@@ -130,7 +130,7 @@
             placeholder="Select One"
           >
             <mat-option [value]="null">All</mat-option>
-            @for (group of riskGroups; track group.value) {
+            @for (group of riskGroupOptions$(); track group.value) {
             <mat-option [value]="group.value">{{ group.label }}</mat-option>
             }
           </mat-select>

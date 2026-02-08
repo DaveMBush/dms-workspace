@@ -40,7 +40,6 @@ import { enrichUniverseWithRiskGroups } from './enrich-universe-with-risk-groups
 import { filterUniverses } from './filter-universes.function';
 import { UNIVERSE_COLUMNS } from './global-universe.columns';
 import { EXPIRED_OPTIONS } from './global-universe.expired-options';
-import { RISK_GROUPS } from './global-universe.risk-groups';
 import { UniverseService } from './services/universe.service';
 import { UniverseValidationService } from './services/universe-validation.service';
 
@@ -99,8 +98,6 @@ export class GlobalUniverseComponent {
   readonly screenerError = this.screenerService.error;
   readonly columns: ColumnDef[] = UNIVERSE_COLUMNS;
 
-  readonly riskGroups = RISK_GROUPS;
-
   readonly expiredOptions = EXPIRED_OPTIONS;
 
   readonly calculateYield = calculateYieldPercent;
@@ -111,6 +108,16 @@ export class GlobalUniverseComponent {
     const options = [{ label: 'All Accounts', value: 'all' }];
     for (let i = 0; i < accounts.length; i++) {
       options.push({ label: accounts[i].name, value: accounts[i].id });
+    }
+    return options;
+  });
+
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signal
+  readonly riskGroupOptions$ = computed(() => {
+    const riskGroups = selectRiskGroup();
+    const options: { label: string; value: string }[] = [];
+    for (let i = 0; i < riskGroups.length; i++) {
+      options.push({ label: riskGroups[i].name, value: riskGroups[i].id });
     }
     return options;
   });
@@ -211,7 +218,7 @@ export class GlobalUniverseComponent {
     this.notification.success(`Deleted symbol: ${row.symbol}`);
   }
 
-  onCellEdit(row: Universe, field: string, value: unknown): void {
+  onCellEdit(row: Universe, field: keyof Universe, value: unknown): void {
     // Transform value based on field type before validation
     let transformedValue = value;
     if (field === 'ex_date') {

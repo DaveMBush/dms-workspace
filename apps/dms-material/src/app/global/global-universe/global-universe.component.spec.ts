@@ -24,7 +24,11 @@ vi.mock('../../store/accounts/selectors/select-accounts.function', () => ({
 }));
 
 vi.mock('../../store/risk-group/selectors/select-risk-group.function', () => ({
-  selectRiskGroup: vi.fn().mockReturnValue([]),
+  selectRiskGroup: vi.fn().mockReturnValue([
+    { id: 'rg1', name: 'Equities' },
+    { id: 'rg2', name: 'Income' },
+    { id: 'rg3', name: 'Tax Free Income' },
+  ]),
 }));
 
 vi.mock('../../store/top/selectors/select-top-entities.function', () => ({
@@ -291,8 +295,8 @@ describe('GlobalUniverseComponent', () => {
   });
 
   describe('filtering', () => {
-    it('should have riskGroups defined', () => {
-      expect(component.riskGroups.length).toBeGreaterThan(0);
+    it('should have riskGroupOptions defined', () => {
+      expect(component.riskGroupOptions$().length).toBeGreaterThan(0);
     });
 
     it('should have expiredOptions defined', () => {
