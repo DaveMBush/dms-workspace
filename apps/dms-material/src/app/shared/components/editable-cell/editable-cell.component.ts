@@ -38,6 +38,7 @@ export class EditableCellComponent {
 
   isEditing$ = signal(false);
   editValue$ = signal<number>(0);
+  rawEditValue$ = signal<string>('');
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- needed to capture this
   displayValue$ = computed(() => this.value());
@@ -54,6 +55,7 @@ export class EditableCellComponent {
 
   startEdit(): void {
     this.editValue$.set(this.value());
+    this.rawEditValue$.set(String(this.value()));
     this.isEditing$.set(true);
     const context = this;
     // eslint-disable-next-line @smarttools/no-anonymous-functions -- needed to capture this
@@ -62,14 +64,23 @@ export class EditableCellComponent {
     }, 0);
   }
 
-  onValueChange(newValue: number): void {
-    this.editValue$.set(newValue);
+  onValueChange(newValue: number | string): void {
+    // Store raw string value while editing to preserve decimal punctuation
+    this.rawEditValue$.set(String(newValue));
   }
 
   saveEdit(): void {
-    if (this.editValue$() !== this.value()) {
-      this.valueChange.emit(this.editValue$());
+    // Parse and validate the raw string value
+    const numericValue = parseFloat(this.rawEditValue$());
+
+    // Only save if it's a valid number
+    if (!isNaN(numericValue)) {
+      this.editValue$.set(numericValue);
+      if (numericValue !== this.value()) {
+        this.valueChange.emit(numericValue);
+      }
     }
+
     this.isEditing$.set(false);
   }
 

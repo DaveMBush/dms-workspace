@@ -56,7 +56,7 @@
     "primeicons": "^7.0.0",
     "primeng": "^20.0.0",
     "rxjs": "~7.8.0",
-    "yahoo-finance2": "^3.11.2"
+    "yahoo-finance2": "^3.13.0"
   },
   "devDependencies": {
     "@analogjs/vite-plugin-angular": "2.1.3",

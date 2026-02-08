@@ -29,16 +29,19 @@ import { NotificationService } from '../../shared/services/notification.service'
 import { UniverseSyncService } from '../../shared/services/universe-sync.service';
 import { UpdateUniverseFieldsService } from '../../shared/services/update-universe-fields.service';
 import { selectAccounts } from '../../store/accounts/selectors/select-accounts.function';
+import { selectRiskGroup } from '../../store/risk-group/selectors/select-risk-group.function';
 import { selectUniverses } from '../../store/universe/selectors/select-universes.function';
 import { Universe } from '../../store/universe/universe.interface';
 import { AddSymbolDialog } from '../../universe-settings/add-symbol-dialog/add-symbol-dialog';
 import { ScreenerService } from '../global-screener/services/screener.service';
 import { calculateYieldPercent } from './calculate-yield-percent.function';
 import { CellEditEvent } from './cell-edit-event.interface';
+import { enrichUniverseWithRiskGroups } from './enrich-universe-with-risk-groups.function';
 import { filterUniverses } from './filter-universes.function';
 import { UNIVERSE_COLUMNS } from './global-universe.columns';
 import { EXPIRED_OPTIONS } from './global-universe.expired-options';
-import { RISK_GROUPS } from './global-universe.risk-groups';
+import { UniverseService } from './services/universe.service';
+import { UniverseValidationService } from './services/universe-validation.service';
 
 @Component({
   selector: 'dms-global-universe',
@@ -66,6 +69,8 @@ import { RISK_GROUPS } from './global-universe.risk-groups';
 export class GlobalUniverseComponent {
   private readonly syncService = inject(UniverseSyncService);
   private readonly screenerService = inject(ScreenerService);
+  private readonly universeService = inject(UniverseService);
+  private readonly validationService = inject(UniverseValidationService);
   private readonly globalLoading = inject(GlobalLoadingService);
   private readonly notification = inject(NotificationService);
   private readonly dialog = inject(MatDialog);
@@ -93,9 +98,9 @@ export class GlobalUniverseComponent {
   readonly screenerError = this.screenerService.error;
   readonly columns: ColumnDef[] = UNIVERSE_COLUMNS;
 
-  readonly riskGroups = RISK_GROUPS;
-
   readonly expiredOptions = EXPIRED_OPTIONS;
+
+  readonly calculateYield = calculateYieldPercent;
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signal
   readonly accountOptions$ = computed(() => {
@@ -108,12 +113,27 @@ export class GlobalUniverseComponent {
   });
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signal
+  readonly riskGroupOptions$ = computed(() => {
+    const riskGroups = selectRiskGroup();
+    const options: { label: string; value: string }[] = [];
+    for (let i = 0; i < riskGroups.length; i++) {
+      options.push({ label: riskGroups[i].name, value: riskGroups[i].id });
+    }
+    return options;
+  });
+
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signal
   readonly filteredData$ = computed(() => {
-    const rawData = selectUniverses();
+    const rawData = this.universeService.universes();
+    const riskGroups = selectRiskGroup();
+
     if (!Array.isArray(rawData)) {
       return [];
     }
-    return filterUniverses(rawData, {
+
+    const enrichedData = enrichUniverseWithRiskGroups(rawData, riskGroups);
+
+    return filterUniverses(enrichedData, {
       symbolFilter: this.symbolFilter$(),
       riskGroupFilter: this.riskGroupFilter$(),
       expiredFilter: this.expiredFilter$(),
@@ -198,16 +218,30 @@ export class GlobalUniverseComponent {
     this.notification.success(`Deleted symbol: ${row.symbol}`);
   }
 
-  onCellEdit(row: Universe, field: string, value: unknown): void {
+  onCellEdit(row: Universe, field: keyof Universe, value: unknown): void {
     // Transform value based on field type before validation
     let transformedValue = value;
     if (field === 'ex_date') {
-      transformedValue = this.transformExDateValue(value);
+      transformedValue = this.validationService.transformExDateValue(value);
     }
 
-    if (!this.validateFieldValue(field, transformedValue)) {
+    if (!this.validationService.validateFieldValue(field, transformedValue)) {
       return;
     }
+
+    // Find the actual universe object in the SmartNgRX store and update it
+    // This triggers SmartNgRX to automatically save the changes
+    const universes = selectUniverses();
+    for (let i = 0; i < universes.length; i++) {
+      if (universes[i].id === row.id) {
+        // Update the field directly on the SmartNgRX managed object
+        (universes[i] as unknown as Record<string, unknown>)[field] =
+          transformedValue;
+        break;
+      }
+    }
+
+    // Emit event for any listeners (optional, for compatibility)
     this.cellEdit.emit({ row, field, value: transformedValue });
   }
 
@@ -227,12 +261,16 @@ export class GlobalUniverseComponent {
     this.selectedAccountId$.set(value);
   }
 
-  onMinYieldFilterChange(value: number | null): void {
-    this.minYieldFilter$.set(value);
+  parseYieldValue(value: string): number | null {
+    if (!value || value.trim() === '') {
+      return null;
+    }
+    const parsed = parseFloat(value);
+    return isNaN(parsed) ? null : parsed;
   }
 
-  calculateYield(row: Universe): number {
-    return calculateYieldPercent(row);
+  onMinYieldFilterChange(value: number | null): void {
+    this.minYieldFilter$.set(value);
   }
 
   onRefresh(): void {
@@ -245,113 +283,5 @@ export class GlobalUniverseComponent {
         // Error is already captured by ScreenerService error signal
       },
     });
-  }
-
-  private validateFieldValue(field: string, value: unknown): boolean {
-    if (field === 'distribution') {
-      return this.validateDistribution(value);
-    }
-    if (field === 'distributions_per_year') {
-      return this.validateDistributionsPerYear(value);
-    }
-    if (field === 'ex_date') {
-      return this.validateExDate(value);
-    }
-    return true;
-  }
-
-  private validateDistribution(value: unknown): boolean {
-    if (typeof value === 'number' && value < 0) {
-      this.notification.error('Distribution value cannot be negative');
-      return false;
-    }
-    return true;
-  }
-
-  private validateDistributionsPerYear(value: unknown): boolean {
-    if (typeof value !== 'number') {
-      return true;
-    }
-    if (value < 0) {
-      this.notification.error('Distributions per year cannot be negative');
-      return false;
-    }
-    if (!Number.isInteger(value)) {
-      this.notification.error('Distributions per year must be a whole number');
-      return false;
-    }
-    return true;
-  }
-
-  private validateExDate(value: unknown): boolean {
-    // Allow null values to clear the date
-    if (value === null) {
-      return true;
-    }
-
-    if (typeof value !== 'string') {
-      return true;
-    }
-
-    const ERROR_MESSAGE = 'Invalid date format. Please use YYYY-MM-DD';
-    const isoDateRegex = /^\d{4}-\d{2}-\d{2}$/;
-
-    if (!isoDateRegex.test(value)) {
-      this.notification.error(ERROR_MESSAGE);
-      return false;
-    }
-
-    const date = new Date(value + 'T00:00:00Z');
-    if (isNaN(date.getTime())) {
-      this.notification.error(ERROR_MESSAGE);
-      return false;
-    }
-
-    const parts = value.split('-');
-    const year = parseInt(parts[0], 10);
-    const month = parseInt(parts[1], 10);
-    const day = parseInt(parts[2], 10);
-
-    if (
-      date.getUTCFullYear() !== year ||
-      date.getUTCMonth() + 1 !== month ||
-      date.getUTCDate() !== day
-    ) {
-      this.notification.error(ERROR_MESSAGE);
-      return false;
-    }
-
-    return true;
-  }
-
-  private transformExDateValue(value: unknown): unknown {
-    // Handle null explicitly
-    if (value === null) {
-      return null;
-    }
-
-    // Handle empty string - convert to null
-    if (value === '') {
-      return null;
-    }
-
-    // Handle Date objects
-    if (value instanceof Date) {
-      // Check if date is valid
-      if (isNaN(value.getTime())) {
-        // Return a string that will fail validation
-        // This triggers the error in validateExDate
-        return 'INVALID_DATE';
-      }
-      // Convert to ISO date string (YYYY-MM-DD) using local date components
-      // to avoid timezone issues with toISOString()
-      const year = value.getFullYear();
-      const month = String(value.getMonth() + 1).padStart(2, '0');
-      const day = String(value.getDate()).padStart(2, '0');
-      return `${year}-${month}-${day}`;
-    }
-
-    // Return string values as-is for validation
-    return value;
   }
 }

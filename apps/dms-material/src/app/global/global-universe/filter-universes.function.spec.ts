@@ -390,10 +390,10 @@ describe('filterUniverses - Expired Filter', () => {
   });
 });
 
-// TDD RED Phase - Story AN.9
-// Comprehensive expired filter tests - currently disabled
-// Tests will be re-enabled in Story AN.10
-describe.skip('filterUniverses - Expired Filter Comprehensive Tests (Story AN.9)', () => {
+// TDD GREEN Phase - Story AN.10
+// Comprehensive expired filter tests - re-enabled
+// Tests were written in Story AN.9 (RED phase)
+describe('filterUniverses - Expired Filter Comprehensive Tests (Story AN.9)', () => {
   const testData: Universe[] = [
     {
       id: '1',
@@ -453,7 +453,7 @@ describe.skip('filterUniverses - Expired Filter Comprehensive Tests (Story AN.9)
   ];
 
   describe('Basic Expired Filter Behavior', () => {
-    it.skip('should handle all expired symbols', () => {
+    it('should handle all expired symbols', () => {
       const allExpired: Universe[] = [
         {
           id: '1',
@@ -488,7 +488,7 @@ describe.skip('filterUniverses - Expired Filter Comprehensive Tests (Story AN.9)
       expect(result).toHaveLength(0);
     });
 
-    it.skip('should handle all non-expired symbols', () => {
+    it('should handle all non-expired symbols', () => {
       const allActive: Universe[] = [
         {
           id: '1',
@@ -523,7 +523,7 @@ describe.skip('filterUniverses - Expired Filter Comprehensive Tests (Story AN.9)
       expect(result).toHaveLength(0);
     });
 
-    it.skip('should return correct count when filtering expired=true', () => {
+    it('should return correct count when filtering expired=true', () => {
       const result = filterUniverses(testData, {
         symbolFilter: '',
         riskGroupFilter: null,
@@ -538,7 +538,7 @@ describe.skip('filterUniverses - Expired Filter Comprehensive Tests (Story AN.9)
       ).toBe(true);
     });
 
-    it.skip('should return correct count when filtering expired=false', () => {
+    it('should return correct count when filtering expired=false', () => {
       const result = filterUniverses(testData, {
         symbolFilter: '',
         riskGroupFilter: null,
@@ -553,7 +553,7 @@ describe.skip('filterUniverses - Expired Filter Comprehensive Tests (Story AN.9)
       ).toBe(true);
     });
 
-    it.skip('should preserve all expired symbols when filter is null', () => {
+    it('should preserve all expired symbols when filter is null', () => {
       const result = filterUniverses(testData, {
         symbolFilter: '',
         riskGroupFilter: null,
@@ -569,7 +569,7 @@ describe.skip('filterUniverses - Expired Filter Comprehensive Tests (Story AN.9)
   });
 
   describe('Expired Filter with Symbol Filter', () => {
-    it.skip('should combine expired=false with symbol filter', () => {
+    it('should combine expired=false with symbol filter', () => {
       const result = filterUniverses(testData, {
         symbolFilter: 'A',
         riskGroupFilter: null,
@@ -581,7 +581,7 @@ describe.skip('filterUniverses - Expired Filter Comprehensive Tests (Story AN.9)
       expect(result[0].expired).toBe(false);
     });
 
-    it.skip('should combine expired=true with symbol filter', () => {
+    it('should combine expired=true with symbol filter', () => {
       const result = filterUniverses(testData, {
         symbolFilter: 'M',
         riskGroupFilter: null,
@@ -593,7 +593,7 @@ describe.skip('filterUniverses - Expired Filter Comprehensive Tests (Story AN.9)
       expect(result[0].expired).toBe(true);
     });
 
-    it.skip('should return empty when symbol matches but expired status does not', () => {
+    it('should return empty when symbol matches but expired status does not', () => {
       const result = filterUniverses(testData, {
         symbolFilter: 'AAPL',
         riskGroupFilter: null,
@@ -603,7 +603,7 @@ describe.skip('filterUniverses - Expired Filter Comprehensive Tests (Story AN.9)
       expect(result).toHaveLength(0); // AAPL is not expired
     });
 
-    it.skip('should handle case insensitive symbol with expired filter', () => {
+    it('should handle case insensitive symbol with expired filter', () => {
       const result = filterUniverses(testData, {
         symbolFilter: 'msft',
         riskGroupFilter: null,
@@ -616,7 +616,7 @@ describe.skip('filterUniverses - Expired Filter Comprehensive Tests (Story AN.9)
   });
 
   describe('Expired Filter with Risk Group Filter', () => {
-    it.skip('should combine expired=false with equity risk group', () => {
+    it('should combine expired=false with equity risk group', () => {
       const result = filterUniverses(testData, {
         symbolFilter: '',
         riskGroupFilter: 'equity',
@@ -631,7 +631,7 @@ describe.skip('filterUniverses - Expired Filter Comprehensive Tests (Story AN.9)
       ).toBe(true);
     });
 
-    it.skip('should combine expired=true with equity risk group', () => {
+    it('should combine expired=true with equity risk group', () => {
       const result = filterUniverses(testData, {
         symbolFilter: '',
         riskGroupFilter: 'equity',
@@ -642,7 +642,7 @@ describe.skip('filterUniverses - Expired Filter Comprehensive Tests (Story AN.9)
       expect(result[0].symbol).toBe('MSFT');
     });
 
-    it.skip('should combine expired=true with bond risk group', () => {
+    it('should combine expired=true with bond risk group', () => {
       const result = filterUniverses(testData, {
         symbolFilter: '',
         riskGroupFilter: 'bond',
@@ -653,7 +653,7 @@ describe.skip('filterUniverses - Expired Filter Comprehensive Tests (Story AN.9)
       expect(result[0].symbol).toBe('TLT');
     });
 
-    it.skip('should combine expired=true with reit risk group', () => {
+    it('should combine expired=true with reit risk group', () => {
       const result = filterUniverses(testData, {
         symbolFilter: '',
         riskGroupFilter: 'reit',
@@ -664,7 +664,7 @@ describe.skip('filterUniverses - Expired Filter Comprehensive Tests (Story AN.9)
       expect(result[0].symbol).toBe('VNQ');
     });
 
-    it.skip('should return empty when risk group matches but no expired symbols', () => {
+    it('should return empty when risk group matches but no expired symbols', () => {
       const result = filterUniverses(testData, {
         symbolFilter: '',
         riskGroupFilter: 'equity',
@@ -676,7 +676,7 @@ describe.skip('filterUniverses - Expired Filter Comprehensive Tests (Story AN.9)
   });
 
   describe('Expired Filter with Min Yield Filter', () => {
-    it.skip('should combine expired=false with min yield filter', () => {
+    it('should combine expired=false with min yield filter', () => {
       const result = filterUniverses(testData, {
         symbolFilter: '',
         riskGroupFilter: null,
@@ -688,7 +688,7 @@ describe.skip('filterUniverses - Expired Filter Comprehensive Tests (Story AN.9)
       expect(result[0].expired).toBe(false);
     });
 
-    it.skip('should combine expired=true with min yield filter', () => {
+    it('should combine expired=true with min yield filter', () => {
       const result = filterUniverses(testData, {
         symbolFilter: '',
         riskGroupFilter: null,
@@ -703,7 +703,7 @@ describe.skip('filterUniverses - Expired Filter Comprehensive Tests (Story AN.9)
       ).toBe(true);
     });
 
-    it.skip('should handle high yield threshold with expired filter', () => {
+    it('should handle high yield threshold with expired filter', () => {
       const result = filterUniverses(testData, {
         symbolFilter: '',
         riskGroupFilter: null,
@@ -714,7 +714,7 @@ describe.skip('filterUniverses - Expired Filter Comprehensive Tests (Story AN.9)
       expect(result[0].symbol).toBe('TLT');
     });
 
-    it.skip('should return empty when yield threshold excludes all expired', () => {
+    it('should return empty when yield threshold excludes all expired', () => {
       const result = filterUniverses(testData, {
         symbolFilter: '',
         riskGroupFilter: null,
@@ -724,7 +724,7 @@ describe.skip('filterUniverses - Expired Filter Comprehensive Tests (Story AN.9)
       expect(result).toHaveLength(0);
     });
 
-    it.skip('should handle zero yield with expired=false filter', () => {
+    it('should handle zero yield with expired=false filter', () => {
       const result = filterUniverses(testData, {
         symbolFilter: '',
         riskGroupFilter: null,
@@ -737,7 +737,7 @@ describe.skip('filterUniverses - Expired Filter Comprehensive Tests (Story AN.9)
   });
 
   describe('Expired Filter with All Filters Combined', () => {
-    it.skip('should combine all four filters - expired=false', () => {
+    it('should combine all four filters - expired=false', () => {
       const result = filterUniverses(testData, {
         symbolFilter: 'A',
         riskGroupFilter: 'equity',
@@ -748,7 +748,7 @@ describe.skip('filterUniverses - Expired Filter Comprehensive Tests (Story AN.9)
       expect(result[0].symbol).toBe('AAPL');
     });
 
-    it.skip('should combine all four filters - expired=true', () => {
+    it('should combine all four filters - expired=true', () => {
       const result = filterUniverses(testData, {
         symbolFilter: 'T',
         riskGroupFilter: 'bond',
@@ -759,7 +759,7 @@ describe.skip('filterUniverses - Expired Filter Comprehensive Tests (Story AN.9)
       expect(result[0].symbol).toBe('TLT');
     });
 
-    it.skip('should return empty when all filters combined match nothing', () => {
+    it('should return empty when all filters combined match nothing', () => {
       const result = filterUniverses(testData, {
         symbolFilter: 'AAPL',
         riskGroupFilter: 'equity',
@@ -769,7 +769,7 @@ describe.skip('filterUniverses - Expired Filter Comprehensive Tests (Story AN.9)
       expect(result).toHaveLength(0); // AAPL is not expired
     });
 
-    it.skip('should handle complex filter combination with partial matches', () => {
+    it('should handle complex filter combination with partial matches', () => {
       const result = filterUniverses(testData, {
         symbolFilter: 'V',
         riskGroupFilter: 'reit',
@@ -782,7 +782,7 @@ describe.skip('filterUniverses - Expired Filter Comprehensive Tests (Story AN.9)
   });
 
   describe('Edge Cases with Expired Filter', () => {
-    it.skip('should handle empty dataset with expired filter', () => {
+    it('should handle empty dataset with expired filter', () => {
       const result = filterUniverses([], {
         symbolFilter: '',
         riskGroupFilter: null,
@@ -792,7 +792,7 @@ describe.skip('filterUniverses - Expired Filter Comprehensive Tests (Story AN.9)
       expect(result).toHaveLength(0);
     });
 
-    it.skip('should handle dataset with only expired=true when filter=true', () => {
+    it('should handle dataset with only expired=true when filter=true', () => {
       const onlyExpired: Universe[] = [
         {
           id: '1',
@@ -816,7 +816,7 @@ describe.skip('filterUniverses - Expired Filter Comprehensive Tests (Story AN.9)
       expect(result).toHaveLength(1);
     });
 
-    it.skip('should handle dataset with only expired=false when filter=false', () => {
+    it('should handle dataset with only expired=false when filter=false', () => {
       const onlyActive: Universe[] = [
         {
           id: '1',
@@ -840,7 +840,7 @@ describe.skip('filterUniverses - Expired Filter Comprehensive Tests (Story AN.9)
       expect(result).toHaveLength(1);
     });
 
-    it.skip('should handle mixed expired states with null last_price', () => {
+    it('should handle mixed expired states with null last_price', () => {
       const mixedData: Universe[] = [
         {
           id: '1',
@@ -885,7 +885,7 @@ describe.skip('filterUniverses - Expired Filter Comprehensive Tests (Story AN.9)
       expect(resultActive[0].symbol).toBe('AAPL');
     });
 
-    it.skip('should preserve order when filtering by expired', () => {
+    it('should preserve order when filtering by expired', () => {
       const orderedData: Universe[] = [
         {
           id: '1',

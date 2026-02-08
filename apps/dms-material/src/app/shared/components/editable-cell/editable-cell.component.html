@@ -3,8 +3,9 @@
   <input
     #inputRef
     matInput
-    type="number"
-    [ngModel]="editValue$()"
+    type="text"
+    inputmode="decimal"
+    [ngModel]="rawEditValue$()"
     (ngModelChange)="onValueChange($event)"
     (keydown.enter)="saveEdit()"
     (keydown.escape)="cancelEdit()"

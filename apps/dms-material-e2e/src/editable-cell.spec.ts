@@ -27,7 +27,7 @@ test.describe.skip('Editable Cell Component', () => {
     test('should show input field in edit mode', async ({ page }) => {
       const displayValue = page.locator('.display-value').first();
       await displayValue.click();
-      const input = page.locator('input[type="number"]').first();
+      const input = page.locator('input[matInput]').first();
       await expect(input).toBeVisible();
     });
 
@@ -114,7 +114,7 @@ test.describe.skip('Editable Cell Component', () => {
     test('should reject non-numeric input', async ({ page }) => {
       const displayValue = page.locator('.display-value').first();
       await displayValue.click();
-      const input = page.locator('input[type="number"]').first();
+      const input = page.locator('input[matInput]').first();
       await input.fill('abc');
       const value = await input.inputValue();
       expect(value).toBe('');

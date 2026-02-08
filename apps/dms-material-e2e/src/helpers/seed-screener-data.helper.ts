@@ -1,4 +1,6 @@
-import type { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
+
+type PrismaClientType = PrismaClient;
 
 interface SeederResult {
   cleanup(): Promise<void>;
@@ -44,7 +46,7 @@ function generateUniqueId(): string {
 /**
  * Create risk groups in the database
  */
-async function createRiskGroups(prisma: PrismaClient): Promise<RiskGroups> {
+async function createRiskGroups(prisma: PrismaClientType): Promise<RiskGroups> {
   const equitiesRiskGroup = await prisma.risk_group.upsert({
     where: { name: 'Equities' },
     update: {},
@@ -141,7 +143,7 @@ function buildScreenerRecords(
  * Create screener records in database
  */
 async function createScreenerRecords(
-  prisma: PrismaClient,
+  prisma: PrismaClientType,
   symbols: string[],
   riskGroups: RiskGroups
 ): Promise<void> {
@@ -161,7 +163,7 @@ async function createScreenerRecords(
  */
 export async function seedScreenerData(): Promise<SeederResult> {
   // Import Prisma and adapter dynamically to avoid bundling issues
-  const { PrismaClient } = await import('@prisma/client');
+  const prismaClientImport = (await import('@prisma/client')).PrismaClient;
   const { PrismaBetterSqlite3 } = await import(
     '@prisma/adapter-better-sqlite3'
   );
@@ -171,7 +173,7 @@ export async function seedScreenerData(): Promise<SeederResult> {
   // This matches apps/server/project.json e2e-server configuration
   const testDbUrl = 'file:./test-database.db';
   const adapter = new PrismaBetterSqlite3({ url: testDbUrl });
-  const prisma = new PrismaClient({ adapter });
+  const prisma = new prismaClientImport({ adapter });
 
   // Generate unique symbols for this test run
   const uniqueId = generateUniqueId();
