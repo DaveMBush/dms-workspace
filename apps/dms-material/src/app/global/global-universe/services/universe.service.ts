@@ -23,7 +23,11 @@ export class UniverseService {
 
         // SmartNgRX returns a Proxy that behaves like an array
         // Check length property directly (don't use Array.isArray() on Proxies)
-        if (universes !== null && universes !== undefined && universes.length > 0) {
+        if (
+          universes !== null &&
+          universes !== undefined &&
+          universes.length > 0
+        ) {
           // Convert to actual array and cache
           const universesArray = [] as Universe[];
           for (let i = 0; i < universes.length; i++) {

@@ -8,7 +8,11 @@ export function enrichUniverseWithRiskGroups(
 ): EnrichedUniverse[] {
   // Create a map of risk group ID to name for fast lookup
   const riskGroupMap = new Map<string, string>();
-  if (riskGroups !== null && riskGroups !== undefined && riskGroups.length > 0) {
+  if (
+    riskGroups !== null &&
+    riskGroups !== undefined &&
+    riskGroups.length > 0
+  ) {
     for (let i = 0; i < riskGroups.length; i++) {
       riskGroupMap.set(riskGroups[i].id, riskGroups[i].name);
     }
