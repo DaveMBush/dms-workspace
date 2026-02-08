@@ -117,7 +117,7 @@ export class GlobalUniverseComponent {
 
     // Create a map of risk group ID to name for fast lookup
     const riskGroupMap = new Map<string, string>();
-    if (riskGroups && riskGroups.length > 0) {
+    if (riskGroups !== null && riskGroups !== undefined && riskGroups.length > 0) {
       for (let i = 0; i < riskGroups.length; i++) {
         riskGroupMap.set(riskGroups[i].id, riskGroups[i].name);
       }
@@ -141,7 +141,7 @@ export class GlobalUniverseComponent {
         ex_date: universe.ex_date,
         risk_group_id: universe.risk_group_id,
         risk_group:
-          riskGroupMap.get(universe.risk_group_id) || universe.risk_group_id,
+          riskGroupMap.get(universe.risk_group_id) ?? universe.risk_group_id,
         expired: universe.expired,
         is_closed_end_fund: universe.is_closed_end_fund,
         name: universe.name,
@@ -360,10 +360,33 @@ export class GlobalUniverseComponent {
       return false;
     }
 
-    // Parse the date
-    const date = new Date(value);
+    return this.validateDateComponents(value);
+  }
+
+  private validateDateComponents(value: string): boolean {
+    // Extract date components
+    const datePart = value.split('T')[0];
+    const parts = datePart.split('-');
+    const year = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10);
+    const day = parseInt(parts[2], 10);
+
+    // Create Date object based on format
+    const isUTC = value.includes('T') && value.endsWith('Z');
+    const date = isUTC ? new Date(value) : new Date(year, month - 1, day);
+
     if (isNaN(date.getTime())) {
       this.notification.error('Invalid date value');
+      return false;
+    }
+
+    // Verify parsed date matches input
+    const parsedYear = isUTC ? date.getUTCFullYear() : date.getFullYear();
+    const parsedMonth = isUTC ? date.getUTCMonth() + 1 : date.getMonth() + 1;
+    const parsedDay = isUTC ? date.getUTCDate() : date.getDate();
+
+    if (parsedYear !== year || parsedMonth !== month || parsedDay !== day) {
+      this.notification.error('Invalid date format');
       return false;
     }
 

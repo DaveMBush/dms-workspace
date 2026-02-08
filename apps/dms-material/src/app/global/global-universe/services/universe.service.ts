@@ -23,7 +23,7 @@ export class UniverseService {
 
         // SmartNgRX returns a Proxy that behaves like an array
         // Check length property directly (don't use Array.isArray() on Proxies)
-        if (universes && universes.length > 0) {
+        if (universes !== null && universes !== undefined && universes.length > 0) {
           // Convert to actual array and cache
           const universesArray = [] as Universe[];
           for (let i = 0; i < universes.length; i++) {
@@ -43,14 +43,19 @@ export class UniverseService {
   universes = computed(() => {
     // Read selectUniverses() to establish dependency and trigger updates
     const current = selectUniverses();
-    const cached = this.cachedUniverses();
 
     // SmartNgRX returns a Proxy - check .length property directly
-    if (current && current.length > 0) {
-      return cached;
+    // Return current data when available, otherwise fall back to cache
+    if (current !== null && current !== undefined && current.length > 0) {
+      // Convert to actual array since current is a Proxy
+      const currentArray = [] as Universe[];
+      for (let i = 0; i < current.length; i++) {
+        currentArray.push(current[i]);
+      }
+      return currentArray;
     }
 
-    // Return cache when SmartNgRX returns empty
-    return cached;
+    // Return cache when SmartNgRX returns empty (during state recalculation)
+    return this.cachedUniverses();
   });
 }

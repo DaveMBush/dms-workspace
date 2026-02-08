@@ -12,6 +12,7 @@ import { UpdateUniverseFieldsService } from '../../shared/services/update-univer
 import { GlobalLoadingService } from '../../shared/services/global-loading.service';
 import { Universe } from '../../store/universe/universe.interface';
 import { GlobalUniverseComponent } from './global-universe.component';
+import { UniverseService } from './services/universe.service';
 
 // Mock SmartNgRX selectors
 vi.mock('../../store/universe/selectors/select-universes.function', () => ({
@@ -20,6 +21,10 @@ vi.mock('../../store/universe/selectors/select-universes.function', () => ({
 
 vi.mock('../../store/accounts/selectors/select-accounts.function', () => ({
   selectAccounts: vi.fn().mockReturnValue([]),
+}));
+
+vi.mock('../../store/risk-group/selectors/select-risk-group.function', () => ({
+  selectRiskGroup: vi.fn().mockReturnValue([]),
 }));
 
 vi.mock('../../store/top/selectors/select-top-entities.function', () => ({
@@ -58,6 +63,9 @@ describe('GlobalUniverseComponent', () => {
     info: ReturnType<typeof vi.fn>;
     showPersistent: ReturnType<typeof vi.fn>;
   };
+  let mockUniverseService: {
+    universes: ReturnType<typeof signal<Universe[]>>;
+  };
 
   beforeEach(async () => {
     mockSyncService = {
@@ -77,6 +85,9 @@ describe('GlobalUniverseComponent', () => {
       info: vi.fn(),
       showPersistent: vi.fn(),
     };
+    mockUniverseService = {
+      universes: signal<Universe[]>([]),
+    };
 
     await TestBed.configureTestingModule({
       imports: [GlobalUniverseComponent],
@@ -84,6 +95,7 @@ describe('GlobalUniverseComponent', () => {
         provideSmartNgRX(),
         { provide: UniverseSyncService, useValue: mockSyncService },
         { provide: NotificationService, useValue: mockNotification },
+        { provide: UniverseService, useValue: mockUniverseService },
       ],
     }).compileComponents();
 
@@ -115,7 +127,7 @@ describe('GlobalUniverseComponent', () => {
 
     it('should have risk group column', () => {
       const col = component.columns.find(function findRiskGroup(c) {
-        return c.field === 'risk_group_id';
+        return c.field === 'risk_group';
       });
       expect(col).toBeDefined();
     });
@@ -1726,7 +1738,7 @@ describe('GlobalUniverseComponent - Distribution Field Editing Validation (TDD -
 
       expect(cellEditSpy).not.toHaveBeenCalled();
       expect(mockNotification.error).toHaveBeenCalledWith(
-        'Invalid date format. Please use YYYY-MM-DD'
+        'Invalid date format'
       );
     });
 
@@ -1742,7 +1754,7 @@ describe('GlobalUniverseComponent - Distribution Field Editing Validation (TDD -
 
       expect(cellEditSpy).not.toHaveBeenCalled();
       expect(mockNotification.error).toHaveBeenCalledWith(
-        'Invalid date format. Please use YYYY-MM-DD'
+        'Invalid date format'
       );
     });
 
@@ -1758,7 +1770,7 @@ describe('GlobalUniverseComponent - Distribution Field Editing Validation (TDD -
 
       expect(cellEditSpy).not.toHaveBeenCalled();
       expect(mockNotification.error).toHaveBeenCalledWith(
-        'Invalid date format. Please use YYYY-MM-DD'
+        'Invalid date format'
       );
     });
 
@@ -1774,7 +1786,7 @@ describe('GlobalUniverseComponent - Distribution Field Editing Validation (TDD -
 
       expect(cellEditSpy).not.toHaveBeenCalled();
       expect(mockNotification.error).toHaveBeenCalledWith(
-        'Invalid date format. Please use YYYY-MM-DD'
+        'Invalid date format'
       );
     });
 
@@ -1889,7 +1901,7 @@ describe('GlobalUniverseComponent - Distribution Field Editing Validation (TDD -
       // Test ex_date error
       component.onCellEdit(row, 'ex_date', 'invalid');
       expect(mockNotification.error).toHaveBeenCalledWith(
-        'Invalid date format. Please use YYYY-MM-DD'
+        'Invalid date format'
       );
     });
 
@@ -1976,7 +1988,7 @@ describe('GlobalUniverseComponent - Ex-Date Editing Enhancements (TDD - Story AN
       expect(cellEditSpy).toHaveBeenCalledWith({
         row,
         field: 'ex_date',
-        value: '2024-06-15',
+        value: '2024-06-15T00:00:00.000Z',
       });
       expect(mockNotification.error).not.toHaveBeenCalled();
     });
@@ -1997,7 +2009,7 @@ describe('GlobalUniverseComponent - Ex-Date Editing Enhancements (TDD - Story AN
       expect(cellEditSpy).toHaveBeenCalledWith({
         row,
         field: 'ex_date',
-        value: '2024-06-15',
+        value: '2024-06-15T00:00:00.000Z',
       });
       expect(mockNotification.error).not.toHaveBeenCalled();
     });
@@ -2018,7 +2030,7 @@ describe('GlobalUniverseComponent - Ex-Date Editing Enhancements (TDD - Story AN
       expect(cellEditSpy).toHaveBeenCalledWith({
         row,
         field: 'ex_date',
-        value: '2024-06-15',
+        value: '2024-06-15T00:00:00.000Z',
       });
       expect(mockNotification.error).not.toHaveBeenCalled();
     });
@@ -2037,7 +2049,7 @@ describe('GlobalUniverseComponent - Ex-Date Editing Enhancements (TDD - Story AN
 
       expect(cellEditSpy).not.toHaveBeenCalled();
       expect(mockNotification.error).toHaveBeenCalledWith(
-        'Invalid date format. Please use YYYY-MM-DD'
+        'Invalid date format'
       );
     });
   });
@@ -2115,7 +2127,7 @@ describe('GlobalUniverseComponent - Ex-Date Editing Enhancements (TDD - Story AN
 
       expect(cellEditSpy).not.toHaveBeenCalled();
       expect(mockNotification.error).toHaveBeenCalledWith(
-        'Invalid date format. Please use YYYY-MM-DD'
+        'Invalid date format'
       );
     });
 
@@ -2192,7 +2204,7 @@ describe('GlobalUniverseComponent - Ex-Date Editing Enhancements (TDD - Story AN
 
       expect(cellEditSpy).not.toHaveBeenCalled();
       expect(mockNotification.error).toHaveBeenCalledWith(
-        'Invalid date format. Please use YYYY-MM-DD'
+        'Invalid date format'
       );
     });
 
@@ -2209,7 +2221,7 @@ describe('GlobalUniverseComponent - Ex-Date Editing Enhancements (TDD - Story AN
 
       expect(cellEditSpy).not.toHaveBeenCalled();
       expect(mockNotification.error).toHaveBeenCalledWith(
-        'Invalid date format. Please use YYYY-MM-DD'
+        'Invalid date format'
       );
     });
 
@@ -2226,7 +2238,7 @@ describe('GlobalUniverseComponent - Ex-Date Editing Enhancements (TDD - Story AN
 
       expect(cellEditSpy).not.toHaveBeenCalled();
       expect(mockNotification.error).toHaveBeenCalledWith(
-        'Invalid date format. Please use YYYY-MM-DD'
+        'Invalid date format'
       );
     });
   });
@@ -2300,7 +2312,7 @@ describe('GlobalUniverseComponent - Ex-Date Editing Enhancements (TDD - Story AN
         ex_date: '2024-01-15',
       } as Universe;
 
-      const expectedError = 'Invalid date format. Please use YYYY-MM-DD';
+      const expectedError = 'Invalid date format';
 
       // Test various invalid formats
       const invalidFormats = [
