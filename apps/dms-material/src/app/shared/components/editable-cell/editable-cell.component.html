@@ -5,7 +5,7 @@
     matInput
     type="text"
     inputmode="decimal"
-    [ngModel]="editValue$()"
+    [ngModel]="rawEditValue$()"
     (ngModelChange)="onValueChange($event)"
     (keydown.enter)="saveEdit()"
     (keydown.escape)="cancelEdit()"

@@ -41,7 +41,7 @@ export function processYahooFinanceDividendData(
     .map(function mapDividendRow(dividend): ProcessedRow {
       return {
         amount: dividend.amount,
-        date: new Date(dividend.date)
+        date: new Date(dividend.date),
       };
     })
     .filter(function filterValidDates(row: ProcessedRow): boolean {
