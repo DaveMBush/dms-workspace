@@ -24,17 +24,17 @@
 
 ### Functional Requirements
 
-- [ ] All E2E tests written for complete universe workflow
-- [ ] Tests cover table display, filtering, editing workflows
-- [ ] All tests initially fail (RED phase)
-- [ ] Tests disabled with `xit()` or `.skip` to allow CI to pass
+- [x] All E2E tests written for complete universe workflow
+- [x] Tests cover table display, filtering, editing workflows
+- [x] All tests initially fail (RED phase)
+- [x] Tests disabled with `xit()` or `.skip` to allow CI to pass
 
 ### Technical Requirements
 
-- [ ] Tests follow E2E testing patterns
-- [ ] Proper data-testid attributes for E2E selectors
-- [ ] Test coverage includes edge cases
-- [ ] Test descriptions are clear and specific
+- [x] Tests follow E2E testing patterns
+- [x] Proper data-testid attributes for E2E selectors
+- [x] Test coverage includes edge cases
+- [x] Test descriptions are clear and specific
 
 ## Implementation Details
 
@@ -56,16 +56,16 @@ Change `it()` to `xit()` or use `.skip` to disable tests.
 
 ## Definition of Done
 
-- [ ] All tests written and disabled (RED phase)
-- [ ] Tests cover all acceptance criteria scenarios
-- [ ] Tests disabled to allow CI to pass
-- [ ] Test code follows project conventions
-- [ ] All validation commands pass:
-  - [ ] Run `pnpm all`
-  - [ ] Run `pnpm e2e:dms-material`
-  - [ ] Run `pnpm dupcheck`
-  - [ ] Run `pnpm format`
-  - [ ] Repeat all of these if any fail until they all pass
+- [x] All tests written and disabled (RED phase)
+- [x] Tests cover all acceptance criteria scenarios
+- [x] Tests disabled to allow CI to pass
+- [x] Test code follows project conventions
+- [x] All validation commands pass:
+  - [x] Run `pnpm all`
+  - [x] Run `pnpm e2e:dms-material`
+  - [x] Run `pnpm dupcheck`
+  - [x] Run `pnpm format`
+  - [x] Repeat all of these if any fail until they all pass
 - [ ] Code reviewed and approved
 
 ## Notes
@@ -78,6 +78,81 @@ Change `it()` to `xit()` or use `.skip` to disable tests.
 ## Related Stories
 
 - **Previous**: Story AN.10
-- **Next**: Story AN.AN.12
+- **Next**: Story AN.12
 - **Epic**: Epic AN
 - **Pattern Reference**: Story AM.11 (Similar TDD pattern)
+
+---
+
+## Tasks
+
+- [x] Create comprehensive E2E test file for universe table workflows
+- [x] Implement tests for table data display
+- [x] Implement tests for cell editing workflows (distribution, yield, ex-date)
+- [x] Implement tests for symbol deletion
+- [x] Implement tests for Add Symbol dialog
+- [x] Implement tests for Update Fields operation
+- [x] Implement tests for filter combinations
+- [x] Implement tests for table refresh
+- [x] Implement tests for edge cases and error handling
+- [x] Implement tests for accessibility and keyboard navigation
+- [x] Disable all tests with `.skip` to allow CI to pass
+- [x] Run all validation commands and ensure they pass
+
+## Dev Agent Record
+
+### Agent Model Used
+
+Claude Sonnet 4.5
+
+### Completion Notes
+
+Successfully implemented comprehensive E2E test suite for universe table workflows in TDD RED phase:
+
+- Created new test file: `universe-table-workflows.spec.ts`
+- Implemented 64 comprehensive E2E tests covering:
+  - Table data display and column structure
+  - Cell editing for distribution, yield percentage, and ex-date fields
+  - Form validation during editing
+  - Symbol deletion workflow with confirmation
+  - Add Symbol dialog integration
+  - Update Fields operation
+  - Filter combinations (symbol, risk group, yield, expired status)
+  - Table refresh functionality
+  - Edge cases and error handling
+  - Accessibility and keyboard navigation
+- All tests properly disabled with `test.describe.skip()` to allow CI to pass
+- Fixed linting errors (slow-regex and empty function warnings)
+- All validation commands pass successfully
+
+### File List
+
+**Created:**
+
+- apps/dms-material-e2e/src/universe-table-workflows.spec.ts
+
+### Change Log
+
+1. Created comprehensive E2E test file with 64 test cases
+2. Organized tests into logical describe blocks for better structure
+3. Added proper test documentation explaining TDD RED phase approach
+4. Disabled all tests with `.skip` to allow CI to pass
+5. Fixed linting errors with appropriate eslint-disable comments
+6. Verified all tests are properly skipped during E2E test runs
+7. Confirmed all validation commands pass (pnpm all, dupcheck, format, e2e)
+
+## Status
+
+**Ready for Review**
+
+---
+
+## QA Results
+
+### Review Date: 2026-02-09
+
+### Reviewed By: Quinn (Test Architect)
+
+### Gate Status
+
+Gate: PASS → docs/qa/gates/AN.11-tdd-e2e-universe-table.yml
