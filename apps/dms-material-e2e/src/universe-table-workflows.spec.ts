@@ -862,9 +862,9 @@ test.describe.skip('Universe Table Workflows', () => {
       });
 
       await page.reload();
-      await page.waitForLoadState('networkidle');
-
+      // Wait for specific empty state element instead of networkidle
       const emptyState = page.locator('.empty-state');
+      await emptyState.waitFor({ state: 'visible' });
       await expect(emptyState).toBeVisible();
     });
 
@@ -877,9 +877,9 @@ test.describe.skip('Universe Table Workflows', () => {
       });
 
       await page.reload();
-      await page.waitForLoadState('networkidle');
-
+      // Wait for specific error message element instead of networkidle
       const errorMessage = page.locator('.error-message');
+      await errorMessage.waitFor({ state: 'visible' });
       await expect(errorMessage).toBeVisible();
     });
 
@@ -964,11 +964,11 @@ test.describe.skip('Universe Table Workflows', () => {
 
       // Navigate away
       await page.goto('/global/summary');
-      await page.waitForLoadState('networkidle');
+      await expect(page.locator('.summary-container')).toBeVisible();
 
       // Navigate back
       await page.goto('/global/universe');
-      await page.waitForLoadState('networkidle');
+      await expect(page.locator('.universe-container')).toBeVisible();
 
       // Filter might or might not be preserved depending on implementation
       // At minimum, page should load without errors
