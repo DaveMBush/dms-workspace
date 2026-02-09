@@ -26,7 +26,8 @@ test.describe.skip('Universe Table Workflows', () => {
   test.beforeEach(async ({ page }) => {
     await login(page);
     await page.goto('/global/universe');
-    await page.waitForLoadState('networkidle');
+    // Wait for table to be ready instead of networkidle
+    await expect(page.locator('dms-base-table')).toBeVisible();
   });
 
   test.describe('Table Data Display', () => {
@@ -610,7 +611,7 @@ test.describe.skip('Universe Table Workflows', () => {
       const updateButton = page.locator('[data-testid="update-fields-button"]');
       await updateButton.click();
 
-      const overlay = page.locator('.fixed.inset-0.bg-black.bg-opacity-50');
+      const overlay = page.locator('[data-testid="loading-overlay"]');
       await expect(overlay).toBeVisible();
       await expect(overlay).toContainText('Updating universe fields');
     });
@@ -672,6 +673,10 @@ test.describe.skip('Universe Table Workflows', () => {
     test('should filter by symbol and risk group together', async ({
       page,
     }) => {
+      // Get baseline count
+      const rows = page.locator('tbody tr');
+      const baselineCount = await rows.count();
+
       const symbolInput = page.locator('input[placeholder="Search Symbol"]');
       await symbolInput.fill('AAP');
 
@@ -679,15 +684,27 @@ test.describe.skip('Universe Table Workflows', () => {
       await riskGroupSelect.click();
       await page.getByRole('option', { name: 'Equities' }).click();
 
-      // Table should show filtered results
-      const rows = page.locator('tbody tr');
-      const count = await rows.count();
-      expect(count).toBeGreaterThanOrEqual(0);
+      // Filtered results should be <= baseline
+      await page.waitForTimeout(500); // Allow filter to apply
+      const filteredCount = await rows.count();
+      expect(filteredCount).toBeLessThanOrEqual(baselineCount);
+
+      // Verify visible rows contain filter criteria
+      if (filteredCount > 0) {
+        const firstSymbol = await rows
+          .first()
+          .locator('td:first-child')
+          .textContent();
+        expect(firstSymbol?.toUpperCase()).toContain('AAP');
+      }
     });
 
     test('should filter by yield and expired status together', async ({
       page,
     }) => {
+      const rows = page.locator('tbody tr');
+      const baselineCount = await rows.count();
+
       const yieldInput = page.locator('input[placeholder="Min Yield %"]');
       await yieldInput.fill('5');
 
@@ -695,13 +712,28 @@ test.describe.skip('Universe Table Workflows', () => {
       await expiredSelect.click();
       await page.getByRole('option', { name: 'No' }).click();
 
-      // All visible rows should have yield >= 5 and not expired
-      const yieldCells = page.locator('tbody tr td:nth-child(4)');
-      const count = await yieldCells.count();
-      expect(count).toBeGreaterThanOrEqual(0);
+      // Filtered results should be <= baseline
+      await page.waitForTimeout(500); // Allow filter to apply
+      const filteredCount = await rows.count();
+      expect(filteredCount).toBeLessThanOrEqual(baselineCount);
+
+      // Verify visible rows meet yield threshold
+      if (filteredCount > 0) {
+        const firstYieldCell = await rows
+          .first()
+          .locator('td:nth-child(4)')
+          .textContent();
+        const yieldValue = parseFloat(
+          firstYieldCell?.replace(/[^0-9.]/g, '') || '0'
+        );
+        expect(yieldValue).toBeGreaterThanOrEqual(5);
+      }
     });
 
     test('should apply all filters simultaneously', async ({ page }) => {
+      const rows = page.locator('tbody tr');
+      const baselineCount = await rows.count();
+
       const symbolInput = page.locator('input[placeholder="Search Symbol"]');
       await symbolInput.fill('A');
 
@@ -716,10 +748,25 @@ test.describe.skip('Universe Table Workflows', () => {
       await expiredSelect.click();
       await page.getByRole('option', { name: 'No' }).click();
 
-      // Table should show results matching all criteria
-      const rows = page.locator('tbody tr');
-      const count = await rows.count();
-      expect(count).toBeGreaterThanOrEqual(0);
+      // Filtered results should be <= baseline with all filters applied
+      await page.waitForTimeout(500); // Allow filters to apply
+      const filteredCount = await rows.count();
+      expect(filteredCount).toBeLessThanOrEqual(baselineCount);
+
+      // Verify first visible row matches all criteria
+      if (filteredCount > 0) {
+        const firstRow = rows.first();
+        const symbol = await firstRow.locator('td:first-child').textContent();
+        expect(symbol?.toUpperCase()).toContain('A');
+
+        const yieldText = await firstRow
+          .locator('td:nth-child(4)')
+          .textContent();
+        const yieldValue = parseFloat(
+          yieldText?.replace(/[^0-9.]/g, '') || '0'
+        );
+        expect(yieldValue).toBeGreaterThanOrEqual(3);
+      }
     });
 
     test('should clear filters independently', async ({ page }) => {
@@ -880,10 +927,19 @@ test.describe.skip('Universe Table Workflows', () => {
       const symbolInput = page.locator('input[placeholder="Search Symbol"]');
       await symbolInput.fill('$%^&*()');
 
-      // Should not crash, may show no results
+      // Should not crash and show no results or empty state
+      await page.waitForTimeout(500); // Allow filter to apply
       const rows = page.locator('tbody tr');
       const count = await rows.count();
-      expect(count).toBeGreaterThanOrEqual(0);
+
+      // Special characters likely won't match any symbols
+      expect(count).toBe(0);
+
+      // Optionally verify empty state is shown
+      const emptyState = page.locator('.empty-state');
+      if (await emptyState.isVisible()) {
+        await expect(emptyState).toBeVisible();
+      }
     });
 
     test('should handle very large yield values', async ({ page }) => {
