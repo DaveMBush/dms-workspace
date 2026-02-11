@@ -155,7 +155,9 @@ test.describe('Global Universe Component', () => {
     test('should show Income option', async ({ page }) => {
       const riskGroupSelect = page.locator('.filter-row mat-select').first();
       await riskGroupSelect.click();
-      await expect(page.getByRole('option', { name: 'Income' })).toBeVisible();
+      await expect(
+        page.getByRole('option', { name: 'Income', exact: true })
+      ).toBeVisible();
     });
   });
 

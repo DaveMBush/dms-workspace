@@ -1,23 +1,35 @@
 @if (isEditing$()) {
-<mat-form-field appearance="outline" class="edit-field">
-  <input
-    #inputRef
-    matInput
-    type="text"
-    inputmode="decimal"
-    [ngModel]="rawEditValue$()"
-    (ngModelChange)="onValueChange($event)"
-    (keydown.enter)="saveEdit()"
-    (keydown.escape)="cancelEdit()"
-    (blur)="saveEdit()"
-    [min]="min$()"
-    [max]="max$()"
-    [step]="step$()"
-  />
-</mat-form-field>
+<div class="edit-container">
+  <mat-form-field appearance="outline" class="edit-field">
+    <input
+      #inputRef
+      matInput
+      type="text"
+      inputmode="decimal"
+      aria-label="Edit value"
+      [attr.data-testid]="
+        testIdFieldName() ? testIdFieldName() + '-input' : null
+      "
+      [ngModel]="rawEditValue$()"
+      (ngModelChange)="onValueChange($event)"
+      (keydown.enter)="saveEdit()"
+      (keydown.escape)="cancelEdit()"
+      (blur)="saveEdit()"
+      [min]="min$()"
+      [max]="max$()"
+      [step]="step$()"
+    />
+  </mat-form-field>
+  @if (validationError$()) {
+  <div class="validation-error" role="alert">
+    {{ validationError$() }}
+  </div>
+  }
+</div>
 } @else {
 <span
   class="display-value"
+  [attr.data-testid]="testId()"
   (click)="startEdit()"
   (keydown.enter)="startEdit()"
   (keydown.space)="startEdit()"

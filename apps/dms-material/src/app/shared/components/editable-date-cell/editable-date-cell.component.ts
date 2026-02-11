@@ -59,6 +59,8 @@ export class EditableDateCellComponent {
   private internalValue: Date | null = null;
 
   @Input() dateFormat = 'MM/dd/yyyy';
+  @Input() testIdFieldName = '';
+  @Input() testId = '';
 
   @Output() readonly valueChange = new EventEmitter<Date>();
 

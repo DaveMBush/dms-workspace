@@ -1,6 +1,7 @@
 import { CurrencyPipe, DatePipe, DecimalPipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   computed,
   inject,
@@ -76,6 +77,7 @@ export class GlobalUniverseComponent {
   private readonly dialog = inject(MatDialog);
   private readonly updateFieldsService = inject(UpdateUniverseFieldsService);
   private readonly errorHandling = inject(ErrorHandlingService);
+  private readonly cdr = inject(ChangeDetectorRef);
   readonly cellEdit = output<CellEditEvent>();
   readonly symbolDeleted = output<Universe>();
   readonly today = new Date();
@@ -139,6 +141,11 @@ export class GlobalUniverseComponent {
       expiredFilter: this.expiredFilter$(),
       minYieldFilter: this.minYieldFilter$(),
     });
+  });
+
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signal
+  readonly showEmptyState$ = computed(() => {
+    return !this.screenerLoading() && this.filteredData$().length === 0;
   });
 
   onSortChange(_: Sort): void {

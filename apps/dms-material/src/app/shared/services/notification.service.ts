@@ -18,7 +18,7 @@ export class NotificationService {
   show(message: string, severity: NotificationSeverity = 'info'): void {
     const config: MatSnackBarConfig = {
       ...this.defaultConfig,
-      panelClass: [`snackbar-${severity}`],
+      panelClass: [`snackbar-${severity}`, `notification-${severity}`],
     };
     this.snackBar.open(message, 'Close', config);
   }
@@ -46,7 +46,7 @@ export class NotificationService {
     const config: MatSnackBarConfig = {
       ...this.defaultConfig,
       duration: 0,
-      panelClass: [`snackbar-${severity}`],
+      panelClass: [`snackbar-${severity}`, `notification-${severity}`],
     };
     this.snackBar.open(message, 'Dismiss', config);
   }
