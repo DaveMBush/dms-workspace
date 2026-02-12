@@ -79,4 +79,57 @@ describe('EditableCellComponent', () => {
     expect(spy).toHaveBeenCalledWith(300);
     expect(component.isEditing$()).toBe(false);
   });
+
+  it('should reject numeric string with trailing non-numeric characters', () => {
+    const spy = vi.spyOn(component.valueChange, 'emit');
+    component.startEdit();
+    component.onValueChange('123abc');
+    component.saveEdit();
+    expect(spy).not.toHaveBeenCalled();
+    expect(component.validationError$()).toBe('Please enter a valid number');
+    expect(component.isEditing$()).toBe(true);
+  });
+
+  it('should reject numeric string with leading non-numeric characters', () => {
+    const spy = vi.spyOn(component.valueChange, 'emit');
+    component.startEdit();
+    component.onValueChange('abc123');
+    component.saveEdit();
+    expect(spy).not.toHaveBeenCalled();
+    expect(component.validationError$()).toBe('Please enter a valid number');
+  });
+
+  it('should reject empty or whitespace-only strings', () => {
+    const spy = vi.spyOn(component.valueChange, 'emit');
+    component.startEdit();
+    component.onValueChange('   ');
+    component.saveEdit();
+    expect(spy).not.toHaveBeenCalled();
+    expect(component.validationError$()).toBe('Please enter a valid number');
+  });
+
+  it('should accept valid numeric string with surrounding whitespace', () => {
+    const spy = vi.spyOn(component.valueChange, 'emit');
+    component.startEdit();
+    component.onValueChange('  250  ');
+    component.saveEdit();
+    expect(spy).toHaveBeenCalledWith(250);
+    expect(component.validationError$()).toBe('');
+  });
+
+  it('should accept valid negative numbers', () => {
+    const spy = vi.spyOn(component.valueChange, 'emit');
+    component.startEdit();
+    component.onValueChange('-50');
+    component.saveEdit();
+    expect(spy).toHaveBeenCalledWith(-50);
+  });
+
+  it('should accept valid decimal numbers', () => {
+    const spy = vi.spyOn(component.valueChange, 'emit');
+    component.startEdit();
+    component.onValueChange('123.456');
+    component.saveEdit();
+    expect(spy).toHaveBeenCalledWith(123.456);
+  });
 });

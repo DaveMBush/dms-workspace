@@ -93,14 +93,15 @@ export class EditableCellComponent {
       return;
     }
 
-    // Parse and validate the raw string value
-    const numericValue = parseFloat(this.rawEditValue$());
+    // Parse and validate the raw string value with strict conversion
+    const rawValue = this.rawEditValue$().trim();
+    const numericValue = Number(rawValue);
 
     // Clear previous validation errors
     this.validationError$.set('');
 
-    // Validate the input
-    if (isNaN(numericValue)) {
+    // Validate the input - Number() returns NaN for invalid strings like "123abc"
+    if (isNaN(numericValue) || rawValue === '') {
       this.validationError$.set('Please enter a valid number');
       return;
     }
