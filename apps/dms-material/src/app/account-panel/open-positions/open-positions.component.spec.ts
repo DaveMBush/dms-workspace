@@ -102,6 +102,9 @@ describe('OpenPositionsComponent', () => {
           quantity: 25,
         } as Trade,
       ];
+
+      // AO.2: Inject mockTrades into component/store
+      // Example: component.trades$.set(mockTrades);
     });
 
     it('should have displayedPositions computed signal', () => {
@@ -110,94 +113,119 @@ describe('OpenPositionsComponent', () => {
     });
 
     it('should filter trades for open positions only (sell_date is null)', () => {
-      // This test expects displayedPositions to filter out trades with sell_date
+      // AO.2: After injecting mockTrades above, this should return 3 open positions
       const positions = component.displayedPositions();
 
-      expect(positions.length).toBeGreaterThan(0);
+      // Should only include trades with sell_date === null (ids: 1, 3, 4)
+      expect(positions.length).toBe(3);
       expect(
         positions.every(
           (t) => t.sell_date === null || t.sell_date === undefined
         )
       ).toBe(true);
+      expect(positions.find((t) => t.id === '1')).toBeDefined();
+      expect(positions.find((t) => t.id === '3')).toBeDefined();
+      expect(positions.find((t) => t.id === '4')).toBeDefined();
+      expect(positions.find((t) => t.id === '2')).toBeUndefined(); // sold
     });
 
     it('should filter trades by selected account', () => {
-      // Assuming component has a selectedAccountId signal
+      // AO.2: Component should have selectedAccountId signal set to 'acc-1'
+      expect(component.selectedAccountId).toBeDefined();
+
       const positions = component.displayedPositions();
 
-      // All displayed positions should belong to the selected account
-      const selectedAccountId = component.selectedAccountId?.();
-      if (selectedAccountId && selectedAccountId !== 'all') {
-        expect(positions.every((t) => t.accountId === selectedAccountId)).toBe(
-          true
-        );
-      }
+      // Should only show acc-1 open positions (ids: 1, 3)
+      expect(positions.length).toBe(2);
+      expect(positions.every((t) => t.accountId === 'acc-1')).toBe(true);
+      expect(positions.find((t) => t.id === '1')).toBeDefined();
+      expect(positions.find((t) => t.id === '3')).toBeDefined();
+      expect(positions.find((t) => t.id === '4')).toBeUndefined(); // acc-2
     });
 
     it('should handle empty trades list gracefully', () => {
-      // Component should handle case where no trades are loaded
+      // AO.2: Component should handle empty trades array
       const positions = component.displayedPositions();
 
       expect(Array.isArray(positions)).toBe(true);
+      expect(positions.length).toBe(0);
     });
 
     it('should update displayedPositions when trades entity changes', () => {
-      // displayedPositions should be reactive to trades signal changes
-      const initialLength = component.displayedPositions().length;
+      // AO.2: Initially should have 3 open positions (from mockTrades)
+      const initialPositions = component.displayedPositions();
+      expect(initialPositions.length).toBe(3);
 
-      // Component should react to signal changes
-      expect(typeof component.displayedPositions).toBe('function');
+      // AO.2: After adding a new open trade, should have 4 positions
+      const newTrade: Trade = {
+        id: '5',
+        universeId: 'NVDA',
+        accountId: 'acc-1',
+        buy: 500,
+        sell: 0,
+        buy_date: '2024-02-10',
+        sell_date: null,
+        quantity: 10,
+      } as Trade;
+
+      const updatedPositions = component.displayedPositions();
+      expect(updatedPositions.length).toBe(4);
+      expect(updatedPositions.find((t) => t.id === '5')).toBeDefined();
     });
 
     it('should subscribe to trades from SmartNgRX on init', () => {
-      // Component should use selectTrades or similar selector
+      // AO.2: Component should use selectTrades or similar selector
       expect(component.trades$).toBeDefined();
     });
 
     it('should filter by both account and open positions', () => {
+      // AO.2: Set account filter to 'acc-2', should return only id 4
       const positions = component.displayedPositions();
 
-      // Should filter for open positions (sell_date is null)
+      // Should filter for open positions AND acc-2 (only id: 4)
+      expect(positions.length).toBe(1);
       expect(
         positions.every(
           (t) => t.sell_date === null || t.sell_date === undefined
         )
       ).toBe(true);
-
-      // Should respect account filter if set
-      const selectedAccountId = component.selectedAccountId?.();
-      if (selectedAccountId && selectedAccountId !== 'all') {
-        expect(positions.every((t) => t.accountId === selectedAccountId)).toBe(
-          true
-        );
-      }
+      expect(positions.every((t) => t.accountId === 'acc-2')).toBe(true);
+      expect(positions[0].id).toBe('4');
     });
   });
 
   describe.skip('Data Transformation for Display', () => {
+    beforeEach(() => {
+      // AO.2: Inject test data with currentPrice for unrealized gain calculation
+      // Test data should include: buy=150, currentPrice=175, quantity=100
+    });
+
     it('should calculate position value (quantity * price)', () => {
       const positions = component.displayedPositions();
 
-      if (positions.length > 0) {
-        const position = positions[0];
-        const expectedValue = position.quantity * position.buy;
+      expect(positions.length).toBeGreaterThan(0);
 
-        // Assuming component adds a calculated 'value' or 'currentValue' field
-        expect(position.buy).toBeGreaterThan(0);
-        expect(position.quantity).toBeGreaterThan(0);
-      }
+      const position = positions[0];
+      const expectedValue = position.quantity * position.buy;
+
+      // AO.2: Component should add calculated 'value' or 'currentValue' field
+      expect(position.value || position.currentValue).toBeCloseTo(
+        expectedValue
+      );
+      expect(expectedValue).toBe(15000); // 100 * 150
     });
 
     it('should format dates for display', () => {
       const positions = component.displayedPositions();
 
-      if (positions.length > 0) {
-        const position = positions[0];
+      expect(positions.length).toBeGreaterThan(0);
 
-        // buy_date should exist and be a valid date string
-        expect(position.buy_date).toBeDefined();
-        expect(typeof position.buy_date).toBe('string');
-      }
+      const position = positions[0];
+
+      // buy_date should exist and be a valid date string
+      expect(position.buy_date).toBeDefined();
+      expect(typeof position.buy_date).toBe('string');
+      expect(position.buy_date).toMatch(/^\d{4}-\d{2}-\d{2}/);
     });
 
     it('should handle positions with missing data gracefully', () => {
@@ -221,37 +249,43 @@ describe('OpenPositionsComponent', () => {
     it('should calculate unrealized gain for open positions', () => {
       const positions = component.displayedPositions();
 
-      // Open positions should have unrealized gain calculation
-      // This will be implemented with current price - buy price
-      if (positions.length > 0) {
-        expect(positions[0].buy).toBeGreaterThanOrEqual(0);
-      }
+      expect(positions.length).toBeGreaterThan(0);
+
+      const position = positions[0];
+
+      // AO.2: Unrealized gain = (currentPrice - buyPrice) * quantity
+      // Assuming test data: buy=150, currentPrice=175, quantity=100
+      const expectedUnrealized = (175 - 150) * 100; // 2500
+
+      // Component should calculate and store unrealized gain
+      expect(position.unrealizedGain).toBeDefined();
+      expect(position.unrealizedGain).toBeCloseTo(expectedUnrealized);
     });
   });
 
   describe.skip('Edge Cases and Error Handling', () => {
     it('should handle null or undefined trades signal', () => {
-      // Component should handle case where trades signal is not initialized
+      // AO.2: Component should handle empty trades array
       expect(() => {
         const positions = component.displayedPositions();
         expect(Array.isArray(positions)).toBe(true);
+        expect(positions.length).toBe(0);
       }).not.toThrow();
     });
 
     it('should handle account switching', () => {
-      // When selectedAccountId changes, displayedPositions should update
+      // AO.2: Set initial trades with multiple accounts, filter to acc-1
       const initialPositions = component.displayedPositions();
+      expect(initialPositions.every((t) => t.accountId === 'acc-1')).toBe(true);
 
-      if (component.selectedAccountId) {
-        // Component should react to account changes
-        expect(typeof component.selectedAccountId).toBe('function');
-      }
-
+      // AO.2: Switch account to acc-2
       const updatedPositions = component.displayedPositions();
       expect(Array.isArray(updatedPositions)).toBe(true);
+      expect(updatedPositions.every((t) => t.accountId === 'acc-2')).toBe(true);
     });
 
     it('should handle trades with partial data', () => {
+      // AO.2: Component should validate required fields exist
       const positions = component.displayedPositions();
 
       // Should not throw when accessing trade properties
@@ -262,20 +296,19 @@ describe('OpenPositionsComponent', () => {
             trade.universeId !== undefined &&
             trade.accountId !== undefined;
 
-          if (!hasRequiredFields) {
-            // Component should handle missing fields gracefully
-          }
+          expect(hasRequiredFields).toBe(true);
         });
       }).not.toThrow();
     });
 
     it('should maintain referential stability when data unchanged', () => {
+      // AO.2: Inject stable test data into component
       const positions1 = component.displayedPositions();
       const positions2 = component.displayedPositions();
 
-      // Computed signals should maintain stability when underlying data unchanged
-      expect(positions1).toBeDefined();
-      expect(positions2).toBeDefined();
+      // Computed signals should maintain referential stability
+      // when underlying data is unchanged
+      expect(positions1).toBe(positions2); // Same object reference
     });
   });
 });
