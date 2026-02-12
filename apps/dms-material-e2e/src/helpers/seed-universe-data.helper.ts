@@ -1,3 +1,5 @@
+import type { PrismaClient } from '@prisma/client';
+
 interface SeederResult {
   cleanup(): Promise<void>;
   symbols: string[];
@@ -44,8 +46,7 @@ function generateUniqueId(): string {
 /**
  * Create risk groups in the database
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-async function createRiskGroups(prisma: any): Promise<RiskGroups> {
+async function createRiskGroups(prisma: PrismaClient): Promise<RiskGroups> {
   const equitiesRiskGroup = await prisma.risk_group.upsert({
     where: { name: 'Equities' },
     update: {},
@@ -68,36 +69,51 @@ async function createRiskGroups(prisma: any): Promise<RiskGroups> {
 }
 
 /**
- * Create test universe data array
+ * Create test date values
  */
-function createTestDataArray(
-  symbols: string[],
-  equitiesId: string,
-  incomeId: string,
-  taxFreeId: string
-): UniverseRecord[] {
+function createTestDates(): { futureDate: Date; pastDate: Date } {
   const today = new Date();
   const futureDate = new Date(today);
   futureDate.setDate(futureDate.getDate() + 30);
   const pastDate = new Date(today);
   pastDate.setDate(pastDate.getDate() - 30);
+  return { futureDate, pastDate };
+}
 
+/**
+ * Create expired equity record
+ */
+function createExpiredEquity(
+  symbol: string,
+  riskGroupId: string,
+  pastDate: Date
+): UniverseRecord {
+  return {
+    symbol,
+    risk_group_id: riskGroupId,
+    distribution: 1.25,
+    distributions_per_year: 4,
+    last_price: 50.0,
+    ex_date: pastDate,
+    most_recent_sell_date: null,
+    most_recent_sell_price: null,
+    expired: true,
+    is_closed_end_fund: true,
+  };
+}
+
+/**
+ * Create active income records
+ */
+function createIncomeRecords(
+  symbols: string[],
+  riskGroupId: string,
+  futureDate: Date
+): UniverseRecord[] {
   return [
     {
       symbol: symbols[0],
-      risk_group_id: equitiesId,
-      distribution: 1.25,
-      distributions_per_year: 4,
-      last_price: 50.0,
-      ex_date: pastDate,
-      most_recent_sell_date: null,
-      most_recent_sell_price: null,
-      expired: true,
-      is_closed_end_fund: true,
-    },
-    {
-      symbol: symbols[1],
-      risk_group_id: incomeId,
+      risk_group_id: riskGroupId,
       distribution: 0.5,
       distributions_per_year: 12,
       last_price: 25.0,
@@ -107,6 +123,42 @@ function createTestDataArray(
       expired: false,
       is_closed_end_fund: true,
     },
+    {
+      symbol: symbols[1],
+      risk_group_id: riskGroupId,
+      distribution: 0.3,
+      distributions_per_year: 12,
+      last_price: 15.0,
+      ex_date: futureDate,
+      most_recent_sell_date: null,
+      most_recent_sell_price: null,
+      expired: false,
+      is_closed_end_fund: true,
+    },
+  ];
+}
+
+/**
+ * Create test universe data array
+ */
+function createTestDataArray(
+  symbols: string[],
+  equitiesId: string,
+  incomeId: string,
+  taxFreeId: string
+): UniverseRecord[] {
+  const { futureDate, pastDate } = createTestDates();
+
+  const expiredEquity = createExpiredEquity(symbols[0], equitiesId, pastDate);
+  const incomeRecords = createIncomeRecords(
+    [symbols[1], symbols[4]],
+    incomeId,
+    futureDate
+  );
+
+  return [
+    expiredEquity,
+    ...incomeRecords,
     {
       symbol: symbols[2],
       risk_group_id: taxFreeId,
@@ -131,19 +183,75 @@ function createTestDataArray(
       expired: false,
       is_closed_end_fund: true,
     },
-    {
-      symbol: symbols[4],
-      risk_group_id: incomeId,
-      distribution: 0.3,
-      distributions_per_year: 12,
-      last_price: 15.0,
-      ex_date: futureDate,
-      most_recent_sell_date: null,
-      most_recent_sell_price: null,
-      expired: false,
-      is_closed_end_fund: true,
-    },
   ];
+}
+
+/**
+ * Initialize Prisma client with test database
+ */
+async function initializePrismaClient(): Promise<PrismaClient> {
+  const prismaClientImport = (await import('@prisma/client')).PrismaClient;
+  const { PrismaBetterSqlite3 } = await import(
+    '@prisma/adapter-better-sqlite3'
+  );
+
+  const testDbUrl = 'file:./test-database.db';
+  const adapter = new PrismaBetterSqlite3({ url: testDbUrl });
+  return new prismaClientImport({ adapter });
+}
+
+/**
+ * Generate unique test symbols
+ */
+function generateTestSymbols(): string[] {
+  const uniqueId = generateUniqueId();
+  return [
+    `UTEST1-${uniqueId}`,
+    `UTEST2-${uniqueId}`,
+    `UTEST3-${uniqueId}`,
+    `UTEST4-${uniqueId}`,
+    `UTEST5-${uniqueId}`,
+  ];
+}
+
+/**
+ * Insert universe test data
+ */
+async function insertUniverseData(
+  prisma: PrismaClient,
+  symbols: string[],
+  riskGroups: RiskGroups
+): Promise<void> {
+  const testData = createTestDataArray(
+    symbols,
+    riskGroups.equitiesRiskGroup.id,
+    riskGroups.incomeRiskGroup.id,
+    riskGroups.taxFreeIncomeRiskGroup.id
+  );
+
+  await prisma.universe.createMany({
+    data: testData,
+  });
+}
+
+/**
+ * Cleanup function for universe test data
+ */
+async function cleanupUniverseData(
+  prisma: PrismaClient,
+  symbols: string[]
+): Promise<void> {
+  try {
+    await prisma.universe.deleteMany({
+      where: {
+        symbol: {
+          in: symbols,
+        },
+      },
+    });
+  } finally {
+    await prisma.$disconnect();
+  }
 }
 
 /**
@@ -151,70 +259,20 @@ function createTestDataArray(
  * Creates risk groups and universe records
  */
 export async function seedUniverseData(): Promise<SeederResult> {
-  // Import Prisma and adapter dynamically to avoid bundling issues
-  const prismaClientImport = (await import('@prisma/client')).PrismaClient;
-  const { PrismaBetterSqlite3 } = await import(
-    '@prisma/adapter-better-sqlite3'
-  );
-
-  // Connect to the same database that the E2E backend server uses
-  // The test database is always at: file:./test-database.db (relative to workspace root)
-  // This matches apps/server/project.json e2e-server configuration
-  const testDbUrl = 'file:./test-database.db';
-  const adapter = new PrismaBetterSqlite3({ url: testDbUrl });
-  const prisma = new prismaClientImport({ adapter });
-
-  const uniqueId = generateUniqueId();
-  const symbols = [
-    `UTEST1-${uniqueId}`,
-    `UTEST2-${uniqueId}`,
-    `UTEST3-${uniqueId}`,
-    `UTEST4-${uniqueId}`,
-    `UTEST5-${uniqueId}`,
-  ];
+  const prisma = await initializePrismaClient();
+  const symbols = generateTestSymbols();
 
   try {
-    // Create risk groups first
-    const { equitiesRiskGroup, incomeRiskGroup, taxFreeIncomeRiskGroup } =
-      await createRiskGroups(prisma);
-
-    // Create test data records
-    const testData = createTestDataArray(
-      symbols,
-      equitiesRiskGroup.id,
-      incomeRiskGroup.id,
-      taxFreeIncomeRiskGroup.id
-    );
-
-    // Insert all universe records
-    await prisma.universe.createMany({
-      data: testData,
-    });
-
-    console.log(`Seeded ${testData.length} universe records`);
+    const riskGroups = await createRiskGroups(prisma);
+    await insertUniverseData(prisma, symbols, riskGroups);
   } catch (error) {
-    console.error('Error seeding universe data:', error);
     await prisma.$disconnect();
     throw error;
   }
 
-  // Return cleanup function that removes test data
   return {
-    async cleanup(): Promise<void> {
-      try {
-        await prisma.universe.deleteMany({
-          where: {
-            symbol: {
-              in: symbols,
-            },
-          },
-        });
-        console.log('Cleaned up universe test data');
-      } catch (error) {
-        console.error('Error cleaning up universe test data:', error);
-      } finally {
-        await prisma.$disconnect();
-      }
+    cleanup: async function cleanupFunction(): Promise<void> {
+      await cleanupUniverseData(prisma, symbols);
     },
     symbols,
   };

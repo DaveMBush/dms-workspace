@@ -77,6 +77,14 @@ export class BaseTableComponent<T extends { id: string }> {
     );
   }
 
+  // Helper to check if row has expired property
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- needed for proper typing
+  isExpired$ = (row: T): boolean => {
+    return (
+      'expired' in row && (row as T & { expired?: boolean }).expired === true
+    );
+  };
+
   // Data source - reactive to data() changes
   // Returns sorted array directly - MatTable can work with arrays
   dataSource = computed(

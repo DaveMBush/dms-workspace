@@ -8,7 +8,7 @@
       inputmode="decimal"
       aria-label="Edit value"
       [attr.data-testid]="
-        testIdFieldName() ? testIdFieldName() + '-input' : null
+        testIdFieldName$() ? testIdFieldName$() + '-input' : null
       "
       [ngModel]="rawEditValue$()"
       (ngModelChange)="onValueChange($event)"
@@ -29,7 +29,7 @@
 } @else {
 <span
   class="display-value"
-  [attr.data-testid]="testId()"
+  [attr.data-testid]="testId$()"
   (click)="startEdit()"
   (keydown.enter)="startEdit()"
   (keydown.space)="startEdit()"
@@ -39,7 +39,7 @@
   @if (formatType$() === 'currency') {
   {{ displayValue$() | currency }}
   } @else if (formatType$() === 'decimal') {
-  {{ displayValue$() | number : decimalFormat() }}
+  {{ displayValue$() | number : decimalFormat$() }}
   } @else {
   {{ displayValue$() }}
   }

@@ -99,7 +99,7 @@
         mat-row
         *matRowDef="let row; columns: displayedColumns()"
         [class.selected]="selection.isSelected(row)"
-        [class.expired]="$any(row).expired"
+        [class.expired]="isExpired$(row)"
         (click)="onRowClick(row)"
       ></tr>
     </table>

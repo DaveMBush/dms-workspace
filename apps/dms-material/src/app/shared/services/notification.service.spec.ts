@@ -19,7 +19,9 @@ describe('NotificationService', () => {
     expect(mockSnackBar.open).toHaveBeenCalledWith(
       'Test message',
       'Close',
-      expect.objectContaining({ panelClass: ['snackbar-success'] })
+      expect.objectContaining({
+        panelClass: ['snackbar-success', 'notification-success'],
+      })
     );
   });
 
@@ -28,7 +30,9 @@ describe('NotificationService', () => {
     expect(mockSnackBar.open).toHaveBeenCalledWith(
       'Error message',
       'Close',
-      expect.objectContaining({ panelClass: ['snackbar-error'] })
+      expect.objectContaining({
+        panelClass: ['snackbar-error', 'notification-error'],
+      })
     );
   });
 
@@ -46,7 +50,9 @@ describe('NotificationService', () => {
     expect(mockSnackBar.open).toHaveBeenCalledWith(
       'Info message',
       'Close',
-      expect.objectContaining({ panelClass: ['snackbar-info'] })
+      expect.objectContaining({
+        panelClass: ['snackbar-info', 'notification-info'],
+      })
     );
   });
 
@@ -55,7 +61,9 @@ describe('NotificationService', () => {
     expect(mockSnackBar.open).toHaveBeenCalledWith(
       'Warning message',
       'Close',
-      expect.objectContaining({ panelClass: ['snackbar-warn'] })
+      expect.objectContaining({
+        panelClass: ['snackbar-warn', 'notification-warn'],
+      })
     );
   });
 
@@ -64,7 +72,9 @@ describe('NotificationService', () => {
     expect(mockSnackBar.open).toHaveBeenCalledWith(
       'Generic message',
       'Close',
-      expect.objectContaining({ panelClass: ['snackbar-info'] })
+      expect.objectContaining({
+        panelClass: ['snackbar-info', 'notification-info'],
+      })
     );
   });
 

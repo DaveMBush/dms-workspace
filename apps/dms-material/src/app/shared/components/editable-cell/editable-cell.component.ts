@@ -36,6 +36,14 @@ export class EditableCellComponent {
   testIdFieldName = input<string>('');
   testId = input<string>('');
 
+  // Computed signals with $ suffix for template use (ESLint rule compliance)
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- needed to capture this
+  testIdFieldName$ = computed(() => this.testIdFieldName());
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- needed to capture this
+  testId$ = computed(() => this.testId());
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- needed to capture this
+  decimalFormat$ = computed(() => this.decimalFormat());
+
   readonly valueChange = output<number>();
 
   validationError$ = signal<string>('');
