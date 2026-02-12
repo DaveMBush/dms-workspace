@@ -1,7 +1,6 @@
 import { CurrencyPipe, DatePipe, DecimalPipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   computed,
   inject,
@@ -77,7 +76,6 @@ export class GlobalUniverseComponent {
   private readonly dialog = inject(MatDialog);
   private readonly updateFieldsService = inject(UpdateUniverseFieldsService);
   private readonly errorHandling = inject(ErrorHandlingService);
-  private readonly cdr = inject(ChangeDetectorRef);
   readonly cellEdit = output<CellEditEvent>();
   readonly symbolDeleted = output<Universe>();
   readonly today = new Date();

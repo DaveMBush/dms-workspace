@@ -67,6 +67,10 @@ export class EditableCellComponent {
   @ViewChild('inputRef') inputRef!: ElementRef<HTMLInputElement>;
 
   startEdit(): void {
+    // Clear state from previous edit cycle to ensure clean start
+    this.isCanceling$.set(false);
+    this.validationError$.set('');
+
     this.editValue$.set(this.value());
     this.rawEditValue$.set(String(this.value()));
     this.isEditing$.set(true);

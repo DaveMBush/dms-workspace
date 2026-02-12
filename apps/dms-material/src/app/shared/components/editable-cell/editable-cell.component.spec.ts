@@ -62,4 +62,21 @@ describe('EditableCellComponent', () => {
     fixture.detectChanges();
     expect(fixture.nativeElement.textContent).toContain('$');
   });
+
+  it('should allow save after cancel without losing data', () => {
+    const spy = vi.spyOn(component.valueChange, 'emit');
+
+    // First edit cycle - cancel
+    component.startEdit();
+    component.onValueChange(200);
+    component.cancelEdit();
+    expect(spy).not.toHaveBeenCalled();
+
+    // Second edit cycle - save should work
+    component.startEdit();
+    component.onValueChange(300);
+    component.saveEdit();
+    expect(spy).toHaveBeenCalledWith(300);
+    expect(component.isEditing$()).toBe(false);
+  });
 });
