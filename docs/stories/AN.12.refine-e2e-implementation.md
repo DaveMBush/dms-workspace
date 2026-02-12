@@ -89,5 +89,3 @@ pnpm e2e:dms-material
 ### Gate Status
 
 Gate: PASS → docs/qa/gates/AN.12-refine-e2e-implementation.yml
-
-## Related Stories
