@@ -75,7 +75,7 @@
   <!-- eslint-disable @angular-eslint/template/cyclomatic-complexity -->
   <!-- eslint-disable @angular-eslint/template/no-call-expression -- Signals require function call syntax -->
   @if (screenerLoading()) {
-  <div class="loading-overlay">
+  <div class="loading-overlay" data-testid="loading-overlay">
     <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
     <p>Refreshing universe data...</p>
   </div>
@@ -91,6 +91,16 @@
   </mat-card>
   }
   <!-- eslint-enable @angular-eslint/template/no-call-expression -->
+
+  <!-- eslint-disable @angular-eslint/template/cyclomatic-complexity -->
+  @if (showEmptyState$()) {
+  <mat-card class="empty-state">
+    <mat-card-content>
+      <mat-icon>info</mat-icon>
+      <p>No results found</p>
+    </mat-card-content>
+  </mat-card>
+  }
   <!-- eslint-enable @angular-eslint/template/cyclomatic-complexity -->
 
   <div class="table-wrapper">
@@ -175,13 +185,15 @@
       <!-- Custom cell template for editable fields -->
       <!-- eslint-disable @angular-eslint/template/cyclomatic-complexity -->
       <!-- eslint-disable @angular-eslint/template/no-call-expression -->
-      <ng-template #cellTemplate let-row let-column="column">
+      <ng-template #cellTemplate let-row let-column="column" let-i="index">
         @switch (column.field) { @case ('distribution') {
         <dms-editable-cell
           [value]="row.distribution"
           format="decimal"
           decimalFormat="1.4-4"
           [min]="0"
+          testIdFieldName="distribution"
+          [testId]="'distribution-cell-' + i"
           (valueChange)="onCellEdit(row, 'distribution', $event)"
         />
         } @case ('distributions_per_year') {
@@ -194,14 +206,19 @@
           (valueChange)="onCellEdit(row, 'distributions_per_year', $event)"
         />
         } @case ('yield_percent') {
-        {{ calculateYield(row) | number : '1.2-2' }}% } @case
-        ('avg_purchase_yield_percent') { @if (row.avg_purchase_yield_percent) {
+        <span [attr.data-testid]="'yield-cell-' + i">
+          {{ calculateYield(row) | number : '1.2-2' }}%
+        </span>
+        } @case ('avg_purchase_yield_percent') { @if
+        (row.avg_purchase_yield_percent) {
         {{ row.avg_purchase_yield_percent | number : '1.2-2' }}% } @else { - } }
         @case ('last_price') {
         {{ row.last_price | currency }}
         } @case ('ex_date') {
         <dms-editable-date-cell
           [value]="row.ex_date"
+          testIdFieldName="ex-date"
+          [testId]="'ex-date-cell-' + i"
           (valueChange)="onCellEdit(row, 'ex_date', $event)"
         />
         } @case ('most_recent_sell_date') { @if (row.most_recent_sell_date) {
@@ -218,6 +235,7 @@
           mat-icon-button
           color="warn"
           matTooltip="Delete unused symbol"
+          [attr.data-testid]="'delete-symbol-' + i"
           (click)="deleteUniverse(row)"
         >
           <mat-icon>delete</mat-icon>

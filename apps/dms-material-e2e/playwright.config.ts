@@ -26,6 +26,9 @@ export default defineConfig({
   reporter: process.env.CI ? [['github']] : [['list']],
   /* Retry failed tests to handle flaky tests */
   retries: process.env.CI ? 3 : 2,
+  /* Run tests serially to avoid database conflicts with shared SQLite test database */
+  workers: 1,
+  fullyParallel: false,
   use: {
     baseURL,
     /* Increase navigation timeout for slower backend responses */

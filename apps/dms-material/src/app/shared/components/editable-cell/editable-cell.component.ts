@@ -33,12 +33,25 @@ export class EditableCellComponent {
   step = input<number>(1);
   format = input<'currency' | 'decimal' | 'number'>('number');
   decimalFormat = input<string>('1.2-2');
+  testIdFieldName = input<string>('');
+  testId = input<string>('');
+
+  // Computed signals with $ suffix for template use (ESLint rule compliance)
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- needed to capture this
+  testIdFieldName$ = computed(() => this.testIdFieldName());
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- needed to capture this
+  testId$ = computed(() => this.testId());
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- needed to capture this
+  decimalFormat$ = computed(() => this.decimalFormat());
 
   readonly valueChange = output<number>();
+
+  validationError$ = signal<string>('');
 
   isEditing$ = signal(false);
   editValue$ = signal<number>(0);
   rawEditValue$ = signal<string>('');
+  isCanceling$ = signal(false); // Track if we're canceling to prevent blur from saving
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- needed to capture this
   displayValue$ = computed(() => this.value());
@@ -54,6 +67,10 @@ export class EditableCellComponent {
   @ViewChild('inputRef') inputRef!: ElementRef<HTMLInputElement>;
 
   startEdit(): void {
+    // Clear state from previous edit cycle to ensure clean start
+    this.isCanceling$.set(false);
+    this.validationError$.set('');
+
     this.editValue$.set(this.value());
     this.rawEditValue$.set(String(this.value()));
     this.isEditing$.set(true);
@@ -70,21 +87,50 @@ export class EditableCellComponent {
   }
 
   saveEdit(): void {
-    // Parse and validate the raw string value
-    const numericValue = parseFloat(this.rawEditValue$());
+    // Don't save if we're canceling
+    if (this.isCanceling$()) {
+      this.isCanceling$.set(false);
+      return;
+    }
+
+    // Parse and validate the raw string value with strict conversion
+    const rawValue = this.rawEditValue$().trim();
+    const numericValue = Number(rawValue);
+
+    // Clear previous validation errors
+    this.validationError$.set('');
+
+    // Validate the input - Number() returns NaN for invalid strings like "123abc"
+    if (isNaN(numericValue) || rawValue === '') {
+      this.validationError$.set('Please enter a valid number');
+      return;
+    }
+
+    const minVal = this.min$();
+    const maxVal = this.max$();
+
+    if (minVal !== null && numericValue < minVal) {
+      this.validationError$.set(`Value must be at least ${minVal}`);
+      return;
+    }
+
+    if (maxVal !== null && numericValue > maxVal) {
+      this.validationError$.set(`Value must be at most ${maxVal}`);
+      return;
+    }
 
     // Only save if it's a valid number
-    if (!isNaN(numericValue)) {
-      this.editValue$.set(numericValue);
-      if (numericValue !== this.value()) {
-        this.valueChange.emit(numericValue);
-      }
+    this.editValue$.set(numericValue);
+    if (numericValue !== this.value()) {
+      this.valueChange.emit(numericValue);
     }
 
     this.isEditing$.set(false);
   }
 
   cancelEdit(): void {
+    this.isCanceling$.set(true);
+    this.validationError$.set('');
     this.isEditing$.set(false);
   }
 }

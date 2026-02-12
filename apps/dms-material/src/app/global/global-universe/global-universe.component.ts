@@ -141,6 +141,11 @@ export class GlobalUniverseComponent {
     });
   });
 
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signal
+  readonly showEmptyState$ = computed(() => {
+    return !this.screenerLoading() && this.filteredData$().length === 0;
+  });
+
   onSortChange(_: Sort): void {
     // code coming
   }

@@ -1,0 +1,8 @@
+schema: 1
+story: 'AN.12'
+gate: PASS
+status_reason: 'All acceptance criteria met with 54/64 E2E tests passing. Core universe table functionality implemented and verified.'
+reviewer: 'Quinn'
+updated: '2026-02-11T12:00:00Z'
+top_issues: []
+waiver: { active: false }
