@@ -63,12 +63,12 @@ Created 18 new epics (AG through AX) covering all 18 items in the implementation
 - ✅ Epic AL: Wire Universe Update Fields
 - ✅ Epic AM: Wire Universe Add Symbol
 - ✅ Epic AN: Wire Universe Table Display
-- ✅ Epic AO: Fidelity Transaction Import
-- ✅ Epic AP: Wire Global Summary
-- ✅ Epic AQ: Wire Account Summary
-- ✅ Epic AR: Wire Open Positions
-- ✅ Epic AS: Wire Sold Positions
-- ✅ Epic AT: Wire Dividends & Deposits
+- ✅ Epic AO: Wire Open Positions
+- ✅ Epic AP: Wire Sold Positions
+- ✅ Epic AQ: Wire Dividends & Deposits
+- ✅ Epic AR: Fidelity Transaction Import
+- ✅ Epic AS: Wire Global Summary
+- ✅ Epic AT: Wire Account Summary
 - ✅ Epic AU: Account Selection Updates
 - ✅ Epic AV: Persist Selected Button
 - ✅ Epic AW: Server-Side Sorting

@@ -21,12 +21,12 @@ Created **18 new epics (AG through AX)** with associated stories to implement ba
 
 ### Feature Completion Epics
 
-9. **Epic AO: Fidelity Transaction Import** - Import from CSV
-10. **Epic AP: Wire Global Summary** - All-accounts pie chart
-11. **Epic AQ: Wire Account Summary** - Account-specific pie chart
-12. **Epic AR: Wire Open Positions** - Trading positions management
-13. **Epic AS: Wire Sold Positions** - Closed positions display
-14. **Epic AT: Wire Dividends & Deposits** - Dividend management
+9. **Epic AO: Wire Open Positions** - Trading positions management
+10. **Epic AP: Wire Sold Positions** - Closed positions display
+11. **Epic AQ: Wire Dividends & Deposits** - Dividend management
+12. **Epic AR: Fidelity Transaction Import** - Import from CSV
+13. **Epic AS: Wire Global Summary** - All-accounts pie chart
+14. **Epic AT: Wire Account Summary** - Account-specific pie chart
 
 ### Integration & Polish Epics
 
@@ -141,12 +141,12 @@ pnpm all
 - `docs/backlog/epic-al-wire-universe-update-fields.md`
 - `docs/backlog/epic-am-wire-universe-add-button.md`
 - `docs/backlog/epic-an-wire-universe-table-display.md`
-- `docs/backlog/epic-ao-import-fidelity-transactions.md`
-- `docs/backlog/epic-ap-wire-global-summary.md`
-- `docs/backlog/epic-aq-wire-account-summary.md`
-- `docs/backlog/epic-ar-wire-open-positions.md`
-- `docs/backlog/epic-as-wire-sold-positions.md`
-- `docs/backlog/epic-at-wire-dividends-deposits.md`
+- `docs/backlog/epic-ao-wire-open-positions.md`
+- `docs/backlog/epic-ap-wire-sold-positions.md`
+- `docs/backlog/epic-aq-wire-dividends-deposits.md`
+- `docs/backlog/epic-ar-import-fidelity-transactions.md`
+- `docs/backlog/epic-as-wire-global-summary.md`
+- `docs/backlog/epic-at-wire-account-summary.md`
 - `docs/backlog/epic-au-account-selection-persistence.md`
 - `docs/backlog/epic-av-persist-selected-button.md`
 - `docs/backlog/epic-aw-server-side-sorting.md`
@@ -168,13 +168,13 @@ graph TD
     AK --> AL[AL: Universe Fields]
     AL --> AM[AM: Universe Add]
     AM --> AN[AN: Universe Table]
-    AN --> AO[AO: Fidelity Import]
-    AH --> AP[AP: Global Summary]
-    AP --> AQ[AQ: Account Summary]
-    AQ --> AR[AR: Open Positions]
-    AR --> AS[AS: Sold Positions]
-    AS --> AT[AT: Dividends]
-    AT --> AU[AU: Account Selection]
+    AN --> AO[AO: Open Positions]
+    AO --> AP[AP: Sold Positions]
+    AP --> AQ[AQ: Dividends]
+    AN --> AR[AR: Fidelity Import]
+    AH --> AS[AS: Global Summary]
+    AS --> AT[AT: Account Summary]
+    AQ --> AU[AU: Account Selection]
     AU --> AV[AV: State Persistence]
     AV --> AW[AW: Server Sorting]
     AW --> AX[AX: Virtual Scrolling]
