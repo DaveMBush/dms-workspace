@@ -59,10 +59,10 @@ export class OpenPositionsPage {
   constructor(page: Page) {
     this.page = page;
     this.addPositionButton = page.getByRole('button', { name: 'Add New Position' });
-    this.positionsTable = page.locator('mat-table');
-    this.symbolColumn = page.locator('mat-column-symbol');
-    this.quantityColumn = page.locator('mat-column-quantity');
-    this.sellDateColumn = page.locator('mat-column-sell_date');
+    this.positionsTable = page.locator('.mat-table');
+    this.symbolColumn = page.locator('.mat-column-symbol');
+    this.quantityColumn = page.locator('.mat-column-quantity');
+    this.sellDateColumn = page.locator('.mat-column-sell_date');
   }
 
   async navigateToOpenPositions() {
@@ -90,7 +90,7 @@ export class OpenPositionsPage {
 
   async closePosition(rowIndex: number, sellPrice: number, sellDate: string) {
     // First set sell price
-    const sellPriceCell = this.page.locator('mat-column-sell').nth(rowIndex);
+    const sellPriceCell = this.page.locator('.mat-column-sell').nth(rowIndex);
     await sellPriceCell.click();
     await sellPriceCell.locator('input').fill(sellPrice.toString());
     await this.page.keyboard.press('Enter');
@@ -106,17 +106,17 @@ export class OpenPositionsPage {
   }
 
   async getPositionCount(): Promise<number> {
-    return await this.positionsTable.locator('mat-row').count();
+    return await this.positionsTable.locator('.mat-row').count();
   }
 
   async getPositionData(rowIndex: number): Promise<any> {
-    const row = this.positionsTable.locator('mat-row').nth(rowIndex);
+    const row = this.positionsTable.locator('.mat-row').nth(rowIndex);
 
     return {
-      symbol: await row.locator('mat-column-symbol').textContent(),
-      quantity: await row.locator('mat-column-quantity').textContent(),
-      price: await row.locator('mat-column-price').textContent(),
-      capitalGain: await row.locator('mat-column-capitalGain').textContent(),
+      symbol: await row.locator('.mat-column-symbol').textContent(),
+      quantity: await row.locator('.mat-column-quantity').textContent(),
+      price: await row.locator('.mat-column-price').textContent(),
+      capitalGain: await row.locator('.mat-column-capitalGain').textContent(),
     };
   }
 }
@@ -224,7 +224,7 @@ test.describe('Open Positions Screen', () => {
     expect(position.capitalGain).toContain('$0.00');
 
     // Set sell price
-    const sellPriceCell = page.locator('mat-column-sell').nth(count - 1);
+    const sellPriceCell = page.locator('.mat-column-sell').nth(count - 1);
     await sellPriceCell.click();
     await sellPriceCell.locator('input').fill('175');
     await page.keyboard.press('Enter');
