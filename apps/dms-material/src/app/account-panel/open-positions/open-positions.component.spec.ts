@@ -378,4 +378,125 @@ describe('OpenPositionsComponent', () => {
       expect(positions1).toBe(positions2); // Same object reference
     });
   });
+
+  // Story AO.3: TDD Tests for Editable Cells (RED state)
+  describe.skip('Editable Cells', () => {
+    beforeEach(() => {
+      // Mock tradesEffects with Jest functions
+      component.tradesEffects = {
+        update: jest.fn().mockResolvedValue(undefined),
+      } as any;
+    });
+
+    it('should update quantity when edited', () => {
+      const trade = {
+        id: '1',
+        universeId: 'AAPL',
+        accountId: '1',
+        quantity: 100,
+        buy: 150,
+        sell: 0,
+        buy_date: '2024-01-01',
+        sell_date: null,
+      } as Trade;
+      component.trades$.set([trade]);
+
+      component.ngOnInit();
+      component.updateQuantity('1', 200);
+
+      expect(component.tradesEffects.update).toHaveBeenCalledWith({
+        id: '1',
+        quantity: 200,
+      });
+    });
+
+    it('should update price when edited', () => {
+      const trade = {
+        id: '1',
+        universeId: 'AAPL',
+        accountId: '1',
+        quantity: 100,
+        buy: 150,
+        sell: 0,
+        buy_date: '2024-01-01',
+        sell_date: null,
+      } as Trade;
+      component.trades$.set([trade]);
+
+      component.ngOnInit();
+      component.updatePrice('1', 175);
+
+      expect(component.tradesEffects.update).toHaveBeenCalledWith({
+        id: '1',
+        price: 175,
+      });
+    });
+
+    it('should update purchase_date when edited', () => {
+      const trade = {
+        id: '1',
+        universeId: 'AAPL',
+        accountId: '1',
+        quantity: 100,
+        buy: 150,
+        sell: 0,
+        buy_date: '2024-01-01',
+        sell_date: null,
+      } as Trade;
+      component.trades$.set([trade]);
+
+      component.ngOnInit();
+      component.updatePurchaseDate('1', '2024-02-01');
+
+      expect(component.tradesEffects.update).toHaveBeenCalledWith({
+        id: '1',
+        purchase_date: '2024-02-01',
+      });
+    });
+
+    it('should validate quantity is positive', () => {
+      component.updateQuantity('1', -50);
+
+      expect(component.tradesEffects.update).not.toHaveBeenCalled();
+      expect(component.errorMessage()).toBe('Quantity must be positive');
+    });
+
+    it('should validate price is positive', () => {
+      component.updatePrice('1', -100);
+
+      expect(component.tradesEffects.update).not.toHaveBeenCalled();
+      expect(component.errorMessage()).toBe('Price must be positive');
+    });
+
+    it('should validate date format', () => {
+      component.updatePurchaseDate('1', 'invalid-date');
+
+      expect(component.tradesEffects.update).not.toHaveBeenCalled();
+      expect(component.errorMessage()).toBe('Invalid date format');
+    });
+
+    it('should handle update errors gracefully', async () => {
+      component.tradesEffects.update.mockRejectedValueOnce(
+        new Error('Update failed')
+      );
+
+      await component.updateQuantity('1', 200);
+
+      expect(component.errorMessage()).toContain('Update failed');
+    });
+
+    it('should show loading indicator during update', async () => {
+      component.tradesEffects.update.mockImplementationOnce(
+        () => new Promise((resolve) => setTimeout(resolve, 100))
+      );
+
+      component.updateQuantity('1', 200);
+
+      expect(component.updating()).toBe(true);
+
+      await new Promise((resolve) => setTimeout(resolve, 150));
+
+      expect(component.updating()).toBe(false);
+    });
+  });
 });
