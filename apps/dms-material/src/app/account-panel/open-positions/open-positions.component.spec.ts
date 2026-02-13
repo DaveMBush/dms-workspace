@@ -381,17 +381,25 @@ describe('OpenPositionsComponent', () => {
 
   // Story AO.3: TDD Tests for Editable Cells (RED state)
   describe.skip('Editable Cells', () => {
+    beforeEach(() => {
+      // Mock tradesEffects with Jest functions
+      component.tradesEffects = {
+        update: jest.fn().mockResolvedValue(undefined),
+      } as any;
+    });
+
     it('should update quantity when edited', () => {
       const trade = {
         id: '1',
-        symbol: 'AAPL',
-        quantity: 100,
-        price: 150,
-        purchase_date: '2024-01-01',
-        sell_date: null,
+        universeId: 'AAPL',
         accountId: '1',
-      };
-      component.trades$.set([trade as any]);
+        quantity: 100,
+        buy: 150,
+        sell: 0,
+        buy_date: '2024-01-01',
+        sell_date: null,
+      } as Trade;
+      component.trades$.set([trade]);
 
       component.ngOnInit();
       component.updateQuantity('1', 200);
@@ -405,14 +413,15 @@ describe('OpenPositionsComponent', () => {
     it('should update price when edited', () => {
       const trade = {
         id: '1',
-        symbol: 'AAPL',
-        quantity: 100,
-        price: 150,
-        purchase_date: '2024-01-01',
-        sell_date: null,
+        universeId: 'AAPL',
         accountId: '1',
-      };
-      component.trades$.set([trade as any]);
+        quantity: 100,
+        buy: 150,
+        sell: 0,
+        buy_date: '2024-01-01',
+        sell_date: null,
+      } as Trade;
+      component.trades$.set([trade]);
 
       component.ngOnInit();
       component.updatePrice('1', 175);
@@ -426,14 +435,15 @@ describe('OpenPositionsComponent', () => {
     it('should update purchase_date when edited', () => {
       const trade = {
         id: '1',
-        symbol: 'AAPL',
-        quantity: 100,
-        price: 150,
-        purchase_date: '2024-01-01',
-        sell_date: null,
+        universeId: 'AAPL',
         accountId: '1',
-      };
-      component.trades$.set([trade as any]);
+        quantity: 100,
+        buy: 150,
+        sell: 0,
+        buy_date: '2024-01-01',
+        sell_date: null,
+      } as Trade;
+      component.trades$.set([trade]);
 
       component.ngOnInit();
       component.updatePurchaseDate('1', '2024-02-01');
@@ -465,12 +475,12 @@ describe('OpenPositionsComponent', () => {
       expect(component.errorMessage()).toBe('Invalid date format');
     });
 
-    it('should handle update errors gracefully', () => {
+    it('should handle update errors gracefully', async () => {
       component.tradesEffects.update.mockRejectedValueOnce(
         new Error('Update failed')
       );
 
-      component.updateQuantity('1', 200);
+      await component.updateQuantity('1', 200);
 
       expect(component.errorMessage()).toContain('Update failed');
     });
