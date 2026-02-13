@@ -1,4 +1,9 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  signal,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -20,9 +25,27 @@ import { Trade } from '../../store/trades/trade.interface';
   styleUrl: './open-positions.component.scss',
 })
 export class OpenPositionsComponent {
-  // FUTURE: Wire up SmartNgRX trades signal
-  // readonly trades = injectSignals('trades', tradesAdapter.getSelectors().selectAll);
+  // Writable signal for trades (populated from SmartNgRX or set directly in tests)
   readonly trades$ = signal<Trade[]>([]);
+
+  // Writable signal for selected account ID (can be set from parent or tests)
+  readonly selectedAccountId = signal<string>('');
+
+  // Computed signal for filtered open positions
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- signal computed requires arrow function
+  readonly displayedPositions = computed(() => {
+    const allTrades = this.trades$();
+    const accountId = this.selectedAccountId();
+
+    return allTrades.filter(function filterOpenPositionsByAccount(
+      trade: Trade
+    ): boolean {
+      return (
+        (trade.sell_date === null || trade.sell_date === undefined) &&
+        trade.accountId === accountId
+      );
+    });
+  });
 
   searchText = '';
 

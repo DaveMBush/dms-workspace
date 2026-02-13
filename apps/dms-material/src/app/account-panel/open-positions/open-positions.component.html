@@ -1,4 +1,5 @@
-<dms-base-table [data]="trades$()" [columns]="columns">
+<!-- eslint-disable @angular-eslint/template/no-call-expression -- Signal call is required for computed signals -->
+<dms-base-table [data]="displayedPositions()" [columns]="columns">
   <ng-template #filterRowTemplate let-column>
     @if (column.field === 'universeId') {
     <mat-form-field

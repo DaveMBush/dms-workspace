@@ -1,0 +1,8 @@
+story: AO.2
+title: Wire Open Positions Table to Trades SmartNgRX
+status: PASS
+timestamp: 2024-12-19T12:00:00Z
+reviewer: Quinn (Test Architect & Quality Advisor)
+updated: '2026-02-12T00:00:00Z'
+top_issues: []
+waiver: { active: false }
