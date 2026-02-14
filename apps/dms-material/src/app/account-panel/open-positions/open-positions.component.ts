@@ -105,6 +105,10 @@ export class OpenPositionsComponent {
   }
 
   updateQuantity(tradeId: string, newQuantity: number): void {
+    if (!Number.isFinite(newQuantity)) {
+      this.errorMessage.set('Quantity must be a valid number');
+      return;
+    }
     if (newQuantity <= 0) {
       this.errorMessage.set('Quantity must be positive');
       return;
@@ -135,6 +139,10 @@ export class OpenPositionsComponent {
   }
 
   updatePrice(tradeId: string, newPrice: number): void {
+    if (!Number.isFinite(newPrice)) {
+      this.errorMessage.set('Price must be a valid number');
+      return;
+    }
     if (newPrice <= 0) {
       this.errorMessage.set('Price must be positive');
       return;
@@ -193,7 +201,25 @@ export class OpenPositionsComponent {
   }
 
   private isValidDate(dateString: string): boolean {
-    const date = new Date(dateString);
-    return date instanceof Date && !isNaN(date.getTime());
+    // Validate strict YYYY-MM-DD format
+    const dateRegex = /^(\d{4})-(\d{2})-(\d{2})$/;
+    const match = dateRegex.exec(dateString);
+
+    if (!match) {
+      return false;
+    }
+
+    // Parse components
+    const year = parseInt(match[1], 10);
+    const month = parseInt(match[2], 10);
+    const day = parseInt(match[3], 10);
+
+    // Create date and verify components match
+    const date = new Date(year, month - 1, day);
+    return (
+      date.getFullYear() === year &&
+      date.getMonth() + 1 === month &&
+      date.getDate() === day
+    );
   }
 }

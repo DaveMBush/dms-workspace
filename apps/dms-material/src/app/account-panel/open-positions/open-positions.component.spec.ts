@@ -469,6 +469,13 @@ describe('OpenPositionsComponent', () => {
       expect(component.errorMessage()).toBe('Quantity must be positive');
     });
 
+    it('should validate quantity is a finite number', () => {
+      component.updateQuantity('1', NaN);
+
+      expect(component.tradesEffects.update).not.toHaveBeenCalled();
+      expect(component.errorMessage()).toBe('Quantity must be a valid number');
+    });
+
     it('should validate price is positive', () => {
       component.updatePrice('1', -100);
 
@@ -476,8 +483,29 @@ describe('OpenPositionsComponent', () => {
       expect(component.errorMessage()).toBe('Price must be positive');
     });
 
+    it('should validate price is a finite number', () => {
+      component.updatePrice('1', NaN);
+
+      expect(component.tradesEffects.update).not.toHaveBeenCalled();
+      expect(component.errorMessage()).toBe('Price must be a valid number');
+    });
+
     it('should validate date format', () => {
       component.updatePurchaseDate('1', 'invalid-date');
+
+      expect(component.tradesEffects.update).not.toHaveBeenCalled();
+      expect(component.errorMessage()).toBe('Invalid date format');
+    });
+
+    it('should reject permissive date inputs', () => {
+      component.updatePurchaseDate('1', '1');
+
+      expect(component.tradesEffects.update).not.toHaveBeenCalled();
+      expect(component.errorMessage()).toBe('Invalid date format');
+    });
+
+    it('should reject invalid dates like February 31st', () => {
+      component.updatePurchaseDate('1', '2024-02-31');
 
       expect(component.tradesEffects.update).not.toHaveBeenCalled();
       expect(component.errorMessage()).toBe('Invalid date format');
