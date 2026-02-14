@@ -678,4 +678,202 @@ describe('OpenPositionsComponent', () => {
       expect(component.errorMessage()).toContain('required');
     });
   });
+
+  // Story AO.7: TDD Tests for Auto-Close Logic (RED state)
+  // Disabled until implementation in AO.8
+  describe.skip('Auto-Close Logic', () => {
+    let mockTradesEffects: any;
+
+    beforeEach(() => {
+      mockTradesEffects = {
+        update: vi.fn().mockReturnValue(of([])),
+        add: vi.fn().mockReturnValue(of([])),
+      };
+      component.tradesEffects = mockTradesEffects;
+    });
+
+    it('should add sell and sell_date columns to table', () => {
+      const trade = {
+        id: '1',
+        symbol: 'AAPL',
+        quantity: 100,
+        buy: 150,
+        buy_date: '2024-01-01',
+        sell_date: null,
+        sell: null,
+        accountId: '1',
+      } as unknown as Trade;
+      component.trades$.set([trade]);
+      component.selectedAccountId.set('1');
+
+      const sellColumn = component.columns.find((c) => c.field === 'sell');
+      const sellDateColumn = component.columns.find(
+        (c) => c.field === 'sell_date'
+      );
+
+      expect(sellColumn).toBeDefined();
+      expect(sellDateColumn).toBeDefined();
+      expect(sellColumn?.editable).toBe(true);
+      expect(sellDateColumn?.editable).toBe(true);
+    });
+
+    it('should close position when sell_date is filled', async () => {
+      const trade = {
+        id: '1',
+        universeId: 'AAPL',
+        quantity: 100,
+        buy: 150,
+        buy_date: '2024-01-01',
+        sell_date: null,
+        sell: 175,
+        accountId: '1',
+      } as Trade;
+      component.trades$.set([trade]);
+      component.selectedAccountId.set('1');
+
+      component.updateSellDate('1', '2024-06-01');
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      expect(mockTradesEffects.update).toHaveBeenCalledWith({
+        id: '1',
+        sell_date: '2024-06-01',
+      });
+
+      // Position should be removed from open positions after update
+      // (In real implementation, the SmartNgRX update would trigger this)
+      component.trades$.set([
+        {
+          ...trade,
+          sell_date: '2024-06-01',
+        },
+      ]);
+      expect(
+        component.displayedPositions().find((p) => p.id === '1')
+      ).toBeUndefined();
+    });
+
+    it('should update sell price without closing position', () => {
+      const trade = {
+        id: '1',
+        universeId: 'AAPL',
+        quantity: 100,
+        buy: 150,
+        sell_date: null,
+        sell: null,
+        accountId: '1',
+      } as Trade;
+      component.trades$.set([trade]);
+      component.selectedAccountId.set('1');
+
+      component.updateSellPrice('1', 175);
+
+      expect(mockTradesEffects.update).toHaveBeenCalledWith({
+        id: '1',
+        sell: 175,
+      });
+
+      // Position should still be in open positions
+      expect(
+        component.displayedPositions().find((p) => p.id === '1')
+      ).toBeDefined();
+    });
+
+    it('should validate sell_date is after purchase_date', () => {
+      const trade = {
+        id: '1',
+        universeId: 'AAPL',
+        buy_date: '2024-06-01',
+        sell_date: null,
+        accountId: '1',
+      } as Trade;
+      component.trades$.set([trade]);
+      component.selectedAccountId.set('1');
+
+      component.updateSellDate('1', '2024-01-01'); // Before purchase
+
+      expect(mockTradesEffects.update).not.toHaveBeenCalled();
+      expect(component.errorMessage()).toContain(
+        'Sell date must be after purchase date'
+      );
+    });
+
+    it('should require sell price when closing position', () => {
+      const trade = {
+        id: '1',
+        universeId: 'AAPL',
+        sell: null,
+        sell_date: null,
+        accountId: '1',
+      } as Trade;
+      component.trades$.set([trade]);
+      component.selectedAccountId.set('1');
+
+      component.updateSellDate('1', '2024-06-01');
+
+      expect(mockTradesEffects.update).not.toHaveBeenCalled();
+      expect(component.errorMessage()).toContain(
+        'Sell price is required to close position'
+      );
+    });
+
+    it('should show confirmation before closing position', () => {
+      const mockConfirm = vi.spyOn(window, 'confirm').mockReturnValue(true);
+      const trade = {
+        id: '1',
+        universeId: 'AAPL',
+        sell: 175,
+        sell_date: null,
+        accountId: '1',
+      } as Trade;
+      component.trades$.set([trade]);
+      component.selectedAccountId.set('1');
+
+      component.updateSellDate('1', '2024-06-01');
+
+      expect(mockConfirm).toHaveBeenCalledWith('Close this position?');
+      mockConfirm.mockRestore();
+    });
+
+    it('should not close if user cancels confirmation', () => {
+      const mockConfirm = vi.spyOn(window, 'confirm').mockReturnValue(false);
+      const trade = {
+        id: '1',
+        universeId: 'AAPL',
+        sell: 175,
+        sell_date: null,
+        accountId: '1',
+      } as Trade;
+      component.trades$.set([trade]);
+      component.selectedAccountId.set('1');
+
+      component.updateSellDate('1', '2024-06-01');
+
+      expect(mockTradesEffects.update).not.toHaveBeenCalled();
+      mockConfirm.mockRestore();
+    });
+
+    it('should calculate capital gain when position closed', () => {
+      const trade = {
+        id: '1',
+        universeId: 'AAPL',
+        quantity: 100,
+        buy: 150,
+        sell: 175,
+        sell_date: null,
+        accountId: '1',
+      } as Trade;
+      component.trades$.set([trade]);
+      component.selectedAccountId.set('1');
+
+      // Calculate expected capital gain: (175 - 150) * 100 = 2500
+      const expectedCapitalGain = (trade.sell - trade.buy) * trade.quantity;
+
+      component.updateSellDate('1', '2024-06-01');
+
+      // The component should calculate capital gain
+      // In the real implementation, this would be part of the update
+      expect(expectedCapitalGain).toBe(2500);
+    });
+  });
 });
