@@ -693,16 +693,16 @@ describe('OpenPositionsComponent', () => {
     });
 
     it('should add sell and sell_date columns to table', () => {
-      const trade = {
+      const trade: Trade = {
         id: '1',
-        symbol: 'AAPL',
+        universeId: 'AAPL',
         quantity: 100,
         buy: 150,
         buy_date: '2024-01-01',
         sell_date: null,
         sell: null,
         accountId: '1',
-      } as unknown as Trade;
+      } as Trade;
       component.trades$.set([trade]);
       component.selectedAccountId.set('1');
 
@@ -871,8 +871,19 @@ describe('OpenPositionsComponent', () => {
 
       component.updateSellDate('1', '2024-06-01');
 
-      // The component should calculate capital gain
-      // In the real implementation, this would be part of the update
+      // Verify the update was called with sell_date
+      expect(mockTradesEffects.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: '1',
+          sell_date: '2024-06-01',
+        })
+      );
+
+      // The component should include or calculate capital gain
+      // In the real implementation, capital gain could be:
+      // 1. Calculated and included in the update payload
+      // 2. Computed as a derived property
+      // Expected capital gain: (175 - 150) * 100 = 2500
       expect(expectedCapitalGain).toBe(2500);
     });
   });
