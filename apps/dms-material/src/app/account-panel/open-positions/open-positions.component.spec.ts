@@ -1,6 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { delay, of, throwError } from 'rxjs';
+import { vi } from 'vitest';
 
 import { OpenPositionsComponent } from './open-positions.component';
+import { tradeEffectsServiceToken } from '../../store/trades/trade-effect-service-token';
 import { Trade } from '../../store/trades/trade.interface';
 
 describe('OpenPositionsComponent', () => {
@@ -10,6 +13,14 @@ describe('OpenPositionsComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [OpenPositionsComponent],
+      providers: [
+        {
+          provide: tradeEffectsServiceToken,
+          useValue: {
+            update: vi.fn().mockReturnValue(of([])),
+          },
+        },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(OpenPositionsComponent);
@@ -380,11 +391,11 @@ describe('OpenPositionsComponent', () => {
   });
 
   // Story AO.3: TDD Tests for Editable Cells (RED state)
-  describe.skip('Editable Cells', () => {
+  describe('Editable Cells', () => {
     beforeEach(() => {
-      // Mock tradesEffects with Jest functions
+      // Mock tradesEffects with Vitest functions
       component.tradesEffects = {
-        update: jest.fn().mockResolvedValue(undefined),
+        update: vi.fn().mockReturnValue(of([])),
       } as any;
     });
 
@@ -401,7 +412,6 @@ describe('OpenPositionsComponent', () => {
       } as Trade;
       component.trades$.set([trade]);
 
-      component.ngOnInit();
       component.updateQuantity('1', 200);
 
       expect(component.tradesEffects.update).toHaveBeenCalledWith({
@@ -423,7 +433,6 @@ describe('OpenPositionsComponent', () => {
       } as Trade;
       component.trades$.set([trade]);
 
-      component.ngOnInit();
       component.updatePrice('1', 175);
 
       expect(component.tradesEffects.update).toHaveBeenCalledWith({
@@ -445,7 +454,6 @@ describe('OpenPositionsComponent', () => {
       } as Trade;
       component.trades$.set([trade]);
 
-      component.ngOnInit();
       component.updatePurchaseDate('1', '2024-02-01');
 
       expect(component.tradesEffects.update).toHaveBeenCalledWith({
@@ -461,11 +469,25 @@ describe('OpenPositionsComponent', () => {
       expect(component.errorMessage()).toBe('Quantity must be positive');
     });
 
+    it('should validate quantity is a finite number', () => {
+      component.updateQuantity('1', NaN);
+
+      expect(component.tradesEffects.update).not.toHaveBeenCalled();
+      expect(component.errorMessage()).toBe('Quantity must be a valid number');
+    });
+
     it('should validate price is positive', () => {
       component.updatePrice('1', -100);
 
       expect(component.tradesEffects.update).not.toHaveBeenCalled();
       expect(component.errorMessage()).toBe('Price must be positive');
+    });
+
+    it('should validate price is a finite number', () => {
+      component.updatePrice('1', NaN);
+
+      expect(component.tradesEffects.update).not.toHaveBeenCalled();
+      expect(component.errorMessage()).toBe('Price must be a valid number');
     });
 
     it('should validate date format', () => {
@@ -475,20 +497,34 @@ describe('OpenPositionsComponent', () => {
       expect(component.errorMessage()).toBe('Invalid date format');
     });
 
-    it('should handle update errors gracefully', async () => {
-      component.tradesEffects.update.mockRejectedValueOnce(
-        new Error('Update failed')
-      );
+    it('should reject permissive date inputs', () => {
+      component.updatePurchaseDate('1', '1');
 
-      await component.updateQuantity('1', 200);
+      expect(component.tradesEffects.update).not.toHaveBeenCalled();
+      expect(component.errorMessage()).toBe('Invalid date format');
+    });
+
+    it('should reject invalid dates like February 31st', () => {
+      component.updatePurchaseDate('1', '2024-02-31');
+
+      expect(component.tradesEffects.update).not.toHaveBeenCalled();
+      expect(component.errorMessage()).toBe('Invalid date format');
+    });
+
+    it('should handle update errors gracefully', () => {
+      component.tradesEffects.update = vi
+        .fn()
+        .mockReturnValue(throwError(() => new Error('Update failed')));
+
+      component.updateQuantity('1', 200);
 
       expect(component.errorMessage()).toContain('Update failed');
     });
 
     it('should show loading indicator during update', async () => {
-      component.tradesEffects.update.mockImplementationOnce(
-        () => new Promise((resolve) => setTimeout(resolve, 100))
-      );
+      component.tradesEffects.update = vi
+        .fn()
+        .mockReturnValue(of([]).pipe(delay(100)));
 
       component.updateQuantity('1', 200);
 

@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  inject,
   signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -11,6 +12,8 @@ import { MatInputModule } from '@angular/material/input';
 import { BaseTableComponent } from '../../shared/components/base-table/base-table.component';
 import { ColumnDef } from '../../shared/components/base-table/column-def.interface';
 import { Trade } from '../../store/trades/trade.interface';
+import { TradeEffectsService } from '../../store/trades/trade-effect.service';
+import { tradeEffectsServiceToken } from '../../store/trades/trade-effect-service-token';
 
 @Component({
   selector: 'dms-open-positions',
@@ -46,6 +49,13 @@ export class OpenPositionsComponent {
       );
     });
   });
+
+  // Signals for editable cells functionality
+  errorMessage = signal<string>('');
+  updating = signal<boolean>(false);
+
+  // Inject TradeEffectsService for update operations
+  tradesEffects: TradeEffectsService = inject(tradeEffectsServiceToken);
 
   searchText = '';
 
@@ -92,5 +102,124 @@ export class OpenPositionsComponent {
 
   onCellEdit(__: Trade, ___: string, ____: unknown): void {
     // Update via SmartNgRX
+  }
+
+  updateQuantity(tradeId: string, newQuantity: number): void {
+    if (!Number.isFinite(newQuantity)) {
+      this.errorMessage.set('Quantity must be a valid number');
+      return;
+    }
+    if (newQuantity <= 0) {
+      this.errorMessage.set('Quantity must be positive');
+      return;
+    }
+
+    this.updating.set(true);
+    const context = this;
+    const handleUpdateQuantitySuccess =
+      function handleUpdateQuantitySuccess(): void {
+        context.updating.set(false);
+        context.errorMessage.set('');
+      };
+    const handleUpdateQuantityError = function handleUpdateQuantityError(
+      error: Error
+    ): void {
+      context.updating.set(false);
+      context.errorMessage.set(`Update failed: ${error.message}`);
+    };
+    this.tradesEffects
+      .update({
+        id: tradeId,
+        quantity: newQuantity,
+      } as unknown as Trade)
+      .subscribe({
+        next: handleUpdateQuantitySuccess,
+        error: handleUpdateQuantityError,
+      });
+  }
+
+  updatePrice(tradeId: string, newPrice: number): void {
+    if (!Number.isFinite(newPrice)) {
+      this.errorMessage.set('Price must be a valid number');
+      return;
+    }
+    if (newPrice <= 0) {
+      this.errorMessage.set('Price must be positive');
+      return;
+    }
+
+    this.updating.set(true);
+    const context = this;
+    const handleUpdatePriceSuccess = function handleUpdatePriceSuccess(): void {
+      context.updating.set(false);
+      context.errorMessage.set('');
+    };
+    const handleUpdatePriceError = function handleUpdatePriceError(
+      error: Error
+    ): void {
+      context.updating.set(false);
+      context.errorMessage.set(`Update failed: ${error.message}`);
+    };
+    this.tradesEffects
+      .update({
+        id: tradeId,
+        price: newPrice,
+      } as unknown as Trade)
+      .subscribe({
+        next: handleUpdatePriceSuccess,
+        error: handleUpdatePriceError,
+      });
+  }
+
+  updatePurchaseDate(tradeId: string, newDate: string): void {
+    if (!this.isValidDate(newDate)) {
+      this.errorMessage.set('Invalid date format');
+      return;
+    }
+
+    this.updating.set(true);
+    const context = this;
+    const handleUpdatePurchaseDateSuccess =
+      function handleUpdatePurchaseDateSuccess(): void {
+        context.updating.set(false);
+        context.errorMessage.set('');
+      };
+    const handleUpdatePurchaseDateError =
+      function handleUpdatePurchaseDateError(error: Error): void {
+        context.updating.set(false);
+        context.errorMessage.set(`Update failed: ${error.message}`);
+      };
+    this.tradesEffects
+      .update({
+        id: tradeId,
+        purchase_date: newDate,
+      } as unknown as Trade)
+      .subscribe({
+        next: handleUpdatePurchaseDateSuccess,
+        error: handleUpdatePurchaseDateError,
+      });
+  }
+
+  private isValidDate(dateString: string): boolean {
+    // Validate strict YYYY-MM-DD format
+    const dateRegex = /^(\d{4})-(\d{2})-(\d{2})$/;
+    const match = dateRegex.exec(dateString);
+
+    if (!match) {
+      return false;
+    }
+
+    // Parse components
+    const year = parseInt(match[1], 10);
+    const month = parseInt(match[2], 10);
+    const day = parseInt(match[3], 10);
+
+    // Create date and verify components match
+    const date = new Date(year, month - 1, day);
+    return (
+      date.getFullYear() === year &&
+      date.getMonth() + 1 === month &&
+      date.getDate() === day
+    );
   }
 }
