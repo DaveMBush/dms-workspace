@@ -227,6 +227,7 @@ export class OpenPositionsComponent {
     const context = this;
     const handleSuccess = function handleSuccess(): void {
       context.updating.set(false);
+      context.errorMessage.set('');
       context.successMessage.set('Position closed successfully');
       const clearMessage = function clearMessage(): void {
         context.successMessage.set('');
