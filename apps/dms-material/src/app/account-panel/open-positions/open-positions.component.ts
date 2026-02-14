@@ -17,7 +17,7 @@ import { Trade } from '../../store/trades/trade.interface';
 import { TradeEffectsService } from '../../store/trades/trade-effect.service';
 import { tradeEffectsServiceToken } from '../../store/trades/trade-effect-service-token';
 import { AddPositionDialogComponent } from './add-position-dialog/add-position-dialog.component';
-
+import { isPositive, isValidDate, isValidNumber } from './position-validators';
 @Component({
   selector: 'dms-open-positions',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -37,7 +37,6 @@ export class OpenPositionsComponent {
 
   // Writable signal for selected account ID (can be set from parent or tests)
   readonly selectedAccountId = signal<string>('');
-
   // Computed signal for filtered open positions
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- signal computed requires arrow function
   readonly displayedPositions = computed(() => {
@@ -58,13 +57,10 @@ export class OpenPositionsComponent {
   errorMessage = signal<string>('');
   successMessage = signal<string>('');
   updating = signal<boolean>(false);
-
   // Inject TradeEffectsService for update operations
   tradesEffects: TradeEffectsService = inject(tradeEffectsServiceToken);
-
   // Inject MatDialog for add position dialog
   private dialog = inject(MatDialog);
-
   searchText = '';
 
   columns: ColumnDef[] = [
@@ -146,99 +142,121 @@ export class OpenPositionsComponent {
   }
 
   updateQuantity(tradeId: string, newQuantity: number): void {
-    if (!Number.isFinite(newQuantity)) {
+    if (!isValidNumber(newQuantity)) {
       this.errorMessage.set('Quantity must be a valid number');
       return;
     }
-    if (newQuantity <= 0) {
+    if (!isPositive(newQuantity)) {
       this.errorMessage.set('Quantity must be positive');
       return;
     }
-
-    this.updating.set(true);
-    const context = this;
-    const handleUpdateQuantitySuccess =
-      function handleUpdateQuantitySuccess(): void {
-        context.updating.set(false);
-        context.errorMessage.set('');
-      };
-    const handleUpdateQuantityError = function handleUpdateQuantityError(
-      error: Error
-    ): void {
-      context.updating.set(false);
-      context.errorMessage.set(`Update failed: ${error.message}`);
-    };
-    this.tradesEffects
-      .update({
-        id: tradeId,
-        quantity: newQuantity,
-      } as unknown as Trade)
-      .subscribe({
-        next: handleUpdateQuantitySuccess,
-        error: handleUpdateQuantityError,
-      });
+    this.performUpdate(tradeId, { quantity: newQuantity } as unknown as Trade);
   }
 
   updatePrice(tradeId: string, newPrice: number): void {
-    if (!Number.isFinite(newPrice)) {
+    if (!isValidNumber(newPrice)) {
       this.errorMessage.set('Price must be a valid number');
       return;
     }
-    if (newPrice <= 0) {
+    if (!isPositive(newPrice)) {
       this.errorMessage.set('Price must be positive');
       return;
     }
-
-    this.updating.set(true);
-    const context = this;
-    const handleUpdatePriceSuccess = function handleUpdatePriceSuccess(): void {
-      context.updating.set(false);
-      context.errorMessage.set('');
-    };
-    const handleUpdatePriceError = function handleUpdatePriceError(
-      error: Error
-    ): void {
-      context.updating.set(false);
-      context.errorMessage.set(`Update failed: ${error.message}`);
-    };
-    this.tradesEffects
-      .update({
-        id: tradeId,
-        price: newPrice,
-      } as unknown as Trade)
-      .subscribe({
-        next: handleUpdatePriceSuccess,
-        error: handleUpdatePriceError,
-      });
+    this.performUpdate(tradeId, { price: newPrice } as unknown as Trade);
   }
 
   updatePurchaseDate(tradeId: string, newDate: string): void {
-    if (!this.isValidDate(newDate)) {
+    if (!isValidDate(newDate)) {
+      this.errorMessage.set('Invalid date format');
+      return;
+    }
+    this.performUpdate(tradeId, {
+      purchase_date: newDate,
+    } as unknown as Trade);
+  }
+
+  updateSellPrice(tradeId: string, newSellPrice: number): void {
+    if (!isValidNumber(newSellPrice)) {
+      this.errorMessage.set('Sell price must be a valid number');
+      return;
+    }
+    if (!isPositive(newSellPrice)) {
+      this.errorMessage.set('Sell price must be positive');
+      return;
+    }
+    this.performUpdate(tradeId, { sell: newSellPrice } as unknown as Trade);
+  }
+
+  updateSellDate(tradeId: string, newSellDate: string): void {
+    const findTradeById = function findTradeById(t: Trade): boolean {
+      return t.id === tradeId;
+    };
+    const trade = this.trades$().find(findTradeById);
+    if (!trade) {
+      this.errorMessage.set('Trade not found');
+      return;
+    }
+    if (!isValidDate(newSellDate)) {
       this.errorMessage.set('Invalid date format');
       return;
     }
 
+    if (!isValidDate(trade.buy_date)) {
+      this.errorMessage.set('Missing or invalid purchase date');
+      return;
+    }
+
+    if (new Date(newSellDate) <= new Date(trade.buy_date)) {
+      this.errorMessage.set('Sell date must be after purchase date');
+      return;
+    }
+
+    if (trade.sell === null || trade.sell === undefined) {
+      this.errorMessage.set('Sell price is required to close position');
+      return;
+    }
+    const confirmed = confirm('Close this position?');
+    if (!confirmed) {
+      return;
+    }
+    this.performClosePosition(tradeId, newSellDate);
+  }
+
+  private performClosePosition(tradeId: string, sellDate: string): void {
     this.updating.set(true);
     const context = this;
-    const handleUpdatePurchaseDateSuccess =
-      function handleUpdatePurchaseDateSuccess(): void {
-        context.updating.set(false);
-        context.errorMessage.set('');
+    const handleSuccess = function handleSuccess(): void {
+      context.updating.set(false);
+      context.errorMessage.set('');
+      context.successMessage.set('Position closed successfully');
+      const clearMessage = function clearMessage(): void {
+        context.successMessage.set('');
       };
-    const handleUpdatePurchaseDateError =
-      function handleUpdatePurchaseDateError(error: Error): void {
-        context.updating.set(false);
-        context.errorMessage.set(`Update failed: ${error.message}`);
-      };
+      setTimeout(clearMessage, 3000);
+    };
+    const handleError = function handleError(error: Error): void {
+      context.updating.set(false);
+      context.errorMessage.set(`Failed to close position: ${error.message}`);
+    };
     this.tradesEffects
-      .update({
-        id: tradeId,
-        purchase_date: newDate,
-      } as unknown as Trade)
-      .subscribe({
-        next: handleUpdatePurchaseDateSuccess,
-        error: handleUpdatePurchaseDateError,
-      });
+      .update({ id: tradeId, sell_date: sellDate } as unknown as Trade)
+      .subscribe({ next: handleSuccess, error: handleError });
+  }
+
+  private performUpdate(tradeId: string, updateData: Partial<Trade>): void {
+    this.updating.set(true);
+    const context = this;
+    const handleSuccess = function handleSuccess(): void {
+      context.updating.set(false);
+      context.errorMessage.set('');
+    };
+    const handleError = function handleError(error: Error): void {
+      context.updating.set(false);
+      context.errorMessage.set(`Update failed: ${error.message}`);
+    };
+    this.tradesEffects
+      .update({ id: tradeId, ...updateData } as unknown as Trade)
+      .subscribe({ next: handleSuccess, error: handleError });
   }
 
   private handleDialogResult(
@@ -303,28 +321,5 @@ export class OpenPositionsComponent {
 
   private handleDialogError(error: Error): void {
     this.errorMessage.set(`Dialog error: ${error.message}`);
-  }
-
-  private isValidDate(dateString: string): boolean {
-    // Validate strict YYYY-MM-DD format
-    const dateRegex = /^(\d{4})-(\d{2})-(\d{2})$/;
-    const match = dateRegex.exec(dateString);
-
-    if (!match) {
-      return false;
-    }
-
-    // Parse components
-    const year = parseInt(match[1], 10);
-    const month = parseInt(match[2], 10);
-    const day = parseInt(match[3], 10);
-
-    // Create date and verify components match
-    const date = new Date(year, month - 1, day);
-    return (
-      date.getFullYear() === year &&
-      date.getMonth() + 1 === month &&
-      date.getDate() === day
-    );
   }
 }
