@@ -6,6 +6,8 @@ import {
   signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
@@ -14,6 +16,7 @@ import { ColumnDef } from '../../shared/components/base-table/column-def.interfa
 import { Trade } from '../../store/trades/trade.interface';
 import { TradeEffectsService } from '../../store/trades/trade-effect.service';
 import { tradeEffectsServiceToken } from '../../store/trades/trade-effect-service-token';
+import { AddPositionDialogComponent } from './add-position-dialog/add-position-dialog.component';
 
 @Component({
   selector: 'dms-open-positions',
@@ -23,6 +26,7 @@ import { tradeEffectsServiceToken } from '../../store/trades/trade-effect-servic
     FormsModule,
     MatFormFieldModule,
     MatInputModule,
+    MatButtonModule,
   ],
   templateUrl: './open-positions.component.html',
   styleUrl: './open-positions.component.scss',
@@ -52,10 +56,14 @@ export class OpenPositionsComponent {
 
   // Signals for editable cells functionality
   errorMessage = signal<string>('');
+  successMessage = signal<string>('');
   updating = signal<boolean>(false);
 
   // Inject TradeEffectsService for update operations
   tradesEffects: TradeEffectsService = inject(tradeEffectsServiceToken);
+
+  // Inject MatDialog for add position dialog
+  private dialog = inject(MatDialog);
 
   searchText = '';
 
@@ -94,6 +102,39 @@ export class OpenPositionsComponent {
 
   onAddPosition(): void {
     // Open new position dialog
+  }
+
+  openAddPositionDialog(): void {
+    const dialogRef = this.dialog.open(AddPositionDialogComponent, {
+      width: '500px',
+      data: {
+        accountId: this.selectedAccountId(),
+      },
+    });
+
+    const context = this;
+    const handleDialogClose = function handleDialogClose(
+      result: {
+        symbol?: string;
+        quantity?: number;
+        price?: number;
+        // eslint-disable-next-line @typescript-eslint/naming-convention -- backend field name
+        purchase_date?: string;
+      } | null
+    ): void {
+      context.handleDialogResult(result);
+    };
+
+    const handleDialogCloseError = function handleDialogCloseError(
+      error: Error
+    ): void {
+      context.handleDialogError(error);
+    };
+
+    dialogRef.afterClosed().subscribe({
+      next: handleDialogClose,
+      error: handleDialogCloseError,
+    });
   }
 
   onSellPosition(_: Trade): void {
@@ -198,6 +239,68 @@ export class OpenPositionsComponent {
         next: handleUpdatePurchaseDateSuccess,
         error: handleUpdatePurchaseDateError,
       });
+  }
+
+  private handleDialogResult(
+    result: {
+      symbol?: string;
+      quantity?: number;
+      price?: number;
+      // eslint-disable-next-line @typescript-eslint/naming-convention -- backend field name
+      purchase_date?: string;
+    } | null
+  ): void {
+    if (result === null || result === undefined) {
+      return;
+    }
+
+    // Validate required fields
+    if (
+      result.symbol === undefined ||
+      result.symbol === '' ||
+      result.quantity === undefined ||
+      result.price === undefined
+    ) {
+      this.errorMessage.set('All fields are required');
+      return;
+    }
+
+    const tradeData = {
+      ...result,
+      accountId: this.selectedAccountId(),
+      sell_date: null,
+    };
+
+    const context = this;
+    const handleAddComplete = function handleAddComplete(): void {
+      context.handleAddSuccess();
+    };
+
+    const handleAddFailed = function handleAddFailed(error: Error): void {
+      context.handleAddError(error);
+    };
+
+    this.tradesEffects.add(tradeData as unknown as Trade).subscribe({
+      next: handleAddComplete,
+      error: handleAddFailed,
+    });
+  }
+
+  private handleAddSuccess(): void {
+    this.successMessage.set('Position added successfully');
+    const context = this;
+    const clearSuccessMessage = function clearSuccessMessage(): void {
+      context.successMessage.set('');
+    };
+    setTimeout(clearSuccessMessage, 3000);
+  }
+
+  private handleAddError(error: Error): void {
+    this.errorMessage.set(`Failed to add position: ${error.message}`);
+  }
+
+  private handleDialogError(error: Error): void {
+    this.errorMessage.set(`Dialog error: ${error.message}`);
   }
 
   private isValidDate(dateString: string): boolean {
