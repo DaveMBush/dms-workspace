@@ -92,7 +92,7 @@
     "@schematics/angular": "21.1.2",
     "@smarttools/eslint-plugin": "1.0.5",
     "@smarttools/eslint-plugin-rxjs": "^1.0.22",
-    "@stylistic/eslint-plugin-js": "4.2.0",
+    "@stylistic/eslint-plugin-js": "4.4.1",
     "@swc-node/register": "~1.9.1",
     "@swc/core": "~1.5.7",
     "@swc/helpers": "~0.5.18",
