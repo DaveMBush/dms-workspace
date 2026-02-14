@@ -542,7 +542,7 @@ describe('OpenPositionsComponent', () => {
     let mockDialogService: any;
     let mockTradesEffects: any;
 
-    beforeEach(() => {
+    beforeEach(async () => {
       mockDialogService = {
         open: vi.fn().mockReturnValue({
           afterClosed: () =>
@@ -564,7 +564,7 @@ describe('OpenPositionsComponent', () => {
         update: vi.fn().mockReturnValue(of([])),
       };
 
-      TestBed.configureTestingModule({
+      await TestBed.configureTestingModule({
         imports: [OpenPositionsComponent],
         providers: [
           { provide: MatDialog, useValue: mockDialogService },
