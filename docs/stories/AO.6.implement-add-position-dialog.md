@@ -228,8 +228,6 @@ Verify:
 
 ## Files Modified
 
-## Files Modified
-
 | File                                                                                                            | Changes                |
 | --------------------------------------------------------------------------------------------------------------- | ---------------------- |
 | `apps/dms-material/src/app/account-panel/open-positions/add-position-dialog/add-position-dialog.component.ts`   | Create dialog          |

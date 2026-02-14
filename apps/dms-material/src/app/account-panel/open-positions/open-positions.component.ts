@@ -259,7 +259,9 @@ export class OpenPositionsComponent {
       result.symbol === undefined ||
       result.symbol === '' ||
       result.quantity === undefined ||
-      result.price === undefined
+      result.price === undefined ||
+      result.purchase_date === undefined ||
+      result.purchase_date === ''
     ) {
       this.errorMessage.set('All fields are required');
       return;
