@@ -680,8 +680,8 @@ describe('OpenPositionsComponent', () => {
   });
 
   // Story AO.7: TDD Tests for Auto-Close Logic (RED state)
-  // Disabled until implementation in AO.8
-  describe.skip('Auto-Close Logic', () => {
+  // Re-enabled in AO.8
+  describe('Auto-Close Logic', () => {
     let mockTradesEffects: any;
 
     beforeEach(() => {
@@ -718,6 +718,7 @@ describe('OpenPositionsComponent', () => {
     });
 
     it('should close position when sell_date is filled', async () => {
+      const mockConfirm = vi.spyOn(window, 'confirm').mockReturnValue(true);
       const trade = {
         id: '1',
         universeId: 'AAPL',
@@ -751,6 +752,7 @@ describe('OpenPositionsComponent', () => {
       expect(
         component.displayedPositions().find((p) => p.id === '1')
       ).toBeUndefined();
+      mockConfirm.mockRestore();
     });
 
     it('should update sell price without closing position', () => {
@@ -854,6 +856,7 @@ describe('OpenPositionsComponent', () => {
     });
 
     it('should calculate capital gain when position closed', () => {
+      const mockConfirm = vi.spyOn(window, 'confirm').mockReturnValue(true);
       const trade = {
         id: '1',
         universeId: 'AAPL',
@@ -885,6 +888,7 @@ describe('OpenPositionsComponent', () => {
       // 2. Computed as a derived property
       // Expected capital gain: (175 - 150) * 100 = 2500
       expect(expectedCapitalGain).toBe(2500);
+      mockConfirm.mockRestore();
     });
   });
 });
