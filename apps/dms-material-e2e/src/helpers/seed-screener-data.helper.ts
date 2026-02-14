@@ -1,16 +1,13 @@
 import { PrismaClient } from '@prisma/client';
 
+import type { RiskGroups } from './risk-groups.types';
+import { createRiskGroups } from './shared-risk-groups.helper';
+
 type PrismaClientType = PrismaClient;
 
 interface SeederResult {
   cleanup(): Promise<void>;
   symbols: string[];
-}
-
-interface RiskGroups {
-  equitiesRiskGroup: { id: string };
-  incomeRiskGroup: { id: string };
-  taxFreeIncomeRiskGroup: { id: string };
 }
 
 // Snake case property names match database schema
@@ -41,31 +38,6 @@ function generateUniqueId(): string {
     .join('')
     .substring(0, 5);
   return `${Date.now()}-${randomStr}`;
-}
-
-/**
- * Create risk groups in the database
- */
-async function createRiskGroups(prisma: PrismaClientType): Promise<RiskGroups> {
-  const equitiesRiskGroup = await prisma.risk_group.upsert({
-    where: { name: 'Equities' },
-    update: {},
-    create: { name: 'Equities' },
-  });
-
-  const incomeRiskGroup = await prisma.risk_group.upsert({
-    where: { name: 'Income' },
-    update: {},
-    create: { name: 'Income' },
-  });
-
-  const taxFreeIncomeRiskGroup = await prisma.risk_group.upsert({
-    where: { name: 'Tax Free Income' },
-    update: {},
-    create: { name: 'Tax Free Income' },
-  });
-
-  return { equitiesRiskGroup, incomeRiskGroup, taxFreeIncomeRiskGroup };
 }
 
 /**
