@@ -1,4 +1,17 @@
 <!-- eslint-disable @angular-eslint/template/no-call-expression -- Signal call is required for computed signals -->
+<div class="open-positions-header">
+  <h2>Open Positions</h2>
+  <button mat-raised-button color="primary" (click)="openAddPositionDialog()">
+    Add New Position
+  </button>
+</div>
+
+@if (successMessage()) {
+<div class="success-message">{{ successMessage() }}</div>
+} @if (errorMessage()) {
+<div class="error-message">{{ errorMessage() }}</div>
+}
+
 <dms-base-table [data]="displayedPositions()" [columns]="columns">
   <ng-template #filterRowTemplate let-column>
     @if (column.field === 'universeId') {

@@ -538,11 +538,14 @@ describe('OpenPositionsComponent', () => {
   });
 
   // Story AO.5: TDD Tests for Add New Position Dialog (RED state)
-  describe.skip('Add New Position Dialog', () => {
+  // Story AO.6: Tests re-enabled (Going GREEN)
+  describe('Add New Position Dialog', () => {
     let mockDialogService: any;
     let mockTradesEffects: any;
 
     beforeEach(async () => {
+      TestBed.resetTestingModule();
+
       mockDialogService = {
         open: vi.fn().mockReturnValue({
           afterClosed: () =>
@@ -560,7 +563,7 @@ describe('OpenPositionsComponent', () => {
           set: vi.fn(),
           get: vi.fn().mockReturnValue('account-123'),
         },
-        create: vi.fn().mockResolvedValue({ id: '1' }),
+        add: vi.fn().mockReturnValue(of([{ id: '1' }])),
         update: vi.fn().mockReturnValue(of([])),
       };
 
@@ -614,7 +617,7 @@ describe('OpenPositionsComponent', () => {
 
       await new Promise((resolve) => setTimeout(resolve, 100));
 
-      expect(mockTradesEffects.create).toHaveBeenCalledWith({
+      expect(mockTradesEffects.add).toHaveBeenCalledWith({
         symbol: 'AAPL',
         quantity: 100,
         price: 150,
@@ -631,7 +634,7 @@ describe('OpenPositionsComponent', () => {
 
       component.openAddPositionDialog();
 
-      expect(mockTradesEffects.create).not.toHaveBeenCalled();
+      expect(mockTradesEffects.add).not.toHaveBeenCalled();
     });
 
     it('should handle dialog errors gracefully', () => {
@@ -654,7 +657,7 @@ describe('OpenPositionsComponent', () => {
             purchase_date: '2024-01-01',
           }),
       });
-      mockTradesEffects.create.mockResolvedValueOnce({ id: '1' });
+      mockTradesEffects.add.mockReturnValueOnce(of([{ id: '1' }]));
       component.selectedAccountId.set('account-123');
 
       component.openAddPositionDialog();
@@ -671,7 +674,7 @@ describe('OpenPositionsComponent', () => {
 
       component.openAddPositionDialog();
 
-      expect(mockTradesEffects.create).not.toHaveBeenCalled();
+      expect(mockTradesEffects.add).not.toHaveBeenCalled();
       expect(component.errorMessage()).toContain('required');
     });
   });
