@@ -201,12 +201,17 @@ export class OpenPositionsComponent {
       return;
     }
 
+    if (!isValidDate(trade.buy_date)) {
+      this.errorMessage.set('Missing or invalid purchase date');
+      return;
+    }
+
     if (new Date(newSellDate) <= new Date(trade.buy_date)) {
       this.errorMessage.set('Sell date must be after purchase date');
       return;
     }
 
-    if (!trade.sell) {
+    if (trade.sell === null || trade.sell === undefined) {
       this.errorMessage.set('Sell price is required to close position');
       return;
     }

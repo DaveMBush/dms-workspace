@@ -804,6 +804,7 @@ describe('OpenPositionsComponent', () => {
       const trade = {
         id: '1',
         universeId: 'AAPL',
+        buy_date: '2024-01-01',
         sell: null,
         sell_date: null,
         accountId: '1',
@@ -824,6 +825,7 @@ describe('OpenPositionsComponent', () => {
       const trade = {
         id: '1',
         universeId: 'AAPL',
+        buy_date: '2024-01-01',
         sell: 175,
         sell_date: null,
         accountId: '1',
@@ -842,6 +844,7 @@ describe('OpenPositionsComponent', () => {
       const trade = {
         id: '1',
         universeId: 'AAPL',
+        buy_date: '2024-01-01',
         sell: 175,
         sell_date: null,
         accountId: '1',
@@ -860,6 +863,7 @@ describe('OpenPositionsComponent', () => {
       const trade = {
         id: '1',
         universeId: 'AAPL',
+        buy_date: '2024-01-01',
         quantity: 100,
         buy: 150,
         sell: 175,
