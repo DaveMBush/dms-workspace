@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatDialog } from '@angular/material/dialog';
 import { delay, of, throwError } from 'rxjs';
 import { vi } from 'vitest';
 
@@ -533,6 +534,145 @@ describe('OpenPositionsComponent', () => {
       await new Promise((resolve) => setTimeout(resolve, 150));
 
       expect(component.updating()).toBe(false);
+    });
+  });
+
+  // Story AO.5: TDD Tests for Add New Position Dialog (RED state)
+  describe.skip('Add New Position Dialog', () => {
+    let mockDialogService: any;
+    let mockTradesEffects: any;
+
+    beforeEach(async () => {
+      mockDialogService = {
+        open: vi.fn().mockReturnValue({
+          afterClosed: () =>
+            of({
+              symbol: 'AAPL',
+              quantity: 100,
+              price: 150,
+              purchase_date: '2024-01-01',
+            }),
+        }),
+      };
+
+      mockTradesEffects = {
+        selectedAccountId: {
+          set: vi.fn(),
+          get: vi.fn().mockReturnValue('account-123'),
+        },
+        create: vi.fn().mockResolvedValue({ id: '1' }),
+        update: vi.fn().mockReturnValue(of([])),
+      };
+
+      await TestBed.configureTestingModule({
+        imports: [OpenPositionsComponent],
+        providers: [
+          { provide: MatDialog, useValue: mockDialogService },
+          { provide: tradeEffectsServiceToken, useValue: mockTradesEffects },
+        ],
+      }).compileComponents();
+
+      fixture = TestBed.createComponent(OpenPositionsComponent);
+      component = fixture.componentInstance;
+      component.tradesEffects = mockTradesEffects;
+    });
+
+    it('should open dialog when Add button clicked', () => {
+      component.openAddPositionDialog();
+
+      expect(mockDialogService.open).toHaveBeenCalled();
+    });
+
+    it('should pass current account ID to dialog', () => {
+      component.selectedAccountId.set('account-123');
+
+      component.openAddPositionDialog();
+
+      expect(mockDialogService.open).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({
+          data: expect.objectContaining({
+            accountId: 'account-123',
+          }),
+        })
+      );
+    });
+
+    it('should create new trade when dialog confirms', async () => {
+      mockDialogService.open.mockReturnValue({
+        afterClosed: () =>
+          of({
+            symbol: 'AAPL',
+            quantity: 100,
+            price: 150,
+            purchase_date: '2024-01-01',
+          }),
+      });
+      component.selectedAccountId.set('account-123');
+
+      component.openAddPositionDialog();
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      expect(mockTradesEffects.create).toHaveBeenCalledWith({
+        symbol: 'AAPL',
+        quantity: 100,
+        price: 150,
+        purchase_date: '2024-01-01',
+        accountId: 'account-123',
+        sell_date: null,
+      });
+    });
+
+    it('should not create trade when dialog cancelled', () => {
+      mockDialogService.open.mockReturnValue({
+        afterClosed: () => of(null),
+      });
+
+      component.openAddPositionDialog();
+
+      expect(mockTradesEffects.create).not.toHaveBeenCalled();
+    });
+
+    it('should handle dialog errors gracefully', () => {
+      mockDialogService.open.mockReturnValue({
+        afterClosed: () => throwError(() => new Error('Dialog error')),
+      });
+
+      component.openAddPositionDialog();
+
+      expect(component.errorMessage()).toContain('Dialog error');
+    });
+
+    it('should show success message after adding position', async () => {
+      mockDialogService.open.mockReturnValue({
+        afterClosed: () =>
+          of({
+            symbol: 'AAPL',
+            quantity: 100,
+            price: 150,
+            purchase_date: '2024-01-01',
+          }),
+      });
+      mockTradesEffects.create.mockResolvedValueOnce({ id: '1' });
+      component.selectedAccountId.set('account-123');
+
+      component.openAddPositionDialog();
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      expect(component.successMessage()).toBe('Position added successfully');
+    });
+
+    it('should validate required fields before creating', () => {
+      mockDialogService.open.mockReturnValue({
+        afterClosed: () => of({ symbol: '', quantity: 100 }), // Missing symbol
+      });
+
+      component.openAddPositionDialog();
+
+      expect(mockTradesEffects.create).not.toHaveBeenCalled();
+      expect(component.errorMessage()).toContain('required');
     });
   });
 });
