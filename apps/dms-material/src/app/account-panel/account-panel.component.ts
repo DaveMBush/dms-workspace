@@ -22,7 +22,12 @@ import {
 } from '@angular/router';
 import { filter, Subscription } from 'rxjs';
 
+import { currentAccountSignalStore } from '../store/current-account/current-account.signal-store';
+import { selectCurrentAccountSignal } from '../store/current-account/select-current-account.signal';
+import { Trade } from '../store/trades/trade.interface';
 import { DivDepModal } from './div-dep-modal/div-dep-modal.component';
+import { AddPositionService } from './open-positions/add-position.service';
+import { AddPositionDialogComponent } from './open-positions/add-position-dialog/add-position-dialog.component';
 
 @Component({
   selector: 'dms-account-panel',
@@ -43,9 +48,15 @@ export class AccountPanelComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private dialog = inject(MatDialog);
+  private currentAccountStore = inject(currentAccountSignalStore);
+  private addPositionService = inject(AddPositionService);
 
   private routeSubscription?: Subscription;
+  private routeParamsSubscription?: Subscription;
   private currentUrl$ = signal<string>('');
+
+  errorMessage$ = this.addPositionService.getErrorMessage();
+  successMessage$ = this.addPositionService.getSuccessMessage();
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
   isOpenPositionsRoute$ = computed(() => {
@@ -82,15 +93,25 @@ export class AccountPanelComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    // Subscribe to route params to update current account store
+    const component = this;
+    this.routeParamsSubscription = this.route.params.subscribe(
+      function handleRouteParams(params: Record<string, string>) {
+        const accountId = params['accountId'];
+        if (typeof accountId === 'string') {
+          component.currentAccountStore.setCurrentAccountId(accountId);
+        }
+      }
+    );
+
     this.routeSubscription = this.router.events
       .pipe(
         filter(function isNavigationEnd(event): event is NavigationEnd {
           return event instanceof NavigationEnd;
         })
       )
-      // eslint-disable-next-line @smarttools/no-anonymous-functions -- preserves this context
-      .subscribe(() => {
-        this.currentUrl$.set(this.router.url);
+      .subscribe(function handleNavigation() {
+        component.currentUrl$.set(component.router.url);
       });
 
     // Set initial URL
@@ -99,6 +120,7 @@ export class AccountPanelComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.routeSubscription?.unsubscribe();
+    this.routeParamsSubscription?.unsubscribe();
   }
 
   onAddClick(): void {
@@ -110,12 +132,30 @@ export class AccountPanelComponent implements OnInit, OnDestroy {
   }
 
   private onAddPosition(): void {
-    // FUTURE: Implement add position dialog
+    const currentAccount = selectCurrentAccountSignal(this.currentAccountStore);
+    const trades = computed(function getTrades() {
+      return currentAccount().trades as Trade[];
+    });
+
+    const dialogRef = this.dialog.open(AddPositionDialogComponent, {
+      width: '500px',
+      disableClose: true,
+      data: { accountId: this.accountId },
+    });
+
+    const handler = this.addPositionService.createDialogCloseHandler(
+      trades,
+      currentAccount,
+      this.accountId
+    );
+
+    dialogRef.afterClosed().subscribe(handler);
   }
 
   private onAddDividend(): void {
     const dialogRef = this.dialog.open(DivDepModal, {
       width: '500px',
+      disableClose: true,
       data: { mode: 'add' },
     });
 
