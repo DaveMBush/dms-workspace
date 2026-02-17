@@ -47,6 +47,13 @@ export class EditableDateCellComponent {
       } else {
         this.internalValue = new Date(val);
       }
+    } else if (val instanceof Date) {
+      // If it's already a Date object, extract date parts and recreate at local midnight
+      // to avoid timezone issues
+      const year = val.getFullYear();
+      const month = val.getMonth();
+      const day = val.getDate();
+      this.internalValue = new Date(year, month, day);
     } else {
       this.internalValue = val;
     }

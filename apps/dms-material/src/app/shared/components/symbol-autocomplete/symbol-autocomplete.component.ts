@@ -42,6 +42,7 @@ export class SymbolAutocompleteComponent implements OnInit {
 
   readonly searchControl = new FormControl('');
   readonly symbolSelected = output<SymbolOption>();
+  readonly symbolBlurred = output();
 
   readonly displayFnRef = this.displayFn.bind(this);
 
@@ -132,6 +133,10 @@ export class SymbolAutocompleteComponent implements OnInit {
 
   onOptionSelected(option: SymbolOption): void {
     this.symbolSelected.emit(option);
+  }
+
+  onBlur(): void {
+    this.symbolBlurred.emit();
   }
 
   reset(): void {

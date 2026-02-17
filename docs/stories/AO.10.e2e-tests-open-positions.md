@@ -1,4 +1,4 @@
-# Story AO.9: E2E Tests for Open Positions Screen
+# Story AO.10: E2E Tests for Open Positions Screen
 
 ## Story
 
@@ -10,7 +10,7 @@
 
 **Current System:**
 
-- Stories AO.1-AO.8 completed
+- Stories AO.1-AO.9 completed
 - Open positions screen fully functional
 - Need E2E tests to verify complete user flows
 
@@ -342,7 +342,7 @@ pnpm format
 
 ## Dependencies
 
-- Stories AO.1-AO.8 completed
+- Stories AO.1-AO.9 completed
 - Playwright configured
 - Test data available
 - Login functionality working
@@ -360,4 +360,4 @@ This E2E suite covers:
 - ✅ Capital gain calculations
 - ✅ Empty state handling
 
-Epic AO is complete when all stories including this E2E suite are done and passing.
+Epic AO is complete when all stories AO.1-AO.10 are done and passing.

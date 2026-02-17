@@ -177,3 +177,22 @@ mat-form-field {
     0.38
   );
 }
+
+// Dialog contrast and styling
+.mat-mdc-dialog-surface {
+  background-color: #ffffff !important;
+  box-shadow: 0px 11px 15px -7px rgba(0, 0, 0, 0.2),
+    0px 24px 38px 3px rgba(0, 0, 0, 0.14), 0px 9px 46px 8px rgba(0, 0, 0, 0.12) !important;
+}
+
+.mat-mdc-dialog-container {
+  --mdc-dialog-container-color: #ffffff;
+}
+
+.dark-theme .mat-mdc-dialog-surface {
+  background-color: #424242 !important;
+}
+
+.dark-theme .mat-mdc-dialog-container {
+  --mdc-dialog-container-color: #424242;
+}
