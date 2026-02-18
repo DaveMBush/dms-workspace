@@ -8,53 +8,12 @@ test.describe('Open Positions', () => {
   test.beforeEach(async ({ page }) => {
     await login(page);
     // Navigate to open positions tab
-    await page.goto('/account/1677e04f-ef9b-4372-adb3-b740443088dc/open');
+    await page.goto(`/account/${ACCOUNT_UUID}/open`);
 
     // Wait for page to be fully loaded
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(2000); // Give time for universe data to load
   });
-
-  // Helper function to add a position via the dialog
-  async function addPosition(
-    page: any,
-    symbol: string,
-    quantity: string,
-    price: string
-  ): Promise<void> {
-    const addButton = page.locator('[data-testid="add-new-position-button"]');
-    await addButton.click();
-
-    const symbolInput = page.locator(
-      '[data-testid="symbol-autocomplete"] input'
-    );
-    await symbolInput.click();
-    await symbolInput.fill(symbol); // Partial symbol to trigger autocomplete
-    await page.waitForTimeout(1000);
-
-    // Click the first autocomplete option
-    const firstOption = page.locator('mat-option').first();
-    await expect(firstOption).toBeVisible({ timeout: 5000 });
-    await firstOption.click();
-
-    await page.waitForTimeout(300);
-
-    await page.locator('[data-testid="quantity-input"]').fill(quantity);
-    await page.locator('[data-testid="price-input"]').fill(price);
-
-    const purchaseDateInput = page.locator(
-      '[data-testid="purchase-date-input"]'
-    );
-    await purchaseDateInput.fill('1/15/2024');
-    await purchaseDateInput.blur();
-    await page.waitForTimeout(300);
-
-    const saveButton = page.locator('[data-testid="add-position-button"]');
-    await expect(saveButton).toBeEnabled({ timeout: 3000 });
-    await saveButton.click();
-
-    await page.waitForTimeout(2000); // Wait for dialog to close and data to save
-  }
 
   test('should display open positions table', async ({ page }) => {
     const table = page.locator('[data-testid="open-positions-table"]');
@@ -632,12 +591,14 @@ test.describe('Open Positions', () => {
     expect(newRows).toBe(initialRows - 1);
   });
 
-  test('should handle empty positions table', async ({ page }) => {
-    // Even if there are positions, verify table structure exists
+  test('should display table structure with column headers', async ({
+    page,
+  }) => {
+    // Verify table structure exists
     const table = page.locator('[data-testid="open-positions-table"]');
     await expect(table).toBeVisible({ timeout: 10000 });
 
-    // Verify table structure exists
+    // Verify column headers are present
     await expect(
       page.getByRole('columnheader', { name: 'Symbol' })
     ).toBeVisible();
@@ -647,7 +608,7 @@ test.describe('Open Positions', () => {
     page,
   }) => {
     // Navigate to account base (summary tab)
-    await page.goto('/account/1677e04f-ef9b-4372-adb3-b740443088dc');
+    await page.goto(`/account/${ACCOUNT_UUID}`);
 
     // Click on Open Positions tab
     const openTab = page.getByRole('tab', { name: 'Open Positions' });

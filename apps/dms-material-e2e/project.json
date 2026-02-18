@@ -20,21 +20,21 @@
       "executor": "@nx/playwright:playwright",
       "options": {
         "config": "apps/dms-material-e2e/playwright.config.ts",
-        "project": "chromium"
+        "project": ["chromium"]
       }
     },
     "e2e-firefox": {
       "executor": "@nx/playwright:playwright",
       "options": {
         "config": "apps/dms-material-e2e/playwright.config.ts",
-        "project": "firefox"
+        "project": ["firefox"]
       }
     },
     "e2e-ui": {
       "executor": "@nx/playwright:playwright",
       "options": {
         "config": "apps/dms-material-e2e/playwright.config.ts",
-        "project": "chromium",
+        "project": ["chromium"],
         "ui": true
       }
     }
