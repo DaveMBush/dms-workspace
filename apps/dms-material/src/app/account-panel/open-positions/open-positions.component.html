@@ -1,11 +1,19 @@
 <!-- eslint-disable @angular-eslint/template/no-call-expression -- Signal call is required for computed signals -->
 @if (successMessage()) {
-<div class="success-message">{{ successMessage() }}</div>
+<div class="success-message" data-testid="success-message">
+  {{ successMessage() }}
+</div>
 } @if (errorMessage()) {
-<div class="error-message">{{ errorMessage() }}</div>
+<div class="error-message" data-testid="error-message">
+  {{ errorMessage() }}
+</div>
 }
 
-<dms-base-table [data]="selectOpenPositions$()" [columns]="columns">
+<dms-base-table
+  data-testid="open-positions-table"
+  [data]="selectOpenPositions$()"
+  [columns]="columns"
+>
   <ng-template #filterRowTemplate let-column>
     @if (column.field === 'symbol') {
     <mat-form-field
@@ -14,6 +22,7 @@
       subscriptSizing="dynamic"
     >
       <input
+        data-testid="symbol-search-input"
         matInput
         type="text"
         [ngModel]="searchText()"
@@ -29,6 +38,8 @@
     <!-- eslint-disable @angular-eslint/template/cyclomatic-complexity -->
     @if (column.field === 'buy' && column.editable) {
     <dms-editable-cell
+      [testId]="'editable-buy-price'"
+      [testIdFieldName]="'editable-buy-price'"
       [value]="row.buy"
       [format]="'currency'"
       [min]="0.01"
@@ -37,11 +48,15 @@
     ></dms-editable-cell>
     } @else if (column.field === 'buyDate' && column.editable) {
     <dms-editable-date-cell
+      [testId]="'editable-buy-date'"
+      [testIdFieldName]="'editable-buy-date'"
       [value]="row.buyDate"
       (valueChange)="onBuyDateChange(row, $event)"
     ></dms-editable-date-cell>
     } @else if (column.field === 'quantity' && column.editable) {
     <dms-editable-cell
+      [testId]="'editable-quantity'"
+      [testIdFieldName]="'editable-quantity'"
       [value]="row.quantity"
       [format]="'number'"
       [min]="1"
@@ -50,6 +65,8 @@
     ></dms-editable-cell>
     } @else if (column.field === 'sell' && column.editable) {
     <dms-editable-cell
+      [testId]="'editable-sell-price'"
+      [testIdFieldName]="'editable-sell-price'"
       [value]="row.sell"
       [format]="'currency'"
       [min]="0"
@@ -58,11 +75,14 @@
     ></dms-editable-cell>
     } @else if (column.field === 'sellDate' && column.editable) {
     <dms-editable-date-cell
+      [testId]="'editable-sell-date'"
+      [testIdFieldName]="'editable-sell-date'"
       [value]="row.sellDate"
       (valueChange)="onSellDateChange(row, $event)"
     ></dms-editable-date-cell>
     } @else if (column.field === 'actions') {
     <button
+      data-testid="delete-position-button"
       mat-icon-button
       (click)="onDeletePosition(row)"
       aria-label="Delete position"

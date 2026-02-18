@@ -56,3 +56,4 @@ logs
 postgres-backup-*.sql
 lint-output.txt
 test-database-*.db
+test-results/

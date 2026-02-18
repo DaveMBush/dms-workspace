@@ -38,6 +38,10 @@ export default defineConfig({
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
   },
+  /* Configure test execution to run one project at a time */
+  // Note: With workers: 1, tests will run serially, but by default they interleave between projects.
+  // To avoid database conflicts, run browsers separately:
+  // pnpm playwright test --project=chromium && pnpm playwright test --project=firefox
   /* Run your local dev server before starting the tests */
   webServer: [
     {

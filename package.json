@@ -13,7 +13,9 @@
     "format": "nx format:write",
     "format:check": "nx format:check",
     "e2e:dms-material": "nx run dms-material-e2e:e2e",
-    "e2e:dms-material:ui": "nx run dms-material-e2e:e2e --ui",
+    "e2e:dms-material:ui": "nx run dms-material-e2e:e2e-ui",
+    "e2e:dms-material:chromium": "nx run dms-material-e2e:e2e-chromium",
+    "e2e:dms-material:firefox": "nx run dms-material-e2e:e2e-firefox",
     "db:create": "prisma generate && prisma migrate deploy",
     "postinstall": "if [ \"$CI\" = \"true\" ]; then prisma generate; fi"
   },

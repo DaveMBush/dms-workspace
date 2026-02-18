@@ -7,9 +7,35 @@
   "// targets": "to see all targets run: nx show project dms-material-e2e --web",
   "targets": {
     "e2e": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "nx e2e-chromium dms-material-e2e",
+          "nx e2e-firefox dms-material-e2e"
+        ],
+        "parallel": false
+      }
+    },
+    "e2e-chromium": {
       "executor": "@nx/playwright:playwright",
       "options": {
-        "config": "apps/dms-material-e2e/playwright.config.ts"
+        "config": "apps/dms-material-e2e/playwright.config.ts",
+        "project": "chromium"
+      }
+    },
+    "e2e-firefox": {
+      "executor": "@nx/playwright:playwright",
+      "options": {
+        "config": "apps/dms-material-e2e/playwright.config.ts",
+        "project": "firefox"
+      }
+    },
+    "e2e-ui": {
+      "executor": "@nx/playwright:playwright",
+      "options": {
+        "config": "apps/dms-material-e2e/playwright.config.ts",
+        "project": "chromium",
+        "ui": true
       }
     }
   }
