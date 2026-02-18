@@ -1,11 +1,12 @@
 <!-- eslint-disable @angular-eslint/template/cyclomatic-complexity -- Form validation requires nested conditionals -->
-<h2 mat-dialog-title>Add New Position</h2>
+<h2 mat-dialog-title data-testid="dialog-title">Add New Position</h2>
 
 <mat-dialog-content class="dialog-content">
   <form [formGroup]="form" class="form-grid">
     <div class="form-row">
       <div class="symbol-field-wrapper">
         <dms-symbol-autocomplete
+          data-testid="symbol-autocomplete"
           [searchFn]="symbolSearchFnBound"
           [label]="'Symbol'"
           [placeholder]="'Search for a symbol...'"
@@ -14,9 +15,13 @@
         ></dms-symbol-autocomplete>
         @if (symbolControl.invalid && (symbolControl.dirty ||
         symbolControl.touched)) { @if (symbolControl.errors?.['required']) {
-        <div class="validation-error">Symbol is required</div>
+        <div class="validation-error" data-testid="symbol-required-error">
+          Symbol is required
+        </div>
         } @if (symbolControl.errors?.['invalidSymbol']) {
-        <div class="validation-error">Symbol does not exist in universe</div>
+        <div class="validation-error" data-testid="symbol-invalid-error">
+          Symbol does not exist in universe
+        </div>
         } }
       </div>
 
@@ -24,6 +29,7 @@
         <mat-form-field appearance="outline">
           <mat-label>Quantity</mat-label>
           <input
+            data-testid="quantity-input"
             matInput
             formControlName="quantity"
             placeholder="100"
@@ -32,11 +38,17 @@
         </mat-form-field>
         @if (quantityControl.invalid && (quantityControl.dirty ||
         quantityControl.touched)) { @if (quantityControl.errors?.['required']) {
-        <div class="validation-error">Quantity is required</div>
+        <div class="validation-error" data-testid="quantity-required-error">
+          Quantity is required
+        </div>
         } @if (quantityControl.errors?.['min']) {
-        <div class="validation-error">Quantity must be at least 1</div>
+        <div class="validation-error" data-testid="quantity-min-error">
+          Quantity must be at least 1
+        </div>
         } @if (quantityControl.errors?.['pattern']) {
-        <div class="validation-error">Quantity must be a whole number</div>
+        <div class="validation-error" data-testid="quantity-pattern-error">
+          Quantity must be a whole number
+        </div>
         } }
       </div>
     </div>
@@ -46,6 +58,7 @@
         <mat-form-field appearance="outline">
           <mat-label>Price</mat-label>
           <input
+            data-testid="price-input"
             matInput
             formControlName="price"
             placeholder="150.50"
@@ -54,11 +67,17 @@
         </mat-form-field>
         @if (priceControl.invalid && (priceControl.dirty ||
         priceControl.touched)) { @if (priceControl.errors?.['required']) {
-        <div class="validation-error">Price is required</div>
+        <div class="validation-error" data-testid="price-required-error">
+          Price is required
+        </div>
         } @if (priceControl.errors?.['min']) {
-        <div class="validation-error">Price must be positive</div>
+        <div class="validation-error" data-testid="price-min-error">
+          Price must be positive
+        </div>
         } @if (priceControl.errors?.['pattern']) {
-        <div class="validation-error">Price must have 2-5 decimal places</div>
+        <div class="validation-error" data-testid="price-pattern-error">
+          Price must have 2-5 decimal places
+        </div>
         } }
       </div>
 
@@ -66,6 +85,7 @@
         <mat-form-field appearance="outline">
           <mat-label>Purchase Date</mat-label>
           <input
+            data-testid="purchase-date-input"
             matInput
             [matDatepicker]="picker"
             formControlName="purchase_date"
@@ -80,7 +100,12 @@
         @if (purchaseDateControl.invalid && (purchaseDateControl.dirty ||
         purchaseDateControl.touched)) { @if
         (purchaseDateControl.errors?.['required']) {
-        <div class="validation-error">Purchase date is required</div>
+        <div
+          class="validation-error"
+          data-testid="purchase-date-required-error"
+        >
+          Purchase date is required
+        </div>
         } }
       </div>
     </div>
@@ -88,8 +113,11 @@
 </mat-dialog-content>
 
 <mat-dialog-actions>
-  <button mat-button (click)="onCancel()">Cancel</button>
+  <button data-testid="cancel-button" mat-button (click)="onCancel()">
+    Cancel
+  </button>
   <button
+    data-testid="add-position-button"
     mat-raised-button
     color="primary"
     (click)="onSave()"
