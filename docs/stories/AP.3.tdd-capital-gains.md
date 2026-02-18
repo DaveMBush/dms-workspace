@@ -16,8 +16,8 @@
 
 **Problem:**
 
-- No capital gains amount shown (sell - buy) * quantity
-- No capital gains percentage shown ((sell - buy) / buy) * 100
+- No capital gains amount shown (sell - buy) \* quantity
+- No capital gains percentage shown ((sell - buy) / buy) \* 100
 - No days held calculation (sell_date - buy_date)
 
 ## Acceptance Criteria

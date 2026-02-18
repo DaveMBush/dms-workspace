@@ -24,8 +24,8 @@
 
 ### Functional Requirements
 
-- [ ] Capital gains dollar amount displayed: (sell - buy) * quantity
-- [ ] Capital gains percentage displayed: ((sell - buy) / buy) * 100
+- [ ] Capital gains dollar amount displayed: (sell - buy) \* quantity
+- [ ] Capital gains percentage displayed: ((sell - buy) / buy) \* 100
 - [ ] Days held displayed: sell_date - buy_date
 - [ ] Positive gains shown in green
 - [ ] Negative gains (losses) shown in red
