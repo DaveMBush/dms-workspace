@@ -24,11 +24,11 @@
 ### Functional Requirements
 
 - [x] Test: Load open positions for account
-- [x] Test: Edit quantity, price, purchase_date (skipped - requires test data seeding)
-- [x] Test: Add new position via dialog (skipped - requires test data seeding)
-- [ ] Test: Close position by filling sell_date (not implemented)
+- [x] Test: Edit quantity, price, purchase_date
+- [x] Test: Add new position via dialog
+- [x] Test: Close position by filling sell_date
 - [x] Test: Validation prevents invalid input
-- [ ] Test: Switch accounts updates positions (not implemented)
+- [x] Test: Switch accounts updates positions
 - [ ] Test: Capital gains calculated correctly
 
 ### Technical Requirements
