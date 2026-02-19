@@ -1,53 +1,285 @@
-# Story AP.6: Implementation - Add Date Range Filtering
+# Story AP.6: Implementation - Add Filtering by Date Range
 
 ## Story
 
-**As a** trader
+**As a** user
 **I want** to filter sold positions by date range
-**So that** I can analyze performance for specific time periods
+**So that** I can view positions sold within specific time periods for tax reporting
 
 ## Context
 
 **Current System:**
 
 - Story AP.5 created RED unit tests
-- Sold positions table shows all sold positions
-- No filtering UI available
+- All sold positions display without filtering
+- Need date range controls for tax year analysis
 
 **Problem:**
 
-- Users with many trades cannot easily view specific time periods
-- Difficult to generate reports for tax purposes
-- No way to analyze quarterly or annual performance
+- Users need to filter positions by sell date
+- Tax reporting requires viewing specific date ranges
+- Need UI controls for date selection
 
 ## Acceptance Criteria
 
 ### Functional Requirements
 
-- [ ] Start date filter input added
-- [ ] End date filter input added
-- [ ] Filters applied to sell_date field
-- [ ] Clear filter button available
-- [ ] Filter state persists during session
-- [ ] Table updates reactively when filters change
+- [ ] Date range picker controls added to UI
+- [ ] Start date filter works correctly
+- [ ] End date filter works correctly
+- [ ] Both filters work together
+- [ ] Clear filters button resets to show all
+- [ ] Date filters persist when switching accounts
+- [ ] Loading state during filter application
 
 ### Technical Requirements
 
 - [ ] Re-enable tests from AP.5
 - [ ] All unit tests pass (GREEN)
-- [ ] Use Material date picker components
-- [ ] Filtering in computed signal
-- [ ] Proper date comparison logic
+- [ ] Use Angular Material date picker
+- [ ] Use signals for date filter state
+- [ ] Computed signal for filtered positions
+
+## Implementation Approach
+
+### Step 1: Re-enable Tests from AP.5
+
+Remove `.skip` from date filtering tests in `sold-positions.component.spec.ts`:
+
+```typescript
+describe('Date Range Filtering', () => {
+  // Tests now active
+});
+```
+
+### Step 2: Run Tests (Should Still Fail)
+
+```bash
+pnpm nx test dms-material --testFile=sold-positions.component.spec.ts
+```
+
+### Step 3: Add Date Filter Signals to Component
+
+Update `apps/dms-material/src/app/features/account/components/sold-positions/sold-positions.component.ts`:
+
+```typescript
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+
+@Component({
+  selector: 'app-sold-positions',
+  templateUrl: './sold-positions.component.html',
+  styleUrls: ['./sold-positions.component.scss'],
+  standalone: true,
+  imports: [
+    CommonModule,
+    MatTableModule,
+    MatProgressSpinnerModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+  ],
+})
+export class SoldPositionsComponent implements OnInit {
+  private tradesEffects = inject(TradesEffects);
+  private accountsEffects = inject(AccountsEffects);
+
+  // Date filter signals
+  startDate = signal<string | null>(null);
+  endDate = signal<string | null>(null);
+
+  // Computed signal with date filtering
+  displayedPositions = computed(() => {
+    const allTrades = this.tradesEffects.entities();
+    const selectedAccountId = this.accountsEffects.selectedAccountId();
+    const startDateFilter = this.startDate();
+    const endDateFilter = this.endDate();
+
+    let filtered = allTrades
+      .filter((trade) => trade.sell_date !== null)
+      .filter((trade) => trade.accountId === selectedAccountId);
+
+    // Apply date filters
+    if (startDateFilter) {
+      filtered = filtered.filter(
+        (trade) => new Date(trade.sell_date!) >= new Date(startDateFilter)
+      );
+    }
+
+    if (endDateFilter) {
+      filtered = filtered.filter(
+        (trade) => new Date(trade.sell_date!) <= new Date(endDateFilter)
+      );
+    }
+
+    return filtered.map((trade) => {
+      const capitalGain = (trade.sell_price - trade.purchase_price) * trade.quantity;
+      const percentGain = ((trade.sell_price - trade.purchase_price) / trade.purchase_price) * 100;
+      const gainLossType = capitalGain > 0 ? 'gain' : capitalGain < 0 ? 'loss' : 'neutral';
+
+      return {
+        ...trade,
+        capitalGain,
+        percentGain,
+        gainLossType,
+        formattedCapitalGain: this.formatCurrency(capitalGain),
+        formattedPercentGain: `${percentGain.toFixed(2)}%`,
+        formattedPurchaseDate: this.formatDate(trade.purchase_date),
+        formattedSellDate: this.formatDate(trade.sell_date!),
+      };
+    });
+  });
+
+  loading = computed(() => this.tradesEffects.loading());
+
+  ngOnInit(): void {
+    this.tradesEffects.loadByIds([this.accountsEffects.selectedAccountId()]);
+  }
+
+  onStartDateChange(date: Date | null): void {
+    this.startDate.set(date ? date.toISOString().split('T')[0] : null);
+  }
+
+  onEndDateChange(date: Date | null): void {
+    this.endDate.set(date ? date.toISOString().split('T')[0] : null);
+  }
+
+  clearFilters(): void {
+    this.startDate.set(null);
+    this.endDate.set(null);
+  }
+
+  private formatDate(date: string): string {
+    return new Date(date).toLocaleDateString();
+  }
+
+  private formatCurrency(value: number): string {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+    }).format(value);
+  }
+}
+```
+
+### Step 4: Add Date Filter UI
+
+Update `apps/dms-material/src/app/features/account/components/sold-positions/sold-positions.component.html`:
+
+```html
+<div class="date-filters">
+  <mat-form-field appearance="outline">
+    <mat-label>Start Date</mat-label>
+    <input matInput [matDatepicker]="startPicker" (dateChange)="onStartDateChange($event.value)">
+    <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+    <mat-datepicker #startPicker></mat-datepicker>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>End Date</mat-label>
+    <input matInput [matDatepicker]="endPicker" (dateChange)="onEndDateChange($event.value)">
+    <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+    <mat-datepicker #endPicker></mat-datepicker>
+  </mat-form-field>
+
+  <button mat-raised-button (click)="clearFilters()">Clear Filters</button>
+</div>
+
+@if (loading()) {
+  <mat-spinner diameter="40"></mat-spinner>
+} @else {
+  <table mat-table [dataSource]="displayedPositions()" class="positions-table">
+    <!-- ... existing columns ... -->
+  </table>
+}
+```
+
+### Step 5: Add CSS for Date Filters
+
+Update `apps/dms-material/src/app/features/account/components/sold-positions/sold-positions.component.scss`:
+
+```scss
+.date-filters {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  align-items: center;
+
+  mat-form-field {
+    flex: 0 0 200px;
+  }
+
+  button {
+    margin-top: 4px;
+  }
+}
+
+.positions-table {
+  width: 100%;
+
+  .gain {
+    color: #4caf50;
+    font-weight: 500;
+  }
+
+  .loss {
+    color: #f44336;
+    font-weight: 500;
+  }
+
+  .neutral {
+    color: #757575;
+  }
+
+  td, th {
+    text-align: right;
+
+    &:first-child {
+      text-align: left;
+    }
+  }
+}
+```
+
+### Step 6: Run Tests (Should Pass)
+
+```bash
+pnpm nx test dms-material --testFile=sold-positions.component.spec.ts
+```
+
+**Expected Result:** All tests pass (GREEN)
+
+### Step 7: Manual Testing
+
+```bash
+pnpm dev
+```
+
+Navigate to sold positions and verify:
+- Date pickers appear and work
+- Start date filter works
+- End date filter works
+- Both filters work together
+- Clear filters button resets view
+- Filters work when switching accounts
 
 ## Definition of Done
 
-- [ ] Date range filtering implemented
-- [ ] All AP.5 tests re-enabled and passing
-- [ ] All existing tests pass
-- [ ] Lint passes
+- [ ] Tests from AP.5 re-enabled
+- [ ] All unit tests pass (GREEN)
+- [ ] Date range picker implemented
+- [ ] Start date filter works
+- [ ] End date filter works
+- [ ] Clear filters button works
+- [ ] Filters persist across account changes
+- [ ] CSS follows Material Design
 - [ ] Manual testing completed
-- [ ] Visual verification (date pickers work)
-- [ ] No console errors
 - [ ] Code reviewed
 - [ ] All validation commands pass
   - Run `pnpm all`
@@ -58,11 +290,14 @@
 
 ## Notes
 
-- Use Material date picker for consistent UX
-- Consider adding preset ranges (Last 30 days, Last quarter, etc.)
-- Store filter state in component signal
-- Ensure proper timezone handling
+- Use Angular Material date picker for consistency
+- Date filters use ISO 8601 format (YYYY-MM-DD) internally
+- Consider adding preset date ranges (This Year, Last Year, etc.)
+- Handle timezone considerations for accurate filtering
 
 ## Dependencies
 
 - Story AP.5 completed
+- Angular Material date picker available
+- Component has computed signals implemented
+
