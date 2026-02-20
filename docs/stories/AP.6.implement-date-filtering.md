@@ -63,7 +63,7 @@ pnpm nx test dms-material --testFile=sold-positions.component.spec.ts
 Update `apps/dms-material/src/app/features/account/components/sold-positions/sold-positions.component.ts`:
 
 ```typescript
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, effect, inject, OnInit, signal } from '@angular/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -85,6 +85,21 @@ export class SoldPositionsComponent implements OnInit {
   startDate = signal<string | null>(null);
   endDate = signal<string | null>(null);
 
+  // Derived signals for date picker values (convert string back to Date for UI binding)
+  startDateValue = computed(() => {
+    const dateStr = this.startDate();
+    if (!dateStr) return null;
+    const [year, month, day] = dateStr.split('-').map(Number);
+    return new Date(year, month - 1, day);
+  });
+
+  endDateValue = computed(() => {
+    const dateStr = this.endDate();
+    if (!dateStr) return null;
+    const [year, month, day] = dateStr.split('-').map(Number);
+    return new Date(year, month - 1, day);
+  });
+
   // Computed signal with date filtering
   displayedPositions = computed(() => {
     const allTrades = this.tradesEffects.entities();
@@ -94,13 +109,13 @@ export class SoldPositionsComponent implements OnInit {
 
     let filtered = allTrades.filter((trade) => trade.sell_date !== null).filter((trade) => trade.accountId === selectedAccountId);
 
-    // Apply date filters
+    // Apply date filters using string comparison (YYYY-MM-DD is lexicographically comparable)
     if (startDateFilter) {
-      filtered = filtered.filter((trade) => new Date(trade.sell_date!) >= new Date(startDateFilter));
+      filtered = filtered.filter((trade) => trade.sell_date! >= startDateFilter);
     }
 
     if (endDateFilter) {
-      filtered = filtered.filter((trade) => new Date(trade.sell_date!) <= new Date(endDateFilter));
+      filtered = filtered.filter((trade) => trade.sell_date! <= endDateFilter);
     }
 
     return filtered.map((trade) => {
@@ -123,8 +138,18 @@ export class SoldPositionsComponent implements OnInit {
 
   loading = computed(() => this.tradesEffects.loading());
 
+  constructor() {
+    // React to account changes and reload trades
+    effect(() => {
+      const selectedAccountId = this.accountsEffects.selectedAccountId();
+      if (selectedAccountId) {
+        this.tradesEffects.loadByIds([selectedAccountId]);
+      }
+    });
+  }
+
   ngOnInit(): void {
-    this.tradesEffects.loadByIds([this.accountsEffects.selectedAccountId()]);
+    // Initial load handled by effect in constructor
   }
 
   onStartDateChange(date: Date | null): void {
@@ -152,6 +177,7 @@ export class SoldPositionsComponent implements OnInit {
   clearFilters(): void {
     this.startDate.set(null);
     this.endDate.set(null);
+    // Note: UI inputs will clear automatically because they're bound to startDateValue/endDateValue computed signals
   }
 
   private formatDate(date: string): string {
@@ -178,14 +204,14 @@ Update `apps/dms-material/src/app/features/account/components/sold-positions/sol
 <div class="date-filters">
   <mat-form-field appearance="outline">
     <mat-label>Start Date</mat-label>
-    <input matInput [matDatepicker]="startPicker" (dateChange)="onStartDateChange($event.value)" />
+    <input matInput [matDatepicker]="startPicker" [value]="startDateValue()" (dateChange)="onStartDateChange($event.value)" />
     <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
     <mat-datepicker #startPicker></mat-datepicker>
   </mat-form-field>
 
   <mat-form-field appearance="outline">
     <mat-label>End Date</mat-label>
-    <input matInput [matDatepicker]="endPicker" (dateChange)="onEndDateChange($event.value)" />
+    <input matInput [matDatepicker]="endPicker" [value]="endDateValue()" (dateChange)="onEndDateChange($event.value)" />
     <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
     <mat-datepicker #endPicker></mat-datepicker>
   </mat-form-field>
