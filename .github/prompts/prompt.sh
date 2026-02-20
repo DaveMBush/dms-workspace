@@ -21,7 +21,7 @@ main() {
     stop)
       echo "Stopping..."
       ;;
-    provide help)
+    "provide help")
       other_value=$(whiptail \
         --title "Enter prompt to assist AI" \
         --inputbox "Prompt:" \
@@ -36,5 +36,5 @@ main() {
   esac
 }
 
-echo $1 do you want to continue, quit, or provide help?
+echo "${1:-No problem specified} - do you want to continue, stop, or provide help?"
 main

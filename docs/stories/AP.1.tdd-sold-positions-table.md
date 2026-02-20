@@ -48,6 +48,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { SoldPositionsComponent } from './sold-positions.component';
 import { TradesEffects } from '../../../../state/trades/trades.effects';
+import { AccountsEffects } from '../../../../state/accounts/accounts.effects';
 import { signal } from '@angular/core';
 
 describe('SoldPositionsComponent - SmartNgRX Integration', () => {
@@ -58,12 +59,18 @@ describe('SoldPositionsComponent - SmartNgRX Integration', () => {
     mockTradesEffects = {
       loadByIds: vi.fn(),
       entities: signal([]),
+    };
+
+    const mockAccountsEffects = {
       selectedAccountId: signal('1'),
     };
 
     TestBed.configureTestingModule({
       imports: [SoldPositionsComponent],
-      providers: [{ provide: TradesEffects, useValue: mockTradesEffects }],
+      providers: [
+        { provide: TradesEffects, useValue: mockTradesEffects },
+        { provide: AccountsEffects, useValue: mockAccountsEffects },
+      ],
     });
 
     const fixture = TestBed.createComponent(SoldPositionsComponent);
@@ -140,7 +147,7 @@ Once tests are verified to run RED, add `.skip` to test suite:
 
 ```typescript
 describe.skip('SmartNgRX Integration', () => {
-  // Tests disabled until AO.2 implementation
+  // Tests disabled until AP.2 implementation
 });
 ```
 

@@ -50,7 +50,7 @@
 Create `apps/dms-material-e2e/src/sold-positions.spec.ts`:
 
 ```typescript
-import { test, expect } from '@playwright/test';
+import { test, expect } from 'playwright/test';
 import { login } from './helpers/login.helper';
 
 const ACCOUNT_UUID = '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d';
@@ -58,7 +58,8 @@ const ACCOUNT_UUID = '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d';
 test.describe('Sold Positions Screen', () => {
   test.beforeEach(async ({ page }) => {
     await login(page);
-    await page.waitForTimeout(2000); // Wait for universe data
+    // Wait for universe data to load
+    await page.waitForSelector('[data-testid="account-selector"]', { state: 'visible' });
   });
 
   test('should display sold positions table', async ({ page }) => {
@@ -113,8 +114,10 @@ test.describe('Sold Positions Screen', () => {
     await page.waitForSelector('table.positions-table');
     const initialCount = await page.locator('table.positions-table tbody tr').count();
 
-    // Apply start date filter
-    await page.fill('input[placeholder*="Start Date"]', '2024-06-01');
+    // Apply start date filter (use data-testid or label locator)
+    const startDateInput = page.getByLabel('Start Date');
+    await startDateInput.fill('2024-06-01');
+    await startDateInput.press('Enter'); // Trigger dateChange event
 
     // Verify filtered results
     const filteredCount = await page.locator('table.positions-table tbody tr').count();
@@ -129,8 +132,10 @@ test.describe('Sold Positions Screen', () => {
     await page.waitForSelector('table.positions-table');
     const initialCount = await page.locator('table.positions-table tbody tr').count();
 
-    // Apply end date filter
-    await page.fill('input[placeholder*="End Date"]', '2024-06-30');
+    // Apply end date filter (use data-testid or label locator)
+    const endDateInput = page.getByLabel('End Date');
+    await endDateInput.fill('2024-06-30');
+    await endDateInput.press('Enter'); // Trigger dateChange event
 
     // Verify filtered results
     const filteredCount = await page.locator('table.positions-table tbody tr').count();

@@ -35,7 +35,7 @@
 
 - [ ] Re-enable tests from AP.3
 - [ ] All unit tests pass (GREEN)
-- [ ] Use Angular currency pipe
+- [ ] Use Intl.NumberFormat for currency formatting
 - [ ] Add CSS classes for color coding
 - [ ] Follow Material Design patterns
 
@@ -71,7 +71,9 @@ displayedPositions = computed(() => {
     .filter((trade) => trade.accountId === selectedAccountId)
     .map((trade) => {
       const capitalGain = (trade.sell_price - trade.purchase_price) * trade.quantity;
-      const percentGain = ((trade.sell_price - trade.purchase_price) / trade.purchase_price) * 100;
+      const percentGain = trade.purchase_price && trade.purchase_price !== 0
+        ? ((trade.sell_price - trade.purchase_price) / trade.purchase_price) * 100
+        : 0;
 
       // Classify gain/loss type for styling
       const gainLossType = capitalGain > 0 ? 'gain' : capitalGain < 0 ? 'loss' : 'neutral';
@@ -82,7 +84,7 @@ displayedPositions = computed(() => {
         percentGain,
         gainLossType,
         formattedCapitalGain: this.formatCurrency(capitalGain),
-        formattedPercentGain: `${percentGain.toFixed(2)}%`,
+        formattedPercentGain: Number.isFinite(percentGain) ? `${percentGain.toFixed(2)}%` : 'N/A',
         formattedPurchaseDate: this.formatDate(trade.purchase_date),
         formattedSellDate: this.formatDate(trade.sell_date),
       };

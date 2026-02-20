@@ -7,7 +7,7 @@ model: Claude Sonnet 4.5 (copilot)
 
 # Autonomous Story Development Workflow
 
-Execute the following steps in order. When encountering errors or needing decisions, call `./prompt.sh "<problem description>"` and handle the response:
+Execute the following steps in order. When encountering errors or needing decisions, call `.github/prompts/prompt.sh "<problem description>"` and handle the response:
 
 - "continue" → Retry with alternative approaches
 - "stop" → Abort entire workflow immediately
@@ -32,23 +32,23 @@ Execute the following steps in order. When encountering errors or needing decisi
 
 **Tool Loading**: Before using any MCP tool, load it first:
 
-```
+```bash
 tool_search_tool_regex pattern="mcp_context7|mcp_microsoft_pla"
 ```
 
 ## PHASE 1: Pre-Development Validation
 
 1. Verify story file exists at `docs/stories/${story}.md`
-   - If not found: Call `./prompt.sh "Story file docs/stories/${story}.md not found"`
+   - If not found: Call `.github/prompts/prompt.sh "Story file docs/stories/${story}.md not found"`
 2. Verify story status is "Ready for Development" (not "Draft")
-   - If Draft: Call `./prompt.sh "Story ${story} is still in Draft status"`
+   - If Draft: Call `.github/prompts/prompt.sh "Story ${story} is still in Draft status"`
 3. Verify git working directory is clean
-   - If dirty: Call `./prompt.sh "Git working directory has uncommitted changes"`
+   - If dirty: Call `.github/prompts/prompt.sh "Git working directory has uncommitted changes"`
 4. Verify currently on main branch and it's up to date with remote
    - If issues: switch to main branch.
 5. Check if GitHub issue already exists for this story (search by story ID in title)
 6. Check if branch already exists for this story
-   - If exists: Call `./prompt.sh "Branch for story ${story} already exists"`
+   - If exists: Call `.github/prompts/prompt.sh "Branch for story ${story} already exists"`
 
 ## PHASE 2: Story Implementation
 
@@ -86,7 +86,7 @@ pnpm all
 - **For API usage errors**: Query Context7 for correct implementation
 - **For UI test failures**: Use Playwright to validate expected behavior
 - Retry up to 10 times with different fix strategies each time
-- On 10th failure: Call `./prompt.sh "pnpm all failing after 10 attempts with errors: <error summary>"`
+- On 10th failure: Call `.github/prompts/prompt.sh "pnpm all failing after 10 attempts with errors: <error summary>"`
 - **If fixed**: After applying fixes, restart Phase 3 from step 3.1
 
 ### 3.2 Run E2E Tests
@@ -101,7 +101,7 @@ pnpm e2e:dms-material
 - **For UI interaction failures**: Use Playwright to manually validate the flow
 - **For unclear API behavior**: Query Context7 for expected behavior
 - Apply fixes and retry up to 10 times
-- On 10th failure: Call `./prompt.sh "E2E tests failing after 10 attempts with errors: <error summary>"`
+- On 10th failure: Call `.github/prompts/prompt.sh "E2E tests failing after 10 attempts with errors: <error summary>"`
 - **If fixed**: After applying fixes, restart Phase 3 from step 3.1
 
 ### 3.3 Check Duplicates
@@ -113,7 +113,7 @@ pnpm dupcheck
 - Run check, identify duplicate code
 - Refactor duplicates if straightforward
 - Retry up to 10 times with different refactoring strategies
-- On 10th failure: Call `./prompt.sh "Duplicate code detected after 10 refactoring attempts: <duplicate details>"`
+- On 10th failure: Call `.github/prompts/prompt.sh "Duplicate code detected after 10 refactoring attempts: <duplicate details>"`
 - **If fixed**: After applying fixes, restart Phase 3 from step 3.1
 
 ### 3.4 Format Code
@@ -123,14 +123,14 @@ pnpm format
 ```
 
 - Should rarely fail
-- If fails: Call `./prompt.sh "pnpm format failed: <error>"`
+- If fails: Call `.github/prompts/prompt.sh "pnpm format failed: <error>"`
 - **If fixed**: After applying fixes, restart Phase 3 from step 3.1
 
 ### Phase 3 Completion Check
 
 - If ALL four checks (3.1, 3.2, 3.3, 3.4) pass in the same iteration: Proceed to Phase 4
 - If any check fails and gets fixed: Return to step 3.1 and run all checks again
-- If Phase 3 loop reaches 10 complete iterations: Call `./prompt.sh "Phase 3 validation loop reached 10 iterations without all checks passing"`
+- If Phase 3 loop reaches 10 complete iterations: Call `.github/prompts/prompt.sh "Phase 3 validation loop reached 10 iterations without all checks passing"`
 
 **Phase 3 MCP Usage**:
 
@@ -151,7 +151,7 @@ run #file:./gate.prompt.md story=${story}
   - **Use Playwright** if QA mentions UI/UX issues
   - Re-run ALL of Phase 3 (tests, e2e, dupcheck, format)
   - Retry gate review
-- On 10th failure: Call `./prompt.sh "QA gate review failing after 10 attempts with issues: <issue summary>"`
+- On 10th failure: Call `.github/prompts/prompt.sh "QA gate review failing after 10 attempts with issues: <issue summary>"`
 
 **Critical**: Gate must pass before proceeding.
 
@@ -170,7 +170,7 @@ This will:
 
 **Rate Limit Protection**: Wait 5 minutes after PR creation before checking CodeRabbit status
 
-If commit-and-pr fails: Call `./prompt.sh "Failed to create PR: <error>"`
+If commit-and-pr fails: Call `.github/prompts/prompt.sh "Failed to create PR: <error>"`
 
 ## PHASE 6: CodeRabbit Review Loop
 
@@ -183,7 +183,7 @@ For each iteration:
 - If first iteration: Already waited 5 minutes after PR creation
 - Poll PR for CodeRabbit review status every 30 seconds
 - Timeout: 10 minutes
-- If timeout: Call `./prompt.sh "CodeRabbit review timed out after 10 minutes"`
+- If timeout: Call `.github/prompts/prompt.sh "CodeRabbit review timed out after 10 minutes"`
 
 ### 6.2 Retrieve and Evaluate Suggestions
 
@@ -203,7 +203,7 @@ For each iteration:
 - **Use Playwright** to validate UI fixes work as expected
 - Retry up to 10 times per suggestion if implementation encounters issues
 - If unable to implement after 10 attempts:
-  - Call `./prompt.sh "Unable to implement CodeRabbit suggestion after 10 attempts: <suggestion details>"`
+  - Call `.github/prompts/prompt.sh "Unable to implement CodeRabbit suggestion after 10 attempts: <suggestion details>"`
   - Handle response before proceeding
 
 ### 6.4 Commit and Push
@@ -218,7 +218,7 @@ For each iteration:
 ### 6.5 Iteration Limit Check
 
 - If iteration 10 reached and still have suggestions:
-  - Call `./prompt.sh "Reached 10 iterations of CodeRabbit feedback, still have suggestions: <summary>"`
+  - Call `.github/prompts/prompt.sh "Reached 10 iterations of CodeRabbit feedback, still have suggestions: <summary>"`
 
 ## PHASE 7: Final Merge
 
@@ -236,18 +236,19 @@ Check that PR has:
 - If story involves UI changes: Run quick Playwright validation of key flows
 - If story involves new API usage: Quick Context7 check for deprecation warnings
 
-If any check fails: Call `./prompt.sh "PR not ready to merge: <specific issues>"`
+If any check fails: Call `.github/prompts/prompt.sh "PR not ready to merge: <specific issues>"`
 
 ### 7.2 Merge PR
 
+- Verify PR has required human reviewer approval
 - Use "Squash and merge" strategy
 - Verify merge successful
-- If merge fails: Call `./prompt.sh "PR merge failed: <error>"`
+- If merge fails: Call `.github/prompts/prompt.sh "PR merge failed: <error>"`
 
 ### 7.3 Verify Post-Merge
 
 - Check that linked GitHub issue auto-closed
-- If issue not closed: Call `./prompt.sh "GitHub issue did not auto-close after PR merge"`
+- If issue not closed: Call `.github/prompts/prompt.sh "GitHub issue did not auto-close after PR merge"`
 
 ### 7.4 Local Cleanup
 
@@ -260,7 +261,7 @@ If any check fails: Call `./prompt.sh "PR not ready to merge: <specific issues>"
 
 Generate summary report:
 
-```
+```text
 ✅ Story ${story} Complete
 
 - GitHub Issue: #<issue-number> (closed)

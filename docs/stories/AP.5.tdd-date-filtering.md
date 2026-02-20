@@ -66,7 +66,6 @@ describe.skip('Date Range Filtering', () => {
   it('should filter by start date only', () => {
     component.startDate.set('2024-06-01');
     component.endDate.set(null);
-    component.ngOnInit();
 
     const positions = component.displayedPositions();
     expect(positions.length).toBe(2);
@@ -76,17 +75,15 @@ describe.skip('Date Range Filtering', () => {
   it('should filter by end date only', () => {
     component.startDate.set(null);
     component.endDate.set('2024-06-30');
-    component.ngOnInit();
 
     const positions = component.displayedPositions();
-    expect(positions.length).toBe(2);
+    expect(positions.length).toBe(3);
     expect(positions.every((p) => new Date(p.sell_date) <= new Date('2024-06-30'))).toBe(true);
   });
 
   it('should filter by both start and end date', () => {
     component.startDate.set('2024-01-01');
     component.endDate.set('2024-06-30');
-    component.ngOnInit();
 
     const positions = component.displayedPositions();
     expect(positions.length).toBe(2);
@@ -101,7 +98,6 @@ describe.skip('Date Range Filtering', () => {
   it('should handle same day start and end date', () => {
     component.startDate.set('2024-01-15');
     component.endDate.set('2024-01-15');
-    component.ngOnInit();
 
     const positions = component.displayedPositions();
     expect(positions.length).toBe(1);
@@ -111,7 +107,6 @@ describe.skip('Date Range Filtering', () => {
   it('should return empty array when no positions match date range', () => {
     component.startDate.set('2025-01-01');
     component.endDate.set('2025-12-31');
-    component.ngOnInit();
 
     expect(component.displayedPositions().length).toBe(0);
   });
@@ -119,7 +114,6 @@ describe.skip('Date Range Filtering', () => {
   it('should handle year boundary correctly', () => {
     component.startDate.set('2023-12-01');
     component.endDate.set('2024-01-31');
-    component.ngOnInit();
 
     const positions = component.displayedPositions();
     expect(positions.length).toBe(2);
@@ -131,7 +125,6 @@ describe.skip('Date Range Filtering', () => {
   it('should update displayed positions when date filter changes', () => {
     component.startDate.set('2024-01-01');
     component.endDate.set('2024-06-30');
-    component.ngOnInit();
 
     expect(component.displayedPositions().length).toBe(2);
 

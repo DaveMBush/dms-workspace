@@ -105,7 +105,9 @@ export class SoldPositionsComponent implements OnInit {
 
     return filtered.map((trade) => {
       const capitalGain = (trade.sell_price - trade.purchase_price) * trade.quantity;
-      const percentGain = ((trade.sell_price - trade.purchase_price) / trade.purchase_price) * 100;
+      const percentGain = trade.purchase_price && trade.purchase_price !== 0
+        ? ((trade.sell_price - trade.purchase_price) / trade.purchase_price) * 100
+        : 0;
       const gainLossType = capitalGain > 0 ? 'gain' : capitalGain < 0 ? 'loss' : 'neutral';
 
       return {
@@ -114,7 +116,7 @@ export class SoldPositionsComponent implements OnInit {
         percentGain,
         gainLossType,
         formattedCapitalGain: this.formatCurrency(capitalGain),
-        formattedPercentGain: `${percentGain.toFixed(2)}%`,
+        formattedPercentGain: Number.isFinite(percentGain) ? `${percentGain.toFixed(2)}%` : 'N/A',
         formattedPurchaseDate: this.formatDate(trade.purchase_date),
         formattedSellDate: this.formatDate(trade.sell_date!),
       };
@@ -128,11 +130,25 @@ export class SoldPositionsComponent implements OnInit {
   }
 
   onStartDateChange(date: Date | null): void {
-    this.startDate.set(date ? date.toISOString().split('T')[0] : null);
+    if (date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      this.startDate.set(`${year}-${month}-${day}`);
+    } else {
+      this.startDate.set(null);
+    }
   }
 
   onEndDateChange(date: Date | null): void {
-    this.endDate.set(date ? date.toISOString().split('T')[0] : null);
+    if (date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      this.endDate.set(`${year}-${month}-${day}`);
+    } else {
+      this.endDate.set(null);
+    }
   }
 
   clearFilters(): void {
@@ -141,7 +157,10 @@ export class SoldPositionsComponent implements OnInit {
   }
 
   private formatDate(date: string): string {
-    return new Date(date).toLocaleDateString();
+    // Parse YYYY-MM-DD string as local date to avoid timezone shifts
+    const [year, month, day] = date.split('-').map(Number);
+    const localDate = new Date(year, month - 1, day);
+    return localDate.toLocaleDateString();
   }
 
   private formatCurrency(value: number): string {

@@ -76,6 +76,9 @@ export class SoldPositionsComponent implements OnInit {
   private tradesEffects = inject(TradesEffects);
   private accountsEffects = inject(AccountsEffects);
 
+  // Define columns for the table
+  displayedColumns: string[] = ['ticker', 'quantity', 'purchase_date', 'sell_date', 'purchase_price', 'sell_price', 'capitalGain', 'percentGain'];
+
   // Computed signal for filtered sold positions with capital gains
   displayedPositions = computed(() => {
     const allTrades = this.tradesEffects.entities();

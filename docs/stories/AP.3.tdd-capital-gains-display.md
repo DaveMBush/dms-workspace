@@ -126,9 +126,9 @@ describe.skip('Capital Gains Display Logic', () => {
 
   it('should classify gain/loss type correctly', () => {
     mockTradesEffects.entities.set([
-      { id: '1', symbol: 'AAPL', quantity: 100, purchase_price: 100, sell_price: 150, sell_date: '2024-06-01', accountId: '1' }, // gain
-      { id: '2', symbol: 'MSFT', quantity: 50, purchase_price: 200, sell_price: 180, sell_date: '2024-06-01', accountId: '1' }, // loss
-      { id: '3', symbol: 'GOOGL', quantity: 75, purchase_price: 100, sell_price: 100, sell_date: '2024-06-01', accountId: '1' }, // neutral
+      { id: '1', symbol: 'AAPL', quantity: 100, purchase_price: 100, sell_price: 150, purchase_date: '2024-01-01', sell_date: '2024-06-01', accountId: '1' }, // gain
+      { id: '2', symbol: 'MSFT', quantity: 50, purchase_price: 200, sell_price: 180, purchase_date: '2024-02-01', sell_date: '2024-06-01', accountId: '1' }, // loss
+      { id: '3', symbol: 'GOOGL', quantity: 75, purchase_price: 100, sell_price: 100, purchase_date: '2024-03-01', sell_date: '2024-06-01', accountId: '1' }, // neutral
     ]);
 
     component.ngOnInit();
