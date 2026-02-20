@@ -49,9 +49,11 @@ main() {
   case "$choice" in
     continue)
       echo "continue"
+      return 0
       ;;
     stop)
       echo "stop"
+      return 1
       ;;
     "provide help")
       # Create temporary file for multi-line input
@@ -77,12 +79,15 @@ main() {
 
       if [ -n "$other_value" ]; then
         echo "$other_value"
+        return 2
       else
         echo "continue"
+        return 0
       fi
       ;;
     *)
       echo "stop."
+      return 1
       ;;
   esac
 }
