@@ -105,9 +105,7 @@ export class SoldPositionsComponent implements OnInit {
 
     return filtered.map((trade) => {
       const capitalGain = (trade.sell_price - trade.purchase_price) * trade.quantity;
-      const percentGain = trade.purchase_price && trade.purchase_price !== 0
-        ? ((trade.sell_price - trade.purchase_price) / trade.purchase_price) * 100
-        : 0;
+      const percentGain = trade.purchase_price && trade.purchase_price !== 0 ? ((trade.sell_price - trade.purchase_price) / trade.purchase_price) * 100 : 0;
       const gainLossType = capitalGain > 0 ? 'gain' : capitalGain < 0 ? 'loss' : 'neutral';
 
       return {
