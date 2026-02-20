@@ -6,9 +6,41 @@ main() {
   local choice=""
   local other_value=""
 
+  # Get terminal dimensions
+  local term_height=$(tput lines)
+  local term_width=$(tput cols)
+
+  # Calculate menu dimensions (use 80% of terminal width, max 100)
+  local menu_width=$((term_width * 80 / 100))
+  if [ $menu_width -gt 100 ]; then
+    menu_width=100
+  fi
+  if [ $menu_width -lt 40 ]; then
+    menu_width=40
+  fi
+
+  local menu_height=$((term_height - 10))
+  if [ $menu_height -lt 10 ]; then
+    menu_height=10
+  fi
+
+  # Build menu text from the provided problem message so newlines are preserved
+  local menu_text
+  # Interpret backslash-escaped sequences (\n) in the passed message so callers
+  # can pass either real newlines or escaped \n sequences.
+  menu_text=$(printf "Problem:\n%b" "$1")
+
+  # Show the multi-line problem message in a msgbox first (whiptail handles multi-line msgbox well)
+  local msg_lines
+  msg_lines=$(printf "%s\n" "$menu_text" | wc -l)
+
+  # Use a temporary file and whiptail --textbox for reliable multi-line display
+  # whiptail --title "AI Assistance Required" --msgbox "$menu_text" $msgbox_height $menu_width
+
+  # Present the concise menu using whiptail
   choice=$(whiptail \
-    --title "Select Option" \
-    --menu "Choose one:" 15 60 4 \
+    --title "AI Assistance Required" \
+    --menu "$menu_text\nChoose One:" $((menu_height + msg_lines)) $menu_width 3 \
     "continue" "Proceed with operation" \
     "stop"     "Abort operation" \
     "provide help"    "Enter prompt to help AI" \
@@ -16,25 +48,37 @@ main() {
 
   case "$choice" in
     continue)
-      echo "Continuing..."
+      echo "continue"
       ;;
     stop)
-      echo "Stopping..."
+      echo "stop"
       ;;
     "provide help")
-      other_value=$(whiptail \
-        --title "Enter prompt to assist AI" \
-        --inputbox "Prompt:" \
-        10 60 \
-        3>&1 1>&2 2>&3)
+      # Create temporary file for multi-line input
+      local tmpfile=$(mktemp)
+      echo "# Enter your prompt below. Lines starting with # are ignored." > "$tmpfile"
+      echo "# Save and exit your editor when done." >> "$tmpfile"
+      echo "" >> "$tmpfile"
 
-      echo "You entered: $other_value"
+      # Use editor (prefer EDITOR env var, fall back to nano, then vi)
+      ${EDITOR:-nano} "$tmpfile"
+
+      # Read the content, filtering out comment lines
+      other_value=$(grep -v '^#' "$tmpfile" | grep -v '^[[:space:]]*$' | tr '\n' ' ')
+
+      # Clean up
+      rm -f "$tmpfile"
+
+      if [ -n "$other_value" ]; then
+        echo "$other_value"
+      else
+        echo "continue"
+      fi
       ;;
     *)
-      echo "Cancelled."
+      echo "stop."
       ;;
   esac
 }
 
-echo "${1:-No problem specified} - do you want to continue, stop, or provide help?"
-main
+main "${1:-No problem specified}"
