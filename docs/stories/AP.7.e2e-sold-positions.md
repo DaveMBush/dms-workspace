@@ -64,10 +64,10 @@ test.describe('Sold Positions Screen', () => {
   test('should display sold positions table', async ({ page }) => {
     await page.goto(`/account/${ACCOUNT_UUID}`);
     await page.click('text=Sold Positions');
-    
+
     // Wait for table to load
     await expect(page.locator('table.positions-table')).toBeVisible();
-    
+
     // Verify table headers
     await expect(page.locator('th:has-text("Symbol")')).toBeVisible();
     await expect(page.locator('th:has-text("Quantity")')).toBeVisible();
@@ -78,13 +78,13 @@ test.describe('Sold Positions Screen', () => {
   test('should display only sold positions (sell_date not null)', async ({ page }) => {
     await page.goto(`/account/${ACCOUNT_UUID}`);
     await page.click('text=Sold Positions');
-    
+
     // Get all rows (excluding header)
     const rows = await page.locator('table.positions-table tbody tr').all();
-    
+
     // Verify at least one sold position exists in test data
     expect(rows.length).toBeGreaterThan(0);
-    
+
     // Verify Sell Date column exists and has values
     const sellDateCells = await page.locator('td:has-text("/")').all();
     expect(sellDateCells.length).toBeGreaterThan(0);
@@ -93,14 +93,14 @@ test.describe('Sold Positions Screen', () => {
   test('should display capital gains with color coding', async ({ page }) => {
     await page.goto(`/account/${ACCOUNT_UUID}`);
     await page.click('text=Sold Positions');
-    
+
     // Wait for table to load
     await page.waitForSelector('table.positions-table');
-    
+
     // Look for gain/loss styling
     const gainCells = await page.locator('.gain').all();
     const lossCells = await page.locator('.loss').all();
-    
+
     // At least one should exist (depends on test data)
     expect(gainCells.length + lossCells.length).toBeGreaterThan(0);
   });
@@ -108,14 +108,14 @@ test.describe('Sold Positions Screen', () => {
   test('should filter by start date', async ({ page }) => {
     await page.goto(`/account/${ACCOUNT_UUID}`);
     await page.click('text=Sold Positions');
-    
+
     // Wait for initial load
     await page.waitForSelector('table.positions-table');
     const initialCount = await page.locator('table.positions-table tbody tr').count();
-    
+
     // Apply start date filter
     await page.fill('input[placeholder*="Start Date"]', '2024-06-01');
-    
+
     // Verify filtered results
     const filteredCount = await page.locator('table.positions-table tbody tr').count();
     expect(filteredCount).toBeLessThanOrEqual(initialCount);
@@ -124,14 +124,14 @@ test.describe('Sold Positions Screen', () => {
   test('should filter by end date', async ({ page }) => {
     await page.goto(`/account/${ACCOUNT_UUID}`);
     await page.click('text=Sold Positions');
-    
+
     // Wait for initial load
     await page.waitForSelector('table.positions-table');
     const initialCount = await page.locator('table.positions-table tbody tr').count();
-    
+
     // Apply end date filter
     await page.fill('input[placeholder*="End Date"]', '2024-06-30');
-    
+
     // Verify filtered results
     const filteredCount = await page.locator('table.positions-table tbody tr').count();
     expect(filteredCount).toBeLessThanOrEqual(initialCount);
@@ -140,14 +140,14 @@ test.describe('Sold Positions Screen', () => {
   test('should filter by both start and end date', async ({ page }) => {
     await page.goto(`/account/${ACCOUNT_UUID}`);
     await page.click('text=Sold Positions');
-    
+
     // Wait for initial load
     await page.waitForSelector('table.positions-table');
-    
+
     // Apply both filters
     await page.fill('input[placeholder*="Start Date"]', '2024-01-01');
     await page.fill('input[placeholder*="End Date"]', '2024-06-30');
-    
+
     // Verify table still renders
     await expect(page.locator('table.positions-table')).toBeVisible();
   });
@@ -155,18 +155,18 @@ test.describe('Sold Positions Screen', () => {
   test('should clear filters', async ({ page }) => {
     await page.goto(`/account/${ACCOUNT_UUID}`);
     await page.click('text=Sold Positions');
-    
+
     // Wait for initial load
     await page.waitForSelector('table.positions-table');
     const initialCount = await page.locator('table.positions-table tbody tr').count();
-    
+
     // Apply filters
     await page.fill('input[placeholder*="Start Date"]', '2024-06-01');
     const filteredCount = await page.locator('table.positions-table tbody tr').count();
-    
+
     // Clear filters
     await page.click('button:has-text("Clear Filters")');
-    
+
     // Verify count returns to initial
     const clearedCount = await page.locator('table.positions-table tbody tr').count();
     expect(clearedCount).toBe(initialCount);
@@ -176,7 +176,7 @@ test.describe('Sold Positions Screen', () => {
     // Requires test account with no sold positions
     await page.goto(`/account/${ACCOUNT_UUID}`);
     await page.click('text=Sold Positions');
-    
+
     await expect(page.locator('text=No sold positions')).toBeVisible();
   });
 
@@ -184,29 +184,32 @@ test.describe('Sold Positions Screen', () => {
     // Requires multiple test accounts
     await page.goto(`/account/${ACCOUNT_UUID}`);
     await page.click('text=Sold Positions');
-    
+
     const account1Count = await page.locator('table.positions-table tbody tr').count();
-    
+
     // Switch to different account
     await page.selectOption('select[name="account"]', 'different-account-id');
-    
+
     const account2Count = await page.locator('table.positions-table tbody tr').count();
-    
+
     // Counts should potentially differ
     expect(account1Count).not.toBe(account2Count);
   });
 
   test('should display loading state', async ({ page }) => {
     await page.goto(`/account/${ACCOUNT_UUID}`);
-    
+
     // Look for spinner during navigation
-    const spinnerPromise = page.locator('mat-spinner').waitFor({ state: 'visible', timeout: 1000 }).catch(() => null);
-    
+    const spinnerPromise = page
+      .locator('mat-spinner')
+      .waitFor({ state: 'visible', timeout: 1000 })
+      .catch(() => null);
+
     await page.click('text=Sold Positions');
-    
+
     // Spinner might appear briefly
     await spinnerPromise;
-    
+
     // Eventually table should load
     await expect(page.locator('table.positions-table')).toBeVisible({ timeout: 5000 });
   });
@@ -214,9 +217,9 @@ test.describe('Sold Positions Screen', () => {
   test('should display currency formatting', async ({ page }) => {
     await page.goto(`/account/${ACCOUNT_UUID}`);
     await page.click('text=Sold Positions');
-    
+
     await page.waitForSelector('table.positions-table');
-    
+
     // Verify currency symbols appear
     const currencyCells = await page.locator('td:has-text("$")').all();
     expect(currencyCells.length).toBeGreaterThan(0);
@@ -225,9 +228,9 @@ test.describe('Sold Positions Screen', () => {
   test('should display percentage formatting', async ({ page }) => {
     await page.goto(`/account/${ACCOUNT_UUID}`);
     await page.click('text=Sold Positions');
-    
+
     await page.waitForSelector('table.positions-table');
-    
+
     // Verify percentage symbols appear
     const percentCells = await page.locator('td:has-text("%")').all();
     expect(percentCells.length).toBeGreaterThan(0);
@@ -306,4 +309,3 @@ All tests should pass in both browsers except skipped tests.
 - Playwright E2E framework configured
 - Test database seeded with sold positions
 - Sequential browser execution configured
-

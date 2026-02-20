@@ -104,15 +104,15 @@ describe('SoldPositionsComponent - SmartNgRX Integration', () => {
 
     it('should transform data with capital gains calculations', () => {
       mockTradesEffects.entities.set([
-        { 
-          id: '1', 
-          symbol: 'AAPL', 
-          quantity: 100, 
-          purchase_date: '2024-01-01', 
-          purchase_price: 150, 
-          sell_date: '2024-06-01', 
-          sell_price: 180, 
-          accountId: '1' 
+        {
+          id: '1',
+          symbol: 'AAPL',
+          quantity: 100,
+          purchase_date: '2024-01-01',
+          purchase_price: 150,
+          sell_date: '2024-06-01',
+          sell_price: 180,
+          accountId: '1',
         },
       ]);
 
@@ -178,4 +178,3 @@ pnpm all
 - Epic AO completed (Open positions working)
 - TradesEffects entity exists
 - AccountsEffects entity exists
-

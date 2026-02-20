@@ -72,10 +72,10 @@ displayedPositions = computed(() => {
     .map((trade) => {
       const capitalGain = (trade.sell_price - trade.purchase_price) * trade.quantity;
       const percentGain = ((trade.sell_price - trade.purchase_price) / trade.purchase_price) * 100;
-      
+
       // Classify gain/loss type for styling
       const gainLossType = capitalGain > 0 ? 'gain' : capitalGain < 0 ? 'loss' : 'neutral';
-      
+
       return {
         ...trade,
         capitalGain,
@@ -105,23 +105,13 @@ Update `apps/dms-material/src/app/features/account/components/sold-positions/sol
 <!-- Capital Gain Column -->
 <ng-container matColumnDef="capitalGain">
   <th mat-header-cell *matHeaderCellDef>Capital Gain</th>
-  <td mat-cell *matCellDef="let position" 
-      [class.gain]="position.gainLossType === 'gain'"
-      [class.loss]="position.gainLossType === 'loss'"
-      [class.neutral]="position.gainLossType === 'neutral'">
-    {{ position.formattedCapitalGain }}
-  </td>
+  <td mat-cell *matCellDef="let position" [class.gain]="position.gainLossType === 'gain'" [class.loss]="position.gainLossType === 'loss'" [class.neutral]="position.gainLossType === 'neutral'">{{ position.formattedCapitalGain }}</td>
 </ng-container>
 
 <!-- Percent Gain Column -->
 <ng-container matColumnDef="percentGain">
   <th mat-header-cell *matHeaderCellDef>% Gain/Loss</th>
-  <td mat-cell *matCellDef="let position"
-      [class.gain]="position.gainLossType === 'gain'"
-      [class.loss]="position.gainLossType === 'loss'"
-      [class.neutral]="position.gainLossType === 'neutral'">
-    {{ position.formattedPercentGain }}
-  </td>
+  <td mat-cell *matCellDef="let position" [class.gain]="position.gainLossType === 'gain'" [class.loss]="position.gainLossType === 'loss'" [class.neutral]="position.gainLossType === 'neutral'">{{ position.formattedPercentGain }}</td>
 </ng-container>
 ```
 
@@ -132,24 +122,25 @@ Update `apps/dms-material/src/app/features/account/components/sold-positions/sol
 ```scss
 .positions-table {
   width: 100%;
-  
+
   .gain {
     color: #4caf50; // Material green
     font-weight: 500;
   }
-  
+
   .loss {
     color: #f44336; // Material red
     font-weight: 500;
   }
-  
+
   .neutral {
     color: #757575; // Material grey
   }
-  
-  td, th {
+
+  td,
+  th {
     text-align: right;
-    
+
     &:first-child {
       text-align: left; // Symbol column left-aligned
     }
@@ -172,6 +163,7 @@ pnpm dev
 ```
 
 Navigate to sold positions and verify:
+
 - Capital gains show with $ formatting
 - Percent gains show with % symbol
 - Gains appear in green
@@ -206,4 +198,3 @@ Navigate to sold positions and verify:
 - Story AP.3 completed
 - Material Design Angular components available
 - CSS styling infrastructure in place
-

@@ -25,7 +25,7 @@
 
 ### Functional Requirements
 
-- [ ] Tests verify capital gain calculation (sell_price - purchase_price) * quantity
+- [ ] Tests verify capital gain calculation (sell_price - purchase_price) \* quantity
 - [ ] Tests verify percent gain calculation
 - [ ] Tests verify positive gains show as green
 - [ ] Tests verify negative losses show as red
@@ -56,7 +56,7 @@ describe.skip('Capital Gains Display Logic', () => {
       sell_price: 180,
       purchase_date: '2024-01-01',
       sell_date: '2024-06-01',
-      accountId: '1'
+      accountId: '1',
     };
 
     mockTradesEffects.entities.set([trade]);
@@ -75,7 +75,7 @@ describe.skip('Capital Gains Display Logic', () => {
       sell_price: 150,
       purchase_date: '2024-01-01',
       sell_date: '2024-06-01',
-      accountId: '1'
+      accountId: '1',
     };
 
     mockTradesEffects.entities.set([trade]);
@@ -94,7 +94,7 @@ describe.skip('Capital Gains Display Logic', () => {
       sell_price: 150,
       purchase_date: '2024-01-01',
       sell_date: '2024-06-01',
-      accountId: '1'
+      accountId: '1',
     };
 
     mockTradesEffects.entities.set([trade]);
@@ -113,7 +113,7 @@ describe.skip('Capital Gains Display Logic', () => {
       sell_price: 150,
       purchase_date: '2024-01-01',
       sell_date: '2024-06-01',
-      accountId: '1'
+      accountId: '1',
     };
 
     mockTradesEffects.entities.set([trade]);
@@ -147,7 +147,7 @@ describe.skip('Capital Gains Display Logic', () => {
       sell_price: 180.789,
       purchase_date: '2024-01-01',
       sell_date: '2024-06-01',
-      accountId: '1'
+      accountId: '1',
     };
 
     mockTradesEffects.entities.set([trade]);
@@ -212,4 +212,3 @@ pnpm all
 - Story AP.2 completed
 - Sold positions table wired to SmartNgRX
 - Basic capital gains calculation in place
-

@@ -90,10 +90,12 @@ describe.skip('Date Range Filtering', () => {
 
     const positions = component.displayedPositions();
     expect(positions.length).toBe(2);
-    expect(positions.every((p) => {
-      const sellDate = new Date(p.sell_date);
-      return sellDate >= new Date('2024-01-01') && sellDate <= new Date('2024-06-30');
-    })).toBe(true);
+    expect(
+      positions.every((p) => {
+        const sellDate = new Date(p.sell_date);
+        return sellDate >= new Date('2024-01-01') && sellDate <= new Date('2024-06-30');
+      })
+    ).toBe(true);
   });
 
   it('should handle same day start and end date', () => {
@@ -195,4 +197,3 @@ pnpm all
 - Story AP.4 completed
 - Capital gains display working
 - Date handling utilities available
-

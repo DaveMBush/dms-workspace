@@ -87,7 +87,7 @@ export class SoldPositionsComponent implements OnInit {
       .map((trade) => {
         const capitalGain = (trade.sell_price - trade.purchase_price) * trade.quantity;
         const percentGain = ((trade.sell_price - trade.purchase_price) / trade.purchase_price) * 100;
-        
+
         return {
           ...trade,
           capitalGain,
@@ -117,55 +117,53 @@ Update `apps/dms-material/src/app/features/account/components/sold-positions/sol
 
 ```html
 @if (loading()) {
-  <mat-spinner diameter="40"></mat-spinner>
+<mat-spinner diameter="40"></mat-spinner>
 } @else {
-  <table mat-table [dataSource]="displayedPositions()" class="positions-table">
-    <!-- Symbol Column -->
-    <ng-container matColumnDef="symbol">
-      <th mat-header-cell *matHeaderCellDef>Symbol</th>
-      <td mat-cell *matCellDef="let position">{{ position.symbol }}</td>
-    </ng-container>
+<table mat-table [dataSource]="displayedPositions()" class="positions-table">
+  <!-- Symbol Column -->
+  <ng-container matColumnDef="symbol">
+    <th mat-header-cell *matHeaderCellDef>Symbol</th>
+    <td mat-cell *matCellDef="let position">{{ position.symbol }}</td>
+  </ng-container>
 
-    <!-- Quantity Column -->
-    <ng-container matColumnDef="quantity">
-      <th mat-header-cell *matHeaderCellDef>Quantity</th>
-      <td mat-cell *matCellDef="let position">{{ position.quantity }}</td>
-    </ng-container>
+  <!-- Quantity Column -->
+  <ng-container matColumnDef="quantity">
+    <th mat-header-cell *matHeaderCellDef>Quantity</th>
+    <td mat-cell *matCellDef="let position">{{ position.quantity }}</td>
+  </ng-container>
 
-    <!-- Purchase Price Column -->
-    <ng-container matColumnDef="purchasePrice">
-      <th mat-header-cell *matHeaderCellDef>Purchase Price</th>
-      <td mat-cell *matCellDef="let position">{{ position.purchase_price | currency }}</td>
-    </ng-container>
+  <!-- Purchase Price Column -->
+  <ng-container matColumnDef="purchasePrice">
+    <th mat-header-cell *matHeaderCellDef>Purchase Price</th>
+    <td mat-cell *matCellDef="let position">{{ position.purchase_price | currency }}</td>
+  </ng-container>
 
-    <!-- Sell Price Column -->
-    <ng-container matColumnDef="sellPrice">
-      <th mat-header-cell *matHeaderCellDef>Sell Price</th>
-      <td mat-cell *matCellDef="let position">{{ position.sell_price | currency }}</td>
-    </ng-container>
+  <!-- Sell Price Column -->
+  <ng-container matColumnDef="sellPrice">
+    <th mat-header-cell *matHeaderCellDef>Sell Price</th>
+    <td mat-cell *matCellDef="let position">{{ position.sell_price | currency }}</td>
+  </ng-container>
 
-    <!-- Capital Gain Column -->
-    <ng-container matColumnDef="capitalGain">
-      <th mat-header-cell *matHeaderCellDef>Capital Gain</th>
-      <td mat-cell *matCellDef="let position" [class.positive]="position.capitalGain > 0" [class.negative]="position.capitalGain < 0">
-        {{ position.capitalGain | currency }}
-      </td>
-    </ng-container>
+  <!-- Capital Gain Column -->
+  <ng-container matColumnDef="capitalGain">
+    <th mat-header-cell *matHeaderCellDef>Capital Gain</th>
+    <td mat-cell *matCellDef="let position" [class.positive]="position.capitalGain > 0" [class.negative]="position.capitalGain < 0">{{ position.capitalGain | currency }}</td>
+  </ng-container>
 
-    <!-- Dates Columns -->
-    <ng-container matColumnDef="purchaseDate">
-      <th mat-header-cell *matHeaderCellDef>Purchase Date</th>
-      <td mat-cell *matCellDef="let position">{{ position.formattedPurchaseDate }}</td>
-    </ng-container>
+  <!-- Dates Columns -->
+  <ng-container matColumnDef="purchaseDate">
+    <th mat-header-cell *matHeaderCellDef>Purchase Date</th>
+    <td mat-cell *matCellDef="let position">{{ position.formattedPurchaseDate }}</td>
+  </ng-container>
 
-    <ng-container matColumnDef="sellDate">
-      <th mat-header-cell *matHeaderCellDef>Sell Date</th>
-      <td mat-cell *matCellDef="let position">{{ position.formattedSellDate }}</td>
-    </ng-container>
+  <ng-container matColumnDef="sellDate">
+    <th mat-header-cell *matHeaderCellDef>Sell Date</th>
+    <td mat-cell *matCellDef="let position">{{ position.formattedSellDate }}</td>
+  </ng-container>
 
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-  </table>
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table>
 }
 ```
 
@@ -184,6 +182,7 @@ pnpm dev
 ```
 
 Navigate to sold positions and verify:
+
 - Trades with sell_date not null display
 - Capital gains calculate correctly
 - Changes when switching accounts
@@ -208,12 +207,11 @@ Navigate to sold positions and verify:
 ## Notes
 
 - Follow same patterns as open positions (AO.2)
-- Capital gains calculations are (sell_price - purchase_price) * quantity
-- Percent gain is ((sell_price - purchase_price) / purchase_price) * 100
+- Capital gains calculations are (sell_price - purchase_price) \* quantity
+- Percent gain is ((sell_price - purchase_price) / purchase_price) \* 100
 
 ## Dependencies
 
 - Story AP.1 completed
 - TradesEffects entity functional
 - AccountsEffects entity functional
-

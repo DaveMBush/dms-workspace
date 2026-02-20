@@ -75,16 +75,7 @@ import { MatButtonModule } from '@angular/material/button';
   templateUrl: './sold-positions.component.html',
   styleUrls: ['./sold-positions.component.scss'],
   standalone: true,
-  imports: [
-    CommonModule,
-    MatTableModule,
-    MatProgressSpinnerModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-  ],
+  imports: [CommonModule, MatTableModule, MatProgressSpinnerModule, MatDatepickerModule, MatNativeDateModule, MatFormFieldModule, MatInputModule, MatButtonModule],
 })
 export class SoldPositionsComponent implements OnInit {
   private tradesEffects = inject(TradesEffects);
@@ -101,21 +92,15 @@ export class SoldPositionsComponent implements OnInit {
     const startDateFilter = this.startDate();
     const endDateFilter = this.endDate();
 
-    let filtered = allTrades
-      .filter((trade) => trade.sell_date !== null)
-      .filter((trade) => trade.accountId === selectedAccountId);
+    let filtered = allTrades.filter((trade) => trade.sell_date !== null).filter((trade) => trade.accountId === selectedAccountId);
 
     // Apply date filters
     if (startDateFilter) {
-      filtered = filtered.filter(
-        (trade) => new Date(trade.sell_date!) >= new Date(startDateFilter)
-      );
+      filtered = filtered.filter((trade) => new Date(trade.sell_date!) >= new Date(startDateFilter));
     }
 
     if (endDateFilter) {
-      filtered = filtered.filter(
-        (trade) => new Date(trade.sell_date!) <= new Date(endDateFilter)
-      );
+      filtered = filtered.filter((trade) => new Date(trade.sell_date!) <= new Date(endDateFilter));
     }
 
     return filtered.map((trade) => {
@@ -176,14 +161,14 @@ Update `apps/dms-material/src/app/features/account/components/sold-positions/sol
 <div class="date-filters">
   <mat-form-field appearance="outline">
     <mat-label>Start Date</mat-label>
-    <input matInput [matDatepicker]="startPicker" (dateChange)="onStartDateChange($event.value)">
+    <input matInput [matDatepicker]="startPicker" (dateChange)="onStartDateChange($event.value)" />
     <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
     <mat-datepicker #startPicker></mat-datepicker>
   </mat-form-field>
 
   <mat-form-field appearance="outline">
     <mat-label>End Date</mat-label>
-    <input matInput [matDatepicker]="endPicker" (dateChange)="onEndDateChange($event.value)">
+    <input matInput [matDatepicker]="endPicker" (dateChange)="onEndDateChange($event.value)" />
     <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
     <mat-datepicker #endPicker></mat-datepicker>
   </mat-form-field>
@@ -192,11 +177,11 @@ Update `apps/dms-material/src/app/features/account/components/sold-positions/sol
 </div>
 
 @if (loading()) {
-  <mat-spinner diameter="40"></mat-spinner>
+<mat-spinner diameter="40"></mat-spinner>
 } @else {
-  <table mat-table [dataSource]="displayedPositions()" class="positions-table">
-    <!-- ... existing columns ... -->
-  </table>
+<table mat-table [dataSource]="displayedPositions()" class="positions-table">
+  <!-- ... existing columns ... -->
+</table>
 }
 ```
 
@@ -237,7 +222,8 @@ Update `apps/dms-material/src/app/features/account/components/sold-positions/sol
     color: #757575;
   }
 
-  td, th {
+  td,
+  th {
     text-align: right;
 
     &:first-child {
@@ -262,6 +248,7 @@ pnpm dev
 ```
 
 Navigate to sold positions and verify:
+
 - Date pickers appear and work
 - Start date filter works
 - End date filter works
@@ -300,4 +287,3 @@ Navigate to sold positions and verify:
 - Story AP.5 completed
 - Angular Material date picker available
 - Component has computed signals implemented
-
