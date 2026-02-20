@@ -301,11 +301,12 @@ All tests should pass in both browsers except skipped tests.
   - Run `pnpm format`
   - Repeat all of these if any fail until they all pass
 
-## Notes
+# Notes
 
 - Follow sequential execution pattern from AO.9 to avoid SQLite conflicts
 - Some tests skipped requiring specific test data (empty state, multiple accounts)
-- 2-second sleep in beforeEach may need adjustment based on universe data load time
+- Do not use fixed timeouts (e.g., page.waitForTimeout). The tests use a reliable selector wait in `beforeEach`:
+  `await page.waitForSelector('[data-testid="account-selector"]', { state: 'visible' });` to synchronize when the universe data is ready.
 - Tests should work with whatever sold position data exists in test database
 
 ## Dependencies

@@ -240,7 +240,7 @@ If any check fails: Call `.github/prompts/prompt.sh "PR not ready to merge: <spe
 
 ### 7.2 Merge PR
 
-- Verify PR has required human reviewer approval
+- By this point, all checks should be green and there should be no coderabbit blocking comments so you can merge without waiting for human approval. If you encounter any issues during merge (e.g. unexpected conflicts, GitHub API errors), call `.github/prompts/prompt.sh "PR merge failed: <error>"` so a human can intervene.
 - Use "Squash and merge" strategy
 - Verify merge successful
 - If merge fails: Call `.github/prompts/prompt.sh "PR merge failed: <error>"`

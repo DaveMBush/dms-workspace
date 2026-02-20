@@ -55,7 +55,10 @@ main() {
       ;;
     "provide help")
       # Create temporary file for multi-line input
-      local tmpfile=$(mktemp)
+      local tmpfile
+      tmpfile=$(mktemp)
+      # Ensure tmpfile is removed on exit (best-effort) and also explicitly later
+      trap 'rm -f "$tmpfile"' EXIT
       echo "# Enter your prompt below. Lines starting with # are ignored." > "$tmpfile"
       echo "# Save and exit your editor when done." >> "$tmpfile"
       echo "" >> "$tmpfile"
@@ -63,11 +66,14 @@ main() {
       # Use editor (prefer EDITOR env var, fall back to nano, then vi)
       ${EDITOR:-nano} "$tmpfile"
 
-      # Read the content, filtering out comment lines
-      other_value=$(grep -v '^#' "$tmpfile" | grep -v '^[[:space:]]*$' | tr '\n' ' ')
+      # Read the content, filtering out comment lines. grep returns exit code 1 when
+      # no matches are found which would fail under 'set -euo pipefail'. Wrap the
+      # grep pipeline and allow an empty result (|| true) so the script doesn't exit.
+      other_value=$({ grep -v '^#' "$tmpfile" | grep -v '^[[:space:]]*$' || true; } | tr '\n' ' ')
 
-      # Clean up
+      # Clean up (trap will also remove in case of early exit)
       rm -f "$tmpfile"
+      trap - EXIT
 
       if [ -n "$other_value" ]; then
         echo "$other_value"

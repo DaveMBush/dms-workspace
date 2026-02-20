@@ -76,8 +76,8 @@ export class SoldPositionsComponent implements OnInit {
   private tradesEffects = inject(TradesEffects);
   private accountsEffects = inject(AccountsEffects);
 
-  // Define columns for the table
-  displayedColumns: string[] = ['ticker', 'quantity', 'purchase_date', 'sell_date', 'purchase_price', 'sell_price', 'capitalGain', 'percentGain'];
+  // Define columns for the table — must match template matColumnDef identifiers
+  displayedColumns: string[] = ['symbol', 'quantity', 'purchasePrice', 'sellPrice', 'capitalGain', 'percentGain'];
 
   // Computed signal for filtered sold positions with capital gains
   displayedPositions = computed(() => {
@@ -89,12 +89,13 @@ export class SoldPositionsComponent implements OnInit {
       .filter((trade) => trade.accountId === selectedAccountId)
       .map((trade) => {
         const capitalGain = (trade.sell_price - trade.purchase_price) * trade.quantity;
-        const percentGain = ((trade.sell_price - trade.purchase_price) / trade.purchase_price) * 100;
+        const percentGain = trade.purchase_price && trade.purchase_price !== 0 ? ((trade.sell_price - trade.purchase_price) / trade.purchase_price) * 100 : 0;
 
         return {
           ...trade,
           capitalGain,
           percentGain,
+          formattedPercentGain: Number.isFinite(percentGain) ? `${percentGain.toFixed(2)}%` : 'N/A',
           formattedPurchaseDate: this.formatDate(trade.purchase_date),
           formattedSellDate: this.formatDate(trade.sell_date),
         };
@@ -109,7 +110,10 @@ export class SoldPositionsComponent implements OnInit {
   }
 
   private formatDate(date: string): string {
-    return new Date(date).toLocaleDateString();
+    // Parse YYYY-MM-DD into local Date to avoid timezone shifts
+    const [year, month, day] = date.split('-').map(Number);
+    const localDate = new Date(year, month - 1, day);
+    return localDate.toLocaleDateString();
   }
 }
 ```
@@ -151,6 +155,12 @@ Update `apps/dms-material/src/app/features/account/components/sold-positions/sol
   <ng-container matColumnDef="capitalGain">
     <th mat-header-cell *matHeaderCellDef>Capital Gain</th>
     <td mat-cell *matCellDef="let position" [class.positive]="position.capitalGain > 0" [class.negative]="position.capitalGain < 0">{{ position.capitalGain | currency }}</td>
+  </ng-container>
+
+  <!-- Percent Gain Column -->
+  <ng-container matColumnDef="percentGain">
+    <th mat-header-cell *matHeaderCellDef>% Gain/Loss</th>
+    <td mat-cell *matCellDef="let position" [class.positive]="position.percentGain > 0" [class.negative]="position.percentGain < 0">{{ position.formattedPercentGain }}</td>
   </ng-container>
 
   <!-- Dates Columns -->

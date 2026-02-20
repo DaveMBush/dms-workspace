@@ -48,10 +48,10 @@ Add to `apps/dms-material/src/app/features/account/components/sold-positions/sol
 describe.skip('Date Range Filtering', () => {
   beforeEach(() => {
     mockTradesEffects.entities.set([
-      { id: '1', symbol: 'AAPL', quantity: 100, purchase_price: 150, sell_price: 180, sell_date: '2024-01-15', accountId: '1' },
-      { id: '2', symbol: 'MSFT', quantity: 50, purchase_price: 300, sell_price: 320, sell_date: '2024-06-20', accountId: '1' },
-      { id: '3', symbol: 'GOOGL', quantity: 75, purchase_price: 100, sell_price: 120, sell_date: '2024-12-31', accountId: '1' },
-      { id: '4', symbol: 'TSLA', quantity: 25, purchase_price: 200, sell_price: 180, sell_date: '2023-12-15', accountId: '1' },
+      { id: '1', symbol: 'AAPL', quantity: 100, purchase_price: 150, purchase_date: '2023-12-01', sell_price: 180, sell_date: '2024-01-15', accountId: '1' },
+      { id: '2', symbol: 'MSFT', quantity: 50, purchase_price: 300, purchase_date: '2024-03-01', sell_price: 320, sell_date: '2024-06-20', accountId: '1' },
+      { id: '3', symbol: 'GOOGL', quantity: 75, purchase_price: 100, purchase_date: '2024-06-01', sell_price: 120, sell_date: '2024-12-31', accountId: '1' },
+      { id: '4', symbol: 'TSLA', quantity: 25, purchase_price: 200, purchase_date: '2023-06-01', sell_price: 180, sell_date: '2023-12-15', accountId: '1' },
     ]);
   });
 
