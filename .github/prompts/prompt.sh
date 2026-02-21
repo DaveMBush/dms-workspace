@@ -23,11 +23,12 @@ main() {
     --column "" \
     --column "Option" \
     --column "Description" \
+    --print-column=2 \
     TRUE  "continue"      "Proceed with operation" \
     FALSE "stop"          "Abort operation" \
     FALSE "provide help"  "Enter prompt to help AI" \
     --width=640 --height=320 \
-    2>/dev/null)
+    2>/dev/null || true)
 
   case "$choice" in
     continue)
@@ -51,8 +52,9 @@ main() {
         echo "$other_value"
         return 2
       else
-        echo "continue"
-        return 0
+        # Operator cancelled or cleared the help dialog — treat as stop
+        echo "stop"
+        return 1
       fi
       ;;
     *)
