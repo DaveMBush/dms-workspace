@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { signal, WritableSignal } from '@angular/core';
+import { signal, computed, Signal, WritableSignal } from '@angular/core';
 
 import { SoldPositionsComponent } from './sold-positions.component';
 import { Trade } from '../../store/trades/trade.interface';
@@ -13,7 +13,8 @@ interface SoldPosition extends Trade {
 // Mock SoldPositionsComponentService (will be created in AP.2)
 interface MockSoldPositionsComponentService {
   trades: WritableSignal<Trade[]>;
-  selectSoldPositions: WritableSignal<SoldPosition[]>;
+  selectSoldPositions: Signal<SoldPosition[]>;
+  toSoldPosition(trade: Trade): SoldPosition;
 }
 
 describe('SoldPositionsComponent', () => {
@@ -88,9 +89,25 @@ describe('SoldPositionsComponent', () => {
 
     beforeEach(() => {
       // Mock service will be injected in AP.2
+      const tradesSignal = signal<Trade[]>([]);
+      const toSoldPosition = (trade: Trade): SoldPosition => ({
+        ...trade,
+        capitalGain: (trade.sell - trade.buy) * trade.quantity,
+        percentGain:
+          trade.buy !== 0 ? ((trade.sell - trade.buy) / trade.buy) * 100 : 0,
+      });
+
       mockSoldPositionsService = {
-        trades: signal<Trade[]>([]),
-        selectSoldPositions: signal<SoldPosition[]>([]),
+        trades: tradesSignal,
+        selectSoldPositions: computed(() =>
+          tradesSignal()
+            // eslint-disable-next-line @typescript-eslint/naming-convention -- Trade interface uses snake_case
+            .filter(
+              (t): t is Trade & { sell_date: string } => t.sell_date !== null
+            )
+            .map(toSoldPosition)
+        ),
+        toSoldPosition,
       };
     });
 
@@ -178,73 +195,62 @@ describe('SoldPositionsComponent', () => {
     });
 
     it('should calculate capital gains correctly', () => {
-      const mockSoldPosition: SoldPosition = {
+      const rawTrade: Trade = {
         id: '1',
         universeId: 'AAPL',
-        symbol: 'AAPL',
-        quantity: 100,
-        buy: 150,
-        buy_date: '2024-01-01',
-        sell: 180,
-        sell_date: '2024-06-01',
         accountId: 'acc-1',
-        capitalGain: 3000, // (180 - 150) * 100
-        percentGain: 20, // ((180 - 150) / 150) * 100
+        buy: 150,
+        sell: 180,
+        buy_date: '2024-01-01',
+        sell_date: '2024-06-01',
+        quantity: 100,
       };
 
-      // Verify capital gain calculation
-      const expectedCapitalGain =
-        (mockSoldPosition.sell - mockSoldPosition.buy) *
-        mockSoldPosition.quantity;
-      expect(mockSoldPosition.capitalGain).toBe(expectedCapitalGain);
-      expect(mockSoldPosition.capitalGain).toBe(3000);
+      // Call the real service transformer (will be implemented in AP.2)
+      const result = mockSoldPositionsService.toSoldPosition(rawTrade);
+
+      expect(result.capitalGain).toBe(3000); // (180 - 150) * 100
     });
 
     it('should calculate percent gain correctly', () => {
-      const mockSoldPosition: SoldPosition = {
+      const rawTrade: Trade = {
         id: '1',
         universeId: 'AAPL',
-        symbol: 'AAPL',
-        quantity: 100,
-        buy: 150,
-        buy_date: '2024-01-01',
-        sell: 180,
-        sell_date: '2024-06-01',
         accountId: 'acc-1',
-        capitalGain: 3000,
-        percentGain: 20,
+        buy: 150,
+        sell: 180,
+        buy_date: '2024-01-01',
+        sell_date: '2024-06-01',
+        quantity: 100,
       };
 
-      // Verify percent gain calculation
-      const expectedPercentGain =
-        ((mockSoldPosition.sell - mockSoldPosition.buy) /
-          mockSoldPosition.buy) *
-        100;
-      expect(mockSoldPosition.percentGain).toBeCloseTo(expectedPercentGain, 1);
-      expect(mockSoldPosition.percentGain).toBeCloseTo(20, 1);
+      // Call the real service transformer (will be implemented in AP.2)
+      const result = mockSoldPositionsService.toSoldPosition(rawTrade);
+
+      expect(result.percentGain).toBeCloseTo(20, 1); // ((180 - 150) / 150) * 100
     });
 
     it('should handle zero purchase price in percent gain', () => {
-      const mockSoldPosition: SoldPosition = {
+      const rawTrade: Trade = {
         id: '1',
         universeId: 'AAPL',
-        symbol: 'AAPL',
-        quantity: 100,
-        buy: 0, // Edge case
-        buy_date: '2024-01-01',
-        sell: 180,
-        sell_date: '2024-06-01',
         accountId: 'acc-1',
-        capitalGain: 18000,
-        percentGain: 0, // Should not divide by zero
+        buy: 0, // Edge case - should guard against division by zero
+        sell: 180,
+        buy_date: '2024-01-01',
+        sell_date: '2024-06-01',
+        quantity: 100,
       };
 
+      // Call the real service transformer (will be implemented in AP.2)
+      const result = mockSoldPositionsService.toSoldPosition(rawTrade);
+
       // Percent gain should be 0 when buy is 0 (avoid division by zero)
-      expect(mockSoldPosition.percentGain).toBe(0);
+      expect(result.percentGain).toBe(0);
     });
 
     it('should transform trade data for display', () => {
-      const mockTrade: Trade = {
+      const rawTrade: Trade = {
         id: '1',
         universeId: 'AAPL',
         accountId: 'acc-1',
@@ -256,21 +262,14 @@ describe('SoldPositionsComponent', () => {
       };
 
       // The service should transform Trade to SoldPosition with calculated fields
-      const expectedSoldPosition: Partial<SoldPosition> = {
-        id: mockTrade.id,
-        buy: mockTrade.buy,
-        sell: mockTrade.sell,
-        buy_date: mockTrade.buy_date,
-        sell_date: mockTrade.sell_date,
-        quantity: mockTrade.quantity,
-        accountId: mockTrade.accountId,
-        // Calculated fields
-        capitalGain: (mockTrade.sell - mockTrade.buy) * mockTrade.quantity,
-        percentGain: ((mockTrade.sell - mockTrade.buy) / mockTrade.buy) * 100,
-      };
+      const result = mockSoldPositionsService.toSoldPosition(rawTrade);
 
-      expect(expectedSoldPosition.capitalGain).toBe(3000);
-      expect(expectedSoldPosition.percentGain).toBeCloseTo(20, 1);
+      // Verify all properties are preserved and calculations are correct
+      expect(result.id).toBe(rawTrade.id);
+      expect(result.buy).toBe(rawTrade.buy);
+      expect(result.sell).toBe(rawTrade.sell);
+      expect(result.capitalGain).toBe(3000); // (180 - 150) * 100
+      expect(result.percentGain).toBeCloseTo(20, 1); // ((180 - 150) / 150) * 100
     });
 
     it('should have displayedPositions computed signal', () => {
