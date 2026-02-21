@@ -249,9 +249,9 @@ export class TokenRefreshService {
     }
 
     try {
-      const payload = JSON.parse(
-        Buffer.from(token.split('.')[1], 'base64').toString()
-      ) as { exp?: number };
+      const payload = JSON.parse(this.decodeBase64Url(token.split('.')[1])) as {
+        exp?: number;
+      };
       if (typeof payload.exp !== 'number' || payload.exp === 0) {
         return null;
       }
@@ -278,7 +278,7 @@ export class TokenRefreshService {
 
       // Store expiration time for quick access
       const payload = JSON.parse(
-        Buffer.from(accessToken.split('.')[1], 'base64').toString()
+        this.decodeBase64Url(accessToken.split('.')[1])
       ) as { exp?: number };
       if (typeof payload.exp === 'number' && payload.exp > 0) {
         sessionStorage.setItem('dms_token_expiration', payload.exp.toString());
@@ -288,6 +288,22 @@ export class TokenRefreshService {
     } catch {
       // Failed to store tokens - error placeholder
     }
+  }
+
+  /**
+   * Decode a base64url-encoded JWT segment to a UTF-8 string.
+   * Uses browser-native atob() instead of Node.js Buffer.
+   */
+  private decodeBase64Url(base64Url: string): string {
+    // Convert base64url to standard base64 (JWT uses - and _ instead of + and /)
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const binary = atob(base64);
+    // Use TextDecoder for proper UTF-8 support
+    function charCode(c: string): number {
+      return c.charCodeAt(0);
+    }
+    const bytes = Uint8Array.from(binary, charCode);
+    return new TextDecoder().decode(bytes);
   }
 
   /**

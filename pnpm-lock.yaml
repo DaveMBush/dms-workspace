@@ -46,10 +46,10 @@ importers:
         version: 21.1.2(82cf63d9d14337d0a50793f915784773)
       '@aws-amplify/auth':
         specifier: ^6.15.0
-        version: 6.15.0(@aws-amplify/core@6.13.1)
+        version: 6.15.0(@aws-amplify/core@6.16.1)
       '@aws-amplify/core':
-        specifier: ^6.13.1
-        version: 6.13.1
+        specifier: ^6.16.1
+        version: 6.16.1
       '@aws-sdk/client-ssm':
         specifier: ^3.970.0
         version: 3.970.0
@@ -763,8 +763,8 @@ packages:
     peerDependencies:
       '@aws-amplify/core': ^6.1.0
 
-  '@aws-amplify/core@6.13.1':
-    resolution: {integrity: sha512-PtSGhC7pv+xdr4Ozy6jzeZraB/kjBZiK9tOLOaBH5Trt0pBuLbh2mneE7a72xHGf64XJbl7v3MWPaVscb8KXkw==}
+  '@aws-amplify/core@6.16.1':
+    resolution: {integrity: sha512-WHO6yYegmnZ+K3vnYzVwy+wnxYqSkdFakBIlgm4922QXHOQYWdIl/rrTcaagrpJEGT6YlTnqx1ANIoPojNxWmw==}
 
   '@aws-crypto/sha256-browser@5.2.0':
     resolution: {integrity: sha512-AXfN/lGotSQwu6HNcEsIASo7kWXZ5HYWvfOmSNKDsEqC4OashTp8alTmaz+F7TC2L083SFv5RdB+qU3Vs1kZqw==}
@@ -851,12 +851,12 @@ packages:
     resolution: {integrity: sha512-YO8KgJecxHIFMhfoP880q51VXFL9V1ELywK5yzVEqzyrwqoG93IUmnTygBUylQrfkbH+QqS0FxEdgwpP3fcwoQ==}
     engines: {node: '>=20.0.0'}
 
-  '@aws-sdk/types@3.398.0':
-    resolution: {integrity: sha512-r44fkS+vsEgKCuEuTV+TIk0t0m5ZlXHNjSDYEUvzLStbbfUFiNus/YG4UCa0wOk9R7VuQI67badsvvPeVPCGDQ==}
-    engines: {node: '>=14.0.0'}
-
   '@aws-sdk/types@3.969.0':
     resolution: {integrity: sha512-7IIzM5TdiXn+VtgPdVLjmE6uUBUtnga0f4RiSEI1WW10RPuNvZ9U+pL3SwDiRDAdoGrOF9tSLJOFZmfuwYuVYQ==}
+    engines: {node: '>=20.0.0'}
+
+  '@aws-sdk/types@3.973.1':
+    resolution: {integrity: sha512-DwHBiMNOB468JiX6+i34c+THsKHErYUdNQ3HexeXZvVn4zouLjgaS4FejiGSi2HyBuzuyHg7SuOPmjSvoU9NRg==}
     engines: {node: '>=20.0.0'}
 
   '@aws-sdk/util-endpoints@3.970.0':
@@ -3796,10 +3796,6 @@ packages:
   '@smithy/smithy-client@4.10.8':
     resolution: {integrity: sha512-wcr3UEL26k7lLoyf9eVDZoD1nNY3Fa1gbNuOXvfxvVWLGkOVW+RYZgUUp/bXHryJfycIOQnBq9o1JAE00ax8HQ==}
     engines: {node: '>=18.0.0'}
-
-  '@smithy/types@2.12.0':
-    resolution: {integrity: sha512-QwYgloJ0sVNBeBuBs65cIkTbfzV/Q6ZNPCJ99EICFEdJYG50nGIY/uYXp+TbsdJReIuPr0a0kXmCvren3MbRRw==}
-    engines: {node: '>=14.0.0'}
 
   '@smithy/types@3.7.2':
     resolution: {integrity: sha512-bNwBYYmN8Eh9RyjS1p2gW6MIhSO2rl7X9QeLM8iTdcGRP+eDiIWDt66c9IysCc22gefKszZv+ubV9qZc7hdESg==}
@@ -11034,17 +11030,17 @@ snapshots:
 
   '@asamuzakjp/nwsapi@2.3.9': {}
 
-  '@aws-amplify/auth@6.15.0(@aws-amplify/core@6.13.1)':
+  '@aws-amplify/auth@6.15.0(@aws-amplify/core@6.16.1)':
     dependencies:
-      '@aws-amplify/core': 6.13.1
+      '@aws-amplify/core': 6.16.1
       '@aws-crypto/sha256-js': 5.2.0
       '@smithy/types': 3.7.2
       tslib: 2.8.1
 
-  '@aws-amplify/core@6.13.1':
+  '@aws-amplify/core@6.16.1':
     dependencies:
       '@aws-crypto/sha256-js': 5.2.0
-      '@aws-sdk/types': 3.398.0
+      '@aws-sdk/types': 3.973.1
       '@smithy/util-hex-encoding': 2.0.0
       '@types/uuid': 9.0.8
       js-cookie: 3.0.5
@@ -11057,7 +11053,7 @@ snapshots:
       '@aws-crypto/sha256-js': 5.2.0
       '@aws-crypto/supports-web-crypto': 5.2.0
       '@aws-crypto/util': 5.2.0
-      '@aws-sdk/types': 3.969.0
+      '@aws-sdk/types': 3.973.1
       '@aws-sdk/util-locate-window': 3.965.2
       '@smithy/util-utf8': 2.3.0
       tslib: 2.8.1
@@ -11065,7 +11061,7 @@ snapshots:
   '@aws-crypto/sha256-js@5.2.0':
     dependencies:
       '@aws-crypto/util': 5.2.0
-      '@aws-sdk/types': 3.969.0
+      '@aws-sdk/types': 3.973.1
       tslib: 2.8.1
 
   '@aws-crypto/supports-web-crypto@5.2.0':
@@ -11074,7 +11070,7 @@ snapshots:
 
   '@aws-crypto/util@5.2.0':
     dependencies:
-      '@aws-sdk/types': 3.969.0
+      '@aws-sdk/types': 3.973.1
       '@smithy/util-utf8': 2.3.0
       tslib: 2.8.1
 
@@ -11380,12 +11376,12 @@ snapshots:
     transitivePeerDependencies:
       - aws-crt
 
-  '@aws-sdk/types@3.398.0':
+  '@aws-sdk/types@3.969.0':
     dependencies:
-      '@smithy/types': 2.12.0
+      '@smithy/types': 4.12.0
       tslib: 2.8.1
 
-  '@aws-sdk/types@3.969.0':
+  '@aws-sdk/types@3.973.1':
     dependencies:
       '@smithy/types': 4.12.0
       tslib: 2.8.1
@@ -15554,10 +15550,6 @@ snapshots:
       '@smithy/protocol-http': 5.3.8
       '@smithy/types': 4.12.0
       '@smithy/util-stream': 4.5.10
-      tslib: 2.8.1
-
-  '@smithy/types@2.12.0':
-    dependencies:
       tslib: 2.8.1
 
   '@smithy/types@3.7.2':
