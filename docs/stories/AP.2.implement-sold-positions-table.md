@@ -12,7 +12,7 @@
 
 - Story AP.1 created RED unit tests
 - Sold positions component exists but shows empty data
-- TradesEffects SmartNgRX entity configured and working for open positions
+- SmartNgRX entity configured and working for open positions
 
 **Problem:**
 
@@ -117,6 +117,8 @@ export class SoldPositionsComponent implements OnInit {
   }
 }
 ```
+
+If you are having trouble getting items to display, refer to the implementation of the open positions component for guidance on how to properly filter and display data from SmartNgRX.
 
 ### Step 4: Update Component Template
 
