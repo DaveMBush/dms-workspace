@@ -1,8 +1,38 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { signal, computed, Signal, WritableSignal } from '@angular/core';
+import { vi } from 'vitest';
 
 import { SoldPositionsComponent } from './sold-positions.component';
+import { SoldPositionsComponentService } from './sold-positions-component.service';
 import { Trade } from '../../store/trades/trade.interface';
+
+// Mock SmartNgRX selectors to avoid initialization errors
+vi.mock('../../store/top/selectors/select-top-entities.function', () => ({
+  selectTopEntities: vi.fn().mockReturnValue([]),
+}));
+
+vi.mock('../../store/universe/selectors/select-universes.function', () => ({
+  selectUniverses: vi.fn().mockReturnValue([]),
+}));
+
+vi.mock('../../store/trades/selectors/select-trades-entity.function', () => ({
+  selectTradesEntity: vi.fn().mockReturnValue([]),
+}));
+
+vi.mock(
+  '../../store/accounts/selectors/select-accounts-entity.function',
+  () => ({
+    selectAccountsEntity: vi.fn().mockReturnValue([]),
+  })
+);
+
+vi.mock('../../store/accounts/selectors/select-accounts.function', () => ({
+  selectAccounts: vi.fn().mockReturnValue([]),
+}));
+
+vi.mock('../../store/div-deposits/div-deposits.selectors', () => ({
+  selectDivDepositEntity: vi.fn().mockReturnValue([]),
+}));
 
 // Define interface for sold position (to be implemented in AP.2)
 interface SoldPosition extends Trade {
@@ -22,9 +52,20 @@ describe('SoldPositionsComponent', () => {
   let component: SoldPositionsComponent;
   let fixture: ComponentFixture<SoldPositionsComponent>;
 
+  // Simple mock service for component injection
+  const mockServiceForInjection = {
+    selectSoldPositions: signal([]),
+  };
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [SoldPositionsComponent],
+      providers: [
+        {
+          provide: SoldPositionsComponentService,
+          useValue: mockServiceForInjection,
+        },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(SoldPositionsComponent);
@@ -84,8 +125,8 @@ describe('SoldPositionsComponent', () => {
   });
 
   // TDD Tests for Story AP.1 - SmartNgRX Integration
-  // These tests are written BEFORE implementation (RED) and will be enabled in Story AP.2
-  describe.skip('SmartNgRX Integration - Sold Positions', () => {
+  // Tests enabled in Story AP.2
+  describe('SmartNgRX Integration - Sold Positions', () => {
     let mockSoldPositionsService: MockSoldPositionsComponentService;
 
     beforeEach(() => {
