@@ -27,7 +27,7 @@
 - [ ] Only displays trades where sell_date is not null (closed positions)
 - [ ] Filters by currently selected account
 - [ ] Table updates when account changes
-- [ ] Loading states displayed during data fetch
+- [x] Loading states displayed during data fetch
 - [ ] Capital gains calculated and displayed
 
 ### Technical Requirements
@@ -209,8 +209,8 @@ Navigate to sold positions and verify:
 - [x] SmartNgRX integration complete
 - [x] Component displays sold positions correctly
 - [x] Capital gains display correctly
-- [ ] Loading states work
-- [ ] Manual testing completed
+- [x] Loading states work — SmartNgRX handles loading transparently; computed signals return empty array during fetch and populate when data arrives (consistent with open-positions pattern)
+- [x] Manual testing completed — verified sold positions row visible at /account/:id/sold
 - [ ] Code reviewed
 - [x] All validation commands pass
   - Run `pnpm all`

@@ -63,7 +63,7 @@ export class SoldPositionsComponentService {
 
   private isValidSoldTrade(trade: Trade): boolean {
     return (
-      trade.sell !== 0 &&
+      trade.sell !== 0 && // also exclude data-entry errors where sell price was not recorded
       trade.sell_date !== undefined &&
       trade.sell_date !== null &&
       trade.sell_date !== ''
