@@ -1,11 +1,17 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
 import { BaseTableComponent } from '../../shared/components/base-table/base-table.component';
 import { ColumnDef } from '../../shared/components/base-table/column-def.interface';
-import { Trade } from '../../store/trades/trade.interface';
+import { ClosedPosition } from '../../store/trades/closed-position.interface';
+import { SoldPositionsComponentService } from './sold-positions-component.service';
 
 @Component({
   selector: 'dms-sold-positions',
@@ -20,9 +26,12 @@ import { Trade } from '../../store/trades/trade.interface';
   styleUrl: './sold-positions.component.scss',
 })
 export class SoldPositionsComponent {
-  // FUTURE: Wire up SmartNgRX trades signal (sold filter)
-  // readonly soldTrades = computed(() => selectTrades().filter(t => t.sellDate !== null));
-  readonly soldTrades$ = signal<Trade[]>([]);
+  private readonly soldPositionsService = inject(SoldPositionsComponentService);
+
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
+  protected readonly displayedPositions = computed(() =>
+    this.soldPositionsService.selectSoldPositions()
+  );
 
   searchText = '';
 
@@ -50,7 +59,7 @@ export class SoldPositionsComponent {
     { field: 'capitalGainPercentage', header: 'Cap Gains%', type: 'number' },
   ];
 
-  onCellEdit(__: Trade, ___: string, ____: unknown): void {
+  onCellEdit(__: ClosedPosition, ___: string, ____: unknown): void {
     // Update via SmartNgRX
   }
 }

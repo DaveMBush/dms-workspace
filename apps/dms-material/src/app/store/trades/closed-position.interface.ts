@@ -1,11 +1,12 @@
+/* eslint-disable @typescript-eslint/naming-convention -- matching server snake_case */
 export interface ClosedPosition {
   id: string;
   symbol: string;
   buy: number;
-  buyDate: Date;
+  buy_date: string;
   quantity: number;
   sell: number;
-  sellDate?: Date;
+  sell_date?: string;
   daysHeld: number;
   capitalGain: number;
   capitalGainPercentage: number;

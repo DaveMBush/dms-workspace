@@ -204,20 +204,44 @@ Navigate to sold positions and verify:
 
 ## Definition of Done
 
-- [ ] Tests from AP.1 re-enabled
-- [ ] All unit tests pass (GREEN)
-- [ ] SmartNgRX integration complete
-- [ ] Component displays sold positions correctly
-- [ ] Capital gains display correctly
+- [x] Tests from AP.1 re-enabled
+- [x] All unit tests pass (GREEN)
+- [x] SmartNgRX integration complete
+- [x] Component displays sold positions correctly
+- [x] Capital gains display correctly
 - [ ] Loading states work
 - [ ] Manual testing completed
 - [ ] Code reviewed
-- [ ] All validation commands pass
+- [x] All validation commands pass
   - Run `pnpm all`
   - Run `pnpm e2e:dms-material`
   - Run `pnpm dupcheck`
   - Run `pnpm format`
   - Repeat all of these if any fail until they all pass
+
+## Dev Agent Record
+
+### File List
+
+- `apps/dms-material/src/app/account-panel/sold-positions/sold-positions-component.service.ts` (created)
+- `apps/dms-material/src/app/account-panel/sold-positions/sold-positions.component.ts` (modified)
+- `apps/dms-material/src/app/account-panel/sold-positions/sold-positions.component.html` (modified)
+- `apps/dms-material/src/app/account-panel/sold-positions/sold-positions.component.spec.ts` (modified)
+- `apps/dms-material/src/app/store/trades/closed-position.interface.ts` (modified)
+
+### Change Log
+
+- Created `SoldPositionsComponentService` following `OpenPositionsComponentService` patterns
+- Service uses `currentAccountSignalStore` + `selectCurrentAccountSignal` to get current account's trades
+- Filters trades where `sell_date` is not null/empty
+- Calculates `capitalGain` and `capitalGainPercentage` per position
+- Looks up `symbol` from universe map
+- Updated `SoldPositionsComponent` to inject service and expose `displayedPositions` computed signal
+- Updated template to use `displayedPositions()` from service instead of empty `soldTrades$` signal
+- Updated `ClosedPosition` interface to use snake_case date fields matching column definitions
+- Enabled 9 previously skipped tests (`describe.skip` → `describe`)
+- Added `vi.mock()` calls for SmartNgRX selector modules to prevent initialization errors in tests
+- Added `SoldPositionsComponentService` mock provider in TestBed setup
 
 ## Notes
 
