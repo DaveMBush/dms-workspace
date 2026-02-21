@@ -18,6 +18,7 @@ Execute the following steps in order. When encountering errors or needing decisi
 - You must run this every time you see this prompt, even if you've run it before. This is to ensure that you are correctly interpreting the return values each time.
 - You must wait for the response before proceeding. The process should block any further action until it returns.
 - These rules apply every time .github/prompts/prompt.sh is called, regardless of the phase or context.
+- Show (unhide) the terminal window this is running in so the operator can see the output and respond to it. Do not hide or minimize the terminal.
 
 ## MCP Server Resources
 
