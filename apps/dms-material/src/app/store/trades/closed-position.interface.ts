@@ -10,4 +10,5 @@ export interface ClosedPosition {
   daysHeld: number;
   capitalGain: number;
   capitalGainPercentage: number;
+  gainLossType?: 'gain' | 'loss' | 'neutral';
 }
