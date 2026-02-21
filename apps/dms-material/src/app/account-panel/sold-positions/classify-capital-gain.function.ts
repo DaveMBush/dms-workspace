@@ -2,8 +2,16 @@
  * Classifies a capital gain/loss amount as 'gain', 'loss', or 'neutral'.
  * Returns classification type for visual display.
  *
- * NOTE: Stub - implementation in Story AP.4
+ * Pure function - no side effects.
  */
-export function classifyCapitalGain(_: number): 'gain' | 'loss' | 'neutral' {
-  throw new Error('Not implemented - see Story AP.4');
+export function classifyCapitalGain(
+  capitalGain: number
+): 'gain' | 'loss' | 'neutral' {
+  if (capitalGain > 0) {
+    return 'gain';
+  }
+  if (capitalGain < 0) {
+    return 'loss';
+  }
+  return 'neutral';
 }

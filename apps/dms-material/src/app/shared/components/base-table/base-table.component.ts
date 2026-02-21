@@ -85,6 +85,28 @@ export class BaseTableComponent<T extends { id: string }> {
     );
   };
 
+  // Helper to read gainLossType from a row when present
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- needed for proper typing
+  gainLossType$ = (row: T): 'gain' | 'loss' | 'neutral' | undefined => {
+    if ('gainLossType' in row) {
+      return (row as T & { gainLossType?: 'gain' | 'loss' | 'neutral' })
+        .gainLossType;
+    }
+    return undefined;
+  };
+
+  // Returns an ngClass-compatible map from the row's gainLossType to avoid
+  // triple evaluation of gainLossType$ per change-detection cycle.
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- needed for proper typing
+  gainLossClassMap$ = (row: T): Record<string, boolean> => {
+    const type = this.gainLossType$(row);
+    return {
+      gain: type === 'gain',
+      loss: type === 'loss',
+      neutral: type === 'neutral',
+    };
+  };
+
   // Data source - reactive to data() changes
   // Returns sorted array directly - MatTable can work with arrays
   dataSource = computed(

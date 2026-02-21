@@ -6,6 +6,7 @@ import { selectCurrentAccountSignal } from '../../store/current-account/select-c
 import { ClosedPosition } from '../../store/trades/closed-position.interface';
 import { differenceInTradingDays } from '../../store/trades/difference-in-trading-days.function';
 import { Trade } from '../../store/trades/trade.interface';
+import { classifyCapitalGain } from './classify-capital-gain.function';
 
 @Injectable({ providedIn: 'root' })
 export class SoldPositionsComponentService {
@@ -55,6 +56,7 @@ export class SoldPositionsComponentService {
         daysHeld,
         capitalGain,
         capitalGainPercentage,
+        gainLossType: classifyCapitalGain(capitalGain),
       });
     }
 
