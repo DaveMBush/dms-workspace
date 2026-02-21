@@ -92,6 +92,7 @@ pnpm all
 - Run tests, analyze failures, apply fixes automatically
 - **For API usage errors**: Query Context7 for correct implementation
 - **For UI test failures**: Use Playwright to validate expected behavior
+- **For ESLint failures**: Fix the lint error, do not comment exclude the problem or otherwise circumvent fixing the problem.
 - Retry up to 10 times with different fix strategies each time
 - On 10th failure: Call `.github/prompts/prompt.sh "pnpm all failing after 10 attempts with errors: <error summary>"`
 - **If fixed**: After applying fixes, restart Phase 3 from step 3.1
