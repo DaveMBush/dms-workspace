@@ -100,6 +100,9 @@
         *matRowDef="let row; columns: displayedColumns()"
         [class.selected]="selection.isSelected(row)"
         [class.expired]="isExpired$(row)"
+        [class.gain]="gainLossType$(row) === 'gain'"
+        [class.loss]="gainLossType$(row) === 'loss'"
+        [class.neutral]="gainLossType$(row) === 'neutral'"
         (click)="onRowClick(row)"
       ></tr>
     </table>

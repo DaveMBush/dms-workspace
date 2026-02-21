@@ -35,6 +35,25 @@ tr.mat-mdc-row {
   &.selected {
     background-color: rgba(var(--dms-primary-500), 0.1);
   }
+
+  // Capital gain/loss classification colors (Material Design)
+  &.gain {
+    td.mat-mdc-cell {
+      color: #4caf50;
+    }
+  }
+
+  &.loss {
+    td.mat-mdc-cell {
+      color: #f44336;
+    }
+  }
+
+  &.neutral {
+    td.mat-mdc-cell {
+      color: #757575;
+    }
+  }
 }
 
 th.mat-mdc-header-cell {

@@ -2,11 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { classifyCapitalGain } from './classify-capital-gain.function';
 
-// TDD RED Phase - Story AP.3
-// Tests are disabled (.skip) because classifyCapitalGain is a stub (Story AP.4 will implement)
-// After AP.3 merge: remove .skip when implementing in Story AP.4
-
-describe.skip('classifyCapitalGain', () => {
+describe('classifyCapitalGain', () => {
   describe('positive capital gains', () => {
     it('should return "gain" for a standard profit', () => {
       // Arrange: (180 - 150) * 100 = 3000
