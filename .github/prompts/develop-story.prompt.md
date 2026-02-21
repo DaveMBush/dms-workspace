@@ -2,7 +2,7 @@
 description: Fully autonomous story development from start to merge
 agent: dev
 argument-hint: story=AD.3
-model: Claude Sonnet 4.5 (copilot)
+model: Claude Sonnet 4.6 (copilot)
 ---
 
 # Autonomous Story Development Workflow
@@ -12,6 +12,12 @@ Execute the following steps in order. When encountering errors or needing decisi
 - "continue" → Retry with alternative approaches
 - "stop" → Abort entire workflow immediately
 - Custom instructions → Follow as if from referenced MD file
+
+**IMPORTANT**:
+
+- You must run this every time you see this prompt, even if you've run it before. This is to ensure that you are correctly interpreting the return values each time.
+- You must wait for the response before proceeding. The process should block any further action until it returns.
+- These rules apply every time .github/prompts/prompt.sh is called, regardless of the phase or context.
 
 ## MCP Server Resources
 
