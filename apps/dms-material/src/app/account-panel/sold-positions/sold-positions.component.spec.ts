@@ -101,8 +101,8 @@ describe('SoldPositionsComponent', () => {
         trades: tradesSignal,
         selectSoldPositions: computed(() =>
           tradesSignal()
-            // eslint-disable-next-line @typescript-eslint/naming-convention -- Trade interface uses snake_case
             .filter(
+              // eslint-disable-next-line @typescript-eslint/naming-convention -- Trade interface uses snake_case
               (t): t is Trade & { sell_date: string } => t.sell_date !== null
             )
             .map(toSoldPosition)

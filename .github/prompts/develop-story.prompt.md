@@ -182,7 +182,10 @@ For each iteration:
 
 - If first iteration: Already waited 5 minutes after PR creation
 - Poll PR for CodeRabbit review status every 30 seconds
-- Timeout: 10 minutes
+- **CRITICAL**: Wait for CodeRabbit to COMPLETE its review, not just start it
+  - Review is complete when comment body does NOT contain "Currently processing" or "review in progress"
+  - Review threads will be populated when complete
+- Timeout: 10 minutes from when review starts processing
 - If timeout: Call `.github/prompts/prompt.sh "CodeRabbit review timed out after 10 minutes"`
 
 ### 6.2 Retrieve and Evaluate Suggestions
@@ -206,13 +209,25 @@ For each iteration:
   - Call `.github/prompts/prompt.sh "Unable to implement CodeRabbit suggestion after 10 attempts: <suggestion details>"`
   - Handle response before proceeding
 
-### 6.4 Commit and Push
+### 6.4 Quality Validation and Commit
 
-- If changes were made:
+- **CRITICAL**: Run ALL Phase 3 validations before committing:
+
+  - `pnpm all` - must pass
+  - `pnpm e2e:dms-material` - must pass
+  - `pnpm dupcheck` - must pass
+  - `pnpm format` - must pass
+  - If any validation fails: Fix issues and re-run ALL validations until they pass
+  - Follow same retry/fix logic as Phase 3 (up to 10 attempts per validation)
+  - If validations fail after 10 attempts: Call `.github/prompts/prompt.sh "Quality validation failed after applying CodeRabbit fixes: <error>"`
+
+- Only after ALL validations pass:
+
   - Commit with message: "Apply CodeRabbit suggestions"
   - Push to branch
   - **Wait 5 minutes** (rate limit protection for CodeRabbit)
   - Return to 6.1 (new iteration)
+
 - If no changes possible or needed: Proceed to Phase 7
 
 ### 6.5 Iteration Limit Check
