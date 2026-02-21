@@ -1,202 +1,140 @@
-# Story AP.4: Implementation - Display Capital Gains Calculations
+# Story AP.4: Implementation - Display Capital Gains Classification
+
+## Status: Draft
 
 ## Story
 
-**As a** user
-**I want** to see capital gains/losses with clear visual indicators
-**So that** I can quickly understand my trading performance
+**As a** user viewing sold positions
+**I want** capital gain/loss rows visually classified as gain, loss, or neutral
+**So that** I can quickly assess trading performance at a glance
 
 ## Context
 
-**Current System:**
+**Current System (as of AP.3):**
 
-- Story AP.3 created RED unit tests
-- Basic capital gains calculated but not enhanced
-- Need better formatting and visual cues
+- `capitalGain` and `capitalGainPercentage` are **already computed** in `SoldPositionsComponentService`
+  (`apps/dms-material/src/app/account-panel/sold-positions/sold-positions-component.service.ts`)
+- `ClosedPosition` interface has `gainLossType?: 'gain' | 'loss' | 'neutral'` added in AP.3
+- `classifyCapitalGain` stub function exists at
+  `apps/dms-material/src/app/account-panel/sold-positions/classify-capital-gain.function.ts`
+- TDD RED tests exist in `classify-capital-gain.function.spec.ts` (8 tests, all `.skip`)
 
 **Problem:**
 
-- Users need to see gains vs losses at a glance
-- Need formatted currency display
-- Need percentage calculations alongside dollar amounts
+- `gainLossType` is not yet populated — `classifyCapitalGain` throws on call
+- No color-coding CSS is applied to the sold positions table
+- RED tests need implementation to turn GREEN
 
 ## Acceptance Criteria
 
 ### Functional Requirements
 
-- [ ] Capital gains display with dollar formatting
-- [ ] Percent gain display with % symbol
-- [ ] Positive gains show in green
-- [ ] Negative losses show in red
-- [ ] Zero gains show in neutral color
-- [ ] Values align properly in table
+- [ ] Positive capital gain rows classified as `'gain'`
+- [ ] Negative capital gain rows classified as `'loss'`
+- [ ] Zero capital gain rows classified as `'neutral'`
+- [ ] `gainLossType` field populated on each `ClosedPosition` row in the service
 
 ### Technical Requirements
 
-- [ ] Re-enable tests from AP.3
-- [ ] All unit tests pass (GREEN)
-- [ ] Use Intl.NumberFormat for currency formatting
-- [ ] Add CSS classes for color coding
-- [ ] Follow Material Design patterns
+- [ ] Remove `.skip` from `classify-capital-gain.function.spec.ts`
+- [ ] All 8 TDD tests pass (GREEN)
+- [ ] `classifyCapitalGain` implemented as a pure function (no side effects)
+- [ ] `SoldPositionsComponentService.selectSoldPositions` calls `classifyCapitalGain(capitalGain)`
+      and sets `gainLossType` on each returned `ClosedPosition`
+- [ ] CSS classes applied to table rows/cells using `gainLossType` (green/red/neutral)
+- [ ] Follow Material Design color patterns
 
 ## Implementation Approach
 
-### Step 1: Re-enable Tests from AP.3
+### Step 1: Implement `classifyCapitalGain`
 
-Remove `.skip` from capital gains tests in `sold-positions.component.spec.ts`:
-
-```typescript
-describe('Capital Gains Display Logic', () => {
-  // Tests now active
-});
-```
-
-### Step 2: Run Tests (Should Still Fail)
-
-```bash
-pnpm nx test dms-material --testFile=sold-positions.component.spec.ts
-```
-
-### Step 3: Enhance Component Logic
-
-Update `apps/dms-material/src/app/features/account/components/sold-positions/sold-positions.component.ts`:
+Update `apps/dms-material/src/app/account-panel/sold-positions/classify-capital-gain.function.ts`:
 
 ```typescript
-displayedPositions = computed(() => {
-  const allTrades = this.tradesEffects.entities();
-  const selectedAccountId = this.accountsEffects.selectedAccountId();
-
-  return allTrades
-    .filter((trade) => trade.sell_date !== null)
-    .filter((trade) => trade.accountId === selectedAccountId)
-    .map((trade) => {
-      const capitalGain = (trade.sell_price - trade.purchase_price) * trade.quantity;
-      const percentGain = trade.purchase_price && trade.purchase_price !== 0
-        ? ((trade.sell_price - trade.purchase_price) / trade.purchase_price) * 100
-        : 0;
-
-      // Classify gain/loss type for styling
-      const gainLossType = capitalGain > 0 ? 'gain' : capitalGain < 0 ? 'loss' : 'neutral';
-
-      return {
-        ...trade,
-        capitalGain,
-        percentGain,
-        gainLossType,
-        formattedCapitalGain: this.formatCurrency(capitalGain),
-        formattedPercentGain: Number.isFinite(percentGain) ? `${percentGain.toFixed(2)}%` : 'N/A',
-        formattedPurchaseDate: this.formatDate(trade.purchase_date),
-        formattedSellDate: this.formatDate(trade.sell_date),
-      };
-    });
-});
-
-private formatCurrency(value: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-  }).format(value);
+/**
+ * Classifies a capital gain/loss amount as 'gain', 'loss', or 'neutral'.
+ */
+export function classifyCapitalGain(capitalGain: number): 'gain' | 'loss' | 'neutral' {
+  if (capitalGain > 0) return 'gain';
+  if (capitalGain < 0) return 'loss';
+  return 'neutral';
 }
 ```
 
-### Step 4: Update Component Template
+### Step 2: Re-enable TDD Tests
 
-Update `apps/dms-material/src/app/features/account/components/sold-positions/sold-positions.component.html`:
+Remove `.skip` from:
+`apps/dms-material/src/app/account-panel/sold-positions/classify-capital-gain.function.spec.ts`
 
-```html
-<!-- Capital Gain Column -->
-<ng-container matColumnDef="capitalGain">
-  <th mat-header-cell *matHeaderCellDef>Capital Gain</th>
-  <td mat-cell *matCellDef="let position" [class.gain]="position.gainLossType === 'gain'" [class.loss]="position.gainLossType === 'loss'" [class.neutral]="position.gainLossType === 'neutral'">{{ position.formattedCapitalGain }}</td>
-</ng-container>
-
-<!-- Percent Gain Column -->
-<ng-container matColumnDef="percentGain">
-  <th mat-header-cell *matHeaderCellDef>% Gain/Loss</th>
-  <td mat-cell *matCellDef="let position" [class.gain]="position.gainLossType === 'gain'" [class.loss]="position.gainLossType === 'loss'" [class.neutral]="position.gainLossType === 'neutral'">{{ position.formattedPercentGain }}</td>
-</ng-container>
-```
-
-### Step 5: Add CSS Styling
-
-Update `apps/dms-material/src/app/features/account/components/sold-positions/sold-positions.component.scss`:
-
-```scss
-.positions-table {
-  width: 100%;
-
-  .gain {
-    color: #4caf50; // Material green
-    font-weight: 500;
-  }
-
-  .loss {
-    color: #f44336; // Material red
-    font-weight: 500;
-  }
-
-  .neutral {
-    color: #757575; // Material grey
-  }
-
-  td,
-  th {
-    text-align: right;
-
-    &:first-child {
-      text-align: left; // Symbol column left-aligned
-    }
-  }
-}
-```
-
-### Step 6: Run Tests (Should Pass)
+Run tests to verify GREEN:
 
 ```bash
-pnpm nx test dms-material --testFile=sold-positions.component.spec.ts
+pnpm nx test dms-material --testFile=classify-capital-gain.function.spec.ts
 ```
 
-**Expected Result:** All tests pass (GREEN)
+### Step 3: Integrate into Service
 
-### Step 7: Manual Testing
+Update the `for` loop in `selectSoldPositions` in `SoldPositionsComponentService`
+(`apps/dms-material/src/app/account-panel/sold-positions/sold-positions-component.service.ts`):
+
+```typescript
+// Inside the for loop, when building each ClosedPosition row:
+row.gainLossType = classifyCapitalGain(row.capitalGain);
+```
+
+### Step 4: Add CSS Color Coding
+
+In the sold positions component template/styles, apply classes based on `gainLossType`:
+
+- `.gain` → Material green (`#4caf50`)
+- `.loss` → Material red (`#f44336`)
+- `.neutral` → Material grey (`#757575`)
+
+### Step 5: Validate
 
 ```bash
-pnpm dev
+pnpm all
+pnpm e2e:dms-material
+pnpm dupcheck
+pnpm format
 ```
-
-Navigate to sold positions and verify:
-
-- Capital gains show with $ formatting
-- Percent gains show with % symbol
-- Gains appear in green
-- Losses appear in red
-- Zero values appear in neutral color
 
 ## Definition of Done
 
-- [ ] Tests from AP.3 re-enabled
-- [ ] All unit tests pass (GREEN)
-- [ ] Capital gains display with formatting
-- [ ] Percent gains display correctly
-- [ ] Color coding works (green/red/neutral)
-- [ ] CSS follows Material Design
-- [ ] Manual testing completed
+- [ ] `classifyCapitalGain` fully implemented (no longer throws)
+- [ ] 8 TDD tests from AP.3 pass (GREEN, `.skip` removed)
+- [ ] `gainLossType` populated on all `ClosedPosition` rows
+- [ ] Color-coding CSS applied to table
+- [ ] `pnpm all` passes
+- [ ] `pnpm e2e:dms-material` passes
+- [ ] `pnpm dupcheck` passes
+- [ ] `pnpm format` clean
 - [ ] Code reviewed
-- [ ] All validation commands pass
-  - Run `pnpm all`
-  - Run `pnpm e2e:dms-material`
-  - Run `pnpm dupcheck`
-  - Run `pnpm format`
-  - Repeat all of these if any fail until they all pass
 
 ## Notes
 
-- Color choices follow Material Design guidelines
-- Currency formatting uses Intl.NumberFormat for localization
-- Consider accessibility for color-blind users (use icons if needed)
+- Do NOT re-implement `capitalGain` or `capitalGainPercentage` — those already exist in the service
+- The `classifyCapitalGain` function must remain a pure function (no injected deps, no side effects)
+- See `apps/dms/` for reference implementations of similar formatting functions
 
 ## Dependencies
 
-- Story AP.3 completed
-- Material Design Angular components available
-- CSS styling infrastructure in place
+- Story AP.3 completed (stub + RED tests in place)
+
+## Dev Agent Record
+
+### Agent Model Used
+
+<!-- fill in when implemented -->
+
+### Completion Notes
+
+<!-- fill in when implemented -->
+
+### Change Log
+
+<!-- fill in when implemented -->
+
+### File List
+
+<!-- fill in when implemented -->

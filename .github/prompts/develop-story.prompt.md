@@ -188,6 +188,7 @@ For each iteration:
 ### 6.1 Wait for CodeRabbit Review
 
 - If first iteration: Already waited 5 minutes after PR creation
+- **CRITICAL**: Before polling, call `activate_repository_inspection_tools` to ensure `mcp_github_pull_request_read` is available
 - **CRITICAL**: Use `mcp_github_pull_request_read` with `method: "get_review_comments"` to poll every 30 seconds
 - **CRITICAL**: Wait for CodeRabbit to COMPLETE its review, not just start it
   - Review is complete when comment body does NOT contain "Currently processing" or "review in progress"
@@ -197,6 +198,7 @@ For each iteration:
 
 ### 6.2 Retrieve and Evaluate Suggestions
 
+- **CRITICAL**: Ensure `activate_repository_inspection_tools` has been called so `mcp_github_pull_request_read` is available
 - **CRITICAL**: Retrieve inline review thread comments using `mcp_github_pull_request_read` with `method: "get_review_comments"` — do NOT use `github-pull-request_issue_fetch` which only returns issue-level comments and will MISS all inline file/line-level review suggestions
 - If no suggestions from `get_review_comments`: Proceed to Phase 7
 - If suggestions exist:
