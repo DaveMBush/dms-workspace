@@ -13,6 +13,7 @@ interface SoldPosition extends Trade {
 // Mock SoldPositionsComponentService (will be created in AP.2)
 interface MockSoldPositionsComponentService {
   trades: WritableSignal<Trade[]>;
+  selectedAccountId: WritableSignal<string>;
   selectSoldPositions: Signal<SoldPosition[]>;
   toSoldPosition(trade: Trade): SoldPosition;
 }
@@ -90,6 +91,7 @@ describe('SoldPositionsComponent', () => {
     beforeEach(() => {
       // Mock service will be injected in AP.2
       const tradesSignal = signal<Trade[]>([]);
+      const selectedAccountIdSignal = signal<string>('acc-1');
       const toSoldPosition = (trade: Trade): SoldPosition => ({
         ...trade,
         capitalGain: (trade.sell - trade.buy) * trade.quantity,
@@ -99,12 +101,14 @@ describe('SoldPositionsComponent', () => {
 
       mockSoldPositionsService = {
         trades: tradesSignal,
+        selectedAccountId: selectedAccountIdSignal,
         selectSoldPositions: computed(() =>
           tradesSignal()
             .filter(
               // eslint-disable-next-line @typescript-eslint/naming-convention -- Trade interface uses snake_case
               (t): t is Trade & { sell_date: string } => t.sell_date !== null
             )
+            .filter((t) => t.accountId === selectedAccountIdSignal())
             .map(toSoldPosition)
         ),
         toSoldPosition,
@@ -183,15 +187,13 @@ describe('SoldPositionsComponent', () => {
         },
       ];
 
+      mockSoldPositionsService.selectedAccountId.set('acc-1');
       mockSoldPositionsService.trades.set(mockTrades);
 
-      // When account 'acc-1' is selected, only its sold positions should show
+      // selectSoldPositions should filter to only account 'acc-1' positions
       const soldPositions = mockSoldPositionsService.selectSoldPositions();
-      const acc1Positions = soldPositions.filter(
-        (p) => p.accountId === 'acc-1'
-      );
-      expect(acc1Positions.length).toBeGreaterThan(0);
-      expect(acc1Positions.every((p) => p.accountId === 'acc-1')).toBe(true);
+      expect(soldPositions.length).toBe(1);
+      expect(soldPositions.every((p) => p.accountId === 'acc-1')).toBe(true);
     });
 
     it('should calculate capital gains correctly', () => {
@@ -279,9 +281,45 @@ describe('SoldPositionsComponent', () => {
     });
 
     it('should update when account changes', () => {
-      // When account changes, sold positions should update reactively
-      // This will be implemented using SmartNgRX signals in AP.2
-      expect(mockSoldPositionsService.selectSoldPositions).toBeDefined();
+      // Test reactive updates when selected account changes
+      const mockTrades: Trade[] = [
+        {
+          id: '1',
+          universeId: 'AAPL',
+          accountId: 'acc-1',
+          buy: 150,
+          sell: 180,
+          buy_date: '2024-01-01',
+          sell_date: '2024-06-01',
+          quantity: 100,
+        },
+        {
+          id: '2',
+          universeId: 'MSFT',
+          accountId: 'acc-2',
+          buy: 300,
+          sell: 320,
+          buy_date: '2024-02-01',
+          sell_date: '2024-05-01',
+          quantity: 50,
+        },
+      ];
+
+      mockSoldPositionsService.trades.set(mockTrades);
+
+      // Initially showing acc-1
+      mockSoldPositionsService.selectedAccountId.set('acc-1');
+      expect(mockSoldPositionsService.selectSoldPositions().length).toBe(1);
+      expect(mockSoldPositionsService.selectSoldPositions()[0].accountId).toBe(
+        'acc-1'
+      );
+
+      // Switch to acc-2, should reactively update
+      mockSoldPositionsService.selectedAccountId.set('acc-2');
+      expect(mockSoldPositionsService.selectSoldPositions().length).toBe(1);
+      expect(mockSoldPositionsService.selectSoldPositions()[0].accountId).toBe(
+        'acc-2'
+      );
     });
   });
 });
