@@ -211,7 +211,7 @@ Navigate to sold positions and verify:
 - [x] Capital gains display correctly
 - [x] Loading states work — SmartNgRX handles loading transparently; computed signals return empty array during fetch and populate when data arrives (consistent with open-positions pattern)
 - [x] Manual testing completed — verified sold positions row visible at /account/:id/sold
-- [ ] Code reviewed
+- [x] Code reviewed
 - [x] All validation commands pass
   - Run `pnpm all`
   - Run `pnpm e2e:dms-material`
@@ -242,6 +242,10 @@ Navigate to sold positions and verify:
 - Enabled 9 previously skipped tests (`describe.skip` → `describe`)
 - Added `vi.mock()` calls for SmartNgRX selector modules to prevent initialization errors in tests
 - Added `SoldPositionsComponentService` mock provider in TestBed setup
+
+### Status
+
+Ready for Review
 
 ## Notes
 
