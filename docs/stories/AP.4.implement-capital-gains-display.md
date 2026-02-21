@@ -74,11 +74,12 @@ pnpm nx test dms-material --testFile=classify-capital-gain.function.spec.ts
 
 ### Step 3: Integrate into Service
 
-Update `selectSoldPositions` computed in `SoldPositionsComponentService`:
+Update the `for` loop in `selectSoldPositions` in `SoldPositionsComponentService`
+(`apps/dms-material/src/app/account-panel/sold-positions/sold-positions-component.service.ts`):
 
 ```typescript
-// Add to the map() lambda that builds each ClosedPosition:
-gainLossType: classifyCapitalGain(position.capitalGain),
+// Inside the for loop, when building each ClosedPosition row:
+row.gainLossType = classifyCapitalGain(row.capitalGain);
 ```
 
 ### Step 4: Add CSS Color Coding

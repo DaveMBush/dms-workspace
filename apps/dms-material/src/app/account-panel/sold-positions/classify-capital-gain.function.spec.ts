@@ -79,7 +79,7 @@ describe.skip('classifyCapitalGain', () => {
 
   describe('zero capital gains (neutral/breakeven)', () => {
     it('should return "neutral" for a breakeven trade', () => {
-      // Arrange: (150 - 150) * 100 = 0
+      // Arrange: literal zero
       const capitalGain = 0;
 
       // Act
@@ -89,9 +89,11 @@ describe.skip('classifyCapitalGain', () => {
       expect(result).toBe('neutral');
     });
 
-    it('should return "neutral" for exact zero', () => {
-      // Arrange
-      const capitalGain = 0.0;
+    it('should return "neutral" for computed zero (floating-point cancellation)', () => {
+      // Arrange: (150 - 150) * 100, verifies computed 0 is treated as neutral
+      const buyPrice = 150;
+      const sellPrice = 150;
+      const capitalGain = (sellPrice - buyPrice) * 100;
 
       // Act
       const result = classifyCapitalGain(capitalGain);
