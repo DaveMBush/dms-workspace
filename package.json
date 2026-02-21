@@ -72,7 +72,7 @@
     "@angular/cli": "21.1.2",
     "@angular/compiler-cli": "21.1.2",
     "@angular/language-service": "21.1.2",
-    "@eslint/eslintrc": "^3.3.1",
+    "@eslint/eslintrc": "^3.3.3",
     "@eslint/js": "^9.8.0",
     "@ngrx/eslint-plugin": "21.0.1",
     "@ngrx/signals": "21.0.1",
