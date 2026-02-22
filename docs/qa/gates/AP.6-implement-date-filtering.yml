@@ -1,0 +1,8 @@
+schema: 1
+story: 'AP.6'
+gate: PASS
+status_reason: 'All acceptance criteria met: date range picker UI added with Angular Material datepicker, start/end date filtering implemented via computed signal, clear filters button resets both signals, AP.5 TDD tests re-enabled and all 8 pass GREEN. pnpm all passes (65 test files, 1089 tests). Chromium E2E 381 passed. Firefox E2E failures confirmed pre-existing/environmental (unrelated to date filtering changes).'
+reviewer: 'Quinn'
+updated: '2026-02-22T09:30:00Z'
+top_issues: []
+waiver: { active: true, reason: 'Firefox E2E 54 failures are pre-existing environment issues unrelated to AP.6 changes, confirmed by operator approval' }

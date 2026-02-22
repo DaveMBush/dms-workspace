@@ -368,8 +368,8 @@ describe('SoldPositionsComponent', () => {
   });
 
   // TDD Tests for Story AP.5 - Date Range Filtering
-  // Tests disabled until AP.6 implementation makes them pass
-  describe.skip('Date Range Filtering', () => {
+  // Enabled in AP.6 implementation
+  describe('Date Range Filtering', () => {
     const testPositions: ClosedPosition[] = [
       {
         id: '1',
