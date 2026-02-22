@@ -4,6 +4,7 @@ import { vi } from 'vitest';
 
 import { SoldPositionsComponent } from './sold-positions.component';
 import { SoldPositionsComponentService } from './sold-positions-component.service';
+import { ClosedPosition } from '../../store/trades/closed-position.interface';
 import { Trade } from '../../store/trades/trade.interface';
 
 // Mock SmartNgRX selectors to avoid initialization errors
@@ -53,8 +54,9 @@ describe('SoldPositionsComponent', () => {
   let fixture: ComponentFixture<SoldPositionsComponent>;
 
   // Simple mock service for component injection
+  const soldPositionsSignal = signal<ClosedPosition[]>([]);
   const mockServiceForInjection = {
-    selectSoldPositions: signal([]),
+    selectSoldPositions: soldPositionsSignal,
   };
 
   beforeEach(async () => {
@@ -322,6 +324,7 @@ describe('SoldPositionsComponent', () => {
     });
 
     it('should update when account changes', () => {
+      // Uses mock service directly (not component injection)
       // Test reactive updates when selected account changes
       const mockTrades: Trade[] = [
         {
@@ -361,6 +364,153 @@ describe('SoldPositionsComponent', () => {
       expect(mockSoldPositionsService.selectSoldPositions()[0].accountId).toBe(
         'acc-2'
       );
+    });
+  });
+
+  // TDD Tests for Story AP.5 - Date Range Filtering
+  // Tests disabled until AP.6 implementation makes them pass
+  describe.skip('Date Range Filtering', () => {
+    const testPositions: ClosedPosition[] = [
+      {
+        id: '1',
+        symbol: 'AAPL',
+        quantity: 100,
+        buy: 150,
+        buy_date: '2023-12-01',
+        sell: 180,
+        sell_date: '2024-01-15',
+        daysHeld: 45,
+        capitalGain: 3000,
+        capitalGainPercentage: 20,
+      },
+      {
+        id: '2',
+        symbol: 'MSFT',
+        quantity: 50,
+        buy: 300,
+        buy_date: '2024-03-01',
+        sell: 320,
+        sell_date: '2024-06-20',
+        daysHeld: 111,
+        capitalGain: 1000,
+        capitalGainPercentage: 6.67,
+      },
+      {
+        id: '3',
+        symbol: 'GOOGL',
+        quantity: 75,
+        buy: 100,
+        buy_date: '2024-06-01',
+        sell: 120,
+        sell_date: '2024-12-31',
+        daysHeld: 213,
+        capitalGain: 1500,
+        capitalGainPercentage: 20,
+      },
+      {
+        id: '4',
+        symbol: 'TSLA',
+        quantity: 25,
+        buy: 200,
+        buy_date: '2023-06-01',
+        sell: 180,
+        sell_date: '2023-12-15',
+        daysHeld: 135,
+        capitalGain: -500,
+        capitalGainPercentage: -10,
+      },
+    ];
+
+    beforeEach(() => {
+      soldPositionsSignal.set(testPositions);
+      component.startDate.set(null);
+      component.endDate.set(null);
+    });
+
+    it('should show all positions when no date filter applied', () => {
+      component.startDate.set(null);
+      component.endDate.set(null);
+
+      expect(component.displayedPositions().length).toBe(4);
+    });
+
+    it('should filter by start date only', () => {
+      component.startDate.set('2024-06-01');
+      component.endDate.set(null);
+
+      const positions = component.displayedPositions();
+      expect(positions.length).toBe(2);
+      expect(
+        positions.every((p) => new Date(p.sell_date!) >= new Date('2024-06-01'))
+      ).toBe(true);
+    });
+
+    it('should filter by end date only', () => {
+      component.startDate.set(null);
+      component.endDate.set('2024-06-30');
+
+      const positions = component.displayedPositions();
+      expect(positions.length).toBe(3);
+      expect(
+        positions.every((p) => new Date(p.sell_date!) <= new Date('2024-06-30'))
+      ).toBe(true);
+    });
+
+    it('should filter by both start and end date', () => {
+      component.startDate.set('2024-01-01');
+      component.endDate.set('2024-06-30');
+
+      const positions = component.displayedPositions();
+      expect(positions.length).toBe(2);
+      expect(
+        positions.every((p) => {
+          const sellDate = new Date(p.sell_date!);
+          return (
+            sellDate >= new Date('2024-01-01') &&
+            sellDate <= new Date('2024-06-30')
+          );
+        })
+      ).toBe(true);
+    });
+
+    it('should handle same day start and end date', () => {
+      component.startDate.set('2024-01-15');
+      component.endDate.set('2024-01-15');
+
+      const positions = component.displayedPositions();
+      expect(positions.length).toBe(1);
+      expect(positions[0].symbol).toBe('AAPL');
+    });
+
+    it('should return empty array when no positions match date range', () => {
+      component.startDate.set('2025-01-01');
+      component.endDate.set('2025-12-31');
+
+      expect(component.displayedPositions().length).toBe(0);
+    });
+
+    it('should handle year boundary correctly', () => {
+      component.startDate.set('2023-12-01');
+      component.endDate.set('2024-01-31');
+
+      const positions = component.displayedPositions();
+      expect(positions.length).toBe(2);
+      const symbols = positions.map((p) => p.symbol);
+      expect(symbols).toContain('AAPL');
+      expect(symbols).toContain('TSLA');
+    });
+
+    it('should update displayed positions when date filter changes', () => {
+      component.startDate.set('2024-01-01');
+      component.endDate.set('2024-06-30');
+
+      expect(component.displayedPositions().length).toBe(2);
+
+      component.startDate.set('2024-12-01');
+      component.endDate.set('2024-12-31');
+
+      expect(component.displayedPositions().length).toBe(1);
+      expect(component.displayedPositions()[0].symbol).toBe('GOOGL');
     });
   });
 });

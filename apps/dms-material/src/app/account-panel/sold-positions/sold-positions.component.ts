@@ -3,6 +3,7 @@ import {
   Component,
   computed,
   inject,
+  signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -28,8 +29,11 @@ import { SoldPositionsComponentService } from './sold-positions-component.servic
 export class SoldPositionsComponent {
   private readonly soldPositionsService = inject(SoldPositionsComponentService);
 
+  startDate = signal<string | null>(null);
+  endDate = signal<string | null>(null);
+
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
-  protected readonly displayedPositions = computed(() =>
+  readonly displayedPositions = computed(() =>
     this.soldPositionsService.selectSoldPositions()
   );
 
