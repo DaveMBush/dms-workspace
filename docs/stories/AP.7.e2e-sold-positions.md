@@ -1,5 +1,7 @@
 # Story AP.7: E2E Tests for Sold Positions Screen
 
+**Status:** Ready for Review
+
 ## Story
 
 **As a** developer
