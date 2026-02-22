@@ -60,7 +60,7 @@ pnpm nx test dms-material --testFile=sold-positions.component.spec.ts
 
 ### Step 3: Add Date Filter Signals to Component
 
-Update `apps/dms-material/src/app/features/account/components/sold-positions/sold-positions.component.ts`:
+Update `apps/dms-material/src/app/account-panel/sold-positions/sold-positions.component.ts`:
 
 ```typescript
 import { Component, computed, effect, inject, OnInit, signal } from '@angular/core';
@@ -86,14 +86,14 @@ export class SoldPositionsComponent implements OnInit {
   endDate = signal<string | null>(null);
 
   // Derived signals for date picker values (convert string back to Date for UI binding)
-  startDateValue = computed(() => {
+  startDateAsDate = computed(() => {
     const dateStr = this.startDate();
     if (!dateStr) return null;
     const [year, month, day] = dateStr.split('-').map(Number);
     return new Date(year, month - 1, day);
   });
 
-  endDateValue = computed(() => {
+  endDateAsDate = computed(() => {
     const dateStr = this.endDate();
     if (!dateStr) return null;
     const [year, month, day] = dateStr.split('-').map(Number);
@@ -177,7 +177,7 @@ export class SoldPositionsComponent implements OnInit {
   clearFilters(): void {
     this.startDate.set(null);
     this.endDate.set(null);
-    // Note: UI inputs will clear automatically because they're bound to startDateValue/endDateValue computed signals
+    // Note: UI inputs will clear automatically because they're bound to startDateAsDate/endDateAsDate computed signals
   }
 
   private formatDate(date: string): string {
@@ -198,20 +198,20 @@ export class SoldPositionsComponent implements OnInit {
 
 ### Step 4: Add Date Filter UI
 
-Update `apps/dms-material/src/app/features/account/components/sold-positions/sold-positions.component.html`:
+Update `apps/dms-material/src/app/account-panel/sold-positions/sold-positions.component.html`:
 
 ```html
 <div class="date-filters">
   <mat-form-field appearance="outline">
     <mat-label>Start Date</mat-label>
-    <input matInput [matDatepicker]="startPicker" [value]="startDateValue()" (dateChange)="onStartDateChange($event.value)" />
+    <input matInput [matDatepicker]="startPicker" [value]="startDateAsDate()" (dateChange)="onStartDateChange($event.value)" />
     <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
     <mat-datepicker #startPicker></mat-datepicker>
   </mat-form-field>
 
   <mat-form-field appearance="outline">
     <mat-label>End Date</mat-label>
-    <input matInput [matDatepicker]="endPicker" [value]="endDateValue()" (dateChange)="onEndDateChange($event.value)" />
+    <input matInput [matDatepicker]="endPicker" [value]="endDateAsDate()" (dateChange)="onEndDateChange($event.value)" />
     <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
     <mat-datepicker #endPicker></mat-datepicker>
   </mat-form-field>
@@ -230,7 +230,7 @@ Update `apps/dms-material/src/app/features/account/components/sold-positions/sol
 
 ### Step 5: Add CSS for Date Filters
 
-Update `apps/dms-material/src/app/features/account/components/sold-positions/sold-positions.component.scss`:
+Update `apps/dms-material/src/app/account-panel/sold-positions/sold-positions.component.scss`:
 
 ```scss
 .date-filters {
