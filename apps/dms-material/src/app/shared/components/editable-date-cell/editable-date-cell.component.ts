@@ -32,7 +32,12 @@ import { MatInputModule } from '@angular/material/input';
   styleUrls: ['./editable-date-cell.component.scss'],
 })
 export class EditableDateCellComponent {
-  @Input() set value(val: Date | string | null) {
+  @Input() set value(val: Date | string | null | undefined) {
+    // Normalize undefined to null
+    if (val === undefined) {
+      this.internalValue = null;
+      return;
+    }
     // Convert string dates to Date objects for internal use
     if (typeof val === 'string') {
       // Parse ISO date string and create local date at midnight
@@ -69,7 +74,7 @@ export class EditableDateCellComponent {
   @Input() testIdFieldName = '';
   @Input() testId = '';
 
-  @Output() readonly valueChange = new EventEmitter<Date>();
+  @Output() readonly valueChange = new EventEmitter<Date | null>();
 
   @ViewChild('picker') picker!: MatDatepicker<Date>;
 
@@ -120,13 +125,17 @@ export class EditableDateCellComponent {
 
   private commitEdit(): void {
     if (this.editValue) {
-      const originalTime = this.value !== null ? this.value.getTime() : 0;
+      const originalTime =
+        this.value instanceof Date ? this.value.getTime() : 0;
       const newTime = this.editValue.getTime();
 
       // Only emit if the date has actually changed
       if (newTime !== originalTime) {
         this.valueChange.emit(this.editValue);
       }
+    } else if (this.value !== null) {
+      // User cleared the date — emit null so the parent can persist the clear
+      this.valueChange.emit(null);
     }
     this.editing = false;
   }

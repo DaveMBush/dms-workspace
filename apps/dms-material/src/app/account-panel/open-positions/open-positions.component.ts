@@ -92,7 +92,13 @@ export class OpenPositionsComponent {
       sortable: true,
     },
     { field: 'sell', header: 'Sell', type: 'currency', editable: true },
-    { field: 'sellDate', header: 'Sell Date', type: 'date', editable: true },
+    {
+      field: 'sellDate',
+      header: 'Sell Date',
+      type: 'date',
+      editable: true,
+      width: '130px',
+    },
     { field: 'daysHeld', header: 'Days Held', type: 'number' },
     { field: 'targetGain', header: 'Target Gain', type: 'number' },
     { field: 'targetSell', header: 'Target Sell', type: 'currency' },
@@ -116,7 +122,11 @@ export class OpenPositionsComponent {
     }
   }
 
-  onBuyDateChange(position: OpenPosition, newDate: Date): void {
+  onBuyDateChange(position: OpenPosition, newDate: Date | null): void {
+    if (newDate === null) {
+      // Buy date cannot be cleared; ignore the event
+      return;
+    }
     // Use local date components to avoid timezone offset issues
     const year = newDate.getFullYear();
     const month = String(newDate.getMonth() + 1).padStart(2, '0');

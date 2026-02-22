@@ -42,14 +42,24 @@ export class SoldPositionsComponent {
   endDate = signal<string | null>(null);
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
-  readonly startDateAsDate = computed(() =>
-    this.startDate() !== null ? new Date(this.startDate()!) : null
-  );
+  readonly startDateAsDate = computed(() => {
+    const dateStr = this.startDate();
+    if (dateStr === null) {
+      return null;
+    }
+    const [year, month, day] = dateStr.split('-').map(Number);
+    return new Date(year, month - 1, day);
+  });
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
-  readonly endDateAsDate = computed(() =>
-    this.endDate() !== null ? new Date(this.endDate()!) : null
-  );
+  readonly endDateAsDate = computed(() => {
+    const dateStr = this.endDate();
+    if (dateStr === null) {
+      return null;
+    }
+    const [year, month, day] = dateStr.split('-').map(Number);
+    return new Date(year, month - 1, day);
+  });
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
   readonly displayedPositions = computed(() => {
@@ -64,11 +74,11 @@ export class SoldPositionsComponent {
       if (position.sell_date === undefined) {
         return false;
       }
-      const sellDate = new Date(position.sell_date);
-      if (start !== null && sellDate < new Date(start)) {
+      const sellDateStr = position.sell_date.split('T')[0];
+      if (start !== null && sellDateStr < start) {
         return false;
       }
-      if (end !== null && sellDate > new Date(end)) {
+      if (end !== null && sellDateStr > end) {
         return false;
       }
       return true;
@@ -107,12 +117,26 @@ export class SoldPositionsComponent {
 
   onStartDateChange(event: MatDatepickerInputEvent<Date>): void {
     const date = event.value;
-    this.startDate.set(date ? date.toISOString().split('T')[0] : null);
+    if (date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      this.startDate.set(`${year}-${month}-${day}`);
+    } else {
+      this.startDate.set(null);
+    }
   }
 
   onEndDateChange(event: MatDatepickerInputEvent<Date>): void {
     const date = event.value;
-    this.endDate.set(date ? date.toISOString().split('T')[0] : null);
+    if (date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      this.endDate.set(`${year}-${month}-${day}`);
+    } else {
+      this.endDate.set(null);
+    }
   }
 
   clearFilters(): void {
