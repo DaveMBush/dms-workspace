@@ -16,5 +16,13 @@ evidence:
     ac_deferred: [8]
     ac_deferred_note: 'Firefox cross-browser run requires dev stack; validated in CI per story design decision'
 nfr_validation:
-  reliability: { status: PASS, notes: 'No fixed timeouts in new tests; deterministic far-past/far-future date assertions' }
-  maintainability: { status: PASS, notes: 'String comparison filter avoids Date object timezone risk; clear signal-based state management' }
+  reliability:
+    {
+      status: PASS,
+      notes: 'No fixed timeouts in new tests; deterministic far-past/far-future date assertions',
+    }
+  maintainability:
+    {
+      status: PASS,
+      notes: 'String comparison filter avoids Date object timezone risk; clear signal-based state management',
+    }

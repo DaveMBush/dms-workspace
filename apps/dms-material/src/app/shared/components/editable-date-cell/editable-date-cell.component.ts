@@ -74,7 +74,7 @@ export class EditableDateCellComponent {
   @Input() testIdFieldName = '';
   @Input() testId = '';
 
-  @Output() readonly valueChange = new EventEmitter<Date>();
+  @Output() readonly valueChange = new EventEmitter<Date | null>();
 
   @ViewChild('picker') picker!: MatDatepicker<Date>;
 
@@ -133,6 +133,9 @@ export class EditableDateCellComponent {
       if (newTime !== originalTime) {
         this.valueChange.emit(this.editValue);
       }
+    } else if (this.value !== null) {
+      // User cleared the date — emit null so the parent can persist the clear
+      this.valueChange.emit(null);
     }
     this.editing = false;
   }

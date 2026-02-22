@@ -122,7 +122,11 @@ export class OpenPositionsComponent {
     }
   }
 
-  onBuyDateChange(position: OpenPosition, newDate: Date): void {
+  onBuyDateChange(position: OpenPosition, newDate: Date | null): void {
+    if (newDate === null) {
+      // Buy date cannot be cleared; ignore the event
+      return;
+    }
     // Use local date components to avoid timezone offset issues
     const year = newDate.getFullYear();
     const month = String(newDate.getMonth() + 1).padStart(2, '0');

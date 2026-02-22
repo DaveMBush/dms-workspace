@@ -363,12 +363,14 @@ Claude Sonnet 4.6
 **Acceptance Criteria:** All 7 functional AC met. AC-8 (Firefox cross-browser) deferred to CI per story design decision — documented and accepted.
 
 **Code Quality:**
+
 - Timezone-safe date parsing via `split('-').map(Number)` + `new Date(year, month-1, day)` avoids `new Date(str)` UTC offset bug
 - String-based YYYY-MM-DD comparison in `displayedPositions` filter is correct and avoids timezone drift
 - `instanceof Date` guard in `commitEdit()` handles `undefined` safely
 - Template `filterRowTemplate` correctly places pickers in `buy_date`/`sell_date` filter columns; Clear Filters in `daysHeld` column
 
 **E2E Tests (Date Range Filtering — 7 new tests):**
+
 - No `page.waitForTimeout` — uses proper locator-wait assertions ✓
 - Deterministic: far-future (1/1/2099) and far-past (1/1/2000) dates guarantee 0-row results regardless of seed data ✓
 - Clear Filters test verifies both UI state (`toHaveValue('')`) and data restoration ✓
