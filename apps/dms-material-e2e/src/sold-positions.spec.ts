@@ -284,8 +284,8 @@ test.describe('Sold Positions', () => {
       await startDateInput.fill('1/1/2099');
       await startDateInput.press('Enter');
 
-      // Table component should still be visible (just with fewer/no rows)
-      await expect(table).toBeVisible();
+      // All rows should be filtered out when start date is in the far future
+      await expect(page.locator('mat-row')).toHaveCount(0);
 
       // Clear filters to restore state
       await page.getByRole('button', { name: 'Clear Filters' }).click();
@@ -301,8 +301,8 @@ test.describe('Sold Positions', () => {
       await endDateInput.fill('1/1/2000');
       await endDateInput.press('Enter');
 
-      // Table component should still be visible (just with fewer/no rows)
-      await expect(table).toBeVisible();
+      // All rows should be filtered out when end date is before any real data
+      await expect(page.locator('mat-row')).toHaveCount(0);
 
       // Clear filters to restore state
       await page.getByRole('button', { name: 'Clear Filters' }).click();
@@ -313,10 +313,13 @@ test.describe('Sold Positions', () => {
     }) => {
       const startDateInput = page.getByLabel('Start Date');
 
-      // Apply a far-future start date
+      // Apply a far-future start date to filter out all rows
       await startDateInput.click();
       await startDateInput.fill('1/1/2099');
       await startDateInput.press('Enter');
+
+      // Verify filter is applied (no rows)
+      await expect(page.locator('mat-row')).toHaveCount(0);
 
       // Click clear filters
       await page.getByRole('button', { name: 'Clear Filters' }).click();
@@ -324,7 +327,7 @@ test.describe('Sold Positions', () => {
       // Start date input should be empty after clearing
       await expect(startDateInput).toHaveValue('');
 
-      // Table should still be visible
+      // Table and rows should be restored after clearing filters
       const table = page.locator('dms-base-table');
       await expect(table).toBeVisible();
     });
@@ -333,17 +336,17 @@ test.describe('Sold Positions', () => {
       const startDateInput = page.getByLabel('Start Date');
       const endDateInput = page.getByLabel('End Date');
 
+      // Apply an impossible range (start after end) so all rows are filtered out
       await startDateInput.click();
-      await startDateInput.fill('1/1/2024');
+      await startDateInput.fill('1/1/2099');
       await startDateInput.press('Enter');
 
       await endDateInput.click();
-      await endDateInput.fill('12/31/2024');
+      await endDateInput.fill('1/1/2000');
       await endDateInput.press('Enter');
 
-      // Table should still be visible with filters applied
-      const table = page.locator('dms-base-table');
-      await expect(table).toBeVisible();
+      // No rows should match an impossible date range
+      await expect(page.locator('mat-row')).toHaveCount(0);
 
       // Clear filters to restore state
       await page.getByRole('button', { name: 'Clear Filters' }).click();

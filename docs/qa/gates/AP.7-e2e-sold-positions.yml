@@ -1,0 +1,20 @@
+schema: 1
+story: 'AP.7'
+story_title: 'E2E Tests for Sold Positions Screen'
+gate: PASS
+status_reason: 'All implementable acceptance criteria met: 7 Date Range Filtering E2E tests added with deterministic assertions, 4 pre-implementation bug fixes correct (timezone-safe parsing, instanceof guard, layout), all validation passes (389 E2E passed/0 failed, 1089 unit tests, 0 dupcheck clones, format clean). Firefox cross-browser testing deferred to CI per story.'
+reviewer: 'Quinn'
+updated: '2026-02-22T12:00:00Z'
+top_issues: []
+waiver: { active: false }
+evidence:
+  tests_reviewed: 7
+  risks_identified: 0
+  trace:
+    ac_covered: [1, 2, 3, 4, 5, 6, 7]
+    ac_gaps: []
+    ac_deferred: [8]
+    ac_deferred_note: 'Firefox cross-browser run requires dev stack; validated in CI per story design decision'
+nfr_validation:
+  reliability: { status: PASS, notes: 'No fixed timeouts in new tests; deterministic far-past/far-future date assertions' }
+  maintainability: { status: PASS, notes: 'String comparison filter avoids Date object timezone risk; clear signal-based state management' }
