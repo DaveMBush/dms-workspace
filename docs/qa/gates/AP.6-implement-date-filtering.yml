@@ -5,4 +5,8 @@ status_reason: 'All acceptance criteria met: date range picker UI added with Ang
 reviewer: 'Quinn'
 updated: '2026-02-22T09:30:00Z'
 top_issues: []
-waiver: { active: true, reason: 'Firefox E2E 54 failures are pre-existing environment issues unrelated to AP.6 changes, confirmed by operator approval' }
+waiver:
+  {
+    active: true,
+    reason: 'Firefox E2E 54 failures are pre-existing environment issues unrelated to AP.6 changes, confirmed by operator approval',
+  }

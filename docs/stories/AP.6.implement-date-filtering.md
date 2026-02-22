@@ -320,9 +320,11 @@ Navigate to sold positions and verify:
 ## Dev Agent Record
 
 ### Agent Model Used
+
 Claude Sonnet 4.6
 
 ### Completion Notes
+
 - Implemented date range filtering in `displayedPositions` computed signal using `startDate`/`endDate` signals
 - Added `MatDatepickerModule`, `MatNativeDateModule`, `MatButtonModule` to component imports
 - Added `startDateAsDate` and `endDateAsDate` computed helpers for datepicker `[value]` binding
@@ -333,6 +335,7 @@ Claude Sonnet 4.6
 - Firefox E2E: 54 pre-existing failures (unrelated to AP.6 changes), approved by operator
 
 ### File List
+
 - `apps/dms-material/src/app/account-panel/sold-positions/sold-positions.component.ts` (modified)
 - `apps/dms-material/src/app/account-panel/sold-positions/sold-positions.component.html` (modified)
 - `apps/dms-material/src/app/account-panel/sold-positions/sold-positions.component.spec.ts` (modified)
@@ -340,6 +343,7 @@ Claude Sonnet 4.6
 - `docs/stories/AP.6.implement-date-filtering.md` (updated)
 
 ### Change Log
+
 - Removed `.skip` from `describe.skip('Date Range Filtering')` in spec
 - Updated `displayedPositions` computed to filter positions by `startDate`/`endDate` signals
 - Added Angular Material datepicker imports and date picker UI
