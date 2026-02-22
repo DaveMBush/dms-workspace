@@ -120,7 +120,8 @@ export class EditableDateCellComponent {
 
   private commitEdit(): void {
     if (this.editValue) {
-      const originalTime = this.value !== null ? this.value.getTime() : 0;
+      const originalTime =
+        this.value instanceof Date ? this.value.getTime() : 0;
       const newTime = this.editValue.getTime();
 
       // Only emit if the date has actually changed

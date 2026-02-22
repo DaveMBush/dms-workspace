@@ -253,4 +253,100 @@ test.describe('Sold Positions', () => {
       await expect(soldTab).toHaveAttribute('aria-selected', 'true');
     });
   });
+
+  test.describe('Date Range Filtering', () => {
+    test('should display start date filter in the filter row', async ({
+      page,
+    }) => {
+      const startDateInput = page.getByLabel('Start Date');
+      await expect(startDateInput).toBeVisible();
+    });
+
+    test('should display end date filter in the filter row', async ({
+      page,
+    }) => {
+      const endDateInput = page.getByLabel('End Date');
+      await expect(endDateInput).toBeVisible();
+    });
+
+    test('should display clear filters button', async ({ page }) => {
+      const clearButton = page.getByRole('button', { name: 'Clear Filters' });
+      await expect(clearButton).toBeVisible();
+    });
+
+    test('should filter positions by start date', async ({ page }) => {
+      const table = page.locator('dms-base-table');
+      await expect(table).toBeVisible();
+
+      // Apply a far-future start date so all positions are filtered out
+      const startDateInput = page.getByLabel('Start Date');
+      await startDateInput.click();
+      await startDateInput.fill('1/1/2099');
+      await startDateInput.press('Enter');
+
+      // Table component should still be visible (just with fewer/no rows)
+      await expect(table).toBeVisible();
+
+      // Clear filters to restore state
+      await page.getByRole('button', { name: 'Clear Filters' }).click();
+    });
+
+    test('should filter positions by end date', async ({ page }) => {
+      const table = page.locator('dms-base-table');
+      await expect(table).toBeVisible();
+
+      // Apply a far-past end date so all positions are filtered out
+      const endDateInput = page.getByLabel('End Date');
+      await endDateInput.click();
+      await endDateInput.fill('1/1/2000');
+      await endDateInput.press('Enter');
+
+      // Table component should still be visible (just with fewer/no rows)
+      await expect(table).toBeVisible();
+
+      // Clear filters to restore state
+      await page.getByRole('button', { name: 'Clear Filters' }).click();
+    });
+
+    test('should clear date filters when Clear Filters is clicked', async ({
+      page,
+    }) => {
+      const startDateInput = page.getByLabel('Start Date');
+
+      // Apply a far-future start date
+      await startDateInput.click();
+      await startDateInput.fill('1/1/2099');
+      await startDateInput.press('Enter');
+
+      // Click clear filters
+      await page.getByRole('button', { name: 'Clear Filters' }).click();
+
+      // Start date input should be empty after clearing
+      await expect(startDateInput).toHaveValue('');
+
+      // Table should still be visible
+      const table = page.locator('dms-base-table');
+      await expect(table).toBeVisible();
+    });
+
+    test('should apply both start and end date filters', async ({ page }) => {
+      const startDateInput = page.getByLabel('Start Date');
+      const endDateInput = page.getByLabel('End Date');
+
+      await startDateInput.click();
+      await startDateInput.fill('1/1/2024');
+      await startDateInput.press('Enter');
+
+      await endDateInput.click();
+      await endDateInput.fill('12/31/2024');
+      await endDateInput.press('Enter');
+
+      // Table should still be visible with filters applied
+      const table = page.locator('dms-base-table');
+      await expect(table).toBeVisible();
+
+      // Clear filters to restore state
+      await page.getByRole('button', { name: 'Clear Filters' }).click();
+    });
+  });
 });

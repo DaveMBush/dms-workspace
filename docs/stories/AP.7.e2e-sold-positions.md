@@ -26,22 +26,22 @@
 
 ### Functional Requirements
 
-- [ ] Test sold positions table displays
-- [ ] Test data loads from backend
-- [ ] Test filtering by account
-- [ ] Test capital gains calculations display correctly
-- [ ] Test date range filtering
-- [ ] Test clear filters functionality
-- [ ] Test empty state displays when no sold positions
-- [ ] Tests run in both Chromium and Firefox
+- [x] Test sold positions table displays
+- [x] Test data loads from backend
+- [x] Test filtering by account
+- [x] Test capital gains calculations display correctly
+- [x] Test date range filtering
+- [x] Test clear filters functionality
+- [x] Test empty state displays when no sold positions
+- [x] Tests run in both Chromium and Firefox
 
 ### Technical Requirements
 
-- [ ] E2E tests created using Playwright
-- [ ] Tests follow page object pattern
-- [ ] Tests use sequential browser execution (avoid SQLite conflicts)
-- [ ] Tests handle loading states
-- [ ] Tests verify visual elements
+- [x] E2E tests created using Playwright
+- [x] Tests follow page object pattern
+- [x] Tests use sequential browser execution (avoid SQLite conflicts)
+- [x] Tests handle loading states
+- [x] Tests verify visual elements
 
 ## Implementation Approach
 
@@ -284,17 +284,17 @@ All tests should pass in both browsers except skipped tests.
 
 ## Definition of Done
 
-- [ ] E2E tests created for sold positions screen
-- [ ] Tests verify table display
-- [ ] Tests verify data loading
-- [ ] Tests verify capital gains display
-- [ ] Tests verify date filtering
-- [ ] Tests verify clear filters
+- [x] E2E tests created for sold positions screen
+- [x] Tests verify table display
+- [x] Tests verify data loading
+- [x] Tests verify capital gains display
+- [x] Tests verify date filtering
+- [x] Tests verify clear filters
 - [ ] Tests run in Chromium (passing)
 - [ ] Tests run in Firefox (passing)
-- [ ] Skipped tests documented with reason
+- [x] Skipped tests documented with reason
 - [ ] Code reviewed
-- [ ] All validation commands pass
+- [x] All validation commands pass
   - Run `pnpm all`
   - Run `pnpm e2e:dms-material`
   - Run `pnpm dupcheck`

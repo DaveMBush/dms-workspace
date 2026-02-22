@@ -1,35 +1,4 @@
 <!-- eslint-disable @angular-eslint/template/no-call-expression -- Signal call is required for computed signals -->
-<div class="date-filters">
-  <mat-form-field appearance="outline" subscriptSizing="dynamic">
-    <mat-label>Start Date</mat-label>
-    <input
-      matInput
-      [matDatepicker]="startPicker"
-      [value]="startDateAsDate()"
-      (dateChange)="onStartDateChange($event)"
-    />
-    <mat-datepicker-toggle
-      matSuffix
-      [for]="startPicker"
-    ></mat-datepicker-toggle>
-    <mat-datepicker #startPicker></mat-datepicker>
-  </mat-form-field>
-
-  <mat-form-field appearance="outline" subscriptSizing="dynamic">
-    <mat-label>End Date</mat-label>
-    <input
-      matInput
-      [matDatepicker]="endPicker"
-      [value]="endDateAsDate()"
-      (dateChange)="onEndDateChange($event)"
-    />
-    <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
-    <mat-datepicker #endPicker></mat-datepicker>
-  </mat-form-field>
-
-  <button mat-raised-button (click)="clearFilters()">Clear Filters</button>
-</div>
-
 <dms-base-table [data]="displayedPositions()" [columns]="columns">
   <ng-template #filterRowTemplate let-column>
     @if (column.field === 'symbol') {
@@ -46,6 +15,38 @@
         class="text-sm"
       />
     </mat-form-field>
+    } @else if (column.field === 'buy_date') {
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Start Date</mat-label>
+      <input
+        matInput
+        [matDatepicker]="startPicker"
+        [value]="startDateAsDate()"
+        (dateChange)="onStartDateChange($event)"
+      />
+      <mat-datepicker-toggle
+        matSuffix
+        [for]="startPicker"
+      ></mat-datepicker-toggle>
+      <mat-datepicker #startPicker></mat-datepicker>
+    </mat-form-field>
+    } @else if (column.field === 'sell_date') {
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>End Date</mat-label>
+      <input
+        matInput
+        [matDatepicker]="endPicker"
+        [value]="endDateAsDate()"
+        (dateChange)="onEndDateChange($event)"
+      />
+      <mat-datepicker-toggle
+        matSuffix
+        [for]="endPicker"
+      ></mat-datepicker-toggle>
+      <mat-datepicker #endPicker></mat-datepicker>
+    </mat-form-field>
+    } @else if (column.field === 'daysHeld') {
+    <button mat-raised-button (click)="clearFilters()">Clear Filters</button>
     }
   </ng-template>
 </dms-base-table>
