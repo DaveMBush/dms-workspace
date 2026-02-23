@@ -1,4 +1,4 @@
-import { computed, inject, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable } from '@angular/core';
 
 import { currentAccountSignalStore } from '../../store/current-account/current-account.signal-store';
 import { DivDeposit } from '../../store/div-deposits/div-deposit.interface';
@@ -8,9 +8,7 @@ import { selectDivDepositEntity } from '../../store/div-deposits/div-deposits.se
 export class DividendDepositsComponentService {
   private currentAccountStore = inject(currentAccountSignalStore);
 
-  readonly selectedAccountId = signal<string>(
-    this.currentAccountStore.selectCurrentAccountId()
-  );
+  readonly selectedAccountId = this.currentAccountStore.selectCurrentAccountId;
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signal
   readonly dividends = computed(() => {

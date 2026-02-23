@@ -85,6 +85,7 @@ Ready for Review
 `apps/dms-material/src/app/account-panel/dividend-deposits/dividend-deposits.component.spec.ts`
 
 **Testing Frameworks:**
+
 - Vitest for unit testing
 - All tests from AQ.1 must pass
 - Add additional tests if needed for edge cases
@@ -92,6 +93,7 @@ Ready for Review
 ### Implementation Details
 
 **DivDeposit Interface:**
+
 ```typescript
 interface DivDeposit {
   id: string;
@@ -104,12 +106,14 @@ interface DivDeposit {
 ```
 
 **Service Injection Pattern:**
+
 ```typescript
 private divDepositsEffects = inject(divDepositsEffectsServiceToken);
 private accountsEffects = inject(accountsEffectsServiceToken);
 ```
 
 **Computed Signal Pattern:**
+
 ```typescript
 readonly dividends = computed(() => {
   const allDividends = this.divDepositsEffects.entities();
@@ -120,6 +124,7 @@ readonly dividends = computed(() => {
 ```
 
 **Column Configuration:**
+
 ```typescript
 columns: ColumnDef[] = [
   { field: 'symbol', header: 'Symbol', sortable: true, width: '120px' },
@@ -132,10 +137,12 @@ columns: ColumnDef[] = [
 ### Relevant Source Tree
 
 **Files to Modify:**
+
 - `apps/dms-material/src/app/account-panel/dividend-deposits/dividend-deposits.component.ts` - Wire SmartNgRX
 - `apps/dms-material/src/app/account-panel/dividend-deposits/dividend-deposits.component.spec.ts` - Re-enable tests
 
 **Dependencies:**
+
 - `apps/dms-material/src/app/shared/components/base-table/base-table.component.ts`
 - `apps/dms-material/src/app/store/div-deposits/div-deposits-effect.service.ts`
 - `apps/dms-material/src/app/store/div-deposits/div-deposits-effect-service-token.ts`
@@ -144,6 +151,7 @@ columns: ColumnDef[] = [
 
 **Reference Implementation:**
 Look at `open-positions.component.ts` for similar patterns:
+
 - Service injection with tokens
 - Computed signals for filtered data
 - BaseTableComponent integration
@@ -186,10 +194,10 @@ Look at `open-positions.component.ts` for similar patterns:
 
 ## Change Log
 
-| Date | Version | Description | Author |
-|------|---------|-------------|--------|
-| 2026-02-22 | 1.0 | Initial story creation | PM Agent |
-| 2026-02-23 | 1.1 | Implementation complete: DividendDepositsComponentService created, component wired, 20 tests GREEN, status → Ready for Review | Dev Agent |
+| Date       | Version | Description                                                                                                                   | Author    |
+| ---------- | ------- | ----------------------------------------------------------------------------------------------------------------------------- | --------- |
+| 2026-02-22 | 1.0     | Initial story creation                                                                                                        | PM Agent  |
+| 2026-02-23 | 1.1     | Implementation complete: DividendDepositsComponentService created, component wired, 20 tests GREEN, status → Ready for Review | Dev Agent |
 
 ## Dev Agent Record
 
