@@ -59,6 +59,7 @@ describe('DividendDepositsComponent', () => {
   let mockEffectsService: {
     add: ReturnType<typeof vi.fn>;
     update: ReturnType<typeof vi.fn>;
+    delete: ReturnType<typeof vi.fn>;
   };
   let mockDividendDepositsService: {
     dividends: WritableSignal<DivDeposit[]>;
@@ -79,6 +80,7 @@ describe('DividendDepositsComponent', () => {
     mockEffectsService = {
       add: vi.fn().mockReturnValue(of([])),
       update: vi.fn().mockReturnValue(of([])),
+      delete: vi.fn().mockReturnValue(of(undefined)),
     };
 
     await TestBed.configureTestingModule({
@@ -598,5 +600,136 @@ describe('DividendDepositsComponent - Edit Dialog SmartNgRX Integration (AQ.5)',
     component.onEditDividend(dividend);
 
     expect(mockEffectsService.update).toHaveBeenCalledWith(updatedDividend);
+  });
+});
+
+// AQ.7: Disabled until implementation in AQ.8
+describe.skip('DividendDepositsComponent - Delete Dialog SmartNgRX Integration (AQ.7)', () => {
+  let component: DividendDepositsComponent;
+  let fixture: ComponentFixture<DividendDepositsComponent>;
+  let mockDialog: { open: ReturnType<typeof vi.fn> };
+  let mockNotification: { success: ReturnType<typeof vi.fn> };
+  let mockConfirmDialog: { confirm: ReturnType<typeof vi.fn> };
+  let mockDividendDepositsService: {
+    dividends: WritableSignal<DivDeposit[]>;
+    selectedAccountId: WritableSignal<string>;
+  };
+  let mockEffectsService: {
+    add: ReturnType<typeof vi.fn>;
+    update: ReturnType<typeof vi.fn>;
+    delete: ReturnType<typeof vi.fn>;
+  };
+
+  beforeEach(async () => {
+    mockDividendDepositsService = {
+      dividends: signal<DivDeposit[]>([]),
+      selectedAccountId: signal<string>(''),
+    };
+
+    mockDialog = {
+      open: vi.fn().mockReturnValue({ afterClosed: () => of(null) }),
+    };
+
+    mockNotification = { success: vi.fn() };
+    mockConfirmDialog = { confirm: vi.fn().mockReturnValue(of(false)) };
+    mockEffectsService = {
+      add: vi.fn().mockReturnValue(of([])),
+      update: vi.fn().mockReturnValue(of([])),
+      delete: vi.fn().mockReturnValue(of(undefined)),
+    };
+
+    await TestBed.configureTestingModule({
+      imports: [DividendDepositsComponent],
+      providers: [
+        {
+          provide: DividendDepositsComponentService,
+          useValue: mockDividendDepositsService,
+        },
+        { provide: MatDialog, useValue: mockDialog },
+        { provide: NotificationService, useValue: mockNotification },
+        { provide: ConfirmDialogService, useValue: mockConfirmDialog },
+        { provide: DivDepositsEffectsService, useValue: mockEffectsService },
+      ],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(DividendDepositsComponent);
+    component = fixture.componentInstance;
+  });
+
+  // AC 2: Tests verify confirmation dialog shown before delete
+  it('should show confirmation dialog when onDeleteDividend is called', () => {
+    const dividend = createDivDeposit({ id: 'dep-del' });
+
+    component.onDeleteDividend(dividend);
+
+    expect(mockConfirmDialog.confirm).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: 'Delete Dividend',
+        message: 'Are you sure you want to delete this dividend?',
+        confirmText: 'Delete',
+      })
+    );
+  });
+
+  // AC 8: Tests verify dividend ID passed correctly to delete method
+  it('should call effectsService.delete with dividend id when confirmed', () => {
+    const dividend = createDivDeposit({ id: 'dep-del-xyz' });
+    mockConfirmDialog.confirm.mockReturnValue(of(true));
+
+    component.onDeleteDividend(dividend);
+
+    expect(mockEffectsService.delete).toHaveBeenCalledWith('dep-del-xyz');
+  });
+
+  // AC 6: Tests verify success notification shown after delete
+  it('should show success notification after successful delete', () => {
+    const dividend = createDivDeposit({ id: 'dep-del' });
+    mockConfirmDialog.confirm.mockReturnValue(of(true));
+
+    component.onDeleteDividend(dividend);
+
+    expect(mockNotification.success).toHaveBeenCalledWith('Dividend deleted');
+  });
+
+  // AC 4: Tests verify delete cancelled when user declines
+  it('should not call effectsService.delete when user cancels', () => {
+    const dividend = createDivDeposit({ id: 'dep-del' });
+    mockConfirmDialog.confirm.mockReturnValue(of(false));
+
+    component.onDeleteDividend(dividend);
+
+    expect(mockEffectsService.delete).not.toHaveBeenCalled();
+  });
+
+  // AC 4: Tests verify notification NOT shown when cancelled
+  it('should not show success notification when user cancels', () => {
+    const dividend = createDivDeposit({ id: 'dep-del' });
+    mockConfirmDialog.confirm.mockReturnValue(of(false));
+
+    component.onDeleteDividend(dividend);
+
+    expect(mockNotification.success).not.toHaveBeenCalled();
+  });
+
+  // AC 3: Tests verify delete proceeds when confirmed
+  it('should proceed with delete when user confirms', () => {
+    const dividend = createDivDeposit({ id: 'dep-del-confirm' });
+    mockConfirmDialog.confirm.mockReturnValue(of(true));
+    mockEffectsService.delete.mockReturnValue(of(undefined));
+
+    component.onDeleteDividend(dividend);
+
+    expect(mockEffectsService.delete).toHaveBeenCalled();
+  });
+
+  // AC 7: Tests verify table updates after delete via SmartNgRX
+  it('should update after delete returns from effectsService', () => {
+    const dividend = createDivDeposit({ id: 'dep-del' });
+    mockConfirmDialog.confirm.mockReturnValue(of(true));
+    mockEffectsService.delete.mockReturnValue(of(undefined));
+
+    component.onDeleteDividend(dividend);
+
+    expect(mockEffectsService.delete).toHaveBeenCalledWith(dividend.id);
   });
 });
