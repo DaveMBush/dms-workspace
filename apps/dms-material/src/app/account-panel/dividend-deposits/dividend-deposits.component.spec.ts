@@ -178,6 +178,7 @@ describe.skip('DividendDepositsComponent', () => {
 
     // AC 2: Tests verify table filters by selected account
     it('should only display dividends for the selected account', () => {
+      // AQ.2: set selectedAccountId to 'acc-1' via DividendDepositsComponentService
       // Arrange: store contains dividends from two different accounts
       entitySignal.set({
         'dep-1': createDivDeposit({
@@ -205,6 +206,7 @@ describe.skip('DividendDepositsComponent', () => {
     });
 
     it('should not display dividends from other accounts', () => {
+      // AQ.2: set selectedAccountId to 'acc-1' via DividendDepositsComponentService
       // Arrange: store has one entry per account
       entitySignal.set({
         'dep-1': createDivDeposit({
@@ -226,6 +228,7 @@ describe.skip('DividendDepositsComponent', () => {
     });
 
     it('should return empty array when selected account has no dividends', () => {
+      // AQ.2: set selectedAccountId to 'acc-1' via DividendDepositsComponentService
       // Arrange: store only has dividends for acc-2; selected account is acc-1
       entitySignal.set({
         'dep-1': createDivDeposit({
