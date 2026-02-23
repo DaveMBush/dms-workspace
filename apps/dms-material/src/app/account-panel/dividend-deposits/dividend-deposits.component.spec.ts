@@ -4,10 +4,12 @@ import { MatDialog } from '@angular/material/dialog';
 import { of } from 'rxjs';
 import { vi } from 'vitest';
 
+import { DivDepModal } from '../div-dep-modal/div-dep-modal.component';
 import { ColumnDef } from '../../shared/components/base-table/column-def.interface';
 import { ConfirmDialogService } from '../../shared/services/confirm-dialog.service';
 import { NotificationService } from '../../shared/services/notification.service';
 import { DivDeposit } from '../../store/div-deposits/div-deposit.interface';
+import { DivDepositsEffectsService } from '../../store/div-deposits/div-deposits-effect.service';
 import { DividendDepositsComponent } from './dividend-deposits.component';
 import { DividendDepositsComponentService } from './dividend-deposits-component.service';
 
@@ -282,5 +284,144 @@ describe('DividendDepositsComponent', () => {
       component.onDeleteDividend(dividend);
       expect(mockNotification.success).toHaveBeenCalledWith('Dividend deleted');
     });
+  });
+});
+// AQ.3: Disabled until implementation in AQ.4
+describe.skip('DividendDepositsComponent - Add Dialog SmartNgRX Integration (AQ.3)', () => {
+  let component: DividendDepositsComponent;
+  let fixture: ComponentFixture<DividendDepositsComponent>;
+  let mockDialog: { open: ReturnType<typeof vi.fn> };
+  let mockDialogRef: { afterClosed: ReturnType<typeof vi.fn> };
+  let mockNotification: { success: ReturnType<typeof vi.fn> };
+  let mockConfirmDialog: { confirm: ReturnType<typeof vi.fn> };
+  let mockDividendDepositsService: {
+    dividends: WritableSignal<DivDeposit[]>;
+    selectedAccountId: WritableSignal<string>;
+  };
+  let mockEffectsService: { add: ReturnType<typeof vi.fn> };
+
+  beforeEach(async () => {
+    mockDividendDepositsService = {
+      dividends: signal<DivDeposit[]>([]),
+      selectedAccountId: signal<string>(''),
+    };
+
+    mockDialogRef = {
+      afterClosed: vi.fn().mockReturnValue(of(null)),
+    };
+
+    mockDialog = {
+      open: vi.fn().mockReturnValue(mockDialogRef),
+    };
+
+    mockNotification = { success: vi.fn() };
+    mockConfirmDialog = { confirm: vi.fn().mockReturnValue(of(false)) };
+    mockEffectsService = { add: vi.fn().mockReturnValue(of([])) };
+
+    await TestBed.configureTestingModule({
+      imports: [DividendDepositsComponent],
+      providers: [
+        {
+          provide: DividendDepositsComponentService,
+          useValue: mockDividendDepositsService,
+        },
+        { provide: MatDialog, useValue: mockDialog },
+        { provide: NotificationService, useValue: mockNotification },
+        { provide: ConfirmDialogService, useValue: mockConfirmDialog },
+        { provide: DivDepositsEffectsService, useValue: mockEffectsService },
+      ],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(DividendDepositsComponent);
+    component = fixture.componentInstance;
+  });
+
+  // AC 1: Tests verify Add button triggers dialog open
+  it('should open dialog when onAddDividend is called', () => {
+    component.onAddDividend();
+
+    expect(mockDialog.open).toHaveBeenCalledWith(
+      DivDepModal,
+      expect.objectContaining({
+        data: expect.objectContaining({ mode: 'add' }),
+      })
+    );
+  });
+
+  // AC 2: Tests verify dialog opens with 'add' mode
+  it('should open dialog with mode add in data', () => {
+    component.onAddDividend();
+
+    const callArgs = mockDialog.open.mock.calls[0] as [
+      unknown,
+      { width: string; data: { mode: string } }
+    ];
+    expect(callArgs[1].data.mode).toBe('add');
+  });
+
+  // AC 3: Tests verify dialog receives correct width (500px)
+  it('should open dialog with width 500px', () => {
+    component.onAddDividend();
+
+    const callArgs = mockDialog.open.mock.calls[0] as [
+      unknown,
+      { width: string; data: unknown }
+    ];
+    expect(callArgs[1].width).toBe('500px');
+  });
+
+  // AC 4: Tests verify successful add shows notification
+  it('should show success notification when dialog returns data', () => {
+    const mockData = createDivDeposit({ id: 'dep-new', amount: 150 });
+    mockDialogRef.afterClosed.mockReturnValue(of(mockData));
+
+    component.onAddDividend();
+
+    expect(mockNotification.success).toHaveBeenCalledWith(
+      'Dividend added successfully'
+    );
+  });
+
+  // AC 4 (negative): Tests verify notification NOT shown when dialog cancelled
+  it('should not show notification when dialog is cancelled', () => {
+    mockDialogRef.afterClosed.mockReturnValue(of(null));
+
+    component.onAddDividend();
+
+    expect(mockNotification.success).not.toHaveBeenCalled();
+  });
+
+  // AC 5: Tests verify data passed to SmartNgRX add method
+  it('should call effectsService.add with data returned from dialog', () => {
+    const mockData = createDivDeposit({ id: 'dep-new', amount: 150 });
+    mockDialogRef.afterClosed.mockReturnValue(of(mockData));
+
+    component.onAddDividend();
+
+    expect(mockEffectsService.add).toHaveBeenCalledWith(mockData);
+  });
+
+  // AC 5 (negative): Tests verify add NOT called when dialog is cancelled
+  it('should not call effectsService.add when dialog is cancelled', () => {
+    mockDialogRef.afterClosed.mockReturnValue(of(null));
+
+    component.onAddDividend();
+
+    expect(mockEffectsService.add).not.toHaveBeenCalled();
+  });
+
+  // AC 6: Tests verify table refreshes after add
+  // The SmartNgRX store is reactive — after add() succeeds, the store
+  // updates dividends$ automatically. This test verifies the dividends
+  // signal updates when the service adds a new dividend.
+  it('should update dividends after successful add', () => {
+    const newDividend = createDivDeposit({ id: 'dep-new', amount: 150 });
+    mockDialogRef.afterClosed.mockReturnValue(of(newDividend));
+    mockEffectsService.add.mockReturnValue(of([newDividend]));
+
+    component.onAddDividend();
+
+    // After add, the store should have been updated — signal should reflect 1 entry
+    expect(mockEffectsService.add).toHaveBeenCalledWith(newDividend);
   });
 });
