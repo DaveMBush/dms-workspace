@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved
+Ready for Review
 
 ## Story
 
@@ -47,33 +47,33 @@ Approved
 
 ## Tasks / Subtasks
 
-- [ ] Re-enable tests from AQ.5 (AC: 1)
-  - [ ] Remove .skip from describe block
-  - [ ] Run tests to verify failures
-- [ ] Implement onEditDividend method (AC: 2-5)
-  - [ ] Accept dividend parameter
-  - [ ] Open MatDialog with DivDepModal
-  - [ ] Pass width: '500px'
-  - [ ] Pass data: { mode: 'edit', dividend }
-  - [ ] Subscribe to afterClosed()
-  - [ ] Show success notification on result
-- [ ] Configure row action in template/table (AC: 1)
-  - [ ] Add row click handler to BaseTableComponent
-  - [ ] Wire to onEditDividend method
-  - [ ] Pass dividend object to handler
-- [ ] Test edit integration (AC: 6, 7)
-  - [ ] Verify table updates automatically via SmartNgRX
-  - [ ] Test cancel behavior
-  - [ ] Test successful update
-- [ ] Run tests until GREEN (AC: 2)
-  - [ ] Execute: `pnpm nx test dms-material --testFile=dividend-deposits.component.spec.ts`
-  - [ ] Fix any failing tests
-  - [ ] Verify coverage >80%
-- [ ] Run all validation commands (AC: DOD)
-  - [ ] `pnpm all`
-  - [ ] `pnpm e2e:dms-material`
-  - [ ] `pnpm dupcheck`
-  - [ ] `pnpm format`
+- [x] Re-enable tests from AQ.5 (AC: 1)
+  - [x] Remove .skip from describe block
+  - [x] Run tests to verify failures
+- [x] Implement onEditDividend method (AC: 2-5)
+  - [x] Accept dividend parameter
+  - [x] Open MatDialog with DivDepModal
+  - [x] Pass width: '500px'
+  - [x] Pass data: { mode: 'edit', dividend }
+  - [x] Subscribe to afterClosed()
+  - [x] Show success notification on result
+- [x] Configure row action in template/table (AC: 1)
+  - [x] Add row click handler to BaseTableComponent
+  - [x] Wire to onEditDividend method
+  - [x] Pass dividend object to handler
+- [x] Test edit integration (AC: 6, 7)
+  - [x] Verify table updates automatically via SmartNgRX
+  - [x] Test cancel behavior
+  - [x] Test successful update
+- [x] Run tests until GREEN (AC: 2)
+  - [x] Execute: `pnpm nx test dms-material --testFile=dividend-deposits.component.spec.ts`
+  - [x] Fix any failing tests
+  - [x] Verify coverage >80%
+- [x] Run all validation commands (AC: DOD)
+  - [x] `pnpm all`
+  - [x] `pnpm e2e:dms-material`
+  - [x] `pnpm dupcheck`
+  - [x] `pnpm format`
 
 ## Dev Notes
 
@@ -83,6 +83,7 @@ Approved
 `apps/dms-material/src/app/account-panel/dividend-deposits/dividend-deposits.component.spec.ts`
 
 **Testing Frameworks:**
+
 - Vitest for unit testing
 - All tests from AQ.5 must pass
 - Add additional tests if needed for edge cases
@@ -90,6 +91,7 @@ Approved
 ### Implementation Details
 
 **onEditDividend Method Implementation:**
+
 ```typescript
 onEditDividend(dividend: DivDeposit): void {
   const context = this;
@@ -109,6 +111,7 @@ onEditDividend(dividend: DivDeposit): void {
 **BaseTableComponent Row Action Configuration:**
 
 Check if BaseTableComponent supports row click via:
+
 1. `(rowClick)` output binding
 2. Configuration in column definitions
 3. Action button column
@@ -116,15 +119,13 @@ Check if BaseTableComponent supports row click via:
 Refer to BaseTableComponent documentation or similar usage.
 
 **Template Example (if using rowClick):**
+
 ```html
-<dms-base-table
-  [data]="dividends()"
-  [columns]="columns"
-  (rowClick)="onEditDividend($event)">
-</dms-base-table>
+<dms-base-table [data]="dividends()" [columns]="columns" (rowClick)="onEditDividend($event)"> </dms-base-table>
 ```
 
 **Note on SmartNgRX:**
+
 - DivDepModal already handles SmartNgRX update() call internally
 - Table automatically refreshes via SmartNgRX signals
 - No manual refresh needed in component
@@ -132,17 +133,20 @@ Refer to BaseTableComponent documentation or similar usage.
 ### Relevant Source Tree
 
 **Files to Modify:**
+
 - `apps/dms-material/src/app/account-panel/dividend-deposits/dividend-deposits.component.ts` - Implement onEditDividend
 - `apps/dms-material/src/app/account-panel/dividend-deposits/dividend-deposits.component.html` - Configure row action
 - `apps/dms-material/src/app/account-panel/dividend-deposits/dividend-deposits.component.spec.ts` - Re-enable tests
 
 **Dependencies:**
+
 - `apps/dms-material/src/app/account-panel/div-dep-modal/div-dep-modal.component.ts` (already exists)
 - `apps/dms-material/src/app/shared/services/notification.service.ts`
 - `apps/dms-material/src/app/shared/components/base-table/base-table.component.ts`
 
 **Reference Implementation:**
 Check existing onEditDividend in component (may already exist partially) or:
+
 - Similar edit patterns in other components
 - BaseTableComponent usage examples
 - Row action handler patterns
@@ -191,27 +195,32 @@ Check existing onEditDividend in component (may already exist partially) or:
 
 ## Change Log
 
-| Date | Version | Description | Author |
-|------|---------|-------------|--------|
-| 2026-02-22 | 1.0 | Initial story creation | PM Agent |
+| Date       | Version | Description            | Author   |
+| ---------- | ------- | ---------------------- | -------- |
+| 2026-02-22 | 1.0     | Initial story creation | PM Agent |
 
 ## Dev Agent Record
 
 ### Agent Model Used
 
-_To be populated during implementation_
+Claude Sonnet 4.5
 
 ### Debug Log References
 
-_To be populated during implementation_
+None - implementation was straightforward.
 
 ### Completion Notes List
 
-_To be populated during implementation_
+- Refactored `onEditDividend()` to use `pipe(filter, switchMap)` pattern (avoids `no-nested-subscribe` rule)
+- Removed `.skip` from AQ.5 `describe` block — all 9 tests now active and GREEN
+- Added `update` mock to first `describe` block's `mockEffectsService` to support new implementation
+- 37/37 tests GREEN across all 3 describe blocks
 
 ### File List
 
-_To be populated during implementation_
+- `apps/dms-material/src/app/account-panel/dividend-deposits/dividend-deposits.component.ts`
+- `apps/dms-material/src/app/account-panel/dividend-deposits/dividend-deposits.component.spec.ts`
+- `docs/stories/AQ.6.implement-edit-functionality.md`
 
 ## QA Results
 
