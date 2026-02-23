@@ -1,12 +1,14 @@
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { filter, switchMap } from 'rxjs';
 
 import { BaseTableComponent } from '../../shared/components/base-table/base-table.component';
 import { ColumnDef } from '../../shared/components/base-table/column-def.interface';
 import { ConfirmDialogService } from '../../shared/services/confirm-dialog.service';
 import { NotificationService } from '../../shared/services/notification.service';
 import { DivDeposit } from '../../store/div-deposits/div-deposit.interface';
+import { DivDepositsEffectsService } from '../../store/div-deposits/div-deposits-effect.service';
 import { DivDepModal } from '../div-dep-modal/div-dep-modal.component';
 import { DividendDepositsComponentService } from './dividend-deposits-component.service';
 
@@ -22,6 +24,7 @@ export class DividendDepositsComponent {
   private dialog = inject(MatDialog);
   private notification = inject(NotificationService);
   private confirmDialog = inject(ConfirmDialogService);
+  private effectsService = inject(DivDepositsEffectsService);
 
   readonly dividends$ = this.dividendDepositsService.dividends;
 
@@ -46,16 +49,20 @@ export class DividendDepositsComponent {
 
   onAddDividend(): void {
     const context = this;
-    const dialogRef = this.dialog.open(DivDepModal, {
-      width: '500px',
-      data: { mode: 'add' },
-    });
-
-    dialogRef.afterClosed().subscribe(function onClose(result: unknown) {
-      if (result !== null && result !== undefined) {
+    this.dialog
+      .open(DivDepModal, { width: '500px', data: { mode: 'add' } })
+      .afterClosed()
+      .pipe(
+        filter(function hasResult(result: unknown): result is DivDeposit {
+          return result !== null && result !== undefined;
+        }),
+        switchMap(function addToStore(result: DivDeposit) {
+          return context.effectsService.add(result);
+        })
+      )
+      .subscribe(function onAdd() {
         context.notification.success('Dividend added successfully');
-      }
-    });
+      });
   }
 
   onEditDividend(dividend: DivDeposit): void {
