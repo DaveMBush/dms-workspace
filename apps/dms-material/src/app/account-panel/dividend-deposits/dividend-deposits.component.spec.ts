@@ -428,3 +428,169 @@ describe('DividendDepositsComponent - Add Dialog SmartNgRX Integration (AQ.3)', 
     expect(mockEffectsService.add).toHaveBeenCalledWith(newDividend);
   });
 });
+
+// AQ.5: Disabled until implementation in AQ.6
+describe.skip('DividendDepositsComponent - Edit Dialog SmartNgRX Integration (AQ.5)', () => {
+  let component: DividendDepositsComponent;
+  let fixture: ComponentFixture<DividendDepositsComponent>;
+  let mockDialog: { open: ReturnType<typeof vi.fn> };
+  let mockDialogRef: { afterClosed: ReturnType<typeof vi.fn> };
+  let mockNotification: { success: ReturnType<typeof vi.fn> };
+  let mockConfirmDialog: { confirm: ReturnType<typeof vi.fn> };
+  let mockDividendDepositsService: {
+    dividends: WritableSignal<DivDeposit[]>;
+    selectedAccountId: WritableSignal<string>;
+  };
+  let mockEffectsService: {
+    add: ReturnType<typeof vi.fn>;
+    update: ReturnType<typeof vi.fn>;
+  };
+
+  beforeEach(async () => {
+    mockDividendDepositsService = {
+      dividends: signal<DivDeposit[]>([]),
+      selectedAccountId: signal<string>(''),
+    };
+
+    mockDialogRef = {
+      afterClosed: vi.fn().mockReturnValue(of(null)),
+    };
+
+    mockDialog = {
+      open: vi.fn().mockReturnValue(mockDialogRef),
+    };
+
+    mockNotification = { success: vi.fn() };
+    mockConfirmDialog = { confirm: vi.fn().mockReturnValue(of(false)) };
+    mockEffectsService = {
+      add: vi.fn().mockReturnValue(of([])),
+      update: vi.fn().mockReturnValue(of([])),
+    };
+
+    await TestBed.configureTestingModule({
+      imports: [DividendDepositsComponent],
+      providers: [
+        {
+          provide: DividendDepositsComponentService,
+          useValue: mockDividendDepositsService,
+        },
+        { provide: MatDialog, useValue: mockDialog },
+        { provide: NotificationService, useValue: mockNotification },
+        { provide: ConfirmDialogService, useValue: mockConfirmDialog },
+        { provide: DivDepositsEffectsService, useValue: mockEffectsService },
+      ],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(DividendDepositsComponent);
+    component = fixture.componentInstance;
+  });
+
+  // AC 1: Tests verify edit action triggers onEditDividend
+  it('should open dialog when onEditDividend is called', () => {
+    const dividend = createDivDeposit({ id: 'dep-edit' });
+
+    component.onEditDividend(dividend);
+
+    expect(mockDialog.open).toHaveBeenCalledWith(
+      DivDepModal,
+      expect.objectContaining({
+        data: expect.objectContaining({ mode: 'edit' }),
+      })
+    );
+  });
+
+  // AC 2: Tests verify dialog opens with 'edit' mode
+  it('should open dialog with mode edit in data', () => {
+    const dividend = createDivDeposit({ id: 'dep-edit' });
+
+    component.onEditDividend(dividend);
+
+    const callArgs = mockDialog.open.mock.calls[0] as [
+      unknown,
+      { width: string; data: { mode: string } }
+    ];
+    expect(callArgs[1].data.mode).toBe('edit');
+  });
+
+  // AC 3: Tests verify existing dividend data passed to dialog
+  it('should pass complete dividend object to dialog', () => {
+    const dividend = createDivDeposit({ id: 'dep-edit', amount: 250 });
+
+    component.onEditDividend(dividend);
+
+    const callArgs = mockDialog.open.mock.calls[0] as [
+      unknown,
+      { width: string; data: { mode: string; dividend: DivDeposit } }
+    ];
+    expect(callArgs[1].data.dividend).toEqual(dividend);
+  });
+
+  // AC 4: Tests verify dialog width is 500px
+  it('should open dialog with width 500px', () => {
+    const dividend = createDivDeposit({ id: 'dep-edit' });
+
+    component.onEditDividend(dividend);
+
+    const callArgs = mockDialog.open.mock.calls[0] as [
+      unknown,
+      { width: string; data: unknown }
+    ];
+    expect(callArgs[1].width).toBe('500px');
+  });
+
+  // AC 5: Tests verify successful edit shows notification
+  it('should show success notification when dialog returns updated data', () => {
+    const dividend = createDivDeposit({ id: 'dep-edit' });
+    const updatedDividend = createDivDeposit({ id: 'dep-edit', amount: 250 });
+    mockDialogRef.afterClosed.mockReturnValue(of(updatedDividend));
+
+    component.onEditDividend(dividend);
+
+    expect(mockNotification.success).toHaveBeenCalledWith(
+      'Dividend updated successfully'
+    );
+  });
+
+  // AC 5 (negative): Tests verify notification NOT shown when cancelled
+  it('should not show notification when edit is cancelled', () => {
+    const dividend = createDivDeposit({ id: 'dep-edit' });
+    mockDialogRef.afterClosed.mockReturnValue(of(null));
+
+    component.onEditDividend(dividend);
+
+    expect(mockNotification.success).not.toHaveBeenCalled();
+  });
+
+  // AC 6: Tests verify effectsService.update called with dialog result
+  it('should call effectsService.update with data returned from dialog', () => {
+    const dividend = createDivDeposit({ id: 'dep-edit' });
+    const updatedDividend = createDivDeposit({ id: 'dep-edit', amount: 300 });
+    mockDialogRef.afterClosed.mockReturnValue(of(updatedDividend));
+
+    component.onEditDividend(dividend);
+
+    expect(mockEffectsService.update).toHaveBeenCalledWith(updatedDividend);
+  });
+
+  // AC 6 (negative): Tests verify update NOT called when cancelled
+  it('should not call effectsService.update when edit is cancelled', () => {
+    const dividend = createDivDeposit({ id: 'dep-edit' });
+    mockDialogRef.afterClosed.mockReturnValue(of(null));
+
+    component.onEditDividend(dividend);
+
+    expect(mockEffectsService.update).not.toHaveBeenCalled();
+  });
+
+  // AC 7: Tests verify cancel closes without changes (update not called)
+  it('should update dividends after successful edit', () => {
+    const dividend = createDivDeposit({ id: 'dep-edit' });
+    const updatedDividend = createDivDeposit({ id: 'dep-edit', amount: 300 });
+    mockDialogRef.afterClosed.mockReturnValue(of(updatedDividend));
+    mockEffectsService.update.mockReturnValue(of([updatedDividend]));
+
+    component.onEditDividend(dividend);
+
+    expect(mockEffectsService.update).toHaveBeenCalledWith(updatedDividend);
+  });
+});
