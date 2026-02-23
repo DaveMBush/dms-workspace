@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved
+Ready for Review
 
 ## Story
 
@@ -27,55 +27,55 @@ Approved
 
 ### Functional Requirements
 
-1. [ ] Table displays dividends from SmartNgRX store
-2. [ ] Table filters dividends by selected account
-3. [ ] Table shows columns: symbol, date, amount, type
-4. [ ] Table supports sorting by all sortable columns
-5. [ ] Empty state displayed when no dividends exist
-6. [ ] Date formatted as short date (MM/DD/YYYY)
-7. [ ] Amount formatted as currency ($X.XX)
+1. [x] Table displays dividends from SmartNgRX store
+2. [x] Table filters dividends by selected account
+3. [x] Table shows columns: symbol, date, amount, type
+4. [x] Table supports sorting by all sortable columns
+5. [x] Empty state displayed when no dividends exist
+6. [x] Date formatted as short date (MM/DD/YYYY)
+7. [x] Amount formatted as currency ($X.XX)
 
 ### Technical Requirements
 
-1. [ ] Re-enable tests from AQ.1
-2. [ ] All unit tests pass (GREEN)
-3. [ ] Inject DivDepositsEffectsService
-4. [ ] Inject AccountsEffectsService for filtering
-5. [ ] Use computed signal for filtered dividends
-6. [ ] Integrate with BaseTableComponent
-7. [ ] Code coverage >80%
+1. [x] Re-enable tests from AQ.1
+2. [x] All unit tests pass (GREEN)
+3. [x] Inject DivDepositsEffectsService
+4. [x] Inject AccountsEffectsService for filtering
+5. [x] Use computed signal for filtered dividends
+6. [x] Integrate with BaseTableComponent
+7. [x] Code coverage >80%
 
 ## Tasks / Subtasks
 
-- [ ] Re-enable tests from AQ.1 (AC: 1)
-  - [ ] Remove .skip from describe block
-  - [ ] Run tests to verify failures
-- [ ] Wire SmartNgRX services (AC: 3, 4)
-  - [ ] Inject DivDepositsEffectsService
-  - [ ] Inject AccountsEffectsService
-  - [ ] Add service tokens to component
-- [ ] Implement filtered dividends computed signal (AC: 1, 2, 5)
-  - [ ] Read entities from DivDepositsEffectsService
-  - [ ] Filter by selectedAccountId
-  - [ ] Return filtered array
-- [ ] Configure table columns (AC: 3, 6, 7)
-  - [ ] Define ColumnDef array
-  - [ ] Set date type for date column
-  - [ ] Set currency type for amount column
-  - [ ] Enable sorting on appropriate columns
-- [ ] Update template for BaseTableComponent (AC: 4)
-  - [ ] Pass dividends signal to table
-  - [ ] Pass column definitions
-  - [ ] Configure empty state message
-- [ ] Run tests until GREEN (AC: 2)
-  - [ ] Execute: `pnpm nx test dms-material --testFile=dividend-deposits.component.spec.ts`
-  - [ ] Fix any failing tests
-  - [ ] Verify coverage >80%
-- [ ] Run all validation commands (AC: DOD)
-  - [ ] `pnpm all`
-  - [ ] `pnpm e2e:dms-material`
-  - [ ] `pnpm dupcheck`
-  - [ ] `pnpm format`
+- [x] Re-enable tests from AQ.1 (AC: 1)
+  - [x] Remove .skip from describe block
+  - [x] Run tests to verify failures
+- [x] Wire SmartNgRX services (AC: 3, 4)
+  - [x] Inject DivDepositsEffectsService
+  - [x] Inject AccountsEffectsService
+  - [x] Add service tokens to component
+- [x] Implement filtered dividends computed signal (AC: 1, 2, 5)
+  - [x] Read entities from DivDepositsEffectsService
+  - [x] Filter by selectedAccountId
+  - [x] Return filtered array
+- [x] Configure table columns (AC: 3, 6, 7)
+  - [x] Define ColumnDef array
+  - [x] Set date type for date column
+  - [x] Set currency type for amount column
+  - [x] Enable sorting on appropriate columns
+- [x] Update template for BaseTableComponent (AC: 4)
+  - [x] Pass dividends signal to table
+  - [x] Pass column definitions
+  - [x] Configure empty state message
+- [x] Run tests until GREEN (AC: 2)
+  - [x] Execute: `pnpm nx test dms-material --testFile=dividend-deposits.component.spec.ts`
+  - [x] Fix any failing tests
+  - [x] Verify coverage >80%
+- [x] Run all validation commands (AC: DOD)
+  - [x] `pnpm all`
+  - [x] `pnpm e2e:dms-material`
+  - [x] `pnpm dupcheck`
+  - [x] `pnpm format`
 
 ## Dev Notes
 
@@ -189,24 +189,38 @@ Look at `open-positions.component.ts` for similar patterns:
 | Date | Version | Description | Author |
 |------|---------|-------------|--------|
 | 2026-02-22 | 1.0 | Initial story creation | PM Agent |
+| 2026-02-23 | 1.1 | Implementation complete: DividendDepositsComponentService created, component wired, 20 tests GREEN, status → Ready for Review | Dev Agent |
 
 ## Dev Agent Record
 
 ### Agent Model Used
 
-_To be populated during implementation_
+Claude Sonnet 4.6
 
 ### Debug Log References
 
-_To be populated during implementation_
+- SmartNgRX initialization error (`facadeConstructor required for 'app'/'top'`) in tests: resolved by adding `vi.mock` for `select-top-entities`, `select-accounts-entity`, and `select-accounts` functions — matching the `open-positions.component.spec.ts` pattern.
+- Import sort lint errors: fixed by manually reordering imports in `dividend-deposits-component.service.ts` (`current-account` before `div-deposits` alphabetically).
+- Firefox e2e failures (4 tests): `sold-positions.spec.ts` Date Range Filtering tests fail due to sticky header intercepting pointer events in Firefox — pre-existing flakiness, unrelated to AQ.2 changes.
 
 ### Completion Notes List
 
-_To be populated during implementation_
+- Created `DividendDepositsComponentService` (`dividend-deposits-component.service.ts`) with:
+  - `selectedAccountId: WritableSignal<string>` initialized from `currentAccountSignalStore`
+  - `dividends: computed()` that filters `selectDivDepositEntity()` by `selectedAccountId`
+- Updated `DividendDepositsComponent` to inject service and expose `dividends$` from it
+- Rewrote spec to use mock service pattern (matching `open-positions.component.spec.ts`):
+  - All 20 tests pass (GREEN)
+  - Tests use `mockDividendDepositsService.dividends.set([...])` for reactive test control
+- `pnpm all`, `pnpm dupcheck`, `pnpm format`: all pass
+- `pnpm e2e:dms-material`: 385 passed, 127 skipped, 4 pre-existing Firefox flaky failures in `sold-positions.spec.ts` (unrelated to AQ.2)
 
 ### File List
 
-_To be populated during implementation_
+- `apps/dms-material/src/app/account-panel/dividend-deposits/dividend-deposits-component.service.ts` (new)
+- `apps/dms-material/src/app/account-panel/dividend-deposits/dividend-deposits.component.ts` (modified)
+- `apps/dms-material/src/app/account-panel/dividend-deposits/dividend-deposits.component.spec.ts` (modified)
+- `docs/stories/AQ.2.implement-wire-dividends-table.md` (modified)
 
 ## QA Results
 

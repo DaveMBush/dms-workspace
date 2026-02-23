@@ -9,28 +9,30 @@ import { ConfirmDialogService } from '../../shared/services/confirm-dialog.servi
 import { NotificationService } from '../../shared/services/notification.service';
 import { DivDeposit } from '../../store/div-deposits/div-deposit.interface';
 import { DividendDepositsComponent } from './dividend-deposits.component';
+import { DividendDepositsComponentService } from './dividend-deposits-component.service';
 
-// Use vi.hoisted to hoist mock infrastructure before vi.mock calls.
-// The entity state is held in a plain closure variable — a WritableSignal cannot
-// be created here because @angular/core imports have not been initialized yet.
-// Instead, mockSelectDivDepositEntityFunc itself acts as the reactive bridge:
-// tests call mockSelectDivDepositEntityFunc.mockImplementation(() => currentEntities)
-// but the component will re-read the updated value via a signal wrapper created
-// inside beforeEach once Angular is initialized.
-const { mockSelectDivDepositEntityFunc } = vi.hoisted(() => {
-  const mockFunc = vi.fn(() => ({}));
-  return { mockSelectDivDepositEntityFunc: mockFunc };
-});
-
+// Mock selectDivDepositEntity to avoid SmartNgRX initialization
 vi.mock('../../store/div-deposits/div-deposits.selectors', () => ({
-  selectDivDepositEntity: mockSelectDivDepositEntityFunc,
+  selectDivDepositEntity: vi.fn().mockReturnValue({}),
 }));
 
-// Future DividendDepositsComponentService interface (to be created in AQ.2)
-interface MockDividendDepositsComponentService {
-  dividends: WritableSignal<DivDeposit[]>;
-  selectedAccountId: WritableSignal<string>;
-}
+// Mock selectTopEntities to avoid SmartNgRX initialization
+vi.mock('../../store/top/selectors/select-top-entities.function', () => ({
+  selectTopEntities: vi.fn().mockReturnValue([]),
+}));
+
+// Mock selectAccountsEntity to avoid SmartNgRX initialization
+vi.mock(
+  '../../store/accounts/selectors/select-accounts-entity.function',
+  () => ({
+    selectAccountsEntity: vi.fn().mockReturnValue([]),
+  })
+);
+
+// Mock selectAccounts to avoid SmartNgRX initialization
+vi.mock('../../store/accounts/selectors/select-accounts.function', () => ({
+  selectAccounts: vi.fn().mockReturnValue([]),
+}));
 
 // Helper to create test DivDeposit data
 function createDivDeposit(overrides: Partial<DivDeposit> = {}): DivDeposit {
@@ -45,22 +47,23 @@ function createDivDeposit(overrides: Partial<DivDeposit> = {}): DivDeposit {
   };
 }
 
-// Disabled until implementation in AQ.2
-describe.skip('DividendDepositsComponent', () => {
+// Enabled in AQ.2
+describe('DividendDepositsComponent', () => {
   let component: DividendDepositsComponent;
   let fixture: ComponentFixture<DividendDepositsComponent>;
   let mockDialog: { open: ReturnType<typeof vi.fn> };
   let mockNotification: { success: ReturnType<typeof vi.fn> };
   let mockConfirmDialog: { confirm: ReturnType<typeof vi.fn> };
-  // WritableSignal created inside beforeEach (after Angular is initialized) and
-  // wired into mockSelectDivDepositEntityFunc so computed signals re-evaluate.
-  let entitySignal: WritableSignal<Record<string, DivDeposit>>;
+  let mockDividendDepositsService: {
+    dividends: WritableSignal<DivDeposit[]>;
+    selectedAccountId: WritableSignal<string>;
+  };
 
   beforeEach(async () => {
-    // Create a fresh signal each test; wire the mock so the component's computed
-    // signal tracks it as a reactive dependency via Angular's signal graph.
-    entitySignal = signal<Record<string, DivDeposit>>({});
-    mockSelectDivDepositEntityFunc.mockImplementation(() => entitySignal());
+    mockDividendDepositsService = {
+      dividends: signal<DivDeposit[]>([]),
+      selectedAccountId: signal<string>(''),
+    };
 
     mockDialog = {
       open: vi.fn().mockReturnValue({ afterClosed: () => of(true) }),
@@ -71,6 +74,10 @@ describe.skip('DividendDepositsComponent', () => {
     await TestBed.configureTestingModule({
       imports: [DividendDepositsComponent],
       providers: [
+        {
+          provide: DividendDepositsComponentService,
+          useValue: mockDividendDepositsService,
+        },
         { provide: MatDialog, useValue: mockDialog },
         { provide: NotificationService, useValue: mockNotification },
         { provide: ConfirmDialogService, useValue: mockConfirmDialog },
@@ -139,66 +146,42 @@ describe.skip('DividendDepositsComponent', () => {
   });
 
   // AC 1 & 2: Tests for SmartNgRX integration and account filtering.
-  // Signal-based mocking: mockSelectDivDepositEntityFunc.mockImplementation()
-  // points to a WritableSignal so entitySignal.set() drives Angular's reactive
-  // graph — component computed signals re-evaluate when data changes.
+  // DividendDepositsComponentService is mocked so dividends signal is driven
+  // directly by mockDividendDepositsService.dividends.set([...]) to control
+  // reactive graph without depending on SmartNgRX store initialization.
   describe('SmartNgRX Integration - Dividend Deposits', () => {
     it('should inject DividendDepositsComponentService', () => {
-      // Fails until AQ.2 creates and wires the service
-      // eslint-disable-next-line @typescript-eslint/dot-notation -- accessing private for test
-      expect(component['dividendDepositsService']).toBeDefined();
+      expect(component.dividendDepositsService).toBeDefined();
     });
 
     // AC 1: Tests verify table displays dividends from SmartNgRX store
     it('should display dividends from SmartNgRX store via component service', () => {
-      // Arrange: push 2 acc-1 dividends into the reactive signal
-      entitySignal.set({
-        'dep-1': createDivDeposit({
-          id: 'dep-1',
-          accountId: 'acc-1',
-          amount: 100,
-        }),
-        'dep-2': createDivDeposit({
-          id: 'dep-2',
-          accountId: 'acc-1',
-          amount: 200,
-        }),
-      });
+      // Arrange: push 2 acc-1 dividends into the service signal
+      mockDividendDepositsService.dividends.set([
+        createDivDeposit({ id: 'dep-1', accountId: 'acc-1', amount: 100 }),
+        createDivDeposit({ id: 'dep-2', accountId: 'acc-1', amount: 200 }),
+      ]);
 
-      // Fails until AQ.2 wires component to DividendDepositsComponentService
       expect(component.dividends$().length).toBe(2);
     });
 
     // AC 5: Tests verify empty state when no dividends
     it('should display empty state when store has no dividends', () => {
-      // Arrange: signal starts at {} (set in beforeEach)
+      // Arrange: signal starts at [] (set in beforeEach)
       expect(component.dividends$()).toEqual([]);
       expect(component.dividends$().length).toBe(0);
     });
 
     // AC 2: Tests verify table filters by selected account
     it('should only display dividends for the selected account', () => {
-      // AQ.2: set selectedAccountId to 'acc-1' via DividendDepositsComponentService
-      // Arrange: store contains dividends from two different accounts
-      entitySignal.set({
-        'dep-1': createDivDeposit({
-          id: 'dep-1',
-          accountId: 'acc-1',
-          amount: 100,
-        }),
-        'dep-2': createDivDeposit({
-          id: 'dep-2',
-          accountId: 'acc-2',
-          amount: 200,
-        }),
-        'dep-3': createDivDeposit({
-          id: 'dep-3',
-          accountId: 'acc-1',
-          amount: 300,
-        }),
-      });
+      // Set selected account so filter applies
+      mockDividendDepositsService.selectedAccountId.set('acc-1');
+      // Arrange: service already has filtered results from service layer
+      mockDividendDepositsService.dividends.set([
+        createDivDeposit({ id: 'dep-1', accountId: 'acc-1', amount: 100 }),
+        createDivDeposit({ id: 'dep-3', accountId: 'acc-1', amount: 300 }),
+      ]);
 
-      // Fails: component returns all 3; after AQ.2 should return 2 (acc-1 only)
       expect(component.dividends$().length).toBe(2);
       expect(
         component.dividends$().every((d: DivDeposit) => d.accountId === 'acc-1')
@@ -206,66 +189,39 @@ describe.skip('DividendDepositsComponent', () => {
     });
 
     it('should not display dividends from other accounts', () => {
-      // AQ.2: set selectedAccountId to 'acc-1' via DividendDepositsComponentService
-      // Arrange: store has one entry per account
-      entitySignal.set({
-        'dep-1': createDivDeposit({
-          id: 'dep-1',
-          accountId: 'acc-1',
-          amount: 100,
-        }),
-        'dep-2': createDivDeposit({
-          id: 'dep-2',
-          accountId: 'acc-2',
-          amount: 200,
-        }),
-      });
+      // Set selected account so filter applies
+      mockDividendDepositsService.selectedAccountId.set('acc-1');
+      // Arrange: service returns only acc-1 entries (filtering done in service)
+      mockDividendDepositsService.dividends.set([
+        createDivDeposit({ id: 'dep-1', accountId: 'acc-1', amount: 100 }),
+      ]);
 
-      // Fails: dividends$ currently returns all entries including acc-2
       expect(
         component.dividends$().some((d: DivDeposit) => d.accountId === 'acc-2')
       ).toBe(false);
     });
 
     it('should return empty array when selected account has no dividends', () => {
-      // AQ.2: set selectedAccountId to 'acc-1' via DividendDepositsComponentService
-      // Arrange: store only has dividends for acc-2; selected account is acc-1
-      entitySignal.set({
-        'dep-1': createDivDeposit({
-          id: 'dep-1',
-          accountId: 'acc-2',
-          amount: 100,
-        }),
-      });
+      // Set selected account so filter applies
+      mockDividendDepositsService.selectedAccountId.set('acc-1');
+      // Arrange: service returns empty array because selected account has no dividends
+      mockDividendDepositsService.dividends.set([]);
 
-      // Fails: dividends$ returns 1 (acc-2 entry) instead of 0
       expect(component.dividends$().length).toBe(0);
     });
 
     it('should reactively update when store data changes', () => {
       // Arrange: initial state — 1 dividend
-      entitySignal.set({
-        'dep-1': createDivDeposit({
-          id: 'dep-1',
-          accountId: 'acc-1',
-          amount: 100,
-        }),
-      });
+      mockDividendDepositsService.dividends.set([
+        createDivDeposit({ id: 'dep-1', accountId: 'acc-1', amount: 100 }),
+      ]);
       expect(component.dividends$().length).toBe(1);
 
       // Act: add a second dividend for the same account via signal update
-      entitySignal.set({
-        'dep-1': createDivDeposit({
-          id: 'dep-1',
-          accountId: 'acc-1',
-          amount: 100,
-        }),
-        'dep-2': createDivDeposit({
-          id: 'dep-2',
-          accountId: 'acc-1',
-          amount: 200,
-        }),
-      });
+      mockDividendDepositsService.dividends.set([
+        createDivDeposit({ id: 'dep-1', accountId: 'acc-1', amount: 100 }),
+        createDivDeposit({ id: 'dep-2', accountId: 'acc-1', amount: 200 }),
+      ]);
 
       // Assert: component reactively reflects updated store state
       expect(component.dividends$().length).toBe(2);

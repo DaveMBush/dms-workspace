@@ -1,10 +1,5 @@
 import { CurrencyPipe, DatePipe } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 
 import { BaseTableComponent } from '../../shared/components/base-table/base-table.component';
@@ -12,8 +7,8 @@ import { ColumnDef } from '../../shared/components/base-table/column-def.interfa
 import { ConfirmDialogService } from '../../shared/services/confirm-dialog.service';
 import { NotificationService } from '../../shared/services/notification.service';
 import { DivDeposit } from '../../store/div-deposits/div-deposit.interface';
-import { selectDivDepositEntity } from '../../store/div-deposits/div-deposits.selectors';
 import { DivDepModal } from '../div-dep-modal/div-dep-modal.component';
+import { DividendDepositsComponentService } from './dividend-deposits-component.service';
 
 @Component({
   selector: 'dms-dividend-deposits',
@@ -23,14 +18,12 @@ import { DivDepModal } from '../div-dep-modal/div-dep-modal.component';
   styleUrl: './dividend-deposits.component.scss',
 })
 export class DividendDepositsComponent {
+  readonly dividendDepositsService = inject(DividendDepositsComponentService);
   private dialog = inject(MatDialog);
   private notification = inject(NotificationService);
   private confirmDialog = inject(ConfirmDialogService);
 
-  readonly dividends$ = computed(
-    // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signal
-    () => Object.values(selectDivDepositEntity()) as DivDeposit[]
-  );
+  readonly dividends$ = this.dividendDepositsService.dividends;
 
   columns: ColumnDef[] = [
     { field: 'symbol', header: 'Symbol', sortable: true, width: '120px' },
