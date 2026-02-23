@@ -83,7 +83,7 @@ export class DividendDepositsComponent {
       });
   }
 
-  onDeleteDividend(__: DivDeposit): void {
+  onDeleteDividend(dividend: DivDeposit): void {
     const context = this;
     this.confirmDialog
       .confirm({
@@ -91,11 +91,16 @@ export class DividendDepositsComponent {
         message: `Are you sure you want to delete this dividend?`,
         confirmText: 'Delete',
       })
-      .subscribe(function onConfirm(confirmed) {
-        if (confirmed) {
-          // Delete via SmartNgRX
-          context.notification.success('Dividend deleted');
-        }
+      .pipe(
+        filter(function isConfirmed(confirmed: boolean): confirmed is true {
+          return confirmed;
+        }),
+        switchMap(function deleteFromStore() {
+          return context.effectsService.delete(dividend.id);
+        })
+      )
+      .subscribe(function onDelete() {
+        context.notification.success('Dividend deleted');
       });
   }
 }

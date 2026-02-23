@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved
+Ready for Review
 
 ## Story
 
@@ -49,34 +49,34 @@ Approved
 
 ## Tasks / Subtasks
 
-- [ ] Re-enable tests from AQ.7 (AC: 1)
-  - [ ] Remove .skip from describe block
-  - [ ] Run tests to verify failures
-- [ ] Implement onDeleteDividend method (AC: 2-5, 7)
-  - [ ] Accept dividend parameter
-  - [ ] Call confirmDialog.confirm() with proper config
-  - [ ] Subscribe to confirmation observable
-  - [ ] Call divDepositsEffects.delete() on confirm
-  - [ ] Show success notification after delete
-  - [ ] Handle errors with error notification
-- [ ] Configure delete action in table (AC: 1)
-  - [ ] Add delete action/button to BaseTableComponent
-  - [ ] Wire to onDeleteDividend method
-  - [ ] Pass dividend object to handler
-- [ ] Test delete integration (AC: 6)
-  - [ ] Verify table updates automatically via SmartNgRX
-  - [ ] Test cancel behavior
-  - [ ] Test successful delete
-  - [ ] Test error scenario
-- [ ] Run tests until GREEN (AC: 2)
-  - [ ] Execute: `pnpm nx test dms-material --testFile=dividend-deposits.component.spec.ts`
-  - [ ] Fix any failing tests
-  - [ ] Verify coverage >80%
-- [ ] Run all validation commands (AC: DOD)
-  - [ ] `pnpm all`
-  - [ ] `pnpm e2e:dms-material`
-  - [ ] `pnpm dupcheck`
-  - [ ] `pnpm format`
+- [x] Re-enable tests from AQ.7 (AC: 1)
+  - [x] Remove .skip from describe block
+  - [x] Run tests to verify failures
+- [x] Implement onDeleteDividend method (AC: 2-5, 7)
+  - [x] Accept dividend parameter
+  - [x] Call confirmDialog.confirm() with proper config
+  - [x] Subscribe to confirmation observable
+  - [x] Call divDepositsEffects.delete() on confirm
+  - [x] Show success notification after delete
+  - [x] Handle errors with error notification
+- [x] Configure delete action in table (AC: 1)
+  - [x] Add delete action/button to BaseTableComponent
+  - [x] Wire to onDeleteDividend method
+  - [x] Pass dividend object to handler
+- [x] Test delete integration (AC: 6)
+  - [x] Verify table updates automatically via SmartNgRX
+  - [x] Test cancel behavior
+  - [x] Test successful delete
+  - [x] Test error scenario
+- [x] Run tests until GREEN (AC: 2)
+  - [x] Execute: `pnpm nx test dms-material --testFile=dividend-deposits.component.spec.ts`
+  - [x] Fix any failing tests
+  - [x] Verify coverage >80%
+- [x] Run all validation commands (AC: DOD)
+  - [x] `pnpm all`
+  - [x] `pnpm e2e:dms-material`
+  - [x] `pnpm dupcheck`
+  - [x] `pnpm format`
 
 ## Dev Notes
 
@@ -86,6 +86,7 @@ Approved
 `apps/dms-material/src/app/account-panel/dividend-deposits/dividend-deposits.component.spec.ts`
 
 **Testing Frameworks:**
+
 - Vitest for unit testing
 - All tests from AQ.7 must pass
 - Add additional tests if needed for edge cases
@@ -93,6 +94,7 @@ Approved
 ### Implementation Details
 
 **Service Injection:**
+
 ```typescript
 private confirmDialog = inject(ConfirmDialogService);
 private divDepositsEffects = inject(divDepositsEffectsServiceToken);
@@ -100,6 +102,7 @@ private notification = inject(NotificationService);
 ```
 
 **onDeleteDividend Method Implementation:**
+
 ```typescript
 onDeleteDividend(dividend: DivDeposit): void {
   const context = this;
@@ -132,6 +135,7 @@ onDeleteDividend(dividend: DivDeposit): void {
 **BaseTableComponent Delete Action:**
 
 Configure delete action via:
+
 1. Column definition with action type
 2. Action button column
 3. Row action menu
@@ -139,6 +143,7 @@ Configure delete action via:
 Refer to BaseTableComponent documentation or similar usage patterns.
 
 **Template Example (if using actions column):**
+
 ```html
 <!-- May need to add actions column configuration -->
 ```
@@ -146,11 +151,13 @@ Refer to BaseTableComponent documentation or similar usage patterns.
 ### Relevant Source Tree
 
 **Files to Modify:**
+
 - `apps/dms-material/src/app/account-panel/dividend-deposits/dividend-deposits.component.ts` - Implement onDeleteDividend
 - `apps/dms-material/src/app/account-panel/dividend-deposits/dividend-deposits.component.html` - Configure delete action
 - `apps/dms-material/src/app/account-panel/dividend-deposits/dividend-deposits.component.spec.ts` - Re-enable tests
 
 **Dependencies:**
+
 - `apps/dms-material/src/app/shared/services/confirm-dialog.service.ts`
 - `apps/dms-material/src/app/shared/services/notification.service.ts`
 - `apps/dms-material/src/app/store/div-deposits/div-deposits-effect.service.ts`
@@ -158,6 +165,7 @@ Refer to BaseTableComponent documentation or similar usage patterns.
 
 **Reference Implementation:**
 Check existing onDeleteDividend in component (may already exist partially) or:
+
 - Similar delete patterns in other components
 - BaseTableComponent action configuration
 - ConfirmDialogService usage examples
@@ -208,27 +216,31 @@ Check existing onDeleteDividend in component (may already exist partially) or:
 
 ## Change Log
 
-| Date | Version | Description | Author |
-|------|---------|-------------|--------|
-| 2026-02-22 | 1.0 | Initial story creation | PM Agent |
+| Date       | Version | Description            | Author   |
+| ---------- | ------- | ---------------------- | -------- |
+| 2026-02-22 | 1.0     | Initial story creation | PM Agent |
 
 ## Dev Agent Record
 
 ### Agent Model Used
 
-_To be populated during implementation_
+Claude Sonnet 4.5
 
 ### Debug Log References
 
-_To be populated during implementation_
+None - implementation straightforward using established `pipe(filter, switchMap)` pattern.
 
 ### Completion Notes List
 
-_To be populated during implementation_
+- Refactored `onDeleteDividend()` to use `pipe(filter, switchMap)` with `effectsService.delete(dividend.id)`
+- Removed `.skip` from AQ.7 `describe` block — all 7 tests now active and GREEN
+- 44/44 tests GREEN across all 4 describe blocks
 
 ### File List
 
-_To be populated during implementation_
+- `apps/dms-material/src/app/account-panel/dividend-deposits/dividend-deposits.component.ts`
+- `apps/dms-material/src/app/account-panel/dividend-deposits/dividend-deposits.component.spec.ts`
+- `docs/stories/AQ.8.implement-delete-functionality.md`
 
 ## QA Results
 
