@@ -603,8 +603,8 @@ describe('DividendDepositsComponent - Edit Dialog SmartNgRX Integration (AQ.5)',
   });
 });
 
-// AQ.7: Disabled until implementation in AQ.8
-describe.skip('DividendDepositsComponent - Delete Dialog SmartNgRX Integration (AQ.7)', () => {
+// AQ.7: Re-enabled in AQ.8
+describe('DividendDepositsComponent - Delete Dialog SmartNgRX Integration (AQ.7)', () => {
   let component: DividendDepositsComponent;
   let fixture: ComponentFixture<DividendDepositsComponent>;
   let mockDialog: { open: ReturnType<typeof vi.fn> };
