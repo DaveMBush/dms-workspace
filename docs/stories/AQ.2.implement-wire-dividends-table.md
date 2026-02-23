@@ -214,7 +214,7 @@ Claude Sonnet 4.6
 ### Completion Notes List
 
 - Created `DividendDepositsComponentService` (`dividend-deposits-component.service.ts`) with:
-  - `selectedAccountId: WritableSignal<string>` initialized from `currentAccountSignalStore`
+  - `selectedAccountId: Signal<string | null>` sourced from `currentAccountSignalStore`
   - `dividends: computed()` that filters `selectDivDepositEntity()` by `selectedAccountId`
 - Updated `DividendDepositsComponent` to inject service and expose `dividends$` from it
 - Rewrote spec to use mock service pattern (matching `open-positions.component.spec.ts`):
