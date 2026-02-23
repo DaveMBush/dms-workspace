@@ -56,7 +56,10 @@ describe('DividendDepositsComponent', () => {
   let mockDialog: { open: ReturnType<typeof vi.fn> };
   let mockNotification: { success: ReturnType<typeof vi.fn> };
   let mockConfirmDialog: { confirm: ReturnType<typeof vi.fn> };
-  let mockEffectsService: { add: ReturnType<typeof vi.fn> };
+  let mockEffectsService: {
+    add: ReturnType<typeof vi.fn>;
+    update: ReturnType<typeof vi.fn>;
+  };
   let mockDividendDepositsService: {
     dividends: WritableSignal<DivDeposit[]>;
     selectedAccountId: WritableSignal<string>;
@@ -73,7 +76,10 @@ describe('DividendDepositsComponent', () => {
     };
     mockNotification = { success: vi.fn() };
     mockConfirmDialog = { confirm: vi.fn().mockReturnValue(of(true)) };
-    mockEffectsService = { add: vi.fn().mockReturnValue(of([])) };
+    mockEffectsService = {
+      add: vi.fn().mockReturnValue(of([])),
+      update: vi.fn().mockReturnValue(of([])),
+    };
 
     await TestBed.configureTestingModule({
       imports: [DividendDepositsComponent],
@@ -429,8 +435,8 @@ describe('DividendDepositsComponent - Add Dialog SmartNgRX Integration (AQ.3)', 
   });
 });
 
-// AQ.5: Disabled until implementation in AQ.6
-describe.skip('DividendDepositsComponent - Edit Dialog SmartNgRX Integration (AQ.5)', () => {
+// AQ.5: Re-enabled in AQ.6
+describe('DividendDepositsComponent - Edit Dialog SmartNgRX Integration (AQ.5)', () => {
   let component: DividendDepositsComponent;
   let fixture: ComponentFixture<DividendDepositsComponent>;
   let mockDialog: { open: ReturnType<typeof vi.fn> };

@@ -67,16 +67,20 @@ export class DividendDepositsComponent {
 
   onEditDividend(dividend: DivDeposit): void {
     const context = this;
-    const dialogRef = this.dialog.open(DivDepModal, {
-      width: '500px',
-      data: { mode: 'edit', dividend },
-    });
-
-    dialogRef.afterClosed().subscribe(function onClose(result: unknown) {
-      if (result !== null && result !== undefined) {
+    this.dialog
+      .open(DivDepModal, { width: '500px', data: { mode: 'edit', dividend } })
+      .afterClosed()
+      .pipe(
+        filter(function hasResult(result: unknown): result is DivDeposit {
+          return result !== null && result !== undefined;
+        }),
+        switchMap(function updateInStore(result: DivDeposit) {
+          return context.effectsService.update(result);
+        })
+      )
+      .subscribe(function onUpdate() {
         context.notification.success('Dividend updated successfully');
-      }
-    });
+      });
   }
 
   onDeleteDividend(__: DivDeposit): void {
