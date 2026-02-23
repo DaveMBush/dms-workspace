@@ -9,7 +9,7 @@ import { ColumnDef } from '../../shared/components/base-table/column-def.interfa
 import { ConfirmDialogService } from '../../shared/services/confirm-dialog.service';
 import { NotificationService } from '../../shared/services/notification.service';
 import { DivDeposit } from '../../store/div-deposits/div-deposit.interface';
-import { DivDepositsEffectsService } from '../../store/div-deposits/div-deposits-effect.service';
+import { divDepositsEffectsServiceToken } from '../../store/div-deposits/div-deposits-effect-service-token';
 import { DividendDepositsComponent } from './dividend-deposits.component';
 import { DividendDepositsComponentService } from './dividend-deposits-component.service';
 
@@ -93,7 +93,10 @@ describe('DividendDepositsComponent', () => {
         { provide: MatDialog, useValue: mockDialog },
         { provide: NotificationService, useValue: mockNotification },
         { provide: ConfirmDialogService, useValue: mockConfirmDialog },
-        { provide: DivDepositsEffectsService, useValue: mockEffectsService },
+        {
+          provide: divDepositsEffectsServiceToken,
+          useValue: mockEffectsService,
+        },
       ],
     }).compileComponents();
 
@@ -339,7 +342,10 @@ describe('DividendDepositsComponent - Add Dialog SmartNgRX Integration (AQ.3)', 
         { provide: MatDialog, useValue: mockDialog },
         { provide: NotificationService, useValue: mockNotification },
         { provide: ConfirmDialogService, useValue: mockConfirmDialog },
-        { provide: DivDepositsEffectsService, useValue: mockEffectsService },
+        {
+          provide: divDepositsEffectsServiceToken,
+          useValue: mockEffectsService,
+        },
       ],
     }).compileComponents();
 
@@ -485,7 +491,10 @@ describe('DividendDepositsComponent - Edit Dialog SmartNgRX Integration (AQ.5)',
         { provide: MatDialog, useValue: mockDialog },
         { provide: NotificationService, useValue: mockNotification },
         { provide: ConfirmDialogService, useValue: mockConfirmDialog },
-        { provide: DivDepositsEffectsService, useValue: mockEffectsService },
+        {
+          provide: divDepositsEffectsServiceToken,
+          useValue: mockEffectsService,
+        },
       ],
     }).compileComponents();
 
@@ -648,7 +657,10 @@ describe('DividendDepositsComponent - Delete Dialog SmartNgRX Integration (AQ.7)
         { provide: MatDialog, useValue: mockDialog },
         { provide: NotificationService, useValue: mockNotification },
         { provide: ConfirmDialogService, useValue: mockConfirmDialog },
-        { provide: DivDepositsEffectsService, useValue: mockEffectsService },
+        {
+          provide: divDepositsEffectsServiceToken,
+          useValue: mockEffectsService,
+        },
       ],
     }).compileComponents();
 

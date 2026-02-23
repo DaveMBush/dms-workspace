@@ -7,6 +7,19 @@ model: Claude Sonnet 4.6 (copilot)
 
 # Autonomous Epic Development Workflow
 
+## CRITICAL: Human Interaction Rules
+
+**NEVER stop, yield back to the user, or pause execution without first calling `prompt.sh`.**
+
+When human input is needed:
+
+1. Run the script in a terminal: `bash .github/prompts/prompt.sh "<your message>"`
+2. Wait for the return value — the process BLOCKS until the user responds
+3. Handle the response ("continue", "stop", or custom instructions)
+4. Only THEN proceed or halt
+
+Violating this rule by pausing without calling `prompt.sh` defeats the purpose of the autonomous workflow.
+
 ## PHASE 1: Epic Discovery and Validation
 
 1. **Discover Stories for Epic ${epic}**
@@ -47,7 +60,9 @@ For each story in the ordered list:
 2. **Pre-E2E Confirmation**
 
    - Before executing the last story:
-     - Call `.github/prompts/prompt.sh "Epic ${epic}: ${N-1} of ${N} stories complete. About to implement final story (${last_story}, typically e2e tests). Any corrections or additional instructions before proceeding?"`
+     - **CRITICAL**: Run `bash .github/prompts/prompt.sh "Epic ${epic}: ${N-1} of ${N} stories complete. About to implement final story (${last_story}, typically e2e tests). Any corrections or additional instructions before proceeding?"` in a terminal via `run_in_terminal`
+     - **CRITICAL**: Wait for the script to return — do NOT yield back to the user or stop — the script itself handles the interaction
+     - **CRITICAL**: Do NOT write a message to the user saying "awaiting your approval" or similar — the zenity dialog IS the approval mechanism
    - Handle response:
      - "continue": Proceed with last story
      - "stop": Document state and exit

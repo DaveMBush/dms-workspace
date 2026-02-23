@@ -8,7 +8,7 @@ import { ColumnDef } from '../../shared/components/base-table/column-def.interfa
 import { ConfirmDialogService } from '../../shared/services/confirm-dialog.service';
 import { NotificationService } from '../../shared/services/notification.service';
 import { DivDeposit } from '../../store/div-deposits/div-deposit.interface';
-import { DivDepositsEffectsService } from '../../store/div-deposits/div-deposits-effect.service';
+import { divDepositsEffectsServiceToken } from '../../store/div-deposits/div-deposits-effect-service-token';
 import { DivDepModal } from '../div-dep-modal/div-dep-modal.component';
 import { DividendDepositsComponentService } from './dividend-deposits-component.service';
 
@@ -24,7 +24,7 @@ export class DividendDepositsComponent {
   private dialog = inject(MatDialog);
   private notification = inject(NotificationService);
   private confirmDialog = inject(ConfirmDialogService);
-  private effectsService = inject(DivDepositsEffectsService);
+  private effectsService = inject(divDepositsEffectsServiceToken);
 
   readonly dividends$ = this.dividendDepositsService.dividends;
 
