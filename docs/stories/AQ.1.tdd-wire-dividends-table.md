@@ -2,7 +2,7 @@
 
 ## Status
 
-Draft
+Approved
 
 ## Story
 
@@ -22,6 +22,7 @@ Draft
 
 - Need to wire table to SmartNgRX divDeposits store
 - Need tests before implementation (TDD RED phase)
+- Keep in mind similar code is available for the Open Positions and Sold Positions tables.
 
 ## Acceptance Criteria
 
