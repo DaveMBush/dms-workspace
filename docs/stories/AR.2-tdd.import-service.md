@@ -43,29 +43,29 @@
 
 ## Tasks / Subtasks
 
-- [ ] Create test file for import service (AC: 1)
-  - [ ] Test importing purchases (creates trades)
-  - [ ] Test importing sales (updates trades)
-  - [ ] Test importing dividends (creates dividend deposits)
-  - [ ] Test importing cash deposits (creates dividend deposits)
-  - [ ] Test account validation
-  - [ ] Test transaction validation
-  - [ ] Test error aggregation
-- [ ] Create integration tests for endpoint (AC: 2)
-  - [ ] Test POST /api/import/fidelity endpoint
-  - [ ] Test file upload handling
-  - [ ] Test success response format
-  - [ ] Test error response format
-  - [ ] Test authentication/authorization
-- [ ] Write edge case tests (AC: 3)
-  - [ ] Test empty file
-  - [ ] Test invalid CSV format
-  - [ ] Test non-existent account
-  - [ ] Test duplicate transactions
-  - [ ] Test partial success scenarios
-- [ ] Disable all tests using .skip (AC: 5)
-- [ ] Verify tests fail before disabling (AC: 4)
-- [ ] Run validation commands
+- [x] Create test file for import service (AC: 1)
+  - [x] Test importing purchases (creates trades)
+  - [x] Test importing sales (updates trades)
+  - [x] Test importing dividends (creates dividend deposits)
+  - [x] Test importing cash deposits (creates dividend deposits)
+  - [x] Test account validation
+  - [x] Test transaction validation
+  - [x] Test error aggregation
+- [x] Create integration tests for endpoint (AC: 2)
+  - [x] Test POST /api/import/fidelity endpoint
+  - [x] Test file upload handling
+  - [x] Test success response format
+  - [x] Test error response format
+  - [x] Test authentication/authorization
+- [x] Write edge case tests (AC: 3)
+  - [x] Test empty file
+  - [x] Test invalid CSV format
+  - [x] Test non-existent account
+  - [x] Test duplicate transactions
+  - [x] Test partial success scenarios
+- [x] Disable all tests using .skip (AC: 5)
+- [x] Verify tests fail before disabling (AC: 4)
+- [x] Run validation commands
 
 ## Dev Notes
 
@@ -105,16 +105,16 @@
 
 ## Definition of Done
 
-- [ ] All tests written and disabled (RED phase)
-- [ ] Tests cover all acceptance criteria scenarios
-- [ ] Tests disabled to allow CI to pass
-- [ ] Test code follows project conventions
-- [ ] All validation commands pass:
-  - [ ] Run `pnpm all`
-  - [ ] Run `pnpm e2e:dms-material`
-  - [ ] Run `pnpm dupcheck`
-  - [ ] Run `pnpm format`
-  - [ ] Repeat all of these if any fail until they all pass
+- [x] All tests written and disabled (RED phase)
+- [x] Tests cover all acceptance criteria scenarios
+- [x] Tests disabled to allow CI to pass
+- [x] Test code follows project conventions
+- [x] All validation commands pass:
+  - [x] Run `pnpm all`
+  - [x] Run `pnpm e2e:dms-material`
+  - [x] Run `pnpm dupcheck`
+  - [x] Run `pnpm format`
+  - [x] Repeat all of these if any fail until they all pass
 - [ ] Code reviewed and approved
 
 ## Notes
@@ -134,9 +134,10 @@
 
 ## Change Log
 
-| Date       | Version | Description      | Author |
-| ---------- | ------- | ---------------- | ------ |
-| 2026-02-24 | 1.0     | Initial creation | SM     |
+| Date       | Version | Description                                                                                                                               | Author    |
+| ---------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------- | --------- |
+| 2026-02-24 | 1.0     | Initial creation                                                                                                                          | SM        |
+| 2026-02-24 | 1.1     | Implemented TDD RED phase tests for import service (15 unit tests) and endpoint (13 integration tests), all disabled with describe.skip() | Dev Agent |
 
 ---
 
@@ -144,19 +145,24 @@
 
 ### Agent Model Used
 
-_To be populated during implementation_
+Claude Opus 4.6 (copilot)
 
 ### Debug Log References
 
-_To be populated during implementation_
+None - all tests created successfully on first attempt.
 
 ### Completion Notes List
 
-_To be populated during implementation_
+- Created import service unit test file with 15 tests covering purchases, sales, dividends, cash deposits, account validation, transaction validation, error aggregation, mixed transactions, and idempotency
+- Created endpoint integration test file with 13 tests covering file upload handling, success/error response formats, authentication, and edge cases
+- All tests wrapped in `describe.skip()` to allow CI to pass (TDD RED phase)
+- Tests reference `importFidelityTransactions` function and import route handler that do not exist yet
 
 ### File List
 
-_To be populated during implementation_
+- `apps/server/src/app/routes/import/fidelity-import-service.function.spec.ts` - Created (import service unit tests)
+- `apps/server/src/app/routes/import/fidelity-import.endpoint.spec.ts` - Created (endpoint integration tests)
+- `docs/stories/AR.2-tdd.import-service.md` - Modified (story updates)
 
 ---
 
