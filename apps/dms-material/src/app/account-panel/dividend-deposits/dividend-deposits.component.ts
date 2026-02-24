@@ -55,12 +55,10 @@ export class DividendDepositsComponent {
       .pipe(
         filter(function hasResult(result: unknown): result is DivDeposit {
           return result !== null && result !== undefined;
-        }),
-        switchMap(function addToStore(result: DivDeposit) {
-          return context.effectsService.add(result);
         })
       )
-      .subscribe(function onAdd() {
+      .subscribe(function onAdd(result: DivDeposit) {
+        context.dividendDepositsService.addDivDeposit(result);
         context.notification.success('Dividend added successfully');
       });
   }

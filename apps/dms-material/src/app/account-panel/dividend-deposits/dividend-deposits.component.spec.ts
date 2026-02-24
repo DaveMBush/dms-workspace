@@ -12,11 +12,31 @@ import { DivDeposit } from '../../store/div-deposits/div-deposit.interface';
 import { divDepositsEffectsServiceToken } from '../../store/div-deposits/div-deposits-effect-service-token';
 import { DividendDepositsComponent } from './dividend-deposits.component';
 import { DividendDepositsComponentService } from './dividend-deposits-component.service';
+// Mock selectDivDepositTypes to avoid SmartNgRX initialization from DivDepModal
+vi.mock(
+  '../../store/div-deposit-types/selectors/select-div-deposit-types.function',
+  () => ({
+    selectDivDepositTypes: vi.fn().mockReturnValue([]),
+  })
+);
+
+// Mock selectUniverses to avoid SmartNgRX initialization from DivDepModal
+vi.mock('../../store/universe/selectors/select-universes.function', () => ({
+  selectUniverses: vi.fn().mockReturnValue([]),
+}));
 
 // Mock selectDivDepositEntity to avoid SmartNgRX initialization
 vi.mock('../../store/div-deposits/div-deposits.selectors', () => ({
   selectDivDepositEntity: vi.fn().mockReturnValue({}),
 }));
+
+// Mock selectDivDepositTypeEntity to avoid SmartNgRX initialization
+vi.mock(
+  '../../store/div-deposit-types/selectors/select-div-deposit-type-entity.function',
+  () => ({
+    selectDivDepositTypeEntity: vi.fn().mockReturnValue({}),
+  })
+);
 
 // Mock selectTopEntities to avoid SmartNgRX initialization
 vi.mock('../../store/top/selectors/select-top-entities.function', () => ({
@@ -35,6 +55,19 @@ vi.mock(
 vi.mock('../../store/accounts/selectors/select-accounts.function', () => ({
   selectAccounts: vi.fn().mockReturnValue([]),
 }));
+
+// Mock selectTradesEntity to avoid SmartNgRX initialization
+vi.mock('../../store/trades/selectors/select-trades-entity.function', () => ({
+  selectTradesEntity: vi.fn().mockReturnValue({}),
+}));
+
+// Mock selectAccountChildren to avoid SmartNgRX initialization
+vi.mock(
+  '../../store/trades/selectors/select-account-children.function',
+  () => ({
+    selectAccountChildren: vi.fn().mockReturnValue({ entities: {} }),
+  })
+);
 
 // Helper to create test DivDeposit data
 function createDivDeposit(overrides: Partial<DivDeposit> = {}): DivDeposit {
@@ -64,12 +97,14 @@ describe('DividendDepositsComponent', () => {
   let mockDividendDepositsService: {
     dividends: WritableSignal<DivDeposit[]>;
     selectedAccountId: WritableSignal<string>;
+    addDivDeposit: ReturnType<typeof vi.fn>;
   };
 
   beforeEach(async () => {
     mockDividendDepositsService = {
       dividends: signal<DivDeposit[]>([]),
       selectedAccountId: signal<string>(''),
+      addDivDeposit: vi.fn(),
     };
 
     mockDialog = {
@@ -311,6 +346,7 @@ describe('DividendDepositsComponent - Add Dialog SmartNgRX Integration (AQ.3)', 
   let mockDividendDepositsService: {
     dividends: WritableSignal<DivDeposit[]>;
     selectedAccountId: WritableSignal<string>;
+    addDivDeposit: ReturnType<typeof vi.fn>;
   };
   let mockEffectsService: { add: ReturnType<typeof vi.fn> };
 
@@ -318,6 +354,7 @@ describe('DividendDepositsComponent - Add Dialog SmartNgRX Integration (AQ.3)', 
     mockDividendDepositsService = {
       dividends: signal<DivDeposit[]>([]),
       selectedAccountId: signal<string>(''),
+      addDivDeposit: vi.fn(),
     };
 
     mockDialogRef = {
@@ -408,38 +445,38 @@ describe('DividendDepositsComponent - Add Dialog SmartNgRX Integration (AQ.3)', 
     expect(mockNotification.success).not.toHaveBeenCalled();
   });
 
-  // AC 5: Tests verify data passed to SmartNgRX add method
-  it('should call effectsService.add with data returned from dialog', () => {
+  // AC 5: Tests verify data passed to SmartNgRX add method via service
+  it('should call dividendDepositsService.addDivDeposit with data returned from dialog', () => {
     const mockData = createDivDeposit({ id: 'dep-new', amount: 150 });
     mockDialogRef.afterClosed.mockReturnValue(of(mockData));
 
     component.onAddDividend();
 
-    expect(mockEffectsService.add).toHaveBeenCalledWith(mockData);
+    expect(mockDividendDepositsService.addDivDeposit).toHaveBeenCalledWith(
+      mockData
+    );
   });
 
   // AC 5 (negative): Tests verify add NOT called when dialog is cancelled
-  it('should not call effectsService.add when dialog is cancelled', () => {
+  it('should not call dividendDepositsService.addDivDeposit when dialog is cancelled', () => {
     mockDialogRef.afterClosed.mockReturnValue(of(null));
 
     component.onAddDividend();
 
-    expect(mockEffectsService.add).not.toHaveBeenCalled();
+    expect(mockDividendDepositsService.addDivDeposit).not.toHaveBeenCalled();
   });
 
-  // AC 6: Tests verify table refreshes after add
-  // The SmartNgRX store is reactive — after add() succeeds, the store
-  // updates dividends$ automatically. This test verifies the dividends
-  // signal updates when the service adds a new dividend.
-  it('should update dividends after successful add', () => {
+  // AC 6: Tests verify that addDivDeposit is called — SmartNgRX handles store update
+  it('should call addDivDeposit after successful dialog close', () => {
     const newDividend = createDivDeposit({ id: 'dep-new', amount: 150 });
     mockDialogRef.afterClosed.mockReturnValue(of(newDividend));
-    mockEffectsService.add.mockReturnValue(of([newDividend]));
 
     component.onAddDividend();
 
-    // After add, the store should have been updated — signal should reflect 1 entry
-    expect(mockEffectsService.add).toHaveBeenCalledWith(newDividend);
+    // SmartNgRX store is updated by addDivDeposit (SmartArray.add! pattern)
+    expect(mockDividendDepositsService.addDivDeposit).toHaveBeenCalledWith(
+      newDividend
+    );
   });
 });
 

@@ -1,53 +1,82 @@
+<!-- eslint-disable @angular-eslint/template/cyclomatic-complexity -- form conditionals require branching -->
 <h2 mat-dialog-title>{{ title }}</h2>
 
-<mat-dialog-content>
-  <form [formGroup]="form" class="flex flex-col gap-4 p-4">
-    <div class="flex flex-row gap-4">
-      <mat-form-field appearance="outline" class="flex-1">
-        <mat-label>Symbol</mat-label>
-        <input matInput formControlName="symbol" [readonly]="isEditMode" />
-        @if (symbolHasError$()) {
-        <mat-error>Symbol is required</mat-error>
-        }
-      </mat-form-field>
+<mat-dialog-content class="dialog-content">
+  <form [formGroup]="form" class="form-grid">
+    <div class="form-row">
+      @if (isEditMode) {
+      <div class="field-wrapper">
+        <mat-form-field appearance="outline">
+          <mat-label>Symbol</mat-label>
+          <input matInput formControlName="symbol" [readonly]="true" />
+          @if (symbolControl.errors?.['required'] && symbolControl.touched) {
+          <mat-error>Symbol is required</mat-error>
+          }
+        </mat-form-field>
+      </div>
+      } @else {
+      <div class="symbol-field-wrapper">
+        <dms-symbol-autocomplete
+          [searchFn]="symbolSearchFnBound"
+          [label]="'Symbol'"
+          [placeholder]="'Search for a symbol...'"
+          (symbolSelected)="onSymbolSelected($event)"
+          (symbolBlurred)="onSymbolBlur()"
+        ></dms-symbol-autocomplete>
+        @if (symbolControl.invalid && (symbolControl.dirty ||
+        symbolControl.touched)) { @if (symbolControl.errors?.['required']) {
+        <div class="validation-error">Symbol is required</div>
+        } @if (symbolControl.errors?.['invalidSymbol']) {
+        <div class="validation-error">Symbol does not exist in universe</div>
+        } }
+      </div>
+      }
 
-      <mat-form-field appearance="outline" class="flex-1">
-        <mat-label>Date</mat-label>
-        <input matInput [matDatepicker]="datePicker" formControlName="date" />
-        <mat-datepicker-toggle
-          matSuffix
-          [for]="datePicker"
-        ></mat-datepicker-toggle>
-        <mat-datepicker #datePicker></mat-datepicker>
-        @if (dateHasError$()) {
-        <mat-error>Date is required</mat-error>
-        }
-      </mat-form-field>
+      <div class="field-wrapper">
+        <mat-form-field appearance="outline">
+          <mat-label>Date</mat-label>
+          <input matInput [matDatepicker]="datePicker" formControlName="date" />
+          <mat-datepicker-toggle
+            matSuffix
+            [for]="datePicker"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #datePicker></mat-datepicker>
+          @if (dateHasError$()) {
+          <mat-error>Date is required</mat-error>
+          }
+        </mat-form-field>
+      </div>
     </div>
 
-    <div class="flex flex-row gap-4">
-      <mat-form-field appearance="outline" class="flex-1">
-        <mat-label>Amount</mat-label>
-        <input
-          matInput
-          type="text"
-          inputmode="decimal"
-          formControlName="amount"
-        />
-        <span matPrefix>$&nbsp;</span>
-        @if (amountHasError$()) {
-        <mat-error>Amount is required</mat-error>
-        }
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="flex-1">
-        <mat-label>Type</mat-label>
-        <mat-select formControlName="type">
-          @for (type of depositTypes; track type) {
-          <mat-option [value]="type">{{ type }}</mat-option>
+    <div class="form-row">
+      <div class="field-wrapper">
+        <mat-form-field appearance="outline">
+          <mat-label>Amount</mat-label>
+          <input
+            matInput
+            type="text"
+            inputmode="decimal"
+            formControlName="amount"
+          />
+          <span matPrefix>$&nbsp;</span>
+          @if (amountHasError$()) {
+          <mat-error>Amount is required</mat-error>
           }
-        </mat-select>
-      </mat-form-field>
+        </mat-form-field>
+      </div>
+
+      <div class="field-wrapper">
+        <mat-form-field appearance="outline">
+          <mat-label>Type</mat-label>
+          <mat-select formControlName="divDepositTypeId">
+            @for (depositType of depositTypes$(); track depositType.id) {
+            <mat-option [value]="depositType.id">{{
+              depositType.name
+            }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
     </div>
   </form>
 </mat-dialog-content>
@@ -61,13 +90,7 @@
     [disabled]="isLoading$()"
     class="bg-green-600 hover:bg-green-700"
   >
-    @if (isLoading$()) {
-    <mat-spinner diameter="20"></mat-spinner>
-    } @else {
-    <ng-container>
-      <mat-icon>check</mat-icon>
-      <span class="ml-1">{{ buttonLabel$() }}</span>
-    </ng-container>
-    }
+    <mat-icon>check</mat-icon>
+    <span class="ml-1">{{ buttonLabel$() }}</span>
   </button>
 </mat-dialog-actions>

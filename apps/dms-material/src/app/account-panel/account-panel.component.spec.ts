@@ -1,7 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { provideRouter } from '@angular/router';
+import { Subject } from 'rxjs';
 
 import { AccountPanelComponent } from './account-panel.component';
+import { DividendDepositsComponentService } from './dividend-deposits/dividend-deposits-component.service';
 
 // Mock the entire selectTrades module to avoid SmartNgRX initialization
 vi.mock('../store/trades/selectors/select-trades.function', () => ({
@@ -37,6 +40,22 @@ vi.mock('../store/accounts/selectors/select-accounts.function', () => ({
 vi.mock('../store/div-deposits/div-deposits.selectors', () => ({
   selectDivDepositEntity: vi.fn().mockReturnValue([]),
 }));
+
+// Mock selectDivDepositTypes to avoid SmartNgRX initialization from DivDepModal
+vi.mock(
+  '../store/div-deposit-types/selectors/select-div-deposit-types.function',
+  () => ({
+    selectDivDepositTypes: vi.fn().mockReturnValue([]),
+  })
+);
+
+// Mock selectDivDepositTypeEntity to avoid SmartNgRX initialization
+vi.mock(
+  '../store/div-deposit-types/selectors/select-div-deposit-type-entity.function',
+  () => ({
+    selectDivDepositTypeEntity: vi.fn().mockReturnValue({}),
+  })
+);
 
 describe('AccountPanelComponent', () => {
   let component: AccountPanelComponent;
@@ -88,5 +107,67 @@ describe('AccountPanelComponent', () => {
   it('should render router outlet', () => {
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('router-outlet')).toBeTruthy();
+  });
+
+  describe('onAddDividend via onAddClick', () => {
+    let dialogClosedSubject: Subject<unknown>;
+    let mockDialogRef: Partial<MatDialogRef<unknown>>;
+    let mockDialog: Partial<MatDialog>;
+    let addDivDepositSpy: ReturnType<typeof vi.spyOn>;
+
+    beforeEach(() => {
+      dialogClosedSubject = new Subject<unknown>();
+      mockDialogRef = {
+        afterClosed: vi.fn().mockReturnValue(dialogClosedSubject.asObservable()),
+      };
+      mockDialog = {
+        open: vi.fn().mockReturnValue(mockDialogRef),
+      };
+
+      Object.defineProperty(component, 'dialog' as keyof AccountPanelComponent, {
+        get: () => mockDialog,
+        configurable: true,
+      });
+
+      addDivDepositSpy = vi
+        .spyOn(
+          TestBed.inject(DividendDepositsComponentService),
+          'addDivDeposit'
+        )
+        .mockImplementation(() => undefined);
+    });
+
+    it('should open DivDepModal dialog when on div-dep route', () => {
+      Object.assign(component, { isDivDepRoute$: vi.fn().mockReturnValue(true) });
+      component.onAddClick();
+      expect(mockDialog.open).toHaveBeenCalledOnce();
+    });
+
+    it('should call addDivDeposit when dialog closes with a result', () => {
+      Object.assign(component, { isDivDepRoute$: vi.fn().mockReturnValue(true) });
+      component.onAddClick();
+      const mockResult = {
+        date: new Date(),
+        amount: 0.5,
+        divDepositTypeId: 'type-1',
+        universeId: 'universe-1',
+      };
+      dialogClosedSubject.next(mockResult);
+      expect(addDivDepositSpy).toHaveBeenCalledWith(mockResult);
+    });
+
+    it('should not call addDivDeposit when dialog closes with null', () => {
+      Object.assign(component, { isDivDepRoute$: vi.fn().mockReturnValue(true) });
+      component.onAddClick();
+      dialogClosedSubject.next(null);
+      expect(addDivDepositSpy).not.toHaveBeenCalled();
+    });
+
+    it('should not call addDivDeposit when dialog closes with undefined', () => {
+      Object.assign(component, { isDivDepRoute$: vi.fn().mockReturnValue(true) });
+      component.onAddClick();
+      dialogClosedSubject.next(undefined);
+      expect(addDivDepositSpy).not.toHaveBeenCalled();
+    });
   });
 });
