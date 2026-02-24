@@ -17,7 +17,7 @@ Creates import routine to parse Fidelity transaction exports and populate trades
 - Dividends should be treated the same as how we treat them manually. Refer to the 'Dividends Deposits' tab for an account. Add 'Add Dividend Deposit' button.
 - Cash deposits should be treated the same as how we treat them manually. Refer to the 'Dividend Deposits' tab for an account.
 - Dividends and Cash Deposits are added by the same screen.
-- Ask if it is unclear how to handle a row in the CSV. If there is a row that doesn't fit into one of the above categories, ask for clarification on how to handle it.
+- Ask, using .github/prompts/prompt.sh, if it is unclear how to handle a row in the CSV. If there is a row that doesn't fit into one of the above categories, ask for clarification on how to handle it.
 
 ## Stories
 
