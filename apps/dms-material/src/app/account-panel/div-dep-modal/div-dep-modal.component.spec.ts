@@ -12,6 +12,7 @@ vi.mock(
     selectDivDepositTypes: vi.fn().mockReturnValue([
       { id: 'type-1', name: 'Regular' },
       { id: 'type-2', name: 'Special' },
+      { id: 'type-deposit', name: 'Deposit' },
     ]),
   })
 );
@@ -139,6 +140,48 @@ describe('DivDepModal', () => {
       });
       component.onSubmit();
       expect(mockDialogRef.close).toHaveBeenCalled();
+    });
+  });
+
+  describe('deposit type behavior', () => {
+    beforeEach(() => {
+      createComponent({ mode: 'add' });
+      component.ngOnInit();
+    });
+
+    it('should not require symbol when type is Deposit', () => {
+      component.form.get('divDepositTypeId')?.setValue('type-deposit');
+      component.form.get('symbol')?.markAsTouched();
+      expect(component.form.get('symbol')?.hasError('required')).toBe(false);
+    });
+
+    it('should require symbol when type is not Deposit', () => {
+      component.form.get('divDepositTypeId')?.setValue('type-1');
+      component.form.get('symbol')?.markAsTouched();
+      expect(component.form.get('symbol')?.hasError('required')).toBe(true);
+    });
+
+    it('should submit with no symbol when type is Deposit', () => {
+      component.form.patchValue({
+        divDepositTypeId: 'type-deposit',
+        date: new Date(),
+        amount: 0.5,
+      });
+      component.onSubmit();
+      expect(mockDialogRef.close).toHaveBeenCalled();
+      const callArg = mockDialogRef.close.mock.calls[0][0] as {
+        universeId: string | null;
+      };
+      expect(callArg.universeId).toBeNull();
+    });
+
+    it('should still validate symbol format when type is Deposit and symbol entered', () => {
+      component.form.get('divDepositTypeId')?.setValue('type-deposit');
+      component.form.get('symbol')?.setValue('NOTEXIST');
+      component.form.get('symbol')?.markAsTouched();
+      expect(component.form.get('symbol')?.hasError('invalidSymbol')).toBe(
+        true
+      );
     });
   });
 

@@ -63,6 +63,7 @@ export class DivDepModal implements OnInit, AfterViewInit {
   data = inject<DivDepModalData>(MAT_DIALOG_DATA);
 
   isLoading$ = signal(false);
+  readonly selectedDepositTypeId = signal('');
 
   private selectedUniverseId: string | null = null;
   private selectedSymbolId: string | null = null;
@@ -71,6 +72,18 @@ export class DivDepModal implements OnInit, AfterViewInit {
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signal
   readonly depositTypes$ = computed(() => selectDivDepositTypes());
+
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signal
+  readonly isDepositType$ = computed(() => {
+    const types = selectDivDepositTypes();
+    const id = this.selectedDepositTypeId();
+    for (let i = 0; i < types.length; i++) {
+      if (types[i].id === id) {
+        return types[i].name === 'Deposit';
+      }
+    }
+    return false;
+  });
 
   form = this.fb.group({
     symbol: ['', [Validators.required, this.symbolExistsValidator.bind(this)]],
@@ -118,7 +131,15 @@ export class DivDepModal implements OnInit, AfterViewInit {
         amount: this.data.dividend.amount,
         divDepositTypeId: this.data.dividend.divDepositTypeId ?? '',
       });
+      this.selectedDepositTypeId.set(this.data.dividend.divDepositTypeId ?? '');
+      this.updateSymbolValidators();
     }
+    const self = this;
+    function onTypeChange(typeId: string | null): void {
+      self.selectedDepositTypeId.set(typeId ?? '');
+      self.updateSymbolValidators();
+    }
+    this.form.get('divDepositTypeId')!.valueChanges.subscribe(onTypeChange);
   }
 
   ngAfterViewInit(): void {
@@ -157,7 +178,10 @@ export class DivDepModal implements OnInit, AfterViewInit {
   }
 
   onSubmit(): void {
-    if (this.form.invalid || this.selectedUniverseId === null) {
+    if (
+      this.form.invalid ||
+      (!this.isDepositType$() && this.selectedUniverseId === null)
+    ) {
       this.form.markAllAsTouched();
       return;
     }
@@ -204,6 +228,17 @@ export class DivDepModal implements OnInit, AfterViewInit {
 
   onCancel(): void {
     this.dialogRef.close(null);
+  }
+
+  private updateSymbolValidators(): void {
+    const symbolCtrl = this.form.get('symbol')!;
+    if (this.isDepositType$()) {
+      symbolCtrl.removeValidators(Validators.required);
+    } else {
+      symbolCtrl.addValidators(Validators.required);
+    }
+    symbolCtrl.updateValueAndValidity({ emitEvent: false });
+    this.cdr.markForCheck();
   }
 
   // Validator: finds first exact then partial case-insensitive match.
