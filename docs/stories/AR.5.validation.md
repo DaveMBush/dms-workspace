@@ -1,6 +1,6 @@
 # Story AR.5: Add Validation and Error Reporting
 
-**Status:** Draft
+**Status:** Approved
 
 ## Story
 

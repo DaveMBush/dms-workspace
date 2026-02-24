@@ -1,6 +1,6 @@
 # Story AR.2-TDD: Write Unit Tests for Import Service and Backend Endpoint - TDD RED Phase
 
-**Status:** Draft
+**Status:** Approved
 
 ## Story
 

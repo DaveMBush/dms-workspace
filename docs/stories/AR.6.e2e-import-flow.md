@@ -1,6 +1,6 @@
 # Story AR.6: Add E2E Tests for Import Flow
 
-**Status:** Draft
+**Status:** Approved
 
 ## Story
 

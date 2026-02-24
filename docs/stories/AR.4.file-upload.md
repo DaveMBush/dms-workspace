@@ -1,6 +1,6 @@
 # Story AR.4: Implement File Upload and Processing
 
-**Status:** Draft
+**Status:** Approved
 
 ## Story
 

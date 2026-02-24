@@ -1,6 +1,6 @@
 # Story AR.3: Build Import UI Dialog on Global/Universe Screen
 
-**Status:** Draft
+**Status:** Approved
 
 ## Story
 

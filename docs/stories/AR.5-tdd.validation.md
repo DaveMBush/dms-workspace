@@ -1,6 +1,6 @@
 # Story AR.5-TDD: Write Unit Tests for Validation and Error Reporting - TDD RED Phase
 
-**Status:** Draft
+**Status:** Approved
 
 ## Story
 

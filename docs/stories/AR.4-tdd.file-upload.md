@@ -1,6 +1,6 @@
 # Story AR.4-TDD: Write Unit Tests for File Upload and Processing - TDD RED Phase
 
-**Status:** Draft
+**Status:** Approved
 
 ## Story
 

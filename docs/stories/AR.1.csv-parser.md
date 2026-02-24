@@ -1,6 +1,6 @@
 # Story AR.1: Implement Fidelity CSV Parser and Data Mapper
 
-**Status:** Draft
+**Status:** Approved
 
 ## Story
 

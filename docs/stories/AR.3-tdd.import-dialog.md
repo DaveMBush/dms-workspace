@@ -1,6 +1,6 @@
 # Story AR.3-TDD: Write Unit Tests for Import UI Dialog - TDD RED Phase
 
-**Status:** Draft
+**Status:** Approved
 
 ## Story
 

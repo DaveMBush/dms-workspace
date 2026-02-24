@@ -1,6 +1,6 @@
 # Story AR.2: Create Import Service and Backend Endpoint
 
-**Status:** Draft
+**Status:** Approved
 
 ## Story
 

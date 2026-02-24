@@ -1,6 +1,6 @@
 # Story AR.1-TDD: Write Unit Tests for Fidelity CSV Parser and Data Mapper - TDD RED Phase
 
-**Status:** Draft
+**Status:** Approved
 
 ## Story
 
