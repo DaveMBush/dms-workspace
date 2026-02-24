@@ -166,6 +166,16 @@ test.describe('Dividend Deposits', () => {
       page,
     }) => {
       await openAddDialog(page);
+      // Explicitly select a type that requires a symbol so the test does not
+      // rely on the form's default empty-string state
+      await page
+        .locator('mat-select[formControlName="divDepositTypeId"]')
+        .click();
+      await page
+        .locator('mat-option')
+        .filter({ hasText: 'Dividend' })
+        .first()
+        .click();
       // Blur the symbol autocomplete input without entering a value
       await page.locator('[data-testid="symbol-input"]').click();
       await page.locator('[data-testid="symbol-input"]').blur();

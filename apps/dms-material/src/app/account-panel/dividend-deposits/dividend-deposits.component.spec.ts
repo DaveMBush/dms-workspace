@@ -358,6 +358,7 @@ describe('DividendDepositsComponent - Add Dialog SmartNgRX Integration (AQ.3)', 
     dividends: WritableSignal<DivDeposit[]>;
     selectedAccountId: WritableSignal<string>;
     addDivDeposit: ReturnType<typeof vi.fn>;
+    deleteDivDeposit: ReturnType<typeof vi.fn>;
   };
   let mockEffectsService: { add: ReturnType<typeof vi.fn> };
 
@@ -366,6 +367,7 @@ describe('DividendDepositsComponent - Add Dialog SmartNgRX Integration (AQ.3)', 
       dividends: signal<DivDeposit[]>([]),
       selectedAccountId: signal<string>(''),
       addDivDeposit: vi.fn(),
+      deleteDivDeposit: vi.fn(),
     };
 
     mockDialogRef = {
@@ -502,6 +504,7 @@ describe('DividendDepositsComponent - Edit Dialog SmartNgRX Integration (AQ.5)',
   let mockDividendDepositsService: {
     dividends: WritableSignal<DivDeposit[]>;
     selectedAccountId: WritableSignal<string>;
+    deleteDivDeposit: ReturnType<typeof vi.fn>;
   };
   let mockEffectsService: {
     add: ReturnType<typeof vi.fn>;
@@ -512,6 +515,7 @@ describe('DividendDepositsComponent - Edit Dialog SmartNgRX Integration (AQ.5)',
     mockDividendDepositsService = {
       dividends: signal<DivDeposit[]>([]),
       selectedAccountId: signal<string>(''),
+      deleteDivDeposit: vi.fn(),
     };
 
     mockDialogRef = {
@@ -773,5 +777,8 @@ describe('DividendDepositsComponent - Delete Dialog SmartNgRX Integration (AQ.7)
     expect(mockDividendDepositsService.deleteDivDeposit).toHaveBeenCalledWith(
       dividend.id
     );
+    // Regression guard: delete must go through SmartNgRX service,
+    // not raw effectsService.delete
+    expect(mockEffectsService.delete).not.toHaveBeenCalled();
   });
 });
