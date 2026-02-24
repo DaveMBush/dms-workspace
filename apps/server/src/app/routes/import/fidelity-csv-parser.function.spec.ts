@@ -2,7 +2,7 @@ import { describe, expect, test } from 'vitest';
 
 import { parseFidelityCsv } from './fidelity-csv-parser.function';
 
-describe.skip('parseFidelityCsv', function () {
+describe('parseFidelityCsv', function () {
   describe('valid CSV parsing', function () {
     test('should parse a single purchase row', function () {
       const csv = [

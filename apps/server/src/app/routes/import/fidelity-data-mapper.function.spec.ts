@@ -32,7 +32,7 @@ interface ParsedCsvRow {
   account: string;
 }
 
-describe.skip('mapFidelityTransactions', function () {
+describe('mapFidelityTransactions', function () {
   beforeEach(function () {
     vi.clearAllMocks();
   });
