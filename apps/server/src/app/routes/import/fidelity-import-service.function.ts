@@ -39,9 +39,22 @@ async function processPurchase(trade: MappedTrade): Promise<void> {
 
 /**
  * Processes a sale by finding a matching open trade and updating it with sell data.
+ * Checks for already-closed trades to ensure idempotency on re-import.
  * Returns an error message if no matching open trade is found.
  */
 async function processSale(sale: MappedSale): Promise<string | null> {
+  const alreadyClosed = await prisma.trades.findFirst({
+    where: {
+      universeId: sale.universeId,
+      accountId: sale.accountId,
+      quantity: sale.quantity,
+      sell: sale.sell,
+      sell_date: new Date(sale.sell_date),
+    },
+  });
+  if (alreadyClosed) {
+    return null;
+  }
   const openTrade = await prisma.trades.findFirst({
     where: {
       universeId: sale.universeId,
@@ -118,7 +131,12 @@ async function processTrades(
       await processPurchase(trade);
       count++;
     } catch (error) {
-      errors.push(formatError('Failed to import purchase', error));
+      errors.push(
+        formatError(
+          `Failed to import purchase: account=${trade.accountId}, universe=${trade.universeId}`,
+          error
+        )
+      );
     }
   }
   return count;
@@ -170,7 +188,14 @@ async function processDeposits(
       await processDivDeposit(deposit);
       count++;
     } catch (error) {
-      errors.push(formatError('Failed to import deposit', error));
+      errors.push(
+        formatError(
+          `Failed to import deposit: account=${
+            deposit.accountId
+          }, universe=${String(deposit.universeId)}`,
+          error
+        )
+      );
     }
   }
   return count;

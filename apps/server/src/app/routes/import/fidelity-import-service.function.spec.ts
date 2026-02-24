@@ -150,7 +150,9 @@ describe('importFidelityTransactions', function () {
         },
       ];
       mapFidelityTransactions.mockResolvedValue(mapped);
-      prisma.trades.findFirst.mockResolvedValue({ id: 't1' });
+      prisma.trades.findFirst
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce({ id: 't1' });
       prisma.trades.update.mockResolvedValue({ id: 't1' });
 
       const result = await importFidelityTransactions('csv content');
@@ -489,6 +491,7 @@ describe('importFidelityTransactions', function () {
       ];
       mapFidelityTransactions.mockResolvedValue(mapped);
       prisma.trades.findFirst
+        .mockResolvedValueOnce(null)
         .mockResolvedValueOnce(null)
         .mockResolvedValueOnce({ id: 't1' });
       prisma.trades.create.mockResolvedValue({ id: 't2' });
