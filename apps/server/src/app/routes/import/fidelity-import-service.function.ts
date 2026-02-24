@@ -66,8 +66,21 @@ async function processSale(sale: MappedSale): Promise<string | null> {
 
 /**
  * Creates a dividend deposit record in the database.
+ * Checks for duplicate deposits to ensure idempotency.
  */
 async function processDivDeposit(deposit: MappedDivDeposit): Promise<void> {
+  const existing = await prisma.divDeposits.findFirst({
+    where: {
+      date: new Date(deposit.date),
+      amount: deposit.amount,
+      accountId: deposit.accountId,
+      divDepositTypeId: deposit.divDepositTypeId,
+      universeId: deposit.universeId,
+    },
+  });
+  if (existing) {
+    return;
+  }
   await prisma.divDeposits.create({
     data: {
       date: new Date(deposit.date),

@@ -1,4 +1,4 @@
-import { describe, expect, test, vi, beforeEach } from 'vitest';
+import { afterEach, describe, expect, test, vi, beforeEach } from 'vitest';
 
 import type { ImportResult } from './import-result.interface';
 
@@ -36,8 +36,12 @@ describe('POST /api/import/fidelity endpoint', function () {
     app = buildApp();
   });
 
+  afterEach(async function closeApp() {
+    await app.close();
+  });
+
   describe('file upload handling', function () {
-    test('should accept multipart/form-data file upload', async function () {
+    test('should accept raw CSV text body', async function () {
       const successResult: ImportResult = {
         success: true,
         imported: 5,

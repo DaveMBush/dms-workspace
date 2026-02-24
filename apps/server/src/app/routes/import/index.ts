@@ -41,30 +41,16 @@ async function handleFidelityImport(
 
 /**
  * Extracts CSV content from the request body.
- * Supports both plain text body and multipart form data with a 'file' field.
+ * Expects plain text body (Fastify parses text/plain natively).
  */
 function extractCsvContent(request: FastifyRequest): string | null {
   const body: unknown = request.body;
   if (typeof body === 'string') {
     return body.trim().length > 0 ? body : null;
   }
-  if (typeof body === 'object' && body !== null && 'file' in body) {
-    const file = (body as Record<string, unknown>).file;
-    if (typeof file === 'string') {
-      return file.trim().length > 0 ? file : null;
-    }
-  }
   return null;
 }
 
 export default function registerImportRoutes(fastify: FastifyInstance): void {
-  fastify.post(
-    '/fidelity',
-    {
-      config: {
-        rawBody: true,
-      },
-    },
-    handleFidelityImport
-  );
+  fastify.post('/fidelity', handleFidelityImport);
 }

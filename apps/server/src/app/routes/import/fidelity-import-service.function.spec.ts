@@ -21,6 +21,7 @@ vi.mock('../../prisma/prisma-client', function () {
       },
       divDeposits: {
         create: vi.fn(),
+        findFirst: vi.fn(),
       },
     },
   };
@@ -44,7 +45,7 @@ describe('importFidelityTransactions', function () {
   let mapFidelityTransactions: Mock;
   let prisma: {
     trades: { create: Mock; findFirst: Mock; update: Mock };
-    divDeposits: { create: Mock };
+    divDeposits: { create: Mock; findFirst: Mock };
   };
 
   function emptyResult(): MappedTransactionResult {
@@ -65,7 +66,7 @@ describe('importFidelityTransactions', function () {
     const mapperModule = await import('./fidelity-data-mapper.function');
     mapFidelityTransactions = mapperModule.mapFidelityTransactions as Mock;
     const prismaModule = await import('../../prisma/prisma-client');
-    prisma = (prismaModule as { prisma: typeof prisma }).prisma;
+    prisma = (prismaModule as unknown as { prisma: typeof prisma }).prisma;
   });
 
   describe('importing purchases (creates trades)', function () {
@@ -201,6 +202,7 @@ describe('importFidelityTransactions', function () {
         },
       ];
       mapFidelityTransactions.mockResolvedValue(mapped);
+      prisma.divDeposits.findFirst.mockResolvedValue(null);
       prisma.divDeposits.create.mockResolvedValue({ id: 'dd1' });
 
       const result = await importFidelityTransactions('csv content');
@@ -237,6 +239,7 @@ describe('importFidelityTransactions', function () {
         },
       ];
       mapFidelityTransactions.mockResolvedValue(mapped);
+      prisma.divDeposits.findFirst.mockResolvedValue(null);
       prisma.divDeposits.create.mockResolvedValue({ id: 'dd1' });
 
       const result = await importFidelityTransactions('csv content');
@@ -261,6 +264,7 @@ describe('importFidelityTransactions', function () {
         },
       ];
       mapFidelityTransactions.mockResolvedValue(mapped);
+      prisma.divDeposits.findFirst.mockResolvedValue(null);
       prisma.divDeposits.create.mockResolvedValue({ id: 'dd1' });
 
       const result = await importFidelityTransactions('csv content');
@@ -383,7 +387,7 @@ describe('importFidelityTransactions', function () {
       const result = await importFidelityTransactions('csv content');
 
       expect(result.success).toBe(false);
-      expect(result.errors.length).toBeGreaterThanOrEqual(1);
+      expect(result.errors).toHaveLength(2);
     });
 
     test('should return both successes and failures in partial success scenario', async function () {
@@ -489,6 +493,7 @@ describe('importFidelityTransactions', function () {
         .mockResolvedValueOnce({ id: 't1' });
       prisma.trades.create.mockResolvedValue({ id: 't2' });
       prisma.trades.update.mockResolvedValue({ id: 't1' });
+      prisma.divDeposits.findFirst.mockResolvedValue(null);
       prisma.divDeposits.create.mockResolvedValue({ id: 'dd1' });
 
       const result = await importFidelityTransactions('csv content');
