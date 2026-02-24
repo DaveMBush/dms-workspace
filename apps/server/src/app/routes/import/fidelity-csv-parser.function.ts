@@ -22,11 +22,17 @@ function cleanNumericValue(value: string): string {
  * Parses a numeric field value, throwing if the result is not a valid number.
  */
 function parseNumericField(value: string, fieldName: string): number {
-  const cleaned = cleanNumericValue(value.trim());
-  const num = Number(cleaned);
-  if (isNaN(num)) {
+  const trimmed = value.trim();
+  const cleaned = cleanNumericValue(trimmed);
+  if (cleaned.length === 0) {
     throw new Error(
-      `Invalid ${fieldName}: expected a number but got "${value.trim()}"`
+      `Invalid ${fieldName}: expected a number but got empty value`
+    );
+  }
+  const num = Number(cleaned);
+  if (Number.isNaN(num)) {
+    throw new Error(
+      `Invalid ${fieldName}: expected a number but got "${trimmed}"`
     );
   }
   return num;
@@ -36,22 +42,23 @@ function parseNumericField(value: string, fieldName: string): number {
  * Splits a CSV line respecting quoted fields (handles commas inside quotes).
  */
 function splitCsvLine(line: string): string[] {
+  const normalized = line.replace(/""/g, '\0');
   const fields: string[] = [];
   let current = '';
   let inQuotes = false;
 
-  for (let i = 0; i < line.length; i++) {
-    const char = line[i];
+  for (let i = 0; i < normalized.length; i++) {
+    const char = normalized[i];
     if (char === '"') {
       inQuotes = !inQuotes;
     } else if (char === ',' && !inQuotes) {
-      fields.push(current);
+      fields.push(current.replace(/\0/g, '"'));
       current = '';
     } else {
       current += char;
     }
   }
-  fields.push(current);
+  fields.push(current.replace(/\0/g, '"'));
 
   return fields;
 }

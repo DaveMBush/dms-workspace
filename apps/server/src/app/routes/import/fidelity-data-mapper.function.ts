@@ -106,11 +106,14 @@ async function mapDividend(
   const depositType = await prisma.divDepositType.findFirst({
     where: { name: 'Dividend' },
   });
+  if (!depositType) {
+    throw new Error('Div deposit type "Dividend" not found');
+  }
   return {
     date: convertDate(row.date),
     amount: row.totalAmount,
     accountId,
-    divDepositTypeId: depositType!.id,
+    divDepositTypeId: depositType.id,
     universeId,
   };
 }
@@ -125,11 +128,14 @@ async function mapCashDeposit(
   const depositType = await prisma.divDepositType.findFirst({
     where: { name: 'Cash Deposit' },
   });
+  if (!depositType) {
+    throw new Error('Div deposit type "Cash Deposit" not found');
+  }
   return {
     date: convertDate(row.date),
     amount: row.totalAmount,
     accountId,
-    divDepositTypeId: depositType!.id,
+    divDepositTypeId: depositType.id,
     universeId: null,
   };
 }
