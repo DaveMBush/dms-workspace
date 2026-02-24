@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved
+Ready for Review
 
 ## Story
 
@@ -239,19 +239,29 @@ test.describe('Dividend Deposits - Full Workflow', () => {
 
 ### Agent Model Used
 
-_To be populated during implementation_
+Claude Sonnet 4.6
 
 ### Debug Log References
 
-_To be populated during implementation_
+None — all issues resolved without needing debug log entries.
 
 ### Completion Notes List
 
-_To be populated during implementation_
+- 17 Playwright E2E tests added covering: table display (2), add dialog with field validation (7), edit dialog (4), delete with confirmation (4)
+- Root cause fix: `onDeleteDividend` was calling raw `effectsService.delete()` bypassing SmartNgRX store; fixed to use `DividendDepositsComponentService.deleteDivDeposit()` with `RowProxyDelete.delete!()`
+- CSS selector fix: `mat-row` locator fails for Angular Material; must use attribute selector `tr[mat-row]`
+- SmartNgRX cache clearing: `page.reload()` after add/edit forces store reset so server data reloads fresh
+- Added `'actions'` to `ColumnDef.type` union and delete button HTML with `data-testid="delete-dividend-button"`
+- All 4 CodeRabbit review rounds addressed; merged via squash as PR #473
 
 ### File List
 
-_To be populated during implementation_
+- `apps/dms-material-e2e/src/dividend-deposits-modal.spec.ts` (new)
+- `apps/dms-material/src/app/account-panel/dividend-deposits/dividend-deposits-component.service.ts` (modified)
+- `apps/dms-material/src/app/account-panel/dividend-deposits/dividend-deposits.component.ts` (modified)
+- `apps/dms-material/src/app/account-panel/dividend-deposits/dividend-deposits.component.html` (modified)
+- `apps/dms-material/src/app/account-panel/dividend-deposits/dividend-deposits.component.spec.ts` (modified)
+- `apps/dms-material/src/app/shared/components/base-table/column-def.interface.ts` (modified)
 
 ## QA Results
 
