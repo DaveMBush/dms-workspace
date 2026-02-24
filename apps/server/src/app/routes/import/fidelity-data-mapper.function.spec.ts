@@ -157,9 +157,9 @@ describe.skip('mapFidelityTransactions', function () {
           action: 'YOU SOLD',
           symbol: 'AAPL',
           description: 'APPLE INC',
-          quantity: 3,
+          quantity: 3.5,
           price: 185.0,
-          totalAmount: 555.0,
+          totalAmount: 647.5,
           account: 'My Brokerage',
         },
       ];
@@ -176,7 +176,7 @@ describe.skip('mapFidelityTransactions', function () {
       const result = await mapFidelityTransactions(rows);
 
       expect(result.sales).toHaveLength(1);
-      expect(result.sales[0].quantity).toBe(3);
+      expect(result.sales[0].quantity).toBe(3.5);
     });
   });
 
