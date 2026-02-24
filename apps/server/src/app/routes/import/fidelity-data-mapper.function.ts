@@ -175,25 +175,27 @@ async function mapSingleRow(
   result: MappedTransactionResult,
   accountCache: Map<string, { id: string }>
 ): Promise<void> {
-  const account = await resolveAccount(row.account, accountCache);
-
   switch (row.action) {
     case 'YOU BOUGHT': {
+      const account = await resolveAccount(row.account, accountCache);
       const universe = await resolveSymbol(row.symbol);
       result.trades.push(mapPurchase(row, account.id, universe.id));
       break;
     }
     case 'YOU SOLD': {
+      const account = await resolveAccount(row.account, accountCache);
       const universe = await resolveSymbol(row.symbol);
       result.sales.push(mapSale(row, account.id, universe.id));
       break;
     }
     case 'DIVIDEND RECEIVED': {
+      const account = await resolveAccount(row.account, accountCache);
       const universe = await resolveSymbol(row.symbol);
       result.divDeposits.push(await mapDividend(row, account.id, universe.id));
       break;
     }
     case 'ELECTRONIC FUNDS TRANSFER': {
+      const account = await resolveAccount(row.account, accountCache);
       result.divDeposits.push(await mapCashDeposit(row, account.id));
       break;
     }

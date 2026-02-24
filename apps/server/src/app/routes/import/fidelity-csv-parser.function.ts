@@ -39,27 +39,65 @@ function parseNumericField(value: string, fieldName: string): number {
 }
 
 /**
- * Splits a CSV line respecting quoted fields (handles commas inside quotes).
+ * Parses a quoted CSV field starting after the opening quote.
+ * Returns the field value and the position after the closing quote and delimiter.
+ */
+function parseQuotedField(
+  line: string,
+  start: number
+): { value: string; nextPos: number } {
+  let value = '';
+  let skipNext = false;
+  for (let i = start; i < line.length; i++) {
+    if (skipNext) {
+      skipNext = false;
+      continue;
+    }
+    if (line[i] === '"' && line[i + 1] === '"') {
+      value += '"';
+      skipNext = true;
+      continue;
+    }
+    if (line[i] === '"') {
+      return { value, nextPos: i + 2 };
+    }
+    value += line[i];
+  }
+  return { value, nextPos: line.length + 1 };
+}
+
+/**
+ * Parses an unquoted CSV field starting at the given position.
+ * Returns the field value and the position after the delimiter.
+ */
+function parseUnquotedField(
+  line: string,
+  start: number
+): { value: string; nextPos: number } {
+  const commaIdx = line.indexOf(',', start);
+  if (commaIdx === -1) {
+    return { value: line.slice(start), nextPos: line.length + 1 };
+  }
+  return { value: line.slice(start, commaIdx), nextPos: commaIdx + 1 };
+}
+
+/**
+ * Splits a CSV line respecting quoted fields (handles commas and escaped quotes).
  */
 function splitCsvLine(line: string): string[] {
-  const normalized = line.replace(/""/g, '\0');
   const fields: string[] = [];
-  let current = '';
-  let inQuotes = false;
-
-  for (let i = 0; i < normalized.length; i++) {
-    const char = normalized[i];
-    if (char === '"') {
-      inQuotes = !inQuotes;
-    } else if (char === ',' && !inQuotes) {
-      fields.push(current.replace(/\0/g, '"'));
-      current = '';
+  let pos = 0;
+  while (pos <= line.length) {
+    if (line[pos] === '"') {
+      const result = parseQuotedField(line, pos + 1);
+      fields.push(result.value);
+      pos = result.nextPos;
     } else {
-      current += char;
+      const result = parseUnquotedField(line, pos);
+      fields.push(result.value);
+      pos = result.nextPos;
     }
   }
-  fields.push(current.replace(/\0/g, '"'));
-
   return fields;
 }
 
