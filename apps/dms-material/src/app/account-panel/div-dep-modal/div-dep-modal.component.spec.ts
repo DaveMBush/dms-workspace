@@ -141,6 +141,22 @@ describe('DivDepModal', () => {
       component.onSubmit();
       expect(mockDialogRef.close).toHaveBeenCalled();
     });
+
+    it('should resolve symbol on submit when user clicks Save without blurring', () => {
+      // selectedUniverseId starts null (user typed but never tabbed out)
+      component.form.patchValue({
+        symbol: 'AAPL',
+        date: new Date(),
+        amount: 0.25,
+        divDepositTypeId: 'type-1',
+      });
+      component.onSubmit();
+      expect(mockDialogRef.close).toHaveBeenCalled();
+      const callArg = mockDialogRef.close.mock.calls[0][0] as {
+        universeId: string | null;
+      };
+      expect(callArg.universeId).toBe('universe-aapl');
+    });
   });
 
   describe('deposit type behavior', () => {

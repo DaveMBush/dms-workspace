@@ -184,6 +184,10 @@ export class DivDepModal implements OnInit, AfterViewInit {
   }
 
   onSubmit(): void {
+    // If user typed a valid symbol but submitted without blurring, resolve now.
+    if (!this.isDepositType$() && this.selectedUniverseId === null) {
+      this.tryResolveFromControl();
+    }
     if (
       this.form.invalid ||
       (!this.isDepositType$() && this.selectedUniverseId === null)
@@ -278,6 +282,20 @@ export class DivDepModal implements OnInit, AfterViewInit {
     return { invalidSymbol: true };
   }
 
+  // Fallback: attempt to resolve the symbol control's current value when the
+  // user submits without blurring the autocomplete first.
+  private tryResolveFromControl(): void {
+    const controlValue: unknown = this.symbolControl.value;
+    if (typeof controlValue !== 'string' || controlValue.length === 0) {
+      return;
+    }
+    const resolved = this.resolveSymbol(controlValue);
+    if (resolved !== null) {
+      this.selectedSymbolId = resolved.symbolId;
+      this.selectedUniverseId = resolved.universeId;
+    }
+  }
+
   // Resolves a symbol string to its universe entry (exact case-insensitive).
   // Returns null when no match is found.
   private resolveSymbol(
@@ -309,6 +327,9 @@ export class DivDepModal implements OnInit, AfterViewInit {
 
     for (let i = 0; i < universes.length && results.length < maxResults; i++) {
       const u = universes[i];
+      if (typeof u.symbol !== 'string' || typeof u.name !== 'string') {
+        continue;
+      }
       const symbolMatch = u.symbol.toLowerCase().includes(lowerQuery);
       const nameMatch = u.name.toLowerCase().includes(lowerQuery);
 
