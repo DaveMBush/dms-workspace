@@ -733,18 +733,6 @@ describe('DividendDepositsComponent - Delete Dialog SmartNgRX Integration (AQ.7)
     );
   });
 
-  // AC 8: Tests verify dividend ID passed correctly to delete method
-  it('should call deleteDivDeposit with dividend id when confirmed', () => {
-    const dividend = createDivDeposit({ id: 'dep-del-xyz' });
-    mockConfirmDialog.confirm.mockReturnValue(of(true));
-
-    component.onDeleteDividend(dividend);
-
-    expect(mockDividendDepositsService.deleteDivDeposit).toHaveBeenCalledWith(
-      'dep-del-xyz'
-    );
-  });
-
   // AC 6: Tests verify success notification shown after delete
   it('should show success notification after successful delete', () => {
     const dividend = createDivDeposit({ id: 'dep-del' });

@@ -54,7 +54,6 @@ async function addDeposit(
   // server fetch. This ensures the persisted row is visible in the table.
   await page.reload();
   await page.waitForLoadState('networkidle');
-  await page.waitForTimeout(1500);
   await expect(
     page
       .locator('tr[mat-row]')
