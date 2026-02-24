@@ -1,6 +1,8 @@
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
 import { filter, switchMap } from 'rxjs';
 
 import { BaseTableComponent } from '../../shared/components/base-table/base-table.component';
@@ -15,7 +17,13 @@ import { DividendDepositsComponentService } from './dividend-deposits-component.
 @Component({
   selector: 'dms-dividend-deposits',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [BaseTableComponent, DatePipe, CurrencyPipe],
+  imports: [
+    BaseTableComponent,
+    DatePipe,
+    CurrencyPipe,
+    MatButtonModule,
+    MatIconModule,
+  ],
   templateUrl: './dividend-deposits.component.html',
   styleUrl: './dividend-deposits.component.scss',
 })
@@ -45,6 +53,7 @@ export class DividendDepositsComponent {
       width: '100px',
     },
     { field: 'type', header: 'Type', width: '120px' },
+    { field: 'actions', header: '', type: 'actions', width: '60px' },
   ];
 
   onAddDividend(): void {
@@ -92,12 +101,10 @@ export class DividendDepositsComponent {
       .pipe(
         filter(function isConfirmed(confirmed: boolean): confirmed is true {
           return confirmed;
-        }),
-        switchMap(function deleteFromStore() {
-          return context.effectsService.delete(dividend.id);
         })
       )
       .subscribe(function onDelete() {
+        context.dividendDepositsService.deleteDivDeposit(dividend.id);
         context.notification.success('Dividend deleted');
       });
   }

@@ -98,6 +98,7 @@ describe('DividendDepositsComponent', () => {
     dividends: WritableSignal<DivDeposit[]>;
     selectedAccountId: WritableSignal<string>;
     addDivDeposit: ReturnType<typeof vi.fn>;
+    deleteDivDeposit: ReturnType<typeof vi.fn>;
   };
 
   beforeEach(async () => {
@@ -105,6 +106,7 @@ describe('DividendDepositsComponent', () => {
       dividends: signal<DivDeposit[]>([]),
       selectedAccountId: signal<string>(''),
       addDivDeposit: vi.fn(),
+      deleteDivDeposit: vi.fn(),
     };
 
     mockDialog = {
@@ -141,8 +143,8 @@ describe('DividendDepositsComponent', () => {
 
   // AC 3: Tests verify table columns display correctly
   describe('columns', () => {
-    it('should define exactly 4 columns', () => {
-      expect(component.columns.length).toBe(4);
+    it('should define exactly 5 columns', () => {
+      expect(component.columns.length).toBe(5);
     });
 
     it('should have symbol column with sortable true and correct width', () => {
@@ -176,6 +178,15 @@ describe('DividendDepositsComponent', () => {
       const col = component.columns.find((c: ColumnDef) => c.field === 'type');
       expect(col).toBeTruthy();
       expect(col?.width).toBe('120px');
+    });
+
+    it('should have actions column with type actions and correct width', () => {
+      const col = component.columns.find(
+        (c: ColumnDef) => c.field === 'actions'
+      );
+      expect(col).toBeTruthy();
+      expect(col?.type).toBe('actions');
+      expect(col?.width).toBe('60px');
     });
 
     // AC 4: Tests verify table sorting functionality
@@ -659,6 +670,7 @@ describe('DividendDepositsComponent - Delete Dialog SmartNgRX Integration (AQ.7)
   let mockDividendDepositsService: {
     dividends: WritableSignal<DivDeposit[]>;
     selectedAccountId: WritableSignal<string>;
+    deleteDivDeposit: ReturnType<typeof vi.fn>;
   };
   let mockEffectsService: {
     add: ReturnType<typeof vi.fn>;
@@ -670,6 +682,7 @@ describe('DividendDepositsComponent - Delete Dialog SmartNgRX Integration (AQ.7)
     mockDividendDepositsService = {
       dividends: signal<DivDeposit[]>([]),
       selectedAccountId: signal<string>(''),
+      deleteDivDeposit: vi.fn(),
     };
 
     mockDialog = {
@@ -721,13 +734,15 @@ describe('DividendDepositsComponent - Delete Dialog SmartNgRX Integration (AQ.7)
   });
 
   // AC 8: Tests verify dividend ID passed correctly to delete method
-  it('should call effectsService.delete with dividend id when confirmed', () => {
+  it('should call deleteDivDeposit with dividend id when confirmed', () => {
     const dividend = createDivDeposit({ id: 'dep-del-xyz' });
     mockConfirmDialog.confirm.mockReturnValue(of(true));
 
     component.onDeleteDividend(dividend);
 
-    expect(mockEffectsService.delete).toHaveBeenCalledWith('dep-del-xyz');
+    expect(mockDividendDepositsService.deleteDivDeposit).toHaveBeenCalledWith(
+      'dep-del-xyz'
+    );
   });
 
   // AC 6: Tests verify success notification shown after delete
@@ -741,13 +756,13 @@ describe('DividendDepositsComponent - Delete Dialog SmartNgRX Integration (AQ.7)
   });
 
   // AC 4: Tests verify delete cancelled when user declines
-  it('should not call effectsService.delete when user cancels', () => {
+  it('should not call deleteDivDeposit when user cancels', () => {
     const dividend = createDivDeposit({ id: 'dep-del' });
     mockConfirmDialog.confirm.mockReturnValue(of(false));
 
     component.onDeleteDividend(dividend);
 
-    expect(mockEffectsService.delete).not.toHaveBeenCalled();
+    expect(mockDividendDepositsService.deleteDivDeposit).not.toHaveBeenCalled();
   });
 
   // AC 4: Tests verify notification NOT shown when cancelled
@@ -764,21 +779,21 @@ describe('DividendDepositsComponent - Delete Dialog SmartNgRX Integration (AQ.7)
   it('should proceed with delete when user confirms', () => {
     const dividend = createDivDeposit({ id: 'dep-del-confirm' });
     mockConfirmDialog.confirm.mockReturnValue(of(true));
-    mockEffectsService.delete.mockReturnValue(of(undefined));
 
     component.onDeleteDividend(dividend);
 
-    expect(mockEffectsService.delete).toHaveBeenCalled();
+    expect(mockDividendDepositsService.deleteDivDeposit).toHaveBeenCalled();
   });
 
-  // AC 7: Tests verify table updates after delete via SmartNgRX
-  it('should update after delete returns from effectsService', () => {
+  // AC 7: Tests verify SmartNgRX store updated after delete
+  it('should call deleteDivDeposit on service after confirmation', () => {
     const dividend = createDivDeposit({ id: 'dep-del' });
     mockConfirmDialog.confirm.mockReturnValue(of(true));
-    mockEffectsService.delete.mockReturnValue(of(undefined));
 
     component.onDeleteDividend(dividend);
 
-    expect(mockEffectsService.delete).toHaveBeenCalledWith(dividend.id);
+    expect(mockDividendDepositsService.deleteDivDeposit).toHaveBeenCalledWith(
+      dividend.id
+    );
   });
 });
