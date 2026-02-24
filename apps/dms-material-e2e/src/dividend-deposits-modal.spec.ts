@@ -1,5 +1,4 @@
-import { expect, test } from '@playwright/test';
-import { Page } from 'playwright/test';
+import { expect, Page, test } from 'playwright/test';
 
 import { login } from './helpers/login.helper';
 
@@ -66,12 +65,18 @@ async function addDeposit(
 
 test.describe('Dividend Deposits', () => {
   test.beforeAll(async ({ request }) => {
-    // Create a fresh test account via API so div-deposit CRUD operations have a valid accountId
-    const response = await request.post(
-      'http://localhost:3001/api/accounts/add',
-      { data: { name: `Test Div Deposits ${Date.now()}` } }
-    );
+    // Create a fresh test account via API so div-deposit CRUD operations have a valid accountId.
+    // Uses a relative URL so Playwright's configured baseURL is respected.
+    const response = await request.post('/api/accounts/add', {
+      data: { name: `Test Div Deposits ${Date.now()}` },
+    });
+    if (!response.ok()) {
+      throw new Error(`Failed to create test account: ${response.status()}`);
+    }
     const accounts = (await response.json()) as Array<{ id: string }>;
+    if (!accounts[0]?.id) {
+      throw new Error('Created account has no id');
+    }
     testAccountId = accounts[0].id;
   });
 

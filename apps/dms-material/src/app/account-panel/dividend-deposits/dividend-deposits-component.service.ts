@@ -88,10 +88,18 @@ export class DividendDepositsComponentService {
       SmartArray<Account, DivDeposit>;
     for (let i = 0; i < divDepositsArray.length; i++) {
       const item = divDepositsArray[i] as DivDeposit & RowProxyDelete;
-      if (item.id === id) {
-        item.delete!();
-        break;
+      if (item.id !== id) {
+        continue;
       }
+      try {
+        item.delete!();
+      } catch (error: unknown) {
+        const err = error as Error;
+        this.errorMessage.set(
+          `Failed to delete dividend deposit: ${err.message}`
+        );
+      }
+      break;
     }
   }
 }

@@ -775,16 +775,6 @@ describe('DividendDepositsComponent - Delete Dialog SmartNgRX Integration (AQ.7)
     expect(mockNotification.success).not.toHaveBeenCalled();
   });
 
-  // AC 3: Tests verify delete proceeds when confirmed
-  it('should proceed with delete when user confirms', () => {
-    const dividend = createDivDeposit({ id: 'dep-del-confirm' });
-    mockConfirmDialog.confirm.mockReturnValue(of(true));
-
-    component.onDeleteDividend(dividend);
-
-    expect(mockDividendDepositsService.deleteDivDeposit).toHaveBeenCalled();
-  });
-
   // AC 7: Tests verify SmartNgRX store updated after delete
   it('should call deleteDivDeposit on service after confirmation', () => {
     const dividend = createDivDeposit({ id: 'dep-del' });
