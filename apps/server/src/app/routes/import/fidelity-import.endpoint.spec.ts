@@ -186,7 +186,7 @@ describe('POST /api/import/fidelity endpoint', function () {
   });
 
   describe('authentication/authorization', function () {
-    test('should require authentication for import endpoint', async function () {
+    test('should allow requests when auth hook is not registered (dev/test wiring)', async function () {
       // Auth is handled globally by the auth plugin (onRequest hook).
       // In dev/test environments, auth is skipped.
       // We verify the route exists and is callable (auth plugin is not
@@ -206,9 +206,41 @@ describe('POST /api/import/fidelity endpoint', function () {
         headers: { 'content-type': 'text/plain' },
       });
 
-      // The route is accessible; in production the auth plugin would reject
-      // unauthenticated requests before reaching this handler.
       expect(response.statusCode).toBe(200);
+    });
+
+    test('should reject unauthenticated requests when auth hook is registered', async function () {
+      const authApp = fastify();
+      authApp.addHook(
+        'onRequest',
+        async function rejectWithoutAuth(request, reply) {
+          if (!request.headers.authorization) {
+            reply.code(401).send({
+              success: false,
+              imported: 0,
+              errors: ['Unauthorized'],
+              warnings: [],
+            });
+          }
+        }
+      );
+      authApp.register(
+        function registerRoutes(instance, _, done) {
+          registerImportRoutes(instance);
+          done();
+        },
+        { prefix: '/api/import' }
+      );
+
+      const response = await authApp.inject({
+        method: 'POST',
+        url: '/api/import/fidelity',
+        payload: 'csv data',
+        headers: { 'content-type': 'text/plain' },
+      });
+
+      expect(response.statusCode).toBe(401);
+      await authApp.close();
     });
   });
 
