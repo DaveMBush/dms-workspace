@@ -1,5 +1,5 @@
 import { computed, inject, Injectable, Signal, signal } from '@angular/core';
-import { SmartArray } from '@smarttools/smart-signals';
+import { RowProxyDelete, SmartArray } from '@smarttools/smart-signals';
 
 import { buildUniverseMap } from '../../shared/build-universe-map.function';
 import { Account } from '../../store/accounts/account.interface';
@@ -79,6 +79,27 @@ export class DividendDepositsComponentService {
     } catch (error: unknown) {
       const err = error as Error;
       this.errorMessage.set(`Failed to add dividend deposit: ${err.message}`);
+    }
+  }
+
+  deleteDivDeposit(id: string): void {
+    const account = this.currentAccount();
+    const divDepositsArray = account.divDeposits as DivDeposit[] &
+      SmartArray<Account, DivDeposit>;
+    for (let i = 0; i < divDepositsArray.length; i++) {
+      const item = divDepositsArray[i] as DivDeposit & RowProxyDelete;
+      if (item.id !== id) {
+        continue;
+      }
+      try {
+        item.delete!();
+      } catch (error: unknown) {
+        const err = error as Error;
+        this.errorMessage.set(
+          `Failed to delete dividend deposit: ${err.message}`
+        );
+      }
+      break;
     }
   }
 }

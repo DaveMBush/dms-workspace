@@ -4,5 +4,12 @@ export interface ColumnDef {
   width?: string;
   sortable?: boolean;
   editable?: boolean;
-  type?: 'boolean' | 'currency' | 'custom' | 'date' | 'number' | 'text';
+  type?:
+    | 'actions'
+    | 'boolean'
+    | 'currency'
+    | 'custom'
+    | 'date'
+    | 'number'
+    | 'text';
 }

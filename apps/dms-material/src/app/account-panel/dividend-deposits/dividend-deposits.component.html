@@ -10,6 +10,15 @@
     {{ row[column.field] | currency }}
     } @case ('date') {
     {{ row[column.field] | date : 'MM/dd/yyyy' }}
+    } @case ('actions') {
+    <button
+      mat-icon-button
+      aria-label="Delete dividend"
+      data-testid="delete-dividend-button"
+      (click)="$event.stopPropagation(); onDeleteDividend(row)"
+    >
+      <mat-icon>delete</mat-icon>
+    </button>
     } @default {
     {{ row[column.field] }}
     } }
