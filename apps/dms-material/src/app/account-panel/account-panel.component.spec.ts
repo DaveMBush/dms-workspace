@@ -183,5 +183,14 @@ describe('AccountPanelComponent', () => {
       dialogClosedSubject.next(undefined);
       expect(addDivDepositSpy).not.toHaveBeenCalled();
     });
+
+    it('should not call addDivDeposit when result lacks divDepositTypeId', () => {
+      Object.assign(component, {
+        isDivDepRoute$: vi.fn().mockReturnValue(true),
+      });
+      component.onAddClick();
+      dialogClosedSubject.next({ date: new Date(), amount: 0.5 });
+      expect(addDivDepositSpy).not.toHaveBeenCalled();
+    });
   });
 });

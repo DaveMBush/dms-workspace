@@ -1,4 +1,4 @@
-import { computed, inject, Injectable } from '@angular/core';
+import { computed, inject, Injectable, Signal, signal } from '@angular/core';
 import { SmartArray } from '@smarttools/smart-signals';
 
 import { buildUniverseMap } from '../../shared/build-universe-map.function';
@@ -12,8 +12,13 @@ import { DivDeposit } from '../../store/div-deposits/div-deposit.interface';
 export class DividendDepositsComponentService {
   private currentAccountStore = inject(currentAccountSignalStore);
   private currentAccount = selectCurrentAccountSignal(this.currentAccountStore);
+  private errorMessage = signal<string>('');
 
   readonly selectedAccountId = this.currentAccountStore.selectCurrentAccountId;
+
+  getErrorMessage(): Signal<string> {
+    return this.errorMessage.asReadonly();
+  }
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signal
   readonly dividends = computed(() => {
@@ -47,21 +52,33 @@ export class DividendDepositsComponentService {
   });
 
   addDivDeposit(dividend: Partial<DivDeposit>): void {
+    if (
+      dividend.divDepositTypeId === undefined ||
+      dividend.divDepositTypeId.length === 0
+    ) {
+      this.errorMessage.set('divDepositTypeId is required');
+      return;
+    }
     const account = this.currentAccount();
     const divDepositsArray = account.divDeposits as SmartArray<
       Account,
       DivDeposit
     >;
-    divDepositsArray.add!(
-      {
-        id: 'new',
-        date: dividend.date ?? new Date(),
-        amount: Number(dividend.amount ?? 0),
-        accountId: account.id,
-        divDepositTypeId: dividend.divDepositTypeId ?? '',
-        universeId: dividend.universeId ?? null,
-      },
-      account
-    );
+    try {
+      divDepositsArray.add!(
+        {
+          id: 'new',
+          date: dividend.date ?? new Date(),
+          amount: Number(dividend.amount ?? 0),
+          accountId: account.id,
+          divDepositTypeId: dividend.divDepositTypeId,
+          universeId: dividend.universeId ?? null,
+        },
+        account
+      );
+    } catch (error: unknown) {
+      const err = error as Error;
+      this.errorMessage.set(`Failed to add dividend deposit: ${err.message}`);
+    }
   }
 }
