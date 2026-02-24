@@ -15,6 +15,7 @@ vi.mock('../../prisma/prisma-client', function () {
       trades: {
         create: vi.fn(),
         findFirst: vi.fn(),
+        update: vi.fn(),
       },
       divDeposits: {
         create: vi.fn(),
