@@ -118,16 +118,22 @@ describe('AccountPanelComponent', () => {
     beforeEach(() => {
       dialogClosedSubject = new Subject<unknown>();
       mockDialogRef = {
-        afterClosed: vi.fn().mockReturnValue(dialogClosedSubject.asObservable()),
+        afterClosed: vi
+          .fn()
+          .mockReturnValue(dialogClosedSubject.asObservable()),
       };
       mockDialog = {
         open: vi.fn().mockReturnValue(mockDialogRef),
       };
 
-      Object.defineProperty(component, 'dialog' as keyof AccountPanelComponent, {
-        get: () => mockDialog,
-        configurable: true,
-      });
+      Object.defineProperty(
+        component,
+        'dialog' as keyof AccountPanelComponent,
+        {
+          get: () => mockDialog,
+          configurable: true,
+        }
+      );
 
       addDivDepositSpy = vi
         .spyOn(
@@ -138,13 +144,17 @@ describe('AccountPanelComponent', () => {
     });
 
     it('should open DivDepModal dialog when on div-dep route', () => {
-      Object.assign(component, { isDivDepRoute$: vi.fn().mockReturnValue(true) });
+      Object.assign(component, {
+        isDivDepRoute$: vi.fn().mockReturnValue(true),
+      });
       component.onAddClick();
       expect(mockDialog.open).toHaveBeenCalledOnce();
     });
 
     it('should call addDivDeposit when dialog closes with a result', () => {
-      Object.assign(component, { isDivDepRoute$: vi.fn().mockReturnValue(true) });
+      Object.assign(component, {
+        isDivDepRoute$: vi.fn().mockReturnValue(true),
+      });
       component.onAddClick();
       const mockResult = {
         date: new Date(),
@@ -157,14 +167,18 @@ describe('AccountPanelComponent', () => {
     });
 
     it('should not call addDivDeposit when dialog closes with null', () => {
-      Object.assign(component, { isDivDepRoute$: vi.fn().mockReturnValue(true) });
+      Object.assign(component, {
+        isDivDepRoute$: vi.fn().mockReturnValue(true),
+      });
       component.onAddClick();
       dialogClosedSubject.next(null);
       expect(addDivDepositSpy).not.toHaveBeenCalled();
     });
 
     it('should not call addDivDeposit when dialog closes with undefined', () => {
-      Object.assign(component, { isDivDepRoute$: vi.fn().mockReturnValue(true) });
+      Object.assign(component, {
+        isDivDepRoute$: vi.fn().mockReturnValue(true),
+      });
       component.onAddClick();
       dialogClosedSubject.next(undefined);
       expect(addDivDepositSpy).not.toHaveBeenCalled();

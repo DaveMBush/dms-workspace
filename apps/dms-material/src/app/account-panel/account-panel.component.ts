@@ -165,7 +165,9 @@ export class AccountPanelComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe(function onClose(result: unknown) {
       if (result !== null && result !== undefined) {
-        context.dividendDepositsService.addDivDeposit(result as Partial<DivDeposit>);
+        context.dividendDepositsService.addDivDeposit(
+          result as Partial<DivDeposit>
+        );
       }
     });
   }

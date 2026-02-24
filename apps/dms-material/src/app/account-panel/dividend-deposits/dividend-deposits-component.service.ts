@@ -36,7 +36,10 @@ export class DividendDepositsComponentService {
         accountId: d.accountId,
         divDepositTypeId: d.divDepositTypeId,
         universeId: d.universeId,
-        symbol: d.universeId !== null ? (universeMap.get(d.universeId)?.symbol ?? '') : '',
+        symbol:
+          d.universeId !== null
+            ? universeMap.get(d.universeId)?.symbol ?? ''
+            : '',
         type: typeNamesMap.get(d.divDepositTypeId) ?? '',
       });
     }
@@ -62,4 +65,3 @@ export class DividendDepositsComponentService {
     );
   }
 }
-
