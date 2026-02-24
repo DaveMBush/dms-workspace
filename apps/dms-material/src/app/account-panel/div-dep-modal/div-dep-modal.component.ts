@@ -4,11 +4,13 @@ import {
   ChangeDetectorRef,
   Component,
   computed,
+  DestroyRef,
   inject,
   OnInit,
   signal,
   ViewChild,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   AbstractControl,
   FormBuilder,
@@ -60,6 +62,7 @@ export class DivDepModal implements OnInit, AfterViewInit {
   private fb = inject(FormBuilder);
   private dialogRef = inject(MatDialogRef<DivDepModal>);
   private cdr = inject(ChangeDetectorRef);
+  private destroyRef = inject(DestroyRef);
   data = inject<DivDepModalData>(MAT_DIALOG_DATA);
 
   isLoading$ = signal(false);
@@ -139,7 +142,10 @@ export class DivDepModal implements OnInit, AfterViewInit {
       self.selectedDepositTypeId.set(typeId ?? '');
       self.updateSymbolValidators();
     }
-    this.form.get('divDepositTypeId')!.valueChanges.subscribe(onTypeChange);
+    this.form
+      .get('divDepositTypeId')!
+      .valueChanges.pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(onTypeChange);
   }
 
   ngAfterViewInit(): void {
@@ -155,9 +161,9 @@ export class DivDepModal implements OnInit, AfterViewInit {
         self.symbolControl.markAsTouched();
       }
     }
-    this.symbolAutocomplete.searchControl.valueChanges.subscribe(
-      onSearchValueChange
-    );
+    this.symbolAutocomplete.searchControl.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(onSearchValueChange);
     if (
       this.isEditMode &&
       this.selectedSymbolId !== null &&
@@ -217,9 +223,16 @@ export class DivDepModal implements OnInit, AfterViewInit {
         emitEvent: false,
       });
     }
-    // Push the uppercased value to the outer form control and re-run
-    // validators.  symbolExistsValidator will auto-populate selectedUniverseId
-    // if the symbol matches something in the universe.
+    // Resolve the typed symbol to a universe entry (exact match only).
+    const resolved = this.resolveSymbol(upper);
+    if (resolved !== null) {
+      this.selectedSymbolId = resolved.symbolId;
+      this.selectedUniverseId = resolved.universeId;
+    } else {
+      this.selectedSymbolId = null;
+      this.selectedUniverseId = null;
+    }
+    // Push the uppercased value to the outer form control and re-run validators.
     this.symbolControl.setValue(upper);
     this.symbolControl.markAsTouched();
     this.symbolControl.updateValueAndValidity();
@@ -241,7 +254,7 @@ export class DivDepModal implements OnInit, AfterViewInit {
     this.cdr.markForCheck();
   }
 
-  // Validator: finds first exact then partial case-insensitive match.
+  // Validator: exact case-insensitive match only — pure, no side effects.
   // Uses an index-based loop because SmartNgRX returns an array-like object
   // that does not have built-in Array methods such as .find() or .filter().
   private symbolExistsValidator(
@@ -253,32 +266,35 @@ export class DivDepModal implements OnInit, AfterViewInit {
     }
     const symbolLower = value.toLowerCase();
     const universes = selectUniverses();
-    let exactIdx = -1;
-    let partialIdx = -1;
     for (let i = 0; i < universes.length; i++) {
       const u = universes[i];
       if (typeof u.symbol !== 'string') {
         continue;
       }
-      const uLower = u.symbol.toLowerCase();
-      if (uLower === symbolLower) {
-        exactIdx = i;
-        break;
-      }
-      if (partialIdx === -1 && uLower.includes(symbolLower)) {
-        partialIdx = i;
+      if (u.symbol.toLowerCase() === symbolLower) {
+        return null;
       }
     }
-    const idx = exactIdx !== -1 ? exactIdx : partialIdx;
-    if (idx !== -1) {
-      const matched = universes[idx];
-      this.selectedSymbolId = matched.symbol.toUpperCase();
-      this.selectedUniverseId = matched.id;
-      return null;
-    }
-    this.selectedSymbolId = null;
-    this.selectedUniverseId = null;
     return { invalidSymbol: true };
+  }
+
+  // Resolves a symbol string to its universe entry (exact case-insensitive).
+  // Returns null when no match is found.
+  private resolveSymbol(
+    symbol: string
+  ): { symbolId: string; universeId: string } | null {
+    const symbolLower = symbol.toLowerCase();
+    const universes = selectUniverses();
+    for (let i = 0; i < universes.length; i++) {
+      const u = universes[i];
+      if (typeof u.symbol !== 'string') {
+        continue;
+      }
+      if (u.symbol.toLowerCase() === symbolLower) {
+        return { symbolId: u.symbol.toUpperCase(), universeId: u.id };
+      }
+    }
+    return null;
   }
 
   private async symbolSearchFn(query: string): Promise<SymbolOption[]> {
