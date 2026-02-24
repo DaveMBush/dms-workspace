@@ -42,24 +42,24 @@
 
 ## Tasks / Subtasks
 
-- [ ] Re-enable tests from AR.1-TDD (AC: 1)
-- [ ] Implement CSV parser (AC: 1)
-  - [ ] Parse CSV file structure
-  - [ ] Validate required columns
-  - [ ] Handle header row
-  - [ ] Parse data rows
-- [ ] Implement data mapper (AC: 2)
-  - [ ] Map purchase transactions
-  - [ ] Map sale transactions
-  - [ ] Map dividend transactions
-  - [ ] Map cash deposit transactions
-  - [ ] Implement account name lookup
-- [ ] Implement error handling (AC: 5)
-  - [ ] Handle missing required fields
-  - [ ] Handle invalid dates
-  - [ ] Handle invalid amounts
-  - [ ] Handle unknown transaction types
-- [ ] Verify all tests pass (AC: 1)
+- [x] Re-enable tests from AR.1-TDD (AC: 1)
+- [x] Implement CSV parser (AC: 1)
+  - [x] Parse CSV file structure
+  - [x] Validate required columns
+  - [x] Handle header row
+  - [x] Parse data rows
+- [x] Implement data mapper (AC: 2)
+  - [x] Map purchase transactions
+  - [x] Map sale transactions
+  - [x] Map dividend transactions
+  - [x] Map cash deposit transactions
+  - [x] Implement account name lookup
+- [x] Implement error handling (AC: 5)
+  - [x] Handle missing required fields
+  - [x] Handle invalid dates
+  - [x] Handle invalid amounts
+  - [x] Handle unknown transaction types
+- [x] Verify all tests pass (AC: 1)
 - [ ] Run validation commands
 
 ## Dev Notes
@@ -133,19 +133,27 @@
 
 ### Agent Model Used
 
-_To be populated during implementation_
+Claude Opus 4.6
 
 ### Debug Log References
 
-_To be populated during implementation_
+None - all tests passed on first implementation.
 
 ### Completion Notes List
 
-_To be populated during implementation_
+- Re-enabled 36 tests (20 parser, 16 mapper) from AR.1-TDD
+- Implemented CSV parser with header validation, quoted field support, whitespace trimming, dollar/comma handling
+- Implemented data mapper for 4 transaction types: purchase, sale, dividend, cash deposit
+- Account caching to minimize DB lookups
+- Full error handling for invalid dates, missing fields, unknown transaction types
 
 ### File List
 
-_To be populated during implementation_
+- `apps/server/src/app/routes/import/fidelity-csv-parser.function.ts` - Modified (implemented parser)
+- `apps/server/src/app/routes/import/fidelity-data-mapper.function.ts` - Modified (implemented mapper)
+- `apps/server/src/app/routes/import/fidelity-csv-parser.function.spec.ts` - Modified (re-enabled tests)
+- `apps/server/src/app/routes/import/fidelity-data-mapper.function.spec.ts` - Modified (re-enabled tests)
+- `docs/stories/AR.1.csv-parser.md` - Modified (story updates)
 
 ---
 

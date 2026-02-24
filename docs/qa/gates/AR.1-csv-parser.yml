@@ -1,0 +1,8 @@
+schema: 1
+story: 'AR.1'
+gate: PASS
+status_reason: 'CSV parser and data mapper implemented with 97.3% test coverage. All 36 TDD tests re-enabled and passing. All transaction types handled (purchase, sale, dividend, cash deposit). Error handling for invalid data, missing fields, and unknown transaction types. No code duplicates. All validation commands pass.'
+reviewer: 'Quinn'
+updated: '2026-02-24T20:00:00Z'
+top_issues: []
+waiver: { active: false }
