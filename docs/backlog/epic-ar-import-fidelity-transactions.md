@@ -21,14 +21,17 @@ Creates import routine to parse Fidelity transaction exports and populate trades
 
 ## Stories
 
-1. **Story AR.1:** Design Fidelity CSV parser and data mapper
-2. **Story AR.2:** Create import service and backend endpoint
-3. **Story AR.3:** Build import UI dialog on Global/Universe screen
-4. **Story AR.4:** Implement file upload and processing
-5. **Story AR.5:** Add validation and error reporting
-6. **Story AR.6:** Add unit tests for parser
-7. **Story AR.7:** Add unit tests for import service
-8. **Story AR.8:** Add e2e tests for import flow
+1. **Story AR.1-TDD:** Write RED tests for Fidelity CSV parser and data mapper
+2. **Story AR.1:** Implement Fidelity CSV parser and data mapper
+3. **Story AR.2-TDD:** Write RED tests for import service and backend endpoint
+4. **Story AR.2:** Create import service and backend endpoint
+5. **Story AR.3-TDD:** Write RED tests for import UI dialog
+6. **Story AR.3:** Build import UI dialog on Global/Universe screen
+7. **Story AR.4-TDD:** Write RED tests for file upload and processing
+8. **Story AR.4:** Implement file upload and processing
+9. **Story AR.5-TDD:** Write RED tests for validation and error reporting
+10. **Story AR.5:** Add validation and error reporting
+11. **Story AR.6:** Add e2e tests for import flow
 
 ## Dependencies
 
