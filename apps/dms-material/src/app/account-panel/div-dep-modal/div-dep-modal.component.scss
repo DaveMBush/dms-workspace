@@ -1,1 +1,51 @@
-// Styles for div-dep-modal component
+// Styles for div-dep-modal component — mirrors add-position-dialog layout
+
+.dialog-content {
+  padding: 24px;
+}
+
+.form-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.form-row > * {
+  width: 100%;
+}
+
+.symbol-field-wrapper {
+  width: 100%;
+}
+
+.field-wrapper {
+  width: 100%;
+}
+
+.validation-error {
+  color: #f44336;
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+mat-dialog-content {
+  overflow: visible;
+}
+
+mat-dialog-actions {
+  padding: 16px 24px;
+  justify-content: flex-end;
+  gap: 8px;
+}

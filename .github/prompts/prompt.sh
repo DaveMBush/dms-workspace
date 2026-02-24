@@ -10,7 +10,9 @@ main() {
   local menu_text
   # Interpret backslash-escaped sequences (\n) in the passed message so callers
   # can pass either real newlines or escaped \n sequences.
-  menu_text=$(printf "Problem:\n%b" "$1")
+  # Wrap long lines at 80 characters so the dialog doesn't expand to fit a
+  # single very long line.
+  menu_text=$(printf "Problem:\n%b" "$1" | fold -s -w 80)
 
   # Use zenity for a GUI dialog that works reliably when called through
   # automated tools (e.g. Copilot) that capture terminal I/O, preventing
@@ -27,7 +29,7 @@ main() {
     TRUE  "continue"      "Proceed with operation" \
     FALSE "stop"          "Abort operation" \
     FALSE "provide help"  "Enter prompt to help AI" \
-    --width=640 --height=320 \
+    --width=480 --height=320 \
     2>/dev/null || true)
 
   case "$choice" in

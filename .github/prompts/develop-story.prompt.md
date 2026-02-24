@@ -7,7 +7,21 @@ model: Claude Sonnet 4.6 (copilot)
 
 # Autonomous Story Development Workflow
 
-Execute the following steps in order. When encountering errors or needing decisions, call `.github/prompts/prompt.sh "<problem description>"` and handle the response:
+## CRITICAL: How to Call prompt.sh
+
+Whenever this document says "Call `.github/prompts/prompt.sh \"...\"`", you MUST:
+
+1. Use `run_in_terminal` to execute: `bash .github/prompts/prompt.sh "your message here"`
+2. Wait for the script to complete — it blocks until the user responds via the Zenity GUI dialog
+3. Read the return value from terminal output:
+   - `"continue"` — try alternatives / proceed
+   - `"stop"` — abort and document state
+   - Any other text — treat as custom instructions
+4. Handle the response appropriately before continuing
+
+**NEVER**: Stop, yield back to the user, or write messages like "awaiting your approval" without first running prompt.sh in a terminal. The prompt.sh script IS the human interaction mechanism.
+
+Execute the following steps in order. When encountering errors or needing decisions, call `.github/prompts/prompt.sh "<problem description>"` via `run_in_terminal` and handle the response:
 
 - "continue" → Retry with alternative approaches
 - "stop" → Abort entire workflow immediately
