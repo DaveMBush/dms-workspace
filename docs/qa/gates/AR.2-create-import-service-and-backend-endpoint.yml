@@ -1,0 +1,8 @@
+schema: 1
+story: 'AR.2'
+gate: PASS
+status_reason: 'All acceptance criteria met. Import service and endpoint implemented with full test coverage. 29 new tests passing, all existing 400 E2E tests passing, 0 code duplicates, lint clean.'
+reviewer: 'Quinn'
+updated: '2026-02-24T18:10:00Z'
+top_issues: []
+waiver: { active: false }
