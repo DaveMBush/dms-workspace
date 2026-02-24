@@ -2,7 +2,7 @@
 description: Fully autonomous epic development - all stories from start to merge
 agent: dev
 argument-hint: epic=AD
-model: Claude Sonnet 4.6 (copilot)
+model: Claude Opus 4.6 (copilot)
 ---
 
 # Autonomous Epic Development Workflow
