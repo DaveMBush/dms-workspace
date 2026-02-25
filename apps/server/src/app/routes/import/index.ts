@@ -125,8 +125,7 @@ function getMissingContentMessage(request: FastifyRequest): string {
  */
 function buildErrorMessage(error: unknown, statusCode: number): string {
   if (statusCode >= 500) {
-    const detail = error instanceof Error ? error.message : 'Unknown error';
-    return `Internal server error: ${detail}`;
+    return 'Internal server error';
   }
   if (error instanceof Error) {
     return error.message;

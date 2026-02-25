@@ -71,7 +71,7 @@
   - [x] Return user-friendly error messages
 - [x] Verify all tests pass (AC: 1)
 - [x] Security review
-- [ ] Run validation commands
+- [x] Run validation commands
 
 ## Dev Notes
 
@@ -140,21 +140,21 @@ try {
 
 ## Definition of Done
 
-- [ ] All tests from AR.4-TDD re-enabled and passing (GREEN phase)
-- [ ] File upload implemented on frontend
-- [ ] File handling implemented on backend
-- [ ] All validations working (type, size, content)
-- [ ] Security measures implemented
-- [ ] Progress tracking working
-- [ ] File cleanup working
-- [ ] Error handling comprehensive
-- [ ] Code follows project conventions
-- [ ] Unit test coverage >80%
-- [ ] All validation commands pass:
-  - [ ] Run `pnpm all`
-  - [ ] Run `pnpm e2e:dms-material`
-  - [ ] Run `pnpm dupcheck`
-  - [ ] Run `pnpm format`
+- [x] All tests from AR.4-TDD re-enabled and passing (GREEN phase)
+- [x] File upload implemented on frontend
+- [x] File handling implemented on backend
+- [x] All validations working (type, size, content)
+- [x] Security measures implemented
+- [x] Progress tracking working
+- [x] File cleanup working
+- [x] Error handling comprehensive
+- [x] Code follows project conventions
+- [x] Unit test coverage >80%
+- [x] All validation commands pass:
+  - [x] Run `pnpm all`
+  - [x] Run `pnpm e2e:dms-material`
+  - [x] Run `pnpm dupcheck`
+  - [x] Run `pnpm format`
   - [ ] Repeat all of these if any fail until they all pass
 - [ ] Code reviewed and approved
 - [ ] Security review completed
@@ -216,6 +216,7 @@ _No significant debug issues encountered._
 | apps/server/src/app/plugins/multipart.ts                                  | Created  |
 | apps/server/src/app/routes/import/index.ts                                | Modified |
 | apps/server/src/app/routes/import/file-upload-handling.spec.ts            | Modified |
+| apps/server/src/app/routes/import/fidelity-import.endpoint.spec.ts        | Modified |
 | apps/dms-material/src/app/global/import-dialog/import-dialog.component.ts | Modified |
 | docs/stories/AR.4.file-upload.md                                          | Modified |
 | package.json                                                              | Modified |

@@ -159,7 +159,7 @@ describe('POST /api/import/fidelity endpoint', function () {
       expect(response.statusCode).toBe(500);
       const body = JSON.parse(response.body) as ImportResult;
       expect(body.success).toBe(false);
-      expect(body.errors[0]).toContain('Unexpected DB crash');
+      expect(body.errors[0]).toMatch(/internal server error/i);
     });
 
     test('should return detailed error messages for each failed row', async function () {

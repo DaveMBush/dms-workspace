@@ -61,6 +61,7 @@ export class ImportDialogComponent {
       return;
     }
     const file = files[0];
+    this.errors.set([]);
     if (!file.name.toLowerCase().endsWith('.csv')) {
       this.selectedFile = null;
       return;
