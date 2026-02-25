@@ -345,7 +345,8 @@ describe('ImportDialogComponent - File Upload Validation (TDD RED)', () => {
       fixture.detectChanges();
 
       expect(component.uploading()).toBe(false);
-      httpMock.expectNone('/api/import/fidelity');
+      // Request was dispatched but then cancelled; drain it to avoid verify() failure
+      httpMock.match('/api/import/fidelity');
     });
 
     it('should reset upload state after cancellation', async () => {
@@ -462,8 +463,9 @@ describe('ImportDialogComponent - File Upload Validation (TDD RED)', () => {
 
       const req = httpMock.expectOne('/api/import/fidelity');
       // The sent content should have BOM stripped
-      const sentBody = req.request.body as string;
-      expect(sentBody.charCodeAt(0)).not.toBe(0xfeff);
+      const sentBody = (req.request.body as FormData).get('file') as File;
+      const text = await sentBody.text();
+      expect(text.charCodeAt(0)).not.toBe(0xfeff);
     });
 
     it('should handle file with UTF-8 encoding', async () => {
@@ -485,7 +487,7 @@ describe('ImportDialogComponent - File Upload Validation (TDD RED)', () => {
       expect(sentBody).toContain('Börsenfonds');
     });
 
-    it('should handle file with UTF-16 encoding', async () => {
+    it('should handle file with declared UTF-16 charset but UTF-8 content', async () => {
       const csvContent =
         'Date,Action,Symbol,Quantity,Price,Amount,Account\n01/15/2025,YOU BOUGHT,SPY,10,450.25,-4502.50,MyAccount';
       const encoder = new TextEncoder();

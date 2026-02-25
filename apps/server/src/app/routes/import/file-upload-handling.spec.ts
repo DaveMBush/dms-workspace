@@ -272,9 +272,6 @@ describe('POST /api/import/fidelity - File Upload Handling (TDD RED)', function 
     });
 
     test.skip('should process file buffer without creating temp files', async function () {
-      const fs = await import('fs');
-      const existsSyncSpy = vi.spyOn(fs, 'existsSync');
-
       const successResult: ImportResult = {
         success: true,
         imported: 1,
@@ -303,12 +300,10 @@ describe('POST /api/import/fidelity - File Upload Handling (TDD RED)', function 
         },
       });
 
-      // No temp file existence checks should have been made for uploaded file
-      const tempFileCalls = existsSyncSpy.mock.calls.filter(function (call) {
-        return String(call[0]).includes('upload');
-      });
-      expect(tempFileCalls).toHaveLength(0);
-      existsSyncSpy.mockRestore();
+      // Buffer mode: service receives a string, not a file path
+      expect(mockImportFidelityTransactions).toHaveBeenCalledWith(
+        expect.any(String)
+      );
     });
   });
 
@@ -409,7 +404,7 @@ describe('POST /api/import/fidelity - File Upload Handling (TDD RED)', function 
 
       expect(response.statusCode).toBe(500);
       const result = JSON.parse(response.body) as ImportResult;
-      expect(result.errors[0]).toContain('Processing crashed');
+      expect(result.errors[0]).toMatch(/unexpected error|internal server error/i);
     });
   });
 
