@@ -96,6 +96,13 @@ if (typeof globalThis.DataTransfer === 'undefined') {
     DataTransferPolyfill;
 }
 
+// Polyfill Blob.prototype.text for jsdom (File extends Blob)
+if (typeof Blob.prototype.text !== 'function') {
+  Blob.prototype.text = function blobText(): Promise<string> {
+    return new Response(this).text();
+  };
+}
+
 // Mock matchMedia for tests (including deprecated addListener/removeListener for Angular CDK)
 Object.defineProperty(window, 'matchMedia', {
   writable: true,

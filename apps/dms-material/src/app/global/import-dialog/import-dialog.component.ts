@@ -2,9 +2,11 @@ import { HttpClient } from '@angular/common/http';
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   inject,
   signal,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import {
   MAT_DIALOG_DATA,
@@ -13,6 +15,7 @@ import {
 } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { from, switchMap } from 'rxjs';
 
 import { ImportDialogData } from './import-dialog-data.interface';
 import { ImportDialogResult } from './import-dialog-result.interface';
@@ -40,6 +43,7 @@ export class ImportDialogComponent {
   readonly data = inject<ImportDialogData>(MAT_DIALOG_DATA);
   private readonly dialogRef = inject(MatDialogRef<ImportDialogComponent>);
   private readonly http = inject(HttpClient);
+  private readonly destroyRef = inject(DestroyRef);
 
   selectedFile: File | null = null;
   readonly uploading = signal(false);
@@ -78,42 +82,57 @@ export class ImportDialogComponent {
     this.success.set(false);
 
     const context = this;
-    this.http
-      .post<ImportApiResponse>('/api/import/fidelity', this.selectedFile)
+    from(this.selectedFile.text())
+      .pipe(
+        switchMap(function sendCsvToServer(csvContent: string) {
+          return context.http.post<ImportApiResponse>(
+            '/api/import/fidelity',
+            csvContent,
+            { headers: { 'Content-Type': 'text/plain' } }
+          );
+        }),
+        takeUntilDestroyed(context.destroyRef)
+      )
       .subscribe({
         next: function onUploadSuccess(response: ImportApiResponse) {
-          context.uploading.set(false);
-          if (response.success) {
-            context.success.set(true);
-            context.importCount.set(response.imported);
-            context.warnings.set(response.warnings);
-            const result: ImportDialogResult = {
-              success: true,
-              imported: response.imported,
-            };
-            context.dialogRef.close(result);
-          } else {
-            context.errors.set(response.errors);
-            context.warnings.set(response.warnings);
-          }
+          context.handleUploadSuccess(response);
         },
         error: function onUploadError(error: unknown) {
-          context.uploading.set(false);
-          const httpError = error as { status: number };
-          if (httpError.status === 0) {
-            context.errors.set([
-              'Network connection error. Please check your connection and try again.',
-            ]);
-          } else {
-            context.errors.set([
-              'An error occurred during import. Please try again.',
-            ]);
-          }
+          context.handleUploadError(error);
         },
       });
   }
 
   onCancel(): void {
     this.dialogRef.close();
+  }
+
+  private handleUploadSuccess(response: ImportApiResponse): void {
+    this.uploading.set(false);
+    if (response.success) {
+      this.success.set(true);
+      this.importCount.set(response.imported);
+      this.warnings.set(response.warnings);
+      const result: ImportDialogResult = {
+        success: true,
+        imported: response.imported,
+      };
+      this.dialogRef.close(result);
+    } else {
+      this.errors.set(response.errors);
+      this.warnings.set(response.warnings);
+    }
+  }
+
+  private handleUploadError(error: unknown): void {
+    this.uploading.set(false);
+    const httpError = error as { status: number };
+    if (httpError.status === 0) {
+      this.errors.set([
+        'Network connection error. Please check your connection and try again.',
+      ]);
+    } else {
+      this.errors.set(['An error occurred during import. Please try again.']);
+    }
   }
 }
