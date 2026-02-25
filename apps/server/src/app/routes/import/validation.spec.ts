@@ -24,7 +24,7 @@ describe('Transaction Validation', function () {
   };
 
   beforeEach(async function () {
-    vi.clearAllMocks();
+    vi.resetAllMocks();
     const prismaModule = await import('../../prisma/prisma-client');
     prisma = (prismaModule as unknown as { prisma: typeof prisma }).prisma;
   });
