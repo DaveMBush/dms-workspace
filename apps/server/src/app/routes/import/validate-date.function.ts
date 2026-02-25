@@ -12,13 +12,19 @@ interface DateValidationSuccess {
 
 type DateValidationResult = DateValidationFailure | DateValidationSuccess;
 
+interface DateComponents {
+  month: number;
+  day: number;
+  year: number;
+}
+
 /**
  * Parses a MM/DD/YYYY date string and returns the parsed components,
  * or a failure result if the format is invalid.
  */
 function parseDateComponents(
   dateStr: string
-): DateValidationFailure | { month: number; day: number; year: number } {
+): DateComponents | DateValidationFailure {
   const match = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(dateStr);
   if (match === null) {
     return {
@@ -39,12 +45,6 @@ function parseDateComponents(
   }
 
   return { month, day, year };
-}
-
-interface DateComponents {
-  month: number;
-  day: number;
-  year: number;
 }
 
 /**
@@ -89,16 +89,17 @@ function validateDateRange(
  * Rejects future dates and dates older than 1950.
  */
 export function validateDate(dateStr: string): DateValidationResult {
-  if (dateStr.trim().length === 0) {
+  const normalizedDateStr = dateStr.trim();
+  if (normalizedDateStr.length === 0) {
     return { valid: false, error: 'Date is required' };
   }
 
-  const parsed = parseDateComponents(dateStr);
+  const parsed = parseDateComponents(normalizedDateStr);
   if ('valid' in parsed) {
     return parsed;
   }
 
   const date = new Date(parsed.year, parsed.month - 1, parsed.day);
 
-  return validateDateRange(date, parsed, dateStr);
+  return validateDateRange(date, parsed, normalizedDateStr);
 }
