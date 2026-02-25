@@ -198,7 +198,7 @@ No debug issues encountered.
 **Validation Results:**
 
 - pnpm all: PASS (67 test files, 1139 tests passed, 8 skipped)
-- pnpm e2e:dms-material: Pre-existing failures only (not related to this story)
+- pnpm e2e:dms-material: Pre-existing failures only (accounts.spec.ts tests 18-31, add-symbol-dialog.spec.ts tests 43-44) — explicitly waived for AR.3-TDD gate as these failures exist on main branch and are unrelated to this story's changes
 - pnpm dupcheck: PASS (0 clones)
 - pnpm format: PASS
 
