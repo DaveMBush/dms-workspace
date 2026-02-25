@@ -55,7 +55,7 @@
 - [x] Implement account validation (AC: 2)
   - [x] Check account exists in database
   - [x] Verify account belongs to current user
-  - [x] Implement case-insensitive name matching
+  - [x] Implement exact name matching
   - [x] Add error message for non-existent account
 - [x] Implement symbol validation (AC: 3)
   - [x] Validate symbol format (1-5 chars, uppercase)
@@ -90,7 +90,7 @@
   - [x] Continue processing valid rows
   - [x] Return detailed results
 - [x] Verify all tests pass (AC: 1)
-- [ ] Run validation commands
+- [x] Run validation commands
 
 ## Dev Notes
 
@@ -257,13 +257,29 @@ Claude Opus 4.6 (copilot)
 
 - All 51 tests from AR.5-TDD re-enabled and passing
 - Fixed 4 test cases missing `await` on async `validateAccount` calls
-- Created `validate-transaction.function.ts` with all validation logic
+- Modular architecture: 14 single-export function files + 2 interface files per @smarttools/one-exported-item-per-file rule
 - Validation types use TypeScript discriminated unions for type safety
+- Applied CodeRabbit review suggestions (action validation, date format docs, exact-match account lookup)
 
 ### File List
 
-- `apps/server/src/app/routes/import/validate-transaction.function.ts` (new)
-- `apps/server/src/app/routes/import/validation.spec.ts` (modified - re-enabled tests, added await)
+- `apps/server/src/app/routes/import/validate-account.function.ts` (new)
+- `apps/server/src/app/routes/import/validate-symbol.function.ts` (new)
+- `apps/server/src/app/routes/import/validate-quantity.function.ts` (new)
+- `apps/server/src/app/routes/import/validate-price.function.ts` (new)
+- `apps/server/src/app/routes/import/validate-amount.function.ts` (new)
+- `apps/server/src/app/routes/import/validate-date.function.ts` (new)
+- `apps/server/src/app/routes/import/validate-action.function.ts` (new)
+- `apps/server/src/app/routes/import/validate-row.function.ts` (new)
+- `apps/server/src/app/routes/import/validate-rows.function.ts` (new)
+- `apps/server/src/app/routes/import/format-validation-error.function.ts` (new)
+- `apps/server/src/app/routes/import/aggregate-errors.function.ts` (new)
+- `apps/server/src/app/routes/import/detect-duplicates-in-file.function.ts` (new)
+- `apps/server/src/app/routes/import/detect-duplicate-in-db.function.ts` (new)
+- `apps/server/src/app/routes/import/check-amount-mismatch.function.ts` (new)
+- `apps/server/src/app/routes/import/validation-error.interface.ts` (new)
+- `apps/server/src/app/routes/import/validation-warning.interface.ts` (new)
+- `apps/server/src/app/routes/import/validation.spec.ts` (modified - re-enabled tests, added await, updated imports)
 - `docs/stories/AR.5.validation.md` (modified - dev record updates)
 
 ---

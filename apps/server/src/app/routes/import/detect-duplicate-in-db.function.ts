@@ -17,6 +17,9 @@ interface DuplicateDbResult {
 /**
  * Checks if a transaction already exists in the database.
  * Returns a warning (not an error) if a duplicate is found.
+ *
+ * @param params.date - Expected in ISO format (YYYY-MM-DD).
+ *   Callers must convert from display formats (e.g., MM/DD/YYYY) before calling.
  */
 export async function detectDuplicateInDb(
   params: DbDuplicateCheckParams

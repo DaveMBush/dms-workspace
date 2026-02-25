@@ -77,7 +77,7 @@ function validateDateRange(
   if (components.year < MIN_YEAR) {
     return {
       valid: false,
-      error: `Date is too old: "${dateStr}" (must be after ${MIN_YEAR})`,
+      error: `Date is too old: "${dateStr}" (must be ${MIN_YEAR} or later)`,
     };
   }
 

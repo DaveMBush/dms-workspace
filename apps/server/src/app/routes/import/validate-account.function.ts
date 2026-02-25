@@ -12,7 +12,7 @@ interface AccountValidationSuccess {
 
 /**
  * Validates that an account exists in the database.
- * Uses case-insensitive matching on the account name.
+ * Performs an exact-match lookup on the account name.
  */
 export async function validateAccount(
   accountName: string
