@@ -1,6 +1,6 @@
 # Story AR.5-TDD: Write Unit Tests for Validation and Error Reporting - TDD RED Phase
 
-**Status:** Approved
+**Status:** Ready for Review
 
 ## Story
 
@@ -27,70 +27,70 @@
 
 ### Functional Requirements
 
-1. [ ] All unit tests written for data validation
-2. [ ] Tests verify account existence validation
-3. [ ] Tests verify symbol validation
-4. [ ] Tests verify numeric field validation (quantity, price, amount)
-5. [ ] Tests verify date validation
-6. [ ] Tests verify duplicate transaction detection
-7. [ ] Tests verify error message formatting
-8. [ ] Tests verify partial success handling
-9. [ ] All tests initially fail (RED phase)
-10. [ ] Tests disabled with `xit()` or `.skip` to allow CI to pass
+1. [x] All unit tests written for data validation
+2. [x] Tests verify account existence validation
+3. [x] Tests verify symbol validation
+4. [x] Tests verify numeric field validation (quantity, price, amount)
+5. [x] Tests verify date validation
+6. [x] Tests verify duplicate transaction detection
+7. [x] Tests verify error message formatting
+8. [x] Tests verify partial success handling
+9. [x] All tests initially fail (RED phase)
+10. [x] Tests disabled with `xit()` or `.skip` to allow CI to pass
 
 ### Technical Requirements
 
-1. [ ] Tests follow existing testing patterns
-2. [ ] Mock dependencies properly configured
-3. [ ] Test coverage includes edge cases
-4. [ ] Test descriptions are clear and specific
-5. [ ] Tests cover both validation logic and error reporting
+1. [x] Tests follow existing testing patterns
+2. [x] Mock dependencies properly configured
+3. [x] Test coverage includes edge cases
+4. [x] Test descriptions are clear and specific
+5. [x] Tests cover both validation logic and error reporting
 
 ## Tasks / Subtasks
 
-- [ ] Create tests for account validation (AC: 2)
-  - [ ] Test account exists in database
-  - [ ] Test account belongs to current user
-  - [ ] Test case-sensitive vs case-insensitive matching
-  - [ ] Test error message for non-existent account
-- [ ] Create tests for symbol validation (AC: 3)
-  - [ ] Test symbol format validation
-  - [ ] Test empty symbol handling
-  - [ ] Test symbol with special characters
-- [ ] Create tests for numeric validation (AC: 4)
-  - [ ] Test quantity is positive number
-  - [ ] Test price is positive number
-  - [ ] Test amount validation
-  - [ ] Test decimal precision handling
-  - [ ] Test zero values
-  - [ ] Test negative values (should fail or handle appropriately)
-- [ ] Create tests for date validation (AC: 5)
-  - [ ] Test valid date formats
-  - [ ] Test invalid date formats
-  - [ ] Test future dates
-  - [ ] Test very old dates
-  - [ ] Test date parsing from various formats
-- [ ] Create tests for duplicate detection (AC: 6)
-  - [ ] Test same transaction in file multiple times
-  - [ ] Test transaction already in database
-  - [ ] Test duplicate detection criteria
-- [ ] Create tests for error reporting (AC: 7, 8)
-  - [ ] Test error message includes row number
-  - [ ] Test error message includes field name
-  - [ ] Test error message is user-friendly
-  - [ ] Test multiple errors aggregated per row
-  - [ ] Test all errors collected (not just first error)
-  - [ ] Test successful rows reported separately
-  - [ ] Test warning messages for suspicious data
-- [ ] Write edge case tests (AC: 3, 4, 5)
-  - [ ] Test missing required fields
-  - [ ] Test extra/unknown columns
-  - [ ] Test inconsistent data (e.g., amount != quantity \* price)
-  - [ ] Test very large numbers
-  - [ ] Test very small numbers (precision)
-- [ ] Disable all tests using .skip (AC: 10)
-- [ ] Verify tests fail before disabling (AC: 9)
-- [ ] Run validation commands
+- [x] Create tests for account validation (AC: 2)
+  - [x] Test account exists in database
+  - [x] Test account belongs to current user
+  - [x] Test case-sensitive vs case-insensitive matching
+  - [x] Test error message for non-existent account
+- [x] Create tests for symbol validation (AC: 3)
+  - [x] Test symbol format validation
+  - [x] Test empty symbol handling
+  - [x] Test symbol with special characters
+- [x] Create tests for numeric validation (AC: 4)
+  - [x] Test quantity is positive number
+  - [x] Test price is positive number
+  - [x] Test amount validation
+  - [x] Test decimal precision handling
+  - [x] Test zero values
+  - [x] Test negative values (should fail or handle appropriately)
+- [x] Create tests for date validation (AC: 5)
+  - [x] Test valid date formats
+  - [x] Test invalid date formats
+  - [x] Test future dates
+  - [x] Test very old dates
+  - [x] Test date parsing from various formats
+- [x] Create tests for duplicate detection (AC: 6)
+  - [x] Test same transaction in file multiple times
+  - [x] Test transaction already in database
+  - [x] Test duplicate detection criteria
+- [x] Create tests for error reporting (AC: 7, 8)
+  - [x] Test error message includes row number
+  - [x] Test error message includes field name
+  - [x] Test error message is user-friendly
+  - [x] Test multiple errors aggregated per row
+  - [x] Test all errors collected (not just first error)
+  - [x] Test successful rows reported separately
+  - [x] Test warning messages for suspicious data
+- [x] Write edge case tests (AC: 3, 4, 5)
+  - [x] Test missing required fields
+  - [x] Test extra/unknown columns
+  - [x] Test inconsistent data (e.g., amount != quantity \* price)
+  - [x] Test very large numbers
+  - [x] Test very small numbers (precision)
+- [x] Disable all tests using .skip (AC: 10)
+- [x] Verify tests fail before disabling (AC: 9)
+- [x] Run validation commands
 
 ## Dev Notes
 
@@ -145,16 +145,16 @@
 
 ## Definition of Done
 
-- [ ] All tests written and disabled (RED phase)
-- [ ] Tests cover all acceptance criteria scenarios
-- [ ] Tests disabled to allow CI to pass
-- [ ] Test code follows project conventions
-- [ ] All validation commands pass:
-  - [ ] Run `pnpm all`
-  - [ ] Run `pnpm e2e:dms-material`
-  - [ ] Run `pnpm dupcheck`
-  - [ ] Run `pnpm format`
-  - [ ] Repeat all of these if any fail until they all pass
+- [x] All tests written and disabled (RED phase)
+- [x] Tests cover all acceptance criteria scenarios
+- [x] Tests disabled to allow CI to pass
+- [x] Test code follows project conventions
+- [x] All validation commands pass:
+  - [x] Run `pnpm all`
+  - [x] Run `pnpm e2e:dms-material`
+  - [x] Run `pnpm dupcheck`
+  - [x] Run `pnpm format`
+  - [x] Repeat all of these if any fail until they all pass
 - [ ] Code reviewed and approved
 
 ## Notes
@@ -175,9 +175,10 @@
 
 ## Change Log
 
-| Date       | Version | Description      | Author |
-| ---------- | ------- | ---------------- | ------ |
-| 2026-02-24 | 1.0     | Initial creation | SM     |
+| Date       | Version | Description                                                        | Author    |
+| ---------- | ------- | ------------------------------------------------------------------ | --------- |
+| 2026-02-24 | 1.0     | Initial creation                                                   | SM        |
+| 2026-02-25 | 1.1     | Implemented TDD RED phase tests for validation and error reporting | Dev Agent |
 
 ---
 
@@ -185,19 +186,22 @@
 
 ### Agent Model Used
 
-_To be populated during implementation_
+Claude Opus 4.6
 
 ### Debug Log References
 
-_To be populated during implementation_
+None
 
 ### Completion Notes List
 
-_To be populated during implementation_
+- Created comprehensive validation test file with 51 tests covering all acceptance criteria
+- Tests organized into describe blocks: account validation, symbol validation, numeric validation, date validation, duplicate detection, error reporting, edge cases
+- All test blocks disabled with `describe.skip()` to allow CI to pass
+- Tests reference `validate-transaction.function.ts` which will be implemented in AR.5
 
 ### File List
 
-_To be populated during implementation_
+- `apps/server/src/app/routes/import/validation.spec.ts` (new) - TDD RED phase validation tests
 
 ---
 
