@@ -10,10 +10,14 @@ vi.mock('./fidelity-import-service.function', function () {
 });
 
 import fastify from 'fastify';
+import multipart from '@fastify/multipart';
 import registerImportRoutes from './index';
 
 function buildApp() {
-  const app = fastify();
+  const app = fastify({ bodyLimit: 15 * 1024 * 1024 });
+  app.register(multipart, {
+    limits: { fileSize: 15 * 1024 * 1024 },
+  });
   app.register(
     function registerRoutes(instance, _, done) {
       registerImportRoutes(instance);
@@ -49,7 +53,7 @@ describe('POST /api/import/fidelity - File Upload Handling (TDD RED)', function 
   });
 
   describe('multipart request parsing', function () {
-    test.skip('should accept multipart/form-data file upload', async function () {
+    test('should accept multipart/form-data file upload', async function () {
       const successResult: ImportResult = {
         success: true,
         imported: 5,
@@ -86,7 +90,7 @@ describe('POST /api/import/fidelity - File Upload Handling (TDD RED)', function 
       );
     });
 
-    test.skip('should reject multipart request without file field', async function () {
+    test('should reject multipart request without file field', async function () {
       const boundary = '----FormBoundary7MA4YWxkTrZu0gW';
       const body = [
         `--${boundary}`,
@@ -110,7 +114,7 @@ describe('POST /api/import/fidelity - File Upload Handling (TDD RED)', function 
       expect(result.errors[0]).toMatch(/file|missing/i);
     });
 
-    test.skip('should extract file content from multipart request', async function () {
+    test('should extract file content from multipart request', async function () {
       const successResult: ImportResult = {
         success: true,
         imported: 3,
@@ -147,7 +151,7 @@ describe('POST /api/import/fidelity - File Upload Handling (TDD RED)', function 
   });
 
   describe('file extraction from request', function () {
-    test.skip('should extract CSV content as a string from uploaded file', async function () {
+    test('should extract CSV content as a string from uploaded file', async function () {
       const successResult: ImportResult = {
         success: true,
         imported: 1,
@@ -182,7 +186,7 @@ describe('POST /api/import/fidelity - File Upload Handling (TDD RED)', function 
       expect(calledWith).toContain('Date,Action,Symbol');
     });
 
-    test.skip('should validate uploaded file is a CSV', async function () {
+    test('should validate uploaded file is a CSV', async function () {
       const boundary = '----FormBoundary';
       const body = [
         `--${boundary}`,
@@ -207,7 +211,7 @@ describe('POST /api/import/fidelity - File Upload Handling (TDD RED)', function 
       expect(result.errors[0]).toMatch(/csv|file type/i);
     });
 
-    test.skip('should reject file exceeding maximum size limit', async function () {
+    test('should reject file exceeding maximum size limit', async function () {
       const boundary = '----FormBoundary';
       const oversizedContent = 'a'.repeat(11 * 1024 * 1024);
       const body = [
@@ -235,7 +239,7 @@ describe('POST /api/import/fidelity - File Upload Handling (TDD RED)', function 
   });
 
   describe('temporary file handling', function () {
-    test.skip('should not persist uploaded file to disk', async function () {
+    test('should not persist uploaded file to disk', async function () {
       const successResult: ImportResult = {
         success: true,
         imported: 1,
@@ -271,7 +275,7 @@ describe('POST /api/import/fidelity - File Upload Handling (TDD RED)', function 
       );
     });
 
-    test.skip('should process file buffer without creating temp files', async function () {
+    test('should process file buffer without creating temp files', async function () {
       const successResult: ImportResult = {
         success: true,
         imported: 1,
@@ -308,7 +312,7 @@ describe('POST /api/import/fidelity - File Upload Handling (TDD RED)', function 
   });
 
   describe('file cleanup after processing', function () {
-    test.skip('should release file buffer after successful processing', async function () {
+    test('should release file buffer after successful processing', async function () {
       const successResult: ImportResult = {
         success: true,
         imported: 5,
@@ -343,7 +347,7 @@ describe('POST /api/import/fidelity - File Upload Handling (TDD RED)', function 
       expect(mockImportFidelityTransactions).toHaveBeenCalledTimes(1);
     });
 
-    test.skip('should release file buffer after failed processing', async function () {
+    test('should release file buffer after failed processing', async function () {
       const errorResult: ImportResult = {
         success: false,
         imported: 0,
@@ -377,7 +381,7 @@ describe('POST /api/import/fidelity - File Upload Handling (TDD RED)', function 
       expect(mockImportFidelityTransactions).toHaveBeenCalledTimes(1);
     });
 
-    test.skip('should handle exception during file processing gracefully', async function () {
+    test('should handle exception during file processing gracefully', async function () {
       mockImportFidelityTransactions.mockRejectedValue(
         new Error('Processing crashed')
       );
@@ -411,7 +415,7 @@ describe('POST /api/import/fidelity - File Upload Handling (TDD RED)', function 
   });
 
   describe('BOM and encoding handling', function () {
-    test.skip('should strip UTF-8 BOM from uploaded CSV content', async function () {
+    test('should strip UTF-8 BOM from uploaded CSV content', async function () {
       const successResult: ImportResult = {
         success: true,
         imported: 1,
@@ -448,7 +452,7 @@ describe('POST /api/import/fidelity - File Upload Handling (TDD RED)', function 
       expect(calledWith).toContain('Date,Action');
     });
 
-    test.skip('should handle UTF-8 encoded CSV content correctly', async function () {
+    test('should handle UTF-8 encoded CSV content correctly', async function () {
       const successResult: ImportResult = {
         success: true,
         imported: 1,
@@ -484,7 +488,7 @@ describe('POST /api/import/fidelity - File Upload Handling (TDD RED)', function 
       expect(calledWith).toContain('Börsenfonds');
     });
 
-    test.skip('should handle empty multipart file upload', async function () {
+    test('should handle empty multipart file upload', async function () {
       const boundary = '----FormBoundary';
       const body = [
         `--${boundary}`,

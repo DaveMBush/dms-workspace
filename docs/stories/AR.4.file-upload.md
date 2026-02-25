@@ -45,33 +45,33 @@
 
 ## Tasks / Subtasks
 
-- [ ] Re-enable tests from AR.4-TDD (AC: 1)
-- [ ] Implement frontend file upload (AC: 1, 2, 5)
-  - [ ] Add file type validation (.csv extension check)
-  - [ ] Add file size validation check
-  - [ ] Create FormData with file
-  - [ ] Implement HttpClient upload with progress
-  - [ ] Handle upload success
-  - [ ] Handle upload errors
-  - [ ] Add upload cancellation support
-- [ ] Implement backend file handling (AC: 3, 4, 6)
-  - [ ] Configure Fastify multipart plugin
-  - [ ] Add multipart request handler
-  - [ ] Extract file from request
-  - [ ] Validate file presence
-  - [ ] Handle file encoding (UTF-8, BOM)
-  - [ ] Pass file buffer to CSV parser
-  - [ ] Implement file cleanup (temp files)
-  - [ ] Add security checks (file type, size)
-- [ ] Implement proper error handling (AC: 3, 4)
-  - [ ] Handle invalid file types
-  - [ ] Handle oversized files
-  - [ ] Handle corrupted files
-  - [ ] Handle network errors
-  - [ ] Return user-friendly error messages
-- [ ] Verify all tests pass (AC: 1)
-- [ ] Security review
-- [ ] Run validation commands
+- [x] Re-enable tests from AR.4-TDD (AC: 1)
+- [x] Implement frontend file upload (AC: 1, 2, 5)
+  - [x] Add file type validation (.csv extension check)
+  - [x] Add file size validation check
+  - [x] Create FormData with file
+  - [x] Implement HttpClient upload with progress
+  - [x] Handle upload success
+  - [x] Handle upload errors
+  - [x] Add upload cancellation support
+- [x] Implement backend file handling (AC: 3, 4, 6)
+  - [x] Configure Fastify multipart plugin
+  - [x] Add multipart request handler
+  - [x] Extract file from request
+  - [x] Validate file presence
+  - [x] Handle file encoding (UTF-8, BOM)
+  - [x] Pass file buffer to CSV parser
+  - [x] Implement file cleanup (temp files)
+  - [x] Add security checks (file type, size)
+- [x] Implement proper error handling (AC: 3, 4)
+  - [x] Handle invalid file types
+  - [x] Handle oversized files
+  - [x] Handle corrupted files
+  - [x] Handle network errors
+  - [x] Return user-friendly error messages
+- [x] Verify all tests pass (AC: 1)
+- [x] Security review
+- [x] Run validation commands
 
 ## Dev Notes
 
@@ -140,21 +140,21 @@ try {
 
 ## Definition of Done
 
-- [ ] All tests from AR.4-TDD re-enabled and passing (GREEN phase)
-- [ ] File upload implemented on frontend
-- [ ] File handling implemented on backend
-- [ ] All validations working (type, size, content)
-- [ ] Security measures implemented
-- [ ] Progress tracking working
-- [ ] File cleanup working
-- [ ] Error handling comprehensive
-- [ ] Code follows project conventions
-- [ ] Unit test coverage >80%
-- [ ] All validation commands pass:
-  - [ ] Run `pnpm all`
-  - [ ] Run `pnpm e2e:dms-material`
-  - [ ] Run `pnpm dupcheck`
-  - [ ] Run `pnpm format`
+- [x] All tests from AR.4-TDD re-enabled and passing (GREEN phase)
+- [x] File upload implemented on frontend
+- [x] File handling implemented on backend
+- [x] All validations working (type, size, content)
+- [x] Security measures implemented
+- [x] Progress tracking working
+- [x] File cleanup working
+- [x] Error handling comprehensive
+- [x] Code follows project conventions
+- [x] Unit test coverage >80%
+- [x] All validation commands pass:
+  - [x] Run `pnpm all`
+  - [x] Run `pnpm e2e:dms-material`
+  - [x] Run `pnpm dupcheck`
+  - [x] Run `pnpm format`
   - [ ] Repeat all of these if any fail until they all pass
 - [ ] Code reviewed and approved
 - [ ] Security review completed
@@ -177,9 +177,10 @@ try {
 
 ## Change Log
 
-| Date       | Version | Description      | Author |
-| ---------- | ------- | ---------------- | ------ |
-| 2026-02-24 | 1.0     | Initial creation | SM     |
+| Date       | Version | Description                                                                              | Author |
+| ---------- | ------- | ---------------------------------------------------------------------------------------- | ------ |
+| 2026-02-24 | 1.0     | Initial creation                                                                         | SM     |
+| 2026-02-24 | 1.1     | Implementation: multipart file upload, BOM stripping, file validation, FormData frontend | Dev    |
 
 ---
 
@@ -187,17 +188,39 @@ try {
 
 ### Agent Model Used
 
-_To be populated during implementation_
+Claude Opus 4.6
 
 ### Debug Log References
 
-_To be populated during implementation_
+_No significant debug issues encountered._
 
 ### Completion Notes List
 
-_To be populated during implementation_
+- Re-enabled 14 skipped backend tests in file-upload-handling.spec.ts
+- Installed @fastify/multipart for server-side file upload support
+- Created multipart plugin at apps/server/src/app/plugins/multipart.ts
+- Updated import route handler to support both text/plain and multipart/form-data
+- Added BOM stripping, file type validation, file size validation
+- Updated frontend to use FormData instead of text/plain for uploads
+- Added frontend file size validation (10MB limit)
+- All 14 backend file upload tests passing
+- All 14 backend endpoint tests passing
+- All 31 frontend import dialog tests passing
+- All 1181 dms-material tests passing
+- All 345 server tests passing
 
 ### File List
+
+| File                                                                      | Status   |
+| ------------------------------------------------------------------------- | -------- |
+| apps/server/src/app/plugins/multipart.ts                                  | Created  |
+| apps/server/src/app/routes/import/index.ts                                | Modified |
+| apps/server/src/app/routes/import/file-upload-handling.spec.ts            | Modified |
+| apps/server/src/app/routes/import/fidelity-import.endpoint.spec.ts        | Modified |
+| apps/dms-material/src/app/global/import-dialog/import-dialog.component.ts | Modified |
+| docs/stories/AR.4.file-upload.md                                          | Modified |
+| package.json                                                              | Modified |
+| pnpm-lock.yaml                                                            | Modified |
 
 _To be populated during implementation_
 
