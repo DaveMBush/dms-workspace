@@ -139,7 +139,7 @@ describe.skip('GlobalUniverseComponent - Import Integration', () => {
       const importButton = compiled.querySelector(
         '[data-testid="import-transactions-button"]'
       )!;
-      expect(importButton.getAttribute('ng-reflect-message')).toContain(
+      expect(importButton.getAttribute('aria-label')).toBe(
         'Import Fidelity CSV'
       );
     });
@@ -147,9 +147,9 @@ describe.skip('GlobalUniverseComponent - Import Integration', () => {
 
   describe('button opens dialog', () => {
     it('should open ImportDialogComponent when import button is clicked', () => {
-      // Placeholder class - will be replaced with real import when component exists.
-      // Dynamic import was removed because Vite resolves imports at parse time
-      // even inside describe.skip.
+      // AR.3 GREEN phase: Replace with:
+      //   import { ImportDialogComponent } from '../import-dialog/import-dialog.component';
+      // and remove this placeholder class.
       class ImportDialogComponent {
         placeholder = true;
       }
@@ -229,7 +229,7 @@ describe.skip('GlobalUniverseComponent - Import Integration', () => {
   });
 
   describe('data refresh after successful import', () => {
-    it('should refresh universe data after dialog closes with success', () => {
+    it('should show success notification after dialog closes with success', () => {
       const compiled = fixture.nativeElement as HTMLElement;
       const importButton = compiled.querySelector(
         '[data-testid="import-transactions-button"]'

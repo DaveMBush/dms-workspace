@@ -3,6 +3,6 @@ story: 'AR.3-tdd'
 gate: PASS
 status_reason: 'All acceptance criteria met. Comprehensive TDD RED phase tests written for import dialog component and Global/Universe integration, all disabled with describe.skip.'
 reviewer: 'Quinn'
-updated: '2025-06-26T19:45:00Z'
+updated: '2026-02-25T00:57:00Z'
 top_issues: []
 waiver: { active: false }

@@ -13,10 +13,12 @@ import {
  * implement the component and re-enable these tests.
  */
 
-// Placeholder class until the real component is implemented.
-// Using a class (not a type) so it can be passed to TestBed.createComponent
-// when the tests are eventually enabled. The dynamic import was removed
-// because Vite resolves imports at parse time even inside describe.skip.
+// AR.3 GREEN phase: Replace with:
+//   import { ImportDialogComponent } from './import-dialog.component';
+// and remove this placeholder class.
+// Placeholder class used because the actual component doesn't exist yet (TDD RED phase).
+// Vite resolves imports at parse time even inside describe.skip, so a real
+// import would fail.
 class ImportDialogComponent {
   placeholder = true;
 }
@@ -89,7 +91,8 @@ describe.skip('ImportDialogComponent', () => {
 
     it('should restrict file input to CSV files', () => {
       const compiled = fixture.nativeElement as HTMLElement;
-      const fileInput = compiled.querySelector('input[type="file"]')!;
+      const fileInput =
+        compiled.querySelector<HTMLInputElement>('input[type="file"]')!;
       expect(fileInput.accept).toBe('.csv');
     });
 
@@ -103,14 +106,18 @@ describe.skip('ImportDialogComponent', () => {
   describe('file selection handling', () => {
     it('should update selected file when a file is chosen', () => {
       const compiled = fixture.nativeElement as HTMLElement;
-      const fileInput = compiled.querySelector('input[type="file"]')!;
+      const fileInput =
+        compiled.querySelector<HTMLInputElement>('input[type="file"]')!;
 
       const file = new File(['test,csv,content'], 'test.csv', {
         type: 'text/csv',
       });
       const dataTransfer = new DataTransfer();
       dataTransfer.items.add(file);
-      fileInput.files = dataTransfer.files;
+      Object.defineProperty(fileInput, 'files', {
+        value: dataTransfer.files,
+        configurable: true,
+      });
       fileInput.dispatchEvent(new Event('change'));
       fixture.detectChanges();
 
@@ -119,14 +126,18 @@ describe.skip('ImportDialogComponent', () => {
 
     it('should display selected file name after selection', () => {
       const compiled = fixture.nativeElement as HTMLElement;
-      const fileInput = compiled.querySelector('input[type="file"]')!;
+      const fileInput =
+        compiled.querySelector<HTMLInputElement>('input[type="file"]')!;
 
       const file = new File(['content'], 'transactions.csv', {
         type: 'text/csv',
       });
       const dataTransfer = new DataTransfer();
       dataTransfer.items.add(file);
-      fileInput.files = dataTransfer.files;
+      Object.defineProperty(fileInput, 'files', {
+        value: dataTransfer.files,
+        configurable: true,
+      });
       fileInput.dispatchEvent(new Event('change'));
       fixture.detectChanges();
 
@@ -137,7 +148,7 @@ describe.skip('ImportDialogComponent', () => {
   describe('upload button enablement', () => {
     it('should have upload button disabled initially when no file selected', () => {
       const compiled = fixture.nativeElement as HTMLElement;
-      const uploadButton = compiled.querySelector(
+      const uploadButton = compiled.querySelector<HTMLButtonElement>(
         '[data-testid="upload-button"]'
       )!;
       expect(uploadButton.disabled).toBe(true);
@@ -145,16 +156,20 @@ describe.skip('ImportDialogComponent', () => {
 
     it('should enable upload button after a file is selected', () => {
       const compiled = fixture.nativeElement as HTMLElement;
-      const fileInput = compiled.querySelector('input[type="file"]')!;
+      const fileInput =
+        compiled.querySelector<HTMLInputElement>('input[type="file"]')!;
 
       const file = new File(['test'], 'test.csv', { type: 'text/csv' });
       const dataTransfer = new DataTransfer();
       dataTransfer.items.add(file);
-      fileInput.files = dataTransfer.files;
+      Object.defineProperty(fileInput, 'files', {
+        value: dataTransfer.files,
+        configurable: true,
+      });
       fileInput.dispatchEvent(new Event('change'));
       fixture.detectChanges();
 
-      const uploadButton = compiled.querySelector(
+      const uploadButton = compiled.querySelector<HTMLButtonElement>(
         '[data-testid="upload-button"]'
       )!;
       expect(uploadButton.disabled).toBe(false);
@@ -172,7 +187,7 @@ describe.skip('ImportDialogComponent', () => {
 
     it('should close the dialog when cancel is clicked', () => {
       const compiled = fixture.nativeElement as HTMLElement;
-      const cancelButton = compiled.querySelector(
+      const cancelButton = compiled.querySelector<HTMLButtonElement>(
         '[data-testid="cancel-button"]'
       )!;
       cancelButton.click();
@@ -181,7 +196,7 @@ describe.skip('ImportDialogComponent', () => {
 
     it('should close the dialog with no result on cancel', () => {
       const compiled = fixture.nativeElement as HTMLElement;
-      const cancelButton = compiled.querySelector(
+      const cancelButton = compiled.querySelector<HTMLButtonElement>(
         '[data-testid="cancel-button"]'
       )!;
       cancelButton.click();
@@ -201,16 +216,20 @@ describe.skip('ImportDialogComponent', () => {
     it('should show progress spinner during upload', () => {
       // Arrange: select a file and trigger upload
       const compiled = fixture.nativeElement as HTMLElement;
-      const fileInput = compiled.querySelector('input[type="file"]')!;
+      const fileInput =
+        compiled.querySelector<HTMLInputElement>('input[type="file"]')!;
       const file = new File(['test'], 'test.csv', { type: 'text/csv' });
       const dataTransfer = new DataTransfer();
       dataTransfer.items.add(file);
-      fileInput.files = dataTransfer.files;
+      Object.defineProperty(fileInput, 'files', {
+        value: dataTransfer.files,
+        configurable: true,
+      });
       fileInput.dispatchEvent(new Event('change'));
       fixture.detectChanges();
 
       // Act: click upload
-      const uploadButton = compiled.querySelector(
+      const uploadButton = compiled.querySelector<HTMLButtonElement>(
         '[data-testid="upload-button"]'
       )!;
       uploadButton.click();
@@ -225,15 +244,19 @@ describe.skip('ImportDialogComponent', () => {
 
     it('should disable upload button during upload', () => {
       const compiled = fixture.nativeElement as HTMLElement;
-      const fileInput = compiled.querySelector('input[type="file"]')!;
+      const fileInput =
+        compiled.querySelector<HTMLInputElement>('input[type="file"]')!;
       const file = new File(['test'], 'test.csv', { type: 'text/csv' });
       const dataTransfer = new DataTransfer();
       dataTransfer.items.add(file);
-      fileInput.files = dataTransfer.files;
+      Object.defineProperty(fileInput, 'files', {
+        value: dataTransfer.files,
+        configurable: true,
+      });
       fileInput.dispatchEvent(new Event('change'));
       fixture.detectChanges();
 
-      const uploadButton = compiled.querySelector(
+      const uploadButton = compiled.querySelector<HTMLButtonElement>(
         '[data-testid="upload-button"]'
       )!;
       uploadButton.click();
@@ -247,15 +270,19 @@ describe.skip('ImportDialogComponent', () => {
     it('should display success message with import count after successful upload', () => {
       // Arrange: select file and trigger upload
       const compiled = fixture.nativeElement as HTMLElement;
-      const fileInput = compiled.querySelector('input[type="file"]')!;
+      const fileInput =
+        compiled.querySelector<HTMLInputElement>('input[type="file"]')!;
       const file = new File(['test'], 'test.csv', { type: 'text/csv' });
       const dataTransfer = new DataTransfer();
       dataTransfer.items.add(file);
-      fileInput.files = dataTransfer.files;
+      Object.defineProperty(fileInput, 'files', {
+        value: dataTransfer.files,
+        configurable: true,
+      });
       fileInput.dispatchEvent(new Event('change'));
       fixture.detectChanges();
 
-      const uploadButton = compiled.querySelector(
+      const uploadButton = compiled.querySelector<HTMLButtonElement>(
         '[data-testid="upload-button"]'
       )!;
       uploadButton.click();
@@ -272,7 +299,7 @@ describe.skip('ImportDialogComponent', () => {
       fixture.detectChanges();
 
       // Assert: success message visible
-      const resultArea = compiled.querySelector(
+      const resultArea = compiled.querySelector<HTMLElement>(
         '[data-testid="import-result"]'
       )!;
       expect(resultArea.textContent).toContain('15');
@@ -281,15 +308,19 @@ describe.skip('ImportDialogComponent', () => {
 
     it('should hide spinner after successful upload', () => {
       const compiled = fixture.nativeElement as HTMLElement;
-      const fileInput = compiled.querySelector('input[type="file"]')!;
+      const fileInput =
+        compiled.querySelector<HTMLInputElement>('input[type="file"]')!;
       const file = new File(['test'], 'test.csv', { type: 'text/csv' });
       const dataTransfer = new DataTransfer();
       dataTransfer.items.add(file);
-      fileInput.files = dataTransfer.files;
+      Object.defineProperty(fileInput, 'files', {
+        value: dataTransfer.files,
+        configurable: true,
+      });
       fileInput.dispatchEvent(new Event('change'));
       fixture.detectChanges();
 
-      const uploadButton = compiled.querySelector(
+      const uploadButton = compiled.querySelector<HTMLButtonElement>(
         '[data-testid="upload-button"]'
       )!;
       uploadButton.click();
@@ -314,15 +345,19 @@ describe.skip('ImportDialogComponent', () => {
   describe('error message display', () => {
     it('should display error messages when import fails', () => {
       const compiled = fixture.nativeElement as HTMLElement;
-      const fileInput = compiled.querySelector('input[type="file"]')!;
+      const fileInput =
+        compiled.querySelector<HTMLInputElement>('input[type="file"]')!;
       const file = new File(['test'], 'test.csv', { type: 'text/csv' });
       const dataTransfer = new DataTransfer();
       dataTransfer.items.add(file);
-      fileInput.files = dataTransfer.files;
+      Object.defineProperty(fileInput, 'files', {
+        value: dataTransfer.files,
+        configurable: true,
+      });
       fileInput.dispatchEvent(new Event('change'));
       fixture.detectChanges();
 
-      const uploadButton = compiled.querySelector(
+      const uploadButton = compiled.querySelector<HTMLButtonElement>(
         '[data-testid="upload-button"]'
       )!;
       uploadButton.click();
@@ -337,7 +372,7 @@ describe.skip('ImportDialogComponent', () => {
       });
       fixture.detectChanges();
 
-      const resultArea = compiled.querySelector(
+      const resultArea = compiled.querySelector<HTMLElement>(
         '[data-testid="import-result"]'
       )!;
       expect(resultArea.textContent).toContain('Invalid CSV format');
@@ -346,15 +381,19 @@ describe.skip('ImportDialogComponent', () => {
 
     it('should display error icon or styling on failure', () => {
       const compiled = fixture.nativeElement as HTMLElement;
-      const fileInput = compiled.querySelector('input[type="file"]')!;
+      const fileInput =
+        compiled.querySelector<HTMLInputElement>('input[type="file"]')!;
       const file = new File(['test'], 'test.csv', { type: 'text/csv' });
       const dataTransfer = new DataTransfer();
       dataTransfer.items.add(file);
-      fileInput.files = dataTransfer.files;
+      Object.defineProperty(fileInput, 'files', {
+        value: dataTransfer.files,
+        configurable: true,
+      });
       fileInput.dispatchEvent(new Event('change'));
       fixture.detectChanges();
 
-      const uploadButton = compiled.querySelector(
+      const uploadButton = compiled.querySelector<HTMLButtonElement>(
         '[data-testid="upload-button"]'
       )!;
       uploadButton.click();
@@ -377,15 +416,19 @@ describe.skip('ImportDialogComponent', () => {
   describe('dialog close on success', () => {
     it('should close dialog automatically after successful import', () => {
       const compiled = fixture.nativeElement as HTMLElement;
-      const fileInput = compiled.querySelector('input[type="file"]')!;
+      const fileInput =
+        compiled.querySelector<HTMLInputElement>('input[type="file"]')!;
       const file = new File(['test'], 'test.csv', { type: 'text/csv' });
       const dataTransfer = new DataTransfer();
       dataTransfer.items.add(file);
-      fileInput.files = dataTransfer.files;
+      Object.defineProperty(fileInput, 'files', {
+        value: dataTransfer.files,
+        configurable: true,
+      });
       fileInput.dispatchEvent(new Event('change'));
       fixture.detectChanges();
 
-      const uploadButton = compiled.querySelector(
+      const uploadButton = compiled.querySelector<HTMLButtonElement>(
         '[data-testid="upload-button"]'
       )!;
       uploadButton.click();
@@ -407,15 +450,19 @@ describe.skip('ImportDialogComponent', () => {
 
     it('should not close dialog automatically on error', () => {
       const compiled = fixture.nativeElement as HTMLElement;
-      const fileInput = compiled.querySelector('input[type="file"]')!;
+      const fileInput =
+        compiled.querySelector<HTMLInputElement>('input[type="file"]')!;
       const file = new File(['test'], 'test.csv', { type: 'text/csv' });
       const dataTransfer = new DataTransfer();
       dataTransfer.items.add(file);
-      fileInput.files = dataTransfer.files;
+      Object.defineProperty(fileInput, 'files', {
+        value: dataTransfer.files,
+        configurable: true,
+      });
       fileInput.dispatchEvent(new Event('change'));
       fixture.detectChanges();
 
-      const uploadButton = compiled.querySelector(
+      const uploadButton = compiled.querySelector<HTMLButtonElement>(
         '[data-testid="upload-button"]'
       )!;
       uploadButton.click();
@@ -457,6 +504,9 @@ describe.skip('ImportDialogComponent', () => {
         ],
       }).compileComponents();
 
+      // Re-capture httpMock so afterEach verify() uses the fresh instance
+      httpMock = TestBed.inject(HttpTestingController);
+
       const newFixture = TestBed.createComponent(ImportDialogComponent);
       const newComponent = newFixture.componentInstance as Record<
         string,
@@ -474,19 +524,23 @@ describe.skip('ImportDialogComponent', () => {
   describe('edge cases', () => {
     it('should reject non-CSV files', () => {
       const compiled = fixture.nativeElement as HTMLElement;
-      const fileInput = compiled.querySelector('input[type="file"]')!;
+      const fileInput =
+        compiled.querySelector<HTMLInputElement>('input[type="file"]')!;
 
       const file = new File(['not csv'], 'test.txt', {
         type: 'text/plain',
       });
       const dataTransfer = new DataTransfer();
       dataTransfer.items.add(file);
-      fileInput.files = dataTransfer.files;
+      Object.defineProperty(fileInput, 'files', {
+        value: dataTransfer.files,
+        configurable: true,
+      });
       fileInput.dispatchEvent(new Event('change'));
       fixture.detectChanges();
 
       // Upload button should remain disabled for non-CSV files
-      const uploadButton = compiled.querySelector(
+      const uploadButton = compiled.querySelector<HTMLButtonElement>(
         '[data-testid="upload-button"]'
       )!;
       expect(uploadButton.disabled).toBe(true);
@@ -494,13 +548,14 @@ describe.skip('ImportDialogComponent', () => {
 
     it('should handle empty file selection gracefully', () => {
       const compiled = fixture.nativeElement as HTMLElement;
-      const fileInput = compiled.querySelector('input[type="file"]')!;
+      const fileInput =
+        compiled.querySelector<HTMLInputElement>('input[type="file"]')!;
 
       // Trigger change with no files
       fileInput.dispatchEvent(new Event('change'));
       fixture.detectChanges();
 
-      const uploadButton = compiled.querySelector(
+      const uploadButton = compiled.querySelector<HTMLButtonElement>(
         '[data-testid="upload-button"]'
       )!;
       expect(uploadButton.disabled).toBe(true);
@@ -508,15 +563,19 @@ describe.skip('ImportDialogComponent', () => {
 
     it('should display error when upload HTTP request fails', () => {
       const compiled = fixture.nativeElement as HTMLElement;
-      const fileInput = compiled.querySelector('input[type="file"]')!;
+      const fileInput =
+        compiled.querySelector<HTMLInputElement>('input[type="file"]')!;
       const file = new File(['test'], 'test.csv', { type: 'text/csv' });
       const dataTransfer = new DataTransfer();
       dataTransfer.items.add(file);
-      fileInput.files = dataTransfer.files;
+      Object.defineProperty(fileInput, 'files', {
+        value: dataTransfer.files,
+        configurable: true,
+      });
       fileInput.dispatchEvent(new Event('change'));
       fixture.detectChanges();
 
-      const uploadButton = compiled.querySelector(
+      const uploadButton = compiled.querySelector<HTMLButtonElement>(
         '[data-testid="upload-button"]'
       )!;
       uploadButton.click();
@@ -530,7 +589,7 @@ describe.skip('ImportDialogComponent', () => {
       });
       fixture.detectChanges();
 
-      const resultArea = compiled.querySelector(
+      const resultArea = compiled.querySelector<HTMLElement>(
         '[data-testid="import-result"]'
       )!;
       expect(resultArea.textContent).toMatch(/error|failed/i);
@@ -538,15 +597,19 @@ describe.skip('ImportDialogComponent', () => {
 
     it('should display error on network failure', () => {
       const compiled = fixture.nativeElement as HTMLElement;
-      const fileInput = compiled.querySelector('input[type="file"]')!;
+      const fileInput =
+        compiled.querySelector<HTMLInputElement>('input[type="file"]')!;
       const file = new File(['test'], 'test.csv', { type: 'text/csv' });
       const dataTransfer = new DataTransfer();
       dataTransfer.items.add(file);
-      fileInput.files = dataTransfer.files;
+      Object.defineProperty(fileInput, 'files', {
+        value: dataTransfer.files,
+        configurable: true,
+      });
       fileInput.dispatchEvent(new Event('change'));
       fixture.detectChanges();
 
-      const uploadButton = compiled.querySelector(
+      const uploadButton = compiled.querySelector<HTMLButtonElement>(
         '[data-testid="upload-button"]'
       )!;
       uploadButton.click();
@@ -560,7 +623,7 @@ describe.skip('ImportDialogComponent', () => {
       });
       fixture.detectChanges();
 
-      const resultArea = compiled.querySelector(
+      const resultArea = compiled.querySelector<HTMLElement>(
         '[data-testid="import-result"]'
       )!;
       expect(resultArea.textContent).toMatch(/network|connection|error/i);
@@ -568,7 +631,8 @@ describe.skip('ImportDialogComponent', () => {
 
     it('should handle large file selection without crashing', () => {
       const compiled = fixture.nativeElement as HTMLElement;
-      const fileInput = compiled.querySelector('input[type="file"]')!;
+      const fileInput =
+        compiled.querySelector<HTMLInputElement>('input[type="file"]')!;
 
       // Create a large file (simulate with a large string)
       const largeContent = 'a'.repeat(10 * 1024 * 1024); // 10MB
@@ -577,13 +641,16 @@ describe.skip('ImportDialogComponent', () => {
       });
       const dataTransfer = new DataTransfer();
       dataTransfer.items.add(file);
-      fileInput.files = dataTransfer.files;
+      Object.defineProperty(fileInput, 'files', {
+        value: dataTransfer.files,
+        configurable: true,
+      });
       fileInput.dispatchEvent(new Event('change'));
       fixture.detectChanges();
 
       // Component should handle the large file without error
       expect(component).toBeTruthy();
-      const uploadButton = compiled.querySelector(
+      const uploadButton = compiled.querySelector<HTMLButtonElement>(
         '[data-testid="upload-button"]'
       )!;
       expect(uploadButton.disabled).toBe(false);
@@ -591,15 +658,19 @@ describe.skip('ImportDialogComponent', () => {
 
     it('should display warnings from import result', () => {
       const compiled = fixture.nativeElement as HTMLElement;
-      const fileInput = compiled.querySelector('input[type="file"]')!;
+      const fileInput =
+        compiled.querySelector<HTMLInputElement>('input[type="file"]')!;
       const file = new File(['test'], 'test.csv', { type: 'text/csv' });
       const dataTransfer = new DataTransfer();
       dataTransfer.items.add(file);
-      fileInput.files = dataTransfer.files;
+      Object.defineProperty(fileInput, 'files', {
+        value: dataTransfer.files,
+        configurable: true,
+      });
       fileInput.dispatchEvent(new Event('change'));
       fixture.detectChanges();
 
-      const uploadButton = compiled.querySelector(
+      const uploadButton = compiled.querySelector<HTMLButtonElement>(
         '[data-testid="upload-button"]'
       )!;
       uploadButton.click();
@@ -614,7 +685,7 @@ describe.skip('ImportDialogComponent', () => {
       });
       fixture.detectChanges();
 
-      const resultArea = compiled.querySelector(
+      const resultArea = compiled.querySelector<HTMLElement>(
         '[data-testid="import-result"]'
       )!;
       expect(resultArea.textContent).toContain(
