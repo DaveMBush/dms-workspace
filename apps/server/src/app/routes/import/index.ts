@@ -93,6 +93,11 @@ function extractPlainTextCsvContent(request: FastifyRequest): string | null {
   const body: unknown = request.body;
   if (typeof body === 'string') {
     const content = stripBom(body);
+    if (Buffer.byteLength(content, 'utf-8') > MAX_FILE_SIZE) {
+      throw createValidationError(
+        'File size exceeds the maximum limit of 10MB.',
+      );
+    }
     return content.trim().length > 0 ? content : null;
   }
   return null;
