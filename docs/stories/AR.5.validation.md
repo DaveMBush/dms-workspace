@@ -47,50 +47,50 @@
 
 ## Tasks / Subtasks
 
-- [ ] Re-enable tests from AR.5-TDD (AC: 1)
-- [ ] Implement validation framework (AC: 1)
-  - [ ] Create validation result types
-  - [ ] Create error/warning aggregation structure
-  - [ ] Create validation helper functions
-- [ ] Implement account validation (AC: 2)
-  - [ ] Check account exists in database
-  - [ ] Verify account belongs to current user
-  - [ ] Implement case-insensitive name matching
-  - [ ] Add error message for non-existent account
-- [ ] Implement symbol validation (AC: 3)
-  - [ ] Validate symbol format (1-5 chars, uppercase)
-  - [ ] Handle empty symbol
-  - [ ] Allow international symbols if needed
-- [ ] Implement numeric validation (AC: 4)
-  - [ ] Validate quantity is positive number
-  - [ ] Validate price is positive number
-  - [ ] Validate amount
-  - [ ] Handle decimal precision
-  - [ ] Check for negative values
-  - [ ] Warn if amount != quantity \* price
-- [ ] Implement date validation (AC: 5)
-  - [ ] Parse various date formats
-  - [ ] Validate date is not in future
-  - [ ] Add error for invalid dates
-- [ ] Implement duplicate detection (AC: 6)
-  - [ ] Check for duplicates within file
-  - [ ] Check for duplicates in database
-  - [ ] Add warnings (not errors) for duplicates
-- [ ] Implement error reporting (AC: 7, 8)
-  - [ ] Format error messages with row number
-  - [ ] Include field name in error message
-  - [ ] Make messages user-friendly (not technical)
-  - [ ] Aggregate multiple errors per row
-  - [ ] Collect all errors (don't stop at first)
-  - [ ] Report successful row count
-  - [ ] Include warnings separately from errors
-- [ ] Integrate validation into import service
-  - [ ] Call validators before processing each row
-  - [ ] Skip invalid rows
-  - [ ] Continue processing valid rows
-  - [ ] Return detailed results
-- [ ] Verify all tests pass (AC: 1)
-- [ ] Run validation commands
+- [x] Re-enable tests from AR.5-TDD (AC: 1)
+- [x] Implement validation framework (AC: 1)
+  - [x] Create validation result types
+  - [x] Create error/warning aggregation structure
+  - [x] Create validation helper functions
+- [x] Implement account validation (AC: 2)
+  - [x] Check account exists in database
+  - [x] Verify account belongs to current user
+  - [x] Implement exact name matching
+  - [x] Add error message for non-existent account
+- [x] Implement symbol validation (AC: 3)
+  - [x] Validate symbol format (1-5 chars, uppercase)
+  - [x] Handle empty symbol
+  - [x] Allow international symbols if needed
+- [x] Implement numeric validation (AC: 4)
+  - [x] Validate quantity is positive number
+  - [x] Validate price is positive number
+  - [x] Validate amount
+  - [x] Handle decimal precision
+  - [x] Check for negative values
+  - [x] Warn if amount != quantity \* price
+- [x] Implement date validation (AC: 5)
+  - [x] Parse various date formats
+  - [x] Validate date is not in future
+  - [x] Add error for invalid dates
+- [x] Implement duplicate detection (AC: 6)
+  - [x] Check for duplicates within file
+  - [x] Check for duplicates in database
+  - [x] Add warnings (not errors) for duplicates
+- [x] Implement error reporting (AC: 7, 8)
+  - [x] Format error messages with row number
+  - [x] Include field name in error message
+  - [x] Make messages user-friendly (not technical)
+  - [x] Aggregate multiple errors per row
+  - [x] Collect all errors (don't stop at first)
+  - [x] Report successful row count
+  - [x] Include warnings separately from errors
+- [x] Integrate validation into import service
+  - [x] Call validators before processing each row
+  - [x] Skip invalid rows
+  - [x] Continue processing valid rows
+  - [x] Return detailed results
+- [x] Verify all tests pass (AC: 1)
+- [x] Run validation commands
 
 ## Dev Notes
 
@@ -236,9 +236,10 @@ const validateDate = (dateStr: string) => {
 
 ## Change Log
 
-| Date       | Version | Description      | Author |
-| ---------- | ------- | ---------------- | ------ |
-| 2026-02-24 | 1.0     | Initial creation | SM     |
+| Date       | Version | Description                                                    | Author |
+| ---------- | ------- | -------------------------------------------------------------- | ------ |
+| 2026-02-24 | 1.0     | Initial creation                                               | SM     |
+| 2026-02-25 | 1.1     | Implemented all validation logic and re-enabled AR.5-TDD tests | Dev    |
 
 ---
 
@@ -246,19 +247,40 @@ const validateDate = (dateStr: string) => {
 
 ### Agent Model Used
 
-_To be populated during implementation_
+Claude Opus 4.6 (copilot)
 
 ### Debug Log References
 
-_To be populated during implementation_
+- No debug issues encountered
 
 ### Completion Notes List
 
-_To be populated during implementation_
+- All 51 tests from AR.5-TDD re-enabled and passing
+- Fixed 4 test cases missing `await` on async `validateAccount` calls
+- Modular architecture: 14 single-export function files + 2 interface files per @smarttools/one-exported-item-per-file rule
+- Validation types use TypeScript discriminated unions for type safety
+- Applied CodeRabbit review suggestions (action validation, date format docs, exact-match account lookup)
 
 ### File List
 
-_To be populated during implementation_
+- `apps/server/src/app/routes/import/validate-account.function.ts` (new)
+- `apps/server/src/app/routes/import/validate-symbol.function.ts` (new)
+- `apps/server/src/app/routes/import/validate-quantity.function.ts` (new)
+- `apps/server/src/app/routes/import/validate-price.function.ts` (new)
+- `apps/server/src/app/routes/import/validate-amount.function.ts` (new)
+- `apps/server/src/app/routes/import/validate-date.function.ts` (new)
+- `apps/server/src/app/routes/import/validate-action.function.ts` (new)
+- `apps/server/src/app/routes/import/validate-row.function.ts` (new)
+- `apps/server/src/app/routes/import/validate-rows.function.ts` (new)
+- `apps/server/src/app/routes/import/format-validation-error.function.ts` (new)
+- `apps/server/src/app/routes/import/aggregate-errors.function.ts` (new)
+- `apps/server/src/app/routes/import/detect-duplicates-in-file.function.ts` (new)
+- `apps/server/src/app/routes/import/detect-duplicate-in-db.function.ts` (new)
+- `apps/server/src/app/routes/import/check-amount-mismatch.function.ts` (new)
+- `apps/server/src/app/routes/import/validation-error.interface.ts` (new)
+- `apps/server/src/app/routes/import/validation-warning.interface.ts` (new)
+- `apps/server/src/app/routes/import/validation.spec.ts` (modified - re-enabled tests, added await, updated imports)
+- `docs/stories/AR.5.validation.md` (modified - dev record updates)
 
 ---
 
