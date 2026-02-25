@@ -15,7 +15,6 @@ import {
 } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { from, switchMap } from 'rxjs';
 
 import { ImportDialogData } from './import-dialog-data.interface';
 import { ImportDialogResult } from './import-dialog-result.interface';
@@ -26,6 +25,8 @@ interface ImportApiResponse {
   errors: string[];
   warnings: string[];
 }
+
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
 @Component({
   selector: 'dms-import-fidelity-dialog',
@@ -64,6 +65,11 @@ export class ImportDialogComponent {
       this.selectedFile = null;
       return;
     }
+    if (file.size > MAX_FILE_SIZE) {
+      this.selectedFile = null;
+      this.errors.set(['File size exceeds the maximum limit of 10MB.']);
+      return;
+    }
     this.selectedFile = file;
   }
 
@@ -82,17 +88,12 @@ export class ImportDialogComponent {
     this.success.set(false);
 
     const context = this;
-    from(this.selectedFile.text())
-      .pipe(
-        switchMap(function sendCsvToServer(csvContent: string) {
-          return context.http.post<ImportApiResponse>(
-            '/api/import/fidelity',
-            csvContent,
-            { headers: { 'Content-Type': 'text/plain' } }
-          );
-        }),
-        takeUntilDestroyed(context.destroyRef)
-      )
+    const formData = new FormData();
+    formData.append('file', this.selectedFile);
+
+    context.http
+      .post<ImportApiResponse>('/api/import/fidelity', formData)
+      .pipe(takeUntilDestroyed(context.destroyRef))
       .subscribe({
         next: function onUploadSuccess(response: ImportApiResponse) {
           context.handleUploadSuccess(response);
