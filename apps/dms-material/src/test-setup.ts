@@ -63,6 +63,39 @@ HTMLCanvasElement.prototype.getContext = vi.fn(function mockGetContext() {
   } as unknown as CanvasRenderingContext2D;
 }) as unknown as typeof HTMLCanvasElement.prototype.getContext;
 
+// Polyfill DataTransfer for jsdom (used by file-input tests)
+if (typeof globalThis.DataTransfer === 'undefined') {
+  class DataTransferPolyfill {
+    private fileList: File[] = [];
+    items = {
+      add: (file: File) => {
+        this.fileList.push(file);
+      },
+    };
+    get files(): FileList {
+      const list = this.fileList;
+      return {
+        length: list.length,
+        item: function getItem(index: number) {
+          return list[index] || null;
+        },
+        [Symbol.iterator]: function* iterateFiles() {
+          for (let i = 0; i < list.length; i++) {
+            yield list[i];
+          }
+        },
+        ...Object.fromEntries(
+          list.map(function mapFiles(f, i) {
+            return [i, f];
+          })
+        ),
+      } as unknown as FileList;
+    }
+  }
+  (globalThis as Record<string, unknown>)['DataTransfer'] =
+    DataTransferPolyfill;
+}
+
 // Mock matchMedia for tests (including deprecated addListener/removeListener for Angular CDK)
 Object.defineProperty(window, 'matchMedia', {
   writable: true,

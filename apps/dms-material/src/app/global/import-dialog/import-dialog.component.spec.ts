@@ -1,34 +1,15 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { provideHttpClient } from '@angular/common/http';
 import {
   HttpTestingController,
   provideHttpClientTesting,
 } from '@angular/common/http/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
-/**
- * TDD RED Phase: These tests define the expected behavior of the
- * ImportDialogComponent which does not yet exist. All tests are
- * disabled with describe.skip so CI passes. Story AR.3 will
- * implement the component and re-enable these tests.
- */
+import { ImportDialogComponent } from './import-dialog.component';
+import { ImportDialogData } from './import-dialog-data.interface';
 
-// AR.3 GREEN phase: Replace with:
-//   import { ImportDialogComponent } from './import-dialog.component';
-// and remove this placeholder class.
-// Placeholder class used because the actual component doesn't exist yet (TDD RED phase).
-// Vite resolves imports at parse time even inside describe.skip, so a real
-// import would fail.
-class ImportDialogComponent {
-  placeholder = true;
-}
-
-// Placeholder interface until the real data interface is implemented
-interface ImportDialogData {
-  accountFilter?: string;
-}
-
-describe.skip('ImportDialogComponent', () => {
+describe('ImportDialogComponent', () => {
   let component: ImportDialogComponent;
   let fixture: ComponentFixture<ImportDialogComponent>;
   let mockDialogRef: { close: ReturnType<typeof vi.fn> };
@@ -38,6 +19,7 @@ describe.skip('ImportDialogComponent', () => {
   beforeEach(async () => {
     mockDialogRef = { close: vi.fn() };
 
+    TestBed.resetTestingModule();
     await TestBed.configureTestingModule({
       imports: [ImportDialogComponent],
       providers: [
@@ -55,6 +37,9 @@ describe.skip('ImportDialogComponent', () => {
   });
 
   afterEach(() => {
+    // Discard any outstanding requests left by tests that
+    // intentionally check intermediate loading state.
+    httpMock.match(() => true);
     httpMock.verify();
   });
 
