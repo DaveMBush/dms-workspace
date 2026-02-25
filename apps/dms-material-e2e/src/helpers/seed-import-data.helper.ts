@@ -56,16 +56,21 @@ async function createTestUniverseEntry(
 }
 
 /**
- * Create a divDepositType "Dividend" if not already present
+ * Create a divDepositType "Dividend" if not already present.
+ * Uses try-catch to handle potential race conditions safely.
  */
 async function ensureDividendType(prisma: PrismaClient): Promise<void> {
   const existing = await prisma.divDepositType.findFirst({
     where: { name: 'Dividend' },
   });
   if (!existing) {
-    await prisma.divDepositType.create({
-      data: { name: 'Dividend' },
-    });
+    try {
+      await prisma.divDepositType.create({
+        data: { name: 'Dividend' },
+      });
+    } catch {
+      // If another process created it concurrently, ignore the error
+    }
   }
 }
 

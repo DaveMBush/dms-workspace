@@ -262,9 +262,9 @@ No debug issues encountered.
 
 ## QA Results
 
-- All 9 E2E tests pass (Chromium and Firefox)
+- Targeted AR.6 run: All 9 new E2E tests pass (Chromium)
 - `pnpm all` passes (lint, build, unit tests)
-- `pnpm e2e:dms-material` full suite: 406 passed, 127 skipped, 0 new failures (4 pre-existing sold-positions Firefox date filtering failures)
+- `pnpm e2e:dms-material` full suite: 406 passed, 127 skipped, 0 new failures (note: 4 pre-existing Firefox failures in sold-positions date filtering, unrelated to this PR)
 - `pnpm dupcheck`: 0 clones found
 - `pnpm format`: applied and clean
 - All acceptance criteria verified through E2E tests

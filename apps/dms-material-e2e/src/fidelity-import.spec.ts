@@ -209,6 +209,11 @@ test.describe('Fidelity Import E2E', () => {
       // Verify error message content from actual API response
       expect(responseBody.success).toBe(false);
       expect(responseBody.errors.length).toBeGreaterThan(0);
+      expect(
+        responseBody.errors.some(function hasNotFound(e) {
+          return e.toLowerCase().includes('not found');
+        })
+      ).toBe(true);
 
       // Dialog should stay open
       await expect(
@@ -257,21 +262,14 @@ test.describe('Fidelity Import E2E', () => {
         errors: string[];
       };
 
-      // If first import has errors, the dialog stays open — close it
-      if (!firstBody.success) {
-        await page.locator('[data-testid="cancel-button"]').click();
-        await expect(
-          page.getByRole('heading', {
-            name: 'Import Fidelity Transactions',
-          })
-        ).not.toBeVisible({ timeout: 5000 });
-      } else {
-        await expect(
-          page.getByRole('heading', {
-            name: 'Import Fidelity Transactions',
-          })
-        ).not.toBeVisible({ timeout: 30000 });
-      }
+      // First import must succeed
+      expect(firstBody.success).toBe(true);
+      expect(firstBody.imported).toBeGreaterThan(0);
+      await expect(
+        page.getByRole('heading', {
+          name: 'Import Fidelity Transactions',
+        })
+      ).not.toBeVisible({ timeout: 30000 });
 
       // Second import of same data
       const secondResponsePromise = page.waitForResponse(function matchSecond(
@@ -289,8 +287,9 @@ test.describe('Fidelity Import E2E', () => {
         imported: number;
       };
 
-      // Duplicate detection: the import service skips existing records
-      // Second import should succeed (idempotent) with same or fewer count
+      // Duplicate detection: the import service handles duplicate records
+      // Second import should succeed with same count (idempotent)
+      expect(secondBody.success).toBe(true);
       expect(secondBody.imported).toBeLessThanOrEqual(firstBody.imported);
     });
   });
@@ -317,27 +316,14 @@ test.describe('Fidelity Import E2E', () => {
       };
 
       // The mixed file has a valid purchase and a sale with no matching open
-      // trade (quantity 99). Some rows should succeed but errors exist.
-      if (responseBody.errors.length > 0) {
-        // Partial success: some imported, some failed
-        await waitForImportResult(page);
-        await expect(page.locator('.error-message')).toBeVisible({
-          timeout: 10000,
-        });
+      // trade (quantity 99). Must have both successes and failures.
+      expect(responseBody.imported).toBeGreaterThan(0);
+      expect(responseBody.errors.length).toBeGreaterThan(0);
 
-        // Dialog should stay open since success is false
-        await expect(
-          page.getByRole('heading', {
-            name: 'Import Fidelity Transactions',
-          })
-        ).toBeVisible();
-      }
-
-      // Verify that at least some transactions were processed
-      // (either imported or identified as errors)
-      expect(
-        responseBody.imported + responseBody.errors.length
-      ).toBeGreaterThan(0);
+      await waitForImportResult(page);
+      await expect(page.locator('.error-message')).toBeVisible({
+        timeout: 10000,
+      });
     });
   });
 });
