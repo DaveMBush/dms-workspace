@@ -45,31 +45,31 @@
 
 ## Tasks / Subtasks
 
-- [ ] Create test file for import dialog component (AC: 1)
-  - [ ] Test dialog initialization
-  - [ ] Test file input rendering
-  - [ ] Test file selection handling
-  - [ ] Test upload button enablement
-  - [ ] Test cancel button
-  - [ ] Test progress indicator during upload
-  - [ ] Test success message display
-  - [ ] Test error message display
-  - [ ] Test dialog close on success
-  - [ ] Test dialog data passing (e.g., account filter)
-- [ ] Create tests for Global/Universe integration (AC: 2)
-  - [ ] Test "Import Transactions" button exists
-  - [ ] Test button opens dialog
-  - [ ] Test dialog receives context data
-  - [ ] Test data refresh after successful import
-- [ ] Write edge case tests (AC: 3)
-  - [ ] Test invalid file type selection
-  - [ ] Test empty file selection
-  - [ ] Test upload failure
-  - [ ] Test network error
-  - [ ] Test large file handling
-- [ ] Disable all tests using .skip (AC: 7)
-- [ ] Verify tests fail before disabling (AC: 6)
-- [ ] Run validation commands
+- [x] Create test file for import dialog component (AC: 1)
+  - [x] Test dialog initialization
+  - [x] Test file input rendering
+  - [x] Test file selection handling
+  - [x] Test upload button enablement
+  - [x] Test cancel button
+  - [x] Test progress indicator during upload
+  - [x] Test success message display
+  - [x] Test error message display
+  - [x] Test dialog close on success
+  - [x] Test dialog data passing (e.g., account filter)
+- [x] Create tests for Global/Universe integration (AC: 2)
+  - [x] Test "Import Transactions" button exists
+  - [x] Test button opens dialog
+  - [x] Test dialog receives context data
+  - [x] Test data refresh after successful import
+- [x] Write edge case tests (AC: 3)
+  - [x] Test invalid file type selection
+  - [x] Test empty file selection
+  - [x] Test upload failure
+  - [x] Test network error
+  - [x] Test large file handling
+- [x] Disable all tests using .skip (AC: 7)
+- [x] Verify tests fail before disabling (AC: 6)
+- [x] Run validation commands
 
 ## Dev Notes
 
@@ -139,9 +139,10 @@
 
 ## Change Log
 
-| Date       | Version | Description      | Author |
-| ---------- | ------- | ---------------- | ------ |
-| 2026-02-24 | 1.0     | Initial creation | SM     |
+| Date       | Version | Description                                                                                                                                | Author    |
+| ---------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------ | --------- |
+| 2026-02-24 | 1.0     | Initial creation                                                                                                                           | SM        |
+| 2026-02-24 | 1.1     | TDD RED phase implementation: Created import dialog component tests and Global/Universe integration tests, all disabled with describe.skip | Dev Agent |
 
 ---
 
@@ -149,22 +150,58 @@
 
 ### Agent Model Used
 
-_To be populated during implementation_
+Claude Opus 4.6 (copilot)
 
 ### Debug Log References
 
-_To be populated during implementation_
+No debug issues encountered.
 
 ### Completion Notes List
 
-_To be populated during implementation_
+- Created import dialog component test file with comprehensive tests covering initialization, file input, file selection, upload button, cancel, progress, success/error display, dialog close behavior, data passing, and edge cases
+- Created integration test file for Global/Universe screen covering Import Transactions button, dialog opening, context data passing, and post-import data refresh
+- All tests disabled with `describe.skip` to allow CI to pass (TDD RED phase)
+- Tests follow existing project patterns: Vitest with Angular TestBed, AAA pattern, proper mocking
 
 ### File List
 
-_To be populated during implementation_
+- `apps/dms-material/src/app/global/import-dialog/import-dialog.component.spec.ts` - Created (import dialog component unit tests)
+- `apps/dms-material/src/app/global/global-universe/global-universe-import.integration.spec.ts` - Created (Global/Universe import integration tests)
+- `docs/stories/AR.3-tdd.import-dialog.md` - Modified (Dev Agent Record updated)
 
 ---
 
 ## QA Results
 
-_To be populated after implementation_
+### Review Date: 2026-02-25
+
+### Reviewed By: Quinn (Test Architect)
+
+**Acceptance Criteria Review:**
+
+- [x] AC1: All unit tests written for import dialog component (33 tests)
+- [x] AC2: Tests verify dialog can be opened from Global/Universe screen
+- [x] AC3: Tests verify file selection UI (input rendering, CSV restriction, file name display)
+- [x] AC4: Tests verify upload progress indication (spinner, button disable)
+- [x] AC5: Tests verify success/error message display (import count, error list, warnings)
+- [x] AC6: All tests initially fail (RED phase - component doesn't exist)
+- [x] AC7: Tests disabled with `describe.skip` to allow CI to pass
+
+**Technical Requirements Review:**
+
+- [x] Tests follow existing testing patterns (Vitest + Angular TestBed, AAA pattern)
+- [x] Mock dependencies properly configured (HttpTestingController, MatDialogRef, MAT_DIALOG_DATA)
+- [x] Test coverage includes edge cases (invalid file type, empty file, HTTP error, network error, large file, warnings)
+- [x] Test descriptions are clear and specific
+- [x] Tests use Angular TestBed
+
+**Validation Results:**
+
+- pnpm all: PASS (67 test files, 1139 tests passed, 8 skipped)
+- pnpm e2e:dms-material: Pre-existing failures only (accounts.spec.ts tests 18-31, add-symbol-dialog.spec.ts tests 43-44) — explicitly waived for AR.3-TDD gate as these failures exist on main branch and are unrelated to this story's changes
+- pnpm dupcheck: PASS (0 clones)
+- pnpm format: PASS
+
+### Gate Status
+
+Gate: PASS → docs/qa/gates/AR.3-tdd-import-dialog.yml
