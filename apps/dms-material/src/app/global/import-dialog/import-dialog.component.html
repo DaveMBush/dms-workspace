@@ -1,0 +1,67 @@
+<h2 mat-dialog-title>Import Fidelity Transactions</h2>
+<!-- eslint-disable @angular-eslint/template/no-call-expression -- Signals require function call syntax -->
+<!-- eslint-disable @angular-eslint/template/cyclomatic-complexity -->
+<mat-dialog-content>
+  <p>Select a CSV file to import Fidelity transactions.</p>
+  <div class="file-input-container">
+    <input
+      type="file"
+      accept=".csv"
+      (change)="onFileSelected($event)"
+      aria-label="Select CSV file"
+    />
+    @if (selectedFile !== null) {
+    <span class="selected-file-name">{{ selectedFile.name }}</span>
+    }
+  </div>
+  @if (uploading()) {
+  <div class="progress-container">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>Uploading...</p>
+  </div>
+  } @if (success() || errors().length > 0 || warnings().length > 0) {
+  <div data-testid="import-result" class="import-result" role="status">
+    @if (success()) {
+    <div class="success-message">
+      <mat-icon color="primary">check_circle</mat-icon>
+      <span>Successfully imported {{ importCount() }} transactions.</span>
+    </div>
+    } @if (errors().length > 0) {
+    <div class="error-message">
+      <mat-icon color="warn">error</mat-icon>
+      @for (err of errors(); track err) {
+      <p>{{ err }}</p>
+      }
+    </div>
+    } @if (warnings().length > 0) {
+    <div class="warning-message">
+      @for (warn of warnings(); track warn) {
+      <p>{{ warn }}</p>
+      }
+    </div>
+    }
+  </div>
+  }
+</mat-dialog-content>
+<!-- eslint-enable @angular-eslint/template/cyclomatic-complexity -->
+<!-- eslint-enable @angular-eslint/template/no-call-expression -->
+<mat-dialog-actions align="end">
+  <button
+    mat-button
+    data-testid="cancel-button"
+    (click)="onCancel()"
+    aria-label="Cancel import"
+  >
+    Cancel
+  </button>
+  <button
+    mat-raised-button
+    color="primary"
+    data-testid="upload-button"
+    [disabled]="isUploadDisabled"
+    (click)="onUpload()"
+    aria-label="Upload CSV file"
+  >
+    Upload
+  </button>
+</mat-dialog-actions>

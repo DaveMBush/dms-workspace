@@ -10,12 +10,7 @@ import { Universe } from '../../store/universe/universe.interface';
 import { GlobalUniverseComponent } from './global-universe.component';
 import { UniverseService } from './services/universe.service';
 
-/**
- * TDD RED Phase: These tests define the expected behavior for the
- * "Import Transactions" button integration in the Global/Universe screen.
- * All tests are disabled with describe.skip so CI passes.
- * Story AR.3 will implement the functionality and re-enable these tests.
- */
+import { ImportDialogComponent } from '../import-dialog/import-dialog.component';
 
 // Mock SmartNgRX selectors
 vi.mock('../../store/universe/selectors/select-universes.function', () => ({
@@ -55,7 +50,7 @@ vi.mock('../../store/screen/selectors/select-screen.function', () => ({
   selectScreen: vi.fn().mockReturnValue([]),
 }));
 
-describe.skip('GlobalUniverseComponent - Import Integration', () => {
+describe('GlobalUniverseComponent - Import Integration', () => {
   let component: GlobalUniverseComponent;
   let fixture: ComponentFixture<GlobalUniverseComponent>;
   let mockDialog: { open: ReturnType<typeof vi.fn> };
@@ -147,13 +142,6 @@ describe.skip('GlobalUniverseComponent - Import Integration', () => {
 
   describe('button opens dialog', () => {
     it('should open ImportDialogComponent when import button is clicked', () => {
-      // AR.3 GREEN phase: Replace with:
-      //   import { ImportDialogComponent } from '../import-dialog/import-dialog.component';
-      // and remove this placeholder class.
-      class ImportDialogComponent {
-        placeholder = true;
-      }
-
       const compiled = fixture.nativeElement as HTMLElement;
       const importButton = compiled.querySelector(
         '[data-testid="import-transactions-button"]'

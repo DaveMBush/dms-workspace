@@ -29,6 +29,16 @@
 
     <button
       mat-icon-button
+      data-testid="import-transactions-button"
+      matTooltip="Import Fidelity CSV"
+      aria-label="Import Fidelity CSV"
+      (click)="openImportDialog()"
+    >
+      <mat-icon>upload_file</mat-icon>
+    </button>
+
+    <button
+      mat-icon-button
       data-testid="update-universe-button"
       matTooltip="Update Universe"
       (click)="syncUniverse()"

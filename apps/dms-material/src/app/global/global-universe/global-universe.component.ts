@@ -34,6 +34,8 @@ import { selectUniverses } from '../../store/universe/selectors/select-universes
 import { Universe } from '../../store/universe/universe.interface';
 import { AddSymbolDialog } from '../../universe-settings/add-symbol-dialog/add-symbol-dialog';
 import { ScreenerService } from '../global-screener/services/screener.service';
+import { ImportDialogComponent } from '../import-dialog/import-dialog.component';
+import { ImportDialogResult } from '../import-dialog/import-dialog-result.interface';
 import { calculateYieldPercent } from './calculate-yield-percent.function';
 import { CellEditEvent } from './cell-edit-event.interface';
 import { enrichUniverseWithRiskGroups } from './enrich-universe-with-risk-groups.function';
@@ -210,6 +212,29 @@ export class GlobalUniverseComponent {
     dialogRef.afterClosed().subscribe({
       next: function onDialogClosed() {
         // Table will automatically update via signals
+      },
+    });
+  }
+
+  openImportDialog(): void {
+    const dialogRef = this.dialog.open(ImportDialogComponent, {
+      width: '600px',
+      disableClose: false,
+      data: {
+        accountFilter: this.selectedAccountId$(),
+      },
+    });
+
+    const context = this;
+    dialogRef.afterClosed().subscribe({
+      next: function onImportDialogClosed(
+        result: ImportDialogResult | undefined
+      ) {
+        if (result?.success === true) {
+          context.notification.success(
+            `Successfully imported ${result.imported} transactions`
+          );
+        }
       },
     });
   }

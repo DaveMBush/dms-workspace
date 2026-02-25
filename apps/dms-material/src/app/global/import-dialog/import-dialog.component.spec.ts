@@ -1,34 +1,15 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { provideHttpClient } from '@angular/common/http';
 import {
   HttpTestingController,
   provideHttpClientTesting,
 } from '@angular/common/http/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
-/**
- * TDD RED Phase: These tests define the expected behavior of the
- * ImportDialogComponent which does not yet exist. All tests are
- * disabled with describe.skip so CI passes. Story AR.3 will
- * implement the component and re-enable these tests.
- */
+import { ImportDialogComponent } from './import-dialog.component';
+import { ImportDialogData } from './import-dialog-data.interface';
 
-// AR.3 GREEN phase: Replace with:
-//   import { ImportDialogComponent } from './import-dialog.component';
-// and remove this placeholder class.
-// Placeholder class used because the actual component doesn't exist yet (TDD RED phase).
-// Vite resolves imports at parse time even inside describe.skip, so a real
-// import would fail.
-class ImportDialogComponent {
-  placeholder = true;
-}
-
-// Placeholder interface until the real data interface is implemented
-interface ImportDialogData {
-  accountFilter?: string;
-}
-
-describe.skip('ImportDialogComponent', () => {
+describe('ImportDialogComponent', () => {
   let component: ImportDialogComponent;
   let fixture: ComponentFixture<ImportDialogComponent>;
   let mockDialogRef: { close: ReturnType<typeof vi.fn> };
@@ -38,6 +19,7 @@ describe.skip('ImportDialogComponent', () => {
   beforeEach(async () => {
     mockDialogRef = { close: vi.fn() };
 
+    TestBed.resetTestingModule();
     await TestBed.configureTestingModule({
       imports: [ImportDialogComponent],
       providers: [
@@ -55,8 +37,18 @@ describe.skip('ImportDialogComponent', () => {
   });
 
   afterEach(() => {
+    // Discard any outstanding requests left by tests that
+    // intentionally check intermediate loading state.
+    httpMock.match(() => true);
     httpMock.verify();
   });
+
+  // Flush the File.text() microtask so the HTTP request is created
+  async function flushFileReading(): Promise<void> {
+    await new Promise(function resolveNextTick(resolve) {
+      setTimeout(resolve, 0);
+    });
+  }
 
   describe('dialog initialization', () => {
     it('should create the component', () => {
@@ -267,7 +259,7 @@ describe.skip('ImportDialogComponent', () => {
   });
 
   describe('success message display', () => {
-    it('should display success message with import count after successful upload', () => {
+    it('should display success message with import count after successful upload', async () => {
       // Arrange: select file and trigger upload
       const compiled = fixture.nativeElement as HTMLElement;
       const fileInput =
@@ -287,6 +279,7 @@ describe.skip('ImportDialogComponent', () => {
       )!;
       uploadButton.click();
       fixture.detectChanges();
+      await flushFileReading();
 
       // Act: respond with success
       const req = httpMock.expectOne('/api/import/fidelity');
@@ -306,7 +299,7 @@ describe.skip('ImportDialogComponent', () => {
       expect(resultArea.textContent).toMatch(/success|imported/i);
     });
 
-    it('should hide spinner after successful upload', () => {
+    it('should hide spinner after successful upload', async () => {
       const compiled = fixture.nativeElement as HTMLElement;
       const fileInput =
         compiled.querySelector<HTMLInputElement>('input[type="file"]')!;
@@ -325,6 +318,7 @@ describe.skip('ImportDialogComponent', () => {
       )!;
       uploadButton.click();
       fixture.detectChanges();
+      await flushFileReading();
 
       const req = httpMock.expectOne('/api/import/fidelity');
       req.flush({
@@ -343,7 +337,7 @@ describe.skip('ImportDialogComponent', () => {
   });
 
   describe('error message display', () => {
-    it('should display error messages when import fails', () => {
+    it('should display error messages when import fails', async () => {
       const compiled = fixture.nativeElement as HTMLElement;
       const fileInput =
         compiled.querySelector<HTMLInputElement>('input[type="file"]')!;
@@ -362,6 +356,7 @@ describe.skip('ImportDialogComponent', () => {
       )!;
       uploadButton.click();
       fixture.detectChanges();
+      await flushFileReading();
 
       const req = httpMock.expectOne('/api/import/fidelity');
       req.flush({
@@ -379,7 +374,7 @@ describe.skip('ImportDialogComponent', () => {
       expect(resultArea.textContent).toContain('Missing required columns');
     });
 
-    it('should display error icon or styling on failure', () => {
+    it('should display error icon or styling on failure', async () => {
       const compiled = fixture.nativeElement as HTMLElement;
       const fileInput =
         compiled.querySelector<HTMLInputElement>('input[type="file"]')!;
@@ -398,6 +393,7 @@ describe.skip('ImportDialogComponent', () => {
       )!;
       uploadButton.click();
       fixture.detectChanges();
+      await flushFileReading();
 
       const req = httpMock.expectOne('/api/import/fidelity');
       req.flush({
@@ -414,7 +410,7 @@ describe.skip('ImportDialogComponent', () => {
   });
 
   describe('dialog close on success', () => {
-    it('should close dialog automatically after successful import', () => {
+    it('should close dialog automatically after successful import', async () => {
       const compiled = fixture.nativeElement as HTMLElement;
       const fileInput =
         compiled.querySelector<HTMLInputElement>('input[type="file"]')!;
@@ -433,6 +429,7 @@ describe.skip('ImportDialogComponent', () => {
       )!;
       uploadButton.click();
       fixture.detectChanges();
+      await flushFileReading();
 
       const req = httpMock.expectOne('/api/import/fidelity');
       req.flush({
@@ -448,7 +445,7 @@ describe.skip('ImportDialogComponent', () => {
       );
     });
 
-    it('should not close dialog automatically on error', () => {
+    it('should not close dialog automatically on error', async () => {
       const compiled = fixture.nativeElement as HTMLElement;
       const fileInput =
         compiled.querySelector<HTMLInputElement>('input[type="file"]')!;
@@ -467,6 +464,7 @@ describe.skip('ImportDialogComponent', () => {
       )!;
       uploadButton.click();
       fixture.detectChanges();
+      await flushFileReading();
 
       const req = httpMock.expectOne('/api/import/fidelity');
       req.flush({
@@ -561,7 +559,7 @@ describe.skip('ImportDialogComponent', () => {
       expect(uploadButton.disabled).toBe(true);
     });
 
-    it('should display error when upload HTTP request fails', () => {
+    it('should display error when upload HTTP request fails', async () => {
       const compiled = fixture.nativeElement as HTMLElement;
       const fileInput =
         compiled.querySelector<HTMLInputElement>('input[type="file"]')!;
@@ -580,6 +578,7 @@ describe.skip('ImportDialogComponent', () => {
       )!;
       uploadButton.click();
       fixture.detectChanges();
+      await flushFileReading();
 
       // Simulate HTTP error
       const req = httpMock.expectOne('/api/import/fidelity');
@@ -595,7 +594,7 @@ describe.skip('ImportDialogComponent', () => {
       expect(resultArea.textContent).toMatch(/error|failed/i);
     });
 
-    it('should display error on network failure', () => {
+    it('should display error on network failure', async () => {
       const compiled = fixture.nativeElement as HTMLElement;
       const fileInput =
         compiled.querySelector<HTMLInputElement>('input[type="file"]')!;
@@ -614,6 +613,7 @@ describe.skip('ImportDialogComponent', () => {
       )!;
       uploadButton.click();
       fixture.detectChanges();
+      await flushFileReading();
 
       // Simulate network error (status 0)
       const req = httpMock.expectOne('/api/import/fidelity');
@@ -656,7 +656,7 @@ describe.skip('ImportDialogComponent', () => {
       expect(uploadButton.disabled).toBe(false);
     });
 
-    it('should display warnings from import result', () => {
+    it('should display warnings from import result', async () => {
       const compiled = fixture.nativeElement as HTMLElement;
       const fileInput =
         compiled.querySelector<HTMLInputElement>('input[type="file"]')!;
@@ -675,6 +675,7 @@ describe.skip('ImportDialogComponent', () => {
       )!;
       uploadButton.click();
       fixture.detectChanges();
+      await flushFileReading();
 
       const req = httpMock.expectOne('/api/import/fidelity');
       req.flush({
