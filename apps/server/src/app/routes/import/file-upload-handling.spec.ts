@@ -404,7 +404,9 @@ describe('POST /api/import/fidelity - File Upload Handling (TDD RED)', function 
 
       expect(response.statusCode).toBe(500);
       const result = JSON.parse(response.body) as ImportResult;
-      expect(result.errors[0]).toMatch(/unexpected error|internal server error/i);
+      expect(result.errors[0]).toMatch(
+        /unexpected error|internal server error/i
+      );
     });
   });
 
