@@ -78,12 +78,12 @@ async function extractMultipartCsvContent(
   const buffer = await file.toBuffer();
   validateFileBuffer(buffer, file.filename, file.mimetype);
 
-  const content = buffer.toString('utf-8');
+  const content = stripBom(buffer.toString('utf-8'));
   if (content.trim().length === 0) {
     throw createValidationError('File is empty. No content to import.');
   }
 
-  return stripBom(content);
+  return content;
 }
 
 /**
