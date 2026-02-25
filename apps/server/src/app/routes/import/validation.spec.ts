@@ -29,15 +29,15 @@ describe('Transaction Validation', function () {
     prisma = (prismaModule as unknown as { prisma: typeof prisma }).prisma;
   });
 
-  describe.skip('account validation', function () {
+  describe('account validation', function () {
     test('should accept account that exists in database', async function () {
       prisma.accounts.findFirst.mockResolvedValue({
         id: 'account-123',
         name: 'My Brokerage',
       });
 
-      const mod = await import('./validate-transaction.function');
-      const result = mod.validateAccount('My Brokerage');
+      const mod = await import('./validate-account.function');
+      const result = await mod.validateAccount('My Brokerage');
 
       expect(result).toEqual({ valid: true, accountId: 'account-123' });
     });
@@ -45,8 +45,8 @@ describe('Transaction Validation', function () {
     test('should reject account not found in database', async function () {
       prisma.accounts.findFirst.mockResolvedValue(null);
 
-      const mod = await import('./validate-transaction.function');
-      const result = mod.validateAccount('Nonexistent Account');
+      const mod = await import('./validate-account.function');
+      const result = await mod.validateAccount('Nonexistent Account');
 
       expect(result).toEqual({
         valid: false,
@@ -60,8 +60,8 @@ describe('Transaction Validation', function () {
         name: 'My Brokerage',
       });
 
-      const mod = await import('./validate-transaction.function');
-      const result = mod.validateAccount('my brokerage');
+      const mod = await import('./validate-account.function');
+      const result = await mod.validateAccount('my brokerage');
 
       expect(result).toEqual({ valid: true, accountId: 'account-123' });
     });
@@ -69,8 +69,8 @@ describe('Transaction Validation', function () {
     test('should return descriptive error for non-existent account', async function () {
       prisma.accounts.findFirst.mockResolvedValue(null);
 
-      const mod = await import('./validate-transaction.function');
-      const result = mod.validateAccount('Roth 401k');
+      const mod = await import('./validate-account.function');
+      const result = await mod.validateAccount('Roth 401k');
 
       expect(result.valid).toBe(false);
       expect(result.error).toContain('Roth 401k');
@@ -78,16 +78,16 @@ describe('Transaction Validation', function () {
     });
   });
 
-  describe.skip('symbol validation', function () {
+  describe('symbol validation', function () {
     test('should accept valid uppercase symbol', async function () {
-      const mod = await import('./validate-transaction.function');
+      const mod = await import('./validate-symbol.function');
       const result = mod.validateSymbol('SPY');
 
       expect(result).toEqual({ valid: true });
     });
 
     test('should accept symbol with 1 to 5 characters', async function () {
-      const mod = await import('./validate-transaction.function');
+      const mod = await import('./validate-symbol.function');
 
       expect(mod.validateSymbol('A').valid).toBe(true);
       expect(mod.validateSymbol('AB').valid).toBe(true);
@@ -97,7 +97,7 @@ describe('Transaction Validation', function () {
     });
 
     test('should reject empty symbol', async function () {
-      const mod = await import('./validate-transaction.function');
+      const mod = await import('./validate-symbol.function');
       const result = mod.validateSymbol('');
 
       expect(result).toEqual({
@@ -107,7 +107,7 @@ describe('Transaction Validation', function () {
     });
 
     test('should reject symbol with special characters', async function () {
-      const mod = await import('./validate-transaction.function');
+      const mod = await import('./validate-symbol.function');
       const result = mod.validateSymbol('SP@Y');
 
       expect(result).toEqual({
@@ -117,24 +117,24 @@ describe('Transaction Validation', function () {
     });
 
     test('should allow wider symbol format for international symbols', async function () {
-      const mod = await import('./validate-transaction.function');
+      const mod = await import('./validate-symbol.function');
       const result = mod.validateSymbol('BABA.HK');
 
       expect(result.valid).toBe(true);
     });
   });
 
-  describe.skip('numeric field validation', function () {
+  describe('numeric field validation', function () {
     describe('quantity validation', function () {
       test('should accept positive quantity', async function () {
-        const mod = await import('./validate-transaction.function');
+        const mod = await import('./validate-quantity.function');
         const result = mod.validateQuantity(10);
 
         expect(result).toEqual({ valid: true });
       });
 
       test('should reject zero quantity for purchases and sales', async function () {
-        const mod = await import('./validate-transaction.function');
+        const mod = await import('./validate-quantity.function');
         const result = mod.validateQuantity(0, 'purchase');
 
         expect(result).toEqual({
@@ -144,7 +144,7 @@ describe('Transaction Validation', function () {
       });
 
       test('should reject negative quantity', async function () {
-        const mod = await import('./validate-transaction.function');
+        const mod = await import('./validate-quantity.function');
         const result = mod.validateQuantity(-5);
 
         expect(result.valid).toBe(false);
@@ -152,14 +152,14 @@ describe('Transaction Validation', function () {
       });
 
       test('should accept decimal quantity (fractional shares)', async function () {
-        const mod = await import('./validate-transaction.function');
+        const mod = await import('./validate-quantity.function');
         const result = mod.validateQuantity(3.5);
 
         expect(result).toEqual({ valid: true });
       });
 
       test('should reject NaN quantity', async function () {
-        const mod = await import('./validate-transaction.function');
+        const mod = await import('./validate-quantity.function');
         const result = mod.validateQuantity(NaN);
 
         expect(result.valid).toBe(false);
@@ -168,14 +168,14 @@ describe('Transaction Validation', function () {
 
     describe('price validation', function () {
       test('should accept positive price', async function () {
-        const mod = await import('./validate-transaction.function');
+        const mod = await import('./validate-price.function');
         const result = mod.validatePrice(450.25);
 
         expect(result).toEqual({ valid: true });
       });
 
       test('should reject zero price for purchases and sales', async function () {
-        const mod = await import('./validate-transaction.function');
+        const mod = await import('./validate-price.function');
         const result = mod.validatePrice(0, 'purchase');
 
         expect(result).toEqual({
@@ -185,21 +185,21 @@ describe('Transaction Validation', function () {
       });
 
       test('should reject negative price', async function () {
-        const mod = await import('./validate-transaction.function');
+        const mod = await import('./validate-price.function');
         const result = mod.validatePrice(-10);
 
         expect(result.valid).toBe(false);
       });
 
       test('should handle price with many decimal places', async function () {
-        const mod = await import('./validate-transaction.function');
+        const mod = await import('./validate-price.function');
         const result = mod.validatePrice(123.456789);
 
         expect(result).toEqual({ valid: true });
       });
 
       test('should reject NaN price', async function () {
-        const mod = await import('./validate-transaction.function');
+        const mod = await import('./validate-price.function');
         const result = mod.validatePrice(NaN);
 
         expect(result.valid).toBe(false);
@@ -208,35 +208,35 @@ describe('Transaction Validation', function () {
 
     describe('amount validation', function () {
       test('should accept valid total amount', async function () {
-        const mod = await import('./validate-transaction.function');
+        const mod = await import('./validate-amount.function');
         const result = mod.validateAmount(-4502.5);
 
         expect(result).toEqual({ valid: true });
       });
 
       test('should reject NaN amount', async function () {
-        const mod = await import('./validate-transaction.function');
+        const mod = await import('./validate-amount.function');
         const result = mod.validateAmount(NaN);
 
         expect(result.valid).toBe(false);
       });
 
       test('should accept zero amount for dividends/deposits', async function () {
-        const mod = await import('./validate-transaction.function');
+        const mod = await import('./validate-amount.function');
         const result = mod.validateAmount(0);
 
         expect(result).toEqual({ valid: true });
       });
 
       test('should handle very large numbers', async function () {
-        const mod = await import('./validate-transaction.function');
+        const mod = await import('./validate-amount.function');
         const result = mod.validateAmount(999999999.99);
 
         expect(result).toEqual({ valid: true });
       });
 
       test('should handle very small numbers (precision)', async function () {
-        const mod = await import('./validate-transaction.function');
+        const mod = await import('./validate-amount.function');
         const result = mod.validateAmount(0.01);
 
         expect(result).toEqual({ valid: true });
@@ -244,16 +244,16 @@ describe('Transaction Validation', function () {
     });
   });
 
-  describe.skip('date validation', function () {
+  describe('date validation', function () {
     test('should accept valid MM/DD/YYYY date', async function () {
-      const mod = await import('./validate-transaction.function');
+      const mod = await import('./validate-date.function');
       const result = mod.validateDate('02/15/2026');
 
       expect(result).toEqual({ valid: true });
     });
 
     test('should reject invalid date format', async function () {
-      const mod = await import('./validate-transaction.function');
+      const mod = await import('./validate-date.function');
       const result = mod.validateDate('2026-02-15');
 
       expect(result).toEqual({
@@ -263,7 +263,7 @@ describe('Transaction Validation', function () {
     });
 
     test('should reject future dates', async function () {
-      const mod = await import('./validate-transaction.function');
+      const mod = await import('./validate-date.function');
       const result = mod.validateDate('12/31/2099');
 
       expect(result).toEqual({
@@ -273,7 +273,7 @@ describe('Transaction Validation', function () {
     });
 
     test('should reject very old dates', async function () {
-      const mod = await import('./validate-transaction.function');
+      const mod = await import('./validate-date.function');
       const result = mod.validateDate('01/01/1900');
 
       expect(result).toEqual({
@@ -283,37 +283,37 @@ describe('Transaction Validation', function () {
     });
 
     test('should reject empty date string', async function () {
-      const mod = await import('./validate-transaction.function');
+      const mod = await import('./validate-date.function');
       const result = mod.validateDate('');
 
       expect(result.valid).toBe(false);
     });
 
     test('should reject malformed date like 13/32/2026', async function () {
-      const mod = await import('./validate-transaction.function');
+      const mod = await import('./validate-date.function');
       const result = mod.validateDate('13/32/2026');
 
       expect(result.valid).toBe(false);
     });
 
     test('should accept date in various valid formats', async function () {
-      const mod = await import('./validate-transaction.function');
+      const mod = await import('./validate-date.function');
 
       expect(mod.validateDate('01/01/2020').valid).toBe(true);
       expect(mod.validateDate('12/31/2025').valid).toBe(true);
     });
 
     test('should reject date with text', async function () {
-      const mod = await import('./validate-transaction.function');
+      const mod = await import('./validate-date.function');
       const result = mod.validateDate('not-a-date');
 
       expect(result.valid).toBe(false);
     });
   });
 
-  describe.skip('duplicate transaction detection', function () {
+  describe('duplicate transaction detection', function () {
     test('should detect same transaction appearing multiple times in file', async function () {
-      const mod = await import('./validate-transaction.function');
+      const mod = await import('./detect-duplicates-in-file.function');
       const rows = [
         {
           date: '02/15/2026',
@@ -349,7 +349,7 @@ describe('Transaction Validation', function () {
         quantity: 10,
       });
 
-      const mod = await import('./validate-transaction.function');
+      const mod = await import('./detect-duplicate-in-db.function');
       const result = await mod.detectDuplicateInDb({
         accountId: 'a1',
         universeId: 'u1',
@@ -364,7 +364,7 @@ describe('Transaction Validation', function () {
     test('should not flag as duplicate when quantity or price differs', async function () {
       prisma.trades.findFirst.mockResolvedValue(null);
 
-      const mod = await import('./validate-transaction.function');
+      const mod = await import('./detect-duplicate-in-db.function');
       const result = await mod.detectDuplicateInDb({
         accountId: 'a1',
         universeId: 'u1',
@@ -377,7 +377,7 @@ describe('Transaction Validation', function () {
     });
 
     test('should allow same symbol/date if quantity/price differ', async function () {
-      const mod = await import('./validate-transaction.function');
+      const mod = await import('./detect-duplicates-in-file.function');
       const rows = [
         {
           date: '02/15/2026',
@@ -407,7 +407,7 @@ describe('Transaction Validation', function () {
         id: 'existing-trade',
       });
 
-      const mod = await import('./validate-transaction.function');
+      const mod = await import('./detect-duplicate-in-db.function');
       const result = await mod.detectDuplicateInDb({
         accountId: 'a1',
         universeId: 'u1',
@@ -421,9 +421,9 @@ describe('Transaction Validation', function () {
     });
   });
 
-  describe.skip('error reporting', function () {
+  describe('error reporting', function () {
     test('should include row number in error message', async function () {
-      const mod = await import('./validate-transaction.function');
+      const mod = await import('./format-validation-error.function');
       const error = mod.formatValidationError(
         5,
         'account',
@@ -434,7 +434,7 @@ describe('Transaction Validation', function () {
     });
 
     test('should include field name in error message', async function () {
-      const mod = await import('./validate-transaction.function');
+      const mod = await import('./format-validation-error.function');
       const error = mod.formatValidationError(
         5,
         'account',
@@ -445,7 +445,7 @@ describe('Transaction Validation', function () {
     });
 
     test('should produce user-friendly error message', async function () {
-      const mod = await import('./validate-transaction.function');
+      const mod = await import('./format-validation-error.function');
       const error = mod.formatValidationError(
         5,
         'account',
@@ -456,7 +456,7 @@ describe('Transaction Validation', function () {
     });
 
     test('should aggregate multiple errors per row', async function () {
-      const mod = await import('./validate-transaction.function');
+      const mod = await import('./aggregate-errors.function');
       const errors = [
         { row: 5, field: 'account', message: 'Account not found' },
         { row: 5, field: 'quantity', message: 'Quantity must be positive' },
@@ -470,7 +470,7 @@ describe('Transaction Validation', function () {
     });
 
     test('should collect all errors not just first error', async function () {
-      const mod = await import('./validate-transaction.function');
+      const mod = await import('./validate-row.function');
       const row = {
         date: 'invalid',
         action: 'YOU BOUGHT',
@@ -488,7 +488,7 @@ describe('Transaction Validation', function () {
     });
 
     test('should report successful rows separately', async function () {
-      const mod = await import('./validate-transaction.function');
+      const mod = await import('./validate-rows.function');
       const rows = [
         {
           date: '02/15/2026',
@@ -519,7 +519,7 @@ describe('Transaction Validation', function () {
     });
 
     test('should generate warning for suspicious data', async function () {
-      const mod = await import('./validate-transaction.function');
+      const mod = await import('./check-amount-mismatch.function');
       const warning = mod.checkAmountMismatch(10, 150.5, 1506.0, 10);
 
       expect(warning).not.toBeNull();
@@ -528,9 +528,9 @@ describe('Transaction Validation', function () {
     });
   });
 
-  describe.skip('edge cases', function () {
+  describe('edge cases', function () {
     test('should report error for missing required fields', async function () {
-      const mod = await import('./validate-transaction.function');
+      const mod = await import('./validate-row.function');
       const row = {
         date: '',
         action: '',
@@ -548,7 +548,7 @@ describe('Transaction Validation', function () {
     });
 
     test('should handle extra or unknown columns gracefully', async function () {
-      const mod = await import('./validate-transaction.function');
+      const mod = await import('./validate-row.function');
       const row = {
         date: '02/15/2026',
         action: 'YOU BOUGHT',
@@ -567,7 +567,7 @@ describe('Transaction Validation', function () {
     });
 
     test('should warn when amount does not match quantity times price', async function () {
-      const mod = await import('./validate-transaction.function');
+      const mod = await import('./check-amount-mismatch.function');
       const warning = mod.checkAmountMismatch(10, 150.55, 1506.0, 5);
 
       expect(warning).not.toBeNull();
@@ -575,28 +575,28 @@ describe('Transaction Validation', function () {
     });
 
     test('should not warn when amount matches quantity times price', async function () {
-      const mod = await import('./validate-transaction.function');
+      const mod = await import('./check-amount-mismatch.function');
       const warning = mod.checkAmountMismatch(10, 150.5, 1505.0, 5);
 
       expect(warning).toBeNull();
     });
 
     test('should handle very large numbers', async function () {
-      const mod = await import('./validate-transaction.function');
+      const mod = await import('./validate-quantity.function');
       const result = mod.validateQuantity(999999999);
 
       expect(result).toEqual({ valid: true });
     });
 
     test('should handle very small numbers (precision)', async function () {
-      const mod = await import('./validate-transaction.function');
+      const mod = await import('./validate-quantity.function');
       const result = mod.validateQuantity(0.001);
 
       expect(result).toEqual({ valid: true });
     });
 
     test('should validate action is a recognized transaction type', async function () {
-      const mod = await import('./validate-transaction.function');
+      const mod = await import('./validate-action.function');
 
       expect(mod.validateAction('YOU BOUGHT').valid).toBe(true);
       expect(mod.validateAction('YOU SOLD').valid).toBe(true);
