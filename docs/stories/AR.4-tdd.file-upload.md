@@ -1,6 +1,6 @@
 # Story AR.4-TDD: Write Unit Tests for File Upload and Processing - TDD RED Phase
 
-**Status:** Approved
+**Status:** Ready for Review
 
 ## Story
 
@@ -45,30 +45,30 @@
 
 ## Tasks / Subtasks
 
-- [ ] Create tests for frontend file upload (AC: 1, 2, 3, 4)
-  - [ ] Test FileReader usage
-  - [ ] Test file type validation (.csv extension)
-  - [ ] Test file size limits
-  - [ ] Test file content preview
-  - [ ] Test FormData creation
-  - [ ] Test upload progress tracking
-  - [ ] Test upload cancellation
-- [ ] Create tests for backend file handling (AC: 5)
-  - [ ] Test multipart request parsing
-  - [ ] Test file extraction from request
-  - [ ] Test temporary file handling
-  - [ ] Test file cleanup after processing
-- [ ] Write edge case tests (AC: 3, 4)
-  - [ ] Test empty file
-  - [ ] Test file with no extension
-  - [ ] Test file with wrong extension
-  - [ ] Test file too large
-  - [ ] Test corrupted file
-  - [ ] Test file with BOM (Byte Order Mark)
-  - [ ] Test file with different encodings (UTF-8, UTF-16)
-- [ ] Disable all tests using .skip (AC: 7)
-- [ ] Verify tests fail before disabling (AC: 6)
-- [ ] Run validation commands
+- [x] Create tests for frontend file upload (AC: 1, 2, 3, 4)
+  - [x] Test FileReader usage
+  - [x] Test file type validation (.csv extension)
+  - [x] Test file size limits
+  - [x] Test file content preview
+  - [x] Test FormData creation
+  - [x] Test upload progress tracking
+  - [x] Test upload cancellation
+- [x] Create tests for backend file handling (AC: 5)
+  - [x] Test multipart request parsing
+  - [x] Test file extraction from request
+  - [x] Test temporary file handling
+  - [x] Test file cleanup after processing
+- [x] Write edge case tests (AC: 3, 4)
+  - [x] Test empty file
+  - [x] Test file with no extension
+  - [x] Test file with wrong extension
+  - [x] Test file too large
+  - [x] Test corrupted file
+  - [x] Test file with BOM (Byte Order Mark)
+  - [x] Test file with different encodings (UTF-8, UTF-16)
+- [x] Disable all tests using .skip (AC: 7)
+- [x] Verify tests fail before disabling (AC: 6)
+- [x] Run validation commands
 
 ## Dev Notes
 
@@ -120,16 +120,16 @@
 
 ## Definition of Done
 
-- [ ] All tests written and disabled (RED phase)
-- [ ] Tests cover all acceptance criteria scenarios
-- [ ] Tests disabled to allow CI to pass
-- [ ] Test code follows project conventions
-- [ ] All validation commands pass:
-  - [ ] Run `pnpm all`
-  - [ ] Run `pnpm e2e:dms-material`
-  - [ ] Run `pnpm dupcheck`
-  - [ ] Run `pnpm format`
-  - [ ] Repeat all of these if any fail until they all pass
+- [x] All tests written and disabled (RED phase)
+- [x] Tests cover all acceptance criteria scenarios
+- [x] Tests disabled to allow CI to pass
+- [x] Test code follows project conventions
+- [x] All validation commands pass:
+  - [x] Run `pnpm all`
+  - [x] Run `pnpm e2e:dms-material`
+  - [x] Run `pnpm dupcheck`
+  - [x] Run `pnpm format`
+  - [x] Repeat all of these if any fail until they all pass
 - [ ] Code reviewed and approved
 
 ## Notes
@@ -150,9 +150,10 @@
 
 ## Change Log
 
-| Date       | Version | Description      | Author |
-| ---------- | ------- | ---------------- | ------ |
-| 2026-02-24 | 1.0     | Initial creation | SM     |
+| Date       | Version | Description                                                                                                        | Author    |
+| ---------- | ------- | ------------------------------------------------------------------------------------------------------------------ | --------- |
+| 2026-02-24 | 1.0     | Initial creation                                                                                                   | SM        |
+| 2026-02-24 | 1.1     | Implementation: Created 42 TDD RED phase tests (28 frontend, 14 backend) for file upload validation and processing | Dev Agent |
 
 ---
 
@@ -160,19 +161,24 @@
 
 ### Agent Model Used
 
-_To be populated during implementation_
+Claude Opus 4.6
 
 ### Debug Log References
 
-_To be populated during implementation_
+None - implementation proceeded without issues.
 
 ### Completion Notes List
 
-_To be populated during implementation_
+- Created 28 frontend TDD tests covering file size validation, content preview, FormData creation, upload progress tracking, upload cancellation, file type edge cases, and empty/corrupted/BOM/encoding handling
+- Created 14 backend TDD tests covering multipart request parsing, file extraction, file size limits, temporary file handling, file cleanup, BOM stripping, and encoding handling
+- All tests disabled with describe.skip/test.skip for CI compatibility (TDD RED phase)
+- Tests verified to fail when enabled (features not yet implemented)
 
 ### File List
 
-_To be populated during implementation_
+- `apps/dms-material/src/app/global/import-dialog/file-upload-validation.spec.ts` (new)
+- `apps/server/src/app/routes/import/file-upload-handling.spec.ts` (new)
+- `docs/stories/AR.4-tdd.file-upload.md` (modified)
 
 ---
 
