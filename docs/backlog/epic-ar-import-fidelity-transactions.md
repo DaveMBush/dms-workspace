@@ -32,6 +32,7 @@ Creates import routine to parse Fidelity transaction exports and populate trades
 9. **Story AR.5-TDD:** Write RED tests for validation and error reporting
 10. **Story AR.5:** Add validation and error reporting
 11. **Story AR.6:** Add e2e tests for import flow
+12. **Story AR.7:** Bug fixes for completed epic stories
 
 ## Dependencies
 
