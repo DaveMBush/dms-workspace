@@ -1,6 +1,6 @@
 # Story AS.4: Implement Pie Chart Display with ng2-charts
 
-**Status:** Draft
+**Status:** Approved
 
 ## Story
 

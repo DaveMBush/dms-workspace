@@ -1,6 +1,6 @@
 # Story AS.6: Add Month/Year Selector Functionality
 
-**Status:** Draft
+**Status:** Approved
 
 ## Story
 

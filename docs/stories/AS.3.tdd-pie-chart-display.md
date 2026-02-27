@@ -1,6 +1,6 @@
 # Story AS.3: TDD - Unit Tests for Pie Chart Display with Real Data
 
-**Status:** Draft
+**Status:** Approved
 
 ## Story
 

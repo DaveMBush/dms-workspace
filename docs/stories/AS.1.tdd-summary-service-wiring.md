@@ -1,6 +1,6 @@
 # Story AS.1: TDD - Unit Tests for Summary Service Wiring
 
-**Status:** Draft
+**Status:** Approved
 
 ## Story
 

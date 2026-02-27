@@ -1,6 +1,6 @@
 # Story AS.7: Add Comprehensive Unit Tests
 
-**Status:** Draft
+**Status:** Approved
 
 ## Story
 
