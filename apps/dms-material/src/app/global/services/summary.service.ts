@@ -1,10 +1,134 @@
-import { Injectable } from '@angular/core';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { inject, Injectable, signal } from '@angular/core';
+
+import { GraphPoint } from './graph-point.interface';
+import { MonthOption } from './month-option.interface';
+import { Summary } from './summary.interface';
+
+function createDefaultSummary(): Summary {
+  return {
+    deposits: 0,
+    dividends: 0,
+    capitalGains: 0,
+    equities: 0,
+    income: 0,
+    tax_free_income: 0,
+  };
+}
 
 /**
- * Stub service for summary data.
- * Will be implemented in Story AS.2.
+ * Service for fetching and managing summary data.
+ * Communicates with /api/summary, /api/summary/graph, and /api/summary/months endpoints.
  */
 @Injectable({
   providedIn: 'root',
 })
-export class SummaryService {}
+export class SummaryService {
+  private readonly http = inject(HttpClient);
+  private summaryRequestSeq = 0;
+
+  // Private writable signals for state management
+  private readonly summarySignal = signal<Summary>(createDefaultSummary());
+  private readonly graphSignal = signal<GraphPoint[]>([]);
+  private readonly monthsSignal = signal<MonthOption[]>([]);
+  private readonly loadingSignal = signal(false);
+  private readonly errorSignal = signal<string | null>(null);
+
+  // Public readonly signals for consumers
+  readonly summary = this.summarySignal.asReadonly();
+  readonly graph = this.graphSignal.asReadonly();
+  readonly months = this.monthsSignal.asReadonly();
+  readonly loading = this.loadingSignal.asReadonly();
+  readonly error = this.errorSignal.asReadonly();
+
+  /**
+   * Fetch summary data for a given month.
+   *
+   * @param month - The month string (e.g., '2025-03')
+   */
+  fetchSummary(month: string): void {
+    const requestSeq = ++this.summaryRequestSeq;
+    this.loadingSignal.set(true);
+    this.errorSignal.set(null);
+
+    const self = this;
+
+    function onSummarySuccess(data: Summary): void {
+      if (requestSeq !== self.summaryRequestSeq) {
+        return;
+      }
+      self.summarySignal.set(data);
+      self.loadingSignal.set(false);
+    }
+
+    function onSummaryError(err: HttpErrorResponse): void {
+      if (requestSeq !== self.summaryRequestSeq) {
+        return;
+      }
+      self.errorSignal.set(err.message || 'Failed to fetch summary');
+      self.loadingSignal.set(false);
+    }
+
+    this.http.get<Summary>('/api/summary', { params: { month } }).subscribe({
+      next: onSummarySuccess,
+      error: onSummaryError,
+    });
+  }
+
+  /**
+   * Fetch graph data for the current year.
+   */
+  fetchGraph(): void {
+    this.errorSignal.set(null);
+    const year = new Date().getFullYear().toString();
+
+    function onGraphSuccess(this: SummaryService, data: GraphPoint[]): void {
+      this.graphSignal.set(data);
+    }
+
+    function onGraphError(this: SummaryService, err: HttpErrorResponse): void {
+      this.errorSignal.set(err.message || 'Failed to fetch graph');
+    }
+
+    this.http
+      .get<GraphPoint[]>('/api/summary/graph', {
+        params: { year, time_period: 'year' },
+      })
+      .subscribe({
+        next: onGraphSuccess.bind(this),
+        error: onGraphError.bind(this),
+      });
+  }
+
+  /**
+   * Fetch available months for the dropdown.
+   */
+  fetchMonths(): void {
+    this.errorSignal.set(null);
+
+    function onMonthsSuccess(
+      this: SummaryService,
+      data: Array<{ month: string; label: string }>
+    ): void {
+      this.monthsSignal.set(
+        data.map(function transformMonth(m: {
+          month: string;
+          label: string;
+        }): MonthOption {
+          return { label: m.label, value: m.month };
+        })
+      );
+    }
+
+    function onMonthsError(this: SummaryService, err: HttpErrorResponse): void {
+      this.errorSignal.set(err.message || 'Failed to fetch months');
+    }
+
+    this.http
+      .get<Array<{ month: string; label: string }>>('/api/summary/months')
+      .subscribe({
+        next: onMonthsSuccess.bind(this),
+        error: onMonthsError.bind(this),
+      });
+  }
+}

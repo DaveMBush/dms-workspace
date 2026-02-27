@@ -8,7 +8,7 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 
 import { SummaryService } from './summary.service';
 
-describe.skip('SummaryService', () => {
+describe('SummaryService', () => {
   let service: SummaryService;
   let httpMock: HttpTestingController;
 
