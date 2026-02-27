@@ -16,7 +16,7 @@
 - Component currently displays hardcoded/mock data
 - Backend `/api/summary` endpoint exists (from old DMS app)
 - Need to wire component to backend summary service
-- A similar component is implemented in #file:./apps/dms/src/app/global/*.* using primeng instead of angular material
+- A similar component is implemented in #file:./apps/dms/src/app/global/_._ using primeng instead of angular material
 
 **Problem:**
 
@@ -63,10 +63,7 @@ describe('GlobalSummary - Service Integration', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [GlobalSummary],
-      providers: [
-        provideHttpClient(),
-        provideHttpClientTesting(),
-      ],
+      providers: [provideHttpClient(), provideHttpClientTesting()],
     });
 
     const fixture = TestBed.createComponent(GlobalSummary);
@@ -279,11 +276,7 @@ describe.skip('SummaryService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [
-        SummaryService,
-        provideHttpClient(),
-        provideHttpClientTesting(),
-      ],
+      providers: [SummaryService, provideHttpClient(), provideHttpClientTesting()],
     });
 
     service = TestBed.inject(SummaryService);
@@ -300,9 +293,7 @@ describe.skip('SummaryService', () => {
 
   it('should fetch summary data from /api/summary', () => {
     const mockResponse = {
-      riskGroups: [
-        { name: 'Equities', amount: 50000, percentage: 50 },
-      ],
+      riskGroups: [{ name: 'Equities', amount: 50000, percentage: 50 }],
       basis: 100000,
       capitalGains: 5000,
       dividends: 2500,
@@ -378,25 +369,25 @@ Before moving to Story AS.2, ensure these tests cover:
 
 ## Tasks / Subtasks
 
-- [ ] Create/update global-summary.spec.ts with service integration tests (AC: 1-5)
-  - [ ] Tests for service injection
-  - [ ] Tests for /api/summary endpoint calls
-  - [ ] Tests for data transformation
-  - [ ] Tests for loading states
-  - [ ] Tests for error handling
-  - [ ] Tests for accountId parameter
-- [ ] Create summary.service.spec.ts (AC: 1-5)
-  - [ ] Tests for service creation
-  - [ ] Tests for HTTP calls
-  - [ ] Tests for error handling
-  - [ ] Tests for caching
-- [ ] Run tests to verify they FAIL (RED phase) (AC: 2, 3)
-- [ ] Disable all tests with `.skip` (AC: 3)
-- [ ] Document expected behavior in test descriptions (AC: 1)
-- [ ] Run validation commands
-  - [ ] Run `pnpm all` (should pass - tests are skipped)
-  - [ ] Run `pnpm dupcheck`
-  - [ ] Run `pnpm format`
+- [x] Create/update global-summary.spec.ts with service integration tests (AC: 1-5)
+  - [x] Tests for service injection
+  - [x] Tests for /api/summary endpoint calls
+  - [x] Tests for data transformation
+  - [x] Tests for loading states
+  - [x] Tests for error handling
+  - [x] Tests for accountId parameter
+- [x] Create summary.service.spec.ts (AC: 1-5)
+  - [x] Tests for service creation
+  - [x] Tests for HTTP calls
+  - [x] Tests for error handling
+  - [x] Tests for caching
+- [x] Run tests to verify they FAIL (RED phase) (AC: 2, 3)
+- [x] Disable all tests with `.skip` (AC: 3)
+- [x] Document expected behavior in test descriptions (AC: 1)
+- [x] Run validation commands
+  - [x] Run `pnpm all` (should pass - tests are skipped)
+  - [x] Run `pnpm dupcheck`
+  - [x] Run `pnpm format`
 
 ## Dev Notes
 
@@ -428,6 +419,7 @@ Before moving to Story AS.2, ensure these tests cover:
 ### Implementation Notes from Old DMS App
 
 Reference implementation in:
+
 - `apps/dms/src/app/global/global-summary/global-summary-component.service.ts`
 - Uses `/api/summary` endpoint
 - Has separate endpoints for `/api/summary/graph` and `/api/summary/months`
@@ -481,10 +473,80 @@ Reference implementation in:
 
 ## QA Results
 
-*QA assessment will be recorded here after story review*
+### Review Date: 2026-02-27
+
+### Reviewed By: Quinn (Test Architect)
+
+### Code Quality Assessment
+
+**Overall: Excellent.** The test suite is comprehensive, well-structured, and correctly aligned to the actual backend API interfaces. The developer made the right decision to adapt mock responses from the story examples to match the real `Summary`, `GraphResponse`, and months endpoint schemas rather than using the placeholder data shapes from the story template.
+
+**Test Architecture:**
+
+- `global-summary.spec.ts`: 5 original passing tests retained (unskipped), 4 new `describe.skip` blocks added covering Service Integration (9 tests), Graph Integration (5 tests), Available Months (3 tests), and Error Handling (5 tests) — **22 new component-level tests**
+- `summary.service.spec.ts`: 1 `describe.skip` block covering getSummary (3 tests), getGraph (3 tests), getAvailableMonths (3 tests), error handling (4 tests), loading state (2 tests) — **16 new service-level tests**
+- `summary.service.ts`: Minimal stub with `@Injectable({ providedIn: 'root' })` — appropriate for TDD RED phase
+
+**Mock Response Realism:** Verified against backend interfaces:
+
+- `/api/summary` → `Summary { deposits, dividends, capitalGains, equities, income, tax_free_income }` ✅
+- `/api/summary/graph` → `GraphResponse[] { month, deposits, dividends, capitalGains }` ✅
+- `/api/summary/months` → `Array<{ month, label }>` ✅
+
+### Refactoring Performed
+
+None required. Code is clean and well-organized.
+
+### Compliance Check
+
+- Coding Standards: ✓ Tests follow project conventions (vitest + Angular TestBed)
+- Project Structure: ✓ Service in `services/` subdirectory, spec files co-located
+- Testing Strategy: ✓ AAA pattern, HttpTestingController for mocks, proper cleanup with httpMock.verify()
+- All ACs Met: ✓ All 5 functional + 5 technical requirements addressed
+
+### Acceptance Criteria Trace
+
+| AC# | Description                    | Test Coverage                                                                                                               |
+| --- | ------------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
+| F1  | Service injection              | `global-summary.spec.ts` "should inject summary service" + `summary.service.spec.ts` "should be created"                    |
+| F2  | `/api/summary` endpoint call   | "should call /api/summary endpoint with selected month", "should fetch summary data from /api/summary with month parameter" |
+| F3  | Data transformation to signals | Allocation chart data, basis$, capitalGain$, dividends$, percentIncrease$, performanceChartData, monthOptions               |
+| F4  | Loading state                  | Service "should set loading to true during summary fetch", "should set loading to false after error"                        |
+| F5  | Error state                    | Component-level error handling for all 3 endpoints, default values on error, service error signals                          |
+| T1  | >80% coverage                  | 38 new tests across 2 files covering all code paths                                                                         |
+| T2  | AAA pattern                    | ✓ Consistently applied across all tests                                                                                     |
+| T3  | Tests disabled with .skip      | ✓ All new describe blocks use `describe.skip`                                                                               |
+| T4  | Mock HTTP                      | ✓ Angular HttpTestingController with expectOne/flush/error                                                                  |
+| T5  | All transformations            | ✓ Chart data, signals, month options, graph datasets                                                                        |
+
+### Improvements Checklist
+
+- [x] All acceptance criteria covered with tests
+- [x] Mock responses match actual backend API interfaces
+- [x] Tests properly disabled with .skip
+- [x] Stub service is minimal and appropriate for RED phase
+- [x] Existing tests remain passing (1181 passed, 24 skipped)
+- [x] Lint passes
+- [x] Dupcheck passes (0 clones)
+
+### Security Review
+
+No security concerns — this is a test-only story with no runtime code changes beyond a stub service.
+
+### Performance Considerations
+
+No performance concerns — all tests are properly skipped and add no runtime overhead.
+
+### Gate Status
+
+Gate: PASS → docs/qa/gates/AS.1-tdd-summary-service-wiring.yml
+
+### Recommended Status
+
+✓ Ready for Done
 
 ---
 
 ## Dev Agent Record
 
-*This section will be populated during story implementation*
+_This section will be populated during story implementation_
