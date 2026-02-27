@@ -63,10 +63,16 @@
 
         <!-- Pie Chart -->
         <div class="w-full max-w-md">
-          <h2 class="text-lg font-semibold mb-2">Allocation by Risk Group</h2>
+          <h2 class="text-lg font-semibold mb-2 chart-title">
+            Allocation by Risk Group
+          </h2>
+          @if (!hasAllocationData$()) {
+          <p class="no-data-message text-gray-500 py-4">No data available</p>
+          }
           <dms-summary-display
             [data$]="allocationData"
             [chartType$]="'pie'"
+            [options$]="pieChartOptions"
           ></dms-summary-display>
         </div>
       </div>

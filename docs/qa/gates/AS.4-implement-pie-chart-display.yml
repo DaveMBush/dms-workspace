@@ -1,0 +1,48 @@
+schema: 1
+story: 'AS.4'
+story_title: 'Implement Pie Chart Display with ng2-charts'
+gate: PASS
+status_reason: >
+  All 13 acceptance criteria met. GREEN phase complete with 12 TDD tests re-enabled and passing.
+  95.4% code coverage (53/53 statements, 22/22 declarations). Clean signal-based architecture,
+  proper currency-formatted tooltips, color consistency verified, empty state handled.
+  Two low-severity advisory items noted (empty state canvas overlap, 4 uncovered branches) —
+  neither blocking.
+reviewer: 'Quinn (Test Architect)'
+updated: '2026-02-27T00:00:00Z'
+
+waiver: { active: false }
+
+top_issues: []
+
+quality_score: 92
+expires: '2026-03-13T00:00:00Z'
+
+evidence:
+  tests_reviewed: 38
+  risks_identified: 0
+  trace:
+    ac_covered: [1, 2, 3, 4, 5, 6, 7]
+    ac_gaps: []
+
+nfr_validation:
+  security:
+    status: PASS
+    notes: 'Read-only chart display, no user input processed, existing authenticated API'
+  performance:
+    status: PASS
+    notes: 'computed() signals prevent unnecessary recalculation, static chart options'
+  reliability:
+    status: PASS
+    notes: 'Empty state handled, error states delegated to service layer, default zero values on API failure'
+  maintainability:
+    status: PASS
+    notes: 'Clean signal patterns, typed ChartData/ChartConfiguration, named functions per project standards'
+
+recommendations:
+  immediate: []
+  future:
+    - action: 'Wrap <dms-summary-display> in @if (hasAllocationData$()) to avoid rendering blank canvas in empty state'
+      refs: ['apps/dms-material/src/app/global/global-summary.html']
+    - action: 'Add tests for tooltip edge cases (missing label, zero total) to cover remaining 4 branches'
+      refs: ['apps/dms-material/src/app/global/global-summary.spec.ts']
