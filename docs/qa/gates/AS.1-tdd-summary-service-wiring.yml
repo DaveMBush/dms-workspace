@@ -1,0 +1,46 @@
+schema: 1
+story: 'AS.1'
+story_title: 'TDD - Unit Tests for Summary Service Wiring'
+gate: PASS
+status_reason: 'All 10 acceptance criteria fully covered by 38 new tests across 2 files. Mock responses match actual backend API interfaces. Tests properly disabled with .skip. Existing test suite unaffected (1181 passed, 24 skipped). Lint and dupcheck clean.'
+reviewer: 'Quinn (Test Architect)'
+updated: '2026-02-27T00:00:00Z'
+
+waiver: { active: false }
+
+top_issues: []
+
+risk_summary:
+  totals: { critical: 0, high: 0, medium: 0, low: 0 }
+  recommendations:
+    must_fix: []
+    monitor: []
+
+quality_score: 100
+
+evidence:
+  tests_reviewed: 38
+  risks_identified: 0
+  trace:
+    ac_covered: [1, 2, 3, 4, 5]
+    ac_gaps: []
+
+nfr_validation:
+  security:
+    status: PASS
+    notes: 'Test-only story, no runtime code changes beyond stub service'
+  performance:
+    status: PASS
+    notes: 'All new tests are skipped, no runtime overhead'
+  reliability:
+    status: PASS
+    notes: 'Proper httpMock.verify() cleanup in afterEach blocks'
+  maintainability:
+    status: PASS
+    notes: 'Well-organized test blocks, AAA pattern, realistic mock data'
+
+recommendations:
+  immediate: []
+  future:
+    - action: 'When implementing AS.2, verify tests pass GREEN with actual service implementation'
+      refs: ['apps/dms-material/src/app/global/services/summary.service.ts']
