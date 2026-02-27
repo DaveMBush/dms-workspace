@@ -271,7 +271,7 @@ describe('SummaryService', () => {
     });
   });
 
-  describe.skip('Month Caching', () => {
+  describe('Month Caching', () => {
     it('should cache months data after first fetch', () => {
       service.fetchMonths();
 

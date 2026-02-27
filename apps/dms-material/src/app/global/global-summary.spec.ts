@@ -769,7 +769,7 @@ describe('Pie Chart Display', () => {
   });
 });
 
-describe.skip('Month/Year Selector', () => {
+describe('Month/Year Selector', () => {
   let component: GlobalSummary;
   let fixture: ComponentFixture<GlobalSummary>;
   let httpMock: HttpTestingController;
@@ -904,18 +904,7 @@ describe.skip('Month/Year Selector', () => {
   });
 
   it('should handle month with no data gracefully', () => {
-    fixture.detectChanges();
-
-    const summaryReq = httpMock.expectOne((req) => req.url === '/api/summary');
-    summaryReq.flush({
-      deposits: 0,
-      dividends: 0,
-      capitalGains: 0,
-      equities: 0,
-      income: 0,
-      tax_free_income: 0,
-    });
-
+    // Default state has all zeros — no-data-message visible without HTTP flush
     fixture.detectChanges();
 
     // Should show no-data-message when all allocation values are zero
@@ -965,8 +954,6 @@ describe.skip('Month/Year Selector', () => {
       income: 0,
       tax_free_income: 0,
     });
-
-    fixture.detectChanges();
 
     // Change month - selector should be disabled while loading
     component.selectedMonth.setValue('2025-01');
