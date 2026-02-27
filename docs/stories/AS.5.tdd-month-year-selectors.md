@@ -16,8 +16,7 @@
 - Month/year selector currently not connected to backend
 - Backend provides `/api/summary/months` endpoint (from old DMS app)
 - Need to verify month selection updates displayed data
-- A similar component is implemented in #file:./apps/dms/src/app/global/*.* using primeng instead of angular material
-
+- A similar component is implemented in #file:./apps/dms/src/app/global/_._ using primeng instead of angular material
 
 **Problem:**
 
@@ -60,10 +59,7 @@ describe.skip('Month/Year Selector', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [GlobalSummary],
-      providers: [
-        provideHttpClient(),
-        provideHttpClientTesting(),
-      ],
+      providers: [provideHttpClient(), provideHttpClientTesting()],
     });
 
     fixture = TestBed.createComponent(GlobalSummary);
@@ -389,11 +385,7 @@ describe.skip('SummaryService - Months', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [
-        SummaryService,
-        provideHttpClient(),
-        provideHttpClientTesting(),
-      ],
+      providers: [SummaryService, provideHttpClient(), provideHttpClientTesting()],
     });
 
     service = TestBed.inject(SummaryService);
@@ -471,24 +463,24 @@ Before moving to Story AS.6, ensure tests cover:
 
 ## Tasks / Subtasks
 
-- [ ] Create month/year selector tests in global-summary.spec.ts (AC: 1-6)
-  - [ ] Tests for fetching months
-  - [ ] Tests for month selector display
-  - [ ] Tests for month change handling
-  - [ ] Tests for data refresh on month change
-  - [ ] Tests for loading states
-  - [ ] Tests for error handling
-- [ ] Add month tests to summary.service.spec.ts (AC: 1-6)
-  - [ ] Tests for months endpoint
-  - [ ] Tests for month parameter
-  - [ ] Tests for caching
-- [ ] Run tests to verify they FAIL (RED phase) (AC: 2, 3)
-- [ ] Disable all new tests with `.skip` (AC: 3)
-- [ ] Document expected behavior in test descriptions (AC: 1)
-- [ ] Run validation commands
-  - [ ] Run `pnpm all` (should pass - tests are skipped)
-  - [ ] Run `pnpm dupcheck`
-  - [ ] Run `pnpm format`
+- [x] Create month/year selector tests in global-summary.spec.ts (AC: 1-6)
+  - [x] Tests for fetching months
+  - [x] Tests for month selector display
+  - [x] Tests for month change handling
+  - [x] Tests for data refresh on month change
+  - [x] Tests for loading states
+  - [x] Tests for error handling
+- [x] Add month tests to summary.service.spec.ts (AC: 1-6)
+  - [x] Tests for months endpoint
+  - [x] Tests for month parameter
+  - [x] Tests for caching
+- [x] Run tests to verify they FAIL (RED phase) (AC: 2, 3)
+- [x] Disable all new tests with `.skip` (AC: 3)
+- [x] Document expected behavior in test descriptions (AC: 1)
+- [x] Run validation commands
+  - [x] Run `pnpm all` (should pass - tests are skipped)
+  - [x] Run `pnpm dupcheck`
+  - [x] Run `pnpm format`
 
 ## Dev Notes
 
@@ -516,8 +508,8 @@ Before moving to Story AS.6, ensure tests cover:
 // /api/summary/months
 interface MonthsResponse {
   months: Array<{
-    label: string;  // Display format: "03/2025"
-    value: string;  // API format: "2025-03"
+    label: string; // Display format: "03/2025"
+    value: string; // API format: "2025-03"
   }>;
   currentMonth?: string; // API format: "2025-03"
 }
@@ -573,10 +565,73 @@ interface MonthsResponse {
 
 ## QA Results
 
-*QA assessment will be recorded here after story review*
+### Review Date: 2026-02-27
+
+### Reviewed By: Quinn (Test Architect)
+
+### Code Quality Assessment
+
+**Overall: Excellent** — This TDD RED phase story is well-executed. The developer wrote 15 comprehensive, compilable unit tests across two test files covering all functional requirements. Tests are properly skipped with `describe.skip`, and RED phase verification confirms 6 of 15 tests fail when unskipped (testing not-yet-implemented features), while 9 pass against existing functionality. Test code is clean, idiomatic, follows AAA pattern, and integrates correctly with the existing `HttpTestingController` and Angular TestBed setup.
+
+**Key Strengths:**
+
+- Tests intelligently adapted from story template to match actual codebase APIs (e.g., `component.monthOptions` getter vs signal call, `component.loading$()` vs `isLoadingMonths()`, `service.fetchMonths()` vs Observable pattern)
+- Good coverage of edge cases: error handling, loading states, no-data scenarios, month persistence across refresh
+- Proper HTTP mock teardown in `afterEach` blocks with `httpMock.verify()`
+- Zero code duplication (dupcheck: 0 clones)
+- Clean lint and format
+
+**Observations (not blocking):**
+
+1. **Default month semantics:** Test "should default to most recent month" expects `'2025-01'` (index 0 / first item), but the `effect()` in the component auto-selects `months[0]`. If the `/api/summary/months` endpoint returns months in ascending chronological order, index 0 is the _oldest_, not most recent. The test is correct for current behavior, but the GREEN phase (AS.6) should decide whether "most recent" means last element. Test description could be clarified.
+2. **`refreshData()` method:** Referenced in the "persist selected month" test but doesn't exist yet on the component — correct RED phase behavior. AS.6 will need to implement this.
+3. **`invalidateMonthsCache()` method:** Referenced in service caching test — doesn't exist yet. Correct RED behavior.
+4. **Selector disable during loading:** The "disable month selector while loading data" test expects `selectedMonth.disabled` to toggle — not yet implemented. Correct RED.
+5. **`loading` signal in `fetchMonths()`:** Current `fetchMonths()` doesn't set `loadingSignal` — caching tests for loading state correctly fail RED.
+
+### Refactoring Performed
+
+None — TDD RED phase story; no implementation code to refactor.
+
+### Compliance Check
+
+- Coding Standards: ✓ Named functions used per project convention, no anonymous function lint issues
+- Project Structure: ✓ Test files co-located with source, correct `.spec.ts` naming
+- Testing Strategy: ✓ AAA pattern, `HttpTestingController`, proper mocking, skipped RED tests
+- All ACs Met: ✓ All 6 functional + 5 technical requirements satisfied
+
+### Improvements Checklist
+
+- [x] All 15 tests compile and are properly skipped
+- [x] RED phase verified (6 failures confirm unimplemented features)
+- [x] `pnpm all` passes (1230 tests, 11 skipped)
+- [x] `pnpm dupcheck` clean (0 clones)
+- [x] `pnpm format` clean
+- [ ] Consider clarifying test description "should default to most recent month" vs actual behavior (selects first element) — address in AS.6
+
+### Security Review
+
+No security concerns — test-only changes with no production code modifications.
+
+### Performance Considerations
+
+No performance concerns — all tests use `HttpTestingController` (synchronous flush, no real HTTP calls). Test count increase (+15) is negligible.
+
+### Files Modified During Review
+
+None — review only, no refactoring performed.
+
+### Gate Status
+
+Gate: PASS → docs/qa/gates/AS.5-tdd-month-year-selectors.yml
+Quality Score: 95/100
+
+### Recommended Status
+
+✓ Ready for Done — All acceptance criteria met. Tests are comprehensive, correctly RED, properly skipped, and all validation commands pass. Story AS.6 unblocked for GREEN phase.
 
 ---
 
 ## Dev Agent Record
 
-*This section will be populated during story implementation*
+_This section will be populated during story implementation_

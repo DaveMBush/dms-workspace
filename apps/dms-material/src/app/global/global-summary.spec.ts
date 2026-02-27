@@ -768,3 +768,304 @@ describe('Pie Chart Display', () => {
     expect(total).toBe(100000);
   });
 });
+
+describe.skip('Month/Year Selector', () => {
+  let component: GlobalSummary;
+  let fixture: ComponentFixture<GlobalSummary>;
+  let httpMock: HttpTestingController;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [GlobalSummary],
+      providers: [
+        provideSmartNgRX(),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: topEffectsServiceToken, useValue: {} },
+      ],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(GlobalSummary);
+    component = fixture.componentInstance;
+    httpMock = TestBed.inject(HttpTestingController);
+  });
+
+  afterEach(() => {
+    // Discard outstanding requests from concurrent init fetch operations
+    httpMock.match((req) => req.url.includes('/api/summary'));
+    httpMock.verify();
+  });
+
+  it('should fetch available months on init', () => {
+    fixture.detectChanges();
+
+    const req = httpMock.expectOne('/api/summary/months');
+    expect(req.request.method).toBe('GET');
+
+    req.flush([
+      { month: '2025-01', label: '01/2025' },
+      { month: '2025-02', label: '02/2025' },
+      { month: '2025-03', label: '03/2025' },
+    ]);
+
+    expect(component.monthOptions.length).toBe(3);
+  });
+
+  it('should display month options in selector', () => {
+    fixture.detectChanges();
+
+    const monthsReq = httpMock.expectOne('/api/summary/months');
+    monthsReq.flush([
+      { month: '2025-01', label: '01/2025' },
+      { month: '2025-02', label: '02/2025' },
+    ]);
+
+    fixture.detectChanges();
+
+    const options = component.monthOptions;
+    expect(options[0].label).toBe('01/2025');
+    expect(options[0].value).toBe('2025-01');
+    expect(options[1].label).toBe('02/2025');
+    expect(options[1].value).toBe('2025-02');
+  });
+
+  it('should set default month to first available month', () => {
+    fixture.detectChanges();
+
+    const monthsReq = httpMock.expectOne('/api/summary/months');
+    monthsReq.flush([
+      { month: '2025-01', label: '01/2025' },
+      { month: '2025-02', label: '02/2025' },
+      { month: '2025-03', label: '03/2025' },
+    ]);
+
+    fixture.detectChanges();
+
+    expect(component.selectedMonth.value).toBe('2025-01');
+  });
+
+  it('should refresh data when month selection changes', () => {
+    fixture.detectChanges();
+
+    // Flush initial requests
+    const monthsReq = httpMock.expectOne('/api/summary/months');
+    monthsReq.flush([
+      { month: '2025-01', label: '01/2025' },
+      { month: '2025-02', label: '02/2025' },
+    ]);
+
+    const initialSummaryReq = httpMock.expectOne(
+      (req) => req.url === '/api/summary' && req.params.has('month')
+    );
+    initialSummaryReq.flush({
+      deposits: 50000,
+      dividends: 1000,
+      capitalGains: 2000,
+      equities: 30000,
+      income: 10000,
+      tax_free_income: 10000,
+    });
+
+    // Change month
+    component.selectedMonth.setValue('2025-02');
+
+    const refreshReq = httpMock.expectOne(
+      (req) =>
+        req.url === '/api/summary' && req.params.get('month') === '2025-02'
+    );
+    refreshReq.flush({
+      deposits: 40000,
+      dividends: 800,
+      capitalGains: 1500,
+      equities: 25000,
+      income: 8000,
+      tax_free_income: 7000,
+    });
+
+    expect(component.basis$()).toBe(40000);
+  });
+
+  it('should include month parameter in summary API call', () => {
+    // selectedMonth FormControl defaults to '2025-03'
+    fixture.detectChanges();
+
+    const summaryReq = httpMock.expectOne(
+      (req) => req.url === '/api/summary' && req.params.has('month')
+    );
+    expect(summaryReq.request.params.get('month')).toBe('2025-03');
+    summaryReq.flush({
+      deposits: 0,
+      dividends: 0,
+      capitalGains: 0,
+      equities: 0,
+      income: 0,
+      tax_free_income: 0,
+    });
+  });
+
+  it('should handle month with no data gracefully', () => {
+    fixture.detectChanges();
+
+    const summaryReq = httpMock.expectOne((req) => req.url === '/api/summary');
+    summaryReq.flush({
+      deposits: 0,
+      dividends: 0,
+      capitalGains: 0,
+      equities: 0,
+      income: 0,
+      tax_free_income: 0,
+    });
+
+    fixture.detectChanges();
+
+    // Should show no-data-message when all allocation values are zero
+    const noDataMessage =
+      fixture.nativeElement.querySelector('.no-data-message');
+    expect(noDataMessage).not.toBeNull();
+  });
+
+  it('should show loading spinner while fetching months', () => {
+    // Before init, loading should be false
+    expect(component.loading$()).toBe(false);
+
+    fixture.detectChanges();
+
+    // During fetch, loading should be true
+    expect(component.loading$()).toBe(true);
+
+    const summaryReq = httpMock.expectOne((req) => req.url === '/api/summary');
+    summaryReq.flush({
+      deposits: 0,
+      dividends: 0,
+      capitalGains: 0,
+      equities: 0,
+      income: 0,
+      tax_free_income: 0,
+    });
+
+    expect(component.loading$()).toBe(false);
+  });
+
+  it('should disable month selector while loading data', () => {
+    fixture.detectChanges();
+
+    // Flush initial months
+    const monthsReq = httpMock.expectOne('/api/summary/months');
+    monthsReq.flush([
+      { month: '2025-01', label: '01/2025' },
+      { month: '2025-02', label: '02/2025' },
+    ]);
+
+    const initialReq = httpMock.expectOne((req) => req.url === '/api/summary');
+    initialReq.flush({
+      deposits: 0,
+      dividends: 0,
+      capitalGains: 0,
+      equities: 0,
+      income: 0,
+      tax_free_income: 0,
+    });
+
+    fixture.detectChanges();
+
+    // Change month - selector should be disabled while loading
+    component.selectedMonth.setValue('2025-01');
+    expect(component.selectedMonth.disabled).toBe(true);
+
+    const refreshReq = httpMock.expectOne((req) => req.url === '/api/summary');
+    refreshReq.flush({
+      deposits: 0,
+      dividends: 0,
+      capitalGains: 0,
+      equities: 0,
+      income: 0,
+      tax_free_income: 0,
+    });
+
+    expect(component.selectedMonth.disabled).toBe(false);
+  });
+
+  it('should handle error fetching months', () => {
+    fixture.detectChanges();
+
+    const monthsReq = httpMock.expectOne('/api/summary/months');
+    monthsReq.error(new ProgressEvent('error'));
+
+    fixture.detectChanges();
+
+    expect(component.error$()).toBeTruthy();
+    expect(component.monthOptions.length).toBe(0);
+  });
+
+  it('should default to first available month when API returns multiple months', () => {
+    fixture.detectChanges();
+
+    const monthsReq = httpMock.expectOne('/api/summary/months');
+    monthsReq.flush([
+      { month: '2025-01', label: '01/2025' },
+      { month: '2025-02', label: '02/2025' },
+      { month: '2025-03', label: '03/2025' },
+    ]);
+
+    fixture.detectChanges();
+
+    // Should default to first month in sorted list (effect sets first)
+    expect(component.selectedMonth.value).toBe('2025-01');
+  });
+
+  it('should persist selected month when data refreshes', () => {
+    fixture.detectChanges();
+
+    // Flush initial months
+    const monthsReq = httpMock.expectOne('/api/summary/months');
+    monthsReq.flush([
+      { month: '2025-01', label: '01/2025' },
+      { month: '2025-02', label: '02/2025' },
+    ]);
+
+    const initialReq = httpMock.expectOne((req) => req.url === '/api/summary');
+    initialReq.flush({
+      deposits: 50000,
+      dividends: 1000,
+      capitalGains: 2000,
+      equities: 30000,
+      income: 10000,
+      tax_free_income: 10000,
+    });
+
+    // Change to specific month
+    component.selectedMonth.setValue('2025-02');
+
+    const changeReq = httpMock.expectOne(
+      (req) =>
+        req.url === '/api/summary' && req.params.get('month') === '2025-02'
+    );
+    changeReq.flush({
+      deposits: 40000,
+      dividends: 800,
+      capitalGains: 1500,
+      equities: 25000,
+      income: 8000,
+      tax_free_income: 7000,
+    });
+
+    // Trigger manual refresh
+    component.refreshData();
+
+    const refreshReq = httpMock.expectOne(
+      (req) =>
+        req.url === '/api/summary' && req.params.get('month') === '2025-02'
+    );
+    refreshReq.flush({
+      deposits: 41000,
+      dividends: 850,
+      capitalGains: 1600,
+      equities: 25500,
+      income: 8200,
+      tax_free_income: 7300,
+    });
+
+    // Month should still be 2025-02
+    expect(component.selectedMonth.value).toBe('2025-02');
+  });
+});

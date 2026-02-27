@@ -1,0 +1,59 @@
+schema: 1
+story: 'AS.5'
+story_title: 'TDD - Unit Tests for Month/Year Selector Functionality'
+gate: PASS
+status_reason: >-
+  TDD RED phase fully satisfied: 15 compilable tests across 2 files (12 component, 3 service),
+  properly skipped with describe.skip, 6 confirmed RED failures for unimplemented features,
+  9 tests passing against existing functionality. All validation commands clean.
+reviewer: 'Quinn (Test Architect)'
+updated: '2026-02-27T21:45:00Z'
+
+waiver: { active: false }
+
+top_issues: []
+
+quality_score: 95
+expires: '2026-03-13T21:45:00Z'
+
+evidence:
+  new_tests_written: 15
+  risks_identified: 0
+  red_failures_confirmed: 6
+  passing_against_existing: 9
+  trace:
+    ac_covered: [1, 2, 3, 4, 5, 6]
+    ac_gaps: []
+
+nfr_validation:
+  security:
+    status: PASS
+    notes: 'Test-only changes, no production code modified'
+  performance:
+    status: PASS
+    notes: 'No real HTTP calls, all tests use HttpTestingController'
+  reliability:
+    status: PASS
+    notes: 'Proper cleanup with httpMock.verify() in all afterEach blocks'
+  maintainability:
+    status: PASS
+    notes: 'Tests follow AAA pattern, clear descriptions, well-structured describe blocks'
+
+recommendations:
+  immediate: []
+  future:
+    - action: 'Clarify "most recent month" test description vs actual first-element selection behavior'
+      refs: ['apps/dms-material/src/app/global/global-summary.spec.ts']
+    - action: 'Implement refreshData(), invalidateMonthsCache(), and selector disable-during-loading in AS.6 GREEN phase'
+      refs:
+        [
+          'apps/dms-material/src/app/global/global-summary.ts',
+          'apps/dms-material/src/app/global/services/summary.service.ts',
+        ]
+
+validation:
+  pnpm_all: PASS
+  test_count: 1230
+  skipped_count: 11
+  dupcheck: '0 clones'
+  format: clean

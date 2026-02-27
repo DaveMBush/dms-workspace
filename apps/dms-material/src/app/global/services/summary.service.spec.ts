@@ -270,4 +270,55 @@ describe('SummaryService', () => {
       expect(service.loading()).toBe(false);
     });
   });
+
+  describe.skip('Month Caching', () => {
+    it('should cache months data after first fetch', () => {
+      service.fetchMonths();
+
+      const req = httpMock.expectOne('/api/summary/months');
+      req.flush([
+        { month: '2025-01', label: '01/2025' },
+        { month: '2025-02', label: '02/2025' },
+      ]);
+
+      // Second fetch should not make a new HTTP request
+      service.fetchMonths();
+      httpMock.expectNone('/api/summary/months');
+
+      expect(service.months().length).toBe(2);
+    });
+
+    it('should refresh months cache when invalidateMonthsCache is called', () => {
+      service.fetchMonths();
+
+      const req1 = httpMock.expectOne('/api/summary/months');
+      req1.flush([{ month: '2025-01', label: '01/2025' }]);
+
+      // Invalidate cache
+      service.invalidateMonthsCache();
+
+      // Next fetch should make a new HTTP request
+      service.fetchMonths();
+      const req2 = httpMock.expectOne('/api/summary/months');
+      req2.flush([
+        { month: '2025-01', label: '01/2025' },
+        { month: '2025-02', label: '02/2025' },
+      ]);
+
+      expect(service.months().length).toBe(2);
+    });
+
+    it('should set loading during months fetch', () => {
+      expect(service.loading()).toBe(false);
+
+      service.fetchMonths();
+
+      expect(service.loading()).toBe(true);
+
+      const req = httpMock.expectOne('/api/summary/months');
+      req.flush([{ month: '2025-01', label: '01/2025' }]);
+
+      expect(service.loading()).toBe(false);
+    });
+  });
 });
