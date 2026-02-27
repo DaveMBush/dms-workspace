@@ -321,4 +321,167 @@ describe('SummaryService', () => {
       expect(service.loading()).toBe(false);
     });
   });
+
+  describe('Race Condition Handling', () => {
+    it('should ignore stale success response when a newer request is pending', () => {
+      // First request
+      service.fetchSummary('2025-01');
+      const req1 = httpMock.expectOne(
+        (req) =>
+          req.url === '/api/summary' && req.params.get('month') === '2025-01'
+      );
+
+      // Second request before first completes
+      service.fetchSummary('2025-02');
+      const req2 = httpMock.expectOne(
+        (req) =>
+          req.url === '/api/summary' && req.params.get('month') === '2025-02'
+      );
+
+      // First request completes (stale) — should be ignored
+      req1.flush({
+        deposits: 999,
+        dividends: 999,
+        capitalGains: 999,
+        equities: 999,
+        income: 999,
+        tax_free_income: 999,
+      });
+
+      // Data should NOT update from stale response
+      expect(service.summary().deposits).toBe(0);
+
+      // Second request completes — should update
+      req2.flush({
+        deposits: 100,
+        dividends: 200,
+        capitalGains: 300,
+        equities: 400,
+        income: 500,
+        tax_free_income: 600,
+      });
+
+      expect(service.summary().deposits).toBe(100);
+    });
+
+    it('should ignore stale error response when a newer request is pending', () => {
+      // First request
+      service.fetchSummary('2025-01');
+      const req1 = httpMock.expectOne(
+        (req) =>
+          req.url === '/api/summary' && req.params.get('month') === '2025-01'
+      );
+
+      // Second request before first completes
+      service.fetchSummary('2025-02');
+      const req2 = httpMock.expectOne(
+        (req) =>
+          req.url === '/api/summary' && req.params.get('month') === '2025-02'
+      );
+
+      // First request errors (stale) — should be ignored
+      req1.error(new ProgressEvent('error'));
+
+      // Error should NOT be set from stale response
+      expect(service.error()).toBeNull();
+
+      // Second request completes normally
+      req2.flush({
+        deposits: 100,
+        dividends: 200,
+        capitalGains: 300,
+        equities: 400,
+        income: 500,
+        tax_free_income: 600,
+      });
+
+      expect(service.summary().deposits).toBe(100);
+      expect(service.error()).toBeNull();
+    });
+  });
+
+  describe('onComplete Callback', () => {
+    it('should call onComplete callback on successful fetchSummary', () => {
+      let callbackCalled = false;
+      function onDone(): void {
+        callbackCalled = true;
+      }
+
+      service.fetchSummary('2025-01', onDone);
+
+      const successReq = httpMock.expectOne(function matchSummaryMonth(r) {
+        return r.url === '/api/summary' && r.params.get('month') === '2025-01';
+      });
+      successReq.flush({
+        deposits: 100,
+        dividends: 200,
+        capitalGains: 300,
+        equities: 400,
+        income: 500,
+        tax_free_income: 600,
+      });
+
+      expect(callbackCalled).toBe(true);
+    });
+
+    it('should call onComplete callback on failed fetchSummary', () => {
+      let callbackCalled = false;
+      function onDone(): void {
+        callbackCalled = true;
+      }
+
+      service.fetchSummary('2025-01', onDone);
+
+      const errorReq = httpMock.expectOne(function matchSummaryMonth(r) {
+        return r.url === '/api/summary' && r.params.get('month') === '2025-01';
+      });
+      errorReq.error(new ProgressEvent('error'));
+
+      expect(callbackCalled).toBe(true);
+      expect(service.error()).toBeTruthy();
+    });
+
+    it('should not call onComplete when response is stale', () => {
+      let callbackCalled = false;
+      function onDone(): void {
+        callbackCalled = true;
+      }
+
+      // First request with callback
+      service.fetchSummary('2025-01', onDone);
+      const req1 = httpMock.expectOne(
+        (req) =>
+          req.url === '/api/summary' && req.params.get('month') === '2025-01'
+      );
+
+      // Second request supersedes
+      service.fetchSummary('2025-02');
+      const req2 = httpMock.expectOne(
+        (req) =>
+          req.url === '/api/summary' && req.params.get('month') === '2025-02'
+      );
+
+      // First request completes (stale) — callback should NOT be called
+      req1.flush({
+        deposits: 0,
+        dividends: 0,
+        capitalGains: 0,
+        equities: 0,
+        income: 0,
+        tax_free_income: 0,
+      });
+
+      expect(callbackCalled).toBe(false);
+
+      // Clean up second request
+      req2.flush({
+        deposits: 0,
+        dividends: 0,
+        capitalGains: 0,
+        equities: 0,
+        income: 0,
+        tax_free_income: 0,
+      });
+    });
+  });
 });

@@ -1056,3 +1056,161 @@ describe('Month/Year Selector', () => {
     expect(component.selectedMonth.value).toBe('2025-02');
   });
 });
+
+describe('Branch Coverage - Edge Cases', () => {
+  let fixture: ComponentFixture<GlobalSummary>;
+  let component: GlobalSummary;
+  let httpMock: HttpTestingController;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [GlobalSummary],
+      providers: [
+        provideSmartNgRX(),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: topEffectsServiceToken, useValue: {} },
+      ],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(GlobalSummary);
+    component = fixture.componentInstance;
+    httpMock = TestBed.inject(HttpTestingController);
+  });
+
+  afterEach(() => {
+    // Discard outstanding requests from concurrent init fetch operations
+    httpMock.match(function matchSummary(req) {
+      return req.url.includes('/api/summary');
+    });
+    httpMock.verify();
+  });
+
+  it('should handle tooltip with undefined label', () => {
+    fixture.detectChanges();
+
+    const options = component.pieChartOptions;
+    const tooltipCallback = options.plugins!.tooltip!.callbacks!.label;
+
+    const tooltipItem = {
+      label: undefined,
+      raw: 50000,
+      parsed: 50000,
+      dataIndex: 0,
+      dataset: { data: [50000, 30000, 20000] },
+    };
+
+    const result = (tooltipCallback as (...args: unknown[]) => string)(
+      tooltipItem
+    );
+    expect(result).toContain('$50,000');
+    expect(result).toContain('50%');
+    expect(result).toMatch(/^:\s/);
+  });
+
+  it('should handle tooltip with undefined raw value', () => {
+    fixture.detectChanges();
+
+    const options = component.pieChartOptions;
+    const tooltipCallback = options.plugins!.tooltip!.callbacks!.label;
+
+    const tooltipItem = {
+      label: 'Equities',
+      raw: undefined,
+      parsed: 0,
+      dataIndex: 0,
+      dataset: { data: [0, 30000, 20000] },
+    };
+
+    const result = (tooltipCallback as (...args: unknown[]) => string)(
+      tooltipItem
+    );
+    expect(result).toContain('Equities');
+    expect(result).toContain('$0');
+  });
+
+  it('should handle tooltip when total is zero', () => {
+    fixture.detectChanges();
+
+    const options = component.pieChartOptions;
+    const tooltipCallback = options.plugins!.tooltip!.callbacks!.label;
+
+    const tooltipItem = {
+      label: 'Equities',
+      raw: 0,
+      parsed: 0,
+      dataIndex: 0,
+      dataset: { data: [0, 0, 0] },
+    };
+
+    const result = (tooltipCallback as (...args: unknown[]) => string)(
+      tooltipItem
+    );
+    expect(result).toContain('Equities');
+    expect(result).toContain('0%');
+  });
+
+  it('should handle null month in valueChanges without calling fetchSummary', () => {
+    fixture.detectChanges();
+
+    // Flush initial summary request from ngOnInit
+    const initialReq = httpMock.expectOne(
+      (req) => req.url === '/api/summary' && req.params.has('month')
+    );
+    initialReq.flush({
+      deposits: 0,
+      dividends: 0,
+      capitalGains: 0,
+      equities: 0,
+      income: 0,
+      tax_free_income: 0,
+    });
+
+    // Set null value — should NOT trigger a new fetchSummary
+    component.selectedMonth.setValue(null as unknown as string);
+
+    // No additional summary request should be made
+    httpMock.expectNone(function matchRefreshSummary(req) {
+      return req.url === '/api/summary' && req.params.get('month') === 'null';
+    });
+  });
+
+  it('should use fallback month when selectedMonth value is null during refreshData', () => {
+    fixture.detectChanges();
+
+    // Flush initial request
+    const initialReq = httpMock.expectOne(
+      (req) => req.url === '/api/summary' && req.params.has('month')
+    );
+    initialReq.flush({
+      deposits: 0,
+      dividends: 0,
+      capitalGains: 0,
+      equities: 0,
+      income: 0,
+      tax_free_income: 0,
+    });
+
+    // Force selectedMonth to null (edge case)
+    component.selectedMonth.setValue(null as unknown as string);
+
+    // Call refreshData — should use fallback '2025-03'
+    component.refreshData();
+
+    const refreshReq = httpMock.expectOne(function matchRefreshFallback(req) {
+      return (
+        req.url === '/api/summary' && req.params.get('month') === '2025-03'
+      );
+    });
+    refreshReq.flush({
+      deposits: 0,
+      dividends: 0,
+      capitalGains: 0,
+      equities: 0,
+      income: 0,
+      tax_free_income: 0,
+    });
+
+    expect(refreshReq.request.params.get('month')).toBe('2025-03');
+  });
+});
