@@ -14,7 +14,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatOptionModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
-import { ChartData } from 'chart.js';
+import { ChartConfiguration, ChartData } from 'chart.js';
 
 import { SummaryDisplayComponent } from '../shared/components/summary-display/summary-display';
 import { SummaryService } from './services/summary.service';
@@ -65,6 +65,52 @@ export class GlobalSummary implements OnInit {
       ],
     };
   });
+
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- need access to computed signal
+  readonly hasAllocationData$ = computed(() => {
+    const data = this.allocationChartData();
+    return data.datasets[0].data.some(function isNonZero(v: unknown): boolean {
+      return (v as number) !== 0;
+    });
+  });
+
+  readonly pieChartOptions: ChartConfiguration['options'] = {
+    responsive: true,
+    maintainAspectRatio: true,
+    plugins: {
+      legend: {
+        position: 'bottom' as const,
+      },
+      tooltip: {
+        callbacks: {
+          label: function formatTooltip(context: {
+            label?: string;
+            raw?: unknown;
+            dataIndex: number;
+            dataset: { data: unknown[] };
+          }): string {
+            const label = context.label ?? '';
+            const value = context.raw as number;
+            const total = (context.dataset.data as number[]).reduce(
+              function sum(a: number, b: number): number {
+                return a + b;
+              },
+              0
+            );
+            const percentage =
+              total > 0 ? Math.round((value / total) * 100) : 0;
+            const formatted = value.toLocaleString('en-US', {
+              style: 'currency',
+              currency: 'USD',
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 0,
+            });
+            return `${label}: ${formatted} (${String(percentage)}%)`;
+          },
+        },
+      },
+    },
+  };
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- need access to service signal
   readonly performanceChartData = computed((): ChartData<'line'> => {
