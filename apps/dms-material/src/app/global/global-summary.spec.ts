@@ -886,6 +886,7 @@ describe.skip('Month/Year Selector', () => {
   });
 
   it('should include month parameter in summary API call', () => {
+    // selectedMonth FormControl defaults to '2025-03'
     fixture.detectChanges();
 
     const summaryReq = httpMock.expectOne(
@@ -996,7 +997,7 @@ describe.skip('Month/Year Selector', () => {
     expect(component.monthOptions.length).toBe(0);
   });
 
-  it('should default to most recent month when API returns multiple months', () => {
+  it('should default to first available month when API returns multiple months', () => {
     fixture.detectChanges();
 
     const monthsReq = httpMock.expectOne('/api/summary/months');
