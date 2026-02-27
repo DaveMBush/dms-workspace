@@ -1,6 +1,6 @@
 # Story AS.2: Wire Summary Component to Summary Service
 
-**Status:** Draft
+**Status:** Approved
 
 ## Story
 

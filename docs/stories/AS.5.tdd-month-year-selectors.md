@@ -1,6 +1,6 @@
 # Story AS.5: TDD - Unit Tests for Month/Year Selector Functionality
 
-**Status:** Draft
+**Status:** Approved
 
 ## Story
 

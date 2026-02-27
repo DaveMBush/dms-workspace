@@ -1,6 +1,6 @@
 # Story AS.9: Add E2E Tests for Global Summary
 
-**Status:** Draft
+**Status:** Approved
 
 ## Story
 

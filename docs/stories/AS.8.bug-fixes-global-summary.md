@@ -1,6 +1,6 @@
 # Story AS.8: Bug Fixes for Global Summary
 
-**Status:** Draft
+**Status:** Approved
 
 ## Story
 
