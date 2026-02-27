@@ -1,6 +1,6 @@
 # Story AS.3: TDD - Unit Tests for Pie Chart Display with Real Data
 
-**Status:** Approved
+**Status:** Ready for Review
 
 ## Story
 
@@ -16,8 +16,7 @@
 - Component receives real data from backend
 - Pie chart using `ng2-charts` via `SummaryDisplayComponent`
 - Need to verify chart renders correctly with various data scenarios
-- A similar component is implemented in #file:./apps/dms/src/app/global/*.* using primeng instead of angular material
-
+- A similar component is implemented in #file:./apps/dms/src/app/global/_._ using primeng instead of angular material
 
 **Problem:**
 
@@ -61,10 +60,7 @@ describe.skip('Pie Chart Display', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [GlobalSummary],
-      providers: [
-        provideHttpClient(),
-        provideHttpClientTesting(),
-      ],
+      providers: [provideHttpClient(), provideHttpClientTesting()],
     });
 
     fixture = TestBed.createComponent(GlobalSummary);
@@ -176,9 +172,7 @@ describe.skip('Pie Chart Display', () => {
     component.ngOnInit();
     const req = httpMock.expectOne('/api/summary');
     req.flush({
-      riskGroups: [
-        { name: 'Equities', amount: 100000, percentage: 100 },
-      ],
+      riskGroups: [{ name: 'Equities', amount: 100000, percentage: 100 }],
       basis: 100000,
       capitalGains: 0,
       dividends: 0,
@@ -254,9 +248,7 @@ describe.skip('Pie Chart Display', () => {
     component.ngOnInit();
     const req = httpMock.expectOne('/api/summary');
     req.flush({
-      riskGroups: [
-        { name: 'Equities', amount: 50000, percentage: 50 },
-      ],
+      riskGroups: [{ name: 'Equities', amount: 50000, percentage: 50 }],
       basis: 100000,
       capitalGains: 0,
       dividends: 0,
@@ -273,9 +265,7 @@ describe.skip('Pie Chart Display', () => {
     component.ngOnInit();
     const req = httpMock.expectOne('/api/summary');
     req.flush({
-      riskGroups: [
-        { name: 'Equities', amount: 50000, percentage: 50 },
-      ],
+      riskGroups: [{ name: 'Equities', amount: 50000, percentage: 50 }],
       basis: 100000,
       capitalGains: 0,
       dividends: 0,
@@ -311,9 +301,7 @@ describe.skip('Pie Chart Display', () => {
     component.ngOnInit();
     const req = httpMock.expectOne('/api/summary');
     req.flush({
-      riskGroups: [
-        { name: 'Equities', amount: 50000, percentage: 50 },
-      ],
+      riskGroups: [{ name: 'Equities', amount: 50000, percentage: 50 }],
       basis: 100000,
       capitalGains: 0,
       dividends: 0,
@@ -359,21 +347,21 @@ Before moving to Story AS.4, ensure tests cover:
 
 ## Tasks / Subtasks
 
-- [ ] Create pie chart display tests in global-summary.spec.ts (AC: 1-7)
-  - [ ] Tests for chart rendering
-  - [ ] Tests for data binding
-  - [ ] Tests for color application
-  - [ ] Tests for empty data handling
-  - [ ] Tests for edge cases (single, many groups)
-  - [ ] Tests for chart configuration
-  - [ ] Tests for tooltip formatting
-- [ ] Run tests to verify they FAIL (RED phase) (AC: 2, 3)
-- [ ] Disable all new tests with `.skip` (AC: 3)
-- [ ] Document expected behavior in test descriptions (AC: 1)
-- [ ] Run validation commands
-  - [ ] Run `pnpm all` (should pass - tests are skipped)
-  - [ ] Run `pnpm dupcheck`
-  - [ ] Run `pnpm format`
+- [x] Create pie chart display tests in global-summary.spec.ts (AC: 1-7)
+  - [x] Tests for chart rendering
+  - [x] Tests for data binding
+  - [x] Tests for color application
+  - [x] Tests for empty data handling
+  - [x] Tests for edge cases (single, many groups)
+  - [x] Tests for chart configuration
+  - [x] Tests for tooltip formatting
+- [x] Run tests to verify they FAIL (RED phase) (AC: 2, 3)
+- [x] Disable all new tests with `.skip` (AC: 3)
+- [x] Document expected behavior in test descriptions (AC: 1)
+- [x] Run validation commands
+  - [x] Run `pnpm all` (should pass - tests are skipped)
+  - [x] Run `pnpm dupcheck`
+  - [x] Run `pnpm format`
 
 ## Dev Notes
 
@@ -485,10 +473,36 @@ const CHART_COLORS = [
 
 ## QA Results
 
-*QA assessment will be recorded here after story review*
+_QA assessment will be recorded here after story review_
 
 ---
 
 ## Dev Agent Record
 
-*This section will be populated during story implementation*
+### Agent Model Used
+
+Claude Opus 4.6
+
+### Debug Log References
+
+None - clean TDD RED phase implementation.
+
+### Completion Notes
+
+- 12 tests written in `describe.skip('Pie Chart Display')` block
+- Tests adapted to real API format (equities/income/tax_free_income, not riskGroups)
+- 7 of 12 tests confirmed failing (RED) — tests for pieChartOptions, .no-data-message, .chart-title, tooltip formatting, legend config
+- 5 tests pass with existing implementation — basic rendering, labels, data values, colors, data sum
+- All tests disabled with `.skip`, pnpm all 4/4 passed, dupcheck 0 clones
+
+### File List
+
+| File                                                      | Status   |
+| --------------------------------------------------------- | -------- |
+| `apps/dms-material/src/app/global/global-summary.spec.ts` | Modified |
+
+### Change Log
+
+| Date       | Change                                                              |
+| ---------- | ------------------------------------------------------------------- |
+| 2026-02-27 | Added 12 TDD RED tests for pie chart display in describe.skip block |
