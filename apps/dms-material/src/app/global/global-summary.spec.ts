@@ -78,7 +78,7 @@ describe('GlobalSummary', () => {
   });
 });
 
-describe.skip('GlobalSummary - Service Integration', () => {
+describe('GlobalSummary - Service Integration', () => {
   let component: GlobalSummary;
   let fixture: ComponentFixture<GlobalSummary>;
   let httpMock: HttpTestingController;
@@ -100,6 +100,8 @@ describe.skip('GlobalSummary - Service Integration', () => {
   });
 
   afterEach(() => {
+    // Discard outstanding requests from concurrent init fetch operations
+    httpMock.match((req) => req.url.includes('/api/summary'));
     httpMock.verify();
   });
 
@@ -139,8 +141,6 @@ describe.skip('GlobalSummary - Service Integration', () => {
       tax_free_income: 20000,
     });
 
-    fixture.detectChanges();
-
     const chartData = component.allocationChartData();
     expect(chartData.labels).toEqual(['Equities', 'Income', 'Tax Free']);
     expect(chartData.datasets[0].data).toEqual([50000, 30000, 20000]);
@@ -159,8 +159,6 @@ describe.skip('GlobalSummary - Service Integration', () => {
       tax_free_income: 50000,
     });
 
-    fixture.detectChanges();
-
     expect(component.basis$()).toBe(150000);
   });
 
@@ -176,8 +174,6 @@ describe.skip('GlobalSummary - Service Integration', () => {
       income: 40000,
       tax_free_income: 50000,
     });
-
-    fixture.detectChanges();
 
     expect(component.capitalGain$()).toBe(10000);
   });
@@ -195,8 +191,6 @@ describe.skip('GlobalSummary - Service Integration', () => {
       tax_free_income: 50000,
     });
 
-    fixture.detectChanges();
-
     expect(component.dividends$()).toBe(5000);
   });
 
@@ -212,8 +206,6 @@ describe.skip('GlobalSummary - Service Integration', () => {
       income: 30000,
       tax_free_income: 20000,
     });
-
-    fixture.detectChanges();
 
     // (12 * (5000 + 2500)) / 100000 = 0.9
     expect(component.percentIncrease$()).toBeCloseTo(0.9, 2);
@@ -235,7 +227,6 @@ describe.skip('GlobalSummary - Service Integration', () => {
     });
 
     component.selectedMonth.setValue('2025-06');
-    fixture.detectChanges();
 
     const req2 = httpMock.expectOne(
       (request) =>
@@ -251,13 +242,11 @@ describe.skip('GlobalSummary - Service Integration', () => {
       tax_free_income: 30000,
     });
 
-    fixture.detectChanges();
-
     expect(component.basis$()).toBe(120000);
   });
 });
 
-describe.skip('GlobalSummary - Graph Integration', () => {
+describe('GlobalSummary - Graph Integration', () => {
   let component: GlobalSummary;
   let fixture: ComponentFixture<GlobalSummary>;
   let httpMock: HttpTestingController;
@@ -279,6 +268,8 @@ describe.skip('GlobalSummary - Graph Integration', () => {
   });
 
   afterEach(() => {
+    // Discard outstanding requests from concurrent init fetch operations
+    httpMock.match((req) => req.url.includes('/api/summary'));
     httpMock.verify();
   });
 
@@ -378,7 +369,7 @@ describe.skip('GlobalSummary - Graph Integration', () => {
   });
 });
 
-describe.skip('GlobalSummary - Available Months', () => {
+describe('GlobalSummary - Available Months', () => {
   let component: GlobalSummary;
   let fixture: ComponentFixture<GlobalSummary>;
   let httpMock: HttpTestingController;
@@ -400,6 +391,8 @@ describe.skip('GlobalSummary - Available Months', () => {
   });
 
   afterEach(() => {
+    // Discard outstanding requests from concurrent init fetch operations
+    httpMock.match((req) => req.url.includes('/api/summary'));
     httpMock.verify();
   });
 
@@ -448,7 +441,7 @@ describe.skip('GlobalSummary - Available Months', () => {
   });
 });
 
-describe.skip('GlobalSummary - Error Handling', () => {
+describe('GlobalSummary - Error Handling', () => {
   let component: GlobalSummary;
   let fixture: ComponentFixture<GlobalSummary>;
   let httpMock: HttpTestingController;
@@ -470,6 +463,8 @@ describe.skip('GlobalSummary - Error Handling', () => {
   });
 
   afterEach(() => {
+    // Discard outstanding requests from concurrent init fetch operations
+    httpMock.match((req) => req.url.includes('/api/summary'));
     httpMock.verify();
   });
 

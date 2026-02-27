@@ -3,87 +3,30 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
-  signal,
+  DestroyRef,
+  effect,
+  inject,
+  OnInit,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatOptionModule } from '@angular/material/core';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { ChartData } from 'chart.js';
 
 import { SummaryDisplayComponent } from '../shared/components/summary-display/summary-display';
-
-function computeAllocationChartData(): ChartData<'pie'> {
-  return {
-    labels: ['Equities', 'Income', 'Tax Free'],
-    datasets: [
-      {
-        data: [50, 30, 20],
-        backgroundColor: ['#3B82F6', '#10B981', '#F59E0B'],
-      },
-    ],
-  };
-}
-
-function computePerformanceChartData(): ChartData<'line'> {
-  return {
-    labels: [
-      '01-2025',
-      '02-2025',
-      '03-2025',
-      '04-2025',
-      '05-2025',
-      '06-2025',
-      '07-2025',
-      '08-2025',
-      '09-2025',
-      '10-2025',
-      '11-2025',
-      '12-2025',
-    ],
-    datasets: [
-      {
-        label: 'Base',
-        data: [
-          40000, 40200, 40500, 40800, 41000, 41200, 41400, 41600, 41800, 42000,
-          42100, 42200,
-        ],
-        borderColor: '#3B82F6',
-        tension: 0.2,
-      },
-      {
-        label: 'Capital Gains',
-        data: [0, 100, 300, 500, 700, 900, 1000, 1050, 1100, 1150, 1175, 1200],
-        borderColor: '#10B981',
-        tension: 0.2,
-      },
-      {
-        label: 'Dividends',
-        data: [0, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 525],
-        borderColor: '#F59E0B',
-        tension: 0.2,
-      },
-    ],
-  };
-}
-
-function createMonthOptions(): Array<{ label: string; value: string }> {
-  const months = [];
-  for (let m = 1; m <= 12; m++) {
-    const paddedMonth = m.toString().padStart(2, '0');
-    months.push({
-      label: `${paddedMonth}/2025`,
-      value: `2025-${paddedMonth}`,
-    });
-  }
-  return months;
-}
+import { SummaryService } from './services/summary.service';
 
 function computePercentIncrease(
   basis: number,
   gains: number,
   divs: number
 ): number {
+  if (basis === 0) {
+    return 0;
+  }
   return (12 * (gains + divs)) / basis;
 }
 
@@ -93,6 +36,7 @@ function computePercentIncrease(
     CurrencyPipe,
     MatCardModule,
     MatOptionModule,
+    MatProgressSpinnerModule,
     MatSelectModule,
     PercentPipe,
     ReactiveFormsModule,
@@ -102,16 +46,77 @@ function computePercentIncrease(
   styleUrl: './global-summary.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class GlobalSummary {
+export class GlobalSummary implements OnInit {
+  private readonly summaryService = inject(SummaryService);
+  private readonly destroyRef = inject(DestroyRef);
+
   readonly selectedMonth = new FormControl('2025-03');
-  readonly monthOptionsSignal = computed(createMonthOptions);
 
-  readonly allocationChartData = computed(computeAllocationChartData);
-  readonly performanceChartData = computed(computePerformanceChartData);
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- need access to service signal
+  readonly allocationChartData = computed((): ChartData<'pie'> => {
+    const summary = this.summaryService.summary();
+    return {
+      labels: ['Equities', 'Income', 'Tax Free'],
+      datasets: [
+        {
+          data: [summary.equities, summary.income, summary.tax_free_income],
+          backgroundColor: ['#3B82F6', '#10B981', '#F59E0B'],
+        },
+      ],
+    };
+  });
 
-  readonly basis$ = signal(40500.0);
-  readonly capitalGain$ = signal(1000.0);
-  readonly dividends$ = signal(525.0);
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- need access to service signal
+  readonly performanceChartData = computed((): ChartData<'line'> => {
+    const graphData = this.summaryService.graph();
+    return {
+      labels: graphData.map(function getMonth(p: { month: string }): string {
+        return p.month;
+      }),
+      datasets: [
+        {
+          label: 'Base',
+          data: graphData.map(function getDeposits(p: {
+            deposits: number;
+          }): number {
+            return p.deposits;
+          }),
+          borderColor: '#3B82F6',
+          tension: 0.2,
+        },
+        {
+          label: 'Capital Gains',
+          data: graphData.map(function getCapitalGains(p: {
+            capitalGains: number;
+          }): number {
+            return p.capitalGains;
+          }),
+          borderColor: '#10B981',
+          tension: 0.2,
+        },
+        {
+          label: 'Dividends',
+          data: graphData.map(function getDividends(p: {
+            dividends: number;
+          }): number {
+            return p.dividends;
+          }),
+          borderColor: '#F59E0B',
+          tension: 0.2,
+        },
+      ],
+    };
+  });
+
+  /* eslint-disable @smarttools/no-anonymous-functions -- computed signals need service access */
+  readonly basis$ = computed(() => this.summaryService.summary().deposits);
+
+  readonly capitalGain$ = computed(
+    () => this.summaryService.summary().capitalGains
+  );
+
+  readonly dividends$ = computed(() => this.summaryService.summary().dividends);
+  /* eslint-enable @smarttools/no-anonymous-functions -- end computed signals block */
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- need access to this
   readonly percentIncrease$ = computed(() => {
@@ -122,8 +127,24 @@ export class GlobalSummary {
     );
   });
 
+  readonly loading$ = this.summaryService.loading;
+  readonly error$ = this.summaryService.error;
+
+  constructor() {
+    // Auto-select first available month when months load
+    effect(
+      // eslint-disable-next-line @smarttools/no-anonymous-functions -- Required for effect
+      () => {
+        const months = this.summaryService.months();
+        if (months.length > 0) {
+          this.selectedMonth.setValue(months[0].value);
+        }
+      }
+    );
+  }
+
   get monthOptions(): Array<{ label: string; value: string }> {
-    return this.monthOptionsSignal();
+    return this.summaryService.months();
   }
 
   get allocationData(): ChartData<'pie'> {
@@ -132,5 +153,22 @@ export class GlobalSummary {
 
   get performanceData(): ChartData<'line'> {
     return this.performanceChartData();
+  }
+
+  ngOnInit(): void {
+    this.summaryService.fetchMonths();
+    this.summaryService.fetchGraph();
+    this.summaryService.fetchSummary(this.selectedMonth.value ?? '2025-03');
+
+    this.selectedMonth.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(
+        // eslint-disable-next-line @smarttools/no-anonymous-functions -- need inline access to service
+        (month: string | null) => {
+          if (month !== null) {
+            this.summaryService.fetchSummary(month);
+          }
+        }
+      );
   }
 }
