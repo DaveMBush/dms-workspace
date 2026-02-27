@@ -135,11 +135,16 @@ After current bug fix validated, ask if another bug to fix in same branch:
 
 Call `.github/prompts/prompt.sh "Bug fix validated. Fix another bug in this branch?"` and handle the response:
 
-- **"continue"**: Make a second call to get bug description:
+- **"continue"** OR any affirmative ("yes", "Yes", "y", "Y", "ok", "sure"): Make a second call to get bug description:
   - Call `.github/prompts/prompt.sh "Please describe the bug to fix:"`
-  - Use the response as the bug description and return to PHASE 3.1
+  - If this second call exits with code 130 (Ctrl+C / interrupted) or returns empty output: treat as "stop" and log "Bug description prompt was cancelled — proceeding to Phase 6", then proceed to Phase 6
+  - If this second call returns "stop": proceed to Phase 6
+  - Otherwise: Use the response as the bug description and return to PHASE 3.1
 - **"stop"**: Proceed to Phase 6 (create PR with all fixes)
+- **Exit code 130** (process interrupted — likely agent infrastructure restart or summarization, NOT deliberate user action): **RETRY** the same `prompt.sh` call up to 3 times (waiting 5 seconds between attempts) before giving up. Log each attempt: "prompt.sh interrupted (exit 130), retrying attempt N/3...". If all 3 retries also exit 130, then treat as "stop" and log "All 3 prompt.sh retries failed with exit 130 — proceeding to Phase 6".
 - **Custom text** (user typed a bug description): Use that text as the bug description and return to PHASE 3.1
+
+**Do NOT treat exit code 130 as an implicit "stop" on the first occurrence — it most likely means the dialog was still open and the agent was restarted/summarized, not that the user chose to stop.**
 
 **Note**: All bugs fixed in Phase 5 loop will be in ONE PR for atomic review.
 
