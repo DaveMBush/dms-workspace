@@ -94,13 +94,55 @@ export class OpenPositionsComponentService {
   }
 
   /**
-   * Parse a date string (YYYY-MM-DD or YYYY-MM-DDTHH:mm:ss.sssZ) and create a Date at local midnight.
+   * Parse a date string (YYYY-MM-DD, YYYY-MM-DDTHH:mm:ss.sssZ, or MM/DD/YYYY) and create a Date at local midnight.
    * This avoids timezone offset issues where UTC dates become the previous day in local time.
+   * Delegates to format-specific helpers to keep each branch simple.
    */
-  private parseDateString(dateStr: string): Date {
-    const datePart = dateStr.split('T')[0];
+  private parseDateString(dateStr: string | null | undefined): Date {
+    if (dateStr === null || dateStr === undefined || dateStr.trim() === '') {
+      return new Date();
+    }
+    const trimmed = dateStr.trim();
+    return (
+      this.parseIsoDate(trimmed) ??
+      this.parseMdyDate(trimmed) ??
+      this.parseFallbackDate(trimmed)
+    );
+  }
+
+  private parseIsoDate(trimmed: string): Date | null {
+    if (!trimmed.includes('-')) {
+      return null;
+    }
+    const datePart = trimmed.split('T')[0];
     const [year, month, day] = datePart.split('-').map(Number);
-    return new Date(year, month - 1, day); // month is 0-indexed
+    if (isNaN(year) || isNaN(month) || isNaN(day)) {
+      return null;
+    }
+    return new Date(year, month - 1, day);
+  }
+
+  private parseMdyDate(trimmed: string): Date | null {
+    if (!trimmed.includes('/')) {
+      return null;
+    }
+    const [month, day, year] = trimmed.split('/').map(Number);
+    if (isNaN(year) || isNaN(month) || isNaN(day)) {
+      return null;
+    }
+    return new Date(year, month - 1, day);
+  }
+
+  private parseFallbackDate(trimmed: string): Date {
+    const fallback = new Date(trimmed);
+    if (!isNaN(fallback.getTime())) {
+      return new Date(
+        fallback.getFullYear(),
+        fallback.getMonth(),
+        fallback.getDate()
+      );
+    }
+    return new Date();
   }
 
   private getFormulaExDate(universe: Universe): Date {
