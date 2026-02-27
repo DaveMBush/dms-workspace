@@ -19,6 +19,10 @@ import { ChartConfiguration, ChartData } from 'chart.js';
 import { SummaryDisplayComponent } from '../shared/components/summary-display/summary-display';
 import { SummaryService } from './services/summary.service';
 
+function enableMonthSelector(this: GlobalSummary): void {
+  this.selectedMonth.enable({ emitEvent: false });
+}
+
 function computePercentIncrease(
   basis: number,
   gains: number,
@@ -201,6 +205,17 @@ export class GlobalSummary implements OnInit {
     return this.performanceChartData();
   }
 
+  /**
+   * Refresh summary data for the currently selected month.
+   */
+  refreshData(): void {
+    this.selectedMonth.disable({ emitEvent: false });
+    this.summaryService.fetchSummary(
+      this.selectedMonth.value ?? '2025-03',
+      enableMonthSelector.bind(this)
+    );
+  }
+
   ngOnInit(): void {
     this.summaryService.fetchMonths();
     this.summaryService.fetchGraph();
@@ -212,7 +227,11 @@ export class GlobalSummary implements OnInit {
         // eslint-disable-next-line @smarttools/no-anonymous-functions -- need inline access to service
         (month: string | null) => {
           if (month !== null) {
-            this.summaryService.fetchSummary(month);
+            this.selectedMonth.disable({ emitEvent: false });
+            this.summaryService.fetchSummary(
+              month,
+              enableMonthSelector.bind(this)
+            );
           }
         }
       );

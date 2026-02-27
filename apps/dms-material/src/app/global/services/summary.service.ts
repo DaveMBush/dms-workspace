@@ -26,6 +26,7 @@ function createDefaultSummary(): Summary {
 export class SummaryService {
   private readonly http = inject(HttpClient);
   private summaryRequestSeq = 0;
+  private monthsCached = false;
 
   // Private writable signals for state management
   private readonly summarySignal = signal<Summary>(createDefaultSummary());
@@ -45,8 +46,9 @@ export class SummaryService {
    * Fetch summary data for a given month.
    *
    * @param month - The month string (e.g., '2025-03')
+   * @param onComplete - Optional callback invoked after success or error
    */
-  fetchSummary(month: string): void {
+  fetchSummary(month: string, onComplete?: () => void): void {
     const requestSeq = ++this.summaryRequestSeq;
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
@@ -59,6 +61,9 @@ export class SummaryService {
       }
       self.summarySignal.set(data);
       self.loadingSignal.set(false);
+      if (onComplete) {
+        onComplete();
+      }
     }
 
     function onSummaryError(err: HttpErrorResponse): void {
@@ -67,6 +72,9 @@ export class SummaryService {
       }
       self.errorSignal.set(err.message || 'Failed to fetch summary');
       self.loadingSignal.set(false);
+      if (onComplete) {
+        onComplete();
+      }
     }
 
     this.http.get<Summary>('/api/summary', { params: { month } }).subscribe({
@@ -102,9 +110,14 @@ export class SummaryService {
 
   /**
    * Fetch available months for the dropdown.
+   * Results are cached; call invalidateMonthsCache() to refresh.
    */
   fetchMonths(): void {
+    if (this.monthsCached) {
+      return;
+    }
     this.errorSignal.set(null);
+    this.loadingSignal.set(true);
 
     function onMonthsSuccess(
       this: SummaryService,
@@ -118,10 +131,13 @@ export class SummaryService {
           return { label: m.label, value: m.month };
         })
       );
+      this.monthsCached = true;
+      this.loadingSignal.set(false);
     }
 
     function onMonthsError(this: SummaryService, err: HttpErrorResponse): void {
       this.errorSignal.set(err.message || 'Failed to fetch months');
+      this.loadingSignal.set(false);
     }
 
     this.http
@@ -130,5 +146,13 @@ export class SummaryService {
         next: onMonthsSuccess.bind(this),
         error: onMonthsError.bind(this),
       });
+  }
+
+  /**
+   * Invalidate the months cache so the next fetchMonths() call
+   * fetches fresh data from the server.
+   */
+  invalidateMonthsCache(): void {
+    this.monthsCached = false;
   }
 }
