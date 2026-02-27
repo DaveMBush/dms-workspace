@@ -1,14 +1,20 @@
 import { FidelityCsvRow } from './fidelity-csv-row.interface';
 
 const EXPECTED_HEADERS = [
-  'Date',
+  'Run Date',
+  'Account',
+  'Account Number',
   'Action',
   'Symbol',
   'Description',
+  'Type',
+  'Price ($)',
   'Quantity',
-  'Price',
-  'Total Amount',
-  'Account',
+  'Commission ($)',
+  'Fees ($)',
+  'Accrued Interest ($)',
+  'Amount ($)',
+  'Settlement Date',
 ];
 
 /**
@@ -20,14 +26,13 @@ function cleanNumericValue(value: string): string {
 
 /**
  * Parses a numeric field value, throwing if the result is not a valid number.
+ * Returns 0 for empty values (common in Fidelity CSV for dividends/cash transactions).
  */
 function parseNumericField(value: string, fieldName: string): number {
   const trimmed = value.trim();
   const cleaned = cleanNumericValue(trimmed);
   if (cleaned.length === 0) {
-    throw new Error(
-      `Invalid ${fieldName}: expected a number but got empty value`
-    );
+    return 0;
   }
   const num = Number(cleaned);
   if (Number.isNaN(num)) {
@@ -170,15 +175,15 @@ function parseRow(line: string, lineNumber: number): FidelityCsvRow {
 
   return {
     date: fields[0].trim(),
-    action: fields[1].trim(),
-    symbol: fields[2].trim(),
-    description: fields[3].trim(),
-    quantity: parseNumericField(fields[4], `quantity at row ${lineNumber}`),
-    price: parseNumericField(fields[5], `price at row ${lineNumber}`),
+    account: fields[1].trim(),
+    action: fields[3].trim(),
+    symbol: fields[4].trim(),
+    description: fields[5].trim(),
+    quantity: parseNumericField(fields[8], `quantity at row ${lineNumber}`),
+    price: parseNumericField(fields[7], `price at row ${lineNumber}`),
     totalAmount: parseNumericField(
-      fields[6],
+      fields[12],
       `total amount at row ${lineNumber}`
     ),
-    account: fields[7].trim(),
   };
 }

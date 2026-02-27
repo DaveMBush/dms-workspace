@@ -62,8 +62,13 @@ export class ImportDialogComponent {
     }
     const file = files[0];
     this.errors.set([]);
-    if (!file.name.toLowerCase().endsWith('.csv')) {
+    // Trim filename to handle trailing/leading spaces
+    const trimmedName = file.name.trim().toLowerCase();
+    if (!trimmedName.endsWith('.csv')) {
       this.selectedFile = null;
+      this.errors.set([
+        `Invalid file type. Please select a CSV file. Selected: "${file.name}"`,
+      ]);
       return;
     }
     if (file.size > MAX_FILE_SIZE) {

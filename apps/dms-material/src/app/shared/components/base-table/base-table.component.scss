@@ -36,11 +36,12 @@ tr.mat-mdc-row {
     background-color: rgba(var(--dms-primary-500), 0.1);
   }
 
-  // Capital gain/loss classification colors — WCAG AA compliant Material Design shades
-  // with font-weight as a non-color reinforcing indicator
+  // Capital gain/loss classification colors — WCAG AA compliant
+  // Losses use red to stand out; gains use default text color (white in dark theme)
+  // font-weight provides a non-color reinforcing indicator for both
   &.gain {
     td.mat-mdc-cell {
-      color: #2e7d32; // Material Green 800 — contrast ≥4.5:1 on white
+      color: inherit; // Default text color — avoids green/red colorblind confusion
       font-weight: 600;
     }
   }

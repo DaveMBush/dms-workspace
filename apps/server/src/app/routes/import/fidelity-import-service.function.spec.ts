@@ -7,9 +7,11 @@ vi.mock('../../prisma/prisma-client', function () {
     prisma: {
       accounts: {
         findFirst: vi.fn(),
+        findUnique: vi.fn(),
       },
       universe: {
         findFirst: vi.fn(),
+        findUnique: vi.fn(),
       },
       divDepositType: {
         findFirst: vi.fn(),
@@ -17,6 +19,7 @@ vi.mock('../../prisma/prisma-client', function () {
       trades: {
         create: vi.fn(),
         findFirst: vi.fn(),
+        findMany: vi.fn(),
         update: vi.fn(),
       },
       divDeposits: {
@@ -44,7 +47,7 @@ describe('importFidelityTransactions', function () {
   let parseFidelityCsv: Mock;
   let mapFidelityTransactions: Mock;
   let prisma: {
-    trades: { create: Mock; findFirst: Mock; update: Mock };
+    trades: { create: Mock; findFirst: Mock; findMany: Mock; update: Mock };
     divDeposits: { create: Mock; findFirst: Mock };
   };
 
@@ -137,7 +140,7 @@ describe('importFidelityTransactions', function () {
   });
 
   describe('importing sales (updates trades)', function () {
-    test('should find existing open trade and update with sell info', async function () {
+    test('should find existing open trade and close it using FIFO', async function () {
       parseFidelityCsv.mockReturnValue([{}]);
       const mapped = emptyResult();
       mapped.sales = [
@@ -146,13 +149,22 @@ describe('importFidelityTransactions', function () {
           accountId: 'a1',
           sell: 30,
           sell_date: '2025-02-01',
-          quantity: 100,
+          quantity: -100,
         },
       ];
       mapFidelityTransactions.mockResolvedValue(mapped);
-      prisma.trades.findFirst
-        .mockResolvedValueOnce(null)
-        .mockResolvedValueOnce({ id: 't1' });
+      prisma.trades.findMany.mockResolvedValue([
+        {
+          id: 't1',
+          universeId: 'u1',
+          accountId: 'a1',
+          buy: 25,
+          sell: 0,
+          buy_date: new Date('2025-01-01'),
+          sell_date: null,
+          quantity: 100,
+        },
+      ]);
       prisma.trades.update.mockResolvedValue({ id: 't1' });
 
       const result = await importFidelityTransactions('csv content');
@@ -176,17 +188,128 @@ describe('importFidelityTransactions', function () {
           accountId: 'a1',
           sell: 30,
           sell_date: '2025-02-01',
-          quantity: 100,
+          quantity: -100,
         },
       ];
       mapFidelityTransactions.mockResolvedValue(mapped);
-      prisma.trades.findFirst.mockResolvedValue(null);
+      prisma.trades.findMany.mockResolvedValue([]);
+      (prisma as any).accounts.findUnique.mockResolvedValue({
+        name: 'Test Account',
+      });
+      (prisma as any).universe.findUnique.mockResolvedValue({ symbol: 'SPY' });
 
       const result = await importFidelityTransactions('csv content');
 
       expect(result.success).toBe(false);
       expect(result.errors).toHaveLength(1);
       expect(result.errors[0]).toContain('No matching open trade found');
+      expect(result.errors[0]).toContain('Test Account');
+      expect(result.errors[0]).toContain('SPY');
+    });
+
+    test('should split trade when selling partial position (FIFO)', async function () {
+      parseFidelityCsv.mockReturnValue([{}]);
+      const mapped = emptyResult();
+      mapped.sales = [
+        {
+          universeId: 'u1',
+          accountId: 'a1',
+          sell: 30,
+          sell_date: '2025-02-15',
+          quantity: -40,
+        },
+      ];
+      mapFidelityTransactions.mockResolvedValue(mapped);
+      prisma.trades.findMany.mockResolvedValue([
+        {
+          id: 't1',
+          universeId: 'u1',
+          accountId: 'a1',
+          buy: 25,
+          sell: 0,
+          buy_date: new Date('2025-01-01'),
+          sell_date: null,
+          quantity: 100,
+        },
+      ]);
+      prisma.trades.create.mockResolvedValue({ id: 't2' });
+      prisma.trades.update.mockResolvedValue({ id: 't1' });
+
+      const result = await importFidelityTransactions('csv content');
+
+      expect(result.success).toBe(true);
+      // Should create a new closed trade for 40 shares
+      expect(prisma.trades.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          quantity: 40,
+          sell: 30,
+        }),
+      });
+      // Should update original trade to have 60 shares remaining
+      expect(prisma.trades.update).toHaveBeenCalledWith({
+        where: { id: 't1' },
+        data: { quantity: 60 },
+      });
+    });
+
+    test('should consume multiple lots in FIFO order', async function () {
+      parseFidelityCsv.mockReturnValue([{}]);
+      const mapped = emptyResult();
+      mapped.sales = [
+        {
+          universeId: 'u1',
+          accountId: 'a1',
+          sell: 30,
+          sell_date: '2025-03-01',
+          quantity: -80,
+        },
+      ];
+      mapFidelityTransactions.mockResolvedValue(mapped);
+      prisma.trades.findMany.mockResolvedValue([
+        {
+          id: 't1',
+          universeId: 'u1',
+          accountId: 'a1',
+          buy: 20,
+          sell: 0,
+          buy_date: new Date('2025-01-01'),
+          sell_date: null,
+          quantity: 40,
+        },
+        {
+          id: 't2',
+          universeId: 'u1',
+          accountId: 'a1',
+          buy: 25,
+          sell: 0,
+          buy_date: new Date('2025-01-15'),
+          sell_date: null,
+          quantity: 60,
+        },
+      ]);
+      prisma.trades.update.mockResolvedValue({});
+      prisma.trades.create.mockResolvedValue({ id: 't3' });
+
+      const result = await importFidelityTransactions('csv content');
+
+      expect(result.success).toBe(true);
+      // Should close first lot completely (40 shares)
+      expect(prisma.trades.update).toHaveBeenCalledWith({
+        where: { id: 't1' },
+        data: expect.objectContaining({ sell: 30 }),
+      });
+      // Should create closed trade for 40 shares from second lot
+      expect(prisma.trades.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          quantity: 40,
+          sell: 30,
+        }),
+      });
+      // Should update second lot to have 20 shares remaining
+      expect(prisma.trades.update).toHaveBeenCalledWith({
+        where: { id: 't2' },
+        data: { quantity: 20 },
+      });
     });
   });
 
@@ -384,6 +507,7 @@ describe('importFidelityTransactions', function () {
       ];
       mapFidelityTransactions.mockResolvedValue(mapped);
       prisma.trades.findFirst.mockResolvedValue(null);
+      prisma.trades.findMany.mockResolvedValue([]);
       prisma.trades.create.mockRejectedValue(new Error('DB error'));
 
       const result = await importFidelityTransactions('csv content');
@@ -415,9 +539,8 @@ describe('importFidelityTransactions', function () {
         },
       ];
       mapFidelityTransactions.mockResolvedValue(mapped);
-      prisma.trades.findFirst
-        .mockResolvedValueOnce(null)
-        .mockResolvedValueOnce(null);
+      prisma.trades.findFirst.mockResolvedValue(null);
+      prisma.trades.findMany.mockResolvedValue([]);
       prisma.trades.create.mockResolvedValue({ id: 't1' });
 
       const result = await importFidelityTransactions('csv content');
@@ -440,12 +563,16 @@ describe('importFidelityTransactions', function () {
         },
       ];
       mapFidelityTransactions.mockResolvedValue(mapped);
-      prisma.trades.findFirst.mockResolvedValue(null);
+      prisma.trades.findMany.mockResolvedValue([]);
+      (prisma as any).accounts.findUnique.mockResolvedValue({
+        name: 'My Account',
+      });
+      (prisma as any).universe.findUnique.mockResolvedValue({ symbol: 'AAPL' });
 
       const result = await importFidelityTransactions('csv content');
 
-      expect(result.errors[0]).toContain('account=');
-      expect(result.errors[0]).toContain('universe=');
+      expect(result.errors[0]).toContain('My Account');
+      expect(result.errors[0]).toContain('AAPL');
       expect(result.errors[0]).toContain('quantity=');
     });
   });
@@ -490,10 +617,19 @@ describe('importFidelityTransactions', function () {
         },
       ];
       mapFidelityTransactions.mockResolvedValue(mapped);
-      prisma.trades.findFirst
-        .mockResolvedValueOnce(null)
-        .mockResolvedValueOnce(null)
-        .mockResolvedValueOnce({ id: 't1' });
+      prisma.trades.findFirst.mockResolvedValue(null);
+      prisma.trades.findMany.mockResolvedValue([
+        {
+          id: 't1',
+          universeId: 'u2',
+          accountId: 'a1',
+          buy: 25,
+          sell: 0,
+          buy_date: new Date('2025-01-01'),
+          sell_date: null,
+          quantity: 100,
+        },
+      ]);
       prisma.trades.create.mockResolvedValue({ id: 't2' });
       prisma.trades.update.mockResolvedValue({ id: 't1' });
       prisma.divDeposits.findFirst.mockResolvedValue(null);
