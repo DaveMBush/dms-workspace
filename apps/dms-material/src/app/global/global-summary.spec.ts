@@ -531,3 +531,294 @@ describe('GlobalSummary - Error Handling', () => {
     expect(chartData.datasets[0].data).toEqual([]);
   });
 });
+
+describe.skip('Pie Chart Display', () => {
+  let component: GlobalSummary;
+  let fixture: ComponentFixture<GlobalSummary>;
+  let httpMock: HttpTestingController;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [GlobalSummary],
+      providers: [
+        provideSmartNgRX(),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: topEffectsServiceToken, useValue: {} },
+      ],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(GlobalSummary);
+    component = fixture.componentInstance;
+    httpMock = TestBed.inject(HttpTestingController);
+  });
+
+  afterEach(() => {
+    // Discard outstanding requests from concurrent init fetch operations
+    httpMock.match((req) => req.url.includes('/api/summary'));
+    httpMock.verify();
+  });
+
+  it('should render pie chart component with real data', () => {
+    fixture.detectChanges();
+
+    const summaryReq = httpMock.expectOne(
+      (req) => req.url === '/api/summary' && req.params.has('month')
+    );
+    summaryReq.flush({
+      deposits: 100000,
+      dividends: 2500,
+      capitalGains: 5000,
+      equities: 50000,
+      income: 30000,
+      tax_free_income: 20000,
+    });
+
+    fixture.detectChanges();
+
+    const pieChart = fixture.nativeElement.querySelector(
+      'dms-summary-display[chartType\\$="pie"]'
+    );
+    expect(pieChart).toBeDefined();
+  });
+
+  it('should pass correct labels to pie chart', () => {
+    fixture.detectChanges();
+
+    const summaryReq = httpMock.expectOne(
+      (req) => req.url === '/api/summary' && req.params.has('month')
+    );
+    summaryReq.flush({
+      deposits: 100000,
+      dividends: 2500,
+      capitalGains: 5000,
+      equities: 50000,
+      income: 30000,
+      tax_free_income: 20000,
+    });
+
+    const chartData = component.allocationData;
+    expect(chartData.labels).toEqual(['Equities', 'Income', 'Tax Free']);
+  });
+
+  it('should pass correct data values to pie chart', () => {
+    fixture.detectChanges();
+
+    const summaryReq = httpMock.expectOne(
+      (req) => req.url === '/api/summary' && req.params.has('month')
+    );
+    summaryReq.flush({
+      deposits: 100000,
+      dividends: 2500,
+      capitalGains: 5000,
+      equities: 50000,
+      income: 30000,
+      tax_free_income: 20000,
+    });
+
+    const chartData = component.allocationData;
+    expect(chartData.datasets[0].data).toEqual([50000, 30000, 20000]);
+  });
+
+  it('should apply correct colors to pie chart segments', () => {
+    fixture.detectChanges();
+
+    const summaryReq = httpMock.expectOne(
+      (req) => req.url === '/api/summary' && req.params.has('month')
+    );
+    summaryReq.flush({
+      deposits: 100000,
+      dividends: 2500,
+      capitalGains: 5000,
+      equities: 50000,
+      income: 30000,
+      tax_free_income: 20000,
+    });
+
+    const chartData = component.allocationData;
+    expect(chartData.datasets[0].backgroundColor).toBeDefined();
+    expect((chartData.datasets[0].backgroundColor as string[]).length).toBe(3);
+  });
+
+  it('should handle empty/zero allocation data gracefully', () => {
+    fixture.detectChanges();
+
+    const summaryReq = httpMock.expectOne(
+      (req) => req.url === '/api/summary' && req.params.has('month')
+    );
+    summaryReq.flush({
+      deposits: 0,
+      dividends: 0,
+      capitalGains: 0,
+      equities: 0,
+      income: 0,
+      tax_free_income: 0,
+    });
+
+    fixture.detectChanges();
+
+    const noDataMessage =
+      fixture.nativeElement.querySelector('.no-data-message');
+    expect(noDataMessage).toBeDefined();
+    expect(noDataMessage.textContent).toContain('No data available');
+  });
+
+  it('should display pie chart title', () => {
+    fixture.detectChanges();
+
+    const summaryReq = httpMock.expectOne(
+      (req) => req.url === '/api/summary' && req.params.has('month')
+    );
+    summaryReq.flush({
+      deposits: 100000,
+      dividends: 2500,
+      capitalGains: 5000,
+      equities: 50000,
+      income: 30000,
+      tax_free_income: 20000,
+    });
+
+    fixture.detectChanges();
+
+    const title = fixture.nativeElement.querySelector('.chart-title');
+    expect(title).toBeDefined();
+    expect(title.textContent).toContain('Allocation');
+  });
+
+  it('should configure chart with responsive options', () => {
+    fixture.detectChanges();
+
+    expect(component.pieChartOptions).toBeDefined();
+    expect(component.pieChartOptions.responsive).toBe(true);
+    expect(component.pieChartOptions.maintainAspectRatio).toBe(true);
+  });
+
+  it('should configure legend position at bottom', () => {
+    fixture.detectChanges();
+
+    const options = component.pieChartOptions;
+    expect(options.plugins).toBeDefined();
+    expect(options.plugins!.legend).toBeDefined();
+    expect(options.plugins!.legend!.position).toBe('bottom');
+  });
+
+  it('should format tooltip with currency amount and percentage', () => {
+    fixture.detectChanges();
+
+    const summaryReq = httpMock.expectOne(
+      (req) => req.url === '/api/summary' && req.params.has('month')
+    );
+    summaryReq.flush({
+      deposits: 100000,
+      dividends: 2500,
+      capitalGains: 5000,
+      equities: 50000,
+      income: 30000,
+      tax_free_income: 20000,
+    });
+
+    const options = component.pieChartOptions;
+    const tooltipCallback = options.plugins!.tooltip!.callbacks!.label;
+    expect(tooltipCallback).toBeDefined();
+
+    const tooltipItem = {
+      label: 'Equities',
+      raw: 50000,
+      parsed: 50000,
+      dataIndex: 0,
+      dataset: { data: [50000, 30000, 20000] },
+    };
+
+    const result = (tooltipCallback as (...args: unknown[]) => string)(
+      tooltipItem
+    );
+    expect(result).toContain('$50,000');
+    expect(result).toContain('50%');
+  });
+
+  it('should use consistent colors for same categories across data refreshes', () => {
+    fixture.detectChanges();
+
+    const summaryReq = httpMock.expectOne(
+      (req) => req.url === '/api/summary' && req.params.has('month')
+    );
+    summaryReq.flush({
+      deposits: 100000,
+      dividends: 2500,
+      capitalGains: 5000,
+      equities: 50000,
+      income: 30000,
+      tax_free_income: 20000,
+    });
+
+    const colors1 = component.allocationData.datasets[0].backgroundColor;
+
+    // Trigger a new fetch with different values
+    component.selectedMonth.setValue('2025-04');
+    const summaryReq2 = httpMock.expectOne(
+      (req) =>
+        req.url === '/api/summary' && req.params.get('month') === '2025-04'
+    );
+    summaryReq2.flush({
+      deposits: 80000,
+      dividends: 3000,
+      capitalGains: 4000,
+      equities: 60000,
+      income: 10000,
+      tax_free_income: 10000,
+    });
+
+    const colors2 = component.allocationData.datasets[0].backgroundColor;
+    expect(colors1).toEqual(colors2);
+  });
+
+  it('should pass allocation data to summary display component input', () => {
+    fixture.detectChanges();
+
+    const summaryReq = httpMock.expectOne(
+      (req) => req.url === '/api/summary' && req.params.has('month')
+    );
+    summaryReq.flush({
+      deposits: 100000,
+      dividends: 2500,
+      capitalGains: 5000,
+      equities: 50000,
+      income: 30000,
+      tax_free_income: 20000,
+    });
+
+    fixture.detectChanges();
+
+    const pieDisplay = fixture.nativeElement.querySelector(
+      'dms-summary-display[chartType\\$="pie"]'
+    );
+    expect(pieDisplay).toBeTruthy();
+  });
+
+  it('should display percentages in chart data', () => {
+    fixture.detectChanges();
+
+    const summaryReq = httpMock.expectOne(
+      (req) => req.url === '/api/summary' && req.params.has('month')
+    );
+    summaryReq.flush({
+      deposits: 100000,
+      dividends: 2500,
+      capitalGains: 5000,
+      equities: 50000,
+      income: 30000,
+      tax_free_income: 20000,
+    });
+
+    const chartData = component.allocationData;
+    // All data values should sum to total and reflect proportions
+    const total = chartData.datasets[0].data.reduce(function sum(
+      a: number,
+      b: number
+    ): number {
+      return a + b;
+    },
+    0);
+    expect(total).toBe(100000);
+  });
+});
