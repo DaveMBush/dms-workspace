@@ -1,2 +1,2 @@
-Date,Action,Symbol,Description,Quantity,Price,Total Amount,Account
-01/15/2026,YOU BOUGHT,IMPORTTEST1,IMPORTTEST1 INC,10,25.50,255.00,Import Test Account
+Run Date,Account,Account Number,Action,Symbol,Description,Type,Price ($),Quantity,Commission ($),Fees ($),Accrued Interest ($),Amount ($),Settlement Date
+01/15/2026,Import Test Account,12345678,YOU BOUGHT,IMPORTTEST1,IMPORTTEST1 INC,Stock,25.50,10,,,,255.00,01/15/2026

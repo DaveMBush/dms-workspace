@@ -93,14 +93,17 @@ test.describe('Screener Table', () => {
     test('should filter by risk group', async ({ page }) => {
       const dropdown = page.locator('[data-testid="risk-group-filter"]');
       await dropdown.click();
+      await page.waitForTimeout(300); // Wait for dropdown animation
 
       await page.getByRole('option', { name: 'Equities' }).click();
+      await page.waitForTimeout(500); // Wait for filter to apply
 
       // All visible rows should have "Equities" risk group
       const riskGroups = await page
         .locator('[data-testid="screener-table"] tbody tr td:nth-child(2)')
         .allTextContents();
 
+      expect(riskGroups.length).toBeGreaterThan(0);
       for (const group of riskGroups) {
         expect(group).toContain('Equities');
       }

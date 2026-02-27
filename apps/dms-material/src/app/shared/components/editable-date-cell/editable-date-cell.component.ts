@@ -33,35 +33,17 @@ import { MatInputModule } from '@angular/material/input';
 })
 export class EditableDateCellComponent {
   @Input() set value(val: Date | string | null | undefined) {
-    // Normalize undefined to null
-    if (val === undefined) {
+    if (val === null || val === undefined) {
       this.internalValue = null;
       return;
     }
-    // Convert string dates to Date objects for internal use
     if (typeof val === 'string') {
-      // Parse ISO date string and create local date at midnight
-      // This avoids timezone offset issues where UTC midnight becomes previous day in local time
-      const datePart = val.split('T')[0];
-      const parts = datePart.split('-');
-      if (parts.length === 3) {
-        const year = parseInt(parts[0], 10);
-        const month = parseInt(parts[1], 10) - 1; // Month is 0-indexed
-        const day = parseInt(parts[2], 10);
-        this.internalValue = new Date(year, month, day);
-      } else {
-        this.internalValue = new Date(val);
-      }
-    } else if (val instanceof Date) {
-      // If it's already a Date object, extract date parts and recreate at local midnight
-      // to avoid timezone issues
-      const year = val.getFullYear();
-      const month = val.getMonth();
-      const day = val.getDate();
-      this.internalValue = new Date(year, month, day);
-    } else {
-      this.internalValue = val;
+      this.internalValue = this.parseStringToDate(val.trim());
+      return;
     }
+    this.internalValue = isNaN(val.getTime())
+      ? null
+      : this.normalizeDateToLocalMidnight(val);
   }
 
   get value(): Date | null {
@@ -142,5 +124,42 @@ export class EditableDateCellComponent {
 
   private openPicker(): void {
     this.picker?.open();
+  }
+
+  private parseStringToDate(trimmed: string): Date | null {
+    if (trimmed === '') {
+      return null;
+    }
+    return this.parseIsoString(trimmed) ?? this.parseFallbackString(trimmed);
+  }
+
+  private parseIsoString(trimmed: string): Date | null {
+    if (!trimmed.includes('-') && !trimmed.includes('T')) {
+      return null;
+    }
+    const datePart = trimmed.split('T')[0];
+    const parts = datePart.split('-');
+    if (parts.length !== 3) {
+      return null;
+    }
+    const year = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10) - 1;
+    const day = parseInt(parts[2], 10);
+    if (isNaN(year) || isNaN(month) || isNaN(day)) {
+      return null;
+    }
+    const date = new Date(year, month, day);
+    return isNaN(date.getTime()) ? null : date;
+  }
+
+  private parseFallbackString(trimmed: string): Date | null {
+    const parsed = new Date(trimmed);
+    return isNaN(parsed.getTime())
+      ? null
+      : this.normalizeDateToLocalMidnight(parsed);
+  }
+
+  private normalizeDateToLocalMidnight(date: Date): Date {
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate());
   }
 }

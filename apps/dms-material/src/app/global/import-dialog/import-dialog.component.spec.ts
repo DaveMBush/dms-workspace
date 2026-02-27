@@ -81,11 +81,12 @@ describe('ImportDialogComponent', () => {
       expect(fileInput).toBeTruthy();
     });
 
-    it('should restrict file input to CSV files', () => {
+    it('should allow file selection (validated by JavaScript)', () => {
       const compiled = fixture.nativeElement as HTMLElement;
       const fileInput =
         compiled.querySelector<HTMLInputElement>('input[type="file"]')!;
-      expect(fileInput.accept).toBe('.csv');
+      // No accept attribute - all files shown, CSV validation in onFileSelected()
+      expect(fileInput.accept).toBe('');
     });
 
     it('should display file selection label or instructions', () => {

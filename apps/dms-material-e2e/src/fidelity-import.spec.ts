@@ -180,8 +180,10 @@ test.describe('Fidelity Import E2E', () => {
     });
   });
 
-  test.describe('Account Not Found', () => {
-    test('should show error for non-existent account', async ({ page }) => {
+  test.describe('Auto-create Account', () => {
+    test('should auto-create account and succeed for non-existent account', async ({
+      page,
+    }) => {
       const responsePromise = page.waitForResponse(function matchImportApi(
         response
       ) {
@@ -195,30 +197,18 @@ test.describe('Fidelity Import E2E', () => {
       const response = await responsePromise;
       const responseBody = (await response.json()) as {
         success: boolean;
+        imported: number;
         errors: string[];
       };
 
-      // Wait for error response
-      await waitForImportResult(page);
+      // Account is auto-created on import — should succeed
+      expect(responseBody.success).toBe(true);
+      expect(responseBody.imported).toBeGreaterThan(0);
 
-      // Should show error about account not found
-      await expect(page.locator('.error-message')).toBeVisible({
-        timeout: 10000,
-      });
-
-      // Verify error message content from actual API response
-      expect(responseBody.success).toBe(false);
-      expect(responseBody.errors.length).toBeGreaterThan(0);
-      expect(
-        responseBody.errors.some(function hasNotFound(e) {
-          return e.toLowerCase().includes('not found');
-        })
-      ).toBe(true);
-
-      // Dialog should stay open
+      // Dialog should close on success
       await expect(
         page.getByRole('heading', { name: 'Import Fidelity Transactions' })
-      ).toBeVisible();
+      ).not.toBeVisible({ timeout: 10000 });
     });
   });
 
