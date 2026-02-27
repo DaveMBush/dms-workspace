@@ -632,7 +632,7 @@ describe('Pie Chart Display', () => {
 
     const noDataMessage =
       fixture.nativeElement.querySelector('.no-data-message');
-    expect(noDataMessage).toBeDefined();
+    expect(noDataMessage).not.toBeNull();
     expect(noDataMessage.textContent).toContain('No data available');
   });
 
@@ -640,7 +640,7 @@ describe('Pie Chart Display', () => {
     fixture.detectChanges();
 
     const title = fixture.nativeElement.querySelector('.chart-title');
-    expect(title).toBeDefined();
+    expect(title).not.toBeNull();
     expect(title.textContent).toContain('Allocation');
   });
 

@@ -90,7 +90,7 @@ export class GlobalSummary implements OnInit {
             dataset: { data: unknown[] };
           }): string {
             const label = context.label ?? '';
-            const value = context.raw as number;
+            const value = (context.raw as number) ?? 0;
             const total = (context.dataset.data as number[]).reduce(
               function sum(a: number, b: number): number {
                 return a + b;

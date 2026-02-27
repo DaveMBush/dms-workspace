@@ -301,12 +301,6 @@ Quality Score: **92/100**
 
 ---
 
-## QA Results
-
-_QA assessment will be recorded here after story review_
-
----
-
 ## Dev Agent Record
 
 _This section will be populated during story implementation_
