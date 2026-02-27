@@ -2,6 +2,10 @@
 
 set -euo pipefail
 
+# Ignore SIGINT so that agent infrastructure interruptions (e.g. conversation
+# summarization) don't kill this script while the dialog is waiting for input.
+trap '' INT
+
 main() {
   local choice=""
   local other_value=""
@@ -17,7 +21,9 @@ main() {
   # Use zenity for a GUI dialog that works reliably when called through
   # automated tools (e.g. Copilot) that capture terminal I/O, preventing
   # TUI apps like whiptail from rendering correctly.
-  choice=$(zenity \
+  # Run zenity via setsid so it gets its own session and won't receive SIGINT
+  # sent to the parent process group (e.g. from agent infrastructure restarts).
+  choice=$(setsid zenity \
     --list \
     --title "AI Assistance Required" \
     --text "$menu_text\n\nChoose one:" \
@@ -43,7 +49,8 @@ main() {
       ;;
     "provide help")
       # Use zenity editable text-info to collect multi-line input from operator
-      other_value=$(zenity \
+      # setsid isolates it from SIGINT sent to the parent process group.
+      other_value=$(setsid zenity \
         --text-info \
         --editable \
         --title "Enter help prompt" \
