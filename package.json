@@ -57,7 +57,7 @@
     "ng2-charts": "^8.0.0",
     "nyse-holidays": "^1.2.0",
     "primeicons": "^7.0.0",
-    "primeng": "^20.0.0",
+    "primeng": "^21.1.1",
     "rxjs": "~7.8.0",
     "yahoo-finance2": "^3.13.0"
   },
