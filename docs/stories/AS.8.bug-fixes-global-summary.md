@@ -22,7 +22,7 @@
 - Verify feature works with real backend data
 - Identify and fix any bugs discovered during verification
 - Ensure edge cases are handled correctly
-- Prepare for E2E testing in Story AS.9
+- Prepare for E2E testing in Story AS.10
 
 **Bug Discovery Process:**
 
@@ -337,7 +337,7 @@ Added test "should set loading to false on error" in global-summary.spec.ts
 ## Related Stories
 
 - **Previous:** Story AS.7 (Add Unit Tests)
-- **Next:** Story AS.9 (Add E2E Tests)
+- **Next:** Story AS.9 (Bug Fixes - Post Integration)
 - **Epic:** Epic AS - Wire Up Global/Summary Screen
 
 ---

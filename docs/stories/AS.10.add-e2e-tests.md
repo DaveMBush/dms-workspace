@@ -1,4 +1,4 @@
-# Story AS.9: Add E2E Tests for Global Summary
+# Story AS.10: Add E2E Tests for Global Summary
 
 **Status:** Approved
 
@@ -12,7 +12,7 @@
 
 **Current System:**
 
-- Epic AS (AS.1–AS.8) is complete and bug-free
+- Epic AS (AS.1–AS.9) is complete and bug-free
 - Feature fully functional with real backend
 - Unit tests provide code-level coverage
 - Need E2E tests to verify complete user workflows
@@ -386,7 +386,7 @@ pnpm playwright show-report
 
 ## Related Stories
 
-- **Previous:** Story AS.8 (Bug Fixes)
+- **Previous:** Story AS.9 (Bug Fixes - Post Integration)
 - **Epic:** Epic AS - Wire Up Global/Summary Screen
 
 ---
