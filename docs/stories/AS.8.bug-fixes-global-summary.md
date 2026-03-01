@@ -211,7 +211,75 @@ it('should not load data when month is empty string', () => {
 
 ## Bug List
 
-*Bugs will be documented here as they are discovered*
+### Bug #1: CSV Column Validation Missing
+
+**Severity:** Major
+
+**Fix:** Added validation to detect missing required columns and reject files with unexpected column layouts, supporting both Fidelity web-download and Desktop Brokerage formats.
+
+**Regression Test:** Added tests in `fidelity-csv-parser.function.spec.ts`
+
+---
+
+### Bug #2: Desktop Brokerage Format Not Supported
+
+**Severity:** Major
+
+**Fix:** Added detection and mapping for the Desktop Brokerage CSV format alongside the existing web-download format.
+
+**Regression Test:** Added tests in `fidelity-data-mapper.function.spec.ts`
+
+---
+
+### Bug #3: SPAXX Trades Imported / MONEY LINE RECEIVED Missing
+
+**Severity:** Major
+
+**Fix:** Skip trades with symbol `SPAXX` (money market) during import. Added `MONEY LINE RECEIVED` to the list of recognized transaction types.
+
+**Regression Test:** Added tests in `fidelity-import-service.function.ts` tests
+
+---
+
+### Bug #4–6: CUSIP Resolution
+
+**Severity:** Major
+
+**Fix:** Added `is-cusip.function.ts` to detect CUSIP format, `resolve-cusip.function.ts` with OpenFIGI batch API lookup and Yahoo Finance fallback for unresolved CUSIPs.
+
+**Regression Test:** Added `resolve-cusip.function.spec.ts` with 22 tests
+
+---
+
+### Bug #7: OpenFIGI API Key Not Sent
+
+**Severity:** Minor
+
+**Fix:** Added support for `OPENFIGI_API_KEY` env var — sends as `X-OPENFIGI-APIKEY` request header when present.
+
+**Regression Test:** Added test "should include X-OPENFIGI-APIKEY header when env var is set" in `resolve-cusip.function.spec.ts`
+
+---
+
+### Bug #8: Firefox E2E Tests Failing
+
+**Severity:** Major
+
+**Root Cause:** Firefox resolves `localhost` to `::1` (IPv6); Angular dev server listens on IPv4 only.
+
+**Fix:** Added `baseURL: 'http://127.0.0.1:4301'` to Firefox project in `playwright.config.ts`. Also removed spurious `click()` before `fill()` in sold-positions date filter tests and added `aria-label` to date inputs.
+
+---
+
+### Bug #9: Year Picker Shows All Years Instead of Years With Data
+
+**Severity:** Minor
+
+**Fix:** Added `GET /api/summary/years` backend endpoint returning distinct years from trades and divDeposits. Updated `SummaryService` with `fetchYears()` and `years` signal. `yearOptions` getter now delegates to service signal. Effect auto-selects most recent available year.
+
+**Regression Test:** Added 4 tests in `global-summary.spec.ts` and 4 tests in `summary.service.spec.ts`
+
+
 
 <!--
 Example:
