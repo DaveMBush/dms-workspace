@@ -1055,6 +1055,53 @@ describe('Month/Year Selector', () => {
     // Month should still be 2025-02
     expect(component.selectedMonth.value).toBe('2025-02');
   });
+
+  it('should default selectedYear to the current year', () => {
+    expect(component.selectedYear.value).toBe(new Date().getFullYear());
+  });
+
+  it('should provide yearOptions from service years signal', () => {
+    fixture.detectChanges();
+
+    const yearsReq = httpMock.expectOne('/api/summary/years');
+    yearsReq.flush([2025, 2024, 2023, 2022, 2021, 2020]);
+
+    const years = component.yearOptions;
+    expect(years).toEqual([2025, 2024, 2023, 2022, 2021, 2020]);
+    expect(years[0]).toBeGreaterThan(years[years.length - 1]);
+  });
+
+  it('should fetch graph with selected year on init', () => {
+    const currentYear = new Date().getFullYear();
+    fixture.detectChanges();
+
+    const graphReq = httpMock.expectOne(
+      (req) =>
+        req.url === '/api/summary/graph' &&
+        req.params.get('year') === currentYear.toString()
+    );
+    expect(graphReq.request.method).toBe('GET');
+    graphReq.flush([]);
+
+    // Flush other init requests
+    httpMock.match((req) => req.url.includes('/api/summary'));
+  });
+
+  it('should re-fetch graph when year selection changes', () => {
+    fixture.detectChanges();
+
+    // Flush all init requests
+    httpMock.match((req) => req.url.includes('/api/summary'));
+
+    component.selectedYear.setValue(2023);
+
+    const graphReq = httpMock.expectOne(
+      (req) =>
+        req.url === '/api/summary/graph' && req.params.get('year') === '2023'
+    );
+    expect(graphReq.request.method).toBe('GET');
+    graphReq.flush([]);
+  });
 });
 
 describe('Branch Coverage - Edge Cases', () => {

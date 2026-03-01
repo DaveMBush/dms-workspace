@@ -18,7 +18,8 @@ function createDefaultSummary(): Summary {
 
 /**
  * Service for fetching and managing summary data.
- * Communicates with /api/summary, /api/summary/graph, and /api/summary/months endpoints.
+ * Communicates with /api/summary, /api/summary/graph, /api/summary/months,
+ * and /api/summary/years endpoints.
  */
 @Injectable({
   providedIn: 'root',
@@ -27,11 +28,13 @@ export class SummaryService {
   private readonly http = inject(HttpClient);
   private summaryRequestSeq = 0;
   private monthsCached = false;
+  private yearsCached = false;
 
   // Private writable signals for state management
   private readonly summarySignal = signal<Summary>(createDefaultSummary());
   private readonly graphSignal = signal<GraphPoint[]>([]);
   private readonly monthsSignal = signal<MonthOption[]>([]);
+  private readonly yearsSignal = signal<number[]>([]);
   private readonly loadingSignal = signal(false);
   private readonly errorSignal = signal<string | null>(null);
 
@@ -39,6 +42,7 @@ export class SummaryService {
   readonly summary = this.summarySignal.asReadonly();
   readonly graph = this.graphSignal.asReadonly();
   readonly months = this.monthsSignal.asReadonly();
+  readonly years = this.yearsSignal.asReadonly();
   readonly loading = this.loadingSignal.asReadonly();
   readonly error = this.errorSignal.asReadonly();
 
@@ -84,12 +88,13 @@ export class SummaryService {
   }
 
   /**
-   * Fetch graph data for the current year.
+   * Fetch graph data for a given year (defaults to current year).
+   *
+   * @param year - The 4-digit year to fetch graph data for (default: current year)
    */
-  fetchGraph(): void {
+  fetchGraph(year?: number): void {
     this.errorSignal.set(null);
-    const year = new Date().getFullYear().toString();
-
+    const yearStr = (year ?? new Date().getFullYear()).toString();
     function onGraphSuccess(this: SummaryService, data: GraphPoint[]): void {
       this.graphSignal.set(data);
     }
@@ -100,7 +105,7 @@ export class SummaryService {
 
     this.http
       .get<GraphPoint[]>('/api/summary/graph', {
-        params: { year, time_period: 'year' },
+        params: { year: yearStr, time_period: 'year' },
       })
       .subscribe({
         next: onGraphSuccess.bind(this),
@@ -154,5 +159,38 @@ export class SummaryService {
    */
   invalidateMonthsCache(): void {
     this.monthsCached = false;
+  }
+
+  /**
+   * Fetch available years from the server (years that have trade or deposit data).
+   * Results are cached; call invalidateYearsCache() to refresh.
+   */
+  fetchYears(): void {
+    if (this.yearsCached) {
+      return;
+    }
+    this.errorSignal.set(null);
+
+    function onYearsSuccess(this: SummaryService, data: number[]): void {
+      this.yearsSignal.set(data);
+      this.yearsCached = true;
+    }
+
+    function onYearsError(this: SummaryService, err: HttpErrorResponse): void {
+      this.errorSignal.set(err.message || 'Failed to fetch years');
+    }
+
+    this.http.get<number[]>('/api/summary/years').subscribe({
+      next: onYearsSuccess.bind(this),
+      error: onYearsError.bind(this),
+    });
+  }
+
+  /**
+   * Invalidate the years cache so the next fetchYears() call
+   * fetches fresh data from the server.
+   */
+  invalidateYearsCache(): void {
+    this.yearsCached = false;
   }
 }

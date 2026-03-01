@@ -55,6 +55,11 @@ export class GlobalSummary implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
 
   readonly selectedMonth = new FormControl('2025-03');
+  readonly selectedYear = new FormControl(new Date().getFullYear());
+
+  get yearOptions(): number[] {
+    return this.summaryService.years();
+  }
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- need access to service signal
   readonly allocationChartData = computed((): ChartData<'pie'> => {
@@ -191,6 +196,20 @@ export class GlobalSummary implements OnInit {
         }
       }
     );
+
+    // Auto-select most recent available year when years load
+    effect(
+      // eslint-disable-next-line @smarttools/no-anonymous-functions -- Required for effect
+      () => {
+        const years = this.summaryService.years();
+        if (years.length > 0) {
+          const currentValue = this.selectedYear.value;
+          if (currentValue === null || !years.includes(currentValue)) {
+            this.selectedYear.setValue(years[0]);
+          }
+        }
+      }
+    );
   }
 
   get monthOptions(): Array<{ label: string; value: string }> {
@@ -218,8 +237,22 @@ export class GlobalSummary implements OnInit {
 
   ngOnInit(): void {
     this.summaryService.fetchMonths();
-    this.summaryService.fetchGraph();
+    this.summaryService.fetchYears();
+    this.summaryService.fetchGraph(
+      this.selectedYear.value ?? new Date().getFullYear()
+    );
     this.summaryService.fetchSummary(this.selectedMonth.value ?? '2025-03');
+
+    this.selectedYear.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(
+        // eslint-disable-next-line @smarttools/no-anonymous-functions -- need inline access to service
+        (year: number | null) => {
+          if (year !== null) {
+            this.summaryService.fetchGraph(year);
+          }
+        }
+      );
 
     this.selectedMonth.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))

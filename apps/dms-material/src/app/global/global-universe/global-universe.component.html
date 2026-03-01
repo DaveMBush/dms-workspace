@@ -50,23 +50,6 @@
       <mat-icon>sync</mat-icon>
       }
     </button>
-
-    <!-- eslint-disable @angular-eslint/template/no-call-expression -- Signals require function call syntax -->
-    <button
-      mat-icon-button
-      matTooltip="Refresh from Screener"
-      data-testid="refresh-button"
-      (click)="onRefresh()"
-      [disabled]="screenerLoading()"
-    >
-      @if (screenerLoading()) {
-      <mat-spinner diameter="24"></mat-spinner>
-      } @else {
-      <mat-icon>cloud_download</mat-icon>
-      }
-    </button>
-    <!-- eslint-enable @angular-eslint/template/no-call-expression -->
-
     <button
       mat-icon-button
       data-testid="update-fields-button"
@@ -82,14 +65,8 @@
     </button>
   </mat-toolbar>
 
-  <!-- eslint-disable @angular-eslint/template/cyclomatic-complexity -->
   <!-- eslint-disable @angular-eslint/template/no-call-expression -- Signals require function call syntax -->
-  @if (screenerLoading()) {
-  <div class="loading-overlay" data-testid="loading-overlay">
-    <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
-    <p>Refreshing universe data...</p>
-  </div>
-  } @if (screenerError()) {
+  @if (screenerError()) {
   <mat-card class="error-card" data-testid="error-message">
     <mat-card-content>
       <mat-icon color="warn">error</mat-icon>
@@ -102,7 +79,6 @@
   }
   <!-- eslint-enable @angular-eslint/template/no-call-expression -->
 
-  <!-- eslint-disable @angular-eslint/template/cyclomatic-complexity -->
   @if (showEmptyState$()) {
   <mat-card class="empty-state">
     <mat-card-content>
@@ -111,7 +87,6 @@
     </mat-card-content>
   </mat-card>
   }
-  <!-- eslint-enable @angular-eslint/template/cyclomatic-complexity -->
 
   <div class="table-wrapper">
     <dms-base-table

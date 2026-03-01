@@ -484,4 +484,56 @@ describe('SummaryService', () => {
       });
     });
   });
+
+  describe('Year Caching', () => {
+    it('should fetch available years from /api/summary/years', () => {
+      service.fetchYears();
+
+      const req = httpMock.expectOne('/api/summary/years');
+      expect(req.request.method).toBe('GET');
+      req.flush([2025, 2024, 2023]);
+
+      expect(service.years()).toEqual([2025, 2024, 2023]);
+    });
+
+    it('should cache years data after first fetch', () => {
+      service.fetchYears();
+
+      const req = httpMock.expectOne('/api/summary/years');
+      req.flush([2025, 2024]);
+
+      // Second fetch should not make a new HTTP request
+      service.fetchYears();
+      httpMock.expectNone('/api/summary/years');
+
+      expect(service.years().length).toBe(2);
+    });
+
+    it('should refresh years cache when invalidateYearsCache is called', () => {
+      service.fetchYears();
+
+      const req1 = httpMock.expectOne('/api/summary/years');
+      req1.flush([2025]);
+
+      service.invalidateYearsCache();
+
+      service.fetchYears();
+      const req2 = httpMock.expectOne('/api/summary/years');
+      req2.flush([2025, 2024]);
+
+      expect(service.years().length).toBe(2);
+    });
+
+    it('should set error when years fetch fails', () => {
+      service.fetchYears();
+
+      const req = httpMock.expectOne('/api/summary/years');
+      req.flush('Server error', {
+        status: 500,
+        statusText: 'Internal Server Error',
+      });
+
+      expect(service.error()).toBeTruthy();
+    });
+  });
 });

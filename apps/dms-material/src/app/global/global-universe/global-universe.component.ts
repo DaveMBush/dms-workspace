@@ -96,7 +96,6 @@ export class GlobalUniverseComponent {
   readonly isUpdatingFields$ = this.updateFieldsService.isUpdating;
 
   // Expose screener service loading and error signals
-  readonly screenerLoading = this.screenerService.loading;
   readonly screenerError = this.screenerService.error;
   readonly columns: ColumnDef[] = UNIVERSE_COLUMNS;
 
@@ -145,7 +144,7 @@ export class GlobalUniverseComponent {
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signal
   readonly showEmptyState$ = computed(() => {
-    return !this.screenerLoading() && this.filteredData$().length === 0;
+    return this.globalLoading.isLoading() && this.filteredData$().length === 0;
   });
 
   onSortChange(_: Sort): void {

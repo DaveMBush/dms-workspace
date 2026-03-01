@@ -387,7 +387,6 @@ describe('GlobalUniverseComponent - Refresh Button', () => {
           provide: ScreenerService,
           useValue: {
             refresh: vi.fn().mockReturnValue(of({})),
-            loading: signal(false),
             error: signal(null),
           },
         },
@@ -415,26 +414,9 @@ describe('GlobalUniverseComponent - Refresh Button', () => {
     fixture.detectChanges();
   });
 
-  it('should have refresh button in template', () => {
-    const button = fixture.nativeElement.querySelector(
-      '[data-testid="refresh-button"]'
-    );
-    expect(button).toBeTruthy();
-  });
-
   it('should call screenerService.refresh() on button click', () => {
     component.onRefresh();
     expect(screenerService.refresh).toHaveBeenCalled();
-  });
-
-  it('should show loading indicator during refresh', () => {
-    (screenerService.loading as any).set(true);
-    fixture.detectChanges();
-
-    const button = fixture.nativeElement.querySelector(
-      '[data-testid="refresh-button"]'
-    );
-    expect(button.disabled).toBe(true);
   });
 
   it('should call screener service refresh and show success notification', async () => {
@@ -462,16 +444,6 @@ describe('GlobalUniverseComponent - Refresh Button', () => {
       '[data-testid="error-message"]'
     );
     expect(errorEl).toBeTruthy();
-  });
-
-  it('should disable refresh button while loading', () => {
-    (screenerService.loading as any).set(true);
-    fixture.detectChanges();
-
-    const button = fixture.nativeElement.querySelector(
-      '[data-testid="refresh-button"]'
-    );
-    expect(button.disabled).toBe(true);
   });
 
   it('should display error message when refresh fails', () => {
@@ -630,7 +602,6 @@ describe('GlobalUniverseComponent - Loading and Error Handling', () => {
   let notificationService: NotificationService;
 
   beforeEach(async () => {
-    const loadingSignal = signal(false);
     const errorSignal = signal<string | null>(null);
     const refreshMock = vi.fn(() => {
       // Simulate ScreenerService behavior: clear error on refresh
@@ -646,7 +617,6 @@ describe('GlobalUniverseComponent - Loading and Error Handling', () => {
           provide: ScreenerService,
           useValue: {
             refresh: refreshMock,
-            loading: loadingSignal,
             error: errorSignal,
           },
         },
@@ -673,22 +643,6 @@ describe('GlobalUniverseComponent - Loading and Error Handling', () => {
     screenerService = TestBed.inject(ScreenerService);
     notificationService = TestBed.inject(NotificationService);
     fixture.detectChanges();
-  });
-
-  it('should show spinner when loading', () => {
-    (screenerService.loading as any).set(true);
-    fixture.detectChanges();
-
-    const spinner = fixture.nativeElement.querySelector('mat-progress-spinner');
-    expect(spinner).toBeTruthy();
-  });
-
-  it('should hide spinner when not loading', () => {
-    (screenerService.loading as any).set(false);
-    fixture.detectChanges();
-
-    const spinner = fixture.nativeElement.querySelector('mat-progress-spinner');
-    expect(spinner).toBeFalsy();
   });
 
   it('should display error message when error occurs', () => {
@@ -986,6 +940,7 @@ describe('GlobalUniverseComponent - Update Fields Button Integration (TDD - Stor
     mockGlobalLoading = {
       show: vi.fn(),
       hide: vi.fn(),
+      isLoading: signal(false),
     };
 
     mockNotification = {
@@ -1013,7 +968,6 @@ describe('GlobalUniverseComponent - Update Fields Button Integration (TDD - Stor
           provide: ScreenerService,
           useValue: {
             refresh: vi.fn().mockReturnValue(of({})),
-            loading: signal(false),
             error: signal(null),
           },
         },
@@ -1268,11 +1222,6 @@ describe('GlobalUniverseComponent - SmartNgRX Integration', () => {
   });
 
   describe('loading state handling', () => {
-    it('should display loading indicator while universe data loads', () => {
-      // The component uses screenerLoading for loading indication
-      expect(component.screenerLoading).toBeDefined();
-    });
-
     it('should hide loading indicator when data load completes', () => {
       // Mock loaded data
       selectUniversesMock.mockReturnValue([

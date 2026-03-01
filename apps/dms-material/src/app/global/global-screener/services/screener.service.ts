@@ -1,6 +1,6 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { computed, effect, inject, Injectable, signal } from '@angular/core';
-import { catchError, Observable, of, tap } from 'rxjs';
+import { catchError, Observable, of } from 'rxjs';
 
 import { Screen } from '../../../store/screen/screen.interface';
 import { selectScreen } from '../../../store/screen/selectors/select-screen.function';
@@ -16,12 +16,10 @@ export class ScreenerService {
   private readonly http = inject(HttpClient);
 
   // Private writable signals for state management
-  private readonly loadingSignal = signal(false);
   private readonly errorSignal$ = signal<string | null>(null);
   private readonly cachedScreens = signal<Screen[]>([]);
 
   // Public readonly signals for consumers
-  readonly loading = this.loadingSignal.asReadonly();
   readonly error = this.errorSignal$.asReadonly();
 
   constructor() {
@@ -88,18 +86,12 @@ export class ScreenerService {
    * @returns Observable that completes when the refresh operation finishes
    */
   refresh(): Observable<unknown> {
-    this.loadingSignal.set(true);
     this.errorSignal$.set(null);
-
-    function refreshTap(this: ScreenerService): void {
-      this.loadingSignal.set(false);
-    }
 
     function refreshCatchError(
       this: ScreenerService,
       error: unknown
     ): Observable<null> {
-      this.loadingSignal.set(false);
       let errorMessage = 'Failed to refresh screener data';
       if (error instanceof HttpErrorResponse) {
         const errorBody = error.error as { message?: string };
@@ -113,10 +105,7 @@ export class ScreenerService {
 
     return this.http
       .get('/api/screener')
-      .pipe(
-        tap(refreshTap.bind(this)),
-        catchError(refreshCatchError.bind(this))
-      );
+      .pipe(catchError(refreshCatchError.bind(this)));
   }
 
   /**

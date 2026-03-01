@@ -369,6 +369,39 @@ describe('mapFidelityTransactions', function () {
       );
     });
 
+    test('should map MONEY LINE RECEIVED as cash deposit', async function () {
+      const rows: ParsedCsvRow[] = [
+        {
+          date: '06/03/2025',
+          action: 'MONEY LINE RECEIVED EFT FUNDS RECEIVED ER92714866 /WEB',
+          symbol: '',
+          description: '',
+          quantity: 0,
+          price: 0,
+          totalAmount: 2000.0,
+          account: 'Joint Brokerage',
+        },
+      ];
+
+      mockPrisma.accounts.findFirst.mockResolvedValue({
+        id: 'account-123',
+        name: 'Joint Brokerage',
+      });
+      mockPrisma.divDepositType.findFirst.mockResolvedValue({
+        id: 'cash-deposit-type',
+        name: 'Cash Deposit',
+      });
+
+      const result = await mapFidelityTransactions(rows);
+
+      expect(result.divDeposits).toHaveLength(1);
+      expect(result.divDeposits[0].amount).toBe(2000.0);
+      expect(result.divDeposits[0].divDepositTypeId).toBe('cash-deposit-type');
+      expect(result.divDeposits[0].universeId).toBeNull();
+      expect(result.trades).toHaveLength(0);
+      expect(result.unknownTransactions).toHaveLength(0);
+    });
+
     test('should auto-create Dividend type if not found', async function () {
       const rows: ParsedCsvRow[] = [
         {
@@ -834,7 +867,7 @@ describe('mapFidelityTransactions', function () {
       expect(result.unknownTransactions).toHaveLength(0);
     });
 
-    test('should treat SPAXX purchases and redemptions as cash movements', async function () {
+    test('should skip SPAXX purchases and redemptions as implied cash movements', async function () {
       const rows: ParsedCsvRow[] = [
         {
           date: '06/30/2025',
@@ -864,19 +897,41 @@ describe('mapFidelityTransactions', function () {
         id: 'account-123',
         name: 'Joint Brokerage',
       });
-      mockPrisma.divDepositType.findFirst.mockResolvedValue({
-        id: 'cash-deposit-type',
-        name: 'Cash Deposit',
+
+      const result = await mapFidelityTransactions(rows);
+
+      // Should skip entirely — these are implied cash sweep movements
+      expect(result.trades).toHaveLength(0);
+      expect(result.sales).toHaveLength(0);
+      expect(result.divDeposits).toHaveLength(0);
+      expect(result.unknownTransactions).toHaveLength(0);
+    });
+
+    test('should skip SPAXX reinvestment as implied cash movement', async function () {
+      const rows: ParsedCsvRow[] = [
+        {
+          date: '12/31/2025',
+          action: 'REINVESTMENT REINVEST @ $1.000',
+          symbol: 'SPAXX',
+          description: 'FIDELITY GOVERNMENT MONEY MARKET',
+          quantity: 9.57,
+          price: 1.0,
+          totalAmount: -9.57,
+          account: 'Joint Brokerage',
+        },
+      ];
+
+      mockPrisma.accounts.findFirst.mockResolvedValue({
+        id: 'account-123',
+        name: 'Joint Brokerage',
       });
 
       const result = await mapFidelityTransactions(rows);
 
-      // Should create cash deposits, not trades or sales
+      // REINVESTMENT into SPAXX is a cash sweep — skip it
       expect(result.trades).toHaveLength(0);
       expect(result.sales).toHaveLength(0);
-      expect(result.divDeposits).toHaveLength(2);
-      expect(result.divDeposits[0].amount).toBe(6043.5); // Redemption (sorted first by date)
-      expect(result.divDeposits[1].amount).toBe(-153.05); // Purchase
+      expect(result.divDeposits).toHaveLength(0);
       expect(result.unknownTransactions).toHaveLength(0);
     });
 

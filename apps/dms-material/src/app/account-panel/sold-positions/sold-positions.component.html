@@ -23,6 +23,7 @@
         [matDatepicker]="startPicker"
         [value]="startDateAsDate()"
         (dateChange)="onStartDateChange($event)"
+        aria-label="Start Date"
       />
       <mat-datepicker-toggle
         matSuffix
@@ -38,6 +39,7 @@
         [matDatepicker]="endPicker"
         [value]="endDateAsDate()"
         (dateChange)="onEndDateChange($event)"
+        aria-label="End Date"
       />
       <mat-datepicker-toggle
         matSuffix
