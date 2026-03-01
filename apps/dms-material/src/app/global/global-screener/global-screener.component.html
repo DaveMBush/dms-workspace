@@ -9,7 +9,6 @@
       mat-icon-button
       matTooltip="Refresh"
       data-testid="refresh-button"
-      [disabled]="loading$()"
       (click)="onRefresh()"
     >
       <mat-icon>refresh</mat-icon>
@@ -32,7 +31,6 @@
       data-testid="screener-table"
       [data]="filteredData$()"
       [columns]="columns"
-      [loading]="loading$()"
       [selectable]="false"
       [rowHeight]="48"
       (sortChange)="onSortChange($event)"

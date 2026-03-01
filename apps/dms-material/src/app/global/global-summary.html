@@ -79,7 +79,20 @@
 
       <!-- Right: Line chart -->
       <div class="flex-1 w-full h-full">
-        <h2 class="text-lg font-semibold mb-2">Portfolio Performance</h2>
+        <div class="flex items-center gap-4 mb-2">
+          <h2 class="text-lg font-semibold chart-title">
+            Portfolio Performance
+          </h2>
+          <mat-select
+            [formControl]="selectedYear"
+            class="w-24"
+            aria-label="Select year"
+          >
+            @for (year of yearOptions; track year) {
+            <mat-option [value]="year">{{ year }}</mat-option>
+            }
+          </mat-select>
+        </div>
         <dms-summary-display
           [data$]="performanceData"
           [chartType$]="'line'"
