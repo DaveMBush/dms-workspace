@@ -120,7 +120,8 @@ describe('resolveCusipSymbols', function () {
 
   test('should keep original CUSIP when OpenFIGI returns no data', async function () {
     const rows = [createRow('99999X999')];
-    mockFetchResponse([{ error: 'No identifier found.' }]);
+    // Actual OpenFIGI v3 API returns "warning" (not "error") when no identifier found
+    mockFetchResponse([{ warning: 'No identifier found.' }]);
 
     await resolveCusipSymbols(rows);
 
@@ -203,8 +204,8 @@ describe('resolveCusipSymbols', function () {
         account: 'My Brokerage',
       },
     ];
-    // OpenFIGI returns no data
-    mockFetchResponse([{ error: 'No identifier found.' }]);
+    // OpenFIGI returns no data — actual API v3 uses "warning" not "error"
+    mockFetchResponse([{ warning: 'No identifier found.' }]);
     // Yahoo Finance returns OXLC
     mockYahooSearch.mockResolvedValue({
       quotes: [{ symbol: 'OXLC', quoteType: 'ETF' }],
@@ -242,7 +243,7 @@ describe('resolveCusipSymbols', function () {
         account: 'My Brokerage',
       },
     ];
-    mockFetchResponse([{ error: 'No identifier found.' }]);
+    mockFetchResponse([{ warning: 'No identifier found.' }]);
     mockYahooSearch.mockResolvedValue({ quotes: [] });
 
     await resolveCusipSymbols(rows);
@@ -263,7 +264,7 @@ describe('resolveCusipSymbols', function () {
         account: 'My Brokerage',
       },
     ];
-    mockFetchResponse([{ error: 'No identifier found.' }]);
+    mockFetchResponse([{ warning: 'No identifier found.' }]);
     mockYahooSearch.mockResolvedValue({
       quotes: [
         { symbol: 'OXLC.IDX', quoteType: 'INDEX' },

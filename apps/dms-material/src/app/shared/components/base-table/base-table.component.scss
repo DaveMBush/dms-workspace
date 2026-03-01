@@ -23,6 +23,12 @@ mat-progress-bar {
 table {
   width: 100%;
   table-layout: fixed;
+  // Fix for sticky <th> headers with borders:
+  // border-collapse:collapse causes borders to ghost/disappear on sticky cells
+  // during scroll. Use separate+0 spacing to restore border painting.
+  // See: https://css-tricks.com/position-sticky-and-table-headers/
+  border-collapse: separate;
+  border-spacing: 0;
 }
 
 tr.mat-mdc-row {
@@ -30,10 +36,24 @@ tr.mat-mdc-row {
 
   &:hover {
     background-color: rgba(0, 0, 0, 0.04);
+
+    td.mat-mdc-cell {
+      // Must also set on td: opaque td background-color (set below) would
+      // otherwise block the tr hover from showing through
+      background-color: color-mix(in srgb, var(--dms-surface) 96%, #000000);
+    }
   }
 
   &.selected {
     background-color: rgba(var(--dms-primary-500), 0.1);
+
+    td.mat-mdc-cell {
+      background-color: color-mix(
+        in srgb,
+        var(--dms-primary-500) 10%,
+        var(--dms-surface)
+      );
+    }
   }
 
   // Capital gain/loss classification colors — WCAG AA compliant
@@ -66,6 +86,9 @@ th.mat-mdc-header-cell {
   position: sticky;
   top: 0;
   z-index: 1;
+  // box-shadow replaces the collapsed border line for sticky cells:
+  // a border-bottom on a sticky th disappears during scroll; box-shadow persists
+  box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.12);
 }
 
 tr.filter-row th.mat-mdc-header-cell {
@@ -75,10 +98,19 @@ tr.filter-row th.mat-mdc-header-cell {
 
 td.mat-mdc-cell {
   padding: 8px 16px;
+  // Prevent transparent cell backgrounds that cause border "ghosting" during
+  // scroll when position:sticky headers overlap border-collapse table borders
+  background-color: var(--dms-surface);
+  background-clip: padding-box;
 }
 
 .dark-theme {
   tr.mat-mdc-row:hover {
     background-color: rgba(255, 255, 255, 0.04);
+
+    td.mat-mdc-cell {
+      // Dark theme: blend white at 4% opacity equivalent
+      background-color: color-mix(in srgb, var(--dms-surface) 96%, #ffffff);
+    }
   }
 }

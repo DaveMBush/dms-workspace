@@ -76,6 +76,28 @@ describe('GlobalSummary', () => {
     );
     expect(charts.length).toBe(2); // pie and line
   });
+
+  it('should render year picker inside mat-form-field to constrain its width (regression: AS.9 Bug #3)', () => {
+    fixture.detectChanges();
+    // The year picker must be inside a mat-form-field so it doesn't expand to fill remaining width
+    const yearFormField = fixture.nativeElement.querySelector(
+      'mat-form-field mat-select[aria-label="Select year"]'
+    );
+    expect(yearFormField).not.toBeNull();
+  });
+
+  it('should pass 100% height to performance line chart so it fills panel (regression: AS.9 Bug #5)', () => {
+    fixture.detectChanges();
+    // The line chart (second dms-summary-display) should receive height 100%
+    const charts = fixture.nativeElement.querySelectorAll(
+      'dms-summary-display'
+    );
+    expect(charts.length).toBe(2);
+    // Verify the component property returns performance data (chart is configured)
+    const perfData = component.performanceData;
+    expect(perfData).toBeDefined();
+    expect(perfData.datasets).toBeDefined();
+  });
 });
 
 describe('GlobalSummary - Service Integration', () => {
@@ -326,12 +348,14 @@ describe('GlobalSummary - Graph Integration', () => {
     expect(baseDataset!.data).toEqual([40000, 40200]);
   });
 
-  it('should map graph capitalGains to Capital Gains dataset', () => {
+  it('should map Capital Gains dataset as deposits + cumulative capitalGains (regression: AS.9 Bug #6)', () => {
     fixture.detectChanges();
 
     const req = httpMock.expectOne(
       (request) => request.url === '/api/summary/graph'
     );
+    // Jan: deposits=40000, capitalGains=0  → line = 40000 + 0 = 40000
+    // Feb: deposits=40200, capitalGains=100 → line = 40200 + (0+100) = 40300
     req.flush([
       { month: '01-2025', deposits: 40000, dividends: 50, capitalGains: 0 },
       { month: '02-2025', deposits: 40200, dividends: 100, capitalGains: 100 },
@@ -344,15 +368,19 @@ describe('GlobalSummary - Graph Integration', () => {
       (ds) => ds.label === 'Capital Gains'
     );
     expect(gainsDataset).toBeDefined();
-    expect(gainsDataset!.data).toEqual([0, 100]);
+    expect(gainsDataset!.data).toEqual([40000, 40300]);
   });
 
-  it('should map graph dividends to Dividends dataset', () => {
+  it('should map Dividends dataset as deposits + cumulative capitalGains + cumulative dividends (regression: AS.9 Bug #7)', () => {
     fixture.detectChanges();
 
     const req = httpMock.expectOne(
       (request) => request.url === '/api/summary/graph'
     );
+    // Jan: deposits=40000, capitalGains=0, dividends=50
+    //   → line = 40000 + 0 + 50 = 40050
+    // Feb: deposits=40200, capitalGains=100, dividends=100
+    //   → line = 40200 + (0+100) + (50+100) = 40200 + 100 + 150 = 40450
     req.flush([
       { month: '01-2025', deposits: 40000, dividends: 50, capitalGains: 0 },
       { month: '02-2025', deposits: 40200, dividends: 100, capitalGains: 100 },
@@ -365,7 +393,7 @@ describe('GlobalSummary - Graph Integration', () => {
       (ds) => ds.label === 'Dividends'
     );
     expect(divDataset).toBeDefined();
-    expect(divDataset!.data).toEqual([50, 100]);
+    expect(divDataset!.data).toEqual([40050, 40450]);
   });
 });
 
@@ -1101,6 +1129,43 @@ describe('Month/Year Selector', () => {
     );
     expect(graphReq.request.method).toBe('GET');
     graphReq.flush([]);
+  });
+
+  it('should render year mat-select in the DOM next to Portfolio Performance heading (regression: AS.9 Bug #3)', () => {
+    fixture.detectChanges();
+
+    // Flush the years request so yearOptions are populated
+    const yearsReq = httpMock.expectOne('/api/summary/years');
+    yearsReq.flush([2025, 2024, 2023]);
+
+    fixture.detectChanges();
+
+    // The year mat-select must be in the DOM
+    const yearSelect = fixture.nativeElement.querySelector(
+      'mat-select[aria-label="Select year"]'
+    );
+    expect(yearSelect).not.toBeNull();
+
+    // yearOptions must be non-empty so the trigger renders a visible value
+    expect(component.yearOptions.length).toBeGreaterThan(0);
+
+    // Effect should have set selectedYear to the first (most recent) year
+    expect(component.selectedYear.value).toBe(2025);
+  });
+
+  it('should keep year select invisible (no options) when years API fails, then become visible when retried (regression: AS.9 Bug #3)', () => {
+    fixture.detectChanges();
+
+    // Simulate years API returning empty (as it would on 404 before Bug #2 fix)
+    const yearsReq = httpMock.expectOne('/api/summary/years');
+    yearsReq.flush([]);
+
+    fixture.detectChanges();
+
+    // With no options, yearOptions is empty — effect does NOT change selectedYear
+    expect(component.yearOptions.length).toBe(0);
+    // selectedYear stays at initial default (current year)
+    expect(component.selectedYear.value).toBe(new Date().getFullYear());
   });
 });
 

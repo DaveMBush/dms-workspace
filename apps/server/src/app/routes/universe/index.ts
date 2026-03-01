@@ -21,6 +21,32 @@ interface UniverseWithTrades {
   is_closed_end_fund: boolean;
 }
 
+function calculateAvgPurchaseYieldPercent(
+  trades: Array<{ buy: number; quantity: number }>,
+  distribution: number,
+  distributionsPerYear: number
+): number {
+  const totalQuantity = trades.reduce(function sumQty(
+    acc: number,
+    t: { quantity: number }
+  ): number {
+    return acc + t.quantity;
+  },
+  0);
+  if (totalQuantity === 0) {
+    return 0;
+  }
+  const totalCost = trades.reduce(function sumCost(
+    acc: number,
+    t: { buy: number; quantity: number }
+  ): number {
+    return acc + t.buy * t.quantity;
+  },
+  0);
+  const avgBuy = totalCost / totalQuantity;
+  return (distribution * distributionsPerYear * 100) / avgBuy;
+}
+
 function mapUniverseToResponse(u: UniverseWithTrades): Universe {
   return {
     id: u.id,
@@ -35,6 +61,11 @@ function mapUniverseToResponse(u: UniverseWithTrades): Universe {
     position: calculatePosition(u.trades),
     expired: u.expired,
     is_closed_end_fund: u.is_closed_end_fund,
+    avg_purchase_yield_percent: calculateAvgPurchaseYieldPercent(
+      u.trades,
+      u.distribution,
+      u.distributions_per_year
+    ),
   };
 }
 

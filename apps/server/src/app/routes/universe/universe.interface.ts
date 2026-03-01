@@ -11,4 +11,5 @@ export interface Universe {
   expired: boolean;
   is_closed_end_fund: boolean;
   position: number;
+  avg_purchase_yield_percent: number;
 }
