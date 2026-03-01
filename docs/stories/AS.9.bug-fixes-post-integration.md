@@ -125,20 +125,20 @@ The graph endpoint returns per-month data in the form:
 
 ```typescript
 interface GraphPoint {
-  month: string;       // e.g. "01-2025"
-  deposits: number;    // cumulative base (running total of deposits)
-  dividends: number;   // monthly dividend income
+  month: string; // e.g. "01-2025"
+  deposits: number; // cumulative base (running total of deposits)
+  dividends: number; // monthly dividend income
   capitalGains: number; // monthly capital gains
 }
 ```
 
 The three lines to display are:
 
-| Line | Formula | Description |
-|------|---------|-------------|
-| Base | `deposits` | Running total of deposits (already cumulative) |
-| Capital Gains | `deposits + cumulative capitalGains` | Base plus accumulated capital gains |
-| Dividends | `deposits + cumulative capitalGains + cumulative dividends` | All three combined |
+| Line          | Formula                                                     | Description                                    |
+| ------------- | ----------------------------------------------------------- | ---------------------------------------------- |
+| Base          | `deposits`                                                  | Running total of deposits (already cumulative) |
+| Capital Gains | `deposits + cumulative capitalGains`                        | Base plus accumulated capital gains            |
+| Dividends     | `deposits + cumulative capitalGains + cumulative dividends` | All three combined                             |
 
 - **January continuity**: The first data point of a year should begin at the last value of the previous year (December closing), not at zero. The backend may need to provide a "prior year closing" baseline, or the frontend should fetch and carry forward the December value from the previous year.
 - **Graph height**: Use `height: 100%` / flexbox on the container div so the chart fills its panel.
@@ -153,6 +153,7 @@ For each bug found, document:
 **Severity:** Critical | Major | Minor
 
 **Steps to Reproduce:**
+
 1. Step 1
 
 **Expected Behavior:**
@@ -170,13 +171,14 @@ Test added to prevent recurrence
 
 ## Bug List
 
-*Bugs will be documented here as they are discovered during implementation*
+_Bugs will be documented here as they are discovered during implementation_
 
 ### Bug #1: Table Border Transparency on Scroll
 
 **Severity:** Major
 
 **Steps to Reproduce:**
+
 1. Navigate to any screen with a large table (e.g. Open Positions, Sold Positions, Universe)
 2. Scroll down
 
@@ -196,6 +198,7 @@ TBD — likely a `background-color` missing on sticky cells, or a `background-cl
 **Severity:** Major
 
 **Steps to Reproduce:**
+
 1. Navigate to any screen with a filterable table
 2. Scroll down slowly
 
@@ -215,6 +218,7 @@ TBD — likely a `z-index` or stacking context issue with `position: sticky` on 
 **Severity:** Major
 
 **Steps to Reproduce:**
+
 1. Navigate to Global Summary screen
 2. Look for the year picker next to "Portfolio Performance" heading
 
@@ -234,6 +238,7 @@ TBD — investigate CSS layout issue. The element is in the DOM (see `global-sum
 **Severity:** Major
 
 **Steps to Reproduce:**
+
 1. Navigate to Global Summary
 2. View Portfolio Performance graph
 
@@ -253,6 +258,7 @@ TBD — carry forward the December closing value of the prior year as the Januar
 **Severity:** Minor
 
 **Steps to Reproduce:**
+
 1. Navigate to Global Summary
 2. Compare chart height with Account Summary screen
 
@@ -272,6 +278,7 @@ TBD — update container CSS to use `height: 100%` or flexbox stretch.
 **Severity:** Major
 
 **Steps to Reproduce:**
+
 1. Navigate to Global Summary
 2. View Portfolio Performance graph Capital Gains line
 
@@ -291,6 +298,7 @@ TBD — update `performanceChartData` computed signal dataset for "Capital Gains
 **Severity:** Major
 
 **Steps to Reproduce:**
+
 1. Navigate to Global Summary
 2. View Portfolio Performance graph Dividend line
 
@@ -310,6 +318,7 @@ TBD — update `performanceChartData` computed signal dataset for "Dividends" to
 **Severity:** Major
 
 **Steps to Reproduce:**
+
 1. Navigate to the Universe screen
 2. Observe the `Avg Purch Yield %`, `Mst Rcnt Sll Dt`, and `Mst Rcnt Sell $` columns
 
@@ -335,6 +344,7 @@ Add test confirming `avg_purchase_yield_percent` is present and non-null on rows
 **Severity:** Major
 
 **Steps to Reproduce:**
+
 1. Import a CSV file that contains CUSIP identifiers instead of ticker symbols
 2. Observe that positions remain unmatched (symbol column shows the raw CUSIP)
 
@@ -346,6 +356,7 @@ CUSIP resolution fails — tickers are not returned / positions remain unresolve
 
 **Root Cause (suspected):**
 The OpenFIGI API v3 contract may have changed since the implementation was written. Possible issues:
+
 - Response structure changed (`ticker` field renamed or nested differently)
 - Rate limiting / authentication requirements changed
 - The `idType: 'ID_CUSIP'` identifier type may need updating
@@ -394,16 +405,16 @@ Update `resolve-cusip.function.spec.ts` to accurately mock the current API respo
 
 ## Change Log
 
-| Date       | Version | Description      | Author |
-| ---------- | ------- | ---------------- | ------ |
-| 2026-03-01 | 1.0     | Initial creation | PM     |
+| Date       | Version | Description                                                | Author |
+| ---------- | ------- | ---------------------------------------------------------- | ------ |
+| 2026-03-01 | 1.0     | Initial creation                                           | PM     |
 | 2026-03-01 | 1.1     | Added bugs #8 (universe columns) and #9 (CUSIP resolution) | PM     |
 
 ---
 
 ## QA Results
 
-*QA assessment will be recorded here after story review*
+_QA assessment will be recorded here after story review_
 
 ---
 
@@ -444,6 +455,6 @@ Update `resolve-cusip.function.spec.ts` to accurately mock the current API respo
 
 ### Change Log
 
-| Date | Change | Files |
-|------|--------|-------|
+| Date       | Change                              | Files               |
+| ---------- | ----------------------------------- | ------------------- |
 | 2026-03-01 | All 9 bugs fixed + regression tests | See File List above |

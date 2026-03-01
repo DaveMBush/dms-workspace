@@ -148,6 +148,7 @@ function handleAddUniverseRoute(fastify: FastifyInstance): void {
           position: 0,
           expired: result.expired,
           is_closed_end_fund: result.is_closed_end_fund,
+          avg_purchase_yield_percent: 0, // new symbol has no purchase history yet
         },
       ]);
     }
