@@ -93,6 +93,21 @@
   - [x] Run all validation commands
   - [x] Manual testing of all scenarios
   - [x] Verify no console errors
+- [x] Fix server 500 on /api/top (Post-PR Bug 10)
+  - [x] Identify root cause: `handleAddUniverseRoute` response missing `avg_purchase_yield_percent` caused TypeScript build failure bringing down all endpoints
+  - [x] Add `avg_purchase_yield_percent: 0` to add-symbol route response
+  - [x] Verify server compiles and all endpoints respond
+- [x] Fix Global Summary scrollbar (Post-PR Bug 11)
+  - [x] Identify root cause: CSS Grid in splitter lacked `grid-template-rows: 100%` causing implicit row to auto-size to content height rather than container height
+  - [x] Add `grid-template-rows: 100%` to `.splitter-container` in `splitter.component.scss`
+  - [x] Remove redundant `overflow-y: auto` from `.content-panel` in `shell.scss` (scroll managed at inner component level)
+  - [x] Changed `height: 100dvh` → `height: 100%` in `global-summary.scss`
+  - [x] Added `:host { height: 100%; display: flex }` to `app.scss`
+- [x] Fix Universe columns still blank (Post-PR Bug 12)
+  - [x] Identify root cause: `enrich-universe-with-risk-groups.function.ts` explicitly maps each property but omits `avg_purchase_yield_percent`
+  - [x] Add `avg_purchase_yield_percent: universe.avg_purchase_yield_percent` to enrichment mapping
+  - [x] Update enrichment function test mocks and add assertion
+  - [x] Run full test suite — 1258/1258 pass
 
 ## Dev Notes
 
@@ -435,12 +450,17 @@ _QA assessment will be recorded here after story review_
 
 ### File List
 
+- `apps/dms-material/src/app/app.scss` — Bug #11 (added :host height chain)
 - `apps/dms-material/src/app/global/global-summary.html` — Bugs #3, #5
-- `apps/dms-material/src/app/global/global-summary.scss` — Bug #5
+- `apps/dms-material/src/app/global/global-summary.scss` — Bugs #5, #11 (100dvh → 100%)
 - `apps/dms-material/src/app/global/global-summary.spec.ts` — Bugs #3, #5, #6, #7 regression tests
 - `apps/dms-material/src/app/global/global-summary.ts` — Bugs #3, #6, #7 (MatFormFieldModule, buildEnrichedPoints, performanceChartData)
+- `apps/dms-material/src/app/global/global-universe/enrich-universe-with-risk-groups.function.ts` — Bug #12 (added avg_purchase_yield_percent)
+- `apps/dms-material/src/app/global/global-universe/enrich-universe-with-risk-groups.function.spec.ts` — Bug #12 (updated mocks, added assertion)
 - `apps/dms-material/src/app/shared/components/base-table/base-table.component.scss` — Bug #1
 - `apps/dms-material/src/app/shared/components/base-table/base-table.component.spec.ts` — Bug #1 regression test
+- `apps/dms-material/src/app/shared/components/splitter/splitter.component.scss` — Bug #11 (grid-template-rows: 100%)
+- `apps/dms-material/src/app/shell/shell.scss` — Bug #11 (content-panel overflow: hidden)
 - `apps/dms-material/src/app/store/universe/universe-definition.const.ts` — Bug #8 (default row)
 - `apps/dms-material/src/app/store/universe/universe.interface.ts` — Bug #8
 - `apps/server/src/app/routes/import/resolve-cusip.function.spec.ts` — Bug #9 (mock accuracy)
@@ -450,7 +470,7 @@ _QA assessment will be recorded here after story review_
 - `apps/server/src/app/routes/summary/years/index.spec.ts` (NEW) — Bug #2 regression tests
 - `apps/server/src/app/routes/summary/years/index.ts` — Bug #2 (stale comment removed)
 - `apps/server/src/app/routes/universe/index.spec.ts` (NEW) — Bug #8 regression tests
-- `apps/server/src/app/routes/universe/index.ts` — Bug #8 (calculateAvgPurchaseYieldPercent)
+- `apps/server/src/app/routes/universe/index.ts` — Bugs #8, #10 (calculateAvgPurchaseYieldPercent, avg_purchase_yield_percent in add route)
 - `apps/server/src/app/routes/universe/universe.interface.ts` — Bug #8
 
 ### Change Log
