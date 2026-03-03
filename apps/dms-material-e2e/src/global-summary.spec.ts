@@ -179,15 +179,40 @@ test.describe('Global Summary Component', () => {
     test('should show loading spinner during data fetch', async ({ page }) => {
       // Page is fully loaded via beforeEach. We reload and hold ALL summary API
       // calls (including /months) so loadingSignal stays true the whole time.
-      const pendingRoutes: Array<() => void> = [];
-      await page.route(/\/api\/summary/, (route) => {
+      // We use route.fulfill() with mock data (instead of route.continue()) to
+      // avoid browser timeout issues on held requests.
+      let intercepting = true;
+      const pendingRoutes: Array<() => Promise<void>> = [];
+      await page.route(/\/api\/summary/, function holdSummaryRoutes(route) {
         const url = route.request().url();
-        if (url.includes('/graph') || url.includes('/years')) {
+        if (!intercepting || url.includes('/graph') || url.includes('/years')) {
           return route.continue();
         }
-        return new Promise<void>((resolve) => {
-          pendingRoutes.push(() => {
-            route.continue();
+        return new Promise<void>(function deferRoute(resolve) {
+          pendingRoutes.push(async function releasePendingRoute() {
+            if (url.includes('/months')) {
+              await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify([
+                  { month: '2025-03', label: 'March 2025' },
+                  { month: '2025-02', label: 'February 2025' },
+                ]),
+              });
+            } else {
+              await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({
+                  deposits: 100000,
+                  dividends: 2500,
+                  capitalGains: 5000,
+                  equities: 50000,
+                  income: 30000,
+                  tax_free_income: 20000,
+                }),
+              });
+            }
             resolve();
           });
         });
@@ -200,18 +225,26 @@ test.describe('Global Summary Component', () => {
 
       // Wait until the spinner appears in DOM (Angular bootstrapped + loadingSignal=true)
       await page.waitForFunction(
-        () =>
-          document.querySelector('[data-testid="loading-spinner"]') !== null,
+        function checkSpinnerInDom() {
+          return (
+            document.querySelector('[data-testid="loading-spinner"]') !== null
+          );
+        },
         { timeout: 10000 }
       );
 
       // Spinner confirmed in DOM; assert it is visible
       await expect(spinner).toBeVisible();
 
-      // Release all held routes; Angular will complete the fetch and hide the spinner
-      for (const resolve of pendingRoutes) {
-        resolve();
-      }
+      // Stop intercepting new requests so subsequent fetches go through normally
+      intercepting = false;
+
+      // Release all held routes with fulfilled mock data and await fulfillment
+      await Promise.all(
+        pendingRoutes.map(function invokeRelease(release) {
+          return release();
+        })
+      );
 
       // After data loads, spinner should be gone (wait up to 15s for Angular to update)
       await expect(spinner).not.toBeVisible({ timeout: 15000 });
