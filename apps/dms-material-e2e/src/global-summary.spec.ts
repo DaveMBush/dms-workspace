@@ -209,7 +209,9 @@ test.describe('Global Summary Component', () => {
       await expect(spinner).toBeVisible();
 
       // Release all held routes; Angular will complete the fetch and hide the spinner
-      pendingRoutes.forEach((resolve) => resolve());
+      for (const resolve of pendingRoutes) {
+        resolve();
+      }
 
       // After data loads, spinner should be gone (wait up to 15s for Angular to update)
       await expect(spinner).not.toBeVisible({ timeout: 15000 });
@@ -328,7 +330,11 @@ test.describe('Global Summary Component', () => {
 
       // Resize viewport and verify charts adapt
       await page.setViewportSize({ width: 800, height: 600 });
-      await page.waitForTimeout(500); // Wait for resize to complete
+      // Poll until width has decreased (avoids fixed delay)
+      await expect(async () => {
+        const box = await chartsContainer.boundingBox();
+        expect(box?.width).toBeLessThan(initialBox?.width || Infinity);
+      }).toPass({ timeout: 5000 });
 
       const resizedBox = await chartsContainer.boundingBox();
       expect(resizedBox).not.toBeNull();
@@ -399,24 +405,21 @@ test.describe('Global Summary Component', () => {
     }) => {
       // Test on desktop
       await page.setViewportSize({ width: 1920, height: 1080 });
-      await page.waitForTimeout(300);
-
-      let charts = page.locator('dms-summary-display');
-      await expect(charts).toHaveCount(2);
+      await expect(page.locator('dms-summary-display')).toHaveCount(2, {
+        timeout: 5000,
+      });
 
       // Test on tablet
       await page.setViewportSize({ width: 768, height: 1024 });
-      await page.waitForTimeout(300);
-
-      charts = page.locator('dms-summary-display');
-      await expect(charts).toHaveCount(2);
+      await expect(page.locator('dms-summary-display')).toHaveCount(2, {
+        timeout: 5000,
+      });
 
       // Test on mobile
       await page.setViewportSize({ width: 375, height: 667 });
-      await page.waitForTimeout(300);
-
-      charts = page.locator('dms-summary-display');
-      await expect(charts).toHaveCount(2);
+      await expect(page.locator('dms-summary-display')).toHaveCount(2, {
+        timeout: 5000,
+      });
     });
   });
 
