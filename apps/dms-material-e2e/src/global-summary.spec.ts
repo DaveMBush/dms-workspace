@@ -28,8 +28,10 @@ test.describe('Global Summary Component', () => {
     }) => {
       const allocationChart = page.locator('[data-testid="allocation-chart"]');
       await expect(allocationChart).toBeVisible();
-      // Verify the chart container is present
-      await expect(allocationChart.locator('canvas')).toBeVisible();
+      // Verify the chart container is present (canvas may take time to render)
+      await expect(allocationChart.locator('canvas')).toBeVisible({
+        timeout: 15000,
+      });
     });
 
     test('performance line chart displays over time', async ({ page }) => {
@@ -37,8 +39,10 @@ test.describe('Global Summary Component', () => {
         '[data-testid="performance-chart"]'
       );
       await expect(performanceChart).toBeVisible();
-      // Verify the chart container is present
-      await expect(performanceChart.locator('canvas')).toBeVisible();
+      // Verify the chart container is present (canvas may take time to render)
+      await expect(performanceChart.locator('canvas')).toBeVisible({
+        timeout: 15000,
+      });
     });
 
     test('should render two summary display components', async ({ page }) => {
@@ -70,6 +74,10 @@ test.describe('Global Summary Component', () => {
     test('should have month options available', async ({ page }) => {
       const monthSelector = page.locator('[data-testid="month-selector"]');
       await expect(monthSelector).toBeVisible();
+      // Wait for the selector to be enabled (Angular enables it after data loads)
+      await expect(monthSelector).not.toHaveAttribute('aria-disabled', 'true', {
+        timeout: 15000,
+      });
       // Click to open the dropdown
       await monthSelector.click();
       // Wait for options to appear
@@ -86,6 +94,10 @@ test.describe('Global Summary Component', () => {
     }) => {
       const monthSelector = page.locator('[data-testid="month-selector"]');
       await expect(monthSelector).toBeVisible();
+      // Wait for the selector to be enabled after data loads
+      await expect(monthSelector).not.toHaveAttribute('aria-disabled', 'true', {
+        timeout: 15000,
+      });
 
       // Click to open the dropdown
       await monthSelector.click();
@@ -121,6 +133,10 @@ test.describe('Global Summary Component', () => {
     test('should have year options available', async ({ page }) => {
       const yearSelector = page.locator('[data-testid="year-selector"]');
       await expect(yearSelector).toBeVisible();
+      // Wait for the selector to be enabled after data loads
+      await expect(yearSelector).not.toHaveAttribute('aria-disabled', 'true', {
+        timeout: 15000,
+      });
       await yearSelector.click();
       await page.waitForSelector('mat-option', { state: 'visible' });
       const options = page.locator('mat-option');
@@ -134,6 +150,10 @@ test.describe('Global Summary Component', () => {
     }) => {
       const yearSelector = page.locator('[data-testid="year-selector"]');
       await expect(yearSelector).toBeVisible();
+      // Wait for the selector to be enabled after data loads
+      await expect(yearSelector).not.toHaveAttribute('aria-disabled', 'true', {
+        timeout: 15000,
+      });
 
       await yearSelector.click();
       await page.waitForSelector('mat-option', { state: 'visible' });
@@ -157,16 +177,42 @@ test.describe('Global Summary Component', () => {
 
   test.describe('Loading State', () => {
     test('should show loading spinner during data fetch', async ({ page }) => {
-      // Navigate without waiting for networkidle so we can catch the spinner
-      await page.goto('/global/summary');
-      // The spinner should appear while data is loading
-      // Use a loose check: if visible it's correct, if page already loaded that's fine too
+      // Page is fully loaded via beforeEach. We reload and hold ALL summary API
+      // calls (including /months) so loadingSignal stays true the whole time.
+      const pendingRoutes: Array<() => void> = [];
+      await page.route(/\/api\/summary/, (route) => {
+        const url = route.request().url();
+        if (url.includes('/graph') || url.includes('/years')) {
+          return route.continue();
+        }
+        return new Promise<void>((resolve) => {
+          pendingRoutes.push(() => {
+            route.continue();
+            resolve();
+          });
+        });
+      });
+
       const spinner = page.locator('[data-testid="loading-spinner"]');
-      // If data loads very quickly the spinner may not be visible, which is acceptable
-      // Just verify the spinner element exists in DOM when loading occurs
-      await page.waitForLoadState('networkidle');
-      // After loading completes, spinner should be gone
-      await expect(spinner).not.toBeVisible();
+
+      // Reload page; Angular will bootstrap and fire API calls (all held open)
+      void page.reload({ waitUntil: 'domcontentloaded' });
+
+      // Wait until the spinner appears in DOM (Angular bootstrapped + loadingSignal=true)
+      await page.waitForFunction(
+        () =>
+          document.querySelector('[data-testid="loading-spinner"]') !== null,
+        { timeout: 10000 }
+      );
+
+      // Spinner confirmed in DOM; assert it is visible
+      await expect(spinner).toBeVisible();
+
+      // Release all held routes; Angular will complete the fetch and hide the spinner
+      pendingRoutes.forEach((resolve) => resolve());
+
+      // After data loads, spinner should be gone (wait up to 15s for Angular to update)
+      await expect(spinner).not.toBeVisible({ timeout: 15000 });
     });
 
     test('should display data after loading completes', async ({ page }) => {
@@ -204,6 +250,44 @@ test.describe('Global Summary Component', () => {
     test('should not show error message on successful load', async ({
       page,
     }) => {
+      const errorMessage = page.locator('[data-testid="error-message"]');
+      await expect(errorMessage).not.toBeVisible();
+    });
+  });
+
+  test.describe('Empty State', () => {
+    test('should show no-data message when summary has no allocation data', async ({
+      page,
+    }) => {
+      // Intercept only the summary data endpoint (not months/graph) to return all-zero data
+      // This makes hasAllocationData$() return false, triggering the no-data message
+      await page.route('**/api/summary?*', async (route) => {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            deposits: 0,
+            dividends: 0,
+            capitalGains: 0,
+            equities: 0,
+            income: 0,
+            tax_free_income: 0,
+          }),
+        });
+      });
+
+      await page.goto('/global/summary');
+      await page.waitForLoadState('networkidle');
+
+      // No-data message should be visible (all allocation values are zero)
+      const noDataMessage = page.locator('[data-testid="no-data-message"]');
+      await expect(noDataMessage).toBeVisible();
+
+      // Stats grid should be visible (showing zeros)
+      const statsGrid = page.locator('[data-testid="stats-grid"]');
+      await expect(statsGrid).toBeVisible();
+
+      // No error message — empty data is a valid state, not an error
       const errorMessage = page.locator('[data-testid="error-message"]');
       await expect(errorMessage).not.toBeVisible();
     });
