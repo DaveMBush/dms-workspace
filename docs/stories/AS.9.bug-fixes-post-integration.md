@@ -447,6 +447,7 @@ _QA assessment will be recorded here after story review_
 - Bugs #6 & #7: `buildEnrichedPoints()` helper extracted for cumulative sum computation; existing wrong tests corrected
 - Bug #8: `avg_purchase_yield_percent` is computed (not stored) — `(distribution * distributions_per_year * 100) / avgBuyPrice` from open trades
 - Bug #9: OpenFIGI v3 API is operational; actual response uses `warning` (not `error`) for unresolvable CUSIPs — mocks updated accordingly
+- Bug #13: `most_recent_sell_date` and `most_recent_sell_price` columns were always NULL in the universe table; server now computes them at query time from sold trades (like the old DMS app did client-side). Also fixed pre-existing test typo (`screenerError` → `screenerError$`).
 
 ### File List
 
@@ -469,12 +470,14 @@ _QA assessment will be recorded here after story review_
 - `apps/server/src/app/routes/summary/graph/index.ts` — Bug #4
 - `apps/server/src/app/routes/summary/years/index.spec.ts` (NEW) — Bug #2 regression tests
 - `apps/server/src/app/routes/summary/years/index.ts` — Bug #2 (stale comment removed)
-- `apps/server/src/app/routes/universe/index.spec.ts` (NEW) — Bug #8 regression tests
-- `apps/server/src/app/routes/universe/index.ts` — Bugs #8, #10 (calculateAvgPurchaseYieldPercent, avg_purchase_yield_percent in add route)
+- `apps/server/src/app/routes/universe/index.spec.ts` — Bugs #8, #13 (regression tests for sell data computation)
+- `apps/server/src/app/routes/universe/index.ts` — Bugs #8, #10, #13 (calculateAvgPurchaseYieldPercent, avg_purchase_yield_percent in add route, compute most_recent_sell from trades)
 - `apps/server/src/app/routes/universe/universe.interface.ts` — Bug #8
+- `apps/dms-material/src/app/global/global-universe/global-universe.component.spec.ts` — Bug #13 (fixed screenerError → screenerError$ typo)
 
 ### Change Log
 
-| Date       | Change                              | Files               |
-| ---------- | ----------------------------------- | ------------------- |
-| 2026-03-01 | All 9 bugs fixed + regression tests | See File List above |
+| Date       | Change                                                    | Files               |
+| ---------- | --------------------------------------------------------- | ------------------- |
+| 2026-03-01 | All 9 bugs fixed + regression tests                       | See File List above |
+| 2026-03-02 | Bug #13: most_recent_sell computed from trades + test fix | See File List above |

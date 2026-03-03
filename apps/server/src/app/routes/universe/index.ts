@@ -6,29 +6,57 @@ import { addSymbol } from './add-symbol/add-symbol.function';
 import registerSyncFromScreener from './sync-from-screener';
 import { Universe } from './universe.interface';
 
+interface TradeRow {
+  buy: number;
+  quantity: number;
+  sell: number;
+  sell_date: Date | null;
+}
+
 interface UniverseWithTrades {
   id: string;
   distribution: number;
   distributions_per_year: number;
   last_price: number;
-  most_recent_sell_date: Date | null;
-  most_recent_sell_price: number | null;
   symbol: string;
   ex_date: Date | null;
   risk_group_id: string;
-  trades: Array<{ buy: number; quantity: number }>;
+  trades: TradeRow[];
   expired: boolean;
   is_closed_end_fund: boolean;
 }
 
+function getOpenTrades(trades: TradeRow[]): TradeRow[] {
+  return trades.filter(function isOpen(t: TradeRow): boolean {
+    return t.sell_date === null;
+  });
+}
+
+function getMostRecentSell(
+  trades: TradeRow[]
+): { sell_date: Date; sell: number } | null {
+  let mostRecent: { sell_date: Date; sell: number } | null = null;
+  for (let i = 0; i < trades.length; i++) {
+    const t = trades[i];
+    if (
+      t.sell_date !== null &&
+      (mostRecent === null ||
+        t.sell_date.getTime() > mostRecent.sell_date.getTime())
+    ) {
+      mostRecent = { sell_date: t.sell_date, sell: t.sell };
+    }
+  }
+  return mostRecent;
+}
+
 function calculateAvgPurchaseYieldPercent(
-  trades: Array<{ buy: number; quantity: number }>,
+  openTrades: TradeRow[],
   distribution: number,
   distributionsPerYear: number
 ): number {
-  const totalQuantity = trades.reduce(function sumQty(
+  const totalQuantity = openTrades.reduce(function sumQty(
     acc: number,
-    t: { quantity: number }
+    t: TradeRow
   ): number {
     return acc + t.quantity;
   },
@@ -36,9 +64,9 @@ function calculateAvgPurchaseYieldPercent(
   if (totalQuantity === 0) {
     return 0;
   }
-  const totalCost = trades.reduce(function sumCost(
+  const totalCost = openTrades.reduce(function sumCost(
     acc: number,
-    t: { buy: number; quantity: number }
+    t: TradeRow
   ): number {
     return acc + t.buy * t.quantity;
   },
@@ -48,33 +76,33 @@ function calculateAvgPurchaseYieldPercent(
 }
 
 function mapUniverseToResponse(u: UniverseWithTrades): Universe {
+  const openTrades = getOpenTrades(u.trades);
+  const mostRecentSell = getMostRecentSell(u.trades);
   return {
     id: u.id,
     distribution: u.distribution,
     distributions_per_year: u.distributions_per_year,
     last_price: u.last_price,
-    most_recent_sell_date: u.most_recent_sell_date?.toISOString() ?? null,
-    most_recent_sell_price: u.most_recent_sell_price ?? null,
+    most_recent_sell_date: mostRecentSell?.sell_date.toISOString() ?? null,
+    most_recent_sell_price: mostRecentSell?.sell ?? null,
     symbol: u.symbol,
     ex_date: u.ex_date?.toISOString() ?? '',
     risk_group_id: u.risk_group_id,
-    position: calculatePosition(u.trades),
+    position: calculatePosition(openTrades),
     expired: u.expired,
     is_closed_end_fund: u.is_closed_end_fund,
     avg_purchase_yield_percent: calculateAvgPurchaseYieldPercent(
-      u.trades,
+      openTrades,
       u.distribution,
       u.distributions_per_year
     ),
   };
 }
 
-function calculatePosition(
-  trades: Array<{ buy: number; quantity: number }>
-): number {
-  return trades.reduce(function sumPosition(
+function calculatePosition(openTrades: TradeRow[]): number {
+  return openTrades.reduce(function sumPosition(
     acc: number,
-    trade: { buy: number; quantity: number }
+    trade: TradeRow
   ): number {
     return acc + trade.buy * trade.quantity;
   },
@@ -101,9 +129,7 @@ function handleGetUniversesRoute(fastify: FastifyInstance): void {
         where: { id: { in: ids } },
         include: {
           risk_group: true,
-          trades: {
-            where: { sell_date: null },
-          },
+          trades: true,
         },
       });
       return universes.map(function mapUniverse(u) {
@@ -239,13 +265,7 @@ async function fetchUpdatedUniverse(id: string): Promise<UniverseWithTrades[]> {
   return prisma.universe.findMany({
     where: { id },
     include: {
-      trades: {
-        where: {
-          sell_date: {
-            equals: null,
-          },
-        },
-      },
+      trades: true,
     },
   });
 }

@@ -28,14 +28,17 @@ function makeUniverseRow(
     distribution: number;
     distributions_per_year: number;
     last_price: number;
-    most_recent_sell_date: Date | null;
-    most_recent_sell_price: number | null;
     symbol: string;
     ex_date: Date | null;
     risk_group_id: string;
     expired: boolean;
     is_closed_end_fund: boolean;
-    trades: Array<{ buy: number; quantity: number }>;
+    trades: Array<{
+      buy: number;
+      quantity: number;
+      sell: number;
+      sell_date: Date | null;
+    }>;
     risk_group: { name: string };
   }> = {}
 ) {
@@ -44,8 +47,6 @@ function makeUniverseRow(
     distribution: 0.1,
     distributions_per_year: 12,
     last_price: 10.0,
-    most_recent_sell_date: null,
-    most_recent_sell_price: null,
     symbol: 'ABC',
     ex_date: null,
     risk_group_id: 'rg1',
@@ -73,7 +74,9 @@ describe('POST /api/universe - avg_purchase_yield_percent (regression: AS.9 Bug 
 
   it('should include avg_purchase_yield_percent in response for each universe row', async () => {
     mockPrismaUniverse.findMany.mockResolvedValue([
-      makeUniverseRow({ trades: [{ buy: 10.0, quantity: 100 }] }),
+      makeUniverseRow({
+        trades: [{ buy: 10.0, quantity: 100, sell: 0, sell_date: null }],
+      }),
     ]);
 
     const response = await app.inject({
@@ -98,8 +101,8 @@ describe('POST /api/universe - avg_purchase_yield_percent (regression: AS.9 Bug 
         distribution: 0.1,
         distributions_per_year: 12,
         trades: [
-          { buy: 10.0, quantity: 50 },
-          { buy: 12.0, quantity: 50 },
+          { buy: 10.0, quantity: 50, sell: 0, sell_date: null },
+          { buy: 12.0, quantity: 50, sell: 0, sell_date: null },
         ],
       }),
     ]);
@@ -134,5 +137,100 @@ describe('POST /api/universe - avg_purchase_yield_percent (regression: AS.9 Bug 
       avg_purchase_yield_percent: number;
     }>;
     expect(rows[0].avg_purchase_yield_percent).toBe(0);
+  });
+
+  it('should compute most_recent_sell_date and most_recent_sell_price from sold trades', async () => {
+    const olderSellDate = new Date('2025-06-15T00:00:00.000Z');
+    const newerSellDate = new Date('2025-10-27T00:00:00.000Z');
+    mockPrismaUniverse.findMany.mockResolvedValue([
+      makeUniverseRow({
+        trades: [
+          { buy: 10.0, quantity: 50, sell: 0, sell_date: null },
+          {
+            buy: 10.0,
+            quantity: 30,
+            sell: 12.5,
+            sell_date: olderSellDate,
+          },
+          {
+            buy: 10.0,
+            quantity: 20,
+            sell: 14.0,
+            sell_date: newerSellDate,
+          },
+        ],
+      }),
+    ]);
+
+    const response = await app.inject({
+      method: 'POST',
+      url: '/api/universe/',
+      payload: ['u1'],
+    });
+
+    expect(response.statusCode).toBe(200);
+    const rows = JSON.parse(response.body) as Array<{
+      most_recent_sell_date: string | null;
+      most_recent_sell_price: number | null;
+    }>;
+    expect(rows[0].most_recent_sell_date).toBe(newerSellDate.toISOString());
+    expect(rows[0].most_recent_sell_price).toBe(14.0);
+  });
+
+  it('should return null for most_recent_sell fields when no sold trades exist', async () => {
+    mockPrismaUniverse.findMany.mockResolvedValue([
+      makeUniverseRow({
+        trades: [{ buy: 10.0, quantity: 50, sell: 0, sell_date: null }],
+      }),
+    ]);
+
+    const response = await app.inject({
+      method: 'POST',
+      url: '/api/universe/',
+      payload: ['u1'],
+    });
+
+    expect(response.statusCode).toBe(200);
+    const rows = JSON.parse(response.body) as Array<{
+      most_recent_sell_date: string | null;
+      most_recent_sell_price: number | null;
+    }>;
+    expect(rows[0].most_recent_sell_date).toBeNull();
+    expect(rows[0].most_recent_sell_price).toBeNull();
+  });
+
+  it('should only use open trades for position and avg_purchase_yield_percent', async () => {
+    // Mix of open and sold trades - only open trades should count
+    mockPrismaUniverse.findMany.mockResolvedValue([
+      makeUniverseRow({
+        distribution: 0.1,
+        distributions_per_year: 12,
+        trades: [
+          { buy: 10.0, quantity: 100, sell: 0, sell_date: null }, // open
+          {
+            buy: 8.0,
+            quantity: 50,
+            sell: 12.0,
+            sell_date: new Date('2025-06-15'),
+          }, // sold
+        ],
+      }),
+    ]);
+
+    const response = await app.inject({
+      method: 'POST',
+      url: '/api/universe/',
+      payload: ['u1'],
+    });
+
+    expect(response.statusCode).toBe(200);
+    const rows = JSON.parse(response.body) as Array<{
+      position: number;
+      avg_purchase_yield_percent: number;
+    }>;
+    // Position = only open trade: 10.0 * 100 = 1000
+    expect(rows[0].position).toBe(1000);
+    // avg yield uses only open trade: (0.1 * 12 * 100) / 10.0 = 12.0
+    expect(rows[0].avg_purchase_yield_percent).toBeCloseTo(12.0, 2);
   });
 });

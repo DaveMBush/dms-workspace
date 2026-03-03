@@ -96,7 +96,7 @@ export class GlobalUniverseComponent {
   readonly isUpdatingFields$ = this.updateFieldsService.isUpdating;
 
   // Expose screener service loading and error signals
-  readonly screenerError = this.screenerService.error;
+  readonly screenerError$ = this.screenerService.error;
   readonly columns: ColumnDef[] = UNIVERSE_COLUMNS;
 
   readonly expiredOptions = EXPIRED_OPTIONS;
