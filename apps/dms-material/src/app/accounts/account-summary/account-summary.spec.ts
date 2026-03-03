@@ -67,8 +67,8 @@ describe('AccountSummary - Service Integration', () => {
     });
 
     it('should get accountId from route parameter', () => {
-      // Mock ActivatedRoute with accountId param
-      expect(component['accountId']).toBeDefined();
+      // Verify accountId is extracted from route parameter and matches expected value
+      expect(component['accountId']).toBe('123');
     });
 
     it('should transform API response to allocation chart data', () => {

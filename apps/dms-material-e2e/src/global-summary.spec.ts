@@ -182,16 +182,16 @@ test.describe('Global Summary Component', () => {
       // We use route.fulfill() with mock data (instead of route.continue()) to
       // avoid browser timeout issues on held requests.
       let intercepting = true;
-      const pendingRoutes: Array<() => void> = [];
+      const pendingRoutes: Array<() => Promise<void>> = [];
       await page.route(/\/api\/summary/, function holdSummaryRoutes(route) {
         const url = route.request().url();
         if (!intercepting || url.includes('/graph') || url.includes('/years')) {
           return route.continue();
         }
         return new Promise<void>(function deferRoute(resolve) {
-          pendingRoutes.push(function releasePendingRoute() {
+          pendingRoutes.push(async function releasePendingRoute() {
             if (url.includes('/months')) {
-              route.fulfill({
+              await route.fulfill({
                 status: 200,
                 contentType: 'application/json',
                 body: JSON.stringify([
@@ -200,7 +200,7 @@ test.describe('Global Summary Component', () => {
                 ]),
               });
             } else {
-              route.fulfill({
+              await route.fulfill({
                 status: 200,
                 contentType: 'application/json',
                 body: JSON.stringify({
@@ -239,10 +239,12 @@ test.describe('Global Summary Component', () => {
       // Stop intercepting new requests so subsequent fetches go through normally
       intercepting = false;
 
-      // Release all held routes with fulfilled mock data
-      for (const resolve of pendingRoutes) {
-        resolve();
-      }
+      // Release all held routes with fulfilled mock data and await fulfillment
+      await Promise.all(
+        pendingRoutes.map(function invokeRelease(release) {
+          return release();
+        })
+      );
 
       // After data loads, spinner should be gone (wait up to 15s for Angular to update)
       await expect(spinner).not.toBeVisible({ timeout: 15000 });
