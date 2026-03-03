@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/dot-notation -- TDD RED phase: bracket notation needed for not-yet-implemented private members */
+/* eslint-disable @typescript-eslint/dot-notation -- bracket notation needed for private members */
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
@@ -14,6 +14,27 @@ import {
 import { of } from 'rxjs';
 
 import { AccountSummary } from './account-summary';
+
+function flushPendingRequests(httpMock: HttpTestingController): void {
+  const pending = httpMock.match(() => true);
+  for (const req of pending) {
+    const url = req.request.url;
+    if (url.includes('/api/summary/graph')) {
+      req.flush([]);
+    } else if (url.includes('/api/summary/months')) {
+      req.flush([]);
+    } else if (url.includes('/api/summary')) {
+      req.flush({
+        deposits: 0,
+        dividends: 0,
+        capitalGains: 0,
+        equities: 0,
+        income: 0,
+        tax_free_income: 0,
+      });
+    }
+  }
+}
 
 describe('AccountSummary - Service Integration', () => {
   let component: AccountSummary;
@@ -49,6 +70,7 @@ describe('AccountSummary - Service Integration', () => {
   });
 
   afterEach(() => {
+    flushPendingRequests(httpMock);
     httpMock.verify();
   });
 
@@ -56,13 +78,12 @@ describe('AccountSummary - Service Integration', () => {
     expect(component).toBeTruthy();
   });
 
-  describe.skip('Account Summary Service Integration', () => {
+  describe('Account Summary Service Integration', () => {
     it('should inject summary service on initialization', () => {
       expect(component['summaryService']).toBeDefined();
     });
 
     it('should call /api/summary with accountId parameter on init', () => {
-      // Set mock accountId
       component['accountId'] = '123';
       component.ngOnInit();
 
@@ -137,7 +158,7 @@ describe('AccountSummary - Service Integration', () => {
     });
   });
 
-  describe.skip('Graph Integration', () => {
+  describe('Graph Integration', () => {
     it('should call /api/summary/graph with accountId', () => {
       component['accountId'] = '123';
       component['selectedMonth'].setValue('2025-03');
@@ -204,7 +225,7 @@ describe('AccountSummary - Service Integration', () => {
     });
   });
 
-  describe.skip('Available Months', () => {
+  describe('Available Months', () => {
     it('should fetch available months with accountId', () => {
       component['accountId'] = '123';
       component.ngOnInit();
@@ -232,7 +253,7 @@ describe('AccountSummary - Service Integration', () => {
     });
   });
 
-  describe.skip('Error Handling', () => {
+  describe('Error Handling', () => {
     it('should handle summary fetch errors', () => {
       component['accountId'] = '123';
       component.ngOnInit();

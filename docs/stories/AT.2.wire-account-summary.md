@@ -1,6 +1,6 @@
 # Story AT.2: Wire Account Summary to Backend with AccountId Filter
 
-**Status:** Approved
+**Status:** Ready for Review
 
 ## Story
 
@@ -50,30 +50,30 @@
 
 ## Tasks / Subtasks
 
-- [ ] Re-enable tests from AT.1-TDD (AC: T1)
-- [ ] Modify SummaryService to accept accountId parameter (AC: T2)
-  - [ ] Update `getSummary()` method to accept optional accountId
-  - [ ] Update `getGraph()` method to accept optional accountId
-  - [ ] Update `getAvailableMonths()` method to accept optional accountId
-  - [ ] Add accountId query parameter to HTTP requests
-- [ ] Implement AccountSummary component (AC: F1-F7)
-  - [ ] Inject SummaryService
-  - [ ] Inject ActivatedRoute to get accountId
-  - [ ] Add `ngOnInit()` lifecycle method
-  - [ ] Extract accountId from route params
-  - [ ] Add loading state signal
-  - [ ] Add error state signals
-  - [ ] Call summary service on init with accountId
-  - [ ] Transform API response to chart data
-  - [ ] Update deposits, capitalGains, dividends signals
-- [ ] Create component template (AC: F5, F6)
-  - [ ] Add loading spinner
-  - [ ] Add error message display
-  - [ ] Show/hide content based on loading state
-  - [ ] Display allocation chart
-  - [ ] Display performance metrics
-- [ ] Verify all tests pass (AC: T1)
-- [ ] Run validation commands
+- [x] Re-enable tests from AT.1-TDD (AC: T1)
+- [x] Modify SummaryService to accept accountId parameter (AC: T2)
+  - [x] Update `getSummary()` method to accept optional accountId
+  - [x] Update `getGraph()` method to accept optional accountId
+  - [x] Update `getAvailableMonths()` method to accept optional accountId
+  - [x] Add accountId query parameter to HTTP requests
+- [x] Implement AccountSummary component (AC: F1-F7)
+  - [x] Inject SummaryService
+  - [x] Inject ActivatedRoute to get accountId
+  - [x] Add `ngOnInit()` lifecycle method
+  - [x] Extract accountId from route params
+  - [x] Add loading state signal
+  - [x] Add error state signals
+  - [x] Call summary service on init with accountId
+  - [x] Transform API response to chart data
+  - [x] Update deposits, capitalGains, dividends signals
+- [x] Create component template (AC: F5, F6)
+  - [x] Add loading spinner
+  - [x] Add error message display
+  - [x] Show/hide content based on loading state
+  - [x] Display allocation chart
+  - [x] Display performance metrics
+- [x] Verify all tests pass (AC: T1)
+- [x] Run validation commands
 
 ## Dev Notes
 
@@ -174,6 +174,44 @@ getSummary(accountId?: string): void {
 
 ## Change Log
 
-| Date       | Version | Description      | Author |
-| ---------- | ------- | ---------------- | ------ |
-| 2026-03-02 | 1.0     | Initial creation | PM     |
+| Date       | Version | Description             | Author      |
+| ---------- | ------- | ----------------------- | ----------- |
+| 2026-03-02 | 1.0     | Initial creation        | PM          |
+| 2026-03-03 | 1.1     | Implementation complete | James (Dev) |
+
+---
+
+## Dev Agent Record
+
+### Agent Model Used
+
+Claude Opus 4.6
+
+### File List
+
+- `apps/dms-material/src/app/accounts/account-summary/account-summary.ts` (modified)
+- `apps/dms-material/src/app/accounts/account-summary/account-summary.html` (modified)
+- `apps/dms-material/src/app/accounts/account-summary/account-summary.scss` (new)
+- `apps/dms-material/src/app/accounts/account-summary/account-summary.spec.ts` (modified)
+- `apps/dms-material/src/app/global/services/summary.service.ts` (modified)
+- `docs/qa/gates/at.2-wire-account-summary.yml` (new)
+- `docs/stories/AT.2.wire-account-summary.md` (modified)
+
+### Debug Log References
+
+None
+
+### Completion Notes
+
+- All 15 unit tests from AT.1-TDD re-enabled and passing
+- SummaryService modified with optional accountId parameter on fetchSummary, fetchGraph, fetchMonths
+- AccountSummary component implemented following GlobalSummary pattern
+- Template includes loading spinner, error display, allocation chart, performance chart, stats grid
+- No regressions: 62 global-summary tests pass, 28 service tests pass, 1273 total tests pass
+- E2E: 421 passed (pre-existing update-fields failures unrelated to changes)
+- Dupcheck: 0 clones
+- All lint rules satisfied
+
+### QA Results
+
+Gate: PASS → docs/qa/gates/at.2-wire-account-summary.yml
