@@ -34,6 +34,7 @@ export class SummaryService {
   private readonly summarySignal = signal<Summary>(createDefaultSummary());
   private readonly graphSignal = signal<GraphPoint[]>([]);
   private readonly monthsSignal = signal<MonthOption[]>([]);
+  private readonly accountMonthsSignal = signal<MonthOption[]>([]);
   private readonly yearsSignal = signal<number[]>([]);
   private readonly loadingSignal = signal(false);
   private readonly errorSignal = signal<string | null>(null);
@@ -42,6 +43,7 @@ export class SummaryService {
   readonly summary = this.summarySignal.asReadonly();
   readonly graph = this.graphSignal.asReadonly();
   readonly months = this.monthsSignal.asReadonly();
+  readonly accountMonths = this.accountMonthsSignal.asReadonly();
   readonly years = this.yearsSignal.asReadonly();
   readonly loading = this.loadingSignal.asReadonly();
   readonly error = this.errorSignal.asReadonly();
@@ -150,14 +152,17 @@ export class SummaryService {
     function onMonthsSuccess(
       data: Array<{ month: string; label: string }>
     ): void {
-      self.monthsSignal.set(
-        data.map(function transformMonth(m: {
-          month: string;
-          label: string;
-        }): MonthOption {
-          return { label: m.label, value: m.month };
-        })
-      );
+      const mapped = data.map(function transformMonth(m: {
+        month: string;
+        label: string;
+      }): MonthOption {
+        return { label: m.label, value: m.month };
+      });
+      if (hasAccountId) {
+        self.accountMonthsSignal.set(mapped);
+      } else {
+        self.monthsSignal.set(mapped);
+      }
       if (shouldCache) {
         self.monthsCached = true;
       }

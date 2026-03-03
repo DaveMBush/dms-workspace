@@ -30,31 +30,31 @@
 
 ### Functional Requirements
 
-1. [ ] Component displays real data from `/api/summary?accountId=xxx` endpoint
-2. [ ] AccountId extracted from route parameters
-3. [ ] Risk group allocation pie chart shows actual backend data for account
-4. [ ] Deposits, capital gains, and dividends display real values for account
-5. [ ] Loading spinner shown while fetching data
-6. [ ] Error message displayed on API failure
-7. [ ] Data refreshes on component init
+1. [x] Component displays real data from `/api/summary?accountId=xxx` endpoint
+2. [x] AccountId extracted from route parameters
+3. [x] Risk group allocation pie chart shows actual backend data for account
+4. [x] Deposits, capital gains, and dividends display real values for account
+5. [x] Loading spinner shown while fetching data
+6. [x] Error message displayed on API failure
+7. [x] Data refreshes on component init
 
 ### Technical Requirements
 
-1. [ ] All tests from AT.1-TDD re-enabled and passing
-2. [ ] SummaryService modified to accept accountId parameter
-3. [ ] AccountSummary component properly wired to service
-4. [ ] HTTP calls properly configured with retry logic
-5. [ ] Signals updated reactively from API response
-6. [ ] Code follows project coding standards
-7. [ ] Unit test coverage >80%
+1. [x] All tests from AT.1-TDD re-enabled and passing
+2. [x] SummaryService modified to accept accountId parameter
+3. [x] AccountSummary component properly wired to service
+4. [x] HTTP calls properly configured with retry logic
+5. [x] Signals updated reactively from API response
+6. [x] Code follows project coding standards
+7. [x] Unit test coverage >80%
 
 ## Tasks / Subtasks
 
 - [x] Re-enable tests from AT.1-TDD (AC: T1)
 - [x] Modify SummaryService to accept accountId parameter (AC: T2)
-  - [x] Update `getSummary()` method to accept optional accountId
-  - [x] Update `getGraph()` method to accept optional accountId
-  - [x] Update `getAvailableMonths()` method to accept optional accountId
+  - [x] Update `fetchSummary()` method to accept optional accountId
+  - [x] Update `fetchGraph()` method to accept optional accountId
+  - [x] Update `fetchMonths()` method to accept optional accountId
   - [x] Add accountId query parameter to HTTP requests
 - [x] Implement AccountSummary component (AC: F1-F7)
   - [x] Inject SummaryService
@@ -132,29 +132,29 @@ private readonly accountId = this.route.snapshot.paramMap.get('id') || '';
 
 ```typescript
 // Update service methods to accept optional accountId
-getSummary(accountId?: string): void {
-  const params = accountId ? { accountId } : {};
+fetchSummary(month: string, onComplete?: () => void, accountId?: string): void {
+  const params = accountId ? { accountId } : { month };
   this.http.get<Summary>('/api/summary', { params }).subscribe(/*...*/);
 }
 ```
 
 ## Definition of Done
 
-- [ ] All tests from AT.1-TDD re-enabled and passing (GREEN phase)
-- [ ] SummaryService modified to accept accountId parameter
-- [ ] AccountSummary component wired to service
-- [ ] AccountId extracted from route parameters
-- [ ] Data displays correctly from backend
-- [ ] Loading and error states implemented
-- [ ] Code follows project conventions
-- [ ] Unit test coverage >80%
-- [ ] All validation commands pass:
-  - [ ] Run `pnpm all`
-  - [ ] Run `pnpm e2e:dms-material`
-  - [ ] Run `pnpm dupcheck`
-  - [ ] Run `pnpm format`
-  - [ ] Repeat all of these if any fail until they all pass
-- [ ] Code reviewed and approved
+- [x] All tests from AT.1-TDD re-enabled and passing (GREEN phase)
+- [x] SummaryService modified to accept accountId parameter
+- [x] AccountSummary component wired to service
+- [x] AccountId extracted from route parameters
+- [x] Data displays correctly from backend
+- [x] Loading and error states implemented
+- [x] Code follows project conventions
+- [x] Unit test coverage >80%
+- [x] All validation commands pass:
+  - [x] Run `pnpm all`
+  - [x] Run `pnpm e2e:dms-material`
+  - [x] Run `pnpm dupcheck`
+  - [x] Run `pnpm format`
+  - [x] Repeat all of these if any fail until they all pass
+- [x] Code reviewed and approved
 
 ## Notes
 

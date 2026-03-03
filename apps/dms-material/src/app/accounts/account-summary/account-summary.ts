@@ -16,6 +16,13 @@ import { GraphPoint } from '../../global/services/graph-point.interface';
 import { SummaryService } from '../../global/services/summary.service';
 import { SummaryDisplayComponent } from '../../shared/components/summary-display/summary-display';
 
+function getCurrentMonth(): string {
+  const now = new Date();
+  const year = now.getFullYear();
+  const monthStr = (now.getMonth() + 1).toString().padStart(2, '0');
+  return `${year}-${monthStr}`;
+}
+
 interface EnrichedPoint {
   month: string;
   base: number;
@@ -67,7 +74,7 @@ export class AccountSummary implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private accountId = '';
 
-  readonly selectedMonth = new FormControl('2025-03');
+  readonly selectedMonth = new FormControl(getCurrentMonth());
 
   readonly loading$ = this.summaryService.loading;
   readonly loading = this.loading$;
@@ -134,7 +141,7 @@ export class AccountSummary implements OnInit {
     };
   });
 
-  readonly monthOptions = computed(() => this.summaryService.months());
+  readonly monthOptions = computed(() => this.summaryService.accountMonths());
 
   readonly basis$ = computed(() => this.summaryService.summary().deposits);
 
@@ -177,7 +184,7 @@ export class AccountSummary implements OnInit {
     this.summaryService.fetchGraph(
       undefined,
       this.accountId,
-      this.selectedMonth.value ?? '2025-03'
+      this.selectedMonth.value ?? getCurrentMonth()
     );
     this.summaryService.fetchMonths(this.accountId);
   }
