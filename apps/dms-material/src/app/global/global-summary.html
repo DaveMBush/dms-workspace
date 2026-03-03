@@ -1,4 +1,4 @@
-<mat-card>
+<mat-card data-testid="global-summary-container">
   <mat-card-header>
     <mat-card-title>
       <h1>Global Summary</h1>
@@ -6,13 +6,17 @@
   </mat-card-header>
   <mat-card-content>
     @if (loading$()) {
-    <div class="flex justify-center items-center py-4">
+    <div
+      class="flex justify-center items-center py-4"
+      data-testid="loading-spinner"
+    >
       <mat-spinner diameter="32"></mat-spinner>
     </div>
     } @if (error$()) {
     <div
       class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4"
       role="alert"
+      data-testid="error-message"
     >
       <span class="font-medium">Error:</span> {{ error$() }}
     </div>
@@ -28,6 +32,7 @@
             [formControl]="selectedMonth"
             class="w-48"
             panelClass="month-select-panel"
+            data-testid="month-selector"
           >
             @for (month of monthOptions; track month.value) {
             <mat-option [value]="month.value">{{ month.label }}</mat-option>
@@ -36,10 +41,15 @@
         </div>
 
         <!-- Stats Grid -->
-        <div class="grid grid-cols-2 gap-6 w-full max-w-md mb-8">
+        <div
+          class="grid grid-cols-2 gap-6 w-full max-w-md mb-8"
+          data-testid="stats-grid"
+        >
           <div class="flex flex-col">
             <span class="text-xs text-gray-500">Base</span>
-            <span class="text-lg font-semibold">{{ basis$() | currency }}</span>
+            <span class="text-lg font-semibold" data-testid="basis-value"
+              >{{ basis$() | currency }}</span
+            >
           </div>
           <div class="flex flex-col">
             <span class="text-xs text-gray-500">Dividends</span>
@@ -67,9 +77,15 @@
             Allocation by Risk Group
           </h2>
           @if (!hasAllocationData$()) {
-          <p class="no-data-message text-gray-500 py-4">No data available</p>
+          <p
+            class="no-data-message text-gray-500 py-4"
+            data-testid="no-data-message"
+          >
+            No data available
+          </p>
           }
           <dms-summary-display
+            data-testid="allocation-chart"
             [data$]="allocationData"
             [chartType$]="'pie'"
             [options$]="pieChartOptions"
@@ -88,7 +104,11 @@
             subscriptSizing="dynamic"
             class="w-24"
           >
-            <mat-select [formControl]="selectedYear" aria-label="Select year">
+            <mat-select
+              [formControl]="selectedYear"
+              aria-label="Select year"
+              data-testid="year-selector"
+            >
               @for (year of yearOptions; track year) {
               <mat-option [value]="year">{{ year }}</mat-option>
               }
@@ -97,6 +117,7 @@
         </div>
         <div class="flex-1 min-h-0">
           <dms-summary-display
+            data-testid="performance-chart"
             [data$]="performanceData"
             [chartType$]="'line'"
             [height$]="'100%'"
