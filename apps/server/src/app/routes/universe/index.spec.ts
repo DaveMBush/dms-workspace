@@ -139,6 +139,26 @@ describe('POST /api/universe - avg_purchase_yield_percent (regression: AS.9 Bug 
     expect(rows[0].avg_purchase_yield_percent).toBe(0);
   });
 
+  it('should return 0 when open trades exist but average buy is 0', async () => {
+    mockPrismaUniverse.findMany.mockResolvedValue([
+      makeUniverseRow({
+        trades: [{ buy: 0, quantity: 10, sell: 0, sell_date: null }],
+      }),
+    ]);
+
+    const response = await app.inject({
+      method: 'POST',
+      url: '/api/universe/',
+      payload: ['u1'],
+    });
+
+    expect(response.statusCode).toBe(200);
+    const rows = JSON.parse(response.body) as Array<{
+      avg_purchase_yield_percent: number;
+    }>;
+    expect(rows[0].avg_purchase_yield_percent).toBe(0);
+  });
+
   it('should compute most_recent_sell_date and most_recent_sell_price from sold trades', async () => {
     const olderSellDate = new Date('2025-06-15T00:00:00.000Z');
     const newerSellDate = new Date('2025-10-27T00:00:00.000Z');

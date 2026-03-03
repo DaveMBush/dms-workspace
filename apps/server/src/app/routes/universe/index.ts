@@ -72,6 +72,9 @@ function calculateAvgPurchaseYieldPercent(
   },
   0);
   const avgBuy = totalCost / totalQuantity;
+  if (!Number.isFinite(avgBuy) || avgBuy <= 0) {
+    return 0;
+  }
   return (distribution * distributionsPerYear * 100) / avgBuy;
 }
 
