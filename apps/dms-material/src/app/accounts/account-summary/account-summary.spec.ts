@@ -298,45 +298,6 @@ describe('AccountSummary - Service Integration', () => {
       expect(chartData.datasets[0].data).toEqual([0, 0, 0]);
     });
   });
-});
-
-describe('AccountSummary', () => {
-  let component: AccountSummary;
-  let fixture: ComponentFixture<AccountSummary>;
-  let httpMock: HttpTestingController;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [AccountSummary],
-      providers: [
-        provideHttpClient(),
-        provideHttpClientTesting(),
-        provideRouter([
-          {
-            path: 'accounts/:id',
-            component: AccountSummary,
-          },
-        ]),
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            snapshot: { paramMap: convertToParamMap({ id: '123' }) },
-            paramMap: of(convertToParamMap({ id: '123' })),
-            params: of({ id: '123' }),
-          },
-        },
-      ],
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(AccountSummary);
-    component = fixture.componentInstance;
-    httpMock = TestBed.inject(HttpTestingController);
-  });
-
-  afterEach(() => {
-    flushPendingRequests(httpMock);
-    httpMock.verify();
-  });
 
   describe.skip('Account Pie Chart Display', () => {
     it('should configure pie chart with account allocation data', () => {
