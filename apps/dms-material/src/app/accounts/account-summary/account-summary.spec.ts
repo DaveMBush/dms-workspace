@@ -126,6 +126,7 @@ describe('AccountSummary - Service Integration', () => {
     it('should call /api/summary/graph with accountId', () => {
       component['accountId'] = '123';
       component['selectedMonth'].setValue('2025-03');
+      component.ngOnInit();
 
       const req = httpMock.expectOne(
         '/api/summary/graph?month=2025-03&accountId=123'
@@ -156,6 +157,7 @@ describe('AccountSummary - Service Integration', () => {
     it('should transform graph data for performance chart', () => {
       component['accountId'] = '123';
       component['selectedMonth'].setValue('2025-03');
+      component.ngOnInit();
 
       const req = httpMock.expectOne(
         '/api/summary/graph?month=2025-03&accountId=123'
@@ -190,6 +192,7 @@ describe('AccountSummary - Service Integration', () => {
   describe.skip('Available Months', () => {
     it('should fetch available months with accountId', () => {
       component['accountId'] = '123';
+      component.ngOnInit();
 
       const req = httpMock.expectOne('/api/summary/months?accountId=123');
       expect(req.request.method).toBe('GET');
@@ -202,6 +205,7 @@ describe('AccountSummary - Service Integration', () => {
 
     it('should populate month selector options', () => {
       component['accountId'] = '123';
+      component.ngOnInit();
 
       const req = httpMock.expectOne('/api/summary/months?accountId=123');
       req.flush([
@@ -227,6 +231,7 @@ describe('AccountSummary - Service Integration', () => {
     it('should handle graph fetch errors', () => {
       component['accountId'] = '123';
       component['selectedMonth'].setValue('2025-03');
+      component.ngOnInit();
 
       const req = httpMock.expectOne(
         '/api/summary/graph?month=2025-03&accountId=123'
@@ -238,6 +243,7 @@ describe('AccountSummary - Service Integration', () => {
 
     it('should handle months fetch errors', () => {
       component['accountId'] = '123';
+      component.ngOnInit();
 
       const req = httpMock.expectOne('/api/summary/months?accountId=123');
       req.error(new ProgressEvent('error'));
