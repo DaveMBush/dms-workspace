@@ -7,6 +7,10 @@ model: Claude Opus 4.6 (copilot)
 
 # Autonomous Epic Development Workflow
 
+## CRITICAL: Each Phase In a subAgent
+
+Each phase of the epic development process must be handled by a separate subAgent. This ensures modularity, better error handling, clear separation of concerns, and avoids loss of overall context
+
 ## CRITICAL: How to Call prompt.sh
 
 Whenever this document says "Call `.github/prompts/prompt.sh \"...\"`", you MUST:
