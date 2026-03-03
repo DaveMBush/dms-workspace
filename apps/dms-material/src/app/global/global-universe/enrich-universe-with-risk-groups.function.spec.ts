@@ -25,6 +25,7 @@ describe('enrichUniverseWithRiskGroups', () => {
       is_closed_end_fund: false,
       name: 'Apple Inc.',
       position: 100,
+      avg_purchase_yield_percent: 6.5,
     },
     {
       id: '2',
@@ -40,6 +41,7 @@ describe('enrichUniverseWithRiskGroups', () => {
       is_closed_end_fund: false,
       name: 'Alphabet Inc.',
       position: 50,
+      avg_purchase_yield_percent: 0,
     },
   ];
 
@@ -102,6 +104,9 @@ describe('enrichUniverseWithRiskGroups', () => {
     expect(enriched.is_closed_end_fund).toBe(original.is_closed_end_fund);
     expect(enriched.name).toBe(original.name);
     expect(enriched.position).toBe(original.position);
+    expect(enriched.avg_purchase_yield_percent).toBe(
+      original.avg_purchase_yield_percent
+    );
   });
 
   it('should create new objects, not modify originals', () => {

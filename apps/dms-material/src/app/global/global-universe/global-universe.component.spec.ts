@@ -1291,8 +1291,8 @@ describe('GlobalUniverseComponent - SmartNgRX Integration', () => {
 
   describe('error state handling', () => {
     it('should display error message when universe data load fails', () => {
-      // The component uses screenerError for error display
-      expect(component.screenerError).toBeDefined();
+      // The component uses screenerError$ for error display
+      expect(component.screenerError$).toBeDefined();
     });
 
     it('should provide retry mechanism on load failure', () => {

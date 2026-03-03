@@ -18,7 +18,7 @@
     </div>
     }
     <div
-      class="flex flex-col md:flex-row items-start w-full h-full gap-8 charts-container"
+      class="flex flex-col md:flex-row items-stretch w-full gap-8 charts-container flex-1 min-h-0"
     >
       <!-- Left: Dropdown, stats, pie chart -->
       <div class="flex flex-col items-start w-full md:w-1/2 max-w-md">
@@ -78,25 +78,30 @@
       </div>
 
       <!-- Right: Line chart -->
-      <div class="flex-1 w-full h-full">
-        <div class="flex items-center gap-4 mb-2">
+      <div class="flex-1 w-full min-h-0 flex flex-col">
+        <div class="flex items-center gap-4 mb-2 flex-none">
           <h2 class="text-lg font-semibold chart-title">
             Portfolio Performance
           </h2>
-          <mat-select
-            [formControl]="selectedYear"
+          <mat-form-field
+            appearance="outline"
+            subscriptSizing="dynamic"
             class="w-24"
-            aria-label="Select year"
           >
-            @for (year of yearOptions; track year) {
-            <mat-option [value]="year">{{ year }}</mat-option>
-            }
-          </mat-select>
+            <mat-select [formControl]="selectedYear" aria-label="Select year">
+              @for (year of yearOptions; track year) {
+              <mat-option [value]="year">{{ year }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
         </div>
-        <dms-summary-display
-          [data$]="performanceData"
-          [chartType$]="'line'"
-        ></dms-summary-display>
+        <div class="flex-1 min-h-0">
+          <dms-summary-display
+            [data$]="performanceData"
+            [chartType$]="'line'"
+            [height$]="'100%'"
+          ></dms-summary-display>
+        </div>
       </div>
     </div>
   </mat-card-content>

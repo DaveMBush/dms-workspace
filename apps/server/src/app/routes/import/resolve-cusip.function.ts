@@ -11,7 +11,8 @@ interface OpenFigiJob {
 
 interface OpenFigiResult {
   data?: Array<{ ticker?: string }>;
-  error?: string;
+  warning?: string;
+  error?: string; // kept for back-compat; actual v3 API uses "warning"
 }
 
 /**

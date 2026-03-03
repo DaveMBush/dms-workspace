@@ -21,6 +21,7 @@ export const universeDefinition: SmartEntityDefinition<Universe> = {
       expired: false,
       is_closed_end_fund: true,
       position: 0,
+      avg_purchase_yield_percent: 0,
     };
   },
 };

@@ -38,7 +38,6 @@ function handleAvailableYearsRoute(fastify: FastifyInstance): void {
     {
       schema: {
         response: {
-          // eslint-disable-next-line @typescript-eslint/naming-convention -- fastify schema
           200: {
             type: 'array',
             items: { type: 'number' },
