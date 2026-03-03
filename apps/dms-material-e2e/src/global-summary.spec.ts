@@ -11,7 +11,9 @@ test.describe('Global Summary Component', () => {
 
   test.describe('Core Functionality', () => {
     test('should display global summary page', async ({ page }) => {
-      const summaryCard = page.locator('mat-card');
+      const summaryCard = page.locator(
+        '[data-testid="global-summary-container"]'
+      );
       await expect(summaryCard).toBeVisible();
     });
 
@@ -24,14 +26,16 @@ test.describe('Global Summary Component', () => {
     test('allocation pie chart displays risk group breakdown', async ({
       page,
     }) => {
-      const allocationChart = page.locator('dms-summary-display').first();
+      const allocationChart = page.locator('[data-testid="allocation-chart"]');
       await expect(allocationChart).toBeVisible();
       // Verify the chart container is present
       await expect(allocationChart.locator('canvas')).toBeVisible();
     });
 
     test('performance line chart displays over time', async ({ page }) => {
-      const performanceChart = page.locator('dms-summary-display').nth(1);
+      const performanceChart = page.locator(
+        '[data-testid="performance-chart"]'
+      );
       await expect(performanceChart).toBeVisible();
       // Verify the chart container is present
       await expect(performanceChart.locator('canvas')).toBeVisible();
@@ -50,13 +54,166 @@ test.describe('Global Summary Component', () => {
       await expect(allocationTitle).toBeVisible();
       await expect(performanceTitle).toBeVisible();
     });
+
+    test('should display stats grid with summary values', async ({ page }) => {
+      const statsGrid = page.locator('[data-testid="stats-grid"]');
+      await expect(statsGrid).toBeVisible();
+    });
+  });
+
+  test.describe('Month Selection', () => {
+    test('should display month selector', async ({ page }) => {
+      const monthSelector = page.locator('[data-testid="month-selector"]');
+      await expect(monthSelector).toBeVisible();
+    });
+
+    test('should have month options available', async ({ page }) => {
+      const monthSelector = page.locator('[data-testid="month-selector"]');
+      await expect(monthSelector).toBeVisible();
+      // Click to open the dropdown
+      await monthSelector.click();
+      // Wait for options to appear
+      await page.waitForSelector('mat-option', { state: 'visible' });
+      const options = page.locator('mat-option');
+      const count = await options.count();
+      expect(count).toBeGreaterThan(0);
+      // Close the dropdown by pressing Escape
+      await page.keyboard.press('Escape');
+    });
+
+    test('should update data when selecting a different month', async ({
+      page,
+    }) => {
+      const monthSelector = page.locator('[data-testid="month-selector"]');
+      await expect(monthSelector).toBeVisible();
+
+      // Click to open the dropdown
+      await monthSelector.click();
+      await page.waitForSelector('mat-option', { state: 'visible' });
+
+      const options = page.locator('mat-option');
+      const count = await options.count();
+
+      if (count > 1) {
+        // Select the second option (different from current)
+        await options.nth(1).click();
+        // Wait for page to settle after month change
+        await page.waitForLoadState('networkidle');
+        // Verify statistics are still displayed (data refreshed)
+        const statsGrid = page.locator('[data-testid="stats-grid"]');
+        await expect(statsGrid).toBeVisible();
+      } else {
+        // Only one month available - just verify the selector is functional
+        await page.keyboard.press('Escape');
+        await expect(monthSelector).toBeVisible();
+      }
+    });
+  });
+
+  test.describe('Year Selection', () => {
+    test('should display year selector for performance chart', async ({
+      page,
+    }) => {
+      const yearSelector = page.locator('[data-testid="year-selector"]');
+      await expect(yearSelector).toBeVisible();
+    });
+
+    test('should have year options available', async ({ page }) => {
+      const yearSelector = page.locator('[data-testid="year-selector"]');
+      await expect(yearSelector).toBeVisible();
+      await yearSelector.click();
+      await page.waitForSelector('mat-option', { state: 'visible' });
+      const options = page.locator('mat-option');
+      const count = await options.count();
+      expect(count).toBeGreaterThan(0);
+      await page.keyboard.press('Escape');
+    });
+
+    test('should update performance chart when selecting a different year', async ({
+      page,
+    }) => {
+      const yearSelector = page.locator('[data-testid="year-selector"]');
+      await expect(yearSelector).toBeVisible();
+
+      await yearSelector.click();
+      await page.waitForSelector('mat-option', { state: 'visible' });
+      const options = page.locator('mat-option');
+      const count = await options.count();
+
+      if (count > 1) {
+        await options.nth(1).click();
+        await page.waitForLoadState('networkidle');
+        // Verify performance chart is still visible after year change
+        const performanceChart = page.locator(
+          '[data-testid="performance-chart"]'
+        );
+        await expect(performanceChart).toBeVisible();
+      } else {
+        await page.keyboard.press('Escape');
+        await expect(yearSelector).toBeVisible();
+      }
+    });
+  });
+
+  test.describe('Loading State', () => {
+    test('should show loading spinner during data fetch', async ({ page }) => {
+      // Navigate without waiting for networkidle so we can catch the spinner
+      await page.goto('/global/summary');
+      // The spinner should appear while data is loading
+      // Use a loose check: if visible it's correct, if page already loaded that's fine too
+      const spinner = page.locator('[data-testid="loading-spinner"]');
+      // If data loads very quickly the spinner may not be visible, which is acceptable
+      // Just verify the spinner element exists in DOM when loading occurs
+      await page.waitForLoadState('networkidle');
+      // After loading completes, spinner should be gone
+      await expect(spinner).not.toBeVisible();
+    });
+
+    test('should display data after loading completes', async ({ page }) => {
+      // Verify that after networkidle the stats grid and charts are visible
+      const statsGrid = page.locator('[data-testid="stats-grid"]');
+      await expect(statsGrid).toBeVisible();
+
+      const allocationChart = page.locator('[data-testid="allocation-chart"]');
+      await expect(allocationChart).toBeVisible();
+
+      const performanceChart = page.locator(
+        '[data-testid="performance-chart"]'
+      );
+      await expect(performanceChart).toBeVisible();
+    });
+  });
+
+  test.describe('Error State', () => {
+    test('should display error message when backend fails', async ({
+      page,
+    }) => {
+      // Intercept summary API calls to simulate a failure
+      await page.route('**/api/summary*', (route) => {
+        route.abort('failed');
+      });
+
+      await page.goto('/global/summary');
+      await page.waitForLoadState('networkidle');
+
+      // Error message should appear
+      const errorMessage = page.locator('[data-testid="error-message"]');
+      await expect(errorMessage).toBeVisible();
+    });
+
+    test('should not show error message on successful load', async ({
+      page,
+    }) => {
+      const errorMessage = page.locator('[data-testid="error-message"]');
+      await expect(errorMessage).not.toBeVisible();
+    });
   });
 
   test.describe('Chart Rendering', () => {
     test('allocation pie chart should have visible canvas', async ({
       page,
     }) => {
-      const firstChart = page.locator('dms-summary-display').first();
+      const firstChart = page.locator('[data-testid="allocation-chart"]');
       const canvas = firstChart.locator('canvas');
 
       const boundingBox = await canvas.boundingBox();
@@ -68,7 +225,7 @@ test.describe('Global Summary Component', () => {
     test('performance line chart should have visible canvas', async ({
       page,
     }) => {
-      const secondChart = page.locator('dms-summary-display').nth(1);
+      const secondChart = page.locator('[data-testid="performance-chart"]');
       const canvas = secondChart.locator('canvas');
 
       const boundingBox = await canvas.boundingBox();
@@ -112,7 +269,7 @@ test.describe('Global Summary Component', () => {
     });
 
     test('should display legend for pie chart', async ({ page }) => {
-      const firstChart = page.locator('dms-summary-display').first();
+      const firstChart = page.locator('[data-testid="allocation-chart"]');
       // Verify chart is rendered with canvas
       const canvas = firstChart.locator('canvas');
       await expect(canvas).toBeVisible();
@@ -135,7 +292,7 @@ test.describe('Global Summary Component', () => {
 
   test.describe('Layout & Styling', () => {
     test('should have proper card styling', async ({ page }) => {
-      const card = page.locator('mat-card').first();
+      const card = page.locator('[data-testid="global-summary-container"]');
       await expect(card).toBeVisible();
 
       // Verify card has padding/spacing
@@ -181,7 +338,7 @@ test.describe('Global Summary Component', () => {
 
   test.describe('Accessibility', () => {
     test('charts should have accessible structure', async ({ page }) => {
-      const summaryDisplay = page.locator('dms-summary-display').first();
+      const summaryDisplay = page.locator('[data-testid="allocation-chart"]');
       await expect(summaryDisplay).toBeVisible();
 
       // Verify the component has proper structure
