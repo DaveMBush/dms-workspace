@@ -299,7 +299,7 @@ describe('AccountSummary - Service Integration', () => {
     });
   });
 
-  describe.skip('Account Pie Chart Display', () => {
+  describe('Account Pie Chart Display', () => {
     it('should configure pie chart with account allocation data', () => {
       component['accountId'] = '123';
       component.ngOnInit();

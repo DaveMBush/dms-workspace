@@ -1,6 +1,6 @@
 # Story AT.4: Implement Account-Specific Pie Chart
 
-**Status:** Approved
+**Status:** Dev Complete
 
 ## Story
 
@@ -28,43 +28,43 @@
 
 ### Functional Requirements
 
-1. [ ] Pie chart displays risk group allocation for specific account
-2. [ ] Chart shows three segments: Equities, Income, Tax Free
-3. [ ] Colors match global summary (blue, green, orange)
-4. [ ] Chart handles zero values gracefully
-5. [ ] Chart handles empty data appropriately
-6. [ ] Legend displays below chart
-7. [ ] Tooltips show currency-formatted values
+1. [x] Pie chart displays risk group allocation for specific account
+2. [x] Chart shows three segments: Equities, Income, Tax Free
+3. [x] Colors match global summary (blue, green, orange)
+4. [x] Chart handles zero values gracefully
+5. [x] Chart handles empty data appropriately
+6. [x] Legend displays below chart
+7. [x] Tooltips show currency-formatted values
 
 ### Technical Requirements
 
-1. [ ] All tests from AT.3-TDD re-enabled and passing
-2. [ ] ng2-charts BaseChartDirective properly integrated
-3. [ ] Chart configuration follows Chart.js best practices
-4. [ ] Responsive design works on different screen sizes
-5. [ ] Code follows project coding standards
-6. [ ] Unit test coverage >80%
+1. [x] All tests from AT.3-TDD re-enabled and passing
+2. [x] ng2-charts BaseChartDirective properly integrated
+3. [x] Chart configuration follows Chart.js best practices
+4. [x] Responsive design works on different screen sizes
+5. [x] Code follows project coding standards
+6. [x] Unit test coverage >80%
 
 ## Tasks / Subtasks
 
-- [ ] Re-enable tests from AT.3-TDD (AC: T1)
-- [ ] Add ng2-charts imports to component (AC: T2)
-  - [ ] Import BaseChartDirective
-  - [ ] Add to component imports array
-- [ ] Configure pie chart data (AC: F1-F5)
-  - [ ] Create allocationChartData computed signal
-  - [ ] Map equities, income, tax_free_income to chart data
-  - [ ] Set labels ['Equities', 'Income', 'Tax Free']
-  - [ ] Set colors ['#3B82F6', '#10B981', '#F59E0B']
-- [ ] Configure chart options (AC: F6-F7)
-  - [ ] Set responsive: true
-  - [ ] Configure legend position: 'bottom'
-  - [ ] Add currency formatting to tooltips
-- [ ] Update component template
-  - [ ] Add canvas element with chart directive
-  - [ ] Bind chart data and options
-  - [ ] Wrap in mat-card for styling
-- [ ] Verify all tests pass (AC: T1)
+- [x] Re-enable tests from AT.3-TDD (AC: T1)
+- [x] Add ng2-charts imports to component (AC: T2)
+  - [x] Import BaseChartDirective
+  - [x] Add to component imports array
+- [x] Configure pie chart data (AC: F1-F5)
+  - [x] Create allocationChartData computed signal
+  - [x] Map equities, income, tax_free_income to chart data
+  - [x] Set labels ['Equities', 'Income', 'Tax Free']
+  - [x] Set colors ['#3B82F6', '#10B981', '#F59E0B']
+- [x] Configure chart options (AC: F6-F7)
+  - [x] Set responsive: true
+  - [x] Configure legend position: 'bottom'
+  - [x] Add currency formatting to tooltips
+- [x] Update component template
+  - [x] Add canvas element with chart directive
+  - [x] Bind chart data and options
+  - [x] Wrap in mat-card for styling
+- [x] Verify all tests pass (AC: T1)
 - [ ] Run validation commands
 
 ## Dev Notes
@@ -131,13 +131,13 @@ readonly allocationChartOptions: ChartConfiguration<'pie'>['options'] = {
 
 ## Definition of Done
 
-- [ ] All tests from AT.3-TDD re-enabled and passing (GREEN phase)
-- [ ] Pie chart displays account-specific risk group allocation
-- [ ] Chart colors and legend configured correctly
-- [ ] Tooltips show currency-formatted values
-- [ ] Chart handles edge cases (zero values, empty data)
-- [ ] Code follows project conventions
-- [ ] Unit test coverage >80%
+- [x] All tests from AT.3-TDD re-enabled and passing (GREEN phase)
+- [x] Pie chart displays account-specific risk group allocation
+- [x] Chart colors and legend configured correctly
+- [x] Tooltips show currency-formatted values
+- [x] Chart handles edge cases (zero values, empty data)
+- [x] Code follows project conventions
+- [x] Unit test coverage >80%
 - [ ] All validation commands pass:
   - [ ] Run `pnpm all`
   - [ ] Run `pnpm e2e:dms-material`
@@ -164,6 +164,7 @@ readonly allocationChartOptions: ChartConfiguration<'pie'>['options'] = {
 
 ## Change Log
 
-| Date       | Version | Description      | Author |
-| ---------- | ------- | ---------------- | ------ |
-| 2026-03-02 | 1.0     | Initial creation | PM     |
+| Date       | Version | Description                                                                                                                                     | Author    |
+| ---------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | --------- |
+| 2026-03-02 | 1.0     | Initial creation                                                                                                                                | PM        |
+| 2026-03-03 | 1.1     | Implementation complete - enhanced pieChartOptions with legend display and tooltip currency+percentage formatting, re-enabled 15 AT.3-TDD tests | Dev Agent |
