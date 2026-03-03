@@ -34,6 +34,7 @@ export class SummaryService {
   private readonly summarySignal = signal<Summary>(createDefaultSummary());
   private readonly graphSignal = signal<GraphPoint[]>([]);
   private readonly monthsSignal = signal<MonthOption[]>([]);
+  private readonly accountMonthsSignal = signal<MonthOption[]>([]);
   private readonly yearsSignal = signal<number[]>([]);
   private readonly loadingSignal = signal(false);
   private readonly errorSignal = signal<string | null>(null);
@@ -42,6 +43,7 @@ export class SummaryService {
   readonly summary = this.summarySignal.asReadonly();
   readonly graph = this.graphSignal.asReadonly();
   readonly months = this.monthsSignal.asReadonly();
+  readonly accountMonths = this.accountMonthsSignal.asReadonly();
   readonly years = this.yearsSignal.asReadonly();
   readonly loading = this.loadingSignal.asReadonly();
   readonly error = this.errorSignal.asReadonly();
@@ -51,8 +53,13 @@ export class SummaryService {
    *
    * @param month - The month string (e.g., '2025-03')
    * @param onComplete - Optional callback invoked after success or error
+   * @param accountId - Optional account ID for account-specific summary
    */
-  fetchSummary(month: string, onComplete?: () => void): void {
+  fetchSummary(
+    month: string,
+    onComplete?: () => void,
+    accountId?: string
+  ): void {
     const requestSeq = ++this.summaryRequestSeq;
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
@@ -81,7 +88,9 @@ export class SummaryService {
       }
     }
 
-    this.http.get<Summary>('/api/summary', { params: { month } }).subscribe({
+    const params: Record<string, string> =
+      accountId !== undefined && accountId !== '' ? { accountId } : { month };
+    this.http.get<Summary>('/api/summary', { params }).subscribe({
       next: onSummarySuccess,
       error: onSummaryError,
     });
@@ -91,10 +100,12 @@ export class SummaryService {
    * Fetch graph data for a given year (defaults to current year).
    *
    * @param year - The 4-digit year to fetch graph data for (default: current year)
+   * @param accountId - Optional account ID for account-specific graph
+   * @param month - Optional month for account-specific graph queries
    */
-  fetchGraph(year?: number): void {
+  fetchGraph(year?: number, accountId?: string, month?: string): void {
     this.errorSignal.set(null);
-    const yearStr = (year ?? new Date().getFullYear()).toString();
+
     function onGraphSuccess(this: SummaryService, data: GraphPoint[]): void {
       this.graphSignal.set(data);
     }
@@ -103,53 +114,75 @@ export class SummaryService {
       this.errorSignal.set(err.message || 'Failed to fetch graph');
     }
 
-    this.http
-      .get<GraphPoint[]>('/api/summary/graph', {
-        params: { year: yearStr, time_period: 'year' },
-      })
-      .subscribe({
-        next: onGraphSuccess.bind(this),
-        error: onGraphError.bind(this),
-      });
+    const params: Record<string, string> = {};
+    if (accountId !== undefined && accountId !== '') {
+      if (month !== undefined && month !== '') {
+        params['month'] = month;
+      }
+      params['accountId'] = accountId;
+    } else {
+      const yearStr = (year ?? new Date().getFullYear()).toString();
+      params['year'] = yearStr;
+      params['time_period'] = 'year';
+    }
+
+    this.http.get<GraphPoint[]>('/api/summary/graph', { params }).subscribe({
+      next: onGraphSuccess.bind(this),
+      error: onGraphError.bind(this),
+    });
   }
 
   /**
    * Fetch available months for the dropdown.
-   * Results are cached; call invalidateMonthsCache() to refresh.
+   * Results are cached for global requests; account-specific requests always fetch.
+   *
+   * @param accountId - Optional account ID for account-specific months
    */
-  fetchMonths(): void {
-    if (this.monthsCached) {
+  fetchMonths(accountId?: string): void {
+    const hasAccountId = accountId !== undefined && accountId !== '';
+    if (!hasAccountId && this.monthsCached) {
       return;
     }
     this.errorSignal.set(null);
     this.loadingSignal.set(true);
 
+    const self = this;
+    const shouldCache = !hasAccountId;
+
     function onMonthsSuccess(
-      this: SummaryService,
       data: Array<{ month: string; label: string }>
     ): void {
-      this.monthsSignal.set(
-        data.map(function transformMonth(m: {
-          month: string;
-          label: string;
-        }): MonthOption {
-          return { label: m.label, value: m.month };
-        })
-      );
-      this.monthsCached = true;
-      this.loadingSignal.set(false);
+      const mapped = data.map(function transformMonth(m: {
+        month: string;
+        label: string;
+      }): MonthOption {
+        return { label: m.label, value: m.month };
+      });
+      if (hasAccountId) {
+        self.accountMonthsSignal.set(mapped);
+      } else {
+        self.monthsSignal.set(mapped);
+      }
+      if (shouldCache) {
+        self.monthsCached = true;
+      }
+      self.loadingSignal.set(false);
     }
 
-    function onMonthsError(this: SummaryService, err: HttpErrorResponse): void {
-      this.errorSignal.set(err.message || 'Failed to fetch months');
-      this.loadingSignal.set(false);
+    function onMonthsError(err: HttpErrorResponse): void {
+      self.errorSignal.set(err.message || 'Failed to fetch months');
+      self.loadingSignal.set(false);
     }
 
+    const params: Record<string, string> =
+      accountId !== undefined && accountId !== '' ? { accountId } : {};
     this.http
-      .get<Array<{ month: string; label: string }>>('/api/summary/months')
+      .get<Array<{ month: string; label: string }>>('/api/summary/months', {
+        params,
+      })
       .subscribe({
-        next: onMonthsSuccess.bind(this),
-        error: onMonthsError.bind(this),
+        next: onMonthsSuccess,
+        error: onMonthsError,
       });
   }
 
