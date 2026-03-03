@@ -1,6 +1,6 @@
 # Story AT.3: TDD - Unit Tests for Account-Specific Pie Chart
 
-**Status:** Approved
+**Status:** Done
 
 ## Story
 
@@ -155,16 +155,16 @@ After verifying tests run and fail appropriately, all new test blocks should use
 
 ## Tasks / Subtasks
 
-- [ ] Create pie chart configuration tests (AC: F1)
-- [ ] Create tests for chart data mapping (AC: F2)
-- [ ] Create tests for color scheme (AC: F3)
-- [ ] Create tests for zero values (AC: F4)
-- [ ] Create tests for empty data (AC: F5)
-- [ ] Create tests for legend configuration (AC: F6)
-- [ ] Create tests for chart options
-- [ ] Create tests for tooltip formatting
-- [ ] Run tests to verify they FAIL (RED phase)
-- [ ] Disable all new tests with `.skip`
+- [x] Create pie chart configuration tests (AC: F1)
+- [x] Create tests for chart data mapping (AC: F2)
+- [x] Create tests for color scheme (AC: F3)
+- [x] Create tests for zero values (AC: F4)
+- [x] Create tests for empty data (AC: F5)
+- [x] Create tests for legend configuration (AC: F6)
+- [x] Create tests for chart options
+- [x] Create tests for tooltip formatting
+- [x] Run tests to verify they FAIL (RED phase)
+- [x] Disable all new tests with `.skip`
 
 ## Dev Notes
 
@@ -211,18 +211,18 @@ interface ChartOptions {
 
 ## Definition of Done
 
-- [ ] Comprehensive test suite created for pie chart display
-- [ ] All edge cases covered (zero values, empty data, single risk group)
-- [ ] Tests verified to run and FAIL (RED phase)
-- [ ] All new tests disabled with `.skip`
-- [ ] Existing tests still pass
-- [ ] Code follows project conventions
-- [ ] All validation commands pass:
-  - [ ] Run `pnpm all`
-  - [ ] Run `pnpm e2e:dms-material`
-  - [ ] Run `pnpm dupcheck`
-  - [ ] Run `pnpm format`
-  - [ ] Repeat all of these if any fail until they all pass
+- [x] Comprehensive test suite created for pie chart display
+- [x] All edge cases covered (zero values, empty data, single risk group)
+- [x] Tests verified to run and FAIL (RED phase)
+- [x] All new tests disabled with `.skip`
+- [x] Existing tests still pass
+- [x] Code follows project conventions
+- [x] All validation commands pass:
+  - [x] Run `pnpm all`
+  - [x] Run `pnpm e2e:dms-material`
+  - [x] Run `pnpm dupcheck`
+  - [x] Run `pnpm format`
+  - [x] Repeat all of these if any fail until they all pass
 
 ## Notes
 
@@ -241,8 +241,21 @@ interface ChartOptions {
 
 ---
 
+## Dev Agent Record
+
+| Field          | Value                                                          |
+| -------------- | -------------------------------------------------------------- |
+| Agent          | James (Expert Senior Software Engineer)                        |
+| Date           | 2026-03-03                                                     |
+| Issue          | #529                                                           |
+| Branch         | feature/AT.3-tdd-account-pie-chart                             |
+| Tests Added    | 15 skipped tests in describe.skip('Account Pie Chart Display') |
+| Existing Tests | 15 passing (unchanged)                                         |
+| Total Tests    | 30 (15 passing + 15 skipped)                                   |
+
 ## Change Log
 
 | Date       | Version | Description      | Author |
 | ---------- | ------- | ---------------- | ------ |
 | 2026-03-02 | 1.0     | Initial creation | PM     |
+| 2026-03-03 | 1.1     | Implementation   | James  |

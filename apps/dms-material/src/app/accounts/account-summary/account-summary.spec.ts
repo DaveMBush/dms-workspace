@@ -298,4 +298,261 @@ describe('AccountSummary - Service Integration', () => {
       expect(chartData.datasets[0].data).toEqual([0, 0, 0]);
     });
   });
+
+  describe.skip('Account Pie Chart Display', () => {
+    it('should configure pie chart with account allocation data', () => {
+      component['accountId'] = '123';
+      component.ngOnInit();
+
+      const req = httpMock.expectOne('/api/summary?accountId=123');
+      req.flush({
+        deposits: 100000,
+        dividends: 2500,
+        capitalGains: 5000,
+        equities: 50000,
+        income: 30000,
+        tax_free_income: 20000,
+      });
+
+      const chartData = component.allocationChartData();
+      expect(chartData.labels).toEqual(['Equities', 'Income', 'Tax Free']);
+      expect(chartData.datasets[0].data).toEqual([50000, 30000, 20000]);
+    });
+
+    it('should display three risk group segments', () => {
+      component['accountId'] = '123';
+      component.ngOnInit();
+
+      const req = httpMock.expectOne('/api/summary?accountId=123');
+      req.flush({
+        deposits: 100000,
+        dividends: 2500,
+        capitalGains: 5000,
+        equities: 40000,
+        income: 35000,
+        tax_free_income: 25000,
+      });
+
+      const chartData = component.allocationChartData();
+      expect(chartData.labels).toHaveLength(3);
+      expect(chartData.datasets[0].data).toHaveLength(3);
+      expect(chartData.labels).toContain('Equities');
+      expect(chartData.labels).toContain('Income');
+      expect(chartData.labels).toContain('Tax Free');
+    });
+
+    it('should use correct colors for risk group segments', () => {
+      component['accountId'] = '123';
+      component.ngOnInit();
+
+      const req = httpMock.expectOne('/api/summary?accountId=123');
+      req.flush({
+        deposits: 100000,
+        dividends: 2500,
+        capitalGains: 5000,
+        equities: 50000,
+        income: 30000,
+        tax_free_income: 20000,
+      });
+
+      const chartData = component.allocationChartData();
+      expect(chartData.datasets[0].backgroundColor).toEqual([
+        '#3B82F6', // Blue for Equities
+        '#10B981', // Green for Income
+        '#F59E0B', // Orange for Tax Free
+      ]);
+    });
+
+    it('should match global summary chart colors', () => {
+      component['accountId'] = '123';
+      component.ngOnInit();
+
+      const req = httpMock.expectOne('/api/summary?accountId=123');
+      req.flush({
+        deposits: 100000,
+        dividends: 2500,
+        capitalGains: 5000,
+        equities: 50000,
+        income: 30000,
+        tax_free_income: 20000,
+      });
+
+      const chartData = component.allocationChartData();
+      const colors = chartData.datasets[0].backgroundColor as string[];
+      expect(colors[0]).toBe('#3B82F6');
+      expect(colors[1]).toBe('#10B981');
+      expect(colors[2]).toBe('#F59E0B');
+    });
+
+    it('should handle account with zero values', () => {
+      component['accountId'] = '123';
+      component.ngOnInit();
+
+      const req = httpMock.expectOne('/api/summary?accountId=123');
+      req.flush({
+        deposits: 0,
+        dividends: 0,
+        capitalGains: 0,
+        equities: 0,
+        income: 0,
+        tax_free_income: 0,
+      });
+
+      const chartData = component.allocationChartData();
+      expect(chartData.datasets[0].data).toEqual([0, 0, 0]);
+      expect(component.hasAllocationData$()).toBe(false);
+    });
+
+    it('should handle empty data with default values', () => {
+      const chartData = component.allocationChartData();
+      expect(chartData.labels).toEqual(['Equities', 'Income', 'Tax Free']);
+      expect(chartData.datasets[0].data).toEqual([0, 0, 0]);
+    });
+
+    it('should indicate when allocation data is available', () => {
+      component['accountId'] = '123';
+      component.ngOnInit();
+
+      const req = httpMock.expectOne('/api/summary?accountId=123');
+      req.flush({
+        deposits: 100000,
+        dividends: 2500,
+        capitalGains: 5000,
+        equities: 50000,
+        income: 30000,
+        tax_free_income: 20000,
+      });
+
+      expect(component.hasAllocationData$()).toBe(true);
+    });
+
+    it('should configure pie chart options with responsive settings', () => {
+      const options = component.pieChartOptions;
+      expect(options).toBeDefined();
+      expect(options!.responsive).toBe(true);
+      expect(options!.maintainAspectRatio).toBe(true);
+    });
+
+    it('should configure legend display at bottom position', () => {
+      const options = component.pieChartOptions;
+      expect(options!.plugins).toBeDefined();
+      expect(options!.plugins!.legend).toBeDefined();
+      expect(options!.plugins!.legend!.display).toBe(true);
+      expect(options!.plugins!.legend!.position).toBe('bottom');
+    });
+
+    it('should configure tooltip with currency formatting callback', () => {
+      const options = component.pieChartOptions;
+      expect(options!.plugins!.tooltip).toBeDefined();
+      expect(options!.plugins!.tooltip!.callbacks).toBeDefined();
+      expect(options!.plugins!.tooltip!.callbacks!.label).toBeDefined();
+    });
+
+    it('should format tooltip with currency amount and percentage', () => {
+      component['accountId'] = '123';
+      component.ngOnInit();
+
+      const req = httpMock.expectOne('/api/summary?accountId=123');
+      req.flush({
+        deposits: 100000,
+        dividends: 2500,
+        capitalGains: 5000,
+        equities: 50000,
+        income: 30000,
+        tax_free_income: 20000,
+      });
+
+      const options = component.pieChartOptions;
+      const tooltipCallback = options!.plugins!.tooltip!.callbacks!.label;
+
+      const tooltipItem = {
+        label: 'Equities',
+        raw: 50000,
+        parsed: 50000,
+        dataIndex: 0,
+        dataset: { data: [50000, 30000, 20000] },
+      };
+
+      const result = (tooltipCallback as (...args: unknown[]) => string)(
+        tooltipItem
+      );
+      expect(result).toContain('$50,000');
+      expect(result).toContain('50%');
+    });
+
+    it('should handle tooltip with undefined label', () => {
+      const options = component.pieChartOptions;
+      const tooltipCallback = options!.plugins!.tooltip!.callbacks!.label;
+
+      const tooltipItem = {
+        label: undefined,
+        raw: 50000,
+        parsed: 50000,
+        dataIndex: 0,
+        dataset: { data: [50000, 30000, 20000] },
+      };
+
+      const result = (tooltipCallback as (...args: unknown[]) => string)(
+        tooltipItem
+      );
+      expect(result).toContain('$50,000');
+    });
+
+    it('should handle tooltip when total is zero', () => {
+      const options = component.pieChartOptions;
+      const tooltipCallback = options!.plugins!.tooltip!.callbacks!.label;
+
+      const tooltipItem = {
+        label: 'Equities',
+        raw: 0,
+        parsed: 0,
+        dataIndex: 0,
+        dataset: { data: [0, 0, 0] },
+      };
+
+      const result = (tooltipCallback as (...args: unknown[]) => string)(
+        tooltipItem
+      );
+      expect(result).toContain('Equities');
+      expect(result).toContain('0%');
+    });
+
+    it('should handle single risk group allocation', () => {
+      component['accountId'] = '123';
+      component.ngOnInit();
+
+      const req = httpMock.expectOne('/api/summary?accountId=123');
+      req.flush({
+        deposits: 50000,
+        dividends: 500,
+        capitalGains: 1000,
+        equities: 50000,
+        income: 0,
+        tax_free_income: 0,
+      });
+
+      const chartData = component.allocationChartData();
+      expect(chartData.datasets[0].data).toEqual([50000, 0, 0]);
+      expect(component.hasAllocationData$()).toBe(true);
+    });
+
+    it('should provide allocation data through getter', () => {
+      component['accountId'] = '123';
+      component.ngOnInit();
+
+      const req = httpMock.expectOne('/api/summary?accountId=123');
+      req.flush({
+        deposits: 100000,
+        dividends: 2500,
+        capitalGains: 5000,
+        equities: 50000,
+        income: 30000,
+        tax_free_income: 20000,
+      });
+
+      const allocationData = component.allocationData;
+      expect(allocationData.labels).toEqual(['Equities', 'Income', 'Tax Free']);
+      expect(allocationData.datasets[0].data).toEqual([50000, 30000, 20000]);
+    });
+  });
 });
