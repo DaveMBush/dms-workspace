@@ -1,6 +1,6 @@
 # Story AT.1: TDD - Unit Tests for Account Summary Service Wiring
 
-**Status:** Ready
+**Status:** Approved
 
 ## Story
 

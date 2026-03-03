@@ -1,6 +1,6 @@
 # Story AT.7: Add Comprehensive Unit Tests
 
-**Status:** Ready
+**Status:** Approved
 
 ## Story
 

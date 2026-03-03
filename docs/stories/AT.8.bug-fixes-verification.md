@@ -1,6 +1,6 @@
 # Story AT.8: Bug Fix and Verification
 
-**Status:** Ready
+**Status:** Approved
 
 ## Story
 

@@ -1,6 +1,6 @@
 # Story AT.6: Add Month/Year Selectors Functionality
 
-**Status:** Ready
+**Status:** Approved
 
 ## Story
 

@@ -1,6 +1,6 @@
 # Story AT.2: Wire Account Summary to Backend with AccountId Filter
 
-**Status:** Ready
+**Status:** Approved
 
 ## Story
 

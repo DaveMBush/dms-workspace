@@ -1,6 +1,6 @@
 # Story AT.4: Implement Account-Specific Pie Chart
 
-**Status:** Ready
+**Status:** Approved
 
 ## Story
 

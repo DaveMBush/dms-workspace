@@ -1,6 +1,6 @@
 # Story AT.9: Add E2E Tests for Account Summary
 
-**Status:** Ready
+**Status:** Approved
 
 ## Story
 

@@ -1,6 +1,6 @@
 # Story AT.3: TDD - Unit Tests for Account-Specific Pie Chart
 
-**Status:** Ready
+**Status:** Approved
 
 ## Story
 
