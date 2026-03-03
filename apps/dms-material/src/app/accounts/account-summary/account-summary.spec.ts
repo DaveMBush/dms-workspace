@@ -6,7 +6,12 @@ import {
   provideHttpClientTesting,
   HttpTestingController,
 } from '@angular/common/http/testing';
-import { provideRouter } from '@angular/router';
+import {
+  ActivatedRoute,
+  convertToParamMap,
+  provideRouter,
+} from '@angular/router';
+import { of } from 'rxjs';
 
 import { AccountSummary } from './account-summary';
 
@@ -27,6 +32,14 @@ describe('AccountSummary - Service Integration', () => {
             component: AccountSummary,
           },
         ]),
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: { paramMap: convertToParamMap({ id: '123' }) },
+            paramMap: of(convertToParamMap({ id: '123' })),
+            params: of({ id: '123' }),
+          },
+        },
       ],
     }).compileComponents();
 
@@ -67,7 +80,9 @@ describe('AccountSummary - Service Integration', () => {
     });
 
     it('should get accountId from route parameter', () => {
-      // Verify accountId is extracted from route parameter and matches expected value
+      // Act
+      component.ngOnInit();
+      // Assert
       expect(component['accountId']).toBe('123');
     });
 
