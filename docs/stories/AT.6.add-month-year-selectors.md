@@ -1,6 +1,6 @@
 # Story AT.6: Add Month/Year Selectors Functionality
 
-**Status:** Approved
+**Status:** Ready for Review
 
 ## Story
 
@@ -48,30 +48,30 @@
 
 ## Tasks / Subtasks
 
-- [ ] Re-enable tests from AT.5-TDD (AC: T1)
-- [ ] Add Material form modules to component (AC: T2)
-  - [ ] Import MatFormFieldModule
-  - [ ] Import MatSelectModule
-  - [ ] Import ReactiveFormsModule
-- [ ] Add form controls (AC: F1-F5)
-  - [ ] Create selectedMonth FormControl
-  - [ ] Create selectedYear FormControl
-  - [ ] Set default values to current month/year
-  - [ ] Disable controls during loading
-- [ ] Wire month selector (AC: F1, F3)
-  - [ ] Bind to monthOptions from service
-  - [ ] Add effect to watch for month changes
-  - [ ] Trigger graph data refresh on change
-- [ ] Wire year selector (AC: F2, F4)
-  - [ ] Bind to yearOptions from service
-  - [ ] Add effect to watch for year changes
-  - [ ] Trigger available months refresh on change
-- [ ] Update component template
-  - [ ] Add month select form field
-  - [ ] Add year select form field
-  - [ ] Style selectors in header area
-- [ ] Verify all tests pass (AC: T1)
-- [ ] Run validation commands
+- [x] Re-enable tests from AT.5-TDD (AC: T1)
+- [x] Add Material form modules to component (AC: T2)
+  - [x] Import MatFormFieldModule
+  - [x] Import MatSelectModule
+  - [x] Import ReactiveFormsModule
+- [x] Add form controls (AC: F1-F5)
+  - [x] Create selectedMonth FormControl
+  - [x] Create selectedYear FormControl
+  - [x] Set default values to current month/year
+  - [x] Disable controls during loading
+- [x] Wire month selector (AC: F1, F3)
+  - [x] Bind to monthOptions from service
+  - [x] Add effect to watch for month changes
+  - [x] Trigger graph data refresh on change
+- [x] Wire year selector (AC: F2, F4)
+  - [x] Bind to yearOptions from service
+  - [x] Add effect to watch for year changes
+  - [x] Trigger available months refresh on change
+- [x] Update component template
+  - [x] Add month select form field
+  - [x] Add year select form field
+  - [x] Style selectors in header area
+- [x] Verify all tests pass (AC: T1)
+- [x] Run validation commands
 
 ## Dev Notes
 
@@ -156,19 +156,19 @@ private readonly enableSelectorsEffect = effect(() => {
 
 ## Definition of Done
 
-- [ ] All tests from AT.5-TDD re-enabled and passing (GREEN phase)
-- [ ] Month and year selectors functional
-- [ ] Selectors update chart data appropriately
-- [ ] Default values set to current month/year
-- [ ] Selectors disabled during loading
-- [ ] Code follows project conventions
-- [ ] Unit test coverage >80%
-- [ ] All validation commands pass:
-  - [ ] Run `pnpm all`
-  - [ ] Run `pnpm e2e:dms-material`
-  - [ ] Run `pnpm dupcheck`
-  - [ ] Run `pnpm format`
-  - [ ] Repeat all of these if any fail until they all pass
+- [x] All tests from AT.5-TDD re-enabled and passing (GREEN phase)
+- [x] Month and year selectors functional
+- [x] Selectors update chart data appropriately
+- [x] Default values set to current month/year
+- [x] Selectors disabled during loading
+- [x] Code follows project conventions
+- [x] Unit test coverage >80%
+- [x] All validation commands pass:
+  - [x] Run `pnpm all`
+  - [x] Run `pnpm e2e:dms-material`
+  - [x] Run `pnpm dupcheck`
+  - [x] Run `pnpm format`
+  - [x] Repeat all of these if any fail until they all pass
 - [ ] Code reviewed and approved
 
 ## Notes
@@ -192,3 +192,31 @@ private readonly enableSelectorsEffect = effect(() => {
 | Date       | Version | Description      | Author |
 | ---------- | ------- | ---------------- | ------ |
 | 2026-03-02 | 1.0     | Initial creation | PM     |
+| 2026-03-03 | 1.1     | Implementation complete - GREEN phase | Dev (Claude Opus 4.6) |
+
+## Dev Agent Record
+
+### Agent Model Used
+Claude Opus 4.6
+
+### Completion Notes
+- Re-enabled 13 AT.5-TDD Month/Year Selector tests (describe.skip -> describe)
+- Added MatFormFieldModule, MatSelectModule, MatOptionModule, ReactiveFormsModule imports
+- Added selectedYear FormControl with current year default
+- Added yearOptions$ computed signal from SummaryService.years()
+- Renamed monthOptions/yearOptions to monthOptions$/yearOptions$ ($ suffix for template lint rule)
+- Wired month valueChanges to fetchGraph with accountId
+- Wired year valueChanges to fetchMonths with year parameter
+- Added enableSelectors callback pattern (disable in ngOnInit, enable on fetchSummary complete)
+- Updated SummaryService.fetchMonths to accept optional year parameter
+- Updated flushPendingRequests test helper to handle /api/summary/years
+- Added fetchYears() call in ngOnInit
+- Added month/year selector HTML to template
+- All 1301 unit tests passing, 422 e2e tests passing, 0 duplicates
+
+### File List
+- `apps/dms-material/src/app/accounts/account-summary/account-summary.ts` (modified)
+- `apps/dms-material/src/app/accounts/account-summary/account-summary.html` (modified)
+- `apps/dms-material/src/app/accounts/account-summary/account-summary.spec.ts` (modified)
+- `apps/dms-material/src/app/global/services/summary.service.ts` (modified)
+- `docs/stories/AT.6.add-month-year-selectors.md` (modified)

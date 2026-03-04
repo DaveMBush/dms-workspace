@@ -138,7 +138,7 @@ export class SummaryService {
    *
    * @param accountId - Optional account ID for account-specific months
    */
-  fetchMonths(accountId?: string): void {
+  fetchMonths(accountId?: string, year?: number): void {
     const hasAccountId = accountId !== undefined && accountId !== '';
     if (!hasAccountId && this.monthsCached) {
       return;
@@ -174,8 +174,13 @@ export class SummaryService {
       self.loadingSignal.set(false);
     }
 
-    const params: Record<string, string> =
-      accountId !== undefined && accountId !== '' ? { accountId } : {};
+    const params: Record<string, string> = {};
+    if (hasAccountId) {
+      params['accountId'] = accountId!;
+    }
+    if (year !== undefined) {
+      params['year'] = year.toString();
+    }
     this.http
       .get<Array<{ month: string; label: string }>>('/api/summary/months', {
         params,

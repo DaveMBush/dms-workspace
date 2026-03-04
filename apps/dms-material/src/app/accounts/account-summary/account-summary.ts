@@ -3,12 +3,17 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  DestroyRef,
   inject,
   OnInit,
 } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
+import { MatOptionModule } from '@angular/material/core';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
 import { ActivatedRoute } from '@angular/router';
 import { ChartConfiguration, ChartData } from 'chart.js';
 
@@ -56,13 +61,22 @@ function computePercentIncrease(
   return (12 * (gains + divs)) / basis;
 }
 
+function enableSelectors(this: AccountSummary): void {
+  this.selectedMonth.enable({ emitEvent: false });
+  this.selectedYear.enable({ emitEvent: false });
+}
+
 @Component({
   selector: 'dms-account-summary',
   imports: [
     CurrencyPipe,
     MatCardModule,
+    MatFormFieldModule,
+    MatOptionModule,
     MatProgressSpinnerModule,
+    MatSelectModule,
     PercentPipe,
+    ReactiveFormsModule,
     SummaryDisplayComponent,
   ],
   templateUrl: './account-summary.html',
@@ -72,9 +86,11 @@ function computePercentIncrease(
 export class AccountSummary implements OnInit {
   private readonly summaryService = inject(SummaryService);
   private readonly route = inject(ActivatedRoute);
+  private readonly destroyRef = inject(DestroyRef);
   private accountId = '';
 
   readonly selectedMonth = new FormControl(getCurrentMonth());
+  readonly selectedYear = new FormControl(new Date().getFullYear());
 
   readonly loading$ = this.summaryService.loading;
   readonly loading = this.loading$;
@@ -141,7 +157,9 @@ export class AccountSummary implements OnInit {
     };
   });
 
-  readonly monthOptions = computed(() => this.summaryService.accountMonths());
+  readonly monthOptions$ = computed(() => this.summaryService.accountMonths());
+
+  readonly yearOptions$ = computed(() => this.summaryService.years());
 
   readonly basis$ = computed(() => this.summaryService.summary().deposits);
 
@@ -209,12 +227,41 @@ export class AccountSummary implements OnInit {
 
   ngOnInit(): void {
     this.accountId = this.route.snapshot.paramMap.get('id') ?? '';
-    this.summaryService.fetchSummary('', undefined, this.accountId);
+    this.selectedMonth.disable({ emitEvent: false });
+    this.selectedYear.disable({ emitEvent: false });
+    this.summaryService.fetchSummary(
+      '',
+      enableSelectors.bind(this),
+      this.accountId
+    );
     this.summaryService.fetchGraph(
       undefined,
       this.accountId,
       this.selectedMonth.value ?? getCurrentMonth()
     );
     this.summaryService.fetchMonths(this.accountId);
+    this.summaryService.fetchYears();
+
+    this.selectedMonth.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(
+        // eslint-disable-next-line @smarttools/no-anonymous-functions -- need inline access to service
+        (month: string | null) => {
+          if (month !== null && this.accountId !== '') {
+            this.summaryService.fetchGraph(undefined, this.accountId, month);
+          }
+        }
+      );
+
+    this.selectedYear.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(
+        // eslint-disable-next-line @smarttools/no-anonymous-functions -- need inline access to service
+        (year: number | null) => {
+          if (year !== null && this.accountId !== '') {
+            this.summaryService.fetchMonths(this.accountId, year);
+          }
+        }
+      );
   }
 }

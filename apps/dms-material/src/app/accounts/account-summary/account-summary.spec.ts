@@ -23,6 +23,8 @@ function flushPendingRequests(httpMock: HttpTestingController): void {
       req.flush([]);
     } else if (url.includes('/api/summary/months')) {
       req.flush([]);
+    } else if (url.includes('/api/summary/years')) {
+      req.flush([]);
     } else if (url.includes('/api/summary')) {
       req.flush({
         deposits: 0,
@@ -249,7 +251,7 @@ describe('AccountSummary - Service Integration', () => {
         { month: '2025-02', label: 'February 2025' },
       ]);
 
-      expect(component.monthOptions()).toHaveLength(2);
+      expect(component.monthOptions$()).toHaveLength(2);
     });
   });
 
@@ -556,7 +558,7 @@ describe('AccountSummary - Service Integration', () => {
     });
   });
 
-  describe.skip('Month/Year Selectors', function monthYearSelectorsTests() {
+  describe('Month/Year Selectors', function monthYearSelectorsTests() {
     it('should populate month selector from available months', function populateMonthSelector() {
       component['accountId'] = '123';
       component.ngOnInit();
@@ -568,7 +570,7 @@ describe('AccountSummary - Service Integration', () => {
         { month: '2025-03', label: 'March 2025' },
       ]);
 
-      const options = component.monthOptions();
+      const options = component.monthOptions$();
       expect(options).toHaveLength(3);
       expect(options[0].value).toBe('2025-01');
       expect(options[0].label).toBe('January 2025');
@@ -581,7 +583,7 @@ describe('AccountSummary - Service Integration', () => {
       const yearsReq = httpMock.expectOne('/api/summary/years');
       yearsReq.flush([2025, 2024, 2023]);
 
-      const years = component.yearOptions();
+      const years = component.yearOptions$();
       expect(years).toContain(2025);
       expect(years).toContain(2024);
       expect(years).toContain(2023);
@@ -698,7 +700,7 @@ describe('AccountSummary - Service Integration', () => {
         { month: '2024-12', label: 'December 2024' },
       ]);
 
-      const options = component.monthOptions();
+      const options = component.monthOptions$();
       expect(options).toHaveLength(2);
       expect(options[0].value).toBe('2024-06');
     });
@@ -725,7 +727,7 @@ describe('AccountSummary - Service Integration', () => {
       const req = httpMock.expectOne('/api/summary/months?accountId=123');
       req.flush([]);
 
-      const options = component.monthOptions();
+      const options = component.monthOptions$();
       expect(options).toHaveLength(0);
     });
 
@@ -736,7 +738,7 @@ describe('AccountSummary - Service Integration', () => {
       const yearsReq = httpMock.expectOne('/api/summary/years');
       yearsReq.flush([]);
 
-      const years = component.yearOptions();
+      const years = component.yearOptions$();
       expect(years).toHaveLength(0);
     });
   });
