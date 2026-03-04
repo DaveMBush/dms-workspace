@@ -57,18 +57,7 @@ For each story in the ordered list:
 
    - Last story = story with highest numeric value in the ordered list
 
-2. **Pre-E2E Confirmation**
-
-   - Before executing the last story:
-     - **CRITICAL**: Run `bash .github/prompts/prompt.sh "Epic ${epic}: ${N-1} of ${N} stories complete. About to implement final story (${last_story}, typically e2e tests). Any corrections or additional instructions before proceeding?"` in a terminal via `run_in_terminal`
-     - **CRITICAL**: Wait for the script to return — do NOT yield back to the user or stop — the script itself handles the interaction
-     - **CRITICAL**: Do NOT write a message to the user saying "awaiting your approval" or similar — the zenity dialog IS the approval mechanism
-   - Handle response:
-     - "continue": Proceed with last story
-     - "stop": Document state and exit
-     - Custom instructions: Apply instructions, then proceed with last story
-
-3. **Execute Final Story**
+2. **Execute Final Story**
    - Run develop-story.prompt.md for last story
 
 ## PHASE 4: Epic Completion
