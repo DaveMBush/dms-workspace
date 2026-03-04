@@ -20,12 +20,9 @@ test.describe('Account Summary', () => {
   });
 
   test('should display total value statistic', async ({ page }) => {
-    const totalValueLabel = page.getByText('Total Value');
-    await expect(totalValueLabel).toBeVisible();
-    const totalValueAmount = totalValueLabel
-      .locator('..')
-      .locator('span')
-      .nth(1);
-    await expect(totalValueAmount).toContainText('$');
+    const basisLabel = page.getByText('Base');
+    await expect(basisLabel).toBeVisible();
+    const basisAmount = page.locator('[data-testid="basis-value"]');
+    await expect(basisAmount).toContainText('$');
   });
 });
