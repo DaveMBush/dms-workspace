@@ -100,6 +100,23 @@ function matchGraph(
   };
 }
 
+/**
+ * Match /api/summary/graph requests by accountId and year (ignores month
+ * param so tests can assert the graph re-fetch triggered by year changes).
+ */
+function matchGraphByYear(
+  accountId: string,
+  year: number
+): (r: HttpRequest<unknown>) => boolean {
+  return function isGraphRequestForYear(r: HttpRequest<unknown>): boolean {
+    return (
+      r.url === '/api/summary/graph' &&
+      r.params.get('account_id') === accountId &&
+      r.params.get('year') === String(year)
+    );
+  };
+}
+
 describe('AccountSummary - Service Integration', () => {
   let component: AccountSummary;
   let fixture: ComponentFixture<AccountSummary>;
@@ -703,7 +720,8 @@ describe('AccountSummary - Service Integration', () => {
       ]);
 
       // Year change also triggers graph re-fetch
-      flushPendingRequests(httpMock);
+      const graphReq = httpMock.expectOne(matchGraphByYear('123', 2024));
+      graphReq.flush(createMockGraphData());
     });
 
     it('should disable month selector during loading', function monthDisabledDuringLoading() {
@@ -772,7 +790,8 @@ describe('AccountSummary - Service Integration', () => {
       ]);
 
       // Year change also triggers graph re-fetch
-      flushPendingRequests(httpMock);
+      const yearGraphReq = httpMock.expectOne(matchGraphByYear('123', 2024));
+      yearGraphReq.flush(createMockGraphData());
 
       const options = component.monthOptions$();
       expect(options).toHaveLength(2);
@@ -788,7 +807,13 @@ describe('AccountSummary - Service Integration', () => {
       component.selectedYear.setValue(2024);
 
       // Year change should trigger months fetch and graph re-fetch
-      flushPendingRequests(httpMock);
+      const monthsReq = httpMock.expectOne(
+        '/api/summary/months?account_id=123&year=2024'
+      );
+      monthsReq.flush(createMockMonths());
+
+      const graphReq = httpMock.expectOne(matchGraphByYear('123', 2024));
+      graphReq.flush(createMockGraphData());
     });
 
     it('should handle empty month options gracefully', function emptyMonthOptions() {
@@ -1201,7 +1226,8 @@ describe('AccountSummary - Service Integration', () => {
       ]);
 
       // Year change also triggers graph re-fetch
-      flushPendingRequests(httpMock);
+      const yearGraphReq = httpMock.expectOne(matchGraphByYear('123', 2024));
+      yearGraphReq.flush(createMockGraphData());
 
       // Verify final state
       expect(component.monthOptions$()).toHaveLength(2);
@@ -1340,7 +1366,8 @@ describe('AccountSummary - Service Integration', () => {
       req2.flush(createMockMonths());
 
       // Year change also triggers graph re-fetch
-      flushPendingRequests(httpMock);
+      const yearGraphReq = httpMock.expectOne(matchGraphByYear('123', 2024));
+      yearGraphReq.flush(createMockGraphData());
 
       expect(component.monthOptions$()).toHaveLength(3);
     });
