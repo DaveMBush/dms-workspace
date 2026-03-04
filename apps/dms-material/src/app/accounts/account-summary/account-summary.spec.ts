@@ -767,7 +767,8 @@ describe('AccountSummary - Service Integration', () => {
       ]);
 
       // Month change also triggers summary re-fetch
-      flushPendingRequests(httpMock);
+      const summaryReq = httpMock.expectOne(matchSummary('123'));
+      summaryReq.flush(createMockSummary());
 
       const updatedChart = component.performanceChartData();
       expect(updatedChart).not.toEqual(initialChart);
@@ -1212,7 +1213,8 @@ describe('AccountSummary - Service Integration', () => {
       graphReq.flush(createMockGraphData());
 
       // Month change also triggers summary re-fetch
-      flushPendingRequests(httpMock);
+      const monthSummaryReq = httpMock.expectOne(matchSummary('123'));
+      monthSummaryReq.flush(createMockSummary());
 
       // Step 3: Select a different year
       component.selectedYear.setValue(2024);
@@ -1274,6 +1276,11 @@ describe('AccountSummary - Service Integration', () => {
       const yearsReq = httpMock.expectOne('/api/summary/years');
       yearsReq.flush([2025, 2024, 2023]);
 
+      const graphReq = httpMock.expectOne(
+        matchGraphByYear('123', new Date().getFullYear())
+      );
+      graphReq.flush(createMockGraphData());
+
       expect(component.basis$()).toBe(100000);
       expect(component.monthOptions$()).toHaveLength(3);
       expect(component.yearOptions$()).toHaveLength(3);
@@ -1292,7 +1299,8 @@ describe('AccountSummary - Service Integration', () => {
       req.flush(createMockGraphData());
 
       // Month change also triggers summary re-fetch
-      flushPendingRequests(httpMock);
+      const monthSummaryReq = httpMock.expectOne(matchSummary('123'));
+      monthSummaryReq.flush(createMockSummary());
 
       const updatedData = component.performanceChartData();
       expect(updatedData.labels!.length).toBeGreaterThan(
@@ -1341,7 +1349,8 @@ describe('AccountSummary - Service Integration', () => {
       req2.flush(createMockGraphData());
 
       // Month change also triggers summary re-fetch
-      flushPendingRequests(httpMock);
+      const summaryReq = httpMock.expectOne(matchSummary('123'));
+      summaryReq.flush(createMockSummary());
 
       expect(component.performanceChartData().labels!.length).toBeGreaterThan(
         0
