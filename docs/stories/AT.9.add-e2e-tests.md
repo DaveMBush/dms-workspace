@@ -53,7 +53,7 @@
   - [x] Import necessary Playwright utilities
   - [x] Set up test fixtures
 - [x] Create navigation tests (AC: F1)
-  - [x] Test navigating to account summary from account list
+  - [x] Test navigating to account summary from another account tab
   - [x] Test direct URL navigation with accountId
   - [x] Test browser back button behavior
 - [x] Create data display tests (AC: F2)
@@ -227,4 +227,4 @@ await expect(page.getByRole('progressbar')).toBeHidden();
 | Date       | Version | Description                                                  | Author |
 | ---------- | ------- | ------------------------------------------------------------ | ------ |
 | 2026-03-02 | 1.0     | Initial creation                                             | PM     |
-| 2026-03-04 | 1.1     | Implementation complete - 35 E2E tests across 10 test groups | Dev    |
+| 2026-03-04 | 1.1     | Implementation complete - 35 E2E tests across 11 test groups | Dev    |
