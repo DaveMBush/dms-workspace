@@ -555,4 +555,189 @@ describe('AccountSummary - Service Integration', () => {
       expect(allocationData.datasets[0].data).toEqual([50000, 30000, 20000]);
     });
   });
+
+  describe.skip('Month/Year Selectors', function monthYearSelectorsTests() {
+    it('should populate month selector from available months', function populateMonthSelector() {
+      component['accountId'] = '123';
+      component.ngOnInit();
+
+      const req = httpMock.expectOne('/api/summary/months?accountId=123');
+      req.flush([
+        { month: '2025-01', label: 'January 2025' },
+        { month: '2025-02', label: 'February 2025' },
+        { month: '2025-03', label: 'March 2025' },
+      ]);
+
+      const options = component.monthOptions();
+      expect(options).toHaveLength(3);
+      expect(options[0].value).toBe('2025-01');
+      expect(options[0].label).toBe('January 2025');
+    });
+
+    it('should populate year selector from service', function populateYearSelector() {
+      component['accountId'] = '123';
+      component.ngOnInit();
+
+      const yearsReq = httpMock.expectOne('/api/summary/years');
+      yearsReq.flush([2025, 2024, 2023]);
+
+      const years = component.yearOptions();
+      expect(years).toContain(2025);
+      expect(years).toContain(2024);
+      expect(years).toContain(2023);
+    });
+
+    it('should default selectedMonth to the current month', function defaultMonth() {
+      const now = new Date();
+      const expectedMonth = `${String(now.getFullYear())}-${String(
+        now.getMonth() + 1
+      ).padStart(2, '0')}`;
+      expect(component.selectedMonth.value).toBe(expectedMonth);
+    });
+
+    it('should default selectedYear to the current year', function defaultYear() {
+      expect(component.selectedYear.value).toBe(new Date().getFullYear());
+    });
+
+    it('should fetch graph data when month selection changes', function monthChangeTriggersGraph() {
+      component['accountId'] = '123';
+      component.ngOnInit();
+
+      // Flush initial requests
+      flushPendingRequests(httpMock);
+
+      component.selectedMonth.setValue('2025-02');
+
+      const req = httpMock.expectOne(
+        '/api/summary/graph?month=2025-02&accountId=123'
+      );
+      expect(req.request.method).toBe('GET');
+      req.flush([]);
+    });
+
+    it('should fetch available months when year selection changes', function yearChangeTriggersMonthsFetch() {
+      component['accountId'] = '123';
+      component.ngOnInit();
+
+      // Flush initial requests
+      flushPendingRequests(httpMock);
+
+      component.selectedYear.setValue(2024);
+
+      const req = httpMock.expectOne(
+        '/api/summary/months?accountId=123&year=2024'
+      );
+      expect(req.request.method).toBe('GET');
+      req.flush([
+        { month: '2024-01', label: 'January 2024' },
+        { month: '2024-06', label: 'June 2024' },
+      ]);
+    });
+
+    it('should disable month selector during loading', function monthDisabledDuringLoading() {
+      component['accountId'] = '123';
+      component.ngOnInit();
+
+      expect(component.selectedMonth.disabled).toBe(true);
+
+      flushPendingRequests(httpMock);
+
+      expect(component.selectedMonth.disabled).toBe(false);
+    });
+
+    it('should disable year selector during loading', function yearDisabledDuringLoading() {
+      component['accountId'] = '123';
+      component.ngOnInit();
+
+      expect(component.selectedYear.disabled).toBe(true);
+
+      flushPendingRequests(httpMock);
+
+      expect(component.selectedYear.disabled).toBe(false);
+    });
+
+    it('should update performance chart when month selection changes', function chartUpdatesOnMonthChange() {
+      component['accountId'] = '123';
+      component.ngOnInit();
+
+      flushPendingRequests(httpMock);
+
+      const initialChart = component.performanceChartData();
+
+      component.selectedMonth.setValue('2025-01');
+
+      const req = httpMock.expectOne(
+        '/api/summary/graph?month=2025-01&accountId=123'
+      );
+      req.flush([
+        {
+          month: '2025-01',
+          deposits: 10000,
+          dividends: 100,
+          capitalGains: 200,
+        },
+      ]);
+
+      const updatedChart = component.performanceChartData();
+      expect(updatedChart).not.toEqual(initialChart);
+    });
+
+    it('should reset month selection when year changes and months reload', function resetMonthOnYearChange() {
+      component['accountId'] = '123';
+      component.ngOnInit();
+
+      flushPendingRequests(httpMock);
+
+      component.selectedYear.setValue(2024);
+
+      const monthsReq = httpMock.expectOne(
+        '/api/summary/months?accountId=123&year=2024'
+      );
+      monthsReq.flush([
+        { month: '2024-06', label: 'June 2024' },
+        { month: '2024-12', label: 'December 2024' },
+      ]);
+
+      const options = component.monthOptions();
+      expect(options).toHaveLength(2);
+      expect(options[0].value).toBe('2024-06');
+    });
+
+    it('should re-fetch graph when year selection changes', function graphRefreshOnYearChange() {
+      component['accountId'] = '123';
+      component.ngOnInit();
+
+      flushPendingRequests(httpMock);
+
+      component.selectedYear.setValue(2024);
+
+      // Year change should trigger months fetch
+      const monthsReq = httpMock.expectOne(
+        '/api/summary/months?accountId=123&year=2024'
+      );
+      monthsReq.flush([{ month: '2024-01', label: 'January 2024' }]);
+    });
+
+    it('should handle empty month options gracefully', function emptyMonthOptions() {
+      component['accountId'] = '123';
+      component.ngOnInit();
+
+      const req = httpMock.expectOne('/api/summary/months?accountId=123');
+      req.flush([]);
+
+      const options = component.monthOptions();
+      expect(options).toHaveLength(0);
+    });
+
+    it('should handle empty year options gracefully', function emptyYearOptions() {
+      component['accountId'] = '123';
+      component.ngOnInit();
+
+      const yearsReq = httpMock.expectOne('/api/summary/years');
+      yearsReq.flush([]);
+
+      const years = component.yearOptions();
+      expect(years).toHaveLength(0);
+    });
+  });
 });
