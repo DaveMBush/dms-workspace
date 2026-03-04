@@ -122,7 +122,7 @@ pnpm e2e:dms-material:firefox
 - Analyze failures (flaky tests, timing issues) and apply fixes
 - Use Playwright for manual validation when needed
 - Retry up to 10 times; on 10th failure call `.github/prompts/prompt.sh "E2E tests failing after 10 attempts with errors: <error summary>"`
-  **If fixed**: After applying fixes, restart Phase 3 from step 3.
+  **If fixed**: After applying fixes, restart Phase 3 from step 3.1.
 
 ### 3.3 Check Duplicates
 
@@ -146,7 +146,7 @@ pnpm format
 - If fails: Call `.github/prompts/prompt.sh "pnpm format failed: <error>"`
 - **If fixed**: After applying fixes, restart Phase 3 from step 3.1
 
-### 3.4 Phase 3 Completion Check
+### 3.5 Phase 3 Completion Check
 
 - If ALL four checks (3.1, 3.2, 3.3, 3.4) pass in the same iteration: Proceed to Phase 4
 - If any check fails and gets fixed: Return to step 3.1 and run all checks again
@@ -208,7 +208,7 @@ Phase 6 has been delegated to a dedicated, resumable subagent. After Phase 5 com
 
 Then call the subagent to handle the full CodeRabbit loop:
 
-```
+```bash
 run #file:./code-rabbit.prompt.md story=${story}
 ```
 

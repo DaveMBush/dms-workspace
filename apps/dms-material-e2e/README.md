@@ -74,8 +74,9 @@ The default command works correctly in CI:
 
 ```yaml
 # GitHub Actions example
-- name: Run E2E Tests
+- name: Run E2E Tests (Chromium)
   run: pnpm e2e:dms-material:chromium
+- name: Run E2E Tests (Firefox)
   run: pnpm e2e:dms-material:firefox
 ```
 
