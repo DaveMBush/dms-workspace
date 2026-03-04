@@ -189,17 +189,19 @@ private readonly enableSelectorsEffect = effect(() => {
 
 ## Change Log
 
-| Date       | Version | Description      | Author |
-| ---------- | ------- | ---------------- | ------ |
-| 2026-03-02 | 1.0     | Initial creation | PM     |
+| Date       | Version | Description                           | Author                |
+| ---------- | ------- | ------------------------------------- | --------------------- |
+| 2026-03-02 | 1.0     | Initial creation                      | PM                    |
 | 2026-03-03 | 1.1     | Implementation complete - GREEN phase | Dev (Claude Opus 4.6) |
 
 ## Dev Agent Record
 
 ### Agent Model Used
+
 Claude Opus 4.6
 
 ### Completion Notes
+
 - Re-enabled 13 AT.5-TDD Month/Year Selector tests (describe.skip -> describe)
 - Added MatFormFieldModule, MatSelectModule, MatOptionModule, ReactiveFormsModule imports
 - Added selectedYear FormControl with current year default
@@ -215,6 +217,7 @@ Claude Opus 4.6
 - All 1301 unit tests passing, 422 e2e tests passing, 0 duplicates
 
 ### File List
+
 - `apps/dms-material/src/app/accounts/account-summary/account-summary.ts` (modified)
 - `apps/dms-material/src/app/accounts/account-summary/account-summary.html` (modified)
 - `apps/dms-material/src/app/accounts/account-summary/account-summary.spec.ts` (modified)
