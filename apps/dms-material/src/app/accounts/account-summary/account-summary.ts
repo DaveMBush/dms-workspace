@@ -226,11 +226,12 @@ export class AccountSummary implements OnInit {
   }
 
   ngOnInit(): void {
-    this.accountId = this.route.snapshot.paramMap.get('id') ?? '';
+    this.accountId =
+      this.route.parent?.parent?.snapshot.paramMap.get('accountId') ?? '';
     this.selectedMonth.disable({ emitEvent: false });
     this.selectedYear.disable({ emitEvent: false });
     this.summaryService.fetchSummary(
-      '',
+      this.selectedMonth.value ?? getCurrentMonth(),
       enableSelectors.bind(this),
       this.accountId
     );
@@ -244,24 +245,37 @@ export class AccountSummary implements OnInit {
 
     this.selectedMonth.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(
-        // eslint-disable-next-line @smarttools/no-anonymous-functions -- need inline access to service
-        (month: string | null) => {
-          if (month !== null && this.accountId !== '') {
-            this.summaryService.fetchGraph(undefined, this.accountId, month);
-          }
-        }
-      );
+      .subscribe(this.onMonthChange.bind(this));
 
     this.selectedYear.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(
-        // eslint-disable-next-line @smarttools/no-anonymous-functions -- need inline access to service
-        (year: number | null) => {
-          if (year !== null && this.accountId !== '') {
-            this.summaryService.fetchMonths(this.accountId, year);
-          }
-        }
+      .subscribe(this.onYearChange.bind(this));
+  }
+
+  private onMonthChange(month: string | null): void {
+    if (month !== null && this.accountId !== '') {
+      this.selectedMonth.disable({ emitEvent: false });
+      this.summaryService.fetchSummary(
+        month,
+        enableSelectors.bind(this),
+        this.accountId
       );
+      this.summaryService.fetchGraph(
+        this.selectedYear.value ?? undefined,
+        this.accountId,
+        month
+      );
+    }
+  }
+
+  private onYearChange(year: number | null): void {
+    if (year !== null && this.accountId !== '') {
+      this.summaryService.fetchMonths(this.accountId, year);
+      this.summaryService.fetchGraph(
+        year,
+        this.accountId,
+        this.selectedMonth.value ?? getCurrentMonth()
+      );
+    }
   }
 }

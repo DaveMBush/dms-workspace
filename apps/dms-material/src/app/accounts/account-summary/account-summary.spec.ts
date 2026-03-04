@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/dot-notation -- bracket notation needed for private members */
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideHttpClient } from '@angular/common/http';
+import { HttpRequest, provideHttpClient } from '@angular/common/http';
 import {
   provideHttpClientTesting,
   HttpTestingController,
@@ -68,6 +68,38 @@ function flushPendingRequests(httpMock: HttpTestingController): void {
   }
 }
 
+/**
+ * Match /api/summary requests by accountId (ignores month param so tests
+ * don't depend on the current date).
+ */
+function matchSummary(accountId: string): (r: HttpRequest<unknown>) => boolean {
+  return function isSummaryRequest(r: HttpRequest<unknown>): boolean {
+    return (
+      r.url === '/api/summary' &&
+      r.params.has('month') &&
+      r.params.get('account_id') === accountId
+    );
+  };
+}
+
+/**
+ * Match /api/summary/graph requests by accountId and month (ignores year
+ * param so tests don't depend on the current date).
+ */
+function matchGraph(
+  accountId: string,
+  month: string
+): (r: HttpRequest<unknown>) => boolean {
+  return function isGraphRequest(r: HttpRequest<unknown>): boolean {
+    return (
+      r.url === '/api/summary/graph' &&
+      r.params.has('year') &&
+      r.params.get('month') === month &&
+      r.params.get('account_id') === accountId
+    );
+  };
+}
+
 describe('AccountSummary - Service Integration', () => {
   let component: AccountSummary;
   let fixture: ComponentFixture<AccountSummary>;
@@ -81,16 +113,25 @@ describe('AccountSummary - Service Integration', () => {
         provideHttpClientTesting(),
         provideRouter([
           {
-            path: 'accounts/:id',
+            path: 'account/:accountId',
             component: AccountSummary,
           },
         ]),
         {
           provide: ActivatedRoute,
           useValue: {
-            snapshot: { paramMap: convertToParamMap({ id: '123' }) },
-            paramMap: of(convertToParamMap({ id: '123' })),
-            params: of({ id: '123' }),
+            snapshot: { paramMap: convertToParamMap({}) },
+            paramMap: of(convertToParamMap({})),
+            params: of({}),
+            parent: {
+              parent: {
+                snapshot: {
+                  paramMap: convertToParamMap({ accountId: '123' }),
+                },
+                paramMap: of(convertToParamMap({ accountId: '123' })),
+                params: of({ accountId: '123' }),
+              },
+            },
           },
         },
       ],
@@ -119,7 +160,7 @@ describe('AccountSummary - Service Integration', () => {
       component['accountId'] = '123';
       component.ngOnInit();
 
-      const req = httpMock.expectOne('/api/summary?accountId=123');
+      const req = httpMock.expectOne(matchSummary('123'));
       expect(req.request.method).toBe('GET');
 
       req.flush({
@@ -143,7 +184,7 @@ describe('AccountSummary - Service Integration', () => {
       component['accountId'] = '123';
       component.ngOnInit();
 
-      const req = httpMock.expectOne('/api/summary?accountId=123');
+      const req = httpMock.expectOne(matchSummary('123'));
       req.flush({
         deposits: 100000,
         dividends: 2500,
@@ -165,7 +206,7 @@ describe('AccountSummary - Service Integration', () => {
       component.ngOnInit();
       expect(component.loading()).toBe(true);
 
-      const req = httpMock.expectOne('/api/summary?accountId=123');
+      const req = httpMock.expectOne(matchSummary('123'));
       req.flush({
         deposits: 100000,
         dividends: 2500,
@@ -182,7 +223,7 @@ describe('AccountSummary - Service Integration', () => {
       component['accountId'] = '123';
       component.ngOnInit();
 
-      const req = httpMock.expectOne('/api/summary?accountId=123');
+      const req = httpMock.expectOne(matchSummary('123'));
       req.error(new ProgressEvent('error'), { status: 500 });
 
       expect(component.error()).toBeTruthy();
@@ -196,9 +237,7 @@ describe('AccountSummary - Service Integration', () => {
       component['selectedMonth'].setValue('2025-03');
       component.ngOnInit();
 
-      const req = httpMock.expectOne(
-        '/api/summary/graph?month=2025-03&accountId=123'
-      );
+      const req = httpMock.expectOne(matchGraph('123', '2025-03'));
       expect(req.request.method).toBe('GET');
       req.flush([
         {
@@ -227,9 +266,7 @@ describe('AccountSummary - Service Integration', () => {
       component['selectedMonth'].setValue('2025-03');
       component.ngOnInit();
 
-      const req = httpMock.expectOne(
-        '/api/summary/graph?month=2025-03&accountId=123'
-      );
+      const req = httpMock.expectOne(matchGraph('123', '2025-03'));
       req.flush([
         {
           month: '2025-01',
@@ -262,7 +299,7 @@ describe('AccountSummary - Service Integration', () => {
       component['accountId'] = '123';
       component.ngOnInit();
 
-      const req = httpMock.expectOne('/api/summary/months?accountId=123');
+      const req = httpMock.expectOne('/api/summary/months?account_id=123');
       expect(req.request.method).toBe('GET');
       req.flush([
         { month: '2025-01', label: 'January 2025' },
@@ -275,7 +312,7 @@ describe('AccountSummary - Service Integration', () => {
       component['accountId'] = '123';
       component.ngOnInit();
 
-      const req = httpMock.expectOne('/api/summary/months?accountId=123');
+      const req = httpMock.expectOne('/api/summary/months?account_id=123');
       req.flush([
         { month: '2025-01', label: 'January 2025' },
         { month: '2025-02', label: 'February 2025' },
@@ -290,7 +327,7 @@ describe('AccountSummary - Service Integration', () => {
       component['accountId'] = '123';
       component.ngOnInit();
 
-      const req = httpMock.expectOne('/api/summary?accountId=123');
+      const req = httpMock.expectOne(matchSummary('123'));
       req.error(new ProgressEvent('error'));
 
       expect(component.error()).toBeTruthy();
@@ -301,9 +338,7 @@ describe('AccountSummary - Service Integration', () => {
       component['selectedMonth'].setValue('2025-03');
       component.ngOnInit();
 
-      const req = httpMock.expectOne(
-        '/api/summary/graph?month=2025-03&accountId=123'
-      );
+      const req = httpMock.expectOne(matchGraph('123', '2025-03'));
       req.error(new ProgressEvent('error'));
 
       expect(component.error()).toBeTruthy();
@@ -313,7 +348,7 @@ describe('AccountSummary - Service Integration', () => {
       component['accountId'] = '123';
       component.ngOnInit();
 
-      const req = httpMock.expectOne('/api/summary/months?accountId=123');
+      const req = httpMock.expectOne('/api/summary/months?account_id=123');
       req.error(new ProgressEvent('error'));
 
       expect(component.error()).toBeTruthy();
@@ -323,7 +358,7 @@ describe('AccountSummary - Service Integration', () => {
       component['accountId'] = '123';
       component.ngOnInit();
 
-      const req = httpMock.expectOne('/api/summary?accountId=123');
+      const req = httpMock.expectOne(matchSummary('123'));
       req.error(new ProgressEvent('error'));
 
       const chartData = component.allocationChartData();
@@ -336,7 +371,7 @@ describe('AccountSummary - Service Integration', () => {
       component['accountId'] = '123';
       component.ngOnInit();
 
-      const req = httpMock.expectOne('/api/summary?accountId=123');
+      const req = httpMock.expectOne(matchSummary('123'));
       req.flush({
         deposits: 100000,
         dividends: 2500,
@@ -355,7 +390,7 @@ describe('AccountSummary - Service Integration', () => {
       component['accountId'] = '123';
       component.ngOnInit();
 
-      const req = httpMock.expectOne('/api/summary?accountId=123');
+      const req = httpMock.expectOne(matchSummary('123'));
       req.flush({
         deposits: 100000,
         dividends: 2500,
@@ -377,7 +412,7 @@ describe('AccountSummary - Service Integration', () => {
       component['accountId'] = '123';
       component.ngOnInit();
 
-      const req = httpMock.expectOne('/api/summary?accountId=123');
+      const req = httpMock.expectOne(matchSummary('123'));
       req.flush({
         deposits: 100000,
         dividends: 2500,
@@ -399,7 +434,7 @@ describe('AccountSummary - Service Integration', () => {
       component['accountId'] = '123';
       component.ngOnInit();
 
-      const req = httpMock.expectOne('/api/summary?accountId=123');
+      const req = httpMock.expectOne(matchSummary('123'));
       req.flush({
         deposits: 100000,
         dividends: 2500,
@@ -420,7 +455,7 @@ describe('AccountSummary - Service Integration', () => {
       component['accountId'] = '123';
       component.ngOnInit();
 
-      const req = httpMock.expectOne('/api/summary?accountId=123');
+      const req = httpMock.expectOne(matchSummary('123'));
       req.flush({
         deposits: 0,
         dividends: 0,
@@ -445,7 +480,7 @@ describe('AccountSummary - Service Integration', () => {
       component['accountId'] = '123';
       component.ngOnInit();
 
-      const req = httpMock.expectOne('/api/summary?accountId=123');
+      const req = httpMock.expectOne(matchSummary('123'));
       req.flush({
         deposits: 100000,
         dividends: 2500,
@@ -484,7 +519,7 @@ describe('AccountSummary - Service Integration', () => {
       component['accountId'] = '123';
       component.ngOnInit();
 
-      const req = httpMock.expectOne('/api/summary?accountId=123');
+      const req = httpMock.expectOne(matchSummary('123'));
       req.flush({
         deposits: 100000,
         dividends: 2500,
@@ -553,7 +588,7 @@ describe('AccountSummary - Service Integration', () => {
       component['accountId'] = '123';
       component.ngOnInit();
 
-      const req = httpMock.expectOne('/api/summary?accountId=123');
+      const req = httpMock.expectOne(matchSummary('123'));
       req.flush({
         deposits: 50000,
         dividends: 500,
@@ -572,7 +607,7 @@ describe('AccountSummary - Service Integration', () => {
       component['accountId'] = '123';
       component.ngOnInit();
 
-      const req = httpMock.expectOne('/api/summary?accountId=123');
+      const req = httpMock.expectOne(matchSummary('123'));
       req.flush({
         deposits: 100000,
         dividends: 2500,
@@ -593,7 +628,7 @@ describe('AccountSummary - Service Integration', () => {
       component['accountId'] = '123';
       component.ngOnInit();
 
-      const req = httpMock.expectOne('/api/summary/months?accountId=123');
+      const req = httpMock.expectOne('/api/summary/months?account_id=123');
       req.flush([
         { month: '2025-01', label: 'January 2025' },
         { month: '2025-02', label: 'February 2025' },
@@ -640,11 +675,13 @@ describe('AccountSummary - Service Integration', () => {
 
       component.selectedMonth.setValue('2025-02');
 
-      const req = httpMock.expectOne(
-        '/api/summary/graph?month=2025-02&accountId=123'
-      );
-      expect(req.request.method).toBe('GET');
-      req.flush([]);
+      const graphReq = httpMock.expectOne(matchGraph('123', '2025-02'));
+      expect(graphReq.request.method).toBe('GET');
+      graphReq.flush([]);
+
+      // Month change also triggers summary re-fetch
+      const summaryReq = httpMock.expectOne(matchSummary('123'));
+      summaryReq.flush(createMockSummary());
     });
 
     it('should fetch available months when year selection changes', function yearChangeTriggersMonthsFetch() {
@@ -656,14 +693,17 @@ describe('AccountSummary - Service Integration', () => {
 
       component.selectedYear.setValue(2024);
 
-      const req = httpMock.expectOne(
-        '/api/summary/months?accountId=123&year=2024'
+      const monthsReq = httpMock.expectOne(
+        '/api/summary/months?account_id=123&year=2024'
       );
-      expect(req.request.method).toBe('GET');
-      req.flush([
+      expect(monthsReq.request.method).toBe('GET');
+      monthsReq.flush([
         { month: '2024-01', label: 'January 2024' },
         { month: '2024-06', label: 'June 2024' },
       ]);
+
+      // Year change also triggers graph re-fetch
+      flushPendingRequests(httpMock);
     });
 
     it('should disable month selector during loading', function monthDisabledDuringLoading() {
@@ -698,10 +738,8 @@ describe('AccountSummary - Service Integration', () => {
 
       component.selectedMonth.setValue('2025-01');
 
-      const req = httpMock.expectOne(
-        '/api/summary/graph?month=2025-01&accountId=123'
-      );
-      req.flush([
+      const graphReq = httpMock.expectOne(matchGraph('123', '2025-01'));
+      graphReq.flush([
         {
           month: '2025-01',
           deposits: 10000,
@@ -709,6 +747,9 @@ describe('AccountSummary - Service Integration', () => {
           capitalGains: 200,
         },
       ]);
+
+      // Month change also triggers summary re-fetch
+      flushPendingRequests(httpMock);
 
       const updatedChart = component.performanceChartData();
       expect(updatedChart).not.toEqual(initialChart);
@@ -723,12 +764,15 @@ describe('AccountSummary - Service Integration', () => {
       component.selectedYear.setValue(2024);
 
       const monthsReq = httpMock.expectOne(
-        '/api/summary/months?accountId=123&year=2024'
+        '/api/summary/months?account_id=123&year=2024'
       );
       monthsReq.flush([
         { month: '2024-06', label: 'June 2024' },
         { month: '2024-12', label: 'December 2024' },
       ]);
+
+      // Year change also triggers graph re-fetch
+      flushPendingRequests(httpMock);
 
       const options = component.monthOptions$();
       expect(options).toHaveLength(2);
@@ -743,18 +787,15 @@ describe('AccountSummary - Service Integration', () => {
 
       component.selectedYear.setValue(2024);
 
-      // Year change should trigger months fetch
-      const monthsReq = httpMock.expectOne(
-        '/api/summary/months?accountId=123&year=2024'
-      );
-      monthsReq.flush([{ month: '2024-01', label: 'January 2024' }]);
+      // Year change should trigger months fetch and graph re-fetch
+      flushPendingRequests(httpMock);
     });
 
     it('should handle empty month options gracefully', function emptyMonthOptions() {
       component['accountId'] = '123';
       component.ngOnInit();
 
-      const req = httpMock.expectOne('/api/summary/months?accountId=123');
+      const req = httpMock.expectOne('/api/summary/months?account_id=123');
       req.flush([]);
 
       const options = component.monthOptions$();
@@ -780,7 +821,7 @@ describe('AccountSummary - Service Integration', () => {
       component.ngOnInit();
 
       // Act
-      const req = httpMock.expectOne('/api/summary?accountId=123');
+      const req = httpMock.expectOne(matchSummary('123'));
       req.flush(createMockSummary({ deposits: 150000 }));
 
       // Assert
@@ -791,7 +832,7 @@ describe('AccountSummary - Service Integration', () => {
       component['accountId'] = '123';
       component.ngOnInit();
 
-      const req = httpMock.expectOne('/api/summary?accountId=123');
+      const req = httpMock.expectOne(matchSummary('123'));
       req.flush(createMockSummary({ capitalGains: 7500 }));
 
       expect(component.capitalGain$()).toBe(7500);
@@ -801,7 +842,7 @@ describe('AccountSummary - Service Integration', () => {
       component['accountId'] = '123';
       component.ngOnInit();
 
-      const req = httpMock.expectOne('/api/summary?accountId=123');
+      const req = httpMock.expectOne(matchSummary('123'));
       req.flush(createMockSummary({ dividends: 3200 }));
 
       expect(component.dividends$()).toBe(3200);
@@ -811,7 +852,7 @@ describe('AccountSummary - Service Integration', () => {
       component['accountId'] = '123';
       component.ngOnInit();
 
-      const req = httpMock.expectOne('/api/summary?accountId=123');
+      const req = httpMock.expectOne(matchSummary('123'));
       req.flush(
         createMockSummary({
           deposits: 100000,
@@ -828,7 +869,7 @@ describe('AccountSummary - Service Integration', () => {
       component['accountId'] = '123';
       component.ngOnInit();
 
-      const req = httpMock.expectOne('/api/summary?accountId=123');
+      const req = httpMock.expectOne(matchSummary('123'));
       req.flush(
         createMockSummary({
           deposits: 0,
@@ -849,7 +890,7 @@ describe('AccountSummary - Service Integration', () => {
       component['accountId'] = '123';
       component.ngOnInit();
 
-      const req = httpMock.expectOne('/api/summary?accountId=123');
+      const req = httpMock.expectOne(matchSummary('123'));
       req.flush(
         createMockSummary({
           deposits: 200000,
@@ -869,7 +910,7 @@ describe('AccountSummary - Service Integration', () => {
       component['accountId'] = '123';
       component.ngOnInit();
 
-      const req = httpMock.expectOne('/api/summary?accountId=123');
+      const req = httpMock.expectOne(matchSummary('123'));
       req.flush(
         createMockSummary({
           equities: 0,
@@ -887,7 +928,7 @@ describe('AccountSummary - Service Integration', () => {
       component['accountId'] = '123';
       component.ngOnInit();
 
-      const req = httpMock.expectOne('/api/summary?accountId=123');
+      const req = httpMock.expectOne(matchSummary('123'));
       req.flush(createMockSummary());
 
       expect(component.allocationData).toEqual(component.allocationChartData());
@@ -898,9 +939,7 @@ describe('AccountSummary - Service Integration', () => {
       component['selectedMonth'].setValue('2025-03');
       component.ngOnInit();
 
-      const req = httpMock.expectOne(
-        '/api/summary/graph?month=2025-03&accountId=123'
-      );
+      const req = httpMock.expectOne(matchGraph('123', '2025-03'));
       req.flush(createMockGraphData());
 
       expect(component.performanceData).toEqual(
@@ -921,7 +960,7 @@ describe('AccountSummary - Service Integration', () => {
       component['accountId'] = '123';
       component.ngOnInit();
 
-      const req = httpMock.expectOne('/api/summary?accountId=123');
+      const req = httpMock.expectOne(matchSummary('123'));
       req.flush(
         createMockSummary({
           deposits: 0,
@@ -952,9 +991,7 @@ describe('AccountSummary - Service Integration', () => {
       component['selectedMonth'].setValue('2025-01');
       component.ngOnInit();
 
-      const req = httpMock.expectOne(
-        '/api/summary/graph?month=2025-01&accountId=123'
-      );
+      const req = httpMock.expectOne(matchGraph('123', '2025-01'));
       req.flush([
         {
           month: '2025-01',
@@ -977,9 +1014,7 @@ describe('AccountSummary - Service Integration', () => {
       component['selectedMonth'].setValue('2025-03');
       component.ngOnInit();
 
-      const req = httpMock.expectOne(
-        '/api/summary/graph?month=2025-03&accountId=123'
-      );
+      const req = httpMock.expectOne(matchGraph('123', '2025-03'));
       req.flush(createMockGraphData());
 
       const chartData = component.performanceChartData();
@@ -999,9 +1034,7 @@ describe('AccountSummary - Service Integration', () => {
       component['selectedMonth'].setValue('2025-03');
       component.ngOnInit();
 
-      const req = httpMock.expectOne(
-        '/api/summary/graph?month=2025-03&accountId=123'
-      );
+      const req = httpMock.expectOne(matchGraph('123', '2025-03'));
       req.flush(createMockGraphData());
 
       const chartData = component.performanceChartData();
@@ -1015,9 +1048,7 @@ describe('AccountSummary - Service Integration', () => {
       component['selectedMonth'].setValue('2025-03');
       component.ngOnInit();
 
-      const req = httpMock.expectOne(
-        '/api/summary/graph?month=2025-03&accountId=123'
-      );
+      const req = httpMock.expectOne(matchGraph('123', '2025-03'));
       req.flush(createMockGraphData());
 
       const chartData = component.performanceChartData();
@@ -1035,7 +1066,7 @@ describe('AccountSummary - Service Integration', () => {
       component.selectedMonth.setValue(null);
 
       // No new graph request should be made
-      const pending = httpMock.match(function matchGraph(
+      const pending = httpMock.match(function matchGraphRequest(
         r: import('@angular/common/http').HttpRequest<unknown>
       ): boolean {
         return r.url.includes('/api/summary/graph');
@@ -1152,21 +1183,25 @@ describe('AccountSummary - Service Integration', () => {
       // Step 2: Select a different month
       component.selectedMonth.setValue('2025-02');
 
-      const graphReq = httpMock.expectOne(
-        '/api/summary/graph?month=2025-02&accountId=123'
-      );
+      const graphReq = httpMock.expectOne(matchGraph('123', '2025-02'));
       graphReq.flush(createMockGraphData());
+
+      // Month change also triggers summary re-fetch
+      flushPendingRequests(httpMock);
 
       // Step 3: Select a different year
       component.selectedYear.setValue(2024);
 
       const monthsReq = httpMock.expectOne(
-        '/api/summary/months?accountId=123&year=2024'
+        '/api/summary/months?account_id=123&year=2024'
       );
       monthsReq.flush([
         { month: '2024-01', label: 'January 2024' },
         { month: '2024-06', label: 'June 2024' },
       ]);
+
+      // Year change also triggers graph re-fetch
+      flushPendingRequests(httpMock);
 
       // Verify final state
       expect(component.monthOptions$()).toHaveLength(2);
@@ -1193,16 +1228,21 @@ describe('AccountSummary - Service Integration', () => {
       for (const req of graphReqs) {
         req.flush(createMockGraphData());
       }
+
+      // Flush any pending summary requests from month changes
+      flushPendingRequests(httpMock);
     });
 
     it('should fetch all required data on initialization', function fetchAllOnInit() {
       component['accountId'] = '123';
       component.ngOnInit();
 
-      const summaryReq = httpMock.expectOne('/api/summary?accountId=123');
+      const summaryReq = httpMock.expectOne(matchSummary('123'));
       summaryReq.flush(createMockSummary());
 
-      const monthsReq = httpMock.expectOne('/api/summary/months?accountId=123');
+      const monthsReq = httpMock.expectOne(
+        '/api/summary/months?account_id=123'
+      );
       monthsReq.flush(createMockMonths());
 
       const yearsReq = httpMock.expectOne('/api/summary/years');
@@ -1222,10 +1262,11 @@ describe('AccountSummary - Service Integration', () => {
 
       component.selectedMonth.setValue('2025-02');
 
-      const req = httpMock.expectOne(
-        '/api/summary/graph?month=2025-02&accountId=123'
-      );
+      const req = httpMock.expectOne(matchGraph('123', '2025-02'));
       req.flush(createMockGraphData());
+
+      // Month change also triggers summary re-fetch
+      flushPendingRequests(httpMock);
 
       const updatedData = component.performanceChartData();
       expect(updatedData.labels!.length).toBeGreaterThan(
@@ -1239,7 +1280,7 @@ describe('AccountSummary - Service Integration', () => {
       component['accountId'] = '123';
       component.ngOnInit();
 
-      const req1 = httpMock.expectOne('/api/summary?accountId=123');
+      const req1 = httpMock.expectOne(matchSummary('123'));
       req1.error(new ProgressEvent('error'), { status: 500 });
 
       expect(component.error()).toBeTruthy();
@@ -1247,7 +1288,7 @@ describe('AccountSummary - Service Integration', () => {
       // Retry by calling ngOnInit again
       component.ngOnInit();
 
-      const req2 = httpMock.expectOne('/api/summary?accountId=123');
+      const req2 = httpMock.expectOne(matchSummary('123'));
       req2.flush(createMockSummary());
 
       expect(component.error()).toBeNull();
@@ -1259,20 +1300,22 @@ describe('AccountSummary - Service Integration', () => {
       component['selectedMonth'].setValue('2025-01');
       component.ngOnInit();
 
-      const req1 = httpMock.expectOne(
-        '/api/summary/graph?month=2025-01&accountId=123'
-      );
+      const req1 = httpMock.expectOne(matchGraph('123', '2025-01'));
       req1.error(new ProgressEvent('error'));
+
+      // Flush remaining init requests
+      flushPendingRequests(httpMock);
 
       expect(component.error()).toBeTruthy();
 
       // Change month to trigger new graph request
       component.selectedMonth.setValue('2025-02');
 
-      const req2 = httpMock.expectOne(
-        '/api/summary/graph?month=2025-02&accountId=123'
-      );
+      const req2 = httpMock.expectOne(matchGraph('123', '2025-02'));
       req2.flush(createMockGraphData());
+
+      // Month change also triggers summary re-fetch
+      flushPendingRequests(httpMock);
 
       expect(component.performanceChartData().labels!.length).toBeGreaterThan(
         0
@@ -1283,7 +1326,7 @@ describe('AccountSummary - Service Integration', () => {
       component['accountId'] = '123';
       component.ngOnInit();
 
-      const req1 = httpMock.expectOne('/api/summary/months?accountId=123');
+      const req1 = httpMock.expectOne('/api/summary/months?account_id=123');
       req1.error(new ProgressEvent('error'));
 
       expect(component.error()).toBeTruthy();
@@ -1292,9 +1335,12 @@ describe('AccountSummary - Service Integration', () => {
       component.selectedYear.setValue(2024);
 
       const req2 = httpMock.expectOne(
-        '/api/summary/months?accountId=123&year=2024'
+        '/api/summary/months?account_id=123&year=2024'
       );
       req2.flush(createMockMonths());
+
+      // Year change also triggers graph re-fetch
+      flushPendingRequests(httpMock);
 
       expect(component.monthOptions$()).toHaveLength(3);
     });
@@ -1303,7 +1349,7 @@ describe('AccountSummary - Service Integration', () => {
       component['accountId'] = '123';
       component.ngOnInit();
 
-      const req1 = httpMock.expectOne('/api/summary?accountId=123');
+      const req1 = httpMock.expectOne(matchSummary('123'));
       req1.error(new ProgressEvent('error'), { status: 500 });
 
       expect(component.error()).toBeTruthy();

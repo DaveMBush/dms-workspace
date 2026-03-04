@@ -21,34 +21,24 @@
       <span class="font-medium">Error:</span> {{ error$() }}
     </div>
     }
-    <!-- Month/Year Selectors -->
-    <div class="flex gap-4 mb-4">
-      <mat-form-field appearance="outline" subscriptSizing="dynamic">
-        <mat-label>Month</mat-label>
-        <mat-select [formControl]="selectedMonth" data-testid="month-selector">
-          @for (option of monthOptions$(); track option.value) {
-          <mat-option [value]="option.value">{{ option.label }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
-      <mat-form-field appearance="outline" subscriptSizing="dynamic">
-        <mat-label>Year</mat-label>
-        <mat-select
-          [formControl]="selectedYear"
-          aria-label="Select year"
-          data-testid="year-selector"
-        >
-          @for (year of yearOptions$(); track year) {
-          <mat-option [value]="year">{{ year }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
-    </div>
     <div
       class="flex flex-col md:flex-row items-stretch w-full gap-8 charts-container flex-1 min-h-0"
     >
-      <!-- Left: Stats and Pie Chart -->
+      <!-- Left: Dropdown, Stats and Pie Chart -->
       <div class="flex flex-col items-start w-full md:w-1/2 max-w-md">
+        <!-- Dropdown -->
+        <div class="mb-4">
+          <mat-select
+            [formControl]="selectedMonth"
+            class="w-48"
+            panelClass="month-select-panel"
+            data-testid="month-selector"
+          >
+            @for (option of monthOptions$(); track option.value) {
+            <mat-option [value]="option.value">{{ option.label }}</mat-option>
+            }
+          </mat-select>
+        </div>
         <!-- Stats Grid -->
         <div
           class="grid grid-cols-2 gap-6 w-full max-w-md mb-8"
@@ -104,9 +94,26 @@
 
       <!-- Right: Line Chart -->
       <div class="flex-1 w-full min-h-0 flex flex-col">
-        <h2 class="text-lg font-semibold mb-2 chart-title">
-          Portfolio Performance
-        </h2>
+        <div class="flex items-center gap-4 mb-2 flex-none">
+          <h2 class="text-lg font-semibold chart-title">
+            Portfolio Performance
+          </h2>
+          <mat-form-field
+            appearance="outline"
+            subscriptSizing="dynamic"
+            class="w-24"
+          >
+            <mat-select
+              [formControl]="selectedYear"
+              aria-label="Select year"
+              data-testid="year-selector"
+            >
+              @for (year of yearOptions$(); track year) {
+              <mat-option [value]="year">{{ year }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
         <div class="flex-1 min-h-0">
           <dms-summary-display
             data-testid="performance-chart"

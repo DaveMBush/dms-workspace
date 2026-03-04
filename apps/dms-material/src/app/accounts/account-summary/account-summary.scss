@@ -21,3 +21,7 @@ mat-card-content {
   flex-direction: column;
   overflow: auto;
 }
+
+::ng-deep .month-select-panel {
+  min-width: 12rem !important;
+}

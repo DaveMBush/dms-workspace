@@ -88,8 +88,10 @@ export class SummaryService {
       }
     }
 
-    const params: Record<string, string> =
-      accountId !== undefined && accountId !== '' ? { accountId } : { month };
+    const params: Record<string, string> = { month };
+    if (accountId !== undefined && accountId !== '') {
+      params['account_id'] = accountId;
+    }
     this.http.get<Summary>('/api/summary', { params }).subscribe({
       next: onSummarySuccess,
       error: onSummaryError,
@@ -115,13 +117,14 @@ export class SummaryService {
     }
 
     const params: Record<string, string> = {};
+    const yearStr = (year ?? new Date().getFullYear()).toString();
     if (accountId !== undefined && accountId !== '') {
+      params['year'] = yearStr;
       if (month !== undefined && month !== '') {
         params['month'] = month;
       }
-      params['accountId'] = accountId;
+      params['account_id'] = accountId;
     } else {
-      const yearStr = (year ?? new Date().getFullYear()).toString();
       params['year'] = yearStr;
       params['time_period'] = 'year';
     }
@@ -176,7 +179,7 @@ export class SummaryService {
 
     const params: Record<string, string> = {};
     if (hasAccountId) {
-      params['accountId'] = accountId!;
+      params['account_id'] = accountId!;
     }
     if (year !== undefined) {
       params['year'] = year.toString();
