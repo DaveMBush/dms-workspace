@@ -53,19 +53,21 @@
           </div>
           <div class="flex flex-col">
             <span class="text-xs text-gray-500">Dividends</span>
-            <span class="text-lg font-semibold"
+            <span class="text-lg font-semibold" data-testid="dividends-value"
               >{{ dividends$() | currency }}</span
             >
           </div>
           <div class="flex flex-col">
             <span class="text-xs text-gray-500">Capital Gain</span>
-            <span class="text-lg font-semibold"
+            <span class="text-lg font-semibold" data-testid="capital-gain-value"
               >{{ capitalGain$() | currency }}</span
             >
           </div>
           <div class="flex flex-col">
             <span class="text-xs text-gray-500">% Increase</span>
-            <span class="text-lg font-semibold"
+            <span
+              class="text-lg font-semibold"
+              data-testid="percent-increase-value"
               >{{ percentIncrease$() | percent: "1.2-2" }}</span
             >
           </div>
