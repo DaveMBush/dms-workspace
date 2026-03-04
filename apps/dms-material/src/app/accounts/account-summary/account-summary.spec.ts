@@ -14,20 +14,10 @@ import {
 import { of } from 'rxjs';
 
 import { AccountSummary } from './account-summary';
+import type { GraphPoint } from '../../global/services/graph-point.interface';
+import type { Summary } from '../../global/services/summary.interface';
 
-interface MockSummaryData {
-  deposits: number;
-  dividends: number;
-  capitalGains: number;
-  equities: number;
-  income: number;
-  // eslint-disable-next-line @typescript-eslint/naming-convention -- API response field name
-  tax_free_income: number;
-}
-
-function createMockSummary(
-  overrides?: Partial<MockSummaryData>
-): MockSummaryData {
+function createMockSummary(overrides?: Partial<Summary>): Summary {
   return {
     deposits: 100000,
     dividends: 2500,
@@ -39,12 +29,7 @@ function createMockSummary(
   };
 }
 
-function createMockGraphData(): Array<{
-  month: string;
-  deposits: number;
-  dividends: number;
-  capitalGains: number;
-}> {
+function createMockGraphData(): GraphPoint[] {
   return [
     { month: '2025-01', deposits: 10000, dividends: 100, capitalGains: 200 },
     { month: '2025-02', deposits: 20000, dividends: 150, capitalGains: 300 },
