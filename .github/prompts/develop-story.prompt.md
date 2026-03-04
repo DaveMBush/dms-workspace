@@ -90,23 +90,12 @@ This will:
 
 - Create GitHub issue (if not exists)
 - Create and checkout branch
-- Implement the story using \*develop-story command
+- Implement the story using the delegated implementation workflow
+- During implementation, use `mcp_context7_query-docs` for unfamiliar APIs and Playwright for UI checks
 
-**During Implementation**:
+If `code-story.prompt.md` encounters issues, it must call `.github/prompts/prompt.sh` or handle internal retries as required.
 
-- **Unknown APIs**: Use Context7 to look up documentation before implementing
-- **UI Components**: After implementing, validate with Playwright browser tests
-- **API Integration**: Query Context7 for proper usage patterns and best practices
-
-If code-story.prompt.md encounters issues, it should handle them internally or call prompt.sh.
-
-## PHASE 3: Quality Validation (with auto-fix)
-
-**CRITICAL LOOP STRUCTURE**: After fixing any errors in steps 3.1-3.4, you MUST re-run ALL steps from the beginning (3.1 → 3.2 → 3.3 → 3.4) until ALL four checks pass in a single iteration with no errors.
-
-**Max Phase 3 Loop Iterations**: 10
-
-For each step, attempt up to 10 times with automatic fixes between attempts:
+## Phase 3 Quality Validation
 
 ### 3.1 Run All Tests
 
@@ -117,25 +106,23 @@ pnpm all
 - Run tests, analyze failures, apply fixes automatically
 - **For API usage errors**: Query Context7 for correct implementation
 - **For UI test failures**: Use Playwright to validate expected behavior
-- **For ESLint failures**: Fix the lint error, do not comment exclude the problem or otherwise circumvent fixing the problem.
-- Retry up to 10 times with different fix strategies each time
+- **For ESLint failures**: Fix the lint error; do not bypass the rule
+- Retry up to 10 times with different fix strategies
 - On 10th failure: Call `.github/prompts/prompt.sh "pnpm all failing after 10 attempts with errors: <error summary>"`
 - **If fixed**: After applying fixes, restart Phase 3 from step 3.1
 
 ### 3.2 Run E2E Tests
 
 ```bash
-pnpm e2e:dms-material
+pnpm e2e:dms-material:chrome
+pnpm e2e:dms-material:firefox
 ```
 
-**Note**: E2E tests take over 10 minutes to complete because tests run sequentially one at a time to avoid database collisions. This is expected behavior.
-
-- Run tests, analyze failures (flaky tests, timing issues, etc.)
-- **For UI interaction failures**: Use Playwright to manually validate the flow
-- **For unclear API behavior**: Query Context7 for expected behavior
-- Apply fixes and retry up to 10 times
-- On 10th failure: Call `.github/prompts/prompt.sh "E2E tests failing after 10 attempts with errors: <error summary>"`
-- **If fixed**: After applying fixes, restart Phase 3 from step 3.1
+- E2E tests run sequentially and may take 10+ minutes
+- Analyze failures (flaky tests, timing issues) and apply fixes
+- Use Playwright for manual validation when needed
+- Retry up to 10 times; on 10th failure call `.github/prompts/prompt.sh "E2E tests failing after 10 attempts with errors: <error summary>"`
+  **If fixed**: After applying fixes, restart Phase 3 from step 3.
 
 ### 3.3 Check Duplicates
 
@@ -159,7 +146,7 @@ pnpm format
 - If fails: Call `.github/prompts/prompt.sh "pnpm format failed: <error>"`
 - **If fixed**: After applying fixes, restart Phase 3 from step 3.1
 
-### Phase 3 Completion Check
+### 3.4 Phase 3 Completion Check
 
 - If ALL four checks (3.1, 3.2, 3.3, 3.4) pass in the same iteration: Proceed to Phase 4
 - If any check fails and gets fixed: Return to step 3.1 and run all checks again
@@ -205,70 +192,29 @@ This will:
 
 If commit-and-pr fails: Call `.github/prompts/prompt.sh "Failed to create PR: <error>"`
 
-## PHASE 6: CodeRabbit Review Loop
+## PHASE 6: CodeRabbit Review Loop (delegated)
 
-**Max iterations: 10** (prevents infinite loops)
+Phase 6 has been delegated to a dedicated, resumable subagent. After Phase 5 completes the `commit-and-pr` step MUST write a minimal metadata file at `.git/tmp/story-${story}-meta.json` with at least:
 
-For each iteration:
+```json
+{
+  "pr": <pr_number>,
+  "branch": "<branch-name>",
+  "repo": "<owner>/<repo>",
+  "attempt": 0,
+  "maxIterations": 10
+}
+```
 
-### 6.1 Wait for CodeRabbit Review
+Then call the subagent to handle the full CodeRabbit loop:
 
-- If first iteration: Already waited 5 minutes after PR creation
-- **CRITICAL**: Before polling, call `activate_repository_inspection_tools` to ensure `mcp_github_pull_request_read` is available
-- **CRITICAL**: Use `mcp_github_pull_request_read` with `method: "get_review_comments"` to poll every 30 seconds
-- **CRITICAL**: Wait for CodeRabbit to COMPLETE its review, not just start it
-  - Review is complete when comment body does NOT contain "Currently processing" or "review in progress"
-  - Review threads will be populated when complete
-- Timeout: 10 minutes from when review starts processing
-- If timeout: Call `.github/prompts/prompt.sh "CodeRabbit review timed out after 10 minutes"`
+```
+run #file:./code-rabbit.prompt.md story=${story}
+```
 
-### 6.2 Retrieve and Evaluate Suggestions
+The `code-rabbit` subagent will poll `mcp_github_pull_request_read method:get_review_comments`, classify suggestions, apply in-scope fixes, run Phase 3 validations, commit/push, and loop until the PR is ready to merge or max iterations are reached. It updates the `.git/tmp/story-${story}-meta.json` file as it proceeds so the process can be resumed safely.
 
-- **CRITICAL**: Ensure `activate_repository_inspection_tools` has been called so `mcp_github_pull_request_read` is available
-- **CRITICAL**: Retrieve inline review thread comments using `mcp_github_pull_request_read` with `method: "get_review_comments"` — do NOT use `github-pull-request_issue_fetch` which only returns issue-level comments and will MISS all inline file/line-level review suggestions
-- If no suggestions from `get_review_comments`: Proceed to Phase 7
-- If suggestions exist:
-  - Categorize each: valid/invalid, in-scope/out-of-scope
-  - **For API-related suggestions**: Query Context7 to verify best practices
-  - **For UI-related suggestions**: Validate with Playwright if needed
-  - For valid + in-scope: Plan fixes
-  - For others: Document reasoning in PR comment
-
-### 6.3 Apply Fixes
-
-- Implement all valid, in-scope suggestions
-- **Use Context7** for guidance on proper API implementations
-- **Use Playwright** to validate UI fixes work as expected
-- Retry up to 10 times per suggestion if implementation encounters issues
-- If unable to implement after 10 attempts:
-  - Call `.github/prompts/prompt.sh "Unable to implement CodeRabbit suggestion after 10 attempts: <suggestion details>"`
-  - Handle response before proceeding
-
-### 6.4 Quality Validation and Commit
-
-- **CRITICAL**: Run ALL Phase 3 validations before committing:
-
-  - `pnpm all` - must pass
-  - `pnpm e2e:dms-material` - must pass
-  - `pnpm dupcheck` - must pass
-  - `pnpm format` - must pass
-  - If any validation fails: Fix issues and re-run ALL validations until they pass
-  - Follow same retry/fix logic as Phase 3 (up to 10 attempts per validation)
-  - If validations fail after 10 attempts: Call `.github/prompts/prompt.sh "Quality validation failed after applying CodeRabbit fixes: <error>"`
-
-- Only after ALL validations pass:
-
-  - Commit with message: "Apply CodeRabbit suggestions"
-  - Push to branch
-  - **Wait 5 minutes** (rate limit protection for CodeRabbit)
-  - Return to 6.1 (new iteration)
-
-- If no changes possible or needed: Proceed to Phase 7
-
-### 6.5 Iteration Limit Check
-
-- If iteration 10 reached and still have suggestions:
-  - Call `.github/prompts/prompt.sh "Reached 10 iterations of CodeRabbit feedback, still have suggestions: <summary>"`
+Use the `code-rabbit.prompt.md` subagent to keep the story prompt small, idempotent, and resumable.
 
 ## PHASE 7: Final Merge
 

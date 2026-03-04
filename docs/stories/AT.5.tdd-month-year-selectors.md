@@ -1,6 +1,6 @@
 # Story AT.5: TDD - Unit Tests for Month/Year Selectors
 
-**Status:** Approved
+**Status:** Done
 
 ## Story
 
@@ -157,15 +157,15 @@ After verifying tests run and fail appropriately, all new test blocks should use
 
 ## Tasks / Subtasks
 
-- [ ] Create month selector population tests (AC: F1)
-- [ ] Create year selector population tests (AC: F2)
-- [ ] Create month selection change tests (AC: F3)
-- [ ] Create year selection change tests (AC: F4)
-- [ ] Create default selection tests (AC: F5)
-- [ ] Create selector disabled state tests (AC: F6)
-- [ ] Create chart update on selection tests
-- [ ] Run tests to verify they FAIL (RED phase)
-- [ ] Disable all new tests with `.skip`
+- [x] Create month selector population tests (AC: F1)
+- [x] Create year selector population tests (AC: F2)
+- [x] Create month selection change tests (AC: F3)
+- [x] Create year selection change tests (AC: F4)
+- [x] Create default selection tests (AC: F5)
+- [x] Create selector disabled state tests (AC: F6)
+- [x] Create chart update on selection tests
+- [x] Run tests to verify they FAIL (RED phase)
+- [x] Disable all new tests with `.skip`
 
 ## Dev Notes
 
@@ -234,6 +234,7 @@ effect(() => {
 
 ## Change Log
 
-| Date       | Version | Description      | Author |
-| ---------- | ------- | ---------------- | ------ |
-| 2026-03-02 | 1.0     | Initial creation | PM     |
+| Date       | Version | Description                                                       | Author    |
+| ---------- | ------- | ----------------------------------------------------------------- | --------- |
+| 2026-03-02 | 1.0     | Initial creation                                                  | PM        |
+| 2026-03-03 | 1.1     | Implemented 13 skipped tests for month/year selectors (RED phase) | Dev Agent |

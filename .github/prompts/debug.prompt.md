@@ -95,7 +95,8 @@ pnpm all
 ### 4.2 Run E2E Tests
 
 ```bash
-pnpm e2e:dms-material
+pnpm e2e:dms-material:chromium
+pnpm e2e:dms-material:firefox
 ```
 
 **Note**: E2E tests take over 10 minutes to complete because tests run sequentially one at a time to avoid database collisions. This is expected behavior.
@@ -222,7 +223,8 @@ For each iteration:
 - **CRITICAL**: Run ALL Phase 4 validations before committing:
 
   - `pnpm all` - must pass
-  - `pnpm e2e:dms-material` - must pass
+  - `pnpm e2e:dms-material:chromium` - must pass
+  - `pnpm e2e:dms-material:firefox` - must pass
   - `pnpm dupcheck` - must pass
   - `pnpm format` - must pass
   - If any validation fails: Fix issues and re-run ALL validations until they pass

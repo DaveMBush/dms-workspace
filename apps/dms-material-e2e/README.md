@@ -23,10 +23,8 @@ Run all tests with both browsers, one browser at a time:
 
 ```bash
 # Using pnpm script (runs Chromium, then Firefox)
-pnpm e2e:dms-material
-
-# Or using nx directly
-nx e2e dms-material-e2e
+pnpm e2e:dms-material:chromium
+pnpm e2e:dms-material:firefox
 ```
 
 ### UI Mode (Interactive Debugging)
@@ -77,7 +75,8 @@ The default command works correctly in CI:
 ```yaml
 # GitHub Actions example
 - name: Run E2E Tests
-  run: pnpm e2e:dms-material
+  run: pnpm e2e:dms-material:chromium
+  run: pnpm e2e:dms-material:firefox
 ```
 
 ## Future Improvements
