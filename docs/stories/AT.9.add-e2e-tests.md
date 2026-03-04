@@ -1,6 +1,6 @@
 # Story AT.9: Add E2E Tests for Account Summary
 
-**Status:** Done
+**Status:** In Review
 
 ## Story
 
@@ -224,7 +224,7 @@ await expect(page.getByRole('progressbar')).toBeHidden();
 
 ## Change Log
 
-| Date       | Version | Description      | Author |
-| ---------- | ------- | ---------------- | ------ |
-| 2026-03-02 | 1.0     | Initial creation | PM     |
-| 2026-03-04 | 1.1     | Implementation complete - 35 E2E tests across 10 test groups | Dev |
+| Date       | Version | Description                                                  | Author |
+| ---------- | ------- | ------------------------------------------------------------ | ------ |
+| 2026-03-02 | 1.0     | Initial creation                                             | PM     |
+| 2026-03-04 | 1.1     | Implementation complete - 35 E2E tests across 10 test groups | Dev    |

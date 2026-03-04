@@ -22,17 +22,20 @@ test.describe('Account Summary', () => {
       await expect(summaryCard).toBeVisible();
     });
 
-    test('should display account summary after navigating from account list', async ({
+    test('should display account summary after navigating from another tab', async ({
       page,
     }) => {
-      // Navigate to dashboard first
-      await page.goto('/dashboard');
+      // Navigate to Open Positions tab within the account panel
+      await page.locator('a', { hasText: 'Open Positions' }).click();
+      await page.waitForLoadState('networkidle');
+      await expect(page).toHaveURL(/\/account\/.+\/open/);
+
+      // Navigate back to Summary tab
+      await page.getByRole('tab', { name: 'Summary' }).click();
       await page.waitForLoadState('networkidle');
 
-      // Navigate to account via direct URL (simulates clicking an account)
-      await page.goto(`/account/${ACCOUNT_UUID}`);
-      await page.waitForLoadState('networkidle');
-
+      // Verify account summary URL (no sub-path, summary is default)
+      await expect(page).toHaveURL(new RegExp(`/account/${ACCOUNT_UUID}$`));
       const summaryCard = page.locator(
         '[data-testid="account-summary-container"]'
       );
@@ -150,6 +153,7 @@ test.describe('Account Summary', () => {
     }) => {
       const firstChart = page.locator('[data-testid="allocation-chart"]');
       const canvas = firstChart.locator('canvas');
+      await expect(canvas).toBeVisible({ timeout: 15000 });
 
       const boundingBox = await canvas.boundingBox();
       expect(boundingBox).not.toBeNull();
@@ -162,6 +166,7 @@ test.describe('Account Summary', () => {
     }) => {
       const secondChart = page.locator('[data-testid="performance-chart"]');
       const canvas = secondChart.locator('canvas');
+      await expect(canvas).toBeVisible({ timeout: 15000 });
 
       const boundingBox = await canvas.boundingBox();
       expect(boundingBox).not.toBeNull();
@@ -230,7 +235,7 @@ test.describe('Account Summary', () => {
     test('should update data when selecting a different month', async ({
       page,
     }) => {
-      // Mock API to provide consistent month options and summary data
+      // Mock API to provide consistent month options and month-dependent data
       await page.route(
         '**/api/summary/months*',
         async function fulfillMonths(route) {
@@ -247,12 +252,15 @@ test.describe('Account Summary', () => {
       await page.route(
         /\/api\/summary\?/,
         async function fulfillSummary(route) {
+          const requestUrl = new URL(route.request().url());
+          const month = requestUrl.searchParams.get('month');
+          const dividends = month === '2025-02' ? 2200 : 1200;
           await route.fulfill({
             status: 200,
             contentType: 'application/json',
             body: JSON.stringify({
               deposits: 50000,
-              dividends: 1200,
+              dividends,
               capitalGains: 3000,
               equities: 25000,
               income: 15000,
@@ -279,13 +287,24 @@ test.describe('Account Summary', () => {
       const count = await options.count();
 
       if (count > 1) {
-        // Select the second option (different from current)
+        // Capture the refresh request to prove data updates
+        const refreshRequest = page.waitForRequest(function isMonthRefresh(
+          request
+        ) {
+          const url = new URL(request.url());
+          return (
+            url.pathname === '/api/summary' &&
+            url.searchParams.get('month') === '2025-02'
+          );
+        });
+        // Select the second option (February 2025)
         await options.nth(1).click();
-        // Wait for page to settle after month change
+        await refreshRequest;
         await page.waitForLoadState('networkidle');
-        // Verify statistics are still displayed (data refreshed)
-        const statsGrid = page.locator('[data-testid="stats-grid"]');
-        await expect(statsGrid).toBeVisible();
+        // Verify the dividends value updated to match February data
+        await expect(
+          page.locator('[data-testid="dividends-value"]')
+        ).toContainText('2,200');
       } else {
         // Only one month available - just verify the selector is functional
         await page.keyboard.press('Escape');
@@ -381,6 +400,36 @@ test.describe('Account Summary', () => {
           });
         }
       );
+      await page.route(
+        '**/api/summary/graph*',
+        async function fulfillGraph(route) {
+          const requestUrl = new URL(route.request().url());
+          const year = requestUrl.searchParams.get('year');
+          await route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify(
+              year === '2024'
+                ? [
+                    {
+                      month: '2024-01',
+                      deposits: 30000,
+                      dividends: 200,
+                      capitalGains: 400,
+                    },
+                  ]
+                : [
+                    {
+                      month: '2025-01',
+                      deposits: 40000,
+                      dividends: 300,
+                      capitalGains: 500,
+                    },
+                  ]
+            ),
+          });
+        }
+      );
       await page.goto(`/account/${ACCOUNT_UUID}`);
       await page.waitForLoadState('networkidle');
 
@@ -398,7 +447,18 @@ test.describe('Account Summary', () => {
       const count = await options.count();
 
       if (count > 1) {
+        // Capture the graph refresh request to validate year-specific refresh
+        const graphRefresh = page.waitForRequest(function isYearRefresh(
+          request
+        ) {
+          const url = new URL(request.url());
+          return (
+            url.pathname === '/api/summary/graph' &&
+            url.searchParams.get('year') === '2024'
+          );
+        });
         await options.nth(1).click();
+        await graphRefresh;
         await page.waitForLoadState('networkidle');
         // Verify performance chart is still visible after year change
         const performanceChart = page.locator(
