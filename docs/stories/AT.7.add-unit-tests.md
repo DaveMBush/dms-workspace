@@ -1,6 +1,6 @@
 # Story AT.7: Add Comprehensive Unit Tests
 
-**Status:** Approved
+**Status:** Dev Complete
 
 ## Story
 
@@ -46,27 +46,27 @@
 
 ## Tasks / Subtasks
 
-- [ ] Audit existing test coverage (AC: T1)
-  - [ ] Run coverage report
-  - [ ] Identify gaps in coverage
-  - [ ] Document untested code paths
-- [ ] Add missing unit tests (AC: F1-F6)
-  - [ ] Tests for accountId edge cases (missing, invalid)
-  - [ ] Tests for component cleanup (subscriptions, effects)
-  - [ ] Tests for all computed signals
-  - [ ] Tests for form control interactions
-  - [ ] Tests for performance chart data transformations
-  - [ ] Tests for concurrent HTTP requests
-- [ ] Add integration tests (AC: F5)
-  - [ ] Test full user flow: load -> select month -> select year
-  - [ ] Test error recovery: error -> retry -> success
-  - [ ] Test loading states across all features
-- [ ] Refactor duplicate test code (AC: T4)
-  - [ ] Extract common test setup to helper functions
-  - [ ] Create reusable mock data factories
-  - [ ] DRY up HTTP mock patterns
-- [ ] Verify coverage >80% (AC: T1)
-- [ ] Run validation commands
+- [x] Audit existing test coverage (AC: T1)
+  - [x] Run coverage report
+  - [x] Identify gaps in coverage
+  - [x] Document untested code paths
+- [x] Add missing unit tests (AC: F1-F6)
+  - [x] Tests for accountId edge cases (missing, invalid)
+  - [x] Tests for component cleanup (subscriptions, effects)
+  - [x] Tests for all computed signals
+  - [x] Tests for form control interactions
+  - [x] Tests for performance chart data transformations
+  - [x] Tests for concurrent HTTP requests
+- [x] Add integration tests (AC: F5)
+  - [x] Test full user flow: load -> select month -> select year
+  - [x] Test error recovery: error -> retry -> success
+  - [x] Test loading states across all features
+- [x] Refactor duplicate test code (AC: T4)
+  - [x] Extract common test setup to helper functions
+  - [x] Create reusable mock data factories
+  - [x] DRY up HTTP mock patterns
+- [x] Verify coverage >80% (AC: T1)
+- [x] Run validation commands
 
 ## Dev Notes
 
@@ -164,6 +164,29 @@ Common areas needing additional tests:
 
 ## Change Log
 
-| Date       | Version | Description      | Author |
-| ---------- | ------- | ---------------- | ------ |
-| 2026-03-02 | 1.0     | Initial creation | PM     |
+| Date       | Version | Description                                                                      | Author    |
+| ---------- | ------- | -------------------------------------------------------------------------------- | --------- |
+| 2026-03-02 | 1.0     | Initial creation                                                                 | PM        |
+| 2026-03-03 | 1.1     | Implementation - added 32 new tests, mock factories, coverage 100%/85%/100%/100% | Dev Agent |
+
+## Dev Agent Record
+
+### Agent Model Used
+
+Claude Opus 4.6
+
+### File List
+
+- `apps/dms-material/src/app/accounts/account-summary/account-summary.spec.ts` (modified)
+- `docs/stories/AT.7.add-unit-tests.md` (modified)
+
+### Debug Log References
+
+None
+
+### Completion Notes
+
+- Added 32 new unit tests (43 → 75 total)
+- Coverage improved: Stmts 89.47% → 100%, Branch 65% → 85%, Funcs 76.92% → 100%, Lines 91.54% → 100%
+- Added mock data factories: `createMockSummary`, `createMockGraphData`, `createMockMonths`
+- New test sections: Computed Signals, Getters, Edge Cases, Component Lifecycle, Integration Flows, Error Recovery
