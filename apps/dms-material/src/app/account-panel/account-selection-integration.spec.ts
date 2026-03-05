@@ -460,8 +460,8 @@ describe('Account Selection Integration', () => {
       expect(currentAccount().name).toBe('Brokerage');
     });
 
-    it('should reuse the same selectCurrentAccountSignal without stacking', () => {
-      // Creating the signal multiple times should not cause duplicate references
+    it('should allow multiple signal instances to track state independently', () => {
+      // Multiple signal instances created from the factory should each track the same store state correctly
       const signalA = selectCurrentAccountSignal(store);
       const signalB = selectCurrentAccountSignal(store);
 
@@ -590,6 +590,7 @@ describe('Account Selection Integration', () => {
     });
 
     it('should handle account that has undefined trades gracefully', () => {
+      // Defensive test: verifies behavior if runtime data violates Account interface contract
       populateAccounts({
         'account-no-trades': {
           id: 'account-no-trades',
