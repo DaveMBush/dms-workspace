@@ -1,14 +1,29 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { signal, WritableSignal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  input,
+  NO_ERRORS_SCHEMA,
+  signal,
+  WritableSignal,
+} from '@angular/core';
 
 import { SummaryService } from '../../global/services/summary.service';
+import { SummaryDisplayComponent } from '../../shared/components/summary-display/summary-display';
 import { currentAccountSignalStore } from '../../store/current-account/current-account.signal-store';
 import { SummaryComponent } from './summary.component';
 
-// Mock the entire selectTrades module to avoid SmartNgRX initialization
-vi.mock('../../store/trades/selectors/select-trades.function', () => ({
-  selectTrades: vi.fn().mockReturnValue([]),
-}));
+@Component({
+  selector: 'dms-summary-display',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  templateUrl: './mock-summary-display.html',
+})
+class MockSummaryDisplayComponent {
+  chartType$ = input<string>('pie');
+  data$ = input<unknown>({});
+  title$ = input<string>('');
+  height$ = input<string>('300px');
+}
 
 // Mock selectAccounts to avoid SmartNgRX initialization from currentAccountSignalStore
 vi.mock('../../store/accounts/selectors/select-accounts.function', () => ({
@@ -89,7 +104,14 @@ describe('SummaryComponent - Account Selection Integration', () => {
       // eslint-disable-next-line @typescript-eslint/naming-convention -- matches Summary interface
       tax_free_income: number;
     }>;
-    graph: WritableSignal<Array<{ date: string; value: number }>>;
+    graph: WritableSignal<
+      Array<{
+        month: string;
+        deposits: number;
+        capitalGains: number;
+        dividends: number;
+      }>
+    >;
     months: WritableSignal<Array<{ label: string; value: string }>>;
     accountMonths: WritableSignal<Array<{ label: string; value: string }>>;
     years: WritableSignal<number[]>;
@@ -155,7 +177,13 @@ describe('SummaryComponent - Account Selection Integration', () => {
           useValue: mockCurrentAccountStore,
         },
       ],
-    }).compileComponents();
+      schemas: [NO_ERRORS_SCHEMA],
+    })
+      .overrideComponent(SummaryComponent, {
+        remove: { imports: [SummaryDisplayComponent] },
+        add: { imports: [MockSummaryDisplayComponent] },
+      })
+      .compileComponents();
 
     fixture = TestBed.createComponent(SummaryComponent);
     component = fixture.componentInstance;

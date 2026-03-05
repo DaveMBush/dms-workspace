@@ -14,10 +14,26 @@ import { MatOptionModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
 import { ChartData } from 'chart.js';
 
+import { GraphPoint } from '../../global/services/graph-point.interface';
+import { Summary } from '../../global/services/summary.interface';
 import { SummaryService } from '../../global/services/summary.service';
 import { SummaryDisplayComponent } from '../../shared/components/summary-display/summary-display';
 import { currentAccountSignalStore } from '../../store/current-account/current-account.signal-store';
-import { selectTrades } from '../../store/trades/selectors/select-trades.function';
+
+const CHART_COLORS = {
+  equities: '#42A5F5',
+  income: '#66BB6A',
+  taxFree: '#FFA726',
+  equitiesHover: '#64B5F6',
+  incomeHover: '#81C784',
+  taxFreeHover: '#FFB74D',
+  base: '#42A5F5',
+  capitalGains: '#66BB6A',
+  dividends: '#FFA726',
+  baseAlpha: 'rgba(66,165,245,0.2)',
+  capitalGainsAlpha: 'rgba(102,187,106,0.2)',
+  dividendsAlpha: 'rgba(255,167,38,0.2)',
+};
 
 function createMonthOptions(): Array<{ label: string; value: string }> {
   return Array.from({ length: 12 }, function buildMonthOption(_, index) {
@@ -28,6 +44,109 @@ function createMonthOptions(): Array<{ label: string; value: string }> {
 
 function onFetchComplete(): void {
   // intentionally empty – required callback placeholder
+}
+
+function buildAllocationData(summary: Summary): ChartData<'pie'> {
+  const { equities, income, tax_free_income } = summary;
+  const total = equities + income + tax_free_income;
+  const pctEquities = total > 0 ? (100 * equities) / total : 0;
+  const pctIncome = total > 0 ? (100 * income) / total : 0;
+  const pctTaxFree = total > 0 ? (100 * tax_free_income) / total : 0;
+
+  return {
+    labels: ['Equities', 'Income', 'Tax Free'],
+    datasets: [
+      {
+        data: [pctEquities, pctIncome, pctTaxFree],
+        backgroundColor: [
+          CHART_COLORS.equities,
+          CHART_COLORS.income,
+          CHART_COLORS.taxFree,
+        ],
+        hoverBackgroundColor: [
+          CHART_COLORS.equitiesHover,
+          CHART_COLORS.incomeHover,
+          CHART_COLORS.taxFreeHover,
+        ],
+      },
+    ],
+  };
+}
+
+function createLineDataset(
+  label: string,
+  data: number[],
+  borderColor: string,
+  backgroundColor: string
+): {
+  label: string;
+  data: number[];
+  borderColor: string;
+  backgroundColor: string;
+  fill: boolean;
+  tension: number;
+} {
+  return {
+    label,
+    data,
+    borderColor,
+    backgroundColor,
+    fill: false,
+    tension: 0.1,
+  };
+}
+
+function buildPerformanceDatasets(
+  graphPoints: GraphPoint[]
+): ChartData<'line'>['datasets'] {
+  const baseData = graphPoints.map(function baseMap(gp) {
+    return gp.deposits;
+  });
+  const capitalGainsData = graphPoints.map(function capGainsMap(gp) {
+    return gp.deposits + gp.capitalGains;
+  });
+  const dividendsData = graphPoints.map(function dividendsMap(gp) {
+    return gp.deposits + gp.capitalGains + gp.dividends;
+  });
+
+  return [
+    createLineDataset(
+      'Base',
+      baseData,
+      CHART_COLORS.base,
+      CHART_COLORS.baseAlpha
+    ),
+    createLineDataset(
+      'Capital Gains',
+      capitalGainsData,
+      CHART_COLORS.capitalGains,
+      CHART_COLORS.capitalGainsAlpha
+    ),
+    createLineDataset(
+      'Dividends',
+      dividendsData,
+      CHART_COLORS.dividends,
+      CHART_COLORS.dividendsAlpha
+    ),
+  ];
+}
+
+function buildPerformanceData(graphPoints: GraphPoint[]): ChartData<'line'> {
+  if (graphPoints.length === 0) {
+    return {
+      labels: [],
+      datasets: buildPerformanceDatasets([]),
+    };
+  }
+
+  const labels = graphPoints.map(function labelMap(gp) {
+    return gp.month;
+  });
+
+  return {
+    labels,
+    datasets: buildPerformanceDatasets(graphPoints),
+  };
 }
 
 @Component({
@@ -49,55 +168,13 @@ export class SummaryComponent {
   private readonly summaryService = inject(SummaryService);
   private readonly accountStore = inject(currentAccountSignalStore);
   private readonly destroyRef = inject(DestroyRef);
-  private tradesSignal = selectTrades();
 
-  private allocationDataSignal = computed<ChartData<'pie'>>(
-    function computeAllocationData() {
-      // Build from trades data
-      return {
-        labels: ['Open', 'Sold', 'Cash'],
-        datasets: [
-          {
-            data: [60, 30, 10],
-            backgroundColor: ['#3B82F6', '#22C55E', '#F59E0B'],
-          },
-        ],
-      };
-    }
+  private allocationDataSignal = computed(
+    this.computeAllocationData.bind(this)
   );
 
-  private performanceDataSignal = computed<ChartData<'line'>>(
-    function computePerformanceData() {
-      return {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
-        datasets: [
-          {
-            label: 'Base',
-            data: [10000, 10200, 10100, 10300, 10500],
-            borderColor: '#42A5F5',
-            backgroundColor: 'rgba(66,165,245,0.2)',
-            fill: false,
-            tension: 0.1,
-          },
-          {
-            label: 'Capital Gains',
-            data: [10000, 10400, 10300, 10600, 11000],
-            borderColor: '#66BB6A',
-            backgroundColor: 'rgba(102,187,106,0.2)',
-            fill: false,
-            tension: 0.1,
-          },
-          {
-            label: 'Dividends',
-            data: [10000, 10500, 10400, 10800, 11500],
-            borderColor: '#FFA726',
-            backgroundColor: 'rgba(255,167,38,0.2)',
-            fill: false,
-            tension: 0.1,
-          },
-        ],
-      };
-    }
+  private performanceDataSignal = computed(
+    this.computePerformanceData.bind(this)
   );
 
   readonly selectedMonth = new FormControl('2025-03');
@@ -130,21 +207,13 @@ export class SummaryComponent {
       });
   }
 
-  private totalValueSignal = computed(function computeTotalValue() {
-    return 11500;
-  });
+  private totalValueSignal = computed(this.computeTotalValue.bind(this));
 
-  private totalGainSignal = computed(function computeTotalGain() {
-    return 1500;
-  });
+  private totalGainSignal = computed(this.computeTotalGain.bind(this));
 
-  private gainPercentSignal = computed(function computeGainPercent() {
-    return 0.15;
-  });
+  private gainPercentSignal = computed(this.computeGainPercent.bind(this));
 
-  private capitalGainSignal = computed(function computeCapitalGain() {
-    return 1200;
-  });
+  private capitalGainSignal = computed(this.computeCapitalGain.bind(this));
 
   // Getters for template
   get allocationData(): ChartData<'pie'> {
@@ -173,5 +242,32 @@ export class SummaryComponent {
 
   get gainPercent(): number {
     return this.gainPercentSignal();
+  }
+
+  private computeAllocationData(): ChartData<'pie'> {
+    return buildAllocationData(this.summaryService.summary());
+  }
+
+  private computePerformanceData(): ChartData<'line'> {
+    return buildPerformanceData(this.summaryService.graph());
+  }
+
+  private computeTotalValue(): number {
+    const s = this.summaryService.summary();
+    return s.equities + s.income + s.tax_free_income;
+  }
+
+  private computeTotalGain(): number {
+    const s = this.summaryService.summary();
+    return s.capitalGains + s.dividends;
+  }
+
+  private computeGainPercent(): number {
+    const s = this.summaryService.summary();
+    return s.deposits > 0 ? (s.capitalGains + s.dividends) / s.deposits : 0;
+  }
+
+  private computeCapitalGain(): number {
+    return this.summaryService.summary().capitalGains;
   }
 }
