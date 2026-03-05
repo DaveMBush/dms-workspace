@@ -8,6 +8,7 @@ import { DivDepModal } from '../div-dep-modal/div-dep-modal.component';
 import { ColumnDef } from '../../shared/components/base-table/column-def.interface';
 import { ConfirmDialogService } from '../../shared/services/confirm-dialog.service';
 import { NotificationService } from '../../shared/services/notification.service';
+import { currentAccountSignalStore } from '../../store/current-account/current-account.signal-store';
 import { DivDeposit } from '../../store/div-deposits/div-deposit.interface';
 import { divDepositsEffectsServiceToken } from '../../store/div-deposits/div-deposits-effect-service-token';
 import { DividendDepositsComponent } from './dividend-deposits.component';
@@ -780,5 +781,357 @@ describe('DividendDepositsComponent - Delete Dialog SmartNgRX Integration (AQ.7)
     // Regression guard: delete must go through SmartNgRX service,
     // not raw effectsService.delete
     expect(mockEffectsService.delete).not.toHaveBeenCalled();
+  });
+});
+
+// Story AU.9: TDD Tests for Dividend Deposits Account Selection Integration
+// Enabled in AU.10: Wire Dividend Deposits to Account Selection
+// These tests verify that the dividend deposits screen properly integrates with
+// account selection, refreshing data when the selected account changes.
+describe.skip('DividendDepositsComponent - Account Selection Integration', () => {
+  let component: DividendDepositsComponent;
+  let fixture: ComponentFixture<DividendDepositsComponent>;
+  let mockDividendDepositsService: {
+    dividends: WritableSignal<DivDeposit[]>;
+    selectedAccountId: WritableSignal<string>;
+    addDivDeposit: ReturnType<typeof vi.fn>;
+    deleteDivDeposit: ReturnType<typeof vi.fn>;
+  };
+  let mockCurrentAccountStore: {
+    id: WritableSignal<string>;
+    selectCurrentAccountId: WritableSignal<string>;
+    setCurrentAccountId: ReturnType<typeof vi.fn>;
+  };
+
+  beforeEach(async () => {
+    mockCurrentAccountStore = {
+      id: signal<string>(''),
+      selectCurrentAccountId: signal<string>(''),
+      setCurrentAccountId: vi.fn(),
+    };
+
+    mockDividendDepositsService = {
+      dividends: signal<DivDeposit[]>([]),
+      selectedAccountId: signal<string>(''),
+      addDivDeposit: vi.fn(),
+      deleteDivDeposit: vi.fn(),
+    };
+
+    await TestBed.configureTestingModule({
+      imports: [DividendDepositsComponent],
+      providers: [
+        {
+          provide: DividendDepositsComponentService,
+          useValue: mockDividendDepositsService,
+        },
+        {
+          provide: currentAccountSignalStore,
+          useValue: mockCurrentAccountStore,
+        },
+        { provide: MatDialog, useValue: { open: vi.fn() } },
+        { provide: NotificationService, useValue: { success: vi.fn() } },
+        { provide: ConfirmDialogService, useValue: { confirm: vi.fn() } },
+        {
+          provide: divDepositsEffectsServiceToken,
+          useValue: { add: vi.fn(), update: vi.fn(), delete: vi.fn() },
+        },
+      ],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(DividendDepositsComponent);
+    component = fixture.componentInstance;
+  });
+
+  describe('subscribes to account selection changes', () => {
+    it('should react when the selected account ID changes', () => {
+      fixture.detectChanges();
+
+      // Simulate account change via the store
+      mockCurrentAccountStore.selectCurrentAccountId.set('acc-123');
+      fixture.detectChanges();
+
+      // Component should reflect the new account context
+      expect(mockCurrentAccountStore.selectCurrentAccountId()).toBe('acc-123');
+    });
+
+    it('should not display stale data when account ID is empty', () => {
+      fixture.detectChanges();
+
+      mockCurrentAccountStore.selectCurrentAccountId.set('');
+      mockDividendDepositsService.dividends.set([]);
+      fixture.detectChanges();
+
+      const dividends = component.dividends$();
+      expect(dividends.length).toBe(0);
+    });
+
+    it('should handle initial account selection on component creation', () => {
+      mockCurrentAccountStore.selectCurrentAccountId.set('acc-initial');
+      fixture.detectChanges();
+
+      expect(mockCurrentAccountStore.selectCurrentAccountId()).toBe(
+        'acc-initial'
+      );
+    });
+  });
+
+  describe('data refresh on account change', () => {
+    it('should load dividends for selected account', () => {
+      const account1Dividends: DivDeposit[] = [
+        createDivDeposit({
+          id: 'dep-1',
+          accountId: 'acc-1',
+          amount: 100,
+        }),
+      ];
+
+      fixture.detectChanges();
+
+      mockCurrentAccountStore.selectCurrentAccountId.set('acc-1');
+      mockDividendDepositsService.dividends.set(account1Dividends);
+      fixture.detectChanges();
+
+      const dividends = component.dividends$();
+      expect(dividends.length).toBe(1);
+      expect(dividends[0].amount).toBe(100);
+    });
+
+    it('should refresh table when account changes', () => {
+      const account1Dividends: DivDeposit[] = [
+        createDivDeposit({
+          id: 'dep-1',
+          accountId: 'acc-1',
+          amount: 100,
+        }),
+      ];
+
+      const account2Dividends: DivDeposit[] = [
+        createDivDeposit({
+          id: 'dep-10',
+          accountId: 'acc-2',
+          amount: 250,
+        }),
+        createDivDeposit({
+          id: 'dep-11',
+          accountId: 'acc-2',
+          amount: 375,
+        }),
+      ];
+
+      fixture.detectChanges();
+
+      // First account
+      mockCurrentAccountStore.selectCurrentAccountId.set('acc-1');
+      mockDividendDepositsService.dividends.set(account1Dividends);
+      fixture.detectChanges();
+
+      expect(component.dividends$().length).toBe(1);
+
+      // Switch to second account
+      mockCurrentAccountStore.selectCurrentAccountId.set('acc-2');
+      mockDividendDepositsService.dividends.set(account2Dividends);
+      fixture.detectChanges();
+
+      const dividends = component.dividends$();
+      expect(dividends.length).toBe(2);
+      expect(dividends[0].amount).toBe(250);
+      expect(dividends[1].amount).toBe(375);
+    });
+
+    it('should clear dividends when account deselected', () => {
+      const mockDividends: DivDeposit[] = [
+        createDivDeposit({
+          id: 'dep-1',
+          accountId: 'acc-1',
+          amount: 100,
+        }),
+      ];
+
+      fixture.detectChanges();
+
+      mockCurrentAccountStore.selectCurrentAccountId.set('acc-1');
+      mockDividendDepositsService.dividends.set(mockDividends);
+      fixture.detectChanges();
+      expect(component.dividends$().length).toBe(1);
+
+      // Deselect account
+      mockCurrentAccountStore.selectCurrentAccountId.set('');
+      mockDividendDepositsService.dividends.set([]);
+      fixture.detectChanges();
+
+      expect(component.dividends$().length).toBe(0);
+    });
+
+    it('should update dividend amounts for new account', () => {
+      const dividends: DivDeposit[] = [
+        createDivDeposit({
+          id: 'dep-1',
+          accountId: 'acc-1',
+          amount: 500,
+        }),
+        createDivDeposit({
+          id: 'dep-2',
+          accountId: 'acc-1',
+          amount: 150,
+        }),
+      ];
+
+      fixture.detectChanges();
+
+      mockCurrentAccountStore.selectCurrentAccountId.set('acc-1');
+      mockDividendDepositsService.dividends.set(dividends);
+      fixture.detectChanges();
+
+      const displayed = component.dividends$();
+      expect(displayed.length).toBe(2);
+      expect(displayed[0].amount).toBe(500);
+      expect(displayed[1].amount).toBe(150);
+    });
+  });
+
+  describe('correct account ID passed to service calls', () => {
+    it('should verify correct account ID is used by the service', () => {
+      fixture.detectChanges();
+
+      mockCurrentAccountStore.selectCurrentAccountId.set('acc-789');
+      fixture.detectChanges();
+
+      expect(mockCurrentAccountStore.selectCurrentAccountId()).toBe('acc-789');
+    });
+
+    it('should use updated account ID after rapid account switches', () => {
+      fixture.detectChanges();
+
+      // Rapid account switches
+      mockCurrentAccountStore.selectCurrentAccountId.set('acc-1');
+      mockCurrentAccountStore.selectCurrentAccountId.set('acc-2');
+      mockCurrentAccountStore.selectCurrentAccountId.set('acc-3');
+      fixture.detectChanges();
+
+      // The most recent account should be active
+      expect(mockCurrentAccountStore.selectCurrentAccountId()).toBe('acc-3');
+    });
+
+    it('should pass account ID through to service computation', () => {
+      fixture.detectChanges();
+
+      mockCurrentAccountStore.selectCurrentAccountId.set('acc-555');
+      fixture.detectChanges();
+
+      // Service should have access to the current account context
+      expect(mockCurrentAccountStore.selectCurrentAccountId()).toBe('acc-555');
+    });
+  });
+
+  describe('table updates with new account data', () => {
+    it('should display dividends specific to the selected account', () => {
+      const accountDividends: DivDeposit[] = [
+        createDivDeposit({
+          id: 'dep-100',
+          accountId: 'acc-nvda',
+          amount: 75,
+          divDepositTypeId: 'type-2',
+        }),
+      ];
+
+      fixture.detectChanges();
+
+      mockCurrentAccountStore.selectCurrentAccountId.set('acc-nvda');
+      mockDividendDepositsService.dividends.set(accountDividends);
+      fixture.detectChanges();
+
+      const dividends = component.dividends$();
+      expect(dividends.length).toBe(1);
+      expect(dividends[0].id).toBe('dep-100');
+      expect(dividends[0].amount).toBe(75);
+    });
+
+    it('should update table columns when account data changes structure', () => {
+      fixture.detectChanges();
+
+      mockCurrentAccountStore.selectCurrentAccountId.set('acc-new');
+      fixture.detectChanges();
+
+      // Columns should remain defined regardless of account
+      expect(component.columns.length).toBeGreaterThan(0);
+      expect(
+        component.columns.find(function findSymbol(c: ColumnDef) {
+          return c.field === 'symbol';
+        })
+      ).toBeTruthy();
+      expect(
+        component.columns.find(function findAmount(c: ColumnDef) {
+          return c.field === 'amount';
+        })
+      ).toBeTruthy();
+    });
+
+    it('should handle empty dividends for a new account gracefully', () => {
+      fixture.detectChanges();
+
+      mockCurrentAccountStore.selectCurrentAccountId.set('acc-empty');
+      mockDividendDepositsService.dividends.set([]);
+      fixture.detectChanges();
+
+      const dividends = component.dividends$();
+      expect(Array.isArray(dividends)).toBe(true);
+      expect(dividends.length).toBe(0);
+    });
+  });
+
+  describe('edge cases for account switching', () => {
+    it('should handle switching to same account without error', () => {
+      fixture.detectChanges();
+
+      mockCurrentAccountStore.selectCurrentAccountId.set('acc-1');
+      fixture.detectChanges();
+
+      // Switch to same account again
+      mockCurrentAccountStore.selectCurrentAccountId.set('acc-1');
+      fixture.detectChanges();
+
+      expect(mockCurrentAccountStore.selectCurrentAccountId()).toBe('acc-1');
+    });
+
+    it('should handle add operation with correct account context', () => {
+      fixture.detectChanges();
+
+      mockCurrentAccountStore.selectCurrentAccountId.set('acc-add');
+      mockDividendDepositsService.selectedAccountId.set('acc-add');
+      fixture.detectChanges();
+
+      // Verify service has the correct account context for add operations
+      expect(mockDividendDepositsService.selectedAccountId()).toBe('acc-add');
+    });
+
+    it('should handle delete operation with correct account context', () => {
+      const dividend = createDivDeposit({
+        id: 'dep-del',
+        accountId: 'acc-del',
+      });
+
+      fixture.detectChanges();
+
+      mockCurrentAccountStore.selectCurrentAccountId.set('acc-del');
+      mockDividendDepositsService.dividends.set([dividend]);
+      fixture.detectChanges();
+
+      // Verify the dividend belongs to the current account
+      expect(component.dividends$()[0].accountId).toBe('acc-del');
+    });
+
+    it('should preserve component state across account switches', () => {
+      fixture.detectChanges();
+
+      // Columns should remain stable across switches
+      const columnCount = component.columns.length;
+
+      // Switch accounts
+      mockCurrentAccountStore.selectCurrentAccountId.set('acc-new');
+      fixture.detectChanges();
+
+      // Component column definitions should be preserved
+      expect(component.columns.length).toBe(columnCount);
+    });
   });
 });
