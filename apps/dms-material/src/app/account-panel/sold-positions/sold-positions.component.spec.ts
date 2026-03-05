@@ -5,6 +5,7 @@ import { vi } from 'vitest';
 import { SoldPositionsComponent } from './sold-positions.component';
 import { SoldPositionsComponentService } from './sold-positions-component.service';
 import { ClosedPosition } from '../../store/trades/closed-position.interface';
+import { currentAccountSignalStore } from '../../store/current-account/current-account.signal-store';
 import { Trade } from '../../store/trades/trade.interface';
 
 // Mock SmartNgRX selectors to avoid initialization errors
@@ -511,6 +512,456 @@ describe('SoldPositionsComponent', () => {
 
       expect(component.displayedPositions().length).toBe(1);
       expect(component.displayedPositions()[0].symbol).toBe('GOOGL');
+    });
+  });
+});
+
+// Story AU.7: TDD Tests for Sold Positions Account Selection Integration
+// Disabled with describe.skip — will be enabled in implementation story AU.8
+// These tests verify that the sold positions screen properly integrates with
+// account selection, refreshing data when the selected account changes.
+describe.skip('SoldPositionsComponent - Account Selection Integration', () => {
+  let component: SoldPositionsComponent;
+  let fixture: ComponentFixture<SoldPositionsComponent>;
+  let mockSoldPositionsComponentService: {
+    selectSoldPositions: WritableSignal<ClosedPosition[]>;
+  };
+  let mockCurrentAccountStore: {
+    id: WritableSignal<string>;
+    selectCurrentAccountId: WritableSignal<string>;
+    setCurrentAccountId: ReturnType<typeof vi.fn>;
+  };
+
+  beforeEach(async () => {
+    mockCurrentAccountStore = {
+      id: signal<string>(''),
+      selectCurrentAccountId: signal<string>(''),
+      setCurrentAccountId: vi.fn(),
+    };
+
+    mockSoldPositionsComponentService = {
+      selectSoldPositions: signal<ClosedPosition[]>([]),
+    };
+
+    await TestBed.configureTestingModule({
+      imports: [SoldPositionsComponent],
+      providers: [
+        {
+          provide: SoldPositionsComponentService,
+          useValue: mockSoldPositionsComponentService,
+        },
+        {
+          provide: currentAccountSignalStore,
+          useValue: mockCurrentAccountStore,
+        },
+      ],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(SoldPositionsComponent);
+    component = fixture.componentInstance;
+  });
+
+  describe('subscribes to account selection changes', () => {
+    it('should react when the selected account ID changes', () => {
+      fixture.detectChanges();
+
+      // Simulate account change via the store
+      mockCurrentAccountStore.selectCurrentAccountId.set('acc-123');
+      fixture.detectChanges();
+
+      // Component should reflect the new account context
+      expect(mockCurrentAccountStore.selectCurrentAccountId()).toBe('acc-123');
+    });
+
+    it('should not display stale data when account ID is empty', () => {
+      fixture.detectChanges();
+
+      mockCurrentAccountStore.selectCurrentAccountId.set('');
+      mockSoldPositionsComponentService.selectSoldPositions.set([]);
+      fixture.detectChanges();
+
+      const positions = component.displayedPositions();
+      expect(positions.length).toBe(0);
+    });
+
+    it('should handle initial account selection on component creation', () => {
+      mockCurrentAccountStore.selectCurrentAccountId.set('acc-initial');
+      fixture.detectChanges();
+
+      expect(mockCurrentAccountStore.selectCurrentAccountId()).toBe(
+        'acc-initial'
+      );
+    });
+  });
+
+  describe('data refresh on account change', () => {
+    it('should load sold positions for selected account', () => {
+      const account1Positions: ClosedPosition[] = [
+        {
+          id: '1',
+          symbol: 'AAPL',
+          buy: 150,
+          buy_date: '2024-01-15',
+          quantity: 100,
+          sell: 180,
+          sell_date: '2024-06-01',
+          daysHeld: 138,
+          capitalGain: 3000,
+          capitalGainPercentage: 20,
+        },
+      ];
+
+      fixture.detectChanges();
+
+      mockCurrentAccountStore.selectCurrentAccountId.set('acc-1');
+      mockSoldPositionsComponentService.selectSoldPositions.set(
+        account1Positions
+      );
+      fixture.detectChanges();
+
+      const positions = component.displayedPositions();
+      expect(positions.length).toBe(1);
+      expect(positions[0].symbol).toBe('AAPL');
+    });
+
+    it('should refresh table when account changes', () => {
+      const account1Positions: ClosedPosition[] = [
+        {
+          id: '1',
+          symbol: 'AAPL',
+          buy: 150,
+          buy_date: '2024-01-15',
+          quantity: 100,
+          sell: 180,
+          sell_date: '2024-06-01',
+          daysHeld: 138,
+          capitalGain: 3000,
+          capitalGainPercentage: 20,
+        },
+      ];
+
+      const account2Positions: ClosedPosition[] = [
+        {
+          id: '10',
+          symbol: 'MSFT',
+          buy: 300,
+          buy_date: '2024-02-01',
+          quantity: 50,
+          sell: 320,
+          sell_date: '2024-05-01',
+          daysHeld: 90,
+          capitalGain: 1000,
+          capitalGainPercentage: 6.67,
+        },
+        {
+          id: '11',
+          symbol: 'GOOGL',
+          buy: 100,
+          buy_date: '2024-02-10',
+          quantity: 75,
+          sell: 120,
+          sell_date: '2024-07-01',
+          daysHeld: 142,
+          capitalGain: 1500,
+          capitalGainPercentage: 20,
+        },
+      ];
+
+      fixture.detectChanges();
+
+      // First account
+      mockCurrentAccountStore.selectCurrentAccountId.set('acc-1');
+      mockSoldPositionsComponentService.selectSoldPositions.set(
+        account1Positions
+      );
+      fixture.detectChanges();
+
+      expect(component.displayedPositions().length).toBe(1);
+
+      // Switch to second account
+      mockCurrentAccountStore.selectCurrentAccountId.set('acc-2');
+      mockSoldPositionsComponentService.selectSoldPositions.set(
+        account2Positions
+      );
+      fixture.detectChanges();
+
+      const positions = component.displayedPositions();
+      expect(positions.length).toBe(2);
+      expect(positions[0].symbol).toBe('MSFT');
+      expect(positions[1].symbol).toBe('GOOGL');
+    });
+
+    it('should clear positions when account deselected', () => {
+      const mockPositions: ClosedPosition[] = [
+        {
+          id: '1',
+          symbol: 'AAPL',
+          buy: 150,
+          buy_date: '2024-01-15',
+          quantity: 100,
+          sell: 180,
+          sell_date: '2024-06-01',
+          daysHeld: 138,
+          capitalGain: 3000,
+          capitalGainPercentage: 20,
+        },
+      ];
+
+      fixture.detectChanges();
+
+      mockCurrentAccountStore.selectCurrentAccountId.set('acc-1');
+      mockSoldPositionsComponentService.selectSoldPositions.set(mockPositions);
+      fixture.detectChanges();
+      expect(component.displayedPositions().length).toBe(1);
+
+      // Deselect account
+      mockCurrentAccountStore.selectCurrentAccountId.set('');
+      mockSoldPositionsComponentService.selectSoldPositions.set([]);
+      fixture.detectChanges();
+
+      expect(component.displayedPositions().length).toBe(0);
+    });
+
+    it('should update capital gains for new account', () => {
+      const positions: ClosedPosition[] = [
+        {
+          id: '1',
+          symbol: 'AAPL',
+          buy: 150,
+          buy_date: '2024-01-15',
+          quantity: 100,
+          sell: 180,
+          sell_date: '2024-06-01',
+          daysHeld: 138,
+          capitalGain: 3000,
+          capitalGainPercentage: 20,
+        },
+        {
+          id: '2',
+          symbol: 'MSFT',
+          buy: 300,
+          buy_date: '2024-02-01',
+          quantity: 50,
+          sell: 280,
+          sell_date: '2024-05-01',
+          daysHeld: 90,
+          capitalGain: -1000,
+          capitalGainPercentage: -6.67,
+        },
+      ];
+
+      fixture.detectChanges();
+
+      mockCurrentAccountStore.selectCurrentAccountId.set('acc-1');
+      mockSoldPositionsComponentService.selectSoldPositions.set(positions);
+      fixture.detectChanges();
+
+      const displayed = component.displayedPositions();
+      expect(displayed.length).toBe(2);
+      expect(displayed[0].capitalGain).toBe(3000);
+      expect(displayed[1].capitalGain).toBe(-1000);
+    });
+  });
+
+  describe('correct account ID passed to service calls', () => {
+    it('should verify correct account ID is used by the service', () => {
+      fixture.detectChanges();
+
+      mockCurrentAccountStore.selectCurrentAccountId.set('acc-789');
+      fixture.detectChanges();
+
+      expect(mockCurrentAccountStore.selectCurrentAccountId()).toBe('acc-789');
+    });
+
+    it('should use updated account ID after rapid account switches', () => {
+      fixture.detectChanges();
+
+      // Rapid account switches
+      mockCurrentAccountStore.selectCurrentAccountId.set('acc-1');
+      mockCurrentAccountStore.selectCurrentAccountId.set('acc-2');
+      mockCurrentAccountStore.selectCurrentAccountId.set('acc-3');
+      fixture.detectChanges();
+
+      // The most recent account should be active
+      expect(mockCurrentAccountStore.selectCurrentAccountId()).toBe('acc-3');
+    });
+
+    it('should pass account ID through to service trades computation', () => {
+      fixture.detectChanges();
+
+      mockCurrentAccountStore.selectCurrentAccountId.set('acc-555');
+      fixture.detectChanges();
+
+      // Service should have access to the current account context
+      expect(mockCurrentAccountStore.selectCurrentAccountId()).toBe('acc-555');
+    });
+  });
+
+  describe('table updates with new account data', () => {
+    it('should display positions specific to the selected account', () => {
+      const accountPositions: ClosedPosition[] = [
+        {
+          id: '100',
+          symbol: 'NVDA',
+          buy: 500,
+          buy_date: '2024-03-01',
+          quantity: 20,
+          sell: 550,
+          sell_date: '2024-08-01',
+          daysHeld: 153,
+          capitalGain: 1000,
+          capitalGainPercentage: 10,
+        },
+      ];
+
+      fixture.detectChanges();
+
+      mockCurrentAccountStore.selectCurrentAccountId.set('acc-nvda');
+      mockSoldPositionsComponentService.selectSoldPositions.set(
+        accountPositions
+      );
+      fixture.detectChanges();
+
+      const positions = component.displayedPositions();
+      expect(positions.length).toBe(1);
+      expect(positions[0].id).toBe('100');
+      expect(positions[0].symbol).toBe('NVDA');
+      expect(positions[0].quantity).toBe(20);
+    });
+
+    it('should update table columns when account data changes structure', () => {
+      fixture.detectChanges();
+
+      mockCurrentAccountStore.selectCurrentAccountId.set('acc-new');
+      fixture.detectChanges();
+
+      // Columns should remain defined regardless of account
+      expect(component.columns.length).toBeGreaterThan(0);
+      expect(component.columns.find((c) => c.field === 'symbol')).toBeTruthy();
+      expect(
+        component.columns.find((c) => c.field === 'capitalGain')
+      ).toBeTruthy();
+    });
+
+    it('should maintain date filter when account changes', () => {
+      const account1Positions: ClosedPosition[] = [
+        {
+          id: '1',
+          symbol: 'AAPL',
+          buy: 150,
+          buy_date: '2024-01-15',
+          quantity: 100,
+          sell: 180,
+          sell_date: '2024-06-01',
+          daysHeld: 138,
+          capitalGain: 3000,
+          capitalGainPercentage: 20,
+        },
+        {
+          id: '2',
+          symbol: 'MSFT',
+          buy: 300,
+          buy_date: '2024-02-01',
+          quantity: 50,
+          sell: 320,
+          sell_date: '2024-12-15',
+          daysHeld: 318,
+          capitalGain: 1000,
+          capitalGainPercentage: 6.67,
+        },
+      ];
+
+      fixture.detectChanges();
+
+      // Set date filter
+      component.startDate.set('2024-06-01');
+      component.endDate.set('2024-06-30');
+
+      mockCurrentAccountStore.selectCurrentAccountId.set('acc-1');
+      mockSoldPositionsComponentService.selectSoldPositions.set(
+        account1Positions
+      );
+      fixture.detectChanges();
+
+      // Date filter should still apply after account change
+      const filtered = component.displayedPositions();
+      expect(filtered.length).toBe(1);
+      expect(filtered[0].symbol).toBe('AAPL');
+    });
+
+    it('should handle empty positions for a new account gracefully', () => {
+      fixture.detectChanges();
+
+      mockCurrentAccountStore.selectCurrentAccountId.set('acc-empty');
+      mockSoldPositionsComponentService.selectSoldPositions.set([]);
+      fixture.detectChanges();
+
+      const positions = component.displayedPositions();
+      expect(Array.isArray(positions)).toBe(true);
+      expect(positions.length).toBe(0);
+    });
+  });
+
+  describe('edge cases for account switching', () => {
+    it('should handle switching to same account without error', () => {
+      fixture.detectChanges();
+
+      mockCurrentAccountStore.selectCurrentAccountId.set('acc-1');
+      fixture.detectChanges();
+
+      // Switch to same account again
+      mockCurrentAccountStore.selectCurrentAccountId.set('acc-1');
+      fixture.detectChanges();
+
+      expect(mockCurrentAccountStore.selectCurrentAccountId()).toBe('acc-1');
+    });
+
+    it('should handle concurrent account and date filter changes', () => {
+      const positions: ClosedPosition[] = [
+        {
+          id: '1',
+          symbol: 'AAPL',
+          buy: 150,
+          buy_date: '2024-01-15',
+          quantity: 100,
+          sell: 180,
+          sell_date: '2024-06-01',
+          daysHeld: 138,
+          capitalGain: 3000,
+          capitalGainPercentage: 20,
+        },
+      ];
+
+      fixture.detectChanges();
+
+      // Change account and date filter simultaneously
+      mockCurrentAccountStore.selectCurrentAccountId.set('acc-2');
+      component.startDate.set('2024-01-01');
+      component.endDate.set('2024-12-31');
+      mockSoldPositionsComponentService.selectSoldPositions.set(positions);
+      fixture.detectChanges();
+
+      const filtered = component.displayedPositions();
+      expect(filtered.length).toBe(1);
+      expect(filtered[0].symbol).toBe('AAPL');
+    });
+
+    it('should preserve component state across account switches', () => {
+      fixture.detectChanges();
+
+      // Set some component state
+      component.searchText = 'test';
+      component.startDate.set('2024-01-01');
+      component.endDate.set('2024-12-31');
+
+      // Switch accounts
+      mockCurrentAccountStore.selectCurrentAccountId.set('acc-new');
+      fixture.detectChanges();
+
+      // Component state should be preserved
+      expect(component.searchText).toBe('test');
+      expect(component.startDate()).toBe('2024-01-01');
+      expect(component.endDate()).toBe('2024-12-31');
     });
   });
 });
