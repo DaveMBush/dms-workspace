@@ -850,8 +850,8 @@ describe.skip('DividendDepositsComponent - Account Selection Integration', () =>
       mockCurrentAccountStore.selectCurrentAccountId.set('acc-123');
       fixture.detectChanges();
 
-      // Component should reflect the new account context
-      expect(mockCurrentAccountStore.selectCurrentAccountId()).toBe('acc-123');
+      // Verify propagation into component service context
+      expect(mockDividendDepositsService.selectedAccountId()).toBe('acc-123');
     });
 
     it('should not display stale data when account ID is empty', () => {
@@ -869,7 +869,8 @@ describe.skip('DividendDepositsComponent - Account Selection Integration', () =>
       mockCurrentAccountStore.selectCurrentAccountId.set('acc-initial');
       fixture.detectChanges();
 
-      expect(mockCurrentAccountStore.selectCurrentAccountId()).toBe(
+      // Verify service receives initial account selection
+      expect(mockDividendDepositsService.selectedAccountId()).toBe(
         'acc-initial'
       );
     });
@@ -888,8 +889,9 @@ describe.skip('DividendDepositsComponent - Account Selection Integration', () =>
       fixture.detectChanges();
 
       mockCurrentAccountStore.selectCurrentAccountId.set('acc-1');
-      mockDividendDepositsService.dividends.set(account1Dividends);
       fixture.detectChanges();
+      expect(mockDividendDepositsService.selectedAccountId()).toBe('acc-1');
+      mockDividendDepositsService.dividends.set(account1Dividends);
 
       const dividends = component.dividends$();
       expect(dividends.length).toBe(1);
@@ -922,15 +924,17 @@ describe.skip('DividendDepositsComponent - Account Selection Integration', () =>
 
       // First account
       mockCurrentAccountStore.selectCurrentAccountId.set('acc-1');
-      mockDividendDepositsService.dividends.set(account1Dividends);
       fixture.detectChanges();
+      expect(mockDividendDepositsService.selectedAccountId()).toBe('acc-1');
+      mockDividendDepositsService.dividends.set(account1Dividends);
 
       expect(component.dividends$().length).toBe(1);
 
       // Switch to second account
       mockCurrentAccountStore.selectCurrentAccountId.set('acc-2');
-      mockDividendDepositsService.dividends.set(account2Dividends);
       fixture.detectChanges();
+      expect(mockDividendDepositsService.selectedAccountId()).toBe('acc-2');
+      mockDividendDepositsService.dividends.set(account2Dividends);
 
       const dividends = component.dividends$();
       expect(dividends.length).toBe(2);
@@ -950,14 +954,16 @@ describe.skip('DividendDepositsComponent - Account Selection Integration', () =>
       fixture.detectChanges();
 
       mockCurrentAccountStore.selectCurrentAccountId.set('acc-1');
-      mockDividendDepositsService.dividends.set(mockDividends);
       fixture.detectChanges();
+      expect(mockDividendDepositsService.selectedAccountId()).toBe('acc-1');
+      mockDividendDepositsService.dividends.set(mockDividends);
       expect(component.dividends$().length).toBe(1);
 
       // Deselect account
       mockCurrentAccountStore.selectCurrentAccountId.set('');
-      mockDividendDepositsService.dividends.set([]);
       fixture.detectChanges();
+      expect(mockDividendDepositsService.selectedAccountId()).toBe('');
+      mockDividendDepositsService.dividends.set([]);
 
       expect(component.dividends$().length).toBe(0);
     });
@@ -996,7 +1002,8 @@ describe.skip('DividendDepositsComponent - Account Selection Integration', () =>
       mockCurrentAccountStore.selectCurrentAccountId.set('acc-789');
       fixture.detectChanges();
 
-      expect(mockCurrentAccountStore.selectCurrentAccountId()).toBe('acc-789');
+      // Verify service received the propagated account ID
+      expect(mockDividendDepositsService.selectedAccountId()).toBe('acc-789');
     });
 
     it('should use updated account ID after rapid account switches', () => {
@@ -1008,8 +1015,8 @@ describe.skip('DividendDepositsComponent - Account Selection Integration', () =>
       mockCurrentAccountStore.selectCurrentAccountId.set('acc-3');
       fixture.detectChanges();
 
-      // The most recent account should be active
-      expect(mockCurrentAccountStore.selectCurrentAccountId()).toBe('acc-3');
+      // The most recent account should be active in the service
+      expect(mockDividendDepositsService.selectedAccountId()).toBe('acc-3');
     });
 
     it('should pass account ID through to service computation', () => {
@@ -1019,7 +1026,7 @@ describe.skip('DividendDepositsComponent - Account Selection Integration', () =>
       fixture.detectChanges();
 
       // Service should have access to the current account context
-      expect(mockCurrentAccountStore.selectCurrentAccountId()).toBe('acc-555');
+      expect(mockDividendDepositsService.selectedAccountId()).toBe('acc-555');
     });
   });
 
@@ -1090,14 +1097,14 @@ describe.skip('DividendDepositsComponent - Account Selection Integration', () =>
       mockCurrentAccountStore.selectCurrentAccountId.set('acc-1');
       fixture.detectChanges();
 
-      expect(mockCurrentAccountStore.selectCurrentAccountId()).toBe('acc-1');
+      // Service should still reflect the correct account
+      expect(mockDividendDepositsService.selectedAccountId()).toBe('acc-1');
     });
 
     it('should handle add operation with correct account context', () => {
       fixture.detectChanges();
 
       mockCurrentAccountStore.selectCurrentAccountId.set('acc-add');
-      mockDividendDepositsService.selectedAccountId.set('acc-add');
       fixture.detectChanges();
 
       // Verify service has the correct account context for add operations
