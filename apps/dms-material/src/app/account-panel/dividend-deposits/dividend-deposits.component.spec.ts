@@ -803,6 +803,9 @@ describe.skip('DividendDepositsComponent - Account Selection Integration', () =>
     setCurrentAccountId: ReturnType<typeof vi.fn>;
   };
 
+  let mockDialog: { open: ReturnType<typeof vi.fn> };
+  let mockConfirmDialogService: { confirm: ReturnType<typeof vi.fn> };
+
   beforeEach(async () => {
     mockCurrentAccountStore = {
       id: signal<string>(''),
@@ -817,6 +820,14 @@ describe.skip('DividendDepositsComponent - Account Selection Integration', () =>
       deleteDivDeposit: vi.fn(),
     };
 
+    mockDialog = {
+      open: vi.fn().mockReturnValue({ afterClosed: () => of(null) }),
+    };
+
+    mockConfirmDialogService = {
+      confirm: vi.fn().mockReturnValue(of(true)),
+    };
+
     await TestBed.configureTestingModule({
       imports: [DividendDepositsComponent],
       providers: [
@@ -828,9 +839,9 @@ describe.skip('DividendDepositsComponent - Account Selection Integration', () =>
           provide: currentAccountSignalStore,
           useValue: mockCurrentAccountStore,
         },
-        { provide: MatDialog, useValue: { open: vi.fn() } },
+        { provide: MatDialog, useValue: mockDialog },
         { provide: NotificationService, useValue: { success: vi.fn() } },
-        { provide: ConfirmDialogService, useValue: { confirm: vi.fn() } },
+        { provide: ConfirmDialogService, useValue: mockConfirmDialogService },
         {
           provide: divDepositsEffectsServiceToken,
           useValue: { add: vi.fn(), update: vi.fn(), delete: vi.fn() },
@@ -1109,6 +1120,16 @@ describe.skip('DividendDepositsComponent - Account Selection Integration', () =>
 
       // Verify service has the correct account context for add operations
       expect(mockDividendDepositsService.selectedAccountId()).toBe('acc-add');
+
+      // Simulate add - dialog opens with account context available
+      const newDividend = createDivDeposit({ accountId: 'acc-add' });
+      mockDialog.open.mockReturnValue({
+        afterClosed: () => of(newDividend),
+      });
+      component.onAddDividend();
+      expect(mockDividendDepositsService.addDivDeposit).toHaveBeenCalledWith(
+        newDividend
+      );
     });
 
     it('should handle delete operation with correct account context', () => {
@@ -1120,11 +1141,18 @@ describe.skip('DividendDepositsComponent - Account Selection Integration', () =>
       fixture.detectChanges();
 
       mockCurrentAccountStore.selectCurrentAccountId.set('acc-del');
-      mockDividendDepositsService.dividends.set([dividend]);
       fixture.detectChanges();
+
+      // Verify service has the correct account context for delete
+      expect(mockDividendDepositsService.selectedAccountId()).toBe('acc-del');
+
+      mockDividendDepositsService.dividends.set([dividend]);
 
       // Verify the dividend belongs to the current account
       expect(component.dividends$()[0].accountId).toBe('acc-del');
+
+      // Simulate delete - service method should be callable
+      component.onDeleteDividend(dividend);
     });
 
     it('should preserve component state across account switches', () => {
