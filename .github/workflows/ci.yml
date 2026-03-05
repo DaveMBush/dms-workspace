@@ -32,11 +32,16 @@ jobs:
           node-version: 22.21.1
           cache: 'pnpm'
 
+      # Install build tools required for native modules
+      - name: Install build dependencies
+        run: sudo apt-get update && sudo apt-get install -y build-essential python3
+
       # Prisma client is auto-generated via postinstall script
       - run: pnpm i --frozen-lockfile
 
       # Rebuild native modules for CI environment
-      - run: pnpm rebuild better-sqlite3
+      - name: Rebuild native modules
+        run: pnpm rebuild better-sqlite3
 
       # Fetch main branch for format:check comparison (only needed on PR branches)
       - name: Fetch main branch
