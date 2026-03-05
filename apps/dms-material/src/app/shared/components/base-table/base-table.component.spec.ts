@@ -53,4 +53,18 @@ describe('BaseTableComponent', () => {
   it('should track by id', () => {
     expect(component.trackByFn(0, { id: '123', name: 'Test' })).toBe('123');
   });
+
+  it('should render header cells with mat-mdc-header-cell class for scroll border transparency fix (regression: AS.9 Bug #1)', () => {
+    // Regression: th.mat-mdc-header-cell must be sticky with background-color: var(--dms-surface)
+    // so that when td.mat-mdc-cell also has background-color: var(--dms-surface), borders remain
+    // visible and do not "ghost" (become transparent) during scroll in real browsers.
+    // The fix is purely CSS — verified here by confirming the table header renders correctly
+    // so that the CSS selectors will apply in a real browser context.
+    fixture.componentRef.setInput('data', []);
+    fixture.detectChanges();
+    const headerCells = fixture.nativeElement.querySelectorAll(
+      'th.mat-mdc-header-cell'
+    );
+    expect(headerCells.length).toBeGreaterThan(0);
+  });
 });

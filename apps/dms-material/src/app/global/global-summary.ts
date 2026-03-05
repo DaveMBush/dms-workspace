@@ -12,11 +12,13 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatOptionModule } from '@angular/material/core';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { ChartConfiguration, ChartData } from 'chart.js';
 
 import { SummaryDisplayComponent } from '../shared/components/summary-display/summary-display';
+import { GraphPoint } from './services/graph-point.interface';
 import { SummaryService } from './services/summary.service';
 
 function enableMonthSelector(this: GlobalSummary): void {
@@ -34,11 +36,34 @@ function computePercentIncrease(
   return (12 * (gains + divs)) / basis;
 }
 
+interface EnrichedPoint {
+  month: string;
+  base: number;
+  capitalGainsLine: number;
+  dividendsLine: number;
+}
+
+function buildEnrichedPoints(graphData: GraphPoint[]): EnrichedPoint[] {
+  let cumulCapGains = 0;
+  let cumulDividends = 0;
+  return graphData.map(function buildPoint(p: GraphPoint): EnrichedPoint {
+    cumulCapGains += p.capitalGains;
+    cumulDividends += p.dividends;
+    return {
+      month: p.month,
+      base: p.deposits,
+      capitalGainsLine: p.deposits + cumulCapGains,
+      dividendsLine: p.deposits + cumulCapGains + cumulDividends,
+    };
+  });
+}
+
 @Component({
   selector: 'dms-global-summary',
   imports: [
     CurrencyPipe,
     MatCardModule,
+    MatFormFieldModule,
     MatOptionModule,
     MatProgressSpinnerModule,
     MatSelectModule,
@@ -55,6 +80,11 @@ export class GlobalSummary implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
 
   readonly selectedMonth = new FormControl('2025-03');
+  readonly selectedYear = new FormControl(new Date().getFullYear());
+
+  get yearOptions(): number[] {
+    return this.summaryService.years();
+  }
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- need access to service signal
   readonly allocationChartData = computed((): ChartData<'pie'> => {
@@ -118,38 +148,36 @@ export class GlobalSummary implements OnInit {
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- need access to service signal
   readonly performanceChartData = computed((): ChartData<'line'> => {
-    const graphData = this.summaryService.graph();
+    const enriched = buildEnrichedPoints(this.summaryService.graph());
     return {
-      labels: graphData.map(function getMonth(p: { month: string }): string {
+      labels: enriched.map(function getMonth(p: EnrichedPoint): string {
         return p.month;
       }),
       datasets: [
         {
           label: 'Base',
-          data: graphData.map(function getDeposits(p: {
-            deposits: number;
-          }): number {
-            return p.deposits;
+          data: enriched.map(function getBase(p: EnrichedPoint): number {
+            return p.base;
           }),
           borderColor: '#3B82F6',
           tension: 0.2,
         },
         {
           label: 'Capital Gains',
-          data: graphData.map(function getCapitalGains(p: {
-            capitalGains: number;
-          }): number {
-            return p.capitalGains;
+          data: enriched.map(function getCapGainsLine(
+            p: EnrichedPoint
+          ): number {
+            return p.capitalGainsLine;
           }),
           borderColor: '#10B981',
           tension: 0.2,
         },
         {
           label: 'Dividends',
-          data: graphData.map(function getDividends(p: {
-            dividends: number;
-          }): number {
-            return p.dividends;
+          data: enriched.map(function getDividendsLine(
+            p: EnrichedPoint
+          ): number {
+            return p.dividendsLine;
           }),
           borderColor: '#F59E0B',
           tension: 0.2,
@@ -191,6 +219,20 @@ export class GlobalSummary implements OnInit {
         }
       }
     );
+
+    // Auto-select most recent available year when years load
+    effect(
+      // eslint-disable-next-line @smarttools/no-anonymous-functions -- Required for effect
+      () => {
+        const years = this.summaryService.years();
+        if (years.length > 0) {
+          const currentValue = this.selectedYear.value;
+          if (currentValue === null || !years.includes(currentValue)) {
+            this.selectedYear.setValue(years[0]);
+          }
+        }
+      }
+    );
   }
 
   get monthOptions(): Array<{ label: string; value: string }> {
@@ -218,8 +260,22 @@ export class GlobalSummary implements OnInit {
 
   ngOnInit(): void {
     this.summaryService.fetchMonths();
-    this.summaryService.fetchGraph();
+    this.summaryService.fetchYears();
+    this.summaryService.fetchGraph(
+      this.selectedYear.value ?? new Date().getFullYear()
+    );
     this.summaryService.fetchSummary(this.selectedMonth.value ?? '2025-03');
+
+    this.selectedYear.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(
+        // eslint-disable-next-line @smarttools/no-anonymous-functions -- need inline access to service
+        (year: number | null) => {
+          if (year !== null) {
+            this.summaryService.fetchGraph(year);
+          }
+        }
+      );
 
     this.selectedMonth.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))

@@ -37,7 +37,9 @@ test.describe('Screener Refresh', () => {
     await expect(spinner).toBeVisible();
   });
 
-  test('should disable button during refresh', async ({ page }) => {
+  test('should show global loading overlay during refresh', async ({
+    page,
+  }) => {
     // Mock the API to delay response
     await page.route('**/api/screener', async (route) => {
       await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -50,8 +52,9 @@ test.describe('Screener Refresh', () => {
     const button = page.locator('[data-testid="refresh-button"]');
     await button.click();
 
-    // Button should be disabled while loading
-    await expect(button).toBeDisabled();
+    // Global loading overlay should appear while refreshing
+    const overlay = page.locator('[data-testid="loading-overlay"]');
+    await expect(overlay).toBeVisible();
   });
 
   test('should hide loading indicator after successful refresh', async ({

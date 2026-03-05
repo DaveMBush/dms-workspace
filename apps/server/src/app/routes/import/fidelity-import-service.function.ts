@@ -6,6 +6,7 @@ import { MappedDivDeposit } from './mapped-div-deposit.interface';
 import { MappedSale } from './mapped-sale.interface';
 import { MappedTrade } from './mapped-trade.interface';
 import { MappedTransactionResult } from './mapped-transaction-result.interface';
+import { resolveCusipSymbols } from './resolve-cusip.function';
 import { UnknownTransaction } from './unknown-transaction.interface';
 
 /**
@@ -324,6 +325,12 @@ export async function importFidelityTransactions(
   }
   if (rows.length === 0) {
     return { success: true, imported: 0, errors: [], warnings: [] };
+  }
+
+  try {
+    await resolveCusipSymbols(rows);
+  } catch {
+    // Non-fatal: if CUSIP resolution fails, continue with original symbols
   }
 
   let mapped;

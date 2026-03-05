@@ -101,8 +101,8 @@ export const appRoutes: Route[] = [
               {
                 path: '',
                 loadComponent: async () =>
-                  import('./account-panel/summary/summary.component').then(
-                    (m) => m.SummaryComponent
+                  import('./accounts/account-summary/account-summary').then(
+                    (m) => m.AccountSummary
                   ),
               },
               {

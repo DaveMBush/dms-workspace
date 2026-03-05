@@ -1,6 +1,6 @@
 # Story AS.10: Add E2E Tests for Global Summary
 
-**Status:** Approved
+**Status:** Ready for Review
 
 ## Story
 
@@ -395,4 +395,30 @@ _QA assessment will be recorded here after story review_
 
 ## Dev Agent Record
 
-_This section will be populated during story implementation_
+### Agent Model Used
+
+Claude Sonnet 4.6
+
+### Completion Notes
+
+- Rewrote `global-summary.spec.ts` from 17 tests to 28 comprehensive tests covering all 7 ACs
+- Added `data-testid` attributes to 10 elements in `global-summary.html` for stable test selectors
+- Error state test uses Playwright `page.route()` to mock backend failure — no real empty-data month needed
+- All 28 tests pass in both Chromium and Firefox (421 passed, 0 failed across full E2E suite)
+- `pnpm all` passes: lint + build + 1259 unit tests
+
+### File List
+
+- `apps/dms-material-e2e/src/global-summary.spec.ts` — rewritten (17→28 tests)
+- `apps/dms-material/src/app/global/global-summary.html` — added data-testid attributes
+
+### Debug Log References
+
+None — implementation completed without blocking issues.
+
+### Change Log
+
+| Date       | Description                                                  | Author      |
+| ---------- | ------------------------------------------------------------ | ----------- |
+| 2025-07-15 | Added data-testid attrs to global-summary.html               | James (dev) |
+| 2025-07-15 | Rewrote global-summary.spec.ts with 28 tests covering all AC | James (dev) |

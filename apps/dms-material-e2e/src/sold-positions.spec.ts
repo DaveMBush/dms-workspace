@@ -255,6 +255,12 @@ test.describe('Sold Positions', () => {
   });
 
   test.describe('Date Range Filtering', () => {
+    test.beforeEach(async ({ page }) => {
+      // Wait for the table data to finish loading before interacting with filters
+      await page.waitForLoadState('networkidle');
+      await expect(page.locator('dms-base-table')).toBeVisible();
+    });
+
     test('should display start date filter in the filter row', async ({
       page,
     }) => {
@@ -280,7 +286,6 @@ test.describe('Sold Positions', () => {
 
       // Apply a far-future start date so all positions are filtered out
       const startDateInput = page.getByLabel('Start Date');
-      await startDateInput.click();
       await startDateInput.fill('1/1/2099');
       await startDateInput.press('Enter');
 
@@ -297,7 +302,6 @@ test.describe('Sold Positions', () => {
 
       // Apply a far-past end date so all positions are filtered out
       const endDateInput = page.getByLabel('End Date');
-      await endDateInput.click();
       await endDateInput.fill('1/1/2000');
       await endDateInput.press('Enter');
 
@@ -314,7 +318,6 @@ test.describe('Sold Positions', () => {
       const startDateInput = page.getByLabel('Start Date');
 
       // Apply a far-future start date to filter out all rows
-      await startDateInput.click();
       await startDateInput.fill('1/1/2099');
       await startDateInput.press('Enter');
 
@@ -337,11 +340,9 @@ test.describe('Sold Positions', () => {
       const endDateInput = page.getByLabel('End Date');
 
       // Apply an impossible range (start after end) so all rows are filtered out
-      await startDateInput.click();
       await startDateInput.fill('1/1/2099');
       await startDateInput.press('Enter');
 
-      await endDateInput.click();
       await endDateInput.fill('1/1/2000');
       await endDateInput.press('Enter');
 

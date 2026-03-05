@@ -153,6 +153,11 @@ async function processGlobalMonthData(
   return extractMonthData(aggregateAccountData(allAccounts));
 }
 
+interface PriorYearState {
+  runningTotal: number;
+  pending: number;
+}
+
 async function generateGraphDataInternal(
   year: number,
   monthProcessor: (
@@ -162,11 +167,12 @@ async function generateGraphDataInternal(
     monthDeposits: number;
     monthDividends: number;
     monthCapitalGains: number;
-  }>
+  }>,
+  priorState: PriorYearState = { runningTotal: 0, pending: 0 }
 ): Promise<GraphResponse[]> {
   const results: GraphResponse[] = [];
-  let runningTotal = 0;
-  let pending = 0;
+  let runningTotal = priorState.runningTotal;
+  let pending = priorState.pending;
 
   for (let m = 0; m < 12; m++) {
     const { monthDeposits, monthDividends, monthCapitalGains } =
@@ -185,17 +191,50 @@ async function generateGraphDataInternal(
   return results;
 }
 
+async function computePriorYearState(
+  year: number,
+  monthProcessor: (
+    year: number,
+    month: number
+  ) => Promise<{
+    monthDeposits: number;
+    monthDividends: number;
+    monthCapitalGains: number;
+  }>
+): Promise<PriorYearState> {
+  // Generate the prior year's data (starting from 0) to find December's closing state
+  const priorData = await generateGraphDataInternal(year - 1, monthProcessor);
+  if (priorData.length === 0) {
+    return { runningTotal: 0, pending: 0 };
+  }
+  const december = priorData[priorData.length - 1];
+  return {
+    runningTotal: december.deposits,
+    pending: december.dividends + december.capitalGains,
+  };
+}
+
 async function generateGraphData(
   accountId: string,
   year: number
 ): Promise<GraphResponse[]> {
-  return generateGraphDataInternal(year, async function processMonth(y, m) {
+  const monthProcessor = async function processMonth(
+    y: number,
+    m: number
+  ): Promise<{
+    monthDeposits: number;
+    monthDividends: number;
+    monthCapitalGains: number;
+  }> {
     return processMonthData(accountId, y, m);
-  });
+  };
+  const priorState = await computePriorYearState(year, monthProcessor);
+  return generateGraphDataInternal(year, monthProcessor, priorState);
 }
 
 async function generateGlobalGraphData(year: number): Promise<GraphResponse[]> {
-  return generateGraphDataInternal(year, processGlobalMonthData);
+  const priorState = await computePriorYearState(year, processGlobalMonthData);
+  return generateGraphDataInternal(year, processGlobalMonthData, priorState);
 }
 
 function handleGraphRoute(fastify: FastifyInstance): void {

@@ -62,7 +62,7 @@ import { AccountSelectionService } from '../services/account-selection.service';
 })
 export class DividendsComponent {
   private accountSelection = inject(AccountSelectionService);
-
+  
   constructor() {
     // React to account changes
     effect(() => {
@@ -72,7 +72,7 @@ export class DividendsComponent {
       }
     });
   }
-
+  
   private loadDividends(accountId: number): void {
     // Load dividends data via SmartNgRX
   }

@@ -66,7 +66,7 @@ Create or update `apps/dms-material/src/app/services/account-selection.service.t
 import { Injectable, signal } from '@angular/core';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class AccountSelectionService {
   // Selected account ID as signal

@@ -62,7 +62,7 @@ import { AccountSelectionService } from '../services/account-selection.service';
 })
 export class SummaryComponent {
   private accountSelection = inject(AccountSelectionService);
-
+  
   constructor() {
     // React to account changes
     effect(() => {
@@ -72,7 +72,7 @@ export class SummaryComponent {
       }
     });
   }
-
+  
   private loadSummaryData(accountId: number): void {
     // Load summary data for the account
   }
