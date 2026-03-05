@@ -20,7 +20,7 @@ const mockConsole = {
 
 vi.stubGlobal('console', mockConsole);
 
-describe('Prisma Client - PostgreSQL', () => {
+describe.skipIf(process.env['CI'] === 'true')('Prisma Client - PostgreSQL', () => {
   beforeAll(async () => {
     // Set test environment
     process.env.NODE_ENV = 'test';

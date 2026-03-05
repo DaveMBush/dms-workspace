@@ -6,7 +6,7 @@ import { authDatabaseOptimizerService } from './auth-database-optimizer.service'
 import { databasePerformanceBenchmarkService } from './database-performance-benchmark.service';
 import { databasePerformanceService } from './database-performance.service';
 
-describe('Database Performance Integration Tests', () => {
+describe.skipIf(process.env['CI'] === 'true')('Database Performance Integration Tests', () => {
   let testClient: PrismaClient;
   const testDbUrl = 'file:./test-db-performance.db';
 

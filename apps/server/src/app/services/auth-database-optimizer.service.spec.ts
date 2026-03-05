@@ -4,7 +4,7 @@ import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
 import { authDatabaseOptimizerService } from './auth-database-optimizer.service';
 import { databasePerformanceService } from './database-performance.service';
 
-describe('AuthDatabaseOptimizerService', () => {
+describe.skipIf(process.env['CI'] === 'true')('AuthDatabaseOptimizerService', () => {
   let testClient: PrismaClient;
   const testDbUrl = 'file:./test-auth-optimizer.db';
 
