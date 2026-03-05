@@ -16,8 +16,7 @@ vi.mock(
 type SignalStoreModule = typeof import('./current-account.signal-store');
 let currentAccountSignalStore: SignalStoreModule['currentAccountSignalStore'];
 
-// DISABLE TESTS FOR CI - Will be enabled in implementation story AU.2
-describe.skip('currentAccountSignalStore', () => {
+describe('currentAccountSignalStore', () => {
   let store: InstanceType<typeof currentAccountSignalStore>;
 
   beforeEach(async function setup() {
