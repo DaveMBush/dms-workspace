@@ -517,10 +517,10 @@ describe('SoldPositionsComponent', () => {
 });
 
 // Story AU.7: TDD Tests for Sold Positions Account Selection Integration
-// Disabled with describe.skip — will be enabled in implementation story AU.8
+// Enabled in AU.8: Wire Sold Positions to Account Selection
 // These tests verify that the sold positions screen properly integrates with
 // account selection, refreshing data when the selected account changes.
-describe.skip('SoldPositionsComponent - Account Selection Integration', () => {
+describe('SoldPositionsComponent - Account Selection Integration', () => {
   let component: SoldPositionsComponent;
   let fixture: ComponentFixture<SoldPositionsComponent>;
   let mockSoldPositionsComponentService: {
