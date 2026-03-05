@@ -1,12 +1,22 @@
 import { CurrencyPipe, PercentPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  DestroyRef,
+  effect,
+  inject,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatOptionModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
 import { ChartData } from 'chart.js';
 
+import { SummaryService } from '../../global/services/summary.service';
 import { SummaryDisplayComponent } from '../../shared/components/summary-display/summary-display';
+import { currentAccountSignalStore } from '../../store/current-account/current-account.signal-store';
 import { selectTrades } from '../../store/trades/selectors/select-trades.function';
 
 function createMonthOptions(): Array<{ label: string; value: string }> {
@@ -14,6 +24,10 @@ function createMonthOptions(): Array<{ label: string; value: string }> {
     const month = (index + 1).toString().padStart(2, '0');
     return { label: `${month}/2025`, value: `2025-${month}` };
   });
+}
+
+function onFetchComplete(): void {
+  // intentionally empty – required callback placeholder
 }
 
 @Component({
@@ -32,6 +46,9 @@ function createMonthOptions(): Array<{ label: string; value: string }> {
   styleUrl: './summary.component.scss',
 })
 export class SummaryComponent {
+  private readonly summaryService = inject(SummaryService);
+  private readonly accountStore = inject(currentAccountSignalStore);
+  private readonly destroyRef = inject(DestroyRef);
   private tradesSignal = selectTrades();
 
   private allocationDataSignal = computed<ChartData<'pie'>>(
@@ -85,6 +102,33 @@ export class SummaryComponent {
 
   readonly selectedMonth = new FormControl('2025-03');
   private monthOptionsSignal = computed(createMonthOptions);
+
+  constructor() {
+    const self = this;
+
+    effect(function onAccountChange() {
+      const accountId = self.accountStore.selectCurrentAccountId();
+      if (accountId !== '') {
+        const month = self.selectedMonth.value ?? '2025-03';
+        const year = Number.parseInt(month.slice(0, 4), 10);
+        self.summaryService.fetchSummary(month, onFetchComplete, accountId);
+        self.summaryService.fetchGraph(year, accountId, month);
+        self.summaryService.fetchMonths(accountId, year);
+      }
+    });
+
+    this.selectedMonth.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(function onMonthChange(month: string | null) {
+        if (month === null) {
+          return;
+        }
+        const accountId = self.accountStore.selectCurrentAccountId();
+        if (accountId !== '') {
+          self.summaryService.fetchSummary(month, onFetchComplete, accountId);
+        }
+      });
+  }
 
   private totalValueSignal = computed(function computeTotalValue() {
     return 11500;
