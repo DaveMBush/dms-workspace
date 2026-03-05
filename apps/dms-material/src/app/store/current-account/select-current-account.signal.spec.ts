@@ -8,7 +8,17 @@ vi.mock(
   function mockSelectAccountChildren() {
     return {
       selectAccountChildren: vi.fn(function selectAccountChildrenMock() {
-        return { entities: {} };
+        return {
+          entities: {
+            'account-1': {
+              id: 'account-1',
+              name: 'Test Account',
+              trades: [],
+              divDeposits: [],
+              months: [{ month: 1, year: 2024 }],
+            },
+          },
+        };
       }),
     };
   }
@@ -22,8 +32,7 @@ type CurrentAccountStore = InstanceType<
   typeof import('./current-account.signal-store').currentAccountSignalStore
 >;
 
-// DISABLE TESTS FOR CI - Will be enabled in implementation story AU.2
-describe.skip('selectCurrentAccountSignal', () => {
+describe('selectCurrentAccountSignal', () => {
   beforeEach(async function loadModule() {
     const mod = await import('./select-current-account.signal');
     selectCurrentAccountSignal = mod.selectCurrentAccountSignal;
