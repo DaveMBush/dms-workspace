@@ -770,10 +770,10 @@ describe('OpenPositionsComponent', () => {
 });
 
 // Story AU.5: TDD Tests for Open Positions Account Selection Integration
-// DISABLED with describe.skip — Will be enabled in implementation story AU.6
+// Enabled in implementation story AU.6
 // These tests verify that the open positions screen properly integrates with
 // account selection, refreshing data when the selected account changes.
-describe.skip('OpenPositionsComponent - Account Selection Integration', () => {
+describe('OpenPositionsComponent - Account Selection Integration', () => {
   let component: OpenPositionsComponent;
   let fixture: ComponentFixture<OpenPositionsComponent>;
   let mockOpenPositionsService: {
