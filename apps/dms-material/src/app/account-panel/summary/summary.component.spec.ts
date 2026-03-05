@@ -74,7 +74,6 @@ describe('SummaryComponent', () => {
   });
 });
 
-// DISABLE TESTS FOR CI - Will be enabled in implementation story AU.4
 // These tests verify that the summary screen properly integrates with
 // account selection, refreshing data when the selected account changes.
 describe('SummaryComponent - Account Selection Integration', () => {

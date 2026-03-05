@@ -3,9 +3,11 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  DestroyRef,
   effect,
   inject,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatOptionModule } from '@angular/material/core';
@@ -46,6 +48,7 @@ function onFetchComplete(): void {
 export class SummaryComponent {
   private readonly summaryService = inject(SummaryService);
   private readonly accountStore = inject(currentAccountSignalStore);
+  private readonly destroyRef = inject(DestroyRef);
   private tradesSignal = selectTrades();
 
   private allocationDataSignal = computed<ChartData<'pie'>>(
@@ -107,24 +110,24 @@ export class SummaryComponent {
       const accountId = self.accountStore.selectCurrentAccountId();
       if (accountId !== '') {
         const month = self.selectedMonth.value ?? '2025-03';
-        const year = new Date().getFullYear();
+        const year = Number.parseInt(month.slice(0, 4), 10);
         self.summaryService.fetchSummary(month, onFetchComplete, accountId);
         self.summaryService.fetchGraph(year, accountId, month);
         self.summaryService.fetchMonths(accountId, year);
       }
     });
 
-    this.selectedMonth.valueChanges.subscribe(function onMonthChange(
-      month: string | null
-    ) {
-      if (month === null) {
-        return;
-      }
-      const accountId = self.accountStore.selectCurrentAccountId();
-      if (accountId !== '') {
-        self.summaryService.fetchSummary(month, onFetchComplete, accountId);
-      }
-    });
+    this.selectedMonth.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(function onMonthChange(month: string | null) {
+        if (month === null) {
+          return;
+        }
+        const accountId = self.accountStore.selectCurrentAccountId();
+        if (accountId !== '') {
+          self.summaryService.fetchSummary(month, onFetchComplete, accountId);
+        }
+      });
   }
 
   private totalValueSignal = computed(function computeTotalValue() {
