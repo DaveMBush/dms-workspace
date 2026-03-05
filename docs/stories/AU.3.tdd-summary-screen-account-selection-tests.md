@@ -103,9 +103,23 @@ pnpm nx test dms-material --testFile=summary
 
 ## Definition of Done
 
-- [ ] All test cases written and disabled with `.skip`
-- [ ] Tests are well-structured and follow project patterns
-- [ ] Test file runs without syntax errors
-- [ ] CI pipeline remains green
-- [ ] Code reviewed and approved
-- [ ] All validation commands pass
+- [x] All test cases written and disabled with `.skip`
+- [x] Tests are well-structured and follow project patterns
+- [x] Test file runs without syntax errors
+- [x] CI pipeline remains green
+- [x] Code reviewed and approved
+- [x] All validation commands pass
+
+## Dev Agent Record
+
+### Status: Done
+
+### Change Log
+
+- Added 15 TDD tests in `describe.skip` block to `summary.component.spec.ts`
+- Tests cover: account subscription, data refresh, correct account ID, loading states, month selection
+- PR #548 merged via squash, issue #547 closed
+
+### File List
+
+- `apps/dms-material/src/app/account-panel/summary/summary.component.spec.ts` (modified)
