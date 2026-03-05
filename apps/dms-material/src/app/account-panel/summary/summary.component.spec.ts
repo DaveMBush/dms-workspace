@@ -77,7 +77,7 @@ describe('SummaryComponent', () => {
 // DISABLE TESTS FOR CI - Will be enabled in implementation story AU.4
 // These tests verify that the summary screen properly integrates with
 // account selection, refreshing data when the selected account changes.
-describe.skip('SummaryComponent - Account Selection Integration', () => {
+describe('SummaryComponent - Account Selection Integration', () => {
   let component: SummaryComponent;
   let fixture: ComponentFixture<SummaryComponent>;
   let mockSummaryService: {
