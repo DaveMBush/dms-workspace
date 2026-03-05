@@ -342,7 +342,7 @@ open coverage/index.html
 
 ## QA Results
 
-*QA assessment will be recorded here after story review*
+_QA assessment will be recorded here after story review_
 
 ---
 
@@ -365,14 +365,14 @@ open coverage/index.html
 
 ### File List
 
-| File | Action |
-| --- | --- |
-| apps/dms-material/src/app/global/global-summary.spec.ts | Modified |
+| File                                                              | Action   |
+| ----------------------------------------------------------------- | -------- |
+| apps/dms-material/src/app/global/global-summary.spec.ts           | Modified |
 | apps/dms-material/src/app/global/services/summary.service.spec.ts | Modified |
-| docs/stories/AS.7.add-unit-tests.md | Modified |
+| docs/stories/AS.7.add-unit-tests.md                               | Modified |
 
 ### Change Log
 
-| Date | Change | Files |
-| --- | --- | --- |
+| Date       | Change                                                                                                       | Files                                           |
+| ---------- | ------------------------------------------------------------------------------------------------------------ | ----------------------------------------------- |
 | 2025-07-27 | Added 10 comprehensive unit tests covering race conditions, callbacks, tooltip edge cases, and null handling | global-summary.spec.ts, summary.service.spec.ts |

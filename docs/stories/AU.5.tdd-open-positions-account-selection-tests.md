@@ -17,7 +17,7 @@
 **TDD Approach:**
 
 - Write failing tests first (RED)
-- Disable tests to keep CI green  
+- Disable tests to keep CI green
 - Implementation story AU.6 will re-enable and make tests pass (GREEN)
 
 ## Acceptance Criteria

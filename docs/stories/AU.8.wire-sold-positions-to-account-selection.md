@@ -62,7 +62,7 @@ import { AccountSelectionService } from '../services/account-selection.service';
 })
 export class SoldPositionsComponent {
   private accountSelection = inject(AccountSelectionService);
-  
+
   constructor() {
     // React to account changes
     effect(() => {
@@ -72,7 +72,7 @@ export class SoldPositionsComponent {
       }
     });
   }
-  
+
   private loadSoldPositions(accountId: number): void {
     // Load sold positions data via SmartNgRX
     // Capital gains will automatically recalculate

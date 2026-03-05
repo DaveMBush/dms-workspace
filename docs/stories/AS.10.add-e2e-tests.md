@@ -313,28 +313,16 @@ Add these to the template:
   <div data-testid="capital-gains-value">{{ capitalGain$() | currency }}</div>
   <div data-testid="dividends-value">{{ dividends$() | currency }}</div>
 
-  <mat-select data-testid="month-selector" [formControl]="selectedMonth">
-    ...
-  </mat-select>
+  <mat-select data-testid="month-selector" [formControl]="selectedMonth"> ... </mat-select>
 
   @if (isLoading()) {
-    <mat-spinner data-testid="loading-spinner"></mat-spinner>
-  }
-
-  @if (hasError()) {
-    <p data-testid="error-message">{{ errorMessage() }}</p>
-  }
-
-  @if (riskGroups$().length === 0) {
-    <p data-testid="no-data-message">No data available</p>
-  }
-
-  @if (riskGroups$().length > 0) {
-    <dms-summary-display
-      data-testid="allocation-chart"
-      [chartData]="allocationData"
-      chartType="pie"
-    />
+  <mat-spinner data-testid="loading-spinner"></mat-spinner>
+  } @if (hasError()) {
+  <p data-testid="error-message">{{ errorMessage() }}</p>
+  } @if (riskGroups$().length === 0) {
+  <p data-testid="no-data-message">No data available</p>
+  } @if (riskGroups$().length > 0) {
+  <dms-summary-display data-testid="allocation-chart" [chartData]="allocationData" chartType="pie" />
   }
 </div>
 ```
@@ -401,10 +389,10 @@ pnpm playwright show-report
 
 ## QA Results
 
-*QA assessment will be recorded here after story review*
+_QA assessment will be recorded here after story review_
 
 ---
 
 ## Dev Agent Record
 
-*This section will be populated during story implementation*
+_This section will be populated during story implementation_

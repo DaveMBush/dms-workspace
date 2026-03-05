@@ -138,6 +138,7 @@ For each bug found, document:
 **Severity:** Critical | Major | Minor
 
 **Steps to Reproduce:**
+
 1. Step 1
 2. Step 2
 3. ...
@@ -163,21 +164,25 @@ Test added to prevent recurrence
 Based on similar stories, watch for:
 
 1. **Data Transformation Issues**
+
    - Incorrect calculations
    - Null/undefined handling
    - Type mismatches
 
 2. **UI State Issues**
+
    - Loading state not clearing
    - Error state not displaying
    - Disabled controls not re-enabling
 
 3. **API Integration Issues**
+
    - Incorrect parameter passing
    - Response parsing errors
    - Caching issues
 
 4. **Chart Rendering Issues**
+
    - Empty charts not showing message
    - Color assignment problems
    - Tooltip formatting errors
@@ -197,7 +202,8 @@ this.selectedMonth.valueChanges.subscribe((month) => {
 
 // After (fix):
 this.selectedMonth.valueChanges.subscribe((month) => {
-  if (month && month !== '') { // Guard clause added
+  if (month && month !== '') {
+    // Guard clause added
     this.loadSummaryData();
   }
 });
@@ -279,8 +285,6 @@ it('should not load data when month is empty string', () => {
 
 **Regression Test:** Added 4 tests in `global-summary.spec.ts` and 4 tests in `summary.service.spec.ts`
 
-
-
 <!--
 Example:
 ### Bug #1: Loading spinner doesn't clear on error
@@ -352,10 +356,10 @@ Added test "should set loading to false on error" in global-summary.spec.ts
 
 ## QA Results
 
-*QA assessment will be recorded here after story review*
+_QA assessment will be recorded here after story review_
 
 ---
 
 ## Dev Agent Record
 
-*This section will be populated during story implementation*
+_This section will be populated during story implementation_

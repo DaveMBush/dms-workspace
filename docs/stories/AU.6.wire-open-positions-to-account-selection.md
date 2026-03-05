@@ -62,7 +62,7 @@ import { AccountSelectionService } from '../services/account-selection.service';
 })
 export class OpenPositionsComponent {
   private accountSelection = inject(AccountSelectionService);
-  
+
   constructor() {
     // React to account changes
     effect(() => {
@@ -72,7 +72,7 @@ export class OpenPositionsComponent {
       }
     });
   }
-  
+
   private loadOpenPositions(accountId: number): void {
     // Load open positions data via SmartNgRX
   }

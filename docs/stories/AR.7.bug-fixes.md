@@ -465,29 +465,29 @@ _No significant debug issues encountered._
 
 ### File List
 
-| File                                                                                       | Status   |
-| ------------------------------------------------------------------------------------------ | -------- |
-| apps/dms-material/src/app/global/import-dialog/import-dialog.component.html                | Modified |
-| apps/dms-material/src/app/global/import-dialog/import-dialog.component.ts                  | Modified |
-| apps/dms-material/src/app/global/import-dialog/import-dialog.component.spec.ts             | Modified |
-| apps/server/src/app/routes/import/fidelity-csv-parser.function.ts                          | Modified |
-| apps/server/src/app/routes/import/fidelity-csv-parser.function.spec.ts                     | Modified |
-| apps/dms-material-e2e/fixtures/fidelity-valid.csv                                          | Modified |
-| apps/dms-material-e2e/fixtures/fidelity-mixed.csv                                          | Modified |
-| apps/dms-material-e2e/fixtures/fidelity-invalid-account.csv                                | Modified |
-| apps/dms-material-e2e/fixtures/fidelity-invalid-quantity.csv                               | Modified |
-| apps/dms-material-e2e/fixtures/fidelity-duplicates.csv                                     | Modified |
-| apps/dms-material/src/app/account-panel/open-positions/open-positions-component.service.ts | Modified |
+| File                                                                                           | Status   |
+| ---------------------------------------------------------------------------------------------- | -------- |
+| apps/dms-material/src/app/global/import-dialog/import-dialog.component.html                    | Modified |
+| apps/dms-material/src/app/global/import-dialog/import-dialog.component.ts                      | Modified |
+| apps/dms-material/src/app/global/import-dialog/import-dialog.component.spec.ts                 | Modified |
+| apps/server/src/app/routes/import/fidelity-csv-parser.function.ts                              | Modified |
+| apps/server/src/app/routes/import/fidelity-csv-parser.function.spec.ts                         | Modified |
+| apps/dms-material-e2e/fixtures/fidelity-valid.csv                                              | Modified |
+| apps/dms-material-e2e/fixtures/fidelity-mixed.csv                                              | Modified |
+| apps/dms-material-e2e/fixtures/fidelity-invalid-account.csv                                    | Modified |
+| apps/dms-material-e2e/fixtures/fidelity-invalid-quantity.csv                                   | Modified |
+| apps/dms-material-e2e/fixtures/fidelity-duplicates.csv                                         | Modified |
+| apps/dms-material/src/app/account-panel/open-positions/open-positions-component.service.ts     | Modified |
 | apps/dms-material/src/app/shared/components/editable-date-cell/editable-date-cell.component.ts | Modified |
-| apps/dms-material/src/app/shared/components/base-table/base-table.component.scss           | Modified |
-| apps/server/src/app/routes/import/fidelity-data-mapper.function.ts                         | Modified |
-| apps/server/src/app/routes/import/fidelity-data-mapper.function.spec.ts                    | Modified |
-| apps/server/src/app/routes/import/fidelity-import-service.function.ts                      | Modified |
-| apps/server/src/app/routes/import/fidelity-import-service.function.spec.ts                 | Modified |
-| apps/dms-material-e2e/src/fidelity-import.spec.ts                                          | Modified |
-| apps/dms-material-e2e/src/screener-table.spec.ts                                           | Modified |
-| docs/stories/AR.7.bug-fixes.md                                                             | Modified |
-| docs/backlog/epic-ar-import-fidelity-transactions.md                                       | Modified |
+| apps/dms-material/src/app/shared/components/base-table/base-table.component.scss               | Modified |
+| apps/server/src/app/routes/import/fidelity-data-mapper.function.ts                             | Modified |
+| apps/server/src/app/routes/import/fidelity-data-mapper.function.spec.ts                        | Modified |
+| apps/server/src/app/routes/import/fidelity-import-service.function.ts                          | Modified |
+| apps/server/src/app/routes/import/fidelity-import-service.function.spec.ts                     | Modified |
+| apps/dms-material-e2e/src/fidelity-import.spec.ts                                              | Modified |
+| apps/dms-material-e2e/src/screener-table.spec.ts                                               | Modified |
+| docs/stories/AR.7.bug-fixes.md                                                                 | Modified |
+| docs/backlog/epic-ar-import-fidelity-transactions.md                                           | Modified |
 
 ---
 
