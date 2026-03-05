@@ -14,7 +14,7 @@ export class DividendDepositsComponentService {
   private currentAccount = selectCurrentAccountSignal(this.currentAccountStore);
   private errorMessage = signal<string>('');
 
-  readonly selectedAccountId = this.currentAccountStore.selectCurrentAccountId;
+  readonly selectedAccountId = signal<string>('');
 
   getErrorMessage(): Signal<string> {
     return this.errorMessage.asReadonly();

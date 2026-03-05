@@ -1,5 +1,10 @@
 import { CurrencyPipe, DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  effect,
+  inject,
+} from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
@@ -9,6 +14,7 @@ import { BaseTableComponent } from '../../shared/components/base-table/base-tabl
 import { ColumnDef } from '../../shared/components/base-table/column-def.interface';
 import { ConfirmDialogService } from '../../shared/services/confirm-dialog.service';
 import { NotificationService } from '../../shared/services/notification.service';
+import { currentAccountSignalStore } from '../../store/current-account/current-account.signal-store';
 import { DivDeposit } from '../../store/div-deposits/div-deposit.interface';
 import { divDepositsEffectsServiceToken } from '../../store/div-deposits/div-deposits-effect-service-token';
 import { DivDepModal } from '../div-dep-modal/div-dep-modal.component';
@@ -29,10 +35,20 @@ import { DividendDepositsComponentService } from './dividend-deposits-component.
 })
 export class DividendDepositsComponent {
   readonly dividendDepositsService = inject(DividendDepositsComponentService);
+  private currentAccountStore = inject(currentAccountSignalStore);
   private dialog = inject(MatDialog);
   private notification = inject(NotificationService);
   private confirmDialog = inject(ConfirmDialogService);
   private effectsService = inject(divDepositsEffectsServiceToken);
+
+  constructor() {
+    const store = this.currentAccountStore;
+    const service = this.dividendDepositsService;
+    effect(function syncAccountSelection() {
+      const accountId = store.selectCurrentAccountId();
+      service.selectedAccountId.set(accountId);
+    });
+  }
 
   readonly dividends$ = this.dividendDepositsService.dividends;
 

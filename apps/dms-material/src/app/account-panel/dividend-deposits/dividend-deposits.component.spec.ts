@@ -788,7 +788,7 @@ describe('DividendDepositsComponent - Delete Dialog SmartNgRX Integration (AQ.7)
 // Enabled in AU.10: Wire Dividend Deposits to Account Selection
 // These tests verify that the dividend deposits screen properly integrates with
 // account selection, refreshing data when the selected account changes.
-describe.skip('DividendDepositsComponent - Account Selection Integration', () => {
+describe('DividendDepositsComponent - Account Selection Integration', () => {
   let component: DividendDepositsComponent;
   let fixture: ComponentFixture<DividendDepositsComponent>;
   let mockDividendDepositsService: {
