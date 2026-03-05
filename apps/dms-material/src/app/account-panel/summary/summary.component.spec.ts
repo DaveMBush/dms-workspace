@@ -2,12 +2,26 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { signal, WritableSignal } from '@angular/core';
 
 import { SummaryService } from '../../global/services/summary.service';
+import { currentAccountSignalStore } from '../../store/current-account/current-account.signal-store';
 import { SummaryComponent } from './summary.component';
 
 // Mock the entire selectTrades module to avoid SmartNgRX initialization
 vi.mock('../../store/trades/selectors/select-trades.function', () => ({
   selectTrades: vi.fn().mockReturnValue([]),
 }));
+
+// Mock selectAccounts to avoid SmartNgRX initialization from currentAccountSignalStore
+vi.mock('../../store/accounts/selectors/select-accounts.function', () => ({
+  selectAccounts: vi.fn().mockReturnValue([]),
+}));
+
+// Mock selectAccountChildren to avoid SmartNgRX initialization
+vi.mock(
+  '../../store/trades/selectors/select-account-children.function',
+  () => ({
+    selectAccountChildren: vi.fn().mockReturnValue({ entities: {} }),
+  })
+);
 
 describe('SummaryComponent', () => {
   let component: SummaryComponent;
@@ -73,7 +87,8 @@ describe.skip('SummaryComponent - Account Selection Integration', () => {
       capitalGains: number;
       equities: number;
       income: number;
-      taxFreeIncome: number;
+      // eslint-disable-next-line @typescript-eslint/naming-convention -- matches Summary interface
+      tax_free_income: number;
     }>;
     graph: WritableSignal<Array<{ date: string; value: number }>>;
     months: WritableSignal<Array<{ label: string; value: string }>>;
@@ -87,7 +102,10 @@ describe.skip('SummaryComponent - Account Selection Integration', () => {
     fetchYears: ReturnType<typeof vi.fn>;
     invalidateMonthsCache: ReturnType<typeof vi.fn>;
   };
-  let mockCurrentAccountId: WritableSignal<string>;
+  let mockCurrentAccountStore: {
+    selectCurrentAccountId: WritableSignal<string>;
+    setCurrentAccountId: ReturnType<typeof vi.fn>;
+  };
 
   function createDefaultSummary(): {
     deposits: number;
@@ -95,7 +113,8 @@ describe.skip('SummaryComponent - Account Selection Integration', () => {
     capitalGains: number;
     equities: number;
     income: number;
-    taxFreeIncome: number;
+    // eslint-disable-next-line @typescript-eslint/naming-convention -- matches Summary interface
+    tax_free_income: number;
   } {
     return {
       deposits: 0,
@@ -103,12 +122,15 @@ describe.skip('SummaryComponent - Account Selection Integration', () => {
       capitalGains: 0,
       equities: 0,
       income: 0,
-      taxFreeIncome: 0,
+      tax_free_income: 0,
     };
   }
 
   beforeEach(async () => {
-    mockCurrentAccountId = signal<string>('');
+    mockCurrentAccountStore = {
+      selectCurrentAccountId: signal<string>(''),
+      setCurrentAccountId: vi.fn(),
+    };
 
     mockSummaryService = {
       summary: signal(createDefaultSummary()),
@@ -127,7 +149,13 @@ describe.skip('SummaryComponent - Account Selection Integration', () => {
 
     await TestBed.configureTestingModule({
       imports: [SummaryComponent],
-      providers: [{ provide: SummaryService, useValue: mockSummaryService }],
+      providers: [
+        { provide: SummaryService, useValue: mockSummaryService },
+        {
+          provide: currentAccountSignalStore,
+          useValue: mockCurrentAccountStore,
+        },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(SummaryComponent);
@@ -138,8 +166,8 @@ describe.skip('SummaryComponent - Account Selection Integration', () => {
     it('should react when the selected account ID changes', () => {
       fixture.detectChanges();
 
-      // Simulate account change
-      mockCurrentAccountId.set('acc-123');
+      // Simulate account change via the store
+      mockCurrentAccountStore.selectCurrentAccountId.set('acc-123');
       fixture.detectChanges();
 
       // Component should have triggered a data refresh for the new account
@@ -149,15 +177,13 @@ describe.skip('SummaryComponent - Account Selection Integration', () => {
     it('should not fetch data when account ID is empty', () => {
       fixture.detectChanges();
 
-      mockCurrentAccountId.set('');
+      mockCurrentAccountStore.selectCurrentAccountId.set('');
       fixture.detectChanges();
 
-      // Should not make a fetch call with empty account ID
-      expect(mockSummaryService.fetchSummary).not.toHaveBeenCalledWith(
-        expect.anything(),
-        expect.anything(),
-        ''
-      );
+      // No call should have been made with an empty account ID
+      for (const call of mockSummaryService.fetchSummary.mock.calls) {
+        expect(call[2]).not.toBe('');
+      }
     });
   });
 
@@ -165,7 +191,7 @@ describe.skip('SummaryComponent - Account Selection Integration', () => {
     it('should call fetchSummary with new account ID when account changes', () => {
       fixture.detectChanges();
 
-      mockCurrentAccountId.set('acc-456');
+      mockCurrentAccountStore.selectCurrentAccountId.set('acc-456');
       fixture.detectChanges();
 
       expect(mockSummaryService.fetchSummary).toHaveBeenCalledWith(
@@ -178,7 +204,7 @@ describe.skip('SummaryComponent - Account Selection Integration', () => {
     it('should call fetchGraph with new account ID when account changes', () => {
       fixture.detectChanges();
 
-      mockCurrentAccountId.set('acc-456');
+      mockCurrentAccountStore.selectCurrentAccountId.set('acc-456');
       fixture.detectChanges();
 
       expect(mockSummaryService.fetchGraph).toHaveBeenCalledWith(
@@ -191,7 +217,7 @@ describe.skip('SummaryComponent - Account Selection Integration', () => {
     it('should call fetchMonths with new account ID when account changes', () => {
       fixture.detectChanges();
 
-      mockCurrentAccountId.set('acc-456');
+      mockCurrentAccountStore.selectCurrentAccountId.set('acc-456');
       fixture.detectChanges();
 
       expect(mockSummaryService.fetchMonths).toHaveBeenCalledWith(
@@ -204,14 +230,14 @@ describe.skip('SummaryComponent - Account Selection Integration', () => {
       fixture.detectChanges();
 
       // Switch to first account
-      mockCurrentAccountId.set('acc-100');
+      mockCurrentAccountStore.selectCurrentAccountId.set('acc-100');
       fixture.detectChanges();
 
       const callCountAfterFirst =
         mockSummaryService.fetchSummary.mock.calls.length;
 
       // Switch to second account
-      mockCurrentAccountId.set('acc-200');
+      mockCurrentAccountStore.selectCurrentAccountId.set('acc-200');
       fixture.detectChanges();
 
       // Should have additional calls for the second account
@@ -225,7 +251,7 @@ describe.skip('SummaryComponent - Account Selection Integration', () => {
     it('should pass the current account ID to fetchSummary', () => {
       fixture.detectChanges();
 
-      mockCurrentAccountId.set('acc-789');
+      mockCurrentAccountStore.selectCurrentAccountId.set('acc-789');
       fixture.detectChanges();
 
       const lastCall =
@@ -239,9 +265,9 @@ describe.skip('SummaryComponent - Account Selection Integration', () => {
       fixture.detectChanges();
 
       // Rapid account switches
-      mockCurrentAccountId.set('acc-1');
-      mockCurrentAccountId.set('acc-2');
-      mockCurrentAccountId.set('acc-3');
+      mockCurrentAccountStore.selectCurrentAccountId.set('acc-1');
+      mockCurrentAccountStore.selectCurrentAccountId.set('acc-2');
+      mockCurrentAccountStore.selectCurrentAccountId.set('acc-3');
       fixture.detectChanges();
 
       // The most recent call should use the latest account ID
@@ -255,7 +281,7 @@ describe.skip('SummaryComponent - Account Selection Integration', () => {
     it('should pass account ID along with selected month', () => {
       fixture.detectChanges();
 
-      mockCurrentAccountId.set('acc-555');
+      mockCurrentAccountStore.selectCurrentAccountId.set('acc-555');
       fixture.detectChanges();
 
       // fetchSummary should receive both month and account ID
@@ -272,7 +298,7 @@ describe.skip('SummaryComponent - Account Selection Integration', () => {
       fixture.detectChanges();
 
       mockSummaryService.loading.set(true);
-      mockCurrentAccountId.set('acc-new');
+      mockCurrentAccountStore.selectCurrentAccountId.set('acc-new');
       fixture.detectChanges();
 
       // Component should reflect loading state
@@ -283,7 +309,7 @@ describe.skip('SummaryComponent - Account Selection Integration', () => {
       fixture.detectChanges();
 
       mockSummaryService.loading.set(true);
-      mockCurrentAccountId.set('acc-new');
+      mockCurrentAccountStore.selectCurrentAccountId.set('acc-new');
       fixture.detectChanges();
 
       // Simulate data load completing
@@ -294,7 +320,7 @@ describe.skip('SummaryComponent - Account Selection Integration', () => {
         capitalGains: 2000,
         equities: 30000,
         income: 15000,
-        taxFreeIncome: 10000,
+        tax_free_income: 10000,
       });
       fixture.detectChanges();
 
@@ -305,7 +331,7 @@ describe.skip('SummaryComponent - Account Selection Integration', () => {
     it('should handle error state during account switch', () => {
       fixture.detectChanges();
 
-      mockCurrentAccountId.set('acc-bad');
+      mockCurrentAccountStore.selectCurrentAccountId.set('acc-bad');
       mockSummaryService.error.set('Failed to fetch summary');
       mockSummaryService.loading.set(false);
       fixture.detectChanges();
@@ -322,12 +348,12 @@ describe.skip('SummaryComponent - Account Selection Integration', () => {
         capitalGains: 10000,
         equities: 60000,
         income: 30000,
-        taxFreeIncome: 20000,
+        tax_free_income: 20000,
       });
       fixture.detectChanges();
 
       // Switch account - loading starts
-      mockCurrentAccountId.set('acc-other');
+      mockCurrentAccountStore.selectCurrentAccountId.set('acc-other');
       mockSummaryService.loading.set(true);
       fixture.detectChanges();
 
@@ -339,7 +365,7 @@ describe.skip('SummaryComponent - Account Selection Integration', () => {
   describe('month selection with account context', () => {
     it('should pass account ID when month selection changes', () => {
       fixture.detectChanges();
-      mockCurrentAccountId.set('acc-month-test');
+      mockCurrentAccountStore.selectCurrentAccountId.set('acc-month-test');
       fixture.detectChanges();
 
       // Simulate month change
@@ -357,7 +383,7 @@ describe.skip('SummaryComponent - Account Selection Integration', () => {
     it('should fetch account-specific months list', () => {
       fixture.detectChanges();
 
-      mockCurrentAccountId.set('acc-months');
+      mockCurrentAccountStore.selectCurrentAccountId.set('acc-months');
       fixture.detectChanges();
 
       expect(mockSummaryService.fetchMonths).toHaveBeenCalledWith(
