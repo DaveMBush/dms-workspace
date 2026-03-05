@@ -16,7 +16,7 @@
 - Tests written in Story AS.5-TDD define expected behavior
 - Backend provides `/api/summary/months` and `/api/summary?month=YYYY-MM` endpoints
 - Need to wire selector to backend and handle month changes
-- A similar component is implemented in #file:./apps/dms/src/app/global/*.* using primeng instead of angular material
+- A similar component is implemented in #file:./apps/dms/src/app/global/_._ using primeng instead of angular material
 
 **Implementation Approach:**
 
@@ -113,11 +113,7 @@ export class SummaryService {
     if (accountId) params.accountId = accountId;
     if (month) params.month = month;
 
-    this.summaryCache$ = this.http.get<SummaryResponse>('/api/summary', { params })
-      .pipe(
-        retry(3),
-        shareReplay(1)
-      );
+    this.summaryCache$ = this.http.get<SummaryResponse>('/api/summary', { params }).pipe(retry(3), shareReplay(1));
 
     this.summaryCacheTime = now;
     return this.summaryCache$;
@@ -130,11 +126,7 @@ export class SummaryService {
       return this.monthsCache$;
     }
 
-    this.monthsCache$ = this.http.get<MonthsResponse>('/api/summary/months')
-      .pipe(
-        retry(3),
-        shareReplay(1)
-      );
+    this.monthsCache$ = this.http.get<MonthsResponse>('/api/summary/months').pipe(retry(3), shareReplay(1));
 
     this.monthsCacheTime = now;
     return this.monthsCache$;
@@ -228,14 +220,12 @@ export class GlobalSummary implements OnInit {
   <mat-label>Month</mat-label>
   <mat-select [formControl]="selectedMonth">
     @if (isLoadingMonths()) {
-      <mat-option disabled>Loading months...</mat-option>
+    <mat-option disabled>Loading months...</mat-option>
     } @else if (hasMonthsError()) {
-      <mat-option disabled>Error loading months</mat-option>
-    } @else {
-      @for (option of monthOptions; track option.value) {
-        <mat-option [value]="option.value">{{ option.label }}</mat-option>
-      }
-    }
+    <mat-option disabled>Error loading months</mat-option>
+    } @else { @for (option of monthOptions; track option.value) {
+    <mat-option [value]="option.value">{{ option.label }}</mat-option>
+    } }
   </mat-select>
 </mat-form-field>
 ```
@@ -244,8 +234,8 @@ export class GlobalSummary implements OnInit {
 
 ```typescript
 interface MonthOption {
-  label: string;  // "03/2025"
-  value: string;  // "2025-03"
+  label: string; // "03/2025"
+  value: string; // "2025-03"
 }
 
 interface MonthsResponse {
@@ -298,7 +288,7 @@ interface MonthsResponse {
 
 ## QA Results
 
-*QA assessment will be recorded here after story review*
+_QA assessment will be recorded here after story review_
 
 ---
 
@@ -326,16 +316,16 @@ interface MonthsResponse {
 
 ### File List
 
-| File | Action |
-| --- | --- |
-| apps/dms-material/src/app/global/services/summary.service.ts | Modified |
+| File                                                              | Action   |
+| ----------------------------------------------------------------- | -------- |
+| apps/dms-material/src/app/global/services/summary.service.ts      | Modified |
 | apps/dms-material/src/app/global/services/summary.service.spec.ts | Modified |
-| apps/dms-material/src/app/global/global-summary.ts | Modified |
-| apps/dms-material/src/app/global/global-summary.spec.ts | Modified |
-| docs/stories/AS.6.add-month-year-selectors.md | Modified |
+| apps/dms-material/src/app/global/global-summary.ts                | Modified |
+| apps/dms-material/src/app/global/global-summary.spec.ts           | Modified |
+| docs/stories/AS.6.add-month-year-selectors.md                     | Modified |
 
 ### Change Log
 
-| Date | Change | Files |
-| --- | --- | --- |
-| 2025-07-27 | GREEN phase: re-enabled AS.5 tests, added month caching, callback-based disable/enable | summary.service.ts, global-summary.ts, *.spec.ts |
+| Date       | Change                                                                                 | Files                                             |
+| ---------- | -------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| 2025-07-27 | GREEN phase: re-enabled AS.5 tests, added month caching, callback-based disable/enable | summary.service.ts, global-summary.ts, \*.spec.ts |
