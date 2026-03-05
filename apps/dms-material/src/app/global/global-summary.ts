@@ -3,80 +3,26 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
-  signal,
+  DestroyRef,
+  effect,
+  inject,
+  OnInit,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatOptionModule } from '@angular/material/core';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
-import { ChartData } from 'chart.js';
+import { ChartConfiguration, ChartData } from 'chart.js';
 
 import { SummaryDisplayComponent } from '../shared/components/summary-display/summary-display';
+import { GraphPoint } from './services/graph-point.interface';
+import { SummaryService } from './services/summary.service';
 
-function computeAllocationChartData(): ChartData<'pie'> {
-  return {
-    labels: ['Equities', 'Income', 'Tax Free'],
-    datasets: [
-      {
-        data: [50, 30, 20],
-        backgroundColor: ['#3B82F6', '#10B981', '#F59E0B'],
-      },
-    ],
-  };
-}
-
-function computePerformanceChartData(): ChartData<'line'> {
-  return {
-    labels: [
-      '01-2025',
-      '02-2025',
-      '03-2025',
-      '04-2025',
-      '05-2025',
-      '06-2025',
-      '07-2025',
-      '08-2025',
-      '09-2025',
-      '10-2025',
-      '11-2025',
-      '12-2025',
-    ],
-    datasets: [
-      {
-        label: 'Base',
-        data: [
-          40000, 40200, 40500, 40800, 41000, 41200, 41400, 41600, 41800, 42000,
-          42100, 42200,
-        ],
-        borderColor: '#3B82F6',
-        tension: 0.2,
-      },
-      {
-        label: 'Capital Gains',
-        data: [0, 100, 300, 500, 700, 900, 1000, 1050, 1100, 1150, 1175, 1200],
-        borderColor: '#10B981',
-        tension: 0.2,
-      },
-      {
-        label: 'Dividends',
-        data: [0, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 525],
-        borderColor: '#F59E0B',
-        tension: 0.2,
-      },
-    ],
-  };
-}
-
-function createMonthOptions(): Array<{ label: string; value: string }> {
-  const months = [];
-  for (let m = 1; m <= 12; m++) {
-    const paddedMonth = m.toString().padStart(2, '0');
-    months.push({
-      label: `${paddedMonth}/2025`,
-      value: `2025-${paddedMonth}`,
-    });
-  }
-  return months;
+function enableMonthSelector(this: GlobalSummary): void {
+  this.selectedMonth.enable({ emitEvent: false });
 }
 
 function computePercentIncrease(
@@ -84,7 +30,32 @@ function computePercentIncrease(
   gains: number,
   divs: number
 ): number {
+  if (basis === 0) {
+    return 0;
+  }
   return (12 * (gains + divs)) / basis;
+}
+
+interface EnrichedPoint {
+  month: string;
+  base: number;
+  capitalGainsLine: number;
+  dividendsLine: number;
+}
+
+function buildEnrichedPoints(graphData: GraphPoint[]): EnrichedPoint[] {
+  let cumulCapGains = 0;
+  let cumulDividends = 0;
+  return graphData.map(function buildPoint(p: GraphPoint): EnrichedPoint {
+    cumulCapGains += p.capitalGains;
+    cumulDividends += p.dividends;
+    return {
+      month: p.month,
+      base: p.deposits,
+      capitalGainsLine: p.deposits + cumulCapGains,
+      dividendsLine: p.deposits + cumulCapGains + cumulDividends,
+    };
+  });
 }
 
 @Component({
@@ -92,7 +63,9 @@ function computePercentIncrease(
   imports: [
     CurrencyPipe,
     MatCardModule,
+    MatFormFieldModule,
     MatOptionModule,
+    MatProgressSpinnerModule,
     MatSelectModule,
     PercentPipe,
     ReactiveFormsModule,
@@ -102,16 +75,126 @@ function computePercentIncrease(
   styleUrl: './global-summary.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class GlobalSummary {
+export class GlobalSummary implements OnInit {
+  private readonly summaryService = inject(SummaryService);
+  private readonly destroyRef = inject(DestroyRef);
+
   readonly selectedMonth = new FormControl('2025-03');
-  readonly monthOptionsSignal = computed(createMonthOptions);
+  readonly selectedYear = new FormControl(new Date().getFullYear());
 
-  readonly allocationChartData = computed(computeAllocationChartData);
-  readonly performanceChartData = computed(computePerformanceChartData);
+  get yearOptions(): number[] {
+    return this.summaryService.years();
+  }
 
-  readonly basis$ = signal(40500.0);
-  readonly capitalGain$ = signal(1000.0);
-  readonly dividends$ = signal(525.0);
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- need access to service signal
+  readonly allocationChartData = computed((): ChartData<'pie'> => {
+    const summary = this.summaryService.summary();
+    return {
+      labels: ['Equities', 'Income', 'Tax Free'],
+      datasets: [
+        {
+          data: [summary.equities, summary.income, summary.tax_free_income],
+          backgroundColor: ['#3B82F6', '#10B981', '#F59E0B'],
+        },
+      ],
+    };
+  });
+
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- need access to computed signal
+  readonly hasAllocationData$ = computed(() => {
+    const data = this.allocationChartData();
+    return data.datasets[0].data.some(function isNonZero(v: unknown): boolean {
+      return (v as number) !== 0;
+    });
+  });
+
+  readonly pieChartOptions: ChartConfiguration['options'] = {
+    responsive: true,
+    maintainAspectRatio: true,
+    plugins: {
+      legend: {
+        position: 'bottom' as const,
+      },
+      tooltip: {
+        callbacks: {
+          label: function formatTooltip(context: {
+            label?: string;
+            raw?: unknown;
+            dataIndex: number;
+            dataset: { data: unknown[] };
+          }): string {
+            const label = context.label ?? '';
+            const value = (context.raw as number) ?? 0;
+            const total = (context.dataset.data as number[]).reduce(
+              function sum(a: number, b: number): number {
+                return a + b;
+              },
+              0
+            );
+            const percentage =
+              total > 0 ? Math.round((value / total) * 100) : 0;
+            const formatted = value.toLocaleString('en-US', {
+              style: 'currency',
+              currency: 'USD',
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 0,
+            });
+            return `${label}: ${formatted} (${String(percentage)}%)`;
+          },
+        },
+      },
+    },
+  };
+
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- need access to service signal
+  readonly performanceChartData = computed((): ChartData<'line'> => {
+    const enriched = buildEnrichedPoints(this.summaryService.graph());
+    return {
+      labels: enriched.map(function getMonth(p: EnrichedPoint): string {
+        return p.month;
+      }),
+      datasets: [
+        {
+          label: 'Base',
+          data: enriched.map(function getBase(p: EnrichedPoint): number {
+            return p.base;
+          }),
+          borderColor: '#3B82F6',
+          tension: 0.2,
+        },
+        {
+          label: 'Capital Gains',
+          data: enriched.map(function getCapGainsLine(
+            p: EnrichedPoint
+          ): number {
+            return p.capitalGainsLine;
+          }),
+          borderColor: '#10B981',
+          tension: 0.2,
+        },
+        {
+          label: 'Dividends',
+          data: enriched.map(function getDividendsLine(
+            p: EnrichedPoint
+          ): number {
+            return p.dividendsLine;
+          }),
+          borderColor: '#F59E0B',
+          tension: 0.2,
+        },
+      ],
+    };
+  });
+
+  /* eslint-disable @smarttools/no-anonymous-functions -- computed signals need service access */
+  readonly basis$ = computed(() => this.summaryService.summary().deposits);
+
+  readonly capitalGain$ = computed(
+    () => this.summaryService.summary().capitalGains
+  );
+
+  readonly dividends$ = computed(() => this.summaryService.summary().dividends);
+  /* eslint-enable @smarttools/no-anonymous-functions -- end computed signals block */
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- need access to this
   readonly percentIncrease$ = computed(() => {
@@ -122,8 +205,38 @@ export class GlobalSummary {
     );
   });
 
+  readonly loading$ = this.summaryService.loading;
+  readonly error$ = this.summaryService.error;
+
+  constructor() {
+    // Auto-select first available month when months load
+    effect(
+      // eslint-disable-next-line @smarttools/no-anonymous-functions -- Required for effect
+      () => {
+        const months = this.summaryService.months();
+        if (months.length > 0) {
+          this.selectedMonth.setValue(months[0].value);
+        }
+      }
+    );
+
+    // Auto-select most recent available year when years load
+    effect(
+      // eslint-disable-next-line @smarttools/no-anonymous-functions -- Required for effect
+      () => {
+        const years = this.summaryService.years();
+        if (years.length > 0) {
+          const currentValue = this.selectedYear.value;
+          if (currentValue === null || !years.includes(currentValue)) {
+            this.selectedYear.setValue(years[0]);
+          }
+        }
+      }
+    );
+  }
+
   get monthOptions(): Array<{ label: string; value: string }> {
-    return this.monthOptionsSignal();
+    return this.summaryService.months();
   }
 
   get allocationData(): ChartData<'pie'> {
@@ -132,5 +245,51 @@ export class GlobalSummary {
 
   get performanceData(): ChartData<'line'> {
     return this.performanceChartData();
+  }
+
+  /**
+   * Refresh summary data for the currently selected month.
+   */
+  refreshData(): void {
+    this.selectedMonth.disable({ emitEvent: false });
+    this.summaryService.fetchSummary(
+      this.selectedMonth.value ?? '2025-03',
+      enableMonthSelector.bind(this)
+    );
+  }
+
+  ngOnInit(): void {
+    this.summaryService.fetchMonths();
+    this.summaryService.fetchYears();
+    this.summaryService.fetchGraph(
+      this.selectedYear.value ?? new Date().getFullYear()
+    );
+    this.summaryService.fetchSummary(this.selectedMonth.value ?? '2025-03');
+
+    this.selectedYear.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(
+        // eslint-disable-next-line @smarttools/no-anonymous-functions -- need inline access to service
+        (year: number | null) => {
+          if (year !== null) {
+            this.summaryService.fetchGraph(year);
+          }
+        }
+      );
+
+    this.selectedMonth.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(
+        // eslint-disable-next-line @smarttools/no-anonymous-functions -- need inline access to service
+        (month: string | null) => {
+          if (month !== null) {
+            this.selectedMonth.disable({ emitEvent: false });
+            this.summaryService.fetchSummary(
+              month,
+              enableMonthSelector.bind(this)
+            );
+          }
+        }
+      );
   }
 }

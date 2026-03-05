@@ -18,7 +18,8 @@ Connects Global/Summary screen to backend summary calculations with pie charts.
 6. **Story AS.6:** Add Month/Year Selectors Functionality
 7. **Story AS.7:** Add Comprehensive Unit Tests
 8. **Story AS.8:** Bug Fixes for Global Summary
-9. **Story AS.9:** Add E2E Tests
+9. **Story AS.9:** Bug Fixes - Post Integration
+10. **Story AS.10:** Add E2E Tests
 
 ## Dependencies
 

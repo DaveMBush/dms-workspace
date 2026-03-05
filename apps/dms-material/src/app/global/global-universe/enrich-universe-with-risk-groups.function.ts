@@ -37,6 +37,7 @@ export function enrichUniverseWithRiskGroups(
       is_closed_end_fund: universe.is_closed_end_fund,
       name: universe.name,
       position: universe.position,
+      avg_purchase_yield_percent: universe.avg_purchase_yield_percent,
     };
   });
 }

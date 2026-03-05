@@ -26,6 +26,5 @@ dms-splitter {
 .accounts-panel,
 .content-panel {
   height: 100%;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: hidden;
 }

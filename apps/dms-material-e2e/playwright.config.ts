@@ -73,7 +73,12 @@ export default defineConfig({
 
     {
       name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
+      use: {
+        ...devices['Desktop Firefox'],
+        // Firefox on Linux resolves 'localhost' to ::1 (IPv6), but the dev server
+        // only listens on IPv4. Override baseURL to use 127.0.0.1 explicitly.
+        baseURL: 'http://127.0.0.1:4301',
+      },
     },
 
     // Temporarily disabled due to missing libicui18n.so.74 dependency

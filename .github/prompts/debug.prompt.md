@@ -20,6 +20,17 @@ When human input is needed:
 
 Violating this rule by pausing without calling `prompt.sh` defeats the purpose of the autonomous workflow.
 
+## CRITICAL: Database Safety
+
+**NEVER run destructive database commands** including but not limited to:
+
+- `prisma db push --force-reset`
+- `prisma migrate reset`
+- Deleting or overwriting `prisma/database.db`
+- Any command that drops tables, truncates data, or resets the database
+
+The development database contains real financial data that takes hours to re-seed. If a schema change requires a reset, call `prompt.sh` to get explicit human approval first. See `docs/architecture/coding-standards.md` for full database safety rules.
+
 ## PHASE 1: Epic Discovery and Validation
 
 1. Load the epic ${epic}
@@ -53,6 +64,8 @@ Violating this rule by pausing without calling `prompt.sh` defeats the purpose o
 
 ### 3.1 Prompt the user for a bug to fix using `.github/prompts/prompt.sh "Please describe the bug to fix:"` and wait for their response.
 
+**CRITICAL**: After calling prompt.sh, do NOTHING until the user responds. Do NOT start servers, run manual tests, do code reviews, or perform any speculative work while waiting. The prompt.sh call BLOCKS — your only job is to wait for the response and then act on it.
+
 ### 3.2 Analyze the bug report, identify the root cause and fix.
 
 If relevant, use the Playwright MCP server to help you see the problem and confirm that you've fixed the problem.
@@ -82,7 +95,8 @@ pnpm all
 ### 4.2 Run E2E Tests
 
 ```bash
-pnpm e2e:dms-material
+pnpm e2e:dms-material:chromium
+pnpm e2e:dms-material:firefox
 ```
 
 **Note**: E2E tests take over 10 minutes to complete because tests run sequentially one at a time to avoid database collisions. This is expected behavior.
@@ -209,7 +223,8 @@ For each iteration:
 - **CRITICAL**: Run ALL Phase 4 validations before committing:
 
   - `pnpm all` - must pass
-  - `pnpm e2e:dms-material` - must pass
+  - `pnpm e2e:dms-material:chromium` - must pass
+  - `pnpm e2e:dms-material:firefox` - must pass
   - `pnpm dupcheck` - must pass
   - `pnpm format` - must pass
   - If any validation fails: Fix issues and re-run ALL validations until they pass

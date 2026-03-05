@@ -7,6 +7,10 @@ model: Claude Opus 4.6 (copilot)
 
 # Autonomous Epic Development Workflow
 
+## CRITICAL: Each Phase In a subAgent
+
+Each phase of the epic development process must be handled by a separate subAgent. This ensures modularity, better error handling, clear separation of concerns, and avoids loss of overall context
+
 ## CRITICAL: How to Call prompt.sh
 
 Whenever this document says "Call `.github/prompts/prompt.sh \"...\"`", you MUST:
@@ -70,7 +74,16 @@ When human input is needed:
 
 Violating this rule by pausing without calling `prompt.sh` defeats the purpose of the autonomous workflow.
 
-## PHASE 1: Epic Discovery and Validation
+## CRITICAL: Database Safety
+
+**NEVER run destructive database commands** including but not limited to:
+
+- `prisma db push --force-reset`
+- `prisma migrate reset`
+- Deleting or overwriting `prisma/database.db`
+- Any command that drops tables, truncates data, or resets the database
+
+The development database contains real financial data that takes hours to re-seed. If a schema change requires a reset, call `prompt.sh` to get explicit human approval first. See `docs/architecture/coding-standards.md` for full database safety rules.
 
 1. **Discover Stories for Epic ${epic}**
 
@@ -90,12 +103,23 @@ Violating this rule by pausing without calling `prompt.sh` defeats the purpose o
 
 For each story in the ordered list:
 
-1. **Execute Story Development**
+1. **Classify Story Type**
 
-   - Run: `run #file:./develop-story.prompt.md story=${current_story}`
-   - This executes all 7 phases: validation, implementation, quality checks, QA review, PR creation, CodeRabbit review, and merge
+   - Read the story file and check the title/filename for keywords
+   - **Bug fix story**: Title or filename contains "bug fix", "bug-fix", "bugfix", or "debug" → Use `debug.prompt.md`
+   - **Standard story**: All other stories → Use `develop-story.prompt.md`
+   - Add a todo item for each story indicating its type (standard/bug-fix) before starting implementation
 
-2. **Handle Story Failures**
+2. **Execute Story Development**
+
+   - **CRITICAL**: You MUST delegate to the correct workflow file below. Do NOT attempt to implement the story yourself inline. Do NOT start servers, run manual tests, do code reviews, or perform any implementation work outside of the delegated workflow. The workflow file contains the complete instructions — follow them exactly.
+   - **For standard stories**: Run `run #file:./develop-story.prompt.md story=${current_story}`
+   - **For bug fix stories**: Run `run #file:./debug.prompt.md epic=${epic} story=${current_story}`
+   - Both workflows handle: validation, implementation, quality checks, PR creation, CodeRabbit review, and merge
+   - After the delegated workflow returns, the orchestrator MUST read the minimal state file written by the story workflow at `.git/tmp/story-${current_story}-meta.json`. If the file is missing or malformed, call `.github/prompts/prompt.sh "Missing or invalid meta file for ${current_story}. Repair or continue?"` via `run_in_terminal` and handle the response.
+   - Append or update the epic aggregation file `.git/tmp/epic-${epic}-stories.json` with the story's metadata. Each entry should include at minimum: `story`, `pr`, `branch`, `merged` (boolean), and `mergedAt` (timestamp if merged). Use this file for later reporting and for resuming orchestration without re-passing large prompt context.
+
+3. **Handle Story Failures**
    - If story execution calls prompt.sh with "stop":
      - Document state
      - Call `.github/prompts/prompt.sh "Story ${story} failed and was stopped. Abort entire epic or skip this story and continue?"`
@@ -119,7 +143,9 @@ For each story in the ordered list:
      - Custom instructions: Apply instructions, then proceed with last story
 
 3. **Execute Final Story**
-   - Run develop-story.prompt.md for last story
+   - Use the same story type classification from Phase 2 to select the correct workflow:
+     - **Standard story**: Run `develop-story.prompt.md`
+     - **Bug fix story**: Run `debug.prompt.md`
 
 ## PHASE 4: Epic Completion
 

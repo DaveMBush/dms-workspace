@@ -321,7 +321,8 @@ async function mapSingleRow(
   const account = await resolveAccount(row.account, accountCache);
 
   if (isMoneyMarketFund(row.symbol) && isMoneyMarketTradeAction(action)) {
-    result.divDeposits.push(await mapCashDeposit(row, account.id));
+    // Skip money market trade actions — these are implied cash sweep movements.
+    // The actual dividends are captured separately via DIVIDEND RECEIVED.
     return;
   }
   if (isBuyAction(action)) {
@@ -337,6 +338,10 @@ async function mapSingleRow(
     return;
   }
   if (action.startsWith('ELECTRONIC FUNDS TRANSFER')) {
+    result.divDeposits.push(await mapCashDeposit(row, account.id));
+    return;
+  }
+  if (action.startsWith('MONEY LINE RECEIVED')) {
     result.divDeposits.push(await mapCashDeposit(row, account.id));
     return;
   }

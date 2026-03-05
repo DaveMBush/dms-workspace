@@ -62,7 +62,6 @@ export class GlobalScreenerComponent {
   }
 
   readonly cellEdit = output<ScreenCellEditEvent>();
-  readonly loading$ = this.screenerService.loading;
   readonly error = this.screenerService.error;
 
   readonly riskGroupFilter$ = signal<string | null>(null);

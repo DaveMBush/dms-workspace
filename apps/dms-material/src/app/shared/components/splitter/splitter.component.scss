@@ -1,6 +1,7 @@
 .splitter-container {
   display: grid;
   grid-template-columns: var(--left-width-px) 8px 1fr;
+  grid-template-rows: 100%;
   width: 100%;
   height: 100%;
   overflow: hidden;

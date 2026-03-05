@@ -1,0 +1,51 @@
+schema: 1
+story: 'AS.2'
+story_title: 'Wire Summary Component to Summary Service'
+gate: PASS
+status_reason: 'Solid TDD GREEN implementation — all 38+ tests pass, service follows established patterns, clean signal-based architecture. Loading spinner and error message display implemented in template (AC F4, F5). Request sequencing guards against race conditions.'
+reviewer: 'Quinn (Test Architect)'
+updated: '2026-02-27T00:00:00Z'
+
+waiver: { active: false }
+
+top_issues: []
+
+risk_summary:
+  totals: { critical: 0, high: 0, medium: 0, low: 0 }
+  recommendations:
+    must_fix: []
+    monitor:
+      - 'Consider adding retry logic and caching in future story'
+
+quality_score: 95
+
+evidence:
+  tests_reviewed: 38
+  risks_identified: 0
+  trace:
+    ac_covered: [1, 2, 3, 4, 5, 6]
+    ac_gaps: []
+
+nfr_validation:
+  security:
+    status: PASS
+    notes: 'Standard HTTP GET calls to internal API, no sensitive data handling'
+  performance:
+    status: PASS
+    notes: 'Signal-based with OnPush, computed signals avoid unnecessary recalculations'
+  reliability:
+    status: PASS
+    notes: 'Error signals displayed to user, request sequencing prevents race conditions'
+  maintainability:
+    status: PASS
+    notes: 'Clean service/component separation, one export per file, follows ScreenerService pattern'
+
+recommendations:
+  immediate: []
+  future:
+    - action: 'Add retry logic (3 attempts) to HTTP calls as mentioned in story tasks'
+      refs: ['apps/dms-material/src/app/global/services/summary.service.ts']
+    - action: 'Add response caching (30s) as mentioned in story tasks'
+      refs: ['apps/dms-material/src/app/global/services/summary.service.ts']
+    - action: 'Set loadingSignal in fetchGraph/fetchMonths for consistent UX'
+      refs: ['apps/dms-material/src/app/global/services/summary.service.ts']
