@@ -4,8 +4,8 @@ import {
   Component,
   computed,
   DestroyRef,
+  effect,
   inject,
-  OnInit,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
@@ -14,12 +14,12 @@ import { MatOptionModule } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
-import { ActivatedRoute } from '@angular/router';
 import { ChartConfiguration, ChartData } from 'chart.js';
 
 import { GraphPoint } from '../../global/services/graph-point.interface';
 import { SummaryService } from '../../global/services/summary.service';
 import { SummaryDisplayComponent } from '../../shared/components/summary-display/summary-display';
+import { currentAccountSignalStore } from '../../store/current-account/current-account.signal-store';
 
 function getCurrentMonth(): string {
   const now = new Date();
@@ -83,10 +83,10 @@ function enableSelectors(this: AccountSummary): void {
   styleUrl: './account-summary.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AccountSummary implements OnInit {
+export class AccountSummary {
   private readonly summaryService = inject(SummaryService);
-  private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly accountStore = inject(currentAccountSignalStore);
   private accountId = '';
 
   readonly selectedMonth = new FormControl(getCurrentMonth());
@@ -225,9 +225,28 @@ export class AccountSummary implements OnInit {
     return this.performanceChartData();
   }
 
-  ngOnInit(): void {
-    this.accountId =
-      this.route.parent?.parent?.snapshot.paramMap.get('accountId') ?? '';
+  constructor() {
+    const component = this;
+    effect(function watchAccountChange(): void {
+      const accountId = component.accountStore.selectCurrentAccountId();
+      if (accountId !== '') {
+        component.accountId = accountId;
+        component.fetchAccountData();
+      }
+    });
+
+    this.selectedMonth.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(this.onMonthChange.bind(this));
+
+    this.selectedYear.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(this.onYearChange.bind(this));
+  }
+
+  private fetchAccountData(): void {
+    this.selectedMonth.setValue(getCurrentMonth(), { emitEvent: false });
+    this.selectedYear.setValue(new Date().getFullYear(), { emitEvent: false });
     this.selectedMonth.disable({ emitEvent: false });
     this.selectedYear.disable({ emitEvent: false });
     this.summaryService.fetchSummary(
@@ -242,14 +261,6 @@ export class AccountSummary implements OnInit {
     );
     this.summaryService.fetchMonths(this.accountId);
     this.summaryService.fetchYears();
-
-    this.selectedMonth.valueChanges
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(this.onMonthChange.bind(this));
-
-    this.selectedYear.valueChanges
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(this.onYearChange.bind(this));
   }
 
   private onMonthChange(month: string | null): void {
