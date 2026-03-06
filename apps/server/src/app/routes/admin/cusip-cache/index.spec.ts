@@ -205,6 +205,17 @@ describe('Admin CUSIP Cache Routes', function () {
       });
     });
 
+    test('should reject empty body', async function () {
+      const response = await app.inject({
+        method: 'POST',
+        url: '/api/admin/cusip-cache/add',
+      });
+
+      expect(response.statusCode).toBe(400);
+      const body = JSON.parse(response.body);
+      expect(body.error).toBe('Request body is required');
+    });
+
     test('should reject invalid CUSIP', async function () {
       const response = await app.inject({
         method: 'POST',
@@ -316,6 +327,17 @@ describe('Admin CUSIP Cache Routes', function () {
       const body = JSON.parse(response.body);
       expect(body.added).toBe(1);
       expect(body.errors).toHaveLength(2);
+    });
+
+    test('should reject empty body', async function () {
+      const response = await app.inject({
+        method: 'POST',
+        url: '/api/admin/cusip-cache/bulk-add',
+      });
+
+      expect(response.statusCode).toBe(400);
+      const body = JSON.parse(response.body);
+      expect(body.error).toBe('Request body is required');
     });
 
     test('should reject empty mappings array', async function () {

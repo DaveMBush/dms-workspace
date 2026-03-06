@@ -112,6 +112,10 @@ async function handleAdd(
   request: FastifyRequest<{ Body: AddBody }>,
   reply: FastifyReply
 ): Promise<void> {
+  if (request.body === null || request.body === undefined) {
+    reply.status(400).send({ error: 'Request body is required' });
+    return;
+  }
   const { cusip, symbol, source, reason } = request.body;
 
   if (!cusipCacheValidators.isValidCusip(cusip)) {
@@ -184,6 +188,10 @@ async function handleBulkAdd(
   request: FastifyRequest<{ Body: BulkAddBody }>,
   reply: FastifyReply
 ): Promise<void> {
+  if (request.body === null || request.body === undefined) {
+    reply.status(400).send({ error: 'Request body is required' });
+    return;
+  }
   const { mappings, reason } = request.body;
 
   if (!Array.isArray(mappings) || mappings.length === 0) {
