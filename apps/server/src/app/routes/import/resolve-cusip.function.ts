@@ -219,11 +219,15 @@ function buildUnresolvedDescriptions(
 function collectYahooMappings(
   resolved: Map<string, string>,
   resolvedBeforeYahoo: Set<string>
-): Array<{ cusip: string; symbol: string; source: string }> {
+): Array<{
+  cusip: string;
+  symbol: string;
+  source: 'OPENFIGI' | 'YAHOO_FINANCE';
+}> {
   const yahooMappings: Array<{
     cusip: string;
     symbol: string;
-    source: string;
+    source: 'OPENFIGI' | 'YAHOO_FINANCE';
   }> = [];
   for (const [cusip, symbol] of resolved) {
     if (!resolvedBeforeYahoo.has(cusip)) {
@@ -271,7 +275,7 @@ export async function resolveCusipSymbols(
       cusip,
       symbol,
     ]) {
-      return { cusip, symbol, source: 'OPENFIGI' };
+      return { cusip, symbol, source: 'OPENFIGI' as const };
     });
     await cusipCacheService.upsertManyMappings(openfigiMappings);
 

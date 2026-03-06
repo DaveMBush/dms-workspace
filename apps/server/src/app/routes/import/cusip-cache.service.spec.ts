@@ -15,7 +15,7 @@ interface CusipCacheEntry {
   id: string;
   cusip: string;
   symbol: string;
-  source: string;
+  source: 'OPENFIGI' | 'YAHOO_FINANCE';
   resolvedAt: Date;
   createdAt: Date;
   updatedAt: Date;
