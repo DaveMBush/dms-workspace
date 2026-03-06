@@ -10,28 +10,32 @@ import {
 } from 'vitest';
 
 vi.mock('../../../prisma/prisma-client', function () {
-  return {
-    prisma: {
-      cusip_cache: {
-        count: vi.fn(),
-        groupBy: vi.fn(),
-        findMany: vi.fn(),
-        findFirst: vi.fn(),
-        findUnique: vi.fn(),
-        upsert: vi.fn(),
-        delete: vi.fn(),
-      },
-      cusip_cache_archive: {
-        findMany: vi.fn(),
-        count: vi.fn(),
-      },
-      cusip_cache_audit: {
-        create: vi.fn(),
-        findMany: vi.fn(),
-        count: vi.fn(),
-      },
+  const prismaMock: Record<string, unknown> = {
+    cusip_cache: {
+      count: vi.fn(),
+      groupBy: vi.fn(),
+      findMany: vi.fn(),
+      findFirst: vi.fn(),
+      findUnique: vi.fn(),
+      upsert: vi.fn(),
+      delete: vi.fn(),
+    },
+    cusip_cache_archive: {
+      findMany: vi.fn(),
+      count: vi.fn(),
+    },
+    cusip_cache_audit: {
+      create: vi.fn(),
+      findMany: vi.fn(),
+      count: vi.fn(),
     },
   };
+  prismaMock.$transaction = vi.fn(async function mockTransaction(
+    fn: (tx: Record<string, unknown>) => Promise<unknown>
+  ) {
+    return fn(prismaMock);
+  });
+  return { prisma: prismaMock };
 });
 
 vi.mock('../../../services/cusip-audit-log.service', function () {
@@ -56,9 +60,24 @@ vi.mock('../../../services/cusip-cache-cleanup.service', function () {
   };
 });
 
+vi.mock('./upsert-with-audit', function () {
+  return {
+    cusipCacheTransactions: {
+      upsertWithAudit: vi.fn().mockResolvedValue({
+        id: 'uuid-1',
+        cusip: '037833100',
+        symbol: 'AAPL',
+        source: 'OPENFIGI',
+      }),
+      deleteWithAudit: vi.fn().mockResolvedValue(undefined),
+    },
+  };
+});
+
 import { prisma } from '../../../prisma/prisma-client';
 import { cusipAuditLogService } from '../../../services/cusip-audit-log.service';
 import { cusipCacheCleanupService } from '../../../services/cusip-cache-cleanup.service';
+import { cusipCacheTransactions } from './upsert-with-audit';
 import registerAdminCusipCacheRoutes from './index';
 
 describe('Admin CUSIP Cache Routes', function () {
@@ -168,19 +187,6 @@ describe('Admin CUSIP Cache Routes', function () {
 
   describe('POST /api/admin/cusip-cache/add', function () {
     test('should add a new mapping', async function () {
-      const entry = {
-        id: 'uuid-1',
-        cusip: '037833100',
-        symbol: 'AAPL',
-        source: 'OPENFIGI',
-      };
-      (prisma.cusip_cache.upsert as ReturnType<typeof vi.fn>).mockResolvedValue(
-        entry
-      );
-      (
-        prisma.cusip_cache_audit.create as ReturnType<typeof vi.fn>
-      ).mockResolvedValue({});
-
       const response = await app.inject({
         method: 'POST',
         url: '/api/admin/cusip-cache/add',
@@ -190,6 +196,13 @@ describe('Admin CUSIP Cache Routes', function () {
       expect(response.statusCode).toBe(201);
       const body = JSON.parse(response.body);
       expect(body.cusip).toBe('037833100');
+      expect(cusipCacheTransactions.upsertWithAudit).toHaveBeenCalledWith({
+        cusip: '037833100',
+        symbol: 'AAPL',
+        source: 'OPENFIGI',
+        auditSource: 'MANUAL',
+        reason: undefined,
+      });
     });
 
     test('should reject invalid CUSIP', async function () {
@@ -211,6 +224,16 @@ describe('Admin CUSIP Cache Routes', function () {
 
       expect(response.statusCode).toBe(400);
     });
+
+    test('should reject invalid source', async function () {
+      const response = await app.inject({
+        method: 'POST',
+        url: '/api/admin/cusip-cache/add',
+        payload: { cusip: '037833100', symbol: 'AAPL', source: 'INVALID' },
+      });
+
+      expect(response.statusCode).toBe(400);
+    });
   });
 
   // === Delete Endpoint ===
@@ -224,12 +247,6 @@ describe('Admin CUSIP Cache Routes', function () {
         cusip: '037833100',
         symbol: 'AAPL',
       });
-      (prisma.cusip_cache.delete as ReturnType<typeof vi.fn>).mockResolvedValue(
-        {}
-      );
-      (
-        prisma.cusip_cache_audit.create as ReturnType<typeof vi.fn>
-      ).mockResolvedValue({});
 
       const response = await app.inject({
         method: 'DELETE',
@@ -239,6 +256,11 @@ describe('Admin CUSIP Cache Routes', function () {
       expect(response.statusCode).toBe(200);
       const body = JSON.parse(response.body);
       expect(body.cusip).toBe('037833100');
+      expect(cusipCacheTransactions.deleteWithAudit).toHaveBeenCalledWith(
+        'uuid-1',
+        '037833100',
+        'AAPL'
+      );
     });
 
     test('should return 404 for missing entry', async function () {
@@ -259,13 +281,6 @@ describe('Admin CUSIP Cache Routes', function () {
 
   describe('POST /api/admin/cusip-cache/bulk-add', function () {
     test('should add multiple mappings', async function () {
-      (prisma.cusip_cache.upsert as ReturnType<typeof vi.fn>).mockResolvedValue(
-        {}
-      );
-      (
-        prisma.cusip_cache_audit.create as ReturnType<typeof vi.fn>
-      ).mockResolvedValue({});
-
       const response = await app.inject({
         method: 'POST',
         url: '/api/admin/cusip-cache/bulk-add',
@@ -281,16 +296,10 @@ describe('Admin CUSIP Cache Routes', function () {
       const body = JSON.parse(response.body);
       expect(body.added).toBe(2);
       expect(body.errors).toHaveLength(0);
+      expect(cusipCacheTransactions.upsertWithAudit).toHaveBeenCalledTimes(2);
     });
 
     test('should report errors for invalid entries', async function () {
-      (prisma.cusip_cache.upsert as ReturnType<typeof vi.fn>).mockResolvedValue(
-        {}
-      );
-      (
-        prisma.cusip_cache_audit.create as ReturnType<typeof vi.fn>
-      ).mockResolvedValue({});
-
       const response = await app.inject({
         method: 'POST',
         url: '/api/admin/cusip-cache/bulk-add',
@@ -317,6 +326,21 @@ describe('Admin CUSIP Cache Routes', function () {
       });
 
       expect(response.statusCode).toBe(400);
+    });
+
+    test('should reject invalid source in bulk', async function () {
+      const response = await app.inject({
+        method: 'POST',
+        url: '/api/admin/cusip-cache/bulk-add',
+        payload: {
+          mappings: [{ cusip: '037833100', symbol: 'AAPL', source: 'INVALID' }],
+        },
+      });
+
+      expect(response.statusCode).toBe(200);
+      const body = JSON.parse(response.body);
+      expect(body.added).toBe(0);
+      expect(body.errors).toHaveLength(1);
     });
   });
 

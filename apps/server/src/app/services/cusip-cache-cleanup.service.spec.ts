@@ -20,11 +20,14 @@ function createMockPrismaClient(): PrismaClient {
       findMany: vi.fn(),
       count: vi.fn(),
     },
+    cusip_cache_audit: {
+      create: vi.fn(),
+    },
   } as unknown as PrismaClient;
   (client as Record<string, unknown>).$transaction = vi.fn(async function (
-    fn: (tx: PrismaClient) => Promise<void>
+    fn: (tx: PrismaClient) => Promise<unknown>
   ) {
-    await fn(client);
+    return fn(client);
   });
   return client;
 }
@@ -86,9 +89,38 @@ describe('cusipCacheCleanupService', function () {
       expect(result.archivedCount).toBe(1);
       expect(result.entries[0].cusip).toBe('037833100');
       expect(mockPrisma.cusip_cache_archive.create).toHaveBeenCalled();
+      expect(
+        (
+          mockPrisma as unknown as Record<
+            string,
+            Record<string, Record<string, ReturnType<typeof vi.fn>>>
+          >
+        ).cusip_cache_audit.create
+      ).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          cusip: '037833100',
+          action: 'DELETE',
+        }),
+      });
       expect(mockPrisma.cusip_cache.deleteMany).toHaveBeenCalledWith({
         where: { id: { in: ['entry-1'] } },
       });
+    });
+
+    test('should reject non-positive ageDays', async function () {
+      await expect(
+        cusipCacheCleanupService.archiveStaleEntries(0, mockPrisma)
+      ).rejects.toThrow('ageDays must be a positive integer');
+
+      await expect(
+        cusipCacheCleanupService.archiveStaleEntries(-5, mockPrisma)
+      ).rejects.toThrow('ageDays must be a positive integer');
+    });
+
+    test('should reject non-integer ageDays', async function () {
+      await expect(
+        cusipCacheCleanupService.archiveStaleEntries(3.5, mockPrisma)
+      ).rejects.toThrow('ageDays must be a positive integer');
     });
   });
 

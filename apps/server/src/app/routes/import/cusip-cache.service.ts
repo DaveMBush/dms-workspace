@@ -9,6 +9,23 @@ interface CusipCacheMapping {
   source: 'OPENFIGI' | 'YAHOO_FINANCE';
 }
 
+async function updateLastUsedAt(
+  client: PrismaClient,
+  cusip: string
+): Promise<void> {
+  try {
+    await client.cusip_cache.update({
+      where: { cusip },
+      data: { lastUsedAt: new Date() },
+    });
+  } catch (updateError: unknown) {
+    logger.warn('CUSIP cache lastUsedAt update failed', {
+      cusip,
+      error: updateError,
+    });
+  }
+}
+
 /**
  * Looks up a single CUSIP in the cache.
  * Returns the cached symbol or null if not found.
@@ -23,10 +40,7 @@ async function findByCusip(
       where: { cusip },
     });
     if (entry) {
-      await client.cusip_cache.update({
-        where: { cusip },
-        data: { lastUsedAt: new Date() },
-      });
+      await updateLastUsedAt(client, cusip);
       return entry.symbol;
     }
     return null;

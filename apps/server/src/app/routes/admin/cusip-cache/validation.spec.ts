@@ -1,6 +1,8 @@
 import { describe, expect, test } from 'vitest';
 
-import { isValidCusip } from './validation';
+import { cusipCacheValidators } from './validation';
+
+const { isValidCusip } = cusipCacheValidators;
 
 describe('validation', function () {
   describe('isValidCusip', function () {

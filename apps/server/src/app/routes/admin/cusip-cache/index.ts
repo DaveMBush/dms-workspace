@@ -1,9 +1,11 @@
+import { CusipCacheSource } from '@prisma/client';
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 
 import { prisma } from '../../../prisma/prisma-client';
 import { cusipAuditLogService } from '../../../services/cusip-audit-log.service';
 import { cusipCacheCleanupService } from '../../../services/cusip-cache-cleanup.service';
-import { isValidCusip } from './validation';
+import { cusipCacheTransactions } from './upsert-with-audit';
+import { cusipCacheValidators } from './validation';
 
 // --- Statistics Endpoint ---
 
@@ -106,45 +108,34 @@ interface AddBody {
   reason?: string;
 }
 
-function isNonEmptySymbol(value: unknown): value is string {
-  return typeof value === 'string' && value.trim().length > 0;
-}
-
 async function handleAdd(
   request: FastifyRequest<{ Body: AddBody }>,
   reply: FastifyReply
 ): Promise<void> {
   const { cusip, symbol, source, reason } = request.body;
 
-  if (!isValidCusip(cusip)) {
+  if (!cusipCacheValidators.isValidCusip(cusip)) {
     reply.status(400).send({
       error: 'Invalid CUSIP format (must be 9 alphanumeric characters)',
     });
     return;
   }
-
-  if (!isNonEmptySymbol(symbol)) {
+  if (!cusipCacheValidators.isNonEmptySymbol(symbol)) {
     reply.status(400).send({ error: 'Symbol must be a non-empty string' });
     return;
   }
+  if (!cusipCacheValidators.isValidSource(source)) {
+    reply
+      .status(400)
+      .send({ error: 'Invalid source (must be OPENFIGI or YAHOO_FINANCE)' });
+    return;
+  }
 
-  const cacheSource = source === 'YAHOO_FINANCE' ? 'YAHOO_FINANCE' : 'OPENFIGI';
-
-  const entry = await prisma.cusip_cache.upsert({
-    where: { cusip: cusip.toUpperCase() },
-    update: { symbol: symbol.toUpperCase(), source: cacheSource },
-    create: {
-      cusip: cusip.toUpperCase(),
-      symbol: symbol.toUpperCase(),
-      source: cacheSource,
-    },
-  });
-
-  await cusipAuditLogService.logCacheChange({
+  const entry = await cusipCacheTransactions.upsertWithAudit({
     cusip: cusip.toUpperCase(),
     symbol: symbol.toUpperCase(),
-    action: 'CREATE',
-    source: 'MANUAL',
+    source: (source ?? 'OPENFIGI') as CusipCacheSource,
+    auditSource: 'MANUAL',
     reason,
   });
 
@@ -169,14 +160,11 @@ async function handleDelete(
     return;
   }
 
-  await prisma.cusip_cache.delete({ where: { id } });
-
-  await cusipAuditLogService.logCacheChange({
-    cusip: existing.cusip,
-    symbol: existing.symbol,
-    action: 'DELETE',
-    source: 'MANUAL',
-  });
+  await cusipCacheTransactions.deleteWithAudit(
+    id,
+    existing.cusip,
+    existing.symbol
+  );
 
   reply.send({ message: 'Cache entry deleted', cusip: existing.cusip });
 }
@@ -202,7 +190,6 @@ async function handleBulkAdd(
     reply.status(400).send({ error: 'Provide a non-empty mappings array' });
     return;
   }
-
   if (mappings.length > 1000) {
     reply
       .status(400)
@@ -213,33 +200,26 @@ async function handleBulkAdd(
   const results = { added: 0, errors: [] as string[] };
 
   for (const mapping of mappings) {
-    if (!isValidCusip(mapping.cusip)) {
+    if (!cusipCacheValidators.isValidCusip(mapping.cusip)) {
       results.errors.push(`Invalid CUSIP: ${mapping.cusip}`);
       continue;
     }
-    if (!isNonEmptySymbol(mapping.symbol)) {
+    if (!cusipCacheValidators.isNonEmptySymbol(mapping.symbol)) {
       results.errors.push(`Empty symbol for CUSIP: ${mapping.cusip}`);
       continue;
     }
+    if (!cusipCacheValidators.isValidSource(mapping.source)) {
+      results.errors.push(
+        `Invalid source for CUSIP ${mapping.cusip}: ${mapping.source}`
+      );
+      continue;
+    }
 
-    const cacheSource =
-      mapping.source === 'YAHOO_FINANCE' ? 'YAHOO_FINANCE' : 'OPENFIGI';
-
-    await prisma.cusip_cache.upsert({
-      where: { cusip: mapping.cusip.toUpperCase() },
-      update: { symbol: mapping.symbol.toUpperCase(), source: cacheSource },
-      create: {
-        cusip: mapping.cusip.toUpperCase(),
-        symbol: mapping.symbol.toUpperCase(),
-        source: cacheSource,
-      },
-    });
-
-    await cusipAuditLogService.logCacheChange({
+    await cusipCacheTransactions.upsertWithAudit({
       cusip: mapping.cusip.toUpperCase(),
       symbol: mapping.symbol.toUpperCase(),
-      action: 'CREATE',
-      source: 'BULK_IMPORT',
+      source: (mapping.source ?? 'OPENFIGI') as CusipCacheSource,
+      auditSource: 'BULK_IMPORT',
       reason,
     });
 
@@ -279,6 +259,12 @@ async function handleGetArchived(
   const offsetStr = request.query.offset ?? '0';
   const limit = parseInt(limitStr, 10);
   const offset = parseInt(offsetStr, 10);
+
+  if (isNaN(limit) || limit < 0 || isNaN(offset) || offset < 0) {
+    reply.status(400).send({ error: 'Invalid limit or offset parameter' });
+    return;
+  }
+
   const result = await cusipCacheCleanupService.getArchived({ limit, offset });
   reply.send(result);
 }
@@ -311,19 +297,51 @@ function parseOptionalInt(value: string | undefined): number | undefined {
   return str !== undefined ? parseInt(str, 10) : undefined;
 }
 
+function isInvalidDate(value: string | undefined): boolean {
+  if (typeof value !== 'string' || value.length === 0) {
+    return false;
+  }
+  return !isFinite(new Date(value).getTime());
+}
+
+function isInvalidPaginationParam(value: number | undefined): boolean {
+  return value !== undefined && (isNaN(value) || value < 0);
+}
+
 async function handleGetAuditLog(
   request: FastifyRequest<{ Querystring: AuditQuery }>,
   reply: FastifyReply
 ): Promise<void> {
   const { cusip, action, startDate, endDate, limit, offset } = request.query;
 
+  if (isInvalidDate(startDate)) {
+    reply.status(400).send({ error: 'Invalid startDate format' });
+    return;
+  }
+  if (isInvalidDate(endDate)) {
+    reply.status(400).send({ error: 'Invalid endDate format' });
+    return;
+  }
+
+  const parsedLimit = parseOptionalInt(limit);
+  const parsedOffset = parseOptionalInt(offset);
+
+  if (isInvalidPaginationParam(parsedLimit)) {
+    reply.status(400).send({ error: 'Invalid limit parameter' });
+    return;
+  }
+  if (isInvalidPaginationParam(parsedOffset)) {
+    reply.status(400).send({ error: 'Invalid offset parameter' });
+    return;
+  }
+
   const result = await cusipAuditLogService.queryAuditLog({
     cusip: parseOptionalString(cusip),
     action: parseOptionalString(action),
     startDate: parseOptionalDate(startDate),
     endDate: parseOptionalDate(endDate),
-    limit: parseOptionalInt(limit),
-    offset: parseOptionalInt(offset),
+    limit: parsedLimit,
+    offset: parsedOffset,
   });
 
   reply.send(result);

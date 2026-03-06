@@ -26,43 +26,46 @@ function isCleanupEnabled(): boolean {
   return process.env.CUSIP_CACHE_CLEANUP_ENABLED === 'true';
 }
 
-async function archiveStaleEntries(
-  ageDays?: number,
-  client: PrismaClient = prisma
+interface StaleEntry {
+  id: string;
+  cusip: string;
+  symbol: string;
+  source: string;
+  resolvedAt: Date;
+  lastUsedAt: Date;
+}
+
+async function archiveAndAuditEntries(
+  tx: PrismaClient,
+  staleEntries: StaleEntry[],
+  cutoffDays: number
 ): Promise<CleanupResult> {
-  const cutoffDays = ageDays ?? getCleanupAgeDays();
-  const cutoffDate = new Date();
-  cutoffDate.setDate(cutoffDate.getDate() - cutoffDays);
-
-  const staleEntries = await client.cusip_cache.findMany({
-    where: {
-      lastUsedAt: { lt: cutoffDate },
-    },
-  });
-
-  if (staleEntries.length === 0) {
-    return { archivedCount: 0, entries: [] };
+  for (const entry of staleEntries) {
+    await tx.cusip_cache_archive.create({
+      data: {
+        cusip: entry.cusip,
+        symbol: entry.symbol,
+        source: entry.source,
+        resolvedAt: entry.resolvedAt,
+        reason: `Unused for ${cutoffDays}+ days`,
+      },
+    });
+    await tx.cusip_cache_audit.create({
+      data: {
+        cusip: entry.cusip,
+        symbol: entry.symbol,
+        action: 'DELETE',
+        source: 'API',
+        reason: `Cleanup: unused for ${cutoffDays}+ days`,
+      },
+    });
   }
 
-  await client.$transaction(async function archiveTransaction(tx) {
-    for (const entry of staleEntries) {
-      await tx.cusip_cache_archive.create({
-        data: {
-          cusip: entry.cusip,
-          symbol: entry.symbol,
-          source: entry.source,
-          resolvedAt: entry.resolvedAt,
-          reason: `Unused for ${cutoffDays}+ days`,
-        },
-      });
-    }
-
-    const staleIds = staleEntries.map(function mapId(e) {
-      return e.id;
-    });
-    await tx.cusip_cache.deleteMany({
-      where: { id: { in: staleIds } },
-    });
+  const staleIds = staleEntries.map(function mapId(e) {
+    return e.id;
+  });
+  await tx.cusip_cache.deleteMany({
+    where: { id: { in: staleIds } },
   });
 
   return {
@@ -75,6 +78,35 @@ async function archiveStaleEntries(
       };
     }),
   };
+}
+
+async function archiveStaleEntries(
+  ageDays?: number,
+  client: PrismaClient = prisma
+): Promise<CleanupResult> {
+  if (ageDays !== undefined && (!Number.isInteger(ageDays) || ageDays <= 0)) {
+    throw new Error('ageDays must be a positive integer');
+  }
+
+  const cutoffDays = ageDays ?? getCleanupAgeDays();
+  const cutoffDate = new Date();
+  cutoffDate.setDate(cutoffDate.getDate() - cutoffDays);
+
+  return client.$transaction(async function archiveTransaction(tx) {
+    const staleEntries = await tx.cusip_cache.findMany({
+      where: { lastUsedAt: { lt: cutoffDate } },
+    });
+
+    if (staleEntries.length === 0) {
+      return { archivedCount: 0, entries: [] };
+    }
+
+    return archiveAndAuditEntries(
+      tx as unknown as PrismaClient,
+      staleEntries,
+      cutoffDays
+    );
+  });
 }
 
 async function getArchived(
