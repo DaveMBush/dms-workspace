@@ -12,3 +12,5 @@ At the close of the TDD story, disable the stories using skip and reenable them 
 Also, most of our epics have and e2e test story at the end. Create a story just before the e2e test story that is a "bug fix" story that will allow me to verify that the story was implemented correctly and fix any issues that arise before we create the e2e tests.
 
 All stories should be renumbered sequentially 1, 2, 3 etc.
+
+Once you've done this, run #file:./create-stories-for-epic.prompt.md to create the stories for the epic.
