@@ -36,7 +36,8 @@ Creates import routine to parse Fidelity transaction exports and populate trades
 13. **Story AR.8:** Unit tests for CUSIP lookup caching
 14. **Story AR.9:** Implement CUSIP lookup caching with database persistence
 15. **Story AR.10:** CUSIP cache backend API (statistics, management, cleanup, audit logging)
-16. **Story AR.11:** CUSIP cache admin UI and E2E tests
+16. **Story AR.10.5:** Debug and review CUSIP cache implementation (AR.8-AR.10)
+17. **Story AR.11:** CUSIP cache admin UI and E2E tests
 
 ## Dependencies
 
@@ -66,6 +67,11 @@ These stories add database-backed caching for CUSIP→Symbol lookups to improve 
   - Cache cleanup/archival for old entries
   - Audit logging for troubleshooting
   - Manual cache management (add/edit/delete)
+- **AR.10.5** provides debug and review checkpoint:
+  - Review and test AR.8-AR.10 implementation
+  - Identify and fix any issues discovered
+  - Verify cache behavior and performance
+  - Quality gate before UI development
 - **AR.11** completes the feature with admin UI:
   - Dashboard showing cache statistics
   - Search interface by CUSIP or symbol
