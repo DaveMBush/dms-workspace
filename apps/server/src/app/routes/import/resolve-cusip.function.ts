@@ -1,4 +1,5 @@
 import { yahooFinance } from '../../routes/settings/yahoo-finance.instance';
+import { cusipCacheService } from './cusip-cache.service';
 import { FidelityCsvRow } from './fidelity-csv-row.interface';
 import { isCusip } from './is-cusip.function';
 
@@ -196,8 +197,49 @@ function applyResolved(
 }
 
 /**
+ * Builds a descriptions map for CUSIPs that are not yet resolved.
+ */
+function buildUnresolvedDescriptions(
+  uncachedCusips: string[],
+  resolved: Map<string, string>,
+  cusipDescriptions: Map<string, string>
+): Map<string, string> {
+  const unresolvedDescriptions = new Map<string, string>();
+  for (const cusip of uncachedCusips) {
+    if (!resolved.has(cusip)) {
+      unresolvedDescriptions.set(cusip, cusipDescriptions.get(cusip) ?? '');
+    }
+  }
+  return unresolvedDescriptions;
+}
+
+/**
+ * Collects newly resolved mappings from Yahoo Finance fallback.
+ */
+function collectYahooMappings(
+  resolved: Map<string, string>,
+  resolvedBeforeYahoo: Set<string>
+): Array<{
+  cusip: string;
+  symbol: string;
+  source: 'OPENFIGI' | 'YAHOO_FINANCE';
+}> {
+  const yahooMappings: Array<{
+    cusip: string;
+    symbol: string;
+    source: 'OPENFIGI' | 'YAHOO_FINANCE';
+  }> = [];
+  for (const [cusip, symbol] of resolved) {
+    if (!resolvedBeforeYahoo.has(cusip)) {
+      yahooMappings.push({ cusip, symbol, source: 'YAHOO_FINANCE' });
+    }
+  }
+  return yahooMappings;
+}
+
+/**
  * Resolves CUSIP identifiers in parsed CSV rows to proper ticker symbols.
- * Strategy: OpenFIGI batch lookup first, then Yahoo Finance description search as fallback.
+ * Strategy: Check cache first, then OpenFIGI batch lookup, then Yahoo Finance fallback.
  * Rows with unresolvable CUSIPs keep their original symbol.
  *
  * @param rows - Parsed CSV rows (mutated in place)
@@ -211,7 +253,51 @@ export async function resolveCusipSymbols(
     return;
   }
 
-  const resolved = await batchLookupCusips([...cusipDescriptions.keys()]);
-  await resolveViaYahooFallback(cusipDescriptions, resolved);
+  const allCusips = [...cusipDescriptions.keys()];
+
+  // Check cache first
+  const cached = await cusipCacheService.findManyCusips(allCusips);
+
+  // Filter out cached CUSIPs from API calls
+  const uncachedCusips = allCusips.filter(function isUncached(c) {
+    return !cached.has(c);
+  });
+
+  // Start with cached results
+  const resolved = new Map<string, string>(cached);
+
+  if (uncachedCusips.length > 0) {
+    // Look up uncached CUSIPs via OpenFIGI
+    const apiResolved = await batchLookupCusips(uncachedCusips);
+
+    // Cache OpenFIGI results
+    const openfigiMappings = [...apiResolved.entries()].map(function toMapping([
+      cusip,
+      symbol,
+    ]) {
+      return { cusip, symbol, source: 'OPENFIGI' as const };
+    });
+    await cusipCacheService.upsertManyMappings(openfigiMappings);
+
+    // Merge API results into resolved map
+    for (const [cusip, symbol] of apiResolved) {
+      resolved.set(cusip, symbol);
+    }
+
+    // Yahoo Finance fallback for still-unresolved CUSIPs
+    const unresolvedDescriptions = buildUnresolvedDescriptions(
+      uncachedCusips,
+      resolved,
+      cusipDescriptions
+    );
+
+    const resolvedBeforeYahoo = new Set(resolved.keys());
+    await resolveViaYahooFallback(unresolvedDescriptions, resolved);
+
+    // Cache Yahoo Finance results
+    const yahooMappings = collectYahooMappings(resolved, resolvedBeforeYahoo);
+    await cusipCacheService.upsertManyMappings(yahooMappings);
+  }
+
   applyResolved(rows, resolved);
 }

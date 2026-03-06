@@ -141,3 +141,21 @@ model screener {
   @@index([has_volitility, objectives_understood, graph_higher_before_2008])
   @@index([risk_group_id])
 }
+
+enum CusipCacheSource {
+  OPENFIGI
+  YAHOO_FINANCE
+}
+
+model cusip_cache {
+  id         String           @id @default(uuid())
+  cusip      String           @unique
+  symbol     String
+  source     CusipCacheSource
+  resolvedAt DateTime         @default(now())
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+
+  @@index([cusip])
+  @@index([resolvedAt])
+}
