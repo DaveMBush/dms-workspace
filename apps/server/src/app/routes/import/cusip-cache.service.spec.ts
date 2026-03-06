@@ -27,6 +27,8 @@ function createMockPrismaClient(): PrismaClient {
       findUnique: vi.fn(),
       findMany: vi.fn(),
       upsert: vi.fn(),
+      update: vi.fn(),
+      updateMany: vi.fn(),
     },
   } as unknown as PrismaClient;
 }

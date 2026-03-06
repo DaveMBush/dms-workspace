@@ -153,9 +153,37 @@ model cusip_cache {
   symbol     String
   source     CusipCacheSource
   resolvedAt DateTime         @default(now())
+  lastUsedAt DateTime         @default(now())
   createdAt  DateTime         @default(now())
   updatedAt  DateTime         @updatedAt
 
   @@index([cusip])
   @@index([resolvedAt])
+  @@index([lastUsedAt])
+}
+
+model cusip_cache_archive {
+  id         String   @id @default(uuid())
+  cusip      String
+  symbol     String
+  source     String
+  resolvedAt DateTime
+  archivedAt DateTime @default(now())
+  reason     String?
+
+  @@index([archivedAt])
+}
+
+model cusip_cache_audit {
+  id        String   @id @default(uuid())
+  cusip     String
+  symbol    String
+  action    String
+  source    String
+  userId    String?
+  reason    String?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([cusip])
 }

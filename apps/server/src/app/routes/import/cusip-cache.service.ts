@@ -9,6 +9,23 @@ interface CusipCacheMapping {
   source: 'OPENFIGI' | 'YAHOO_FINANCE';
 }
 
+async function updateLastUsedAt(
+  client: PrismaClient,
+  cusip: string
+): Promise<void> {
+  try {
+    await client.cusip_cache.update({
+      where: { cusip },
+      data: { lastUsedAt: new Date() },
+    });
+  } catch (updateError: unknown) {
+    logger.warn('CUSIP cache lastUsedAt update failed', {
+      cusip,
+      error: updateError,
+    });
+  }
+}
+
 /**
  * Looks up a single CUSIP in the cache.
  * Returns the cached symbol or null if not found.
@@ -22,7 +39,11 @@ async function findByCusip(
     const entry = await client.cusip_cache.findUnique({
       where: { cusip },
     });
-    return entry?.symbol ?? null;
+    if (entry) {
+      await updateLastUsedAt(client, cusip);
+      return entry.symbol;
+    }
+    return null;
   } catch (error: unknown) {
     logger.warn('CUSIP cache lookup failed', { cusip, error });
     return null;
@@ -46,8 +67,16 @@ async function findManyCusips(
     const entries = await client.cusip_cache.findMany({
       where: { cusip: { in: cusips } },
     });
+    const foundCusips: string[] = [];
     for (const entry of entries) {
       result.set(entry.cusip, entry.symbol);
+      foundCusips.push(entry.cusip);
+    }
+    if (foundCusips.length > 0) {
+      await client.cusip_cache.updateMany({
+        where: { cusip: { in: foundCusips } },
+        data: { lastUsedAt: new Date() },
+      });
     }
   } catch (error: unknown) {
     logger.warn('CUSIP cache batch lookup failed', {
