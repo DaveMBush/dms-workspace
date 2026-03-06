@@ -124,7 +124,7 @@
 
 ### Security
 
-- Admin endpoints must require authentjection
+- Admin endpoints must require authentication
 - Limit bulk operations to prevent abuse
 - Rate limit API endpoints
 
