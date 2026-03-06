@@ -276,4 +276,70 @@ describe('resolveCusipSymbols', function () {
 
     expect(rows[0].symbol).toBe('OXLC');
   });
+
+  // === Cache Integration Tests (AC: 11-14) ===
+  // These tests validate that resolveCusipSymbols integrates with the CUSIP cache.
+  // They are skipped (RED phase) until the cache is implemented in AR.9.
+
+  describe('cache integration', function () {
+    test.skip('should check cache before making API calls', async function () {
+      // When cache has the mapping, no fetch or Yahoo calls should be made
+      const rows = [createRow('88634T493')];
+
+      // Future: mock cache to return 'MSTY' for this CUSIP
+      await resolveCusipSymbols(rows);
+      expect(rows[0].symbol).toBe('MSTY');
+      expect(mockFetch).not.toHaveBeenCalled();
+      expect(mockYahooSearch).not.toHaveBeenCalled();
+    });
+
+    test.skip('should trigger original API lookup flow on cache miss', async function () {
+      // When cache returns null, normal OpenFIGI + Yahoo flow should occur
+      const rows = [createRow('88634T493')];
+      mockFetchResponse([{ data: [{ ticker: 'MSTY' }] }]);
+
+      // Future: mock cache to return null for this CUSIP
+      // await resolveCusipSymbols(rows);
+      // expect(mockFetch).toHaveBeenCalled();
+
+      await resolveCusipSymbols(rows);
+      expect(rows[0].symbol).toBe('MSTY');
+    });
+
+    test.skip('should bypass both OpenFIGI and Yahoo Finance on cache hit', async function () {
+      // Full cache hit should skip all external API calls
+      const rows: FidelityCsvRow[] = [
+        {
+          date: '12/31/2025',
+          action: 'YOU BOUGHT',
+          symbol: '691543102',
+          description: 'OXFORD LANE CAPITAL CORP',
+          quantity: 10,
+          price: 5.0,
+          totalAmount: -50.0,
+          account: 'My Brokerage',
+        },
+      ];
+
+      // Future: mock cache to return 'OXLC' for this CUSIP
+      await resolveCusipSymbols(rows);
+      expect(rows[0].symbol).toBe('OXLC');
+      expect(mockFetch).not.toHaveBeenCalled();
+      expect(mockYahooSearch).not.toHaveBeenCalled();
+    });
+
+    test.skip('should make newly resolved symbols immediately available in cache', async function () {
+      // After resolving via API, the result should be cached for next use
+      const rows = [createRow('88634T493')];
+      mockFetchResponse([{ data: [{ ticker: 'MSTY' }] }]);
+
+      await resolveCusipSymbols(rows);
+      expect(rows[0].symbol).toBe('MSTY');
+
+      // Will fail until cache write integration is wired in AR.9:
+      // Verify the cache service was called with the resolved mapping
+      // e.g., expect(cacheService.upsert).toHaveBeenCalledWith('88634T493', 'MSTY', 'OPENFIGI')
+      expect(true).toBe(false); // RED: force failure until cache write is verified
+    });
+  });
 });

@@ -1,6 +1,6 @@
 # Story AR.9: Implement CUSIP Lookup Caching
 
-**Status:** Draft
+**Status:** Approved
 
 ## Story
 
@@ -145,20 +145,24 @@
 ## Technical Considerations
 
 ### Prisma Schema Location
+
 - Primary schema: `prisma/schema.prisma` (SQLite for dev)
 - Also maintain: `prisma/schema.postgresql.prisma` (production)
 - Migration files in: `prisma/migrations/` and `prisma/migrations-postgresql/`
 
 ### Cache Invalidation Strategy
+
 - Current implementation: no expiration (permanent cache)
 - Rationale: CUSIP→Symbol mappings rarely change
 - Future enhancement (AR.10): Add expiration/cleanup for delisted securities
 
 ### Concurrency
+
 - Upsert operations prevent duplicate key errors
 - Last-write-wins for concurrent updates (acceptable for this use case)
 
 ### Testing Strategy
+
 - Unit tests with mocked Prisma client (AR.8)
 - Integration tests with test database
 - Manual testing with real Fidelity CSV files
@@ -178,11 +182,13 @@
 ## Related Files
 
 **New Files:**
+
 - `apps/server/src/app/routes/import/cusip-cache.service.ts` (cache service)
 - `apps/server/src/app/routes/import/cusip-cache.service.spec.ts` (created in AR.8)
 - Migration file: `prisma/migrations/YYYYMMDDHHMMSS_add_cusip_cache/migration.sql`
 
 **Modified Files:**
+
 - `prisma/schema.prisma` (add cusip_cache model)
 - `prisma/schema.postgresql.prisma` (add cusip_cache model)
 - `apps/server/src/app/routes/import/resolve-cusip.function.ts` (integrate caching)
@@ -210,13 +216,13 @@ model cusip_cache {
 ```typescript
 // Before API lookup
 const cached = await cusipCacheService.findManyCusips(allCusips);
-const uncachedCusips = allCusips.filter(c => !cached.has(c));
+const uncachedCusips = allCusips.filter((c) => !cached.has(c));
 
 // After API lookup
-const newMappings = resolvedFromApi.map(({cusip, symbol}) => ({
+const newMappings = resolvedFromApi.map(({ cusip, symbol }) => ({
   cusip,
   symbol,
-  source: 'OPENFIGI'
+  source: 'OPENFIGI',
 }));
 await cusipCacheService.upsertManyMappings(newMappings);
 ```

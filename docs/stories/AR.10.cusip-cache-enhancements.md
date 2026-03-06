@@ -1,6 +1,6 @@
 # Story AR.10: CUSIP Cache Enhancements and Management
 
-**Status:** Draft
+**Status:** Approved
 
 ## Story
 
@@ -123,7 +123,8 @@
 ## Dependencies
 
 ### Security
-- Admin endpoints must require authentjection
+
+- Admin endpoints must require authentication
 - Limit bulk operations to prevent abuse
 - Rate limit API endpoints
 
@@ -163,6 +164,7 @@ model cusip_cache_audit {
 ```
 
 ### Configuration
+
 - Add environment variables for:
   - `CUSIP_CACHE_CLEANUP_ENABLED` (default: false)
   - `CUSIP_CACHE_CLEANUP_AGE_DAYS` (default: 365)
@@ -178,12 +180,13 @@ model cusip_cache_audit {
 - [ ] Admin UI tested (if implemented)
 - [ ] Documentation updated:
   - Admin guide for cache management
-  - API documentationed
+  - API documentation
 - [ ] Performance tested with large cache (10k+ entries)
 
 ## Related Files
 
 **New Files:**
+
 - `apps/server/src/app/routes/admin/cusip-cache-stats.route.ts`
 - `apps/server/src/app/routes/admin/cusip-cache-management.route.ts`
 - `apps/server/src/app/services/cusip-cache-cleanup.service.ts`
@@ -192,12 +195,12 @@ model cusip_cache_audit {
 - `scripts/sample-cusips.csv` (sample data for testing)
 - Migration file(s) for schema updates
 
-**Migration file(s) for schema updates
-
 **Modified Files:**
+
 - `prisma/schema.prisma` (add audit and archive models)
 - `prisma/schema.postgresql.prisma` (add audit and archive models)
 - `apps/server/src/app/routes/import/cusip-cache.service.ts` (add lastUsedAt tracking)
+
 ```json
 {
   "totalEntries": 1247,
@@ -221,6 +224,7 @@ model cusip_cache_audit {
 ```
 
 ### GET /api/admin/cusip-cache/search?cusip=037833100
+
 ```json
 {
   "id": "abc-123-def-456",
@@ -237,12 +241,8 @@ model cusip_cache_audit {
 ## Notes
 
 - This story enhances the basic caching from AR.8/AR.9
-- Features are prioritized: Statistics > Management API > Cleanup > UI
-- Can be split into multiple smaller stories if needed
-- Cache warming is useful for testing and production initialization
-- Audit logging helps debug incorrect symbol resolutions reported by users
-implements backend API infrastructure for cache management
 - Features are prioritized: Statistics > Management API > Cleanup > Audit Logging
-- Admin UI will be implemented in AR.11 with e2e tests
+- Can be split into multiple smaller stories if needed
 - Audit logging helps debug incorrect symbol resolutions reported by users
+- Admin UI will be implemented in AR.11 with e2e tests
 - Since the system primarily works with closed-end funds, cache warming is not needed
