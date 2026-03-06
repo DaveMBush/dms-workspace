@@ -7,83 +7,20 @@ model: Claude Opus 4.6 (copilot)
 
 # Autonomous Epic Development Workflow
 
+**IMPORTANT**: This workflow uses the bmad-workflow skill. Read and apply:
+
+- run #file:./bmad-workflow.SKILL.md
+
+Key points from bmad-workflow skill:
+
+- **Human Interaction**: Use `prompt.sh` with `timeout: 0` (no timeout)
+- **Database Safety**: Never run destructive database commands
+- **MCP Servers**: Load tools before use
+- **State Files**: Use `.git/tmp/` for story and epic metadata
+
 ## CRITICAL: Each Phase In a subAgent
 
 Each phase of the epic development process must be handled by a separate subAgent. This ensures modularity, better error handling, clear separation of concerns, and avoids loss of overall context
-
-## CRITICAL: How to Call prompt.sh
-
-Whenever this document says "Call `.github/prompts/prompt.sh \"...\"`", you MUST:
-
-1. Use `run_in_terminal` to execute: `bash .github/prompts/prompt.sh "your message here"`
-2. Wait for the script to complete — it blocks until the user responds via the Zenity GUI dialog
-3. Read the return value from terminal output:
-   - `"continue"` — try alternatives / proceed
-   - `"stop"` — abort and document state
-   - Any other text — treat as custom instructions
-4. Handle the response appropriately before continuing
-
-**NEVER**: Stop, yield back to the user, or write messages like "awaiting your approval" without first running prompt.sh in a terminal. The prompt.sh script IS the human interaction mechanism.
-
-Execute the following steps in order. When encountering errors or needing decisions, call `.github/prompts/prompt.sh "<problem description>"` via `run_in_terminal` and handle the response:
-
-- "continue" → Retry with alternative approaches
-- "stop" → Abort entire workflow immediately
-- Custom instructions → Follow as if from referenced MD file
-
-**IMPORTANT**:
-
-- You must run this every time you see this prompt, even if you've run it before. This is to ensure that you are correctly interpreting the return values each time.
-- You must wait for the response before proceeding. The process should block any further action until it returns.
-- These rules apply every time .github/prompts/prompt.sh is called, regardless of the phase or context.
-- Show (unhide) the terminal window this is running in so the operator can see the output and respond to it. Do not hide or minimize the terminal.
-
-## MCP Server Resources
-
-**Context7 Documentation Server**: When you need information about APIs, libraries, or frameworks:
-
-- Search for tools using pattern: `mcp_context7`
-- Use `mcp_context7_resolve-library-id` to find available documentation
-- Use `mcp_context7_query-docs` to retrieve API usage examples and documentation
-- Example: Need to know how to use Angular Material Dialog? Query Context7 first
-
-**Playwright Browser Automation Server**: When implementing or fixing UI components:
-
-- Search for tools using pattern: `mcp_microsoft_pla`
-- Use Playwright tools to validate UI behavior, interactions, and rendering
-- Run visual tests after UI changes to verify correctness
-- Use for E2E validation, screenshot comparisons, and interaction testing
-- Example: After implementing a form, use Playwright to verify form submission works
-
-**Tool Loading**: Before using any MCP tool, load it first:
-
-```bash
-tool_search_tool_regex pattern="mcp_context7|mcp_microsoft_pla"
-```
-
-## CRITICAL: Human Interaction Rules
-
-**NEVER stop, yield back to the user, or pause execution without first calling `prompt.sh`.**
-
-When human input is needed:
-
-1. Run the script in a terminal: `bash .github/prompts/prompt.sh "<your message>"`
-2. Wait for the return value — the process BLOCKS until the user responds
-3. Handle the response ("continue", "stop", or custom instructions)
-4. Only THEN proceed or halt
-
-Violating this rule by pausing without calling `prompt.sh` defeats the purpose of the autonomous workflow.
-
-## CRITICAL: Database Safety
-
-**NEVER run destructive database commands** including but not limited to:
-
-- `prisma db push --force-reset`
-- `prisma migrate reset`
-- Deleting or overwriting `prisma/database.db`
-- Any command that drops tables, truncates data, or resets the database
-
-The development database contains real financial data that takes hours to re-seed. If a schema change requires a reset, call `prompt.sh` to get explicit human approval first. See `docs/architecture/coding-standards.md` for full database safety rules.
 
 1. **Discover Stories for Epic ${epic}**
 

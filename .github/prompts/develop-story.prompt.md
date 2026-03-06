@@ -7,66 +7,17 @@ model: Claude Sonnet 4.6 (copilot)
 
 # Autonomous Story Development Workflow
 
-## CRITICAL: How to Call prompt.sh
+**IMPORTANT**: This workflow uses the bmad-workflow skill. Read and apply:
 
-Whenever this document says "Call `.github/prompts/prompt.sh \"...\"`", you MUST:
+- run #file:./bmad-workflow.SKILL.md
 
-1. Use `run_in_terminal` to execute: `bash .github/prompts/prompt.sh "your message here"`
-2. Wait for the script to complete — it blocks until the user responds via the Zenity GUI dialog
-3. Read the return value from terminal output:
-   - `"continue"` — try alternatives / proceed
-   - `"stop"` — abort and document state
-   - Any other text — treat as custom instructions
-4. Handle the response appropriately before continuing
+Key points from bmad-workflow skill:
 
-**NEVER**: Stop, yield back to the user, or write messages like "awaiting your approval" without first running prompt.sh in a terminal. The prompt.sh script IS the human interaction mechanism.
-
-Execute the following steps in order. When encountering errors or needing decisions, call `.github/prompts/prompt.sh "<problem description>"` via `run_in_terminal` and handle the response:
-
-- "continue" → Retry with alternative approaches
-- "stop" → Abort entire workflow immediately
-- Custom instructions → Follow as if from referenced MD file
-
-**IMPORTANT**:
-
-- You must run this every time you see this prompt, even if you've run it before. This is to ensure that you are correctly interpreting the return values each time.
-- You must wait for the response before proceeding. The process should block any further action until it returns.
-- These rules apply every time .github/prompts/prompt.sh is called, regardless of the phase or context.
-- Show (unhide) the terminal window this is running in so the operator can see the output and respond to it. Do not hide or minimize the terminal.
-
-## MCP Server Resources
-
-**Context7 Documentation Server**: When you need information about APIs, libraries, or frameworks:
-
-- Search for tools using pattern: `mcp_context7`
-- Use `mcp_context7_resolve-library-id` to find available documentation
-- Use `mcp_context7_query-docs` to retrieve API usage examples and documentation
-- Example: Need to know how to use Angular Material Dialog? Query Context7 first
-
-**Playwright Browser Automation Server**: When implementing or fixing UI components:
-
-- Search for tools using pattern: `mcp_microsoft_pla`
-- Use Playwright tools to validate UI behavior, interactions, and rendering
-- Run visual tests after UI changes to verify correctness
-- Use for E2E validation, screenshot comparisons, and interaction testing
-- Example: After implementing a form, use Playwright to verify form submission works
-
-**Tool Loading**: Before using any MCP tool, load it first:
-
-```bash
-tool_search_tool_regex pattern="mcp_context7|mcp_microsoft_pla"
-```
-
-## CRITICAL: Database Safety
-
-**NEVER run destructive database commands** including but not limited to:
-
-- `prisma db push --force-reset`
-- `prisma migrate reset`
-- Deleting or overwriting `prisma/database.db`
-- Any command that drops tables, truncates data, or resets the database
-
-The development database contains real financial data that takes hours to re-seed. If a schema change requires a reset, call `prompt.sh` to get explicit human approval first. See `docs/architecture/coding-standards.md` for full database safety rules.
+- **Human Interaction**: Use `prompt.sh` with `timeout: 0` (no timeout)
+- **Database Safety**: Never run destructive database commands
+- **MCP Servers**: Load Context7 and Playwright tools before use
+- **Quality Validation**: Run full validation loop (all tests, e2e, dupcheck, format)
+- **CodeRabbit**: Follow review loop pattern with rate limiting
 
 ## PHASE 1: Pre-Development Validation
 
@@ -97,67 +48,18 @@ If `code-story.prompt.md` encounters issues, it must call `.github/prompts/promp
 
 ## Phase 3 Quality Validation
 
-### 3.1 Run All Tests
+**Run the Quality Validation Loop from bmad-workflow skill** (see skill for full details):
 
-```bash
-pnpm all
-```
+All commands and retry logic are defined in the bmad-workflow skill. Summary:
 
-- Run tests, analyze failures, apply fixes automatically
-- **For API usage errors**: Query Context7 for correct implementation
-- **For UI test failures**: Use Playwright to validate expected behavior
-- **For ESLint failures**: Fix the lint error; do not bypass the rule
-- Retry up to 10 times with different fix strategies
-- On 10th failure: Call `.github/prompts/prompt.sh "pnpm all failing after 10 attempts with errors: <error summary>"`
-- **If fixed**: After applying fixes, restart Phase 3 from step 3.1
+1. `pnpm all` - Run all tests (10 retries, use Context7 for API errors)
+2. `pnpm e2e:dms-material:chromium` and `firefox` - E2E tests (10 retries, use Playwright)
+3. `pnpm dupcheck` - Check for duplicates (10 retries, refactor)
+4. `pnpm format` - Format code
 
-### 3.2 Run E2E Tests
+**CRITICAL**: If ANY check fails and gets fixed, restart from step 1. All checks must pass in a single iteration.
 
-```bash
-pnpm e2e:dms-material:chrome
-pnpm e2e:dms-material:firefox
-```
-
-- E2E tests run sequentially and may take 10+ minutes
-- Analyze failures (flaky tests, timing issues) and apply fixes
-- Use Playwright for manual validation when needed
-- Retry up to 10 times; on 10th failure call `.github/prompts/prompt.sh "E2E tests failing after 10 attempts with errors: <error summary>"`
-  **If fixed**: After applying fixes, restart Phase 3 from step 3.1.
-
-### 3.3 Check Duplicates
-
-```bash
-pnpm dupcheck
-```
-
-- Run check, identify duplicate code
-- Refactor duplicates if straightforward
-- Retry up to 10 times with different refactoring strategies
-- On 10th failure: Call `.github/prompts/prompt.sh "Duplicate code detected after 10 refactoring attempts: <duplicate details>"`
-- **If fixed**: After applying fixes, restart Phase 3 from step 3.1
-
-### 3.4 Format Code
-
-```bash
-pnpm format
-```
-
-- Should rarely fail
-- If fails: Call `.github/prompts/prompt.sh "pnpm format failed: <error>"`
-- **If fixed**: After applying fixes, restart Phase 3 from step 3.1
-
-### 3.5 Phase 3 Completion Check
-
-- If ALL four checks (3.1, 3.2, 3.3, 3.4) pass in the same iteration: Proceed to Phase 4
-- If any check fails and gets fixed: Return to step 3.1 and run all checks again
-- If Phase 3 loop reaches 10 complete iterations: Call `.github/prompts/prompt.sh "Phase 3 validation loop reached 10 iterations without all checks passing"`
-
-**Phase 3 MCP Usage**:
-
-- Use Playwright to do spot checks on UI functionality after fixes
-- Use Context7 to verify API usage is correct according to official docs
-
-**Critical**: All Phase 3 checks must pass in a single iteration before proceeding to Phase 4.
+See "Quality Validation Loop" section in bmad-workflow skill for full instructions, retry logic, and MCP usage patterns.
 
 ## PHASE 4: QA Review
 
@@ -274,67 +176,22 @@ Implementation complete and merged to main.
 
 ## Error Recovery Strategy
 
-When prompt.sh returns:
+**See "Error Recovery Strategy" in bmad-workflow skill for full details.**
 
-- **"continue"**:
+Summary:
 
-  - Try alternative solution approaches
-  - **Use Context7** to research correct approaches
-  - **Use Playwright** to validate assumptions about UI behavior
-  - Attempt fixes with different strategies
-  - If still stuck after 5 more attempts: Call prompt.sh again with updated context
-
-- **"stop"**:
-
-  - Document current state in story Debug Log
-  - Commit progress with "[WIP] Story ${story} - stopped at <phase>"
-  - DO NOT merge
-  - Report final state and exit
-
-- **Custom instructions**:
-  - Parse instructions as additional guidance
-  - Apply guidance to current problem
-  - Continue workflow from interruption point
+- `"continue"`: Try alternatives, use Context7/Playwright, retry
+- `"stop"`: Document state, commit as WIP, exit
+- Custom instructions: Apply guidance, continue workflow
 
 ## Success Criteria
 
 ✅ All 7 phases complete without "stop" command = Story fully implemented, reviewed, and merged
 
-## Rate Limit Notes
-
-- 5-minute wait after initial PR creation
-- 5-minute wait after each CodeRabbit fix commit
-- Protects against CodeRabbit API rate limiting
-- Total workflow may take 50+ minutes if all CodeRabbit iterations used
-
-## MCP Best Practices
-
-**Context7 Usage**:
-
-- Query BEFORE implementing unfamiliar APIs
-- Verify deprecated patterns aren't being used
-- Check for breaking changes in library versions
-- Get code examples for complex integrations
-
-**Playwright Usage**:
-
-- Validate UI after every UI component change
-- Test user interactions (clicks, form fills, navigation)
-- Verify responsive behavior if relevant
-- Take screenshots for visual regression checking
-- Test error states and edge cases
-
-**When to Load MCP Tools**:
-
-- Load relevant tools at start of Phase 2 (implementation)
-- Keep tools loaded throughout Phase 3-6 (testing/fixing)
-- Pattern: `tool_search_tool_regex pattern="mcp_context7|mcp_microsoft_pla"`
-
 ## Notes
 
 - This workflow is designed for zero human intervention on happy path
 - Human involvement only via prompt.sh when decisions/help needed
-- All git, issue, and PR operations are automated
-- Maintains quality gates while maximizing autonomy
-- Generous 10-attempt retry limits reduce false failures
-- MCP servers provide additional validation and documentation resources
+- All quality gates maintained while maximizing autonomy
+- MCP servers provide validation and documentation resources
+- See bmad-workflow skill for detailed patterns and best practices
