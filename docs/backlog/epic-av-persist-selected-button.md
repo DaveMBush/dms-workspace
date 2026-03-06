@@ -10,13 +10,19 @@ Use localStorage or query params to persist UI state across page refreshes.
 
 ## Stories
 
-1. **Story AV.1:** Implement state persistence service
-2. **Story AV.2:** Persist global tab selection
-3. **Story AV.3:** Persist account selection
-4. **Story AV.4:** Persist account tab selection
-5. **Story AV.5:** Restore state on app load
-6. **Story AV.6:** Add unit tests
-7. **Story AV.7:** Add e2e tests
+1. **Story AV.1 (TDD):** Write Unit Tests for State Persistence Service - TDD RED Phase
+2. **Story AV.2 (Implementation):** Implement State Persistence Service - TDD GREEN Phase
+3. **Story AV.3 (TDD):** Write Unit Tests for Global Tab Selection Persistence - TDD RED Phase
+4. **Story AV.4 (Implementation):** Persist Global Tab Selection - TDD GREEN Phase
+5. **Story AV.5 (TDD):** Write Unit Tests for Account Selection Persistence - TDD RED Phase
+6. **Story AV.6 (Implementation):** Persist Account Selection - TDD GREEN Phase
+7. **Story AV.7 (TDD):** Write Unit Tests for Account Tab Selection Persistence - TDD RED Phase
+8. **Story AV.8 (Implementation):** Persist Account Tab Selection - TDD GREEN Phase
+9. **Story AV.9 (TDD):** Write Unit Tests for State Restoration on App Load - TDD RED Phase
+10. **Story AV.10 (Implementation):** Restore State on App Load - TDD GREEN Phase
+11. **Story AV.11 (Bug Fix):** Verify and Fix Implementation Issues Before E2E Tests
+12. **Story AV.12 (E2E Tests):** Write E2E Tests for State Persistence - TDD RED Phase
+13. **Story AV.13 (E2E Implementation):** Refine Implementation Based on E2E Test Results - TDD GREEN Phase
 
 ## Dependencies
 
@@ -28,4 +34,4 @@ Use localStorage or query params to persist UI state across page refreshes.
 
 ## Estimated Effort
 
-2-3 days
+4-5 days (TDD pattern with RED/GREEN phases and bug fix verification)
