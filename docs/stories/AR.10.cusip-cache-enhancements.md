@@ -180,7 +180,7 @@ model cusip_cache_audit {
 - [ ] Admin UI tested (if implemented)
 - [ ] Documentation updated:
   - Admin guide for cache management
-  - API documentationed
+  - API documentation
 - [ ] Performance tested with large cache (10k+ entries)
 
 ## Related Files
@@ -241,11 +241,8 @@ model cusip_cache_audit {
 ## Notes
 
 - This story enhances the basic caching from AR.8/AR.9
-- Features are prioritized: Statistics > Management API > Cleanup > UI
-- Can be split into multiple smaller stories if needed
-- Cache warming is useful for testing and production initialization
-- Audit logging helps debug incorrect symbol resolutions reported by users
 - Features are prioritized: Statistics > Management API > Cleanup > Audit Logging
-- Admin UI will be implemented in AR.11 with e2e tests
+- Can be split into multiple smaller stories if needed
 - Audit logging helps debug incorrect symbol resolutions reported by users
+- Admin UI will be implemented in AR.11 with e2e tests
 - Since the system primarily works with closed-end funds, cache warming is not needed
