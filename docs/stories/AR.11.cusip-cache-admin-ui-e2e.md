@@ -1,6 +1,6 @@
 # Story AR.11: CUSIP Cache Admin UI and E2E Tests
 
-**Status:** Draft
+**Status:** Approved
 
 ## Story
 
@@ -186,6 +186,7 @@
 ## Technical Considerations
 
 ### Component Architecture
+
 ```
 CusipCacheDashboardComponent (parent)
 ├── CacheStatisticsComponent (statistics display)
@@ -195,30 +196,34 @@ CusipCacheDashboardComponent (parent)
 ```
 
 ### API Service
+
 ```typescript
 class CusipCacheAdminService {
-  getStatistics(): Observable<CacheStatistics>
-  searchByCusip(cusip: string): Observable<CacheEntry | null>
-  searchBySymbol(symbol: string): Observable<CacheEntry[]>
-  addMapping(data: AddMappingDto): Observable<void>
-  updateMapping(id: string, data: UpdateMappingDto): Observable<void>
-  deleteMapping(id: string): Observable<void>
-  getRecentActivity(limit: number): Observable<AuditLogEntry[]>
+  getStatistics(): Observable<CacheStatistics>;
+  searchByCusip(cusip: string): Observable<CacheEntry | null>;
+  searchBySymbol(symbol: string): Observable<CacheEntry[]>;
+  addMapping(data: AddMappingDto): Observable<void>;
+  updateMapping(id: string, data: UpdateMappingDto): Observable<void>;
+  deleteMapping(id: string): Observable<void>;
+  getRecentActivity(limit: number): Observable<AuditLogEntry[]>;
 }
 ```
 
 ### Routing
+
 - Add route: `/admin/cusip-cache`
 - Protect with admin auth guard
 - Add menu item in admin navigation
 
 ### UI Framework
+
 - Use PrimeNG components (Table, Dialog, Button, InputText, Dropdown)
 - Follow project styling conventions
 - Use Material icons
 - Ensure accessibility (ARIA labels, keyboard navigation)
 
 ### E2E Testing
+
 - Location: `apps/dms-material-e2e/src/cusip-cache-admin.spec.ts`
 - Use Playwright for E2E tests
 - Create test database fixtures
@@ -226,6 +231,7 @@ class CusipCacheAdminService {
 - Use page object pattern for maintainability
 
 ### Performance
+
 - Lazy load dashboard data
 - Debounce search inputs
 - Paginate search results if needed
@@ -249,6 +255,7 @@ class CusipCacheAdminService {
 ## Related Files
 
 **New Files:**
+
 - `apps/dms/src/app/admin/cusip-cache-dashboard/cusip-cache-dashboard.component.ts`
 - `apps/dms/src/app/admin/cusip-cache-dashboard/cusip-cache-dashboard.component.html`
 - `apps/dms/src/app/admin/cusip-cache-dashboard/cusip-cache-dashboard.component.scss`
@@ -262,12 +269,14 @@ class CusipCacheAdminService {
 - `apps/dms-material-e2e/src/cusip-cache-admin.spec.ts`
 
 **Modified Files:**
+
 - Admin routing module (add new route)
 - Admin navigation menu (add menu item)
 
 ## Example UI Mockup
 
 ### Dashboard Statistics Section
+
 ```
 CUSIP Cache Dashboard                   [Refresh] [Last updated: 2026-03-06 09:15 AM]
 
@@ -288,6 +297,7 @@ CUSIP Cache Dashboard                   [Refresh] [Last updated: 2026-03-06 09:1
 ```
 
 ### Search Interface
+
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │ Search Cache                                    [Add New Mapping] │

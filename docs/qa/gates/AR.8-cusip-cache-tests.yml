@@ -1,0 +1,62 @@
+schema: 1
+story: 'AR.8'
+story_title: 'Unit Tests for CUSIP Lookup Caching - TDD RED Phase'
+gate: CONCERNS
+status_reason: 'All 22 ACs mapped to 22 skipped tests and CI is green, but cache service tests exercise mocks directly instead of a service abstraction, and AC 15 error handling test asserts an error IS thrown rather than graceful fallback.'
+reviewer: 'Quinn (Test Architect)'
+updated: '2026-03-06T12:00:00Z'
+
+top_issues:
+  - id: 'TEST-001'
+    severity: medium
+    finding: 'Tests in cusip-cache.service.spec.ts call Prisma mock methods directly rather than through a CusipCacheService class. TDD RED tests should import and call the not-yet-existing service, failing at import/call level, so the tests actually drive the service API design.'
+    suggested_action: 'In AR.9, ensure tests are refactored to call CusipCacheService methods (lookup, lookupMany, cache) rather than raw Prisma operations. Alternatively, add a thin import placeholder in AR.8 so tests fail for the right reason.'
+  - id: 'TEST-002'
+    severity: medium
+    finding: 'AC 15 test "should handle database errors gracefully on lookup" asserts the error IS thrown (expect(caughtError).toBeDefined()), but AC 15 requires graceful fallback where DB errors do NOT prevent API lookup. The test validates the opposite of the requirement.'
+    suggested_action: 'Rewrite the test to verify that when findUnique rejects, the service returns null/undefined (graceful degradation) instead of propagating the error.'
+  - id: 'TEST-003'
+    severity: low
+    finding: 'AC 16 test "should handle cache write failures without affecting resolution" similarly asserts the write error is thrown rather than testing that the resolution result is still returned despite the cache write failure.'
+    suggested_action: 'Restructure to test that the service catches write errors and returns the resolution result unchanged.'
+
+waiver: { active: false }
+
+risk_summary:
+  totals: { critical: 0, high: 0, medium: 2, low: 1 }
+  recommendations:
+    must_fix: []
+    monitor:
+      - 'Ensure AR.9 implementation addresses TEST-001 by routing tests through service abstraction'
+      - 'Fix error handling test semantics (TEST-002, TEST-003) when enabling tests in AR.9'
+
+evidence:
+  tests_reviewed: 22
+  risks_identified: 3
+  trace:
+    ac_covered:
+      [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+      ]
+    ac_gaps: []

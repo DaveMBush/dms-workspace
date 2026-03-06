@@ -1,6 +1,6 @@
 # Story AR.10.5: Debug and Review CUSIP Cache Implementation
 
-**Status:** Draft
+**Status:** Approved
 
 ## Story
 
@@ -81,16 +81,19 @@ _Technical details and findings will be added here during review_
 ## Testing Strategy
 
 1. **Unit Test Review:**
+
    - Verify all AR.8 tests passing
    - Check test coverage completeness
    - Validate test assertions
 
 2. **Integration Testing:**
+
    - Test cache during actual CSV imports
    - Verify cache hits reduce API calls
    - Confirm cache miss behavior correct
 
 3. **API Testing:**
+
    - Test statistics endpoint with various cache states
    - Verify search by CUSIP and symbol
    - Test cache management operations (add/edit/delete)
@@ -123,6 +126,7 @@ _Technical details and findings will be added here during review_
 ## Notes
 
 This story serves as a quality gate before UI implementation. Add details to the "Issues Discovered" section as problems are found and resolved. Include:
+
 - Clear problem descriptions
 - Root cause analysis
 - Solutions implemented
