@@ -62,28 +62,6 @@ For each story in the ordered list:
      - Call `.github/prompts/prompt.sh "Story ${story} failed and was stopped. Abort entire epic or skip this story and continue?"`
    - If custom instructions received: Apply and retry story
 
-## PHASE 3: Pre-E2E Checkpoint
-
-1. **Identify Last Story**
-
-   - Last story = story with highest numeric value in the ordered list
-
-2. **Pre-E2E Confirmation**
-
-   - Before executing the last story:
-     - **CRITICAL**: Run `bash .github/prompts/prompt.sh "Epic ${epic}: ${N-1} of ${N} stories complete. About to implement final story (${last_story}, typically e2e tests). Any corrections or additional instructions before proceeding?"` in a terminal via `run_in_terminal`
-     - **CRITICAL**: Wait for the script to return — do NOT yield back to the user or stop — the script itself handles the interaction
-     - **CRITICAL**: Do NOT write a message to the user saying "awaiting your approval" or similar — the zenity dialog IS the approval mechanism
-   - Handle response:
-     - "continue": Proceed with last story
-     - "stop": Document state and exit
-     - Custom instructions: Apply instructions, then proceed with last story
-
-3. **Execute Final Story**
-   - Use the same story type classification from Phase 2 to select the correct workflow:
-     - **Standard story**: Run `develop-story.prompt.md`
-     - **Bug fix story**: Run `debug.prompt.md`
-
 ## PHASE 4: Epic Completion
 
 Report completion:
