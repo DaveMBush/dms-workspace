@@ -8,7 +8,23 @@ vi.mock('../../routes/settings/yahoo-finance.instance', function () {
   };
 });
 
+vi.mock('../../prisma/prisma-client', function () {
+  return {
+    prisma: {},
+  };
+});
+
+vi.mock('./cusip-cache.service', function () {
+  return {
+    cusipCacheService: {
+      findManyCusips: vi.fn(),
+      upsertManyMappings: vi.fn(),
+    },
+  };
+});
+
 import { yahooFinance } from '../../routes/settings/yahoo-finance.instance';
+import { cusipCacheService } from './cusip-cache.service';
 import { FidelityCsvRow } from './fidelity-csv-row.interface';
 import { isCusip } from './is-cusip.function';
 import { resolveCusipSymbols } from './resolve-cusip.function';
@@ -17,6 +33,11 @@ const mockFetch = vi.fn();
 vi.stubGlobal('fetch', mockFetch);
 
 const mockYahooSearch = yahooFinance.search as ReturnType<typeof vi.fn>;
+const mockFindManyCusips = cusipCacheService.findManyCusips as ReturnType<
+  typeof vi.fn
+>;
+const mockUpsertManyMappings =
+  cusipCacheService.upsertManyMappings as ReturnType<typeof vi.fn>;
 
 function mockFetchResponse(data: unknown, ok: boolean = true): void {
   mockFetch.mockResolvedValue({
@@ -67,8 +88,13 @@ describe('resolveCusipSymbols', function () {
   beforeEach(function () {
     mockFetch.mockReset();
     mockYahooSearch.mockReset();
+    mockFindManyCusips.mockReset();
+    mockUpsertManyMappings.mockReset();
     vi.unstubAllEnvs();
     vi.stubEnv('OPENFIGI_API_KEY', '');
+    // Default: cache returns empty (cache miss)
+    mockFindManyCusips.mockResolvedValue(new Map<string, string>());
+    mockUpsertManyMappings.mockResolvedValue(undefined);
   });
 
   function createRow(symbol: string): FidelityCsvRow {
@@ -278,36 +304,31 @@ describe('resolveCusipSymbols', function () {
   });
 
   // === Cache Integration Tests (AC: 11-14) ===
-  // These tests validate that resolveCusipSymbols integrates with the CUSIP cache.
-  // They are skipped (RED phase) until the cache is implemented in AR.9.
 
   describe('cache integration', function () {
-    test.skip('should check cache before making API calls', async function () {
-      // When cache has the mapping, no fetch or Yahoo calls should be made
+    test('should check cache before making API calls', async function () {
       const rows = [createRow('88634T493')];
+      mockFindManyCusips.mockResolvedValue(
+        new Map<string, string>([['88634T493', 'MSTY']])
+      );
 
-      // Future: mock cache to return 'MSTY' for this CUSIP
       await resolveCusipSymbols(rows);
       expect(rows[0].symbol).toBe('MSTY');
       expect(mockFetch).not.toHaveBeenCalled();
       expect(mockYahooSearch).not.toHaveBeenCalled();
     });
 
-    test.skip('should trigger original API lookup flow on cache miss', async function () {
-      // When cache returns null, normal OpenFIGI + Yahoo flow should occur
+    test('should trigger original API lookup flow on cache miss', async function () {
       const rows = [createRow('88634T493')];
+      mockFindManyCusips.mockResolvedValue(new Map<string, string>());
       mockFetchResponse([{ data: [{ ticker: 'MSTY' }] }]);
-
-      // Future: mock cache to return null for this CUSIP
-      // await resolveCusipSymbols(rows);
-      // expect(mockFetch).toHaveBeenCalled();
 
       await resolveCusipSymbols(rows);
       expect(rows[0].symbol).toBe('MSTY');
+      expect(mockFetch).toHaveBeenCalled();
     });
 
-    test.skip('should bypass both OpenFIGI and Yahoo Finance on cache hit', async function () {
-      // Full cache hit should skip all external API calls
+    test('should bypass both OpenFIGI and Yahoo Finance on cache hit', async function () {
       const rows: FidelityCsvRow[] = [
         {
           date: '12/31/2025',
@@ -320,26 +341,33 @@ describe('resolveCusipSymbols', function () {
           account: 'My Brokerage',
         },
       ];
+      mockFindManyCusips.mockResolvedValue(
+        new Map<string, string>([['691543102', 'OXLC']])
+      );
 
-      // Future: mock cache to return 'OXLC' for this CUSIP
       await resolveCusipSymbols(rows);
       expect(rows[0].symbol).toBe('OXLC');
       expect(mockFetch).not.toHaveBeenCalled();
       expect(mockYahooSearch).not.toHaveBeenCalled();
     });
 
-    test.skip('should make newly resolved symbols immediately available in cache', async function () {
-      // After resolving via API, the result should be cached for next use
+    test('should make newly resolved symbols immediately available in cache', async function () {
       const rows = [createRow('88634T493')];
+      mockFindManyCusips.mockResolvedValue(new Map<string, string>());
       mockFetchResponse([{ data: [{ ticker: 'MSTY' }] }]);
 
       await resolveCusipSymbols(rows);
       expect(rows[0].symbol).toBe('MSTY');
 
-      // Will fail until cache write integration is wired in AR.9:
-      // Verify the cache service was called with the resolved mapping
-      // e.g., expect(cacheService.upsert).toHaveBeenCalledWith('88634T493', 'MSTY', 'OPENFIGI')
-      expect(true).toBe(false); // RED: force failure until cache write is verified
+      expect(mockUpsertManyMappings).toHaveBeenCalledWith(
+        expect.arrayContaining([
+          expect.objectContaining({
+            cusip: '88634T493',
+            symbol: 'MSTY',
+            source: 'OPENFIGI',
+          }),
+        ])
+      );
     });
   });
 });
