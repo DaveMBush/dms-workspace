@@ -1,5 +1,5 @@
 ---
-agent: qa
+agent: pm
 description: Update Epic to use TDD as a separate story.
 argument-hint: epic=AD
 model: Claude Sonnet 4.5 (copilot)
