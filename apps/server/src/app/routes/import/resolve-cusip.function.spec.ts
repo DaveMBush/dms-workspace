@@ -287,12 +287,10 @@ describe('resolveCusipSymbols', function () {
       const rows = [createRow('88634T493')];
 
       // Future: mock cache to return 'MSTY' for this CUSIP
-      // await resolveCusipSymbols(rows);
-      // expect(rows[0].symbol).toBe('MSTY');
-      // expect(mockFetch).not.toHaveBeenCalled();
-      // expect(mockYahooSearch).not.toHaveBeenCalled();
-
-      expect(rows[0].symbol).toBe('88634T493'); // will change when cache is wired
+      await resolveCusipSymbols(rows);
+      expect(rows[0].symbol).toBe('MSTY');
+      expect(mockFetch).not.toHaveBeenCalled();
+      expect(mockYahooSearch).not.toHaveBeenCalled();
     });
 
     test.skip('should trigger original API lookup flow on cache miss', async function () {
@@ -324,12 +322,10 @@ describe('resolveCusipSymbols', function () {
       ];
 
       // Future: mock cache to return 'OXLC' for this CUSIP
-      // await resolveCusipSymbols(rows);
-      // expect(rows[0].symbol).toBe('OXLC');
-      // expect(mockFetch).not.toHaveBeenCalled();
-      // expect(mockYahooSearch).not.toHaveBeenCalled();
-
-      expect(rows[0].symbol).toBe('691543102'); // will change when cache is wired
+      await resolveCusipSymbols(rows);
+      expect(rows[0].symbol).toBe('OXLC');
+      expect(mockFetch).not.toHaveBeenCalled();
+      expect(mockYahooSearch).not.toHaveBeenCalled();
     });
 
     test.skip('should make newly resolved symbols immediately available in cache', async function () {
@@ -340,12 +336,10 @@ describe('resolveCusipSymbols', function () {
       await resolveCusipSymbols(rows);
       expect(rows[0].symbol).toBe('MSTY');
 
-      // Future: verify cache.upsert was called with the resolved mapping
-      // expect(mockCacheUpsert).toHaveBeenCalledWith({
-      //   where: { cusip: '88634T493' },
-      //   update: { symbol: 'MSTY' },
-      //   create: { cusip: '88634T493', symbol: 'MSTY' },
-      // });
+      // Will fail until cache write integration is wired in AR.9:
+      // Verify the cache service was called with the resolved mapping
+      // e.g., expect(cacheService.upsert).toHaveBeenCalledWith('88634T493', 'MSTY', 'OPENFIGI')
+      expect(true).toBe(false); // RED: force failure until cache write is verified
     });
   });
 });

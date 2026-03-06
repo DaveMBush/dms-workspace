@@ -195,8 +195,6 @@ model cusip_cache_audit {
 - `scripts/sample-cusips.csv` (sample data for testing)
 - Migration file(s) for schema updates
 
-\*\*Migration file(s) for schema updates
-
 **Modified Files:**
 
 - `prisma/schema.prisma` (add audit and archive models)
@@ -247,7 +245,6 @@ model cusip_cache_audit {
 - Can be split into multiple smaller stories if needed
 - Cache warming is useful for testing and production initialization
 - Audit logging helps debug incorrect symbol resolutions reported by users
-  implements backend API infrastructure for cache management
 - Features are prioritized: Statistics > Management API > Cleanup > Audit Logging
 - Admin UI will be implemented in AR.11 with e2e tests
 - Audit logging helps debug incorrect symbol resolutions reported by users

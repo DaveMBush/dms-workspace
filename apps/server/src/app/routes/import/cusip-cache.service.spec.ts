@@ -304,17 +304,14 @@ describe('cusipCacheService', function () {
         mockPrisma.cusipCache.findUnique as ReturnType<typeof vi.fn>
       ).mockRejectedValue(new Error('Database connection failed'));
 
-      let caughtError: Error | undefined;
-      try {
-        await mockPrisma.cusipCache.findUnique({
-          where: { cusip: '88634T493' },
-        });
-      } catch (error) {
-        caughtError = error as Error;
-      }
+      // AC 15: Cache layer should swallow DB errors and return null
+      // so the caller can fall through to API lookup
+      const result = await mockPrisma.cusipCache.findUnique({
+        where: { cusip: '88634T493' },
+      });
 
-      expect(caughtError).toBeDefined();
-      expect(caughtError!.message).toBe('Database connection failed');
+      // Graceful degradation: no error thrown, returns null
+      expect(result).toBeNull();
     });
 
     test.skip('should handle cache write failures without affecting resolution', async function () {
@@ -322,20 +319,15 @@ describe('cusipCacheService', function () {
         mockPrisma.cusipCache.upsert as ReturnType<typeof vi.fn>
       ).mockRejectedValue(new Error('Write failed'));
 
-      let writeError: Error | undefined;
-      try {
-        await mockPrisma.cusipCache.upsert({
+      // AC 16: Cache write failures should not propagate to the caller
+      // The upsert should be swallowed so resolution can continue
+      await expect(
+        mockPrisma.cusipCache.upsert({
           where: { cusip: '88634T493' },
           update: { symbol: 'MSTY' },
           create: { cusip: '88634T493', symbol: 'MSTY' },
-        });
-      } catch (error) {
-        writeError = error as Error;
-      }
-
-      // The error occurred but should not prevent the caller from continuing
-      expect(writeError).toBeDefined();
-      expect(writeError!.message).toBe('Write failed');
+        })
+      ).resolves.toBeUndefined();
     });
 
     test.skip('should not cache entries with invalid CUSIP format', function () {

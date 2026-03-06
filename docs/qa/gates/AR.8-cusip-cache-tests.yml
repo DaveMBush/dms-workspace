@@ -4,7 +4,7 @@ story_title: 'Unit Tests for CUSIP Lookup Caching - TDD RED Phase'
 gate: CONCERNS
 status_reason: 'All 22 ACs mapped to 22 skipped tests and CI is green, but cache service tests exercise mocks directly instead of a service abstraction, and AC 15 error handling test asserts an error IS thrown rather than graceful fallback.'
 reviewer: 'Quinn (Test Architect)'
-updated: '2026-03-06T12:00:00Z'
+updated: '2026-03-06T18:30:00Z'
 
 top_issues:
   - id: 'TEST-001'
