@@ -1,0 +1,66 @@
+<!-- eslint-disable @angular-eslint/template/no-call-expression -->
+<h2 mat-dialog-title>{{ isEdit ? 'Edit' : 'Add' }} Cache Mapping</h2>
+<mat-dialog-content>
+  <form [formGroup]="form" class="flex flex-col gap-4 mt-2">
+    <mat-form-field appearance="outline">
+      <mat-label>CUSIP</mat-label>
+      <input
+        matInput
+        formControlName="cusip"
+        placeholder="e.g. 037833100"
+        data-testid="dialog-cusip-input"
+      />
+      @if (form.get('cusip')?.hasError('required')) {
+      <mat-error>CUSIP is required</mat-error>
+      } @else if (form.get('cusip')?.hasError('pattern')) {
+      <mat-error>Must be 9 alphanumeric characters</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Symbol</mat-label>
+      <input
+        matInput
+        formControlName="symbol"
+        placeholder="e.g. AAPL"
+        data-testid="dialog-symbol-input"
+      />
+      @if (form.get('symbol')?.hasError('required')) {
+      <mat-error>Symbol is required</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Source</mat-label>
+      <mat-select formControlName="source" data-testid="dialog-source-select">
+        <mat-option value="OPENFIGI">OPENFIGI</mat-option>
+        <mat-option value="YAHOO_FINANCE">YAHOO_FINANCE</mat-option>
+        <mat-option value="MANUAL">MANUAL</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Reason (optional)</mat-label>
+      <input
+        matInput
+        formControlName="reason"
+        placeholder="Reason for change"
+        data-testid="dialog-reason-input"
+      />
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()" data-testid="dialog-cancel-button">
+    Cancel
+  </button>
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="onSubmit()"
+    [disabled]="form.invalid"
+    data-testid="dialog-submit-button"
+  >
+    {{ isEdit ? 'Update' : 'Add' }}
+  </button>
+</mat-dialog-actions>

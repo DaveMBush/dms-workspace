@@ -78,6 +78,13 @@ export const appRoutes: Route[] = [
           ),
       },
       {
+        path: 'global/cusip-cache',
+        loadComponent: async () =>
+          import('./global/cusip-cache/cusip-cache.component').then(
+            (m) => m.CusipCacheComponent
+          ),
+      },
+      {
         path: 'account/:accountId',
         loadComponent: async () =>
           import('./account-panel/account-panel.component').then(
