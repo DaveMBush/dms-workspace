@@ -176,6 +176,7 @@
             <button
               mat-icon-button
               matTooltip="Edit"
+              [attr.aria-label]="'Edit mapping for ' + row.cusip"
               (click)="onEditMapping(row)"
               data-testid="edit-button"
             >
@@ -184,6 +185,7 @@
             <button
               mat-icon-button
               matTooltip="Delete"
+              [attr.aria-label]="'Delete mapping for ' + row.cusip"
               color="warn"
               (click)="onDeleteMapping(row)"
               data-testid="delete-button"
@@ -195,7 +197,7 @@
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
       </table>
-      } @else if (searchValue().trim().length > 0 && !loading()) {
+      } @else if (hasSearched() && searchResults().length === 0 && !loading()) {
       <p class="text-gray-500 mt-4 text-center" data-testid="no-results">
         No results found
       </p>

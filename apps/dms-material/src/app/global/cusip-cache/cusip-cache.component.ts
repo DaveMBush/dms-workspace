@@ -61,6 +61,7 @@ export class CusipCacheComponent implements OnInit {
 
   readonly searchType = signal<'cusip' | 'symbol'>('cusip');
   readonly searchValue = signal('');
+  readonly hasSearched = signal(false);
 
   readonly displayedColumns = [
     'cusip',
@@ -88,6 +89,7 @@ export class CusipCacheComponent implements OnInit {
     if (value.length === 0) {
       return;
     }
+    this.hasSearched.set(true);
     if (this.searchType() === 'cusip') {
       this.adminService.search(value);
     } else {
@@ -97,6 +99,7 @@ export class CusipCacheComponent implements OnInit {
 
   onClearSearch(): void {
     this.searchValue.set('');
+    this.hasSearched.set(false);
     this.adminService.clearSearch();
   }
 
