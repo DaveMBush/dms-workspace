@@ -15,7 +15,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
-import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -41,7 +40,6 @@ import { CusipCacheEntry } from './cusip-cache-entry.interface';
     MatInputModule,
     MatSelectModule,
     MatTableModule,
-    MatSortModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
   ],
@@ -127,10 +125,15 @@ export class CusipCacheComponent implements OnInit {
           );
         })
       )
-      .subscribe(function onAddSuccess() {
-        self.notification.success('Mapping added successfully');
-        self.adminService.fetchStats();
-        self.adminService.fetchAuditLog();
+      .subscribe({
+        next: function onAddSuccess() {
+          self.notification.success('Mapping added successfully');
+          self.adminService.fetchStats();
+          self.adminService.fetchAuditLog();
+        },
+        error: function onAddError() {
+          // Error already set in service errorSignal
+        },
       });
   }
 
@@ -159,13 +162,18 @@ export class CusipCacheComponent implements OnInit {
           );
         })
       )
-      .subscribe(function onEditSuccess() {
-        self.notification.success('Mapping updated successfully');
-        self.adminService.fetchStats();
-        self.adminService.fetchAuditLog();
-        if (self.searchValue().trim().length > 0) {
-          self.onSearch();
-        }
+      .subscribe({
+        next: function onEditSuccess() {
+          self.notification.success('Mapping updated successfully');
+          self.adminService.fetchStats();
+          self.adminService.fetchAuditLog();
+          if (self.searchValue().trim().length > 0) {
+            self.onSearch();
+          }
+        },
+        error: function onEditError() {
+          // Error already set in service errorSignal
+        },
       });
   }
 
@@ -186,17 +194,18 @@ export class CusipCacheComponent implements OnInit {
           return self.adminService.deleteMapping(entry.id);
         })
       )
-      .subscribe(function onDeleteSuccess() {
-        self.notification.success('Cache entry deleted');
-        self.adminService.fetchStats();
-        self.adminService.fetchAuditLog();
-        if (self.searchValue().trim().length > 0) {
-          self.onSearch();
-        }
+      .subscribe({
+        next: function onDeleteSuccess() {
+          self.notification.success('Cache entry deleted');
+          self.adminService.fetchStats();
+          self.adminService.fetchAuditLog();
+          if (self.searchValue().trim().length > 0) {
+            self.onSearch();
+          }
+        },
+        error: function onDeleteError() {
+          // Error already set in service errorSignal
+        },
       });
-  }
-
-  onSort(_: Sort): void {
-    // Sort is handled client-side since results are limited
   }
 }

@@ -367,9 +367,10 @@ None
 - No admin route guard added - consistent with existing global routes (error-logs, universe, screener) where auth is at shell level
 - `CusipCacheSource` union type (`'OPENFIGI' | 'YAHOO_FINANCE'`) enforces valid server values at the type level
 - Service uses loading counter with `computed()` for derived loading signal to handle concurrent requests
-- `addMapping`/`deleteMapping` return Observable for proper success/error chaining in component
+- `addMapping`/`deleteMapping` return cold Observable via `defer()` + `finalize()` for proper loading lifecycle
 
 ### Change Log
 
 - Initial implementation: all source files, unit tests, E2E tests
 - CR iteration 1: Loading counter, Observable return types, CusipCacheSource type, symbol trim, E2E strengthening
+- CR iteration 2: defer/finalize for loading state, error handlers on subscriptions, removed dead sort code

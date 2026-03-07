@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { Observable, tap } from 'rxjs';
+import { defer, finalize, Observable, tap } from 'rxjs';
 
 import { AuditResult } from './audit-result.interface';
 import { CusipCacheEntry } from './cusip-cache-entry.interface';
@@ -93,54 +93,50 @@ export class CusipCacheAdminService {
     source: CusipCacheSource,
     reason?: string
   ): Observable<CusipCacheEntry> {
-    this.loadingCountSignal.update(function increment(c) {
-      return c + 1;
-    });
-    this.errorSignal.set(null);
     const self = this;
-    return this.http
-      .post<CusipCacheEntry>(`${this.baseUrl}/add`, {
+    return defer(function deferAdd() {
+      self.loadingCountSignal.update(function increment(c) {
+        return c + 1;
+      });
+      self.errorSignal.set(null);
+      return self.http.post<CusipCacheEntry>(`${self.baseUrl}/add`, {
         cusip,
         symbol,
         source,
         reason,
+      });
+    }).pipe(
+      tap({
+        error: function onAddError(err: unknown) {
+          self.errorSignal.set(formatHttpError(err));
+        },
+      }),
+      finalize(function onAddFinalize() {
+        self.loadingCountSignal.update(function decrement(c) {
+          return c - 1;
+        });
       })
-      .pipe(
-        tap({
-          next: function onAddSuccess() {
-            self.loadingCountSignal.update(function decrement(c) {
-              return c - 1;
-            });
-          },
-          error: function onAddError(err: unknown) {
-            self.errorSignal.set(formatHttpError(err));
-            self.loadingCountSignal.update(function decrement(c) {
-              return c - 1;
-            });
-          },
-        })
-      );
+    );
   }
 
   deleteMapping(id: string): Observable<unknown> {
-    this.loadingCountSignal.update(function increment(c) {
-      return c + 1;
-    });
-    this.errorSignal.set(null);
     const self = this;
-    return this.http.delete(`${this.baseUrl}/${id}`).pipe(
+    return defer(function deferDelete() {
+      self.loadingCountSignal.update(function increment(c) {
+        return c + 1;
+      });
+      self.errorSignal.set(null);
+      return self.http.delete(`${self.baseUrl}/${id}`);
+    }).pipe(
       tap({
-        next: function onDeleteSuccess() {
-          self.loadingCountSignal.update(function decrement(c) {
-            return c - 1;
-          });
-        },
         error: function onDeleteError(err: unknown) {
           self.errorSignal.set(formatHttpError(err));
-          self.loadingCountSignal.update(function decrement(c) {
-            return c - 1;
-          });
         },
+      }),
+      finalize(function onDeleteFinalize() {
+        self.loadingCountSignal.update(function decrement(c) {
+          return c - 1;
+        });
       })
     );
   }

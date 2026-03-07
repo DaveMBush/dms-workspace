@@ -158,20 +158,18 @@ describe('CusipCacheComponent', function describeComponent() {
     });
 
     it('should add mapping on dialog close with result', function shouldAdd() {
-      const addSpy = vi
-        .spyOn(adminService, 'addMapping')
-        .mockReturnValue(
-          of({
-            id: '1',
-            cusip: '037833100',
-            symbol: 'AAPL',
-            source: 'OPENFIGI',
-            resolvedAt: null,
-            lastUsedAt: null,
-            createdAt: '2025-01-01',
-            updatedAt: '2025-01-01',
-          })
-        );
+      const addSpy = vi.spyOn(adminService, 'addMapping').mockReturnValue(
+        of({
+          id: '1',
+          cusip: '037833100',
+          symbol: 'AAPL',
+          source: 'OPENFIGI',
+          resolvedAt: null,
+          lastUsedAt: null,
+          createdAt: '2025-01-01',
+          updatedAt: '2025-01-01',
+        })
+      );
       const notifySpy = vi.spyOn(notificationService, 'success');
       const fetchStatsSpy = vi.spyOn(adminService, 'fetchStats');
 
@@ -247,20 +245,18 @@ describe('CusipCacheComponent', function describeComponent() {
     });
 
     it('should update mapping on dialog close', function shouldUpdate() {
-      const addSpy = vi
-        .spyOn(adminService, 'addMapping')
-        .mockReturnValue(
-          of({
-            id: '1',
-            cusip: '037833100',
-            symbol: 'AAPL2',
-            source: 'OPENFIGI',
-            resolvedAt: null,
-            lastUsedAt: null,
-            createdAt: '2025-01-01',
-            updatedAt: '2025-01-01',
-          })
-        );
+      const addSpy = vi.spyOn(adminService, 'addMapping').mockReturnValue(
+        of({
+          id: '1',
+          cusip: '037833100',
+          symbol: 'AAPL2',
+          source: 'OPENFIGI',
+          resolvedAt: null,
+          lastUsedAt: null,
+          createdAt: '2025-01-01',
+          updatedAt: '2025-01-01',
+        })
+      );
       const notifySpy = vi.spyOn(notificationService, 'success');
 
       component.onEditMapping(mockEntry);
