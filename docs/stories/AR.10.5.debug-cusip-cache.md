@@ -1,6 +1,6 @@
 # Story AR.10.5: Debug and Review CUSIP Cache Implementation
 
-**Status:** Approved
+**Status:** Done
 
 ## Story
 

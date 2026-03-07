@@ -1,0 +1,251 @@
+<!-- eslint-disable @angular-eslint/template/no-call-expression -->
+<!-- eslint-disable @angular-eslint/template/cyclomatic-complexity -->
+<div class="cusip-cache-container" data-testid="cusip-cache-page">
+  <mat-toolbar class="cusip-cache-toolbar">
+    <span>CUSIP Cache Admin</span>
+    <span class="spacer"></span>
+    <button
+      mat-icon-button
+      (click)="onRefresh()"
+      matTooltip="Refresh data"
+      aria-label="Refresh"
+      data-testid="refresh-button"
+    >
+      <mat-icon>refresh</mat-icon>
+    </button>
+  </mat-toolbar>
+
+  @if (loading()) {
+  <div
+    class="flex justify-center items-center py-4"
+    data-testid="loading-spinner"
+  >
+    <mat-spinner diameter="32"></mat-spinner>
+  </div>
+  } @if (error()) {
+  <div
+    class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mx-4 mt-4"
+    role="alert"
+    data-testid="error-message"
+  >
+    <span class="font-medium">Error:</span> {{ error() }}
+  </div>
+  }
+
+  <!-- Statistics Section -->
+  @if (stats(); as statsData) {
+  <mat-card class="m-4" data-testid="stats-card">
+    <mat-card-header>
+      <mat-card-title>Cache Statistics</mat-card-title>
+      <mat-card-subtitle
+        >Last updated: {{ statsData.timestamp }}</mat-card-subtitle
+      >
+    </mat-card-header>
+    <mat-card-content>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+        <div class="stat-item" data-testid="total-entries">
+          <span class="text-xs text-gray-500">Total Entries</span>
+          <span class="text-2xl font-semibold"
+            >{{ statsData.totalEntries }}</span
+          >
+        </div>
+        @for (sourceEntry of statsData.entriesBySource | keyvalue; track
+        sourceEntry.key) {
+        <div class="stat-item" data-testid="source-count">
+          <span class="text-xs text-gray-500">{{ sourceEntry.key }}</span>
+          <span class="text-2xl font-semibold">{{ sourceEntry.value }}</span>
+        </div>
+        }
+        <div class="stat-item" data-testid="oldest-entry">
+          <span class="text-xs text-gray-500">Oldest Entry</span>
+          <span class="text-sm">{{ statsData.oldestEntry ?? 'N/A' }}</span>
+        </div>
+        <div class="stat-item" data-testid="newest-entry">
+          <span class="text-xs text-gray-500">Newest Entry</span>
+          <span class="text-sm">{{ statsData.newestEntry ?? 'N/A' }}</span>
+        </div>
+      </div>
+
+      @if (statsData.recentlyAdded.length > 0) {
+      <h3 class="mt-6 mb-2 text-sm font-medium text-gray-600">
+        Recently Added
+      </h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+        @for (recent of statsData.recentlyAdded; track recent.cusip) {
+        <div class="text-xs p-2 bg-gray-50 rounded" data-testid="recent-entry">
+          {{ recent.cusip }} → {{ recent.symbol }} ({{ recent.source }})
+        </div>
+        }
+      </div>
+      }
+    </mat-card-content>
+  </mat-card>
+  }
+
+  <!-- Search Section -->
+  <mat-card class="m-4" data-testid="search-card">
+    <mat-card-header>
+      <mat-card-title>Search Cache</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="flex items-end gap-4 mt-4">
+        <mat-form-field appearance="outline" class="w-32">
+          <mat-label>Search by</mat-label>
+          <mat-select
+            [value]="searchType()"
+            (selectionChange)="searchType.set($event.value)"
+            data-testid="search-type-select"
+          >
+            <mat-option value="cusip">CUSIP</mat-option>
+            <mat-option value="symbol">Symbol</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="flex-1">
+          <mat-label
+            >{{ searchType() === 'cusip' ? 'Enter CUSIP' : 'Enter Symbol'
+            }}</mat-label
+          >
+          <input
+            matInput
+            #searchInput
+            [value]="searchValue()"
+            (input)="searchValue.set(searchInput.value)"
+            (keyup.enter)="onSearch()"
+            data-testid="search-input"
+          />
+        </mat-form-field>
+
+        <button
+          mat-raised-button
+          color="primary"
+          (click)="onSearch()"
+          data-testid="search-button"
+        >
+          <mat-icon>search</mat-icon>
+          Search
+        </button>
+        <button
+          mat-button
+          (click)="onClearSearch()"
+          data-testid="clear-search-button"
+        >
+          Clear
+        </button>
+        <button
+          mat-raised-button
+          color="accent"
+          (click)="onAddMapping()"
+          data-testid="add-mapping-button"
+        >
+          <mat-icon>add</mat-icon>
+          Add Mapping
+        </button>
+      </div>
+
+      @if (searchResults().length > 0) {
+      <table
+        mat-table
+        [dataSource]="searchResults()"
+        class="w-full mt-4"
+        data-testid="search-results-table"
+      >
+        <ng-container matColumnDef="cusip">
+          <th mat-header-cell *matHeaderCellDef>CUSIP</th>
+          <td mat-cell *matCellDef="let row">{{ row.cusip }}</td>
+        </ng-container>
+        <ng-container matColumnDef="symbol">
+          <th mat-header-cell *matHeaderCellDef>Symbol</th>
+          <td mat-cell *matCellDef="let row">{{ row.symbol }}</td>
+        </ng-container>
+        <ng-container matColumnDef="source">
+          <th mat-header-cell *matHeaderCellDef>Source</th>
+          <td mat-cell *matCellDef="let row">{{ row.source }}</td>
+        </ng-container>
+        <ng-container matColumnDef="resolvedAt">
+          <th mat-header-cell *matHeaderCellDef>Resolved</th>
+          <td mat-cell *matCellDef="let row">{{ row.resolvedAt ?? 'N/A' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="lastUsedAt">
+          <th mat-header-cell *matHeaderCellDef>Last Used</th>
+          <td mat-cell *matCellDef="let row">{{ row.lastUsedAt ?? 'N/A' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let row">
+            <button
+              mat-icon-button
+              matTooltip="Edit"
+              [attr.aria-label]="'Edit mapping for ' + row.cusip"
+              (click)="onEditMapping(row)"
+              data-testid="edit-button"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button
+              mat-icon-button
+              matTooltip="Delete"
+              [attr.aria-label]="'Delete mapping for ' + row.cusip"
+              color="warn"
+              (click)="onDeleteMapping(row)"
+              data-testid="delete-button"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+      } @else if (hasSearched() && searchResults().length === 0 && !loading()) {
+      <p class="text-gray-500 mt-4 text-center" data-testid="no-results">
+        No results found
+      </p>
+      }
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Audit Log Section -->
+  <mat-card class="m-4" data-testid="audit-card">
+    <mat-card-header>
+      <mat-card-title>Recent Activity</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      @if (auditEntries().entries.length > 0) {
+      <table
+        mat-table
+        [dataSource]="auditEntries().entries"
+        class="w-full mt-4"
+        data-testid="audit-table"
+      >
+        <ng-container matColumnDef="createdAt">
+          <th mat-header-cell *matHeaderCellDef>Timestamp</th>
+          <td mat-cell *matCellDef="let row">{{ row.createdAt }}</td>
+        </ng-container>
+        <ng-container matColumnDef="cusip">
+          <th mat-header-cell *matHeaderCellDef>CUSIP</th>
+          <td mat-cell *matCellDef="let row">{{ row.cusip }}</td>
+        </ng-container>
+        <ng-container matColumnDef="symbol">
+          <th mat-header-cell *matHeaderCellDef>Symbol</th>
+          <td mat-cell *matCellDef="let row">{{ row.symbol }}</td>
+        </ng-container>
+        <ng-container matColumnDef="action">
+          <th mat-header-cell *matHeaderCellDef>Action</th>
+          <td mat-cell *matCellDef="let row">{{ row.action }}</td>
+        </ng-container>
+        <ng-container matColumnDef="source">
+          <th mat-header-cell *matHeaderCellDef>Source</th>
+          <td mat-cell *matCellDef="let row">{{ row.source }}</td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="auditColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: auditColumns"></tr>
+      </table>
+      } @else {
+      <p class="text-gray-500 mt-4 text-center" data-testid="no-audit">
+        No recent activity
+      </p>
+      }
+    </mat-card-content>
+  </mat-card>
+</div>
