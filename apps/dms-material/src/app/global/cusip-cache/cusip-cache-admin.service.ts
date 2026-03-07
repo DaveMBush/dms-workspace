@@ -1,8 +1,10 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
+import { Observable, tap } from 'rxjs';
 
 import { AuditResult } from './audit-result.interface';
 import { CusipCacheEntry } from './cusip-cache-entry.interface';
+import { CusipCacheSource } from './cusip-cache-source.type';
 import { CusipCacheStats } from './cusip-cache-stats.interface';
 import { SearchResult } from './search-result.interface';
 
@@ -19,33 +21,41 @@ export class CusipCacheAdminService {
     total: 0,
   });
 
-  private readonly loadingSignal = signal(false);
+  private readonly loadingCountSignal = signal(0);
   private readonly errorSignal = signal<string | null>(null);
 
   readonly stats = this.statsSignal.asReadonly();
   readonly searchResults = this.searchResultsSignal.asReadonly();
   readonly auditEntries = this.auditEntriesSignal.asReadonly();
-  readonly loading = this.loadingSignal.asReadonly();
+  readonly loading = computed(this.isLoading.bind(this));
   readonly error = this.errorSignal.asReadonly();
 
   fetchStats(): void {
-    this.loadingSignal.set(true);
+    this.loadingCountSignal.update(function increment(c) {
+      return c + 1;
+    });
     this.errorSignal.set(null);
     const self = this;
     this.http.get<CusipCacheStats>(`${this.baseUrl}/stats`).subscribe({
       next: function onStatsSuccess(data) {
         self.statsSignal.set(data);
-        self.loadingSignal.set(false);
+        self.loadingCountSignal.update(function decrement(c) {
+          return c - 1;
+        });
       },
       error: function onStatsError(err: unknown) {
         self.errorSignal.set(formatHttpError(err));
-        self.loadingSignal.set(false);
+        self.loadingCountSignal.update(function decrement(c) {
+          return c - 1;
+        });
       },
     });
   }
 
   search(cusip?: string, symbol?: string): void {
-    this.loadingSignal.set(true);
+    this.loadingCountSignal.update(function increment(c) {
+      return c + 1;
+    });
     this.errorSignal.set(null);
     const params: Record<string, string> = {};
     if (cusip !== undefined && cusip !== '') {
@@ -60,11 +70,15 @@ export class CusipCacheAdminService {
       .subscribe({
         next: function onSearchSuccess(data) {
           self.searchResultsSignal.set(data.entries);
-          self.loadingSignal.set(false);
+          self.loadingCountSignal.update(function decrement(c) {
+            return c - 1;
+          });
         },
         error: function onSearchError(err: unknown) {
           self.errorSignal.set(formatHttpError(err));
-          self.loadingSignal.set(false);
+          self.loadingCountSignal.update(function decrement(c) {
+            return c - 1;
+          });
         },
       });
   }
@@ -76,47 +90,65 @@ export class CusipCacheAdminService {
   addMapping(
     cusip: string,
     symbol: string,
-    source: string,
+    source: CusipCacheSource,
     reason?: string
-  ): void {
-    this.loadingSignal.set(true);
+  ): Observable<CusipCacheEntry> {
+    this.loadingCountSignal.update(function increment(c) {
+      return c + 1;
+    });
     this.errorSignal.set(null);
     const self = this;
-    this.http
+    return this.http
       .post<CusipCacheEntry>(`${this.baseUrl}/add`, {
         cusip,
         symbol,
         source,
         reason,
       })
-      .subscribe({
-        next: function onAddSuccess() {
-          self.loadingSignal.set(false);
-        },
-        error: function onAddError(err: unknown) {
-          self.errorSignal.set(formatHttpError(err));
-          self.loadingSignal.set(false);
-        },
-      });
+      .pipe(
+        tap({
+          next: function onAddSuccess() {
+            self.loadingCountSignal.update(function decrement(c) {
+              return c - 1;
+            });
+          },
+          error: function onAddError(err: unknown) {
+            self.errorSignal.set(formatHttpError(err));
+            self.loadingCountSignal.update(function decrement(c) {
+              return c - 1;
+            });
+          },
+        })
+      );
   }
 
-  deleteMapping(id: string): void {
-    this.loadingSignal.set(true);
+  deleteMapping(id: string): Observable<unknown> {
+    this.loadingCountSignal.update(function increment(c) {
+      return c + 1;
+    });
     this.errorSignal.set(null);
     const self = this;
-    this.http.delete(`${this.baseUrl}/${id}`).subscribe({
-      next: function onDeleteSuccess() {
-        self.loadingSignal.set(false);
-      },
-      error: function onDeleteError(err: unknown) {
-        self.errorSignal.set(formatHttpError(err));
-        self.loadingSignal.set(false);
-      },
-    });
+    return this.http.delete(`${this.baseUrl}/${id}`).pipe(
+      tap({
+        next: function onDeleteSuccess() {
+          self.loadingCountSignal.update(function decrement(c) {
+            return c - 1;
+          });
+        },
+        error: function onDeleteError(err: unknown) {
+          self.errorSignal.set(formatHttpError(err));
+          self.loadingCountSignal.update(function decrement(c) {
+            return c - 1;
+          });
+        },
+      })
+    );
   }
 
   fetchAuditLog(limit = 20): void {
-    this.loadingSignal.set(true);
+    this.loadingCountSignal.update(function increment(c) {
+      return c + 1;
+    });
     this.errorSignal.set(null);
     const self = this;
     this.http
@@ -126,13 +158,21 @@ export class CusipCacheAdminService {
       .subscribe({
         next: function onAuditSuccess(data) {
           self.auditEntriesSignal.set(data);
-          self.loadingSignal.set(false);
+          self.loadingCountSignal.update(function decrement(c) {
+            return c - 1;
+          });
         },
         error: function onAuditError(err: unknown) {
           self.errorSignal.set(formatHttpError(err));
-          self.loadingSignal.set(false);
+          self.loadingCountSignal.update(function decrement(c) {
+            return c - 1;
+          });
         },
       });
+  }
+
+  private isLoading(): boolean {
+    return this.loadingCountSignal() > 0;
   }
 }
 

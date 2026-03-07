@@ -322,3 +322,54 @@ CUSIP Cache Dashboard                   [Refresh] [Last updated: 2026-03-06 09:1
 - Admin UI should be intuitive for support staff with minimal training
 - Consider adding export functionality in future (export cache to CSV)
 - Monitor usage to determine if additional visualization (charts) would be valuable
+
+## Dev Agent Record
+
+### Agent Model Used
+
+Claude Opus 4.6 (GitHub Copilot)
+
+### File List
+
+**New Files:**
+
+- `apps/dms-material/src/app/global/cusip-cache/cusip-cache.component.ts`
+- `apps/dms-material/src/app/global/cusip-cache/cusip-cache.html`
+- `apps/dms-material/src/app/global/cusip-cache/cusip-cache.scss`
+- `apps/dms-material/src/app/global/cusip-cache/cusip-cache.component.spec.ts`
+- `apps/dms-material/src/app/global/cusip-cache/cusip-cache-admin.service.ts`
+- `apps/dms-material/src/app/global/cusip-cache/cusip-cache-admin.service.spec.ts`
+- `apps/dms-material/src/app/global/cusip-cache/cusip-cache-add-dialog.component.ts`
+- `apps/dms-material/src/app/global/cusip-cache/cusip-cache-add-dialog.html`
+- `apps/dms-material/src/app/global/cusip-cache/cusip-cache-add-dialog.component.spec.ts`
+- `apps/dms-material/src/app/global/cusip-cache/cusip-cache-entry.interface.ts`
+- `apps/dms-material/src/app/global/cusip-cache/cusip-cache-stats.interface.ts`
+- `apps/dms-material/src/app/global/cusip-cache/cusip-cache-audit-entry.interface.ts`
+- `apps/dms-material/src/app/global/cusip-cache/cusip-cache-dialog-result.interface.ts`
+- `apps/dms-material/src/app/global/cusip-cache/cusip-cache-source.type.ts`
+- `apps/dms-material/src/app/global/cusip-cache/search-result.interface.ts`
+- `apps/dms-material/src/app/global/cusip-cache/audit-result.interface.ts`
+- `apps/dms-material-e2e/src/cusip-cache-admin.spec.ts`
+
+**Modified Files:**
+
+- `apps/dms-material/src/app/app.routes.ts` (added lazy-loaded route at `global/cusip-cache`)
+- `apps/dms-material/src/app/accounts/account.html` (added nav link with `cached` icon)
+
+### Debug Log References
+
+None
+
+### Completion Notes
+
+- Implemented as Angular Material standalone component (not PrimeNG as originally spec'd)
+- Route is `/global/cusip-cache` (not `/admin/cusip-cache`) - consistent with other global routes
+- No admin route guard added - consistent with existing global routes (error-logs, universe, screener) where auth is at shell level
+- `CusipCacheSource` union type (`'OPENFIGI' | 'YAHOO_FINANCE'`) enforces valid server values at the type level
+- Service uses loading counter with `computed()` for derived loading signal to handle concurrent requests
+- `addMapping`/`deleteMapping` return Observable for proper success/error chaining in component
+
+### Change Log
+
+- Initial implementation: all source files, unit tests, E2E tests
+- CR iteration 1: Loading counter, Observable return types, CusipCacheSource type, symbol trim, E2E strengthening

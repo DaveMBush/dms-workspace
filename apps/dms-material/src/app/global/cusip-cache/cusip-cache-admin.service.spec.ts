@@ -185,28 +185,34 @@ describe('CusipCacheAdminService', function describeService() {
 
   describe('addMapping', function describeAddMapping() {
     it('should post a new mapping', function shouldAdd() {
-      service.addMapping('037833100', 'AAPL', 'MANUAL', 'test reason');
+      service
+        .addMapping('037833100', 'AAPL', 'OPENFIGI', 'test reason')
+        .subscribe();
 
       const req = httpMock.expectOne('/api/admin/cusip-cache/add');
       expect(req.request.method).toBe('POST');
       expect(req.request.body).toEqual({
         cusip: '037833100',
         symbol: 'AAPL',
-        source: 'MANUAL',
+        source: 'OPENFIGI',
         reason: 'test reason',
       });
       req.flush({
         id: '1',
         cusip: '037833100',
         symbol: 'AAPL',
-        source: 'MANUAL',
+        source: 'OPENFIGI',
       });
 
       expect(service.loading()).toBe(false);
     });
 
     it('should handle add error', function shouldHandleAddError() {
-      service.addMapping('invalid', 'X', 'MANUAL');
+      service.addMapping('invalid', 'X', 'OPENFIGI').subscribe({
+        error: function noop() {
+          // expected
+        },
+      });
 
       const req = httpMock.expectOne('/api/admin/cusip-cache/add');
       req.flush(
@@ -221,7 +227,7 @@ describe('CusipCacheAdminService', function describeService() {
 
   describe('deleteMapping', function describeDeleteMapping() {
     it('should delete a mapping', function shouldDelete() {
-      service.deleteMapping('abc-123');
+      service.deleteMapping('abc-123').subscribe();
 
       const req = httpMock.expectOne('/api/admin/cusip-cache/abc-123');
       expect(req.request.method).toBe('DELETE');
@@ -231,7 +237,11 @@ describe('CusipCacheAdminService', function describeService() {
     });
 
     it('should handle delete error', function shouldHandleDeleteError() {
-      service.deleteMapping('nonexistent');
+      service.deleteMapping('nonexistent').subscribe({
+        error: function noop() {
+          // expected
+        },
+      });
 
       const req = httpMock.expectOne('/api/admin/cusip-cache/nonexistent');
       req.flush(

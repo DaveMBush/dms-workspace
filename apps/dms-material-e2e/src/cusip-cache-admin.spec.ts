@@ -7,25 +7,38 @@ const TEST_CUSIP = 'E2ETEST01';
 const TEST_SYMBOL = 'E2ETEST';
 
 async function seedTestMapping(page: Page): Promise<void> {
-  await page.request.post(`${BASE_API}/add`, {
+  const response = await page.request.post(`${BASE_API}/add`, {
     data: {
       cusip: TEST_CUSIP,
       symbol: TEST_SYMBOL,
-      source: 'MANUAL',
+      source: 'OPENFIGI',
       reason: 'E2E test seed',
     },
   });
+  if (!response.ok()) {
+    throw new Error(`Failed to seed test mapping: ${response.status()}`);
+  }
 }
 
 async function cleanupTestMapping(page: Page): Promise<void> {
   const searchResponse = await page.request.get(
     `${BASE_API}/search?cusip=${TEST_CUSIP}`
   );
+  if (!searchResponse.ok()) {
+    throw new Error(
+      `Failed to search test mapping: ${searchResponse.status()}`
+    );
+  }
   const searchData = (await searchResponse.json()) as {
     entries: Array<{ id: string }>;
   };
   for (const entry of searchData.entries) {
-    await page.request.delete(`${BASE_API}/${entry.id}`);
+    const deleteResponse = await page.request.delete(`${BASE_API}/${entry.id}`);
+    if (!deleteResponse.ok()) {
+      throw new Error(
+        `Failed to delete test mapping ${entry.id}: ${deleteResponse.status()}`
+      );
+    }
   }
 }
 
@@ -188,7 +201,7 @@ test.describe('CUSIP Cache Admin UI', function describeCusipCache() {
 
       const sourceSelect = page.locator('[data-testid="dialog-source-select"]');
       await sourceSelect.click();
-      await page.locator('mat-option:has-text("MANUAL")').click();
+      await page.locator('mat-option:has-text("OPENFIGI")').click();
 
       await page
         .locator('[data-testid="dialog-reason-input"]')
@@ -199,6 +212,19 @@ test.describe('CUSIP Cache Admin UI', function describeCusipCache() {
       await expect(
         page.locator('[data-testid="dialog-cusip-input"]')
       ).not.toBeVisible({ timeout: 5000 });
+
+      // Verify the entry was actually created by searching for it
+      await page.locator('[data-testid="search-input"]').fill(TEST_CUSIP);
+      await page.locator('[data-testid="search-button"]').click();
+
+      await expect(
+        page.locator('[data-testid="search-results-table"]')
+      ).toBeVisible({ timeout: 10000 });
+
+      const firstRow = page.locator(
+        '[data-testid="search-results-table"] tr.mat-mdc-row'
+      );
+      await expect(firstRow.first()).toContainText(TEST_CUSIP);
     });
 
     test('should validate CUSIP format', async function shouldValidateCusip({
@@ -272,7 +298,7 @@ test.describe('CUSIP Cache Admin UI', function describeCusipCache() {
       await page.waitForLoadState('networkidle');
     });
 
-    test('should show confirmation dialog on delete', async function shouldConfirm({
+    test('should show confirmation and delete entry', async function shouldConfirm({
       page,
     }) {
       await page.locator('[data-testid="search-input"]').fill(TEST_CUSIP);
@@ -287,6 +313,21 @@ test.describe('CUSIP Cache Admin UI', function describeCusipCache() {
       // Confirm dialog should appear
       await expect(page.locator('mat-dialog-container')).toBeVisible({
         timeout: 5000,
+      });
+
+      // Click confirm/delete button in the confirmation dialog
+      const confirmButton = page.locator(
+        'mat-dialog-container button:has-text("Delete")'
+      );
+      await confirmButton.click();
+
+      // Verify the entry is removed by searching again
+      await page.waitForTimeout(500);
+      await page.locator('[data-testid="search-input"]').fill(TEST_CUSIP);
+      await page.locator('[data-testid="search-button"]').click();
+
+      await expect(page.locator('[data-testid="no-results"]')).toBeVisible({
+        timeout: 10000,
       });
     });
   });
@@ -310,7 +351,7 @@ test.describe('CUSIP Cache Admin UI', function describeCusipCache() {
   });
 
   test.describe('Recent Activity', function describeActivity() {
-    test('should display audit log section', async function shouldDisplayAudit({
+    test('should display audit entries after seeding', async function shouldDisplayAudit({
       page,
     }) {
       // Seed data to create audit entries
@@ -322,25 +363,21 @@ test.describe('CUSIP Cache Admin UI', function describeCusipCache() {
         timeout: 10000,
       });
 
-      // Should have audit table or "no activity" message
-      const auditTable = page.locator('[data-testid="audit-table"]');
-      const noAudit = page.locator('[data-testid="no-audit"]');
-
-      const hasAuditTable = await auditTable
-        .isVisible()
-        .catch(function onCatch() {
-          return false;
-        });
-      const hasNoAudit = await noAudit.isVisible().catch(function onCatch() {
-        return false;
+      // Audit table should be visible (seeding creates an audit entry)
+      await expect(page.locator('[data-testid="audit-table"]')).toBeVisible({
+        timeout: 10000,
       });
 
-      expect(hasAuditTable || hasNoAudit).toBe(true);
+      // Should have at least one audit row with the seeded CUSIP
+      const auditRows = page.locator(
+        '[data-testid="audit-table"] tr.mat-mdc-row'
+      );
+      await expect(auditRows.first()).toBeVisible({ timeout: 5000 });
     });
   });
 
   test.describe('Error Handling', function describeErrors() {
-    test('should display loading spinner during API calls', async function shouldShowLoading({
+    test('should display loading spinner during slow API calls', async function shouldShowLoading({
       page,
     }) {
       // Slow down the API to catch the loading state
@@ -348,7 +385,7 @@ test.describe('CUSIP Cache Admin UI', function describeCusipCache() {
         '**/api/admin/cusip-cache/stats',
         async function onRoute(route) {
           await new Promise(function delay(resolve) {
-            setTimeout(resolve, 500);
+            setTimeout(resolve, 1000);
           });
           await route.continue();
         }
@@ -357,12 +394,10 @@ test.describe('CUSIP Cache Admin UI', function describeCusipCache() {
       await page.goto('/global/cusip-cache');
 
       const spinner = page.locator('[data-testid="loading-spinner"]');
-      // Loading spinner may appear briefly
-      await expect(spinner)
-        .toBeVisible({ timeout: 5000 })
-        .catch(function onCatch() {
-          // Spinner may disappear quickly - acceptable
-        });
+      await expect(spinner).toBeVisible({ timeout: 5000 });
+
+      // Wait for the spinner to disappear once data loads
+      await expect(spinner).not.toBeVisible({ timeout: 10000 });
     });
   });
 

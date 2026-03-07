@@ -2,7 +2,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { Subject } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { ConfirmDialogService } from '../../shared/services/confirm-dialog.service';
@@ -158,7 +158,20 @@ describe('CusipCacheComponent', function describeComponent() {
     });
 
     it('should add mapping on dialog close with result', function shouldAdd() {
-      const addSpy = vi.spyOn(adminService, 'addMapping');
+      const addSpy = vi
+        .spyOn(adminService, 'addMapping')
+        .mockReturnValue(
+          of({
+            id: '1',
+            cusip: '037833100',
+            symbol: 'AAPL',
+            source: 'OPENFIGI',
+            resolvedAt: null,
+            lastUsedAt: null,
+            createdAt: '2025-01-01',
+            updatedAt: '2025-01-01',
+          })
+        );
       const notifySpy = vi.spyOn(notificationService, 'success');
       const fetchStatsSpy = vi.spyOn(adminService, 'fetchStats');
 
@@ -166,14 +179,14 @@ describe('CusipCacheComponent', function describeComponent() {
       dialogClosedSubject.next({
         cusip: '037833100',
         symbol: 'AAPL',
-        source: 'MANUAL',
+        source: 'OPENFIGI',
         reason: 'test',
       });
 
       expect(addSpy).toHaveBeenCalledWith(
         '037833100',
         'AAPL',
-        'MANUAL',
+        'OPENFIGI',
         'test'
       );
       expect(notifySpy).toHaveBeenCalledWith('Mapping added successfully');
@@ -234,27 +247,52 @@ describe('CusipCacheComponent', function describeComponent() {
     });
 
     it('should update mapping on dialog close', function shouldUpdate() {
-      const addSpy = vi.spyOn(adminService, 'addMapping');
+      const addSpy = vi
+        .spyOn(adminService, 'addMapping')
+        .mockReturnValue(
+          of({
+            id: '1',
+            cusip: '037833100',
+            symbol: 'AAPL2',
+            source: 'OPENFIGI',
+            resolvedAt: null,
+            lastUsedAt: null,
+            createdAt: '2025-01-01',
+            updatedAt: '2025-01-01',
+          })
+        );
       const notifySpy = vi.spyOn(notificationService, 'success');
 
       component.onEditMapping(mockEntry);
       dialogClosedSubject.next({
         cusip: '037833100',
         symbol: 'AAPL2',
-        source: 'MANUAL',
+        source: 'OPENFIGI',
         reason: 'corrected',
       });
 
       expect(addSpy).toHaveBeenCalledWith(
         '037833100',
         'AAPL2',
-        'MANUAL',
+        'OPENFIGI',
         'corrected'
       );
       expect(notifySpy).toHaveBeenCalledWith('Mapping updated successfully');
     });
 
     it('should refresh search if active', function shouldRefreshSearch() {
+      vi.spyOn(adminService, 'addMapping').mockReturnValue(
+        of({
+          id: '1',
+          cusip: '037833100',
+          symbol: 'AAPL2',
+          source: 'OPENFIGI',
+          resolvedAt: null,
+          lastUsedAt: null,
+          createdAt: '2025-01-01',
+          updatedAt: '2025-01-01',
+        })
+      );
       const searchSpy = vi.spyOn(adminService, 'search');
       component.searchValue.set('037833100');
       component.searchType.set('cusip');
@@ -263,7 +301,7 @@ describe('CusipCacheComponent', function describeComponent() {
       dialogClosedSubject.next({
         cusip: '037833100',
         symbol: 'AAPL2',
-        source: 'MANUAL',
+        source: 'OPENFIGI',
         reason: '',
       });
 
@@ -303,7 +341,9 @@ describe('CusipCacheComponent', function describeComponent() {
       vi.spyOn(TestBed.inject(ConfirmDialogService), 'confirm').mockReturnValue(
         confirmSubject.asObservable()
       );
-      const deleteSpy = vi.spyOn(adminService, 'deleteMapping');
+      const deleteSpy = vi
+        .spyOn(adminService, 'deleteMapping')
+        .mockReturnValue(of({}));
       const notifySpy = vi.spyOn(notificationService, 'success');
 
       component.onDeleteMapping(mockEntry);

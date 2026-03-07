@@ -16,6 +16,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 
 import { CusipCacheEntry } from './cusip-cache-entry.interface';
+import { CusipCacheSource } from './cusip-cache-source.type';
 
 const CUSIP_PATTERN = /^[A-Za-z0-9]{9}$/;
 
@@ -64,9 +65,13 @@ export class CusipCacheAddDialogComponent {
     const rawValue = this.form.getRawValue() as {
       cusip: string;
       symbol: string;
-      source: string;
+      source: CusipCacheSource;
       reason: string;
     };
+    rawValue.symbol = rawValue.symbol.trim();
+    if (rawValue.symbol.length === 0) {
+      return;
+    }
     this.dialogRef.close(rawValue);
   }
 

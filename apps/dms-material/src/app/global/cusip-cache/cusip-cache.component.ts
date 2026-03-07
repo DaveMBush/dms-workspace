@@ -19,6 +19,7 @@ import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { filter, switchMap } from 'rxjs';
 
 import { ConfirmDialogService } from '../../shared/services/confirm-dialog.service';
 import { NotificationService } from '../../shared/services/notification.service';
@@ -111,20 +112,25 @@ export class CusipCacheComponent implements OnInit {
 
     dialogRef
       .afterClosed()
-      .subscribe(function onDialogClosed(
-        result: CusipCacheDialogResult | undefined
-      ) {
-        if (result !== null && result !== undefined) {
-          self.adminService.addMapping(
+      .pipe(
+        filter(function hasResult(
+          result: CusipCacheDialogResult | undefined
+        ): result is CusipCacheDialogResult {
+          return result !== null && result !== undefined;
+        }),
+        switchMap(function addMapping(result: CusipCacheDialogResult) {
+          return self.adminService.addMapping(
             result.cusip,
             result.symbol,
             result.source,
             result.reason
           );
-          self.notification.success('Mapping added successfully');
-          self.adminService.fetchStats();
-          self.adminService.fetchAuditLog();
-        }
+        })
+      )
+      .subscribe(function onAddSuccess() {
+        self.notification.success('Mapping added successfully');
+        self.adminService.fetchStats();
+        self.adminService.fetchAuditLog();
       });
   }
 
@@ -138,22 +144,27 @@ export class CusipCacheComponent implements OnInit {
 
     dialogRef
       .afterClosed()
-      .subscribe(function onEditClosed(
-        result: CusipCacheDialogResult | undefined
-      ) {
-        if (result !== null && result !== undefined) {
-          self.adminService.addMapping(
+      .pipe(
+        filter(function hasResult(
+          result: CusipCacheDialogResult | undefined
+        ): result is CusipCacheDialogResult {
+          return result !== null && result !== undefined;
+        }),
+        switchMap(function editMapping(result: CusipCacheDialogResult) {
+          return self.adminService.addMapping(
             result.cusip,
             result.symbol,
             result.source,
             result.reason
           );
-          self.notification.success('Mapping updated successfully');
-          self.adminService.fetchStats();
-          self.adminService.fetchAuditLog();
-          if (self.searchValue().trim().length > 0) {
-            self.onSearch();
-          }
+        })
+      )
+      .subscribe(function onEditSuccess() {
+        self.notification.success('Mapping updated successfully');
+        self.adminService.fetchStats();
+        self.adminService.fetchAuditLog();
+        if (self.searchValue().trim().length > 0) {
+          self.onSearch();
         }
       });
   }
@@ -167,15 +178,20 @@ export class CusipCacheComponent implements OnInit {
         confirmText: 'Delete',
         cancelText: 'Cancel',
       })
-      .subscribe(function onDeleteConfirmed(confirmed) {
-        if (confirmed) {
-          self.adminService.deleteMapping(entry.id);
-          self.notification.success('Cache entry deleted');
-          self.adminService.fetchStats();
-          self.adminService.fetchAuditLog();
-          if (self.searchValue().trim().length > 0) {
-            self.onSearch();
-          }
+      .pipe(
+        filter(function isConfirmed(confirmed: boolean) {
+          return confirmed;
+        }),
+        switchMap(function deleteMapping() {
+          return self.adminService.deleteMapping(entry.id);
+        })
+      )
+      .subscribe(function onDeleteSuccess() {
+        self.notification.success('Cache entry deleted');
+        self.adminService.fetchStats();
+        self.adminService.fetchAuditLog();
+        if (self.searchValue().trim().length > 0) {
+          self.onSearch();
         }
       });
   }

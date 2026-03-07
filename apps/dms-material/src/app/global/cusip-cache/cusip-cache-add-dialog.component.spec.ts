@@ -69,7 +69,7 @@ describe('CusipCacheAddDialogComponent', function describeDialog() {
     it('should submit valid form', function shouldSubmitValid() {
       component.form.get('cusip')?.setValue('037833100');
       component.form.get('symbol')?.setValue('AAPL');
-      component.form.get('source')?.setValue('MANUAL');
+      component.form.get('source')?.setValue('OPENFIGI');
       component.form.get('reason')?.setValue('test');
 
       component.onSubmit();
@@ -77,9 +77,32 @@ describe('CusipCacheAddDialogComponent', function describeDialog() {
       expect(dialogRefSpy.close).toHaveBeenCalledWith({
         cusip: '037833100',
         symbol: 'AAPL',
-        source: 'MANUAL',
+        source: 'OPENFIGI',
         reason: 'test',
       });
+    });
+
+    it('should not submit whitespace-only symbol', function shouldRejectWhitespace() {
+      component.form.get('cusip')?.setValue('037833100');
+      component.form.get('symbol')?.setValue('   ');
+      component.form.get('source')?.setValue('OPENFIGI');
+
+      component.onSubmit();
+
+      expect(dialogRefSpy.close).not.toHaveBeenCalled();
+    });
+
+    it('should trim symbol whitespace on submit', function shouldTrimSymbol() {
+      component.form.get('cusip')?.setValue('037833100');
+      component.form.get('symbol')?.setValue('  AAPL  ');
+      component.form.get('source')?.setValue('OPENFIGI');
+      component.form.get('reason')?.setValue('');
+
+      component.onSubmit();
+
+      expect(dialogRefSpy.close).toHaveBeenCalledWith(
+        expect.objectContaining({ symbol: 'AAPL' })
+      );
     });
 
     it('should close with null on cancel', function shouldCancel() {
