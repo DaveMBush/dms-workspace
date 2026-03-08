@@ -95,4 +95,31 @@ pnpm test:dms-material
 
 ### Status
 
-Approved
+Ready for Review
+
+### Agent Model Used
+
+Claude Opus 4.6
+
+### Completion Notes
+
+- Re-enabled all 5 Global Tab Selection Persistence tests from AV.3
+- Injected StatePersistenceService into Account component
+- navigateToGlobal now saves selected tab path via saveState
+- ngOnInit loads saved tab and navigates to it if non-null
+- Updated one test assertion: expect.anything() → null (vitest doesn't match null with anything())
+- All 1533 unit tests pass, 3 pre-existing skips only
+
+### File List
+
+- apps/dms-material/src/app/accounts/account.ts (modified)
+- apps/dms-material/src/app/accounts/account.spec.ts (modified)
+
+### Change Log
+
+- Import StatePersistenceService in Account component
+- Add statePersistence injection and stateKey constant
+- Save tab selection in navigateToGlobal via saveState
+- Load and restore tab selection in ngOnInit
+- Re-enable all 5 skipped persistence tests
+- Fix test assertion for loadState default parameter
