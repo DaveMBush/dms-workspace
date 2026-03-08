@@ -149,7 +149,7 @@ export class AccountPanelComponent implements OnInit, OnDestroy {
 
   onTabChange(tabRoute: string): void {
     const accountId = this.accountId;
-    if (accountId !== null) {
+    if (accountId !== null && tabRoute !== '') {
       const stateKey = AccountPanelComponent.tabKeyPrefix + accountId;
       this.statePersistence.saveState(stateKey, tabRoute);
     }
