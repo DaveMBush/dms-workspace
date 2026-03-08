@@ -87,6 +87,36 @@ pnpm test:dms-material
 
 ## Dev Agent Record
 
+### Agent Model Used
+
+Claude Opus 4.6
+
 ### Status
 
-Approved
+Ready for Review
+
+### Tasks / Subtasks
+
+- [x] Write skipped tests for saving tab route per account
+- [x] Write skipped tests for loading saved tab on init
+- [x] Write skipped tests for default tab behavior
+- [x] Write skipped tests for independent state per account
+- [x] Write skipped tests for tab navigation on account switch
+- [x] Write skipped tests for invalid tab handling
+- [x] Verify RED phase (test fails when unskipped)
+- [x] All validation passes
+
+### File List
+
+- apps/dms-material/src/app/account-panel/account-panel.component.spec.ts (modified - 6 skipped tests)
+- docs/stories/AV.7.tdd-account-tab-selection-persistence.md (modified - dev record)
+
+### Change Log
+
+- Added 6 skipped tests in Tab Selection Persistence describe block
+- Tests cover: save per account, load on init, default tab, independent state, navigate on switch, invalid tab
+- Verified RED phase: unskipped test fails (onTabChange doesn't exist)
+
+### Debug Log References
+
+### Completion Notes
