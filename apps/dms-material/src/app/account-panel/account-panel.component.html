@@ -7,6 +7,7 @@
       #rla1="routerLinkActive"
       [routerLinkActiveOptions]="{ exact: true }"
       [active]="rla1.isActive"
+      (click)="onTabChange('')"
     >
       Summary
     </a>
@@ -16,6 +17,7 @@
       routerLinkActive
       #rla2="routerLinkActive"
       [active]="rla2.isActive"
+      (click)="onTabChange('open')"
     >
       Open Positions
     </a>
@@ -25,6 +27,7 @@
       routerLinkActive
       #rla3="routerLinkActive"
       [active]="rla3.isActive"
+      (click)="onTabChange('sold')"
     >
       Sold Positions
     </a>
@@ -34,6 +37,7 @@
       routerLinkActive
       #rla4="routerLinkActive"
       [active]="rla4.isActive"
+      (click)="onTabChange('div-dep')"
     >
       Dividend Deposits
     </a>
