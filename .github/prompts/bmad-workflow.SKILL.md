@@ -7,6 +7,17 @@ description: Common rules and patterns for BMAD (Business-Model-Agile-Developmen
 
 This skill contains shared rules and patterns used across all BMAD autonomous development workflows.
 
+## CRITICAL: Subagent Continuation Rule
+
+**When a `run #file:` subagent returns, IMMEDIATELY continue to the next step — no pausing, no waiting for human input, no asking for confirmation.**
+
+The ONLY reasons to stop after a subagent returns:
+
+- The subagent explicitly called `prompt.sh` with `"stop"` as its output
+- The subagent called `prompt.sh` and you are waiting on the response
+
+In ALL other cases: treat a returning subagent as a green light to proceed to the next phase. This rule applies everywhere in every workflow.
+
 ## CRITICAL: Human Interaction Protocol
 
 **NEVER stop, yield back to the user, or pause execution without first calling `prompt.sh`.**
@@ -28,14 +39,15 @@ When human input is needed:
 ```typescript
 run_in_terminal({
   command: 'bash .github/prompts/prompt.sh "Unable to merge PR: conflicts detected"',
-  explanation: "Requesting human decision on merge conflicts",
-  goal: "Get human guidance",
+  explanation: 'Requesting human decision on merge conflicts',
+  goal: 'Get human guidance',
   isBackground: false,
-  timeout: 0  // CRITICAL: No timeout - wait indefinitely
-})
+  timeout: 0, // CRITICAL: No timeout - wait indefinitely
+});
 ```
 
 **NEVER**:
+
 - Stop, yield back to the user, or write messages like "awaiting your approval" without first running prompt.sh
 - Use a timeout other than 0 when calling prompt.sh
 - Continue without handling the response from prompt.sh
@@ -43,6 +55,7 @@ run_in_terminal({
 The prompt.sh script IS the human interaction mechanism. The Zenity dialog handles all user interaction.
 
 **IMPORTANT**:
+
 - You must wait for the response before proceeding. The process should block any further action until it returns.
 - These rules apply every time `.github/prompts/prompt.sh` is called, regardless of the phase or context.
 - Do not hide or minimize the terminal window — the operator needs to see the dialog.
@@ -71,6 +84,7 @@ When you need information about APIs, libraries, or frameworks:
 3. Use `mcp_context7_query-docs` to retrieve API usage examples and documentation
 
 **Example use cases:**
+
 - Need to know how to use Angular Material Dialog? Query Context7 first
 - Verifying correct API usage for unfamiliar libraries
 - Checking for deprecation warnings or breaking changes
@@ -85,6 +99,7 @@ When implementing or fixing UI components:
 3. Run visual tests after UI changes to verify correctness
 
 **Example use cases:**
+
 - Validating UI after every UI component change
 - Testing user interactions (clicks, form fills, navigation)
 - Verifying responsive behavior
@@ -220,12 +235,14 @@ For each iteration:
 ### 4. Validate and Commit
 
 - **CRITICAL**: Run ALL quality validation steps (see "Quality Validation Loop" section above) before committing
+
   - All four checks (pnpm all, e2e tests, dupcheck, format) must pass
   - If any validation fails: Fix issues and re-run ALL validations until they pass
   - Follow same retry/fix logic (up to 10 attempts per validation)
   - If validations fail after 10 attempts: Call `.github/prompts/prompt.sh "Quality validation failed after applying CodeRabbit fixes: <error>"`
 
 - Only after ALL validations pass:
+
   - Commit with message: "Apply CodeRabbit suggestions"
   - Push to branch
   - **Wait 5 minutes** (rate limit protection for CodeRabbit)
@@ -273,11 +290,13 @@ For workflows that can be resumed (epic orchestration, CodeRabbit loops), mainta
 Location: `.git/tmp/story-${story}-meta.json`
 
 Required fields:
+
 ```json
 {
   "pr": 123,
   "branch": "feat/story-AD.3",
   "repo": "owner/repo",
+  "worktreePath": "../dms/story-AD.3",
   "attempt": 0,
   "maxIterations": 10,
   "merged": false,
@@ -285,11 +304,21 @@ Required fields:
 }
 ```
 
+**IMPORTANT — state file path in worktrees**: When running from inside a git worktree, `.git` is a pointer file rather than a directory. Always resolve the shared git directory using:
+
+```bash
+GIT_COMMON_DIR=$(git rev-parse --git-common-dir)
+mkdir -p "$GIT_COMMON_DIR/tmp"
+```
+
+Then write/read state files at `"$GIT_COMMON_DIR/tmp/story-${story}-meta.json"` (not `.git/tmp/`) so all subagents share the same location regardless of which worktree they run from.
+
 ### Epic Aggregation File
 
 Location: `.git/tmp/epic-${epic}-stories.json`
 
 Format:
+
 ```json
 [
   {
@@ -328,6 +357,7 @@ To avoid CodeRabbit API rate limiting:
 ## Exit Code 130 Handling
 
 Exit code 130 indicates process interruption (SIGINT), which can occur when:
+
 - Agent infrastructure restarts/summarizes (NOT user action - most common)
 - User presses Ctrl+C (deliberate user action - rare)
 
@@ -407,15 +437,18 @@ run #skill:bmad-workflow
 [Your workflow-specific instructions here]
 
 ## Phase 1: Implementation
+
 - Follow human interaction protocol from bmad-workflow skill
 - Use MCP servers as described in bmad-workflow skill
 - Never run destructive database commands (see bmad-workflow skill)
 
 ## Phase 2: Validation
+
 - Run quality validation loop from bmad-workflow skill
 - On failures, use MCP servers for guidance
 
 ## Phase 3: CodeRabbit Review
+
 - Follow CodeRabbit review loop pattern from bmad-workflow skill
 ```
 

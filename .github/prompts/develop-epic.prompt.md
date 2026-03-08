@@ -53,8 +53,9 @@ For each story in the ordered list:
    - **For standard stories**: Run `run #file:./develop-story.prompt.md story=${current_story}`
    - **For bug fix stories**: Run `run #file:./debug.prompt.md epic=${epic} story=${current_story}`
    - Both workflows handle: validation, implementation, quality checks, PR creation, CodeRabbit review, and merge
-   - After the delegated workflow returns, the orchestrator MUST read the minimal state file written by the story workflow at `.git/tmp/story-${current_story}-meta.json`. If the file is missing or malformed, call `.github/prompts/prompt.sh "Missing or invalid meta file for ${current_story}. Repair or continue?"` via `run_in_terminal` and handle the response.
-   - Append or update the epic aggregation file `.git/tmp/epic-${epic}-stories.json` with the story's metadata. Each entry should include at minimum: `story`, `pr`, `branch`, `merged` (boolean), and `mergedAt` (timestamp if merged). Use this file for later reporting and for resuming orchestration without re-passing large prompt context.
+   - **IMMEDIATELY after the delegated workflow returns** (do not pause, do not wait for human input): read the minimal state file written by the story workflow. Resolve the path via `$(git rev-parse --git-common-dir)/tmp/story-${current_story}-meta.json`. If the file is missing or malformed, call `.github/prompts/prompt.sh "Missing or invalid meta file for ${current_story}. Repair or continue?"` via `run_in_terminal` and handle the response.
+   - Append or update the epic aggregation file at `$(git rev-parse --git-common-dir)/tmp/epic-${epic}-stories.json` with the story's metadata. Each entry should include at minimum: `story`, `pr`, `branch`, `merged` (boolean), and `mergedAt` (timestamp if merged). Use this file for later reporting and for resuming orchestration without re-passing large prompt context.
+   - **IMMEDIATELY continue to the next story in the ordered list** — no human confirmation required between stories.
 
 3. **Handle Story Failures**
    - If story execution calls prompt.sh with "stop":

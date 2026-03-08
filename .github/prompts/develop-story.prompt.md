@@ -32,6 +32,8 @@ Key points from bmad-workflow skill:
 5. Check if GitHub issue already exists for this story (search by story ID in title)
 6. Check if branch already exists for this story
    - If exists: Call `.github/prompts/prompt.sh "Branch for story ${story} already exists"`
+7. Check if worktree already exists at `../dms/story-${story}`
+   - If exists: Call `.github/prompts/prompt.sh "Worktree for story ${story} already exists at ../dms/story-${story}"`
 
 ## PHASE 2: Story Implementation
 
@@ -40,11 +42,15 @@ run #file:./code-story.prompt.md story=${story}
 This will:
 
 - Create GitHub issue (if not exists)
-- Create and checkout branch
-- Implement the story using the delegated implementation workflow
+- Create branch and a git worktree at `../dms/story-${story}`
+- Implement the story from within the worktree directory
 - During implementation, use `mcp_context7_query-docs` for unfamiliar APIs and Playwright for UI checks
 
 If `code-story.prompt.md` encounters issues, it must call `.github/prompts/prompt.sh` or handle internal retries as required.
+
+**IMMEDIATELY PROCEED TO PHASE 3** once `code-story.prompt.md` returns — do not pause, do not ask for confirmation. cd to `../dms/story-${story}` and run `pnpm i` now, then begin Phase 3.
+
+**IMPORTANT**: All subsequent phases (3 through 7) must run from within the worktree at `../dms/story-${story}`.
 
 ## Phase 3 Quality Validation
 
@@ -67,15 +73,18 @@ Run QA gate up to 10 times:
 
 run #file:./gate.prompt.md story=${story}
 
-- For each failed attempt:
+The gate subagent outputs a review result. Interpret the result as follows:
+
+- **PASS** (subagent returns without errors or blocking findings): **IMMEDIATELY proceed to Phase 5 — do not pause, do not ask for confirmation.**
+- **FAIL** (subagent returns with blocking findings / explicit failure notes):
   - Apply QA fix recommendations automatically
   - **Use Context7** if QA mentions incorrect API usage
   - **Use Playwright** if QA mentions UI/UX issues
   - Re-run ALL of Phase 3 (tests, e2e, dupcheck, format)
-  - Retry gate review
+  - Retry gate (return to top of Phase 4)
 - On 10th failure: Call `.github/prompts/prompt.sh "QA gate review failing after 10 attempts with issues: <issue summary>"`
 
-**Critical**: Gate must pass before proceeding.
+**Critical**: Gate must pass before proceeding. When it passes: IMMEDIATELY move to Phase 5.
 
 ## PHASE 5: Commit and PR Creation
 
@@ -94,15 +103,18 @@ This will:
 
 If commit-and-pr fails: Call `.github/prompts/prompt.sh "Failed to create PR: <error>"`
 
+**IMMEDIATELY PROCEED TO PHASE 6** once `commit-and-pr.prompt.md` returns successfully — do not pause or wait for human input.
+
 ## PHASE 6: CodeRabbit Review Loop (delegated)
 
-Phase 6 has been delegated to a dedicated, resumable subagent. After Phase 5 completes the `commit-and-pr` step MUST write a minimal metadata file at `.git/tmp/story-${story}-meta.json` with at least:
+Phase 6 has been delegated to a dedicated, resumable subagent. After Phase 5 completes the `commit-and-pr` step MUST write a minimal metadata file at `$(git rev-parse --git-common-dir)/tmp/story-${story}-meta.json` with at least:
 
 ```json
 {
-  "pr": <pr_number>,
+  "pr": "<pr_number>",
   "branch": "<branch-name>",
   "repo": "<owner>/<repo>",
+  "worktreePath": "<absolute-path-to-worktree>",
   "attempt": 0,
   "maxIterations": 10
 }
@@ -118,6 +130,8 @@ The `code-rabbit` subagent will poll `mcp_github_pull_request_read method:get_re
 
 Use the `code-rabbit.prompt.md` subagent to keep the story prompt small, idempotent, and resumable.
 
+**IMMEDIATELY PROCEED TO PHASE 7** once `code-rabbit.prompt.md` returns — do not pause or wait for human input.
+
 ## PHASE 7: Final Merge
 
 ### 7.1 Verify PR Mergeable
@@ -128,6 +142,24 @@ Check that PR has:
 - ✅ No merge conflicts
 - ✅ Issue linkage present (#<issue-number>)
 - ✅ CodeRabbit approved or no blocking comments
+
+**Conflict Check with Main** (run from within the worktree `../dms/story-${story}`):
+
+```bash
+git fetch origin main
+git merge-tree $(git merge-base HEAD origin/main) HEAD origin/main
+```
+
+If the output contains conflict markers (`<<<<<<<`, `=======`, `>>>>>>>`), the branch conflicts with main:
+
+- Attempt rebase onto main to resolve:
+  ```bash
+  git rebase origin/main
+  ```
+  - Fix any conflicts, run full Phase 3 validation, then push
+  - If rebase fails after 3 attempts: Call `.github/prompts/prompt.sh "Branch has unresolvable conflicts with main: <conflict details>"`
+- After rebase (or if no conflicts), verify the PR `mergeable` state via `mcp_github_pull_request_read` with `method: "get"` — poll every 30 seconds until `mergeable` is `true` or `false` (not `null`); timeout after 5 minutes
+  - If `mergeable` is `false`: Call `.github/prompts/prompt.sh "PR is not mergeable: <details>"`
 
 **Optional Final Validation**:
 
@@ -150,10 +182,23 @@ If any check fails: Call `.github/prompts/prompt.sh "PR not ready to merge: <spe
 
 ### 7.4 Local Cleanup
 
-- Checkout main branch locally
-- Pull latest changes
-- Delete local story branch
-- Verify clean state
+- Navigate back to the main workspace from within the worktree:
+  ```bash
+  cd "$(git rev-parse --git-common-dir)/.."
+  ```
+- Pull latest changes on main:
+  ```bash
+  git pull origin main
+  ```
+- Remove the story worktree:
+  ```bash
+  git worktree remove ../dms/story-${story} --force
+  ```
+- Delete the local story branch (GitHub typically deletes the remote branch after a squash merge):
+  ```bash
+  git branch -d <branch-name> || git branch -D <branch-name>
+  ```
+- Verify clean state: `git worktree list` should no longer show the story worktree
 
 ### 7.5 Report Completion
 
