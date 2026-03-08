@@ -50,17 +50,20 @@
 Test each scenario manually in the browser:
 
 1. **Global Tab Persistence**
+
    - [ ] Select different global tabs
    - [ ] Refresh page
    - [ ] Verify correct tab selected after refresh
 
 2. **Account Selection Persistence**
+
    - [ ] Select different accounts
    - [ ] Refresh page
    - [ ] Verify correct account selected after refresh
    - [ ] Test with deleted account
 
 3. **Account Tab Persistence**
+
    - [ ] Select different accounts
    - [ ] Change to different tabs for each account
    - [ ] Switch between accounts
@@ -77,6 +80,7 @@ Test each scenario manually in the browser:
 ### Step 2: Fix Discovered Issues
 
 For each bug found:
+
 1. Reproduce reliably
 2. Add failing unit test if possible
 3. Implement fix
@@ -134,7 +138,7 @@ pnpm format
 
 ### Status
 
-Not Started
+Approved
 
 ### Bugs Found and Fixed
 

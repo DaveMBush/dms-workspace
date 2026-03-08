@@ -61,67 +61,60 @@ test.describe.skip('State Persistence', () => {
   test('should persist global tab selection through refresh', async ({ page }) => {
     // Select Account tab
     await page.click('[data-testid="global-tab-account"]');
-    
+
     // Verify Account tab selected
-    await expect(page.locator('[data-testid="global-tab-account"]'))
-      .toHaveAttribute('aria-selected', 'true');
-    
+    await expect(page.locator('[data-testid="global-tab-account"]')).toHaveAttribute('aria-selected', 'true');
+
     // Refresh page
     await page.reload();
-    
+
     // Verify Account tab still selected
-    await expect(page.locator('[data-testid="global-tab-account"]'))
-      .toHaveAttribute('aria-selected', 'true');
+    await expect(page.locator('[data-testid="global-tab-account"]')).toHaveAttribute('aria-selected', 'true');
   });
 
   test('should persist account selection through refresh', async ({ page }) => {
     // Navigate to Account tab
     await page.click('[data-testid="global-tab-account"]');
-    
+
     // Select specific account
     await page.click('[data-testid="account-123"]');
-    
+
     // Verify account selected
-    await expect(page.locator('[data-testid="selected-account-name"]'))
-      .toContainText('Account 123');
-    
+    await expect(page.locator('[data-testid="selected-account-name"]')).toContainText('Account 123');
+
     // Refresh page
     await page.reload();
-    
+
     // Verify account still selected
-    await expect(page.locator('[data-testid="selected-account-name"]'))
-      .toContainText('Account 123');
+    await expect(page.locator('[data-testid="selected-account-name"]')).toContainText('Account 123');
   });
 
   test('should persist account tab selection per account through refresh', async ({ page }) => {
     // Navigate to Account tab
     await page.click('[data-testid="global-tab-account"]');
-    
+
     // Select account 1 and set to Holdings tab
     await page.click('[data-testid="account-123"]');
     await page.click('[data-testid="account-tab-holdings"]');
-    
+
     // Select account 2 and set to Activity tab
     await page.click('[data-testid="account-456"]');
     await page.click('[data-testid="account-tab-activity"]');
-    
+
     // Verify account 2 Activity tab selected
-    await expect(page.locator('[data-testid="account-tab-activity"]'))
-      .toHaveAttribute('aria-selected', 'true');
-    
+    await expect(page.locator('[data-testid="account-tab-activity"]')).toHaveAttribute('aria-selected', 'true');
+
     // Refresh page
     await page.reload();
-    
+
     // Verify account 2 Activity tab still selected
-    await expect(page.locator('[data-testid="account-tab-activity"]'))
-      .toHaveAttribute('aria-selected', 'true');
-    
+    await expect(page.locator('[data-testid="account-tab-activity"]')).toHaveAttribute('aria-selected', 'true');
+
     // Switch to account 1
     await page.click('[data-testid="account-123"]');
-    
+
     // Verify account 1 Holdings tab selected (independent state)
-    await expect(page.locator('[data-testid="account-tab-holdings"]'))
-      .toHaveAttribute('aria-selected', 'true');
+    await expect(page.locator('[data-testid="account-tab-holdings"]')).toHaveAttribute('aria-selected', 'true');
   });
 
   test('should restore complete state on page load', async ({ page }) => {
@@ -129,29 +122,25 @@ test.describe.skip('State Persistence', () => {
     await page.click('[data-testid="global-tab-account"]');
     await page.click('[data-testid="account-123"]');
     await page.click('[data-testid="account-tab-distributions"]');
-    
+
     // Refresh page
     await page.reload();
-    
+
     // Verify all state restored
-    await expect(page.locator('[data-testid="global-tab-account"]'))
-      .toHaveAttribute('aria-selected', 'true');
-    await expect(page.locator('[data-testid="selected-account-name"]'))
-      .toContainText('Account 123');
-    await expect(page.locator('[data-testid="account-tab-distributions"]'))
-      .toHaveAttribute('aria-selected', 'true');
+    await expect(page.locator('[data-testid="global-tab-account"]')).toHaveAttribute('aria-selected', 'true');
+    await expect(page.locator('[data-testid="selected-account-name"]')).toContainText('Account 123');
+    await expect(page.locator('[data-testid="account-tab-distributions"]')).toHaveAttribute('aria-selected', 'true');
   });
 
   test('should handle fresh start with no saved state', async ({ page }) => {
     // Clear any saved state
     await page.evaluate(() => localStorage.clear());
-    
+
     // Reload page
     await page.reload();
-    
+
     // Verify defaults used
-    await expect(page.locator('[data-testid="global-tab-sell"]'))
-      .toHaveAttribute('aria-selected', 'true');
+    await expect(page.locator('[data-testid="global-tab-sell"]')).toHaveAttribute('aria-selected', 'true');
   });
 });
 ```
@@ -201,4 +190,4 @@ Verify all new tests are skipped.
 
 ### Status
 
-Not Started
+Approved

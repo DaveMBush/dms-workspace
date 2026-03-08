@@ -17,7 +17,7 @@
 
 - Re-enable unit tests from AV.1
 - Create StatePersistenceService
-- Implement localStorage operations  
+- Implement localStorage operations
 - Make all tests pass (GREEN phase)
 
 ## Acceptance Criteria
@@ -48,7 +48,7 @@ Remove `x` prefix or `.skip` from tests written in AV.1.
 
 ```typescript
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class StatePersistenceService {
   private readonly STORAGE_KEY = 'dms-ui-state';
@@ -139,7 +139,7 @@ pnpm test:dms-material
 
 ### Status
 
-Not Started
+Approved
 
 ### Tasks / Subtasks
 
