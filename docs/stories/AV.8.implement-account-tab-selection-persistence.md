@@ -50,7 +50,7 @@ Remove `x` prefix or `.skip` from tests written in AV.7.
 ```typescript
 export class AccountDetailComponent implements OnInit {
   private readonly STATE_KEY_PREFIX = 'account-tab-';
-  
+
   constructor(private statePersistence: StatePersistenceService) {}
 
   ngOnInit() {
@@ -107,4 +107,4 @@ pnpm test:dms-material
 
 ### Status
 
-Not Started
+Approved

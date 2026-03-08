@@ -49,7 +49,7 @@ Remove `x` prefix or `.skip` from tests written in AV.3.
 ```typescript
 export class TabsComponent implements OnInit {
   private readonly STATE_KEY = 'global-tab-selection';
-  
+
   constructor(private statePersistence: StatePersistenceService) {}
 
   ngOnInit() {
@@ -95,4 +95,4 @@ pnpm test:dms-material
 
 ### Status
 
-Not Started
+Approved

@@ -60,11 +60,11 @@ describe('StatePersistenceService', () => {
   xit('should clear state from localStorage');
   xit('should get current state');
   xit('should set current state');
-  
+
   // Serialization
   xit('should serialize state to JSON');
   xit('should deserialize state from JSON');
-  
+
   // Error handling
   xit('should handle missing localStorage data');
   xit('should handle corrupted data gracefully');
@@ -119,10 +119,37 @@ Temporarily remove `.skip` from one test to verify it fails, then re-add `.skip`
 
 ### Agent Model Used
 
+Claude Opus 4.6
+
 ### Status
 
-Not Started
+In Progress
 
 ### Tasks / Subtasks
 
+- [x] Create skeleton StatePersistenceService stub for compilation
+- [x] Write unit tests for saveState() with .skip
+- [x] Write unit tests for loadState() with .skip
+- [x] Write unit tests for clearState() with .skip
+- [x] Write tests for serialization/deserialization with .skip
+- [x] Write tests for error handling (corrupted/invalid data) with .skip
+- [x] Verify all tests are skipped and CI passes
+- [x] Confirm a test would fail if unskipped
+
+### File List
+
+- apps/dms-material/src/app/shared/services/state-persistence.service.ts (new - skeleton stub)
+- apps/dms-material/src/app/shared/services/state-persistence.service.spec.ts (new - TDD RED tests)
+- docs/stories/AV.1.tdd-state-persistence-service.md (modified - dev record)
+
+### Change Log
+
+- Created StatePersistenceService skeleton stub with empty method signatures
+- Created comprehensive test file with 20 skipped tests covering saveState, loadState, clearState, serialization, and error handling
+- Fixed test mocking: replaced Storage.prototype spies with globalThis.localStorage mock for jsdom compatibility
+- Verified all 19 skipped tests + 4 passing tests work correctly
+- Confirmed RED phase: unskipped test fails as expected (no implementation)
+
 ### Debug Log References
+
+### Completion Notes

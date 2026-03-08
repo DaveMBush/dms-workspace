@@ -49,17 +49,11 @@ Remove `x` prefix or `.skip` from tests written in AV.5.
 ```typescript
 export class AccountComponent implements OnInit {
   private readonly STATE_KEY = 'selected-account-id';
-  
-  constructor(
-    private statePersistence: StatePersistenceService,
-    private accountService: AccountService
-  ) {}
+
+  constructor(private statePersistence: StatePersistenceService, private accountService: AccountService) {}
 
   ngOnInit() {
-    const savedAccountId = this.statePersistence.loadState<string | null>(
-      this.STATE_KEY,
-      null
-    );
+    const savedAccountId = this.statePersistence.loadState<string | null>(this.STATE_KEY, null);
     if (savedAccountId && this.isValidAccount(savedAccountId)) {
       this.selectAccount(savedAccountId);
     }
@@ -69,9 +63,9 @@ export class AccountComponent implements OnInit {
     this.selectAccount(accountId);
     this.statePersistence.saveState(this.STATE_KEY, accountId);
   }
-  
+
   private isValidAccount(accountId: string): boolean {
-    return this.accounts().some(acc => acc.id === accountId);
+    return this.accounts().some((acc) => acc.id === accountId);
   }
 }
 ```
@@ -107,4 +101,4 @@ pnpm test:dms-material
 
 ### Status
 
-Not Started
+Approved
