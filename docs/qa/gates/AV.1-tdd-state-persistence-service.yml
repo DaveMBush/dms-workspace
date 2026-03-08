@@ -8,6 +8,6 @@ updated: '2026-03-07T00:00:00Z'
 top_issues:
   - id: 'NOTE-001'
     severity: low
-    finding: 'AC lists getState()/setState() as separate methods but implementation consolidates into saveState()/loadState(). Behavior is fully covered.'
-    suggested_action: 'Update AC checklist to match actual API surface, or add explicit getState/setState methods in AV.2 if in-memory state is needed.'
+    finding: 'AC previously listed getState()/setState() as separate methods - removed to match actual API surface (saveState/loadState/clearState).'
+    suggested_action: 'Resolved - AC updated to match implementation.'
 waiver: { active: false }

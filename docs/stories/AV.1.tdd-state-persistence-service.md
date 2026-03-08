@@ -30,8 +30,6 @@
   - [ ] Test saveState() stores data in localStorage
   - [ ] Test loadState() retrieves data from localStorage
   - [ ] Test clearState() removes data from localStorage
-  - [ ] Test getState() returns current state
-  - [ ] Test setState() updates current state
   - [ ] Test state serialization to JSON
   - [ ] Test state deserialization from JSON
   - [ ] Test handling of missing/corrupted data
@@ -58,8 +56,6 @@ describe('StatePersistenceService', () => {
   xit('should save state to localStorage');
   xit('should load state from localStorage');
   xit('should clear state from localStorage');
-  xit('should get current state');
-  xit('should set current state');
 
   // Serialization
   xit('should serialize state to JSON');
@@ -123,7 +119,7 @@ Claude Opus 4.6
 
 ### Status
 
-In Progress
+Ready for Review
 
 ### Tasks / Subtasks
 
