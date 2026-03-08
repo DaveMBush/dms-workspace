@@ -248,19 +248,19 @@ describe('AccountPanelComponent', () => {
       });
       mockStatePersistenceService.loadState.mockReturnValue(null);
 
+      const router = TestBed.inject(Router);
+      const routerSpy = vi.spyOn(router, 'navigate');
+
       component.ngOnInit();
       fixture.detectChanges();
 
       // Should not navigate to a specific sub-tab - stays on summary (default)
-      const router = TestBed.inject(Router);
-      const routerSpy = vi.spyOn(router, 'navigate');
       expect(routerSpy).not.toHaveBeenCalledWith(
         expect.arrayContaining([expect.stringContaining('/open')])
       );
     });
 
     it.skip('should maintain independent tab state per account', () => {
-      // Account 1 has 'open' tab saved
       mockStatePersistenceService.loadState.mockImplementation(
         function getState(key: string) {
           if (key === 'account-tab-account-1') {
@@ -273,12 +273,17 @@ describe('AccountPanelComponent', () => {
         }
       );
 
-      expect(
-        mockStatePersistenceService.loadState('account-tab-account-1')
-      ).toBe('open');
-      expect(
-        mockStatePersistenceService.loadState('account-tab-account-2')
-      ).toBe('sold');
+      // Switch to account-1 and verify it loads 'open'
+      Object.defineProperty(component, 'accountId', {
+        get: () => 'account-1',
+        configurable: true,
+      });
+      component.ngOnInit();
+
+      expect(mockStatePersistenceService.loadState).toHaveBeenCalledWith(
+        'account-tab-account-1',
+        null
+      );
     });
 
     it.skip('should navigate to saved tab route on account switch', () => {
