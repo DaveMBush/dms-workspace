@@ -78,8 +78,9 @@ describe('Account', () => {
 
     fixture = TestBed.createComponent(Account);
     component = fixture.componentInstance;
-    mockRouter = TestBed.inject(Router) as unknown as {
-      navigate: ReturnType<typeof vi.fn>;
+    const router = TestBed.inject(Router);
+    mockRouter = {
+      navigate: vi.spyOn(router, 'navigate').mockResolvedValue(true),
     };
 
     // Mock the accounts$ signal
