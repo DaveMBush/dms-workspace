@@ -276,7 +276,7 @@ describe('Account', () => {
   });
 
   describe('Global Tab Selection Persistence', () => {
-    it.skip('should save selected global tab to state service when navigating', () => {
+    it('should save selected global tab to state service when navigating', () => {
       component.navigateToGlobal('universe');
 
       expect(mockStatePersistenceService.saveState).toHaveBeenCalledWith(
@@ -285,18 +285,18 @@ describe('Account', () => {
       );
     });
 
-    it.skip('should load saved global tab selection on component init', () => {
+    it('should load saved global tab selection on component init', () => {
       mockStatePersistenceService.loadState.mockReturnValue('screener');
 
       component.ngOnInit();
 
       expect(mockStatePersistenceService.loadState).toHaveBeenCalledWith(
         'global-tab-selection',
-        expect.anything()
+        null
       );
     });
 
-    it.skip('should default to no tab selection when no saved state exists', () => {
+    it('should default to no tab selection when no saved state exists', () => {
       mockStatePersistenceService.loadState.mockReturnValue(null);
 
       component.ngOnInit();
@@ -307,7 +307,7 @@ describe('Account', () => {
       );
     });
 
-    it.skip('should navigate to saved global tab on init', () => {
+    it('should navigate to saved global tab on init', () => {
       mockStatePersistenceService.loadState.mockReturnValue('universe');
 
       component.ngOnInit();
@@ -316,7 +316,7 @@ describe('Account', () => {
       expect(mockRouter.navigate).toHaveBeenCalledWith(['/global', 'universe']);
     });
 
-    it.skip('should handle invalid saved tab gracefully', () => {
+    it('should handle invalid saved tab gracefully', () => {
       mockStatePersistenceService.loadState.mockReturnValue('nonexistent-tab');
 
       expect(() => {

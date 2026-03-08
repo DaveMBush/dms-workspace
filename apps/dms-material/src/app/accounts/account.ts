@@ -16,6 +16,7 @@ import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { SmartArray } from '@smarttools/smart-signals';
 
 import { NodeEditorComponent } from '../shared/components/edit/node-editor.component';
+import { StatePersistenceService } from '../shared/services/state-persistence.service';
 import { Account as AccountInterface } from '../store/accounts/account.interface';
 import { selectAccounts } from '../store/accounts/selectors/select-accounts.function';
 import { selectTopEntities } from '../store/top/selectors/select-top-entities.function';
@@ -43,6 +44,8 @@ import { AccountComponentService } from './account-component.service';
 export class Account implements OnInit {
   private accountService = inject(AccountComponentService);
   private router = inject(Router);
+  private statePersistence = inject(StatePersistenceService);
+  private readonly stateKey = 'global-tab-selection';
 
   accounts$ = selectAccounts as Signal<
     AccountInterface[] & SmartArray<Top, AccountInterface>
@@ -52,6 +55,13 @@ export class Account implements OnInit {
 
   ngOnInit(): void {
     this.accountService.init(this);
+    const savedTab = this.statePersistence.loadState<string | null>(
+      this.stateKey,
+      null
+    );
+    if (savedTab !== null) {
+      this.navigateToGlobal(savedTab);
+    }
   }
 
   // Convert SmartArray to regular array for Angular Material compatibility
@@ -75,6 +85,7 @@ export class Account implements OnInit {
   }
 
   navigateToGlobal(path: string): void {
+    this.statePersistence.saveState(this.stateKey, path);
     const context = this;
     void context.router
       .navigate(['/global', path])
