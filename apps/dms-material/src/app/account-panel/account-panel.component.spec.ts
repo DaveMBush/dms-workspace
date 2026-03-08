@@ -3,6 +3,7 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { provideRouter, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 
+import { StatePersistenceService } from '../shared/services/state-persistence.service';
 import { AccountPanelComponent } from './account-panel.component';
 import { DividendDepositsComponentService } from './dividend-deposits/dividend-deposits-component.service';
 
@@ -200,23 +201,40 @@ describe('AccountPanelComponent', () => {
       loadState: ReturnType<typeof vi.fn>;
       clearState: ReturnType<typeof vi.fn>;
     };
+    let persistenceFixture: ComponentFixture<AccountPanelComponent>;
+    let persistenceComponent: AccountPanelComponent;
 
-    beforeEach(() => {
+    beforeEach(async () => {
       mockStatePersistenceService = {
         saveState: vi.fn(),
         loadState: vi.fn().mockReturnValue(null),
         clearState: vi.fn(),
       };
+
+      TestBed.resetTestingModule();
+      await TestBed.configureTestingModule({
+        imports: [AccountPanelComponent],
+        providers: [
+          provideRouter([]),
+          {
+            provide: StatePersistenceService,
+            useValue: mockStatePersistenceService,
+          },
+        ],
+      }).compileComponents();
+
+      persistenceFixture = TestBed.createComponent(AccountPanelComponent);
+      persistenceComponent = persistenceFixture.componentInstance;
     });
 
-    it.skip('should save selected tab route per account ID', () => {
+    it('should save selected tab route per account ID', () => {
       const accountId = 'account-1';
-      Object.defineProperty(component, 'accountId', {
+      Object.defineProperty(persistenceComponent, 'accountId', {
         get: () => accountId,
         configurable: true,
       });
 
-      (component as any).onTabChange('open');
+      persistenceComponent.onTabChange('open');
 
       expect(mockStatePersistenceService.saveState).toHaveBeenCalledWith(
         'account-tab-account-1',
@@ -224,15 +242,15 @@ describe('AccountPanelComponent', () => {
       );
     });
 
-    it.skip('should load saved tab for selected account on init', () => {
+    it('should load saved tab for selected account on init', () => {
       const accountId = 'account-1';
-      Object.defineProperty(component, 'accountId', {
+      Object.defineProperty(persistenceComponent, 'accountId', {
         get: () => accountId,
         configurable: true,
       });
       mockStatePersistenceService.loadState.mockReturnValue('sold');
 
-      component.ngOnInit();
+      persistenceComponent.ngOnInit();
 
       expect(mockStatePersistenceService.loadState).toHaveBeenCalledWith(
         'account-tab-account-1',
@@ -240,9 +258,9 @@ describe('AccountPanelComponent', () => {
       );
     });
 
-    it.skip('should default to summary tab when no saved selection', () => {
+    it('should default to summary tab when no saved selection', () => {
       const accountId = 'account-1';
-      Object.defineProperty(component, 'accountId', {
+      Object.defineProperty(persistenceComponent, 'accountId', {
         get: () => accountId,
         configurable: true,
       });
@@ -251,8 +269,8 @@ describe('AccountPanelComponent', () => {
       const router = TestBed.inject(Router);
       const routerSpy = vi.spyOn(router, 'navigate');
 
-      component.ngOnInit();
-      fixture.detectChanges();
+      persistenceComponent.ngOnInit();
+      persistenceFixture.detectChanges();
 
       // Should not navigate to a specific sub-tab - stays on summary (default)
       expect(routerSpy).not.toHaveBeenCalledWith(
@@ -260,7 +278,7 @@ describe('AccountPanelComponent', () => {
       );
     });
 
-    it.skip('should maintain independent tab state per account', () => {
+    it('should maintain independent tab state per account', () => {
       mockStatePersistenceService.loadState.mockImplementation(
         function getState(key: string) {
           if (key === 'account-tab-account-1') {
@@ -274,11 +292,11 @@ describe('AccountPanelComponent', () => {
       );
 
       // Switch to account-1 and verify it loads 'open'
-      Object.defineProperty(component, 'accountId', {
+      Object.defineProperty(persistenceComponent, 'accountId', {
         get: () => 'account-1',
         configurable: true,
       });
-      component.ngOnInit();
+      persistenceComponent.ngOnInit();
 
       expect(mockStatePersistenceService.loadState).toHaveBeenCalledWith(
         'account-tab-account-1',
@@ -286,9 +304,9 @@ describe('AccountPanelComponent', () => {
       );
     });
 
-    it.skip('should navigate to saved tab route on account switch', () => {
+    it('should navigate to saved tab route on account switch', () => {
       const accountId = 'account-1';
-      Object.defineProperty(component, 'accountId', {
+      Object.defineProperty(persistenceComponent, 'accountId', {
         get: () => accountId,
         configurable: true,
       });
@@ -296,7 +314,7 @@ describe('AccountPanelComponent', () => {
 
       const router = TestBed.inject(Router);
       const routerSpy = vi.spyOn(router, 'navigate');
-      component.ngOnInit();
+      persistenceComponent.ngOnInit();
 
       expect(routerSpy).toHaveBeenCalledWith([
         '/account',
@@ -305,17 +323,17 @@ describe('AccountPanelComponent', () => {
       ]);
     });
 
-    it.skip('should handle invalid saved tab gracefully', () => {
+    it('should handle invalid saved tab gracefully', () => {
       const accountId = 'account-1';
-      Object.defineProperty(component, 'accountId', {
+      Object.defineProperty(persistenceComponent, 'accountId', {
         get: () => accountId,
         configurable: true,
       });
       mockStatePersistenceService.loadState.mockReturnValue('nonexistent-tab');
 
       expect(() => {
-        component.ngOnInit();
-        fixture.detectChanges();
+        persistenceComponent.ngOnInit();
+        persistenceFixture.detectChanges();
       }).not.toThrow();
     });
   });

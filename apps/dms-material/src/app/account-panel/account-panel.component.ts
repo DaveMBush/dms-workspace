@@ -22,6 +22,7 @@ import {
 } from '@angular/router';
 import { filter, Subscription } from 'rxjs';
 
+import { StatePersistenceService } from '../shared/services/state-persistence.service';
 import { currentAccountSignalStore } from '../store/current-account/current-account.signal-store';
 import { selectCurrentAccountSignal } from '../store/current-account/select-current-account.signal';
 import { DivDeposit } from '../store/div-deposits/div-deposit.interface';
@@ -53,6 +54,10 @@ export class AccountPanelComponent implements OnInit, OnDestroy {
   private currentAccountStore = inject(currentAccountSignalStore);
   private addPositionService = inject(AddPositionService);
   private dividendDepositsService = inject(DividendDepositsComponentService);
+  private statePersistence = inject(StatePersistenceService);
+
+  private static readonly tabKeyPrefix = 'account-tab-';
+  private static readonly validTabs = ['open', 'sold', 'div-dep'];
 
   private routeSubscription?: Subscription;
   private routeParamsSubscription?: Subscription;
@@ -119,11 +124,35 @@ export class AccountPanelComponent implements OnInit, OnDestroy {
 
     // Set initial URL
     this.currentUrl$.set(this.router.url);
+
+    // Restore saved tab for this account
+    const accountId = this.accountId;
+    if (accountId !== null) {
+      const stateKey = AccountPanelComponent.tabKeyPrefix + accountId;
+      const savedTab = this.statePersistence.loadState<string | null>(
+        stateKey,
+        null
+      );
+      if (
+        savedTab !== null &&
+        AccountPanelComponent.validTabs.includes(savedTab)
+      ) {
+        void this.router.navigate(['/account', accountId, savedTab]);
+      }
+    }
   }
 
   ngOnDestroy(): void {
     this.routeSubscription?.unsubscribe();
     this.routeParamsSubscription?.unsubscribe();
+  }
+
+  onTabChange(tabRoute: string): void {
+    const accountId = this.accountId;
+    if (accountId !== null) {
+      const stateKey = AccountPanelComponent.tabKeyPrefix + accountId;
+      this.statePersistence.saveState(stateKey, tabRoute);
+    }
   }
 
   onAddClick(): void {
