@@ -327,7 +327,7 @@ describe('Account', () => {
   });
 
   describe('Account Selection Persistence', () => {
-    it.skip('should save selected account ID to state service on selection', () => {
+    it('should save selected account ID to state service on selection', () => {
       const account = mockAccounts[0];
 
       component.onAccountSelect(account);
@@ -338,7 +338,7 @@ describe('Account', () => {
       );
     });
 
-    it.skip('should load saved account ID on component init', () => {
+    it('should load saved account ID on component init', () => {
       mockStatePersistenceService.loadState.mockReturnValue('1');
 
       component.ngOnInit();
@@ -349,7 +349,7 @@ describe('Account', () => {
       );
     });
 
-    it.skip('should handle no saved account gracefully', () => {
+    it('should handle no saved account gracefully', () => {
       mockStatePersistenceService.loadState.mockReturnValue(null);
 
       component.ngOnInit();
@@ -359,7 +359,7 @@ describe('Account', () => {
       );
     });
 
-    it.skip('should navigate to saved account on init', () => {
+    it('should navigate to saved account on init', () => {
       mockStatePersistenceService.loadState.mockReturnValue('1');
 
       component.ngOnInit();
@@ -368,7 +368,7 @@ describe('Account', () => {
       expect(mockRouter.navigate).toHaveBeenCalledWith(['/account', '1']);
     });
 
-    it.skip('should handle invalid/deleted account ID gracefully', () => {
+    it('should handle invalid/deleted account ID gracefully', () => {
       mockStatePersistenceService.loadState.mockReturnValue('nonexistent-id');
 
       expect(() => {
@@ -377,7 +377,7 @@ describe('Account', () => {
       }).not.toThrow();
     });
 
-    it.skip('should clear saved account when account is deleted', () => {
+    it('should clear saved account when account is deleted', () => {
       const event = new Event('click');
       const account = mockAccounts[0];
 

@@ -99,6 +99,37 @@ pnpm test:dms-material
 
 ## Dev Agent Record
 
+### Agent Model Used
+
+Claude Opus 4.6
+
 ### Status
 
-Approved
+Ready for Review
+
+### Tasks / Subtasks
+
+- [x] Re-enable 6 skipped tests from AV.5
+- [x] Add saveState call to onAccountSelect
+- [x] Add loadState + navigate to ngOnInit for saved account
+- [x] Add clearState call to deleteAccount
+- [x] All 1539 tests pass (6 new GREEN)
+- [x] Full validation passes
+
+### File List
+
+- apps/dms-material/src/app/accounts/account.ts (modified - account persistence)
+- apps/dms-material/src/app/accounts/account.spec.ts (modified - unskipped 6 tests)
+- docs/stories/AV.6.implement-account-selection-persistence.md (modified - dev record)
+
+### Change Log
+
+- Added accountStateKey 'selected-account' to Account component
+- onAccountSelect now saves account.id via StatePersistenceService
+- ngOnInit now loads saved account ID and navigates to /account/{id}
+- deleteAccount now clears saved account state
+- Re-enabled all 6 AV.5 tests - all pass
+
+### Debug Log References
+
+### Completion Notes

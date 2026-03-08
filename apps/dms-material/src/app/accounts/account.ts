@@ -46,6 +46,7 @@ export class Account implements OnInit {
   private router = inject(Router);
   private statePersistence = inject(StatePersistenceService);
   private readonly stateKey = 'global-tab-selection';
+  private readonly accountStateKey = 'selected-account';
 
   accounts$ = selectAccounts as Signal<
     AccountInterface[] & SmartArray<Top, AccountInterface>
@@ -62,6 +63,18 @@ export class Account implements OnInit {
     if (savedTab !== null) {
       this.navigateToGlobal(savedTab);
     }
+    const savedAccount = this.statePersistence.loadState<string | null>(
+      this.accountStateKey,
+      null
+    );
+    if (savedAccount !== null) {
+      const context = this;
+      void context.router
+        .navigate(['/account', savedAccount])
+        .catch(function handleNavigationError() {
+          // Navigation errors are handled by router
+        });
+    }
   }
 
   // Convert SmartArray to regular array for Angular Material compatibility
@@ -76,6 +89,7 @@ export class Account implements OnInit {
   editingContent = '';
 
   onAccountSelect(account: AccountInterface): void {
+    this.statePersistence.saveState(this.accountStateKey, account.id);
     const context = this;
     void context.router
       .navigate(['/account', account.id])
@@ -115,6 +129,7 @@ export class Account implements OnInit {
   protected deleteAccount(event: Event, item: AccountInterface): void {
     event.preventDefault();
     event.stopPropagation();
+    this.statePersistence.clearState(this.accountStateKey);
     this.accountService.deleteAccount(item);
   }
 }
