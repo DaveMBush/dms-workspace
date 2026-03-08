@@ -147,10 +147,11 @@ Check that PR has:
 
 ```bash
 git fetch origin main
-git merge-tree $(git merge-base HEAD origin/main) HEAD origin/main
+git merge-tree --quiet $(git merge-base HEAD origin/main) HEAD origin/main
+MERGE_EXIT=$?
 ```
 
-If the output contains conflict markers (`<<<<<<<`, `=======`, `>>>>>>>`), the branch conflicts with main:
+If `$MERGE_EXIT` is `1`, the branch conflicts with main (per `git-merge-tree(1)`: exit `0` = clean, `1` = conflicts — do not scan output for markers):
 
 - Attempt rebase onto main to resolve:
   ```bash

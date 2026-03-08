@@ -315,7 +315,7 @@ Then write/read state files at `"$GIT_COMMON_DIR/tmp/story-${story}-meta.json"` 
 
 ### Epic Aggregation File
 
-Location: `.git/tmp/epic-${epic}-stories.json`
+Location: `$(git rev-parse --git-common-dir)/tmp/epic-${epic}-stories.json`
 
 Format:
 
