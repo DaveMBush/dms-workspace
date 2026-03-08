@@ -27,7 +27,7 @@ export class StatePersistenceService {
 
   clearState(key?: string): void {
     try {
-      if (key !== undefined && key !== '') {
+      if (key !== undefined) {
         this.removeKey(key);
       } else {
         localStorage.removeItem(this.storageKey);
@@ -51,8 +51,14 @@ export class StatePersistenceService {
   private loadAllState(): Record<string, unknown> {
     try {
       const stored = localStorage.getItem(this.storageKey);
-      return stored !== null
-        ? (JSON.parse(stored) as Record<string, unknown>)
+      if (stored === null) {
+        return {};
+      }
+      const parsed: unknown = JSON.parse(stored);
+      return parsed !== null &&
+        typeof parsed === 'object' &&
+        !Array.isArray(parsed)
+        ? (parsed as Record<string, unknown>)
         : {};
     } catch {
       return {};
