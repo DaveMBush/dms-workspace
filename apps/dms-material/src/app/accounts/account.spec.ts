@@ -325,4 +325,69 @@ describe('Account', () => {
       }).not.toThrow();
     });
   });
+
+  describe('Account Selection Persistence', () => {
+    it.skip('should save selected account ID to state service on selection', () => {
+      const account = mockAccounts[0];
+
+      component.onAccountSelect(account);
+
+      expect(mockStatePersistenceService.saveState).toHaveBeenCalledWith(
+        'selected-account',
+        account.id
+      );
+    });
+
+    it.skip('should load saved account ID on component init', () => {
+      mockStatePersistenceService.loadState.mockReturnValue('1');
+
+      component.ngOnInit();
+
+      expect(mockStatePersistenceService.loadState).toHaveBeenCalledWith(
+        'selected-account',
+        null
+      );
+    });
+
+    it.skip('should handle no saved account gracefully', () => {
+      mockStatePersistenceService.loadState.mockReturnValue(null);
+
+      component.ngOnInit();
+
+      expect(mockRouter.navigate).not.toHaveBeenCalledWith(
+        expect.arrayContaining([expect.stringContaining('/account')])
+      );
+    });
+
+    it.skip('should navigate to saved account on init', () => {
+      mockStatePersistenceService.loadState.mockReturnValue('1');
+
+      component.ngOnInit();
+      fixture.detectChanges();
+
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/account', '1']);
+    });
+
+    it.skip('should handle invalid/deleted account ID gracefully', () => {
+      mockStatePersistenceService.loadState.mockReturnValue('nonexistent-id');
+
+      expect(() => {
+        component.ngOnInit();
+        fixture.detectChanges();
+      }).not.toThrow();
+    });
+
+    it.skip('should clear saved account when account is deleted', () => {
+      const event = new Event('click');
+      const account = mockAccounts[0];
+
+      component.onAccountSelect(account);
+      mockStatePersistenceService.saveState.mockClear();
+      (component as any).deleteAccount(event, account);
+
+      expect(mockStatePersistenceService.clearState).toHaveBeenCalledWith(
+        'selected-account'
+      );
+    });
+  });
 });
