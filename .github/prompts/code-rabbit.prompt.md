@@ -19,7 +19,14 @@ Key points from bmad-workflow skill:
 
 This subagent implements Phase 6 (CodeRabbit review loop). It is intentionally small and stateful so it can be re-invoked and resumed.
 
-INPUT: `story` (required). Reads `.git/tmp/story-${story}-meta.json` for PR metadata. If that file is missing, use `prompt.sh` with `timeout: 0` to ask for help.
+INPUT: `story` (required). Reads the story metadata file for PR metadata. Resolve the path via:
+```bash
+GIT_COMMON_DIR=$(git rev-parse --git-common-dir)
+META_FILE="$GIT_COMMON_DIR/tmp/story-${story}-meta.json"
+```
+If that file is missing, use `prompt.sh` with `timeout: 0` to ask for help.
+
+**IMPORTANT**: After reading the state file, cd into `worktreePath` (from the state file) before applying any code fixes or running validations. All git operations must be executed from within that worktree directory.
 
 State file format (example):
 
@@ -38,7 +45,7 @@ Behavior (concise):
 **Follow the "CodeRabbit Review Loop Pattern" from bmad-workflow skill exactly.**
 
 Key steps:
-1. Read `.git/tmp/story-${story}-meta.json` into local state
+1. Resolve `GIT_COMMON_DIR=$(git rev-parse --git-common-dir)` and read `$GIT_COMMON_DIR/tmp/story-${story}-meta.json` into local state; then `cd` to `worktreePath` from that state
 2. Loop while `attempt < maxIterations` (increment and persist immediately)
 3. Poll `mcp_github_pull_request_read` with `method: "get_review_comments"` every 30s (10 min timeout)
 4. If no suggestions: proceed to merge checks

@@ -15,8 +15,12 @@ After creating the PR, write a minimal, idempotent metadata file for the story a
 Suggested shell snippet (use in `run_in_terminal`):
 
 ```bash
-# create .git/tmp dir
-mkdir -p .git/tmp
+# Resolve the shared git dir (works from both main repo and worktrees)
+GIT_COMMON_DIR=$(git rev-parse --git-common-dir)
+mkdir -p "$GIT_COMMON_DIR/tmp"
+
+# Capture current worktree path
+WORKTREE_PATH=$(pwd)
 
 # get PR number from gh (adjust flags if you create PR differently)
 PR_NUMBER=$(gh pr create --fill --base main --head "${branch}" --json number -q .number)
@@ -29,15 +33,16 @@ fi
 # get repo owner/name
 REPO_NAME=$(gh repo view --json nameWithOwner -q .nameWithOwner)
 
-cat > .git/tmp/story-${story}-meta.json <<EOF
+cat > "$GIT_COMMON_DIR/tmp/story-${story}-meta.json" <<EOF
 {
 	"pr": ${PR_NUMBER:-null},
 	"branch": "${branch}",
 	"repo": "${REPO_NAME}",
+	"worktreePath": "${WORKTREE_PATH}",
 	"attempt": 0,
 	"maxIterations": 10
 }
 EOF
 
-echo "WROTE .git/tmp/story-${story}-meta.json"
+echo "WROTE $GIT_COMMON_DIR/tmp/story-${story}-meta.json"
 ```
