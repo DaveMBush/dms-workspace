@@ -87,6 +87,36 @@ pnpm test:dms-material
 
 ## Dev Agent Record
 
+### Agent Model Used
+
+Claude Opus 4.6
+
 ### Status
 
-Approved
+Ready for Review
+
+### Tasks / Subtasks
+
+- [x] Write skipped tests for saving account ID on selection
+- [x] Write skipped tests for loading saved account on init
+- [x] Write skipped tests for handling no saved account
+- [x] Write skipped tests for navigating to saved account
+- [x] Write skipped tests for invalid account ID handling
+- [x] Write skipped tests for clearing account on delete
+- [x] Verify RED phase (test fails when unskipped)
+- [x] All validation passes (pnpm all, E2E, dupcheck, format)
+
+### File List
+
+- apps/dms-material/src/app/accounts/account.spec.ts (modified - 6 skipped TDD RED tests added)
+- docs/stories/AV.5.tdd-account-selection-persistence.md (modified - dev record)
+
+### Change Log
+
+- Added 6 skipped tests in Account Selection Persistence describe block
+- Tests cover: save on select, load on init, no saved account, navigate to saved, invalid ID, clear on delete
+- Verified RED phase: unskipped test fails (onAccountSelect doesn't call saveState yet)
+
+### Debug Log References
+
+### Completion Notes
