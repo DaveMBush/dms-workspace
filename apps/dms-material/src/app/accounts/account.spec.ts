@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 import { signal } from '@angular/core';
+
+import { StatePersistenceService } from '../shared/services/state-persistence.service';
 
 // Mock upstream selectors BEFORE anything else
 vi.mock('../store/top/selectors/select-top-entities.function', () => ({
@@ -27,8 +29,20 @@ describe('Account', () => {
     deleteAccount: ReturnType<typeof vi.fn>;
   };
   let mockAccounts: AccountInterface[];
+  let mockStatePersistenceService: {
+    saveState: ReturnType<typeof vi.fn>;
+    loadState: ReturnType<typeof vi.fn>;
+    clearState: ReturnType<typeof vi.fn>;
+  };
+  let mockRouter: { navigate: ReturnType<typeof vi.fn> };
 
   beforeEach(async () => {
+    mockStatePersistenceService = {
+      saveState: vi.fn(),
+      loadState: vi.fn().mockReturnValue(null),
+      clearState: vi.fn(),
+    };
+
     mockAccountService = {
       init: vi.fn(),
       addAccount: vi.fn(),
@@ -45,7 +59,13 @@ describe('Account', () => {
 
     await TestBed.configureTestingModule({
       imports: [Account],
-      providers: [provideRouter([])],
+      providers: [
+        provideRouter([]),
+        {
+          provide: StatePersistenceService,
+          useValue: mockStatePersistenceService,
+        },
+      ],
     })
       .overrideComponent(Account, {
         set: {
@@ -58,6 +78,9 @@ describe('Account', () => {
 
     fixture = TestBed.createComponent(Account);
     component = fixture.componentInstance;
+    mockRouter = TestBed.inject(Router) as unknown as {
+      navigate: ReturnType<typeof vi.fn>;
+    };
 
     // Mock the accounts$ signal
     component.accounts$ = signal(mockAccounts) as any;
@@ -248,6 +271,57 @@ describe('Account', () => {
         'a[routerlink*="/account/1"] .delete-button'
       );
       expect(deleteButton).toBeFalsy();
+    });
+  });
+
+  describe('Global Tab Selection Persistence', () => {
+    it.skip('should save selected global tab to state service when navigating', () => {
+      component.navigateToGlobal('universe');
+
+      expect(mockStatePersistenceService.saveState).toHaveBeenCalledWith(
+        'global-tab-selection',
+        'universe'
+      );
+    });
+
+    it.skip('should load saved global tab selection on component init', () => {
+      mockStatePersistenceService.loadState.mockReturnValue('screener');
+
+      component.ngOnInit();
+
+      expect(mockStatePersistenceService.loadState).toHaveBeenCalledWith(
+        'global-tab-selection',
+        expect.anything()
+      );
+    });
+
+    it.skip('should default to no tab selection when no saved state exists', () => {
+      mockStatePersistenceService.loadState.mockReturnValue(null);
+
+      component.ngOnInit();
+
+      expect(mockStatePersistenceService.loadState).toHaveBeenCalledWith(
+        'global-tab-selection',
+        null
+      );
+    });
+
+    it.skip('should navigate to saved global tab on init', () => {
+      mockStatePersistenceService.loadState.mockReturnValue('universe');
+
+      component.ngOnInit();
+      fixture.detectChanges();
+
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/global', 'universe']);
+    });
+
+    it.skip('should handle invalid saved tab gracefully', () => {
+      mockStatePersistenceService.loadState.mockReturnValue('nonexistent-tab');
+
+      expect(() => {
+        component.ngOnInit();
+        fixture.detectChanges();
+      }).not.toThrow();
     });
   });
 });
