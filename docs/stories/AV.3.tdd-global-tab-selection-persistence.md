@@ -96,4 +96,25 @@ Verify all new tests are skipped.
 
 ### Status
 
-Approved
+Ready for Review
+
+### Agent Model Used
+
+Claude Opus 4.6
+
+### Completion Notes
+
+- Added 5 skipped persistence tests to account.spec.ts in describe('Global Tab Selection Persistence') block
+- Tests cover: save on navigate, restore on init, default when no saved selection, UI update on restore, invalid saved tab handling
+- RED phase verified: tests fail when unskipped (service not injected/used in component yet)
+- All validation commands pass: pnpm all, e2e chromium (512 passed), e2e firefox (513 passed), dupcheck (0 clones), format clean
+
+### File List
+
+- apps/dms-material/src/app/accounts/account.spec.ts (modified)
+
+### Change Log
+
+- Added StatePersistenceService mock and Router mock to account.spec.ts TestBed
+- Added describe('Global Tab Selection Persistence') block with 5 it.skip() tests
+- Tests ready for GREEN phase implementation in AV.4
