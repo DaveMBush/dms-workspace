@@ -45,7 +45,7 @@ describe('StatePersistenceService', () => {
       expect(service.saveState).toBeDefined();
     });
 
-    it.skip('should save state to localStorage under the storage key', () => {
+    it('should save state to localStorage under the storage key', () => {
       mockGetItem.mockReturnValue(JSON.stringify({}));
 
       service.saveState('test-key', 'test-value');
@@ -56,7 +56,7 @@ describe('StatePersistenceService', () => {
       );
     });
 
-    it.skip('should merge with existing state when saving', () => {
+    it('should merge with existing state when saving', () => {
       mockGetItem.mockReturnValue(
         JSON.stringify({ 'existing-key': 'existing-value' })
       );
@@ -72,7 +72,7 @@ describe('StatePersistenceService', () => {
       );
     });
 
-    it.skip('should overwrite existing key when saving same key', () => {
+    it('should overwrite existing key when saving same key', () => {
       mockGetItem.mockReturnValue(JSON.stringify({ 'test-key': 'old-value' }));
 
       service.saveState('test-key', 'new-value');
@@ -83,7 +83,7 @@ describe('StatePersistenceService', () => {
       );
     });
 
-    it.skip('should serialize complex objects to JSON', () => {
+    it('should serialize complex objects to JSON', () => {
       mockGetItem.mockReturnValue(JSON.stringify({}));
       const complexValue = { nested: { data: [1, 2, 3] }, flag: true };
 
@@ -95,7 +95,7 @@ describe('StatePersistenceService', () => {
       );
     });
 
-    it.skip('should handle save when localStorage has corrupted data', () => {
+    it('should handle save when localStorage has corrupted data', () => {
       mockGetItem.mockReturnValue('not-valid-json{{{');
 
       service.saveState('test-key', 'test-value');
@@ -106,7 +106,7 @@ describe('StatePersistenceService', () => {
       );
     });
 
-    it.skip('should not throw when localStorage.setItem throws', () => {
+    it('should not throw when localStorage.setItem throws', () => {
       mockGetItem.mockReturnValue(JSON.stringify({}));
       mockSetItem.mockImplementation(function throwOnSetItem() {
         throw new Error('QuotaExceededError');
@@ -123,7 +123,7 @@ describe('StatePersistenceService', () => {
       expect(service.loadState).toBeDefined();
     });
 
-    it.skip('should load state from localStorage', () => {
+    it('should load state from localStorage', () => {
       mockGetItem.mockReturnValue(
         JSON.stringify({ 'test-key': 'saved-value' })
       );
@@ -133,7 +133,7 @@ describe('StatePersistenceService', () => {
       expect(result).toBe('saved-value');
     });
 
-    it.skip('should return default value when key does not exist', () => {
+    it('should return default value when key does not exist', () => {
       mockGetItem.mockReturnValue(JSON.stringify({}));
 
       const result = service.loadState('missing-key', 'default-value');
@@ -141,7 +141,7 @@ describe('StatePersistenceService', () => {
       expect(result).toBe('default-value');
     });
 
-    it.skip('should return default value when no saved state exists', () => {
+    it('should return default value when no saved state exists', () => {
       mockGetItem.mockReturnValue(null);
 
       const result = service.loadState('any-key', 42);
@@ -149,7 +149,7 @@ describe('StatePersistenceService', () => {
       expect(result).toBe(42);
     });
 
-    it.skip('should deserialize complex objects from JSON', () => {
+    it('should deserialize complex objects from JSON', () => {
       const complexValue = { nested: { data: [1, 2, 3] }, flag: true };
       mockGetItem.mockReturnValue(
         JSON.stringify({ 'complex-key': complexValue })
@@ -160,7 +160,7 @@ describe('StatePersistenceService', () => {
       expect(result).toEqual(complexValue);
     });
 
-    it.skip('should return default value when localStorage has invalid JSON', () => {
+    it('should return default value when localStorage has invalid JSON', () => {
       mockGetItem.mockReturnValue('this is not json');
 
       const result = service.loadState('test-key', 'fallback');
@@ -168,7 +168,7 @@ describe('StatePersistenceService', () => {
       expect(result).toBe('fallback');
     });
 
-    it.skip('should return default value when localStorage has corrupted data', () => {
+    it('should return default value when localStorage has corrupted data', () => {
       mockGetItem.mockReturnValue('{corrupted: data}}}');
 
       const result = service.loadState('test-key', 'safe-default');
@@ -176,7 +176,7 @@ describe('StatePersistenceService', () => {
       expect(result).toBe('safe-default');
     });
 
-    it.skip('should handle numeric default values', () => {
+    it('should handle numeric default values', () => {
       mockGetItem.mockReturnValue(JSON.stringify({ 'tab-index': 2 }));
 
       const result = service.loadState('tab-index', 0);
@@ -184,7 +184,7 @@ describe('StatePersistenceService', () => {
       expect(result).toBe(2);
     });
 
-    it.skip('should handle boolean default values', () => {
+    it('should handle boolean default values', () => {
       mockGetItem.mockReturnValue(JSON.stringify({ expanded: true }));
 
       const result = service.loadState('expanded', false);
@@ -198,7 +198,7 @@ describe('StatePersistenceService', () => {
       expect(service.clearState).toBeDefined();
     });
 
-    it.skip('should remove specific key from localStorage state', () => {
+    it('should remove specific key from localStorage state', () => {
       mockGetItem.mockReturnValue(
         JSON.stringify({ 'key-a': 'value-a', 'key-b': 'value-b' })
       );
@@ -211,13 +211,13 @@ describe('StatePersistenceService', () => {
       );
     });
 
-    it.skip('should remove all state when no key is provided', () => {
+    it('should remove all state when no key is provided', () => {
       service.clearState();
 
       expect(mockRemoveItem).toHaveBeenCalledWith(STORAGE_KEY);
     });
 
-    it.skip('should handle clearing a key that does not exist', () => {
+    it('should handle clearing a key that does not exist', () => {
       mockGetItem.mockReturnValue(JSON.stringify({ 'existing-key': 'value' }));
 
       service.clearState('non-existent-key');
@@ -228,7 +228,7 @@ describe('StatePersistenceService', () => {
       );
     });
 
-    it.skip('should handle clearing when localStorage has corrupted data', () => {
+    it('should handle clearing when localStorage has corrupted data', () => {
       mockGetItem.mockReturnValue('invalid json!!!');
 
       expect(() => {
@@ -236,7 +236,7 @@ describe('StatePersistenceService', () => {
       }).not.toThrow();
     });
 
-    it.skip('should not throw when localStorage.removeItem throws', () => {
+    it('should not throw when localStorage.removeItem throws', () => {
       mockRemoveItem.mockImplementation(function throwOnRemoveItem() {
         throw new Error('Storage error');
       });
