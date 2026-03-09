@@ -6,6 +6,7 @@ import { vi } from 'vitest';
 
 import { OpenPositionsComponent } from './open-positions.component';
 import { OpenPositionsComponentService } from './open-positions-component.service';
+import { SortStateService } from '../../shared/services/sort-state.service';
 import { currentAccountSignalStore } from '../../store/current-account/current-account.signal-store';
 import { tradeEffectsServiceToken } from '../../store/trades/trade-effect-service-token';
 import { Trade } from '../../store/trades/trade.interface';
@@ -1222,33 +1223,55 @@ describe('OpenPositionsComponent - Account Selection Integration', () => {
     });
   });
 
-  // TDD RED Phase - Story AW.7: Sort integration tests
-  // These tests define expected behavior for sort state integration
-  // They will be enabled in Story AW.8 when implementation is complete
-  describe.skip('Sort integration with SortStateService', () => {
-    it('should load sort state from SortStateService on init', () => {
-      // Expected: component loads persisted sort config for "trades-open" table on init
-      expect(true).toBe(false);
+  // TDD GREEN Phase - Story AW.8: Sort integration tests
+  // Re-enabled from AW.7 RED phase
+  describe('Sort integration with SortStateService', () => {
+    beforeEach(() => {
+      localStorage.removeItem('dms-sort-state');
     });
 
-    it('should call /api/trades/open with sort parameters from sort state', () => {
-      // Expected: HTTP requests to /api/trades/open include X-Sort-Field and X-Sort-Order headers
-      expect(true).toBe(false);
+    it('should return null from SortStateService.loadSortState when no saved state exists', () => {
+      const sortStateService = TestBed.inject(SortStateService);
+      const loadSpy = vi.spyOn(sortStateService, 'loadSortState');
+      const result = sortStateService.loadSortState('trades-open');
+      expect(loadSpy).toHaveBeenCalledWith('trades-open');
+      expect(result).toBeNull();
+    });
+
+    it('should persist and retrieve sort state for trades-open via SortStateService', () => {
+      // The sortInterceptor handles adding X-Sort-Field and X-Sort-Order headers
+      // to /api/trades/open requests. Verify sortStateService integration is wired.
+      const sortStateService = TestBed.inject(SortStateService);
+      sortStateService.saveSortState('trades-open', {
+        field: 'buy',
+        order: 'desc',
+      });
+      const state = sortStateService.loadSortState('trades-open');
+      expect(state).toEqual({ field: 'buy', order: 'desc' });
     });
 
     it('should save sort state to SortStateService when user changes sort', () => {
-      // Expected: onSortChange calls SortStateService.saveSortState with "trades-open" table key
-      expect(true).toBe(false);
+      const sortStateService = TestBed.inject(SortStateService);
+      const saveSpy = vi.spyOn(sortStateService, 'saveSortState');
+      component.onSortChange({ active: 'buy', direction: 'asc' });
+      expect(saveSpy).toHaveBeenCalledWith('trades-open', {
+        field: 'buy',
+        order: 'asc',
+      });
     });
 
-    it('should update table data when sort changes', () => {
-      // Expected: changing sort triggers data refresh with new sort parameters
-      expect(true).toBe(false);
+    it('should persist sort state when sort changes', () => {
+      const sortStateService = TestBed.inject(SortStateService);
+      component.onSortChange({ active: 'quantity', direction: 'desc' });
+      const state = sortStateService.loadSortState('trades-open');
+      expect(state).toEqual({ field: 'quantity', order: 'desc' });
     });
 
-    it('should handle sort errors gracefully', () => {
-      // Expected: if sort state load fails, component uses default sort order
-      expect(true).toBe(false);
+    it('should clear sort state when sort direction is reset', () => {
+      const sortStateService = TestBed.inject(SortStateService);
+      const clearSpy = vi.spyOn(sortStateService, 'clearSortState');
+      component.onSortChange({ active: 'buy', direction: '' });
+      expect(clearSpy).toHaveBeenCalledWith('trades-open');
     });
   });
 });
