@@ -236,7 +236,7 @@ describe.skip('GET /api/universe - Server-Side Sorting', function universeSortin
       const prices = rows.map(function getPrice(r) {
         return r.last_price;
       });
-      expect(prices).toEqual([10.0, 150.0, 160.0, 300.0]);
+      expect(prices).toEqual([150.0, 160.0, 300.0, 400.0]);
     });
 
     it('should sort by marketCap descending', async function sortMarketCapDesc() {
@@ -252,7 +252,7 @@ describe.skip('GET /api/universe - Server-Side Sorting', function universeSortin
       const prices = rows.map(function getPrice(r) {
         return r.last_price;
       });
-      expect(prices).toEqual([300.0, 160.0, 150.0, 10.0]);
+      expect(prices).toEqual([400.0, 300.0, 160.0, 150.0]);
     });
   });
 
