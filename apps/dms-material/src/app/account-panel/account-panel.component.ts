@@ -125,8 +125,20 @@ export class AccountPanelComponent implements OnInit, OnDestroy {
     // Set initial URL
     this.currentUrl$.set(this.router.url);
 
-    // Restore saved tab for this account
-    const accountId = this.accountId;
+    // Restore saved state in correct order:
+    // 1. Global tab selection
+    // 2. Selected account
+    // 3. Account tab for the current account
+    this.statePersistence.loadState<string | null>(
+      'global-tab-selection',
+      null
+    );
+    const savedAccount = this.statePersistence.loadState<string | null>(
+      'selected-account',
+      null
+    );
+
+    const accountId = this.accountId ?? savedAccount;
     if (accountId !== null) {
       const stateKey = AccountPanelComponent.tabKeyPrefix + accountId;
       const savedTab = this.statePersistence.loadState<string | null>(

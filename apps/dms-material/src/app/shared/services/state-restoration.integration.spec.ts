@@ -75,7 +75,7 @@ describe('State Restoration on App Load', () => {
     router = TestBed.inject(Router);
   });
 
-  it.skip('should restore global tab selection before account selection', () => {
+  it('should restore global tab selection before account selection', () => {
     const callOrder: string[] = [];
     mockStatePersistenceService.loadState.mockImplementation(function trackLoad(
       key: string
@@ -99,7 +99,7 @@ describe('State Restoration on App Load', () => {
     expect(globalTabIndex).toBeLessThan(selectedAccountIndex);
   });
 
-  it.skip('should restore account selection after global tab', () => {
+  it('should restore account selection after global tab', () => {
     const callOrder: string[] = [];
     mockStatePersistenceService.loadState.mockImplementation(function trackLoad(
       key: string
@@ -126,7 +126,7 @@ describe('State Restoration on App Load', () => {
     expect(selectedAccountIndex).toBeLessThan(accountTabIndex);
   });
 
-  it.skip('should restore account tab for restored account', () => {
+  it('should restore account tab for restored account', () => {
     const accountId = 'account-1';
     Object.defineProperty(component, 'accountId', {
       get: () => accountId,
@@ -147,7 +147,7 @@ describe('State Restoration on App Load', () => {
     expect(routerSpy).toHaveBeenCalledWith(['/account', accountId, 'sold']);
   });
 
-  it.skip('should handle no saved state gracefully', () => {
+  it('should handle no saved state gracefully', () => {
     mockStatePersistenceService.loadState.mockReturnValue(null);
 
     const routerSpy = vi.spyOn(router, 'navigate');
@@ -160,7 +160,7 @@ describe('State Restoration on App Load', () => {
     expect(routerSpy).not.toHaveBeenCalled();
   });
 
-  it.skip('should handle partial state with only some values saved', () => {
+  it('should handle partial state with only some values saved', () => {
     mockStatePersistenceService.loadState.mockImplementation(function getState(
       key: string
     ) {
@@ -181,7 +181,7 @@ describe('State Restoration on App Load', () => {
     expect(routerSpy).not.toHaveBeenCalled();
   });
 
-  it.skip('should complete full restoration in correct order', () => {
+  it('should complete full restoration in correct order', () => {
     const accountId = 'account-5';
     Object.defineProperty(component, 'accountId', {
       get: () => accountId,
@@ -220,7 +220,7 @@ describe('State Restoration on App Load', () => {
     expect(accountIdx).toBeLessThan(tabIdx);
   });
 
-  it.skip('should handle invalid saved state gracefully', () => {
+  it('should handle invalid saved state gracefully', () => {
     Object.defineProperty(component, 'accountId', {
       get: () => 'account-1',
       configurable: true,
