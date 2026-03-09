@@ -1,6 +1,8 @@
 import { FastifyInstance } from 'fastify';
 
 import { prisma } from '../../prisma/prisma-client';
+import registerGetClosedTrades from './get-closed-trades/index';
+import registerGetOpenTrades from './get-open-trades/index';
 
 interface Trade {
   id: string;
@@ -161,4 +163,6 @@ export default function registerTradeRoutes(fastify: FastifyInstance): void {
   handleAddTradeRoute(fastify);
   handleDeleteTradeRoute(fastify);
   handleUpdateTradeRoute(fastify);
+  registerGetOpenTrades(fastify);
+  registerGetClosedTrades(fastify);
 }

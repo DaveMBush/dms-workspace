@@ -136,14 +136,40 @@ pnpm test:server
 
 ### Agent Model Used
 
+Claude Opus 4.6
+
 ### Status
 
-Approved
+Ready for Review
 
 ### Tasks / Subtasks
 
+- [x] Re-enable unit tests from AW.3 (remove `.skip` from both `describe.skip` blocks)
+- [x] Create `GET /api/trades/open` endpoint with server-side sorting
+- [x] Create `GET /api/trades/closed` endpoint with server-side sorting
+- [x] Register new routes in trades router
+- [x] Update test mock data to include universe relation for symbol/price lookups
+- [x] All 24 unit tests passing
+- [x] Lint, build, test all pass
+- [x] E2E Chromium: PASS
+- [x] E2E Firefox: pre-existing splitter.spec.ts failures only (unrelated to changes)
+- [x] Dupcheck: PASS (0 new duplicates)
+- [x] Format: PASS
+
 ### File List
 
+- `apps/server/src/app/routes/trades/get-open-trades/index.ts` — NEW: Open trades endpoint with sorting
+- `apps/server/src/app/routes/trades/get-closed-trades/index.ts` — NEW: Closed trades endpoint with sorting
+- `apps/server/src/app/routes/trades/index.ts` — MODIFIED: Register new routes
+- `apps/server/src/app/routes/trades/trades-sorting.spec.ts` — MODIFIED: Remove .skip, add universe mock data, remove unused helpers
+
 ### Change Log
+
+- Removed `.skip` from Open Trades and Closed Trades test describe blocks
+- Updated test seed data factories to include `universe` relation objects (symbol, last_price)
+- Removed unused test helper functions (symbolMap, currentPriceMap, getSymbol, getCurrentPrice, calculateUnrealizedGain, calculateCurrentValue, calculateProfit, calculatePercentGain)
+- Created `get-open-trades/index.ts`: GET /api/trades/open with sortBy (symbol, openDate, currentValue, unrealizedGain), validation, and computed fields
+- Created `get-closed-trades/index.ts`: GET /api/trades/closed with sortBy (symbol, closeDate, profit, percentGain), validation, and computed fields
+- Registered both new routes in the trades router
 
 ### Debug Log References

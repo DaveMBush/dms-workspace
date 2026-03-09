@@ -117,125 +117,105 @@ function makeClosedTrade(
   };
 }
 
-function makeOpenTradesSeedData(): OpenTradeRow[] {
+function makeOpenTradesSeedData() {
   return [
-    makeOpenTrade({
-      id: 'ot1',
-      universeId: 'u-aapl',
-      buy: 150.0,
-      buy_date: new Date('2024-03-10'),
-      quantity: 50,
-    }),
-    makeOpenTrade({
-      id: 'ot2',
-      universeId: 'u-msft',
-      buy: 380.0,
-      buy_date: new Date('2024-01-05'),
-      quantity: 25,
-    }),
-    makeOpenTrade({
-      id: 'ot3',
-      universeId: 'u-goog',
-      buy: 140.0,
-      buy_date: new Date('2024-06-20'),
-      quantity: 75,
-    }),
-    makeOpenTrade({
-      id: 'ot4',
-      universeId: 'u-amzn',
-      buy: 178.0,
-      buy_date: new Date('2024-02-14'),
-      quantity: 40,
-    }),
+    {
+      ...makeOpenTrade({
+        id: 'ot1',
+        universeId: 'u-aapl',
+        buy: 150.0,
+        buy_date: new Date('2024-03-10'),
+        quantity: 50,
+      }),
+      universe: { symbol: 'AAPL', last_price: 195.0 },
+    },
+    {
+      ...makeOpenTrade({
+        id: 'ot2',
+        universeId: 'u-msft',
+        buy: 380.0,
+        buy_date: new Date('2024-01-05'),
+        quantity: 25,
+      }),
+      universe: { symbol: 'MSFT', last_price: 420.0 },
+    },
+    {
+      ...makeOpenTrade({
+        id: 'ot3',
+        universeId: 'u-goog',
+        buy: 140.0,
+        buy_date: new Date('2024-06-20'),
+        quantity: 75,
+      }),
+      universe: { symbol: 'GOOG', last_price: 175.0 },
+    },
+    {
+      ...makeOpenTrade({
+        id: 'ot4',
+        universeId: 'u-amzn',
+        buy: 178.0,
+        buy_date: new Date('2024-02-14'),
+        quantity: 40,
+      }),
+      universe: { symbol: 'AMZN', last_price: 185.0 },
+    },
   ];
 }
 
-function makeClosedTradesSeedData(): ClosedTradeRow[] {
+function makeClosedTradesSeedData() {
   return [
-    makeClosedTrade({
-      id: 'ct1',
-      universeId: 'u-aapl',
-      buy: 120.0,
-      sell: 155.0,
-      buy_date: new Date('2023-06-01'),
-      sell_date: new Date('2024-01-15'),
-      quantity: 60,
-    }),
-    makeClosedTrade({
-      id: 'ct2',
-      universeId: 'u-tsla',
-      buy: 200.0,
-      sell: 180.0,
-      buy_date: new Date('2023-09-15'),
-      sell_date: new Date('2024-03-20'),
-      quantity: 30,
-    }),
-    makeClosedTrade({
-      id: 'ct3',
-      universeId: 'u-nvda',
-      buy: 450.0,
-      sell: 800.0,
-      buy_date: new Date('2023-03-01'),
-      sell_date: new Date('2024-06-10'),
-      quantity: 20,
-    }),
-    makeClosedTrade({
-      id: 'ct4',
-      universeId: 'u-meta',
-      buy: 300.0,
-      sell: 500.0,
-      buy_date: new Date('2023-12-01'),
-      sell_date: new Date('2024-02-28'),
-      quantity: 45,
-    }),
+    {
+      ...makeClosedTrade({
+        id: 'ct1',
+        universeId: 'u-aapl',
+        buy: 120.0,
+        sell: 155.0,
+        buy_date: new Date('2023-06-01'),
+        sell_date: new Date('2024-01-15'),
+        quantity: 60,
+      }),
+      universe: { symbol: 'AAPL', last_price: 195.0 },
+    },
+    {
+      ...makeClosedTrade({
+        id: 'ct2',
+        universeId: 'u-tsla',
+        buy: 200.0,
+        sell: 180.0,
+        buy_date: new Date('2023-09-15'),
+        sell_date: new Date('2024-03-20'),
+        quantity: 30,
+      }),
+      universe: { symbol: 'TSLA', last_price: 250.0 },
+    },
+    {
+      ...makeClosedTrade({
+        id: 'ct3',
+        universeId: 'u-nvda',
+        buy: 450.0,
+        sell: 800.0,
+        buy_date: new Date('2023-03-01'),
+        sell_date: new Date('2024-06-10'),
+        quantity: 20,
+      }),
+      universe: { symbol: 'NVDA', last_price: 800.0 },
+    },
+    {
+      ...makeClosedTrade({
+        id: 'ct4',
+        universeId: 'u-meta',
+        buy: 300.0,
+        sell: 500.0,
+        buy_date: new Date('2023-12-01'),
+        sell_date: new Date('2024-02-28'),
+        quantity: 45,
+      }),
+      universe: { symbol: 'META', last_price: 500.0 },
+    },
   ];
 }
 
-// Symbol lookup for test data (simulates universe join)
-const symbolMap: Record<string, string> = {
-  'u-aapl': 'AAPL',
-  'u-msft': 'MSFT',
-  'u-goog': 'GOOG',
-  'u-amzn': 'AMZN',
-  'u-tsla': 'TSLA',
-  'u-nvda': 'NVDA',
-  'u-meta': 'META',
-};
-
-// Current prices for unrealized gain calculations
-const currentPriceMap: Record<string, number> = {
-  'u-aapl': 195.0,
-  'u-msft': 420.0,
-  'u-goog': 175.0,
-  'u-amzn': 185.0,
-};
-
-function getSymbol(universeId: string): string {
-  return symbolMap[universeId] ?? 'UNKNOWN';
-}
-
-function getCurrentPrice(universeId: string): number {
-  return currentPriceMap[universeId] ?? 0;
-}
-
-function calculateUnrealizedGain(trade: OpenTradeRow): number {
-  const currentPrice = getCurrentPrice(trade.universeId);
-  return (currentPrice - trade.buy) * trade.quantity;
-}
-
-function calculateCurrentValue(trade: OpenTradeRow): number {
-  return getCurrentPrice(trade.universeId) * trade.quantity;
-}
-
-function calculateProfit(trade: ClosedTradeRow): number {
-  return (trade.sell - trade.buy) * trade.quantity;
-}
-
-function calculatePercentGain(trade: ClosedTradeRow): number {
-  return ((trade.sell - trade.buy) / trade.buy) * 100;
-}
-
-describe.skip('Open Trades Endpoint - Sorting', function openTradesSortingTests() {
+describe('Open Trades Endpoint - Sorting', function openTradesSortingTests() {
   let app: FastifyInstance;
 
   beforeEach(async function setupApp() {
@@ -470,7 +450,7 @@ describe.skip('Open Trades Endpoint - Sorting', function openTradesSortingTests(
   });
 });
 
-describe.skip('Closed Trades Endpoint - Sorting', function closedTradesSortingTests() {
+describe('Closed Trades Endpoint - Sorting', function closedTradesSortingTests() {
   let app: FastifyInstance;
 
   beforeEach(async function setupApp() {
