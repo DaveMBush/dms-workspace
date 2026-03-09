@@ -193,4 +193,33 @@ Verify all new tests are skipped.
 
 ### Status
 
-Approved
+Ready for Review
+
+### Agent Model Used
+
+Claude Opus 4.6
+
+### File List
+
+- `apps/dms-material-e2e/src/state-persistence.spec.ts` (new - 9 skipped E2E tests)
+- `apps/dms-material/src/app/accounts/account.html` (modified - added data-testid to global nav links)
+- `apps/dms-material/src/app/account-panel/account-panel.component.html` (modified - added data-testid to tab links)
+- `docs/stories/AV.12.tdd-e2e-state-persistence.md` (modified - Dev Agent Record)
+
+### Change Log
+
+- Created `state-persistence.spec.ts` with `test.describe.skip` containing 9 E2E tests
+- Added data-testid attributes: global-nav-universe, global-nav-screener, global-nav-summary, global-nav-error-logs
+- Added data-testid attributes: account-tab-summary, account-tab-open, account-tab-sold, account-tab-div-dep
+- Tests cover: global tab persistence, account selection persistence, account tab persistence (including per-account independence), complete state restoration, fresh start
+
+### Debug Log References
+
+None needed
+
+### Completion Notes
+
+- All 9 E2E tests are skipped (RED phase)
+- 1553 unit tests passing, 0 E2E failures (skipped tests don't count)
+- E2E: 513 passed chromium + 513 passed firefox, 136 skipped each (including our 9)
+- 0 clones, lint clean, format clean
