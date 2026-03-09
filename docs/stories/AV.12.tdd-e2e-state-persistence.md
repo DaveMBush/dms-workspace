@@ -177,6 +177,9 @@ Verify all new tests are skipped.
 - This is the TDD RED phase for E2E tests
 - Tests should be comprehensive but maintainable
 - Story AV.13 will enable tests and fix any issues
+- All unit and e2e tests must pass even if you think they are unrelated to this story.
+- If any tests fail, fix them before merging this story to ensure a stable baseline for Story AV.13
+- E2E tests must be run for Chromium and Firefox separately and both must pass before merge.
 
 ## Related Stories
 

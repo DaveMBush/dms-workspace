@@ -389,5 +389,16 @@ describe('Account', () => {
         'selected-account'
       );
     });
+
+    it('should clear account tab state when account is deleted', () => {
+      const event = new Event('click');
+      const account = mockAccounts[0];
+
+      (component as any).deleteAccount(event, account);
+
+      expect(mockStatePersistenceService.clearState).toHaveBeenCalledWith(
+        'account-tab-' + account.id
+      );
+    });
   });
 });
