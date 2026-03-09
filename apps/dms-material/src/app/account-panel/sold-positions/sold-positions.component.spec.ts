@@ -973,7 +973,7 @@ describe('SoldPositionsComponent - Account Selection Integration', () => {
       localStorage.removeItem('dms-sort-state');
     });
 
-    it('should load sort state from SortStateService on init', () => {
+    it('should return null from SortStateService.loadSortState when no saved state exists', () => {
       const sortStateService = TestBed.inject(SortStateService);
       const loadSpy = vi.spyOn(sortStateService, 'loadSortState');
       const result = sortStateService.loadSortState('trades-closed');

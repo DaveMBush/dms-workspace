@@ -2296,13 +2296,11 @@ describe('GlobalUniverseComponent - Ex-Date Editing Enhancements (TDD - Story AN
       localStorage.removeItem('dms-sort-state');
     });
 
-    it('should load sort state from SortStateService on init', () => {
+    it('should return null from SortStateService.loadSortState when no saved state exists', () => {
       const sortStateService = TestBed.inject(SortStateService);
       const loadSpy = vi.spyOn(sortStateService, 'loadSortState');
-      // Component should be able to call loadSortState for 'universes'
       const result = sortStateService.loadSortState('universes');
       expect(loadSpy).toHaveBeenCalledWith('universes');
-      // Default state is null when nothing saved
       expect(result).toBeNull();
     });
 
