@@ -7,12 +7,12 @@ interface SortConfig {
 
 @Injectable({ providedIn: 'root' })
 export class SortStateService {
-  private readonly STORAGE_KEY = 'dms-sort-state';
+  private readonly storageKey = 'dms-sort-state';
 
   saveSortState(table: string, config: SortConfig): void {
     const state = this.loadAllState();
     state[table] = config;
-    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(state));
+    localStorage.setItem(this.storageKey, JSON.stringify(state));
   }
 
   loadSortState(table: string): SortConfig | null {
@@ -22,18 +22,24 @@ export class SortStateService {
 
   clearSortState(table: string): void {
     const state = this.loadAllState();
-    delete state[table];
-    if (Object.keys(state).length === 0) {
-      localStorage.removeItem(this.STORAGE_KEY);
+    const rest = Object.fromEntries(
+      Object.entries(state).filter(function keepOtherTables([key]) {
+        return key !== table;
+      })
+    );
+    if (Object.keys(rest).length === 0) {
+      localStorage.removeItem(this.storageKey);
     } else {
-      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(state));
+      localStorage.setItem(this.storageKey, JSON.stringify(rest));
     }
   }
 
   private loadAllState(): Record<string, SortConfig> {
     try {
-      const stored = localStorage.getItem(this.STORAGE_KEY);
-      return stored ? (JSON.parse(stored) as Record<string, SortConfig>) : {};
+      const stored = localStorage.getItem(this.storageKey);
+      return stored !== null
+        ? (JSON.parse(stored) as Record<string, SortConfig>)
+        : {};
     } catch {
       return {};
     }

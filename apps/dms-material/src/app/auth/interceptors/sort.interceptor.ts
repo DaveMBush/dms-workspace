@@ -31,7 +31,7 @@ export const sortInterceptor: HttpInterceptorFn = function sortInterceptorImpl(
   const sortStateService = inject(SortStateService);
   const tableName = getTableName(req.url);
 
-  if (!tableName) {
+  if (tableName === null) {
     return next(req);
   }
 
