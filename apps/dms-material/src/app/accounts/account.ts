@@ -130,6 +130,7 @@ export class Account implements OnInit {
     event.preventDefault();
     event.stopPropagation();
     this.statePersistence.clearState(this.accountStateKey);
+    this.statePersistence.clearState('account-tab-' + item.id);
     this.accountService.deleteAccount(item);
   }
 }
