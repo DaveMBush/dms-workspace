@@ -125,14 +125,29 @@ pnpm test:server
 
 ### Agent Model Used
 
+Claude Opus 4.6 (copilot)
+
 ### Status
 
-Approved
+Ready for Review
 
 ### Tasks / Subtasks
 
+- [x] Write open trades endpoint sorting tests (describe.skip)
+- [x] Write closed trades endpoint sorting tests (describe.skip)
+- [x] Include default sorting tests
+- [x] Include invalid sort field handling tests
+- [x] All validation commands pass
+
 ### File List
 
+- apps/server/src/app/routes/trades/trades-sorting.spec.ts (new)
+
 ### Change Log
+
+- Added trades-sorting.spec.ts with 22 tests covering open and closed trades endpoints sorting
+- Tests use describe.skip to allow CI to pass (TDD RED phase)
+- Covers sorting by symbol, openDate/closeDate, currentValue/profit, unrealizedGain/percentGain
+- Includes invalid sort field and empty sortBy edge cases
 
 ### Debug Log References
