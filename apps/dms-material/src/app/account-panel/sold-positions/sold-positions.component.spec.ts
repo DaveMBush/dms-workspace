@@ -981,7 +981,7 @@ describe('SoldPositionsComponent - Account Selection Integration', () => {
       expect(result).toBeNull();
     });
 
-    it('should call /api/trades/closed with sort parameters from sort state', () => {
+    it('should persist and retrieve sort state for trades-closed via SortStateService', () => {
       // The sortInterceptor handles adding X-Sort-Field and X-Sort-Order headers
       // to /api/trades/closed requests. Verify sortStateService integration is wired.
       const sortStateService = TestBed.inject(SortStateService);
@@ -1003,14 +1003,14 @@ describe('SoldPositionsComponent - Account Selection Integration', () => {
       });
     });
 
-    it('should update table data when sort changes', () => {
+    it('should persist sort state when sort changes', () => {
       const sortStateService = TestBed.inject(SortStateService);
       component.onSortChange({ active: 'capitalGain', direction: 'desc' });
       const state = sortStateService.loadSortState('trades-closed');
       expect(state).toEqual({ field: 'capitalGain', order: 'desc' });
     });
 
-    it('should handle sort errors gracefully', () => {
+    it('should clear sort state when sort direction is reset', () => {
       const sortStateService = TestBed.inject(SortStateService);
       const clearSpy = vi.spyOn(sortStateService, 'clearSortState');
       component.onSortChange({ active: 'sell', direction: '' });

@@ -2304,7 +2304,7 @@ describe('GlobalUniverseComponent - Ex-Date Editing Enhancements (TDD - Story AN
       expect(result).toBeNull();
     });
 
-    it('should call /api/universe with sort parameters from sort state', () => {
+    it('should persist and retrieve sort state for universes via SortStateService', () => {
       // The sortInterceptor handles adding X-Sort-Field and X-Sort-Order headers
       // to /api/universe requests. Verify sortStateService integration is wired.
       const sortStateService = TestBed.inject(SortStateService);
@@ -2326,14 +2326,14 @@ describe('GlobalUniverseComponent - Ex-Date Editing Enhancements (TDD - Story AN
       });
     });
 
-    it('should update table data when sort changes', () => {
+    it('should persist sort state when sort changes', () => {
       const sortStateService = TestBed.inject(SortStateService);
       component.onSortChange({ active: 'distribution', direction: 'desc' });
       const state = sortStateService.loadSortState('universes');
       expect(state).toEqual({ field: 'distribution', order: 'desc' });
     });
 
-    it('should handle sort errors gracefully', () => {
+    it('should clear sort state when sort direction is reset', () => {
       // When direction is empty string (sort cleared), clear sort state
       const sortStateService = TestBed.inject(SortStateService);
       const clearSpy = vi.spyOn(sortStateService, 'clearSortState');
