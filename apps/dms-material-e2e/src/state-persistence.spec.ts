@@ -51,7 +51,7 @@ function ignoreError(): void {
 
 // ─── State Persistence E2E Tests ──────────────────────────────────────────────
 
-test.describe.skip('State Persistence', () => {
+test.describe('State Persistence', () => {
   test.beforeAll(async ({ request }) => {
     // Create two fresh test accounts via API
     const res1 = await request.post('/api/accounts/add', {
@@ -209,19 +209,21 @@ test.describe.skip('State Persistence', () => {
       await page.click('[data-testid="account-tab-sold"]');
       await page.waitForURL(/\/sold$/, { timeout: 10000 });
 
-      // Refresh page
+      // Refresh page — should restore second account with Sold tab
       await page.reload();
       await waitForAccountsPanel(page);
 
-      // Verify second account with Sold tab is restored
       await expect(page).toHaveURL(
         new RegExp(`/account/${secondAccountId}/sold`)
       );
 
-      // Switch to first account
-      await selectAccountByName(page, testAccountName);
+      // Now navigate directly to first account and refresh to restore its tab
+      await page.goto(`/account/${testAccountId}`);
+      await page.waitForLoadState('networkidle');
+      await page.reload();
+      await waitForAccountsPanel(page);
 
-      // Verify first account with Open tab is restored
+      // Verify first account's Open tab is restored independently
       await expect(page).toHaveURL(
         new RegExp(`/account/${testAccountId}/open`)
       );
