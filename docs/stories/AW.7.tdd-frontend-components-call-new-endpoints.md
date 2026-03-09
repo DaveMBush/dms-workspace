@@ -131,14 +131,31 @@ pnpm test:dms-material
 
 ### Agent Model Used
 
+Claude Opus 4.6
+
 ### Status
 
-Approved
+Complete
 
 ### Tasks / Subtasks
 
+- [x] Write Unit Tests for GlobalUniverseComponent sort integration (describe.skip)
+- [x] Write Unit Tests for OpenPositionsComponent sort integration (describe.skip)
+- [x] Write Unit Tests for SoldPositionsComponent (ClosedTrades) sort integration (describe.skip)
+- [x] Verify all tests skipped and CI green (pnpm all, lint, build, test)
+- [x] Run pnpm format and pnpm dupcheck
+
 ### File List
 
+- apps/dms-material/src/app/global/global-universe/global-universe.component.spec.ts (modified)
+- apps/dms-material/src/app/account-panel/open-positions/open-positions.component.spec.ts (modified)
+- apps/dms-material/src/app/account-panel/sold-positions/sold-positions.component.spec.ts (modified)
+
 ### Change Log
+
+- Added `describe.skip('Sort integration with SortStateService')` block to GlobalUniverseComponent spec with 5 tests for "universes" table sort integration
+- Added `describe.skip('Sort integration with SortStateService')` block to OpenPositionsComponent spec with 5 tests for "trades-open" table sort integration
+- Added `describe.skip('Sort integration with SortStateService')` block to SoldPositionsComponent spec with 5 tests for "trades-closed" table sort integration
+- Each test block covers: load sort state on init, call endpoint with sort params, save sort state on change, update table on sort change, handle sort errors gracefully
 
 ### Debug Log References

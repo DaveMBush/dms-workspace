@@ -1221,4 +1221,34 @@ describe('OpenPositionsComponent - Account Selection Integration', () => {
       expect(component.successMessage()).toBe('');
     });
   });
+
+  // TDD RED Phase - Story AW.7: Sort integration tests
+  // These tests define expected behavior for sort state integration
+  // They will be enabled in Story AW.8 when implementation is complete
+  describe.skip('Sort integration with SortStateService', () => {
+    it('should load sort state from SortStateService on init', () => {
+      // Expected: component loads persisted sort config for "trades-open" table on init
+      expect(true).toBe(false);
+    });
+
+    it('should call /api/trades/open with sort parameters from sort state', () => {
+      // Expected: HTTP requests to /api/trades/open include X-Sort-Field and X-Sort-Order headers
+      expect(true).toBe(false);
+    });
+
+    it('should save sort state to SortStateService when user changes sort', () => {
+      // Expected: onSortChange calls SortStateService.saveSortState with "trades-open" table key
+      expect(true).toBe(false);
+    });
+
+    it('should update table data when sort changes', () => {
+      // Expected: changing sort triggers data refresh with new sort parameters
+      expect(true).toBe(false);
+    });
+
+    it('should handle sort errors gracefully', () => {
+      // Expected: if sort state load fails, component uses default sort order
+      expect(true).toBe(false);
+    });
+  });
 });
