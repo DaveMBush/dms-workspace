@@ -66,36 +66,27 @@ function mapToResponse(trade: TradeWithUniverse): ClosedTradeResponse {
   };
 }
 
-function getSortValue(
-  trade: ClosedTradeResponse,
-  sortBy: SortField
-): number | string {
-  switch (sortBy) {
-    case 'symbol':
-      return trade.symbol;
-    case 'closeDate':
-      return new Date(trade.sell_date).getTime();
-    case 'profit':
-      return trade.profit;
-    case 'percentGain':
-    default:
-      return trade.percentGain;
-  }
-}
-
 function compareResponses(
   a: ClosedTradeResponse,
   b: ClosedTradeResponse,
   sortBy: SortField,
   sortOrder: 'asc' | 'desc'
 ): number {
-  const aVal = getSortValue(a, sortBy);
-  const bVal = getSortValue(b, sortBy);
   let diff: number;
-  if (typeof aVal === 'string' && typeof bVal === 'string') {
-    diff = aVal.localeCompare(bVal);
-  } else {
-    diff = (aVal as number) - (bVal as number);
+  switch (sortBy) {
+    case 'symbol':
+      diff = a.symbol.localeCompare(b.symbol);
+      break;
+    case 'closeDate':
+      diff = new Date(a.sell_date).getTime() - new Date(b.sell_date).getTime();
+      break;
+    case 'profit':
+      diff = a.profit - b.profit;
+      break;
+    case 'percentGain':
+    default:
+      diff = a.percentGain - b.percentGain;
+      break;
   }
   return sortOrder === 'desc' ? -diff : diff;
 }
