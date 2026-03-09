@@ -116,14 +116,42 @@ pnpm test:server
 
 ### Agent Model Used
 
+Claude Opus 4.6
+
 ### Status
 
-Approved
+Ready for Review
 
 ### Tasks / Subtasks
 
+- [x] Re-enable unit tests from AW.1 (remove `.skip`)
+- [x] Add GET route handler with sort parameter parsing
+- [x] Validate sortBy against allowed fields
+- [x] Map field names to database columns
+- [x] Return 400 for invalid sort fields
+- [x] Apply Prisma `orderBy` at database level
+- [x] Default sort by symbol ascending
+- [x] Case-insensitive sorting for text fields
+- [x] All validation commands pass
+
 ### File List
+
+- `apps/server/src/app/routes/universe/index.ts` — Modified: imports new GET route module and extracted helpers
+- `apps/server/src/app/routes/universe/universe-sorting.spec.ts` — Modified: re-enabled tests (removed `.skip`)
+- `apps/server/src/app/routes/universe/get-all-universes/index.ts` — New: GET route with sorting logic
+- `apps/server/src/app/routes/universe/universe-helpers.ts` — New: extracted trade helper functions
+- `apps/server/src/app/routes/admin/cusip-cache/index.ts` — Modified: refactored to fix pre-existing lint errors (complexity, max-lines)
+- `apps/server/src/app/routes/admin/cusip-cache/audit-log-handler.ts` — New: extracted audit log handler
+- `apps/server/src/app/routes/admin/cusip-cache/bulk-add-processor.ts` — New: extracted bulk add processor
 
 ### Change Log
 
+- 2026-03-09: Implemented server-side sorting for universe endpoint (GREEN phase)
+- 2026-03-09: Refactored cusip-cache/index.ts to fix pre-existing lint errors blocking CI
+- 2026-03-09: All validations pass (lint, build, test, format, dupcheck)
+
 ### Debug Log References
+
+### Completion Notes
+
+- Fixed pre-existing lint errors in cusip-cache/index.ts (complexity and max-lines) that were blocking CI for all server PRs

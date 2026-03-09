@@ -106,7 +106,7 @@ interface UniverseResponse {
   is_closed_end_fund: boolean;
 }
 
-describe.skip('GET /api/universe - Server-Side Sorting', function universeSortingTests() {
+describe('GET /api/universe - Server-Side Sorting', function universeSortingTests() {
   let app: FastifyInstance;
 
   beforeEach(async function setupApp() {

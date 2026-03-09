@@ -2,8 +2,9 @@ import { CusipCacheSource } from '@prisma/client';
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 
 import { prisma } from '../../../prisma/prisma-client';
-import { cusipAuditLogService } from '../../../services/cusip-audit-log.service';
 import { cusipCacheCleanupService } from '../../../services/cusip-cache-cleanup.service';
+import { handleGetAuditLog } from './audit-log-handler';
+import { processBulkMappings } from './bulk-add-processor';
 import { cusipCacheTransactions } from './upsert-with-audit';
 import { cusipCacheValidators } from './validation';
 
@@ -205,35 +206,7 @@ async function handleBulkAdd(
     return;
   }
 
-  const results = { added: 0, errors: [] as string[] };
-
-  for (const mapping of mappings) {
-    if (!cusipCacheValidators.isValidCusip(mapping.cusip)) {
-      results.errors.push(`Invalid CUSIP: ${mapping.cusip}`);
-      continue;
-    }
-    if (!cusipCacheValidators.isNonEmptySymbol(mapping.symbol)) {
-      results.errors.push(`Empty symbol for CUSIP: ${mapping.cusip}`);
-      continue;
-    }
-    if (!cusipCacheValidators.isValidSource(mapping.source)) {
-      results.errors.push(
-        `Invalid source for CUSIP ${mapping.cusip}: ${mapping.source}`
-      );
-      continue;
-    }
-
-    await cusipCacheTransactions.upsertWithAudit({
-      cusip: mapping.cusip.toUpperCase(),
-      symbol: mapping.symbol.toUpperCase(),
-      source: (mapping.source ?? 'OPENFIGI') as CusipCacheSource,
-      auditSource: 'BULK_IMPORT',
-      reason,
-    });
-
-    results.added++;
-  }
-
+  const results = await processBulkMappings(mappings, reason);
   reply.send(results);
 }
 
@@ -274,84 +247,6 @@ async function handleGetArchived(
   }
 
   const result = await cusipCacheCleanupService.getArchived({ limit, offset });
-  reply.send(result);
-}
-
-// --- Audit Log ---
-
-interface AuditQuery {
-  cusip?: string;
-  action?: string;
-  startDate?: string;
-  endDate?: string;
-  limit?: string;
-  offset?: string;
-}
-
-function parseOptionalString(value: string | undefined): string | undefined {
-  if (typeof value === 'string' && value.length > 0) {
-    return value;
-  }
-  return undefined;
-}
-
-function parseOptionalDate(value: string | undefined): Date | undefined {
-  const str = parseOptionalString(value);
-  return str !== undefined ? new Date(str) : undefined;
-}
-
-function parseOptionalInt(value: string | undefined): number | undefined {
-  const str = parseOptionalString(value);
-  return str !== undefined ? parseInt(str, 10) : undefined;
-}
-
-function isInvalidDate(value: string | undefined): boolean {
-  if (typeof value !== 'string' || value.length === 0) {
-    return false;
-  }
-  return !isFinite(new Date(value).getTime());
-}
-
-function isInvalidPaginationParam(value: number | undefined): boolean {
-  return value !== undefined && (isNaN(value) || value < 0);
-}
-
-async function handleGetAuditLog(
-  request: FastifyRequest<{ Querystring: AuditQuery }>,
-  reply: FastifyReply
-): Promise<void> {
-  const { cusip, action, startDate, endDate, limit, offset } = request.query;
-
-  if (isInvalidDate(startDate)) {
-    reply.status(400).send({ error: 'Invalid startDate format' });
-    return;
-  }
-  if (isInvalidDate(endDate)) {
-    reply.status(400).send({ error: 'Invalid endDate format' });
-    return;
-  }
-
-  const parsedLimit = parseOptionalInt(limit);
-  const parsedOffset = parseOptionalInt(offset);
-
-  if (isInvalidPaginationParam(parsedLimit)) {
-    reply.status(400).send({ error: 'Invalid limit parameter' });
-    return;
-  }
-  if (isInvalidPaginationParam(parsedOffset)) {
-    reply.status(400).send({ error: 'Invalid offset parameter' });
-    return;
-  }
-
-  const result = await cusipAuditLogService.queryAuditLog({
-    cusip: parseOptionalString(cusip),
-    action: parseOptionalString(action),
-    startDate: parseOptionalDate(startDate),
-    endDate: parseOptionalDate(endDate),
-    limit: parsedLimit,
-    offset: parsedOffset,
-  });
-
   reply.send(result);
 }
 
