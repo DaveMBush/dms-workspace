@@ -50,7 +50,8 @@ function isValidSortField(field: string): field is SortField {
 
 function mapToResponse(trade: TradeWithUniverse): ClosedTradeResponse {
   const profit = (trade.sell - trade.buy) * trade.quantity;
-  const percentGain = ((trade.sell - trade.buy) / trade.buy) * 100;
+  const percentGain =
+    trade.buy !== 0 ? ((trade.sell - trade.buy) / trade.buy) * 100 : 0;
   return {
     id: trade.id,
     universeId: trade.universeId,

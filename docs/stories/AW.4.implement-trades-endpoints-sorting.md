@@ -171,5 +171,6 @@ Ready for Review
 - Created `get-open-trades/index.ts`: GET /api/trades/open with sortBy (symbol, openDate, currentValue, unrealizedGain), validation, and computed fields
 - Created `get-closed-trades/index.ts`: GET /api/trades/closed with sortBy (symbol, closeDate, profit, percentGain), validation, and computed fields
 - Registered both new routes in the trades router
+- Note: Sorting is performed in the route layer after `findMany()`, not at the database/query-builder level. Computed fields (currentValue, unrealizedGain, profit, percentGain) require data from the universe relation, so in-memory sorting is necessary after computing derived values.
 
 ### Debug Log References
