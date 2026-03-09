@@ -35,6 +35,10 @@ export const sortInterceptor: HttpInterceptorFn = function sortInterceptorImpl(
     return next(req);
   }
 
+  if (req.method !== 'GET') {
+    return next(req);
+  }
+
   const sortState = sortStateService.loadSortState(tableName);
 
   if (!sortState) {

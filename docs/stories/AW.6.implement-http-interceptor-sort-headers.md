@@ -205,6 +205,7 @@ Ready for Review
 - apps/dms-material/src/app/shared/services/sort-state.service.spec.ts (modified - removed .skip)
 - apps/dms-material/src/app/auth/interceptors/sort.interceptor.ts (modified - implemented)
 - apps/dms-material/src/app/auth/interceptors/sort.interceptor.spec.ts (modified - removed .skip)
+- apps/dms-material/src/app/app.config.ts (modified - registered sortInterceptor)
 
 ### Change Log
 
