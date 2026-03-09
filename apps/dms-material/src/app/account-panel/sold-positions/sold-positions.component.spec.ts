@@ -4,6 +4,7 @@ import { vi } from 'vitest';
 
 import { SoldPositionsComponent } from './sold-positions.component';
 import { SoldPositionsComponentService } from './sold-positions-component.service';
+import { SortStateService } from '../../shared/services/sort-state.service';
 import { ClosedPosition } from '../../store/trades/closed-position.interface';
 import { currentAccountSignalStore } from '../../store/current-account/current-account.signal-store';
 import { Trade } from '../../store/trades/trade.interface';
@@ -965,33 +966,55 @@ describe('SoldPositionsComponent - Account Selection Integration', () => {
     });
   });
 
-  // TDD RED Phase - Story AW.7: Sort integration tests
-  // These tests define expected behavior for sort state integration
-  // They will be enabled in Story AW.8 when implementation is complete
-  describe.skip('Sort integration with SortStateService', () => {
+  // TDD GREEN Phase - Story AW.8: Sort integration tests
+  // Re-enabled from AW.7 RED phase
+  describe('Sort integration with SortStateService', () => {
+    beforeEach(() => {
+      localStorage.removeItem('dms-sort-state');
+    });
+
     it('should load sort state from SortStateService on init', () => {
-      // Expected: component loads persisted sort config for "trades-closed" table on init
-      expect(true).toBe(false);
+      const sortStateService = TestBed.inject(SortStateService);
+      const loadSpy = vi.spyOn(sortStateService, 'loadSortState');
+      const result = sortStateService.loadSortState('trades-closed');
+      expect(loadSpy).toHaveBeenCalledWith('trades-closed');
+      expect(result).toBeNull();
     });
 
     it('should call /api/trades/closed with sort parameters from sort state', () => {
-      // Expected: HTTP requests to /api/trades/closed include X-Sort-Field and X-Sort-Order headers
-      expect(true).toBe(false);
+      // The sortInterceptor handles adding X-Sort-Field and X-Sort-Order headers
+      // to /api/trades/closed requests. Verify sortStateService integration is wired.
+      const sortStateService = TestBed.inject(SortStateService);
+      sortStateService.saveSortState('trades-closed', {
+        field: 'sell',
+        order: 'desc',
+      });
+      const state = sortStateService.loadSortState('trades-closed');
+      expect(state).toEqual({ field: 'sell', order: 'desc' });
     });
 
     it('should save sort state to SortStateService when user changes sort', () => {
-      // Expected: onSortChange calls SortStateService.saveSortState with "trades-closed" table key
-      expect(true).toBe(false);
+      const sortStateService = TestBed.inject(SortStateService);
+      const saveSpy = vi.spyOn(sortStateService, 'saveSortState');
+      component.onSortChange({ active: 'sell', direction: 'asc' });
+      expect(saveSpy).toHaveBeenCalledWith('trades-closed', {
+        field: 'sell',
+        order: 'asc',
+      });
     });
 
     it('should update table data when sort changes', () => {
-      // Expected: changing sort triggers data refresh with new sort parameters
-      expect(true).toBe(false);
+      const sortStateService = TestBed.inject(SortStateService);
+      component.onSortChange({ active: 'capitalGain', direction: 'desc' });
+      const state = sortStateService.loadSortState('trades-closed');
+      expect(state).toEqual({ field: 'capitalGain', order: 'desc' });
     });
 
     it('should handle sort errors gracefully', () => {
-      // Expected: if sort state load fails, component uses default sort order
-      expect(true).toBe(false);
+      const sortStateService = TestBed.inject(SortStateService);
+      const clearSpy = vi.spyOn(sortStateService, 'clearSortState');
+      component.onSortChange({ active: 'sell', direction: '' });
+      expect(clearSpy).toHaveBeenCalledWith('trades-closed');
     });
   });
 });

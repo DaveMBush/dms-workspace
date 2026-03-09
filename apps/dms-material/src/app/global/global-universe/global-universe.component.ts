@@ -26,6 +26,7 @@ import { EditableDateCellComponent } from '../../shared/components/editable-date
 import { ErrorHandlingService } from '../../shared/services/error-handling.service';
 import { GlobalLoadingService } from '../../shared/services/global-loading.service';
 import { NotificationService } from '../../shared/services/notification.service';
+import { SortStateService } from '../../shared/services/sort-state.service';
 import { UniverseSyncService } from '../../shared/services/universe-sync.service';
 import { UpdateUniverseFieldsService } from '../../shared/services/update-universe-fields.service';
 import { selectAccounts } from '../../store/accounts/selectors/select-accounts.function';
@@ -78,6 +79,7 @@ export class GlobalUniverseComponent {
   private readonly dialog = inject(MatDialog);
   private readonly updateFieldsService = inject(UpdateUniverseFieldsService);
   private readonly errorHandling = inject(ErrorHandlingService);
+  private readonly sortStateService = inject(SortStateService);
   readonly cellEdit = output<CellEditEvent>();
   readonly symbolDeleted = output<Universe>();
   readonly today = new Date();
@@ -147,8 +149,15 @@ export class GlobalUniverseComponent {
     return this.globalLoading.isLoading() && this.filteredData$().length === 0;
   });
 
-  onSortChange(_: Sort): void {
-    // code coming
+  onSortChange(sort: Sort): void {
+    if (sort.direction === '') {
+      this.sortStateService.clearSortState('universes');
+      return;
+    }
+    this.sortStateService.saveSortState('universes', {
+      field: sort.active,
+      order: sort.direction,
+    });
   }
 
   syncUniverse(): void {

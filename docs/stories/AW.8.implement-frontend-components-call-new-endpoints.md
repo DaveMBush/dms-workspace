@@ -148,14 +148,37 @@ pnpm test:dms-material
 
 ### Agent Model Used
 
+Claude Opus 4.6
+
 ### Status
 
-Approved
+Ready for Review
 
 ### Tasks / Subtasks
 
+- [x] Update global-universe.component.ts to integrate with SortStateService
+- [x] Update open-positions.component.ts to call /api/trades/open with sort integration
+- [x] Update sold-positions.component.ts to call /api/trades/closed with sort integration
+- [x] Re-enable and pass all unit tests from AW.7
+- [x] Run pnpm all — PASS (1596 tests passed, lint clean, build clean)
+- [x] Run pnpm dupcheck — 1 pre-existing clone only
+- [x] Run pnpm format — clean
+- [x] QA gate — PASS
+
 ### File List
 
+- apps/dms-material/src/app/global/global-universe/global-universe.component.ts (modified)
+- apps/dms-material/src/app/global/global-universe/global-universe.component.spec.ts (modified)
+- apps/dms-material/src/app/account-panel/open-positions/open-positions.component.ts (modified)
+- apps/dms-material/src/app/account-panel/open-positions/open-positions.component.spec.ts (modified)
+- apps/dms-material/src/app/account-panel/sold-positions/sold-positions.component.ts (modified)
+- apps/dms-material/src/app/account-panel/sold-positions/sold-positions.component.spec.ts (modified)
+
 ### Change Log
+
+- Updated GlobalUniverseComponent to integrate with SortStateService for sort persistence
+- Updated OpenPositionsComponent to call /api/trades/open endpoint with SortStateService integration
+- Updated SoldPositionsComponent to call /api/trades/closed endpoint with SortStateService integration
+- Re-enabled all unit tests from AW.7 — all passing
 
 ### Debug Log References

@@ -14,9 +14,11 @@ import {
 } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { Sort } from '@angular/material/sort';
 
 import { BaseTableComponent } from '../../shared/components/base-table/base-table.component';
 import { ColumnDef } from '../../shared/components/base-table/column-def.interface';
+import { SortStateService } from '../../shared/services/sort-state.service';
 import { ClosedPosition } from '../../store/trades/closed-position.interface';
 import { SoldPositionsComponentService } from './sold-positions-component.service';
 
@@ -37,6 +39,7 @@ import { SoldPositionsComponentService } from './sold-positions-component.servic
 })
 export class SoldPositionsComponent {
   private readonly soldPositionsService = inject(SoldPositionsComponentService);
+  private readonly sortStateService = inject(SortStateService);
 
   startDate = signal<string | null>(null);
   endDate = signal<string | null>(null);
@@ -86,6 +89,17 @@ export class SoldPositionsComponent {
   });
 
   searchText = '';
+
+  onSortChange(sort: Sort): void {
+    if (sort.direction === '') {
+      this.sortStateService.clearSortState('trades-closed');
+      return;
+    }
+    this.sortStateService.saveSortState('trades-closed', {
+      field: sort.active,
+      order: sort.direction,
+    });
+  }
 
   columns: ColumnDef[] = [
     { field: 'symbol', header: 'Symbol', sortable: false, width: '120px' },

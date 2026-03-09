@@ -12,12 +12,14 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { Sort } from '@angular/material/sort';
 import { ActivatedRoute } from '@angular/router';
 
 import { BaseTableComponent } from '../../shared/components/base-table/base-table.component';
 import { ColumnDef } from '../../shared/components/base-table/column-def.interface';
 import { EditableCellComponent } from '../../shared/components/editable-cell/editable-cell.component';
 import { EditableDateCellComponent } from '../../shared/components/editable-date-cell/editable-date-cell.component';
+import { SortStateService } from '../../shared/services/sort-state.service';
 import { OpenPosition } from '../../store/trades/open-position.interface';
 import { Trade } from '../../store/trades/trade.interface';
 import { OpenPositionsComponentService } from './open-positions-component.service';
@@ -41,6 +43,7 @@ import { isPositive, isValidDate, isValidNumber } from './position-validators';
 })
 export class OpenPositionsComponent {
   readonly openPositionsService = inject(OpenPositionsComponentService);
+  private readonly sortStateService = inject(SortStateService);
   // Inject route to get accountId from URL
   private route = inject(ActivatedRoute);
   // Inject MatDialog for add position dialog
@@ -49,6 +52,17 @@ export class OpenPositionsComponent {
   searchText = signal<string>('');
   errorMessage = signal<string>('');
   successMessage = signal<string>('');
+
+  onSortChange(sort: Sort): void {
+    if (sort.direction === '') {
+      this.sortStateService.clearSortState('trades-open');
+      return;
+    }
+    this.sortStateService.saveSortState('trades-open', {
+      field: sort.active,
+      order: sort.direction,
+    });
+  }
 
   // Writable signal for trades (populated from SmartNgRX or set directly in tests)
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- would obscure this
