@@ -3,15 +3,10 @@ import { FastifyInstance } from 'fastify';
 import { prisma } from '../../prisma/prisma-client';
 import registerAddSymbol from './add-symbol';
 import { addSymbol } from './add-symbol/add-symbol.function';
+import registerGetAllUniverses from './get-all-universes';
 import registerSyncFromScreener from './sync-from-screener';
 import { Universe } from './universe.interface';
-
-interface TradeRow {
-  buy: number;
-  quantity: number;
-  sell: number;
-  sell_date: Date | null;
-}
+import universeHelpers from './universe-helpers';
 
 interface UniverseWithTrades {
   id: string;
@@ -21,66 +16,19 @@ interface UniverseWithTrades {
   symbol: string;
   ex_date: Date | null;
   risk_group_id: string;
-  trades: TradeRow[];
+  trades: Array<{
+    buy: number;
+    quantity: number;
+    sell: number;
+    sell_date: Date | null;
+  }>;
   expired: boolean;
   is_closed_end_fund: boolean;
 }
 
-function getOpenTrades(trades: TradeRow[]): TradeRow[] {
-  return trades.filter(function isOpen(t: TradeRow): boolean {
-    return t.sell_date === null;
-  });
-}
-
-function getMostRecentSell(
-  trades: TradeRow[]
-): { sell_date: Date; sell: number } | null {
-  let mostRecent: { sell_date: Date; sell: number } | null = null;
-  for (let i = 0; i < trades.length; i++) {
-    const t = trades[i];
-    if (
-      t.sell_date !== null &&
-      (mostRecent === null ||
-        t.sell_date.getTime() > mostRecent.sell_date.getTime())
-    ) {
-      mostRecent = { sell_date: t.sell_date, sell: t.sell };
-    }
-  }
-  return mostRecent;
-}
-
-function calculateAvgPurchaseYieldPercent(
-  openTrades: TradeRow[],
-  distribution: number,
-  distributionsPerYear: number
-): number {
-  const totalQuantity = openTrades.reduce(function sumQty(
-    acc: number,
-    t: TradeRow
-  ): number {
-    return acc + t.quantity;
-  },
-  0);
-  if (totalQuantity === 0) {
-    return 0;
-  }
-  const totalCost = openTrades.reduce(function sumCost(
-    acc: number,
-    t: TradeRow
-  ): number {
-    return acc + t.buy * t.quantity;
-  },
-  0);
-  const avgBuy = totalCost / totalQuantity;
-  if (!Number.isFinite(avgBuy) || avgBuy <= 0) {
-    return 0;
-  }
-  return (distribution * distributionsPerYear * 100) / avgBuy;
-}
-
 function mapUniverseToResponse(u: UniverseWithTrades): Universe {
-  const openTrades = getOpenTrades(u.trades);
-  const mostRecentSell = getMostRecentSell(u.trades);
+  const openTrades = universeHelpers.getOpenTrades(u.trades);
+  const mostRecentSell = universeHelpers.getMostRecentSell(u.trades);
   return {
     id: u.id,
     distribution: u.distribution,
@@ -91,25 +39,16 @@ function mapUniverseToResponse(u: UniverseWithTrades): Universe {
     symbol: u.symbol,
     ex_date: u.ex_date?.toISOString() ?? '',
     risk_group_id: u.risk_group_id,
-    position: calculatePosition(openTrades),
+    position: universeHelpers.calculatePosition(openTrades),
     expired: u.expired,
     is_closed_end_fund: u.is_closed_end_fund,
-    avg_purchase_yield_percent: calculateAvgPurchaseYieldPercent(
-      openTrades,
-      u.distribution,
-      u.distributions_per_year
-    ),
+    avg_purchase_yield_percent:
+      universeHelpers.calculateAvgPurchaseYieldPercent(
+        openTrades,
+        u.distribution,
+        u.distributions_per_year
+      ),
   };
-}
-
-function calculatePosition(openTrades: TradeRow[]): number {
-  return openTrades.reduce(function sumPosition(
-    acc: number,
-    trade: TradeRow
-  ): number {
-    return acc + trade.buy * trade.quantity;
-  },
-  0);
 }
 
 function handleGetUniversesRoute(fastify: FastifyInstance): void {
@@ -288,8 +227,8 @@ function handleUpdateUniverseRoute(fastify: FastifyInstance): void {
     }
   );
 }
-
 export default function registerUniverseRoutes(fastify: FastifyInstance): void {
+  registerGetAllUniverses(fastify);
   handleGetUniversesRoute(fastify);
   handleAddUniverseRoute(fastify);
   handleDeleteUniverseRoute(fastify);
