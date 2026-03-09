@@ -30,7 +30,7 @@ describe('sortInterceptor', () => {
     vi.restoreAllMocks();
   });
 
-  describe.skip('universe endpoint sort headers', () => {
+  describe('universe endpoint sort headers', () => {
     it('should add X-Sort-Field header to universe requests', () => {
       mockSortStateService.loadSortState.mockReturnValue({
         field: 'name',
@@ -81,7 +81,7 @@ describe('sortInterceptor', () => {
     });
   });
 
-  describe.skip('trades endpoint sort headers', () => {
+  describe('trades endpoint sort headers', () => {
     it('should add sort headers to trades/open requests', () => {
       mockSortStateService.loadSortState.mockReturnValue({
         field: 'openDate',
@@ -151,7 +151,7 @@ describe('sortInterceptor', () => {
     });
   });
 
-  describe.skip('non-sortable endpoints', () => {
+  describe('non-sortable endpoints', () => {
     it('should not add headers to auth endpoints', () => {
       const req = new HttpRequest('GET', '/api/auth/login');
 
@@ -192,7 +192,7 @@ describe('sortInterceptor', () => {
     });
   });
 
-  describe.skip('backend default ordering fallback', () => {
+  describe('backend default ordering fallback', () => {
     it('should not add sort headers when no state exists for universes', () => {
       mockSortStateService.loadSortState.mockReturnValue(null);
 

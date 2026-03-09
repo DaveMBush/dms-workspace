@@ -26,6 +26,7 @@ import { configureAmplify } from './amplify.config';
 import { appRoutes } from './app.routes';
 import { AuthService } from './auth/auth.service';
 import { authInterceptor } from './auth/interceptors/auth.interceptor';
+import { sortInterceptor } from './auth/interceptors/sort.interceptor';
 import { MockAuthService } from './auth/mock-auth.service';
 import { MockProfileService } from './auth/services/mock-profile.service';
 import { ProfileService } from './auth/services/profile.service';
@@ -123,7 +124,7 @@ export const appConfig: ApplicationConfig = {
 
     // HTTP client with auth interceptor
     provideHttpClient(
-      withInterceptors([authInterceptor]),
+      withInterceptors([authInterceptor, sortInterceptor]),
       withInterceptorsFromDi(),
       withFetch()
     ),

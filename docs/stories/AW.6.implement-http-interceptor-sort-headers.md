@@ -181,14 +181,36 @@ pnpm test:dms-material
 
 ### Agent Model Used
 
+Claude Opus 4.6
+
 ### Status
 
-Approved
+Ready for Review
 
 ### Tasks / Subtasks
 
+- [x] Re-enable unit tests from AW.5 (remove `.skip` from describe blocks)
+- [x] Implement SortStateService for localStorage management
+- [x] Implement SortInterceptor to add sort headers to HTTP requests
+- [x] All unit tests passing (GREEN phase complete)
+- [x] Lint, build, test passing (`pnpm all`)
+- [x] Format check (`pnpm format`)
+- [x] Duplicate check (`pnpm dupcheck`)
+- [x] E2E chromium
+- [x] E2E firefox
+
 ### File List
 
+- apps/dms-material/src/app/shared/services/sort-state.service.ts (modified - implemented)
+- apps/dms-material/src/app/shared/services/sort-state.service.spec.ts (modified - removed .skip)
+- apps/dms-material/src/app/auth/interceptors/sort.interceptor.ts (modified - implemented)
+- apps/dms-material/src/app/auth/interceptors/sort.interceptor.spec.ts (modified - removed .skip)
+- apps/dms-material/src/app/app.config.ts (modified - registered sortInterceptor)
+
 ### Change Log
+
+- Implemented SortStateService: saveSortState, loadSortState, clearSortState with localStorage persistence and error handling
+- Implemented sortInterceptor: adds X-Sort-Field and X-Sort-Order headers to sortable endpoints (/api/universe, /api/trades/open, /api/trades/closed)
+- Re-enabled all 28+ unit tests from AW.5 TDD RED phase
 
 ### Debug Log References
