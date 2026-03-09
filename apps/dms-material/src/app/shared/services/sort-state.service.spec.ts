@@ -50,7 +50,7 @@ describe('SortStateService', () => {
     }
   });
 
-  describe.skip('saveSortState', () => {
+  describe('saveSortState', () => {
     it('should recover from corrupted localStorage data before saving', () => {
       mockGetItem.mockReturnValue('not-valid-json{{{');
 
@@ -135,7 +135,7 @@ describe('SortStateService', () => {
     });
   });
 
-  describe.skip('loadSortState', () => {
+  describe('loadSortState', () => {
     it('should load sort state from localStorage', () => {
       mockGetItem.mockReturnValue(
         JSON.stringify({
@@ -178,7 +178,7 @@ describe('SortStateService', () => {
     });
   });
 
-  describe.skip('clearSortState', () => {
+  describe('clearSortState', () => {
     it('should handle corrupted localStorage data gracefully when clearing', () => {
       mockGetItem.mockReturnValue('not-valid-json{{{');
 
@@ -216,7 +216,7 @@ describe('SortStateService', () => {
     });
   });
 
-  describe.skip('multiple table configurations', () => {
+  describe('multiple table configurations', () => {
     it('should handle sort states for universes table', () => {
       mockGetItem.mockReturnValue(null);
 

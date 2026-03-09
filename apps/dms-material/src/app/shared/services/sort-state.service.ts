@@ -7,16 +7,35 @@ interface SortConfig {
 
 @Injectable({ providedIn: 'root' })
 export class SortStateService {
-  saveSortState(_: string, __: SortConfig): void {
-    // TDD RED: Implementation in Story AW.6
+  private readonly STORAGE_KEY = 'dms-sort-state';
+
+  saveSortState(table: string, config: SortConfig): void {
+    const state = this.loadAllState();
+    state[table] = config;
+    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(state));
   }
 
-  loadSortState(_: string): SortConfig | null {
-    // TDD RED: Implementation in Story AW.6
-    return null;
+  loadSortState(table: string): SortConfig | null {
+    const state = this.loadAllState();
+    return state[table] ?? null;
   }
 
-  clearSortState(_: string): void {
-    // TDD RED: Implementation in Story AW.6
+  clearSortState(table: string): void {
+    const state = this.loadAllState();
+    delete state[table];
+    if (Object.keys(state).length === 0) {
+      localStorage.removeItem(this.STORAGE_KEY);
+    } else {
+      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(state));
+    }
+  }
+
+  private loadAllState(): Record<string, SortConfig> {
+    try {
+      const stored = localStorage.getItem(this.STORAGE_KEY);
+      return stored ? (JSON.parse(stored) as Record<string, SortConfig>) : {};
+    } catch {
+      return {};
+    }
   }
 }
