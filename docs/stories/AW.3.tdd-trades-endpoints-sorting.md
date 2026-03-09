@@ -145,7 +145,7 @@ Ready for Review
 
 ### Change Log
 
-- Added trades-sorting.spec.ts with 22 tests covering open and closed trades endpoints sorting
+- Added trades-sorting.spec.ts with 24 tests covering open and closed trades endpoints sorting
 - Tests use describe.skip to allow CI to pass (TDD RED phase)
 - Covers sorting by symbol, openDate/closeDate, currentValue/profit, unrealizedGain/percentGain
 - Includes invalid sort field and empty sortBy edge cases
