@@ -8,6 +8,10 @@ describe('SortStateService', () => {
   let mockGetItem: ReturnType<typeof vi.fn>;
   let mockSetItem: ReturnType<typeof vi.fn>;
   let mockRemoveItem: ReturnType<typeof vi.fn>;
+  const originalLocalStorageDescriptor = Object.getOwnPropertyDescriptor(
+    globalThis,
+    'localStorage'
+  );
 
   const STORAGE_KEY = 'dms-sort-state';
 
@@ -35,6 +39,15 @@ describe('SortStateService', () => {
 
   afterEach(() => {
     vi.restoreAllMocks();
+    if (originalLocalStorageDescriptor) {
+      Object.defineProperty(
+        globalThis,
+        'localStorage',
+        originalLocalStorageDescriptor
+      );
+    } else {
+      Reflect.deleteProperty(globalThis, 'localStorage');
+    }
   });
 
   describe.skip('saveSortState', () => {

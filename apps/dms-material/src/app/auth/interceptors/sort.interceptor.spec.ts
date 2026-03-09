@@ -189,8 +189,8 @@ describe('sortInterceptor', () => {
     });
   });
 
-  describe.skip('default sort behavior', () => {
-    it('should use default sort when no state exists for universes', () => {
+  describe.skip('backend default ordering fallback', () => {
+    it('should not add sort headers when no state exists for universes', () => {
       mockSortStateService.loadSortState.mockReturnValue(null);
 
       const req = new HttpRequest('GET', '/api/universe');
@@ -204,7 +204,7 @@ describe('sortInterceptor', () => {
       expect(interceptedReq.headers.has('X-Sort-Order')).toBe(false);
     });
 
-    it('should use default sort when no state exists for trades', () => {
+    it('should not add sort headers when no state exists for trades', () => {
       mockSortStateService.loadSortState.mockReturnValue(null);
 
       const req = new HttpRequest('GET', '/api/trades/open');
