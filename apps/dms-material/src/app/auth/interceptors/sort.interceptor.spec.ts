@@ -159,6 +159,7 @@ describe('sortInterceptor', () => {
         sortInterceptor(req, mockNext);
       });
 
+      expect(mockSortStateService.loadSortState).not.toHaveBeenCalled();
       const interceptedReq = mockNext.mock.calls[0][0] as HttpRequest<unknown>;
       expect(interceptedReq.headers.has('X-Sort-Field')).toBe(false);
       expect(interceptedReq.headers.has('X-Sort-Order')).toBe(false);
@@ -171,6 +172,7 @@ describe('sortInterceptor', () => {
         sortInterceptor(req, mockNext);
       });
 
+      expect(mockSortStateService.loadSortState).not.toHaveBeenCalled();
       const interceptedReq = mockNext.mock.calls[0][0] as HttpRequest<unknown>;
       expect(interceptedReq.headers.has('X-Sort-Field')).toBe(false);
       expect(interceptedReq.headers.has('X-Sort-Order')).toBe(false);
@@ -183,6 +185,7 @@ describe('sortInterceptor', () => {
         sortInterceptor(req, mockNext);
       });
 
+      expect(mockSortStateService.loadSortState).not.toHaveBeenCalled();
       const interceptedReq = mockNext.mock.calls[0][0] as HttpRequest<unknown>;
       expect(interceptedReq.headers.has('X-Sort-Field')).toBe(false);
       expect(interceptedReq.headers.has('X-Sort-Order')).toBe(false);

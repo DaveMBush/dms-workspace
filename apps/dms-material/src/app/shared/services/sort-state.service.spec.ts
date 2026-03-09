@@ -51,6 +51,18 @@ describe('SortStateService', () => {
   });
 
   describe.skip('saveSortState', () => {
+    it('should recover from corrupted localStorage data before saving', () => {
+      mockGetItem.mockReturnValue('not-valid-json{{{');
+
+      expect(() =>
+        service.saveSortState('universes', {
+          field: 'name',
+          order: 'asc',
+        })
+      ).not.toThrow();
+      expect(mockSetItem).toHaveBeenCalled();
+    });
+
     it('should save sort state to localStorage', () => {
       mockGetItem.mockReturnValue(null);
 
@@ -167,6 +179,12 @@ describe('SortStateService', () => {
   });
 
   describe.skip('clearSortState', () => {
+    it('should handle corrupted localStorage data gracefully when clearing', () => {
+      mockGetItem.mockReturnValue('not-valid-json{{{');
+
+      expect(() => service.clearSortState('universes')).not.toThrow();
+    });
+
     it('should clear sort state for a specific table', () => {
       mockGetItem.mockReturnValue(
         JSON.stringify({
