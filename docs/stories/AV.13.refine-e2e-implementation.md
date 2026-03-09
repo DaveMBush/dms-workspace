@@ -107,6 +107,9 @@ for i in {1..3}; do pnpm e2e:dms-material:chromium; done
 - Focus on making tests pass and ensuring stability
 - Document any tricky E2E testing issues for team knowledge
 - Feature should be production-ready after this story
+- All unit and e2e tests must pass even if you think they are unrelated to this story.
+- If any tests fail, fix them before merging this story to ensure a stable baseline for Story AV.13
+- E2E tests must be run for Chromium and Firefox separately and both must pass before merge.
 
 ## Related Stories
 
