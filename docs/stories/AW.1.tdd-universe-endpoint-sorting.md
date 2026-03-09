@@ -115,14 +115,37 @@ Temporarily remove `.skip` from one test to verify it fails, then re-add `.skip`
 
 ### Agent Model Used
 
+Claude Opus 4.6
+
 ### Status
 
-Approved
+In Progress
 
 ### Tasks / Subtasks
 
+- [x] Write universe endpoint sort tests (symbol, name, sector, marketCap asc/desc)
+- [x] Write default sorting behavior test
+- [x] Write invalid sort field handling test
+- [x] Write case-insensitive sorting test
+- [x] Verify all tests are skipped (11 tests, 11 skipped)
+- [x] Confirm RED phase (test fails with 404 when .skip removed)
+- [x] Restore .skip to allow CI to pass
+
 ### File List
 
+- `apps/server/src/app/routes/universe/universe-sorting.spec.ts` (new)
+
 ### Change Log
+
+- Created `universe-sorting.spec.ts` with 11 tests covering all acceptance criteria
+  - Sort by symbol (asc/desc)
+  - Sort by name/risk_group (asc/desc)
+  - Sort by sector (asc/desc)
+  - Sort by marketCap (asc/desc)
+  - Default sorting behavior
+  - Invalid sort field handling (expects 400)
+  - Case-insensitive text sorting
+- All tests wrapped in `describe.skip` to allow CI to pass
+- Confirmed tests fail when .skip removed (404 - GET route doesn't exist yet)
 
 ### Debug Log References
