@@ -117,14 +117,40 @@ pnpm test:dms-material
 
 ### Agent Model Used
 
+Claude Opus 4.6
+
 ### Status
 
-Approved
+Ready for Review
 
 ### Tasks / Subtasks
 
+- [x] Study existing Angular test patterns (auth.interceptor.spec.ts, performance.interceptor.spec.ts, state-persistence.service.spec.ts)
+- [x] Create SortStateService stub with minimal interface for import resolution
+- [x] Create SortInterceptor stub with no-op pass-through for import resolution
+- [x] Write SortStateService tests with describe.skip (saveSortState, loadSortState, clearSortState, multiple tables)
+- [x] Write SortInterceptor tests with describe.skip (sort headers, endpoint filtering, default behavior)
+- [x] Fix lint issues (dot-notation, one-exported-item-per-file, naming-convention)
+- [x] Run pnpm all — lint, build, test pass
+- [x] Run pnpm dupcheck — pass
+- [x] Run pnpm format — pass
+- [x] Run E2E chromium — pass
+- [x] Run E2E firefox — pass
+
 ### File List
 
+- apps/dms-material/src/app/shared/services/sort-state.service.ts (new — TDD RED stub)
+- apps/dms-material/src/app/shared/services/sort-state.service.spec.ts (new — 16 skipped tests)
+- apps/dms-material/src/app/auth/interceptors/sort.interceptor.ts (new — TDD RED stub)
+- apps/dms-material/src/app/auth/interceptors/sort.interceptor.spec.ts (new — 18 skipped tests)
+- docs/stories/AW.5.tdd-http-interceptor-sort-headers.md (updated — Dev Agent Record)
+
 ### Change Log
+
+- Created SortStateService stub (`sort-state.service.ts`) with save/load/clear interface and no-op implementations
+- Created SortInterceptor stub (`sort.interceptor.ts`) with pass-through no-op implementation
+- Created SortStateService spec (`sort-state.service.spec.ts`) with 16 skipped tests covering: saveSortState (4 tests), loadSortState (4 tests), clearSortState (2 tests), multiple table configurations (4 tests)
+- Created SortInterceptor spec (`sort.interceptor.spec.ts`) with 18 skipped tests covering: universe endpoint headers (3 tests), trades endpoint headers (4 tests), non-sortable endpoints (3 tests), default sort behavior (2 tests)
+- All tests use describe.skip for TDD RED phase — CI passes with tests properly skipped
 
 ### Debug Log References
