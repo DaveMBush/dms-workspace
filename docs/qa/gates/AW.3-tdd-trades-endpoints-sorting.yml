@@ -1,0 +1,27 @@
+schema: 1
+story: 'AW.3'
+story_title: 'Write Unit Tests for Separate openTrades/closedTrades Endpoints with Sorting - TDD RED Phase'
+gate: PASS
+status_reason: 'TDD RED phase complete. 22 skipped tests cover all acceptance criteria across open and closed trade endpoints, including sort by symbol/date/value/gain/profit/percentGain (asc+desc), default sort, invalid sort field, and empty sortBy edge cases. Seed data arithmetic verified. Pattern matches project Fastify+Vitest+Prisma mock conventions.'
+reviewer: 'Quinn (Test Architect)'
+updated: '2026-03-09T00:00:00Z'
+top_issues: []
+waiver: { active: false }
+evidence:
+  tests_reviewed: 22
+  risks_identified: 0
+  trace:
+    ac_covered:
+      - 'Open trades sort by symbol asc/desc'
+      - 'Open trades sort by openDate asc/desc'
+      - 'Open trades sort by currentValue asc/desc'
+      - 'Open trades sort by unrealizedGain asc/desc'
+      - 'Closed trades sort by symbol asc/desc'
+      - 'Closed trades sort by closeDate asc/desc'
+      - 'Closed trades sort by profit asc/desc'
+      - 'Closed trades sort by percentGain asc/desc'
+      - 'Default sorting behavior (both endpoints)'
+      - 'Invalid sort field handling (both endpoints)'
+      - 'Empty sortBy handling (both endpoints)'
+      - 'Basic response validation (both endpoints)'
+    ac_gaps: []
