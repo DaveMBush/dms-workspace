@@ -184,14 +184,40 @@ pnpm e2e:dms-material:firefox
 
 ### Agent Model Used
 
+Claude Opus 4.6
+
 ### Status
 
-Approved
+In Progress
 
 ### Tasks / Subtasks
 
+- [x] Research existing e2e patterns and sort interceptor behavior
+- [x] Create server-side-sorting.spec.ts with 17 e2e tests
+  - [x] Universe sorting: Symbol, Risk Group, direction toggle, indicator, localStorage
+  - [x] Universe persistence: page refresh, cross-navigation
+  - [x] Open Positions: pre-set sort, unrealizedGain, sortable headers, visual indicator
+  - [x] Closed Positions: pre-set sort, sortable column, visual indicator
+  - [x] Cross-table: independent states, no-sort-params, clear on 3rd click
+- [x] pnpm all passes (EXIT=0)
+- [x] pnpm format passes
+- [x] pnpm dupcheck passes (1 pre-existing clone in server code, not ours)
+- [ ] e2e-chromium passes
+- [ ] e2e-firefox passes
+- [ ] Commit, push, create PR
+- [ ] CodeRabbit review loop
+- [ ] Squash merge
+
 ### File List
+
+- apps/dms-material-e2e/src/server-side-sorting.spec.ts (new)
 
 ### Change Log
 
+- Created server-side-sorting.spec.ts with 17 comprehensive e2e tests
+- Tests verify localStorage sort state, persistence, cross-table independence
+- Uses query params (sortBy/sortOrder) approach matching sort.interceptor.ts
+
 ### Debug Log References
+
+- GitHub Issue: #628
