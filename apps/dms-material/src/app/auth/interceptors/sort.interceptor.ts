@@ -15,6 +15,20 @@ const SORTABLE_ENDPOINTS: Record<string, string> = {
   '/api/trades/closed': 'trades-closed',
 };
 
+const FIELD_NAME_MAP: Record<string, Record<string, string>> = {
+  universes: {
+    symbol: 'symbol',
+    risk_group: 'name',
+  },
+  'trades-open': {
+    buyDate: 'openDate',
+    unrealizedGain: 'unrealizedGain',
+  },
+  'trades-closed': {
+    sell_date: 'closeDate',
+  },
+};
+
 function getTableName(url: string): string | null {
   for (const [endpoint, table] of Object.entries(SORTABLE_ENDPOINTS)) {
     if (url.includes(endpoint)) {
@@ -22,6 +36,14 @@ function getTableName(url: string): string | null {
     }
   }
   return null;
+}
+
+function mapFieldName(tableName: string, frontendField: string): string | null {
+  const tableMap = FIELD_NAME_MAP[tableName];
+  if (tableMap === undefined) {
+    return null;
+  }
+  return tableMap[frontendField] ?? null;
 }
 
 export const sortInterceptor: HttpInterceptorFn = function sortInterceptorImpl(
@@ -45,10 +67,16 @@ export const sortInterceptor: HttpInterceptorFn = function sortInterceptorImpl(
     return next(req);
   }
 
+  const serverField = mapFieldName(tableName, sortState.field);
+
+  if (serverField === null) {
+    return next(req);
+  }
+
   const cloned = req.clone({
-    setHeaders: {
-      'X-Sort-Field': sortState.field,
-      'X-Sort-Order': sortState.order,
+    setParams: {
+      sortBy: serverField,
+      sortOrder: sortState.order,
     },
   });
 
