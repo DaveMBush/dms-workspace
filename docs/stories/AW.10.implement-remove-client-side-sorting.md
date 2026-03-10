@@ -152,7 +152,7 @@ Ready for Review
   - [x] `pnpm dupcheck` — pass
   - [x] `pnpm format` — pass
   - [x] e2e-chromium — pass
-  - [x] e2e-firefox — pass (pending)
+  - [x] e2e-firefox — pass
 
 ### File List
 
