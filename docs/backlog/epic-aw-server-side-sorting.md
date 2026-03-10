@@ -41,6 +41,7 @@ We will store the sort state in localStorage and send it to the server on each r
 
 11. **Story AW.11 (Bug Fix):** Integration testing, verification, and bug fixes
 12. **Story AW.12 (E2E):** Add e2e tests for complete server-side sorting workflow
+13. **Story AW.13 (Bug Fix):** bug fix
 
 ## Dependencies
 
@@ -52,4 +53,4 @@ We will store the sort state in localStorage and send it to the server on each r
 
 ## Estimated Effort
 
-4-5 days (12 stories using TDD approach - tests written before implementation for each feature)
+4-5 days (13 stories using TDD approach - tests written before implementation for each feature)

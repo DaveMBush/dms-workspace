@@ -176,6 +176,7 @@ pnpm e2e:dms-material:firefox
 ## Related Stories
 
 - **Previous**: Story AW.11 (Bug Fix and Verification)
+- **Next**: Story AW.13 (bug fix)
 - **Epic**: Epic AW
 
 ---
