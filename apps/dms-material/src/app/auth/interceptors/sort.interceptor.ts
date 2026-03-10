@@ -21,10 +21,12 @@ const FIELD_NAME_MAP: Record<string, Record<string, string>> = {
     risk_group: 'name',
   },
   'trades-open': {
+    symbol: 'symbol',
     buyDate: 'openDate',
     unrealizedGain: 'unrealizedGain',
   },
   'trades-closed': {
+    symbol: 'symbol',
     sell_date: 'closeDate',
   },
 };

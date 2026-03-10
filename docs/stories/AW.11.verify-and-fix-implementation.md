@@ -32,15 +32,15 @@
   - [ ] Open trades table sorting (all fields, both directions)
   - [ ] Closed trades table sorting (all fields, both directions)
 - [ ] Sort state persists across page refreshes
-- [ ] HTTP interceptor correctly adds headers
-- [ ] Backend correctly processes sort headers
+- [ ] HTTP interceptor correctly adds sort query params
+- [ ] Backend correctly processes sort query params
 - [ ] All bugs discovered and fixed
 - [ ] Performance improvements verified
 
 ### Technical Requirements
 
 - [ ] No console errors during sorting operations
-- [ ] Network requests show correct headers
+- [ ] Network requests show correct query params
 - [ ] Database queries use proper ORDER BY clauses
 - [ ] No regression in existing functionality
 - [ ] All edge cases handled
@@ -79,9 +79,9 @@ Test each scenario manually:
 Use browser DevTools to verify:
 
 ```
-✓ Headers present in requests:
-  - X-Sort-Field: <field>
-  - X-Sort-Order: <asc|desc>
+✓ Query params present in requests:
+  - sortBy=<field>
+  - sortOrder=<asc|desc>
 
 ✓ Correct endpoints called:
   - /api/universe
@@ -94,7 +94,7 @@ Use browser DevTools to verify:
 Check server logs/debug output to confirm:
 
 ```
-✓ Headers correctly read from requests
+✓ Query params correctly read from requests
 ✓ Database queries include ORDER BY
 ✓ Correct sort order applied
 ✓ Case-insensitive sorting for text fields

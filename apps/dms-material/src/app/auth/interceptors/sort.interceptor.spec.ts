@@ -115,6 +115,40 @@ describe('sortInterceptor', () => {
       expect(interceptedReq.params.get('sortOrder')).toBe('desc');
     });
 
+    it('should pass symbol unchanged for trades/open requests', () => {
+      mockSortStateService.loadSortState.mockReturnValue({
+        field: 'symbol',
+        order: 'desc',
+      });
+
+      const req = new HttpRequest('GET', '/api/trades/open');
+
+      TestBed.runInInjectionContext(() => {
+        sortInterceptor(req, mockNext);
+      });
+
+      const interceptedReq = mockNext.mock.calls[0][0] as HttpRequest<unknown>;
+      expect(interceptedReq.params.get('sortBy')).toBe('symbol');
+      expect(interceptedReq.params.get('sortOrder')).toBe('desc');
+    });
+
+    it('should pass symbol unchanged for trades/closed requests', () => {
+      mockSortStateService.loadSortState.mockReturnValue({
+        field: 'symbol',
+        order: 'asc',
+      });
+
+      const req = new HttpRequest('GET', '/api/trades/closed');
+
+      TestBed.runInInjectionContext(() => {
+        sortInterceptor(req, mockNext);
+      });
+
+      const interceptedReq = mockNext.mock.calls[0][0] as HttpRequest<unknown>;
+      expect(interceptedReq.params.get('sortBy')).toBe('symbol');
+      expect(interceptedReq.params.get('sortOrder')).toBe('asc');
+    });
+
     it('should pass unrealizedGain unchanged for trades/open requests', () => {
       mockSortStateService.loadSortState.mockReturnValue({
         field: 'unrealizedGain',
