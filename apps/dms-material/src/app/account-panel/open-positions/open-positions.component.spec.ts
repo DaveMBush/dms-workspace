@@ -1275,3 +1275,131 @@ describe('OpenPositionsComponent - Account Selection Integration', () => {
     });
   });
 });
+
+// Story AW.9: TDD RED - Verify client-side sorting logic is removed
+// Tests will be enabled in Story AW.10 after sorting removal is implemented
+describe('OpenPositionsComponent - Client-Side Sorting Removal', () => {
+  let component: OpenPositionsComponent;
+  let fixture: ComponentFixture<OpenPositionsComponent>;
+  let mockOpenPositionsService: {
+    trades: WritableSignal<Trade[]>;
+    selectOpenPositions: WritableSignal<OpenPosition[]>;
+    deleteOpenPosition: ReturnType<typeof vi.fn>;
+  };
+
+  beforeEach(async () => {
+    mockOpenPositionsService = {
+      trades: signal<Trade[]>([]),
+      selectOpenPositions: signal<OpenPosition[]>([]),
+      deleteOpenPosition: vi.fn(),
+    };
+
+    await TestBed.configureTestingModule({
+      imports: [OpenPositionsComponent],
+      providers: [
+        provideRouter([]),
+        {
+          provide: OpenPositionsComponentService,
+          useValue: mockOpenPositionsService,
+        },
+        {
+          provide: tradeEffectsServiceToken,
+          useValue: {
+            update: vi.fn().mockReturnValue(of([])),
+          },
+        },
+      ],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(OpenPositionsComponent);
+    component = fixture.componentInstance;
+  });
+
+  describe.skip('Verify no client-side sorting', () => {
+    it('should not have sortData method', () => {
+      expect(
+        (component as Record<string, unknown>)['sortData']
+      ).toBeUndefined();
+      expect(
+        typeof (component as Record<string, unknown>)['sortData']
+      ).not.toBe('function');
+    });
+
+    it('should preserve server response order', () => {
+      const serverOrder: OpenPosition[] = [
+        { id: '3', symbol: 'GOOGL', buy: 100 } as OpenPosition,
+        { id: '1', symbol: 'AAPL', buy: 150 } as OpenPosition,
+        { id: '2', symbol: 'MSFT', buy: 300 } as OpenPosition,
+      ];
+      mockOpenPositionsService.selectOpenPositions.set(serverOrder);
+
+      const displayed = component.selectOpenPositions$();
+      const displayedSymbols = displayed.map(function getSymbol(
+        p: OpenPosition
+      ) {
+        return p.symbol;
+      });
+
+      // Data should be in exact server response order
+      expect(displayedSymbols).toEqual(['GOOGL', 'AAPL', 'MSFT']);
+    });
+
+    it('should trigger HTTP call on sort change instead of local sorting', () => {
+      const sortStateService = TestBed.inject(SortStateService);
+      const saveSpy = vi.spyOn(sortStateService, 'saveSortState');
+
+      component.onSortChange({ active: 'buy', direction: 'asc' });
+
+      // Sort change should delegate to SortStateService (which triggers HTTP via interceptor)
+      expect(saveSpy).toHaveBeenCalledWith('trades-open', {
+        field: 'buy',
+        order: 'asc',
+      });
+
+      // Component should NOT have any local sort logic
+      expect(
+        (component as Record<string, unknown>)['sortData']
+      ).toBeUndefined();
+      expect(
+        (component as Record<string, unknown>)['compareFunction']
+      ).toBeUndefined();
+    });
+
+    it('should not manipulate data array order', () => {
+      const testData: OpenPosition[] = [
+        { id: '3', symbol: 'GOOGL', buy: 100, quantity: 75 } as OpenPosition,
+        { id: '1', symbol: 'AAPL', buy: 300, quantity: 100 } as OpenPosition,
+        { id: '2', symbol: 'MSFT', buy: 200, quantity: 50 } as OpenPosition,
+      ];
+      mockOpenPositionsService.selectOpenPositions.set(testData);
+
+      const displayed = component.selectOpenPositions$();
+
+      // Data order must match server response exactly
+      expect(displayed[0].id).toBe('3');
+      expect(displayed[1].id).toBe('1');
+      expect(displayed[2].id).toBe('2');
+    });
+
+    it('should not use Array.sort() on table data', () => {
+      const testData: OpenPosition[] = [
+        { id: '2', symbol: 'MSFT', buy: 300 } as OpenPosition,
+        { id: '1', symbol: 'AAPL', buy: 150 } as OpenPosition,
+      ];
+      mockOpenPositionsService.selectOpenPositions.set(testData);
+
+      const sortSpy = vi.spyOn(Array.prototype, 'sort');
+
+      component.selectOpenPositions$();
+
+      const dataSortCalls = sortSpy.mock.calls.filter(function isDataSort(
+        call
+      ) {
+        return call.length > 0;
+      });
+      expect(dataSortCalls.length).toBe(0);
+
+      sortSpy.mockRestore();
+    });
+  });
+});

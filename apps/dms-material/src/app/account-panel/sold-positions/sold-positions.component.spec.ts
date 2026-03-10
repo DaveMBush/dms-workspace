@@ -1018,3 +1018,145 @@ describe('SoldPositionsComponent - Account Selection Integration', () => {
     });
   });
 });
+
+// Story AW.9: TDD RED - Verify client-side sorting logic is removed
+// Tests will be enabled in Story AW.10 after sorting removal is implemented
+describe('SoldPositionsComponent - Client-Side Sorting Removal', () => {
+  let component: SoldPositionsComponent;
+  let fixture: ComponentFixture<SoldPositionsComponent>;
+  let mockSoldPositionsService: {
+    selectSoldPositions: WritableSignal<ClosedPosition[]>;
+  };
+
+  beforeEach(async () => {
+    mockSoldPositionsService = {
+      selectSoldPositions: signal<ClosedPosition[]>([]),
+    };
+
+    await TestBed.configureTestingModule({
+      imports: [SoldPositionsComponent],
+      providers: [
+        {
+          provide: SoldPositionsComponentService,
+          useValue: mockSoldPositionsService,
+        },
+      ],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(SoldPositionsComponent);
+    component = fixture.componentInstance;
+  });
+
+  describe.skip('Verify no client-side sorting', () => {
+    it('should not have sortData method', () => {
+      expect(
+        (component as Record<string, unknown>)['sortData']
+      ).toBeUndefined();
+      expect(
+        typeof (component as Record<string, unknown>)['sortData']
+      ).not.toBe('function');
+    });
+
+    it('should preserve server response order', () => {
+      const serverOrder: ClosedPosition[] = [
+        { id: '3', symbol: 'GOOGL', sell: 120 } as ClosedPosition,
+        { id: '1', symbol: 'AAPL', sell: 180 } as ClosedPosition,
+        { id: '2', symbol: 'MSFT', sell: 320 } as ClosedPosition,
+      ];
+      mockSoldPositionsService.selectSoldPositions.set(serverOrder);
+
+      const displayed = component.displayedPositions();
+      const displayedSymbols = displayed.map(function getSymbol(
+        p: ClosedPosition
+      ) {
+        return p.symbol;
+      });
+
+      // Data should be in exact server response order
+      expect(displayedSymbols).toEqual(['GOOGL', 'AAPL', 'MSFT']);
+    });
+
+    it('should trigger HTTP call on sort change instead of local sorting', () => {
+      const sortStateService = TestBed.inject(SortStateService);
+      const saveSpy = vi.spyOn(sortStateService, 'saveSortState');
+
+      component.onSortChange({ active: 'sell', direction: 'desc' });
+
+      // Sort change should delegate to SortStateService (which triggers HTTP via interceptor)
+      expect(saveSpy).toHaveBeenCalledWith('trades-closed', {
+        field: 'sell',
+        order: 'desc',
+      });
+
+      // Component should NOT have any local sort logic
+      expect(
+        (component as Record<string, unknown>)['sortData']
+      ).toBeUndefined();
+      expect(
+        (component as Record<string, unknown>)['compareFunction']
+      ).toBeUndefined();
+    });
+
+    it('should not manipulate data array order', () => {
+      const testData: ClosedPosition[] = [
+        {
+          id: '3',
+          symbol: 'GOOGL',
+          sell: 120,
+          sell_date: '2024-07-01',
+        } as ClosedPosition,
+        {
+          id: '1',
+          symbol: 'AAPL',
+          sell: 180,
+          sell_date: '2024-06-01',
+        } as ClosedPosition,
+        {
+          id: '2',
+          symbol: 'MSFT',
+          sell: 320,
+          sell_date: '2024-05-01',
+        } as ClosedPosition,
+      ];
+      mockSoldPositionsService.selectSoldPositions.set(testData);
+
+      const displayed = component.displayedPositions();
+
+      // Data order must match server response exactly
+      expect(displayed[0].id).toBe('3');
+      expect(displayed[1].id).toBe('1');
+      expect(displayed[2].id).toBe('2');
+    });
+
+    it('should not use Array.sort() on table data', () => {
+      const testData: ClosedPosition[] = [
+        {
+          id: '2',
+          symbol: 'MSFT',
+          sell: 320,
+          sell_date: '2024-05-01',
+        } as ClosedPosition,
+        {
+          id: '1',
+          symbol: 'AAPL',
+          sell: 180,
+          sell_date: '2024-06-01',
+        } as ClosedPosition,
+      ];
+      mockSoldPositionsService.selectSoldPositions.set(testData);
+
+      const sortSpy = vi.spyOn(Array.prototype, 'sort');
+
+      component.displayedPositions();
+
+      const dataSortCalls = sortSpy.mock.calls.filter(function isDataSort(
+        call
+      ) {
+        return call.length > 0;
+      });
+      expect(dataSortCalls.length).toBe(0);
+
+      sortSpy.mockRestore();
+    });
+  });
+});
