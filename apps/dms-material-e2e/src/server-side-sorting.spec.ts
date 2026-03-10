@@ -138,7 +138,7 @@ test.describe('Universe Table - Server-Side Sorting', () => {
     expect(state!.order).toBe('asc');
   });
 
-  test('should display sort indicator when column is clicked', async ({
+  test('should update localStorage sort state when column is clicked', async ({
     page,
   }) => {
     const symbolHeader = page.getByRole('button', { name: 'Symbol' });
