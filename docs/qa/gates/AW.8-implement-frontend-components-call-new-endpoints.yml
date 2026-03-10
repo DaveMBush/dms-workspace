@@ -1,0 +1,34 @@
+schema: 1
+story: 'AW.8'
+story_title: 'Update Frontend Components to Call New Endpoints and Send Sort Parameters - TDD GREEN Phase'
+gate: PASS
+status_reason: 'All three components (OpenPositions, SoldPositions, GlobalUniverse) correctly integrate with SortStateService using matching table keys. AW.7 sort tests re-enabled and passing. All 1596 unit tests pass, lint clean, build clean, e2e chromium passes (485 tests). Dupcheck shows only 1 pre-existing server-side clone (0.07%).'
+reviewer: 'Quinn (Test Architect)'
+updated: '2026-03-09T20:00:00Z'
+top_issues: []
+waiver: { active: false }
+evidence:
+  tests_reviewed: 15
+  risks_identified: 0
+  validation_results:
+    pnpm_all: PASS
+    unit_tests: '1596 passed, 8 skipped (pre-existing), 80 test files'
+    e2e_chromium: 'PASS (485 tests)'
+    lint: PASS
+    build: PASS
+    dupcheck: '1 pre-existing clone (server get-open-trades/get-closed-trades, 0.07%)'
+  trace:
+    ac_covered:
+      - 'OpenPositionsComponent integrates with SortStateService using trades-open key'
+      - 'SoldPositionsComponent integrates with SortStateService using trades-closed key'
+      - 'GlobalUniverseComponent integrates with SortStateService using universes key'
+      - 'All three components implement onSortChange(sort: Sort) method'
+      - 'Sort state saved on user sort action via saveSortState()'
+      - 'Sort state cleared when direction is empty string via clearSortState()'
+      - 'Sort interceptor maps /api/trades/open → trades-open'
+      - 'Sort interceptor maps /api/trades/closed → trades-closed'
+      - 'Sort interceptor maps /api/universe → universes'
+      - 'AW.7 sort integration tests re-enabled in all 3 spec files (no .skip)'
+      - 'Components use Angular best practices (inject(), ChangeDetectionStrategy.OnPush, signals)'
+      - 'Proper dependency injection via inject() function'
+    ac_gaps: []
