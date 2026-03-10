@@ -2342,3 +2342,133 @@ describe('GlobalUniverseComponent - Ex-Date Editing Enhancements (TDD - Story AN
     });
   });
 });
+
+// Story AW.9: TDD RED - Verify client-side sorting logic is removed
+// Tests will be enabled in Story AW.10 after sorting removal is implemented
+describe('GlobalUniverseComponent - Client-Side Sorting Removal', () => {
+  let component: GlobalUniverseComponent;
+  let fixture: ComponentFixture<GlobalUniverseComponent>;
+  let mockUniverseService: {
+    universes: ReturnType<typeof signal<Universe[]>>;
+  };
+
+  beforeEach(async () => {
+    mockUniverseService = {
+      universes: signal<Universe[]>([]),
+    };
+
+    await TestBed.configureTestingModule({
+      imports: [GlobalUniverseComponent],
+      providers: [
+        provideSmartNgRX(),
+        {
+          provide: UniverseSyncService,
+          useValue: {
+            syncFromScreener: vi.fn().mockReturnValue(of({})),
+            isSyncing: vi.fn().mockReturnValue(false),
+          },
+        },
+        {
+          provide: NotificationService,
+          useValue: {
+            success: vi.fn(),
+            error: vi.fn(),
+            showPersistent: vi.fn(),
+          },
+        },
+        { provide: UniverseService, useValue: mockUniverseService },
+      ],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(GlobalUniverseComponent);
+    component = fixture.componentInstance;
+  });
+
+  describe.skip('Verify no client-side sorting', () => {
+    it('should not have sortData method', () => {
+      expect(
+        (component as Record<string, unknown>)['sortData']
+      ).toBeUndefined();
+      expect(
+        typeof (component as Record<string, unknown>)['sortData']
+      ).not.toBe('function');
+    });
+
+    it('should not manipulate data array order', () => {
+      const testData: Universe[] = [
+        { id: '3', symbol: 'GOOGL' } as Universe,
+        { id: '1', symbol: 'AAPL' } as Universe,
+        { id: '2', symbol: 'MSFT' } as Universe,
+      ];
+      mockUniverseService.universes.set(testData);
+
+      const displayed = component.filteredData$();
+
+      // Data should preserve insertion order from server, not be alphabetically sorted
+      expect(displayed[0].symbol).toBe('GOOGL');
+      expect(displayed[1].symbol).toBe('AAPL');
+      expect(displayed[2].symbol).toBe('MSFT');
+    });
+
+    it('should preserve server response order', () => {
+      const serverOrder: Universe[] = [
+        { id: '2', symbol: 'MSFT' } as Universe,
+        { id: '3', symbol: 'GOOGL' } as Universe,
+        { id: '1', symbol: 'AAPL' } as Universe,
+      ];
+      mockUniverseService.universes.set(serverOrder);
+
+      const displayed = component.filteredData$();
+      const displayedSymbols = displayed.map(function getSymbol(u: Universe) {
+        return u.symbol;
+      });
+
+      expect(displayedSymbols).toEqual(['MSFT', 'GOOGL', 'AAPL']);
+    });
+
+    it('should trigger HTTP call on sort change instead of local sorting', () => {
+      const sortStateService = TestBed.inject(SortStateService);
+      const saveSpy = vi.spyOn(sortStateService, 'saveSortState');
+
+      component.onSortChange({ active: 'symbol', direction: 'asc' });
+
+      // Sort change should delegate to SortStateService (which triggers HTTP via interceptor)
+      expect(saveSpy).toHaveBeenCalledWith('universes', {
+        field: 'symbol',
+        order: 'asc',
+      });
+
+      // Component should NOT have any local sort logic that reorders filteredData$
+      expect(
+        (component as Record<string, unknown>)['sortData']
+      ).toBeUndefined();
+      expect(
+        (component as Record<string, unknown>)['compareFunction']
+      ).toBeUndefined();
+    });
+
+    it('should not use Array.sort() on table data', () => {
+      const testData: Universe[] = [
+        { id: '3', symbol: 'GOOGL', last_price: 100 } as Universe,
+        { id: '1', symbol: 'AAPL', last_price: 200 } as Universe,
+        { id: '2', symbol: 'MSFT', last_price: 150 } as Universe,
+      ];
+      mockUniverseService.universes.set(testData);
+
+      // Spy on Array.prototype.sort to ensure it is not called on the data array
+      const sortSpy = vi.spyOn(Array.prototype, 'sort');
+
+      component.filteredData$();
+
+      // The component should not sort the data array
+      const dataSortCalls = sortSpy.mock.calls.filter(function isDataSort(
+        call
+      ) {
+        return call.length > 0;
+      });
+      expect(dataSortCalls.length).toBe(0);
+
+      sortSpy.mockRestore();
+    });
+  });
+});

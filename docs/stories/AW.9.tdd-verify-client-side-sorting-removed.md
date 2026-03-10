@@ -124,14 +124,50 @@ pnpm test:dms-material
 
 ### Agent Model Used
 
+Claude Sonnet 4.6
+
 ### Status
 
-Approved
+Ready for Review
 
 ### Tasks / Subtasks
 
+- [x] Read three component source files to understand existing sorting patterns
+- [x] Write `.skip`-wrapped tests in `global-universe.component.spec.ts`
+  - [x] Test no `sortData()` method exists
+  - [x] Test data arrays not manipulated for sorting
+  - [x] Test server response order preserved
+  - [x] Test sort change triggers HTTP call via SortStateService
+  - [x] Test no `Array.sort()` on table data
+- [x] Write `.skip`-wrapped tests in `open-positions.component.spec.ts`
+  - [x] Test no `sortData()` method exists
+  - [x] Test server response order preserved
+  - [x] Test sort change triggers HTTP call via SortStateService
+  - [x] Test data array order not manipulated
+  - [x] Test no `Array.sort()` on table data
+- [x] Write `.skip`-wrapped tests in `sold-positions.component.spec.ts`
+  - [x] Test no `sortData()` method exists
+  - [x] Test server response order preserved
+  - [x] Test sort change triggers HTTP call via SortStateService
+  - [x] Test data array order not manipulated
+  - [x] Test no `Array.sort()` on table data
+- [x] Run `pnpm format` — pass
+- [x] Run `pnpm all` (lint + build + test) — pass
+- [x] Run `pnpm dupcheck` — pass (1 pre-existing clone)
+- [x] Run e2e chromium — pass
+- [x] Run e2e firefox — pass
+
 ### File List
 
+- `apps/dms-material/src/app/global/global-universe/global-universe.component.spec.ts` (modified)
+- `apps/dms-material/src/app/account-panel/open-positions/open-positions.component.spec.ts` (modified)
+- `apps/dms-material/src/app/account-panel/sold-positions/sold-positions.component.spec.ts` (modified)
+- `docs/stories/AW.9.tdd-verify-client-side-sorting-removed.md` (modified)
+
 ### Change Log
+
+- Added `describe.skip('Verify no client-side sorting', ...)` block to `global-universe.component.spec.ts` with 5 tests
+- Added `describe.skip('Verify no client-side sorting', ...)` block to `open-positions.component.spec.ts` with 5 tests
+- Added `describe.skip('Verify no client-side sorting', ...)` block to `sold-positions.component.spec.ts` with 5 tests
 
 ### Debug Log References
