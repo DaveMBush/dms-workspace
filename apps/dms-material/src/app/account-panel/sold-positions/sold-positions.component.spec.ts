@@ -1047,7 +1047,7 @@ describe('SoldPositionsComponent - Client-Side Sorting Removal', () => {
     component = fixture.componentInstance;
   });
 
-  describe.skip('Verify no client-side sorting', () => {
+  describe('Verify no client-side sorting', () => {
     it('should not have sortData method', () => {
       expect(
         (component as Record<string, unknown>)['sortData']
