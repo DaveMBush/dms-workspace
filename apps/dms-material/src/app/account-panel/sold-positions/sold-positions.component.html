@@ -1,5 +1,9 @@
 <!-- eslint-disable @angular-eslint/template/no-call-expression -- Signal call is required for computed signals -->
-<dms-base-table [data]="displayedPositions()" [columns]="columns">
+<dms-base-table
+  [data]="displayedPositions()"
+  [columns]="columns"
+  (sortChange)="onSortChange($event)"
+>
   <ng-template #filterRowTemplate let-column>
     @if (column.field === 'symbol') {
     <mat-form-field
@@ -10,7 +14,9 @@
       <input
         matInput
         type="text"
-        [(ngModel)]="searchText"
+        #symbolInput
+        [value]="searchText()"
+        (input)="onSymbolFilterChange(symbolInput.value)"
         placeholder="Search Symbol"
         class="text-sm"
       />
@@ -48,7 +54,9 @@
       <mat-datepicker #endPicker></mat-datepicker>
     </mat-form-field>
     } @else if (column.field === 'daysHeld') {
-    <button mat-raised-button (click)="clearFilters()">Clear Filters</button>
+    <button mat-raised-button (click)="clearFilters()">
+      Clear Date Filters
+    </button>
     }
   </ng-template>
 </dms-base-table>

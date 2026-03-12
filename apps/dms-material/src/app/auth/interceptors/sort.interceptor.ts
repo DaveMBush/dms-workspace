@@ -7,80 +7,77 @@ import {
 import { inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
-import { SortStateService } from '../../shared/services/sort-state.service';
-
-const SORTABLE_ENDPOINTS: Record<string, string> = {
-  '/api/universe': 'universes',
-  '/api/trades/open': 'trades-open',
-  '/api/trades/closed': 'trades-closed',
-};
+import { SortFilterStateService } from '../../shared/services/sort-filter-state.service';
+import { TableState } from '../../shared/services/table-state.interface';
 
 const FIELD_NAME_MAP: Record<string, Record<string, string>> = {
   universes: {
-    symbol: 'symbol',
-    risk_group: 'name',
+    risk_group: 'risk_group',
   },
   'trades-open': {
-    symbol: 'symbol',
     buyDate: 'openDate',
-    unrealizedGain: 'unrealizedGain',
   },
   'trades-closed': {
-    symbol: 'symbol',
     sell_date: 'closeDate',
   },
 };
 
-function getTableName(url: string): string | null {
-  for (const [endpoint, table] of Object.entries(SORTABLE_ENDPOINTS)) {
-    if (url.includes(endpoint)) {
-      return table;
-    }
-  }
-  return null;
-}
-
-function mapFieldName(tableName: string, frontendField: string): string | null {
+function mapSortField(tableName: string, frontendField: string): string {
   const tableMap = FIELD_NAME_MAP[tableName];
   if (tableMap === undefined) {
-    return null;
+    return frontendField;
   }
-  return tableMap[frontendField] ?? null;
+  return tableMap[frontendField] ?? frontendField;
+}
+
+function buildMappedEntry(
+  table: string,
+  tableState: TableState
+): TableState | null {
+  const entry: TableState = {};
+  if (tableState.sort !== undefined) {
+    const serverField = mapSortField(table, tableState.sort.field);
+    entry.sort = { field: serverField, order: tableState.sort.order };
+  }
+  if (tableState.filters !== undefined) {
+    entry.filters = tableState.filters;
+  }
+  return entry.sort !== undefined || entry.filters !== undefined ? entry : null;
+}
+
+function buildMappedState(
+  allState: Record<string, TableState>
+): Record<string, TableState> {
+  const mapped: Record<string, TableState> = {};
+  for (const [table, tableState] of Object.entries(allState)) {
+    const entry = buildMappedEntry(table, tableState);
+    if (entry !== null) {
+      mapped[table] = entry;
+    }
+  }
+  return mapped;
 }
 
 export const sortInterceptor: HttpInterceptorFn = function sortInterceptorImpl(
   req: HttpRequest<unknown>,
   next: HttpHandlerFn
 ): Observable<HttpEvent<unknown>> {
-  const sortStateService = inject(SortStateService);
-  const tableName = getTableName(req.url);
+  const sortFilterStateService = inject(SortFilterStateService);
+  const allState = sortFilterStateService.loadAllSortFilterState();
 
-  if (tableName === null) {
+  if (Object.keys(allState).length === 0) {
     return next(req);
   }
 
-  if (req.method !== 'GET') {
+  const mapped = buildMappedState(allState);
+
+  if (Object.keys(mapped).length === 0) {
     return next(req);
   }
-
-  const sortState = sortStateService.loadSortState(tableName);
-
-  if (!sortState) {
-    return next(req);
-  }
-
-  const serverField = mapFieldName(tableName, sortState.field);
-
-  if (serverField === null) {
-    return next(req);
-  }
-
   const cloned = req.clone({
-    setParams: {
-      sortBy: serverField,
-      sortOrder: sortState.order,
+    setHeaders: {
+      'X-Sort-Filter-State': JSON.stringify(mapped),
     },
   });
-
   return next(cloned);
 };

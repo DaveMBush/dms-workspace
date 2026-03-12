@@ -18,6 +18,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { Sort } from '@angular/material/sort';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { handleSocketNotification } from '@smarttools/smart-signals';
 
 import { BaseTableComponent } from '../../shared/components/base-table/base-table.component';
 import { ColumnDef } from '../../shared/components/base-table/column-def.interface';
@@ -26,7 +27,7 @@ import { EditableDateCellComponent } from '../../shared/components/editable-date
 import { ErrorHandlingService } from '../../shared/services/error-handling.service';
 import { GlobalLoadingService } from '../../shared/services/global-loading.service';
 import { NotificationService } from '../../shared/services/notification.service';
-import { SortStateService } from '../../shared/services/sort-state.service';
+import { SortFilterStateService } from '../../shared/services/sort-filter-state.service';
 import { UniverseSyncService } from '../../shared/services/universe-sync.service';
 import { UpdateUniverseFieldsService } from '../../shared/services/update-universe-fields.service';
 import { selectAccounts } from '../../store/accounts/selectors/select-accounts.function';
@@ -40,9 +41,9 @@ import { ImportDialogResult } from '../import-dialog/import-dialog-result.interf
 import { calculateYieldPercent } from './calculate-yield-percent.function';
 import { CellEditEvent } from './cell-edit-event.interface';
 import { enrichUniverseWithRiskGroups } from './enrich-universe-with-risk-groups.function';
-import { filterUniverses } from './filter-universes.function';
 import { UNIVERSE_COLUMNS } from './global-universe.columns';
 import { EXPIRED_OPTIONS } from './global-universe.expired-options';
+import { saveUniverseFiltersAndNotify } from './save-universe-filters-and-notify.function';
 import { UniverseService } from './services/universe.service';
 import { UniverseValidationService } from './services/universe-validation.service';
 
@@ -79,7 +80,7 @@ export class GlobalUniverseComponent {
   private readonly dialog = inject(MatDialog);
   private readonly updateFieldsService = inject(UpdateUniverseFieldsService);
   private readonly errorHandling = inject(ErrorHandlingService);
-  private readonly sortStateService = inject(SortStateService);
+  private readonly sortFilterStateService = inject(SortFilterStateService);
   readonly cellEdit = output<CellEditEvent>();
   readonly symbolDeleted = output<Universe>();
   readonly today = new Date();
@@ -89,6 +90,7 @@ export class GlobalUniverseComponent {
   readonly selectedAccountId$ = signal<string>('all');
   readonly minYieldFilter$ = signal<number | null>(null);
   private readonly localSyncInProgress$ = signal<boolean>(false);
+  private textFilterTimer: ReturnType<typeof setTimeout> | null = null;
   readonly isSyncingUniverse$ = computed(
     function computeIsUniverseSyncing(this: GlobalUniverseComponent) {
       return this.syncService.isSyncing() || this.localSyncInProgress$();
@@ -125,6 +127,7 @@ export class GlobalUniverseComponent {
     return options;
   });
 
+  // Server handles filtering, so no client-side filter is applied
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signal
   readonly filteredData$ = computed(() => {
     const rawData = this.universeService.universes();
@@ -134,14 +137,7 @@ export class GlobalUniverseComponent {
       return [];
     }
 
-    const enrichedData = enrichUniverseWithRiskGroups(rawData, riskGroups);
-
-    return filterUniverses(enrichedData, {
-      symbolFilter: this.symbolFilter$(),
-      riskGroupFilter: this.riskGroupFilter$(),
-      expiredFilter: this.expiredFilter$(),
-      minYieldFilter: this.minYieldFilter$(),
-    });
+    return enrichUniverseWithRiskGroups(rawData, riskGroups);
   });
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signal
@@ -151,13 +147,14 @@ export class GlobalUniverseComponent {
 
   onSortChange(sort: Sort): void {
     if (sort.direction === '') {
-      this.sortStateService.clearSortState('universes');
-      return;
+      this.sortFilterStateService.clearSortState('universes');
+    } else {
+      this.sortFilterStateService.saveSortState('universes', {
+        field: sort.active,
+        order: sort.direction,
+      });
     }
-    this.sortStateService.saveSortState('universes', {
-      field: sort.active,
-      order: sort.direction,
-    });
+    handleSocketNotification('top', 'update', ['1']);
   }
 
   syncUniverse(): void {
@@ -285,18 +282,22 @@ export class GlobalUniverseComponent {
 
   onSymbolFilterChange(value: string): void {
     this.symbolFilter$.set(value);
+    this.debouncedNotifyFilterChange();
   }
 
   onRiskGroupFilterChange(value: string | null): void {
     this.riskGroupFilter$.set(value);
+    this.notifyFilterChange();
   }
 
   onExpiredFilterChange(value: boolean | null): void {
     this.expiredFilter$.set(value);
+    this.notifyFilterChange();
   }
 
   onAccountChange(value: string): void {
     this.selectedAccountId$.set(value);
+    this.notifyFilterChange();
   }
 
   parseYieldValue(value: string): number | null {
@@ -309,6 +310,7 @@ export class GlobalUniverseComponent {
 
   onMinYieldFilterChange(value: number | null): void {
     this.minYieldFilter$.set(value);
+    this.debouncedNotifyFilterChange();
   }
 
   onRefresh(): void {
@@ -321,5 +323,22 @@ export class GlobalUniverseComponent {
         // Error is already captured by ScreenerService error signal
       },
     });
+  }
+
+  private notifyFilterChange(): void {
+    saveUniverseFiltersAndNotify(this.sortFilterStateService, {
+      symbol: this.symbolFilter$(),
+      riskGroup: this.riskGroupFilter$(),
+      expired: this.expiredFilter$(),
+      minYield: this.minYieldFilter$(),
+      accountId: this.selectedAccountId$(),
+    });
+  }
+
+  private debouncedNotifyFilterChange(): void {
+    if (this.textFilterTimer !== null) {
+      clearTimeout(this.textFilterTimer);
+    }
+    this.textFilterTimer = setTimeout(this.notifyFilterChange.bind(this), 300);
   }
 }

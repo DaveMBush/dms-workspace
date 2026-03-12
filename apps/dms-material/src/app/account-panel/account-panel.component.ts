@@ -178,7 +178,7 @@ export class AccountPanelComponent implements OnInit, OnDestroy {
   private onAddPosition(): void {
     const currentAccount = selectCurrentAccountSignal(this.currentAccountStore);
     const trades = computed(function getTrades() {
-      return currentAccount().trades as Trade[];
+      return currentAccount().openTrades as Trade[];
     });
 
     const dialogRef = this.dialog.open(AddPositionDialogComponent, {

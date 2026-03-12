@@ -1,10 +1,10 @@
 import { TestBed } from '@angular/core/testing';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
-import { SortStateService } from './sort-state.service';
+import { SortFilterStateService } from './sort-filter-state.service';
 
-describe('SortStateService', () => {
-  let service: SortStateService;
+describe('SortFilterStateService', () => {
+  let service: SortFilterStateService;
   let mockGetItem: ReturnType<typeof vi.fn>;
   let mockSetItem: ReturnType<typeof vi.fn>;
   let mockRemoveItem: ReturnType<typeof vi.fn>;
@@ -13,7 +13,7 @@ describe('SortStateService', () => {
     'localStorage'
   );
 
-  const STORAGE_KEY = 'dms-sort-state';
+  const STORAGE_KEY = 'dms-sort-filter-state';
 
   beforeEach(() => {
     mockGetItem = vi.fn();
@@ -34,7 +34,7 @@ describe('SortStateService', () => {
     });
 
     TestBed.configureTestingModule({});
-    service = TestBed.inject(SortStateService);
+    service = TestBed.inject(SortFilterStateService);
   });
 
   afterEach(() => {
@@ -86,7 +86,7 @@ describe('SortStateService', () => {
       });
 
       const savedData = JSON.parse(mockSetItem.mock.calls[0][1]);
-      expect(savedData.universes).toEqual({
+      expect(savedData.universes.sort).toEqual({
         field: 'name',
         order: 'asc',
       });
@@ -95,7 +95,7 @@ describe('SortStateService', () => {
     it('should merge with existing sort states for other tables', () => {
       mockGetItem.mockReturnValue(
         JSON.stringify({
-          'trades-open': { field: 'date', order: 'desc' },
+          'trades-open': { sort: { field: 'date', order: 'desc' } },
         })
       );
 
@@ -105,11 +105,11 @@ describe('SortStateService', () => {
       });
 
       const savedData = JSON.parse(mockSetItem.mock.calls[0][1]);
-      expect(savedData['trades-open']).toEqual({
+      expect(savedData['trades-open'].sort).toEqual({
         field: 'date',
         order: 'desc',
       });
-      expect(savedData.universes).toEqual({
+      expect(savedData.universes.sort).toEqual({
         field: 'name',
         order: 'asc',
       });
@@ -118,7 +118,7 @@ describe('SortStateService', () => {
     it('should overwrite existing sort state for same table', () => {
       mockGetItem.mockReturnValue(
         JSON.stringify({
-          universes: { field: 'name', order: 'asc' },
+          universes: { sort: { field: 'name', order: 'asc' } },
         })
       );
 
@@ -128,7 +128,7 @@ describe('SortStateService', () => {
       });
 
       const savedData = JSON.parse(mockSetItem.mock.calls[0][1]);
-      expect(savedData.universes).toEqual({
+      expect(savedData.universes.sort).toEqual({
         field: 'value',
         order: 'desc',
       });
@@ -139,7 +139,7 @@ describe('SortStateService', () => {
     it('should load sort state from localStorage', () => {
       mockGetItem.mockReturnValue(
         JSON.stringify({
-          universes: { field: 'name', order: 'asc' },
+          universes: { sort: { field: 'name', order: 'asc' } },
         })
       );
 
@@ -160,7 +160,7 @@ describe('SortStateService', () => {
     it('should return null when table has no saved state', () => {
       mockGetItem.mockReturnValue(
         JSON.stringify({
-          'trades-open': { field: 'date', order: 'desc' },
+          'trades-open': { sort: { field: 'date', order: 'desc' } },
         })
       );
 
@@ -188,8 +188,8 @@ describe('SortStateService', () => {
     it('should clear sort state for a specific table', () => {
       mockGetItem.mockReturnValue(
         JSON.stringify({
-          universes: { field: 'name', order: 'asc' },
-          'trades-open': { field: 'date', order: 'desc' },
+          universes: { sort: { field: 'name', order: 'asc' } },
+          'trades-open': { sort: { field: 'date', order: 'desc' } },
         })
       );
 
@@ -197,7 +197,7 @@ describe('SortStateService', () => {
 
       const savedData = JSON.parse(mockSetItem.mock.calls[0][1]);
       expect(savedData.universes).toBeUndefined();
-      expect(savedData['trades-open']).toEqual({
+      expect(savedData['trades-open'].sort).toEqual({
         field: 'date',
         order: 'desc',
       });
@@ -206,13 +206,124 @@ describe('SortStateService', () => {
     it('should remove storage key when last table state is cleared', () => {
       mockGetItem.mockReturnValue(
         JSON.stringify({
-          universes: { field: 'name', order: 'asc' },
+          universes: { sort: { field: 'name', order: 'asc' } },
         })
       );
 
       service.clearSortState('universes');
 
       expect(mockRemoveItem).toHaveBeenCalledWith(STORAGE_KEY);
+    });
+  });
+
+  describe('filter state', () => {
+    it('should save filter state to localStorage', () => {
+      mockGetItem.mockReturnValue(null);
+
+      service.saveFilterState('universes', { symbol: 'AAPL' });
+
+      const savedData = JSON.parse(mockSetItem.mock.calls[0][1]);
+      expect(savedData.universes.filters).toEqual({ symbol: 'AAPL' });
+    });
+
+    it('should load filter state from localStorage', () => {
+      mockGetItem.mockReturnValue(
+        JSON.stringify({
+          universes: { filters: { symbol: 'AAPL' } },
+        })
+      );
+
+      const result = service.loadFilterState('universes');
+
+      expect(result).toEqual({ symbol: 'AAPL' });
+    });
+
+    it('should return null when no filter state exists', () => {
+      mockGetItem.mockReturnValue(null);
+
+      const result = service.loadFilterState('universes');
+
+      expect(result).toBeNull();
+    });
+
+    it('should clear filter state for a specific table', () => {
+      mockGetItem.mockReturnValue(
+        JSON.stringify({
+          universes: {
+            sort: { field: 'name', order: 'asc' },
+            filters: { symbol: 'AAPL' },
+          },
+        })
+      );
+
+      service.clearFilterState('universes');
+
+      const savedData = JSON.parse(mockSetItem.mock.calls[0][1]);
+      expect(savedData.universes.sort).toEqual({
+        field: 'name',
+        order: 'asc',
+      });
+      expect(savedData.universes.filters).toBeUndefined();
+    });
+
+    it('should remove table entry when both sort and filter are cleared', () => {
+      mockGetItem.mockReturnValue(
+        JSON.stringify({
+          universes: { filters: { symbol: 'AAPL' } },
+        })
+      );
+
+      service.clearFilterState('universes');
+
+      expect(mockRemoveItem).toHaveBeenCalledWith(STORAGE_KEY);
+    });
+
+    it('should preserve filter state when saving sort state', () => {
+      mockGetItem.mockReturnValue(
+        JSON.stringify({
+          universes: { filters: { symbol: 'AAPL' } },
+        })
+      );
+
+      service.saveSortState('universes', { field: 'name', order: 'asc' });
+
+      const savedData = JSON.parse(mockSetItem.mock.calls[0][1]);
+      expect(savedData.universes.filters).toEqual({ symbol: 'AAPL' });
+      expect(savedData.universes.sort).toEqual({
+        field: 'name',
+        order: 'asc',
+      });
+    });
+  });
+
+  describe('loadAllSortFilterState', () => {
+    it('should return all state for all tables', () => {
+      mockGetItem.mockReturnValue(
+        JSON.stringify({
+          universes: {
+            sort: { field: 'name', order: 'asc' },
+            filters: { symbol: 'AAPL' },
+          },
+          'trades-open': { sort: { field: 'date', order: 'desc' } },
+        })
+      );
+
+      const result = service.loadAllSortFilterState();
+
+      expect(result.universes.sort).toEqual({ field: 'name', order: 'asc' });
+      expect(result.universes.filters).toEqual({ symbol: 'AAPL' });
+      expect(result['trades-open'].sort).toEqual({
+        field: 'date',
+        order: 'desc',
+      });
+    });
+
+    it('should return empty object when no state exists', () => {
+      mockGetItem.mockReturnValue(null);
+
+      const result = service.loadAllSortFilterState();
+
+      expect(result).toEqual({});
     });
   });
 
@@ -256,7 +367,7 @@ describe('SortStateService', () => {
     it('should maintain independent sort states across tables', () => {
       mockGetItem.mockReturnValueOnce(null).mockReturnValueOnce(
         JSON.stringify({
-          universes: { field: 'name', order: 'asc' },
+          universes: { sort: { field: 'name', order: 'asc' } },
         })
       );
 
@@ -271,11 +382,11 @@ describe('SortStateService', () => {
       });
 
       const savedData = JSON.parse(mockSetItem.mock.calls[1][1]);
-      expect(savedData.universes).toEqual({
+      expect(savedData.universes.sort).toEqual({
         field: 'name',
         order: 'asc',
       });
-      expect(savedData['trades-open']).toEqual({
+      expect(savedData['trades-open'].sort).toEqual({
         field: 'openDate',
         order: 'desc',
       });

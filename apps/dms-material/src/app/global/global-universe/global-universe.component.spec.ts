@@ -7,7 +7,7 @@ import { of, throwError } from 'rxjs';
 
 import { ScreenerService } from '../global-screener/services/screener.service';
 import { NotificationService } from '../../shared/services/notification.service';
-import { SortStateService } from '../../shared/services/sort-state.service';
+import { SortFilterStateService } from '../../shared/services/sort-filter-state.service';
 import { UniverseSyncService } from '../../shared/services/universe-sync.service';
 import { UpdateUniverseFieldsService } from '../../shared/services/update-universe-fields.service';
 import { GlobalLoadingService } from '../../shared/services/global-loading.service';
@@ -1261,7 +1261,7 @@ describe('GlobalUniverseComponent - SmartNgRX Integration', () => {
       expect(component.filteredData$().length).toBe(0);
     });
 
-    it('should display empty state when all entries are filtered out', () => {
+    it('should pass through all entries regardless of filter (server-side filtering)', () => {
       // Mock some data
       selectUniversesMock.mockReturnValue([
         {
@@ -1281,12 +1281,14 @@ describe('GlobalUniverseComponent - SmartNgRX Integration', () => {
         },
       ]);
 
-      // Apply a filter that excludes all entries
+      // Set filter UI state - does not filter client-side
       component.symbolFilter$.set('ZZZZ');
       fixture.detectChanges();
 
-      // filteredData$ should return empty array after filtering
-      expect(component.filteredData$().length).toBe(0);
+      // All data passes through (server-side filtering)
+      expect(component.filteredData$().length).toBe(1);
+      // Filter UI state is maintained for the interceptor
+      expect(component.symbolFilter$()).toBe('ZZZZ');
     });
   });
 
@@ -2291,34 +2293,34 @@ describe('GlobalUniverseComponent - Ex-Date Editing Enhancements (TDD - Story AN
 
   // TDD GREEN Phase - Story AW.8: Sort integration tests
   // Re-enabled from AW.7 RED phase
-  describe('Sort integration with SortStateService', () => {
+  describe('Sort integration with SortFilterStateService', () => {
     beforeEach(() => {
-      localStorage.removeItem('dms-sort-state');
+      localStorage.removeItem('dms-sort-filter-state');
     });
 
-    it('should return null from SortStateService.loadSortState when no saved state exists', () => {
-      const sortStateService = TestBed.inject(SortStateService);
-      const loadSpy = vi.spyOn(sortStateService, 'loadSortState');
-      const result = sortStateService.loadSortState('universes');
+    it('should return null from SortFilterStateService.loadSortState when no saved state exists', () => {
+      const sortFilterStateService = TestBed.inject(SortFilterStateService);
+      const loadSpy = vi.spyOn(sortFilterStateService, 'loadSortState');
+      const result = sortFilterStateService.loadSortState('universes');
       expect(loadSpy).toHaveBeenCalledWith('universes');
       expect(result).toBeNull();
     });
 
-    it('should persist and retrieve sort state for universes via SortStateService', () => {
+    it('should persist and retrieve sort state for universes via SortFilterStateService', () => {
       // The sortInterceptor handles adding X-Sort-Field and X-Sort-Order headers
-      // to /api/universe requests. Verify sortStateService integration is wired.
-      const sortStateService = TestBed.inject(SortStateService);
-      sortStateService.saveSortState('universes', {
+      // to /api/universe requests. Verify sortFilterStateService integration is wired.
+      const sortFilterStateService = TestBed.inject(SortFilterStateService);
+      sortFilterStateService.saveSortState('universes', {
         field: 'symbol',
         order: 'asc',
       });
-      const state = sortStateService.loadSortState('universes');
+      const state = sortFilterStateService.loadSortState('universes');
       expect(state).toEqual({ field: 'symbol', order: 'asc' });
     });
 
-    it('should save sort state to SortStateService when user changes sort', () => {
-      const sortStateService = TestBed.inject(SortStateService);
-      const saveSpy = vi.spyOn(sortStateService, 'saveSortState');
+    it('should save sort state to SortFilterStateService when user changes sort', () => {
+      const sortFilterStateService = TestBed.inject(SortFilterStateService);
+      const saveSpy = vi.spyOn(sortFilterStateService, 'saveSortState');
       component.onSortChange({ active: 'symbol', direction: 'asc' });
       expect(saveSpy).toHaveBeenCalledWith('universes', {
         field: 'symbol',
@@ -2327,16 +2329,16 @@ describe('GlobalUniverseComponent - Ex-Date Editing Enhancements (TDD - Story AN
     });
 
     it('should persist sort state when sort changes', () => {
-      const sortStateService = TestBed.inject(SortStateService);
+      const sortFilterStateService = TestBed.inject(SortFilterStateService);
       component.onSortChange({ active: 'distribution', direction: 'desc' });
-      const state = sortStateService.loadSortState('universes');
+      const state = sortFilterStateService.loadSortState('universes');
       expect(state).toEqual({ field: 'distribution', order: 'desc' });
     });
 
     it('should clear sort state when sort direction is reset', () => {
       // When direction is empty string (sort cleared), clear sort state
-      const sortStateService = TestBed.inject(SortStateService);
-      const clearSpy = vi.spyOn(sortStateService, 'clearSortState');
+      const sortFilterStateService = TestBed.inject(SortFilterStateService);
+      const clearSpy = vi.spyOn(sortFilterStateService, 'clearSortState');
       component.onSortChange({ active: 'symbol', direction: '' });
       expect(clearSpy).toHaveBeenCalledWith('universes');
     });
@@ -2427,12 +2429,12 @@ describe('GlobalUniverseComponent - Client-Side Sorting Removal', () => {
     });
 
     it('should trigger HTTP call on sort change instead of local sorting', () => {
-      const sortStateService = TestBed.inject(SortStateService);
-      const saveSpy = vi.spyOn(sortStateService, 'saveSortState');
+      const sortFilterStateService = TestBed.inject(SortFilterStateService);
+      const saveSpy = vi.spyOn(sortFilterStateService, 'saveSortState');
 
       component.onSortChange({ active: 'symbol', direction: 'asc' });
 
-      // Sort change should delegate to SortStateService (which triggers HTTP via interceptor)
+      // Sort change should delegate to SortFilterStateService (which triggers HTTP via interceptor)
       expect(saveSpy).toHaveBeenCalledWith('universes', {
         field: 'symbol',
         order: 'asc',

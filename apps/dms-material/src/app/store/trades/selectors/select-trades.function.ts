@@ -4,7 +4,7 @@ import { Account } from '../../accounts/account.interface';
 import { Trade } from '../trade.interface';
 import { selectAccountChildren } from './select-account-children.function';
 
-export const selectTrades = getTopChildRows<Account, Trade>(
+export const selectOpenTrades = getTopChildRows<Account, Trade>(
   selectAccountChildren,
-  'trades'
+  'openTrades'
 );

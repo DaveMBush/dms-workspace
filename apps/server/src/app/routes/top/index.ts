@@ -1,9 +1,16 @@
+import { Prisma } from '@prisma/client';
 import { FastifyInstance } from 'fastify';
 import { getHolidays } from 'nyse-holidays';
 
 import { prisma } from '../../prisma/prisma-client';
+import { getTableState } from '../common/get-table-state.function';
+import { parseSortFilterHeader } from '../common/parse-sort-filter-header.function';
+import { TableState } from '../common/table-state.interface';
 import { ensureRiskGroupsExist } from '../settings/common/ensure-risk-groups-exist.function';
+import { buildScreenerOrderBy } from './build-screener-order-by.function';
+import { isUniverseComputedSort } from './is-universe-computed-sort.function';
 import { Top } from './top.interface';
+import { sortUniversesByComputedField } from './universe-computed-sort.function';
 
 async function ensureHolidaysExist(): Promise<void> {
   const existingHolidays = await prisma.holidays.findMany({
@@ -51,12 +58,80 @@ async function getTopAccounts(): Promise<string[]> {
   });
 }
 
-async function getTopUniverses(): Promise<string[]> {
+const UNIVERSE_DIRECT_SORT_FIELDS = new Set([
+  'symbol',
+  'distribution',
+  'distributions_per_year',
+  'last_price',
+  'ex_date',
+  'most_recent_sell_price',
+  'expired',
+]);
+
+function buildUniverseWhere(state: TableState): Prisma.universeWhereInput {
+  const where: Prisma.universeWhereInput = {};
+  const filters = state.filters;
+  if (filters === undefined) {
+    return where;
+  }
+  if (typeof filters['symbol'] === 'string' && filters['symbol'] !== '') {
+    where.symbol = { contains: filters['symbol'] };
+  }
+  if (typeof filters['risk_group'] === 'string') {
+    where.risk_group_id = filters['risk_group'];
+  }
+  if (typeof filters['expired'] === 'boolean') {
+    where.expired = filters['expired'];
+  }
+  // account_id does NOT filter which symbols appear — all symbols are always shown.
+  // account_id only affects computed field calculations in the entity route.
+  return where;
+}
+
+function buildUniverseOrderBy(
+  state: TableState
+): Prisma.universeOrderByWithRelationInput {
+  const sort = state.sort;
+  if (sort === undefined) {
+    return { createdAt: 'asc' };
+  }
+  if (sort.field === 'risk_group') {
+    return { risk_group: { name: sort.order } };
+  }
+  if (UNIVERSE_DIRECT_SORT_FIELDS.has(sort.field)) {
+    return { [sort.field]: sort.order };
+  }
+  // For computed fields (yield_percent, avg_purchase_yield_percent), fall back to default
+  return { createdAt: 'asc' };
+}
+
+async function getTopUniverses(state: TableState): Promise<string[]> {
+  const sort = state.sort;
+  if (sort !== undefined && isUniverseComputedSort(sort.field)) {
+    const universes = await prisma.universe.findMany({
+      select: {
+        id: true,
+        distribution: true,
+        distributions_per_year: true,
+        last_price: true,
+        trades: {
+          select: { buy: true, quantity: true, sell: true, sell_date: true },
+        },
+      },
+      where: buildUniverseWhere(state),
+    });
+    sortUniversesByComputedField(universes, sort.field, sort.order);
+    return universes.map(function mapUniverse(universe) {
+      return universe.id;
+    });
+  }
+
   const universes = await prisma.universe.findMany({
     select: {
       id: true,
     },
-    orderBy: { createdAt: 'asc' },
+    where: buildUniverseWhere(state),
+    orderBy: buildUniverseOrderBy(state),
   });
   return universes.map(function mapUniverse(universe) {
     return universe.id;
@@ -119,12 +194,12 @@ async function getTopHolidays(): Promise<Date[]> {
   });
 }
 
-async function getTopScreens(): Promise<string[]> {
+async function getTopScreens(state: TableState): Promise<string[]> {
   const screens = await prisma.screener.findMany({
     select: {
       id: true,
     },
-    orderBy: { createdAt: 'asc' },
+    orderBy: buildScreenerOrderBy(state),
   });
   return screens.map(function mapScreen(screen) {
     return screen.id;
@@ -177,6 +252,10 @@ function handleTopRoute(fastify: FastifyInstance): void {
 
       await ensureHolidaysExist();
 
+      const allState = parseSortFilterHeader(request);
+      const universeState = getTableState(allState, 'universes');
+      const screenerState = getTableState(allState, 'screens');
+
       const [
         accounts,
         universes,
@@ -186,11 +265,11 @@ function handleTopRoute(fastify: FastifyInstance): void {
         screens,
       ] = await Promise.all([
         getTopAccounts(),
-        getTopUniverses(),
+        getTopUniverses(universeState),
         getTopRiskGroups(),
         getTopDivDepositTypes(),
         getTopHolidays(),
-        getTopScreens(),
+        getTopScreens(screenerState),
       ]);
 
       return reply.status(200).send([

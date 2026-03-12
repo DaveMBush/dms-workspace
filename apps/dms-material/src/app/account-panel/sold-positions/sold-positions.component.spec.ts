@@ -4,7 +4,7 @@ import { vi } from 'vitest';
 
 import { SoldPositionsComponent } from './sold-positions.component';
 import { SoldPositionsComponentService } from './sold-positions-component.service';
-import { SortStateService } from '../../shared/services/sort-state.service';
+import { SortFilterStateService } from '../../shared/services/sort-filter-state.service';
 import { ClosedPosition } from '../../store/trades/closed-position.interface';
 import { currentAccountSignalStore } from '../../store/current-account/current-account.signal-store';
 import { Trade } from '../../store/trades/trade.interface';
@@ -18,9 +18,19 @@ vi.mock('../../store/universe/selectors/select-universes.function', () => ({
   selectUniverses: vi.fn().mockReturnValue([]),
 }));
 
-vi.mock('../../store/trades/selectors/select-trades-entity.function', () => ({
-  selectTradesEntity: vi.fn().mockReturnValue([]),
-}));
+vi.mock(
+  '../../store/trades/selectors/select-open-trade-entity.function',
+  () => ({
+    selectOpenTradeEntity: vi.fn().mockReturnValue([]),
+  })
+);
+
+vi.mock(
+  '../../store/trades/selectors/select-sold-trade-entity.function',
+  () => ({
+    selectSoldTradeEntity: vi.fn().mockReturnValue([]),
+  })
+);
 
 vi.mock(
   '../../store/accounts/selectors/select-accounts-entity.function',
@@ -436,83 +446,72 @@ describe('SoldPositionsComponent', () => {
       expect(component.displayedPositions().length).toBe(4);
     });
 
-    it('should filter by start date only', () => {
+    it('should pass through all positions regardless of start date filter (server-side filtering)', () => {
       component.startDate.set('2024-06-01');
       component.endDate.set(null);
 
       const positions = component.displayedPositions();
-      expect(positions.length).toBe(2);
-      expect(
-        positions.every((p) => new Date(p.sell_date!) >= new Date('2024-06-01'))
-      ).toBe(true);
+      // Client-side filtering removed - all positions pass through
+      expect(positions.length).toBe(4);
+      // Date filter UI state is maintained for the interceptor
+      expect(component.startDate()).toBe('2024-06-01');
     });
 
-    it('should filter by end date only', () => {
+    it('should pass through all positions regardless of end date filter (server-side filtering)', () => {
       component.startDate.set(null);
       component.endDate.set('2024-06-30');
 
       const positions = component.displayedPositions();
-      expect(positions.length).toBe(3);
-      expect(
-        positions.every((p) => new Date(p.sell_date!) <= new Date('2024-06-30'))
-      ).toBe(true);
+      expect(positions.length).toBe(4);
+      expect(component.endDate()).toBe('2024-06-30');
     });
 
-    it('should filter by both start and end date', () => {
+    it('should pass through all positions regardless of date range (server-side filtering)', () => {
       component.startDate.set('2024-01-01');
       component.endDate.set('2024-06-30');
 
       const positions = component.displayedPositions();
-      expect(positions.length).toBe(2);
-      expect(
-        positions.every((p) => {
-          const sellDate = new Date(p.sell_date!);
-          return (
-            sellDate >= new Date('2024-01-01') &&
-            sellDate <= new Date('2024-06-30')
-          );
-        })
-      ).toBe(true);
+      expect(positions.length).toBe(4);
+      expect(component.startDate()).toBe('2024-01-01');
+      expect(component.endDate()).toBe('2024-06-30');
     });
 
-    it('should handle same day start and end date', () => {
+    it('should maintain date filter UI state (server-side filtering)', () => {
       component.startDate.set('2024-01-15');
       component.endDate.set('2024-01-15');
 
       const positions = component.displayedPositions();
-      expect(positions.length).toBe(1);
-      expect(positions[0].symbol).toBe('AAPL');
+      expect(positions.length).toBe(4);
+      expect(component.startDate()).toBe('2024-01-15');
+      expect(component.endDate()).toBe('2024-01-15');
     });
 
-    it('should return empty array when no positions match date range', () => {
+    it('should pass through all positions even with non-matching date range (server-side filtering)', () => {
       component.startDate.set('2025-01-01');
       component.endDate.set('2025-12-31');
 
-      expect(component.displayedPositions().length).toBe(0);
+      expect(component.displayedPositions().length).toBe(4);
     });
 
-    it('should handle year boundary correctly', () => {
+    it('should pass through all positions with year boundary dates (server-side filtering)', () => {
       component.startDate.set('2023-12-01');
       component.endDate.set('2024-01-31');
 
       const positions = component.displayedPositions();
-      expect(positions.length).toBe(2);
-      const symbols = positions.map((p) => p.symbol);
-      expect(symbols).toContain('AAPL');
-      expect(symbols).toContain('TSLA');
+      expect(positions.length).toBe(4);
     });
 
-    it('should update displayed positions when date filter changes', () => {
+    it('should pass through all positions when date filter changes (server-side filtering)', () => {
       component.startDate.set('2024-01-01');
       component.endDate.set('2024-06-30');
 
-      expect(component.displayedPositions().length).toBe(2);
+      expect(component.displayedPositions().length).toBe(4);
 
       component.startDate.set('2024-12-01');
       component.endDate.set('2024-12-31');
 
-      expect(component.displayedPositions().length).toBe(1);
-      expect(component.displayedPositions()[0].symbol).toBe('GOOGL');
+      // Still all positions pass through
+      expect(component.displayedPositions().length).toBe(4);
     });
   });
 });
@@ -844,7 +843,7 @@ describe('SoldPositionsComponent - Account Selection Integration', () => {
       ).toBeTruthy();
     });
 
-    it('should maintain date filter when account changes', () => {
+    it('should maintain date filter UI state when account changes (server-side filtering)', () => {
       const account1Positions: ClosedPosition[] = [
         {
           id: '1',
@@ -884,10 +883,12 @@ describe('SoldPositionsComponent - Account Selection Integration', () => {
       );
       fixture.detectChanges();
 
-      // Date filter should still apply after account change
-      const filtered = component.displayedPositions();
-      expect(filtered.length).toBe(1);
-      expect(filtered[0].symbol).toBe('AAPL');
+      // All positions pass through (server-side filtering)
+      const positions = component.displayedPositions();
+      expect(positions.length).toBe(2);
+      // Date filter UI state is maintained
+      expect(component.startDate()).toBe('2024-06-01');
+      expect(component.endDate()).toBe('2024-06-30');
     });
 
     it('should handle empty positions for a new account gracefully', () => {
@@ -951,7 +952,7 @@ describe('SoldPositionsComponent - Account Selection Integration', () => {
       fixture.detectChanges();
 
       // Set some component state
-      component.searchText = 'test';
+      component.searchText.set('test');
       component.startDate.set('2024-01-01');
       component.endDate.set('2024-12-31');
 
@@ -960,7 +961,7 @@ describe('SoldPositionsComponent - Account Selection Integration', () => {
       fixture.detectChanges();
 
       // Component state should be preserved
-      expect(component.searchText).toBe('test');
+      expect(component.searchText()).toBe('test');
       expect(component.startDate()).toBe('2024-01-01');
       expect(component.endDate()).toBe('2024-12-31');
     });
@@ -968,34 +969,34 @@ describe('SoldPositionsComponent - Account Selection Integration', () => {
 
   // TDD GREEN Phase - Story AW.8: Sort integration tests
   // Re-enabled from AW.7 RED phase
-  describe('Sort integration with SortStateService', () => {
+  describe('Sort integration with SortFilterStateService', () => {
     beforeEach(() => {
-      localStorage.removeItem('dms-sort-state');
+      localStorage.removeItem('dms-sort-filter-state');
     });
 
-    it('should return null from SortStateService.loadSortState when no saved state exists', () => {
-      const sortStateService = TestBed.inject(SortStateService);
-      const loadSpy = vi.spyOn(sortStateService, 'loadSortState');
-      const result = sortStateService.loadSortState('trades-closed');
+    it('should return null from SortFilterStateService.loadSortState when no saved state exists', () => {
+      const sortFilterStateService = TestBed.inject(SortFilterStateService);
+      const loadSpy = vi.spyOn(sortFilterStateService, 'loadSortState');
+      const result = sortFilterStateService.loadSortState('trades-closed');
       expect(loadSpy).toHaveBeenCalledWith('trades-closed');
       expect(result).toBeNull();
     });
 
-    it('should persist and retrieve sort state for trades-closed via SortStateService', () => {
+    it('should persist and retrieve sort state for trades-closed via SortFilterStateService', () => {
       // The sortInterceptor handles adding X-Sort-Field and X-Sort-Order headers
-      // to /api/trades/closed requests. Verify sortStateService integration is wired.
-      const sortStateService = TestBed.inject(SortStateService);
-      sortStateService.saveSortState('trades-closed', {
+      // to /api/trades/closed requests. Verify sortFilterStateService integration is wired.
+      const sortFilterStateService = TestBed.inject(SortFilterStateService);
+      sortFilterStateService.saveSortState('trades-closed', {
         field: 'sell',
         order: 'desc',
       });
-      const state = sortStateService.loadSortState('trades-closed');
+      const state = sortFilterStateService.loadSortState('trades-closed');
       expect(state).toEqual({ field: 'sell', order: 'desc' });
     });
 
-    it('should save sort state to SortStateService when user changes sort', () => {
-      const sortStateService = TestBed.inject(SortStateService);
-      const saveSpy = vi.spyOn(sortStateService, 'saveSortState');
+    it('should save sort state to SortFilterStateService when user changes sort', () => {
+      const sortFilterStateService = TestBed.inject(SortFilterStateService);
+      const saveSpy = vi.spyOn(sortFilterStateService, 'saveSortState');
       component.onSortChange({ active: 'sell', direction: 'asc' });
       expect(saveSpy).toHaveBeenCalledWith('trades-closed', {
         field: 'sell',
@@ -1004,15 +1005,15 @@ describe('SoldPositionsComponent - Account Selection Integration', () => {
     });
 
     it('should persist sort state when sort changes', () => {
-      const sortStateService = TestBed.inject(SortStateService);
+      const sortFilterStateService = TestBed.inject(SortFilterStateService);
       component.onSortChange({ active: 'capitalGain', direction: 'desc' });
-      const state = sortStateService.loadSortState('trades-closed');
+      const state = sortFilterStateService.loadSortState('trades-closed');
       expect(state).toEqual({ field: 'capitalGain', order: 'desc' });
     });
 
     it('should clear sort state when sort direction is reset', () => {
-      const sortStateService = TestBed.inject(SortStateService);
-      const clearSpy = vi.spyOn(sortStateService, 'clearSortState');
+      const sortFilterStateService = TestBed.inject(SortFilterStateService);
+      const clearSpy = vi.spyOn(sortFilterStateService, 'clearSortState');
       component.onSortChange({ active: 'sell', direction: '' });
       expect(clearSpy).toHaveBeenCalledWith('trades-closed');
     });
@@ -1077,12 +1078,12 @@ describe('SoldPositionsComponent - Client-Side Sorting Removal', () => {
     });
 
     it('should trigger HTTP call on sort change instead of local sorting', () => {
-      const sortStateService = TestBed.inject(SortStateService);
-      const saveSpy = vi.spyOn(sortStateService, 'saveSortState');
+      const sortFilterStateService = TestBed.inject(SortFilterStateService);
+      const saveSpy = vi.spyOn(sortFilterStateService, 'saveSortState');
 
       component.onSortChange({ active: 'sell', direction: 'desc' });
 
-      // Sort change should delegate to SortStateService (which triggers HTTP via interceptor)
+      // Sort change should delegate to SortFilterStateService (which triggers HTTP via interceptor)
       expect(saveSpy).toHaveBeenCalledWith('trades-closed', {
         field: 'sell',
         order: 'desc',

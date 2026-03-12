@@ -1,6 +1,8 @@
 import { FastifyInstance } from 'fastify';
 
 import { prisma } from '../../prisma/prisma-client';
+import { getTableState } from '../common/get-table-state.function';
+import { parseSortFilterHeader } from '../common/parse-sort-filter-header.function';
 import registerAddSymbol from './add-symbol';
 import { addSymbol } from './add-symbol/add-symbol.function';
 import registerGetAllUniverses from './get-all-universes';
@@ -67,11 +69,20 @@ function handleGetUniversesRoute(fastify: FastifyInstance): void {
       if (ids === null || ids === undefined || ids.length === 0) {
         return [];
       }
+      // Check if an account filter is set to scope computed fields
+      const allState = parseSortFilterHeader(request);
+      const universeState = getTableState(allState, 'universes');
+      const accountId =
+        universeState.filters !== undefined &&
+        typeof universeState.filters['account_id'] === 'string'
+          ? universeState.filters['account_id']
+          : null;
+
       const universes = await prisma.universe.findMany({
         where: { id: { in: ids } },
         include: {
           risk_group: true,
-          trades: true,
+          trades: accountId !== null ? { where: { accountId } } : true,
         },
       });
       return universes.map(function mapUniverse(u) {

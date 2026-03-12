@@ -25,7 +25,8 @@ export class AccountComponentService {
       {
         name: 'New Account',
         id: 'new',
-        trades: [],
+        openTrades: [],
+        soldTrades: [],
         divDeposits: [],
         months: [],
       },

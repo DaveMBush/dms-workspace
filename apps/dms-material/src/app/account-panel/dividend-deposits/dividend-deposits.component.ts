@@ -8,12 +8,16 @@ import {
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
+import { Sort } from '@angular/material/sort';
+import { handleSocketNotification } from '@smarttools/smart-signals';
 import { filter, switchMap } from 'rxjs';
 
 import { BaseTableComponent } from '../../shared/components/base-table/base-table.component';
 import { ColumnDef } from '../../shared/components/base-table/column-def.interface';
 import { ConfirmDialogService } from '../../shared/services/confirm-dialog.service';
 import { NotificationService } from '../../shared/services/notification.service';
+import { SortFilterStateService } from '../../shared/services/sort-filter-state.service';
+import { getAccountIds } from '../../store/accounts/selectors/get-account-ids.function';
 import { currentAccountSignalStore } from '../../store/current-account/current-account.signal-store';
 import { DivDeposit } from '../../store/div-deposits/div-deposit.interface';
 import { divDepositsEffectsServiceToken } from '../../store/div-deposits/div-deposits-effect-service-token';
@@ -34,12 +38,14 @@ import { DividendDepositsComponentService } from './dividend-deposits-component.
   styleUrl: './dividend-deposits.component.scss',
 })
 export class DividendDepositsComponent {
+  private static readonly tableKey = 'div-deposits';
   readonly dividendDepositsService = inject(DividendDepositsComponentService);
   private currentAccountStore = inject(currentAccountSignalStore);
   private dialog = inject(MatDialog);
   private notification = inject(NotificationService);
   private confirmDialog = inject(ConfirmDialogService);
   private effectsService = inject(divDepositsEffectsServiceToken);
+  private readonly sortFilterStateService = inject(SortFilterStateService);
 
   constructor() {
     const store = this.currentAccountStore;
@@ -51,6 +57,23 @@ export class DividendDepositsComponent {
   }
 
   readonly dividends$ = this.dividendDepositsService.dividends;
+
+  onSortChange(sort: Sort): void {
+    if (sort.direction === '') {
+      this.sortFilterStateService.clearSortState(
+        DividendDepositsComponent.tableKey
+      );
+    } else {
+      this.sortFilterStateService.saveSortState(
+        DividendDepositsComponent.tableKey,
+        {
+          field: sort.active,
+          order: sort.direction,
+        }
+      );
+    }
+    handleSocketNotification('accounts', 'update', getAccountIds());
+  }
 
   columns: ColumnDef[] = [
     { field: 'symbol', header: 'Symbol', sortable: true, width: '120px' },

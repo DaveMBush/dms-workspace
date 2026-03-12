@@ -16,12 +16,14 @@ import { MatSelectModule } from '@angular/material/select';
 import { Sort } from '@angular/material/sort';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { handleSocketNotification } from '@smarttools/smart-signals';
 
 import { BaseTableComponent } from '../../shared/components/base-table/base-table.component';
 import { ColumnDef } from '../../shared/components/base-table/column-def.interface';
 import { ErrorHandlingService } from '../../shared/services/error-handling.service';
 import { GlobalLoadingService } from '../../shared/services/global-loading.service';
 import { NotificationService } from '../../shared/services/notification.service';
+import { SortFilterStateService } from '../../shared/services/sort-filter-state.service';
 import { Screen } from '../../store/screen/screen.interface';
 import { ScreenCellEditEvent } from './screen-cell-edit-event.interface';
 import { ScreenerService } from './services/screener.service';
@@ -48,6 +50,7 @@ export class GlobalScreenerComponent {
   private readonly screenerService = inject(ScreenerService);
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly errorHandling = inject(ErrorHandlingService);
+  private readonly sortFilterStateService = inject(SortFilterStateService);
 
   constructor() {
     // Force change detection when filteredData$ changes
@@ -114,8 +117,16 @@ export class GlobalScreenerComponent {
     });
   });
 
-  onSortChange(_: Sort): void {
-    // Sorting is handled automatically by the table
+  onSortChange(sort: Sort): void {
+    if (sort.direction === '') {
+      this.sortFilterStateService.clearSortState('screens');
+    } else {
+      this.sortFilterStateService.saveSortState('screens', {
+        field: sort.active,
+        order: sort.direction,
+      });
+    }
+    handleSocketNotification('top', 'update', ['1']);
   }
 
   onRefresh(): void {
@@ -140,6 +151,14 @@ export class GlobalScreenerComponent {
 
   onRiskGroupFilterChange(value: string | null): void {
     this.riskGroupFilter$.set(value);
+    if (value !== null) {
+      this.sortFilterStateService.saveFilterState('screens', {
+        risk_group: value,
+      });
+    } else {
+      this.sortFilterStateService.clearFilterState('screens');
+    }
+    handleSocketNotification('top', 'update', ['1']);
   }
 
   onCellEdit(row: Screen, field: string, value: unknown): void {

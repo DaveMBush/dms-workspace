@@ -1,7 +1,15 @@
 import { FastifyInstance } from 'fastify';
 
 import { prisma } from '../../prisma/prisma-client';
+import { getTableState } from '../common/get-table-state.function';
+import { parseSortFilterHeader } from '../common/parse-sort-filter-header.function';
+import { TableState } from '../common/table-state.interface';
 import { Account } from './account.interface';
+import { buildDivDepositOrderBy } from './build-div-deposit-order-by.function';
+import { buildDivDepositWhere } from './build-div-deposit-where.function';
+import { buildTradeOrderBy } from './build-trade-order-by.function';
+import { buildTradeWhere } from './build-trade-where.function';
+import { isComputedTradeSort } from './is-computed-trade-sort.function';
 import { NewAccount } from './new-account.interface';
 
 interface AccountWithTrades {
@@ -58,89 +66,108 @@ function combineAndSortMonths(
   });
 }
 
-interface PrismaAccountResult {
+interface TradeWithComputed {
   id: string;
-  name: string;
-  // eslint-disable-next-line @typescript-eslint/naming-convention -- prisma field
-  _count: {
-    divDeposits: number;
-  };
-  trades?: Array<{ id: string; sell_date: Date | null }>;
-  divDeposits?: Array<{ id: string; date: Date }>;
+  buy: number;
+  quantity: number;
+  universe: { last_price: number };
 }
 
-function mapAccountToResponse(account: PrismaAccountResult): Account {
-  const trades = account.trades ?? [];
-  const divDeposits = account.divDeposits ?? [];
+function computeUnrealizedGain(trade: TradeWithComputed): number {
+  return (trade.universe.last_price - trade.buy) * trade.quantity;
+}
 
-  const months1 = extractMonthsFromTrades(trades);
-  const months2 = extractMonthsFromDivDeposits(divDeposits);
+function computeUnrealizedGainPercent(trade: TradeWithComputed): number {
+  if (trade.buy <= 0) {
+    return 0;
+  }
+  return ((trade.universe.last_price - trade.buy) / trade.buy) * 100;
+}
+
+function getTradeComputedValue(
+  field: string,
+  trade: TradeWithComputed
+): number {
+  if (field === 'unrealizedGain') {
+    return computeUnrealizedGain(trade);
+  }
+  return computeUnrealizedGainPercent(trade);
+}
+
+async function getOpenTradeIds(
+  openState: TableState,
+  accountId: string
+): Promise<string[]> {
+  if (isComputedTradeSort(openState)) {
+    const trades = await prisma.trades.findMany({
+      where: buildTradeWhere(openState, accountId, true),
+      select: {
+        id: true,
+        buy: true,
+        quantity: true,
+        universe: { select: { last_price: true } },
+      },
+    });
+    const field = openState.sort!.field;
+    const order = openState.sort!.order;
+    trades.sort(function sortByComputed(a, b) {
+      const diff =
+        getTradeComputedValue(field, a) - getTradeComputedValue(field, b);
+      return order === 'desc' ? -diff : diff;
+    });
+    return trades.map(function mapId(t) {
+      return t.id;
+    });
+  }
+  const trades = await prisma.trades.findMany({
+    where: buildTradeWhere(openState, accountId, true),
+    select: { id: true },
+    orderBy: buildTradeOrderBy(openState),
+  });
+  return trades.map(function mapId(t) {
+    return t.id;
+  });
+}
+
+async function buildAccountResponse(
+  account: { id: string; name: string },
+  openState: TableState,
+  closedState: TableState,
+  divState: TableState
+): Promise<Account> {
+  const [openTradeIds, soldTrades, allDivDeposits] = await Promise.all([
+    getOpenTradeIds(openState, account.id),
+    prisma.trades.findMany({
+      where: buildTradeWhere(closedState, account.id, false),
+      select: { id: true, sell_date: true },
+      orderBy: buildTradeOrderBy(closedState),
+    }),
+    prisma.divDeposits.findMany({
+      where: buildDivDepositWhere(divState, account.id),
+      select: { id: true, date: true },
+      orderBy: buildDivDepositOrderBy(divState),
+    }),
+  ]);
+
+  const months1 = extractMonthsFromTrades(soldTrades);
+  const months2 = extractMonthsFromDivDeposits(allDivDeposits);
   const months = combineAndSortMonths(months1, months2);
 
   return {
     id: account.id,
     name: account.name,
-    trades: trades.map(function mapTradeToId(trade) {
+    openTrades: openTradeIds,
+    soldTrades: soldTrades.map(function mapSoldTradeId(trade) {
       return trade.id;
     }),
     divDeposits: {
       startIndex: 0,
-      indexes: divDeposits.map(function mapDivDepositToIndex(divDeposit) {
-        return divDeposit.id;
+      indexes: allDivDeposits.slice(0, 10).map(function mapDivDepositId(d) {
+        return d.id;
       }),
-      // eslint-disable-next-line no-underscore-dangle -- prisma field
-      length: account._count.divDeposits,
+      length: allDivDeposits.length,
     },
     months,
-  };
-}
-
-function getHandleGetAccountsRouteFindManyJson(ids: string[]): {
-  where: { id: { in: string[] } };
-  select: {
-    id: boolean;
-    name: boolean;
-    // eslint-disable-next-line @typescript-eslint/naming-convention -- prisma field
-    _count: { select: { divDeposits: boolean } };
-    trades: { select: { id: boolean; sell_date: boolean } };
-    divDeposits: {
-      take: number;
-      select: { id: boolean; date: boolean };
-      orderBy: { date: 'desc' };
-    };
-  };
-  orderBy: { name: 'asc' };
-} {
-  return {
-    where: { id: { in: ids } },
-    select: {
-      id: true,
-      name: true,
-      _count: {
-        select: {
-          divDeposits: true,
-        },
-      },
-      trades: {
-        select: {
-          id: true,
-          sell_date: true,
-        },
-      },
-      divDeposits: {
-        take: 10,
-        select: {
-          id: true,
-          date: true,
-        },
-        orderBy: {
-          date: 'desc' as const,
-        },
-      },
-    },
-    orderBy: {
-      name: 'asc' as const,
-    },
   };
 }
 
@@ -161,12 +188,27 @@ function handleGetAccountsRoute(fastify: FastifyInstance): void {
         return [];
       }
 
-      const accounts = await prisma.accounts.findMany(
-        getHandleGetAccountsRouteFindManyJson(ids)
-      );
-      return accounts.map(function mapAccount(account) {
-        return mapAccountToResponse(account);
+      const allState = parseSortFilterHeader(request);
+      const openState = getTableState(allState, 'trades-open');
+      const closedState = getTableState(allState, 'trades-closed');
+      const divState = getTableState(allState, 'div-deposits');
+
+      const accounts = await prisma.accounts.findMany({
+        where: { id: { in: ids } },
+        select: { id: true, name: true },
+        orderBy: { name: 'asc' as const },
       });
+
+      return Promise.all(
+        accounts.map(async function mapAccountWithState(account) {
+          return buildAccountResponse(
+            account,
+            openState,
+            closedState,
+            divState
+          );
+        })
+      );
     }
   );
 }
@@ -194,7 +236,8 @@ function handleAddAccountRoute(fastify: FastifyInstance): void {
         return {
           id: accountItem.id,
           name: accountItem.name,
-          trades: accountItem.trades.map(mapTradeToId),
+          openTrades: accountItem.trades.map(mapTradeToId),
+          soldTrades: [],
           divDeposits: {
             startIndex: 0,
             indexes: [],
@@ -251,7 +294,8 @@ function handleUpdateAccountRoute(fastify: FastifyInstance): void {
         return {
           id: accountItem.id,
           name: accountItem.name,
-          trades: accountItem.trades.map(mapTradeToIdForUpdate),
+          openTrades: accountItem.trades.map(mapTradeToIdForUpdate),
+          soldTrades: [],
           divDeposits: {
             startIndex: 0,
             indexes: [],

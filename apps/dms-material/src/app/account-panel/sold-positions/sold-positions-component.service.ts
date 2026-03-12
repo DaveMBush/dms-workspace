@@ -17,7 +17,7 @@ export class SoldPositionsComponentService {
     const currentAccount = selectCurrentAccountSignal(
       this.currentAccountSignalStore
     );
-    return currentAccount().trades as Trade[];
+    return currentAccount().soldTrades as Trade[];
   });
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
