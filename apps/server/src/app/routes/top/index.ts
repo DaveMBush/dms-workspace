@@ -91,6 +91,7 @@ async function getTopUniverses(state: TableState): Promise<string[]> {
         trades: buildTradesSelect(accountId),
       },
       where: buildUniverseWhere(state),
+      orderBy: { id: 'asc' },
     });
     sortUniversesByComputedField(universes, sort.field, sort.order);
     return universes.map(function mapUniverse(universe) {
