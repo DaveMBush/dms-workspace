@@ -4,28 +4,32 @@ import { login } from './helpers/login.helper';
 import { seedUniverseE2eData } from './helpers/seed-universe-e2e-data.helper';
 
 /**
- * Helper: read sort state from localStorage.
+ * Helper: read sort state from the sort-filter localStorage key.
  */
 async function getSortState(
   page: Page,
   table: string
 ): Promise<{ field: string; order: string } | null> {
-  return page.evaluate(function readSortState(t: string) {
-    const raw = localStorage.getItem('dms-sort-state');
+  return page.evaluate(function readSortFilterState(t: string) {
+    const raw = localStorage.getItem('dms-sort-filter-state');
     if (raw === null) {
       return null;
     }
     const state = JSON.parse(raw);
-    return (state[t] as { field: string; order: string }) ?? null;
+    const entry = state[t];
+    if (entry === undefined || entry === null) {
+      return null;
+    }
+    return (entry.sort as { field: string; order: string }) ?? null;
   }, table);
 }
 
 /**
- * Helper: clear sort state.
+ * Helper: clear sort-filter state from localStorage.
  */
-async function clearSortState(page: Page): Promise<void> {
-  await page.evaluate(function removeSortState(): void {
-    localStorage.removeItem('dms-sort-state');
+async function clearSortFilterState(page: Page): Promise<void> {
+  await page.evaluate(function removeSortFilterState(): void {
+    localStorage.removeItem('dms-sort-filter-state');
   });
 }
 
@@ -76,7 +80,7 @@ test.describe('Universe Screen E2E', () => {
   test.describe('Filter Tests', () => {
     test.beforeEach(async ({ page }) => {
       await login(page);
-      await clearSortState(page);
+      await clearSortFilterState(page);
       await page.goto('/global/universe');
       await waitForTableRows(page);
     });
@@ -160,7 +164,7 @@ test.describe('Universe Screen E2E', () => {
   test.describe('Sort Tests', () => {
     test.beforeEach(async ({ page }) => {
       await login(page);
-      await clearSortState(page);
+      await clearSortFilterState(page);
       await page.goto('/global/universe');
       await waitForTableRows(page);
     });
@@ -248,7 +252,7 @@ test.describe('Universe Screen E2E', () => {
   test.describe('Account Filter Computed Fields', () => {
     test.beforeEach(async ({ page }) => {
       await login(page);
-      await clearSortState(page);
+      await clearSortFilterState(page);
       await page.goto('/global/universe');
       await waitForTableRows(page);
     });

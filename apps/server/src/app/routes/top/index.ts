@@ -1,4 +1,3 @@
-import { Prisma } from '@prisma/client';
 import { FastifyInstance } from 'fastify';
 import { getHolidays } from 'nyse-holidays';
 
@@ -8,6 +7,7 @@ import { parseSortFilterHeader } from '../common/parse-sort-filter-header.functi
 import { TableState } from '../common/table-state.interface';
 import { ensureRiskGroupsExist } from '../settings/common/ensure-risk-groups-exist.function';
 import { buildScreenerOrderBy } from './build-screener-order-by.function';
+import { buildUniverseOrderBy } from './build-universe-order-by.function';
 import { buildUniverseWhere } from './build-universe-where.function';
 import { isUniverseComputedSort } from './is-universe-computed-sort.function';
 import { Top } from './top.interface';
@@ -57,32 +57,6 @@ async function getTopAccounts(): Promise<string[]> {
   return topAccounts.map(function mapAccount(account) {
     return account.id;
   });
-}
-
-const UNIVERSE_DIRECT_SORT_FIELDS = new Set([
-  'symbol',
-  'distribution',
-  'distributions_per_year',
-  'last_price',
-  'ex_date',
-  'expired',
-]);
-
-function buildUniverseOrderBy(
-  state: TableState
-): Prisma.universeOrderByWithRelationInput {
-  const sort = state.sort;
-  if (sort === undefined) {
-    return { createdAt: 'asc' };
-  }
-  if (sort.field === 'risk_group') {
-    return { risk_group: { name: sort.order } };
-  }
-  if (UNIVERSE_DIRECT_SORT_FIELDS.has(sort.field)) {
-    return { [sort.field]: sort.order };
-  }
-  // For computed fields (yield_percent, avg_purchase_yield_percent), fall back to default
-  return { createdAt: 'asc' };
 }
 
 function getAccountIdFromState(state: TableState): string | null {
