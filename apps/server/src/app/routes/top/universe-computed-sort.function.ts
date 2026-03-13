@@ -101,12 +101,32 @@ function compareValues(
   return order === 'desc' ? -diff : diff;
 }
 
+function computeMostRecentSellPrice(
+  trades: Array<{ sell: number; sell_date: Date | null }>
+): number | null {
+  let mostRecent: { sell: number; timestamp: number } | null = null;
+  for (let i = 0; i < trades.length; i++) {
+    const sd = trades[i].sell_date;
+    if (sd === null) {
+      continue;
+    }
+    const ts = sd.getTime();
+    if (mostRecent === null || ts > mostRecent.timestamp) {
+      mostRecent = { sell: trades[i].sell, timestamp: ts };
+    }
+  }
+  return mostRecent?.sell ?? null;
+}
+
 function getComputedValue(
   field: string,
   u: UniverseForComputedSort
 ): ComputedSortValue {
   if (field === 'most_recent_sell_date') {
     return computeMostRecentSellDateTimestamp(u.trades);
+  }
+  if (field === 'most_recent_sell_price') {
+    return computeMostRecentSellPrice(u.trades);
   }
   return getComputedNumericValue(field, u);
 }

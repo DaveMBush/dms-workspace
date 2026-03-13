@@ -41,6 +41,7 @@ import { ImportDialogResult } from '../import-dialog/import-dialog-result.interf
 import { calculateYieldPercent } from './calculate-yield-percent.function';
 import { CellEditEvent } from './cell-edit-event.interface';
 import { enrichUniverseWithRiskGroups } from './enrich-universe-with-risk-groups.function';
+import { filterUniverses } from './filter-universes.function';
 import { UNIVERSE_COLUMNS } from './global-universe.columns';
 import { EXPIRED_OPTIONS } from './global-universe.expired-options';
 import { saveUniverseFiltersAndNotify } from './save-universe-filters-and-notify.function';
@@ -127,7 +128,7 @@ export class GlobalUniverseComponent {
     return options;
   });
 
-  // Server handles filtering, so no client-side filter is applied
+  // Server handles symbol/risk_group filtering; expired and yield % need client-side filtering
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signal
   readonly filteredData$ = computed(() => {
     const rawData = this.universeService.universes();
@@ -137,7 +138,14 @@ export class GlobalUniverseComponent {
       return [];
     }
 
-    return enrichUniverseWithRiskGroups(rawData, riskGroups);
+    const enrichedData = enrichUniverseWithRiskGroups(rawData, riskGroups);
+
+    return filterUniverses(enrichedData, {
+      symbolFilter: this.symbolFilter$(),
+      riskGroupFilter: this.riskGroupFilter$(),
+      expiredFilter: this.expiredFilter$(),
+      minYieldFilter: this.minYieldFilter$(),
+    });
   });
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signal

@@ -378,142 +378,6 @@ describe('SoldPositionsComponent', () => {
       );
     });
   });
-
-  // TDD Tests for Story AP.5 - Date Range Filtering
-  // Enabled in AP.6 implementation
-  describe('Date Range Filtering', () => {
-    const testPositions: ClosedPosition[] = [
-      {
-        id: '1',
-        symbol: 'AAPL',
-        quantity: 100,
-        buy: 150,
-        buy_date: '2023-12-01',
-        sell: 180,
-        sell_date: '2024-01-15',
-        daysHeld: 45,
-        capitalGain: 3000,
-        capitalGainPercentage: 20,
-      },
-      {
-        id: '2',
-        symbol: 'MSFT',
-        quantity: 50,
-        buy: 300,
-        buy_date: '2024-03-01',
-        sell: 320,
-        sell_date: '2024-06-20',
-        daysHeld: 111,
-        capitalGain: 1000,
-        capitalGainPercentage: 6.67,
-      },
-      {
-        id: '3',
-        symbol: 'GOOGL',
-        quantity: 75,
-        buy: 100,
-        buy_date: '2024-06-01',
-        sell: 120,
-        sell_date: '2024-12-31',
-        daysHeld: 213,
-        capitalGain: 1500,
-        capitalGainPercentage: 20,
-      },
-      {
-        id: '4',
-        symbol: 'TSLA',
-        quantity: 25,
-        buy: 200,
-        buy_date: '2023-06-01',
-        sell: 180,
-        sell_date: '2023-12-15',
-        daysHeld: 135,
-        capitalGain: -500,
-        capitalGainPercentage: -10,
-      },
-    ];
-
-    beforeEach(() => {
-      soldPositionsSignal.set(testPositions);
-      component.startDate.set(null);
-      component.endDate.set(null);
-    });
-
-    it('should show all positions when no date filter applied', () => {
-      component.startDate.set(null);
-      component.endDate.set(null);
-
-      expect(component.displayedPositions().length).toBe(4);
-    });
-
-    it('should pass through all positions regardless of start date filter (server-side filtering)', () => {
-      component.startDate.set('2024-06-01');
-      component.endDate.set(null);
-
-      const positions = component.displayedPositions();
-      // Client-side filtering removed - all positions pass through
-      expect(positions.length).toBe(4);
-      // Date filter UI state is maintained for the interceptor
-      expect(component.startDate()).toBe('2024-06-01');
-    });
-
-    it('should pass through all positions regardless of end date filter (server-side filtering)', () => {
-      component.startDate.set(null);
-      component.endDate.set('2024-06-30');
-
-      const positions = component.displayedPositions();
-      expect(positions.length).toBe(4);
-      expect(component.endDate()).toBe('2024-06-30');
-    });
-
-    it('should pass through all positions regardless of date range (server-side filtering)', () => {
-      component.startDate.set('2024-01-01');
-      component.endDate.set('2024-06-30');
-
-      const positions = component.displayedPositions();
-      expect(positions.length).toBe(4);
-      expect(component.startDate()).toBe('2024-01-01');
-      expect(component.endDate()).toBe('2024-06-30');
-    });
-
-    it('should maintain date filter UI state (server-side filtering)', () => {
-      component.startDate.set('2024-01-15');
-      component.endDate.set('2024-01-15');
-
-      const positions = component.displayedPositions();
-      expect(positions.length).toBe(4);
-      expect(component.startDate()).toBe('2024-01-15');
-      expect(component.endDate()).toBe('2024-01-15');
-    });
-
-    it('should pass through all positions even with non-matching date range (server-side filtering)', () => {
-      component.startDate.set('2025-01-01');
-      component.endDate.set('2025-12-31');
-
-      expect(component.displayedPositions().length).toBe(4);
-    });
-
-    it('should pass through all positions with year boundary dates (server-side filtering)', () => {
-      component.startDate.set('2023-12-01');
-      component.endDate.set('2024-01-31');
-
-      const positions = component.displayedPositions();
-      expect(positions.length).toBe(4);
-    });
-
-    it('should pass through all positions when date filter changes (server-side filtering)', () => {
-      component.startDate.set('2024-01-01');
-      component.endDate.set('2024-06-30');
-
-      expect(component.displayedPositions().length).toBe(4);
-
-      component.startDate.set('2024-12-01');
-      component.endDate.set('2024-12-31');
-
-      // Still all positions pass through
-      expect(component.displayedPositions().length).toBe(4);
-    });
-  });
 });
 
 // Story AU.7: TDD Tests for Sold Positions Account Selection Integration
@@ -843,54 +707,6 @@ describe('SoldPositionsComponent - Account Selection Integration', () => {
       ).toBeTruthy();
     });
 
-    it('should maintain date filter UI state when account changes (server-side filtering)', () => {
-      const account1Positions: ClosedPosition[] = [
-        {
-          id: '1',
-          symbol: 'AAPL',
-          buy: 150,
-          buy_date: '2024-01-15',
-          quantity: 100,
-          sell: 180,
-          sell_date: '2024-06-01',
-          daysHeld: 138,
-          capitalGain: 3000,
-          capitalGainPercentage: 20,
-        },
-        {
-          id: '2',
-          symbol: 'MSFT',
-          buy: 300,
-          buy_date: '2024-02-01',
-          quantity: 50,
-          sell: 320,
-          sell_date: '2024-12-15',
-          daysHeld: 318,
-          capitalGain: 1000,
-          capitalGainPercentage: 6.67,
-        },
-      ];
-
-      fixture.detectChanges();
-
-      // Set date filter
-      component.startDate.set('2024-06-01');
-      component.endDate.set('2024-06-30');
-
-      mockCurrentAccountStore.selectCurrentAccountId.set('acc-1');
-      mockSoldPositionsComponentService.selectSoldPositions.set(
-        account1Positions
-      );
-      fixture.detectChanges();
-
-      // All positions pass through (server-side filtering)
-      const positions = component.displayedPositions();
-      expect(positions.length).toBe(2);
-      // Date filter UI state is maintained
-      expect(component.startDate()).toBe('2024-06-01');
-      expect(component.endDate()).toBe('2024-06-30');
-    });
-
     it('should handle empty positions for a new account gracefully', () => {
       fixture.detectChanges();
 
@@ -918,43 +734,11 @@ describe('SoldPositionsComponent - Account Selection Integration', () => {
       expect(mockCurrentAccountStore.selectCurrentAccountId()).toBe('acc-1');
     });
 
-    it('should handle concurrent account and date filter changes', () => {
-      const positions: ClosedPosition[] = [
-        {
-          id: '1',
-          symbol: 'AAPL',
-          buy: 150,
-          buy_date: '2024-01-15',
-          quantity: 100,
-          sell: 180,
-          sell_date: '2024-06-01',
-          daysHeld: 138,
-          capitalGain: 3000,
-          capitalGainPercentage: 20,
-        },
-      ];
-
-      fixture.detectChanges();
-
-      // Change account and date filter simultaneously
-      mockCurrentAccountStore.selectCurrentAccountId.set('acc-2');
-      component.startDate.set('2024-01-01');
-      component.endDate.set('2024-12-31');
-      mockSoldPositionsComponentService.selectSoldPositions.set(positions);
-      fixture.detectChanges();
-
-      const filtered = component.displayedPositions();
-      expect(filtered.length).toBe(1);
-      expect(filtered[0].symbol).toBe('AAPL');
-    });
-
     it('should preserve component state across account switches', () => {
       fixture.detectChanges();
 
       // Set some component state
       component.searchText.set('test');
-      component.startDate.set('2024-01-01');
-      component.endDate.set('2024-12-31');
 
       // Switch accounts
       mockCurrentAccountStore.selectCurrentAccountId.set('acc-new');
@@ -962,8 +746,6 @@ describe('SoldPositionsComponent - Account Selection Integration', () => {
 
       // Component state should be preserved
       expect(component.searchText()).toBe('test');
-      expect(component.startDate()).toBe('2024-01-01');
-      expect(component.endDate()).toBe('2024-12-31');
     });
   });
 

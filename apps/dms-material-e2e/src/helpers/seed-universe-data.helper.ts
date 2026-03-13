@@ -1,55 +1,14 @@
 import type { PrismaClient } from '@prisma/client';
 
+import { createTestDates } from './create-test-dates.helper';
+import { generateUniqueId } from './generate-unique-id.helper';
 import type { RiskGroups } from './risk-groups.types';
 import { createRiskGroups } from './shared-risk-groups.helper';
+import type { UniverseRecord } from './universe-record.types';
 
 interface SeederResult {
   cleanup(): Promise<void>;
   symbols: string[];
-}
-
-// Snake case property names match database schema
-/* eslint-disable @typescript-eslint/naming-convention -- Property names match database column names */
-interface UniverseRecord {
-  symbol: string;
-  risk_group_id: string;
-  distribution: number;
-  distributions_per_year: number;
-  last_price: number;
-  ex_date: Date | null;
-  most_recent_sell_date: Date | null;
-  most_recent_sell_price: number | null;
-  expired: boolean;
-  is_closed_end_fund: boolean;
-}
-/* eslint-enable @typescript-eslint/naming-convention -- Re-enable naming convention */
-
-/**
- * Generate unique identifier using cryptographically secure random values
- * @returns Unique ID string
- */
-function generateUniqueId(): string {
-  // Use crypto for secure random values instead of Math.random()
-  const randomBytes = crypto.getRandomValues(new Uint8Array(4));
-  const randomStr = Array.from(randomBytes)
-    .map(function byteToString(b: number): string {
-      return b.toString(36);
-    })
-    .join('')
-    .substring(0, 5);
-  return `${Date.now()}-${randomStr}`;
-}
-
-/**
- * Create test date values
- */
-function createTestDates(): { futureDate: Date; pastDate: Date } {
-  const today = new Date();
-  const futureDate = new Date(today);
-  futureDate.setDate(futureDate.getDate() + 30);
-  const pastDate = new Date(today);
-  pastDate.setDate(pastDate.getDate() - 30);
-  return { futureDate, pastDate };
 }
 
 /**

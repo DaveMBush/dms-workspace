@@ -2,6 +2,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { computed, effect, inject, Injectable, signal } from '@angular/core';
 import { catchError, Observable, of } from 'rxjs';
 
+import { SortFilterStateService } from '../../../shared/services/sort-filter-state.service';
 import { Screen } from '../../../store/screen/screen.interface';
 import { selectScreen } from '../../../store/screen/selectors/select-screen.function';
 
@@ -14,6 +15,7 @@ import { selectScreen } from '../../../store/screen/selectors/select-screen.func
 })
 export class ScreenerService {
   private readonly http = inject(HttpClient);
+  private readonly sortFilterStateService = inject(SortFilterStateService);
 
   // Private writable signals for state management
   private readonly errorSignal$ = signal<string | null>(null);
@@ -30,29 +32,35 @@ export class ScreenerService {
         const screens = selectScreen();
 
         if (screens.length > 0) {
-          // Sort and cache when we have data
           const screenReturn = [] as Screen[];
           for (let i = 0; i < screens.length; i++) {
             const screen = screens[i];
             screenReturn.push(screen);
           }
-          // Sort by completion status (complete ones to bottom), then by symbol
-          screenReturn.sort(function screenSort(a, b) {
-            const aScore =
-              (a.graph_higher_before_2008 &&
-              a.has_volitility &&
-              a.objectives_understood
-                ? 'z'
-                : 'a') + a.symbol;
-            const bScore =
-              (b.graph_higher_before_2008 &&
-              b.has_volitility &&
-              b.objectives_understood
-                ? 'z'
-                : 'a') + b.symbol;
 
-            return aScore.localeCompare(bScore);
-          });
+          // Only apply default client-side sort when no user sort is active.
+          // When the user sorts by a column (e.g., Symbol or RiskGroup), the server
+          // returns data in the correct order — preserve that order.
+          const userSort = this.sortFilterStateService.loadSortState('screens');
+          if (userSort === null) {
+            // Default sort: completion status (complete ones to bottom), then by symbol
+            screenReturn.sort(function screenSort(a, b) {
+              const aScore =
+                (a.graph_higher_before_2008 &&
+                a.has_volitility &&
+                a.objectives_understood
+                  ? 'z'
+                  : 'a') + a.symbol;
+              const bScore =
+                (b.graph_higher_before_2008 &&
+                b.has_volitility &&
+                b.objectives_understood
+                  ? 'z'
+                  : 'a') + b.symbol;
+
+              return aScore.localeCompare(bScore);
+            });
+          }
 
           this.cachedScreens.set(screenReturn);
         }

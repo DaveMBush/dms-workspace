@@ -8,6 +8,7 @@ import { parseSortFilterHeader } from '../common/parse-sort-filter-header.functi
 import { TableState } from '../common/table-state.interface';
 import { ensureRiskGroupsExist } from '../settings/common/ensure-risk-groups-exist.function';
 import { buildScreenerOrderBy } from './build-screener-order-by.function';
+import { buildUniverseWhere } from './build-universe-where.function';
 import { isUniverseComputedSort } from './is-universe-computed-sort.function';
 import { Top } from './top.interface';
 import { sortUniversesByComputedField } from './universe-computed-sort.function';
@@ -64,29 +65,8 @@ const UNIVERSE_DIRECT_SORT_FIELDS = new Set([
   'distributions_per_year',
   'last_price',
   'ex_date',
-  'most_recent_sell_price',
   'expired',
 ]);
-
-function buildUniverseWhere(state: TableState): Prisma.universeWhereInput {
-  const where: Prisma.universeWhereInput = {};
-  const filters = state.filters;
-  if (filters === undefined) {
-    return where;
-  }
-  if (typeof filters['symbol'] === 'string' && filters['symbol'] !== '') {
-    where.symbol = { contains: filters['symbol'] };
-  }
-  if (typeof filters['risk_group'] === 'string') {
-    where.risk_group_id = filters['risk_group'];
-  }
-  if (typeof filters['expired'] === 'boolean') {
-    where.expired = filters['expired'];
-  }
-  // account_id does NOT filter which symbols appear — all symbols are always shown.
-  // account_id only affects computed field calculations in the entity route.
-  return where;
-}
 
 function buildUniverseOrderBy(
   state: TableState
@@ -105,8 +85,28 @@ function buildUniverseOrderBy(
   return { createdAt: 'asc' };
 }
 
+function getAccountIdFromState(state: TableState): string | null {
+  const filters = state.filters;
+  if (filters === undefined) {
+    return null;
+  }
+  return typeof filters['account_id'] === 'string'
+    ? filters['account_id']
+    : null;
+}
+
+function buildTradesSelect(accountId: string | null): Record<string, unknown> {
+  const select = { buy: true, quantity: true, sell: true, sell_date: true };
+  if (accountId !== null) {
+    return { where: { accountId }, select };
+  }
+  return { select };
+}
+
 async function getTopUniverses(state: TableState): Promise<string[]> {
   const sort = state.sort;
+  const accountId = getAccountIdFromState(state);
+
   if (sort !== undefined && isUniverseComputedSort(sort.field)) {
     const universes = await prisma.universe.findMany({
       select: {
@@ -114,9 +114,7 @@ async function getTopUniverses(state: TableState): Promise<string[]> {
         distribution: true,
         distributions_per_year: true,
         last_price: true,
-        trades: {
-          select: { buy: true, quantity: true, sell: true, sell_date: true },
-        },
+        trades: buildTradesSelect(accountId),
       },
       where: buildUniverseWhere(state),
     });

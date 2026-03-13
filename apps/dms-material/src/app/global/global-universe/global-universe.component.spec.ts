@@ -1261,7 +1261,7 @@ describe('GlobalUniverseComponent - SmartNgRX Integration', () => {
       expect(component.filteredData$().length).toBe(0);
     });
 
-    it('should pass through all entries regardless of filter (server-side filtering)', () => {
+    it('should filter entries client-side when filter is applied', () => {
       // Mock some data
       selectUniversesMock.mockReturnValue([
         {
@@ -1281,12 +1281,12 @@ describe('GlobalUniverseComponent - SmartNgRX Integration', () => {
         },
       ]);
 
-      // Set filter UI state - does not filter client-side
+      // Set filter that does not match any symbol
       component.symbolFilter$.set('ZZZZ');
       fixture.detectChanges();
 
-      // All data passes through (server-side filtering)
-      expect(component.filteredData$().length).toBe(1);
+      // Client-side filtering removes non-matching entries
+      expect(component.filteredData$().length).toBe(0);
       // Filter UI state is maintained for the interceptor
       expect(component.symbolFilter$()).toBe('ZZZZ');
     });
