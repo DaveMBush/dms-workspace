@@ -93,12 +93,10 @@ export class GlobalUniverseComponent implements OnDestroy {
   readonly selectedAccountId$ = signal<string>('all');
   readonly minYieldFilter$ = signal<number | null>(null);
   private readonly localSyncInProgress$ = signal<boolean>(false);
-  private textFilterTimer: ReturnType<typeof setTimeout> | null = null;
+  private textFilterTimer?: ReturnType<typeof setTimeout>;
 
   ngOnDestroy(): void {
-    if (this.textFilterTimer !== null) {
-      clearTimeout(this.textFilterTimer);
-    }
+    clearTimeout(this.textFilterTimer);
   }
 
   readonly isSyncingUniverse$ = computed(
@@ -337,6 +335,8 @@ export class GlobalUniverseComponent implements OnDestroy {
   }
 
   private notifyFilterChange(): void {
+    clearTimeout(this.textFilterTimer);
+    this.textFilterTimer = undefined;
     saveUniverseFiltersAndNotify(this.sortFilterStateService, {
       symbol: this.symbolFilter$(),
       riskGroup: this.riskGroupFilter$(),
@@ -347,9 +347,7 @@ export class GlobalUniverseComponent implements OnDestroy {
   }
 
   private debouncedNotifyFilterChange(): void {
-    if (this.textFilterTimer !== null) {
-      clearTimeout(this.textFilterTimer);
-    }
+    clearTimeout(this.textFilterTimer);
     this.textFilterTimer = setTimeout(this.notifyFilterChange.bind(this), 300);
   }
 }

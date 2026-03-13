@@ -20,11 +20,19 @@ function isValidFilters(filters: unknown): boolean {
   );
 }
 
+const ALLOWED_TABLE_STATE_KEYS = new Set(['sort', 'filters']);
+
 function isValidTableState(value: unknown): value is TableState {
   if (typeof value !== 'object' || value === null || Array.isArray(value)) {
     return false;
   }
   const obj = value as Record<string, unknown>;
+  const keys = Object.keys(obj);
+  for (let i = 0; i < keys.length; i++) {
+    if (!ALLOWED_TABLE_STATE_KEYS.has(keys[i])) {
+      return false;
+    }
+  }
   if (obj['sort'] !== undefined && !isValidSort(obj['sort'])) {
     return false;
   }
@@ -34,13 +42,21 @@ function isValidTableState(value: unknown): value is TableState {
   return true;
 }
 
+const DANGEROUS_KEYS = new Set(['__proto__', 'constructor', 'prototype']);
+
 function buildValidatedResult(
   parsed: Record<string, unknown>
 ): Record<string, TableState> {
-  const result: Record<string, TableState> = {};
+  const result: Record<string, TableState> = Object.create(null) as Record<
+    string,
+    TableState
+  >;
   const entries = Object.entries(parsed);
   for (let i = 0; i < entries.length; i++) {
     const [key, value] = entries[i];
+    if (DANGEROUS_KEYS.has(key)) {
+      continue;
+    }
     if (isValidTableState(value)) {
       result[key] = value;
     }
