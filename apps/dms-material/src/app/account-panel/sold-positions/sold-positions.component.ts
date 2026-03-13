@@ -3,6 +3,7 @@ import {
   Component,
   computed,
   inject,
+  OnDestroy,
   signal,
 } from '@angular/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -24,13 +25,20 @@ import { SoldPositionsComponentService } from './sold-positions-component.servic
   templateUrl: './sold-positions.component.html',
   styleUrl: './sold-positions.component.scss',
 })
-export class SoldPositionsComponent {
+export class SoldPositionsComponent implements OnDestroy {
   private static readonly tableKey = 'trades-closed';
   private readonly soldPositionsService = inject(SoldPositionsComponentService);
   private readonly sortFilterStateService = inject(SortFilterStateService);
 
   searchText = signal<string>('');
   private symbolFilterTimer: ReturnType<typeof setTimeout> | null = null;
+
+  ngOnDestroy(): void {
+    if (this.symbolFilterTimer !== null) {
+      clearTimeout(this.symbolFilterTimer);
+      this.symbolFilterTimer = null;
+    }
+  }
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
   readonly displayedPositions = computed(() => {

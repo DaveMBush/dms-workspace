@@ -4,6 +4,7 @@ import {
   Component,
   computed,
   inject,
+  OnDestroy,
   output,
   signal,
 } from '@angular/core';
@@ -44,6 +45,7 @@ import { enrichUniverseWithRiskGroups } from './enrich-universe-with-risk-groups
 import { filterUniverses } from './filter-universes.function';
 import { UNIVERSE_COLUMNS } from './global-universe.columns';
 import { EXPIRED_OPTIONS } from './global-universe.expired-options';
+import { parseYieldValue } from './parse-yield-value.function';
 import { saveUniverseFiltersAndNotify } from './save-universe-filters-and-notify.function';
 import { UniverseService } from './services/universe.service';
 import { UniverseValidationService } from './services/universe-validation.service';
@@ -71,7 +73,7 @@ import { UniverseValidationService } from './services/universe-validation.servic
   styleUrl: './global-universe.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class GlobalUniverseComponent {
+export class GlobalUniverseComponent implements OnDestroy {
   private readonly syncService = inject(UniverseSyncService);
   private readonly screenerService = inject(ScreenerService);
   private readonly universeService = inject(UniverseService);
@@ -92,6 +94,13 @@ export class GlobalUniverseComponent {
   readonly minYieldFilter$ = signal<number | null>(null);
   private readonly localSyncInProgress$ = signal<boolean>(false);
   private textFilterTimer: ReturnType<typeof setTimeout> | null = null;
+
+  ngOnDestroy(): void {
+    if (this.textFilterTimer !== null) {
+      clearTimeout(this.textFilterTimer);
+    }
+  }
+
   readonly isSyncingUniverse$ = computed(
     function computeIsUniverseSyncing(this: GlobalUniverseComponent) {
       return this.syncService.isSyncing() || this.localSyncInProgress$();
@@ -308,13 +317,7 @@ export class GlobalUniverseComponent {
     this.notifyFilterChange();
   }
 
-  parseYieldValue(value: string): number | null {
-    if (!value || value.trim() === '') {
-      return null;
-    }
-    const parsed = parseFloat(value);
-    return isNaN(parsed) ? null : parsed;
-  }
+  readonly parseYieldValue = parseYieldValue;
 
   onMinYieldFilterChange(value: number | null): void {
     this.minYieldFilter$.set(value);

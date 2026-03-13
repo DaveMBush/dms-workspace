@@ -22,16 +22,23 @@ export function buildTradeWhere(
     where.universe = { symbol: { contains: filters['symbol'] } };
   }
   if (typeof filters['startDate'] === 'string') {
-    where.sell_date = {
-      ...(where.sell_date as object),
-      gte: new Date(filters['startDate']),
-    };
+    const startDate = new Date(filters['startDate']);
+    if (!isNaN(startDate.getTime())) {
+      where.sell_date = {
+        ...(where.sell_date as object),
+        gte: startDate,
+      };
+    }
   }
   if (typeof filters['endDate'] === 'string') {
-    where.sell_date = {
-      ...(where.sell_date as object),
-      lte: new Date(filters['endDate']),
-    };
+    const endDate = new Date(filters['endDate']);
+    if (!isNaN(endDate.getTime())) {
+      endDate.setHours(23, 59, 59, 999);
+      where.sell_date = {
+        ...(where.sell_date as object),
+        lte: endDate,
+      };
+    }
   }
   return where;
 }

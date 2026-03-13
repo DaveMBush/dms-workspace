@@ -4,6 +4,7 @@ import {
   Component,
   computed,
   inject,
+  OnDestroy,
   signal,
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
@@ -42,7 +43,7 @@ import { isPositive, isValidDate, isValidNumber } from './position-validators';
   templateUrl: './open-positions.component.html',
   styleUrl: './open-positions.component.scss',
 })
-export class OpenPositionsComponent {
+export class OpenPositionsComponent implements OnDestroy {
   private static readonly tableKey = 'trades-open';
   readonly openPositionsService = inject(OpenPositionsComponentService);
   private readonly sortFilterStateService = inject(SortFilterStateService);
@@ -55,6 +56,13 @@ export class OpenPositionsComponent {
   errorMessage = signal<string>('');
   successMessage = signal<string>('');
   private symbolFilterTimer: ReturnType<typeof setTimeout> | null = null;
+
+  ngOnDestroy(): void {
+    if (this.symbolFilterTimer !== null) {
+      clearTimeout(this.symbolFilterTimer);
+      this.symbolFilterTimer = null;
+    }
+  }
 
   onSymbolFilterChange(value: string): void {
     this.searchText.set(value);
