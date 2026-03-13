@@ -18,11 +18,13 @@ export function selectCurrentAccountSignal(
 
     if (account) {
       // The departments array should automatically handle its child signals
-      const trades = account.trades;
+      const openTrades = account.openTrades;
+      const soldTrades = account.soldTrades;
       const divDeposits = account.divDeposits;
       return {
         ...account,
-        trades,
+        openTrades,
+        soldTrades,
         divDeposits,
         months: account.months,
       };
@@ -31,7 +33,8 @@ export function selectCurrentAccountSignal(
     return {
       id: '',
       name: '',
-      trades: [],
+      openTrades: [],
+      soldTrades: [],
       divDeposits: [],
       months: [],
     };

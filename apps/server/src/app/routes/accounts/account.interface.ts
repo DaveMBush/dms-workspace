@@ -1,7 +1,8 @@
 export interface Account {
   id: string;
   name: string;
-  trades: string[];
+  openTrades: string[];
+  soldTrades: string[];
   divDeposits: {
     startIndex: number;
     indexes: string[];

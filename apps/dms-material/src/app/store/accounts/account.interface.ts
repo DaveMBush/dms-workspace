@@ -6,7 +6,8 @@ import { Trade } from '../trades/trade.interface';
 export interface Account {
   id: string;
   name: string;
-  trades: string[] | Trade[];
+  openTrades: string[] | Trade[];
+  soldTrades: string[] | Trade[];
   divDeposits: PartialArrayDefinition | SmartArray<Account, DivDeposit>;
   months: { month: number; year: number }[];
 }

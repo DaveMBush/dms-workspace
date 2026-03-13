@@ -57,10 +57,21 @@ vi.mock('../../store/accounts/selectors/select-accounts.function', () => ({
   selectAccounts: vi.fn().mockReturnValue([]),
 }));
 
-// Mock selectTradesEntity to avoid SmartNgRX initialization
-vi.mock('../../store/trades/selectors/select-trades-entity.function', () => ({
-  selectTradesEntity: vi.fn().mockReturnValue({}),
-}));
+// Mock selectOpenTradeEntity to avoid SmartNgRX initialization
+vi.mock(
+  '../../store/trades/selectors/select-open-trade-entity.function',
+  () => ({
+    selectOpenTradeEntity: vi.fn().mockReturnValue({}),
+  })
+);
+
+// Mock selectSoldTradeEntity to avoid SmartNgRX initialization
+vi.mock(
+  '../../store/trades/selectors/select-sold-trade-entity.function',
+  () => ({
+    selectSoldTradeEntity: vi.fn().mockReturnValue({}),
+  })
+);
 
 // Mock selectAccountChildren to avoid SmartNgRX initialization
 vi.mock(

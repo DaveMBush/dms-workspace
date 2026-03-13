@@ -7,17 +7,9 @@ model: Claude Sonnet 4.6 (copilot)
 
 # Autonomous Story Development Workflow
 
-**IMPORTANT**: This workflow uses the bmad-workflow skill. Read and apply:
+**IMPORTANT**: This workflow uses the bmad-workflow skill:
 
-- run #file:./bmad-workflow.SKILL.md
-
-Key points from bmad-workflow skill:
-
-- **Human Interaction**: Use `prompt.sh` with `timeout: 0` (no timeout)
-- **Database Safety**: Never run destructive database commands
-- **MCP Servers**: Load Context7 and Playwright tools before use
-- **Quality Validation**: Run full validation loop (all tests, e2e, dupcheck, format)
-- **CodeRabbit**: Follow review loop pattern with rate limiting
+#skill:bmad-workflow
 
 ## PHASE 1: Pre-Development Validation
 
@@ -54,37 +46,43 @@ If `code-story.prompt.md` encounters issues, it must call `.github/prompts/promp
 
 ## Phase 3 Quality Validation
 
-**Run the Quality Validation Loop from bmad-workflow skill** (see skill for full details):
+Delegate Phase 3 to a dedicated validation subagent:
 
-All commands and retry logic are defined in the bmad-workflow skill. Summary:
+```bash
+run #file:./quality-validation.prompt.md context=story-${story}
+```
 
-1. `pnpm all` - Run all tests (10 retries, use Context7 for API errors)
-2. `pnpm e2e:dms-material:chromium` and `firefox` - E2E tests (10 retries, use Playwright)
-3. `pnpm dupcheck` - Check for duplicates (10 retries, refactor)
-4. `pnpm format` - Format code
+This keeps the story workflow context small while the validation loop handles:
 
-**CRITICAL**: If ANY check fails and gets fixed, restart from step 1. All checks must pass in a single iteration.
+1. `pnpm all`
+2. `pnpm e2e:dms-material:chromium` and `firefox`
+3. `pnpm dupcheck`
+4. `pnpm format`
+5. Code self-review of changed files only (`git diff --name-only origin/main...HEAD`) using `.github/instructions/code-review.md`
 
-See "Quality Validation Loop" section in bmad-workflow skill for full instructions, retry logic, and MCP usage patterns.
+**CRITICAL**: The validation subagent must follow the shared quality-validation loop exactly. If ANY check fails and gets fixed, it restarts from step 1 and only returns when all checks pass in a single iteration.
+
+If the validation subagent returns `VALIDATION FAILED`, call `.github/prompts/prompt.sh "Phase 3 validation failed for ${story}: <reason>"`.
 
 ## PHASE 4: QA Review
 
-Run QA gate up to 10 times:
+Delegate Phase 4 to a dedicated QA review subagent:
 
-run #file:./gate.prompt.md story=${story}
+```bash
+run #file:./qa-review-loop.prompt.md story=${story}
+```
 
-The gate subagent outputs a review result. Interpret the result as follows:
+This keeps the story workflow context small while the QA review subagent handles:
 
-- **PASS** (subagent returns without errors or blocking findings): **IMMEDIATELY proceed to Phase 5 — do not pause, do not ask for confirmation.**
-- **FAIL** (subagent returns with blocking findings / explicit failure notes):
-  - Apply QA fix recommendations automatically
-  - **Use Context7** if QA mentions incorrect API usage
-  - **Use Playwright** if QA mentions UI/UX issues
-  - Re-run ALL of Phase 3 (tests, e2e, dupcheck, format)
-  - Retry gate (return to top of Phase 4)
-- On 10th failure: Call `.github/prompts/prompt.sh "QA gate review failing after 10 attempts with issues: <issue summary>"`
+1. Running `gate.prompt.md`
+2. Interpreting PASS/FAIL results
+3. Applying QA remediation automatically
+4. Re-running validation through `quality-validation.prompt.md`
+5. Retrying the gate up to 10 times
 
-**Critical**: Gate must pass before proceeding. When it passes: IMMEDIATELY move to Phase 5.
+**CRITICAL**: The QA review subagent must not return success until the gate passes. If it returns `QA FAILED`, call `.github/prompts/prompt.sh "QA review failed for ${story}: <reason>"`.
+
+When it returns `QA PASSED`: IMMEDIATELY move to Phase 5.
 
 ## PHASE 5: Commit and PR Creation
 
@@ -134,91 +132,24 @@ Use the `code-rabbit.prompt.md` subagent to keep the story prompt small, idempot
 
 ## PHASE 7: Final Merge
 
-### 7.1 Verify PR Mergeable
-
-Check that PR has:
-
-- ✅ All CI/CD checks passing
-- ✅ No merge conflicts
-- ✅ Issue linkage present (#<issue-number>)
-- ✅ CodeRabbit approved or no blocking comments
-
-**Conflict Check with Main** (run from within the worktree `../dms/story-${story}`):
+Delegate Phase 7 to a dedicated merge/finalize subagent:
 
 ```bash
-git fetch origin main
-git merge-tree --quiet $(git merge-base HEAD origin/main) HEAD origin/main
-MERGE_EXIT=$?
+run #file:./merge-finalize.prompt.md story=${story}
 ```
 
-If `$MERGE_EXIT` is `1`, the branch conflicts with main (per `git-merge-tree(1)`: exit `0` = clean, `1` = conflicts — do not scan output for markers):
+This keeps the story workflow context small while the merge subagent handles:
 
-- Attempt rebase onto main to resolve:
-  ```bash
-  git rebase origin/main
-  ```
-  - Fix any conflicts, run full Phase 3 validation, then push
-  - If rebase fails after 3 attempts: Call `.github/prompts/prompt.sh "Branch has unresolvable conflicts with main: <conflict details>"`
-- After rebase (or if no conflicts), verify the PR `mergeable` state via `mcp_github_pull_request_read` with `method: "get"` — poll every 30 seconds until `mergeable` is `true` or `false` (not `null`); timeout after 5 minutes
-  - If `mergeable` is `false`: Call `.github/prompts/prompt.sh "PR is not mergeable: <details>"`
+1. PR mergeability verification
+2. conflict detection and rebase attempts
+3. re-validation after conflict resolution
+4. squash merge execution
+5. post-merge issue verification
+6. local cleanup and final completion summary
 
-**Optional Final Validation**:
+**CRITICAL**: The merge subagent must not return success until the PR is merged and cleanup is complete. If it returns `MERGE FAILED`, call `.github/prompts/prompt.sh "Final merge failed for ${story}: <reason>"`.
 
-- If story involves UI changes: Run quick Playwright validation of key flows
-- If story involves new API usage: Quick Context7 check for deprecation warnings
-
-If any check fails: Call `.github/prompts/prompt.sh "PR not ready to merge: <specific issues>"`
-
-### 7.2 Merge PR
-
-- By this point, all checks should be green and there should be no coderabbit blocking comments so you can merge without waiting for human approval. If you encounter any issues during merge (e.g. unexpected conflicts, GitHub API errors), call `.github/prompts/prompt.sh "PR merge failed: <error>"` so a human can intervene.
-- Use "Squash and merge" strategy
-- Verify merge successful
-- If merge fails: Call `.github/prompts/prompt.sh "PR merge failed: <error>"`
-
-### 7.3 Verify Post-Merge
-
-- Check that linked GitHub issue auto-closed
-- If issue not closed: Call `.github/prompts/prompt.sh "GitHub issue did not auto-close after PR merge"`
-
-### 7.4 Local Cleanup
-
-- Navigate back to the main workspace from within the worktree:
-  ```bash
-  cd "$(git rev-parse --git-common-dir)/.."
-  ```
-- Pull latest changes on main:
-  ```bash
-  git pull origin main
-  ```
-- Remove the story worktree:
-  ```bash
-  git worktree remove ../dms/story-${story} --force
-  ```
-- Delete the local story branch (GitHub typically deletes the remote branch after a squash merge):
-  ```bash
-  git branch -d <branch-name> || git branch -D <branch-name>
-  ```
-- Verify clean state: `git worktree list` should no longer show the story worktree
-
-### 7.5 Report Completion
-
-Generate summary report:
-
-```text
-✅ Story ${story} Complete
-
-- GitHub Issue: #<issue-number> (closed)
-- Pull Request: #<pr-number> (merged)
-- Files Changed: <count>
-- Tests: All passing
-- E2E Tests: All passing
-- Code Quality: No duplicates
-- Code Review: CodeRabbit approved
-- MCP Tools Used: Context7 (<query count>), Playwright (<test count>)
-
-Implementation complete and merged to main.
-```
+When it returns `MERGE COMPLETE`: the story workflow is complete.
 
 ## Error Recovery Strategy
 

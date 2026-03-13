@@ -7,14 +7,24 @@ import { StatePersistenceService } from '../shared/services/state-persistence.se
 import { AccountPanelComponent } from './account-panel.component';
 import { DividendDepositsComponentService } from './dividend-deposits/dividend-deposits-component.service';
 
-// Mock the entire selectTrades module to avoid SmartNgRX initialization
+// Mock the entire selectOpenTrades module to avoid SmartNgRX initialization
 vi.mock('../store/trades/selectors/select-trades.function', () => ({
-  selectTrades: vi.fn().mockReturnValue([]),
+  selectOpenTrades: vi.fn().mockReturnValue([]),
 }));
 
-// Mock selectTradesEntity to avoid SmartNgRX initialization
-vi.mock('../store/trades/selectors/select-trades-entity.function', () => ({
-  selectTradesEntity: vi.fn().mockReturnValue([]),
+// Mock selectSoldTrades to avoid SmartNgRX initialization
+vi.mock('../store/trades/selectors/select-sold-trades.function', () => ({
+  selectSoldTrades: vi.fn().mockReturnValue([]),
+}));
+
+// Mock selectOpenTradeEntity to avoid SmartNgRX initialization
+vi.mock('../store/trades/selectors/select-open-trade-entity.function', () => ({
+  selectOpenTradeEntity: vi.fn().mockReturnValue([]),
+}));
+
+// Mock selectSoldTradeEntity to avoid SmartNgRX initialization
+vi.mock('../store/trades/selectors/select-sold-trade-entity.function', () => ({
+  selectSoldTradeEntity: vi.fn().mockReturnValue([]),
 }));
 
 // Mock selectUniverses to avoid SmartNgRX initialization from AddPositionDialogComponent

@@ -4,9 +4,9 @@ import {
   Component,
   computed,
   inject,
+  OnDestroy,
   signal,
 } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -14,12 +14,15 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { Sort } from '@angular/material/sort';
 import { ActivatedRoute } from '@angular/router';
+import { handleSocketNotification } from '@smarttools/smart-signals';
 
 import { BaseTableComponent } from '../../shared/components/base-table/base-table.component';
 import { ColumnDef } from '../../shared/components/base-table/column-def.interface';
 import { EditableCellComponent } from '../../shared/components/editable-cell/editable-cell.component';
 import { EditableDateCellComponent } from '../../shared/components/editable-date-cell/editable-date-cell.component';
-import { SortStateService } from '../../shared/services/sort-state.service';
+import { FilterConfig } from '../../shared/services/filter-config.interface';
+import { SortFilterStateService } from '../../shared/services/sort-filter-state.service';
+import { getAccountIds } from '../../store/accounts/selectors/get-account-ids.function';
 import { OpenPosition } from '../../store/trades/open-position.interface';
 import { Trade } from '../../store/trades/trade.interface';
 import { OpenPositionsComponentService } from './open-positions-component.service';
@@ -30,7 +33,6 @@ import { isPositive, isValidDate, isValidNumber } from './position-validators';
   imports: [
     CommonModule,
     BaseTableComponent,
-    FormsModule,
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
@@ -41,9 +43,10 @@ import { isPositive, isValidDate, isValidNumber } from './position-validators';
   templateUrl: './open-positions.component.html',
   styleUrl: './open-positions.component.scss',
 })
-export class OpenPositionsComponent {
+export class OpenPositionsComponent implements OnDestroy {
+  private static readonly tableKey = 'trades-open';
   readonly openPositionsService = inject(OpenPositionsComponentService);
-  private readonly sortStateService = inject(SortStateService);
+  private readonly sortFilterStateService = inject(SortFilterStateService);
   // Inject route to get accountId from URL
   private route = inject(ActivatedRoute);
   // Inject MatDialog for add position dialog
@@ -52,30 +55,48 @@ export class OpenPositionsComponent {
   searchText = signal<string>('');
   errorMessage = signal<string>('');
   successMessage = signal<string>('');
+  private symbolFilterTimer: ReturnType<typeof setTimeout> | null = null;
+
+  ngOnDestroy(): void {
+    if (this.symbolFilterTimer !== null) {
+      clearTimeout(this.symbolFilterTimer);
+      this.symbolFilterTimer = null;
+    }
+  }
+
+  onSymbolFilterChange(value: string): void {
+    this.searchText.set(value);
+    if (this.symbolFilterTimer !== null) {
+      clearTimeout(this.symbolFilterTimer);
+    }
+    this.symbolFilterTimer = setTimeout(
+      this.saveSymbolFilterAndNotify.bind(this),
+      300
+    );
+  }
 
   onSortChange(sort: Sort): void {
     if (sort.direction === '') {
-      this.sortStateService.clearSortState('trades-open');
-      return;
+      this.sortFilterStateService.clearSortState(
+        OpenPositionsComponent.tableKey
+      );
+    } else {
+      this.sortFilterStateService.saveSortState(
+        OpenPositionsComponent.tableKey,
+        {
+          field: sort.active,
+          order: sort.direction,
+        }
+      );
     }
-    this.sortStateService.saveSortState('trades-open', {
-      field: sort.active,
-      order: sort.direction,
-    });
+    handleSocketNotification('accounts', 'update', getAccountIds());
   }
 
   // Writable signal for trades (populated from SmartNgRX or set directly in tests)
+  // Server handles filtering, so no client-side filter is applied
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- would obscure this
   readonly selectOpenPositions$ = computed(() => {
-    const positions = this.openPositionsService.selectOpenPositions();
-    const search = this.searchText().trim().toLowerCase();
-    if (!search) {
-      return positions;
-    }
-    const filterBySymbol = function filterBySymbol(p: OpenPosition): boolean {
-      return p.symbol.toLowerCase().includes(search);
-    };
-    return positions.filter(filterBySymbol);
+    return this.openPositionsService.selectOpenPositions();
   });
 
   columns: ColumnDef[] = [
@@ -218,5 +239,21 @@ export class OpenPositionsComponent {
       }
     }
     return undefined;
+  }
+
+  private saveSymbolFilterAndNotify(): void {
+    const symbol = this.searchText();
+    if (symbol !== '') {
+      const filters: FilterConfig = { symbol };
+      this.sortFilterStateService.saveFilterState(
+        OpenPositionsComponent.tableKey,
+        filters
+      );
+    } else {
+      this.sortFilterStateService.clearFilterState(
+        OpenPositionsComponent.tableKey
+      );
+    }
+    handleSocketNotification('accounts', 'update', getAccountIds());
   }
 }

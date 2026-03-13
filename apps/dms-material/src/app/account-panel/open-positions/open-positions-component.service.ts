@@ -18,14 +18,14 @@ export class OpenPositionsComponentService {
     const currentAccount = selectCurrentAccountSignal(
       this.currentAccountSignalStore
     );
-    return currentAccount().trades as Trade[];
+    return currentAccount().openTrades as Trade[];
   });
 
   deleteOpenPosition(position: OpenPosition): void {
     const currentAccount = selectCurrentAccountSignal(
       this.currentAccountSignalStore
     );
-    const trades = currentAccount().trades as Trade[];
+    const trades = currentAccount().openTrades as Trade[];
     const tradesArray = trades as SmartArray<Account, Trade> & Trade[];
     for (let i = 0; i < tradesArray.length; i++) {
       const trade = tradesArray[i] as RowProxyDelete & Trade;

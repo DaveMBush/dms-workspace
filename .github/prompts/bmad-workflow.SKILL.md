@@ -1,11 +1,23 @@
 ---
-name: bmad-workflow
-description: Common rules and patterns for BMAD (Business-Model-Agile-Development) autonomous workflows. Includes human interaction protocols, database safety, MCP server usage, quality validation loops, and CodeRabbit review patterns. Use this skill in all BMAD workflow prompts (develop-story, debug, develop-epic, code-rabbit).
+name: bmad-workflow-deprecated
+description: DEPRECATED — This file has moved. Use #skill:bmad-workflow instead (located at .github/skills/bmad-workflow/SKILL.md).
 ---
 
-# BMAD Workflow Common Rules
+# DEPRECATED — File Moved
 
-This skill contains shared rules and patterns used across all BMAD autonomous development workflows.
+This file has been moved to the proper skill location:
+
+```
+.github/skills/bmad-workflow/SKILL.md
+```
+
+Update any references from:
+
+- `#file:./bmad-workflow.SKILL.md`
+
+To:
+
+- `#skill:bmad-workflow`
 
 ## CRITICAL: Subagent Continuation Rule
 
