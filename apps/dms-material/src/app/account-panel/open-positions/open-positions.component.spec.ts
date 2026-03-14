@@ -1422,3 +1422,77 @@ describe('OpenPositionsComponent - Client-Side Sorting Removal', () => {
     });
   });
 });
+
+// Story AX.7: TDD Tests for Open Positions Virtual Data Access (Component)
+// Disabled in AX.7: Re-enable in AX.8
+describe.skip('OpenPositionsComponent - Virtual Data Access (AX.7)', () => {
+  let component: OpenPositionsComponent;
+  let fixture: ComponentFixture<OpenPositionsComponent>;
+  let mockOpenPositionsService: {
+    trades: WritableSignal<Trade[]>;
+    selectOpenPositions: WritableSignal<OpenPosition[]>;
+    deleteOpenPosition: ReturnType<typeof vi.fn>;
+    visibleRange: WritableSignal<{ start: number; end: number }>;
+  };
+
+  beforeEach(async () => {
+    mockOpenPositionsService = {
+      trades: signal<Trade[]>([]),
+      selectOpenPositions: signal<OpenPosition[]>([]),
+      deleteOpenPosition: vi.fn(),
+      visibleRange: signal<{ start: number; end: number }>({
+        start: 0,
+        end: 50,
+      }),
+    };
+
+    await TestBed.configureTestingModule({
+      imports: [OpenPositionsComponent],
+      providers: [
+        provideRouter([]),
+        {
+          provide: OpenPositionsComponentService,
+          useValue: mockOpenPositionsService,
+        },
+        {
+          provide: tradeEffectsServiceToken,
+          useValue: {
+            update: vi.fn().mockReturnValue(of([])),
+          },
+        },
+      ],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(OpenPositionsComponent);
+    component = fixture.componentInstance;
+  });
+
+  // AC: Test visibleRange signal has default { start: 0, end: 50 }
+  it('should have visibleRange signal with default { start: 0, end: 50 }', () => {
+    expect(component.visibleRange()).toEqual({ start: 0, end: 50 });
+  });
+
+  // AC: Test onRangeChange updates signal correctly
+  it('should update visibleRange when onRangeChange is called', () => {
+    component.onRangeChange({ start: 10, end: 60 });
+
+    expect(component.visibleRange()).toEqual({ start: 10, end: 60 });
+  });
+
+  it('should update visibleRange to different values on subsequent calls', () => {
+    component.onRangeChange({ start: 5, end: 25 });
+    expect(component.visibleRange()).toEqual({ start: 5, end: 25 });
+
+    component.onRangeChange({ start: 100, end: 150 });
+    expect(component.visibleRange()).toEqual({ start: 100, end: 150 });
+  });
+
+  it('should propagate range change to service visibleRange', () => {
+    component.onRangeChange({ start: 20, end: 70 });
+
+    expect(mockOpenPositionsService.visibleRange()).toEqual({
+      start: 20,
+      end: 70,
+    });
+  });
+});
