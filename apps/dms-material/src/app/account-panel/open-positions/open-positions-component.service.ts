@@ -46,22 +46,30 @@ export class OpenPositionsComponentService {
     const trades = this.trades();
     const universeMap = this.universeMap();
     const range = this.visibleRange();
-    const totalLength = trades.length;
 
-    if (totalLength === 0) {
+    if (trades.length === 0) {
       return [] as OpenPosition[];
     }
 
-    // Visible-window loop: create sparse array, only transform visible items
-    const openPositions = new Array<OpenPosition>(totalLength);
-    const rangeEnd = Math.min(range.end, totalLength);
-    for (let i = range.start; i < rangeEnd; i++) {
+    // First pass: collect indices of open trades (cheap isClosed check)
+    const openIndices: number[] = [];
+    for (let i = 0; i < trades.length; i++) {
       const trade = trades[i];
       const universe = universeMap.get(trade.universeId);
-      if (this.isClosed(trade, universe!)) {
-        continue;
+      if (!this.isClosed(trade, universe!)) {
+        openIndices.push(i);
       }
-      openPositions[i] = this.transformTradeToPosition(trade, universe!);
+    }
+
+    // Visible-window: sparse array sized to open count, only transform visible items
+    const totalOpen = openIndices.length;
+    const openPositions = new Array<OpenPosition>(totalOpen);
+    const rangeEnd = Math.min(range.end, totalOpen);
+    for (let j = range.start; j < rangeEnd; j++) {
+      const tradeIdx = openIndices[j];
+      const trade = trades[tradeIdx];
+      const universe = universeMap.get(trade.universeId)!;
+      openPositions[j] = this.transformTradeToPosition(trade, universe);
     }
     return openPositions;
   });
