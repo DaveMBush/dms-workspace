@@ -4,6 +4,7 @@ import {
   Component,
   effect,
   inject,
+  signal,
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
@@ -57,6 +58,15 @@ export class DividendDepositsComponent {
   }
 
   readonly dividends$ = this.dividendDepositsService.dividends;
+  readonly visibleRange = signal<{ start: number; end: number }>({
+    start: 0,
+    end: 50,
+  });
+
+  onRangeChange(range: { start: number; end: number }): void {
+    this.visibleRange.set(range);
+    this.dividendDepositsService.visibleRange.set(range);
+  }
 
   onSortChange(sort: Sort): void {
     if (sort.direction === '') {

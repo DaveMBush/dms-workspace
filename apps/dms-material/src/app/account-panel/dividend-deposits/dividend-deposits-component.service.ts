@@ -8,6 +8,17 @@ import { selectCurrentAccountSignal } from '../../store/current-account/select-c
 import { selectDivDepositTypes } from '../../store/div-deposit-types/selectors/select-div-deposit-types.function';
 import { DivDeposit } from '../../store/div-deposits/div-deposit.interface';
 
+interface DividendRow {
+  id: string;
+  date: Date;
+  amount: number;
+  accountId: string;
+  divDepositTypeId: string;
+  universeId: string | null;
+  symbol: string;
+  type: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class DividendDepositsComponentService {
   private currentAccountStore = inject(currentAccountSignalStore);
@@ -15,6 +26,10 @@ export class DividendDepositsComponentService {
   private errorMessage = signal<string>('');
 
   readonly selectedAccountId = signal<string>('');
+  readonly visibleRange = signal<{ start: number; end: number }>({
+    start: 0,
+    end: 50,
+  });
 
   getErrorMessage(): Signal<string> {
     return this.errorMessage.asReadonly();
@@ -24,6 +39,10 @@ export class DividendDepositsComponentService {
   readonly dividends = computed(() => {
     // Access SmartArray directly to trigger SmartNgRX loading of div-deposit entities
     const divDepositsArray = this.currentAccount().divDeposits as DivDeposit[];
+    const totalLength = divDepositsArray.length;
+    if (totalLength === 0) {
+      return [];
+    }
     // Resolve universe symbols and type names via entity lookups
     const universeMap = buildUniverseMap();
     const typesList = selectDivDepositTypes();
@@ -31,10 +50,16 @@ export class DividendDepositsComponentService {
     for (let ti = 0; ti < typesList.length; ti++) {
       typeNamesMap.set(typesList[ti].id, typesList[ti].name);
     }
-    const result = [];
-    for (let i = 0; i < divDepositsArray.length; i++) {
+    // Visible-window loop: only transform items within the visible range
+    const range = this.visibleRange();
+    const start = range.start;
+    const end = Math.min(range.end, totalLength);
+    // Create sparse array with correct total length
+    const result: DividendRow[] = [];
+    result.length = totalLength;
+    for (let i = start; i < end; i++) {
       const d = divDepositsArray[i];
-      result.push({
+      result[i] = {
         id: d.id,
         date: d.date,
         amount: d.amount,
@@ -46,7 +71,7 @@ export class DividendDepositsComponentService {
             ? universeMap.get(d.universeId)?.symbol ?? ''
             : '',
         type: typeNamesMap.get(d.divDepositTypeId) ?? '',
-      });
+      };
     }
     return result;
   });

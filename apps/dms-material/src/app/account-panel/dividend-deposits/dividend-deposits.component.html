@@ -5,6 +5,7 @@
   [bufferSize]="20"
   (sortChange)="onSortChange($event)"
   (rowClick)="onEditDividend($event)"
+  (renderedRangeChange)="onRangeChange($event)"
 >
   <ng-template #cellTemplate let-row let-column="column">
     @switch (column.type) { @case ('currency') {

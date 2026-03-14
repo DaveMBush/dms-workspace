@@ -4,6 +4,7 @@ import { vi } from 'vitest';
 
 import { DivDeposit } from '../../store/div-deposits/div-deposit.interface';
 import { selectCurrentAccountSignal } from '../../store/current-account/select-current-account.signal';
+import { currentAccountSignalStore } from '../../store/current-account/current-account.signal-store';
 import { DividendDepositsComponentService } from './dividend-deposits-component.service';
 
 // Mock SmartNgRX dependencies to prevent store initialization
@@ -90,8 +91,8 @@ function createMockDivDepositsArray(count: number): DivDeposit[] {
 }
 
 // Story AX.3: TDD Tests for Dividend Deposits Virtual Data Access (Service)
-// Disabled in AX.3: Re-enable in AX.4
-describe.skip('DividendDepositsComponentService - Virtual Data Access (AX.3)', () => {
+// Re-enabled in AX.4
+describe('DividendDepositsComponentService - Virtual Data Access (AX.3)', () => {
   let service: DividendDepositsComponentService;
   let mockCurrentAccount: ReturnType<typeof signal>;
   let mockDivDepositsArray: DivDeposit[];
@@ -117,7 +118,13 @@ describe.skip('DividendDepositsComponentService - Virtual Data Access (AX.3)', (
     selectCurrentAccountSignalMock.mockReturnValue(mockCurrentAccount);
 
     TestBed.configureTestingModule({
-      providers: [DividendDepositsComponentService],
+      providers: [
+        {
+          provide: currentAccountSignalStore,
+          useValue: { selectCurrentAccountId: signal('') },
+        },
+        DividendDepositsComponentService,
+      ],
     });
 
     service = TestBed.inject(DividendDepositsComponentService);
