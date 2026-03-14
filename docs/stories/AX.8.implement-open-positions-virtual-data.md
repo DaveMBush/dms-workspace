@@ -35,7 +35,7 @@
 
 ### Status
 
-In Progress
+Complete
 
 ### Agent Model Used
 
@@ -50,6 +50,7 @@ Claude Opus 4.6
 - Added `onRangeChange` handler that updates both component and service `visibleRange`
 - Bound `(renderedRangeChange)` event on `dms-base-table` in template
 - Re-enabled AX.7 TDD tests in both component and service spec files
+- Fixed CodeRabbit finding: pre-filter closed trades by collecting open-trade indices before visible-window loop to prevent undefined slots in sparse array
 
 ### File List
 
@@ -62,3 +63,9 @@ Claude Opus 4.6
 ### Debug Log References
 
 ### Completion Notes
+
+- PR #651 merged via squash to main (commit a729af5)
+- Issue #650 auto-closed
+- CodeRabbit review: 1 finding addressed (sparse array undefined slots from closed trades)
+- CI passed on both commits
+- All 83 unit tests passing, E2E pre-existing failures only
