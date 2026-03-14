@@ -1,15 +1,17 @@
-import { SelectionModel } from '@angular/cdk/collections';
+import { ListRange, SelectionModel } from '@angular/cdk/collections';
 import {
   CdkVirtualScrollViewport,
   ScrollingModule,
 } from '@angular/cdk/scrolling';
 import { CommonModule } from '@angular/common';
 import {
+  AfterViewInit,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   computed,
   ContentChild,
+  DestroyRef,
   effect,
   inject,
   input,
@@ -18,10 +20,12 @@ import {
   TemplateRef,
   viewChild,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
+import { debounceTime } from 'rxjs';
 
 import { ColumnDef } from './column-def.interface';
 
@@ -39,7 +43,9 @@ import { ColumnDef } from './column-def.interface';
   styleUrl: './base-table.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class BaseTableComponent<T extends { id: string }> {
+export class BaseTableComponent<T extends { id: string }>
+  implements AfterViewInit
+{
   // Inputs
   data = input.required<T[]>(); // Signal-based data input
   columns = input.required<ColumnDef[]>();
@@ -53,6 +59,7 @@ export class BaseTableComponent<T extends { id: string }> {
   readonly sortChange = output<Sort>();
   readonly rowClick = output<T>();
   readonly selectionChange = output<T[]>();
+  readonly renderedRangeChange = output<{ start: number; end: number }>();
 
   // ViewChild for virtual scroll viewport
   viewport = viewChild<CdkVirtualScrollViewport>('viewport');
@@ -61,6 +68,7 @@ export class BaseTableComponent<T extends { id: string }> {
   selection = new SelectionModel<T>(true, []);
   private sortState = signal<Sort | null>(null);
   private cdr = inject(ChangeDetectorRef);
+  private destroyRef = inject(DestroyRef);
 
   constructor() {
     // Force change detection when dataSource changes
@@ -75,6 +83,19 @@ export class BaseTableComponent<T extends { id: string }> {
         context.cdr.markForCheck();
       }
     );
+  }
+
+  ngAfterViewInit(): void {
+    const viewportValue = this.viewport();
+    if (viewportValue) {
+      viewportValue.renderedRangeStream
+        .pipe(debounceTime(100), takeUntilDestroyed(this.destroyRef))
+        .subscribe(
+          function emitRange(this: BaseTableComponent<T>, range: ListRange) {
+            this.renderedRangeChange.emit(range);
+          }.bind(this)
+        );
+    }
   }
 
   // Helper to check if row has expired property
