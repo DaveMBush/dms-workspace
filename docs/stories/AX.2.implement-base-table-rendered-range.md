@@ -11,6 +11,7 @@
 **Pre-condition:** TDD tests from AX.1 are complete and disabled
 
 **Implementation Approach:**
+
 - Inject `DestroyRef` into `BaseTableComponent`
 - Implement `AfterViewInit` lifecycle hook
 - Subscribe to `viewport().renderedRangeStream` with debounce
@@ -45,6 +46,7 @@
 ### Implementation Steps
 
 1. Add imports:
+
    ```typescript
    import { AfterViewInit, DestroyRef } from '@angular/core';
    import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -52,11 +54,13 @@
    ```
 
 2. Inject `DestroyRef`:
+
    ```typescript
    private destroyRef = inject(DestroyRef);
    ```
 
 3. Add output:
+
    ```typescript
    readonly renderedRangeChange = output<{ start: number; end: number }>();
    ```
@@ -108,4 +112,34 @@
 
 ### Status
 
-Approved
+Ready for Review
+
+### Agent Model Used
+
+Claude Opus 4.6 (copilot)
+
+### File List
+
+- `apps/dms-material/src/app/shared/components/base-table/base-table.component.ts` (modified)
+- `apps/dms-material/src/app/shared/components/base-table/base-table.component.spec.ts` (modified)
+
+### Change Log
+
+- Added `AfterViewInit`, `DestroyRef` imports and interface implementation to `BaseTableComponent`
+- Added `takeUntilDestroyed` from `@angular/core/rxjs-interop`
+- Added `debounceTime` import from `rxjs`
+- Injected `DestroyRef` into component
+- Added `renderedRangeChange` signal output
+- Implemented `ngAfterViewInit()` with debounced viewport range subscription
+- Re-enabled AX.1 TDD tests (removed `describe.skip`)
+- Replaced `fakeAsync`/`tick` with vitest `vi.useFakeTimers()`/`vi.advanceTimersByTime()` for compatibility
+
+### Debug Log References
+
+(none)
+
+### Completion Notes
+
+- Implementation follows OnPush change detection pattern
+- Named function pattern used with `.bind(this)` per project ESLint rules
+- Tests verified: all 12 tests passing (7 existing + 5 rendered range tracking)

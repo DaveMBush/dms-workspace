@@ -1,11 +1,6 @@
 import { ListRange } from '@angular/cdk/collections';
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
-import {
-  ComponentFixture,
-  TestBed,
-  fakeAsync,
-  tick,
-} from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Subject } from 'rxjs';
 
 import { BaseTableComponent } from './base-table.component';
@@ -79,9 +74,8 @@ describe('BaseTableComponent', () => {
 
 // TDD RED Phase: Tests for Story AX.1 - renderedRangeChange output
 // These tests define expected behavior for viewport range tracking.
-// They are disabled (.skip) because the implementation does not exist yet.
-// Story AX.2 will implement the functionality and re-enable these tests.
-describe.skip('BaseTableComponent - Rendered Range Tracking', () => {
+// Story AX.2 implements the functionality and re-enables these tests.
+describe('BaseTableComponent - Rendered Range Tracking', () => {
   let component: BaseTableComponent<{ id: string; name: string }>;
   let fixture: ComponentFixture<
     BaseTableComponent<{ id: string; name: string }>
@@ -106,6 +100,12 @@ describe.skip('BaseTableComponent - Rendered Range Tracking', () => {
       { id: '1', name: 'Row 1' },
       { id: '2', name: 'Row 2' },
     ]);
+
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   function mockViewport(): void {
@@ -126,11 +126,12 @@ describe.skip('BaseTableComponent - Rendered Range Tracking', () => {
 
     const spy = vi.spyOn(component.renderedRangeChange, 'emit');
     rangeSubject.next({ start: 0, end: 10 });
+    vi.advanceTimersByTime(100);
 
     expect(spy).toHaveBeenCalled();
   });
 
-  it('should emit renderedRangeChange when viewport range changes', fakeAsync(() => {
+  it('should emit renderedRangeChange when viewport range changes', () => {
     mockViewport();
     fixture.detectChanges();
 
@@ -142,12 +143,12 @@ describe.skip('BaseTableComponent - Rendered Range Tracking', () => {
     });
 
     rangeSubject.next({ start: 0, end: 10 });
-    tick(100);
+    vi.advanceTimersByTime(100);
 
     expect(emitted).toEqual([{ start: 0, end: 10 }]);
-  }));
+  });
 
-  it('should debounce range emissions by 100ms', fakeAsync(() => {
+  it('should debounce range emissions by 100ms', () => {
     mockViewport();
     fixture.detectChanges();
 
@@ -159,17 +160,17 @@ describe.skip('BaseTableComponent - Rendered Range Tracking', () => {
     });
 
     rangeSubject.next({ start: 0, end: 10 });
-    tick(50);
+    vi.advanceTimersByTime(50);
     rangeSubject.next({ start: 5, end: 15 });
-    tick(50);
+    vi.advanceTimersByTime(50);
     rangeSubject.next({ start: 10, end: 20 });
-    tick(100);
+    vi.advanceTimersByTime(100);
 
     // Only the last emission within the debounce window should come through
     expect(emitted).toEqual([{ start: 10, end: 20 }]);
-  }));
+  });
 
-  it('should cleanup subscription on destroy', fakeAsync(() => {
+  it('should cleanup subscription on destroy', () => {
     mockViewport();
     fixture.detectChanges();
 
@@ -178,18 +179,18 @@ describe.skip('BaseTableComponent - Rendered Range Tracking', () => {
     fixture.destroy();
 
     rangeSubject.next({ start: 0, end: 10 });
-    tick(100);
+    vi.advanceTimersByTime(100);
 
     expect(spy).not.toHaveBeenCalled();
-  }));
+  });
 
-  it('should handle undefined viewport gracefully', fakeAsync(() => {
+  it('should handle undefined viewport gracefully', () => {
     // Do not mock viewport — leave it as undefined
     fixture.detectChanges();
 
     const spy = vi.spyOn(component.renderedRangeChange, 'emit');
-    tick(100);
+    vi.advanceTimersByTime(100);
 
     expect(spy).not.toHaveBeenCalled();
-  }));
+  });
 });
