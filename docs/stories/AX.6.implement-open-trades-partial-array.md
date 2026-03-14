@@ -36,4 +36,34 @@
 
 ### Status
 
-Approved
+In Progress
+
+### Agent Model Used
+
+Claude Opus 4.6
+
+### File List
+
+- apps/dms-material/src/app/store/accounts/account.interface.ts (modified)
+- apps/dms-material/src/app/store/accounts/accounts-definition.const.ts (modified)
+- apps/server/src/app/routes/accounts/account.interface.ts (modified)
+- apps/server/src/app/routes/accounts/index.ts (modified)
+- apps/server/src/app/routes/accounts/build-account-response.function.ts (new)
+- apps/server/src/app/routes/accounts/build-account-response.spec.ts (modified)
+- apps/server/src/app/routes/accounts/indexes/index.ts (modified)
+- apps/server/src/app/routes/accounts/indexes/indexes-open-trades.spec.ts (modified)
+
+### Change Log
+
+- Changed openTrades type from `string[] | Trade[]` to `PartialArrayDefinition | SmartArray<Account, Trade>` in dms-material account interface
+- Changed default openTrades from `[]` to `{ startIndex: 0, indexes: [], length: 0 }` in accounts-definition
+- Changed server Account interface openTrades from `string[]` to PartialArrayDefinition shape
+- Modified buildAccountResponse to return openTrades as PartialArrayDefinition (startIndex: 0, first 10 indexes, total length)
+- Extracted buildAccountResponse and helpers into build-account-response.function.ts to satisfy max-lines lint rule
+- Updated indexes endpoint to handle 'openTrades' childField with sell_date IS NULL filter and buildTradeOrderBy ordering
+- Fixed add/update account handlers to return openTrades as PartialArrayDefinition
+- Re-enabled 13 AX.5 TDD tests (removed describe.skip)
+
+### Completion Notes
+
+### Debug Log References
