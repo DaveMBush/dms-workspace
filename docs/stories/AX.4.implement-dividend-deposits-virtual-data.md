@@ -55,4 +55,4 @@ See Epic AX story AX.2 (now AX.4) for detailed implementation steps.
 
 ### Status
 
-Draft
+Approved
