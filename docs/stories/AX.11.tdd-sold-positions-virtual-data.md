@@ -34,4 +34,26 @@
 
 ### Status
 
-Approved
+In Progress
+
+### Agent Model Used
+
+Claude Opus 4.6 (copilot)
+
+### File List
+
+- apps/dms-material/src/app/account-panel/sold-positions/sold-positions.component.spec.ts (modified)
+- apps/dms-material/src/app/account-panel/sold-positions/sold-positions-component.service.spec.ts (new)
+
+### Change Log
+
+- Added `describe.skip` block for Virtual Data Access component tests (visibleRange, onRangeChange) to sold-positions.component.spec.ts
+- Created sold-positions-component.service.spec.ts with `describe.skip` block for sparse array and visible-window loop tests
+
+### Debug Log References
+
+(none)
+
+### Completion Notes
+
+(pending)
