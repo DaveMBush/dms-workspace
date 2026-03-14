@@ -14,6 +14,7 @@
   [data]="selectOpenPositions$()"
   [columns]="columns"
   (sortChange)="onSortChange($event)"
+  (renderedRangeChange)="onRangeChange($event)"
 >
   <ng-template #filterRowTemplate let-column>
     @if (column.field === 'symbol') {

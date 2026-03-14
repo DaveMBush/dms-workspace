@@ -55,6 +55,12 @@ export class OpenPositionsComponent implements OnDestroy {
   searchText = signal<string>('');
   errorMessage = signal<string>('');
   successMessage = signal<string>('');
+
+  visibleRange = signal<{ start: number; end: number }>({
+    start: 0,
+    end: 50,
+  });
+
   private symbolFilterTimer: ReturnType<typeof setTimeout> | null = null;
 
   ngOnDestroy(): void {
@@ -73,6 +79,11 @@ export class OpenPositionsComponent implements OnDestroy {
       this.saveSymbolFilterAndNotify.bind(this),
       300
     );
+  }
+
+  onRangeChange(range: { start: number; end: number }): void {
+    this.visibleRange.set(range);
+    this.openPositionsService.visibleRange.set(range);
   }
 
   onSortChange(sort: Sort): void {

@@ -1,4 +1,4 @@
-import { computed, inject, Injectable } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { RowProxyDelete, SmartArray } from '@smarttools/smart-signals';
 
 import { Account } from '../../accounts/account';
@@ -12,6 +12,11 @@ import { Universe } from '../../store/universe/universe.interface';
 @Injectable({ providedIn: 'root' })
 export class OpenPositionsComponentService {
   private currentAccountSignalStore = inject(currentAccountSignalStore);
+
+  visibleRange = signal<{ start: number; end: number }>({
+    start: 0,
+    end: 50,
+  });
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- will hide this
   trades = computed(() => {
@@ -40,50 +45,65 @@ export class OpenPositionsComponentService {
   selectOpenPositions = computed(() => {
     const trades = this.trades();
     const universeMap = this.universeMap();
-    const openPositions = [] as OpenPosition[];
-    for (let i = 0; i < trades.length; i++) {
+    const range = this.visibleRange();
+    const totalLength = trades.length;
+
+    if (totalLength === 0) {
+      return [] as OpenPosition[];
+    }
+
+    // Visible-window loop: create sparse array, only transform visible items
+    const openPositions = new Array<OpenPosition>(totalLength);
+    const rangeEnd = Math.min(range.end, totalLength);
+    for (let i = range.start; i < rangeEnd; i++) {
       const trade = trades[i];
       const universe = universeMap.get(trade.universeId);
       if (this.isClosed(trade, universe!)) {
         continue;
       }
-      const daysHeld = this.differenceInTradingDaysPrivate(
-        trade.buy_date,
-        new Date().toISOString()
-      );
-      const expectedYield = this.getExpectedYield(universe!, trade);
-
-      const targetGain = this.getTargetGain(
-        universe!,
-        trade,
-        daysHeld,
-        expectedYield
-      );
-      const sellDate =
-        trade.sell_date !== undefined
-          ? this.parseDateString(trade.sell_date)
-          : undefined;
-      openPositions.push({
-        id: trade.id,
-        symbol: universe!.symbol,
-        exDate: universe!.ex_date || null,
-        buy: trade.buy,
-        buyDate: this.parseDateString(trade.buy_date),
-        sell: trade.sell,
-        sellDate,
-        daysHeld,
-        expectedYield,
-        targetGain,
-        targetSell: targetGain / trade.quantity + trade.buy,
-        quantity: trade.quantity,
-        lastPrice: universe!.last_price,
-        unrealizedGainPercent:
-          ((universe!.last_price - trade.buy) / trade.buy) * 100,
-        unrealizedGain: (universe!.last_price - trade.buy) * trade.quantity,
-      });
+      openPositions[i] = this.transformTradeToPosition(trade, universe!);
     }
     return openPositions;
   });
+
+  private transformTradeToPosition(
+    trade: Trade,
+    universe: Universe
+  ): OpenPosition {
+    const daysHeld = this.differenceInTradingDaysPrivate(
+      trade.buy_date,
+      new Date().toISOString()
+    );
+    const expectedYield = this.getExpectedYield(universe, trade);
+    const targetGain = this.getTargetGain(
+      universe,
+      trade,
+      daysHeld,
+      expectedYield
+    );
+    const sellDate =
+      trade.sell_date !== undefined
+        ? this.parseDateString(trade.sell_date)
+        : undefined;
+    return {
+      id: trade.id,
+      symbol: universe.symbol,
+      exDate: universe.ex_date || null,
+      buy: trade.buy,
+      buyDate: this.parseDateString(trade.buy_date),
+      sell: trade.sell,
+      sellDate,
+      daysHeld,
+      expectedYield,
+      targetGain,
+      targetSell: targetGain / trade.quantity + trade.buy,
+      quantity: trade.quantity,
+      lastPrice: universe.last_price,
+      unrealizedGainPercent:
+        ((universe.last_price - trade.buy) / trade.buy) * 100,
+      unrealizedGain: (universe.last_price - trade.buy) * trade.quantity,
+    };
+  }
 
   private differenceInTradingDaysPrivate(start: string, end: string): number {
     return differenceInTradingDays(start, end);
