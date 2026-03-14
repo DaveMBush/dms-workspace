@@ -1181,3 +1181,87 @@ describe('DividendDepositsComponent - Account Selection Integration', () => {
     });
   });
 });
+
+// Story AX.3: TDD Tests for Dividend Deposits Virtual Data Access
+// Disabled in AX.3: Re-enable in AX.4
+describe.skip('DividendDepositsComponent - Virtual Data Access (AX.3)', () => {
+  let component: DividendDepositsComponent;
+  let fixture: ComponentFixture<DividendDepositsComponent>;
+  let mockDividendDepositsService: {
+    dividends: WritableSignal<DivDeposit[]>;
+    selectedAccountId: WritableSignal<string>;
+    visibleRange: WritableSignal<{ start: number; end: number }>;
+    addDivDeposit: ReturnType<typeof vi.fn>;
+    deleteDivDeposit: ReturnType<typeof vi.fn>;
+  };
+
+  beforeEach(async () => {
+    mockDividendDepositsService = {
+      dividends: signal<DivDeposit[]>([]),
+      selectedAccountId: signal<string>(''),
+      visibleRange: signal<{ start: number; end: number }>({
+        start: 0,
+        end: 50,
+      }),
+      addDivDeposit: vi.fn(),
+      deleteDivDeposit: vi.fn(),
+    };
+
+    await TestBed.configureTestingModule({
+      imports: [DividendDepositsComponent],
+      providers: [
+        {
+          provide: DividendDepositsComponentService,
+          useValue: mockDividendDepositsService,
+        },
+        {
+          provide: MatDialog,
+          useValue: {
+            open: vi.fn().mockReturnValue({ afterClosed: () => of(null) }),
+          },
+        },
+        { provide: NotificationService, useValue: { success: vi.fn() } },
+        {
+          provide: ConfirmDialogService,
+          useValue: { confirm: vi.fn().mockReturnValue(of(false)) },
+        },
+        {
+          provide: divDepositsEffectsServiceToken,
+          useValue: { add: vi.fn(), update: vi.fn(), delete: vi.fn() },
+        },
+      ],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(DividendDepositsComponent);
+    component = fixture.componentInstance;
+  });
+
+  // AC: Test visibleRange signal has default { start: 0, end: 50 }
+  it('should have visibleRange signal with default { start: 0, end: 50 }', () => {
+    expect(component.visibleRange()).toEqual({ start: 0, end: 50 });
+  });
+
+  // AC: Test onRangeChange updates signal correctly
+  it('should update visibleRange when onRangeChange is called', () => {
+    component.onRangeChange({ start: 10, end: 60 });
+
+    expect(component.visibleRange()).toEqual({ start: 10, end: 60 });
+  });
+
+  it('should update visibleRange to different values on subsequent calls', () => {
+    component.onRangeChange({ start: 5, end: 25 });
+    expect(component.visibleRange()).toEqual({ start: 5, end: 25 });
+
+    component.onRangeChange({ start: 100, end: 150 });
+    expect(component.visibleRange()).toEqual({ start: 100, end: 150 });
+  });
+
+  it('should propagate range change to service visibleRange', () => {
+    component.onRangeChange({ start: 20, end: 70 });
+
+    expect(mockDividendDepositsService.visibleRange()).toEqual({
+      start: 20,
+      end: 70,
+    });
+  });
+});
