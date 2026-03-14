@@ -69,6 +69,10 @@ describe('SoldPositionsComponent', () => {
   const soldPositionsSignal = signal<ClosedPosition[]>([]);
   const mockServiceForInjection = {
     selectSoldPositions: soldPositionsSignal,
+    visibleRange: signal<{ start: number; end: number }>({
+      start: 0,
+      end: 50,
+    }),
   };
 
   beforeEach(async () => {
@@ -389,6 +393,7 @@ describe('SoldPositionsComponent - Account Selection Integration', () => {
   let fixture: ComponentFixture<SoldPositionsComponent>;
   let mockSoldPositionsComponentService: {
     selectSoldPositions: WritableSignal<ClosedPosition[]>;
+    visibleRange: WritableSignal<{ start: number; end: number }>;
   };
   let mockCurrentAccountStore: {
     id: WritableSignal<string>;
@@ -405,6 +410,10 @@ describe('SoldPositionsComponent - Account Selection Integration', () => {
 
     mockSoldPositionsComponentService = {
       selectSoldPositions: signal<ClosedPosition[]>([]),
+      visibleRange: signal<{ start: number; end: number }>({
+        start: 0,
+        end: 50,
+      }),
     };
 
     await TestBed.configureTestingModule({
@@ -809,11 +818,16 @@ describe('SoldPositionsComponent - Client-Side Sorting Removal', () => {
   let fixture: ComponentFixture<SoldPositionsComponent>;
   let mockSoldPositionsService: {
     selectSoldPositions: WritableSignal<ClosedPosition[]>;
+    visibleRange: WritableSignal<{ start: number; end: number }>;
   };
 
   beforeEach(async () => {
     mockSoldPositionsService = {
       selectSoldPositions: signal<ClosedPosition[]>([]),
+      visibleRange: signal<{ start: number; end: number }>({
+        start: 0,
+        end: 50,
+      }),
     };
 
     await TestBed.configureTestingModule({
@@ -946,7 +960,7 @@ describe('SoldPositionsComponent - Client-Side Sorting Removal', () => {
 
 // Story AX.11: TDD Tests for Sold Positions Virtual Data Access
 // Disabled in AX.11 (RED phase): Re-enable in AX.12
-describe.skip('SoldPositionsComponent - Virtual Data Access (AX.11)', () => {
+describe('SoldPositionsComponent - Virtual Data Access (AX.11)', () => {
   let component: SoldPositionsComponent;
   let fixture: ComponentFixture<SoldPositionsComponent>;
   let mockSoldPositionsService: {

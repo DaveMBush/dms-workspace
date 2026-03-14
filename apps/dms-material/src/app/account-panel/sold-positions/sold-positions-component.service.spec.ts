@@ -66,6 +66,10 @@ vi.mock('../../store/div-deposits/div-deposits.selectors', () => ({
   selectDivDepositEntity: vi.fn().mockReturnValue([]),
 }));
 
+vi.mock('../../store/trades/difference-in-trading-days.function', () => ({
+  differenceInTradingDays: vi.fn().mockReturnValue(100),
+}));
+
 // Helper to create a valid sold trade
 function createSoldTrade(overrides: Partial<Trade> = {}): Trade {
   return {
@@ -102,7 +106,7 @@ function createMockSoldTradesArray(count: number): Trade[] {
 
 // Story AX.11: TDD Tests for Sold Positions Virtual Data Access (Service)
 // Disabled in AX.11 (RED phase): Re-enable in AX.12
-describe.skip('SoldPositionsComponentService - Virtual Data Access (AX.11)', () => {
+describe('SoldPositionsComponentService - Virtual Data Access (AX.11)', () => {
   let service: SoldPositionsComponentService;
   let mockCurrentAccount: ReturnType<typeof signal>;
   let mockSoldTradesArray: Trade[];

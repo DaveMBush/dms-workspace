@@ -31,6 +31,12 @@ export class SoldPositionsComponent implements OnDestroy {
   private readonly sortFilterStateService = inject(SortFilterStateService);
 
   searchText = signal<string>('');
+
+  visibleRange = signal<{ start: number; end: number }>({
+    start: 0,
+    end: 50,
+  });
+
   private symbolFilterTimer: ReturnType<typeof setTimeout> | null = null;
 
   ngOnDestroy(): void {
@@ -44,6 +50,11 @@ export class SoldPositionsComponent implements OnDestroy {
   readonly displayedPositions = computed(() => {
     return this.soldPositionsService.selectSoldPositions();
   });
+
+  onRangeChange(range: { start: number; end: number }): void {
+    this.visibleRange.set(range);
+    this.soldPositionsService.visibleRange.set(range);
+  }
 
   onSymbolFilterChange(value: string): void {
     this.searchText.set(value);
