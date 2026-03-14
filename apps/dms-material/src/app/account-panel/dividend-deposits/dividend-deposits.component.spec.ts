@@ -117,6 +117,10 @@ describe('DividendDepositsComponent', () => {
     mockDividendDepositsService = {
       dividends: signal<DivDeposit[]>([]),
       selectedAccountId: signal<string>(''),
+      visibleRange: signal<{ start: number; end: number }>({
+        start: 0,
+        end: 50,
+      }),
       addDivDeposit: vi.fn(),
       deleteDivDeposit: vi.fn(),
     };
@@ -378,6 +382,10 @@ describe('DividendDepositsComponent - Add Dialog SmartNgRX Integration (AQ.3)', 
     mockDividendDepositsService = {
       dividends: signal<DivDeposit[]>([]),
       selectedAccountId: signal<string>(''),
+      visibleRange: signal<{ start: number; end: number }>({
+        start: 0,
+        end: 50,
+      }),
       addDivDeposit: vi.fn(),
       deleteDivDeposit: vi.fn(),
     };
@@ -527,6 +535,10 @@ describe('DividendDepositsComponent - Edit Dialog SmartNgRX Integration (AQ.5)',
     mockDividendDepositsService = {
       dividends: signal<DivDeposit[]>([]),
       selectedAccountId: signal<string>(''),
+      visibleRange: signal<{ start: number; end: number }>({
+        start: 0,
+        end: 50,
+      }),
       deleteDivDeposit: vi.fn(),
     };
 
@@ -698,6 +710,10 @@ describe('DividendDepositsComponent - Delete Dialog SmartNgRX Integration (AQ.7)
     mockDividendDepositsService = {
       dividends: signal<DivDeposit[]>([]),
       selectedAccountId: signal<string>(''),
+      visibleRange: signal<{ start: number; end: number }>({
+        start: 0,
+        end: 50,
+      }),
       deleteDivDeposit: vi.fn(),
     };
 
@@ -827,6 +843,10 @@ describe('DividendDepositsComponent - Account Selection Integration', () => {
     mockDividendDepositsService = {
       dividends: signal<DivDeposit[]>([]),
       selectedAccountId: signal<string>(''),
+      visibleRange: signal<{ start: number; end: number }>({
+        start: 0,
+        end: 50,
+      }),
       addDivDeposit: vi.fn(),
       deleteDivDeposit: vi.fn(),
     };
@@ -1184,7 +1204,8 @@ describe('DividendDepositsComponent - Account Selection Integration', () => {
 
 // Story AX.3: TDD Tests for Dividend Deposits Virtual Data Access
 // Disabled in AX.3: Re-enable in AX.4
-describe.skip('DividendDepositsComponent - Virtual Data Access (AX.3)', () => {
+// Re-enabled in AX.4
+describe('DividendDepositsComponent - Virtual Data Access (AX.3)', () => {
   let component: DividendDepositsComponent;
   let fixture: ComponentFixture<DividendDepositsComponent>;
   let mockDividendDepositsService: {
