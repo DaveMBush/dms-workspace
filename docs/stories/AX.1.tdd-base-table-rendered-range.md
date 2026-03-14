@@ -9,11 +9,13 @@
 ## Context
 
 **Current System:**
+
 - `BaseTableComponent` uses CDK virtual scrolling
 - No mechanism to notify consumers about which rows are currently visible
 - Components need visible range info to implement virtual data access patterns
 
 **Implementation Approach:**
+
 - Write tests for `renderedRangeChange` signal output
 - Test subscription to `viewport().renderedRangeStream`
 - Test debouncing and cleanup
@@ -103,4 +105,38 @@ Temporarily remove `.skip()` from one test to verify it fails, then re-add `.ski
 
 ### Status
 
-Approved
+Complete
+
+### Agent Model Used
+
+Claude Opus 4.6 (copilot)
+
+### Tasks
+
+- [x] Write BaseTableComponent rendered range tracking tests (describe.skip)
+  - [x] Test subscribes to viewport renderedRangeStream in ngAfterViewInit
+  - [x] Test renderedRangeChange output emits when range changes
+  - [x] Test debouncing (100ms)
+  - [x] Test cleanup subscription on destroy
+  - [x] Test handles undefined viewport gracefully
+- [x] Verify tests are skipped and CI passes
+
+### File List
+
+- Modified: `apps/dms-material/src/app/shared/components/base-table/base-table.component.spec.ts`
+
+### Change Log
+
+- Added `describe.skip('BaseTableComponent - Rendered Range Tracking')` test suite with 5 tests covering viewport range tracking behavior (TDD RED phase)
+- Tests cover: subscription in ngAfterViewInit, renderedRangeChange emission, 100ms debouncing, cleanup on destroy, undefined viewport handling
+- Tests are disabled with `.skip()` to allow CI to pass since implementation does not exist yet
+
+### Debug Log References
+
+None
+
+### Completion Notes
+
+- All 5 TDD tests written and skipped
+- Existing tests continue to pass (1615 passed, 8 skipped)
+- Tests follow existing Angular testing patterns using Vitest
