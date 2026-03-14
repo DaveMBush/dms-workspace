@@ -6,7 +6,11 @@ export interface Account {
     indexes: string[];
     length: number;
   };
-  soldTrades: string[];
+  soldTrades: {
+    startIndex: number;
+    indexes: string[];
+    length: number;
+  };
   divDeposits: {
     startIndex: number;
     indexes: string[];
