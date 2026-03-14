@@ -1,4 +1,12 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ListRange } from '@angular/cdk/collections';
+import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
+import {
+  ComponentFixture,
+  TestBed,
+  fakeAsync,
+  tick,
+} from '@angular/core/testing';
+import { Subject } from 'rxjs';
 
 import { BaseTableComponent } from './base-table.component';
 import { ColumnDef } from './column-def.interface';
@@ -67,4 +75,121 @@ describe('BaseTableComponent', () => {
     );
     expect(headerCells.length).toBeGreaterThan(0);
   });
+});
+
+// TDD RED Phase: Tests for Story AX.1 - renderedRangeChange output
+// These tests define expected behavior for viewport range tracking.
+// They are disabled (.skip) because the implementation does not exist yet.
+// Story AX.2 will implement the functionality and re-enable these tests.
+describe.skip('BaseTableComponent - Rendered Range Tracking', () => {
+  let component: BaseTableComponent<{ id: string; name: string }>;
+  let fixture: ComponentFixture<
+    BaseTableComponent<{ id: string; name: string }>
+  >;
+  let rangeSubject: Subject<ListRange>;
+
+  const columns: ColumnDef[] = [
+    { field: 'name', header: 'Name', sortable: true },
+  ];
+
+  beforeEach(async () => {
+    rangeSubject = new Subject<ListRange>();
+
+    await TestBed.configureTestingModule({
+      imports: [BaseTableComponent],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(BaseTableComponent);
+    component = fixture.componentInstance;
+    fixture.componentRef.setInput('columns', columns);
+    fixture.componentRef.setInput('data', [
+      { id: '1', name: 'Row 1' },
+      { id: '2', name: 'Row 2' },
+    ]);
+  });
+
+  function mockViewport(): void {
+    const mockViewportRef = {
+      renderedRangeStream: rangeSubject.asObservable(),
+    } as unknown as CdkVirtualScrollViewport;
+
+    Object.defineProperty(component, 'viewport', {
+      value: function viewportSignal() {
+        return mockViewportRef;
+      },
+    });
+  }
+
+  it('should subscribe to viewport renderedRangeStream in ngAfterViewInit', () => {
+    mockViewport();
+    fixture.detectChanges();
+
+    const spy = vi.spyOn(component.renderedRangeChange, 'emit');
+    rangeSubject.next({ start: 0, end: 10 });
+
+    expect(spy).toHaveBeenCalled();
+  });
+
+  it('should emit renderedRangeChange when viewport range changes', fakeAsync(() => {
+    mockViewport();
+    fixture.detectChanges();
+
+    const emitted: ListRange[] = [];
+    component.renderedRangeChange.subscribe(function captureRange(
+      range: ListRange
+    ) {
+      emitted.push(range);
+    });
+
+    rangeSubject.next({ start: 0, end: 10 });
+    tick(100);
+
+    expect(emitted).toEqual([{ start: 0, end: 10 }]);
+  }));
+
+  it('should debounce range emissions by 100ms', fakeAsync(() => {
+    mockViewport();
+    fixture.detectChanges();
+
+    const emitted: ListRange[] = [];
+    component.renderedRangeChange.subscribe(function captureRange(
+      range: ListRange
+    ) {
+      emitted.push(range);
+    });
+
+    rangeSubject.next({ start: 0, end: 10 });
+    tick(50);
+    rangeSubject.next({ start: 5, end: 15 });
+    tick(50);
+    rangeSubject.next({ start: 10, end: 20 });
+    tick(100);
+
+    // Only the last emission within the debounce window should come through
+    expect(emitted).toEqual([{ start: 10, end: 20 }]);
+  }));
+
+  it('should cleanup subscription on destroy', fakeAsync(() => {
+    mockViewport();
+    fixture.detectChanges();
+
+    const spy = vi.spyOn(component.renderedRangeChange, 'emit');
+
+    fixture.destroy();
+
+    rangeSubject.next({ start: 0, end: 10 });
+    tick(100);
+
+    expect(spy).not.toHaveBeenCalled();
+  }));
+
+  it('should handle undefined viewport gracefully', fakeAsync(() => {
+    // Do not mock viewport — leave it as undefined
+    fixture.detectChanges();
+
+    const spy = vi.spyOn(component.renderedRangeChange, 'emit');
+    tick(100);
+
+    expect(spy).not.toHaveBeenCalled();
+  }));
 });
