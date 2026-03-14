@@ -92,6 +92,11 @@ vi.mock('../../store/top/selectors/select-top-entities.function', () => ({
   selectTopEntities: vi.fn().mockReturnValue([]),
 }));
 
+// Mock selectHolidays to avoid SmartNgRX initialization
+vi.mock('../../store/top/selectors/select-holidays.function', () => ({
+  selectHolidays: vi.fn().mockReturnValue([]),
+}));
+
 // Mock selectAccountsEntity to avoid SmartNgRX initialization
 vi.mock(
   '../../store/accounts/selectors/select-accounts-entity.function',
@@ -138,8 +143,8 @@ function createMockTradesArray(count: number): Trade[] {
 }
 
 // Story AX.7: TDD Tests for Open Positions Virtual Data Access (Service)
-// Disabled in AX.7: Re-enable in AX.8
-describe.skip('OpenPositionsComponentService - Virtual Data Access (AX.7)', () => {
+// Re-enabled in AX.8
+describe('OpenPositionsComponentService - Virtual Data Access (AX.7)', () => {
   let service: OpenPositionsComponentService;
   let mockCurrentAccount: ReturnType<typeof signal>;
   let mockTradesArray: Trade[];

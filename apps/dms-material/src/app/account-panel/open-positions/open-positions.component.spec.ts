@@ -80,6 +80,7 @@ describe('OpenPositionsComponent', () => {
     trades: WritableSignal<Trade[]>;
     selectOpenPositions: WritableSignal<OpenPosition[]>;
     deleteOpenPosition: ReturnType<typeof vi.fn>;
+    visibleRange: WritableSignal<{ start: number; end: number }>;
   };
 
   beforeEach(async () => {
@@ -88,6 +89,10 @@ describe('OpenPositionsComponent', () => {
       trades: signal<Trade[]>([]),
       selectOpenPositions: signal<OpenPosition[]>([]),
       deleteOpenPosition: vi.fn(),
+      visibleRange: signal<{ start: number; end: number }>({
+        start: 0,
+        end: 50,
+      }),
     };
 
     await TestBed.configureTestingModule({
@@ -799,6 +804,7 @@ describe('OpenPositionsComponent - Account Selection Integration', () => {
     trades: WritableSignal<Trade[]>;
     selectOpenPositions: WritableSignal<OpenPosition[]>;
     deleteOpenPosition: ReturnType<typeof vi.fn>;
+    visibleRange: WritableSignal<{ start: number; end: number }>;
   };
   let mockCurrentAccountStore: {
     id: WritableSignal<string>;
@@ -817,6 +823,10 @@ describe('OpenPositionsComponent - Account Selection Integration', () => {
       trades: signal<Trade[]>([]),
       selectOpenPositions: signal<OpenPosition[]>([]),
       deleteOpenPosition: vi.fn(),
+      visibleRange: signal<{ start: number; end: number }>({
+        start: 0,
+        end: 50,
+      }),
     };
 
     await TestBed.configureTestingModule({
@@ -1304,6 +1314,7 @@ describe('OpenPositionsComponent - Client-Side Sorting Removal', () => {
     trades: WritableSignal<Trade[]>;
     selectOpenPositions: WritableSignal<OpenPosition[]>;
     deleteOpenPosition: ReturnType<typeof vi.fn>;
+    visibleRange: WritableSignal<{ start: number; end: number }>;
   };
 
   beforeEach(async () => {
@@ -1311,6 +1322,10 @@ describe('OpenPositionsComponent - Client-Side Sorting Removal', () => {
       trades: signal<Trade[]>([]),
       selectOpenPositions: signal<OpenPosition[]>([]),
       deleteOpenPosition: vi.fn(),
+      visibleRange: signal<{ start: number; end: number }>({
+        start: 0,
+        end: 50,
+      }),
     };
 
     await TestBed.configureTestingModule({
@@ -1424,8 +1439,8 @@ describe('OpenPositionsComponent - Client-Side Sorting Removal', () => {
 });
 
 // Story AX.7: TDD Tests for Open Positions Virtual Data Access (Component)
-// Disabled in AX.7: Re-enable in AX.8
-describe.skip('OpenPositionsComponent - Virtual Data Access (AX.7)', () => {
+// Re-enabled in AX.8
+describe('OpenPositionsComponent - Virtual Data Access (AX.7)', () => {
   let component: OpenPositionsComponent;
   let fixture: ComponentFixture<OpenPositionsComponent>;
   let mockOpenPositionsService: {

@@ -35,4 +35,30 @@
 
 ### Status
 
-Approved
+In Progress
+
+### Agent Model Used
+
+Claude Opus 4.6
+
+### Change Log
+
+- Added `visibleRange` writable signal to `OpenPositionsComponentService` with default `{ start: 0, end: 50 }`
+- Modified `selectOpenPositions` computed to use visible-window loop: creates sparse array, only transforms items within `visibleRange`
+- Extracted `transformTradeToPosition` private method from inline loop logic
+- Added `visibleRange` signal to `OpenPositionsComponent`
+- Added `onRangeChange` handler that updates both component and service `visibleRange`
+- Bound `(renderedRangeChange)` event on `dms-base-table` in template
+- Re-enabled AX.7 TDD tests in both component and service spec files
+
+### File List
+
+- apps/dms-material/src/app/account-panel/open-positions/open-positions-component.service.ts (modified)
+- apps/dms-material/src/app/account-panel/open-positions/open-positions.component.ts (modified)
+- apps/dms-material/src/app/account-panel/open-positions/open-positions.component.html (modified)
+- apps/dms-material/src/app/account-panel/open-positions/open-positions-component.service.spec.ts (modified)
+- apps/dms-material/src/app/account-panel/open-positions/open-positions.component.spec.ts (modified)
+
+### Debug Log References
+
+### Completion Notes
