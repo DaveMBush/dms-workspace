@@ -59,7 +59,7 @@ export class BaseTableComponent<T extends { id: string }>
   readonly sortChange = output<Sort>();
   readonly rowClick = output<T>();
   readonly selectionChange = output<T[]>();
-  readonly renderedRangeChange = output<{ start: number; end: number }>();
+  readonly renderedRangeChange = output<ListRange>();
 
   // ViewChild for virtual scroll viewport
   viewport = viewChild<CdkVirtualScrollViewport>('viewport');
