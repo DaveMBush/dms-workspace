@@ -34,7 +34,7 @@
 
 ### Status
 
-In Progress
+Done
 
 ### Agent Model Used
 
@@ -56,4 +56,6 @@ Claude Opus 4.6 (copilot)
 
 ### Completion Notes
 
-(pending)
+- All 14 TDD RED phase tests written and disabled with .skip()
+- QA gate PASS, CodeRabbit clean review, CI passed
+- Merged via PR #657, issue #656 auto-closed
