@@ -35,7 +35,7 @@ function mapAccountToResponse(accountItem: AccountWithTrades): Account {
       indexes: tradeIds.slice(0, 10),
       length: tradeIds.length,
     },
-    soldTrades: [],
+    soldTrades: { startIndex: 0, indexes: [], length: 0 },
     divDeposits: {
       startIndex: 0,
       indexes: [],

@@ -9,7 +9,7 @@ import { Account } from './account.interface';
 // Disabled with describe.skip() to allow CI to pass
 // Will be re-enabled in Story AX.10
 
-describe.skip('Account soldTrades PartialArrayDefinition (AX.9)', () => {
+describe('Account soldTrades PartialArrayDefinition (AX.9)', () => {
   it('should accept PartialArrayDefinition shape for soldTrades', () => {
     const account: Account = {
       id: 'acc-1',

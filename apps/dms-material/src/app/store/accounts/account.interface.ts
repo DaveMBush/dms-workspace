@@ -7,7 +7,7 @@ export interface Account {
   id: string;
   name: string;
   openTrades: PartialArrayDefinition | SmartArray<Account, Trade>;
-  soldTrades: string[] | Trade[];
+  soldTrades: PartialArrayDefinition | SmartArray<Account, Trade>;
   divDeposits: PartialArrayDefinition | SmartArray<Account, DivDeposit>;
   months: { month: number; year: number }[];
 }

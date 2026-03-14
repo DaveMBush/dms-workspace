@@ -32,11 +32,12 @@ const indexesSchema = {
   },
 } as const;
 
-async function handleOpenTradesIndexes(request: {
-  body: IndexesParams;
-}): Promise<IndexesResponse> {
+async function handleTradeIndexes(
+  request: { body: IndexesParams },
+  isOpen: boolean
+): Promise<IndexesResponse> {
   const defaultState = { sort: undefined, filters: undefined };
-  const where = buildTradeWhere(defaultState, request.body.parentId, true);
+  const where = buildTradeWhere(defaultState, request.body.parentId, isOpen);
   const [ids, total] = await Promise.all([
     prisma.trades.findMany({
       where,
@@ -88,7 +89,10 @@ function handleGetAccountsIndexesRoute(fastify: FastifyInstance): void {
       _
     ): Promise<IndexesResponse> {
       if (request.body.childField === 'openTrades') {
-        return handleOpenTradesIndexes(request);
+        return handleTradeIndexes(request, true);
+      }
+      if (request.body.childField === 'soldTrades') {
+        return handleTradeIndexes(request, false);
       }
       if (request.body.childField === 'divDeposits') {
         return handleDivDepositsIndexes(request);

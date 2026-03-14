@@ -35,7 +35,7 @@ function makeSoldTrade(id: string) {
   return { id, ['sell_date' as string]: new Date('2024-01-15') };
 }
 
-describe.skip('buildAccountResponse - soldTrades as PartialArrayDefinition (AX.9)', () => {
+describe('buildAccountResponse - soldTrades as PartialArrayDefinition (AX.9)', () => {
   let app: FastifyInstance;
 
   beforeEach(async () => {

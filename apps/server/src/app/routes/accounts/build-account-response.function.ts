@@ -155,9 +155,13 @@ export async function buildAccountResponse(
       indexes: openTradeIds.slice(0, 10),
       length: openTradeIds.length,
     },
-    soldTrades: soldTrades.map(function mapSoldTradeId(trade) {
-      return trade.id;
-    }),
+    soldTrades: {
+      startIndex: 0,
+      indexes: soldTrades.slice(0, 10).map(function mapSoldTradeId(trade) {
+        return trade.id;
+      }),
+      length: soldTrades.length,
+    },
     divDeposits: {
       startIndex: 0,
       indexes: allDivDeposits.slice(0, 10).map(function mapDivDepositId(d) {
