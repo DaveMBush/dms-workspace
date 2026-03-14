@@ -9,11 +9,13 @@
 ## Context
 
 **Current System:**
+
 - Dividend Deposits table loops through all items (0..length)
 - `divDeposits` already uses `PartialArrayDefinition`
 - Server `/indexes` endpoint already exists
 
 **Implementation Approach:**
+
 - Write tests for `visibleRange` signal
 - Test `onRangeChange` method
 - Test computed signal uses visible-window loop pattern
@@ -65,4 +67,42 @@
 
 ### Status
 
-Approved
+In Progress
+
+### Agent Model Used
+
+Claude Opus 4.6 (copilot)
+
+### Tasks
+
+- [x] Write unit tests for visibleRange signal default value
+- [x] Write unit tests for onRangeChange method
+- [x] Write unit tests for dividends computed sparse array behavior
+- [x] Write unit tests for visible-window loop pattern
+- [x] Write edge case tests (range beyond data, empty data, reactivity)
+- [x] Disable all tests with `.skip()` for CI
+- [x] Verify lint passes
+- [x] Verify build passes
+- [x] Verify existing tests still pass
+
+### File List
+
+- apps/dms-material/src/app/account-panel/dividend-deposits/dividend-deposits.component.spec.ts (modified)
+- apps/dms-material/src/app/account-panel/dividend-deposits/dividend-deposits-component.service.spec.ts (new)
+
+### Change Log
+
+- Added `describe.skip` block "DividendDepositsComponent - Virtual Data Access (AX.3)" to component spec with 4 tests for `visibleRange` signal and `onRangeChange` method
+- Created new service spec file with `describe.skip` block "DividendDepositsComponentService - Virtual Data Access (AX.3)" containing 11 tests for sparse array behavior, visible-window loop, symbol/type resolution, and edge cases
+- All tests are in RED phase (test features that will be implemented in AX.4)
+- All tests disabled with `describe.skip()` to allow CI to pass
+
+### Debug Log References
+
+None
+
+### Completion Notes
+
+- 15 TDD tests total (4 component + 11 service) covering all acceptance criteria
+- Tests verify: visibleRange default, onRangeChange updates, sparse array length, visible-range-only transformation, undefined items outside range, visible-window loop pattern, symbol/type resolution, edge cases
+- Pre-existing test failures in Account Selection Integration block (60 tests on main) are unrelated
