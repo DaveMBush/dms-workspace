@@ -1,9 +1,14 @@
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import fastify, { FastifyInstance } from 'fastify';
+
+import registerAccountRoutes from './index';
 
 // Story AX.5: TDD Tests for openTrades PartialArrayDefinition conversion
-// RED phase — these tests define the expected server response shape
-// Disabled with describe.skip() to allow CI to pass
-// Will be re-enabled in Story AX.6
+// RED phase — these tests call the actual route and assert openTrades is
+// a PartialArrayDefinition shape. Currently the server returns string[],
+// so these tests will FAIL when un-skipped (correct RED behavior).
+// Disabled with describe.skip() to allow CI to pass.
+// Will be re-enabled in Story AX.6.
 
 // Hoisted mocks
 const { mockPrismaTrades, mockPrismaDivDeposits, mockPrismaAccounts } =
@@ -31,26 +36,39 @@ function makeTradeId(id: string): { id: string } {
 }
 
 describe.skip('buildAccountResponse - openTrades as PartialArrayDefinition (AX.5)', () => {
+  let app: FastifyInstance;
+
+  beforeEach(async () => {
+    app = fastify({ logger: false });
+    await app.register(registerAccountRoutes, { prefix: '/api/accounts' });
+    await app.ready();
+    mockPrismaTrades.findMany.mockReset();
+    mockPrismaDivDeposits.findMany.mockReset();
+    mockPrismaAccounts.findMany.mockReset();
+  });
+
+  afterEach(async () => {
+    await app.close();
+  });
+
   it('should return openTrades as PartialArrayDefinition with startIndex 0', async () => {
-    // Arrange: 15 open trades
     const openTradeIds = Array.from({ length: 15 }, function createId(_, i) {
       return makeTradeId(`trade-${i}`);
     });
+    mockPrismaAccounts.findMany.mockResolvedValue([
+      { id: 'acc-1', name: 'Test' },
+    ]);
     mockPrismaTrades.findMany.mockResolvedValue(openTradeIds);
     mockPrismaDivDeposits.findMany.mockResolvedValue([]);
 
-    // Act: call the route handler (will be implemented in AX.6)
-    // For now, define the expected shape
-    const expected = {
-      startIndex: 0,
-      indexes: openTradeIds.slice(0, 10).map(function mapId(t) {
-        return t.id;
-      }),
-      length: 15,
-    };
+    const response = await app.inject({
+      method: 'POST',
+      url: '/api/accounts',
+      payload: ['acc-1'],
+    });
 
-    // Assert: openTrades should be PartialArrayDefinition
-    expect(expected).toEqual({
+    const body = JSON.parse(response.body);
+    expect(body[0].openTrades).toEqual({
       startIndex: 0,
       indexes: [
         'trade-0',
@@ -69,70 +87,134 @@ describe.skip('buildAccountResponse - openTrades as PartialArrayDefinition (AX.5
   });
 
   it('should return first 10 trade IDs in indexes when more than 10 exist', async () => {
-    const allIds = Array.from({ length: 25 }, function createId(_, i) {
-      return `open-trade-${i}`;
+    const openTradeIds = Array.from({ length: 25 }, function createId(_, i) {
+      return makeTradeId(`trade-${i}`);
     });
-    const expectedIndexes = allIds.slice(0, 10);
+    mockPrismaAccounts.findMany.mockResolvedValue([
+      { id: 'acc-1', name: 'Test' },
+    ]);
+    mockPrismaTrades.findMany.mockResolvedValue(openTradeIds);
+    mockPrismaDivDeposits.findMany.mockResolvedValue([]);
 
-    expect(expectedIndexes).toHaveLength(10);
-    expect(expectedIndexes[0]).toBe('open-trade-0');
-    expect(expectedIndexes[9]).toBe('open-trade-9');
+    const response = await app.inject({
+      method: 'POST',
+      url: '/api/accounts',
+      payload: ['acc-1'],
+    });
+
+    const body = JSON.parse(response.body);
+    expect(body[0].openTrades.indexes).toHaveLength(10);
+    expect(body[0].openTrades.indexes[0]).toBe('trade-0');
+    expect(body[0].openTrades.indexes[9]).toBe('trade-9');
   });
 
   it('should return total length equal to all open trades count', async () => {
-    const totalOpenTrades = 42;
-    const expected = {
-      startIndex: 0,
-      indexes: expect.any(Array),
-      length: totalOpenTrades,
-    };
+    const openTradeIds = Array.from({ length: 42 }, function createId(_, i) {
+      return makeTradeId(`trade-${i}`);
+    });
+    mockPrismaAccounts.findMany.mockResolvedValue([
+      { id: 'acc-1', name: 'Test' },
+    ]);
+    mockPrismaTrades.findMany.mockResolvedValue(openTradeIds);
+    mockPrismaDivDeposits.findMany.mockResolvedValue([]);
 
-    expect(expected.length).toBe(42);
+    const response = await app.inject({
+      method: 'POST',
+      url: '/api/accounts',
+      payload: ['acc-1'],
+    });
+
+    const body = JSON.parse(response.body);
+    expect(body[0].openTrades.length).toBe(42);
   });
 
   it('should filter open trades by sell_date null', async () => {
-    // The where clause for open trades should include sell_date: null
-    // This verifies buildTradeWhere is called with isOpen=true
-    const openTradeWhere = {
-      accountId: 'acc-1',
-      OR: [{ sell_date: null }, { sell: 0 }],
-    };
+    mockPrismaAccounts.findMany.mockResolvedValue([
+      { id: 'acc-1', name: 'Test' },
+    ]);
+    mockPrismaTrades.findMany.mockResolvedValue([]);
+    mockPrismaDivDeposits.findMany.mockResolvedValue([]);
 
-    expect(openTradeWhere.OR).toContainEqual({ sell_date: null });
+    await app.inject({
+      method: 'POST',
+      url: '/api/accounts',
+      payload: ['acc-1'],
+    });
+
+    // Verify the open trades query includes sell_date: null filter
+    // The first findMany call is for open trades (getOpenTradeIds)
+    expect(mockPrismaTrades.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          accountId: 'acc-1',
+          OR: expect.arrayContaining([
+            expect.objectContaining({ sell_date: null }),
+          ]),
+        }),
+      })
+    );
   });
 
   it('should apply buildTradeOrderBy for open trades ordering', async () => {
-    // Default ordering when no sort specified
-    const defaultOrderBy = { createdAt: 'asc' };
-    expect(defaultOrderBy).toEqual({ createdAt: 'asc' });
+    mockPrismaAccounts.findMany.mockResolvedValue([
+      { id: 'acc-1', name: 'Test' },
+    ]);
+    mockPrismaTrades.findMany.mockResolvedValue([]);
+    mockPrismaDivDeposits.findMany.mockResolvedValue([]);
 
-    // Custom sort by buy_date
-    const customOrderBy = { buy_date: 'desc' };
-    expect(customOrderBy).toEqual({ buy_date: 'desc' });
+    await app.inject({
+      method: 'POST',
+      url: '/api/accounts',
+      payload: ['acc-1'],
+    });
+
+    // Default ordering when no sort header provided
+    expect(mockPrismaTrades.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        orderBy: { createdAt: 'asc' },
+      })
+    );
   });
 
   it('should return all IDs when fewer than 10 open trades exist', async () => {
     const openTradeIds = Array.from({ length: 5 }, function createId(_, i) {
-      return `trade-${i}`;
+      return makeTradeId(`trade-${i}`);
     });
-    const expected = {
-      startIndex: 0,
-      indexes: openTradeIds,
-      length: 5,
-    };
+    mockPrismaAccounts.findMany.mockResolvedValue([
+      { id: 'acc-1', name: 'Test' },
+    ]);
+    mockPrismaTrades.findMany.mockResolvedValue(openTradeIds);
+    mockPrismaDivDeposits.findMany.mockResolvedValue([]);
 
-    expect(expected.indexes).toHaveLength(5);
-    expect(expected.length).toBe(5);
+    const response = await app.inject({
+      method: 'POST',
+      url: '/api/accounts',
+      payload: ['acc-1'],
+    });
+
+    const body = JSON.parse(response.body);
+    expect(body[0].openTrades.indexes).toHaveLength(5);
+    expect(body[0].openTrades.length).toBe(5);
   });
 
-  it('should return empty indexes and length 0 when no open trades exist', async () => {
-    const expected = {
+  it('should return empty PartialArrayDefinition when no open trades exist', async () => {
+    mockPrismaAccounts.findMany.mockResolvedValue([
+      { id: 'acc-1', name: 'Test' },
+    ]);
+    mockPrismaTrades.findMany.mockResolvedValue([]);
+    mockPrismaDivDeposits.findMany.mockResolvedValue([]);
+
+    const response = await app.inject({
+      method: 'POST',
+      url: '/api/accounts',
+      payload: ['acc-1'],
+    });
+
+    const body = JSON.parse(response.body);
+    expect(body[0].openTrades).toEqual({
       startIndex: 0,
       indexes: [],
       length: 0,
-    };
-
-    expect(expected.indexes).toHaveLength(0);
-    expect(expected.length).toBe(0);
+    });
   });
 });
