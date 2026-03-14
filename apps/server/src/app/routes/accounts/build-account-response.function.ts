@@ -42,12 +42,17 @@ function combineAndSortMonths(
   months1: Set<string>,
   months2: Set<string>
 ): MonthData[] {
-  const combinedMonths = [...months1].concat([...months2]);
+  const combinedMonths = [...new Set([...months1, ...months2])];
   const sortedMonths = combinedMonths.toSorted(function sortMonthsDescending(
     a: string,
     b: string
   ) {
-    return b.localeCompare(a);
+    const [aYear, aMonth] = a.split('-').map(Number);
+    const [bYear, bMonth] = b.split('-').map(Number);
+    if (aYear !== bYear) {
+      return bYear - aYear;
+    }
+    return bMonth - aMonth;
   });
   return sortedMonths.map(function parseMonth(m) {
     const [year, month] = m.split('-');

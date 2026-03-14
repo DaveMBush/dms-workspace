@@ -10,7 +10,39 @@ import { NewAccount } from './new-account.interface';
 interface AccountWithTrades {
   id: string;
   name: string;
-  trades: Array<{ id: string }>;
+  trades: Array<{ id: string; sell_date: Date | null; sell: number }>;
+}
+
+function isOpenTrade(trade: { sell_date: Date | null; sell: number }): boolean {
+  return trade.sell_date === null || trade.sell === 0;
+}
+
+function mapTradeToId(trade: { id: string }): string {
+  return trade.id;
+}
+
+function getOpenTradeIds(accountItem: AccountWithTrades): string[] {
+  return accountItem.trades.filter(isOpenTrade).map(mapTradeToId);
+}
+
+function mapAccountToResponse(accountItem: AccountWithTrades): Account {
+  const tradeIds = getOpenTradeIds(accountItem);
+  return {
+    id: accountItem.id,
+    name: accountItem.name,
+    openTrades: {
+      startIndex: 0,
+      indexes: tradeIds.slice(0, 10),
+      length: tradeIds.length,
+    },
+    soldTrades: [],
+    divDeposits: {
+      startIndex: 0,
+      indexes: [],
+      length: 0,
+    },
+    months: [],
+  };
 }
 
 function handleGetAccountsRoute(fastify: FastifyInstance): void {
@@ -70,31 +102,8 @@ function handleAddAccountRoute(fastify: FastifyInstance): void {
           trades: true,
         },
       });
-      function mapTradeToId(trade: { id: string }): string {
-        return trade.id;
-      }
 
-      function mapNewAccount(accountItem: AccountWithTrades): Account {
-        const tradeIds = accountItem.trades.map(mapTradeToId);
-        return {
-          id: accountItem.id,
-          name: accountItem.name,
-          openTrades: {
-            startIndex: 0,
-            indexes: tradeIds.slice(0, 10),
-            length: tradeIds.length,
-          },
-          soldTrades: [],
-          divDeposits: {
-            startIndex: 0,
-            indexes: [],
-            length: 0,
-          },
-          months: [],
-        };
-      }
-
-      const response = account.map(mapNewAccount);
+      const response = account.map(mapAccountToResponse);
       reply.status(200).send(response);
       return response;
     }
@@ -133,31 +142,7 @@ function handleUpdateAccountRoute(fastify: FastifyInstance): void {
         include: { trades: true },
       });
 
-      function mapTradeToIdForUpdate(trade: { id: string }): string {
-        return trade.id;
-      }
-
-      function mapUpdatedAccount(accountItem: AccountWithTrades): Account {
-        const tradeIds = accountItem.trades.map(mapTradeToIdForUpdate);
-        return {
-          id: accountItem.id,
-          name: accountItem.name,
-          openTrades: {
-            startIndex: 0,
-            indexes: tradeIds.slice(0, 10),
-            length: tradeIds.length,
-          },
-          soldTrades: [],
-          divDeposits: {
-            startIndex: 0,
-            indexes: [],
-            length: 0,
-          },
-          months: [],
-        };
-      }
-
-      const result = accounts.map(mapUpdatedAccount);
+      const result = accounts.map(mapAccountToResponse);
       reply.status(200).send(result);
       return result;
     }
