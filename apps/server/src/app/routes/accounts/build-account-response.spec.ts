@@ -35,7 +35,7 @@ function makeTradeId(id: string): { id: string } {
   return { id };
 }
 
-describe.skip('buildAccountResponse - openTrades as PartialArrayDefinition (AX.5)', () => {
+describe('buildAccountResponse - openTrades as PartialArrayDefinition (AX.5)', () => {
   let app: FastifyInstance;
 
   beforeEach(async () => {

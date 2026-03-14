@@ -25,7 +25,7 @@ function makeTradeId(id: string): { id: string } {
   return { id };
 }
 
-describe.skip('GET /indexes - openTrades childField (AX.5)', () => {
+describe('GET /indexes - openTrades childField (AX.5)', () => {
   let app: FastifyInstance;
 
   beforeEach(async () => {
