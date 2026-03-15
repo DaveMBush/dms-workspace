@@ -107,7 +107,10 @@ test.describe('Universe Screen E2E', () => {
       await riskGroupSelect.click();
       await page.waitForTimeout(300);
 
-      const incomeOption = page.getByRole('option', { name: 'Income' });
+      const incomeOption = page.getByRole('option', {
+        name: 'Income',
+        exact: true,
+      });
       await incomeOption.click();
       await page.waitForTimeout(500);
 
@@ -192,7 +195,7 @@ test.describe('Universe Screen E2E', () => {
     });
 
     test('should sort by Yield %', async ({ page }) => {
-      const header = page.getByRole('button', { name: 'Yield %' });
+      const header = page.getByRole('button', { name: 'Yield %', exact: true });
       await header.click();
       await page.waitForTimeout(500);
 
