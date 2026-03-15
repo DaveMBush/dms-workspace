@@ -21,7 +21,7 @@ Ensure the migrated dms-material application is fully tested, polished, and vali
 ## Stories
 
 1. **Story AY.1:** Unit Test Migration
-2. **Story AY.2:** E2E Test Updates  
+2. **Story AY.2:** E2E Test Updates
 3. **Story AY.3:** TDD - Accessibility Tests
 4. **Story AY.4:** Implement - Accessibility Fixes
 5. **Story AY.5:** TDD - Performance Tests
