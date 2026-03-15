@@ -5,6 +5,7 @@ import { buildDivDepositOrderBy } from './build-div-deposit-order-by.function';
 import { buildDivDepositWhere } from './build-div-deposit-where.function';
 import { buildTradeOrderBy } from './build-trade-order-by.function';
 import { buildTradeWhere } from './build-trade-where.function';
+import { getTradeComputedValue } from './get-trade-computed-value.function';
 import { isComputedTradeSort } from './is-computed-trade-sort.function';
 
 interface MonthData {
@@ -58,34 +59,6 @@ function combineAndSortMonths(
     const [year, month] = m.split('-');
     return { year: parseInt(year, 10), month: parseInt(month, 10) };
   });
-}
-
-interface TradeWithComputed {
-  id: string;
-  buy: number;
-  quantity: number;
-  universe: { last_price: number };
-}
-
-function computeUnrealizedGain(trade: TradeWithComputed): number {
-  return (trade.universe.last_price - trade.buy) * trade.quantity;
-}
-
-function computeUnrealizedGainPercent(trade: TradeWithComputed): number {
-  if (trade.buy <= 0) {
-    return 0;
-  }
-  return ((trade.universe.last_price - trade.buy) / trade.buy) * 100;
-}
-
-function getTradeComputedValue(
-  field: string,
-  trade: TradeWithComputed
-): number {
-  if (field === 'unrealizedGain') {
-    return computeUnrealizedGain(trade);
-  }
-  return computeUnrealizedGainPercent(trade);
 }
 
 async function getOpenTradeIds(
