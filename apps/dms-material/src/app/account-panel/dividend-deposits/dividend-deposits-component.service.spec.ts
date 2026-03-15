@@ -295,4 +295,53 @@ describe('DividendDepositsComponentService - Virtual Data Access (AX.3)', () => 
     // Items from old range should no longer be defined
     expect(secondResult[0]).toBeUndefined();
   });
+
+  // AX.14: Single item edge case
+  it('should handle single div deposit array correctly', () => {
+    mockCurrentAccount.set({
+      id: 'acc-1',
+      name: 'Test Account',
+      divDeposits: [createDivDeposit({ id: 'single-dep', amount: 42 })],
+      openTrades: [],
+      soldTrades: [],
+      months: [],
+    });
+
+    const dividends = service.dividends();
+
+    expect(dividends.length).toBe(1);
+    expect(dividends[0]).toBeDefined();
+    expect(dividends[0].id).toBe('single-dep');
+    expect(dividends[0].amount).toBe(42);
+  });
+
+  // AX.14: Scroll to beginning after scrolling to end
+  it('should return correct data when scrolling back to beginning', () => {
+    // Scroll to end
+    service.visibleRange.set({ start: 190, end: 200 });
+    const endResult = service.dividends();
+    expect(endResult[190]).toBeDefined();
+    expect(endResult[0]).toBeUndefined();
+
+    // Scroll back to beginning
+    service.visibleRange.set({ start: 0, end: 10 });
+    const beginResult = service.dividends();
+    expect(beginResult[0]).toBeDefined();
+    expect(beginResult[0].id).toBe('dep-0');
+    expect(beginResult[190]).toBeUndefined();
+  });
+
+  // AX.14: Scroll to exact end boundary
+  it('should handle range exactly at end of array', () => {
+    service.visibleRange.set({ start: 195, end: 200 });
+
+    const dividends = service.dividends();
+
+    expect(dividends.length).toBe(200);
+    for (let i = 195; i < 200; i++) {
+      expect(dividends[i]).toBeDefined();
+      expect(dividends[i].id).toBe(`dep-${i}`);
+    }
+    expect(dividends[194]).toBeUndefined();
+  });
 });

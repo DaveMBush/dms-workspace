@@ -193,4 +193,94 @@ describe('BaseTableComponent - Rendered Range Tracking', () => {
 
     expect(spy).not.toHaveBeenCalled();
   });
+
+  // AX.14: Single data item edge case
+  it('should emit range for single data item', () => {
+    fixture.componentRef.setInput('data', [{ id: '1', name: 'Only Row' }]);
+    mockViewport();
+    fixture.detectChanges();
+
+    const emitted: ListRange[] = [];
+    component.renderedRangeChange.subscribe(function captureRange(
+      range: ListRange
+    ) {
+      emitted.push(range);
+    });
+
+    rangeSubject.next({ start: 0, end: 1 });
+    vi.advanceTimersByTime(100);
+
+    expect(emitted).toEqual([{ start: 0, end: 1 }]);
+  });
+
+  // AX.14: Scroll to end of dataset
+  it('should emit range at end of dataset', () => {
+    const data = Array.from({ length: 100 }, function createRow(_, i) {
+      return { id: String(i), name: `Row ${i}` };
+    });
+    fixture.componentRef.setInput('data', data);
+    mockViewport();
+    fixture.detectChanges();
+
+    const emitted: ListRange[] = [];
+    component.renderedRangeChange.subscribe(function captureRange(
+      range: ListRange
+    ) {
+      emitted.push(range);
+    });
+
+    rangeSubject.next({ start: 90, end: 100 });
+    vi.advanceTimersByTime(100);
+
+    expect(emitted).toEqual([{ start: 90, end: 100 }]);
+  });
+
+  // AX.14: Scroll to end then back to beginning
+  it('should emit correct ranges when scrolling to end then back to beginning', () => {
+    const data = Array.from({ length: 100 }, function createRow(_, i) {
+      return { id: String(i), name: `Row ${i}` };
+    });
+    fixture.componentRef.setInput('data', data);
+    mockViewport();
+    fixture.detectChanges();
+
+    const emitted: ListRange[] = [];
+    component.renderedRangeChange.subscribe(function captureRange(
+      range: ListRange
+    ) {
+      emitted.push(range);
+    });
+
+    // Scroll to end
+    rangeSubject.next({ start: 90, end: 100 });
+    vi.advanceTimersByTime(100);
+
+    // Scroll back to beginning
+    rangeSubject.next({ start: 0, end: 10 });
+    vi.advanceTimersByTime(100);
+
+    expect(emitted).toEqual([
+      { start: 90, end: 100 },
+      { start: 0, end: 10 },
+    ]);
+  });
+
+  // AX.14: Empty data array
+  it('should emit range even with empty data array', () => {
+    fixture.componentRef.setInput('data', []);
+    mockViewport();
+    fixture.detectChanges();
+
+    const emitted: ListRange[] = [];
+    component.renderedRangeChange.subscribe(function captureRange(
+      range: ListRange
+    ) {
+      emitted.push(range);
+    });
+
+    rangeSubject.next({ start: 0, end: 0 });
+    vi.advanceTimersByTime(100);
+
+    expect(emitted).toEqual([{ start: 0, end: 0 }]);
+  });
 });

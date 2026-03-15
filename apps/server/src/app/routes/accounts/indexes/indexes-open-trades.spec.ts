@@ -188,4 +188,47 @@ describe('GET /indexes - openTrades childField (AX.5)', () => {
     expect(body.indexes).toEqual([]);
     expect(body.length).toBe(0);
   });
+
+  // AX.14: Single item edge case
+  it('should handle single open trade correctly', async () => {
+    mockPrismaTrades.findMany.mockResolvedValue([makeTradeId('only-trade')]);
+    mockPrismaTrades.count.mockResolvedValue(1);
+
+    const response = await app.inject({
+      method: 'POST',
+      url: '/api/accounts/indexes',
+      payload: {
+        startIndex: 0,
+        length: 10,
+        parentId: 'acc-1',
+        childField: 'openTrades',
+      },
+    });
+
+    const body = JSON.parse(response.body);
+    expect(body.indexes).toEqual(['only-trade']);
+    expect(body.length).toBe(1);
+  });
+
+  // AX.14: Scroll to end edge case
+  it('should handle startIndex at end of dataset', async () => {
+    mockPrismaTrades.findMany.mockResolvedValue([makeTradeId('trade-99')]);
+    mockPrismaTrades.count.mockResolvedValue(100);
+
+    const response = await app.inject({
+      method: 'POST',
+      url: '/api/accounts/indexes',
+      payload: {
+        startIndex: 99,
+        length: 10,
+        parentId: 'acc-1',
+        childField: 'openTrades',
+      },
+    });
+
+    const body = JSON.parse(response.body);
+    expect(body.startIndex).toBe(99);
+    expect(body.indexes).toEqual(['trade-99']);
+    expect(body.length).toBe(100);
+  });
 });
