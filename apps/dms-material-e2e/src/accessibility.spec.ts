@@ -222,6 +222,7 @@ test.describe.skip('Accessibility - Keyboard Navigation', () => {
       await expect(passwordInput).toBeFocused();
 
       await page.keyboard.type('password123');
+      await page.keyboard.press('Tab'); // to password visibility toggle
       await page.keyboard.press('Tab'); // to remember me checkbox
       await page.keyboard.press('Tab'); // to submit button
 
@@ -249,27 +250,34 @@ test.describe.skip('Accessibility - Keyboard Navigation', () => {
     test('should show focus indicators on all interactive elements', async ({
       page,
     }) => {
-      const interactiveElements = [
-        'input[type="email"]',
-        'input[type="password"]',
-        'button[matIconSuffix]',
-        'mat-checkbox',
-        'button[type="submit"]',
-      ];
+      // Drive focus via Tab to trigger :focus-visible, not .focus()
+      const expectedCount = 5; // email, password, toggle, checkbox, submit
+      const focusIndicators: { tag: string; hasIndicator: boolean }[] = [];
 
-      for (const selector of interactiveElements) {
-        const element = page.locator(selector).first();
-        await element.focus();
-
-        const outline = await element.evaluate(function getOutlineStyle(
-          el: Element
-        ): string {
-          return window.getComputedStyle(el).outlineStyle;
+      for (let i = 0; i < expectedCount; i++) {
+        await page.keyboard.press('Tab');
+        const result = await page.evaluate(function checkFocusIndicator(): {
+          tag: string;
+          hasIndicator: boolean;
+        } {
+          const el = document.activeElement;
+          if (!el) {
+            return { tag: 'NONE', hasIndicator: false };
+          }
+          const computed = window.getComputedStyle(el);
+          return {
+            tag: el.tagName,
+            hasIndicator:
+              computed.outlineStyle !== 'none' || computed.boxShadow !== 'none',
+          };
         });
+        focusIndicators.push(result);
+      }
 
+      for (const indicator of focusIndicators) {
         expect(
-          outline !== 'none',
-          `Focus indicator missing on ${selector}`
+          indicator.hasIndicator,
+          `Focus indicator missing on ${indicator.tag}`
         ).toBeTruthy();
       }
     });
@@ -315,6 +323,8 @@ test.describe.skip('Accessibility - Keyboard Navigation', () => {
       await navLinks.first().focus();
       await expect(navLinks.first()).toBeFocused();
 
+      const initialUrl = page.url();
+
       // arrow/tab through nav links
       for (let i = 1; i < Math.min(count, 5); i++) {
         await page.keyboard.press('Tab');
@@ -322,8 +332,10 @@ test.describe.skip('Accessibility - Keyboard Navigation', () => {
 
       // activate a link with Enter
       await page.keyboard.press('Enter');
-      // page should navigate
-      await page.waitForTimeout(1000);
+
+      // verify navigation occurred
+      await page.waitForTimeout(2000);
+      expect(page.url()).not.toBe(initialUrl);
     });
   });
 
@@ -340,69 +352,77 @@ test.describe.skip('Accessibility - Keyboard Navigation', () => {
     });
 
     test('should trap focus within dialog', async ({ page }) => {
-      // Open add-symbol dialog if available
       const addButton = page.locator('button', { hasText: /add/i });
-      if ((await addButton.count()) > 0) {
-        await addButton.first().click();
+      expect(
+        await addButton.count(),
+        'Add button trigger must exist on universe page'
+      ).toBeGreaterThan(0);
 
-        // wait for dialog
-        await page.waitForSelector('mat-dialog-container', {
-          state: 'visible',
-          timeout: 10000,
+      await addButton.first().click();
+
+      // wait for dialog
+      await page.waitForSelector('mat-dialog-container', {
+        state: 'visible',
+        timeout: 10000,
+      });
+
+      // tab through dialog elements
+      const dialogFocusedTags: string[] = [];
+      for (let i = 0; i < 20; i++) {
+        await page.keyboard.press('Tab');
+        const tag = await page.evaluate(function getActiveTag(): string {
+          const el = document.activeElement;
+          return el?.closest('mat-dialog-container') ? el.tagName : 'OUTSIDE';
         });
-
-        // tab through dialog elements
-        const dialogFocusedTags: string[] = [];
-        for (let i = 0; i < 20; i++) {
-          await page.keyboard.press('Tab');
-          const tag = await page.evaluate(function getActiveTag(): string {
-            const el = document.activeElement;
-            return el?.closest('mat-dialog-container') ? el.tagName : 'OUTSIDE';
-          });
-          dialogFocusedTags.push(tag);
-        }
-
-        // focus should never leave the dialog
-        expect(dialogFocusedTags).not.toContain('OUTSIDE');
+        dialogFocusedTags.push(tag);
       }
+
+      // focus should never leave the dialog
+      expect(dialogFocusedTags).not.toContain('OUTSIDE');
     });
 
     test('should close dialog with Escape key', async ({ page }) => {
       const addButton = page.locator('button', { hasText: /add/i });
-      if ((await addButton.count()) > 0) {
-        await addButton.first().click();
+      expect(
+        await addButton.count(),
+        'Add button trigger must exist on universe page'
+      ).toBeGreaterThan(0);
 
-        await page.waitForSelector('mat-dialog-container', {
-          state: 'visible',
-          timeout: 10000,
-        });
+      await addButton.first().click();
 
-        await page.keyboard.press('Escape');
+      await page.waitForSelector('mat-dialog-container', {
+        state: 'visible',
+        timeout: 10000,
+      });
 
-        await expect(page.locator('mat-dialog-container')).not.toBeVisible();
-      }
+      await page.keyboard.press('Escape');
+
+      await expect(page.locator('mat-dialog-container')).not.toBeVisible();
     });
 
     test('should return focus to trigger after dialog close', async ({
       page,
     }) => {
       const addButton = page.locator('button', { hasText: /add/i });
-      if ((await addButton.count()) > 0) {
-        await addButton.first().focus();
-        await page.keyboard.press('Enter');
+      expect(
+        await addButton.count(),
+        'Add button trigger must exist on universe page'
+      ).toBeGreaterThan(0);
 
-        await page.waitForSelector('mat-dialog-container', {
-          state: 'visible',
-          timeout: 10000,
-        });
+      await addButton.first().focus();
+      await page.keyboard.press('Enter');
 
-        await page.keyboard.press('Escape');
+      await page.waitForSelector('mat-dialog-container', {
+        state: 'visible',
+        timeout: 10000,
+      });
 
-        await expect(page.locator('mat-dialog-container')).not.toBeVisible();
+      await page.keyboard.press('Escape');
 
-        // focus should return to the trigger button
-        await expect(addButton.first()).toBeFocused();
-      }
+      await expect(page.locator('mat-dialog-container')).not.toBeVisible();
+
+      // focus should return to the trigger button
+      await expect(addButton.first()).toBeFocused();
     });
   });
 
@@ -424,32 +444,45 @@ test.describe.skip('Accessibility - Keyboard Navigation', () => {
       const headers = page.locator('th.mat-mdc-header-cell[mat-sort-header]');
       const headerCount = await headers.count();
 
-      if (headerCount > 0) {
-        await headers.first().focus();
-        await expect(headers.first()).toBeFocused();
+      expect(
+        headerCount,
+        'Sortable table headers must be present'
+      ).toBeGreaterThan(0);
 
-        // Enter should trigger sort
-        await page.keyboard.press('Enter');
-        await page.waitForTimeout(500);
-      }
+      await headers.first().focus();
+      await expect(headers.first()).toBeFocused();
+
+      // Enter should trigger sort — verify aria-sort changes
+      const sortBefore = await headers.first().getAttribute('aria-sort');
+
+      await page.keyboard.press('Enter');
+      await page.waitForTimeout(500);
+
+      const sortAfter = await headers.first().getAttribute('aria-sort');
+
+      expect(sortAfter, 'Sort state should change after Enter').not.toBe(
+        sortBefore
+      );
     });
 
     test('should skip disabled elements during tab navigation', async ({
       page,
     }) => {
-      // Tab through and verify disabled elements are skipped
-      const focusedDisabledCount = await page.evaluate(
-        function countDisabledFocused(): number {
-          let count = 0;
-          for (let i = 0; i < 30; i++) {
+      // Tab through elements and verify none that receive focus are disabled
+      let focusedDisabledCount = 0;
+
+      for (let i = 0; i < 30; i++) {
+        await page.keyboard.press('Tab');
+        const isDisabled = await page.evaluate(
+          function checkDisabledFocus(): boolean {
             const el = document.activeElement;
-            if (el instanceof HTMLElement && el.hasAttribute('disabled')) {
-              count++;
-            }
+            return el instanceof HTMLElement && el.hasAttribute('disabled');
           }
-          return count;
+        );
+        if (isDisabled) {
+          focusedDisabledCount++;
         }
-      );
+      }
 
       expect(focusedDisabledCount).toBe(0);
     });
@@ -628,45 +661,49 @@ test.describe.skip('Accessibility - Visual Requirements', () => {
       timeout: 15000,
     });
 
-    const buttons = page.locator('button:not([disabled])');
-    const buttonCount = await buttons.count();
+    // Drive focus via Tab to trigger :focus-visible
+    const focusResults: { tag: string; hasIndicator: boolean }[] = [];
 
-    for (let i = 0; i < Math.min(buttonCount, 5); i++) {
-      const button = buttons.nth(i);
-      await button.focus();
-
-      const styles = await button.evaluate(function getFocusStyles(
-        el: Element
-      ): {
-        outline: string;
-        boxShadow: string;
+    for (let i = 0; i < 10; i++) {
+      await page.keyboard.press('Tab');
+      const result = await page.evaluate(function checkFocusIndicator(): {
+        tag: string;
+        hasIndicator: boolean;
       } {
+        const el = document.activeElement;
+        if (!el) {
+          return { tag: 'NONE', hasIndicator: false };
+        }
         const computed = window.getComputedStyle(el);
         return {
-          outline: computed.outlineStyle,
-          boxShadow: computed.boxShadow,
+          tag: el.tagName,
+          hasIndicator:
+            computed.outlineStyle !== 'none' || computed.boxShadow !== 'none',
         };
       });
+      focusResults.push(result);
+    }
 
-      const hasFocusIndicator =
-        styles.outline !== 'none' || styles.boxShadow !== 'none';
-
+    for (const result of focusResults) {
       expect(
-        hasFocusIndicator,
-        `Button ${i} has no visible focus indicator`
+        result.hasIndicator,
+        `Focus indicator missing on ${result.tag}`
       ).toBeTruthy();
     }
   });
 
   // ─── Zoom Support ────────────────────────────────────────────────────
 
-  test('should remain usable at 200% zoom', async ({ page }) => {
+  test('should reflow correctly at narrow viewport (simulated zoom)', async ({
+    page,
+  }) => {
     await page.goto('/global/universe', { waitUntil: 'domcontentloaded' });
 
-    // simulate 200% zoom via viewport scaling
+    // Simulate narrow viewport to test reflow (true browser zoom
+    // cannot be automated — see manual test plans for 200% zoom)
     await page.setViewportSize({ width: 640, height: 360 });
 
-    // content should still be visible without horizontal scroll issues
+    // content should still be visible without extreme horizontal overflow
     const bodyWidth = await page.evaluate(
       function getBodyScrollWidth(): number {
         return document.body.scrollWidth;
