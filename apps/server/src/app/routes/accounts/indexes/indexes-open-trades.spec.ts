@@ -208,6 +208,9 @@ describe('GET /indexes - openTrades childField (AX.5)', () => {
     const body = JSON.parse(response.body);
     expect(body.indexes).toEqual(['only-trade']);
     expect(body.length).toBe(1);
+    expect(mockPrismaTrades.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ skip: 0, take: 10 })
+    );
   });
 
   // AX.14: Scroll to end edge case
@@ -230,5 +233,8 @@ describe('GET /indexes - openTrades childField (AX.5)', () => {
     expect(body.startIndex).toBe(99);
     expect(body.indexes).toEqual(['trade-99']);
     expect(body.length).toBe(100);
+    expect(mockPrismaTrades.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ skip: 99, take: 10 })
+    );
   });
 });

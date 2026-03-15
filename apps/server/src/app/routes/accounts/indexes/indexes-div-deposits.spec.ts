@@ -178,7 +178,7 @@ describe('GET /indexes - divDeposits childField (AX.14)', () => {
     mockPrismaDivDeposits.findMany.mockResolvedValue([makeDepositId('dep-99')]);
     mockPrismaDivDeposits.count.mockResolvedValue(100);
 
-    await app.inject({
+    const endResponse = await app.inject({
       method: 'POST',
       url: '/api/accounts/indexes',
       payload: {
@@ -188,6 +188,12 @@ describe('GET /indexes - divDeposits childField (AX.14)', () => {
         childField: 'divDeposits',
       },
     });
+
+    const endBody = JSON.parse(endResponse.body);
+    expect(endResponse.statusCode).toBe(200);
+    expect(endBody.startIndex).toBe(99);
+    expect(endBody.indexes).toEqual(['dep-99']);
+    expect(endBody.length).toBe(100);
 
     // Second request: scroll back to beginning
     const beginIds = Array.from({ length: 10 }, function createId(_, i) {
