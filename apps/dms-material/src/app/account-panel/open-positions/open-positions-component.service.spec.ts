@@ -356,4 +356,60 @@ describe('OpenPositionsComponentService - Virtual Data Access (AX.7)', () => {
     expect(firstPosition.targetGain).toBeDefined();
     expect(firstPosition.targetSell).toBeDefined();
   });
+
+  // AX.14: Single item edge case
+  it('should handle single open trade array correctly', () => {
+    mockCurrentAccount.set({
+      id: 'acc-1',
+      name: 'Test Account',
+      openTrades: [
+        createOpenTrade({
+          id: 'single-trade',
+          buy: 100,
+          quantity: 10,
+          universeId: 'universe-1',
+        }),
+      ],
+      divDeposits: [],
+      soldTrades: [],
+      months: [],
+    });
+
+    const positions = service.selectOpenPositions();
+
+    expect(positions.length).toBe(1);
+    expect(positions[0]).toBeDefined();
+    expect(positions[0].id).toBe('single-trade');
+    expect(positions[0].symbol).toBe('AAPL');
+  });
+
+  // AX.14: Scroll to beginning after scrolling to end
+  it('should return correct data when scrolling back to beginning', () => {
+    // Scroll to end
+    service.visibleRange.set({ start: 190, end: 200 });
+    const endResult = service.selectOpenPositions();
+    expect(endResult[190]).toBeDefined();
+    expect(endResult[0]).toBeUndefined();
+
+    // Scroll back to beginning
+    service.visibleRange.set({ start: 0, end: 10 });
+    const beginResult = service.selectOpenPositions();
+    expect(beginResult[0]).toBeDefined();
+    expect(beginResult[0].id).toBe('trade-0');
+    expect(beginResult[190]).toBeUndefined();
+  });
+
+  // AX.14: Scroll to exact end boundary
+  it('should handle range exactly at end of array', () => {
+    service.visibleRange.set({ start: 195, end: 200 });
+
+    const positions = service.selectOpenPositions();
+
+    expect(positions.length).toBe(200);
+    for (let i = 195; i < 200; i++) {
+      expect(positions[i]).toBeDefined();
+      expect(positions[i].id).toBe(`trade-${i}`);
+    }
+    expect(positions[194]).toBeUndefined();
+  });
 });
