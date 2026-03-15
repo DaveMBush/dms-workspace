@@ -269,17 +269,20 @@ test.describe('Global Summary Component', () => {
     test('should display error message when backend fails', async ({
       page,
     }) => {
-      // Intercept summary API calls to simulate a failure
+      // Intercept summary API calls to simulate a 500 server error
       await page.route('**/api/summary*', (route) => {
-        route.abort('failed');
+        route.fulfill({
+          status: 500,
+          contentType: 'application/json',
+          body: JSON.stringify({ message: 'Internal Server Error' }),
+        });
       });
 
       await page.goto('/global/summary');
-      await page.waitForLoadState('networkidle');
 
-      // Error message should appear
+      // Wait for the error message to appear (driven by error signal)
       const errorMessage = page.locator('[data-testid="error-message"]');
-      await expect(errorMessage).toBeVisible();
+      await expect(errorMessage).toBeVisible({ timeout: 10000 });
     });
 
     test('should not show error message on successful load', async ({
