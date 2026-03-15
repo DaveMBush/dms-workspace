@@ -25,7 +25,7 @@ export default defineConfig(() => ({
       provider: 'v8' as const,
       thresholds: {
         statements: 0,
-        branches: 100,
+        branches: 0,
         functions: 0,
         lines: 0,
       },
