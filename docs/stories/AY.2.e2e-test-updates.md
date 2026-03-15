@@ -166,7 +166,7 @@ pnpm nx run dms-material-e2e:e2e
 
 ### Status
 
-Draft
+Approved
 
 ### Data Management
 

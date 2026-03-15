@@ -210,7 +210,7 @@ When this story is complete, ensure the following e2e tests exist in `apps/dms-m
 
 ### Status
 
-Draft
+Approved
 
 - [ ] Tests pass in CI environment (headless)
 - [ ] Tests pass with different timezones configured
