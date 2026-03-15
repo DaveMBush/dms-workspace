@@ -199,6 +199,19 @@ When this story is complete, ensure the following e2e tests exist in `apps/dms-m
 
 ### Edge Cases
 
+## Related Stories
+
+- **Next**: Story AY.2 (E2E tests)
+- **Epic**: Epic AY
+
+---
+
+## Dev Agent Record
+
+### Status
+
+Draft
+
 - [ ] Tests pass in CI environment (headless)
 - [ ] Tests pass with different timezones configured
 - [ ] Tests handle async operations correctly (no race conditions)

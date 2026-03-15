@@ -388,3 +388,17 @@ When this story is complete, ensure the following e2e tests exist in `apps/dms-m
 - [ ] No excessive repaints (DevTools paint flashing)
 
 Run `pnpm nx run dms-material-e2e:e2e` to verify all e2e tests pass.
+
+## Related Stories
+
+- **Previous**: Story AY.4 (accessibility fixes)
+- **Next**: Story AY.6 (performance optimizations)
+- **Epic**: Epic AY
+
+---
+
+## Dev Agent Record
+
+### Status
+
+Draft

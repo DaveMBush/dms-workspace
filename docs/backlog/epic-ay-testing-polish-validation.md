@@ -56,7 +56,7 @@ Ensure the migrated dms-material application is fully tested, polished, and vali
 
 ## Estimated Effort
 
-3-4 business days
+5-7 business days (6 stories)
 
 ## Definition of Done
 

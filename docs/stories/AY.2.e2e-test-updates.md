@@ -154,6 +154,20 @@ pnpm nx run dms-material-e2e:e2e
 - [ ] Tab navigation in account panel
 - [ ] Theme toggle
 
+## Related Stories
+
+- **Previous**: Story AY.1 (unit tests)
+- **Next**: Story AY.3 (TDD accessibility)
+- **Epic**: Epic AY
+
+---
+
+## Dev Agent Record
+
+### Status
+
+Draft
+
 ### Data Management
 
 - [ ] View open positions

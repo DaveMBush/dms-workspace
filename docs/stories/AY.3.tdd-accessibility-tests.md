@@ -256,3 +256,17 @@ When this story is complete, ensure the following e2e tests exist in `apps/dms-m
 - [ ] Multi-step forms indicate progress
 
 Run `pnpm nx run dms-material-e2e:e2e` to verify all e2e tests pass.
+
+## Related Stories
+
+- **Previous**: Story AY.2 (E2E tests)
+- **Next**: Story AY.4 (implement accessibility fixes)
+- **Epic**: Epic AY
+
+---
+
+## Dev Agent Record
+
+### Status
+
+Draft
