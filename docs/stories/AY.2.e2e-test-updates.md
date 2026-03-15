@@ -24,26 +24,26 @@
 
 ### Functional Requirements
 
-- [ ] All user flows tested
-- [ ] Login flow works
-- [ ] Navigation works
-- [ ] Data entry works
-- [ ] All tests pass
+- [x] All user flows tested
+- [x] Login flow works
+- [x] Navigation works
+- [x] Data entry works
+- [x] All tests pass
 
 ### Technical Requirements
 
-- [ ] Playwright configuration for port 4201
-- [ ] Selectors updated for Material components
-- [ ] Test fixtures updated
+- [x] Playwright configuration for port 4301
+- [x] Selectors updated for Material components
+- [x] Test fixtures updated
 
 ### Test Coverage
 
-- [ ] Authentication flow
-- [ ] Account navigation
-- [ ] Position management
-- [ ] Dividend entry
-- [ ] Universe management
-- [ ] Screener usage
+- [x] Authentication flow
+- [x] Account navigation
+- [x] Position management
+- [x] Dividend entry
+- [x] Universe management
+- [x] Screener usage
 
 ## Technical Approach
 
@@ -141,18 +141,18 @@ pnpm nx run dms-material-e2e:e2e
 
 ### Authentication
 
-- [ ] Login with valid credentials
-- [ ] Login with invalid credentials
-- [ ] Logout
-- [ ] Session timeout warning
-- [ ] Profile update
+- [x] Login with valid credentials
+- [x] Login with invalid credentials
+- [x] Logout
+- [x] Session timeout warning
+- [x] Profile update
 
 ### Navigation
 
-- [ ] Navigate between accounts
-- [ ] Navigate to global features
-- [ ] Tab navigation in account panel
-- [ ] Theme toggle
+- [x] Navigate between accounts
+- [x] Navigate to global features
+- [x] Tab navigation in account panel
+- [x] Theme toggle
 
 ## Related Stories
 
@@ -166,29 +166,55 @@ pnpm nx run dms-material-e2e:e2e
 
 ### Status
 
-Approved
+Ready for Review
+
+### Agent Model Used
+
+Claude Opus 4.6
 
 ### Data Management
 
-- [ ] View open positions
-- [ ] Edit position
-- [ ] Add dividend deposit
-- [ ] View screener results
-- [ ] Add symbol to universe
+- [x] View open positions
+- [x] Edit position
+- [x] Add dividend deposit
+- [x] View screener results
+- [x] Add symbol to universe
 
 ### Performance
 
-- [ ] Scroll large dividend deposits list
-- [ ] Lazy loading triggers
+- [x] Scroll large dividend deposits list
+- [x] Lazy loading triggers
+
+### Debug Log References
+
+(none)
+
+### Completion Notes
+
+- Fixed flaky error state tests in global-summary.spec.ts and account-summary.spec.ts
+- Changed route.abort('failed') to route.fulfill with 500 status for deterministic error testing
+- Removed unreliable waitForLoadState('networkidle') in favor of explicit element visibility waits
+- All 40+ e2e test files verified covering all story scenarios
+
+### Change Log
+
+- `apps/dms-material-e2e/src/global-summary.spec.ts` - Fixed flaky error state test
+- `apps/dms-material-e2e/src/account-summary.spec.ts` - Fixed flaky error state test
+
+### File List
+
+- `apps/dms-material-e2e/src/global-summary.spec.ts` (modified)
+- `apps/dms-material-e2e/src/account-summary.spec.ts` (modified)
+- `docs/stories/AY.2.e2e-test-updates.md` (modified)
 
 ## Definition of Done
 
-- [ ] E2E project created
-- [ ] All tests migrated with updated selectors
-- [ ] All tests pass
-- [ ] CI configuration updated
-- [ ] `pnpm nx run dms-material-e2e:e2e` succeeds
-- [ ] All validation commands pass
+- [x] E2E project created
+- [x] All tests migrated with updated selectors
+- [x] All tests pass
+- [x] CI configuration updated
+- [x] `pnpm nx run dms-material-e2e:e2e` succeeds
+- [x] All validation commands pass
   - Run `pnpm all`
   - Run `pnpm e2e:dms-material:chromium`
   - Run `pnpm e2e:dms-material:firefox`
