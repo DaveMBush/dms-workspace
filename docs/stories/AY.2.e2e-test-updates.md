@@ -17,7 +17,7 @@
 **Migration Target:**
 
 - Create `apps/dms-material-e2e/`
-- Test against dms-material on port 4201
+- Test against dms-material on port 4301
 - Update selectors for Material components
 
 ## Acceptance Criteria
@@ -68,7 +68,7 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: 'html',
   use: {
-    baseURL: 'http://localhost:4201',
+    baseURL: 'http://localhost:4301',
     trace: 'on-first-retry',
   },
   projects: [
@@ -79,7 +79,7 @@ export default defineConfig({
   ],
   webServer: {
     command: 'pnpm nx run dms-material:serve',
-    url: 'http://localhost:4201',
+    url: 'http://localhost:4301',
     reuseExistingServer: !process.env.CI,
   },
 });
