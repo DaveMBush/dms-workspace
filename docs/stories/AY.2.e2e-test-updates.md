@@ -1,4 +1,4 @@
-# Story AG.2: E2E Test Updates
+# Story AY.2: E2E Test Updates
 
 ## Story
 
@@ -176,7 +176,8 @@ pnpm nx run dms-material-e2e:e2e
 - [ ] `pnpm nx run dms-material-e2e:e2e` succeeds
 - [ ] All validation commands pass
   - Run `pnpm all`
-  - Run `pnpm e2e:dms-material`
+  - Run `pnpm e2e:dms-material:chromium`
+  - Run `pnpm e2e:dms-material:firefox`
   - Run `pnpm dupcheck`
   - Run `pnpm format`
   - Repeat all of these if any fail until they all pass

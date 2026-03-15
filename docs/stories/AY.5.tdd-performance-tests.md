@@ -1,14 +1,18 @@
-# Story AG.4: Performance Validation
+# Story AY.5: TDD - Performance Tests
 
 ## Story
 
-**As a** user with large datasets
-**I want** the application to perform well
-**So that** I can work efficiently without lag or delays
+**As a** developer validating application performance
+**I want** comprehensive performance tests and benchmarks
+**So that** I can measure and validate improvements from the migration
 
 ## Context
 
-The primary driver for this migration is improved virtual scrolling with lazy loading performance. This story validates that the migration achieved its goals.
+This story focuses on creating the **RED phase** of TDD - writing performance tests and benchmarks that establish baseline metrics and targets.
+
+**IMPORTANT**: Once performance tests are written and baseline metrics captured (which may initially "fail" against targets), **disable any failing tests** using `.skip` so that CI can pass and this story can be merged. Story AY.6 will re-enable the tests and implement optimizations to meet targets (GREEN).
+
+The primary driver for this migration is improved virtual scrolling with lazy loading performance. These tests will validate that goal.
 
 ## Acceptance Criteria
 
@@ -37,7 +41,9 @@ The primary driver for this migration is improved virtual scrolling with lazy lo
 
 ## Technical Approach
 
-### Step 1: Bundle Size Analysis
+### Step 1: Bundle Size Analysis Script
+
+Create baseline bundle size measurement:
 
 ```bash
 # Build production bundles
@@ -51,9 +57,9 @@ ls -la dist/apps/dms-material/browser/*.js
 
 **Target:** dms-material bundle within 10% of dms bundle.
 
-### Step 2: Lighthouse Audit
+### Step 2: Create Lighthouse Test Script
 
-Run Lighthouse on key pages:
+Create automated Lighthouse audit script for key pages:
 
 - Login page
 - Dashboard (with data)
@@ -200,9 +206,28 @@ async function testMemoryLeaks() {
 }
 ```
 
-### Step 6: Compare with Original DMS
+### Step 6: Capture Baseline Metrics
 
-Run same benchmarks on original DMS application and compare:
+Run all performance tests and document baseline metrics:
+
+| Metric           | Current (DMS-Material) | Target    |
+| ---------------- | ---------------------- | --------- |
+| Bundle Size      | TBD                    | Within 10% of DMS |
+| Initial Load (FCP) | TBD                  | < 1.5s    |
+| Scroll FPS       | TBD                    | >= 55fps  |
+| Lazy Load Time   | TBD                    | < 200ms   |
+
+### Step 7: Disable Failing Performance Tests
+
+**CRITICAL**: If any performance tests fail to meet targets (which is expected at this stage), disable them so CI can pass:
+
+```typescript
+test.skip('should scroll at >= 55fps with 1000 rows', async () => {
+  // Test implementation that currently fails...
+});
+```
+
+Story AY.6 will re-enable these tests and implement optimizations to make them pass.
 
 | Metric         | DMS (PrimeNG) | DMS-Material | Improvement |
 | -------------- | ------------- | ------------ | ----------- |
@@ -266,17 +291,20 @@ Run same benchmarks on original DMS application and compare:
 
 ## Definition of Done
 
-- [ ] Bundle size analysis complete
-- [ ] Lighthouse audits pass targets
-- [ ] Virtual scrolling >= 55fps average
-- [ ] Lazy loading works correctly
-- [ ] No memory leaks detected
-- [ ] Performance report documented
-- [ ] Comparison with DMS shows improvement or parity
-- [ ] PRIMARY DRIVER VALIDATED: Virtual scrolling with lazy loading works correctly
+- [ ] Bundle size analysis script created
+- [ ] Lighthouse test automation created
+- [ ] Virtual scrolling performance test created
+- [ ] Lazy loading verification test created
+- [ ] Memory leak detection test created
+- [ ] All tests written and documented
+- [ ] Baseline metrics captured
+- [ ] Any failing tests disabled with `.skip` or similar
+- [ ] CI passes despite disabled tests
+- [ ] Performance test code documented for Story AY.6 optimization
 - [ ] All validation commands pass
   - Run `pnpm all`
-  - Run `pnpm e2e:dms-material`
+  - Run `pnpm e2e:dms-material:chromium`
+  - Run `pnpm e2e:dms-material:firefox`
   - Run `pnpm dupcheck`
   - Run `pnpm format`
   - Repeat all of these if any fail until they all pass

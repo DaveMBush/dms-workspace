@@ -1,4 +1,4 @@
-# Story AG.1: Unit Test Migration
+# Story AY.1: Unit Test Migration
 
 ## Story
 
@@ -181,7 +181,8 @@ pnpm nx run dms-material:test --code-coverage
 - [ ] `pnpm nx run dms-material:test --code-coverage` succeeds
 - [ ] All validation commands pass
   - Run `pnpm all`
-  - Run `pnpm e2e:dms-material`
+  - Run `pnpm e2e:dms-material:chromium`
+  - Run `pnpm e2e:dms-material:firefox`
   - Run `pnpm dupcheck`
   - Run `pnpm format`
   - Repeat all of these if any fail until they all pass
