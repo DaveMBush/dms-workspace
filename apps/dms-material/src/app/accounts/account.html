@@ -3,7 +3,7 @@
     <span>Global</span>
   </mat-toolbar>
 
-  <mat-nav-list class="global-list" role="group" aria-label="Global pages">
+  <mat-nav-list class="global-list" aria-label="Global pages">
     <a
       mat-list-item
       routerLink="/global/universe"
@@ -67,7 +67,7 @@
     </button>
   </mat-toolbar>
 
-  <mat-nav-list class="accounts-list" role="group" aria-label="Accounts">
+  <mat-nav-list class="accounts-list" aria-label="Accounts">
     @for (account of accountsArray$(); track account.id) { @if(addingNode ===
     account.id || editingNode === account.id) {
     <mat-list-item

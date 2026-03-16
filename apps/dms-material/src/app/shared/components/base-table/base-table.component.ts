@@ -178,10 +178,6 @@ export class BaseTableComponent<T extends { id: string }>
     this.sortChange.emit(sort);
   }
 
-  onHeaderEnterKey(event: Event): void {
-    (event.currentTarget as HTMLElement).click();
-  }
-
   onRowClick(row: T): void {
     this.rowClick.emit(row);
   }

@@ -56,8 +56,6 @@
           [attr.data-sort-header]="column.sortable ? column.field : null"
           [disabled]="!column.sortable"
           [style.width]="column.width"
-          [attr.tabindex]="column.sortable ? -1 : null"
-          (keydown.enter)="onHeaderEnterKey($event)"
         >
           {{ column.header }}
         </th>

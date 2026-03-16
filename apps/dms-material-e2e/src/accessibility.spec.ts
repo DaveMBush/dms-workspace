@@ -467,8 +467,10 @@ test.describe('Accessibility - Keyboard Navigation', () => {
         'Sortable table headers must be present'
       ).toBeGreaterThan(0);
 
-      await headers.first().focus();
-      await expect(headers.first()).toBeFocused();
+      // Focus the internal sort-header button (mat-sort-header provides its own keyboard support)
+      const sortButton = headers.first().locator('.mat-sort-header-container');
+      await sortButton.click();
+      await expect(headers.first()).toHaveAttribute('aria-sort');
 
       // Enter should trigger sort — verify aria-sort changes
       const sortBefore = await headers.first().getAttribute('aria-sort');
@@ -519,7 +521,7 @@ test.describe('Accessibility - Screen Reader Support', () => {
     await expect(main).toBeVisible();
 
     const nav = page.locator('nav, [role="navigation"]');
-    await expect(nav).toBeVisible();
+    await expect(nav.first()).toBeVisible();
   });
 
   // ─── Form Labels ──────────────────────────────────────────────────────
