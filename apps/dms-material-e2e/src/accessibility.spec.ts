@@ -237,7 +237,23 @@ test.describe.skip('Accessibility - Keyboard Navigation', () => {
       page,
     }) => {
       const toggleButton = page.locator('button[matIconSuffix]');
-      await toggleButton.focus();
+
+      // Tab until the toggle button receives focus (bypasses hardcoded tab order)
+      const maxTabs = 10;
+      for (let i = 0; i < maxTabs; i++) {
+        await page.keyboard.press('Tab');
+        if (
+          await toggleButton.evaluate(function isFocused(el) {
+            return document.activeElement === el;
+          })
+        ) {
+          break;
+        }
+        if (i === maxTabs - 1) {
+          throw new Error('Toggle button was not reached via Tab navigation');
+        }
+      }
+
       await page.keyboard.press('Enter');
 
       const passwordInput = page.locator('input[formControlName="password"]');
@@ -333,9 +349,15 @@ test.describe.skip('Accessibility - Keyboard Navigation', () => {
       // activate a link with Enter
       await page.keyboard.press('Enter');
 
-      // verify navigation occurred
-      await page.waitForTimeout(2000);
-      expect(page.url()).not.toBe(initialUrl);
+      // verify navigation occurred by polling until URL changes
+      await expect
+        .poll(
+          function checkUrlChanged() {
+            return page.url();
+          },
+          { timeout: 10000 }
+        )
+        .not.toBe(initialUrl);
     });
   });
 
