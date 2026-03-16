@@ -9,6 +9,7 @@
     "start:simulation": "nx run simulation:serve",
     "build:dms": "nx run dms:build",
     "all": "nx affected -t lint build test --parallel=16",
+    "bundle-analysis": "bash scripts/bundle-size-analysis.sh",
     "dupcheck": "pnpm jscpd",
     "format": "nx format:write",
     "format:check": "nx format:check",
