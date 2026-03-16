@@ -17,6 +17,7 @@
       [dataSource]="dataSource()"
       matSort
       (matSortChange)="onSort($event)"
+      [attr.aria-label]="tableLabel()"
     >
       <!-- Selection Column -->
       @if (selectable()) {
@@ -52,6 +53,7 @@
           mat-header-cell
           *matHeaderCellDef
           [mat-sort-header]="column.sortable ? column.field : ''"
+          [attr.data-sort-header]="column.sortable ? column.field : null"
           [disabled]="!column.sortable"
           [style.width]="column.width"
         >

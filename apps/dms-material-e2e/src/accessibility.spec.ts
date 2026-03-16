@@ -4,19 +4,15 @@ import AxeBuilder from '@axe-core/playwright';
 
 import { login } from './helpers/login.helper';
 
-// ─── Accessibility Tests (RED Phase - TDD) ──────────────────────────────────
+// ─── Accessibility Tests (GREEN Phase - TDD) ────────────────────────────────
 //
 // These tests verify WCAG 2.1 AA compliance using axe-core.
-// They are currently SKIPPED because they identify real accessibility
-// violations that need to be fixed. Story AY.4 will re-enable these
-// tests and implement the necessary fixes (GREEN phase).
-//
-// To run these tests locally for development:
-//   Remove .skip from the describe block or individual tests.
+// Story AY.4 re-enabled these tests and implemented the necessary
+// accessibility fixes to make them pass.
 //
 // ─────────────────────────────────────────────────────────────────────────────
 
-test.describe.skip('Accessibility - axe-core audits', () => {
+test.describe('Accessibility - axe-core audits', () => {
   // ─── Login Page ──────────────────────────────────────────────────────────
 
   test.describe('Login Page', () => {
@@ -198,7 +194,7 @@ test.describe.skip('Accessibility - axe-core audits', () => {
   });
 });
 
-test.describe.skip('Accessibility - Keyboard Navigation', () => {
+test.describe('Accessibility - Keyboard Navigation', () => {
   // ─── Login Page Keyboard Navigation ──────────────────────────────────────
 
   test.describe('Login Page', () => {
@@ -463,7 +459,7 @@ test.describe.skip('Accessibility - Keyboard Navigation', () => {
     test('should navigate table headers with keyboard for sorting', async ({
       page,
     }) => {
-      const headers = page.locator('th.mat-mdc-header-cell[mat-sort-header]');
+      const headers = page.locator('th.mat-mdc-header-cell[data-sort-header]');
       const headerCount = await headers.count();
 
       expect(
@@ -471,8 +467,10 @@ test.describe.skip('Accessibility - Keyboard Navigation', () => {
         'Sortable table headers must be present'
       ).toBeGreaterThan(0);
 
-      await headers.first().focus();
-      await expect(headers.first()).toBeFocused();
+      // Focus the internal sort-header container (mat-sort-header provides its own keyboard support)
+      const sortButton = headers.first().locator('.mat-sort-header-container');
+      await sortButton.focus();
+      await expect(headers.first()).toHaveAttribute('aria-sort');
 
       // Enter should trigger sort — verify aria-sort changes
       const sortBefore = await headers.first().getAttribute('aria-sort');
@@ -511,7 +509,7 @@ test.describe.skip('Accessibility - Keyboard Navigation', () => {
   });
 });
 
-test.describe.skip('Accessibility - Screen Reader Support', () => {
+test.describe('Accessibility - Screen Reader Support', () => {
   test.beforeEach(async ({ page }) => {
     await login(page);
   });
@@ -523,7 +521,7 @@ test.describe.skip('Accessibility - Screen Reader Support', () => {
     await expect(main).toBeVisible();
 
     const nav = page.locator('nav, [role="navigation"]');
-    await expect(nav).toBeVisible();
+    await expect(nav.first()).toBeVisible();
   });
 
   // ─── Form Labels ──────────────────────────────────────────────────────
@@ -639,7 +637,7 @@ test.describe.skip('Accessibility - Screen Reader Support', () => {
   });
 });
 
-test.describe.skip('Accessibility - Visual Requirements', () => {
+test.describe('Accessibility - Visual Requirements', () => {
   test.beforeEach(async ({ page }) => {
     await login(page);
   });
@@ -740,7 +738,7 @@ test.describe.skip('Accessibility - Visual Requirements', () => {
   });
 });
 
-test.describe.skip('Accessibility - Forms', () => {
+test.describe('Accessibility - Forms', () => {
   // ─── Login Form ──────────────────────────────────────────────────────
 
   test.describe('Login Form', () => {

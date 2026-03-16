@@ -10,7 +10,10 @@
       class="flex justify-center items-center py-4"
       data-testid="loading-spinner"
     >
-      <mat-spinner diameter="32"></mat-spinner>
+      <mat-spinner
+        diameter="32"
+        aria-label="Loading summary data"
+      ></mat-spinner>
     </div>
     } @if (error$()) {
     <div
@@ -33,6 +36,7 @@
             class="w-48"
             panelClass="month-select-panel"
             data-testid="month-selector"
+            aria-label="Select month"
           >
             @for (month of monthOptions; track month.value) {
             <mat-option [value]="month.value">{{ month.label }}</mat-option>
@@ -46,25 +50,25 @@
           data-testid="stats-grid"
         >
           <div class="flex flex-col">
-            <span class="text-xs text-gray-500">Base</span>
+            <span class="text-xs text-gray-600">Base</span>
             <span class="text-lg font-semibold" data-testid="basis-value"
               >{{ basis$() | currency }}</span
             >
           </div>
           <div class="flex flex-col">
-            <span class="text-xs text-gray-500">Dividends</span>
+            <span class="text-xs text-gray-600">Dividends</span>
             <span class="text-lg font-semibold"
               >{{ dividends$() | currency }}</span
             >
           </div>
           <div class="flex flex-col">
-            <span class="text-xs text-gray-500">Capital Gain</span>
+            <span class="text-xs text-gray-600">Capital Gain</span>
             <span class="text-lg font-semibold"
               >{{ capitalGain$() | currency }}</span
             >
           </div>
           <div class="flex flex-col">
-            <span class="text-xs text-gray-500">% Increase</span>
+            <span class="text-xs text-gray-600">% Increase</span>
             <span class="text-lg font-semibold"
               >{{ percentIncrease$() | percent : '1.2-2' }}</span
             >
@@ -78,7 +82,7 @@
           </h2>
           @if (!hasAllocationData$()) {
           <p
-            class="no-data-message text-gray-500 py-4"
+            class="no-data-message text-gray-600 py-4"
             data-testid="no-data-message"
           >
             No data available

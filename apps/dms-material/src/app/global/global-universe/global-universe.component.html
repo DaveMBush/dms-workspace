@@ -22,6 +22,7 @@
       mat-icon-button
       data-testid="add-symbol-button"
       matTooltip="Add Symbol"
+      aria-label="Add to universe"
       (click)="showAddSymbolDialog()"
     >
       <mat-icon>add</mat-icon>
@@ -41,11 +42,12 @@
       mat-icon-button
       data-testid="update-universe-button"
       matTooltip="Update Universe"
+      aria-label="Update Universe"
       (click)="syncUniverse()"
       [disabled]="isSyncingUniverse$()"
     >
       @if (isSyncingUniverse$()) {
-      <mat-spinner diameter="24"></mat-spinner>
+      <mat-spinner diameter="24" aria-label="Syncing universe"></mat-spinner>
       } @else {
       <mat-icon>sync</mat-icon>
       }
@@ -54,11 +56,12 @@
       mat-icon-button
       data-testid="update-fields-button"
       matTooltip="Update Fields"
+      aria-label="Update Fields"
       (click)="updateFields()"
       [disabled]="isUpdatingFields$()"
     >
       @if (isUpdatingFields$()) {
-      <mat-spinner diameter="24"></mat-spinner>
+      <mat-spinner diameter="24" aria-label="Updating fields"></mat-spinner>
       } @else {
       <mat-icon>refresh</mat-icon>
       }
@@ -90,6 +93,7 @@
       [columns]="columns"
       [selectable]="false"
       [rowHeight]="48"
+      tableLabel="Universe positions"
       (sortChange)="onSortChange($event)"
     >
       <!-- Filter row template - receives column definition -->
