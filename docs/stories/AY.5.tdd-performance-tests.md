@@ -210,12 +210,12 @@ async function testMemoryLeaks() {
 
 Run all performance tests and document baseline metrics:
 
-| Metric           | Current (DMS-Material) | Target    |
-| ---------------- | ---------------------- | --------- |
-| Bundle Size      | TBD                    | Within 10% of DMS |
-| Initial Load (FCP) | TBD                  | < 1.5s    |
-| Scroll FPS       | TBD                    | >= 55fps  |
-| Lazy Load Time   | TBD                    | < 200ms   |
+| Metric             | Current (DMS-Material) | Target            |
+| ------------------ | ---------------------- | ----------------- |
+| Bundle Size        | TBD                    | Within 10% of DMS |
+| Initial Load (FCP) | TBD                    | < 1.5s            |
+| Scroll FPS         | TBD                    | >= 55fps          |
+| Lazy Load Time     | TBD                    | < 200ms           |
 
 ### Step 7: Disable Failing Performance Tests
 
@@ -401,4 +401,54 @@ Run `pnpm nx run dms-material-e2e:e2e` to verify all e2e tests pass.
 
 ### Status
 
-Approved
+Ready for Review
+
+### Agent Model Used
+
+Claude Opus 4.6
+
+### Tasks Completed
+
+- [x] Bundle size analysis script created
+- [x] Virtual scrolling performance test created
+- [x] Lazy loading verification test created
+- [x] Memory leak detection test created
+- [x] Performance data seeder helper created
+- [x] All tests written and documented
+- [x] Failing tests disabled with `.skip` for CI
+- [ ] Baseline metrics captured
+- [ ] CI passes (pnpm all)
+- [ ] E2E tests pass
+
+### File List
+
+- scripts/bundle-size-analysis.sh (new)
+- apps/dms-material-e2e/src/helpers/seed-performance-data.helper.ts (new)
+- apps/dms-material-e2e/src/performance.spec.ts (new)
+- package.json (modified - added bundle-analysis script)
+- docs/stories/AY.5.tdd-performance-tests.md (modified)
+
+### Change Log
+
+- Created bundle size analysis script comparing DMS vs DMS-Material production builds
+- Created performance data seeder helper to generate 1000+ universe records for testing
+- Created comprehensive performance E2E test suite covering:
+  - Page load timing (< 3s target)
+  - Lighthouse FCP and TTI placeholders (skipped for RED phase)
+  - Virtual scrolling with 1000 rows (load verification + DOM row count)
+  - Virtual scrolling edge cases (5000/10000 rows, rapid scroll, blank rows, keyboard)
+  - Lazy loading (API request tracking, debounce, timing)
+  - Memory management (20x navigation, heap growth, DOM node accumulation)
+  - Network conditions (slow 3G simulation)
+- Disabled failing performance tests with .skip per TDD RED phase convention
+- Added bundle-analysis script to package.json
+
+### Debug Log References
+
+(none yet)
+
+### Completion Notes
+
+- RED phase only: tests establish targets, skipped tests will be enabled in AY.6
+- Two tests run without .skip: page load < 3s and 20x navigation without crash
+- All other performance tests are .skip'd for CI to pass
