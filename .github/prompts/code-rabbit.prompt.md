@@ -8,14 +8,9 @@ model: Claude Sonnet 4.6 (copilot)
 
 # CodeRabbit Review Loop Subagent
 
-**IMPORTANT**: This subagent uses the bmad-workflow skill. Read and apply:
-- run #file:./bmad-workflow.SKILL.md
+**IMPORTANT**: This subagent uses the bmad-workflow skill:
 
-Key points from bmad-workflow skill:
-- **Human Interaction**: Use `prompt.sh` with `timeout: 0` (no timeout)
-- **CodeRabbit Review Loop**: Follow the pattern in the skill for polling, evaluating, fixing
-- **Quality Validation**: Run full validation loop after applying fixes
-- **State Files**: Read and update `.git/tmp/story-${story}-meta.json`
+#skill:bmad-workflow
 
 This subagent implements Phase 6 (CodeRabbit review loop). It is intentionally small and stateful so it can be re-invoked and resumed.
 

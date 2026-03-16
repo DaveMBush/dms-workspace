@@ -9,7 +9,8 @@ import { divDepositDefinition } from './store/div-deposits/div-deposit-definitio
 import { riskGroupDefinition } from './store/risk-group/risk-group-definition.const';
 import { screenDefinition } from './store/screen/screen-definition.const';
 import { topDefinition } from './store/top/top-definition.const';
-import { tradesDefinition } from './store/trades/trades-definition.const';
+import { openTradesDefinition } from './store/trades/open-trades-definition.const';
+import { soldTradesDefinition } from './store/trades/sold-trades-definition.const';
 import { universeDefinition } from './store/universe/universe-definition.const';
 
 export const appRoutes: Route[] = [
@@ -99,7 +100,8 @@ export const appRoutes: Route[] = [
               ),
             providers: [
               provideSmartFeatureSignalEntities('app', [
-                tradesDefinition,
+                openTradesDefinition,
+                soldTradesDefinition,
                 divDepositDefinition,
                 divDepositTypesDefinition,
               ]),

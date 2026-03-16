@@ -53,8 +53,22 @@ describe('Account', () => {
     };
 
     mockAccounts = [
-      { id: '1', name: 'Account 1', trades: [], divDeposits: [], months: [] },
-      { id: '2', name: 'Account 2', trades: [], divDeposits: [], months: [] },
+      {
+        id: '1',
+        name: 'Account 1',
+        openTrades: [],
+        soldTrades: [],
+        divDeposits: [],
+        months: [],
+      },
+      {
+        id: '2',
+        name: 'Account 2',
+        openTrades: [],
+        soldTrades: [],
+        divDeposits: [],
+        months: [],
+      },
     ];
 
     await TestBed.configureTestingModule({
@@ -117,7 +131,8 @@ describe('Account', () => {
       mockAccounts.push({
         id: 'new',
         name: 'New Account',
-        trades: [],
+        openTrades: [],
+        soldTrades: [],
         divDeposits: [],
         months: [],
       });

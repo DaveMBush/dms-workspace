@@ -5,7 +5,8 @@ import { selectAccountsEntity } from '../../accounts/selectors/select-accounts-e
 import { DivDeposit } from '../../div-deposits/div-deposit.interface';
 import { selectDivDepositEntity } from '../../div-deposits/div-deposits.selectors';
 import { Trade } from '../trade.interface';
-import { selectTradesEntity } from './select-trades-entity.function';
+import { selectOpenTradeEntity } from './select-open-trade-entity.function';
+import { selectSoldTradeEntity } from './select-sold-trade-entity.function';
 
 export const selectAccountChildren = createSmartSignal<
   Account,
@@ -13,11 +14,19 @@ export const selectAccountChildren = createSmartSignal<
 >(selectAccountsEntity, [
   {
     childFeature: 'app',
-    childEntity: 'trades',
-    parentField: 'trades',
+    childEntity: 'openTrades',
+    parentField: 'openTrades',
     parentFeature: 'app',
     parentEntity: 'accounts',
-    childSelector: selectTradesEntity,
+    childSelector: selectOpenTradeEntity,
+  },
+  {
+    childFeature: 'app',
+    childEntity: 'soldTrades',
+    parentField: 'soldTrades',
+    parentFeature: 'app',
+    parentEntity: 'accounts',
+    childSelector: selectSoldTradeEntity,
   },
   {
     childFeature: 'app',

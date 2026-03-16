@@ -32,10 +32,10 @@ test.describe('Global Error Logs Component', () => {
 
     test('should display filter controls', async ({ page }) => {
       await expect(
-        page.getByRole('combobox', { name: 'All Files' })
+        page.getByRole('combobox', { name: 'File type' })
       ).toBeVisible();
       await expect(
-        page.getByRole('combobox', { name: 'All Levels' })
+        page.getByRole('combobox', { name: 'Log level' })
       ).toBeVisible();
       await expect(page.getByPlaceholder('mm/dd/yyyy').first()).toBeVisible();
       await expect(page.getByPlaceholder('Search messages...')).toBeVisible();

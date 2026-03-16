@@ -6,13 +6,13 @@ import { vi } from 'vitest';
 
 import { OpenPositionsComponent } from './open-positions.component';
 import { OpenPositionsComponentService } from './open-positions-component.service';
-import { SortStateService } from '../../shared/services/sort-state.service';
+import { SortFilterStateService } from '../../shared/services/sort-filter-state.service';
 import { currentAccountSignalStore } from '../../store/current-account/current-account.signal-store';
 import { tradeEffectsServiceToken } from '../../store/trades/trade-effect-service-token';
 import { Trade } from '../../store/trades/trade.interface';
 import { OpenPosition } from '../../store/trades/open-position.interface';
 
-// Mock the entire selectTrades module to avoid SmartNgRX initialization
+// Mock the entire selectOpenTrades module to avoid SmartNgRX initialization
 const { mockSelectTradesFunc, mockTradesAddFunc } = vi.hoisted(() => {
   const mockAdd = vi.fn();
   const mockSelect = vi.fn().mockReturnValue([]);
@@ -21,13 +21,29 @@ const { mockSelectTradesFunc, mockTradesAddFunc } = vi.hoisted(() => {
   return { mockSelectTradesFunc: mockSelect, mockTradesAddFunc: mockAdd };
 });
 vi.mock('../../store/trades/selectors/select-trades.function', () => ({
-  selectTrades: mockSelectTradesFunc,
+  selectOpenTrades: mockSelectTradesFunc,
 }));
 
-// Mock selectTradesEntity to avoid SmartNgRX initialization
-vi.mock('../../store/trades/selectors/select-trades-entity.function', () => ({
-  selectTradesEntity: vi.fn().mockReturnValue([]),
+// Mock selectSoldTrades to avoid SmartNgRX initialization
+vi.mock('../../store/trades/selectors/select-sold-trades.function', () => ({
+  selectSoldTrades: vi.fn().mockReturnValue([]),
 }));
+
+// Mock selectOpenTradeEntity to avoid SmartNgRX initialization
+vi.mock(
+  '../../store/trades/selectors/select-open-trade-entity.function',
+  () => ({
+    selectOpenTradeEntity: vi.fn().mockReturnValue([]),
+  })
+);
+
+// Mock selectSoldTradeEntity to avoid SmartNgRX initialization
+vi.mock(
+  '../../store/trades/selectors/select-sold-trade-entity.function',
+  () => ({
+    selectSoldTradeEntity: vi.fn().mockReturnValue([]),
+  })
+);
 
 // Mock selectUniverses to avoid SmartNgRX initialization from AddPositionDialogComponent
 vi.mock('../../store/universe/selectors/select-universes.function', () => ({
@@ -64,6 +80,7 @@ describe('OpenPositionsComponent', () => {
     trades: WritableSignal<Trade[]>;
     selectOpenPositions: WritableSignal<OpenPosition[]>;
     deleteOpenPosition: ReturnType<typeof vi.fn>;
+    visibleRange: WritableSignal<{ start: number; end: number }>;
   };
 
   beforeEach(async () => {
@@ -72,6 +89,10 @@ describe('OpenPositionsComponent', () => {
       trades: signal<Trade[]>([]),
       selectOpenPositions: signal<OpenPosition[]>([]),
       deleteOpenPosition: vi.fn(),
+      visibleRange: signal<{ start: number; end: number }>({
+        start: 0,
+        end: 50,
+      }),
     };
 
     await TestBed.configureTestingModule({
@@ -283,14 +304,16 @@ describe('OpenPositionsComponent', () => {
       expect(component.openPositionsService.trades).toBeDefined();
     });
 
-    it('should filter positions with search text', () => {
+    it('should pass through all positions regardless of search text (server-side filtering)', () => {
       mockOpenPositionsService.selectOpenPositions.set(mockOpenPositions);
 
       component.searchText.set('AAPL');
-      const filtered = component.selectOpenPositions$();
+      const positions = component.selectOpenPositions$();
 
-      expect(filtered.length).toBe(1);
-      expect(filtered[0].symbol).toBe('AAPL');
+      // Client-side filtering removed - all positions pass through
+      expect(positions.length).toBe(mockOpenPositions.length);
+      // Search text is maintained as UI state for the interceptor
+      expect(component.searchText()).toBe('AAPL');
     });
   });
 
@@ -781,6 +804,7 @@ describe('OpenPositionsComponent - Account Selection Integration', () => {
     trades: WritableSignal<Trade[]>;
     selectOpenPositions: WritableSignal<OpenPosition[]>;
     deleteOpenPosition: ReturnType<typeof vi.fn>;
+    visibleRange: WritableSignal<{ start: number; end: number }>;
   };
   let mockCurrentAccountStore: {
     id: WritableSignal<string>;
@@ -799,6 +823,10 @@ describe('OpenPositionsComponent - Account Selection Integration', () => {
       trades: signal<Trade[]>([]),
       selectOpenPositions: signal<OpenPosition[]>([]),
       deleteOpenPosition: vi.fn(),
+      visibleRange: signal<{ start: number; end: number }>({
+        start: 0,
+        end: 50,
+      }),
     };
 
     await TestBed.configureTestingModule({
@@ -1090,7 +1118,7 @@ describe('OpenPositionsComponent - Account Selection Integration', () => {
       ).toBeTruthy();
     });
 
-    it('should maintain search filter when account changes', () => {
+    it('should maintain search text UI state when account changes (server-side filtering)', () => {
       const account1Positions: OpenPosition[] = [
         {
           id: '1',
@@ -1137,10 +1165,11 @@ describe('OpenPositionsComponent - Account Selection Integration', () => {
       mockOpenPositionsService.selectOpenPositions.set(account1Positions);
       fixture.detectChanges();
 
-      // Search filter should still apply after account change
-      const filtered = component.selectOpenPositions$();
-      expect(filtered.length).toBe(1);
-      expect(filtered[0].symbol).toBe('AAPL');
+      // All positions pass through (server-side filtering)
+      const positions = component.selectOpenPositions$();
+      expect(positions.length).toBe(2);
+      // Search text UI state is maintained
+      expect(component.searchText()).toBe('AAPL');
     });
 
     it('should handle empty positions for a new account gracefully', () => {
@@ -1225,34 +1254,34 @@ describe('OpenPositionsComponent - Account Selection Integration', () => {
 
   // TDD GREEN Phase - Story AW.8: Sort integration tests
   // Re-enabled from AW.7 RED phase
-  describe('Sort integration with SortStateService', () => {
+  describe('Sort integration with SortFilterStateService', () => {
     beforeEach(() => {
-      localStorage.removeItem('dms-sort-state');
+      localStorage.removeItem('dms-sort-filter-state');
     });
 
-    it('should return null from SortStateService.loadSortState when no saved state exists', () => {
-      const sortStateService = TestBed.inject(SortStateService);
-      const loadSpy = vi.spyOn(sortStateService, 'loadSortState');
-      const result = sortStateService.loadSortState('trades-open');
+    it('should return null from SortFilterStateService.loadSortState when no saved state exists', () => {
+      const sortFilterStateService = TestBed.inject(SortFilterStateService);
+      const loadSpy = vi.spyOn(sortFilterStateService, 'loadSortState');
+      const result = sortFilterStateService.loadSortState('trades-open');
       expect(loadSpy).toHaveBeenCalledWith('trades-open');
       expect(result).toBeNull();
     });
 
-    it('should persist and retrieve sort state for trades-open via SortStateService', () => {
+    it('should persist and retrieve sort state for trades-open via SortFilterStateService', () => {
       // The sortInterceptor handles adding X-Sort-Field and X-Sort-Order headers
-      // to /api/trades/open requests. Verify sortStateService integration is wired.
-      const sortStateService = TestBed.inject(SortStateService);
-      sortStateService.saveSortState('trades-open', {
+      // to /api/trades/open requests. Verify sortFilterStateService integration is wired.
+      const sortFilterStateService = TestBed.inject(SortFilterStateService);
+      sortFilterStateService.saveSortState('trades-open', {
         field: 'buy',
         order: 'desc',
       });
-      const state = sortStateService.loadSortState('trades-open');
+      const state = sortFilterStateService.loadSortState('trades-open');
       expect(state).toEqual({ field: 'buy', order: 'desc' });
     });
 
-    it('should save sort state to SortStateService when user changes sort', () => {
-      const sortStateService = TestBed.inject(SortStateService);
-      const saveSpy = vi.spyOn(sortStateService, 'saveSortState');
+    it('should save sort state to SortFilterStateService when user changes sort', () => {
+      const sortFilterStateService = TestBed.inject(SortFilterStateService);
+      const saveSpy = vi.spyOn(sortFilterStateService, 'saveSortState');
       component.onSortChange({ active: 'buy', direction: 'asc' });
       expect(saveSpy).toHaveBeenCalledWith('trades-open', {
         field: 'buy',
@@ -1261,15 +1290,15 @@ describe('OpenPositionsComponent - Account Selection Integration', () => {
     });
 
     it('should persist sort state when sort changes', () => {
-      const sortStateService = TestBed.inject(SortStateService);
+      const sortFilterStateService = TestBed.inject(SortFilterStateService);
       component.onSortChange({ active: 'quantity', direction: 'desc' });
-      const state = sortStateService.loadSortState('trades-open');
+      const state = sortFilterStateService.loadSortState('trades-open');
       expect(state).toEqual({ field: 'quantity', order: 'desc' });
     });
 
     it('should clear sort state when sort direction is reset', () => {
-      const sortStateService = TestBed.inject(SortStateService);
-      const clearSpy = vi.spyOn(sortStateService, 'clearSortState');
+      const sortFilterStateService = TestBed.inject(SortFilterStateService);
+      const clearSpy = vi.spyOn(sortFilterStateService, 'clearSortState');
       component.onSortChange({ active: 'buy', direction: '' });
       expect(clearSpy).toHaveBeenCalledWith('trades-open');
     });
@@ -1285,6 +1314,7 @@ describe('OpenPositionsComponent - Client-Side Sorting Removal', () => {
     trades: WritableSignal<Trade[]>;
     selectOpenPositions: WritableSignal<OpenPosition[]>;
     deleteOpenPosition: ReturnType<typeof vi.fn>;
+    visibleRange: WritableSignal<{ start: number; end: number }>;
   };
 
   beforeEach(async () => {
@@ -1292,6 +1322,10 @@ describe('OpenPositionsComponent - Client-Side Sorting Removal', () => {
       trades: signal<Trade[]>([]),
       selectOpenPositions: signal<OpenPosition[]>([]),
       deleteOpenPosition: vi.fn(),
+      visibleRange: signal<{ start: number; end: number }>({
+        start: 0,
+        end: 50,
+      }),
     };
 
     await TestBed.configureTestingModule({
@@ -1345,12 +1379,12 @@ describe('OpenPositionsComponent - Client-Side Sorting Removal', () => {
     });
 
     it('should trigger HTTP call on sort change instead of local sorting', () => {
-      const sortStateService = TestBed.inject(SortStateService);
-      const saveSpy = vi.spyOn(sortStateService, 'saveSortState');
+      const sortFilterStateService = TestBed.inject(SortFilterStateService);
+      const saveSpy = vi.spyOn(sortFilterStateService, 'saveSortState');
 
       component.onSortChange({ active: 'buy', direction: 'asc' });
 
-      // Sort change should delegate to SortStateService (which triggers HTTP via interceptor)
+      // Sort change should delegate to SortFilterStateService (which triggers HTTP via interceptor)
       expect(saveSpy).toHaveBeenCalledWith('trades-open', {
         field: 'buy',
         order: 'asc',
@@ -1400,6 +1434,80 @@ describe('OpenPositionsComponent - Client-Side Sorting Removal', () => {
       expect(dataSortCalls.length).toBe(0);
 
       sortSpy.mockRestore();
+    });
+  });
+});
+
+// Story AX.7: TDD Tests for Open Positions Virtual Data Access (Component)
+// Re-enabled in AX.8
+describe('OpenPositionsComponent - Virtual Data Access (AX.7)', () => {
+  let component: OpenPositionsComponent;
+  let fixture: ComponentFixture<OpenPositionsComponent>;
+  let mockOpenPositionsService: {
+    trades: WritableSignal<Trade[]>;
+    selectOpenPositions: WritableSignal<OpenPosition[]>;
+    deleteOpenPosition: ReturnType<typeof vi.fn>;
+    visibleRange: WritableSignal<{ start: number; end: number }>;
+  };
+
+  beforeEach(async () => {
+    mockOpenPositionsService = {
+      trades: signal<Trade[]>([]),
+      selectOpenPositions: signal<OpenPosition[]>([]),
+      deleteOpenPosition: vi.fn(),
+      visibleRange: signal<{ start: number; end: number }>({
+        start: 0,
+        end: 50,
+      }),
+    };
+
+    await TestBed.configureTestingModule({
+      imports: [OpenPositionsComponent],
+      providers: [
+        provideRouter([]),
+        {
+          provide: OpenPositionsComponentService,
+          useValue: mockOpenPositionsService,
+        },
+        {
+          provide: tradeEffectsServiceToken,
+          useValue: {
+            update: vi.fn().mockReturnValue(of([])),
+          },
+        },
+      ],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(OpenPositionsComponent);
+    component = fixture.componentInstance;
+  });
+
+  // AC: Test visibleRange signal has default { start: 0, end: 50 }
+  it('should have visibleRange signal with default { start: 0, end: 50 }', () => {
+    expect(component.visibleRange()).toEqual({ start: 0, end: 50 });
+  });
+
+  // AC: Test onRangeChange updates signal correctly
+  it('should update visibleRange when onRangeChange is called', () => {
+    component.onRangeChange({ start: 10, end: 60 });
+
+    expect(component.visibleRange()).toEqual({ start: 10, end: 60 });
+  });
+
+  it('should update visibleRange to different values on subsequent calls', () => {
+    component.onRangeChange({ start: 5, end: 25 });
+    expect(component.visibleRange()).toEqual({ start: 5, end: 25 });
+
+    component.onRangeChange({ start: 100, end: 150 });
+    expect(component.visibleRange()).toEqual({ start: 100, end: 150 });
+  });
+
+  it('should propagate range change to service visibleRange', () => {
+    component.onRangeChange({ start: 20, end: 70 });
+
+    expect(mockOpenPositionsService.visibleRange()).toEqual({
+      start: 20,
+      end: 70,
     });
   });
 });

@@ -3,102 +3,85 @@ import {
   Component,
   computed,
   inject,
+  OnDestroy,
   signal,
 } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatNativeDateModule } from '@angular/material/core';
-import {
-  MatDatepickerInputEvent,
-  MatDatepickerModule,
-} from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { Sort } from '@angular/material/sort';
+import { handleSocketNotification } from '@smarttools/smart-signals';
 
 import { BaseTableComponent } from '../../shared/components/base-table/base-table.component';
 import { ColumnDef } from '../../shared/components/base-table/column-def.interface';
-import { SortStateService } from '../../shared/services/sort-state.service';
+import { SortFilterStateService } from '../../shared/services/sort-filter-state.service';
+import { getAccountIds } from '../../store/accounts/selectors/get-account-ids.function';
 import { ClosedPosition } from '../../store/trades/closed-position.interface';
 import { SoldPositionsComponentService } from './sold-positions-component.service';
 
 @Component({
   selector: 'dms-sold-positions',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    BaseTableComponent,
-    FormsModule,
-    MatButtonModule,
-    MatDatepickerModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatNativeDateModule,
-  ],
+  imports: [BaseTableComponent, MatFormFieldModule, MatInputModule],
   templateUrl: './sold-positions.component.html',
   styleUrl: './sold-positions.component.scss',
 })
-export class SoldPositionsComponent {
+export class SoldPositionsComponent implements OnDestroy {
+  private static readonly tableKey = 'trades-closed';
   private readonly soldPositionsService = inject(SoldPositionsComponentService);
-  private readonly sortStateService = inject(SortStateService);
+  private readonly sortFilterStateService = inject(SortFilterStateService);
 
-  startDate = signal<string | null>(null);
-  endDate = signal<string | null>(null);
+  searchText = signal<string>('');
 
-  // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
-  readonly startDateAsDate = computed(() => {
-    const dateStr = this.startDate();
-    if (dateStr === null) {
-      return null;
-    }
-    const [year, month, day] = dateStr.split('-').map(Number);
-    return new Date(year, month - 1, day);
+  visibleRange = signal<{ start: number; end: number }>({
+    start: 0,
+    end: 50,
   });
 
-  // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
-  readonly endDateAsDate = computed(() => {
-    const dateStr = this.endDate();
-    if (dateStr === null) {
-      return null;
+  private symbolFilterTimer: ReturnType<typeof setTimeout> | null = null;
+
+  ngOnDestroy(): void {
+    if (this.symbolFilterTimer !== null) {
+      clearTimeout(this.symbolFilterTimer);
+      this.symbolFilterTimer = null;
     }
-    const [year, month, day] = dateStr.split('-').map(Number);
-    return new Date(year, month - 1, day);
-  });
+  }
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
   readonly displayedPositions = computed(() => {
-    const positions = this.soldPositionsService.selectSoldPositions();
-    const start = this.startDate();
-    const end = this.endDate();
-    if (start === null && end === null) {
-      return positions;
-    }
-    // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
-    return positions.filter((position: ClosedPosition) => {
-      if (position.sell_date === undefined) {
-        return false;
-      }
-      const sellDateStr = position.sell_date.split('T')[0];
-      if (start !== null && sellDateStr < start) {
-        return false;
-      }
-      if (end !== null && sellDateStr > end) {
-        return false;
-      }
-      return true;
-    });
+    return this.soldPositionsService.selectSoldPositions();
   });
 
-  searchText = '';
+  onRangeChange(range: { start: number; end: number }): void {
+    this.visibleRange.set(range);
+    this.soldPositionsService.visibleRange.set(range);
+  }
+
+  onSymbolFilterChange(value: string): void {
+    this.searchText.set(value);
+    if (this.symbolFilterTimer !== null) {
+      clearTimeout(this.symbolFilterTimer);
+    }
+    this.symbolFilterTimer = setTimeout(
+      this.saveSymbolFilterAndNotify.bind(this),
+      300
+    );
+  }
 
   onSortChange(sort: Sort): void {
     if (sort.direction === '') {
-      this.sortStateService.clearSortState('trades-closed');
-      return;
+      this.sortFilterStateService.clearSortState(
+        SoldPositionsComponent.tableKey
+      );
+    } else {
+      this.sortFilterStateService.saveSortState(
+        SoldPositionsComponent.tableKey,
+        {
+          field: sort.active,
+          order: sort.direction,
+        }
+      );
     }
-    this.sortStateService.saveSortState('trades-closed', {
-      field: sort.active,
-      order: sort.direction,
-    });
+    handleSocketNotification('accounts', 'update', getAccountIds());
   }
 
   columns: ColumnDef[] = [
@@ -129,32 +112,18 @@ export class SoldPositionsComponent {
     // Update via SmartNgRX
   }
 
-  onStartDateChange(event: MatDatepickerInputEvent<Date>): void {
-    const date = event.value;
-    if (date) {
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const day = String(date.getDate()).padStart(2, '0');
-      this.startDate.set(`${year}-${month}-${day}`);
+  private saveSymbolFilterAndNotify(): void {
+    const symbol = this.searchText();
+    if (symbol !== '') {
+      this.sortFilterStateService.saveFilterState(
+        SoldPositionsComponent.tableKey,
+        { symbol }
+      );
     } else {
-      this.startDate.set(null);
+      this.sortFilterStateService.clearFilterState(
+        SoldPositionsComponent.tableKey
+      );
     }
-  }
-
-  onEndDateChange(event: MatDatepickerInputEvent<Date>): void {
-    const date = event.value;
-    if (date) {
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const day = String(date.getDate()).padStart(2, '0');
-      this.endDate.set(`${year}-${month}-${day}`);
-    } else {
-      this.endDate.set(null);
-    }
-  }
-
-  clearFilters(): void {
-    this.startDate.set(null);
-    this.endDate.set(null);
+    handleSocketNotification('accounts', 'update', getAccountIds());
   }
 }

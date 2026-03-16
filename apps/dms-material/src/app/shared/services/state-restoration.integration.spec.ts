@@ -6,11 +6,23 @@ import { AccountPanelComponent } from '../../account-panel/account-panel.compone
 
 // Mock SmartNgRX dependencies to avoid initialization
 vi.mock('../../store/trades/selectors/select-trades.function', () => ({
-  selectTrades: vi.fn().mockReturnValue([]),
+  selectOpenTrades: vi.fn().mockReturnValue([]),
 }));
-vi.mock('../../store/trades/selectors/select-trades-entity.function', () => ({
-  selectTradesEntity: vi.fn().mockReturnValue([]),
+vi.mock('../../store/trades/selectors/select-sold-trades.function', () => ({
+  selectSoldTrades: vi.fn().mockReturnValue([]),
 }));
+vi.mock(
+  '../../store/trades/selectors/select-open-trade-entity.function',
+  () => ({
+    selectOpenTradeEntity: vi.fn().mockReturnValue([]),
+  })
+);
+vi.mock(
+  '../../store/trades/selectors/select-sold-trade-entity.function',
+  () => ({
+    selectSoldTradeEntity: vi.fn().mockReturnValue([]),
+  })
+);
 vi.mock('../../store/universe/selectors/select-universes.function', () => ({
   selectUniverses: vi.fn().mockReturnValue([]),
 }));

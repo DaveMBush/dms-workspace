@@ -255,4 +255,151 @@ describe('Top Route Handler', () => {
       expect(mockEnsureRiskGroupsExist).toHaveBeenCalledTimes(3);
     });
   });
+
+  describe('Account filter on computed sort', () => {
+    it('should pass accountId to trades query when sorting by avg_purchase_yield_percent', async () => {
+      mockPrismaUniverse.findMany.mockResolvedValue([
+        {
+          id: 'u1',
+          distribution: 1,
+          distributions_per_year: 4,
+          last_price: 100,
+          trades: [{ buy: 50, quantity: 10, sell: 0, sell_date: null }],
+        },
+      ]);
+
+      const filterState = JSON.stringify({
+        universes: {
+          sort: { field: 'avg_purchase_yield_percent', order: 'desc' },
+          filters: { account_id: 'acct-1' },
+        },
+      });
+
+      const response = await app.inject({
+        method: 'POST',
+        url: '/api/top',
+        payload: ['1'],
+        headers: { 'x-sort-filter-state': filterState },
+      });
+
+      expect(response.statusCode).toBe(200);
+      // Verify that findMany was called with trades filtered by accountId
+      const universeCall = mockPrismaUniverse.findMany.mock.calls[0][0];
+      expect(universeCall.select.trades).toEqual({
+        where: { accountId: 'acct-1' },
+        select: { buy: true, quantity: true, sell: true, sell_date: true },
+      });
+    });
+
+    it('should not filter trades when no account_id filter is set', async () => {
+      mockPrismaUniverse.findMany.mockResolvedValue([
+        {
+          id: 'u1',
+          distribution: 1,
+          distributions_per_year: 4,
+          last_price: 100,
+          trades: [{ buy: 50, quantity: 10, sell: 0, sell_date: null }],
+        },
+      ]);
+
+      const filterState = JSON.stringify({
+        universes: {
+          sort: { field: 'avg_purchase_yield_percent', order: 'desc' },
+        },
+      });
+
+      const response = await app.inject({
+        method: 'POST',
+        url: '/api/top',
+        payload: ['1'],
+        headers: { 'x-sort-filter-state': filterState },
+      });
+
+      expect(response.statusCode).toBe(200);
+      const universeCall = mockPrismaUniverse.findMany.mock.calls[0][0];
+      expect(universeCall.select.trades).toEqual({
+        select: { buy: true, quantity: true, sell: true, sell_date: true },
+      });
+    });
+
+    it('should pass accountId when sorting by most_recent_sell_date', async () => {
+      mockPrismaUniverse.findMany.mockResolvedValue([
+        {
+          id: 'u1',
+          distribution: 1,
+          distributions_per_year: 4,
+          last_price: 100,
+          trades: [
+            {
+              buy: 50,
+              quantity: 10,
+              sell: 55,
+              sell_date: new Date('2025-06-01'),
+            },
+          ],
+        },
+      ]);
+
+      const filterState = JSON.stringify({
+        universes: {
+          sort: { field: 'most_recent_sell_date', order: 'asc' },
+          filters: { account_id: 'acct-2' },
+        },
+      });
+
+      const response = await app.inject({
+        method: 'POST',
+        url: '/api/top',
+        payload: ['1'],
+        headers: { 'x-sort-filter-state': filterState },
+      });
+
+      expect(response.statusCode).toBe(200);
+      const universeCall = mockPrismaUniverse.findMany.mock.calls[0][0];
+      expect(universeCall.select.trades).toEqual({
+        where: { accountId: 'acct-2' },
+        select: { buy: true, quantity: true, sell: true, sell_date: true },
+      });
+    });
+
+    it('should pass accountId when sorting by most_recent_sell_price', async () => {
+      mockPrismaUniverse.findMany.mockResolvedValue([
+        {
+          id: 'u1',
+          distribution: 1,
+          distributions_per_year: 4,
+          last_price: 100,
+          trades: [
+            {
+              buy: 50,
+              quantity: 10,
+              sell: 55,
+              sell_date: new Date('2025-06-01'),
+            },
+          ],
+        },
+      ]);
+
+      const filterState = JSON.stringify({
+        universes: {
+          sort: { field: 'most_recent_sell_price', order: 'desc' },
+          filters: { account_id: 'acct-3' },
+        },
+      });
+
+      const response = await app.inject({
+        method: 'POST',
+        url: '/api/top',
+        payload: ['1'],
+        headers: { 'x-sort-filter-state': filterState },
+      });
+
+      expect(response.statusCode).toBe(200);
+      const universeCall = mockPrismaUniverse.findMany.mock.calls[0][0];
+      expect(universeCall.select.trades).toEqual({
+        where: { accountId: 'acct-3' },
+        select: { buy: true, quantity: true, sell: true, sell_date: true },
+      });
+    });
+  });
 });

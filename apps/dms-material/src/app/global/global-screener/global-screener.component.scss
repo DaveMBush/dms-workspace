@@ -80,10 +80,10 @@
 
 .symbol-link {
   text-decoration: underline;
-  color: var(--mat-app-primary, #1976d2);
+  color: var(--mat-app-primary-dark, #1565c0);
 
   &:hover {
-    color: var(--mat-app-primary-dark, #1565c0);
+    color: var(--mat-app-primary, #1976d2);
   }
 
   &:focus {

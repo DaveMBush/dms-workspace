@@ -1,3 +1,4 @@
+import { A11yModule } from '@angular/cdk/a11y';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -41,6 +42,7 @@ import { selectUniverses } from '../../store/universe/selectors/select-universes
     MatButtonModule,
     MatProgressSpinnerModule,
     SymbolAutocompleteComponent,
+    A11yModule,
   ],
   templateUrl: './add-symbol-dialog.html',
   styleUrl: './add-symbol-dialog.scss',

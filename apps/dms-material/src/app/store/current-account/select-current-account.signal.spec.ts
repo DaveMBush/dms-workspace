@@ -13,7 +13,8 @@ vi.mock(
             'account-1': {
               id: 'account-1',
               name: 'Test Account',
-              trades: [],
+              openTrades: [],
+              soldTrades: [],
               divDeposits: [],
               months: [{ month: 1, year: 2024 }],
             },
@@ -49,7 +50,8 @@ describe('selectCurrentAccountSignal', () => {
   const mockAccount: Account = {
     id: 'account-1',
     name: 'Test Account',
-    trades: [],
+    openTrades: [],
+    soldTrades: [],
     divDeposits: [],
     months: [{ month: 1, year: 2024 }],
   };
@@ -57,7 +59,8 @@ describe('selectCurrentAccountSignal', () => {
   const emptyAccount: Account = {
     id: '',
     name: '',
-    trades: [],
+    openTrades: [],
+    soldTrades: [],
     divDeposits: [],
     months: [],
   };
@@ -71,10 +74,16 @@ describe('selectCurrentAccountSignal', () => {
       expect(result().id).toBe('account-1');
     });
 
-    it('should include trades from the account', () => {
+    it('should include openTrades from the account', () => {
       const store = createMockStore('account-1');
       const result = selectCurrentAccountSignal(store);
-      expect(result().trades).toBeDefined();
+      expect(result().openTrades).toBeDefined();
+    });
+
+    it('should include soldTrades from the account', () => {
+      const store = createMockStore('account-1');
+      const result = selectCurrentAccountSignal(store);
+      expect(result().soldTrades).toBeDefined();
     });
 
     it('should include divDeposits from the account', () => {
@@ -98,10 +107,16 @@ describe('selectCurrentAccountSignal', () => {
       expect(result().name).toBe('');
     });
 
-    it('should return empty trades array', () => {
+    it('should return empty openTrades array', () => {
       const store = createMockStore('nonexistent-id');
       const result = selectCurrentAccountSignal(store);
-      expect(result().trades).toEqual([]);
+      expect(result().openTrades).toEqual([]);
+    });
+
+    it('should return empty soldTrades array', () => {
+      const store = createMockStore('nonexistent-id');
+      const result = selectCurrentAccountSignal(store);
+      expect(result().soldTrades).toEqual([]);
     });
 
     it('should return empty divDeposits array', () => {
@@ -155,7 +170,8 @@ describe('selectCurrentAccountSignal', () => {
       // Verify the returned account has all expected fields
       expect(account).toHaveProperty('id');
       expect(account).toHaveProperty('name');
-      expect(account).toHaveProperty('trades');
+      expect(account).toHaveProperty('openTrades');
+      expect(account).toHaveProperty('soldTrades');
       expect(account).toHaveProperty('divDeposits');
       expect(account).toHaveProperty('months');
     });

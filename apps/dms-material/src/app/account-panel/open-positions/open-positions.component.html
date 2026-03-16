@@ -13,6 +13,8 @@
   data-testid="open-positions-table"
   [data]="selectOpenPositions$()"
   [columns]="columns"
+  (sortChange)="onSortChange($event)"
+  (renderedRangeChange)="onRangeChange($event)"
 >
   <ng-template #filterRowTemplate let-column>
     @if (column.field === 'symbol') {
@@ -25,8 +27,9 @@
         data-testid="symbol-search-input"
         matInput
         type="text"
-        [ngModel]="searchText()"
-        (ngModelChange)="searchText.set($event)"
+        [value]="searchText()"
+        (input)="onSymbolFilterChange(symbolInput.value)"
+        #symbolInput
         placeholder="Search Symbol"
         class="text-sm"
       />

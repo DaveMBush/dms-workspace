@@ -1,146 +1,47 @@
 import { FastifyInstance } from 'fastify';
 
 import { prisma } from '../../prisma/prisma-client';
+import { getTableState } from '../common/get-table-state.function';
+import { parseSortFilterHeader } from '../common/parse-sort-filter-header.function';
 import { Account } from './account.interface';
+import { buildAccountResponse } from './build-account-response.function';
 import { NewAccount } from './new-account.interface';
 
 interface AccountWithTrades {
   id: string;
   name: string;
-  trades: Array<{ id: string }>;
+  trades: Array<{ id: string; sell_date: Date | null; sell: number }>;
 }
 
-interface MonthData {
-  year: number;
-  month: number;
+function isOpenTrade(trade: { sell_date: Date | null; sell: number }): boolean {
+  return trade.sell_date === null || trade.sell === 0;
 }
 
-function extractMonthsFromTrades(
-  trades: Array<{ sell_date: Date | null }>
-): Set<string> {
-  return new Set(
-    trades
-      .filter(function filterSoldTrades(trade) {
-        return trade.sell_date !== null;
-      })
-      .map(function mapTradeToMonth(trade) {
-        const d = new Date(trade.sell_date!);
-        return `${d.getFullYear()}-${d.getMonth() + 1}`;
-      })
-  );
+function mapTradeToId(trade: { id: string }): string {
+  return trade.id;
 }
 
-function extractMonthsFromDivDeposits(
-  divDeposits: Array<{ date: Date }>
-): Set<string> {
-  return new Set(
-    divDeposits.map(function mapDivDepositToMonth(divDeposit) {
-      const d = new Date(divDeposit.date);
-      return `${d.getFullYear()}-${d.getMonth() + 1}`;
-    })
-  );
+function getOpenTradeIds(accountItem: AccountWithTrades): string[] {
+  return accountItem.trades.filter(isOpenTrade).map(mapTradeToId);
 }
 
-function combineAndSortMonths(
-  months1: Set<string>,
-  months2: Set<string>
-): MonthData[] {
-  const combinedMonths = [...months1].concat([...months2]);
-  const sortedMonths = combinedMonths.toSorted(function sortMonthsDescending(
-    a: string,
-    b: string
-  ) {
-    return b.localeCompare(a);
-  });
-  return sortedMonths.map(function parseMonth(m) {
-    const [year, month] = m.split('-');
-    return { year: parseInt(year, 10), month: parseInt(month, 10) };
-  });
-}
-
-interface PrismaAccountResult {
-  id: string;
-  name: string;
-  // eslint-disable-next-line @typescript-eslint/naming-convention -- prisma field
-  _count: {
-    divDeposits: number;
-  };
-  trades?: Array<{ id: string; sell_date: Date | null }>;
-  divDeposits?: Array<{ id: string; date: Date }>;
-}
-
-function mapAccountToResponse(account: PrismaAccountResult): Account {
-  const trades = account.trades ?? [];
-  const divDeposits = account.divDeposits ?? [];
-
-  const months1 = extractMonthsFromTrades(trades);
-  const months2 = extractMonthsFromDivDeposits(divDeposits);
-  const months = combineAndSortMonths(months1, months2);
-
+function mapAccountToResponse(accountItem: AccountWithTrades): Account {
+  const tradeIds = getOpenTradeIds(accountItem);
   return {
-    id: account.id,
-    name: account.name,
-    trades: trades.map(function mapTradeToId(trade) {
-      return trade.id;
-    }),
+    id: accountItem.id,
+    name: accountItem.name,
+    openTrades: {
+      startIndex: 0,
+      indexes: tradeIds.slice(0, 10),
+      length: tradeIds.length,
+    },
+    soldTrades: { startIndex: 0, indexes: [], length: 0 },
     divDeposits: {
       startIndex: 0,
-      indexes: divDeposits.map(function mapDivDepositToIndex(divDeposit) {
-        return divDeposit.id;
-      }),
-      // eslint-disable-next-line no-underscore-dangle -- prisma field
-      length: account._count.divDeposits,
+      indexes: [],
+      length: 0,
     },
-    months,
-  };
-}
-
-function getHandleGetAccountsRouteFindManyJson(ids: string[]): {
-  where: { id: { in: string[] } };
-  select: {
-    id: boolean;
-    name: boolean;
-    // eslint-disable-next-line @typescript-eslint/naming-convention -- prisma field
-    _count: { select: { divDeposits: boolean } };
-    trades: { select: { id: boolean; sell_date: boolean } };
-    divDeposits: {
-      take: number;
-      select: { id: boolean; date: boolean };
-      orderBy: { date: 'desc' };
-    };
-  };
-  orderBy: { name: 'asc' };
-} {
-  return {
-    where: { id: { in: ids } },
-    select: {
-      id: true,
-      name: true,
-      _count: {
-        select: {
-          divDeposits: true,
-        },
-      },
-      trades: {
-        select: {
-          id: true,
-          sell_date: true,
-        },
-      },
-      divDeposits: {
-        take: 10,
-        select: {
-          id: true,
-          date: true,
-        },
-        orderBy: {
-          date: 'desc' as const,
-        },
-      },
-    },
-    orderBy: {
-      name: 'asc' as const,
-    },
+    months: [],
   };
 }
 
@@ -161,12 +62,27 @@ function handleGetAccountsRoute(fastify: FastifyInstance): void {
         return [];
       }
 
-      const accounts = await prisma.accounts.findMany(
-        getHandleGetAccountsRouteFindManyJson(ids)
-      );
-      return accounts.map(function mapAccount(account) {
-        return mapAccountToResponse(account);
+      const allState = parseSortFilterHeader(request);
+      const openState = getTableState(allState, 'trades-open');
+      const closedState = getTableState(allState, 'trades-closed');
+      const divState = getTableState(allState, 'div-deposits');
+
+      const accounts = await prisma.accounts.findMany({
+        where: { id: { in: ids } },
+        select: { id: true, name: true },
+        orderBy: { name: 'asc' as const },
       });
+
+      return Promise.all(
+        accounts.map(async function mapAccountWithState(account) {
+          return buildAccountResponse(
+            account,
+            openState,
+            closedState,
+            divState
+          );
+        })
+      );
     }
   );
 }
@@ -186,25 +102,8 @@ function handleAddAccountRoute(fastify: FastifyInstance): void {
           trades: true,
         },
       });
-      function mapTradeToId(trade: { id: string }): string {
-        return trade.id;
-      }
 
-      function mapNewAccount(accountItem: AccountWithTrades): Account {
-        return {
-          id: accountItem.id,
-          name: accountItem.name,
-          trades: accountItem.trades.map(mapTradeToId),
-          divDeposits: {
-            startIndex: 0,
-            indexes: [],
-            length: 0,
-          },
-          months: [],
-        };
-      }
-
-      const response = account.map(mapNewAccount);
+      const response = account.map(mapAccountToResponse);
       reply.status(200).send(response);
       return response;
     }
@@ -243,25 +142,7 @@ function handleUpdateAccountRoute(fastify: FastifyInstance): void {
         include: { trades: true },
       });
 
-      function mapTradeToIdForUpdate(trade: { id: string }): string {
-        return trade.id;
-      }
-
-      function mapUpdatedAccount(accountItem: AccountWithTrades): Account {
-        return {
-          id: accountItem.id,
-          name: accountItem.name,
-          trades: accountItem.trades.map(mapTradeToIdForUpdate),
-          divDeposits: {
-            startIndex: 0,
-            indexes: [],
-            length: 0,
-          },
-          months: [],
-        };
-      }
-
-      const result = accounts.map(mapUpdatedAccount);
+      const result = accounts.map(mapAccountToResponse);
       reply.status(200).send(result);
       return result;
     }

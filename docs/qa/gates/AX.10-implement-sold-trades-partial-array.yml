@@ -1,0 +1,9 @@
+schema: 1
+story: 'AX.10'
+story_title: 'Implement - Convert soldTrades to PartialArrayDefinition'
+gate: PASS
+status_reason: 'All acceptance criteria met. Interface, defaults, server response, indexes route, and tests implemented correctly following existing patterns.'
+reviewer: 'Quinn (Test Architect)'
+updated: '2026-03-14T13:00:00Z'
+top_issues: []
+waiver: { active: false }

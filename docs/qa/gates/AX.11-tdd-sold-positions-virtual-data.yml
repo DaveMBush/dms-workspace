@@ -1,0 +1,15 @@
+schema: 1
+story: 'AX.11'
+story_title: 'TDD - Virtual data access for Sold Positions'
+gate: PASS
+status_reason: 'All acceptance criteria met. TDD RED phase tests written and disabled with .skip(). Component tests cover visibleRange and onRangeChange (4 tests). Service tests cover sparse array, visible-window loop, universe symbol resolution, and range edge cases (10 tests). All validation commands pass.'
+reviewer: 'Quinn (Test Architect)'
+updated: '2026-03-14T19:58:13Z'
+top_issues: []
+waiver: { active: false }
+evidence:
+  tests_reviewed: 14
+  risks_identified: 0
+  trace:
+    ac_covered: [1, 2, 3, 4, 5, 6]
+    ac_gaps: []

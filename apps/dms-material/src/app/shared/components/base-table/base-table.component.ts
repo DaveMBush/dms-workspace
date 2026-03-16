@@ -1,15 +1,17 @@
-import { SelectionModel } from '@angular/cdk/collections';
+import { ListRange, SelectionModel } from '@angular/cdk/collections';
 import {
   CdkVirtualScrollViewport,
   ScrollingModule,
 } from '@angular/cdk/scrolling';
 import { CommonModule } from '@angular/common';
 import {
+  AfterViewInit,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   computed,
   ContentChild,
+  DestroyRef,
   effect,
   inject,
   input,
@@ -18,10 +20,12 @@ import {
   TemplateRef,
   viewChild,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
+import { debounceTime } from 'rxjs';
 
 import { ColumnDef } from './column-def.interface';
 
@@ -39,10 +43,13 @@ import { ColumnDef } from './column-def.interface';
   styleUrl: './base-table.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class BaseTableComponent<T extends { id: string }> {
+export class BaseTableComponent<T extends { id: string }>
+  implements AfterViewInit
+{
   // Inputs
   data = input.required<T[]>(); // Signal-based data input
   columns = input.required<ColumnDef[]>();
+  tableLabel = input<string>('Data table');
   rowHeight = input<number>(48);
   bufferSize = input<number>(10);
   selectable = input<boolean>(false);
@@ -53,6 +60,7 @@ export class BaseTableComponent<T extends { id: string }> {
   readonly sortChange = output<Sort>();
   readonly rowClick = output<T>();
   readonly selectionChange = output<T[]>();
+  readonly renderedRangeChange = output<ListRange>();
 
   // ViewChild for virtual scroll viewport
   viewport = viewChild<CdkVirtualScrollViewport>('viewport');
@@ -61,6 +69,7 @@ export class BaseTableComponent<T extends { id: string }> {
   selection = new SelectionModel<T>(true, []);
   private sortState = signal<Sort | null>(null);
   private cdr = inject(ChangeDetectorRef);
+  private destroyRef = inject(DestroyRef);
 
   constructor() {
     // Force change detection when dataSource changes
@@ -75,6 +84,19 @@ export class BaseTableComponent<T extends { id: string }> {
         context.cdr.markForCheck();
       }
     );
+  }
+
+  ngAfterViewInit(): void {
+    const viewportValue = this.viewport();
+    if (viewportValue) {
+      viewportValue.renderedRangeStream
+        .pipe(debounceTime(100), takeUntilDestroyed(this.destroyRef))
+        .subscribe(
+          function emitRange(this: BaseTableComponent<T>, range: ListRange) {
+            this.renderedRangeChange.emit(range);
+          }.bind(this)
+        );
+    }
   }
 
   // Helper to check if row has expired property
@@ -108,14 +130,11 @@ export class BaseTableComponent<T extends { id: string }> {
   };
 
   // Data source - reactive to data() changes
-  // Returns sorted array directly - MatTable can work with arrays
+  // Server handles sorting, so no client-side sort is applied
   dataSource = computed(
     // eslint-disable-next-line @smarttools/no-anonymous-functions -- Required for computed signal
     () => {
-      const context = this;
-      const dataValue = context.data();
-      const sortValue = context.sortState();
-      return context.applySortToData(dataValue, sortValue);
+      return [...this.data()];
     }
   );
 
@@ -193,39 +212,5 @@ export class BaseTableComponent<T extends { id: string }> {
     if (viewportValue) {
       viewportValue.scrollToIndex(0);
     }
-  }
-
-  private applySortToData(dataValue: T[], sortValue: Sort | null): T[] {
-    if (
-      sortValue === null ||
-      sortValue.active.length === 0 ||
-      sortValue.direction.length === 0
-    ) {
-      return [...dataValue];
-    }
-
-    return this.sortData(dataValue, sortValue);
-  }
-
-  private sortData(dataValue: T[], sortValue: Sort): T[] {
-    return [...dataValue].sort(function compare(a: T, b: T) {
-      const aValue = (a as Record<string, unknown>)[sortValue.active];
-      const bValue = (b as Record<string, unknown>)[sortValue.active];
-
-      if (aValue === bValue) {
-        return 0;
-      }
-
-      if (aValue === null || aValue === undefined) {
-        return 1;
-      }
-      if (bValue === null || bValue === undefined) {
-        return -1;
-      }
-
-      const comparison =
-        (aValue as number | string) < (bValue as number | string) ? -1 : 1;
-      return sortValue.direction === 'asc' ? comparison : -comparison;
-    });
   }
 }

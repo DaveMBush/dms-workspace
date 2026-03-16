@@ -1,4 +1,4 @@
-import { computed, inject, Injectable } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { RowProxyDelete, SmartArray } from '@smarttools/smart-signals';
 
 import { Account } from '../../accounts/account';
@@ -13,19 +13,24 @@ import { Universe } from '../../store/universe/universe.interface';
 export class OpenPositionsComponentService {
   private currentAccountSignalStore = inject(currentAccountSignalStore);
 
+  visibleRange = signal<{ start: number; end: number }>({
+    start: 0,
+    end: 50,
+  });
+
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- will hide this
   trades = computed(() => {
     const currentAccount = selectCurrentAccountSignal(
       this.currentAccountSignalStore
     );
-    return currentAccount().trades as Trade[];
+    return currentAccount().openTrades as Trade[];
   });
 
   deleteOpenPosition(position: OpenPosition): void {
     const currentAccount = selectCurrentAccountSignal(
       this.currentAccountSignalStore
     );
-    const trades = currentAccount().trades as Trade[];
+    const trades = currentAccount().openTrades as Trade[];
     const tradesArray = trades as SmartArray<Account, Trade> & Trade[];
     for (let i = 0; i < tradesArray.length; i++) {
       const trade = tradesArray[i] as RowProxyDelete & Trade;
@@ -40,50 +45,73 @@ export class OpenPositionsComponentService {
   selectOpenPositions = computed(() => {
     const trades = this.trades();
     const universeMap = this.universeMap();
-    const openPositions = [] as OpenPosition[];
+    const range = this.visibleRange();
+
+    if (trades.length === 0) {
+      return [] as OpenPosition[];
+    }
+
+    // First pass: collect indices of open trades (cheap isClosed check)
+    const openIndices: number[] = [];
     for (let i = 0; i < trades.length; i++) {
       const trade = trades[i];
       const universe = universeMap.get(trade.universeId);
-      if (this.isClosed(trade, universe!)) {
-        continue;
+      if (!this.isClosed(trade, universe!)) {
+        openIndices.push(i);
       }
-      const daysHeld = this.differenceInTradingDaysPrivate(
-        trade.buy_date,
-        new Date().toISOString()
-      );
-      const expectedYield = this.getExpectedYield(universe!, trade);
+    }
 
-      const targetGain = this.getTargetGain(
-        universe!,
-        trade,
-        daysHeld,
-        expectedYield
-      );
-      const sellDate =
-        trade.sell_date !== undefined
-          ? this.parseDateString(trade.sell_date)
-          : undefined;
-      openPositions.push({
-        id: trade.id,
-        symbol: universe!.symbol,
-        exDate: universe!.ex_date || null,
-        buy: trade.buy,
-        buyDate: this.parseDateString(trade.buy_date),
-        sell: trade.sell,
-        sellDate,
-        daysHeld,
-        expectedYield,
-        targetGain,
-        targetSell: targetGain / trade.quantity + trade.buy,
-        quantity: trade.quantity,
-        lastPrice: universe!.last_price,
-        unrealizedGainPercent:
-          ((universe!.last_price - trade.buy) / trade.buy) * 100,
-        unrealizedGain: (universe!.last_price - trade.buy) * trade.quantity,
-      });
+    // Visible-window: sparse array sized to open count, only transform visible items
+    const totalOpen = openIndices.length;
+    const openPositions = new Array<OpenPosition>(totalOpen);
+    const rangeEnd = Math.min(range.end, totalOpen);
+    for (let j = range.start; j < rangeEnd; j++) {
+      const tradeIdx = openIndices[j];
+      const trade = trades[tradeIdx];
+      const universe = universeMap.get(trade.universeId)!;
+      openPositions[j] = this.transformTradeToPosition(trade, universe);
     }
     return openPositions;
   });
+
+  private transformTradeToPosition(
+    trade: Trade,
+    universe: Universe
+  ): OpenPosition {
+    const daysHeld = this.differenceInTradingDaysPrivate(
+      trade.buy_date,
+      new Date().toISOString()
+    );
+    const expectedYield = this.getExpectedYield(universe, trade);
+    const targetGain = this.getTargetGain(
+      universe,
+      trade,
+      daysHeld,
+      expectedYield
+    );
+    const sellDate =
+      trade.sell_date !== undefined
+        ? this.parseDateString(trade.sell_date)
+        : undefined;
+    return {
+      id: trade.id,
+      symbol: universe.symbol,
+      exDate: universe.ex_date || null,
+      buy: trade.buy,
+      buyDate: this.parseDateString(trade.buy_date),
+      sell: trade.sell,
+      sellDate,
+      daysHeld,
+      expectedYield,
+      targetGain,
+      targetSell: targetGain / trade.quantity + trade.buy,
+      quantity: trade.quantity,
+      lastPrice: universe.last_price,
+      unrealizedGainPercent:
+        ((universe.last_price - trade.buy) / trade.buy) * 100,
+      unrealizedGain: (universe.last_price - trade.buy) * trade.quantity,
+    };
+  }
 
   private differenceInTradingDaysPrivate(start: string, end: string): number {
     return differenceInTradingDays(start, end);

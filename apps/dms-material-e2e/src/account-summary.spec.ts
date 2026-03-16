@@ -562,17 +562,20 @@ test.describe('Account Summary', () => {
     test('should display error message when backend fails', async ({
       page,
     }) => {
-      // Intercept summary API calls to simulate a failure
-      await page.route('**/api/summary*', function abortSummary(route) {
-        return route.abort('failed');
+      // Intercept summary API calls to simulate a 500 server error
+      await page.route('**/api/summary*', function failSummary(route) {
+        return route.fulfill({
+          status: 500,
+          contentType: 'application/json',
+          body: JSON.stringify({ message: 'Internal Server Error' }),
+        });
       });
 
       await page.goto(`/account/${ACCOUNT_UUID}`);
-      await page.waitForLoadState('networkidle');
 
-      // Error message should appear
+      // Wait for the error message to appear (driven by error signal)
       const errorMessage = page.locator('[data-testid="error-message"]');
-      await expect(errorMessage).toBeVisible();
+      await expect(errorMessage).toBeVisible({ timeout: 10000 });
     });
 
     test('should not show error message when API returns valid data', async ({

@@ -1,4 +1,4 @@
-import { computed, inject, Injectable } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 
 import { buildUniverseMap } from '../../shared/build-universe-map.function';
 import { currentAccountSignalStore } from '../../store/current-account/current-account.signal-store';
@@ -12,30 +12,51 @@ import { classifyCapitalGain } from './classify-capital-gain.function';
 export class SoldPositionsComponentService {
   private currentAccountSignalStore = inject(currentAccountSignalStore);
 
+  visibleRange = signal<{ start: number; end: number }>({
+    start: 0,
+    end: 50,
+  });
+
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
   trades = computed(() => {
     const currentAccount = selectCurrentAccountSignal(
       this.currentAccountSignalStore
     );
-    return currentAccount().trades as Trade[];
+    return currentAccount().soldTrades as Trade[];
   });
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
   selectSoldPositions = computed(() => {
     const trades = this.trades();
     const universeMap = buildUniverseMap();
-    const soldPositions: ClosedPosition[] = [];
+    const range = this.visibleRange();
 
+    if (trades.length === 0) {
+      return [] as ClosedPosition[];
+    }
+
+    // First pass: collect indices of valid sold trades (cheap validation check)
+    const soldIndices: number[] = [];
     for (let i = 0; i < trades.length; i++) {
       const trade = trades[i];
       if (!this.isValidSoldTrade(trade)) {
         continue;
       }
-
       const universe = universeMap.get(trade.universeId);
       if (!universe) {
         continue;
       }
+      soldIndices.push(i);
+    }
+
+    // Visible-window: sparse array sized to sold count, only transform visible items
+    const totalSold = soldIndices.length;
+    const soldPositions = new Array<ClosedPosition>(totalSold);
+    const rangeEnd = Math.min(range.end, totalSold);
+    for (let j = range.start; j < rangeEnd; j++) {
+      const tradeIdx = soldIndices[j];
+      const trade = trades[tradeIdx];
+      const universe = universeMap.get(trade.universeId)!;
 
       const daysHeld = differenceInTradingDays(
         trade.buy_date,
@@ -45,7 +66,7 @@ export class SoldPositionsComponentService {
       const capitalGainPercentage =
         trade.buy !== 0 ? ((trade.sell - trade.buy) / trade.buy) * 100 : 0;
 
-      soldPositions.push({
+      soldPositions[j] = {
         id: trade.id,
         symbol: universe.symbol,
         buy: trade.buy,
@@ -57,7 +78,7 @@ export class SoldPositionsComponentService {
         capitalGain,
         capitalGainPercentage,
         gainLossType: classifyCapitalGain(capitalGain),
-      });
+      };
     }
 
     return soldPositions;

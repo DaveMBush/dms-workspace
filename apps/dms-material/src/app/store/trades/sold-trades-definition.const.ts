@@ -3,10 +3,10 @@ import { SmartEntityDefinition } from '@smarttools/smart-signals';
 import { Trade } from './trade.interface';
 import { tradeEffectsServiceToken } from './trade-effect-service-token';
 
-export const tradesDefinition: SmartEntityDefinition<Trade> = {
-  entityName: 'trades',
+export const soldTradesDefinition: SmartEntityDefinition<Trade> = {
+  entityName: 'soldTrades',
   effectServiceToken: tradeEffectsServiceToken,
-  defaultRow: function standardTradesDefaultRowFunction(id) {
+  defaultRow: function soldTradesDefaultRowFunction(id) {
     return {
       id,
       universeId: '',

@@ -23,10 +23,13 @@ async function setSortState(
       field: string;
       order: string;
     }): void {
-      const raw = localStorage.getItem('dms-sort-state');
+      const raw = localStorage.getItem('dms-sort-filter-state');
       const state = raw !== null ? JSON.parse(raw) : {};
-      state[t] = { field: f, order: o };
-      localStorage.setItem('dms-sort-state', JSON.stringify(state));
+      if (state[t] === undefined) {
+        state[t] = {};
+      }
+      state[t].sort = { field: f, order: o };
+      localStorage.setItem('dms-sort-filter-state', JSON.stringify(state));
     },
     { table, field, order }
   );
@@ -40,12 +43,12 @@ async function getSortState(
   table: string
 ): Promise<{ field: string; order: string } | null> {
   return page.evaluate(function readSortState(t: string) {
-    const raw = localStorage.getItem('dms-sort-state');
+    const raw = localStorage.getItem('dms-sort-filter-state');
     if (raw === null) {
       return null;
     }
     const state = JSON.parse(raw);
-    return (state[t] as { field: string; order: string }) ?? null;
+    return (state[t]?.sort as { field: string; order: string }) ?? null;
   }, table);
 }
 
@@ -54,7 +57,7 @@ async function getSortState(
  */
 async function clearSortState(page: Page): Promise<void> {
   await page.evaluate(function removeSortState(): void {
-    localStorage.removeItem('dms-sort-state');
+    localStorage.removeItem('dms-sort-filter-state');
   });
 }
 

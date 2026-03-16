@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 
+import { generateUniqueId } from './generate-unique-id.helper';
 import type { RiskGroups } from './risk-groups.types';
 import { createRiskGroups } from './shared-risk-groups.helper';
 
@@ -23,22 +24,6 @@ interface ScreenerRecord {
   last_price: number;
 }
 /* eslint-enable @typescript-eslint/naming-convention -- Re-enable naming convention */
-
-/**
- * Generate unique identifier using cryptographically secure random values
- * @returns Unique ID string
- */
-function generateUniqueId(): string {
-  // Use crypto for secure random values instead of Math.random()
-  const randomBytes = crypto.getRandomValues(new Uint8Array(4));
-  const randomStr = Array.from(randomBytes)
-    .map(function byteToString(b: number): string {
-      return b.toString(36);
-    })
-    .join('')
-    .substring(0, 5);
-  return `${Date.now()}-${randomStr}`;
-}
 
 /**
  * Create test data array - compact format to meet line limit

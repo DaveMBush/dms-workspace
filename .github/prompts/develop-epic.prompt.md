@@ -7,16 +7,9 @@ model: Claude Opus 4.6 (copilot)
 
 # Autonomous Epic Development Workflow
 
-**IMPORTANT**: This workflow uses the bmad-workflow skill. Read and apply:
+**IMPORTANT**: This workflow uses the bmad-workflow skill:
 
-- run #file:./bmad-workflow.SKILL.md
-
-Key points from bmad-workflow skill:
-
-- **Human Interaction**: Use `prompt.sh` with `timeout: 0` (no timeout)
-- **Database Safety**: Never run destructive database commands
-- **MCP Servers**: Load tools before use
-- **State Files**: Use `.git/tmp/` for story and epic metadata
+#skill:bmad-workflow
 
 ## CRITICAL: Each Phase In a subAgent
 

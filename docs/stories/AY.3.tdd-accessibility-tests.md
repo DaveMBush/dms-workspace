@@ -1,14 +1,16 @@
-# Story AG.3: Accessibility Audit
+# Story AY.3: TDD - Accessibility Tests
 
 ## Story
 
-**As a** user with accessibility needs
-**I want** the application to be fully accessible
-**So that** I can use it effectively with assistive technologies
+**As a** developer maintaining the dms-material application
+**I want** automated accessibility tests
+**So that** I can ensure the application meets WCAG 2.1 AA standards
 
 ## Context
 
-Angular Material components have built-in accessibility features, but custom components and integrations need verification.
+This story focuses on creating the **RED phase** of TDD - writing failing accessibility tests using axe-core and defining manual test plans.
+
+**IMPORTANT**: Once tests are written and failing (RED), **disable them** using `.skip` or similar so that CI can pass and this story can be merged. Story AY.4 will re-enable the tests and fix the issues (GREEN).
 
 ## Acceptance Criteria
 
@@ -40,9 +42,15 @@ Angular Material components have built-in accessibility features, but custom com
 
 ## Technical Approach
 
-### Step 1: Automated Testing
+### Step 1: Install Testing Dependencies
 
-Use axe-core for automated accessibility testing:
+```bash
+pnpm add -D @axe-core/playwright
+```
+
+### Step 2: Create Automated Accessibility Tests (RED Phase)
+
+Use axe-core for automated accessibility testing in E2E tests:
 
 ```typescript
 // In Playwright E2E tests
@@ -95,58 +103,42 @@ test('should have no accessibility violations on dashboard', async ({ page }) =>
 - [ ] High contrast mode
 - [ ] Color blindness simulation
 
-### Step 3: Fix Common Issues
+### Step 3: Document Manual Test Plans
 
-**Common fixes needed:**
+Create manual testing checklists (these will be executed in Story AY.4):
 
-1. **Missing form labels:**
+**Keyboard Navigation Checklist:**
 
-```html
-<!-- Bad -->
-<input matInput placeholder="Email" />
+- Tab through all interactive elements
+- Shift+Tab to go backwards
+- Enter/Space to activate buttons
+- Arrow keys in selects and menus
+- Escape to close dialogs
 
-<!-- Good -->
-<mat-form-field>
-  <mat-label>Email</mat-label>
-  <input matInput />
-</mat-form-field>
+**Screen Reader Testing Checklist:**
+
+- VoiceOver (Mac) or NVDA (Windows)
+- Form labels announced
+- Table structure announced
+- Error messages announced
+
+**Visual Testing Checklist:**
+
+- Zoom to 200% - layout remains usable
+- High contrast mode works
+- Color blindness simulation checked
+
+### Step 4: Disable Failing Tests for CI
+
+**CRITICAL**: After writing tests that identify accessibility violations, disable them so CI can pass:
+
+```typescript
+test.skip('should have no accessibility violations on login page', async ({ page }) => {
+  // Test implementation...
+});
 ```
 
-2. **Missing button labels:**
-
-```html
-<!-- Bad -->
-<button mat-icon-button><mat-icon>delete</mat-icon></button>
-
-<!-- Good -->
-<button mat-icon-button aria-label="Delete item">
-  <mat-icon>delete</mat-icon>
-</button>
-```
-
-3. **Table accessibility:**
-
-```html
-<table mat-table [dataSource]="data" aria-label="Investment positions">
-  ...
-</table>
-```
-
-4. **Dialog focus management:**
-   Material dialogs handle this automatically, but verify:
-
-- Focus moves to dialog on open
-- Focus trapped within dialog
-- Focus returns to trigger on close
-
-### Step 4: Document Findings
-
-Create accessibility report with:
-
-- Issues found
-- Severity
-- Remediation steps
-- Verification status
+Or mark the entire test file/suite as skip if needed. Story AY.4 will re-enable and fix.
 
 ## Audit Checklist
 
@@ -185,15 +177,17 @@ Create accessibility report with:
 
 ## Definition of Done
 
-- [ ] Automated tests pass with no violations
-- [ ] Manual keyboard testing complete
-- [ ] Screen reader testing complete
-- [ ] All critical issues fixed
-- [ ] Accessibility report documented
-- [ ] WCAG 2.1 AA compliance verified
+- [ ] axe-core dependency installed
+- [ ] Automated accessibility tests written for all major pages
+- [ ] Manual test plans documented
+- [ ] Tests identify accessibility violations (RED phase)
+- [ ] All failing tests disabled with `.skip` or similar
+- [ ] CI passes despite disabled tests
+- [ ] Test code documented for Story AY.4 re-enablement
 - [ ] All validation commands pass
   - Run `pnpm all`
-  - Run `pnpm e2e:dms-material`
+  - Run `pnpm e2e:dms-material:chromium`
+  - Run `pnpm e2e:dms-material:firefox`
   - Run `pnpm dupcheck`
   - Run `pnpm format`
   - Repeat all of these if any fail until they all pass
@@ -262,3 +256,50 @@ When this story is complete, ensure the following e2e tests exist in `apps/dms-m
 - [ ] Multi-step forms indicate progress
 
 Run `pnpm nx run dms-material-e2e:e2e` to verify all e2e tests pass.
+
+## Related Stories
+
+- **Previous**: Story AY.2 (E2E tests)
+- **Next**: Story AY.4 (implement accessibility fixes)
+- **Epic**: Epic AY
+
+---
+
+## Dev Agent Record
+
+### Status
+
+Done
+
+### Agent Model Used
+
+Claude Opus 4.6 (copilot)
+
+### File List
+
+- apps/dms-material-e2e/src/accessibility.spec.ts (new)
+- docs/testing/accessibility-manual-test-plans.md (new)
+- package.json (modified - added @axe-core/playwright)
+- pnpm-lock.yaml (modified)
+
+### Change Log
+
+- Installed @axe-core/playwright dependency for automated accessibility testing
+- Created accessibility.spec.ts with axe-core audit tests for all major pages (login, dashboard, universe, screener, global summary, error logs, cusip cache, profile)
+- Created keyboard navigation tests (login flow, dashboard nav, dialog focus trap, table navigation)
+- Created screen reader support tests (ARIA landmarks, form labels, table structure, error associations, live regions, skip navigation)
+- Created visual requirement tests (color contrast, focus indicators, zoom support)
+- Created form accessibility tests (autocomplete attributes, required fields, aria-invalid)
+- All tests disabled with test.describe.skip() for RED phase TDD (CI will pass)
+- Created comprehensive manual test plans documentation at docs/testing/accessibility-manual-test-plans.md
+
+### Debug Log References
+
+(none)
+
+### Completion Notes
+
+- This is the RED phase of TDD. All automated tests are written to identify accessibility violations.
+- All test suites use test.describe.skip() so CI passes. Story AY.4 will remove .skip and fix violations.
+- PR #669 merged to main. Issue #668 closed.
+- CodeRabbit review: 2 rounds, 8 comments total, all resolved.

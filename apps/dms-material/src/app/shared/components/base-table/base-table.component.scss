@@ -10,6 +10,8 @@
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
+  will-change: transform;
+  contain: strict;
 }
 
 mat-progress-bar {
@@ -102,6 +104,7 @@ td.mat-mdc-cell {
   // scroll when position:sticky headers overlap border-collapse table borders
   background-color: var(--dms-surface);
   background-clip: padding-box;
+  contain: content;
 }
 
 .dark-theme {

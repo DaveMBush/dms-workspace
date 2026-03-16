@@ -49,8 +49,22 @@ describe('AccountComponentService', () => {
     mockRemoveFromStore = vi.fn();
 
     mockAccounts = [
-      { id: '1', name: 'Account 1', trades: [], divDeposits: [], months: [] },
-      { id: '2', name: 'Account 2', trades: [], divDeposits: [], months: [] },
+      {
+        id: '1',
+        name: 'Account 1',
+        openTrades: [],
+        soldTrades: [],
+        divDeposits: [],
+        months: [],
+      },
+      {
+        id: '2',
+        name: 'Account 2',
+        openTrades: [],
+        soldTrades: [],
+        divDeposits: [],
+        months: [],
+      },
     ];
 
     // Create mock component with necessary properties
@@ -105,7 +119,8 @@ describe('AccountComponentService', () => {
         {
           name: 'New Account',
           id: 'new',
-          trades: [],
+          openTrades: [],
+          soldTrades: [],
           divDeposits: [],
           months: [],
         },
@@ -119,7 +134,8 @@ describe('AccountComponentService', () => {
       const addedAccount = mockAddToStore.mock.calls[0][0] as AccountInterface;
       expect(addedAccount.id).toBe('new');
       expect(addedAccount.name).toBe('New Account');
-      expect(addedAccount.trades).toEqual([]);
+      expect(addedAccount.openTrades).toEqual([]);
+      expect(addedAccount.soldTrades).toEqual([]);
       expect(addedAccount.divDeposits).toEqual([]);
       expect(addedAccount.months).toEqual([]);
     });

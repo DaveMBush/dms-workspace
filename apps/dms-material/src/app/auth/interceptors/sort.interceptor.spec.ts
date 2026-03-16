@@ -3,25 +3,28 @@ import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
-import { SortStateService } from '../../shared/services/sort-state.service';
+import { SortFilterStateService } from '../../shared/services/sort-filter-state.service';
 import { sortInterceptor } from './sort.interceptor';
 
 describe('sortInterceptor', () => {
-  let mockSortStateService: {
-    loadSortState: ReturnType<typeof vi.fn>;
+  let mockSortFilterStateService: {
+    loadAllSortFilterState: ReturnType<typeof vi.fn>;
   };
   let mockNext: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
-    mockSortStateService = {
-      loadSortState: vi.fn(),
+    mockSortFilterStateService = {
+      loadAllSortFilterState: vi.fn().mockReturnValue({}),
     };
 
     mockNext = vi.fn().mockReturnValue(of(new HttpResponse({ status: 200 })));
 
     TestBed.configureTestingModule({
       providers: [
-        { provide: SortStateService, useValue: mockSortStateService },
+        {
+          provide: SortFilterStateService,
+          useValue: mockSortFilterStateService,
+        },
       ],
     });
   });
@@ -30,43 +33,39 @@ describe('sortInterceptor', () => {
     vi.restoreAllMocks();
   });
 
-  describe('universe endpoint sort params', () => {
-    it('should add sortBy query param for universe symbol field', () => {
-      mockSortStateService.loadSortState.mockReturnValue({
+  describe('sends all state as JSON header', () => {
+    it('should add X-Sort-Filter-State header with all table states', () => {
+      mockSortFilterStateService.loadAllSortFilterState.mockReturnValue({
+        universes: { sort: { field: 'symbol', order: 'asc' } },
+        'trades-open': { sort: { field: 'buyDate', order: 'desc' } },
+      });
+
+      const req = new HttpRequest('GET', '/api/universe');
+
+      TestBed.runInInjectionContext(() => {
+        sortInterceptor(req, mockNext);
+      });
+
+      const interceptedReq = mockNext.mock.calls[0][0] as HttpRequest<unknown>;
+      const headerValue = interceptedReq.headers.get('X-Sort-Filter-State');
+      expect(headerValue).not.toBeNull();
+      const parsed = JSON.parse(headerValue!);
+      expect(parsed.universes.sort).toEqual({
         field: 'symbol',
         order: 'asc',
       });
-
-      const req = new HttpRequest('GET', '/api/universe');
-
-      TestBed.runInInjectionContext(() => {
-        sortInterceptor(req, mockNext);
-      });
-
-      const interceptedReq = mockNext.mock.calls[0][0] as HttpRequest<unknown>;
-      expect(interceptedReq.params.get('sortBy')).toBe('symbol');
-    });
-
-    it('should add sortOrder query param for universe requests', () => {
-      mockSortStateService.loadSortState.mockReturnValue({
-        field: 'symbol',
+      expect(parsed['trades-open'].sort).toEqual({
+        field: 'openDate',
         order: 'desc',
       });
-
-      const req = new HttpRequest('GET', '/api/universe');
-
-      TestBed.runInInjectionContext(() => {
-        sortInterceptor(req, mockNext);
-      });
-
-      const interceptedReq = mockNext.mock.calls[0][0] as HttpRequest<unknown>;
-      expect(interceptedReq.params.get('sortOrder')).toBe('desc');
     });
 
-    it('should map risk_group field to name for universe requests', () => {
-      mockSortStateService.loadSortState.mockReturnValue({
-        field: 'risk_group',
-        order: 'asc',
+    it('should include filter state in the header', () => {
+      mockSortFilterStateService.loadAllSortFilterState.mockReturnValue({
+        universes: {
+          sort: { field: 'symbol', order: 'asc' },
+          filters: { symbol: 'AAPL' },
+        },
       });
 
       const req = new HttpRequest('GET', '/api/universe');
@@ -76,224 +75,33 @@ describe('sortInterceptor', () => {
       });
 
       const interceptedReq = mockNext.mock.calls[0][0] as HttpRequest<unknown>;
-      expect(interceptedReq.params.get('sortBy')).toBe('name');
-    });
-
-    it('should read sort state from SortStateService for universes', () => {
-      mockSortStateService.loadSortState.mockReturnValue({
-        field: 'symbol',
-        order: 'desc',
-      });
-
-      const req = new HttpRequest('GET', '/api/universe');
-
-      TestBed.runInInjectionContext(() => {
-        sortInterceptor(req, mockNext);
-      });
-
-      expect(mockSortStateService.loadSortState).toHaveBeenCalledWith(
-        'universes'
+      const parsed = JSON.parse(
+        interceptedReq.headers.get('X-Sort-Filter-State')!
       );
-    });
-  });
-
-  describe('trades endpoint sort params', () => {
-    it('should map buyDate to openDate for trades/open requests', () => {
-      mockSortStateService.loadSortState.mockReturnValue({
-        field: 'buyDate',
-        order: 'desc',
-      });
-
-      const req = new HttpRequest('GET', '/api/trades/open');
-
-      TestBed.runInInjectionContext(() => {
-        sortInterceptor(req, mockNext);
-      });
-
-      const interceptedReq = mockNext.mock.calls[0][0] as HttpRequest<unknown>;
-      expect(interceptedReq.params.get('sortBy')).toBe('openDate');
-      expect(interceptedReq.params.get('sortOrder')).toBe('desc');
+      expect(parsed.universes.filters).toEqual({ symbol: 'AAPL' });
     });
 
-    it('should pass symbol unchanged for trades/open requests', () => {
-      mockSortStateService.loadSortState.mockReturnValue({
-        field: 'symbol',
-        order: 'desc',
+    it('should send state on any GET request regardless of endpoint', () => {
+      mockSortFilterStateService.loadAllSortFilterState.mockReturnValue({
+        universes: { sort: { field: 'symbol', order: 'asc' } },
       });
 
-      const req = new HttpRequest('GET', '/api/trades/open');
-
-      TestBed.runInInjectionContext(() => {
-        sortInterceptor(req, mockNext);
-      });
-
-      const interceptedReq = mockNext.mock.calls[0][0] as HttpRequest<unknown>;
-      expect(interceptedReq.params.get('sortBy')).toBe('symbol');
-      expect(interceptedReq.params.get('sortOrder')).toBe('desc');
-    });
-
-    it('should pass symbol unchanged for trades/closed requests', () => {
-      mockSortStateService.loadSortState.mockReturnValue({
-        field: 'symbol',
-        order: 'asc',
-      });
-
-      const req = new HttpRequest('GET', '/api/trades/closed');
-
-      TestBed.runInInjectionContext(() => {
-        sortInterceptor(req, mockNext);
-      });
-
-      const interceptedReq = mockNext.mock.calls[0][0] as HttpRequest<unknown>;
-      expect(interceptedReq.params.get('sortBy')).toBe('symbol');
-      expect(interceptedReq.params.get('sortOrder')).toBe('asc');
-    });
-
-    it('should pass unrealizedGain unchanged for trades/open requests', () => {
-      mockSortStateService.loadSortState.mockReturnValue({
-        field: 'unrealizedGain',
-        order: 'asc',
-      });
-
-      const req = new HttpRequest('GET', '/api/trades/open');
-
-      TestBed.runInInjectionContext(() => {
-        sortInterceptor(req, mockNext);
-      });
-
-      const interceptedReq = mockNext.mock.calls[0][0] as HttpRequest<unknown>;
-      expect(interceptedReq.params.get('sortBy')).toBe('unrealizedGain');
-    });
-
-    it('should map sell_date to closeDate for trades/closed requests', () => {
-      mockSortStateService.loadSortState.mockReturnValue({
-        field: 'sell_date',
-        order: 'desc',
-      });
-
-      const req = new HttpRequest('GET', '/api/trades/closed');
-
-      TestBed.runInInjectionContext(() => {
-        sortInterceptor(req, mockNext);
-      });
-
-      const interceptedReq = mockNext.mock.calls[0][0] as HttpRequest<unknown>;
-      expect(interceptedReq.params.get('sortBy')).toBe('closeDate');
-      expect(interceptedReq.params.get('sortOrder')).toBe('desc');
-    });
-
-    it('should read sort state from SortStateService for trades-open', () => {
-      mockSortStateService.loadSortState.mockReturnValue({
-        field: 'buyDate',
-        order: 'desc',
-      });
-
-      const req = new HttpRequest('GET', '/api/trades/open');
-
-      TestBed.runInInjectionContext(() => {
-        sortInterceptor(req, mockNext);
-      });
-
-      expect(mockSortStateService.loadSortState).toHaveBeenCalledWith(
-        'trades-open'
-      );
-    });
-
-    it('should read sort state from SortStateService for trades-closed', () => {
-      mockSortStateService.loadSortState.mockReturnValue({
-        field: 'sell_date',
-        order: 'desc',
-      });
-
-      const req = new HttpRequest('GET', '/api/trades/closed');
-
-      TestBed.runInInjectionContext(() => {
-        sortInterceptor(req, mockNext);
-      });
-
-      expect(mockSortStateService.loadSortState).toHaveBeenCalledWith(
-        'trades-closed'
-      );
-    });
-  });
-
-  describe('unmapped field names', () => {
-    it('should skip sort params for unmapped universe fields', () => {
-      mockSortStateService.loadSortState.mockReturnValue({
-        field: 'yield_percent',
-        order: 'asc',
-      });
-
-      const req = new HttpRequest('GET', '/api/universe');
-
-      TestBed.runInInjectionContext(() => {
-        sortInterceptor(req, mockNext);
-      });
-
-      const interceptedReq = mockNext.mock.calls[0][0] as HttpRequest<unknown>;
-      expect(interceptedReq.params.has('sortBy')).toBe(false);
-      expect(interceptedReq.params.has('sortOrder')).toBe(false);
-    });
-
-    it('should skip sort params for unmapped open trades fields', () => {
-      mockSortStateService.loadSortState.mockReturnValue({
-        field: 'unrealizedGainPercent',
-        order: 'desc',
-      });
-
-      const req = new HttpRequest('GET', '/api/trades/open');
-
-      TestBed.runInInjectionContext(() => {
-        sortInterceptor(req, mockNext);
-      });
-
-      const interceptedReq = mockNext.mock.calls[0][0] as HttpRequest<unknown>;
-      expect(interceptedReq.params.has('sortBy')).toBe(false);
-    });
-  });
-
-  describe('non-sortable endpoints', () => {
-    it('should not add params to auth endpoints', () => {
-      const req = new HttpRequest('GET', '/api/auth/login');
-
-      TestBed.runInInjectionContext(() => {
-        sortInterceptor(req, mockNext);
-      });
-
-      expect(mockSortStateService.loadSortState).not.toHaveBeenCalled();
-      const interceptedReq = mockNext.mock.calls[0][0] as HttpRequest<unknown>;
-      expect(interceptedReq.params.has('sortBy')).toBe(false);
-      expect(interceptedReq.params.has('sortOrder')).toBe(false);
-    });
-
-    it('should not add params to health endpoints', () => {
-      const req = new HttpRequest('GET', '/health');
-
-      TestBed.runInInjectionContext(() => {
-        sortInterceptor(req, mockNext);
-      });
-
-      expect(mockSortStateService.loadSortState).not.toHaveBeenCalled();
-      const interceptedReq = mockNext.mock.calls[0][0] as HttpRequest<unknown>;
-      expect(interceptedReq.params.has('sortBy')).toBe(false);
-    });
-
-    it('should not add params to unknown API endpoints', () => {
       const req = new HttpRequest('GET', '/api/other/endpoint');
 
       TestBed.runInInjectionContext(() => {
         sortInterceptor(req, mockNext);
       });
 
-      expect(mockSortStateService.loadSortState).not.toHaveBeenCalled();
       const interceptedReq = mockNext.mock.calls[0][0] as HttpRequest<unknown>;
-      expect(interceptedReq.params.has('sortBy')).toBe(false);
+      expect(interceptedReq.headers.has('X-Sort-Filter-State')).toBe(true);
     });
   });
 
-  describe('backend default ordering fallback', () => {
-    it('should not add sort params when no state exists for universes', () => {
-      mockSortStateService.loadSortState.mockReturnValue(null);
+  describe('field name mapping', () => {
+    it('should pass through risk_group field for universes', () => {
+      mockSortFilterStateService.loadAllSortFilterState.mockReturnValue({
+        universes: { sort: { field: 'risk_group', order: 'asc' } },
+      });
 
       const req = new HttpRequest('GET', '/api/universe');
 
@@ -302,12 +110,16 @@ describe('sortInterceptor', () => {
       });
 
       const interceptedReq = mockNext.mock.calls[0][0] as HttpRequest<unknown>;
-      expect(interceptedReq.params.has('sortBy')).toBe(false);
-      expect(interceptedReq.params.has('sortOrder')).toBe(false);
+      const parsed = JSON.parse(
+        interceptedReq.headers.get('X-Sort-Filter-State')!
+      );
+      expect(parsed.universes.sort.field).toBe('risk_group');
     });
 
-    it('should not add sort params when no state exists for trades', () => {
-      mockSortStateService.loadSortState.mockReturnValue(null);
+    it('should map buyDate to openDate for trades-open', () => {
+      mockSortFilterStateService.loadAllSortFilterState.mockReturnValue({
+        'trades-open': { sort: { field: 'buyDate', order: 'desc' } },
+      });
 
       const req = new HttpRequest('GET', '/api/trades/open');
 
@@ -316,8 +128,97 @@ describe('sortInterceptor', () => {
       });
 
       const interceptedReq = mockNext.mock.calls[0][0] as HttpRequest<unknown>;
-      expect(interceptedReq.params.has('sortBy')).toBe(false);
-      expect(interceptedReq.params.has('sortOrder')).toBe(false);
+      const parsed = JSON.parse(
+        interceptedReq.headers.get('X-Sort-Filter-State')!
+      );
+      expect(parsed['trades-open'].sort.field).toBe('openDate');
+    });
+
+    it('should map sell_date to closeDate for trades-closed', () => {
+      mockSortFilterStateService.loadAllSortFilterState.mockReturnValue({
+        'trades-closed': { sort: { field: 'sell_date', order: 'desc' } },
+      });
+
+      const req = new HttpRequest('GET', '/api/trades/closed');
+
+      TestBed.runInInjectionContext(() => {
+        sortInterceptor(req, mockNext);
+      });
+
+      const interceptedReq = mockNext.mock.calls[0][0] as HttpRequest<unknown>;
+      const parsed = JSON.parse(
+        interceptedReq.headers.get('X-Sort-Filter-State')!
+      );
+      expect(parsed['trades-closed'].sort.field).toBe('closeDate');
+    });
+
+    it('should pass through unmapped sort fields for known tables', () => {
+      mockSortFilterStateService.loadAllSortFilterState.mockReturnValue({
+        universes: { sort: { field: 'yield_percent', order: 'asc' } },
+      });
+
+      const req = new HttpRequest('GET', '/api/universe');
+
+      TestBed.runInInjectionContext(() => {
+        sortInterceptor(req, mockNext);
+      });
+
+      const interceptedReq = mockNext.mock.calls[0][0] as HttpRequest<unknown>;
+      expect(interceptedReq.headers.has('X-Sort-Filter-State')).toBe(true);
+      const parsed = JSON.parse(
+        interceptedReq.headers.get('X-Sort-Filter-State')!
+      );
+      expect(parsed.universes.sort.field).toBe('yield_percent');
+    });
+
+    it('should pass through fields for tables without a field map', () => {
+      mockSortFilterStateService.loadAllSortFilterState.mockReturnValue({
+        'other-table': { sort: { field: 'name', order: 'asc' } },
+      });
+
+      const req = new HttpRequest('GET', '/api/other');
+
+      TestBed.runInInjectionContext(() => {
+        sortInterceptor(req, mockNext);
+      });
+
+      const interceptedReq = mockNext.mock.calls[0][0] as HttpRequest<unknown>;
+      const parsed = JSON.parse(
+        interceptedReq.headers.get('X-Sort-Filter-State')!
+      );
+      expect(parsed['other-table'].sort.field).toBe('name');
+    });
+  });
+
+  describe('non-GET requests', () => {
+    it('should add headers to POST requests', () => {
+      mockSortFilterStateService.loadAllSortFilterState.mockReturnValue({
+        universes: { sort: { field: 'symbol', order: 'asc' } },
+      });
+
+      const req = new HttpRequest('POST', '/api/universe', {});
+
+      TestBed.runInInjectionContext(() => {
+        sortInterceptor(req, mockNext);
+      });
+
+      const interceptedReq = mockNext.mock.calls[0][0] as HttpRequest<unknown>;
+      expect(interceptedReq.headers.has('X-Sort-Filter-State')).toBe(true);
+    });
+  });
+
+  describe('empty state', () => {
+    it('should not add header when no state exists', () => {
+      mockSortFilterStateService.loadAllSortFilterState.mockReturnValue({});
+
+      const req = new HttpRequest('GET', '/api/universe');
+
+      TestBed.runInInjectionContext(() => {
+        sortInterceptor(req, mockNext);
+      });
+
+      const interceptedReq = mockNext.mock.calls[0][0] as HttpRequest<unknown>;
+      expect(interceptedReq.headers.has('X-Sort-Filter-State')).toBe(false);
     });
   });
 });

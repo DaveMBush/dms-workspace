@@ -51,7 +51,7 @@ vi.mock(
   '../store/trades/selectors/select-trades.function',
   function mockSelectTradesModule() {
     return {
-      selectTrades: vi.fn(function selectTradesMock() {
+      selectOpenTrades: vi.fn(function selectOpenTradesMock() {
         return [];
       }),
     };
@@ -59,10 +59,32 @@ vi.mock(
 );
 
 vi.mock(
-  '../store/trades/selectors/select-trades-entity.function',
-  function mockSelectTradesEntityModule() {
+  '../store/trades/selectors/select-sold-trades.function',
+  function mockSelectSoldTradesModule() {
     return {
-      selectTradesEntity: vi.fn(function selectTradesEntityMock() {
+      selectSoldTrades: vi.fn(function selectSoldTradesMock() {
+        return [];
+      }),
+    };
+  }
+);
+
+vi.mock(
+  '../store/trades/selectors/select-open-trade-entity.function',
+  function mockSelectOpenTradeEntityModule() {
+    return {
+      selectOpenTradeEntity: vi.fn(function selectOpenTradeEntityMock() {
+        return {};
+      }),
+    };
+  }
+);
+
+vi.mock(
+  '../store/trades/selectors/select-sold-trade-entity.function',
+  function mockSelectSoldTradeEntityModule() {
+    return {
+      selectSoldTradeEntity: vi.fn(function selectSoldTradeEntityMock() {
         return {};
       }),
     };
@@ -139,7 +161,8 @@ function createAccount(id: string, name: string): Account {
   return {
     id,
     name,
-    trades: [] as Trade[],
+    openTrades: [] as Trade[],
+    soldTrades: [] as Trade[],
     divDeposits: [] as unknown as Account['divDeposits'],
     months: [],
   };
@@ -205,14 +228,16 @@ describe('Account Selection Integration', () => {
     populateAccounts({
       'account-1': {
         ...createAccount('account-1', 'Brokerage'),
-        trades: [createTrade({ id: 't-1', accountId: 'account-1' })],
+        openTrades: [createTrade({ id: 't-1', accountId: 'account-1' })],
         divDeposits: [
           createDivDeposit({ id: 'd-1', accountId: 'account-1' }),
         ] as unknown as Account['divDeposits'],
       },
       'account-2': {
         ...createAccount('account-2', 'Retirement'),
-        trades: [createTrade({ id: 't-2', accountId: 'account-2', buy: 200 })],
+        openTrades: [
+          createTrade({ id: 't-2', accountId: 'account-2', buy: 200 }),
+        ],
         divDeposits: [
           createDivDeposit({
             id: 'd-2',
@@ -260,14 +285,14 @@ describe('Account Selection Integration', () => {
       expect(account.name).toBe('Brokerage');
     });
 
-    it('should reflect trades for the final account after rapid switches', () => {
+    it('should reflect openTrades for the final account after rapid switches', () => {
       const currentAccount = selectCurrentAccountSignal(store);
 
       store.setCurrentAccountId('account-2');
       store.setCurrentAccountId('account-1');
       store.setCurrentAccountId('account-2');
 
-      const trades = currentAccount().trades as Trade[];
+      const trades = currentAccount().openTrades as Trade[];
       expect(trades.length).toBe(1);
       expect(trades[0].buy).toBe(200);
     });
@@ -311,15 +336,15 @@ describe('Account Selection Integration', () => {
       expect(currentAccount().id).toBe('account-2');
     });
 
-    it('should update trades when the account changes', () => {
+    it('should update openTrades when the account changes', () => {
       const currentAccount = selectCurrentAccountSignal(store);
 
       store.setCurrentAccountId('account-1');
-      const tradesA = currentAccount().trades as Trade[];
+      const tradesA = currentAccount().openTrades as Trade[];
       expect(tradesA[0].id).toBe('t-1');
 
       store.setCurrentAccountId('account-2');
-      const tradesB = currentAccount().trades as Trade[];
+      const tradesB = currentAccount().openTrades as Trade[];
       expect(tradesB[0].id).toBe('t-2');
     });
 
@@ -367,7 +392,7 @@ describe('Account Selection Integration', () => {
 
       expect(account.id).toBe('account-1');
       expect(account.name).toBe('Brokerage');
-      expect((account.trades as Trade[]).length).toBe(1);
+      expect((account.openTrades as Trade[]).length).toBe(1);
       expect((account.divDeposits as unknown as DivDeposit[]).length).toBe(1);
     });
   });
@@ -385,7 +410,7 @@ describe('Account Selection Integration', () => {
       const account = currentAccount();
       expect(account.id).toBe('');
       expect(account.name).toBe('');
-      expect((account.trades as Trade[]).length).toBe(0);
+      expect((account.openTrades as Trade[]).length).toBe(0);
     });
 
     it('should return empty account when entities store is completely empty', () => {
@@ -424,7 +449,7 @@ describe('Account Selection Integration', () => {
       expect(currentAccount().name).toBe('Retirement');
     });
 
-    it('should handle account with empty trades and divDeposits gracefully', () => {
+    it('should handle account with empty openTrades and divDeposits gracefully', () => {
       populateAccounts({
         'account-empty': createAccount('account-empty', 'Empty Account'),
       });
@@ -434,7 +459,7 @@ describe('Account Selection Integration', () => {
 
       const account = currentAccount();
       expect(account.id).toBe('account-empty');
-      expect((account.trades as Trade[]).length).toBe(0);
+      expect((account.openTrades as Trade[]).length).toBe(0);
     });
   });
 
@@ -522,7 +547,7 @@ describe('Account Selection Integration', () => {
       const account = currentAccount();
       expect(account.id).toBe('');
       expect(account.name).toBe('');
-      expect((account.trades as Trade[]).length).toBe(0);
+      expect((account.openTrades as Trade[]).length).toBe(0);
     });
 
     it('should load the correct account once setCurrentAccountId is called from a route', () => {
@@ -536,12 +561,12 @@ describe('Account Selection Integration', () => {
       expect(account.name).toBe('Retirement');
     });
 
-    it('should include trades for the initially loaded account', () => {
+    it('should include openTrades for the initially loaded account', () => {
       const currentAccount = selectCurrentAccountSignal(store);
 
       store.setCurrentAccountId('account-1');
 
-      const trades = currentAccount().trades as Trade[];
+      const trades = currentAccount().openTrades as Trade[];
       expect(trades.length).toBe(1);
       expect(trades[0].id).toBe('t-1');
     });
@@ -589,13 +614,14 @@ describe('Account Selection Integration', () => {
       expect(currentAccount().id).toBe('');
     });
 
-    it('should handle account that has undefined trades gracefully', () => {
+    it('should handle account that has undefined openTrades gracefully', () => {
       // Defensive test: verifies behavior if runtime data violates Account interface contract
       populateAccounts({
         'account-no-trades': {
           id: 'account-no-trades',
           name: 'No Trades',
-          trades: undefined as unknown as Trade[],
+          openTrades: undefined as unknown as Trade[],
+          soldTrades: undefined as unknown as Trade[],
           divDeposits: [] as unknown as Account['divDeposits'],
           months: [],
         },
@@ -628,7 +654,7 @@ describe('Account Selection Integration', () => {
       }
     });
 
-    it('should return empty divDeposits and trades for a newly created account', () => {
+    it('should return empty divDeposits and openTrades for a newly created account', () => {
       populateAccounts({
         'account-new': createAccount('account-new', 'Brand New'),
       });
@@ -638,7 +664,7 @@ describe('Account Selection Integration', () => {
 
       const account = currentAccount();
       expect(account.id).toBe('account-new');
-      expect((account.trades as Trade[]).length).toBe(0);
+      expect((account.openTrades as Trade[]).length).toBe(0);
     });
 
     it('should handle account ID with special characters', () => {
