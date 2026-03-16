@@ -24,11 +24,14 @@ echo ""
 if [ -d "dist/apps/dms/browser" ]; then
   echo "--- DMS (PrimeNG) ---"
   DMS_TOTAL=0
+  shopt -s nullglob
   for f in dist/apps/dms/browser/*.js; do
+    [ -f "$f" ] || continue
     SIZE=$(wc -c < "$f")
     DMS_TOTAL=$((DMS_TOTAL + SIZE))
     echo "  $(basename "$f"): $((SIZE / 1024)) KB"
   done
+  shopt -u nullglob
   echo "  TOTAL JS: $((DMS_TOTAL / 1024)) KB"
 else
   echo "--- DMS (PrimeNG) --- (not built)"
@@ -41,11 +44,14 @@ echo ""
 if [ -d "dist/apps/dms-material/browser" ]; then
   echo "--- DMS-Material ---"
   MAT_TOTAL=0
+  shopt -s nullglob
   for f in dist/apps/dms-material/browser/*.js; do
+    [ -f "$f" ] || continue
     SIZE=$(wc -c < "$f")
     MAT_TOTAL=$((MAT_TOTAL + SIZE))
     echo "  $(basename "$f"): $((SIZE / 1024)) KB"
   done
+  shopt -u nullglob
   echo "  TOTAL JS: $((MAT_TOTAL / 1024)) KB"
 else
   echo "--- DMS-Material --- (not built)"
