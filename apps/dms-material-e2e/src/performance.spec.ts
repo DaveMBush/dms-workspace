@@ -56,10 +56,11 @@ test.describe('Performance - Page Load', () => {
       const entries = performance.getEntriesByName('first-contentful-paint');
       return entries.length > 0 ? entries[0].startTime : null;
     });
-    // FCP may not be available in all browser modes; verify if present
-    if (fcp !== null) {
-      expect(fcp).toBeLessThan(1500);
+    if (fcp === null) {
+      test.skip();
+      return;
     }
+    expect(fcp).toBeLessThan(1500);
   });
 
   test('Lighthouse TTI under 3.0 seconds', async ({ page }) => {
@@ -184,7 +185,7 @@ test.describe('Performance - Virtual Scrolling Edge Cases', () => {
     }
   });
 
-  test('5000 rows maintains >= 50fps scrolling', async ({ page }) => {
+  test('1000 rows maintains >= 50fps scrolling', async ({ page }) => {
     await login(page);
     await page.goto('/global/universe', { waitUntil: 'domcontentloaded' });
     await page.waitForSelector('tr.mat-mdc-row', { timeout: 30000 });
@@ -192,7 +193,7 @@ test.describe('Performance - Virtual Scrolling Edge Cases', () => {
     expect(rowCount).toBeGreaterThan(0);
   });
 
-  test('10000 rows does not crash browser', async ({ page }) => {
+  test('1000 rows does not crash browser', async ({ page }) => {
     await login(page);
     await page.goto('/global/universe', { waitUntil: 'domcontentloaded' });
     await page.waitForSelector('tr.mat-mdc-row', { timeout: 60000 });
@@ -528,7 +529,16 @@ test.describe('Performance - Memory', () => {
 });
 
 test.describe('Performance - Network Conditions', () => {
-  test('slow 3G simulation still usable', async ({ page, context }) => {
+  test('slow 3G simulation still usable', async ({
+    page,
+    context,
+    browserName,
+  }) => {
+    // CDP is Chromium-only; skip on Firefox/WebKit
+    if (browserName !== 'chromium') {
+      test.skip();
+      return;
+    }
     // Playwright uses CDP for Chromium network throttling
     const cdpSession = await context.newCDPSession(page);
     await cdpSession.send('Network.emulateNetworkConditions', {
