@@ -467,9 +467,9 @@ test.describe('Accessibility - Keyboard Navigation', () => {
         'Sortable table headers must be present'
       ).toBeGreaterThan(0);
 
-      // Focus the internal sort-header button (mat-sort-header provides its own keyboard support)
+      // Focus the internal sort-header container (mat-sort-header provides its own keyboard support)
       const sortButton = headers.first().locator('.mat-sort-header-container');
-      await sortButton.click();
+      await sortButton.focus();
       await expect(headers.first()).toHaveAttribute('aria-sort');
 
       // Enter should trigger sort — verify aria-sort changes
