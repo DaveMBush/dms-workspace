@@ -9,6 +9,7 @@
       <!-- Filter Toolbar -->
       <mat-toolbar class="filter-toolbar">
         <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>File type</mat-label>
           <mat-select
             [value]="selectedFile$()"
             (selectionChange)="onFileFilter($event.value)"
@@ -20,6 +21,7 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Log level</mat-label>
           <mat-select
             [value]="selectedLevel$()"
             (selectionChange)="onLevelFilter($event.value)"
@@ -46,6 +48,7 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="filter-field date-field">
+          <mat-label>End date</mat-label>
           <input
             matInput
             [matDatepicker]="endPicker"
@@ -61,6 +64,7 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="filter-field search-field">
+          <mat-label>Search messages</mat-label>
           <input
             matInput
             placeholder="Search messages..."
@@ -72,6 +76,7 @@
           mat-icon-button
           (click)="onApplyFilters()"
           class="filter-button"
+          aria-label="Apply filters"
         >
           <mat-icon>filter_list</mat-icon>
         </button>
@@ -81,13 +86,14 @@
           color="primary"
           (click)="onSearch()"
           class="search-button"
+          aria-label="Search"
         >
           <mat-icon>search</mat-icon>
         </button>
       </mat-toolbar>
 
       <!-- Error Logs Table -->
-      <table mat-table [dataSource]="errorLogs$()">
+      <table mat-table [dataSource]="errorLogs$()" aria-label="Error logs">
         <ng-container matColumnDef="timestamp">
           <th mat-header-cell *matHeaderCellDef>Timestamp</th>
           <td mat-cell *matCellDef="let row">

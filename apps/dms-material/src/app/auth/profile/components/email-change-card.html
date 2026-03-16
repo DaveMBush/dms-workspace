@@ -32,7 +32,7 @@
         [disabled]="isLoading()"
       >
         @if (isLoading()) {
-        <mat-spinner diameter="20"></mat-spinner>
+        <mat-spinner diameter="20" aria-label="Changing email"></mat-spinner>
         } @else { Change Email }
       </button>
     </form>

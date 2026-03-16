@@ -49,6 +49,7 @@ export class BaseTableComponent<T extends { id: string }>
   // Inputs
   data = input.required<T[]>(); // Signal-based data input
   columns = input.required<ColumnDef[]>();
+  tableLabel = input<string>('Data table');
   rowHeight = input<number>(48);
   bufferSize = input<number>(10);
   selectable = input<boolean>(false);
@@ -175,6 +176,10 @@ export class BaseTableComponent<T extends { id: string }>
   onSort(sort: Sort): void {
     this.sortState.set(sort);
     this.sortChange.emit(sort);
+  }
+
+  onHeaderEnterKey(event: Event): void {
+    (event.currentTarget as HTMLElement).click();
   }
 
   onRowClick(row: T): void {

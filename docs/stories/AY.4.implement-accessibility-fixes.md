@@ -98,7 +98,9 @@ Review axe-core violation reports to identify specific issues.
 
 ```html
 <table mat-table [dataSource]="data" aria-label="Investment positions">
-  <caption class="sr-only">Investment Positions</caption>
+  <caption class="sr-only">
+    Investment Positions
+  </caption>
   ...
 </table>
 ```
@@ -212,4 +214,57 @@ Create accessibility report:
 
 ### Status
 
-Approved
+Complete
+
+### Agent Model Used
+
+Claude Opus 4.6 (copilot)
+
+### Change Log
+
+- Removed `.skip` from all 5 accessibility test describe blocks in accessibility.spec.ts
+- Added skip-link, nav landmark, main landmark, aria-live region, and spinner aria-label to shell.html
+- Added skip-link styles, sr-only utility, nav/main flex layout to shell.scss
+- Added global focus-visible CSS with dark theme support to styles.scss
+- Added tableLabel input signal and onHeaderEnterKey method to base-table.component.ts
+- Added aria-label, data-sort-header attribute, tabindex, and keydown.enter handler to base-table.component.html
+- Added aria-labels to all icon buttons and spinners in global-universe.component.html
+- Changed dialog autoFocus to 'dialog' in global-universe.component.ts
+- Added aria-label to refresh button and tableLabel to global-screener.component.html
+- Changed symbol-link color to #1565c0 for WCAG contrast compliance in global-screener.component.scss
+- Added aria-labels to spinner and month selector, improved text contrast in global-summary.html
+- Added aria-labels to spinners, search-results-table, audit-table, improved text contrast in cusip-cache.html
+- Added mat-labels to form fields, aria-labels to buttons/selects/table in global-error-logs.html
+- Added aria-invalid binding, spinner aria-label, event-based password toggle focus in login.html/login.ts
+- Added spinner aria-labels in profile-info-card.html, email-change-card.html, password-change-card.html
+- Added password toggle aria-labels to password-change-card.html
+- Changed mat-nav-list to role="group" and Add account icon to Unicode codepoint in account.html
+- Added cdkTrapFocus and A11yModule in add-symbol-dialog.html/ts
+- Updated global-error-logs.spec.ts to use new accessible names for filter comboboxes
+- Updated accessibility.spec.ts sort header selector to use data-sort-header attribute
+
+### File List
+
+- apps/dms-material-e2e/src/accessibility.spec.ts (modified)
+- apps/dms-material-e2e/src/global-error-logs.spec.ts (modified)
+- apps/dms-material/src/app/accounts/account.html (modified)
+- apps/dms-material/src/app/auth/login/login.html (modified)
+- apps/dms-material/src/app/auth/login/login.ts (modified)
+- apps/dms-material/src/app/auth/profile/components/email-change-card.html (modified)
+- apps/dms-material/src/app/auth/profile/components/password-change-card.html (modified)
+- apps/dms-material/src/app/auth/profile/components/profile-info-card.html (modified)
+- apps/dms-material/src/app/global/cusip-cache/cusip-cache.html (modified)
+- apps/dms-material/src/app/global/global-error-logs/global-error-logs.html (modified)
+- apps/dms-material/src/app/global/global-screener/global-screener.component.html (modified)
+- apps/dms-material/src/app/global/global-screener/global-screener.component.scss (modified)
+- apps/dms-material/src/app/global/global-summary.html (modified)
+- apps/dms-material/src/app/global/global-universe/global-universe.component.html (modified)
+- apps/dms-material/src/app/global/global-universe/global-universe.component.ts (modified)
+- apps/dms-material/src/app/shared/components/base-table/base-table.component.html (modified)
+- apps/dms-material/src/app/shared/components/base-table/base-table.component.ts (modified)
+- apps/dms-material/src/app/shell/shell.html (modified)
+- apps/dms-material/src/app/shell/shell.scss (modified)
+- apps/dms-material/src/app/universe-settings/add-symbol-dialog/add-symbol-dialog.html (modified)
+- apps/dms-material/src/app/universe-settings/add-symbol-dialog/add-symbol-dialog.ts (modified)
+- apps/dms-material/src/styles.scss (modified)
+- docs/stories/AY.4.implement-accessibility-fixes.md (modified)

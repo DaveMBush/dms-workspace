@@ -60,7 +60,8 @@ export class Login {
   passwordControl = this.loginForm.get('password');
   rememberMeControl = this.loginForm.get('rememberMe');
 
-  togglePasswordVisibility(): void {
+  togglePasswordVisibility(event?: Event): void {
+    const button = (event?.target as HTMLElement)?.closest('button');
     const isHidden = this.hidePassword();
     this.hidePassword.set(!isHidden);
     this.passwordFieldType.set(isHidden ? 'text' : 'password');
@@ -68,6 +69,10 @@ export class Login {
       isHidden ? 'Hide password' : 'Show password'
     );
     this.passwordToggleIcon.set(isHidden ? 'visibility' : 'visibility_off');
+    // Re-focus toggle button after Angular change detection
+    setTimeout(function refocusToggle() {
+      button?.focus();
+    });
   }
 
   updateValidationErrors(): void {

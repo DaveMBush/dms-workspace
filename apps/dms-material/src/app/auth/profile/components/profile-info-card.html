@@ -39,7 +39,7 @@
     </div>
     } @else { @if (isLoading()) {
     <div class="state-container">
-      <mat-spinner diameter="40"></mat-spinner>
+      <mat-spinner diameter="40" aria-label="Loading profile"></mat-spinner>
       <p class="state-message">Loading profile information...</p>
     </div>
     } @if (hasError()) {

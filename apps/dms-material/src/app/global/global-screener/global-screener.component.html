@@ -8,6 +8,7 @@
     <button
       mat-icon-button
       matTooltip="Refresh"
+      aria-label="Refresh"
       data-testid="refresh-button"
       (click)="onRefresh()"
     >
@@ -33,6 +34,7 @@
       [columns]="columns"
       [selectable]="false"
       [rowHeight]="48"
+      tableLabel="Screener positions"
       (sortChange)="onSortChange($event)"
     >
       <!-- Filter row template - receives column definition -->

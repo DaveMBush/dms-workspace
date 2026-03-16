@@ -24,6 +24,7 @@
             placeholder="Enter Email"
             formControlName="email"
             autocomplete="email"
+            [attr.aria-invalid]="emailHasRequiredError() || emailHasFormatError() ? 'true' : null"
             (blur)="updateValidationErrors()"
           />
           @if (emailHasRequiredError()) {
@@ -45,10 +46,11 @@
             (blur)="updateValidationErrors()"
           />
           <button
+            #toggleButton
             mat-icon-button
             matIconSuffix
             type="button"
-            (click)="togglePasswordVisibility()"
+            (click)="togglePasswordVisibility($event)"
             [attr.aria-label]="passwordToggleAriaLabel()"
           >
             <mat-icon>{{ passwordToggleIcon() }}</mat-icon>
@@ -72,7 +74,7 @@
           class="full-width submit-button"
           disabled
         >
-          <mat-spinner diameter="20"></mat-spinner>
+          <mat-spinner diameter="20" aria-label="Signing in"></mat-spinner>
         </button>
         } @else {
         <button

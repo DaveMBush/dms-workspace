@@ -20,7 +20,7 @@
     class="flex justify-center items-center py-4"
     data-testid="loading-spinner"
   >
-    <mat-spinner diameter="32"></mat-spinner>
+    <mat-spinner diameter="32" aria-label="Loading cache data"></mat-spinner>
   </div>
   } @if (error()) {
   <div
@@ -44,7 +44,7 @@
     <mat-card-content>
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
         <div class="stat-item" data-testid="total-entries">
-          <span class="text-xs text-gray-500">Total Entries</span>
+          <span class="text-xs text-gray-600">Total Entries</span>
           <span class="text-2xl font-semibold"
             >{{ statsData.totalEntries }}</span
           >
@@ -52,22 +52,22 @@
         @for (sourceEntry of statsData.entriesBySource | keyvalue; track
         sourceEntry.key) {
         <div class="stat-item" data-testid="source-count">
-          <span class="text-xs text-gray-500">{{ sourceEntry.key }}</span>
+          <span class="text-xs text-gray-600">{{ sourceEntry.key }}</span>
           <span class="text-2xl font-semibold">{{ sourceEntry.value }}</span>
         </div>
         }
         <div class="stat-item" data-testid="oldest-entry">
-          <span class="text-xs text-gray-500">Oldest Entry</span>
+          <span class="text-xs text-gray-600">Oldest Entry</span>
           <span class="text-sm">{{ statsData.oldestEntry ?? 'N/A' }}</span>
         </div>
         <div class="stat-item" data-testid="newest-entry">
-          <span class="text-xs text-gray-500">Newest Entry</span>
+          <span class="text-xs text-gray-600">Newest Entry</span>
           <span class="text-sm">{{ statsData.newestEntry ?? 'N/A' }}</span>
         </div>
       </div>
 
       @if (statsData.recentlyAdded.length > 0) {
-      <h3 class="mt-6 mb-2 text-sm font-medium text-gray-600">
+      <h3 class="mt-6 mb-2 text-sm font-medium text-gray-700">
         Recently Added
       </h3>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
@@ -149,6 +149,7 @@
         [dataSource]="searchResults()"
         class="w-full mt-4"
         data-testid="search-results-table"
+        aria-label="CUSIP search results"
       >
         <ng-container matColumnDef="cusip">
           <th mat-header-cell *matHeaderCellDef>CUSIP</th>
@@ -198,7 +199,7 @@
         <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
       </table>
       } @else if (hasSearched() && searchResults().length === 0 && !loading()) {
-      <p class="text-gray-500 mt-4 text-center" data-testid="no-results">
+      <p class="text-gray-600 mt-4 text-center" data-testid="no-results">
         No results found
       </p>
       }
@@ -217,6 +218,7 @@
         [dataSource]="auditEntries().entries"
         class="w-full mt-4"
         data-testid="audit-table"
+        aria-label="Recent activity log"
       >
         <ng-container matColumnDef="createdAt">
           <th mat-header-cell *matHeaderCellDef>Timestamp</th>
@@ -242,7 +244,7 @@
         <tr mat-row *matRowDef="let row; columns: auditColumns"></tr>
       </table>
       } @else {
-      <p class="text-gray-500 mt-4 text-center" data-testid="no-audit">
+      <p class="text-gray-600 mt-4 text-center" data-testid="no-audit">
         No recent activity
       </p>
       }

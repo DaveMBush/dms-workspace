@@ -196,3 +196,30 @@ mat-form-field {
 .dark-theme .mat-mdc-dialog-container {
   --mdc-dialog-container-color: #424242;
 }
+
+// Accessibility: Focus-visible indicators for all interactive elements
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible,
+.mat-mdc-icon-button:focus-visible,
+.mat-mdc-button:focus-visible,
+.mat-mdc-raised-button:focus-visible,
+.mat-mdc-checkbox:focus-visible .mdc-checkbox,
+.mdc-text-field__input:focus-visible {
+  outline: 2px solid #1976d2 !important;
+  outline-offset: 2px !important;
+}
+
+.dark-theme {
+  button:focus-visible,
+  a:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible,
+  [tabindex]:focus-visible {
+    outline-color: #90caf9;
+  }
+}

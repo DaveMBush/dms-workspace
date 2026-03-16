@@ -227,6 +227,7 @@ export class GlobalUniverseComponent implements OnDestroy {
     const dialogRef = this.dialog.open(AddSymbolDialog, {
       width: '400px',
       disableClose: false,
+      autoFocus: 'dialog',
     });
 
     dialogRef.afterClosed().subscribe({
