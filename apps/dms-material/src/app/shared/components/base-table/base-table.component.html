@@ -15,6 +15,7 @@
     <table
       mat-table
       [dataSource]="dataSource()"
+      [trackBy]="trackByFn"
       matSort
       (matSortChange)="onSort($event)"
       [attr.aria-label]="tableLabel()"
