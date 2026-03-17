@@ -1,0 +1,51 @@
+{
+  "parts": [
+    {
+      "part_id": "dms-material",
+      "name": "DMS Material Frontend",
+      "type": "frontend-spa",
+      "project_type_id": "angular-spa",
+      "path": "apps/dms-material",
+      "description": "Angular 21 standalone SPA — dividend portfolio management UI",
+      "tech": [
+        "Angular 21",
+        "Angular Material 21",
+        "Tailwind CSS 3.4",
+        "SmartNgRX signals",
+        "AWS Amplify 6"
+      ],
+      "entry_point": "apps/dms-material/src/main.ts",
+      "serve_port": 4201,
+      "e2e_port": 4301
+    },
+    {
+      "part_id": "dms-material-e2e",
+      "name": "DMS Material E2E Tests",
+      "type": "e2e-tests",
+      "project_type_id": "playwright",
+      "path": "apps/dms-material-e2e",
+      "description": "Playwright E2E tests for dms-material — Chromium + Firefox",
+      "tech": ["Playwright 1.55", "axe-core/playwright"],
+      "entry_point": "apps/dms-material-e2e/playwright.config.ts",
+      "depends_on": ["dms-material", "server"]
+    },
+    {
+      "part_id": "server",
+      "name": "DMS API Server",
+      "type": "backend-api",
+      "project_type_id": "fastify-api",
+      "path": "apps/server",
+      "description": "Fastify 5 REST API — portfolio data, authentication, CEF screener, import",
+      "tech": [
+        "Fastify 5.8",
+        "Prisma 7.2",
+        "better-sqlite3 12.6",
+        "AWS Cognito JWT",
+        "AWS SSM"
+      ],
+      "entry_point": "apps/server/src/main.ts",
+      "serve_port": 3000,
+      "e2e_port": 3001
+    }
+  ]
+}

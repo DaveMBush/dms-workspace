@@ -1,15 +1,10 @@
 ---
 description: Dedicated QA review and remediation loop runner
-agent: dev
 argument-hint: story=AD.3
 model: Claude Sonnet 4.6 (copilot)
 ---
 
 # Dedicated QA Review Loop
-
-**IMPORTANT**: This workflow uses the bmad-workflow skill:
-
-#skill:bmad-workflow
 
 Run this prompt from the story worktree that contains the implementation under review.
 
@@ -21,11 +16,9 @@ This prompt exists to run the full QA gate, remediation, and re-validation cycle
 
 Before doing anything else, read all of the following:
 
-1. `.github/skills/bmad-workflow/SKILL.md`
-2. `.github/skills/bmad-workflow/references/human-interaction.md`
-3. `.github/prompts/gate.prompt.md`
-4. `.github/prompts/quality-validation.prompt.md`
-5. `.bmad-core/core-config.yaml`
+1. `_bmad-output/project-context.md`
+2. `.github/prompts/gate.prompt.md`
+3. `.github/prompts/quality-validation.prompt.md`
 
 ## Execution Rules
 

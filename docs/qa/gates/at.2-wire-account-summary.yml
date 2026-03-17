@@ -1,8 +1,0 @@
-schema: 1
-story: 'AT.2'
-gate: PASS
-status_reason: 'All acceptance criteria met. Tests pass, no regressions, code follows project patterns.'
-reviewer: 'Quinn'
-updated: '2026-03-03T12:00:00Z'
-top_issues: []
-waiver: { active: false }

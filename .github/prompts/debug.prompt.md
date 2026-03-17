@@ -1,15 +1,10 @@
 ---
 description: Fully autonomous epic debug prompt
-agent: dev
 argument-hint: epic=AD story=AD.5
 model: Claude Sonnet 4.6 (copilot)
 ---
 
 # Autonomous Epic Bug Fix Workflow
-
-**IMPORTANT**: This workflow uses the bmad-workflow skill:
-
-#skill:bmad-workflow
 
 ## PHASE 1-2: Epic Validation And Debug Setup
 
@@ -51,12 +46,10 @@ run_in_terminal({
 Once the bug description is collected, use `runSubagent` with agent `"dev"` to implement and validate the fix in a **fresh context**. Substitute the actual values for `${epic}`, the branch returned by PHASE 1-2 setup, and the collected bug description:
 
 ```
-You are the dev agent (James). Before doing anything else, read ALL of these files:
-1. .github/skills/bmad-workflow/SKILL.md
-2. .github/skills/bmad-workflow/references/human-interaction.md
-3. .github/skills/bmad-workflow/references/quality-validation.md
-4. docs/epics/${epic}.md
-5. .bmad-core/core-config.yaml
+You are a developer agent implementing a bug fix. Before doing anything else, read ALL of these files:
+1. `_bmad-output/project-context.md`
+2. `_bmad-output/planning-artifacts/${epic}.md`
+3. `_bmad/bmm/config.yaml`
 
 Current branch: <branch name returned by debug-setup.prompt.md>
 Bug to fix: <bug description from user>

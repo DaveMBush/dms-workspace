@@ -1,15 +1,10 @@
 ---
 description: Dedicated debug setup and branch preparation runner
-agent: dev
 argument-hint: epic=AD story=AD.5
 model: Claude Sonnet 4.6 (copilot)
 ---
 
 # Dedicated Debug Setup Workflow
-
-**IMPORTANT**: This workflow uses the bmad-workflow skill:
-
-#skill:bmad-workflow
 
 ## Purpose
 
@@ -19,10 +14,9 @@ This prompt exists to run epic validation, repository preflight checks, GitHub i
 
 Before doing anything else, read all of the following:
 
-1. `.github/skills/bmad-workflow/SKILL.md`
-2. `.github/skills/bmad-workflow/references/human-interaction.md`
-3. `.bmad-core/core-config.yaml`
-4. `docs/epics/${epic}.md`
+1. `_bmad-output/project-context.md`
+2. `_bmad/bmm/config.yaml`
+3. `_bmad-output/planning-artifacts/${epic}.md`
 
 ## Execution Rules
 

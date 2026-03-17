@@ -1,15 +1,10 @@
 ---
 description: Fully autonomous epic development - all stories from start to merge
-agent: dev
 argument-hint: epic=AD
 model: Claude Opus 4.6 (copilot)
 ---
 
 # Autonomous Epic Development Workflow
-
-**IMPORTANT**: This workflow uses the bmad-workflow skill:
-
-#skill:bmad-workflow
 
 ## CRITICAL: Each Phase In a subAgent
 
@@ -17,7 +12,7 @@ Each phase of the epic development process must be handled by a separate subAgen
 
 1. **Discover Stories for Epic ${epic}**
 
-   - Search for all story files matching: `docs/stories/${epic}.*.md`
+   - Search for all story files matching: `_bmad-output/implementation-artifacts/${epic}-*.md`
    - Parse story numbers from filenames (e.g., AD.1, AD.2, AD.3)
    - Sort stories by numeric value (1, 2, 3, ...)
    - If no stories found: Call `.github/prompts/prompt.sh "No stories found for epic ${epic}"`

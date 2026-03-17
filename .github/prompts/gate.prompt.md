@@ -1,10 +1,20 @@
 ---
-agent: qa
 description: QA the result of story development.
 argument-hint: story=AD.3
-model: Grok Code Fast 1 (copilot)
+model: Claude Sonnet 4.6 (copilot)
 ---
 
-\*gate ${story}
+# QA Gate for Story ${story}
 
-Do not commit until I say so.
+Invoke the `bmad-code-review` skill to perform a comprehensive code review across all quality facets for the changes in this story.
+
+Before invoking, read:
+
+1. `_bmad-output/project-context.md`
+2. `_bmad-output/implementation-artifacts/${story}.md` — acceptance criteria and story context
+
+Use `git diff --name-only origin/main...HEAD` to identify the changed files and scope the review to only those files.
+
+Invoke the `#skill:bmad-code-review` skill now.
+
+Do not commit until gate result is evaluated by the calling workflow.

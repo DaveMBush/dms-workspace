@@ -1,8 +1,0 @@
-schema: 1
-story: 'AX.8'
-gate: PASS
-status_reason: 'All acceptance criteria met. Virtual data access implemented with visible-window loop pattern. All AX.7 TDD tests re-enabled and passing.'
-reviewer: 'Quinn'
-updated: '2026-03-14T07:30:00Z'
-top_issues: []
-waiver: { active: false }
