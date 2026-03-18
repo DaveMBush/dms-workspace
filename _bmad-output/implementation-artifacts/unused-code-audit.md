@@ -167,7 +167,7 @@ Scanned: 62 files (0 pipes, 35 function files, 9 const files, 4 types files, 14 
   - Criteria met: zero imports outside own file, no template usage
   - Associated files: none (no spec file exists)
 
-- [ ] `apps/dms-material/src/app/shared/components/base-table/virtual-table-data-source.ts` — class `VirtualTableDataSource`
+- [x] `apps/dms-material/src/app/shared/components/base-table/virtual-table-data-source.ts` — class `VirtualTableDataSource` _(removed in Story 1.4)_
 
   - Criteria met: zero imports outside own spec file, not used by any component
   - Associated files: `virtual-table-data-source.spec.ts`
