@@ -259,8 +259,6 @@ test.describe('Universe Table Workflows', () => {
     });
   });
 
-
-
   test.describe('Cell Editing - Ex-Date', () => {
     test('should enter edit mode when clicking ex-date cell', async ({
       page,
