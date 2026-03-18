@@ -2,6 +2,7 @@ import { expect, test } from 'playwright/test';
 
 // Skip these tests until SymbolAutocomplete is integrated into a feature page
 // These tests will be enabled when a feature using SymbolAutocomplete is implemented
+// TODO(E3): blocked — SymbolAutocomplete not integrated into a feature page
 test.describe.skip('Symbol Autocomplete Component', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
