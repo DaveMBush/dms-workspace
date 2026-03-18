@@ -172,7 +172,7 @@ Scanned: 62 files (0 pipes, 35 function files, 9 const files, 4 types files, 14 
   - Criteria met: zero imports outside own spec file, not used by any component
   - Associated files: `virtual-table-data-source.spec.ts`
 
-- [ ] `apps/dms-material/src/app/shared/components/base-table/lazy-load-event.interface.ts` — interface `LazyLoadEvent`
+- [x] `apps/dms-material/src/app/shared/components/base-table/lazy-load-event.interface.ts` — interface `LazyLoadEvent` _(removed in Story 1.4)_
   - Criteria met: only consumer is `VirtualTableDataSource` (itself unused — transitively dead)
   - Associated files: none (no spec file exists)
 
