@@ -646,16 +646,6 @@ describe('OpenPositionsComponent', () => {
     });
   });
 
-  // Story AO.5: TDD Tests for Add New Position Dialog
-  // Story AO.6: Tests re-enabled (Going GREEN)
-  // NOTE: Add Position functionality moved to AccountPanelComponent in refactoring
-  describe.skip('Add New Position Dialog (Obsolete - Moved to AccountPanelComponent)', () => {
-    // These tests are skipped because the Add Position functionality
-    // was moved from OpenPositionsComponent to AccountPanelComponent
-    // during refactoring. The functionality is now tested in
-    // account-panel.component.spec.ts using AddPositionService.
-  });
-
   // Story AO.7: TDD Tests for Auto-Close Logic (GREEN state)
   // Re-enabled in AO.8
   describe('Auto-Close Logic', () => {
