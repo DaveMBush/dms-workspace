@@ -37,19 +37,19 @@
 #     E1 → E3 → E4(TS rules) → E2 → E5 → E4(template rules) → E6 → E7 → E8
 
 generated: 2026-03-17
-last_updated: 2026-03-17 dms-workspace
+last_updated: 2026-03-18 dms-workspace
 project_key: NOKEY
 tracking_system: file-system
 story_location: _bmad-output/implementation-artifacts
 
 development_status:
   # ── Epic 1: Remove Unused Code ──────────────────────────────────────────────
-  epic-1: in-progress
-  1-1-audit-components-for-unused-declarations: ready-for-dev
-  1-2-remove-unused-components-batch: ready-for-dev
-  1-3-audit-services-for-unused-registrations: ready-for-dev
-  1-4-audit-and-remove-unused-utilities-and-pipes: ready-for-dev
-  1-5-update-project-context-documentation: ready-for-dev
+  epic-1: done
+  1-1-audit-components-for-unused-declarations: done
+  1-2-remove-unused-components-batch: done
+  1-3-audit-services-for-unused-registrations: done
+  1-4-audit-and-remove-unused-utilities-and-pipes: done
+  1-5-update-project-context-documentation: done
   epic-1-retrospective: optional
 
   # ── Epic 2: Fix CUSIP Lookup — Switch to massive.com API ────────────────────
@@ -61,11 +61,11 @@ development_status:
   epic-2-retrospective: optional
 
   # ── Epic 3: Enable Skipped Unit and E2E Tests ────────────────────────────────
-  epic-3: backlog
-  3-1-inventory-all-skipped-tests: backlog
-  3-2-unskip-and-fix-unit-tests: backlog
-  3-3-unskip-and-fix-e2e-tests: backlog
-  3-4-delete-irrelevant-skipped-tests: backlog
+  epic-3: in-progress
+  3-1-inventory-all-skipped-tests: ready-for-dev
+  3-2-unskip-and-fix-unit-tests: ready-for-dev
+  3-3-unskip-and-fix-e2e-tests: ready-for-dev
+  3-4-delete-irrelevant-skipped-tests: ready-for-dev
   epic-3-retrospective: optional
 
   # ── Epic 4: Improve Lint Rules ───────────────────────────────────────────────
