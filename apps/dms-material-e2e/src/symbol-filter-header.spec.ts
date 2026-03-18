@@ -5,6 +5,7 @@ test.describe('Symbol Filter Header Component', () => {
     await page.goto('/');
   });
 
+  // TODO(E3): blocked — symbol filter header feature not implemented
   test.skip('should display filter dropdown with options', async ({ page }) => {
     const filterField = page.locator('mat-select');
     await expect(filterField).toBeVisible();
@@ -13,6 +14,7 @@ test.describe('Symbol Filter Header Component', () => {
     await expect(options).not.toHaveCount(0);
   });
 
+  // TODO(E3): blocked — symbol filter header feature not implemented
   test.skip('should filter table data when option selected', async ({
     page,
   }) => {
@@ -23,6 +25,7 @@ test.describe('Symbol Filter Header Component', () => {
     await expect(filterField).toContainText(await option.textContent());
   });
 
+  // TODO(E3): blocked — symbol filter header feature not implemented
   test.skip('should show all data when "All" option selected', async ({
     page,
   }) => {
@@ -33,12 +36,14 @@ test.describe('Symbol Filter Header Component', () => {
     await expect(tableRows).not.toHaveCount(0);
   });
 
+  // TODO(E3): blocked — symbol filter header feature not implemented
   test.skip('should fit filter within table header cell', async ({ page }) => {
     const filterField = page.locator('mat-form-field.filter-field');
     const boundingBox = await filterField.boundingBox();
     expect(boundingBox?.width).toBeLessThanOrEqual(150);
   });
 
+  // TODO(E3): blocked — symbol filter header feature not implemented
   test.skip('should navigate filter options with keyboard', async ({
     page,
   }) => {
@@ -49,6 +54,7 @@ test.describe('Symbol Filter Header Component', () => {
     await expect(filterField).not.toBeEmpty();
   });
 
+  // TODO(E3): blocked — symbol filter header feature not implemented
   test.skip('should close dropdown with Escape key', async ({ page }) => {
     const filterField = page.locator('mat-select');
     await filterField.click();
@@ -57,6 +63,7 @@ test.describe('Symbol Filter Header Component', () => {
     await expect(panel).not.toBeVisible();
   });
 
+  // TODO(E3): blocked — symbol filter header feature not implemented
   test.skip('should close dropdown when clicking outside', async ({ page }) => {
     const filterField = page.locator('mat-select');
     await filterField.click();
@@ -66,6 +73,7 @@ test.describe('Symbol Filter Header Component', () => {
     await expect(panel).not.toBeVisible();
   });
 
+  // TODO(E3): blocked — symbol filter header feature not implemented
   test.skip('should render many options performantly', async ({ page }) => {
     const filterField = page.locator('mat-select');
     const startTime = Date.now();
@@ -76,6 +84,7 @@ test.describe('Symbol Filter Header Component', () => {
     await expect(options).not.toHaveCount(0);
   });
 
+  // TODO(E3): blocked — symbol filter header feature not implemented
   test.skip('should show active filter indicator when not "All"', async ({
     page,
   }) => {
@@ -87,6 +96,7 @@ test.describe('Symbol Filter Header Component', () => {
     expect(selectedText).not.toBe('All');
   });
 
+  // TODO(E3): blocked — symbol filter header feature not implemented
   test.skip('should announce filter changes to screen readers', async ({
     page,
   }) => {
