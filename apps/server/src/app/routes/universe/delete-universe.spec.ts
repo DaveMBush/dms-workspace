@@ -94,7 +94,7 @@ function createTestDeleteRoute(testPrisma: PrismaClient) {
   };
 }
 
-// TODO(E3): blocked — integration test requires database in CI
+// BLOCKED(E3): blocked — integration test requires database in CI
 describe.skipIf(process.env.CI)('DELETE /universe/:id', () => {
   let prisma: PrismaClient;
   let testDbPath: string;

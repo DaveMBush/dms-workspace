@@ -206,7 +206,7 @@ describe('SymbolSearchService', () => {
   });
 
   describe('debouncing', () => {
-    // TODO(E3): blocked — debouncing requires service API redesign (see issue #690)
+    // BLOCKED(E3): blocked — debouncing requires service API redesign (see issue #690)
     it.skip('should debounce search requests by 300ms', fakeAsync(() => {
       const query1 = 'AA';
       const query2 = 'AAP';
@@ -233,7 +233,7 @@ describe('SymbolSearchService', () => {
       requests[0].flush(mockResponse);
     }));
 
-    // TODO(E3): blocked — debouncing requires service API redesign (see issue #690)
+    // BLOCKED(E3): blocked — debouncing requires service API redesign (see issue #690)
     it.skip('should not debounce separate search sessions', fakeAsync(() => {
       const query1 = 'AAPL';
       const query2 = 'MSFT';

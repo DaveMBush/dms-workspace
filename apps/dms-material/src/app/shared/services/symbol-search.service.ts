@@ -6,6 +6,7 @@ import { SymbolOption } from '../components/symbol-autocomplete/symbol-option.in
 
 interface ApiResult {
   ticker: string;
+  /* eslint-disable-next-line @typescript-eslint/naming-convention -- matches external API response shape */
   company_name: string | null;
 }
 
@@ -43,26 +44,42 @@ export class SymbolSearchService {
 
     const params = new HttpParams().set('query', trimmedQuery);
 
+    const self = this;
+
     return this.http
-      .get<SymbolOption[] | ApiResponse>('/api/symbol/search', { params })
+      .get<ApiResponse | SymbolOption[]>('/api/symbol/search', { params })
       .pipe(
-        map((response) => this.transformResponse(response)),
-        map((results) => this.filterAndLimitResults(results)),
-        tap((results) => this.setCache(trimmedQuery, results))
+        map(function transformPipe(
+          response: ApiResponse | SymbolOption[]
+        ): SymbolOption[] {
+          return self.transformResponse(response);
+        }),
+        map(function filterPipe(results: SymbolOption[]): SymbolOption[] {
+          return self.filterAndLimitResults(results);
+        }),
+        tap(function cachePipe(results: SymbolOption[]): void {
+          self.setCache(trimmedQuery, results);
+        })
       );
   }
 
   private transformResponse(
-    response: SymbolOption[] | ApiResponse
+    response: ApiResponse | SymbolOption[]
   ): SymbolOption[] {
     if (Array.isArray(response)) {
       return response;
     }
-    if (response && Array.isArray(response.results)) {
-      return response.results.map((item: ApiResult) => ({
-        symbol: item.ticker,
-        name: item.company_name ?? '',
-      }));
+    if (
+      response !== null &&
+      response !== undefined &&
+      Array.isArray(response.results)
+    ) {
+      return response.results.map(function mapApiResult(item: ApiResult) {
+        return {
+          symbol: item.ticker,
+          name: item.company_name ?? '',
+        };
+      });
     }
     return [];
   }
