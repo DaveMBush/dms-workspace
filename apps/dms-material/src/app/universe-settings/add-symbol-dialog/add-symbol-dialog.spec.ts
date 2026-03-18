@@ -263,14 +263,15 @@ describe('AddSymbolDialog', () => {
       expect(autocomplete).toBeTruthy();
     });
 
-    it('should show loading indicator during search', async () => {
+    it('should complete search request successfully', async () => {
       const query = 'AAPL';
       const promise = component.searchSymbols(query);
 
       const req = httpMock.expectOne(`/api/symbol/search?query=${query}`);
       req.flush([{ symbol: 'AAPL', name: 'Apple Inc.' }]);
 
-      await promise;
+      const result = await promise;
+      expect(result).toEqual([{ symbol: 'AAPL', name: 'Apple Inc.' }]);
     });
 
     it('should populate form when autocomplete option selected', () => {
@@ -308,7 +309,7 @@ describe('AddSymbolDialog', () => {
       expect(component.form.get('symbol')?.value).toBeFalsy();
     });
 
-    it('should debounce autocomplete searches by 300ms', async () => {
+    it('should make separate HTTP request for each search call', async () => {
       const query1 = 'AA';
       const query2 = 'AAP';
       const query3 = 'AAPL';
