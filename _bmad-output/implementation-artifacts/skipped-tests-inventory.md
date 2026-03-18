@@ -126,6 +126,6 @@
 | Category         | Unit Tests      | E2E Tests | Total  |
 | ---------------- | --------------- | --------- | ------ |
 | unskip-trivial   | 18              | 0         | 18     |
-| unskip-needs-fix | 16 (+3 CI-only) | 40        | 59     |
+| unskip-needs-fix | 17 (+3 CI-only) | 39        | 59     |
 | delete           | 1               | 1         | 2      |
-| **Total**        | **38**          | **41**    | **79** |
+| **Total**        | **39**          | **40**    | **79** |
