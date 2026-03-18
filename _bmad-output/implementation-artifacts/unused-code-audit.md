@@ -14,29 +14,29 @@ A component is a removal candidate only when ALL five conditions are true:
 
 ## Removal Candidates
 
-- [ ] `apps/dms-material/src/app/account-panel/summary/summary.component.ts` — class `SummaryComponent`, selector `dms-summary`
+- [x] `apps/dms-material/src/app/account-panel/summary/summary.component.ts` — class `SummaryComponent`, selector `dms-summary` *(removed in Story 1.2)*
   - Criteria met: no imports in other files, no route, no template ref, no stories
   - Note: Superseded by `AccountSummary` in `accounts/account-summary/`
   - Associated files: `summary.component.html`, `summary.component.scss`, `summary.component.spec.ts`
 
-- [ ] `apps/dms-material/src/app/global/global-error-logs.ts` — class `GlobalErrorLogs`, selector `dms-global-error-logs`
+- [x] `apps/dms-material/src/app/global/global-error-logs.ts` — class `GlobalErrorLogs`, selector `dms-global-error-logs` *(removed in Story 1.2)*
   - Criteria met: no imports in other files, no route (route loads from `./global/global-error-logs/` subfolder), no template ref, no stories
   - Note: Stub duplicate — real implementation at `global/global-error-logs/global-error-logs.ts`
   - Associated files: `global-error-logs.html`, `global-error-logs.scss` (at `global/` root level)
 
-- [ ] `apps/dms-material/src/app/accounts/dividend-deposits/dividend-deposits.ts` — class `DividendDeposits`, selector `dms-dividend-deposits`
+- [x] `apps/dms-material/src/app/accounts/dividend-deposits/dividend-deposits.ts` — class `DividendDeposits`, selector `dms-dividend-deposits` *(removed in Story 1.2)*
   - Criteria met: no imports in other files, no route, no template ref, no stories
   - Note: Empty placeholder component (no logic, empty imports array)
 
-- [ ] `apps/dms-material/src/app/accounts/open-positions/open-positions.ts` — class `OpenPositions`, selector `dms-open-positions`
+- [x] `apps/dms-material/src/app/accounts/open-positions/open-positions.ts` — class `OpenPositions`, selector `dms-open-positions` *(removed in Story 1.2)*
   - Criteria met: no imports in other files, no route, no template ref, no stories
   - Note: Empty placeholder component (no logic, empty imports array)
 
-- [ ] `apps/dms-material/src/app/accounts/sold-positions/sold-positions.ts` — class `SoldPositions`, selector `dms-sold-positions`
+- [x] `apps/dms-material/src/app/accounts/sold-positions/sold-positions.ts` — class `SoldPositions`, selector `dms-sold-positions` *(removed in Story 1.2)*
   - Criteria met: no imports in other files, no route, no template ref, no stories
   - Note: Empty placeholder component (no logic, empty imports array)
 
-- [ ] `apps/dms-material/src/app/shared/components/symbol-filter-header/symbol-filter-header.component.ts` — class `SymbolFilterHeaderComponent`, selector `dms-symbol-filter-header`
+- [x] `apps/dms-material/src/app/shared/components/symbol-filter-header/symbol-filter-header.component.ts` — class `SymbolFilterHeaderComponent`, selector `dms-symbol-filter-header` *(removed in Story 1.2)*
   - Criteria met: no imports in other files, no route, no template ref, no stories
   - Associated files: `symbol-filter-header.component.html`, `symbol-filter-header.component.scss`, `symbol-filter-header.component.spec.ts`
 
