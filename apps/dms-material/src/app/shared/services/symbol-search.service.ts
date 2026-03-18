@@ -1,8 +1,17 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { map, Observable, of, tap } from 'rxjs';
 
 import { SymbolOption } from '../components/symbol-autocomplete/symbol-option.interface';
+
+interface ApiResult {
+  ticker: string;
+  company_name: string | null;
+}
+
+interface ApiResponse {
+  results: ApiResult[];
+}
 
 interface CacheEntry {
   data: SymbolOption[];
@@ -34,7 +43,28 @@ export class SymbolSearchService {
 
     const params = new HttpParams().set('query', trimmedQuery);
 
-    return this.http.get<SymbolOption[]>('/api/symbol/search', { params });
+    return this.http
+      .get<SymbolOption[] | ApiResponse>('/api/symbol/search', { params })
+      .pipe(
+        map((response) => this.transformResponse(response)),
+        map((results) => this.filterAndLimitResults(results)),
+        tap((results) => this.setCache(trimmedQuery, results))
+      );
+  }
+
+  private transformResponse(
+    response: SymbolOption[] | ApiResponse
+  ): SymbolOption[] {
+    if (Array.isArray(response)) {
+      return response;
+    }
+    if (response && Array.isArray(response.results)) {
+      return response.results.map((item: ApiResult) => ({
+        symbol: item.ticker,
+        name: item.company_name ?? '',
+      }));
+    }
+    return [];
   }
 
   private filterAndLimitResults(results: SymbolOption[]): SymbolOption[] {

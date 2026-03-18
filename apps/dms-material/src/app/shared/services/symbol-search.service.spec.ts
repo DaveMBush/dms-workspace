@@ -155,7 +155,7 @@ describe('SymbolSearchService', () => {
       }
     });
 
-    it.skip('should filter out invalid results', async () => {
+    it('should filter out invalid results', async () => {
       const query = 'AAPL';
       const mockResponse = [
         { symbol: 'AAPL', name: 'Apple Inc.' },
@@ -179,7 +179,7 @@ describe('SymbolSearchService', () => {
       expect(results.every((r) => r.symbol.length > 0)).toBe(true);
     });
 
-    it.skip('should limit results to maximum of 10 items', async () => {
+    it('should limit results to maximum of 10 items', async () => {
       const query = 'A';
       const mockResponse: SymbolOption[] = Array.from(
         { length: 20 },
@@ -206,6 +206,7 @@ describe('SymbolSearchService', () => {
   });
 
   describe('debouncing', () => {
+    // TODO(E3): blocked — debouncing requires service API redesign (see issue #690)
     it.skip('should debounce search requests by 300ms', fakeAsync(() => {
       const query1 = 'AA';
       const query2 = 'AAP';
@@ -232,6 +233,7 @@ describe('SymbolSearchService', () => {
       requests[0].flush(mockResponse);
     }));
 
+    // TODO(E3): blocked — debouncing requires service API redesign (see issue #690)
     it.skip('should not debounce separate search sessions', fakeAsync(() => {
       const query1 = 'AAPL';
       const query2 = 'MSFT';
@@ -264,7 +266,7 @@ describe('SymbolSearchService', () => {
   });
 
   describe('result transformation', () => {
-    it.skip('should transform API response to SymbolOption format', async () => {
+    it('should transform API response to SymbolOption format', async () => {
       const query = 'AAPL';
       const apiResponse = {
         results: [
@@ -291,7 +293,7 @@ describe('SymbolSearchService', () => {
       expect(results[0].name).toBe('Apple Inc.');
     });
 
-    it.skip('should handle missing name field gracefully', async () => {
+    it('should handle missing name field gracefully', async () => {
       const query = 'TEST';
       const apiResponse = {
         results: [{ ticker: 'TEST', company_name: null }],
@@ -316,7 +318,7 @@ describe('SymbolSearchService', () => {
   });
 
   describe('caching', () => {
-    it.skip('should cache search results for identical queries', async () => {
+    it('should cache search results for identical queries', async () => {
       const query = 'AAPL';
       const mockResponse: SymbolOption[] = [
         { symbol: 'AAPL', name: 'Apple Inc.' },
@@ -351,32 +353,43 @@ describe('SymbolSearchService', () => {
       expect(results2).toEqual(mockResponse);
     });
 
-    it.skip('should clear cache after 5 minutes', fakeAsync(() => {
+    it('should clear cache after 5 minutes', async () => {
       const query = 'AAPL';
       const mockResponse: SymbolOption[] = [
         { symbol: 'AAPL', name: 'Apple Inc.' },
       ];
 
+      const now = Date.now();
+      const dateSpy = vi.spyOn(Date, 'now');
+      dateSpy.mockReturnValue(now);
+
       // First call
-      service.searchSymbols(query).subscribe();
+      const promise1 = new Promise<void>((resolve) => {
+        service.searchSymbols(query).subscribe(() => resolve());
+      });
       const req1 = httpMock.expectOne((request) =>
         request.url.includes('/api/symbol/search')
       );
       req1.flush(mockResponse);
+      await promise1;
 
-      // Wait 5 minutes
-      tick(5 * 60 * 1000);
+      // Advance past cache duration
+      dateSpy.mockReturnValue(now + 5 * 60 * 1000 + 1);
 
       // Second call should make new request
-      service.searchSymbols(query).subscribe();
+      const promise2 = new Promise<void>((resolve) => {
+        service.searchSymbols(query).subscribe(() => resolve());
+      });
       const req2 = httpMock.expectOne((request) =>
         request.url.includes('/api/symbol/search')
       );
       req2.flush(mockResponse);
+      await promise2;
 
-      // Should have made two separate requests
       expect(req1).toBeTruthy();
       expect(req2).toBeTruthy();
-    }));
+
+      dateSpy.mockRestore();
+    });
   });
 });
