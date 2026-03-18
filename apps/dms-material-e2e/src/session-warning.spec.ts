@@ -4,6 +4,7 @@ import { test, expect } from 'playwright/test';
 // Currently, the dialog is only shown automatically before session timeout,
 // and there's no test hook to manually trigger it. These tests should be
 // re-enabled once a test trigger mechanism is implemented.
+// TODO(E3): blocked — needs test hook mechanism to trigger session warning dialog
 test.describe.skip('Session Warning Dialog', () => {
   test.beforeEach(async ({ page }) => {
     // Navigate to login page
@@ -129,6 +130,7 @@ test.describe.skip('Session Warning Dialog', () => {
     // For demonstration, we'd need to mock or speed up the timer
     // Skipping actual implementation as it would take 60+ seconds
 
+    // TODO(E3): blocked — needs test hook mechanism to trigger session warning dialog
     test.skip();
   });
 

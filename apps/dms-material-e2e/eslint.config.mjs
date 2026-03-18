@@ -7,4 +7,10 @@ export default [
     // Override or add rules here
     rules: {},
   },
+  {
+    files: ['**/*.spec.ts'],
+    rules: {
+      'sonarjs/todo-tag': 'off', // Allow TODO(E3) deferred-test annotations
+    },
+  },
 ];

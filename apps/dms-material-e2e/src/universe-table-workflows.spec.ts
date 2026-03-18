@@ -259,57 +259,6 @@ test.describe('Universe Table Workflows', () => {
     });
   });
 
-  test.describe.skip('Cell Editing - Yield Percentage', () => {
-    // Yield is a calculated field (distribution * distributions_per_year / last_price)
-    // and is not directly editable. These tests are skipped.
-    test('should enter edit mode when clicking yield cell', async ({
-      page,
-    }) => {
-      const yieldCell = page.locator('[data-testid="yield-cell-0"]');
-      await yieldCell.click();
-
-      const input = page.locator('input[data-testid="yield-input"]');
-      await expect(input).toBeVisible();
-      await expect(input).toBeFocused();
-    });
-
-    test('should save yield value on Enter key', async ({ page }) => {
-      const yieldCell = page.locator('[data-testid="yield-cell-0"]');
-      await yieldCell.click();
-
-      const input = page.locator('input[data-testid="yield-input"]');
-      await input.fill('6.50');
-      await input.press('Enter');
-
-      await expect(input).not.toBeVisible();
-      await expect(yieldCell).toContainText('6.50');
-    });
-
-    test('should validate percentage range (0-100)', async ({ page }) => {
-      const yieldCell = page.locator('[data-testid="yield-cell-0"]');
-      await yieldCell.click();
-
-      const input = page.locator('input[data-testid="yield-input"]');
-      await input.fill('150');
-      await input.press('Enter');
-
-      // Should show validation error for out of range
-      const errorMessage = page.locator('.validation-error');
-      await expect(errorMessage).toBeVisible();
-    });
-
-    test('should accept decimal values for yield', async ({ page }) => {
-      const yieldCell = page.locator('[data-testid="yield-cell-0"]');
-      await yieldCell.click();
-
-      const input = page.locator('input[data-testid="yield-input"]');
-      await input.fill('5.75');
-      await input.press('Enter');
-
-      await expect(input).not.toBeVisible();
-    });
-  });
-
   test.describe('Cell Editing - Ex-Date', () => {
     test('should enter edit mode when clicking ex-date cell', async ({
       page,
@@ -398,6 +347,7 @@ test.describe('Universe Table Workflows', () => {
   });
 
   test.describe('Symbol Deletion', () => {
+    // TODO(E3): blocked — symbol deletion not fully testable
     test.skip('should display delete button for deletable symbols', async ({
       page,
     }) => {
@@ -430,6 +380,7 @@ test.describe('Universe Table Workflows', () => {
       await expect(deleteButton).not.toBeVisible();
     });
 
+    // TODO(E3): blocked — symbol deletion not fully testable
     test.skip('should show confirmation dialog when delete is clicked', async ({
       page,
     }) => {
@@ -443,6 +394,7 @@ test.describe('Universe Table Workflows', () => {
       await expect(confirmDialog).toContainText('confirm');
     });
 
+    // TODO(E3): blocked — symbol deletion not fully testable
     test.skip('should cancel deletion when Cancel is clicked', async ({
       page,
     }) => {
@@ -460,6 +412,7 @@ test.describe('Universe Table Workflows', () => {
       expect(rowsAfter).toBe(rowsBefore);
     });
 
+    // TODO(E3): blocked — symbol deletion not fully testable
     test.skip('should remove symbol when deletion is confirmed', async ({
       page,
     }) => {
@@ -483,6 +436,7 @@ test.describe('Universe Table Workflows', () => {
       expect(rowsAfter).toBe(rowsBefore - 1);
     });
 
+    // TODO(E3): blocked — symbol deletion not fully testable
     test.skip('should show success notification after deletion', async ({
       page,
     }) => {
@@ -533,6 +487,7 @@ test.describe('Universe Table Workflows', () => {
       await expect(dialog).not.toBeVisible();
     });
 
+    // TODO(E3): blocked — add symbol feature not fully testable
     test.skip('should validate symbol format before adding', async ({
       page,
     }) => {
@@ -550,6 +505,7 @@ test.describe('Universe Table Workflows', () => {
       await expect(errorMessage).toBeVisible();
     });
 
+    // TODO(E3): blocked — add symbol feature not fully testable
     test.skip('should add symbol to table on successful submission', async ({
       page,
     }) => {
@@ -574,6 +530,7 @@ test.describe('Universe Table Workflows', () => {
       expect(rowsAfter).toBe(rowsBefore + 1);
     });
 
+    // TODO(E3): blocked — add symbol feature not fully testable
     test.skip('should show success notification after adding symbol', async ({
       page,
     }) => {
@@ -591,6 +548,7 @@ test.describe('Universe Table Workflows', () => {
       await expect(notification).toContainText('NEWTEST');
     });
 
+    // TODO(E3): blocked — add symbol feature not fully testable
     test.skip('should handle duplicate symbol error', async ({ page }) => {
       const addButton = page.locator('[data-testid="add-symbol-button"]');
       await addButton.click();
@@ -613,6 +571,7 @@ test.describe('Universe Table Workflows', () => {
     });
   });
 
+  // TODO(E3): blocked — Update Fields feature not fully testable
   test.describe.skip('Update Fields Operation', () => {
     test('should trigger update fields when button is clicked', async ({
       page,
@@ -707,6 +666,7 @@ test.describe('Universe Table Workflows', () => {
     });
   });
 
+  // TODO(E3): blocked — Filter Combinations feature not fully testable
   test.describe.skip('Filter Combinations', () => {
     test('should filter by symbol and risk group together', async ({
       page,
@@ -835,6 +795,7 @@ test.describe('Universe Table Workflows', () => {
     });
   });
 
+  // TODO(E3): blocked — Table Refresh feature not fully testable
   test.describe.skip('Table Refresh', () => {
     test('should refresh table data when refresh icon is clicked', async ({
       page,
@@ -890,6 +851,7 @@ test.describe('Universe Table Workflows', () => {
     });
   });
 
+  // TODO(E3): blocked — Edge Cases and Error Handling not fully testable
   test.describe.skip('Edge Cases and Error Handling', () => {
     test('should handle empty table gracefully', async ({ page }) => {
       await page.route('**/api/universe**', async (route) => {
@@ -1014,6 +976,7 @@ test.describe('Universe Table Workflows', () => {
     });
   });
 
+  // TODO(E3): blocked — Accessibility and Keyboard Navigation not fully testable
   test.describe.skip('Accessibility and Keyboard Navigation', () => {
     test('should support Tab key navigation through editable cells', async ({
       page,

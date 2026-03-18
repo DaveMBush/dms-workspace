@@ -3,6 +3,7 @@ import { test, expect } from 'playwright/test';
 import { login } from './helpers/login.helper';
 
 // reimplement these once we can add an account via the UI
+// TODO(E3): blocked — accounts cannot be added via the UI yet
 test.describe.skip('Account List', () => {
   test.beforeEach(async ({ page }) => {
     await login(page);
