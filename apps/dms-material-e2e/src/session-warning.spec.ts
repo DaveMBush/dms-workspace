@@ -130,6 +130,7 @@ test.describe.skip('Session Warning Dialog', () => {
     // For demonstration, we'd need to mock or speed up the timer
     // Skipping actual implementation as it would take 60+ seconds
 
+    // TODO(E3): blocked — needs test hook mechanism to trigger session warning dialog
     test.skip();
   });
 
