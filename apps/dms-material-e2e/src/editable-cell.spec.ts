@@ -2,6 +2,7 @@ import { expect, test } from 'playwright/test';
 
 // Skip these tests until EditableCell is integrated into a feature page
 // These tests will be enabled when a feature using EditableCell is implemented
+// TODO(E3): blocked — EditableCell not integrated into a feature page
 test.describe.skip('Editable Cell Component', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
