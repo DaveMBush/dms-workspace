@@ -147,3 +147,43 @@ A service is a removal candidate when ALL of these conditions are true:
 - _Plus 12 additional verified active services_
 
 </details>
+
+## Utilities & Pipes
+
+### Classification Criteria
+
+A utility/pipe is a removal candidate when ALL of these conditions are true:
+
+1. Zero `import` references in any other `*.ts` file (excluding own spec)
+2. Not referenced in any `*.html` template (for pipes: `| pipeName`)
+3. Not part of `test-utils/` (test utilities are out of scope)
+
+Scanned: 62 files (0 pipes, 35 function files, 9 const files, 4 types files, 14 shared misc files)
+
+### Removal Candidates
+
+- [x] `apps/dms-material/src/app/global/global-universe/sort-universes.function.ts` — export `sortUniverses` _(removed in Story 1.4)_
+
+  - Criteria met: zero imports outside own file, no template usage
+  - Associated files: none (no spec file exists)
+
+- [x] `apps/dms-material/src/app/shared/components/base-table/virtual-table-data-source.ts` — class `VirtualTableDataSource` _(removed in Story 1.4)_
+
+  - Criteria met: zero imports outside own spec file, not used by any component
+  - Associated files: `virtual-table-data-source.spec.ts`
+
+- [x] `apps/dms-material/src/app/shared/components/base-table/lazy-load-event.interface.ts` — interface `LazyLoadEvent` _(removed in Story 1.4)_
+  - Criteria met: only consumer is `VirtualTableDataSource` (itself unused — transitively dead)
+  - Associated files: none (no spec file exists)
+
+### Verified Active (59 files)
+
+<details>
+<summary>Click to expand verified active utilities list</summary>
+
+- 34 function files (all actively imported by components/services)
+- 9 const files (all used in app.routes.ts)
+- 4 types files (all imported by services and functions)
+- 12 shared interface/misc files (all imported by components/services)
+
+</details>
