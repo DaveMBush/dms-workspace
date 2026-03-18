@@ -50,6 +50,7 @@ describe('Prisma Client - PostgreSQL', () => {
       }
     }, 10000);
 
+    // BLOCKED(E3): blocked — SQLite accepts any path; test appropriate for PostgreSQL only
     it.skip('should handle database connection errors gracefully', async () => {
       // Note: This test is skipped for SQLite because any file path is valid for SQLite.
       // SQLite will create a new database file if it doesn't exist.
@@ -81,6 +82,7 @@ describe('Prisma Client - PostgreSQL', () => {
       await expect(connectWithRetry(1, 100)).resolves.not.toThrow();
     }, 5000);
 
+    // BLOCKED(E3): blocked — SQLite connection never fails; test appropriate for PostgreSQL only
     it.skip('should handle connection failures with retry logic', async () => {
       // Note: This test is skipped for SQLite because any file path is valid for SQLite.
       // SQLite will create a new database file if it doesn't exist, so connection never fails.

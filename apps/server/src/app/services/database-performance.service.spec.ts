@@ -3,7 +3,7 @@ import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
 
 import { databasePerformanceService } from './database-performance.service';
 
-describe.skip('DatabasePerformanceService', () => {
+describe('DatabasePerformanceService', () => {
   let testClient: PrismaClient;
 
   beforeAll(async () => {
@@ -133,7 +133,7 @@ describe.skip('DatabasePerformanceService', () => {
 
   describe('measureQueryPerformance', () => {
     it('should measure query execution time and return results', async () => {
-      const mockQuery = jest.fn().mockResolvedValue({ test: 'data' });
+      const mockQuery = vi.fn().mockResolvedValue({ test: 'data' });
 
       const { result, metrics } =
         await databasePerformanceService.measureQueryPerformance(
@@ -152,7 +152,7 @@ describe.skip('DatabasePerformanceService', () => {
 
     it('should record slow queries above threshold', async () => {
       // Mock a slow query (simulate 100ms delay)
-      const slowQuery = jest
+      const slowQuery = vi
         .fn()
         .mockImplementation(
           () =>
@@ -175,7 +175,7 @@ describe.skip('DatabasePerformanceService', () => {
     });
 
     it('should handle query errors gracefully', async () => {
-      const errorQuery = jest.fn().mockRejectedValue(new Error('Test error'));
+      const errorQuery = vi.fn().mockRejectedValue(new Error('Test error'));
 
       await expect(
         databasePerformanceService.measureQueryPerformance(

@@ -1,8 +1,18 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { map, Observable, of, tap } from 'rxjs';
 
 import { SymbolOption } from '../components/symbol-autocomplete/symbol-option.interface';
+
+interface ApiResult {
+  ticker: string;
+  /* eslint-disable-next-line @typescript-eslint/naming-convention -- matches external API response shape */
+  company_name: string | null;
+}
+
+interface ApiResponse {
+  results: ApiResult[];
+}
 
 interface CacheEntry {
   data: SymbolOption[];
@@ -34,7 +44,44 @@ export class SymbolSearchService {
 
     const params = new HttpParams().set('query', trimmedQuery);
 
-    return this.http.get<SymbolOption[]>('/api/symbol/search', { params });
+    const self = this;
+
+    return this.http
+      .get<ApiResponse | SymbolOption[]>('/api/symbol/search', { params })
+      .pipe(
+        map(function transformPipe(
+          response: ApiResponse | SymbolOption[]
+        ): SymbolOption[] {
+          return self.transformResponse(response);
+        }),
+        map(function filterPipe(results: SymbolOption[]): SymbolOption[] {
+          return self.filterAndLimitResults(results);
+        }),
+        tap(function cachePipe(results: SymbolOption[]): void {
+          self.setCache(trimmedQuery, results);
+        })
+      );
+  }
+
+  private transformResponse(
+    response: ApiResponse | SymbolOption[]
+  ): SymbolOption[] {
+    if (Array.isArray(response)) {
+      return response;
+    }
+    if (
+      response !== null &&
+      response !== undefined &&
+      Array.isArray(response.results)
+    ) {
+      return response.results.map(function mapApiResult(item: ApiResult) {
+        return {
+          symbol: item.ticker,
+          name: item.company_name ?? '',
+        };
+      });
+    }
+    return [];
   }
 
   private filterAndLimitResults(results: SymbolOption[]): SymbolOption[] {

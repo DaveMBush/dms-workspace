@@ -6,6 +6,7 @@ import { Account } from './account.interface';
 // Story AX.5: TDD Tests for Account interface and default row with PartialArrayDefinition
 // RED phase — these tests expect openTrades to use PartialArrayDefinition
 // which hasn't been implemented yet
+// BLOCKED(E3): blocked — openTrades PartialArrayDefinition not implemented yet (Story AX.6)
 // Disabled with describe.skip() to allow CI to pass
 // Will be re-enabled in Story AX.6
 

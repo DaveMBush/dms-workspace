@@ -257,6 +257,7 @@ describe('Database Performance Integration Tests', () => {
   });
 
   describe('Database Performance Monitoring', () => {
+    // BLOCKED(E3): blocked — optimizer service doesn't call monitor for metrics tracking
     it.skip('should record and track authentication operations', async () => {
       // Skip - performance metrics tracking has integration issues in test environment
       await authDatabaseOptimizerService.optimizedUserLookup(
@@ -342,6 +343,7 @@ describe('Database Performance Integration Tests', () => {
     });
   });
 
+  // BLOCKED(E3): blocked — benchmark thresholds need tuning for test environment
   describe.skip('Performance Benchmarks - 30% Reduction Target', () => {
     it('should achieve at least 30% performance improvement', async () => {
       // Skip - benchmark requires fine-tuning for test environment
@@ -417,6 +419,7 @@ describe('Database Performance Integration Tests', () => {
       expect(totalTime).toBeLessThan(2000); // 2 seconds for 30 operations
     });
 
+    // BLOCKED(E3): blocked — optimizer service doesn't call monitor for metrics tracking
     it.skip('should maintain connection pool efficiency during load', async () => {
       // Skip - performance metrics tracking has integration issues in test environment
       const initialMetrics =
@@ -442,6 +445,7 @@ describe('Database Performance Integration Tests', () => {
       expect(loadMetrics.averageAuthQueryTime).toBeLessThan(100); // Should be under 100ms average
     });
 
+    // BLOCKED(E3): blocked — optimizer service doesn't call monitor for metrics tracking
     it.skip('should provide accurate performance monitoring during operations', async () => {
       // Skip - performance metrics tracking has integration issues in test environment
       authDatabaseMonitorService.resetMetrics();

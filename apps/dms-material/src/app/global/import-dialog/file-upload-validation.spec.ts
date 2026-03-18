@@ -14,6 +14,7 @@ import { ImportDialogData } from './import-dialog-data.interface';
  * These tests define expected behavior for file upload features
  * that will be implemented in Story AR.4.
  *
+ * BLOCKED(E3): blocked — file upload features not implemented (Story AR.4)
  * Individual tests are disabled with it.skip to allow CI to pass.
  */
 
