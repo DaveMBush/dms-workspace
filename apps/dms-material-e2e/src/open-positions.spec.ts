@@ -59,6 +59,7 @@ test.describe('Open Positions', () => {
     await expect(dialogTitle).toHaveText('Add New Position');
   });
 
+  // TODO(E3): blocked — requires universe data seeding in test database
   test.skip('should add new position via dialog', async ({ page }) => {
     // SKIPPED: This test requires universe data to be loaded in the test database.
     // The symbol autocomplete needs universe data to show options. Need to add test data seeding.
@@ -208,6 +209,7 @@ test.describe('Open Positions', () => {
     await expect(dialogTitle).not.toBeVisible();
   });
 
+  // TODO(E3): blocked — requires universe data seeding in test database
   test.skip('should edit quantity inline', async ({ page }) => {
     // SKIPPED: Requires universe data in test database. Need to add test data seeding.
     // First, add a position so we have something to edit
@@ -274,6 +276,7 @@ test.describe('Open Positions', () => {
     expect(newValue).toContain('999');
   });
 
+  // TODO(E3): blocked — requires universe data seeding in test database
   test.skip('should edit buy price inline', async ({ page }) => {
     // SKIPPED: Requires universe data in test database. Need to add test data seeding.
     // First, add a position so we have something to edit
@@ -336,6 +339,7 @@ test.describe('Open Positions', () => {
     expect(newValue).toContain('123.45');
   });
 
+  // TODO(E3): blocked — requires universe data seeding in test database
   test.skip('should edit buy date inline', async ({ page }) => {
     // SKIPPED: Requires universe data in test database. Need to add test data seeding.
     // First, add a position so we have something to edit
@@ -398,6 +402,7 @@ test.describe('Open Positions', () => {
     expect(newValue).toContain('2/14/24');
   });
 
+  // TODO(E3): blocked — requires universe data seeding in test database
   test.skip('should cancel inline edit with escape key', async ({ page }) => {
     // SKIPPED: Requires universe data in test database. Need to add test data seeding.
     // First, add a position so we have something to edit
@@ -463,6 +468,7 @@ test.describe('Open Positions', () => {
     expect(newValue).toBe(originalValue);
   });
 
+  // TODO(E3): blocked — requires universe data seeding in test database
   test.skip('should filter positions by symbol', async ({ page }) => {
     // SKIPPED: Requires universe data in test database. Need to add test data seeding.
     // First, add two different positions
@@ -538,6 +544,7 @@ test.describe('Open Positions', () => {
     }
   });
 
+  // TODO(E3): blocked — requires universe data seeding in test database
   test.skip('should delete position', async ({ page }) => {
     // SKIPPED: Requires universe data in test database. Need to add test data seeding.
     // First, add a position so we have something to delete
