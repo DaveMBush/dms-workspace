@@ -1,8 +1,0 @@
-schema: 1
-story: 'AX.6'
-gate: PASS
-status_reason: 'All acceptance criteria met. openTrades converted to PartialArrayDefinition across client and server. AX.5 TDD tests re-enabled and passing. Indexes endpoint handles openTrades childField correctly.'
-reviewer: 'Quinn'
-updated: '2026-03-14T05:20:00Z'
-top_issues: []
-waiver: { active: false }

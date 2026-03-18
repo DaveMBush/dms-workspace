@@ -1,0 +1,109 @@
+# generated: 2026-03-17
+# last_updated: 2026-03-17
+# project: dms-workspace
+# project_key: NOKEY
+# tracking_system: file-system
+# story_location: _bmad-output/implementation-artifacts
+#
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic not yet started
+#   - in-progress: Epic actively being worked on
+#   - done: All stories in epic completed
+#
+# Epic Status Transitions:
+#   - backlog → in-progress: Automatically when first story is created (via create-story)
+#   - in-progress → done: Manually when all stories reach 'done' status
+#
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - ready-for-dev: Story file created in stories folder
+#   - in-progress: Developer actively working on implementation
+#   - review: Ready for code review (via Dev's code-review workflow)
+#   - done: Story completed
+#
+# Retrospective Status:
+#   - optional: Can be completed but not required
+#   - done: Retrospective has been completed
+#
+# WORKFLOW NOTES:
+# ===============
+# - Epic transitions to 'in-progress' automatically when first story is created
+# - Stories can be worked in parallel if team capacity allows
+# - SM typically creates next story after previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
+# - Implementation sequence (from architecture.md):
+#     E1 → E3 → E4(TS rules) → E2 → E5 → E4(template rules) → E6 → E7 → E8
+
+generated: 2026-03-17
+last_updated: 2026-03-17 dms-workspace
+project_key: NOKEY
+tracking_system: file-system
+story_location: _bmad-output/implementation-artifacts
+
+development_status:
+  # ── Epic 1: Remove Unused Code ──────────────────────────────────────────────
+  epic-1: in-progress
+  1-1-audit-components-for-unused-declarations: ready-for-dev
+  1-2-remove-unused-components-batch: ready-for-dev
+  1-3-audit-services-for-unused-registrations: ready-for-dev
+  1-4-audit-and-remove-unused-utilities-and-pipes: ready-for-dev
+  1-5-update-project-context-documentation: ready-for-dev
+  epic-1-retrospective: optional
+
+  # ── Epic 2: Fix CUSIP Lookup — Switch to massive.com API ────────────────────
+  epic-2: backlog
+  2-1-verify-massive-com-api-returns-results-for-failing-cusips: backlog
+  2-2-implement-massive-com-cusip-resolution-service: backlog
+  2-3-integrate-massive-com-as-fallback-in-cusip-resolution-chain: backlog
+  2-4-validate-resolution-of-previously-failing-cusips: backlog
+  epic-2-retrospective: optional
+
+  # ── Epic 3: Enable Skipped Unit and E2E Tests ────────────────────────────────
+  epic-3: backlog
+  3-1-inventory-all-skipped-tests: backlog
+  3-2-unskip-and-fix-unit-tests: backlog
+  3-3-unskip-and-fix-e2e-tests: backlog
+  3-4-delete-irrelevant-skipped-tests: backlog
+  epic-3-retrospective: optional
+
+  # ── Epic 4: Improve Lint Rules ───────────────────────────────────────────────
+  epic-4: backlog
+  4-1-diff-lint-configurations: backlog
+  4-2-add-new-lint-rules-zero-warning-phase: backlog
+  4-3-add-vitest-equivalent-rules: backlog
+  epic-4-retrospective: optional
+
+  # ── Epic 5: Migrate CSS to Tailwind / Theme ──────────────────────────────────
+  epic-5: backlog
+  5-1-audit-component-level-css: backlog
+  5-2-replace-layout-and-spacing-css-with-tailwind-utilities: backlog
+  5-3-replace-hardcoded-colors-with-theme-variables: backlog
+  5-4-update-project-context-to-enforce-css-policy: backlog
+  epic-5-retrospective: optional
+
+  # ── Epic 6: Upgrade Tailwind CSS to Version 4 ───────────────────────────────
+  epic-6: backlog
+  6-1-analyse-breaking-changes-and-branch-state: backlog
+  6-2-update-dependencies-and-configuration: backlog
+  6-3-migrate-tailwind-config-js-to-v4-format: backlog
+  6-4-fix-all-v4-utility-class-breakages: backlog
+  6-5-ci-pipeline-green-with-tailwind-v4: backlog
+  epic-6-retrospective: optional
+
+  # ── Epic 7: CUSIP Cache Page Cosmetics ──────────────────────────────────────
+  epic-7: backlog
+  7-1-inspect-cusip-cache-page-in-dark-mode: backlog
+  7-2-fix-white-on-white-text-in-recently-added-section: backlog
+  7-3-fix-any-remaining-dark-mode-cosmetic-issues: backlog
+  epic-7-retrospective: optional
+
+  # ── Epic 8: Storybook for Display-Only Components ───────────────────────────
+  epic-8: backlog
+  8-1-install-and-configure-storybook: backlog
+  8-2-create-stories-for-display-only-components: backlog
+  8-3-create-stories-for-full-pages-with-mocked-data: backlog
+  8-4-implement-playwright-visual-regression-tests-against-storybook: backlog
+  8-5-update-ci-pipeline-to-include-storybook-build-and-visual-tests: backlog
+  epic-8-retrospective: optional

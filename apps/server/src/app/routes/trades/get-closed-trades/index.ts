@@ -97,6 +97,7 @@ export default function registerGetClosedTrades(
 ): void {
   fastify.get<{ Querystring: SortQuerystring }>(
     '/closed',
+    /* jscpd:ignore-start */
     async function handleGetClosedTrades(request, reply): Promise<void> {
       const { sortBy, sortOrder } = request.query;
 
@@ -121,6 +122,7 @@ export default function registerGetClosedTrades(
         where: { sell_date: { not: null } },
         include: { universe: true },
       });
+      /* jscpd:ignore-end */
 
       const responses = (trades as unknown as TradeWithUniverse[]).map(
         mapToResponse

@@ -1,9 +1,0 @@
-schema: 1
-story: 'AV.7'
-story_title: 'Write Unit Tests for Account Tab Selection Persistence - TDD RED Phase'
-gate: PASS
-status_reason: 'TDD RED phase completed. 6 skipped tests added for account tab persistence covering save, load, default, independent state, navigation, and error handling. RED phase verified.'
-reviewer: 'Quinn (Test Architect)'
-updated: '2026-03-08T00:00:00Z'
-top_issues: []
-waiver: { active: false }

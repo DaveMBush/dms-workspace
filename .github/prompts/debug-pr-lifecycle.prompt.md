@@ -1,6 +1,5 @@
 ---
 description: Dedicated debug PR creation and CodeRabbit lifecycle runner
-agent: dev
 argument-hint: story=AD.5
 model: Claude Sonnet 4.6 (copilot)
 ---
@@ -21,12 +20,11 @@ This prompt exists to run commit/PR creation and the CodeRabbit review loop in a
 
 Before doing anything else, read all of the following:
 
-1. `.github/skills/bmad-workflow/SKILL.md`
-2. `.github/skills/bmad-workflow/references/human-interaction.md`
+1. `_bmad-output/project-context.md`
+2. `_bmad/bmm/config.yaml`
 3. `.github/prompts/commit-and-pr.prompt.md`
 4. `.github/prompts/code-rabbit.prompt.md`
 5. `.github/prompts/quality-validation.prompt.md`
-6. `.bmad-core/core-config.yaml`
 
 ## Execution Rules
 

@@ -157,9 +157,6 @@ const eslintConfig = async () => {
           parserOptions: {
             ...config.languageOptions?.parserOptions,
             project: [
-              'apps/dms/tsconfig.json',
-              'apps/dms/tsconfig.app.json',
-              'apps/dms/tsconfig.spec.json',
               'apps/dms-material/tsconfig.json',
               'apps/dms-material/tsconfig.app.json',
               'apps/dms-material/tsconfig.spec.json',
@@ -202,9 +199,6 @@ const eslintConfig = async () => {
           parserOptions: {
             ...config.languageOptions?.parserOptions,
             project: [
-              'apps/dms/tsconfig.json',
-              'apps/dms/tsconfig.app.json',
-              'apps/dms/tsconfig.spec.json',
               'apps/dms-material/tsconfig.json',
               'apps/dms-material/tsconfig.app.json',
               'apps/dms-material/tsconfig.spec.json',
@@ -806,14 +800,6 @@ const eslintConfig = async () => {
       },
     },
     {
-      // Turn off deprecation warnings for dms app only (being deprecated)
-      files: ['**/apps/dms/**/*.ts'],
-      rules: {
-        '@typescript-eslint/no-deprecated': 'off',
-        'sonarjs/deprecation': 'off',
-      },
-    },
-    {
       // Disable RxJS deprecation false positives in dms-material
       // The typescript-eslint plugin incorrectly flags RxJS operators as using deprecated
       // overloads even when they're not. These are false positives from RxJS 7's type definitions
@@ -933,9 +919,6 @@ const eslintConfig = async () => {
       languageOptions: {
         parserOptions: {
           project: [
-            'apps/dms/tsconfig.json',
-            'apps/dms/tsconfig.app.json',
-            'apps/dms/tsconfig.spec.json',
             'apps/dms-material/tsconfig.json',
             'apps/dms-material/tsconfig.app.json',
             'apps/dms-material/tsconfig.spec.json',

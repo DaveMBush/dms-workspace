@@ -1,5 +1,4 @@
 ---
-agent: pm
 description: Create stories from Epics that use TDD stories.
 argument-hint: epic=AD
 model: Claude Sonnet 4.5 (copilot)

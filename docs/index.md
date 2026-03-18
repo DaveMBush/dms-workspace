@@ -1,67 +1,130 @@
-# DMS Workspace Documentation
+# DMS Workspace Documentation Index
 
-Welcome to the DMS workspace documentation. This documentation covers the architecture, configuration, and operational procedures for the DMS system.
+> **CEF Personal Dividend Investment Tracker**
+> Angular 21 + Fastify 5 + Prisma 7 + SmartNgRX + AWS Cognito
+> Nx 22 monorepo — scan level 3 (exhaustive)
 
-## 📚 Documentation Sections
+---
 
-### 🏗️ Architecture
+## Quick Reference
 
-- [Architecture Overview](./architecture.md) - High-level system architecture
-- [Frontend Architecture](./frontend-architecture.md) - Frontend system design
-- [Frontend Specifications](./front-end-spec.md) - UI/UX specifications
+| Need                                      | Document                                                  |
+| ----------------------------------------- | --------------------------------------------------------- |
+| "What does this project do?"              | [Project Overview](./project-overview.md)                 |
+| "How do I set up my dev environment?"     | [Development Guide](./development-guide.md)               |
+| "How do I deploy to production?"          | [Deployment Guide](./deployment-guide.md)                 |
+| "What API endpoints exist?"               | [API Contracts](./api-contracts.md)                       |
+| "What does the code structure look like?" | [Source Tree Analysis](./source-tree-analysis.md)         |
+| "How does the Angular app work?"          | [Frontend Architecture](./architecture-dms-material.md)   |
+| "How does the Node.js API work?"          | [Backend Architecture](./architecture-server.md)          |
+| "What are all the components?"            | [Component Inventory](./component-inventory.md)           |
+| "What is the database schema?"            | [Data Models](./data-models.md)                           |
+| "How does front + back communicate?"      | [Integration Architecture](./integration-architecture.md) |
 
-### ⚙️ Configuration
+---
 
-- [Configuration Guide](./configuration/index.md) - System configuration and setup
-- [Feature Flags](./configuration/feature-flags.md) - Feature flag management
-- [Environment Setup](./configuration/environment-setup.md) - Environment configuration
+## Documentation Files
 
-### 🚀 Operations
+### Project-Level
 
-- [Rollback Runbook](./rollback-runbook.md) - Emergency rollback procedures
-- [Logging and Metrics](./logging-metrics-extraction.md) - System monitoring and logging
-- [Documentation Sync Process](./documentation-sync-process.md) - Keeping architecture and backlog synchronized
+| File                                                   | Description                                                   | Status |
+| ------------------------------------------------------ | ------------------------------------------------------------- | ------ |
+| [project-overview.md](./project-overview.md)           | Domain intro, architecture diagram, tech stack, quick-start   | ✅     |
+| [project-parts.json](./project-parts.json)             | Machine-readable app catalog (SmartNgRX, Playwright, Fastify) | ✅     |
+| [project-scan-report.json](./project-scan-report.json) | Scan metadata and document list                               | ✅     |
 
-### 📋 Product & Planning
+### Architecture & Code
 
-- [Product Requirements](./prd.md) - Product requirements document
-- [Backlog](./backlog.md) - Development backlog and roadmap
+| File                                                           | Description                                                   | Status |
+| -------------------------------------------------------------- | ------------------------------------------------------------- | ------ |
+| [source-tree-analysis.md](./source-tree-analysis.md)           | Annotated source tree for all 3 apps + root files             | ✅     |
+| [architecture-dms-material.md](./architecture-dms-material.md) | Angular bootstrap, routing, SmartNgRX, auth, theming, testing | ✅     |
+| [architecture-server.md](./architecture-server.md)             | Fastify bootstrap, plugins, middleware pipeline, security, DB | ✅     |
+| [component-inventory.md](./component-inventory.md)             | All Angular components with inputs/outputs and purpose        | ✅     |
+| [integration-architecture.md](./integration-architecture.md)   | Frontend↔backend protocols, auth flow, SmartNgRX data flow    | ✅     |
 
-## 🚀 Quick Start
+### Data & APIs
 
-1. **Setup**: See [Environment Setup](./configuration/environment-setup.md) for local development
-2. **Configuration**: Configure feature flags via [Feature Flags Guide](./configuration/feature-flags.md)
-3. **Development**: Use the [Architecture Overview](./architecture.md) to understand the system
-4. **Operations**: Refer to [Rollback Runbook](./rollback-runbook.md) for emergency procedures
+| File                                   | Description                                                | Status |
+| -------------------------------------- | ---------------------------------------------------------- | ------ |
+| [api-contracts.md](./api-contracts.md) | All REST endpoints with request/response shapes            | ✅     |
+| [data-models.md](./data-models.md)     | Prisma schema, TypeScript interfaces, ER diagram, patterns | ✅     |
 
-## 🔧 Key Features
+### Developer Operations
 
-- **Feature Flags**: Dynamic feature toggling via environment variables
-- **Universe Management**: Manual and screener-driven universe synchronization
-- **Risk Management**: Comprehensive rollback and monitoring procedures
-- **Multi-Environment**: Support for local, development, staging, and production
+| File                                           | Description                                              | Status |
+| ---------------------------------------------- | -------------------------------------------------------- | ------ |
+| [development-guide.md](./development-guide.md) | Setup, commands, testing, conventions, debugging         | ✅     |
+| [deployment-guide.md](./deployment-guide.md)   | Local, Docker, E2E, and production deployment procedures | ✅     |
 
-## 📖 Feature Flag System
+### Pre-existing Documentation
 
-The DMS workspace uses a feature flag system to control the rollout of new features:
+| File                                                                             | Description                       |
+| -------------------------------------------------------------------------------- | --------------------------------- |
+| [architecture.md](./architecture.md)                                             | High-level architecture decisions |
+| [front-end-spec.md](./front-end-spec.md)                                         | Frontend specification            |
+| [frontend-architecture.md](./frontend-architecture.md)                           | Frontend architecture reference   |
+| [prd.md](./prd.md)                                                               | Product requirements document     |
+| [backlog.md](./backlog.md)                                                       | Feature backlog                   |
+| [local-development.md](./local-development.md)                                   | Local development setup notes     |
+| [monitoring-and-alerts.md](./monitoring-and-alerts.md)                           | Monitoring setup                  |
+| [rollback-runbook.md](./rollback-runbook.md)                                     | Rollback procedures               |
+| [SmartNgRX-Implementation-Checklist.md](./SmartNgRX-Implementation-Checklist.md) | SmartNgRX implementation guide    |
+| [SmartNgRX-Signals-Reference.md](./SmartNgRX-Signals-Reference.md)               | SmartNgRX signals API reference   |
 
-- **`USE_SCREENER_FOR_UNIVERSE`**: Controls screener-driven universe synchronization
-- **Default Behavior**: Manual universe management (flag = `false`)
-- **Safe Toggling**: Feature can be enabled/disabled without data loss
-- **Environment Support**: Works across local, development, staging, and production
+---
 
-For detailed configuration, see the [Feature Flags Guide](./configuration/feature-flags.md).
+## Technology Stack Summary
 
-## 🆘 Need Help?
+| Layer                 | Technology                              | Version |
+| --------------------- | --------------------------------------- | ------- |
+| Frontend framework    | Angular                                 | 21.2.x  |
+| UI component library  | Angular Material + CDK                  | 21.2.x  |
+| CSS utility           | Tailwind CSS                            | 3.4.1   |
+| State management      | SmartNgRX (`@smarttools/smart-signals`) | 3.0.0   |
+| Authentication (prod) | AWS Amplify + Cognito                   | 6.x     |
+| Backend framework     | Fastify                                 | 5.8.x   |
+| ORM                   | Prisma                                  | 7.2.x   |
+| Database (dev)        | SQLite via better-sqlite3               | 12.6    |
+| Database (prod)       | PostgreSQL                              | 16      |
+| Monorepo tooling      | Nx                                      | 22.5.4  |
+| Package manager       | pnpm                                    | 10.x    |
+| Unit testing          | Vitest                                  | 4.0.9   |
+| E2E testing           | Playwright                              | 1.55.1  |
+| Language              | TypeScript                              | 5.9.3   |
+| Runtime               | Node.js                                 | ≥ 22    |
 
-- **Configuration Issues**: Check [Troubleshooting](./configuration/feature-flags.md#troubleshooting)
-- **Architecture Questions**: Review [Architecture Documentation](./architecture.md)
-- **Emergency Procedures**: Consult [Rollback Runbook](./rollback-runbook.md)
-- **Development Setup**: See [Environment Setup](./configuration/environment-setup.md)
+---
 
-## 🔄 Recent Updates
+## Application Structure
 
-- **Story F2**: Documentation synchronization process implemented
-- **Story B1**: Feature flag configuration and documentation completed
-- **Epic A**: Universe sync from screener feature implemented
-- **Feature Flags**: Comprehensive configuration and operational guides added
+```
+dms-workspace/
+├── apps/
+│   ├── dms-material/          Angular 21 SPA (431 source files)
+│   ├── dms-material-e2e/      Playwright E2E tests (71 files)
+│   └── server/                Fastify 5 API (310 source files)
+├── prisma/
+│   ├── schema.prisma          SQLite schema
+│   └── schema.postgresql.prisma  PostgreSQL schema
+├── docs/                      ← you are here
+└── scripts/                   Operational scripts
+```
+
+---
+
+## Domain Glossary
+
+| Term             | Definition                                                                         |
+| ---------------- | ---------------------------------------------------------------------------------- |
+| **CEF**          | Closed-End Fund — a publicly traded investment fund with a fixed number of shares  |
+| **Universe**     | Personal watchlist of CEF ticker symbols being tracked                             |
+| **Risk Group**   | Category for universe entries: Equities, Income, Tax Free Income                   |
+| **Distribution** | Regular income payment from a CEF (like a dividend)                                |
+| **Ex-Date**      | Ex-dividend date — must own shares before this date to receive the distribution    |
+| **Open Trade**   | A position currently held (bought, not yet sold)                                   |
+| **Closed Trade** | A position that has been sold                                                      |
+| **Screener**     | CEF Connect screener data showing distribution rates, premium/discount, YTD return |
+| **CUSIP**        | 9-character security identifier used in Fidelity CSV exports                       |
+| **Top**          | Virtual bootstrap entity — aggregates all root entity IDs for app initialization   |
+| **SmartNgRX**    | Custom entity store library replacing NgRx for signal-based state management       |

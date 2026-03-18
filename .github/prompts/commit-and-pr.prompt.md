@@ -1,6 +1,5 @@
 ---
 model: Claude Sonnet 4.5 (copilot)
-agent: dev
 ---
 
 - run `pnpm format`

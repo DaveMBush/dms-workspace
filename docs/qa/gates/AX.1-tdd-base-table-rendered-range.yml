@@ -1,8 +1,0 @@
-schema: 1
-story: 'AX.1'
-gate: PASS
-status_reason: 'All acceptance criteria met. TDD RED phase tests written and disabled with .skip() as required.'
-reviewer: 'Quinn'
-updated: '2026-03-13T21:15:00Z'
-top_issues: []
-waiver: { active: false }

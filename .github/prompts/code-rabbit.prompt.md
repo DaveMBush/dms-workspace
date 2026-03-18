@@ -1,16 +1,11 @@
 ````prompt
 ---
 description: Handle CodeRabbit review loop for a story PR
-agent: dev
 argument-hint: story=AD.3
 model: Claude Sonnet 4.6 (copilot)
 ---
 
 # CodeRabbit Review Loop Subagent
-
-**IMPORTANT**: This subagent uses the bmad-workflow skill:
-
-#skill:bmad-workflow
 
 This subagent implements Phase 6 (CodeRabbit review loop). It is intentionally small and stateful so it can be re-invoked and resumed.
 
@@ -37,7 +32,7 @@ State file format (example):
 
 Behavior (concise):
 
-**Follow the "CodeRabbit Review Loop Pattern" from bmad-workflow skill exactly.**
+**CodeRabbit Review Loop:**
 
 Key steps:
 1. Resolve `GIT_COMMON_DIR=$(git rev-parse --git-common-dir)` and read `$GIT_COMMON_DIR/tmp/story-${story}-meta.json` into local state; then `cd` to `worktreePath` from that state
@@ -45,7 +40,10 @@ Key steps:
 3. Poll `mcp_github_pull_request_read` with `method: "get_review_comments"` every 30s (10 min timeout)
 4. If no suggestions: proceed to merge checks
 5. If suggestions: classify (valid/invalid, in-scope/out-of-scope), use Context7/Playwright for verification
-6. Apply valid in-scope fixes, run full quality validation loop (see skill)
+6. Apply valid in-scope fixes, then run full quality validation:
+   ```bash
+   run #file:./quality-validation.prompt.md context=story-${story}-cr
+   ```
 7. Commit "Apply CodeRabbit suggestions", push, wait 5 minutes, continue loop
 8. Update state file with final status when complete
 

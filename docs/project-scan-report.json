@@ -1,0 +1,69 @@
+{
+  "scanVersion": "1.0",
+  "scanLevel": 3,
+  "scanLevelDescription": "Exhaustive Scan — all source files enumerated and key files read in detail",
+  "completedAt": "2025-07-17",
+  "workspace": "/home/dave/code/dms-workspace",
+  "apps": [
+    {
+      "name": "dms-material",
+      "type": "angular-spa",
+      "sourceFiles": 431,
+      "framework": "Angular 21.2.x",
+      "uiLibrary": "Angular Material 21.2.x",
+      "stateManagement": "SmartNgRX (@smarttools/smart-signals 3.0.0)",
+      "auth": "AWS Amplify Auth 6.x (Cognito)",
+      "styling": "Tailwind CSS 3.4.1 + Angular Material 3",
+      "changeDetection": "zoneless (provideZonelessChangeDetection)",
+      "componentStyle": "standalone, OnPush, signal inputs/outputs, inject()"
+    },
+    {
+      "name": "dms-material-e2e",
+      "type": "playwright",
+      "sourceFiles": 71,
+      "framework": "Playwright 1.55.1",
+      "browsers": ["chromium", "firefox"],
+      "ports": {
+        "frontend": 4301,
+        "backend": 3001
+      }
+    },
+    {
+      "name": "server",
+      "type": "fastify-api",
+      "sourceFiles": 310,
+      "framework": "Fastify 5.8.x",
+      "orm": "Prisma 7.2.x",
+      "database": {
+        "dev": "SQLite (better-sqlite3 12.6)",
+        "production": "PostgreSQL 16"
+      },
+      "auth": "JWT (AWS Cognito RS256 via JWKS)"
+    }
+  ],
+  "toolchain": {
+    "nx": "22.5.4",
+    "pnpm": "10.x",
+    "typescript": "5.9.3",
+    "node": ">=22",
+    "vitest": "4.0.9",
+    "prisma": "7.2.x"
+  },
+  "domain": "CEF (Closed-End Fund) personal dividend investment tracker",
+  "documentsGenerated": [
+    "docs/project-overview.md",
+    "docs/project-parts.json",
+    "docs/source-tree-analysis.md",
+    "docs/architecture-dms-material.md",
+    "docs/architecture-server.md",
+    "docs/component-inventory.md",
+    "docs/development-guide.md",
+    "docs/deployment-guide.md",
+    "docs/api-contracts.md",
+    "docs/data-models.md",
+    "docs/integration-architecture.md",
+    "docs/index.md",
+    "docs/project-scan-report.json"
+  ],
+  "status": "COMPLETE"
+}

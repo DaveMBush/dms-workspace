@@ -1,6 +1,5 @@
 ---
 description: Dedicated debug merge verification and cleanup runner
-agent: dev
 argument-hint: story=AD.5
 model: Claude Sonnet 4.6 (copilot)
 ---
@@ -21,11 +20,10 @@ This prompt exists to run merge verification, merge execution, post-merge valida
 
 Before doing anything else, read all of the following:
 
-1. `.github/skills/bmad-workflow/SKILL.md`
-2. `.github/skills/bmad-workflow/references/human-interaction.md`
+1. `_bmad-output/project-context.md`
+2. `_bmad/bmm/config.yaml`
 3. `.github/prompts/quality-validation.prompt.md`
-4. `.bmad-core/core-config.yaml`
-5. `$(git rev-parse --git-common-dir)/tmp/story-${story}-meta.json`
+4. `$(git rev-parse --git-common-dir)/tmp/story-${story}-meta.json`
 
 ## Execution Rules
 
