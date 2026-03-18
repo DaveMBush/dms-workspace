@@ -98,12 +98,12 @@ A service is a removal candidate when ALL of these conditions are true:
 
 ### Removal Candidates
 
-- [ ] `apps/dms-material/src/app/auth/services/performance-monitoring.service.ts` — class `PerformanceMonitoringService`
+- [x] `apps/dms-material/src/app/auth/services/performance-monitoring.service.ts` — class `PerformanceMonitoringService` _(removed in Story 1.3)_
 
   - Criteria met: zero active injections outside own spec file, not referenced in any providers array
   - Associated files: `performance-monitoring.service.spec.ts`
 
-- [ ] `apps/dms-material/src/app/shared/services/feature-flags.service.ts` — class `FeatureFlagsService`
+- [x] `apps/dms-material/src/app/shared/services/feature-flags.service.ts` — class `FeatureFlagsService` _(removed in Story 1.3)_
   - Criteria met: zero references anywhere outside its own file, completely orphaned
   - Associated files: none (no spec file exists)
 
