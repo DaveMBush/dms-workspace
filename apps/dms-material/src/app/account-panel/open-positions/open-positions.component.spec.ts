@@ -317,6 +317,7 @@ describe('OpenPositionsComponent', () => {
     });
   });
 
+  // TODO(E3): blocked — unrealized gain calculation not implemented (Story AO.2)
   describe.skip('Data Transformation for Display', () => {
     beforeEach(() => {
       // AO.2: Inject test data with currentPrice for unrealized gain calculation

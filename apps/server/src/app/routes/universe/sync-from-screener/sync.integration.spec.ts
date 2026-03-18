@@ -20,6 +20,7 @@ import { SyncLogger } from '../../../../utils/logger';
  * rather than HTTP endpoints, avoiding complex mocking issues
  * while still providing comprehensive integration test coverage.
  */
+// TODO(E3): blocked — integration test requires database in CI
 describe.skipIf(process.env.CI)(
   'sync-from-screener database integration tests',
   () => {
