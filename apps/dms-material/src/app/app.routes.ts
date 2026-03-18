@@ -72,13 +72,6 @@ export const appRoutes: Route[] = [
           import('./global/global-screener').then((m) => m.GlobalScreener),
       },
       {
-        path: 'global/error-logs',
-        loadComponent: async () =>
-          import('./global/global-error-logs/global-error-logs').then(
-            (m) => m.GlobalErrorLogs
-          ),
-      },
-      {
         path: 'global/cusip-cache',
         loadComponent: async () =>
           import('./global/cusip-cache/cusip-cache.component').then(
