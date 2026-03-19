@@ -31,7 +31,7 @@ so that I can confirm the alternative source actually resolves what OpenFIGI can
   - [x] Call OpenFIGI with each of the three CUSIPs and record responses
 - [x] Create comparison document (AC: 2)
   - [x] Create `_bmad-output/implementation-artifacts/cusip-api-comparison.md`
-  - [x] Include table: CUSIP | OpenFIGI Result | 13f.info Result | Ticker | Resolved? | Notes
+  - [x] Include table: CUSIP | OpenFIGI Result | 13f.info Ticker | Company Name | Resolved? | Notes
   - [x] Document ticker extraction approach
   - [x] Document rate-limiting strategy
 
@@ -79,11 +79,11 @@ Story 2.2 will need to add `THIRTEENF` to this enum and create a migration.
 ```markdown
 # CUSIP API Comparison — OpenFIGI vs 13f.info
 
-| CUSIP     | OpenFIGI Result | 13f.info Ticker | Resolved? | Notes |
-| --------- | --------------- | --------------- | --------- | ----- |
-| 691543102 | ...             | OXLC            | Yes       | ...   |
-| 88636J527 | ...             | ULTY            | Yes       | ...   |
-| 88634T493 | ...             | MSTY            | Yes       | ...   |
+| CUSIP     | OpenFIGI Result | 13f.info Ticker | Company Name | Resolved? | Notes |
+| --------- | --------------- | --------------- | ------------ | --------- | ----- |
+| 691543102 | ...             | OXLC            | ...          | Yes       | ...   |
+| 88636J527 | ...             | ULTY            | ...          | Yes       | ...   |
+| 88634T493 | ...             | MSTY            | ...          | Yes       | ...   |
 ```
 
 ### References

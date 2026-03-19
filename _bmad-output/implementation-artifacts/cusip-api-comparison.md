@@ -47,7 +47,9 @@ The ticker symbol is embedded in JSON-LD structured data within the HTML page:
 
 **Extraction**: `JSON.parse(jsonLdText).itemListElement[0].name` → ticker symbol
 
-The `alternateName` field provides the company name. The `identifier` field echoes back the CUSIP.
+The `identifier` field echoes back the CUSIP.
+`alternateName` is not consistently a human-readable company name across all CUSIPs (e.g., MSTY returns `"MSTY,0P0001R3R8,800499"`), so treat it as optional metadata only.
+If a display name is needed, prefer the page `<title>` tag or another validated source.
 
 ## OpenFIGI Call Details
 
