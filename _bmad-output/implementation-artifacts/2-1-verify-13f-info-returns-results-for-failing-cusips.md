@@ -1,6 +1,6 @@
 # Story 2.1: Verify 13f.info Returns Results for Failing CUSIPs
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -18,22 +18,22 @@ so that I can confirm the alternative source actually resolves what OpenFIGI can
 
 ## Tasks / Subtasks
 
-- [ ] Verify 13f.info endpoint behaviour (AC: 1)
-  - [ ] Confirm URL pattern: `https://13f.info/cusip/{CUSIP}`
-  - [ ] Confirm ticker extraction method: JSON-LD `<script type="application/ld+json">` — `itemListElement[0].name`
-  - [ ] Confirm no API key or authentication required
-  - [ ] Note: no official public rate limit; apply 1 req/sec (same delay pattern as Yahoo Finance)
-- [ ] Make test HTTP fetches for each failing CUSIP (AC: 1)
-  - [ ] Fetch 13f.info for `691543102` and record resolved ticker
-  - [ ] Fetch 13f.info for `88636J527` and record resolved ticker
-  - [ ] Fetch 13f.info for `88634T493` and record resolved ticker
-- [ ] Make corresponding OpenFIGI calls for comparison (AC: 2)
-  - [ ] Call OpenFIGI with each of the three CUSIPs and record responses
-- [ ] Create comparison document (AC: 2)
-  - [ ] Create `_bmad-output/implementation-artifacts/cusip-api-comparison.md`
-  - [ ] Include table: CUSIP | OpenFIGI Result | 13f.info Result | Ticker | Resolved? | Notes
-  - [ ] Document ticker extraction approach
-  - [ ] Document rate-limiting strategy
+- [x] Verify 13f.info endpoint behaviour (AC: 1)
+  - [x] Confirm URL pattern: `https://13f.info/cusip/{CUSIP}`
+  - [x] Confirm ticker extraction method: JSON-LD `<script type="application/ld+json">` — `itemListElement[0].name`
+  - [x] Confirm no API key or authentication required
+  - [x] Note: no official public rate limit; apply 1 req/sec (same delay pattern as Yahoo Finance)
+- [x] Make test HTTP fetches for each failing CUSIP (AC: 1)
+  - [x] Fetch 13f.info for `691543102` and record resolved ticker
+  - [x] Fetch 13f.info for `88636J527` and record resolved ticker
+  - [x] Fetch 13f.info for `88634T493` and record resolved ticker
+- [x] Make corresponding OpenFIGI calls for comparison (AC: 2)
+  - [x] Call OpenFIGI with each of the three CUSIPs and record responses
+- [x] Create comparison document (AC: 2)
+  - [x] Create `_bmad-output/implementation-artifacts/cusip-api-comparison.md`
+  - [x] Include table: CUSIP | OpenFIGI Result | 13f.info Result | Ticker | Resolved? | Notes
+  - [x] Document ticker extraction approach
+  - [x] Document rate-limiting strategy
 
 ## Dev Notes
 
@@ -46,12 +46,14 @@ so that I can confirm the alternative source actually resolves what OpenFIGI can
 ### 13f.info Ticker Extraction
 
 The ticker symbol is embedded in the page's JSON-LD structured data:
+
 ```html
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BreadcrumbList",
- "itemListElement":[{"name":"OXLC","item":"https://13f.info/cusip/691543102",...}]}
+  {"@context":"https://schema.org","@type":"BreadcrumbList",
+   "itemListElement":[{"name":"OXLC","item":"https://13f.info/cusip/691543102",...}]}
 </script>
 ```
+
 Parse: `JSON.parse(jsonLdText).itemListElement[0].name` → ticker symbol.
 
 Alternatively, the page `<title>` tag follows the pattern `TICKER – Company Name 13F Top Holders`.
@@ -59,6 +61,7 @@ Alternatively, the page `<title>` tag follows the pattern `TICKER – Company Na
 ### Existing Resolution Sources
 
 The `CusipCacheSource` enum in `prisma/schema.prisma` currently has:
+
 - `OPENFIGI`
 - `YAHOO_FINANCE`
 
@@ -76,11 +79,11 @@ Story 2.2 will need to add `THIRTEENF` to this enum and create a migration.
 ```markdown
 # CUSIP API Comparison — OpenFIGI vs 13f.info
 
-| CUSIP       | OpenFIGI Result | 13f.info Ticker | Resolved? | Notes |
-|-------------|-----------------|-----------------|-----------|-------|
-| 691543102   | ...             | OXLC            | Yes       | ...   |
-| 88636J527   | ...             | ULTY            | Yes       | ...   |
-| 88634T493   | ...             | MSTY            | Yes       | ...   |
+| CUSIP     | OpenFIGI Result | 13f.info Ticker | Resolved? | Notes |
+| --------- | --------------- | --------------- | --------- | ----- |
+| 691543102 | ...             | OXLC            | Yes       | ...   |
+| 88636J527 | ...             | ULTY            | Yes       | ...   |
+| 88634T493 | ...             | MSTY            | Yes       | ...   |
 ```
 
 ### References
@@ -94,6 +97,25 @@ Story 2.2 will need to add `THIRTEENF` to this enum and create a migration.
 
 ### Agent Model Used
 
+Claude Opus 4.6 (GitHub Copilot)
+
 ### Completion Notes List
 
+- All three failing CUSIPs resolved successfully via 13f.info
+- 691543102 → OXLC (Oxford Lane Capital Corp.)
+- 88636J527 → ULTY (Tidal Trust II YieldMax Ultra O)
+- 88634T493 → MSTY (YieldMax MSTR Option Income Strategy ETF)
+- OpenFIGI returned `"No identifier found."` for all three CUSIPs, confirming the gap
+- No API key or authentication required for 13f.info
+- JSON-LD extraction method confirmed: `itemListElement[0].name`
+- Rate-limiting strategy: 1 req/sec (1000 ms delay), matching Yahoo Finance pattern
+
 ### File List
+
+- `_bmad-output/implementation-artifacts/cusip-api-comparison.md` — Comparison document with full results
+
+### Change Log
+
+| Date       | Change                                                                     | Author                      |
+| ---------- | -------------------------------------------------------------------------- | --------------------------- |
+| 2026-03-19 | Story completed — all verification tasks done, comparison document created | Dev Agent (Claude Opus 4.6) |

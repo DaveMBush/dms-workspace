@@ -1,3 +1,4 @@
+/* eslint-disable vitest/no-conditional-expect -- Pre-existing: health-check assertions vary by database connectivity */
 /**
  * Tests for health check endpoints
  */

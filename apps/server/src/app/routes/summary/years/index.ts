@@ -23,6 +23,9 @@ async function getAvailableYears(): Promise<number[]> {
   });
 
   trades.forEach(function extractTradeYear(trade) {
+    if (!trade.sell_date) {
+      return;
+    }
     yearSet.add(new Date(trade.sell_date).getFullYear());
   });
 

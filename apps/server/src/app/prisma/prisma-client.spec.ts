@@ -1,3 +1,4 @@
+/* eslint-disable vitest/no-disabled-tests, vitest/no-conditional-expect -- Pre-existing: tests blocked on E3 or use conditional health-check assertions */
 /**
  * Tests for PostgreSQL Prisma client functionality
  */

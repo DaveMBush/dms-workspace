@@ -1,3 +1,4 @@
+/* eslint-disable vitest/no-conditional-expect -- Pre-existing: catch-block assertions verify error properties */
 import { describe, expect, it } from 'vitest';
 
 import { AuthError, AuthErrorType } from '../types/auth.types';
