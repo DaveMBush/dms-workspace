@@ -119,12 +119,9 @@ describe('SymbolSearchService', () => {
       );
       req.flush('API Error', { status: 500, statusText: 'Server Error' });
 
-      try {
-        await errorPromise;
-        throw new Error('Should have thrown an error');
-      } catch (error: unknown) {
-        expect((error as { status: number }).status).toBe(500);
-      }
+      await expect(errorPromise).rejects.toMatchObject({
+        status: 500,
+      });
     });
 
     it('should handle network errors', async () => {
@@ -144,15 +141,13 @@ describe('SymbolSearchService', () => {
       );
       req.error(new ProgressEvent('Network error'));
 
-      try {
-        await errorPromise;
-        throw new Error('Should have thrown an error');
-      } catch (error: unknown) {
-        expect((error as { status: number }).status).toBe(0);
-        expect((error as { error: unknown }).error).toBeInstanceOf(
-          ProgressEvent
-        );
-      }
+      await expect(errorPromise).rejects.toMatchObject({
+        status: 0,
+      });
+      await expect(errorPromise).rejects.toSatisfy(
+        (error: unknown) =>
+          (error as { error: unknown }).error instanceof ProgressEvent
+      );
     });
 
     it('should filter out invalid results', async () => {
@@ -207,6 +202,7 @@ describe('SymbolSearchService', () => {
 
   describe('debouncing', () => {
     // BLOCKED(E3): blocked — debouncing requires service API redesign (see issue #690)
+    // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test
     it.skip('should debounce search requests by 300ms', fakeAsync(() => {
       const query1 = 'AA';
       const query2 = 'AAP';
@@ -234,6 +230,7 @@ describe('SymbolSearchService', () => {
     }));
 
     // BLOCKED(E3): blocked — debouncing requires service API redesign (see issue #690)
+    // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test
     it.skip('should not debounce separate search sessions', fakeAsync(() => {
       const query1 = 'AAPL';
       const query2 = 'MSFT';

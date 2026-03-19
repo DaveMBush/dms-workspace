@@ -80,6 +80,7 @@ describe('ImportDialogComponent - File Upload Validation (TDD RED)', () => {
     expect(true).toBe(true);
   });
 
+  // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test
   describe.skip('file size validation', () => {
     it('should reject files larger than 10MB', () => {
       const oversizedContent = 'a'.repeat(11 * 1024 * 1024);
@@ -129,6 +130,7 @@ describe('ImportDialogComponent - File Upload Validation (TDD RED)', () => {
     });
   });
 
+  // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test
   describe.skip('file content preview', () => {
     it('should display a preview section after file selection', () => {
       const csvContent =
@@ -191,6 +193,7 @@ describe('ImportDialogComponent - File Upload Validation (TDD RED)', () => {
     });
   });
 
+  // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test
   describe.skip('FormData creation', () => {
     it('should create FormData with selected file for upload', async () => {
       const file = new File(['csv,content'], 'test.csv', {
@@ -250,6 +253,7 @@ describe('ImportDialogComponent - File Upload Validation (TDD RED)', () => {
     });
   });
 
+  // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test
   describe.skip('upload progress tracking', () => {
     it('should report upload progress as a percentage', () => {
       const file = new File(['csv,content'], 'test.csv', {
@@ -305,6 +309,7 @@ describe('ImportDialogComponent - File Upload Validation (TDD RED)', () => {
     });
   });
 
+  // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test
   describe.skip('upload cancellation', () => {
     it('should display a cancel upload button during upload', () => {
       const file = new File(['csv,content'], 'test.csv', {
@@ -377,6 +382,7 @@ describe('ImportDialogComponent - File Upload Validation (TDD RED)', () => {
     });
   });
 
+  // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test
   describe.skip('file type validation edge cases', () => {
     it('should accept .CSV files with uppercase extension', () => {
       const file = new File(['csv,content'], 'TRANSACTIONS.CSV', {
@@ -429,6 +435,7 @@ describe('ImportDialogComponent - File Upload Validation (TDD RED)', () => {
     });
   });
 
+  // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test
   describe.skip('empty and corrupted file handling', () => {
     it('should reject empty files (0 bytes)', () => {
       const file = new File([], 'empty.csv', { type: 'text/csv' });

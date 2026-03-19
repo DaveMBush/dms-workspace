@@ -1285,6 +1285,7 @@ describe('Branch Coverage - Edge Cases', () => {
     httpMock.expectNone(function matchRefreshSummary(req) {
       return req.url === '/api/summary' && req.params.get('month') === 'null';
     });
+    expect(component.selectedMonth.value).toBeNull();
   });
 
   it('should use fallback month when selectedMonth value is null during refreshData', () => {

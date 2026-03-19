@@ -49,10 +49,11 @@ describe('SessionTimerService', () => {
       };
 
       service.timerEvents.subscribe((event) => {
-        if (event.event === SessionTimerEvent.Warning) {
-          expect(event.event).toBe(SessionTimerEvent.Warning);
-          done();
+        if (event.event !== SessionTimerEvent.Warning) {
+          return;
         }
+        expect(event.event).toBe(SessionTimerEvent.Warning);
+        done();
       });
 
       service.startTimers(config);

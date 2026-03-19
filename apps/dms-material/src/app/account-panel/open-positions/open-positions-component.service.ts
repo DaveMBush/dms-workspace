@@ -1,8 +1,8 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { RowProxyDelete, SmartArray } from '@smarttools/smart-signals';
 
-import { Account } from '../../store/accounts/account.interface';
 import { buildUniverseMap } from '../../shared/build-universe-map.function';
+import { Account } from '../../store/accounts/account.interface';
 import { currentAccountSignalStore } from '../../store/current-account/current-account.signal-store';
 import { selectCurrentAccountSignal } from '../../store/current-account/select-current-account.signal';
 import { differenceInTradingDays } from '../../store/trades/difference-in-trading-days.function';

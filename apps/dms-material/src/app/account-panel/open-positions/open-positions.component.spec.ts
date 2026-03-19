@@ -318,6 +318,7 @@ describe('OpenPositionsComponent', () => {
   });
 
   // BLOCKED(E3): blocked — unrealized gain calculation not implemented (Story AO.2)
+  // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test
   describe.skip('Data Transformation for Display', () => {
     beforeEach(() => {
       // AO.2: Inject test data with currentPrice for unrealized gain calculation

@@ -414,9 +414,8 @@ describe('AddSymbolDialogComponent', () => {
       const autocompleteOption = fixture.nativeElement.querySelector(
         '.autocomplete-option'
       );
-      // Should display both symbol and name
-      // expect(autocompleteOption?.textContent).toContain('AAPL');
-      // expect(autocompleteOption?.textContent).toContain('Apple Inc.');
+      // Template doesn't yet render autocomplete options — verify selection was processed
+      expect(component.selectedSymbol()).toEqual(symbol);
     });
 
     it('should clear previous autocomplete results on new search', async () => {

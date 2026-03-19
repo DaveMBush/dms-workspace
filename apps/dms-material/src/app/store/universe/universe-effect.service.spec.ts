@@ -103,15 +103,14 @@ describe('UniverseEffectsService', () => {
         { status: 409, statusText: 'Conflict' }
       );
 
-      try {
-        await errorPromise;
-        fail('should have thrown an error');
-      } catch (error: unknown) {
-        expect((error as { status: number }).status).toBe(409);
-        expect(
-          (error as { error: { message: string } }).error.message
-        ).toContain('already exists');
-      }
+      await expect(errorPromise).rejects.toMatchObject({
+        status: 409,
+      });
+      await expect(errorPromise).rejects.toSatisfy((error: unknown) =>
+        (error as { error: { message: string } }).error.message.includes(
+          'already exists'
+        )
+      );
     });
 
     it('should handle network errors', async () => {
@@ -130,15 +129,13 @@ describe('UniverseEffectsService', () => {
       const req = httpMock.expectOne('./api/universe/add');
       req.error(new ProgressEvent('Network error'));
 
-      try {
-        await errorPromise;
-        fail('should have thrown an error');
-      } catch (error: unknown) {
-        expect((error as { status: number }).status).toBe(0);
-        expect((error as { error: unknown }).error).toBeInstanceOf(
-          ProgressEvent
-        );
-      }
+      await expect(errorPromise).rejects.toMatchObject({
+        status: 0,
+      });
+      await expect(errorPromise).rejects.toSatisfy(
+        (error: unknown) =>
+          (error as { error: unknown }).error instanceof ProgressEvent
+      );
     });
 
     it('should send correct request payload structure', () => {
@@ -176,15 +173,14 @@ describe('UniverseEffectsService', () => {
         { status: 400, statusText: 'Bad Request' }
       );
 
-      try {
-        await errorPromise;
-        fail('should have thrown an error');
-      } catch (error: unknown) {
-        expect((error as { status: number }).status).toBe(400);
-        expect(
-          (error as { error: { message: string } }).error.message
-        ).toContain('validation');
-      }
+      await expect(errorPromise).rejects.toMatchObject({
+        status: 400,
+      });
+      await expect(errorPromise).rejects.toSatisfy((error: unknown) =>
+        (error as { error: { message: string } }).error.message.includes(
+          'validation'
+        )
+      );
     });
 
     it('should handle 404 error for invalid risk group', async () => {
@@ -206,15 +202,14 @@ describe('UniverseEffectsService', () => {
         { status: 404, statusText: 'Not Found' }
       );
 
-      try {
-        await errorPromise;
-        fail('should have thrown an error');
-      } catch (error: unknown) {
-        expect((error as { status: number }).status).toBe(404);
-        expect(
-          (error as { error: { message: string } }).error.message
-        ).toContain('not found');
-      }
+      await expect(errorPromise).rejects.toMatchObject({
+        status: 404,
+      });
+      await expect(errorPromise).rejects.toSatisfy((error: unknown) =>
+        (error as { error: { message: string } }).error.message.includes(
+          'not found'
+        )
+      );
     });
   });
 });

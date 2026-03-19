@@ -276,6 +276,9 @@ importers:
       '@vitest/coverage-v8':
         specifier: 4.0.9
         version: 4.0.9(vitest@4.0.9)
+      '@vitest/eslint-plugin':
+        specifier: ^1.6.12
+        version: 1.6.12(eslint@9.29.0(jiti@2.6.1))(typescript@5.9.3)(vitest@4.0.9)
       '@vitest/ui':
         specifier: 4.0.9
         version: 4.0.9(vitest@4.0.9)
@@ -5013,6 +5016,19 @@ packages:
       vitest: 4.0.9
     peerDependenciesMeta:
       '@vitest/browser':
+        optional: true
+
+  '@vitest/eslint-plugin@1.6.12':
+    resolution: {integrity: sha512-4kI47BJNFE+EQ5bmPbHzBF+ibNzx2Fj0Jo9xhWsTPxMddlHwIWl6YAxagefh461hrwx/W0QwBZpxGS404kBXyg==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      eslint: '>=8.57.0'
+      typescript: '>=5.0.0'
+      vitest: '*'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+      vitest:
         optional: true
 
   '@vitest/expect@4.0.9':
@@ -17011,6 +17027,17 @@ snapshots:
       magicast: 0.5.1
       std-env: 3.10.0
       tinyrainbow: 3.0.3
+      vitest: 4.0.9(@types/node@20.19.9)(@vitest/ui@4.0.9)(jiti@2.6.1)(jsdom@28.0.0)(less@4.4.2)(lightningcss@1.31.1)(sass-embedded@1.89.2)(sass@1.97.3)(stylus@0.64.0)(terser@5.46.0)(yaml@2.8.2)
+    transitivePeerDependencies:
+      - supports-color
+
+  '@vitest/eslint-plugin@1.6.12(eslint@9.29.0(jiti@2.6.1))(typescript@5.9.3)(vitest@4.0.9)':
+    dependencies:
+      '@typescript-eslint/scope-manager': 8.55.0
+      '@typescript-eslint/utils': 8.55.0(eslint@9.29.0(jiti@2.6.1))(typescript@5.9.3)
+      eslint: 9.29.0(jiti@2.6.1)
+    optionalDependencies:
+      typescript: 5.9.3
       vitest: 4.0.9(@types/node@20.19.9)(@vitest/ui@4.0.9)(jiti@2.6.1)(jsdom@28.0.0)(less@4.4.2)(lightningcss@1.31.1)(sass-embedded@1.89.2)(sass@1.97.3)(stylus@0.64.0)(terser@5.46.0)(yaml@2.8.2)
     transitivePeerDependencies:
       - supports-color

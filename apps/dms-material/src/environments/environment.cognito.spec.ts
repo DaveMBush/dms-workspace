@@ -23,14 +23,16 @@ describe('Cognito Configuration', () => {
         'profile',
         'aws.cognito.signin.user.admin',
       ]);
-      if (!cognitoConfigDev.hostedUIUrl.includes('REPLACE_WITH')) {
-        expect(cognitoConfigDev.hostedUIUrl).toContain('https://');
-      }
-      if (!cognitoConfigDev.jwtIssuer.includes('REPLACE_WITH')) {
-        expect(cognitoConfigDev.jwtIssuer).toContain(
-          'cognito-idp.us-east-1.amazonaws.com'
-        );
-      }
+      expect(
+        cognitoConfigDev.hostedUIUrl.includes('REPLACE_WITH') ||
+          cognitoConfigDev.hostedUIUrl.includes('https://')
+      ).toBe(true);
+      expect(
+        cognitoConfigDev.jwtIssuer.includes('REPLACE_WITH') ||
+          cognitoConfigDev.jwtIssuer.includes(
+            'cognito-idp.us-east-1.amazonaws.com'
+          )
+      ).toBe(true);
     });
 
     it('should have valid production configuration structure', () => {
@@ -49,14 +51,16 @@ describe('Cognito Configuration', () => {
         'profile',
         'aws.cognito.signin.user.admin',
       ]);
-      if (!cognitoConfigProd.hostedUIUrl.includes('REPLACE_WITH')) {
-        expect(cognitoConfigProd.hostedUIUrl).toContain('https://');
-      }
-      if (!cognitoConfigProd.jwtIssuer.includes('REPLACE_WITH')) {
-        expect(cognitoConfigProd.jwtIssuer).toContain(
-          'cognito-idp.us-east-1.amazonaws.com'
-        );
-      }
+      expect(
+        cognitoConfigProd.hostedUIUrl.includes('REPLACE_WITH') ||
+          cognitoConfigProd.hostedUIUrl.includes('https://')
+      ).toBe(true);
+      expect(
+        cognitoConfigProd.jwtIssuer.includes('REPLACE_WITH') ||
+          cognitoConfigProd.jwtIssuer.includes(
+            'cognito-idp.us-east-1.amazonaws.com'
+          )
+      ).toBe(true);
     });
 
     it('should have valid staging configuration structure', () => {
@@ -77,14 +81,16 @@ describe('Cognito Configuration', () => {
         'profile',
         'aws.cognito.signin.user.admin',
       ]);
-      if (!cognitoConfigStaging.hostedUIUrl.includes('REPLACE_WITH')) {
-        expect(cognitoConfigStaging.hostedUIUrl).toContain('https://');
-      }
-      if (!cognitoConfigStaging.jwtIssuer.includes('REPLACE_WITH')) {
-        expect(cognitoConfigStaging.jwtIssuer).toContain(
-          'cognito-idp.us-east-1.amazonaws.com'
-        );
-      }
+      expect(
+        cognitoConfigStaging.hostedUIUrl.includes('REPLACE_WITH') ||
+          cognitoConfigStaging.hostedUIUrl.includes('https://')
+      ).toBe(true);
+      expect(
+        cognitoConfigStaging.jwtIssuer.includes('REPLACE_WITH') ||
+          cognitoConfigStaging.jwtIssuer.includes(
+            'cognito-idp.us-east-1.amazonaws.com'
+          )
+      ).toBe(true);
     });
   });
 
@@ -115,31 +121,27 @@ describe('Cognito Configuration', () => {
     it('should use HTTPS for production URLs', () => {
       expect(cognitoConfigProd.redirectSignIn).toMatch(/^https:\/\//);
       expect(cognitoConfigProd.redirectSignOut).toMatch(/^https:\/\//);
-      if (!cognitoConfigProd.hostedUIUrl.includes('REPLACE_WITH')) {
-        expect(cognitoConfigProd.hostedUIUrl).toMatch(/^https:\/\//);
-      } else {
-        expect(cognitoConfigProd.hostedUIUrl).toContain('REPLACE_WITH');
-      }
-      if (!cognitoConfigProd.jwtIssuer.includes('REPLACE_WITH')) {
-        expect(cognitoConfigProd.jwtIssuer).toMatch(/^https:\/\//);
-      } else {
-        expect(cognitoConfigProd.jwtIssuer).toContain('REPLACE_WITH');
-      }
+      expect(
+        cognitoConfigProd.hostedUIUrl.includes('REPLACE_WITH') ||
+          cognitoConfigProd.hostedUIUrl.startsWith('https://')
+      ).toBe(true);
+      expect(
+        cognitoConfigProd.jwtIssuer.includes('REPLACE_WITH') ||
+          cognitoConfigProd.jwtIssuer.startsWith('https://')
+      ).toBe(true);
     });
 
     it('should use HTTPS for staging URLs', () => {
       expect(cognitoConfigStaging.redirectSignIn).toMatch(/^https:\/\//);
       expect(cognitoConfigStaging.redirectSignOut).toMatch(/^https:\/\//);
-      if (!cognitoConfigStaging.hostedUIUrl.includes('REPLACE_WITH')) {
-        expect(cognitoConfigStaging.hostedUIUrl).toMatch(/^https:\/\//);
-      } else {
-        expect(cognitoConfigStaging.hostedUIUrl).toContain('REPLACE_WITH');
-      }
-      if (!cognitoConfigStaging.jwtIssuer.includes('REPLACE_WITH')) {
-        expect(cognitoConfigStaging.jwtIssuer).toMatch(/^https:\/\//);
-      } else {
-        expect(cognitoConfigStaging.jwtIssuer).toContain('REPLACE_WITH');
-      }
+      expect(
+        cognitoConfigStaging.hostedUIUrl.includes('REPLACE_WITH') ||
+          cognitoConfigStaging.hostedUIUrl.startsWith('https://')
+      ).toBe(true);
+      expect(
+        cognitoConfigStaging.jwtIssuer.includes('REPLACE_WITH') ||
+          cognitoConfigStaging.jwtIssuer.startsWith('https://')
+      ).toBe(true);
     });
 
     it('should include required OAuth scopes', () => {
@@ -176,35 +178,41 @@ describe('Cognito Configuration', () => {
       const jwtIssuerPattern =
         /^https:\/\/cognito-idp\.us-east-1\.amazonaws\.com\/us-east-1_[A-Za-z0-9]+$/;
 
-      // For dev config, allow placeholder or valid pattern
-      if (!cognitoConfigDev.jwtIssuer.includes('REPLACE_WITH')) {
-        expect(cognitoConfigDev.jwtIssuer).toMatch(jwtIssuerPattern);
-      }
+      // For each config, allow placeholder or valid pattern
+      expect(
+        cognitoConfigDev.jwtIssuer.includes('REPLACE_WITH') ||
+          jwtIssuerPattern.test(cognitoConfigDev.jwtIssuer)
+      ).toBe(true);
 
-      if (!cognitoConfigStaging.jwtIssuer.includes('REPLACE_WITH')) {
-        expect(cognitoConfigStaging.jwtIssuer).toMatch(jwtIssuerPattern);
-      }
+      expect(
+        cognitoConfigStaging.jwtIssuer.includes('REPLACE_WITH') ||
+          jwtIssuerPattern.test(cognitoConfigStaging.jwtIssuer)
+      ).toBe(true);
 
-      if (!cognitoConfigProd.jwtIssuer.includes('REPLACE_WITH')) {
-        expect(cognitoConfigProd.jwtIssuer).toMatch(jwtIssuerPattern);
-      }
+      expect(
+        cognitoConfigProd.jwtIssuer.includes('REPLACE_WITH') ||
+          jwtIssuerPattern.test(cognitoConfigProd.jwtIssuer)
+      ).toBe(true);
     });
 
     it('should have valid domain formats', () => {
       const domainPattern = /^[a-z0-9-]+\.auth\.us-east-1\.amazoncognito\.com$/;
 
-      // For dev config, allow placeholder or valid pattern
-      if (!cognitoConfigDev.domain.includes('REPLACE_WITH')) {
-        expect(cognitoConfigDev.domain).toMatch(domainPattern);
-      }
+      // For each config, allow placeholder or valid pattern
+      expect(
+        cognitoConfigDev.domain.includes('REPLACE_WITH') ||
+          domainPattern.test(cognitoConfigDev.domain)
+      ).toBe(true);
 
-      if (!cognitoConfigStaging.domain.includes('REPLACE_WITH')) {
-        expect(cognitoConfigStaging.domain).toMatch(domainPattern);
-      }
+      expect(
+        cognitoConfigStaging.domain.includes('REPLACE_WITH') ||
+          domainPattern.test(cognitoConfigStaging.domain)
+      ).toBe(true);
 
-      if (!cognitoConfigProd.domain.includes('REPLACE_WITH')) {
-        expect(cognitoConfigProd.domain).toMatch(domainPattern);
-      }
+      expect(
+        cognitoConfigProd.domain.includes('REPLACE_WITH') ||
+          domainPattern.test(cognitoConfigProd.domain)
+      ).toBe(true);
     });
 
     it('should have consistent callback URL patterns', () => {
