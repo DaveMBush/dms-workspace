@@ -32,7 +32,7 @@ export const appRoutes: Route[] = [
         path: '',
         outlet: 'accounts',
         loadComponent: async () =>
-          import('./accounts/account').then((m) => m.Account),
+          import('./accounts/account').then((m) => m.AccountComponent),
       },
       {
         path: '',
@@ -47,7 +47,7 @@ export const appRoutes: Route[] = [
       {
         path: 'profile',
         loadComponent: async () =>
-          import('./auth/profile/profile').then((m) => m.Profile),
+          import('./auth/profile/profile').then((m) => m.ProfileComponent),
       },
       {
         path: 'test-session-warning',
@@ -59,7 +59,9 @@ export const appRoutes: Route[] = [
       {
         path: 'global/summary',
         loadComponent: async () =>
-          import('./global/global-summary').then((m) => m.GlobalSummary),
+          import('./global/global-summary').then(
+            (m) => m.GlobalSummaryComponent
+          ),
       },
       {
         path: 'global/universe',
@@ -104,7 +106,7 @@ export const appRoutes: Route[] = [
                 path: '',
                 loadComponent: async () =>
                   import('./accounts/account-summary/account-summary').then(
-                    (m) => m.AccountSummary
+                    (m) => m.AccountSummaryComponent
                   ),
               },
               {
@@ -135,7 +137,7 @@ export const appRoutes: Route[] = [
       {
         path: 'demo/charts',
         loadComponent: async () =>
-          import('./demo/chart-demo').then((m) => m.ChartDemo),
+          import('./demo/chart-demo').then((m) => m.ChartDemoComponent),
       },
     ],
   },

@@ -27,7 +27,7 @@ import { currentAccountSignalStore } from '../store/current-account/current-acco
 import { selectCurrentAccountSignal } from '../store/current-account/select-current-account.signal';
 import { DivDeposit } from '../store/div-deposits/div-deposit.interface';
 import { Trade } from '../store/trades/trade.interface';
-import { DivDepModal } from './div-dep-modal/div-dep-modal.component';
+import { DivDepModalComponent } from './div-dep-modal/div-dep-modal.component';
 import { DividendDepositsComponentService } from './dividend-deposits/dividend-deposits-component.service';
 import { AddPositionService } from './open-positions/add-position.service';
 import { AddPositionDialogComponent } from './open-positions/add-position-dialog/add-position-dialog.component';
@@ -198,7 +198,7 @@ export class AccountPanelComponent implements OnInit, OnDestroy {
 
   private onAddDividend(): void {
     const context = this;
-    const dialogRef = this.dialog.open(DivDepModal, {
+    const dialogRef = this.dialog.open(DivDepModalComponent, {
       width: '500px',
       disableClose: true,
       data: { mode: 'add' },

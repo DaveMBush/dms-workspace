@@ -28,8 +28,8 @@ import { AuthService } from '../../auth.service';
   styleUrl: './session-warning.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SessionWarning implements OnInit, OnDestroy {
-  private dialogRef = inject(MatDialogRef<SessionWarning>);
+export class SessionWarningComponent implements OnInit, OnDestroy {
+  private dialogRef = inject(MatDialogRef<SessionWarningComponent>);
   private authService = inject(AuthService);
   private timerSubscription: Subscription | null = null;
 

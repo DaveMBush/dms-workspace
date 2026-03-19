@@ -1,14 +1,14 @@
 import { TestBed } from '@angular/core/testing';
 
-import { App } from './app';
+import { AppComponent } from './app';
 
-describe('App', () => {
+describe('AppComponent', () => {
   beforeEach(async () => {
     vi.spyOn(Storage.prototype, 'getItem').mockReturnValue(null);
     vi.spyOn(Storage.prototype, 'setItem');
 
     await TestBed.configureTestingModule({
-      imports: [App],
+      imports: [AppComponent],
     }).compileComponents();
   });
 
@@ -18,7 +18,7 @@ describe('App', () => {
   });
 
   it('should have router outlet', () => {
-    const fixture = TestBed.createComponent(App);
+    const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
     const routerOutlet = compiled.querySelector('router-outlet');

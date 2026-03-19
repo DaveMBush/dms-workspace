@@ -1,11 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Login } from './login';
+import { LoginComponent } from './login';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth.service';
 
-describe('Login', () => {
-  let component: Login;
-  let fixture: ComponentFixture<Login>;
+describe('LoginComponent', () => {
+  let component: LoginComponent;
+  let fixture: ComponentFixture<LoginComponent>;
   let mockAuthService: { signIn: ReturnType<typeof vi.fn> };
   let mockRouter: { navigate: ReturnType<typeof vi.fn> };
 
@@ -14,14 +14,14 @@ describe('Login', () => {
     mockRouter = { navigate: vi.fn() };
 
     await TestBed.configureTestingModule({
-      imports: [Login],
+      imports: [LoginComponent],
       providers: [
         { provide: AuthService, useValue: mockAuthService },
         { provide: Router, useValue: mockRouter },
       ],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(Login);
+    fixture = TestBed.createComponent(LoginComponent);
     component = fixture.componentInstance;
   });
 

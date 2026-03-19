@@ -371,7 +371,7 @@ const eslintConfig = async () => {
           'prefer-spread': 'error',
           'prefer-arrow-callback': 'off',
           radix: 'error',
-          //'@angular-eslint/component-class-suffix': 'error',
+          '@angular-eslint/component-class-suffix': 'error',
           '@angular-eslint/component-selector': [
             'error',
             {
@@ -683,6 +683,8 @@ const eslintConfig = async () => {
           'unused-imports/no-unused-vars': [
             'error',
             {
+              vars: 'all',
+              varsIgnorePattern: '^_',
               args: 'after-used',
               argsIgnorePattern: '^_+',
             },

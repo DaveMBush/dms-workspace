@@ -21,7 +21,7 @@ import { SummaryDisplayComponent } from '../shared/components/summary-display/su
 import { GraphPoint } from './services/graph-point.interface';
 import { SummaryService } from './services/summary.service';
 
-function enableMonthSelector(this: GlobalSummary): void {
+function enableMonthSelector(this: GlobalSummaryComponent): void {
   this.selectedMonth.enable({ emitEvent: false });
 }
 
@@ -75,7 +75,7 @@ function buildEnrichedPoints(graphData: GraphPoint[]): EnrichedPoint[] {
   styleUrl: './global-summary.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class GlobalSummary implements OnInit {
+export class GlobalSummaryComponent implements OnInit {
   private readonly summaryService = inject(SummaryService);
   private readonly destroyRef = inject(DestroyRef);
 

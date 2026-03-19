@@ -1,11 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ProfileActionsService } from '../../services/profile-actions.service';
-import { AccountActionsCard } from './account-actions-card';
+import { AccountActionsCardComponent } from './account-actions-card';
 
-describe('AccountActionsCard', () => {
-  let component: AccountActionsCard;
-  let fixture: ComponentFixture<AccountActionsCard>;
+describe('AccountActionsCardComponent', () => {
+  let component: AccountActionsCardComponent;
+  let fixture: ComponentFixture<AccountActionsCardComponent>;
   let mockProfileActionsService: {
     confirmSignOut: ReturnType<typeof vi.fn>;
     confirmSignOutAllDevices: ReturnType<typeof vi.fn>;
@@ -18,7 +18,7 @@ describe('AccountActionsCard', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [AccountActionsCard],
+      imports: [AccountActionsCardComponent],
       providers: [
         {
           provide: ProfileActionsService,
@@ -27,7 +27,7 @@ describe('AccountActionsCard', () => {
       ],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(AccountActionsCard);
+    fixture = TestBed.createComponent(AccountActionsCardComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

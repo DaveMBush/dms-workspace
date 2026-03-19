@@ -55,12 +55,12 @@ import { DivDepModalData } from './div-dep-modal-data.interface';
   templateUrl: './div-dep-modal.component.html',
   styleUrl: './div-dep-modal.component.scss',
 })
-export class DivDepModal implements OnInit, AfterViewInit {
+export class DivDepModalComponent implements OnInit, AfterViewInit {
   @ViewChild(SymbolAutocompleteComponent)
   private symbolAutocomplete: SymbolAutocompleteComponent | undefined;
 
   private fb = inject(FormBuilder);
-  private dialogRef = inject(MatDialogRef<DivDepModal>);
+  private dialogRef = inject(MatDialogRef<DivDepModalComponent>);
   private cdr = inject(ChangeDetectorRef);
   private destroyRef = inject(DestroyRef);
   data = inject<DivDepModalData>(MAT_DIALOG_DATA);

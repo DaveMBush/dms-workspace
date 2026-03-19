@@ -52,7 +52,7 @@ vi.mock('../store/div-deposits/div-deposits.selectors', () => ({
   selectDivDepositEntity: vi.fn().mockReturnValue([]),
 }));
 
-// Mock selectDivDepositTypes to avoid SmartNgRX initialization from DivDepModal
+// Mock selectDivDepositTypes to avoid SmartNgRX initialization from DivDepModalComponent
 vi.mock(
   '../store/div-deposit-types/selectors/select-div-deposit-types.function',
   () => ({
@@ -154,7 +154,7 @@ describe('AccountPanelComponent', () => {
         .mockImplementation(() => undefined);
     });
 
-    it('should open DivDepModal dialog when on div-dep route', () => {
+    it('should open DivDepModalComponent dialog when on div-dep route', () => {
       Object.assign(component, {
         isDivDepRoute$: vi.fn().mockReturnValue(true),
       });

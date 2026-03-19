@@ -208,7 +208,7 @@ describe('GlobalUniverseComponent', () => {
   });
 
   describe('showAddSymbolDialog', () => {
-    it('should open the AddSymbolDialog', () => {
+    it('should open the AddSymbolDialogComponent', () => {
       const mockDialogRef = {
         afterClosed: vi.fn().mockReturnValue(of(null)),
       };

@@ -8,11 +8,11 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { vi } from 'vitest';
 
 import { AuthService } from '../../auth.service';
-import { SessionWarning } from './session-warning';
+import { SessionWarningComponent } from './session-warning';
 
-describe('SessionWarning', () => {
-  let component: SessionWarning;
-  let fixture: ComponentFixture<SessionWarning>;
+describe('SessionWarningComponent', () => {
+  let component: SessionWarningComponent;
+  let fixture: ComponentFixture<SessionWarningComponent>;
   let mockDialogRef: {
     close: ReturnType<typeof vi.fn>;
   };
@@ -29,7 +29,7 @@ describe('SessionWarning', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [SessionWarning],
+      imports: [SessionWarningComponent],
       providers: [
         {
           provide: MatDialogRef,
@@ -42,7 +42,7 @@ describe('SessionWarning', () => {
       ],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(SessionWarning);
+    fixture = TestBed.createComponent(SessionWarningComponent);
     component = fixture.componentInstance;
   });
 

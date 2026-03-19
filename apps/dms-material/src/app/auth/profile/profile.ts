@@ -8,37 +8,37 @@ import {
 } from '@angular/core';
 
 import { ProfileService } from '../services/profile.service';
-import { AccountActionsCard } from './components/account-actions-card';
-import { EmailChangeCard } from './components/email-change-card';
-import { PasswordChangeCard } from './components/password-change-card';
-import { ProfileInfoCard } from './components/profile-info-card';
-import { SessionInfoCard } from './components/session-info-card';
+import { AccountActionsCardComponent } from './components/account-actions-card';
+import { EmailChangeCardComponent } from './components/email-change-card';
+import { PasswordChangeCardComponent } from './components/password-change-card';
+import { ProfileInfoCardComponent } from './components/profile-info-card';
+import { SessionInfoCardComponent } from './components/session-info-card';
 
 @Component({
   selector: 'dms-profile',
   imports: [
-    PasswordChangeCard,
-    EmailChangeCard,
-    ProfileInfoCard,
-    SessionInfoCard,
-    AccountActionsCard,
+    PasswordChangeCardComponent,
+    EmailChangeCardComponent,
+    ProfileInfoCardComponent,
+    SessionInfoCardComponent,
+    AccountActionsCardComponent,
   ],
   templateUrl: './profile.html',
   styleUrl: './profile.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Profile implements OnInit {
+export class ProfileComponent implements OnInit {
   private profileService = inject(ProfileService);
 
   profile = this.profileService.profile;
   userEmail = computed(
-    function getUserEmail(this: Profile) {
+    function getUserEmail(this: ProfileComponent) {
       return this.profile()?.email ?? '';
     }.bind(this)
   );
 
   userName = computed(
-    function getUserName(this: Profile) {
+    function getUserName(this: ProfileComponent) {
       return this.profile()?.name ?? this.profile()?.email ?? '';
     }.bind(this)
   );

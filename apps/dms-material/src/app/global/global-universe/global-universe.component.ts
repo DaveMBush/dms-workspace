@@ -35,7 +35,7 @@ import { selectAccounts } from '../../store/accounts/selectors/select-accounts.f
 import { selectRiskGroup } from '../../store/risk-group/selectors/select-risk-group.function';
 import { selectUniverses } from '../../store/universe/selectors/select-universes.function';
 import { Universe } from '../../store/universe/universe.interface';
-import { AddSymbolDialog } from '../../universe-settings/add-symbol-dialog/add-symbol-dialog';
+import { AddSymbolDialogComponent } from '../../universe-settings/add-symbol-dialog/add-symbol-dialog';
 import { ScreenerService } from '../global-screener/services/screener.service';
 import { ImportDialogComponent } from '../import-dialog/import-dialog.component';
 import { ImportDialogResult } from '../import-dialog/import-dialog-result.interface';
@@ -224,7 +224,7 @@ export class GlobalUniverseComponent implements OnDestroy {
   }
 
   showAddSymbolDialog(): void {
-    const dialogRef = this.dialog.open(AddSymbolDialog, {
+    const dialogRef = this.dialog.open(AddSymbolDialogComponent, {
       width: '400px',
       disableClose: false,
       autoFocus: 'dialog',

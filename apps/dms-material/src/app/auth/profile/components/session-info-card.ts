@@ -17,29 +17,29 @@ import { ProfileService } from '../../services/profile.service';
   styleUrl: './session-info-card.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SessionInfoCard {
+export class SessionInfoCardComponent {
   private profileService = inject(ProfileService);
 
   hasProfile = computed(
-    function hasProfile(this: SessionInfoCard) {
+    function hasProfile(this: SessionInfoCardComponent) {
       return this.profileService.profile() !== null;
     }.bind(this)
   );
 
   loginTime = computed(
-    function loginTime(this: SessionInfoCard) {
+    function loginTime(this: SessionInfoCardComponent) {
       return this.profileService.profile()?.sessionInfo.loginTime;
     }.bind(this)
   );
 
   tokenExpiration = computed(
-    function tokenExpiration(this: SessionInfoCard) {
+    function tokenExpiration(this: SessionInfoCardComponent) {
       return this.profileService.profile()?.sessionInfo.tokenExpiration;
     }.bind(this)
   );
 
   sessionDuration = computed(
-    function sessionDuration(this: SessionInfoCard) {
+    function sessionDuration(this: SessionInfoCardComponent) {
       const duration =
         this.profileService.profile()?.sessionInfo.sessionDuration ?? 0;
       return this.formatSessionDuration(duration);

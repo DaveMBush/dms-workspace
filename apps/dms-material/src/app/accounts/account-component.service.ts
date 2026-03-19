@@ -5,16 +5,16 @@ import { RowProxyDelete, SmartArray } from '@smarttools/smart-signals';
 import { ConfirmDialogService } from '../shared/services/confirm-dialog.service';
 import { Account as AccountInterface } from '../store/accounts/account.interface';
 import { Top } from '../store/top/top.interface';
-import { Account } from './account';
+import { AccountComponent } from './account';
 
 @Injectable()
 export class AccountComponentService {
-  private component!: Account;
+  private component!: AccountComponent;
   private confirmDialogService = inject(ConfirmDialogService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
 
-  init(component: Account): void {
+  init(component: AccountComponent): void {
     this.component = component;
   }
 

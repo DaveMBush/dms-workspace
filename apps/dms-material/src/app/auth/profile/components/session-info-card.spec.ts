@@ -3,11 +3,11 @@ import { signal } from '@angular/core';
 
 import { ProfileService } from '../../services/profile.service';
 import { UserProfile } from '../../types/profile.types';
-import { SessionInfoCard } from './session-info-card';
+import { SessionInfoCardComponent } from './session-info-card';
 
-describe('SessionInfoCard', () => {
-  let component: SessionInfoCard;
-  let fixture: ComponentFixture<SessionInfoCard>;
+describe('SessionInfoCardComponent', () => {
+  let component: SessionInfoCardComponent;
+  let fixture: ComponentFixture<SessionInfoCardComponent>;
   let mockProfileService: {
     profile: ReturnType<typeof signal<UserProfile | null>>;
     loading: ReturnType<typeof signal<boolean>>;
@@ -36,11 +36,11 @@ describe('SessionInfoCard', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [SessionInfoCard],
+      imports: [SessionInfoCardComponent],
       providers: [{ provide: ProfileService, useValue: mockProfileService }],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(SessionInfoCard);
+    fixture = TestBed.createComponent(SessionInfoCardComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

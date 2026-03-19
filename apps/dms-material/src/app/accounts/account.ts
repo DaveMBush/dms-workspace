@@ -41,7 +41,7 @@ import { AccountComponentService } from './account-component.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   viewProviders: [AccountComponentService],
 })
-export class Account implements OnInit {
+export class AccountComponent implements OnInit {
   private accountService = inject(AccountComponentService);
   private router = inject(Router);
   private statePersistence = inject(StatePersistenceService);

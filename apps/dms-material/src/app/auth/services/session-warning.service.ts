@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 
-import { SessionWarning } from '../components/session-warning/session-warning';
+import { SessionWarningComponent } from '../components/session-warning/session-warning';
 
 @Injectable({
   providedIn: 'root',
@@ -10,14 +10,14 @@ import { SessionWarning } from '../components/session-warning/session-warning';
 export class SessionWarningService {
   private dialog = inject(MatDialog);
   private router = inject(Router);
-  private dialogRef: MatDialogRef<SessionWarning> | null = null;
+  private dialogRef: MatDialogRef<SessionWarningComponent> | null = null;
 
   showWarning(): void {
     if (this.dialogRef !== null) {
       return;
     }
 
-    this.dialogRef = this.dialog.open(SessionWarning, {
+    this.dialogRef = this.dialog.open(SessionWarningComponent, {
       width: '400px',
       disableClose: true,
       panelClass: 'session-warning-dialog',

@@ -32,7 +32,7 @@ import { ProfileService } from '../../services/profile.service';
   styleUrl: './email-change-card.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class EmailChangeCard {
+export class EmailChangeCardComponent {
   private fb = inject(FormBuilder);
   private profileService = inject(ProfileService);
   private notification = inject(NotificationService);

@@ -30,7 +30,7 @@ import { ProfileService } from '../../services/profile.service';
   styleUrl: './password-change-card.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PasswordChangeCard {
+export class PasswordChangeCardComponent {
   private fb = inject(FormBuilder);
   private profileService = inject(ProfileService);
   private notification = inject(NotificationService);
