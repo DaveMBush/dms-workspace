@@ -37,7 +37,7 @@
 #     E1 → E3 → E4(TS rules) → E2 → E5 → E4(template rules) → E6 → E7 → E8
 
 generated: 2026-03-17
-last_updated: 2026-03-19 dms-workspace
+last_updated: 2026-03-19
 project_key: NOKEY
 tracking_system: file-system
 story_location: _bmad-output/implementation-artifacts
@@ -53,11 +53,11 @@ development_status:
   epic-1-retrospective: optional
 
   # ── Epic 2: Fix CUSIP Lookup — Switch to massive.com API ────────────────────
-  epic-2: backlog
-  2-1-verify-massive-com-api-returns-results-for-failing-cusips: backlog
-  2-2-implement-massive-com-cusip-resolution-service: backlog
-  2-3-integrate-massive-com-as-fallback-in-cusip-resolution-chain: backlog
-  2-4-validate-resolution-of-previously-failing-cusips: backlog
+  epic-2: in-progress
+  2-1-verify-massive-com-api-returns-results-for-failing-cusips: ready-for-dev
+  2-2-implement-massive-com-cusip-resolution-service: ready-for-dev
+  2-3-integrate-massive-com-as-fallback-in-cusip-resolution-chain: ready-for-dev
+  2-4-validate-resolution-of-previously-failing-cusips: ready-for-dev
   epic-2-retrospective: optional
 
   # ── Epic 3: Enable Skipped Unit and E2E Tests ────────────────────────────────
@@ -69,41 +69,41 @@ development_status:
   epic-3-retrospective: optional
 
   # ── Epic 4: Improve Lint Rules ───────────────────────────────────────────────
-  epic-4: backlog
-  4-1-diff-lint-configurations: backlog
-  4-2-add-new-lint-rules-zero-warning-phase: backlog
-  4-3-add-vitest-equivalent-rules: backlog
+  epic-4: in-progress
+  4-1-diff-lint-configurations: ready-for-dev
+  4-2-add-new-lint-rules-zero-warning-phase: ready-for-dev
+  4-3-add-vitest-equivalent-rules: ready-for-dev
   epic-4-retrospective: optional
 
   # ── Epic 5: Migrate CSS to Tailwind / Theme ──────────────────────────────────
-  epic-5: backlog
-  5-1-audit-component-level-css: backlog
-  5-2-replace-layout-and-spacing-css-with-tailwind-utilities: backlog
-  5-3-replace-hardcoded-colors-with-theme-variables: backlog
-  5-4-update-project-context-to-enforce-css-policy: backlog
+  epic-5: in-progress
+  5-1-audit-component-level-css: ready-for-dev
+  5-2-replace-layout-and-spacing-css-with-tailwind-utilities: ready-for-dev
+  5-3-replace-hardcoded-colors-with-theme-variables: ready-for-dev
+  5-4-update-project-context-to-enforce-css-policy: ready-for-dev
   epic-5-retrospective: optional
 
   # ── Epic 6: Upgrade Tailwind CSS to Version 4 ───────────────────────────────
-  epic-6: backlog
-  6-1-analyse-breaking-changes-and-branch-state: backlog
-  6-2-update-dependencies-and-configuration: backlog
-  6-3-migrate-tailwind-config-js-to-v4-format: backlog
-  6-4-fix-all-v4-utility-class-breakages: backlog
-  6-5-ci-pipeline-green-with-tailwind-v4: backlog
+  epic-6: in-progress
+  6-1-analyse-breaking-changes-and-branch-state: ready-for-dev
+  6-2-update-dependencies-and-configuration: ready-for-dev
+  6-3-migrate-tailwind-config-js-to-v4-format: ready-for-dev
+  6-4-fix-all-v4-utility-class-breakages: ready-for-dev
+  6-5-ci-pipeline-green-with-tailwind-v4: ready-for-dev
   epic-6-retrospective: optional
 
   # ── Epic 7: CUSIP Cache Page Cosmetics ──────────────────────────────────────
-  epic-7: backlog
-  7-1-inspect-cusip-cache-page-in-dark-mode: backlog
-  7-2-fix-white-on-white-text-in-recently-added-section: backlog
-  7-3-fix-any-remaining-dark-mode-cosmetic-issues: backlog
+  epic-7: in-progress
+  7-1-inspect-cusip-cache-page-in-dark-mode: ready-for-dev
+  7-2-fix-white-on-white-text-in-recently-added-section: ready-for-dev
+  7-3-fix-any-remaining-dark-mode-cosmetic-issues: ready-for-dev
   epic-7-retrospective: optional
 
   # ── Epic 8: Storybook for Display-Only Components ───────────────────────────
-  epic-8: backlog
-  8-1-install-and-configure-storybook: backlog
-  8-2-create-stories-for-display-only-components: backlog
-  8-3-create-stories-for-full-pages-with-mocked-data: backlog
-  8-4-implement-playwright-visual-regression-tests-against-storybook: backlog
-  8-5-update-ci-pipeline-to-include-storybook-build-and-visual-tests: backlog
+  epic-8: in-progress
+  8-1-install-and-configure-storybook: ready-for-dev
+  8-2-create-stories-for-display-only-components: ready-for-dev
+  8-3-create-stories-for-full-pages-with-mocked-data: ready-for-dev
+  8-4-implement-playwright-visual-regression-tests-against-storybook: ready-for-dev
+  8-5-update-ci-pipeline-to-include-storybook-build-and-visual-tests: ready-for-dev
   epic-8-retrospective: optional

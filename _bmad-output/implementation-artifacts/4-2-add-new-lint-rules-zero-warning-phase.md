@@ -1,6 +1,6 @@
 # Story 4.2: Add New Lint Rules (Zero-Warning Phase)
 
-Status: Approved
+Status: Done
 
 ## Story
 

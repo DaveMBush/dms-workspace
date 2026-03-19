@@ -1,6 +1,6 @@
 # Story 4.3: Add Vitest-Equivalent Rules
 
-Status: Approved
+Status: Done
 
 ## Story
 
