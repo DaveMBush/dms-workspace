@@ -13,6 +13,7 @@ import ngrxEslintPlugin from '@ngrx/eslint-plugin';
 import eslintPluginMaxParamsNoConstructor from 'eslint-plugin-max-params-no-constructor';
 import typescriptEslintParser from '@typescript-eslint/parser';
 import playwright from 'eslint-plugin-playwright';
+import vitest from '@vitest/eslint-plugin';
 
 // can't support function until NX eslint supports ESM or
 // functional supports CommonJS OR I figure out how to get
@@ -968,6 +969,48 @@ const eslintConfig = async () => {
         'prefer-const': 'off', // Allow let in e2e tests
         '@typescript-eslint/promise-function-async': 'off', // Allow non-async functions returning promises
         '@typescript-eslint/no-floating-promises': 'off', // Allow floating promises in e2e tests
+      },
+    },
+    {
+      // Vitest rules — test files only
+      // These replace the Jest equivalents from SmartNgRX eslint.config.js
+      files: ['**/*.spec.ts', 'apps/dms-material-e2e/**/*.ts'],
+      plugins: {
+        vitest,
+      },
+      rules: {
+        // Ensures every test has at least one assertion — catches empty placeholder tests
+        'vitest/expect-expect': [
+          'error',
+          {
+            assertFunctionNames: [
+              'expect',
+              'expectObservable',
+              'expectSubscriptions',
+            ],
+          },
+        ],
+
+        // Prevents accidentally-committed test.skip / xit — skipped tests are invisible bugs
+        'vitest/no-disabled-tests': 'error',
+
+        // Prevents test.only / fit leaking into CI — would silently skip all other tests
+        'vitest/no-focused-tests': 'error',
+
+        // Ensures test titles are strings and follow conventions
+        'vitest/valid-title': 'error',
+
+        // Prevents duplicate test names within a describe block
+        'vitest/no-identical-title': 'error',
+
+        // Prevents expect() inside conditionals — makes test assertions deterministic
+        'vitest/no-conditional-expect': 'error',
+
+        // Prevents expect() outside of test blocks — catches misplaced assertions
+        'vitest/no-standalone-expect': 'error',
+
+        // Ensures .resolves/.rejects are awaited and expect has assertions
+        'vitest/valid-expect': 'error',
       },
     },
   ];

@@ -10,6 +10,7 @@ import { Account } from './account.interface';
 // Disabled with describe.skip() to allow CI to pass
 // Will be re-enabled in Story AX.6
 
+// eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test
 describe.skip('Account openTrades PartialArrayDefinition (AX.5)', () => {
   it('should accept PartialArrayDefinition shape for openTrades', () => {
     // The Account interface should allow openTrades as PartialArrayDefinition

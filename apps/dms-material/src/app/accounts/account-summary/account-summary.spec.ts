@@ -796,6 +796,7 @@ describe('AccountSummaryComponent - Service Integration', () => {
       monthsReq.flush(createMockMonths());
 
       const graphReq = httpMock.expectOne(matchGraphByYear('123', 2024));
+      expect(graphReq.request.method).toBe('GET');
       graphReq.flush(createMockGraphData());
     });
 

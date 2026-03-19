@@ -293,6 +293,7 @@ describe('CusipCacheAdminService', function describeService() {
           r.params.get('limit') === '50'
         );
       });
+      expect(req.request.method).toBe('GET');
       req.flush({ entries: [], total: 0 });
     });
 
