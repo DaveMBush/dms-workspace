@@ -4,7 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { of } from 'rxjs';
 import { vi } from 'vitest';
 
-import { DivDepModal } from '../div-dep-modal/div-dep-modal.component';
+import { DivDepModalComponent } from '../div-dep-modal/div-dep-modal.component';
 import { ColumnDef } from '../../shared/components/base-table/column-def.interface';
 import { ConfirmDialogService } from '../../shared/services/confirm-dialog.service';
 import { NotificationService } from '../../shared/services/notification.service';
@@ -13,7 +13,7 @@ import { DivDeposit } from '../../store/div-deposits/div-deposit.interface';
 import { divDepositsEffectsServiceToken } from '../../store/div-deposits/div-deposits-effect-service-token';
 import { DividendDepositsComponent } from './dividend-deposits.component';
 import { DividendDepositsComponentService } from './dividend-deposits-component.service';
-// Mock selectDivDepositTypes to avoid SmartNgRX initialization from DivDepModal
+// Mock selectDivDepositTypes to avoid SmartNgRX initialization from DivDepModalComponent
 vi.mock(
   '../../store/div-deposit-types/selectors/select-div-deposit-types.function',
   () => ({
@@ -21,7 +21,7 @@ vi.mock(
   })
 );
 
-// Mock selectUniverses to avoid SmartNgRX initialization from DivDepModal
+// Mock selectUniverses to avoid SmartNgRX initialization from DivDepModalComponent
 vi.mock('../../store/universe/selectors/select-universes.function', () => ({
   selectUniverses: vi.fn().mockReturnValue([]),
 }));
@@ -428,7 +428,7 @@ describe('DividendDepositsComponent - Add Dialog SmartNgRX Integration (AQ.3)', 
     component.onAddDividend();
 
     expect(mockDialog.open).toHaveBeenCalledWith(
-      DivDepModal,
+      DivDepModalComponent,
       expect.objectContaining({
         data: expect.objectContaining({ mode: 'add' }),
       })
@@ -585,7 +585,7 @@ describe('DividendDepositsComponent - Edit Dialog SmartNgRX Integration (AQ.5)',
     component.onEditDividend(dividend);
 
     expect(mockDialog.open).toHaveBeenCalledWith(
-      DivDepModal,
+      DivDepModalComponent,
       expect.objectContaining({
         data: expect.objectContaining({ mode: 'edit' }),
       })

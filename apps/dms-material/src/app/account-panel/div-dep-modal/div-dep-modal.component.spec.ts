@@ -3,7 +3,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatNativeDateModule } from '@angular/material/core';
 import { vi } from 'vitest';
 
-import { DivDepModal } from './div-dep-modal.component';
+import { DivDepModalComponent } from './div-dep-modal.component';
 import { DivDepModalData } from './div-dep-modal-data.interface';
 
 vi.mock(
@@ -25,21 +25,21 @@ vi.mock('../../store/universe/selectors/select-universes.function', () => ({
     ]),
 }));
 
-describe('DivDepModal', () => {
-  let component: DivDepModal;
-  let fixture: ComponentFixture<DivDepModal>;
+describe('DivDepModalComponent', () => {
+  let component: DivDepModalComponent;
+  let fixture: ComponentFixture<DivDepModalComponent>;
   let mockDialogRef: { close: ReturnType<typeof vi.fn> };
 
   const createComponent = (data: DivDepModalData) => {
     mockDialogRef = { close: vi.fn() };
     TestBed.configureTestingModule({
-      imports: [DivDepModal, MatNativeDateModule],
+      imports: [DivDepModalComponent, MatNativeDateModule],
       providers: [
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: MAT_DIALOG_DATA, useValue: data },
       ],
     });
-    fixture = TestBed.createComponent(DivDepModal);
+    fixture = TestBed.createComponent(DivDepModalComponent);
     component = fixture.componentInstance;
   };
 

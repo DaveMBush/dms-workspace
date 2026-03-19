@@ -22,7 +22,7 @@ import { getAccountIds } from '../../store/accounts/selectors/get-account-ids.fu
 import { currentAccountSignalStore } from '../../store/current-account/current-account.signal-store';
 import { DivDeposit } from '../../store/div-deposits/div-deposit.interface';
 import { divDepositsEffectsServiceToken } from '../../store/div-deposits/div-deposits-effect-service-token';
-import { DivDepModal } from '../div-dep-modal/div-dep-modal.component';
+import { DivDepModalComponent } from '../div-dep-modal/div-dep-modal.component';
 import { DividendDepositsComponentService } from './dividend-deposits-component.service';
 
 @Component({
@@ -108,7 +108,7 @@ export class DividendDepositsComponent {
   onAddDividend(): void {
     const context = this;
     this.dialog
-      .open(DivDepModal, { width: '500px', data: { mode: 'add' } })
+      .open(DivDepModalComponent, { width: '500px', data: { mode: 'add' } })
       .afterClosed()
       .pipe(
         filter(function hasResult(result: unknown): result is DivDeposit {
@@ -124,7 +124,10 @@ export class DividendDepositsComponent {
   onEditDividend(dividend: DivDeposit): void {
     const context = this;
     this.dialog
-      .open(DivDepModal, { width: '500px', data: { mode: 'edit', dividend } })
+      .open(DivDepModalComponent, {
+        width: '500px',
+        data: { mode: 'edit', dividend },
+      })
       .afterClosed()
       .pipe(
         filter(function hasResult(result: unknown): result is DivDeposit {

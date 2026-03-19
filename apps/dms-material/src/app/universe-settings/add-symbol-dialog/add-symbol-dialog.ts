@@ -47,9 +47,9 @@ import { selectUniverses } from '../../store/universe/selectors/select-universes
   templateUrl: './add-symbol-dialog.html',
   styleUrl: './add-symbol-dialog.scss',
 })
-export class AddSymbolDialog {
+export class AddSymbolDialogComponent {
   private fb = inject(FormBuilder);
-  private dialogRef = inject(MatDialogRef<AddSymbolDialog>);
+  private dialogRef = inject(MatDialogRef<AddSymbolDialogComponent>);
   private notification = inject(NotificationService);
   private symbolSearchService = inject(SymbolSearchService);
 
@@ -57,7 +57,7 @@ export class AddSymbolDialog {
 
   // Track existing symbols for duplicate validation
   existingSymbols = computed(
-    function existingSymbols(this: AddSymbolDialog) {
+    function existingSymbols(this: AddSymbolDialogComponent) {
       const universes = selectUniverses() as unknown as Array<{
         symbol: string;
       }>;
@@ -86,7 +86,7 @@ export class AddSymbolDialog {
 
   // Effect to revalidate symbol when universe data changes
   private revalidateSymbolEffect = effect(
-    function revalidateSymbol(this: AddSymbolDialog) {
+    function revalidateSymbol(this: AddSymbolDialogComponent) {
       // Read existingSymbols to track changes
       this.existingSymbols();
       // Revalidate the symbol control when universe data updates
@@ -96,31 +96,31 @@ export class AddSymbolDialog {
 
   // Computed signals for template
   symbolValue = computed(
-    function symbolValue(this: AddSymbolDialog) {
+    function symbolValue(this: AddSymbolDialogComponent) {
       return this.selectedSymbol()?.symbol;
     }.bind(this)
   );
 
   symbolName = computed(
-    function symbolName(this: AddSymbolDialog) {
+    function symbolName(this: AddSymbolDialogComponent) {
       return this.selectedSymbol()?.name;
     }.bind(this)
   );
 
   hasSelectedSymbol = computed(
-    function hasSelectedSymbol(this: AddSymbolDialog) {
+    function hasSelectedSymbol(this: AddSymbolDialogComponent) {
       return !!this.selectedSymbol();
     }.bind(this)
   );
 
   riskGroupIdControl = computed(
-    function riskGroupIdControl(this: AddSymbolDialog) {
+    function riskGroupIdControl(this: AddSymbolDialogComponent) {
       return this.form.get('riskGroupId');
     }.bind(this)
   );
 
   riskGroupIdHasError = computed(
-    function riskGroupIdHasError(this: AddSymbolDialog) {
+    function riskGroupIdHasError(this: AddSymbolDialogComponent) {
       const control = this.form.get('riskGroupId');
       const hasError = control?.hasError('required') ?? false;
       const isTouched = control?.touched ?? false;
@@ -129,14 +129,14 @@ export class AddSymbolDialog {
   );
 
   isSubmitDisabled = computed(
-    function isSubmitDisabled(this: AddSymbolDialog) {
+    function isSubmitDisabled(this: AddSymbolDialogComponent) {
       return this.isLoading() || !this.selectedSymbol();
     }.bind(this)
   );
 
   // Computed signals for validation error display
   showSymbolErrors = computed(
-    function showSymbolErrors(this: AddSymbolDialog) {
+    function showSymbolErrors(this: AddSymbolDialogComponent) {
       const control = this.form.get('symbol');
       const touched = control?.touched ?? false;
       const invalid = control?.invalid ?? false;
@@ -145,19 +145,19 @@ export class AddSymbolDialog {
   );
 
   symbolRequiredError = computed(
-    function symbolRequiredError(this: AddSymbolDialog) {
+    function symbolRequiredError(this: AddSymbolDialogComponent) {
       return Boolean(this.form.get('symbol')?.hasError('required'));
     }.bind(this)
   );
 
   symbolPatternError = computed(
-    function symbolPatternError(this: AddSymbolDialog) {
+    function symbolPatternError(this: AddSymbolDialogComponent) {
       return Boolean(this.form.get('symbol')?.hasError('pattern'));
     }.bind(this)
   );
 
   symbolDuplicateError = computed(
-    function symbolDuplicateError(this: AddSymbolDialog) {
+    function symbolDuplicateError(this: AddSymbolDialogComponent) {
       return Boolean(this.form.get('symbol')?.hasError('duplicate'));
     }.bind(this)
   );

@@ -20,17 +20,17 @@ vi.mock('../store/accounts/selectors/select-accounts.function', () => ({
   selectAccounts: signal([]),
 }));
 
-import { GlobalSummary } from './global-summary';
+import { GlobalSummaryComponent } from './global-summary';
 import { SummaryService } from './services/summary.service';
 import { topEffectsServiceToken } from '../store/top/top-effect-service-token';
 
-describe('GlobalSummary', () => {
-  let component: GlobalSummary;
-  let fixture: ComponentFixture<GlobalSummary>;
+describe('GlobalSummaryComponent', () => {
+  let component: GlobalSummaryComponent;
+  let fixture: ComponentFixture<GlobalSummaryComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [GlobalSummary],
+      imports: [GlobalSummaryComponent],
       providers: [
         provideSmartNgRX(),
         provideHttpClient(),
@@ -39,7 +39,7 @@ describe('GlobalSummary', () => {
       ],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(GlobalSummary);
+    fixture = TestBed.createComponent(GlobalSummaryComponent);
     component = fixture.componentInstance;
   });
 
@@ -100,14 +100,14 @@ describe('GlobalSummary', () => {
   });
 });
 
-describe('GlobalSummary - Service Integration', () => {
-  let component: GlobalSummary;
-  let fixture: ComponentFixture<GlobalSummary>;
+describe('GlobalSummaryComponent - Service Integration', () => {
+  let component: GlobalSummaryComponent;
+  let fixture: ComponentFixture<GlobalSummaryComponent>;
   let httpMock: HttpTestingController;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [GlobalSummary],
+      imports: [GlobalSummaryComponent],
       providers: [
         provideSmartNgRX(),
         provideHttpClient(),
@@ -116,7 +116,7 @@ describe('GlobalSummary - Service Integration', () => {
       ],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(GlobalSummary);
+    fixture = TestBed.createComponent(GlobalSummaryComponent);
     component = fixture.componentInstance;
     httpMock = TestBed.inject(HttpTestingController);
   });
@@ -268,14 +268,14 @@ describe('GlobalSummary - Service Integration', () => {
   });
 });
 
-describe('GlobalSummary - Graph Integration', () => {
-  let component: GlobalSummary;
-  let fixture: ComponentFixture<GlobalSummary>;
+describe('GlobalSummaryComponent - Graph Integration', () => {
+  let component: GlobalSummaryComponent;
+  let fixture: ComponentFixture<GlobalSummaryComponent>;
   let httpMock: HttpTestingController;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [GlobalSummary],
+      imports: [GlobalSummaryComponent],
       providers: [
         provideSmartNgRX(),
         provideHttpClient(),
@@ -284,7 +284,7 @@ describe('GlobalSummary - Graph Integration', () => {
       ],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(GlobalSummary);
+    fixture = TestBed.createComponent(GlobalSummaryComponent);
     component = fixture.componentInstance;
     httpMock = TestBed.inject(HttpTestingController);
   });
@@ -397,14 +397,14 @@ describe('GlobalSummary - Graph Integration', () => {
   });
 });
 
-describe('GlobalSummary - Available Months', () => {
-  let component: GlobalSummary;
-  let fixture: ComponentFixture<GlobalSummary>;
+describe('GlobalSummaryComponent - Available Months', () => {
+  let component: GlobalSummaryComponent;
+  let fixture: ComponentFixture<GlobalSummaryComponent>;
   let httpMock: HttpTestingController;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [GlobalSummary],
+      imports: [GlobalSummaryComponent],
       providers: [
         provideSmartNgRX(),
         provideHttpClient(),
@@ -413,7 +413,7 @@ describe('GlobalSummary - Available Months', () => {
       ],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(GlobalSummary);
+    fixture = TestBed.createComponent(GlobalSummaryComponent);
     component = fixture.componentInstance;
     httpMock = TestBed.inject(HttpTestingController);
   });
@@ -469,14 +469,14 @@ describe('GlobalSummary - Available Months', () => {
   });
 });
 
-describe('GlobalSummary - Error Handling', () => {
-  let component: GlobalSummary;
-  let fixture: ComponentFixture<GlobalSummary>;
+describe('GlobalSummaryComponent - Error Handling', () => {
+  let component: GlobalSummaryComponent;
+  let fixture: ComponentFixture<GlobalSummaryComponent>;
   let httpMock: HttpTestingController;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [GlobalSummary],
+      imports: [GlobalSummaryComponent],
       providers: [
         provideSmartNgRX(),
         provideHttpClient(),
@@ -485,7 +485,7 @@ describe('GlobalSummary - Error Handling', () => {
       ],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(GlobalSummary);
+    fixture = TestBed.createComponent(GlobalSummaryComponent);
     component = fixture.componentInstance;
     httpMock = TestBed.inject(HttpTestingController);
   });
@@ -561,13 +561,13 @@ describe('GlobalSummary - Error Handling', () => {
 });
 
 describe('Pie Chart Display', () => {
-  let component: GlobalSummary;
-  let fixture: ComponentFixture<GlobalSummary>;
+  let component: GlobalSummaryComponent;
+  let fixture: ComponentFixture<GlobalSummaryComponent>;
   let httpMock: HttpTestingController;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [GlobalSummary],
+      imports: [GlobalSummaryComponent],
       providers: [
         provideSmartNgRX(),
         provideHttpClient(),
@@ -576,7 +576,7 @@ describe('Pie Chart Display', () => {
       ],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(GlobalSummary);
+    fixture = TestBed.createComponent(GlobalSummaryComponent);
     component = fixture.componentInstance;
     httpMock = TestBed.inject(HttpTestingController);
   });
@@ -798,13 +798,13 @@ describe('Pie Chart Display', () => {
 });
 
 describe('Month/Year Selector', () => {
-  let component: GlobalSummary;
-  let fixture: ComponentFixture<GlobalSummary>;
+  let component: GlobalSummaryComponent;
+  let fixture: ComponentFixture<GlobalSummaryComponent>;
   let httpMock: HttpTestingController;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [GlobalSummary],
+      imports: [GlobalSummaryComponent],
       providers: [
         provideSmartNgRX(),
         provideHttpClient(),
@@ -813,7 +813,7 @@ describe('Month/Year Selector', () => {
       ],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(GlobalSummary);
+    fixture = TestBed.createComponent(GlobalSummaryComponent);
     component = fixture.componentInstance;
     httpMock = TestBed.inject(HttpTestingController);
   });
@@ -1170,13 +1170,13 @@ describe('Month/Year Selector', () => {
 });
 
 describe('Branch Coverage - Edge Cases', () => {
-  let fixture: ComponentFixture<GlobalSummary>;
-  let component: GlobalSummary;
+  let fixture: ComponentFixture<GlobalSummaryComponent>;
+  let component: GlobalSummaryComponent;
   let httpMock: HttpTestingController;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [GlobalSummary],
+      imports: [GlobalSummaryComponent],
       providers: [
         provideSmartNgRX(),
         provideHttpClient(),
@@ -1185,7 +1185,7 @@ describe('Branch Coverage - Edge Cases', () => {
       ],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(GlobalSummary);
+    fixture = TestBed.createComponent(GlobalSummaryComponent);
     component = fixture.componentInstance;
     httpMock = TestBed.inject(HttpTestingController);
   });

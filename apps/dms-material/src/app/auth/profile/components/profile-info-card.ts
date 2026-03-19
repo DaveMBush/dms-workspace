@@ -24,59 +24,59 @@ import { ProfileService } from '../../services/profile.service';
   styleUrl: './profile-info-card.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProfileInfoCard {
+export class ProfileInfoCardComponent {
   private profileService = inject(ProfileService);
 
   hasProfile = computed(
-    function hasProfile(this: ProfileInfoCard) {
+    function hasProfile(this: ProfileInfoCardComponent) {
       return this.profileService.profile() !== null;
     }.bind(this)
   );
 
   isLoading = computed(
-    function isLoading(this: ProfileInfoCard) {
+    function isLoading(this: ProfileInfoCardComponent) {
       return this.profileService.loading();
     }.bind(this)
   );
 
   hasError = computed(
-    function hasError(this: ProfileInfoCard) {
+    function hasError(this: ProfileInfoCardComponent) {
       return this.profileService.profileError() !== null;
     }.bind(this)
   );
 
   errorMessage = computed(
-    function errorMessage(this: ProfileInfoCard) {
+    function errorMessage(this: ProfileInfoCardComponent) {
       return this.profileService.profileError();
     }.bind(this)
   );
 
   username = computed(
-    function username(this: ProfileInfoCard) {
+    function username(this: ProfileInfoCardComponent) {
       return this.profileService.profile()?.username ?? '';
     }.bind(this)
   );
 
   email = computed(
-    function email(this: ProfileInfoCard) {
+    function email(this: ProfileInfoCardComponent) {
       return this.profileService.profile()?.email ?? '';
     }.bind(this)
   );
 
   emailVerified = computed(
-    function emailVerified(this: ProfileInfoCard) {
+    function emailVerified(this: ProfileInfoCardComponent) {
       return this.profileService.profile()?.emailVerified ?? false;
     }.bind(this)
   );
 
   accountCreated = computed(
-    function accountCreated(this: ProfileInfoCard) {
+    function accountCreated(this: ProfileInfoCardComponent) {
       return this.profileService.profile()?.createdAt;
     }.bind(this)
   );
 
   lastModified = computed(
-    function lastModified(this: ProfileInfoCard) {
+    function lastModified(this: ProfileInfoCardComponent) {
       return this.profileService.profile()?.lastModified;
     }.bind(this)
   );

@@ -23,7 +23,7 @@ async function getAvailableYears(): Promise<number[]> {
   });
 
   trades.forEach(function extractTradeYear(trade) {
-    yearSet.add(new Date(trade.sell_date!).getFullYear());
+    yearSet.add(new Date(trade.sell_date).getFullYear());
   });
 
   // Return sorted descending

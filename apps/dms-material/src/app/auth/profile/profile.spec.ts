@@ -2,13 +2,13 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
 import { signal } from '@angular/core';
-import { Profile } from './profile';
+import { ProfileComponent } from './profile';
 import { ProfileService } from '../services/profile.service';
 import { UserProfile } from '../types/profile.types';
 
-describe('Profile', () => {
-  let component: Profile;
-  let fixture: ComponentFixture<Profile>;
+describe('ProfileComponent', () => {
+  let component: ProfileComponent;
+  let fixture: ComponentFixture<ProfileComponent>;
   let mockProfileService: {
     profile: ReturnType<typeof signal<UserProfile | null>>;
     loading: ReturnType<typeof signal<boolean>>;
@@ -37,7 +37,7 @@ describe('Profile', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [Profile],
+      imports: [ProfileComponent],
       providers: [
         { provide: ProfileService, useValue: mockProfileService },
         provideHttpClient(),
@@ -45,7 +45,7 @@ describe('Profile', () => {
       ],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(Profile);
+    fixture = TestBed.createComponent(ProfileComponent);
     component = fixture.componentInstance;
   });
 

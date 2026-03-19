@@ -13,13 +13,13 @@ vi.mock('../store/accounts/selectors/select-accounts.function', () => ({
   selectAccounts: signal([]),
 }));
 
-import { Account } from './account';
+import { AccountComponent } from './account';
 import { AccountComponentService } from './account-component.service';
 import { Account as AccountInterface } from '../store/accounts/account.interface';
 
-describe('Account', () => {
-  let component: Account;
-  let fixture: ComponentFixture<Account>;
+describe('AccountComponent', () => {
+  let component: AccountComponent;
+  let fixture: ComponentFixture<AccountComponent>;
   let mockAccountService: {
     init: ReturnType<typeof vi.fn>;
     addAccount: ReturnType<typeof vi.fn>;
@@ -72,7 +72,7 @@ describe('Account', () => {
     ];
 
     await TestBed.configureTestingModule({
-      imports: [Account],
+      imports: [AccountComponent],
       providers: [
         provideRouter([]),
         {
@@ -81,7 +81,7 @@ describe('Account', () => {
         },
       ],
     })
-      .overrideComponent(Account, {
+      .overrideComponent(AccountComponent, {
         set: {
           viewProviders: [
             { provide: AccountComponentService, useValue: mockAccountService },
@@ -90,7 +90,7 @@ describe('Account', () => {
       })
       .compileComponents();
 
-    fixture = TestBed.createComponent(Account);
+    fixture = TestBed.createComponent(AccountComponent);
     component = fixture.componentInstance;
     const router = TestBed.inject(Router);
     mockRouter = {

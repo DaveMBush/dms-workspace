@@ -4,14 +4,14 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { of } from 'rxjs';
 
 import { AccountComponentService } from './account-component.service';
-import { Account } from './account';
+import { AccountComponent } from './account';
 import { Account as AccountInterface } from '../store/accounts/account.interface';
 import { Top } from '../store/top/top.interface';
 import { ConfirmDialogService } from '../shared/services/confirm-dialog.service';
 
 describe('AccountComponentService', () => {
   let service: AccountComponentService;
-  let mockComponent: Account;
+  let mockComponent: AccountComponent;
   let mockAccounts: AccountInterface[];
   let mockAddToStore: ReturnType<typeof vi.fn>;
   let mockRemoveFromStore: ReturnType<typeof vi.fn>;

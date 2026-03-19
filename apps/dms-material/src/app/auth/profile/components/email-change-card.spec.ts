@@ -1,11 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { EmailChangeCard } from './email-change-card';
+import { EmailChangeCardComponent } from './email-change-card';
 import { ProfileService } from '../../services/profile.service';
 import { NotificationService } from '../../../shared/services/notification.service';
 
-describe('EmailChangeCard', () => {
-  let component: EmailChangeCard;
-  let fixture: ComponentFixture<EmailChangeCard>;
+describe('EmailChangeCardComponent', () => {
+  let component: EmailChangeCardComponent;
+  let fixture: ComponentFixture<EmailChangeCardComponent>;
   let mockProfileService: { updateEmail: ReturnType<typeof vi.fn> };
   let mockNotification: {
     success: ReturnType<typeof vi.fn>;
@@ -17,7 +17,7 @@ describe('EmailChangeCard', () => {
     mockNotification = { success: vi.fn(), error: vi.fn() };
 
     await TestBed.configureTestingModule({
-      imports: [EmailChangeCard],
+      imports: [EmailChangeCardComponent],
       providers: [
         { provide: ProfileService, useValue: mockProfileService },
         {
@@ -27,7 +27,7 @@ describe('EmailChangeCard', () => {
       ],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(EmailChangeCard);
+    fixture = TestBed.createComponent(EmailChangeCardComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

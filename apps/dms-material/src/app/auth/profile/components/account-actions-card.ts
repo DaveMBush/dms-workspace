@@ -12,7 +12,7 @@ import { ProfileActionsService } from '../../services/profile-actions.service';
   styleUrl: './account-actions-card.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AccountActionsCard {
+export class AccountActionsCardComponent {
   private profileActionsService = inject(ProfileActionsService);
 
   onLogout(): void {

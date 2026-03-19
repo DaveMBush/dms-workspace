@@ -8,7 +8,7 @@ import {
 } from '@angular/common/http/testing';
 import { provideRouter } from '@angular/router';
 
-import { AccountSummary } from './account-summary';
+import { AccountSummaryComponent } from './account-summary';
 import { currentAccountSignalStore } from '../../store/current-account/current-account.signal-store';
 import type { GraphPoint } from '../../global/services/graph-point.interface';
 import type { Summary } from '../../global/services/summary.interface';
@@ -138,9 +138,9 @@ function testCurrentMonth(): string {
   return `${year}-${monthStr}`;
 }
 
-describe('AccountSummary - Service Integration', () => {
-  let component: AccountSummary;
-  let fixture: ComponentFixture<AccountSummary>;
+describe('AccountSummaryComponent - Service Integration', () => {
+  let component: AccountSummaryComponent;
+  let fixture: ComponentFixture<AccountSummaryComponent>;
   let httpMock: HttpTestingController;
   let store: InstanceType<typeof currentAccountSignalStore>;
 
@@ -155,20 +155,20 @@ describe('AccountSummary - Service Integration', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AccountSummary],
+      imports: [AccountSummaryComponent],
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
         provideRouter([
           {
             path: 'account/:accountId',
-            component: AccountSummary,
+            component: AccountSummaryComponent,
           },
         ]),
       ],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(AccountSummary);
+    fixture = TestBed.createComponent(AccountSummaryComponent);
     component = fixture.componentInstance;
     httpMock = TestBed.inject(HttpTestingController);
     store = TestBed.inject(currentAccountSignalStore);

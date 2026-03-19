@@ -61,7 +61,7 @@ function computePercentIncrease(
   return (12 * (gains + divs)) / basis;
 }
 
-function enableSelectors(this: AccountSummary): void {
+function enableSelectors(this: AccountSummaryComponent): void {
   this.selectedMonth.enable({ emitEvent: false });
   this.selectedYear.enable({ emitEvent: false });
 }
@@ -83,7 +83,7 @@ function enableSelectors(this: AccountSummary): void {
   styleUrl: './account-summary.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AccountSummary {
+export class AccountSummaryComponent {
   private readonly summaryService = inject(SummaryService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly accountStore = inject(currentAccountSignalStore);

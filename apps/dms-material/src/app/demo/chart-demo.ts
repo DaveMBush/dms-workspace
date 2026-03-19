@@ -12,7 +12,7 @@ import { SummaryDisplayComponent } from '../shared/components/summary-display/su
   styleUrl: './chart-demo.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ChartDemo {
+export class ChartDemoComponent {
   pieChartData$ = signal<ChartData<'pie'>>({
     labels: ['Stocks', 'Bonds', 'Cash', 'Real Estate'],
     datasets: [

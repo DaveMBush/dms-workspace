@@ -33,12 +33,12 @@ vi.mock('../../store/universe/selectors/select-universes.function', () => ({
   }),
 }));
 
-import { AddSymbolDialog } from './add-symbol-dialog';
+import { AddSymbolDialogComponent } from './add-symbol-dialog';
 import { NotificationService } from '../../shared/services/notification.service';
 
-describe('AddSymbolDialog', () => {
-  let component: AddSymbolDialog;
-  let fixture: ComponentFixture<AddSymbolDialog>;
+describe('AddSymbolDialogComponent', () => {
+  let component: AddSymbolDialogComponent;
+  let fixture: ComponentFixture<AddSymbolDialogComponent>;
   let mockDialogRef: { close: ReturnType<typeof vi.fn> };
   let notificationService: NotificationService;
   let httpMock: HttpTestingController;
@@ -49,7 +49,7 @@ describe('AddSymbolDialog', () => {
     mockUniverseArray.length = 0; // Clear the array between tests
 
     await TestBed.configureTestingModule({
-      imports: [AddSymbolDialog],
+      imports: [AddSymbolDialogComponent],
       providers: [
         provideSmartNgRX(),
         provideHttpClient(),
@@ -59,7 +59,7 @@ describe('AddSymbolDialog', () => {
       ],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(AddSymbolDialog);
+    fixture = TestBed.createComponent(AddSymbolDialogComponent);
     component = fixture.componentInstance;
     notificationService = TestBed.inject(NotificationService);
     httpMock = TestBed.inject(HttpTestingController);
@@ -455,7 +455,7 @@ describe('AddSymbolDialog', () => {
   // Story AM.5: TDD RED Phase - Validation and Error Handling Tests
   // Story AM.6: Tests re-enabled for GREEN phase
   /* eslint-disable no-throw-literal -- AM.5/AM.6: Implementing validation and error handling */
-  describe('AddSymbolDialog validation - AM.5', () => {
+  describe('AddSymbolDialogComponent validation - AM.5', () => {
     describe('duplicate symbol validation', () => {
       it('should show error for duplicate symbol', () => {
         // Given: A symbol that already exists in the universe
@@ -463,7 +463,7 @@ describe('AddSymbolDialog', () => {
         mockUniverseArray.push({ symbol: existingSymbol });
 
         // Recreate component to pick up new universe data
-        fixture = TestBed.createComponent(AddSymbolDialog);
+        fixture = TestBed.createComponent(AddSymbolDialogComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
 
@@ -487,7 +487,7 @@ describe('AddSymbolDialog', () => {
         mockUniverseArray.push({ symbol: existingSymbol });
 
         // Recreate component to pick up new universe data
-        fixture = TestBed.createComponent(AddSymbolDialog);
+        fixture = TestBed.createComponent(AddSymbolDialogComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
 
@@ -661,7 +661,7 @@ describe('AddSymbolDialog', () => {
     });
   });
 
-  describe('AddSymbolDialog error handling - AM.5', () => {
+  describe('AddSymbolDialogComponent error handling - AM.5', () => {
     describe('API 409 Conflict error handling', () => {
       it('should handle 409 Conflict error from universeArray.add', () => {
         // Given: Symbol that will cause 409 error

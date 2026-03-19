@@ -1,11 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { PasswordChangeCard } from './password-change-card';
+import { PasswordChangeCardComponent } from './password-change-card';
 import { ProfileService } from '../../services/profile.service';
 import { NotificationService } from '../../../shared/services/notification.service';
 
-describe('PasswordChangeCard', () => {
-  let component: PasswordChangeCard;
-  let fixture: ComponentFixture<PasswordChangeCard>;
+describe('PasswordChangeCardComponent', () => {
+  let component: PasswordChangeCardComponent;
+  let fixture: ComponentFixture<PasswordChangeCardComponent>;
   let mockProfileService: {
     changeUserPassword: ReturnType<typeof vi.fn>;
   };
@@ -19,7 +19,7 @@ describe('PasswordChangeCard', () => {
     mockNotification = { success: vi.fn(), error: vi.fn() };
 
     await TestBed.configureTestingModule({
-      imports: [PasswordChangeCard],
+      imports: [PasswordChangeCardComponent],
       providers: [
         { provide: ProfileService, useValue: mockProfileService },
         {
@@ -29,7 +29,7 @@ describe('PasswordChangeCard', () => {
       ],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(PasswordChangeCard);
+    fixture = TestBed.createComponent(PasswordChangeCardComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
