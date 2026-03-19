@@ -50,7 +50,7 @@ This document provides the complete epic and story breakdown for **dms-workspace
 ## Epic List
 
 1. [Epic 1: Remove Unused Code](#epic-1-remove-unused-code)
-2. [Epic 2: Fix CUSIP Lookup — Switch to massive.com API](#epic-2-fix-cusip-lookup--switch-to-massivecom-api)
+2. [Epic 2: Fix CUSIP Lookup — Switch to 13f.info](#epic-2-fix-cusip-lookup--switch-to-13finfo)
 3. [Epic 3: Enable Skipped Unit and E2E Tests](#epic-3-enable-skipped-unit-and-e2e-tests)
 4. [Epic 4: Improve Lint Rules](#epic-4-improve-lint-rules)
 5. [Epic 5: Migrate CSS to Tailwind / Theme](#epic-5-migrate-css-to-tailwind--theme)
@@ -150,61 +150,61 @@ So that future AI agents and developers have an accurate picture of what is acti
 
 ---
 
-## Epic 2: Fix CUSIP Lookup — Switch to massive.com API
+## Epic 2: Fix CUSIP Lookup — Switch to 13f.info
 
-**Goal:** Replace the OpenFIGI CUSIP-to-ticker resolution entirely with the massive.com API to resolve the three known failing CUSIPs (`691543102`, `88636J527`, `88634T493`). Preserve all existing behaviour: caching, UI, and error handling.
+**Goal:** Replace the OpenFIGI CUSIP-to-ticker resolution entirely with HTML scraping of `https://13f.info/cusip/{CUSIP}` to resolve the three known failing CUSIPs (`691543102`, `88636J527`, `88634T493`). Preserve all existing behaviour: caching, UI, and error handling.
 
-The massive.com API key is stored in the MASSIVE_API_KEY environment variable and uses the free tier (5 calls/minute). The new service must respect this rate limit (similar to how we rate limit yahoo-finance) and replace OpenFIGI as the primary CUSIP-to-ticker resolver. Yahoo Finance remains the final fallback.
+13f.info requires no API key or authentication. The new service scrapes the JSON-LD structured data from each page to extract the ticker symbol, and applies a 1 req/sec polite scraping rate (mirroring the Yahoo Finance rate-limit pattern). It replaces OpenFIGI entirely as the primary CUSIP-to-ticker resolver. Yahoo Finance remains the final fallback.
 
 ---
 
-### Story 2.1: Verify massive.com API Returns Results for Failing CUSIPs
+### Story 2.1: Verify 13f.info Returns Results for Failing CUSIPs
 
 As a developer,
-I want to make test API calls to massive.com for the three failing CUSIPs before committing to the integration,
-So that I can confirm the alternative API actually resolves what OpenFIGI cannot.
+I want to make test HTTP requests to 13f.info for the three failing CUSIPs before committing to the integration,
+So that I can confirm the alternative source actually resolves what OpenFIGI cannot.
 
 **Acceptance Criteria:**
 
 **Given** the three failing CUSIPs: `691543102`, `88636J527`, `88634T493`,
-**When** I call the massive.com API (free tier) with each CUSIP,
-**Then** each call returns a valid ticker symbol (or a clear indication that the symbol is unresolvable).
+**When** I fetch `https://13f.info/cusip/{CUSIP}` for each and parse the JSON-LD structured data,
+**Then** each response contains a valid ticker symbol (`OXLC`, `ULTY`, `MSTY` respectively).
 
-**And** the results are documented in `_bmad-output/implementation-artifacts/cusip-api-comparison.md` comparing OpenFIGI vs massive.com responses.
+**And** the results are documented in `_bmad-output/implementation-artifacts/cusip-api-comparison.md` comparing OpenFIGI vs 13f.info responses.
 
 ---
 
-### Story 2.2: Implement massive.com CUSIP Resolution Service
+### Story 2.2: Implement 13f.info CUSIP Resolution Service
 
 As a developer,
-I want a server-side service that wraps the massive.com API and resolves a CUSIP to a ticker symbol,
+I want a server-side service that scrapes 13f.info and resolves a CUSIP to a ticker symbol,
 So that the resolution logic is encapsulated and testable independently of the existing OpenFIGI service.
 
 **Acceptance Criteria:**
 
 **Given** a valid CUSIP string,
-**When** the massive.com service is called,
+**When** the 13f.info service is called,
 **Then** it returns the resolved ticker symbol if found, or `null` if not found.
 
-**And** the service respects the 5 API calls/minute rate limit by queuing or throttling requests.
+**And** the service enforces a 1-second minimum delay between requests (mirroring the Yahoo Finance rate-limit pattern).
 
-**And** the service has unit tests covering: successful resolution, null response, rate-limit handling, and network error.
+**And** the service has unit tests covering: successful resolution, null response, rate-limit delay, and network error.
 
 ---
 
-### Story 2.3: Replace OpenFIGI with massive.com in CUSIP Resolution Chain
+### Story 2.3: Replace OpenFIGI with 13f.info in CUSIP Resolution Chain
 
 As a developer,
-I want the CUSIP resolution chain to use massive.com as the primary resolver with Yahoo Finance as the final fallback,
+I want the CUSIP resolution chain to use 13f.info as the primary resolver with Yahoo Finance as the final fallback,
 So that OpenFIGI is fully removed and the maximum number of CUSIPs are resolved without changing the cache or UI layers.
 
 **Acceptance Criteria:**
 
 **Given** a CUSIP that requires resolution,
-**When** massive.com resolves it successfully,
+**When** 13f.info resolves it successfully,
 **Then** the resolved ticker is cached and returned exactly as it would have been from OpenFIGI.
 
-**And** the resolution chain is: massive.com → Yahoo Finance (OpenFIGI is removed entirely).
+**And** the resolution chain is: 13f.info → Yahoo Finance (OpenFIGI is removed entirely).
 
 **And** the OpenFIGI service and all references to it are deleted from the codebase.
 

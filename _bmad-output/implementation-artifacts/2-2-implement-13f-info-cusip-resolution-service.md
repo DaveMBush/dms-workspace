@@ -78,7 +78,7 @@ Apply the same pattern with `THIRTEENF_RATE_LIMIT_DELAY = 1000`.
 
 ### 13f.info Ticker Extraction
 
-URL: `https://13f.info/cusip/{CUSIP}`
+URL: `https://13f.info/cusip/{CUSIP}`  
 No authentication required.
 
 JSON-LD block in `<head>`:

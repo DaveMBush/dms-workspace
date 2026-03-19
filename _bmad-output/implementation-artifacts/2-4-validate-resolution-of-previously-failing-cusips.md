@@ -51,17 +51,25 @@ so that I can close this epic with confidence.
 
 ### Previous Story Intelligence
 
-- Story 2.1: Verified massive.com API returns results for the failing CUSIPs
-- Story 2.2: Created `MassiveCusipService` with rate limiting and circuit breaker
-- Story 2.3: Integrated massive.com into resolution chain (OpenFIGI → massive.com → Yahoo Finance)
+- Story 2.1: Verified 13f.info returns ticker symbols for all three failing CUSIPs (OXLC, ULTY, MSTY)
+- Story 2.2: Created `ThirteenfCusipService` with 1 req/sec rate limiting (Yahoo Finance pattern)
+- Story 2.3: Integrated 13f.info into resolution chain as primary resolver (OpenFIGI removed); chain is now 13f.info → Yahoo Finance
+
+### Expected Ticker Symbols (from Story 2.1 verification)
+
+| CUSIP      | Expected Ticker |
+|------------|-----------------|
+| 691543102  | OXLC            |
+| 88636J527  | ULTY            |
+| 88634T493  | MSTY            |
 
 ### Key Files
 
 | File | Purpose |
-|------|---------|
+|------|----------|
 | `apps/server/src/app/routes/import/resolve-cusip.function.ts` | Resolution chain (modified in 2.3) |
 | `apps/server/src/app/routes/import/resolve-cusip.function.spec.ts` | Add regression tests here |
-| `apps/server/src/utils/massive-cusip.service.ts` | massive.com service (created in 2.2) |
+| `apps/server/src/utils/thirteenf-cusip.service.ts` | 13f.info service (created in 2.2) |
 
 ### Quality Validation
 
