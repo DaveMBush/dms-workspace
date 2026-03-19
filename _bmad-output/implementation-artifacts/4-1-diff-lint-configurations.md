@@ -1,6 +1,14 @@
 # Story 4.1: Diff Lint Configurations
 
-Status: Approved
+Status: Done
+
+## Change Log
+
+- Created `_bmad-output/implementation-artifacts/lint-rules-diff.md` with full rule-by-rule comparison
+- Identified 1 rule to add (`@angular-eslint/component-class-suffix`)
+- Identified 9 Jest→Vitest substitutes for Story 4.3
+- Identified 8 intentional config differences to preserve
+- Documented ~185 rules already present in both configs
 
 ## Story
 
@@ -38,10 +46,10 @@ so that I know exactly which rules are new, missing, or replaced.
 
 ### Source Files
 
-| File | Location |
-|------|----------|
+| File                | Location                                                              |
+| ------------------- | --------------------------------------------------------------------- |
 | SmartNgRX reference | `https://github.com/DaveMBush/SmartNgRX/blob/v-next/eslint.config.js` |
-| Our current config | `eslint.config.mjs` (workspace root) |
+| Our current config  | `eslint.config.mjs` (workspace root)                                  |
 
 ### Current Plugin Inventory
 
@@ -59,9 +67,11 @@ Our `eslint.config.mjs` already imports these plugins — cross-reference to avo
 ### Jest Rules to Watch For
 
 SmartNgRX likely includes rules from `eslint-plugin-jest` such as:
+
 - `jest/no-disabled-tests`, `jest/no-focused-tests`, `jest/expect-expect`, `jest/valid-title`, etc.
 
 These must be classified as **Skip** (we use Vitest, not Jest) and their vitest equivalents noted, e.g.:
+
 - `jest/no-disabled-tests` → `vitest/no-disabled-tests`
 - `jest/expect-expect` → `vitest/expect-expect`
 
@@ -72,20 +82,20 @@ These must be classified as **Skip** (we use Vitest, not Jest) and their vitest 
 
 ## Rules to Add
 
-| Rule | Plugin | Proposed Severity | Notes |
-|------|--------|-------------------|-------|
-| no-console | @eslint/js | error | ... |
+| Rule       | Plugin     | Proposed Severity | Notes |
+| ---------- | ---------- | ----------------- | ----- |
+| no-console | @eslint/js | error             | ...   |
 
 ## Rules to Skip (Jest-Specific)
 
-| Rule | Plugin | Reason |
-|------|--------|--------|
+| Rule                   | Plugin             | Reason        |
+| ---------------------- | ------------------ | ------------- |
 | jest/no-disabled-tests | eslint-plugin-jest | We use Vitest |
 
 ## Vitest Substitutes
 
-| Jest Rule | Vitest Equivalent | Notes |
-|-----------|-------------------|-------|
+| Jest Rule              | Vitest Equivalent        | Notes             |
+| ---------------------- | ------------------------ | ----------------- |
 | jest/no-disabled-tests | vitest/no-disabled-tests | Direct equivalent |
 
 ## Already Present
