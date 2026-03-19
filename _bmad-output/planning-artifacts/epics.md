@@ -154,6 +154,8 @@ So that future AI agents and developers have an accurate picture of what is acti
 
 **Goal:** Replace or supplement the OpenFIGI CUSIP-to-ticker resolution with the massive.com API to resolve the three known failing CUSIPs (`691543102`, `88636J527`, `88634T493`). Preserve all existing behaviour: caching, UI, error handling, and fallback chain.
 
+The massive.com API key is stored in the MASSIVE_API_KEY environment variable and uses the free tier (5 calls/minute). The new service must respect this rate limit (similar to how we rate limit yahoo-finance) and be integrated as a fallback after OpenFIGI but before Yahoo Finance.
+
 ---
 
 ### Story 2.1: Verify massive.com API Returns Results for Failing CUSIPs
