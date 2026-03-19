@@ -152,9 +152,9 @@ So that future AI agents and developers have an accurate picture of what is acti
 
 ## Epic 2: Fix CUSIP Lookup — Switch to massive.com API
 
-**Goal:** Replace or supplement the OpenFIGI CUSIP-to-ticker resolution with the massive.com API to resolve the three known failing CUSIPs (`691543102`, `88636J527`, `88634T493`). Preserve all existing behaviour: caching, UI, error handling, and fallback chain.
+**Goal:** Replace the OpenFIGI CUSIP-to-ticker resolution entirely with the massive.com API to resolve the three known failing CUSIPs (`691543102`, `88636J527`, `88634T493`). Preserve all existing behaviour: caching, UI, and error handling.
 
-The massive.com API key is stored in the MASSIVE_API_KEY environment variable and uses the free tier (5 calls/minute). The new service must respect this rate limit (similar to how we rate limit yahoo-finance) and be integrated as a fallback after OpenFIGI but before Yahoo Finance.
+The massive.com API key is stored in the MASSIVE_API_KEY environment variable and uses the free tier (5 calls/minute). The new service must respect this rate limit (similar to how we rate limit yahoo-finance) and replace OpenFIGI as the primary CUSIP-to-ticker resolver. Yahoo Finance remains the final fallback.
 
 ---
 
@@ -192,21 +192,21 @@ So that the resolution logic is encapsulated and testable independently of the e
 
 ---
 
-### Story 2.3: Integrate massive.com as Fallback in CUSIP Resolution Chain
+### Story 2.3: Replace OpenFIGI with massive.com in CUSIP Resolution Chain
 
 As a developer,
-I want the CUSIP resolution chain to try OpenFIGI first, then massive.com, then Yahoo Finance,
-So that the maximum number of CUSIPs are resolved without changing the cache or UI layers.
+I want the CUSIP resolution chain to use massive.com as the primary resolver with Yahoo Finance as the final fallback,
+So that OpenFIGI is fully removed and the maximum number of CUSIPs are resolved without changing the cache or UI layers.
 
 **Acceptance Criteria:**
 
-**Given** a CUSIP not resolvable by OpenFIGI,
+**Given** a CUSIP that requires resolution,
 **When** massive.com resolves it successfully,
 **Then** the resolved ticker is cached and returned exactly as it would have been from OpenFIGI.
 
-**And** the fallback chain is: OpenFIGI → massive.com → Yahoo Finance.
+**And** the resolution chain is: massive.com → Yahoo Finance (OpenFIGI is removed entirely).
 
-**And** existing behaviour for CUSIPs resolvable by OpenFIGI is unchanged.
+**And** the OpenFIGI service and all references to it are deleted from the codebase.
 
 **And** the CUSIP cache table (FR39) and audit log continue to record resolution source.
 
