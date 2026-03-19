@@ -37,7 +37,7 @@
 #     E1 → E3 → E4(TS rules) → E2 → E5 → E4(template rules) → E6 → E7 → E8
 
 generated: 2026-03-17
-last_updated: 2026-03-18 dms-workspace
+last_updated: 2026-03-19 dms-workspace
 project_key: NOKEY
 tracking_system: file-system
 story_location: _bmad-output/implementation-artifacts
@@ -61,11 +61,11 @@ development_status:
   epic-2-retrospective: optional
 
   # ── Epic 3: Enable Skipped Unit and E2E Tests ────────────────────────────────
-  epic-3: in-progress
-  3-1-inventory-all-skipped-tests: ready-for-dev
-  3-2-unskip-and-fix-unit-tests: ready-for-dev
-  3-3-unskip-and-fix-e2e-tests: ready-for-dev
-  3-4-delete-irrelevant-skipped-tests: ready-for-dev
+  epic-3: done
+  3-1-inventory-all-skipped-tests: done
+  3-2-unskip-and-fix-unit-tests: done
+  3-3-unskip-and-fix-e2e-tests: done
+  3-4-delete-irrelevant-skipped-tests: done
   epic-3-retrospective: optional
 
   # ── Epic 4: Improve Lint Rules ───────────────────────────────────────────────

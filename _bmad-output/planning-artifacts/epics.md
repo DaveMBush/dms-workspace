@@ -2,6 +2,8 @@
 stepsCompleted:
   - step-01-validate-prerequisites
   - step-02-design-epics
+  - step-03-create-stories
+epic4Status: Approved
 inputDocuments:
   - _bmad-output/planning-artifacts/prd.md
   - .github/instructions/epics-2026-03-17.md
@@ -297,6 +299,8 @@ So that the test suite does not contain misleading dead weight.
 ---
 
 ## Epic 4: Improve Lint Rules
+
+**Status:** Approved
 
 **Goal:** Adopt the stronger ESLint rule set from `DaveMBush/SmartNgRX` (branch `v-next`) — skipping Jest-specific rules that don't apply — and add equivalent Vitest rules where appropriate. All existing code must pass the new rules (auto-fix where possible; manual fix otherwise).
 
