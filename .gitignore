@@ -58,3 +58,5 @@ lint-output.txt
 test-database-*.db
 test-results/
 .playwright-mcp
+# Storybook static build output
+dist/storybook/
