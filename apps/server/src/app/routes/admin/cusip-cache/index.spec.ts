@@ -134,7 +134,10 @@ describe('Admin CUSIP Cache Routes', function () {
       expect(response.statusCode).toBe(200);
       const body = JSON.parse(response.body);
       expect(body.totalEntries).toBe(100);
-      expect(body.entriesBySource).toEqual({ THIRTEENF: 70, YAHOO_FINANCE: 30 });
+      expect(body.entriesBySource).toEqual({
+        THIRTEENF: 70,
+        YAHOO_FINANCE: 30,
+      });
       expect(body.recentlyAdded).toHaveLength(1);
       expect(body).toHaveProperty('timestamp');
     });

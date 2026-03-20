@@ -36,8 +36,9 @@ import { FidelityCsvRow } from './fidelity-csv-row.interface';
 import { isCusip } from './is-cusip.function';
 import { resolveCusipSymbols } from './resolve-cusip.function';
 
-const mockResolveCusipViaThirteenf =
-  resolveCusipViaThirteenf as ReturnType<typeof vi.fn>;
+const mockResolveCusipViaThirteenf = resolveCusipViaThirteenf as ReturnType<
+  typeof vi.fn
+>;
 const mockYahooSearch = yahooFinance.search as ReturnType<typeof vi.fn>;
 const mockFindManyCusips = cusipCacheService.findManyCusips as ReturnType<
   typeof vi.fn
