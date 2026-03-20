@@ -6,18 +6,6 @@
 // Include Material core styles (required once)
 @include mat.core();
 
-// CSS Layer ordering for proper specificity
-@layer tailwind-base, material, tailwind-utilities;
-
-@layer tailwind-base {
-  @tailwind base;
-}
-
-@layer tailwind-utilities {
-  @tailwind components;
-  @tailwind utilities;
-}
-
 .mdc-notched-outline__notch {
   border-right: none;
 }
