@@ -1,6 +1,6 @@
 # Story 2.1: Verify 13f.info Returns Results for Failing CUSIPs
 
-Status: review
+Status: done
 
 ## Story
 

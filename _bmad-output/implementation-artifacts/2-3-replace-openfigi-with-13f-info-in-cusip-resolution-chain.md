@@ -1,6 +1,6 @@
 # Story 2.3: Replace OpenFIGI with 13f.info in CUSIP Resolution Chain
 
-Status: ready-for-dev
+Status: done
 
 ## Story
 
