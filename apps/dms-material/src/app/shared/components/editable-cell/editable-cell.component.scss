@@ -5,7 +5,7 @@
 }
 
 .display-value:hover {
-  background-color: rgba(0, 0, 0, 0.04);
+  background-color: color-mix(in srgb, var(--dms-text-primary) 4%, transparent);
 }
 
 .edit-field {
@@ -32,10 +32,10 @@
 }
 
 .validation-error {
-  color: #f44336;
+  color: var(--dms-error);
   font-size: 12px;
   margin-top: 2px;
   padding: 4px 8px;
-  background-color: #ffebee;
+  background-color: color-mix(in srgb, var(--dms-error) 10%, var(--dms-surface));
   border-radius: 4px;
 }

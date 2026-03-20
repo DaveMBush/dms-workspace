@@ -5,7 +5,7 @@
 }
 
 .display-value:hover {
-  background-color: rgba(0, 0, 0, 0.04);
+  background-color: color-mix(in srgb, var(--dms-text-primary) 4%, transparent);
 }
 
 .edit-field {

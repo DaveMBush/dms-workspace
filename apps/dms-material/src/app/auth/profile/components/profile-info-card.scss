@@ -28,11 +28,11 @@ mat-card {
 
 mat-icon {
   &.verified {
-    color: #4caf50;
+    color: var(--dms-success);
   }
 
   &.unverified {
-    color: #ff9800;
+    color: var(--dms-warning);
   }
 }
 
@@ -59,7 +59,7 @@ mat-icon {
 }
 
 .error-icon {
-  color: #ff9800;
+  color: var(--dms-warning);
   font-size: 2rem;
   width: 2rem;
   height: 2rem;
