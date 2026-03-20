@@ -17,7 +17,7 @@ async function tryResolveSingleCusip(
       result.set(cusip, ticker);
     }
   } catch {
-    // 13f.info unavailable — skip this CUSIP
+    // Unexpected error — skip this CUSIP (normal failures return null)
   }
 }
 
