@@ -1,3 +1,4 @@
+/* eslint-disable vitest/no-conditional-expect -- Pre-existing: catch-block assertions verify error properties */
 import { AwsConfigManager, validateEnvironmentVariables } from './aws-config';
 import { vi, beforeEach, afterEach, describe, it, expect } from 'vitest';
 

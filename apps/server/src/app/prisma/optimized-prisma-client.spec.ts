@@ -1,3 +1,4 @@
+/* eslint-disable vitest/no-disabled-tests, vitest/no-conditional-expect -- Pre-existing: test suite blocked on E3, conditional assertions match runtime structure */
 import { PrismaClient } from '@prisma/client';
 import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
 

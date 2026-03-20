@@ -30,6 +30,9 @@ async function getAvailableMonths(): Promise<
   // Extract months from trades
   const tradeMonths = new Set<string>();
   trades.forEach(function extractTradeMonth(trade) {
+    if (!trade.sell_date) {
+      return;
+    }
     const d = new Date(trade.sell_date);
     const monthStr = `${d.getFullYear()}-${(d.getMonth() + 1)
       .toString()
