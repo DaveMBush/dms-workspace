@@ -13,7 +13,6 @@ import { logger } from './structured-logger';
 import {
   enforceThirteenfRateLimit,
   resolveCusipViaThirteenf,
-  updateThirteenfLastCallTime,
 } from './thirteenf-cusip.service';
 
 const mockLogger = vi.mocked(logger);
@@ -129,12 +128,14 @@ describe('thirteenf-cusip.service', () => {
 
   describe('rate limiting', () => {
     test('enforces delay between consecutive calls', async () => {
-      vi.useFakeTimers();
+      // Start fake timers far in the future to avoid stale lastThirteenfCallTime from prior tests
+      vi.useFakeTimers({ now: new Date('2030-01-01T00:00:00.000Z') });
 
-      // Simulate a recent call
-      updateThirteenfLastCallTime();
+      // First call establishes baseline (eagerly reserves a slot)
+      await enforceThirteenfRateLimit();
       const callTime = Date.now();
 
+      // Second call should be rate limited
       const rateLimitPromise = enforceThirteenfRateLimit();
 
       // Advance time past the rate limit delay
@@ -149,11 +150,11 @@ describe('thirteenf-cusip.service', () => {
     });
 
     test('does not delay when enough time has passed', async () => {
-      vi.useFakeTimers();
+      // Start fake timers far in the future to avoid stale lastThirteenfCallTime from prior tests
+      vi.useFakeTimers({ now: new Date('2030-06-01T00:00:00.000Z') });
 
-      // Set a known baseline time
-      vi.setSystemTime(new Date('2025-06-01T00:00:00.000Z'));
-      updateThirteenfLastCallTime();
+      // First call establishes baseline
+      await enforceThirteenfRateLimit();
 
       // Advance well past the rate limit
       vi.advanceTimersByTime(1500);

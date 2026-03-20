@@ -7,19 +7,18 @@ const THIRTEENF_RATE_LIMIT_DELAY = 1000; // 1 second in milliseconds
 
 export async function enforceThirteenfRateLimit(): Promise<void> {
   const now = Date.now();
-  const timeSinceLastCall = now - lastThirteenfCallTime;
+  const nextAllowedTime = lastThirteenfCallTime + THIRTEENF_RATE_LIMIT_DELAY;
 
-  if (timeSinceLastCall < THIRTEENF_RATE_LIMIT_DELAY) {
-    const waitTime = THIRTEENF_RATE_LIMIT_DELAY - timeSinceLastCall;
+  // Reserve the next slot immediately to prevent concurrent calls from bypassing rate limit
+  lastThirteenfCallTime = Math.max(now, nextAllowedTime);
+
+  if (now < nextAllowedTime) {
+    const waitTime = nextAllowedTime - now;
     // eslint-disable-next-line no-restricted-syntax -- Promise
     await new Promise(function rateLimitPromise(resolve) {
       setTimeout(resolve, waitTime);
     });
   }
-}
-
-export function updateThirteenfLastCallTime(): void {
-  lastThirteenfCallTime = Date.now();
 }
 
 export async function resolveCusipViaThirteenf(
@@ -30,7 +29,6 @@ export async function resolveCusipViaThirteenf(
     const response = await fetch(
       `https://13f.info/cusip/${encodeURIComponent(cusip)}`
     );
-    updateThirteenfLastCallTime();
 
     if (!response.ok) {
       logger.warn(
