@@ -53,14 +53,14 @@ so that I can close this epic with confidence.
 
 ### File List
 
-| File | Action |
-|------|--------|
+| File                                                               | Action                                          |
+| ------------------------------------------------------------------ | ----------------------------------------------- |
 | `apps/server/src/app/routes/import/resolve-cusip.function.spec.ts` | Modified — added 4 regression tests (141 lines) |
 
 ### Change Log
 
-| Date | Change |
-|------|--------|
+| Date       | Change                                                                    |
+| ---------- | ------------------------------------------------------------------------- |
 | 2026-03-19 | Initial implementation: 4 regression tests added (3 individual + 1 batch) |
 
 ### Previous Story Intelligence
@@ -71,23 +71,24 @@ so that I can close this epic with confidence.
 
 ### Expected Ticker Symbols (from Story 2.1 verification)
 
-| CUSIP      | Expected Ticker |
-|------------|-----------------|
-| 691543102  | OXLC            |
-| 88636J527  | ULTY            |
-| 88634T493  | MSTY            |
+| CUSIP     | Expected Ticker |
+| --------- | --------------- |
+| 691543102 | OXLC            |
+| 88636J527 | ULTY            |
+| 88634T493 | MSTY            |
 
 ### Key Files
 
-| File | Purpose |
-|------|----------|
-| `apps/server/src/app/routes/import/resolve-cusip.function.ts` | Resolution chain (modified in 2.3) |
-| `apps/server/src/app/routes/import/resolve-cusip.function.spec.ts` | Add regression tests here |
-| `apps/server/src/utils/thirteenf-cusip.service.ts` | 13f.info service (created in 2.2) |
+| File                                                               | Purpose                            |
+| ------------------------------------------------------------------ | ---------------------------------- |
+| `apps/server/src/app/routes/import/resolve-cusip.function.ts`      | Resolution chain (modified in 2.3) |
+| `apps/server/src/app/routes/import/resolve-cusip.function.spec.ts` | Add regression tests here          |
+| `apps/server/src/utils/thirteenf-cusip.service.ts`                 | 13f.info service (created in 2.2)  |
 
 ### Quality Validation
 
 Run the full quality gate:
+
 ```bash
 pnpm all
 pnpm e2e:dms-material:chromium

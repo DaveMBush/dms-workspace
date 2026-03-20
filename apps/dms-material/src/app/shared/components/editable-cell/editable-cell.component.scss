@@ -36,6 +36,10 @@
   font-size: 12px;
   margin-top: 2px;
   padding: 4px 8px;
-  background-color: color-mix(in srgb, var(--dms-error) 10%, var(--dms-surface));
+  background-color: color-mix(
+    in srgb,
+    var(--dms-error) 10%,
+    var(--dms-surface)
+  );
   border-radius: 4px;
 }

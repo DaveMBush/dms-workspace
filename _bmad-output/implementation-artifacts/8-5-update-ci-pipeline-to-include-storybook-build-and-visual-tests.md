@@ -57,6 +57,7 @@ so that visual regressions are caught before code reaches `main`.
 ### Pipeline Step Ordering
 
 Existing steps (must not break):
+
 1. Lint
 2. Build
 3. Unit tests
@@ -65,9 +66,7 @@ Existing steps (must not break):
 6. Duplicate check
 7. Format check
 
-New steps to add:
-8. Storybook build (cacheable)
-9. Storybook visual regression tests
+New steps to add: 8. Storybook build (cacheable) 9. Storybook visual regression tests
 
 ### GitHub Actions Caching
 

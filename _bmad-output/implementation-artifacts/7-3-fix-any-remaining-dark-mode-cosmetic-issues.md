@@ -46,13 +46,13 @@ so that the CUSIP Cache page looks polished in both themes.
 
 ### Key Files
 
-| File | Purpose |
-|------|---------|
-| `apps/dms-material/src/app/global/cusip-cache/cusip-cache.component.ts` | Component |
-| `apps/dms-material/src/app/global/cusip-cache/cusip-cache.html` | Template |
-| `apps/dms-material/src/app/global/cusip-cache/cusip-cache.scss` | Styles |
-| `apps/dms-material/src/app/global/cusip-cache/cusip-cache-add-dialog.component.ts` | Add dialog |
-| `apps/dms-material/src/themes/_theme-variables.scss` | Theme variables |
+| File                                                                               | Purpose         |
+| ---------------------------------------------------------------------------------- | --------------- |
+| `apps/dms-material/src/app/global/cusip-cache/cusip-cache.component.ts`            | Component       |
+| `apps/dms-material/src/app/global/cusip-cache/cusip-cache.html`                    | Template        |
+| `apps/dms-material/src/app/global/cusip-cache/cusip-cache.scss`                    | Styles          |
+| `apps/dms-material/src/app/global/cusip-cache/cusip-cache-add-dialog.component.ts` | Add dialog      |
+| `apps/dms-material/src/themes/_theme-variables.scss`                               | Theme variables |
 
 ### Previous Story Intelligence
 
@@ -62,6 +62,7 @@ so that the CUSIP Cache page looks polished in both themes.
 ### Epic Sequencing Impact
 
 After this story is complete:
+
 - E7 is done
 - E8 Story 8.4 (visual regression baseline capture) can proceed
 - Baselines captured before E7 would include cosmetic bugs as the "correct" baseline

@@ -62,6 +62,7 @@ so that the resolution logic is encapsulated and testable independently of the e
 ### Rate-Limit Pattern (mirror of Yahoo Finance)
 
 From `apps/server/src/app/routes/common/distribution-api.function.ts`:
+
 ```typescript
 let lastApiCallTime = 0;
 const YAHOO_RATE_LIMIT_DELAY = 10 * 1000;
@@ -70,10 +71,11 @@ async function enforceYahooFinanceRateLimit() {
   const now = Date.now();
   const timeSinceLastCall = now - lastApiCallTime;
   if (timeSinceLastCall < YAHOO_RATE_LIMIT_DELAY) {
-    await new Promise(resolve => setTimeout(resolve, YAHOO_RATE_LIMIT_DELAY - timeSinceLastCall));
+    await new Promise((resolve) => setTimeout(resolve, YAHOO_RATE_LIMIT_DELAY - timeSinceLastCall));
   }
 }
 ```
+
 Apply the same pattern with `THIRTEENF_RATE_LIMIT_DELAY = 1000`.
 
 ### 13f.info Ticker Extraction
@@ -82,49 +84,56 @@ URL: `https://13f.info/cusip/{CUSIP}`
 No authentication required.
 
 JSON-LD block in `<head>`:
+
 ```json
 {"@context":"https://schema.org","@type":"BreadcrumbList",
  "itemListElement":[{"name":"OXLC","item":"https://13f.info/cusip/691543102",
   "alternateName":"Oxford Lane Capital Corp.","identifier":"691543102",...}]}
 ```
+
 Extract ticker: `parsed.itemListElement[0].name`
 
 Verified results from Story 2.1 pre-test:
-| CUSIP      | Ticker |
+| CUSIP | Ticker |
 |------------|--------|
-| 691543102  | OXLC   |
-| 88636J527  | ULTY   |
-| 88634T493  | MSTY   |
+| 691543102 | OXLC |
+| 88636J527 | ULTY |
+| 88634T493 | MSTY |
 
 ### Prisma Schema Change Required
 
 Both schema files must stay in sync:
+
 - `prisma/schema.prisma` (SQLite dev)
 - `prisma/schema.postgresql.prisma` (PostgreSQL prod)
 
 Current `CusipCacheSource` enum:
+
 ```prisma
 enum CusipCacheSource {
   OPENFIGI
   YAHOO_FINANCE
 }
 ```
+
 Must become:
+
 ```prisma
 enum CusipCacheSource {
   THIRTEENF
   YAHOO_FINANCE
 }
 ```
+
 (Remove `OPENFIGI` as it is being deleted in Story 2.3; add `THIRTEENF` for 13f.info.)
 
 ### Naming Convention
 
 Resolution source values match the `CusipCacheSource` enum exactly:
-| Value          | Meaning                              |
+| Value | Meaning |
 |----------------|--------------------------------------|
-| `THIRTEENF`    | Resolved via 13f.info HTML scraping  |
-| `YAHOO_FINANCE`| Resolved via Yahoo Finance fallback  |
+| `THIRTEENF` | Resolved via 13f.info HTML scraping |
+| `YAHOO_FINANCE`| Resolved via Yahoo Finance fallback |
 
 ### Testing Standards
 
@@ -144,9 +153,11 @@ Resolution source values match the `CusipCacheSource` enum exactly:
 ## Dev Agent Record
 
 ### Agent Model Used
+
 Claude Opus 4.6 via GitHub Copilot
 
 ### Completion Notes List
+
 - Added `THIRTEENF` to `CusipCacheSource` enum in both schema files (kept `OPENFIGI` — removed in Story 2.3)
 - Implemented as standalone exported functions (not a class) to match the `distribution-api.function.ts` pattern
 - Uses `RegExp.exec()` instead of `String.match()` per eslint rules
@@ -157,12 +168,14 @@ Claude Opus 4.6 via GitHub Copilot
 - Prisma migration deferred to Story 2.3
 
 ### File List
+
 - `prisma/schema.prisma` — added `THIRTEENF` to `CusipCacheSource` enum
 - `prisma/schema.postgresql.prisma` — added `THIRTEENF` to `CusipCacheSource` enum
 - `apps/server/src/utils/thirteenf-cusip.service.ts` — new 13f.info CUSIP resolution service
 - `apps/server/src/utils/thirteenf-cusip.service.spec.ts` — unit tests (7 tests)
 
 ### Change Log
-| Date | Change | Reason |
-|------|--------|--------|
+
+| Date       | Change                 | Reason    |
+| ---------- | ---------------------- | --------- |
 | 2026-03-19 | Initial implementation | Story 2.2 |

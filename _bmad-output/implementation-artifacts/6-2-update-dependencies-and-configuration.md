@@ -53,6 +53,7 @@ so that the application builds with Tailwind v4.
 ### Production Bundle Verification (Critical)
 
 This is a go/no-go gate: if the production CSS bundle does NOT contain Tailwind utility classes from inline Angular component templates:
+
 1. Switch from `@tailwindcss/postcss` to `@tailwindcss/vite`
 2. Re-validate the entire build pipeline
 3. Document the decision change
@@ -60,17 +61,18 @@ This is a go/no-go gate: if the production CSS bundle does NOT contain Tailwind 
 ### Fallback Path
 
 If `@tailwindcss/postcss` does not work:
+
 - Use `@tailwindcss/vite` instead
 - Thread through Vite config alongside `@analogjs/vite-plugin-angular`
 - Re-run all verification steps
 
 ### Current Technology Versions
 
-| Package | Current | Target |
-|---------|---------|--------|
-| tailwindcss | 3.4.1 | ^4.x |
-| postcss | (check package.json) | compatible with @tailwindcss/postcss |
-| @tailwindcss/postcss | N/A | ^4.x (new) |
+| Package              | Current              | Target                               |
+| -------------------- | -------------------- | ------------------------------------ |
+| tailwindcss          | 3.4.1                | ^4.x                                 |
+| postcss              | (check package.json) | compatible with @tailwindcss/postcss |
+| @tailwindcss/postcss | N/A                  | ^4.x (new)                           |
 
 ### References
 

@@ -31,7 +31,10 @@ export function getLogFiles(): LogFileInfo[] {
         return file !== null;
       })
       .sort(function sortByModifiedTime(a, b) {
-        return new Date(b.lastModified).getTime() - new Date(a.lastModified).getTime();
+        return (
+          new Date(b.lastModified).getTime() -
+          new Date(a.lastModified).getTime()
+        );
       });
 
     return logFiles;
@@ -44,24 +47,27 @@ export function readLogFiles(specificFile?: string): LogEntry[] {
   const logsDir = join(process.cwd(), 'logs');
 
   try {
-    const logFilePaths = specificFile !== null && specificFile !== undefined && specificFile !== '' ?
-      [join(logsDir, specificFile)] :
-      readdirSync(logsDir)
-        .filter(function filterLogFiles(file) {
-          return file.endsWith('.log');
-        })
-        .map(function mapToPath(file) {
-          return join(logsDir, file);
-        });
+    const logFilePaths =
+      specificFile !== null && specificFile !== undefined && specificFile !== ''
+        ? [join(logsDir, specificFile)]
+        : readdirSync(logsDir)
+            .filter(function filterLogFiles(file) {
+              return file.endsWith('.log');
+            })
+            .map(function mapToPath(file) {
+              return join(logsDir, file);
+            });
 
     const logs: LogEntry[] = [];
 
     logFilePaths.forEach(function processLogFile(filePath) {
       try {
         const content = readFileSync(filePath, 'utf-8');
-        const lines = content.split('\n').filter(function filterEmptyLines(line) {
-          return line.trim();
-        });
+        const lines = content
+          .split('\n')
+          .filter(function filterEmptyLines(line) {
+            return line.trim();
+          });
 
         lines.forEach(function processLogLine(line) {
           try {
@@ -84,7 +90,10 @@ export function readLogFiles(specificFile?: string): LogEntry[] {
   }
 }
 
-export function deleteLogFile(filename: string): { success: boolean; message: string } {
+export function deleteLogFile(filename: string): {
+  success: boolean;
+  message: string;
+} {
   const logsDir = join(process.cwd(), 'logs');
   const filePath = join(logsDir, filename);
 

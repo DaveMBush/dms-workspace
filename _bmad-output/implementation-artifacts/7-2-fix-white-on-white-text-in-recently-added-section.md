@@ -50,13 +50,13 @@ so that users can read all text regardless of the active theme.
 
 ### Key Files
 
-| File | Purpose |
-|------|---------|
-| `apps/dms-material/src/app/global/cusip-cache/cusip-cache.component.ts` | Component source |
-| `apps/dms-material/src/app/global/cusip-cache/cusip-cache.html` | Template with "Recently Added" section |
-| `apps/dms-material/src/app/global/cusip-cache/cusip-cache.scss` | Component styles |
-| `apps/dms-material/src/themes/_theme-variables.scss` | Theme variable definitions |
-| `apps/dms-material/src/themes/_dark-theme.scss` | Dark theme definition |
+| File                                                                    | Purpose                                |
+| ----------------------------------------------------------------------- | -------------------------------------- |
+| `apps/dms-material/src/app/global/cusip-cache/cusip-cache.component.ts` | Component source                       |
+| `apps/dms-material/src/app/global/cusip-cache/cusip-cache.html`         | Template with "Recently Added" section |
+| `apps/dms-material/src/app/global/cusip-cache/cusip-cache.scss`         | Component styles                       |
+| `apps/dms-material/src/themes/_theme-variables.scss`                    | Theme variable definitions             |
+| `apps/dms-material/src/themes/_dark-theme.scss`                         | Dark theme definition                  |
 
 ### WCAG Contrast Requirements
 

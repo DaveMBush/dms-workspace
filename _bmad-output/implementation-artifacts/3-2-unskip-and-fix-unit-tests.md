@@ -43,6 +43,7 @@ so that the unit test suite is complete and reliable.
 ### What Counts as a Unit Test
 
 Any `*.spec.ts` file in:
+
 - `apps/dms-material/src/**/*.spec.ts`
 - `apps/server/src/**/*.spec.ts`
 
@@ -58,6 +59,7 @@ fix: correct null guard in AccountService.getAccount() (unskips account service 
 ### When a Bug Is Too Large to Fix Here
 
 If a `unskip-needs-fix` test exposes a defect that requires significant refactoring or a new story to resolve:
+
 1. Leave the skip in place (do not delete it)
 2. Add `// TODO(E3): blocked — see bug story X` above the skip
 3. Document it in the inventory as deferred
@@ -70,5 +72,6 @@ Do NOT touch tests in files containing `// @atdd`. These are intentional skips t
 ### Quality Gate
 
 Before marking this story done, the following must all be true:
+
 - `pnpm all` exits 0
 - `grep -r "it\.skip\|xit\b\|xtest\b\|describe\.skip\|xdescribe\b" apps/ --include="*.spec.ts"` returns only `@atdd` file matches (or zero matches)

@@ -45,10 +45,10 @@ Add after the existing "Styling & Theming — Critical Rules" section in `_bmad-
 
 ### Suggested Anti-Pattern Addition
 
-| Anti-Pattern | Why | Correct Alternative |
-|-------------|-----|---------------------|
-| Writing component CSS for layout/spacing | Tailwind utilities handle this | Use Tailwind utility classes in template |
-| Hardcoding hex/RGB color values | Breaks dark mode | Use `--dms-*` variables or Material tokens |
+| Anti-Pattern                             | Why                            | Correct Alternative                        |
+| ---------------------------------------- | ------------------------------ | ------------------------------------------ |
+| Writing component CSS for layout/spacing | Tailwind utilities handle this | Use Tailwind utility classes in template   |
+| Hardcoding hex/RGB color values          | Breaks dark mode               | Use `--dms-*` variables or Material tokens |
 
 ### Previous Story Intelligence
 

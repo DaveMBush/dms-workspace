@@ -37,6 +37,12 @@
         "project": ["chromium"],
         "ui": true
       }
+    },
+    "e2e-storybook": {
+      "executor": "@nx/playwright:playwright",
+      "options": {
+        "config": "apps/dms-material-e2e/playwright-storybook.config.ts"
+      }
     }
   }
 }

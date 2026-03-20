@@ -42,6 +42,7 @@ so that the app theme switch (light ↔ dark) correctly recolors every element.
 ### Available Theme Variables
 
 Defined in `apps/dms-material/src/themes/_theme-variables.scss`:
+
 - `--dms-background`, `--dms-surface`
 - `--dms-text-primary`, `--dms-text-secondary`
 - `--dms-border`
