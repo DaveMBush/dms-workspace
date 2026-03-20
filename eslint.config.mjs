@@ -848,6 +848,10 @@ const eslintConfig = async () => {
         '@typescript-eslint/naming-convention': 'off',
         '@angular-eslint/prefer-on-push-component-change-detection': 'off',
         '@angular-eslint/component-max-inline-declarations': 'off',
+        '@typescript-eslint/explicit-module-boundary-types': 'off',
+        '@typescript-eslint/require-await': 'off',
+        'sonarjs/no-duplicate-string': 'off',
+        'max-statements-per-line': 'off',
       },
     },
     {
