@@ -51,7 +51,7 @@ const mockAuthService = {
     return true;
   },
   clearError: function mockClearError(): void {
-    /* noop */
+    mockError.set(null);
   },
 };
 
