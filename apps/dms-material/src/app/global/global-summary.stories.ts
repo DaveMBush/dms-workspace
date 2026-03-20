@@ -81,7 +81,15 @@ export default meta;
 
 type Story = StoryObj<GlobalSummaryComponent>;
 
-export const LightMode: Story = {};
+export const LightMode: Story = {
+  decorators: [
+    function removeDarkTheme(story) {
+      const result = story();
+      document.body.classList.remove('dark-theme');
+      return result;
+    },
+  ],
+};
 
 export const DarkMode: Story = {
   decorators: [

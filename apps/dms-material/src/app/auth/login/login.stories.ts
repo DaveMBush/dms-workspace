@@ -1,4 +1,4 @@
-import { signal } from '@angular/core';
+import { computed, signal } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import {
   applicationConfig,
@@ -9,16 +9,24 @@ import {
 import { AuthService } from '../auth.service';
 import { LoginComponent } from './login';
 
+const mockCurrentUser = signal<object | null>(null);
+const mockIsLoading = signal(false);
+const mockError = signal<string | null>(null);
+
 const mockAuthService = {
-  currentUser: signal(null),
-  isLoading: signal(false),
-  error: signal(null),
-  isAuthenticated: signal(false),
-  authState: signal({
-    user: null,
-    isLoading: false,
-    error: null,
-    isAuthenticated: false,
+  currentUser: mockCurrentUser,
+  isLoading: mockIsLoading,
+  error: mockError,
+  isAuthenticated: computed(function computeIsAuthenticated() {
+    return mockCurrentUser() !== null;
+  }),
+  authState: computed(function computeAuthState() {
+    return {
+      user: mockCurrentUser(),
+      isLoading: mockIsLoading(),
+      error: mockError(),
+      isAuthenticated: mockCurrentUser() !== null,
+    };
   }),
   signIn: async function mockSignIn(): Promise<void> {
     /* noop */
@@ -64,7 +72,15 @@ export default meta;
 
 type Story = StoryObj<LoginComponent>;
 
-export const LightMode: Story = {};
+export const LightMode: Story = {
+  decorators: [
+    function removeDarkTheme(story) {
+      const result = story();
+      document.body.classList.remove('dark-theme');
+      return result;
+    },
+  ],
+};
 
 export const DarkMode: Story = {
   decorators: [
