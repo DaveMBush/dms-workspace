@@ -358,4 +358,145 @@ describe('resolveCusipSymbols', function () {
       );
     });
   });
+
+  // === Regression Tests: Previously Failing CUSIPs (Story 2.4) ===
+
+  describe('regression: previously failing CUSIPs resolve via 13f.info', function () {
+    test('should resolve 691543102 to OXLC via 13f.info', async function () {
+      const rows: FidelityCsvRow[] = [
+        {
+          date: '12/31/2025',
+          action: 'YOU BOUGHT',
+          symbol: '691543102',
+          description: 'OXFORD LANE CAPITAL CORP',
+          quantity: 10,
+          price: 5.0,
+          totalAmount: -50.0,
+          account: 'My Brokerage',
+        },
+      ];
+      mockResolveCusipViaThirteenf.mockResolvedValue('OXLC');
+
+      await resolveCusipSymbols(rows);
+
+      expect(rows[0].symbol).toBe('OXLC');
+      expect(mockResolveCusipViaThirteenf).toHaveBeenCalledWith('691543102');
+      expect(mockUpsertManyMappings).toHaveBeenCalledWith(
+        expect.arrayContaining([
+          expect.objectContaining({
+            cusip: '691543102',
+            symbol: 'OXLC',
+            source: 'THIRTEENF',
+          }),
+        ])
+      );
+    });
+
+    test('should resolve 88636J527 to ULTY via 13f.info', async function () {
+      const rows: FidelityCsvRow[] = [
+        {
+          date: '12/31/2025',
+          action: 'YOU BOUGHT',
+          symbol: '88636J527',
+          description: 'YIELDMAX ULTRA OPTION INCOME STRATEGY ETF',
+          quantity: 20,
+          price: 10.0,
+          totalAmount: -200.0,
+          account: 'My Brokerage',
+        },
+      ];
+      mockResolveCusipViaThirteenf.mockResolvedValue('ULTY');
+
+      await resolveCusipSymbols(rows);
+
+      expect(rows[0].symbol).toBe('ULTY');
+      expect(mockResolveCusipViaThirteenf).toHaveBeenCalledWith('88636J527');
+      expect(mockUpsertManyMappings).toHaveBeenCalledWith(
+        expect.arrayContaining([
+          expect.objectContaining({
+            cusip: '88636J527',
+            symbol: 'ULTY',
+            source: 'THIRTEENF',
+          }),
+        ])
+      );
+    });
+
+    test('should resolve 88634T493 to MSTY via 13f.info', async function () {
+      const rows: FidelityCsvRow[] = [
+        {
+          date: '12/31/2025',
+          action: 'YOU BOUGHT',
+          symbol: '88634T493',
+          description: 'YIELDMAX MSTR OPTION INCOME STRATEGY ETF',
+          quantity: 15,
+          price: 25.0,
+          totalAmount: -375.0,
+          account: 'My Brokerage',
+        },
+      ];
+      mockResolveCusipViaThirteenf.mockResolvedValue('MSTY');
+
+      await resolveCusipSymbols(rows);
+
+      expect(rows[0].symbol).toBe('MSTY');
+      expect(mockResolveCusipViaThirteenf).toHaveBeenCalledWith('88634T493');
+      expect(mockUpsertManyMappings).toHaveBeenCalledWith(
+        expect.arrayContaining([
+          expect.objectContaining({
+            cusip: '88634T493',
+            symbol: 'MSTY',
+            source: 'THIRTEENF',
+          }),
+        ])
+      );
+    });
+
+    test('should resolve all three CUSIPs in one batch', async function () {
+      const rows: FidelityCsvRow[] = [
+        {
+          date: '12/31/2025',
+          action: 'YOU BOUGHT',
+          symbol: '691543102',
+          description: 'OXFORD LANE CAPITAL CORP',
+          quantity: 10,
+          price: 5.0,
+          totalAmount: -50.0,
+          account: 'My Brokerage',
+        },
+        {
+          date: '12/31/2025',
+          action: 'YOU BOUGHT',
+          symbol: '88636J527',
+          description: 'YIELDMAX ULTRA OPTION INCOME STRATEGY ETF',
+          quantity: 20,
+          price: 10.0,
+          totalAmount: -200.0,
+          account: 'My Brokerage',
+        },
+        {
+          date: '12/31/2025',
+          action: 'YOU BOUGHT',
+          symbol: '88634T493',
+          description: 'YIELDMAX MSTR OPTION INCOME STRATEGY ETF',
+          quantity: 15,
+          price: 25.0,
+          totalAmount: -375.0,
+          account: 'My Brokerage',
+        },
+      ];
+      mockResolveCusipViaThirteenf
+        .mockResolvedValueOnce('OXLC')
+        .mockResolvedValueOnce('ULTY')
+        .mockResolvedValueOnce('MSTY');
+
+      await resolveCusipSymbols(rows);
+
+      expect(rows[0].symbol).toBe('OXLC');
+      expect(rows[1].symbol).toBe('ULTY');
+      expect(rows[2].symbol).toBe('MSTY');
+      expect(mockResolveCusipViaThirteenf).toHaveBeenCalledTimes(3);
+      expect(mockYahooSearch).not.toHaveBeenCalled();
+    });
+  });
 });
