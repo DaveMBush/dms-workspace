@@ -13,6 +13,7 @@ import { ActivatedRoute, RouterOutlet } from '@angular/router';
   imports: [RouterOutlet],
   templateUrl: './account-detail.component.html',
   styleUrl: './account-detail.component.scss',
+  host: { class: 'flex flex-col h-full' },
 })
 export class AccountDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);

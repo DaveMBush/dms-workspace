@@ -82,6 +82,7 @@ function enableSelectors(this: AccountSummaryComponent): void {
   templateUrl: './account-summary.html',
   styleUrl: './account-summary.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { class: 'flex flex-col w-full h-full overflow-hidden' },
 })
 export class AccountSummaryComponent {
   private readonly summaryService = inject(SummaryService);

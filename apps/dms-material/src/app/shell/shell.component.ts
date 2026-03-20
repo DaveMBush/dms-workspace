@@ -32,6 +32,7 @@ import { ThemeService } from '../shared/services/theme.service';
   templateUrl: './shell.html',
   styleUrl: './shell.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { class: 'flex flex-col h-screen' },
 })
 export class ShellComponent {
   private authService = inject(AuthService);

@@ -42,6 +42,7 @@ import { isPositive, isValidDate, isValidNumber } from './position-validators';
   ],
   templateUrl: './open-positions.component.html',
   styleUrl: './open-positions.component.scss',
+  host: { class: 'block h-full w-full' },
 })
 export class OpenPositionsComponent implements OnDestroy {
   private static readonly tableKey = 'trades-open';

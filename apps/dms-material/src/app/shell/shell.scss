@@ -1,19 +1,6 @@
-:host {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-}
+// :host layout migrated to host: { class: 'flex flex-col h-screen' } in shell.component.ts
 
-nav {
-  flex-shrink: 0;
-}
-
-main {
-  flex: 1;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
+// Layout migrated to Tailwind classes in shell.html
 
 .skip-link {
   position: absolute;
@@ -53,13 +40,8 @@ main {
   font-weight: 500;
 }
 
-.toolbar-spacer {
-  flex: 1 1 auto;
-}
-
 dms-splitter {
-  flex: 1;
-  overflow: hidden;
+  // flex-1 overflow-hidden migrated to Tailwind in template
 }
 
 .accounts-panel,

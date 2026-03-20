@@ -13,6 +13,7 @@ import { SessionWarningService } from './auth/services/session-warning.service';
   templateUrl: './test-session-warning.html',
   styleUrl: './test-session-warning.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { class: 'block max-w-[600px] mx-auto my-8' },
 })
 export class TestSessionWarningComponent {
   private sessionWarningService = inject(SessionWarningService);

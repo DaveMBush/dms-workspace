@@ -1,6 +1,1 @@
-:host {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  overflow: hidden;
-}
+// Layout styles migrated to host: { class: 'flex flex-col h-full overflow-hidden' } in app.ts

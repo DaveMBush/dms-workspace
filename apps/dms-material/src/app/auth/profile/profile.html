@@ -1,32 +1,32 @@
 <!-- eslint-disable @angular-eslint/template/no-call-expression -->
-<div class="profile-container">
-  <div class="header-section">
-    <h1 class="profile-title">User Profile</h1>
+<div class="p-4 max-w-[1536px] mx-auto">
+  <div class="mb-4">
+    <h1 class="profile-title mb-2">User Profile</h1>
     <p class="profile-subtitle">Manage your account settings and preferences</p>
   </div>
 
   <!-- Profile Information Section -->
-  <div class="section">
-    <h2 class="section-title">Profile Information</h2>
-    <div class="grid">
-      <div class="grid-col-half">
+  <div class="mb-4">
+    <h2 class="section-title mb-3">Profile Information</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="flex flex-col">
         <dms-profile-info-card />
       </div>
-      <div class="grid-col-half">
+      <div class="flex flex-col">
         <dms-session-info-card />
       </div>
     </div>
   </div>
 
   <!-- Security Section -->
-  <div class="section">
-    <h2 class="section-title">Security Settings</h2>
-    <div class="grid">
-      <div class="grid-col-half">
+  <div class="mb-4">
+    <h2 class="section-title mb-3">Security Settings</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="flex flex-col">
         <dms-password-change-card />
       </div>
-      <div class="grid-col-half">
-        <div class="nested-grid">
+      <div class="flex flex-col">
+        <div class="grid grid-cols-1 gap-4">
           <dms-email-change-card
             [currentEmail]="userEmail()"
             (emailChanged)="onEmailChanged()"
