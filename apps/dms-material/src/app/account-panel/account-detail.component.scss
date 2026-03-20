@@ -1,9 +1,2 @@
-:host {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-.account-detail-container {
-  @apply flex flex-col h-full;
-}
+// :host layout styles migrated to host: { class: 'flex flex-col h-full' } in component.ts
+// .account-detail-container already uses @apply in template

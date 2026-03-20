@@ -1,8 +1,4 @@
-:host {
-  display: block;
-  height: 100%;
-  width: 100%;
-}
+// :host layout migrated to host: { class: 'block h-full w-full' } in sold-positions.component.ts
 
 dms-base-table {
   display: block;

@@ -74,6 +74,7 @@ function buildEnrichedPoints(graphData: GraphPoint[]): EnrichedPoint[] {
   templateUrl: './global-summary.html',
   styleUrl: './global-summary.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { class: 'flex flex-col w-full h-full overflow-hidden' },
 })
 export class GlobalSummaryComponent implements OnInit {
   private readonly summaryService = inject(SummaryService);

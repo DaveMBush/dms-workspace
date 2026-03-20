@@ -1,9 +1,9 @@
 <a class="skip-link" href="#main-content">Skip to main content</a>
-<nav aria-label="Main navigation">
+<nav class="shrink-0" aria-label="Main navigation">
   <mat-toolbar color="primary" class="shell-toolbar">
     <span class="app-title">Dividend Management System Material</span>
 
-    <span class="toolbar-spacer"></span>
+    <span class="flex-auto"></span>
 
     <button
       mat-icon-button
@@ -35,8 +35,8 @@
 </nav>
 
 <!-- eslint-disable @angular-eslint/template/no-call-expression -->
-<main id="main-content" role="main">
-  <dms-splitter stateKey="dms-main-splitter" [initialLeftWidth]="20">
+<main id="main-content" role="main" class="flex-1 overflow-hidden flex flex-col">
+  <dms-splitter class="flex-1 overflow-hidden" stateKey="dms-main-splitter" [initialLeftWidth]="20">
     <div leftPanel class="accounts-panel">
       <router-outlet name="accounts"></router-outlet>
     </div>

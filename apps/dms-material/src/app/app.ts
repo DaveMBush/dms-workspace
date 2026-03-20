@@ -7,6 +7,7 @@ import { RouterModule } from '@angular/router';
   selector: 'dms-root',
   templateUrl: './app.html',
   styleUrl: './app.scss',
+  host: { class: 'flex flex-col h-full overflow-hidden' },
 })
 export class AppComponent {
   protected title = 'dms-material';

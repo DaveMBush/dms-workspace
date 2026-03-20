@@ -24,6 +24,7 @@ import { SoldPositionsComponentService } from './sold-positions-component.servic
   imports: [BaseTableComponent, MatFormFieldModule, MatInputModule],
   templateUrl: './sold-positions.component.html',
   styleUrl: './sold-positions.component.scss',
+  host: { class: 'block h-full w-full' },
 })
 export class SoldPositionsComponent implements OnDestroy {
   private static readonly tableKey = 'trades-closed';

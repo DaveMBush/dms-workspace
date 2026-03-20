@@ -46,6 +46,7 @@ import { selectUniverses } from '../../store/universe/selectors/select-universes
   ],
   templateUrl: './add-symbol-dialog.html',
   styleUrl: './add-symbol-dialog.scss',
+  host: { class: 'block' },
 })
 export class AddSymbolDialogComponent {
   private fb = inject(FormBuilder);

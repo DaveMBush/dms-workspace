@@ -1,10 +1,4 @@
-:host {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-}
+/* :host styles migrated to Tailwind host classes in component decorator */
 
 mat-card {
   flex: 1;

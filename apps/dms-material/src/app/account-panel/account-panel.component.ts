@@ -46,6 +46,7 @@ import { AddPositionDialogComponent } from './open-positions/add-position-dialog
   templateUrl: './account-panel.component.html',
   styleUrl: './account-panel.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { class: 'flex flex-col h-full' },
 })
 export class AccountPanelComponent implements OnInit, OnDestroy {
   private router = inject(Router);

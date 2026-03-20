@@ -37,6 +37,7 @@ import { DividendDepositsComponentService } from './dividend-deposits-component.
   ],
   templateUrl: './dividend-deposits.component.html',
   styleUrl: './dividend-deposits.component.scss',
+  host: { class: 'block h-full w-full' },
 })
 export class DividendDepositsComponent {
   private static readonly tableKey = 'div-deposits';

@@ -1,8 +1,4 @@
-:host {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
+// :host layout migrated to host: { class: 'flex flex-col h-full' } in account-panel.component.ts
 
 mat-tab-nav-panel {
   height: 100%;

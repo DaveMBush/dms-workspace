@@ -1,21 +1,9 @@
-.screener-container {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  overflow: hidden;
-}
+/* .screener-container layout migrated to Tailwind in template */
 
 .screener-toolbar {
-  flex-shrink: 0;
-  padding: 0 16px;
-
   .toolbar-title {
     font-weight: 500;
     margin-right: 16px;
-  }
-
-  .toolbar-spacer {
-    flex: 1;
   }
 
   mat-progress-spinner {
