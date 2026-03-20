@@ -67,12 +67,17 @@
       </div>
 
       @if (statsData.recentlyAdded.length > 0) {
-      <h3 class="mt-6 mb-2 text-sm font-medium text-gray-700">
+      <h3
+        class="mt-6 mb-2 text-sm font-medium text-gray-700 dark:text-gray-300"
+      >
         Recently Added
       </h3>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
         @for (recent of statsData.recentlyAdded; track recent.cusip) {
-        <div class="text-xs p-2 bg-gray-50 rounded" data-testid="recent-entry">
+        <div
+          class="text-xs p-2 bg-gray-50 dark:bg-gray-800 dark:text-gray-300 rounded"
+          data-testid="recent-entry"
+        >
           {{ recent.cusip }} → {{ recent.symbol }} ({{ recent.source }})
         </div>
         }
