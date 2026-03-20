@@ -6,7 +6,7 @@ import { prisma } from '../../prisma/prisma-client';
 interface CusipCacheMapping {
   cusip: string;
   symbol: string;
-  source: 'OPENFIGI' | 'YAHOO_FINANCE';
+  source: 'THIRTEENF' | 'YAHOO_FINANCE';
 }
 
 async function updateLastUsedAt(
@@ -94,7 +94,7 @@ async function findManyCusips(
 async function upsertMapping(
   cusip: string,
   symbol: string,
-  source: 'OPENFIGI' | 'YAHOO_FINANCE',
+  source: 'THIRTEENF' | 'YAHOO_FINANCE',
   client: PrismaClient = prisma
 ): Promise<void> {
   if (symbol.length === 0) {

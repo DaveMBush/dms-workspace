@@ -36,7 +36,7 @@ describe('CusipCacheAddDialogComponent', function describeDialog() {
     it('should have empty form', function shouldHaveEmptyForm() {
       expect(component.form.get('cusip')?.value).toBe('');
       expect(component.form.get('symbol')?.value).toBe('');
-      expect(component.form.get('source')?.value).toBe('OPENFIGI');
+      expect(component.form.get('source')?.value).toBe('THIRTEENF');
     });
 
     it('should have cusip enabled', function shouldEnableCusip() {
@@ -69,7 +69,7 @@ describe('CusipCacheAddDialogComponent', function describeDialog() {
     it('should submit valid form', function shouldSubmitValid() {
       component.form.get('cusip')?.setValue('037833100');
       component.form.get('symbol')?.setValue('AAPL');
-      component.form.get('source')?.setValue('OPENFIGI');
+      component.form.get('source')?.setValue('THIRTEENF');
       component.form.get('reason')?.setValue('test');
 
       component.onSubmit();
@@ -77,7 +77,7 @@ describe('CusipCacheAddDialogComponent', function describeDialog() {
       expect(dialogRefSpy.close).toHaveBeenCalledWith({
         cusip: '037833100',
         symbol: 'AAPL',
-        source: 'OPENFIGI',
+        source: 'THIRTEENF',
         reason: 'test',
       });
     });
@@ -85,7 +85,7 @@ describe('CusipCacheAddDialogComponent', function describeDialog() {
     it('should not submit whitespace-only symbol', function shouldRejectWhitespace() {
       component.form.get('cusip')?.setValue('037833100');
       component.form.get('symbol')?.setValue('   ');
-      component.form.get('source')?.setValue('OPENFIGI');
+      component.form.get('source')?.setValue('THIRTEENF');
 
       component.onSubmit();
 
@@ -95,7 +95,7 @@ describe('CusipCacheAddDialogComponent', function describeDialog() {
     it('should trim symbol whitespace on submit', function shouldTrimSymbol() {
       component.form.get('cusip')?.setValue('037833100');
       component.form.get('symbol')?.setValue('  AAPL  ');
-      component.form.get('source')?.setValue('OPENFIGI');
+      component.form.get('source')?.setValue('THIRTEENF');
       component.form.get('reason')?.setValue('');
 
       component.onSubmit();
@@ -120,7 +120,7 @@ describe('CusipCacheAddDialogComponent', function describeDialog() {
       id: '1',
       cusip: '037833100',
       symbol: 'AAPL',
-      source: 'OPENFIGI',
+      source: 'THIRTEENF',
       resolvedAt: null,
       lastUsedAt: null,
       createdAt: '2025-01-01',
@@ -149,7 +149,7 @@ describe('CusipCacheAddDialogComponent', function describeDialog() {
     it('should pre-fill form', function shouldPreFill() {
       expect(component.form.get('cusip')?.value).toBe('037833100');
       expect(component.form.get('symbol')?.value).toBe('AAPL');
-      expect(component.form.get('source')?.value).toBe('OPENFIGI');
+      expect(component.form.get('source')?.value).toBe('THIRTEENF');
     });
 
     it('should disable cusip field', function shouldDisableCusip() {

@@ -23,28 +23,27 @@ vi.mock('./cusip-cache.service', function () {
   };
 });
 
+vi.mock('../../../utils/thirteenf-cusip.service', function () {
+  return {
+    resolveCusipViaThirteenf: vi.fn(),
+  };
+});
+
+import { resolveCusipViaThirteenf } from '../../../utils/thirteenf-cusip.service';
 import { yahooFinance } from '../../routes/settings/yahoo-finance.instance';
 import { cusipCacheService } from './cusip-cache.service';
 import { FidelityCsvRow } from './fidelity-csv-row.interface';
 import { isCusip } from './is-cusip.function';
 import { resolveCusipSymbols } from './resolve-cusip.function';
 
-const mockFetch = vi.fn();
-vi.stubGlobal('fetch', mockFetch);
-
+const mockResolveCusipViaThirteenf =
+  resolveCusipViaThirteenf as ReturnType<typeof vi.fn>;
 const mockYahooSearch = yahooFinance.search as ReturnType<typeof vi.fn>;
 const mockFindManyCusips = cusipCacheService.findManyCusips as ReturnType<
   typeof vi.fn
 >;
 const mockUpsertManyMappings =
   cusipCacheService.upsertManyMappings as ReturnType<typeof vi.fn>;
-
-function mockFetchResponse(data: unknown, ok: boolean = true): void {
-  mockFetch.mockResolvedValue({
-    ok,
-    json: async () => data,
-  });
-}
 
 describe('isCusip', function () {
   test('should detect a valid 9-character CUSIP with digits', function () {
@@ -86,12 +85,12 @@ describe('isCusip', function () {
 
 describe('resolveCusipSymbols', function () {
   beforeEach(function () {
-    mockFetch.mockReset();
+    mockResolveCusipViaThirteenf.mockReset();
     mockYahooSearch.mockReset();
     mockFindManyCusips.mockReset();
     mockUpsertManyMappings.mockReset();
-    vi.unstubAllEnvs();
-    vi.stubEnv('OPENFIGI_API_KEY', '');
+    // Default: 13f.info returns null (no match)
+    mockResolveCusipViaThirteenf.mockResolvedValue(null);
     // Default: cache returns empty (cache miss)
     mockFindManyCusips.mockResolvedValue(new Map<string, string>());
     mockUpsertManyMappings.mockResolvedValue(undefined);
@@ -110,62 +109,28 @@ describe('resolveCusipSymbols', function () {
     };
   }
 
-  test('should resolve a CUSIP to a ticker symbol via OpenFIGI', async function () {
+  test('should resolve a CUSIP to a ticker symbol via 13f.info', async function () {
     const rows = [createRow('88634T493')];
-    mockFetchResponse([{ data: [{ ticker: 'MSTY' }] }]);
+    mockResolveCusipViaThirteenf.mockResolvedValue('MSTY');
 
     await resolveCusipSymbols(rows);
 
     expect(rows[0].symbol).toBe('MSTY');
-    expect(mockFetch).toHaveBeenCalledWith(
-      'https://api.openfigi.com/v3/mapping',
-      expect.objectContaining({
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-      })
-    );
+    expect(mockResolveCusipViaThirteenf).toHaveBeenCalledWith('88634T493');
   });
 
-  test('should include X-OPENFIGI-APIKEY header when env var is set', async function () {
-    vi.stubEnv('OPENFIGI_API_KEY', 'test-api-key');
-    const rows = [createRow('88634T493')];
-    mockFetchResponse([{ data: [{ ticker: 'MSTY' }] }]);
-
-    await resolveCusipSymbols(rows);
-
-    expect(mockFetch).toHaveBeenCalledWith(
-      'https://api.openfigi.com/v3/mapping',
-      expect.objectContaining({
-        headers: {
-          'Content-Type': 'application/json',
-          'X-OPENFIGI-APIKEY': 'test-api-key',
-        },
-      })
-    );
-  });
-
-  test('should keep original CUSIP when OpenFIGI returns no data', async function () {
+  test('should keep original CUSIP when 13f.info returns null', async function () {
     const rows = [createRow('99999X999')];
-    // Actual OpenFIGI v3 API returns "warning" (not "error") when no identifier found
-    mockFetchResponse([{ warning: 'No identifier found.' }]);
+    mockResolveCusipViaThirteenf.mockResolvedValue(null);
 
     await resolveCusipSymbols(rows);
 
     expect(rows[0].symbol).toBe('99999X999');
   });
 
-  test('should keep original CUSIP when fetch throws', async function () {
+  test('should keep original CUSIP when 13f.info throws', async function () {
     const rows = [createRow('88634T493')];
-    mockFetch.mockRejectedValue(new Error('Network error'));
-
-    await resolveCusipSymbols(rows);
-
-    expect(rows[0].symbol).toBe('88634T493');
-  });
-
-  test('should keep original CUSIP when API returns non-OK status', async function () {
-    const rows = [createRow('88634T493')];
-    mockFetchResponse([], false);
+    mockResolveCusipViaThirteenf.mockRejectedValue(new Error('Network error'));
 
     await resolveCusipSymbols(rows);
 
@@ -179,33 +144,32 @@ describe('resolveCusipSymbols', function () {
 
     expect(rows[0].symbol).toBe('SPY');
     expect(rows[1].symbol).toBe('AAPL');
-    expect(mockFetch).not.toHaveBeenCalled();
+    expect(mockResolveCusipViaThirteenf).not.toHaveBeenCalled();
   });
 
-  test('should deduplicate CUSIPs in batch request', async function () {
+  test('should deduplicate CUSIPs in lookup', async function () {
     const rows = [createRow('88634T493'), createRow('88634T493')];
-    mockFetchResponse([{ data: [{ ticker: 'MSTY' }] }]);
+    mockResolveCusipViaThirteenf.mockResolvedValue('MSTY');
 
     await resolveCusipSymbols(rows);
 
     expect(rows[0].symbol).toBe('MSTY');
     expect(rows[1].symbol).toBe('MSTY');
-    // Only one fetch call since both CUSIPs are the same
-    expect(mockFetch).toHaveBeenCalledTimes(1);
+    // Only one call since both CUSIPs are the same
+    expect(mockResolveCusipViaThirteenf).toHaveBeenCalledTimes(1);
   });
 
-  test('should resolve multiple different CUSIPs in single batch', async function () {
+  test('should resolve multiple different CUSIPs', async function () {
     const rows = [createRow('88634T493'), createRow('12345A678')];
-    mockFetchResponse([
-      { data: [{ ticker: 'MSTY' }] },
-      { data: [{ ticker: 'XYZ' }] },
-    ]);
+    mockResolveCusipViaThirteenf
+      .mockResolvedValueOnce('MSTY')
+      .mockResolvedValueOnce('XYZ');
 
     await resolveCusipSymbols(rows);
 
     expect(rows[0].symbol).toBe('MSTY');
     expect(rows[1].symbol).toBe('XYZ');
-    expect(mockFetch).toHaveBeenCalledTimes(1);
+    expect(mockResolveCusipViaThirteenf).toHaveBeenCalledTimes(2);
   });
 
   test('should skip empty symbols', async function () {
@@ -214,10 +178,10 @@ describe('resolveCusipSymbols', function () {
     await resolveCusipSymbols(rows);
 
     expect(rows[0].symbol).toBe('');
-    expect(mockFetch).not.toHaveBeenCalled();
+    expect(mockResolveCusipViaThirteenf).not.toHaveBeenCalled();
   });
 
-  test('should fall back to Yahoo Finance description search when OpenFIGI fails', async function () {
+  test('should fall back to Yahoo Finance when 13f.info returns null', async function () {
     const rows: FidelityCsvRow[] = [
       {
         date: '12/31/2025',
@@ -230,8 +194,8 @@ describe('resolveCusipSymbols', function () {
         account: 'My Brokerage',
       },
     ];
-    // OpenFIGI returns no data — actual API v3 uses "warning" not "error"
-    mockFetchResponse([{ warning: 'No identifier found.' }]);
+    // 13f.info returns null
+    mockResolveCusipViaThirteenf.mockResolvedValue(null);
     // Yahoo Finance returns OXLC
     mockYahooSearch.mockResolvedValue({
       quotes: [{ symbol: 'OXLC', quoteType: 'ETF' }],
@@ -246,9 +210,32 @@ describe('resolveCusipSymbols', function () {
     });
   });
 
-  test('should not call Yahoo Finance fallback when OpenFIGI resolves', async function () {
+  test('should fall back to Yahoo Finance when 13f.info throws network error', async function () {
+    const rows: FidelityCsvRow[] = [
+      {
+        date: '12/31/2025',
+        action: 'YOU BOUGHT',
+        symbol: '691543102',
+        description: 'OXFORD LANE CAPITAL CORP',
+        quantity: 10,
+        price: 5.0,
+        totalAmount: -50.0,
+        account: 'My Brokerage',
+      },
+    ];
+    mockResolveCusipViaThirteenf.mockRejectedValue(new Error('Network error'));
+    mockYahooSearch.mockResolvedValue({
+      quotes: [{ symbol: 'OXLC', quoteType: 'ETF' }],
+    });
+
+    await resolveCusipSymbols(rows);
+
+    expect(rows[0].symbol).toBe('OXLC');
+  });
+
+  test('should not call Yahoo Finance fallback when 13f.info resolves', async function () {
     const rows = [createRow('88634T493')];
-    mockFetchResponse([{ data: [{ ticker: 'MSTY' }] }]);
+    mockResolveCusipViaThirteenf.mockResolvedValue('MSTY');
 
     await resolveCusipSymbols(rows);
 
@@ -256,7 +243,7 @@ describe('resolveCusipSymbols', function () {
     expect(mockYahooSearch).not.toHaveBeenCalled();
   });
 
-  test('should keep CUSIP when both OpenFIGI and Yahoo Finance fail', async function () {
+  test('should keep CUSIP when both 13f.info and Yahoo Finance fail', async function () {
     const rows: FidelityCsvRow[] = [
       {
         date: '12/31/2025',
@@ -269,7 +256,7 @@ describe('resolveCusipSymbols', function () {
         account: 'My Brokerage',
       },
     ];
-    mockFetchResponse([{ warning: 'No identifier found.' }]);
+    mockResolveCusipViaThirteenf.mockResolvedValue(null);
     mockYahooSearch.mockResolvedValue({ quotes: [] });
 
     await resolveCusipSymbols(rows);
@@ -290,7 +277,7 @@ describe('resolveCusipSymbols', function () {
         account: 'My Brokerage',
       },
     ];
-    mockFetchResponse([{ warning: 'No identifier found.' }]);
+    mockResolveCusipViaThirteenf.mockResolvedValue(null);
     mockYahooSearch.mockResolvedValue({
       quotes: [
         { symbol: 'OXLC.IDX', quoteType: 'INDEX' },
@@ -314,21 +301,21 @@ describe('resolveCusipSymbols', function () {
 
       await resolveCusipSymbols(rows);
       expect(rows[0].symbol).toBe('MSTY');
-      expect(mockFetch).not.toHaveBeenCalled();
+      expect(mockResolveCusipViaThirteenf).not.toHaveBeenCalled();
       expect(mockYahooSearch).not.toHaveBeenCalled();
     });
 
-    test('should trigger original API lookup flow on cache miss', async function () {
+    test('should trigger 13f.info lookup on cache miss', async function () {
       const rows = [createRow('88634T493')];
       mockFindManyCusips.mockResolvedValue(new Map<string, string>());
-      mockFetchResponse([{ data: [{ ticker: 'MSTY' }] }]);
+      mockResolveCusipViaThirteenf.mockResolvedValue('MSTY');
 
       await resolveCusipSymbols(rows);
       expect(rows[0].symbol).toBe('MSTY');
-      expect(mockFetch).toHaveBeenCalled();
+      expect(mockResolveCusipViaThirteenf).toHaveBeenCalled();
     });
 
-    test('should bypass both OpenFIGI and Yahoo Finance on cache hit', async function () {
+    test('should bypass both 13f.info and Yahoo Finance on cache hit', async function () {
       const rows: FidelityCsvRow[] = [
         {
           date: '12/31/2025',
@@ -347,14 +334,14 @@ describe('resolveCusipSymbols', function () {
 
       await resolveCusipSymbols(rows);
       expect(rows[0].symbol).toBe('OXLC');
-      expect(mockFetch).not.toHaveBeenCalled();
+      expect(mockResolveCusipViaThirteenf).not.toHaveBeenCalled();
       expect(mockYahooSearch).not.toHaveBeenCalled();
     });
 
-    test('should make newly resolved symbols immediately available in cache', async function () {
+    test('should cache 13f.info results with source THIRTEENF', async function () {
       const rows = [createRow('88634T493')];
       mockFindManyCusips.mockResolvedValue(new Map<string, string>());
-      mockFetchResponse([{ data: [{ ticker: 'MSTY' }] }]);
+      mockResolveCusipViaThirteenf.mockResolvedValue('MSTY');
 
       await resolveCusipSymbols(rows);
       expect(rows[0].symbol).toBe('MSTY');
@@ -364,7 +351,7 @@ describe('resolveCusipSymbols', function () {
           expect.objectContaining({
             cusip: '88634T493',
             symbol: 'MSTY',
-            source: 'OPENFIGI',
+            source: 'THIRTEENF',
           }),
         ])
       );

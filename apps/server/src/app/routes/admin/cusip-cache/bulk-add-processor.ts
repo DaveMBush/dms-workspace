@@ -41,7 +41,7 @@ async function processBulkMappings(
     }
 
     const effectiveSource: CusipCacheSource =
-      mapping.source === 'YAHOO_FINANCE' ? 'YAHOO_FINANCE' : 'OPENFIGI';
+      mapping.source === 'YAHOO_FINANCE' ? 'YAHOO_FINANCE' : 'THIRTEENF';
 
     await cusipCacheTransactions.upsertWithAudit({
       cusip: mapping.cusip.toUpperCase(),

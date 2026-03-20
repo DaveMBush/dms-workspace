@@ -11,7 +11,7 @@ async function seedTestMapping(page: Page): Promise<void> {
     data: {
       cusip: TEST_CUSIP,
       symbol: TEST_SYMBOL,
-      source: 'OPENFIGI',
+      source: 'THIRTEENF',
       reason: 'E2E test seed',
     },
   });
@@ -201,7 +201,7 @@ test.describe('CUSIP Cache Admin UI', function describeCusipCache() {
 
       const sourceSelect = page.locator('[data-testid="dialog-source-select"]');
       await sourceSelect.click();
-      await page.locator('mat-option:has-text("OPENFIGI")').click();
+      await page.locator('mat-option:has-text("THIRTEENF")').click();
 
       await page
         .locator('[data-testid="dialog-reason-input"]')

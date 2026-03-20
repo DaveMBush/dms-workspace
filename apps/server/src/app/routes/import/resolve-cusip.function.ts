@@ -1,93 +1,37 @@
+import { resolveCusipViaThirteenf } from '../../../utils/thirteenf-cusip.service';
 import { yahooFinance } from '../../routes/settings/yahoo-finance.instance';
 import { cusipCacheService } from './cusip-cache.service';
 import { FidelityCsvRow } from './fidelity-csv-row.interface';
 import { isCusip } from './is-cusip.function';
 
-const OPENFIGI_URL = 'https://api.openfigi.com/v3/mapping';
-
-interface OpenFigiJob {
-  idType: string;
-  idValue: string;
-}
-
-interface OpenFigiResult {
-  data?: Array<{ ticker?: string }>;
-  warning?: string;
-  error?: string; // kept for back-compat; actual v3 API uses "warning"
-}
-
 /**
- * Checks whether an OpenFIGI result entry has a resolved ticker.
+ * Attempts to resolve a single CUSIP via 13f.info, catching errors.
  */
-function getTickerFromResult(entry: OpenFigiResult): string | undefined {
-  if (
-    entry.data &&
-    entry.data.length > 0 &&
-    entry.data[0].ticker !== undefined &&
-    entry.data[0].ticker.length > 0
-  ) {
-    return entry.data[0].ticker;
-  }
-  return undefined;
-}
-
-/**
- * Processes a single batch of CUSIPs against the OpenFIGI API.
- */
-async function processBatch(
-  batch: string[],
+async function tryResolveSingleCusip(
+  cusip: string,
   result: Map<string, string>
 ): Promise<void> {
-  const jobs: OpenFigiJob[] = batch.map(function toJob(cusip) {
-    return { idType: 'ID_CUSIP', idValue: cusip };
-  });
-
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-  };
-  const apiKey = process.env['OPENFIGI_API_KEY'];
-  if (apiKey !== undefined && apiKey.length > 0) {
-    headers['X-OPENFIGI-APIKEY'] = apiKey;
-  }
-
-  const response = await fetch(OPENFIGI_URL, {
-    method: 'POST',
-    headers,
-    body: JSON.stringify(jobs),
-  });
-
-  if (!response.ok) {
-    return;
-  }
-
-  const data = (await response.json()) as OpenFigiResult[];
-  for (let j = 0; j < data.length; j++) {
-    const ticker = getTickerFromResult(data[j]);
-    if (ticker !== undefined) {
-      result.set(batch[j], ticker);
+  try {
+    const ticker = await resolveCusipViaThirteenf(cusip);
+    if (ticker !== null) {
+      result.set(cusip, ticker);
     }
+  } catch {
+    // 13f.info unavailable — skip this CUSIP
   }
 }
 
 /**
- * Looks up CUSIPs via the OpenFIGI API (Bloomberg) in a single batch request.
+ * Looks up CUSIPs via 13f.info one at a time (rate-limited to 1 req/sec).
  * Returns a map of CUSIP → ticker for resolved CUSIPs.
- * Free tier: 25 requests/minute, 10 jobs per request (no API key needed).
  */
-async function batchLookupCusips(
+async function lookupCusipsViaThirteenf(
   cusips: string[]
 ): Promise<Map<string, string>> {
   const result = new Map<string, string>();
-  // OpenFIGI allows up to 10 jobs per request
-  const batchSize = 10;
 
-  for (let i = 0; i < cusips.length; i += batchSize) {
-    const batch = cusips.slice(i, i + batchSize);
-    try {
-      await processBatch(batch, result);
-    } catch {
-      // OpenFIGI unavailable — skip this batch
-    }
+  for (const cusip of cusips) {
+    await tryResolveSingleCusip(cusip, result);
   }
 
   return result;
@@ -222,12 +166,12 @@ function collectYahooMappings(
 ): Array<{
   cusip: string;
   symbol: string;
-  source: 'OPENFIGI' | 'YAHOO_FINANCE';
+  source: 'THIRTEENF' | 'YAHOO_FINANCE';
 }> {
   const yahooMappings: Array<{
     cusip: string;
     symbol: string;
-    source: 'OPENFIGI' | 'YAHOO_FINANCE';
+    source: 'THIRTEENF' | 'YAHOO_FINANCE';
   }> = [];
   for (const [cusip, symbol] of resolved) {
     if (!resolvedBeforeYahoo.has(cusip)) {
@@ -239,7 +183,7 @@ function collectYahooMappings(
 
 /**
  * Resolves CUSIP identifiers in parsed CSV rows to proper ticker symbols.
- * Strategy: Check cache first, then OpenFIGI batch lookup, then Yahoo Finance fallback.
+ * Strategy: Check cache first, then 13f.info lookup, then Yahoo Finance fallback.
  * Rows with unresolvable CUSIPs keep their original symbol.
  *
  * @param rows - Parsed CSV rows (mutated in place)
@@ -267,17 +211,16 @@ export async function resolveCusipSymbols(
   const resolved = new Map<string, string>(cached);
 
   if (uncachedCusips.length > 0) {
-    // Look up uncached CUSIPs via OpenFIGI
-    const apiResolved = await batchLookupCusips(uncachedCusips);
+    // Look up uncached CUSIPs via 13f.info
+    const apiResolved = await lookupCusipsViaThirteenf(uncachedCusips);
 
-    // Cache OpenFIGI results
-    const openfigiMappings = [...apiResolved.entries()].map(function toMapping([
-      cusip,
-      symbol,
-    ]) {
-      return { cusip, symbol, source: 'OPENFIGI' as const };
-    });
-    await cusipCacheService.upsertManyMappings(openfigiMappings);
+    // Cache 13f.info results
+    const thirteenfMappings = [...apiResolved.entries()].map(
+      function toMapping([cusip, symbol]) {
+        return { cusip, symbol, source: 'THIRTEENF' as const };
+      }
+    );
+    await cusipCacheService.upsertManyMappings(thirteenfMappings);
 
     // Merge API results into resolved map
     for (const [cusip, symbol] of apiResolved) {
