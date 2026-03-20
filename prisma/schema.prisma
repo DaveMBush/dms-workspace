@@ -142,7 +142,6 @@ model screener {
 }
 
 enum CusipCacheSource {
-  OPENFIGI
   THIRTEENF
   YAHOO_FINANCE
 }

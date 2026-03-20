@@ -163,7 +163,7 @@ describe('CusipCacheComponent', function describeComponent() {
           id: '1',
           cusip: '037833100',
           symbol: 'AAPL',
-          source: 'OPENFIGI',
+          source: 'THIRTEENF',
           resolvedAt: null,
           lastUsedAt: null,
           createdAt: '2025-01-01',
@@ -177,14 +177,14 @@ describe('CusipCacheComponent', function describeComponent() {
       dialogClosedSubject.next({
         cusip: '037833100',
         symbol: 'AAPL',
-        source: 'OPENFIGI',
+        source: 'THIRTEENF',
         reason: 'test',
       });
 
       expect(addSpy).toHaveBeenCalledWith(
         '037833100',
         'AAPL',
-        'OPENFIGI',
+        'THIRTEENF',
         'test'
       );
       expect(notifySpy).toHaveBeenCalledWith('Mapping added successfully');
@@ -210,7 +210,7 @@ describe('CusipCacheComponent', function describeComponent() {
       id: '1',
       cusip: '037833100',
       symbol: 'AAPL',
-      source: 'OPENFIGI',
+      source: 'THIRTEENF',
       resolvedAt: null,
       lastUsedAt: null,
       createdAt: '2025-01-01',
@@ -250,7 +250,7 @@ describe('CusipCacheComponent', function describeComponent() {
           id: '1',
           cusip: '037833100',
           symbol: 'AAPL2',
-          source: 'OPENFIGI',
+          source: 'THIRTEENF',
           resolvedAt: null,
           lastUsedAt: null,
           createdAt: '2025-01-01',
@@ -263,14 +263,14 @@ describe('CusipCacheComponent', function describeComponent() {
       dialogClosedSubject.next({
         cusip: '037833100',
         symbol: 'AAPL2',
-        source: 'OPENFIGI',
+        source: 'THIRTEENF',
         reason: 'corrected',
       });
 
       expect(addSpy).toHaveBeenCalledWith(
         '037833100',
         'AAPL2',
-        'OPENFIGI',
+        'THIRTEENF',
         'corrected'
       );
       expect(notifySpy).toHaveBeenCalledWith('Mapping updated successfully');
@@ -282,7 +282,7 @@ describe('CusipCacheComponent', function describeComponent() {
           id: '1',
           cusip: '037833100',
           symbol: 'AAPL2',
-          source: 'OPENFIGI',
+          source: 'THIRTEENF',
           resolvedAt: null,
           lastUsedAt: null,
           createdAt: '2025-01-01',
@@ -297,7 +297,7 @@ describe('CusipCacheComponent', function describeComponent() {
       dialogClosedSubject.next({
         cusip: '037833100',
         symbol: 'AAPL2',
-        source: 'OPENFIGI',
+        source: 'THIRTEENF',
         reason: '',
       });
 
@@ -310,7 +310,7 @@ describe('CusipCacheComponent', function describeComponent() {
       id: '1',
       cusip: '037833100',
       symbol: 'AAPL',
-      source: 'OPENFIGI',
+      source: 'THIRTEENF',
       resolvedAt: null,
       lastUsedAt: null,
       createdAt: '2025-01-01',

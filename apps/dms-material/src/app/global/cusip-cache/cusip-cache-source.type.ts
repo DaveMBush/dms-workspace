@@ -1,1 +1,1 @@
-export type CusipCacheSource = 'OPENFIGI' | 'YAHOO_FINANCE';
+export type CusipCacheSource = 'THIRTEENF' | 'YAHOO_FINANCE';

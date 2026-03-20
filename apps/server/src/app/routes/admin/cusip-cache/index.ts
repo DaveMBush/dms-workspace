@@ -132,14 +132,14 @@ async function handleAdd(
   if (!cusipCacheValidators.isValidSource(source)) {
     reply
       .status(400)
-      .send({ error: 'Invalid source (must be OPENFIGI or YAHOO_FINANCE)' });
+      .send({ error: 'Invalid source (must be THIRTEENF or YAHOO_FINANCE)' });
     return;
   }
 
   const entry = await cusipCacheTransactions.upsertWithAudit({
     cusip: cusip.toUpperCase(),
     symbol: symbol.toUpperCase(),
-    source: (source ?? 'OPENFIGI') as CusipCacheSource,
+    source: (source ?? 'THIRTEENF') as CusipCacheSource,
     auditSource: 'MANUAL',
     reason,
   });

@@ -10,7 +10,7 @@ function isNonEmptySymbol(value: unknown): value is string {
 
 function isValidSource(source: string | undefined): boolean {
   return (
-    source === undefined || source === 'OPENFIGI' || source === 'YAHOO_FINANCE'
+    source === undefined || source === 'THIRTEENF' || source === 'YAHOO_FINANCE'
   );
 }
 

@@ -54,7 +54,7 @@ export class CusipCacheAddDialogComponent {
       this.data?.symbol ?? '',
       [Validators.required, Validators.minLength(1)],
     ],
-    source: [this.data?.source ?? 'OPENFIGI', [Validators.required]],
+    source: [this.data?.source ?? 'THIRTEENF', [Validators.required]],
     reason: [''],
   });
 

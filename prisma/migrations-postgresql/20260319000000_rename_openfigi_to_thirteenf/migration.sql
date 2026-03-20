@@ -1,0 +1,2 @@
+-- RenameEnumValue
+ALTER TYPE "CusipCacheSource" RENAME VALUE 'OPENFIGI' TO 'THIRTEENF';

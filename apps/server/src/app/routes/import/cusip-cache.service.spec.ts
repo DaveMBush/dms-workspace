@@ -15,7 +15,7 @@ interface CusipCacheEntry {
   id: string;
   cusip: string;
   symbol: string;
-  source: 'OPENFIGI' | 'YAHOO_FINANCE';
+  source: 'THIRTEENF' | 'YAHOO_FINANCE';
   resolvedAt: Date;
   createdAt: Date;
   updatedAt: Date;
@@ -44,7 +44,7 @@ function createCacheEntry(
     id: 'uuid-' + cusip,
     cusip,
     symbol,
-    source: 'OPENFIGI',
+    source: 'THIRTEENF',
     resolvedAt: defaultTimestamp,
     createdAt: defaultTimestamp,
     updatedAt: defaultTimestamp,
@@ -158,7 +158,7 @@ describe('cusipCacheService', function () {
   // === Cache Update Tests (AC: 6-10) ===
 
   describe('cache update', function () {
-    test('should cache successful OpenFIGI resolutions', async function () {
+    test('should cache successful 13f.info resolutions', async function () {
       const entry = createCacheEntry('88634T493', 'MSTY');
       (
         mockPrisma.cusip_cache.upsert as ReturnType<typeof vi.fn>
@@ -167,14 +167,14 @@ describe('cusipCacheService', function () {
       await cusipCacheService.upsertMapping(
         '88634T493',
         'MSTY',
-        'OPENFIGI',
+        'THIRTEENF',
         mockPrisma
       );
 
       expect(mockPrisma.cusip_cache.upsert).toHaveBeenCalledWith({
         where: { cusip: '88634T493' },
-        update: { symbol: 'MSTY', source: 'OPENFIGI' },
-        create: { cusip: '88634T493', symbol: 'MSTY', source: 'OPENFIGI' },
+        update: { symbol: 'MSTY', source: 'THIRTEENF' },
+        create: { cusip: '88634T493', symbol: 'MSTY', source: 'THIRTEENF' },
       });
     });
 
@@ -214,7 +214,7 @@ describe('cusipCacheService', function () {
         await cusipCacheService.upsertMapping(
           failedCusip,
           resolvedSymbol,
-          'OPENFIGI',
+          'THIRTEENF',
           mockPrisma
         );
       }
@@ -239,7 +239,7 @@ describe('cusipCacheService', function () {
           return {
             cusip,
             symbol: resolved.get(cusip)!,
-            source: 'OPENFIGI',
+            source: 'THIRTEENF',
           };
         });
 
@@ -249,8 +249,8 @@ describe('cusipCacheService', function () {
       expect(mockPrisma.cusip_cache.upsert).toHaveBeenCalledTimes(1);
       expect(mockPrisma.cusip_cache.upsert).toHaveBeenCalledWith({
         where: { cusip: '88634T493' },
-        update: { symbol: 'MSTY', source: 'OPENFIGI' },
-        create: { cusip: '88634T493', symbol: 'MSTY', source: 'OPENFIGI' },
+        update: { symbol: 'MSTY', source: 'THIRTEENF' },
+        create: { cusip: '88634T493', symbol: 'MSTY', source: 'THIRTEENF' },
       });
     });
 
@@ -265,7 +265,7 @@ describe('cusipCacheService', function () {
       await cusipCacheService.upsertMapping(
         '88634T493',
         'MSTY',
-        'OPENFIGI',
+        'THIRTEENF',
         mockPrisma
       );
 
@@ -279,7 +279,7 @@ describe('cusipCacheService', function () {
       await cusipCacheService.upsertMapping(
         '88634T493',
         'MSTY_NEW',
-        'OPENFIGI',
+        'THIRTEENF',
         mockPrisma
       );
 
@@ -312,7 +312,7 @@ describe('cusipCacheService', function () {
         cusipCacheService.upsertMapping(
           '88634T493',
           'MSTY',
-          'OPENFIGI',
+          'THIRTEENF',
           mockPrisma
         )
       ).resolves.toBeUndefined();
@@ -333,7 +333,7 @@ describe('cusipCacheService', function () {
       await cusipCacheService.upsertMapping(
         '88634T493',
         '',
-        'OPENFIGI',
+        'THIRTEENF',
         mockPrisma
       );
 
@@ -357,7 +357,7 @@ describe('cusipCacheService', function () {
       await cusipCacheService.upsertMapping(
         '88634T493',
         'MSTY',
-        'OPENFIGI',
+        'THIRTEENF',
         mockPrisma
       );
 

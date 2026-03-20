@@ -37,14 +37,14 @@ describe('CusipCacheAdminService', function describeService() {
     it('should fetch stats and update signal', function shouldFetch() {
       const mockStats = {
         totalEntries: 42,
-        entriesBySource: { OPENFIGI: 30, YAHOO_FINANCE: 12 },
+        entriesBySource: { THIRTEENF: 30, YAHOO_FINANCE: 12 },
         oldestEntry: '2024-01-01',
         newestEntry: '2025-03-01',
         recentlyAdded: [
           {
             cusip: '037833100',
             symbol: 'AAPL',
-            source: 'OPENFIGI',
+            source: 'THIRTEENF',
             resolvedAt: '2025-03-01',
           },
         ],
@@ -111,7 +111,7 @@ describe('CusipCacheAdminService', function describeService() {
             id: '1',
             cusip: '037833100',
             symbol: 'AAPL',
-            source: 'OPENFIGI',
+            source: 'THIRTEENF',
             resolvedAt: null,
             lastUsedAt: null,
             createdAt: '2025-01-01',
@@ -167,7 +167,7 @@ describe('CusipCacheAdminService', function describeService() {
             id: '1',
             cusip: '037833100',
             symbol: 'AAPL',
-            source: 'OPENFIGI',
+            source: 'THIRTEENF',
             resolvedAt: null,
             lastUsedAt: null,
             createdAt: '2025-01-01',
@@ -186,7 +186,7 @@ describe('CusipCacheAdminService', function describeService() {
   describe('addMapping', function describeAddMapping() {
     it('should post a new mapping', function shouldAdd() {
       service
-        .addMapping('037833100', 'AAPL', 'OPENFIGI', 'test reason')
+        .addMapping('037833100', 'AAPL', 'THIRTEENF', 'test reason')
         .subscribe();
 
       const req = httpMock.expectOne('/api/admin/cusip-cache/add');
@@ -194,21 +194,21 @@ describe('CusipCacheAdminService', function describeService() {
       expect(req.request.body).toEqual({
         cusip: '037833100',
         symbol: 'AAPL',
-        source: 'OPENFIGI',
+        source: 'THIRTEENF',
         reason: 'test reason',
       });
       req.flush({
         id: '1',
         cusip: '037833100',
         symbol: 'AAPL',
-        source: 'OPENFIGI',
+        source: 'THIRTEENF',
       });
 
       expect(service.loading()).toBe(false);
     });
 
     it('should handle add error', function shouldHandleAddError() {
-      service.addMapping('invalid', 'X', 'OPENFIGI').subscribe({
+      service.addMapping('invalid', 'X', 'THIRTEENF').subscribe({
         error: function noop() {
           // expected
         },

@@ -67,7 +67,7 @@ vi.mock('./upsert-with-audit', function () {
         id: 'uuid-1',
         cusip: '037833100',
         symbol: 'AAPL',
-        source: 'OPENFIGI',
+        source: 'THIRTEENF',
       }),
       deleteWithAudit: vi.fn().mockResolvedValue(undefined),
     },
@@ -109,7 +109,7 @@ describe('Admin CUSIP Cache Routes', function () {
       (
         prisma.cusip_cache.groupBy as ReturnType<typeof vi.fn>
       ).mockResolvedValue([
-        { source: 'OPENFIGI', _count: 70 },
+        { source: 'THIRTEENF', _count: 70 },
         { source: 'YAHOO_FINANCE', _count: 30 },
       ]);
       (
@@ -118,7 +118,7 @@ describe('Admin CUSIP Cache Routes', function () {
         {
           cusip: '037833100',
           symbol: 'AAPL',
-          source: 'OPENFIGI',
+          source: 'THIRTEENF',
           resolvedAt: new Date(),
         },
       ]);
@@ -134,7 +134,10 @@ describe('Admin CUSIP Cache Routes', function () {
       expect(response.statusCode).toBe(200);
       const body = JSON.parse(response.body);
       expect(body.totalEntries).toBe(100);
-      expect(body.entriesBySource).toEqual({ OPENFIGI: 70, YAHOO_FINANCE: 30 });
+      expect(body.entriesBySource).toEqual({
+        THIRTEENF: 70,
+        YAHOO_FINANCE: 30,
+      });
       expect(body.recentlyAdded).toHaveLength(1);
       expect(body).toHaveProperty('timestamp');
     });
@@ -199,7 +202,7 @@ describe('Admin CUSIP Cache Routes', function () {
       expect(cusipCacheTransactions.upsertWithAudit).toHaveBeenCalledWith({
         cusip: '037833100',
         symbol: 'AAPL',
-        source: 'OPENFIGI',
+        source: 'THIRTEENF',
         auditSource: 'MANUAL',
         reason: undefined,
       });
