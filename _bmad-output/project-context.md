@@ -207,6 +207,34 @@ Use `--dms-*` custom properties for semantic colors (defined in `_theme-variable
 - `inlineStyleLanguage: "scss"` — component styles use SCSS.
 - Import `@use '@angular/material' as mat;` for Material mixins inside component SCSS.
 
+### CSS Policy
+
+**Prefer Tailwind utility classes for layout, spacing, and color. Use `--dms-*` / Angular Material theme tokens for brand colors. Component-level CSS is a last resort for truly component-specific styles that cannot be expressed otherwise.**
+
+#### When to Use Each Approach
+
+| Approach | Use When | Examples |
+| --- | --- | --- |
+| Tailwind utility classes | Layout, spacing, display, overflow, flex/grid | `class="flex flex-col h-full p-4 gap-2"` |
+| `--dms-*` CSS variables | Semantic colors that adapt to light/dark mode | `color: var(--dms-error)`, `background: var(--dms-surface)` |
+| Angular Material tokens | Colors on Material components | `var(--mat-sys-primary)`, theme mixins |
+| `host: { class: '...' }` | `:host` element layout on Angular components | `host: { class: 'flex flex-col h-full' }` |
+| Component SCSS | Material component internal overrides, complex animations, truly unique styles | `mat-card { flex: 1; min-height: 0; }` |
+
+#### Color-Mix for Derived Colors
+
+Use `color-mix()` with theme variables instead of hardcoded rgba/hex for derived colors:
+
+```scss
+// ✅ Correct — adapts to theme
+background-color: color-mix(in srgb, var(--dms-error) 15%, var(--dms-surface));
+border-color: color-mix(in srgb, var(--dms-text-primary) 12%, transparent);
+
+// ❌ Wrong — breaks in dark mode
+background-color: rgba(239, 68, 68, 0.1);
+border-color: rgba(0, 0, 0, 0.12);
+```
+
 ---
 
 ## Backend — Fastify + Prisma
@@ -351,6 +379,9 @@ Imports must be sorted: external → @angular → @smarttools/@ngrx → internal
 | Using `@Input()` / `@Output()` decorators   | Legacy pattern                                   | `input()` / `output()` signal functions            |
 | `@ViewChild()` decorator                    | Legacy pattern                                   | `viewChild()` signal function                      |
 | Changing the CSS layer order                | Breaks Material/Tailwind coexistence             | Keep `tailwind-base, material, tailwind-utilities` |
+| Writing component CSS for layout/spacing    | Tailwind utilities handle this                   | Use Tailwind utility classes in template           |
+| Hardcoding hex/RGB color values in SCSS     | Breaks dark mode theming                         | Use `--dms-*` variables or Material tokens         |
+| Using `:host {}` for layout in SCSS         | Tailwind host classes are preferred              | Use `host: { class: '...' }` in @Component        |
 
 ---
 
