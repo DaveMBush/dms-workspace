@@ -21,7 +21,10 @@
             "input": "apps/dms-material/public"
           }
         ],
-        "styles": ["apps/dms-material/src/styles.scss"]
+        "styles": [
+          "apps/dms-material/src/tailwind-imports.css",
+          "apps/dms-material/src/styles.scss"
+        ]
       },
       "configurations": {
         "production": {
