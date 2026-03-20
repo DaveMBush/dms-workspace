@@ -27,7 +27,7 @@ mat-card-header {
   gap: 0.5rem;
   padding: 0.75rem 1rem;
   margin-bottom: 1rem;
-  background-color: rgba(239, 68, 68, 0.1);
+  background-color: color-mix(in srgb, var(--dms-error) 10%, transparent);
   border: 1px solid var(--dms-error);
   border-radius: 4px;
   color: var(--dms-error);

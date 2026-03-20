@@ -32,8 +32,8 @@
   display: flex;
   gap: 12px;
   padding: 8px 16px;
-  background-color: var(--mat-toolbar-container-background-color, #fafafa);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  background-color: var(--mat-toolbar-container-background-color, var(--dms-surface));
+  border-bottom: 1px solid color-mix(in srgb, var(--dms-text-primary) 12%, transparent);
   flex-shrink: 0;
 }
 
@@ -72,23 +72,23 @@
 
     // Ensure complete border on all sides for outline appearance
     .mdc-notched-outline__leading {
-      border-left: 1px solid rgba(0, 0, 0, 0.38);
-      border-top: 1px solid rgba(0, 0, 0, 0.38);
-      border-bottom: 1px solid rgba(0, 0, 0, 0.38);
+      border-left: 1px solid color-mix(in srgb, var(--dms-text-primary) 38%, transparent);
+      border-top: 1px solid color-mix(in srgb, var(--dms-text-primary) 38%, transparent);
+      border-bottom: 1px solid color-mix(in srgb, var(--dms-text-primary) 38%, transparent);
       border-right: none;
     }
 
     .mdc-notched-outline__notch {
-      border-top: 1px solid rgba(0, 0, 0, 0.38);
-      border-bottom: 1px solid rgba(0, 0, 0, 0.38);
+      border-top: 1px solid color-mix(in srgb, var(--dms-text-primary) 38%, transparent);
+      border-bottom: 1px solid color-mix(in srgb, var(--dms-text-primary) 38%, transparent);
       border-left: none;
       border-right: none;
     }
 
     .mdc-notched-outline__trailing {
-      border-right: 1px solid rgba(0, 0, 0, 0.38);
-      border-top: 1px solid rgba(0, 0, 0, 0.38);
-      border-bottom: 1px solid rgba(0, 0, 0, 0.38);
+      border-right: 1px solid color-mix(in srgb, var(--dms-text-primary) 38%, transparent);
+      border-top: 1px solid color-mix(in srgb, var(--dms-text-primary) 38%, transparent);
+      border-bottom: 1px solid color-mix(in srgb, var(--dms-text-primary) 38%, transparent);
       border-left: none;
     }
 
@@ -119,7 +119,7 @@
 }
 
 .expired-indicator {
-  color: var(--mat-warn-color, #f44336);
+  color: var(--mat-warn-color, var(--dms-error));
   font-weight: bold;
 }
 
@@ -133,7 +133,7 @@
 
   p {
     margin: 0;
-    color: rgba(0, 0, 0, 0.6);
+    color: var(--dms-text-secondary);
     font-size: 14px;
   }
 }
@@ -164,7 +164,7 @@
 
 .error-message {
   padding: 12px 16px;
-  background-color: var(--mat-warn-color, #f44336);
+  background-color: var(--mat-warn-color, var(--dms-error));
   color: white;
   margin: 0;
   font-size: 14px;
@@ -173,7 +173,7 @@
 // Dark theme support
 :host-context(.dark-theme) {
   .filter-row {
-    background-color: var(--mat-toolbar-container-background-color, #424242);
-    border-bottom-color: rgba(255, 255, 255, 0.12);
+    background-color: var(--mat-toolbar-container-background-color, var(--dms-surface));
+    border-bottom-color: color-mix(in srgb, var(--dms-text-primary) 12%, transparent);
   }
 }

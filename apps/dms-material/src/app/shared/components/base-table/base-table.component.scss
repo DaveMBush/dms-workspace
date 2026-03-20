@@ -37,12 +37,12 @@ tr.mat-mdc-row {
   cursor: pointer;
 
   &:hover {
-    background-color: rgba(0, 0, 0, 0.04);
+    background-color: color-mix(in srgb, var(--dms-text-primary) 4%, transparent);
 
     td.mat-mdc-cell {
       // Must also set on td: opaque td background-color (set below) would
       // otherwise block the tr hover from showing through
-      background-color: color-mix(in srgb, var(--dms-surface) 96%, #000000);
+      background-color: color-mix(in srgb, var(--dms-surface) 96%, var(--dms-text-primary));
     }
   }
 
@@ -70,14 +70,14 @@ tr.mat-mdc-row {
 
   &.loss {
     td.mat-mdc-cell {
-      color: #c62828; // Material Red 800 — contrast ≥4.5:1 on white
+      color: var(--dms-error);
       font-weight: 600;
     }
   }
 
   &.neutral {
     td.mat-mdc-cell {
-      color: #757575;
+      color: var(--dms-text-secondary);
     }
   }
 }
@@ -90,7 +90,7 @@ th.mat-mdc-header-cell {
   z-index: 1;
   // box-shadow replaces the collapsed border line for sticky cells:
   // a border-bottom on a sticky th disappears during scroll; box-shadow persists
-  box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.12);
+  box-shadow: 0 1px 0 0 color-mix(in srgb, var(--dms-text-primary) 12%, transparent);
 }
 
 tr.filter-row th.mat-mdc-header-cell {
@@ -109,11 +109,11 @@ td.mat-mdc-cell {
 
 .dark-theme {
   tr.mat-mdc-row:hover {
-    background-color: rgba(255, 255, 255, 0.04);
+    background-color: color-mix(in srgb, var(--dms-text-primary) 4%, transparent);
 
     td.mat-mdc-cell {
-      // Dark theme: blend white at 4% opacity equivalent
-      background-color: color-mix(in srgb, var(--dms-surface) 96%, #ffffff);
+      // Dark theme: blend text-primary at 4% opacity equivalent
+      background-color: color-mix(in srgb, var(--dms-surface) 96%, var(--dms-text-primary));
     }
   }
 }

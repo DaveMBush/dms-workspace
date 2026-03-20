@@ -28,7 +28,7 @@
 }
 
 .validation-error {
-  color: #f44336;
+  color: var(--dms-error);
   font-size: 12px;
   margin-top: 4px;
   display: block;

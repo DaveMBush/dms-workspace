@@ -23,10 +23,10 @@ mat-card {
   display: flex;
   align-items: center;
   gap: 0.25rem;
-  color: #4caf50;
+  color: var(--dms-success);
   font-weight: 500;
 
   mat-icon {
-    color: #4caf50;
+    color: var(--dms-success);
   }
 }
