@@ -24,7 +24,7 @@
   </div>
   } @if (error()) {
   <div
-    class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mx-4 mt-4"
+    class="bg-red-50 border border-red-200 text-red-700 dark:bg-red-900/20 dark:border-red-800 dark:text-red-400 px-4 py-3 rounded mx-4 mt-4"
     role="alert"
     data-testid="error-message"
   >
@@ -44,7 +44,9 @@
     <mat-card-content>
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
         <div class="stat-item" data-testid="total-entries">
-          <span class="text-xs text-gray-600">Total Entries</span>
+          <span class="text-xs text-gray-600 dark:text-gray-400"
+            >Total Entries</span
+          >
           <span class="text-2xl font-semibold"
             >{{ statsData.totalEntries }}</span
           >
@@ -52,16 +54,22 @@
         @for (sourceEntry of statsData.entriesBySource | keyvalue; track
         sourceEntry.key) {
         <div class="stat-item" data-testid="source-count">
-          <span class="text-xs text-gray-600">{{ sourceEntry.key }}</span>
+          <span class="text-xs text-gray-600 dark:text-gray-400"
+            >{{ sourceEntry.key }}</span
+          >
           <span class="text-2xl font-semibold">{{ sourceEntry.value }}</span>
         </div>
         }
         <div class="stat-item" data-testid="oldest-entry">
-          <span class="text-xs text-gray-600">Oldest Entry</span>
+          <span class="text-xs text-gray-600 dark:text-gray-400"
+            >Oldest Entry</span
+          >
           <span class="text-sm">{{ statsData.oldestEntry ?? 'N/A' }}</span>
         </div>
         <div class="stat-item" data-testid="newest-entry">
-          <span class="text-xs text-gray-600">Newest Entry</span>
+          <span class="text-xs text-gray-600 dark:text-gray-400"
+            >Newest Entry</span
+          >
           <span class="text-sm">{{ statsData.newestEntry ?? 'N/A' }}</span>
         </div>
       </div>
@@ -204,7 +212,10 @@
         <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
       </table>
       } @else if (hasSearched() && searchResults().length === 0 && !loading()) {
-      <p class="text-gray-600 mt-4 text-center" data-testid="no-results">
+      <p
+        class="text-gray-600 dark:text-gray-400 mt-4 text-center"
+        data-testid="no-results"
+      >
         No results found
       </p>
       }
@@ -249,7 +260,10 @@
         <tr mat-row *matRowDef="let row; columns: auditColumns"></tr>
       </table>
       } @else {
-      <p class="text-gray-600 mt-4 text-center" data-testid="no-audit">
+      <p
+        class="text-gray-600 dark:text-gray-400 mt-4 text-center"
+        data-testid="no-audit"
+      >
         No recent activity
       </p>
       }
