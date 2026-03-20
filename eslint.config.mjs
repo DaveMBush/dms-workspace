@@ -138,6 +138,7 @@ const eslintConfig = async () => {
             'apps/dms-material/tsconfig.json',
             'apps/dms-material/tsconfig.app.json',
             'apps/dms-material/tsconfig.spec.json',
+            'apps/dms-material/.storybook/tsconfig.json',
             'apps/server/tsconfig.app.json',
             'apps/server/tsconfig.spec.json',
             'apps/dms-material-e2e/tsconfig.json',
@@ -161,6 +162,7 @@ const eslintConfig = async () => {
               'apps/dms-material/tsconfig.json',
               'apps/dms-material/tsconfig.app.json',
               'apps/dms-material/tsconfig.spec.json',
+              'apps/dms-material/.storybook/tsconfig.json',
               'apps/server/tsconfig.app.json',
               'apps/dms-material-e2e/tsconfig.json',
             ],
@@ -203,6 +205,7 @@ const eslintConfig = async () => {
               'apps/dms-material/tsconfig.json',
               'apps/dms-material/tsconfig.app.json',
               'apps/dms-material/tsconfig.spec.json',
+              'apps/dms-material/.storybook/tsconfig.json',
               'apps/server/tsconfig.app.json',
               'apps/dms-material-e2e/tsconfig.json',
             ],
@@ -837,6 +840,23 @@ const eslintConfig = async () => {
         '@smarttools/no-anonymous-functions': 'off',
       },
     },
+    {
+      files: ['**/*.stories.ts'],
+      rules: {
+        'import/no-default-export': 'off',
+        '@smarttools/one-exported-item-per-file': 'off',
+        '@typescript-eslint/naming-convention': 'off',
+        '@angular-eslint/prefer-on-push-component-change-detection': 'off',
+        '@angular-eslint/component-max-inline-declarations': 'off',
+      },
+    },
+    {
+      files: ['**/apps/dms-material/.storybook/*.ts'],
+      rules: {
+        'import/no-default-export': 'off',
+        '@smarttools/no-anonymous-functions': 'off',
+      },
+    },
     ...compat
       .config({
         extends: ['plugin:@nx/angular-template'],
@@ -925,6 +945,7 @@ const eslintConfig = async () => {
             'apps/dms-material/tsconfig.json',
             'apps/dms-material/tsconfig.app.json',
             'apps/dms-material/tsconfig.spec.json',
+            'apps/dms-material/.storybook/tsconfig.json',
             'apps/server/tsconfig.app.json',
             'apps/server/tsconfig.spec.json',
             'apps/dms-material-e2e/tsconfig.json',
