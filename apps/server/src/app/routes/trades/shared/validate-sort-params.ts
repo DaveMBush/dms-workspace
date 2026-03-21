@@ -1,6 +1,15 @@
+/* eslint-disable @smarttools/one-exported-item-per-file -- Shared utility exports function and related types together */
 import type { FastifyReply } from 'fastify';
 
-import type { SortQuerystring, ValidatedSortParams } from './sort-types';
+interface SortQuerystring {
+  sortBy?: string;
+  sortOrder?: string;
+}
+
+interface ValidatedSortParams<T extends string> {
+  effectiveSortBy: T;
+  effectiveSortOrder: 'asc' | 'desc';
+}
 
 /**
  * Validates sort parameters from query string and returns normalized values.
@@ -12,7 +21,7 @@ import type { SortQuerystring, ValidatedSortParams } from './sort-types';
  * @param defaultSortBy - Default sort field if none specified
  * @returns Validated sort parameters or null if validation fails
  */
-export function validateSortParams<T extends string>(
+function validateSortParams<T extends string>(
   query: SortQuerystring,
   reply: FastifyReply,
   validFields: readonly T[],
@@ -41,3 +50,6 @@ export function validateSortParams<T extends string>(
 
   return { effectiveSortBy, effectiveSortOrder };
 }
+
+export { validateSortParams };
+export type { SortQuerystring, ValidatedSortParams };
