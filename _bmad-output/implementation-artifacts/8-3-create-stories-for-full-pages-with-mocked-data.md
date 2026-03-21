@@ -58,33 +58,33 @@ import { applicationConfig } from '@storybook/angular';
 export const Default: Story = {
   decorators: [
     applicationConfig({
-      providers: [
-        { provide: MyEffectService, useClass: MockMyEffectService },
-      ],
+      providers: [{ provide: MyEffectService, useClass: MockMyEffectService }],
     }),
   ],
 };
 ```
 
 **WRONG — never use:**
+
 ```typescript
 import { TestBed } from '@angular/core/testing'; // NEVER in stories
 ```
 
 ### Page Components (Likely Candidates)
 
-| Page | Route | Key Dependencies |
-|------|-------|-----------------|
-| Dashboard | `/dashboard` | SmartNgRX store entities |
-| Accounts | `/accounts` | Account entities, trades |
-| CUSIP Cache | `/global/cusip-cache` | CUSIP cache service |
-| Global Screener | `/global/screener` | Screener entities |
-| Global Universe | `/global/universe` | Universe entities |
-| Global Error Logs | `/global/error-logs` | Error log data |
+| Page              | Route                 | Key Dependencies         |
+| ----------------- | --------------------- | ------------------------ |
+| Dashboard         | `/dashboard`          | SmartNgRX store entities |
+| Accounts          | `/accounts`           | Account entities, trades |
+| CUSIP Cache       | `/global/cusip-cache` | CUSIP cache service      |
+| Global Screener   | `/global/screener`    | Screener entities        |
+| Global Universe   | `/global/universe`    | Universe entities        |
+| Global Error Logs | `/global/error-logs`  | Error log data           |
 
 ### Dark Mode Decorator
 
 Apply `.dark-theme` class to the story wrapper for dark mode variants:
+
 ```typescript
 export const DarkMode: Story = {
   decorators: [
@@ -96,6 +96,7 @@ export const DarkMode: Story = {
 ### Existing Test Utils
 
 Check `apps/dms-material/src/test-utils/` for reusable mock factories:
+
 - `createMockConfirmDialogService()`
 - `createMockMatDialog()`
 - Other mock service factories

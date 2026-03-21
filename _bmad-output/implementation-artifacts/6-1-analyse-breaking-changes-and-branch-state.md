@@ -52,11 +52,11 @@ so that I know what migration steps are required beyond a simple dependency bump
 
 ### Current Configuration Files
 
-| File | Location | Purpose |
-|------|----------|---------|
-| `tailwind.config.js` | workspace root | Tailwind v3 config with custom theme tokens |
-| `postcss.config.js` | workspace root | Current PostCSS config |
-| `styles.scss` | `apps/dms-material/src/styles.scss` | Global styles with `@layer` rules |
+| File                 | Location                            | Purpose                                     |
+| -------------------- | ----------------------------------- | ------------------------------------------- |
+| `tailwind.config.js` | workspace root                      | Tailwind v3 config with custom theme tokens |
+| `postcss.config.js`  | workspace root                      | Current PostCSS config                      |
+| `styles.scss`        | `apps/dms-material/src/styles.scss` | Global styles with `@layer` rules           |
 
 ### Production Bundle Verification (Story 6.2)
 

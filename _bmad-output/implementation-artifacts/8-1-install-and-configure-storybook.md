@@ -83,12 +83,12 @@ story export name: PascalCase        # e.g. Default, DarkTheme, EmptyState
 
 ### Existing Technology Stack
 
-| Layer | Technology | Version |
-|-------|-----------|---------|
-| Angular | Standalone, zoneless | 21.2.x |
-| Build | Vite + @analogjs/vite-plugin-angular | 7.x / 2.1.x |
-| UI | Angular Material + CDK | 21.2.x |
-| CSS | Tailwind CSS | 3.4.1 (or v4 if E6 complete) |
+| Layer   | Technology                           | Version                      |
+| ------- | ------------------------------------ | ---------------------------- |
+| Angular | Standalone, zoneless                 | 21.2.x                       |
+| Build   | Vite + @analogjs/vite-plugin-angular | 7.x / 2.1.x                  |
+| UI      | Angular Material + CDK               | 21.2.x                       |
+| CSS     | Tailwind CSS                         | 3.4.1 (or v4 if E6 complete) |
 
 ### References
 

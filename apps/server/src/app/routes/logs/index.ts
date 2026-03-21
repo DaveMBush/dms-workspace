@@ -1,12 +1,22 @@
 import { FastifyPluginAsync, FastifyReply, FastifyRequest } from 'fastify';
 
-import { deleteLogFile, getLogFiles, mapLogToErrorLogEntry, paginateLogs, readLogFiles } from './log-utils';
+import {
+  deleteLogFile,
+  getLogFiles,
+  mapLogToErrorLogEntry,
+  paginateLogs,
+  readLogFiles,
+} from './log-utils';
 import { ErrorLogResponse, LogEntry, LogFileInfo, LogFilters } from './types';
 
 const INTERNAL_SERVER_ERROR = 'Internal server error';
 
 function isValidLogLevel(filters: LogFilters, log: LogEntry): boolean {
-  if (filters.level === null || filters.level === undefined || filters.level === '') {
+  if (
+    filters.level === null ||
+    filters.level === undefined ||
+    filters.level === ''
+  ) {
     return true;
   }
   return log.level === filters.level;
@@ -15,7 +25,11 @@ function isValidLogLevel(filters: LogFilters, log: LogEntry): boolean {
 function isWithinDateRange(filters: LogFilters, log: LogEntry): boolean {
   const logDate = new Date(log.timestamp);
 
-  if (filters.from !== null && filters.from !== undefined && filters.from !== '') {
+  if (
+    filters.from !== null &&
+    filters.from !== undefined &&
+    filters.from !== ''
+  ) {
     const fromDate = new Date(filters.from);
     if (logDate < fromDate) {
       return false;
@@ -33,7 +47,11 @@ function isWithinDateRange(filters: LogFilters, log: LogEntry): boolean {
 }
 
 function matchesSearchTerm(filters: LogFilters, log: LogEntry): boolean {
-  if (filters.search === null || filters.search === undefined || filters.search.trim() === '') {
+  if (
+    filters.search === null ||
+    filters.search === undefined ||
+    filters.search.trim() === ''
+  ) {
     return true;
   }
   const searchTerm = filters.search.toLowerCase();
@@ -42,9 +60,11 @@ function matchesSearchTerm(filters: LogFilters, log: LogEntry): boolean {
 
 function filterLogs(logs: LogEntry[], filters: LogFilters): LogEntry[] {
   return logs.filter(function applyFilters(log) {
-    return isValidLogLevel(filters, log) &&
-           isWithinDateRange(filters, log) &&
-           matchesSearchTerm(filters, log);
+    return (
+      isValidLogLevel(filters, log) &&
+      isWithinDateRange(filters, log) &&
+      matchesSearchTerm(filters, log)
+    );
   });
 }
 
@@ -137,7 +157,13 @@ function handleErrorLogsRequest(
       return validationError;
     }
 
-    const filters: LogFilters = { level, from, to, search: search.trim(), file };
+    const filters: LogFilters = {
+      level,
+      from,
+      to,
+      search: search.trim(),
+      file,
+    };
     const allLogs = readLogFiles(file);
     const filteredLogs = filterLogs(allLogs, filters);
     const errorLogs = filteredLogs.map(mapLogToErrorLogEntry);

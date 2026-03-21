@@ -50,12 +50,12 @@ so that the test suite does not contain misleading dead weight.
 
 ### What to Delete vs. What to Keep
 
-| Scenario                                 | Action                                      |
-| ---------------------------------------- | ------------------------------------------- |
-| Test for a removed feature               | Delete the entire `it` block                |
-| Test that duplicates an existing passing test | Delete the duplicate                   |
-| Test with a TODO that has no owner/issue | Delete if the feature is not in the PRD     |
-| Test for future planned work             | Keep if there is a story for it; mark `// @atdd` |
+| Scenario                                      | Action                                           |
+| --------------------------------------------- | ------------------------------------------------ |
+| Test for a removed feature                    | Delete the entire `it` block                     |
+| Test that duplicates an existing passing test | Delete the duplicate                             |
+| Test with a TODO that has no owner/issue      | Delete if the feature is not in the PRD          |
+| Test for future planned work                  | Keep if there is a story for it; mark `// @atdd` |
 
 ### Handling Empty Describe Blocks
 
@@ -81,6 +81,7 @@ test(cleanup): delete empty describe block in legacy-widget.spec.ts
 ### Final Epic 3 Completion Check
 
 Story 3.4 is the last story in Epic 3. After this story is done:
+
 - Zero non-`@atdd` skipped tests exist in the codebase
 - `pnpm all` + both E2E suites are green
 - The inventory document is fully updated with dispositions for every original entry

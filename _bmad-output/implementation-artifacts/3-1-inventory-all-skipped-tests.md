@@ -61,11 +61,11 @@ Files containing `// @atdd` (anywhere in the file) are intentionally-skipped ATD
 
 ### Classification Guidance
 
-| Classification      | When to use                                                                 |
-| ------------------- | --------------------------------------------------------------------------- |
-| `unskip-trivial`    | Test was skipped to unblock a sprint; underlying code now works correctly   |
-| `unskip-needs-fix`  | Test reveals a real broken assertion or missing behaviour                   |
-| `delete`            | Test duplicates another, tests a removed feature, or has a TODO with no owner |
+| Classification     | When to use                                                                   |
+| ------------------ | ----------------------------------------------------------------------------- |
+| `unskip-trivial`   | Test was skipped to unblock a sprint; underlying code now works correctly     |
+| `unskip-needs-fix` | Test reveals a real broken assertion or missing behaviour                     |
+| `delete`           | Test duplicates another, tests a removed feature, or has a TODO with no owner |
 
 ### Output Document Format
 
@@ -74,14 +74,14 @@ Files containing `// @atdd` (anywhere in the file) are intentionally-skipped ATD
 
 ## Unit Tests
 
-| File | Test Name | Reason | Classification |
-|------|-----------|--------|----------------|
+| File                          | Test Name          | Reason                  | Classification |
+| ----------------------------- | ------------------ | ----------------------- | -------------- |
 | apps/dms-material/src/app/... | describe > it name | "broken after refactor" | unskip-trivial |
 
 ## E2E Tests
 
 | File | Test Name | Reason | Classification |
-|------|-----------|--------|----------------|
+| ---- | --------- | ------ | -------------- |
 
 ## Needs-Fix Candidates (Potential Bug Stories)
 

@@ -62,6 +62,7 @@ so that any unintended visual change in a component or page is caught automatica
 ### CI Pipeline Integration
 
 The pipeline flow for Storybook tests:
+
 ```bash
 # Step 1: Build static Storybook
 pnpm storybook:build
@@ -89,6 +90,7 @@ await expect(page).toHaveScreenshot('story-name.png', {
 ### Cross-Machine Baseline Warning
 
 Different OS font rendering invalidates cross-machine baselines. Baselines must be:
+
 - Generated inside CI (GitHub Actions Linux runner)
 - Committed as CI artifacts or stored in a consistent location
 - Never generated on developer macOS/Windows machines

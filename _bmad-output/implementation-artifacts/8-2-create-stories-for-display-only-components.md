@@ -82,6 +82,7 @@ export const Default: Story = {
 ### Component Input Pattern
 
 All components use Angular signal-based inputs:
+
 ```typescript
 myInput = input.required<string>();
 myOptionalInput = input<number>(0);

@@ -49,16 +49,17 @@ so that I have a concrete list of cosmetic defects to fix.
 
 ### Key Components to Inspect
 
-| Component | File | Known Issue |
-|-----------|------|-------------|
-| CUSIP Cache | `apps/dms-material/src/app/global/cusip-cache/cusip-cache.component.ts` | Dark mode cosmetics |
-| CUSIP Cache template | `apps/dms-material/src/app/global/cusip-cache/cusip-cache.html` | White-on-white text |
-| CUSIP Cache styles | `apps/dms-material/src/app/global/cusip-cache/cusip-cache.scss` | Hardcoded colors? |
-| CUSIP Cache Add Dialog | `apps/dms-material/src/app/global/cusip-cache/cusip-cache-add-dialog.component.ts` | Check dark mode |
+| Component              | File                                                                               | Known Issue         |
+| ---------------------- | ---------------------------------------------------------------------------------- | ------------------- |
+| CUSIP Cache            | `apps/dms-material/src/app/global/cusip-cache/cusip-cache.component.ts`            | Dark mode cosmetics |
+| CUSIP Cache template   | `apps/dms-material/src/app/global/cusip-cache/cusip-cache.html`                    | White-on-white text |
+| CUSIP Cache styles     | `apps/dms-material/src/app/global/cusip-cache/cusip-cache.scss`                    | Hardcoded colors?   |
+| CUSIP Cache Add Dialog | `apps/dms-material/src/app/global/cusip-cache/cusip-cache-add-dialog.component.ts` | Check dark mode     |
 
 ### Theme Variables Available
 
 Use `--dms-*` custom properties for fixes:
+
 - `--dms-background`, `--dms-surface`
 - `--dms-text-primary`, `--dms-text-secondary`
 - `--dms-border`

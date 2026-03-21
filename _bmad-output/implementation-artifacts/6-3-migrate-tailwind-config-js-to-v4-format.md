@@ -49,6 +49,7 @@ so that all existing custom theme tokens and content paths are preserved.
 ### Dark Mode Configuration
 
 Current: `darkMode: ['class', '.dark-theme']`
+
 - Dark mode toggled by `.dark-theme` class on `document.body`
 - Verify v4 still supports the class-based dark mode with custom class selector
 

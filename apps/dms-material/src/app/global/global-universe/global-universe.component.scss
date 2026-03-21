@@ -32,8 +32,12 @@
   display: flex;
   gap: 12px;
   padding: 8px 16px;
-  background-color: var(--mat-toolbar-container-background-color, var(--dms-surface));
-  border-bottom: 1px solid color-mix(in srgb, var(--dms-text-primary) 12%, transparent);
+  background-color: var(
+    --mat-toolbar-container-background-color,
+    var(--dms-surface)
+  );
+  border-bottom: 1px solid
+    color-mix(in srgb, var(--dms-text-primary) 12%, transparent);
   flex-shrink: 0;
 }
 
@@ -72,23 +76,31 @@
 
     // Ensure complete border on all sides for outline appearance
     .mdc-notched-outline__leading {
-      border-left: 1px solid color-mix(in srgb, var(--dms-text-primary) 38%, transparent);
-      border-top: 1px solid color-mix(in srgb, var(--dms-text-primary) 38%, transparent);
-      border-bottom: 1px solid color-mix(in srgb, var(--dms-text-primary) 38%, transparent);
+      border-left: 1px solid
+        color-mix(in srgb, var(--dms-text-primary) 38%, transparent);
+      border-top: 1px solid
+        color-mix(in srgb, var(--dms-text-primary) 38%, transparent);
+      border-bottom: 1px solid
+        color-mix(in srgb, var(--dms-text-primary) 38%, transparent);
       border-right: none;
     }
 
     .mdc-notched-outline__notch {
-      border-top: 1px solid color-mix(in srgb, var(--dms-text-primary) 38%, transparent);
-      border-bottom: 1px solid color-mix(in srgb, var(--dms-text-primary) 38%, transparent);
+      border-top: 1px solid
+        color-mix(in srgb, var(--dms-text-primary) 38%, transparent);
+      border-bottom: 1px solid
+        color-mix(in srgb, var(--dms-text-primary) 38%, transparent);
       border-left: none;
       border-right: none;
     }
 
     .mdc-notched-outline__trailing {
-      border-right: 1px solid color-mix(in srgb, var(--dms-text-primary) 38%, transparent);
-      border-top: 1px solid color-mix(in srgb, var(--dms-text-primary) 38%, transparent);
-      border-bottom: 1px solid color-mix(in srgb, var(--dms-text-primary) 38%, transparent);
+      border-right: 1px solid
+        color-mix(in srgb, var(--dms-text-primary) 38%, transparent);
+      border-top: 1px solid
+        color-mix(in srgb, var(--dms-text-primary) 38%, transparent);
+      border-bottom: 1px solid
+        color-mix(in srgb, var(--dms-text-primary) 38%, transparent);
       border-left: none;
     }
 
@@ -173,7 +185,14 @@
 // Dark theme support
 :host-context(.dark-theme) {
   .filter-row {
-    background-color: var(--mat-toolbar-container-background-color, var(--dms-surface));
-    border-bottom-color: color-mix(in srgb, var(--dms-text-primary) 12%, transparent);
+    background-color: var(
+      --mat-toolbar-container-background-color,
+      var(--dms-surface)
+    );
+    border-bottom-color: color-mix(
+      in srgb,
+      var(--dms-text-primary) 12%,
+      transparent
+    );
   }
 }

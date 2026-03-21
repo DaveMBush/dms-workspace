@@ -48,6 +48,7 @@ so that E2E coverage is complete and reliable.
 ### E2E Test Scope
 
 All Playwright tests under:
+
 - `apps/dms-material-e2e/src/**/*.ts`
 
 Unit spec files (`*.spec.ts`) are handled in Story 3.2.
@@ -66,13 +67,13 @@ pnpm exec playwright test apps/dms-material-e2e/src/path/to/test.spec.ts --proje
 
 ### Common E2E Skip Causes
 
-| Root Cause            | Fix Approach                                                  |
-| --------------------- | ------------------------------------------------------------- |
-| Selector changed      | Update the Playwright locator to match the current DOM        |
-| Timing/race condition | Add `await page.waitFor...` or use a more resilient locator   |
-| Feature removed       | Reclassify as `delete` and handle in Story 3.4               |
-| Backend not seeded    | Verify test database fixture contains the required data       |
-| Feature not yet built | Mark as deferred; do not delete                               |
+| Root Cause            | Fix Approach                                                |
+| --------------------- | ----------------------------------------------------------- |
+| Selector changed      | Update the Playwright locator to match the current DOM      |
+| Timing/race condition | Add `await page.waitFor...` or use a more resilient locator |
+| Feature removed       | Reclassify as `delete` and handle in Story 3.4              |
+| Backend not seeded    | Verify test database fixture contains the required data     |
+| Feature not yet built | Mark as deferred; do not delete                             |
 
 ### Commit Message Formats
 
@@ -84,6 +85,7 @@ fix: update CUSIP cache page locator for dark mode (unskips E2E "dark mode cache
 ### When an E2E Fix Is Too Complex
 
 If an E2E fix requires new feature work or significant architectural change:
+
 1. Leave the skip in place — do not delete
 2. Add `// TODO(E3): blocked — see deferred list` above the `test.skip` call
 3. Document in the inventory as deferred with the reason
@@ -92,6 +94,7 @@ If an E2E fix requires new feature work or significant architectural change:
 ### Quality Gate
 
 Before marking this story done:
+
 - `pnpm e2e:dms-material:chromium` exits 0
 - `pnpm e2e:dms-material:firefox` exits 0
 - `grep -r "test\.skip\|test\.fixme" apps/dms-material-e2e/ --include="*.ts"` returns only deferred/blocked items with `// TODO(E3)` comments (or zero matches)

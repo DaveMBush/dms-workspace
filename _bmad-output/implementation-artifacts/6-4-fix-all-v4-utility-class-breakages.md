@@ -42,6 +42,7 @@ so that all templates compile and render correctly.
 ### Common Tailwind v3 → v4 Class Changes
 
 Reference the Tailwind v4 upgrade guide for the full list. Common changes include:
+
 - `bg-opacity-*` → `bg-{color}/{opacity}` (opacity modifier syntax)
 - `text-opacity-*` → `text-{color}/{opacity}`
 - Various renamed utilities documented in the migration guide

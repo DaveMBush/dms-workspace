@@ -53,16 +53,17 @@ so that OpenFIGI is fully removed and the maximum number of CUSIPs are resolved 
 
 ### Key Files to Modify
 
-| File | Purpose |
-|------|---------|
+| File                                                          | Purpose                                                                                      |
+| ------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
 | `apps/server/src/app/routes/import/resolve-cusip.function.ts` | Main resolution chain — replace OpenFIGI call with `ThirteenfCusipService` as first resolver |
-| `apps/server/src/app/routes/import/cusip-cache.service.ts` | Cache service — no changes expected (already handles source enum) |
-| `apps/server/src/app/services/cusip-cache-cleanup.service.ts` | Cleanup service — verify `THIRTEENF` source handled correctly |
-| OpenFIGI service file (e.g. `openfigi-cusip.service.ts`) | **Delete** — service and all references to be removed |
+| `apps/server/src/app/routes/import/cusip-cache.service.ts`    | Cache service — no changes expected (already handles source enum)                            |
+| `apps/server/src/app/services/cusip-cache-cleanup.service.ts` | Cleanup service — verify `THIRTEENF` source handled correctly                                |
+| OpenFIGI service file (e.g. `openfigi-cusip.service.ts`)      | **Delete** — service and all references to be removed                                        |
 
 ### Existing Resolution Sources in Tests
 
 From `cusip-cache/index.spec.ts`, existing tests reference:
+
 - `source: 'OPENFIGI'` ← **remove/replace with `THIRTEENF`**
 - `source: 'YAHOO_FINANCE'`
 - `body.entriesBySource` contains `{ OPENFIGI: count, YAHOO_FINANCE: count }`
@@ -72,6 +73,7 @@ After this story, `OPENFIGI` entries are removed and `THIRTEENF` appears in `ent
 ### Previous Story Intelligence
 
 Story 2.2 creates `ThirteenfCusipService` in `apps/server/src/utils/thirteenf-cusip.service.ts` with:
+
 - `resolveCusip(cusip: string): Promise<string | null>`
 - Built-in 1 req/sec rate limiting (Yahoo Finance pattern)
 - Returns `null` on any non-200 or parse failure

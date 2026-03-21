@@ -49,9 +49,11 @@ so that component stylesheets become empty or minimal.
 ### CSS Layer Order (ADR-002)
 
 The `styles.scss` layer ordering must not be changed:
+
 ```scss
 @layer tailwind-base, material, tailwind-utilities;
 ```
+
 Tailwind utility classes applied in templates will land in the `tailwind-utilities` layer, which has highest priority.
 
 ### View Encapsulation Consideration

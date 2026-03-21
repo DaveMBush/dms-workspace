@@ -9,16 +9,25 @@ dms-base-table {
 .success-message {
   padding: 12px;
   margin: 8px 16px;
-  background-color: color-mix(in srgb, var(--dms-success) 15%, var(--dms-surface));
+  background-color: color-mix(
+    in srgb,
+    var(--dms-success) 15%,
+    var(--dms-surface)
+  );
   color: var(--dms-success);
-  border: 1px solid color-mix(in srgb, var(--dms-success) 30%, var(--dms-surface));
+  border: 1px solid
+    color-mix(in srgb, var(--dms-success) 30%, var(--dms-surface));
   border-radius: 4px;
 }
 
 .error-message {
   padding: 12px;
   margin: 8px 16px;
-  background-color: color-mix(in srgb, var(--dms-error) 15%, var(--dms-surface));
+  background-color: color-mix(
+    in srgb,
+    var(--dms-error) 15%,
+    var(--dms-surface)
+  );
   color: var(--dms-error);
   border: 1px solid color-mix(in srgb, var(--dms-error) 30%, var(--dms-surface));
   border-radius: 4px;

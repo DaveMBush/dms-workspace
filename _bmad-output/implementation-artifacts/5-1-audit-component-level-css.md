@@ -44,9 +44,9 @@ so that I know what needs to be migrated.
 
 Per architecture Implementation Patterns § Format Patterns:
 
-| Component | File | Current Style | Type | Proposed Tailwind Class |
-|-----------|------|---------------|------|------------------------|
-| `HoldingsTableComponent` | `holdings-table.component.scss` | `margin-top: 8px` | layout | `mt-2` |
+| Component                | File                            | Current Style     | Type   | Proposed Tailwind Class |
+| ------------------------ | ------------------------------- | ----------------- | ------ | ----------------------- |
+| `HoldingsTableComponent` | `holdings-table.component.scss` | `margin-top: 8px` | layout | `mt-2`                  |
 
 **Type** values: `layout` | `spacing` | `typography` | `color` | `other`
 
@@ -71,6 +71,7 @@ apps/dms-material/src/themes/
 ### Project CSS Variables
 
 Use `--dms-*` custom properties for semantic colors (defined in `_theme-variables.scss`):
+
 - `--dms-background`, `--dms-surface`, `--dms-text-primary`, `--dms-text-secondary`, `--dms-border`
 - `--dms-primary-{50-900}`, `--dms-success`, `--dms-warning`, `--dms-error`, `--dms-info`
 
