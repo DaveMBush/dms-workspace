@@ -1,6 +1,8 @@
 import { FastifyInstance } from 'fastify';
 
 import { prisma } from '../../../prisma/prisma-client';
+import type { SortQuerystring } from '../shared/sort-types';
+import { validateSortParams } from '../shared/validate-sort-params';
 
 const VALID_SORT_FIELDS = [
   'symbol',
@@ -9,11 +11,6 @@ const VALID_SORT_FIELDS = [
   'unrealizedGain',
 ] as const;
 type SortField = (typeof VALID_SORT_FIELDS)[number];
-
-interface SortQuerystring {
-  sortBy?: string;
-  sortOrder?: string;
-}
 
 interface TradeWithUniverse {
   id: string;
@@ -38,10 +35,6 @@ interface OpenTradeResponse {
   buy_date: string;
   currentValue: number;
   unrealizedGain: number;
-}
-
-function isValidSortField(field: string): field is SortField {
-  return (VALID_SORT_FIELDS as readonly string[]).includes(field);
 }
 
 function mapToResponse(trade: TradeWithUniverse): OpenTradeResponse {
@@ -90,24 +83,18 @@ export default function registerGetOpenTrades(fastify: FastifyInstance): void {
   fastify.get<{ Querystring: SortQuerystring }>(
     '/open',
     async function handleGetOpenTrades(request, reply): Promise<void> {
-      const { sortBy, sortOrder } = request.query;
+      const validated = validateSortParams(
+        request.query,
+        reply,
+        VALID_SORT_FIELDS,
+        'symbol'
+      );
 
-      if (
-        sortBy !== undefined &&
-        (sortBy === '' || !isValidSortField(sortBy))
-      ) {
-        reply.status(400).send({
-          error: `Invalid sort field: ${sortBy}. Valid fields: ${VALID_SORT_FIELDS.join(
-            ', '
-          )}`,
-        });
-        return;
+      if (!validated) {
+        return; // Error response already sent by validateSortParams
       }
 
-      const effectiveSortBy: SortField =
-        sortBy !== undefined && isValidSortField(sortBy) ? sortBy : 'symbol';
-      const effectiveSortOrder: 'asc' | 'desc' =
-        sortOrder === 'desc' ? 'desc' : 'asc';
+      const { effectiveSortBy, effectiveSortOrder } = validated;
 
       const trades = await prisma.trades.findMany({
         where: { sell_date: null },
