@@ -65,7 +65,7 @@ jobs:
         id: storybook-cache
         with:
           path: dist/storybook
-          key: storybook-${{ hashFiles('apps/dms-material/src/**', 'apps/dms-material/.storybook/**') }}
+          key: storybook-${{ hashFiles('pnpm-lock.yaml', 'apps/dms-material/src/**', 'apps/dms-material/.storybook/**') }}
 
       - name: Build Storybook
         if: steps.storybook-cache.outputs.cache-hit != 'true'
