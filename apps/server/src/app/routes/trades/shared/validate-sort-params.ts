@@ -34,7 +34,8 @@ function validateSortParams<T extends string>(
     (sortBy === '' || !validFields.includes(sortBy as T))
   ) {
     reply.status(400).send({
-      error: `Invalid sort field: ${sortBy}. Valid fields: ${validFields.join(
+      error: 'Bad Request',
+      message: `Invalid sort field: ${sortBy}. Valid fields: ${validFields.join(
         ', '
       )}`,
     });
