@@ -54,13 +54,11 @@ So that I can implement the correct fix for all affected stories.
 ## Dev Notes
 
 ### Context from Epic 8
-
 - Storybook was set up in Epic 8 (Story 8.1) using `@storybook/angular` with `@analogjs/vite-plugin-angular`
 - Stories were created in Story 8.2 (display-only components) and 8.3 (page components)
 - Stories were not verified before merging, leading to this error
 
 ### Architecture Constraints
-
 - **ADR-001** from architecture.md specifies:
   - Use `@storybook/angular` with `@storybook/builder-vite`
   - Thread `@analogjs/vite-plugin-angular` through `viteFinal` in `.storybook/main.ts`
@@ -68,23 +66,19 @@ So that I can implement the correct fix for all affected stories.
   - Page components use mock `EffectService` via `applicationConfig`
 
 ### Key Files to Examine
-
 - `.storybook/main.ts` - Storybook configuration
 - `.storybook/preview.ts` - Story preview configuration
 - `apps/dms-material/src/**/*.stories.ts` - All existing story files
 
 ### Testing Standards
-
 - This is a diagnostic story - no unit tests required
 - Focus on analysis and documentation for implementation in Story 9.2
 
 ### Project Structure Notes
-
 - Story files should be colocated with components: `apps/dms-material/src/app/components/**/*.stories.ts`
 - Storybook build output: `dist/storybook`
 
 ### References
-
 - [Source: _bmad-output/planning-artifacts/epics-2026-03-21.md#Epic 9]
 - [Source: _bmad-output/planning-artifacts/architecture.md#ADR-001]
 - [Source: https://storybook.js.org/docs/angular/api/csf]
@@ -116,7 +110,6 @@ No errors encountered. All story files correctly formatted.
 ## Change Log
 
 ### 2026-03-21 - Initial Diagnosis
-
 - **Added**: Comprehensive diagnostic report documenting analysis of all 17 story files
 - **Finding**: All story files are correctly formatted with proper CSF 3.0 default exports
 - **Finding**: Storybook configuration is correct for Angular + Vite + Analog.js
