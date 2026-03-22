@@ -6,6 +6,8 @@ model: Claude Sonnet 4.6 (copilot)
 
 # Dedicated Debug Setup Workflow
 
+Shell execution rule: every shell command in this workflow must use the bash MCP server. Use `mcp_bash_run` for blocking commands and `mcp_bash_run_background` only for true background processes. This applies to `pnpm`, `git`, `gh`, `bash`, and `.github/prompts/prompt.sh`.
+
 ## Purpose
 
 This prompt exists to run epic validation, repository preflight checks, GitHub issue creation, and debug branch setup in a **fresh subagent context** so the parent debug workflow does not accumulate setup state.
@@ -28,8 +30,9 @@ Before doing anything else, read all of the following:
 6. Create the debug branch from `main`.
 7. Check out the branch locally.
 8. Return the created issue number and branch name in the completion summary.
-9. For all human interaction, use `.github/prompts/prompt.sh` via `run_in_terminal` with `timeout: 0`.
-10. Do not ask for confirmation on success; return control immediately to the caller.
+9. Use the bash MCP server for every shell command in this workflow. Use `mcp_bash_run` for blocking commands and `mcp_bash_run_background` only for true background processes. This applies to `git`, `gh`, `bash`, and `.github/prompts/prompt.sh`.
+10. For all human interaction, use `.github/prompts/prompt.sh` via the bash MCP server with `timeout: 0`.
+11. Do not ask for confirmation on success; return control immediately to the caller.
 
 ## Completion Contract
 

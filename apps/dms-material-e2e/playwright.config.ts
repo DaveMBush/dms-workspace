@@ -21,6 +21,8 @@ if (process.env.WSL_DISTRO_NAME && !process.env.CI) {
 
 export default defineConfig({
   ...nxE2EPreset(__filename, { testDir: './src' }),
+  /* Exclude storybook visual tests — those are run separately via e2e:storybook */
+  testIgnore: /storybook-visual\.spec\.ts/,
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   timeout: process.env.CI ? 90000 : 60000,
   reporter: process.env.CI ? [['github']] : [['list']],

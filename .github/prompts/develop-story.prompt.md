@@ -6,6 +6,8 @@ model: Claude Sonnet 4.6 (copilot)
 
 # Autonomous Story Development Workflow
 
+Shell execution rule: every shell command in this workflow and its delegated steps must use the bash MCP server. Use `mcp_bash_run` for blocking commands and `mcp_bash_run_background` only for true background processes. This applies to `pnpm`, `git`, `gh`, `bash`, and `.github/prompts/prompt.sh`. Do not use `run_in_terminal` for shell execution.
+
 ## PHASE 1: Pre-Development Validation
 
 1. Verify story file exists at `_bmad-output/implementation-artifacts/${story}.md`
@@ -35,7 +37,7 @@ This will:
 
 If `code-story.prompt.md` encounters issues, it must call `.github/prompts/prompt.sh` or handle internal retries as required.
 
-**IMMEDIATELY PROCEED TO PHASE 3** once `code-story.prompt.md` returns — do not pause, do not ask for confirmation. cd to `../dms/story-${story}` and run `pnpm i` now, then begin Phase 3.
+**IMMEDIATELY PROCEED TO PHASE 3** once `code-story.prompt.md` returns — do not pause, do not ask for confirmation. Use the bash MCP server to run `pnpm i` with `cwd` set to `../dms/story-${story}`, then begin Phase 3.
 
 **IMPORTANT**: All subsequent phases (3 through 7) must run from within the worktree at `../dms/story-${story}`.
 

@@ -8,6 +8,8 @@ model: Claude Sonnet 4.6 (copilot)
 
 Run this prompt from the story worktree that contains the implementation under review.
 
+Shell execution rule: every shell command in this workflow must use the bash MCP server. Use `mcp_bash_run` for blocking commands and `mcp_bash_run_background` only for true background processes. This applies to `pnpm`, `git`, `gh`, `bash`, and `.github/prompts/prompt.sh`.
+
 ## Purpose
 
 This prompt exists to run the full QA gate, remediation, and re-validation cycle in a **fresh subagent context** so the parent story workflow does not accumulate QA findings, fix attempts, and validation output.
@@ -23,13 +25,14 @@ Before doing anything else, read all of the following:
 ## Execution Rules
 
 1. Operate in the **current working directory** only.
-2. Run the QA gate up to 10 times by calling:
+2. Use the bash MCP server for every shell command in this workflow. Use `mcp_bash_run` for blocking commands and `mcp_bash_run_background` only for true background processes. This applies to `pnpm`, `git`, `gh`, `bash`, and `.github/prompts/prompt.sh`.
+3. Run the QA gate up to 10 times by calling:
 
 ```bash
 run #file:./gate.prompt.md story=${story}
 ```
 
-3. Interpret results exactly as follows:
+4. Interpret results exactly as follows:
    - **PASS**: Return immediately with `QA PASSED`
    - **FAIL**: Apply QA fix recommendations automatically, then re-run:
 
@@ -37,12 +40,12 @@ run #file:./gate.prompt.md story=${story}
 run #file:./quality-validation.prompt.md context=story-${story}-qa
 ```
 
-4. For QA findings about API misuse, use Context7.
-5. For QA findings about UI behavior, use Playwright.
-6. After re-validation passes, retry the gate from the top of the loop.
-7. If the loop reaches 10 failed gate attempts, call `.github/prompts/prompt.sh` with `timeout: 0` and report the issue summary.
-8. For all human interaction, use `.github/prompts/prompt.sh` via `run_in_terminal` with `timeout: 0`.
-9. Do not ask for confirmation on success; return control immediately to the caller.
+5. For QA findings about API misuse, use Context7.
+6. For QA findings about UI behavior, use Playwright.
+7. After re-validation passes, retry the gate from the top of the loop.
+8. If the loop reaches 10 failed gate attempts, run `.github/prompts/prompt.sh` through the bash MCP server with `timeout: 0` and report the issue summary.
+9. For all human interaction, use `.github/prompts/prompt.sh` via the bash MCP server with `timeout: 0`.
+10. Do not ask for confirmation on success; return control immediately to the caller.
 
 ## Completion Contract
 

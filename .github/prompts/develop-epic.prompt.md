@@ -6,6 +6,8 @@ model: Claude Opus 4.6 (copilot)
 
 # Autonomous Epic Development Workflow
 
+Shell execution rule: every shell command in this workflow and its delegated steps must use the bash MCP server. Use `mcp_bash_run` for blocking commands and `mcp_bash_run_background` only for true background processes. This applies to `pnpm`, `git`, `gh`, `bash`, and `.github/prompts/prompt.sh`. Do not use `run_in_terminal` for shell execution.
+
 ## CRITICAL: Each Phase In a subAgent
 
 Each phase of the epic development process must be handled by a separate subAgent. This ensures modularity, better error handling, clear separation of concerns, and avoids loss of overall context
@@ -41,7 +43,7 @@ For each story in the ordered list:
    - **For standard stories**: Run `run #file:./develop-story.prompt.md story=${current_story}`
    - **For bug fix stories**: Run `run #file:./debug.prompt.md epic=${epic} story=${current_story}`
    - Both workflows handle: validation, implementation, quality checks, PR creation, CodeRabbit review, and merge
-   - **IMMEDIATELY after the delegated workflow returns** (do not pause, do not wait for human input): read the minimal state file written by the story workflow. Resolve the path via `$(git rev-parse --git-common-dir)/tmp/story-${current_story}-meta.json`. If the file is missing or malformed, call `.github/prompts/prompt.sh "Missing or invalid meta file for ${current_story}. Repair or continue?"` via `run_in_terminal` and handle the response.
+   - **IMMEDIATELY after the delegated workflow returns** (do not pause, do not wait for human input): read the minimal state file written by the story workflow. Resolve the path via `$(git rev-parse --git-common-dir)/tmp/story-${current_story}-meta.json`. If the file is missing or malformed, call `.github/prompts/prompt.sh "Missing or invalid meta file for ${current_story}. Repair or continue?"` via the bash MCP server and handle the response.
    - Append or update the epic aggregation file at `$(git rev-parse --git-common-dir)/tmp/epic-${epic}-stories.json` with the story's metadata. Each entry should include at minimum: `story`, `pr`, `branch`, `merged` (boolean), and `mergedAt` (timestamp if merged). Use this file for later reporting and for resuming orchestration without re-passing large prompt context.
    - **IMMEDIATELY continue to the next story in the ordered list** — no human confirmation required between stories.
 

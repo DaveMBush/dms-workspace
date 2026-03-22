@@ -6,6 +6,8 @@ model: Claude Sonnet 4.6 (copilot)
 
 # Autonomous Epic Bug Fix Workflow
 
+Shell execution rule: every shell command in this workflow and its delegated steps must use the bash MCP server. Use `mcp_bash_run` for blocking commands and `mcp_bash_run_background` only for true background processes. This applies to `pnpm`, `git`, `gh`, `bash`, and `.github/prompts/prompt.sh`. Do not use `run_in_terminal` for shell execution.
+
 ## PHASE 1-2: Epic Validation And Debug Setup
 
 Delegate epic validation and branch setup to a dedicated setup subagent:
@@ -30,16 +32,14 @@ This keeps the debug workflow context small while the setup subagent handles:
 Prompt the user using `prompt.sh`:
 
 ```typescript
-run_in_terminal({
+mcp_bash_run({
   command: 'bash .github/prompts/prompt.sh "Please describe the bug to fix:"',
-  explanation: 'Collecting bug description from user',
-  goal: 'Get bug description',
-  isBackground: false,
-  timeout: 0, // CRITICAL: No timeout
+  cwd: process.cwd(),
+  timeout: 0,
 });
 ```
 
-**CRITICAL**: After calling prompt.sh, do NOTHING until the user responds. Do NOT start servers, run manual tests, do code reviews, or perform any speculative work while waiting. The prompt.sh call BLOCKS — your only job is to wait for the response and then act on it.
+**CRITICAL**: After calling prompt.sh through the bash MCP server, do NOTHING until the user responds. Do NOT start servers, run manual tests, do code reviews, or perform any speculative work while waiting. The prompt.sh call BLOCKS — your only job is to wait for the response and then act on it.
 
 ### 3.2 Delegate Fix and Validation to a Subagent
 
@@ -65,7 +65,7 @@ Tasks:
 5. Return a summary of: files changed, what the fix was, and either
    "VALIDATION PASSED" or "VALIDATION FAILED: <reason>".
 
-CRITICAL: You MUST call prompt.sh via run_in_terminal for ALL human interaction.
+CRITICAL: You MUST call prompt.sh via the bash MCP server for ALL human interaction.
 NEVER write questions or status messages to the chat window.
 ```
 
@@ -90,15 +90,13 @@ All checks must pass in a single iteration. The validation subagent returns to t
 
 After current bug fix validated, ask if another bug to fix in same branch:
 
-**CRITICAL**: Use `timeout: 0` when calling `prompt.sh`:
+**CRITICAL**: Use the bash MCP server with `timeout: 0` when calling `prompt.sh`:
 
 ```typescript
-run_in_terminal({
+mcp_bash_run({
   command: 'bash .github/prompts/prompt.sh "Bug fix validated. Fix another bug in this branch?"',
-  explanation: 'Asking if another bug should be fixed',
-  goal: 'Get user decision',
-  isBackground: false,
-  timeout: 0, // CRITICAL: No timeout
+  cwd: process.cwd(),
+  timeout: 0,
 });
 ```
 
@@ -122,11 +120,11 @@ Before making any Phase 5 `prompt.sh` call or spawning the next subagent, **re-r
 3. Re-read the epic file: `docs/epics/${epic}.md`
 4. Re-read the dev agent core config: `.bmad-core/core-config.yaml`
 
-**WHY (context refresh)**: After multiple loop iterations the main agent's context window may be summarized, causing it to forget that it must use `prompt.sh` for the "fix another bug?" prompt. Re-reading keeps the main orchestration loop correct.
+**WHY (context refresh)**: After multiple loop iterations the main agent's context window may be summarized, causing it to forget that it must use `prompt.sh` through the bash MCP server for the "fix another bug?" prompt. Re-reading keeps the main orchestration loop correct.
 
 **WHY (subagent)**: Even with a refresh, the main agent still carries accumulated context from all prior bugs. The subagent in PHASE 3.2 gets a completely clean slate for each bug fix, eliminating any risk of its implementation or quality-validation work being affected by forgotten rules.
 
-**REMINDER after re-reading**: You MUST call `prompt.sh` via `run_in_terminal` for ALL human interaction in this loop. NEVER write questions or status messages to the chat window.
+**REMINDER after re-reading**: You MUST call `prompt.sh` via the bash MCP server for ALL human interaction in this loop. NEVER write questions or status messages to the chat window.
 
 ## PHASE 6: Commit and PR Creation
 
@@ -188,6 +186,6 @@ This keeps the debug workflow context small while the merge subagent handles:
 ## Notes
 
 - This workflow is designed for zero human intervention on happy path
-- Human involvement only via prompt.sh (with `timeout: 0`) when decisions/help needed
+- Human involvement only via prompt.sh through the bash MCP server (with `timeout: 0`) when decisions/help needed
 - Maintains quality gates while maximizing autonomy
 - See bmad-workflow skill for detailed patterns and best practices

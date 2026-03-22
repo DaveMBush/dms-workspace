@@ -9,14 +9,16 @@ model: Claude Sonnet 4.6 (copilot)
 
 This subagent implements Phase 6 (CodeRabbit review loop). It is intentionally small and stateful so it can be re-invoked and resumed.
 
+Shell execution rule: every shell command in this workflow must use the bash MCP server. Use `mcp_bash_run` for blocking commands and `mcp_bash_run_background` only for true background processes. This applies to `pnpm`, `git`, `gh`, `bash`, and `.github/prompts/prompt.sh`.
+
 INPUT: `story` (required). Reads the story metadata file for PR metadata. Resolve the path via:
 ```bash
 GIT_COMMON_DIR=$(git rev-parse --git-common-dir)
 META_FILE="$GIT_COMMON_DIR/tmp/story-${story}-meta.json"
 ```
-If that file is missing, use `prompt.sh` with `timeout: 0` to ask for help.
+If that file is missing, use `prompt.sh` through the bash MCP server with `timeout: 0` to ask for help.
 
-**IMPORTANT**: After reading the state file, cd into `worktreePath` (from the state file) before applying any code fixes or running validations. All git operations must be executed from within that worktree directory.
+**IMPORTANT**: After reading the state file, use `worktreePath` (from the state file) as the `cwd` for bash MCP calls before applying any code fixes or running validations. All git operations must be executed from within that worktree directory.
 
 State file format (example):
 
@@ -36,7 +38,7 @@ Behavior (concise):
 
 Key steps:
 1. Look at the current PR's CI pipeline status and verify that is succeeded. If it is still running, wait and re-check every 30s (with a max timeout of 10 min). If it fails, look at the pipeline for the failue and fix the issue(s) before proceeding.
-2. Resolve `GIT_COMMON_DIR=$(git rev-parse --git-common-dir)` and read `$GIT_COMMON_DIR/tmp/story-${story}-meta.json` into local state; then `cd` to `worktreePath` from that state
+2. Resolve `GIT_COMMON_DIR=$(git rev-parse --git-common-dir)` and read `$GIT_COMMON_DIR/tmp/story-${story}-meta.json` into local state; then use `worktreePath` from that state as the `cwd` for subsequent bash MCP calls
 3. Loop while `attempt < maxIterations` (increment and persist immediately)
 4. Poll `mcp_github_pull_request_read` with `method: "get_review_comments"` every 120s (10 min timeout)
 5. If no suggestions: proceed to merge checks
@@ -48,7 +50,7 @@ Key steps:
 8. Commit "Apply CodeRabbit suggestions", push, wait 5 minutes, continue loop
 9. Update state file with final status when complete
 
-Error handling: Use `prompt.sh` with `timeout: 0` for any unexpected failures or max iterations.
+Error handling: Use `prompt.sh` through the bash MCP server with `timeout: 0` for any unexpected failures or max iterations.
 
 Notes:
 - Use state file to avoid passing large context

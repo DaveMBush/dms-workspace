@@ -16,9 +16,9 @@ In the TDD stories, in order to make the CI pass and allow us to merge, once you
 
 Make sure the Definition of Done for each story includes:
 
-- capture the worktree path and use it in all subsequent commands that need to run in the worktree (e.g. `run ("pnpm format", { cwd: "${WORKTREE_PATH}" })` for the commit-and-pr story)
+- capture the worktree path and use it in all subsequent shell commands that need to run in the worktree via the bash MCP server (e.g. `mcp_bash_run({ command: "pnpm format", cwd: "${WORKTREE_PATH}", timeout: 0 })` for the commit-and-pr story)
 
-- [ ] All validation commands pass each run command should use the bash mcp server to run the command.  ie `run ("pnpm all", { cwd: "${WORKTREE_PATH}" })`
+- [ ] All validation commands pass. Each shell command must use the bash MCP server, for example `mcp_bash_run({ command: "CI=1 pnpm all", cwd: "${WORKTREE_PATH}", timeout: 0 })`
   - Run `CI=1 pnpm all`
   - Run `pnpm e2e:dms-material:chromium`
   - Run `pnpm e2e:dms-material:firefox`
