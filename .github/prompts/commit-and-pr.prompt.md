@@ -2,7 +2,14 @@
 model: Claude Sonnet 4.5 (copilot)
 ---
 
-- run `pnpm format`
+- Capture current worktree path
+WORKTREE_PATH=$(pwd)
+
+- run `pnpm format` using the bash mcp server to auto-format any files that need it before committing:
+
+```
+run ("pnpm format", { cwd: "${WORKTREE_PATH}" })
+```
 - commit all existing changes and create a pull request. Do not reference Claude code in either the commit or the PR.
 - Make sure you reference the github issue number in the PR so that when we merge the PR it will close the issue automatically.
 - When drafting the PR description, do not include literal escape sequences like `\n`. Instead, write the summary as regular Markdown (paragraphs or bullet lists) derived from the story's "Change Log" section and repeat the testing steps under a "Testing" heading.
@@ -17,9 +24,6 @@ Suggested shell snippet (use in `run_in_terminal`):
 # Resolve the shared git dir (works from both main repo and worktrees)
 GIT_COMMON_DIR=$(git rev-parse --git-common-dir)
 mkdir -p "$GIT_COMMON_DIR/tmp"
-
-# Capture current worktree path
-WORKTREE_PATH=$(pwd)
 
 # get PR number from gh (adjust flags if you create PR differently)
 PR_NUMBER=$(gh pr create --fill --base main --head "${branch}" --json number -q .number)

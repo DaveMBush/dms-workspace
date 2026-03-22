@@ -23,18 +23,18 @@ Before running the loop, read:
 
 1. Operate in the **current working directory** only.
 2. Treat `${context}` only as a logging label for status messages and summaries.
-3. Run the following Quality Validation Loop steps in order:
+3. Run the following Quality Validation Loop steps in order using the bash mcp server for each command:
    1. `pnpm all` (lint + build + unit tests)
    2. `pnpm e2e:dms-material:chromium`
    3. `pnpm e2e:dms-material:firefox`
    4. `pnpm dupcheck`
    5. `pnpm format`
-   6. Self-review changed files (`git diff --name-only origin/main...HEAD`) against `.github/instructions/code-review.md` and fix any findings
-4. Auto-fix failures and code-review findings when possible.
-5. If any fix is applied, restart the loop from step 1.
-6. All steps must pass in a single uninterrupted iteration before reporting success.
-7. For all human interaction, use `.github/prompts/prompt.sh` via `run_in_terminal` with `timeout: 0`.
-8. Do not ask for confirmation when the loop completes successfully; return control immediately to the caller.
+4. Self-review changed files (`git diff --name-only origin/main...HEAD`) against `.github/instructions/code-review.md` and fix any findings
+5. Auto-fix failures and code-review findings when possible.
+6. If any fix is applied, restart the loop from step 1.
+7. All steps must pass in a single uninterrupted iteration before reporting success.
+8. For all human interaction, use `.github/prompts/prompt.sh` via `run_in_terminal` with `timeout: 0`.
+9. Do not ask for confirmation when the loop completes successfully; return control immediately to the caller.
 
 ## Completion Contract
 

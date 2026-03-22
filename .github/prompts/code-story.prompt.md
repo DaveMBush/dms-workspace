@@ -14,7 +14,11 @@ model: Claude Sonnet 4.5 (copilot)
    ```bash
    git worktree add ../dms/story-${story} <branch-name>
    ```
-4. `cd` into `../dms/story-${story}` and run `pnpm i` to install dependencies.
+4. `cd` into `../dms/story-${story}` and run `pnpm i` using the bash mcp server to install dependencies.
+
+```
+run ("pnpm i", { cwd: "../dms/story-${story}" })
+```
 
 ## Implementation
 
