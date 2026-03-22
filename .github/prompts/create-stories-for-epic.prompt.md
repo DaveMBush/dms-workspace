@@ -19,7 +19,7 @@ Make sure the Definition of Done for each story includes:
 - capture the worktree path and use it in all subsequent commands that need to run in the worktree (e.g. `run ("pnpm format", { cwd: "${WORKTREE_PATH}" })` for the commit-and-pr story)
 
 - [ ] All validation commands pass each run command should use the bash mcp server to run the command.  ie `run ("pnpm all", { cwd: "${WORKTREE_PATH}" })`
-  - Run `pnpm all`
+  - Run `CI=1 pnpm all`
   - Run `pnpm e2e:dms-material:chromium`
   - Run `pnpm e2e:dms-material:firefox`
   - Run `pnpm dupcheck`

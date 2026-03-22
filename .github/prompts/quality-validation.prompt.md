@@ -23,8 +23,8 @@ Before running the loop, read:
 
 1. Operate in the **current working directory** only.
 2. Treat `${context}` only as a logging label for status messages and summaries.
-3. Run the following Quality Validation Loop steps in order using the bash mcp server for each command:
-   1. `pnpm all` (lint + build + unit tests)
+3. Run the following Quality Validation Loop steps in order using the bash mcp server for each command. ie `run ("<command>", { cwd: process.cwd() })`:
+   1. `CI=1 pnpm all` (lint + build + unit tests)
    2. `pnpm e2e:dms-material:chromium`
    3. `pnpm e2e:dms-material:firefox`
    4. `pnpm dupcheck`

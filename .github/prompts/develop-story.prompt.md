@@ -49,7 +49,7 @@ run #file:./quality-validation.prompt.md context=story-${story}
 
 This keeps the story workflow context small while the validation loop handles:
 
-1. `pnpm all`
+1. `CI=1 pnpm all`
 2. `pnpm e2e:dms-material:chromium`
 3. `pnpm e2e:dms-material:firefox`
 4. `pnpm dupcheck`
