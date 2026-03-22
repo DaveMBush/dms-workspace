@@ -99,7 +99,7 @@ If commit-and-pr fails: Call `.github/prompts/prompt.sh "Failed to create PR: <e
 
 **IMMEDIATELY PROCEED TO PHASE 6** once `commit-and-pr.prompt.md` returns successfully — do not pause or wait for human input.
 
-## PHASE 6: CodeRabbit Review Loop (delegated)
+## PHASE 6: CI Pipeline and CodeRabbit Review Loop (delegated)
 
 Phase 6 has been delegated to a dedicated, resumable subagent. After Phase 5 completes the `commit-and-pr` step MUST write a minimal metadata file at `$(git rev-parse --git-common-dir)/tmp/story-${story}-meta.json` with at least:
 

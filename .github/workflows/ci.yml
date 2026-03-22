@@ -59,6 +59,30 @@ jobs:
       # Tests run with SQLite (default environment), builds use PostgreSQL schema
       - run: pnpm nx affected -t lint build test --parallel=1
 
+      # Storybook visual regression tests
+      - name: Cache Storybook build
+        uses: actions/cache@v4
+        id: storybook-cache
+        with:
+          path: dist/storybook
+          key: storybook-${{ hashFiles('pnpm-lock.yaml', 'apps/dms-material/src/**', 'apps/dms-material/.storybook/**') }}
+
+      - name: Build Storybook
+        if: steps.storybook-cache.outputs.cache-hit != 'true'
+        run: pnpm storybook:build
+
+      - name: Run Storybook visual regression tests
+        run: pnpm nx run dms-material-e2e:e2e-storybook
+
+      - name: Upload visual regression diffs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-regression-diffs
+          path: |
+            test-results/storybook-visual/
+            apps/dms-material-e2e/playwright-report/
+
       # I'll look at running e2e on CI later
       # and run locally until then.
       # Don't forget to enable nx cloud (above)
