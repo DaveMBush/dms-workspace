@@ -5,10 +5,22 @@
   <p>Select a CSV file to import Fidelity transactions.</p>
   <div class="file-input-container">
     <input
+      #fileInput
       type="file"
+      class="hidden"
       (change)="onFileSelected($event)"
       aria-label="Select CSV file"
     />
+    <button
+      mat-raised-button
+      color="primary"
+      type="button"
+      data-testid="select-file-button"
+      (click)="fileInput.click()"
+    >
+      <mat-icon>upload_file</mat-icon>
+      Select CSV File
+    </button>
     @if (selectedFile !== null) {
     <span class="selected-file-name">{{ selectedFile.name }}</span>
     }
