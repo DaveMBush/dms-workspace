@@ -19,7 +19,12 @@
     "**/tsconfig.lib.json",
     "**/node_modules/**",
     "**/{.*,coverage,dist,tmp}/**",
-    "**/dms-material/**",
+    "**/global/global-screener/**",
+    "**/global/global-universe/**",
+    "**/global/global-summary.ts",
+    "**/global/global-summary.html",
+    "**/accounts/account-summary/account-summary.ts",
+    "**/accounts/account-summary/account-summary.html",
     "**/routes/trades/get-closed-trades/**",
     "**/routes/trades/get-open-trades/**"
   ]

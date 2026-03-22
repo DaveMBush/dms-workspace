@@ -51,18 +51,20 @@ test.describe('Loading Spinner Centering', () => {
       }
     }
 
-    // Verify spinner content is centered within the overlay
-    const spinner = loadingOverlay.locator('mat-progress-spinner');
-    const spinnerBox = await spinner.boundingBox();
-    if (spinnerBox && box) {
+    // Verify the centered wrapper is centered within the overlay
+    const wrapper = loadingOverlay.locator(
+      'div.flex.flex-col.items-center.justify-center'
+    );
+    const wrapperBox = await wrapper.boundingBox();
+    if (wrapperBox && box) {
       const centerX = box.width / 2;
       const centerY = box.height / 2;
-      const spinnerCenterX = spinnerBox.x + spinnerBox.width / 2;
-      const spinnerCenterY = spinnerBox.y + spinnerBox.height / 2;
+      const wrapperCenterX = wrapperBox.x + wrapperBox.width / 2;
+      const wrapperCenterY = wrapperBox.y + wrapperBox.height / 2;
 
       // Allow 1px tolerance for rounding
-      expect(Math.abs(spinnerCenterX - centerX)).toBeLessThan(1);
-      expect(Math.abs(spinnerCenterY - centerY)).toBeLessThan(1);
+      expect(Math.abs(wrapperCenterX - centerX)).toBeLessThan(1);
+      expect(Math.abs(wrapperCenterY - centerY)).toBeLessThan(1);
     }
 
     // Wait for loading to complete
@@ -114,65 +116,82 @@ test.describe('Loading Spinner Centering', () => {
     const loadingOverlay = page.locator('[data-testid="loading-overlay"]');
 
     const updateButton = page.locator('[data-testid="update-universe-button"]');
-    if ((await updateButton.isVisible()) && (await updateButton.isEnabled())) {
-      await updateButton.click();
+    await expect(updateButton).toBeVisible();
+    await expect(updateButton).toBeEnabled();
+    await updateButton.click();
+    await expect(loadingOverlay).toBeVisible({ timeout: 2000 });
 
-      const appeared = await loadingOverlay
-        .waitFor({ state: 'visible', timeout: 2000 })
-        .then(() => true)
-        .catch(() => false);
+    // Verify centering
+    const classes = await loadingOverlay.getAttribute('class');
+    expect(classes).toContain('fixed');
+    expect(classes).toContain('inset-0');
+    expect(classes).toContain('flex');
+    expect(classes).toContain('items-center');
+    expect(classes).toContain('justify-center');
 
-      if (appeared) {
-        // Verify centering
-        const classes = await loadingOverlay.getAttribute('class');
-        expect(classes).toContain('fixed');
-        expect(classes).toContain('inset-0');
-        expect(classes).toContain('flex');
-        expect(classes).toContain('items-center');
-        expect(classes).toContain('justify-center');
-
-        await loadingOverlay.waitFor({ state: 'hidden', timeout: 10000 });
-      }
-    }
+    await loadingOverlay.waitFor({ state: 'hidden', timeout: 10000 });
   });
 
   test('AC 3.2: Account screens spinner is centered', async ({ page }) => {
-    // Navigate to root - accounts panel is shown in the sidebar
-    await page.goto('/');
-    await page.waitForSelector('[data-testid="accounts-panel"]', {
-      timeout: 10000,
-    });
+    const ACCOUNT_UUID = '1677e04f-ef9b-4372-adb3-b740443088dc';
 
-    // Check if there's a loading spinner visible on the accounts screen
+    // Stub API calls with a delay to ensure the loading spinner is visible
+    await page.route(
+      '**/api/summary*',
+      async function handleSummaryRoute(route) {
+        await new Promise<void>(function delayResponse(resolve) {
+          setTimeout(resolve, 2000);
+        });
+        await route.continue();
+      }
+    );
+
+    // Navigate to account summary page (triggers data load)
+    await page.goto(`/account/${ACCOUNT_UUID}`);
+
+    // Wait for loading spinner to appear (guaranteed by the route delay)
     const loadingSpinner = page.locator('[data-testid="loading-spinner"]');
+    await expect(loadingSpinner).toBeVisible({ timeout: 5000 });
 
-    // If a local loading spinner exists, it should use flex centering within its container
-    if (await loadingSpinner.isVisible()) {
-      const classes = await loadingSpinner.getAttribute('class');
-      expect(classes).toContain('flex');
-      expect(classes).toContain('justify-center');
-      expect(classes).toContain('items-center');
-    }
+    // Verify flex centering classes
+    const classes = await loadingSpinner.getAttribute('class');
+    expect(classes).toContain('flex');
+    expect(classes).toContain('justify-center');
+    expect(classes).toContain('items-center');
+
+    // Wait for loading to complete
+    await expect(loadingSpinner).toBeHidden({ timeout: 15000 });
   });
 
   test('AC 3.3: Global Summary screen spinner is centered', async ({
     page,
   }) => {
-    // Navigate to global summary
+    // Stub API calls with a delay to ensure the loading spinner is visible
+    await page.route(
+      '**/api/summary*',
+      async function handleSummaryRoute(route) {
+        await new Promise<void>(function delayResponse(resolve) {
+          setTimeout(resolve, 2000);
+        });
+        await route.continue();
+      }
+    );
+
+    // Navigate to global summary page (triggers data load)
     await page.goto('/global/summary');
-    await page.waitForSelector('[data-testid="global-summary-container"]', {
-      timeout: 10000,
-    });
 
-    // Check for local loading spinner
+    // Wait for loading spinner to appear (guaranteed by the route delay)
     const loadingSpinner = page.locator('[data-testid="loading-spinner"]');
+    await expect(loadingSpinner).toBeVisible({ timeout: 5000 });
 
-    if (await loadingSpinner.isVisible()) {
-      const classes = await loadingSpinner.getAttribute('class');
-      expect(classes).toContain('flex');
-      expect(classes).toContain('justify-center');
-      expect(classes).toContain('items-center');
-    }
+    // Verify flex centering classes
+    const classes = await loadingSpinner.getAttribute('class');
+    expect(classes).toContain('flex');
+    expect(classes).toContain('justify-center');
+    expect(classes).toContain('items-center');
+
+    // Wait for loading to complete
+    await expect(loadingSpinner).toBeHidden({ timeout: 15000 });
   });
 
   test('AC 2: Solution works for all screen sizes', async ({ page }) => {
@@ -207,17 +226,19 @@ test.describe('Loading Spinner Centering', () => {
         expect(box.height).toBe(size.height);
       }
 
-      // Verify spinner is centered
-      const spinner = loadingOverlay.locator('mat-progress-spinner');
-      const spinnerBox = await spinner.boundingBox();
-      if (spinnerBox && box) {
+      // Verify centered wrapper is centered within the overlay
+      const wrapper = loadingOverlay.locator(
+        'div.flex.flex-col.items-center.justify-center'
+      );
+      const wrapperBox = await wrapper.boundingBox();
+      if (wrapperBox && box) {
         const centerX = box.width / 2;
         const centerY = box.height / 2;
-        const spinnerCenterX = spinnerBox.x + spinnerBox.width / 2;
-        const spinnerCenterY = spinnerBox.y + spinnerBox.height / 2;
+        const wrapperCenterX = wrapperBox.x + wrapperBox.width / 2;
+        const wrapperCenterY = wrapperBox.y + wrapperBox.height / 2;
 
-        expect(Math.abs(spinnerCenterX - centerX)).toBeLessThan(1);
-        expect(Math.abs(spinnerCenterY - centerY)).toBeLessThan(1);
+        expect(Math.abs(wrapperCenterX - centerX)).toBeLessThan(1);
+        expect(Math.abs(wrapperCenterY - centerY)).toBeLessThan(1);
       }
 
       await loadingOverlay.waitFor({ state: 'hidden', timeout: 10000 });

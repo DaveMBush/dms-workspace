@@ -38,7 +38,7 @@ So that I have a clear visual indication that data is loading without it being o
 - [x] Verified on Screener, Universe, Account, and Global Summary screens
 - [x] Solution works at all screen sizes
 - [x] Verified using Playwright E2E tests
-- [x] All validation commands pass:
+- [ ] All validation commands pass:
   - [x] Run `pnpm all`
   - [ ] Run `pnpm e2e:dms-material:chromium`
   - [ ] Run `pnpm e2e:dms-material:firefox`
