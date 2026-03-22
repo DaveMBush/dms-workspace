@@ -1,6 +1,6 @@
 # Story 11.1: Apply Button Styling to Upload Input
 
-Status: Approved
+Status: review
 
 ## Story
 
@@ -35,48 +35,48 @@ So that I know I can click it to select a file to upload.
 
 ## Definition of Done
 
-- [ ] Upload input has button-like styling with background, padding, rounded corners
-- [ ] Hover effect works correctly
-- [ ] Styling consistent with other buttons in the app
-- [ ] Verified using Playwright MCP server
-- [ ] All validation commands pass:
-  - [ ] Run `pnpm all`
-  - [ ] Run `pnpm e2e:dms-material:chromium`
-  - [ ] Run `pnpm e2e:dms-material:firefox`
-  - [ ] Run `pnpm dupcheck`
-  - [ ] Run `pnpm format`
-  - [ ] Repeat all of these if any fail until they all pass
+- [x] Upload input has button-like styling with background, padding, rounded corners
+- [x] Hover effect works correctly
+- [x] Styling consistent with other buttons in the app
+- [x] Verified using Playwright MCP server
+- [x] All validation commands pass:
+  - [x] Run `pnpm all`
+  - [x] Run `pnpm e2e:dms-material:chromium`
+  - [x] Run `pnpm e2e:dms-material:firefox`
+  - [x] Run `pnpm dupcheck`
+  - [x] Run `pnpm format`
+  - [x] Repeat all of these if any fail until they all pass
 
 ## Tasks / Subtasks
 
-- [ ] Find the Universe screen upload control (AC: 1)
-  - [ ] Navigate to Universe screen component: `apps/dms-material/src/app/pages/universe/`
-  - [ ] Locate the file upload input element in the template
-  - [ ] Identify current styling classes
-- [ ] Check git history for previous styling (AC: 2)
-  - [ ] Run `git log --all --full-history -- **/universe/**`
-  - [ ] Find Epic 8 commits that modified Universe screen styling
-  - [ ] Document what button classes or Material directives were removed
-- [ ] Examine other buttons for consistent styling (AC: 3)
-  - [ ] Find other action buttons on Universe or similar screens
-  - [ ] Note the Tailwind classes they use
-  - [ ] Identify color tokens from `tailwind.config.js`
-- [ ] Apply button styling to upload input (AC: 1, 3)
-  - [ ] Wrap `<input type="file">` in a styled label or button
-  - [ ] Apply Tailwind classes: `bg-primary text-white px-4 py-2 rounded cursor-pointer`
-  - [ ] Add hover classes: `hover:bg-primary-dark transition-colors`
-  - [ ] Hide the native file input: `hidden` or `sr-only`
-  - [ ] Ensure file selection still works after styling
-- [ ] Test locally (AC: 1)
-  - [ ] Navigate to Universe screen
-  - [ ] Verify upload control looks like a button
-  - [ ] Test hover state
-  - [ ] Test file selection functionality
-- [ ] Use Playwright MCP server for verification (AC: 4)
-  - [ ] Navigate to Universe screen
-  - [ ] Take screenshot of upload button
-  - [ ] Test hover state with `mcp_microsoft_pla_browser_hover`
-  - [ ] Verify button appearance and functionality
+- [x] Find the Universe screen upload control (AC: 1)
+  - [x] Navigate to Universe screen component: `apps/dms-material/src/app/pages/universe/`
+  - [x] Locate the file upload input element in the template
+  - [x] Identify current styling classes
+- [x] Check git history for previous styling (AC: 2)
+  - [x] Run `git log --all --full-history -- **/universe/**`
+  - [x] Find Epic 8 commits that modified Universe screen styling
+  - [x] Document what button classes or Material directives were removed
+- [x] Examine other buttons for consistent styling (AC: 3)
+  - [x] Find other action buttons on Universe or similar screens
+  - [x] Note the Tailwind classes they use
+  - [x] Identify color tokens from `tailwind.config.js`
+- [x] Apply button styling to upload input (AC: 1, 3)
+  - [x] Wrap `<input type="file">` in a styled label or button
+  - [x] Apply Tailwind classes: `bg-primary text-white px-4 py-2 rounded cursor-pointer`
+  - [x] Add hover classes: `hover:bg-primary-dark transition-colors`
+  - [x] Hide the native file input: `hidden` or `sr-only`
+  - [x] Ensure file selection still works after styling
+- [x] Test locally (AC: 1)
+  - [x] Navigate to Universe screen
+  - [x] Verify upload control looks like a button
+  - [x] Test hover state
+  - [x] Test file selection functionality
+- [x] Use Playwright MCP server for verification (AC: 4)
+  - [x] Navigate to Universe screen
+  - [x] Take screenshot of upload button
+  - [x] Test hover state with `mcp_microsoft_pla_browser_hover`
+  - [x] Verify button appearance and functionality
 
 ## Dev Notes
 
@@ -138,16 +138,21 @@ Check `tailwind.config.js` for:
 
 ### Agent Model Used
 
-_To be filled by dev agent_
+Claude Sonnet 4.5 (GitHub Copilot)
 
 ### Debug Log References
 
-_To be filled by dev agent_
+N/A - no significant debug issues
 
 ### Completion Notes List
 
-_To be filled by dev agent_
+- Upload control was located in `import-dialog.component.html` (not `pages/universe/` as story indicated - it's a global dialog)
+- No prior button styling found in git history - input was always unstyled
+- `tailwind.config.js` has no custom color tokens (`bg-primary` does not exist), so Angular Material `mat-raised-button color="primary"` was used instead - consistent with app's existing button pattern
+- All E2E tests (9/9 Chromium, 9/9 Firefox) pass with hidden input approach - Playwright's `setInputFiles()` works on hidden inputs
+- Playwright MCP visual verification confirmed styled button appears correctly in the Import Fidelity Transactions dialog
 
 ### File List
 
-_To be filled by dev agent_
+- `apps/dms-material/src/app/global/import-dialog/import-dialog.component.html`
+- `apps/dms-material/src/app/global/import-dialog/import-dialog.component.spec.ts`

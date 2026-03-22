@@ -94,6 +94,21 @@ describe('ImportDialogComponent', () => {
       const text = compiled.textContent;
       expect(text).toMatch(/select|choose|csv/i);
     });
+
+    it('should render a styled select-file button instead of raw file input', () => {
+      const compiled = fixture.nativeElement as HTMLElement;
+      const selectButton = compiled.querySelector<HTMLButtonElement>(
+        '[data-testid="select-file-button"]'
+      );
+      expect(selectButton).toBeTruthy();
+    });
+
+    it('should hide the native file input visually', () => {
+      const compiled = fixture.nativeElement as HTMLElement;
+      const fileInput =
+        compiled.querySelector<HTMLInputElement>('input[type="file"]')!;
+      expect(fileInput.classList.contains('hidden')).toBe(true);
+    });
   });
 
   describe('file selection handling', () => {
