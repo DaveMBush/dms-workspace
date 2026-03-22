@@ -81,25 +81,25 @@ So that I know I can click it to select a file to upload.
 ## Dev Notes
 
 ### Context from Epic 8
+
 - Tailwind CSS migration removed button styling from file upload input
 - File input now appears as plain text label with no visual affordance
 
 ### Common Pattern for Styled File Inputs
+
 ```html
 <!-- Hidden native input -->
 <input #fileInput type="file" class="hidden" (change)="onFileSelect($event)" />
 
 <!-- Visible styled label acting as button -->
-<label
-  for="fileInput"
-  class="inline-flex items-center px-4 py-2 bg-primary text-white rounded cursor-pointer hover:bg-primary-dark transition-colors"
->
+<label for="fileInput" class="inline-flex items-center px-4 py-2 bg-primary text-white rounded cursor-pointer hover:bg-primary-dark transition-colors">
   <mat-icon class="mr-2">upload</mat-icon>
   Upload CSV
 </label>
 ```
 
 Or using Angular Material button:
+
 ```html
 <input #fileInput type="file" class="hidden" (change)="onFileSelect($event)" />
 <button mat-raised-button color="primary" (click)="fileInput.click()">
@@ -109,27 +109,33 @@ Or using Angular Material button:
 ```
 
 ### Key Files to Modify
+
 - Universe screen component: `apps/dms-material/src/app/pages/universe/universe.component.ts`
 - Universe screen template: `apps/dms-material/src/app/pages/universe/universe.component.html`
 
 ### Tailwind Color Tokens
+
 Check `tailwind.config.js` for:
+
 - `bg-primary` - primary button background
 - `bg-primary-dark` - primary button hover state
 - `text-white` or `text-primary-contrast` - button text color
 
 ### Testing with Playwright MCP Server
+
 - Use `mcp_microsoft_pla_browser_navigate` to go to Universe screen
 - Use `mcp_microsoft_pla_browser_take_screenshot` to capture button styling
 - Use `mcp_microsoft_pla_browser_hover` to test hover state
 - Use `mcp_microsoft_pla_browser_click` to test file dialog opens
 
 ### Project Structure Notes
+
 - Follow Angular 21 patterns: standalone components, `inject()`, signals
 - Maintain CEF-focused domain logic for Universe screen
 - Ensure accessibility: proper label, keyboard navigation
 
 ### References
+
 - [Source: _bmad-output/planning-artifacts/epics-2026-03-21.md#Story 11.1]
 - [Source: apps/dms-material/src/app/pages/universe/]
 - [Source: tailwind.config.js]
