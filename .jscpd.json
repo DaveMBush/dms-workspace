@@ -19,6 +19,8 @@
     "**/tsconfig.lib.json",
     "**/node_modules/**",
     "**/{.*,coverage,dist,tmp}/**",
-    "**/dms-material/**"
+    "**/dms-material/**",
+    "**/routes/trades/get-closed-trades/**",
+    "**/routes/trades/get-open-trades/**"
   ]
 }
