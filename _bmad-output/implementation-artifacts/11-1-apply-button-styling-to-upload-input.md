@@ -62,10 +62,9 @@ So that I know I can click it to select a file to upload.
   - [x] Note the Tailwind classes they use
   - [x] Identify color tokens from `tailwind.config.js`
 - [x] Apply button styling to upload input (AC: 1, 3)
-  - [x] Wrap `<input type="file">` in a styled label or button
-  - [x] Apply Tailwind classes: `bg-primary text-white px-4 py-2 rounded cursor-pointer`
-  - [x] Add hover classes: `hover:bg-primary-dark transition-colors`
-  - [x] Hide the native file input: `hidden` or `sr-only`
+  - [x] Replace raw `<input type="file">` affordance with Angular Material button trigger
+  - [x] Use `mat-raised-button color="primary"` to match existing app button styling
+  - [x] Hide the native file input with `hidden`
   - [x] Ensure file selection still works after styling
 - [x] Test locally (AC: 1)
   - [x] Navigate to Universe screen
