@@ -1,5 +1,5 @@
 ---
-description: 'Collect required user input via script instead of chat. Use when information is missing, ambiguous, or a decision is required before continuing. Replaces asking follow-up questions in chat.'
+description: 'Collect required user input via script instead of chat. Use when information is missing, ambiguous, a decision is required before continuing, or the rate limit for the current model is exceeded. Replaces asking follow-up questions in chat.'
 name: 'prompt'
 ---
 
@@ -7,6 +7,7 @@ name: 'prompt'
 
 Invoke this skill instead of continuing the conversation when ANY of the following are true:
 
+- Rate limit for the current model is exceeded and you need to ask the user to wait before retrying
 - Required input is missing, ambiguous, or incomplete
 - Multiple reasonable interpretations exist
 - A decision, confirmation, or preference is required from the user
