@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vitest';
 
 import { formatPosition } from './format-position.function';
 
+// eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test; Story 15.2 will re-enable
 describe.skip('formatPosition - TDD skipped for CI (Story 15.1)', () => {
   it('should format zero as "0.00"', () => {
     expect(formatPosition(0)).toBe('0.00');
