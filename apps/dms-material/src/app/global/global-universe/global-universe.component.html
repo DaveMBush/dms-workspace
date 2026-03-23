@@ -212,7 +212,9 @@
         (row.most_recent_sell_price) {
         {{ row.most_recent_sell_price | currency }}
         } @else { - } } @case ('position') {
-        {{ row.position === 0 ? '' : row.position }}
+        <span class="block text-right">{{
+          row.position === 0 ? '' : formatPosition(row.position)
+        }}</span>
         } @case ('expired') {
         <span class="expired-indicator">{{ row.expired ? '*' : '' }}</span>
         } @case ('actions') { @if (shouldShowDeleteButton(row)) {

@@ -64,7 +64,7 @@ export const UNIVERSE_COLUMNS: ColumnDef[] = [
     sortable: true,
     width: '110px',
   },
-  { field: 'position', header: 'Position', type: 'number', width: '80px' },
+  { field: 'position', header: 'Position', type: 'number', width: '140px' },
   { field: 'expired', header: 'Expired', width: '100px' },
   { field: 'actions', header: 'Actions', width: '70px' },
 ];
