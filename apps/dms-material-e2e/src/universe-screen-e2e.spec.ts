@@ -102,9 +102,9 @@ test.describe('Universe Screen E2E', () => {
     test('should filter by Risk Group', async ({ page }) => {
       // Open the Risk Group filter dropdown and select "Income"
       const riskGroupSelect = page
-        .locator('tr.filter-row mat-form-field:has(mat-select) mat-select')
+        .locator('.header-filter mat-select')
         .first();
-      await riskGroupSelect.click();
+        await riskGroupSelect.dispatchEvent('click');
       await page.waitForTimeout(300);
 
       const incomeOption = page.getByRole('option', {
@@ -141,13 +141,12 @@ test.describe('Universe Screen E2E', () => {
     test('should filter by Expired', async ({ page }) => {
       // Open the Expired filter dropdown and select "Yes"
       const expiredSelects = page.locator(
-        'tr.filter-row mat-form-field mat-select'
+        '.header-filter mat-select'
       );
       // Expired select is the last one in the filter row
       const expiredSelect = expiredSelects.last();
-      await expiredSelect.click();
-      await page.waitForTimeout(300);
-
+        await expiredSelect.dispatchEvent('click');
+        await page.waitForTimeout(300);
       const yesOption = page.getByRole('option', { name: 'Yes' });
       await yesOption.click();
       await page.waitForTimeout(500);

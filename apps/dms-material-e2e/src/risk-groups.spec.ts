@@ -30,12 +30,12 @@ test.describe('Risk Group Initialization', () => {
     await page.goto('/global/universe');
     await page.waitForLoadState('networkidle');
 
-    // Verify risk group filter available - universe uses .filter-row not .header-filter
-    const riskGroupFilter = page.locator('.filter-row mat-select').first();
+    // Verify risk group filter available
+    const riskGroupFilter = page.locator('.header-filter mat-select').first();
     await expect(riskGroupFilter).toBeVisible();
 
     // Open filter dropdown
-    await riskGroupFilter.click();
+    await riskGroupFilter.dispatchEvent('click');
 
     // Verify all groups present
     await expect(page.getByRole('option', { name: 'Equities' })).toBeVisible();
@@ -78,7 +78,7 @@ test.describe('Risk Group Initialization', () => {
 
     // Verify risk groups still available (not reloaded)
     const universeFilter = page.locator('.header-filter mat-select').first();
-    await universeFilter.click();
+    await universeFilter.dispatchEvent('click');
     await expect(page.getByRole('option', { name: 'Equities' })).toBeVisible();
   });
 

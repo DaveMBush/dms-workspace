@@ -29,7 +29,7 @@ test.describe('Screener Refresh', () => {
     await button.click();
 
     // Check that global loading overlay appears
-    const globalOverlay = page.locator('.fixed.inset-0.bg-black.bg-opacity-50');
+    const globalOverlay = page.locator('[data-testid="loading-overlay"]');
     await expect(globalOverlay).toBeVisible();
 
     // Check that spinner appears in the overlay
@@ -72,7 +72,7 @@ test.describe('Screener Refresh', () => {
     await button.click();
 
     // Wait for loading to complete - global overlay should disappear
-    const globalOverlay = page.locator('.fixed.inset-0.bg-black.bg-opacity-50');
+    const globalOverlay = page.locator('[data-testid="loading-overlay"]');
     await expect(globalOverlay).not.toBeVisible({ timeout: 10000 });
 
     // Button should be re-enabled
