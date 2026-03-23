@@ -53,7 +53,7 @@ test.describe('Loading Spinner Centering', () => {
     // Verify layout properties - check computed CSS to confirm fixed/inset coverage
     const overlayStyle = await page.evaluate(() => {
       const el = document.querySelector('[data-testid="loading-overlay"]');
-      if (!el) return null;
+      if (!el) { return null; }
       const cs = window.getComputedStyle(el);
       return {
         position: cs.position,
@@ -306,7 +306,7 @@ test.describe('Loading Spinner Centering', () => {
       // Verify overlay covers entire viewport via computed CSS (fixed inset-0)
       const overlayStyle = await page.evaluate(() => {
         const el = document.querySelector('[data-testid="loading-overlay"]');
-        if (!el) return null;
+        if (!el) { return null; }
         const cs = window.getComputedStyle(el);
         return {
           position: cs.position,
