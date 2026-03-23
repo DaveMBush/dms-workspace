@@ -130,7 +130,7 @@ test.describe('Universe Update Flow', () => {
       await button.click();
 
       // Global loading overlay should appear
-      const overlay = page.locator('.fixed.inset-0.bg-black.bg-opacity-50');
+      const overlay = page.locator('[data-testid="loading-overlay"]');
       await expect(overlay).toBeVisible();
 
       // Spinner should be visible in overlay
@@ -152,7 +152,7 @@ test.describe('Universe Update Flow', () => {
       await button.click();
 
       // Loading overlay should contain message
-      const overlay = page.locator('.fixed.inset-0.bg-black.bg-opacity-50');
+      const overlay = page.locator('[data-testid="loading-overlay"]');
       await expect(overlay).toBeVisible();
       await expect(overlay).toContainText('Updating universe from screener');
     });
@@ -172,7 +172,7 @@ test.describe('Universe Update Flow', () => {
       await button.click();
 
       // Wait for loading to complete
-      const overlay = page.locator('.fixed.inset-0.bg-black.bg-opacity-50');
+      const overlay = page.locator('[data-testid="loading-overlay"]');
       await expect(overlay).not.toBeVisible({ timeout: 10000 });
     });
 
@@ -189,7 +189,7 @@ test.describe('Universe Update Flow', () => {
       await button.click();
 
       // Wait for loading to complete even on error
-      const overlay = page.locator('.fixed.inset-0.bg-black.bg-opacity-50');
+      const overlay = page.locator('[data-testid="loading-overlay"]');
       await expect(overlay).not.toBeVisible({ timeout: 10000 });
     });
   });

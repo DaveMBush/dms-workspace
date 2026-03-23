@@ -101,7 +101,7 @@ test.describe('Update Fields Flow', () => {
       const button = page.locator('[data-testid="update-fields-button"]');
       await button.click();
 
-      const overlay = page.locator('.fixed.inset-0.bg-black.bg-opacity-50');
+      const overlay = page.locator('[data-testid="loading-overlay"]');
       await expect(overlay).toBeVisible();
       await expect(overlay).toContainText('Updating universe fields');
     });
@@ -117,7 +117,7 @@ test.describe('Update Fields Flow', () => {
       const button = page.locator('[data-testid="update-fields-button"]');
       await button.click();
 
-      const overlay = page.locator('.fixed.inset-0.bg-black.bg-opacity-50');
+      const overlay = page.locator('[data-testid="loading-overlay"]');
       await expect(overlay).not.toBeVisible({ timeout: 10000 });
     });
   });
