@@ -17,16 +17,19 @@ test.describe('Loading Spinner Centering', () => {
     page,
   }) => {
     // Mock screener API to return quickly so the overlay shows and hides reliably
-    await page.route('**/api/screener', async function mockScreenerRefresh(route) {
-      await new Promise<void>(function delayRefresh(resolve) {
-        setTimeout(resolve, 1500);
-      });
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ success: true, count: 100 }),
-      });
-    });
+    await page.route(
+      '**/api/screener',
+      async function mockScreenerRefresh(route) {
+        await new Promise<void>(function delayRefresh(resolve) {
+          setTimeout(resolve, 1500);
+        });
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ success: true, count: 100 }),
+        });
+      }
+    );
 
     // Navigate to screener
     await page.goto('/global/screener');
@@ -53,7 +56,9 @@ test.describe('Loading Spinner Centering', () => {
     // Verify layout properties - check computed CSS to confirm fixed/inset coverage
     const overlayStyle = await page.evaluate(() => {
       const el = document.querySelector('[data-testid="loading-overlay"]');
-      if (!el) { return null; }
+      if (!el) {
+        return null;
+      }
       const cs = window.getComputedStyle(el);
       return {
         position: cs.position,
@@ -82,16 +87,19 @@ test.describe('Loading Spinner Centering', () => {
     page,
   }) => {
     // Mock screener API to return quickly so the overlay shows and hides reliably
-    await page.route('**/api/screener', async function mockScreenerRefreshAC2(route) {
-      await new Promise<void>(function delayRefreshAC2(resolve) {
-        setTimeout(resolve, 1500);
-      });
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ success: true, count: 100 }),
-      });
-    });
+    await page.route(
+      '**/api/screener',
+      async function mockScreenerRefreshAC2(route) {
+        await new Promise<void>(function delayRefreshAC2(resolve) {
+          setTimeout(resolve, 1500);
+        });
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ success: true, count: 100 }),
+        });
+      }
+    );
 
     // Navigate to screener
     await page.goto('/global/screener');
@@ -244,7 +252,9 @@ test.describe('Loading Spinner Centering', () => {
     const loadingSpinner = page.locator('[data-testid="loading-spinner"]');
     await page.waitForFunction(
       function checkSpinnerVisible() {
-        return document.querySelector('[data-testid="loading-spinner"]') !== null;
+        return (
+          document.querySelector('[data-testid="loading-spinner"]') !== null
+        );
       },
       { timeout: 10000 }
     );
@@ -268,16 +278,19 @@ test.describe('Loading Spinner Centering', () => {
 
   test('AC 2: Solution works for all screen sizes', async ({ page }) => {
     // Mock screener API to return quickly so the overlay shows and hides reliably
-    await page.route('**/api/screener', async function mockScreenerAllSizes(route) {
-      await new Promise<void>(function delayRefreshAllSizes(resolve) {
-        setTimeout(resolve, 1500);
-      });
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ success: true, count: 100 }),
-      });
-    });
+    await page.route(
+      '**/api/screener',
+      async function mockScreenerAllSizes(route) {
+        await new Promise<void>(function delayRefreshAllSizes(resolve) {
+          setTimeout(resolve, 1500);
+        });
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ success: true, count: 100 }),
+        });
+      }
+    );
 
     const screenSizes = [
       { width: 1920, height: 1080, name: 'Desktop Large' },
@@ -306,7 +319,9 @@ test.describe('Loading Spinner Centering', () => {
       // Verify overlay covers entire viewport via computed CSS (fixed inset-0)
       const overlayStyle = await page.evaluate(() => {
         const el = document.querySelector('[data-testid="loading-overlay"]');
-        if (!el) { return null; }
+        if (!el) {
+          return null;
+        }
         const cs = window.getComputedStyle(el);
         return {
           position: cs.position,
