@@ -1,6 +1,6 @@
 # Story 16.1: Remove Existing Storybook Configuration
 
-Status: ready-for-dev
+Status: done
 
 ## Story
 
