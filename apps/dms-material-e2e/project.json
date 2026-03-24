@@ -37,6 +37,6 @@
         "project": ["chromium"],
         "ui": true
       }
-    },
+    }
   }
 }
