@@ -138,7 +138,6 @@ const eslintConfig = async () => {
             'apps/dms-material/tsconfig.json',
             'apps/dms-material/tsconfig.app.json',
             'apps/dms-material/tsconfig.spec.json',
-            'apps/dms-material/.storybook/tsconfig.json',
             'apps/server/tsconfig.app.json',
             'apps/server/tsconfig.spec.json',
             'apps/dms-material-e2e/tsconfig.json',
@@ -162,7 +161,6 @@ const eslintConfig = async () => {
               'apps/dms-material/tsconfig.json',
               'apps/dms-material/tsconfig.app.json',
               'apps/dms-material/tsconfig.spec.json',
-              'apps/dms-material/.storybook/tsconfig.json',
               'apps/server/tsconfig.app.json',
               'apps/dms-material-e2e/tsconfig.json',
             ],
@@ -205,7 +203,6 @@ const eslintConfig = async () => {
               'apps/dms-material/tsconfig.json',
               'apps/dms-material/tsconfig.app.json',
               'apps/dms-material/tsconfig.spec.json',
-              'apps/dms-material/.storybook/tsconfig.json',
               'apps/server/tsconfig.app.json',
               'apps/dms-material-e2e/tsconfig.json',
             ],
@@ -854,13 +851,6 @@ const eslintConfig = async () => {
         'max-statements-per-line': 'off',
       },
     },
-    {
-      files: ['**/apps/dms-material/.storybook/*.ts'],
-      rules: {
-        'import/no-default-export': 'off',
-        '@smarttools/no-anonymous-functions': 'off',
-      },
-    },
     ...compat
       .config({
         extends: ['plugin:@nx/angular-template'],
@@ -949,7 +939,6 @@ const eslintConfig = async () => {
             'apps/dms-material/tsconfig.json',
             'apps/dms-material/tsconfig.app.json',
             'apps/dms-material/tsconfig.spec.json',
-            'apps/dms-material/.storybook/tsconfig.json',
             'apps/server/tsconfig.app.json',
             'apps/server/tsconfig.spec.json',
             'apps/dms-material-e2e/tsconfig.json',
