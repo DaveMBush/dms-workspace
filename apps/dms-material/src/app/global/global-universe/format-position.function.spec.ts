@@ -1,12 +1,9 @@
-// TDD RED Phase - Story 15.1
-// Tests written before implementation. Run to verify RED, then GREEN, then skipped for CI.
-// Story 15.2 will re-enable these tests.
+// Story 15.2: re-enabled from TDD Story 15.1
 import { describe, expect, it } from 'vitest';
 
 import { formatPosition } from './format-position.function';
 
-// eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test; Story 15.2 will re-enable
-describe.skip('formatPosition - TDD skipped for CI (Story 15.1)', () => {
+describe('formatPosition', () => {
   it('should format zero as "0.00"', () => {
     expect(formatPosition(0)).toBe('0.00');
   });

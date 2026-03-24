@@ -43,6 +43,7 @@ import { calculateYieldPercent } from './calculate-yield-percent.function';
 import { CellEditEvent } from './cell-edit-event.interface';
 import { enrichUniverseWithRiskGroups } from './enrich-universe-with-risk-groups.function';
 import { filterUniverses } from './filter-universes.function';
+import { formatPosition } from './format-position.function';
 import { UNIVERSE_COLUMNS } from './global-universe.columns';
 import { EXPIRED_OPTIONS } from './global-universe.expired-options';
 import { parseYieldValue } from './parse-yield-value.function';
@@ -114,6 +115,7 @@ export class GlobalUniverseComponent implements OnDestroy {
   readonly expiredOptions = EXPIRED_OPTIONS;
 
   readonly calculateYield = calculateYieldPercent;
+  readonly formatPosition = formatPosition;
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signal
   readonly accountOptions$ = computed(() => {
@@ -329,9 +331,8 @@ export class GlobalUniverseComponent implements OnDestroy {
       next: function onRefreshSuccess() {
         context.notification.success('Universe data refreshed successfully');
       },
-      error: function onRefreshError() {
-        // Error is already captured by ScreenerService error signal
-      },
+      // eslint-disable-next-line @typescript-eslint/no-empty-function -- Error is already captured by ScreenerService error signal
+      error: function onRefreshError() {},
     });
   }
 
