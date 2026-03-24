@@ -331,9 +331,8 @@ export class GlobalUniverseComponent implements OnDestroy {
       next: function onRefreshSuccess() {
         context.notification.success('Universe data refreshed successfully');
       },
-      error: function onRefreshError() {
-        // Error is already captured by ScreenerService error signal
-      },
+      // eslint-disable-next-line @typescript-eslint/no-empty-function -- Error is already captured by ScreenerService error signal
+      error: function onRefreshError() {},
     });
   }
 
