@@ -1,6 +1,6 @@
 # Story 17.1: Fix Wait Spinner Centering with Tailwind CSS
 
-Status: ready-for-dev
+Status: Approved
 
 ## Story
 

@@ -1,6 +1,6 @@
 # Story 18.2: Fix Dividend Deposits Table Row Visibility
 
-Status: ready-for-dev
+Status: Approved
 
 ## Story
 

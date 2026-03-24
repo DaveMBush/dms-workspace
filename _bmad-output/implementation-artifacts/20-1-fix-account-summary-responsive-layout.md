@@ -1,6 +1,6 @@
 # Story 20.1: Fix Account Summary Responsive Layout
 
-Status: ready-for-dev
+Status: Approved
 
 ## Story
 

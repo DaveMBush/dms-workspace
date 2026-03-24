@@ -1,6 +1,6 @@
 # Story 16.2: Install and Configure Storybook via @nx/storybook
 
-Status: ready-for-dev
+Status: Approved
 
 ## Story
 

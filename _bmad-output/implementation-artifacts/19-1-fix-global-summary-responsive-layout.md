@@ -1,6 +1,6 @@
 # Story 19.1: Fix Global Summary Responsive Layout
 
-Status: ready-for-dev
+Status: Approved
 
 ## Story
 

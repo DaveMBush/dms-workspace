@@ -1,6 +1,6 @@
 # Story 16.3: Create Stories for All Display-Only Components
 
-Status: ready-for-dev
+Status: Approved
 
 ## Story
 

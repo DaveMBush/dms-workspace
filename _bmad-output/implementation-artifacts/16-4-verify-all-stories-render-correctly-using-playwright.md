@@ -1,6 +1,6 @@
 # Story 16.4: Verify All Stories Render Correctly Using Playwright
 
-Status: ready-for-dev
+Status: Approved
 
 ## Story
 

@@ -1,6 +1,6 @@
 # Story 18.1: Diagnose Dividend Deposits Table Rendering Issue
 
-Status: ready-for-dev
+Status: Approved
 
 ## Story
 
