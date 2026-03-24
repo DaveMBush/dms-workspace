@@ -37,7 +37,7 @@
 #     E1 → E3 → E4(TS rules) → E2 → E5 → E4(template rules) → E6 → E7 → E8
 
 generated: 2026-03-17
-last_updated: 2026-03-19
+last_updated: 2026-03-24
 project_key: NOKEY
 tracking_system: file-system
 story_location: _bmad-output/implementation-artifacts
@@ -107,3 +107,32 @@ development_status:
   8-4-implement-playwright-visual-regression-tests-against-storybook: ready-for-dev
   8-5-update-ci-pipeline-to-include-storybook-build-and-visual-tests: ready-for-dev
   epic-8-retrospective: optional
+
+  # ── Epic 16: Fix Storybook Setup with @nx/storybook ──────────────────────────
+  epic-16: in-progress
+  16-1-remove-existing-storybook-configuration: ready-for-dev
+  16-2-install-and-configure-storybook-via-nx-storybook: ready-for-dev
+  16-3-create-stories-for-all-display-only-components: ready-for-dev
+  16-4-verify-all-stories-render-correctly-using-playwright: ready-for-dev
+  epic-16-retrospective: optional
+
+  # ── Epic 17: Fix Wait Spinner Centering (Retry) ──────────────────────────────
+  epic-17: in-progress
+  17-1-fix-wait-spinner-centering-with-tailwind-css: ready-for-dev
+  epic-17-retrospective: optional
+
+  # ── Epic 18: Fix Dividend Deposits Table (Retry) ─────────────────────────────
+  epic-18: in-progress
+  18-1-diagnose-dividend-deposits-table-rendering-issue: ready-for-dev
+  18-2-fix-dividend-deposits-table-row-visibility: ready-for-dev
+  epic-18-retrospective: optional
+
+  # ── Epic 19: Fix Global Summary Layout (Retry) ───────────────────────────────
+  epic-19: in-progress
+  19-1-fix-global-summary-responsive-layout: ready-for-dev
+  epic-19-retrospective: optional
+
+  # ── Epic 20: Fix Account Summary Layout (Retry) ──────────────────────────────
+  epic-20: in-progress
+  20-1-fix-account-summary-responsive-layout: ready-for-dev
+  epic-20-retrospective: optional
