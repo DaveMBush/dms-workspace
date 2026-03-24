@@ -1,7 +1,7 @@
 ---
 description: Develop a story using the BMAD V6 dev story skill.
 argument-hint: story=AD.3
-model: Claude Sonnet 4.5 (copilot)
+model: GPT-5.4 (copilot)
 ---
 
 # Story Development: ${story}

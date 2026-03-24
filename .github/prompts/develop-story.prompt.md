@@ -1,7 +1,7 @@
 ---
 description: Fully autonomous story development from start to merge
 argument-hint: story=AD.3
-model: Claude Sonnet 4.6 (copilot)
+model: GPT-5.4 (copilot)
 ---
 
 # Autonomous Story Development Workflow

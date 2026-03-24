@@ -1,7 +1,7 @@
 ---
 description: Dedicated merge verification and final cleanup runner
 argument-hint: story=AD.3
-model: Claude Sonnet 4.6 (copilot)
+model: GPT-5.4 (copilot)
 ---
 
 # Dedicated Merge And Finalize Workflow

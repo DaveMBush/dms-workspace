@@ -1,7 +1,7 @@
 ---
 description: Create stories from Epics that use TDD stories.
 argument-hint: epic=AD
-model: Claude Sonnet 4.5 (copilot)
+model: GPT-5.4 (copilot)
 ---
 
 Next we want to create the stories for epic ${epic} but before we do, we need to adjust the epic.

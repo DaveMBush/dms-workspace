@@ -1,7 +1,7 @@
 ---
 description: Dedicated debug merge verification and cleanup runner
 argument-hint: story=AD.5
-model: Claude Sonnet 4.6 (copilot)
+model: GPT-5.4 (copilot)
 ---
 
 # Dedicated Debug Merge And Finalize Workflow

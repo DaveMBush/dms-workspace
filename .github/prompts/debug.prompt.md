@@ -1,7 +1,7 @@
 ---
 description: Fully autonomous epic debug prompt
 argument-hint: epic=AD story=AD.5
-model: Claude Sonnet 4.6 (copilot)
+model: GPT-5.4 (copilot)
 ---
 
 # Autonomous Epic Bug Fix Workflow
