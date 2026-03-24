@@ -24,43 +24,43 @@ So that I can start from a clean state before applying the correct @nx/storybook
 
 ## Definition of Done
 
-- [ ] All `.storybook/` configuration directories removed
-- [ ] All `*.stories.ts` files removed
-- [ ] All Storybook packages removed from `package.json`
-- [ ] `pnpm install` succeeds
-- [ ] All validation commands pass:
-  - [ ] Run `pnpm all`
-  - [ ] Run `pnpm e2e:dms-material:chromium`
-  - [ ] Run `pnpm e2e:dms-material:firefox`
-  - [ ] Run `pnpm dupcheck`
-  - [ ] Run `pnpm format`
-  - [ ] Repeat all of these if any fail until they all pass
+- [x] All `.storybook/` configuration directories removed
+- [x] All `*.stories.ts` files removed
+- [x] All Storybook packages removed from `package.json`
+- [x] `pnpm install` succeeds
+- [x] All validation commands pass:
+  - [x] Run `pnpm all`
+  - [x] Run `pnpm e2e:dms-material:chromium`
+  - [x] Run `pnpm e2e:dms-material:firefox`
+  - [x] Run `pnpm dupcheck`
+  - [x] Run `pnpm format`
+  - [x] Repeat all of these if any fail until they all pass
 
 ## Tasks / Subtasks
 
-- [ ] Locate and remove `.storybook/` directory (AC: 1)
-  - [ ] Check `apps/dms-material/.storybook/` — delete if present
-  - [ ] Check workspace root `.storybook/` — delete if present
-- [ ] Find and delete all `*.stories.ts` files (AC: 1)
-  - [ ] Run: `find apps/dms-material -name "*.stories.ts" -type f`
-  - [ ] Delete every file found
-- [ ] Remove Storybook packages from `package.json` (AC: 1)
-  - [ ] Search `package.json` for any `@storybook/*`, `storybook`, `@nx/storybook` entries
-  - [ ] Remove them from `dependencies`, `devDependencies`, and `peerDependencies`
-  - [ ] Also check root `package.json` and `apps/dms-material/package.json` if it exists
-- [ ] Remove Storybook scripts from `package.json` (AC: 1)
-  - [ ] Search for keys like `storybook`, `storybook:build`, `build-storybook`
-  - [ ] Remove them from the `scripts` section
-- [ ] Check NX project.json for storybook targets (AC: 1)
-  - [ ] Open `apps/dms-material/project.json`
-  - [ ] Remove any `storybook` or `build-storybook` target entries
-- [ ] Run `pnpm install` to sync lockfile (AC: 1)
-- [ ] Run validation suite (AC: 2)
-  - [ ] `pnpm all`
-  - [ ] `pnpm e2e:dms-material:chromium`
-  - [ ] `pnpm e2e:dms-material:firefox`
-  - [ ] `pnpm dupcheck`
-  - [ ] `pnpm format`
+- [x] Locate and remove `.storybook/` directory (AC: 1)
+  - [x] Check `apps/dms-material/.storybook/` — delete if present
+  - [x] Check workspace root `.storybook/` — delete if present
+- [x] Find and delete all `*.stories.ts` files (AC: 1)
+  - [x] Run: `find apps/dms-material -name "*.stories.ts" -type f`
+  - [x] Delete every file found
+- [x] Remove Storybook packages from `package.json` (AC: 1)
+  - [x] Search `package.json` for any `@storybook/*`, `storybook`, `@nx/storybook` entries
+  - [x] Remove them from `dependencies`, `devDependencies`, and `peerDependencies`
+  - [x] Also check root `package.json` and `apps/dms-material/package.json` if it exists
+- [x] Remove Storybook scripts from `package.json` (AC: 1)
+  - [x] Search for keys like `storybook`, `storybook:build`, `build-storybook`
+  - [x] Remove them from the `scripts` section
+- [x] Check NX project.json for storybook targets (AC: 1)
+  - [x] Open `apps/dms-material/project.json`
+  - [x] Remove any `storybook` or `build-storybook` target entries
+- [x] Run `pnpm install` to sync lockfile (AC: 1)
+- [x] Run validation suite (AC: 2)
+  - [x] `pnpm all`
+  - [x] `pnpm e2e:dms-material:chromium`
+  - [x] `pnpm e2e:dms-material:firefox`
+  - [x] `pnpm dupcheck`
+  - [x] `pnpm format`
 
 ## Dev Notes
 
