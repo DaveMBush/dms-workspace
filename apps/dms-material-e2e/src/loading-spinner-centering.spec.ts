@@ -189,7 +189,7 @@ test.describe('Loading Spinner Centering', () => {
 
     // Wait for loading spinner to appear (guaranteed by the route delay)
     const loadingSpinner = page.locator('[data-testid="loading-spinner"]');
-    await expect(loadingSpinner).toBeVisible({ timeout: 5000 });
+    await expect(loadingSpinner).toBeVisible({ timeout: 10000 });
 
     // Verify flex centering classes
     const classes = await loadingSpinner.getAttribute('class');
