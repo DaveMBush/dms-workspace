@@ -12,15 +12,13 @@ const mockSymbols: SymbolOption[] = [
   { id: '6', symbol: 'TSLA', name: 'Tesla Inc.' },
 ];
 
-function mockSearchFn(query: string): Promise<SymbolOption[]> {
+function symbolMatches(lower: string, s: SymbolOption): boolean {
+  return s.symbol.toLowerCase().includes(lower) || s.name.toLowerCase().includes(lower);
+}
+
+async function mockSearchFn(query: string): Promise<SymbolOption[]> {
   const lower = query.toLowerCase();
-  return Promise.resolve(
-    mockSymbols.filter(
-      (s) =>
-        s.symbol.toLowerCase().includes(lower) ||
-        s.name.toLowerCase().includes(lower)
-    )
-  );
+  return mockSymbols.filter(symbolMatches.bind(null, lower));
 }
 
 const meta: Meta<SymbolAutocompleteComponent> = {

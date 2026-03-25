@@ -1,6 +1,18 @@
-import type { Meta, StoryObj } from '@storybook/angular';
+import type { Meta, StoryFn, StoryObj } from '@storybook/angular';
 
 import { SplitterComponent } from './splitter.component';
+
+function splitterContainerDecorator(storyFn: StoryFn<SplitterComponent>) {
+  const story = storyFn();
+  return {
+    ...story,
+    template: `<div style="width:600px; height:300px; border:1px solid #ccc;">
+      <dms-splitter [stateKey]="stateKey" [initialLeftWidth]="initialLeftWidth">
+      </dms-splitter>
+    </div>`,
+    props: story.props,
+  };
+}
 
 const meta: Meta<SplitterComponent> = {
   component: SplitterComponent,
@@ -8,19 +20,7 @@ const meta: Meta<SplitterComponent> = {
   argTypes: {
     widthChange: { action: 'widthChange' },
   },
-  decorators: [
-    (storyFn) => {
-      const story = storyFn();
-      return {
-        ...story,
-        template: `<div style="width:600px; height:300px; border:1px solid #ccc;">
-          <dms-splitter [stateKey]="stateKey" [initialLeftWidth]="initialLeftWidth">
-          </dms-splitter>
-        </div>`,
-        props: story.props,
-      };
-    },
-  ],
+  decorators: [splitterContainerDecorator],
 };
 
 export default meta;
