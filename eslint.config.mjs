@@ -138,6 +138,7 @@ const eslintConfig = async () => {
             'apps/dms-material/tsconfig.json',
             'apps/dms-material/tsconfig.app.json',
             'apps/dms-material/tsconfig.spec.json',
+            'apps/dms-material/.storybook/tsconfig.json',
             'apps/server/tsconfig.app.json',
             'apps/server/tsconfig.spec.json',
             'apps/dms-material-e2e/tsconfig.json',
@@ -161,6 +162,7 @@ const eslintConfig = async () => {
               'apps/dms-material/tsconfig.json',
               'apps/dms-material/tsconfig.app.json',
               'apps/dms-material/tsconfig.spec.json',
+              'apps/dms-material/.storybook/tsconfig.json',
               'apps/server/tsconfig.app.json',
               'apps/dms-material-e2e/tsconfig.json',
             ],
@@ -203,6 +205,7 @@ const eslintConfig = async () => {
               'apps/dms-material/tsconfig.json',
               'apps/dms-material/tsconfig.app.json',
               'apps/dms-material/tsconfig.spec.json',
+              'apps/dms-material/.storybook/tsconfig.json',
               'apps/server/tsconfig.app.json',
               'apps/dms-material-e2e/tsconfig.json',
             ],
@@ -838,6 +841,14 @@ const eslintConfig = async () => {
       },
     },
     {
+      files: ['**/.storybook/*.ts', '**/.storybook/*.js'],
+      rules: {
+        'import/no-default-export': 'off',
+        '@smarttools/one-exported-item-per-file': 'off',
+        'simple-import-sort/imports': 'off',
+      },
+    },
+    {
       files: ['**/*.stories.ts'],
       rules: {
         'import/no-default-export': 'off',
@@ -939,6 +950,7 @@ const eslintConfig = async () => {
             'apps/dms-material/tsconfig.json',
             'apps/dms-material/tsconfig.app.json',
             'apps/dms-material/tsconfig.spec.json',
+            'apps/dms-material/.storybook/tsconfig.json',
             'apps/server/tsconfig.app.json',
             'apps/server/tsconfig.spec.json',
             'apps/dms-material-e2e/tsconfig.json',
