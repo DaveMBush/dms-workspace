@@ -13,7 +13,10 @@ const mockSymbols: SymbolOption[] = [
 ];
 
 function symbolMatches(lower: string, s: SymbolOption): boolean {
-  return s.symbol.toLowerCase().includes(lower) || s.name.toLowerCase().includes(lower);
+  return (
+    s.symbol.toLowerCase().includes(lower) ||
+    s.name.toLowerCase().includes(lower)
+  );
 }
 
 async function mockSearchFn(query: string): Promise<SymbolOption[]> {
