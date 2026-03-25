@@ -50,7 +50,7 @@
         "default",
         "^production",
         "{projectRoot}/.storybook/**/*",
-        "{projectRoot}/tsconfig.storybook.json"
+        "{projectRoot}/.storybook/tsconfig.json"
       ]
     }
   },
