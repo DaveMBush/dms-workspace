@@ -1,8 +1,15 @@
-import type { Meta, StoryFn, StoryObj } from '@storybook/angular';
+import type {
+  Meta,
+  StoryFn,
+  StoryFnAngularReturnType,
+  StoryObj,
+} from '@storybook/angular';
 
 import { SplitterComponent } from './splitter.component';
 
-function splitterContainerDecorator(storyFn: StoryFn<SplitterComponent>) {
+function splitterContainerDecorator(
+  storyFn: StoryFn<SplitterComponent>
+): StoryFnAngularReturnType {
   const story = storyFn();
   return {
     ...story,
