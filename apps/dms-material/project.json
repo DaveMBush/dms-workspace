@@ -128,7 +128,7 @@
         "compodoc": false,
         "configDir": "apps/dms-material/.storybook",
         "browserTarget": "dms-material:build:development",
-        "experimentalZoneless": true
+        "experimentalZoneless": false
       },
       "configurations": {
         "ci": {
@@ -144,7 +144,7 @@
         "compodoc": false,
         "configDir": "apps/dms-material/.storybook",
         "browserTarget": "dms-material:build:development",
-        "experimentalZoneless": true
+        "experimentalZoneless": false
       },
       "configurations": {
         "ci": {

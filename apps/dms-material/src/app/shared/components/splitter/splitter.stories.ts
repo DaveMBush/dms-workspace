@@ -1,25 +1,19 @@
-import type {
-  Meta,
-  StoryFn,
-  StoryFnAngularReturnType,
-  StoryObj,
-} from '@storybook/angular';
+import type { Decorator, Meta, StoryObj } from '@storybook/angular';
 
 import { SplitterComponent } from './splitter.component';
 
-function splitterContainerDecorator(
-  storyFn: StoryFn<SplitterComponent>
-): StoryFnAngularReturnType {
-  const story = storyFn();
-  return {
-    ...story,
-    template: `<div style="width:600px; height:300px; border:1px solid #ccc;">
+const splitterContainerDecorator: Decorator =
+  function splitterContainerDecorator(storyFn, context) {
+    const story = storyFn({ args: context.args });
+    return {
+      ...story,
+      template: `<div style="width:600px; height:300px; border:1px solid #ccc;">
       <dms-splitter [stateKey]="stateKey" [initialLeftWidth]="initialLeftWidth">
       </dms-splitter>
     </div>`,
-    props: story.props,
+      props: story.props,
+    };
   };
-}
 
 const meta: Meta<SplitterComponent> = {
   component: SplitterComponent,
