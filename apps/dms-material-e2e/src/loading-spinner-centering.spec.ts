@@ -173,14 +173,61 @@ test.describe('Loading Spinner Centering', () => {
   test('AC 3.2: Account screens spinner is centered', async ({ page }) => {
     const ACCOUNT_UUID = '1677e04f-ef9b-4372-adb3-b740443088dc';
 
-    // Stub API calls with a delay to ensure the loading spinner is visible
+    // Fulfill account summary APIs with a delay so the spinner is visible
     await page.route(
-      '**/api/summary*',
-      async function handleSummaryRoute(route) {
+      /\/api\/summary/,
+      async function handleAccountSummaryRoute(route) {
+        const url = route.request().url();
         await new Promise<void>(function delayResponse(resolve) {
           setTimeout(resolve, 2000);
         });
-        await route.continue();
+
+        if (url.includes('/months')) {
+          await route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify([{ month: '2026-03', label: 'March 2026' }]),
+          });
+          return;
+        }
+
+        if (url.includes('/years')) {
+          await route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify([2026, 2025]),
+          });
+          return;
+        }
+
+        if (url.includes('/graph')) {
+          await route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify([
+              {
+                month: '2026-03',
+                deposits: 100000,
+                dividends: 2500,
+                capitalGains: 5000,
+              },
+            ]),
+          });
+          return;
+        }
+
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            deposits: 100000,
+            dividends: 2500,
+            capitalGains: 5000,
+            equities: 50000,
+            income: 30000,
+            tax_free_income: 20000,
+          }),
+        });
       }
     );
 
