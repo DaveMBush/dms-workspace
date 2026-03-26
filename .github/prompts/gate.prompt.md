@@ -1,7 +1,7 @@
 ---
 description: QA the result of story development.
 argument-hint: story=AD.3
-model: GPT-5.4 (copilot)
+model: Auto (copilot)
 ---
 
 # QA Gate for Story ${story}

@@ -1,7 +1,7 @@
 ---
 description: Dedicated QA review and remediation loop runner
 argument-hint: story=AD.3
-model: Claude Sonnet 4.6 (copilot)
+model: Auto (copilot)
 ---
 
 # Dedicated QA Review Loop

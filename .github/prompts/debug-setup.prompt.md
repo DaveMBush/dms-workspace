@@ -1,7 +1,7 @@
 ---
 description: Dedicated debug setup and branch preparation runner
 argument-hint: epic=AD story=AD.5
-model: GPT-5.4 (copilot)
+model: Auto (copilot)
 ---
 
 # Dedicated Debug Setup Workflow

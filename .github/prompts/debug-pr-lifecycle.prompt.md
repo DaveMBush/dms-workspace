@@ -1,7 +1,7 @@
 ---
 description: Dedicated debug PR creation and CodeRabbit lifecycle runner
 argument-hint: story=AD.5
-model: GPT-5.4 (copilot)
+model: Auto (copilot)
 ---
 
 # Dedicated Debug PR Lifecycle Workflow
