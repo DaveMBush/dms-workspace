@@ -60,3 +60,4 @@ test-results/
 .playwright-mcp
 # Storybook static build output
 dist/storybook/
+.nx/workspace-data-old
