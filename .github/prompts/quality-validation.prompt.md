@@ -1,7 +1,7 @@
 ---
 description: Dedicated quality validation loop runner
 argument-hint: context=story-AD.3
-model: Auto (copilot)
+model: Claude Opus 4.6
 ---
 
 # Dedicated Quality Validation Workflow

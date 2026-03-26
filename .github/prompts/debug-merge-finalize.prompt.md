@@ -1,7 +1,7 @@
 ---
 description: Dedicated debug merge verification and cleanup runner
 argument-hint: story=AD.5
-model: Auto (copilot)
+model: Claude Opus 4.6
 ---
 
 # Dedicated Debug Merge And Finalize Workflow

@@ -2,7 +2,7 @@
 ---
 description: Handle CodeRabbit review loop for a story PR
 argument-hint: story=AD.3
-model: Auto (copilot)
+model: Claude Opus 4.6
 ---
 
 # CodeRabbit Review Loop Subagent

@@ -1,7 +1,7 @@
 ---
 description: QA the result of story development.
 argument-hint: story=AD.3
-model: Auto (copilot)
+model: Claude Opus 4.6
 ---
 
 # QA Gate for Story ${story}

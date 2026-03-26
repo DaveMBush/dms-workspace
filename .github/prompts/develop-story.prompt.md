@@ -1,7 +1,7 @@
 ---
 description: Fully autonomous story development from start to merge
 argument-hint: story=AD.3
-model: Auto (copilot)
+model: Claude Opus 4.6
 ---
 
 # Autonomous Story Development Workflow

@@ -1,7 +1,7 @@
 ---
 description: Dedicated debug PR creation and CodeRabbit lifecycle runner
 argument-hint: story=AD.5
-model: Auto (copilot)
+model: Claude Opus 4.6
 ---
 
 # Dedicated Debug PR Lifecycle Workflow

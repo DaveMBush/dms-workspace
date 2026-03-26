@@ -1,7 +1,7 @@
 ---
 description: Fully autonomous epic debug prompt
 argument-hint: epic=AD story=AD.5
-model: Auto (copilot)
+model: Claude Opus 4.6
 ---
 
 # Autonomous Epic Bug Fix Workflow

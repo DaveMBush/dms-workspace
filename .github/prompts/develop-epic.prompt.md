@@ -1,7 +1,7 @@
 ---
 description: Fully autonomous epic development - all stories from start to merge
 argument-hint: epic=AD
-model: Auto (copilot)
+model: Claude Opus 4.6
 ---
 
 # Autonomous Epic Development Workflow
@@ -13,7 +13,6 @@ Shell execution rule: every shell command in this workflow and its delegated ste
 Each phase of the epic development process must be handled by a separate subAgent. This ensures modularity, better error handling, clear separation of concerns, and avoids loss of overall context
 
 1. **Discover Stories for Epic ${epic}**
-
    - Search for all story files matching: `_bmad-output/implementation-artifacts/${epic}-*.md`
    - Parse story numbers from filenames (e.g., AD.1, AD.2, AD.3)
    - Sort stories by numeric value (1, 2, 3, ...)
@@ -31,14 +30,12 @@ Each phase of the epic development process must be handled by a separate subAgen
 For each story in the ordered list:
 
 1. **Classify Story Type**
-
    - Read the story file and check the title/filename for keywords
    - **Bug fix story**: Title or filename contains "bug fix", "bug-fix", "bugfix", or "debug" → Use `debug.prompt.md`
    - **Standard story**: All other stories → Use `develop-story.prompt.md`
    - Add a todo item for each story indicating its type (standard/bug-fix) before starting implementation
 
 2. **Execute Story Development**
-
    - **CRITICAL**: You MUST delegate to the correct workflow file below. Do NOT attempt to implement the story yourself inline. Do NOT start servers, run manual tests, do code reviews, or perform any implementation work outside of the delegated workflow. The workflow file contains the complete instructions — follow them exactly.
    - **For standard stories**: Run `run #file:./develop-story.prompt.md story=${current_story}`
    - **For bug fix stories**: Run `run #file:./debug.prompt.md epic=${epic} story=${current_story}`
