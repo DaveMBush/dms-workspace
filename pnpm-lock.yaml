@@ -133,8 +133,8 @@ importers:
         specifier: 2.1.3
         version: 2.1.3(@analogjs/vite-plugin-angular@2.3.1(@angular-devkit/build-angular@21.2.2(24f5e2256ebffee9e90cc9d56c5e613a))(@angular/build@21.2.2(c0c297fa1662f0dd82628f80ad06d693)))(@angular-devkit/architect@0.2102.2(chokidar@5.0.0))(vitest@4.0.9)
       '@angular-devkit/core':
-        specifier: 21.2.2
-        version: 21.2.2(chokidar@5.0.0)
+        specifier: 21.2.5
+        version: 21.2.5(chokidar@5.0.0)
       '@angular-devkit/schematics':
         specifier: 21.2.2
         version: 21.2.2(chokidar@5.0.0)
@@ -182,7 +182,7 @@ importers:
         version: 21.0.1(@angular/core@21.2.4(@angular/compiler@21.2.4)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2)
       '@nx/angular':
         specifier: 22.5.4
-        version: 22.5.4(ec834ce2c37a2521800bbed703ce87be)
+        version: 22.5.4(aa2918feae7a8e202a42ab47d04a9030)
       '@nx/devkit':
         specifier: 22.5.4
         version: 22.5.4(nx@22.5.4(@swc-node/register@1.11.1(@swc/core@1.15.8(@swc/helpers@0.5.18))(@swc/types@0.1.25)(typescript@5.9.3))(@swc/core@1.15.8(@swc/helpers@0.5.18)))
@@ -239,7 +239,7 @@ importers:
         version: 1.0.22(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3)
       '@storybook/angular':
         specifier: ^10.3.3
-        version: 10.3.3(b0ffae262c7d4957424dbae516493bac)
+        version: 10.3.3(4e2badc0a409916be7af927e9aae3bf8)
       '@stylistic/eslint-plugin-js':
         specifier: 4.4.1
         version: 4.4.1(eslint@9.39.4(jiti@2.6.1))
@@ -568,6 +568,15 @@ packages:
 
   '@angular-devkit/core@21.2.2':
     resolution: {integrity: sha512-xUeKGe4BDQpkz0E6fnAPIJXE0y0nqtap0KhJIBhvN7xi3NenIzTmoi6T9Yv5OOBUdLZbOm4SOel8MhdXiIBpAQ==}
+    engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
+    peerDependencies:
+      chokidar: ^5.0.0
+    peerDependenciesMeta:
+      chokidar:
+        optional: true
+
+  '@angular-devkit/core@21.2.5':
+    resolution: {integrity: sha512-9z9w7UxKKVmib5QHFZTOfJpAiSudqQwwEZFpQy31yaXR3tJw85xO5owi+66sgTpEvNh9Ix2THhcUq//ToP/0VA==}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     peerDependencies:
       chokidar: ^5.0.0
@@ -11829,6 +11838,17 @@ snapshots:
     optionalDependencies:
       chokidar: 5.0.0
 
+  '@angular-devkit/core@21.2.5(chokidar@5.0.0)':
+    dependencies:
+      ajv: 8.18.0
+      ajv-formats: 3.0.1(ajv@8.18.0)
+      jsonc-parser: 3.3.1
+      picomatch: 4.0.4
+      rxjs: 7.8.2
+      source-map: 0.7.6
+    optionalDependencies:
+      chokidar: 5.0.0
+
   '@angular-devkit/schematics@21.1.2(chokidar@5.0.0)':
     dependencies:
       '@angular-devkit/core': 21.1.2(chokidar@5.0.0)
@@ -11852,7 +11872,7 @@ snapshots:
   '@angular-eslint/builder@21.2.0(@angular/cli@21.2.2(@types/node@20.19.9)(chokidar@5.0.0))(chokidar@5.0.0)(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3)':
     dependencies:
       '@angular-devkit/architect': 0.2101.2(chokidar@5.0.0)
-      '@angular-devkit/core': 21.2.2(chokidar@5.0.0)
+      '@angular-devkit/core': 21.2.5(chokidar@5.0.0)
       '@angular/cli': 21.2.2(@types/node@20.19.9)(chokidar@5.0.0)
       eslint: 9.39.4(jiti@2.6.1)
       typescript: 5.9.3
@@ -11907,7 +11927,7 @@ snapshots:
 
   '@angular-eslint/schematics@21.2.0(@angular-eslint/template-parser@21.2.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(@angular/cli@21.2.2(@types/node@20.19.9)(chokidar@5.0.0))(@typescript-eslint/types@8.54.0)(@typescript-eslint/utils@8.50.1(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(chokidar@5.0.0)(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3)':
     dependencies:
-      '@angular-devkit/core': 21.2.2(chokidar@5.0.0)
+      '@angular-devkit/core': 21.2.5(chokidar@5.0.0)
       '@angular-devkit/schematics': 21.2.2(chokidar@5.0.0)
       '@angular-eslint/eslint-plugin': 21.2.0(@typescript-eslint/utils@8.50.1(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3)
       '@angular-eslint/eslint-plugin-template': 21.2.0(@angular-eslint/template-parser@21.2.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(@typescript-eslint/types@8.54.0)(@typescript-eslint/utils@8.50.1(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3)
@@ -15283,9 +15303,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@nx/angular@22.5.4(ec834ce2c37a2521800bbed703ce87be)':
+  '@nx/angular@22.5.4(aa2918feae7a8e202a42ab47d04a9030)':
     dependencies:
-      '@angular-devkit/core': 21.2.2(chokidar@5.0.0)
+      '@angular-devkit/core': 21.2.5(chokidar@5.0.0)
       '@angular-devkit/schematics': 21.2.2(chokidar@5.0.0)
       '@nx/devkit': 22.5.4(nx@22.5.4(@swc-node/register@1.11.1(@swc/core@1.15.8(@swc/helpers@0.5.18))(@swc/types@0.1.25)(typescript@5.9.3))(@swc/core@1.15.8(@swc/helpers@0.5.18)))
       '@nx/eslint': 22.5.4(@babel/traverse@7.29.0)(@swc-node/register@1.11.1(@swc/core@1.15.8(@swc/helpers@0.5.18))(@swc/types@0.1.25)(typescript@5.9.3))(@swc/core@1.15.8(@swc/helpers@0.5.18))(@zkochan/js-yaml@0.0.7)(eslint@9.39.4(jiti@2.6.1))(nx@22.5.4(@swc-node/register@1.11.1(@swc/core@1.15.8(@swc/helpers@0.5.18))(@swc/types@0.1.25)(typescript@5.9.3))(@swc/core@1.15.8(@swc/helpers@0.5.18)))
@@ -16796,11 +16816,11 @@ snapshots:
 
   '@standard-schema/spec@1.1.0': {}
 
-  '@storybook/angular@10.3.3(b0ffae262c7d4957424dbae516493bac)':
+  '@storybook/angular@10.3.3(4e2badc0a409916be7af927e9aae3bf8)':
     dependencies:
       '@angular-devkit/architect': 0.2102.2(chokidar@5.0.0)
       '@angular-devkit/build-angular': 21.2.2(24f5e2256ebffee9e90cc9d56c5e613a)
-      '@angular-devkit/core': 21.2.2(chokidar@5.0.0)
+      '@angular-devkit/core': 21.2.5(chokidar@5.0.0)
       '@angular/common': 21.2.4(@angular/core@21.2.4(@angular/compiler@21.2.4)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2)
       '@angular/compiler': 21.2.4
       '@angular/compiler-cli': 21.2.4(@angular/compiler@21.2.4)(typescript@5.9.3)
@@ -17941,7 +17961,7 @@ snapshots:
 
   angular-eslint@21.2.0(@angular/cli@21.2.2(@types/node@20.19.9)(chokidar@5.0.0))(chokidar@5.0.0)(eslint@9.39.4(jiti@2.6.1))(typescript-eslint@8.53.1(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(typescript@5.9.3):
     dependencies:
-      '@angular-devkit/core': 21.2.2(chokidar@5.0.0)
+      '@angular-devkit/core': 21.2.5(chokidar@5.0.0)
       '@angular-devkit/schematics': 21.2.2(chokidar@5.0.0)
       '@angular-eslint/builder': 21.2.0(@angular/cli@21.2.2(@types/node@20.19.9)(chokidar@5.0.0))(chokidar@5.0.0)(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3)
       '@angular-eslint/eslint-plugin': 21.2.0(@typescript-eslint/utils@8.50.1(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3)
@@ -19933,10 +19953,6 @@ snapshots:
   fb-watchman@2.0.2:
     dependencies:
       bser: 2.1.1
-
-  fdir@6.5.0(picomatch@4.0.3):
-    optionalDependencies:
-      picomatch: 4.0.3
 
   fdir@6.5.0(picomatch@4.0.4):
     optionalDependencies:
@@ -24484,8 +24500,8 @@ snapshots:
   vite@7.3.1(@types/node@20.19.9)(jiti@2.6.1)(less@4.4.2)(lightningcss@1.32.0)(sass-embedded@1.89.2)(sass@1.97.3)(stylus@0.64.0)(terser@5.46.0)(yaml@2.8.3):
     dependencies:
       esbuild: 0.27.3
-      fdir: 6.5.0(picomatch@4.0.3)
-      picomatch: 4.0.3
+      fdir: 6.5.0(picomatch@4.0.4)
+      picomatch: 4.0.4
       postcss: 8.5.6
       rollup: 4.59.0
       tinyglobby: 0.2.15
