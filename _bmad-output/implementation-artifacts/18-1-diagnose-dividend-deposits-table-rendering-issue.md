@@ -63,7 +63,7 @@ So that I can apply a targeted fix rather than guessing.
   - [x] Scroll the Dividend Deposits table and observe behavior change
 - [x] Identify root cause (AC: 2)
   - [x] Document whether the issue is: container height = 0, CDK viewport miscalculation, CSS difference, or other
-  - [x] Trace where the 1-vs-2 header row difference creates a measurement error
+  - [x] Trace root cause: sparse-array holes + CDK virtual-scroll rendered range overrun
 - [x] Write diagnosis document (AC: 3)
   - [x] Create: `_bmad-output/implementation-artifacts/dividend-deposits-diagnosis.md`
   - [x] Include: root cause statement, evidence from inspection, proposed fix approach
@@ -124,7 +124,7 @@ See `_bmad-output/implementation-artifacts/12-1-restore-account-screen-table-vis
 
 A common pattern is:
 
-```
+```text
 viewport height = total container height - (number_of_header_rows × row_height)
 ```
 

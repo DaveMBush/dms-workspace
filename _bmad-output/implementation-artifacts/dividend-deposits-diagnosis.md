@@ -123,7 +123,7 @@ All three create sparse arrays with only the visible range populated. The differ
 
 ### CDK Buffer Calculation
 
-```
+```text
 CDK rendered items = ceil(viewport / itemSize) + ceil(maxBufferPx / itemSize)
 
 Open Positions:  ceil(911/52) + ceil(1040/52) = 18 + 20 = 38  ← under 50 ✅
