@@ -119,7 +119,7 @@
     "@vitest/eslint-plugin": "^1.6.12",
     "@vitest/ui": "4.0.9",
     "angular-eslint": "21.2.0",
-    "autoprefixer": "^10.4.24",
+    "autoprefixer": "^10.4.27",
     "better-sqlite3": "^12.6.2",
     "esbuild": "^0.25.7",
     "eslint": "^9.39.4",
