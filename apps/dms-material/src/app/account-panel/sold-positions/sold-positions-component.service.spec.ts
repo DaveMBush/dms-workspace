@@ -180,52 +180,34 @@ describe('SoldPositionsComponentService - Virtual Data Access (AX.11)', () => {
     }
   });
 
-  // AC: Test items outside range are undefined (sparse)
-  it('should not transform items outside the visible range', () => {
+  // AC: Dense arrays - all items are populated regardless of visible range
+  it('should transform all items regardless of visible range (dense array)', () => {
     // Set visible range to 10-30
     service.visibleRange.set({ start: 10, end: 30 });
 
     const positions = service.selectSoldPositions();
 
-    // Items before visible range (0-9) should be sparse/undefined
-    for (let i = 0; i < 10; i++) {
-      expect(positions[i]).toBeUndefined();
-    }
-
-    // Items after visible range (30-199) should be sparse/undefined
-    for (let i = 30; i < 200; i++) {
-      expect(positions[i]).toBeUndefined();
+    // ALL items should be defined (dense array)
+    for (let i = 0; i < 200; i++) {
+      expect(positions[i]).toBeDefined();
+      expect(positions[i].id).toBe(`trade-${i}`);
     }
   });
 
-  // AC: Test visible-window loop pattern is applied
-  it('should apply visible-window loop: sparse before, mapped in range, padded after', () => {
+  // AC: Dense array - all items populated regardless of range
+  it('should produce dense array with all items populated', () => {
     service.visibleRange.set({ start: 50, end: 100 });
 
     const positions = service.selectSoldPositions();
 
-    // Sparse before range: indices 0-49 should be empty/undefined
-    const beforeRange = positions.slice(0, 50);
-    const definedBefore = beforeRange.filter(function isDefined(item: unknown) {
-      return item !== undefined;
-    });
-    expect(definedBefore.length).toBe(0);
-
-    // Mapped in range: indices 50-99 should have full data
-    for (let i = 50; i < 100; i++) {
+    // All items should be defined (dense array)
+    for (let i = 0; i < 200; i++) {
       expect(positions[i]).toBeDefined();
       expect(positions[i].id).toBe(`trade-${i}`);
     }
 
-    // Padded after: array length equals total count
+    // Array length equals total count
     expect(positions.length).toBe(200);
-
-    // After range: indices 100-199 should be empty/undefined
-    const afterRange = positions.slice(100);
-    const definedAfter = afterRange.filter(function isDefined(item: unknown) {
-      return item !== undefined;
-    });
-    expect(definedAfter.length).toBe(0);
   });
 
   // AC: Test that universe symbols are resolved for visible items
@@ -294,8 +276,8 @@ describe('SoldPositionsComponentService - Virtual Data Access (AX.11)', () => {
     expect(secondResult[50]).toBeDefined();
     expect(secondResult[50].id).toBe('trade-50');
 
-    // Items from old range should no longer be defined
-    expect(secondResult[0]).toBeUndefined();
+    // With dense arrays, all items remain defined
+    expect(secondResult[0]).toBeDefined();
   });
 
   // AX.14: Single item edge case
@@ -331,14 +313,14 @@ describe('SoldPositionsComponentService - Virtual Data Access (AX.11)', () => {
     service.visibleRange.set({ start: 190, end: 200 });
     const endResult = service.selectSoldPositions();
     expect(endResult[190]).toBeDefined();
-    expect(endResult[0]).toBeUndefined();
+    expect(endResult[0]).toBeDefined();
 
     // Scroll back to beginning
     service.visibleRange.set({ start: 0, end: 10 });
     const beginResult = service.selectSoldPositions();
     expect(beginResult[0]).toBeDefined();
     expect(beginResult[0].id).toBe('trade-0');
-    expect(beginResult[190]).toBeUndefined();
+    expect(beginResult[190]).toBeDefined();
   });
 
   // AX.14: Scroll to exact end boundary
@@ -352,6 +334,6 @@ describe('SoldPositionsComponentService - Virtual Data Access (AX.11)', () => {
       expect(positions[i]).toBeDefined();
       expect(positions[i].id).toBe(`trade-${i}`);
     }
-    expect(positions[194]).toBeUndefined();
+    expect(positions[194]).toBeDefined();
   });
 });
