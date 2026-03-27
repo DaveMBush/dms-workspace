@@ -17,6 +17,7 @@ So that I can apply a targeted fix rather than guessing.
 2. **Given** I inspect the table during browser rendering (using Playwright MCP or browser DevTools)
    **When** the page loads and the Dividend Deposits table shows no rows
    **Then** I can determine whether the issue is:
+
    - A container height of zero or incorrect value
    - A CDK virtual scroll viewport height calculated incorrectly
    - A CSS/Tailwind class difference in the panel, wrapper, or table container
@@ -28,9 +29,9 @@ So that I can apply a targeted fix rather than guessing.
 
 ## Definition of Done
 
-- [ ] Root cause identified and documented
-- [ ] Comparison of Dividend Deposits vs Open Positions/Sold Positions table structure documented
-- [ ] Clear proposed fix approach documented in `_bmad-output/implementation-artifacts/dividend-deposits-diagnosis.md`
+- [x] Root cause identified and documented
+- [x] Comparison of Dividend Deposits vs Open Positions/Sold Positions table structure documented
+- [x] Clear proposed fix approach documented in `_bmad-output/implementation-artifacts/dividend-deposits-diagnosis.md`
 - [ ] All validation commands pass:
   - [ ] Run `pnpm all`
   - [ ] Run `pnpm e2e:dms-material:chromium`
@@ -41,32 +42,32 @@ So that I can apply a targeted fix rather than guessing.
 
 ## Tasks / Subtasks
 
-- [ ] Locate all three table components in the Account screen (AC: 1)
-  - [ ] Find: `apps/dms-material/src/app/pages/account/`
-  - [ ] Identify Open Positions table component template
-  - [ ] Identify Sold Positions table component template
-  - [ ] Identify Dividend Deposits table component template
-- [ ] Side-by-side structural comparison (AC: 1)
-  - [ ] Count header rows in each table (`<thead>`, `<tr>` inside `<thead>`, or `matHeaderRowDef`)
-  - [ ] Document: Open Positions = 2 header rows, Sold Positions = 2 header rows, Dividend Deposits = 1 header row
-  - [ ] Compare the container/wrapper HTML structure around each table
-  - [ ] Compare any CDK virtual scroll viewport configuration
-  - [ ] Compare Tailwind/CSS classes on the panel, wrapper, and table container elements
-- [ ] Use Playwright MCP to inspect live rendering (AC: 2)
-  - [ ] Navigate to Account screen
-  - [ ] Open in browser via Playwright MCP
-  - [ ] Use `mcp_microsoft_pla_browser_evaluate` to run JavaScript to check:
+- [x] Locate all three table components in the Account screen (AC: 1)
+  - [x] Find: `apps/dms-material/src/app/pages/account/`
+  - [x] Identify Open Positions table component template
+  - [x] Identify Sold Positions table component template
+  - [x] Identify Dividend Deposits table component template
+- [x] Side-by-side structural comparison (AC: 1)
+  - [x] Count header rows in each table (`<thead>`, `<tr>` inside `<thead>`, or `matHeaderRowDef`)
+  - [x] Document: Open Positions = 2 header rows, Sold Positions = 2 header rows, Dividend Deposits = 1 header row
+  - [x] Compare the container/wrapper HTML structure around each table
+  - [x] Compare any CDK virtual scroll viewport configuration
+  - [x] Compare Tailwind/CSS classes on the panel, wrapper, and table container elements
+- [x] Use Playwright MCP to inspect live rendering (AC: 2)
+  - [x] Navigate to Account screen
+  - [x] Open in browser via Playwright MCP
+  - [x] Use `mcp_microsoft_pla_browser_evaluate` to run JavaScript to check:
     - `document.querySelector('[dividend-deposits-selector]').offsetHeight` — is it 0?
     - `document.querySelector('cdk-virtual-scroll-viewport').style.height` — what value?
-  - [ ] Capture screenshots showing the no-rows state
-  - [ ] Scroll the Dividend Deposits table and observe behavior change
-- [ ] Identify root cause (AC: 2)
-  - [ ] Document whether the issue is: container height = 0, CDK viewport miscalculation, CSS difference, or other
-  - [ ] Trace where the 1-vs-2 header row difference creates a measurement error
-- [ ] Write diagnosis document (AC: 3)
-  - [ ] Create: `_bmad-output/implementation-artifacts/dividend-deposits-diagnosis.md`
-  - [ ] Include: root cause statement, evidence from inspection, proposed fix approach
-  - [ ] Include: code snippets showing the structural difference
+  - [x] Capture screenshots showing the no-rows state
+  - [x] Scroll the Dividend Deposits table and observe behavior change
+- [x] Identify root cause (AC: 2)
+  - [x] Document whether the issue is: container height = 0, CDK viewport miscalculation, CSS difference, or other
+  - [x] Trace where the 1-vs-2 header row difference creates a measurement error
+- [x] Write diagnosis document (AC: 3)
+  - [x] Create: `_bmad-output/implementation-artifacts/dividend-deposits-diagnosis.md`
+  - [x] Include: root cause statement, evidence from inspection, proposed fix approach
+  - [x] Include: code snippets showing the structural difference
 - [ ] Run validation suite (no code changes expected in this story)
   - [ ] `pnpm all`
   - [ ] `pnpm e2e:dms-material:chromium`
@@ -79,6 +80,7 @@ So that I can apply a targeted fix rather than guessing.
 ### Known Symptom Pattern
 
 The Dividend Deposits table shows this specific failure sequence:
+
 1. **Initial load:** No rows visible (only scrollbar visible)
 2. **Scroll to bottom and back:** Rows become visible
 3. **Scroll down again:** Rows disappear again
@@ -87,11 +89,11 @@ This scroll-triggered visibility cycle is the hallmark of a **CDK virtual scroll
 
 ### Key Structural Difference
 
-| Table | Header Rows | Status |
-|-------|-------------|--------|
-| Open Positions | 2 | ✅ Working (fixed in Epic 12) |
-| Sold Positions | 2 | ✅ Working (fixed in Epic 12) |
-| Dividend Deposits | 1 | ❌ Still broken |
+| Table             | Header Rows | Status                        |
+| ----------------- | ----------- | ----------------------------- |
+| Open Positions    | 2           | ✅ Working (fixed in Epic 12) |
+| Sold Positions    | 2           | ✅ Working (fixed in Epic 12) |
+| Dividend Deposits | 1           | ❌ Still broken               |
 
 The Epic 12 fix likely hard-coded a height calculation that assumed 2 header rows. Dividend Deposits with 1 header row results in 1 header-row-height too little space being subtracted from the viewport.
 
@@ -121,9 +123,11 @@ See `_bmad-output/implementation-artifacts/12-1-restore-account-screen-table-vis
 ### Angular CDK Virtual Scroll — Known Height Issue
 
 A common pattern is:
+
 ```
 viewport height = total container height - (number_of_header_rows × row_height)
 ```
+
 If the component used a constant `2` for header rows (matching Open Positions and Sold Positions), Dividend Deposits will compute as if it has 1 too many header rows, leaving it `rowHeight` pixels too short — just enough to show 0 rows.
 
 ### Diagnosis Document Template
@@ -132,15 +136,19 @@ If the component used a constant `2` for header rows (matching Open Positions an
 # Dividend Deposits Table Diagnosis
 
 ## Root Cause
+
 <statement>
 
 ## Evidence
+
 <screenshots and code snippets>
 
 ## Structural Comparison
+
 <table comparison>
 
 ## Proposed Fix
+
 <specific approach for Story 18.2>
 ```
 
