@@ -50,16 +50,12 @@ export class DividendDepositsComponentService {
     for (let ti = 0; ti < typesList.length; ti++) {
       typeNamesMap.set(typesList[ti].id, typesList[ti].name);
     }
-    // Visible-window loop: only transform items within the visible range
-    const range = this.visibleRange();
-    const start = range.start;
-    const end = Math.min(range.end, totalLength);
-    // Create sparse array with correct total length
+    // Dense array: populate all items to avoid sparse-array/CDK buffer mismatch
+    this.visibleRange(); // maintain signal dependency for reactivity
     const result: DividendRow[] = [];
-    result.length = totalLength;
-    for (let i = start; i < end; i++) {
+    for (let i = 0; i < totalLength; i++) {
       const d = divDepositsArray[i];
-      result[i] = {
+      result.push({
         id: d.id,
         date: d.date,
         amount: d.amount,
@@ -71,7 +67,7 @@ export class DividendDepositsComponentService {
             ? universeMap.get(d.universeId)?.symbol ?? ''
             : '',
         type: typeNamesMap.get(d.divDepositTypeId) ?? '',
-      };
+      });
     }
     return result;
   });

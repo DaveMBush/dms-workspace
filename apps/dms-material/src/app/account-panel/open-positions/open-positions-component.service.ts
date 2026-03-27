@@ -45,7 +45,7 @@ export class OpenPositionsComponentService {
   selectOpenPositions = computed(() => {
     const trades = this.trades();
     const universeMap = this.universeMap();
-    const range = this.visibleRange();
+    this.visibleRange(); // maintain signal dependency for reactivity
 
     if (trades.length === 0) {
       return [] as OpenPosition[];
@@ -61,15 +61,14 @@ export class OpenPositionsComponentService {
       }
     }
 
-    // Visible-window: sparse array sized to open count, only transform visible items
+    // Dense array: populate all items to avoid sparse-array/CDK buffer mismatch
     const totalOpen = openIndices.length;
-    const openPositions = new Array<OpenPosition>(totalOpen);
-    const rangeEnd = Math.min(range.end, totalOpen);
-    for (let j = range.start; j < rangeEnd; j++) {
+    const openPositions: OpenPosition[] = [];
+    for (let j = 0; j < totalOpen; j++) {
       const tradeIdx = openIndices[j];
       const trade = trades[tradeIdx];
       const universe = universeMap.get(trade.universeId)!;
-      openPositions[j] = this.transformTradeToPosition(trade, universe);
+      openPositions.push(this.transformTradeToPosition(trade, universe));
     }
     return openPositions;
   });

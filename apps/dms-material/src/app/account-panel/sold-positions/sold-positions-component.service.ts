@@ -29,7 +29,7 @@ export class SoldPositionsComponentService {
   selectSoldPositions = computed(() => {
     const trades = this.trades();
     const universeMap = buildUniverseMap();
-    const range = this.visibleRange();
+    this.visibleRange(); // maintain signal dependency for reactivity
 
     if (trades.length === 0) {
       return [] as ClosedPosition[];
@@ -49,11 +49,10 @@ export class SoldPositionsComponentService {
       soldIndices.push(i);
     }
 
-    // Visible-window: sparse array sized to sold count, only transform visible items
+    // Dense array: populate all items to avoid sparse-array/CDK buffer mismatch
     const totalSold = soldIndices.length;
-    const soldPositions = new Array<ClosedPosition>(totalSold);
-    const rangeEnd = Math.min(range.end, totalSold);
-    for (let j = range.start; j < rangeEnd; j++) {
+    const soldPositions: ClosedPosition[] = [];
+    for (let j = 0; j < totalSold; j++) {
       const tradeIdx = soldIndices[j];
       const trade = trades[tradeIdx];
       const universe = universeMap.get(trade.universeId)!;
@@ -66,7 +65,7 @@ export class SoldPositionsComponentService {
       const capitalGainPercentage =
         trade.buy !== 0 ? ((trade.sell - trade.buy) / trade.buy) * 100 : 0;
 
-      soldPositions[j] = {
+      soldPositions.push({
         id: trade.id,
         symbol: universe.symbol,
         buy: trade.buy,
@@ -78,7 +77,7 @@ export class SoldPositionsComponentService {
         capitalGain,
         capitalGainPercentage,
         gainLossType: classifyCapitalGain(capitalGain),
-      };
+      });
     }
 
     return soldPositions;
