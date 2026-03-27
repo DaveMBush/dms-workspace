@@ -78,7 +78,7 @@
       "executor": "@nx/vitest:test",
       "options": {
         "passWithNoTests": true,
-        "reportsDirectory": "coverage/apps/server",
+        "reportsDirectory": "{projectRoot}/coverage/apps/server",
         "cwd": "apps/server"
       }
     }

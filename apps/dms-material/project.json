@@ -97,7 +97,7 @@
       "executor": "@nx/vitest:test",
       "outputs": ["{options.reportsDirectory}"],
       "options": {
-        "reportsDirectory": "../../coverage/apps/dms-material",
+        "reportsDirectory": "{projectRoot}/../../coverage/apps/dms-material",
         "passWithNoTests": true
       }
     },
