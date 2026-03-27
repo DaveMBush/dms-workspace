@@ -40,12 +40,13 @@
   font-weight: 500;
 }
 
-dms-splitter {
-  // flex-1 overflow-hidden migrated to Tailwind in template
-}
-
 .accounts-panel,
 .content-panel {
   height: 100%;
   overflow: hidden;
+}
+
+.overlay-container {
+  background-color: var(--dms-background);
+  opacity: 0.5;
 }

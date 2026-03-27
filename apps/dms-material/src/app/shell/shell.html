@@ -55,10 +55,10 @@
 </main>
 
 <!-- Global Loading Overlay -->
-@if (isLoading()) {
+@if (true || isLoading()) {
 <div
   data-testid="loading-overlay"
-  class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40"
+  class="overlay-container fixed h-full w-full inset-0 z-[9999] flex items-center justify-center"
 >
   <div class="flex flex-col items-center justify-center p-6">
     <mat-progress-spinner
