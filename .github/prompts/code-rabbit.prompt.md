@@ -37,10 +37,16 @@ Behavior (concise):
 **CodeRabbit Review Loop:**
 
 Key steps:
-1. Look at the current PR's CI pipeline status and verify that is succeeded. If it is still running, wait and re-check every 30s (with a max timeout of 10 min). If it fails, look at the pipeline for the failue and fix the issue(s) before proceeding.
-2. Resolve `GIT_COMMON_DIR=$(git rev-parse --git-common-dir)` and read `$GIT_COMMON_DIR/tmp/story-${story}-meta.json` into local state; then use `worktreePath` from that state as the `cwd` for subsequent bash MCP calls
+
+1. Resolve `GIT_COMMON_DIR=$(git rev-parse --git-common-dir)` and read `$GIT_COMMON_DIR/tmp/story-${story}-meta.json` into local state; then use `worktreePath` from that state as the `cwd` for subsequent bash MCP calls
+
+2. Look at the current PR's CI pipeline status and verify that is succeeded.
+
+**IMPORTANT**:
+If the PR CI pipeline is still running, wait and re-check every 120s (with a max timeout of 30 min). If it fails, look at the pipeline for the failure and fix the issue(s) before proceeding.
+
 3. Loop while `attempt < maxIterations` (increment and persist immediately)
-4. Poll `mcp_github_pull_request_read` with `method: "get_review_comments"` every 120s (10 min timeout)
+4. Poll `mcp_github_pull_request_read` with `method: "get_review_comments"` every 240s (10 min timeout)
 5. If no suggestions: proceed to merge checks
 6. If suggestions: classify (valid/invalid, in-scope/out-of-scope), use Context7/Playwright for verification
 7. Apply valid in-scope fixes, then run full quality validation:

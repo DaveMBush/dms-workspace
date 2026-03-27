@@ -25,6 +25,12 @@ Before running the loop, read:
 
 1. Operate in the **current working directory** only.
 2. Treat `${context}` only as a logging label for status messages and summaries.
+3. When running shell commands using the bash MCP server,
+**DO NOT EVER ADD SLEEP STATEMENTS TO THE COMMANDS****.
+**ALWAYS WAIT FOR THE COMMAND TO COMPLETE**.
+**USE THE MCP SERVER'S `timeout` PARAMETER INSTEAD using the MAX timeout value** .
+**WAIT FOR 120 seconds before running the next command** to prevent rate limit issues.
+
 3. Run the following Quality Validation Loop steps in order using the bash MCP server for each command, for example `mcp_bash_run({ command: "<command>", cwd: process.cwd(), timeout: 0 })`:
    1. `CI=1 pnpm all` (lint + build + unit tests)
    2. `pnpm e2e:dms-material:chromium`
