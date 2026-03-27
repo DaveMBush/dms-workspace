@@ -26,23 +26,23 @@ Before running the loop, read:
 1. Operate in the **current working directory** only.
 2. Treat `${context}` only as a logging label for status messages and summaries.
 3. When running shell commands using the bash MCP server,
-**DO NOT EVER ADD SLEEP STATEMENTS TO THE COMMANDS****.
-**ALWAYS WAIT FOR THE COMMAND TO COMPLETE**.
-**USE THE MCP SERVER'S `timeout` PARAMETER INSTEAD using the MAX timeout value** .
-**WAIT FOR 120 seconds before running the next command** to prevent rate limit issues.
+   **DO NOT EVER ADD SLEEP STATEMENTS TO THE COMMANDS\*\***.
+   **ALWAYS WAIT FOR THE COMMAND TO COMPLETE**.
+   **USE THE MCP SERVER'S `timeout` PARAMETER INSTEAD using the MAX timeout value** .
+   **WAIT FOR 120 seconds before running the next command** to prevent rate limit issues.
 
-3. Run the following Quality Validation Loop steps in order using the bash MCP server for each command, for example `mcp_bash_run({ command: "<command>", cwd: process.cwd(), timeout: 0 })`:
+4. Run the following Quality Validation Loop steps in order using the bash MCP server for each command, for example `mcp_bash_run({ command: "<command>", cwd: process.cwd(), timeout: 0 })`:
    1. `CI=1 pnpm all` (lint + build + unit tests)
-   2. `pnpm e2e:dms-material:chromium`
-   3. `pnpm e2e:dms-material:firefox`
+   2. `pnpm e2e:dms-material:chromium` (this can take a very long time... over 20 minutes or more, so be patient and do not interrupt it)
+   3. `pnpm e2e:dms-material:firefox` (this can also take a very long time, so again be patient and do not interrupt it)
    4. `pnpm dupcheck`
    5. `pnpm format`
-4. Self-review changed files (`git diff --name-only origin/main...HEAD`) against `.github/instructions/code-review.md` and fix any findings
-5. Auto-fix failures and code-review findings when possible.
-6. If any fix is applied, restart the loop from step 1.
-7. All steps must pass in a single uninterrupted iteration before reporting success.
-8. For all human interaction, run `.github/prompts/prompt.sh` through the bash MCP server, for example `mcp_bash_run({ command: 'bash .github/prompts/prompt.sh "<message>"', cwd: process.cwd(), timeout: 0 })`.
-9. Do not ask for confirmation when the loop completes successfully; return control immediately to the caller.
+5. Self-review changed files (`git diff --name-only origin/main...HEAD`) against `.github/instructions/code-review.md` and fix any findings
+6. Auto-fix failures and code-review findings when possible.
+7. If any fix is applied, restart the loop from step 1.
+8. All steps must pass in a single uninterrupted iteration before reporting success.
+9. For all human interaction, run `.github/prompts/prompt.sh` through the bash MCP server, for example `mcp_bash_run({ command: 'bash .github/prompts/prompt.sh "<message>"', cwd: process.cwd(), timeout: 0 })`.
+10. Do not ask for confirmation when the loop completes successfully; return control immediately to the caller.
 
 ## Completion Contract
 
