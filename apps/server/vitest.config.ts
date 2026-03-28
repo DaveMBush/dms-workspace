@@ -12,6 +12,12 @@ export default defineConfig({
     coverage: {
       reportsDirectory: '../../coverage/apps/server',
       provider: 'v8' as const,
+      thresholds: {
+        branches: 100,
+        functions: 100,
+        lines: 100,
+        statements: 100,
+      },
     },
     // Use unique database file per worker for isolation
     // Vitest automatically provides a unique workerId for each worker
