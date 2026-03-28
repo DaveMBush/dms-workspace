@@ -63,4 +63,8 @@ Notes:
 - Make operations idempotent: re-running should continue safely
 - All detailed instructions are in the "CodeRabbit Review Loop Pattern" section of bmad-workflow skill
 
+## Rate Limits
+
+If GitHub Copilot rate limiting is detected or approached: (1) pause for at least 2 minutes before the next API call, (2) do not abort the task — resume from the last completed step after the pause, (3) prefer slow completion over fast failure.
+
 ````

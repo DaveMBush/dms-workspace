@@ -13,3 +13,7 @@ Also, most of our epics have and e2e test story at the end. Create a story just 
 All stories should be renumbered sequentially 1, 2, 3 etc.
 
 Once you've done this, run #file:./create-stories-for-epic.prompt.md to create the stories for the epic.
+
+## Rate Limits
+
+If GitHub Copilot rate limiting is detected or approached: (1) pause for at least 2 minutes before the next API call, (2) do not abort the task — resume from the last completed step after the pause, (3) prefer slow completion over fast failure.

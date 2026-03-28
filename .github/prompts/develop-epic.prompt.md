@@ -13,6 +13,7 @@ Shell execution rule: every shell command in this workflow and its delegated ste
 Each phase of the epic development process must be handled by a separate subAgent. This ensures modularity, better error handling, clear separation of concerns, and avoids loss of overall context
 
 1. **Discover Stories for Epic ${epic}**
+
    - Search for all story files matching: `_bmad-output/implementation-artifacts/${epic}-*.md`
    - Parse story numbers from filenames (e.g., AD.1, AD.2, AD.3)
    - Sort stories by numeric value (1, 2, 3, ...)
@@ -30,12 +31,14 @@ Each phase of the epic development process must be handled by a separate subAgen
 For each story in the ordered list:
 
 1. **Classify Story Type**
+
    - Read the story file and check the title/filename for keywords
    - **Bug fix story**: Title or filename contains "bug fix", "bug-fix", "bugfix", or "debug" → Use `debug.prompt.md`
    - **Standard story**: All other stories → Use `develop-story.prompt.md`
    - Add a todo item for each story indicating its type (standard/bug-fix) before starting implementation
 
 2. **Execute Story Development**
+
    - **CRITICAL**: You MUST delegate to the correct workflow file below. Do NOT attempt to implement the story yourself inline. Do NOT start servers, run manual tests, do code reviews, or perform any implementation work outside of the delegated workflow. The workflow file contains the complete instructions — follow them exactly.
    - **For standard stories**: Run `run #file:./develop-story.prompt.md story=${current_story}`
    - **For bug fix stories**: Run `run #file:./debug.prompt.md epic=${epic} story=${current_story}`
@@ -65,3 +68,7 @@ All ${N} stories implemented and merged to main.
 - **Story fails**: prompt.sh decides abort epic / skip story / retry with help
 - **Status validation fails**: prompt.sh decides whether to continue anyway
 - **Rate limits or conflicts**: Individual stories handle via develop-story.prompt.md
+
+## Rate Limits
+
+If GitHub Copilot rate limiting is detected or approached: (1) pause for at least 2 minutes before the next API call, (2) do not abort the task — resume from the last completed step after the pause, (3) prefer slow completion over fast failure.

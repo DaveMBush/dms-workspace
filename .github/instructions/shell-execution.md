@@ -32,13 +32,13 @@ When executing commands, use `timeout: 0` (no timeout) and wait for the command 
 ```typescript
 // Run command and wait for completion
 mcp_bash_run({
-  command: "pnpm test > test-output.txt 2>&1",
-  cwd: "/home/dave/code/dms-workspace",
-  timeout: 0  // Wait for completion
+  command: 'pnpm test > test-output.txt 2>&1',
+  cwd: '/home/dave/code/dms-workspace',
+  timeout: 0, // Wait for completion
 });
 
 // After command completes, read the file ONCE
-read_file({ filePath: "test-output.txt", startLine: 1, endLine: 100 });
+read_file({ filePath: 'test-output.txt', startLine: 1, endLine: 100 });
 ```
 
 ### ❌ INCORRECT: Monitor file while command runs
@@ -77,9 +77,9 @@ Use `mcp_bash_run_background` ONLY for:
 
 ```typescript
 mcp_bash_run({
-  command: "pnpm build",
-  cwd: "/home/dave/code/dms-workspace",
-  timeout: 0  // Wait for build to complete
+  command: 'pnpm build',
+  cwd: '/home/dave/code/dms-workspace',
+  timeout: 0, // Wait for build to complete
 });
 ```
 
@@ -87,9 +87,9 @@ mcp_bash_run({
 
 ```typescript
 mcp_bash_run({
-  command: "pnpm test",
-  cwd: "/home/dave/code/dms-workspace",
-  timeout: 0  // Wait for tests to complete
+  command: 'pnpm test',
+  cwd: '/home/dave/code/dms-workspace',
+  timeout: 0, // Wait for tests to complete
 });
 ```
 
@@ -97,9 +97,9 @@ mcp_bash_run({
 
 ```typescript
 mcp_bash_run({
-  command: "pnpm lint",
-  cwd: "/home/dave/code/dms-workspace",
-  timeout: 0  // Wait for linting to complete
+  command: 'pnpm lint',
+  cwd: '/home/dave/code/dms-workspace',
+  timeout: 0, // Wait for linting to complete
 });
 ```
 
@@ -107,9 +107,9 @@ mcp_bash_run({
 
 ```typescript
 mcp_bash_run({
-  command: "git status",
-  cwd: "/home/dave/code/dms-workspace",
-  timeout: 0
+  command: 'git status',
+  cwd: '/home/dave/code/dms-workspace',
+  timeout: 0,
 });
 ```
 
@@ -117,8 +117,8 @@ mcp_bash_run({
 
 ```typescript
 mcp_bash_run_background({
-  command: "pnpm dev",
-  cwd: "/home/dave/code/dms-workspace"
+  command: 'pnpm dev',
+  cwd: '/home/dave/code/dms-workspace',
 });
 ```
 
@@ -131,23 +131,23 @@ If a command produces large output, use shell redirection and read selectively:
 ```typescript
 // Run command, redirect output
 mcp_bash_run({
-  command: "pnpm test 2>&1 | tee test-results.txt",
-  cwd: "/home/dave/code/dms-workspace",
-  timeout: 0
+  command: 'pnpm test 2>&1 | tee test-results.txt',
+  cwd: '/home/dave/code/dms-workspace',
+  timeout: 0,
 });
 
 // Read relevant portions
 read_file({
-  filePath: "test-results.txt",
+  filePath: 'test-results.txt',
   startLine: 1,
-  endLine: 50  // Read first 50 lines
+  endLine: 50, // Read first 50 lines
 });
 
 // If needed, read more specific sections
 read_file({
-  filePath: "test-results.txt",
+  filePath: 'test-results.txt',
   startLine: 100,
-  endLine: 150
+  endLine: 150,
 });
 ```
 
@@ -158,8 +158,8 @@ Use tools like `grep`, `head`, `tail`, or `jq` to filter output before capture:
 ```typescript
 mcp_bash_run({
   command: "pnpm test 2>&1 | grep -E '(PASS|FAIL|Error)' > test-summary.txt",
-  cwd: "/home/dave/code/dms-workspace",
-  timeout: 0
+  cwd: '/home/dave/code/dms-workspace',
+  timeout: 0,
 });
 ```
 
@@ -169,9 +169,9 @@ Always check command results and handle errors appropriately:
 
 ```typescript
 const result = mcp_bash_run({
-  command: "pnpm build",
-  cwd: "/home/dave/code/dms-workspace",
-  timeout: 0
+  command: 'pnpm build',
+  cwd: '/home/dave/code/dms-workspace',
+  timeout: 0,
 });
 
 // The bash MCP server returns structured output with exit code and stderr
@@ -188,8 +188,13 @@ const result = mcp_bash_run({
 6. **Never monitor files** while a command is still running - this wastes tokens and money
 
 These practices ensure:
+
 - ✅ Efficient token usage
 - ✅ Fewer API calls
 - ✅ Lower costs
 - ✅ More reliable execution
 - ✅ Cleaner, more maintainable code
+
+## Rate Limits
+
+If GitHub Copilot rate limiting is detected or approached: (1) pause for at least 2 minutes before the next API call, (2) do not abort the task — resume from the last completed step after the pause, (3) prefer slow completion over fast failure.
