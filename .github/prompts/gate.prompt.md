@@ -21,4 +21,6 @@ Do not commit until gate result is evaluated by the calling workflow.
 
 ## Rate Limits
 
-If GitHub Copilot rate limiting is detected or approached: (1) pause for at least 2 minutes before the next API call, (2) do not abort the task — resume from the last completed step after the pause, (3) prefer slow completion over fast failure.
+To avoid GitHub Copilot rate limiting:
+- Always wait for at least 2 minutes between API calls.
+- Prefer slow completion over fast failure.
