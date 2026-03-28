@@ -37,7 +37,7 @@
 #     E1 → E3 → E4(TS rules) → E2 → E5 → E4(template rules) → E6 → E7 → E8
 
 generated: 2026-03-17
-last_updated: 2026-03-24
+last_updated: 2026-03-27
 project_key: NOKEY
 tracking_system: file-system
 story_location: _bmad-output/implementation-artifacts
@@ -136,3 +136,60 @@ development_status:
   epic-20: in-progress
   20-1-fix-account-summary-responsive-layout: ready-for-dev
   epic-20-retrospective: optional
+
+  # ── Epic 21: Agent Prompt Rate-Limit Directives ──────────────────────────────
+  epic-21: in-progress
+  21-1-audit-and-update-agent-prompt-files-for-rate-limit-directives: ready-for-dev
+  epic-21-retrospective: optional
+
+  # ── Epic 22: 100% Branch Coverage via Vitest ─────────────────────────────────
+  epic-22: in-progress
+  22-1-configure-vitest-for-100-branch-coverage-threshold: ready-for-dev
+  22-2-achieve-100-branch-coverage-across-all-tested-files: ready-for-dev
+  epic-22-retrospective: optional
+
+  # ── Epic 23: Fix jscpd Configuration and Resolve Duplication ─────────────────
+  epic-23: in-progress
+  23-1-remove-invalid-ignore-paths-from-jscpd-json: ready-for-dev
+  23-2-resolve-duplication-exposed-by-jscpd-fix: ready-for-dev
+  23-3-add-quality-tool-governance-section-to-architecture-document: ready-for-dev
+  epic-23-retrospective: optional
+
+  # ── Epic 24: Multi-Column Sort on Universe Table ──────────────────────────────
+  epic-24: in-progress
+  24-1-extend-sort-state-model-for-multi-column-sort: ready-for-dev
+  24-2-implement-multi-column-sort-in-backend-query: ready-for-dev
+  24-3-implement-multi-column-sort-ui-on-universe-screen: ready-for-dev
+  epic-24-retrospective: optional
+
+  # ── Epic 25: Restore Sort and Filter UI State on Load ────────────────────────
+  epic-25: in-progress
+  25-1-restore-sort-indicator-ui-from-saved-state: ready-for-dev
+  25-2-restore-filter-ui-state-from-saved-state: ready-for-dev
+  epic-25-retrospective: optional
+
+  # ── Epic 26: Dual-Theme Storybook and Snapshot Testing ───────────────────────
+  epic-26: in-progress
+  26-1-add-theme-switcher-to-storybook-preview: ready-for-dev
+  26-2-dual-theme-snapshot-testing: ready-for-dev
+  epic-26-retrospective: optional
+
+  # ── Epic 27: Remove Deprecated Checkbox Columns ──────────────────────────────
+  epic-27: in-progress
+  27-1-remove-checkbox-columns-from-screener-frontend: ready-for-dev
+  27-2-remove-checkbox-columns-from-backend-schema-and-api: ready-for-dev
+  27-3-remove-checkbox-update-logic-from-frontend-and-backend: ready-for-dev
+  27-4-update-update-universe-to-not-require-checkboxes: ready-for-dev
+  epic-27-retrospective: optional
+
+  # ── Epic 28: Storybook Stories for BaseTableComponent ────────────────────────
+  epic-28: in-progress
+  28-1-create-default-and-variation-stories-for-basetable: ready-for-dev
+  28-2-verify-basetable-stories-with-playwright-snapshot-testing: ready-for-dev
+  epic-28-retrospective: optional
+
+  # ── Epic 29: Virtual Scroll Row Height Standardization ───────────────────────
+  epic-29: in-progress
+  29-1-audit-and-standardize-virtual-scroll-row-heights: ready-for-dev
+  29-2-verify-smooth-scrolling-on-all-tables-with-playwright: ready-for-dev
+  epic-29-retrospective: optional
