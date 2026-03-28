@@ -189,3 +189,7 @@ This keeps the debug workflow context small while the merge subagent handles:
 - Human involvement only via prompt.sh through the bash MCP server (with `timeout: 0`) when decisions/help needed
 - Maintains quality gates while maximizing autonomy
 - See bmad-workflow skill for detailed patterns and best practices
+
+## Rate Limits
+
+If GitHub Copilot rate limiting is detected or approached: (1) pause for at least 2 minutes before the next API call, (2) do not abort the task — resume from the last completed step after the pause, (3) prefer slow completion over fast failure.

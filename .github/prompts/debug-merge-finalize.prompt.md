@@ -75,3 +75,7 @@ Return a concise summary containing:
 - cleanup result
 
 If merge/finalization fails after required retries and escalations, return `MERGE FAILED: <reason>` after handling required `prompt.sh` escalation.
+
+## Rate Limits
+
+If GitHub Copilot rate limiting is detected or approached: (1) pause for at least 2 minutes before the next API call, (2) do not abort the task — resume from the last completed step after the pause, (3) prefer slow completion over fast failure.

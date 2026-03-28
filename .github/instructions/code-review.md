@@ -510,3 +510,7 @@ When performing a code review, apply these prompt engineering principles from th
 - **Code Style**: ESLint with `@angular-eslint`, `@smarttools/no-anonymous-functions`, and project-specific rules. Prettier for formatting.
 - **Architecture**: refer to [docs/architecture/index.md](docs/architecture/index.md) for detailed architecture documentation
 - **Coding Standards**: refer to [docs/architecture/coding-standards.md](docs/architecture/coding-standards.md) for mandatory rules
+
+## Rate Limits
+
+If GitHub Copilot rate limiting is detected or approached: (1) pause for at least 2 minutes before the next API call, (2) do not abort the task — resume from the last completed step after the pause, (3) prefer slow completion over fast failure.
