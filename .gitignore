@@ -61,3 +61,4 @@ test-results/
 # Storybook static build output
 dist/storybook/
 .nx/workspace-data-old
+apps/server/coverage
