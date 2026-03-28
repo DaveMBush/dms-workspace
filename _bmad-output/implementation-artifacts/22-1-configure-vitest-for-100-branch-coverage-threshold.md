@@ -96,22 +96,25 @@ None
 
 ### Completion Notes List
 
-- Updated root `vitest.config.ts` thresholds from 0 to 100 for branches, functions, lines, statements
-- Audited `apps/server/vitest.config.ts` — has no threshold overrides, defers to root config (no change needed)
-- No `vitest.config.ts` found under `apps/dms-material/` — uses root config via Nx executor
-- `vitest.workspace.ts` only registers `apps/server/vitest.config.ts`
-- Updated `all` script: split lint/build from test to add `--coverage` flag to test runs
+- Updated root `vitest.config.ts` thresholds from 0 to 100 for branches, functions, lines, statements; flattened `thresholds.global` to `thresholds` (removed `global` wrapper)
+- Updated `apps/dms-material/vite.config.mts` thresholds from 0 to 100 for branches, functions, lines, statements
+- Updated `apps/server/vitest.config.ts` — added `thresholds` block with branches, functions, lines, statements all set to 100
+- Updated `all` script in `package.json`: split lint/build from test to add `--coverage` flag to test runs
 - Coverage threshold failures expected until story 22.2 fixes gaps
 
 ### File List
 
-- `vitest.config.ts` — changed thresholds from 0 to 100
+- `vitest.config.ts` — changed thresholds from 0 to 100, flattened `thresholds.global` to `thresholds`
+- `apps/dms-material/vite.config.mts` — changed thresholds from 0 to 100
+- `apps/server/vitest.config.ts` — added thresholds block with all values set to 100
 - `package.json` — updated `all` script to enforce coverage
 - `_bmad-output/implementation-artifacts/22-1-configure-vitest-for-100-branch-coverage-threshold.md` — story file updates
 
 ### Change Log
 
-| File               | Change                                                                                                                                                   |
-| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `vitest.config.ts` | `thresholds.global.{branches,functions,lines,statements}`: `0` → `100`                                                                                   |
-| `package.json`     | `all` script: `nx affected -t lint build test --parallel=16` → `nx affected -t lint build --parallel=16 && nx affected -t test --coverage --parallel=16` |
+| File                                | Change                                                                                                                                                   |
+| ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `vitest.config.ts`                  | `thresholds.global.{branches,functions,lines,statements}`: `0` → `100`; removed `global` wrapper (thresholds now at top level)                           |
+| `apps/dms-material/vite.config.mts` | `thresholds.{statements,branches,functions,lines}`: `0` → `100`                                                                                         |
+| `apps/server/vitest.config.ts`      | Added `thresholds` block: `{branches,functions,lines,statements}` all set to `100`                                                                       |
+| `package.json`                      | `all` script: `nx affected -t lint build test --parallel=16` → `nx affected -t lint build --parallel=16 && nx affected -t test --coverage --parallel=16` |
