@@ -115,6 +115,6 @@ None
 | File                                | Change                                                                                                                                                   |
 | ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `vitest.config.ts`                  | `thresholds.global.{branches,functions,lines,statements}`: `0` → `100`; removed `global` wrapper (thresholds now at top level)                           |
-| `apps/dms-material/vite.config.mts` | `thresholds.{statements,branches,functions,lines}`: `0` → `100`                                                                                         |
+| `apps/dms-material/vite.config.mts` | `thresholds.{statements,branches,functions,lines}`: `0` → `100`                                                                                          |
 | `apps/server/vitest.config.ts`      | Added `thresholds` block: `{branches,functions,lines,statements}` all set to `100`                                                                       |
 | `package.json`                      | `all` script: `nx affected -t lint build test --parallel=16` → `nx affected -t lint build --parallel=16 && nx affected -t test --coverage --parallel=16` |
