@@ -64,6 +64,13 @@ export default defineConfig({
       cwd: workspaceRoot,
       timeout: 120000,
     },
+    {
+      command: 'pnpm nx run dms-material:storybook --port 6006',
+      url: 'http://localhost:6006',
+      reuseExistingServer: true,
+      cwd: workspaceRoot,
+      timeout: 120000,
+    },
   ],
   projects: [
     {
