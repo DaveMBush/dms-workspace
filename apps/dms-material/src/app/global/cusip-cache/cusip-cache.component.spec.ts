@@ -361,5 +361,21 @@ describe('CusipCacheComponent', function describeComponent() {
 
       expect(deleteSpy).not.toHaveBeenCalled();
     });
+
+    it('should re-run search after delete when search is active', function shouldReSearch() {
+      const confirmSubject = new Subject<boolean>();
+      vi.spyOn(TestBed.inject(ConfirmDialogService), 'confirm').mockReturnValue(
+        confirmSubject.asObservable()
+      );
+      vi.spyOn(adminService, 'deleteMapping').mockReturnValue(of({}));
+      const searchSpy = vi.spyOn(adminService, 'search');
+      component.searchValue.set('037833100');
+      component.searchType.set('cusip');
+
+      component.onDeleteMapping(mockEntry);
+      confirmSubject.next(true);
+
+      expect(searchSpy).toHaveBeenCalled();
+    });
   });
 });

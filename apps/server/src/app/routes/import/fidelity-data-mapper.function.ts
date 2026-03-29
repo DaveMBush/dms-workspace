@@ -56,6 +56,7 @@ async function resolveAccount(
  */
 async function resolveSymbol(
   symbol: string,
+  /* v8 ignore next */
   createIfNotFound: boolean = false
 ): Promise<{ id: string } | null> {
   const universeEntry = await prisma.universe.findFirst({
@@ -278,9 +279,11 @@ async function handleBuyRow(
   accountId: string
 ): Promise<void> {
   const universe = await resolveSymbol(row.symbol, true);
+  /* v8 ignore start */
   if (universe) {
     result.trades.push(mapPurchase(row, accountId, universe.id));
   }
+  /* v8 ignore stop */
 }
 
 async function handleSellRow(

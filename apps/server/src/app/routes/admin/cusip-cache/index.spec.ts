@@ -141,6 +141,31 @@ describe('Admin CUSIP Cache Routes', function () {
       expect(body.recentlyAdded).toHaveLength(1);
       expect(body).toHaveProperty('timestamp');
     });
+    test('should return null dates when no entries exist', async function () {
+      (prisma.cusip_cache.count as ReturnType<typeof vi.fn>).mockResolvedValue(
+        0
+      );
+      (
+        prisma.cusip_cache.groupBy as ReturnType<typeof vi.fn>
+      ).mockResolvedValue([]);
+      (
+        prisma.cusip_cache.findMany as ReturnType<typeof vi.fn>
+      ).mockResolvedValue([]);
+      (prisma.cusip_cache.findFirst as ReturnType<typeof vi.fn>)
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce(null);
+
+      const response = await app.inject({
+        method: 'GET',
+        url: '/api/admin/cusip-cache/stats',
+      });
+
+      expect(response.statusCode).toBe(200);
+      const body = JSON.parse(response.body);
+      expect(body.totalEntries).toBe(0);
+      expect(body.oldestEntry).toBeNull();
+      expect(body.newestEntry).toBeNull();
+    });
   });
 
   // === Search Endpoint ===
@@ -353,6 +378,22 @@ describe('Admin CUSIP Cache Routes', function () {
       expect(response.statusCode).toBe(400);
     });
 
+    test('should reject more than 1000 mappings', async function () {
+      const mappings = Array.from({ length: 1001 }, function (_, i) {
+        return { cusip: String(i).padStart(9, '0'), symbol: 'X' + i };
+      });
+
+      const response = await app.inject({
+        method: 'POST',
+        url: '/api/admin/cusip-cache/bulk-add',
+        payload: { mappings },
+      });
+
+      expect(response.statusCode).toBe(400);
+      const body = JSON.parse(response.body);
+      expect(body.error).toContain('1000');
+    });
+
     test('should reject invalid source in bulk', async function () {
       const response = await app.inject({
         method: 'POST',
@@ -441,11 +482,36 @@ describe('Admin CUSIP Cache Routes', function () {
       const body = JSON.parse(response.body);
       expect(body.archivedCount).toBe(0);
     });
+    test('should handle cleanup with undefined body', async function () {
+      (
+        cusipCacheCleanupService.archiveStaleEntries as ReturnType<typeof vi.fn>
+      ).mockResolvedValue({
+        archivedCount: 0,
+        entries: [],
+      });
+
+      const response = await app.inject({
+        method: 'POST',
+        url: '/api/admin/cusip-cache/cleanup',
+      });
+
+      expect(response.statusCode).toBe(200);
+    });
   });
 
   // === Archived Endpoint ===
 
   describe('GET /api/admin/cusip-cache/archived', function () {
+    test('should reject invalid limit parameter', async function () {
+      const response = await app.inject({
+        method: 'GET',
+        url: '/api/admin/cusip-cache/archived?limit=abc',
+      });
+
+      expect(response.statusCode).toBe(400);
+      const body = JSON.parse(response.body);
+      expect(body.error).toContain('Invalid');
+    });
     test('should return archived entries', async function () {
       (
         cusipCacheCleanupService.getArchived as ReturnType<typeof vi.fn>

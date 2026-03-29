@@ -264,6 +264,19 @@ describe('getDistributions', () => {
     expect(result?.distributions_per_year).toBe(52);
   });
 
+  test('returns annual default for biweekly interval (8-27 days)', async () => {
+    const mockRows: ProcessedRow[] = [
+      { amount: 0.25, date: new Date('2025-07-15') },
+      { amount: 0.25, date: new Date('2025-07-29') }, // 14 days apart
+    ];
+
+    mockFetchDistributionData.mockResolvedValueOnce(mockRows);
+
+    const result = await getDistributions('BIWEEKLY');
+
+    expect(result?.distributions_per_year).toBe(1); // Falls to annual/default
+  });
+
   test('correctly identifies monthly at 30-day interval', async () => {
     const mockRows: ProcessedRow[] = [
       { amount: 0.25, date: new Date('2025-07-15') },

@@ -157,6 +157,79 @@ describe('cusipAuditLogService', function () {
       );
     });
 
+    test('should filter by action', async function () {
+      (
+        mockPrisma.cusip_cache_audit.findMany as ReturnType<typeof vi.fn>
+      ).mockResolvedValue([]);
+      (
+        mockPrisma.cusip_cache_audit.count as ReturnType<typeof vi.fn>
+      ).mockResolvedValue(0);
+
+      await cusipAuditLogService.queryAuditLog(
+        { action: 'CREATE' },
+        mockPrisma
+      );
+
+      expect(mockPrisma.cusip_cache_audit.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { action: 'CREATE' },
+        })
+      );
+    });
+
+    test('should ignore empty action string', async function () {
+      (
+        mockPrisma.cusip_cache_audit.findMany as ReturnType<typeof vi.fn>
+      ).mockResolvedValue([]);
+      (
+        mockPrisma.cusip_cache_audit.count as ReturnType<typeof vi.fn>
+      ).mockResolvedValue(0);
+
+      await cusipAuditLogService.queryAuditLog({ action: '' }, mockPrisma);
+
+      expect(mockPrisma.cusip_cache_audit.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: {},
+        })
+      );
+    });
+
+    test('should filter by startDate only', async function () {
+      const startDate = new Date('2025-06-01');
+      (
+        mockPrisma.cusip_cache_audit.findMany as ReturnType<typeof vi.fn>
+      ).mockResolvedValue([]);
+      (
+        mockPrisma.cusip_cache_audit.count as ReturnType<typeof vi.fn>
+      ).mockResolvedValue(0);
+
+      await cusipAuditLogService.queryAuditLog({ startDate }, mockPrisma);
+
+      expect(mockPrisma.cusip_cache_audit.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { createdAt: { gte: startDate } },
+        })
+      );
+    });
+
+    test('should filter by endDate only', async function () {
+      const endDate = new Date('2025-12-31');
+      (
+        mockPrisma.cusip_cache_audit.findMany as ReturnType<typeof vi.fn>
+      ).mockResolvedValue([]);
+      (
+        mockPrisma.cusip_cache_audit.count as ReturnType<typeof vi.fn>
+      ).mockResolvedValue(0);
+
+      await cusipAuditLogService.queryAuditLog({ endDate }, mockPrisma);
+
+      expect(mockPrisma.cusip_cache_audit.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { createdAt: { lte: endDate } },
+        })
+      );
+    });
+
     test('should apply pagination', async function () {
       (
         mockPrisma.cusip_cache_audit.findMany as ReturnType<typeof vi.fn>

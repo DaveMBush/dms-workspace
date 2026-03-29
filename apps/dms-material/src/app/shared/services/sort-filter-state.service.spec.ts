@@ -214,6 +214,37 @@ describe('SortFilterStateService', () => {
 
       expect(mockRemoveItem).toHaveBeenCalledWith(STORAGE_KEY);
     });
+
+    it('should save state unchanged when table has no entry', () => {
+      mockGetItem.mockReturnValue(
+        JSON.stringify({
+          other: { sort: { field: 'date', order: 'desc' } },
+        })
+      );
+
+      service.clearSortState('nonexistent');
+
+      const savedData = JSON.parse(mockSetItem.mock.calls[0][1]);
+      expect(savedData.other.sort).toEqual({ field: 'date', order: 'desc' });
+      expect(savedData.nonexistent).toBeUndefined();
+    });
+
+    it('should preserve filters when clearing sort from table with both', () => {
+      mockGetItem.mockReturnValue(
+        JSON.stringify({
+          universes: {
+            sort: { field: 'name', order: 'asc' },
+            filters: { symbol: 'AAPL' },
+          },
+        })
+      );
+
+      service.clearSortState('universes');
+
+      const savedData = JSON.parse(mockSetItem.mock.calls[0][1]);
+      expect(savedData.universes.filters).toEqual({ symbol: 'AAPL' });
+      expect(savedData.universes.sort).toBeUndefined();
+    });
   });
 
   describe('filter state', () => {
@@ -276,6 +307,20 @@ describe('SortFilterStateService', () => {
       service.clearFilterState('universes');
 
       expect(mockRemoveItem).toHaveBeenCalledWith(STORAGE_KEY);
+    });
+
+    it('should save state unchanged when clearing filter for table with no entry', () => {
+      mockGetItem.mockReturnValue(
+        JSON.stringify({
+          other: { filters: { symbol: 'GOOG' } },
+        })
+      );
+
+      service.clearFilterState('nonexistent');
+
+      const savedData = JSON.parse(mockSetItem.mock.calls[0][1]);
+      expect(savedData.other.filters).toEqual({ symbol: 'GOOG' });
+      expect(savedData.nonexistent).toBeUndefined();
     });
 
     it('should preserve filter state when saving sort state', () => {

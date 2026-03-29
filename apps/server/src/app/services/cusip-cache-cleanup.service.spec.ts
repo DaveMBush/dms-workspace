@@ -117,6 +117,20 @@ describe('cusipCacheCleanupService', function () {
       ).rejects.toThrow('ageDays must be a positive integer');
     });
 
+    test('should use default ageDays from env when not provided', async function () {
+      delete process.env.CUSIP_CACHE_CLEANUP_AGE_DAYS;
+      (
+        mockPrisma.cusip_cache.findMany as ReturnType<typeof vi.fn>
+      ).mockResolvedValue([]);
+
+      const result = await cusipCacheCleanupService.archiveStaleEntries(
+        undefined,
+        mockPrisma
+      );
+
+      expect(result.archivedCount).toBe(0);
+    });
+
     test('should reject non-integer ageDays', async function () {
       await expect(
         cusipCacheCleanupService.archiveStaleEntries(3.5, mockPrisma)
@@ -125,6 +139,23 @@ describe('cusipCacheCleanupService', function () {
   });
 
   describe('getArchived', function () {
+    test('should use default limit and offset when not provided', async function () {
+      (
+        mockPrisma.cusip_cache_archive.findMany as ReturnType<typeof vi.fn>
+      ).mockResolvedValue([]);
+      (
+        mockPrisma.cusip_cache_archive.count as ReturnType<typeof vi.fn>
+      ).mockResolvedValue(0);
+
+      const result = await cusipCacheCleanupService.getArchived({}, mockPrisma);
+
+      expect(result.entries).toEqual([]);
+      expect(result.total).toBe(0);
+      expect(mockPrisma.cusip_cache_archive.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({ take: 50, skip: 0 })
+      );
+    });
+
     test('should return archived entries with pagination', async function () {
       const mockEntries = [
         {
@@ -176,6 +207,15 @@ describe('cusipCacheCleanupService', function () {
     test('should return env value when set', function () {
       process.env.CUSIP_CACHE_CLEANUP_AGE_DAYS = '180';
       expect(cusipCacheCleanupService.getCleanupAgeDays()).toBe(180);
+    });
+    test('should return 365 for invalid env value', function () {
+      process.env.CUSIP_CACHE_CLEANUP_AGE_DAYS = 'abc';
+      expect(cusipCacheCleanupService.getCleanupAgeDays()).toBe(365);
+    });
+
+    test('should return 365 for zero env value', function () {
+      process.env.CUSIP_CACHE_CLEANUP_AGE_DAYS = '0';
+      expect(cusipCacheCleanupService.getCleanupAgeDays()).toBe(365);
     });
   });
 });

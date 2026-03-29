@@ -66,6 +66,31 @@ describe('StructuredLogger', () => {
       expect(logEntry.data.context).toBe('test');
     });
 
+    it('should log error messages without error objects', () => {
+      testLogger.error('Error occurred', undefined, { context: 'test' });
+
+      const logCall = consoleMock.mock.calls[0][0];
+      const logEntry = JSON.parse(logCall);
+
+      expect(logEntry.level).toBe('error');
+      expect(logEntry.message).toBe('Error occurred');
+      expect(logEntry.data.error).toBeUndefined();
+      expect(logEntry.data.context).toBe('test');
+    });
+
+    it('should default environment to development when NODE_ENV is undefined', () => {
+      const originalEnv = process.env.NODE_ENV;
+      delete process.env.NODE_ENV;
+      const fallbackLogger = new StructuredLogger('fallback-test');
+      fallbackLogger.info('test');
+
+      const logCall = consoleMock.mock.calls[0][0];
+      const logEntry = JSON.parse(logCall);
+      expect(logEntry.environment).toBe('development');
+
+      process.env.NODE_ENV = originalEnv;
+    });
+
     it('should only log debug messages in development', () => {
       const originalEnv = process.env.NODE_ENV;
       const originalLogLevel = process.env.LOG_LEVEL;

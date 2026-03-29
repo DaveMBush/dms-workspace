@@ -136,4 +136,12 @@ describe('SessionWarningComponent', () => {
       expect(component.secondsRemaining()).toBe(59);
     }));
   });
+
+  describe('computed signals', () => {
+    it('should format remaining time', () => {
+      component.secondsRemaining.set(65);
+      const formatted = component.formattedTime();
+      expect(formatted).toBe('1:05');
+    });
+  });
 });

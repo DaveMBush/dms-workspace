@@ -256,7 +256,74 @@ describe('Top Route Handler', () => {
     });
   });
 
+  describe('Holiday and DivDepositType seeding', () => {
+    it('should seed holidays when none exist', async () => {
+      mockPrismaHolidays.findMany.mockResolvedValue([]);
+      const { getHolidays } = await import('nyse-holidays');
+      (getHolidays as ReturnType<typeof vi.fn>).mockReturnValue([
+        { date: new Date('2026-01-01'), name: 'New Year' },
+      ]);
+
+      const response = await app.inject({
+        method: 'POST',
+        url: '/api/top',
+        payload: ['1'],
+      });
+
+      expect(response.statusCode).toBe(200);
+      expect(mockPrismaHolidays.upsert).toHaveBeenCalled();
+    });
+
+    it('should seed divDepositTypes when none exist', async () => {
+      mockPrismaDivDepositType.findMany
+        .mockResolvedValueOnce([])
+        .mockResolvedValueOnce([{ id: 'ddt-new-1' }, { id: 'ddt-new-2' }]);
+
+      const response = await app.inject({
+        method: 'POST',
+        url: '/api/top',
+        payload: ['1'],
+      });
+
+      expect(response.statusCode).toBe(200);
+      expect(mockPrismaDivDepositType.create).toHaveBeenCalledTimes(2);
+    });
+  });
+
   describe('Account filter on computed sort', () => {
+    it('should return null accountId when filters exist without account_id', async () => {
+      mockPrismaUniverse.findMany.mockResolvedValue([
+        {
+          id: 'u1',
+          distribution: 1,
+          distributions_per_year: 4,
+          last_price: 100,
+          trades: [{ buy: 50, quantity: 10, sell: 0, sell_date: null }],
+        },
+      ]);
+
+      const filterState = JSON.stringify({
+        universes: {
+          sort: { field: 'avg_purchase_yield_percent', order: 'desc' },
+          filters: { expired: 'false' },
+        },
+      });
+
+      const response = await app.inject({
+        method: 'POST',
+        url: '/api/top',
+        payload: ['1'],
+        headers: { 'x-sort-filter-state': filterState },
+      });
+
+      expect(response.statusCode).toBe(200);
+      // Without account_id filter, trades should not be filtered
+      const universeCall = mockPrismaUniverse.findMany.mock.calls[0][0];
+      expect(universeCall.select.trades).toEqual({
+        select: { buy: true, quantity: true, sell: true, sell_date: true },
+      });
+    });
+
     it('should pass accountId to trades query when sorting by avg_purchase_yield_percent', async () => {
       mockPrismaUniverse.findMany.mockResolvedValue([
         {

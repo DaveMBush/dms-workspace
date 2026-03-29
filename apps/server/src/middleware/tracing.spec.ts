@@ -124,6 +124,30 @@ describe('Tracing Middleware', () => {
       expect(contextCall.sessionId).toBe('cookie-session-456');
     });
 
+    it('should handle requests without id, ip, or user-agent', async () => {
+      const testRemoteAddress = ['10', '0', '0', '1'].join('.');
+      mockRequest = {
+        id: undefined as unknown as string,
+        method: 'POST',
+        url: '/api/data',
+        headers: {
+          'x-amzn-trace-id': 'Root=1-test',
+        },
+        ip: undefined as unknown as string,
+        socket: { remoteAddress: testRemoteAddress } as never,
+      };
+
+      await tracingMiddleware(
+        mockRequest as FastifyRequest,
+        mockReply as FastifyReply
+      );
+
+      const contextCall = loggerSpy.setContextAsync.mock.calls[0][0];
+      expect(contextCall.requestId).toBeDefined();
+      expect(contextCall.requestId).not.toBe('req-123');
+      expect(contextCall.ipAddress).toBe(testRemoteAddress);
+    });
+
     it('should generate trace ID when not provided', async () => {
       delete mockRequest.headers!['x-amzn-trace-id'];
 

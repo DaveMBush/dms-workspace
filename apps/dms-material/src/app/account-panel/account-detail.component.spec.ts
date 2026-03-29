@@ -39,4 +39,44 @@ describe('AccountDetailComponent', () => {
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('router-outlet')).toBeTruthy();
   });
+
+  it('should handle missing route parent gracefully', async () => {
+    TestBed.resetTestingModule();
+    await TestBed.configureTestingModule({
+      imports: [AccountDetailComponent],
+      providers: [
+        provideRouter([]),
+        {
+          provide: ActivatedRoute,
+          useValue: { parent: undefined },
+        },
+      ],
+    }).compileComponents();
+
+    const f = TestBed.createComponent(AccountDetailComponent);
+    const c = f.componentInstance;
+    c.ngOnInit();
+    expect(c.accountId()).toBe('');
+  });
+
+  it('should default accountId to empty string when param is missing', async () => {
+    TestBed.resetTestingModule();
+    await TestBed.configureTestingModule({
+      imports: [AccountDetailComponent],
+      providers: [
+        provideRouter([]),
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            parent: { paramMap: of(new Map()) },
+          },
+        },
+      ],
+    }).compileComponents();
+
+    const f = TestBed.createComponent(AccountDetailComponent);
+    const c = f.componentInstance;
+    c.ngOnInit();
+    expect(c.accountId()).toBe('');
+  });
 });

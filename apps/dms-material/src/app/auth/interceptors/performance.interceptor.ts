@@ -95,7 +95,7 @@ function extractRequestId(req: HttpRequest<unknown>): string {
  * Generate fallback request ID if none exists
  */
 function generateFallbackRequestId(): string {
-  // Use crypto.randomUUID if available, otherwise fallback to timestamp
+  /* v8 ignore start -- environment-dependent: jsdom always has crypto.randomUUID */
   if (
     typeof crypto !== 'undefined' &&
     typeof crypto.randomUUID === 'function'
@@ -103,6 +103,7 @@ function generateFallbackRequestId(): string {
     return `perf-${crypto.randomUUID()}`;
   }
   return `perf-${Date.now()}-${Date.now().toString(36)}`;
+  /* v8 ignore stop */
 }
 
 /**

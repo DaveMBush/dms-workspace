@@ -119,6 +119,34 @@ describe('DatabasePerformanceService', () => {
       expect(typeof result.connectionCount).toBe('number');
     });
 
+    it('should use PostgreSQL connection count when provider is postgresql', async () => {
+      const originalProvider = process.env.DATABASE_PROVIDER;
+      process.env.DATABASE_PROVIDER = 'postgresql';
+
+      const result = await databasePerformanceService.profileConnectionOverhead(
+        testClient
+      );
+
+      // SQLite can't run pg_stat_activity, so getPostgresConnectionCount
+      // catches and returns fallback of 1
+      expect(result.connectionCount).toBe(1);
+      expect(result.connectionTime).toBeGreaterThan(0);
+
+      process.env.DATABASE_PROVIDER = originalProvider;
+    });
+
+    it('should throw when connection profiling fails', async () => {
+      const brokenClient = {
+        $queryRaw: vi.fn().mockRejectedValue(new Error('connection refused')),
+      } as unknown as PrismaClient;
+
+      await expect(
+        databasePerformanceService.profileConnectionOverhead(brokenClient)
+      ).rejects.toThrow(
+        'Database connection profiling failed: Error: connection refused'
+      );
+    });
+
     it('should complete connection profiling within reasonable time', async () => {
       const startTime = Date.now();
       const result = await databasePerformanceService.profileConnectionOverhead(
@@ -263,6 +291,28 @@ describe('DatabasePerformanceService', () => {
       );
       expect(benchmark.baseline.connectionTime).toBeGreaterThan(0);
       expect(benchmark.optimized.connectionTime).toBeGreaterThan(0);
+    });
+
+    it('should filter slow queries through optimization in benchmark', async () => {
+      // Mock performance.now to simulate slow queries (>50ms threshold)
+      let tick = 0;
+      const perfSpy = vi.spyOn(performance, 'now').mockImplementation(() => {
+        tick += 100; // Each call advances 100ms, so durations ≈ 100ms > 50ms
+        return tick;
+      });
+
+      const benchmark =
+        await databasePerformanceService.benchmarkPerformanceImprovement(
+          testClient,
+          1
+        );
+
+      perfSpy.mockRestore();
+
+      // With 100ms durations, slow queries should be recorded and filtered
+      expect(benchmark.baseline.slowQueries.length).toBeGreaterThan(0);
+      // isStillSlowAfterOptimization: 100 * 0.65 = 65 > 50 → queries survive filter
+      expect(benchmark.optimized.slowQueries.length).toBeGreaterThan(0);
     });
 
     it('should provide consistent benchmark results', async () => {

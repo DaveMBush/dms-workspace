@@ -36,6 +36,8 @@ const eslintConfig = async () => {
       ignores: [
         '**/dist/**',
         'dist/**',
+        '**/coverage/**',
+        'coverage/**',
         '**/node_modules/**',
         'node_modules/**',
         '**/jest.config.ts',
