@@ -32,7 +32,6 @@ describe('GlobalScreenerComponent', () => {
     refresh: ReturnType<typeof vi.fn>;
     loading: ReturnType<typeof vi.fn>;
     error: ReturnType<typeof vi.fn>;
-    updateScreener: ReturnType<typeof vi.fn>;
   };
 
   beforeEach(async () => {
@@ -51,7 +50,6 @@ describe('GlobalScreenerComponent', () => {
       refresh: vi.fn().mockReturnValue(of(null)),
       loading: vi.fn().mockReturnValue(false),
       error: vi.fn().mockReturnValue(null),
-      updateScreener: vi.fn(),
     };
 
     await TestBed.configureTestingModule({
@@ -161,22 +159,6 @@ describe('GlobalScreenerComponent', () => {
       // Sorting is now handled automatically by BaseTableComponent
       // onSortChange is just a placeholder method
       expect(() => component.onSortChange(sort)).not.toThrow();
-    });
-  });
-
-  describe('cell editing', () => {
-    it('should emit cell edit event', () => {
-      const row = {
-        id: '1',
-        symbol: 'TST',
-      } as Screen;
-      const spy = vi.spyOn(component.cellEdit, 'emit');
-      component.onCellEdit(row, 'symbol', 'NEW');
-      expect(spy).toHaveBeenCalledWith({
-        row,
-        field: 'symbol',
-        value: 'NEW',
-      });
     });
   });
 
@@ -386,7 +368,6 @@ describe('GlobalScreenerComponent - Filter State Restoration', () => {
             refresh: vi.fn().mockReturnValue(of(null)),
             error: vi.fn().mockReturnValue(null),
             screens: vi.fn().mockReturnValue([]),
-            updateScreener: vi.fn(),
           },
         },
         {

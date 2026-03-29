@@ -11,9 +11,6 @@ export const screenDefinition: SmartEntityDefinition<Screen> = {
       id,
       symbol: '',
       risk_group: '',
-      has_volitility: false,
-      objectives_understood: false,
-      graph_higher_before_2008: false,
     };
   },
 };

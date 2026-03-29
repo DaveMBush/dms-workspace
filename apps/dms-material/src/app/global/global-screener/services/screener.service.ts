@@ -43,22 +43,9 @@ export class ScreenerService {
           // returns data in the correct order — preserve that order.
           const userSort = this.sortFilterStateService.loadSortState('screens');
           if (userSort === null) {
-            // Default sort: completion status (complete ones to bottom), then by symbol
+            // Default sort: by symbol
             screenReturn.sort(function screenSort(a, b) {
-              const aScore =
-                (a.graph_higher_before_2008 &&
-                a.has_volitility &&
-                a.objectives_understood
-                  ? 'z'
-                  : 'a') + a.symbol;
-              const bScore =
-                (b.graph_higher_before_2008 &&
-                b.has_volitility &&
-                b.objectives_understood
-                  ? 'z'
-                  : 'a') + b.symbol;
-
-              return aScore.localeCompare(bScore);
+              return a.symbol.localeCompare(b.symbol);
             });
           }
 
@@ -71,7 +58,7 @@ export class ScreenerService {
   /**
    * Computed signal that provides sorted screens from SmartNgRX store.
    * Uses cached data when SmartNgRX temporarily returns empty (during state recalculation).
-   * Screens are sorted by completion status (complete ones to bottom), then by symbol.
+   * Screens are sorted by symbol when no user sort is active.
    */
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- Arrow function required for proper 'this' binding in computed signal to access cachedScreens()
   screens = computed(() => {
@@ -114,26 +101,5 @@ export class ScreenerService {
     return this.http
       .get('/api/screener')
       .pipe(catchError(refreshCatchError.bind(this)));
-  }
-
-  /**
-   * Update a screen field in the store.
-   *
-   * @param id - The screen id to update
-   * @param field - The field to update
-   * @param value - The new value
-   */
-  updateScreener(id: string, field: keyof Screen, value: boolean): void {
-    const screens = selectScreen();
-    for (let i = 0; i < screens.length; i++) {
-      const screen = screens[i] as unknown as Record<
-        keyof Screen,
-        boolean | string
-      >;
-      if (screen.id === id) {
-        screen[field] = value;
-        break;
-      }
-    }
   }
 }

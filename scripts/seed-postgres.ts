@@ -272,9 +272,6 @@ class DatabaseSeeder {
         distributions_per_year: 4,
         last_price: 875.5,
         risk_group_id: riskGroups[3].id, // Speculative
-        has_volitility: true,
-        objectives_understood: true,
-        graph_higher_before_2008: false,
       },
       {
         symbol: 'KO',
@@ -282,9 +279,6 @@ class DatabaseSeeder {
         distributions_per_year: 4,
         last_price: 60.25,
         risk_group_id: riskGroups[0].id, // Low Risk
-        has_volitility: false,
-        objectives_understood: true,
-        graph_higher_before_2008: true,
       },
     ];
 

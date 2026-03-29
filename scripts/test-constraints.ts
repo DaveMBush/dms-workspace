@@ -116,7 +116,6 @@ async function testConstraints() {
     const expectedScreenerIndexes = [
       'screener_symbol_key',
       'screener_risk_group_id_idx',
-      'screener_has_volitility_objectives_understood_graph_higher_before_2008_idx',
     ];
 
     console.log(
@@ -152,18 +151,6 @@ async function testConstraints() {
     });
     const time2 = Date.now() - start2;
     console.log(`✅ universe.risk_group_id query: ${time2}ms`);
-
-    // Query using screener composite index
-    const start3 = Date.now();
-    await prisma.screener.count({
-      where: {
-        has_volitility: true,
-        objectives_understood: true,
-        graph_higher_before_2008: false,
-      },
-    });
-    const time3 = Date.now() - start3;
-    console.log(`✅ screener composite query: ${time3}ms`);
 
     console.log(
       '\n🎉 All Story E3 constraints and indexes are working correctly!'
