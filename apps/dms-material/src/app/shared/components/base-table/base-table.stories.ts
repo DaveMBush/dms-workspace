@@ -153,6 +153,7 @@ const meta: Meta<BaseTableComponent<SampleRow>> = {
 export default meta;
 
 type Story = StoryObj<BaseTableComponent<SampleRow>>;
+type UniverseStory = StoryObj<BaseTableComponent<UniverseRow>>;
 
 export const Default: Story = {
   args: {
@@ -177,16 +178,15 @@ export const EmptyState: Story = {
   },
 };
 
-export const UniverseTableVariation: StoryObj<BaseTableComponent<UniverseRow>> =
-  {
-    args: {
-      data: universeData,
-      columns: universeColumns,
-      tableLabel: 'Universe screener table',
-      rowHeight: 52,
-      loading: false,
-      selectable: true,
-      multiSelect: true,
-      sortColumns: [{ column: 'ticker', direction: 'asc' }],
-    },
-  };
+export const UniverseTableVariation: UniverseStory = {
+  args: {
+    data: universeData,
+    columns: universeColumns,
+    tableLabel: 'Universe screener table',
+    rowHeight: 52,
+    loading: false,
+    selectable: true,
+    multiSelect: true,
+    sortColumns: [{ column: 'ticker', direction: 'asc' }],
+  },
+};
