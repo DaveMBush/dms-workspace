@@ -100,6 +100,12 @@ th.mat-mdc-header-cell {
   // a border-bottom on a sticky th disappears during scroll; box-shadow persists
   box-shadow: 0 1px 0 0
     color-mix(in srgb, var(--dms-text-primary) 12%, transparent);
+
+  .sort-rank-indicator {
+    font-size: 0.75em;
+    margin-left: 2px;
+    opacity: 0.8;
+  }
 }
 
 tr.filter-row th.mat-mdc-header-cell {

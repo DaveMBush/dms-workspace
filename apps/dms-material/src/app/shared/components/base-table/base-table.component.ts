@@ -13,6 +13,7 @@ import {
   ContentChild,
   DestroyRef,
   effect,
+  ElementRef,
   inject,
   input,
   output,
@@ -27,6 +28,7 @@ import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { debounceTime } from 'rxjs';
 
+import { SortColumn } from '../../services/sort-column.interface';
 import { ColumnDef } from './column-def.interface';
 
 @Component({
@@ -46,6 +48,19 @@ import { ColumnDef } from './column-def.interface';
 export class BaseTableComponent<T extends { id: string }>
   implements AfterViewInit
 {
+  private static readonly superscripts = [
+    '',
+    '\u00B9',
+    '\u00B2',
+    '\u00B3',
+    '\u2074',
+    '\u2075',
+    '\u2076',
+    '\u2077',
+    '\u2078',
+    '\u2079',
+  ];
+
   // Inputs
   data = input.required<T[]>(); // Signal-based data input
   columns = input.required<ColumnDef[]>();
@@ -55,6 +70,7 @@ export class BaseTableComponent<T extends { id: string }>
   selectable = input<boolean>(false);
   multiSelect = input<boolean>(false);
   loading = input<boolean>(false);
+  sortColumns = input<SortColumn[]>([]);
 
   // Outputs
   readonly sortChange = output<Sort>();
@@ -70,8 +86,37 @@ export class BaseTableComponent<T extends { id: string }>
   private sortState = signal<Sort | null>(null);
   private cdr = inject(ChangeDetectorRef);
   private destroyRef = inject(DestroyRef);
+  private lastShiftKey = false;
+
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- Required for computed signal
+  readonly sortRankMap = computed(() => {
+    const columns = this.sortColumns();
+    const map: Record<string, string> = {};
+    for (let i = 0; i < columns.length; i++) {
+      const rank = i + 1;
+      const sup =
+        rank < BaseTableComponent.superscripts.length
+          ? BaseTableComponent.superscripts[rank]
+          : String(rank);
+      const arrow = columns[i].direction === 'asc' ? '\u2191' : '\u2193';
+      map[columns[i].column] = sup + arrow;
+    }
+    return map;
+  });
 
   constructor() {
+    const el = inject(ElementRef).nativeElement as HTMLElement;
+    const self = this;
+
+    function captureShiftKey(event: MouseEvent): void {
+      self.lastShiftKey = event.shiftKey;
+    }
+
+    el.addEventListener('click', captureShiftKey, true);
+    this.destroyRef.onDestroy(function removeShiftListener() {
+      el.removeEventListener('click', captureShiftKey, true);
+    });
+
     // Force change detection when dataSource changes
     // This ensures MatTable and virtual scroll viewport update properly
     effect(
@@ -172,6 +217,12 @@ export class BaseTableComponent<T extends { id: string }>
 
   @ContentChild('cellTemplate') cellTemplate?: TemplateRef<unknown>;
   @ContentChild('filterRowTemplate') filterRowTemplate?: TemplateRef<unknown>;
+
+  getLastShiftKey(): boolean {
+    const value = this.lastShiftKey;
+    this.lastShiftKey = false;
+    return value;
+  }
 
   onSort(sort: Sort): void {
     this.sortState.set(sort);
