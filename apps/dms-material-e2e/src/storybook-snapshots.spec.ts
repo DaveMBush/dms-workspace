@@ -1,4 +1,4 @@
-import { test } from '@playwright/test';
+import { test } from 'playwright/test';
 
 import { captureStoryInBothThemes } from './helpers/storybook-theme-snapshot';
 
