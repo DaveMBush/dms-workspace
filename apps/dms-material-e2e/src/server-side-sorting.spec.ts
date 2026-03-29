@@ -235,6 +235,32 @@ test.describe('Universe Sort Persistence', () => {
     expect(cols).not.toBeNull();
     expect(cols).toEqual([{ column: 'risk_group', direction: 'asc' }]);
   });
+
+  test('should restore sort arrow indicator on page load from saved state', async ({
+    page,
+  }) => {
+    await page.goto('/global/universe');
+    await page.waitForLoadState('networkidle');
+
+    // Sort by Symbol ascending
+    const symbolHeader = page.getByRole('button', { name: 'Symbol' });
+    await symbolHeader.click();
+    await page.waitForTimeout(500);
+
+    // Navigate away
+    await page.goto(`/account/${ACCOUNT_UUID}/open`);
+    await page.waitForLoadState('networkidle');
+
+    // Navigate back to universe
+    await page.goto('/global/universe');
+    await page.waitForLoadState('networkidle');
+
+    // Verify the Symbol sort header has the active sort arrow
+    const symbolSortHeader = page.locator(
+      '[data-sort-header="symbol"].mat-sort-header-sorted'
+    );
+    await expect(symbolSortHeader).toBeVisible();
+  });
 });
 
 // ─── Open Positions – Sort Interceptor ───────────────────────────────────────

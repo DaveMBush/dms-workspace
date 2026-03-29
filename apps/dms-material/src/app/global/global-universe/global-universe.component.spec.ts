@@ -2475,3 +2475,65 @@ describe('GlobalUniverseComponent - Client-Side Sorting Removal', () => {
     });
   });
 });
+
+describe('GlobalUniverseComponent - Sort State Restoration on Init', () => {
+  afterEach(() => {
+    localStorage.removeItem('dms-sort-filter-state');
+  });
+
+  it('should restore sortColumns from localStorage on init with single column', () => {
+    localStorage.setItem(
+      'dms-sort-filter-state',
+      JSON.stringify({
+        universes: {
+          sortColumns: [{ column: 'symbol', direction: 'asc' }],
+        },
+      })
+    );
+
+    const fixture = TestBed.configureTestingModule({
+      imports: [GlobalUniverseComponent],
+      providers: [provideSmartNgRX()],
+    }).createComponent(GlobalUniverseComponent);
+    const component = fixture.componentInstance;
+
+    expect(component.sortColumns$()).toEqual([
+      { column: 'symbol', direction: 'asc' },
+    ]);
+  });
+
+  it('should restore sortColumns from localStorage on init with multiple columns', () => {
+    localStorage.setItem(
+      'dms-sort-filter-state',
+      JSON.stringify({
+        universes: {
+          sortColumns: [
+            { column: 'symbol', direction: 'asc' },
+            { column: 'last_price', direction: 'desc' },
+          ],
+        },
+      })
+    );
+
+    const fixture = TestBed.configureTestingModule({
+      imports: [GlobalUniverseComponent],
+      providers: [provideSmartNgRX()],
+    }).createComponent(GlobalUniverseComponent);
+    const component = fixture.componentInstance;
+
+    expect(component.sortColumns$()).toEqual([
+      { column: 'symbol', direction: 'asc' },
+      { column: 'last_price', direction: 'desc' },
+    ]);
+  });
+
+  it('should default to empty sortColumns when no saved state exists', () => {
+    const fixture = TestBed.configureTestingModule({
+      imports: [GlobalUniverseComponent],
+      providers: [provideSmartNgRX()],
+    }).createComponent(GlobalUniverseComponent);
+    const component = fixture.componentInstance;
+
+    expect(component.sortColumns$()).toEqual([]);
+  });
+});
