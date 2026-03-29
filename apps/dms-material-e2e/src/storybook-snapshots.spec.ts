@@ -23,4 +23,23 @@ test.describe('Storybook Dual-Theme Snapshots', function storybookSnapshots() {
   }) {
     await captureStoryInBothThemes(page, 'components-editablecell--default');
   });
+
+  test('BaseTable - Default', async function testBaseTableDefault({ page }) {
+    await captureStoryInBothThemes(page, 'shared-basetable--default');
+  });
+
+  test('BaseTable - EmptyState', async function testBaseTableEmptyState({
+    page,
+  }) {
+    await captureStoryInBothThemes(page, 'shared-basetable--empty-state');
+  });
+
+  test('BaseTable - UniverseTableVariation', async function testBaseTableUniverseTableVariation({
+    page,
+  }) {
+    await captureStoryInBothThemes(
+      page,
+      'shared-basetable--universe-table-variation'
+    );
+  });
 });
