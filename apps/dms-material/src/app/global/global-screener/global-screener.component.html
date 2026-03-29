@@ -1,4 +1,7 @@
-<div class="flex flex-col h-full overflow-hidden" data-testid="screener-container">
+<div
+  class="flex flex-col h-full overflow-hidden"
+  data-testid="screener-container"
+>
   <mat-toolbar class="screener-toolbar shrink-0 px-4">
     <span class="toolbar-title">Screener</span>
 
@@ -72,24 +75,6 @@
         >
           {{ row.symbol }}
         </a>
-        } @case ('has_volitility') {
-        <mat-checkbox
-          data-testid="has-volitility-checkbox"
-          [checked]="row.has_volitility"
-          (change)="onCellEdit(row, 'has_volitility', $event.checked)"
-        />
-        } @case ('objectives_understood') {
-        <mat-checkbox
-          data-testid="objectives-understood-checkbox"
-          [checked]="row.objectives_understood"
-          (change)="onCellEdit(row, 'objectives_understood', $event.checked)"
-        />
-        } @case ('graph_higher_before_2008') {
-        <mat-checkbox
-          data-testid="graph-higher-checkbox"
-          [checked]="row.graph_higher_before_2008"
-          (change)="onCellEdit(row, 'graph_higher_before_2008', $event.checked)"
-        />
         } @default {
         {{ row[column.field] }}
         } }
