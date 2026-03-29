@@ -191,6 +191,14 @@ describe('StatePersistenceService', () => {
 
       expect(result).toBe(true);
     });
+
+    it('should return default when stored data is a JSON array', () => {
+      mockGetItem.mockReturnValue('[1, 2, 3]');
+
+      const result = service.loadState('test-key', 'fallback');
+
+      expect(result).toBe('fallback');
+    });
   });
 
   describe('clearState', () => {

@@ -682,6 +682,32 @@ describe('mapFidelityTransactions', function () {
       expect(result.trades[0].universeId).toBe('new-universe-123');
     });
 
+    test('should throw error when no risk groups exist for BUY auto-create', async function () {
+      const rows: ParsedCsvRow[] = [
+        {
+          date: '02/15/2026',
+          action: 'YOU BOUGHT',
+          symbol: 'NEWSTOCK',
+          description: 'NEW STOCK',
+          quantity: 10,
+          price: 100.0,
+          totalAmount: -1000.0,
+          account: 'My Brokerage',
+        },
+      ];
+
+      mockPrisma.accounts.findFirst.mockResolvedValue({
+        id: 'account-123',
+        name: 'My Brokerage',
+      });
+      mockPrisma.universe.findFirst.mockResolvedValue(null);
+      mockPrisma.risk_group.findFirst.mockResolvedValue(null);
+
+      await expect(mapFidelityTransactions(rows)).rejects.toThrow(
+        'No risk groups found in database'
+      );
+    });
+
     test('should treat SELL of unknown symbol as cash deposit', async function () {
       const rows: ParsedCsvRow[] = [
         {
@@ -1066,6 +1092,34 @@ describe('mapFidelityTransactions', function () {
       expect(result.sales).toHaveLength(1);
       expect(result.divDeposits).toHaveLength(2);
       expect(result.unknownTransactions).toHaveLength(0);
+    });
+
+    test('should skip dividend when universe not found for non-money-market symbol', async function () {
+      const rows: ParsedCsvRow[] = [
+        {
+          date: '03/15/2026',
+          action: 'DIVIDEND RECEIVED',
+          symbol: 'UNKNOWNDIV',
+          description: 'UNKNOWN DIV STOCK',
+          quantity: 0,
+          price: 0,
+          totalAmount: 5.0,
+          account: 'My Brokerage',
+        },
+      ];
+
+      mockPrisma.accounts.findFirst.mockResolvedValue({
+        id: 'account-123',
+        name: 'My Brokerage',
+      });
+      // Non-money-market symbol with no universe match → resolveSymbol returns null
+      mockPrisma.universe.findFirst.mockResolvedValue(null);
+
+      const result = await mapFidelityTransactions(rows);
+
+      // Dividend skipped because universe is null
+      expect(result.divDeposits).toHaveLength(0);
+      expect(result.trades).toHaveLength(0);
     });
   });
 });

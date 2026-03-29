@@ -66,26 +66,65 @@ describe('StructuredLogger', () => {
       expect(logEntry.data.context).toBe('test');
     });
 
+    it('should log error messages without error objects', () => {
+      testLogger.error('Error occurred', undefined, { context: 'test' });
+
+      const logCall = consoleMock.mock.calls[0][0];
+      const logEntry = JSON.parse(logCall);
+
+      expect(logEntry.level).toBe('error');
+      expect(logEntry.message).toBe('Error occurred');
+      expect(logEntry.data.error).toBeUndefined();
+      expect(logEntry.data.context).toBe('test');
+    });
+
+    it('should default environment to development when NODE_ENV is undefined', () => {
+      const originalEnv = process.env.NODE_ENV;
+      try {
+        delete process.env.NODE_ENV;
+        const fallbackLogger = new StructuredLogger('fallback-test');
+        fallbackLogger.info('test');
+
+        const logCall = consoleMock.mock.calls[0][0];
+        const logEntry = JSON.parse(logCall);
+        expect(logEntry.environment).toBe('development');
+      } finally {
+        if (originalEnv !== undefined) {
+          process.env.NODE_ENV = originalEnv;
+        } else {
+          delete process.env.NODE_ENV;
+        }
+      }
+    });
+
     it('should only log debug messages in development', () => {
       const originalEnv = process.env.NODE_ENV;
       const originalLogLevel = process.env.LOG_LEVEL;
 
-      // Test debug disabled in production
-      process.env.NODE_ENV = 'production';
-      delete process.env.LOG_LEVEL; // Clear LOG_LEVEL to ensure it doesn't force debug logging
-      const prodLogger = new StructuredLogger('prod-service');
-      prodLogger.debug('Debug message');
-      expect(consoleMock).not.toHaveBeenCalled();
+      try {
+        // Test debug disabled in production
+        process.env.NODE_ENV = 'production';
+        delete process.env.LOG_LEVEL; // Clear LOG_LEVEL to ensure it doesn't force debug logging
+        const prodLogger = new StructuredLogger('prod-service');
+        prodLogger.debug('Debug message');
+        expect(consoleMock).not.toHaveBeenCalled();
 
-      // Test debug enabled in development
-      process.env.NODE_ENV = 'development';
-      const devLogger = new StructuredLogger('dev-service');
-      devLogger.debug('Debug message');
-      expect(consoleMock).toHaveBeenCalledTimes(1);
-
-      process.env.NODE_ENV = originalEnv;
-      if (originalLogLevel) {
-        process.env.LOG_LEVEL = originalLogLevel;
+        // Test debug enabled in development
+        process.env.NODE_ENV = 'development';
+        const devLogger = new StructuredLogger('dev-service');
+        devLogger.debug('Debug message');
+        expect(consoleMock).toHaveBeenCalledTimes(1);
+      } finally {
+        if (originalEnv !== undefined) {
+          process.env.NODE_ENV = originalEnv;
+        } else {
+          delete process.env.NODE_ENV;
+        }
+        if (originalLogLevel !== undefined) {
+          process.env.LOG_LEVEL = originalLogLevel;
+        } else {
+          delete process.env.LOG_LEVEL;
+        }
       }
     });
   });
@@ -239,16 +278,22 @@ describe('StructuredLogger', () => {
     it('should set correct environment in log entries', () => {
       const originalEnv = process.env.NODE_ENV;
 
-      process.env.NODE_ENV = 'production';
-      const prodLogger = new StructuredLogger();
-      prodLogger.info('Production message');
+      try {
+        process.env.NODE_ENV = 'production';
+        const prodLogger = new StructuredLogger();
+        prodLogger.info('Production message');
 
-      const logCall = consoleMock.mock.calls[0][0];
-      const logEntry = JSON.parse(logCall);
+        const logCall = consoleMock.mock.calls[0][0];
+        const logEntry = JSON.parse(logCall);
 
-      expect(logEntry.environment).toBe('production');
-
-      process.env.NODE_ENV = originalEnv;
+        expect(logEntry.environment).toBe('production');
+      } finally {
+        if (originalEnv !== undefined) {
+          process.env.NODE_ENV = originalEnv;
+        } else {
+          delete process.env.NODE_ENV;
+        }
+      }
     });
   });
 

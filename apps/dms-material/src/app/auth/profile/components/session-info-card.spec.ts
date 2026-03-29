@@ -118,6 +118,14 @@ describe('SessionInfoCardComponent', () => {
     );
   });
 
+  it('should handle null profile in all computed signals', () => {
+    mockProfileService.profile.set(null);
+    fixture.detectChanges();
+    expect(component.loginTime()).toBeUndefined();
+    expect(component.tokenExpiration()).toBeUndefined();
+    expect(component.sessionDuration()).toBe('0h 0m');
+  });
+
   it('should show active status icon', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     const statusIcon = compiled.querySelector('mat-icon.status-active');

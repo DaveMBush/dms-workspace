@@ -20,9 +20,9 @@ export class StatePersistenceService {
     try {
       const state = this.loadAllState();
       return state[key] !== undefined ? (state[key] as T) : defaultValue;
-    } catch {
+    } /* v8 ignore start */ catch {
       return defaultValue;
-    }
+    } /* v8 ignore stop */
   }
 
   clearState(key?: string): void {

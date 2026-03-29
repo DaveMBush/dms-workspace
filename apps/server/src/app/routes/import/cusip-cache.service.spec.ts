@@ -131,6 +131,13 @@ describe('cusipCacheService', function () {
       expect(result).toBeNull();
     });
 
+    test('should return empty map for empty cusip array', async function () {
+      const result = await cusipCacheService.findManyCusips([], mockPrisma);
+
+      expect(result.size).toBe(0);
+      expect(mockPrisma.cusip_cache.findMany).not.toHaveBeenCalled();
+    });
+
     test('should handle mixed cached and uncached CUSIPs', async function () {
       const entries = [createCacheEntry('88634T493', 'MSTY')];
       (
@@ -396,6 +403,61 @@ describe('cusipCacheService', function () {
       expect(typeof entry.symbol).toBe('string');
       expect(entry.createdAt).toBeInstanceOf(Date);
       expect(entry.updatedAt).toBeInstanceOf(Date);
+    });
+  });
+
+  describe('error handling and edge cases', () => {
+    test('should handle updateLastUsedAt failure gracefully', async () => {
+      const entry = createCacheEntry('ERR001', 'ERRSYM');
+      (
+        mockPrisma.cusip_cache.findUnique as ReturnType<typeof vi.fn>
+      ).mockResolvedValue(entry);
+      // update throws triggering the catch block in updateLastUsedAt
+      (
+        mockPrisma.cusip_cache.update as ReturnType<typeof vi.fn>
+      ).mockRejectedValue(new Error('update failed'));
+
+      const result = await cusipCacheService.findByCusip('ERR001', mockPrisma);
+
+      // Still returns the symbol despite lastUsedAt update failure
+      expect(result).toBe('ERRSYM');
+    });
+
+    test('should handle findManyCusips database failure gracefully', async () => {
+      (
+        mockPrisma.cusip_cache.findMany as ReturnType<typeof vi.fn>
+      ).mockRejectedValue(new Error('db connection lost'));
+
+      const result = await cusipCacheService.findManyCusips(
+        ['FAIL1', 'FAIL2'],
+        mockPrisma
+      );
+
+      // Returns empty map on error
+      expect(result.size).toBe(0);
+    });
+
+    test('should skip updateMany when no cusips found in batch', async () => {
+      (
+        mockPrisma.cusip_cache.findMany as ReturnType<typeof vi.fn>
+      ).mockResolvedValue([]);
+
+      const result = await cusipCacheService.findManyCusips(
+        ['NOMATCH1', 'NOMATCH2'],
+        mockPrisma
+      );
+
+      expect(result.size).toBe(0);
+      expect(mockPrisma.cusip_cache.updateMany).not.toHaveBeenCalled();
+    });
+
+    test('should skip upsert for mappings with empty symbol', async () => {
+      await cusipCacheService.upsertManyMappings(
+        [{ cusip: 'EMPTY1', symbol: '', source: 'THIRTEENF' }],
+        mockPrisma
+      );
+
+      expect(mockPrisma.cusip_cache.upsert).not.toHaveBeenCalled();
     });
   });
 });

@@ -69,6 +69,23 @@ describe('GET /api/summary/years', () => {
     expect(years).toEqual([]);
   });
 
+  it('should skip trades with null sell_date', async () => {
+    mockPrismaDivDeposits.findMany.mockResolvedValue([]);
+    mockPrismaTrades.findMany.mockResolvedValue([
+      { sell_date: null },
+      { sell_date: new Date('2025-06-01') },
+    ]);
+
+    const response = await app.inject({
+      method: 'GET',
+      url: '/api/summary/years/',
+    });
+
+    expect(response.statusCode).toBe(200);
+    const years = JSON.parse(response.body) as number[];
+    expect(years).toEqual([2025]);
+  });
+
   it('should deduplicate years that appear in both divDeposits and trades', async () => {
     // Use only trades mock to isolate deduplication test (fresh app per test)
     mockPrismaDivDeposits.findMany.mockResolvedValue([]);

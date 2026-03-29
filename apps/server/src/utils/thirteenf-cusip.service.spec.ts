@@ -98,6 +98,24 @@ describe('thirteenf-cusip.service', () => {
       expect(result).toBeNull();
     });
 
+    test('returns null when itemListElement name is undefined', async () => {
+      const jsonLd = JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [{ identifier: '691543102' }],
+      });
+      const html = `<html><head><script type="application/ld+json">${jsonLd}</script></head><body></body></html>`;
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        text: vi.fn().mockResolvedValueOnce(html),
+      });
+
+      const result = await resolveCusipViaThirteenf('691543102');
+
+      expect(result).toBeNull();
+    });
+
     test('returns null and logs warning on HTTP non-200 response', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: false,
