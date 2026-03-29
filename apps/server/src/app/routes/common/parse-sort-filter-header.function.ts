@@ -6,12 +6,36 @@ function isValidSortOrder(order: unknown): order is 'asc' | 'desc' {
   return order === 'asc' || order === 'desc';
 }
 
+function isNonNullObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
 function isValidSort(sort: unknown): boolean {
-  if (typeof sort !== 'object' || sort === null) {
+  if (!isNonNullObject(sort)) {
     return false;
   }
-  const s = sort as Record<string, unknown>;
-  return typeof s['field'] === 'string' && isValidSortOrder(s['order']);
+  return typeof sort['field'] === 'string' && isValidSortOrder(sort['order']);
+}
+
+function isValidSortColumn(item: unknown): boolean {
+  if (!isNonNullObject(item)) {
+    return false;
+  }
+  return (
+    typeof item['column'] === 'string' && isValidSortOrder(item['direction'])
+  );
+}
+
+function isValidSortColumns(sortColumns: unknown): boolean {
+  if (!Array.isArray(sortColumns)) {
+    return false;
+  }
+  for (let i = 0; i < sortColumns.length; i++) {
+    if (!isValidSortColumn(sortColumns[i])) {
+      return false;
+    }
+  }
+  return true;
 }
 
 function isValidFilters(filters: unknown): boolean {
@@ -20,23 +44,35 @@ function isValidFilters(filters: unknown): boolean {
   );
 }
 
-const ALLOWED_TABLE_STATE_KEYS = new Set(['sort', 'filters']);
+const ALLOWED_TABLE_STATE_KEYS = new Set(['sort', 'sortColumns', 'filters']);
 
-function isValidTableState(value: unknown): value is TableState {
-  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
-    return false;
-  }
-  const obj = value as Record<string, unknown>;
+function hasOnlyAllowedKeys(obj: Record<string, unknown>): boolean {
   const keys = Object.keys(obj);
   for (let i = 0; i < keys.length; i++) {
     if (!ALLOWED_TABLE_STATE_KEYS.has(keys[i])) {
       return false;
     }
   }
-  if (obj['sort'] !== undefined && !isValidSort(obj['sort'])) {
+  return true;
+}
+
+function isValidTableState(value: unknown): value is TableState {
+  if (!isNonNullObject(value)) {
     return false;
   }
-  if (obj['filters'] !== undefined && !isValidFilters(obj['filters'])) {
+  if (!hasOnlyAllowedKeys(value)) {
+    return false;
+  }
+  if (value['sort'] !== undefined && !isValidSort(value['sort'])) {
+    return false;
+  }
+  if (
+    value['sortColumns'] !== undefined &&
+    !isValidSortColumns(value['sortColumns'])
+  ) {
+    return false;
+  }
+  if (value['filters'] !== undefined && !isValidFilters(value['filters'])) {
     return false;
   }
   return true;

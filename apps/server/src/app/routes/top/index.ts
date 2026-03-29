@@ -4,6 +4,7 @@ import { getHolidays } from 'nyse-holidays';
 import { prisma } from '../../prisma/prisma-client';
 import { getTableState } from '../common/get-table-state.function';
 import { parseSortFilterHeader } from '../common/parse-sort-filter-header.function';
+import { SortColumn } from '../common/sort-column.interface';
 import { TableState } from '../common/table-state.interface';
 import { ensureRiskGroupsExist } from '../settings/common/ensure-risk-groups-exist.function';
 import { buildScreenerOrderBy } from './build-screener-order-by.function';
@@ -77,11 +78,28 @@ function buildTradesSelect(accountId: string | null): Record<string, unknown> {
   return { select };
 }
 
-async function getTopUniverses(state: TableState): Promise<string[]> {
-  const sort = state.sort;
-  const accountId = getAccountIdFromState(state);
+function findComputedSortColumn(state: TableState): SortColumn | undefined {
+  const sortColumns: SortColumn[] | undefined = state.sortColumns;
+  if (sortColumns === undefined || sortColumns.length === 0) {
+    const sort = state.sort;
+    if (sort !== undefined && isUniverseComputedSort(sort.field)) {
+      return { column: sort.field, direction: sort.order };
+    }
+    return undefined;
+  }
+  for (let i = 0; i < sortColumns.length; i++) {
+    if (isUniverseComputedSort(sortColumns[i].column)) {
+      return sortColumns[i];
+    }
+  }
+  return undefined;
+}
 
-  if (sort !== undefined && isUniverseComputedSort(sort.field)) {
+async function getTopUniverses(state: TableState): Promise<string[]> {
+  const accountId = getAccountIdFromState(state);
+  const computedSort: SortColumn | undefined = findComputedSortColumn(state);
+
+  if (computedSort !== undefined) {
     const universes = await prisma.universe.findMany({
       select: {
         id: true,
@@ -93,7 +111,11 @@ async function getTopUniverses(state: TableState): Promise<string[]> {
       where: buildUniverseWhere(state),
       orderBy: { id: 'asc' },
     });
-    sortUniversesByComputedField(universes, sort.field, sort.order);
+    sortUniversesByComputedField(
+      universes,
+      computedSort.column,
+      computedSort.direction
+    );
     return universes.map(function mapUniverse(universe) {
       return universe.id;
     });

@@ -1,6 +1,6 @@
 # Story 24.2: Implement Multi-Column Sort in Backend Query
 
-Status: Approved
+Status: Review
 
 ## Story
 
@@ -17,33 +17,33 @@ so that the database returns rows sorted by multiple columns in the caller-speci
 
 ## Definition of Done
 
-- [ ] Backend Universe route updated to build `orderBy` array from `sortColumns`
-- [ ] Allowlist of valid sort column names enforced
-- [ ] Default sort applied when `sortColumns` is empty/absent
-- [ ] Unit tests for the `orderBy` builder cover all branches (valid columns, invalid column, empty array)
-- [ ] Run `pnpm all`
-- [ ] Run `pnpm format`
-- [ ] Repeat all of these if any fail until they all pass
+- [x] Backend Universe route updated to build `orderBy` array from `sortColumns`
+- [x] Allowlist of valid sort column names enforced
+- [x] Default sort applied when `sortColumns` is empty/absent
+- [x] Unit tests for the `orderBy` builder cover all branches (valid columns, invalid column, empty array)
+- [x] Run `pnpm all`
+- [x] Run `pnpm format`
+- [x] Repeat all of these if any fail until they all pass
 
 ## Tasks / Subtasks
 
-- [ ] Locate Universe backend route (AC: #1)
-  - [ ] Find the route handler in `apps/server/src/routes/` that serves the universe table data
-  - [ ] Identify where `TableState` / sort state is currently read from the request header
-- [ ] Build `orderBy` array from `sortColumns` (AC: #1)
-  - [ ] Parse `sortColumns` from the `x-table-state` header (or the JSON body, whichever is used)
-  - [ ] Map each `{ column, direction }` to a Prisma `OrderByInput` object: `{ [column]: direction }`
-  - [ ] Pass the resulting array to `prisma.universe.findMany({ orderBy: [...] })`
-- [ ] Apply column allowlist validation (AC: #3)
-  - [ ] Define array of valid sortable column names (those present in the Prisma `Universe` model)
-  - [ ] Filter out any `sortColumns` entries whose `column` is not in the allowlist
-- [ ] Apply default sort fallback (AC: #2)
-  - [ ] When the resulting `orderBy` array is empty, use `[{ id: 'asc' }]` (or equivalent stable default)
-- [ ] Write/update unit tests (AC: #4)
-  - [ ] Test: valid multi-column input → correct `orderBy` array
-  - [ ] Test: empty `sortColumns` → default sort applied
-  - [ ] Test: unknown column in `sortColumns` → column dropped, rest preserved
-  - [ ] Achieve 100% branch coverage on the new logic
+- [x] Locate Universe backend route (AC: #1)
+  - [x] Find the route handler in `apps/server/src/routes/` that serves the universe table data
+  - [x] Identify where `TableState` / sort state is currently read from the request header
+- [x] Build `orderBy` array from `sortColumns` (AC: #1)
+  - [x] Parse `sortColumns` from the `x-table-state` header (or the JSON body, whichever is used)
+  - [x] Map each `{ column, direction }` to a Prisma `OrderByInput` object: `{ [column]: direction }`
+  - [x] Pass the resulting array to `prisma.universe.findMany({ orderBy: [...] })`
+- [x] Apply column allowlist validation (AC: #3)
+  - [x] Define array of valid sortable column names (those present in the Prisma `Universe` model)
+  - [x] Filter out any `sortColumns` entries whose `column` is not in the allowlist
+- [x] Apply default sort fallback (AC: #2)
+  - [x] When the resulting `orderBy` array is empty, use `[{ createdAt: 'asc' }]` (stable default)
+- [x] Write/update unit tests (AC: #4)
+  - [x] Test: valid multi-column input → correct `orderBy` array
+  - [x] Test: empty `sortColumns` → default sort applied
+  - [x] Test: unknown column in `sortColumns` → column dropped, rest preserved
+  - [x] Achieve 100% branch coverage on the new logic
 
 ## Dev Notes
 
@@ -58,21 +58,16 @@ so that the database returns rows sorted by multiple columns in the caller-speci
 ```typescript
 // Multi-column sort in Prisma:
 prisma.universe.findMany({
-  orderBy: [
-    { ticker: 'asc' },
-    { market_cap: 'desc' },
-  ],
+  orderBy: [{ ticker: 'asc' }, { market_cap: 'desc' }],
 });
 ```
 
 ### Column Allowlist Pattern
 
 ```typescript
-const VALID_SORT_COLUMNS = new Set(['ticker', 'name', 'market_cap', /* ... */]);
+const VALID_SORT_COLUMNS = new Set(['ticker', 'name', 'market_cap' /* ... */]);
 
-const orderBy = sortColumns
-  .filter(sc => VALID_SORT_COLUMNS.has(sc.column))
-  .map(sc => ({ [sc.column]: sc.direction }));
+const orderBy = sortColumns.filter((sc) => VALID_SORT_COLUMNS.has(sc.column)).map((sc) => ({ [sc.column]: sc.direction }));
 ```
 
 ### Dependencies
@@ -88,8 +83,33 @@ const orderBy = sortColumns
 
 ### Agent Model Used
 
+Claude Opus 4.6
+
 ### Debug Log References
+
+- Lint: complexity 12 in isValidTableState → extracted isNonNullObject and hasOnlyAllowedKeys helpers
+- Lint: max-depth 3 in findComputedSortColumn → flattened with early return pattern
+- Lint: import sort → auto-fixed with eslint --fix
+- Coverage: V8 cache artifact caused phantom 0% middleware entries → resolved by clearing .nx cache
 
 ### Completion Notes List
 
+- Added `SortColumn` interface to server-side in its own file (one-export-per-file rule)
+- Updated `TableState` to include `sortColumns?: SortColumn[]`
+- Added `sortColumns` to `ALLOWED_TABLE_STATE_KEYS` whitelist with full validation
+- Refactored `buildUniverseOrderBy` to return array, handle `sortColumns` → `sort` → default fallback
+- Updated `getTopUniverses` with `findComputedSortColumn` to check `sortColumns` for computed fields
+- Created comprehensive unit tests for `buildUniverseOrderBy` (16 tests) and `parseSortFilterHeader` (29 tests)
+- Added integration tests for `sortColumns` path in `index.spec.ts` (2 new tests)
+- All 100% coverage maintained across branches, functions, lines, statements
+
 ### File List
+
+- `apps/server/src/app/routes/common/sort-column.interface.ts` (NEW)
+- `apps/server/src/app/routes/common/table-state.interface.ts` (MODIFIED)
+- `apps/server/src/app/routes/common/parse-sort-filter-header.function.ts` (MODIFIED)
+- `apps/server/src/app/routes/common/parse-sort-filter-header.function.spec.ts` (NEW)
+- `apps/server/src/app/routes/top/build-universe-order-by.function.ts` (MODIFIED)
+- `apps/server/src/app/routes/top/build-universe-order-by.function.spec.ts` (NEW)
+- `apps/server/src/app/routes/top/index.ts` (MODIFIED)
+- `apps/server/src/app/routes/top/index.spec.ts` (MODIFIED)
