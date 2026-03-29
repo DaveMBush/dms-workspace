@@ -152,6 +152,8 @@ export class BaseTableComponent<T extends { id: string }>
             active: columns[0].column,
             direction: columns[0].direction,
           });
+        } else {
+          this.sortState.set(null);
         }
       }
     );
