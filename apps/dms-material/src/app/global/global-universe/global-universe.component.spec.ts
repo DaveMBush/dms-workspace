@@ -1071,6 +1071,7 @@ describe('GlobalUniverseComponent - SmartNgRX Integration', () => {
   };
 
   beforeEach(async () => {
+    localStorage.clear();
     // Get reference to the mocked selector
     const { selectUniverses } = await import(
       '../../store/universe/selectors/select-universes.function'
@@ -1323,6 +1324,7 @@ describe('Universe Selectors', () => {
   };
 
   beforeEach(async () => {
+    localStorage.clear();
     // Get reference to the mocked selector
     const { selectUniverses } = await import(
       '../../store/universe/selectors/select-universes.function'
@@ -2535,5 +2537,88 @@ describe('GlobalUniverseComponent - Sort State Restoration on Init', () => {
     const component = fixture.componentInstance;
 
     expect(component.sortColumns$()).toEqual([]);
+  });
+});
+
+describe('GlobalUniverseComponent - Filter State Restoration', () => {
+  let mockLoadFilterState: ReturnType<typeof vi.fn>;
+
+  beforeEach(async () => {
+    mockLoadFilterState = vi.fn().mockReturnValue(null);
+
+    await TestBed.configureTestingModule({
+      imports: [GlobalUniverseComponent],
+      providers: [
+        provideSmartNgRX(),
+        {
+          provide: SortFilterStateService,
+          useValue: {
+            loadFilterState: mockLoadFilterState,
+            loadSortColumnsState: vi.fn().mockReturnValue(null),
+            saveFilterState: vi.fn(),
+            clearFilterState: vi.fn(),
+            saveSortColumnsState: vi.fn(),
+            clearSortColumnsState: vi.fn(),
+          },
+        },
+        {
+          provide: UniverseSyncService,
+          useValue: {
+            syncFromScreener: vi.fn().mockReturnValue(of({})),
+            isSyncing: vi.fn().mockReturnValue(false),
+          },
+        },
+        {
+          provide: NotificationService,
+          useValue: { success: vi.fn(), showPersistent: vi.fn() },
+        },
+      ],
+    }).compileComponents();
+  });
+
+  it('should restore all filter values from saved state', () => {
+    mockLoadFilterState.mockReturnValue({
+      symbol: 'AAPL',
+      risk_group: 'Equities',
+      expired: true,
+      min_yield: 5.5,
+      account_id: 'acc-1',
+    });
+    const fixture = TestBed.createComponent(GlobalUniverseComponent);
+    const component = fixture.componentInstance;
+
+    expect(component.symbolFilter$()).toBe('AAPL');
+    expect(component.riskGroupFilter$()).toBe('Equities');
+    expect(component.expiredFilter$()).toBe(true);
+    expect(component.minYieldFilter$()).toBe(5.5);
+    expect(component.selectedAccountId$()).toBe('acc-1');
+  });
+
+  it('should use defaults when no saved filter state exists', () => {
+    mockLoadFilterState.mockReturnValue(null);
+    const fixture = TestBed.createComponent(GlobalUniverseComponent);
+    const component = fixture.componentInstance;
+
+    expect(component.symbolFilter$()).toBe('');
+    expect(component.riskGroupFilter$()).toBeNull();
+    expect(component.expiredFilter$()).toBeNull();
+    expect(component.selectedAccountId$()).toBe('all');
+    expect(component.minYieldFilter$()).toBeNull();
+  });
+
+  it('should silently ignore unknown filter keys', () => {
+    mockLoadFilterState.mockReturnValue({
+      symbol: 'AAPL',
+      unknown_key: 'test',
+      another_unknown: 42,
+    });
+    const fixture = TestBed.createComponent(GlobalUniverseComponent);
+    const component = fixture.componentInstance;
+
+    expect(component.symbolFilter$()).toBe('AAPL');
+    expect(component.riskGroupFilter$()).toBeNull();
+    expect(component.expiredFilter$()).toBeNull();
+    expect(component.minYieldFilter$()).toBeNull();
+    expect(component.selectedAccountId$()).toBe('all');
   });
 });

@@ -4,6 +4,7 @@ import { of } from 'rxjs';
 
 import { NotificationService } from '../../shared/services/notification.service';
 import { GlobalLoadingService } from '../../shared/services/global-loading.service';
+import { SortFilterStateService } from '../../shared/services/sort-filter-state.service';
 import { Screen } from '../../store/screen/screen.interface';
 import { GlobalScreenerComponent } from './global-screener.component';
 import { ScreenerService } from './services/screener.service';
@@ -575,5 +576,66 @@ describe('GlobalScreenerComponent', () => {
       filtered = component.filteredData$();
       expect(filtered.length).toBe(2);
     });
+  });
+});
+
+describe('GlobalScreenerComponent - Filter State Restoration', () => {
+  let mockLoadFilterState: ReturnType<typeof vi.fn>;
+
+  beforeEach(async () => {
+    mockLoadFilterState = vi.fn().mockReturnValue(null);
+
+    await TestBed.configureTestingModule({
+      imports: [GlobalScreenerComponent],
+      providers: [
+        {
+          provide: SortFilterStateService,
+          useValue: {
+            loadFilterState: mockLoadFilterState,
+            saveFilterState: vi.fn(),
+            clearFilterState: vi.fn(),
+            saveSortState: vi.fn(),
+            clearSortState: vi.fn(),
+          },
+        },
+        {
+          provide: ScreenerService,
+          useValue: {
+            refresh: vi.fn().mockReturnValue(of(null)),
+            error: vi.fn().mockReturnValue(null),
+            screens: vi.fn().mockReturnValue([]),
+            updateScreener: vi.fn(),
+          },
+        },
+        {
+          provide: NotificationService,
+          useValue: { show: vi.fn() },
+        },
+      ],
+    }).compileComponents();
+  });
+
+  it('should restore risk group filter from saved state', () => {
+    mockLoadFilterState.mockReturnValue({ risk_group: 'Income' });
+    const fixture = TestBed.createComponent(GlobalScreenerComponent);
+    const component = fixture.componentInstance;
+
+    expect(component.riskGroupFilter$()).toBe('Income');
+  });
+
+  it('should default to null when no saved filter state exists', () => {
+    mockLoadFilterState.mockReturnValue(null);
+    const fixture = TestBed.createComponent(GlobalScreenerComponent);
+    const component = fixture.componentInstance;
+
+    expect(component.riskGroupFilter$()).toBeNull();
+  });
+
+  it('should silently ignore unknown filter keys', () => {
+    mockLoadFilterState.mockReturnValue({ unknown_key: 'test' });
+    const fixture = TestBed.createComponent(GlobalScreenerComponent);
+    const component = fixture.componentInstance;
+
+    expect(component.riskGroupFilter$()).toBeNull();
   });
 });
