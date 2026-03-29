@@ -34,7 +34,7 @@ describe('sortInterceptor', () => {
   });
 
   describe('sends all state as JSON header', () => {
-    it('should add X-Sort-Filter-State header with all table states', () => {
+    it('should add X-Sort-Filter-State header with all table states using sortColumns', () => {
       mockSortFilterStateService.loadAllSortFilterState.mockReturnValue({
         universes: { sort: { field: 'symbol', order: 'asc' } },
         'trades-open': { sort: { field: 'buyDate', order: 'desc' } },
@@ -50,17 +50,41 @@ describe('sortInterceptor', () => {
       const headerValue = interceptedReq.headers.get('X-Sort-Filter-State');
       expect(headerValue).not.toBeNull();
       const parsed = JSON.parse(headerValue!);
-      expect(parsed.universes.sort).toEqual({
-        field: 'symbol',
-        order: 'asc',
-      });
-      expect(parsed['trades-open'].sort).toEqual({
-        field: 'openDate',
-        order: 'desc',
-      });
+      expect(parsed.universes.sortColumns).toEqual([
+        { column: 'symbol', direction: 'asc' },
+      ]);
+      expect(parsed['trades-open'].sortColumns).toEqual([
+        { column: 'openDate', direction: 'desc' },
+      ]);
     });
 
-    it('should include filter state in the header', () => {
+    it('should use sortColumns directly when present in state', () => {
+      mockSortFilterStateService.loadAllSortFilterState.mockReturnValue({
+        universes: {
+          sortColumns: [
+            { column: 'symbol', direction: 'asc' },
+            { column: 'yield_percent', direction: 'desc' },
+          ],
+        },
+      });
+
+      const req = new HttpRequest('GET', '/api/universe');
+
+      TestBed.runInInjectionContext(() => {
+        sortInterceptor(req, mockNext);
+      });
+
+      const interceptedReq = mockNext.mock.calls[0][0] as HttpRequest<unknown>;
+      const parsed = JSON.parse(
+        interceptedReq.headers.get('X-Sort-Filter-State')!
+      );
+      expect(parsed.universes.sortColumns).toEqual([
+        { column: 'symbol', direction: 'asc' },
+        { column: 'yield_percent', direction: 'desc' },
+      ]);
+    });
+
+    it('should include filter state in the header alongside sortColumns', () => {
       mockSortFilterStateService.loadAllSortFilterState.mockReturnValue({
         universes: {
           sort: { field: 'symbol', order: 'asc' },
@@ -79,6 +103,9 @@ describe('sortInterceptor', () => {
         interceptedReq.headers.get('X-Sort-Filter-State')!
       );
       expect(parsed.universes.filters).toEqual({ symbol: 'AAPL' });
+      expect(parsed.universes.sortColumns).toEqual([
+        { column: 'symbol', direction: 'asc' },
+      ]);
     });
 
     it('should send state on any GET request regardless of endpoint', () => {
@@ -98,7 +125,7 @@ describe('sortInterceptor', () => {
   });
 
   describe('field name mapping', () => {
-    it('should pass through risk_group field for universes', () => {
+    it('should pass through risk_group field for universes via sortColumns', () => {
       mockSortFilterStateService.loadAllSortFilterState.mockReturnValue({
         universes: { sort: { field: 'risk_group', order: 'asc' } },
       });
@@ -113,10 +140,10 @@ describe('sortInterceptor', () => {
       const parsed = JSON.parse(
         interceptedReq.headers.get('X-Sort-Filter-State')!
       );
-      expect(parsed.universes.sort.field).toBe('risk_group');
+      expect(parsed.universes.sortColumns[0].column).toBe('risk_group');
     });
 
-    it('should map buyDate to openDate for trades-open', () => {
+    it('should map buyDate to openDate for trades-open via sortColumns', () => {
       mockSortFilterStateService.loadAllSortFilterState.mockReturnValue({
         'trades-open': { sort: { field: 'buyDate', order: 'desc' } },
       });
@@ -131,10 +158,10 @@ describe('sortInterceptor', () => {
       const parsed = JSON.parse(
         interceptedReq.headers.get('X-Sort-Filter-State')!
       );
-      expect(parsed['trades-open'].sort.field).toBe('openDate');
+      expect(parsed['trades-open'].sortColumns[0].column).toBe('openDate');
     });
 
-    it('should map sell_date to closeDate for trades-closed', () => {
+    it('should map sell_date to closeDate for trades-closed via sortColumns', () => {
       mockSortFilterStateService.loadAllSortFilterState.mockReturnValue({
         'trades-closed': { sort: { field: 'sell_date', order: 'desc' } },
       });
@@ -149,7 +176,7 @@ describe('sortInterceptor', () => {
       const parsed = JSON.parse(
         interceptedReq.headers.get('X-Sort-Filter-State')!
       );
-      expect(parsed['trades-closed'].sort.field).toBe('closeDate');
+      expect(parsed['trades-closed'].sortColumns[0].column).toBe('closeDate');
     });
 
     it('should pass through unmapped sort fields for known tables', () => {
@@ -168,7 +195,7 @@ describe('sortInterceptor', () => {
       const parsed = JSON.parse(
         interceptedReq.headers.get('X-Sort-Filter-State')!
       );
-      expect(parsed.universes.sort.field).toBe('yield_percent');
+      expect(parsed.universes.sortColumns[0].column).toBe('yield_percent');
     });
 
     it('should pass through fields for tables without a field map', () => {
@@ -186,14 +213,40 @@ describe('sortInterceptor', () => {
       const parsed = JSON.parse(
         interceptedReq.headers.get('X-Sort-Filter-State')!
       );
-      expect(parsed['other-table'].sort.field).toBe('name');
+      expect(parsed['other-table'].sortColumns[0].column).toBe('name');
+    });
+
+    it('should map fields in multi-column sortColumns', () => {
+      mockSortFilterStateService.loadAllSortFilterState.mockReturnValue({
+        'trades-open': {
+          sortColumns: [
+            { column: 'buyDate', direction: 'asc' },
+            { column: 'symbol', direction: 'desc' },
+          ],
+        },
+      });
+
+      const req = new HttpRequest('GET', '/api/trades/open');
+
+      TestBed.runInInjectionContext(() => {
+        sortInterceptor(req, mockNext);
+      });
+
+      const interceptedReq = mockNext.mock.calls[0][0] as HttpRequest<unknown>;
+      const parsed = JSON.parse(
+        interceptedReq.headers.get('X-Sort-Filter-State')!
+      );
+      expect(parsed['trades-open'].sortColumns).toEqual([
+        { column: 'openDate', direction: 'asc' },
+        { column: 'symbol', direction: 'desc' },
+      ]);
     });
   });
 
   describe('non-GET requests', () => {
     it('should add headers to POST requests', () => {
       mockSortFilterStateService.loadAllSortFilterState.mockReturnValue({
-        universes: { sort: { field: 'symbol', order: 'asc' } },
+        universes: { sortColumns: [{ column: 'symbol', direction: 'asc' }] },
       });
 
       const req = new HttpRequest('POST', '/api/universe', {});
@@ -219,6 +272,65 @@ describe('sortInterceptor', () => {
 
       const interceptedReq = mockNext.mock.calls[0][0] as HttpRequest<unknown>;
       expect(interceptedReq.headers.has('X-Sort-Filter-State')).toBe(false);
+    });
+
+    it('should not add header when table has empty sortColumns and no sort or filters', () => {
+      mockSortFilterStateService.loadAllSortFilterState.mockReturnValue({
+        universes: { sortColumns: [] },
+      });
+
+      const req = new HttpRequest('GET', '/api/universe');
+
+      TestBed.runInInjectionContext(() => {
+        sortInterceptor(req, mockNext);
+      });
+
+      const interceptedReq = mockNext.mock.calls[0][0] as HttpRequest<unknown>;
+      expect(interceptedReq.headers.has('X-Sort-Filter-State')).toBe(false);
+    });
+
+    it('should fall back to legacy sort when sortColumns is empty but sort is present', () => {
+      mockSortFilterStateService.loadAllSortFilterState.mockReturnValue({
+        universes: {
+          sortColumns: [],
+          sort: { field: 'symbol', order: 'asc' },
+        },
+      });
+
+      const req = new HttpRequest('GET', '/api/universe');
+
+      TestBed.runInInjectionContext(() => {
+        sortInterceptor(req, mockNext);
+      });
+
+      const interceptedReq = mockNext.mock.calls[0][0] as HttpRequest<unknown>;
+      const parsed = JSON.parse(
+        interceptedReq.headers.get('X-Sort-Filter-State')!
+      );
+      expect(parsed.universes.sort).toEqual({
+        field: 'symbol',
+        order: 'asc',
+      });
+    });
+
+    it('should include only filters when sortColumns is empty and no sort', () => {
+      mockSortFilterStateService.loadAllSortFilterState.mockReturnValue({
+        universes: { sortColumns: [], filters: { active: true } },
+      });
+
+      const req = new HttpRequest('GET', '/api/universe');
+
+      TestBed.runInInjectionContext(() => {
+        sortInterceptor(req, mockNext);
+      });
+
+      const interceptedReq = mockNext.mock.calls[0][0] as HttpRequest<unknown>;
+      const parsed = JSON.parse(
+        interceptedReq.headers.get('X-Sort-Filter-State')!
+      );
+      expect(parsed.universes.filters).toEqual({ active: true });
+      expect(parsed.universes.sortColumns).toBeUndefined();
+      expect(parsed.universes.sort).toBeUndefined();
     });
   });
 });
