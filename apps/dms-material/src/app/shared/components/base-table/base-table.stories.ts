@@ -10,6 +10,16 @@ interface SampleRow {
   value: number;
 }
 
+interface UniverseRow {
+  id: string;
+  ticker: string;
+  name: string;
+  price: number;
+  marketCap: number;
+  sector: string;
+  peRatio: number;
+}
+
 const sampleColumns: ColumnDef[] = [
   { field: 'name', header: 'Name', sortable: true, type: 'text' },
   { field: 'ticker', header: 'Ticker', sortable: true, type: 'text' },
@@ -22,11 +32,116 @@ const sampleData: SampleRow[] = [
   { id: '3', name: 'Microsoft Corp.', ticker: 'MSFT', value: 415.22 },
   { id: '4', name: 'Amazon.com Inc.', ticker: 'AMZN', value: 179.78 },
   { id: '5', name: 'NVIDIA Corp.', ticker: 'NVDA', value: 880.0 },
+  { id: '6', name: 'Meta Platforms Inc.', ticker: 'META', value: 505.75 },
+  { id: '7', name: 'Tesla Inc.', ticker: 'TSLA', value: 248.42 },
+  { id: '8', name: 'Berkshire Hathaway', ticker: 'BRK.B', value: 412.18 },
+];
+
+const universeColumns: ColumnDef[] = [
+  { field: 'ticker', header: 'Ticker', sortable: true, type: 'text' },
+  { field: 'name', header: 'Name', sortable: true, type: 'text' },
+  { field: 'price', header: 'Price', sortable: true, type: 'currency' },
+  { field: 'marketCap', header: 'Market Cap', sortable: true, type: 'number' },
+  { field: 'sector', header: 'Sector', sortable: false, type: 'text' },
+  { field: 'peRatio', header: 'P/E Ratio', sortable: true, type: 'number' },
+];
+
+const universeData: UniverseRow[] = [
+  {
+    id: '1',
+    ticker: 'AAPL',
+    name: 'Apple Inc.',
+    price: 189.3,
+    marketCap: 2940000000000,
+    sector: 'Technology',
+    peRatio: 31.2,
+  },
+  {
+    id: '2',
+    ticker: 'MSFT',
+    name: 'Microsoft Corp.',
+    price: 415.22,
+    marketCap: 3090000000000,
+    sector: 'Technology',
+    peRatio: 36.8,
+  },
+  {
+    id: '3',
+    ticker: 'GOOGL',
+    name: 'Alphabet Inc.',
+    price: 140.52,
+    marketCap: 1760000000000,
+    sector: 'Communication Services',
+    peRatio: 25.4,
+  },
+  {
+    id: '4',
+    ticker: 'AMZN',
+    name: 'Amazon.com Inc.',
+    price: 179.78,
+    marketCap: 1870000000000,
+    sector: 'Consumer Discretionary',
+    peRatio: 60.1,
+  },
+  {
+    id: '5',
+    ticker: 'NVDA',
+    name: 'NVIDIA Corp.',
+    price: 880.0,
+    marketCap: 2170000000000,
+    sector: 'Technology',
+    peRatio: 72.5,
+  },
+  {
+    id: '6',
+    ticker: 'JPM',
+    name: 'JPMorgan Chase',
+    price: 198.45,
+    marketCap: 572000000000,
+    sector: 'Financials',
+    peRatio: 11.8,
+  },
+  {
+    id: '7',
+    ticker: 'JNJ',
+    name: 'Johnson & Johnson',
+    price: 156.32,
+    marketCap: 376000000000,
+    sector: 'Healthcare',
+    peRatio: 22.1,
+  },
+  {
+    id: '8',
+    ticker: 'XOM',
+    name: 'Exxon Mobil Corp.',
+    price: 104.67,
+    marketCap: 441000000000,
+    sector: 'Energy',
+    peRatio: 13.4,
+  },
+  {
+    id: '9',
+    ticker: 'PG',
+    name: 'Procter & Gamble',
+    price: 162.89,
+    marketCap: 383000000000,
+    sector: 'Consumer Staples',
+    peRatio: 26.7,
+  },
+  {
+    id: '10',
+    ticker: 'V',
+    name: 'Visa Inc.',
+    price: 281.34,
+    marketCap: 577000000000,
+    sector: 'Financials',
+    peRatio: 31.9,
+  },
 ];
 
 const meta: Meta<BaseTableComponent<SampleRow>> = {
   component: BaseTableComponent,
-  title: 'Components/BaseTable',
+  title: 'Shared/BaseTable',
   argTypes: {
     sortChange: { action: 'sortChange' },
     rowClick: { action: 'rowClick' },
@@ -46,12 +161,13 @@ export const Default: Story = {
     tableLabel: 'Sample positions table',
     rowHeight: 52,
     loading: false,
-    selectable: false,
+    selectable: true,
     multiSelect: false,
+    sortColumns: [{ column: 'name', direction: 'asc' }],
   },
 };
 
-export const Empty: Story = {
+export const EmptyState: Story = {
   args: {
     data: [],
     columns: sampleColumns,
@@ -61,23 +177,16 @@ export const Empty: Story = {
   },
 };
 
-export const Loading: Story = {
-  args: {
-    data: [],
-    columns: sampleColumns,
-    tableLabel: 'Loading table',
-    loading: true,
-    selectable: false,
-  },
-};
-
-export const Selectable: Story = {
-  args: {
-    data: sampleData,
-    columns: sampleColumns,
-    tableLabel: 'Selectable positions table',
-    loading: false,
-    selectable: true,
-    multiSelect: true,
-  },
-};
+export const UniverseTableVariation: StoryObj<BaseTableComponent<UniverseRow>> =
+  {
+    args: {
+      data: universeData,
+      columns: universeColumns,
+      tableLabel: 'Universe screener table',
+      rowHeight: 52,
+      loading: false,
+      selectable: true,
+      multiSelect: true,
+      sortColumns: [{ column: 'ticker', direction: 'asc' }],
+    },
+  };
