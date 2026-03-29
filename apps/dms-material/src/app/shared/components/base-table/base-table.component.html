@@ -17,6 +17,8 @@
       [dataSource]="dataSource()"
       [trackBy]="trackByFn"
       matSort
+      [matSortActive]="activeSortColumn()"
+      [matSortDirection]="activeSortDirection()"
       (matSortChange)="onSort($event)"
       [attr.aria-label]="tableLabel()"
     >

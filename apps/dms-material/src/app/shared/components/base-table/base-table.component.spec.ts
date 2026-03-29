@@ -284,3 +284,55 @@ describe('BaseTableComponent - Rendered Range Tracking', () => {
     expect(emitted).toEqual([{ start: 0, end: 0 }]);
   });
 });
+
+describe('BaseTableComponent - Sort State Restoration', () => {
+  let component: BaseTableComponent<{ id: string; name: string }>;
+  let fixture: ComponentFixture<
+    BaseTableComponent<{ id: string; name: string }>
+  >;
+
+  const columns: ColumnDef[] = [
+    { field: 'name', header: 'Name', sortable: true },
+    { field: 'id', header: 'ID', sortable: true },
+  ];
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [BaseTableComponent],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(BaseTableComponent);
+    component = fixture.componentInstance;
+    fixture.componentRef.setInput('columns', columns);
+    fixture.componentRef.setInput('data', []);
+  });
+
+  it('should derive activeSortColumn from single sortColumns input', () => {
+    fixture.componentRef.setInput('sortColumns', [
+      { column: 'name', direction: 'asc' },
+    ]);
+    fixture.detectChanges();
+
+    expect(component.activeSortColumn()).toBe('name');
+    expect(component.activeSortDirection()).toBe('asc');
+  });
+
+  it('should derive activeSortColumn from first of multiple sortColumns', () => {
+    fixture.componentRef.setInput('sortColumns', [
+      { column: 'name', direction: 'desc' },
+      { column: 'id', direction: 'asc' },
+    ]);
+    fixture.detectChanges();
+
+    expect(component.activeSortColumn()).toBe('name');
+    expect(component.activeSortDirection()).toBe('desc');
+  });
+
+  it('should return empty strings when sortColumns is empty', () => {
+    fixture.componentRef.setInput('sortColumns', []);
+    fixture.detectChanges();
+
+    expect(component.activeSortColumn()).toBe('');
+    expect(component.activeSortDirection()).toBe('');
+  });
+});

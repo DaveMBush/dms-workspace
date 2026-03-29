@@ -89,6 +89,18 @@ export class BaseTableComponent<T extends { id: string }>
   private lastShiftKey = false;
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- Required for computed signal
+  readonly activeSortColumn = computed(() => {
+    const columns = this.sortColumns();
+    return columns.length > 0 ? columns[0].column : '';
+  });
+
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- Required for computed signal
+  readonly activeSortDirection = computed(() => {
+    const columns = this.sortColumns();
+    return columns.length > 0 ? columns[0].direction : '';
+  });
+
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- Required for computed signal
   readonly sortRankMap = computed(() => {
     const columns = this.sortColumns();
     const map: Record<string, string> = {};
@@ -127,6 +139,22 @@ export class BaseTableComponent<T extends { id: string }>
         context.dataSource();
         // Mark for check to trigger change detection in OnPush component
         context.cdr.markForCheck();
+      }
+    );
+
+    // Initialize sortState from sortColumns input for restored state
+    effect(
+      // eslint-disable-next-line @smarttools/no-anonymous-functions -- Required for effect
+      () => {
+        const columns = this.sortColumns();
+        if (columns.length > 0) {
+          this.sortState.set({
+            active: columns[0].column,
+            direction: columns[0].direction,
+          });
+        } else {
+          this.sortState.set(null);
+        }
       }
     );
   }
