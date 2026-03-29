@@ -5,7 +5,6 @@ import {
   computed,
   effect,
   inject,
-  output,
   signal,
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
@@ -23,8 +22,6 @@ import { ErrorHandlingService } from '../../shared/services/error-handling.servi
 import { GlobalLoadingService } from '../../shared/services/global-loading.service';
 import { NotificationService } from '../../shared/services/notification.service';
 import { SortFilterStateService } from '../../shared/services/sort-filter-state.service';
-import { Screen } from '../../store/screen/screen.interface';
-import { ScreenCellEditEvent } from './screen-cell-edit-event.interface';
 import { ScreenerService } from './services/screener.service';
 
 @Component({
@@ -62,7 +59,6 @@ export class GlobalScreenerComponent {
     );
   }
 
-  readonly cellEdit = output<ScreenCellEditEvent>();
   readonly error = this.screenerService.error;
 
   private readonly savedFilters =
@@ -146,10 +142,6 @@ export class GlobalScreenerComponent {
       this.sortFilterStateService.clearFilterState('screens');
     }
     handleSocketNotification('top', 'update', ['1']);
-  }
-
-  onCellEdit(row: Screen, field: string, value: unknown): void {
-    this.cellEdit.emit({ row, field, value });
   }
 
   getCefConnectUrl(symbol: string): string {
