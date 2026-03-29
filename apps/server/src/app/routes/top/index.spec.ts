@@ -291,6 +291,62 @@ describe('Top Route Handler', () => {
   });
 
   describe('Account filter on computed sort', () => {
+    it('should use computed sort path with sortColumns', async () => {
+      mockPrismaUniverse.findMany.mockResolvedValue([
+        {
+          id: 'u1',
+          distribution: 1,
+          distributions_per_year: 4,
+          last_price: 100,
+          trades: [{ buy: 50, quantity: 10, sell: 0, sell_date: null }],
+        },
+      ]);
+
+      const filterState = JSON.stringify({
+        universes: {
+          sortColumns: [{ column: 'yield_percent', direction: 'desc' }],
+        },
+      });
+
+      const response = await app.inject({
+        method: 'POST',
+        url: '/api/top',
+        payload: ['1'],
+        headers: { 'x-sort-filter-state': filterState },
+      });
+
+      expect(response.statusCode).toBe(200);
+      const universeCall = mockPrismaUniverse.findMany.mock.calls[0][0];
+      expect(universeCall.select.distribution).toBe(true);
+    });
+
+    it('should use DB sort path with non-computed sortColumns', async () => {
+      mockPrismaUniverse.findMany.mockResolvedValue([{ id: 'u1' }]);
+
+      const filterState = JSON.stringify({
+        universes: {
+          sortColumns: [
+            { column: 'symbol', direction: 'asc' },
+            { column: 'last_price', direction: 'desc' },
+          ],
+        },
+      });
+
+      const response = await app.inject({
+        method: 'POST',
+        url: '/api/top',
+        payload: ['1'],
+        headers: { 'x-sort-filter-state': filterState },
+      });
+
+      expect(response.statusCode).toBe(200);
+      const universeCall = mockPrismaUniverse.findMany.mock.calls[0][0];
+      expect(universeCall.orderBy).toEqual([
+        { symbol: 'asc' },
+        { last_price: 'desc' },
+      ]);
+    });
+
     it('should return null accountId when filters exist without account_id', async () => {
       mockPrismaUniverse.findMany.mockResolvedValue([
         {
