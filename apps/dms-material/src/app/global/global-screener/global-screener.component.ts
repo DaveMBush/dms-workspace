@@ -67,7 +67,14 @@ export class GlobalScreenerComponent {
   readonly cellEdit = output<ScreenCellEditEvent>();
   readonly error = this.screenerService.error;
 
-  readonly riskGroupFilter$ = signal<string | null>(null);
+  private readonly savedFilters =
+    this.sortFilterStateService.loadFilterState('screens');
+
+  readonly riskGroupFilter$ = signal<string | null>(
+    typeof this.savedFilters?.['risk_group'] === 'string'
+      ? this.savedFilters['risk_group']
+      : null
+  );
 
   readonly columns: ColumnDef[] = [
     { field: 'symbol', header: 'Symbol', sortable: true, width: '100px' },

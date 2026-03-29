@@ -50,6 +50,7 @@ import { UNIVERSE_COLUMNS } from './global-universe.columns';
 import { EXPIRED_OPTIONS } from './global-universe.expired-options';
 import { handleCellEdit } from './handle-cell-edit.function';
 import { parseYieldValue } from './parse-yield-value.function';
+import { restoreUniverseFilters } from './restore-universe-filters.function';
 import { saveUniverseFiltersAndNotify } from './save-universe-filters-and-notify.function';
 import { UniverseService } from './services/universe.service';
 import { UniverseValidationService } from './services/universe-validation.service';
@@ -91,11 +92,15 @@ export class GlobalUniverseComponent implements OnDestroy {
   readonly cellEdit = output<CellEditEvent>();
   readonly symbolDeleted = output<Universe>();
   readonly today = new Date();
-  readonly symbolFilter$ = signal<string>('');
-  readonly riskGroupFilter$ = signal<string | null>(null);
-  readonly expiredFilter$ = signal<boolean | null>(null);
-  readonly selectedAccountId$ = signal<string>('all');
-  readonly minYieldFilter$ = signal<number | null>(null);
+  private readonly rf = restoreUniverseFilters(
+    this.sortFilterStateService.loadFilterState('universes')
+  );
+
+  readonly symbolFilter$ = signal<string>(this.rf.symbol);
+  readonly riskGroupFilter$ = signal<string | null>(this.rf.riskGroup);
+  readonly expiredFilter$ = signal<boolean | null>(this.rf.expired);
+  readonly selectedAccountId$ = signal<string>(this.rf.accountId);
+  readonly minYieldFilter$ = signal<number | null>(this.rf.minYield);
   readonly sortColumns$ = signal<SortColumn[]>(
     this.sortFilterStateService.loadSortColumnsState('universes') ?? []
   );
