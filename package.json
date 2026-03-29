@@ -100,6 +100,7 @@
     "@schematics/angular": "21.1.2",
     "@smarttools/eslint-plugin": "1.0.5",
     "@smarttools/eslint-plugin-rxjs": "^1.0.22",
+    "@storybook/addon-themes": "^10.3.3",
     "@storybook/angular": "^10.3.3",
     "@stylistic/eslint-plugin-js": "4.4.1",
     "@swc-node/register": "1.11.1",

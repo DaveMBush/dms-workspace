@@ -237,6 +237,9 @@ importers:
       '@smarttools/eslint-plugin-rxjs':
         specifier: ^1.0.22
         version: 1.0.22(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3)
+      '@storybook/addon-themes':
+        specifier: ^10.3.3
+        version: 10.3.3(storybook@10.3.3(@testing-library/dom@10.4.1)(prettier@2.8.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))
       '@storybook/angular':
         specifier: ^10.3.3
         version: 10.3.3(18c1a7f9909f9e828d00ff9b0dd783db)
@@ -4209,6 +4212,11 @@ packages:
 
   '@standard-schema/spec@1.1.0':
     resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
+
+  '@storybook/addon-themes@10.3.3':
+    resolution: {integrity: sha512-6PgH1o7yNnWRVj4lAT1DNcX/eZXKgzjhfmzgWh3oFpPfDDvUzpFxx+MClM5f/ZieIbyQscxEuq8li7+e/F5VEQ==}
+    peerDependencies:
+      storybook: ^10.3.3
 
   '@storybook/angular@10.3.3':
     resolution: {integrity: sha512-y7fP0TFonEHCXXkWqFyhVocHJw168romQfbmXSTai1WOAZYLhM0cZROJt4K9EgnJDqZ+L2YnJiMnnuTmIknguw==}
@@ -16114,6 +16122,11 @@ snapshots:
       tslib: 2.8.1
 
   '@standard-schema/spec@1.1.0': {}
+
+  '@storybook/addon-themes@10.3.3(storybook@10.3.3(@testing-library/dom@10.4.1)(prettier@2.8.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))':
+    dependencies:
+      storybook: 10.3.3(@testing-library/dom@10.4.1)(prettier@2.8.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      ts-dedent: 2.2.0
 
   '@storybook/angular@10.3.3(18c1a7f9909f9e828d00ff9b0dd783db)':
     dependencies:
