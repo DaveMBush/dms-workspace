@@ -9,6 +9,7 @@ import { Observable } from 'rxjs';
 
 import { SortFilterStateService } from '../../shared/services/sort-filter-state.service';
 import { TableState } from '../../shared/services/table-state.interface';
+import { migrateTableState } from '../../shared/utils/migrate-table-state.function';
 
 const FIELD_NAME_MAP: Record<string, Record<string, string>> = {
   universes: {
@@ -34,15 +35,27 @@ function buildMappedEntry(
   table: string,
   tableState: TableState
 ): TableState | null {
+  const migrated = migrateTableState(tableState);
   const entry: TableState = {};
-  if (tableState.sort !== undefined) {
-    const serverField = mapSortField(table, tableState.sort.field);
-    entry.sort = { field: serverField, order: tableState.sort.order };
+  if (migrated.sortColumns !== undefined && migrated.sortColumns.length > 0) {
+    entry.sortColumns = migrated.sortColumns.map(function mapColumn(sc) {
+      return {
+        column: mapSortField(table, sc.column),
+        direction: sc.direction,
+      };
+    });
+  } else if (migrated.sort !== undefined) {
+    const serverField = mapSortField(table, migrated.sort.field);
+    entry.sort = { field: serverField, order: migrated.sort.order };
   }
-  if (tableState.filters !== undefined) {
-    entry.filters = tableState.filters;
+  if (migrated.filters !== undefined) {
+    entry.filters = migrated.filters;
   }
-  return entry.sort !== undefined || entry.filters !== undefined ? entry : null;
+  return entry.sortColumns !== undefined ||
+    entry.sort !== undefined ||
+    entry.filters !== undefined
+    ? entry
+    : null;
 }
 
 function buildMappedState(
