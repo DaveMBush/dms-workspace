@@ -36,15 +36,6 @@ test.describe('Screener Table', () => {
       await expect(
         page.getByRole('columnheader', { name: 'Risk Group' })
       ).toBeVisible();
-      await expect(
-        page.getByRole('columnheader', { name: 'Has Volatility' })
-      ).toBeVisible();
-      await expect(
-        page.getByRole('columnheader', { name: 'Objectives Understood' })
-      ).toBeVisible();
-      await expect(
-        page.getByRole('columnheader', { name: 'Graph Higher Before 2008' })
-      ).toBeVisible();
     });
 
     test('should display data rows', async ({ page }) => {

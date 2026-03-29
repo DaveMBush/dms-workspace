@@ -96,30 +96,6 @@ describe('GlobalScreenerComponent', () => {
       expect(col?.header).toBe('Risk Group');
     });
 
-    it('should have has_volitility column', () => {
-      const col = component.columns.find(function findHasVolatility(c) {
-        return c.field === 'has_volitility';
-      });
-      expect(col).toBeDefined();
-      expect(col?.header).toBe('Has Volatility');
-    });
-
-    it('should have objectives_understood column', () => {
-      const col = component.columns.find(function findObjectives(c) {
-        return c.field === 'objectives_understood';
-      });
-      expect(col).toBeDefined();
-      expect(col?.header).toBe('Objectives Understood');
-    });
-
-    it('should have graph_higher_before_2008 column', () => {
-      const col = component.columns.find(function findGraph(c) {
-        return c.field === 'graph_higher_before_2008';
-      });
-      expect(col).toBeDefined();
-      expect(col?.header).toBe('Graph Higher Before 2008');
-    });
-
     it('should initialize riskGroupFilter to null', () => {
       expect(component.riskGroupFilter$()).toBeNull();
     });
@@ -189,100 +165,18 @@ describe('GlobalScreenerComponent', () => {
   });
 
   describe('cell editing', () => {
-    it('should emit cell edit event with correct data for has_volitility', () => {
+    it('should emit cell edit event', () => {
       const row = {
         id: '1',
         symbol: 'TST',
-        has_volitility: false,
       } as Screen;
       const spy = vi.spyOn(component.cellEdit, 'emit');
-      component.onCellEdit(row, 'has_volitility', true);
-      expect(spy).toHaveBeenCalledWith({
-        row,
-        field: 'has_volitility',
-        value: true,
-      });
-    });
-
-    it('should call updateScreener for has_volitility', () => {
-      const row = {
-        id: '1',
-        symbol: 'TST',
-        has_volitility: false,
-      } as Screen;
-      component.onCellEdit(row, 'has_volitility', true);
-      expect(mockScreenerService.updateScreener).toHaveBeenCalledWith(
-        '1',
-        'has_volitility',
-        true
-      );
-    });
-
-    it('should emit cell edit event for objectives_understood', () => {
-      const row = {
-        id: '1',
-        symbol: 'TST',
-        objectives_understood: false,
-      } as Screen;
-      const spy = vi.spyOn(component.cellEdit, 'emit');
-      component.onCellEdit(row, 'objectives_understood', true);
-      expect(spy).toHaveBeenCalledWith({
-        row,
-        field: 'objectives_understood',
-        value: true,
-      });
-    });
-
-    it('should call updateScreener for objectives_understood', () => {
-      const row = {
-        id: '1',
-        symbol: 'TST',
-        objectives_understood: false,
-      } as Screen;
-      component.onCellEdit(row, 'objectives_understood', true);
-      expect(mockScreenerService.updateScreener).toHaveBeenCalledWith(
-        '1',
-        'objectives_understood',
-        true
-      );
-    });
-
-    it('should emit cell edit event for graph_higher_before_2008', () => {
-      const row = {
-        id: '1',
-        symbol: 'TST',
-        graph_higher_before_2008: false,
-      } as Screen;
-      const spy = vi.spyOn(component.cellEdit, 'emit');
-      component.onCellEdit(row, 'graph_higher_before_2008', true);
-      expect(spy).toHaveBeenCalledWith({
-        row,
-        field: 'graph_higher_before_2008',
-        value: true,
-      });
-    });
-
-    it('should call updateScreener for graph_higher_before_2008', () => {
-      const row = {
-        id: '1',
-        symbol: 'TST',
-        graph_higher_before_2008: false,
-      } as Screen;
-      component.onCellEdit(row, 'graph_higher_before_2008', true);
-      expect(mockScreenerService.updateScreener).toHaveBeenCalledWith(
-        '1',
-        'graph_higher_before_2008',
-        true
-      );
-    });
-
-    it('should not call updateScreener for non-boolean fields', () => {
-      const row = {
-        id: '1',
-        symbol: 'TST',
-      } as Screen;
       component.onCellEdit(row, 'symbol', 'NEW');
-      expect(mockScreenerService.updateScreener).not.toHaveBeenCalled();
+      expect(spy).toHaveBeenCalledWith({
+        row,
+        field: 'symbol',
+        value: 'NEW',
+      });
     });
   });
 
@@ -305,9 +199,6 @@ describe('GlobalScreenerComponent', () => {
           id: '1',
           symbol: 'TEST',
           risk_group: 'Equities',
-          has_volitility: true,
-          objectives_understood: true,
-          graph_higher_before_2008: true,
         },
       ];
 
@@ -325,17 +216,11 @@ describe('GlobalScreenerComponent', () => {
           id: '1',
           symbol: 'A',
           risk_group: 'Equities',
-          has_volitility: false,
-          objectives_understood: false,
-          graph_higher_before_2008: false,
         },
         {
           id: '2',
           symbol: 'B',
           risk_group: 'Income',
-          has_volitility: false,
-          objectives_understood: false,
-          graph_higher_before_2008: false,
         },
       ];
 
@@ -355,17 +240,11 @@ describe('GlobalScreenerComponent', () => {
           id: '1',
           symbol: 'A',
           risk_group: 'Equities',
-          has_volitility: false,
-          objectives_understood: false,
-          graph_higher_before_2008: false,
         },
         {
           id: '2',
           symbol: 'B',
           risk_group: 'Income',
-          has_volitility: false,
-          objectives_understood: false,
-          graph_higher_before_2008: false,
         },
       ];
 
@@ -385,17 +264,11 @@ describe('GlobalScreenerComponent', () => {
           id: '1',
           symbol: 'A',
           risk_group: 'Equities',
-          has_volitility: false,
-          objectives_understood: false,
-          graph_higher_before_2008: false,
         },
         {
           id: '2',
           symbol: 'B',
           risk_group: 'Tax Free Income',
-          has_volitility: false,
-          objectives_understood: false,
-          graph_higher_before_2008: false,
         },
       ];
 
@@ -415,17 +288,11 @@ describe('GlobalScreenerComponent', () => {
           id: '1',
           symbol: 'A',
           risk_group: 'Equities',
-          has_volitility: false,
-          objectives_understood: false,
-          graph_higher_before_2008: false,
         },
         {
           id: '2',
           symbol: 'B',
           risk_group: 'Income',
-          has_volitility: false,
-          objectives_understood: false,
-          graph_higher_before_2008: false,
         },
       ];
 
@@ -443,9 +310,6 @@ describe('GlobalScreenerComponent', () => {
           id: '1',
           symbol: 'A',
           risk_group: 'Equities',
-          has_volitility: false,
-          objectives_understood: false,
-          graph_higher_before_2008: false,
         },
       ];
 
@@ -457,99 +321,17 @@ describe('GlobalScreenerComponent', () => {
       expect(filtered.length).toBe(0);
     });
 
-    it('should update screener when checkbox clicked for has_volitility', () => {
-      const mockScreen: Screen = {
-        id: '1',
-        symbol: 'TEST',
-        risk_group: 'Equities',
-        has_volitility: false,
-        objectives_understood: false,
-        graph_higher_before_2008: false,
-      };
-
-      component.onCellEdit(mockScreen, 'has_volitility', true);
-
-      expect(mockScreenerService.updateScreener).toHaveBeenCalledWith(
-        '1',
-        'has_volitility',
-        true
-      );
-    });
-
-    it('should update screener when checkbox clicked for objectives_understood', () => {
-      const mockScreen: Screen = {
-        id: '1',
-        symbol: 'TEST',
-        risk_group: 'Equities',
-        has_volitility: false,
-        objectives_understood: false,
-        graph_higher_before_2008: false,
-      };
-
-      component.onCellEdit(mockScreen, 'objectives_understood', true);
-
-      expect(mockScreenerService.updateScreener).toHaveBeenCalledWith(
-        '1',
-        'objectives_understood',
-        true
-      );
-    });
-
-    it('should update screener when checkbox clicked for graph_higher_before_2008', () => {
-      const mockScreen: Screen = {
-        id: '1',
-        symbol: 'TEST',
-        risk_group: 'Equities',
-        has_volitility: false,
-        objectives_understood: false,
-        graph_higher_before_2008: false,
-      };
-
-      component.onCellEdit(mockScreen, 'graph_higher_before_2008', true);
-
-      expect(mockScreenerService.updateScreener).toHaveBeenCalledWith(
-        '1',
-        'graph_higher_before_2008',
-        true
-      );
-    });
-
-    it('should handle unchecking checkbox', () => {
-      const mockScreen: Screen = {
-        id: '1',
-        symbol: 'TEST',
-        risk_group: 'Equities',
-        has_volitility: true,
-        objectives_understood: false,
-        graph_higher_before_2008: false,
-      };
-
-      component.onCellEdit(mockScreen, 'has_volitility', false);
-
-      expect(mockScreenerService.updateScreener).toHaveBeenCalledWith(
-        '1',
-        'has_volitility',
-        false
-      );
-    });
-
     it('should filter data reactively when risk group changes', () => {
       const mockScreens: Screen[] = [
         {
           id: '1',
           symbol: 'A',
           risk_group: 'Equities',
-          has_volitility: false,
-          objectives_understood: false,
-          graph_higher_before_2008: false,
         },
         {
           id: '2',
           symbol: 'B',
           risk_group: 'Income',
-          has_volitility: false,
-          objectives_understood: false,
-          graph_higher_before_2008: false,
         },
       ];
 

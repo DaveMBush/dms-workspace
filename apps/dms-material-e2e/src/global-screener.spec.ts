@@ -50,28 +50,6 @@ test.describe('Global Screener Component', () => {
         page.getByRole('columnheader', { name: 'Risk Group' })
       ).toBeVisible();
     });
-
-    test('should display Has Volatility column header', async ({ page }) => {
-      await expect(
-        page.getByRole('columnheader', { name: 'Has Volatility' })
-      ).toBeVisible();
-    });
-
-    test('should display Objectives Understood column header', async ({
-      page,
-    }) => {
-      await expect(
-        page.getByRole('columnheader', { name: 'Objectives Understood' })
-      ).toBeVisible();
-    });
-
-    test('should display Graph Higher Before 2008 column header', async ({
-      page,
-    }) => {
-      await expect(
-        page.getByRole('columnheader', { name: 'Graph Higher Before 2008' })
-      ).toBeVisible();
-    });
   });
 
   test.describe('Risk Group Filter', () => {
@@ -134,22 +112,6 @@ test.describe('Global Screener Component', () => {
     });
   });
 
-  test.describe('Checkbox Columns', () => {
-    test('should display checkboxes in Has Volatility column', async ({
-      page,
-    }) => {
-      // Wait for table data to potentially load
-      await page.waitForTimeout(500);
-      const checkboxes = page.locator(
-        'dms-base-table mat-checkbox[aria-label="Has Volatility"], dms-base-table mat-checkbox'
-      );
-      // If there is data, there should be checkboxes
-      const count = await checkboxes.count();
-      // At minimum the component should render without errors
-      expect(count).toBeGreaterThanOrEqual(0);
-    });
-  });
-
   test.describe('Symbol Links', () => {
     test('should render symbol links to cefconnect.com', async ({ page }) => {
       // Wait for table data to potentially load
@@ -167,18 +129,24 @@ test.describe('Global Screener Component', () => {
   test.describe('Responsive Layout', () => {
     test('should display correctly at desktop viewport', async ({ page }) => {
       await page.setViewportSize({ width: 1920, height: 1080 });
-      await expect(page.locator('[data-testid="screener-container"]')).toBeVisible();
+      await expect(
+        page.locator('[data-testid="screener-container"]')
+      ).toBeVisible();
       await expect(page.locator('.screener-toolbar')).toBeVisible();
     });
 
     test('should display correctly at tablet viewport', async ({ page }) => {
       await page.setViewportSize({ width: 768, height: 1024 });
-      await expect(page.locator('[data-testid="screener-container"]')).toBeVisible();
+      await expect(
+        page.locator('[data-testid="screener-container"]')
+      ).toBeVisible();
     });
 
     test('should display correctly at mobile viewport', async ({ page }) => {
       await page.setViewportSize({ width: 375, height: 667 });
-      await expect(page.locator('[data-testid="screener-container"]')).toBeVisible();
+      await expect(
+        page.locator('[data-testid="screener-container"]')
+      ).toBeVisible();
     });
   });
 
@@ -201,7 +169,9 @@ test.describe('Global Screener Component', () => {
       const refreshButton = page.locator('button[mattooltip="Refresh"]');
       await refreshButton.click();
       // Should not crash - verify page is still functional
-      await expect(page.locator('[data-testid="screener-container"]')).toBeVisible();
+      await expect(
+        page.locator('[data-testid="screener-container"]')
+      ).toBeVisible();
     });
 
     test('should handle multiple rapid filter changes', async ({ page }) => {
@@ -224,7 +194,9 @@ test.describe('Global Screener Component', () => {
       await page.waitForTimeout(500); // Final wait for stabilization
 
       // Component should still be functional
-      await expect(page.locator('[data-testid="screener-container"]')).toBeVisible();
+      await expect(
+        page.locator('[data-testid="screener-container"]')
+      ).toBeVisible();
     });
   });
 });

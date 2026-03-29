@@ -9,7 +9,6 @@ import {
   signal,
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
@@ -36,7 +35,6 @@ import { ScreenerService } from './services/screener.service';
     MatIconModule,
     MatSelectModule,
     MatFormFieldModule,
-    MatCheckboxModule,
     MatTooltipModule,
     BaseTableComponent,
   ],
@@ -83,24 +81,6 @@ export class GlobalScreenerComponent {
       header: 'Risk Group',
       sortable: true,
       width: '120px',
-    },
-    {
-      field: 'has_volitility',
-      header: 'Has Volatility',
-      type: 'boolean',
-      width: '120px',
-    },
-    {
-      field: 'objectives_understood',
-      header: 'Objectives Understood',
-      type: 'boolean',
-      width: '160px',
-    },
-    {
-      field: 'graph_higher_before_2008',
-      header: 'Graph Higher Before 2008',
-      type: 'boolean',
-      width: '180px',
     },
   ];
 
@@ -169,18 +149,6 @@ export class GlobalScreenerComponent {
   }
 
   onCellEdit(row: Screen, field: string, value: unknown): void {
-    if (
-      field === 'has_volitility' ||
-      field === 'objectives_understood' ||
-      field === 'graph_higher_before_2008'
-    ) {
-      this.screenerService.updateScreener(
-        row.id,
-        field as keyof Screen,
-        value as boolean
-      );
-    }
-
     this.cellEdit.emit({ row, field, value });
   }
 
