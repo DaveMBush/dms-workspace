@@ -5,6 +5,7 @@ import { seedUniverseE2eData } from './helpers/seed-universe-e2e-data.helper';
 
 /**
  * Helper: read sort state from the sort-filter localStorage key.
+ * Supports both legacy `sort` format and multi-column `sortColumns` format.
  */
 async function getSortState(
   page: Page,
@@ -19,6 +20,11 @@ async function getSortState(
     const entry = state[t];
     if (entry === undefined || entry === null) {
       return null;
+    }
+    // Multi-column format: sortColumns is an array of { column, direction }
+    if (Array.isArray(entry.sortColumns) && entry.sortColumns.length > 0) {
+      const first = entry.sortColumns[0];
+      return { field: first.column, order: first.direction };
     }
     return (entry.sort as { field: string; order: string }) ?? null;
   }, table);
@@ -101,10 +107,8 @@ test.describe('Universe Screen E2E', () => {
 
     test('should filter by Risk Group', async ({ page }) => {
       // Open the Risk Group filter dropdown and select "Income"
-      const riskGroupSelect = page
-        .locator('.header-filter mat-select')
-        .first();
-        await riskGroupSelect.dispatchEvent('click');
+      const riskGroupSelect = page.locator('.header-filter mat-select').first();
+      await riskGroupSelect.dispatchEvent('click');
       await page.waitForTimeout(300);
 
       const incomeOption = page.getByRole('option', {
@@ -140,13 +144,11 @@ test.describe('Universe Screen E2E', () => {
 
     test('should filter by Expired', async ({ page }) => {
       // Open the Expired filter dropdown and select "Yes"
-      const expiredSelects = page.locator(
-        '.header-filter mat-select'
-      );
+      const expiredSelects = page.locator('.header-filter mat-select');
       // Expired select is the last one in the filter row
       const expiredSelect = expiredSelects.last();
-        await expiredSelect.dispatchEvent('click');
-        await page.waitForTimeout(300);
+      await expiredSelect.dispatchEvent('click');
+      await page.waitForTimeout(300);
       const yesOption = page.getByRole('option', { name: 'Yes' });
       await yesOption.click();
       await page.waitForTimeout(500);

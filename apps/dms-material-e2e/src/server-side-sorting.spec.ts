@@ -255,11 +255,11 @@ test.describe('Universe Sort Persistence', () => {
     await page.goto('/global/universe');
     await page.waitForLoadState('networkidle');
 
-    // Verify the Symbol sort header has the active sort arrow
-    const symbolSortHeader = page.locator(
-      '[data-sort-header="symbol"].mat-sort-header-sorted'
+    // Verify the Symbol sort header has the active sort rank indicator
+    const symbolSortIndicator = page.locator(
+      '[data-sort-header="symbol"] [data-testid="sort-rank"]'
     );
-    await expect(symbolSortHeader).toBeVisible();
+    await expect(symbolSortIndicator).toBeVisible();
   });
 });
 

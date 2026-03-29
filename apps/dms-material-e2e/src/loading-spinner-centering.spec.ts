@@ -51,7 +51,8 @@ test.describe('Loading Spinner Centering', () => {
     expect(classes).toContain('flex');
     expect(classes).toContain('items-center');
     expect(classes).toContain('justify-center');
-    expect(classes).toContain('bg-black/40');
+    // Backdrop is applied via .overlay-container SCSS class (background-color + opacity)
+    expect(classes).toContain('overlay-container');
 
     // Verify layout properties - check computed CSS to confirm fixed/inset coverage
     const overlayStyle = await page.evaluate(() => {
@@ -126,8 +127,8 @@ test.describe('Loading Spinner Centering', () => {
     // Should have appropriate z-index
     expect(classes).toMatch(/z-\[9999\]/);
 
-    // Should have backdrop
-    expect(classes).toContain('bg-black/40');
+    // Backdrop is applied via .overlay-container SCSS class (background-color + opacity)
+    expect(classes).toContain('overlay-container');
 
     await loadingOverlay.waitFor({ state: 'hidden', timeout: 30000 });
   });
