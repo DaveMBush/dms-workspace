@@ -426,11 +426,6 @@ describe('sync-from-screener route', () => {
     await api.invoke(SYNC_PATH);
 
     expect(h.client.screener.findMany).toHaveBeenCalledWith({
-      where: {
-        has_volitility: true,
-        objectives_understood: true,
-        graph_higher_before_2008: true,
-      },
       select: { symbol: true, risk_group_id: true },
     });
   });

@@ -9,9 +9,6 @@ interface ScreenerSelect {
   risk_group: {
     name: string;
   };
-  has_volitility: boolean;
-  objectives_understood: boolean;
-  graph_higher_before_2008: boolean;
 }
 
 function mapScreenerToScreen(s: ScreenerSelect): Screen {
@@ -19,9 +16,6 @@ function mapScreenerToScreen(s: ScreenerSelect): Screen {
     id: s.id,
     symbol: s.symbol,
     risk_group: s.risk_group.name,
-    has_volitility: s.has_volitility,
-    objectives_understood: s.objectives_understood,
-    graph_higher_before_2008: s.graph_higher_before_2008,
   };
 }
 
@@ -44,58 +38,9 @@ async function handleGetScreenerRequest(request: {
             name: true,
           },
         },
-        has_volitility: true,
-        objectives_understood: true,
-        graph_higher_before_2008: true,
       },
     })
     .then(function mapScreenerResults(screen: ScreenerSelect[]): Screen[] {
-      return screen.map(mapScreenerToScreen);
-    });
-}
-
-async function handleUpdateScreenerRequest(request: {
-  body: {
-    id: string;
-    has_volitility: boolean;
-    objectives_understood: boolean;
-    graph_higher_before_2008: boolean;
-  };
-}): Promise<Screen[]> {
-  const {
-    id,
-    has_volitility,
-    objectives_understood,
-    graph_higher_before_2008,
-  } = request.body;
-
-  return prisma.screener
-    .update({
-      where: { id },
-      data: {
-        has_volitility,
-        objectives_understood,
-        graph_higher_before_2008,
-      },
-    })
-    .then(async function findUpdatedScreener(): Promise<ScreenerSelect[]> {
-      return prisma.screener.findMany({
-        where: { id },
-        select: {
-          id: true,
-          symbol: true,
-          risk_group: {
-            select: {
-              name: true,
-            },
-          },
-          has_volitility: true,
-          objectives_understood: true,
-          graph_higher_before_2008: true,
-        },
-      });
-    })
-    .then(function mapUpdatedResults(screen: ScreenerSelect[]): Screen[] {
       return screen.map(mapScreenerToScreen);
     });
 }
@@ -117,16 +62,4 @@ export default function registerScreenerRoutes(fastify: FastifyInstance): void {
       return handleGetScreenerRequest(request);
     }
   );
-
-  fastify.put<{
-    Body: {
-      id: string;
-      has_volitility: boolean;
-      objectives_understood: boolean;
-      graph_higher_before_2008: boolean;
-    };
-    Reply: Screen[];
-  }>('/', async function handlePutRequest(request, _): Promise<Screen[]> {
-    return handleUpdateScreenerRequest(request);
-  });
 }

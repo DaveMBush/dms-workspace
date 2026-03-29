@@ -128,16 +128,12 @@ model screener {
   last_price               Float
   ex_date                  DateTime?
   risk_group_id            String
-  has_volitility           Boolean
-  objectives_understood    Boolean
-  graph_higher_before_2008 Boolean
   createdAt                DateTime   @default(now())
   updatedAt                DateTime   @updatedAt
   deletedAt                DateTime?
   version                  Int        @default(1)
   risk_group               risk_group @relation(fields: [risk_group_id], references: [id])
 
-  @@index([has_volitility, objectives_understood, graph_higher_before_2008])
   @@index([risk_group_id])
 }
 
