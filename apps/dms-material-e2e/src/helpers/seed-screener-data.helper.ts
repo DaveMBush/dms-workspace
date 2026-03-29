@@ -16,9 +16,6 @@ interface SeederResult {
 interface ScreenerRecord {
   symbol: string;
   risk_group_id: string;
-  has_volitility: boolean;
-  objectives_understood: boolean;
-  graph_higher_before_2008: boolean;
   distribution: number;
   distributions_per_year: number;
   last_price: number;
@@ -40,41 +37,26 @@ function createTestDataArray(
       ...b,
       symbol: symbols[0],
       risk_group_id: equitiesId,
-      has_volitility: false,
-      objectives_understood: false,
-      graph_higher_before_2008: false,
     },
     {
       ...b,
       symbol: symbols[1],
       risk_group_id: equitiesId,
-      has_volitility: true,
-      objectives_understood: false,
-      graph_higher_before_2008: false,
     },
     {
       ...b,
       symbol: symbols[2],
       risk_group_id: incomeId,
-      has_volitility: false,
-      objectives_understood: true,
-      graph_higher_before_2008: false,
     },
     {
       ...b,
       symbol: symbols[3],
       risk_group_id: incomeId,
-      has_volitility: true,
-      objectives_understood: false,
-      graph_higher_before_2008: true,
     },
     {
       ...b,
       symbol: symbols[4],
       risk_group_id: taxFreeId,
-      has_volitility: false,
-      objectives_understood: false,
-      graph_higher_before_2008: false,
     },
   ];
 }

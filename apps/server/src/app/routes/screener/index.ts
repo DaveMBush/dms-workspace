@@ -90,9 +90,6 @@ interface ScreenerRecord {
   id: string;
   symbol: string;
   risk_group_id: string;
-  has_volitility: boolean;
-  objectives_understood: boolean;
-  graph_higher_before_2008: boolean;
   distribution: number;
   last_price: number;
   ex_date: Date | null;
@@ -130,9 +127,6 @@ function createScreenerData(
   return {
     symbol: symbol.Ticker,
     risk_group_id: riskGroupId,
-    has_volitility: false,
-    objectives_understood: false,
-    graph_higher_before_2008: false,
     distribution: symbol.CurrentDistribution,
     last_price: symbol.Price ?? 0.0,
     ex_date: null,

@@ -51,9 +51,7 @@ test.describe('Screener Table', () => {
       // Verify we have data
       expect(symbols.length).toBeGreaterThan(0);
 
-      // Incomplete items (not all 3 checkboxes true) should be sorted alphabetically
-      // Then complete items (all 3 checkboxes true) sorted alphabetically
-      // Current test data has all incomplete items, so should be alphabetical
+      // Items should be sorted alphabetically by symbol
       const sortedSymbols = [...symbols].sort();
       expect(symbols).toEqual(sortedSymbols);
     });

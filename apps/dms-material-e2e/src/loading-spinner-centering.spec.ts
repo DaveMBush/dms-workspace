@@ -140,14 +140,27 @@ test.describe('Loading Spinner Centering', () => {
       timeout: 10000,
     });
 
-    // Stub universe sync API to ensure overlay is visible long enough to test
+    // Mock universe sync API — fulfill with a canned response to avoid slow
+    // Yahoo Finance calls that would exceed the overlay hide timeout.
     await page.route(
       '**/universe/sync-from-screener',
       async function delaySyncRoute(route) {
         await new Promise<void>(function delayResponse(resolve) {
           setTimeout(resolve, 2000);
         });
-        await route.continue();
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            inserted: 0,
+            updated: 0,
+            markedExpired: 0,
+            preservedEtfCount: 0,
+            selectedCount: 0,
+            correlationId: 'test',
+            logFilePath: '',
+          }),
+        });
       }
     );
 

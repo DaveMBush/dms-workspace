@@ -44,11 +44,6 @@ async function selectEligibleScreener(
   client: PrismaClientLike
 ): Promise<Array<{ symbol: string; risk_group_id: string }>> {
   return client.screener.findMany({
-    where: {
-      has_volitility: true,
-      objectives_understood: true,
-      graph_higher_before_2008: true,
-    },
     select: { symbol: true, risk_group_id: true },
   });
 }

@@ -102,9 +102,6 @@ describe.skipIf(process.env.CI)(
             distributions_per_year: 4,
             last_price: 150.0,
             risk_group_id: riskGroupId1,
-            has_volitility: true,
-            objectives_understood: true,
-            graph_higher_before_2008: true, // Eligible
           },
           {
             symbol: 'GOOGL',
@@ -112,9 +109,6 @@ describe.skipIf(process.env.CI)(
             distributions_per_year: 0,
             last_price: 120.0,
             risk_group_id: riskGroupId2,
-            has_volitility: true,
-            objectives_understood: true,
-            graph_higher_before_2008: true, // Eligible
           },
           {
             symbol: 'TSLA',
@@ -122,9 +116,6 @@ describe.skipIf(process.env.CI)(
             distributions_per_year: 0,
             last_price: 80.0,
             risk_group_id: riskGroupId1,
-            has_volitility: false, // Not eligible
-            objectives_understood: true,
-            graph_higher_before_2008: true,
           },
         ],
       });
@@ -162,18 +153,12 @@ describe.skipIf(process.env.CI)(
       expect(universeCount).toBe(2);
       expect(riskGroupCount).toBe(2);
 
-      // Test screener selection logic
-      const eligibleScreener = await prisma.screener.findMany({
-        where: {
-          has_volitility: true,
-          objectives_understood: true,
-          graph_higher_before_2008: true,
-        },
-      });
+      // Test screener selection logic - all screener records are now eligible
+      const eligibleScreener = await prisma.screener.findMany();
 
-      expect(eligibleScreener).toHaveLength(2);
+      expect(eligibleScreener).toHaveLength(3);
       expect(eligibleScreener.map((s) => s.symbol)).toEqual(
-        expect.arrayContaining(['AAPL', 'GOOGL'])
+        expect.arrayContaining(['AAPL', 'GOOGL', 'TSLA'])
       );
     });
 
@@ -321,9 +306,6 @@ describe.skipIf(process.env.CI)(
           distributions_per_year: 12,
           last_price: 25.0,
           risk_group_id: riskGroupId1,
-          has_volitility: true,
-          objectives_understood: true,
-          graph_higher_before_2008: true,
         },
       });
 
@@ -584,9 +566,6 @@ describe.skipIf(process.env.CI)(
           distributions_per_year: (i % 12) + 1, // Deterministic values
           last_price: 100.0 + i * 10, // Deterministic values
           risk_group_id: i % 2 === 0 ? riskGroupId1 : riskGroupId2,
-          has_volitility: true,
-          objectives_understood: true,
-          graph_higher_before_2008: true,
         })
       );
 
