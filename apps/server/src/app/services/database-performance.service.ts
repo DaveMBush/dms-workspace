@@ -252,9 +252,7 @@ class DatabasePerformanceService {
       return sum + m.queryTime;
     }
     function sumPoolUtilization(sum: number, m: DatabaseMetrics): number {
-      /* v8 ignore start */
       return sum + (m.poolUtilization ?? 0);
-      /* v8 ignore stop */
     }
     function sumTotalTime(sum: number, m: DatabaseMetrics): number {
       return sum + m.totalTime;
@@ -294,9 +292,7 @@ class DatabasePerformanceService {
       const result = await client.$queryRaw<[{ count: bigint }]>`
         SELECT count(*) FROM pg_stat_activity WHERE state = 'active'
       `;
-      /* v8 ignore start */
       return Number(result[0].count);
-      /* v8 ignore stop */
     } catch {
       // Fallback to default for SQLite or if PostgreSQL query fails
       return 1;

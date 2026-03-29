@@ -33,7 +33,6 @@ async function updateLastUsedAt(
  */
 async function findByCusip(
   cusip: string,
-  /* v8 ignore next */
   client: PrismaClient = prisma
 ): Promise<string | null> {
   try {
@@ -58,7 +57,6 @@ async function findByCusip(
  */
 async function findManyCusips(
   cusips: string[],
-  /* v8 ignore next */
   client: PrismaClient = prisma
 ): Promise<Map<string, string>> {
   const result = new Map<string, string>();
@@ -97,7 +95,6 @@ async function upsertMapping(
   cusip: string,
   symbol: string,
   source: 'THIRTEENF' | 'YAHOO_FINANCE',
-  /* v8 ignore next */
   client: PrismaClient = prisma
 ): Promise<void> {
   if (symbol.length === 0) {
@@ -120,7 +117,6 @@ async function upsertMapping(
  */
 async function upsertManyMappings(
   mappings: CusipCacheMapping[],
-  /* v8 ignore next */
   client: PrismaClient = prisma
 ): Promise<void> {
   for (const mapping of mappings) {

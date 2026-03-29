@@ -121,18 +121,51 @@ describe('DatabasePerformanceService', () => {
 
     it('should use PostgreSQL connection count when provider is postgresql', async () => {
       const originalProvider = process.env.DATABASE_PROVIDER;
-      process.env.DATABASE_PROVIDER = 'postgresql';
+      try {
+        process.env.DATABASE_PROVIDER = 'postgresql';
 
-      const result = await databasePerformanceService.profileConnectionOverhead(
-        testClient
-      );
+        const result =
+          await databasePerformanceService.profileConnectionOverhead(
+            testClient
+          );
 
-      // SQLite can't run pg_stat_activity, so getPostgresConnectionCount
-      // catches and returns fallback of 1
-      expect(result.connectionCount).toBe(1);
-      expect(result.connectionTime).toBeGreaterThan(0);
+        // SQLite can't run pg_stat_activity, so getPostgresConnectionCount
+        // catches and returns fallback of 1
+        expect(result.connectionCount).toBe(1);
+        expect(result.connectionTime).toBeGreaterThan(0);
+      } finally {
+        process.env.DATABASE_PROVIDER = originalProvider;
+      }
+    });
 
-      process.env.DATABASE_PROVIDER = originalProvider;
+    it('should return actual connection count when PostgreSQL query succeeds', async () => {
+      const originalProvider = process.env.DATABASE_PROVIDER;
+      try {
+        process.env.DATABASE_PROVIDER = 'postgresql';
+
+        // Mock client where pg_stat_activity query succeeds
+        let callCount = 0;
+        const pgMockClient = {
+          $queryRaw: vi.fn().mockImplementation(() => {
+            callCount++;
+            // First call is SELECT 1 connectivity check, second is pg_stat_activity
+            if (callCount === 1) {
+              return Promise.resolve([{ '1': 1 }]);
+            }
+            return Promise.resolve([{ count: BigInt(5) }]);
+          }),
+        } as unknown as PrismaClient;
+
+        const result =
+          await databasePerformanceService.profileConnectionOverhead(
+            pgMockClient
+          );
+
+        expect(result.connectionCount).toBe(5);
+        expect(result.connectionTime).toBeGreaterThan(0);
+      } finally {
+        process.env.DATABASE_PROVIDER = originalProvider;
+      }
     });
 
     it('should throw when connection profiling fails', async () => {
@@ -301,18 +334,20 @@ describe('DatabasePerformanceService', () => {
         return tick;
       });
 
-      const benchmark =
-        await databasePerformanceService.benchmarkPerformanceImprovement(
-          testClient,
-          1
-        );
+      try {
+        const benchmark =
+          await databasePerformanceService.benchmarkPerformanceImprovement(
+            testClient,
+            1
+          );
 
-      perfSpy.mockRestore();
-
-      // With 100ms durations, slow queries should be recorded and filtered
-      expect(benchmark.baseline.slowQueries.length).toBeGreaterThan(0);
-      // isStillSlowAfterOptimization: 100 * 0.65 = 65 > 50 → queries survive filter
-      expect(benchmark.optimized.slowQueries.length).toBeGreaterThan(0);
+        // With 100ms durations, slow queries should be recorded and filtered
+        expect(benchmark.baseline.slowQueries.length).toBeGreaterThan(0);
+        // isStillSlowAfterOptimization: 100 * 0.65 = 65 > 50 → queries survive filter
+        expect(benchmark.optimized.slowQueries.length).toBeGreaterThan(0);
+      } finally {
+        perfSpy.mockRestore();
+      }
     });
 
     it('should provide consistent benchmark results', async () => {
@@ -332,6 +367,33 @@ describe('DatabasePerformanceService', () => {
         benchmark1.improvementPercentage - benchmark2.improvementPercentage
       );
       expect(variance).toBeLessThan(20);
+    });
+
+    it('should handle undefined poolUtilization in metrics', async () => {
+      // Mock getPerformanceMetrics to return metrics with undefined poolUtilization
+      const spy = vi
+        .spyOn(databasePerformanceService, 'getPerformanceMetrics')
+        .mockResolvedValue({
+          connectionTime: 10,
+          queryTime: 20,
+          poolUtilization: undefined,
+          slowQueries: [],
+          totalTime: 30,
+        });
+
+      try {
+        const benchmark =
+          await databasePerformanceService.benchmarkPerformanceImprovement(
+            testClient,
+            1
+          );
+
+        // poolUtilization should default to 0 via ?? operator
+        expect(benchmark.baseline.poolUtilization).toBe(0);
+        expect(benchmark.improvementPercentage).toBeGreaterThanOrEqual(30);
+      } finally {
+        spy.mockRestore();
+      }
     });
   });
 
