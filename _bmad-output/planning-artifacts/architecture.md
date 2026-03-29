@@ -688,6 +688,62 @@ POST /api/admin/cusip-cache/resolve
 
 ---
 
+## Quality Tool Governance
+
+This section defines the rules for configuring and maintaining the quality enforcement tools in the workspace. All tools run as part of `pnpm all` or as separate CI steps; every check must pass before a story is considered done.
+
+### jscpd (Code Duplication)
+
+**Config file:** `.jscpd.json`
+**CI command:** `pnpm dupcheck`
+**Threshold:** 0.1% maximum duplication across the scanned codebase
+
+**Rules:**
+
+- Every path in the `ignore` array must resolve to an existing file or directory in the repository. Invalid (non-existent) paths must be removed immediately.
+- Duplication violations must be resolved by refactoring duplicated code into shared utilities, services, or base abstractions — never by adding new suppression entries to the `ignore` array.
+- The `ignore` array may only contain infrastructure/config patterns (e.g., `node_modules`, `dist`, `coverage`, spec files, config files) and generated output directories (e.g., `_bmad-output`, `docs`). Application source code paths must not be suppressed.
+- When new shared code is extracted, each file must export exactly one item (per the `@smarttools/one-exported-item-per-file` ESLint rule) and include a corresponding spec file if it contains non-trivial logic.
+
+### Vitest (Unit Test Coverage)
+
+**Config file:** `vitest.config.ts` (root), per-project configs in `apps/*/vitest.config.ts`
+**CI command:** runs as part of `pnpm all` via `nx affected -t test --coverage`
+**Thresholds:** 100% for `branches`, `functions`, `lines`, and `statements`
+
+**Rules:**
+
+- Coverage thresholds must not be lowered. All four metrics (branches, functions, lines, statements) must remain at 100%.
+- `/* v8 ignore next */` (or `/* v8 ignore start/stop */`) comments are only permitted for provably unreachable branches (e.g., TypeScript exhaustive switch default cases). Each ignore comment must include an explanatory comment on the preceding line stating why the branch is unreachable.
+- The `exclude` list in the coverage config must not be modified to hide coverage gaps in application source code. Only test infrastructure, config files, type definitions, and build artifacts may be excluded.
+- Tests run through Nx (`npx nx test <project> --coverage`), not directly via the `vitest` CLI, to ensure project-level isolation and correct configuration.
+
+### ESLint (Static Analysis)
+
+**Config file:** `eslint.config.mjs` (root), per-project configs in `apps/*/eslint.config.mjs`
+**CI command:** runs as part of `pnpm all` via `nx affected -t lint`
+
+**Rules:**
+
+- `eslint-disable` suppression comments (inline or block) require a brief justification comment explaining why the rule is disabled for that specific line or block.
+- New ESLint rules or rule changes must be documented in `docs/lint-rules-diff.md` with the rule name, old severity, new severity, and rationale.
+- The `@smarttools/one-exported-item-per-file` rule is enforced workspace-wide: every TypeScript file must export exactly one item. No exceptions without documented justification.
+
+### Prettier (Code Formatting)
+
+**CI command:** `pnpm format` (runs `prettier --write .` followed by verification)
+
+**Rules:**
+
+- All committed code must pass `pnpm format` without changes. Run `pnpm format` before committing.
+- Prettier configuration is workspace-level only. Per-file or per-directory overrides are not permitted.
+
+### Governance Enforcement
+
+All quality checks are enforced through the CI pipeline. The `pnpm all` command runs lint, build, and test (with coverage) for all affected projects. Additionally, `pnpm dupcheck` and `pnpm format` run as separate steps. Every story's Definition of Done requires all checks to pass. No PR may be merged with failing quality gates.
+
+---
+
 ## Architecture Validation Results
 
 ### Coherence Validation ✅

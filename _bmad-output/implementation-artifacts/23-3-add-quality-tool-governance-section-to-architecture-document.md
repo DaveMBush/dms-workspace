@@ -1,6 +1,6 @@
 # Story 23.3: Add Quality Tool Governance Section to Architecture Document
 
-Status: Approved
+Status: Review
 
 ## Story
 
@@ -16,36 +16,36 @@ so that the rules for configuring and maintaining `jscpd`, `vitest` coverage, an
 
 ## Definition of Done
 
-- [ ] Quality Tool Governance section added to `_bmad-output/planning-artifacts/architecture.md`
-- [ ] Section covers: jscpd (duplication), vitest (coverage), eslint (linting), and any other active quality gates
-- [ ] Rules for each tool clearly described (what is allowed vs. not allowed)
-- [ ] Run `pnpm format`
-- [ ] Repeat if any fails until it passes
+- [x] Quality Tool Governance section added to `_bmad-output/planning-artifacts/architecture.md`
+- [x] Section covers: jscpd (duplication), vitest (coverage), eslint (linting), and any other active quality gates
+- [x] Rules for each tool clearly described (what is allowed vs. not allowed)
+- [x] Run `pnpm format`
+- [x] Repeat if any fails until it passes
 
 ## Tasks / Subtasks
 
-- [ ] Review current architecture document structure (AC: #1)
-  - [ ] Read `_bmad-output/planning-artifacts/architecture.md` to find appropriate insertion point
-  - [ ] Identify existing quality-related sections (if any) to avoid duplication
-- [ ] Draft Quality Tool Governance section (AC: #1, #2)
-  - [ ] Add `## Quality Tool Governance` (or equivalent heading level) section
-  - [ ] Write sub-section for **jscpd** (duplication checker):
+- [x] Review current architecture document structure (AC: #1)
+  - [x] Read `_bmad-output/planning-artifacts/architecture.md` to find appropriate insertion point
+  - [x] Identify existing quality-related sections (if any) to avoid duplication
+- [x] Draft Quality Tool Governance section (AC: #1, #2)
+  - [x] Add `## Quality Tool Governance` (or equivalent heading level) section
+  - [x] Write sub-section for **jscpd** (duplication checker):
     - Config file: `.jscpd.json`
     - Rule: all ignore paths must point to existing files; invalid paths must be removed
     - Rule: duplication violations must be resolved by refactoring, never by adding suppressions
-  - [ ] Write sub-section for **Vitest coverage**:
+  - [x] Write sub-section for **Vitest coverage**:
     - Config file: `vitest.config.ts`
     - Required threshold: `100` for `branches` globally
     - Rule: `/* v8 ignore */` comments are only permitted for provably unreachable branches, with an explanatory comment
     - Rule: the `exclude` list in the coverage config must not be modified to hide gaps
-  - [ ] Write sub-section for **ESLint**:
+  - [x] Write sub-section for **ESLint**:
     - Config file: `eslint.config.mjs`
     - Rule: `eslint-disable` suppression comments require a brief justification comment
-  - [ ] Include a **Governance Enforcement** paragraph explaining that `pnpm all` runs all checks and all checks must pass before a story is considered done
-- [ ] Insert section into document (AC: #1)
-  - [ ] Place after the existing "Testing Strategy" or "Architecture Decisions" section (whichever is more appropriate)
-- [ ] Validate document (AC: #3)
-  - [ ] Run `pnpm format` and confirm no errors
+  - [x] Include a **Governance Enforcement** paragraph explaining that `pnpm all` runs all checks and all checks must pass before a story is considered done
+- [x] Insert section into document (AC: #1)
+  - [x] Place after the existing "Testing Strategy" or "Architecture Decisions" section (whichever is more appropriate)
+- [x] Validate document (AC: #3)
+  - [x] Run `pnpm format` and confirm no errors
 
 ## Dev Notes
 
@@ -73,8 +73,20 @@ so that the rules for configuring and maintaining `jscpd`, `vitest` coverage, an
 
 ### Agent Model Used
 
+Claude Opus 4.6
+
 ### Debug Log References
+
+None — documentation-only change.
 
 ### Completion Notes List
 
+- Added `## Quality Tool Governance` section to `architecture.md` between "Project Structure & Boundaries" and "Architecture Validation Results"
+- Section covers 4 tools: jscpd, Vitest, ESLint, Prettier
+- Each sub-section includes config file location, CI command, and prescriptive rules
+- Added Governance Enforcement paragraph tying all checks to `pnpm all` and story DoD
+- `pnpm format` passes with no changes needed
+
 ### File List
+
+- `_bmad-output/planning-artifacts/architecture.md` — added Quality Tool Governance section
