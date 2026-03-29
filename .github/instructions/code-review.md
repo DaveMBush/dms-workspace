@@ -514,5 +514,6 @@ When performing a code review, apply these prompt engineering principles from th
 ## Rate Limits
 
 To avoid GitHub Copilot rate limiting:
+
 - Always wait for at least 2 minutes between API calls.
 - Prefer slow completion over fast failure.
