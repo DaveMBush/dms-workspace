@@ -53,6 +53,25 @@ async function getSortState(
 }
 
 /**
+ * Helper: read sortColumns state from localStorage.
+ */
+async function getSortColumnsState(
+  page: Page,
+  table: string
+): Promise<{ column: string; direction: string }[] | null> {
+  return page.evaluate(function readSortColumnsState(t: string) {
+    const raw = localStorage.getItem('dms-sort-filter-state');
+    if (raw === null) {
+      return null;
+    }
+    const state = JSON.parse(raw);
+    return (
+      (state[t]?.sortColumns as { column: string; direction: string }[]) ?? null
+    );
+  }, table);
+}
+
+/**
  * Helper: clear sort state from localStorage.
  */
 async function clearSortState(page: Page): Promise<void> {
@@ -93,11 +112,10 @@ test.describe('Universe Table - Server-Side Sorting', () => {
     await symbolHeader.click();
     await page.waitForTimeout(300);
 
-    // Verify sort state was saved to localStorage
-    const state = await getSortState(page, 'universes');
-    expect(state).not.toBeNull();
-    expect(state!.field).toBe('symbol');
-    expect(state!.order).toBe('asc');
+    // Verify sort state was saved to localStorage as sortColumns
+    const cols = await getSortColumnsState(page, 'universes');
+    expect(cols).not.toBeNull();
+    expect(cols).toEqual([{ column: 'symbol', direction: 'asc' }]);
   });
 
   test('should toggle sort direction on second click', async ({ page }) => {
@@ -106,14 +124,14 @@ test.describe('Universe Table - Server-Side Sorting', () => {
     // First click → asc
     await symbolHeader.click();
     await page.waitForTimeout(300);
-    let state = await getSortState(page, 'universes');
-    expect(state!.order).toBe('asc');
+    let cols = await getSortColumnsState(page, 'universes');
+    expect(cols).toEqual([{ column: 'symbol', direction: 'asc' }]);
 
     // Second click → desc
     await symbolHeader.click();
     await page.waitForTimeout(300);
-    state = await getSortState(page, 'universes');
-    expect(state!.order).toBe('desc');
+    cols = await getSortColumnsState(page, 'universes');
+    expect(cols).toEqual([{ column: 'symbol', direction: 'desc' }]);
   });
 
   test('should save sort state to localStorage on sort click', async ({
@@ -123,10 +141,9 @@ test.describe('Universe Table - Server-Side Sorting', () => {
     await symbolHeader.click();
     await page.waitForTimeout(500);
 
-    const state = await getSortState(page, 'universes');
-    expect(state).not.toBeNull();
-    expect(state!.field).toBe('symbol');
-    expect(state!.order).toBe('asc');
+    const cols = await getSortColumnsState(page, 'universes');
+    expect(cols).not.toBeNull();
+    expect(cols).toEqual([{ column: 'symbol', direction: 'asc' }]);
   });
 
   test('should send sort params for Risk Group column', async ({ page }) => {
@@ -135,10 +152,9 @@ test.describe('Universe Table - Server-Side Sorting', () => {
     await page.waitForTimeout(300);
 
     // Verify sort state was saved
-    const state = await getSortState(page, 'universes');
-    expect(state).not.toBeNull();
-    expect(state!.field).toBe('risk_group');
-    expect(state!.order).toBe('asc');
+    const cols = await getSortColumnsState(page, 'universes');
+    expect(cols).not.toBeNull();
+    expect(cols).toEqual([{ column: 'risk_group', direction: 'asc' }]);
   });
 
   test('should update localStorage sort state when column is clicked', async ({
@@ -147,17 +163,17 @@ test.describe('Universe Table - Server-Side Sorting', () => {
     const symbolHeader = page.getByRole('button', { name: 'Symbol' });
 
     // Before sorting, verify no sort state
-    let state = await getSortState(page, 'universes');
-    expect(state).toBeNull();
+    let cols = await getSortColumnsState(page, 'universes');
+    expect(cols).toBeNull();
 
     // Click to sort
     await symbolHeader.click();
     await page.waitForTimeout(300);
 
     // After sorting, verify state changed
-    state = await getSortState(page, 'universes');
-    expect(state).not.toBeNull();
-    expect(state!.field).toBe('symbol');
+    cols = await getSortColumnsState(page, 'universes');
+    expect(cols).not.toBeNull();
+    expect(cols![0].column).toBe('symbol');
   });
 });
 
@@ -179,19 +195,18 @@ test.describe('Universe Sort Persistence', () => {
     await page.waitForTimeout(500);
 
     // Confirm state is saved
-    let state = await getSortState(page, 'universes');
-    expect(state).not.toBeNull();
-    expect(state!.field).toBe('symbol');
+    let cols = await getSortColumnsState(page, 'universes');
+    expect(cols).not.toBeNull();
+    expect(cols![0].column).toBe('symbol');
 
     // Refresh the page
     await page.reload();
     await page.waitForLoadState('networkidle');
 
     // Verify sort state persisted after refresh
-    state = await getSortState(page, 'universes');
-    expect(state).not.toBeNull();
-    expect(state!.field).toBe('symbol');
-    expect(state!.order).toBe('asc');
+    cols = await getSortColumnsState(page, 'universes');
+    expect(cols).not.toBeNull();
+    expect(cols).toEqual([{ column: 'symbol', direction: 'asc' }]);
   });
 
   test('should persist sort state across navigation', async ({ page }) => {
@@ -204,8 +219,8 @@ test.describe('Universe Sort Persistence', () => {
     await page.waitForTimeout(500);
 
     // Confirm state is saved
-    let state = await getSortState(page, 'universes');
-    expect(state!.field).toBe('risk_group');
+    let cols = await getSortColumnsState(page, 'universes');
+    expect(cols![0].column).toBe('risk_group');
 
     // Navigate away to a different page
     await page.goto(`/account/${ACCOUNT_UUID}/open`);
@@ -216,10 +231,9 @@ test.describe('Universe Sort Persistence', () => {
     await page.waitForLoadState('networkidle');
 
     // Verify sort state persisted
-    state = await getSortState(page, 'universes');
-    expect(state).not.toBeNull();
-    expect(state!.field).toBe('risk_group');
-    expect(state!.order).toBe('asc');
+    cols = await getSortColumnsState(page, 'universes');
+    expect(cols).not.toBeNull();
+    expect(cols).toEqual([{ column: 'risk_group', direction: 'asc' }]);
   });
 });
 
@@ -409,7 +423,7 @@ test.describe('Cross-Table Sort Independence', () => {
     await page.waitForTimeout(300);
 
     // Verify sort state was cleared from localStorage
-    const state = await getSortState(page, 'universes');
-    expect(state).toBeNull();
+    const cols = await getSortColumnsState(page, 'universes');
+    expect(cols).toBeNull();
   });
 });

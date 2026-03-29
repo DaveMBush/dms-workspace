@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 
 import { FilterConfig } from './filter-config.interface';
+import { SortColumn } from './sort-column.interface';
 import { SortConfig } from './sort-config.interface';
 import { TableState } from './table-state.interface';
 
@@ -17,15 +18,43 @@ export class SortFilterStateService {
     localStorage.setItem(this.storageKey, JSON.stringify(state));
   }
 
+  saveSortColumnsState(table: string, columns: SortColumn[]): void {
+    const state = this.loadAllState();
+    if (state[table] === undefined) {
+      state[table] = {};
+    }
+    state[table].sortColumns = columns;
+    delete state[table].sort;
+    localStorage.setItem(this.storageKey, JSON.stringify(state));
+  }
+
   loadSortState(table: string): SortConfig | null {
     const state = this.loadAllState();
     return state[table]?.sort ?? null;
+  }
+
+  loadSortColumnsState(table: string): SortColumn[] | null {
+    const state = this.loadAllState();
+    return state[table]?.sortColumns ?? null;
   }
 
   clearSortState(table: string): void {
     const state = this.loadAllState();
     if (state[table] !== undefined) {
       state[table] = { filters: state[table].filters };
+      if (state[table].filters === undefined) {
+        this.saveState(this.removeTableEntry(state, table));
+        return;
+      }
+    }
+    this.saveState(state);
+  }
+
+  clearSortColumnsState(table: string): void {
+    const state = this.loadAllState();
+    if (state[table] !== undefined) {
+      delete state[table].sortColumns;
+      delete state[table].sort;
       if (state[table].filters === undefined) {
         this.saveState(this.removeTableEntry(state, table));
         return;

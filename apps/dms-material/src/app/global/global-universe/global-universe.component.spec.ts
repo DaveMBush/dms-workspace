@@ -2320,25 +2320,27 @@ describe('GlobalUniverseComponent - Ex-Date Editing Enhancements (TDD - Story AN
 
     it('should save sort state to SortFilterStateService when user changes sort', () => {
       const sortFilterStateService = TestBed.inject(SortFilterStateService);
-      const saveSpy = vi.spyOn(sortFilterStateService, 'saveSortState');
+      const saveSpy = vi.spyOn(sortFilterStateService, 'saveSortColumnsState');
       component.onSortChange({ active: 'symbol', direction: 'asc' });
-      expect(saveSpy).toHaveBeenCalledWith('universes', {
-        field: 'symbol',
-        order: 'asc',
-      });
+      expect(saveSpy).toHaveBeenCalledWith('universes', [
+        { column: 'symbol', direction: 'asc' },
+      ]);
     });
 
     it('should persist sort state when sort changes', () => {
       const sortFilterStateService = TestBed.inject(SortFilterStateService);
       component.onSortChange({ active: 'distribution', direction: 'desc' });
-      const state = sortFilterStateService.loadSortState('universes');
-      expect(state).toEqual({ field: 'distribution', order: 'desc' });
+      const state = sortFilterStateService.loadSortColumnsState('universes');
+      expect(state).toEqual([{ column: 'distribution', direction: 'desc' }]);
     });
 
     it('should clear sort state when sort direction is reset', () => {
       // When direction is empty string (sort cleared), clear sort state
       const sortFilterStateService = TestBed.inject(SortFilterStateService);
-      const clearSpy = vi.spyOn(sortFilterStateService, 'clearSortState');
+      const clearSpy = vi.spyOn(
+        sortFilterStateService,
+        'clearSortColumnsState'
+      );
       component.onSortChange({ active: 'symbol', direction: '' });
       expect(clearSpy).toHaveBeenCalledWith('universes');
     });
@@ -2430,15 +2432,14 @@ describe('GlobalUniverseComponent - Client-Side Sorting Removal', () => {
 
     it('should trigger HTTP call on sort change instead of local sorting', () => {
       const sortFilterStateService = TestBed.inject(SortFilterStateService);
-      const saveSpy = vi.spyOn(sortFilterStateService, 'saveSortState');
+      const saveSpy = vi.spyOn(sortFilterStateService, 'saveSortColumnsState');
 
       component.onSortChange({ active: 'symbol', direction: 'asc' });
 
       // Sort change should delegate to SortFilterStateService (which triggers HTTP via interceptor)
-      expect(saveSpy).toHaveBeenCalledWith('universes', {
-        field: 'symbol',
-        order: 'asc',
-      });
+      expect(saveSpy).toHaveBeenCalledWith('universes', [
+        { column: 'symbol', direction: 'asc' },
+      ]);
 
       // Component should NOT have any local sort logic that reorders filteredData$
       expect(

@@ -7,6 +7,7 @@ import {
   OnDestroy,
   output,
   signal,
+  viewChild,
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -28,17 +29,18 @@ import { EditableDateCellComponent } from '../../shared/components/editable-date
 import { ErrorHandlingService } from '../../shared/services/error-handling.service';
 import { GlobalLoadingService } from '../../shared/services/global-loading.service';
 import { NotificationService } from '../../shared/services/notification.service';
+import { SortColumn } from '../../shared/services/sort-column.interface';
 import { SortFilterStateService } from '../../shared/services/sort-filter-state.service';
 import { UniverseSyncService } from '../../shared/services/universe-sync.service';
 import { UpdateUniverseFieldsService } from '../../shared/services/update-universe-fields.service';
 import { selectAccounts } from '../../store/accounts/selectors/select-accounts.function';
 import { selectRiskGroup } from '../../store/risk-group/selectors/select-risk-group.function';
-import { selectUniverses } from '../../store/universe/selectors/select-universes.function';
 import { Universe } from '../../store/universe/universe.interface';
 import { AddSymbolDialogComponent } from '../../universe-settings/add-symbol-dialog/add-symbol-dialog';
 import { ScreenerService } from '../global-screener/services/screener.service';
 import { ImportDialogComponent } from '../import-dialog/import-dialog.component';
 import { ImportDialogResult } from '../import-dialog/import-dialog-result.interface';
+import { buildShiftSortColumns } from './build-shift-sort-columns.function';
 import { calculateYieldPercent } from './calculate-yield-percent.function';
 import { CellEditEvent } from './cell-edit-event.interface';
 import { enrichUniverseWithRiskGroups } from './enrich-universe-with-risk-groups.function';
@@ -46,6 +48,7 @@ import { filterUniverses } from './filter-universes.function';
 import { formatPosition } from './format-position.function';
 import { UNIVERSE_COLUMNS } from './global-universe.columns';
 import { EXPIRED_OPTIONS } from './global-universe.expired-options';
+import { handleCellEdit } from './handle-cell-edit.function';
 import { parseYieldValue } from './parse-yield-value.function';
 import { saveUniverseFiltersAndNotify } from './save-universe-filters-and-notify.function';
 import { UniverseService } from './services/universe.service';
@@ -93,8 +96,13 @@ export class GlobalUniverseComponent implements OnDestroy {
   readonly expiredFilter$ = signal<boolean | null>(null);
   readonly selectedAccountId$ = signal<string>('all');
   readonly minYieldFilter$ = signal<number | null>(null);
+  readonly sortColumns$ = signal<SortColumn[]>(
+    this.sortFilterStateService.loadSortColumnsState('universes') ?? []
+  );
+
   private readonly localSyncInProgress$ = signal<boolean>(false);
   private textFilterTimer?: ReturnType<typeof setTimeout>;
+  private readonly baseTable = viewChild(BaseTableComponent);
 
   ngOnDestroy(): void {
     clearTimeout(this.textFilterTimer);
@@ -163,14 +171,19 @@ export class GlobalUniverseComponent implements OnDestroy {
   });
 
   onSortChange(sort: Sort): void {
-    if (sort.direction === '') {
-      this.sortFilterStateService.clearSortState('universes');
-    } else {
-      this.sortFilterStateService.saveSortState('universes', {
-        field: sort.active,
-        order: sort.direction,
-      });
+    const shiftKey = this.baseTable()?.getLastShiftKey() ?? false;
+    if (sort.direction === '' && !shiftKey) {
+      this.sortColumns$.set([]);
+      this.sortFilterStateService.clearSortColumnsState('universes');
+      handleSocketNotification('top', 'update', ['1']);
+      return;
     }
+    const direction = sort.direction as 'asc' | 'desc';
+    const newColumns = shiftKey
+      ? buildShiftSortColumns(this.sortColumns$(), sort.active, direction)
+      : [{ column: sort.active, direction }];
+    this.sortColumns$.set(newColumns);
+    this.sortFilterStateService.saveSortColumnsState('universes', newColumns);
     handleSocketNotification('top', 'update', ['1']);
   }
 
@@ -226,16 +239,10 @@ export class GlobalUniverseComponent implements OnDestroy {
   }
 
   showAddSymbolDialog(): void {
-    const dialogRef = this.dialog.open(AddSymbolDialogComponent, {
+    this.dialog.open(AddSymbolDialogComponent, {
       width: '400px',
       disableClose: false,
       autoFocus: 'dialog',
-    });
-
-    dialogRef.afterClosed().subscribe({
-      next: function onDialogClosed() {
-        // Table will automatically update via signals
-      },
     });
   }
 
@@ -272,30 +279,10 @@ export class GlobalUniverseComponent implements OnDestroy {
   }
 
   onCellEdit(row: Universe, field: keyof Universe, value: unknown): void {
-    // Transform value based on field type before validation
-    let transformedValue = value;
-    if (field === 'ex_date') {
-      transformedValue = this.validationService.transformExDateValue(value);
-    }
-
-    if (!this.validationService.validateFieldValue(field, transformedValue)) {
-      return;
-    }
-
-    // Find the actual universe object in the SmartNgRX store and update it
-    // This triggers SmartNgRX to automatically save the changes
-    const universes = selectUniverses();
-    for (let i = 0; i < universes.length; i++) {
-      if (universes[i].id === row.id) {
-        // Update the field directly on the SmartNgRX managed object
-        (universes[i] as unknown as Record<string, unknown>)[field] =
-          transformedValue;
-        break;
-      }
-    }
-
-    // Emit event for any listeners (optional, for compatibility)
-    this.cellEdit.emit({ row, field, value: transformedValue });
+    handleCellEdit(row, field, value, {
+      validationService: this.validationService,
+      emitCellEdit: this.cellEdit.emit.bind(this.cellEdit),
+    });
   }
 
   onSymbolFilterChange(value: string): void {

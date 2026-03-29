@@ -59,6 +59,11 @@
           [style.width]="column.width"
         >
           {{ column.header }}
+          @if (sortRankMap()[column.field]) {
+          <span class="sort-rank-indicator" data-testid="sort-rank">{{
+            sortRankMap()[column.field]
+          }}</span>
+          }
         </th>
         <td mat-cell *matCellDef="let row; let i = index">
           <ng-container
