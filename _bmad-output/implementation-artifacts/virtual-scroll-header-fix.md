@@ -54,53 +54,60 @@ From `base-table.component.scss`:
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  will-change: transform; // ← creates a stacking context (minor factor)
-  contain: strict; // ← PRIMARY ROOT CAUSE
+  will-change: transform; // creates a GPU compositing layer — likely factor
+  contain: strict; // implies size + layout + paint + style
 }
 ```
 
 `contain: strict` expands to `contain: size layout paint style`.
 
-### Why `contain: layout` Breaks `position: sticky`
+### Why `position: sticky` Fails in This Setup
 
-`contain: layout` on an element makes it an **independent formatting context** (a layout root). According to the CSS Containment Level 2 spec:
+**Note on `contain: layout`**: According to the CSS Containment spec (W3C) and MDN,
+`contain: layout` by itself does _not_ break `position: sticky` for descendant elements.
+Sticky positioning resolves against the nearest scroll container (found via `overflow != visible`),
+and layout containment's independent formatting context does not intercept that lookup.
 
-> `contain: layout` establishes a new independent formatting context for its children. The element becomes both the containing block and the layout root for its subtree.
+The observed failure — sticky header scrolling 1:1 with `scrollTop` from the very first scroll
+step — is therefore not directly caused by layout containment. Three more likely mechanisms
+are:
 
-For `position: sticky` to work:
+**1. `will-change: transform` on the scroll container**
 
-1. The sticky element must have a **scrollable ancestor** — ✅ `.virtual-scroll-viewport` has `overflow-y: auto`.
-2. The sticky element must have a **containing block** (nearest block ancestor) that is _taller_ than the sticky element, giving the element a non-zero "stick range" (the distance it can travel before it is released at the bottom).
+When `will-change: transform` is set on the _scroll container itself_, the browser promotes it
+to a GPU compositing layer and applies the same environmental effects as `transform: (anything)`.
+A known browser behaviour is that composited scroll layers can bypass the standard sticky-offset
+calculation: the sticky element's paint is computed on a different draw phase than the
+scrolling/layout phase, and some browser compositor paths treat the sticky offset as zero when
+the containing scroll layer is hardware-accelerated in this way. The result: the element paints
+at its normal-flow position (top of content) and scrolls away with the content instead of holding
+at `top: 0`.
 
-The problem: when `contain: layout` is applied to the scroll container, the browser's layout engine resolves the sticky element's containing block as the _same element_ that is also the scroll container. In this geometry, the layout containment boundary and the scroll container boundary are identical. Because the sticky element's containing block and scroll container are the same node, the browser treats sticky as if the element has already consumed its full stick range at every scroll position — effectively falling back to `position: relative`.
+**2. `contain: strict` combined with `will-change: transform`**
 
-Additionally, `contain: size` (also part of `contain: strict`) declares that the element's size is independent of its content. This further confuses the sticky constraint calculation, as the browser cannot correctly compute the "scrollable height" vs "visible height" ratio needed to resolve where stickiness should engage and release.
+Even if neither rule breaks sticky individually, the combination of `contain: strict` (which
+creates a new stacking context, new BFC, and constrains size and paint) with `will-change:
+transform` (which creates a compositing layer) can prevent the browser's sticky-calculation pass
+from correctly identifying the scroll container and computing the offset. The stacking-context and
+compositing-layer boundaries effectively isolate the scroll viewport from the standard sticky
+resolution path.
 
-### The `will-change: transform` Factor
+**3. CDK `transform: translateY(Npx)` on the content wrapper (higher scroll depths)**
 
-`will-change: transform` on the viewport creates a new **stacking context** and **GPU compositing layer** for the element. While this does not by itself break sticky, it combines with `contain: strict` to fully isolate the scroll viewport's rendering from its ancestors. Any sticky resolution that might have climbed the ancestor chain is cut off by this compositing boundary.
-
-### Angular CDK Virtual Scroll Interaction
-
-Angular CDK version: `@angular/cdk 21.2.4` (Angular 21.2.x)
-
-CDK virtual scroll works by:
-
-1. Setting a large-height element inside the viewport to represent the full scroll height
-2. Applying `transform: translateY(Npx)` to the `.cdk-virtual-scroll-content-wrapper` to virtually position rendered rows
-
-In our test, at scroll depth ≤ 500 px with 27 rows × 52 px = 1,404 px total height, CDK has not yet needed to apply a translateY transform (all rows are already rendered). So the `transform` on the content wrapper is not the trigger in this case — the sticky failure happens purely due to `contain: layout` on the viewport.
-
-At higher scroll depths (when CDK does apply `transform: translateY(Npx)` to the content wrapper), there would be a _second independent failure_: any sticky header inside a transformed element cannot be sticky relative to a scroll container outside that transform, because transforms create new stacking/containing-block contexts. This is documented in the CSS spec as: "a transform makes the element a containing block for `position: fixed`". The same mechanism makes sticky positioning resolve against the transformed ancestor rather than the scroll container.
+At higher scroll depths CDK applies `transform: translateY(Npx)` to `.cdk-virtual-scroll-content-wrapper`
+to position the rendered rows. A `transform` on any ancestor between the sticky element and the
+scroll container creates a new containing block for absolutely/fixed-positioned elements and, in
+practice, also disrupts sticky positioning. This is an independent secondary failure mode: at low
+scroll depths (our 27-row test) the CDK transform was still `matrix(1,0,0,1,0,0)` (identity)
+but the header was already broken, confirming the primary cause is not the CDK transform.
 
 ### Summary
 
-| Factor                                                                        | Effect                                                                                                                                    |
-| ----------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| `contain: strict` → `contain: layout`                                         | Creates independent formatting context; sticky element's containing block = scroll container → zero stick range → sticky becomes relative |
-| `contain: strict` → `contain: size`                                           | Viewport's intrinsic size is decoupled from children; sticky constraint calculation is further broken                                     |
-| `will-change: transform`                                                      | Creates stacking/compositing layer; reinforces isolation of the scroll context                                                            |
-| CDK `transform: translateY(Npx)` on content wrapper (at higher scroll depths) | Would independently break intra-wrapper sticky a second time                                                                              |
+| Factor                                                                        | Effect                                                                                                |
+| ----------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `will-change: transform` on scroll container                                  | Composites the scroll layer; browser sticky-offset calculation may be bypassed by the compositor path |
+| `contain: strict` + `will-change: transform` combined                         | Stacking-context + compositing-layer isolation prevents correct sticky resolution                     |
+| CDK `transform: translateY(Npx)` on content wrapper (at higher scroll depths) | Independent secondary failure: transform ancestor interrupts sticky lookup                            |
 
 ---
 
@@ -108,7 +115,7 @@ At higher scroll depths (when CDK does apply `transform: translateY(Npx)` to the
 
 - `@angular/cdk`: `21.2.4`
 - Angular version: `21.2.x`
-- This is not a CDK bug introduced in a specific version — it is a fundamental CSS containment + sticky interaction that applies to all versions of CDK virtual scroll when `contain: strict` is applied to the viewport element.
+- This is not a CDK bug introduced in a specific version — it is a browser-level interaction between `will-change: transform` / `contain: strict` on the scroll container and `position: sticky` for descendants, which affects all versions of CDK virtual scroll.
 - There is no CDK upstream fix required; the fix is purely in the application's CSS.
 
 ---
@@ -117,7 +124,7 @@ At higher scroll depths (when CDK does apply `transform: translateY(Npx)` to the
 
 ### Recommended Fix: Replace `contain: strict` with `contain: paint` in `base-table.component.scss`
 
-`contain: content` (= `contain: layout paint style`) would NOT fix the issue because it still includes `contain: layout`. The correct fix is to use `contain: paint` only.
+Since the primary suspected cause is the combination of `contain: strict` with `will-change: transform`, the minimal CSS fix is to replace `contain: strict` with `contain: paint`, which removes the `size`, `layout`, and `style` constraints while retaining the paint-performance benefit.
 
 **Change**:
 
@@ -141,12 +148,12 @@ At higher scroll depths (when CDK does apply `transform: translateY(Npx)` to the
 }
 ```
 
-`contain: paint` tells the browser that elements inside the viewport do not overflow beyond the viewport's box (enabling GPU paint optimisation) but does NOT create an independent formatting context. This preserves the GPU compositing performance benefit while allowing the sticky header computation to work correctly.
+`contain: paint` tells the browser that elements inside the viewport do not overflow beyond the viewport's box (enabling GPU paint optimization) but does NOT apply `size`, `layout`, or `style` containment. This removes the constraints most likely to combine with `will-change: transform` and break sticky resolution.
 
 ### Why `contain: paint` Is Safe
 
-- **`contain: paint`** still creates a paint-optimised compositing layer (the primary performance goal of the original rule)
-- It does NOT apply layout containment, so `position: sticky` resolves correctly against the scroll container
+- **`contain: paint`** still creates a paint-optimized compositing layer (the primary performance goal of the original rule)
+- It does NOT apply layout or size containment, so `position: sticky` resolves correctly against the scroll container
 - The `will-change: transform` rule is retained, preserving GPU compositing of the scroll layer
 - There is no risk of layout _leakage_ to the outside of the viewport element because `overflow: auto/hidden` already clips overflow
 
@@ -162,7 +169,7 @@ At higher scroll depths (when CDK does apply `transform: translateY(Npx)` to the
 }
 ```
 
-This is also valid. `will-change: transform` already promotes the element to a GPU compositing layer. The `contain: strict` was originally added to further optimise paint and layout, but this optimization is overly aggressive and breaks the header sticky behaviour.
+This is also valid. `will-change: transform` already promotes the element to a GPU compositing layer. The `contain: strict` was originally added to further optimize paint and layout, but this change is overly aggressive and breaks the header sticky behaviour.
 
 ### Verification Approach (for Story 31.2)
 
