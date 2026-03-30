@@ -18,11 +18,11 @@ so that the fix in Story 31.2 targets the correct problem and has a confirmed re
 
 ## Definition of Done
 
-- [ ] Playwright MCP session used to scroll Universe table and capture header position data
-- [ ] Root cause documented in `_bmad-output/implementation-artifacts/virtual-scroll-header-fix.md`
-- [ ] Account screen behaviour documented in the same file
-- [ ] `pnpm all` passes (no code changes)
-- [ ] Run `pnpm format`
+- [x] Playwright MCP session used to scroll Universe table and capture header position data
+- [x] Root cause documented in `_bmad-output/implementation-artifacts/virtual-scroll-header-fix.md`
+- [x] Account screen behaviour documented in the same file
+- [x] `pnpm all` passes (no code changes)
+- [x] Run `pnpm format`
 
 ## Tasks / Subtasks
 
@@ -61,12 +61,15 @@ The terminals show `pnpm start:server` and `pnpm start:dms-material` are already
 ### BaseTable Template Structure
 
 The virtual scroll is structured as:
+
 ```html
-<div class="table-container">          <!-- position: relative; height: 100%; overflow: hidden -->
-  <cdk-virtual-scroll-viewport         <!-- .virtual-scroll-viewport: flex:1; overflow-y:auto; will-change:transform; contain:strict -->
+<div class="table-container">
+  <!-- position: relative; height: 100%; overflow: hidden -->
+  <cdk-virtual-scroll-viewport <!-- .virtual-scroll-viewport: flex:1; overflow-y:auto; will-change:transform; contain:strict -->
     [itemSize]="rowHeight()">
     <table mat-table>
-      <tr mat-header-row *matHeaderRowDef="displayedColumns(); sticky: true"></tr>  <!-- sticky: true -->
+      <tr mat-header-row *matHeaderRowDef="displayedColumns(); sticky: true"></tr>
+      <!-- sticky: true -->
       <tr mat-row *matRowDef="..."></tr>
     </table>
   </cdk-virtual-scroll-viewport>
@@ -107,8 +110,21 @@ This story produces `virtual-scroll-header-fix.md` which Story 31.2 uses as the 
 
 ### Agent Model Used
 
+Claude Sonnet 4.6
+
 ### Debug Log References
+
+- Playwright MCP used to reproduce issue on Universe screen (header top changed 128→−372 over 10×50px scroll steps)
+- Playwright MCP confirmed same issue on Account screen (header top changed 113→−137 over 5×50px scroll steps)
+- Root cause: `contain: strict` (implies `contain: layout`) on `.virtual-scroll-viewport` breaks `position: sticky` for descendant headers
 
 ### Completion Notes List
 
+- `_bmad-output/implementation-artifacts/virtual-scroll-header-fix.md` created with reproduction data, root cause, CDK version constraint, and proposed fix (`contain: paint` replacing `contain: strict`)
+- No source code changes were made (investigation-only story)
+- `pnpm all` passed (no affected tasks)
+- `pnpm format` ran clean
+
 ### File List
+
+- `_bmad-output/implementation-artifacts/virtual-scroll-header-fix.md` (new)
