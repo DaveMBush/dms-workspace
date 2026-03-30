@@ -26,7 +26,7 @@ export class MyComponent {
 | `data`        | `T[]`         | ✅ Yes   | -       | Array of table data (must be signal) |
 | `columns`     | `ColumnDef[]` | ✅ Yes   | -       | Column definitions                   |
 | `loading`     | `boolean`     | ❌ No    | `false` | Loading state indicator              |
-| `rowHeight`   | `number`      | ❌ No    | `48`    | Height of each row in pixels         |
+| `rowHeight`   | `number`      | ❌ No    | `52`    | Height of each row in pixels         |
 | `bufferSize`  | `number`      | ❌ No    | `10`    | Virtual scroll buffer size           |
 | `selectable`  | `boolean`     | ❌ No    | `false` | Enable row selection                 |
 | `multiSelect` | `boolean`     | ❌ No    | `false` | Allow multiple row selection         |
