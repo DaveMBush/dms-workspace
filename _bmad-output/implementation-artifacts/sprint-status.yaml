@@ -193,3 +193,25 @@ development_status:
   29-1-audit-and-standardize-virtual-scroll-row-heights: ready-for-dev
   29-2-verify-smooth-scrolling-on-all-tables-with-playwright: ready-for-dev
   epic-29-retrospective: optional
+
+  # ── Epic 30: Update Rate-Limiting Directives in Agent Prompts ────────────────
+  epic-30: in-progress
+  30-1-replace-rate-limiting-directive-in-all-prompt-and-instruction-files: ready-for-dev
+  epic-30-retrospective: optional
+
+  # ── Epic 31: Fix Janky Virtual-Scroll Table Header Jumping ───────────────────
+  epic-31: in-progress
+  31-1-reproduce-and-root-cause-the-header-jumping-issue: ready-for-dev
+  31-2-implement-and-verify-the-virtual-scroll-header-fix: ready-for-dev
+  epic-31-retrospective: optional
+
+  # ── Epic 32: Fix Copy Paste Detection Threshold and Violations ───────────────
+  epic-32: in-progress
+  32-1-lower-jscpd-threshold-to-zero-and-update-architecture-doc: ready-for-dev
+  32-2-refactor-all-copy-paste-violations-to-pass-zero-threshold-check: ready-for-dev
+  epic-32-retrospective: optional
+
+  # ── Epic 33: Fix BaseTable Storybook Story Display ───────────────────────────
+  epic-33: in-progress
+  33-1-add-fixed-size-host-wrapper-to-basetable-storybook-stories: ready-for-dev
+  epic-33-retrospective: optional
