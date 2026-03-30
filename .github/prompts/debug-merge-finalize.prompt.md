@@ -79,5 +79,5 @@ If merge/finalization fails after required retries and escalations, return `MERG
 ## Rate Limits
 
 To avoid GitHub Copilot rate limiting:
-- Always wait for at least 2 minutes between API calls.
+- Always wait for at least 2 minutes between terminal calls, calls to MCP servers, or code updates.
 - Prefer slow completion over fast failure.
