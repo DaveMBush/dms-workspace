@@ -16,7 +16,7 @@ Wrap the client and server in electron such that electron renders the angular co
 
 - All internal links should go to the links within the app just like they would if this was a web application
 - All external links should launch the default browser.
-- Calls to /api/**/*.* should be processed by the backend code.
+- Calls to /api/\*_/_.\* should be processed by the backend code.
 
 ## Find a better dividend source
 
@@ -25,4 +25,3 @@ Yahoo Finance only provides dividend information to 3 decimal places but most of
 ## Check the buffer size on the tables for virtual scrolling
 
 ## Are we really lazy loading the data
-
