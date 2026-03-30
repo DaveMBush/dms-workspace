@@ -61,12 +61,15 @@ The terminals show `pnpm start:server` and `pnpm start:dms-material` are already
 ### BaseTable Template Structure
 
 The virtual scroll is structured as:
+
 ```html
-<div class="table-container">          <!-- position: relative; height: 100%; overflow: hidden -->
-  <cdk-virtual-scroll-viewport         <!-- .virtual-scroll-viewport: flex:1; overflow-y:auto; will-change:transform; contain:strict -->
+<div class="table-container">
+  <!-- position: relative; height: 100%; overflow: hidden -->
+  <cdk-virtual-scroll-viewport <!-- .virtual-scroll-viewport: flex:1; overflow-y:auto; will-change:transform; contain:strict -->
     [itemSize]="rowHeight()">
     <table mat-table>
-      <tr mat-header-row *matHeaderRowDef="displayedColumns(); sticky: true"></tr>  <!-- sticky: true -->
+      <tr mat-header-row *matHeaderRowDef="displayedColumns(); sticky: true"></tr>
+      <!-- sticky: true -->
       <tr mat-row *matRowDef="..."></tr>
     </table>
   </cdk-virtual-scroll-viewport>
