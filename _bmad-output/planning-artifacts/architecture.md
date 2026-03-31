@@ -696,7 +696,7 @@ This section defines the rules for configuring and maintaining the quality enfor
 
 **Config file:** `.jscpd.json`
 **CI command:** `pnpm dupcheck`
-**Threshold:** 0.1% maximum duplication across the scanned codebase
+**Threshold:** 0% — zero tolerance for code duplication across the scanned codebase
 
 **Rules:**
 

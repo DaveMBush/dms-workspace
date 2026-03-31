@@ -1,6 +1,6 @@
 {
   "silent": false,
-  "threshold": "0.1",
+  "threshold": "0",
   "mode": "weak",
   "pattern": "**/*.{js,ts,html,css,scss,json,md}",
   "minLines": 15,
