@@ -71,6 +71,20 @@ describe('GlobalSummaryComponent', () => {
 
   it('should render summary display components', () => {
     fixture.detectChanges();
+    const httpMock = TestBed.inject(HttpTestingController);
+    const summaryReq = httpMock.expectOne(
+      (req) => req.url === '/api/summary' && req.params.has('month')
+    );
+    summaryReq.flush({
+      deposits: 100000,
+      dividends: 2500,
+      capitalGains: 5000,
+      equities: 50000,
+      income: 30000,
+      tax_free_income: 20000,
+    });
+    httpMock.match((req) => req.url.includes('/api/summary'));
+    fixture.detectChanges();
     const charts = fixture.nativeElement.querySelectorAll(
       'dms-summary-display'
     );
@@ -87,6 +101,20 @@ describe('GlobalSummaryComponent', () => {
   });
 
   it('should pass 100% height to performance line chart so it fills panel (regression: AS.9 Bug #5)', () => {
+    fixture.detectChanges();
+    const httpMockBug5 = TestBed.inject(HttpTestingController);
+    const summaryReqBug5 = httpMockBug5.expectOne(
+      (req) => req.url === '/api/summary' && req.params.has('month')
+    );
+    summaryReqBug5.flush({
+      deposits: 100000,
+      dividends: 2500,
+      capitalGains: 5000,
+      equities: 50000,
+      income: 30000,
+      tax_free_income: 20000,
+    });
+    httpMockBug5.match((req) => req.url.includes('/api/summary'));
     fixture.detectChanges();
     // The line chart (second dms-summary-display) should receive height 100%
     const charts = fixture.nativeElement.querySelectorAll(
@@ -588,6 +616,18 @@ describe('Pie Chart Display', () => {
   });
 
   it('should render pie chart component with real data', () => {
+    fixture.detectChanges();
+    const summaryReqPie = httpMock.expectOne(
+      (req) => req.url === '/api/summary' && req.params.has('month')
+    );
+    summaryReqPie.flush({
+      deposits: 100000,
+      dividends: 2500,
+      capitalGains: 5000,
+      equities: 50000,
+      income: 30000,
+      tax_free_income: 20000,
+    });
     fixture.detectChanges();
 
     const pieCharts = fixture.nativeElement.querySelectorAll(
