@@ -6,11 +6,12 @@
   <p class="no-data-message text-gray-500 py-4" data-testid="no-data-message">
     No data available
   </p>
-  }
+  } @else {
   <dms-summary-display
     data-testid="allocation-chart"
     [data$]="allocationData$()"
     [chartType$]="'pie'"
     [options$]="pieChartOptions$()"
   ></dms-summary-display>
+  }
 </div>
