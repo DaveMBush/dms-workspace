@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { signal } from '@angular/core';
 import { ChartData } from 'chart.js';
 
 import { AllocationChartComponent } from './allocation-chart';

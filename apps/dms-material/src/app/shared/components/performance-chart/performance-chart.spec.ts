@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl } from '@angular/forms';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { ChartData } from 'chart.js';
 
 import { PerformanceChartComponent } from './performance-chart';
@@ -18,7 +18,8 @@ describe('PerformanceChartComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [PerformanceChartComponent, NoopAnimationsModule],
+      imports: [PerformanceChartComponent],
+      providers: [provideNoopAnimations()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(PerformanceChartComponent);
