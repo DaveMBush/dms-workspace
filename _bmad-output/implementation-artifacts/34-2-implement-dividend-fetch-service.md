@@ -1,6 +1,6 @@
 # Story 34.2: Implement Dividend Fetch Service for Selected Source
 
-Status: Approved
+Status: Done
 
 ## Story
 
@@ -17,25 +17,25 @@ so that the dividend data can be integrated into the update process.
 
 ## Definition of Done
 
-- [ ] New service file created under `apps/server/src/app/routes/common/` following existing naming conventions (e.g. `dividend-history.service.ts`)
-- [ ] `ProcessedRow[]` return type matches the existing interface in `distribution-api.function.ts`
-- [ ] Rate-limit utility added/reused
-- [ ] Unit tests with ≥ 100% branch coverage
-- [ ] `pnpm all` passes
-- [ ] `pnpm format` passes
+- [x] New service file created under `apps/server/src/app/routes/common/` following existing naming conventions (e.g. `dividend-history.service.ts`)
+- [x] `ProcessedRow[]` return type matches the existing interface in `distribution-api.function.ts`
+- [x] Rate-limit utility added/reused
+- [x] Unit tests with ≥ 100% branch coverage
+- [x] `pnpm all` passes
+- [x] `pnpm format` passes
 
 ## Tasks / Subtasks
 
-- [ ] Read Story 34.1 output (`dividend-source-evaluation.md`) to confirm the selected source and its API shape (AC: #1)
-  - [ ] Identify the URL pattern, response format, and any required parsing
-- [ ] Create `dividend-history.service.ts` under `apps/server/src/app/routes/common/` (AC: #1)
-  - [ ] Export `fetchDividendHistory(ticker: string): Promise<ProcessedRow[]>`
-  - [ ] Parse response to extract `{ amount: number; date: Date }` pairs preserving full decimal precision
-- [ ] Implement empty/error guard returning `[]` and logging a warning (AC: #2)
-- [ ] Add rate-limit delay following the pattern in `distribution-api.function.ts` (AC: #3)
-- [ ] Write unit tests covering success, empty response, and error branches (AC: #4)
-- [ ] Run `pnpm all` and fix any failures
-- [ ] Run `pnpm format`
+- [x] Read Story 34.1 output (`dividend-source-evaluation.md`) to confirm the selected source and its API shape (AC: #1)
+  - [x] Identify the URL pattern, response format, and any required parsing
+- [x] Create `dividend-history.service.ts` under `apps/server/src/app/routes/common/` (AC: #1)
+  - [x] Export `fetchDividendHistory(ticker: string): Promise<ProcessedRow[]>`
+  - [x] Parse response to extract `{ amount: number; date: Date }` pairs preserving full decimal precision
+- [x] Implement empty/error guard returning `[]` and logging a warning (AC: #2)
+- [x] Add rate-limit delay following the pattern in `distribution-api.function.ts` (AC: #3)
+- [x] Write unit tests covering success, empty response, and error branches (AC: #4)
+- [x] Run `pnpm all` and fix any failures
+- [x] Run `pnpm format`
 
 ## Dev Notes
 
@@ -52,7 +52,15 @@ Create a standalone service function (not a class) following the naming conventi
 ## Dev Agent Record
 
 ### Agent Model Used
+Claude Sonnet 4.6 (GitHub Copilot)
 
 ### Completion Notes
+- Created `dividend-history.service.ts` fetching from `dividendhistory.org/payout/{TICKER}/`
+- Extracts JSON from `<script type="application/json" data-dividend-chart-json>` tag
+- Filters unconfirmed rows (`type === 'u'`), validates amount > 0 and valid date
+- 10-second rate limit matching Yahoo Finance pattern
+- 14 unit tests, all passing, lint-clean
 
 ## File List
+- `apps/server/src/app/routes/common/dividend-history.service.ts` (new)
+- `apps/server/src/app/routes/common/dividend-history.service.spec.ts` (new)
