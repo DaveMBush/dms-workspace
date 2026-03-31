@@ -1,4 +1,8 @@
-import type { Decorator, Meta, StoryObj } from '@storybook/angular';
+import {
+  componentWrapperDecorator,
+  type Meta,
+  type StoryObj,
+} from '@storybook/angular';
 
 import { BaseTableComponent } from './base-table.component';
 import { ColumnDef } from './column-def.interface';
@@ -139,21 +143,14 @@ const universeData: UniverseRow[] = [
   },
 ];
 
-const baseTableContainerDecorator: Decorator =
-  function baseTableContainerDecorator(storyFn, context) {
-    const story = storyFn({ args: context.args });
-    return {
-      ...story,
-      template: `<div style="height: 500px; width: 100%; display: block;">${
-        story.template ?? ''
-      }</div>`,
-    };
-  };
+function wrapInFixedContainer(story: string): string {
+  return `<div style="height: 500px; width: 100%; display: block;">${story}</div>`;
+}
 
 const meta: Meta<BaseTableComponent<SampleRow>> = {
   component: BaseTableComponent,
   title: 'Shared/BaseTable',
-  decorators: [baseTableContainerDecorator],
+  decorators: [componentWrapperDecorator(wrapInFixedContainer)],
   argTypes: {
     sortChange: { action: 'sortChange' },
     rowClick: { action: 'rowClick' },
