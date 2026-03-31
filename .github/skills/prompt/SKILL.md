@@ -1,5 +1,5 @@
 ---
-description: 'Collect required user input via script instead of chat. Use when information is missing, ambiguous, a decision is required before continuing, or the rate limit for the current model is exceeded. Replaces asking follow-up questions in chat.'
+description: 'Use this when more information is needed from the user, or when a decision or confirmation is required.'
 name: 'prompt'
 ---
 
@@ -28,9 +28,6 @@ with:
 
 ## Handling the response
 
-- If response == "stop" → halt the current workflow
-- If response == "continue" → proceed with no changes
-- Otherwise:
-  - Treat the response as user-provided input
-  - Add it to context as if it came from a file
-  - Continue execution using that input
+- Treat the response as user-provided input
+- Add it to context as if it came from a file
+- Continue execution using that input

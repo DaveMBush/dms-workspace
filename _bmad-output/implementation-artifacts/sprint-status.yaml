@@ -215,3 +215,61 @@ development_status:
   epic-33: in-progress
   33-1-add-fixed-size-host-wrapper-to-basetable-storybook-stories: ready-for-dev
   epic-33-retrospective: optional
+
+  # ── Epic 34: Find a Better Dividend Source ───────────────────────────────────
+  epic-34: backlog
+  34-1-evaluate-and-select-dividend-data-source: backlog
+  34-2-implement-dividend-fetch-service: backlog
+  34-3-wire-new-service-into-dividend-update-process: backlog
+  34-4-e2e-test-dividend-precision-after-update: backlog
+  epic-34-retrospective: optional
+
+  # ── Epic 35: Fetch Price and Dividend on Symbol Add ──────────────────────────
+  epic-35: backlog
+  35-1-identify-price-dividend-fetch-entry-points: backlog
+  35-2-fetch-price-dividend-after-manual-symbol-add: backlog
+  35-3-fetch-price-dividend-after-cusip-resolution-add: backlog
+  epic-35-retrospective: optional
+
+  # ── Epic 36: Fix Multi-Column Sorting on Universe Screen ─────────────────────
+  epic-36: backlog
+  36-1-write-failing-e2e-tests-multi-column-sort-universe: backlog
+  36-2-fix-secondary-sort-universe-screen: backlog
+  36-3-regression-proof-multi-column-sort-persistence: backlog
+  epic-36-retrospective: optional
+
+  # ── Epic 37: Fix Sorting on Account Tables ───────────────────────────────────
+  epic-37: backlog
+  37-1-write-failing-e2e-tests-account-table-sorting: backlog
+  37-2-diagnose-and-fix-account-table-sort-bug: backlog
+  37-3-unit-tests-account-table-sort-state-wiring: backlog
+  epic-37-retrospective: optional
+
+  # ── Epic 38: Fix Sort/Filter State Persistence on Account Screens ─────────────
+  epic-38: backlog
+  38-1-write-e2e-tests-sort-filter-state-persistence-account: backlog
+  38-2-fix-sort-filter-state-persistence-account-screens: backlog
+  38-3-verify-universe-screen-sort-filter-persistence: backlog
+  epic-38-retrospective: optional
+
+  # ── Epic 39: Fix Empty Date Editor Width ─────────────────────────────────────
+  epic-39: backlog
+  39-1-write-tests-date-editor-width-consistency: backlog
+  39-2-fix-date-editor-width-consistent: backlog
+  epic-39-retrospective: optional
+
+  # ── Epic 40: Implement Lazy Loading for All Tables ───────────────────────────
+  epic-40: backlog
+  40-1-diagnose-root-cause-eager-data-loading: backlog
+  40-2-implement-lazy-loading-universe-screen-table: backlog
+  40-3-implement-lazy-loading-account-tables: backlog
+  40-4-e2e-tests-verifying-lazy-loading-network-traffic: backlog
+  epic-40-retrospective: optional
+
+  # ── Epic 41: Refactor Code and Functionality Duplication ─────────────────────
+  epic-41: backlog
+  41-1-comprehensive-duplication-audit: backlog
+  41-2-refactor-copy-paste-code-duplication: backlog
+  41-3-refactor-functional-duplication: backlog
+  41-4-evaluate-global-summary-account-summary-merge: backlog
+  epic-41-retrospective: optional
