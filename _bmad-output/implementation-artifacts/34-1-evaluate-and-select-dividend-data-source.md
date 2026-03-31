@@ -1,6 +1,6 @@
 # Story 34.1: Evaluate and Select Dividend Data Source
 
-Status: Approved
+Status: Done
 
 ## Story
 
@@ -17,25 +17,25 @@ so that I can select the best source before writing any integration code.
 
 ## Definition of Done
 
-- [ ] `dividend-source-evaluation.md` created with all required sections
-- [ ] At least one real HTTP fetch documented for each candidate
-- [ ] A clear recommendation present in the document
-- [ ] `pnpm format` passes
+- [x] `dividend-source-evaluation.md` created with all required sections
+- [x] At least one real HTTP fetch documented for each candidate
+- [x] A clear recommendation present in the document
+- [x] `pnpm format` passes
 
 ## Tasks / Subtasks
 
-- [ ] Fetch and analyse dividendhistory.org for ticker `PDI` (AC: #1)
-  - [ ] Make a real HTTP request (or manual browser inspection) to retrieve dividend data
-  - [ ] Record: URL pattern used, response format, decimal precision of amounts, rate-limit information
-- [ ] Fetch and analyse dividendhistory.net for ticker `PDI` (AC: #2)
-  - [ ] Same analysis as above for the `.net` variant
-  - [ ] Compare both sources on precision, data coverage, and ToS constraints
-- [ ] Research alternative sources if neither candidate qualifies (AC: #3)
-  - [ ] Check cefconnect.com, macrotrends.net; document findings if checked
-- [ ] Produce `dividend-source-evaluation.md` artefact (AC: #2)
-  - [ ] Section per candidate: URL, sample response, precision, rate limits, ToS summary
-  - [ ] Clear recommendation section at the top
-- [ ] Run `pnpm format` (AC: #4)
+- [x] Fetch and analyse dividendhistory.org for ticker `PDI` (AC: #1)
+  - [x] Make a real HTTP request (or manual browser inspection) to retrieve dividend data
+  - [x] Record: URL pattern used, response format, decimal precision of amounts, rate-limit information
+- [x] Fetch and analyse dividendhistory.net for ticker `PDI` (AC: #2)
+  - [x] Same analysis as above for the `.net` variant
+  - [x] Compare both sources on precision, data coverage, and ToS constraints
+- [x] Research alternative sources if neither candidate qualifies (AC: #3)
+  - [x] Check cefconnect.com, macrotrends.net; document findings if checked
+- [x] Produce `dividend-source-evaluation.md` artefact (AC: #2)
+  - [x] Section per candidate: URL, sample response, precision, rate limits, ToS summary
+  - [x] Clear recommendation section at the top
+- [x] Run `pnpm format` (AC: #4)
 
 ## Dev Notes
 
@@ -52,6 +52,17 @@ This is a research/documentation story. No production code changes are expected.
 
 ### Agent Model Used
 
+Claude Sonnet 4.6 (GitHub Copilot)
+
 ### Completion Notes
 
+Both candidate sources were evaluated via real HTTP requests (curl) against ticker PDI on 2026-03-31.
+
+- dividendhistory.org: confirmed 4 dp precision (`0.2205`), machine-readable JSON embedded in page, no API key required. **Selected.**
+- dividendhistory.net: confirmed 5 dp precision (`$0.22100`) but the amount differs from official PIMCO data (`0.2205`), HTML table only (no JSON API). Not selected.
+
+Alternative sources (cefconnect, macrotrends) not needed since dividendhistory.org satisfies all requirements.
+
 ## File List
+
+- `_bmad-output/implementation-artifacts/dividend-source-evaluation.md`
