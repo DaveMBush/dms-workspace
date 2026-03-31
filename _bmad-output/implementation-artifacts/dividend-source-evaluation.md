@@ -21,7 +21,7 @@ URL pattern: `https://dividendhistory.org/payout/{TICKER}/`
 
 ### URL Pattern
 
-```
+```text
 https://dividendhistory.org/payout/{TICKER}/
 ```
 
@@ -58,14 +58,14 @@ The page embeds a JSON payload inside a `<script>` tag in the HTML body:
 
 The same data is also rendered in an HTML `<table id="dividend-table">`.
 
-### Field Mapping to `ProcessedRow`
+### Field Mapping
 
-| JSON field | ProcessedRow field | Notes                                                |
-| ---------- | ------------------ | ---------------------------------------------------- |
-| `payout`   | `amount`           | JavaScript number, ≥ 3 sig figs                      |
-| `ex_div`   | `date`             | ISO-8601 date string (`YYYY-MM-DD`)                  |
-| `payday`   | (secondary date)   | Payment date if needed                               |
-| `type`     | —                  | `""` = regular, `"s"` = special, `"u"` = unconfirmed |
+| JSON field | Schema field                             | Notes                                                |
+| ---------- | ---------------------------------------- | ---------------------------------------------------- |
+| `payout`   | `ProcessedRow.amount`                    | JavaScript number, ≥ 3 sig figs                      |
+| `ex_div`   | `screener.ex_date` / `ex_date`           | ISO-8601 ex-dividend date (`YYYY-MM-DD`)             |
+| `payday`   | `divDeposits.date` / `ProcessedRow.date` | Payment/deposit date                                 |
+| `type`     | —                                        | `""` = regular, `"s"` = special, `"u"` = unconfirmed |
 
 ### Decimal Precision
 
@@ -93,7 +93,7 @@ The site copyright notice reads: "2012-2026 DividendHistory.org, All Rights Rese
 
 ### URL Pattern
 
-```
+```text
 https://dividendhistory.net/{ticker}-dividend-yield
 ```
 
