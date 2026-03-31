@@ -198,6 +198,20 @@ describe('dividend-history.service', () => {
       );
     });
 
+    test('returns empty array when JSON is non-array (object)', async () => {
+      const htmlWithObjectJson =
+        '<html><body><script type="application/json" data-dividend-chart-json>{"key":"value"}</script></body></html>';
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        text: vi.fn().mockResolvedValueOnce(htmlWithObjectJson),
+      });
+
+      const result = await fetchDividendHistory('OBJ');
+
+      expect(result).toEqual([]);
+    });
+
     test('returns empty array and logs warning when JSON array is empty', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,

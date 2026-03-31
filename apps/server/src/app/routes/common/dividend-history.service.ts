@@ -59,7 +59,8 @@ function extractDividendJson(html: string): DividendHistoryRow[] | null {
     return null;
   }
   try {
-    return JSON.parse(match[1]) as DividendHistoryRow[];
+    const parsed: unknown = JSON.parse(match[1]);
+    return Array.isArray(parsed) ? (parsed as DividendHistoryRow[]) : null;
   } catch {
     return null;
   }
