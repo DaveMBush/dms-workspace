@@ -1,0 +1,22 @@
+<div class="flex items-center gap-4 mb-2 flex-none">
+  <h2 class="text-lg font-semibold chart-title">Portfolio Performance</h2>
+  <mat-form-field appearance="outline" subscriptSizing="dynamic" class="w-24">
+    <mat-select
+      [formControl]="selectedYear$()"
+      aria-label="Select year"
+      data-testid="year-selector"
+    >
+      @for (year of yearOptions$(); track year) {
+      <mat-option [value]="year">{{ year }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+</div>
+<div class="flex-1 min-h-0">
+  <dms-summary-display
+    data-testid="performance-chart"
+    [data$]="performanceData$()"
+    [chartType$]="'line'"
+    [height$]="'100%'"
+  ></dms-summary-display>
+</div>

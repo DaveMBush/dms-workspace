@@ -11,13 +11,13 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatOptionModule } from '@angular/material/core';
-import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { ChartData } from 'chart.js';
 
 import { SummaryService } from '../../global/services/summary.service';
-import { SummaryDisplayComponent } from '../../shared/components/summary-display/summary-display';
+import { AllocationChartComponent } from '../../shared/components/allocation-chart/allocation-chart';
+import { PerformanceChartComponent } from '../../shared/components/performance-chart/performance-chart';
 import { buildAllocationChartData } from '../../shared/utils/build-allocation-chart-data.function';
 import { buildPerformanceChartData } from '../../shared/utils/build-performance-chart-data.function';
 import { computePercentIncrease } from '../../shared/utils/compute-percent-increase.function';
@@ -39,15 +39,15 @@ function enableSelectors(this: AccountSummaryComponent): void {
 @Component({
   selector: 'dms-account-summary',
   imports: [
+    AllocationChartComponent,
     CurrencyPipe,
     MatCardModule,
-    MatFormFieldModule,
     MatOptionModule,
     MatProgressSpinnerModule,
     MatSelectModule,
     PercentPipe,
+    PerformanceChartComponent,
     ReactiveFormsModule,
-    SummaryDisplayComponent,
   ],
   templateUrl: './account-summary.html',
   styleUrl: './account-summary.scss',

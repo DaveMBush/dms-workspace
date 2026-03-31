@@ -74,57 +74,20 @@
         </div>
 
         <!-- Pie Chart -->
-        <div class="w-full max-w-md">
-          <h2 class="text-lg font-semibold mb-2 chart-title">
-            Allocation by Risk Group
-          </h2>
-          @if (!hasAllocationData$()) {
-          <p
-            class="no-data-message text-gray-500 py-4"
-            data-testid="no-data-message"
-          >
-            No data available
-          </p>
-          }
-          <dms-summary-display
-            data-testid="allocation-chart"
-            [data$]="allocationData"
-            [chartType$]="'pie'"
-            [options$]="pieChartOptions"
-          ></dms-summary-display>
-        </div>
+        <dms-allocation-chart
+          [allocationData$]="allocationData"
+          [hasAllocationData$]="hasAllocationData$()"
+          [pieChartOptions$]="pieChartOptions"
+        ></dms-allocation-chart>
       </div>
 
       <!-- Right: Line Chart -->
       <div class="summary-right flex-1 min-w-0 min-h-[250px] flex flex-col">
-        <div class="flex items-center gap-4 mb-2 flex-none">
-          <h2 class="text-lg font-semibold chart-title">
-            Portfolio Performance
-          </h2>
-          <mat-form-field
-            appearance="outline"
-            subscriptSizing="dynamic"
-            class="w-24"
-          >
-            <mat-select
-              [formControl]="selectedYear"
-              aria-label="Select year"
-              data-testid="year-selector"
-            >
-              @for (year of yearOptions$(); track year) {
-              <mat-option [value]="year">{{ year }}</mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-        </div>
-        <div class="flex-1 min-h-0">
-          <dms-summary-display
-            data-testid="performance-chart"
-            [data$]="performanceData"
-            [chartType$]="'line'"
-            [height$]="'100%'"
-          ></dms-summary-display>
-        </div>
+        <dms-performance-chart
+          [performanceData$]="performanceData"
+          [selectedYear$]="selectedYear"
+          [yearOptions$]="yearOptions$()"
+        ></dms-performance-chart>
       </div>
     </div>
   </mat-card-content>

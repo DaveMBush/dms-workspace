@@ -63,7 +63,6 @@
       </ng-template>
 
       <!-- Custom cell template -->
-      <!-- eslint-disable @angular-eslint/template/cyclomatic-complexity -->
       <!-- eslint-disable @angular-eslint/template/no-call-expression -->
       <ng-template #cellTemplate let-row let-column="column">
         @switch (column.field) { @case ('symbol') {
@@ -78,7 +77,6 @@
         {{ row[column.field] }}
         } }
       </ng-template>
-      <!-- eslint-enable @angular-eslint/template/cyclomatic-complexity -->
       <!-- eslint-enable @angular-eslint/template/no-call-expression -->
     </dms-base-table>
   </div>
