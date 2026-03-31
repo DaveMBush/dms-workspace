@@ -1,6 +1,6 @@
 # Story 29.1: Audit and Standardize Virtual Scroll Row Heights
 
-Status: Approved
+Status: Complete
 
 ## Story
 
@@ -88,8 +88,27 @@ Story 29.2 writes a Playwright smooth-scroll verification test. This audit (29.1
 
 ### Agent Model Used
 
+Claude Opus 4.6
+
 ### Debug Log References
+
+None required — clean implementation.
 
 ### Completion Notes List
 
+- Audited all 4 BaseTable consumers: global-universe, global-screener, dividend-deposits, account (open-positions)
+- Measured actual row height via Playwright: 52px across all tables in both themes
+- 3 templates had `[rowHeight]="48"` overrides creating a 4px mismatch — removed them
+- Account open-positions already used the default (no override) — confirmed correct
+- Created `docs/row-height-audit.md` documenting all findings
+- Updated `QUICK-REFERENCE.md` default from 48 → 52
+- All validation passed: CI=1 pnpm all (1691 tests), E2E Chromium (593), E2E Firefox (593), dupcheck, format
+- PR #832, closes #831
+
 ### File List
+
+- `apps/dms-material/src/app/account-panel/dividend-deposits/dividend-deposits.component.html` — removed `[rowHeight]="48"`
+- `apps/dms-material/src/app/global/global-screener/global-screener.component.html` — removed `[rowHeight]="48"`
+- `apps/dms-material/src/app/global/global-universe/global-universe.component.html` — removed `[rowHeight]="48"`
+- `apps/dms-material/src/app/shared/components/base-table/QUICK-REFERENCE.md` — updated default 48→52
+- `docs/row-height-audit.md` — NEW audit document
