@@ -144,7 +144,9 @@ const baseTableContainerDecorator: Decorator =
     const story = storyFn({ args: context.args });
     return {
       ...story,
-      template: `<div style="height: 500px; width: 100%; display: block;">${story.template ?? ''}</div>`,
+      template: `<div style="height: 500px; width: 100%; display: block;">${
+        story.template ?? ''
+      }</div>`,
     };
   };
 
