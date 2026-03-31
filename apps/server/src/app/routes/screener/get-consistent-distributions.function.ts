@@ -1,7 +1,9 @@
+import { logger } from '../../../utils/structured-logger';
 import {
   fetchDistributionData,
   type ProcessedRow,
 } from '../common/distribution-api.function';
+import { fetchDividendHistory } from '../common/dividend-history.service';
 
 function filterPastDistributions(rows: ProcessedRow[]): ProcessedRow[] {
   const today = new Date();
@@ -61,7 +63,15 @@ function hasDecliningTrend(recentExDates: ProcessedRow[]): boolean {
 export async function getConsistentDistributions(
   symbol: string
 ): Promise<boolean> {
-  const rows = await fetchDistributionData(symbol);
+  let rows = await fetchDividendHistory(symbol);
+
+  if (rows.length === 0) {
+    logger.warn(
+      `fetchDividendHistory returned no data for ${symbol}, falling back to Yahoo Finance`,
+      { symbol }
+    );
+    rows = await fetchDistributionData(symbol);
+  }
 
   if (rows.length === 0) {
     return false;
