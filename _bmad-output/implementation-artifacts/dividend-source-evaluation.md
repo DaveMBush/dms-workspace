@@ -7,6 +7,7 @@
 URL pattern: `https://dividendhistory.org/payout/{TICKER}/`
 
 **Rationale:**
+
 - Provides ≥ 4 decimal-place precision (`0.2205`, `1.8362`) that matches official issuer announcements
 - Data is embedded in the HTML page as a machine-readable JSON blob under `<script type="application/json" data-dividend-chart-json>` — no browser JS execution required to parse
 - No API key or authentication required
@@ -42,16 +43,16 @@ The page embeds a JSON payload inside a `<script>` tag in the HTML body:
 
 ```html
 <script type="application/json" data-dividend-chart-json>
-[
-  {"ex_div":"2026-03-12","payday":"2026-04-01","payout":0.2205,"type":"","currency":"USD","pctChange":""},
-  {"ex_div":"2026-02-12","payday":"2026-03-02","payout":0.2205,"type":"","currency":"USD","pctChange":""},
-  {"ex_div":"2025-12-11","payday":"2026-01-02","payout":0.2205,"type":"","currency":"USD","pctChange":""},
-  ...
-  {"ex_div":"2022-12-14","payday":"2022-12-22","payout":0.65,"type":"s","currency":"USD","pctChange":"Special dividend"},
-  {"ex_div":"2014-12-24","payday":"2015-01-16","payout":1.8362,"type":"","currency":"USD","pctChange":""},
-  ...
-  {"ex_div":"2012-07-10","payday":"2012-08-01","payout":0.177,"type":"","currency":"USD","pctChange":""}
-]
+  [
+    {"ex_div":"2026-03-12","payday":"2026-04-01","payout":0.2205,"type":"","currency":"USD","pctChange":""},
+    {"ex_div":"2026-02-12","payday":"2026-03-02","payout":0.2205,"type":"","currency":"USD","pctChange":""},
+    {"ex_div":"2025-12-11","payday":"2026-01-02","payout":0.2205,"type":"","currency":"USD","pctChange":""},
+    ...
+    {"ex_div":"2022-12-14","payday":"2022-12-22","payout":0.65,"type":"s","currency":"USD","pctChange":"Special dividend"},
+    {"ex_div":"2014-12-24","payday":"2015-01-16","payout":1.8362,"type":"","currency":"USD","pctChange":""},
+    ...
+    {"ex_div":"2012-07-10","payday":"2012-08-01","payout":0.177,"type":"","currency":"USD","pctChange":""}
+  ]
 </script>
 ```
 
@@ -59,17 +60,17 @@ The same data is also rendered in an HTML `<table id="dividend-table">`.
 
 ### Field Mapping to `ProcessedRow`
 
-| JSON field | ProcessedRow field | Notes                              |
-|------------|--------------------|------------------------------------|
-| `payout`   | `amount`           | JavaScript number, ≥ 3 sig figs    |
-| `ex_div`   | `date`             | ISO-8601 date string (`YYYY-MM-DD`) |
-| `payday`   | (secondary date)   | Payment date if needed             |
+| JSON field | ProcessedRow field | Notes                                                |
+| ---------- | ------------------ | ---------------------------------------------------- |
+| `payout`   | `amount`           | JavaScript number, ≥ 3 sig figs                      |
+| `ex_div`   | `date`             | ISO-8601 date string (`YYYY-MM-DD`)                  |
+| `payday`   | (secondary date)   | Payment date if needed                               |
 | `type`     | —                  | `""` = regular, `"s"` = special, `"u"` = unconfirmed |
 
 ### Decimal Precision
 
 | Dividend Amount | Decimal places |
-|-----------------|----------------|
+| --------------- | -------------- |
 | `0.177`         | 3              |
 | `0.191`         | 3              |
 | `0.2205`        | 4 ✅           |
@@ -143,7 +144,7 @@ Data is presented in an HTML table only. There is a JavaScript call to `/dividen
 ### Decimal Precision
 
 | Dividend Amount | Decimal places |
-|-----------------|----------------|
+| --------------- | -------------- |
 | `$0.22100`      | 5 ✅           |
 
 The site consistently reports PDI recent dividends as `$0.22100` (5 decimal places).
@@ -162,19 +163,19 @@ No robots.txt was found (`/robots.txt` returns 404). The site has a commercial s
 
 ## Comparison Table
 
-| Criterion               | dividendhistory.org                             | dividendhistory.net                             |
-|-------------------------|-------------------------------------------------|-------------------------------------------------|
-| **URL pattern**         | `/payout/{TICKER}/`                             | `/{ticker}-dividend-yield`                      |
-| **PDI confirmed**       | ✅ 200 OK                                       | ✅ 200 OK                                       |
-| **Decimal precision**   | 4 dp (`0.2205`) ✅                              | 5 dp (`0.22100`) but value differs from official |
-| **Data accuracy (PDI)** | Matches PIMCO official (`$0.2205/share`) ✅     | Differs: `$0.22100` vs official `$0.2205` ⚠️   |
-| **Machine-readable**    | JSON blob in `<script>` tag ✅                  | HTML table only (no JSON API found)             |
-| **API key required**    | No ✅                                           | No ✅                                           |
-| **Rate-limit headers**  | None observed                                   | None observed                                   |
-| **Server**              | nginx (Astro static site)                       | Microsoft-IIS/8.5 (older stack)                 |
-| **ToS concerns**        | No explicit ban on automated access             | No robots.txt; commercial upsell model          |
-| **History depth**       | Back to 2012 (PDI inception) ✅                 | Recent history confirmed; depth unknown         |
-| **Special dividends**   | Yes, tagged with `"type":"s"` ✅               | Yes, present in table                           |
+| Criterion               | dividendhistory.org                         | dividendhistory.net                              |
+| ----------------------- | ------------------------------------------- | ------------------------------------------------ |
+| **URL pattern**         | `/payout/{TICKER}/`                         | `/{ticker}-dividend-yield`                       |
+| **PDI confirmed**       | ✅ 200 OK                                   | ✅ 200 OK                                        |
+| **Decimal precision**   | 4 dp (`0.2205`) ✅                          | 5 dp (`0.22100`) but value differs from official |
+| **Data accuracy (PDI)** | Matches PIMCO official (`$0.2205/share`) ✅ | Differs: `$0.22100` vs official `$0.2205` ⚠️     |
+| **Machine-readable**    | JSON blob in `<script>` tag ✅              | HTML table only (no JSON API found)              |
+| **API key required**    | No ✅                                       | No ✅                                            |
+| **Rate-limit headers**  | None observed                               | None observed                                    |
+| **Server**              | nginx (Astro static site)                   | Microsoft-IIS/8.5 (older stack)                  |
+| **ToS concerns**        | No explicit ban on automated access         | No robots.txt; commercial upsell model           |
+| **History depth**       | Back to 2012 (PDI inception) ✅             | Recent history confirmed; depth unknown          |
+| **Special dividends**   | Yes, tagged with `"type":"s"` ✅            | Yes, present in table                            |
 
 ---
 
@@ -222,13 +223,13 @@ Rate limiting: enforce a minimum of 10 seconds between ticker requests (same pat
 
 ```json
 [
-  {"ex_div":"2026-03-12","payday":"2026-04-01","payout":0.2205,"type":"","currency":"USD","pctChange":""},
-  {"ex_div":"2026-02-12","payday":"2026-03-02","payout":0.2205,"type":"","currency":"USD","pctChange":""},
-  {"ex_div":"2026-01-13","payday":"2026-02-02","payout":0.2205,"type":"","currency":"USD","pctChange":""},
-  {"ex_div":"2025-12-11","payday":"2026-01-02","payout":0.2205,"type":"","currency":"USD","pctChange":""},
-  {"ex_div":"2022-12-14","payday":"2022-12-22","payout":0.65,"type":"s","currency":"USD","pctChange":"Special dividend"},
-  {"ex_div":"2014-12-24","payday":"2015-01-16","payout":1.8362,"type":"","currency":"USD","pctChange":""},
-  {"ex_div":"2013-10-09","payday":"2013-11-01","payout":0.191,"type":"","currency":"USD","pctChange":7.91},
-  {"ex_div":"2012-07-10","payday":"2012-08-01","payout":0.177,"type":"","currency":"USD","pctChange":""}
+  { "ex_div": "2026-03-12", "payday": "2026-04-01", "payout": 0.2205, "type": "", "currency": "USD", "pctChange": "" },
+  { "ex_div": "2026-02-12", "payday": "2026-03-02", "payout": 0.2205, "type": "", "currency": "USD", "pctChange": "" },
+  { "ex_div": "2026-01-13", "payday": "2026-02-02", "payout": 0.2205, "type": "", "currency": "USD", "pctChange": "" },
+  { "ex_div": "2025-12-11", "payday": "2026-01-02", "payout": 0.2205, "type": "", "currency": "USD", "pctChange": "" },
+  { "ex_div": "2022-12-14", "payday": "2022-12-22", "payout": 0.65, "type": "s", "currency": "USD", "pctChange": "Special dividend" },
+  { "ex_div": "2014-12-24", "payday": "2015-01-16", "payout": 1.8362, "type": "", "currency": "USD", "pctChange": "" },
+  { "ex_div": "2013-10-09", "payday": "2013-11-01", "payout": 0.191, "type": "", "currency": "USD", "pctChange": 7.91 },
+  { "ex_div": "2012-07-10", "payday": "2012-08-01", "payout": 0.177, "type": "", "currency": "USD", "pctChange": "" }
 ]
 ```
