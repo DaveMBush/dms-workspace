@@ -1,13 +1,28 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 
 import type { ProcessedRow } from '../../common/distribution-api.function';
+import { logger } from '../../../utils/structured-logger';
 import { getConsistentDistributions } from './get-consistent-distributions.function';
 
-// Hoisted mock
+// Hoisted mocks
 const mockFetchDistributionData = vi.hoisted(() => vi.fn());
+const mockFetchDividendHistory = vi.hoisted(() => vi.fn());
 
 vi.mock('../common/distribution-api.function', () => ({
   fetchDistributionData: mockFetchDistributionData,
+}));
+
+vi.mock('../common/dividend-history.service', () => ({
+  fetchDividendHistory: mockFetchDividendHistory,
+}));
+
+vi.mock('../../../utils/structured-logger', () => ({
+  logger: {
+    warn: vi.fn(),
+    info: vi.fn(),
+    error: vi.fn(),
+    debug: vi.fn(),
+  },
 }));
 
 describe('getConsistentDistributions', () => {
@@ -15,6 +30,8 @@ describe('getConsistentDistributions', () => {
     vi.clearAllMocks();
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2025-11-09T10:00:00Z'));
+    // Default: new service returns no data, triggering fallback to Yahoo Finance
+    mockFetchDividendHistory.mockResolvedValue([]);
   });
 
   afterEach(() => {
@@ -364,4 +381,42 @@ describe('getConsistentDistributions', () => {
       expect(result).toBe(true);
     });
   });
+
+  describe('primary and fallback data source', () => {
+    test('uses primary dividend service when it returns data (no fallback)', async () => {
+      const primaryRows: ProcessedRow[] = [
+        { amount: 0.2205, date: new Date('2025-08-15') },
+        { amount: 0.2205, date: new Date('2025-09-15') },
+        { amount: 0.2205, date: new Date('2025-10-15') },
+      ];
+
+      mockFetchDividendHistory.mockResolvedValueOnce(primaryRows);
+
+      const result = await getConsistentDistributions('PDI');
+
+      expect(result).toBe(true);
+      expect(mockFetchDistributionData).not.toHaveBeenCalled();
+    });
+
+    test('falls back to Yahoo Finance and logs warning when primary returns empty', async () => {
+      const fallbackRows: ProcessedRow[] = [
+        { amount: 0.2205, date: new Date('2025-08-15') },
+        { amount: 0.2205, date: new Date('2025-09-15') },
+        { amount: 0.2205, date: new Date('2025-10-15') },
+      ];
+
+      mockFetchDividendHistory.mockResolvedValueOnce([]);
+      mockFetchDistributionData.mockResolvedValueOnce(fallbackRows);
+
+      const result = await getConsistentDistributions('NOLISTING');
+
+      expect(result).toBe(true);
+      expect(mockFetchDistributionData).toHaveBeenCalledWith('NOLISTING');
+      expect(vi.mocked(logger.warn)).toHaveBeenCalledWith(
+        'fetchDividendHistory returned no data for NOLISTING, falling back to Yahoo Finance',
+        { symbol: 'NOLISTING' }
+      );
+    });
+  });
 });
+

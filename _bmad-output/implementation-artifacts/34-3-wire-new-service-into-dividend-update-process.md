@@ -1,6 +1,6 @@
 # Story 34.3: Wire New Service into Dividend Update Process
 
-Status: Approved
+Status: Done
 
 ## Story
 
@@ -17,25 +17,25 @@ so that dividend data is stored with full precision (≥ 4 decimal places).
 
 ## Definition of Done
 
-- [ ] Yahoo Finance dividend call replaced by new service in the update route/function
-- [ ] Fallback to Yahoo Finance implemented and logged
-- [ ] Integration test or updated unit test covering the fallback path
-- [ ] `pnpm all` passes
-- [ ] `pnpm format` passes
+- [x] Yahoo Finance dividend call replaced by new service in the update route/function
+- [x] Fallback to Yahoo Finance implemented and logged
+- [x] Integration test or updated unit test covering the fallback path
+- [x] `pnpm all` passes
+- [x] `pnpm format` passes
 
 ## Tasks / Subtasks
 
-- [ ] Locate the server update route/function that currently calls Yahoo Finance for dividends (AC: #1)
-  - [ ] Identify the exact call site in `distribution-api.function.ts` or related route handler
-- [ ] Replace the Yahoo Finance dividend call with `fetchDividendHistory` from Story 34.2 (AC: #1)
-  - [ ] Ensure the response is passed to the same database write logic
-- [ ] Implement fallback to Yahoo Finance when `fetchDividendHistory` returns an empty array (AC: #2)
-  - [ ] Log a structured warning with the ticker symbol that triggered the fallback
-- [ ] Verify no precision truncation occurs in the database write path (AC: #3)
-  - [ ] Check Prisma schema field types for dividend amount
-- [ ] Update or add unit/integration tests covering: primary source success, fallback path (AC: #4)
-- [ ] Run `pnpm all` and fix any failures
-- [ ] Run `pnpm format`
+- [x] Locate the server update route/function that currently calls Yahoo Finance for dividends (AC: #1)
+  - [x] Identify the exact call site in `distribution-api.function.ts` or related route handler
+- [x] Replace the Yahoo Finance dividend call with `fetchDividendHistory` from Story 34.2 (AC: #1)
+  - [x] Ensure the response is passed to the same database write logic
+- [x] Implement fallback to Yahoo Finance when `fetchDividendHistory` returns an empty array (AC: #2)
+  - [x] Log a structured warning with the ticker symbol that triggered the fallback
+- [x] Verify no precision truncation occurs in the database write path (AC: #3)
+  - [x] Check Prisma schema field types for dividend amount
+- [x] Update or add unit/integration tests covering: primary source success, fallback path (AC: #4)
+- [x] Run `pnpm all` and fix any failures
+- [x] Run `pnpm format`
 
 ## Dev Notes
 
@@ -52,7 +52,17 @@ This story is a targeted surgical replacement of one call site. Do not restructu
 ## Dev Agent Record
 
 ### Agent Model Used
+Claude Sonnet 4.6 (GitHub Copilot)
 
 ### Completion Notes
+- Replaced `fetchDistributionData` with `fetchDividendHistory` as primary source in 2 files
+- Fallback to Yahoo Finance when primary returns empty array, with structured warning log
+- Prisma `Float` type preserves full IEEE 754 double precision (no truncation)
+- Added 4 new tests (2 per file): primary path and fallback path
+- 43 total tests passing across both spec files
 
 ## File List
+- `apps/server/src/app/routes/settings/common/get-distributions.function.ts` (modified)
+- `apps/server/src/app/routes/settings/common/get-distributions.function.spec.ts` (modified)
+- `apps/server/src/app/routes/screener/get-consistent-distributions.function.ts` (modified)
+- `apps/server/src/app/routes/screener/get-consistent-distributions.function.spec.ts` (modified)

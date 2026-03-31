@@ -1,7 +1,9 @@
+import { logger } from '../../../../utils/structured-logger';
 import {
   fetchDistributionData,
   type ProcessedRow,
 } from '../../common/distribution-api.function';
+import { fetchDividendHistory } from '../../common/dividend-history.service';
 
 interface DistributionResult {
   distribution: number;
@@ -72,7 +74,15 @@ export async function getDistributions(
   symbol: string
 ): Promise<DistributionResult | undefined> {
   try {
-    const rows = await fetchDistributionData(symbol);
+    let rows = await fetchDividendHistory(symbol);
+
+    if (rows.length === 0) {
+      logger.warn(
+        `fetchDividendHistory returned no data for ${symbol}, falling back to Yahoo Finance`,
+        { symbol }
+      );
+      rows = await fetchDistributionData(symbol);
+    }
 
     if (rows.length === 0) {
       return undefined;
