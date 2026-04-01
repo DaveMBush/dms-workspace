@@ -347,6 +347,33 @@ describe('Top Route Handler', () => {
       ]);
     });
 
+    it('should apply all sortColumns to orderBy for risk_group + ex_date multi-column sort (Story 36.2)', async () => {
+      mockPrismaUniverse.findMany.mockResolvedValue([{ id: 'u1' }]);
+
+      const filterState = JSON.stringify({
+        universes: {
+          sortColumns: [
+            { column: 'risk_group', direction: 'asc' },
+            { column: 'ex_date', direction: 'asc' },
+          ],
+        },
+      });
+
+      const response = await app.inject({
+        method: 'POST',
+        url: '/api/top',
+        payload: ['1'],
+        headers: { 'x-sort-filter-state': filterState },
+      });
+
+      expect(response.statusCode).toBe(200);
+      const universeCall = mockPrismaUniverse.findMany.mock.calls[0][0];
+      expect(universeCall.orderBy).toEqual([
+        { risk_group: { name: 'asc' } },
+        { ex_date: 'asc' },
+      ]);
+    });
+
     it('should return null accountId when filters exist without account_id', async () => {
       mockPrismaUniverse.findMany.mockResolvedValue([
         {
