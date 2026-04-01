@@ -30,7 +30,7 @@ const HIGH_PRECISION_DISTRIBUTION = 0.2245;
 
 interface UniverseRecord {
   id: string;
-  risk_group_id: string;
+  riskGroupId: string;
 }
 
 test.describe('Dividend Precision After Update', () => {
@@ -61,7 +61,7 @@ test.describe('Dividend Precision After Update', () => {
 
       seededRecord = {
         id: record.id,
-        risk_group_id: riskGroups.incomeRiskGroup.id,
+        riskGroupId: riskGroups.incomeRiskGroup.id,
       };
 
       cleanupFn = async function cleanup() {
@@ -94,7 +94,7 @@ test.describe('Dividend Precision After Update', () => {
       data: {
         id: seededRecord.id,
         symbol: testSymbol,
-        risk_group_id: seededRecord.risk_group_id,
+        risk_group_id: seededRecord.riskGroupId,
         distribution: HIGH_PRECISION_DISTRIBUTION,
         distributions_per_year: 12,
         last_price: 20.0,
