@@ -34,12 +34,12 @@ async function waitForTableRows(page: Page): Promise<void> {
   await page.waitForSelector('tr.mat-mdc-row', { timeout: 15000 });
 }
 
-// ─── Story 36.1: Multi-Column Sort Row Ordering ───────────────────────────────
+// ─── Stories 36.1 + 36.3: Multi-Column Sort Row Ordering & Refresh Persistence ─
 //
 // The existing multi-column-sort.spec.ts verifies that sort state is persisted
 // in localStorage correctly. This file verifies that multi-column sort actually
 // REORDERS ROWS in the DOM — the behaviour the buggy implementation fails to
-// deliver.
+// deliver — and that the sort state survives a page refresh (Story 36.3).
 //
 // Column positions (1-based) in Universe table:
 //   1 → Symbol
@@ -58,7 +58,7 @@ async function waitForTableRows(page: Page): Promise<void> {
 // leaves them in default DB insertion order: UAAA then UDDD. So the assertion
 // idxUDDD < idxUAAA FAILS against the current codebase (by design).
 
-test.describe('Universe Screen - Multi-Column Sort Row Ordering (Story 36.1)', () => {
+test.describe('Universe Screen - Multi-Column Sort Row Ordering & Refresh Persistence (Stories 36.1 + 36.3)', () => {
   let cleanup: () => Promise<void>;
   let symbols: string[];
 
@@ -124,6 +124,58 @@ test.describe('Universe Screen - Multi-Column Sort Row Ordering (Story 36.1)', (
     const descIdxUAAA = descValues.indexOf(symbols[0]);
     const descIdxUEEE = descValues.indexOf(symbols[4]);
     expect(descIdxUEEE).toBeLessThan(descIdxUAAA);
+  });
+
+  // ─── Story 36.3: Sort state persists across page refresh ────────────────────
+  //
+  // AC #1: sort rank indicators visible on both sorted column headers after reload
+  // AC #2: row order matches pre-reload order (server honours restored sort columns)
+  // AC #3: this test is the regression-proof extension of Story 36.1 tests
+
+  test('multi-column sort indicators and row order are preserved after page refresh (Story 36.3 AC #1, #2, #3)', async ({
+    page,
+  }) => {
+    // Filter to the 5 seeded rows so assertions are deterministic.
+    const sharedSuffix = symbols[0].slice('UAAA-'.length);
+    const symbolInput = page.locator('input[placeholder="Search Symbol"]');
+    await symbolInput.fill(sharedSuffix);
+    await page.waitForTimeout(800);
+    await page.waitForLoadState('networkidle');
+
+    // Primary sort: Risk Group ascending
+    const riskGroupHeader = page.getByRole('button', { name: 'Risk Group' });
+    await riskGroupHeader.click();
+    await page.waitForTimeout(800);
+    await page.waitForLoadState('networkidle');
+
+    // Secondary sort: Ex-Date ascending (Shift+click)
+    const exDateHeader = page.getByRole('button', { name: 'Ex-Date' });
+    await exDateHeader.click({ modifiers: ['Shift'] });
+    await page.waitForTimeout(800);
+    await page.waitForLoadState('networkidle');
+
+    // Capture symbol order before reload — this is the ground truth.
+    const symbolsBefore = await getColumnTexts(page, 1);
+    expect(symbolsBefore.length).toBe(5);
+
+    // ── Simulate browser refresh ──────────────────────────────────────────
+    await page.reload();
+    await waitForTableRows(page);
+    await page.waitForTimeout(800);
+    await page.waitForLoadState('networkidle');
+
+    // AC #1: sort rank indicators must be visible on both sort columns.
+    // BaseTableComponent renders [data-testid="sort-rank"] spans inside the
+    // column header for every entry in sortRankMap — exactly one per sorted
+    // column. Two sort columns → two indicators.
+    const rankIndicators = page.locator('[data-testid="sort-rank"]');
+    await expect(rankIndicators).toHaveCount(2);
+
+    // AC #2: row order after refresh must match row order before refresh.
+    // This confirms the server honoured the restored sort columns.
+    const symbolsAfter = await getColumnTexts(page, 1);
+    expect(symbolsAfter.length).toBe(5);
+    expect(symbolsAfter).toEqual(symbolsBefore);
   });
 
   // ─── AC #2: Secondary sort reorders rows within the same primary group ────
