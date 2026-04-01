@@ -1,6 +1,12 @@
 import { prisma } from '../../prisma/prisma-client';
 import { TableState } from '../common/table-state.interface';
 import { Account } from './account.interface';
+import { buildDivDepositOrderBy } from './build-div-deposit-order-by.function';
+import { buildDivDepositWhere } from './build-div-deposit-where.function';
+import { buildTradeOrderBy } from './build-trade-order-by.function';
+import { buildTradeWhere } from './build-trade-where.function';
+import { getTradeComputedValue } from './get-trade-computed-value.function';
+import { isComputedTradeSort } from './is-computed-trade-sort.function';
 
 function getSortFieldAndOrder(
   state: TableState
@@ -13,12 +19,6 @@ function getSortFieldAndOrder(
   }
   return state.sort;
 }
-import { buildDivDepositOrderBy } from './build-div-deposit-order-by.function';
-import { buildDivDepositWhere } from './build-div-deposit-where.function';
-import { buildTradeOrderBy } from './build-trade-order-by.function';
-import { buildTradeWhere } from './build-trade-where.function';
-import { getTradeComputedValue } from './get-trade-computed-value.function';
-import { isComputedTradeSort } from './is-computed-trade-sort.function';
 
 interface MonthData {
   year: number;
@@ -87,8 +87,7 @@ async function getOpenTradeIds(
         universe: { select: { last_price: true } },
       },
     });
-    const field = getSortFieldAndOrder(openState)!.field;
-    const order = getSortFieldAndOrder(openState)!.order;
+    const { field, order } = getSortFieldAndOrder(openState)!;
     trades.sort(function sortByComputed(a, b) {
       const diff =
         getTradeComputedValue(field, a) - getTradeComputedValue(field, b);
