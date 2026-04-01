@@ -15,26 +15,26 @@ so that I can call the same code path from the symbol-add and CUSIP-resolution f
 
 ## Definition of Done
 
-- [ ] `price-dividend-fetch-analysis.md` created
-- [ ] All referenced file paths and function names verified against the actual source
-- [ ] `pnpm format` passes
+- [x] `price-dividend-fetch-analysis.md` created
+- [x] All referenced file paths and function names verified against the actual source
+- [x] `pnpm format` passes
 
 ## Tasks / Subtasks
 
-- [ ] Trace the "Update Fields" server flow end-to-end (AC: #1)
-  - [ ] Find the route handler that processes the "Update Fields" action
-  - [ ] Identify which function(s) fetch price and which fetch dividend
-  - [ ] Note the exact function signatures and file paths
-- [ ] Identify the Prisma model fields updated by the fetch (AC: #1)
-  - [ ] Record field names from `prisma/schema.prisma`
-- [ ] Find the manual symbol-add call site (AC: #1)
-  - [ ] Trace from the Angular Add Symbol UI to the server route handler
-- [ ] Find the CUSIP resolution call site (AC: #1)
-  - [ ] Trace the CUSIP resolution chain (OpenFIGI → massive.com → Yahoo Finance) to where the symbol is saved
-- [ ] Draft recommended integration approach (AC: #1)
-  - [ ] Describe how to call the existing price/dividend fetch after each save without duplicating logic
-- [ ] Produce `price-dividend-fetch-analysis.md` with all findings (AC: #2)
-- [ ] Run `pnpm format`
+- [x] Trace the "Update Fields" server flow end-to-end (AC: #1)
+  - [x] Find the route handler that processes the "Update Fields" action
+  - [x] Identify which function(s) fetch price and which fetch dividend
+  - [x] Note the exact function signatures and file paths
+- [x] Identify the Prisma model fields updated by the fetch (AC: #1)
+  - [x] Record field names from `prisma/schema.prisma`
+- [x] Find the manual symbol-add call site (AC: #1)
+  - [x] Trace from the Angular Add Symbol UI to the server route handler
+- [x] Find the CUSIP resolution call site (AC: #1)
+  - [x] Trace the CUSIP resolution chain (OpenFIGI → massive.com → Yahoo Finance) to where the symbol is saved
+- [x] Draft recommended integration approach (AC: #1)
+  - [x] Describe how to call the existing price/dividend fetch after each save without duplicating logic
+- [x] Produce `price-dividend-fetch-analysis.md` with all findings (AC: #2)
+- [x] Run `pnpm format`
 
 ## Dev Notes
 
@@ -52,6 +52,12 @@ Use grep/search to follow the call chain from the API route for "Update Fields" 
 
 ### Agent Model Used
 
+Claude Sonnet 4.6
+
 ### Completion Notes
 
+Research-only story. Created `_bmad-output/implementation-artifacts/price-dividend-fetch-analysis.md` documenting the full price/dividend fetch chain. Key finding: the Fidelity CSV import auto-create path (`fidelity-data-mapper.function.ts → resolveSymbol`) does NOT call `getLastPrice` or `getDistributions` — it creates bare zero-filled universe records. All other entry points (manual add-symbol, bulk settings save, sync-from-screener) already call both canonical fetch functions.
+
 ## File List
+
+- `_bmad-output/implementation-artifacts/price-dividend-fetch-analysis.md` (created)
