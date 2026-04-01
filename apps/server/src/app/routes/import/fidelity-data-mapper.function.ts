@@ -1,4 +1,6 @@
+import { logger } from '../../../utils/structured-logger';
 import { prisma } from '../../prisma/prisma-client';
+import { fetchAndUpdatePriceData } from '../universe/fetch-and-update-price-data.function';
 import { FidelityCsvRow } from './fidelity-csv-row.interface';
 import { MappedDivDeposit } from './mapped-div-deposit.interface';
 import { MappedSale } from './mapped-sale.interface';
@@ -87,6 +89,23 @@ async function resolveSymbol(
         is_closed_end_fund: true,
       },
     });
+
+    try {
+      await fetchAndUpdatePriceData(
+        newUniverse.id,
+        symbol,
+        newUniverse,
+        'CUSIP resolution'
+      );
+    } catch (error) {
+      logger.warn(
+        'Unexpected error during price/dividend fetch after CUSIP resolution',
+        {
+          symbol,
+          error: error instanceof Error ? error.message : String(error),
+        }
+      );
+    }
 
     return newUniverse;
   }
