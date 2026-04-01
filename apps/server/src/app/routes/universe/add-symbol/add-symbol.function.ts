@@ -1,7 +1,7 @@
+import { logger } from '../../../../utils/structured-logger';
 import { prisma } from '../../../prisma/prisma-client';
 import { getDistributions } from '../../settings/common/get-distributions.function';
 import { getLastPrice } from '../../settings/common/get-last-price.function';
-import { logger } from '../../../../utils/structured-logger';
 
 interface AddSymbolRequest {
   symbol: string;
@@ -85,6 +85,41 @@ function mapUniverseRecordToResult(
   };
 }
 
+interface FetchResult {
+  record: UniverseRecord;
+  fetchFailed: boolean;
+}
+
+async function fetchAndUpdatePriceData(
+  universeId: string,
+  symbol: string,
+  fallbackRecord: UniverseRecord
+): Promise<FetchResult> {
+  const [lastPrice, distributionData] = await Promise.all([
+    getLastPrice(symbol),
+    getDistributions(symbol),
+  ]);
+
+  if (lastPrice === undefined && distributionData === undefined) {
+    logger.warn('Price and dividend fetch failed after manual symbol add', {
+      symbol,
+    });
+    return { record: fallbackRecord, fetchFailed: true };
+  }
+
+  const updatedRecord = await prisma.universe.update({
+    where: { id: universeId },
+    data: {
+      last_price: lastPrice ?? 0,
+      distribution: distributionData?.distribution ?? 0,
+      distributions_per_year: distributionData?.distributions_per_year ?? 0,
+      ex_date: distributionData?.ex_date ?? null,
+    },
+  });
+
+  return { record: updatedRecord as UniverseRecord, fetchFailed: false };
+}
+
 export async function addSymbol(
   request: AddSymbolRequest
 ): Promise<AddSymbolResult> {
@@ -108,29 +143,12 @@ export async function addSymbol(
   });
 
   try {
-    const [lastPrice, distributionData] = await Promise.all([
-      getLastPrice(upperSymbol),
-      getDistributions(upperSymbol),
-    ]);
-
-    if (lastPrice === undefined && distributionData === undefined) {
-      logger.warn('Price and dividend fetch failed after manual symbol add', {
-        symbol: upperSymbol,
-      });
-      return mapUniverseRecordToResult(universeRecord, true);
-    }
-
-    const updatedRecord = await prisma.universe.update({
-      where: { id: universeRecord.id },
-      data: {
-        last_price: lastPrice ?? 0,
-        distribution: distributionData?.distribution ?? 0,
-        distributions_per_year: distributionData?.distributions_per_year ?? 0,
-        ex_date: distributionData?.ex_date ?? null,
-      },
-    });
-
-    return mapUniverseRecordToResult(updatedRecord as UniverseRecord, false);
+    const { record, fetchFailed } = await fetchAndUpdatePriceData(
+      universeRecord.id,
+      upperSymbol,
+      universeRecord
+    );
+    return mapUniverseRecordToResult(record, fetchFailed);
   } catch (error) {
     logger.warn(
       'Unexpected error during price/dividend fetch after manual symbol add',
