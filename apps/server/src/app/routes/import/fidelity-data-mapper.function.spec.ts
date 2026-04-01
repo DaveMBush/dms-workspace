@@ -1264,5 +1264,99 @@ describe('mapFidelityTransactions', function () {
       expect(result.trades).toHaveLength(1);
       expect(result.trades[0].universeId).toBe('fail-universe-456');
     });
+    test('should warn and return universe entry when price/dividend fetch throws after CUSIP resolution', async function () {
+      const rows: ParsedCsvRow[] = [
+        {
+          date: '02/15/2026',
+          action: 'YOU BOUGHT',
+          symbol: 'ERRSTOCK',
+          description: 'ERR STOCK',
+          quantity: 5,
+          price: 50.0,
+          totalAmount: -250.0,
+          account: 'My Brokerage',
+        },
+      ];
+
+      const createdRecord = {
+        id: 'err-universe-789',
+        symbol: 'ERRSTOCK',
+        risk_group_id: 'default-risk-group',
+        last_price: 0,
+        distribution: 0,
+        distributions_per_year: 0,
+        ex_date: null,
+        most_recent_sell_date: null,
+        expired: false,
+        is_closed_end_fund: true,
+        createdAt: new Date('2026-02-15'),
+        updatedAt: new Date('2026-02-15'),
+      };
+
+      mockPrisma.accounts.findFirst.mockResolvedValue({
+        id: 'account-123',
+        name: 'My Brokerage',
+      });
+      mockPrisma.universe.findFirst.mockResolvedValue(null);
+      mockPrisma.risk_group.findFirst.mockResolvedValue({
+        id: 'default-risk-group',
+        name: 'Default',
+      });
+      mockPrisma.universe.create.mockResolvedValue(createdRecord);
+      mockGetLastPrice.mockRejectedValue(new Error('Network error'));
+
+      const result = await mapFidelityTransactions(rows);
+
+      // Trade is still created even when fetch throws
+      expect(result.trades).toHaveLength(1);
+      expect(result.trades[0].universeId).toBe('err-universe-789');
+    });
+
+    test('should warn and return universe entry when non-Error thrown during price/dividend fetch after CUSIP resolution', async function () {
+      const rows: ParsedCsvRow[] = [
+        {
+          date: '02/15/2026',
+          action: 'YOU BOUGHT',
+          symbol: 'ERRSTOCK2',
+          description: 'ERR STOCK 2',
+          quantity: 5,
+          price: 50.0,
+          totalAmount: -250.0,
+          account: 'My Brokerage',
+        },
+      ];
+
+      const createdRecord = {
+        id: 'err-universe-790',
+        symbol: 'ERRSTOCK2',
+        risk_group_id: 'default-risk-group',
+        last_price: 0,
+        distribution: 0,
+        distributions_per_year: 0,
+        ex_date: null,
+        most_recent_sell_date: null,
+        expired: false,
+        is_closed_end_fund: true,
+        createdAt: new Date('2026-02-15'),
+        updatedAt: new Date('2026-02-15'),
+      };
+
+      mockPrisma.accounts.findFirst.mockResolvedValue({
+        id: 'account-123',
+        name: 'My Brokerage',
+      });
+      mockPrisma.universe.findFirst.mockResolvedValue(null);
+      mockPrisma.risk_group.findFirst.mockResolvedValue({
+        id: 'default-risk-group',
+        name: 'Default',
+      });
+      mockPrisma.universe.create.mockResolvedValue(createdRecord);
+      mockGetLastPrice.mockRejectedValue('not an Error object');
+
+      const result = await mapFidelityTransactions(rows);
+
+      expect(result.trades).toHaveLength(1);
+      expect(result.trades[0].universeId).toBe('err-universe-790');
+    });
   });
 });
