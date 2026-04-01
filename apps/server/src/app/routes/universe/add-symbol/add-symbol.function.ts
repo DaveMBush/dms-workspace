@@ -1,9 +1,7 @@
 import { logger } from '../../../../utils/structured-logger';
 import { prisma } from '../../../prisma/prisma-client';
-import {
-  fetchAndUpdatePriceData,
-  UniverseRecord,
-} from '../fetch-and-update-price-data.function';
+import { fetchAndUpdatePriceData } from '../fetch-and-update-price-data.function';
+import type { UniverseRecord } from '../universe-record.interface';
 
 interface AddSymbolRequest {
   symbol: string;
