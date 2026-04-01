@@ -349,3 +349,146 @@ describe('GET /indexes - sort/filter state passthrough (AX.13)', () => {
     });
   });
 });
+
+// Story 37.2: Tests verifying sortColumns format (sent by Angular interceptor
+// via migrateTableState) is handled correctly for all three childField types.
+// The Angular interceptor converts `sort: { field, order }` to
+// `sortColumns: [{ column, direction }]` before sending to the server.
+describe('GET /indexes - sortColumns format (Story 37.2 fix)', () => {
+  let app: FastifyInstance;
+
+  beforeEach(async () => {
+    app = fastify({ logger: false });
+    await app.register(registerAccountIndexesRoutes, {
+      prefix: '/api/accounts/indexes',
+    });
+    await app.ready();
+    mockPrismaTrades.findMany.mockReset();
+    mockPrismaTrades.count.mockReset();
+    mockPrismaDivDeposits.findMany.mockReset();
+    mockPrismaDivDeposits.count.mockReset();
+  });
+
+  afterEach(async () => {
+    await app.close();
+  });
+
+  it('should apply openDate sort via sortColumns for openTrades', async () => {
+    mockPrismaTrades.findMany.mockResolvedValue([{ id: 't-1' }]);
+    mockPrismaTrades.count.mockResolvedValue(1);
+
+    // This is what the Angular interceptor sends: buyDate → openDate after mapping
+    const sortState = JSON.stringify({
+      'trades-open': {
+        sortColumns: [{ column: 'openDate', direction: 'asc' }],
+      },
+    });
+
+    await app.inject({
+      method: 'POST',
+      url: '/api/accounts/indexes',
+      headers: { 'x-sort-filter-state': sortState },
+      payload: {
+        startIndex: 0,
+        length: 10,
+        parentId: 'acc-1',
+        childField: 'openTrades',
+      },
+    });
+
+    expect(mockPrismaTrades.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        orderBy: { buy_date: 'asc' },
+      })
+    );
+  });
+
+  it('should apply closeDate sort via sortColumns for soldTrades', async () => {
+    mockPrismaTrades.findMany.mockResolvedValue([{ id: 's-1' }]);
+    mockPrismaTrades.count.mockResolvedValue(1);
+
+    // This is what the Angular interceptor sends: sell_date → closeDate after mapping
+    const sortState = JSON.stringify({
+      'trades-closed': {
+        sortColumns: [{ column: 'closeDate', direction: 'asc' }],
+      },
+    });
+
+    await app.inject({
+      method: 'POST',
+      url: '/api/accounts/indexes',
+      headers: { 'x-sort-filter-state': sortState },
+      payload: {
+        startIndex: 0,
+        length: 10,
+        parentId: 'acc-1',
+        childField: 'soldTrades',
+      },
+    });
+
+    expect(mockPrismaTrades.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        orderBy: { sell_date: 'asc' },
+      })
+    );
+  });
+
+  it('should apply amount sort via sortColumns for divDeposits', async () => {
+    mockPrismaDivDeposits.findMany.mockResolvedValue([{ id: 'd-1' }]);
+    mockPrismaDivDeposits.count.mockResolvedValue(1);
+
+    const sortState = JSON.stringify({
+      'div-deposits': {
+        sortColumns: [{ column: 'amount', direction: 'asc' }],
+      },
+    });
+
+    await app.inject({
+      method: 'POST',
+      url: '/api/accounts/indexes',
+      headers: { 'x-sort-filter-state': sortState },
+      payload: {
+        startIndex: 0,
+        length: 10,
+        parentId: 'acc-1',
+        childField: 'divDeposits',
+      },
+    });
+
+    expect(mockPrismaDivDeposits.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        orderBy: { amount: 'asc' },
+      })
+    );
+  });
+
+  it('should apply computed unrealizedGain sort via sortColumns for openTrades', async () => {
+    mockPrismaTrades.findMany.mockResolvedValue([
+      { id: 't-1', buy: 10, quantity: 5, universe: { last_price: 20 } },
+      { id: 't-2', buy: 10, quantity: 5, universe: { last_price: 30 } },
+    ]);
+    mockPrismaTrades.count.mockResolvedValue(2);
+
+    const sortState = JSON.stringify({
+      'trades-open': {
+        sortColumns: [{ column: 'unrealizedGain', direction: 'desc' }],
+      },
+    });
+
+    const response = await app.inject({
+      method: 'POST',
+      url: '/api/accounts/indexes',
+      headers: { 'x-sort-filter-state': sortState },
+      payload: {
+        startIndex: 0,
+        length: 10,
+        parentId: 'acc-1',
+        childField: 'openTrades',
+      },
+    });
+
+    const body = JSON.parse(response.body);
+    // t-2 has higher unrealized gain (100 vs 50), so desc = t-2 first
+    expect(body.indexes).toEqual(['t-2', 't-1']);
+  });
+});

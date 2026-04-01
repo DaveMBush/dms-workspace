@@ -1,6 +1,18 @@
 import { prisma } from '../../prisma/prisma-client';
 import { TableState } from '../common/table-state.interface';
 import { Account } from './account.interface';
+
+function getSortFieldAndOrder(
+  state: TableState
+): { field: string; order: 'asc' | 'desc' } | undefined {
+  if (state.sortColumns !== undefined && state.sortColumns.length > 0) {
+    return {
+      field: state.sortColumns[0].column,
+      order: state.sortColumns[0].direction,
+    };
+  }
+  return state.sort;
+}
 import { buildDivDepositOrderBy } from './build-div-deposit-order-by.function';
 import { buildDivDepositWhere } from './build-div-deposit-where.function';
 import { buildTradeOrderBy } from './build-trade-order-by.function';
@@ -75,8 +87,8 @@ async function getOpenTradeIds(
         universe: { select: { last_price: true } },
       },
     });
-    const field = openState.sort!.field;
-    const order = openState.sort!.order;
+    const field = getSortFieldAndOrder(openState)!.field;
+    const order = getSortFieldAndOrder(openState)!.order;
     trades.sort(function sortByComputed(a, b) {
       const diff =
         getTradeComputedValue(field, a) - getTradeComputedValue(field, b);
