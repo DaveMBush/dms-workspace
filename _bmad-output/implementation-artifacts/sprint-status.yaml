@@ -240,7 +240,7 @@ development_status:
 
   # ── Epic 37: Fix Sorting on Account Tables ───────────────────────────────────
   epic-37: backlog
-  37-1-write-failing-e2e-tests-account-table-sorting: backlog
+  37-1-write-failing-e2e-tests-account-table-sorting: review
   37-2-diagnose-and-fix-account-table-sort-bug: backlog
   37-3-unit-tests-account-table-sort-state-wiring: backlog
   epic-37-retrospective: optional
