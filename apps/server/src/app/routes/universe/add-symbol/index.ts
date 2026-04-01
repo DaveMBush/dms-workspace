@@ -21,6 +21,7 @@ interface AddSymbolResponse {
   is_closed_end_fund: boolean;
   createdAt: string;
   updatedAt: string;
+  fetchFailed: boolean;
 }
 
 interface ErrorResponse {

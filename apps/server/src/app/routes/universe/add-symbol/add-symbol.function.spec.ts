@@ -10,6 +10,7 @@ vi.mock('../../../prisma/prisma-client', function () {
       universe: {
         findFirst: vi.fn(),
         create: vi.fn(),
+        update: vi.fn(),
       },
       risk_group: {
         findUnique: vi.fn(),
@@ -20,17 +21,40 @@ vi.mock('../../../prisma/prisma-client', function () {
 
 vi.mock('../../settings/common/get-distributions.function');
 vi.mock('../../settings/common/get-last-price.function');
+vi.mock('../../../../utils/structured-logger', function () {
+  return {
+    logger: {
+      warn: vi.fn(),
+      info: vi.fn(),
+    },
+  };
+});
 
 const mockPrisma = prisma as any;
 const mockGetDistributions = getDistributions as any;
 const mockGetLastPrice = getLastPrice as any;
+
+const mockDefaultRecord = {
+  id: 'test-universe-id',
+  symbol: 'SPY',
+  risk_group_id: 'test-risk-group-id',
+  distribution: 0,
+  distributions_per_year: 0,
+  ex_date: null,
+  last_price: 0,
+  most_recent_sell_date: null,
+  expired: false,
+  is_closed_end_fund: false,
+  createdAt: new Date('2024-09-20'),
+  updatedAt: new Date('2024-09-20'),
+};
 
 describe('addSymbol', function () {
   beforeEach(function () {
     vi.clearAllMocks();
   });
 
-  test('should successfully add new symbol', async function () {
+  test('should save symbol first then fetch price and dividend on success', async function () {
     const request = {
       symbol: 'SPY',
       risk_group_id: 'test-risk-group-id',
@@ -42,19 +66,12 @@ describe('addSymbol', function () {
       distributions_per_year: 4,
     };
 
-    const mockCreatedRecord = {
-      id: 'test-universe-id',
-      symbol: 'SPY',
-      risk_group_id: 'test-risk-group-id',
+    const mockUpdatedRecord = {
+      ...mockDefaultRecord,
       distribution: 1.5,
       distributions_per_year: 4,
       ex_date: new Date('2024-09-15'),
       last_price: 150.25,
-      most_recent_sell_date: null,
-      expired: false,
-      is_closed_end_fund: false,
-      createdAt: new Date('2024-09-20'),
-      updatedAt: new Date('2024-09-20'),
     };
 
     mockPrisma.universe.findFirst.mockResolvedValue(null);
@@ -62,9 +79,10 @@ describe('addSymbol', function () {
       id: 'test-risk-group-id',
       name: 'Conservative',
     });
+    mockPrisma.universe.create.mockResolvedValue(mockDefaultRecord as any);
     mockGetLastPrice.mockResolvedValue(150.25);
     mockGetDistributions.mockResolvedValue(mockDistributionData);
-    mockPrisma.universe.create.mockResolvedValue(mockCreatedRecord as any);
+    mockPrisma.universe.update.mockResolvedValue(mockUpdatedRecord as any);
 
     const result = await addSymbol(request);
 
@@ -81,21 +99,71 @@ describe('addSymbol', function () {
       is_closed_end_fund: false,
       createdAt: '2024-09-20T00:00:00.000Z',
       updatedAt: '2024-09-20T00:00:00.000Z',
+      fetchFailed: false,
     });
 
     expect(mockPrisma.universe.create).toHaveBeenCalledWith({
       data: {
         symbol: 'SPY',
         risk_group_id: 'test-risk-group-id',
-        last_price: 150.25,
-        distribution: 1.5,
-        distributions_per_year: 4,
-        ex_date: new Date('2024-09-15'),
+        last_price: 0,
+        distribution: 0,
+        distributions_per_year: 0,
+        ex_date: null,
         most_recent_sell_date: null,
         expired: false,
         is_closed_end_fund: false,
       },
     });
+
+    expect(mockPrisma.universe.update).toHaveBeenCalledWith({
+      where: { id: 'test-universe-id' },
+      data: {
+        last_price: 150.25,
+        distribution: 1.5,
+        distributions_per_year: 4,
+        ex_date: new Date('2024-09-15'),
+      },
+    });
+  });
+
+  test('should save symbol successfully and set fetchFailed when fetch fails', async function () {
+    const request = {
+      symbol: 'UNKNOWN',
+      risk_group_id: 'test-risk-group-id',
+    };
+
+    const mockCreatedRecord = {
+      ...mockDefaultRecord,
+      symbol: 'UNKNOWN',
+    };
+
+    mockPrisma.universe.findFirst.mockResolvedValue(null);
+    mockPrisma.risk_group.findUnique.mockResolvedValue({
+      id: 'test-risk-group-id',
+      name: 'Conservative',
+    });
+    mockPrisma.universe.create.mockResolvedValue(mockCreatedRecord as any);
+    mockGetLastPrice.mockResolvedValue(undefined);
+    mockGetDistributions.mockResolvedValue(undefined);
+
+    const result = await addSymbol(request);
+
+    expect(result.id).toBe('test-universe-id');
+    expect(result.symbol).toBe('UNKNOWN');
+    expect(result.fetchFailed).toBe(true);
+    expect(result.last_price).toBeNull();
+    expect(result.distribution).toBeNull();
+
+    expect(mockPrisma.universe.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        symbol: 'UNKNOWN',
+        last_price: 0,
+        distribution: 0,
+      }),
+    });
+
+    expect(mockPrisma.universe.update).not.toHaveBeenCalled();
   });
 
   test('should throw error if symbol already exists', async function () {
@@ -127,25 +195,10 @@ describe('addSymbol', function () {
     );
   });
 
-  test('should handle null price and distribution data', async function () {
+  test('should handle null price and distribution data and set fetchFailed', async function () {
     const request = {
       symbol: 'SPY',
       risk_group_id: 'test-risk-group-id',
-    };
-
-    const mockCreatedRecord = {
-      id: 'test-universe-id',
-      symbol: 'SPY',
-      risk_group_id: 'test-risk-group-id',
-      distribution: 0,
-      distributions_per_year: 0,
-      ex_date: null,
-      last_price: 0,
-      most_recent_sell_date: null,
-      expired: false,
-      is_closed_end_fund: false,
-      createdAt: new Date('2024-09-20'),
-      updatedAt: new Date('2024-09-20'),
     };
 
     mockPrisma.universe.findFirst.mockResolvedValue(null);
@@ -154,8 +207,8 @@ describe('addSymbol', function () {
       name: 'Conservative',
     });
     mockGetLastPrice.mockResolvedValue(undefined);
-    mockGetDistributions.mockResolvedValue(null);
-    mockPrisma.universe.create.mockResolvedValue(mockCreatedRecord as any);
+    mockGetDistributions.mockResolvedValue(undefined);
+    mockPrisma.universe.create.mockResolvedValue(mockDefaultRecord as any);
 
     const result = await addSymbol(request);
 
@@ -163,6 +216,7 @@ describe('addSymbol', function () {
     expect(result.distribution).toBeNull();
     expect(result.distributions_per_year).toBeNull();
     expect(result.ex_date).toBeNull();
+    expect(result.fetchFailed).toBe(true);
   });
 
   test('should convert symbol to uppercase', async function () {
@@ -172,18 +226,8 @@ describe('addSymbol', function () {
     };
 
     const mockCreatedRecord = {
-      id: 'test-universe-id',
+      ...mockDefaultRecord,
       symbol: 'SPY',
-      risk_group_id: 'test-risk-group-id',
-      distribution: 0,
-      distributions_per_year: 0,
-      ex_date: null,
-      last_price: 0,
-      most_recent_sell_date: null,
-      expired: false,
-      is_closed_end_fund: false,
-      createdAt: new Date('2024-09-20'),
-      updatedAt: new Date('2024-09-20'),
     };
 
     mockPrisma.universe.findFirst.mockResolvedValue(null);
@@ -192,7 +236,7 @@ describe('addSymbol', function () {
       name: 'Conservative',
     });
     mockGetLastPrice.mockResolvedValue(undefined);
-    mockGetDistributions.mockResolvedValue(null);
+    mockGetDistributions.mockResolvedValue(undefined);
     mockPrisma.universe.create.mockResolvedValue(mockCreatedRecord as any);
 
     await addSymbol(request);
