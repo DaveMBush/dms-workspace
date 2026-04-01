@@ -219,6 +219,44 @@ describe('addSymbol', function () {
     expect(result.fetchFailed).toBe(true);
   });
 
+  test('should handle unexpected error during price/dividend fetch and return fetchFailed true', async function () {
+    const request = {
+      symbol: 'ERRSTOCK',
+      risk_group_id: 'test-risk-group-id',
+    };
+
+    mockPrisma.universe.findFirst.mockResolvedValue(null);
+    mockPrisma.risk_group.findUnique.mockResolvedValue({
+      id: 'test-risk-group-id',
+      name: 'Conservative',
+    });
+    mockPrisma.universe.create.mockResolvedValue(mockDefaultRecord as any);
+    mockGetLastPrice.mockRejectedValue(new Error('Network error'));
+
+    const result = await addSymbol(request);
+
+    expect(result.fetchFailed).toBe(true);
+  });
+
+  test('should handle non-Error thrown during price/dividend fetch and return fetchFailed true', async function () {
+    const request = {
+      symbol: 'ERRSTOCK2',
+      risk_group_id: 'test-risk-group-id',
+    };
+
+    mockPrisma.universe.findFirst.mockResolvedValue(null);
+    mockPrisma.risk_group.findUnique.mockResolvedValue({
+      id: 'test-risk-group-id',
+      name: 'Conservative',
+    });
+    mockPrisma.universe.create.mockResolvedValue(mockDefaultRecord as any);
+    mockGetLastPrice.mockRejectedValue('not an Error object');
+
+    const result = await addSymbol(request);
+
+    expect(result.fetchFailed).toBe(true);
+  });
+
   test('should convert symbol to uppercase', async function () {
     const request = {
       symbol: 'spy',

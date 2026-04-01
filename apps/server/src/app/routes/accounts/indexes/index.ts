@@ -57,8 +57,14 @@ async function handleComputedTradeIndexes(
     }),
     prisma.trades.count({ where }),
   ]);
-  const field = state.sort!.field;
-  const order = state.sort!.order;
+  const field =
+    state.sortColumns !== undefined && state.sortColumns.length > 0
+      ? state.sortColumns[0].column
+      : state.sort!.field;
+  const order =
+    state.sortColumns !== undefined && state.sortColumns.length > 0
+      ? state.sortColumns[0].direction
+      : state.sort!.order;
   trades.sort(function sortByComputed(a, b) {
     const diff =
       getTradeComputedValue(field, a) - getTradeComputedValue(field, b);

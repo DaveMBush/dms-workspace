@@ -8,6 +8,18 @@ import { buildTradeWhere } from './build-trade-where.function';
 import { getTradeComputedValue } from './get-trade-computed-value.function';
 import { isComputedTradeSort } from './is-computed-trade-sort.function';
 
+function getSortFieldAndOrder(
+  state: TableState
+): { field: string; order: 'asc' | 'desc' } | undefined {
+  if (state.sortColumns !== undefined && state.sortColumns.length > 0) {
+    return {
+      field: state.sortColumns[0].column,
+      order: state.sortColumns[0].direction,
+    };
+  }
+  return state.sort;
+}
+
 interface MonthData {
   year: number;
   month: number;
@@ -75,8 +87,7 @@ async function getOpenTradeIds(
         universe: { select: { last_price: true } },
       },
     });
-    const field = openState.sort!.field;
-    const order = openState.sort!.order;
+    const { field, order } = getSortFieldAndOrder(openState)!;
     trades.sort(function sortByComputed(a, b) {
       const diff =
         getTradeComputedValue(field, a) - getTradeComputedValue(field, b);
