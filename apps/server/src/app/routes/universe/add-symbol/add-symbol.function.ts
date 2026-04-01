@@ -114,10 +114,9 @@ export async function addSymbol(
     ]);
 
     if (lastPrice === undefined && distributionData === undefined) {
-      logger.warn(
-        'Price and dividend fetch failed after manual symbol add',
-        { symbol: upperSymbol }
-      );
+      logger.warn('Price and dividend fetch failed after manual symbol add', {
+        symbol: upperSymbol,
+      });
       return mapUniverseRecordToResult(universeRecord, true);
     }
 
@@ -135,7 +134,10 @@ export async function addSymbol(
   } catch (error) {
     logger.warn(
       'Unexpected error during price/dividend fetch after manual symbol add',
-      { symbol: upperSymbol, error: error instanceof Error ? error.message : String(error) }
+      {
+        symbol: upperSymbol,
+        error: error instanceof Error ? error.message : String(error),
+      }
     );
     return mapUniverseRecordToResult(universeRecord, true);
   }
