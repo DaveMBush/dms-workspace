@@ -100,16 +100,30 @@ test.describe('Universe Screen - Multi-Column Sort Row Ordering (Story 36.1)', (
     await page.waitForTimeout(800);
     await page.waitForLoadState('networkidle');
 
-    // Collect all visible Symbol values
-    const symbolValues = await getColumnTexts(page, 1);
-    expect(symbolValues.length).toBeGreaterThanOrEqual(5);
+    // Collect Symbol values after ascending sort
+    const ascValues = await getColumnTexts(page, 1);
+    expect(ascValues.length).toBe(5);
 
-    // Every consecutive pair should be in ascending lexicographic order
-    for (let i = 1; i < symbolValues.length; i++) {
-      expect(
-        symbolValues[i - 1].localeCompare(symbolValues[i])
-      ).toBeLessThanOrEqual(0);
-    }
+    // UAAA (symbols[0]) must appear before UEEE (symbols[4]) in ascending order
+    const ascIdxUAAA = ascValues.indexOf(symbols[0]);
+    const ascIdxUEEE = ascValues.indexOf(symbols[4]);
+    expect(ascIdxUAAA).toBeGreaterThan(-1);
+    expect(ascIdxUEEE).toBeGreaterThan(-1);
+    expect(ascIdxUAAA).toBeLessThan(ascIdxUEEE);
+
+    // Click Symbol header again to sort descending, proving the sort is live
+    // (not just natural DB insertion order)
+    await symbolHeader.click();
+    await page.waitForTimeout(800);
+    await page.waitForLoadState('networkidle');
+
+    const descValues = await getColumnTexts(page, 1);
+    expect(descValues.length).toBe(5);
+
+    // In descending order UEEE must appear before UAAA — opposite of ascending
+    const descIdxUAAA = descValues.indexOf(symbols[0]);
+    const descIdxUEEE = descValues.indexOf(symbols[4]);
+    expect(descIdxUEEE).toBeLessThan(descIdxUAAA);
   });
 
   // ─── AC #2: Secondary sort reorders rows within the same primary group ────
@@ -139,8 +153,8 @@ test.describe('Universe Screen - Multi-Column Sort Row Ordering (Story 36.1)', (
 
     // Secondary sort: Ex-Date ascending (Shift+click)
     // After this, within the Equities group:
-    //   UDDD (ex_date ≈ today+30, May)  should appear before
-    //   UAAA (ex_date = 2026-06-15, June)
+    //   UDDD (ex_date 2026-04-15, April)  should appear before
+    //   UAAA (ex_date 2026-06-15, June)
     const exDateHeader = page.getByRole('button', { name: 'Ex-Date' });
     await exDateHeader.click({ modifiers: ['Shift'] });
     await page.waitForTimeout(800);
@@ -148,11 +162,11 @@ test.describe('Universe Screen - Multi-Column Sort Row Ordering (Story 36.1)', (
 
     // Collect all displayed symbol values in DOM order
     const symbolValues = await getColumnTexts(page, 1);
-    expect(symbolValues.length).toBeGreaterThanOrEqual(5);
+    expect(symbolValues.length).toBe(5);
 
     // Identify positions of the two Equities rows
-    const idxUAAA = symbolValues.indexOf(symbols[0]); // June 15 — later date
-    const idxUDDD = symbolValues.indexOf(symbols[3]); // today+30 — earlier date
+    const idxUAAA = symbolValues.indexOf(symbols[0]); // ex_date 2026-06-15 — later date
+    const idxUDDD = symbolValues.indexOf(symbols[3]); // ex_date 2026-04-15 — earlier date
 
     expect(idxUAAA).toBeGreaterThan(-1);
     expect(idxUDDD).toBeGreaterThan(-1);
