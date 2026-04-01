@@ -50,5 +50,5 @@ If setup fails after required retries and escalations, return `SETUP FAILED: <re
 
 To avoid GitHub Copilot rate limiting:
 
-- Always wait for at least 2 minutes between terminal calls, calls to MCP servers, or code updates.
+**CRITICAL**: Always wait for at least 2 minutes between terminal calls, calls to MCP servers, or code updates.
 - Prefer slow completion over fast failure.
