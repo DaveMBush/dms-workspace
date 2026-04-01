@@ -1,6 +1,7 @@
 import { prisma } from '../../../prisma/prisma-client';
 import { getDistributions } from '../../settings/common/get-distributions.function';
 import { getLastPrice } from '../../settings/common/get-last-price.function';
+import { logger } from '../../../../utils/structured-logger';
 
 interface AddSymbolRequest {
   symbol: string;
@@ -20,6 +21,7 @@ interface AddSymbolResult {
   is_closed_end_fund: boolean;
   createdAt: string;
   updatedAt: string;
+  fetchFailed: boolean;
 }
 
 async function validateSymbolAndRiskGroup(
@@ -58,7 +60,8 @@ interface UniverseRecord {
 }
 
 function mapUniverseRecordToResult(
-  universeRecord: UniverseRecord
+  universeRecord: UniverseRecord,
+  fetchFailed: boolean
 ): AddSymbolResult {
   return {
     id: universeRecord.id,
@@ -78,6 +81,7 @@ function mapUniverseRecordToResult(
     is_closed_end_fund: universeRecord.is_closed_end_fund,
     createdAt: universeRecord.createdAt.toISOString(),
     updatedAt: universeRecord.updatedAt.toISOString(),
+    fetchFailed,
   };
 }
 
@@ -89,24 +93,50 @@ export async function addSymbol(
 
   await validateSymbolAndRiskGroup(upperSymbol, risk_group_id);
 
-  const [lastPrice, distributionData] = await Promise.all([
-    getLastPrice(upperSymbol),
-    getDistributions(upperSymbol),
-  ]);
-
   const universeRecord = await prisma.universe.create({
     data: {
       symbol: upperSymbol,
       risk_group_id,
-      last_price: lastPrice ?? 0,
-      distribution: distributionData?.distribution ?? 0,
-      distributions_per_year: distributionData?.distributions_per_year ?? 0,
-      ex_date: distributionData?.ex_date ?? null,
+      last_price: 0,
+      distribution: 0,
+      distributions_per_year: 0,
+      ex_date: null,
       most_recent_sell_date: null,
       expired: false,
       is_closed_end_fund: false,
     },
   });
 
-  return mapUniverseRecordToResult(universeRecord);
+  try {
+    const [lastPrice, distributionData] = await Promise.all([
+      getLastPrice(upperSymbol),
+      getDistributions(upperSymbol),
+    ]);
+
+    if (lastPrice === undefined && distributionData === undefined) {
+      logger.warn(
+        { symbol: upperSymbol },
+        'Price and dividend fetch failed after manual symbol add'
+      );
+      return mapUniverseRecordToResult(universeRecord, true);
+    }
+
+    const updatedRecord = await prisma.universe.update({
+      where: { id: universeRecord.id },
+      data: {
+        last_price: lastPrice ?? 0,
+        distribution: distributionData?.distribution ?? 0,
+        distributions_per_year: distributionData?.distributions_per_year ?? 0,
+        ex_date: distributionData?.ex_date ?? null,
+      },
+    });
+
+    return mapUniverseRecordToResult(updatedRecord as UniverseRecord, false);
+  } catch (error) {
+    logger.warn(
+      { symbol: upperSymbol, error },
+      'Unexpected error during price/dividend fetch after manual symbol add'
+    );
+    return mapUniverseRecordToResult(universeRecord, true);
+  }
 }
