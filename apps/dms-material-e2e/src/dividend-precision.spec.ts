@@ -111,11 +111,14 @@ test.describe('Dividend Precision After Update', () => {
     // API must accept and echo back the high-precision value (not rounded).
     expect(updateResponse.ok()).toBe(true);
     const updatedRows = (await updateResponse.json()) as Array<{
+      id: string;
+      symbol: string;
       distribution: number;
     }>;
-    expect(updatedRows.length).toBeGreaterThanOrEqual(1);
+    const updatedRecord = updatedRows.find((row) => row.id === seededRecord.id);
+    expect(updatedRecord).toBeDefined();
     // Assert the server stored exactly the 4-decimal precision value.
-    expect(updatedRows[0].distribution).toBe(HIGH_PRECISION_DISTRIBUTION);
+    expect(updatedRecord?.distribution).toBe(HIGH_PRECISION_DISTRIBUTION);
 
     // ── Step 2: Load the Universe screen and verify the stored precision is
     // faithfully displayed in the UI (guards against UI-layer rounding).
@@ -133,6 +136,11 @@ test.describe('Dividend Precision After Update', () => {
 
     // Wait for exactly one data row matching the test symbol.
     await page.waitForSelector('tr.mat-mdc-row', { timeout: 10000 });
+
+    // Verify the first visible row actually contains the expected test symbol
+    // before asserting on the distribution cell value.
+    const firstRow = page.locator('tr.mat-mdc-row').first();
+    await expect(firstRow).toContainText(testSymbol, { timeout: 10000 });
 
     // The editable-cell component uses data-testid="distribution-cell-0" for
     // row index 0, formatted with decimalFormat="1.4-4" (exactly 4 decimal places).
@@ -188,6 +196,11 @@ test.describe('Dividend Precision After Update', () => {
       await page.waitForTimeout(500);
 
       await page.waitForSelector('tr.mat-mdc-row', { timeout: 10000 });
+
+      // Verify the first visible row actually contains the expected baseline symbol
+      // before asserting on the distribution cell value.
+      const firstRow = page.locator('tr.mat-mdc-row').first();
+      await expect(firstRow).toContainText(baselineSymbol, { timeout: 10000 });
 
       const distributionCell = page.locator(
         '[data-testid="distribution-cell-0"]'
