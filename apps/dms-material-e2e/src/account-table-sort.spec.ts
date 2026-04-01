@@ -83,10 +83,7 @@ test.describe('Account Tables - Sorting (Story 37.1 - Failing Tests)', () => {
       await login(page);
       await clearSortFilterState(page);
       await page.goto(`/account/${accountIdOpen}/open`);
-      await expect(
-        page.locator('[data-testid="open-positions-table"]')
-      ).toBeVisible({ timeout: 15000 });
-      await page.waitForSelector('tr.mat-mdc-row', { timeout: 15000 });
+      await waitForTableRows(page);
     });
 
     // EXPECTED TO FAIL: buggy implementation does not reorder rows

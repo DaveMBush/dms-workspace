@@ -79,7 +79,13 @@ export async function seedDivDepositsE2eData(): Promise<DivDepositsSeederResult>
       data: { name: accountName },
     });
     accountId = account.id;
-    await createDivDeposits(prisma, accountId, divDepositTypeId);
+    try {
+      await createDivDeposits(prisma, accountId, divDepositTypeId);
+    } catch (createError) {
+      // Clean up the account if deposit creation fails to avoid orphaned records
+      await prisma.accounts.delete({ where: { id: accountId } });
+      throw createError;
+    }
   } catch (error) {
     await prisma.$disconnect();
     throw error;
