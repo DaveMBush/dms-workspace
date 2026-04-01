@@ -106,7 +106,9 @@ test.describe('Universe Screen - Multi-Column Sort Row Ordering (Story 36.1)', (
 
     // Every consecutive pair should be in ascending lexicographic order
     for (let i = 1; i < symbolValues.length; i++) {
-      expect(symbolValues[i - 1].localeCompare(symbolValues[i])).toBeLessThanOrEqual(0);
+      expect(
+        symbolValues[i - 1].localeCompare(symbolValues[i])
+      ).toBeLessThanOrEqual(0);
     }
   });
 
