@@ -1,6 +1,5 @@
 import type { PrismaClient } from '@prisma/client';
 
-import { createTestDates } from './create-test-dates.helper';
 import { generateUniqueId } from './generate-unique-id.helper';
 import type { RiskGroups } from './risk-groups.types';
 import { fetchUniverseIds } from './shared-fetch-universe-ids.helper';
@@ -76,8 +75,7 @@ function createFirstBatch(
 
 function createSecondBatch(
   symbols: string[],
-  riskGroups: { eq: string; inc: string },
-  dates: { futureDate: Date; pastDate: Date }
+  riskGroups: { eq: string; inc: string }
 ): UniverseRecord[] {
   return [
     createRecord({
@@ -86,7 +84,9 @@ function createSecondBatch(
       distribution: 1.5,
       distPerYear: 4,
       lastPrice: 50.0,
-      exDate: dates.futureDate,
+      // Fixed date clearly before symbols[0]'s 2026-06-15, so secondary-sort
+      // assertions remain valid regardless of when the tests are run.
+      exDate: new Date('2026-04-15'),
       expired: true,
     }),
     createRecord({
@@ -95,7 +95,7 @@ function createSecondBatch(
       distribution: 0.3,
       distPerYear: 12,
       lastPrice: 15.0,
-      exDate: dates.pastDate,
+      exDate: new Date('2026-01-15'),
       expired: false,
     }),
   ];
@@ -105,14 +105,13 @@ function createUniverseRecords(
   symbols: string[],
   riskGroups: RiskGroups
 ): UniverseRecord[] {
-  const dates = createTestDates();
   const eq = riskGroups.equitiesRiskGroup.id;
   const inc = riskGroups.incomeRiskGroup.id;
   const tf = riskGroups.taxFreeIncomeRiskGroup.id;
 
   return [
     ...createFirstBatch(symbols, eq, inc, tf),
-    ...createSecondBatch(symbols, { eq, inc }, dates),
+    ...createSecondBatch(symbols, { eq, inc }),
   ];
 }
 
