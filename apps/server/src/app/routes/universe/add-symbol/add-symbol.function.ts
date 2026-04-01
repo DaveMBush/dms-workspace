@@ -1,7 +1,9 @@
 import { logger } from '../../../../utils/structured-logger';
 import { prisma } from '../../../prisma/prisma-client';
-import { getDistributions } from '../../settings/common/get-distributions.function';
-import { getLastPrice } from '../../settings/common/get-last-price.function';
+import {
+  fetchAndUpdatePriceData,
+  UniverseRecord,
+} from '../fetch-and-update-price-data.function';
 
 interface AddSymbolRequest {
   symbol: string;
@@ -45,20 +47,6 @@ async function validateSymbolAndRiskGroup(
   }
 }
 
-interface UniverseRecord {
-  id: string;
-  symbol: string;
-  risk_group_id: string;
-  distribution: number;
-  distributions_per_year: number;
-  ex_date: Date | null;
-  last_price: number;
-  expired: boolean;
-  is_closed_end_fund: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
 function mapUniverseRecordToResult(
   universeRecord: UniverseRecord,
   fetchFailed: boolean
@@ -83,41 +71,6 @@ function mapUniverseRecordToResult(
     updatedAt: universeRecord.updatedAt.toISOString(),
     fetchFailed,
   };
-}
-
-interface FetchResult {
-  record: UniverseRecord;
-  fetchFailed: boolean;
-}
-
-async function fetchAndUpdatePriceData(
-  universeId: string,
-  symbol: string,
-  fallbackRecord: UniverseRecord
-): Promise<FetchResult> {
-  const [lastPrice, distributionData] = await Promise.all([
-    getLastPrice(symbol),
-    getDistributions(symbol),
-  ]);
-
-  if (lastPrice === undefined && distributionData === undefined) {
-    logger.warn('Price and dividend fetch failed after manual symbol add', {
-      symbol,
-    });
-    return { record: fallbackRecord, fetchFailed: true };
-  }
-
-  const updatedRecord = await prisma.universe.update({
-    where: { id: universeId },
-    data: {
-      last_price: lastPrice ?? 0,
-      distribution: distributionData?.distribution ?? 0,
-      distributions_per_year: distributionData?.distributions_per_year ?? 0,
-      ex_date: distributionData?.ex_date ?? null,
-    },
-  });
-
-  return { record: updatedRecord as UniverseRecord, fetchFailed: false };
 }
 
 export async function addSymbol(
@@ -146,7 +99,8 @@ export async function addSymbol(
     const { record, fetchFailed } = await fetchAndUpdatePriceData(
       universeRecord.id,
       upperSymbol,
-      universeRecord
+      universeRecord,
+      'manual symbol add'
     );
     return mapUniverseRecordToResult(record, fetchFailed);
   } catch (error) {

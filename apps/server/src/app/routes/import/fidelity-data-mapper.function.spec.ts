@@ -2,6 +2,8 @@ import { describe, expect, test, vi, beforeEach } from 'vitest';
 
 import { mapFidelityTransactions } from './fidelity-data-mapper.function';
 import { prisma } from '../../prisma/prisma-client';
+import { getDistributions } from '../settings/common/get-distributions.function';
+import { getLastPrice } from '../settings/common/get-last-price.function';
 
 vi.mock('../../prisma/prisma-client', function () {
   return {
@@ -13,6 +15,7 @@ vi.mock('../../prisma/prisma-client', function () {
       universe: {
         findFirst: vi.fn(),
         create: vi.fn(),
+        update: vi.fn(),
       },
       divDepositType: {
         findFirst: vi.fn(),
@@ -25,7 +28,20 @@ vi.mock('../../prisma/prisma-client', function () {
   };
 });
 
+vi.mock('../settings/common/get-distributions.function');
+vi.mock('../settings/common/get-last-price.function');
+vi.mock('../../../utils/structured-logger', function () {
+  return {
+    logger: {
+      warn: vi.fn(),
+      info: vi.fn(),
+    },
+  };
+});
+
 const mockPrisma = prisma as any;
+const mockGetDistributions = getDistributions as any;
+const mockGetLastPrice = getLastPrice as any;
 
 interface ParsedCsvRow {
   date: string;
@@ -1120,6 +1136,133 @@ describe('mapFidelityTransactions', function () {
       // Dividend skipped because universe is null
       expect(result.divDeposits).toHaveLength(0);
       expect(result.trades).toHaveLength(0);
+    });
+  });
+
+  describe('CUSIP-resolved symbol price/dividend fetch', function () {
+    test('should fetch price and dividend after auto-creating symbol for BUY', async function () {
+      const rows: ParsedCsvRow[] = [
+        {
+          date: '02/15/2026',
+          action: 'YOU BOUGHT',
+          symbol: 'NEWSTOCK',
+          description: 'NEW STOCK',
+          quantity: 10,
+          price: 100.0,
+          totalAmount: -1000.0,
+          account: 'My Brokerage',
+        },
+      ];
+
+      const createdRecord = {
+        id: 'new-universe-123',
+        symbol: 'NEWSTOCK',
+        risk_group_id: 'default-risk-group',
+        last_price: 0,
+        distribution: 0,
+        distributions_per_year: 0,
+        ex_date: null,
+        most_recent_sell_date: null,
+        expired: false,
+        is_closed_end_fund: true,
+        createdAt: new Date('2026-02-15'),
+        updatedAt: new Date('2026-02-15'),
+      };
+
+      mockPrisma.accounts.findFirst.mockResolvedValue({
+        id: 'account-123',
+        name: 'My Brokerage',
+      });
+      mockPrisma.universe.findFirst.mockResolvedValue(null);
+      mockPrisma.risk_group.findFirst.mockResolvedValue({
+        id: 'default-risk-group',
+        name: 'Default',
+      });
+      mockPrisma.universe.create.mockResolvedValue(createdRecord);
+      mockGetLastPrice.mockResolvedValue(120.5);
+      mockGetDistributions.mockResolvedValue({
+        distribution: 2.0,
+        ex_date: new Date('2026-03-01'),
+        distributions_per_year: 4,
+      });
+      mockPrisma.universe.update.mockResolvedValue({
+        ...createdRecord,
+        last_price: 120.5,
+        distribution: 2.0,
+        distributions_per_year: 4,
+        ex_date: new Date('2026-03-01'),
+      });
+
+      const result = await mapFidelityTransactions(rows);
+
+      expect(mockPrisma.universe.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({ symbol: 'NEWSTOCK', last_price: 0 }),
+      });
+      expect(mockPrisma.universe.update).toHaveBeenCalledWith({
+        where: { id: 'new-universe-123' },
+        data: {
+          last_price: 120.5,
+          distribution: 2.0,
+          distributions_per_year: 4,
+          ex_date: new Date('2026-03-01'),
+        },
+      });
+      expect(result.trades).toHaveLength(1);
+      expect(result.trades[0].universeId).toBe('new-universe-123');
+    });
+
+    test('should still create symbol when price/dividend fetch fails after CUSIP resolution', async function () {
+      const rows: ParsedCsvRow[] = [
+        {
+          date: '02/15/2026',
+          action: 'YOU BOUGHT',
+          symbol: 'FAILSTOCK',
+          description: 'FAIL STOCK',
+          quantity: 5,
+          price: 50.0,
+          totalAmount: -250.0,
+          account: 'My Brokerage',
+        },
+      ];
+
+      const createdRecord = {
+        id: 'fail-universe-456',
+        symbol: 'FAILSTOCK',
+        risk_group_id: 'default-risk-group',
+        last_price: 0,
+        distribution: 0,
+        distributions_per_year: 0,
+        ex_date: null,
+        most_recent_sell_date: null,
+        expired: false,
+        is_closed_end_fund: true,
+        createdAt: new Date('2026-02-15'),
+        updatedAt: new Date('2026-02-15'),
+      };
+
+      mockPrisma.accounts.findFirst.mockResolvedValue({
+        id: 'account-123',
+        name: 'My Brokerage',
+      });
+      mockPrisma.universe.findFirst.mockResolvedValue(null);
+      mockPrisma.risk_group.findFirst.mockResolvedValue({
+        id: 'default-risk-group',
+        name: 'Default',
+      });
+      mockPrisma.universe.create.mockResolvedValue(createdRecord);
+      mockGetLastPrice.mockResolvedValue(undefined);
+      mockGetDistributions.mockResolvedValue(undefined);
+
+      const result = await mapFidelityTransactions(rows);
+
+      expect(mockPrisma.universe.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({ symbol: 'FAILSTOCK', last_price: 0 }),
+      });
+      // update should NOT be called when both fetch results are undefined
+      expect(mockPrisma.universe.update).not.toHaveBeenCalled();
+      // symbol is still added to universe and trade is created
+      expect(result.trades).toHaveLength(1);
+      expect(result.trades[0].universeId).toBe('fail-universe-456');
     });
   });
 });
