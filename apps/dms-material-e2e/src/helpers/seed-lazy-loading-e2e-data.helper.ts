@@ -101,25 +101,53 @@ async function seedRecordsIntoDb(
   return account.id;
 }
 
+function generateSymbols(
+  prefix: string,
+  count: number,
+  uniqueId: string
+): string[] {
+  return Array.from(
+    { length: count },
+    function generateSymbol(_: unknown, i: number): string {
+      return `${prefix}${String(i).padStart(3, '0')}-${uniqueId}`;
+    }
+  );
+}
+
+async function cleanupPartialSeed(
+  prisma: PrismaClient,
+  accountName: string,
+  allSymbols: string[]
+): Promise<void> {
+  const seededAccount = await prisma.accounts.findFirst({
+    where: { name: accountName },
+    select: { id: true },
+  });
+  if (seededAccount !== null) {
+    await prisma.trades.deleteMany({
+      where: { accountId: seededAccount.id },
+    });
+    await prisma.accounts.delete({
+      where: { id: seededAccount.id },
+    });
+  }
+  await prisma.universe.deleteMany({
+    where: { symbol: { in: allSymbols } },
+  });
+}
+
 export async function seedLazyLoadingE2eData(): Promise<LazyLoadingSeederResult> {
   const prisma = await initializePrismaClient();
   const uniqueId = generateUniqueId();
 
-  const universeSymbols = Array.from(
-    { length: UNIVERSE_ROW_COUNT },
-    function generateSymbol(_: unknown, i: number): string {
-      return `ULZY${String(i).padStart(3, '0')}-${uniqueId}`;
-    }
+  const universeSymbols = generateSymbols('ULZY', UNIVERSE_ROW_COUNT, uniqueId);
+  const openPositionSymbols = generateSymbols(
+    'OLZY',
+    OPEN_POSITIONS_COUNT,
+    uniqueId
   );
-
-  const openPositionSymbols = Array.from(
-    { length: OPEN_POSITIONS_COUNT },
-    function generateSymbol(_: unknown, i: number): string {
-      return `OLZY${String(i).padStart(3, '0')}-${uniqueId}`;
-    }
-  );
-
   const accountName = `E2E-Lazy-Acct-${uniqueId}`;
+  const allSymbols = [...universeSymbols, ...openPositionSymbols];
   let accountId = '';
 
   try {
@@ -130,11 +158,13 @@ export async function seedLazyLoadingE2eData(): Promise<LazyLoadingSeederResult>
       accountName
     );
   } catch (error) {
-    await prisma.$disconnect();
+    await cleanupPartialSeed(prisma, accountName, allSymbols).finally(
+      async function disconnect(): Promise<void> {
+        await prisma.$disconnect();
+      }
+    );
     throw error;
   }
-
-  const allSymbols = [...universeSymbols, ...openPositionSymbols];
 
   return {
     universeSymbols,

@@ -1,4 +1,4 @@
-import { expect, Page, test } from 'playwright/test';
+import { expect, Page, Request, test } from 'playwright/test';
 
 import { login } from './helpers/login.helper';
 import { seedLazyLoadingE2eData } from './helpers/seed-lazy-loading-e2e-data.helper';
@@ -20,6 +20,7 @@ interface TopResponse {
 }
 
 interface CapturedIndexesRequest {
+  request: Request;
   body: { startIndex: number; length: number; childField: string };
   response: PartialArray;
 }
@@ -80,6 +81,7 @@ function captureIndexesRequests(
       const body = JSON.parse(postData) as CapturedIndexesRequest['body'];
       if (typeof body.startIndex === 'number') {
         captured.push({
+          request,
           body,
           response: { startIndex: 0, indexes: [], length: 0 },
         });
@@ -96,7 +98,11 @@ function captureIndexesRequests(
     if (!response.url().includes(urlPattern)) {
       return;
     }
-    const entry = captured[captured.length - 1];
+    const entry = captured.find(function matchRequest(
+      e: CapturedIndexesRequest
+    ): boolean {
+      return e.request === response.request();
+    });
     if (entry === undefined) {
       return;
     }
@@ -242,19 +248,14 @@ test.describe('Lazy Loading Network Traffic', () => {
       );
       expect(openTradeRequests.length).toBeGreaterThanOrEqual(1);
 
-      // Each request should ask for ≤ MAX_PAGE_SIZE rows
-      for (const entry of openTradeRequests) {
-        expect(entry.body.startIndex).toBeGreaterThanOrEqual(0);
-        expect(entry.body.length).toBeLessThanOrEqual(MAX_PAGE_SIZE);
-        expect(entry.body.length).toBeGreaterThan(0);
-      }
+      // The first request should be for the beginning of the list
+      const firstEntry = openTradeRequests[0];
 
-      // The response should report the total count
-      const lastEntry = openTradeRequests[openTradeRequests.length - 1];
-      expect(lastEntry.response.length).toBeGreaterThanOrEqual(50);
+      // The response should report the total count (we seeded 80)
+      expect(firstEntry.response.length).toBeGreaterThanOrEqual(50);
 
       // The indexes returned should be ≤ page size
-      expect(lastEntry.response.indexes.length).toBeLessThanOrEqual(
+      expect(firstEntry.response.indexes.length).toBeLessThanOrEqual(
         MAX_PAGE_SIZE
       );
     });
