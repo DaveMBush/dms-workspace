@@ -1019,4 +1019,84 @@ describe('SoldPositionsComponent - Virtual Data Access (AX.11)', () => {
       end: 70,
     });
   });
+
+  // Story 37.3: Sort State Wiring Tests
+  describe('Sort integration with SortFilterStateService', () => {
+    beforeEach(() => {
+      localStorage.removeItem('dms-sort-filter-state');
+    });
+
+    it('should call saveSortState with correct key and value on sort change', () => {
+      const sortFilterStateService = TestBed.inject(SortFilterStateService);
+      const saveSpy = vi.spyOn(sortFilterStateService, 'saveSortState');
+
+      component.onSortChange({ active: 'sell_date', direction: 'asc' });
+
+      expect(saveSpy).toHaveBeenCalledWith('trades-closed', {
+        field: 'sell_date',
+        order: 'asc',
+      });
+    });
+
+    it('should persist sort state when sort direction is desc', () => {
+      const sortFilterStateService = TestBed.inject(SortFilterStateService);
+      const saveSpy = vi.spyOn(sortFilterStateService, 'saveSortState');
+
+      component.onSortChange({ active: 'capitalGain', direction: 'desc' });
+
+      expect(saveSpy).toHaveBeenCalledWith('trades-closed', {
+        field: 'capitalGain',
+        order: 'desc',
+      });
+    });
+
+    it('should call clearSortState when sort direction is empty', () => {
+      const sortFilterStateService = TestBed.inject(SortFilterStateService);
+      const clearSpy = vi.spyOn(sortFilterStateService, 'clearSortState');
+
+      component.onSortChange({ active: 'sell_date', direction: '' });
+
+      expect(clearSpy).toHaveBeenCalledWith('trades-closed');
+    });
+
+    it('should persist and retrieve sort state round-trip', () => {
+      const sortFilterStateService = TestBed.inject(SortFilterStateService);
+
+      component.onSortChange({ active: 'daysHeld', direction: 'asc' });
+
+      const state = sortFilterStateService.loadSortState('trades-closed');
+      expect(state).toEqual({ field: 'daysHeld', order: 'asc' });
+    });
+
+    it('should make saved sort state available to interceptor via loadAllSortFilterState', () => {
+      const sortFilterStateService = TestBed.inject(SortFilterStateService);
+      // Pre-populate sort state as if saved from a previous session
+      sortFilterStateService.saveSortState('trades-closed', {
+        field: 'sell_date',
+        order: 'desc',
+      });
+
+      // Verify the sort state is included in loadAllSortFilterState (used by the interceptor)
+      const allState = sortFilterStateService.loadAllSortFilterState();
+      expect(allState['trades-closed']).toEqual({
+        sort: { field: 'sell_date', order: 'desc' },
+      });
+    });
+
+    it('should return null from loadSortState when no saved state exists', () => {
+      const sortFilterStateService = TestBed.inject(SortFilterStateService);
+      const result = sortFilterStateService.loadSortState('trades-closed');
+      expect(result).toBeNull();
+    });
+
+    it('should persist latest sort state when sorting multiple fields', () => {
+      const sortFilterStateService = TestBed.inject(SortFilterStateService);
+
+      component.onSortChange({ active: 'sell_date', direction: 'asc' });
+      component.onSortChange({ active: 'capitalGain', direction: 'desc' });
+
+      const state = sortFilterStateService.loadSortState('trades-closed');
+      expect(state).toEqual({ field: 'capitalGain', order: 'desc' });
+    });
+  });
 });
