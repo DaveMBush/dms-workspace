@@ -10,16 +10,15 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { Sort } from '@angular/material/sort';
-import { handleSocketNotification } from '@smarttools/smart-signals';
 import { filter, switchMap } from 'rxjs';
 
 import { BaseTableComponent } from '../../shared/components/base-table/base-table.component';
 import { ColumnDef } from '../../shared/components/base-table/column-def.interface';
 import { ConfirmDialogService } from '../../shared/services/confirm-dialog.service';
 import { NotificationService } from '../../shared/services/notification.service';
-import { SortColumn } from '../../shared/services/sort-column.interface';
 import { SortFilterStateService } from '../../shared/services/sort-filter-state.service';
-import { getAccountIds } from '../../store/accounts/selectors/get-account-ids.function';
+import { handleSortChange } from '../../shared/utils/handle-sort-change.function';
+import { initSortColumns } from '../../shared/utils/init-sort-columns.function';
 import { currentAccountSignalStore } from '../../store/current-account/current-account.signal-store';
 import { DivDeposit } from '../../store/div-deposits/div-deposit.interface';
 import { divDepositsEffectsServiceToken } from '../../store/div-deposits/div-deposits-effect-service-token';
@@ -50,19 +49,9 @@ export class DividendDepositsComponent {
   private effectsService = inject(divDepositsEffectsServiceToken);
   private readonly sortFilterStateService = inject(SortFilterStateService);
 
-  private readonly restoredSort = this.sortFilterStateService.loadSortState(
+  sortColumns$ = initSortColumns(
+    this.sortFilterStateService,
     DividendDepositsComponent.tableKey
-  );
-
-  sortColumns$ = signal<SortColumn[]>(
-    this.restoredSort !== null
-      ? [
-          {
-            column: this.restoredSort.field,
-            direction: this.restoredSort.order,
-          },
-        ]
-      : []
   );
 
   constructor() {
@@ -86,23 +75,12 @@ export class DividendDepositsComponent {
   }
 
   onSortChange(sort: Sort): void {
-    if (sort.direction === '') {
-      this.sortColumns$.set([]);
-      this.sortFilterStateService.clearSortState(
-        DividendDepositsComponent.tableKey
-      );
-    } else {
-      const direction = sort.direction;
-      this.sortColumns$.set([{ column: sort.active, direction }]);
-      this.sortFilterStateService.saveSortState(
-        DividendDepositsComponent.tableKey,
-        {
-          field: sort.active,
-          order: direction,
-        }
-      );
-    }
-    handleSocketNotification('accounts', 'update', getAccountIds());
+    handleSortChange(
+      sort,
+      this.sortColumns$,
+      this.sortFilterStateService,
+      DividendDepositsComponent.tableKey
+    );
   }
 
   columns: ColumnDef[] = [

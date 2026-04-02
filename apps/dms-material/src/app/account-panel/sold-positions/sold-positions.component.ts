@@ -9,13 +9,15 @@ import {
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { Sort } from '@angular/material/sort';
-import { handleSocketNotification } from '@smarttools/smart-signals';
 
 import { BaseTableComponent } from '../../shared/components/base-table/base-table.component';
 import { ColumnDef } from '../../shared/components/base-table/column-def.interface';
-import { SortColumn } from '../../shared/services/sort-column.interface';
 import { SortFilterStateService } from '../../shared/services/sort-filter-state.service';
-import { getAccountIds } from '../../store/accounts/selectors/get-account-ids.function';
+import { createSymbolFilterManager } from '../../shared/utils/create-symbol-filter-manager.function';
+import { handleSortChange } from '../../shared/utils/handle-sort-change.function';
+import { initSearchText } from '../../shared/utils/init-search-text.function';
+import { initSortColumns } from '../../shared/utils/init-sort-columns.function';
+import { SymbolFilterManager } from '../../shared/utils/symbol-filter-manager.interface';
 import { ClosedPosition } from '../../store/trades/closed-position.interface';
 import { SoldPositionsComponentService } from './sold-positions-component.service';
 
@@ -32,27 +34,14 @@ export class SoldPositionsComponent implements OnDestroy {
   private readonly soldPositionsService = inject(SoldPositionsComponentService);
   private readonly sortFilterStateService = inject(SortFilterStateService);
 
-  private readonly restoredFilter = this.sortFilterStateService.loadFilterState(
+  searchText = initSearchText(
+    this.sortFilterStateService,
     SoldPositionsComponent.tableKey
   );
 
-  private readonly restoredSort = this.sortFilterStateService.loadSortState(
+  sortColumns$ = initSortColumns(
+    this.sortFilterStateService,
     SoldPositionsComponent.tableKey
-  );
-
-  searchText = signal<string>(
-    (this.restoredFilter?.['symbol'] as string) ?? ''
-  );
-
-  sortColumns$ = signal<SortColumn[]>(
-    this.restoredSort !== null
-      ? [
-          {
-            column: this.restoredSort.field,
-            direction: this.restoredSort.order,
-          },
-        ]
-      : []
   );
 
   visibleRange = signal<{ start: number; end: number }>({
@@ -60,13 +49,15 @@ export class SoldPositionsComponent implements OnDestroy {
     end: 50,
   });
 
-  private symbolFilterTimer: ReturnType<typeof setTimeout> | null = null;
+  private readonly symbolFilterManager: SymbolFilterManager =
+    createSymbolFilterManager(
+      this.searchText,
+      this.sortFilterStateService,
+      SoldPositionsComponent.tableKey
+    );
 
   ngOnDestroy(): void {
-    if (this.symbolFilterTimer !== null) {
-      clearTimeout(this.symbolFilterTimer);
-      this.symbolFilterTimer = null;
-    }
+    this.symbolFilterManager.cleanup();
   }
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
@@ -80,34 +71,16 @@ export class SoldPositionsComponent implements OnDestroy {
   }
 
   onSymbolFilterChange(value: string): void {
-    this.searchText.set(value);
-    if (this.symbolFilterTimer !== null) {
-      clearTimeout(this.symbolFilterTimer);
-    }
-    this.symbolFilterTimer = setTimeout(
-      this.saveSymbolFilterAndNotify.bind(this),
-      300
-    );
+    this.symbolFilterManager.onSymbolFilterChange(value);
   }
 
   onSortChange(sort: Sort): void {
-    if (sort.direction === '') {
-      this.sortColumns$.set([]);
-      this.sortFilterStateService.clearSortState(
-        SoldPositionsComponent.tableKey
-      );
-    } else {
-      const direction = sort.direction;
-      this.sortColumns$.set([{ column: sort.active, direction }]);
-      this.sortFilterStateService.saveSortState(
-        SoldPositionsComponent.tableKey,
-        {
-          field: sort.active,
-          order: direction,
-        }
-      );
-    }
-    handleSocketNotification('accounts', 'update', getAccountIds());
+    handleSortChange(
+      sort,
+      this.sortColumns$,
+      this.sortFilterStateService,
+      SoldPositionsComponent.tableKey
+    );
   }
 
   columns: ColumnDef[] = [
@@ -136,20 +109,5 @@ export class SoldPositionsComponent implements OnDestroy {
 
   onCellEdit(__: ClosedPosition, ___: string, ____: unknown): void {
     // Update via SmartNgRX
-  }
-
-  private saveSymbolFilterAndNotify(): void {
-    const symbol = this.searchText();
-    if (symbol !== '') {
-      this.sortFilterStateService.saveFilterState(
-        SoldPositionsComponent.tableKey,
-        { symbol }
-      );
-    } else {
-      this.sortFilterStateService.clearFilterState(
-        SoldPositionsComponent.tableKey
-      );
-    }
-    handleSocketNotification('accounts', 'update', getAccountIds());
   }
 }

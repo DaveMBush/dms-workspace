@@ -1,5 +1,3 @@
-import { Prisma } from '@prisma/client';
-
 import { prisma } from '../../prisma/prisma-client';
 import { TableState } from '../common/table-state.interface';
 import { PartialArrayDefinition } from '../top/partial-array-definition.interface';
@@ -9,6 +7,7 @@ import { buildDivDepositOrderBy } from './build-div-deposit-order-by.function';
 import { buildDivDepositWhere } from './build-div-deposit-where.function';
 import { buildTradeOrderBy } from './build-trade-order-by.function';
 import { buildTradeWhere } from './build-trade-where.function';
+import { fetchStandardPage } from './fetch-standard-page.function';
 import { getTradeComputedValue } from './get-trade-computed-value.function';
 import { isComputedTradeSort } from './is-computed-trade-sort.function';
 
@@ -118,28 +117,8 @@ async function getSoldTradesPage(
   closedState: TableState,
   accountId: string
 ): Promise<PartialArrayDefinition> {
-  const where: Prisma.tradesWhereInput = buildTradeWhere(
-    closedState,
-    accountId,
-    false
-  );
-  const [totalCount, trades] = await Promise.all([
-    prisma.trades.count({ where }),
-    prisma.trades.findMany({
-      where,
-      select: { id: true },
-      orderBy: buildTradeOrderBy(closedState),
-      skip: 0,
-      take: ACCOUNT_PAGE_SIZE,
-    }),
-  ]);
-  return {
-    startIndex: 0,
-    indexes: trades.map(function mapId(t) {
-      return t.id;
-    }),
-    length: totalCount,
-  };
+  const where = buildTradeWhere(closedState, accountId, false);
+  return fetchStandardPage('trades', where, buildTradeOrderBy(closedState));
 }
 
 async function getDivDepositsPage(
@@ -147,23 +126,11 @@ async function getDivDepositsPage(
   accountId: string
 ): Promise<PartialArrayDefinition> {
   const where = buildDivDepositWhere(divState, accountId);
-  const [totalCount, divDeposits] = await Promise.all([
-    prisma.divDeposits.count({ where }),
-    prisma.divDeposits.findMany({
-      where,
-      select: { id: true },
-      orderBy: buildDivDepositOrderBy(divState),
-      skip: 0,
-      take: ACCOUNT_PAGE_SIZE,
-    }),
-  ]);
-  return {
-    startIndex: 0,
-    indexes: divDeposits.map(function mapId(d) {
-      return d.id;
-    }),
-    length: totalCount,
-  };
+  return fetchStandardPage(
+    'divDeposits',
+    where,
+    buildDivDepositOrderBy(divState)
+  );
 }
 
 async function getSoldTradeMonthDates(

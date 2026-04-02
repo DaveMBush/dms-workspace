@@ -69,25 +69,33 @@ function createSummarySchema(): SummarySchema {
   };
 }
 
-async function getAccountThisMonth(
-  accountId: string,
+async function getAccountsThisMonth(
   sellDateStart: Date,
-  sellDateEnd: Date
-): Promise<AccountWithTradesAndDeposits | null> {
-  return prisma.accounts.findUnique({
-    where: { id: accountId },
-    ...createAccountQuery(sellDateStart, sellDateEnd),
-  });
+  sellDateEnd: Date,
+  accountId?: string
+): Promise<AccountWithTradesAndDeposits[]> {
+  if (accountId !== undefined) {
+    const account = await prisma.accounts.findUnique({
+      where: { id: accountId },
+      ...createAccountQuery(sellDateStart, sellDateEnd),
+    });
+    if (!account) {
+      throw new Error('Account not found');
+    }
+    return [account];
+  }
+  return prisma.accounts.findMany(
+    createAccountQuery(sellDateStart, sellDateEnd)
+  );
 }
 
-async function getAccountPriorMonths(
-  accountId: string,
-  sellDateStart: Date
+async function getAccountsPriorMonths(
+  sellDateStart: Date,
+  accountId?: string
 ): Promise<AccountWithTradesAndDeposits[]> {
+  const where = accountId !== undefined ? { id: accountId } : undefined;
   return prisma.accounts.findMany({
-    where: {
-      id: accountId,
-    },
+    ...(where !== undefined ? { where } : {}),
     include: {
       trades: {
         where: {
@@ -105,73 +113,6 @@ async function getAccountPriorMonths(
       },
     },
   });
-}
-
-async function calculateSingleAccountSummaryData(
-  accountId: string,
-  sellDateStart: Date,
-  sellDateEnd: Date
-): Promise<{
-  deposits: number;
-  dividends: number;
-  capitalGains: number;
-  priorDivDeposit: number;
-  priorCapitalGains: number;
-}> {
-  const accountThisMonth = await getAccountThisMonth(
-    accountId,
-    sellDateStart,
-    sellDateEnd
-  );
-  if (!accountThisMonth) {
-    throw new Error('Account not found');
-  }
-
-  const accountPriorMonths = await getAccountPriorMonths(
-    accountId,
-    sellDateStart
-  );
-
-  const singleAccountData = aggregateAccountData([accountThisMonth]);
-  const priorDivDeposit = calculatePriorDivDeposits(accountPriorMonths);
-  const priorCapitalGains = calculatePriorCapitalGains(accountPriorMonths);
-
-  return {
-    deposits: singleAccountData.deposits,
-    dividends: singleAccountData.dividends,
-    capitalGains: singleAccountData.capitalGains,
-    priorDivDeposit,
-    priorCapitalGains,
-  };
-}
-
-async function calculateGlobalSummaryData(
-  sellDateStart: Date,
-  sellDateEnd: Date
-): Promise<{
-  deposits: number;
-  dividends: number;
-  capitalGains: number;
-  priorDivDeposit: number;
-  priorCapitalGains: number;
-}> {
-  const allAccountsThisMonth = await getAllAccountsThisMonth(
-    sellDateStart,
-    sellDateEnd
-  );
-  const allAccountsPriorMonths = await getAllAccountsPriorMonths(sellDateStart);
-
-  const thisMonthData = aggregateAccountData(allAccountsThisMonth);
-  const priorDivDeposit = calculatePriorDivDeposits(allAccountsPriorMonths);
-  const priorCapitalGains = calculatePriorCapitalGains(allAccountsPriorMonths);
-
-  return {
-    deposits: thisMonthData.deposits,
-    dividends: thisMonthData.dividends,
-    capitalGains: thisMonthData.capitalGains,
-    priorDivDeposit,
-    priorCapitalGains,
-  };
 }
 
 async function calculateSummaryData(
@@ -185,46 +126,24 @@ async function calculateSummaryData(
   priorDivDeposit: number;
   priorCapitalGains: number;
 }> {
-  if (accountId !== undefined) {
-    return calculateSingleAccountSummaryData(
-      accountId,
-      sellDateStart,
-      sellDateEnd
-    );
-  }
-  return calculateGlobalSummaryData(sellDateStart, sellDateEnd);
-}
-
-async function getAllAccountsThisMonth(
-  sellDateStart: Date,
-  sellDateEnd: Date
-): Promise<AccountWithTradesAndDeposits[]> {
-  return prisma.accounts.findMany(
-    createAccountQuery(sellDateStart, sellDateEnd)
+  const thisMonth = await getAccountsThisMonth(
+    sellDateStart,
+    sellDateEnd,
+    accountId
   );
-}
+  const priorMonths = await getAccountsPriorMonths(sellDateStart, accountId);
 
-async function getAllAccountsPriorMonths(
-  sellDateStart: Date
-): Promise<AccountWithTradesAndDeposits[]> {
-  return prisma.accounts.findMany({
-    include: {
-      trades: {
-        where: {
-          sell_date: {
-            lt: sellDateStart,
-          },
-        },
-      },
-      divDeposits: {
-        where: {
-          date: {
-            lt: sellDateStart,
-          },
-        },
-      },
-    },
-  });
+  const thisMonthData = aggregateAccountData(thisMonth);
+  const priorDivDeposit = calculatePriorDivDeposits(priorMonths);
+  const priorCapitalGains = calculatePriorCapitalGains(priorMonths);
+
+  return {
+    deposits: thisMonthData.deposits,
+    dividends: thisMonthData.dividends,
+    capitalGains: thisMonthData.capitalGains,
+    priorDivDeposit,
+    priorCapitalGains,
+  };
 }
 
 function handleSummaryRoute(fastify: FastifyInstance): void {
