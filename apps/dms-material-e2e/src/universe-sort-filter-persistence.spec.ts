@@ -29,10 +29,12 @@ async function waitForTableRows(page: Page): Promise<void> {
 
 test.describe('Universe Sort/Filter Persistence (Story 38.3)', () => {
   let cleanup: () => Promise<void>;
+  let symbols: string[];
 
   test.beforeAll(async () => {
     const seeder = await seedUniverseE2eData();
     cleanup = seeder.cleanup;
+    symbols = seeder.symbols;
   });
 
   test.afterAll(async () => {
@@ -61,19 +63,17 @@ test.describe('Universe Sort/Filter Persistence (Story 38.3)', () => {
       await header.click();
       await page.waitForTimeout(500);
 
-      // Verify sort indicator is active before reload
-      await expect(header).toHaveAttribute('aria-sort', /ascending|descending/);
+      // Capture exact sort direction before reload
+      const sortBefore = await header.getAttribute('aria-sort');
+      expect(sortBefore).toMatch(/ascending|descending/);
 
       // Reload the page
       await page.reload();
       await waitForTableRows(page);
 
-      // After reload, sort indicator should still be visible
+      // After reload, sort indicator should show the same direction
       const restoredHeader = page.locator('[data-sort-header="symbol"]');
-      await expect(restoredHeader).toHaveAttribute(
-        'aria-sort',
-        /ascending|descending/
-      );
+      await expect(restoredHeader).toHaveAttribute('aria-sort', sortBefore!);
     });
 
     test('sort indicator on Ex-Date persists after page reload', async ({
@@ -84,19 +84,17 @@ test.describe('Universe Sort/Filter Persistence (Story 38.3)', () => {
       await header.click();
       await page.waitForTimeout(500);
 
-      // Verify sort indicator is active before reload
-      await expect(header).toHaveAttribute('aria-sort', /ascending|descending/);
+      // Capture exact sort direction before reload
+      const sortBefore = await header.getAttribute('aria-sort');
+      expect(sortBefore).toMatch(/ascending|descending/);
 
       // Reload the page
       await page.reload();
       await waitForTableRows(page);
 
-      // After reload, sort indicator should still be visible
+      // After reload, sort indicator should show the same direction
       const restoredHeader = page.locator('[data-sort-header="ex_date"]');
-      await expect(restoredHeader).toHaveAttribute(
-        'aria-sort',
-        /ascending|descending/
-      );
+      await expect(restoredHeader).toHaveAttribute('aria-sort', sortBefore!);
     });
   });
 
@@ -113,23 +111,28 @@ test.describe('Universe Sort/Filter Persistence (Story 38.3)', () => {
     });
 
     test('symbol filter value persists after page reload', async ({ page }) => {
-      // Type a filter value into the Symbol search input
+      // Use a seeded symbol prefix to verify both input and data persistence
+      const filterValue = symbols[0];
       const symbolInput = page.getByPlaceholder('Search Symbol');
-      await symbolInput.fill('TESTFILTER');
+      await symbolInput.fill(filterValue);
       // Wait for debounced save (300ms) plus buffer
       await page.waitForTimeout(600);
 
+      // Verify filtered data is visible before reload
+      const rowsBefore = page.locator('tr.mat-mdc-row');
+      await expect(rowsBefore.first()).toBeVisible({ timeout: 10000 });
+
       // Reload the page
       await page.reload();
-      // Wait for the table component to render (not data rows, since the
-      // restored filter may legitimately exclude all seeded data)
-      await expect(page.locator('dms-base-table')).toBeVisible({
-        timeout: 15000,
-      });
+      await waitForTableRows(page);
 
       // After reload, filter input should still contain the value
       const restoredInput = page.getByPlaceholder('Search Symbol');
-      await expect(restoredInput).toHaveValue('TESTFILTER');
+      await expect(restoredInput).toHaveValue(filterValue);
+
+      // After reload, filtered data should still be visible
+      const rowsAfter = page.locator('tr.mat-mdc-row');
+      await expect(rowsAfter.first()).toBeVisible({ timeout: 10000 });
     });
   });
 });
