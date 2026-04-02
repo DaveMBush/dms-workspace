@@ -27,6 +27,7 @@ const {
   },
   mockPrismaUniverse: {
     findMany: vi.fn(),
+    count: vi.fn(),
   },
   mockPrismaRiskGroup: {
     findMany: vi.fn(),
@@ -85,6 +86,7 @@ describe('Top Route Handler', () => {
       { id: 'acc-2' },
     ]);
     mockPrismaUniverse.findMany.mockResolvedValue([{ id: 'uni-1' }]);
+    mockPrismaUniverse.count.mockResolvedValue(1);
     mockPrismaRiskGroup.findMany.mockResolvedValue([
       { id: 'rg-1' },
       { id: 'rg-2' },
@@ -550,6 +552,167 @@ describe('Top Route Handler', () => {
         where: { accountId: 'acct-3' },
         select: { buy: true, quantity: true, sell: true, sell_date: true },
       });
+    });
+  });
+
+  describe('Lazy loading: PartialArrayDefinition', () => {
+    it('should return universes as PartialArrayDefinition', async () => {
+      mockPrismaUniverse.count.mockResolvedValue(1);
+      mockPrismaUniverse.findMany.mockResolvedValue([{ id: 'uni-1' }]);
+
+      const response = await app.inject({
+        method: 'POST',
+        url: '/api/top',
+        payload: ['1'],
+      });
+
+      expect(response.statusCode).toBe(200);
+      const body = JSON.parse(response.body);
+      expect(body[0].universes).toEqual({
+        startIndex: 0,
+        indexes: ['uni-1'],
+        length: 1,
+      });
+    });
+
+    it('should return only first page of universes when count exceeds page size', async () => {
+      const allIds = Array.from({ length: 100 }, (_, i) => ({
+        id: `uni-${i + 1}`,
+      }));
+      mockPrismaUniverse.count.mockResolvedValue(100);
+      mockPrismaUniverse.findMany.mockResolvedValue(allIds.slice(0, 50));
+
+      const response = await app.inject({
+        method: 'POST',
+        url: '/api/top',
+        payload: ['1'],
+      });
+
+      expect(response.statusCode).toBe(200);
+      const body = JSON.parse(response.body);
+      expect(body[0].universes.startIndex).toBe(0);
+      expect(body[0].universes.indexes).toHaveLength(50);
+      expect(body[0].universes.length).toBe(100);
+    });
+
+    it('should apply skip/take to findMany for non-computed sort', async () => {
+      mockPrismaUniverse.count.mockResolvedValue(100);
+      mockPrismaUniverse.findMany.mockResolvedValue([{ id: 'uni-1' }]);
+
+      await app.inject({
+        method: 'POST',
+        url: '/api/top',
+        payload: ['1'],
+      });
+
+      const universeCall = mockPrismaUniverse.findMany.mock.calls[0][0];
+      expect(universeCall.skip).toBe(0);
+      expect(universeCall.take).toBe(50);
+    });
+
+    it('should return paginated result for computed sort', async () => {
+      const allUniverses = Array.from({ length: 100 }, (_, i) => ({
+        id: `u${i + 1}`,
+        distribution: (i + 1) * 0.5,
+        distributions_per_year: 4,
+        last_price: 100,
+        trades: [{ buy: 50, quantity: 10, sell: 0, sell_date: null }],
+      }));
+      mockPrismaUniverse.findMany.mockResolvedValue(allUniverses);
+
+      const filterState = JSON.stringify({
+        universes: {
+          sortColumns: [{ column: 'yield_percent', direction: 'desc' }],
+        },
+      });
+
+      const response = await app.inject({
+        method: 'POST',
+        url: '/api/top',
+        payload: ['1'],
+        headers: { 'x-sort-filter-state': filterState },
+      });
+
+      expect(response.statusCode).toBe(200);
+      const body = JSON.parse(response.body);
+      expect(body[0].universes.startIndex).toBe(0);
+      expect(body[0].universes.indexes).toHaveLength(50);
+      expect(body[0].universes.length).toBe(100);
+    });
+  });
+
+  describe('POST /indexes', () => {
+    it('should return PartialArrayDefinition for universes childField', async () => {
+      mockPrismaUniverse.count.mockResolvedValue(100);
+      const pageIds = Array.from({ length: 20 }, (_, i) => ({
+        id: `uni-${i + 51}`,
+      }));
+      mockPrismaUniverse.findMany.mockResolvedValue(pageIds);
+
+      const response = await app.inject({
+        method: 'POST',
+        url: '/api/top/indexes',
+        payload: {
+          parentId: '1',
+          childField: 'universes',
+          startIndex: 50,
+          length: 20,
+        },
+      });
+
+      expect(response.statusCode).toBe(200);
+      const body = JSON.parse(response.body);
+      expect(body.startIndex).toBe(50);
+      expect(body.indexes).toHaveLength(20);
+      expect(body.indexes[0]).toBe('uni-51');
+      expect(body.length).toBe(100);
+    });
+
+    it('should return empty result for unsupported childField', async () => {
+      const response = await app.inject({
+        method: 'POST',
+        url: '/api/top/indexes',
+        payload: {
+          parentId: '1',
+          childField: 'accounts',
+          startIndex: 0,
+          length: 10,
+        },
+      });
+
+      expect(response.statusCode).toBe(200);
+      const body = JSON.parse(response.body);
+      expect(body.indexes).toEqual([]);
+      expect(body.length).toBe(0);
+    });
+
+    it('should pass sort/filter state to universe query', async () => {
+      mockPrismaUniverse.count.mockResolvedValue(50);
+      mockPrismaUniverse.findMany.mockResolvedValue([{ id: 'uni-1' }]);
+
+      const filterState = JSON.stringify({
+        universes: {
+          sortColumns: [{ column: 'symbol', direction: 'asc' }],
+        },
+      });
+
+      const response = await app.inject({
+        method: 'POST',
+        url: '/api/top/indexes',
+        payload: {
+          parentId: '1',
+          childField: 'universes',
+          startIndex: 0,
+          length: 20,
+        },
+        headers: { 'x-sort-filter-state': filterState },
+      });
+
+      expect(response.statusCode).toBe(200);
+      const universeCall = mockPrismaUniverse.findMany.mock.calls[0][0];
+      expect(universeCall.skip).toBe(0);
+      expect(universeCall.take).toBe(20);
+      expect(universeCall.orderBy).toEqual([{ symbol: 'asc' }]);
     });
   });
 });

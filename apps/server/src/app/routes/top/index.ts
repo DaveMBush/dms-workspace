@@ -11,8 +11,11 @@ import { buildScreenerOrderBy } from './build-screener-order-by.function';
 import { buildUniverseOrderBy } from './build-universe-order-by.function';
 import { buildUniverseWhere } from './build-universe-where.function';
 import { isUniverseComputedSort } from './is-universe-computed-sort.function';
+import { PartialArrayDefinition } from './partial-array-definition.interface';
 import { Top } from './top.interface';
 import { sortUniversesByComputedField } from './universe-computed-sort.function';
+
+const UNIVERSE_PAGE_SIZE = 50;
 
 async function ensureHolidaysExist(): Promise<void> {
   const existingHolidays = await prisma.holidays.findMany({
@@ -95,7 +98,11 @@ function findComputedSortColumn(state: TableState): SortColumn | undefined {
   return undefined;
 }
 
-async function getTopUniverses(state: TableState): Promise<string[]> {
+async function getTopUniverses(
+  state: TableState,
+  startIndex: number,
+  length: number
+): Promise<PartialArrayDefinition> {
   const accountId = getAccountIdFromState(state);
   const computedSort: SortColumn | undefined = findComputedSortColumn(state);
 
@@ -116,21 +123,35 @@ async function getTopUniverses(state: TableState): Promise<string[]> {
       computedSort.column,
       computedSort.direction
     );
-    return universes.map(function mapUniverse(universe) {
+    const allIds = universes.map(function mapUniverse(universe) {
       return universe.id;
     });
+    return {
+      startIndex,
+      indexes: allIds.slice(startIndex, startIndex + length),
+      length: allIds.length,
+    };
   }
 
-  const universes = await prisma.universe.findMany({
-    select: {
-      id: true,
-    },
-    where: buildUniverseWhere(state),
-    orderBy: buildUniverseOrderBy(state),
-  });
-  return universes.map(function mapUniverse(universe) {
-    return universe.id;
-  });
+  const [totalCount, universes] = await Promise.all([
+    prisma.universe.count({ where: buildUniverseWhere(state) }),
+    prisma.universe.findMany({
+      select: {
+        id: true,
+      },
+      where: buildUniverseWhere(state),
+      orderBy: buildUniverseOrderBy(state),
+      skip: startIndex,
+      take: length,
+    }),
+  ]);
+  return {
+    startIndex,
+    indexes: universes.map(function mapUniverse(universe) {
+      return universe.id;
+    }),
+    length: totalCount,
+  };
 }
 
 async function getTopRiskGroups(): Promise<string[]> {
@@ -215,7 +236,14 @@ function createTopSchema(): Record<string, unknown> {
           properties: {
             id: { type: 'string' },
             accounts: { type: 'array', items: { type: 'string' } },
-            universes: { type: 'array', items: { type: 'string' } },
+            universes: {
+              type: 'object',
+              properties: {
+                startIndex: { type: 'number' },
+                indexes: { type: 'array', items: { type: 'string' } },
+                length: { type: 'number' },
+              },
+            },
             riskGroups: { type: 'array', items: { type: 'string' } },
             divDepositTypes: { type: 'array', items: { type: 'string' } },
             holidays: {
@@ -260,7 +288,7 @@ function handleTopRoute(fastify: FastifyInstance): void {
         screens,
       ] = await Promise.all([
         getTopAccounts(),
-        getTopUniverses(universeState),
+        getTopUniverses(universeState, 0, UNIVERSE_PAGE_SIZE),
         getTopRiskGroups(),
         getTopDivDepositTypes(),
         getTopHolidays(),
@@ -282,6 +310,67 @@ function handleTopRoute(fastify: FastifyInstance): void {
   );
 }
 
+interface IndexesRequestBody {
+  parentId: string;
+  childField: string;
+  startIndex: number;
+  length: number;
+}
+
+function createIndexesSchema(): Record<string, unknown> {
+  return {
+    body: {
+      type: 'object',
+      required: ['parentId', 'childField', 'startIndex', 'length'],
+      properties: {
+        parentId: { type: 'string' },
+        childField: { type: 'string' },
+        startIndex: { type: 'number' },
+        length: { type: 'number' },
+      },
+    },
+    response: {
+      200: {
+        type: 'object',
+        properties: {
+          startIndex: { type: 'number' },
+          indexes: { type: 'array', items: { type: 'string' } },
+          length: { type: 'number' },
+        },
+      },
+    },
+  };
+}
+
+function handleIndexesRoute(fastify: FastifyInstance): void {
+  fastify.post<{ Body: IndexesRequestBody; Reply: PartialArrayDefinition }>(
+    '/indexes',
+    {
+      schema: createIndexesSchema(),
+    },
+    async function handleIndexesRequest(
+      request,
+      reply
+    ): Promise<PartialArrayDefinition> {
+      const { childField, startIndex, length } = request.body;
+
+      if (childField !== 'universes') {
+        return reply.status(200).send({
+          startIndex,
+          indexes: [],
+          length: 0,
+        });
+      }
+
+      const allState = parseSortFilterHeader(request);
+      const universeState = getTableState(allState, 'universes');
+      const result = await getTopUniverses(universeState, startIndex, length);
+      return reply.status(200).send(result);
+    }
+  );
+}
+
 export default function registerTopRoutes(fastify: FastifyInstance): void {
   handleTopRoute(fastify);
+  handleIndexesRoute(fastify);
 }
