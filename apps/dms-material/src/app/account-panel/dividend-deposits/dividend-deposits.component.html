@@ -2,6 +2,7 @@
   [data]="dividends$()"
   [columns]="columns"
   [bufferSize]="20"
+  [sortColumns]="sortColumns$()"
   (sortChange)="onSortChange($event)"
   (rowClick)="onEditDividend($event)"
   (renderedRangeChange)="onRangeChange($event)"

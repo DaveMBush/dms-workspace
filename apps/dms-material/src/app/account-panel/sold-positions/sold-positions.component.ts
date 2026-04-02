@@ -13,6 +13,7 @@ import { handleSocketNotification } from '@smarttools/smart-signals';
 
 import { BaseTableComponent } from '../../shared/components/base-table/base-table.component';
 import { ColumnDef } from '../../shared/components/base-table/column-def.interface';
+import { SortColumn } from '../../shared/services/sort-column.interface';
 import { SortFilterStateService } from '../../shared/services/sort-filter-state.service';
 import { getAccountIds } from '../../store/accounts/selectors/get-account-ids.function';
 import { ClosedPosition } from '../../store/trades/closed-position.interface';
@@ -31,7 +32,28 @@ export class SoldPositionsComponent implements OnDestroy {
   private readonly soldPositionsService = inject(SoldPositionsComponentService);
   private readonly sortFilterStateService = inject(SortFilterStateService);
 
-  searchText = signal<string>('');
+  private readonly restoredFilter = this.sortFilterStateService.loadFilterState(
+    SoldPositionsComponent.tableKey
+  );
+
+  private readonly restoredSort = this.sortFilterStateService.loadSortState(
+    SoldPositionsComponent.tableKey
+  );
+
+  searchText = signal<string>(
+    (this.restoredFilter?.['symbol'] as string) ?? ''
+  );
+
+  sortColumns$ = signal<SortColumn[]>(
+    this.restoredSort !== null
+      ? [
+          {
+            column: this.restoredSort.field,
+            direction: this.restoredSort.order,
+          },
+        ]
+      : []
+  );
 
   visibleRange = signal<{ start: number; end: number }>({
     start: 0,
@@ -70,15 +92,18 @@ export class SoldPositionsComponent implements OnDestroy {
 
   onSortChange(sort: Sort): void {
     if (sort.direction === '') {
+      this.sortColumns$.set([]);
       this.sortFilterStateService.clearSortState(
         SoldPositionsComponent.tableKey
       );
     } else {
+      const direction = sort.direction;
+      this.sortColumns$.set([{ column: sort.active, direction }]);
       this.sortFilterStateService.saveSortState(
         SoldPositionsComponent.tableKey,
         {
           field: sort.active,
-          order: sort.direction,
+          order: direction,
         }
       );
     }
