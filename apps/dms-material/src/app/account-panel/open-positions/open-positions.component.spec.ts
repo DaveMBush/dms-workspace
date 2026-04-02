@@ -1502,4 +1502,84 @@ describe('OpenPositionsComponent - Virtual Data Access (AX.7)', () => {
       end: 70,
     });
   });
+
+  // Story 37.3: Sort State Wiring Tests
+  describe('Sort integration with SortFilterStateService', () => {
+    beforeEach(() => {
+      localStorage.removeItem('dms-sort-filter-state');
+    });
+
+    it('should call saveSortState with correct key and value on sort change', () => {
+      const sortFilterStateService = TestBed.inject(SortFilterStateService);
+      const saveSpy = vi.spyOn(sortFilterStateService, 'saveSortState');
+
+      component.onSortChange({ active: 'buy', direction: 'asc' });
+
+      expect(saveSpy).toHaveBeenCalledWith('trades-open', {
+        field: 'buy',
+        order: 'asc',
+      });
+    });
+
+    it('should persist sort state when sort direction is desc', () => {
+      const sortFilterStateService = TestBed.inject(SortFilterStateService);
+      const saveSpy = vi.spyOn(sortFilterStateService, 'saveSortState');
+
+      component.onSortChange({ active: 'buyDate', direction: 'desc' });
+
+      expect(saveSpy).toHaveBeenCalledWith('trades-open', {
+        field: 'buyDate',
+        order: 'desc',
+      });
+    });
+
+    it('should call clearSortState when sort direction is empty', () => {
+      const sortFilterStateService = TestBed.inject(SortFilterStateService);
+      const clearSpy = vi.spyOn(sortFilterStateService, 'clearSortState');
+
+      component.onSortChange({ active: 'buy', direction: '' });
+
+      expect(clearSpy).toHaveBeenCalledWith('trades-open');
+    });
+
+    it('should persist and retrieve sort state round-trip', () => {
+      const sortFilterStateService = TestBed.inject(SortFilterStateService);
+
+      component.onSortChange({ active: 'unrealizedGain', direction: 'asc' });
+
+      const state = sortFilterStateService.loadSortState('trades-open');
+      expect(state).toEqual({ field: 'unrealizedGain', order: 'asc' });
+    });
+
+    it('should make saved sort state available to interceptor via loadAllSortFilterState', () => {
+      const sortFilterStateService = TestBed.inject(SortFilterStateService);
+      // Pre-populate sort state as if saved from a previous session
+      sortFilterStateService.saveSortState('trades-open', {
+        field: 'buyDate',
+        order: 'desc',
+      });
+
+      // Verify the sort state is included in loadAllSortFilterState (used by the interceptor)
+      const allState = sortFilterStateService.loadAllSortFilterState();
+      expect(allState['trades-open']).toEqual({
+        sort: { field: 'buyDate', order: 'desc' },
+      });
+    });
+
+    it('should return null from loadSortState when no saved state exists', () => {
+      const sortFilterStateService = TestBed.inject(SortFilterStateService);
+      const result = sortFilterStateService.loadSortState('trades-open');
+      expect(result).toBeNull();
+    });
+
+    it('should persist latest sort state when sorting multiple fields', () => {
+      const sortFilterStateService = TestBed.inject(SortFilterStateService);
+
+      component.onSortChange({ active: 'buy', direction: 'asc' });
+      component.onSortChange({ active: 'quantity', direction: 'desc' });
+
+      const state = sortFilterStateService.loadSortState('trades-open');
+      expect(state).toEqual({ field: 'quantity', order: 'desc' });
+    });
+  });
 });

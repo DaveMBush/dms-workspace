@@ -8,6 +8,7 @@ import { DivDepModalComponent } from '../div-dep-modal/div-dep-modal.component';
 import { ColumnDef } from '../../shared/components/base-table/column-def.interface';
 import { ConfirmDialogService } from '../../shared/services/confirm-dialog.service';
 import { NotificationService } from '../../shared/services/notification.service';
+import { SortFilterStateService } from '../../shared/services/sort-filter-state.service';
 import { currentAccountSignalStore } from '../../store/current-account/current-account.signal-store';
 import { DivDeposit } from '../../store/div-deposits/div-deposit.interface';
 import { divDepositsEffectsServiceToken } from '../../store/div-deposits/div-deposits-effect-service-token';
@@ -1283,6 +1284,86 @@ describe('DividendDepositsComponent - Virtual Data Access (AX.3)', () => {
     expect(mockDividendDepositsService.visibleRange()).toEqual({
       start: 20,
       end: 70,
+    });
+  });
+
+  // Story 37.3: Sort State Wiring Tests
+  describe('Sort integration with SortFilterStateService', () => {
+    beforeEach(() => {
+      localStorage.removeItem('dms-sort-filter-state');
+    });
+
+    it('should call saveSortState with correct key and value on sort change', () => {
+      const sortFilterStateService = TestBed.inject(SortFilterStateService);
+      const saveSpy = vi.spyOn(sortFilterStateService, 'saveSortState');
+
+      component.onSortChange({ active: 'symbol', direction: 'asc' });
+
+      expect(saveSpy).toHaveBeenCalledWith('div-deposits', {
+        field: 'symbol',
+        order: 'asc',
+      });
+    });
+
+    it('should persist sort state when sort direction is desc', () => {
+      const sortFilterStateService = TestBed.inject(SortFilterStateService);
+      const saveSpy = vi.spyOn(sortFilterStateService, 'saveSortState');
+
+      component.onSortChange({ active: 'amount', direction: 'desc' });
+
+      expect(saveSpy).toHaveBeenCalledWith('div-deposits', {
+        field: 'amount',
+        order: 'desc',
+      });
+    });
+
+    it('should call clearSortState when sort direction is empty', () => {
+      const sortFilterStateService = TestBed.inject(SortFilterStateService);
+      const clearSpy = vi.spyOn(sortFilterStateService, 'clearSortState');
+
+      component.onSortChange({ active: 'symbol', direction: '' });
+
+      expect(clearSpy).toHaveBeenCalledWith('div-deposits');
+    });
+
+    it('should persist and retrieve sort state round-trip', () => {
+      const sortFilterStateService = TestBed.inject(SortFilterStateService);
+
+      component.onSortChange({ active: 'date', direction: 'asc' });
+
+      const state = sortFilterStateService.loadSortState('div-deposits');
+      expect(state).toEqual({ field: 'date', order: 'asc' });
+    });
+
+    it('should make saved sort state available to interceptor via loadAllSortFilterState', () => {
+      const sortFilterStateService = TestBed.inject(SortFilterStateService);
+      // Pre-populate sort state as if saved from a previous session
+      sortFilterStateService.saveSortState('div-deposits', {
+        field: 'amount',
+        order: 'desc',
+      });
+
+      // Verify the sort state is included in loadAllSortFilterState (used by the interceptor)
+      const allState = sortFilterStateService.loadAllSortFilterState();
+      expect(allState['div-deposits']).toEqual({
+        sort: { field: 'amount', order: 'desc' },
+      });
+    });
+
+    it('should return null from loadSortState when no saved state exists', () => {
+      const sortFilterStateService = TestBed.inject(SortFilterStateService);
+      const result = sortFilterStateService.loadSortState('div-deposits');
+      expect(result).toBeNull();
+    });
+
+    it('should persist latest sort state when sorting multiple fields', () => {
+      const sortFilterStateService = TestBed.inject(SortFilterStateService);
+
+      component.onSortChange({ active: 'symbol', direction: 'asc' });
+      component.onSortChange({ active: 'amount', direction: 'desc' });
+
+      const state = sortFilterStateService.loadSortState('div-deposits');
+      expect(state).toEqual({ field: 'amount', order: 'desc' });
     });
   });
 });
