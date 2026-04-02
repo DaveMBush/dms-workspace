@@ -8,11 +8,11 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatOptionModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
+import { ActivatedRoute } from '@angular/router';
 
 import { currentAccountSignalStore } from '../../../store/current-account/current-account.signal-store';
 import { AllocationChartComponent } from '../allocation-chart/allocation-chart';
@@ -45,7 +45,7 @@ export class SummaryViewComponent extends SummaryViewBase implements OnInit {
   constructor() {
     super();
     const route = inject(ActivatedRoute);
-    const routeMode = route.snapshot.data['mode'];
+    const routeMode = route.snapshot.data['mode'] as string | undefined;
     if (routeMode === 'account' || routeMode === 'global') {
       this.mode = routeMode;
     }
