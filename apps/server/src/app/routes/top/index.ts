@@ -1,5 +1,4 @@
 import { FastifyInstance } from 'fastify';
-import { getHolidays } from 'nyse-holidays';
 
 import { prisma } from '../../prisma/prisma-client';
 import { getTableState } from '../common/get-table-state.function';
@@ -10,46 +9,14 @@ import { ensureRiskGroupsExist } from '../settings/common/ensure-risk-groups-exi
 import { buildScreenerOrderBy } from './build-screener-order-by.function';
 import { buildUniverseOrderBy } from './build-universe-order-by.function';
 import { buildUniverseWhere } from './build-universe-where.function';
+import { ensureHolidaysExist } from './ensure-holidays-exist.function';
+import { getTopDivDepositTypes } from './get-top-div-deposit-types.function';
+import { getTopUniversesComputedSort } from './get-top-universes-computed-sort.function';
 import { isUniverseComputedSort } from './is-universe-computed-sort.function';
 import { PartialArrayDefinition } from './partial-array-definition.interface';
 import { Top } from './top.interface';
-import { sortUniversesByComputedField } from './universe-computed-sort.function';
 
 const UNIVERSE_PAGE_SIZE = 50;
-
-async function ensureHolidaysExist(): Promise<void> {
-  const existingHolidays = await prisma.holidays.findMany({
-    select: {
-      date: true,
-    },
-    orderBy: { createdAt: 'asc' },
-    where: {
-      date: {
-        gte: new Date('2026-01-01'),
-      },
-    },
-  });
-
-  if (existingHolidays.length === 0) {
-    const thisYear = new Date().getFullYear();
-    const currentYearHolidays = getHolidays(thisYear);
-    for (const holiday of currentYearHolidays) {
-      await prisma.holidays.upsert({
-        where: { date: holiday.date },
-        update: {},
-        create: { date: holiday.date, name: holiday.name },
-      });
-    }
-    const nextYearHolidays = getHolidays(thisYear + 1);
-    for (const holiday of nextYearHolidays) {
-      await prisma.holidays.upsert({
-        where: { date: holiday.date },
-        update: {},
-        create: { date: holiday.date, name: holiday.name },
-      });
-    }
-  }
-}
 
 async function getTopAccounts(): Promise<string[]> {
   const topAccounts = await prisma.accounts.findMany({
@@ -71,14 +38,6 @@ function getAccountIdFromState(state: TableState): string | null {
   return typeof filters['account_id'] === 'string'
     ? filters['account_id']
     : null;
-}
-
-function buildTradesSelect(accountId: string | null): Record<string, unknown> {
-  const select = { buy: true, quantity: true, sell: true, sell_date: true };
-  if (accountId !== null) {
-    return { where: { accountId }, select };
-  }
-  return { select };
 }
 
 function findComputedSortColumn(state: TableState): SortColumn | undefined {
@@ -107,30 +66,13 @@ async function getTopUniverses(
   const computedSort: SortColumn | undefined = findComputedSortColumn(state);
 
   if (computedSort !== undefined) {
-    const universes = await prisma.universe.findMany({
-      select: {
-        id: true,
-        distribution: true,
-        distributions_per_year: true,
-        last_price: true,
-        trades: buildTradesSelect(accountId),
-      },
-      where: buildUniverseWhere(state),
-      orderBy: { id: 'asc' },
-    });
-    sortUniversesByComputedField(
-      universes,
-      computedSort.column,
-      computedSort.direction
-    );
-    const allIds = universes.map(function mapUniverse(universe) {
-      return universe.id;
-    });
-    return {
+    return getTopUniversesComputedSort({
+      state,
       startIndex,
-      indexes: allIds.slice(startIndex, startIndex + length),
-      length: allIds.length,
-    };
+      length,
+      accountId,
+      computedSort,
+    });
   }
 
   const [totalCount, universes] = await Promise.all([
@@ -163,38 +105,6 @@ async function getTopRiskGroups(): Promise<string[]> {
   });
   return riskGroups.map(function mapRiskGroup(riskGroup) {
     return riskGroup.id;
-  });
-}
-
-async function getTopDivDepositTypes(): Promise<string[]> {
-  let divDepositTypes = await prisma.divDepositType.findMany({
-    select: {
-      id: true,
-    },
-    orderBy: { createdAt: 'asc' },
-  });
-
-  if (divDepositTypes.length === 0) {
-    await prisma.divDepositType.create({
-      data: {
-        name: 'Dividend',
-      },
-    });
-    await prisma.divDepositType.create({
-      data: {
-        name: 'Deposit',
-      },
-    });
-    divDepositTypes = await prisma.divDepositType.findMany({
-      select: {
-        id: true,
-      },
-      orderBy: { createdAt: 'asc' },
-    });
-  }
-
-  return divDepositTypes.map(function mapDivDepositType(divDepositType) {
-    return divDepositType.id;
   });
 }
 
@@ -259,6 +169,7 @@ function createTopSchema(): Record<string, unknown> {
 }
 
 function handleTopRoute(fastify: FastifyInstance): void {
+  // eslint-disable-next-line @typescript-eslint/naming-convention -- Fastify requires Body/Reply
   fastify.post<{ Body: { ids: string[] }; Reply: Top[] }>(
     '/',
     {
@@ -343,6 +254,7 @@ function createIndexesSchema(): Record<string, unknown> {
 }
 
 function handleIndexesRoute(fastify: FastifyInstance): void {
+  // eslint-disable-next-line @typescript-eslint/naming-convention -- Fastify requires Body/Reply
   fastify.post<{ Body: IndexesRequestBody; Reply: PartialArrayDefinition }>(
     '/indexes',
     {
@@ -370,6 +282,7 @@ function handleIndexesRoute(fastify: FastifyInstance): void {
   );
 }
 
+// eslint-disable-next-line import/no-default-export -- Fastify plugin registration pattern
 export default function registerTopRoutes(fastify: FastifyInstance): void {
   handleTopRoute(fastify);
   handleIndexesRoute(fastify);
