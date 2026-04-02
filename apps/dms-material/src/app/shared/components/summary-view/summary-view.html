@@ -1,7 +1,7 @@
-<mat-card data-testid="account-summary-container">
+<mat-card [attr.data-testid]="containerTestId">
   <mat-card-header>
     <mat-card-title>
-      <h1>Account Summary</h1>
+      <h1>{{ title }}</h1>
     </mat-card-title>
   </mat-card-header>
   <mat-card-content>
@@ -10,7 +10,10 @@
       class="flex justify-center items-center py-4"
       data-testid="loading-spinner"
     >
-      <mat-spinner diameter="32"></mat-spinner>
+      <mat-spinner
+        diameter="32"
+        aria-label="Loading summary data"
+      ></mat-spinner>
     </div>
     } @if (error$()) {
     <div
@@ -24,51 +27,52 @@
     <div
       class="flex flex-col items-stretch w-full gap-8 charts-container flex-1 min-h-0"
     >
-      <!-- Left: Dropdown, Stats and Pie Chart -->
+      <!-- Left: Dropdown, stats, pie chart -->
       <div class="summary-left flex flex-col items-start w-full min-w-0">
         <!-- Dropdown -->
         <div class="mb-4">
           <mat-select
             [formControl]="selectedMonth"
-            aria-label="Select month"
             class="w-48"
             panelClass="month-select-panel"
             data-testid="month-selector"
+            aria-label="Select month"
           >
-            @for (option of monthOptions$(); track option.value) {
-            <mat-option [value]="option.value">{{ option.label }}</mat-option>
+            @for (month of monthOptions$(); track month.value) {
+            <mat-option [value]="month.value">{{ month.label }}</mat-option>
             }
           </mat-select>
         </div>
+
         <!-- Stats Grid -->
         <div
           class="grid grid-cols-2 gap-6 w-full max-w-md mb-8"
           data-testid="stats-grid"
         >
           <div class="flex flex-col">
-            <span class="text-xs text-gray-500">Base</span>
+            <span [class]="'text-xs ' + labelClass">Base</span>
             <span class="text-lg font-semibold" data-testid="basis-value"
               >{{ basis$() | currency }}</span
             >
           </div>
           <div class="flex flex-col">
-            <span class="text-xs text-gray-500">Dividends</span>
+            <span [class]="'text-xs ' + labelClass">Dividends</span>
             <span class="text-lg font-semibold" data-testid="dividends-value"
               >{{ dividends$() | currency }}</span
             >
           </div>
           <div class="flex flex-col">
-            <span class="text-xs text-gray-500">Capital Gain</span>
+            <span [class]="'text-xs ' + labelClass">Capital Gain</span>
             <span class="text-lg font-semibold" data-testid="capital-gain-value"
               >{{ capitalGain$() | currency }}</span
             >
           </div>
           <div class="flex flex-col">
-            <span class="text-xs text-gray-500">% Increase</span>
+            <span [class]="'text-xs ' + labelClass">% Increase</span>
             <span
               class="text-lg font-semibold"
               data-testid="percent-increase-value"
-              >{{ percentIncrease$() | percent: "1.2-2" }}</span
+              >{{ percentIncrease$() | percent: '1.2-2' }}</span
             >
           </div>
         </div>
@@ -81,7 +85,7 @@
         ></dms-allocation-chart>
       </div>
 
-      <!-- Right: Line Chart -->
+      <!-- Right: Line chart -->
       <div class="summary-right flex-1 min-w-0 min-h-[250px] flex flex-col">
         <dms-performance-chart
           [performanceData$]="performanceData"

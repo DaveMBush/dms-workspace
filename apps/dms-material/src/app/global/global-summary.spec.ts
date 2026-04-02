@@ -477,7 +477,7 @@ describe('GlobalSummaryComponent - Available Months', () => {
 
     fixture.detectChanges();
 
-    const options = component.monthOptions;
+    const options = component.monthOptions$();
     expect(options.length).toBe(3);
     expect(options[0]).toEqual({ label: '01/2025', value: '2025-01' });
   });
@@ -876,7 +876,7 @@ describe('Month/Year Selector', () => {
       { month: '2025-03', label: '03/2025' },
     ]);
 
-    expect(component.monthOptions.length).toBe(3);
+    expect(component.monthOptions$().length).toBe(3);
   });
 
   it('should display month options in selector', () => {
@@ -890,7 +890,7 @@ describe('Month/Year Selector', () => {
 
     fixture.detectChanges();
 
-    const options = component.monthOptions;
+    const options = component.monthOptions$();
     expect(options[0].label).toBe('01/2025');
     expect(options[0].value).toBe('2025-01');
     expect(options[1].label).toBe('02/2025');
@@ -954,13 +954,17 @@ describe('Month/Year Selector', () => {
   });
 
   it('should include month parameter in summary API call', () => {
-    // selectedMonth FormControl defaults to '2025-03'
+    // selectedMonth FormControl defaults to getCurrentMonth()
+    const now = new Date();
+    const expectedMonth = `${now.getFullYear()}-${(now.getMonth() + 1)
+      .toString()
+      .padStart(2, '0')}`;
     fixture.detectChanges();
 
     const summaryReq = httpMock.expectOne(
       (req) => req.url === '/api/summary' && req.params.has('month')
     );
-    expect(summaryReq.request.params.get('month')).toBe('2025-03');
+    expect(summaryReq.request.params.get('month')).toBe(expectedMonth);
     summaryReq.flush({
       deposits: 0,
       dividends: 0,
@@ -1049,7 +1053,7 @@ describe('Month/Year Selector', () => {
     fixture.detectChanges();
 
     expect(component.error$()).toBeTruthy();
-    expect(component.monthOptions.length).toBe(0);
+    expect(component.monthOptions$().length).toBe(0);
   });
 
   it('should default to first available month when API returns multiple months', () => {
@@ -1134,7 +1138,7 @@ describe('Month/Year Selector', () => {
     const yearsReq = httpMock.expectOne('/api/summary/years');
     yearsReq.flush([2025, 2024, 2023, 2022, 2021, 2020]);
 
-    const years = component.yearOptions;
+    const years = component.yearOptions$();
     expect(years).toEqual([2025, 2024, 2023, 2022, 2021, 2020]);
     expect(years[0]).toBeGreaterThan(years[years.length - 1]);
   });
@@ -1187,7 +1191,7 @@ describe('Month/Year Selector', () => {
     expect(yearSelect).not.toBeNull();
 
     // yearOptions must be non-empty so the trigger renders a visible value
-    expect(component.yearOptions.length).toBeGreaterThan(0);
+    expect(component.yearOptions$().length).toBeGreaterThan(0);
 
     // Effect should have set selectedYear to the first (most recent) year
     expect(component.selectedYear.value).toBe(2025);
@@ -1203,7 +1207,7 @@ describe('Month/Year Selector', () => {
     fixture.detectChanges();
 
     // With no options, yearOptions is empty — effect does NOT change selectedYear
-    expect(component.yearOptions.length).toBe(0);
+    expect(component.yearOptions$().length).toBe(0);
     // selectedYear stays at initial default (current year)
     expect(component.selectedYear.value).toBe(new Date().getFullYear());
   });
@@ -1329,6 +1333,10 @@ describe('Branch Coverage - Edge Cases', () => {
   });
 
   it('should use fallback month when selectedMonth value is null during refreshData', () => {
+    const now = new Date();
+    const expectedMonth = `${now.getFullYear()}-${(now.getMonth() + 1)
+      .toString()
+      .padStart(2, '0')}`;
     fixture.detectChanges();
 
     // Flush initial request
@@ -1347,12 +1355,12 @@ describe('Branch Coverage - Edge Cases', () => {
     // Force selectedMonth to null (edge case)
     component.selectedMonth.setValue(null as unknown as string);
 
-    // Call refreshData — should use fallback '2025-03'
+    // Call refreshData — should use fallback getCurrentMonth()
     component.refreshData();
 
     const refreshReq = httpMock.expectOne(function matchRefreshFallback(req) {
       return (
-        req.url === '/api/summary' && req.params.get('month') === '2025-03'
+        req.url === '/api/summary' && req.params.get('month') === expectedMonth
       );
     });
     refreshReq.flush({
@@ -1364,6 +1372,6 @@ describe('Branch Coverage - Edge Cases', () => {
       tax_free_income: 0,
     });
 
-    expect(refreshReq.request.params.get('month')).toBe('2025-03');
+    expect(refreshReq.request.params.get('month')).toBe(expectedMonth);
   });
 });
