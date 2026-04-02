@@ -29,7 +29,4 @@ mat-card-content {
   }
 }
 
-/* stylelint-disable-next-line selector-pseudo-element-no-unknown -- needed for CDK overlay panelClass styling */
-::ng-deep .month-select-panel {
-  min-width: 12rem !important;
-}
+/* Overlay panel styles are in src/styles.scss (CDK overlays live outside component scope) */

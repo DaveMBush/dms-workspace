@@ -59,9 +59,10 @@ export const appRoutes: Route[] = [
       {
         path: 'global/summary',
         loadComponent: async () =>
-          import('./global/global-summary').then(
-            (m) => m.GlobalSummaryComponent
+          import('./shared/components/summary-view/summary-view').then(
+            (m) => m.SummaryViewComponent
           ),
+        data: { mode: 'global' },
       },
       {
         path: 'global/universe',
@@ -105,9 +106,10 @@ export const appRoutes: Route[] = [
               {
                 path: '',
                 loadComponent: async () =>
-                  import('./accounts/account-summary/account-summary').then(
-                    (m) => m.AccountSummaryComponent
+                  import('./shared/components/summary-view/summary-view').then(
+                    (m) => m.SummaryViewComponent
                   ),
+                data: { mode: 'account' },
               },
               {
                 path: 'open',
