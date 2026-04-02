@@ -27,10 +27,12 @@ There is **no index-based / paginated loading** anywhere in the chain. The `load
 ### Selector Chain
 
 1. **`selectTopEntities`** (`apps/dms-material/src/app/store/top/selectors/select-top-entities.function.ts`)
+
    - `createSmartSignal<Top>('app', 'top')` — top-level signal for the `top` entity
    - This triggers `TopEffectsService.loadByIds(['1'])` → `POST /api/top` with `['1']`
 
 2. **`selectTopUniverses`** (`apps/dms-material/src/app/store/universe/selectors/select-top-universes.function.ts`)
+
    - `createSmartSignal(selectTopEntities, [{ childFeature: 'app', childEntity: 'universes', parentField: 'universes', ... }])`
    - Reads `Top.universes` (the array of **all** universe IDs) and triggers `loadByIds()` for each batch
 
@@ -47,10 +49,12 @@ There is **no index-based / paginated loading** anywhere in the chain. The `load
 ### Server Layer
 
 - **`POST /api/top`** (`apps/server/src/app/routes/top/index.ts`)
+
   - `getTopUniverses()` → `prisma.universe.findMany({ select: { id: true }, where: ..., orderBy: ... })` — returns **all** IDs
   - No `skip`/`take` pagination parameters
 
 - **`POST /api/universe`** (`apps/server/src/app/routes/universe/index.ts`)
+
   - `prisma.universe.findMany({ where: { id: { in: ids } }, include: { trades: ... } })` — fetches every requested ID
 
 - **`GET /api/universe`** (`apps/server/src/app/routes/universe/get-all-universes/index.ts`)
@@ -70,12 +74,12 @@ There is **no index-based / paginated loading** anywhere in the chain. The `load
 
 ## Summary of Issues
 
-| # | Issue | File(s) | Impact |
-|---|-------|---------|--------|
-| 1 | `getTopUniverses()` returns ALL IDs with no pagination | `apps/server/src/app/routes/top/index.ts` | Server sends every universe ID on initial load |
-| 2 | `loadByIndexes()` not implemented | `apps/dms-material/src/app/store/universe/universe-effect.service.ts` | No mechanism for index-based fetching |
-| 3 | No `PartialArrayDefinition` / virtual array in store config | `apps/dms-material/src/app/store/universe/universe-definition.const.ts` | SmartSignals treats universes as a flat ID list, not a virtual array |
-| 4 | Virtual scroll not connected to data fetching | `apps/dms-material/src/app/shared/components/base-table/base-table.component.html` | Scroll position doesn't drive data loading |
+| #   | Issue                                                       | File(s)                                                                            | Impact                                                               |
+| --- | ----------------------------------------------------------- | ---------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| 1   | `getTopUniverses()` returns ALL IDs with no pagination      | `apps/server/src/app/routes/top/index.ts`                                          | Server sends every universe ID on initial load                       |
+| 2   | `loadByIndexes()` not implemented                           | `apps/dms-material/src/app/store/universe/universe-effect.service.ts`              | No mechanism for index-based fetching                                |
+| 3   | No `PartialArrayDefinition` / virtual array in store config | `apps/dms-material/src/app/store/universe/universe-definition.const.ts`            | SmartSignals treats universes as a flat ID list, not a virtual array |
+| 4   | Virtual scroll not connected to data fetching               | `apps/dms-material/src/app/shared/components/base-table/base-table.component.html` | Scroll position doesn't drive data loading                           |
 
 ## SmartSignals Lazy Loading Architecture
 
@@ -94,27 +98,33 @@ SmartSignals supports lazy loading through its **virtual array / `loadByIndexes`
 ### What Needs to Change for Lazy Loading
 
 #### Server Side (`apps/server/src/app/routes/top/index.ts`)
+
 - `getTopUniverses()` must return a `PartialArrayDefinition` instead of a flat `string[]`, OR
 - The `top` entity should return only a total count + first page of IDs, and subsequent pages are fetched via `loadByIndexes()`
 
 #### Client Side — Effect Service (`universe-effect.service.ts`)
+
 - Implement `loadByIndexes()` to call a new server endpoint that accepts `start`/`length` parameters and returns `PartialArrayDefinition`
 
 #### Client Side — Store Definition (`universe-definition.const.ts`)
+
 - May need additional configuration depending on how SmartSignals triggers virtual array loading (this is handled implicitly when `loadByIndexes` is wired up and the parent field contains a virtual array)
 
 #### Server Side — New Endpoint
+
 - Create a `GET /api/universe/indexes?parentId=1&childField=universes&start=N&length=M` endpoint (or similar) that returns `{ startIndex, indexes, length }` from the database using `skip`/`take`
 
 ## Recommended Implementation Approach
 
 ### Story 40.2: Server-Side Pagination Support
+
 1. Add a new route or modify the `top` route to support returning `PartialArrayDefinition` for universes
 2. Use `prisma.universe.count()` for total length
 3. Use `prisma.universe.findMany({ skip: start, take: length, select: { id: true } })` for the page of IDs
 4. Return `{ startIndex: start, indexes: ids, length: totalCount }`
 
 ### Story 40.3: Client-Side Virtual Array Wiring
+
 1. Implement `loadByIndexes()` in `UniverseEffectsService` to call the new endpoint
 2. Update the `top` route response so `universes` field triggers virtual array behavior
 3. Verify SmartSignals automatically requests more pages as the user scrolls via `cdk-virtual-scroll-viewport`
