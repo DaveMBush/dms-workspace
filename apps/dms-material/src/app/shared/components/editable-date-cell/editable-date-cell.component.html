@@ -2,6 +2,7 @@
 <mat-form-field appearance="outline" class="edit-field">
   <input
     matInput
+    class="min-w-[10ch]"
     [matDatepicker]="picker"
     [(ngModel)]="editValue"
     (dateChange)="onDateSelected($event)"
