@@ -2,6 +2,7 @@
 <dms-base-table
   [data]="displayedPositions()"
   [columns]="columns"
+  [sortColumns]="sortColumns$()"
   (sortChange)="onSortChange($event)"
   (renderedRangeChange)="onRangeChange($event)"
 >

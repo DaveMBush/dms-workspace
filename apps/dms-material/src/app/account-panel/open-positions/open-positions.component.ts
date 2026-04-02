@@ -21,6 +21,7 @@ import { ColumnDef } from '../../shared/components/base-table/column-def.interfa
 import { EditableCellComponent } from '../../shared/components/editable-cell/editable-cell.component';
 import { EditableDateCellComponent } from '../../shared/components/editable-date-cell/editable-date-cell.component';
 import { FilterConfig } from '../../shared/services/filter-config.interface';
+import { SortColumn } from '../../shared/services/sort-column.interface';
 import { SortFilterStateService } from '../../shared/services/sort-filter-state.service';
 import { getAccountIds } from '../../store/accounts/selectors/get-account-ids.function';
 import { OpenPosition } from '../../store/trades/open-position.interface';
@@ -53,7 +54,29 @@ export class OpenPositionsComponent implements OnDestroy {
   // Inject MatDialog for add position dialog
   private dialog = inject(MatDialog);
 
-  searchText = signal<string>('');
+  private readonly restoredFilter = this.sortFilterStateService.loadFilterState(
+    OpenPositionsComponent.tableKey
+  );
+
+  private readonly restoredSort = this.sortFilterStateService.loadSortState(
+    OpenPositionsComponent.tableKey
+  );
+
+  searchText = signal<string>(
+    (this.restoredFilter?.['symbol'] as string) ?? ''
+  );
+
+  sortColumns$ = signal<SortColumn[]>(
+    this.restoredSort !== null
+      ? [
+          {
+            column: this.restoredSort.field,
+            direction: this.restoredSort.order,
+          },
+        ]
+      : []
+  );
+
   errorMessage = signal<string>('');
   successMessage = signal<string>('');
 
@@ -89,15 +112,18 @@ export class OpenPositionsComponent implements OnDestroy {
 
   onSortChange(sort: Sort): void {
     if (sort.direction === '') {
+      this.sortColumns$.set([]);
       this.sortFilterStateService.clearSortState(
         OpenPositionsComponent.tableKey
       );
     } else {
+      const direction = sort.direction;
+      this.sortColumns$.set([{ column: sort.active, direction }]);
       this.sortFilterStateService.saveSortState(
         OpenPositionsComponent.tableKey,
         {
           field: sort.active,
-          order: sort.direction,
+          order: direction,
         }
       );
     }

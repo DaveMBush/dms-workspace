@@ -118,7 +118,11 @@ test.describe('Account Sort/Filter Persistence (Story 38.1)', () => {
 
       // Reload the page
       await page.reload();
-      await waitForTableRows(page);
+      // Wait for the table component to render (not data rows, since the
+      // restored filter may legitimately exclude all seeded data)
+      await expect(page.locator('dms-base-table')).toBeVisible({
+        timeout: 15000,
+      });
 
       // After reload, filter input should still contain the value
       const restoredInput = page.getByPlaceholder('Search Symbol');
@@ -213,7 +217,11 @@ test.describe('Account Sort/Filter Persistence (Story 38.1)', () => {
 
       // Reload the page
       await page.reload();
-      await waitForTableRows(page);
+      // Wait for the table component to render (not data rows, since the
+      // restored filter may legitimately exclude all seeded data)
+      await expect(page.locator('dms-base-table')).toBeVisible({
+        timeout: 15000,
+      });
 
       // After reload, filter input should still contain the value
       const restoredInput = page.getByPlaceholder('Search Symbol');

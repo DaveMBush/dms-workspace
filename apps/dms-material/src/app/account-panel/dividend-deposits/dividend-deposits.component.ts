@@ -17,6 +17,7 @@ import { BaseTableComponent } from '../../shared/components/base-table/base-tabl
 import { ColumnDef } from '../../shared/components/base-table/column-def.interface';
 import { ConfirmDialogService } from '../../shared/services/confirm-dialog.service';
 import { NotificationService } from '../../shared/services/notification.service';
+import { SortColumn } from '../../shared/services/sort-column.interface';
 import { SortFilterStateService } from '../../shared/services/sort-filter-state.service';
 import { getAccountIds } from '../../store/accounts/selectors/get-account-ids.function';
 import { currentAccountSignalStore } from '../../store/current-account/current-account.signal-store';
@@ -49,6 +50,21 @@ export class DividendDepositsComponent {
   private effectsService = inject(divDepositsEffectsServiceToken);
   private readonly sortFilterStateService = inject(SortFilterStateService);
 
+  private readonly restoredSort = this.sortFilterStateService.loadSortState(
+    DividendDepositsComponent.tableKey
+  );
+
+  sortColumns$ = signal<SortColumn[]>(
+    this.restoredSort !== null
+      ? [
+          {
+            column: this.restoredSort.field,
+            direction: this.restoredSort.order,
+          },
+        ]
+      : []
+  );
+
   constructor() {
     const store = this.currentAccountStore;
     const service = this.dividendDepositsService;
@@ -71,15 +87,18 @@ export class DividendDepositsComponent {
 
   onSortChange(sort: Sort): void {
     if (sort.direction === '') {
+      this.sortColumns$.set([]);
       this.sortFilterStateService.clearSortState(
         DividendDepositsComponent.tableKey
       );
     } else {
+      const direction = sort.direction;
+      this.sortColumns$.set([{ column: sort.active, direction }]);
       this.sortFilterStateService.saveSortState(
         DividendDepositsComponent.tableKey,
         {
           field: sort.active,
-          order: sort.direction,
+          order: direction,
         }
       );
     }
