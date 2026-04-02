@@ -3,8 +3,8 @@ import { describe, expect, it } from 'vitest';
 import { accountsDefinition } from './accounts-definition.const';
 import { Account } from './account.interface';
 
-describe('Account soldTrades PartialArrayDefinition (Story 40.3)', () => {
-  it('should accept PartialArrayDefinition shape for soldTrades', () => {
+describe('Account divDeposits PartialArrayDefinition (Story 40.3)', () => {
+  it('should accept PartialArrayDefinition shape for divDeposits', () => {
     const account: Account = {
       id: 'acc-1',
       name: 'Test Account',
@@ -15,36 +15,36 @@ describe('Account soldTrades PartialArrayDefinition (Story 40.3)', () => {
       } as unknown as Account['openTrades'],
       soldTrades: {
         startIndex: 0,
-        indexes: ['trade-1', 'trade-2'],
-        length: 10,
+        indexes: [],
+        length: 0,
       } as unknown as Account['soldTrades'],
       divDeposits: {
         startIndex: 0,
-        indexes: [],
-        length: 0,
+        indexes: ['div-1', 'div-2'],
+        length: 10,
       } as unknown as Account['divDeposits'],
       months: [],
     };
 
-    const soldTrades = account.soldTrades as unknown as {
+    const divDeposits = account.divDeposits as unknown as {
       startIndex: number;
       indexes: string[];
       length: number;
     };
-    expect(soldTrades.startIndex).toBe(0);
-    expect(soldTrades.indexes).toEqual(['trade-1', 'trade-2']);
-    expect(soldTrades.length).toBe(10);
+    expect(divDeposits.startIndex).toBe(0);
+    expect(divDeposits.indexes).toEqual(['div-1', 'div-2']);
+    expect(divDeposits.length).toBe(10);
   });
 
-  it('should have default row with PartialArrayDefinition shape for soldTrades', () => {
+  it('should have default row with PartialArrayDefinition shape for divDeposits', () => {
     const defaultRow = accountsDefinition.defaultRow('test-id');
 
-    const soldTrades = defaultRow.soldTrades as unknown as {
+    const divDeposits = defaultRow.divDeposits as unknown as {
       startIndex: number;
       indexes: string[];
       length: number;
     };
-    expect(soldTrades).toEqual({
+    expect(divDeposits).toEqual({
       startIndex: 0,
       indexes: [],
       length: 0,

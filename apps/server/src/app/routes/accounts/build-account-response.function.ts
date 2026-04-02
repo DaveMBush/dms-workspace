@@ -1,6 +1,10 @@
+import { Prisma } from '@prisma/client';
+
 import { prisma } from '../../prisma/prisma-client';
 import { TableState } from '../common/table-state.interface';
+import { PartialArrayDefinition } from '../top/partial-array-definition.interface';
 import { Account } from './account.interface';
+import { ACCOUNT_PAGE_SIZE } from './account-page-size.const';
 import { buildDivDepositOrderBy } from './build-div-deposit-order-by.function';
 import { buildDivDepositWhere } from './build-div-deposit-where.function';
 import { buildTradeOrderBy } from './build-trade-order-by.function';
@@ -25,29 +29,15 @@ interface MonthData {
   month: number;
 }
 
-function extractMonthsFromTrades(
-  trades: Array<{ sell_date: Date | null }>
-): Set<string> {
+function extractMonthsFromDates(dates: Array<Date | null>): Set<string> {
   return new Set(
-    trades
-      .filter(function filterSoldTrades(trade) {
-        return trade.sell_date !== null;
+    dates
+      .filter(function filterNonNull(date): date is Date {
+        return date !== null;
       })
-      .map(function mapTradeToMonth(trade) {
-        const d = new Date(trade.sell_date!);
-        return `${d.getFullYear()}-${d.getMonth() + 1}`;
+      .map(function mapDateToMonth(date) {
+        return `${date.getFullYear()}-${date.getMonth() + 1}`;
       })
-  );
-}
-
-function extractMonthsFromDivDeposits(
-  divDeposits: Array<{ date: Date }>
-): Set<string> {
-  return new Set(
-    divDeposits.map(function mapDivDepositToMonth(divDeposit) {
-      const d = new Date(divDeposit.date);
-      return `${d.getFullYear()}-${d.getMonth() + 1}`;
-    })
   );
 }
 
@@ -73,13 +63,15 @@ function combineAndSortMonths(
   });
 }
 
-async function getOpenTradeIds(
+async function getOpenTradesPage(
   openState: TableState,
   accountId: string
-): Promise<string[]> {
+): Promise<PartialArrayDefinition> {
+  const where = buildTradeWhere(openState, accountId, true);
+
   if (isComputedTradeSort(openState)) {
     const trades = await prisma.trades.findMany({
-      where: buildTradeWhere(openState, accountId, true),
+      where,
       select: {
         id: true,
         buy: true,
@@ -93,17 +85,110 @@ async function getOpenTradeIds(
         getTradeComputedValue(field, a) - getTradeComputedValue(field, b);
       return order === 'desc' ? -diff : diff;
     });
-    return trades.map(function mapId(t) {
-      return t.id;
-    });
+    const sliced = trades.slice(0, ACCOUNT_PAGE_SIZE);
+    return {
+      startIndex: 0,
+      indexes: sliced.map(function mapId(t) {
+        return t.id;
+      }),
+      length: trades.length,
+    };
   }
-  const trades = await prisma.trades.findMany({
-    where: buildTradeWhere(openState, accountId, true),
-    select: { id: true },
-    orderBy: buildTradeOrderBy(openState),
+
+  const [totalCount, trades] = await Promise.all([
+    prisma.trades.count({ where }),
+    prisma.trades.findMany({
+      where,
+      select: { id: true },
+      orderBy: buildTradeOrderBy(openState),
+      skip: 0,
+      take: ACCOUNT_PAGE_SIZE,
+    }),
+  ]);
+  return {
+    startIndex: 0,
+    indexes: trades.map(function mapId(t) {
+      return t.id;
+    }),
+    length: totalCount,
+  };
+}
+
+async function getSoldTradesPage(
+  closedState: TableState,
+  accountId: string
+): Promise<PartialArrayDefinition> {
+  const where: Prisma.tradesWhereInput = buildTradeWhere(
+    closedState,
+    accountId,
+    false
+  );
+  const [totalCount, trades] = await Promise.all([
+    prisma.trades.count({ where }),
+    prisma.trades.findMany({
+      where,
+      select: { id: true },
+      orderBy: buildTradeOrderBy(closedState),
+      skip: 0,
+      take: ACCOUNT_PAGE_SIZE,
+    }),
+  ]);
+  return {
+    startIndex: 0,
+    indexes: trades.map(function mapId(t) {
+      return t.id;
+    }),
+    length: totalCount,
+  };
+}
+
+async function getDivDepositsPage(
+  divState: TableState,
+  accountId: string
+): Promise<PartialArrayDefinition> {
+  const where = buildDivDepositWhere(divState, accountId);
+  const [totalCount, divDeposits] = await Promise.all([
+    prisma.divDeposits.count({ where }),
+    prisma.divDeposits.findMany({
+      where,
+      select: { id: true },
+      orderBy: buildDivDepositOrderBy(divState),
+      skip: 0,
+      take: ACCOUNT_PAGE_SIZE,
+    }),
+  ]);
+  return {
+    startIndex: 0,
+    indexes: divDeposits.map(function mapId(d) {
+      return d.id;
+    }),
+    length: totalCount,
+  };
+}
+
+async function getSoldTradeMonthDates(
+  closedState: TableState,
+  accountId: string
+): Promise<Array<Date | null>> {
+  const soldTrades = await prisma.trades.findMany({
+    where: buildTradeWhere(closedState, accountId, false),
+    select: { sell_date: true },
   });
-  return trades.map(function mapId(t) {
-    return t.id;
+  return soldTrades.map(function mapSellDate(t) {
+    return t.sell_date;
+  });
+}
+
+async function getDivDepositMonthDates(
+  divState: TableState,
+  accountId: string
+): Promise<Date[]> {
+  const divDeposits = await prisma.divDeposits.findMany({
+    where: buildDivDepositWhere(divState, accountId),
+    select: { date: true },
+  });
+  return divDeposits.map(function mapDate(d) {
+    return d.date;
   });
 }
 
@@ -113,46 +198,30 @@ export async function buildAccountResponse(
   closedState: TableState,
   divState: TableState
 ): Promise<Account> {
-  const [openTradeIds, soldTrades, allDivDeposits] = await Promise.all([
-    getOpenTradeIds(openState, account.id),
-    prisma.trades.findMany({
-      where: buildTradeWhere(closedState, account.id, false),
-      select: { id: true, sell_date: true },
-      orderBy: buildTradeOrderBy(closedState),
-    }),
-    prisma.divDeposits.findMany({
-      where: buildDivDepositWhere(divState, account.id),
-      select: { id: true, date: true },
-      orderBy: buildDivDepositOrderBy(divState),
-    }),
+  const [
+    openTrades,
+    soldTrades,
+    divDeposits,
+    soldTradeMonthDates,
+    divDepositMonthDates,
+  ] = await Promise.all([
+    getOpenTradesPage(openState, account.id),
+    getSoldTradesPage(closedState, account.id),
+    getDivDepositsPage(divState, account.id),
+    getSoldTradeMonthDates(closedState, account.id),
+    getDivDepositMonthDates(divState, account.id),
   ]);
 
-  const months1 = extractMonthsFromTrades(soldTrades);
-  const months2 = extractMonthsFromDivDeposits(allDivDeposits);
+  const months1 = extractMonthsFromDates(soldTradeMonthDates);
+  const months2 = extractMonthsFromDates(divDepositMonthDates);
   const months = combineAndSortMonths(months1, months2);
 
   return {
     id: account.id,
     name: account.name,
-    openTrades: {
-      startIndex: 0,
-      indexes: openTradeIds.slice(0, 10),
-      length: openTradeIds.length,
-    },
-    soldTrades: {
-      startIndex: 0,
-      indexes: soldTrades.slice(0, 10).map(function mapSoldTradeId(trade) {
-        return trade.id;
-      }),
-      length: soldTrades.length,
-    },
-    divDeposits: {
-      startIndex: 0,
-      indexes: allDivDeposits.slice(0, 10).map(function mapDivDepositId(d) {
-        return d.id;
-      }),
-      length: allDivDeposits.length,
-    },
+    openTrades,
+    soldTrades,
+    divDeposits,
     months,
   };
 }

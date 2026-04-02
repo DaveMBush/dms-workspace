@@ -3,17 +3,8 @@ import { describe, expect, it } from 'vitest';
 import { accountsDefinition } from './accounts-definition.const';
 import { Account } from './account.interface';
 
-// Story AX.5: TDD Tests for Account interface and default row with PartialArrayDefinition
-// RED phase — these tests expect openTrades to use PartialArrayDefinition
-// which hasn't been implemented yet
-// BLOCKED(E3): blocked — openTrades PartialArrayDefinition not implemented yet (Story AX.6)
-// Disabled with describe.skip() to allow CI to pass
-// Will be re-enabled in Story AX.6
-
-// eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test
-describe.skip('Account openTrades PartialArrayDefinition (AX.5)', () => {
+describe('Account openTrades PartialArrayDefinition (Story 40.3)', () => {
   it('should accept PartialArrayDefinition shape for openTrades', () => {
-    // The Account interface should allow openTrades as PartialArrayDefinition
     const account: Account = {
       id: 'acc-1',
       name: 'Test Account',
@@ -22,12 +13,16 @@ describe.skip('Account openTrades PartialArrayDefinition (AX.5)', () => {
         indexes: ['trade-1', 'trade-2'],
         length: 10,
       } as unknown as Account['openTrades'],
-      soldTrades: [],
+      soldTrades: {
+        startIndex: 0,
+        indexes: [],
+        length: 0,
+      } as unknown as Account['soldTrades'],
       divDeposits: {
         startIndex: 0,
         indexes: [],
         length: 0,
-      },
+      } as unknown as Account['divDeposits'],
       months: [],
     };
 
@@ -44,9 +39,6 @@ describe.skip('Account openTrades PartialArrayDefinition (AX.5)', () => {
   it('should have default row with PartialArrayDefinition shape for openTrades', () => {
     const defaultRow = accountsDefinition.defaultRow('test-id');
 
-    // After AX.6 implementation, openTrades default should be
-    // a PartialArrayDefinition-compatible shape (empty array is OK
-    // since SmartNgRX accepts both)
     const openTrades = defaultRow.openTrades as unknown as {
       startIndex: number;
       indexes: string[];
