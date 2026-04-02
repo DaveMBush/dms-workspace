@@ -211,3 +211,8 @@ textarea:focus-visible,
     outline-color: #90caf9;
   }
 }
+
+/* CDK overlay panel styles (outside component scope, must be global) */
+.month-select-panel {
+  min-width: 12rem !important;
+}

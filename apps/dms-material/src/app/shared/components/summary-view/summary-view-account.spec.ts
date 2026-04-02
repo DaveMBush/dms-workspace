@@ -6,28 +6,28 @@ import {
   provideHttpClientTesting,
   HttpTestingController,
 } from '@angular/common/http/testing';
-import { provideRouter } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 
-import { AccountSummaryComponent } from './account-summary';
-import { currentAccountSignalStore } from '../../store/current-account/current-account.signal-store';
-import type { GraphPoint } from '../../global/services/graph-point.interface';
-import type { Summary } from '../../global/services/summary.interface';
+import { SummaryViewComponent } from './summary-view';
+import { currentAccountSignalStore } from '../../../store/current-account/current-account.signal-store';
+import type { GraphPoint } from '../../../global/services/graph-point.interface';
+import type { Summary } from '../../../global/services/summary.interface';
 
 // Mock selectTopEntities to avoid SmartNgRX initialization
-vi.mock('../../store/top/selectors/select-top-entities.function', () => ({
+vi.mock('../../../store/top/selectors/select-top-entities.function', () => ({
   selectTopEntities: vi.fn().mockReturnValue([]),
 }));
 
 // Mock selectAccountsEntity to avoid SmartNgRX initialization
 vi.mock(
-  '../../store/accounts/selectors/select-accounts-entity.function',
+  '../../../store/accounts/selectors/select-accounts-entity.function',
   () => ({
     selectAccountsEntity: vi.fn().mockReturnValue([]),
   })
 );
 
 // Mock selectAccounts to avoid SmartNgRX initialization
-vi.mock('../../store/accounts/selectors/select-accounts.function', () => ({
+vi.mock('../../../store/accounts/selectors/select-accounts.function', () => ({
   selectAccounts: vi.fn().mockReturnValue([]),
 }));
 
@@ -138,9 +138,9 @@ function testCurrentMonth(): string {
   return `${year}-${monthStr}`;
 }
 
-describe('AccountSummaryComponent - Service Integration', () => {
-  let component: AccountSummaryComponent;
-  let fixture: ComponentFixture<AccountSummaryComponent>;
+describe('SummaryViewComponent - Service Integration', () => {
+  let component: SummaryViewComponent;
+  let fixture: ComponentFixture<SummaryViewComponent>;
   let httpMock: HttpTestingController;
   let store: InstanceType<typeof currentAccountSignalStore>;
 
@@ -155,20 +155,15 @@ describe('AccountSummaryComponent - Service Integration', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AccountSummaryComponent],
+      imports: [SummaryViewComponent],
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
-        provideRouter([
-          {
-            path: 'account/:accountId',
-            component: AccountSummaryComponent,
-          },
-        ]),
+        { provide: ActivatedRoute, useValue: { snapshot: { data: { mode: 'account' } } } },
       ],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(AccountSummaryComponent);
+    fixture = TestBed.createComponent(SummaryViewComponent);
     component = fixture.componentInstance;
     httpMock = TestBed.inject(HttpTestingController);
     store = TestBed.inject(currentAccountSignalStore);

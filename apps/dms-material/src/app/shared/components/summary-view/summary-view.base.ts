@@ -10,12 +10,11 @@ import { defaultPieChartOptions } from '../../utils/default-pie-chart-options.co
 import { getCurrentMonth } from './get-current-month.function';
 
 /**
- * Abstract base class for summary components (Global and Account).
+ * Base class for the unified summary component.
  * Holds all shared computed signals, form controls, and template bindings.
- * Subclasses must set `mode` and implement their own data-fetching lifecycle.
  */
-export abstract class SummaryViewBase {
-  abstract readonly mode: 'account' | 'global';
+export class SummaryViewBase {
+  mode: 'account' | 'global' = 'global';
 
   protected readonly summaryService = inject(SummaryService);
   protected readonly destroyRef = inject(DestroyRef);
