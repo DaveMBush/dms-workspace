@@ -19,9 +19,3 @@ Invoke the `#skill:bmad-code-review` skill now.
 
 Do not commit until gate result is evaluated by the calling workflow.
 
-## Rate Limits
-
-To avoid GitHub Copilot rate limiting:
-
-**CRITICAL**: Always wait for at least 2 minutes between terminal calls, calls to MCP servers, or code updates.
-- Prefer slow completion over fast failure.

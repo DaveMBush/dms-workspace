@@ -167,9 +167,3 @@ When it returns `MERGE COMPLETE`: the story workflow is complete.
 - MCP servers provide validation and documentation resources
 - See bmad-workflow skill for detailed patterns and best practices
 
-## Rate Limits
-
-To avoid GitHub Copilot rate limiting:
-
-**CRITICAL**: Always wait for at least 2 minutes between terminal calls, calls to MCP servers, or code updates.
-- Prefer slow completion over fast failure.

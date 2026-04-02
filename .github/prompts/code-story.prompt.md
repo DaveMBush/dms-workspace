@@ -27,10 +27,3 @@ mcp_bash_run({ command: "pnpm i", cwd: "../dms/story-${story}", timeout: 0 })
 Invoke the `#skill:bmad-dev-story` skill to implement the story from within the worktree directory.
 
 When implementation is complete, return immediately — the parent workflow handles committing, PR creation, and merge.
-
-## Rate Limits
-
-To avoid GitHub Copilot rate limiting:
-
-**CRITICAL**: Always wait for at least 2 minutes between terminal calls, calls to MCP servers, or code updates.
-- Prefer slow completion over fast failure.

@@ -69,9 +69,3 @@ All ${N} stories implemented and merged to main.
 - **Status validation fails**: prompt.sh decides whether to continue anyway
 - **Rate limits or conflicts**: Individual stories handle via develop-story.prompt.md
 
-## Rate Limits
-
-To avoid GitHub Copilot rate limiting:
-
-**CRITICAL**: Always wait for at least 2 minutes between terminal calls, calls to MCP servers, or code updates.
-- Prefer slow completion over fast failure.

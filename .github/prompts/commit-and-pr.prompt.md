@@ -52,10 +52,3 @@ EOF
 
 echo "WROTE $GIT_COMMON_DIR/tmp/story-${story}-meta.json"
 ```
-
-## Rate Limits
-
-To avoid GitHub Copilot rate limiting:
-
-**CRITICAL**: Always wait for at least 2 minutes between terminal calls, calls to MCP servers, or code updates.
-- Prefer slow completion over fast failure.

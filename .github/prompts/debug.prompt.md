@@ -190,9 +190,3 @@ This keeps the debug workflow context small while the merge subagent handles:
 - Maintains quality gates while maximizing autonomy
 - See bmad-workflow skill for detailed patterns and best practices
 
-## Rate Limits
-
-To avoid GitHub Copilot rate limiting:
-
-**CRITICAL**: Always wait for at least 2 minutes between terminal calls, calls to MCP servers, or code updates.
-- Prefer slow completion over fast failure.

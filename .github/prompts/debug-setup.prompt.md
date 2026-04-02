@@ -46,9 +46,3 @@ Return a concise summary containing:
 
 If setup fails after required retries and escalations, return `SETUP FAILED: <reason>` after handling required `prompt.sh` escalation.
 
-## Rate Limits
-
-To avoid GitHub Copilot rate limiting:
-
-**CRITICAL**: Always wait for at least 2 minutes between terminal calls, calls to MCP servers, or code updates.
-- Prefer slow completion over fast failure.
