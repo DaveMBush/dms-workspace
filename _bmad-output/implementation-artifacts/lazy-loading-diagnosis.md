@@ -120,7 +120,7 @@ SmartSignals supports lazy loading through its **virtual array / `loadByIndexes`
 
 1. Add a new route or modify the `top` route to support returning `PartialArrayDefinition` for universes
 2. Use `prisma.universe.count()` for total length
-3. Use `prisma.universe.findMany({ skip: start, take: length, select: { id: true } })` for the page of IDs
+3. Use `prisma.universe.findMany({ skip: start, take: length, orderBy: { id: 'asc' }, select: { id: true } })` for the page of IDs (stable ordering required)
 4. Return `{ startIndex: start, indexes: ids, length: totalCount }`
 
 ### Story 40.3: Client-Side Virtual Array Wiring
