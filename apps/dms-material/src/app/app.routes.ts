@@ -106,9 +106,9 @@ export const appRoutes: Route[] = [
               {
                 path: '',
                 loadComponent: async () =>
-                  import(
-                    './shared/components/summary-view/summary-view'
-                  ).then((m) => m.SummaryViewComponent),
+                  import('./shared/components/summary-view/summary-view').then(
+                    (m) => m.SummaryViewComponent
+                  ),
                 data: { mode: 'account' },
               },
               {

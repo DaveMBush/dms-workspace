@@ -162,10 +162,7 @@ export class SummaryViewComponent extends SummaryViewBase implements OnInit {
   private onGlobalMonthChange(month: string | null): void {
     if (month !== null) {
       this.selectedMonth.disable({ emitEvent: false });
-      this.summaryService.fetchSummary(
-        month,
-        this.enableSelectors.bind(this)
-      );
+      this.summaryService.fetchSummary(month, this.enableSelectors.bind(this));
     }
   }
 }

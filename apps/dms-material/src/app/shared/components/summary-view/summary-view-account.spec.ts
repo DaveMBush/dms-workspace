@@ -159,7 +159,10 @@ describe('SummaryViewComponent - Service Integration', () => {
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
-        { provide: ActivatedRoute, useValue: { snapshot: { data: { mode: 'account' } } } },
+        {
+          provide: ActivatedRoute,
+          useValue: { snapshot: { data: { mode: 'account' } } },
+        },
       ],
     }).compileComponents();
 

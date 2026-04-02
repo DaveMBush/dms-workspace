@@ -37,7 +37,10 @@ describe('SummaryViewComponent', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         { provide: topEffectsServiceToken, useValue: {} },
-        { provide: ActivatedRoute, useValue: { snapshot: { data: { mode: 'global' } } } },
+        {
+          provide: ActivatedRoute,
+          useValue: { snapshot: { data: { mode: 'global' } } },
+        },
       ],
     }).compileComponents();
 
@@ -143,7 +146,10 @@ describe('SummaryViewComponent - Service Integration', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         { provide: topEffectsServiceToken, useValue: {} },
-        { provide: ActivatedRoute, useValue: { snapshot: { data: { mode: 'global' } } } },
+        {
+          provide: ActivatedRoute,
+          useValue: { snapshot: { data: { mode: 'global' } } },
+        },
       ],
     }).compileComponents();
 
@@ -312,7 +318,10 @@ describe('SummaryViewComponent - Graph Integration', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         { provide: topEffectsServiceToken, useValue: {} },
-        { provide: ActivatedRoute, useValue: { snapshot: { data: { mode: 'global' } } } },
+        {
+          provide: ActivatedRoute,
+          useValue: { snapshot: { data: { mode: 'global' } } },
+        },
       ],
     }).compileComponents();
 
@@ -442,7 +451,10 @@ describe('SummaryViewComponent - Available Months', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         { provide: topEffectsServiceToken, useValue: {} },
-        { provide: ActivatedRoute, useValue: { snapshot: { data: { mode: 'global' } } } },
+        {
+          provide: ActivatedRoute,
+          useValue: { snapshot: { data: { mode: 'global' } } },
+        },
       ],
     }).compileComponents();
 
@@ -515,7 +527,10 @@ describe('SummaryViewComponent - Error Handling', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         { provide: topEffectsServiceToken, useValue: {} },
-        { provide: ActivatedRoute, useValue: { snapshot: { data: { mode: 'global' } } } },
+        {
+          provide: ActivatedRoute,
+          useValue: { snapshot: { data: { mode: 'global' } } },
+        },
       ],
     }).compileComponents();
 
@@ -607,7 +622,10 @@ describe('Pie Chart Display', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         { provide: topEffectsServiceToken, useValue: {} },
-        { provide: ActivatedRoute, useValue: { snapshot: { data: { mode: 'global' } } } },
+        {
+          provide: ActivatedRoute,
+          useValue: { snapshot: { data: { mode: 'global' } } },
+        },
       ],
     }).compileComponents();
 
@@ -857,7 +875,10 @@ describe('Month/Year Selector', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         { provide: topEffectsServiceToken, useValue: {} },
-        { provide: ActivatedRoute, useValue: { snapshot: { data: { mode: 'global' } } } },
+        {
+          provide: ActivatedRoute,
+          useValue: { snapshot: { data: { mode: 'global' } } },
+        },
       ],
     }).compileComponents();
 
@@ -1234,7 +1255,10 @@ describe('Branch Coverage - Edge Cases', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         { provide: topEffectsServiceToken, useValue: {} },
-        { provide: ActivatedRoute, useValue: { snapshot: { data: { mode: 'global' } } } },
+        {
+          provide: ActivatedRoute,
+          useValue: { snapshot: { data: { mode: 'global' } } },
+        },
       ],
     }).compileComponents();
 
