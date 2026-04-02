@@ -12,7 +12,7 @@ export const accountsDefinition: SmartEntityDefinition<Account> = {
       name: '',
       openTrades: { startIndex: 0, indexes: [], length: 0 },
       soldTrades: { startIndex: 0, indexes: [], length: 0 },
-      divDeposits: [],
+      divDeposits: { startIndex: 0, indexes: [], length: 0 },
       months: [],
     };
   },

@@ -169,7 +169,6 @@ function createTopSchema(): Record<string, unknown> {
 }
 
 function handleTopRoute(fastify: FastifyInstance): void {
-  // eslint-disable-next-line @typescript-eslint/naming-convention -- Fastify requires Body/Reply
   fastify.post<{ Body: { ids: string[] }; Reply: Top[] }>(
     '/',
     {
@@ -254,7 +253,6 @@ function createIndexesSchema(): Record<string, unknown> {
 }
 
 function handleIndexesRoute(fastify: FastifyInstance): void {
-  // eslint-disable-next-line @typescript-eslint/naming-convention -- Fastify requires Body/Reply
   fastify.post<{ Body: IndexesRequestBody; Reply: PartialArrayDefinition }>(
     '/indexes',
     {
@@ -282,7 +280,6 @@ function handleIndexesRoute(fastify: FastifyInstance): void {
   );
 }
 
-// eslint-disable-next-line import/no-default-export -- Fastify plugin registration pattern
 export default function registerTopRoutes(fastify: FastifyInstance): void {
   handleTopRoute(fastify);
   handleIndexesRoute(fastify);
