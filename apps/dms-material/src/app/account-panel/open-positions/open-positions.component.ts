@@ -14,16 +14,17 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { Sort } from '@angular/material/sort';
 import { ActivatedRoute } from '@angular/router';
-import { handleSocketNotification } from '@smarttools/smart-signals';
 
 import { BaseTableComponent } from '../../shared/components/base-table/base-table.component';
 import { ColumnDef } from '../../shared/components/base-table/column-def.interface';
 import { EditableCellComponent } from '../../shared/components/editable-cell/editable-cell.component';
 import { EditableDateCellComponent } from '../../shared/components/editable-date-cell/editable-date-cell.component';
-import { FilterConfig } from '../../shared/services/filter-config.interface';
-import { SortColumn } from '../../shared/services/sort-column.interface';
 import { SortFilterStateService } from '../../shared/services/sort-filter-state.service';
-import { getAccountIds } from '../../store/accounts/selectors/get-account-ids.function';
+import { createSymbolFilterManager } from '../../shared/utils/create-symbol-filter-manager.function';
+import { handleSortChange } from '../../shared/utils/handle-sort-change.function';
+import { initSearchText } from '../../shared/utils/init-search-text.function';
+import { initSortColumns } from '../../shared/utils/init-sort-columns.function';
+import { SymbolFilterManager } from '../../shared/utils/symbol-filter-manager.interface';
 import { OpenPosition } from '../../store/trades/open-position.interface';
 import { Trade } from '../../store/trades/trade.interface';
 import { OpenPositionsComponentService } from './open-positions-component.service';
@@ -54,27 +55,14 @@ export class OpenPositionsComponent implements OnDestroy {
   // Inject MatDialog for add position dialog
   private dialog = inject(MatDialog);
 
-  private readonly restoredFilter = this.sortFilterStateService.loadFilterState(
+  searchText = initSearchText(
+    this.sortFilterStateService,
     OpenPositionsComponent.tableKey
   );
 
-  private readonly restoredSort = this.sortFilterStateService.loadSortState(
+  sortColumns$ = initSortColumns(
+    this.sortFilterStateService,
     OpenPositionsComponent.tableKey
-  );
-
-  searchText = signal<string>(
-    (this.restoredFilter?.['symbol'] as string) ?? ''
-  );
-
-  sortColumns$ = signal<SortColumn[]>(
-    this.restoredSort !== null
-      ? [
-          {
-            column: this.restoredSort.field,
-            direction: this.restoredSort.order,
-          },
-        ]
-      : []
   );
 
   errorMessage = signal<string>('');
@@ -85,24 +73,19 @@ export class OpenPositionsComponent implements OnDestroy {
     end: 50,
   });
 
-  private symbolFilterTimer: ReturnType<typeof setTimeout> | null = null;
+  private readonly symbolFilterManager: SymbolFilterManager =
+    createSymbolFilterManager(
+      this.searchText,
+      this.sortFilterStateService,
+      OpenPositionsComponent.tableKey
+    );
 
   ngOnDestroy(): void {
-    if (this.symbolFilterTimer !== null) {
-      clearTimeout(this.symbolFilterTimer);
-      this.symbolFilterTimer = null;
-    }
+    this.symbolFilterManager.cleanup();
   }
 
   onSymbolFilterChange(value: string): void {
-    this.searchText.set(value);
-    if (this.symbolFilterTimer !== null) {
-      clearTimeout(this.symbolFilterTimer);
-    }
-    this.symbolFilterTimer = setTimeout(
-      this.saveSymbolFilterAndNotify.bind(this),
-      300
-    );
+    this.symbolFilterManager.onSymbolFilterChange(value);
   }
 
   onRangeChange(range: { start: number; end: number }): void {
@@ -111,23 +94,12 @@ export class OpenPositionsComponent implements OnDestroy {
   }
 
   onSortChange(sort: Sort): void {
-    if (sort.direction === '') {
-      this.sortColumns$.set([]);
-      this.sortFilterStateService.clearSortState(
-        OpenPositionsComponent.tableKey
-      );
-    } else {
-      const direction = sort.direction;
-      this.sortColumns$.set([{ column: sort.active, direction }]);
-      this.sortFilterStateService.saveSortState(
-        OpenPositionsComponent.tableKey,
-        {
-          field: sort.active,
-          order: direction,
-        }
-      );
-    }
-    handleSocketNotification('accounts', 'update', getAccountIds());
+    handleSortChange(
+      sort,
+      this.sortColumns$,
+      this.sortFilterStateService,
+      OpenPositionsComponent.tableKey
+    );
   }
 
   // Writable signal for trades (populated from SmartNgRX or set directly in tests)
@@ -277,21 +249,5 @@ export class OpenPositionsComponent implements OnDestroy {
       }
     }
     return undefined;
-  }
-
-  private saveSymbolFilterAndNotify(): void {
-    const symbol = this.searchText();
-    if (symbol !== '') {
-      const filters: FilterConfig = { symbol };
-      this.sortFilterStateService.saveFilterState(
-        OpenPositionsComponent.tableKey,
-        filters
-      );
-    } else {
-      this.sortFilterStateService.clearFilterState(
-        OpenPositionsComponent.tableKey
-      );
-    }
-    handleSocketNotification('accounts', 'update', getAccountIds());
   }
 }
