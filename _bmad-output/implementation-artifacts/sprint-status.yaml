@@ -273,3 +273,9 @@ development_status:
   41-3-refactor-functional-duplication: backlog
   41-4-evaluate-global-summary-account-summary-merge: backlog
   epic-41-retrospective: optional
+
+  # ── Epic 42: Fix Failing E2E Tests ───────────────────────────────────────────
+  epic-42: backlog
+  42-1-fix-failing-chromium-e2e-tests: ready-for-dev
+  42-2-fix-failing-firefox-e2e-tests: ready-for-dev
+  epic-42-retrospective: optional
