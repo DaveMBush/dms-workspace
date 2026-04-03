@@ -172,8 +172,8 @@ importers:
         specifier: 21.0.1
         version: 21.0.1(@angular/core@21.2.6(@angular/compiler@21.2.6)(rxjs@7.8.2)(zone.js@0.15.1))(@ngrx/store@21.0.1(@angular/core@21.2.6(@angular/compiler@21.2.6)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(rxjs@7.8.2)
       '@ngrx/eslint-plugin':
-        specifier: 21.0.1
-        version: 21.0.1(@typescript-eslint/utils@8.50.1(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(typescript-eslint@8.53.1(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(typescript@5.9.3)
+        specifier: 21.1.0
+        version: 21.1.0(@typescript-eslint/utils@8.50.1(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(typescript-eslint@8.53.1(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(typescript@5.9.3)
       '@ngrx/signals':
         specifier: 21.0.1
         version: 21.0.1(@angular/core@21.2.6(@angular/compiler@21.2.6)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2)
@@ -3088,11 +3088,11 @@ packages:
       '@ngrx/store': 21.0.1
       rxjs: ^6.5.3 || ^7.5.0
 
-  '@ngrx/eslint-plugin@21.0.1':
-    resolution: {integrity: sha512-ZFFb7UFiTF4UzXYaMRmK6hEHFOiFtoJ+Euus4O7i0A+0na+zaYVxS42cdylG/IKe3sfAoLKZWkly/idNnMSaWQ==}
+  '@ngrx/eslint-plugin@21.1.0':
+    resolution: {integrity: sha512-L9B1v/7rcEyk5UHjlpLHfI1YnEWXQ8ucGk9DMI0VNDPpZ5izWOTFR39nN0ZZGM1slY89UHOczDdFIRq1CsBYVw==}
     peerDependencies:
       '@typescript-eslint/utils': ^8.0.0
-      eslint: ^8.57.0 || ^9.0.0
+      eslint: ^8.57.0 || ^9.0.0 || ^10.0.0
       typescript: '*'
       typescript-eslint: ^8.0.0
 
@@ -14494,7 +14494,7 @@ snapshots:
       rxjs: 7.8.2
       tslib: 2.8.1
 
-  '@ngrx/eslint-plugin@21.0.1(@typescript-eslint/utils@8.50.1(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(typescript-eslint@8.53.1(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(typescript@5.9.3)':
+  '@ngrx/eslint-plugin@21.1.0(@typescript-eslint/utils@8.50.1(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(typescript-eslint@8.53.1(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(typescript@5.9.3)':
     dependencies:
       '@typescript-eslint/utils': 8.50.1(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3)
       eslint: 9.39.4(jiti@2.6.1)
