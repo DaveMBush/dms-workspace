@@ -3,9 +3,9 @@
     Allocation by Risk Group
   </h2>
   @if (!hasAllocationData$()) {
-  <p class="no-data-message text-gray-500 py-4" data-testid="no-data-message">
+  <div class="no-data-message" data-testid="no-data-message">
     No data available
-  </p>
+  </div>
   } @else {
   <dms-summary-display
     data-testid="allocation-chart"
