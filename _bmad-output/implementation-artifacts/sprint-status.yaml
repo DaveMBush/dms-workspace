@@ -279,3 +279,44 @@ development_status:
   42-1-fix-failing-chromium-e2e-tests: ready-for-dev
   42-2-fix-failing-firefox-e2e-tests: ready-for-dev
   epic-42-retrospective: optional
+
+  # ── Epic 43: Fix Secondary Sort on Universe Screen ────────────────────────────
+  epic-43: backlog
+  43-1-diagnose-fix-server-secondary-sort: ready-for-dev
+  43-2-e2e-secondary-sort-universe: ready-for-dev
+  epic-43-retrospective: optional
+
+  # ── Epic 44: Fix Janky Scrolling Across All Tables ────────────────────────────
+  epic-44: backlog
+  44-1-reproduce-diagnose-janky-scrolling: ready-for-dev
+  44-2-fix-janky-scrolling: ready-for-dev
+  44-3-verify-scrolling-e2e-tests: ready-for-dev
+  epic-44-retrospective: optional
+
+  # ── Epic 45: Remove Yahoo Finance Dividend Code ───────────────────────────────
+  epic-45: backlog
+  45-1-remove-yahoo-finance-dividend-code: ready-for-dev
+  45-2-verify-dividend-data-correctness: ready-for-dev
+  epic-45-retrospective: optional
+
+  # ── Epic 46: Fix Column Filter Width on Universe Screen ───────────────────────
+  epic-46: backlog
+  46-1-fix-universe-column-filter-width: ready-for-dev
+  46-2-e2e-universe-column-filter-width: ready-for-dev
+  epic-46-retrospective: optional
+
+  # ── Epic 47: Fix Lazy Loading of Data on All Tables ───────────────────────────
+  epic-47: backlog
+  47-1-reproduce-diagnose-lazy-loading: ready-for-dev
+  47-2-fix-lazy-loading-implementation: ready-for-dev
+  47-3-verify-lazy-loading-e2e: ready-for-dev
+  epic-47-retrospective: optional
+
+  # ── Epic 48: CSV Import Split Handling ────────────────────────────────────────
+  epic-48: backlog
+  48-1-detect-split-transactions-csv: ready-for-dev
+  48-2-calculate-split-ratio: ready-for-dev
+  48-3-adjust-positions-for-split: ready-for-dev
+  48-4-handle-split-remainders: ready-for-dev
+  48-5-e2e-csv-import-split-handling: ready-for-dev
+  epic-48-retrospective: optional
