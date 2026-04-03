@@ -31,6 +31,30 @@ import { debounceTime } from 'rxjs';
 import { SortColumn } from '../../services/sort-column.interface';
 import { ColumnDef } from './column-def.interface';
 
+function compareNonNullValues(aVal: unknown, bVal: unknown): number {
+  if (typeof aVal === 'string' && typeof bVal === 'string') {
+    return aVal.localeCompare(bVal);
+  }
+  const a = aVal as number;
+  const b = bVal as number;
+  if (a < b) {
+    return -1;
+  }
+  return a > b ? 1 : 0;
+}
+
+function compareValues(aVal: unknown, bVal: unknown): number {
+  const aNull = aVal === null || aVal === undefined;
+  const bNull = bVal === null || bVal === undefined;
+  if (aNull) {
+    return bNull ? 0 : -1;
+  }
+  if (bNull) {
+    return 1;
+  }
+  return compareNonNullValues(aVal, bVal);
+}
+
 @Component({
   selector: 'dms-base-table',
   imports: [
@@ -202,12 +226,28 @@ export class BaseTableComponent<T extends { id: string }>
     };
   };
 
-  // Data source - reactive to data() changes
-  // Server handles sorting, so no client-side sort is applied
+  // Data source - reactive to data() and sortColumns() changes
   dataSource = computed(
     // eslint-disable-next-line @smarttools/no-anonymous-functions -- Required for computed signal
     () => {
-      return [...this.data()];
+      const rows = [...this.data()];
+      const columns = this.sortColumns();
+      if (columns.length === 0) {
+        return rows;
+      }
+      return rows.sort(function compareBySortColumns(
+        a: Record<string, unknown>,
+        b: Record<string, unknown>
+      ): number {
+        for (let i = 0; i < columns.length; i++) {
+          const col = columns[i];
+          const cmp = compareValues(a[col.column], b[col.column]);
+          if (cmp !== 0) {
+            return col.direction === 'desc' ? -cmp : cmp;
+          }
+        }
+        return 0;
+      } as (a: T, b: T) => number);
     }
   );
 

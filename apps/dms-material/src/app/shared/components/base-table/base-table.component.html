@@ -62,7 +62,7 @@
         >
           {{ column.header }}
           @if (sortRankMap()[column.field]) {
-          <span class="sort-rank-indicator" data-testid="sort-rank">{{
+          <span class="sort-rank-indicator" data-testid="sort-rank" aria-hidden="true">{{
             sortRankMap()[column.field]
           }}</span>
           }

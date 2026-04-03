@@ -80,7 +80,7 @@ async function getAccountsThisMonth(
       ...createAccountQuery(sellDateStart, sellDateEnd),
     });
     if (!account) {
-      throw new Error('Account not found');
+      return [];
     }
     return [account];
   }
