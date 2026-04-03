@@ -194,7 +194,7 @@ importers:
         version: 22.6.3(@babel/traverse@7.29.0)(@swc-node/register@1.11.1(@swc/core@1.15.8(@swc/helpers@0.5.18))(@swc/types@0.1.25)(typescript@5.9.3))(@swc/core@1.15.8(@swc/helpers@0.5.18))(@zkochan/js-yaml@0.0.7)(eslint@9.39.4(jiti@2.6.1))(nx@22.6.3(@swc-node/register@1.11.1(@swc/core@1.15.8(@swc/helpers@0.5.18))(@swc/types@0.1.25)(typescript@5.9.3))(@swc/core@1.15.8(@swc/helpers@0.5.18)))
       '@nx/eslint-plugin':
         specifier: 22.6.3
-        version: 22.6.3(@babel/traverse@7.29.0)(@swc-node/register@1.11.1(@swc/core@1.15.8(@swc/helpers@0.5.18))(@swc/types@0.1.25)(typescript@5.9.3))(@swc/core@1.15.8(@swc/helpers@0.5.18))(@typescript-eslint/parser@8.50.1(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint-config-prettier@10.1.5(eslint@9.39.4(jiti@2.6.1)))(eslint@9.39.4(jiti@2.6.1))(nx@22.6.3(@swc-node/register@1.11.1(@swc/core@1.15.8(@swc/helpers@0.5.18))(@swc/types@0.1.25)(typescript@5.9.3))(@swc/core@1.15.8(@swc/helpers@0.5.18)))(typescript@5.9.3)
+        version: 22.6.3(@babel/traverse@7.29.0)(@swc-node/register@1.11.1(@swc/core@1.15.8(@swc/helpers@0.5.18))(@swc/types@0.1.25)(typescript@5.9.3))(@swc/core@1.15.8(@swc/helpers@0.5.18))(@typescript-eslint/parser@8.50.1(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint-config-prettier@10.1.8(eslint@9.39.4(jiti@2.6.1)))(eslint@9.39.4(jiti@2.6.1))(nx@22.6.3(@swc-node/register@1.11.1(@swc/core@1.15.8(@swc/helpers@0.5.18))(@swc/types@0.1.25)(typescript@5.9.3))(@swc/core@1.15.8(@swc/helpers@0.5.18)))(typescript@5.9.3)
       '@nx/js':
         specifier: 22.6.3
         version: 22.6.3(@babel/traverse@7.29.0)(@swc-node/register@1.11.1(@swc/core@1.15.8(@swc/helpers@0.5.18))(@swc/types@0.1.25)(typescript@5.9.3))(@swc/core@1.15.8(@swc/helpers@0.5.18))(nx@22.6.3(@swc-node/register@1.11.1(@swc/core@1.15.8(@swc/helpers@0.5.18))(@swc/types@0.1.25)(typescript@5.9.3))(@swc/core@1.15.8(@swc/helpers@0.5.18)))
@@ -310,8 +310,8 @@ importers:
         specifier: ^9.39.4
         version: 9.39.4(jiti@2.6.1)
       eslint-config-prettier:
-        specifier: ^10.0.0
-        version: 10.1.5(eslint@9.39.4(jiti@2.6.1))
+        specifier: ^10.1.8
+        version: 10.1.8(eslint@9.39.4(jiti@2.6.1))
       eslint-plugin-cypress:
         specifier: ^4.3.0
         version: 4.3.0(eslint@9.39.4(jiti@2.6.1))
@@ -6529,8 +6529,8 @@ packages:
     resolution: {integrity: sha512-/veY75JbMK4j1yjvuUxuVsiS/hr/4iHs9FTT6cgTexxdE0Ly/glccBAkloH/DofkjRbZU3bnoj38mOmhkZ0lHw==}
     engines: {node: '>=12'}
 
-  eslint-config-prettier@10.1.5:
-    resolution: {integrity: sha512-zc1UmCpNltmVY34vuLRV61r1K27sWuX39E+uyUnY8xS2Bex88VV9cugG+UZbRSRGtGyFboj+D8JODyme1plMpw==}
+  eslint-config-prettier@10.1.8:
+    resolution: {integrity: sha512-82GZUjRS0p/jganf6q1rEO25VSoHH0hKPCTrgillPjdI/3bgBhAE1QzHrHTizjpRvy6pGAvKjDJtk2pF9NDq8w==}
     hasBin: true
     peerDependencies:
       eslint: '>=7.0.0'
@@ -14729,7 +14729,7 @@ snapshots:
       - supports-color
       - verdaccio
 
-  '@nx/eslint-plugin@22.6.3(@babel/traverse@7.29.0)(@swc-node/register@1.11.1(@swc/core@1.15.8(@swc/helpers@0.5.18))(@swc/types@0.1.25)(typescript@5.9.3))(@swc/core@1.15.8(@swc/helpers@0.5.18))(@typescript-eslint/parser@8.50.1(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint-config-prettier@10.1.5(eslint@9.39.4(jiti@2.6.1)))(eslint@9.39.4(jiti@2.6.1))(nx@22.6.3(@swc-node/register@1.11.1(@swc/core@1.15.8(@swc/helpers@0.5.18))(@swc/types@0.1.25)(typescript@5.9.3))(@swc/core@1.15.8(@swc/helpers@0.5.18)))(typescript@5.9.3)':
+  '@nx/eslint-plugin@22.6.3(@babel/traverse@7.29.0)(@swc-node/register@1.11.1(@swc/core@1.15.8(@swc/helpers@0.5.18))(@swc/types@0.1.25)(typescript@5.9.3))(@swc/core@1.15.8(@swc/helpers@0.5.18))(@typescript-eslint/parser@8.50.1(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint-config-prettier@10.1.8(eslint@9.39.4(jiti@2.6.1)))(eslint@9.39.4(jiti@2.6.1))(nx@22.6.3(@swc-node/register@1.11.1(@swc/core@1.15.8(@swc/helpers@0.5.18))(@swc/types@0.1.25)(typescript@5.9.3))(@swc/core@1.15.8(@swc/helpers@0.5.18)))(typescript@5.9.3)':
     dependencies:
       '@nx/devkit': 22.6.3(nx@22.6.3(@swc-node/register@1.11.1(@swc/core@1.15.8(@swc/helpers@0.5.18))(@swc/types@0.1.25)(typescript@5.9.3))(@swc/core@1.15.8(@swc/helpers@0.5.18)))
       '@nx/js': 22.6.3(@babel/traverse@7.29.0)(@swc-node/register@1.11.1(@swc/core@1.15.8(@swc/helpers@0.5.18))(@swc/types@0.1.25)(typescript@5.9.3))(@swc/core@1.15.8(@swc/helpers@0.5.18))(nx@22.6.3(@swc-node/register@1.11.1(@swc/core@1.15.8(@swc/helpers@0.5.18))(@swc/types@0.1.25)(typescript@5.9.3))(@swc/core@1.15.8(@swc/helpers@0.5.18)))
@@ -14744,7 +14744,7 @@ snapshots:
       semver: 7.7.4
       tslib: 2.8.1
     optionalDependencies:
-      eslint-config-prettier: 10.1.5(eslint@9.39.4(jiti@2.6.1))
+      eslint-config-prettier: 10.1.8(eslint@9.39.4(jiti@2.6.1))
     transitivePeerDependencies:
       - '@babel/traverse'
       - '@swc-node/register'
@@ -18766,7 +18766,7 @@ snapshots:
 
   escape-string-regexp@5.0.0: {}
 
-  eslint-config-prettier@10.1.5(eslint@9.39.4(jiti@2.6.1)):
+  eslint-config-prettier@10.1.8(eslint@9.39.4(jiti@2.6.1)):
     dependencies:
       eslint: 9.39.4(jiti@2.6.1)
 
