@@ -82,7 +82,7 @@ Claude Sonnet 4.6
 
 **Root Cause Identified (AC #2):** The bulk-fetch is caused by multiple client-side component services that iterate through ALL indices of a SmartSignals `VirtualArray`/`ArrayProxy`, not just the visible range. Specifically:
 
-1. **`university.service.ts`** — Both an `effect` and a `computed` signal loop `for (let i = 0; i < universes.length; i++)` where `universes` is an `ArrayProxy` with `length` = total row count (not just loaded count). Accessing indices 50..N triggers `dispatchLoadByIndexes(parentId, childField, i)` for each.
+1. **`universe.service.ts`** — Both an `effect` and a `computed` signal loop `for (let i = 0; i < universes.length; i++)` where `universes` is an `ArrayProxy` with `length` = total row count (not just loaded count). Accessing indices 50..N triggers `dispatchLoadByIndexes(parentId, childField, i)` for each.
 
 2. **`build-universe-map.function.ts`** — `computed` function loops all `universes.length` items via `for (let j = 0; j < universes.length; j++)`.
 
