@@ -15,15 +15,15 @@ so that I can apply a targeted, permanent fix.
 
 ## Tasks / Subtasks
 
-- [ ] Use the Playwright MCP server to open the Universe screen and programmatically scroll through the table (AC: #1)
-  - [ ] Observe and capture evidence of the scrolling jank
-  - [ ] Repeat on at least two other table screens (e.g., Account > Open Positions, Dividend Deposits)
-- [ ] Review Epic 31 findings (`31-1-reproduce-and-root-cause-the-header-jumping-issue.md`, `31-2-implement-and-verify-the-virtual-scroll-header-fix.md`) to understand what was attempted previously (AC: #2)
-- [ ] Inspect virtual scroll configuration — row heights, `cdkFixedSizeVirtualScroll` or `cdkAutoSizeVirtualScroll`, buffer sizes (AC: #2)
-- [ ] Inspect change detection — confirm all table components use `OnPush`; check for unnecessary `markForCheck()` calls in scroll handlers (AC: #2)
-- [ ] Inspect CSS — check for CSS transitions, animations, or layout-triggering properties on scroll (AC: #2)
-- [ ] Document root cause in an investigation note or code comment (AC: #2)
-- [ ] Run `pnpm all` to confirm no regressions from read-only investigation (AC: no changes expected)
+- [x] Use the Playwright MCP server to open the Universe screen and programmatically scroll through the table (AC: #1)
+  - [x] Observe and capture evidence of the scrolling jank — Universe: header 128px→−372px over 10×50px steps (1:1 ratio); Dividend Deposits: 113px→−287px over 8×50px steps (same ratio)
+  - [x] Repeat on at least two other table screens — confirmed on Universe, Dividend Deposits, and Open Positions (same pattern)
+- [x] Review Epic 31 findings (`31-1-reproduce-and-root-cause-the-header-jumping-issue.md`, `31-2-implement-and-verify-the-virtual-scroll-header-fix.md`) to understand what was attempted previously (AC: #2)
+- [x] Inspect virtual scroll configuration — `itemSize=52`, `minBufferPx=520`, `maxBufferPx=1040`, `bufferSize=10`, `debounceTime(100)` on renderedRangeStream (AC: #2)
+- [x] Inspect change detection — all table components confirmed `ChangeDetectionStrategy.OnPush`; found `effect(() => { markForCheck() })` in `BaseTableComponent` (AC: #2)
+- [x] Inspect CSS — found global `* { transition: background-color 0.2s ease, ... }` in `styles.scss`; `will-change: transform` on viewport; confirmed via Playwright computed styles (AC: #2)
+- [x] Document root cause in an investigation note or code comment — 4 findings documented in Dev Agent Record below (AC: #2)
+- [x] Run `pnpm all` to confirm no regressions from read-only investigation — passed (no affected tasks; no code changed) (AC: no changes expected)
 
 ## Dev Notes
 
@@ -106,9 +106,11 @@ Claude Sonnet 4.6
 #### Finding 1: Story 31 Fix Did NOT Resolve Header Jumping
 
 Story 31.2 changed `contain: strict` → `contain: paint` in `base-table.component.scss` (line: `contain: paint; // was: strict`).
-However, `contain: paint` **implies `contain: layout`** per the CSS Containment spec. Layout containment creates an independent formatting context that, combined with `will-change: transform` on the same element (scroll container), still prevents `position: sticky; top: 0` from working correctly for descendant `<th>` cells. The header still scrolls away 1:1 with `scrollTop`.
+`contain: strict` is a shorthand for `contain: layout inline-size style paint` — it includes layout containment, which creates an independent formatting context that breaks `position: sticky`. Changing to `contain: paint` removed the layout containment, which was the right direction. However, the header still scrolls 1:1 because `will-change: transform` remains on the scroll container. `will-change: transform` promotes the element to a GPU compositing layer and creates a new stacking context; sticky positioning for descendants resolves relative to this stacking context rather than the scroll viewport, causing headers to scroll rather than stick.
 
-**Actual fix needed (for Story 44.2)**: Remove `contain` entirely (or change to `contain: size`), OR remove `will-change: transform`. The `will-change: transform` on the scroll container itself is the primary culprit — it promotes the element to a GPU compositing layer AND alters how the browser resolves sticky offsets for contained descendants. Removing `contain: paint` alone while keeping `will-change: transform` would not fix the issue.
+**Note**: `contain: paint` and `contain: layout` are independent keywords — `contain: paint` does **not** imply layout containment. The paint-only containment change was correct, but it was insufficient on its own.
+
+**Actual fix needed (for Story 44.2)**: Remove `will-change: transform` from `.virtual-scroll-viewport`. `contain: paint` can remain or be removed, but `will-change: transform` is the root cause of the sticky failure.
 
 #### Finding 2: Primary Jank Cause — Global CSS `* { transition: ... }` in `styles.scss`
 
@@ -175,18 +177,17 @@ In Angular 21 zoneless mode, `markForCheck()` schedules Angular change detection
 
 `will-change: transform` on `.virtual-scroll-viewport` was originally added to promote the scroll container to a GPU compositing layer (performance optimization). However:
 
-- It creates a new stacking context on the scroll container
-- Combined with any `contain` value (including `contain: paint`), it prevents `position: sticky; top: 0` in descendant `<th>` elements from resolving against the correct scroll container
+- It creates a new stacking context on the scroll container, which prevents `position: sticky; top: 0` in descendant `<th>` elements from resolving against the correct scroll container
 - Removing it (and relying on the browser's default scroll compositing) may actually improve performance on modern browsers, which natively composite scroll even without this hint
 
 #### Summary of Root Causes for Story 44.2 Fix
 
-| Priority | Root Cause                                                      | Where                                                                           | Effect                                                          |
-| -------- | --------------------------------------------------------------- | ------------------------------------------------------------------------------- | --------------------------------------------------------------- |
-| **P1**   | Global `* { transition: ... }` in `styles.scss`                 | `styles.scss:L?`                                                                | Janky scroll — transitions fire on every CDK row create/recycle |
-| **P1**   | `will-change: transform` + `contain: paint` on scroll container | `base-table.component.scss`                                                     | Header jumps 1:1 with scroll (sticky broken)                    |
-| **P2**   | `visibleRange()` as unnecessary computed trigger in service     | `open-positions-component.service.ts`, `dividend-deposits-component.service.ts` | 10Hz O(n) full recompute during scroll + Angular CD cycles      |
-| **P3**   | `cdr.markForCheck()` in effect triggered by data recompute      | `base-table.component.ts`                                                       | Angular CD cycle per data update (amplifies P2)                 |
+| Priority | Root Cause                                                  | Where                                                                           | Effect                                                          |
+| -------- | ----------------------------------------------------------- | ------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| **P1**   | Global `* { transition: ... }` in `styles.scss`             | `styles.scss:L?`                                                                | Janky scroll — transitions fire on every CDK row create/recycle |
+| **P1**   | `will-change: transform` on scroll container                | `base-table.component.scss`                                                     | Header jumps 1:1 with scroll (sticky broken)                    |
+| **P2**   | `visibleRange()` as unnecessary computed trigger in service | `open-positions-component.service.ts`, `dividend-deposits-component.service.ts` | 10Hz O(n) full recompute during scroll + Angular CD cycles      |
+| **P3**   | `cdr.markForCheck()` in effect triggered by data recompute  | `base-table.component.ts`                                                       | Angular CD cycle per data update (amplifies P2)                 |
 
 #### Recommended Fixes for Story 44.2
 
@@ -205,15 +206,15 @@ In Angular 21 zoneless mode, `markForCheck()` schedules Angular change detection
    }
    ```
 
-2. **`base-table.component.scss`**: Remove `will-change: transform` from `.virtual-scroll-viewport`. Also change `contain: paint` to `contain: size` (keeps size containment for CDK sizing but removes layout/paint isolation that breaks sticky). Or remove `contain` entirely:
+2. **`base-table.component.scss`**: Remove `will-change: transform` from `.virtual-scroll-viewport`. This is the primary cause of sticky header failure. `contain: paint` can remain (it does not imply layout containment and does not break sticky on its own):
 
    ```scss
    .virtual-scroll-viewport {
      flex: 1;
      overflow-y: auto;
      overflow-x: hidden;
-     // Removed: will-change: transform — breaks sticky positioning on th headers
-     // Removed: contain: paint — contain: paint implies layout containment which also breaks sticky
+     contain: paint; // OK to keep — paint containment does not break sticky
+     // Removed: will-change: transform — creates new stacking context, breaks position:sticky on th headers
    }
    ```
 
