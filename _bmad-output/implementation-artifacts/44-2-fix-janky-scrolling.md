@@ -71,12 +71,15 @@ Janky scrolling was targeted in Epic 31 but persists. Story 44.1 must be complet
 ## Dev Agent Record
 
 ### Agent Model Used
+
 Claude Sonnet 4.6
 
 ### Debug Log References
+
 N/A
 
 ### Completion Notes List
+
 - P1 CSS: Added `cdk-virtual-scroll-viewport * { transition: none; }` after the global `* { transition: ... }` rule in `styles.scss` to prevent transitions from firing on every CDK row create/recycle during scroll.
 - P1 CSS: Removed `will-change: transform` from `.virtual-scroll-viewport` in `base-table.component.scss`. This property was creating a new stacking context that broke `position: sticky` on header cells and caused compositor-layer churn during scroll.
 - P2: Removed `this.visibleRange(); // maintain signal dependency for reactivity` from the `selectOpenPositions` computed in `open-positions-component.service.ts`. The call was creating a signal dependency causing O(n) recomputes at ~10Hz during scroll, but `visibleRange` was never actually used to filter results (dense array pattern already returns all items).
@@ -85,6 +88,7 @@ N/A
 - P3: Removed `context.cdr.markForCheck()` from the `effect()` in `base-table.component.ts` that tracks `dataSource()`. In Angular 21 zoneless, signal-based effects automatically schedule view updates; the redundant `markForCheck()` was adding an extra CD cycle per data recompute. Also removed the unused `ChangeDetectorRef` import and `cdr` field.
 
 ### File List
+
 - `apps/dms-material/src/styles.scss`
 - `apps/dms-material/src/app/shared/components/base-table/base-table.component.scss`
 - `apps/dms-material/src/app/shared/components/base-table/base-table.component.ts`
