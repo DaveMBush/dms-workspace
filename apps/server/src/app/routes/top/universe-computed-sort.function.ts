@@ -136,11 +136,22 @@ export function sortUniversesByComputedField(
   universes: UniverseForComputedSort[],
   sortColumns: SortColumn[]
 ): void {
+  const cache = new Map<string, Record<string, ComputedSortValue>>();
+  for (let i = 0; i < universes.length; i++) {
+    const u = universes[i];
+    const values: Record<string, ComputedSortValue> = {};
+    for (let j = 0; j < sortColumns.length; j++) {
+      const col = sortColumns[j].column;
+      values[col] = getComputedValue(col, u);
+    }
+    cache.set(u.id, values);
+  }
   universes.sort(function sortByComputed(a, b) {
     for (let i = 0; i < sortColumns.length; i++) {
+      const col = sortColumns[i].column;
       const result = compareValues(
-        getComputedValue(sortColumns[i].column, a),
-        getComputedValue(sortColumns[i].column, b),
+        cache.get(a.id)![col],
+        cache.get(b.id)![col],
         sortColumns[i].direction
       );
       if (result !== 0) {
