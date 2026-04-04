@@ -45,7 +45,6 @@ export class OpenPositionsComponentService {
   selectOpenPositions = computed(() => {
     const trades = this.trades();
     const universeMap = this.universeMap();
-    this.visibleRange(); // maintain signal dependency for reactivity
 
     if (trades.length === 0) {
       return [] as OpenPosition[];

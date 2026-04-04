@@ -7,7 +7,6 @@ import { CommonModule } from '@angular/common';
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   computed,
   ContentChild,
@@ -108,7 +107,6 @@ export class BaseTableComponent<T extends { id: string }>
   // Internal state
   selection = new SelectionModel<T>(true, []);
   private sortState = signal<Sort | null>(null);
-  private cdr = inject(ChangeDetectorRef);
   private destroyRef = inject(DestroyRef);
   private lastShiftKey = false;
 
@@ -153,16 +151,15 @@ export class BaseTableComponent<T extends { id: string }>
       el.removeEventListener('click', captureShiftKey, true);
     });
 
-    // Force change detection when dataSource changes
-    // This ensures MatTable and virtual scroll viewport update properly
+    // Track dataSource changes so the effect is reactive to data/sort updates
     effect(
       // eslint-disable-next-line @smarttools/no-anonymous-functions -- Required for effect
       () => {
         const context = this;
-        // Read the signal to track it
+        // Read the signal to track it — Angular 21 zoneless signals schedule
+        // view updates automatically; markForCheck() is not needed here and
+        // would add a redundant CD cycle on every scroll-triggered recompute
         context.dataSource();
-        // Mark for check to trigger change detection in OnPush component
-        context.cdr.markForCheck();
       }
     );
 
