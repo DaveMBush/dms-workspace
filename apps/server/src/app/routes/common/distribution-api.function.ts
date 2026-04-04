@@ -9,9 +9,9 @@ export interface ProcessedRow {
   date: Date;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars -- stub retained for compatibility
+// eslint-disable-next-line @typescript-eslint/require-await -- stub returns empty array; no async operations needed
 export async function fetchDistributionData(
-  symbol: string
+  _: string
 ): Promise<ProcessedRow[]> {
   return [];
 }
