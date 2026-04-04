@@ -79,3 +79,13 @@ _No source files were changed — this story is a verification-only task._
 - Verified Story 45.1 complete: Yahoo Finance code removed, dividendhistory.org is sole data source.
 - Confirmed all unit and integration tests pass via `pnpm all`.
 - Confirmed E2E dividend precision and universe-screen tests cover ACs #1 and #2.
+
+### Evidence
+
+| Field | Value |
+|-------|-------|
+| Verified by | GitHub Copilot (Claude Sonnet 4.6) |
+| Verification date | 2026-04-04T10:00:00Z |
+| CI build | [CI run](https://github.com/DaveMBush/dms-workspace/actions/runs/23976609420/job/69934545435) — SUCCESS |
+| Nx Cloud pipeline | [CIPE](https://cloud.nx.app/cipes/69d0e10438d1e05eff4d3f63) |
+| Commit verified | `0cec3da` |
