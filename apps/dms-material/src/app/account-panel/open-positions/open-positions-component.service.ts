@@ -36,7 +36,7 @@ function partialOpenPosition(trade: Trade): OpenPosition {
     symbol: '',
     exDate: null,
     buy: trade.buy,
-    buyDate: new Date(),
+    buyDate: trade.buy_date ? new Date(trade.buy_date) : new Date(),
     sell: trade.sell,
     sellDate: undefined,
     daysHeld: 0,
