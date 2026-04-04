@@ -74,29 +74,30 @@ Claude Sonnet 4.6
 **Universe Screen** (`/global/universe`, 32 visible rows):
 | Step | scrollTop | headerRow.top | Delta from step 0 |
 |------|-----------|---------------|-------------------|
-| 0    | 0 px      | 128 px        | —                 |
-| 1    | 50 px     | 78 px         | −50 px            |
-| 2    | 100 px    | 28 px         | −100 px           |
-| 3    | 150 px    | −22 px        | −150 px           |
-| 4    | 200 px    | −72 px        | −200 px           |
-| 5    | 250 px    | −122 px       | −250 px           |
-| 10   | 500 px    | −372 px       | −500 px           |
+| 0 | 0 px | 128 px | — |
+| 1 | 50 px | 78 px | −50 px |
+| 2 | 100 px | 28 px | −100 px |
+| 3 | 150 px | −22 px | −150 px |
+| 4 | 200 px | −72 px | −200 px |
+| 5 | 250 px | −122 px | −250 px |
+| 10 | 500 px | −372 px | −500 px |
 
 **Conclusion**: header moves 1:1 with scrollTop — `position: sticky` is non-functional.
 
 **Dividend Deposits Screen** (`/account/.../div-dep`, 52 visible rows):
 | Step | scrollTop | headerRow.top | Delta from step 0 |
 |------|-----------|---------------|-------------------|
-| 0    | 0 px      | 113 px        | —                 |
-| 1    | 50 px     | 63 px         | −50 px            |
-| 5    | 250 px    | −137 px       | −250 px           |
-| 8    | 400 px    | −287 px       | −400 px           |
+| 0 | 0 px | 113 px | — |
+| 1 | 50 px | 63 px | −50 px |
+| 5 | 250 px | −137 px | −250 px |
+| 8 | 400 px | −287 px | −400 px |
 
 **Conclusion**: identical 1:1 ratio — same issue present on all `BaseTableComponent` tables.
 
 **Open Positions Screen**: redirects to same account when no open positions. Pattern confirmed at `/div-dep`.
 
 **CSS inspection via Playwright (computed styles):**
+
 - `.virtual-scroll-viewport`: `contain: paint`, `will-change: transform`, `overflow-y: auto`
 - `th.mat-mdc-header-cell`: `transition: background-color 0.2s, color 0.2s, border-color 0.2s`, `contain: none`
 
@@ -119,6 +120,7 @@ However, `contain: paint` **implies `contain: layout`** per the CSS Containment 
 ```
 
 This rule applies CSS transitions to **every element** in the application, including `<tr>`, `<td>`, and `<th>` elements inside the virtual scroll table. When CDK virtual scroll creates or recycles DOM rows during scrolling, each new element immediately fires 0.2s transition animations for background-color, color, and border-color. This forces the browser to:
+
 1. Compute transition start/end values for each newly visible row element on every scroll step
 2. Paint transition frames for all transitioning cells (can be 10–15 cells per new row × N rows rendered)
 3. Composite these layers while also handling the scroll physics
@@ -144,6 +146,7 @@ selectOpenPositions = computed(() => {
 ```
 
 **What happens during scroll:**
+
 1. User scrolls → CDK `renderedRangeStream.pipe(debounceTime(100))` fires
 2. Component's `onRangeChange(range)` → sets `visibleRange` signal
 3. Service `selectOpenPositions` / `dividends` computed re-runs → iterates ALL rows with O(n) work (date arithmetic, universe lookups)
@@ -171,32 +174,39 @@ In Angular 21 zoneless mode, `markForCheck()` schedules Angular change detection
 #### Finding 5: `will-change: transform` on Scroll Container Is Both Cause of Sticky Failure and Perf Concern
 
 `will-change: transform` on `.virtual-scroll-viewport` was originally added to promote the scroll container to a GPU compositing layer (performance optimization). However:
+
 - It creates a new stacking context on the scroll container
 - Combined with any `contain` value (including `contain: paint`), it prevents `position: sticky; top: 0` in descendant `<th>` elements from resolving against the correct scroll container
 - Removing it (and relying on the browser's default scroll compositing) may actually improve performance on modern browsers, which natively composite scroll even without this hint
 
 #### Summary of Root Causes for Story 44.2 Fix
 
-| Priority | Root Cause | Where | Effect |
-|----------|-----------|-------|--------|
-| **P1** | Global `* { transition: ... }` in `styles.scss` | `styles.scss:L?` | Janky scroll — transitions fire on every CDK row create/recycle |
-| **P1** | `will-change: transform` + `contain: paint` on scroll container | `base-table.component.scss` | Header jumps 1:1 with scroll (sticky broken) |
-| **P2** | `visibleRange()` as unnecessary computed trigger in service | `open-positions-component.service.ts`, `dividend-deposits-component.service.ts` | 10Hz O(n) full recompute during scroll + Angular CD cycles |
-| **P3** | `cdr.markForCheck()` in effect triggered by data recompute | `base-table.component.ts` | Angular CD cycle per data update (amplifies P2) |
+| Priority | Root Cause                                                      | Where                                                                           | Effect                                                          |
+| -------- | --------------------------------------------------------------- | ------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| **P1**   | Global `* { transition: ... }` in `styles.scss`                 | `styles.scss:L?`                                                                | Janky scroll — transitions fire on every CDK row create/recycle |
+| **P1**   | `will-change: transform` + `contain: paint` on scroll container | `base-table.component.scss`                                                     | Header jumps 1:1 with scroll (sticky broken)                    |
+| **P2**   | `visibleRange()` as unnecessary computed trigger in service     | `open-positions-component.service.ts`, `dividend-deposits-component.service.ts` | 10Hz O(n) full recompute during scroll + Angular CD cycles      |
+| **P3**   | `cdr.markForCheck()` in effect triggered by data recompute      | `base-table.component.ts`                                                       | Angular CD cycle per data update (amplifies P2)                 |
 
 #### Recommended Fixes for Story 44.2
 
 1. **`styles.scss`**: Scope the global transition to theme-toggle only — add an `.animating` class or use `prefers-reduced-motion`, or remove the `*` selector and apply transitions only to elements that need them (nav, buttons, etc. — NOT table cells):
+
    ```scss
    // Instead of * { transition: ... }, apply only to theme-aware elements:
    :root body {
      transition: background-color 0.2s ease, color 0.2s ease;
    }
    // Remove transition from table rows/cells via explicit reset
-   tr, td, th { transition: none; }
+   tr,
+   td,
+   th {
+     transition: none;
+   }
    ```
 
 2. **`base-table.component.scss`**: Remove `will-change: transform` from `.virtual-scroll-viewport`. Also change `contain: paint` to `contain: size` (keeps size containment for CDK sizing but removes layout/paint isolation that breaks sticky). Or remove `contain` entirely:
+
    ```scss
    .virtual-scroll-viewport {
      flex: 1;
