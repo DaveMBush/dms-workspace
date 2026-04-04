@@ -95,6 +95,7 @@
       [selectable]="false"
       tableLabel="Universe positions"
       (sortChange)="onSortChange($event)"
+      (renderedRangeChange)="visibleRange.set($event)"
     >
       <!-- Filter row template - receives column definition -->
       <!-- eslint-disable @angular-eslint/template/cyclomatic-complexity -->

@@ -7,6 +7,7 @@ import { currentAccountSignalStore } from '../../store/current-account/current-a
 import { selectCurrentAccountSignal } from '../../store/current-account/select-current-account.signal';
 import { selectDivDepositTypes } from '../../store/div-deposit-types/selectors/select-div-deposit-types.function';
 import { DivDeposit } from '../../store/div-deposits/div-deposit.interface';
+import { Universe } from '../../store/universe/universe.interface';
 
 interface DividendRow {
   id: string;
@@ -17,6 +18,37 @@ interface DividendRow {
   universeId: string | null;
   symbol: string;
   type: string;
+}
+
+function buildPlaceholderDividendRow(id: string): DividendRow {
+  return {
+    id,
+    date: new Date(),
+    amount: 0,
+    accountId: '',
+    divDepositTypeId: '',
+    universeId: null,
+    symbol: '',
+    type: '',
+  };
+}
+
+function buildLoadedDividendRow(
+  d: DivDeposit,
+  universeMap: Map<string, Universe>,
+  typeNamesMap: Map<string, string>
+): DividendRow {
+  return {
+    id: d.id,
+    date: d.date,
+    amount: d.amount,
+    accountId: d.accountId,
+    divDepositTypeId: d.divDepositTypeId,
+    universeId: d.universeId,
+    symbol:
+      d.universeId !== null ? universeMap.get(d.universeId)?.symbol ?? '' : '',
+    type: typeNamesMap.get(d.divDepositTypeId) ?? '',
+  };
 }
 
 @Injectable({ providedIn: 'root' })
@@ -37,36 +69,41 @@ export class DividendDepositsComponentService {
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signal
   readonly dividends = computed(() => {
-    // Access SmartArray directly to trigger SmartNgRX loading of div-deposit entities
     const divDepositsArray = this.currentAccount().divDeposits as DivDeposit[];
     const totalLength = divDepositsArray.length;
     if (totalLength === 0) {
       return [];
     }
-    // Resolve universe symbols and type names via entity lookups
     const universeMap = buildUniverseMap();
     const typesList = selectDivDepositTypes();
     const typeNamesMap = new Map<string, string>();
     for (let ti = 0; ti < typesList.length; ti++) {
       typeNamesMap.set(typesList[ti].id, typesList[ti].name);
     }
-    // Dense array: populate all items to avoid sparse-array/CDK buffer mismatch
-    const result: DividendRow[] = [];
+
+    const smartArr = divDepositsArray as unknown as {
+      getIdAtIndex?(i: number): string | undefined;
+    };
+    const isProxy = typeof smartArr.getIdAtIndex === 'function';
+
+    const range = this.visibleRange();
+    const visStart = Math.max(0, range.start - 20);
+    const visEnd = Math.min(totalLength, range.end + 20);
+
+    const result = new Array<DividendRow>(totalLength);
+
     for (let i = 0; i < totalLength; i++) {
+      if (isProxy && !(i >= visStart && i < visEnd)) {
+        result[i] = buildPlaceholderDividendRow(
+          smartArr.getIdAtIndex!(i) ?? `placeholder-${String(i)}`
+        );
+        continue;
+      }
       const d = divDepositsArray[i];
-      result.push({
-        id: d.id,
-        date: d.date,
-        amount: d.amount,
-        accountId: d.accountId,
-        divDepositTypeId: d.divDepositTypeId,
-        universeId: d.universeId,
-        symbol:
-          d.universeId !== null
-            ? universeMap.get(d.universeId)?.symbol ?? ''
-            : '',
-        type: typeNamesMap.get(d.divDepositTypeId) ?? '',
-      });
+      result[i] =
+        typeof d === 'string'
+          ? buildPlaceholderDividendRow(d)
+          : buildLoadedDividendRow(d, universeMap, typeNamesMap);
     }
     return result;
   });
