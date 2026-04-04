@@ -25,6 +25,9 @@ function buildPlaceholderClosedPosition(id: string): ClosedPosition {
 }
 
 function buildPartialClosedPosition(trade: Trade): ClosedPosition {
+  const capitalGain = (trade.sell - trade.buy) * trade.quantity;
+  const capitalGainPercentage =
+    trade.buy !== 0 ? ((trade.sell - trade.buy) / trade.buy) * 100 : 0;
   return {
     id: trade.id,
     symbol: '',
@@ -33,9 +36,13 @@ function buildPartialClosedPosition(trade: Trade): ClosedPosition {
     quantity: trade.quantity,
     sell: trade.sell,
     sell_date: trade.sell_date,
-    daysHeld: 0,
-    capitalGain: 0,
-    capitalGainPercentage: 0,
+    daysHeld:
+      trade.sell_date !== undefined
+        ? differenceInTradingDays(trade.buy_date, trade.sell_date)
+        : 0,
+    capitalGain,
+    capitalGainPercentage,
+    gainLossType: classifyCapitalGain(capitalGain),
   };
 }
 
@@ -107,8 +114,10 @@ export class SoldPositionsComponentService {
         continue;
       }
       const trade = trades[i];
-      if (typeof trade === 'string') {
-        soldPositions[i] = buildPlaceholderClosedPosition(trade);
+      if (trade === undefined || typeof trade === 'string') {
+        soldPositions[i] = buildPlaceholderClosedPosition(
+          `placeholder-${String(i)}`
+        );
         continue;
       }
       const universe = universeMap.get(trade.universeId);

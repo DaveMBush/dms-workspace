@@ -100,10 +100,11 @@ export class DividendDepositsComponentService {
         continue;
       }
       const d = divDepositsArray[i];
-      result[i] =
-        typeof d === 'string'
-          ? buildPlaceholderDividendRow(d)
-          : buildLoadedDividendRow(d, universeMap, typeNamesMap);
+      if (d === undefined || typeof d === 'string') {
+        result[i] = buildPlaceholderDividendRow(`placeholder-${String(i)}`);
+        continue;
+      }
+      result[i] = buildLoadedDividendRow(d, universeMap, typeNamesMap);
     }
     return result;
   });

@@ -110,8 +110,8 @@ export class OpenPositionsComponentService {
         continue;
       }
       const trade = trades[i];
-      if (typeof trade === 'string') {
-        openPositions[i] = placeholderOpenPosition(trade);
+      if (trade === undefined || typeof trade === 'string') {
+        openPositions[i] = placeholderOpenPosition(`placeholder-${String(i)}`);
         continue;
       }
       const universe = universeMap.get(trade.universeId);
