@@ -18,14 +18,19 @@ test.describe('Universe Column Filter Width', () => {
     await login(page);
     await page.goto('/global/universe');
     await page.waitForLoadState('networkidle');
-    await expect(page.locator('dms-base-table')).toBeVisible({ timeout: 15000 });
+    await expect(page.locator('dms-base-table')).toBeVisible({
+      timeout: 15000,
+    });
   });
 
   test('Symbol column filter should not overflow the column boundary', async ({
     page,
   }) => {
     // The Symbol column header cell (regular header row) gives the column boundary
-    const symbolHeader = page.getByRole('columnheader', { name: 'Symbol', exact: true });
+    const symbolHeader = page.getByRole('columnheader', {
+      name: 'Symbol',
+      exact: true,
+    });
     await expect(symbolHeader).toBeVisible({ timeout: 10000 });
 
     // The Symbol filter form field is in the filter row
