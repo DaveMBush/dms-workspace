@@ -17,17 +17,17 @@ so that filters are usable and consistent with the Account screens.
 
 ## Tasks / Subtasks
 
-- [ ] Inspect the column filter component used on Account > Open Positions screen (AC: #1)
-  - [ ] Identify the component/directive responsible for rendering the filter input
-  - [ ] Find the CSS rule(s) that constrain the filter input to the column width (`max-width`, `overflow`, `width: 100%`, etc.)
-- [ ] Inspect the column filter component used on the Universe screen (AC: #1)
-  - [ ] Compare with the Account screen implementation — identify what is missing or different
-- [ ] Apply the Account screen's constraint pattern to the Universe screen column filter (AC: #1, #2, #3)
-  - [ ] Add or fix the CSS to constrain the input within its column
-  - [ ] Use Tailwind utility classes consistent with the project's CSS approach
-- [ ] Visually verify the fix works on narrow Universe screen columns (AC: #2, #3)
-  - [ ] Test with the filter input on columns of varying widths
-- [ ] Run `pnpm all` and confirm no regressions (AC: #4)
+- [x] Inspect the column filter component used on Account > Open Positions screen (AC: #1)
+  - [x] Identify the component/directive responsible for rendering the filter input
+  - [x] Find the CSS rule(s) that constrain the filter input to the column width (`max-width`, `overflow`, `width: 100%`, etc.)
+- [x] Inspect the column filter component used on the Universe screen (AC: #1)
+  - [x] Compare with the Account screen implementation — identify what is missing or different
+- [x] Apply the Account screen's constraint pattern to the Universe screen column filter (AC: #1, #2, #3)
+  - [x] Add or fix the CSS to constrain the input within its column
+  - [x] Use Tailwind utility classes consistent with the project's CSS approach
+- [x] Visually verify the fix works on narrow Universe screen columns (AC: #2, #3)
+  - [x] Test with the filter input on columns of varying widths
+- [x] Run `pnpm all` and confirm no regressions (AC: #4)
 
 ## Dev Notes
 
@@ -68,9 +68,17 @@ The Account > Open Positions and Sold Positions screens already handle column fi
 ## Dev Agent Record
 
 ### Agent Model Used
+Claude Sonnet 4.6
 
 ### Debug Log References
+N/A
 
 ### Completion Notes List
+- Account > Open Positions uses `class="w-full max-w-[80px]"` on mat-form-field to constrain filter within column
+- Account > Sold Positions uses `class="w-full max-w-[120px]"` on mat-form-field
+- Universe screen used `class="header-filter w-24"` (fixed 96px) causing overflow on 80px/90px columns
+- Fix: replaced `w-24` with `w-full` on all 4 filter mat-form-fields in global-universe.component.html
+- `header-filter` SCSS class retained for its padding/font-size/border styling
 
 ### File List
+- `apps/dms-material/src/app/global/global-universe/global-universe.component.html`
