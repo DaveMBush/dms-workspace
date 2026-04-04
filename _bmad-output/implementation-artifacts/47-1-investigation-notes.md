@@ -16,6 +16,7 @@ When the server returns a `PartialArrayDefinition` (e.g., `{ startIndex: 0, inde
 - `length` = 200 (total row count from server)
 
 When code accesses `virtualArray[i]` for `i >= 50`:
+
 1. The Proxy detects `rawArray[i] === undefined`
 2. Calls `dispatchLoadByIndexes(parentId, childField, i)` — queues index `i` via RxJS Subject
 3. Sets `rawArray[i] = 'indexNoOp-${i}'` to prevent duplicate dispatches
@@ -43,13 +44,15 @@ effectService.loadByIndexes(parentId, childField, min, max - min + 1)
 
 ```typescript
 // In the effect — runs every time selectUniverses() changes:
-for (let i = 0; i < universes.length; i++) {  // universes.length = 200 (total)
-  universesArray.push(universes[i]);           // accesses index 50-199!
+for (let i = 0; i < universes.length; i++) {
+  // universes.length = 200 (total)
+  universesArray.push(universes[i]); // accesses index 50-199!
 }
 
 // In the computed signal — also runs every recomputation:
-for (let i = 0; i < current.length; i++) {    // current.length = 200
-  currentArray.push(current[i]);              // accesses index 50-199!
+for (let i = 0; i < current.length; i++) {
+  // current.length = 200
+  currentArray.push(current[i]); // accesses index 50-199!
 }
 ```
 
@@ -61,8 +64,9 @@ for (let i = 0; i < current.length; i++) {    // current.length = 200
 
 ```typescript
 export const buildUniverseMap = computed(function computeUniverseMap() {
-  const universes = selectUniverses();     // ArrayProxy, length=200
-  for (let j = 0; j < universes.length; j++) {   // iterates ALL 200 items!
+  const universes = selectUniverses(); // ArrayProxy, length=200
+  for (let j = 0; j < universes.length; j++) {
+    // iterates ALL 200 items!
     const universe = universes[j];
     universeMap.set(universe.id, universe);
   }
@@ -97,8 +101,9 @@ readonly dividends = computed(() => {
 
 ```typescript
 selectOpenPositions = computed(() => {
-  const trades = this.trades();             // openTrades as ArrayProxy, length=200
-  for (let i = 0; i < trades.length; i++) {  // iterates ALL items!
+  const trades = this.trades(); // openTrades as ArrayProxy, length=200
+  for (let i = 0; i < trades.length; i++) {
+    // iterates ALL items!
     const trade = trades[i];
     if (!this.isClosed(trade, universe!)) {
       openIndices.push(i);
@@ -141,6 +146,7 @@ The spread `[...this.data()]` iterates from index 0 to `data().length - 1`. If `
 ### Account Sub-Tables Trigger Chain
 
 Same pattern for `divDeposits`, `openTrades`, `soldTrades`:
+
 1. `AccountEffectsService.loadByIds([accountId])` → `POST /api/accounts` → server returns `PartialArrayDefinition` for each field (first 50, `length=total`)
 2. SmartSignals creates `VirtualArray` for each field
 3. Component service accesses ALL indices in a for-loop, triggering bulk `loadByIndexes`
@@ -153,6 +159,7 @@ Same pattern for `divDeposits`, `openTrades`, `soldTrades`:
 The server was updated in Epic 40 and is correct:
 
 - **`UNIVERSE_PAGE_SIZE = 50`** (`apps/server/src/app/routes/top/index.ts`)
+
   - Initial `POST /api/top` returns first 50 universe IDs as `PartialArrayDefinition`
   - `/api/top/indexes` endpoint supports `{ startIndex, length }` for pagination
 
@@ -182,26 +189,28 @@ The "scroll beyond 10 rows" is a red herring — the bulk fetch is triggered on 
 The fix requires a fundamental change to how component services consume the SmartSignals `ArrayProxy`:
 
 ### ❌ Current (Broken) Pattern
+
 ```typescript
 // Iterates ALL items → bulk fetch
 for (let i = 0; i < proxyArray.length; i++) {
   items.push(proxyArray[i]);
 }
-const copy = [...proxyArray];  // Also iterates ALL items
+const copy = [...proxyArray]; // Also iterates ALL items
 ```
 
 ### ✅ Required Pattern (Only Access Visible Range)
+
 Pass the `ArrayProxy` directly to CDK virtual scroll. **Never** iterate through all `proxyArray.length` items. Instead, let CDK virtual scroll access only the visible range (e.g., indices 0..19) — SmartSignals will then only fetch those ranges.
 
 ### Files That Must Change in Story 47.2
 
-| File | Required Change |
-|------|----------------|
-| `apps/dms-material/src/app/global/global-universe/services/universe.service.ts` | Do NOT convert `ArrayProxy` to dense array. Return the proxy directly (or slice only visible range). |
-| `apps/dms-material/src/app/shared/build-universe-map.function.ts` | Avoid iterating ALL universe items; only map loaded items (those with non-empty `symbol`). |
-| `apps/dms-material/src/app/account-panel/dividend-deposits/dividend-deposits-component.service.ts` | Do NOT loop through `divDepositsArray.length`. Return the proxy or slice visible range. |
-| `apps/dms-material/src/app/account-panel/open-positions/open-positions-component.service.ts` | Do NOT loop through `trades.length`. Return proxy or visible range only. |
-| `apps/dms-material/src/app/shared/components/base-table/base-table.component.ts` | Replace `[...this.data()]` with a non-spreading alternative that CDK virtual scroll handles lazily. |
+| File                                                                                               | Required Change                                                                                      |
+| -------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `apps/dms-material/src/app/global/global-universe/services/universe.service.ts`                    | Do NOT convert `ArrayProxy` to dense array. Return the proxy directly (or slice only visible range). |
+| `apps/dms-material/src/app/shared/build-universe-map.function.ts`                                  | Avoid iterating ALL universe items; only map loaded items (those with non-empty `symbol`).           |
+| `apps/dms-material/src/app/account-panel/dividend-deposits/dividend-deposits-component.service.ts` | Do NOT loop through `divDepositsArray.length`. Return the proxy or slice visible range.              |
+| `apps/dms-material/src/app/account-panel/open-positions/open-positions-component.service.ts`       | Do NOT loop through `trades.length`. Return proxy or visible range only.                             |
+| `apps/dms-material/src/app/shared/components/base-table/base-table.component.ts`                   | Replace `[...this.data()]` with a non-spreading alternative that CDK virtual scroll handles lazily.  |
 
 ### Key Design Shift for Story 47.2
 
@@ -211,11 +220,11 @@ The `BaseTableComponent` should receive the raw `ArrayProxy` as `data()` and pas
 
 ## Network Request Evidence (Code-Level)
 
-| Screen | Endpoint | Page Size | Bulk-Fetch Trigger |
-|--------|----------|-----------|-------------------|
-| Universe | `POST /api/top/indexes` | 50 | `universe.service.ts` for-loops `ArrayProxy` |
-| Dividend Deposits | `POST /api/accounts/indexes` with `childField='divDeposits'` | 50 | `dividend-deposits-component.service.ts` for-loop |
-| Open Positions | `POST /api/accounts/indexes` with `childField='openTrades'` | 50 | `open-positions-component.service.ts` for-loop |
+| Screen            | Endpoint                                                     | Page Size | Bulk-Fetch Trigger                                |
+| ----------------- | ------------------------------------------------------------ | --------- | ------------------------------------------------- |
+| Universe          | `POST /api/top/indexes`                                      | 50        | `universe.service.ts` for-loops `ArrayProxy`      |
+| Dividend Deposits | `POST /api/accounts/indexes` with `childField='divDeposits'` | 50        | `dividend-deposits-component.service.ts` for-loop |
+| Open Positions    | `POST /api/accounts/indexes` with `childField='openTrades'`  | 50        | `open-positions-component.service.ts` for-loop    |
 
 All three trigger `loadByIndexes(parentId, fieldName, 50, totalCount-50)` fetching all remaining rows in ONE request, immediately on component initialization (before any scrolling).
 
@@ -224,6 +233,7 @@ All three trigger `loadByIndexes(parentId, fieldName, 50, totalCount-50)` fetchi
 ## Story 47.2 Starting Point
 
 Story 47.2 should:
+
 1. Change `universe.service.ts` to NOT materialize the `ArrayProxy` — pass the proxy directly to `filteredData$` / base-table
 2. Change all account sub-table component services similarly
 3. Change `base-table.component.ts` `dataSource` computed to NOT use spread

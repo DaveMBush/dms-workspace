@@ -95,6 +95,7 @@ Claude Sonnet 4.6
 **How the Bulk-Fetch Happens:** The SmartSignals `VirtualArray` Proxy fires `dispatchLoadByIndexes(parentId, childField, index)` for each unloaded index accessed. The `bufferIndexes()` RxJS operator batches all synchronous index requests into one: `loadByIndexes(parentId, childField, min, max - min + 1)`. All 150 unloaded indices (50..199) are accessed in the same Angular signal recomputation, so ONE bulk request is sent: `POST /api/top/indexes { startIndex: 50, length: 150 }` — fetching ALL remaining rows.
 
 **Epic 40 Context:** Epic 40 correctly implemented:
+
 - Server returns `PartialArrayDefinition` (first 50 rows) for all tables
 - `loadByIndexes` endpoint on server supports pagination
 - `AccountEffectsService.loadByIndexes()` is implemented and calls `POST /api/accounts/indexes`
