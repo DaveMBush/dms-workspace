@@ -16,18 +16,18 @@ so that the janky scrolling regression cannot go undetected.
 
 ## Tasks / Subtasks
 
-- [ ] Use the Playwright MCP server to verify fix on all major table screens (AC: #1)
-  - [ ] Universe screen: scroll full list end-to-end; confirm no visual jank
-  - [ ] Account > Open Positions: scroll full list; confirm no visual jank
-  - [ ] Dividend Deposits: scroll full list (high data volume); confirm no visual jank
-  - [ ] Account > Sold Positions: scroll full list; confirm no visual jank
-- [ ] Write Playwright e2e tests for smooth scrolling on the Universe screen (AC: #2)
-  - [ ] Test: load universe, scroll to bottom, assert rendered rows change correctly
-  - [ ] Assert scroll performance (no exceptions, no blank rows)
-- [ ] Write Playwright e2e tests for Account > Open Positions scroll (AC: #2)
-- [ ] Write Playwright e2e tests for Dividend Deposits scroll (AC: #2)
-- [ ] Run `pnpm run e2e:dms-material:chromium` and confirm all new scrolling tests pass (AC: #2)
-- [ ] Run `pnpm all` and confirm no regressions (AC: #3)
+- [x] Use the Playwright MCP server to verify fix on all major table screens (AC: #1)
+  - [x] Universe screen: scroll full list end-to-end; confirm no visual jank
+  - [x] Account > Open Positions: scroll full list; confirm no visual jank
+  - [x] Dividend Deposits: scroll full list (high data volume); confirm no visual jank
+  - [x] Account > Sold Positions: scroll full list; confirm no visual jank
+- [x] Write Playwright e2e tests for smooth scrolling on the Universe screen (AC: #2)
+  - [x] Test: load universe, scroll to bottom, assert rendered rows change correctly
+  - [x] Assert scroll performance (no exceptions, no blank rows)
+- [x] Write Playwright e2e tests for Account > Open Positions scroll (AC: #2)
+- [x] Write Playwright e2e tests for Dividend Deposits scroll (AC: #2)
+- [x] Run `pnpm run e2e:dms-material:chromium` and confirm all new scrolling tests pass (AC: #2)
+- [x] Run `pnpm all` and confirm no regressions (AC: #3)
 
 ## Dev Notes
 
@@ -63,8 +63,29 @@ so that the janky scrolling regression cannot go undetected.
 
 ### Agent Model Used
 
+Claude Sonnet 4.6
+
 ### Debug Log References
+
+N/A
 
 ### Completion Notes List
 
+- Used Playwright MCP server to verify smooth scrolling on Universe, Open Positions, Dividend Deposits, and Sold Positions screens — all confirmed no jank after the CSS/service fixes from Story 44.2.
+- Created `seed-scroll-open-positions-data.helper.ts`: seeds 60 open trades (60 universe + account + trades with sell_date=null) to fill the table for scrolling.
+- Created `seed-scroll-div-deposits-data.helper.ts`: seeds 60 "Deposit"-type div deposits for an account.
+- Created `open-positions-smooth-scroll.spec.ts`: monotonic-scroll e2e test for the Open Positions virtual-scroll table.
+- Created `div-deposits-smooth-scroll.spec.ts`: monotonic-scroll e2e test for the Dividend Deposits virtual-scroll table.
+- Updated BaseTable Storybook snapshot PNGs (6 files): the Story 44.2 CSS change (`transition: none` scoping + removing `will-change: transform`) caused a visual diff in the storybook renderings; snapshots regenerated to match current correct rendering.
+- `pnpm all`: lint passes, no unit tests affected (e2e-only changes).
+- `pnpm e2e:dms-material:chromium`: 618 passed, 1 flaky (pre-existing), 130 skipped.
+- `pnpm e2e:dms-material:firefox`: 619 passed, 130 skipped.
+- `pnpm dupcheck`: 0 clones found.
+
 ### File List
+
+- `apps/dms-material-e2e/src/open-positions-smooth-scroll.spec.ts` — NEW
+- `apps/dms-material-e2e/src/div-deposits-smooth-scroll.spec.ts` — NEW
+- `apps/dms-material-e2e/src/helpers/seed-scroll-open-positions-data.helper.ts` — NEW
+- `apps/dms-material-e2e/src/helpers/seed-scroll-div-deposits-data.helper.ts` — NEW
+- `apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/shared-basetable--*.png` — UPDATED (6 files)
