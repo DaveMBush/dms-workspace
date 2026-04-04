@@ -78,6 +78,6 @@ None
 
 ## Change Log
 
-| Date | Change | Author |
-|------|--------|--------|
+| Date       | Change                                                                                                                            | Author    |
+| ---------- | --------------------------------------------------------------------------------------------------------------------------------- | --------- |
 | 2026-04-03 | Created `universe-secondary-sort.spec.ts` with descending and ascending secondary sort E2E tests for Universe screen (Story 43.2) | Dev Agent |
