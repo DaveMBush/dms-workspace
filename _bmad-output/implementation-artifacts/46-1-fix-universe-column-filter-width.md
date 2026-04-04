@@ -68,12 +68,15 @@ The Account > Open Positions and Sold Positions screens already handle column fi
 ## Dev Agent Record
 
 ### Agent Model Used
+
 Claude Sonnet 4.6
 
 ### Debug Log References
+
 N/A
 
 ### Completion Notes List
+
 - Account > Open Positions uses `class="w-full max-w-[80px]"` on mat-form-field to constrain filter within column
 - Account > Sold Positions uses `class="w-full max-w-[120px]"` on mat-form-field
 - Universe screen used `class="header-filter w-24"` (fixed 96px) causing overflow on 80px/90px columns
@@ -81,4 +84,5 @@ N/A
 - `header-filter` SCSS class retained for its padding/font-size/border styling
 
 ### File List
+
 - `apps/dms-material/src/app/global/global-universe/global-universe.component.html`
