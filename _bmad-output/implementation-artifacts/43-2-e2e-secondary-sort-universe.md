@@ -1,6 +1,6 @@
 # Story 43.2: Write Playwright E2E Tests for Secondary Sort
 
-Status: Approved
+Status: Done
 
 ## Story
 
@@ -16,15 +16,15 @@ so that secondary sort behaviour cannot silently regress.
 
 ## Tasks / Subtasks
 
-- [ ] Use the Playwright MCP server to interact with the Universe screen and observe multi-column sort behaviour (AC: #1)
-  - [ ] Identify a column with naturally duplicate values suitable for secondary sort verification
-  - [ ] Confirm Story 43.1 fix is complete before writing tests
-- [ ] Write Playwright e2e test for descending secondary sort scenario (AC: #1, #2)
-  - [ ] Click primary sort column → verify primary order → Shift+click secondary column
-  - [ ] Assert rows with equal primary values are sub-ordered by secondary column descending
-- [ ] Write Playwright e2e test for ascending secondary sort scenario (AC: #1, #2)
-- [ ] Run `pnpm run e2e:dms-material:chromium` and confirm all new tests pass (AC: #2)
-- [ ] Run `pnpm all` and confirm no regressions (AC: #3)
+- [x] Use the Playwright MCP server to interact with the Universe screen and observe multi-column sort behaviour (AC: #1)
+  - [x] Identify a column with naturally duplicate values suitable for secondary sort verification
+  - [x] Confirm Story 43.1 fix is complete before writing tests
+- [x] Write Playwright e2e test for descending secondary sort scenario (AC: #1, #2)
+  - [x] Click primary sort column → verify primary order → Shift+click secondary column
+  - [x] Assert rows with equal primary values are sub-ordered by secondary column descending
+- [x] Write Playwright e2e test for ascending secondary sort scenario (AC: #1, #2)
+- [x] Run `pnpm run e2e:dms-material:chromium` and confirm all new tests pass (AC: #2)
+- [x] Run `pnpm all` and confirm no regressions (AC: #3)
 
 ## Dev Notes
 
@@ -59,8 +59,25 @@ so that secondary sort behaviour cannot silently regress.
 
 ### Agent Model Used
 
+Claude Sonnet 4.6 (GitHub Copilot)
+
 ### Debug Log References
+
+None
 
 ### Completion Notes List
 
+- Reused `seedUniverseE2eData()` helper which seeds UAAA (Equities, ex_date=2026-06-15) and UDDD (Equities, ex_date=2026-04-15) — both sharing the same primary sort value (Risk Group), making them ideal for secondary sort assertions.
+- Used `click({ modifiers: ['Shift'] })` pattern consistent with existing e2e test conventions in the codebase.
+- Descending scenario: 2 Shift+clicks on Ex-Date header (first = asc, second = desc).
+- Did not modify any existing test files.
+
 ### File List
+
+- `apps/dms-material-e2e/src/universe-secondary-sort.spec.ts` (new)
+
+## Change Log
+
+| Date | Change | Author |
+|------|--------|--------|
+| 2026-04-03 | Created `universe-secondary-sort.spec.ts` with descending and ascending secondary sort E2E tests for Universe screen (Story 43.2) | Dev Agent |
