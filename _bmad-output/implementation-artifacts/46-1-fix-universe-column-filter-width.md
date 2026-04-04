@@ -82,6 +82,7 @@ N/A
 - Universe screen used `class="header-filter w-24"` (fixed 96px) causing overflow on 80px/90px columns
 - Fix: replaced `w-24` with `w-full` on all 4 filter mat-form-fields in global-universe.component.html
 - `header-filter` SCSS class retained for its padding/font-size/border styling
+- `max-w` omitted from Universe fix because the base-table template already constrains each filter header cell to its column's defined pixel width via `[style.width]="column.width"`, making an additional `max-w` redundant
 
 ### File List
 
