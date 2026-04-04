@@ -1,3 +1,4 @@
+import { SortColumn } from '../common/sort-column.interface';
 import universeHelpers from '../universe/universe-helpers';
 
 type ComputedSortValue = number | null;
@@ -133,14 +134,30 @@ function getComputedValue(
 
 export function sortUniversesByComputedField(
   universes: UniverseForComputedSort[],
-  field: string,
-  order: 'asc' | 'desc'
+  sortColumns: SortColumn[]
 ): void {
+  const cache = new Map<string, Record<string, ComputedSortValue>>();
+  for (let i = 0; i < universes.length; i++) {
+    const u = universes[i];
+    const values: Record<string, ComputedSortValue> = {};
+    for (let j = 0; j < sortColumns.length; j++) {
+      const col = sortColumns[j].column;
+      values[col] = getComputedValue(col, u);
+    }
+    cache.set(u.id, values);
+  }
   universes.sort(function sortByComputed(a, b) {
-    return compareValues(
-      getComputedValue(field, a),
-      getComputedValue(field, b),
-      order
-    );
+    for (let i = 0; i < sortColumns.length; i++) {
+      const col = sortColumns[i].column;
+      const result = compareValues(
+        cache.get(a.id)![col],
+        cache.get(b.id)![col],
+        sortColumns[i].direction
+      );
+      if (result !== 0) {
+        return result;
+      }
+    }
+    return 0;
   });
 }

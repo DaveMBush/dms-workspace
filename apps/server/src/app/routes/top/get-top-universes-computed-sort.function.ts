@@ -32,11 +32,11 @@ export async function getTopUniversesComputedSort(
     where: buildUniverseWhere(state),
     orderBy: { id: 'asc' },
   });
-  sortUniversesByComputedField(
-    universes,
-    computedSort.column,
-    computedSort.direction
-  );
+  const sortColumnsToApply: SortColumn[] =
+    state.sortColumns !== undefined && state.sortColumns.length > 0
+      ? state.sortColumns
+      : [{ column: computedSort.column, direction: computedSort.direction }];
+  sortUniversesByComputedField(universes, sortColumnsToApply);
   const allIds = universes.map(function mapUniverse(universe) {
     return universe.id;
   });

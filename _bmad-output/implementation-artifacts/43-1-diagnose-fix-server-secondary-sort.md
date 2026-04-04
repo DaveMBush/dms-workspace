@@ -1,6 +1,6 @@
 # Story 43.1: Diagnose and Fix Server-Side Secondary Sort
 
-Status: Approved
+Status: Complete
 
 ## Story
 
@@ -17,16 +17,16 @@ so that I can meaningfully compare securities with equal primary-sort values.
 
 ## Tasks / Subtasks
 
-- [ ] Inspect the server-side query builder to identify how the ORDER BY clause is constructed from incoming sort params (AC: #2)
-  - [ ] Locate the endpoint/service that handles Universe screen data requests
-  - [ ] Trace how client-sent multi-column sort params are converted into SQL ORDER BY expressions
-  - [ ] Identify why only the first sort column is being applied
-- [ ] Fix the ORDER BY construction to include all sort columns in priority order (AC: #2)
-  - [ ] Ensure each sort column and direction from the request is mapped to an ORDER BY term
-  - [ ] Preserve existing single-column sort behaviour (AC: #3)
-- [ ] Verify fix manually on Universe screen (AC: #1)
-  - [ ] Use Playwright MCP server to confirm secondary sort is visually applied when primary values are tied
-- [ ] Run `pnpm all` and confirm no regressions (AC: #4)
+- [x] Inspect the server-side query builder to identify how the ORDER BY clause is constructed from incoming sort params (AC: #2)
+  - [x] Locate the endpoint/service that handles Universe screen data requests
+  - [x] Trace how client-sent multi-column sort params are converted into SQL ORDER BY expressions
+  - [x] Identify why only the first sort column is being applied
+- [x] Fix the ORDER BY construction to include all sort columns in priority order (AC: #2)
+  - [x] Ensure each sort column and direction from the request is mapped to an ORDER BY term
+  - [x] Preserve existing single-column sort behaviour (AC: #3)
+- [x] Verify fix manually on Universe screen (AC: #1)
+  - [x] Use Playwright MCP server to confirm secondary sort is visually applied when primary values are tied
+- [x] Run `pnpm all` and confirm no regressions (AC: #4)
 
 ## Dev Notes
 
@@ -67,8 +67,24 @@ The client already sends the correct multi-column sort parameters to the server.
 
 ### Agent Model Used
 
+Claude Sonnet 4.6
+
 ### Debug Log References
+
+N/A
 
 ### Completion Notes List
 
+- Root cause identified: `sortUniversesByComputedField` in `universe-computed-sort.function.ts` only accepted a single `field`/`order` and was called with only the first computed sort column from `getTopUniversesComputedSort`.
+- Fix: Changed `sortUniversesByComputedField` to accept `SortColumn[]` and compare by each column in order (tiebreaker chain). Updated `getTopUniversesComputedSort` to pass all sort columns from `state.sortColumns` (falling back to the detected computedSort for legacy single-sort path).
+- All 41 existing tests in the top route pass unchanged.
+
 ### File List
+
+- `apps/server/src/app/routes/top/universe-computed-sort.function.ts`
+- `apps/server/src/app/routes/top/get-top-universes-computed-sort.function.ts`
+
+### Change Log
+
+- **Fix**: `sortUniversesByComputedField` now accepts `SortColumn[]` instead of a single field/direction, enabling multi-column in-memory sort with tiebreakers.
+- **Fix**: `getTopUniversesComputedSort` now passes all `state.sortColumns` to `sortUniversesByComputedField`, so secondary (and tertiary, etc.) sort columns are honoured when primary values are tied.
