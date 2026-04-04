@@ -24,9 +24,9 @@ so that I can meaningfully compare securities with equal primary-sort values.
 - [x] Fix the ORDER BY construction to include all sort columns in priority order (AC: #2)
   - [x] Ensure each sort column and direction from the request is mapped to an ORDER BY term
   - [x] Preserve existing single-column sort behaviour (AC: #3)
-- [ ] Verify fix manually on Universe screen (AC: #1)
-  - [ ] Use Playwright MCP server to confirm secondary sort is visually applied when primary values are tied
-- [ ] Run `pnpm all` and confirm no regressions (AC: #4)
+- [x] Verify fix manually on Universe screen (AC: #1)
+  - [x] Use Playwright MCP server to confirm secondary sort is visually applied when primary values are tied
+- [x] Run `pnpm all` and confirm no regressions (AC: #4)
 
 ## Dev Notes
 
