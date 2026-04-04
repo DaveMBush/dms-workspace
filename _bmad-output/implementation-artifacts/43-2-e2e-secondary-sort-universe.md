@@ -42,7 +42,7 @@ so that secondary sort behaviour cannot silently regress.
 
 - E2E: Playwright 1.55.1
 - Use the Playwright MCP server to reproduce interactions and generate test code
-- Shift+click in Playwright: `page.keyboard.down('Shift')` then `locator.click()` then `page.keyboard.up('Shift')`
+- Shift+click in Playwright: `locator.click({ modifiers: ['Shift'] })`
 
 ### Rules
 
