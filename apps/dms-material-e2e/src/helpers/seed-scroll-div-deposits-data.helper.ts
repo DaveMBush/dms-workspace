@@ -20,10 +20,21 @@ async function getOrCreateDepositType(prisma: PrismaClient): Promise<string> {
   if (existing !== null) {
     return existing.id;
   }
-  const created = await prisma.divDepositType.create({
-    data: { name: 'Deposit' },
-  });
-  return created.id;
+  try {
+    const created = await prisma.divDepositType.create({
+      data: { name: 'Deposit' },
+    });
+    return created.id;
+  } catch {
+    // Another process may have created it concurrently; re-fetch
+    const refetched = await prisma.divDepositType.findFirst({
+      where: { name: 'Deposit' },
+    });
+    if (refetched === null) {
+      throw new Error('Failed to create or find Deposit type');
+    }
+    return refetched.id;
+  }
 }
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- Prisma createMany requires untyped batch data */
