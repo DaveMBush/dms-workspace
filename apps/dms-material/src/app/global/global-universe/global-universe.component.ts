@@ -105,6 +105,8 @@ export class GlobalUniverseComponent implements OnDestroy {
     this.sortFilterStateService.loadSortColumnsState('universes') ?? []
   );
 
+  readonly visibleRange = signal({ start: 0, end: 50 });
+
   private readonly localSyncInProgress$ = signal<boolean>(false);
   private textFilterTimer?: ReturnType<typeof setTimeout>;
   private readonly baseTable = viewChild(BaseTableComponent);
@@ -155,13 +157,8 @@ export class GlobalUniverseComponent implements OnDestroy {
   readonly filteredData$ = computed(() => {
     const rawData = this.universeService.universes();
     const riskGroups = selectRiskGroup();
-
-    if (!Array.isArray(rawData)) {
-      return [];
-    }
-
-    const enrichedData = enrichUniverseWithRiskGroups(rawData, riskGroups);
-
+    const vr = this.visibleRange();
+    const enrichedData = enrichUniverseWithRiskGroups(rawData, riskGroups, vr);
     return filterUniverses(enrichedData, {
       symbolFilter: this.symbolFilter$(),
       riskGroupFilter: this.riskGroupFilter$(),
