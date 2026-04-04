@@ -10,7 +10,6 @@
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  will-change: transform;
   contain: paint; // was: strict — strict breaks position:sticky on header cells
 }
 

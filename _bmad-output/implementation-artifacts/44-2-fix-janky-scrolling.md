@@ -16,20 +16,20 @@ so that I can review large lists of data comfortably.
 
 ## Tasks / Subtasks
 
-- [ ] Review Story 44.1 investigation findings before starting (root cause must be known) (AC: #1)
-- [ ] Apply the fix to the base table component or shared virtual scroll configuration (AC: #1)
+- [x] Review Story 44.1 investigation findings before starting (root cause must be known) (AC: #1)
+- [x] Apply the fix to the base table component or shared virtual scroll configuration (AC: #1)
   - [ ] If root cause is row height inconsistency: set fixed, consistent row heights across all tables (see row-height-audit.md)
-  - [ ] If root cause is change detection: review `OnPush` compliance and reduce unnecessary CD cycles during scroll
-  - [ ] If root cause is CSS: remove transitions/animations from scroll containers
+  - [x] If root cause is change detection: review `OnPush` compliance and reduce unnecessary CD cycles during scroll
+  - [x] If root cause is CSS: remove transitions/animations from scroll containers
   - [ ] If root cause is buffer size: tune `minBufferPx`/`maxBufferPx` in CdkVirtualScrollViewport
-- [ ] Verify fix applies to ALL data table screens — not just one (AC: #1)
-  - [ ] Universe screen
-  - [ ] Account > Open Positions screen
-  - [ ] Account > Sold Positions screen
-  - [ ] Dividend Deposits screen
-  - [ ] Any other tables in the app
-- [ ] Use Playwright MCP server to confirm janky scrolling is no longer observable on each screen (AC: #2)
-- [ ] Run `pnpm all` and confirm no regressions (AC: #3)
+- [x] Verify fix applies to ALL data table screens — not just one (AC: #1)
+  - [x] Universe screen
+  - [x] Account > Open Positions screen
+  - [x] Account > Sold Positions screen
+  - [x] Dividend Deposits screen
+  - [x] Any other tables in the app
+- [x] Use Playwright MCP server to confirm janky scrolling is no longer observable on each screen (AC: #2)
+- [x] Run `pnpm all` and confirm no regressions (AC: #3)
 
 ## Dev Notes
 
@@ -72,8 +72,27 @@ Janky scrolling was targeted in Epic 31 but persists. Story 44.1 must be complet
 
 ### Agent Model Used
 
+Claude Sonnet 4.6
+
 ### Debug Log References
+
+N/A
 
 ### Completion Notes List
 
+- P1 CSS: Added `cdk-virtual-scroll-viewport * { transition: none; }` after the global `* { transition: ... }` rule in `styles.scss` to prevent transitions from firing on every CDK row create/recycle during scroll.
+- P1 CSS: Removed `will-change: transform` from `.virtual-scroll-viewport` in `base-table.component.scss`. This property was creating a new stacking context that broke `position: sticky` on header cells and caused compositor-layer churn during scroll.
+- P2: Removed `this.visibleRange(); // maintain signal dependency for reactivity` from the `selectOpenPositions` computed in `open-positions-component.service.ts`. The call was creating a signal dependency causing O(n) recomputes at ~10Hz during scroll, but `visibleRange` was never actually used to filter results (dense array pattern already returns all items).
+- P2: Same removal from `selectSoldPositions` computed in `sold-positions-component.service.ts`.
+- P2: Same removal from `dividends` computed in `dividend-deposits-component.service.ts`.
+- P3: Removed `context.cdr.markForCheck()` from the `effect()` in `base-table.component.ts` that tracks `dataSource()`. In Angular 21 zoneless, signal-based effects automatically schedule view updates; the redundant `markForCheck()` was adding an extra CD cycle per data recompute. Also removed the unused `ChangeDetectorRef` import and `cdr` field.
+
 ### File List
+
+- `apps/dms-material/src/styles.scss`
+- `apps/dms-material/src/app/shared/components/base-table/base-table.component.scss`
+- `apps/dms-material/src/app/shared/components/base-table/base-table.component.ts`
+- `apps/dms-material/src/app/account-panel/open-positions/open-positions-component.service.ts`
+- `apps/dms-material/src/app/account-panel/sold-positions/sold-positions-component.service.ts`
+- `apps/dms-material/src/app/account-panel/dividend-deposits/dividend-deposits-component.service.ts`
+- `_bmad-output/implementation-artifacts/44-2-fix-janky-scrolling.md`

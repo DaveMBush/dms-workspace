@@ -29,7 +29,6 @@ export class SoldPositionsComponentService {
   selectSoldPositions = computed(() => {
     const trades = this.trades();
     const universeMap = buildUniverseMap();
-    this.visibleRange(); // maintain signal dependency for reactivity
 
     if (trades.length === 0) {
       return [] as ClosedPosition[];

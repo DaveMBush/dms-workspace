@@ -88,10 +88,16 @@ body {
   color: var(--dms-text-primary);
 }
 
-// Smooth theme transitions
+// Smooth theme transitions — apply only outside CDK virtual scroll viewports
+// to prevent transition from firing on every row create/recycle during scroll
 * {
   transition: background-color 0.2s ease, color 0.2s ease,
     border-color 0.2s ease;
+}
+
+// P1 fix: suppress transitions inside virtual scroll to eliminate scroll jank
+cdk-virtual-scroll-viewport * {
+  transition: none;
 }
 
 // Custom utility classes for theming

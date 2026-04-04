@@ -51,7 +51,6 @@ export class DividendDepositsComponentService {
       typeNamesMap.set(typesList[ti].id, typesList[ti].name);
     }
     // Dense array: populate all items to avoid sparse-array/CDK buffer mismatch
-    this.visibleRange(); // maintain signal dependency for reactivity
     const result: DividendRow[] = [];
     for (let i = 0; i < totalLength; i++) {
       const d = divDepositsArray[i];
