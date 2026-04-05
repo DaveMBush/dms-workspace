@@ -126,9 +126,7 @@ test.describe('Lazy Loading Network Traffic - Dividend Deposits', () => {
 
     // Filter to divDeposits requests only
     const divDepositRequests = indexesRequests.filter(
-      function filterDivDeposits(
-        entry: CapturedIndexesRequest
-      ): boolean {
+      function filterDivDeposits(entry: CapturedIndexesRequest): boolean {
         return entry.body.childField === 'divDeposits';
       }
     );
@@ -137,9 +135,7 @@ test.describe('Lazy Loading Network Traffic - Dividend Deposits', () => {
     const firstEntry = divDepositRequests[0];
 
     // The response should report the total seeded count
-    expect(firstEntry.response.length).toBeGreaterThanOrEqual(
-      SEEDED_ROW_COUNT
-    );
+    expect(firstEntry.response.length).toBeGreaterThanOrEqual(SEEDED_ROW_COUNT);
 
     // The indexes returned for a single request must be ≤ MAX_PAGE_SIZE
     expect(firstEntry.response.indexes.length).toBeLessThanOrEqual(
@@ -169,9 +165,7 @@ test.describe('Lazy Loading Network Traffic - Dividend Deposits', () => {
     // Scroll the virtual viewport incrementally to trigger range changes
     for (let i = 0; i < 5; i++) {
       await page.evaluate(function scrollDown(step: number): void {
-        const viewport = document.querySelector(
-          'cdk-virtual-scroll-viewport'
-        );
+        const viewport = document.querySelector('cdk-virtual-scroll-viewport');
         if (viewport !== null) {
           (viewport as HTMLElement).scrollTop = (step + 1) * 1000;
         }
@@ -183,9 +177,7 @@ test.describe('Lazy Loading Network Traffic - Dividend Deposits', () => {
     await page.waitForTimeout(3000);
 
     const divDepositRequests = indexesRequests.filter(
-      function filterDivDeposits(
-        entry: CapturedIndexesRequest
-      ): boolean {
+      function filterDivDeposits(entry: CapturedIndexesRequest): boolean {
         return entry.body.childField === 'divDeposits';
       }
     );
