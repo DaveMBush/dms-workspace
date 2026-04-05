@@ -30,7 +30,9 @@ describe('isInLieuRow', function () {
   });
 
   test('returns false for a split description', function () {
-    expect(isInLieuRow(makeRow('REVERSE SPLIT R/S FROM 691543102'))).toBe(false);
+    expect(isInLieuRow(makeRow('REVERSE SPLIT R/S FROM 691543102'))).toBe(
+      false
+    );
   });
 
   test('returns false for empty description', function () {

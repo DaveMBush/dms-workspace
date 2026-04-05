@@ -7,5 +7,7 @@ import { FidelityCsvRow } from './fidelity-csv-row.interface';
  * Example in-lieu description: "IN LIEU OF FRX SHARE EU PAYOUT..."
  */
 export function isInLieuRow(row: FidelityCsvRow): boolean {
-  return row.description?.toUpperCase().includes('IN LIEU OF FRX SHARE') ?? false;
+  return (
+    row.description?.toUpperCase().includes('IN LIEU OF FRX SHARE') ?? false
+  );
 }
