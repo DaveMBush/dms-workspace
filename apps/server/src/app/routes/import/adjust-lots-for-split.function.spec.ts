@@ -33,6 +33,7 @@ describe('adjustLotsForSplit', function () {
   let loggerWarn: Mock;
   let txFindMany: Mock;
   let txUpdate: Mock;
+  let txCreate: Mock;
 
   beforeEach(async function () {
     vi.clearAllMocks();
@@ -43,15 +44,20 @@ describe('adjustLotsForSplit', function () {
     const loggerModule = await import('../../../utils/structured-logger');
     loggerWarn = (loggerModule.logger as unknown as { warn: Mock }).warn;
 
-    // Create distinct tx-scoped mocks so tests can verify findMany/update were
+    // Create distinct tx-scoped mocks so tests can verify findMany/update/create were
     // called via the transaction proxy, not directly on the root prisma client
     txFindMany = vi.fn();
     txUpdate = vi.fn();
+    txCreate = vi.fn();
     prisma.$transaction.mockImplementation(
       async (
-        fn: (tx: { trades: { findMany: Mock; update: Mock } }) => Promise<void>
+        fn: (tx: {
+          trades: { findMany: Mock; update: Mock; create: Mock };
+        }) => Promise<void>
       ) => {
-        return fn({ trades: { findMany: txFindMany, update: txUpdate } });
+        return fn({
+          trades: { findMany: txFindMany, update: txUpdate, create: txCreate },
+        });
       }
     );
   });
@@ -235,7 +241,7 @@ describe('adjustLotsForSplit', function () {
         universeId: 'u-7',
         sell_date: null,
       },
-      select: { id: true, quantity: true, buy: true },
+      select: { id: true, quantity: true, buy: true, accountId: true },
     });
     expect(prisma.trades.findMany).not.toHaveBeenCalled();
   });
@@ -254,5 +260,116 @@ describe('adjustLotsForSplit', function () {
     expect(txFindMany).toHaveBeenCalledOnce();
     expect(prisma.trades.findMany).not.toHaveBeenCalled();
     expect(txUpdate).toHaveBeenCalledTimes(2);
+  });
+
+  // Story 48.4 — Fractional remainder tests
+
+  test('fractional remainder: creates fractional sale record with correct quantity and price', async function () {
+    // 1531 / 5 = 306.2 → remainder = 0.2
+    prisma.universe.findFirst.mockResolvedValue({
+      id: 'u-frac',
+      last_price: 10.0,
+    });
+    txFindMany.mockResolvedValue([
+      { id: 'lot-frac', quantity: 1531, buy: 2.56, accountId: 'acc-1' },
+    ]);
+    txUpdate.mockResolvedValue({});
+    txCreate.mockResolvedValue({});
+
+    await adjustLotsForSplit('OXLC', 5);
+
+    expect(txCreate).toHaveBeenCalledOnce();
+    const call = txCreate.mock.calls[0][0];
+    expect(call.data.universeId).toBe('u-frac');
+    expect(call.data.accountId).toBe('acc-1');
+    expect(call.data.sell).toBe(10.0);
+    expect(call.data.buy).toBe(0);
+    expect(call.data.quantity).toBeCloseTo(0.2, 10);
+    expect(call.data.sell_date).toBeInstanceOf(Date);
+  });
+
+  test('exact whole-share split: no fractional sale created', async function () {
+    // 1000 / 5 = 200 exactly → remainder = 0
+    prisma.universe.findFirst.mockResolvedValue({
+      id: 'u-exact',
+      last_price: 10.0,
+    });
+    txFindMany.mockResolvedValue([
+      { id: 'lot-exact', quantity: 1000, buy: 5.0, accountId: 'acc-2' },
+    ]);
+    txUpdate.mockResolvedValue({});
+
+    await adjustLotsForSplit('EXACT', 5);
+
+    expect(txCreate).not.toHaveBeenCalled();
+  });
+
+  test('fractional remainder with no market price: logs warning and records sale at price 0', async function () {
+    // 1531 / 5 = 306.2 → remainder = 0.2, but last_price = 0
+    prisma.universe.findFirst.mockResolvedValue({
+      id: 'u-noprice',
+      last_price: 0,
+    });
+    txFindMany.mockResolvedValue([
+      { id: 'lot-np', quantity: 1531, buy: 2.56, accountId: 'acc-3' },
+    ]);
+    txUpdate.mockResolvedValue({});
+    txCreate.mockResolvedValue({});
+
+    await adjustLotsForSplit('NOPRICE', 5);
+
+    expect(loggerWarn).toHaveBeenCalledWith(
+      expect.stringContaining('no market price available')
+    );
+    expect(txCreate).toHaveBeenCalledOnce();
+    const call = txCreate.mock.calls[0][0];
+    expect(call.data.sell).toBe(0);
+    expect(call.data.quantity).toBeCloseTo(0.2, 10);
+  });
+
+  test('multiple lots: combined fractional remainders create single sale record', async function () {
+    // lot-a: 1531/5 = 306.2 → remainder 0.2
+    // lot-b: 1000/5 = 200.0 → remainder 0.0
+    // totalRemainder = 0.2
+    prisma.universe.findFirst.mockResolvedValue({
+      id: 'u-multi',
+      last_price: 8.0,
+    });
+    txFindMany.mockResolvedValue([
+      { id: 'lot-a', quantity: 1531, buy: 2.56, accountId: 'acc-4' },
+      { id: 'lot-b', quantity: 1000, buy: 2.56, accountId: 'acc-4' },
+    ]);
+    txUpdate.mockResolvedValue({});
+    txCreate.mockResolvedValue({});
+
+    await adjustLotsForSplit('MULTI', 5);
+
+    expect(txCreate).toHaveBeenCalledOnce();
+    const call = txCreate.mock.calls[0][0];
+    expect(call.data.quantity).toBeCloseTo(0.2, 10);
+    expect(call.data.sell).toBe(8.0);
+  });
+
+  test('multiple lots each with fractional remainder: combined total used for single sale', async function () {
+    // lot-a: 1531/5 = 306.2 → remainder 0.2
+    // lot-b: 1532/5 = 306.4 → remainder 0.4
+    // totalRemainder = 0.6
+    prisma.universe.findFirst.mockResolvedValue({
+      id: 'u-both-frac',
+      last_price: 5.0,
+    });
+    txFindMany.mockResolvedValue([
+      { id: 'lot-a2', quantity: 1531, buy: 2.56, accountId: 'acc-5' },
+      { id: 'lot-b2', quantity: 1532, buy: 2.56, accountId: 'acc-5' },
+    ]);
+    txUpdate.mockResolvedValue({});
+    txCreate.mockResolvedValue({});
+
+    await adjustLotsForSplit('BOTH', 5);
+
+    expect(txCreate).toHaveBeenCalledOnce();
+    const call = txCreate.mock.calls[0][0];
+    expect(call.data.quantity).toBeCloseTo(0.6, 10);
+    expect(call.data.sell).toBe(5.0);
   });
 });

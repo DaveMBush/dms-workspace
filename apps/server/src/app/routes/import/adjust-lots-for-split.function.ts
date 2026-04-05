@@ -44,7 +44,7 @@ export async function adjustLotsForSplit(
         universeId: universeEntry.id,
         sell_date: null,
       },
-      select: { id: true, quantity: true, buy: true },
+      select: { id: true, quantity: true, buy: true, accountId: true },
     });
 
     if (openLots.length === 0) {
@@ -64,6 +64,33 @@ export async function adjustLotsForSplit(
     }
 
     updatedCount = openLots.length;
+
+    const totalRemainder = openLots.reduce(
+      (sum, lot) =>
+        sum + (lot.quantity / ratio - Math.floor(lot.quantity / ratio)),
+      0
+    );
+
+    if (totalRemainder > 0) {
+      const price = universeEntry.last_price > 0 ? universeEntry.last_price : 0;
+      if (!universeEntry.last_price) {
+        logger.warn(
+          `adjustLotsForSplit: no market price available for symbol "${symbol}" — fractional sale recorded at price 0`
+        );
+      }
+      const now = new Date();
+      await tx.trades.create({
+        data: {
+          universeId: universeEntry.id,
+          accountId: openLots[0].accountId,
+          buy: 0,
+          sell: price,
+          buy_date: now,
+          sell_date: now,
+          quantity: totalRemainder,
+        },
+      });
+    }
   });
 
   return updatedCount;
