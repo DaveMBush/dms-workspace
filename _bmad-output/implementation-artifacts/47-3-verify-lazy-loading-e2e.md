@@ -1,6 +1,6 @@
 # Story 47.3: Verify Lazy Loading with Playwright E2E Tests and Network Inspection
 
-Status: Approved
+Status: review
 
 ## Story
 
@@ -17,17 +17,17 @@ so that the bulk-fetch regression is caught automatically if it recurs.
 
 ## Tasks / Subtasks
 
-- [ ] Confirm Story 47.2 fix is complete before starting
-- [ ] Write Playwright e2e test for Universe screen lazy loading with network assertions (AC: #1, #2)
-  - [ ] Intercept all API requests during the test
-  - [ ] Load Universe screen — assert only one initial page request
-  - [ ] Scroll one page — assert exactly one additional page request (not bulk)
-  - [ ] Assert no request with a huge row count / no "load all" request occurs
-- [ ] Write Playwright e2e test for Account > Open Positions lazy loading (AC: #1, #2)
-- [ ] Write Playwright e2e test for Dividend Deposits lazy loading (AC: #3)
-  - [ ] This is the highest priority screen due to volume of data
-- [ ] Run `pnpm run e2e:dms-material:chromium` and confirm all new tests pass (AC: #2)
-- [ ] Run `pnpm all` and confirm no regressions (AC: #4)
+- [x] Confirm Story 47.2 fix is complete before starting
+- [x] Write Playwright e2e test for Universe screen lazy loading with network assertions (AC: #1, #2)
+  - [x] Intercept all API requests during the test
+  - [x] Load Universe screen — assert only one initial page request
+  - [x] Scroll one page — assert exactly one additional page request (not bulk)
+  - [x] Assert no request with a huge row count / no "load all" request occurs
+- [x] Write Playwright e2e test for Account > Open Positions lazy loading (AC: #1, #2)
+- [x] Write Playwright e2e test for Dividend Deposits lazy loading (AC: #3)
+  - [x] This is the highest priority screen due to volume of data
+- [x] Run `pnpm run e2e:dms-material:chromium` and confirm all new tests pass (AC: #2)
+- [x] Run `pnpm all` and confirm no regressions (AC: #4)
 
 ## Dev Notes
 
@@ -65,8 +65,22 @@ so that the bulk-fetch regression is caught automatically if it recurs.
 
 ### Agent Model Used
 
+Claude Sonnet 4.6 (GitHub Copilot)
+
 ### Debug Log References
+
+N/A
 
 ### Completion Notes List
 
+- Story 47.2 was confirmed merged (PR #924) before starting.
+- `lazy-loading-network.spec.ts` already existed from a prior PR (#887) and covers Universe initial load, Universe scroll, and Open Positions initial load. Per story rules ("do not modify existing test files"), a new file was created for Dividend Deposits only.
+- New file `apps/dms-material-e2e/src/lazy-loading-dividend-deposits.spec.ts` added with two tests:
+  1. Initial load asserts ≤ MAX_PAGE_SIZE (50) indexes returned for `divDeposits` child field, total ≥ 60 seeded rows.
+  2. Scroll test asserts incremental requests with `startIndex > 0` after scrolling, each returning ≤ MAX_PAGE_SIZE indexes.
+- Uses `seedScrollDivDepositsData` helper (seeds 60 rows) and `captureIndexesRequests` pattern from `lazy-loading-network.spec.ts`.
+- All 5 network-assertion tests pass on Chromium (2 new + 3 existing).
+
 ### File List
+
+- `apps/dms-material-e2e/src/lazy-loading-dividend-deposits.spec.ts` (new)

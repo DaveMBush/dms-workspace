@@ -95,6 +95,7 @@
       [selectable]="false"
       tableLabel="Universe positions"
       (sortChange)="onSortChange($event)"
+      (renderedRangeChange)="visibleRange.set($event)"
     >
       <!-- Filter row template - receives column definition -->
       <!-- eslint-disable @angular-eslint/template/cyclomatic-complexity -->
@@ -103,7 +104,7 @@
         <mat-form-field
           appearance="outline"
           subscriptSizing="dynamic"
-          class="header-filter w-24"
+          class="header-filter w-full"
         >
           <input
             matInput
@@ -117,7 +118,7 @@
         <mat-form-field
           appearance="outline"
           subscriptSizing="dynamic"
-          class="header-filter w-24"
+          class="header-filter w-full"
         >
           <mat-select
             [value]="riskGroupFilter$()"
@@ -134,7 +135,7 @@
         <mat-form-field
           appearance="outline"
           subscriptSizing="dynamic"
-          class="header-filter w-24"
+          class="header-filter w-full"
         >
           <input
             matInput
@@ -150,7 +151,7 @@
         <mat-form-field
           appearance="outline"
           subscriptSizing="dynamic"
-          class="header-filter w-24"
+          class="header-filter w-full"
         >
           <mat-select
             [value]="expiredFilter$()"

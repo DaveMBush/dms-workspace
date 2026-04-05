@@ -22,18 +22,16 @@ export class UniverseService {
         const universes = selectUniverses();
 
         // SmartNgRX returns a Proxy that behaves like an array
-        // Check length property directly (don't use Array.isArray() on Proxies)
+        // Check length property directly — do NOT iterate the proxy here;
+        // iterating all indices would dispatch loadByIndexes for ALL unloaded
+        // rows, causing a bulk network request.
         if (
           universes !== null &&
           universes !== undefined &&
           universes.length > 0
         ) {
-          // Convert to actual array and cache
-          const universesArray = [] as Universe[];
-          for (let i = 0; i < universes.length; i++) {
-            universesArray.push(universes[i]);
-          }
-          this.cachedUniverses.set(universesArray);
+          // Store the proxy reference directly — no iteration, no bulk fetch
+          this.cachedUniverses.set(universes);
         }
       }
     );
@@ -41,25 +39,23 @@ export class UniverseService {
 
   /**
    * Computed signal that provides universes from SmartNgRX store.
-   * Uses cached data when SmartNgRX temporarily returns empty (during state recalculation).
+   * Returns the ArrayProxy directly so CDK virtual scroll and enrichment
+   * functions access only the indices they need (lazy loading).
+   * Uses cached proxy when SmartNgRX temporarily returns empty.
    */
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- Arrow function required for proper 'this' binding in computed signal
   universes = computed(() => {
-    // Read selectUniverses() to establish dependency and trigger updates
+    // Read selectUniverses() to establish reactive dependency
     const current = selectUniverses();
 
-    // SmartNgRX returns a Proxy - check .length property directly
-    // Return current data when available, otherwise fall back to cache
     if (current !== null && current !== undefined && current.length > 0) {
-      // Convert to actual array since current is a Proxy
-      const currentArray = [] as Universe[];
-      for (let i = 0; i < current.length; i++) {
-        currentArray.push(current[i]);
-      }
-      return currentArray;
+      // Return the proxy directly — never iterate all items; CDK virtual
+      // scroll will access only visible indices via the ArrayProxy,
+      // letting SmartNgRX load only the required pages.
+      return current;
     }
 
-    // Return cache when SmartNgRX returns empty (during state recalculation)
+    // Return cached proxy when SmartNgRX returns empty (during state recalculation)
     return this.cachedUniverses();
   });
 }

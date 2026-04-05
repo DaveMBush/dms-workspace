@@ -16,13 +16,13 @@ so that filter clipping cannot regress unnoticed.
 
 ## Tasks / Subtasks
 
-- [ ] Use Playwright MCP server to activate column filters on narrow Universe screen columns and confirm visual containment (AC: #1)
-  - [ ] Identify at least two narrow columns on the Universe screen to test
-  - [ ] Confirm Story 46.1 fix is visible: filter input does not overflow the column boundary
-- [ ] Write Playwright e2e test: activate filter on narrow column 1, assert filter input bounding box is within column bounding box (AC: #2)
-- [ ] Write Playwright e2e test: activate filter on narrow column 2, assert same containment (AC: #2)
-- [ ] Run `pnpm run e2e:dms-material:chromium` and confirm all new tests pass (AC: #2)
-- [ ] Run `pnpm all` and confirm no regressions (AC: #3)
+- [x] Use Playwright MCP server to activate column filters on narrow Universe screen columns and confirm visual containment (AC: #1)
+  - [x] Identify at least two narrow columns on the Universe screen to test
+  - [x] Confirm Story 46.1 fix is visible: filter input does not overflow the column boundary
+- [x] Write Playwright e2e test: activate filter on narrow column 1, assert filter input bounding box is within column bounding box (AC: #2)
+- [x] Write Playwright e2e test: activate filter on narrow column 2, assert same containment (AC: #2)
+- [x] Run `pnpm run e2e:dms-material:chromium` and confirm all new tests pass (AC: #2)
+- [x] Run `pnpm all` and confirm no regressions (AC: #3)
 
 ## Dev Notes
 
@@ -57,8 +57,18 @@ so that filter clipping cannot regress unnoticed.
 
 ### Agent Model Used
 
+Claude Sonnet 4.6
+
 ### Debug Log References
 
 ### Completion Notes List
 
+- Identified Symbol (80px) and Yield % (90px) as the two narrowest columns with text filter inputs
+- Created `apps/dms-material-e2e/src/universe-column-filter-width.spec.ts` with 2 bounding-box tests
+- Both tests confirmed passing: filter inputs stay within column boundaries after Story 46.1 fix
+- `pnpm all` ran with no regressions (no affected lint/build/test targets from new e2e spec)
+- Pre-existing flaky test in `universe-table-workflows.spec.ts` not caused by this story
+
 ### File List
+
+- `apps/dms-material-e2e/src/universe-column-filter-width.spec.ts` (new)

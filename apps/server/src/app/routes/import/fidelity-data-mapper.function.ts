@@ -2,6 +2,8 @@ import { logger } from '../../../utils/structured-logger';
 import { prisma } from '../../prisma/prisma-client';
 import { fetchAndUpdatePriceData } from '../universe/fetch-and-update-price-data.function';
 import { FidelityCsvRow } from './fidelity-csv-row.interface';
+import { isInLieuRow } from './is-in-lieu-row.function';
+import { isSplitRow } from './is-split-row.function';
 import { MappedDivDeposit } from './mapped-div-deposit.interface';
 import { MappedSale } from './mapped-sale.interface';
 import { MappedTrade } from './mapped-trade.interface';
@@ -339,6 +341,12 @@ async function mapSingleRow(
   result: MappedTransactionResult,
   accountCache: Map<string, { id: string }>
 ): Promise<void> {
+  // Detect split and in-lieu rows BEFORE any buy/sell classification.
+  // Split adjustment logic is handled by Stories 48.2–48.4.
+  if (isSplitRow(row) || isInLieuRow(row)) {
+    return;
+  }
+
   const action = row.action.toUpperCase();
   const account = await resolveAccount(row.account, accountCache);
 

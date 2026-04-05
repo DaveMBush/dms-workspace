@@ -9,6 +9,46 @@ import { differenceInTradingDays } from '../../store/trades/difference-in-tradin
 import { OpenPosition } from '../../store/trades/open-position.interface';
 import { Trade } from '../../store/trades/trade.interface';
 import { Universe } from '../../store/universe/universe.interface';
+
+function placeholderOpenPosition(id: string): OpenPosition {
+  return {
+    id,
+    symbol: '',
+    exDate: null,
+    buy: 0,
+    buyDate: new Date(),
+    sell: 0,
+    sellDate: undefined,
+    daysHeld: 0,
+    expectedYield: 0,
+    targetGain: 0,
+    targetSell: 0,
+    quantity: 0,
+    lastPrice: 0,
+    unrealizedGainPercent: 0,
+    unrealizedGain: 0,
+  };
+}
+
+function partialOpenPosition(trade: Trade): OpenPosition {
+  return {
+    id: trade.id,
+    symbol: '',
+    exDate: null,
+    buy: trade.buy,
+    buyDate: trade.buy_date ? new Date(trade.buy_date) : new Date(),
+    sell: trade.sell,
+    sellDate: undefined,
+    daysHeld: 0,
+    expectedYield: 0,
+    targetGain: 0,
+    targetSell: 0,
+    quantity: trade.quantity,
+    lastPrice: 0,
+    unrealizedGainPercent: 0,
+    unrealizedGain: 0,
+  };
+}
 @Injectable({ providedIn: 'root' })
 export class OpenPositionsComponentService {
   private currentAccountSignalStore = inject(currentAccountSignalStore);
@@ -46,29 +86,41 @@ export class OpenPositionsComponentService {
     const trades = this.trades();
     const universeMap = this.universeMap();
 
-    if (trades.length === 0) {
+    const totalLength = trades.length;
+    if (totalLength === 0) {
       return [] as OpenPosition[];
     }
 
-    // First pass: collect indices of open trades (cheap isClosed check)
-    const openIndices: number[] = [];
-    for (let i = 0; i < trades.length; i++) {
-      const trade = trades[i];
-      const universe = universeMap.get(trade.universeId);
-      if (!this.isClosed(trade, universe!)) {
-        openIndices.push(i);
+    const smartArr = trades as unknown as {
+      getIdAtIndex?(i: number): string | undefined;
+    };
+    const isProxy = typeof smartArr.getIdAtIndex === 'function';
+
+    const range = this.visibleRange();
+    const visStart = Math.max(0, range.start - 20);
+    const visEnd = Math.min(totalLength, range.end + 20);
+
+    const openPositions = new Array<OpenPosition>(totalLength);
+
+    for (let i = 0; i < totalLength; i++) {
+      if (isProxy && !(i >= visStart && i < visEnd)) {
+        openPositions[i] = placeholderOpenPosition(
+          smartArr.getIdAtIndex!(i) ?? `placeholder-${String(i)}`
+        );
+        continue;
       }
+      const trade = trades[i];
+      if (trade === undefined || typeof trade === 'string') {
+        openPositions[i] = placeholderOpenPosition(`placeholder-${String(i)}`);
+        continue;
+      }
+      const universe = universeMap.get(trade.universeId);
+      openPositions[i] =
+        universe === undefined
+          ? partialOpenPosition(trade)
+          : this.transformTradeToPosition(trade, universe);
     }
 
-    // Dense array: populate all items to avoid sparse-array/CDK buffer mismatch
-    const totalOpen = openIndices.length;
-    const openPositions: OpenPosition[] = [];
-    for (let j = 0; j < totalOpen; j++) {
-      const tradeIdx = openIndices[j];
-      const trade = trades[tradeIdx];
-      const universe = universeMap.get(trade.universeId)!;
-      openPositions.push(this.transformTradeToPosition(trade, universe));
-    }
     return openPositions;
   });
 

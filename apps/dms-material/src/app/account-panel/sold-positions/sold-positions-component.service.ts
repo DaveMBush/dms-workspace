@@ -6,7 +6,67 @@ import { selectCurrentAccountSignal } from '../../store/current-account/select-c
 import { ClosedPosition } from '../../store/trades/closed-position.interface';
 import { differenceInTradingDays } from '../../store/trades/difference-in-trading-days.function';
 import { Trade } from '../../store/trades/trade.interface';
+import { Universe } from '../../store/universe/universe.interface';
 import { classifyCapitalGain } from './classify-capital-gain.function';
+
+function buildPlaceholderClosedPosition(id: string): ClosedPosition {
+  return {
+    id,
+    symbol: '',
+    buy: 0,
+    buy_date: '',
+    quantity: 0,
+    sell: 0,
+    sell_date: undefined,
+    daysHeld: 0,
+    capitalGain: 0,
+    capitalGainPercentage: 0,
+  };
+}
+
+function buildPartialClosedPosition(trade: Trade): ClosedPosition {
+  const capitalGain = (trade.sell - trade.buy) * trade.quantity;
+  const capitalGainPercentage =
+    trade.buy !== 0 ? ((trade.sell - trade.buy) / trade.buy) * 100 : 0;
+  return {
+    id: trade.id,
+    symbol: '',
+    buy: trade.buy,
+    buy_date: trade.buy_date,
+    quantity: trade.quantity,
+    sell: trade.sell,
+    sell_date: trade.sell_date,
+    daysHeld:
+      trade.sell_date !== undefined
+        ? differenceInTradingDays(trade.buy_date, trade.sell_date)
+        : 0,
+    capitalGain,
+    capitalGainPercentage,
+    gainLossType: classifyCapitalGain(capitalGain),
+  };
+}
+
+function buildFullClosedPosition(
+  trade: Trade,
+  universe: Universe
+): ClosedPosition {
+  const capitalGain = (trade.sell - trade.buy) * trade.quantity;
+  const capitalGainPercentage =
+    trade.buy !== 0 ? ((trade.sell - trade.buy) / trade.buy) * 100 : 0;
+  return {
+    id: trade.id,
+    symbol: universe.symbol,
+    buy: trade.buy,
+    buy_date: trade.buy_date,
+    quantity: trade.quantity,
+    sell: trade.sell,
+    sell_date: trade.sell_date,
+    daysHeld: differenceInTradingDays(trade.buy_date, trade.sell_date!),
+    capitalGain,
+    capitalGainPercentage,
+    gainLossType: classifyCapitalGain(capitalGain),
+  };
+}
 
 @Injectable({ providedIn: 'root' })
 export class SoldPositionsComponentService {
@@ -17,7 +77,7 @@ export class SoldPositionsComponentService {
     end: 50,
   });
 
-  // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signal
   trades = computed(() => {
     const currentAccount = selectCurrentAccountSignal(
       this.currentAccountSignalStore
@@ -25,69 +85,48 @@ export class SoldPositionsComponentService {
     return currentAccount().soldTrades as Trade[];
   });
 
-  // eslint-disable-next-line @smarttools/no-anonymous-functions -- would hide this
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signal
   selectSoldPositions = computed(() => {
     const trades = this.trades();
     const universeMap = buildUniverseMap();
 
-    if (trades.length === 0) {
+    const totalLength = trades.length;
+    if (totalLength === 0) {
       return [] as ClosedPosition[];
     }
 
-    // First pass: collect indices of valid sold trades (cheap validation check)
-    const soldIndices: number[] = [];
-    for (let i = 0; i < trades.length; i++) {
+    const smartArr = trades as unknown as {
+      getIdAtIndex?(i: number): string | undefined;
+    };
+    const isProxy = typeof smartArr.getIdAtIndex === 'function';
+
+    const range = this.visibleRange();
+    const visStart = Math.max(0, range.start - 20);
+    const visEnd = Math.min(totalLength, range.end + 20);
+
+    const soldPositions = new Array<ClosedPosition>(totalLength);
+
+    for (let i = 0; i < totalLength; i++) {
+      if (isProxy && !(i >= visStart && i < visEnd)) {
+        soldPositions[i] = buildPlaceholderClosedPosition(
+          smartArr.getIdAtIndex!(i) ?? `placeholder-${String(i)}`
+        );
+        continue;
+      }
       const trade = trades[i];
-      if (!this.isValidSoldTrade(trade)) {
+      if (trade === undefined || typeof trade === 'string') {
+        soldPositions[i] = buildPlaceholderClosedPosition(
+          `placeholder-${String(i)}`
+        );
         continue;
       }
       const universe = universeMap.get(trade.universeId);
-      if (!universe) {
-        continue;
-      }
-      soldIndices.push(i);
-    }
-
-    // Dense array: populate all items to avoid sparse-array/CDK buffer mismatch
-    const totalSold = soldIndices.length;
-    const soldPositions: ClosedPosition[] = [];
-    for (let j = 0; j < totalSold; j++) {
-      const tradeIdx = soldIndices[j];
-      const trade = trades[tradeIdx];
-      const universe = universeMap.get(trade.universeId)!;
-
-      const daysHeld = differenceInTradingDays(
-        trade.buy_date,
-        trade.sell_date!
-      );
-      const capitalGain = (trade.sell - trade.buy) * trade.quantity;
-      const capitalGainPercentage =
-        trade.buy !== 0 ? ((trade.sell - trade.buy) / trade.buy) * 100 : 0;
-
-      soldPositions.push({
-        id: trade.id,
-        symbol: universe.symbol,
-        buy: trade.buy,
-        buy_date: trade.buy_date,
-        quantity: trade.quantity,
-        sell: trade.sell,
-        sell_date: trade.sell_date,
-        daysHeld,
-        capitalGain,
-        capitalGainPercentage,
-        gainLossType: classifyCapitalGain(capitalGain),
-      });
+      soldPositions[i] =
+        universe === undefined
+          ? buildPartialClosedPosition(trade)
+          : buildFullClosedPosition(trade, universe);
     }
 
     return soldPositions;
   });
-
-  private isValidSoldTrade(trade: Trade): boolean {
-    return (
-      trade.sell !== 0 && // also exclude data-entry errors where sell price was not recorded
-      trade.sell_date !== undefined &&
-      trade.sell_date !== null &&
-      trade.sell_date !== ''
-    );
-  }
 }
