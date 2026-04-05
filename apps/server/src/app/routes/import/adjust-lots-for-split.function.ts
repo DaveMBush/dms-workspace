@@ -1,17 +1,37 @@
+import { PrismaClient } from '@prisma/client';
+
 import { logger } from '../../../utils/structured-logger';
 import { prisma } from '../../prisma/prisma-client';
 
-type OpenLot = { id: string; quantity: number; buy: number; accountId: string };
+interface OpenLot {
+  id: string;
+  quantity: number;
+  buy: number;
+  accountId: string;
+}
+
+interface FractionalSaleData {
+  universeId: string;
+  symbol: string;
+  lastPrice: number;
+  openLots: OpenLot[];
+  totalRemainder: number;
+}
 
 function calcLotRemainder(lot: OpenLot, ratio: number): number {
   return lot.quantity / ratio - Math.floor(lot.quantity / ratio);
 }
 
+function sumRemainders(openLots: OpenLot[], ratio: number): number {
+  return openLots.reduce(function sumLotRemainder(sum: number, lot: OpenLot) {
+    return sum + calcLotRemainder(lot, ratio);
+  }, 0);
+}
+
 async function updateLots(
   openLots: OpenLot[],
   ratio: number,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  tx: any
+  tx: PrismaClient
 ): Promise<void> {
   for (const lot of openLots) {
     const newQuantity = Math.floor(lot.quantity / ratio);
@@ -24,30 +44,25 @@ async function updateLots(
 }
 
 async function recordFractionalSale(
-  universeId: string,
-  symbol: string,
-  lastPrice: number,
-  openLots: OpenLot[],
-  totalRemainder: number,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  tx: any
+  data: FractionalSaleData,
+  tx: PrismaClient
 ): Promise<void> {
-  const price = lastPrice > 0 ? lastPrice : 0;
-  if (!lastPrice) {
+  const price = data.lastPrice > 0 ? data.lastPrice : 0;
+  if (price === 0) {
     logger.warn(
-      `adjustLotsForSplit: no market price available for symbol "${symbol}" — fractional sale recorded at price 0`
+      `adjustLotsForSplit: no market price available for symbol "${data.symbol}" — fractional sale recorded at price 0`
     );
   }
   const now = new Date();
   await tx.trades.create({
     data: {
-      universeId,
-      accountId: openLots[0].accountId,
+      universeId: data.universeId,
+      accountId: data.openLots[0].accountId,
       buy: 0,
       sell: price,
       buy_date: now,
       sell_date: now,
-      quantity: totalRemainder,
+      quantity: data.totalRemainder,
     },
   });
 }
@@ -93,7 +108,8 @@ export async function adjustLotsForSplit(
   let updatedCount = 0;
 
   await prisma.$transaction(async function applyLotUpdates(tx) {
-    const openLots = await tx.trades.findMany({
+    const txClient = tx as unknown as PrismaClient;
+    const openLots = await txClient.trades.findMany({
       where: { universeId: universeEntry.id, sell_date: null },
       select: { id: true, quantity: true, buy: true, accountId: true },
     });
@@ -105,26 +121,19 @@ export async function adjustLotsForSplit(
       return;
     }
 
-    await updateLots(openLots, ratio, tx);
+    await updateLots(openLots, ratio, txClient);
     updatedCount = openLots.length;
-
-    const totalRemainder = openLots.reduce(function sumLotRemainder(
-      sum: number,
-      lot: OpenLot
-    ) {
-      return sum + calcLotRemainder(lot, ratio);
-    },
-    0);
+    const totalRemainder = sumRemainders(openLots, ratio);
 
     if (totalRemainder > 0) {
-      await recordFractionalSale(
-        universeEntry.id,
+      const saleData: FractionalSaleData = {
+        universeId: universeEntry.id,
         symbol,
-        universeEntry.last_price,
+        lastPrice: universeEntry.last_price,
         openLots,
         totalRemainder,
-        tx
-      );
+      };
+      await recordFractionalSale(saleData, txClient);
     }
   });
 

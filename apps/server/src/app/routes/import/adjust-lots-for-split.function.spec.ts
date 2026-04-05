@@ -327,6 +327,28 @@ describe('adjustLotsForSplit', function () {
     expect(call.data.quantity).toBeCloseTo(0.2, 10);
   });
 
+  test('fractional remainder with negative price: logs warning and records sale at price 0', async function () {
+    // negative last_price should also trigger the warning and use price=0
+    prisma.universe.findFirst.mockResolvedValue({
+      id: 'u-negprice',
+      last_price: -5,
+    });
+    txFindMany.mockResolvedValue([
+      { id: 'lot-neg', quantity: 1531, buy: 2.56, accountId: 'acc-6' },
+    ]);
+    txUpdate.mockResolvedValue({});
+    txCreate.mockResolvedValue({});
+
+    await adjustLotsForSplit('NEGPRICE', 5);
+
+    expect(loggerWarn).toHaveBeenCalledWith(
+      expect.stringContaining('no market price available')
+    );
+    expect(txCreate).toHaveBeenCalledOnce();
+    const call = txCreate.mock.calls[0][0];
+    expect(call.data.sell).toBe(0);
+  });
+
   test('multiple lots: combined fractional remainders create single sale record', async function () {
     // lot-a: 1531/5 = 306.2 → remainder 0.2
     // lot-b: 1000/5 = 200.0 → remainder 0.0
