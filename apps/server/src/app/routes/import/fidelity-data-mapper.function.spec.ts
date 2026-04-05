@@ -977,6 +977,33 @@ describe('mapFidelityTransactions', function () {
       expect(result.unknownTransactions).toHaveLength(0);
     });
 
+    test('should skip cash-in-lieu of fractional share rows', async function () {
+      const rows: ParsedCsvRow[] = [
+        {
+          date: '06/30/2025',
+          action: 'YOU BOUGHT',
+          symbol: 'OXLC',
+          description: 'IN LIEU OF FRX SHARE EU PAYOUT FRACTIONAL SHARES',
+          quantity: 0,
+          price: 0,
+          totalAmount: 1.23,
+          account: 'My Brokerage',
+        },
+      ];
+
+      mockPrisma.accounts.findFirst.mockResolvedValue({
+        id: 'account-123',
+        name: 'My Brokerage',
+      });
+
+      const result = await mapFidelityTransactions(rows);
+
+      expect(result.trades).toHaveLength(0);
+      expect(result.sales).toHaveLength(0);
+      expect(result.divDeposits).toHaveLength(0);
+      expect(result.unknownTransactions).toHaveLength(0);
+    });
+
     test('should auto-create SPAXX universe entry for dividends but not for trades', async function () {
       const rows: ParsedCsvRow[] = [
         {

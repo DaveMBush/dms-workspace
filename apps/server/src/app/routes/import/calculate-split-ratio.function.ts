@@ -1,0 +1,52 @@
+import { logger } from '../../../utils/structured-logger';
+import { prisma } from '../../prisma/prisma-client';
+
+function sumOpenQuantity(sum: number, trade: { quantity: number }): number {
+  return sum + trade.quantity;
+}
+
+/**
+ * Calculates the split ratio for a symbol based on the total open position quantity
+ * and the post-split quantity from the CSV row.
+ *
+ * Formula: ratio = totalCurrentOpenQuantity / csvPostSplitQuantity
+ * - ratio > 1 → reverse split (e.g., 5 means 1-for-5 reverse split)
+ * - ratio < 1 → forward split (e.g., 0.5 means 2-for-1 forward split)
+ *
+ * Returns null if no open lots exist for the symbol (caller must skip the split row).
+ */
+export async function calculateSplitRatio(
+  symbol: string,
+  csvPostSplitQuantity: number
+): Promise<number | null> {
+  const universeEntry = await prisma.universe.findFirst({
+    where: { symbol },
+  });
+
+  if (!universeEntry) {
+    logger.warn(
+      `calculateSplitRatio: no universe entry found for symbol "${symbol}" — skipping split`
+    );
+    return null;
+  }
+
+  const openTrades = await prisma.trades.findMany({
+    where: {
+      universeId: universeEntry.id,
+      sell: 0,
+      sell_date: null,
+    },
+    select: { quantity: true },
+  });
+
+  const totalCurrentOpenQuantity = openTrades.reduce(sumOpenQuantity, 0);
+
+  if (totalCurrentOpenQuantity === 0) {
+    logger.warn(
+      `calculateSplitRatio: no open lots found for symbol "${symbol}" — skipping split`
+    );
+    return null;
+  }
+
+  return totalCurrentOpenQuantity / csvPostSplitQuantity;
+}
