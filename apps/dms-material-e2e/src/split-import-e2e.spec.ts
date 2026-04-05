@@ -142,9 +142,7 @@ test.describe('OXLC Split Import E2E', () => {
     ).toBeVisible({ timeout: 15000 });
     await page.waitForSelector('tr.mat-mdc-row', { timeout: 15000 });
 
-    const oxlcRows = page
-      .locator('tr.mat-mdc-row')
-      .filter({ hasText: 'OXLC' });
+    const oxlcRows = page.locator('tr.mat-mdc-row').filter({ hasText: 'OXLC' });
     await expect(oxlcRows).toHaveCount(3, { timeout: 10000 });
 
     let totalQty = 0;
