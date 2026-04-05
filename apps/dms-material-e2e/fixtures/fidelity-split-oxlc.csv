@@ -1,0 +1,3 @@
+Run Date,Account,Account Number,Action,Symbol,Description,Type,Price ($),Quantity,Commission ($),Fees ($),Accrued Interest ($),Amount ($),Settlement Date
+09/08/2025,OXLC Split Test Account,12345678,YOU SOLD,OXLC,"REVERSE SPLIT R/S FROM 691543102#REOR M005168075001",Stock,,306,,,,,09/08/2025
+09/08/2025,OXLC Split Test Account,12345678,IN LIEU,OXLC,"IN LIEU OF FRX SHARE EU PAYOUT CORPORATE ACTION PAYOUT",Stock,,,,,,0.36,09/08/2025
