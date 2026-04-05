@@ -47,7 +47,10 @@ describe('adjustLotsForSplit', function () {
         fn: (tx: { trades: { findMany: Mock; update: Mock } }) => Promise<void>
       ) => {
         return fn({
-          trades: { findMany: prisma.trades.findMany, update: prisma.trades.update },
+          trades: {
+            findMany: prisma.trades.findMany,
+            update: prisma.trades.update,
+          },
         });
       }
     );
