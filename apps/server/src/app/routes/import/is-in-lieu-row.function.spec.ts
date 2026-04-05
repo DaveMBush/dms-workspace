@@ -17,6 +17,10 @@ function makeRow(description: string): FidelityCsvRow {
 }
 
 describe('isInLieuRow', function () {
+  test('returns false for undefined description', function () {
+    expect(isInLieuRow(makeRow(undefined as unknown as string))).toBe(false);
+  });
+
   test('returns true when description contains "IN LIEU OF FRX SHARE" (uppercase)', function () {
     expect(isInLieuRow(makeRow('IN LIEU OF FRX SHARE EU PAYOUT'))).toBe(true);
   });

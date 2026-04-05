@@ -17,6 +17,10 @@ function makeRow(description: string): FidelityCsvRow {
 }
 
 describe('isSplitRow', function () {
+  test('returns false for undefined description', function () {
+    expect(isSplitRow(makeRow(undefined as unknown as string))).toBe(false);
+  });
+
   test('returns true when description contains "SPLIT" (uppercase)', function () {
     expect(
       isSplitRow(makeRow('REVERSE SPLIT R/S FROM 691543102#REOR M005168075001'))
