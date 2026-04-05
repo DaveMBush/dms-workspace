@@ -4,6 +4,8 @@ import { mapFidelityTransactions } from './fidelity-data-mapper.function';
 import { prisma } from '../../prisma/prisma-client';
 import { getDistributions } from '../settings/common/get-distributions.function';
 import { getLastPrice } from '../settings/common/get-last-price.function';
+import { calculateSplitRatio } from './calculate-split-ratio.function';
+import { adjustLotsForSplit } from './adjust-lots-for-split.function';
 
 vi.mock('../../prisma/prisma-client', function () {
   return {
@@ -38,10 +40,14 @@ vi.mock('../../../utils/structured-logger', function () {
     },
   };
 });
+vi.mock('./calculate-split-ratio.function');
+vi.mock('./adjust-lots-for-split.function');
 
 const mockPrisma = prisma as any;
 const mockGetDistributions = getDistributions as any;
 const mockGetLastPrice = getLastPrice as any;
+const mockCalculateSplitRatio = calculateSplitRatio as any;
+const mockAdjustLotsForSplit = adjustLotsForSplit as any;
 
 interface ParsedCsvRow {
   date: string;
@@ -57,6 +63,8 @@ interface ParsedCsvRow {
 describe('mapFidelityTransactions', function () {
   beforeEach(function () {
     vi.clearAllMocks();
+    mockCalculateSplitRatio.mockResolvedValue(null);
+    mockAdjustLotsForSplit.mockResolvedValue(0);
   });
 
   describe('purchase transaction mapping', function () {
@@ -1384,6 +1392,97 @@ describe('mapFidelityTransactions', function () {
 
       expect(result.trades).toHaveLength(1);
       expect(result.trades[0].universeId).toBe('err-universe-790');
+    });
+  });
+
+  describe('split row handling', function () {
+    test('calls calculateSplitRatio with symbol and csv quantity when split row detected', async function () {
+      const rows: ParsedCsvRow[] = [
+        {
+          date: '02/15/2026',
+          action: 'REVERSE SPLIT',
+          symbol: 'OXLC',
+          description: 'REVERSE SPLIT R/S FROM 691543102#REOR M005168075001',
+          quantity: 306,
+          price: 0,
+          totalAmount: 0,
+          account: 'My Brokerage',
+        },
+      ];
+
+      mockCalculateSplitRatio.mockResolvedValue(5);
+      mockAdjustLotsForSplit.mockResolvedValue(3);
+
+      await mapFidelityTransactions(rows);
+
+      expect(mockCalculateSplitRatio).toHaveBeenCalledWith('OXLC', 306);
+    });
+
+    test('calls adjustLotsForSplit with symbol and ratio when calculateSplitRatio returns a ratio', async function () {
+      const rows: ParsedCsvRow[] = [
+        {
+          date: '02/15/2026',
+          action: 'STOCK SPLIT',
+          symbol: 'XYZ',
+          description: 'FORWARD SPLIT 2:1',
+          quantity: 200,
+          price: 0,
+          totalAmount: 0,
+          account: 'My Brokerage',
+        },
+      ];
+
+      mockCalculateSplitRatio.mockResolvedValue(0.5);
+      mockAdjustLotsForSplit.mockResolvedValue(2);
+
+      await mapFidelityTransactions(rows);
+
+      expect(mockAdjustLotsForSplit).toHaveBeenCalledWith('XYZ', 0.5);
+    });
+
+    test('does not call adjustLotsForSplit when calculateSplitRatio returns null', async function () {
+      const rows: ParsedCsvRow[] = [
+        {
+          date: '02/15/2026',
+          action: 'REVERSE SPLIT',
+          symbol: 'NOPOS',
+          description: 'REVERSE SPLIT NO OPEN LOTS',
+          quantity: 100,
+          price: 0,
+          totalAmount: 0,
+          account: 'My Brokerage',
+        },
+      ];
+
+      mockCalculateSplitRatio.mockResolvedValue(null);
+
+      await mapFidelityTransactions(rows);
+
+      expect(mockAdjustLotsForSplit).not.toHaveBeenCalled();
+    });
+
+    test('split row produces no trades, sales, or divDeposits', async function () {
+      const rows: ParsedCsvRow[] = [
+        {
+          date: '02/15/2026',
+          action: 'REVERSE SPLIT',
+          symbol: 'OXLC',
+          description: 'REVERSE SPLIT R/S FROM 691543102#REOR M005168075001',
+          quantity: 306,
+          price: 0,
+          totalAmount: 0,
+          account: 'My Brokerage',
+        },
+      ];
+
+      mockCalculateSplitRatio.mockResolvedValue(5);
+      mockAdjustLotsForSplit.mockResolvedValue(3);
+
+      const result = await mapFidelityTransactions(rows);
+
+      expect(result.trades).toHaveLength(0);
+      expect(result.sales).toHaveLength(0);
+      expect(result.divDeposits).toHaveLength(0);
     });
   });
 });
