@@ -60,6 +60,7 @@ so that there is no dead code or broken update path for the removed checkbox col
 ### Search Pattern
 
 Run a project-wide search for each field name:
+
 - `has_volitility`
 - `objectives_understood`
 - `graph_higher_before_2008`

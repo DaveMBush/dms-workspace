@@ -126,6 +126,7 @@ Check the component's `selector` in `base-table.component.ts`. It is likely `dms
 ### ADR-001 Pattern Notes
 
 From the architecture:
+
 - Display-only components: pass data via `input()` signal values — no store wiring needed
 - Use `applicationConfig` decorator with providers array if providers are needed
 - Story export naming: PascalCase (Default, EmptyState, UniverseTableVariation) — already correct
@@ -135,6 +136,7 @@ From the architecture:
 ### Existing Stories Data (already in file — do not regenerate)
 
 The file already has:
+
 - `sampleData` (8 rows: AAPL, GOOG, MSFT, AMZN, NVDA, META, TSLA, BRK.B)
 - `universeData` (10 rows: AAPL, MSFT, GOOGL, AMZN, NVDA, JPM, JNJ, XOM, PG, V)
 - `sampleColumns` (name, ticker, value)

@@ -67,19 +67,23 @@ So that visual regression testing and component isolation development can procee
 ## Dev Notes
 
 ### Dependencies
+
 - Requires Story 9.1 to be complete with documented remediation approach
 
 ### Architecture Constraints
+
 - **ADR-001** specifies Storybook setup with Angular + Vite + @analogjs
 - Stories must follow CSF 3.0 format with proper default exports
 - Meta object structure: `{ title: string, component: Type, id?: string }`
 
 ### Common Fixes Expected
+
 Based on typical Storybook CSF 3.0 migration issues:
+
 ```typescript
 // Incorrect - causes destructure error
 export default {
-  component: MyComponent
+  component: MyComponent,
 };
 
 // Correct - CSF 3.0 format
@@ -102,18 +106,22 @@ export const Default: Story = {
 ```
 
 ### Key Files to Modify
+
 All files matching: `apps/dms-material/src/**/*.stories.ts`
 
 ### Verification with Playwright MCP Server
+
 - Use `mcp_microsoft_pla_browser_navigate` to load Storybook
 - Use `mcp_microsoft_pla_browser_snapshot` to capture story states
 - Use `mcp_microsoft_pla_browser_console_messages` to check for errors
 
 ### Project Structure Notes
+
 - Maintain story file colocation with components
 - Storybook configuration in `.storybook/` should not need changes (fixed in Story 8.1)
 
 ### References
+
 - [Source: _bmad-output/planning-artifacts/epics-2026-03-21.md#Story 9.2]
 - [Source: _bmad-output/implementation-artifacts/9-1-diagnose-storybook-default-export-issue.md]
 - [Source: _bmad-output/planning-artifacts/architecture.md#ADR-001]

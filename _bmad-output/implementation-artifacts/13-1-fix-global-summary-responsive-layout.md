@@ -86,10 +86,12 @@ So that I can view both the numbers and the graph simultaneously without scrolli
 ## Dev Notes
 
 ### Context from Epic 8
+
 - Tailwind CSS migration changed layout classes
 - Line graph now stacks below summary instead of appearing side-by-side on desktop
 
 ### Tailwind Responsive Layout Pattern
+
 ```html
 <!-- Stacks on mobile, side-by-side on desktop -->
 <div class="flex flex-col lg:flex-row gap-4">
@@ -103,6 +105,7 @@ So that I can view both the numbers and the graph simultaneously without scrolli
 ```
 
 ### Tailwind Breakpoints
+
 - `sm`: 640px
 - `md`: 768px
 - `lg`: 1024px (use this for desktop layout)
@@ -110,14 +113,17 @@ So that I can view both the numbers and the graph simultaneously without scrolli
 - `2xl`: 1536px
 
 ### Key Files to Modify
+
 - Global Summary page: `apps/dms-material/src/app/pages/global-summary/global-summary.component.html`
 - Global Summary page: `apps/dms-material/src/app/pages/global-summary/global-summary.component.ts`
 
 ### Graph Component
+
 - Likely using a charting library (Chart.js, D3, or similar)
 - Ensure graph component is responsive and fills its container
 
 ### Testing with Playwright MCP Server
+
 - Use `mcp_microsoft_pla_browser_navigate` to go to Global Summary
 - Use `mcp_microsoft_pla_browser_resize` to set viewport sizes:
   - Desktop: `{ width: 1280, height: 720 }`
@@ -126,11 +132,13 @@ So that I can view both the numbers and the graph simultaneously without scrolli
 - Use `mcp_microsoft_pla_browser_evaluate` to check element positions
 
 ### Project Structure Notes
+
 - Global Summary displays portfolio-wide CEF dividend income data
 - Uses SmartNgRX for state management
 - Line graph shows monthly/yearly income trends
 
 ### References
+
 - [Source: _bmad-output/planning-artifacts/epics-2026-03-21.md#Story 13.1]
 - [Source: apps/dms-material/src/app/pages/global-summary/]
 - [Source: tailwind.config.js] (for breakpoint configuration)

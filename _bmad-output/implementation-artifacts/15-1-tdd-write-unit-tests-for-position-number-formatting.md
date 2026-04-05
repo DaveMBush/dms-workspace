@@ -69,6 +69,7 @@ So that the formatting behavior is verified and protected against regressions.
 ## Dev Notes
 
 ### TDD Workflow - RED to GREEN to SKIP
+
 1. Write failing tests first (RED)
 2. Implement minimal code to make tests pass (GREEN)
 3. Skip tests to allow CI merge before full implementation
@@ -77,6 +78,7 @@ So that the formatting behavior is verified and protected against regressions.
 ### Angular Number Formatting Options
 
 **Option 1: DecimalPipe (recommended if simple use case)**
+
 ```typescript
 // In template
 {{ position | number:'1.2-2' }}
@@ -88,40 +90,45 @@ expect(pipe.transform(1234.56, '1.2-2')).toBe('1,234.56');
 ```
 
 **Option 2: Custom Pipe**
+
 ```typescript
 @Pipe({ name: 'formatPosition', standalone: true })
 export class FormatPositionPipe implements PipeTransform {
   transform(value: number): string {
     return new Intl.NumberFormat('en-US', {
       minimumFractionDigits: 2,
-      maximumFractionDigits: 2
+      maximumFractionDigits: 2,
     }).format(value);
   }
 }
 ```
 
 **Option 3: Utility Function**
+
 ```typescript
 export function formatPosition(value: number): string {
   return new Intl.NumberFormat('en-US', {
     minimumFractionDigits: 2,
-    maximumFractionDigits: 2
+    maximumFractionDigits: 2,
   }).format(value);
 }
 ```
 
 ### Test File Location
+
 - If pipe: `apps/dms-material/src/app/pipes/format-position.pipe.spec.ts`
 - If utility: `apps/dms-material/src/app/utils/format-position.spec.ts`
 - Colocated with implementation file
 
 ### Edge Cases to Test
+
 - `null` or `undefined` → should handle gracefully (return "0.00" or "-")
 - `NaN` → should handle gracefully
 - Infinity → should handle gracefully
 - Very large numbers → should not break formatting
 
 ### Skipping Tests
+
 ```typescript
 // Vitest
 describe.skip('Position number formatting', () => {
@@ -135,11 +142,13 @@ it.skip('should format 1000 as "1,000.00"', () => {
 ```
 
 ### Project Structure Notes
+
 - Follow Angular 21 patterns
 - If creating a pipe, make it standalone: `standalone: true`
 - Test file should be colocated with implementation file
 
 ### References
+
 - [Source: _bmad-output/planning-artifacts/epics-2026-03-21.md#Story 15.1]
 - [Source: apps/dms-material/src/app/pages/universe/]
 - [Source: Angular DecimalPipe docs](https://angular.io/api/common/DecimalPipe)

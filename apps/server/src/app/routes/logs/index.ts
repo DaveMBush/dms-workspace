@@ -157,6 +157,7 @@ function handleErrorLogsRequest(
       return validationError;
     }
 
+    // prettier-ignore
     const filters: LogFilters = { level, from, to, search: search.trim(), file };
     const allLogs = readLogFiles(file);
     const filteredLogs = filterLogs(allLogs, filters);

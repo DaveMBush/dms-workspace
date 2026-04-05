@@ -17,6 +17,7 @@ So that I have a clear, unobstructed visual indicator of loading state rather th
 2. **Given** I understand the pre-migration centering approach
    **When** I update the spinner component's template with appropriate Tailwind utilities
    **Then** the spinner wrapper uses either:
+
    - Fixed positioning: `fixed inset-0 flex items-center justify-center` (or equivalent), or
    - A full-screen overlay approach that places the spinner in the viewport center
 
@@ -87,6 +88,7 @@ So that I have a clear, unobstructed visual indicator of loading state rather th
 ### Context: Why Epic 10 Failed
 
 Epic 10 (`10-1-center-wait-spinner-using-tailwind.md`) marked this as done but the spinner still appears in the upper-left corner. The previous fix likely:
+
 - Applied classes to the wrong element, OR
 - Applied classes that were overridden by other CSS, OR
 - Did not account for the positioning context of the spinner's parent container
@@ -104,6 +106,7 @@ The fix must use `fixed` positioning to escape any parent container stacking con
 ```
 
 Key details:
+
 - `fixed` — positions relative to the viewport, not the document
 - `inset-0` — shorthand for `top-0 right-0 bottom-0 left-0` (full viewport coverage)
 - `z-50` — ensures spinner renders above all page content
@@ -117,6 +120,7 @@ Do NOT use `absolute` positioning — this relies on a positioned ancestor and w
 ### Screens That Use the Spinner
 
 All four screens share the same spinner component/mechanism. A single fix to the spinner component should resolve all screens simultaneously. Confirm by checking:
+
 - `apps/dms-material/src/app/pages/screener/`
 - `apps/dms-material/src/app/pages/universe/`
 - `apps/dms-material/src/app/pages/account/`

@@ -1,6 +1,8 @@
 import { logger } from '../../../utils/structured-logger';
 import { prisma } from '../../prisma/prisma-client';
 import { fetchAndUpdatePriceData } from '../universe/fetch-and-update-price-data.function';
+import { adjustLotsForSplit } from './adjust-lots-for-split.function';
+import { calculateSplitRatio } from './calculate-split-ratio.function';
 import { FidelityCsvRow } from './fidelity-csv-row.interface';
 import { isInLieuRow } from './is-in-lieu-row.function';
 import { isSplitRow } from './is-split-row.function';
@@ -333,6 +335,16 @@ async function handleDividendRow(
 }
 
 /**
+ * Handles a split CSV row by calculating the split ratio and adjusting all open lots.
+ */
+async function handleSplitRow(row: FidelityCsvRow): Promise<void> {
+  const ratio = await calculateSplitRatio(row.symbol, row.quantity);
+  if (ratio !== null) {
+    await adjustLotsForSplit(row.symbol, ratio);
+  }
+}
+
+/**
  * Maps a single CSV row to the appropriate result category.
  * Uses pattern matching since action strings contain additional details.
  */
@@ -341,9 +353,14 @@ async function mapSingleRow(
   result: MappedTransactionResult,
   accountCache: Map<string, { id: string }>
 ): Promise<void> {
-  // Detect split and in-lieu rows BEFORE any buy/sell classification.
-  // Split adjustment logic is handled by Stories 48.2–48.4.
-  if (isSplitRow(row) || isInLieuRow(row)) {
+  // In-lieu rows are skipped entirely.
+  if (isInLieuRow(row)) {
+    return;
+  }
+
+  // Split rows: calculate ratio and adjust all open lots (Stories 48.2–48.3).
+  if (isSplitRow(row)) {
+    await handleSplitRow(row);
     return;
   }
 

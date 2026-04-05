@@ -92,6 +92,7 @@ A story is only complete when a human (or Playwright) has seen the component vis
 ### Story URL Pattern
 
 Individual stories are accessible at:
+
 ```
 http://localhost:6006/?path=/story/<story-id>
 ```
@@ -101,6 +102,7 @@ Where `<story-id>` is derived from the `title` field in the Meta export, e.g., `
 ### Success Criteria Per Story
 
 A story is considered **passing** when:
+
 - The component is visible in the Storybook canvas (not blank, not an error overlay)
 - The browser console reports zero errors
 - Any story variants also render without errors
@@ -116,9 +118,9 @@ Date: <date>
 
 ## Results
 
-| Story | Variants Checked | Status | Notes |
-|-------|-----------------|--------|-------|
-| Components/MyComponent | Default, Empty | ✅ Pass | - |
+| Story                  | Variants Checked | Status  | Notes |
+| ---------------------- | ---------------- | ------- | ----- |
+| Components/MyComponent | Default, Empty   | ✅ Pass | -     |
 ```
 
 ### Dependency Chain

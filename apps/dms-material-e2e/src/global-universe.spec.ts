@@ -140,46 +140,46 @@ test.describe('Global Universe Component', () => {
   test.describe('Risk Group Filter', () => {
     test('should show All option for risk group', async ({ page }) => {
       const riskGroupSelect = page.locator('.header-filter mat-select').first();
-        await riskGroupSelect.dispatchEvent('click');
-        await expect(page.getByRole('option', { name: 'All' })).toBeVisible();
-      });
-
-      test('should show Equities option', async ({ page }) => {
-        const riskGroupSelect = page.locator('.header-filter mat-select').first();
-        await riskGroupSelect.dispatchEvent('click');
-        await expect(
-          page.getByRole('option', { name: 'Equities' })
-        ).toBeVisible();
-      });
-
-      test('should show Income option', async ({ page }) => {
-        const riskGroupSelect = page.locator('.header-filter mat-select').first();
-        await riskGroupSelect.dispatchEvent('click');
-        await expect(
-          page.getByRole('option', { name: 'Income', exact: true })
-        ).toBeVisible();
-      });
+      await riskGroupSelect.dispatchEvent('click');
+      await expect(page.getByRole('option', { name: 'All' })).toBeVisible();
     });
 
-    test.describe('Expired Filter', () => {
-      test('should show All option for expired filter', async ({ page }) => {
-        const expiredSelect = page.locator('.header-filter mat-select').last();
-        await expiredSelect.dispatchEvent('click');
-        await expect(page.getByRole('option', { name: 'All' })).toBeVisible();
-      });
-
-      test('should show Yes option', async ({ page }) => {
-        const expiredSelect = page.locator('.header-filter mat-select').last();
-        await expiredSelect.dispatchEvent('click');
-        await expect(page.getByRole('option', { name: 'Yes' })).toBeVisible();
-      });
-
-      test('should show No option', async ({ page }) => {
-        const expiredSelect = page.locator('.header-filter mat-select').last();
-        await expiredSelect.dispatchEvent('click');
-        await expect(page.getByRole('option', { name: 'No' })).toBeVisible();
-      });
+    test('should show Equities option', async ({ page }) => {
+      const riskGroupSelect = page.locator('.header-filter mat-select').first();
+      await riskGroupSelect.dispatchEvent('click');
+      await expect(
+        page.getByRole('option', { name: 'Equities' })
+      ).toBeVisible();
     });
+
+    test('should show Income option', async ({ page }) => {
+      const riskGroupSelect = page.locator('.header-filter mat-select').first();
+      await riskGroupSelect.dispatchEvent('click');
+      await expect(
+        page.getByRole('option', { name: 'Income', exact: true })
+      ).toBeVisible();
+    });
+  });
+
+  test.describe('Expired Filter', () => {
+    test('should show All option for expired filter', async ({ page }) => {
+      const expiredSelect = page.locator('.header-filter mat-select').last();
+      await expiredSelect.dispatchEvent('click');
+      await expect(page.getByRole('option', { name: 'All' })).toBeVisible();
+    });
+
+    test('should show Yes option', async ({ page }) => {
+      const expiredSelect = page.locator('.header-filter mat-select').last();
+      await expiredSelect.dispatchEvent('click');
+      await expect(page.getByRole('option', { name: 'Yes' })).toBeVisible();
+    });
+
+    test('should show No option', async ({ page }) => {
+      const expiredSelect = page.locator('.header-filter mat-select').last();
+      await expiredSelect.dispatchEvent('click');
+      await expect(page.getByRole('option', { name: 'No' })).toBeVisible();
+    });
+  });
 
   test.describe('Responsive Layout', () => {
     test('should display correctly at desktop viewport', async ({ page }) => {
