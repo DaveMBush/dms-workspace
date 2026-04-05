@@ -36,22 +36,24 @@ export async function adjustLotsForSplit(
     return 0;
   }
 
-  const openLots = await prisma.trades.findMany({
-    where: {
-      universeId: universeEntry.id,
-      sell_date: null,
-    },
-    select: { id: true, quantity: true, buy: true },
-  });
-
-  if (openLots.length === 0) {
-    logger.warn(
-      `adjustLotsForSplit: no open lots found for symbol "${symbol}" — skipping adjustment`
-    );
-    return 0;
-  }
+  let updatedCount = 0;
 
   await prisma.$transaction(async function applyLotUpdates(tx) {
+    const openLots = await tx.trades.findMany({
+      where: {
+        universeId: universeEntry.id,
+        sell_date: null,
+      },
+      select: { id: true, quantity: true, buy: true },
+    });
+
+    if (openLots.length === 0) {
+      logger.warn(
+        `adjustLotsForSplit: no open lots found for symbol "${symbol}" — skipping adjustment`
+      );
+      return;
+    }
+
     for (const lot of openLots) {
       const newQuantity = Math.floor(lot.quantity / ratio);
       const newBuy = lot.buy * ratio;
@@ -60,7 +62,9 @@ export async function adjustLotsForSplit(
         data: { quantity: newQuantity, buy: newBuy },
       });
     }
+
+    updatedCount = openLots.length;
   });
 
-  return openLots.length;
+  return updatedCount;
 }

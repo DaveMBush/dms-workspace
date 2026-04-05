@@ -41,10 +41,14 @@ describe('adjustLotsForSplit', function () {
     const loggerModule = await import('../../../utils/structured-logger');
     loggerWarn = (loggerModule.logger as unknown as { warn: Mock }).warn;
 
-    // Wire $transaction to execute the callback with a tx proxy
+    // Wire $transaction to execute the callback with a tx proxy that shares the same mocks
     prisma.$transaction.mockImplementation(
-      async (fn: (tx: { trades: { update: Mock } }) => Promise<void>) => {
-        return fn({ trades: { update: prisma.trades.update } });
+      async (
+        fn: (tx: { trades: { findMany: Mock; update: Mock } }) => Promise<void>
+      ) => {
+        return fn({
+          trades: { findMany: prisma.trades.findMany, update: prisma.trades.update },
+        });
       }
     );
   });
