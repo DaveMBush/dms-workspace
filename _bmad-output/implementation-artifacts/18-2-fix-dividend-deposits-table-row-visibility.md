@@ -88,17 +88,20 @@ Based on the known symptom pattern (scroll-triggered visibility), the fix will l
 
 **Option A — Header row count correction** (most likely):
 If the CDK virtual scroll viewport subtracts a fixed header height assuming 2 rows, change it to use the actual header row count dynamically:
+
 ```typescript
 // Find where headerRowHeight is calculated, e.g.:
-const headerHeight = this.headerRowCount * ROW_HEIGHT;  // was hardcoded to 2
+const headerHeight = this.headerRowCount * ROW_HEIGHT; // was hardcoded to 2
 ```
 
 **Option B — Explicit container height** (fallback):
 If the container has no height, CDK virtual scroll has nothing to work with:
+
 ```html
 <!-- Add explicit height to the wrapper -->
 <div class="h-[400px] overflow-hidden">
-  <cdk-virtual-scroll-viewport ...>
+  <cdk-virtual-scroll-viewport ...></cdk-virtual-scroll-viewport>
+</div>
 ```
 
 **Option C — Force recalculation**:
@@ -127,6 +130,7 @@ Only Tailwind utilities — no custom SCSS for layout/height. If explicit height
 ### Non-Regression Check
 
 The Epic 12 fix made Open Positions and Sold Positions work. The fix for Dividend Deposits must:
+
 - NOT change the Open Positions or Sold Positions table components
 - Only touch Dividend Deposits-specific code
 - OR if using a shared component, make the header-row count configurable (as an `input()`)

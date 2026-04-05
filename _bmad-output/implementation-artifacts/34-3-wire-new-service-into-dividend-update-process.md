@@ -52,9 +52,11 @@ This story is a targeted surgical replacement of one call site. Do not restructu
 ## Dev Agent Record
 
 ### Agent Model Used
+
 Claude Sonnet 4.6 (GitHub Copilot)
 
 ### Completion Notes
+
 - Replaced `fetchDistributionData` with `fetchDividendHistory` as primary source in 2 files
 - Fallback to Yahoo Finance when primary returns empty array, with structured warning log
 - Prisma `Float` type preserves full IEEE 754 double precision (no truncation)
@@ -62,6 +64,7 @@ Claude Sonnet 4.6 (GitHub Copilot)
 - 43 total tests passing across both spec files
 
 ## File List
+
 - `apps/server/src/app/routes/settings/common/get-distributions.function.ts` (modified)
 - `apps/server/src/app/routes/settings/common/get-distributions.function.spec.ts` (modified)
 - `apps/server/src/app/routes/screener/get-consistent-distributions.function.ts` (modified)

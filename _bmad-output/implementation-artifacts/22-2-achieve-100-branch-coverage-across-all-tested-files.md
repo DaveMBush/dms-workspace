@@ -83,6 +83,7 @@ Story 22.1 must be complete before starting this story. The threshold must be se
 ### Signal-First Pattern (Angular Components)
 
 When adding tests for Angular components (using `@analogjs/vitest-angular`):
+
 - Use `TestBed.configureTestingModule()` with `provideZonelessChangeDetection()`
 - Use `fixture.componentRef.setInput()` to set signal inputs
 - Use `fixture.detectChanges()` for `OnPush` components

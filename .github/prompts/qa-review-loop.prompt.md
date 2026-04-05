@@ -58,4 +58,3 @@ Return a concise summary containing:
 - whether re-validation was required
 
 If the QA loop exhausts its retries, return `QA FAILED: <reason>` after handling required `prompt.sh` escalation.
-

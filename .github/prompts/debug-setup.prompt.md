@@ -45,4 +45,3 @@ Return a concise summary containing:
 - created branch name
 
 If setup fails after required retries and escalations, return `SETUP FAILED: <reason>` after handling required `prompt.sh` escalation.
-

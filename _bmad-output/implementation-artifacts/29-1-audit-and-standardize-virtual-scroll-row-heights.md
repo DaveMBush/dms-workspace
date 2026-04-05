@@ -60,6 +60,7 @@ so that `CdkVirtualScrollViewport` receives an accurate `itemSize` and smooth sc
 ### How CdkVirtualScrollViewport Uses rowHeight
 
 `BaseTableComponent` passes `rowHeight` as the `itemSize` to `CdkVirtualScrollViewport`. If `itemSize` is wrong:
+
 - If too small: scroll position jumps (viewport thinks items are smaller than they are)
 - If too large: gaps appear between items
 

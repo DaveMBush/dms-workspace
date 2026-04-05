@@ -63,11 +63,11 @@ so that I can organize portfolio data by a primary field and then break ties wit
 
 ### Rank Superscript Unicode Reference
 
-| Rank | Superscript |
-|------|-------------|
-| 1    | `¹` (U+00B9) |
-| 2    | `²` (U+00B2) |
-| 3    | `³` (U+00B3) |
+| Rank | Superscript       |
+| ---- | ----------------- |
+| 1    | `¹` (U+00B9)      |
+| 2    | `²` (U+00B2)      |
+| 3    | `³` (U+00B3)      |
 | 4+   | `⁴` (U+2074) etc. |
 
 ### Angular Patterns

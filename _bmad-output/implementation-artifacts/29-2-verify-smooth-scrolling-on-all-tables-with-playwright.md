@@ -57,6 +57,7 @@ so that `CdkVirtualScrollViewport` scroll behavior is automatically regression-t
 ### Scroll Container Selector
 
 The `CdkVirtualScrollViewport` renders a `<cdk-virtual-scroll-viewport>` element. Use:
+
 ```typescript
 const viewport = page.locator('cdk-virtual-scroll-viewport');
 ```
@@ -66,12 +67,7 @@ If multiple viewports exist on a page, scope by the screen's component selector.
 ### Monotonic Scroll Implementation Sketch
 
 ```typescript
-export async function verifyMonotonicScroll(
-  page: Page,
-  selector: string,
-  steps = 20,
-  stepPx = 100
-): Promise<void> {
+export async function verifyMonotonicScroll(page: Page, selector: string, steps = 20, stepPx = 100): Promise<void> {
   const el = page.locator(selector);
   let prev = await el.evaluate((node: Element) => node.scrollTop);
 

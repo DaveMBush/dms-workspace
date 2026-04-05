@@ -41,12 +41,14 @@ so that split processing correctness is continuously verified and cannot regress
 ### Test Data (OXLC 1-for-5 Reverse Split)
 
 Pre-condition lots to seed:
+
 - Lot 1: 500 OXLC shares at $4.00/share (bought 2024-01-15)
 - Lot 2: 500 OXLC shares at $3.80/share (bought 2024-03-01)
 - Lot 3: 530 OXLC shares at $3.60/share (bought 2024-06-01)
 - Total: 1530 shares
 
 CSV rows to import:
+
 ```
 <Symbol>,<Date>,<Description>,<Quantity>,<Price>,<Amount>
 OXLC,2025-09-08,"REVERSE SPLIT R/S FROM 691543102#REOR M005168075001",306,,
@@ -54,6 +56,7 @@ OXLC,2025-09-08,"IN LIEU OF FRX SHARE EU PAYOUT...",,, 0.36
 ```
 
 Expected post-import state:
+
 - Open OXLC position: 306 shares
 - Lot 1: 100 shares at $20.00/share
 - Lot 2: 100 shares at $19.00/share

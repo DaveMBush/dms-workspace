@@ -113,7 +113,8 @@ export async function adjustLotsForSplit(
       lot: OpenLot
     ) {
       return sum + calcLotRemainder(lot, ratio);
-    }, 0);
+    },
+    0);
 
     if (totalRemainder > 0) {
       await recordFractionalSale(

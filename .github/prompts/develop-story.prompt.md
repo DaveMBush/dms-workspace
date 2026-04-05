@@ -166,4 +166,3 @@ When it returns `MERGE COMPLETE`: the story workflow is complete.
 - All quality gates maintained while maximizing autonomy
 - MCP servers provide validation and documentation resources
 - See bmad-workflow skill for detailed patterns and best practices
-

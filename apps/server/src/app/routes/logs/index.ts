@@ -157,7 +157,13 @@ function handleErrorLogsRequest(
       return validationError;
     }
 
-    const filters: LogFilters = { level, from, to, search: search.trim(), file };
+    const filters: LogFilters = {
+      level,
+      from,
+      to,
+      search: search.trim(),
+      file,
+    };
     const allLogs = readLogFiles(file);
     const filteredLogs = filterLogs(allLogs, filters);
     const errorLogs = filteredLogs.map(mapLogToErrorLogEntry);

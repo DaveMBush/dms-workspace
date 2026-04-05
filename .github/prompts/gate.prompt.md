@@ -18,4 +18,3 @@ Use `git diff --name-only origin/main...HEAD` to identify the changed files and 
 Invoke the `#skill:bmad-code-review` skill now.
 
 Do not commit until gate result is evaluated by the calling workflow.
-

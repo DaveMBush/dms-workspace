@@ -55,4 +55,3 @@ Return a concise summary containing:
 - brief summary of any auto-fixes applied
 
 If validation fails after exhausting the loop rules, return `VALIDATION FAILED: <reason>` after handling required `prompt.sh` escalation.
-

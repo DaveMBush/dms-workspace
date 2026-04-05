@@ -61,6 +61,7 @@ So that each component can be developed and reviewed in isolation with represent
 ### Display-Only Component Identification Rules
 
 A component qualifies as **display-only** if ALL of the following are true:
+
 - No `inject(SomeService)` calls inside the component class
 - No Angular router usage (`inject(Router)`, `inject(ActivatedRoute)`)
 - All data comes in via `input()` signals or `@Input()` decorator
@@ -103,7 +104,7 @@ The project uses Angular 21 signal-based inputs (`input()` and `input.required<T
 // Component uses: myLabel = input.required<string>();
 export const Default: Story = {
   args: {
-    myLabel: 'Hello World',  // directly map the signal input name
+    myLabel: 'Hello World', // directly map the signal input name
   },
 };
 ```
@@ -117,6 +118,7 @@ export const Default: Story = {
 ### Story File Location
 
 Story files should be co-located with their component:
+
 ```
 apps/dms-material/src/app/components/my-component/
   my-component.component.ts
@@ -128,6 +130,7 @@ apps/dms-material/src/app/components/my-component/
 ### Common Angular Material Components to Watch For
 
 The project uses Angular Material 21.2.x. When creating stories for components that rely on Angular Material:
+
 - Import `provideAnimations()` or `provideAnimationsAsync()` in the story's `applicationConfig`
 - Include required Angular Material providers
 

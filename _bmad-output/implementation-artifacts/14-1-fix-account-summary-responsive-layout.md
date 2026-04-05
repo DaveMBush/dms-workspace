@@ -86,14 +86,17 @@ So that I can view both the numbers and the graph simultaneously without scrolli
 ## Dev Notes
 
 ### Context from Epic 8
+
 - Identical issue to Global Summary (Story 13.1)
 - Tailwind CSS migration changed layout classes
 - Line graph now stacks below summary instead of appearing side-by-side on desktop
 
 ### Similar to Story 13.1
+
 This story is nearly identical to Story 13.1 (Global Summary), just applied to Account Summary screens. The same Tailwind responsive layout pattern should be used.
 
 ### Tailwind Responsive Layout Pattern
+
 ```html
 <!-- Stacks on mobile, side-by-side on desktop -->
 <div class="flex flex-col lg:flex-row gap-4">
@@ -107,18 +110,22 @@ This story is nearly identical to Story 13.1 (Global Summary), just applied to A
 ```
 
 ### Tailwind Breakpoints
+
 - `lg`: 1024px (use this for desktop layout switch)
 
 ### Key Files to Modify
+
 - Account Summary page: `apps/dms-material/src/app/pages/account-summary/account-summary.component.html`
 - Or if integrated: `apps/dms-material/src/app/pages/account/account.component.html`
 
 ### Graph Component
+
 - Likely using the same charting library as Global Summary
 - Ensure graph component is responsive and fills its container
 - May be a shared component already fixed by Story 13.1
 
 ### Testing with Playwright MCP Server
+
 - Use `mcp_microsoft_pla_browser_navigate` to navigate to Account Summary screens
 - Use `mcp_microsoft_pla_browser_resize` to set viewport sizes:
   - Desktop: `{ width: 1280, height: 720 }`
@@ -127,12 +134,14 @@ This story is nearly identical to Story 13.1 (Global Summary), just applied to A
 - Use `mcp_microsoft_pla_browser_evaluate` to verify element positions
 
 ### Project Structure Notes
+
 - Account Summary displays account-specific CEF position and dividend data
 - Uses SmartNgRX for state management
 - Line graph shows account-level income trends over time
 - Multiple accounts exist, test on at least 2-3 different accounts
 
 ### References
+
 - [Source: _bmad-output/planning-artifacts/epics-2026-03-21.md#Story 14.1]
 - [Source: _bmad-output/implementation-artifacts/13-1-fix-global-summary-responsive-layout.md] (similar fix)
 - [Source: apps/dms-material/src/app/pages/account-summary/]

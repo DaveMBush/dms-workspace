@@ -48,7 +48,7 @@ so that I can visually verify components in both themes without manually editing
         themes: { Light: 'light-theme', Dark: 'dark-theme' },
         defaultTheme: 'Light',
       }),
-    ]
+    ];
     ```
   - [ ] Adjust class names to match actual project theme classes
 - [ ] Validate (AC: #4, #5)
@@ -67,6 +67,7 @@ so that I can visually verify components in both themes without manually editing
 ### Theme Class Lookup
 
 Before writing the config, the implementing agent must:
+
 1. Open `apps/dms-material/src/styles.scss` (or the root styles entry)
 2. Find the CSS class or attribute that Angular Material uses to toggle between light and dark palettes
 3. Use those exact class names in `withThemeByClassName`
