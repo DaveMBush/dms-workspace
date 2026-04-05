@@ -40,7 +40,6 @@ export async function calculateSplitRatio(
   const openTrades = await prisma.trades.findMany({
     where: {
       universeId: universeEntry.id,
-      sell: 0,
       sell_date: null,
     },
     select: { quantity: true },

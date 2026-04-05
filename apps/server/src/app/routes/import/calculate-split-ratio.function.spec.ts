@@ -159,7 +159,6 @@ describe('calculateSplitRatio', function () {
     expect(prisma.trades.findMany).toHaveBeenCalledWith({
       where: {
         universeId: 'universe-7',
-        sell: 0,
         sell_date: null,
       },
       select: { quantity: true },
