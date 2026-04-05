@@ -19,6 +19,7 @@ interface CapturedIndexesRequest {
   request: Request;
   body: { startIndex: number; length: number; childField: string };
   response: PartialArray;
+  responseReady?: Promise<void>;
 }
 
 /**
@@ -70,7 +71,7 @@ function captureIndexesRequests(
     if (entry === undefined) {
       return;
     }
-    response
+    entry.responseReady = response
       .json()
       .then(function handleJson(json: PartialArray) {
         entry.response = json;
@@ -81,6 +82,23 @@ function captureIndexesRequests(
   });
 
   return captured;
+}
+
+/**
+ * Await all captured response JSON promises to ensure no race conditions.
+ */
+async function waitForCapturedResponses(
+  entries: CapturedIndexesRequest[]
+): Promise<void> {
+  await Promise.all(
+    entries
+      .map(function toPromise(
+        e: CapturedIndexesRequest
+      ): Promise<void> | undefined {
+        return e.responseReady;
+      })
+      .filter((p): p is Promise<void> => p !== undefined)
+  );
 }
 
 /**
@@ -121,8 +139,11 @@ test.describe('Lazy Loading Network Traffic - Dividend Deposits', () => {
     await page.goto(`/account/${accountId}/div-dep`);
     await waitForDivDepositsTable(page);
 
-    // Wait for indexes requests to complete
-    await page.waitForTimeout(2000);
+    // Wait for at least one request, then await all response JSON parsing
+    await expect
+      .poll(() => indexesRequests.length, { timeout: 10000 })
+      .toBeGreaterThan(0);
+    await waitForCapturedResponses(indexesRequests);
 
     // Filter to divDeposits requests only
     const divDepositRequests = indexesRequests.filter(
@@ -173,8 +194,11 @@ test.describe('Lazy Loading Network Traffic - Dividend Deposits', () => {
       await page.waitForTimeout(500);
     }
 
-    // Wait for all requests to settle
-    await page.waitForTimeout(3000);
+    // Wait for at least one request, then await all response JSON parsing
+    await expect
+      .poll(() => indexesRequests.length, { timeout: 10000 })
+      .toBeGreaterThan(0);
+    await waitForCapturedResponses(indexesRequests);
 
     const divDepositRequests = indexesRequests.filter(
       function filterDivDeposits(entry: CapturedIndexesRequest): boolean {
@@ -183,8 +207,9 @@ test.describe('Lazy Loading Network Traffic - Dividend Deposits', () => {
     );
     expect(divDepositRequests.length).toBeGreaterThanOrEqual(1);
 
-    // Verify every individual response returns at most MAX_PAGE_SIZE indexes
+    // Verify every individual request and response respects MAX_PAGE_SIZE
     for (const entry of divDepositRequests) {
+      expect(entry.body.length).toBeLessThanOrEqual(MAX_PAGE_SIZE);
       expect(entry.response.indexes.length).toBeLessThanOrEqual(MAX_PAGE_SIZE);
     }
 
