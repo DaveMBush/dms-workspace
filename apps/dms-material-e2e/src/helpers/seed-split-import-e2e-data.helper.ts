@@ -3,7 +3,7 @@ import type { PrismaClient } from '@prisma/client';
 import { initializePrismaClient } from './shared-prisma-client.helper';
 import { createRiskGroups } from './shared-risk-groups.helper';
 
-export interface SplitImportSeederResult {
+interface SplitImportSeederResult {
   accountId: string;
   universeId: string;
   cleanup(): Promise<void>;
@@ -11,6 +11,44 @@ export interface SplitImportSeederResult {
 
 const OXLC_SYMBOL = 'OXLC';
 const ACCOUNT_NAME = 'OXLC Split Test Account';
+
+async function createPresplitLots(
+  prisma: PrismaClient,
+  universeId: string,
+  accountId: string
+): Promise<void> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Prisma createMany requires untyped batch data
+  const lotData: any[] = [
+    {
+      universeId,
+      accountId,
+      buy: 4.0,
+      sell: 0,
+      buy_date: new Date('2024-01-15'),
+      quantity: 500,
+      sell_date: null,
+    },
+    {
+      universeId,
+      accountId,
+      buy: 3.8,
+      sell: 0,
+      buy_date: new Date('2024-03-01'),
+      quantity: 500,
+      sell_date: null,
+    },
+    {
+      universeId,
+      accountId,
+      buy: 3.6,
+      sell: 0,
+      buy_date: new Date('2024-06-01'),
+      quantity: 530,
+      sell_date: null,
+    },
+  ];
+  await prisma.trades.createMany({ data: lotData });
+}
 
 async function cleanupExistingOxlcData(prisma: PrismaClient): Promise<void> {
   const existingUniverse = await prisma.universe.findFirst({
@@ -50,37 +88,7 @@ async function createOxlcSeedData(
 
   // Pre-split lots: 500 + 500 + 530 = 1530 total shares
   // After 1-for-5 reverse split → 100 + 100 + 106 = 306 total shares
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Prisma createMany requires untyped batch data
-  const lotData: any[] = [
-    {
-      universeId: universe.id,
-      accountId: account.id,
-      buy: 4.0,
-      sell: 0,
-      buy_date: new Date('2024-01-15'),
-      quantity: 500,
-      sell_date: null,
-    },
-    {
-      universeId: universe.id,
-      accountId: account.id,
-      buy: 3.8,
-      sell: 0,
-      buy_date: new Date('2024-03-01'),
-      quantity: 500,
-      sell_date: null,
-    },
-    {
-      universeId: universe.id,
-      accountId: account.id,
-      buy: 3.6,
-      sell: 0,
-      buy_date: new Date('2024-06-01'),
-      quantity: 530,
-      sell_date: null,
-    },
-  ];
-  await prisma.trades.createMany({ data: lotData });
+  await createPresplitLots(prisma, universe.id, account.id);
 
   return {
     accountId: account.id,

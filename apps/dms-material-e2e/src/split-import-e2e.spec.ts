@@ -104,15 +104,20 @@ test.describe('OXLC Split Import E2E', () => {
     try {
       const openLots = await prisma.trades.findMany({
         where: { universeId, sell_date: null },
+        orderBy: { buy_date: 'asc' },
+        select: { quantity: true, buy: true },
       });
       const totalQty = openLots.reduce(function sumQuantities(
         sum: number,
-        trade: { quantity: number }
+        trade: { quantity: number; buy: number }
       ) {
         return sum + trade.quantity;
       },
       0);
       expect(totalQty).toBe(306);
+      // Per-lot split assertions: 500→100@$20, 500→100@$19, 530→106@$18
+      expect(openLots.map((lot) => lot.quantity)).toEqual([100, 100, 106]);
+      expect(openLots.map((lot) => lot.buy)).toEqual([20, 19, 18]);
 
       // AC2: 1530 / 5 = 306 exactly — no fractional remainder, so no fractional sale
       const closedTradeCount = await prisma.trades.count({
@@ -143,13 +148,26 @@ test.describe('OXLC Split Import E2E', () => {
     await expect(oxlcRows).toHaveCount(3, { timeout: 10000 });
 
     let totalQty = 0;
+    const buyPrices: number[] = [];
     for (let i = 0; i < 3; i++) {
       const qtyText = await oxlcRows
         .nth(i)
         .locator('[data-testid="editable-quantity"]')
         .textContent();
       totalQty += parseInt(qtyText?.trim() ?? '0', 10);
+
+      // AC3: adjusted cost basis — read per-share buy price from UI
+      const buyText = await oxlcRows
+        .nth(i)
+        .locator('[data-testid="editable-buy-price"]')
+        .textContent();
+      buyPrices.push(parseFloat((buyText?.trim() ?? '0').replace(/[$,]/g, '')));
     }
     expect(totalQty).toBe(306);
+    // Post-split buy prices: $20, $19, $18 (sorted for row-order independence)
+    buyPrices.sort(function byAscending(a, b) {
+      return a - b;
+    });
+    expect(buyPrices).toEqual([18, 19, 20]);
   });
 });
