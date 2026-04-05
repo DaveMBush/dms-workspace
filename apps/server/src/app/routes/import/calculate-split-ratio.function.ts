@@ -19,6 +19,13 @@ export async function calculateSplitRatio(
   symbol: string,
   csvPostSplitQuantity: number
 ): Promise<number | null> {
+  if (!Number.isFinite(csvPostSplitQuantity) || csvPostSplitQuantity <= 0) {
+    logger.warn(
+      `calculateSplitRatio: invalid post-split CSV quantity "${csvPostSplitQuantity}" for symbol "${symbol}" — skipping split`
+    );
+    return null;
+  }
+
   const universeEntry = await prisma.universe.findFirst({
     where: { symbol },
   });

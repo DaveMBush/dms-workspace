@@ -69,6 +69,42 @@ describe('calculateSplitRatio', function () {
     expect(result).toBe(2);
   });
 
+  test('returns null and logs a warning when csvPostSplitQuantity is zero', async function () {
+    const result = await calculateSplitRatio('OXLC', 0);
+
+    expect(result).toBeNull();
+    expect(loggerWarn).toHaveBeenCalledWith(
+      expect.stringContaining('invalid post-split CSV quantity')
+    );
+  });
+
+  test('returns null and logs a warning when csvPostSplitQuantity is negative', async function () {
+    const result = await calculateSplitRatio('OXLC', -100);
+
+    expect(result).toBeNull();
+    expect(loggerWarn).toHaveBeenCalledWith(
+      expect.stringContaining('invalid post-split CSV quantity')
+    );
+  });
+
+  test('returns null and logs a warning when csvPostSplitQuantity is NaN', async function () {
+    const result = await calculateSplitRatio('OXLC', Number.NaN);
+
+    expect(result).toBeNull();
+    expect(loggerWarn).toHaveBeenCalledWith(
+      expect.stringContaining('invalid post-split CSV quantity')
+    );
+  });
+
+  test('returns null and logs a warning when csvPostSplitQuantity is Infinity', async function () {
+    const result = await calculateSplitRatio('OXLC', Infinity);
+
+    expect(result).toBeNull();
+    expect(loggerWarn).toHaveBeenCalledWith(
+      expect.stringContaining('invalid post-split CSV quantity')
+    );
+  });
+
   test('returns null and logs a warning when no open lots exist', async function () {
     prisma.universe.findFirst.mockResolvedValue({ id: 'universe-4' });
     prisma.trades.findMany.mockResolvedValue([]);
