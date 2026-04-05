@@ -335,6 +335,16 @@ async function handleDividendRow(
 }
 
 /**
+ * Handles a split CSV row by calculating the split ratio and adjusting all open lots.
+ */
+async function handleSplitRow(row: FidelityCsvRow): Promise<void> {
+  const ratio = await calculateSplitRatio(row.symbol, row.quantity);
+  if (ratio !== null) {
+    await adjustLotsForSplit(row.symbol, ratio);
+  }
+}
+
+/**
  * Maps a single CSV row to the appropriate result category.
  * Uses pattern matching since action strings contain additional details.
  */
@@ -350,10 +360,7 @@ async function mapSingleRow(
 
   // Split rows: calculate ratio and adjust all open lots (Stories 48.2–48.3).
   if (isSplitRow(row)) {
-    const ratio = await calculateSplitRatio(row.symbol, row.quantity);
-    if (ratio !== null) {
-      await adjustLotsForSplit(row.symbol, ratio);
-    }
+    await handleSplitRow(row);
     return;
   }
 

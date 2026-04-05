@@ -51,7 +51,7 @@ export async function adjustLotsForSplit(
     return 0;
   }
 
-  await prisma.$transaction(async (tx) => {
+  await prisma.$transaction(async function applyLotUpdates(tx) {
     for (const lot of openLots) {
       const newQuantity = Math.floor(lot.quantity / ratio);
       const newBuy = lot.buy * ratio;
