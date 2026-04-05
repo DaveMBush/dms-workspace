@@ -68,4 +68,3 @@ All ${N} stories implemented and merged to main.
 - **Story fails**: prompt.sh decides abort epic / skip story / retry with help
 - **Status validation fails**: prompt.sh decides whether to continue anyway
 - **Rate limits or conflicts**: Individual stories handle via develop-story.prompt.md
-

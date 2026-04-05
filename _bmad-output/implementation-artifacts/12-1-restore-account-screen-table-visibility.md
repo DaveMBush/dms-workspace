@@ -83,17 +83,20 @@ So that I can view my Open Positions, Sold Positions, and Dividend Deposits data
 ## Dev Notes
 
 ### Context from Epic 8
+
 - After Tailwind CSS migration, Account screen tables are no longer displaying
 - Universe screen tables still work correctly → suggests issue is with panel/container structure, not table component itself
 - Likely a Flexbox or Grid layout issue where containers collapsed or tables pushed off-screen
 
 ### Common Layout Issues After Tailwind Migration
+
 - Missing `flex` or `flex-col` on parent containers
 - Missing height constraints: `h-full`, `min-h-0`
 - Overflow hidden: changed from `overflow-auto` to `overflow-hidden`
 - Missing `flex-1` or `grow` on expanding sections
 
 ### Expected Fix Pattern
+
 ```html
 <!-- Before (broken) -->
 <div class="account-container">
@@ -111,28 +114,33 @@ So that I can view my Open Positions, Sold Positions, and Dividend Deposits data
 ```
 
 ### Key Files to Modify
+
 - Account page: `apps/dms-material/src/app/pages/account/account.component.html`
 - Account page: `apps/dms-material/src/app/pages/account/account.component.ts`
 - Possibly table components if they have wrapper elements
 
 ### Reference: Universe Screen (Working)
+
 - Universe page: `apps/dms-material/src/app/pages/universe/universe.component.html`
 - Use this as the reference implementation for correct table layout
 
 ### Testing with Playwright MCP Server
+
 - Use `mcp_microsoft_pla_browser_navigate` to navigate to Account screens
 - Use `mcp_microsoft_pla_browser_take_screenshot` to capture full page
 - Use `mcp_microsoft_pla_browser_evaluate` to check element visibility:
   ```javascript
-  document.querySelector('.open-positions-table').offsetHeight > 0
+  document.querySelector('.open-positions-table').offsetHeight > 0;
   ```
 
 ### Project Structure Notes
+
 - Account screens follow Angular 21 patterns with SmartNgRX for state
 - Tables are display-only components receiving data via `input()` signals
 - CEF-focused domain: accounts track positions and dividends for Closed-End Funds
 
 ### References
+
 - [Source: _bmad-output/planning-artifacts/epics-2026-03-21.md#Story 12.1]
 - [Source: apps/dms-material/src/app/pages/account/]
 - [Source: apps/dms-material/src/app/pages/universe/] (working reference)

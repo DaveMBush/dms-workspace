@@ -42,7 +42,9 @@ async function fetchAndParseHtml(
   const response = await fetch(url);
   if (!response.ok) {
     logger.warn(
-      `dividendhistory.org returned ${String(response.status)} for ticker ${upperTicker}`,
+      `dividendhistory.org returned ${String(
+        response.status
+      )} for ticker ${upperTicker}`,
       { ticker: upperTicker, status: response.status }
     );
     return null;
@@ -87,10 +89,13 @@ export async function fetchDividendHistory(
   const url = `${BASE_URL}/${encodeURIComponent(upperTicker)}/`;
 
   try {
-    logger.debug(`Fetching dividend history for ${upperTicker} from dividendhistory.org`, {
-      ticker: upperTicker,
-      url,
-    });
+    logger.debug(
+      `Fetching dividend history for ${upperTicker} from dividendhistory.org`,
+      {
+        ticker: upperTicker,
+        url,
+      }
+    );
 
     const rawRows = await fetchAndParseHtml(url, upperTicker);
 

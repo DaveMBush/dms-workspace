@@ -70,8 +70,8 @@ Before writing any code, read `_bmad-output/implementation-artifacts/virtual-scr
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  will-change: transform;      // ← creates a stacking context; may break sticky
-  contain: strict;             // ← most likely root cause
+  will-change: transform; // ← creates a stacking context; may break sticky
+  contain: strict; // ← most likely root cause
 }
 
 th.mat-mdc-header-cell {
@@ -85,6 +85,7 @@ th.mat-mdc-header-cell {
 ### Likely Fix Approaches (in order of preference)
 
 **Option A — Remove `contain: strict`, keep other performance CSS:**
+
 ```scss
 .virtual-scroll-viewport {
   flex: 1;
@@ -96,17 +97,19 @@ th.mat-mdc-header-cell {
 ```
 
 **Option B — Downgrade `contain` to `contain: size` (preserves some perf benefit):**
+
 ```scss
 .virtual-scroll-viewport {
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
   will-change: transform;
-  contain: size;  // size containment only, no layout isolation
+  contain: size; // size containment only, no layout isolation
 }
 ```
 
 **Option C — Remove both `contain` and `will-change`:**
+
 ```scss
 .virtual-scroll-viewport {
   flex: 1;

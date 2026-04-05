@@ -73,16 +73,19 @@ Each extracted utility or helper MUST be in its own file.
 ### Shared File Locations
 
 **Angular frontend:**
+
 - Utils: `apps/dms-material/src/app/shared/utils/{function-name}.ts`
 - Services: `apps/dms-material/src/app/shared/services/{service-name}.service.ts`
 - Constants: `apps/dms-material/src/app/shared/constants/{name}.ts`
 
 **Server (Fastify/Node):**
+
 - Utils: `apps/server/src/app/utils/{function-name}.ts`
 
 ### Spec File Requirement
 
 If a new file contains non-trivial logic (branching, calculations, transformations), a spec file is required:
+
 ```
 apps/dms-material/src/app/shared/utils/format-currency.ts       ← utility
 apps/dms-material/src/app/shared/utils/format-currency.spec.ts  ← spec
@@ -100,6 +103,7 @@ Trivial wrappers (single-line pass-through re-exports, constants, type aliases) 
 ### Architecture Rules
 
 From `architecture.md` (jscpd section):
+
 > "Duplication violations must be resolved by refactoring duplicated code into shared utilities, services, or base abstractions — never by adding new suppression entries to the `ignore` array."
 > "The `ignore` array may only contain infrastructure/config patterns... Application source code paths must not be suppressed."
 

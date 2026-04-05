@@ -50,25 +50,13 @@ so that no code duplication can accumulate undetected and the documented standar
 ```json
 {
   "silent": false,
-  "threshold": "0.1",        // ← change to "0"
+  "threshold": "0.1", // ← change to "0"
   "mode": "weak",
   "pattern": "**/*.{js,ts,html,css,scss,json,md}",
   "minLines": 15,
   "minTokens": 100,
   "//": "ignore spec files for now",
-  "ignore": [
-    "**/_bmad-output/**",
-    "**/_bmad/**",
-    "**/docs/**",
-    "**/*.test.ts",
-    "**/eslint.config.mjs",
-    "**/jest.config.ts",
-    "**/*.spec.ts",
-    "**/tsconfig.json",
-    "**/tsconfig.lib.json",
-    "**/node_modules/**",
-    "**/{.*,coverage,dist,tmp}/**"
-  ]
+  "ignore": ["**/_bmad-output/**", "**/_bmad/**", "**/docs/**", "**/*.test.ts", "**/eslint.config.mjs", "**/jest.config.ts", "**/*.spec.ts", "**/tsconfig.json", "**/tsconfig.lib.json", "**/node_modules/**", "**/{.*,coverage,dist,tmp}/**"]
 }
 ```
 
@@ -77,10 +65,13 @@ so that no code duplication can accumulate undetected and the documented standar
 Location: `_bmad-output/planning-artifacts/architecture.md` section `### jscpd (Code Duplication)` around line 695.
 
 Change this line:
+
 ```
 **Threshold:** 0.1% maximum duplication across the scanned codebase
 ```
+
 To:
+
 ```
 **Threshold:** 0% — zero tolerance for code duplication across the scanned codebase
 ```
@@ -96,6 +87,7 @@ If `pnpm dupcheck` fails after this change, Story 32.2 is needed. The violations
 ### Architecture Rules on jscpd (for information only — enforced in Story 32.2)
 
 From the architecture doc:
+
 - Duplication violations MUST be resolved by refactoring into shared utilities, services, or base abstractions
 - NEVER add new suppression entries to the `ignore` array
 - The `ignore` array may only contain infrastructure/config patterns — application source code paths must not be suppressed

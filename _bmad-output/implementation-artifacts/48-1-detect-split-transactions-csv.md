@@ -49,12 +49,14 @@ The CSV import currently does not handle split transactions. When a split row is
 ### Known Split Row Format
 
 Example row fields (from the epic description):
+
 - **Symbol:** OXLC
 - **Description:** "REVERSE SPLIT R/S FROM 691543102#REOR M005168075001"
 - **Quantity:** 306 (post-split quantity — this is the NEW quantity after the split)
 - **CUSIP** (if present in description): 691543102 — already resolved to ticker, not needed for logic
 
 "IN LIEU OF FRX SHARE" row:
+
 - **Description:** "IN LIEU OF FRX SHARE EU PAYOUT..."
 - **Amount:** cash amount for fractional share payout
 - This row should be detected and classified separately (skipped by Story 48.4)

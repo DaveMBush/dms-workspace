@@ -17,6 +17,7 @@ So that I can view the full summary at a glance on wide screens and scroll comfo
 2. **Given** I understand the pre-Epic 8 layout approach
    **When** I rewrite the Global Summary component template layout using Tailwind CSS responsive utilities
    **Then** the container uses a responsive flex or grid approach such as:
+
    - `flex flex-col lg:flex-row` on the outer wrapper, with each child taking appropriate width/flex values, or
    - A `grid grid-cols-1 lg:grid-cols-2` (or similar column split) approach
 
@@ -97,10 +98,12 @@ So that I can view the full summary at a glance on wide screens and scroll comfo
 ### Context: Why Epic 13 Failed
 
 Epic 13 (`13-1-fix-global-summary-responsive-layout.md`) was marked done but two issues persist:
+
 1. **Cold start**: The line graph renders ON TOP of the pie chart momentarily, not beside it
 2. **After settling**: The graph is BELOW the summary info, not beside it
 
 The likely cause of #2 is that `flex-col lg:flex-row` was applied but:
+
 - The `lg:flex-row` breakpoint was not set correctly, OR
 - A child element was preventing the side-by-side layout (e.g., `width: 100%` override in SCSS)
 
@@ -135,13 +138,13 @@ The chart library (ng2-charts wrapping chart.js) can cause overlap if the contai
 
 ### Tailwind Breakpoints Reference
 
-| Prefix | Min Width |
-|--------|-----------|
-| `sm`   | 640px     |
-| `md`   | 768px     |
+| Prefix | Min Width         |
+| ------ | ----------------- |
+| `sm`   | 640px             |
+| `md`   | 768px             |
 | `lg`   | 1024px ← use this |
-| `xl`   | 1280px    |
-| `2xl`  | 1536px    |
+| `xl`   | 1280px            |
+| `2xl`  | 1536px            |
 
 Use `lg:` prefix for desktop side-by-side layout.
 

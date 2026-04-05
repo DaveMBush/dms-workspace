@@ -52,9 +52,11 @@ Create a standalone service function (not a class) following the naming conventi
 ## Dev Agent Record
 
 ### Agent Model Used
+
 Claude Sonnet 4.6 (GitHub Copilot)
 
 ### Completion Notes
+
 - Created `dividend-history.service.ts` fetching from `dividendhistory.org/payout/{TICKER}/`
 - Extracts JSON from `<script type="application/json" data-dividend-chart-json>` tag
 - Filters unconfirmed rows (`type === 'u'`), validates amount > 0 and valid date
@@ -62,5 +64,6 @@ Claude Sonnet 4.6 (GitHub Copilot)
 - 14 unit tests, all passing, lint-clean
 
 ## File List
+
 - `apps/server/src/app/routes/common/dividend-history.service.ts` (new)
 - `apps/server/src/app/routes/common/dividend-history.service.spec.ts` (new)

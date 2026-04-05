@@ -74,4 +74,3 @@ Return a concise summary containing:
 - cleanup result
 
 If merge/finalization fails after required retries and escalations, return `MERGE FAILED: <reason>` after handling required `prompt.sh` escalation.
-

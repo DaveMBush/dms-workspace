@@ -82,7 +82,9 @@ type Story = StoryObj<BaseTableComponent>;
 
 export const Default: Story = {
   args: {
-    rows: [ /* mock data */ ],
+    rows: [
+      /* mock data */
+    ],
     selectable: true,
   },
 };

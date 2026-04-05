@@ -55,7 +55,9 @@ const UNCONFIRMED_ROW = {
 };
 
 function buildDividendHtml(rows: unknown[]): string {
-  return `<html><body><script type="application/json" data-dividend-chart-json>${JSON.stringify(rows)}</script></body></html>`;
+  return `<html><body><script type="application/json" data-dividend-chart-json>${JSON.stringify(
+    rows
+  )}</script></body></html>`;
 }
 
 function buildHtmlWithoutScript(): string {
@@ -88,9 +90,9 @@ describe('dividend-history.service', () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        text: vi.fn().mockResolvedValueOnce(
-          buildDividendHtml(SAMPLE_DIVIDEND_ROWS)
-        ),
+        text: vi
+          .fn()
+          .mockResolvedValueOnce(buildDividendHtml(SAMPLE_DIVIDEND_ROWS)),
       });
 
       const result = await fetchDividendHistory('PDI');
@@ -117,9 +119,9 @@ describe('dividend-history.service', () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        text: vi.fn().mockResolvedValueOnce(
-          buildDividendHtml(SAMPLE_DIVIDEND_ROWS)
-        ),
+        text: vi
+          .fn()
+          .mockResolvedValueOnce(buildDividendHtml(SAMPLE_DIVIDEND_ROWS)),
       });
 
       await fetchDividendHistory('pdi');
@@ -134,20 +136,18 @@ describe('dividend-history.service', () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        text: vi.fn().mockResolvedValueOnce(
-          buildDividendHtml(rowsWithUnconfirmed)
-        ),
+        text: vi
+          .fn()
+          .mockResolvedValueOnce(buildDividendHtml(rowsWithUnconfirmed)),
       });
 
       const result = await fetchDividendHistory('PDI');
 
       expect(result).toHaveLength(3);
       expect(
-        result.every(
-          function checkNoFutureDate(row) {
-            return row.date < new Date('2026-04-10');
-          }
-        )
+        result.every(function checkNoFutureDate(row) {
+          return row.date < new Date('2026-04-10');
+        })
       ).toBe(true);
     });
 
@@ -249,9 +249,9 @@ describe('dividend-history.service', () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        text: vi.fn().mockResolvedValueOnce(
-          buildDividendHtml(rowsWithZeroPayout)
-        ),
+        text: vi
+          .fn()
+          .mockResolvedValueOnce(buildDividendHtml(rowsWithZeroPayout)),
       });
 
       const result = await fetchDividendHistory('PDI');
@@ -283,9 +283,9 @@ describe('dividend-history.service', () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        text: vi.fn().mockResolvedValueOnce(
-          buildDividendHtml(SAMPLE_DIVIDEND_ROWS)
-        ),
+        text: vi
+          .fn()
+          .mockResolvedValueOnce(buildDividendHtml(SAMPLE_DIVIDEND_ROWS)),
       });
 
       await fetchDividendHistory('PDI');

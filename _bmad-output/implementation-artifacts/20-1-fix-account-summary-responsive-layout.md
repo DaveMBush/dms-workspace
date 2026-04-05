@@ -114,6 +114,7 @@ Epic 14 (`14-1-fix-account-summary-responsive-layout.md`) did not resolve the is
 ### Multiple Account Summary Screens
 
 The Account screen likely shows summary info for multiple accounts. Determine if:
+
 - There is a single shared `AccountSummaryComponent` used for all accounts (preferred — fix once), OR
 - Each account type has its own template (must fix each individually)
 
@@ -125,8 +126,8 @@ The chart library (ng2-charts / chart.js) requires a sized container or it will 
 
 ### Tailwind Breakpoints
 
-| Prefix | Min Width |
-|--------|-----------|
+| Prefix | Min Width                                  |
+| ------ | ------------------------------------------ |
 | `lg`   | 1024px ← use this for desktop side-by-side |
 
 ### CSS Policy

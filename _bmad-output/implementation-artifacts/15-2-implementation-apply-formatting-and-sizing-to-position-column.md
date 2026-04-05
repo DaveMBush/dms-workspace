@@ -96,75 +96,89 @@ So that I can quickly read position sizes without having to resize columns or gu
 ## Dev Notes
 
 ### Dependencies
+
 - Requires Story 15.1 to be complete with formatting logic implemented
 
 ### Formatting Implementation
+
 Use the formatting approach chosen in Story 15.1:
 
 **If using DecimalPipe in template:**
+
 ```html
 <td class="text-right w-32">{{ position | number:'1.2-2' }}</td>
 ```
 
 **If using custom pipe:**
+
 ```html
 <td class="text-right w-32">{{ position | formatPosition }}</td>
 ```
 
 **If using utility function:**
+
 ```typescript
 // In component
 formattedPosition = computed(() => formatPosition(this.position()));
 ```
+
 ```html
 <td class="text-right w-32">{{ formattedPosition() }}</td>
 ```
 
 ### Column Width Considerations
+
 - "100,000.00" = 10 characters
 - Add padding: ~16px each side = 32px
 - Character width: ~8px for monospace numbers
-- Minimum width: 10 chars * 8px + 32px padding = 112px minimum
+- Minimum width: 10 chars \* 8px + 32px padding = 112px minimum
 - Recommended: 140px (w-35) or 160px (w-40) for comfortable spacing
 
 ### Tailwind Width Classes
+
 - `w-32`: 8rem / 128px
 - `w-36`: 9rem / 144px
 - `w-40`: 10rem / 160px
 - Or custom: `style="width: 140px; min-width: 140px;"`
 
 ### Key Files to Modify
+
 - Universe page: `apps/dms-material/src/app/pages/universe/universe.component.html`
 - Universe page: `apps/dms-material/src/app/pages/universe/universe.component.ts`
 - Possibly table component if Position column is in a child component
 - Test file from Story 15.1 (re-enable tests)
 
 ### Testing with Playwright MCP Server
+
 ```javascript
 // Check formatting
 const positionText = await page.locator('td.position-column').first().innerText();
 expect(positionText).toMatch(/^\d{1,3}(,\d{3})*\.\d{2}$/);
 
 // Check alignment
-const textAlign = await page.locator('td.position-column').first().evaluate(el =>
-  getComputedStyle(el).textAlign
-);
+const textAlign = await page
+  .locator('td.position-column')
+  .first()
+  .evaluate((el) => getComputedStyle(el).textAlign);
 expect(textAlign).toBe('right');
 
 // Check no overflow
-const isOverflowing = await page.locator('td.position-column').first().evaluate(el =>
-  el.scrollWidth > el.clientWidth
-);
+const isOverflowing = await page
+  .locator('td.position-column')
+  .first()
+  .evaluate((el) => el.scrollWidth > el.clientWidth);
 expect(isOverflowing).toBe(false);
 ```
 
 ### Project Structure Notes
+
 - Universe screen manages watchlist of CEF symbols
 - Position values represent share quantities held
 - Values can range from 0 to potentially millions
 - Pre-existing issue since table creation, not caused by Epic 8
 
 ### References
+
 - [Source: _bmad-output/planning-artifacts/epics-2026-03-21.md#Story 15.2]
 - [Source: _bmad-output/implementation-artifacts/15-1-tdd-write-unit-tests-for-position-number-formatting.md]
 - [Source: apps/dms-material/src/app/pages/universe/]

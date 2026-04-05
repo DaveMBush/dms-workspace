@@ -13,4 +13,3 @@ Also, most of our epics have and e2e test story at the end. Create a story just 
 All stories should be renumbered sequentially 1, 2, 3 etc.
 
 Once you've done this, run #file:./create-stories-for-epic.prompt.md to create the stories for the epic.
-
