@@ -1,12 +1,66 @@
 import { logger } from '../../../utils/structured-logger';
 import { prisma } from '../../prisma/prisma-client';
 
+type OpenLot = { id: string; quantity: number; buy: number; accountId: string };
+
+function calcLotRemainder(lot: OpenLot, ratio: number): number {
+  return lot.quantity / ratio - Math.floor(lot.quantity / ratio);
+}
+
+async function updateLots(
+  openLots: OpenLot[],
+  ratio: number,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  tx: any
+): Promise<void> {
+  for (const lot of openLots) {
+    const newQuantity = Math.floor(lot.quantity / ratio);
+    const newBuy = lot.buy * ratio;
+    await tx.trades.update({
+      where: { id: lot.id },
+      data: { quantity: newQuantity, buy: newBuy },
+    });
+  }
+}
+
+async function recordFractionalSale(
+  universeId: string,
+  symbol: string,
+  lastPrice: number,
+  openLots: OpenLot[],
+  totalRemainder: number,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  tx: any
+): Promise<void> {
+  const price = lastPrice > 0 ? lastPrice : 0;
+  if (!lastPrice) {
+    logger.warn(
+      `adjustLotsForSplit: no market price available for symbol "${symbol}" — fractional sale recorded at price 0`
+    );
+  }
+  const now = new Date();
+  await tx.trades.create({
+    data: {
+      universeId,
+      accountId: openLots[0].accountId,
+      buy: 0,
+      sell: price,
+      buy_date: now,
+      sell_date: now,
+      quantity: totalRemainder,
+    },
+  });
+}
+
 /**
  * Adjusts all open position lots for a given symbol by applying a split ratio.
  *
  * For each open lot:
- *   newQuantity     = Math.floor(lot.quantity / ratio)  // whole shares; fractional remainder handled in Story 48.4
+ *   newQuantity     = Math.floor(lot.quantity / ratio)  // whole shares
  *   newPricePerShare = lot.buy * ratio
+ *
+ * If the split produces a fractional remainder across all lots, a fractional
+ * sale record is created at the current market price inside the same transaction.
  *
  * All updates are applied atomically within a single Prisma transaction.
  *
@@ -40,10 +94,7 @@ export async function adjustLotsForSplit(
 
   await prisma.$transaction(async function applyLotUpdates(tx) {
     const openLots = await tx.trades.findMany({
-      where: {
-        universeId: universeEntry.id,
-        sell_date: null,
-      },
+      where: { universeId: universeEntry.id, sell_date: null },
       select: { id: true, quantity: true, buy: true, accountId: true },
     });
 
@@ -54,42 +105,25 @@ export async function adjustLotsForSplit(
       return;
     }
 
-    for (const lot of openLots) {
-      const newQuantity = Math.floor(lot.quantity / ratio);
-      const newBuy = lot.buy * ratio;
-      await tx.trades.update({
-        where: { id: lot.id },
-        data: { quantity: newQuantity, buy: newBuy },
-      });
-    }
-
+    await updateLots(openLots, ratio, tx);
     updatedCount = openLots.length;
 
-    const totalRemainder = openLots.reduce(
-      (sum, lot) =>
-        sum + (lot.quantity / ratio - Math.floor(lot.quantity / ratio)),
-      0
-    );
+    const totalRemainder = openLots.reduce(function sumLotRemainder(
+      sum: number,
+      lot: OpenLot
+    ) {
+      return sum + calcLotRemainder(lot, ratio);
+    }, 0);
 
     if (totalRemainder > 0) {
-      const price = universeEntry.last_price > 0 ? universeEntry.last_price : 0;
-      if (!universeEntry.last_price) {
-        logger.warn(
-          `adjustLotsForSplit: no market price available for symbol "${symbol}" — fractional sale recorded at price 0`
-        );
-      }
-      const now = new Date();
-      await tx.trades.create({
-        data: {
-          universeId: universeEntry.id,
-          accountId: openLots[0].accountId,
-          buy: 0,
-          sell: price,
-          buy_date: now,
-          sell_date: now,
-          quantity: totalRemainder,
-        },
-      });
+      await recordFractionalSale(
+        universeEntry.id,
+        symbol,
+        universeEntry.last_price,
+        openLots,
+        totalRemainder,
+        tx
+      );
     }
   });
 
