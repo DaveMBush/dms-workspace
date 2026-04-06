@@ -192,42 +192,120 @@ Story file created at: `_bmad-output/implementation-artifacts/53-1-investigate-d
 
 ### Investigation Findings
 
-> **TO BE COMPLETED** — This section must be filled in by the agent implementing this story.
-> Use the Playwright MCP server to navigate to each URL, inspect the HTML, and record findings here.
+Investigation performed on 2026-04-06 using the Playwright MCP browser (Chromium) and direct HTTP
+requests via `curl` with browser-like headers matching what `dividend-history.service.ts` sends.
 
-#### VFL (`https://dividendhistory.net/payout/VFL/`)
+#### URL Format — BREAKING CHANGE
 
-- HTTP status: _TBD_
-- `data-dividend-chart-json` present: _TBD_
-- Actual data pattern: _TBD_
-- Sample data: _TBD_
+The `/payout/{TICKER}/` URL pattern returns **HTTP 404** for all four symbols (and for any ticker,
+e.g. AAPL). The site has **changed its URL scheme** to:
 
-#### ACP (`https://dividendhistory.net/payout/ACP/`)
+```
+https://dividendhistory.net/{ticker_lowercase}-dividend-yield
+```
 
-- HTTP status: _TBD_
-- `data-dividend-chart-json` present: _TBD_
-- Actual data pattern: _TBD_
-- Sample data: _TBD_
+Examples confirmed to return HTTP 200:
+- `https://dividendhistory.net/vfl-dividend-yield`
+- `https://dividendhistory.net/acp-dividend-yield`
+- `https://dividendhistory.net/ifn-dividend-yield`
+- `https://dividendhistory.net/fax-dividend-yield`
 
-#### IFN (`https://dividendhistory.net/payout/IFN/`)
+The ticker in the URL is **lowercase**. The `/payout/` path segment no longer exists.
 
-- HTTP status: _TBD_
-- `data-dividend-chart-json` present: _TBD_
-- Actual data pattern: _TBD_
-- Sample data: _TBD_
+#### VFL (`https://dividendhistory.net/vfl-dividend-yield`)
 
-#### FAX (`https://dividendhistory.net/payout/FAX/`)
+- HTTP status: **200 OK** (page: 109 036 bytes)
+- `data-dividend-chart-json` present: **NO** — confirmed zero occurrences in full HTML source
+- Script tags: 18 total; none have `data-dividend-chart-json` attribute; no inline JSON arrays
+- Actual data pattern: **HTML tables** with class `table table-bordered`
+- Table structure:
+  - **Table 0** (12 headers): company summary metadata (name, price, yield, etc.) — not dividend rows
+  - **Table 1** (8 headers, 25 data rows): most recent dividends — has `<th>` header row
+    - Headers: `VFL Ex Dividend Date`, `Declaration Date`, `Record Date`, `Payout Date`, `Period`, `Dividend`, `Unadjusted`, `Change`
+  - **Table 2** (0 headers, 370 data rows): older historical dividends — no header row, same columns
+- Sample rows (Table 1, first two):
+  ```
+  ['03/24/2026', '03/10/2026', '03/24/2026', '03/31/2026', 'Monthly', '$0.05000', '$0.05000', '']
+  ['02/20/2026', '02/10/2026', '02/20/2026', '02/27/2026', 'Monthly', '$0.05000', '$0.05000', '']
+  ```
+- Date format: `MM/DD/YYYY`
+- Amount format: `$0.05000` (dollar-sign prefix, 5 decimal places)
+- No future/projected rows observed (most recent row is 03/24/2026, before today 04/06/2026)
 
-- HTTP status: _TBD_
-- `data-dividend-chart-json` present: _TBD_
-- Actual data pattern: _TBD_
-- Sample data: _TBD_
+#### ACP (`https://dividendhistory.net/acp-dividend-yield`)
+
+- HTTP status: **200 OK** (page: 61 294 bytes)
+- `data-dividend-chart-json` present: **NO**
+- Table structure: identical layout — Table 0 (metadata), Table 1 (25 rows, with headers), Table 2 (155 rows, no headers)
+- Sample rows (Table 1, first two):
+  ```
+  ['03/24/2026', '03/10/2026', '03/24/2026', '03/31/2026', 'Monthly', '$0.07800', '$0.07800', '-0.64%']
+  ['02/20/2026', '02/10/2026', '02/20/2026', '02/27/2026', 'Monthly', '$0.07800', '$0.07800', '-0.64%']
+  ```
+
+#### IFN (`https://dividendhistory.net/ifn-dividend-yield`)
+
+- HTTP status: **200 OK** (page: 37 856 bytes)
+- `data-dividend-chart-json` present: **NO**
+- Table structure: identical layout — Table 0 (metadata), Table 1 (25 rows, with headers), Table 2 (38 rows, no headers)
+- Note: IFN pays quarterly; Table 1 spans from Jun 2020 to Feb 2026
+- Sample rows:
+  ```
+  ['02/20/2026', '02/10/2026', '02/20/2026', '03/31/2026', 'Quarterly', '$0.45000', '$0.45000', '+126.50%']
+  ['11/21/2025', '11/11/2025', '11/21/2025', '01/12/2026', 'Quarterly', '$0.40000', '$0.40000', '']
+  ```
+
+#### FAX (`https://dividendhistory.net/fax-dividend-yield`)
+
+- HTTP status: **200 OK** (page: 85 898 bytes)
+- `data-dividend-chart-json` present: **NO**
+- Table structure: identical layout — Table 0 (metadata), Table 1 (25 rows, with headers), Table 2 (279 rows, no headers)
+- Note: FAX has a `Dividend` vs `Unadjusted` split-adjusted column that differs; e.g. `$0.16800` vs `$0.02800`
+- Sample rows:
+  ```
+  ['03/24/2026', '', '03/24/2026', '03/31/2026', 'Monthly', '$0.16500', '$0.16500', '']
+  ['02/20/2026', '02/10/2026', '02/20/2026', '02/27/2026', 'Monthly', '$0.16500', '$0.16500', '']
+  ```
+
+#### Field Name Mapping (Old JSON → New HTML columns)
+
+| Old `DividendHistoryRow` field | New HTML table column | Column index | Notes |
+|---|---|---|---|
+| `ex_div` | `{SYM} Ex Dividend Date` | 0 | Format `MM/DD/YYYY` |
+| `payday` | `Payout Date` | 3 | Format `MM/DD/YYYY` |
+| `payout` | `Dividend` | 5 | Format `$0.05000` — strip `$`, parse float |
+| `type` | _(not present)_ | — | Was used to filter `type === 'u'`; no equivalent column in new structure |
+| `currency` | _(not present)_ | — | Always USD; not exposed on page |
+| `pctChange` | `Change` | 7 | Format `+15.15%` or `''`; optional |
+
+#### Browser Headers — Accepted
+
+All four symbols return HTTP 200 using the same browser-like `User-Agent` and `Accept` headers
+already present in `dividend-history.service.ts`. No additional headers are required.
 
 #### Summary Conclusion
 
-> _TBD — to be completed after investigation_
->
-> State clearly: (a) does `extractDividendJson` work as-is with dividendhistory.net, or (b) what exact change to the regex / parsing logic is required for Story 53.2?
+**`extractDividendJson` does NOT work with the live dividendhistory.net site.**
+
+Two distinct changes are required for Story 53.2:
+
+1. **URL format** — The `BASE_URL` must change from `https://dividendhistory.net/payout` to
+   `https://dividendhistory.net` and the URL construction must use the pattern
+   `/{ticker_lowercase}-dividend-yield` instead of `/{TICKER}/`.
+
+2. **Parsing logic** — The entire `extractDividendJson` function (and `DividendHistoryRow` interface)
+   must be replaced with an HTML table parser that:
+   - Selects `table.table-bordered` elements (indices 1 and 2, or the 2nd and 3rd such tables)
+   - Skips the header row in Table 1 (it has `<th>` elements)
+   - Reads Table 2 which has no header row
+   - Combines both tables to build the full dividend history
+   - Maps columns: index 0 → ex-div date (`MM/DD/YYYY`), index 3 → payout date, index 5 → dividend
+     amount (strip `$`, parse float)
+   - The `type` filter (`row.type !== 'u'`) cannot be replicated as-is; Story 53.2 should remove it
+     or implement a date-based filter (exclude future ex-div dates) instead
+
+The `isValidProcessedRow` function (`!isNaN(date) && amount > 0`) is still valid and sufficient
+for filtering after the new parsing.
 
 ### Completion Notes
 

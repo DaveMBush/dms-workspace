@@ -161,10 +161,10 @@ The root cause of VFL/ACP/IFN/FAX returning empty arrays is almost certainly tha
 The following must **not** be altered by this story:
 
 - `BROWSER_HEADERS` constant and its contents
-- `BASE_URL = 'https://dividendhistory.net/payout'`
+- ~~`BASE_URL = 'https://dividendhistory.net/payout'`~~ — **MUST CHANGE** (see Story 53.1 findings)
 - `DIVIDEND_HISTORY_RATE_LIMIT_DELAY = 10 * 1000` (10-second minimum gap)
 - `enforceDividendHistoryRateLimit()` and `updateDividendHistoryCallTime()` exports
-- The `type !== 'u'` filter that excludes unconfirmed rows
+- ~~The `type !== 'u'` filter that excludes unconfirmed rows~~ — **MUST REMOVE** (no `type` field in new structure; use date-based filter instead, e.g., reject rows where ex-div date > today)
 - The `isValidProcessedRow` guard (date valid + amount > 0)
 - Sort order (ascending by date)
 
@@ -216,18 +216,61 @@ Claude Sonnet 4.6 (GitHub Copilot)
 
 ### Implementation Notes
 
-_To be completed by the implementing agent after Story 53.1 is done._
+**Updated 2026-04-06 based on Story 53.1 investigation findings.**
 
-Record here:
-1. The confirmed HTML pattern from Story 53.1 (exact attribute name or element structure)
-2. Whether `extractDividendJson` required changes and what was changed
-3. Whether `buildDividendHtml` in the spec required updates
-4. Manual verification results for VFL, ACP, IFN, FAX (non-empty? row count?)
-5. Any field-name differences discovered and how they were handled
+#### Confirmed HTML Pattern from Story 53.1
+
+1. **URL format (BREAKING CHANGE):** The old `/payout/{TICKER}/` path returns HTTP 404. The new URL
+   pattern is: `https://dividendhistory.net/{ticker_lowercase}-dividend-yield`
+   - Change `BASE_URL` to `'https://dividendhistory.net'`
+   - Change URL construction to `` `${BASE_URL}/${encodeURIComponent(upperTicker.toLowerCase())}-dividend-yield` ``
+
+2. **No `data-dividend-chart-json`:** This attribute does not exist on dividendhistory.net.
+   The dividend data is in HTML tables with class `table table-bordered`.
+
+3. **Two-table structure per page:**
+   - **Table 1** (2nd `table.table-bordered` on page): Has header row `<th>`, then ~25 data rows
+   - **Table 2** (3rd `table.table-bordered` on page): No header row, contains older history
+
+4. **Column mapping (0-indexed):**
+   | Index | Column header | Maps to |
+   |---|---|---|
+   | 0 | `{SYM} Ex Dividend Date` | `ex_div` (format: `MM/DD/YYYY`) |
+   | 1 | `Declaration Date` | (not used) |
+   | 2 | `Record Date` | (not used) |
+   | 3 | `Payout Date` | `payday` (format: `MM/DD/YYYY`) |
+   | 4 | `Period` | (not used — `Monthly`, `Quarterly`, `Annual`, `Other`) |
+   | 5 | `Dividend` | `payout` (format: `$0.05000` — strip `$`, parse float) |
+   | 6 | `Unadjusted` | (not used — split-adjusted vs unadjusted price) |
+   | 7 | `Change` | (not used — percentage change vs prior) |
+
+5. **`type` field:** Does not exist in the new HTML. The `type !== 'u'` filter must be replaced
+   with a date-based guard: exclude rows where ex-div date is in the future (> today).
+
+6. **`currency` field:** Not present; always USD. Remove from interface or default to `'USD'`.
+
+7. **`DividendHistoryRow` interface changes needed:**
+   - Remove `type: string` and `currency: string` (absent from new structure)
+   - Change `pctChange` to optional since `Change` column is often empty string
+
+#### What `extractDividendJson` should become
+
+Replace with an HTML table parser (e.g., using regex or a DOM library available in Node):
+- Select the 2nd and 3rd `table.table-bordered` elements
+- For Table 1: skip the first `<tr>` row (it contains `<th>` headers)
+- For Table 2: all rows are data rows
+- For each data row, extract cells by splitting on `<td` boundaries
+- Return array of `ProcessedRow` objects mapped directly from columns 0 (ex_div) and 5 (payout)
+
+#### Manual Verification Results (from Story 53.1 Playwright investigation)
+- VFL: HTTP 200, 25 + 370 rows = 395 total dividend rows (data goes back to 1993)
+- ACP: HTTP 200, 25 + 155 rows = 180 total dividend rows (data goes back to 2011)
+- IFN: HTTP 200, 25 + 38 rows = 63 total dividend rows (quarterly, goes back to 1994)
+- FAX: HTTP 200, 25 + 279 rows = 304 total dividend rows (data goes back to 2000)
+
+All four symbols return substantial dividend histories — no empty results expected after fix.
 
 ### Completion Checklist
-
-- [ ] Story 53.1 findings reviewed
 - [ ] `extractDividendJson` updated (or confirmed unchanged) based on verified HTML structure
 - [ ] `buildDividendHtml` in spec updated to match if parsing changed
 - [ ] VFL returns non-empty array (verified manually or via integration check)
