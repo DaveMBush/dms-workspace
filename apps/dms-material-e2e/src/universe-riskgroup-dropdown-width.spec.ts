@@ -9,7 +9,7 @@ import { createRiskGroups } from './helpers/shared-risk-groups.helper';
  *
  * Verifies that the Risk Group filter dropdown panel on the Universe screen
  * displays options without text wrapping after the Story 49.1 fix
- * (panelWidth="auto" added to mat-select).
+ * (panelWidth="" applied to mat-select, allowing natural content width).
  *
  * Risk groups seeded: "Equities", "Income", "Tax Free Income"
  * "Tax Free Income" is the longest name and exercises the overflow scenario.
@@ -37,9 +37,9 @@ test.describe('Universe Risk Group Filter Dropdown Width', () => {
   test('Risk Group filter dropdown options do not overflow horizontally', async ({
     page,
   }) => {
-    // Risk Group is the only filter mat-select with panelWidth="auto"
+    // Risk Group filter mat-select uses panelWidth="" (content width)
     const riskGroupSelect = page.locator(
-      'tr.filter-row mat-select[panelwidth="auto"]'
+      'tr.filter-row mat-select[panelwidth=""]'
     );
     await expect(riskGroupSelect).toHaveCount(1);
     await expect(riskGroupSelect).toBeVisible({ timeout: 10000 });
@@ -67,19 +67,15 @@ test.describe('Universe Risk Group Filter Dropdown Width', () => {
     await page.keyboard.press('Escape');
   });
 
-  test('Risk Group filter dropdown panel is at least as wide as its trigger', async ({
+  test('Risk Group filter dropdown panel is at least as wide as its widest option label', async ({
     page,
   }) => {
-    // Risk Group is the only filter mat-select with panelWidth="auto"
+    // Risk Group filter mat-select uses panelWidth="" (content width)
     const riskGroupSelect = page.locator(
-      'tr.filter-row mat-select[panelwidth="auto"]'
+      'tr.filter-row mat-select[panelwidth=""]'
     );
     await expect(riskGroupSelect).toHaveCount(1);
     await expect(riskGroupSelect).toBeVisible({ timeout: 10000 });
-
-    // Capture the trigger bounding box before opening
-    const triggerBox = await riskGroupSelect.boundingBox();
-    expect(triggerBox).not.toBeNull();
 
     // Open the dropdown panel
     await riskGroupSelect.click();
@@ -88,12 +84,26 @@ test.describe('Universe Risk Group Filter Dropdown Width', () => {
     const panel = page.locator('.mat-mdc-select-panel');
     await expect(panel).toBeVisible({ timeout: 10000 });
 
-    // Capture the panel bounding box
+    // Measure panel width
     const panelBox = await panel.boundingBox();
     expect(panelBox).not.toBeNull();
 
-    // Panel must be at least as wide as the trigger
-    expect(panelBox!.width).toBeGreaterThanOrEqual(triggerBox!.width - 1);
+    // Measure the widest option label's rendered width
+    const widestOptionLabelWidth = await panel.evaluate((panelEl) => {
+      const labels = panelEl.querySelectorAll('.mdc-list-item__primary-text');
+      let maxWidth = 0;
+      labels.forEach((el) => {
+        const w = (el as HTMLElement).scrollWidth;
+        if (w > maxWidth) {
+          maxWidth = w;
+        }
+      });
+      return maxWidth;
+    });
+    expect(widestOptionLabelWidth).toBeGreaterThan(0);
+
+    // Panel must be at least as wide as the widest option label
+    expect(panelBox!.width).toBeGreaterThanOrEqual(widestOptionLabelWidth - 1);
 
     // Close the panel
     await page.keyboard.press('Escape');
