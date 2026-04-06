@@ -46,17 +46,8 @@ Add `panelWidth="auto"` to the `mat-select`:
 
 ```html
 @case ('risk_group') {
-<mat-form-field
-  appearance="outline"
-  subscriptSizing="dynamic"
-  class="header-filter w-full"
->
-  <mat-select
-    panelWidth="auto"
-    [value]="riskGroupFilter$()"
-    (selectionChange)="onRiskGroupFilterChange($event.value)"
-    placeholder="Select One"
-  >
+<mat-form-field appearance="outline" subscriptSizing="dynamic" class="header-filter w-full">
+  <mat-select panelWidth="auto" [value]="riskGroupFilter$()" (selectionChange)="onRiskGroupFilterChange($event.value)" placeholder="Select One">
     <mat-option [value]="null">All</mat-option>
     @for (group of riskGroupOptions$(); track group.value) {
     <mat-option [value]="group.value">{{ group.label }}</mat-option>
@@ -115,8 +106,8 @@ N/A — pure template attribute change, no debugging required.
 
 ### Change Log
 
-| Date | Change | Author |
-|------|--------|--------|
+| Date       | Change                                             | Author    |
+| ---------- | -------------------------------------------------- | --------- |
 | 2026-04-05 | Added `panelWidth="auto"` to risk_group mat-select | Dev Agent |
 
 ### File List
