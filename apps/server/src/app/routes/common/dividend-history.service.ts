@@ -5,9 +5,22 @@ import type { ProcessedRow } from './distribution-api.function';
 
 // Global rate limiting - track last API call time
 let lastDividendHistoryCallTime = 0;
-const DIVIDEND_HISTORY_RATE_LIMIT_DELAY = 10 * 1000; // 10 seconds in milliseconds
+// 10-second minimum gap between requests — intentionally human-paced to respect
+// dividendhistory.net fair-use expectations and avoid automated-access detection.
+const DIVIDEND_HISTORY_RATE_LIMIT_DELAY = 10 * 1000;
 
-const BASE_URL = 'https://dividendhistory.org/payout';
+const BASE_URL = 'https://dividendhistory.net/payout';
+
+const BROWSER_HEADERS = {
+  'User-Agent':
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 ' +
+    '(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+  Accept:
+    'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,' +
+    'image/webp,*/*;q=0.8',
+  'Accept-Language': 'en-US,en;q=0.9',
+  Referer: 'https://dividendhistory.net/',
+} as const;
 
 interface DividendHistoryRow {
   ex_div: string;
@@ -39,10 +52,10 @@ async function fetchAndParseHtml(
   url: string,
   upperTicker: string
 ): Promise<DividendHistoryRow[] | null> {
-  const response = await fetch(url);
+  const response = await fetch(url, { headers: BROWSER_HEADERS });
   if (!response.ok) {
     logger.warn(
-      `dividendhistory.org returned ${String(
+      `dividendhistory.net returned ${String(
         response.status
       )} for ticker ${upperTicker}`,
       { ticker: upperTicker, status: response.status }
@@ -90,7 +103,7 @@ export async function fetchDividendHistory(
 
   try {
     logger.debug(
-      `Fetching dividend history for ${upperTicker} from dividendhistory.org`,
+      `Fetching dividend history for ${upperTicker} from dividendhistory.net`,
       {
         ticker: upperTicker,
         url,
@@ -101,7 +114,7 @@ export async function fetchDividendHistory(
 
     if (!rawRows || rawRows.length === 0) {
       logger.warn(
-        `No dividend data found on dividendhistory.org for ticker ${upperTicker}`,
+        `No dividend data found on dividendhistory.net for ticker ${upperTicker}`,
         { ticker: upperTicker }
       );
       return [];
@@ -118,14 +131,14 @@ export async function fetchDividendHistory(
       });
 
     logger.debug(
-      `Found ${processed.length.toString()} dividend entries for ${upperTicker} from dividendhistory.org`,
+      `Found ${processed.length.toString()} dividend entries for ${upperTicker} from dividendhistory.net`,
       { ticker: upperTicker, count: processed.length }
     );
 
     return processed;
   } catch (error) {
     logger.warn(
-      `Error fetching dividend history for ${upperTicker} from dividendhistory.org`,
+      `Error fetching dividend history for ${upperTicker} from dividendhistory.net`,
       { ticker: upperTicker, error: String(error) }
     );
     return [];

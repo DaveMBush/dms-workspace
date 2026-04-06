@@ -66,10 +66,9 @@ export async function getConsistentDistributions(
   let rows = await fetchDividendHistory(symbol);
 
   if (rows.length === 0) {
-    logger.warn(
-      `fetchDividendHistory returned no data for ${symbol}, falling back to Yahoo Finance`,
-      { symbol }
-    );
+    logger.warn(`fetchDividendHistory returned no data for ${symbol}`, {
+      symbol,
+    });
     rows = await fetchDistributionData(symbol);
   }
 

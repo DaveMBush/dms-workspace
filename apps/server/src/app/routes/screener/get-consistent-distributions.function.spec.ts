@@ -413,7 +413,7 @@ describe('getConsistentDistributions', () => {
       expect(result).toBe(true);
       expect(mockFetchDistributionData).toHaveBeenCalledWith('NOLISTING');
       expect(vi.mocked(logger.warn)).toHaveBeenCalledWith(
-        'fetchDividendHistory returned no data for NOLISTING, falling back to Yahoo Finance',
+        'fetchDividendHistory returned no data for NOLISTING',
         { symbol: 'NOLISTING' }
       );
     });
