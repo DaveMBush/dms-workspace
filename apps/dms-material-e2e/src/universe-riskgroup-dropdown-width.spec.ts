@@ -90,7 +90,9 @@ test.describe('Universe Risk Group Filter Dropdown Width', () => {
 
     // Measure the widest option label's rendered width
     const widestOptionLabelWidth = await page.evaluate(() => {
-      const options = document.querySelectorAll('.mat-mdc-select-panel mat-option');
+      const options = document.querySelectorAll(
+        '.mat-mdc-select-panel mat-option'
+      );
       let maxWidth = 0;
       options.forEach((el) => {
         const w = (el as HTMLElement).scrollWidth;
