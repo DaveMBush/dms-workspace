@@ -320,3 +320,15 @@ development_status:
   48-4-handle-split-remainders: ready-for-dev
   48-5-e2e-csv-import-split-handling: ready-for-dev
   epic-48-retrospective: optional
+
+  # ── Epic 49: Fix Risk Group Filter Dropdown Width on Universe Screen ──────────
+  epic-49: backlog
+  49-1-fix-riskgroup-dropdown-panel-width: ready-for-dev
+  49-2-e2e-riskgroup-dropdown-width: ready-for-dev
+  epic-49-retrospective: optional
+
+  # ── Epic 50: Fix Dividend History Load Failures (dividendhistory.net) ─────────
+  epic-50: backlog
+  50-1-switch-dividend-fetch-to-dividendhistory-net: ready-for-dev
+  50-2-verify-dividend-data-dividendhistory-net: ready-for-dev
+  epic-50-retrospective: optional
