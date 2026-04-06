@@ -121,6 +121,7 @@
           class="header-filter w-full"
         >
           <mat-select
+            panelWidth="auto"
             [value]="riskGroupFilter$()"
             (selectionChange)="onRiskGroupFilterChange($event.value)"
             placeholder="Select One"

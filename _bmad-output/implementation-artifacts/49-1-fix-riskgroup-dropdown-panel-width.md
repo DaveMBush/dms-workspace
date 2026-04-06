@@ -1,6 +1,6 @@
 # Story 49.1: Fix Risk Group Filter Dropdown Panel Width on Universe Screen
 
-Status: Approved
+Status: Ready for Review
 
 ## Story
 
@@ -18,19 +18,19 @@ so that I can easily read and select the correct risk group without text wrappin
 
 ## Tasks / Subtasks
 
-- [ ] Use Playwright MCP server to reproduce the current wrapping issue (AC: #1)
-  - [ ] Navigate to Universe screen
-  - [ ] Open the Risk Group filter dropdown
-  - [ ] Confirm option labels wrap onto multiple lines
-- [ ] Locate the `@case ('risk_group')` block in `global-universe.component.html` (AC: #1, #2, #3)
-  - [ ] Identify the `mat-select` element at approximately line 123
-- [ ] Add `panelWidth="auto"` to the `mat-select` element (AC: #1, #2)
-  - [ ] This makes the dropdown overlay panel auto-size to the longest option width
-  - [ ] The trigger (`mat-form-field`) width remains unchanged (column-constrained via `w-full`)
-- [ ] Use Playwright MCP server to verify the fix (AC: #1, #2, #3)
-  - [ ] Confirm all options are on a single line after the change
-  - [ ] Confirm the collapsed trigger field is still column-width
-- [ ] Run `pnpm all` and confirm no regressions (AC: #4)
+- [x] Use Playwright MCP server to reproduce the current wrapping issue (AC: #1)
+  - [x] Navigate to Universe screen
+  - [x] Open the Risk Group filter dropdown
+  - [x] Confirm option labels wrap onto multiple lines
+- [x] Locate the `@case ('risk_group')` block in `global-universe.component.html` (AC: #1, #2, #3)
+  - [x] Identify the `mat-select` element at approximately line 123
+- [x] Add `panelWidth="auto"` to the `mat-select` element (AC: #1, #2)
+  - [x] This makes the dropdown overlay panel auto-size to the longest option width
+  - [x] The trigger (`mat-form-field`) width remains unchanged (column-constrained via `w-full`)
+- [x] Use Playwright MCP server to verify the fix (AC: #1, #2, #3)
+  - [x] Confirm all options are on a single line after the change
+  - [x] Confirm the collapsed trigger field is still column-width
+- [x] Run `pnpm all` and confirm no regressions (AC: #4)
 
 ## Dev Notes
 
@@ -100,8 +100,25 @@ constrains it to the column width — only the floating overlay panel gets wider
 
 ### Agent Model Used
 
+Claude Sonnet 4.6 (GitHub Copilot)
+
 ### Debug Log References
+
+N/A — pure template attribute change, no debugging required.
 
 ### Completion Notes List
 
+- Added `panelWidth="auto"` to the `mat-select` inside the `@case ('risk_group')` block at line 124 of `global-universe.component.html`.
+- No TypeScript changes were required.
+- All unit tests passed (`pnpm all`).
+- E2E tests passed on Chromium and Firefox.
+
+### Change Log
+
+| Date | Change | Author |
+|------|--------|--------|
+| 2026-04-05 | Added `panelWidth="auto"` to risk_group mat-select | Dev Agent |
+
 ### File List
+
+- `apps/dms-material/src/app/global/global-universe/global-universe.component.html`
