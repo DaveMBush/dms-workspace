@@ -48,7 +48,8 @@ test.describe('Universe Accounts Filter Dropdown Width', () => {
         '.mat-mdc-select-panel mat-option'
       );
       return Array.from(options).some(
-        (el) => (el as HTMLElement).scrollWidth > (el as HTMLElement).clientWidth
+        (el) =>
+          (el as HTMLElement).scrollWidth > (el as HTMLElement).clientWidth
       );
     });
     expect(hasOverflow).toBe(false);
@@ -80,7 +81,9 @@ test.describe('Universe Accounts Filter Dropdown Width', () => {
 
     // Measure the widest option label's rendered width
     const widestOptionLabelWidth = await page.evaluate(() => {
-      const options = document.querySelectorAll('.mat-mdc-select-panel mat-option');
+      const options = document.querySelectorAll(
+        '.mat-mdc-select-panel mat-option'
+      );
       let maxWidth = 0;
       options.forEach((el) => {
         const w = (el as HTMLElement).scrollWidth;
