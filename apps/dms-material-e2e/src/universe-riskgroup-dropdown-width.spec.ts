@@ -37,8 +37,11 @@ test.describe('Universe Risk Group Filter Dropdown Width', () => {
   test('Risk Group filter dropdown options do not overflow horizontally', async ({
     page,
   }) => {
-    // The Risk Group mat-select is the first mat-select in the filter row
-    const riskGroupSelect = page.locator('tr.filter-row mat-select').first();
+    // Risk Group is the only filter mat-select with panelWidth="auto"
+    const riskGroupSelect = page.locator(
+      'tr.filter-row mat-select[panelwidth="auto"]'
+    );
+    await expect(riskGroupSelect).toHaveCount(1);
     await expect(riskGroupSelect).toBeVisible({ timeout: 10000 });
 
     // Open the dropdown panel
@@ -67,8 +70,11 @@ test.describe('Universe Risk Group Filter Dropdown Width', () => {
   test('Risk Group filter dropdown panel is at least as wide as its trigger', async ({
     page,
   }) => {
-    // The Risk Group mat-select is the first mat-select in the filter row
-    const riskGroupSelect = page.locator('tr.filter-row mat-select').first();
+    // Risk Group is the only filter mat-select with panelWidth="auto"
+    const riskGroupSelect = page.locator(
+      'tr.filter-row mat-select[panelwidth="auto"]'
+    );
+    await expect(riskGroupSelect).toHaveCount(1);
     await expect(riskGroupSelect).toBeVisible({ timeout: 10000 });
 
     // Capture the trigger bounding box before opening
