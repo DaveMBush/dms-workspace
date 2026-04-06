@@ -86,7 +86,7 @@ N/A
 - Story 50.1 had already updated all source files (`dividend-history.service.ts`, `dividend-history.service.spec.ts`, `distribution-api.function.ts`, `get-consistent-distributions.function.ts`, `get-consistent-distributions.function.spec.ts`).
 - One remaining `.org` reference found in `apps/dms-material-e2e/src/dividend-precision.spec.ts` — all 6 occurrences were in JSDoc/inline comments only. Updated all to `dividendhistory.net`.
 - No source-code logic changes required.
-- `pnpm all` passed with no regressions.
+- `pnpm all` (affected tasks only — comment-only change) and all CI checks pass with no regressions. A separate prettier formatting fix was needed for this story file (blank lines after headings and table alignment) which was committed and pushed before CI went green.
 
 ### File List
 
