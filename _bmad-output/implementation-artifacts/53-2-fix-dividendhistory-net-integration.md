@@ -53,6 +53,7 @@ so that the application displays accurate dividend information for securities th
 > **BLOCKED:** Tasks 2–5 cannot begin until Story 53.1 is complete. The first task is to review 53.1's investigation findings and use them to drive all subsequent changes.
 
 - [ ] **Task 1: Review Story 53.1 findings** (prerequisite for all other tasks)
+
   - [ ] Read `_bmad-output/implementation-artifacts/53-1-investigate-dividendhistory-net-html-structure.md` (Dev Agent Record section) in full
   - [ ] Identify the actual HTML pattern confirmed by Investigation (e.g., does `<script data-dividend-chart-json>` exist, or is there a different pattern?)
   - [ ] Identify any confirmed field-name differences vs the `DividendHistoryRow` interface (`ex_div`, `payday`, `payout`, `type`, `currency`, `pctChange`)
@@ -60,6 +61,7 @@ so that the application displays accurate dividend information for securities th
   - [ ] Record the findings that will drive the implementation below
 
 - [ ] **Task 2: Update `extractDividendJson` (or replace it) in `dividend-history.service.ts`** (AC: #5)
+
   - [ ] If the `<script data-dividend-chart-json>` attribute was **confirmed present** on dividendhistory.net: verify the existing regex works correctly and make no change (or add a comment confirming verification)
   - [ ] If the attribute was **absent** and a different HTML pattern was found:
     - [ ] Replace or update the `scriptRegex` in `extractDividendJson` to match the confirmed pattern
@@ -69,10 +71,12 @@ so that the application displays accurate dividend information for securities th
   - [ ] Do **not** remove `BROWSER_HEADERS`, `BASE_URL`, `DIVIDEND_HISTORY_RATE_LIMIT_DELAY` — these must remain intact
 
 - [ ] **Task 3: Verify VFL, ACP, IFN, FAX return non-empty results** (AC: #1–4)
+
   - [ ] Run a manual integration check for each symbol (e.g., via `test-yahoo.js` or a temporary test script, or via Playwright MCP) confirming a non-empty array is returned
   - [ ] Alternatively, write a short throwaway test that hits the live endpoint via `fetchDividendHistory` — mark it `skip` or `todo` in the committed test file if it requires network access
 
 - [ ] **Task 4: Update unit tests in `dividend-history.service.spec.ts`** (AC: #6, #7)
+
   - [ ] Review the `buildDividendHtml` helper function in the spec — it currently generates HTML with `<script type="application/json" data-dividend-chart-json>`. If the confirmed pattern differs, update this helper to match.
   - [ ] If `extractDividendJson` was rewritten (Task 2), update all test cases that supply mock HTML to use the new HTML structure
   - [ ] If field names changed, update `SAMPLE_DIVIDEND_ROWS` and any mapping assertions
@@ -88,21 +92,23 @@ so that the application displays accurate dividend information for securities th
 
 ### Key Files
 
-| File | Purpose |
-|------|---------|
-| `apps/server/src/app/routes/common/dividend-history.service.ts` | Main service — `extractDividendJson`, `fetchAndParseHtml`, `fetchDividendHistory` |
-| `apps/server/src/app/routes/common/dividend-history.service.spec.ts` | Unit tests — `buildDividendHtml` helper must match confirmed HTML pattern |
-| `_bmad-output/implementation-artifacts/53-1-investigate-dividendhistory-net-html-structure.md` | **Investigation results** — drive all parsing decisions from this file |
-| `_bmad-output/implementation-artifacts/50-1-switch-dividend-fetch-to-dividendhistory-net.md` | Prior story context — what was changed in Epic 50 |
+| File                                                                                           | Purpose                                                                           |
+| ---------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| `apps/server/src/app/routes/common/dividend-history.service.ts`                                | Main service — `extractDividendJson`, `fetchAndParseHtml`, `fetchDividendHistory` |
+| `apps/server/src/app/routes/common/dividend-history.service.spec.ts`                           | Unit tests — `buildDividendHtml` helper must match confirmed HTML pattern         |
+| `_bmad-output/implementation-artifacts/53-1-investigate-dividendhistory-net-html-structure.md` | **Investigation results** — drive all parsing decisions from this file            |
+| `_bmad-output/implementation-artifacts/50-1-switch-dividend-fetch-to-dividendhistory-net.md`   | Prior story context — what was changed in Epic 50                                 |
 
 ### Current Implementation Context (post-Story 50.1)
 
 The service as it stands after Story 50.1:
 
 ```typescript
-const BASE_URL = 'https://dividendhistory.net/payout';  // ✅ correct domain
+const BASE_URL = 'https://dividendhistory.net/payout'; // ✅ correct domain
 
-const BROWSER_HEADERS = { /* ... Chrome UA, Accept, Accept-Language, Referer */ };
+const BROWSER_HEADERS = {
+  /* ... Chrome UA, Accept, Accept-Language, Referer */
+};
 // ✅ must remain
 
 // 10-second rate limit — must remain
@@ -119,8 +125,7 @@ interface DividendHistoryRow {
 
 function extractDividendJson(html: string): DividendHistoryRow[] | null {
   // ⚠️  This regex was ASSUMED — Story 53.1 must confirm whether this attribute exists
-  const scriptRegex =
-    /<script[^>]+data-dividend-chart-json[^>]*>([\s\S]*?)<\/script>/;
+  const scriptRegex = /<script[^>]+data-dividend-chart-json[^>]*>([\s\S]*?)<\/script>/;
   const match = scriptRegex.exec(html);
   if (!match) return null;
   try {
@@ -132,7 +137,8 @@ function extractDividendJson(html: string): DividendHistoryRow[] | null {
 }
 ```
 
-The existing spec helper matches the *assumed* pattern:
+The existing spec helper matches the _assumed_ pattern:
+
 ```typescript
 function buildDividendHtml(rows: unknown[]): string {
   return `<html><body><script type="application/json" data-dividend-chart-json>${JSON.stringify(rows)}</script></body></html>`;
@@ -171,12 +177,14 @@ The following must **not** be altered by this story:
 ### Testing Approach
 
 **Unit test scope (must-pass offline):**
-- Mock `fetch` to return HTML that matches the *confirmed* structure from Story 53.1
+
+- Mock `fetch` to return HTML that matches the _confirmed_ structure from Story 53.1
 - Verify `fetchDividendHistory('PDI')` (or any symbol) returns the expected `ProcessedRow[]`
 - Update `buildDividendHtml` helper in the spec to generate matching HTML
 - All existing unit test cases must continue to pass (rewrite, do not delete)
 
 **Integration/manual verification (required for DoD):**
+
 - Use Playwright MCP or a temporary Node script to call `fetchDividendHistory('VFL')` against the live site
 - Confirm a non-empty array for VFL, ACP, IFN, FAX
 - This can be done informally (no committed integration test required), but the result must be documented in the Dev Agent Record below
@@ -222,6 +230,7 @@ Claude Sonnet 4.6 (GitHub Copilot)
 
 1. **URL format (BREAKING CHANGE):** The old `/payout/{TICKER}/` path returns HTTP 404. The new URL
    pattern is: `https://dividendhistory.net/{ticker_lowercase}-dividend-yield`
+
    - Change `BASE_URL` to `'https://dividendhistory.net'`
    - Change URL construction to `` `${BASE_URL}/${encodeURIComponent(upperTicker.toLowerCase())}-dividend-yield` ``
 
@@ -229,6 +238,7 @@ Claude Sonnet 4.6 (GitHub Copilot)
    The dividend data is in HTML tables with class `table table-bordered`.
 
 3. **Two-table structure per page:**
+
    - **Table 1** (2nd `table.table-bordered` on page): Has header row `<th>`, then ~25 data rows
    - **Table 2** (3rd `table.table-bordered` on page): No header row, contains older history
 
@@ -256,6 +266,7 @@ Claude Sonnet 4.6 (GitHub Copilot)
 #### What `extractDividendJson` should become
 
 Replace with an HTML table parser (e.g., using regex or a DOM library available in Node):
+
 - Select the 2nd and 3rd `table.table-bordered` elements
 - For Table 1: skip the first `<tr>` row (it contains `<th>` headers)
 - For Table 2: all rows are data rows
@@ -263,6 +274,7 @@ Replace with an HTML table parser (e.g., using regex or a DOM library available 
 - Return array of `ProcessedRow` objects mapped directly from columns 0 (ex_div) and 5 (payout)
 
 #### Manual Verification Results (from Story 53.1 Playwright investigation)
+
 - VFL: HTTP 200, 25 + 370 rows = 395 total dividend rows (data goes back to 1993)
 - ACP: HTTP 200, 25 + 155 rows = 180 total dividend rows (data goes back to 2011)
 - IFN: HTTP 200, 25 + 38 rows = 63 total dividend rows (quarterly, goes back to 1994)
@@ -271,6 +283,7 @@ Replace with an HTML table parser (e.g., using regex or a DOM library available 
 All four symbols return substantial dividend histories — no empty results expected after fix.
 
 ### Completion Checklist
+
 - [ ] `extractDividendJson` updated (or confirmed unchanged) based on verified HTML structure
 - [ ] `buildDividendHtml` in spec updated to match if parsing changed
 - [ ] VFL returns non-empty array (verified manually or via integration check)

@@ -37,6 +37,7 @@ so that any parsing code is based on empirical observation of the live site rath
 ## Tasks / Subtasks
 
 - [ ] **Navigate to each test URL using the Playwright MCP server** (AC: #1, #4)
+
   - [ ] Open `https://dividendhistory.net/payout/VFL/`
   - [ ] Open `https://dividendhistory.net/payout/ACP/`
   - [ ] Open `https://dividendhistory.net/payout/IFN/`
@@ -44,16 +45,19 @@ so that any parsing code is based on empirical observation of the live site rath
   - [ ] Confirm HTTP 200 response for each (not a block or redirect)
 
 - [ ] **Inspect page source for `<script data-dividend-chart-json>` tag** (AC: #2)
+
   - [ ] Use `page.content()` or the accessibility snapshot / evaluate tools to extract the raw HTML
   - [ ] Search for the string `data-dividend-chart-json` in the HTML source of each page
   - [ ] Note whether the tag is present, absent, or named differently
 
 - [ ] **Identify the actual dividend data structure** (AC: #1, #2)
+
   - [ ] If `<script data-dividend-chart-json>` is absent, locate where dividend data is embedded (e.g., alternative script tag attributes, inline JSON, table rows, other element)
   - [ ] Extract a sample of the data structure for one symbol (e.g., VFL) to confirm field names (`ex_div`, `payday`, `payout`, `type`, `currency`, `pctChange`)
   - [ ] Note any structural differences across the four symbols
 
 - [ ] **Capture network request details** (AC: #4)
+
   - [ ] Use Playwright network request inspection to confirm the request used browser-like headers
   - [ ] Confirm the response status code for each URL is 200
 
@@ -76,8 +80,7 @@ The critical function under investigation is `extractDividendJson`:
 
 ```typescript
 function extractDividendJson(html: string): DividendHistoryRow[] | null {
-  const scriptRegex =
-    /<script[^>]+data-dividend-chart-json[^>]*>([\s\S]*?)<\/script>/;
+  const scriptRegex = /<script[^>]+data-dividend-chart-json[^>]*>([\s\S]*?)<\/script>/;
   const match = scriptRegex.exec(html);
   if (!match) {
     return null;
@@ -116,12 +119,8 @@ The current `fetch` call includes these headers (confirmed in `dividend-history.
 
 ```typescript
 const BROWSER_HEADERS = {
-  'User-Agent':
-    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 ' +
-    '(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-  Accept:
-    'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,' +
-    'image/webp,*/*;q=0.8',
+  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 ' + '(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+  Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,' + 'image/webp,*/*;q=0.8',
   'Accept-Language': 'en-US,en;q=0.9',
   Referer: 'https://dividendhistory.net/',
 } as const;
@@ -137,7 +136,7 @@ Use the Playwright MCP server tools in this sequence for each of the four URLs:
 2. **Check network response** — use `mcp_microsoft_pla_browser_network_requests` to confirm HTTP 200
 3. **Capture page source** — use `mcp_microsoft_pla_browser_evaluate` with:
    ```js
-   () => document.documentElement.outerHTML
+   () => document.documentElement.outerHTML;
    ```
    or use `mcp_microsoft_pla_browser_run_code` with:
    ```js
@@ -146,15 +145,15 @@ Use the Playwright MCP server tools in this sequence for each of the four URLs:
      // Search for script tags with data attributes
      const match = content.match(/<script[^>]+data-[^>]*>/g);
      return { scriptTags: match, hasChartJson: content.includes('data-dividend-chart-json') };
-   }
+   };
    ```
 4. **Snapshot for quick overview** — use `mcp_microsoft_pla_browser_snapshot` to see the accessible structure
 5. **Extract data sample** — if a pattern is found, extract a 2–3 row sample of the actual JSON
 
 ### Test URLs
 
-| Symbol | URL |
-|--------|-----|
+| Symbol | URL                                       |
+| ------ | ----------------------------------------- |
 | VFL    | `https://dividendhistory.net/payout/VFL/` |
 | ACP    | `https://dividendhistory.net/payout/ACP/` |
 | IFN    | `https://dividendhistory.net/payout/IFN/` |
@@ -205,6 +204,7 @@ https://dividendhistory.net/{ticker_lowercase}-dividend-yield
 ```
 
 Examples confirmed to return HTTP 200:
+
 - `https://dividendhistory.net/vfl-dividend-yield`
 - `https://dividendhistory.net/acp-dividend-yield`
 - `https://dividendhistory.net/ifn-dividend-yield`
@@ -269,14 +269,14 @@ The ticker in the URL is **lowercase**. The `/payout/` path segment no longer ex
 
 #### Field Name Mapping (Old JSON → New HTML columns)
 
-| Old `DividendHistoryRow` field | New HTML table column | Column index | Notes |
-|---|---|---|---|
-| `ex_div` | `{SYM} Ex Dividend Date` | 0 | Format `MM/DD/YYYY` |
-| `payday` | `Payout Date` | 3 | Format `MM/DD/YYYY` |
-| `payout` | `Dividend` | 5 | Format `$0.05000` — strip `$`, parse float |
-| `type` | _(not present)_ | — | Was used to filter `type === 'u'`; no equivalent column in new structure |
-| `currency` | _(not present)_ | — | Always USD; not exposed on page |
-| `pctChange` | `Change` | 7 | Format `+15.15%` or `''`; optional |
+| Old `DividendHistoryRow` field | New HTML table column    | Column index | Notes                                                                    |
+| ------------------------------ | ------------------------ | ------------ | ------------------------------------------------------------------------ |
+| `ex_div`                       | `{SYM} Ex Dividend Date` | 0            | Format `MM/DD/YYYY`                                                      |
+| `payday`                       | `Payout Date`            | 3            | Format `MM/DD/YYYY`                                                      |
+| `payout`                       | `Dividend`               | 5            | Format `$0.05000` — strip `$`, parse float                               |
+| `type`                         | _(not present)_          | —            | Was used to filter `type === 'u'`; no equivalent column in new structure |
+| `currency`                     | _(not present)_          | —            | Always USD; not exposed on page                                          |
+| `pctChange`                    | `Change`                 | 7            | Format `+15.15%` or `''`; optional                                       |
 
 #### Browser Headers — Accepted
 
