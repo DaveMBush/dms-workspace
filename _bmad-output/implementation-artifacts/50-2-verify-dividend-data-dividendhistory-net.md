@@ -47,6 +47,7 @@ grep -r "dividendhistory.org" apps/ --include="*.spec.ts" -l
 ```
 
 Also check:
+
 - `apps/server/src/app/routes/common/distribution-api.function.ts` — had a comment on line 4
 - Any `.env` or config files that may reference the old domain
 
@@ -73,24 +74,28 @@ assertions that literally compare against the `dividendhistory.org` domain strin
 ## Dev Agent Record
 
 ### Agent Model Used
+
 Claude Sonnet 4.6
 
 ### Debug Log References
+
 N/A
 
 ### Completion Notes List
+
 - Story 50.1 had already updated all source files (`dividend-history.service.ts`, `dividend-history.service.spec.ts`, `distribution-api.function.ts`, `get-consistent-distributions.function.ts`, `get-consistent-distributions.function.spec.ts`).
 - One remaining `.org` reference found in `apps/dms-material-e2e/src/dividend-precision.spec.ts` — all 6 occurrences were in JSDoc/inline comments only. Updated all to `dividendhistory.net`.
 - No source-code logic changes required.
 - `pnpm all` passed with no regressions.
 
 ### File List
+
 - `apps/dms-material-e2e/src/dividend-precision.spec.ts` (comment updates only)
 - `_bmad-output/implementation-artifacts/50-2-verify-dividend-data-dividendhistory-net.md` (story file update)
 
 ## Change Log
 
-| Date | Version | Description | Author |
-|------|---------|-------------|--------|
-| 2026-04-06 | 1.0 | Initial story created | PM Agent |
-| 2026-04-06 | 1.1 | Implementation complete: updated remaining dividendhistory.org comment references in dividend-precision.spec.ts | Dev Agent (Claude Sonnet 4.6) |
+| Date       | Version | Description                                                                                                     | Author                        |
+| ---------- | ------- | --------------------------------------------------------------------------------------------------------------- | ----------------------------- |
+| 2026-04-06 | 1.0     | Initial story created                                                                                           | PM Agent                      |
+| 2026-04-06 | 1.1     | Implementation complete: updated remaining dividendhistory.org comment references in dividend-precision.spec.ts | Dev Agent (Claude Sonnet 4.6) |
