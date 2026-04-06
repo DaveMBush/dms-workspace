@@ -7,6 +7,7 @@
     <mat-form-field appearance="outline" class="account-select">
       <mat-label>Account</mat-label>
       <mat-select
+        panelWidth=""
         [value]="selectedAccountId$()"
         (selectionChange)="onAccountChange($event.value)"
       >
