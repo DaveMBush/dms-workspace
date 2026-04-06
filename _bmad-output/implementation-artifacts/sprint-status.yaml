@@ -332,3 +332,21 @@ development_status:
   50-1-switch-dividend-fetch-to-dividendhistory-net: ready-for-dev
   50-2-verify-dividend-data-dividendhistory-net: ready-for-dev
   epic-50-retrospective: optional
+
+  # ── Epic 51: Correct Risk Group Filter Dropdown Panel Width (panelWidth="") ───
+  epic-51: backlog
+  51-1-fix-riskgroup-panelwidth-empty-string: backlog
+  51-2-update-e2e-riskgroup-panelwidth: backlog
+  epic-51-retrospective: optional
+
+  # ── Epic 52: Fix Accounts Filter Dropdown Panel Width on Universe Screen ──────
+  epic-52: backlog
+  52-1-fix-accounts-dropdown-panelwidth-empty-string: backlog
+  52-2-e2e-accounts-dropdown-panelwidth: backlog
+  epic-52-retrospective: optional
+
+  # ── Epic 53: Properly Evaluate and Fix dividendhistory.net Integration ─────────
+  epic-53: backlog
+  53-1-investigate-dividendhistory-net-html-structure: backlog
+  53-2-fix-dividendhistory-net-integration: backlog
+  epic-53-retrospective: optional
