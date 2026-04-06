@@ -9,7 +9,7 @@ let lastDividendHistoryCallTime = 0;
 // dividendhistory.net fair-use expectations and avoid automated-access detection.
 const DIVIDEND_HISTORY_RATE_LIMIT_DELAY = 10 * 1000;
 
-const BASE_URL = 'https://dividendhistory.net/payout';
+const BASE_URL = 'https://dividendhistory.net';
 
 const BROWSER_HEADERS = {
   'User-Agent':
@@ -22,13 +22,10 @@ const BROWSER_HEADERS = {
   Referer: 'https://dividendhistory.net/',
 } as const;
 
-interface DividendHistoryRow {
-  ex_div: string;
-  payday: string;
-  payout: number;
-  type: string;
-  currency: string;
-  pctChange: number | string;
+interface ParsedDividendRow {
+  exDiv: string; // column 0: MM/DD/YYYY format
+  payDay: string; // column 3: payout date
+  payout: number; // column 5: dollar amount like "$0.05000"
 }
 
 export async function enforceDividendHistoryRateLimit(): Promise<void> {
@@ -51,7 +48,7 @@ export function updateDividendHistoryCallTime(): void {
 async function fetchAndParseHtml(
   url: string,
   upperTicker: string
-): Promise<DividendHistoryRow[] | null> {
+): Promise<ParsedDividendRow[] | null> {
   const response = await fetch(url, { headers: BROWSER_HEADERS });
   if (!response.ok) {
     logger.warn(
@@ -63,28 +60,70 @@ async function fetchAndParseHtml(
     return null;
   }
   const html = await response.text();
-  return extractDividendJson(html);
+  return parseDividendTable(html);
 }
 
-function extractDividendJson(html: string): DividendHistoryRow[] | null {
-  const scriptRegex =
-    /<script[^>]+data-dividend-chart-json[^>]*>([\s\S]*?)<\/script>/;
-  const match = scriptRegex.exec(html);
-  if (!match) {
-    return null;
+function parseCellValues(cells: string): string[] {
+  const cellValues: string[] = [];
+  const cellRegex = /<td[^>]*>([\s\S]*?)<\/td>/gi;
+  let cellMatch: RegExpExecArray | null;
+  while ((cellMatch = cellRegex.exec(cells)) !== null) {
+    // eslint-disable-next-line sonarjs/slow-regex -- safe: [^>]+ is bounded by > and cannot catastrophically backtrack
+    const text = cellMatch[1].replace(/<[^>]+>/g, '').trim();
+    cellValues.push(text);
   }
-  try {
-    const parsed: unknown = JSON.parse(match[1]);
-    return Array.isArray(parsed) ? (parsed as DividendHistoryRow[]) : null;
-  } catch {
-    return null;
-  }
+  return cellValues;
 }
 
-function mapToProcessedRow(row: DividendHistoryRow): ProcessedRow {
+function parseTableRows(tableContent: string): ParsedDividendRow[] {
+  const rows: ParsedDividendRow[] = [];
+  const rowRegex = /<tr[^>]*>([\s\S]*?)<\/tr>/gi;
+  let rowMatch: RegExpExecArray | null;
+
+  while ((rowMatch = rowRegex.exec(tableContent)) !== null) {
+    const cells = rowMatch[1];
+    if (/<th/i.test(cells)) {
+      continue;
+    }
+
+    const cellValues = parseCellValues(cells);
+    if (cellValues.length < 6) {
+      continue;
+    }
+
+    const exDiv = cellValues[0];
+    const payDay = cellValues[3];
+    const payoutStr = cellValues[5].replace(/[$,]/g, '');
+    const payout = parseFloat(payoutStr);
+
+    if (!exDiv || isNaN(payout)) {
+      continue;
+    }
+
+    rows.push({ exDiv, payDay, payout });
+  }
+
+  return rows;
+}
+
+function parseDividendTable(html: string): ParsedDividendRow[] | null {
+  const tableRegex =
+    /<table[^>]*class="[^"]*table[^"]*table-bordered[^"]*"[^>]*>([\s\S]*?)<\/table>/gi;
+  const rows: ParsedDividendRow[] = [];
+  let tableMatch: RegExpExecArray | null;
+
+  while ((tableMatch = tableRegex.exec(html)) !== null) {
+    rows.push(...parseTableRows(tableMatch[1]));
+  }
+
+  return rows.length > 0 ? rows : null;
+}
+
+function mapToProcessedRow(row: ParsedDividendRow): ProcessedRow {
+  const [month, day, year] = row.exDiv.split('/').map(Number);
   return {
     amount: row.payout,
-    date: new Date(row.ex_div),
+    date: new Date(year, month - 1, day),
   };
 }
 
@@ -99,7 +138,9 @@ export async function fetchDividendHistory(
   updateDividendHistoryCallTime();
 
   const upperTicker = ticker.toUpperCase();
-  const url = `${BASE_URL}/${encodeURIComponent(upperTicker)}/`;
+  const url = `${BASE_URL}/${encodeURIComponent(
+    upperTicker.toLowerCase()
+  )}-dividend-yield`;
 
   try {
     logger.debug(
@@ -120,12 +161,13 @@ export async function fetchDividendHistory(
       return [];
     }
 
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
     const processed = rawRows
-      .filter(function filterConfirmedRows(row: DividendHistoryRow): boolean {
-        return row.type !== 'u';
-      })
       .map(mapToProcessedRow)
-      .filter(isValidProcessedRow)
+      .filter(function filterPastRows(row: ProcessedRow): boolean {
+        return isValidProcessedRow(row) && row.date <= today;
+      })
       .sort(function sortByDate(a: ProcessedRow, b: ProcessedRow): number {
         return a.date.valueOf() - b.date.valueOf();
       });

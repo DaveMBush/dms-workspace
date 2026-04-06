@@ -19,53 +19,48 @@ import {
 const mockLogger = vi.mocked(logger);
 
 const SAMPLE_DIVIDEND_ROWS = [
-  {
-    ex_div: '2026-03-12',
-    payday: '2026-04-01',
-    payout: 0.2205,
-    type: '',
-    currency: 'USD',
-    pctChange: '',
-  },
-  {
-    ex_div: '2026-02-12',
-    payday: '2026-03-02',
-    payout: 0.2205,
-    type: '',
-    currency: 'USD',
-    pctChange: '',
-  },
-  {
-    ex_div: '2026-01-13',
-    payday: '2026-02-02',
-    payout: 0.2205,
-    type: '',
-    currency: 'USD',
-    pctChange: '',
-  },
+  { exDiv: '03/12/2026', payDay: '04/01/2026', payout: 0.2205 },
+  { exDiv: '02/12/2026', payDay: '03/02/2026', payout: 0.2205 },
+  { exDiv: '01/13/2026', payDay: '02/02/2026', payout: 0.2205 },
 ];
 
-const UNCONFIRMED_ROW = {
-  ex_div: '2026-04-10',
-  payday: '2026-05-01',
-  payout: 0.2205,
-  type: 'u',
-  currency: 'USD',
-  pctChange: '',
-};
-
-function buildDividendHtml(rows: unknown[]): string {
-  return `<html><body><script type="application/json" data-dividend-chart-json>${JSON.stringify(
-    rows
-  )}</script></body></html>`;
+function buildDividendHtml(
+  rows: Array<{ exDiv: string; payDay: string; payout: number }>
+): string {
+  const tableRows = rows
+    .map(
+      (r) =>
+        `<tr><td>${r.exDiv}</td><td></td><td></td><td>${
+          r.payDay
+        }</td><td></td><td>$${r.payout.toFixed(5)}</td></tr>`
+    )
+    .join('\n');
+  return `<html><body><table class="table table-bordered"><thead><tr><th>Ex-Div</th><th></th><th></th><th>Pay Date</th><th></th><th>Amount</th></tr></thead><tbody>${tableRows}</tbody></table></body></html>`;
 }
 
 function buildHtmlWithoutScript(): string {
   return '<html><body><p>No dividend data found.</p></body></html>';
 }
 
-function buildHtmlWithInvalidJson(): string {
-  return '<html><body><script type="application/json" data-dividend-chart-json>not valid json</script></body></html>';
+function buildHtmlWithMalformedTable(): string {
+  return '<html><body><table class="table table-bordered"><tbody><tr><td>03/12/2026</td><td>only two</td></tr></tbody></table></body></html>';
+}
+
+function buildMultiTableDividendHtml(
+  rows: Array<{ exDiv: string; payDay: string; payout: number }>
+): string {
+  const dummyTable =
+    '<table class="table table-bordered"><tbody><tr><td>Symbol</td><td>Info</td></tr></tbody></table>';
+  const tableRows = rows
+    .map(
+      (r) =>
+        `<tr><td>${r.exDiv}</td><td></td><td></td><td>${
+          r.payDay
+        }</td><td></td><td>$${r.payout.toFixed(5)}</td></tr>`
+    )
+    .join('\n');
+  const dividendTable = `<table class="table table-bordered"><thead><tr><th>Ex-Div</th><th></th><th></th><th>Pay Date</th><th></th><th>Amount</th></tr></thead><tbody>${tableRows}</tbody></table>`;
+  return `<html><body>${dummyTable}${dividendTable}</body></html>`;
 }
 
 describe('dividend-history.service', () => {
@@ -100,18 +95,18 @@ describe('dividend-history.service', () => {
       expect(result).toHaveLength(3);
       expect(result[0]).toEqual({
         amount: 0.2205,
-        date: new Date('2026-01-13'),
+        date: new Date(2026, 0, 13),
       });
       expect(result[1]).toEqual({
         amount: 0.2205,
-        date: new Date('2026-02-12'),
+        date: new Date(2026, 1, 12),
       });
       expect(result[2]).toEqual({
         amount: 0.2205,
-        date: new Date('2026-03-12'),
+        date: new Date(2026, 2, 12),
       });
       expect(mockFetch).toHaveBeenCalledWith(
-        'https://dividendhistory.net/payout/PDI/',
+        'https://dividendhistory.net/pdi-dividend-yield',
         {
           headers: {
             'User-Agent':
@@ -127,7 +122,7 @@ describe('dividend-history.service', () => {
       );
     });
 
-    test('uppercases ticker in URL', async () => {
+    test('lowercases ticker in URL', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
@@ -139,7 +134,7 @@ describe('dividend-history.service', () => {
       await fetchDividendHistory('pdi');
 
       expect(mockFetch).toHaveBeenCalledWith(
-        'https://dividendhistory.net/payout/PDI/',
+        'https://dividendhistory.net/pdi-dividend-yield',
         {
           headers: {
             'User-Agent':
@@ -155,22 +150,43 @@ describe('dividend-history.service', () => {
       );
     });
 
-    test('filters out unconfirmed rows (type === u)', async () => {
-      const rowsWithUnconfirmed = [...SAMPLE_DIVIDEND_ROWS, UNCONFIRMED_ROW];
+    test('parses dividend rows from multiple table.table-bordered tables', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
         text: vi
           .fn()
-          .mockResolvedValueOnce(buildDividendHtml(rowsWithUnconfirmed)),
+          .mockResolvedValueOnce(
+            buildMultiTableDividendHtml(SAMPLE_DIVIDEND_ROWS)
+          ),
+      });
+
+      const result = await fetchDividendHistory('PDI');
+
+      expect(result).toHaveLength(3);
+      expect(result[0].date).toEqual(new Date(2026, 0, 13));
+      expect(result[2].date).toEqual(new Date(2026, 2, 12));
+    });
+
+    test('filters out future ex-div rows', async () => {
+      const futureRow = {
+        exDiv: '12/31/2099',
+        payDay: '01/31/2100',
+        payout: 0.2205,
+      };
+      const rowsWithFuture = [...SAMPLE_DIVIDEND_ROWS, futureRow];
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        text: vi.fn().mockResolvedValueOnce(buildDividendHtml(rowsWithFuture)),
       });
 
       const result = await fetchDividendHistory('PDI');
 
       expect(result).toHaveLength(3);
       expect(
-        result.every(function checkNoFutureDate(row) {
-          return row.date < new Date('2026-04-10');
+        result.every(function checkNoPastDate(row) {
+          return row.date < new Date('12/31/2099');
         })
       ).toBe(true);
     });
@@ -190,7 +206,7 @@ describe('dividend-history.service', () => {
       );
     });
 
-    test('returns empty array and logs warning when script tag is missing', async () => {
+    test('returns empty array and logs warning when no dividend table found', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
@@ -206,11 +222,11 @@ describe('dividend-history.service', () => {
       );
     });
 
-    test('returns empty array and logs warning when JSON is invalid', async () => {
+    test('returns empty array and logs warning when table has insufficient columns', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        text: vi.fn().mockResolvedValueOnce(buildHtmlWithInvalidJson()),
+        text: vi.fn().mockResolvedValueOnce(buildHtmlWithMalformedTable()),
       });
 
       const result = await fetchDividendHistory('BAD');
@@ -222,13 +238,13 @@ describe('dividend-history.service', () => {
       );
     });
 
-    test('returns empty array when JSON is non-array (object)', async () => {
-      const htmlWithObjectJson =
-        '<html><body><script type="application/json" data-dividend-chart-json>{"key":"value"}</script></body></html>';
+    test('returns empty array when table has no data rows', async () => {
+      const htmlWithOnlyHeader =
+        '<html><body><table class="table table-bordered"><thead><tr><th>Ex-Div</th></tr></thead><tbody></tbody></table></body></html>';
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        text: vi.fn().mockResolvedValueOnce(htmlWithObjectJson),
+        text: vi.fn().mockResolvedValueOnce(htmlWithOnlyHeader),
       });
 
       const result = await fetchDividendHistory('OBJ');
@@ -236,7 +252,7 @@ describe('dividend-history.service', () => {
       expect(result).toEqual([]);
     });
 
-    test('returns empty array and logs warning when JSON array is empty', async () => {
+    test('returns empty array and logs warning when table is empty', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
@@ -286,9 +302,9 @@ describe('dividend-history.service', () => {
 
     test('sorts result by date ascending', async () => {
       const unsorted = [
-        SAMPLE_DIVIDEND_ROWS[2], // 2026-01-13
-        SAMPLE_DIVIDEND_ROWS[0], // 2026-03-12
-        SAMPLE_DIVIDEND_ROWS[1], // 2026-02-12
+        SAMPLE_DIVIDEND_ROWS[2], // 01/13/2026
+        SAMPLE_DIVIDEND_ROWS[0], // 03/12/2026
+        SAMPLE_DIVIDEND_ROWS[1], // 02/12/2026
       ];
       mockFetch.mockResolvedValueOnce({
         ok: true,
@@ -298,9 +314,9 @@ describe('dividend-history.service', () => {
 
       const result = await fetchDividendHistory('PDI');
 
-      expect(result[0].date).toEqual(new Date('2026-01-13'));
-      expect(result[1].date).toEqual(new Date('2026-02-12'));
-      expect(result[2].date).toEqual(new Date('2026-03-12'));
+      expect(result[0].date).toEqual(new Date(2026, 0, 13));
+      expect(result[1].date).toEqual(new Date(2026, 1, 12));
+      expect(result[2].date).toEqual(new Date(2026, 2, 12));
     });
 
     test('logs debug on successful fetch', async () => {
