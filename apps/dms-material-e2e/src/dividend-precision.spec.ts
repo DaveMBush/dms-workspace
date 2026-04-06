@@ -9,21 +9,21 @@ import { createRiskGroups } from './helpers/shared-risk-groups.helper';
  * Dividend Precision After Update – E2E Regression Guard
  *
  * Story 34.4: Verify that dividend amounts from the new high-precision source
- * (dividendhistory.org, ≥4 decimal places) are stored and displayed without
+ * (dividendhistory.net, ≥4 decimal places) are stored and displayed without
  * truncation in the Universe screen.
  *
  * Regression scenario: Yahoo Finance returns 2-decimal values (e.g., $0.22).
- * dividendhistory.org can return 4-decimal values (e.g., $0.2245). This test
+ * dividendhistory.net can return 4-decimal values (e.g., $0.2245). This test
  * guards against accidentally reverting to a lower-precision source or
  * introducing rounding in the API/database/UI pipeline.
  *
  * Approach: Playwright cannot intercept server-side HTTP calls to
- * dividendhistory.org, so the test exercises the full round-trip via the PUT
+ * dividendhistory.net, so the test exercises the full round-trip via the PUT
  * /api/universe endpoint (which mirrors what the settings/update service
- * does after it receives data from dividendhistory.org).
+ * does after it receives data from dividendhistory.net).
  */
 
-// Known high-precision dividend value that simulates what dividendhistory.org
+// Known high-precision dividend value that simulates what dividendhistory.net
 // provides for a ticker like PDI. 4th decimal digit is deliberately non-zero
 // so a regression to 2-decimal precision would cause this test to fail.
 const HIGH_PRECISION_DISTRIBUTION = 0.2245;
@@ -89,7 +89,7 @@ test.describe('Dividend Precision After Update', () => {
   }) => {
     // ── Step 1: Simulate an "update fields" result by writing a high-precision
     // distribution via PUT /api/universe (mirrors what settings/update does
-    // after fetchDividendHistory returns a 4-decimal value from dividendhistory.org).
+    // after fetchDividendHistory returns a 4-decimal value from dividendhistory.net).
     const updateResponse = await request.put('/api/universe', {
       data: {
         id: seededRecord.id,
