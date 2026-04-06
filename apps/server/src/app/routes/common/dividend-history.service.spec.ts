@@ -111,7 +111,19 @@ describe('dividend-history.service', () => {
         date: new Date('2026-03-12'),
       });
       expect(mockFetch).toHaveBeenCalledWith(
-        'https://dividendhistory.org/payout/PDI/'
+        'https://dividendhistory.net/payout/PDI/',
+        {
+          headers: {
+            'User-Agent':
+              'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 ' +
+              '(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+            Accept:
+              'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,' +
+              'image/webp,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.9',
+            Referer: 'https://dividendhistory.net/',
+          },
+        }
       );
     });
 
@@ -127,7 +139,19 @@ describe('dividend-history.service', () => {
       await fetchDividendHistory('pdi');
 
       expect(mockFetch).toHaveBeenCalledWith(
-        'https://dividendhistory.org/payout/PDI/'
+        'https://dividendhistory.net/payout/PDI/',
+        {
+          headers: {
+            'User-Agent':
+              'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 ' +
+              '(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+            Accept:
+              'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,' +
+              'image/webp,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.9',
+            Referer: 'https://dividendhistory.net/',
+          },
+        }
       );
     });
 
@@ -161,7 +185,7 @@ describe('dividend-history.service', () => {
 
       expect(result).toEqual([]);
       expect(mockLogger.warn).toHaveBeenCalledWith(
-        'dividendhistory.org returned 404 for ticker UNKNOWN',
+        'dividendhistory.net returned 404 for ticker UNKNOWN',
         { ticker: 'UNKNOWN', status: 404 }
       );
     });
@@ -177,7 +201,7 @@ describe('dividend-history.service', () => {
 
       expect(result).toEqual([]);
       expect(mockLogger.warn).toHaveBeenCalledWith(
-        'No dividend data found on dividendhistory.org for ticker NODATA',
+        'No dividend data found on dividendhistory.net for ticker NODATA',
         { ticker: 'NODATA' }
       );
     });
@@ -193,7 +217,7 @@ describe('dividend-history.service', () => {
 
       expect(result).toEqual([]);
       expect(mockLogger.warn).toHaveBeenCalledWith(
-        'No dividend data found on dividendhistory.org for ticker BAD',
+        'No dividend data found on dividendhistory.net for ticker BAD',
         { ticker: 'BAD' }
       );
     });
@@ -223,7 +247,7 @@ describe('dividend-history.service', () => {
 
       expect(result).toEqual([]);
       expect(mockLogger.warn).toHaveBeenCalledWith(
-        'No dividend data found on dividendhistory.org for ticker EMPTY',
+        'No dividend data found on dividendhistory.net for ticker EMPTY',
         { ticker: 'EMPTY' }
       );
     });
@@ -235,7 +259,7 @@ describe('dividend-history.service', () => {
 
       expect(result).toEqual([]);
       expect(mockLogger.warn).toHaveBeenCalledWith(
-        'Error fetching dividend history for NET from dividendhistory.org',
+        'Error fetching dividend history for NET from dividendhistory.net',
         { ticker: 'NET', error: 'Error: Network failure' }
       );
     });
