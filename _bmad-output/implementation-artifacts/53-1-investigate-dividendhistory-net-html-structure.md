@@ -38,11 +38,11 @@ so that any parsing code is based on empirical observation of the live site rath
 
 - [ ] **Navigate to each test URL using the Playwright MCP server** (AC: #1, #4)
 
-  - [ ] Open `https://dividendhistory.net/payout/VFL/`
-  - [ ] Open `https://dividendhistory.net/payout/ACP/`
-  - [ ] Open `https://dividendhistory.net/payout/IFN/`
-  - [ ] Open `https://dividendhistory.net/payout/FAX/`
-  - [ ] Confirm HTTP 200 response for each (not a block or redirect)
+  - [x] Open `https://dividendhistory.net/vfl-dividend-yield` (note: `/payout/VFL/` returns 404)
+  - [x] Open `https://dividendhistory.net/acp-dividend-yield` (note: `/payout/ACP/` returns 404)
+  - [x] Open `https://dividendhistory.net/ifn-dividend-yield` (note: `/payout/IFN/` returns 404)
+  - [x] Open `https://dividendhistory.net/fax-dividend-yield` (note: `/payout/FAX/` returns 404)
+  - [x] Confirm HTTP 200 for all four `/{ticker_lowercase}-dividend-yield` endpoints (HTTP 404 for all `/payout/` URLs)
 
 - [ ] **Inspect page source for `<script data-dividend-chart-json>` tag** (AC: #2)
 

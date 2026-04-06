@@ -68,7 +68,8 @@ so that the application displays accurate dividend information for securities th
     - [ ] If the data structure is now in a different element (e.g. HTML table, inline JSON variable, different attribute name), rewrite the extraction logic accordingly
     - [ ] If field names differ from `DividendHistoryRow` (e.g., site uses `exDiv` instead of `ex_div`), add a mapping step or update the interface
   - [ ] Update the function-level comment to describe the confirmed data source pattern
-  - [ ] Do **not** remove `BROWSER_HEADERS`, `BASE_URL`, `DIVIDEND_HISTORY_RATE_LIMIT_DELAY` — these must remain intact
+  - [ ] Do **not** remove `BROWSER_HEADERS`, `DIVIDEND_HISTORY_RATE_LIMIT_DELAY` — these must remain intact
+  - [ ] **Update** `BASE_URL` from `'https://dividendhistory.net/payout'` to `'https://dividendhistory.net'` and URL path from `/{TICKER}/` to `/{ticker_lowercase}-dividend-yield`
 
 - [ ] **Task 3: Verify VFL, ACP, IFN, FAX return non-empty results** (AC: #1–4)
 
@@ -162,17 +163,23 @@ The root cause of VFL/ACP/IFN/FAX returning empty arrays is almost certainly tha
 
 **Do not guess the HTML pattern.** Read the Dev Agent Record of Story 53.1 first.
 
-### Constraints — Do Not Change
+### Constraints
 
 The following must **not** be altered by this story:
 
 - `BROWSER_HEADERS` constant and its contents
-- ~~`BASE_URL = 'https://dividendhistory.net/payout'`~~ — **MUST CHANGE** (see Story 53.1 findings)
 - `DIVIDEND_HISTORY_RATE_LIMIT_DELAY = 10 * 1000` (10-second minimum gap)
 - `enforceDividendHistoryRateLimit()` and `updateDividendHistoryCallTime()` exports
-- ~~The `type !== 'u'` filter that excludes unconfirmed rows~~ — **MUST REMOVE** (no `type` field in new structure; use date-based filter instead, e.g., reject rows where ex-div date > today)
 - The `isValidProcessedRow` guard (date valid + amount > 0)
 - Sort order (ascending by date)
+
+The following **must** be updated by this story (confirmed by Story 53.1 investigation):
+
+- `BASE_URL`: change from `'https://dividendhistory.net/payout'` to `'https://dividendhistory.net'`
+- URL construction: change from `` `${BASE_URL}/${encodeURIComponent(upperTicker)}/` `` to
+  `` `${BASE_URL}/${encodeURIComponent(upperTicker.toLowerCase())}-dividend-yield` ``
+- The `type !== 'u'` filter: **remove**; replace with a date-based guard (exclude rows where
+  ex-div date > today), since the `type` field does not exist in the new HTML structure
 
 ### Testing Approach
 
@@ -265,13 +272,18 @@ Claude Sonnet 4.6 (GitHub Copilot)
 
 #### What `extractDividendJson` should become
 
-Replace with an HTML table parser (e.g., using regex or a DOM library available in Node):
+Replace with an HTML table parser using a proper DOM parser (e.g., JSDOM, `node-html-parser`, or
+similar — not string splitting on `<td` boundaries, which is brittle against whitespace/nesting):
 
-- Select the 2nd and 3rd `table.table-bordered` elements
-- For Table 1: skip the first `<tr>` row (it contains `<th>` headers)
-- For Table 2: all rows are data rows
-- For each data row, extract cells by splitting on `<td` boundaries
-- Return array of `ProcessedRow` objects mapped directly from columns 0 (ex_div) and 5 (payout)
+- Select the 2nd and 3rd `table.table-bordered` elements via DOM
+- For Table 1: iterate rows, skip the first `<tr>` row (header with `<th>` elements)
+- For Table 2: iterate all `<tr>` rows (no header row)
+- For each data row, use DOM `.querySelectorAll('td')` to read cells by index:
+  - Index 0 → `ex_div` (ex-dividend date, `MM/DD/YYYY`)
+  - Index 3 → `payday` (payout date, `MM/DD/YYYY`)
+  - Index 5 → `payout` (dividend amount, strip `$`, parse to float)
+- Filter out rows where `ex_div` date is in the future (date-based guard replaces `type !== 'u'`)
+- Return array of `DividendHistoryRow` objects with only the mapped fields
 
 #### Manual Verification Results (from Story 53.1 Playwright investigation)
 
