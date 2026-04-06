@@ -87,7 +87,9 @@ test.describe('Universe Accounts Filter Dropdown Width', () => {
       let maxWidth = 0;
       options.forEach((el) => {
         const w = (el as HTMLElement).scrollWidth;
-        if (w > maxWidth) maxWidth = w;
+        if (w > maxWidth) {
+          maxWidth = w;
+        }
       });
       return maxWidth;
     });
