@@ -89,12 +89,10 @@ test.describe('Universe Risk Group Filter Dropdown Width', () => {
     expect(panelBox).not.toBeNull();
 
     // Measure the widest option label's rendered width
-    const widestOptionLabelWidth = await page.evaluate(() => {
-      const options = document.querySelectorAll(
-        '.mat-mdc-select-panel mat-option'
-      );
+    const widestOptionLabelWidth = await panel.evaluate((panelEl) => {
+      const labels = panelEl.querySelectorAll('.mdc-list-item__primary-text');
       let maxWidth = 0;
-      options.forEach((el) => {
+      labels.forEach((el) => {
         const w = (el as HTMLElement).scrollWidth;
         if (w > maxWidth) {
           maxWidth = w;
@@ -102,6 +100,7 @@ test.describe('Universe Risk Group Filter Dropdown Width', () => {
       });
       return maxWidth;
     });
+    expect(widestOptionLabelWidth).toBeGreaterThan(0);
 
     // Panel must be at least as wide as the widest option label
     expect(panelBox!.width).toBeGreaterThanOrEqual(widestOptionLabelWidth - 1);
