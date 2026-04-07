@@ -62,17 +62,13 @@ test.describe('Universe Sort State Stickiness (Story 54.1)', () => {
     // Step 1: Click the Symbol column header twice to apply Symbol descending sort
     const symbolHeader = page.locator('[data-sort-header="symbol"]');
     await symbolHeader.click();
-    await page.waitForTimeout(500);
+    await expect(symbolHeader).toHaveAttribute('aria-sort', 'ascending');
     await symbolHeader.click();
-    await page.waitForTimeout(500);
-
-    // Confirm descending sort is active before navigation
     await expect(symbolHeader).toHaveAttribute('aria-sort', 'descending');
 
     // Step 2: Navigate away using Angular SPA routing (click the nav link)
     // This is a client-side navigation — the Universe component is destroyed
     await page.click('[data-testid="global-nav-screener"]');
-    await page.waitForLoadState('networkidle');
     await expect(page).toHaveURL(/screener/, { timeout: 10000 });
 
     // Step 3: Navigate back to Universe using Angular SPA routing (click the nav link)
