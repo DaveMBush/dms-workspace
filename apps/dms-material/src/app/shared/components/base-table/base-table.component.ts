@@ -23,7 +23,7 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatSortModule, Sort } from '@angular/material/sort';
+import { MatSort, MatSortModule, Sort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { debounceTime } from 'rxjs';
 
@@ -103,6 +103,7 @@ export class BaseTableComponent<T extends { id: string }>
 
   // ViewChild for virtual scroll viewport
   viewport = viewChild<CdkVirtualScrollViewport>('viewport');
+  private readonly matSort = viewChild(MatSort);
 
   // Internal state
   selection = new SelectionModel<T>(true, []);
@@ -190,6 +191,18 @@ export class BaseTableComponent<T extends { id: string }>
             this.renderedRangeChange.emit(range);
           }.bind(this)
         );
+    }
+    // In zoneless Angular, MatSort.ngOnChanges() fires _stateChanges.next()
+    // when [matSortActive]/[matSortDirection] bindings are set. However,
+    // MatSortHeader.ngOnInit() subscribes to _stateChanges AFTER that event
+    // fires (parent inputs bind before child ngOnInit), so headers miss the
+    // notification and never update their aria-sort attribute.
+    // Triggering _stateChanges.next() here (after all child ngOnInit have run)
+    // ensures sort headers re-evaluate and render the correct aria-sort value.
+    const matSortRef = this.matSort();
+    if (matSortRef !== undefined && this.sortColumns().length > 0) {
+      // eslint-disable-next-line no-underscore-dangle -- Intentional: notifies MatSortHeaders after ngOnInit subscribes
+      matSortRef._stateChanges.next();
     }
   }
 
