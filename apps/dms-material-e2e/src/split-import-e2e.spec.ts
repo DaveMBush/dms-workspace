@@ -2,10 +2,8 @@ import path from 'path';
 import { expect, Page, test } from 'playwright/test';
 
 import { login } from './helpers/login.helper';
-import {
-  seedAllThreeSplitsE2eData,
-  seedSplitImportE2eData,
-} from './helpers/seed-split-import-e2e-data.helper';
+import { seedAllThreeSplitsE2eData } from './helpers/seed-all-three-splits-e2e-data.helper';
+import { seedSplitImportE2eData } from './helpers/seed-split-import-e2e-data.helper';
 import { initializePrismaClient } from './helpers/shared-prisma-client.helper';
 
 const FIXTURES_DIR = path.resolve(__dirname, '..', 'fixtures');
@@ -36,6 +34,29 @@ async function clickUpload(page: Page): Promise<void> {
   const uploadButton = page.locator('[data-testid="upload-button"]');
   await expect(uploadButton).toBeEnabled({ timeout: 5000 });
   await uploadButton.click();
+}
+
+async function verifySymbolRow(
+  page: Page,
+  symbol: string,
+  expectedQty: number,
+  expectedBuy: number
+): Promise<void> {
+  const rows = page.locator('tr.mat-mdc-row').filter({ hasText: symbol });
+  await expect(rows).toHaveCount(1, { timeout: 10000 });
+  const qtyText = await rows
+    .nth(0)
+    .locator('[data-testid="editable-quantity"]')
+    .textContent();
+  expect(parseInt(qtyText?.trim() ?? '0', 10)).toBe(expectedQty);
+  const buyText = await rows
+    .nth(0)
+    .locator('[data-testid="editable-buy-price"]')
+    .textContent();
+  expect(parseFloat((buyText?.trim() ?? '0').replace(/[$,]/g, ''))).toBeCloseTo(
+    expectedBuy,
+    2
+  );
 }
 
 // Serial mode is required because Test 2 verifies UI state produced by Test 1.
@@ -292,52 +313,11 @@ test.describe('All-Three Reverse Split E2E', () => {
     ).toBeVisible({ timeout: 15000 });
     await page.waitForSelector('tr.mat-mdc-row', { timeout: 15000 });
 
-    // MSTY: 1 row, qty=80, buy=$10.00
-    const mstyRows = page.locator('tr.mat-mdc-row').filter({ hasText: 'MSTY' });
-    await expect(mstyRows).toHaveCount(1, { timeout: 10000 });
-    const mstyQtyText = await mstyRows
-      .nth(0)
-      .locator('[data-testid="editable-quantity"]')
-      .textContent();
-    expect(parseInt(mstyQtyText?.trim() ?? '0', 10)).toBe(80);
-    const mstyBuyText = await mstyRows
-      .nth(0)
-      .locator('[data-testid="editable-buy-price"]')
-      .textContent();
-    expect(
-      parseFloat((mstyBuyText?.trim() ?? '0').replace(/[$,]/g, ''))
-    ).toBeCloseTo(10, 2);
-
-    // ULTY: 1 row, qty=100, buy=$30.00
-    const ultyRows = page.locator('tr.mat-mdc-row').filter({ hasText: 'ULTY' });
-    await expect(ultyRows).toHaveCount(1, { timeout: 10000 });
-    const ultyQtyText = await ultyRows
-      .nth(0)
-      .locator('[data-testid="editable-quantity"]')
-      .textContent();
-    expect(parseInt(ultyQtyText?.trim() ?? '0', 10)).toBe(100);
-    const ultyBuyText = await ultyRows
-      .nth(0)
-      .locator('[data-testid="editable-buy-price"]')
-      .textContent();
-    expect(
-      parseFloat((ultyBuyText?.trim() ?? '0').replace(/[$,]/g, ''))
-    ).toBeCloseTo(30, 2);
-
-    // OXLC: 1 row, qty=306, buy=$5.00
-    const oxlcRows = page.locator('tr.mat-mdc-row').filter({ hasText: 'OXLC' });
-    await expect(oxlcRows).toHaveCount(1, { timeout: 10000 });
-    const oxlcQtyText = await oxlcRows
-      .nth(0)
-      .locator('[data-testid="editable-quantity"]')
-      .textContent();
-    expect(parseInt(oxlcQtyText?.trim() ?? '0', 10)).toBe(306);
-    const oxlcBuyText = await oxlcRows
-      .nth(0)
-      .locator('[data-testid="editable-buy-price"]')
-      .textContent();
-    expect(
-      parseFloat((oxlcBuyText?.trim() ?? '0').replace(/[$,]/g, ''))
-    ).toBeCloseTo(5, 2);
+    // MSTY 1-for-5: 400 → 80 shares @ $10.00
+    await verifySymbolRow(page, 'MSTY', 80, 10);
+    // ULTY 1-for-10: 1000 → 100 shares @ $30.00
+    await verifySymbolRow(page, 'ULTY', 100, 30);
+    // OXLC 1-for-5: 1530 → 306 shares @ $5.00
+    await verifySymbolRow(page, 'OXLC', 306, 5);
   });
 });
