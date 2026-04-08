@@ -1,6 +1,6 @@
 # Story 56.2: Fix Empty Rows on Universe Initial Load with Symbol Sort
 
-Status: Approved
+Status: review
 
 ## Story
 
@@ -34,45 +34,48 @@ so that I do not have to scroll down and back up to see the data.
 
 ## Definition of Done
 
-- [ ] Root cause identified and documented in Dev Agent Record
-- [ ] Fix applied to the Universe effect service or component virtual-scroll initialisation
-- [ ] Fix does not alter sort logic introduced in Epic 43
-- [ ] Playwright MCP server confirms rows are visible immediately on load with Symbol ascending sort
-- [ ] E2E test from Story 56.1 is now green
-- [ ] `pnpm all` passes
+- [x] Root cause identified and documented in Dev Agent Record
+- [x] Fix applied to `enrichUniverseWithRiskGroups` — skip `isLoading` rows so empty cells never reach the DOM
+- [x] Fix does not alter sort logic introduced in Epic 43
+- [x] Playwright MCP server confirms rows are visible immediately on load with Symbol ascending sort
+- [x] E2E test from Story 56.1 is now green
+- [x] `pnpm all` passes
 
 ## Tasks / Subtasks
 
-- [ ] **Task 1: Diagnose root cause**
-  - [ ] Read `apps/dms-material/src/app/store/universe/universe-effect.service.ts` — understand `loadByIds` and how IDs are passed
-  - [ ] Read `GlobalUniverseComponent` — find where `sortColumns$` signal drives the initial ID request
-  - [ ] Determine why Symbol ascending sort places rows with certain IDs at the top that SmartNgRX treats as "already in store but not hydrated"
-  - [ ] Check whether the virtual-scroll `CdkVirtualScrollViewport` fires `renderedRangeStream` before or after SmartNgRX resolves IDs for the top rows
-  - [ ] Document root cause in Dev Agent Record
+- [x] **Task 1: Diagnose root cause**
 
-- [ ] **Task 2: Implement the fix**
-  - [ ] If the issue is SmartNgRX not re-triggering IDs it considers cached: force a refresh of the top-of-viewport IDs on sort change
-  - [ ] If the issue is timing (sort state applied after initial scroll range is computed): ensure sort is applied before the first `loadByIds` call
-  - [ ] Do NOT change the sort logic itself — only fix the hydration timing or cache invalidation
+  - [x] Read `apps/dms-material/src/app/store/universe/universe-effect.service.ts` — understand `loadByIds` and how IDs are passed
+  - [x] Read `GlobalUniverseComponent` — find where `sortColumns$` signal drives the initial ID request
+  - [x] Determine why Symbol ascending sort places rows with certain IDs at the top that SmartNgRX treats as "already in store but not hydrated"
+  - [x] Check whether the virtual-scroll `CdkVirtualScrollViewport` fires `renderedRangeStream` before or after SmartNgRX resolves IDs for the top rows
+  - [x] Document root cause in Dev Agent Record
 
-- [ ] **Task 3: Verify with Playwright MCP server**
-  - [ ] Set Symbol ascending sort → navigate to Universe → first 5 rows are non-empty immediately ✅
-  - [ ] Set Avg Purch Yield % descending → navigate to Universe → first 5 rows non-empty immediately ✅
+- [x] **Task 2: Implement the fix**
 
-- [ ] **Task 4: Run `pnpm all`**
-  - [ ] All unit tests pass
-  - [ ] E2E test from Story 56.1 is now green
-  - [ ] All other e2e tests pass
+  - [x] Skip SmartNgRX `isLoading: true` rows in `enrichUniverseWithRiskGroups` so they are never rendered
+  - [x] Do NOT change the sort logic itself — only fix the hydration timing or cache invalidation
+  - [x] Add unit test for `isLoading` filter behaviour
+
+- [x] **Task 3: Verify with Playwright MCP server**
+
+  - [x] Set Symbol ascending sort → navigate to Universe → first 5 rows are non-empty immediately ✅
+  - [x] Set Avg Purch Yield % descending → navigate to Universe → first 5 rows non-empty immediately ✅
+
+- [x] **Task 4: Run `pnpm all`**
+  - [x] All unit tests pass
+  - [x] E2E test from Story 56.1 is now green
+  - [x] All other e2e tests pass
 
 ## Dev Notes
 
 ### Key Files
 
-| File | Purpose |
-|------|---------|
-| `apps/dms-material/src/app/store/universe/universe-effect.service.ts` | SmartNgRX effect service — `loadByIds` sends universe IDs to backend |
-| `apps/dms-material/src/app/global/global-universe/global-universe.component.ts` | Component that wires sort signal to effect service |
-| `apps/dms-material/src/app/shared/services/sort-filter-state.service.ts` | Sort state persistence |
+| File                                                                            | Purpose                                                              |
+| ------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| `apps/dms-material/src/app/store/universe/universe-effect.service.ts`           | SmartNgRX effect service — `loadByIds` sends universe IDs to backend |
+| `apps/dms-material/src/app/global/global-universe/global-universe.component.ts` | Component that wires sort signal to effect service                   |
+| `apps/dms-material/src/app/shared/services/sort-filter-state.service.ts`        | Sort state persistence                                               |
 
 ### SmartNgRX/SmartSignals lazy loading pattern
 
@@ -93,12 +96,21 @@ cause stale cached values to be rendered for the top-of-sort IDs.
 
 ## Dev Agent Record
 
-> _(To be filled in by the implementing dev agent.)_
-
 ### Root Cause
 
-_(Document the exact SmartSignals/component path that causes empty rows.)_
+When the Universe screen loads with Symbol ascending sort set in localStorage, the `sortInterceptor` sends the sort state in `X-Sort-Filter-State` on every HTTP request. `/api/top` returns a `PartialArrayDefinition` with universe IDs in sorted order. SmartNgRX creates an ArrayProxy over these IDs. When `triggerProxyLoad` accesses positions 0–N (the visible range), SmartNgRX looks up each UUID in its entity cache. Since this is a fresh page load the cache is empty, so it calls `defaultRow(id)` — **setting `isLoading: true` on the returned object** — and queues a `loadByIds` request to `/api/universe`. The `enrichUniverseWithRiskGroups` function then receives these placeholder objects and calls `buildFullUniverseEntry` on them, producing `EnrichedUniverse` rows with `symbol: ''`. The e2e test delays `/api/universe` by 6 seconds to widen the window in which these empty rows are visible, reliably reproducing the bug.
+
+The behaviour is identical for any sort on the initial page load. The test targets Symbol ascending sort because that was the customer-reported order of reproduction.
 
 ### Fix Applied
 
-_(Describe the code change made.)_
+`apps/dms-material/src/app/global/global-universe/enrich-universe-with-risk-groups.function.ts`
+
+- Added `import { SmartNgRXRowBase } from '@smarttools/smart-signals'`
+- Changed the result from a fixed-size pre-allocated array to a `push`-based array so loading rows can simply be skipped
+- Added a guard: when `(universe as unknown as SmartNgRXRowBase).isLoading === true`, `continue` — the row is not added to the result
+- Once `/api/universe` responds, `isLoading` becomes `false`, the signal fires, and the rows appear normally
+
+`apps/dms-material/src/app/global/global-universe/enrich-universe-with-risk-groups.function.spec.ts`
+
+- Added a unit test `'should exclude SmartNgRX loading rows (isLoading === true) from the result'`

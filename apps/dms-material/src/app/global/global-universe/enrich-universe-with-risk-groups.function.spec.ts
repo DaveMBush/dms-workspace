@@ -115,4 +115,19 @@ describe('enrichUniverseWithRiskGroups', () => {
     expect(result[0]).not.toBe(mockUniverses[0]);
     expect(result[1]).not.toBe(mockUniverses[1]);
   });
+
+  it('should exclude SmartNgRX loading rows (isLoading === true) from the result (Story 56.2 fix)', () => {
+    const loadingUniverse = {
+      ...mockUniverses[0],
+      id: 'loading-id',
+      symbol: '',
+      isLoading: true,
+    } as Universe & { isLoading: boolean };
+    const mixedUniverses = [loadingUniverse, mockUniverses[1]];
+
+    const result = enrichUniverseWithRiskGroups(mixedUniverses, mockRiskGroups);
+
+    expect(result).toHaveLength(1);
+    expect(result[0].id).toBe('2');
+  });
 });

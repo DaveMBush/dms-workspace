@@ -1,3 +1,5 @@
+import { SmartNgRXRowBase } from '@smarttools/smart-signals';
+
 import { RiskGroup } from '../../store/risk-group/risk-group.interface';
 import { Universe } from '../../store/universe/universe.interface';
 import { EnrichedUniverse } from './enriched-universe.interface';
@@ -95,23 +97,41 @@ export function enrichUniverseWithRiskGroups(
     triggerProxyLoad(universes, visibleRange);
   }
 
-  const result = new Array<EnrichedUniverse>(totalLength);
+  const result: EnrichedUniverse[] = [];
 
   for (let i = 0; i < totalLength; i++) {
     const id = isProxy ? smartArr.getIdAtIndex!(i) : 'loaded';
-    if (id === undefined || id.startsWith('index')) {
-      result[i] = buildPlaceholderUniverseEntry(
-        id ?? `placeholder-${String(i)}`
-      );
-      continue;
+    const entry = buildEnrichedEntry(id, i, universes[i], riskGroupMap);
+    if (entry !== null) {
+      result.push(entry);
     }
-    const universe = universes[i];
-    if (typeof universe === 'string') {
-      result[i] = buildPlaceholderUniverseEntry(universe);
-      continue;
-    }
-    result[i] = buildFullUniverseEntry(universe, riskGroupMap);
   }
 
   return result;
+}
+
+// Builds the EnrichedUniverse entry for a single loop iteration.
+// Returns null for SmartNgRX loading rows so they are excluded from the
+// rendered result — prevents empty symbol cells during the /api/universe
+// in-flight window (Story 56.2 fix).
+function buildEnrichedEntry(
+  id: string | undefined,
+  index: number,
+  universe: Universe | string,
+  riskGroupMap: Map<string, string>
+): EnrichedUniverse | null {
+  if (id === undefined || id.startsWith('index')) {
+    return buildPlaceholderUniverseEntry(id ?? `placeholder-${String(index)}`);
+  }
+  if (typeof universe === 'string') {
+    return buildPlaceholderUniverseEntry(universe);
+  }
+  // Skip rows that SmartNgRX is still fetching — isLoading is set to true on
+  // the defaultRow while loadByIds is in-flight. Returning null excludes the
+  // row from the result, preventing empty symbol cells from appearing during
+  // the initial load window (Story 56.2 fix).
+  if ((universe as unknown as SmartNgRXRowBase).isLoading === true) {
+    return null;
+  }
+  return buildFullUniverseEntry(universe, riskGroupMap);
 }
