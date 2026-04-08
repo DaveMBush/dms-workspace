@@ -5,6 +5,7 @@ import { adjustLotsForSplit } from './adjust-lots-for-split.function';
 import { calculateSplitRatio } from './calculate-split-ratio.function';
 import { FidelityCsvRow } from './fidelity-csv-row.interface';
 import { isInLieuRow } from './is-in-lieu-row.function';
+import { isSplitFromRow } from './is-split-from-row.function';
 import { isSplitRow } from './is-split-row.function';
 import { MappedDivDeposit } from './mapped-div-deposit.interface';
 import { MappedSale } from './mapped-sale.interface';
@@ -284,16 +285,7 @@ function isSellAction(action: string): boolean {
 }
 
 function createUnknownTransaction(row: FidelityCsvRow): UnknownTransaction {
-  return {
-    date: row.date,
-    action: row.action,
-    symbol: row.symbol,
-    description: row.description,
-    quantity: row.quantity,
-    price: row.price,
-    totalAmount: row.totalAmount,
-    account: row.account,
-  } as UnknownTransaction;
+  return row as UnknownTransaction;
 }
 
 async function handleBuyRow(
@@ -335,12 +327,27 @@ async function handleDividendRow(
 }
 
 /**
- * Handles a split CSV row by calculating the split ratio and adjusting all open lots.
+ * Handles a split CSV row by calculating the split ratio and adjusting open lots.
+ *
+ * TO rows (negative quantity, old-CUSIP symbol) are skipped because they carry no
+ * information beyond what the matching FROM row already provides.
+ *
+ * Account scoping is applied so that only lots belonging to the CSV row's account are
+ * adjusted, preventing premature adjustments for other accounts not yet split.
  */
-async function handleSplitRow(row: FidelityCsvRow): Promise<void> {
-  const ratio = await calculateSplitRatio(row.symbol, row.quantity);
+async function handleSplitRow(
+  row: FidelityCsvRow,
+  accountCache: Map<string, { id: string }>
+): Promise<void> {
+  // Only process FROM rows; TO rows and unrecognised split rows are silently skipped.
+  if (!isSplitFromRow(row)) {
+    return;
+  }
+
+  const account = await resolveAccount(row.account, accountCache);
+  const ratio = await calculateSplitRatio(row.symbol, row.quantity, account.id);
   if (ratio !== null) {
-    await adjustLotsForSplit(row.symbol, ratio);
+    await adjustLotsForSplit(row.symbol, ratio, account.id);
   }
 }
 
@@ -358,9 +365,9 @@ async function mapSingleRow(
     return;
   }
 
-  // Split rows: calculate ratio and adjust all open lots (Stories 48.2–48.3).
+  // Split rows: calculate ratio and adjust all open lots (Stories 48.2–48.3, 57.2).
   if (isSplitRow(row)) {
-    await handleSplitRow(row);
+    await handleSplitRow(row, accountCache);
     return;
   }
 
@@ -384,11 +391,10 @@ async function mapSingleRow(
     await handleDividendRow(row, result, account.id);
     return;
   }
-  if (action.startsWith('ELECTRONIC FUNDS TRANSFER')) {
-    result.divDeposits.push(await mapCashDeposit(row, account.id));
-    return;
-  }
-  if (action.startsWith('MONEY LINE RECEIVED')) {
+  if (
+    action.startsWith('ELECTRONIC FUNDS TRANSFER') ||
+    action.startsWith('MONEY LINE RECEIVED')
+  ) {
     result.divDeposits.push(await mapCashDeposit(row, account.id));
     return;
   }

@@ -46,7 +46,7 @@ describe('calculateSplitRatio', function () {
       { quantity: 530 },
     ]);
 
-    const result = await calculateSplitRatio('OXLC', 306);
+    const result = await calculateSplitRatio('OXLC', 306, 'acct-1');
 
     expect(result).toBe(5);
   });
@@ -55,7 +55,7 @@ describe('calculateSplitRatio', function () {
     prisma.universe.findFirst.mockResolvedValue({ id: 'universe-2' });
     prisma.trades.findMany.mockResolvedValue([{ quantity: 100 }]);
 
-    const result = await calculateSplitRatio('XYZ', 200);
+    const result = await calculateSplitRatio('XYZ', 200, 'acct-1');
 
     expect(result).toBe(0.5);
   });
@@ -64,13 +64,13 @@ describe('calculateSplitRatio', function () {
     prisma.universe.findFirst.mockResolvedValue({ id: 'universe-3' });
     prisma.trades.findMany.mockResolvedValue([{ quantity: 1000 }]);
 
-    const result = await calculateSplitRatio('ABC', 500);
+    const result = await calculateSplitRatio('ABC', 500, 'acct-1');
 
     expect(result).toBe(2);
   });
 
   test('returns null and logs a warning when csvPostSplitQuantity is zero', async function () {
-    const result = await calculateSplitRatio('OXLC', 0);
+    const result = await calculateSplitRatio('OXLC', 0, 'acct-1');
 
     expect(result).toBeNull();
     expect(loggerWarn).toHaveBeenCalledWith(
@@ -79,7 +79,7 @@ describe('calculateSplitRatio', function () {
   });
 
   test('returns null and logs a warning when csvPostSplitQuantity is negative', async function () {
-    const result = await calculateSplitRatio('OXLC', -100);
+    const result = await calculateSplitRatio('OXLC', -100, 'acct-1');
 
     expect(result).toBeNull();
     expect(loggerWarn).toHaveBeenCalledWith(
@@ -88,7 +88,7 @@ describe('calculateSplitRatio', function () {
   });
 
   test('returns null and logs a warning when csvPostSplitQuantity is NaN', async function () {
-    const result = await calculateSplitRatio('OXLC', Number.NaN);
+    const result = await calculateSplitRatio('OXLC', Number.NaN, 'acct-1');
 
     expect(result).toBeNull();
     expect(loggerWarn).toHaveBeenCalledWith(
@@ -97,7 +97,7 @@ describe('calculateSplitRatio', function () {
   });
 
   test('returns null and logs a warning when csvPostSplitQuantity is Infinity', async function () {
-    const result = await calculateSplitRatio('OXLC', Infinity);
+    const result = await calculateSplitRatio('OXLC', Infinity, 'acct-1');
 
     expect(result).toBeNull();
     expect(loggerWarn).toHaveBeenCalledWith(
@@ -109,7 +109,7 @@ describe('calculateSplitRatio', function () {
     prisma.universe.findFirst.mockResolvedValue({ id: 'universe-4' });
     prisma.trades.findMany.mockResolvedValue([]);
 
-    const result = await calculateSplitRatio('NOPOS', 100);
+    const result = await calculateSplitRatio('NOPOS', 100, 'acct-1');
 
     expect(result).toBeNull();
     expect(loggerWarn).toHaveBeenCalledWith(
@@ -120,7 +120,7 @@ describe('calculateSplitRatio', function () {
   test('returns null and logs a warning when no universe entry is found', async function () {
     prisma.universe.findFirst.mockResolvedValue(null);
 
-    const result = await calculateSplitRatio('UNKNOWN', 100);
+    const result = await calculateSplitRatio('UNKNOWN', 100, 'acct-1');
 
     expect(result).toBeNull();
     expect(loggerWarn).toHaveBeenCalledWith(
@@ -132,7 +132,7 @@ describe('calculateSplitRatio', function () {
     prisma.universe.findFirst.mockResolvedValue({ id: 'universe-5' });
     prisma.trades.findMany.mockResolvedValue([{ quantity: 500 }]);
 
-    const result = await calculateSplitRatio('SINGLE', 250);
+    const result = await calculateSplitRatio('SINGLE', 250, 'acct-1');
 
     expect(result).toBe(2);
   });
@@ -145,20 +145,21 @@ describe('calculateSplitRatio', function () {
       { quantity: 500 },
     ]);
 
-    const result = await calculateSplitRatio('MULTI', 200);
+    const result = await calculateSplitRatio('MULTI', 200, 'acct-2');
 
     expect(result).toBe(5);
   });
 
-  test('queries trades with correct open-position filters', async function () {
+  test('queries trades with correct account-scoped open-position filters', async function () {
     prisma.universe.findFirst.mockResolvedValue({ id: 'universe-7' });
     prisma.trades.findMany.mockResolvedValue([{ quantity: 100 }]);
 
-    await calculateSplitRatio('FILTERTEST', 100);
+    await calculateSplitRatio('FILTERTEST', 100, 'acct-7');
 
     expect(prisma.trades.findMany).toHaveBeenCalledWith({
       where: {
         universeId: 'universe-7',
+        accountId: 'acct-7',
         sell_date: null,
       },
       select: { quantity: true },

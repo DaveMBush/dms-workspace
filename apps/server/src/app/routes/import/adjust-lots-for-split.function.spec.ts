@@ -68,7 +68,7 @@ describe('adjustLotsForSplit', function () {
     txFindMany.mockResolvedValue([{ id: 'lot-1', quantity: 1000, buy: 5.0 }]);
     txUpdate.mockResolvedValue({});
 
-    const count = await adjustLotsForSplit('OXLC', 5);
+    const count = await adjustLotsForSplit('OXLC', 5, 'acct-1');
 
     expect(count).toBe(1);
     expect(txUpdate).toHaveBeenCalledWith({
@@ -83,7 +83,7 @@ describe('adjustLotsForSplit', function () {
     txFindMany.mockResolvedValue([{ id: 'lot-2', quantity: 100, buy: 20.0 }]);
     txUpdate.mockResolvedValue({});
 
-    const count = await adjustLotsForSplit('XYZ', 0.5);
+    const count = await adjustLotsForSplit('XYZ', 0.5, 'acct-1');
 
     expect(count).toBe(1);
     expect(txUpdate).toHaveBeenCalledWith({
@@ -109,7 +109,7 @@ describe('adjustLotsForSplit', function () {
       }
     );
 
-    await adjustLotsForSplit('OXLC', ratio);
+    await adjustLotsForSplit('OXLC', ratio, 'acct-1');
 
     const valueBefore = quantity * buy;
     const valueAfter = captured[0].quantity * captured[0].buy;
@@ -126,7 +126,7 @@ describe('adjustLotsForSplit', function () {
     ]);
     txUpdate.mockResolvedValue({});
 
-    const count = await adjustLotsForSplit('OXLC', 5);
+    const count = await adjustLotsForSplit('OXLC', 5, 'acct-1');
 
     expect(count).toBe(3);
     expect(txUpdate).toHaveBeenCalledTimes(3);
@@ -152,7 +152,7 @@ describe('adjustLotsForSplit', function () {
     ]);
     txUpdate.mockResolvedValue({});
 
-    const count = await adjustLotsForSplit('SINGLE', 5);
+    const count = await adjustLotsForSplit('SINGLE', 5, 'acct-1');
 
     expect(count).toBe(1);
     expect(txUpdate).toHaveBeenCalledWith({
@@ -169,7 +169,7 @@ describe('adjustLotsForSplit', function () {
     ]);
     txUpdate.mockResolvedValue({});
 
-    await adjustLotsForSplit('OXLC', 5);
+    await adjustLotsForSplit('OXLC', 5, 'acct-1');
 
     expect(txUpdate).toHaveBeenCalledWith({
       where: { id: 'lot-floor' },
@@ -180,7 +180,7 @@ describe('adjustLotsForSplit', function () {
   test('returns 0 and logs warning when universe entry not found', async function () {
     prisma.universe.findFirst.mockResolvedValue(null);
 
-    const count = await adjustLotsForSplit('UNKNOWN', 5);
+    const count = await adjustLotsForSplit('UNKNOWN', 5, 'acct-1');
 
     expect(count).toBe(0);
     expect(txUpdate).not.toHaveBeenCalled();
@@ -193,7 +193,7 @@ describe('adjustLotsForSplit', function () {
     prisma.universe.findFirst.mockResolvedValue({ id: 'u-6' });
     txFindMany.mockResolvedValue([]);
 
-    const count = await adjustLotsForSplit('NOPOS', 5);
+    const count = await adjustLotsForSplit('NOPOS', 5, 'acct-1');
 
     expect(count).toBe(0);
     expect(txUpdate).not.toHaveBeenCalled();
@@ -203,7 +203,7 @@ describe('adjustLotsForSplit', function () {
   });
 
   test('returns 0 and logs warning when ratio is zero', async function () {
-    const count = await adjustLotsForSplit('OXLC', 0);
+    const count = await adjustLotsForSplit('OXLC', 0, 'acct-1');
 
     expect(count).toBe(0);
     expect(loggerWarn).toHaveBeenCalledWith(
@@ -212,7 +212,7 @@ describe('adjustLotsForSplit', function () {
   });
 
   test('returns 0 and logs warning when ratio is negative', async function () {
-    const count = await adjustLotsForSplit('OXLC', -1);
+    const count = await adjustLotsForSplit('OXLC', -1, 'acct-1');
 
     expect(count).toBe(0);
     expect(loggerWarn).toHaveBeenCalledWith(
@@ -221,7 +221,7 @@ describe('adjustLotsForSplit', function () {
   });
 
   test('returns 0 and logs warning when ratio is NaN', async function () {
-    const count = await adjustLotsForSplit('OXLC', Number.NaN);
+    const count = await adjustLotsForSplit('OXLC', Number.NaN, 'acct-1');
 
     expect(count).toBe(0);
     expect(loggerWarn).toHaveBeenCalledWith(
@@ -234,11 +234,12 @@ describe('adjustLotsForSplit', function () {
     txFindMany.mockResolvedValue([{ id: 'lot-x', quantity: 100, buy: 5.0 }]);
     txUpdate.mockResolvedValue({});
 
-    await adjustLotsForSplit('FILTERTEST', 5);
+    await adjustLotsForSplit('FILTERTEST', 5, 'acct-7');
 
     expect(txFindMany).toHaveBeenCalledWith({
       where: {
         universeId: 'u-7',
+        accountId: 'acct-7',
         sell_date: null,
       },
       select: { id: true, quantity: true, buy: true, accountId: true },
@@ -254,7 +255,7 @@ describe('adjustLotsForSplit', function () {
     ]);
     txUpdate.mockResolvedValue({});
 
-    await adjustLotsForSplit('ATOMIC', 5);
+    await adjustLotsForSplit('ATOMIC', 5, 'acct-1');
 
     expect(prisma.$transaction).toHaveBeenCalledOnce();
     expect(txFindMany).toHaveBeenCalledOnce();
@@ -276,7 +277,7 @@ describe('adjustLotsForSplit', function () {
     txUpdate.mockResolvedValue({});
     txCreate.mockResolvedValue({});
 
-    await adjustLotsForSplit('OXLC', 5);
+    await adjustLotsForSplit('OXLC', 5, 'acct-1');
 
     expect(txCreate).toHaveBeenCalledOnce();
     const call = txCreate.mock.calls[0][0];
@@ -299,7 +300,7 @@ describe('adjustLotsForSplit', function () {
     ]);
     txUpdate.mockResolvedValue({});
 
-    await adjustLotsForSplit('EXACT', 5);
+    await adjustLotsForSplit('EXACT', 5, 'acct-1');
 
     expect(txCreate).not.toHaveBeenCalled();
   });
@@ -316,7 +317,7 @@ describe('adjustLotsForSplit', function () {
     txUpdate.mockResolvedValue({});
     txCreate.mockResolvedValue({});
 
-    await adjustLotsForSplit('NOPRICE', 5);
+    await adjustLotsForSplit('NOPRICE', 5, 'acct-1');
 
     expect(loggerWarn).toHaveBeenCalledWith(
       expect.stringContaining('no market price available')
@@ -339,7 +340,7 @@ describe('adjustLotsForSplit', function () {
     txUpdate.mockResolvedValue({});
     txCreate.mockResolvedValue({});
 
-    await adjustLotsForSplit('NEGPRICE', 5);
+    await adjustLotsForSplit('NEGPRICE', 5, 'acct-1');
 
     expect(loggerWarn).toHaveBeenCalledWith(
       expect.stringContaining('no market price available')
@@ -364,7 +365,7 @@ describe('adjustLotsForSplit', function () {
     txUpdate.mockResolvedValue({});
     txCreate.mockResolvedValue({});
 
-    await adjustLotsForSplit('MULTI', 5);
+    await adjustLotsForSplit('MULTI', 5, 'acct-1');
 
     expect(txCreate).toHaveBeenCalledOnce();
     const call = txCreate.mock.calls[0][0];
@@ -387,7 +388,7 @@ describe('adjustLotsForSplit', function () {
     txUpdate.mockResolvedValue({});
     txCreate.mockResolvedValue({});
 
-    await adjustLotsForSplit('BOTH', 5);
+    await adjustLotsForSplit('BOTH', 5, 'acct-1');
 
     expect(txCreate).toHaveBeenCalledOnce();
     const call = txCreate.mock.calls[0][0];

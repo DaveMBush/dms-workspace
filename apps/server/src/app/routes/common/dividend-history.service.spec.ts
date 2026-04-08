@@ -300,6 +300,37 @@ describe('dividend-history.service', () => {
       expect(result[0].amount).toBe(0.2205);
     });
 
+    test('filters out rows with empty ex-div date', async () => {
+      const rowsWithEmptyExDiv = [
+        { ...SAMPLE_DIVIDEND_ROWS[0], exDiv: '' },
+        SAMPLE_DIVIDEND_ROWS[1],
+      ];
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        text: vi
+          .fn()
+          .mockResolvedValueOnce(buildDividendHtml(rowsWithEmptyExDiv)),
+      });
+
+      const result = await fetchDividendHistory('PDI');
+
+      expect(result).toHaveLength(1);
+    });
+
+    test('filters out rows with non-numeric payout amount', async () => {
+      const htmlWithNaNPayout = `<html><body><table class="table table-bordered"><thead><tr><th>Ex-Div</th><th></th><th></th><th>Pay Date</th><th></th><th>Amount</th></tr></thead><tbody><tr><td>03/12/2026</td><td></td><td></td><td>04/01/2026</td><td></td><td>$N/A</td></tr><tr><td>02/12/2026</td><td></td><td></td><td>03/02/2026</td><td></td><td>$0.22050</td></tr></tbody></table></body></html>`;
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        text: vi.fn().mockResolvedValueOnce(htmlWithNaNPayout),
+      });
+
+      const result = await fetchDividendHistory('PDI');
+
+      expect(result).toHaveLength(1);
+    });
+
     test('sorts result by date ascending', async () => {
       const unsorted = [
         SAMPLE_DIVIDEND_ROWS[2], // 01/13/2026

@@ -1396,7 +1396,7 @@ describe('mapFidelityTransactions', function () {
   });
 
   describe('split row handling', function () {
-    test('calls calculateSplitRatio with symbol and csv quantity when split row detected', async function () {
+    test('calls calculateSplitRatio with symbol, csv quantity, and accountId when split row detected', async function () {
       const rows: ParsedCsvRow[] = [
         {
           date: '02/15/2026',
@@ -1410,21 +1410,26 @@ describe('mapFidelityTransactions', function () {
         },
       ];
 
+      mockPrisma.accounts.findFirst.mockResolvedValue({ id: 'acct-brokerage' });
       mockCalculateSplitRatio.mockResolvedValue(5);
       mockAdjustLotsForSplit.mockResolvedValue(3);
 
       await mapFidelityTransactions(rows);
 
-      expect(mockCalculateSplitRatio).toHaveBeenCalledWith('OXLC', 306);
+      expect(mockCalculateSplitRatio).toHaveBeenCalledWith(
+        'OXLC',
+        306,
+        'acct-brokerage'
+      );
     });
 
-    test('calls adjustLotsForSplit with symbol and ratio when calculateSplitRatio returns a ratio', async function () {
+    test('calls adjustLotsForSplit with symbol, ratio, and accountId when calculateSplitRatio returns a ratio', async function () {
       const rows: ParsedCsvRow[] = [
         {
           date: '02/15/2026',
-          action: 'STOCK SPLIT',
+          action: 'YOU SOLD',
           symbol: 'XYZ',
-          description: 'FORWARD SPLIT 2:1',
+          description: 'REVERSE SPLIT R/S FROM 88634T493#REOR M0051704770001',
           quantity: 200,
           price: 0,
           totalAmount: 0,
@@ -1432,21 +1437,26 @@ describe('mapFidelityTransactions', function () {
         },
       ];
 
+      mockPrisma.accounts.findFirst.mockResolvedValue({ id: 'acct-brokerage' });
       mockCalculateSplitRatio.mockResolvedValue(0.5);
       mockAdjustLotsForSplit.mockResolvedValue(2);
 
       await mapFidelityTransactions(rows);
 
-      expect(mockAdjustLotsForSplit).toHaveBeenCalledWith('XYZ', 0.5);
+      expect(mockAdjustLotsForSplit).toHaveBeenCalledWith(
+        'XYZ',
+        0.5,
+        'acct-brokerage'
+      );
     });
 
     test('does not call adjustLotsForSplit when calculateSplitRatio returns null', async function () {
       const rows: ParsedCsvRow[] = [
         {
           date: '02/15/2026',
-          action: 'REVERSE SPLIT',
+          action: 'YOU SOLD',
           symbol: 'NOPOS',
-          description: 'REVERSE SPLIT NO OPEN LOTS',
+          description: 'REVERSE SPLIT R/S FROM 88634T493#REOR M0051704770001',
           quantity: 100,
           price: 0,
           totalAmount: 0,
@@ -1454,6 +1464,7 @@ describe('mapFidelityTransactions', function () {
         },
       ];
 
+      mockPrisma.accounts.findFirst.mockResolvedValue({ id: 'acct-brokerage' });
       mockCalculateSplitRatio.mockResolvedValue(null);
 
       await mapFidelityTransactions(rows);
@@ -1475,6 +1486,7 @@ describe('mapFidelityTransactions', function () {
         },
       ];
 
+      mockPrisma.accounts.findFirst.mockResolvedValue({ id: 'acct-brokerage' });
       mockCalculateSplitRatio.mockResolvedValue(5);
       mockAdjustLotsForSplit.mockResolvedValue(3);
 
@@ -1483,6 +1495,113 @@ describe('mapFidelityTransactions', function () {
       expect(result.trades).toHaveLength(0);
       expect(result.sales).toHaveLength(0);
       expect(result.divDeposits).toHaveLength(0);
+    });
+
+    // Desktop-format tests: split text is in row.action, description is security name
+    test('desktop-format MSTY FROM row (action contains R/S FROM): calls calculateSplitRatio with correct args', async function () {
+      const rows: ParsedCsvRow[] = [
+        {
+          date: '12/08/2025',
+          action: 'REVERSE SPLIT R/S FROM 88634T493#REOR M0051704770001',
+          symbol: 'MSTY',
+          description: 'MSTY UNIT',
+          quantity: 80,
+          price: 0,
+          totalAmount: 0,
+          account: 'Joint Brokerage *4767',
+        },
+      ];
+
+      mockPrisma.accounts.findFirst.mockResolvedValue({ id: 'acct-joint' });
+      mockCalculateSplitRatio.mockResolvedValue(5);
+      mockAdjustLotsForSplit.mockResolvedValue(1);
+
+      await mapFidelityTransactions(rows);
+
+      expect(mockCalculateSplitRatio).toHaveBeenCalledWith(
+        'MSTY',
+        80,
+        'acct-joint'
+      );
+      expect(mockAdjustLotsForSplit).toHaveBeenCalledWith(
+        'MSTY',
+        5,
+        'acct-joint'
+      );
+    });
+
+    test('desktop-format ULTY FROM row (action contains R/S FROM): processes 1-for-10 split correctly', async function () {
+      const rows: ParsedCsvRow[] = [
+        {
+          date: '12/01/2025',
+          action: 'REVERSE SPLIT R/S FROM 88636J527#REOR M0051702900001',
+          symbol: 'ULTY',
+          description: 'ULTY ETF',
+          quantity: 100,
+          price: 0,
+          totalAmount: 0,
+          account: 'Joint Brokerage *4767',
+        },
+      ];
+
+      mockPrisma.accounts.findFirst.mockResolvedValue({ id: 'acct-joint' });
+      mockCalculateSplitRatio.mockResolvedValue(10);
+      mockAdjustLotsForSplit.mockResolvedValue(1);
+
+      await mapFidelityTransactions(rows);
+
+      expect(mockCalculateSplitRatio).toHaveBeenCalledWith(
+        'ULTY',
+        100,
+        'acct-joint'
+      );
+      expect(mockAdjustLotsForSplit).toHaveBeenCalledWith(
+        'ULTY',
+        10,
+        'acct-joint'
+      );
+    });
+
+    test('desktop-format TO row (action contains R/S TO): is skipped without calling calculateSplitRatio', async function () {
+      const rows: ParsedCsvRow[] = [
+        {
+          date: '12/08/2025',
+          action: 'REVERSE SPLIT R/S TO 88636X732#REOR M0051704770000',
+          symbol: '88634T493',
+          description: 'MSTY UNIT',
+          quantity: -400,
+          price: 0,
+          totalAmount: 0,
+          account: 'Joint Brokerage *4767',
+        },
+      ];
+
+      await mapFidelityTransactions(rows);
+
+      expect(mockCalculateSplitRatio).not.toHaveBeenCalled();
+      expect(mockAdjustLotsForSplit).not.toHaveBeenCalled();
+    });
+
+    test('desktop-format TO row: produces no trades, sales, divDeposits, or unknown transactions', async function () {
+      const rows: ParsedCsvRow[] = [
+        {
+          date: '12/08/2025',
+          action: 'REVERSE SPLIT R/S TO 88636X732#REOR M0051704770000',
+          symbol: '88634T493',
+          description: 'MSTY UNIT',
+          quantity: -400,
+          price: 0,
+          totalAmount: 0,
+          account: 'Joint Brokerage *4767',
+        },
+      ];
+
+      const result = await mapFidelityTransactions(rows);
+
+      expect(result.trades).toHaveLength(0);
+      expect(result.sales).toHaveLength(0);
+      expect(result.divDeposits).toHaveLength(0);
+      expect(result.unknownTransactions).toHaveLength(0);
     });
   });
 });

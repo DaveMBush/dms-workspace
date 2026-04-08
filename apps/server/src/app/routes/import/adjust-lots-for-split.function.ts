@@ -68,7 +68,7 @@ async function recordFractionalSale(
 }
 
 /**
- * Adjusts all open position lots for a given symbol by applying a split ratio.
+ * Adjusts all open position lots for a given symbol and account by applying a split ratio.
  *
  * For each open lot:
  *   newQuantity     = Math.floor(lot.quantity / ratio)  // whole shares
@@ -79,13 +79,15 @@ async function recordFractionalSale(
  *
  * All updates are applied atomically within a single Prisma transaction.
  *
- * @param symbol - The ticker symbol whose lots should be adjusted
- * @param ratio  - The split ratio (>1 for reverse split, <1 for forward split)
+ * @param symbol    - The ticker symbol whose lots should be adjusted
+ * @param ratio     - The split ratio (>1 for reverse split, <1 for forward split)
+ * @param accountId - Only adjust lots belonging to this account
  * @returns The number of lots updated
  */
 export async function adjustLotsForSplit(
   symbol: string,
-  ratio: number
+  ratio: number,
+  accountId: string
 ): Promise<number> {
   if (!Number.isFinite(ratio) || ratio <= 0) {
     logger.warn(
@@ -110,7 +112,7 @@ export async function adjustLotsForSplit(
   await prisma.$transaction(async function applyLotUpdates(tx) {
     const txClient = tx as unknown as PrismaClient;
     const openLots = await txClient.trades.findMany({
-      where: { universeId: universeEntry.id, sell_date: null },
+      where: { universeId: universeEntry.id, accountId, sell_date: null },
       select: { id: true, quantity: true, buy: true, accountId: true },
     });
 
