@@ -121,6 +121,13 @@ test.describe('Universe Screen - Duplicate Symbols Bug (Story 55.1)', () => {
       return s.length > 0;
     });
 
+    // Precondition: verify the collected set spans the stale-position boundary.
+    // The bug only manifests when IDs exist at both new sorted positions (0-49)
+    // AND stale pre-sort positions (≈50-51).  If fewer than 50 non-empty rows
+    // are visible, the boundary was never crossed and the uniqueness assertion
+    // below would trivially pass without confirming the bug.
+    expect(nonEmpty.length).toBeGreaterThan(50);
+
     // Assert no duplicates.  This assertion currently FAILS because some symbols
     // at the stale boundary position appear at both their new sorted position
     // (0-49) and their old pre-sort position (≈50), causing them to be rendered
