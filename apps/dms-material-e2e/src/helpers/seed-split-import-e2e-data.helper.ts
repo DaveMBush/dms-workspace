@@ -127,3 +127,170 @@ export async function seedSplitImportE2eData(): Promise<SplitImportSeederResult>
     throw error;
   }
 }
+
+// ---------------------------------------------------------------------------
+// All-Three Reverse Split seed (Story 57.3)
+// ---------------------------------------------------------------------------
+
+const COMBINED_ACCOUNT_NAME = 'Reverse Split Test Account';
+const MSTY_SYMBOL = 'MSTY';
+const ULTY_SYMBOL = 'ULTY';
+
+interface AllThreeSplitsSeederResult {
+  accountId: string;
+  mstyUniverseId: string;
+  ultyUniverseId: string;
+  oxlcUniverseId: string;
+  cleanup(): Promise<void>;
+}
+
+async function cleanupSymbolData(
+  prisma: PrismaClient,
+  symbol: string
+): Promise<void> {
+  const existingUniverse = await prisma.universe.findFirst({
+    where: { symbol },
+  });
+  if (existingUniverse) {
+    await prisma.trades.deleteMany({
+      where: { universeId: existingUniverse.id },
+    });
+    await prisma.universe.delete({ where: { id: existingUniverse.id } });
+  }
+}
+
+async function createAllThreeSeedData(
+  prisma: PrismaClient
+): Promise<AllThreeSplitsSeederResult> {
+  const riskGroups = await createRiskGroups(prisma);
+
+  // Clean up any pre-existing data that would interfere with the test
+  await cleanupSymbolData(prisma, MSTY_SYMBOL);
+  await cleanupSymbolData(prisma, ULTY_SYMBOL);
+  await cleanupSymbolData(prisma, OXLC_SYMBOL);
+  await prisma.accounts.deleteMany({ where: { name: COMBINED_ACCOUNT_NAME } });
+
+  // Create universe entries for all three symbols
+  const mstyUniverse = await prisma.universe.create({
+    data: {
+      symbol: MSTY_SYMBOL,
+      risk_group_id: riskGroups.equitiesRiskGroup.id,
+      distribution: 1.0,
+      distributions_per_year: 12,
+      last_price: 10.0,
+      ex_date: new Date('2025-09-01'),
+      expired: false,
+      is_closed_end_fund: true,
+    },
+  });
+
+  const ultyUniverse = await prisma.universe.create({
+    data: {
+      symbol: ULTY_SYMBOL,
+      risk_group_id: riskGroups.equitiesRiskGroup.id,
+      distribution: 1.0,
+      distributions_per_year: 12,
+      last_price: 30.0,
+      ex_date: new Date('2025-09-01'),
+      expired: false,
+      is_closed_end_fund: true,
+    },
+  });
+
+  const oxlcUniverse = await prisma.universe.create({
+    data: {
+      symbol: OXLC_SYMBOL,
+      risk_group_id: riskGroups.equitiesRiskGroup.id,
+      distribution: 1.0,
+      distributions_per_year: 12,
+      last_price: 5.0,
+      ex_date: new Date('2025-09-01'),
+      expired: false,
+      is_closed_end_fund: true,
+    },
+  });
+
+  const account = await prisma.accounts.create({
+    data: { name: COMBINED_ACCOUNT_NAME },
+  });
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Prisma createMany requires untyped batch data
+  const lotData: any[] = [
+    // MSTY: 1 lot, 400 shares @ $2.00 → after 1-for-5: 80 shares @ $10.00
+    {
+      universeId: mstyUniverse.id,
+      accountId: account.id,
+      buy: 2.0,
+      sell: 0,
+      buy_date: new Date('2024-01-15'),
+      quantity: 400,
+      sell_date: null,
+    },
+    // ULTY: 1 lot, 1000 shares @ $3.00 → after 1-for-10: 100 shares @ $30.00
+    {
+      universeId: ultyUniverse.id,
+      accountId: account.id,
+      buy: 3.0,
+      sell: 0,
+      buy_date: new Date('2024-01-15'),
+      quantity: 1000,
+      sell_date: null,
+    },
+    // OXLC: 1 lot, 1530 shares @ $1.00 → after 1-for-5: 306 shares @ $5.00
+    {
+      universeId: oxlcUniverse.id,
+      accountId: account.id,
+      buy: 1.0,
+      sell: 0,
+      buy_date: new Date('2024-01-15'),
+      quantity: 1530,
+      sell_date: null,
+    },
+  ];
+  await prisma.trades.createMany({ data: lotData });
+
+  return {
+    accountId: account.id,
+    mstyUniverseId: mstyUniverse.id,
+    ultyUniverseId: ultyUniverse.id,
+    oxlcUniverseId: oxlcUniverse.id,
+    cleanup: async function cleanupAllThreeSplitData(): Promise<void> {
+      try {
+        await prisma.trades.deleteMany({ where: { accountId: account.id } });
+        await prisma.accounts.deleteMany({ where: { id: account.id } });
+        await prisma.universe.deleteMany({
+          where: {
+            id: {
+              in: [mstyUniverse.id, ultyUniverse.id, oxlcUniverse.id],
+            },
+          },
+        });
+      } finally {
+        await prisma.$disconnect();
+      }
+    },
+  };
+}
+
+/**
+ * Seeds the database with MSTY, ULTY, and OXLC pre-split data for the
+ * all-three reverse split E2E test (Story 57.3).
+ *
+ * Creates:
+ * - Universe entries for MSTY (last_price=$10.00), ULTY (last_price=$30.00),
+ *   OXLC (last_price=$5.00)
+ * - Account: "Reverse Split Test Account"
+ * - 1 open lot per symbol:
+ *   - MSTY: 400 shares @ $2.00  (1-for-5 → 80 @ $10.00)
+ *   - ULTY: 1000 shares @ $3.00 (1-for-10 → 100 @ $30.00)
+ *   - OXLC: 1530 shares @ $1.00 (1-for-5 → 306 @ $5.00)
+ */
+export async function seedAllThreeSplitsE2eData(): Promise<AllThreeSplitsSeederResult> {
+  const prisma = await initializePrismaClient();
+  try {
+    return await createAllThreeSeedData(prisma);
+  } catch (error) {
+    await prisma.$disconnect();
+    throw error;
+  }
+}

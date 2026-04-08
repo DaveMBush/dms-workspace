@@ -2,7 +2,10 @@ import path from 'path';
 import { expect, Page, test } from 'playwright/test';
 
 import { login } from './helpers/login.helper';
-import { seedSplitImportE2eData } from './helpers/seed-split-import-e2e-data.helper';
+import {
+  seedAllThreeSplitsE2eData,
+  seedSplitImportE2eData,
+} from './helpers/seed-split-import-e2e-data.helper';
 import { initializePrismaClient } from './helpers/shared-prisma-client.helper';
 
 const FIXTURES_DIR = path.resolve(__dirname, '..', 'fixtures');
@@ -167,5 +170,180 @@ test.describe('OXLC Split Import E2E', () => {
       return a - b;
     });
     expect(buyPrices).toEqual([18, 19, 20]);
+  });
+});
+
+test.describe('All-Three Reverse Split E2E', () => {
+  let accountId = '';
+  let mstyUniverseId = '';
+  let ultyUniverseId = '';
+  let oxlcUniverseId = '';
+  let cleanup: (() => Promise<void>) | null = null;
+
+  test.beforeAll(async () => {
+    const seedResult = await seedAllThreeSplitsE2eData();
+    accountId = seedResult.accountId;
+    mstyUniverseId = seedResult.mstyUniverseId;
+    ultyUniverseId = seedResult.ultyUniverseId;
+    oxlcUniverseId = seedResult.oxlcUniverseId;
+    cleanup = seedResult.cleanup;
+  });
+
+  test.afterAll(async () => {
+    if (cleanup) {
+      await cleanup();
+    }
+  });
+
+  test.beforeEach(async ({ page }) => {
+    await login(page);
+  });
+
+  /**
+   * AC1–AC4: Import one CSV containing all three reverse-split pairs and
+   * verify each symbol's open lots are adjusted correctly in the database.
+   *
+   * MSTY 1-for-5:  400 shares @ $2.00  → 80 shares @ $10.00
+   * ULTY 1-for-10: 1000 shares @ $3.00 → 100 shares @ $30.00
+   * OXLC 1-for-5:  1530 shares @ $1.00 → 306 shares @ $5.00
+   *
+   * AC5: All quantities divide evenly — no fractional sale records created.
+   */
+  test('should import all-three reverse split CSV and adjust all open lots', async ({
+    page,
+  }) => {
+    await navigateToUniverse(page);
+
+    const responsePromise = page.waitForResponse(function matchImportApi(
+      response
+    ) {
+      return response.url().includes('/api/import/fidelity');
+    });
+
+    await openImportDialog(page);
+    await uploadFile(page, 'fidelity-split-all-three.csv');
+    await clickUpload(page);
+
+    const response = await responsePromise;
+    const body = (await response.json()) as {
+      success: boolean;
+      imported: number;
+      errors: string[];
+      warnings: string[];
+    };
+
+    expect(body.success).toBe(true);
+    expect(body.errors).toHaveLength(0);
+
+    // Dialog closes automatically on success
+    await expect(
+      page.getByRole('heading', { name: 'Import Fidelity Transactions' })
+    ).not.toBeVisible({ timeout: 10000 });
+
+    const prisma = await initializePrismaClient();
+    try {
+      // AC2: MSTY 1-for-5 → 400 / 5 = 80 shares, buy $2.00 * 5 = $10.00
+      const mstyLots = await prisma.trades.findMany({
+        where: { universeId: mstyUniverseId, sell_date: null },
+        select: { quantity: true, buy: true },
+      });
+      expect(mstyLots).toHaveLength(1);
+      expect(mstyLots[0].quantity).toBe(80);
+      expect(mstyLots[0].buy).toBeCloseTo(10, 2);
+
+      // AC3: ULTY 1-for-10 → 1000 / 10 = 100 shares, buy $3.00 * 10 = $30.00
+      const ultyLots = await prisma.trades.findMany({
+        where: { universeId: ultyUniverseId, sell_date: null },
+        select: { quantity: true, buy: true },
+      });
+      expect(ultyLots).toHaveLength(1);
+      expect(ultyLots[0].quantity).toBe(100);
+      expect(ultyLots[0].buy).toBeCloseTo(30, 2);
+
+      // AC4: OXLC 1-for-5 → 1530 / 5 = 306 shares, buy $1.00 * 5 = $5.00
+      const oxlcLots = await prisma.trades.findMany({
+        where: { universeId: oxlcUniverseId, sell_date: null },
+        select: { quantity: true, buy: true },
+      });
+      expect(oxlcLots).toHaveLength(1);
+      expect(oxlcLots[0].quantity).toBe(306);
+      expect(oxlcLots[0].buy).toBeCloseTo(5, 2);
+
+      // AC5: all quantities divide evenly — no fractional sale records
+      const closedTradeCount = await prisma.trades.count({
+        where: { accountId, sell_date: { not: null } },
+      });
+      expect(closedTradeCount).toBe(0);
+    } finally {
+      await prisma.$disconnect();
+    }
+  });
+
+  /**
+   * AC2–AC4 (UI): After split import, the Account > Open Positions screen
+   * shows the correct post-split quantities and buy prices for each symbol.
+   */
+  test('should display adjusted quantities and buy prices for all three symbols in open positions', async ({
+    page,
+  }) => {
+    await page.goto(`/account/${accountId}/open`);
+    await expect(
+      page.locator('[data-testid="open-positions-table"]')
+    ).toBeVisible({ timeout: 15000 });
+    await page.waitForSelector('tr.mat-mdc-row', { timeout: 15000 });
+
+    // MSTY: 1 row, qty=80, buy=$10.00
+    const mstyRows = page
+      .locator('tr.mat-mdc-row')
+      .filter({ hasText: 'MSTY' });
+    await expect(mstyRows).toHaveCount(1, { timeout: 10000 });
+    const mstyQtyText = await mstyRows
+      .nth(0)
+      .locator('[data-testid="editable-quantity"]')
+      .textContent();
+    expect(parseInt(mstyQtyText?.trim() ?? '0', 10)).toBe(80);
+    const mstyBuyText = await mstyRows
+      .nth(0)
+      .locator('[data-testid="editable-buy-price"]')
+      .textContent();
+    expect(
+      parseFloat((mstyBuyText?.trim() ?? '0').replace(/[$,]/g, ''))
+    ).toBeCloseTo(10, 2);
+
+    // ULTY: 1 row, qty=100, buy=$30.00
+    const ultyRows = page
+      .locator('tr.mat-mdc-row')
+      .filter({ hasText: 'ULTY' });
+    await expect(ultyRows).toHaveCount(1, { timeout: 10000 });
+    const ultyQtyText = await ultyRows
+      .nth(0)
+      .locator('[data-testid="editable-quantity"]')
+      .textContent();
+    expect(parseInt(ultyQtyText?.trim() ?? '0', 10)).toBe(100);
+    const ultyBuyText = await ultyRows
+      .nth(0)
+      .locator('[data-testid="editable-buy-price"]')
+      .textContent();
+    expect(
+      parseFloat((ultyBuyText?.trim() ?? '0').replace(/[$,]/g, ''))
+    ).toBeCloseTo(30, 2);
+
+    // OXLC: 1 row, qty=306, buy=$5.00
+    const oxlcRows = page
+      .locator('tr.mat-mdc-row')
+      .filter({ hasText: 'OXLC' });
+    await expect(oxlcRows).toHaveCount(1, { timeout: 10000 });
+    const oxlcQtyText = await oxlcRows
+      .nth(0)
+      .locator('[data-testid="editable-quantity"]')
+      .textContent();
+    expect(parseInt(oxlcQtyText?.trim() ?? '0', 10)).toBe(306);
+    const oxlcBuyText = await oxlcRows
+      .nth(0)
+      .locator('[data-testid="editable-buy-price"]')
+      .textContent();
+    expect(
+      parseFloat((oxlcBuyText?.trim() ?? '0').replace(/[$,]/g, ''))
+    ).toBeCloseTo(5, 2);
   });
 });
