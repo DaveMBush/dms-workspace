@@ -116,7 +116,7 @@ describe('enrichUniverseWithRiskGroups', () => {
     expect(result[1]).not.toBe(mockUniverses[1]);
   });
 
-  it('should render SmartNgRX loading rows as placeholders preserving row position (Story 56.2 fix)', () => {
+  it('should exclude SmartNgRX loading rows (isLoading === true) from the result (Story 56.2 fix)', () => {
     const loadingUniverse = {
       ...mockUniverses[0],
       id: 'loading-id',
@@ -125,11 +125,12 @@ describe('enrichUniverseWithRiskGroups', () => {
     } as Universe & { isLoading: boolean };
     const mixedUniverses = [loadingUniverse, mockUniverses[1]];
 
-    const result = enrichUniverseWithRiskGroups(mixedUniverses, mockRiskGroups);
+    const result = enrichUniverseWithRiskGroups(
+      mixedUniverses as Universe[],
+      mockRiskGroups
+    );
 
-    expect(result).toHaveLength(2);
-    expect(result[0].id).toBe('loading-id'); // placeholder preserves row position
-    expect(result[0].symbol).toBe(''); // placeholder has empty symbol
-    expect(result[1].id).toBe('2');
+    expect(result).toHaveLength(1);
+    expect(result[0].id).toBe('2');
   });
 });
