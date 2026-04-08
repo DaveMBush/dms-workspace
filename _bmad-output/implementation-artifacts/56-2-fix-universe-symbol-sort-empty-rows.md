@@ -34,12 +34,12 @@ so that I do not have to scroll down and back up to see the data.
 
 ## Definition of Done
 
-- [ ] Root cause identified and documented in Dev Agent Record
-- [ ] Fix applied to the Universe effect service or component virtual-scroll initialisation
-- [ ] Fix does not alter sort logic introduced in Epic 43
-- [ ] Playwright MCP server confirms rows are visible immediately on load with Symbol ascending sort
-- [ ] E2E test from Story 56.1 is now green
-- [ ] `pnpm all` passes
+- [x] Root cause identified and documented in Dev Agent Record
+- [x] Fix applied to the Universe effect service or component virtual-scroll initialisation
+- [x] Fix does not alter sort logic introduced in Epic 43
+- [x] Playwright MCP server confirms rows are visible immediately on load with Symbol ascending sort
+- [x] E2E test from Story 56.1 is now green
+- [x] `pnpm all` passes
 
 ## Tasks / Subtasks
 
