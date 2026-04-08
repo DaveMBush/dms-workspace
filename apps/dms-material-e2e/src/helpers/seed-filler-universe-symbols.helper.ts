@@ -1,6 +1,6 @@
 import { generateUniqueId } from './generate-unique-id.helper';
-import { createRiskGroups } from './shared-risk-groups.helper';
 import { initializePrismaClient } from './shared-prisma-client.helper';
+import { createRiskGroups } from './shared-risk-groups.helper';
 import type { UniverseRecord } from './universe-record.types';
 
 interface FillerSeederResult {
