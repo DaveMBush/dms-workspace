@@ -98,11 +98,19 @@ test.describe('Universe Screen - Duplicate Symbols Bug (Story 55.1)', () => {
     const avgYieldHeader = page.locator(
       '[data-sort-header="avg_purchase_yield_percent"]'
     );
-    await avgYieldHeader.click();
-    await page.waitForLoadState('networkidle');
+    await Promise.all([
+      page.waitForResponse(
+        (r) => r.url().includes('/api/universe') && r.status() === 200
+      ),
+      avgYieldHeader.click(),
+    ]);
 
-    await avgYieldHeader.click();
-    await page.waitForLoadState('networkidle');
+    await Promise.all([
+      page.waitForResponse(
+        (r) => r.url().includes('/api/universe') && r.status() === 200
+      ),
+      avgYieldHeader.click(),
+    ]);
 
     // Collect all visible symbol cell values (column 1).
     const symbolTexts = await getColumnTexts(page, 1);
