@@ -8,13 +8,8 @@ import { seedUniverseE2eData } from './helpers/seed-universe-e2e-data.helper';
  */
 async function getColumnTexts(page: Page, colIndex: number): Promise<string[]> {
   const cells = page.locator(`tr.mat-mdc-row td:nth-child(${colIndex})`);
-  const count = await cells.count();
-  const texts: string[] = [];
-  for (let i = 0; i < count; i++) {
-    const text = await cells.nth(i).textContent();
-    texts.push((text ?? '').trim());
-  }
-  return texts;
+  const rawTexts = await cells.allTextContents();
+  return rawTexts.map((text) => text.trim());
 }
 
 /**
@@ -104,11 +99,9 @@ test.describe('Universe Screen - Duplicate Symbols Bug (Story 55.1)', () => {
       '[data-sort-header="avg_purchase_yield_percent"]'
     );
     await avgYieldHeader.click();
-    await page.waitForTimeout(800);
     await page.waitForLoadState('networkidle');
 
     await avgYieldHeader.click();
-    await page.waitForTimeout(800);
     await page.waitForLoadState('networkidle');
 
     // Collect all visible symbol cell values (column 1).
