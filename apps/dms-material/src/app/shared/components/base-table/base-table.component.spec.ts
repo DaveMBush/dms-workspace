@@ -1,6 +1,7 @@
 import { ListRange } from '@angular/cdk/collections';
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatSort } from '@angular/material/sort';
 import { Subject } from 'rxjs';
 
 import { BaseTableComponent } from './base-table.component';
@@ -334,5 +335,86 @@ describe('BaseTableComponent - Sort State Restoration', () => {
 
     expect(component.activeSortColumn()).toBe('');
     expect(component.activeSortDirection()).toBe('');
+  });
+});
+
+// Story 54.2 regression guard: notifySortHeadersOfRestoredState behaviour
+describe('BaseTableComponent - Sort Header State Notification', () => {
+  let component: BaseTableComponent<{ id: string; name: string }>;
+  let fixture: ComponentFixture<
+    BaseTableComponent<{ id: string; name: string }>
+  >;
+
+  interface PrivateNotify {
+    notifySortHeadersOfRestoredState(): void;
+  }
+
+  const columns: ColumnDef[] = [
+    { field: 'name', header: 'Name', sortable: true },
+    { field: 'id', header: 'ID', sortable: true },
+  ];
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [BaseTableComponent],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(BaseTableComponent);
+    component = fixture.componentInstance;
+    fixture.componentRef.setInput('columns', columns);
+    fixture.componentRef.setInput('data', []);
+  });
+
+  it('should invoke notifySortHeadersOfRestoredState during ngAfterViewInit when sortColumns is non-empty', () => {
+    const notifySpy = vi.spyOn(
+      component as unknown as PrivateNotify,
+      'notifySortHeadersOfRestoredState'
+    );
+    fixture.componentRef.setInput('sortColumns', [
+      { column: 'name', direction: 'desc' },
+    ]);
+    fixture.detectChanges();
+
+    expect(notifySpy).toHaveBeenCalledOnce();
+  });
+
+  it('should NOT invoke notifySortHeadersOfRestoredState during ngAfterViewInit when sortColumns is empty', () => {
+    const notifySpy = vi.spyOn(
+      component as unknown as PrivateNotify,
+      'notifySortHeadersOfRestoredState'
+    );
+    fixture.componentRef.setInput('sortColumns', []);
+    fixture.detectChanges();
+
+    expect(notifySpy).not.toHaveBeenCalled();
+  });
+
+  it('should not throw when MatSort._stateChanges is absent (fail-soft regression guard)', () => {
+    // Simulates a future Angular Material version that removes _stateChanges
+    Object.defineProperty(component, 'matSort', {
+      value: () => ({} as MatSort),
+      writable: true,
+      configurable: true,
+    });
+    fixture.componentRef.setInput('sortColumns', [
+      { column: 'name', direction: 'desc' },
+    ]);
+
+    expect(() => fixture.detectChanges()).not.toThrow();
+  });
+
+  it('should call _stateChanges.next() when MatSort._stateChanges is present', () => {
+    const mockNext = vi.fn();
+    Object.defineProperty(component, 'matSort', {
+      value: () => ({ _stateChanges: { next: mockNext } } as unknown as MatSort),
+      writable: true,
+      configurable: true,
+    });
+    fixture.componentRef.setInput('sortColumns', [
+      { column: 'name', direction: 'desc' },
+    ]);
+    fixture.detectChanges();
+
+    expect(mockNext).toHaveBeenCalledOnce();
   });
 });
