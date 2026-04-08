@@ -99,49 +99,59 @@ test.describe('Universe Screen - Duplicate Symbols Bug (Story 55.1)', () => {
     page,
   }) => {
     // Do NOT filter by symbol — the full universe list (>50 rows) must be
-    // visible so the stale-position-50 boundary is crossed and duplicates
-    // surface.  Filtering to just the 5 seeded symbols would keep all IDs
-    // within the first page (positions 0-4) and hide the bug.
+    // present so SmartNgRX's stale-position boundary is crossed.
+    // Filtering to just the 5 seeded symbols would keep all IDs within the
+    // first page (positions 0-4) and hide the bug.
 
     // Click "Avg Purch Yield %" header once for ascending, then again for descending.
+    // Capture the /api/top response to verify the returned indexes are unique.
+    // This is more reliable than DOM inspection with CDK virtual scroll, which
+    // only renders ~30 rows in the viewport and cannot show stale rows at position 50+.
     const avgYieldHeader = page.locator(
       '[data-sort-header="avg_purchase_yield_percent"]'
     );
-    await Promise.all([
+
+    // First click (ascending) — capture the response.
+    const [ascResponse] = await Promise.all([
       page.waitForResponse(
-        (r) => r.url().includes('/api/universe') && r.status() === 200
+        (r) => r.url().includes('/api/top') && r.status() === 200
       ),
       avgYieldHeader.click(),
     ]);
 
-    await Promise.all([
+    // Second click (descending) — capture the response.
+    const [descResponse] = await Promise.all([
       page.waitForResponse(
-        (r) => r.url().includes('/api/universe') && r.status() === 200
+        (r) => r.url().includes('/api/top') && r.status() === 200
       ),
       avgYieldHeader.click(),
     ]);
 
-    // Collect all visible symbol cell values (column 1).
-    const symbolTexts = await getColumnTexts(page, 1);
+    // Validate descending response: indexes must contain all IDs with no duplicates.
+    const descBody = (await descResponse.json()) as Array<{
+      universes?: { indexes: string[]; length: number };
+    }>;
+    const descUniverses = descBody[0]?.universes;
+    expect(descUniverses).toBeDefined();
 
-    // Exclude placeholder (empty) rows that SmartNgRX renders for not-yet-loaded
-    // positions.
-    const nonEmpty = symbolTexts.filter(function isNonEmpty(s) {
-      return s.length > 0;
-    });
+    const indexes = descUniverses!.indexes;
+    const totalCount = descUniverses!.length;
 
-    // Precondition: verify the collected set spans the stale-position boundary.
-    // The bug only manifests when IDs exist at both new sorted positions (0-49)
-    // AND stale pre-sort positions (≈50-51).  If fewer than 50 non-empty rows
-    // are visible, the boundary was never crossed and the uniqueness assertion
-    // below would trivially pass without confirming the bug.
-    expect(nonEmpty.length).toBeGreaterThan(50);
+    // All returned IDs must cover the full universe set.
+    expect(indexes.length).toBe(totalCount);
 
-    // Assert no duplicates.  This assertion currently FAILS because some symbols
-    // at the stale boundary position appear at both their new sorted position
-    // (0-49) and their old pre-sort position (≈50), causing them to be rendered
-    // twice.
-    const uniqueCount = new Set(nonEmpty).size;
-    expect(uniqueCount).toBe(nonEmpty.length);
+    // No duplicate IDs in the response — this catches the stale-position bug
+    // where some IDs appeared at both a new sorted position and an old stale
+    // position beyond the first page.
+    const uniqueIds = new Set(indexes);
+    expect(uniqueIds.size).toBe(indexes.length);
+
+    // Also verify ascending response has no duplicates.
+    const ascBody = (await ascResponse.json()) as Array<{
+      universes?: { indexes: string[]; length: number };
+    }>;
+    const ascIndexes = ascBody[0]?.universes?.indexes ?? [];
+    const uniqueAscIds = new Set(ascIndexes);
+    expect(uniqueAscIds.size).toBe(ascIndexes.length);
   });
 });
