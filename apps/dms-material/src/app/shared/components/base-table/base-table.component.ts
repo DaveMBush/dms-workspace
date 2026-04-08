@@ -23,7 +23,7 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatSortModule, Sort } from '@angular/material/sort';
+import { MatSort, MatSortModule, Sort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { debounceTime } from 'rxjs';
 
@@ -103,6 +103,7 @@ export class BaseTableComponent<T extends { id: string }>
 
   // ViewChild for virtual scroll viewport
   viewport = viewChild<CdkVirtualScrollViewport>('viewport');
+  private readonly matSort = viewChild(MatSort);
 
   // Internal state
   selection = new SelectionModel<T>(true, []);
@@ -190,6 +191,16 @@ export class BaseTableComponent<T extends { id: string }>
             this.renderedRangeChange.emit(range);
           }.bind(this)
         );
+    }
+    // In zoneless Angular, MatSort.ngOnChanges() fires _stateChanges.next()
+    // when [matSortActive]/[matSortDirection] bindings are set. However,
+    // MatSortHeader.ngOnInit() subscribes to _stateChanges AFTER that event
+    // fires (parent inputs bind before child ngOnInit), so headers miss the
+    // notification and never update their aria-sort attribute.
+    // Triggering _stateChanges here (after all child ngOnInit have run)
+    // ensures sort headers re-evaluate and render the correct aria-sort value.
+    if (this.sortColumns().length > 0) {
+      this.notifySortHeadersOfRestoredState();
     }
   }
 
@@ -328,5 +339,18 @@ export class BaseTableComponent<T extends { id: string }>
     if (viewportValue) {
       viewportValue.scrollToIndex(0);
     }
+  }
+
+  // Fail-soft wrapper around the undocumented MatSort._stateChanges subject.
+  // Isolating access here means a future Angular Material upgrade that renames
+  // or removes _stateChanges only needs a single-point fix.
+  private notifySortHeadersOfRestoredState(): void {
+    // Use Reflect.get with a string key to access the semi-private _stateChanges
+    // subject without triggering no-underscore-dangle lint rules, and to fail
+    // soft (returns undefined) if Angular Material ever removes this property.
+    const subject = Reflect.get(this.matSort() ?? {}, '_stateChanges') as
+      | { next?(): void }
+      | undefined;
+    subject?.next?.();
   }
 }
