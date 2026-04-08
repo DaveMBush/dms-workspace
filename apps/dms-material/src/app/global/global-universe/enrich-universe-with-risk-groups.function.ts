@@ -102,35 +102,35 @@ export function enrichUniverseWithRiskGroups(
   for (let i = 0; i < totalLength; i++) {
     const id = isProxy ? smartArr.getIdAtIndex!(i) : 'loaded';
     const entry = buildEnrichedEntry(id, i, universes[i], riskGroupMap);
-    if (entry !== null) {
-      result.push(entry);
-    }
+    result.push(entry);
   }
 
   return result;
 }
 
-// Builds the EnrichedUniverse entry for a single loop iteration, or returns
-// null when the row should be excluded from the rendered result (placeholder
-// index slots and SmartNgRX loading rows are both excluded).
+// Builds the EnrichedUniverse entry for a single loop iteration.
+// Never returns null — placeholder entries are used for index slots and
+// SmartNgRX loading rows so that row positions remain stable.
 function buildEnrichedEntry(
   id: string | undefined,
   index: number,
   universe: Universe | string,
   riskGroupMap: Map<string, string>
-): EnrichedUniverse | null {
+): EnrichedUniverse {
   if (id === undefined || id.startsWith('index')) {
     return buildPlaceholderUniverseEntry(id ?? `placeholder-${String(index)}`);
   }
   if (typeof universe === 'string') {
     return buildPlaceholderUniverseEntry(universe);
   }
-  // Skip rows that SmartNgRX is still fetching — isLoading is set to true
-  // on the defaultRow while loadByIds is in-flight. Keeping these out of the
-  // rendered result prevents empty symbol cells from appearing during the
-  // initial load window (Story 56.2 fix).
+  // Return a placeholder for rows that SmartNgRX is still fetching —
+  // isLoading is set to true on the defaultRow while loadByIds is in-flight.
+  // Keeping the placeholder in the result (rather than dropping it) preserves
+  // row-position stability during the initial load window (Story 56.2 fix).
   if ((universe as unknown as SmartNgRXRowBase).isLoading === true) {
-    return null;
+    return buildPlaceholderUniverseEntry(
+      (universe as Universe).id ?? id ?? `placeholder-${String(index)}`
+    );
   }
   return buildFullUniverseEntry(universe, riskGroupMap);
 }
