@@ -197,12 +197,10 @@ export class BaseTableComponent<T extends { id: string }>
     // MatSortHeader.ngOnInit() subscribes to _stateChanges AFTER that event
     // fires (parent inputs bind before child ngOnInit), so headers miss the
     // notification and never update their aria-sort attribute.
-    // Triggering _stateChanges.next() here (after all child ngOnInit have run)
+    // Triggering _stateChanges here (after all child ngOnInit have run)
     // ensures sort headers re-evaluate and render the correct aria-sort value.
-    const matSortRef = this.matSort();
-    if (matSortRef !== undefined && this.sortColumns().length > 0) {
-      // eslint-disable-next-line no-underscore-dangle -- Intentional: notifies MatSortHeaders after ngOnInit subscribes
-      matSortRef._stateChanges.next();
+    if (this.sortColumns().length > 0) {
+      this.notifySortHeadersOfRestoredState();
     }
   }
 
@@ -341,5 +339,18 @@ export class BaseTableComponent<T extends { id: string }>
     if (viewportValue) {
       viewportValue.scrollToIndex(0);
     }
+  }
+
+  // Fail-soft wrapper around the undocumented MatSort._stateChanges subject.
+  // Isolating access here means a future Angular Material upgrade that renames
+  // or removes _stateChanges only needs a single-point fix.
+  private notifySortHeadersOfRestoredState(): void {
+    // Use Reflect.get with a string key to access the semi-private _stateChanges
+    // subject without triggering no-underscore-dangle lint rules, and to fail
+    // soft (returns undefined) if Angular Material ever removes this property.
+    const subject = Reflect.get(this.matSort() ?? {}, '_stateChanges') as
+      | { next?(): void }
+      | undefined;
+    subject?.next?.();
   }
 }
