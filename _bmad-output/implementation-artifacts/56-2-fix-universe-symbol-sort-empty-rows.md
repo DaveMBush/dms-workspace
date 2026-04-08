@@ -35,7 +35,7 @@ so that I do not have to scroll down and back up to see the data.
 ## Definition of Done
 
 - [x] Root cause identified and documented in Dev Agent Record
-- [x] Fix applied to the Universe effect service or component virtual-scroll initialisation
+- [x] Fix applied to `enrichUniverseWithRiskGroups` — skip `isLoading` rows so empty cells never reach the DOM
 - [x] Fix does not alter sort logic introduced in Epic 43
 - [x] Playwright MCP server confirms rows are visible immediately on load with Symbol ascending sort
 - [x] E2E test from Story 56.1 is now green
