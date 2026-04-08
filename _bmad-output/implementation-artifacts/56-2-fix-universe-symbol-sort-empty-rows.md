@@ -44,6 +44,7 @@ so that I do not have to scroll down and back up to see the data.
 ## Tasks / Subtasks
 
 - [x] **Task 1: Diagnose root cause**
+
   - [x] Read `apps/dms-material/src/app/store/universe/universe-effect.service.ts` — understand `loadByIds` and how IDs are passed
   - [x] Read `GlobalUniverseComponent` — find where `sortColumns$` signal drives the initial ID request
   - [x] Determine why Symbol ascending sort places rows with certain IDs at the top that SmartNgRX treats as "already in store but not hydrated"
@@ -51,11 +52,13 @@ so that I do not have to scroll down and back up to see the data.
   - [x] Document root cause in Dev Agent Record
 
 - [x] **Task 2: Implement the fix**
+
   - [x] Skip SmartNgRX `isLoading: true` rows in `enrichUniverseWithRiskGroups` so they are never rendered
   - [x] Do NOT change the sort logic itself — only fix the hydration timing or cache invalidation
   - [x] Add unit test for `isLoading` filter behaviour
 
 - [x] **Task 3: Verify with Playwright MCP server**
+
   - [x] Set Symbol ascending sort → navigate to Universe → first 5 rows are non-empty immediately ✅
   - [x] Set Avg Purch Yield % descending → navigate to Universe → first 5 rows non-empty immediately ✅
 
@@ -68,11 +71,11 @@ so that I do not have to scroll down and back up to see the data.
 
 ### Key Files
 
-| File | Purpose |
-|------|---------|
-| `apps/dms-material/src/app/store/universe/universe-effect.service.ts` | SmartNgRX effect service — `loadByIds` sends universe IDs to backend |
-| `apps/dms-material/src/app/global/global-universe/global-universe.component.ts` | Component that wires sort signal to effect service |
-| `apps/dms-material/src/app/shared/services/sort-filter-state.service.ts` | Sort state persistence |
+| File                                                                            | Purpose                                                              |
+| ------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| `apps/dms-material/src/app/store/universe/universe-effect.service.ts`           | SmartNgRX effect service — `loadByIds` sends universe IDs to backend |
+| `apps/dms-material/src/app/global/global-universe/global-universe.component.ts` | Component that wires sort signal to effect service                   |
+| `apps/dms-material/src/app/shared/services/sort-filter-state.service.ts`        | Sort state persistence                                               |
 
 ### SmartNgRX/SmartSignals lazy loading pattern
 
