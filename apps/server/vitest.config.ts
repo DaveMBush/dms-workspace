@@ -77,11 +77,11 @@ export default defineConfig({
         'src/app/routes/universe/sync-from-screener/index.ts',
         'src/utils/aws-config.ts',
         'src/app/routes/logs/index.ts',
-        // Re-export barrel files with no logic
-        '**/csrf-protection-hook.middleware.ts',
-        '**/enhanced-rate-limit.middleware.ts',
-        '**/get-csrf-stats.middleware.ts',
-        '**/validate-csrf-token.middleware.ts',
+        // Re-export barrel files covered by barrel spec tests
+        'src/app/middleware/csrf-protection-hook.middleware.ts',
+        'src/app/middleware/enhanced-rate-limit.middleware.ts',
+        'src/app/middleware/get-csrf-stats.middleware.ts',
+        'src/app/middleware/validate-csrf-token.middleware.ts',
       ],
       thresholds: {
         branches: 100,

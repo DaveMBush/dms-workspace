@@ -3,10 +3,10 @@ import { describe, expect, test } from 'vitest';
 import { isSplitRow } from './is-split-row.function';
 import { FidelityCsvRow } from './fidelity-csv-row.interface';
 
-function makeRow(description: string): FidelityCsvRow {
+function makeRow(description: string, action = 'YOU BOUGHT'): FidelityCsvRow {
   return {
     date: '04/04/2026',
-    action: 'YOU BOUGHT',
+    action,
     symbol: 'OXLC',
     description,
     quantity: 306,
@@ -45,5 +45,41 @@ describe('isSplitRow', function () {
 
   test('returns false for empty description', function () {
     expect(isSplitRow(makeRow(''))).toBe(false);
+  });
+
+  // Desktop format: split text is in row.action, not row.description
+  test('returns true when action contains "SPLIT" (desktop FROM row)', function () {
+    expect(
+      isSplitRow(
+        makeRow(
+          'MSTY UNIT',
+          'REVERSE SPLIT R/S FROM 88634T493#REOR M0051704770001'
+        )
+      )
+    ).toBe(true);
+  });
+
+  test('returns true when action contains "SPLIT" (desktop TO row)', function () {
+    expect(
+      isSplitRow(
+        makeRow(
+          'MSTY UNIT',
+          'REVERSE SPLIT R/S TO 88636X732#REOR M0051704770000'
+        )
+      )
+    ).toBe(true);
+  });
+
+  test('returns false when neither description nor action contains "SPLIT"', function () {
+    expect(isSplitRow(makeRow('MSTY UNIT', 'DIVIDEND RECEIVED'))).toBe(false);
+  });
+
+  test('returns false when both description and action are undefined', function () {
+    expect(
+      isSplitRow({
+        description: undefined,
+        action: undefined,
+      } as unknown as FidelityCsvRow)
+    ).toBe(false);
   });
 });
