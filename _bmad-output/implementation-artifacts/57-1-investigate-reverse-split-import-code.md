@@ -52,21 +52,21 @@ fix code.
 
   Example 1 — MSTY 1-for-5:
 
-  ```
+  ```csv
   Dec-8-2025,REVERSE SPLIT R/S FROM 88634T493#REOR M0051704770001,MSTY,80,--,--,"+2,637.48",...,Joint Brokerage *4767
   Dec-8-2025,REVERSE SPLIT R/S TO 88636X732#REOR M0051704770000,88634T493,-400,--,--,"+2,637.48",...,Joint Brokerage *4767
   ```
 
   Example 2 — ULTY 1-for-10:
 
-  ```
+  ```csv
   Dec-1-2025,REVERSE SPLIT R/S FROM 88636J527#REOR M0051702900001,ULTY,100,--,--,"+1,697.07",...,Joint Brokerage *4767
   Dec-1-2025,REVERSE SPLIT R/S TO 88636X708#REOR M0051702900000,88636J527,"-1,000",--,--,"+1,697.07",...,Joint Brokerage *4767
   ```
 
   Example 3 — OXLC 1-for-5:
 
-  ```
+  ```csv
   Sep-8-2025,REVERSE SPLIT R/S FROM 691543102#REOR M0051680750001,OXLC,306,--,--,"+3,672.63",...,Joint Brokerage *4767
   Sep-8-2025,REVERSE SPLIT R/S TO 691543847#REOR M0051680750000,691543102,"-1,530",--,--,"+3,672.63",...,Joint Brokerage *4767
   ```
@@ -139,7 +139,7 @@ The TO rows (negative quantity, CUSIP as symbol) are also not detected as split 
 
 `calculateSplitRatio(symbol, csvPostSplitQuantity)` **does NOT** derive the ratio from the CSV pair. It always queries the database:
 
-```
+```ts
 ratio = totalCurrentOpenQuantity (from DB) / csvPostSplitQuantity (from CSV)
 ```
 
