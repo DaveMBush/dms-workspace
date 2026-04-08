@@ -65,11 +65,11 @@ so that I have an accurate view of my portfolio without confusion from phantom d
 
 ### Key Files
 
-| File                                                                                     | Purpose                                               |
-| ---------------------------------------------------------------------------------------- | ----------------------------------------------------- |
-| `apps/server/src/app/routes/universe/index.ts`                                           | Main universe POST endpoint — Prisma query lives here |
-| `apps/server/src/app/routes/universe/parse-sort-filter-header.function.ts` (likely path) | Parses sort/filter from request headers               |
-| `apps/server/src/app/routes/universe/*.spec.ts`                                          | Unit tests for universe route                         |
+| File                                                                         | Purpose                                                              |
+| ---------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| `apps/server/src/app/routes/top/index.ts`                                    | Main `/api/top` endpoint — universe sort/pagination logic lives here |
+| `apps/server/src/app/routes/top/get-top-universes-computed-sort.function.ts` | Computed-sort path — Prisma query with `distinct: ['id']` guard      |
+| `apps/server/src/app/routes/top/*.spec.ts`                                   | Unit tests for top route                                             |
 
 ### Prisma query pattern to watch for
 
