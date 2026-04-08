@@ -129,7 +129,7 @@ function buildEnrichedEntry(
   // row-position stability during the initial load window (Story 56.2 fix).
   if ((universe as unknown as SmartNgRXRowBase).isLoading === true) {
     return buildPlaceholderUniverseEntry(
-      (universe as Universe).id ?? id ?? `placeholder-${String(index)}`
+      universe.id ?? id ?? `placeholder-${String(index)}`
     );
   }
   return buildFullUniverseEntry(universe, riskGroupMap);
