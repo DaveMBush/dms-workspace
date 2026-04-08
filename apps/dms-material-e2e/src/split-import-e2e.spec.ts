@@ -97,10 +97,12 @@ test.describe('OXLC Split Import E2E', () => {
   }) => {
     await navigateToUniverse(page);
 
-    const responsePromise = page.waitForResponse(function matchImportApi(
-      response
-    ) {
-      return response.url().includes('/api/import/fidelity');
+    const responsePromise = page.waitForResponse((response) => {
+      return (
+        response.url().includes('/api/import/fidelity') &&
+        response.request().method() === 'POST' &&
+        response.status() === 200
+      );
     });
 
     await openImportDialog(page);
@@ -235,10 +237,12 @@ test.describe('All-Three Reverse Split E2E', () => {
   }) => {
     await navigateToUniverse(page);
 
-    const responsePromise = page.waitForResponse(function matchImportApi(
-      response
-    ) {
-      return response.url().includes('/api/import/fidelity');
+    const responsePromise = page.waitForResponse((response) => {
+      return (
+        response.url().includes('/api/import/fidelity') &&
+        response.request().method() === 'POST' &&
+        response.status() === 200
+      );
     });
 
     await openImportDialog(page);
