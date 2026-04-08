@@ -126,7 +126,7 @@ describe('enrichUniverseWithRiskGroups', () => {
     const mixedUniverses = [loadingUniverse, mockUniverses[1]];
 
     const result = enrichUniverseWithRiskGroups(
-      mixedUniverses as Universe[],
+      mixedUniverses,
       mockRiskGroups
     );
 
