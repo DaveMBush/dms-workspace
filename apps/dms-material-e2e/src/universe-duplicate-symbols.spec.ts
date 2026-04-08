@@ -1,7 +1,7 @@
 import { expect, Page, test } from 'playwright/test';
 
 import { login } from './helpers/login.helper';
-import { seedUniverseE2eData } from './helpers/seed-universe-e2e-data.helper';
+import { seedFillerUniverseSymbols, seedUniverseE2eData } from './helpers/seed-universe-e2e-data.helper';
 
 /**
  * Helper: collect text content from all visible cells in a given column index (1-based).
@@ -62,15 +62,23 @@ async function waitForTableRows(page: Page): Promise<void> {
 
 test.describe('Universe Screen - Duplicate Symbols Bug (Story 55.1)', () => {
   let cleanup: () => Promise<void>;
+  let fillerCleanup: () => Promise<void>;
 
   test.beforeAll(async () => {
     const seeder = await seedUniverseE2eData();
     cleanup = seeder.cleanup;
+    // Seed 50 filler symbols to guarantee >50 total rows are visible,
+    // ensuring the virtual-scroll stale-position-50 boundary is always crossed.
+    const filler = await seedFillerUniverseSymbols(50);
+    fillerCleanup = filler.cleanup;
   });
 
   test.afterAll(async () => {
     if (cleanup) {
       await cleanup();
+    }
+    if (fillerCleanup) {
+      await fillerCleanup();
     }
   });
 

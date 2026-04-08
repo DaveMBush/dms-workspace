@@ -195,6 +195,59 @@ function generateTestNames(uniqueId: string): {
   };
 }
 
+interface FillerSeederResult {
+  cleanup(): Promise<void>;
+}
+
+/**
+ * Seed N minimal universe symbols so that the total DB symbol count exceeds
+ * the virtual-scroll page boundary (≈50).  Symbols are prefixed with "UFILL"
+ * and tagged with a unique run ID so cleanup is isolated.
+ */
+export async function seedFillerUniverseSymbols(
+  count: number
+): Promise<FillerSeederResult> {
+  const prisma = await initializePrismaClient();
+  const uniqueId = generateUniqueId();
+  const symbols: string[] = [];
+  for (let i = 0; i < count; i++) {
+    symbols.push(`UFILL${i.toString().padStart(3, '0')}-${uniqueId}`);
+  }
+
+  try {
+    const riskGroups = await createRiskGroups(prisma);
+    await prisma.universe.createMany({
+      data: symbols.map((symbol) => ({
+        symbol,
+        risk_group_id: riskGroups.equitiesRiskGroup.id,
+        distribution: 0.5,
+        distributions_per_year: 4,
+        last_price: 10.0,
+        ex_date: null,
+        most_recent_sell_date: null,
+        most_recent_sell_price: null,
+        expired: false,
+        is_closed_end_fund: true,
+      })),
+    });
+  } catch (error) {
+    await prisma.$disconnect();
+    throw error;
+  }
+
+  return {
+    cleanup: async function cleanupFiller(): Promise<void> {
+      try {
+        await prisma.universe.deleteMany({
+          where: { symbol: { in: symbols } },
+        });
+      } finally {
+        await prisma.$disconnect();
+      }
+    },
+  };
+}
+
 export async function seedUniverseE2eData(): Promise<SeederResult> {
   const prisma = await initializePrismaClient();
   const uniqueId = generateUniqueId();
