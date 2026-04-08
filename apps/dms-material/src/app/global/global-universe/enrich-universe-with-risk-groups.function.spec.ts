@@ -125,10 +125,7 @@ describe('enrichUniverseWithRiskGroups', () => {
     } as Universe & { isLoading: boolean };
     const mixedUniverses = [loadingUniverse, mockUniverses[1]];
 
-    const result = enrichUniverseWithRiskGroups(
-      mixedUniverses,
-      mockRiskGroups
-    );
+    const result = enrichUniverseWithRiskGroups(mixedUniverses, mockRiskGroups);
 
     expect(result).toHaveLength(1);
     expect(result[0].id).toBe('2');
