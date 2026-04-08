@@ -293,9 +293,7 @@ test.describe('All-Three Reverse Split E2E', () => {
     await page.waitForSelector('tr.mat-mdc-row', { timeout: 15000 });
 
     // MSTY: 1 row, qty=80, buy=$10.00
-    const mstyRows = page
-      .locator('tr.mat-mdc-row')
-      .filter({ hasText: 'MSTY' });
+    const mstyRows = page.locator('tr.mat-mdc-row').filter({ hasText: 'MSTY' });
     await expect(mstyRows).toHaveCount(1, { timeout: 10000 });
     const mstyQtyText = await mstyRows
       .nth(0)
@@ -311,9 +309,7 @@ test.describe('All-Three Reverse Split E2E', () => {
     ).toBeCloseTo(10, 2);
 
     // ULTY: 1 row, qty=100, buy=$30.00
-    const ultyRows = page
-      .locator('tr.mat-mdc-row')
-      .filter({ hasText: 'ULTY' });
+    const ultyRows = page.locator('tr.mat-mdc-row').filter({ hasText: 'ULTY' });
     await expect(ultyRows).toHaveCount(1, { timeout: 10000 });
     const ultyQtyText = await ultyRows
       .nth(0)
@@ -329,9 +325,7 @@ test.describe('All-Three Reverse Split E2E', () => {
     ).toBeCloseTo(30, 2);
 
     // OXLC: 1 row, qty=306, buy=$5.00
-    const oxlcRows = page
-      .locator('tr.mat-mdc-row')
-      .filter({ hasText: 'OXLC' });
+    const oxlcRows = page.locator('tr.mat-mdc-row').filter({ hasText: 'OXLC' });
     await expect(oxlcRows).toHaveCount(1, { timeout: 10000 });
     const oxlcQtyText = await oxlcRows
       .nth(0)
