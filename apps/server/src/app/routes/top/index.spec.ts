@@ -575,12 +575,12 @@ describe('Top Route Handler', () => {
       });
     });
 
-    it('should return only first page of universes when count exceeds page size', async () => {
+    it('should return all universe IDs when count exceeds previous page size', async () => {
       const allIds = Array.from({ length: 100 }, (_, i) => ({
         id: `uni-${i + 1}`,
       }));
       mockPrismaUniverse.count.mockResolvedValue(100);
-      mockPrismaUniverse.findMany.mockResolvedValue(allIds.slice(0, 50));
+      mockPrismaUniverse.findMany.mockResolvedValue(allIds);
 
       const response = await app.inject({
         method: 'POST',
@@ -591,11 +591,11 @@ describe('Top Route Handler', () => {
       expect(response.statusCode).toBe(200);
       const body = JSON.parse(response.body);
       expect(body[0].universes.startIndex).toBe(0);
-      expect(body[0].universes.indexes).toHaveLength(50);
+      expect(body[0].universes.indexes).toHaveLength(100);
       expect(body[0].universes.length).toBe(100);
     });
 
-    it('should apply skip/take to findMany for non-computed sort', async () => {
+    it('should apply skip without take to findMany for non-computed sort (returns all)', async () => {
       mockPrismaUniverse.count.mockResolvedValue(100);
       mockPrismaUniverse.findMany.mockResolvedValue([{ id: 'uni-1' }]);
 
@@ -607,10 +607,10 @@ describe('Top Route Handler', () => {
 
       const universeCall = mockPrismaUniverse.findMany.mock.calls[0][0];
       expect(universeCall.skip).toBe(0);
-      expect(universeCall.take).toBe(50);
+      expect(universeCall.take).toBeUndefined();
     });
 
-    it('should return paginated result for computed sort', async () => {
+    it('should return all IDs for computed sort via initial top load', async () => {
       const allUniverses = Array.from({ length: 100 }, (_, i) => ({
         id: `u${i + 1}`,
         distribution: (i + 1) * 0.5,
@@ -636,8 +636,98 @@ describe('Top Route Handler', () => {
       expect(response.statusCode).toBe(200);
       const body = JSON.parse(response.body);
       expect(body[0].universes.startIndex).toBe(0);
-      expect(body[0].universes.indexes).toHaveLength(50);
+      expect(body[0].universes.indexes).toHaveLength(100);
       expect(body[0].universes.length).toBe(100);
+    });
+
+    it('should pass distinct: ["id"] to Prisma query for computed sort to prevent duplicate universe IDs (story 55.2)', async () => {
+      mockPrismaUniverse.findMany.mockResolvedValue([
+        {
+          id: 'u1',
+          distribution: 1,
+          distributions_per_year: 4,
+          last_price: 100,
+          trades: [{ buy: 50, quantity: 10, sell: 0, sell_date: null }],
+        },
+      ]);
+
+      const filterState = JSON.stringify({
+        universes: {
+          sortColumns: [
+            { column: 'avg_purchase_yield_percent', direction: 'desc' },
+          ],
+        },
+      });
+
+      await app.inject({
+        method: 'POST',
+        url: '/api/top',
+        payload: ['1'],
+        headers: { 'x-sort-filter-state': filterState },
+      });
+
+      const universeCall = mockPrismaUniverse.findMany.mock.calls[0][0];
+      expect(universeCall.distinct).toEqual(['id']);
+    });
+
+    it('should return no duplicate universe IDs in indexes when computed sort is active (story 55.2)', async () => {
+      // Simulate the SQLite JOIN fan-out: Prisma returns the same universe ID
+      // multiple times (once per trade row). The distinct fix must prevent
+      // these duplicates from appearing in the returned indexes.
+      mockPrismaUniverse.findMany.mockResolvedValue([
+        {
+          id: 'uaaa',
+          distribution: 2.0,
+          distributions_per_year: 4,
+          last_price: 100,
+          trades: [
+            { buy: 50, quantity: 10, sell: 0, sell_date: null },
+            { buy: 60, quantity: 20, sell: 0, sell_date: null },
+            { buy: 55, quantity: 15, sell: 0, sell_date: null },
+            { buy: 52, quantity: 12, sell: 0, sell_date: null },
+          ],
+        },
+        {
+          id: 'ubbb',
+          distribution: 0.5,
+          distributions_per_year: 12,
+          last_price: 25,
+          trades: [
+            { buy: 24, quantity: 5, sell: 0, sell_date: null },
+            { buy: 23, quantity: 8, sell: 0, sell_date: null },
+          ],
+        },
+        {
+          id: 'uccc',
+          distribution: 1.0,
+          distributions_per_year: 4,
+          last_price: 40,
+          trades: [],
+        },
+      ]);
+
+      const filterState = JSON.stringify({
+        universes: {
+          sortColumns: [
+            { column: 'avg_purchase_yield_percent', direction: 'desc' },
+          ],
+        },
+      });
+
+      const response = await app.inject({
+        method: 'POST',
+        url: '/api/top',
+        payload: ['1'],
+        headers: { 'x-sort-filter-state': filterState },
+      });
+
+      expect(response.statusCode).toBe(200);
+      const body = JSON.parse(response.body);
+      const indexes: string[] = body[0].universes.indexes;
+
+      // All returned IDs must be unique — no symbol should appear twice
+      const uniqueIds = new Set(indexes);
+      expect(uniqueIds.size).toBe(indexes.length);
     });
   });
 
