@@ -406,7 +406,8 @@ describe('BaseTableComponent - Sort Header State Notification', () => {
   it('should call _stateChanges.next() when MatSort._stateChanges is present', () => {
     const mockNext = vi.fn();
     Object.defineProperty(component, 'matSort', {
-      value: () => ({ _stateChanges: { next: mockNext } } as unknown as MatSort),
+      value: () =>
+        ({ _stateChanges: { next: mockNext } } as unknown as MatSort),
       writable: true,
       configurable: true,
     });
