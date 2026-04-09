@@ -2,6 +2,11 @@
 
 Status: Approved
 
+> **Scope note:** OXLC (CUSIP `691543102`) is the **concrete failing example** used in the E2E
+> regression tests, but the **unit tests must validate symbol-agnostic behaviour** using
+> generic/invented tickers and CUSIPs. The goal is to guard against regressions in the general
+> fix from Story 61.2, not to hard-code OXLC assumptions into the test suite.
+
 ## Story
 
 As a developer,
@@ -40,7 +45,10 @@ so that any regression introduced by future import changes is caught immediately
   - [ ] List any gaps in coverage (CUSIP-as-symbol path, unresolvable CUSIP, etc.)
 
 - [ ] **Task 2: Extend unit tests**
-  - [ ] Add unit test: lot adjustment where symbol is a CUSIP → resolves to ticker → adjusts correctly
+  - [ ] Add unit test (generic): lot adjustment where an arbitrary CUSIP resolves to an arbitrary
+        ticker — adjusts correctly (validates no OXLC-specific logic in the fix)
+  - [ ] Add unit test (concrete): lot adjustment where CUSIP `691543102` resolves to `OXLC` —
+        adjusts correctly (OXLC regression guard)
   - [ ] Add unit test: lot adjustment where symbol is a ticker (no change to existing behaviour)
   - [ ] Add unit test: lot adjustment where CUSIP is unresolvable → warning emitted, lots unchanged
 
@@ -72,8 +80,13 @@ so that any regression introduced by future import changes is caught immediately
 | Ticker lots — MSTY 1-for-5 | Epic 57.3 | Epic 57.3 | Should already exist |
 | Ticker lots — ULTY 1-for-10 | Epic 57.3 | Epic 57.3 | Should already exist |
 | Ticker lots — OXLC 1-for-5 | Epic 57.3 | Epic 57.3 | Should already exist |
-| CUSIP lots — OXLC 1-for-5 | Story 61.2 | Story 61.1 | New in this epic |
+| CUSIP lots — OXLC 1-for-5 (concrete) | Story 61.2 | Story 61.1 | New in this epic |
+| CUSIP lots — generic ticker/CUSIP pair | Story 61.2 | N/A (unit only) | New in this epic |
 | Unresolvable CUSIP — warning | Story 61.2 | N/A | New in this epic |
+
+> The "generic ticker/CUSIP pair" unit test is the critical guard that the fix is symbol-agnostic.
+> It should use invented values (e.g., ticker `FAKE`, CUSIP `000000001`) to prove no OXLC-specific
+> code path was introduced.
 
 Confirm each row in the matrix is covered before marking done.
 

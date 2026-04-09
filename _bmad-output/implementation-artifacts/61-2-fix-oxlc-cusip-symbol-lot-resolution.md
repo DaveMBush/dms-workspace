@@ -1,6 +1,11 @@
-# Story 61.2: Fix OXLC CUSIP-Symbol Lot Resolution for Reverse Splits
+# Story 61.2: Fix CUSIP-Symbol Lot Resolution for Reverse Splits
 
 Status: Approved
+
+> **Scope note:** OXLC (CUSIP `691543102`, 1-for-5 reverse split) is the **concrete failing
+> example** driving this story. **The implementation fix must be symbol-agnostic.** Any symbol
+> whose lots were stored under a raw CUSIP will exhibit the same bug; the code change must therefore
+> resolve any CUSIP to its ticker before querying for lots — not just the OXLC CUSIP.
 
 ## Story
 
@@ -11,8 +16,8 @@ so that the post-split quantities and prices in my portfolio are accurate.
 
 ## Acceptance Criteria
 
-1. **Given** four open lots recorded under CUSIP `691543102` (300, 150, 500, 580 shares at $4.50,
-   $4.49, $4.06, $3.44),
+1. **Given** four open lots recorded under CUSIP `691543102` (the OXLC example — 300, 150, 500,
+   580 shares at $4.50, $4.49, $4.06, $3.44),
    **When** the OXLC 1-for-5 reverse-split CSV is imported,
    **Then** all four lots are adjusted to 60, 30, 100, and 116 shares at prices $22.50, $22.45,
    $20.30, and $17.20 respectively.
@@ -34,11 +39,15 @@ so that the post-split quantities and prices in my portfolio are accurate.
    **When** `pnpm all` runs,
    **Then** all tests pass with no regressions.
 
+6. **Given** an arbitrary ticker/CUSIP pair (not OXLC) where lots are stored under the CUSIP,
+   **When** a reverse-split CSV for that ticker is imported,
+   **Then** the lots are adjusted correctly — confirming the fix is not OXLC-specific.
+
 ## Definition of Done
 
 - [ ] Root cause confirmed and documented in Dev Notes (which function fails to resolve CUSIP-as-symbol lots)
-- [ ] `adjustLotsForSplit()` (or its caller in the import service) updated to resolve CUSIP symbols to their ticker equivalent before querying the trades table
-- [ ] Unit tests added for: CUSIP-to-ticker resolution path, full OXLC 1-for-5 split scenario, unresolvable CUSIP warning
+- [ ] `adjustLotsForSplit()` (or its caller in the import service) updated to resolve CUSIP symbols to their ticker equivalent before querying the trades table — **no OXLC-specific logic**
+- [ ] Unit tests added for: CUSIP-to-ticker resolution path (using a generic/invented ticker and CUSIP, not just OXLC), full OXLC 1-for-5 split scenario (concrete E2E-driving test), unresolvable CUSIP warning
 - [ ] Playwright MCP server confirms all four OXLC lots are correctly adjusted after import
 - [ ] E2E test from Story 61.1 passes green
 - [ ] `pnpm all` passes
@@ -62,8 +71,11 @@ so that the post-split quantities and prices in my portfolio are accurate.
   - [ ] Log a warning and skip the adjustment if the CUSIP cannot be resolved
 
 - [ ] **Task 4: Add unit tests**
-  - [ ] Test: lots under CUSIP `691543102` are found and adjusted when split is for `OXLC` (ratio 5)
-  - [ ] Test: lots under ticker `OXLC` are still found and adjusted (regression guard)
+  - [ ] Test (generic): lots under an arbitrary CUSIP (e.g., `123456789`) are found and adjusted
+        when a split CSV arrives for the corresponding ticker — confirms no hard-coded OXLC logic
+  - [ ] Test (concrete): lots under CUSIP `691543102` are found and adjusted when split is for
+        `OXLC` (ratio 5) — the OXLC regression guard
+  - [ ] Test: lots under ticker `OXLC` are still found and adjusted (regression guard for ticker path)
   - [ ] Test: unresolvable CUSIP logs a warning and returns without modification
 
 - [ ] **Task 5: Verify with Playwright MCP server**
@@ -98,16 +110,18 @@ It then looks up open lots for `OXLC` in the trades table. Since the lots were r
 
 ### Fix Strategy
 
-In `adjustLotsForSplit()` or its caller, after extracting the ticker (`OXLC`) from the "FROM" row:
+In `adjustLotsForSplit()` or its caller, after extracting the ticker from the "FROM" row:
 
-1. Query the `cusip_cache` for any CUSIP that maps to ticker `OXLC`
+1. Query the `cusip_cache` for any CUSIP that maps to that ticker
 2. Find lots where `symbol IN (ticker, ...all matching CUSIPs)`
 3. Adjust all matching lots
 
-This ensures lots recorded under any historical CUSIP for the ticker are also adjusted.
+This ensures lots recorded under **any** historical CUSIP for **any** ticker are adjusted.
+The logic must not reference `OXLC`, `691543102`, or any other specific symbol. OXLC is
+only used in concrete test fixtures to verify the general path.
 
-Alternatively, look up the old CUSIP from the "FROM" action field (`691543102#REOR…`), strip the
-`#REOR…` suffix, and query lots under both the ticker and that old CUSIP.
+Alternatively, look up the old CUSIP from the "FROM" action field (e.g., `691543102#REOR…`),
+strip the `#REOR…` suffix, and query lots under both the ticker and that old CUSIP.
 
 ## Dev Agent Record
 

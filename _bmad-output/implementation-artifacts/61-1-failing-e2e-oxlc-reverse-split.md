@@ -1,6 +1,12 @@
-# Story 61.1: Write Failing E2E Test for OXLC Reverse-Split Import
+# Story 61.1: Write Failing E2E Test for CUSIP-Stored Lots Reverse-Split Import
 
 Status: Approved
+
+> **Scope note:** OXLC (CUSIP `691543102`) is the **concrete failing example** used in this story.
+> The test uses real OXLC CSV data to expose a **general bug**: when pre-split lots are stored
+> under a raw CUSIP symbol rather than a ticker, the reverse-split lot-adjustment path does not
+> find or update them. Other symbols with the same storage pattern will exhibit the same failure.
+> The implementation fix (Story 61.2) must therefore be symbol-agnostic.
 
 ## Story
 
@@ -109,6 +115,9 @@ The lot-adjustment path in `adjustLotsForSplit()` searches for open lots by symb
 lots are stored under `691543102` (the CUSIP), but the reverse-split "FROM" row identifies the new
 symbol as `OXLC`. The resolver likely queries trades by ticker symbol `OXLC` and finds nothing,
 leaving the CUSIP lots unadjusted.
+
+This is a **general bug** affecting any symbol whose lots were imported with a CUSIP in the symbol
+field. OXLC is simply the first known case. The fix must not be OXLC-specific.
 
 ## Dev Agent Record
 
