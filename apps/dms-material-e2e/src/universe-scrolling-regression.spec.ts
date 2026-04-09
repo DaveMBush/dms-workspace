@@ -26,7 +26,7 @@
  *   and the assertion will fail.
  */
 
-import { expect, test } from 'playwright/test';
+import { expect, Page, test } from 'playwright/test';
 
 import { login } from './helpers/login.helper';
 import { seedScrollUniverseData } from './helpers/seed-scroll-universe-data.helper';
@@ -35,6 +35,45 @@ const VIEWPORT_SELECTOR = 'cdk-virtual-scroll-viewport';
 const ROW_SELECTOR = 'tr.mat-mdc-row';
 // Symbol is the first data cell (column 1, after no selection column in universe)
 const SYMBOL_CELL_SELECTOR = 'tr.mat-mdc-row td:first-child';
+
+/**
+ * Assert that all currently visible symbol cells have non-empty text content.
+ * Uses expect.poll to retry the assertion until all rows are populated or the
+ * timeout expires — no fixed sleeps required.
+ *
+ * Regression guard for Epics 29/31/44/60 (CDK virtual scroll blank rows).
+ */
+async function assertVisibleSymbolsNonEmpty(
+  page: Page,
+  failureMessage: string
+): Promise<void> {
+  // Wait for at least one row to be visible first
+  await expect(page.locator(ROW_SELECTOR).first()).toBeVisible({
+    timeout: 10000,
+  });
+
+  // Poll until no empty cells remain (auto-retries until timeout)
+  await expect
+    .poll(
+      async function countEmptySymbols() {
+        const symbolCells = page.locator(SYMBOL_CELL_SELECTOR);
+        const count = await symbolCells.count();
+        if (count === 0) {
+          return -1; // no rows yet — keep polling
+        }
+        const emptyIndices: number[] = [];
+        for (let i = 0; i < count; i++) {
+          const text = await symbolCells.nth(i).textContent();
+          if ((text ?? '').trim() === '') {
+            emptyIndices.push(i);
+          }
+        }
+        return emptyIndices.length;
+      },
+      { message: failureMessage, timeout: 10000 }
+    )
+    .toBe(0);
+}
 
 // ─── Universe Scrolling Regression Tests ─────────────────────────────────────
 
@@ -78,35 +117,12 @@ test.describe('Universe Scrolling Regression — blank rows on fast scroll', () 
         node.scrollTop = node.scrollHeight;
       });
 
-      // Give Angular change-detection and SmartNgRX time to settle
-      await page.waitForTimeout(500);
-
-      // Scroll back up slightly to ensure the viewport is settled
-      await viewport.evaluate(function scrollUpSlightly(node: Element): void {
-        node.scrollTop = Math.max(0, node.scrollTop - 52);
-      });
-      await page.waitForTimeout(300);
-
-      // Assert every visible symbol cell has non-empty text
-      const symbolCells = page.locator(SYMBOL_CELL_SELECTOR);
-      const count = await symbolCells.count();
-
-      expect(count).toBeGreaterThan(0);
-
-      const emptySymbols: number[] = [];
-      for (let i = 0; i < count; i++) {
-        const text = await symbolCells.nth(i).textContent();
-        if ((text ?? '').trim() === '') {
-          emptySymbols.push(i);
-        }
-      }
-
-      expect(
-        emptySymbols,
-        `Rows at indices [${emptySymbols.join(', ')}] have empty symbol cells after fast scroll to bottom. ` +
+      await assertVisibleSymbolsNonEmpty(
+        page,
+        'Visible rows have empty symbol cells after fast scroll to bottom. ' +
           'This indicates the CDK virtual scroll blank-row regression from Epic 60 is active. ' +
           'See enrich-universe-with-risk-groups.function.ts isLoading filter.'
-      ).toHaveLength(0);
+      );
     }
   );
 
@@ -123,31 +139,17 @@ test.describe('Universe Scrolling Regression — blank rows on fast scroll', () 
       await viewport.evaluate(function scrollToBottom(node: Element): void {
         node.scrollTop = node.scrollHeight;
       });
-      await page.waitForTimeout(400);
 
       // Return to top
       await viewport.evaluate(function scrollToTop(node: Element): void {
         node.scrollTop = 0;
       });
-      await page.waitForTimeout(500);
 
-      const symbolCells = page.locator(SYMBOL_CELL_SELECTOR);
-      const count = await symbolCells.count();
-      expect(count).toBeGreaterThan(0);
-
-      const emptySymbols: number[] = [];
-      for (let i = 0; i < count; i++) {
-        const text = await symbolCells.nth(i).textContent();
-        if ((text ?? '').trim() === '') {
-          emptySymbols.push(i);
-        }
-      }
-
-      expect(
-        emptySymbols,
-        `Rows at indices [${emptySymbols.join(', ')}] have empty symbol cells after scrolling bottom→top. ` +
+      await assertVisibleSymbolsNonEmpty(
+        page,
+        'Visible rows have empty symbol cells after scrolling bottom→top. ' +
           'Epic 60 regression: isLoading filter in enrich-universe-with-risk-groups shrinks array on re-entry.'
-      ).toHaveLength(0);
+      );
     }
   );
 });
