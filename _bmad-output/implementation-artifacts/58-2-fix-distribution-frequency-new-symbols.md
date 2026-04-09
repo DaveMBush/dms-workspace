@@ -44,15 +44,18 @@ universe.
 ## Tasks / Subtasks
 
 - [x] **Task 1: Read Story 58.1 Dev Agent Record**
+
   - [x] Confirm the root cause identified in Task 4 of Story 58.1
   - [x] Confirm the proposed fix approach from Story 58.1
 
 - [x] **Task 2: Implement the frequency-detection fix**
+
   - [x] Modify `calculateDistributionsPerYear` in `get-distributions.function.ts` to fall back to
         future ex-date intervals when fewer than 2 past rows are available
   - [x] Ensure the fix does not change behaviour when 2+ past rows are present
 
 - [x] **Task 3: Update / add unit tests**
+
   - [x] Convert the failing tests from Story 58.1 to green by verifying against the fix
   - [x] Add tests covering: monthly payer with 0 past rows, weekly payer with 1 past row, quarterly
         payer with 1 past row, annual payer with 0 past rows
@@ -66,18 +69,16 @@ universe.
 
 ### Key Files
 
-| File | Purpose |
-| ---- | ------- |
-| `apps/server/src/app/routes/settings/common/get-distributions.function.ts` | Implement fix here |
-| `apps/server/src/app/routes/common/dividend-history.service.ts` | Source of `ProcessedRow[]` |
-| `apps/server/src/app/routes/settings/common/get-distributions.function.spec.ts` | Update tests here |
+| File                                                                            | Purpose                    |
+| ------------------------------------------------------------------------------- | -------------------------- |
+| `apps/server/src/app/routes/settings/common/get-distributions.function.ts`      | Implement fix here         |
+| `apps/server/src/app/routes/common/dividend-history.service.ts`                 | Source of `ProcessedRow[]` |
+| `apps/server/src/app/routes/settings/common/get-distributions.function.spec.ts` | Update tests here          |
 
 ### Current Algorithm (to be extended)
 
 ```ts
-const recentRows = rows
-  .filter(row => row.date < today)
-  .slice(-2);
+const recentRows = rows.filter((row) => row.date < today).slice(-2);
 
 if (recentRows.length <= 1) {
   return 1; // ← Fix required here: use future rows as fallback

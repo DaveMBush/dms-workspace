@@ -348,49 +348,43 @@ describe('getDistributions', () => {
   // branch and returns 1 — regardless of the actual distribution cadence.
   // Story 58.2 fixed the bug; test.fails() wrappers removed.
 
-  test(
-    'monthly payer with 1 past row + future rows correctly returns distributions_per_year=12',
-    async () => {
-      // System time: 2025-08-21T10:00:00Z (set in beforeEach)
-      // Realistic for a newly-listed monthly payer: dividendhistory.net has
-      // exactly 1 past ex-date plus several scheduled future ex-dates.
-      const sparseMonthlyRows: ProcessedRow[] = [
-        { amount: 0.25, date: new Date('2025-08-15') }, // only past row
-        { amount: 0.25, date: new Date('2025-09-15') }, // future
-        { amount: 0.25, date: new Date('2025-10-15') }, // future
-        { amount: 0.25, date: new Date('2025-11-15') }, // future
-        { amount: 0.25, date: new Date('2025-12-15') }, // future
-      ];
+  test('monthly payer with 1 past row + future rows correctly returns distributions_per_year=12', async () => {
+    // System time: 2025-08-21T10:00:00Z (set in beforeEach)
+    // Realistic for a newly-listed monthly payer: dividendhistory.net has
+    // exactly 1 past ex-date plus several scheduled future ex-dates.
+    const sparseMonthlyRows: ProcessedRow[] = [
+      { amount: 0.25, date: new Date('2025-08-15') }, // only past row
+      { amount: 0.25, date: new Date('2025-09-15') }, // future
+      { amount: 0.25, date: new Date('2025-10-15') }, // future
+      { amount: 0.25, date: new Date('2025-11-15') }, // future
+      { amount: 0.25, date: new Date('2025-12-15') }, // future
+    ];
 
-      mockFetchDividendHistory.mockResolvedValueOnce(sparseMonthlyRows);
+    mockFetchDividendHistory.mockResolvedValueOnce(sparseMonthlyRows);
 
-      const result = await getDistributions('NEW-MONTHLY');
+    const result = await getDistributions('NEW-MONTHLY');
 
-      expect(result?.distributions_per_year).toBe(12);
-    }
-  );
+    expect(result?.distributions_per_year).toBe(12);
+  });
 
-  test(
-    'weekly payer with 1 past row + future rows correctly returns distributions_per_year=52',
-    async () => {
-      // System time: 2025-08-21T10:00:00Z (set in beforeEach)
-      // Realistic for a newly-listed weekly payer: dividendhistory.net has
-      // exactly 1 past ex-date plus several scheduled future ex-dates at 7-day intervals.
-      const sparseWeeklyRows: ProcessedRow[] = [
-        { amount: 0.05, date: new Date('2025-08-15') }, // only past row
-        { amount: 0.05, date: new Date('2025-08-22') }, // future (+7 days)
-        { amount: 0.05, date: new Date('2025-08-29') }, // future (+7 days)
-        { amount: 0.05, date: new Date('2025-09-05') }, // future (+7 days)
-        { amount: 0.05, date: new Date('2025-09-12') }, // future (+7 days)
-      ];
+  test('weekly payer with 1 past row + future rows correctly returns distributions_per_year=52', async () => {
+    // System time: 2025-08-21T10:00:00Z (set in beforeEach)
+    // Realistic for a newly-listed weekly payer: dividendhistory.net has
+    // exactly 1 past ex-date plus several scheduled future ex-dates at 7-day intervals.
+    const sparseWeeklyRows: ProcessedRow[] = [
+      { amount: 0.05, date: new Date('2025-08-15') }, // only past row
+      { amount: 0.05, date: new Date('2025-08-22') }, // future (+7 days)
+      { amount: 0.05, date: new Date('2025-08-29') }, // future (+7 days)
+      { amount: 0.05, date: new Date('2025-09-05') }, // future (+7 days)
+      { amount: 0.05, date: new Date('2025-09-12') }, // future (+7 days)
+    ];
 
-      mockFetchDividendHistory.mockResolvedValueOnce(sparseWeeklyRows);
+    mockFetchDividendHistory.mockResolvedValueOnce(sparseWeeklyRows);
 
-      const result = await getDistributions('NEW-WEEKLY');
+    const result = await getDistributions('NEW-WEEKLY');
 
-      expect(result?.distributions_per_year).toBe(52);
-    }
-  );
+    expect(result?.distributions_per_year).toBe(52);
+  });
 
   // Story 58.2: Additional sparse-history tests
 
