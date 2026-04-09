@@ -102,7 +102,7 @@ export async function adjustLotsForSplit(
   accountId: string
 ): Promise<number> {
   const warnMsg = buildSkipWarning(symbol, ratio);
-  if (warnMsg) {
+  if (warnMsg !== null) {
     logger.warn(warnMsg);
     return 0;
   }
@@ -118,10 +118,8 @@ export async function adjustLotsForSplit(
     return 0;
   }
 
-  const allUniverseIds = await resolveCusipUniverseIds(
-    symbol,
-    universeEntry.id
-  );
+  const universeId = universeEntry.id;
+  const allUniverseIds = await resolveCusipUniverseIds(symbol, universeId);
 
   let updatedCount = 0;
 
@@ -145,7 +143,7 @@ export async function adjustLotsForSplit(
 
     if (totalRemainder > 0) {
       const saleData: FractionalSaleData = {
-        universeId: universeEntry.id,
+        universeId,
         symbol,
         lastPrice: universeEntry.last_price,
         openLots,
