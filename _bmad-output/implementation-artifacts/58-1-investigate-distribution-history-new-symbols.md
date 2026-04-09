@@ -153,7 +153,7 @@ Use future ex-dates (from the rows array) as a fallback when past rows are spars
 
 ```ts
 // When recentRows.length <= 1, fall back to future rows
-const futureRows = rows.filter(row => row.date >= today).slice(0, 2);
+const futureRows = rows.filter(row => row.date > today).slice(0, 2);
 if (futureRows.length >= 2) {
   // Calculate interval from future rows and return 52/12/4/1 accordingly
 }
