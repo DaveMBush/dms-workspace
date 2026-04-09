@@ -38,17 +38,20 @@ so that I can design a targeted fix without guessing.
 ## Tasks / Subtasks
 
 - [x] **Task 1: Read the distribution fetch pipeline end-to-end**
+
   - [x] Read `apps/server/src/app/routes/settings/common/get-distributions.function.ts` — focus on `calculateDistributionsPerYear` logic
   - [x] Read `apps/server/src/app/routes/common/dividend-history.service.ts` — understand what `fetchDividendHistory` fetches and filters
   - [x] Read `apps/server/src/app/routes/universe/add-symbol/add-symbol.function.ts` — confirm `getDistributions` is called on symbol add
   - [x] Note the `filterPastRows` logic in `dividend-history.service.ts` — how many past rows it retains
 
 - [x] **Task 2: Trace the sparse-history branch**
+
   - [x] Identify the condition in `calculateDistributionsPerYear` that triggers when `recentRows.length <= 1`
   - [x] Add a log statement or write a throwaway test to observe what `rows` looks like for a monthly payer with few past entries
   - [x] Confirm whether the `fetchDividendHistory` HTML scrape returns future ex-dates before past dates
 
 - [x] **Task 3: Write the failing unit test**
+
   - [x] In `get-distributions.function.spec.ts`, add a test case where `mockFetchDividendHistory` returns exactly 1 past row and several future rows for a monthly payer
   - [x] Assert `distributions_per_year` equals 12 — test should currently fail (it will return 1)
   - [x] Add a similar test for a weekly payer (1 past row + future rows → expect 52)
@@ -60,20 +63,18 @@ so that I can design a targeted fix without guessing.
 
 ### Key Files
 
-| File | Purpose |
-| ---- | ------- |
-| `apps/server/src/app/routes/settings/common/get-distributions.function.ts` | Main distribution fetch + frequency calculation |
-| `apps/server/src/app/routes/common/dividend-history.service.ts` | Fetches raw rows from dividendhistory.net |
-| `apps/server/src/app/routes/settings/common/get-distributions.function.spec.ts` | Unit test file — add failing tests here |
-| `apps/server/src/app/routes/universe/add-symbol/add-symbol.function.ts` | Calls `getDistributions` for newly-added symbols |
-| `apps/server/src/app/routes/universe/fetch-and-update-price-data.function.ts` | Also calls `getDistributions` during sync |
+| File                                                                            | Purpose                                          |
+| ------------------------------------------------------------------------------- | ------------------------------------------------ |
+| `apps/server/src/app/routes/settings/common/get-distributions.function.ts`      | Main distribution fetch + frequency calculation  |
+| `apps/server/src/app/routes/common/dividend-history.service.ts`                 | Fetches raw rows from dividendhistory.net        |
+| `apps/server/src/app/routes/settings/common/get-distributions.function.spec.ts` | Unit test file — add failing tests here          |
+| `apps/server/src/app/routes/universe/add-symbol/add-symbol.function.ts`         | Calls `getDistributions` for newly-added symbols |
+| `apps/server/src/app/routes/universe/fetch-and-update-price-data.function.ts`   | Also calls `getDistributions` during sync        |
 
 ### Key Logic in `calculateDistributionsPerYear`
 
 ```ts
-const recentRows = rows
-  .filter(row => row.date < today)
-  .slice(-2); // Uses last 2 past distributions
+const recentRows = rows.filter((row) => row.date < today).slice(-2); // Uses last 2 past distributions
 
 if (recentRows.length <= 1) {
   return 1; // ← This is the bug path
@@ -87,6 +88,7 @@ dates are in the future (common for a new symbol with a clean record), `recentRo
 ### Approach for Story 58.2
 
 Once confirmed, the fix is likely one of:
+
 1. Use future ex-dates to infer cadence when past data is sparse
 2. Use all rows (past + future) for the interval calculation
 3. Increase the history lookback window on the scrape source
@@ -115,9 +117,7 @@ function calculateDistributionsPerYear(rows: ProcessedRow[], today: Date): numbe
     return 1; // ← Path A: triggered when fetchDividendHistory returns 0–1 total rows
   }
 
-  const recentRows = rows
-    .filter(row => row.date < today)
-    .slice(-2);
+  const recentRows = rows.filter((row) => row.date < today).slice(-2);
 
   if (recentRows.length <= 1) {
     return 1; // ← Path B: triggered when mock returns 1 past row + future rows
@@ -134,14 +134,15 @@ In either case, `distributions_per_year` is incorrectly set to 1 for a monthly o
 
 #### Affected Code Paths Summary
 
-| Scenario | rows.length | recentRows.length | Returns | Should Return |
-|----------|-------------|-------------------|---------|---------------|
-| New symbol, 1 past ex-date | 1 | 1 | 1 | 12 or 52 |
-| New symbol, 1 past + 4 future ex-dates | 5 | 1 | 1 | 12 or 52 |
+| Scenario                               | rows.length | recentRows.length | Returns | Should Return |
+| -------------------------------------- | ----------- | ----------------- | ------- | ------------- |
+| New symbol, 1 past ex-date             | 1           | 1                 | 1       | 12 or 52      |
+| New symbol, 1 past + 4 future ex-dates | 5           | 1                 | 1       | 12 or 52      |
 
 #### Failing Tests Added
 
 Two `test.fails()` tests added to `get-distributions.function.spec.ts`:
+
 - `BUG(58-1): monthly payer with 1 past row + future rows incorrectly returns distributions_per_year=1` — asserts 12, currently returns 1
 - `BUG(58-1): weekly payer with 1 past row + future rows incorrectly returns distributions_per_year=1` — asserts 52, currently returns 1
 
@@ -153,7 +154,7 @@ Use future ex-dates (from the rows array) as a fallback when past rows are spars
 
 ```ts
 // When recentRows.length <= 1, fall back to future rows
-const futureRows = rows.filter(row => row.date > today).slice(0, 2);
+const futureRows = rows.filter((row) => row.date > today).slice(0, 2);
 if (futureRows.length >= 2) {
   // Calculate interval from future rows and return 52/12/4/1 accordingly
 }
