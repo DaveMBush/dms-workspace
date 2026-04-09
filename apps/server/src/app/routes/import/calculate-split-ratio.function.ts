@@ -1,5 +1,6 @@
 import { logger } from '../../../utils/structured-logger';
 import { prisma } from '../../prisma/prisma-client';
+import { resolveCusipUniverseIds } from './resolve-cusip-universe-ids.helper';
 
 function sumOpenQuantity(sum: number, trade: { quantity: number }): number {
   return sum + trade.quantity;
@@ -42,9 +43,14 @@ export async function calculateSplitRatio(
     return null;
   }
 
+  const allUniverseIds = await resolveCusipUniverseIds(
+    symbol,
+    universeEntry.id
+  );
+
   const openTrades = await prisma.trades.findMany({
     where: {
-      universeId: universeEntry.id,
+      universeId: { in: allUniverseIds },
       accountId,
       sell_date: null,
     },
