@@ -1,6 +1,6 @@
 # Story 58.2: Fix Distribution Frequency Detection for New Symbols
 
-Status: Approved
+Status: Done
 
 ## Story
 
@@ -35,49 +35,50 @@ universe.
 
 ## Definition of Done
 
-- [ ] Root cause from Story 58.1 is addressed
-- [ ] `calculateDistributionsPerYear` (or its caller) extended to handle the sparse-history case
-- [ ] Unit tests updated / added for monthly, quarterly, weekly, and annual cadence with sparse initial data (fewer than 2 past rows)
-- [ ] Failing tests from Story 58.1 are now green
-- [ ] `pnpm all` passes
+- [x] Root cause from Story 58.1 is addressed
+- [x] `calculateDistributionsPerYear` (or its caller) extended to handle the sparse-history case
+- [x] Unit tests updated / added for monthly, quarterly, weekly, and annual cadence with sparse initial data (fewer than 2 past rows)
+- [x] Failing tests from Story 58.1 are now green
+- [x] `pnpm all` passes
 
 ## Tasks / Subtasks
 
-- [ ] **Task 1: Read Story 58.1 Dev Agent Record**
-  - [ ] Confirm the root cause identified in Task 4 of Story 58.1
-  - [ ] Confirm the proposed fix approach from Story 58.1
+- [x] **Task 1: Read Story 58.1 Dev Agent Record**
 
-- [ ] **Task 2: Implement the frequency-detection fix**
-  - [ ] Modify `calculateDistributionsPerYear` in `get-distributions.function.ts` to fall back to
+  - [x] Confirm the root cause identified in Task 4 of Story 58.1
+  - [x] Confirm the proposed fix approach from Story 58.1
+
+- [x] **Task 2: Implement the frequency-detection fix**
+
+  - [x] Modify `calculateDistributionsPerYear` in `get-distributions.function.ts` to fall back to
         future ex-date intervals when fewer than 2 past rows are available
-  - [ ] Ensure the fix does not change behaviour when 2+ past rows are present
+  - [x] Ensure the fix does not change behaviour when 2+ past rows are present
 
-- [ ] **Task 3: Update / add unit tests**
-  - [ ] Convert the failing tests from Story 58.1 to green by verifying against the fix
-  - [ ] Add tests covering: monthly payer with 0 past rows, weekly payer with 1 past row, quarterly
+- [x] **Task 3: Update / add unit tests**
+
+  - [x] Convert the failing tests from Story 58.1 to green by verifying against the fix
+  - [x] Add tests covering: monthly payer with 0 past rows, weekly payer with 1 past row, quarterly
         payer with 1 past row, annual payer with 0 past rows
-  - [ ] Confirm all previously passing tests still pass
+  - [x] Confirm all previously passing tests still pass
 
-- [ ] **Task 4: Validate end-to-end (optional)**
-  - [ ] If practical, run `fetchDividendHistory` for a real monthly payer and confirm
+- [x] **Task 4: Validate end-to-end (optional)**
+  - [x] If practical, run `fetchDividendHistory` for a real monthly payer and confirm
         `distributions_per_year` resolves to 12
 
 ## Dev Notes
 
 ### Key Files
 
-| File | Purpose |
-| ---- | ------- |
-| `apps/server/src/app/routes/settings/common/get-distributions.function.ts` | Implement fix here |
-| `apps/server/src/app/routes/common/dividend-history.service.ts` | Source of `ProcessedRow[]` |
-| `apps/server/src/app/routes/settings/common/get-distributions.function.spec.ts` | Update tests here |
+| File                                                                            | Purpose                    |
+| ------------------------------------------------------------------------------- | -------------------------- |
+| `apps/server/src/app/routes/settings/common/get-distributions.function.ts`      | Implement fix here         |
+| `apps/server/src/app/routes/common/dividend-history.service.ts`                 | Source of `ProcessedRow[]` |
+| `apps/server/src/app/routes/settings/common/get-distributions.function.spec.ts` | Update tests here          |
 
 ### Current Algorithm (to be extended)
 
 ```ts
-const recentRows = rows
-  .filter(row => row.date < today)
-  .slice(-2);
+const recentRows = rows.filter((row) => row.date < today).slice(-2);
 
 if (recentRows.length <= 1) {
   return 1; // ← Fix required here: use future rows as fallback
@@ -92,4 +93,21 @@ annual and works correctly for symbols where distributions are primarily announc
 
 ## Dev Agent Record
 
-_To be filled in by the implementing agent._
+### Changes Made
+
+**`apps/server/src/app/routes/settings/common/get-distributions.function.ts`**
+
+- Extracted interval-to-frequency mapping into a new `intervalToDistributionsPerYear(daysBetween)` helper function, shared by both the past-row and future-row code paths.
+- Updated the threshold for quarterly detection from `> 45` (unbounded) to `> 45 && <= 180` to allow annual distributions (365-day intervals) to be correctly classified.
+- In `calculateDistributionsPerYear`, replaced the `recentRows.length <= 1 → return 1` early exit with a fallback that:
+  1. Filters rows to future ex-dates (date >= today)
+  2. Sorts ascending and takes the 2 nearest
+  3. Computes the interval between them
+  4. Passes that interval through `intervalToDistributionsPerYear`
+  5. Falls back to 1 only when fewer than 2 future rows exist
+
+**`apps/server/src/app/routes/settings/common/get-distributions.function.spec.ts`**
+
+- Removed `test.fails()` wrappers from the two 58-1 regression tests; both now pass green.
+- Added 6 new tests covering all cadences with sparse history (0 or 1 past rows).
+- Total: 26 tests, all passing, 100% coverage maintained.

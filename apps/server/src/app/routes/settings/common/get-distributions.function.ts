@@ -28,6 +28,25 @@ function findNextOrRecentDistribution(
   return rows[rows.length - 1]; // most recent past
 }
 
+function intervalToDistributionsPerYear(daysBetween: number): number {
+  // ≤7 days accounts for weekly distributions with holiday/weekend shifts
+  if (daysBetween <= 7) {
+    return 52; // weekly
+  }
+
+  // >27 and ≤45 days accounts for monthly with holiday variations
+  if (daysBetween > 27 && daysBetween <= 45) {
+    return 12; // monthly
+  }
+
+  // >45 and ≤180 days for quarterly (allows for holiday shifts in ~90-day intervals)
+  if (daysBetween > 45 && daysBetween <= 180) {
+    return 4; // quarterly
+  }
+
+  return 1; // annual/default (>180 days, ~365-day intervals)
+}
+
 function calculateDistributionsPerYear(
   rows: ProcessedRow[],
   today: Date
@@ -43,31 +62,33 @@ function calculateDistributionsPerYear(
     .slice(-2); // Use last 2 distributions only (most recent)
 
   if (recentRows.length <= 1) {
-    return 1;
+    // Fallback: use the 2 nearest future ex-dates to infer cadence
+    const futureRows = rows
+      .filter(function filterFutureDistributions(row: ProcessedRow): boolean {
+        return row.date >= today;
+      })
+      .sort(function sortAscending(a: ProcessedRow, b: ProcessedRow): number {
+        return a.date.valueOf() - b.date.valueOf();
+      })
+      .slice(0, 2);
+
+    if (futureRows.length < 2) {
+      return 1;
+    }
+
+    const futureDaysBetween =
+      (futureRows[1].date.valueOf() - futureRows[0].date.valueOf()) /
+      (1000 * 60 * 60 * 24);
+
+    return intervalToDistributionsPerYear(futureDaysBetween);
   }
 
-  // Calculate single interval between last 2 distributions
+  // Calculate single interval between last 2 past distributions
   const daysBetween =
     Math.abs(recentRows[1].date.valueOf() - recentRows[0].date.valueOf()) /
     (1000 * 60 * 60 * 24);
 
-  // Detect frequency based on interval
-  // ≤7 days accounts for weekly distributions with holiday/weekend shifts
-  if (daysBetween <= 7) {
-    return 52; // weekly
-  }
-
-  // >27 and ≤45 days accounts for monthly with holiday variations
-  if (daysBetween > 27 && daysBetween <= 45) {
-    return 12; // monthly
-  }
-
-  // >45 days for quarterly (allows for holiday shifts)
-  if (daysBetween > 45) {
-    return 4; // quarterly
-  }
-
-  return 1; // annual/default
+  return intervalToDistributionsPerYear(daysBetween);
 }
 
 export async function getDistributions(
