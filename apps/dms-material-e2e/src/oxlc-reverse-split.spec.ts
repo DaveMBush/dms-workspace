@@ -75,9 +75,12 @@ test.describe('OXLC CUSIP-Stored Lots Reverse Split E2E', () => {
    *   500 shares @ $4.06 → 100 shares @ $20.30
    *   580 shares @ $3.44 → 116 shares @ $17.20
    */
-  test.fail(
+  test(
     'should adjust CUSIP-stored lots for a 1-for-5 OXLC reverse split',
     async ({ page }) => {
+      // Mark as expected failure: current code cannot find CUSIP-stored lots.
+      // Remove test.fail() once Story 61.2 implements the fix.
+      test.fail();
       await navigateToUniverse(page);
 
       const responsePromise = page.waitForResponse((response) => {
