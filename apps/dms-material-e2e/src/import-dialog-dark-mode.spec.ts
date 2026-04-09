@@ -23,11 +23,35 @@ import { login } from './helpers/login.helper';
 
 const FIXTURES_DIR = path.resolve(__dirname, '..', 'fixtures');
 
-/** Parse an rgb/rgba string from getComputedStyle into [r, g, b] 0–255. */
-function parseRgb(raw: string): [number, number, number] {
-  const m = raw.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*[\d.]+)?\)/);
+/** Parse an rgb/rgba string from getComputedStyle into [r, g, b, a] 0–255 / 0–1. */
+function parseRgba(raw: string): [number, number, number, number] {
+  const m = raw.match(
+    /rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/
+  );
   if (!m) throw new Error(`Cannot parse colour: ${raw}`);
-  return [parseInt(m[1], 10), parseInt(m[2], 10), parseInt(m[3], 10)];
+  return [
+    parseInt(m[1], 10),
+    parseInt(m[2], 10),
+    parseInt(m[3], 10),
+    m[4] !== undefined ? parseFloat(m[4]) : 1,
+  ];
+}
+
+/**
+ * Alpha-composite a foreground RGBA colour over an opaque RGB background.
+ * Returns the opaque composited [r, g, b].
+ */
+function composite(
+  fg: [number, number, number, number],
+  bg: [number, number, number, number]
+): [number, number, number] {
+  const [fr, fg2, fb, fa] = fg;
+  const [br, bg2, bb] = bg;
+  return [
+    Math.round(fr * fa + br * (1 - fa)),
+    Math.round(fg2 * fa + bg2 * (1 - fa)),
+    Math.round(fb * fa + bb * (1 - fa)),
+  ];
 }
 
 /** WCAG 2.1 relative luminance (IEC 61966-2-1 gamma). */
@@ -39,7 +63,7 @@ function relativeLuminance([r, g, b]: [number, number, number]): number {
   return 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
 }
 
-/** WCAG 2.1 contrast ratio between two colours. */
+/** WCAG 2.1 contrast ratio between two opaque colours. */
 function contrastRatio(
   fg: [number, number, number],
   bg: [number, number, number]
@@ -56,8 +80,11 @@ test.describe('Import dialog filename visibility in dark mode', () => {
     'selected filename text must meet WCAG AA contrast (4.5:1) against the dialog surface in dark mode',
     async ({ page }) => {
       // ── 1. Force dark theme before the app boots ─────────────────────────
-      await page.goto('/auth/login', { waitUntil: 'domcontentloaded' });
-      await page.evaluate(() => localStorage.setItem('dms-theme', 'dark'));
+      // Use addInitScript so the localStorage entry is written before any app
+      // script runs, eliminating the goto-then-evaluate race condition.
+      await page.addInitScript(() =>
+        localStorage.setItem('dms-theme', 'dark')
+      );
 
       // ── 2. Login ──────────────────────────────────────────────────────────
       await login(page);
@@ -110,14 +137,25 @@ test.describe('Import dialog filename visibility in dark mode', () => {
         };
       });
 
-      const textRgb = parseRgb(textColorRaw);
-      const bgRgb = parseRgb(bgColorRaw);
-      const ratio = contrastRatio(textRgb, bgRgb);
+      const textRgba = parseRgba(textColorRaw);
+      const bgRgba = parseRgba(bgColorRaw);
+
+      // Alpha-composite the foreground text colour over the dialog background
+      // before computing luminance/contrast.  This correctly handles the
+      // rgba(0,0,0,0.6) fallback that is the root cause of the bug.
+      const compositedText = composite(textRgba, bgRgba);
+      const compositedBg: [number, number, number] = [
+        bgRgba[0],
+        bgRgba[1],
+        bgRgba[2],
+      ];
+      const ratio = contrastRatio(compositedText, compositedBg);
 
       // Diagnostic output — visible in Playwright traces / CI logs
       console.log('Dark mode filename colour inspection:');
-      console.log(`  --mat-sys-on-surface-variant : "${cssVar}"`);
-      console.log(`  computed text color           : ${textColorRaw}`);
+      console.log(`  --mat-sys-on-surface-variant  : "${cssVar}"`);
+      console.log(`  computed text color (raw)     : ${textColorRaw}`);
+      console.log(`  composited text color (rgb)   : rgb(${compositedText.join(', ')})`);
       console.log(`  dialog surface background     : ${bgColorRaw}`);
       console.log(`  contrast ratio                : ${ratio.toFixed(2)}:1`);
 
