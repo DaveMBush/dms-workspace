@@ -116,7 +116,11 @@ describe('enrichUniverseWithRiskGroups', () => {
     expect(result[1]).not.toBe(mockUniverses[1]);
   });
 
-  it('should exclude SmartNgRX loading rows (isLoading === true) from the result (Story 56.2 fix)', () => {
+  it('should include SmartNgRX loading rows as placeholders to keep array length stable (Story 60.2 fix)', () => {
+    // Fix for Epic 60 regression: loading rows must remain in the result array
+    // as placeholders so CDK virtual scroll viewport height stays stable during
+    // rapid scroll. Returning null (old Story 56.2 behavior) caused array length
+    // to fluctuate, resulting in scroll position jumps and blank rows.
     const loadingUniverse = {
       ...mockUniverses[0],
       id: 'loading-id',
@@ -127,7 +131,11 @@ describe('enrichUniverseWithRiskGroups', () => {
 
     const result = enrichUniverseWithRiskGroups(mixedUniverses, mockRiskGroups);
 
-    expect(result).toHaveLength(1);
-    expect(result[0].id).toBe('2');
+    // Both rows must be present (no null filtering) so array length is stable
+    expect(result).toHaveLength(2);
+    // Loading row is a placeholder — symbol is empty (data not yet available)
+    expect(result[0].symbol).toBe('');
+    // Non-loading row is fully populated
+    expect(result[1].id).toBe('2');
   });
 });
