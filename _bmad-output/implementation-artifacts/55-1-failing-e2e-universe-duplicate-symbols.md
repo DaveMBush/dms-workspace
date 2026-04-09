@@ -33,15 +33,18 @@ so that I have a reproducible red test to guide the fix in Story 55.2.
 ## Tasks / Subtasks
 
 - [ ] **Task 1: Reproduce duplicate symbols manually via Playwright MCP server**
+
   - [ ] Open Universe screen
   - [ ] Sort by "Avg Purch Yield %" descending
   - [ ] Observe duplicate symbols — confirm the bug is live and note which symbol(s) duplicate
 
 - [ ] **Task 2: Understand data conditions that trigger duplicates**
+
   - [ ] Check if any symbol with multiple open lots (multiple trades rows) reliably causes duplicates
   - [ ] Determine minimum seed data needed to reproduce consistently (a symbol with ≥ 2 trades rows in the same account)
 
 - [ ] **Task 3: Create `universe-duplicate-symbols.spec.ts`**
+
   - [ ] Seed at least one symbol with multiple open lots so duplicates will appear
   - [ ] Sort Universe by "Avg Purch Yield %" descending
   - [ ] Collect all visible symbol values from the table
@@ -54,11 +57,11 @@ so that I have a reproducible red test to guide the fix in Story 55.2.
 
 ### Key Files
 
-| File | Purpose |
-|------|---------|
+| File                                                                 | Purpose                                                         |
+| -------------------------------------------------------------------- | --------------------------------------------------------------- |
 | `apps/dms-material-e2e/src/helpers/seed-universe-e2e-data.helper.ts` | Seeding helper — use to create symbols with multiple trade lots |
-| `apps/dms-material-e2e/src/universe-multi-column-sort-rows.spec.ts` | Reference for asserting row content |
-| `apps/server/src/app/routes/universe/index.ts` | Backend endpoint that likely produces duplicates |
+| `apps/dms-material-e2e/src/universe-multi-column-sort-rows.spec.ts`  | Reference for asserting row content                             |
+| `apps/server/src/app/routes/universe/index.ts`                       | Backend endpoint that likely produces duplicates                |
 
 ### Reproducing trigger condition
 

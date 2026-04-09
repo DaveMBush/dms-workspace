@@ -50,22 +50,26 @@ so that I can confirm which file I have selected regardless of the active theme.
 ## Tasks / Subtasks
 
 - [ ] **Task 1: Read Story 59.1 Dev Agent Record**
+
   - [ ] Confirm the exact CSS rules identified as root cause
   - [ ] Note which Material 3 tokens are available for `on-surface` text color in dark mode
 
 - [ ] **Task 2: Fix `.selected-file-name` in the component SCSS**
+
   - [ ] Open `apps/dms-material/src/app/global/import-dialog/import-dialog.component.scss`
   - [ ] Replace `rgba(0, 0, 0, 0.6)` fallback with `var(--mat-sys-on-surface)` (no hardcoded fallback),
         OR replace the whole `color` rule with `color: inherit` to pick up the dialog's text colour
   - [ ] Verify the replacement token correctly adapts in both themes
 
 - [ ] **Task 3: Fix `.mat-mdc-dialog-surface` in `styles.scss`**
+
   - [ ] Open `apps/dms-material/src/styles.scss`
   - [ ] Scope the `background-color: #ffffff !important` rule so it only applies under `.light-theme`
         (or remove it entirely if Material 3 already handles the dialog background correctly)
   - [ ] Confirm no other dialogs break in light mode after removing the rule
 
 - [ ] **Task 4: Verify with Playwright MCP server**
+
   - [ ] Use the Playwright MCP server to toggle dark mode, open the import dialog, select a file,
         and confirm the filename is now visible
   - [ ] Take a screenshot and document the fix in the Dev Agent Record
@@ -78,22 +82,25 @@ so that I can confirm which file I have selected regardless of the active theme.
 
 ### Key Files
 
-| File | Purpose |
-| ---- | ------- |
-| `apps/dms-material/src/app/global/import-dialog/import-dialog.component.scss` | Fix `.selected-file-name` here |
-| `apps/dms-material/src/styles.scss` | Fix `.mat-mdc-dialog-surface` override here |
-| `apps/dms-material-e2e/src/import-dialog-dark-mode.spec.ts` | E2E test from Story 59.1 (must turn green) |
+| File                                                                          | Purpose                                     |
+| ----------------------------------------------------------------------------- | ------------------------------------------- |
+| `apps/dms-material/src/app/global/import-dialog/import-dialog.component.scss` | Fix `.selected-file-name` here              |
+| `apps/dms-material/src/styles.scss`                                           | Fix `.mat-mdc-dialog-surface` override here |
+| `apps/dms-material-e2e/src/import-dialog-dark-mode.spec.ts`                   | E2E test from Story 59.1 (must turn green)  |
 
 ### Recommended Fix
 
 **`import-dialog.component.scss`:**
+
 ```scss
 .selected-file-name {
   font-size: 14px;
   color: inherit; /* inherits from dialog text context — adapts to light/dark automatically */
 }
 ```
+
 Or use the Material 3 token directly:
+
 ```scss
 .selected-file-name {
   font-size: 14px;
@@ -102,11 +109,13 @@ Or use the Material 3 token directly:
 ```
 
 **`styles.scss` (scope to light theme):**
+
 ```scss
 .light-theme .mat-mdc-dialog-surface {
   background-color: #ffffff !important;
 }
 ```
+
 Or remove the rule entirely and verify Material 3 provides the correct surface colour in both
 themes without an override.
 

@@ -55,10 +55,7 @@ Add one attribute to the `mat-select` inside `mat-form-field.account-select`. **
 ```html
 <mat-form-field appearance="outline" class="account-select">
   <mat-label>Account</mat-label>
-  <mat-select
-    [value]="selectedAccountId$()"
-    (selectionChange)="onAccountChange($event.value)"
-  >
+  <mat-select [value]="selectedAccountId$()" (selectionChange)="onAccountChange($event.value)">
     @for (option of accountOptions$(); track option.value) {
     <mat-option [value]="option.value">{{ option.label }}</mat-option>
     }
@@ -71,11 +68,7 @@ Add one attribute to the `mat-select` inside `mat-form-field.account-select`. **
 ```html
 <mat-form-field appearance="outline" class="account-select">
   <mat-label>Account</mat-label>
-  <mat-select
-    panelWidth=""
-    [value]="selectedAccountId$()"
-    (selectionChange)="onAccountChange($event.value)"
-  >
+  <mat-select panelWidth="" [value]="selectedAccountId$()" (selectionChange)="onAccountChange($event.value)">
     @for (option of accountOptions$(); track option.value) {
     <mat-option [value]="option.value">{{ option.label }}</mat-option>
     }
@@ -124,16 +117,20 @@ pnpm start:server
 ## Dev Agent Record
 
 ### Agent Model Used
+
 Claude Sonnet 4.6 (GitHub Copilot)
 
 ### Debug Log References
+
 None
 
 ### Completion Notes List
+
 - Story file created from epic spec and direct inspection of `global-universe.component.html`
 - Confirmed: the Account selector is in the `mat-toolbar` (lines 7–17), **not** in a `@case` block
 - Confirmed: the current `mat-select` has no `panelWidth` attribute (unlike `risk_group` which had `panelWidth="auto"`)
 - The fix is a single attribute addition: `panelWidth=""` on the `mat-select`
 
 ### File List
+
 - `apps/dms-material/src/app/global/global-universe/global-universe.component.html` (modify)

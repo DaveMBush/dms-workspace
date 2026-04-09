@@ -56,11 +56,11 @@ so that the correct behaviour is asserted and no tests fail due to the `panelWid
 
 Story 51.1 changed one attribute value in the Angular template:
 
-| | Before (Story 49.1) | After (Story 51.1) |
-|---|---|---|
-| Attribute | `panelWidth="auto"` | `panelWidth=""` |
-| Panel sizing | Matches trigger width (column-constrained) | Grows to widest option label (content width) |
-| Trigger width | Column-constrained | Unchanged — remains column-constrained |
+|               | Before (Story 49.1)                        | After (Story 51.1)                           |
+| ------------- | ------------------------------------------ | -------------------------------------------- |
+| Attribute     | `panelWidth="auto"`                        | `panelWidth=""`                              |
+| Panel sizing  | Matches trigger width (column-constrained) | Grows to widest option label (content width) |
+| Trigger width | Column-constrained                         | Unchanged — remains column-constrained       |
 
 The HTML attribute rendered in the DOM also changes from `panelwidth="auto"` to `panelwidth=""`
 (Angular lowercases the attribute name at runtime), which is what breaks the CSS attribute
@@ -75,6 +75,7 @@ const riskGroupSelect = page.locator('tr.filter-row mat-select[panelwidth="auto"
 ```
 
 After Story 51.1, the rendered attribute value is `""` not `"auto"`, so:
+
 - `await expect(riskGroupSelect).toHaveCount(1)` will fail — the locator matches 0 elements.
 
 The fix is to update the selector to `mat-select[panelwidth=""]`:
@@ -101,9 +102,7 @@ const riskGroupSelect = page.locator('tr.filter-row mat-select[panelwidth=""]');
 Replace the trigger-width comparison with a widest-option-label comparison:
 
 ```ts
-test('Risk Group filter dropdown panel is at least as wide as its widest option label', async ({
-  page,
-}) => {
+test('Risk Group filter dropdown panel is at least as wide as its widest option label', async ({ page }) => {
   // panelWidth="" means the panel grows to fit the widest option label
   const riskGroupSelect = page.locator('tr.filter-row mat-select[panelwidth=""]');
   await expect(riskGroupSelect).toHaveCount(1);
@@ -146,9 +145,7 @@ test('Risk Group filter dropdown panel is at least as wide as its widest option 
 #### No-overflow test (logic unchanged, only selector and comment updated)
 
 ```ts
-test('Risk Group filter dropdown options do not overflow horizontally', async ({
-  page,
-}) => {
+test('Risk Group filter dropdown options do not overflow horizontally', async ({ page }) => {
   // panelWidth="" — panel grows to content width (Story 51.1 fix)
   const riskGroupSelect = page.locator('tr.filter-row mat-select[panelwidth=""]');
   await expect(riskGroupSelect).toHaveCount(1);
@@ -164,9 +161,7 @@ test('Risk Group filter dropdown options do not overflow horizontally', async ({
   // Assert no mat-option element has horizontal text overflow
   const hasOverflow = await page.evaluate(() => {
     const options = document.querySelectorAll('.mat-mdc-select-panel mat-option');
-    return Array.from(options).some(
-      (el) => (el as HTMLElement).scrollWidth > (el as HTMLElement).clientWidth
-    );
+    return Array.from(options).some((el) => (el as HTMLElement).scrollWidth > (el as HTMLElement).clientWidth);
   });
   expect(hasOverflow).toBe(false);
 
@@ -197,11 +192,11 @@ With the dev server running (`pnpm start:dms-material`):
 
 ### Angular Material Selector Notes
 
-| CSS attribute | Angular `@Input` | Behaviour |
-|---|---|---|
-| `[panelwidth="auto"]` | `panelWidth="auto"` | Panel matches trigger width |
-| `[panelwidth=""]` | `panelWidth=""` | Panel grows to widest `mat-option` |
-| `[panelwidth]` (no value) | attribute absent | Uses Material default |
+| CSS attribute             | Angular `@Input`    | Behaviour                          |
+| ------------------------- | ------------------- | ---------------------------------- |
+| `[panelwidth="auto"]`     | `panelWidth="auto"` | Panel matches trigger width        |
+| `[panelwidth=""]`         | `panelWidth=""`     | Panel grows to widest `mat-option` |
+| `[panelwidth]` (no value) | attribute absent    | Uses Material default              |
 
 The Playwright attribute selector `[panelwidth=""]` is a standard CSS exact-match selector and
 matching a DOM attribute with value `""` — this is well-supported in Chromium. If the selector

@@ -48,17 +48,8 @@ Change one attribute value in the `@case ('risk_group')` block. **Before:**
 
 ```html
 @case ('risk_group') {
-<mat-form-field
-  appearance="outline"
-  subscriptSizing="dynamic"
-  class="header-filter w-full"
->
-  <mat-select
-    panelWidth="auto"
-    [value]="riskGroupFilter$()"
-    (selectionChange)="onRiskGroupFilterChange($event.value)"
-    placeholder="Select One"
-  >
+<mat-form-field appearance="outline" subscriptSizing="dynamic" class="header-filter w-full">
+  <mat-select panelWidth="auto" [value]="riskGroupFilter$()" (selectionChange)="onRiskGroupFilterChange($event.value)" placeholder="Select One">
     <mat-option [value]="null">All</mat-option>
     @for (group of riskGroupOptions$(); track group.value) {
     <mat-option [value]="group.value">{{ group.label }}</mat-option>
@@ -72,17 +63,8 @@ Change one attribute value in the `@case ('risk_group')` block. **Before:**
 
 ```html
 @case ('risk_group') {
-<mat-form-field
-  appearance="outline"
-  subscriptSizing="dynamic"
-  class="header-filter w-full"
->
-  <mat-select
-    panelWidth=""
-    [value]="riskGroupFilter$()"
-    (selectionChange)="onRiskGroupFilterChange($event.value)"
-    placeholder="Select One"
-  >
+<mat-form-field appearance="outline" subscriptSizing="dynamic" class="header-filter w-full">
+  <mat-select panelWidth="" [value]="riskGroupFilter$()" (selectionChange)="onRiskGroupFilterChange($event.value)" placeholder="Select One">
     <mat-option [value]="null">All</mat-option>
     @for (group of riskGroupOptions$(); track group.value) {
     <mat-option [value]="group.value">{{ group.label }}</mat-option>

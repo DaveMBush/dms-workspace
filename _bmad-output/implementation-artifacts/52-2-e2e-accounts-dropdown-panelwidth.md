@@ -74,14 +74,10 @@ Two selector approaches work:
 
 ```ts
 // Option A — structural (more stable, works before and after Story 52.1)
-const accountSelect = page.locator(
-  '.universe-toolbar mat-form-field.account-select mat-select'
-);
+const accountSelect = page.locator('.universe-toolbar mat-form-field.account-select mat-select');
 
 // Option B — attribute-value match (mirrors risk-group pattern exactly)
-const accountSelect = page.locator(
-  '.universe-toolbar mat-select[panelwidth=""]'
-);
+const accountSelect = page.locator('.universe-toolbar mat-select[panelwidth=""]');
 ```
 
 **Prefer Option A** for clarity, since there is only one `mat-form-field.account-select` in the
@@ -135,13 +131,9 @@ test.describe('Universe Accounts Filter Dropdown Width', () => {
     });
   });
 
-  test('Accounts filter dropdown options do not overflow horizontally', async ({
-    page,
-  }) => {
+  test('Accounts filter dropdown options do not overflow horizontally', async ({ page }) => {
     // Account filter mat-select uses panelWidth="" (content width) — Story 52.1 fix
-    const accountSelect = page.locator(
-      '.universe-toolbar mat-form-field.account-select mat-select'
-    );
+    const accountSelect = page.locator('.universe-toolbar mat-form-field.account-select mat-select');
     await expect(accountSelect).toHaveCount(1);
     await expect(accountSelect).toBeVisible({ timeout: 10000 });
 
@@ -154,12 +146,8 @@ test.describe('Universe Accounts Filter Dropdown Width', () => {
 
     // Assert no mat-option element has horizontal text overflow
     const hasOverflow = await page.evaluate(() => {
-      const options = document.querySelectorAll(
-        '.mat-mdc-select-panel mat-option'
-      );
-      return Array.from(options).some(
-        (el) => (el as HTMLElement).scrollWidth > (el as HTMLElement).clientWidth
-      );
+      const options = document.querySelectorAll('.mat-mdc-select-panel mat-option');
+      return Array.from(options).some((el) => (el as HTMLElement).scrollWidth > (el as HTMLElement).clientWidth);
     });
     expect(hasOverflow).toBe(false);
 
@@ -167,13 +155,9 @@ test.describe('Universe Accounts Filter Dropdown Width', () => {
     await page.keyboard.press('Escape');
   });
 
-  test('Accounts filter dropdown panel is at least as wide as its widest option label', async ({
-    page,
-  }) => {
+  test('Accounts filter dropdown panel is at least as wide as its widest option label', async ({ page }) => {
     // panelWidth="" means the panel grows to fit the widest option label
-    const accountSelect = page.locator(
-      '.universe-toolbar mat-form-field.account-select mat-select'
-    );
+    const accountSelect = page.locator('.universe-toolbar mat-form-field.account-select mat-select');
     await expect(accountSelect).toHaveCount(1);
     await expect(accountSelect).toBeVisible({ timeout: 10000 });
 
@@ -252,6 +236,7 @@ after Story 52.1 is merged, but only run the full suite once 52.1 is in place.
 ### Context: Why `panelWidth=""`
 
 Angular Material's `panelWidth` input on `mat-select`:
+
 - `panelWidth="auto"` — sizes the overlay panel to match the trigger width (column-constrained).
 - `panelWidth=""` (empty string) — removes the width constraint; the CDK overlay grows to the
   natural width of the widest `mat-option` label. Trigger element width is **not** affected.

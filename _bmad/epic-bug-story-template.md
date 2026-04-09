@@ -9,17 +9,21 @@ Whenever you add a new bug to your epic, copy and fill out this template in your
 **Status:** Draft
 
 ### Steps to Reproduce (Automate with Playwright)
+
 1. [Step 1]
 2. [Step 2]
 3. ...
 
 ### Expected Result
+
 - [Describe what should happen]
 
 ### Actual Result
+
 - [Describe what actually happens]
 
 ### Acceptance Criteria
+
 - [ ] Playwright E2E test reproduces the bug (should fail before fix)
 - [ ] Unit test covers the root cause (should fail before fix)
 - [ ] Bug is fixed
@@ -27,6 +31,7 @@ Whenever you add a new bug to your epic, copy and fill out this template in your
 - [ ] QA Automation skill run to ensure coverage
 
 ### Implementation Checklist
+
 - [ ] Add failing Playwright E2E test
 - [ ] Add failing unit test
 - [ ] Fix the bug
@@ -37,6 +42,7 @@ Whenever you add a new bug to your epic, copy and fill out this template in your
 ---
 
 **BMAD Workflow Steps:**
+
 1. Create Story (`bmad-create-story`)
 2. Validate Story (`bmad-create-story`)
 3. Dev Story (`bmad-dev-story`)

@@ -34,6 +34,7 @@ so that I have a reproducible red test to guide the fix in Story 56.2.
 ## Tasks / Subtasks
 
 - [x] **Task 1: Reproduce via Playwright MCP server**
+
   - [x] Open Universe screen
   - [x] Clear localStorage sort state so default sort applies
   - [x] Set Symbol ascending sort (click Symbol column header once or set via localStorage)
@@ -42,6 +43,7 @@ so that I have a reproducible red test to guide the fix in Story 56.2.
   - [x] Capture a screenshot of the empty rows for reference
 
 - [x] **Task 2: Create `universe-symbol-sort-empty-rows.spec.ts`**
+
   - [x] Seed enough symbols so the virtual scroll viewport has rows to display
   - [x] Set Symbol ascending sort in localStorage before navigating to Universe (or click the sort header after navigation)
   - [x] Wait for the Universe table to render (wait for row count > 0, or a specific Angular CDK virtual scroll stabilise)
@@ -55,10 +57,10 @@ so that I have a reproducible red test to guide the fix in Story 56.2.
 
 ### Key Files
 
-| File | Purpose |
-|------|---------|
-| `apps/dms-material-e2e/src/helpers/seed-universe-e2e-data.helper.ts` | Seed helper |
-| `apps/dms-material-e2e/src/universe-screen-e2e.spec.ts` | Reference for row selectors |
+| File                                                                 | Purpose                                                   |
+| -------------------------------------------------------------------- | --------------------------------------------------------- |
+| `apps/dms-material-e2e/src/helpers/seed-universe-e2e-data.helper.ts` | Seed helper                                               |
+| `apps/dms-material-e2e/src/universe-screen-e2e.spec.ts`              | Reference for row selectors                               |
 | `apps/dms-material-e2e/src/universe-sort-filter-persistence.spec.ts` | Reference for localStorage manipulation before navigation |
 
 ### Setting sort state in localStorage before test
@@ -66,9 +68,12 @@ so that I have a reproducible red test to guide the fix in Story 56.2.
 ```typescript
 // Set Symbol ascending sort before navigating to Universe
 await page.evaluate(function setSortState(): void {
-  localStorage.setItem('dms-sort-filter-state', JSON.stringify({
-    universes: { sortColumns: [{ active: 'symbol', direction: 'asc' }] }
-  }));
+  localStorage.setItem(
+    'dms-sort-filter-state',
+    JSON.stringify({
+      universes: { sortColumns: [{ active: 'symbol', direction: 'asc' }] },
+    })
+  );
 });
 await page.goto('/universe');
 ```
@@ -76,6 +81,7 @@ await page.goto('/universe');
 ### Virtual scroll stabilisation
 
 After navigation, wait for the first row to be in the DOM before asserting:
+
 ```typescript
 const firstRow = page.locator('mat-row, cdk-row').first();
 await firstRow.waitFor({ state: 'attached' });
@@ -85,6 +91,7 @@ await firstRow.waitFor({ state: 'attached' });
 ## Dev Agent Record
 
 ### Implementation Plan
+
 1. Investigated `universeDefinition.defaultRow` — confirms `symbol: ''` is returned for unloaded positions.
 2. Confirmed that SmartNgRX returns `defaultRow` objects immediately when CDK virtual scroll accesses proxy indices, dispatching `loadByIds` asynchronously.
 3. Used Playwright `page.route()` to intercept and delay `/api/universe` POST requests by 6 seconds before navigation so the initial load triggers empty cell state reliably.
@@ -96,6 +103,7 @@ await firstRow.waitFor({ state: 'attached' });
 9. Verified `pnpm format` makes no changes.
 
 ### Completion Notes
+
 - Test file `apps/dms-material-e2e/src/universe-symbol-sort-empty-rows.spec.ts` created.
 - Test reliably fails (red) — `symbol` cell returns empty string because SmartNgRX `defaultRow` is shown before `/api/universe` responds.
 - All previously passing tests continue to pass.

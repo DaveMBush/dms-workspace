@@ -59,29 +59,35 @@ so that my open lots are adjusted with the right multiplier.
 ## Tasks / Subtasks
 
 - [ ] **Task 0: Read Story 57.1 Dev Agent Record findings before writing any code**
+
   - [ ] Open `_bmad-output/implementation-artifacts/57-1-investigate-reverse-split-import-code.md`
   - [ ] Read the "What needs to change" section fully
   - [ ] Only proceed once findings are understood
 
 - [ ] **Task 1: Fix/extend `isSplitRow()` if needed**
+
   - [ ] If `isSplitRow()` already detects "REVERSE SPLIT R/S FROM" → verify and move on
   - [ ] If not → update the detection regex/string match to handle this description pattern
 
 - [ ] **Task 2: Update `calculateSplitRatio()` to derive ratio from paired rows**
+
   - [ ] Ensure the import service groups "R/S FROM" + "R/S TO" rows by their shared reference number (the `#REOR {ref}` part)
   - [ ] Derive ratio = Math.abs(TO row quantity) / FROM row quantity
   - [ ] Update `calculateSplitRatio()` or create a new pairing function as appropriate
   - [ ] Do not remove existing ratio-from-description logic if other use cases rely on it
 
 - [ ] **Task 3: Implement CUSIP-to-symbol resolution**
+
   - [ ] When the "R/S TO" row has a CUSIP as its symbol, look up the actual symbol from the `trades` table (by CUSIP or via the CUSIP cache)
   - [ ] If no match found, log a warning and skip the lot adjustment for that pair
 
 - [ ] **Task 4: Verify account scoping**
+
   - [ ] Ensure lot adjustment only touches trades in the account matching the CSV row's account field
-  - [ ] Confirm "Joint Brokerage *4767" account name is correctly parsed and matched
+  - [ ] Confirm "Joint Brokerage \*4767" account name is correctly parsed and matched
 
 - [ ] **Task 5: Add/update unit tests**
+
   - [ ] Add unit tests for MSTY pair (ratio = 5)
   - [ ] Add unit tests for ULTY pair (ratio = 10)
   - [ ] Add unit tests for OXLC pair (ratio = 5) — may already exist; update if needed
@@ -96,14 +102,14 @@ so that my open lots are adjusted with the right multiplier.
 
 ### Key Files
 
-| File | Purpose |
-|------|---------|
-| `apps/server/src/app/routes/import/is-split-row.function.ts` | Split detection |
-| `apps/server/src/app/routes/import/calculate-split-ratio.function.ts` | Ratio calculation |
-| `apps/server/src/app/routes/import/adjust-lots-for-split.function.ts` | Lot adjustment |
-| `apps/server/src/app/routes/import/fidelity-import-service.function.ts` | Orchestration — where pairs must be grouped |
-| `apps/server/src/app/routes/import/fidelity-csv-parser.function.ts` | CSV parsing |
-| `_bmad-output/implementation-artifacts/57-1-investigate-reverse-split-import-code.md` | **Investigation results — read first** |
+| File                                                                                  | Purpose                                     |
+| ------------------------------------------------------------------------------------- | ------------------------------------------- |
+| `apps/server/src/app/routes/import/is-split-row.function.ts`                          | Split detection                             |
+| `apps/server/src/app/routes/import/calculate-split-ratio.function.ts`                 | Ratio calculation                           |
+| `apps/server/src/app/routes/import/adjust-lots-for-split.function.ts`                 | Lot adjustment                              |
+| `apps/server/src/app/routes/import/fidelity-import-service.function.ts`               | Orchestration — where pairs must be grouped |
+| `apps/server/src/app/routes/import/fidelity-csv-parser.function.ts`                   | CSV parsing                                 |
+| `_bmad-output/implementation-artifacts/57-1-investigate-reverse-split-import-code.md` | **Investigation results — read first**      |
 
 ### Paired row grouping
 
@@ -131,10 +137,5 @@ ratio = Math.abs(toRow.quantity) / fromRow.quantity
 
 ```typescript
 // Existing — do not change this signature
-async function adjustLotsForSplit(
-  tx: PrismaTransaction,
-  symbol: string,
-  accountId: number,
-  ratio: number
-): Promise<void>
+async function adjustLotsForSplit(tx: PrismaTransaction, symbol: string, accountId: number, ratio: number): Promise<void>;
 ```

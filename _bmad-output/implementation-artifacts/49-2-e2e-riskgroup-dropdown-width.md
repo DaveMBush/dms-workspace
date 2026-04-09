@@ -53,9 +53,7 @@ Use `page.evaluate()` to check whether each option has overflow:
 ```ts
 const hasOverflow = await page.evaluate(() => {
   const options = document.querySelectorAll('.mat-mdc-select-panel mat-option');
-  return Array.from(options).some(
-    (el) => (el as HTMLElement).scrollWidth > (el as HTMLElement).clientWidth
-  );
+  return Array.from(options).some((el) => (el as HTMLElement).scrollWidth > (el as HTMLElement).clientWidth);
 });
 expect(hasOverflow).toBe(false);
 ```
