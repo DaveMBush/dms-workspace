@@ -39,6 +39,7 @@ so that I can resume working with the data exactly as I left it.
 ## Tasks / Subtasks
 
 - [ ] **Task 1: Reproduce regression and identify root cause**
+
   - [ ] Use Playwright MCP server to confirm bug is live (sort applied, navigate away, navigate back → sort lost)
   - [ ] Read `GlobalUniverseComponent` (`apps/dms-material/src/app/global/global-universe/global-universe.component.ts`) — locate where sort columns change handler calls `saveSortColumnsState`
   - [ ] Read `SortFilterStateService` (`apps/dms-material/src/app/shared/services/sort-filter-state.service.ts`) — confirm the save/load API
@@ -46,15 +47,18 @@ so that I can resume working with the data exactly as I left it.
   - [ ] Document root cause in Dev Agent Record
 
 - [ ] **Task 2: Fix the save path**
+
   - [ ] Ensure that whenever the sort columns signal changes in `GlobalUniverseComponent`, `saveSortColumnsState('universes', columns)` is called
   - [ ] If the sort-change callback was removed or bypassed in Epic 43, restore it without breaking multi-column sort
 
 - [ ] **Task 3: Fix the load path if needed**
+
   - [ ] Confirm `loadSortColumnsState('universes')` is called during `ngOnInit` (or equivalent in zoneless/signal init)
   - [ ] Confirm the restored sort is applied to the SmartNgRX effect service before the first data load
   - [ ] If the timing is off (sort loaded after initial data fetch), fix the init order
 
 - [ ] **Task 4: Verify with Playwright MCP server**
+
   - [ ] Apply Symbol descending, navigate away, navigate back → sort indicator persists ✅
   - [ ] Apply multi-column sort, navigate away, navigate back → all columns restored ✅
 
@@ -67,14 +71,14 @@ so that I can resume working with the data exactly as I left it.
 
 ### Key Files
 
-| File | Purpose |
-|------|---------|
-| `apps/dms-material/src/app/global/global-universe/global-universe.component.ts` | Universe component — sort-change handler and ngOnInit sort restore |
-| `apps/dms-material/src/app/shared/services/sort-filter-state.service.ts` | `saveSortColumnsState` + `loadSortColumnsState` |
-| `apps/dms-material/src/app/global/global-universe/restore-universe-filters.function.ts` | Filter restore helper |
-| `apps/dms-material/src/app/global/global-universe/save-universe-filters-and-notify.function.ts` | Filter save helper |
-| `apps/dms-material-e2e/src/universe-sort-filter-persistence.spec.ts` | Related existing e2e tests (sort filter persistence for filters — different from sort columns) |
-| `apps/dms-material-e2e/src/54-1-failing-e2e-universe-sort-stickiness.spec.ts` *(sic)* | Story 54.1 test — must turn green |
+| File                                                                                            | Purpose                                                                                        |
+| ----------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `apps/dms-material/src/app/global/global-universe/global-universe.component.ts`                 | Universe component — sort-change handler and ngOnInit sort restore                             |
+| `apps/dms-material/src/app/shared/services/sort-filter-state.service.ts`                        | `saveSortColumnsState` + `loadSortColumnsState`                                                |
+| `apps/dms-material/src/app/global/global-universe/restore-universe-filters.function.ts`         | Filter restore helper                                                                          |
+| `apps/dms-material/src/app/global/global-universe/save-universe-filters-and-notify.function.ts` | Filter save helper                                                                             |
+| `apps/dms-material-e2e/src/universe-sort-filter-persistence.spec.ts`                            | Related existing e2e tests (sort filter persistence for filters — different from sort columns) |
+| `apps/dms-material-e2e/src/54-1-failing-e2e-universe-sort-stickiness.spec.ts` _(sic)_           | Story 54.1 test — must turn green                                                              |
 
 ### Save/Load API
 

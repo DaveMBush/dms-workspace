@@ -279,8 +279,8 @@ frameworks</action>
 <step n="5" goal="Create comprehensive story file">
   <critical>📝 CREATE ULTIMATE STORY FILE - The developer's master implementation guide!</critical>
 
-
 # PATCH: Use bug template for bug stories
+
 <action>
 If the story is a bug (detected by title containing 'bug', 'fix', 'defect', or a type/label field set to 'bug'),
   initialize from _bmad/epic-bug-story-template.md:

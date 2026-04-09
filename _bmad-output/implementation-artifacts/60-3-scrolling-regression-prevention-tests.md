@@ -34,10 +34,12 @@ so that any future regression is caught immediately in CI rather than discovered
 ## Tasks / Subtasks
 
 - [ ] **Task 1: Review Story 60.1 and 60.2 outcomes**
+
   - [ ] Read the Dev Agent Records from both stories
   - [ ] Identify which scrolling patterns triggered the jank (to write targeted tests)
 
 - [ ] **Task 2: Extend `universe-scrolling-regression.spec.ts`**
+
   - [ ] Add test: fast scroll to the bottom of the Universe list — assert all visible rows are populated
   - [ ] Add test: fast scroll to the top after being at the bottom — assert all visible rows are populated
   - [ ] Add test: repeated scroll oscillation (bottom, top, bottom, top) — assert no blank rows after final settle
@@ -45,6 +47,7 @@ so that any future regression is caught immediately in CI rather than discovered
   - [ ] Add test: apply account filter, then scroll — assert rows remain populated
 
 - [ ] **Task 3: Add descriptive comments**
+
   - [ ] Each test case should have a comment block explaining: which prior epic introduced this failure mode, what the root cause was, and why this test guards against it
 
 - [ ] **Task 4: Confirm all tests pass**
@@ -55,10 +58,10 @@ so that any future regression is caught immediately in CI rather than discovered
 
 ### Key Files
 
-| File | Purpose |
-| ---- | ------- |
-| `apps/dms-material-e2e/src/universe-scrolling-regression.spec.ts` | Extend this file from Story 60.1 |
-| Story 60.2 Dev Agent Record | Source of root-cause explanations to cite in test comments |
+| File                                                              | Purpose                                                    |
+| ----------------------------------------------------------------- | ---------------------------------------------------------- |
+| `apps/dms-material-e2e/src/universe-scrolling-regression.spec.ts` | Extend this file from Story 60.1                           |
+| Story 60.2 Dev Agent Record                                       | Source of root-cause explanations to cite in test comments |
 
 ### Test Pattern
 

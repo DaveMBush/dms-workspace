@@ -35,6 +35,7 @@ so that I have a reproducible red test to guide the fix in Story 59.2.
 ## Tasks / Subtasks
 
 - [x] **Task 1: Reproduce with Playwright MCP server**
+
   - [x] Use the Playwright MCP server to navigate to the app
   - [x] Toggle dark mode (inspect how the dark theme is activated — class on `<html>` or `<body>`, or a toggle button)
   - [x] Open the Import dialog and select a CSV file
@@ -42,6 +43,7 @@ so that I have a reproducible red test to guide the fix in Story 59.2.
   - [x] Document the observed values in the Dev Agent Record
 
 - [x] **Task 2: Investigate the specific CSS issue**
+
   - [x] Read `apps/dms-material/src/app/global/import-dialog/import-dialog.component.scss`
   - [x] Read `apps/dms-material/src/styles.scss` — look for `.mat-mdc-dialog-surface` override
   - [x] Read `apps/dms-material/src/themes/_dark-theme.scss` (if it exists) to understand the dark theme setup
@@ -56,17 +58,18 @@ so that I have a reproducible red test to guide the fix in Story 59.2.
 
 ### Key Files
 
-| File | Purpose |
-| ---- | ------- |
-| `apps/dms-material/src/app/global/import-dialog/import-dialog.component.scss` | `.selected-file-name` colour definition |
-| `apps/dms-material/src/styles.scss` | Global `.mat-mdc-dialog-surface` override forcing `#ffffff` |
-| `apps/dms-material/src/themes/_light-theme.scss` | Light theme custom properties |
+| File                                                                          | Purpose                                                              |
+| ----------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| `apps/dms-material/src/app/global/import-dialog/import-dialog.component.scss` | `.selected-file-name` colour definition                              |
+| `apps/dms-material/src/styles.scss`                                           | Global `.mat-mdc-dialog-surface` override forcing `#ffffff`          |
+| `apps/dms-material/src/themes/_light-theme.scss`                              | Light theme custom properties                                        |
 | `apps/dms-material/src/app/global/import-dialog/import-dialog.component.html` | Template — filename displayed in `<span class="selected-file-name">` |
-| `apps/dms-material-e2e/src/` | Target directory for new test |
+| `apps/dms-material-e2e/src/`                                                  | Target directory for new test                                        |
 
 ### Known CSS root causes
 
 **In `import-dialog.component.scss`:**
+
 ```scss
 .selected-file-name {
   color: var(--mat-sys-on-surface-variant, rgba(0, 0, 0, 0.6));
@@ -75,6 +78,7 @@ so that I have a reproducible red test to guide the fix in Story 59.2.
 ```
 
 **In `styles.scss`:**
+
 ```scss
 .mat-mdc-dialog-surface {
   background-color: #ffffff !important;
@@ -109,6 +113,7 @@ the `#424242` dark surface — producing a contrast ratio of approximately 1.7:1
 is 4.5:1).
 
 **Test file**: `apps/dms-material-e2e/src/import-dialog-dark-mode.spec.ts`
+
 - Activates dark mode via `localStorage` before login
 - Logs in with mock credentials, navigates to `/global/universe`
 - Clicks `[data-testid="import-transactions-button"]` to open the dialog

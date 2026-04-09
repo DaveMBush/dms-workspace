@@ -43,24 +43,26 @@ so that I have a reproducible red test that drives the fix in Story 61.2.
 ## Tasks / Subtasks
 
 - [ ] **Task 1: Read existing split import test infrastructure**
+
   - [ ] Read `apps/dms-material-e2e/src/split-import-e2e.spec.ts` — understand existing test structure
   - [ ] Read `apps/dms-material-e2e/src/helpers/seed-split-import-e2e-data.helper.ts` — understand seed pattern
   - [ ] Identify where fixture CSV files are stored
 
 - [ ] **Task 2: Create the fixture CSV**
+
   - [ ] Create `apps/dms-material-e2e/src/fixtures/fidelity-oxlc-cusip-reverse-split.csv` with the
         exact content from the epic description:
-        ```
-        Jun-11-2025,YOU BOUGHT,691543102,300,4.50,"-1,348.50","+2,624.29",OXFORD LANE CAPITAL CORP 1 FOR 5 R/S INTO OXFORD LANE CAPITAL CORP COM USD0.01 CUSIP #691543847,--,--,Joint Brokerage *4767
-        Jun-11-2025,YOU BOUGHT,691543102,150,4.49,-673.50,"+3,972.79",OXFORD LANE CAPITAL CORP 1 FOR 5 R/S INTO OXFORD LANE CAPITAL CORP COM USD0.01 CUSIP #691543847,--,--,Joint Brokerage *4767
-        Jun-26-2025,YOU BOUGHT,691543102,500,4.06,"-2,032.30","+4,345.31",OXFORD LANE CAPITAL CORP 1 FOR 5 R/S INTO OXFORD LANE CAPITAL CORP COM USD0.01 CUSIP #691543847,--,--,Joint Brokerage *4767
-        Aug-5-2025,YOU BOUGHT,691543102,580,3.44,"-1,995.20","+99,068.30",OXFORD LANE CAPITAL CORP 1 FOR 5 R/S INTO OXFORD LANE CAPITAL CORP COM USD0.01 CUSIP #691543847,--,--,Joint Brokerage *4767
-        Sep-8-2025,REVERSE SPLIT R/S FROM 691543102#REOR M0051680750001,OXLC,306,--,--,"+3,672.63",OXFORD LANE CAP CORP COM,--,--,Joint Brokerage *4767
-        Sep-8-2025,REVERSE SPLIT R/S TO 691543847#REOR M0051680750000,691543102,"-1,530",--,--,"+3,672.63",OXFORD LANE CAPITAL CORP 1 FOR 5 R/S INTO OXFORD LANE CAPITAL CORP COM USD0.01 CUSIP #691543847,--,--,Joint Brokerage *4767
-        ```
+        `    Jun-11-2025,YOU BOUGHT,691543102,300,4.50,"-1,348.50","+2,624.29",OXFORD LANE CAPITAL CORP 1 FOR 5 R/S INTO OXFORD LANE CAPITAL CORP COM USD0.01 CUSIP #691543847,--,--,Joint Brokerage *4767
+    Jun-11-2025,YOU BOUGHT,691543102,150,4.49,-673.50,"+3,972.79",OXFORD LANE CAPITAL CORP 1 FOR 5 R/S INTO OXFORD LANE CAPITAL CORP COM USD0.01 CUSIP #691543847,--,--,Joint Brokerage *4767
+    Jun-26-2025,YOU BOUGHT,691543102,500,4.06,"-2,032.30","+4,345.31",OXFORD LANE CAPITAL CORP 1 FOR 5 R/S INTO OXFORD LANE CAPITAL CORP COM USD0.01 CUSIP #691543847,--,--,Joint Brokerage *4767
+    Aug-5-2025,YOU BOUGHT,691543102,580,3.44,"-1,995.20","+99,068.30",OXFORD LANE CAPITAL CORP 1 FOR 5 R/S INTO OXFORD LANE CAPITAL CORP COM USD0.01 CUSIP #691543847,--,--,Joint Brokerage *4767
+    Sep-8-2025,REVERSE SPLIT R/S FROM 691543102#REOR M0051680750001,OXLC,306,--,--,"+3,672.63",OXFORD LANE CAP CORP COM,--,--,Joint Brokerage *4767
+    Sep-8-2025,REVERSE SPLIT R/S TO 691543847#REOR M0051680750000,691543102,"-1,530",--,--,"+3,672.63",OXFORD LANE CAPITAL CORP 1 FOR 5 R/S INTO OXFORD LANE CAPITAL CORP COM USD0.01 CUSIP #691543847,--,--,Joint Brokerage *4767
+   `
   - [ ] Ensure the CSV has the correct Fidelity header row
 
 - [ ] **Task 3: Create the seeder helper**
+
   - [ ] Create or extend a seeder helper that inserts four trades into the test account under symbol
         `691543102` (not `OXLC`): 300 @ $4.50, 150 @ $4.49, 500 @ $4.06, 580 @ $3.44
   - [ ] Also register CUSIP `691543102` → `OXLC` in the `cusip_cache` table
@@ -77,16 +79,17 @@ so that I have a reproducible red test that drives the fix in Story 61.2.
 
 ### Key Files
 
-| File | Purpose |
-| ---- | ------- |
-| `apps/dms-material-e2e/src/split-import-e2e.spec.ts` | Reference for existing split test pattern |
-| `apps/dms-material-e2e/src/helpers/seed-split-import-e2e-data.helper.ts` | Reference seeder helper |
-| `apps/server/src/app/routes/import/adjust-lots-for-split.function.ts` | Where the lot adjustment happens |
-| `apps/server/src/app/routes/import/fidelity-import-service.function.ts` | Import orchestrator |
+| File                                                                     | Purpose                                   |
+| ------------------------------------------------------------------------ | ----------------------------------------- |
+| `apps/dms-material-e2e/src/split-import-e2e.spec.ts`                     | Reference for existing split test pattern |
+| `apps/dms-material-e2e/src/helpers/seed-split-import-e2e-data.helper.ts` | Reference seeder helper                   |
+| `apps/server/src/app/routes/import/adjust-lots-for-split.function.ts`    | Where the lot adjustment happens          |
+| `apps/server/src/app/routes/import/fidelity-import-service.function.ts`  | Import orchestrator                       |
 
 ### OXLC CSV Data (exact content from epic description)
 
 Pre-split "YOU BOUGHT" rows — note symbol field uses CUSIP `691543102` (not the ticker `OXLC`):
+
 ```
 Jun-11-2025,YOU BOUGHT,691543102,300,4.50,...
 Jun-11-2025,YOU BOUGHT,691543102,150,4.49,...
@@ -95,6 +98,7 @@ Aug-5-2025,YOU BOUGHT,691543102,580,3.44,...
 ```
 
 Reverse split rows:
+
 ```
 Sep-8-2025,REVERSE SPLIT R/S FROM 691543102#REOR M0051680750001,OXLC,306,...
 Sep-8-2025,REVERSE SPLIT R/S TO 691543847#REOR M0051680750000,691543102,-1530,...

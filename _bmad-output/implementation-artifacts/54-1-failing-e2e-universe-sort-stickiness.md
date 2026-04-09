@@ -33,6 +33,7 @@ so that I have a reproducible red test to guide the fix in Story 54.2.
 ## Tasks / Subtasks
 
 - [ ] **Task 1: Reproduce the regression manually via Playwright MCP server**
+
   - [ ] Open the Universe screen
   - [ ] Click the Symbol column header to sort descending
   - [ ] Navigate to another route (e.g. Accounts)
@@ -40,6 +41,7 @@ so that I have a reproducible red test to guide the fix in Story 54.2.
   - [ ] Observe: sort indicator is gone / reset — confirm the bug is live
 
 - [ ] **Task 2: Create `universe-sort-stickiness.spec.ts`**
+
   - [ ] Import `Page` from `@playwright/test` and the existing `clearSortFilterState` helper pattern
   - [ ] Seed minimal universe data (at least 2 symbols) using existing `seed-universe-e2e-data.helper.ts`
   - [ ] Clear `dms-sort-filter-state` from localStorage at test start
@@ -56,13 +58,14 @@ so that I have a reproducible red test to guide the fix in Story 54.2.
 
 ### Key Files
 
-| File | Purpose |
-|------|---------|
-| `apps/dms-material-e2e/src/universe-sort-filter-persistence.spec.ts` | Existing persistence tests — use as reference |
-| `apps/dms-material-e2e/src/helpers/seed-universe-e2e-data.helper.ts` | Seed helper for universe e2e data |
-| `apps/dms-material/src/app/shared/services/sort-filter-state.service.ts` | Service that reads/writes localStorage |
+| File                                                                     | Purpose                                       |
+| ------------------------------------------------------------------------ | --------------------------------------------- |
+| `apps/dms-material-e2e/src/universe-sort-filter-persistence.spec.ts`     | Existing persistence tests — use as reference |
+| `apps/dms-material-e2e/src/helpers/seed-universe-e2e-data.helper.ts`     | Seed helper for universe e2e data             |
+| `apps/dms-material/src/app/shared/services/sort-filter-state.service.ts` | Service that reads/writes localStorage        |
 
 ### localStorage key
+
 ```typescript
 // Clear sort state helper pattern (from universe-sort-filter-persistence.spec.ts)
 async function clearSortFilterState(page: Page): Promise<void> {
@@ -73,6 +76,7 @@ async function clearSortFilterState(page: Page): Promise<void> {
 ```
 
 ### Sort indicator selector pattern
+
 The sort direction indicator on column headers uses Angular Material's `mat-sort-header`. Look for
 `aria-sort` attribute on the `<th>` element or the `mat-sort-header-arrow` element visibility to
 assert the current sort direction.

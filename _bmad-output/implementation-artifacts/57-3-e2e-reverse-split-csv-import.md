@@ -47,6 +47,7 @@ so that any future regression is caught immediately.
 ## Tasks / Subtasks
 
 - [ ] **Task 1: Create fixture CSV file**
+
   - [ ] Place under `apps/dms-material-e2e/src/fixtures/` (or wherever existing fixtures live)
   - [ ] Include the MSTY 1-for-5 pair (from Story 57.1 examples)
   - [ ] Include the ULTY 1-for-10 pair
@@ -54,6 +55,7 @@ so that any future regression is caught immediately.
   - [ ] File should be a valid Fidelity CSV (headers + data rows)
 
 - [ ] **Task 2: Create / extend seed helper**
+
   - [ ] Locate existing `seed-split-import-e2e-data.helper.ts` (if it exists from Epic 48 stories)
   - [ ] If it exists, extend it with MSTY, ULTY, OXLC pre-split lots
   - [ ] If it does not exist, create `apps/dms-material-e2e/src/helpers/seed-split-import-e2e-data.helper.ts`
@@ -61,6 +63,7 @@ so that any future regression is caught immediately.
   - [ ] Ensure the teardown removes seeded rows
 
 - [ ] **Task 3: Write / extend the E2E spec**
+
   - [ ] Locate `apps/dms-material-e2e/src/split-import-e2e.spec.ts`
   - [ ] If the file was created by Epic 48 stories, add the three new test cases to it
   - [ ] If the file does not exist, create it following the pattern of existing e2e specs
@@ -80,13 +83,13 @@ so that any future regression is caught immediately.
 
 ### Key Files
 
-| File | Purpose |
-|------|---------|
-| `apps/dms-material-e2e/src/split-import-e2e.spec.ts` | Target E2E spec (extend or create) |
-| `apps/dms-material-e2e/src/helpers/seed-split-import-e2e-data.helper.ts` | DB seed helper (extend or create) |
-| `apps/dms-material-e2e/src/fixtures/` | Fixture CSV files |
-| `apps/dms-material-e2e/playwright.config.ts` | Playwright configuration |
-| `apps/server/src/app/routes/import/fidelity-import-service.function.ts` | Server-side import endpoint |
+| File                                                                     | Purpose                            |
+| ------------------------------------------------------------------------ | ---------------------------------- |
+| `apps/dms-material-e2e/src/split-import-e2e.spec.ts`                     | Target E2E spec (extend or create) |
+| `apps/dms-material-e2e/src/helpers/seed-split-import-e2e-data.helper.ts` | DB seed helper (extend or create)  |
+| `apps/dms-material-e2e/src/fixtures/`                                    | Fixture CSV files                  |
+| `apps/dms-material-e2e/playwright.config.ts`                             | Playwright configuration           |
+| `apps/server/src/app/routes/import/fidelity-import-service.function.ts`  | Server-side import endpoint        |
 
 ### Fixture CSV format (Fidelity)
 
@@ -123,10 +126,10 @@ Dev Agent Record)
 ### Assertion values
 
 | Symbol | Seed lots | Pre-split qty | Post-split qty | Pre-split price | Post-split price |
-|--------|-----------|---------------|----------------|-----------------|------------------|
-| MSTY | 1 lot | 400 | 80 | $2.00 | $10.00 |
-| ULTY | 1 lot | 1000 | 100 | $3.00 | $30.00 |
-| OXLC | 1 lot | 1530 | 306 | $1.00 | $5.00 |
+| ------ | --------- | ------------- | -------------- | --------------- | ---------------- |
+| MSTY   | 1 lot     | 400           | 80             | $2.00           | $10.00           |
+| ULTY   | 1 lot     | 1000          | 100            | $3.00           | $30.00           |
+| OXLC   | 1 lot     | 1530          | 306            | $1.00           | $5.00            |
 
 Adjust seed values as needed once Story 57.1 and 57.2 are complete.
 

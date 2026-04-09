@@ -55,22 +55,26 @@ so that the post-split quantities and prices in my portfolio are accurate.
 ## Tasks / Subtasks
 
 - [ ] **Task 1: Read Story 61.1 Dev Agent Record**
+
   - [ ] Confirm the exact code path where lot resolution fails
   - [ ] Note which database tables / Prisma queries are involved
 
 - [ ] **Task 2: Understand the existing lot-adjustment pipeline**
+
   - [ ] Read `apps/server/src/app/routes/import/adjust-lots-for-split.function.ts`
   - [ ] Read `apps/server/src/app/routes/import/fidelity-import-service.function.ts` — how split pairs are grouped and dispatched
   - [ ] Read `apps/server/src/app/routes/import/is-split-row.function.ts` and `calculate-split-ratio.function.ts`
   - [ ] Identify where the `symbol` value passed to the lot-query comes from and whether it could be a CUSIP
 
 - [ ] **Task 3: Implement CUSIP-to-ticker resolution**
+
   - [ ] Before `adjustLotsForSplit()` queries for open lots, check if the symbol value matches the
         `cusip_cache` table; if so, resolve to the corresponding ticker
   - [ ] Also check if any lots exist directly under the CUSIP string (without resolution) and adjust those
   - [ ] Log a warning and skip the adjustment if the CUSIP cannot be resolved
 
 - [ ] **Task 4: Add unit tests**
+
   - [ ] Test (generic): lots under an arbitrary CUSIP (e.g., `123456789`) are found and adjusted
         when a split CSV arrives for the corresponding ticker — confirms no hard-coded OXLC logic
   - [ ] Test (concrete): lots under CUSIP `691543102` are found and adjusted when split is for
@@ -87,14 +91,14 @@ so that the post-split quantities and prices in my portfolio are accurate.
 
 ### Key Files
 
-| File | Purpose |
-| ---- | ------- |
-| `apps/server/src/app/routes/import/adjust-lots-for-split.function.ts` | Lot adjustment logic — likely fix location |
+| File                                                                    | Purpose                                            |
+| ----------------------------------------------------------------------- | -------------------------------------------------- |
+| `apps/server/src/app/routes/import/adjust-lots-for-split.function.ts`   | Lot adjustment logic — likely fix location         |
 | `apps/server/src/app/routes/import/fidelity-import-service.function.ts` | Import orchestrator — CUSIP resolution may go here |
-| `apps/server/src/app/routes/import/is-split-row.function.ts` | Split row detection |
-| `apps/server/src/app/routes/import/calculate-split-ratio.function.ts` | Ratio calculation from paired rows |
-| `prisma/schema.prisma` | Check `cusip_cache` table structure |
-| `apps/dms-material-e2e/src/oxlc-reverse-split.spec.ts` | E2E test from Story 61.1 (must turn green) |
+| `apps/server/src/app/routes/import/is-split-row.function.ts`            | Split row detection                                |
+| `apps/server/src/app/routes/import/calculate-split-ratio.function.ts`   | Ratio calculation from paired rows                 |
+| `prisma/schema.prisma`                                                  | Check `cusip_cache` table structure                |
+| `apps/dms-material-e2e/src/oxlc-reverse-split.spec.ts`                  | E2E test from Story 61.1 (must turn green)         |
 
 ### CUSIP Chain for OXLC
 

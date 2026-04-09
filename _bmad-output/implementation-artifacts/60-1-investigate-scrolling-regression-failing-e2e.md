@@ -36,11 +36,13 @@ so that the fix in Story 60.2 has a clear target and cannot be skipped or misjud
 ## Tasks / Subtasks
 
 - [ ] **Task 1: Research prior fix attempts**
+
   - [ ] Check git log or story files for Epics 29, 31, 44 — note what each fixed and why it regressed
   - [ ] Read `apps/dms-material/src/app/global/global-universe/global-universe.component.ts` — CDK virtual-scroll setup, `trackBy` function, item size
   - [ ] Read `apps/dms-material/src/app/global/base-table/base-table.component.ts` (if it exists) — shared virtual-scroll table logic
 
 - [ ] **Task 2: Reproduce with Playwright MCP server**
+
   - [ ] Navigate to the Universe screen (ensure it has enough rows — at least 20+ to trigger virtual scroll)
   - [ ] Scroll to the bottom rapidly
   - [ ] Scroll back to the top rapidly
@@ -57,12 +59,12 @@ so that the fix in Story 60.2 has a clear target and cannot be skipped or misjud
 
 ### Key Files
 
-| File | Purpose |
-| ---- | ------- |
-| `apps/dms-material/src/app/global/global-universe/global-universe.component.ts` | CDK virtual-scroll host component |
+| File                                                                              | Purpose                                  |
+| --------------------------------------------------------------------------------- | ---------------------------------------- |
+| `apps/dms-material/src/app/global/global-universe/global-universe.component.ts`   | CDK virtual-scroll host component        |
 | `apps/dms-material/src/app/global/global-universe/global-universe.component.html` | `<cdk-virtual-scroll-viewport>` template |
-| `apps/dms-material/src/app/global/base-table/` | Shared lazy-load table (if applicable) |
-| `apps/dms-material-e2e/src/` | Target directory for the new test |
+| `apps/dms-material/src/app/global/base-table/`                                    | Shared lazy-load table (if applicable)   |
+| `apps/dms-material-e2e/src/`                                                      | Target directory for the new test        |
 
 ### Previous Fix Attempts
 

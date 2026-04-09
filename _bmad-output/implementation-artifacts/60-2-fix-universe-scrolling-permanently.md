@@ -41,14 +41,17 @@ so that I can review my portfolio without the distraction of blank rows or posit
 ## Tasks / Subtasks
 
 - [ ] **Task 1: Read Story 60.1 Dev Agent Record**
+
   - [ ] Confirm root cause hypothesis from the investigation
   - [ ] Note the exact component / service / line where the fix should be applied
 
 - [ ] **Task 2: Apply the fix**
+
   - [ ] Implement the minimal change required to eliminate blank rows during fast scroll
   - [ ] Add an explanatory code comment that cites the root cause AND references Epics 29, 31, 44, 60 to warn future developers
 
 - [ ] **Task 3: Verify with Playwright MCP server**
+
   - [ ] Use the Playwright MCP server to perform rapid scroll-to-bottom and scroll-to-top on the Universe screen
   - [ ] Confirm all rows are populated — no blank cells
   - [ ] Take screenshot for Dev Agent Record
@@ -61,12 +64,12 @@ so that I can review my portfolio without the distraction of blank rows or posit
 
 ### Key Files
 
-| File | Purpose |
-| ---- | ------- |
-| `apps/dms-material/src/app/global/global-universe/global-universe.component.ts` | Most likely fix location |
-| `apps/dms-material/src/app/global/global-universe/global-universe.component.html` | CDK virtual-scroll template |
-| `apps/dms-material/src/app/global/base-table/` | Shared table — check if fix applies here too |
-| `apps/dms-material-e2e/src/universe-scrolling-regression.spec.ts` | E2E test from Story 60.1 (must turn green) |
+| File                                                                              | Purpose                                      |
+| --------------------------------------------------------------------------------- | -------------------------------------------- |
+| `apps/dms-material/src/app/global/global-universe/global-universe.component.ts`   | Most likely fix location                     |
+| `apps/dms-material/src/app/global/global-universe/global-universe.component.html` | CDK virtual-scroll template                  |
+| `apps/dms-material/src/app/global/base-table/`                                    | Shared table — check if fix applies here too |
+| `apps/dms-material-e2e/src/universe-scrolling-regression.spec.ts`                 | E2E test from Story 60.1 (must turn green)   |
 
 ### Architectural Constraints
 
