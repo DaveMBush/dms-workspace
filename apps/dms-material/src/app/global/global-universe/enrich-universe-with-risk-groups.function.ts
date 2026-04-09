@@ -100,8 +100,14 @@ export function enrichUniverseWithRiskGroups(
   const result: EnrichedUniverse[] = [];
 
   for (let i = 0; i < totalLength; i++) {
-    const id = isProxy ? smartArr.getIdAtIndex!(i) : 'loaded';
-    const entry = buildEnrichedEntry(id, i, universes[i], riskGroupMap);
+    const rowItem = universes[i];
+    // Prefer the proxy's getIdAtIndex so SmartNgRX can return its canonical key.
+    // For plain (non-proxy) arrays, derive the id from the row itself so
+    // placeholder entries retain a stable, per-row key instead of the shared
+    // literal 'loaded'. This preserves the unique id through placeholder and
+    // loading states, which is required for CDK virtual-scroll trackBy stability.
+    const id = isProxy ? smartArr.getIdAtIndex!(i) : rowItem.id;
+    const entry = buildEnrichedEntry(id, i, rowItem, riskGroupMap);
     result.push(entry);
   }
 
@@ -129,11 +135,13 @@ function buildEnrichedEntry(
   universe: Universe | string,
   riskGroupMap: Map<string, string>
 ): EnrichedUniverse {
-  if (id === undefined || id.startsWith('index')) {
-    return buildPlaceholderUniverseEntry(id ?? `placeholder-${String(index)}`);
-  }
+  // Raw-string placeholder from SmartNgRX (e.g. 'placeholder-id') — use the
+  // string itself as both the id and the placeholder key.
   if (typeof universe === 'string') {
     return buildPlaceholderUniverseEntry(universe);
+  }
+  if (id === undefined || id.startsWith('index')) {
+    return buildPlaceholderUniverseEntry(id ?? `placeholder-${String(index)}`);
   }
   // Return placeholder (not null) for rows SmartNgRX is still fetching.
   // Using the row's real id prevents client-side sort from clustering loading

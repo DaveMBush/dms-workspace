@@ -133,7 +133,38 @@ describe('enrichUniverseWithRiskGroups', () => {
 
     // Both rows must be present (no null filtering) so array length is stable
     expect(result).toHaveLength(2);
-    // Loading row is a placeholder — symbol is empty (data not yet available)
+    // Loading row is a placeholder — id is preserved, symbol is empty
+    expect(result[0].id).toBe('loading-id');
+    expect(result[0].symbol).toBe('');
+    // Non-loading row is fully populated
+    expect(result[1].id).toBe('2');
+  });
+
+  it('should preserve row id via getIdAtIndex (SmartNgRX proxy path) for loading rows', () => {
+    // Covers the proxy path: SmartNgRX wraps the Universe array with getIdAtIndex
+    // so enrichUniverseWithRiskGroups uses the proxy id rather than the row id.
+    const loadingUniverse = {
+      ...mockUniverses[0],
+      id: 'real-uuid-from-store',
+      symbol: '',
+      isLoading: true,
+    } as Universe & { isLoading: boolean };
+
+    // Simulate SmartNgRX proxy: array with getIdAtIndex method
+    const proxyArray = [loadingUniverse, mockUniverses[1]] as Universe[];
+    const proxyLike = proxyArray as unknown as Universe[] & {
+      getIdAtIndex(i: number): string | undefined;
+    };
+    proxyLike.getIdAtIndex = function getIdAtIndex(i: number): string {
+      return (proxyArray[i] as Universe & { id: string }).id;
+    };
+
+    const result = enrichUniverseWithRiskGroups(proxyLike, mockRiskGroups);
+
+    // Array length is stable — no null filtering
+    expect(result).toHaveLength(2);
+    // Proxy path: id comes from getIdAtIndex → 'real-uuid-from-store'
+    expect(result[0].id).toBe('real-uuid-from-store');
     expect(result[0].symbol).toBe('');
     // Non-loading row is fully populated
     expect(result[1].id).toBe('2');
