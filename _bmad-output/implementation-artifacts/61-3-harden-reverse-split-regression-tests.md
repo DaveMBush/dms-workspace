@@ -40,14 +40,12 @@ so that any regression introduced by future import changes is caught immediately
 ## Tasks / Subtasks
 
 - [x] **Task 1: Audit existing split test coverage**
-
   - [x] Read `apps/server/src/app/routes/import/adjust-lots-for-split.function.spec.ts` (if it exists)
   - [x] Read `apps/dms-material-e2e/src/split-import-e2e.spec.ts`
   - [x] List any gaps in coverage (CUSIP-as-symbol path, unresolvable CUSIP, etc.)
-      - All gaps addressed: CUSIP-as-symbol, concrete OXLC+CUSIP guard, unresolvable CUSIP, generic symbol-agnostic guard all added in Story 61-2
+    - All gaps addressed: CUSIP-as-symbol, concrete OXLC+CUSIP guard, unresolvable CUSIP, generic symbol-agnostic guard all added in Story 61-2
 
 - [x] **Task 2: Extend unit tests** _(completed in Story 61-2, PR #993)_
-
   - [x] Add unit test (generic): lot adjustment where an arbitrary CUSIP resolves to an arbitrary
         ticker — adjusts correctly (validates no OXLC-specific logic in the fix)
         → `adjust-lots-for-split.function.spec.ts`: "adjusts lots stored under CUSIP universe when ticker is passed (generic: FAKE / 000000001)"
@@ -60,7 +58,6 @@ so that any regression introduced by future import changes is caught immediately
         → `adjust-lots-for-split.function.spec.ts`: "logs CUSIP warning and returns 0 when called with a CUSIP symbol instead of ticker"
 
 - [x] **Task 3: Extend E2E tests** _(all E2E coverage confirmed in main)_
-
   - [x] Ensure Story 61.1 test (`oxlc-reverse-split.spec.ts`) is part of the regression suite
         → `apps/dms-material-e2e/src/oxlc-reverse-split.spec.ts` merged via PR #991 (Story 61-1)
   - [x] Add or confirm E2E test: OXLC ticker lots (not CUSIP-based) — guards against regression where ticker path breaks
@@ -106,14 +103,14 @@ Confirm each row in the matrix is covered before marking done.
 
 ### Coverage Matrix — All Rows Confirmed
 
-| Scenario                               | Unit test                                   | E2E test                        | Status  |
-| -------------------------------------- | ------------------------------------------- | ------------------------------- | ------- |
-| Ticker lots — MSTY 1-for-5             | Epic 57.3 (existing)                        | `split-import-e2e.spec.ts` ✅   | ✅ Done |
-| Ticker lots — ULTY 1-for-10            | Epic 57.3 (existing)                        | `split-import-e2e.spec.ts` ✅   | ✅ Done |
-| Ticker lots — OXLC 1-for-5             | `adjust-lots-for-split...spec.ts` non-regr. | `split-import-e2e.spec.ts` ✅   | ✅ Done |
-| CUSIP lots — OXLC 1-for-5 (concrete)   | `adjust-lots-for-split...spec.ts` ✅        | `oxlc-reverse-split.spec.ts` ✅ | ✅ Done |
-| CUSIP lots — generic ticker/CUSIP pair | `adjust-lots-for-split...spec.ts` (FAKE/000000001) ✅ | N/A (unit only)       | ✅ Done |
-| Unresolvable CUSIP — warning           | `adjust-lots-for-split...spec.ts` ✅        | N/A                             | ✅ Done |
+| Scenario                               | Unit test                                             | E2E test                        | Status  |
+| -------------------------------------- | ----------------------------------------------------- | ------------------------------- | ------- |
+| Ticker lots — MSTY 1-for-5             | Epic 57.3 (existing)                                  | `split-import-e2e.spec.ts` ✅   | ✅ Done |
+| Ticker lots — ULTY 1-for-10            | Epic 57.3 (existing)                                  | `split-import-e2e.spec.ts` ✅   | ✅ Done |
+| Ticker lots — OXLC 1-for-5             | `adjust-lots-for-split...spec.ts` non-regr.           | `split-import-e2e.spec.ts` ✅   | ✅ Done |
+| CUSIP lots — OXLC 1-for-5 (concrete)   | `adjust-lots-for-split...spec.ts` ✅                  | `oxlc-reverse-split.spec.ts` ✅ | ✅ Done |
+| CUSIP lots — generic ticker/CUSIP pair | `adjust-lots-for-split...spec.ts` (FAKE/000000001) ✅ | N/A (unit only)                 | ✅ Done |
+| Unresolvable CUSIP — warning           | `adjust-lots-for-split...spec.ts` ✅                  | N/A                             | ✅ Done |
 
 ### Implementation Summary
 
