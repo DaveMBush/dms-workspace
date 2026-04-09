@@ -75,53 +75,50 @@ test.describe('OXLC CUSIP-Stored Lots Reverse Split E2E', () => {
    *   500 shares @ $4.06 → 100 shares @ $20.30
    *   580 shares @ $3.44 → 116 shares @ $17.20
    */
-  test(
-    'should adjust CUSIP-stored lots for a 1-for-5 OXLC reverse split',
-    async ({ page }) => {
-      // Mark as expected failure: current code cannot find CUSIP-stored lots.
-      // Remove test.fail() once Story 61.2 implements the fix.
-      test.fail();
-      await navigateToUniverse(page);
+  test('should adjust CUSIP-stored lots for a 1-for-5 OXLC reverse split', async ({
+    page,
+  }) => {
+    // Mark as expected failure: current code cannot find CUSIP-stored lots.
+    // Remove test.fail() once Story 61.2 implements the fix.
+    test.fail();
+    await navigateToUniverse(page);
 
-      const responsePromise = page.waitForResponse((response) => {
-        return (
-          response.url().includes('/api/import/fidelity') &&
-          response.request().method() === 'POST' &&
-          response.status() === 200
-        );
+    const responsePromise = page.waitForResponse((response) => {
+      return (
+        response.url().includes('/api/import/fidelity') &&
+        response.request().method() === 'POST' &&
+        response.status() === 200
+      );
+    });
+
+    await openImportDialog(page);
+    await uploadFile(page, 'fidelity-oxlc-cusip-reverse-split.csv');
+    await clickUpload(page);
+
+    await responsePromise;
+
+    // Dialog closes automatically on success
+    await expect(
+      page.getByRole('heading', { name: 'Import Fidelity Transactions' })
+    ).not.toBeVisible({ timeout: 10000 });
+
+    // Query open lots under the CUSIP universe (where the pre-split lots live).
+    // After a correct 1-for-5 reverse split adjustment, quantities should be
+    // 60, 30, 100, 116 (ordered by buy_date ascending).
+    const prisma = await initializePrismaClient();
+    try {
+      const openLots = await prisma.trades.findMany({
+        where: { universeId: cusipUniverseId, sell_date: null },
+        orderBy: { buy_date: 'asc' },
+        select: { quantity: true, buy: true },
       });
 
-      await openImportDialog(page);
-      await uploadFile(page, 'fidelity-oxlc-cusip-reverse-split.csv');
-      await clickUpload(page);
-
-      await responsePromise;
-
-      // Dialog closes automatically on success
-      await expect(
-        page.getByRole('heading', { name: 'Import Fidelity Transactions' })
-      ).not.toBeVisible({ timeout: 10000 });
-
-      // Query open lots under the CUSIP universe (where the pre-split lots live).
-      // After a correct 1-for-5 reverse split adjustment, quantities should be
-      // 60, 30, 100, 116 (ordered by buy_date ascending).
-      const prisma = await initializePrismaClient();
-      try {
-        const openLots = await prisma.trades.findMany({
-          where: { universeId: cusipUniverseId, sell_date: null },
-          orderBy: { buy_date: 'asc' },
-          select: { quantity: true, buy: true },
-        });
-
-        // Currently FAILS: the split adjustment does not find CUSIP-stored lots.
-        // After Story 61.2 fix: adjustLotsForSplit will also look up CUSIP-mapped lots.
-        expect(openLots.map((lot) => lot.quantity)).toEqual([60, 30, 100, 116]);
-        expect(openLots.map((lot) => lot.buy)).toEqual([
-          22.5, 22.45, 20.3, 17.2,
-        ]);
-      } finally {
-        await prisma.$disconnect();
-      }
+      // Currently FAILS: the split adjustment does not find CUSIP-stored lots.
+      // After Story 61.2 fix: adjustLotsForSplit will also look up CUSIP-mapped lots.
+      expect(openLots.map((lot) => lot.quantity)).toEqual([60, 30, 100, 116]);
+      expect(openLots.map((lot) => lot.buy)).toEqual([22.5, 22.45, 20.3, 17.2]);
+    } finally {
+      await prisma.$disconnect();
     }
-  );
+  });
 });

@@ -67,10 +67,42 @@ async function createPresplitLots(
   // After 1-for-5 reverse split: 300→60@$22.50, 150→30@$22.45, 500→100@$20.30, 580→116@$17.20
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Prisma createMany requires untyped batch data
   const lotData: any[] = [
-    { universeId: cusipUniverseId, accountId, buy: 4.5, sell: 0, buy_date: new Date('2025-06-11'), quantity: 300, sell_date: null },
-    { universeId: cusipUniverseId, accountId, buy: 4.49, sell: 0, buy_date: new Date('2025-06-11'), quantity: 150, sell_date: null },
-    { universeId: cusipUniverseId, accountId, buy: 4.06, sell: 0, buy_date: new Date('2025-06-26'), quantity: 500, sell_date: null },
-    { universeId: cusipUniverseId, accountId, buy: 3.44, sell: 0, buy_date: new Date('2025-08-05'), quantity: 580, sell_date: null },
+    {
+      universeId: cusipUniverseId,
+      accountId,
+      buy: 4.5,
+      sell: 0,
+      buy_date: new Date('2025-06-11'),
+      quantity: 300,
+      sell_date: null,
+    },
+    {
+      universeId: cusipUniverseId,
+      accountId,
+      buy: 4.49,
+      sell: 0,
+      buy_date: new Date('2025-06-11'),
+      quantity: 150,
+      sell_date: null,
+    },
+    {
+      universeId: cusipUniverseId,
+      accountId,
+      buy: 4.06,
+      sell: 0,
+      buy_date: new Date('2025-06-26'),
+      quantity: 500,
+      sell_date: null,
+    },
+    {
+      universeId: cusipUniverseId,
+      accountId,
+      buy: 3.44,
+      sell: 0,
+      buy_date: new Date('2025-08-05'),
+      quantity: 580,
+      sell_date: null,
+    },
   ];
   await prisma.trades.createMany({ data: lotData });
 }
@@ -81,8 +113,13 @@ async function createSeedData(
   const riskGroups = await createRiskGroups(prisma);
   await cleanupExistingData(prisma);
 
-  const cusipUniverse = await createUniverses(prisma, riskGroups.equitiesRiskGroup.id);
-  const account = await prisma.accounts.create({ data: { name: ACCOUNT_NAME } });
+  const cusipUniverse = await createUniverses(
+    prisma,
+    riskGroups.equitiesRiskGroup.id
+  );
+  const account = await prisma.accounts.create({
+    data: { name: ACCOUNT_NAME },
+  });
   await createPresplitLots(prisma, cusipUniverse.id, account.id);
 
   // Register CUSIP → ticker mapping so the import service knows the relationship.
@@ -98,7 +135,9 @@ async function createSeedData(
     cusipUniverseId: cusipUniverse.id,
     cleanup: async function cleanupCusipSplitData(): Promise<void> {
       try {
-        await prisma.trades.deleteMany({ where: { universeId: cusipUniverse.id } });
+        await prisma.trades.deleteMany({
+          where: { universeId: cusipUniverse.id },
+        });
         await prisma.accounts.deleteMany({ where: { id: account.id } });
         for (const symbol of [CUSIP_SYMBOL, TICKER_SYMBOL]) {
           await prisma.universe.deleteMany({ where: { symbol } });
