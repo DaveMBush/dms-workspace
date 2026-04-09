@@ -341,4 +341,61 @@ describe('getDistributions', () => {
       { symbol: 'NOLISTING' }
     );
   });
+
+  // Story 58.1: Failing tests that document the sparse-history bug.
+  // When fetchDividendHistory returns only 1 past row (plus future rows), the
+  // calculateDistributionsPerYear function hits the `recentRows.length <= 1`
+  // branch and returns 1 — regardless of the actual distribution cadence.
+  // These tests use test.fails() so pnpm all passes while the bug is outstanding.
+  // Story 58.2 will fix the bug and remove the test.fails() wrapper.
+
+  test.fails(
+    'BUG(58-1): monthly payer with 1 past row + future rows incorrectly returns distributions_per_year=1',
+    async () => {
+      // System time: 2025-08-21T10:00:00Z (set in beforeEach)
+      // Realistic for a newly-listed monthly payer: dividendhistory.net has
+      // exactly 1 past ex-date plus several scheduled future ex-dates.
+      const sparseMonthlyRows: ProcessedRow[] = [
+        { amount: 0.25, date: new Date('2025-08-15') }, // only past row
+        { amount: 0.25, date: new Date('2025-09-15') }, // future
+        { amount: 0.25, date: new Date('2025-10-15') }, // future
+        { amount: 0.25, date: new Date('2025-11-15') }, // future
+        { amount: 0.25, date: new Date('2025-12-15') }, // future
+      ];
+
+      mockFetchDividendHistory.mockResolvedValueOnce(sparseMonthlyRows);
+
+      const result = await getDistributions('NEW-MONTHLY');
+
+      // calculateDistributionsPerYear filters to past rows → recentRows = 1 row
+      // recentRows.length <= 1 returns 1; actual cadence should yield 12.
+      // This assertion currently FAILS (result is 1), confirming the bug.
+      expect(result?.distributions_per_year).toBe(12);
+    }
+  );
+
+  test.fails(
+    'BUG(58-1): weekly payer with 1 past row + future rows incorrectly returns distributions_per_year=1',
+    async () => {
+      // System time: 2025-08-21T10:00:00Z (set in beforeEach)
+      // Realistic for a newly-listed weekly payer: dividendhistory.net has
+      // exactly 1 past ex-date plus several scheduled future ex-dates at 7-day intervals.
+      const sparseWeeklyRows: ProcessedRow[] = [
+        { amount: 0.05, date: new Date('2025-08-15') }, // only past row
+        { amount: 0.05, date: new Date('2025-08-22') }, // future (+7 days)
+        { amount: 0.05, date: new Date('2025-08-29') }, // future (+7 days)
+        { amount: 0.05, date: new Date('2025-09-05') }, // future (+7 days)
+        { amount: 0.05, date: new Date('2025-09-12') }, // future (+7 days)
+      ];
+
+      mockFetchDividendHistory.mockResolvedValueOnce(sparseWeeklyRows);
+
+      const result = await getDistributions('NEW-WEEKLY');
+
+      // calculateDistributionsPerYear filters to past rows → recentRows = 1 row
+      // recentRows.length <= 1 returns 1; actual cadence should yield 52.
+      // This assertion currently FAILS (result is 1), confirming the bug.
+      expect(result?.distributions_per_year).toBe(52);
+    }
+  );
 });
