@@ -66,8 +66,8 @@ test.describe('OXLC CUSIP-Stored Lots Reverse Split E2E', () => {
    * (which uses `OXLC` as the split symbol), the current implementation cannot
    * find the CUSIP-stored lots and therefore does not adjust them.
    *
-   * This test is marked `test.fail()` to document the known bug. It will be
-   * converted to a passing test once Story 61.2 fixes the root cause.
+   * Story 61.2 fixes the root cause by looking up CUSIP aliases via cusip_cache
+   * and querying lots under all matching universe IDs.
    *
    * Expected post-split quantities (1-for-5):
    *   300 shares @ $4.50 → 60 shares @ $22.50
@@ -78,9 +78,6 @@ test.describe('OXLC CUSIP-Stored Lots Reverse Split E2E', () => {
   test('should adjust CUSIP-stored lots for a 1-for-5 OXLC reverse split', async ({
     page,
   }) => {
-    // Mark as expected failure: current code cannot find CUSIP-stored lots.
-    // Remove test.fail() once Story 61.2 implements the fix.
-    test.fail();
     await navigateToUniverse(page);
 
     const responsePromise = page.waitForResponse((response) => {

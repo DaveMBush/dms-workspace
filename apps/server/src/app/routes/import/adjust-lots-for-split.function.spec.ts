@@ -5,10 +5,14 @@ vi.mock('../../prisma/prisma-client', function () {
     prisma: {
       universe: {
         findFirst: vi.fn(),
+        findMany: vi.fn(),
       },
       trades: {
         findMany: vi.fn(),
         update: vi.fn(),
+      },
+      cusip_cache: {
+        findMany: vi.fn(),
       },
       $transaction: vi.fn(),
     },
@@ -26,8 +30,9 @@ vi.mock('../../../utils/structured-logger', function () {
 describe('adjustLotsForSplit', function () {
   let adjustLotsForSplit: typeof import('./adjust-lots-for-split.function').adjustLotsForSplit;
   let prisma: {
-    universe: { findFirst: Mock };
+    universe: { findFirst: Mock; findMany: Mock };
     trades: { findMany: Mock; update: Mock };
+    cusip_cache: { findMany: Mock };
     $transaction: Mock;
   };
   let loggerWarn: Mock;
@@ -43,6 +48,10 @@ describe('adjustLotsForSplit', function () {
     prisma = (prismaModule as unknown as { prisma: typeof prisma }).prisma;
     const loggerModule = await import('../../../utils/structured-logger');
     loggerWarn = (loggerModule.logger as unknown as { warn: Mock }).warn;
+
+    // Default: no CUSIP aliases, no extra CUSIP universes
+    prisma.cusip_cache.findMany.mockResolvedValue([]);
+    prisma.universe.findMany.mockResolvedValue([]);
 
     // Create distinct tx-scoped mocks so tests can verify findMany/update/create were
     // called via the transaction proxy, not directly on the root prisma client
@@ -238,7 +247,7 @@ describe('adjustLotsForSplit', function () {
 
     expect(txFindMany).toHaveBeenCalledWith({
       where: {
-        universeId: 'u-7',
+        universeId: { in: ['u-7'] },
         accountId: 'acct-7',
         sell_date: null,
       },
@@ -394,5 +403,116 @@ describe('adjustLotsForSplit', function () {
     const call = txCreate.mock.calls[0][0];
     expect(call.data.quantity).toBeCloseTo(0.6, 10);
     expect(call.data.sell).toBe(5.0);
+  });
+
+  // CUSIP lot resolution tests (Epic 61, Story 61.2)
+
+  test('adjusts lots stored under CUSIP universe when ticker is passed (generic: FAKE / 000000001)', async function () {
+    prisma.universe.findFirst.mockResolvedValue({
+      id: 'u-fake',
+      last_price: 5.0,
+    });
+    prisma.cusip_cache.findMany.mockResolvedValue([{ cusip: '000000001' }]);
+    prisma.universe.findMany.mockResolvedValue([{ id: 'u-000000001' }]);
+    txFindMany.mockResolvedValue([
+      { id: 'lot-cusip', quantity: 500, buy: 4.0, accountId: 'acct-1' },
+    ]);
+    txUpdate.mockResolvedValue({});
+
+    const count = await adjustLotsForSplit('FAKE', 5, 'acct-1');
+
+    expect(count).toBe(1);
+    expect(txFindMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          universeId: { in: ['u-fake', 'u-000000001'] },
+        }),
+      })
+    );
+    expect(txUpdate).toHaveBeenCalledWith({
+      where: { id: 'lot-cusip' },
+      data: { quantity: 100, buy: 20.0 },
+    });
+  });
+
+  test('adjusts OXLC lots stored under CUSIP 691543102 (regression guard)', async function () {
+    prisma.universe.findFirst.mockResolvedValue({
+      id: 'u-oxlc',
+      last_price: 3.44,
+    });
+    prisma.cusip_cache.findMany.mockResolvedValue([{ cusip: '691543102' }]);
+    prisma.universe.findMany.mockResolvedValue([{ id: 'u-691543102' }]);
+    txFindMany.mockResolvedValue([
+      { id: 'lot-1', quantity: 300, buy: 4.5, accountId: 'acct-oxlc' },
+      { id: 'lot-2', quantity: 150, buy: 4.6, accountId: 'acct-oxlc' },
+      { id: 'lot-3', quantity: 500, buy: 4.0, accountId: 'acct-oxlc' },
+      { id: 'lot-4', quantity: 580, buy: 3.4, accountId: 'acct-oxlc' },
+    ]);
+    txUpdate.mockResolvedValue({});
+
+    const count = await adjustLotsForSplit('OXLC', 5, 'acct-oxlc');
+
+    expect(count).toBe(4);
+    expect(txFindMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          universeId: { in: ['u-oxlc', 'u-691543102'] },
+        }),
+      })
+    );
+    expect(txUpdate).toHaveBeenCalledWith({
+      where: { id: 'lot-1' },
+      data: { quantity: 60, buy: 22.5 },
+    });
+    expect(txUpdate).toHaveBeenCalledWith({
+      where: { id: 'lot-2' },
+      data: { quantity: 30, buy: 23.0 },
+    });
+    expect(txUpdate).toHaveBeenCalledWith({
+      where: { id: 'lot-3' },
+      data: { quantity: 100, buy: 20.0 },
+    });
+    expect(txUpdate).toHaveBeenCalledWith({
+      where: { id: 'lot-4' },
+      data: { quantity: 116, buy: 17.0 },
+    });
+  });
+
+  test('ticker-only lots (no CUSIP aliases) still adjusted correctly — non-regression', async function () {
+    prisma.universe.findFirst.mockResolvedValue({
+      id: 'u-msty',
+      last_price: 20.0,
+    });
+    prisma.cusip_cache.findMany.mockResolvedValue([]);
+    txFindMany.mockResolvedValue([
+      { id: 'lot-msty', quantity: 1000, buy: 10.0, accountId: 'acct-1' },
+    ]);
+    txUpdate.mockResolvedValue({});
+
+    const count = await adjustLotsForSplit('MSTY', 5, 'acct-1');
+
+    expect(count).toBe(1);
+    expect(txFindMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          universeId: { in: ['u-msty'] },
+        }),
+      })
+    );
+    expect(txUpdate).toHaveBeenCalledWith({
+      where: { id: 'lot-msty' },
+      data: { quantity: 200, buy: 50.0 },
+    });
+  });
+
+  test('logs CUSIP warning and returns 0 when called with a CUSIP symbol instead of ticker', async function () {
+    // '123456789' matches CUSIP pattern: 9 alphanumeric chars with at least one digit
+    const count = await adjustLotsForSplit('123456789', 5, 'acct-1');
+
+    expect(count).toBe(0);
+    expect(loggerWarn).toHaveBeenCalledWith(
+      expect.stringContaining('cannot resolve CUSIP')
+    );
+    expect(txFindMany).not.toHaveBeenCalled();
   });
 });

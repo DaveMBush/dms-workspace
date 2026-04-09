@@ -2,6 +2,7 @@ import { PrismaClient } from '@prisma/client';
 
 import { logger } from '../../../utils/structured-logger';
 import { prisma } from '../../prisma/prisma-client';
+import { isCusip } from './is-cusip.function';
 
 interface OpenLot {
   id: string;
@@ -26,6 +27,37 @@ function sumRemainders(openLots: OpenLot[], ratio: number): number {
   return openLots.reduce(function sumLotRemainder(sum: number, lot: OpenLot) {
     return sum + calcLotRemainder(lot, ratio);
   }, 0);
+}
+
+function buildSkipWarning(symbol: string, ratio: number): string | null {
+  if (!Number.isFinite(ratio) || ratio <= 0) {
+    return `adjustLotsForSplit: invalid ratio "${ratio}" for symbol "${symbol}" — skipping adjustment`;
+  }
+  if (isCusip(symbol)) {
+    return `adjustLotsForSplit: cannot resolve CUSIP "${symbol}" to ticker for reverse split — skipping adjustment`;
+  }
+  return null;
+}
+
+// CUSIP-stored lots — see Epic 61, Story 61.2. Lots may have been imported under the raw
+// CUSIP rather than the ticker symbol. Query universes for all CUSIP aliases of ticker.
+async function resolveCusipUniverseIds(
+  ticker: string,
+  tickerUniverseId: string
+): Promise<string[]> {
+  const cusipMappings = await prisma.cusip_cache.findMany({
+    where: { symbol: ticker },
+    select: { cusip: true },
+  });
+  if (cusipMappings.length === 0) {
+    return [tickerUniverseId];
+  }
+  const cusipSymbols = cusipMappings.map((m) => m.cusip);
+  const cusipUniverses = await prisma.universe.findMany({
+    where: { symbol: { in: cusipSymbols } },
+    select: { id: true },
+  });
+  return [tickerUniverseId, ...cusipUniverses.map((u) => u.id)];
 }
 
 async function updateLots(
@@ -89,10 +121,9 @@ export async function adjustLotsForSplit(
   ratio: number,
   accountId: string
 ): Promise<number> {
-  if (!Number.isFinite(ratio) || ratio <= 0) {
-    logger.warn(
-      `adjustLotsForSplit: invalid ratio "${ratio}" for symbol "${symbol}" — skipping adjustment`
-    );
+  const warnMsg = buildSkipWarning(symbol, ratio);
+  if (warnMsg) {
+    logger.warn(warnMsg);
     return 0;
   }
 
@@ -107,12 +138,17 @@ export async function adjustLotsForSplit(
     return 0;
   }
 
+  const allUniverseIds = await resolveCusipUniverseIds(
+    symbol,
+    universeEntry.id
+  );
+
   let updatedCount = 0;
 
   await prisma.$transaction(async function applyLotUpdates(tx) {
     const txClient = tx as unknown as PrismaClient;
     const openLots = await txClient.trades.findMany({
-      where: { universeId: universeEntry.id, accountId, sell_date: null },
+      where: { universeId: { in: allUniverseIds }, accountId, sell_date: null },
       select: { id: true, quantity: true, buy: true, accountId: true },
     });
 
