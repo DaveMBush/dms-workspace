@@ -38,15 +38,15 @@ returning empty results.
     - `Accept-Language`: `'en-US,en;q=0.9'`
     - `Referer`: `'https://dividendhistory.net/'`
 - [ ] Verify rate limiting is unchanged (AC: #4)
-  - [ ] Confirm `DIVIDEND_HISTORY_RATE_LIMIT_DELAY` is still 10 seconds (10 * 1000 ms)
+  - [ ] Confirm `DIVIDEND_HISTORY_RATE_LIMIT_DELAY` is still 10 seconds (10 \* 1000 ms)
   - [ ] Add a code comment explaining the delay is intentionally human-paced
 - [ ] Update stale log message in `get-consistent-distributions.function.ts` (AC: #6)
   - [ ] Find: `'fetchDividendHistory returned no data for ${symbol}, falling back to Yahoo Finance'`
   - [ ] Replace with: `'fetchDividendHistory returned no data for ${symbol}'`
   - [ ] **Note:** the unit test in `get-consistent-distributions.function.spec.ts` asserts this
-    exact message text — you MUST also update the test's expected string to match the new message
-    (this is an exception to the "do not modify tests" rule since the test asserts a literal string
-    we are changing as part of this story's scope)
+        exact message text — you MUST also update the test's expected string to match the new message
+        (this is an exception to the "do not modify tests" rule since the test asserts a literal string
+        we are changing as part of this story's scope)
 - [ ] Manually verify VFL returns dividend data (AC: #1)
   - [ ] Call `fetchDividendHistory('VFL')` in a test script or integration test
   - [ ] Confirm result is a non-empty array
@@ -67,7 +67,7 @@ returning empty results.
 const BASE_URL = 'https://dividendhistory.org/payout';
 
 async function fetchAndParseHtml(url, upperTicker) {
-  const response = await fetch(url);   // ← no headers currently
+  const response = await fetch(url); // ← no headers currently
   // ... parse response ...
 }
 ```
@@ -78,14 +78,10 @@ async function fetchAndParseHtml(url, upperTicker) {
 const BASE_URL = 'https://dividendhistory.net/payout';
 
 const BROWSER_HEADERS = {
-  'User-Agent':
-    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 ' +
-    '(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-  'Accept':
-    'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,' +
-    'image/webp,*/*;q=0.8',
+  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 ' + '(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+  Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,' + 'image/webp,*/*;q=0.8',
   'Accept-Language': 'en-US,en;q=0.9',
-  'Referer': 'https://dividendhistory.net/',
+  Referer: 'https://dividendhistory.net/',
 } as const;
 
 async function fetchAndParseHtml(url: string, upperTicker: string) {
@@ -124,9 +120,11 @@ const DIVIDEND_HISTORY_RATE_LIMIT_DELAY = 10 * 1000;
 ### HTML Parsing Compatibility
 
 The `extractDividendJson` function looks for:
+
 ```
 /<script[^>]+data-dividend-chart-json[^>]*>([\s\S]*?)<\/script>/
 ```
+
 Verify this pattern matches dividendhistory.net's HTML before implementing. If the structure
 differs, update the regex accordingly.
 

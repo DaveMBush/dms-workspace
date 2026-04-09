@@ -8,7 +8,7 @@ import { sortUniversesByComputedField } from './universe-computed-sort.function'
 interface ComputedSortParams {
   state: TableState;
   startIndex: number;
-  length: number;
+  length?: number;
   accountId: string | null;
   computedSort: SortColumn;
 }
@@ -29,6 +29,7 @@ export async function getTopUniversesComputedSort(
       last_price: true,
       trades: tradesSelect,
     },
+    distinct: ['id'],
     where: buildUniverseWhere(state),
     orderBy: { id: 'asc' },
   });
@@ -42,7 +43,10 @@ export async function getTopUniversesComputedSort(
   });
   return {
     startIndex,
-    indexes: allIds.slice(startIndex, startIndex + length),
+    indexes:
+      length !== undefined
+        ? allIds.slice(startIndex, startIndex + length)
+        : allIds.slice(startIndex),
     length: allIds.length,
   };
 }

@@ -1,5 +1,6 @@
 import { logger } from '../../../utils/structured-logger';
 import { prisma } from '../../prisma/prisma-client';
+import { resolveCusipUniverseIds } from './resolve-cusip-universe-ids.helper';
 
 function sumOpenQuantity(sum: number, trade: { quantity: number }): number {
   return sum + trade.quantity;
@@ -13,11 +14,16 @@ function sumOpenQuantity(sum: number, trade: { quantity: number }): number {
  * - ratio > 1 → reverse split (e.g., 5 means 1-for-5 reverse split)
  * - ratio < 1 → forward split (e.g., 0.5 means 2-for-1 forward split)
  *
+ * @param symbol - The ticker symbol to calculate the split ratio for
+ * @param csvPostSplitQuantity - The post-split quantity from the CSV row (must be > 0)
+ * @param accountId - Only consider open lots belonging to this account
+ *
  * Returns null if no open lots exist for the symbol (caller must skip the split row).
  */
 export async function calculateSplitRatio(
   symbol: string,
-  csvPostSplitQuantity: number
+  csvPostSplitQuantity: number,
+  accountId: string
 ): Promise<number | null> {
   if (!Number.isFinite(csvPostSplitQuantity) || csvPostSplitQuantity <= 0) {
     logger.warn(
@@ -37,9 +43,15 @@ export async function calculateSplitRatio(
     return null;
   }
 
+  const allUniverseIds = await resolveCusipUniverseIds(
+    symbol,
+    universeEntry.id
+  );
+
   const openTrades = await prisma.trades.findMany({
     where: {
-      universeId: universeEntry.id,
+      universeId: { in: allUniverseIds },
+      accountId,
       sell_date: null,
     },
     select: { quantity: true },

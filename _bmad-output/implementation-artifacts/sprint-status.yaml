@@ -350,3 +350,28 @@ development_status:
   53-1-investigate-dividendhistory-net-html-structure: backlog
   53-2-fix-dividendhistory-net-integration: backlog
   epic-53-retrospective: optional
+
+  # ── Epic 54: Restore Universe Sort Stickiness (Regression from Epic 43) ───────
+  epic-54: backlog
+  54-1-failing-e2e-universe-sort-stickiness: backlog
+  54-2-fix-universe-sort-stickiness: backlog
+  epic-54-retrospective: optional
+
+  # ── Epic 55: Fix Duplicate Symbols on Universe Screen ────────────────────────
+  epic-55: backlog
+  55-1-failing-e2e-universe-duplicate-symbols: backlog
+  55-2-fix-universe-duplicate-symbols: backlog
+  epic-55-retrospective: optional
+
+  # ── Epic 56: Fix Universe Initial Load with Symbol Ascending Sort ────────────
+  epic-56: backlog
+  56-1-failing-e2e-universe-symbol-sort-empty-rows: backlog
+  56-2-fix-universe-symbol-sort-empty-rows: backlog
+  epic-56-retrospective: optional
+
+  # ── Epic 57: Fix CSV Reverse-Split Import Handling ───────────────────────────
+  epic-57: backlog
+  57-1-investigate-reverse-split-import-code: backlog
+  57-2-implement-reverse-split-detection-ratio: backlog
+  57-3-e2e-reverse-split-csv-import: backlog
+  epic-57-retrospective: optional

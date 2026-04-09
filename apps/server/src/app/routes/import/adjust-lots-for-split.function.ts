@@ -2,6 +2,8 @@ import { PrismaClient } from '@prisma/client';
 
 import { logger } from '../../../utils/structured-logger';
 import { prisma } from '../../prisma/prisma-client';
+import { isCusip } from './is-cusip.function';
+import { resolveCusipUniverseIds } from './resolve-cusip-universe-ids.helper';
 
 interface OpenLot {
   id: string;
@@ -26,6 +28,16 @@ function sumRemainders(openLots: OpenLot[], ratio: number): number {
   return openLots.reduce(function sumLotRemainder(sum: number, lot: OpenLot) {
     return sum + calcLotRemainder(lot, ratio);
   }, 0);
+}
+
+function buildSkipWarning(symbol: string, ratio: number): string | null {
+  if (!Number.isFinite(ratio) || ratio <= 0) {
+    return `adjustLotsForSplit: invalid ratio "${ratio}" for symbol "${symbol}" — skipping adjustment`;
+  }
+  if (isCusip(symbol)) {
+    return `adjustLotsForSplit: cannot resolve CUSIP "${symbol}" to ticker for reverse split — skipping adjustment`;
+  }
+  return null;
 }
 
 async function updateLots(
@@ -68,7 +80,7 @@ async function recordFractionalSale(
 }
 
 /**
- * Adjusts all open position lots for a given symbol by applying a split ratio.
+ * Adjusts all open position lots for a given symbol and account by applying a split ratio.
  *
  * For each open lot:
  *   newQuantity     = Math.floor(lot.quantity / ratio)  // whole shares
@@ -79,18 +91,19 @@ async function recordFractionalSale(
  *
  * All updates are applied atomically within a single Prisma transaction.
  *
- * @param symbol - The ticker symbol whose lots should be adjusted
- * @param ratio  - The split ratio (>1 for reverse split, <1 for forward split)
+ * @param symbol    - The ticker symbol whose lots should be adjusted
+ * @param ratio     - The split ratio (>1 for reverse split, <1 for forward split)
+ * @param accountId - Only adjust lots belonging to this account
  * @returns The number of lots updated
  */
 export async function adjustLotsForSplit(
   symbol: string,
-  ratio: number
+  ratio: number,
+  accountId: string
 ): Promise<number> {
-  if (!Number.isFinite(ratio) || ratio <= 0) {
-    logger.warn(
-      `adjustLotsForSplit: invalid ratio "${ratio}" for symbol "${symbol}" — skipping adjustment`
-    );
+  const warnMsg = buildSkipWarning(symbol, ratio);
+  if (warnMsg !== null) {
+    logger.warn(warnMsg);
     return 0;
   }
 
@@ -105,12 +118,15 @@ export async function adjustLotsForSplit(
     return 0;
   }
 
+  const universeId = universeEntry.id;
+  const allUniverseIds = await resolveCusipUniverseIds(symbol, universeId);
+
   let updatedCount = 0;
 
   await prisma.$transaction(async function applyLotUpdates(tx) {
     const txClient = tx as unknown as PrismaClient;
     const openLots = await txClient.trades.findMany({
-      where: { universeId: universeEntry.id, sell_date: null },
+      where: { universeId: { in: allUniverseIds }, accountId, sell_date: null },
       select: { id: true, quantity: true, buy: true, accountId: true },
     });
 
@@ -127,7 +143,7 @@ export async function adjustLotsForSplit(
 
     if (totalRemainder > 0) {
       const saleData: FractionalSaleData = {
-        universeId: universeEntry.id,
+        universeId,
         symbol,
         lastPrice: universeEntry.last_price,
         openLots,

@@ -16,8 +16,6 @@ import { isUniverseComputedSort } from './is-universe-computed-sort.function';
 import { PartialArrayDefinition } from './partial-array-definition.interface';
 import { Top } from './top.interface';
 
-const UNIVERSE_PAGE_SIZE = 50;
-
 async function getTopAccounts(): Promise<string[]> {
   const topAccounts = await prisma.accounts.findMany({
     select: {
@@ -60,7 +58,7 @@ function findComputedSortColumn(state: TableState): SortColumn | undefined {
 async function getTopUniverses(
   state: TableState,
   startIndex: number,
-  length: number
+  length?: number
 ): Promise<PartialArrayDefinition> {
   const accountId = getAccountIdFromState(state);
   const computedSort: SortColumn | undefined = findComputedSortColumn(state);
@@ -75,17 +73,20 @@ async function getTopUniverses(
     });
   }
 
+  const findManyArgs: Parameters<typeof prisma.universe.findMany>[0] = {
+    select: {
+      id: true,
+    },
+    where: buildUniverseWhere(state),
+    orderBy: buildUniverseOrderBy(state),
+    skip: startIndex,
+  };
+  if (length !== undefined) {
+    findManyArgs.take = length;
+  }
   const [totalCount, universes] = await Promise.all([
     prisma.universe.count({ where: buildUniverseWhere(state) }),
-    prisma.universe.findMany({
-      select: {
-        id: true,
-      },
-      where: buildUniverseWhere(state),
-      orderBy: buildUniverseOrderBy(state),
-      skip: startIndex,
-      take: length,
-    }),
+    prisma.universe.findMany(findManyArgs),
   ]);
   return {
     startIndex,
@@ -198,7 +199,7 @@ function handleTopRoute(fastify: FastifyInstance): void {
         screens,
       ] = await Promise.all([
         getTopAccounts(),
-        getTopUniverses(universeState, 0, UNIVERSE_PAGE_SIZE),
+        getTopUniverses(universeState, 0),
         getTopRiskGroups(),
         getTopDivDepositTypes(),
         getTopHolidays(),
