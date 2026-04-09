@@ -101,55 +101,53 @@ test.describe('Universe Scrolling Regression — blank rows on fast scroll', () 
     await page.waitForSelector(ROW_SELECTOR, { timeout: 15000 });
   });
 
-  test(
-    'should have no blank symbol cells after fast scroll to bottom',
-    async ({ page }) => {
-      // Regression guard for Epics 29/31/44/60 (CDK virtual scroll blank rows).
-      // Root cause Epic 60: enrichUniverseWithRiskGroups returns null for
-      // isLoading rows, shrinking the data array mid-scroll and causing CDK
-      // viewport height instability (blank rows at the current scroll position).
-      const viewport = page.locator(VIEWPORT_SELECTOR);
-      await expect(viewport).toBeVisible({ timeout: 10000 });
+  test('should have no blank symbol cells after fast scroll to bottom', async ({
+    page,
+  }) => {
+    // Regression guard for Epics 29/31/44/60 (CDK virtual scroll blank rows).
+    // Root cause Epic 60: enrichUniverseWithRiskGroups returns null for
+    // isLoading rows, shrinking the data array mid-scroll and causing CDK
+    // viewport height instability (blank rows at the current scroll position).
+    const viewport = page.locator(VIEWPORT_SELECTOR);
+    await expect(viewport).toBeVisible({ timeout: 10000 });
 
-      // Fast-scroll to the bottom in one large jump to maximise the chance of
-      // triggering the isLoading window (SmartNgRX lazy-load in-flight).
-      await viewport.evaluate(function scrollToBottom(node: Element): void {
-        node.scrollTop = node.scrollHeight;
-      });
+    // Fast-scroll to the bottom in one large jump to maximise the chance of
+    // triggering the isLoading window (SmartNgRX lazy-load in-flight).
+    await viewport.evaluate(function scrollToBottom(node: Element): void {
+      node.scrollTop = node.scrollHeight;
+    });
 
-      await assertVisibleSymbolsNonEmpty(
-        page,
-        'Visible rows have empty symbol cells after fast scroll to bottom. ' +
-          'This indicates the CDK virtual scroll blank-row regression from Epic 60 is active. ' +
-          'See enrich-universe-with-risk-groups.function.ts isLoading filter.'
-      );
-    }
-  );
+    await assertVisibleSymbolsNonEmpty(
+      page,
+      'Visible rows have empty symbol cells after fast scroll to bottom. ' +
+        'This indicates the CDK virtual scroll blank-row regression from Epic 60 is active. ' +
+        'See enrich-universe-with-risk-groups.function.ts isLoading filter.'
+    );
+  });
 
-  test(
-    'should have no blank symbol cells after scroll from bottom back to top',
-    async ({ page }) => {
-      // Regression guard: scroll to bottom first, then back to top.
-      // In the regression, re-entering rows that were evicted from the viewport
-      // trigger another isLoading cycle → more empty rows at the top.
-      const viewport = page.locator(VIEWPORT_SELECTOR);
-      await expect(viewport).toBeVisible({ timeout: 10000 });
+  test('should have no blank symbol cells after scroll from bottom back to top', async ({
+    page,
+  }) => {
+    // Regression guard: scroll to bottom first, then back to top.
+    // In the regression, re-entering rows that were evicted from the viewport
+    // trigger another isLoading cycle → more empty rows at the top.
+    const viewport = page.locator(VIEWPORT_SELECTOR);
+    await expect(viewport).toBeVisible({ timeout: 10000 });
 
-      // Go to bottom
-      await viewport.evaluate(function scrollToBottom(node: Element): void {
-        node.scrollTop = node.scrollHeight;
-      });
+    // Go to bottom
+    await viewport.evaluate(function scrollToBottom(node: Element): void {
+      node.scrollTop = node.scrollHeight;
+    });
 
-      // Return to top
-      await viewport.evaluate(function scrollToTop(node: Element): void {
-        node.scrollTop = 0;
-      });
+    // Return to top
+    await viewport.evaluate(function scrollToTop(node: Element): void {
+      node.scrollTop = 0;
+    });
 
-      await assertVisibleSymbolsNonEmpty(
-        page,
-        'Visible rows have empty symbol cells after scrolling bottom→top. ' +
-          'Epic 60 regression: isLoading filter in enrich-universe-with-risk-groups shrinks array on re-entry.'
-      );
-    }
-  );
+    await assertVisibleSymbolsNonEmpty(
+      page,
+      'Visible rows have empty symbol cells after scrolling bottom→top. ' +
+        'Epic 60 regression: isLoading filter in enrich-universe-with-risk-groups shrinks array on re-entry.'
+    );
+  });
 });

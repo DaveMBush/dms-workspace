@@ -93,6 +93,7 @@ combinations.
 **Agent:** Autonomous dev agent
 
 #### Prior fix history
+
 - **Epic 29 (Story 29.1):** `rowHeight` mismatch — template used `[rowHeight]="48"` but actual rendered height was 52px. Fix: removed explicit binding, using default of 52. Documented in `docs/row-height-audit.md`.
 - **Epic 31 (Story 31.1):** Header jump during scroll — `contain: strict` on `.virtual-scroll-viewport` broke `position:sticky` on header cells during scroll. Fix: changed `contain: strict → contain: paint` in `base-table.component.scss`.
 - **Epic 44 (Stories 44.1-44.3):** CSS `will-change: transform` on rows caused paint thrashing and jank. Fix: removed `will-change`, scoped CSS transitions, and removed excessive `cdr.markForCheck()` calls from the `dataSource` effect.
@@ -104,17 +105,19 @@ The regression was introduced in **Story 56.2** (commit `5fd758d`, reverted/rein
 File: `apps/dms-material/src/app/global/global-universe/enrich-universe-with-risk-groups.function.ts`
 
 In `buildEnrichedEntry()`:
+
 ```typescript
 if ((universe as unknown as SmartNgRXRowBase).isLoading === true) {
-  return null;  // <-- Root cause of Epic 60 regression
+  return null; // <-- Root cause of Epic 60 regression
 }
 ```
 
 And in the outer loop:
+
 ```typescript
 const entry = buildEnrichedEntry(id, i, universes[i], riskGroupMap);
 if (entry !== null) {
-  result.push(entry);  // Loading rows silently removed from array
+  result.push(entry); // Loading rows silently removed from array
 }
 ```
 
@@ -125,6 +128,7 @@ When the SmartNgRX call completes, the rows re-enter the array and the scan heig
 Story 56.2 added this filter to prevent empty-symbol rows from clustering at the top during client-side symbol sort (empty string < any letter). The trade-off introduced the scroll regression.
 
 #### Key source files examined
+
 - `apps/dms-material/src/app/global/global-universe/global-universe.component.ts` — uses `visibleRange` signal fed by `(renderedRangeChange)` output from `dms-base-table`
 - `apps/dms-material/src/app/global/global-universe/enrich-universe-with-risk-groups.function.ts` — contains the root cause (`isLoading → null` filter)
 - `apps/dms-material/src/app/shared/components/base-table/base-table.component.ts` — CDK CDK virtual scroll host; emits `renderedRangeChange` via `debounceTime(100)` pipe on `renderedRangeStream`
@@ -134,14 +138,16 @@ Story 56.2 added this filter to prevent empty-symbol rows from clustering at the
 - `apps/dms-material-e2e/src/helpers/seed-scroll-universe-data.helper.ts` — seeds 60 rows; reused in new test
 
 #### Test written
+
 `apps/dms-material-e2e/src/universe-scrolling-regression.spec.ts`
 
 Two test cases:
+
 1. Fast-scroll to bottom → assert no empty symbol cells at current viewport position
 2. Scroll bottom → top → assert no empty symbol cells at top
 
 Both tests use `seedScrollUniverseData` (60 rows) and assert that `SYMBOL_CELL_SELECTOR` cells all have non-empty text content after the scroll completes.
 
 #### Note on test reproducibility
-Due to SmartNgRX row caching, the isLoading window may be very short in a clean test environment if the server responds quickly. The tests are written to assert correct behavior after a 500ms settle — if SmartNgRX loads rows within that window the tests pass (regression guard mode). If the bug is active (rows excluded before settlement) the tests fail.
 
+Due to SmartNgRX row caching, the isLoading window may be very short in a clean test environment if the server responds quickly. The tests are written to assert correct behavior after a 500ms settle — if SmartNgRX loads rows within that window the tests pass (regression guard mode). If the bug is active (rows excluded before settlement) the tests fail.
