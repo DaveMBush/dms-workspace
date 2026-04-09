@@ -25,8 +25,11 @@ const FIXTURES_DIR = path.resolve(__dirname, '..', 'fixtures');
 
 /** Parse an rgb/rgba string from getComputedStyle into [r, g, b, a] 0–255 / 0–1. */
 function parseRgba(raw: string): [number, number, number, number] {
-  const m = raw.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/);
-  if (!m) throw new Error(`Cannot parse colour: ${raw}`);
+  const rgbaPattern = /rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/;
+  const m = rgbaPattern.exec(raw);
+  if (!m) {
+    throw new Error(`Cannot parse colour: ${raw}`);
+  }
   return [
     parseInt(m[1], 10),
     parseInt(m[2], 10),
@@ -117,7 +120,9 @@ test.describe('Import dialog filename visibility in dark mode', () => {
     const { textColorRaw, bgColorRaw, cssVar } = await page.evaluate(() => {
       const span = document.querySelector('span.selected-file-name');
       const surface = document.querySelector('.mat-mdc-dialog-surface');
-      if (!span || !surface) throw new Error('Required elements not found');
+      if (!span || !surface) {
+        throw new Error('Required elements not found');
+      }
 
       const spanStyle = window.getComputedStyle(span);
       const surfaceStyle = window.getComputedStyle(surface);
