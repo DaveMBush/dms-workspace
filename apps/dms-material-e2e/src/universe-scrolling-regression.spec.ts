@@ -26,7 +26,7 @@
  *   and the assertion will fail.
  */
 
-import { expect, Page, test } from 'playwright/test';
+import { expect, Locator, Page, test } from 'playwright/test';
 
 import { login } from './helpers/login.helper';
 import { seedScrollUniverseData } from './helpers/seed-scroll-universe-data.helper';
@@ -75,6 +75,27 @@ async function assertVisibleSymbolsNonEmpty(
     .toBe(0);
 }
 
+// ─── Scroll Helpers ──────────────────────────────────────────────────────────
+
+/**
+ * Scroll the CDK virtual-scroll viewport to the very bottom in one jump.
+ * Used across multiple tests to trigger SmartNgRX lazy-load in-flight windows.
+ */
+async function scrollViewportToBottom(viewport: Locator): Promise<void> {
+  await viewport.evaluate(function setScrollTop(node: Element): void {
+    node.scrollTop = node.scrollHeight;
+  });
+}
+
+/**
+ * Scroll the CDK virtual-scroll viewport back to the top.
+ */
+async function scrollViewportToTop(viewport: Locator): Promise<void> {
+  await viewport.evaluate(function setScrollTop(node: Element): void {
+    node.scrollTop = 0;
+  });
+}
+
 // ─── Universe Scrolling Regression Tests ─────────────────────────────────────
 
 test.describe('Universe Scrolling Regression — blank rows on fast scroll', () => {
@@ -113,9 +134,7 @@ test.describe('Universe Scrolling Regression — blank rows on fast scroll', () 
 
     // Fast-scroll to the bottom in one large jump to maximise the chance of
     // triggering the isLoading window (SmartNgRX lazy-load in-flight).
-    await viewport.evaluate(function scrollToBottom(node: Element): void {
-      node.scrollTop = node.scrollHeight;
-    });
+    await scrollViewportToBottom(viewport);
 
     await assertVisibleSymbolsNonEmpty(
       page,
@@ -135,14 +154,10 @@ test.describe('Universe Scrolling Regression — blank rows on fast scroll', () 
     await expect(viewport).toBeVisible({ timeout: 10000 });
 
     // Go to bottom
-    await viewport.evaluate(function scrollToBottom(node: Element): void {
-      node.scrollTop = node.scrollHeight;
-    });
+    await scrollViewportToBottom(viewport);
 
     // Return to top
-    await viewport.evaluate(function scrollToTop(node: Element): void {
-      node.scrollTop = 0;
-    });
+    await scrollViewportToTop(viewport);
 
     await assertVisibleSymbolsNonEmpty(
       page,
@@ -170,18 +185,10 @@ test.describe('Universe Scrolling Regression — blank rows on fast scroll', () 
     await expect(viewport).toBeVisible({ timeout: 10000 });
 
     // Oscillate: bottom → top → bottom → top
-    await viewport.evaluate(function scrollToBottom(node: Element): void {
-      node.scrollTop = node.scrollHeight;
-    });
-    await viewport.evaluate(function scrollToTop(node: Element): void {
-      node.scrollTop = 0;
-    });
-    await viewport.evaluate(function scrollToBottom(node: Element): void {
-      node.scrollTop = node.scrollHeight;
-    });
-    await viewport.evaluate(function scrollToTop(node: Element): void {
-      node.scrollTop = 0;
-    });
+    await scrollViewportToBottom(viewport);
+    await scrollViewportToTop(viewport);
+    await scrollViewportToBottom(viewport);
+    await scrollViewportToTop(viewport);
 
     await assertVisibleSymbolsNonEmpty(
       page,
@@ -207,16 +214,17 @@ test.describe('Universe Scrolling Regression — blank rows on fast scroll', () 
     const symbolHeader = page.getByRole('button', { name: 'Symbol' });
     await symbolHeader.click();
 
-    // Wait for the table to settle with at least one row before scrolling.
-    await page.waitForSelector(ROW_SELECTOR, { timeout: 15000 });
+    // Wait for the sort network round-trip to complete before scrolling.
+    // A short debounce followed by networkidle is more reliable than
+    // waitForSelector (rows persist from beforeEach and pass immediately).
+    await page.waitForTimeout(100);
+    await page.waitForLoadState('networkidle');
 
     const viewport = page.locator(VIEWPORT_SELECTOR);
     await expect(viewport).toBeVisible({ timeout: 10000 });
 
     // Fast-scroll to the bottom to enter the new sorted data range.
-    await viewport.evaluate(function scrollToBottom(node: Element): void {
-      node.scrollTop = node.scrollHeight;
-    });
+    await scrollViewportToBottom(viewport);
 
     await assertVisibleSymbolsNonEmpty(
       page,
@@ -244,16 +252,15 @@ test.describe('Universe Scrolling Regression — blank rows on fast scroll', () 
     await expect(symbolInput).toBeVisible({ timeout: 10000 });
     await symbolInput.fill('USCRL');
 
-    // Wait for filtered rows to start appearing.
-    await page.waitForSelector(ROW_SELECTOR, { timeout: 15000 });
+    // Wait for the filter network round-trip to complete before scrolling.
+    await page.waitForTimeout(100);
+    await page.waitForLoadState('networkidle');
 
     const viewport = page.locator(VIEWPORT_SELECTOR);
     await expect(viewport).toBeVisible({ timeout: 10000 });
 
     // Fast-scroll to the bottom while the filter response may still be loading.
-    await viewport.evaluate(function scrollToBottom(node: Element): void {
-      node.scrollTop = node.scrollHeight;
-    });
+    await scrollViewportToBottom(viewport);
 
     await assertVisibleSymbolsNonEmpty(
       page,
