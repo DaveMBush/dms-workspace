@@ -100,38 +100,56 @@ export function enrichUniverseWithRiskGroups(
   const result: EnrichedUniverse[] = [];
 
   for (let i = 0; i < totalLength; i++) {
-    const id = isProxy ? smartArr.getIdAtIndex!(i) : 'loaded';
-    const entry = buildEnrichedEntry(id, i, universes[i], riskGroupMap);
-    if (entry !== null) {
-      result.push(entry);
-    }
+    const rowItem = universes[i];
+    // Prefer the proxy's getIdAtIndex so SmartNgRX can return its canonical key.
+    // For plain (non-proxy) arrays, derive the id from the row itself so
+    // placeholder entries retain a stable, per-row key instead of the shared
+    // literal 'loaded'. This preserves the unique id through placeholder and
+    // loading states, which is required for CDK virtual-scroll trackBy stability.
+    const id = isProxy ? smartArr.getIdAtIndex!(i) : rowItem.id;
+    const entry = buildEnrichedEntry(id, i, rowItem, riskGroupMap);
+    result.push(entry);
   }
 
   return result;
 }
 
 // Builds the EnrichedUniverse entry for a single loop iteration.
-// Returns null for SmartNgRX loading rows so they are excluded from the
-// rendered result — prevents empty symbol cells during the /api/universe
-// in-flight window (Story 56.2 fix).
+// Returns a placeholder for SmartNgRX loading rows so the data array
+// length stays stable during in-flight API calls.
+//
+// Fix: return placeholder instead of null for isLoading rows — resolves CDK
+// virtual scroll blank rows during rapid scroll (Epics 29, 31, 44, and 60).
+// Root cause: returning null shrinks the data array passed to CdkVirtualScrollViewport.
+// A smaller array → recalculated (shorter) total scroll height → viewport
+// position jump → blank rows at the new scroll position.
+// Story 56.2 introduced the null-return to prevent empty symbols clustering at
+// the top on client-side symbol sort. That fix is preserved here by using a
+// placeholder with the row's resolved id (not an empty string), which keeps the
+// array length stable while still holding a unique key. When SmartNgRX finishes
+// loading the row, Angular re-renders the placeholder with real data.
+// See Story 60.1 Dev Agent Record for full investigation details.
 function buildEnrichedEntry(
   id: string | undefined,
   index: number,
   universe: Universe | string,
   riskGroupMap: Map<string, string>
-): EnrichedUniverse | null {
-  if (id === undefined || id.startsWith('index')) {
-    return buildPlaceholderUniverseEntry(id ?? `placeholder-${String(index)}`);
-  }
+): EnrichedUniverse {
+  // Raw-string placeholder from SmartNgRX (e.g. 'placeholder-id') — use the
+  // string itself as both the id and the placeholder key.
   if (typeof universe === 'string') {
     return buildPlaceholderUniverseEntry(universe);
   }
-  // Skip rows that SmartNgRX is still fetching — isLoading is set to true on
-  // the defaultRow while loadByIds is in-flight. Returning null excludes the
-  // row from the result, preventing empty symbol cells from appearing during
-  // the initial load window (Story 56.2 fix).
+  if (id === undefined || id.startsWith('index')) {
+    return buildPlaceholderUniverseEntry(id ?? `placeholder-${String(index)}`);
+  }
+  // Return placeholder (not null) for rows SmartNgRX is still fetching.
+  // Using the row's real id prevents client-side sort from clustering loading
+  // rows at the top (empty symbol < any letter) — the id is a UUID that sorts
+  // to the end of the alphabet range, away from real symbols like 'AAPL'.
+  // This issue has recurred in Epics 29, 31, 44, and 60.
   if ((universe as unknown as SmartNgRXRowBase).isLoading === true) {
-    return null;
+    return buildPlaceholderUniverseEntry(id);
   }
   return buildFullUniverseEntry(universe, riskGroupMap);
 }

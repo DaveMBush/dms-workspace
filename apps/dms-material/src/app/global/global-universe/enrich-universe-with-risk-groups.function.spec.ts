@@ -116,7 +116,11 @@ describe('enrichUniverseWithRiskGroups', () => {
     expect(result[1]).not.toBe(mockUniverses[1]);
   });
 
-  it('should exclude SmartNgRX loading rows (isLoading === true) from the result (Story 56.2 fix)', () => {
+  it('should include SmartNgRX loading rows as placeholders to keep array length stable (Story 60.2 fix)', () => {
+    // Fix for Epic 60 regression: loading rows must remain in the result array
+    // as placeholders so CDK virtual scroll viewport height stays stable during
+    // rapid scroll. Returning null (old Story 56.2 behavior) caused array length
+    // to fluctuate, resulting in scroll position jumps and blank rows.
     const loadingUniverse = {
       ...mockUniverses[0],
       id: 'loading-id',
@@ -127,7 +131,42 @@ describe('enrichUniverseWithRiskGroups', () => {
 
     const result = enrichUniverseWithRiskGroups(mixedUniverses, mockRiskGroups);
 
-    expect(result).toHaveLength(1);
-    expect(result[0].id).toBe('2');
+    // Both rows must be present (no null filtering) so array length is stable
+    expect(result).toHaveLength(2);
+    // Loading row is a placeholder — id is preserved, symbol is empty
+    expect(result[0].id).toBe('loading-id');
+    expect(result[0].symbol).toBe('');
+    // Non-loading row is fully populated
+    expect(result[1].id).toBe('2');
+  });
+
+  it('should preserve row id via getIdAtIndex (SmartNgRX proxy path) for loading rows', () => {
+    // Covers the proxy path: SmartNgRX wraps the Universe array with getIdAtIndex
+    // so enrichUniverseWithRiskGroups uses the proxy id rather than the row id.
+    const loadingUniverse = {
+      ...mockUniverses[0],
+      id: 'real-uuid-from-store',
+      symbol: '',
+      isLoading: true,
+    } as Universe & { isLoading: boolean };
+
+    // Simulate SmartNgRX proxy: array with getIdAtIndex method
+    const proxyArray = [loadingUniverse, mockUniverses[1]] as Universe[];
+    const proxyLike = proxyArray as unknown as Universe[] & {
+      getIdAtIndex(i: number): string | undefined;
+    };
+    proxyLike.getIdAtIndex = function getIdAtIndex(i: number): string {
+      return (proxyArray[i] as Universe & { id: string }).id;
+    };
+
+    const result = enrichUniverseWithRiskGroups(proxyLike, mockRiskGroups);
+
+    // Array length is stable — no null filtering
+    expect(result).toHaveLength(2);
+    // Proxy path: id comes from getIdAtIndex → 'real-uuid-from-store'
+    expect(result[0].id).toBe('real-uuid-from-store');
+    expect(result[0].symbol).toBe('');
+    // Non-loading row is fully populated
+    expect(result[1].id).toBe('2');
   });
 });
