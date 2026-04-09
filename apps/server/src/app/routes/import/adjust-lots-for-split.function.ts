@@ -3,6 +3,7 @@ import { PrismaClient } from '@prisma/client';
 import { logger } from '../../../utils/structured-logger';
 import { prisma } from '../../prisma/prisma-client';
 import { isCusip } from './is-cusip.function';
+import { resolveCusipUniverseIds } from './resolve-cusip-universe-ids.helper';
 
 interface OpenLot {
   id: string;
@@ -37,27 +38,6 @@ function buildSkipWarning(symbol: string, ratio: number): string | null {
     return `adjustLotsForSplit: cannot resolve CUSIP "${symbol}" to ticker for reverse split — skipping adjustment`;
   }
   return null;
-}
-
-// CUSIP-stored lots — see Epic 61, Story 61.2. Lots may have been imported under the raw
-// CUSIP rather than the ticker symbol. Query universes for all CUSIP aliases of ticker.
-async function resolveCusipUniverseIds(
-  ticker: string,
-  tickerUniverseId: string
-): Promise<string[]> {
-  const cusipMappings = await prisma.cusip_cache.findMany({
-    where: { symbol: ticker },
-    select: { cusip: true },
-  });
-  if (cusipMappings.length === 0) {
-    return [tickerUniverseId];
-  }
-  const cusipSymbols = cusipMappings.map((m) => m.cusip);
-  const cusipUniverses = await prisma.universe.findMany({
-    where: { symbol: { in: cusipSymbols } },
-    select: { id: true },
-  });
-  return [tickerUniverseId, ...cusipUniverses.map((u) => u.id)];
 }
 
 async function updateLots(

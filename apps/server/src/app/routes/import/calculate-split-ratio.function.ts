@@ -1,29 +1,9 @@
 import { logger } from '../../../utils/structured-logger';
 import { prisma } from '../../prisma/prisma-client';
+import { resolveCusipUniverseIds } from './resolve-cusip-universe-ids.helper';
 
 function sumOpenQuantity(sum: number, trade: { quantity: number }): number {
   return sum + trade.quantity;
-}
-
-// CUSIP-stored lots — see Epic 61, Story 61.2. Lots may have been imported under the raw
-// CUSIP rather than the ticker symbol. Query universes for all CUSIP aliases of ticker.
-async function resolveCusipUniverseIds(
-  ticker: string,
-  tickerUniverseId: string
-): Promise<string[]> {
-  const cusipMappings = await prisma.cusip_cache.findMany({
-    where: { symbol: ticker },
-    select: { cusip: true },
-  });
-  if (cusipMappings.length === 0) {
-    return [tickerUniverseId];
-  }
-  const cusipSymbols = cusipMappings.map((m) => m.cusip);
-  const cusipUniverses = await prisma.universe.findMany({
-    where: { symbol: { in: cusipSymbols } },
-    select: { id: true },
-  });
-  return [tickerUniverseId, ...cusipUniverses.map((u) => u.id)];
 }
 
 /**
