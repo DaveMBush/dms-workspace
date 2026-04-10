@@ -153,6 +153,7 @@ export class GlobalUniverseComponent implements OnDestroy {
   });
 
   // Server handles symbol/risk_group filtering; expired and yield % need client-side filtering
+  // Rows with empty symbol are SmartNgRX default/loading placeholders — exclude them
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signal
   readonly filteredData$ = computed(() => {
     const rawData = this.universeService.universes();
@@ -164,6 +165,8 @@ export class GlobalUniverseComponent implements OnDestroy {
       riskGroupFilter: this.riskGroupFilter$(),
       expiredFilter: this.expiredFilter$(),
       minYieldFilter: this.minYieldFilter$(),
+    }).filter(function excludeLoadingRows(row) {
+      return row.symbol !== '';
     });
   });
 

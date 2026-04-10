@@ -575,12 +575,12 @@ describe('Top Route Handler', () => {
       });
     });
 
-    it('should return all universe IDs when count exceeds previous page size', async () => {
-      const allIds = Array.from({ length: 100 }, (_, i) => ({
+    it('should return first page of universe IDs when total count exceeds page size', async () => {
+      const firstPage = Array.from({ length: 50 }, (_, i) => ({
         id: `uni-${i + 1}`,
       }));
       mockPrismaUniverse.count.mockResolvedValue(100);
-      mockPrismaUniverse.findMany.mockResolvedValue(allIds);
+      mockPrismaUniverse.findMany.mockResolvedValue(firstPage);
 
       const response = await app.inject({
         method: 'POST',
@@ -591,11 +591,11 @@ describe('Top Route Handler', () => {
       expect(response.statusCode).toBe(200);
       const body = JSON.parse(response.body);
       expect(body[0].universes.startIndex).toBe(0);
-      expect(body[0].universes.indexes).toHaveLength(100);
+      expect(body[0].universes.indexes).toHaveLength(50);
       expect(body[0].universes.length).toBe(100);
     });
 
-    it('should apply skip without take to findMany for non-computed sort (returns all)', async () => {
+    it('should apply skip=0 and take=50 to findMany for non-computed sort initial load', async () => {
       mockPrismaUniverse.count.mockResolvedValue(100);
       mockPrismaUniverse.findMany.mockResolvedValue([{ id: 'uni-1' }]);
 
@@ -607,10 +607,10 @@ describe('Top Route Handler', () => {
 
       const universeCall = mockPrismaUniverse.findMany.mock.calls[0][0];
       expect(universeCall.skip).toBe(0);
-      expect(universeCall.take).toBeUndefined();
+      expect(universeCall.take).toBe(50);
     });
 
-    it('should return all IDs for computed sort via initial top load', async () => {
+    it('should return first page of IDs for computed sort via initial top load', async () => {
       const allUniverses = Array.from({ length: 100 }, (_, i) => ({
         id: `u${i + 1}`,
         distribution: (i + 1) * 0.5,
@@ -636,7 +636,7 @@ describe('Top Route Handler', () => {
       expect(response.statusCode).toBe(200);
       const body = JSON.parse(response.body);
       expect(body[0].universes.startIndex).toBe(0);
-      expect(body[0].universes.indexes).toHaveLength(100);
+      expect(body[0].universes.indexes).toHaveLength(50);
       expect(body[0].universes.length).toBe(100);
     });
 

@@ -191,7 +191,7 @@ test.describe('Global Screener Component', () => {
       await filterSelect.click();
       await page.waitForTimeout(200);
       await page.getByRole('option', { name: 'All' }).click();
-      await page.waitForTimeout(500); // Final wait for stabilization
+      await page.waitForLoadState('networkidle'); // Wait for final API call to complete
 
       // Component should still be functional
       await expect(
