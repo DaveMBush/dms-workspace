@@ -457,4 +457,55 @@ describe('getDistributions', () => {
 
     expect(result?.distributions_per_year).toBe(12);
   });
+
+  // Story 62.1 regression tests — production-accurate scenario.
+  //
+  // Root cause: fetchDividendHistory applies filterPastRows (row.date <= today)
+  // before returning, so getDistributions never receives future ex-dates.
+  // For a new symbol with exactly 1 past ex-date:
+  //   rows.length === 1  →  calculateDistributionsPerYear Path A  →  return 1
+  // The Story 58.2 futureRows fallback on Path B is never reached in production.
+  //
+  // Both tests use test.fails() so pnpm all continues to pass while confirming
+  // the regression is still present before Story 62.2 applies the fix.
+
+  test.fails(
+    'BUG(62-1): monthly payer with 1 past row (no futures) — production-accurate — returns 1 instead of 12',
+    async () => {
+      // System time: 2025-08-21T10:00:00Z (set in beforeEach)
+      // Production-accurate: fetchDividendHistory has stripped all future rows
+      // before returning.  Only 1 past ex-date remains for a new monthly payer.
+      const productionAccurateMonthly: ProcessedRow[] = [
+        { amount: 0.25, date: new Date('2025-08-15') }, // only past row — no future rows
+      ];
+
+      mockFetchDividendHistory.mockResolvedValueOnce(productionAccurateMonthly);
+
+      const result = await getDistributions('OXLC');
+
+      // Correct expectation: a monthly payer should return 12.
+      // Currently fails: rows.length === 1 → Path A → returns 1.
+      expect(result?.distributions_per_year).toBe(12);
+    }
+  );
+
+  test.fails(
+    'BUG(62-1): weekly payer with 1 past row (no futures) — production-accurate — returns 1 instead of 52',
+    async () => {
+      // System time: 2025-08-21T10:00:00Z (set in beforeEach)
+      // Production-accurate: fetchDividendHistory has stripped all future rows
+      // before returning.  Only 1 past ex-date remains for a new weekly payer.
+      const productionAccurateWeekly: ProcessedRow[] = [
+        { amount: 0.05, date: new Date('2025-08-15') }, // only past row — no future rows
+      ];
+
+      mockFetchDividendHistory.mockResolvedValueOnce(productionAccurateWeekly);
+
+      const result = await getDistributions('MSTY');
+
+      // Correct expectation: a weekly payer should return 52.
+      // Currently fails: rows.length === 1 → Path A → returns 1.
+      expect(result?.distributions_per_year).toBe(52);
+    }
+  );
 });

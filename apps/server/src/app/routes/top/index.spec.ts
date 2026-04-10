@@ -636,7 +636,9 @@ describe('Top Route Handler', () => {
       expect(response.statusCode).toBe(200);
       const body = JSON.parse(response.body);
       expect(body[0].universes.startIndex).toBe(0);
-      expect(body[0].universes.indexes).toHaveLength(50);
+      // Computed sort returns ALL IDs (not paginated) so SmartNgRX can replace
+      // every slot and avoid stale/duplicate rows (changed in Story 55.2).
+      expect(body[0].universes.indexes).toHaveLength(100);
       expect(body[0].universes.length).toBe(100);
     });
 
