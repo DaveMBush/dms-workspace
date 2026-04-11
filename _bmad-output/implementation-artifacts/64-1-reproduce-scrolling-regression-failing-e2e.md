@@ -27,11 +27,11 @@ so that the fix in Story 64.2 has a clear target and cannot be skipped or misjud
 
 ## Definition of Done
 
-- [ ] Playwright MCP server used to reproduce the current scrolling jank on the Universe screen
-- [ ] Root cause hypothesis documented in Dev Notes (CDK viewport, SmartSignals isLoading race, zone-less CD, itemSize, or new regression path)
-- [ ] Prior fix attempts (Epics 29, 31, 44, 60) reviewed and documented to avoid repeating the same approach
-- [ ] Playwright test added to `universe-scrolling-regression.spec.ts` (or the file extended with a new test case) — test currently **fails**
-- [ ] `pnpm all` passes
+- [x] Playwright MCP server used to reproduce the current scrolling jank on the Universe screen
+- [x] Root cause hypothesis documented in Dev Notes (CDK viewport, SmartSignals isLoading race, zone-less CD, itemSize, or new regression path)
+- [x] Prior fix attempts (Epics 29, 31, 44, 60) reviewed and documented to avoid repeating the same approach
+- [x] Playwright test added to `universe-scrolling-regression.spec.ts` (or the file extended with a new test case) — test currently **fails**
+- [x] `pnpm all` passes
 
 ## Tasks / Subtasks
 
