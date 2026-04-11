@@ -14,14 +14,16 @@ const ABCD_SYMBOL = 'ABCD';
 const ACCOUNT_NAME = 'Multi Symbol Test Account';
 
 async function cleanupExistingData(prisma: PrismaClient): Promise<void> {
-  for (const symbol of [TSTX_SYMBOL, ABCD_SYMBOL]) {
-    const existing = await prisma.universe.findFirst({
-      where: { symbol },
-    });
-    if (existing) {
-      await prisma.trades.deleteMany({ where: { universeId: existing.id } });
-      await prisma.universe.delete({ where: { id: existing.id } });
-    }
+  const existingUniverses = await prisma.universe.findMany({
+    where: { symbol: { in: [TSTX_SYMBOL, ABCD_SYMBOL] } },
+    select: { id: true },
+  });
+  const universeIds = existingUniverses.map(function getId(u: { id: string }) {
+    return u.id;
+  });
+  if (universeIds.length > 0) {
+    await prisma.trades.deleteMany({ where: { universeId: { in: universeIds } } });
+    await prisma.universe.deleteMany({ where: { id: { in: universeIds } } });
   }
   await prisma.accounts.deleteMany({ where: { name: ACCOUNT_NAME } });
 }

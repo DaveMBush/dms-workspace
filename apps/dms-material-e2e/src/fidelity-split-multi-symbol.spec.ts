@@ -52,7 +52,7 @@ async function clickUpload(page: Page): Promise<void> {
   await uploadButton.click();
 }
 
-// Serial mode: test 1 imports the CSV, test 2 verifies DB state, test 3 checks UI.
+// Serial mode: import test runs first; UI verification test follows.
 test.describe.configure({ mode: 'serial' });
 
 test.describe('Multi-Symbol Split Import (Story 63.3)', () => {
