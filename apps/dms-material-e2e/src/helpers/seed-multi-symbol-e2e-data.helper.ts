@@ -22,7 +22,9 @@ async function cleanupExistingData(prisma: PrismaClient): Promise<void> {
     return u.id;
   });
   if (universeIds.length > 0) {
-    await prisma.trades.deleteMany({ where: { universeId: { in: universeIds } } });
+    await prisma.trades.deleteMany({
+      where: { universeId: { in: universeIds } },
+    });
     await prisma.universe.deleteMany({ where: { id: { in: universeIds } } });
   }
   await prisma.accounts.deleteMany({ where: { name: ACCOUNT_NAME } });
