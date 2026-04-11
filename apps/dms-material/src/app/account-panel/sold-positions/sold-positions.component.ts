@@ -21,6 +21,27 @@ import { SymbolFilterManager } from '../../shared/utils/symbol-filter-manager.in
 import { ClosedPosition } from '../../store/trades/closed-position.interface';
 import { SoldPositionsComponentService } from './sold-positions-component.service';
 
+function isNullOrUndefined(value: unknown): value is null | undefined {
+  return value === null || value === undefined;
+}
+
+function compareFieldValues(aVal: unknown, bVal: unknown): number {
+  if (isNullOrUndefined(aVal)) {
+    return isNullOrUndefined(bVal) ? 0 : -1;
+  }
+  if (isNullOrUndefined(bVal)) {
+    return 1;
+  }
+  if (typeof aVal === 'string' && typeof bVal === 'string') {
+    return aVal.localeCompare(bVal);
+  }
+  if (typeof aVal === 'number' && typeof bVal === 'number') {
+    return aVal - bVal;
+  }
+  // eslint-disable-next-line @typescript-eslint/no-base-to-string -- fallback for remaining field types
+  return String(aVal).localeCompare(String(bVal));
+}
+
 @Component({
   selector: 'dms-sold-positions',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -79,20 +100,7 @@ export class SoldPositionsComponent implements OnDestroy {
     return [...filtered].sort(function sortPositions(a, b) {
       for (const col of sortCols) {
         const field = col.column as keyof typeof a;
-        const aVal = a[field];
-        const bVal = b[field];
-        let cmp = 0;
-        if (aVal === null || aVal === undefined) {
-          cmp = bVal === null || bVal === undefined ? 0 : -1;
-        } else if (bVal === null || bVal === undefined) {
-          cmp = 1;
-        } else if (typeof aVal === 'string' && typeof bVal === 'string') {
-          cmp = aVal.localeCompare(bVal);
-        } else if (typeof aVal === 'number' && typeof bVal === 'number') {
-          cmp = aVal - bVal;
-        } else {
-          cmp = String(aVal).localeCompare(String(bVal));
-        }
+        const cmp = compareFieldValues(a[field], b[field]);
         if (cmp !== 0) {
           return col.direction === 'asc' ? cmp : -cmp;
         }

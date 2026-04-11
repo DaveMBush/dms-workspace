@@ -29,6 +29,28 @@ import { OpenPosition } from '../../store/trades/open-position.interface';
 import { Trade } from '../../store/trades/trade.interface';
 import { OpenPositionsComponentService } from './open-positions-component.service';
 import { isPositive, isValidDate, isValidNumber } from './position-validators';
+
+function isNullOrUndefined(value: unknown): value is null | undefined {
+  return value === null || value === undefined;
+}
+
+function compareFieldValues(aVal: unknown, bVal: unknown): number {
+  if (isNullOrUndefined(aVal)) {
+    return isNullOrUndefined(bVal) ? 0 : -1;
+  }
+  if (isNullOrUndefined(bVal)) {
+    return 1;
+  }
+  if (aVal instanceof Date && bVal instanceof Date) {
+    return aVal.getTime() - bVal.getTime();
+  }
+  if (typeof aVal === 'number' && typeof bVal === 'number') {
+    return aVal - bVal;
+  }
+  // eslint-disable-next-line @typescript-eslint/no-base-to-string -- fallback for remaining field types
+  return String(aVal).localeCompare(String(bVal));
+}
+
 @Component({
   selector: 'dms-open-positions',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -123,20 +145,7 @@ export class OpenPositionsComponent implements OnDestroy {
     return [...filtered].sort(function sortPositions(a, b) {
       for (const col of sortCols) {
         const field = col.column as keyof typeof a;
-        const aVal = a[field];
-        const bVal = b[field];
-        let cmp = 0;
-        if (aVal === null || aVal === undefined) {
-          cmp = bVal === null || bVal === undefined ? 0 : -1;
-        } else if (bVal === null || bVal === undefined) {
-          cmp = 1;
-        } else if (aVal instanceof Date && bVal instanceof Date) {
-          cmp = aVal.getTime() - bVal.getTime();
-        } else if (typeof aVal === 'number' && typeof bVal === 'number') {
-          cmp = aVal - bVal;
-        } else {
-          cmp = String(aVal).localeCompare(String(bVal));
-        }
+        const cmp = compareFieldValues(a[field], b[field]);
         if (cmp !== 0) {
           return col.direction === 'asc' ? cmp : -cmp;
         }
