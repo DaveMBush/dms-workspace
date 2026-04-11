@@ -1644,5 +1644,98 @@ describe('mapFidelityTransactions', function () {
       expect(result.divDeposits).toHaveLength(0);
       expect(result.unknownTransactions).toHaveLength(0);
     });
+
+    test('multi-symbol CSV — only the split symbol appears in pendingSplits', async function () {
+      const rows: ParsedCsvRow[] = [
+        {
+          date: '09/20/2025',
+          action: 'REVERSE SPLIT',
+          symbol: 'TSTX',
+          description: 'REVERSE SPLIT R/S FROM XXXXXXX#REOR MXXXXXXXXXX',
+          quantity: 200,
+          price: 0,
+          totalAmount: 0,
+          account: 'My Brokerage',
+        },
+        {
+          date: '07/15/2025',
+          action: 'YOU BOUGHT',
+          symbol: 'TSTX',
+          description: 'TSTX INC COMMON STOCK',
+          quantity: 1000,
+          price: 4.0,
+          totalAmount: -4000,
+          account: 'My Brokerage',
+        },
+        {
+          date: '06/01/2025',
+          action: 'YOU BOUGHT',
+          symbol: 'ABCD',
+          description: 'ABCD CORP COMMON STOCK',
+          quantity: 100,
+          price: 10.0,
+          totalAmount: -1000,
+          account: 'My Brokerage',
+        },
+      ];
+
+      mockPrisma.accounts.findFirst.mockResolvedValue({
+        id: 'acct-brokerage',
+        name: 'My Brokerage',
+      });
+      // Sorted oldest-first: ABCD buy (06/01), TSTX buy (07/15), TSTX split (09/20)
+      // universe.findFirst is called for ABCD buy first, then TSTX buy
+      mockPrisma.universe.findFirst
+        .mockResolvedValueOnce({ id: 'universe-abcd', symbol: 'ABCD' })
+        .mockResolvedValueOnce({ id: 'universe-tstx', symbol: 'TSTX' });
+
+      const result = await mapFidelityTransactions(rows);
+
+      expect(result.pendingSplits).toHaveLength(1);
+      expect(result.pendingSplits[0].symbol).toBe('TSTX');
+      expect(result.trades).toHaveLength(2);
+      expect(mockAdjustLotsForSplit).not.toHaveBeenCalled();
+    });
+
+    test('CSV with purchases and sales but no split rows → pendingSplits is empty', async function () {
+      const rows: ParsedCsvRow[] = [
+        {
+          date: '07/15/2025',
+          action: 'YOU BOUGHT',
+          symbol: 'TSTX',
+          description: 'TSTX INC COMMON STOCK',
+          quantity: 100,
+          price: 4.0,
+          totalAmount: -400,
+          account: 'My Brokerage',
+        },
+        {
+          date: '08/01/2025',
+          action: 'YOU SOLD',
+          symbol: 'TSTX',
+          description: 'TSTX INC COMMON STOCK',
+          quantity: 50,
+          price: 5.0,
+          totalAmount: 250,
+          account: 'My Brokerage',
+        },
+      ];
+
+      mockPrisma.accounts.findFirst.mockResolvedValue({
+        id: 'acct-brokerage',
+        name: 'My Brokerage',
+      });
+      mockPrisma.universe.findFirst.mockResolvedValue({
+        id: 'universe-tstx',
+        symbol: 'TSTX',
+      });
+
+      const result = await mapFidelityTransactions(rows);
+
+      expect(result.pendingSplits).toHaveLength(0);
+      expect(result.trades).toHaveLength(1);
+      expect(result.sales).toHaveLength(1);
+      expect(mockAdjustLotsForSplit).not.toHaveBeenCalled();
+    });
   });
 });
