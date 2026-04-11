@@ -82,6 +82,7 @@ async function splitTrade(
     universeId: string;
     accountId: string;
     buy: number;
+    // eslint-disable-next-line @typescript-eslint/naming-convention -- Prisma/DB field uses snake_case
     buy_date: Date;
   },
   soldQuantity: number,
@@ -211,12 +212,7 @@ async function processTrades(
       await processPurchase(trade);
       count++;
     } catch (error) {
-      errors.push(
-        formatError(
-          `Failed to import purchase: account=${trade.accountId}, universe=${trade.universeId}`,
-          error
-        )
-      );
+      errors.push(formatError('Failed to import purchase', error));
     }
   }
   return count;
@@ -226,6 +222,19 @@ async function processTrades(
  * Processes deferred split adjustments that were accumulated during the mapping phase.
  * Must be called after processTrades so that buy lots exist in the database.
  */
+async function applyDeferredSplit(split: PendingSplit): Promise<boolean> {
+  const ratio = await calculateSplitRatio(
+    split.symbol,
+    split.csvQuantity,
+    split.accountId
+  );
+  if (ratio === null) {
+    return false;
+  }
+  await adjustLotsForSplit(split.symbol, ratio, split.accountId);
+  return true;
+}
+
 async function processDeferredSplits(
   pendingSplits: PendingSplit[],
   errors: string[]
@@ -233,19 +242,9 @@ async function processDeferredSplits(
   let count = 0;
   for (const split of pendingSplits) {
     try {
-      const ratio = await calculateSplitRatio(
-        split.symbol,
-        split.csvQuantity,
-        split.accountId
-      );
-      if (ratio !== null) {
-        await adjustLotsForSplit(split.symbol, ratio, split.accountId);
-        count++;
-      }
+      count += (await applyDeferredSplit(split)) ? 1 : 0;
     } catch (error) {
-      errors.push(
-        formatError(`Failed to process split for ${split.symbol}`, error)
-      );
+      errors.push(formatError(`Split failed: ${split.symbol}`, error));
     }
   }
   return count;
@@ -297,14 +296,7 @@ async function processDeposits(
       await processDivDeposit(deposit);
       count++;
     } catch (error) {
-      errors.push(
-        formatError(
-          `Failed to import deposit: account=${
-            deposit.accountId
-          }, universe=${String(deposit.universeId)}`,
-          error
-        )
-      );
+      errors.push(formatError('Failed to import deposit', error));
     }
   }
   return count;
