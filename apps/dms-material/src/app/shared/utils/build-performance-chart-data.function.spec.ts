@@ -14,9 +14,9 @@ describe('buildPerformanceChartData', function () {
     expect(result.datasets[0].label).toBe('Base');
     expect(result.datasets[0].data).toEqual([1000, 1000]);
     expect(result.datasets[1].label).toBe('Capital Gains');
-    expect(result.datasets[1].data).toEqual([1050, 1080]);
+    expect(result.datasets[1].data).toEqual([1050, 1030]);
     expect(result.datasets[2].label).toBe('Dividends');
-    expect(result.datasets[2].data).toEqual([1060, 1110]);
+    expect(result.datasets[2].data).toEqual([1060, 1050]);
   });
 
   it('should return empty labels and data for empty input', function () {

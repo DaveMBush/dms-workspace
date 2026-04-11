@@ -4,6 +4,7 @@ import {
   Component,
   EventEmitter,
   Input,
+  OnDestroy,
   Output,
   ViewChild,
 } from '@angular/core';
@@ -31,7 +32,7 @@ import { MatInputModule } from '@angular/material/input';
   templateUrl: './editable-date-cell.component.html',
   styleUrls: ['./editable-date-cell.component.scss'],
 })
-export class EditableDateCellComponent {
+export class EditableDateCellComponent implements OnDestroy {
   @Input() set value(val: Date | string | null | undefined) {
     if (val === null || val === undefined) {
       this.internalValue = null;
@@ -64,11 +65,22 @@ export class EditableDateCellComponent {
 
   editValue: Date | null = null;
 
+  private openPickerTimer: ReturnType<typeof setTimeout> | null = null;
+  private isCancelling = false;
+
+  ngOnDestroy(): void {
+    if (this.openPickerTimer !== null) {
+      clearTimeout(this.openPickerTimer);
+      this.openPickerTimer = null;
+    }
+  }
+
   startEdit(): void {
+    this.isCancelling = false;
     this.editValue = this.value ? new Date(this.value) : null;
     this.editing = true;
     // open picker shortly after entering edit mode (use named method reference)
-    setTimeout(this.openPicker.bind(this), 0);
+    this.openPickerTimer = setTimeout(this.openPicker.bind(this), 0);
   }
 
   isEditing(): boolean {
@@ -87,6 +99,10 @@ export class EditableDateCellComponent {
   }
 
   onPickerClosed(): void {
+    if (this.isCancelling) {
+      this.isCancelling = false;
+      return;
+    }
     this.commitEdit();
   }
 
@@ -96,6 +112,11 @@ export class EditableDateCellComponent {
   }
 
   cancelEdit(): void {
+    this.isCancelling = true;
+    if (this.openPickerTimer !== null) {
+      clearTimeout(this.openPickerTimer);
+      this.openPickerTimer = null;
+    }
     this.editing = false;
     // Close picker if open
     this.picker?.close();
@@ -123,7 +144,10 @@ export class EditableDateCellComponent {
   }
 
   private openPicker(): void {
-    this.picker?.open();
+    if (!this.isCancelling) {
+      this.picker?.open();
+    }
+    this.openPickerTimer = null;
   }
 
   private parseStringToDate(trimmed: string): Date | null {

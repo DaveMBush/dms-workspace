@@ -161,13 +161,9 @@ export async function fetchDividendHistory(
       return [];
     }
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
     const processed = rawRows
       .map(mapToProcessedRow)
-      .filter(function filterPastRows(row: ProcessedRow): boolean {
-        return isValidProcessedRow(row) && row.date <= today;
-      })
+      .filter(isValidProcessedRow)
       .sort(function sortByDate(a: ProcessedRow, b: ProcessedRow): number {
         return a.date.valueOf() - b.date.valueOf();
       });

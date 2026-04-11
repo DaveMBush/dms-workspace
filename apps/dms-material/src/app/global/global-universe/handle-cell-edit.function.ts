@@ -26,8 +26,19 @@ export function handleCellEdit(
   const universes = selectUniverses();
   for (let i = 0; i < universes.length; i++) {
     if (universes[i].id === row.id) {
-      (universes[i] as unknown as Record<string, unknown>)[field] =
-        transformedValue;
+      const rowRecord = universes[i] as unknown as Record<string, unknown>;
+      rowRecord[field] = transformedValue;
+      // When ex_date is set to a date in the past, also mark as expired.
+      // transformedValue is an ISO string (from transformExDateValue), so parse it.
+      if (field === 'ex_date') {
+        if (transformedValue === null) {
+          rowRecord['expired'] = false;
+        } else {
+          const parsedDate = new Date(transformedValue as string);
+          rowRecord['expired'] =
+            !isNaN(parsedDate.getTime()) && parsedDate < new Date();
+        }
+      }
       break;
     }
   }
