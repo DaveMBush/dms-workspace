@@ -21,27 +21,6 @@ import { SymbolFilterManager } from '../../shared/utils/symbol-filter-manager.in
 import { ClosedPosition } from '../../store/trades/closed-position.interface';
 import { SoldPositionsComponentService } from './sold-positions-component.service';
 
-function isNullOrUndefined(value: unknown): value is null | undefined {
-  return value === null || value === undefined;
-}
-
-function compareFieldValues(aVal: unknown, bVal: unknown): number {
-  if (isNullOrUndefined(aVal)) {
-    return isNullOrUndefined(bVal) ? 0 : -1;
-  }
-  if (isNullOrUndefined(bVal)) {
-    return 1;
-  }
-  if (typeof aVal === 'string' && typeof bVal === 'string') {
-    return aVal.localeCompare(bVal);
-  }
-  if (typeof aVal === 'number' && typeof bVal === 'number') {
-    return aVal - bVal;
-  }
-  // eslint-disable-next-line @typescript-eslint/no-base-to-string -- fallback for remaining field types
-  return String(aVal).localeCompare(String(bVal));
-}
-
 @Component({
   selector: 'dms-sold-positions',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -85,28 +64,12 @@ export class SoldPositionsComponent implements OnDestroy {
   readonly displayedPositions = computed(() => {
     const positions = this.soldPositionsService.selectSoldPositions();
     const search = this.searchText().toLowerCase().trim();
-    const sortCols = this.sortColumns$();
 
-    const filtered = search
+    return search
       ? positions.filter(function filterBySymbol(p) {
           return p.symbol.toLowerCase().includes(search);
         })
       : positions;
-
-    if (sortCols.length === 0) {
-      return filtered;
-    }
-
-    return [...filtered].sort(function sortPositions(a, b) {
-      for (const col of sortCols) {
-        const field = col.column as keyof typeof a;
-        const cmp = compareFieldValues(a[field], b[field]);
-        if (cmp !== 0) {
-          return col.direction === 'asc' ? cmp : -cmp;
-        }
-      }
-      return 0;
-    });
   });
 
   onRangeChange(range: { start: number; end: number }): void {
