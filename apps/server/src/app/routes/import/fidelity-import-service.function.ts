@@ -1,4 +1,6 @@
 import { prisma } from '../../prisma/prisma-client';
+import { adjustLotsForSplit } from './adjust-lots-for-split.function';
+import { calculateSplitRatio } from './calculate-split-ratio.function';
 import { parseFidelityCsv } from './fidelity-csv-parser.function';
 import { mapFidelityTransactions } from './fidelity-data-mapper.function';
 import { ImportResult } from './import-result.interface';
@@ -6,6 +8,7 @@ import { MappedDivDeposit } from './mapped-div-deposit.interface';
 import { MappedSale } from './mapped-sale.interface';
 import { MappedTrade } from './mapped-trade.interface';
 import { MappedTransactionResult } from './mapped-transaction-result.interface';
+import { PendingSplit } from './pending-split.interface';
 import { resolveCusipSymbols } from './resolve-cusip.function';
 import { UnknownTransaction } from './unknown-transaction.interface';
 
@@ -79,6 +82,7 @@ async function splitTrade(
     universeId: string;
     accountId: string;
     buy: number;
+    // eslint-disable-next-line @typescript-eslint/naming-convention -- Prisma/DB field uses snake_case
     buy_date: Date;
   },
   soldQuantity: number,
@@ -208,12 +212,39 @@ async function processTrades(
       await processPurchase(trade);
       count++;
     } catch (error) {
-      errors.push(
-        formatError(
-          `Failed to import purchase: account=${trade.accountId}, universe=${trade.universeId}`,
-          error
-        )
-      );
+      errors.push(formatError('Failed to import purchase', error));
+    }
+  }
+  return count;
+}
+
+/**
+ * Processes deferred split adjustments that were accumulated during the mapping phase.
+ * Must be called after processTrades so that buy lots exist in the database.
+ */
+async function applyDeferredSplit(split: PendingSplit): Promise<boolean> {
+  const ratio = await calculateSplitRatio(
+    split.symbol,
+    split.csvQuantity,
+    split.accountId
+  );
+  if (ratio === null) {
+    return false;
+  }
+  await adjustLotsForSplit(split.symbol, ratio, split.accountId);
+  return true;
+}
+
+async function processDeferredSplits(
+  pendingSplits: PendingSplit[],
+  errors: string[]
+): Promise<number> {
+  let count = 0;
+  for (const split of pendingSplits) {
+    try {
+      count += (await applyDeferredSplit(split)) ? 1 : 0;
+    } catch (error) {
+      errors.push(formatError(`Split failed: ${split.symbol}`, error));
     }
   }
   return count;
@@ -265,14 +296,7 @@ async function processDeposits(
       await processDivDeposit(deposit);
       count++;
     } catch (error) {
-      errors.push(
-        formatError(
-          `Failed to import deposit: account=${
-            deposit.accountId
-          }, universe=${String(deposit.universeId)}`,
-          error
-        )
-      );
+      errors.push(formatError('Failed to import deposit', error));
     }
   }
   return count;
@@ -288,6 +312,7 @@ async function processAllTransactions(
   const warnings = collectUnknownWarnings(mapped.unknownTransactions);
 
   const tradeCount = await processTrades(mapped.trades, errors);
+  await processDeferredSplits(mapped.pendingSplits, errors);
   const saleCount = await processSales(mapped.sales, errors);
   const depositCount = await processDeposits(mapped.divDeposits, errors);
 

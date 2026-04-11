@@ -1,6 +1,7 @@
 import { MappedDivDeposit } from './mapped-div-deposit.interface';
 import { MappedSale } from './mapped-sale.interface';
 import { MappedTrade } from './mapped-trade.interface';
+import { PendingSplit } from './pending-split.interface';
 import { UnknownTransaction } from './unknown-transaction.interface';
 
 export interface MappedTransactionResult {
@@ -8,4 +9,5 @@ export interface MappedTransactionResult {
   sales: MappedSale[];
   divDeposits: MappedDivDeposit[];
   unknownTransactions: UnknownTransaction[];
+  pendingSplits: PendingSplit[];
 }

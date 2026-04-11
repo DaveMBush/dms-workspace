@@ -1,8 +1,6 @@
 import { logger } from '../../../utils/structured-logger';
 import { prisma } from '../../prisma/prisma-client';
 import { fetchAndUpdatePriceData } from '../universe/fetch-and-update-price-data.function';
-import { adjustLotsForSplit } from './adjust-lots-for-split.function';
-import { calculateSplitRatio } from './calculate-split-ratio.function';
 import { FidelityCsvRow } from './fidelity-csv-row.interface';
 import { isInLieuRow } from './is-in-lieu-row.function';
 import { isSplitFromRow } from './is-split-from-row.function';
@@ -229,6 +227,7 @@ export async function mapFidelityTransactions(
     sales: [],
     divDeposits: [],
     unknownTransactions: [],
+    pendingSplits: [],
   };
 
   const accountCache = new Map<string, { id: string }>();
@@ -327,7 +326,8 @@ async function handleDividendRow(
 }
 
 /**
- * Handles a split CSV row by calculating the split ratio and adjusting open lots.
+ * Handles a split CSV row by calculating the split ratio and deferring the lot
+ * adjustment to after all buy trades have been committed to the database.
  *
  * TO rows (negative quantity, old-CUSIP symbol) are skipped because they carry no
  * information beyond what the matching FROM row already provides.
@@ -337,6 +337,7 @@ async function handleDividendRow(
  */
 async function handleSplitRow(
   row: FidelityCsvRow,
+  result: MappedTransactionResult,
   accountCache: Map<string, { id: string }>
 ): Promise<void> {
   // Only process FROM rows; TO rows and unrecognised split rows are silently skipped.
@@ -345,10 +346,11 @@ async function handleSplitRow(
   }
 
   const account = await resolveAccount(row.account, accountCache);
-  const ratio = await calculateSplitRatio(row.symbol, row.quantity, account.id);
-  if (ratio !== null) {
-    await adjustLotsForSplit(row.symbol, ratio, account.id);
-  }
+  result.pendingSplits.push({
+    symbol: row.symbol,
+    csvQuantity: row.quantity,
+    accountId: account.id,
+  });
 }
 
 /**
@@ -365,9 +367,10 @@ async function mapSingleRow(
     return;
   }
 
-  // Split rows: calculate ratio and adjust all open lots (Stories 48.2–48.3, 57.2).
+  // Split rows: accumulate deferred split data (Stories 48.2–48.3, 57.2, 63.2).
+  // Actual lot adjustment is deferred to processAllTransactions after processTrades commits buys.
   if (isSplitRow(row)) {
-    await handleSplitRow(row, accountCache);
+    await handleSplitRow(row, result, accountCache);
     return;
   }
 
