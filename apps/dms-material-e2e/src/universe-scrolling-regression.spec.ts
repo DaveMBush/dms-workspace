@@ -200,7 +200,7 @@ test.describe('Universe Scrolling Regression — blank rows on fast scroll', () 
   test('should have no blank symbol cells after sort change then fast scroll', async ({
     page,
   }) => {
-    // Regression guard for Epics 29/31/44/60 — sort change triggers a new
+    // Regression guard for Epics 29/31/44/60/64 — sort change triggers a new
     // server-side request; while the response is in-flight SmartNgRX marks all
     // rows as isLoading=true.  Under the old code this shrank the data array to
     // zero and the CDK viewport collapsed, producing a completely blank table.
@@ -208,6 +208,24 @@ test.describe('Universe Scrolling Regression — blank rows on fast scroll', () 
     // The fix (Story 60-2) keeps array length stable by returning placeholders
     // for isLoading rows, so the viewport height does not change during the
     // round-trip and a subsequent fast scroll finds fully-populated rows.
+    //
+    // Round 5 regression (Epic 64, Story 64.1):
+    //   `buildPlaceholderUniverseEntry()` returns `{ symbol: '', ... }` for
+    //   loading rows (the Epic 60 fix).  However, `filteredData$` in
+    //   `global-universe.component.ts` applies a second filter AFTER
+    //   `enrichUniverseWithRiskGroups`:
+    //
+    //     .filter(function excludeLoadingRows(row) { return row.symbol !== ''; })
+    //
+    //   This `excludeLoadingRows` filter removes all placeholder rows before the
+    //   array reaches the CDK virtual-scroll viewport, re-introducing the exact
+    //   array-length instability that Epic 60 was meant to fix.  During the
+    //   in-flight window after a sort click the array shrinks, the CDK viewport
+    //   recalculates a shorter scroll height, and fast-scrolling into that
+    //   region produces blank rows.
+    //
+    //   Fix target (Story 64.2): remove or guard `excludeLoadingRows` so
+    //   placeholder rows are passed through to the CDK viewport unchanged.
     //
     // Sort column interaction pattern (from server-side-sorting.spec.ts):
     //   page.getByRole('button', { name: 'Symbol' }) → click to apply sort.
@@ -229,7 +247,9 @@ test.describe('Universe Scrolling Regression — blank rows on fast scroll', () 
     await assertVisibleSymbolsNonEmpty(
       page,
       'Visible rows have empty symbol cells after sort change + fast scroll. ' +
-        'Epic 60 regression: sort triggers mass isLoading state, old null-return collapses array.'
+        'Round 5 (Epic 64) regression: excludeLoadingRows filter in filteredData$ removes ' +
+        'placeholder rows, re-shrinking the CDK data array during isLoading window. ' +
+        'See global-universe.component.ts filteredData$ and Story 64.2 for the fix.'
     );
   });
 
