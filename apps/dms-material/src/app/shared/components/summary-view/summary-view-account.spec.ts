@@ -1002,22 +1002,22 @@ describe('SummaryViewComponent - Service Integration', () => {
       expect(chartData.datasets[2].data).toEqual([10300]);
     });
 
-    it('should accumulate capital gains and dividends across graph points', function cumulativeGraphData() {
+    it('should compute capital gains and dividends lines per graph point', function perPointGraphData() {
       initAccount('123');
 
       const req = httpMock.expectOne(matchGraph('123', testCurrentMonth()));
       req.flush(createMockGraphData());
 
       const chartData = component.performanceChartData();
-      // Point 1: base=10000, cumCG=200, cumDiv=100
+      // Point 1: base=10000, cg=200, div=100
       //   cgLine=10200, divLine=10300
-      // Point 2: base=20000, cumCG=500, cumDiv=250
-      //   cgLine=20500, divLine=20750
-      // Point 3: base=30000, cumCG=900, cumDiv=450
-      //   cgLine=30900, divLine=31350
+      // Point 2: base=20000, cg=300, div=150
+      //   cgLine=20300, divLine=20450
+      // Point 3: base=30000, cg=400, div=200
+      //   cgLine=30400, divLine=30600
       expect(chartData.datasets[0].data).toEqual([10000, 20000, 30000]);
-      expect(chartData.datasets[1].data).toEqual([10200, 20500, 30900]);
-      expect(chartData.datasets[2].data).toEqual([10300, 20750, 31350]);
+      expect(chartData.datasets[1].data).toEqual([10200, 20300, 30400]);
+      expect(chartData.datasets[2].data).toEqual([10300, 20450, 30600]);
     });
 
     it('should have correct dataset labels for performance chart', function performanceChartLabels() {

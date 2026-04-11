@@ -114,6 +114,8 @@
         [class.selected]="selection.isSelected(row)"
         [class.expired]="isExpired$(row)"
         [ngClass]="gainLossClassMap$(row)"
+        [attr.data-is-cef]="getIsCef$(row)"
+        [attr.data-has-position]="getHasPosition$(row)"
         (click)="onRowClick(row)"
       ></tr>
     </table>

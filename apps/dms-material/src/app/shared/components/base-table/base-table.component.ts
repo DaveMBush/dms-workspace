@@ -212,6 +212,20 @@ export class BaseTableComponent<T extends { id: string }>
     );
   };
 
+  // Helper to add data-is-cef attribute for closed-end fund rows
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- needed for proper typing
+  getIsCef$ = (row: T): true | null => {
+    const r = row as T & { is_closed_end_fund?: boolean };
+    return r.is_closed_end_fund === true ? true : null;
+  };
+
+  // Helper to add data-has-position attribute for rows with a position > 0
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- needed for proper typing
+  getHasPosition$ = (row: T): true | null => {
+    const r = row as T & { position?: number };
+    return typeof r.position === 'number' && r.position > 0 ? true : null;
+  };
+
   // Helper to read gainLossType from a row when present
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- needed for proper typing
   gainLossType$ = (row: T): 'gain' | 'loss' | 'neutral' | undefined => {
