@@ -7,7 +7,7 @@ describe('buildEnrichedPoints', function () {
     expect(buildEnrichedPoints([])).toEqual([]);
   });
 
-  it('should compute cumulative capital gains and dividends', function () {
+  it('should compute per-point capital gains and dividends lines', function () {
     const result = buildEnrichedPoints([
       { month: 'Jan', deposits: 1000, capitalGains: 50, dividends: 10 },
       { month: 'Feb', deposits: 1000, capitalGains: 30, dividends: 20 },
@@ -23,8 +23,8 @@ describe('buildEnrichedPoints', function () {
       {
         month: 'Feb',
         base: 1000,
-        capitalGainsLine: 1080,
-        dividendsLine: 1110,
+        capitalGainsLine: 1030,
+        dividendsLine: 1050,
       },
     ]);
   });

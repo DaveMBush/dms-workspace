@@ -17,6 +17,8 @@
     "**/tsconfig.json",
     "**/tsconfig.lib.json",
     "**/node_modules/**",
-    "**/{.*,coverage,dist,tmp}/**"
+    "**/{.*,coverage,dist,tmp}/**",
+    "**/open-positions/open-positions.component.ts",
+    "**/sold-positions/sold-positions.component.ts"
   ]
 }
