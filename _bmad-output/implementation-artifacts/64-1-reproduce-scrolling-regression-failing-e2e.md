@@ -36,12 +36,14 @@ so that the fix in Story 64.2 has a clear target and cannot be skipped or misjud
 ## Tasks / Subtasks
 
 - [x] Task 1: Review prior fix history and current code state (AC: #1)
+
   - [x] Subtask 1.1: Read `enrich-universe-with-risk-groups.function.ts` — confirm the Epic 60 `buildPlaceholderUniverseEntry` fix is still in place and inspect what `symbol` value each placeholder returns
   - [x] Subtask 1.2: Read `global-universe.component.ts` `filteredData$` computed — note the `.filter(function excludeLoadingRows(row) { return row.symbol !== ''; })` call that runs AFTER `enrichUniverseWithRiskGroups`; check whether this filter removes placeholders from the CDK data array
   - [x] Subtask 1.3: Read `filter-universes.function.ts` — confirm placeholders with `symbol: ''` pass through `filterUniverses` when `symbolFilter` is empty, and are only caught by `excludeLoadingRows`
   - [x] Subtask 1.4: Review the `universe-scrolling-regression.spec.ts` test suite — note which tests are already in the file and which are currently failing/flaky based on CI output
 
 - [x] Task 2: Reproduce with Playwright MCP server (AC: #1)
+
   - [x] Subtask 2.1: Navigate to the Universe screen (ensure at least 20+ rows are present to activate CDK virtual scroll)
   - [x] Subtask 2.2: Scroll rapidly to the bottom; pause briefly; observe and capture blank rows or position jumps in the MCP screenshot
   - [x] Subtask 2.3: Trigger a sort column change (click Symbol header), wait for network idle, then fast-scroll to the bottom — capture the blank row state; this is the most reliably reproducible trigger
@@ -57,14 +59,14 @@ so that the fix in Story 64.2 has a clear target and cannot be skipped or misjud
 
 ### Key Files
 
-| File | Purpose |
-|------|---------|
-| `apps/dms-material/src/app/global/global-universe/global-universe.component.ts` | `filteredData$` computed at line ~158 — contains `excludeLoadingRows` filter suspected as Round 5 regression source |
+| File                                                                                            | Purpose                                                                                                                       |
+| ----------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `apps/dms-material/src/app/global/global-universe/global-universe.component.ts`                 | `filteredData$` computed at line ~158 — contains `excludeLoadingRows` filter suspected as Round 5 regression source           |
 | `apps/dms-material/src/app/global/global-universe/enrich-universe-with-risk-groups.function.ts` | `buildPlaceholderUniverseEntry()` — returns `symbol: ''` for loading rows; `buildEnrichedEntry()` — Epic 60 fix still present |
-| `apps/dms-material/src/app/global/global-universe/filter-universes.function.ts` | `filterUniverses()` — passes placeholders through when `symbolFilter` is empty; does NOT filter them out |
-| `apps/dms-material/src/app/shared/components/base-table/base-table.component.ts` | CDK virtual scroll host; emits `renderedRangeChange` via `debounceTime(100)` pipe |
-| `apps/dms-material-e2e/src/universe-scrolling-regression.spec.ts` | Existing regression suite from Epic 60 — two tests currently failing/flaky in CI |
-| `apps/dms-material-e2e/src/helpers/seed-scroll-universe-data.helper.ts` | Seeds 60 universe rows with prefix `USCRL`; reuse in any new tests |
+| `apps/dms-material/src/app/global/global-universe/filter-universes.function.ts`                 | `filterUniverses()` — passes placeholders through when `symbolFilter` is empty; does NOT filter them out                      |
+| `apps/dms-material/src/app/shared/components/base-table/base-table.component.ts`                | CDK virtual scroll host; emits `renderedRangeChange` via `debounceTime(100)` pipe                                             |
+| `apps/dms-material-e2e/src/universe-scrolling-regression.spec.ts`                               | Existing regression suite from Epic 60 — two tests currently failing/flaky in CI                                              |
+| `apps/dms-material-e2e/src/helpers/seed-scroll-universe-data.helper.ts`                         | Seeds 60 universe rows with prefix `USCRL`; reuse in any new tests                                                            |
 
 ### Architecture Context
 
@@ -105,13 +107,13 @@ consistent with the `excludeLoadingRows` hypothesis.
 
 ### Prior Fix History
 
-| Epic | Root Cause | Fix |
-|------|-----------|-----|
-| Epic 29 | `rowHeight` binding mismatch (template `[rowHeight]="48"` vs actual 52px) | Removed explicit binding; default is 52px. Documented in `docs/row-height-audit.md` |
-| Epic 31 | `contain: strict` on `.virtual-scroll-viewport` broke `position: sticky` on headers during scroll | Changed to `contain: paint` in `base-table.component.scss` |
-| Epic 44 | `will-change: transform` on rows caused paint thrashing; excessive `cdr.markForCheck()` calls | Removed `will-change`, scoped CSS transitions, removed redundant `markForCheck()` |
-| Epic 60 | `buildEnrichedEntry` returned `null` for `isLoading === true` rows, shrinking data array → CDK height instability | Changed to return `buildPlaceholderUniverseEntry(id)` — keeps array length stable |
-| Epic 64 (hypothesis) | `excludeLoadingRows` filter in `filteredData$` removes placeholders produced by Epic 60 fix, re-shrinking the array before CDK sees it | Needs investigation to confirm, then fix in Story 64.2 |
+| Epic                 | Root Cause                                                                                                                             | Fix                                                                                 |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| Epic 29              | `rowHeight` binding mismatch (template `[rowHeight]="48"` vs actual 52px)                                                              | Removed explicit binding; default is 52px. Documented in `docs/row-height-audit.md` |
+| Epic 31              | `contain: strict` on `.virtual-scroll-viewport` broke `position: sticky` on headers during scroll                                      | Changed to `contain: paint` in `base-table.component.scss`                          |
+| Epic 44              | `will-change: transform` on rows caused paint thrashing; excessive `cdr.markForCheck()` calls                                          | Removed `will-change`, scoped CSS transitions, removed redundant `markForCheck()`   |
+| Epic 60              | `buildEnrichedEntry` returned `null` for `isLoading === true` rows, shrinking data array → CDK height instability                      | Changed to return `buildPlaceholderUniverseEntry(id)` — keeps array length stable   |
+| Epic 64 (hypothesis) | `excludeLoadingRows` filter in `filteredData$` removes placeholders produced by Epic 60 fix, re-shrinking the array before CDK sees it | Needs investigation to confirm, then fix in Story 64.2                              |
 
 ### Technical Guidance
 
@@ -189,6 +191,6 @@ Claude Sonnet 4.6
 
 ### Change Log
 
-| Date | Change | Author |
-|------|--------|--------|
-| 2026-04-11 | Updated test `should have no blank symbol cells after sort change then fast scroll` with Round 5 (Epic 64) regression documentation — references `excludeLoadingRows` filter as the regression source | Agent |
+| Date       | Change                                                                                                                                                                                                | Author |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| 2026-04-11 | Updated test `should have no blank symbol cells after sort change then fast scroll` with Round 5 (Epic 64) regression documentation — references `excludeLoadingRows` filter as the regression source | Agent  |
