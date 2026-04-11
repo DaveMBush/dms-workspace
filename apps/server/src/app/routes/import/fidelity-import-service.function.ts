@@ -1,4 +1,6 @@
 import { prisma } from '../../prisma/prisma-client';
+import { adjustLotsForSplit } from './adjust-lots-for-split.function';
+import { calculateSplitRatio } from './calculate-split-ratio.function';
 import { parseFidelityCsv } from './fidelity-csv-parser.function';
 import { mapFidelityTransactions } from './fidelity-data-mapper.function';
 import { ImportResult } from './import-result.interface';
@@ -6,6 +8,7 @@ import { MappedDivDeposit } from './mapped-div-deposit.interface';
 import { MappedSale } from './mapped-sale.interface';
 import { MappedTrade } from './mapped-trade.interface';
 import { MappedTransactionResult } from './mapped-transaction-result.interface';
+import { PendingSplit } from './pending-split.interface';
 import { resolveCusipSymbols } from './resolve-cusip.function';
 import { UnknownTransaction } from './unknown-transaction.interface';
 
@@ -220,6 +223,35 @@ async function processTrades(
 }
 
 /**
+ * Processes deferred split adjustments that were accumulated during the mapping phase.
+ * Must be called after processTrades so that buy lots exist in the database.
+ */
+async function processDeferredSplits(
+  pendingSplits: PendingSplit[],
+  errors: string[]
+): Promise<number> {
+  let count = 0;
+  for (const split of pendingSplits) {
+    try {
+      const ratio = await calculateSplitRatio(
+        split.symbol,
+        split.csvQuantity,
+        split.accountId
+      );
+      if (ratio !== null) {
+        await adjustLotsForSplit(split.symbol, ratio, split.accountId);
+        count++;
+      }
+    } catch (error) {
+      errors.push(
+        formatError(`Failed to process split for ${split.symbol}`, error)
+      );
+    }
+  }
+  return count;
+}
+
+/**
  * Processes a single sale and returns 1 if successful, 0 if an error was recorded.
  */
 async function processSingleSale(
@@ -288,6 +320,7 @@ async function processAllTransactions(
   const warnings = collectUnknownWarnings(mapped.unknownTransactions);
 
   const tradeCount = await processTrades(mapped.trades, errors);
+  await processDeferredSplits(mapped.pendingSplits, errors);
   const saleCount = await processSales(mapped.sales, errors);
   const depositCount = await processDeposits(mapped.divDeposits, errors);
 

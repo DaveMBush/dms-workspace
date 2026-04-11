@@ -42,10 +42,24 @@ vi.mock('./fidelity-data-mapper.function', function () {
   };
 });
 
+vi.mock('./adjust-lots-for-split.function', function () {
+  return {
+    adjustLotsForSplit: vi.fn(),
+  };
+});
+
+vi.mock('./calculate-split-ratio.function', function () {
+  return {
+    calculateSplitRatio: vi.fn(),
+  };
+});
+
 describe('importFidelityTransactions', function () {
   let importFidelityTransactions: typeof import('./fidelity-import-service.function').importFidelityTransactions;
   let parseFidelityCsv: Mock;
   let mapFidelityTransactions: Mock;
+  let adjustLotsForSplit: Mock;
+  let calculateSplitRatio: Mock;
   let prisma: {
     trades: { create: Mock; findFirst: Mock; findMany: Mock; update: Mock };
     divDeposits: { create: Mock; findFirst: Mock };
@@ -57,6 +71,7 @@ describe('importFidelityTransactions', function () {
       sales: [],
       divDeposits: [],
       unknownTransactions: [],
+      pendingSplits: [],
     };
   }
 
@@ -68,6 +83,10 @@ describe('importFidelityTransactions', function () {
     parseFidelityCsv = parserModule.parseFidelityCsv as Mock;
     const mapperModule = await import('./fidelity-data-mapper.function');
     mapFidelityTransactions = mapperModule.mapFidelityTransactions as Mock;
+    const adjustModule = await import('./adjust-lots-for-split.function');
+    adjustLotsForSplit = adjustModule.adjustLotsForSplit as Mock;
+    const splitRatioModule = await import('./calculate-split-ratio.function');
+    calculateSplitRatio = splitRatioModule.calculateSplitRatio as Mock;
     const prismaModule = await import('../../prisma/prisma-client');
     prisma = (prismaModule as unknown as { prisma: typeof prisma }).prisma;
   });
@@ -665,6 +684,95 @@ describe('importFidelityTransactions', function () {
       expect(result.success).toBe(true);
       expect(result.imported).toBe(1);
       expect(prisma.trades.create).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('deferred split processing', function () {
+    test('adjustLotsForSplit is NOT called before processTrades resolves', async function () {
+      const callOrder: string[] = [];
+      parseFidelityCsv.mockReturnValue([{}]);
+      const mapped = emptyResult();
+      mapped.trades = [
+        {
+          universeId: 'u1',
+          accountId: 'a1',
+          buy: 10,
+          sell: 0,
+          buy_date: '2025-06-01',
+          quantity: 1000,
+        },
+      ];
+      mapped.pendingSplits = [
+        { symbol: 'TSTX', csvQuantity: 200, accountId: 'a1' },
+      ];
+      mapFidelityTransactions.mockResolvedValue(mapped);
+      prisma.trades.findFirst.mockImplementation(async function () {
+        callOrder.push('processTrades');
+        return null;
+      });
+      prisma.trades.create.mockResolvedValue({ id: 't1' });
+      calculateSplitRatio.mockResolvedValue(5);
+      adjustLotsForSplit.mockImplementation(async function () {
+        callOrder.push('adjustLotsForSplit');
+        return 1;
+      });
+
+      await importFidelityTransactions('csv content');
+
+      expect(callOrder.indexOf('processTrades')).toBeLessThan(
+        callOrder.indexOf('adjustLotsForSplit')
+      );
+    });
+
+    test('adjustLotsForSplit is called once per pendingSplit entry with correct args', async function () {
+      parseFidelityCsv.mockReturnValue([{}]);
+      const mapped = emptyResult();
+      mapped.pendingSplits = [
+        { symbol: 'TSTX', csvQuantity: 200, accountId: 'a1' },
+        { symbol: 'MSTY', csvQuantity: 80, accountId: 'a2' },
+      ];
+      mapFidelityTransactions.mockResolvedValue(mapped);
+      calculateSplitRatio.mockResolvedValueOnce(5).mockResolvedValueOnce(10);
+      adjustLotsForSplit.mockResolvedValue(1);
+
+      const result = await importFidelityTransactions('csv content');
+
+      expect(adjustLotsForSplit).toHaveBeenCalledTimes(2);
+      expect(adjustLotsForSplit).toHaveBeenCalledWith('TSTX', 5, 'a1');
+      expect(adjustLotsForSplit).toHaveBeenCalledWith('MSTY', 10, 'a2');
+      expect(result.success).toBe(true);
+    });
+
+    test('adjustLotsForSplit is NOT called when calculateSplitRatio returns null (no open lots)', async function () {
+      parseFidelityCsv.mockReturnValue([{}]);
+      const mapped = emptyResult();
+      mapped.pendingSplits = [
+        { symbol: 'TSTX', csvQuantity: 200, accountId: 'a1' },
+      ];
+      mapFidelityTransactions.mockResolvedValue(mapped);
+      calculateSplitRatio.mockResolvedValue(null);
+
+      const result = await importFidelityTransactions('csv content');
+
+      expect(adjustLotsForSplit).not.toHaveBeenCalled();
+      expect(result.success).toBe(true);
+    });
+
+    test('error from adjustLotsForSplit is surfaced in result.errors and sets success false', async function () {
+      parseFidelityCsv.mockReturnValue([{}]);
+      const mapped = emptyResult();
+      mapped.pendingSplits = [
+        { symbol: 'TSTX', csvQuantity: 200, accountId: 'a1' },
+      ];
+      mapFidelityTransactions.mockResolvedValue(mapped);
+      calculateSplitRatio.mockResolvedValue(5);
+      adjustLotsForSplit.mockRejectedValue(new Error('No open lots for TSTX'));
+
+      const result = await importFidelityTransactions('csv content');
+
+      expect(result.success).toBe(false);
+      expect(result.errors).toHaveLength(1);
+      expect(result.errors[0]).toContain('TSTX');
     });
   });
 });

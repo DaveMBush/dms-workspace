@@ -4,7 +4,6 @@ import { mapFidelityTransactions } from './fidelity-data-mapper.function';
 import { prisma } from '../../prisma/prisma-client';
 import { getDistributions } from '../settings/common/get-distributions.function';
 import { getLastPrice } from '../settings/common/get-last-price.function';
-import { calculateSplitRatio } from './calculate-split-ratio.function';
 import { adjustLotsForSplit } from './adjust-lots-for-split.function';
 
 vi.mock('../../prisma/prisma-client', function () {
@@ -40,13 +39,11 @@ vi.mock('../../../utils/structured-logger', function () {
     },
   };
 });
-vi.mock('./calculate-split-ratio.function');
 vi.mock('./adjust-lots-for-split.function');
 
 const mockPrisma = prisma as any;
 const mockGetDistributions = getDistributions as any;
 const mockGetLastPrice = getLastPrice as any;
-const mockCalculateSplitRatio = calculateSplitRatio as any;
 const mockAdjustLotsForSplit = adjustLotsForSplit as any;
 
 interface ParsedCsvRow {
@@ -63,7 +60,6 @@ interface ParsedCsvRow {
 describe('mapFidelityTransactions', function () {
   beforeEach(function () {
     vi.clearAllMocks();
-    mockCalculateSplitRatio.mockResolvedValue(null);
     mockAdjustLotsForSplit.mockResolvedValue(0);
   });
 
@@ -1396,7 +1392,7 @@ describe('mapFidelityTransactions', function () {
   });
 
   describe('split row handling', function () {
-    test('calls calculateSplitRatio with symbol, csv quantity, and accountId when split row detected', async function () {
+    test('FROM split row: adds symbol, csvQuantity, and accountId to pendingSplits', async function () {
       const rows: ParsedCsvRow[] = [
         {
           date: '02/15/2026',
@@ -1411,19 +1407,15 @@ describe('mapFidelityTransactions', function () {
       ];
 
       mockPrisma.accounts.findFirst.mockResolvedValue({ id: 'acct-brokerage' });
-      mockCalculateSplitRatio.mockResolvedValue(5);
-      mockAdjustLotsForSplit.mockResolvedValue(3);
 
-      await mapFidelityTransactions(rows);
+      const result = await mapFidelityTransactions(rows);
 
-      expect(mockCalculateSplitRatio).toHaveBeenCalledWith(
-        'OXLC',
-        306,
-        'acct-brokerage'
-      );
+      expect(result.pendingSplits).toEqual([
+        { symbol: 'OXLC', csvQuantity: 306, accountId: 'acct-brokerage' },
+      ]);
     });
 
-    test('calls adjustLotsForSplit with symbol, ratio, and accountId when calculateSplitRatio returns a ratio', async function () {
+    test('populates pendingSplits with symbol, csvQuantity, and accountId and does NOT call adjustLotsForSplit', async function () {
       const rows: ParsedCsvRow[] = [
         {
           date: '02/15/2026',
@@ -1438,19 +1430,16 @@ describe('mapFidelityTransactions', function () {
       ];
 
       mockPrisma.accounts.findFirst.mockResolvedValue({ id: 'acct-brokerage' });
-      mockCalculateSplitRatio.mockResolvedValue(0.5);
-      mockAdjustLotsForSplit.mockResolvedValue(2);
 
-      await mapFidelityTransactions(rows);
+      const result = await mapFidelityTransactions(rows);
 
-      expect(mockAdjustLotsForSplit).toHaveBeenCalledWith(
-        'XYZ',
-        0.5,
-        'acct-brokerage'
-      );
+      expect(result.pendingSplits).toEqual([
+        { symbol: 'XYZ', csvQuantity: 200, accountId: 'acct-brokerage' },
+      ]);
+      expect(mockAdjustLotsForSplit).not.toHaveBeenCalled();
     });
 
-    test('does not call adjustLotsForSplit when calculateSplitRatio returns null', async function () {
+    test('FROM row is always added to pendingSplits (ratio calculation deferred to service)', async function () {
       const rows: ParsedCsvRow[] = [
         {
           date: '02/15/2026',
@@ -1465,10 +1454,80 @@ describe('mapFidelityTransactions', function () {
       ];
 
       mockPrisma.accounts.findFirst.mockResolvedValue({ id: 'acct-brokerage' });
-      mockCalculateSplitRatio.mockResolvedValue(null);
 
-      await mapFidelityTransactions(rows);
+      const result = await mapFidelityTransactions(rows);
 
+      expect(result.pendingSplits).toEqual([
+        { symbol: 'NOPOS', csvQuantity: 100, accountId: 'acct-brokerage' },
+      ]);
+      expect(mockAdjustLotsForSplit).not.toHaveBeenCalled();
+    });
+
+    test('buy row before split row: pendingSplits populated regardless of row order', async function () {
+      const rows: ParsedCsvRow[] = [
+        {
+          date: '06/01/2025',
+          action: 'YOU BOUGHT',
+          symbol: 'TSTX',
+          description: 'Test Stock',
+          quantity: 1000,
+          price: 1.0,
+          totalAmount: -1000,
+          account: 'My Brokerage',
+        },
+        {
+          date: '09/20/2025',
+          action: 'REVERSE SPLIT',
+          symbol: 'TSTX',
+          description: 'REVERSE SPLIT R/S FROM TSTXOLD#REOR M0000000000001',
+          quantity: 200,
+          price: 0,
+          totalAmount: 0,
+          account: 'My Brokerage',
+        },
+      ];
+
+      mockPrisma.accounts.findFirst.mockResolvedValue({ id: 'acct-brokerage' });
+
+      const result = await mapFidelityTransactions(rows);
+
+      expect(result.pendingSplits).toEqual([
+        { symbol: 'TSTX', csvQuantity: 200, accountId: 'acct-brokerage' },
+      ]);
+      expect(mockAdjustLotsForSplit).not.toHaveBeenCalled();
+    });
+
+    test('split row before buy row: pendingSplits still accumulated (order-agnostic)', async function () {
+      const rows: ParsedCsvRow[] = [
+        {
+          date: '09/20/2025',
+          action: 'REVERSE SPLIT',
+          symbol: 'TSTX',
+          description: 'REVERSE SPLIT R/S FROM TSTXOLD#REOR M0000000000001',
+          quantity: 200,
+          price: 0,
+          totalAmount: 0,
+          account: 'My Brokerage',
+        },
+        {
+          date: '06/01/2025',
+          action: 'YOU BOUGHT',
+          symbol: 'TSTX',
+          description: 'Test Stock',
+          quantity: 1000,
+          price: 1.0,
+          totalAmount: -1000,
+          account: 'My Brokerage',
+        },
+      ];
+
+      mockPrisma.accounts.findFirst.mockResolvedValue({ id: 'acct-brokerage' });
+
+      const result = await mapFidelityTransactions(rows);
+
+      expect(result.pendingSplits).toEqual([
+        { symbol: 'TSTX', csvQuantity: 200, accountId: 'acct-brokerage' },
+      ]);
       expect(mockAdjustLotsForSplit).not.toHaveBeenCalled();
     });
 
@@ -1487,8 +1546,6 @@ describe('mapFidelityTransactions', function () {
       ];
 
       mockPrisma.accounts.findFirst.mockResolvedValue({ id: 'acct-brokerage' });
-      mockCalculateSplitRatio.mockResolvedValue(5);
-      mockAdjustLotsForSplit.mockResolvedValue(3);
 
       const result = await mapFidelityTransactions(rows);
 
@@ -1498,7 +1555,7 @@ describe('mapFidelityTransactions', function () {
     });
 
     // Desktop-format tests: split text is in row.action, description is security name
-    test('desktop-format MSTY FROM row (action contains R/S FROM): calls calculateSplitRatio with correct args', async function () {
+    test('desktop-format MSTY FROM row (action contains R/S FROM): adds csvQuantity to pendingSplits', async function () {
       const rows: ParsedCsvRow[] = [
         {
           date: '12/08/2025',
@@ -1513,24 +1570,16 @@ describe('mapFidelityTransactions', function () {
       ];
 
       mockPrisma.accounts.findFirst.mockResolvedValue({ id: 'acct-joint' });
-      mockCalculateSplitRatio.mockResolvedValue(5);
-      mockAdjustLotsForSplit.mockResolvedValue(1);
 
-      await mapFidelityTransactions(rows);
+      const result = await mapFidelityTransactions(rows);
 
-      expect(mockCalculateSplitRatio).toHaveBeenCalledWith(
-        'MSTY',
-        80,
-        'acct-joint'
-      );
-      expect(mockAdjustLotsForSplit).toHaveBeenCalledWith(
-        'MSTY',
-        5,
-        'acct-joint'
-      );
+      expect(result.pendingSplits).toEqual([
+        { symbol: 'MSTY', csvQuantity: 80, accountId: 'acct-joint' },
+      ]);
+      expect(mockAdjustLotsForSplit).not.toHaveBeenCalled();
     });
 
-    test('desktop-format ULTY FROM row (action contains R/S FROM): processes 1-for-10 split correctly', async function () {
+    test('desktop-format ULTY FROM row (action contains R/S FROM): adds csvQuantity to pendingSplits', async function () {
       const rows: ParsedCsvRow[] = [
         {
           date: '12/01/2025',
@@ -1545,24 +1594,16 @@ describe('mapFidelityTransactions', function () {
       ];
 
       mockPrisma.accounts.findFirst.mockResolvedValue({ id: 'acct-joint' });
-      mockCalculateSplitRatio.mockResolvedValue(10);
-      mockAdjustLotsForSplit.mockResolvedValue(1);
 
-      await mapFidelityTransactions(rows);
+      const result = await mapFidelityTransactions(rows);
 
-      expect(mockCalculateSplitRatio).toHaveBeenCalledWith(
-        'ULTY',
-        100,
-        'acct-joint'
-      );
-      expect(mockAdjustLotsForSplit).toHaveBeenCalledWith(
-        'ULTY',
-        10,
-        'acct-joint'
-      );
+      expect(result.pendingSplits).toEqual([
+        { symbol: 'ULTY', csvQuantity: 100, accountId: 'acct-joint' },
+      ]);
+      expect(mockAdjustLotsForSplit).not.toHaveBeenCalled();
     });
 
-    test('desktop-format TO row (action contains R/S TO): is skipped without calling calculateSplitRatio', async function () {
+    test('desktop-format TO row (action contains R/S TO): is skipped without adding to pendingSplits', async function () {
       const rows: ParsedCsvRow[] = [
         {
           date: '12/08/2025',
@@ -1576,9 +1617,9 @@ describe('mapFidelityTransactions', function () {
         },
       ];
 
-      await mapFidelityTransactions(rows);
+      const result = await mapFidelityTransactions(rows);
 
-      expect(mockCalculateSplitRatio).not.toHaveBeenCalled();
+      expect(result.pendingSplits).toHaveLength(0);
       expect(mockAdjustLotsForSplit).not.toHaveBeenCalled();
     });
 
