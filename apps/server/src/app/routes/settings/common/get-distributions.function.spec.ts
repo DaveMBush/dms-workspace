@@ -457,4 +457,54 @@ describe('getDistributions', () => {
 
     expect(result?.distributions_per_year).toBe(12);
   });
+
+  // Story 62.1 / 62.2 regression tests — production-accurate scenario (post-fix).
+  //
+  // Root cause (Story 62.1): fetchDividendHistory applied filterPastRows (row.date <= today)
+  // before returning, so getDistributions never received future ex-dates.
+  // For a new symbol with exactly 1 past ex-date:
+  //   rows.length === 1  →  calculateDistributionsPerYear Path A  →  return 1
+  //
+  // Fix (Story 62.2): fetchDividendHistory now returns all valid rows (past + future).
+  // Production-accurate mocks now include 1 past row + several future rows, allowing
+  // calculateDistributionsPerYear to reach Path B (future-rows fallback) and return
+  // the correct cadence.
+
+  test('OXLC monthly payer: 1 past row + future monthly rows returns distributions_per_year=12', async () => {
+    // System time: 2025-08-21T10:00:00Z (set in beforeEach)
+    // Post-fix production-accurate: fetchDividendHistory returns 1 past ex-date
+    // plus scheduled future ex-dates for a new monthly payer (e.g. OXLC).
+    const productionAccurateMonthly: ProcessedRow[] = [
+      { amount: 0.25, date: new Date('2025-08-15') }, // only past row
+      { amount: 0.25, date: new Date('2025-09-15') }, // future (+31 days)
+      { amount: 0.25, date: new Date('2025-10-15') }, // future (+30 days)
+      { amount: 0.25, date: new Date('2025-11-14') }, // future (+30 days)
+      { amount: 0.25, date: new Date('2025-12-15') }, // future (+31 days)
+    ];
+
+    mockFetchDividendHistory.mockResolvedValueOnce(productionAccurateMonthly);
+
+    const result = await getDistributions('OXLC');
+
+    expect(result?.distributions_per_year).toBe(12);
+  });
+
+  test('MSTY weekly payer: 1 past row + future weekly rows returns distributions_per_year=52', async () => {
+    // System time: 2025-08-21T10:00:00Z (set in beforeEach)
+    // Post-fix production-accurate: fetchDividendHistory returns 1 past ex-date
+    // plus scheduled future ex-dates for a new weekly payer (e.g. MSTY).
+    const productionAccurateWeekly: ProcessedRow[] = [
+      { amount: 0.05, date: new Date('2025-08-15') }, // only past row
+      { amount: 0.05, date: new Date('2025-08-22') }, // future (+7 days)
+      { amount: 0.05, date: new Date('2025-08-29') }, // future (+7 days)
+      { amount: 0.05, date: new Date('2025-09-05') }, // future (+7 days)
+      { amount: 0.05, date: new Date('2025-09-12') }, // future (+7 days)
+    ];
+
+    mockFetchDividendHistory.mockResolvedValueOnce(productionAccurateWeekly);
+
+    const result = await getDistributions('MSTY');
+
+    expect(result?.distributions_per_year).toBe(52);
+  });
 });

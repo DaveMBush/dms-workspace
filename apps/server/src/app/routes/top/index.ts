@@ -16,6 +16,8 @@ import { isUniverseComputedSort } from './is-universe-computed-sort.function';
 import { PartialArrayDefinition } from './partial-array-definition.interface';
 import { Top } from './top.interface';
 
+const TOP_PAGE_SIZE = 50;
+
 async function getTopAccounts(): Promise<string[]> {
   const topAccounts = await prisma.accounts.findMany({
     select: {
@@ -199,7 +201,7 @@ function handleTopRoute(fastify: FastifyInstance): void {
         screens,
       ] = await Promise.all([
         getTopAccounts(),
-        getTopUniverses(universeState, 0),
+        getTopUniverses(universeState, 0, TOP_PAGE_SIZE),
         getTopRiskGroups(),
         getTopDivDepositTypes(),
         getTopHolidays(),

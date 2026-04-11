@@ -412,7 +412,7 @@ describe('SummaryViewComponent - Graph Integration', () => {
     expect(gainsDataset!.data).toEqual([40000, 40300]);
   });
 
-  it('should map Dividends dataset as deposits + cumulative capitalGains + cumulative dividends (regression: AS.9 Bug #7)', () => {
+  it('should map Dividends dataset as deposits + capitalGains + dividends per point', () => {
     fixture.detectChanges();
 
     const req = httpMock.expectOne(
@@ -421,7 +421,7 @@ describe('SummaryViewComponent - Graph Integration', () => {
     // Jan: deposits=40000, capitalGains=0, dividends=50
     //   → line = 40000 + 0 + 50 = 40050
     // Feb: deposits=40200, capitalGains=100, dividends=100
-    //   → line = 40200 + (0+100) + (50+100) = 40200 + 100 + 150 = 40450
+    //   → line = 40200 + 100 + 100 = 40400
     req.flush([
       { month: '01-2025', deposits: 40000, dividends: 50, capitalGains: 0 },
       { month: '02-2025', deposits: 40200, dividends: 100, capitalGains: 100 },
@@ -434,7 +434,7 @@ describe('SummaryViewComponent - Graph Integration', () => {
       (ds) => ds.label === 'Dividends'
     );
     expect(divDataset).toBeDefined();
-    expect(divDataset!.data).toEqual([40050, 40450]);
+    expect(divDataset!.data).toEqual([40050, 40400]);
   });
 });
 

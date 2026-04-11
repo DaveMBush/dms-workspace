@@ -16,7 +16,7 @@ interface ComputedSortParams {
 export async function getTopUniversesComputedSort(
   params: ComputedSortParams
 ): Promise<PartialArrayDefinition> {
-  const { state, startIndex, length, accountId, computedSort } = params;
+  const { state, accountId, computedSort } = params;
   const select = { buy: true, quantity: true, sell: true, sell_date: true };
   const tradesSelect =
     accountId !== null ? { where: { accountId }, select } : { select };
@@ -41,12 +41,13 @@ export async function getTopUniversesComputedSort(
   const allIds = universes.map(function mapUniverse(universe) {
     return universe.id;
   });
+  // For computed sorts we must return ALL sorted IDs so SmartNgRX can replace
+  // every position in its array proxy.  Returning only a page-sized slice
+  // leaves stale IDs at positions beyond the page boundary, causing duplicate
+  // rows to appear when the virtual-scroll buffer pre-loads those positions.
   return {
-    startIndex,
-    indexes:
-      length !== undefined
-        ? allIds.slice(startIndex, startIndex + length)
-        : allIds.slice(startIndex),
+    startIndex: 0,
+    indexes: allIds,
     length: allIds.length,
   };
 }

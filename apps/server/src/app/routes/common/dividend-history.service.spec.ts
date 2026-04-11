@@ -168,7 +168,7 @@ describe('dividend-history.service', () => {
       expect(result[2].date).toEqual(new Date(2026, 2, 12));
     });
 
-    test('filters out future ex-div rows', async () => {
+    test('returns all valid rows including future ex-div rows', async () => {
       const futureRow = {
         exDiv: '12/31/2099',
         payDay: '01/31/2100',
@@ -183,11 +183,11 @@ describe('dividend-history.service', () => {
 
       const result = await fetchDividendHistory('PDI');
 
-      expect(result).toHaveLength(3);
+      // Story 62.2: date filter removed — future ex-div rows are now returned
+      // so that calculateDistributionsPerYear can use them for cadence detection.
+      expect(result).toHaveLength(4);
       expect(
-        result.every(function checkNoPastDate(row) {
-          return row.date < new Date('12/31/2099');
-        })
+        result.every((row) => row.amount > 0 && !isNaN(row.date.valueOf()))
       ).toBe(true);
     });
 
