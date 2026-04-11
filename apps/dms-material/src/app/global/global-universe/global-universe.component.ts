@@ -152,8 +152,16 @@ export class GlobalUniverseComponent implements OnDestroy {
     return options;
   });
 
-  // Server handles symbol/risk_group filtering; expired and yield % need client-side filtering
-  // Rows with empty symbol are SmartNgRX default/loading placeholders — exclude them
+  // Server handles symbol/risk_group filtering; expired and yield % need client-side filtering.
+  //
+  // IMPORTANT — do NOT filter out placeholder rows (symbol === '') here.
+  // SmartNgRX marks rows isLoading=true and buildPlaceholderUniverseEntry() returns symbol:''
+  // as a temporary stand-in until the real data arrives from the server. CDK virtual scroll
+  // requires a STABLE array length to calculate correct scroll-container height. Removing
+  // placeholder rows before CDK sees the array causes the array length to fluctuate as rows
+  // load, which re-introduces the blank-row / position-jump regression that has been fixed and
+  // re-broken across Epics 29, 31, 44, 60, and 64. Placeholder rows render as blank cells for
+  // a brief moment during loading — that is intentional and acceptable.
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signal
   readonly filteredData$ = computed(() => {
     const rawData = this.universeService.universes();
@@ -165,8 +173,6 @@ export class GlobalUniverseComponent implements OnDestroy {
       riskGroupFilter: this.riskGroupFilter$(),
       expiredFilter: this.expiredFilter$(),
       minYieldFilter: this.minYieldFilter$(),
-    }).filter(function excludeLoadingRows(row) {
-      return row.symbol !== '';
     });
   });
 
