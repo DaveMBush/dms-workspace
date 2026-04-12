@@ -335,7 +335,10 @@ test.describe('Universe Lazy-Load Deep Scroll — empty symbols after crossing p
 
     // Click 'Yield %' column header to trigger sort change and data reload
     // Use exact:true to avoid matching 'Avg Purch Yield %' which also contains 'Yield %'
-    const yieldHeader = page.getByRole('button', { name: 'Yield %', exact: true });
+    const yieldHeader = page.getByRole('button', {
+      name: 'Yield %',
+      exact: true,
+    });
     await yieldHeader.click();
     await page.waitForTimeout(100);
     await page
@@ -474,10 +477,10 @@ test.describe('Universe Lazy-Load Deep Scroll — empty symbols after crossing p
 
     await assertVisibleSymbolsNonEmpty(
       page,
-      "Visible rows have empty symbol cells after UDSCRL filter + scroll to bottom. " +
+      'Visible rows have empty symbol cells after UDSCRL filter + scroll to bottom. ' +
         "Story 65.2 regression: filterUniverses() placeholder guard must allow symbol='' " +
-        "rows through even when symbol text filter is active. All 150 seeded rows (prefix " +
-        "UDSCRL) should be visible and fully loaded after deep scroll."
+        'rows through even when symbol text filter is active. All 150 seeded rows (prefix ' +
+        'UDSCRL) should be visible and fully loaded after deep scroll.'
     );
   });
 });
