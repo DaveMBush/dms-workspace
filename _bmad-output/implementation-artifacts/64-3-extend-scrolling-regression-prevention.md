@@ -34,17 +34,20 @@ so that a future regression is caught immediately in CI rather than discovered i
 ## Tasks / Subtasks
 
 - [x] Task 1: Review what the Story 60.3 suite already covers (AC: #1, #2)
+
   - [x] Subtask 1.1: Read `universe-scrolling-regression.spec.ts` in full — list every existing test case and the Epic it guards against
   - [x] Subtask 1.2: Read the Story 64.1 Dev Agent Record — identify whether the Round 5 root cause (`excludeLoadingRows` filter / new regression vector) introduced any failure mode NOT already exercised by an existing test
   - [x] Subtask 1.3: Identify any gap: the sort-change test existed but was the failing one; check whether the fix in Story 64.2 makes it reliably green or if a more targeted variant is needed
 
 - [x] Task 2: Add new test cases for Round 5 failure modes (AC: #1, #2)
+
   - [x] Subtask 2.1: If the `excludeLoadingRows` filter path is confirmed as a new regression vector in Story 64.1/64.2, add a test that specifically targets this path — e.g., a test that verifies array length stability by counting rows before and after a sort change during loading
   - [x] Subtask 2.2: Add test: rapid multiple sort-column toggles followed by fast scroll — this exercises the scenario where sort triggers multiple consecutive `isLoading` windows; assert no blank symbol cells after final settle
   - [x] Subtask 2.3: Add test: apply a symbol filter that returns a subset of rows, wait for results, then scroll to bottom — assert no blank rows; this guards against the filter + scroll interaction that the `excludeLoadingRows` filter previously affected
   - [x] Subtask 2.4: Each new test case must include a comment block citing: (a) which Epic it guards against, (b) the root cause, and (c) what to look for if the test fails in the future
 
 - [x] Task 3: Ensure existing Story 60.3 tests are all green (AC: #1, #3)
+
   - [x] Subtask 3.1: Run the full `universe-scrolling-regression.spec.ts` suite; confirm all previously-green tests remain green
   - [x] Subtask 3.2: Confirm the sort-change test (previously flaky/failing, now fixed by 64.2) is deterministically green — if it remains flaky, increase the settle timeout or use a more reliable polling approach
 
@@ -56,13 +59,13 @@ so that a future regression is caught immediately in CI rather than discovered i
 
 ### Key Files
 
-| File | Purpose |
-|------|---------|
-| `apps/dms-material-e2e/src/universe-scrolling-regression.spec.ts` | **Primary file to extend** — all new tests go here; existing tests must not be modified or removed |
-| `apps/dms-material-e2e/src/helpers/seed-scroll-universe-data.helper.ts` | Seeds 60 rows (`USCRL{n}`) with cleanup; reuse `beforeAll`/`afterAll` pattern already in file |
-| `apps/dms-material-e2e/src/helpers/login.helper.ts` | `login(page)` — called in `beforeEach`; do not replicate inline |
-| Story 64.1 Dev Agent Record | Source of root-cause explanation to embed as test comments |
-| Story 64.2 Dev Agent Record | Source of fix explanation to cite in round-5 guards |
+| File                                                                    | Purpose                                                                                            |
+| ----------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `apps/dms-material-e2e/src/universe-scrolling-regression.spec.ts`       | **Primary file to extend** — all new tests go here; existing tests must not be modified or removed |
+| `apps/dms-material-e2e/src/helpers/seed-scroll-universe-data.helper.ts` | Seeds 60 rows (`USCRL{n}`) with cleanup; reuse `beforeAll`/`afterAll` pattern already in file      |
+| `apps/dms-material-e2e/src/helpers/login.helper.ts`                     | `login(page)` — called in `beforeEach`; do not replicate inline                                    |
+| Story 64.1 Dev Agent Record                                             | Source of root-cause explanation to embed as test comments                                         |
+| Story 64.2 Dev Agent Record                                             | Source of fix explanation to cite in round-5 guards                                                |
 
 ### Architecture Context
 
@@ -76,15 +79,15 @@ The existing test structure (`test.describe` + `test.beforeAll` seed + `test.aft
 
 ### Test Coverage Map (post-Story 64.3)
 
-| Test Scenario | Epic Guarded | Root Cause Guarded Against |
-|--------------|-------------|---------------------------|
-| Fast scroll to bottom | 29 / 31 / 44 / 60 / 64 | rowHeight mismatch, contain:strict, will-change, null→placeholder (60), excludeLoadingRows (64) |
-| Scroll bottom → top | 29 / 31 / 44 / 60 / 64 | Re-entry of evicted rows triggering new isLoading cycle |
-| Repeated oscillation (bottom ↔ top × 2) | 44 / 60 / 64 | Multiple overlapping isLoading windows destabilising CDK height |
-| Sort change then fast scroll | 60 / 64 | Sort triggers mass isLoading; excludeLoadingRows removed rows; CDK height collapse |
-| Symbol filter change then fast scroll | 60 / 64 | Filter triggers server round-trip; isLoading window during scroll |
-| *NEW* Multiple rapid sort toggles then fast scroll | 64 | Consecutive isLoading batches from repeated sort changes; array length oscillation |
-| *NEW* Subset filter + scroll to bottom | 64 | Regression where excludeLoadingRows interacted with filtered result size |
+| Test Scenario                                      | Epic Guarded           | Root Cause Guarded Against                                                                      |
+| -------------------------------------------------- | ---------------------- | ----------------------------------------------------------------------------------------------- |
+| Fast scroll to bottom                              | 29 / 31 / 44 / 60 / 64 | rowHeight mismatch, contain:strict, will-change, null→placeholder (60), excludeLoadingRows (64) |
+| Scroll bottom → top                                | 29 / 31 / 44 / 60 / 64 | Re-entry of evicted rows triggering new isLoading cycle                                         |
+| Repeated oscillation (bottom ↔ top × 2)            | 44 / 60 / 64           | Multiple overlapping isLoading windows destabilising CDK height                                 |
+| Sort change then fast scroll                       | 60 / 64                | Sort triggers mass isLoading; excludeLoadingRows removed rows; CDK height collapse              |
+| Symbol filter change then fast scroll              | 60 / 64                | Filter triggers server round-trip; isLoading window during scroll                               |
+| _NEW_ Multiple rapid sort toggles then fast scroll | 64                     | Consecutive isLoading batches from repeated sort changes; array length oscillation              |
+| _NEW_ Subset filter + scroll to bottom             | 64                     | Regression where excludeLoadingRows interacted with filtered result size                        |
 
 ### Technical Guidance
 
