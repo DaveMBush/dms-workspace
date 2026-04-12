@@ -774,5 +774,30 @@ describe('importFidelityTransactions', function () {
       expect(result.errors).toHaveLength(1);
       expect(result.errors[0]).toContain('TSTX');
     });
+
+    test('when pendingSplits is empty, adjustLotsForSplit is never called', async function () {
+      parseFidelityCsv.mockReturnValue([{}]);
+      const mapped = emptyResult();
+      mapped.trades = [
+        {
+          universeId: 'u1',
+          accountId: 'a1',
+          buy: 10,
+          sell: 0,
+          buy_date: '2025-06-01',
+          quantity: 100,
+        },
+      ];
+      // pendingSplits defaults to [] in emptyResult()
+      mapFidelityTransactions.mockResolvedValue(mapped);
+      prisma.trades.findFirst.mockResolvedValue(null);
+      prisma.trades.create.mockResolvedValue({ id: 't1' });
+
+      const result = await importFidelityTransactions('csv content');
+
+      expect(adjustLotsForSplit).not.toHaveBeenCalled();
+      expect(calculateSplitRatio).not.toHaveBeenCalled();
+      expect(result.success).toBe(true);
+    });
   });
 });

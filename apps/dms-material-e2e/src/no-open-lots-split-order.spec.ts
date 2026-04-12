@@ -192,3 +192,104 @@ test.describe('No Open Lots Split Ordering Bug (Story 63.1)', () => {
     await expect(tstxRow).toHaveCount(1, { timeout: 10000 });
   });
 });
+
+// ─── Story 63.3: Ascending Date Order — buy rows before split row ─────────────
+//
+// Complements the reverse-date test above. Fidelity normally exports in
+// reverse-date order (newest first), but we verify the fix is also correct
+// when the CSV happens to be in ascending order (oldest first).
+//
+// Fixture: fidelity-split-order-ascending.csv
+//   Line 2: 06/01/2025 BUY 500 @ $3.80   (oldest — first in file)
+//   Line 3: 07/15/2025 BUY 500 @ $4.00
+//   Line 4: 09/20/2025 split FROM (post-split qty = 200)  (newest — last in file)
+//
+// Expected: same result as the reverse-date test — totalQty = 200.
+
+test.describe('No Open Lots — Ascending Date Order (Story 63.3)', () => {
+  let universeId = '';
+  let cleanup: (() => Promise<void>) | null = null;
+
+  test.beforeAll(async () => {
+    const seedResult = await seedNoOpenLotsE2eData();
+    universeId = seedResult.universeId;
+    cleanup = seedResult.cleanup;
+  });
+
+  test.afterAll(async () => {
+    if (cleanup) {
+      await cleanup();
+    }
+  });
+
+  test.beforeEach(async ({ page }) => {
+    await login(page);
+  });
+
+  /**
+   * Imports a CSV whose buy rows appear before the split row (ascending-date order).
+   *
+   * This is the "easy" case: the CSV row order matches the natural processing order.
+   * The fix from Story 63.2 must not break this existing ordering.
+   *
+   * Expected after a correct 1-for-5 reverse split:
+   *   Total open lots = 1000 / 5 = 200 shares
+   */
+  test('should apply reverse split when buy rows precede split row in CSV (ascending-date order)', async ({
+    page,
+  }) => {
+    await navigateToUniverse(page);
+
+    const responsePromise = page.waitForResponse(function isImportResponse(
+      response
+    ) {
+      return (
+        response.url().includes('/api/import/fidelity') &&
+        response.request().method() === 'POST' &&
+        response.status() === 200
+      );
+    });
+
+    await openImportDialog(page);
+    await uploadFile(page, 'fidelity-split-order-ascending.csv');
+    await clickUpload(page);
+
+    const response = await responsePromise;
+    const body = (await response.json()) as {
+      success: boolean;
+      imported: number;
+      errors: string[];
+      warnings: string[];
+    };
+
+    expect(body.success).toBe(true);
+    expect(body.errors).toHaveLength(0);
+
+    await expect(
+      page.getByRole('heading', { name: 'Import Fidelity Transactions' })
+    ).not.toBeVisible({ timeout: 10000 });
+
+    const prisma = await initializePrismaClient();
+    try {
+      const openLots = await prisma.trades.findMany({
+        where: { universeId, sell_date: null },
+        select: { quantity: true, buy: true },
+      });
+
+      expect(openLots).toHaveLength(2);
+
+      const totalQty = openLots.reduce(function sumQty(
+        sum: number,
+        lot: { quantity: number }
+      ) {
+        return sum + lot.quantity;
+      },
+      0);
+
+      // 1000 pre-split shares ÷ 5 = 200 post-split shares.
+      expect(totalQty).toBe(200);
+    } finally {
+      await prisma.$disconnect();
+    }
+  });
+});
