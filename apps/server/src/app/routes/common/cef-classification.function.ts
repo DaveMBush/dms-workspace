@@ -32,11 +32,14 @@ function createCefConnectRequestHeaders(): Record<string, string> {
 export async function lookupCefConnectSymbol(
   symbol: string
 ): Promise<ScreeningData | null> {
+  const normalizedSymbol = symbol.trim().toUpperCase();
+  if (!normalizedSymbol) {
+    return null;
+  }
   const url = 'https://www.cefconnect.com/api/v3/dailypricing';
   const response = await axiosGetWithBackoff<ScreeningData[]>(url, {
     headers: createCefConnectRequestHeaders(),
   });
-  const normalizedSymbol = symbol.trim().toUpperCase();
   return (
     response.data.find(function findMatchingTicker(
       entry: ScreeningData

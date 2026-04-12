@@ -81,6 +81,20 @@ describe('lookupCefConnectSymbol', () => {
       'Network failure'
     );
   });
+
+  it('returns null immediately for empty string without calling API', async () => {
+    const result = await lookupCefConnectSymbol('');
+
+    expect(result).toBeNull();
+    expect(mockAxiosGetWithBackoff).not.toHaveBeenCalled();
+  });
+
+  it('returns null immediately for whitespace-only string without calling API', async () => {
+    const result = await lookupCefConnectSymbol('   ');
+
+    expect(result).toBeNull();
+    expect(mockAxiosGetWithBackoff).not.toHaveBeenCalled();
+  });
 });
 
 describe('classifySymbolRiskGroupId', () => {
