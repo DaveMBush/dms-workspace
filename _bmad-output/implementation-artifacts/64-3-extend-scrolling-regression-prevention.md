@@ -25,11 +25,16 @@ so that a future regression is caught immediately in CI rather than discovered i
 
 ## Definition of Done
 
-- [ ] Playwright tests added for any new failure mode discovered in Story 64.1 that is not already covered by the suite from Epic 60 Story 60.3
-- [ ] Existing tests from Story 60.3 continue to pass (no regressions)
-- [ ] All new tests pass green
-- [ ] `pnpm run e2e:dms-material:chromium` passes
-- [ ] `pnpm all` passes
+- [x] Playwright tests added for any new failure mode discovered in Story 64.1 that is not already covered by the suite from Epic 60 Story 60.3
+  - Evidence: 2 new tests added to `universe-scrolling-regression.spec.ts` (multiple rapid sort toggles + subset filter + scroll)
+- [x] Existing tests from Story 60.3 continue to pass (no regressions)
+  - Evidence: Existing 5 tests unchanged; new tests added inside same `test.describe` block with shared seeded data
+- [x] All new tests pass green
+  - Evidence: CI pipeline validated; new tests follow established `expect.poll()` + `assertVisibleSymbolsNonEmpty()` patterns
+- [x] `pnpm run e2e:dms-material:chromium` passes
+  - Evidence: CI pipeline passed after format fix (Phase 6 verification)
+- [x] `pnpm all` passes
+  - Evidence: CI pipeline passed after format fix (Phase 6 verification)
 
 ## Tasks / Subtasks
 
@@ -159,6 +164,8 @@ None — implementation was straightforward with no blockers.
 
 ### Completion Notes List
 
+**Phase 2 (Dev Agent — Implementation):**
+
 - Reviewed existing `universe-scrolling-regression.spec.ts`: confirmed 5 pre-existing tests covering Epics 29/31/44/60/64 fast-scroll, oscillation, sort-change, and filter-change scenarios.
 - Confirmed `excludeLoadingRows` was the Round 5 regression vector (identified in Story 64.1, fixed in Story 64.2).
 - 2 new E2E tests added to `universe-scrolling-regression.spec.ts` within the existing `test.describe` block (share seeded data): (1) multiple rapid sort toggles then fast scroll, (2) subset symbol filter then scroll to bottom. Both include full comment blocks citing Epic, root cause, and fix.
@@ -166,7 +173,18 @@ None — implementation was straightforward with no blockers.
 - `filter-universes.function.spec.ts`: new test verifying placeholder rows pass through when symbol filter is active.
 - `save-universe-filters-and-notify.function.ts`: `accountId !== 'all'` guard around per-entity universe re-fetch notification — prevents unnecessary isLoading windows when no account context is selected.
 - `save-universe-filters-and-notify.function.spec.ts`: new test verifying universe entity notifications are suppressed when `accountId === 'all'`.
-- Test run/validation deferred to Phase 3 subagent.
+
+**Phase 3 (Quality Validation Subagent — Test Execution):**
+
+- `CI=1 pnpm all` (lint + build + unit tests): PASSED — all unit tests green, no lint errors.
+- `pnpm e2e:dms-material:chromium`: PASSED — all scrolling regression tests including the 2 new tests passed green.
+- `pnpm e2e:dms-material:firefox`: PASSED — no regressions.
+- `pnpm dupcheck`: PASSED — no duplication detected.
+- `pnpm format`: PASSED — code formatted.
+
+**Phase 6 (CI Review — CodeRabbit Loop):**
+
+- CI format:check failed on this artifact file (trailing whitespace/formatting). Fixed and re-pushed. CI re-run passed.
 
 ### File List
 
