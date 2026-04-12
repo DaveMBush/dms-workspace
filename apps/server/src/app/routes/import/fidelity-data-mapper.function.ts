@@ -1,5 +1,10 @@
 import { logger } from '../../../utils/structured-logger';
 import { prisma } from '../../prisma/prisma-client';
+import {
+  classifySymbolRiskGroupId,
+  lookupCefConnectSymbol,
+  RiskGroupMap,
+} from '../common/cef-classification.function';
 import { fetchAndUpdatePriceData } from '../universe/fetch-and-update-price-data.function';
 import { FidelityCsvRow } from './fidelity-csv-row.interface';
 import { isInLieuRow } from './is-in-lieu-row.function';
@@ -70,26 +75,60 @@ async function resolveSymbol(
 
   if (!universeEntry && createIfNotFound) {
     // Auto-create universe entry for new symbols on BUY
-    // Get default risk group (first one available)
-    const defaultRiskGroup = await prisma.risk_group.findFirst();
+    const allRiskGroups = await prisma.risk_group.findMany();
+    const defaultRiskGroup = allRiskGroups.find(function findEquities(g) {
+      return g.name === 'Equities';
+    });
 
     if (!defaultRiskGroup) {
       throw new Error(
-        'No risk groups found in database. Cannot create universe entry.'
+        'Equities risk group not found in database. Cannot create universe entry.'
+      );
+    }
+
+    const incomeGroup = allRiskGroups.find(function findIncome(g) {
+      return g.name === 'Income';
+    });
+    const taxFreeGroup = allRiskGroups.find(function findTaxFree(g) {
+      return g.name === 'Tax Free Income';
+    });
+    const riskGroups: RiskGroupMap = {
+      equities: defaultRiskGroup.id,
+      income: incomeGroup?.id ?? defaultRiskGroup.id,
+      taxFree: taxFreeGroup?.id ?? defaultRiskGroup.id,
+    };
+
+    let riskGroupId = defaultRiskGroup.id;
+    let isCef = false;
+
+    try {
+      const cefData = await lookupCefConnectSymbol(symbol);
+      if (cefData) {
+        riskGroupId =
+          classifySymbolRiskGroupId(cefData, riskGroups) ?? defaultRiskGroup.id;
+        isCef = true;
+      }
+    } catch (error) {
+      logger.warn(
+        'CEF classification lookup failed; using default risk group',
+        {
+          symbol,
+          error: error instanceof Error ? error.message : String(error),
+        }
       );
     }
 
     const newUniverse = await prisma.universe.create({
       data: {
         symbol,
-        risk_group_id: defaultRiskGroup.id,
+        risk_group_id: riskGroupId,
         last_price: 0,
         distribution: 0,
         distributions_per_year: 0,
         ex_date: null,
         most_recent_sell_date: null,
         expired: false,
-        is_closed_end_fund: true,
+        is_closed_end_fund: isCef,
       },
     });
 
