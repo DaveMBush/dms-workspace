@@ -1340,8 +1340,14 @@ describe('filterUniverses - Epic 65 placeholder row preservation (CDK scroll-hei
 
   it('should preserve multiple placeholder rows spanning lazy-load page boundaries', () => {
     // Simulates 3 placeholder rows from pages 2-3 of a 150-row universe list
-    const placeholder2: Universe = { ...placeholderRow, id: 'placeholder-uuid-2' };
-    const placeholder3: Universe = { ...placeholderRow, id: 'placeholder-uuid-3' };
+    const placeholder2: Universe = {
+      ...placeholderRow,
+      id: 'placeholder-uuid-2',
+    };
+    const placeholder3: Universe = {
+      ...placeholderRow,
+      id: 'placeholder-uuid-3',
+    };
     const result = filterUniverses(
       [loadedRow, placeholderRow, placeholder2, placeholder3],
       {
