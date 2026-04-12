@@ -37,22 +37,22 @@ export async function seedDeepScrollUniverseData(): Promise<SeederResult> {
   try {
     const riskGroups = await createRiskGroups(prisma);
     const riskGroupId = riskGroups.equitiesRiskGroup.id;
-    const records: UniverseRecord[] = symbols.map(
-      function mapSymbol(symbol): UniverseRecord {
-        return {
-          symbol,
-          risk_group_id: riskGroupId,
-          distribution: 1.0,
-          distributions_per_year: 4,
-          last_price: 50.0,
-          ex_date: futureDate,
-          most_recent_sell_date: null,
-          most_recent_sell_price: null,
-          expired: false,
-          is_closed_end_fund: true,
-        };
-      }
-    );
+    const records: UniverseRecord[] = symbols.map(function mapSymbol(
+      symbol
+    ): UniverseRecord {
+      return {
+        symbol,
+        risk_group_id: riskGroupId,
+        distribution: 1.0,
+        distributions_per_year: 4,
+        last_price: 50.0,
+        ex_date: futureDate,
+        most_recent_sell_date: null,
+        most_recent_sell_price: null,
+        expired: false,
+        is_closed_end_fund: true,
+      };
+    });
     await prisma.universe.createMany({ data: records });
   } catch (error) {
     await prisma.$disconnect();

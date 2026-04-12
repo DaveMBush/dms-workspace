@@ -102,105 +102,102 @@ async function scrollViewportTo(
   viewport: Locator,
   scrollTopPx: number
 ): Promise<void> {
-  await viewport.evaluate(
-    function setScrollTop(node: Element, top: number): void {
-      node.scrollTop = top;
-    },
-    scrollTopPx
-  );
+  await viewport.evaluate(function setScrollTop(
+    node: Element,
+    top: number
+  ): void {
+    node.scrollTop = top;
+  },
+  scrollTopPx);
 }
 
 // ─── Deep-Scroll Universe Tests ───────────────────────────────────────────────
 
-test.describe(
-  'Universe Lazy-Load Deep Scroll — empty symbols after crossing page boundaries',
-  () => {
-    let cleanup: () => Promise<void>;
+test.describe('Universe Lazy-Load Deep Scroll — empty symbols after crossing page boundaries', () => {
+  let cleanup: () => Promise<void>;
 
-    test.beforeAll(async () => {
-      const seeder = await seedDeepScrollUniverseData();
-      cleanup = seeder.cleanup;
+  test.beforeAll(async () => {
+    const seeder = await seedDeepScrollUniverseData();
+    cleanup = seeder.cleanup;
+  });
+
+  test.afterAll(async () => {
+    if (cleanup) {
+      await cleanup();
+    }
+  });
+
+  test.beforeEach(async ({ page }) => {
+    await login(page);
+    await page.goto('/global/universe');
+    await expect(page.locator('dms-base-table')).toBeVisible({
+      timeout: 15000,
     });
+    // Wait for at least one data row to be rendered before scrolling
+    await page.waitForSelector(ROW_SELECTOR, { timeout: 15000 });
+  });
 
-    test.afterAll(async () => {
-      if (cleanup) {
-        await cleanup();
-      }
-    });
+  test('should have no blank symbol cells after incremental deep scroll across three lazy-load page boundaries', async ({
+    page,
+  }) => {
+    // Regression test for Epic 65: deep scroll across multiple lazy-load
+    // page boundaries leaves symbol cells empty because `filteredData$`
+    // strips placeholder rows from the CDK data source, preventing
+    // `visibleRange` from ever reaching pages 2-3 and causing
+    // `triggerProxyLoad` to never dispatch loadByIndexes for those pages.
+    //
+    // Expected behaviour (post-fix): all rows show populated symbol cells
+    // after incremental scrolling through all 150 rows.
+    //
+    // Current behaviour (pre-fix): rows past the first lazy-load page
+    // boundary (row 50+) remain empty — this test FAILS.
+    const viewport = page.locator(VIEWPORT_SELECTOR);
+    await expect(viewport).toBeVisible({ timeout: 10000 });
 
-    test.beforeEach(async ({ page }) => {
-      await login(page);
-      await page.goto('/global/universe');
-      await expect(page.locator('dms-base-table')).toBeVisible({
-        timeout: 15000,
+    // Step 1: Scroll to approximate page 1 / page 2 boundary (~row 50)
+    // TOP_PAGE_SIZE = 50; rowHeight = 52px → boundary ≈ row 50 * 52px
+    const page1Boundary = 50 * ROW_HEIGHT_PX;
+    await scrollViewportTo(viewport, page1Boundary);
+    // Pause at boundary to allow lazy loading to trigger for page 2
+    await page
+      .waitForLoadState('networkidle', { timeout: 5000 })
+      .catch(function ignoreTimeout() {
+        // networkidle may not fire if no requests are in-flight
       });
-      // Wait for at least one data row to be rendered before scrolling
-      await page.waitForSelector(ROW_SELECTOR, { timeout: 15000 });
-    });
 
-    test(
-      'should have no blank symbol cells after incremental deep scroll across three lazy-load page boundaries',
-      async ({ page }) => {
-        // Regression test for Epic 65: deep scroll across multiple lazy-load
-        // page boundaries leaves symbol cells empty because `filteredData$`
-        // strips placeholder rows from the CDK data source, preventing
-        // `visibleRange` from ever reaching pages 2-3 and causing
-        // `triggerProxyLoad` to never dispatch loadByIndexes for those pages.
-        //
-        // Expected behaviour (post-fix): all rows show populated symbol cells
-        // after incremental scrolling through all 150 rows.
-        //
-        // Current behaviour (pre-fix): rows past the first lazy-load page
-        // boundary (row 50+) remain empty — this test FAILS.
-        const viewport = page.locator(VIEWPORT_SELECTOR);
-        await expect(viewport).toBeVisible({ timeout: 10000 });
+    // Step 2: Scroll to approximate page 2 / page 3 boundary (~row 100)
+    const page2Boundary = 100 * ROW_HEIGHT_PX;
+    await scrollViewportTo(viewport, page2Boundary);
+    // Pause at boundary to allow lazy loading to trigger for page 3
+    await page
+      .waitForLoadState('networkidle', { timeout: 5000 })
+      .catch(function ignoreTimeout() {
+        // networkidle may not fire if no requests are in-flight
+      });
 
-        // Step 1: Scroll to approximate page 1 / page 2 boundary (~row 50)
-        // TOP_PAGE_SIZE = 50; rowHeight = 52px → boundary ≈ row 50 * 52px
-        const page1Boundary = 50 * ROW_HEIGHT_PX;
-        await scrollViewportTo(viewport, page1Boundary);
-        // Pause at boundary to allow lazy loading to trigger for page 2
-        await page
-          .waitForLoadState('networkidle', { timeout: 5000 })
-          .catch(function ignoreTimeout() {
-            // networkidle may not fire if no requests are in-flight
-          });
+    // Step 3: Scroll to the bottom of the list (~row 150)
+    const page3End = 150 * ROW_HEIGHT_PX;
+    await scrollViewportTo(viewport, page3End);
+    await page
+      .waitForLoadState('networkidle', { timeout: 5000 })
+      .catch(function ignoreTimeout() {
+        // networkidle may not fire if no requests are in-flight
+      });
 
-        // Step 2: Scroll to approximate page 2 / page 3 boundary (~row 100)
-        const page2Boundary = 100 * ROW_HEIGHT_PX;
-        await scrollViewportTo(viewport, page2Boundary);
-        // Pause at boundary to allow lazy loading to trigger for page 3
-        await page
-          .waitForLoadState('networkidle', { timeout: 5000 })
-          .catch(function ignoreTimeout() {
-            // networkidle may not fire if no requests are in-flight
-          });
-
-        // Step 3: Scroll to the bottom of the list (~row 150)
-        const page3End = 150 * ROW_HEIGHT_PX;
-        await scrollViewportTo(viewport, page3End);
-        await page
-          .waitForLoadState('networkidle', { timeout: 5000 })
-          .catch(function ignoreTimeout() {
-            // networkidle may not fire if no requests are in-flight
-          });
-
-        // Assert: all visible symbol cells must be non-empty.
-        // FAILS in current codebase — rows past page 1 boundary show
-        // empty symbol cells because filteredData$ strips all placeholder rows,
-        // CDK never increases visibleRange past ~50, and pages 2-3 are never
-        // requested via triggerProxyLoad.
-        await assertVisibleSymbolsNonEmpty(
-          page,
-          'Visible rows have empty symbol cells after incremental deep scroll ' +
-            'across three lazy-load page boundaries. ' +
-            'Epic 65 defect: filteredData$ excludeLoadingRows filter strips placeholder rows ' +
-            'from the CDK data source, preventing visibleRange from exceeding ~50 rows. ' +
-            'triggerProxyLoad therefore never dispatches loadByIndexes for pages 2-3. ' +
-            'Fix required: ensure CDK data source receives stable placeholder rows ' +
-            'so visibleRange correctly tracks scroll position across all pages.'
-        );
-      }
+    // Assert: all visible symbol cells must be non-empty.
+    // FAILS in current codebase — rows past page 1 boundary show
+    // empty symbol cells because filteredData$ strips all placeholder rows,
+    // CDK never increases visibleRange past ~50, and pages 2-3 are never
+    // requested via triggerProxyLoad.
+    await assertVisibleSymbolsNonEmpty(
+      page,
+      'Visible rows have empty symbol cells after incremental deep scroll ' +
+        'across three lazy-load page boundaries. ' +
+        'Epic 65 defect: filteredData$ excludeLoadingRows filter strips placeholder rows ' +
+        'from the CDK data source, preventing visibleRange from exceeding ~50 rows. ' +
+        'triggerProxyLoad therefore never dispatches loadByIndexes for pages 2-3. ' +
+        'Fix required: ensure CDK data source receives stable placeholder rows ' +
+        'so visibleRange correctly tracks scroll position across all pages.'
     );
-  }
-);
+  });
+});
