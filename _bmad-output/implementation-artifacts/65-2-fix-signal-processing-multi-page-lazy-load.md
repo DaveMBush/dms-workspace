@@ -64,14 +64,15 @@ so that I never see blank symbol rows at the bottom of the sorted list.
 - [x] Task 5: Verify with Playwright MCP server (AC: #3)
 
   - [x] Subtask 5.1: E2E test `universe-lazy-load-deep-scroll.spec.ts` scrolls 150-row universe incrementally to the bottom — all symbol cells non-empty. Test passes green.
-  - [x] Subtask 5.2: `POST /api/top/indexes` called for pages 2 and 3 confirmed via test scrollTop advancement assertions (scrollTop > page1Boundary + 20 rows).
+  - [x] Subtask 5.2: Deep-scroll progression confirmed via scrollTop advancement assertions and non-empty symbol assertions in `universe-lazy-load-deep-scroll.spec.ts`.
+  - [x] Subtask 5.3: `POST /api/top/indexes` pagination requests confirmed via request-capture assertions in `lazy-loading-network.spec.ts`.
 
 - [x] Task 6: Run the Story 65.1 failing test and confirm it passes green (AC: #3)
 
   - [x] Subtask 6.1: `pnpm e2e:dms-material:chromium --grep "deep scroll"` — PASSES green (1 passed in 24.5s)
 
 - [x] Task 7: Run full suite and confirm no regressions (AC: #4)
-  - [x] Subtask 7.1: `pnpm all` passes (pending full run — unit tests all passing, E2E test passes)
+  - [x] Subtask 7.1: `pnpm all` passes (full run complete)
   - [x] Subtask 7.2: `universe-scrolling-regression.spec.ts` passes — fix does not re-introduce isLoading→array-shrink jank
 
 ## Dev Notes
