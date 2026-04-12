@@ -9,6 +9,27 @@ interface SeederResult {
 
 const DEEP_SCROLL_ROW_COUNT = 150;
 
+function buildDeepScrollRecords(
+  symbols: string[],
+  riskGroupId: string,
+  exDate: Date
+): UniverseRecord[] {
+  return symbols.map(function mapDeepScrollRecord(symbol): UniverseRecord {
+    return {
+      symbol,
+      risk_group_id: riskGroupId,
+      distribution: 1.0,
+      distributions_per_year: 4,
+      last_price: 50.0,
+      ex_date: exDate,
+      most_recent_sell_date: null,
+      most_recent_sell_price: null,
+      expired: false,
+      is_closed_end_fund: true,
+    };
+  });
+}
+
 /**
  * Seeds 150 universe rows for deep-scroll testing.
  * Spanning at least 3 lazy-load pages (TOP_PAGE_SIZE = 50 per page).
@@ -36,23 +57,11 @@ export async function seedDeepScrollUniverseData(): Promise<SeederResult> {
 
   try {
     const riskGroups = await createRiskGroups(prisma);
-    const riskGroupId = riskGroups.equitiesRiskGroup.id;
-    const records: UniverseRecord[] = symbols.map(function mapSymbol(
-      symbol
-    ): UniverseRecord {
-      return {
-        symbol,
-        risk_group_id: riskGroupId,
-        distribution: 1.0,
-        distributions_per_year: 4,
-        last_price: 50.0,
-        ex_date: futureDate,
-        most_recent_sell_date: null,
-        most_recent_sell_price: null,
-        expired: false,
-        is_closed_end_fund: true,
-      };
-    });
+    const records = buildDeepScrollRecords(
+      symbols,
+      riskGroups.equitiesRiskGroup.id,
+      futureDate
+    );
     await prisma.universe.createMany({ data: records });
   } catch (error) {
     await prisma.$disconnect();
