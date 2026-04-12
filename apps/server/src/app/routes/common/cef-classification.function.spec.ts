@@ -50,7 +50,7 @@ describe('lookupCefConnectSymbol', () => {
     expect(result).toEqual(entry);
   });
 
-  it('uppercases the symbol when searching', async () => {
+  it('uppercases and trims the symbol when searching', async () => {
     const entry = makeScreeningData({ Ticker: 'PDI' });
     mockAxiosGetWithBackoff.mockResolvedValueOnce({
       data: [entry],

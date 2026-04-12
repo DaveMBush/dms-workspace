@@ -36,12 +36,12 @@ export async function lookupCefConnectSymbol(
   const response = await axiosGetWithBackoff<ScreeningData[]>(url, {
     headers: createCefConnectRequestHeaders(),
   });
-  const upperSymbol = symbol.toUpperCase();
+  const normalizedSymbol = symbol.trim().toUpperCase();
   return (
     response.data.find(function findMatchingTicker(
       entry: ScreeningData
     ): boolean {
-      return entry.Ticker === upperSymbol;
+      return entry.Ticker.trim().toUpperCase() === normalizedSymbol;
     }) ?? null
   );
 }

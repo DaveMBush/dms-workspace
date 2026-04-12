@@ -32,7 +32,7 @@ so that the same code can be called from the add-symbol paths without duplicatio
 - [x] Existing CefConnect lookup code read and understood (server-side screener route)
 - [x] Classification logic extracted into reusable functions in a shared location (e.g. `apps/server/src/app/routes/common/cef-classification.function.ts`)
 - [x] Screener pipeline updated to call the extracted functions — no logic duplication
-- [x] Unit tests written for the extracted functions covering: known CEF with Equity classification, known CEF with Income classification, known CEF with Tax Free classification, non-CEF symbol (returns null / equity default)
+- [x] Unit tests written for the extracted functions covering: known CEF with Equity classification, known CEF with Income classification, known CEF with Tax Free classification, non-CEF symbol (returns null)
 - [x] No behaviour change to the screener end-to-end
 - [x] `pnpm all` passes
 
