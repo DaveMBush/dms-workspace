@@ -118,6 +118,63 @@ describe('filterUniverses - Symbol Filter', () => {
     expect(result).toHaveLength(1);
     expect(result[0].symbol).toBe('BRK.B');
   });
+
+  it('should pass through placeholder rows (symbol empty string) even when symbol filter is active — CDK array-length stability during isLoading windows', () => {
+    // Regression guard for Epic 64 / Story 64.3:
+    // When SmartNgRX marks rows as isLoading=true during a filter or sort
+    // round-trip, placeholder rows have symbol=''. The filterUniverses
+    // function must NOT remove these rows even when a symbol filter is active;
+    // doing so shrinks the CDK data array and re-introduces scroll instability.
+    // After loading completes, placeholder rows are replaced by actual data and
+    // the symbol filter is applied to the real symbol values at that point.
+    const mixedData: Universe[] = [
+      {
+        id: '1',
+        symbol: 'AAPL',
+        risk_group_id: 'equity',
+        expired: false,
+        distribution: 0.5,
+        distributions_per_year: 4,
+        last_price: 100,
+        position: 0,
+        is_closed_end_fund: false,
+      } as Universe,
+      {
+        id: '2',
+        symbol: '', // placeholder — isLoading=true row
+        risk_group_id: 'equity',
+        expired: false,
+        distribution: 0,
+        distributions_per_year: 0,
+        last_price: 0,
+        position: 0,
+        is_closed_end_fund: false,
+      } as Universe,
+      {
+        id: '3',
+        symbol: 'MSFT',
+        risk_group_id: 'equity',
+        expired: false,
+        distribution: 0.6,
+        distributions_per_year: 4,
+        last_price: 150,
+        position: 0,
+        is_closed_end_fund: false,
+      } as Universe,
+    ];
+
+    const result = filterUniverses(mixedData, {
+      symbolFilter: 'AAPL',
+      riskGroupFilter: null,
+      expiredFilter: null,
+      minYieldFilter: null,
+    });
+
+    // 'AAPL' matches id=1, '' placeholder (id=2) passes through, 'MSFT' (id=3) is excluded.
+    expect(result).toHaveLength(2);
+    expect(result[0].symbol).toBe('AAPL');
+    expect(result[1].symbol).toBe('');
+  });
 });
 
 describe('filterUniverses - Risk Group Filter', () => {

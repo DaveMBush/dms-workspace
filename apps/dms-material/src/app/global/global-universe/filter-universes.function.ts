@@ -24,6 +24,7 @@ export function filterUniverses(
   return data.filter(function filterRow(row) {
     if (
       symbolFilter.length > 0 &&
+      row.symbol !== '' &&
       !row.symbol.toLowerCase().includes(symbolFilter)
     ) {
       return false;
