@@ -1227,3 +1227,134 @@ describe('filterUniverses - Edge Cases', () => {
     expect(result).toHaveLength(2);
   });
 });
+
+// ─── Epic 65 (Story 65.2) Placeholder Preservation ────────────────────────────
+// Regression guard: filterUniverses MUST preserve SmartNgRX placeholder rows
+// (symbol === '') even when riskGroupFilter, expiredFilter, or minYieldFilter
+// is active. Filtering them out shrinks the CDK data array, caps scroll height,
+// and prevents triggerProxyLoad from accessing lazy-load pages 2+ during deep
+// scroll — the root defect described in Epic 65.
+describe('filterUniverses - Epic 65 placeholder row preservation (CDK scroll-height stability)', () => {
+  const placeholderRow: Universe = {
+    id: 'placeholder-uuid-1',
+    symbol: '',
+    risk_group_id: '',
+    expired: false,
+    distribution: 0,
+    distributions_per_year: 0,
+    last_price: 0,
+    most_recent_sell_date: null,
+    most_recent_sell_price: null,
+    ex_date: '',
+    name: '',
+    position: 0,
+    avg_purchase_yield_percent: 0,
+    is_closed_end_fund: false,
+  } as Universe;
+
+  const loadedRow: Universe = {
+    id: 'equity-row-1',
+    symbol: 'AAPL',
+    risk_group_id: 'equity',
+    expired: false,
+    distribution: 0.5,
+    distributions_per_year: 4,
+    last_price: 100,
+    most_recent_sell_date: null,
+    most_recent_sell_price: null,
+    ex_date: '2024-03-15',
+    name: 'Apple Inc.',
+    position: 100,
+    avg_purchase_yield_percent: 2.0,
+    is_closed_end_fund: false,
+  } as Universe;
+
+  it('should preserve placeholder rows when riskGroupFilter is active', () => {
+    // CDK must see placeholder rows to maintain stable scroll height even when
+    // user filters by risk group. Without this, page 2+ positions are invisible
+    // to CDK and triggerProxyLoad never dispatches loadByIndexes for them.
+    const result = filterUniverses([loadedRow, placeholderRow], {
+      symbolFilter: '',
+      riskGroupFilter: 'equity',
+      expiredFilter: null,
+      minYieldFilter: null,
+    });
+    expect(result).toHaveLength(2);
+    expect(result[0].symbol).toBe('AAPL');
+    expect(result[1].symbol).toBe('');
+  });
+
+  it('should preserve placeholder rows when expiredFilter is true (excludes expired rows)', () => {
+    // expired=true filter would strip placeholder rows (expired: false) if not
+    // guarded, because placeholder.expired === false !== true.
+    const expiredLoadedRow: Universe = {
+      ...loadedRow,
+      id: 'expired-row-1',
+      symbol: 'EXP',
+      expired: true,
+    };
+    const result = filterUniverses([expiredLoadedRow, placeholderRow], {
+      symbolFilter: '',
+      riskGroupFilter: null,
+      expiredFilter: true,
+      minYieldFilter: null,
+    });
+    expect(result).toHaveLength(2);
+    expect(result[0].symbol).toBe('EXP');
+    expect(result[1].symbol).toBe('');
+  });
+
+  it('should preserve placeholder rows when minYieldFilter is active (yield > 0)', () => {
+    // minYieldFilter > 0 would strip placeholder rows (yield = 0) if not guarded.
+    const result = filterUniverses([loadedRow, placeholderRow], {
+      symbolFilter: '',
+      riskGroupFilter: null,
+      expiredFilter: null,
+      minYieldFilter: 1.0,
+    });
+    expect(result).toHaveLength(2);
+    expect(result[0].symbol).toBe('AAPL');
+    expect(result[1].symbol).toBe('');
+  });
+
+  it('should preserve placeholder rows when all non-symbol filters are simultaneously active', () => {
+    const expiredEquity: Universe = {
+      ...loadedRow,
+      id: 'expired-equity-1',
+      symbol: 'XPRD',
+      expired: true,
+      risk_group_id: 'equity',
+      distribution: 1.0,
+      last_price: 10,
+    };
+    const result = filterUniverses([expiredEquity, placeholderRow], {
+      symbolFilter: '',
+      riskGroupFilter: 'equity',
+      expiredFilter: true,
+      minYieldFilter: 5.0,
+    });
+    expect(result).toHaveLength(2);
+    expect(result[0].symbol).toBe('XPRD');
+    expect(result[1].symbol).toBe('');
+  });
+
+  it('should preserve multiple placeholder rows spanning lazy-load page boundaries', () => {
+    // Simulates 3 placeholder rows from pages 2-3 of a 150-row universe list
+    const placeholder2: Universe = { ...placeholderRow, id: 'placeholder-uuid-2' };
+    const placeholder3: Universe = { ...placeholderRow, id: 'placeholder-uuid-3' };
+    const result = filterUniverses(
+      [loadedRow, placeholderRow, placeholder2, placeholder3],
+      {
+        symbolFilter: '',
+        riskGroupFilter: 'equity',
+        expiredFilter: null,
+        minYieldFilter: 1.0,
+      }
+    );
+    expect(result).toHaveLength(4);
+    const placeholders = result.filter(function selectEmpty(r) {
+      return r.symbol === '';
+    });
+    expect(placeholders).toHaveLength(3);
+  });
+});
