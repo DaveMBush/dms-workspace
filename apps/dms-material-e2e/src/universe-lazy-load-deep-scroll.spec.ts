@@ -351,17 +351,23 @@ test.describe('Universe Lazy-Load Deep Scroll — empty symbols after crossing p
     await scrollViewportTo(viewport, 50 * ROW_HEIGHT_PX);
     await page
       .waitForLoadState('networkidle', { timeout: 5000 })
-      .catch(function ignoreTimeout() {});
+      .catch(function ignoreTimeout() {
+        // networkidle timeout is expected during scroll
+      });
 
     await scrollViewportTo(viewport, 100 * ROW_HEIGHT_PX);
     await page
       .waitForLoadState('networkidle', { timeout: 5000 })
-      .catch(function ignoreTimeout() {});
+      .catch(function ignoreTimeout() {
+        // networkidle timeout is expected during scroll
+      });
 
     await scrollViewportTo(viewport, 150 * ROW_HEIGHT_PX);
     await page
       .waitForLoadState('networkidle', { timeout: 5000 })
-      .catch(function ignoreTimeout() {});
+      .catch(function ignoreTimeout() {
+        // networkidle timeout is expected during scroll
+      });
 
     await assertVisibleSymbolsNonEmpty(
       page,
@@ -397,29 +403,39 @@ test.describe('Universe Lazy-Load Deep Scroll — empty symbols after crossing p
     await scrollViewportTo(viewport, 50 * ROW_HEIGHT_PX);
     await page
       .waitForLoadState('networkidle', { timeout: 5000 })
-      .catch(function ignoreTimeout() {});
+      .catch(function ignoreTimeout() {
+        // networkidle timeout is expected during scroll
+      });
 
     await scrollViewportTo(viewport, 100 * ROW_HEIGHT_PX);
     await page
       .waitForLoadState('networkidle', { timeout: 5000 })
-      .catch(function ignoreTimeout() {});
+      .catch(function ignoreTimeout() {
+        // networkidle timeout is expected during scroll
+      });
 
     await scrollViewportTo(viewport, 150 * ROW_HEIGHT_PX);
     await page
       .waitForLoadState('networkidle', { timeout: 5000 })
-      .catch(function ignoreTimeout() {});
+      .catch(function ignoreTimeout() {
+        // networkidle timeout is expected during scroll
+      });
 
     // Back to top
     await scrollViewportToTop(viewport);
     await page
       .waitForLoadState('networkidle', { timeout: 5000 })
-      .catch(function ignoreTimeout() {});
+      .catch(function ignoreTimeout() {
+        // networkidle timeout is expected during scroll
+      });
 
     // Back to bottom (fast scroll)
     await scrollViewportToBottom(viewport);
     await page
       .waitForLoadState('networkidle', { timeout: 10000 })
-      .catch(function ignoreTimeout() {});
+      .catch(function ignoreTimeout() {
+        // networkidle timeout is expected during scroll
+      });
 
     await assertVisibleSymbolsNonEmpty(
       page,
@@ -457,23 +473,31 @@ test.describe('Universe Lazy-Load Deep Scroll — empty symbols after crossing p
     await page.waitForTimeout(100);
     await page
       .waitForLoadState('networkidle', { timeout: 10000 })
-      .catch(function ignoreTimeout() {});
+      .catch(function ignoreTimeout() {
+        // networkidle timeout is expected during scroll
+      });
 
     // Scroll incrementally through all 3 pages
     await scrollViewportTo(viewport, 50 * ROW_HEIGHT_PX);
     await page
       .waitForLoadState('networkidle', { timeout: 5000 })
-      .catch(function ignoreTimeout() {});
+      .catch(function ignoreTimeout() {
+        // networkidle timeout is expected during scroll
+      });
 
     await scrollViewportTo(viewport, 100 * ROW_HEIGHT_PX);
     await page
       .waitForLoadState('networkidle', { timeout: 5000 })
-      .catch(function ignoreTimeout() {});
+      .catch(function ignoreTimeout() {
+        // networkidle timeout is expected during scroll
+      });
 
     await scrollViewportToBottom(viewport);
     await page
       .waitForLoadState('networkidle', { timeout: 10000 })
-      .catch(function ignoreTimeout() {});
+      .catch(function ignoreTimeout() {
+        // networkidle timeout is expected during scroll
+      });
 
     await assertVisibleSymbolsNonEmpty(
       page,
