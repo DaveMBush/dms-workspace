@@ -14,7 +14,9 @@ import { ScreeningData } from '../screener/screening-data.interface';
 
 const mockAxiosGetWithBackoff = vi.mocked(axiosGetWithBackoff);
 
-function makeScreeningData(overrides: Partial<ScreeningData> = {}): ScreeningData {
+function makeScreeningData(
+  overrides: Partial<ScreeningData> = {}
+): ScreeningData {
   return {
     CategoryId: 1,
     Ticker: 'TEST',
