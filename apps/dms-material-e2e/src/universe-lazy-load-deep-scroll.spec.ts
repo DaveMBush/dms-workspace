@@ -97,16 +97,18 @@ async function assertVisibleSymbolsNonEmpty(
 
 /**
  * Scroll the CDK virtual-scroll viewport to a specific pixel offset.
+ * Returns the actual scrollTop achieved after the operation.
  */
 async function scrollViewportTo(
   viewport: Locator,
   scrollTopPx: number
-): Promise<void> {
-  await viewport.evaluate(function setScrollTop(
+): Promise<number> {
+  return viewport.evaluate(function setScrollTop(
     node: Element,
     top: number
-  ): void {
+  ): number {
     node.scrollTop = top;
+    return node.scrollTop;
   },
   scrollTopPx);
 }
@@ -157,7 +159,7 @@ test.describe('Universe Lazy-Load Deep Scroll — empty symbols after crossing p
     // Step 1: Scroll to approximate page 1 / page 2 boundary (~row 50)
     // TOP_PAGE_SIZE = 50; rowHeight = 52px → boundary ≈ row 50 * 52px
     const page1Boundary = 50 * ROW_HEIGHT_PX;
-    await scrollViewportTo(viewport, page1Boundary);
+    const topAfterPage1 = await scrollViewportTo(viewport, page1Boundary);
     // Pause at boundary to allow lazy loading to trigger for page 2
     await page
       .waitForLoadState('networkidle', { timeout: 5000 })
@@ -167,7 +169,10 @@ test.describe('Universe Lazy-Load Deep Scroll — empty symbols after crossing p
 
     // Step 2: Scroll to approximate page 2 / page 3 boundary (~row 100)
     const page2Boundary = 100 * ROW_HEIGHT_PX;
-    await scrollViewportTo(viewport, page2Boundary);
+    const topAfterPage2 = await scrollViewportTo(viewport, page2Boundary);
+    // Assert the viewport actually scrolled past page 1 — if the CDK height
+    // is capped (Epic 65 bug), scrollTop will be clamped and this fails.
+    expect(topAfterPage2).toBeGreaterThan(topAfterPage1 + 20 * ROW_HEIGHT_PX);
     // Pause at boundary to allow lazy loading to trigger for page 3
     await page
       .waitForLoadState('networkidle', { timeout: 5000 })
@@ -177,7 +182,9 @@ test.describe('Universe Lazy-Load Deep Scroll — empty symbols after crossing p
 
     // Step 3: Scroll to the bottom of the list (~row 150)
     const page3End = 150 * ROW_HEIGHT_PX;
-    await scrollViewportTo(viewport, page3End);
+    const topAfterPage3 = await scrollViewportTo(viewport, page3End);
+    // Assert the viewport actually scrolled past page 2.
+    expect(topAfterPage3).toBeGreaterThan(topAfterPage2);
     await page
       .waitForLoadState('networkidle', { timeout: 5000 })
       .catch(function ignoreTimeout() {
