@@ -46,8 +46,14 @@ export function saveUniverseFiltersAndNotify(
   // Force universe entities to re-fetch so computed fields
   // (position, avg_purchase_yield_percent, most_recent_sell_date/price)
   // are recalculated with the current account filter.
-  const ids = collectUniverseIds();
-  if (ids.length > 0) {
-    handleSocketNotification('universes', 'update', ids);
+  // Only fire when an account is selected: when accountId is 'all' (no
+  // account context), the 'top' refresh is sufficient and the per-entity
+  // re-fetch causes unnecessary isLoading windows that briefly collapse the
+  // CDK data array (regression guard: Epics 60, 64, Story 64.3).
+  if (values.accountId !== 'all') {
+    const ids = collectUniverseIds();
+    if (ids.length > 0) {
+      handleSocketNotification('universes', 'update', ids);
+    }
   }
 }
