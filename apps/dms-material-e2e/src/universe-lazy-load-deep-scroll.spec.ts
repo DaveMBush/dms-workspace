@@ -33,7 +33,7 @@
  *
  * ── Story 65.2 fix ────────────────────────────────────────────────────────────
  * Added `if (row.symbol === '') { return true; }` guard in `filterUniverses()`
- * (apps/dms-material/src/app/global/universe/filter-universes.function.ts) so
+ * (apps/dms-material/src/app/global/global-universe/filter-universes.function.ts) so
  * SmartNgRX placeholder rows (symbol = '') are never stripped by the filter
  * pipeline.  All other filters (risk group, text search, expired, etc.) continue
  * to apply normally to fully-loaded rows.
@@ -180,6 +180,24 @@ async function scrollViewportToTop(viewport: Locator): Promise<void> {
   });
 }
 
+/**
+ * Assert the viewport scrolled past the page-1 boundary (~50 rows × 52px).
+ * If the CDK data array is incorrectly capped at 50 rows (Story 65.2 regression),
+ * scrollViewportToBottom lands at row 50 instead of row 150, and this check
+ * fails immediately — before assertVisibleSymbolsNonEmpty detects empty cells.
+ */
+async function assertViewportCrossedPage1(
+  viewport: Locator,
+  failureMessage: string
+): Promise<void> {
+  const top = await viewport.evaluate(function readScrollTop(
+    node: Element
+  ): number {
+    return node.scrollTop;
+  });
+  expect(top, failureMessage).toBeGreaterThan(60 * ROW_HEIGHT_PX);
+}
+
 // ─── Deep-Scroll Universe Tests ───────────────────────────────────────────────
 
 test.describe('Universe Lazy-Load Deep Scroll — empty symbols after crossing page boundaries', () => {
@@ -305,6 +323,10 @@ test.describe('Universe Lazy-Load Deep Scroll — empty symbols after crossing p
         // networkidle may not fire if no requests are in-flight
       });
 
+    await assertViewportCrossedPage1(
+      viewport,
+      'Fast scroll to bottom did not cross page-1 boundary; CDK viewport height may be capped at 50 rows (Story 65.2 regression).'
+    );
     await assertVisibleSymbolsNonEmpty(
       page,
       'Visible rows have empty symbol cells after fast scroll to bottom. ' +
@@ -369,6 +391,10 @@ test.describe('Universe Lazy-Load Deep Scroll — empty symbols after crossing p
         // networkidle timeout is expected during scroll
       });
 
+    await assertViewportCrossedPage1(
+      viewport,
+      'Sort + deep scroll did not cross page-1 boundary; CDK viewport height may be capped at 50 rows after sort-triggered reload (Story 65.2 regression).'
+    );
     await assertVisibleSymbolsNonEmpty(
       page,
       'Visible rows have empty symbol cells after sort change + deep scroll. ' +
@@ -437,6 +463,10 @@ test.describe('Universe Lazy-Load Deep Scroll — empty symbols after crossing p
         // networkidle timeout is expected during scroll
       });
 
+    await assertViewportCrossedPage1(
+      viewport,
+      'Bidirectional scroll did not cross page-1 boundary; CDK viewport height may be capped at 50 rows (Story 65.2 regression).'
+    );
     await assertVisibleSymbolsNonEmpty(
       page,
       'Visible rows have empty symbol cells after bidirectional deep scroll. ' +
@@ -499,6 +529,10 @@ test.describe('Universe Lazy-Load Deep Scroll — empty symbols after crossing p
         // networkidle timeout is expected during scroll
       });
 
+    await assertViewportCrossedPage1(
+      viewport,
+      'Filter + scroll to bottom did not cross page-1 boundary; CDK viewport height may be capped at 50 rows when symbol filter is active (Story 65.2 regression).'
+    );
     await assertVisibleSymbolsNonEmpty(
       page,
       'Visible rows have empty symbol cells after UDSCRL filter + scroll to bottom. ' +
