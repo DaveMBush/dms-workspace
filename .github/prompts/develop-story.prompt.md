@@ -4,25 +4,27 @@ argument-hint: story=AD.3
 model: Claude Opus 4.6
 ---
 
+load the #skill:prompt
+
 # Autonomous Story Development Workflow
 
-Shell execution rule: every shell command in this workflow and its delegated steps must use the bash MCP server. Use `mcp_bash_run` for blocking commands and `mcp_bash_run_background` only for true background processes. This applies to `pnpm`, `git`, `gh`, `bash`, and `.github/prompts/prompt.sh`. Do not use `run_in_terminal` for shell execution.
+Shell execution rule: every shell command in this workflow and its delegated steps must use the bash MCP server. Use `mcp_bash_run` for blocking commands and `mcp_bash_run_background` only for true background processes. This applies to `pnpm`, `git`, `gh`, and `bash`. Do not use `run_in_terminal` for shell execution.
 
 ## PHASE 1: Pre-Development Validation
 
 1. Verify story file exists at `_bmad-output/implementation-artifacts/${story}.md`
-   - If not found: Call `.github/prompts/prompt.sh "Story file _bmad-output/implementation-artifacts/${story}.md not found"`
+   - If not found: Use the prompt skill to ask: `Story file _bmad-output/implementation-artifacts/${story}.md not found. Reply with stop, continue, or instructions.`
 2. Verify story status is "Ready for Development" (not "Draft")
-   - If Draft: Call `.github/prompts/prompt.sh "Story ${story} is still in Draft status"`
+   - If Draft: Use the prompt skill to ask: `Story ${story} is still in Draft status. Reply with stop, continue, or instructions.`
 3. Verify git working directory is clean
-   - If dirty: Call `.github/prompts/prompt.sh "Git working directory has uncommitted changes"`
+   - If dirty: Use the prompt skill to ask: `Git working directory has uncommitted changes. Reply with stop, continue, or instructions.`
 4. Verify currently on main branch and it's up to date with remote
    - If issues: switch to main branch.
 5. Check if GitHub issue already exists for this story (search by story ID in title)
 6. Check if branch already exists for this story
-   - If exists: Call `.github/prompts/prompt.sh "Branch for story ${story} already exists"`
+   - If exists: Use the prompt skill to ask: `Branch for story ${story} already exists. Reply with stop, continue, or instructions.`
 7. Check if worktree already exists at `../dms/story-${story}`
-   - If exists: Call `.github/prompts/prompt.sh "Worktree for story ${story} already exists at ../dms/story-${story}"`
+   - If exists: Use the prompt skill to ask: `Worktree for story ${story} already exists at ../dms/story-${story}. Reply with stop, continue, or instructions.`
 
 ## PHASE 2: Story Implementation
 
@@ -35,7 +37,7 @@ This will:
 - Implement the story from within the worktree directory
 - During implementation, use `mcp_context7_query-docs` for unfamiliar APIs and Playwright for UI checks
 
-If `code-story.prompt.md` encounters issues, it must call `.github/prompts/prompt.sh` or handle internal retries as required.
+If `code-story.prompt.md` encounters issues, it must use the prompt skill or handle internal retries as required.
 
 **IMMEDIATELY PROCEED TO PHASE 3** once `code-story.prompt.md` returns — do not pause, do not ask for confirmation. Use the bash MCP server to run `pnpm i` with `cwd` set to `../dms/story-${story}`, then begin Phase 3.
 
@@ -60,7 +62,7 @@ This keeps the story workflow context small while the validation loop handles:
 
 **CRITICAL**: The validation subagent must follow the shared quality-validation loop exactly. If ANY check fails and gets fixed, it restarts from step 1 and only returns when all checks pass in a single iteration.
 
-If the validation subagent returns `VALIDATION FAILED`, call `.github/prompts/prompt.sh "Phase 3 validation failed for ${story}: <reason>"`.
+If the validation subagent returns `VALIDATION FAILED`, use the prompt skill to ask: `Phase 3 validation failed for ${story}: <reason>. Reply with stop, continue, or instructions.`
 
 ## PHASE 4: QA Review
 
@@ -78,7 +80,7 @@ This keeps the story workflow context small while the QA review subagent handles
 4. Re-running validation through `quality-validation.prompt.md`
 5. Retrying the gate up to 10 times
 
-**CRITICAL**: The QA review subagent must not return success until the gate passes. If it returns `QA FAILED`, call `.github/prompts/prompt.sh "QA review failed for ${story}: <reason>"`.
+**CRITICAL**: The QA review subagent must not return success until the gate passes. If it returns `QA FAILED`, use the prompt skill to ask: `QA review failed for ${story}: <reason>. Reply with stop, continue, or instructions.`
 
 When it returns `QA PASSED`: IMMEDIATELY move to Phase 5.
 
@@ -97,7 +99,7 @@ This will:
 
 **Rate Limit Protection**: Wait 5 minutes after PR creation before checking CodeRabbit status
 
-If commit-and-pr fails: Call `.github/prompts/prompt.sh "Failed to create PR: <error>"`
+If commit-and-pr fails: Use the prompt skill to ask: `Failed to create PR: <error>. Reply with stop, continue, or instructions.`
 
 **IMMEDIATELY PROCEED TO PHASE 6** once `commit-and-pr.prompt.md` returns successfully — do not pause or wait for human input.
 
@@ -145,7 +147,7 @@ This keeps the story workflow context small while the merge subagent handles:
 5. post-merge issue verification
 6. local cleanup and final completion summary
 
-**CRITICAL**: The merge subagent must not return success until the PR is merged and cleanup is complete. If it returns `MERGE FAILED`, call `.github/prompts/prompt.sh "Final merge failed for ${story}: <reason>"`.
+**CRITICAL**: The merge subagent must not return success until the PR is merged and cleanup is complete. If it returns `MERGE FAILED`, use the prompt skill to ask: `Final merge failed for ${story}: <reason>. Reply with stop, continue, or instructions.`
 
 When it returns `MERGE COMPLETE`: the story workflow is complete.
 
@@ -162,7 +164,7 @@ When it returns `MERGE COMPLETE`: the story workflow is complete.
 ## Notes
 
 - This workflow is designed for zero human intervention on happy path
-- Human involvement only via prompt.sh when decisions/help needed
+- Human involvement only via the prompt skill when decisions/help are needed
 - All quality gates maintained while maximizing autonomy
 - MCP servers provide validation and documentation resources
 - See bmad-workflow skill for detailed patterns and best practices

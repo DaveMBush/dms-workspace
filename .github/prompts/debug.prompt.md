@@ -4,9 +4,11 @@ argument-hint: epic=AD story=AD.5
 model: Claude Opus 4.6
 ---
 
+load the #skill:prompt
+
 # Autonomous Epic Bug Fix Workflow
 
-Shell execution rule: every shell command in this workflow and its delegated steps must use the bash MCP server. Use `mcp_bash_run` for blocking commands and `mcp_bash_run_background` only for true background processes. This applies to `pnpm`, `git`, `gh`, `bash`, and `.github/prompts/prompt.sh`. Do not use `run_in_terminal` for shell execution.
+Shell execution rule: every shell command in this workflow and its delegated steps must use the bash MCP server. Use `mcp_bash_run` for blocking commands and `mcp_bash_run_background` only for true background processes. This applies to `pnpm`, `git`, `gh`, and `bash`. Do not use `run_in_terminal` for shell execution.
 
 ## PHASE 1-2: Epic Validation And Debug Setup
 
@@ -23,23 +25,15 @@ This keeps the debug workflow context small while the setup subagent handles:
 3. GitHub issue creation
 4. debug branch creation and local checkout
 
-**CRITICAL**: The setup subagent must not return success until the debug branch exists locally and is checked out. Capture the branch name it returns and use that exact branch name in PHASE 3.2. If it returns `SETUP FAILED`, call `.github/prompts/prompt.sh "Debug setup failed for ${story}: <reason>"`.
+**CRITICAL**: The setup subagent must not return success until the debug branch exists locally and is checked out. Capture the branch name it returns and use that exact branch name in PHASE 3.2. If it returns `SETUP FAILED`, use the prompt skill to ask: `Debug setup failed for ${story}: <reason>. Reply with stop or instructions.`
 
 ## PHASE 3: Implement Debug Fix
 
 ### 3.1 Collect Bug Description
 
-Prompt the user using `prompt.sh`:
+Use the prompt skill to ask: `Please describe the bug to fix:`
 
-```typescript
-mcp_bash_run({
-  command: 'bash .github/prompts/prompt.sh "Please describe the bug to fix:"',
-  cwd: process.cwd(),
-  timeout: 0,
-});
-```
-
-**CRITICAL**: After calling prompt.sh through the bash MCP server, do NOTHING until the user responds. Do NOT start servers, run manual tests, do code reviews, or perform any speculative work while waiting. The prompt.sh call BLOCKS — your only job is to wait for the response and then act on it.
+**CRITICAL**: After invoking the prompt skill, do NOTHING until the user responds. Do NOT start servers, run manual tests, do code reviews, or perform any speculative work while waiting. The prompt skill blocks on `vscode_askQuestions` — your only job is to wait for the response and then act on it.
 
 ### 3.2 Delegate Fix and Validation to a Subagent
 
@@ -61,17 +55,17 @@ Tasks:
 4. Delegate validation to a fresh subagent by running:
    - `run #file:./quality-validation.prompt.md context=debug-${story}`
    - This validation subagent must run the full loop from quality-validation.md, including code self-review of changed files only via `.github/instructions/code-review.md`
-   - If the validation subagent returns `VALIDATION FAILED`, call prompt.sh to report to the user
+  - If the validation subagent returns `VALIDATION FAILED`, use the prompt skill to report the failure to the user
 5. Return a summary of: files changed, what the fix was, and either
    "VALIDATION PASSED" or "VALIDATION FAILED: <reason>".
 
-CRITICAL: You MUST call prompt.sh via the bash MCP server for ALL human interaction.
+CRITICAL: You MUST use the prompt skill for ALL human interaction.
 NEVER write questions or status messages to the chat window.
 ```
 
-**WHY subagent**: Each bug fix starts with fully freshly loaded context — no risk of prior loop iterations summarizing away critical rules like the `prompt.sh` requirement.
+**WHY subagent**: Each bug fix starts with fully freshly loaded context — no risk of prior loop iterations summarizing away critical rules like the prompt-skill requirement.
 
-**After subagent returns**: If the result contains "VALIDATION FAILED", call `prompt.sh` to report the failure and halt. Otherwise proceed to Phase 5.
+**After subagent returns**: If the result contains `VALIDATION FAILED`, use the prompt skill to report the failure and halt. Otherwise proceed to Phase 5.
 
 ## PHASE 4: Quality Validation (with auto-fix)
 
@@ -88,43 +82,30 @@ All checks must pass in a single iteration. The validation subagent returns to t
 
 ## PHASE 5: Next Bug Decision
 
-After current bug fix validated, ask if another bug to fix in same branch:
+After current bug fix is validated, use the prompt skill to ask: `Bug fix validated. Fix another bug in this branch? Reply with continue, stop, or the next bug description.`
 
-**CRITICAL**: Use the bash MCP server with `timeout: 0` when calling `prompt.sh`:
-
-```typescript
-mcp_bash_run({
-  command: 'bash .github/prompts/prompt.sh "Bug fix validated. Fix another bug in this branch?"',
-  cwd: process.cwd(),
-  timeout: 0,
-});
-```
-
-Handle the response (see "Exit Code 130 Handling" in bmad-workflow skill for details):
+Handle the response:
 
 - **"continue"** OR any affirmative: Make a second call for bug description, then spawn a subagent as described in PHASE 3.2
 - **"stop"**: Proceed to Phase 6 (create PR with all fixes)
-- **Exit code 130**: Retry up to 3 times before treating as "stop"
-- **Custom text**: Use as the bug description and spawn a subagent as described in PHASE 3.2 (skip the 3.1 prompt.sh call)
-
-**Do NOT treat exit code 130 as an implicit "stop" on the first occurrence — it most likely means the dialog was still open and the agent was restarted/summarized, not that the user chose to stop.**
+- **Custom text**: Use as the bug description and spawn a subagent as described in PHASE 3.2 (skip the separate Phase 3.1 prompt-skill call)
 
 **Note**: All bugs fixed in Phase 5 loop will be in ONE PR for atomic review.
 
 ### PHASE 5 Context Refresh (REQUIRED before each new bug in this loop)
 
-Before making any Phase 5 `prompt.sh` call or spawning the next subagent, **re-read all of the following files** to restore lost context in the main agent:
+Before making any Phase 5 prompt-skill call or spawning the next subagent, **re-read all of the following files** to restore lost context in the main agent:
 
 1. Re-read the bmad-workflow skill: `.github/skills/bmad-workflow/SKILL.md`
 2. Re-read the human interaction protocol: `.github/skills/bmad-workflow/references/human-interaction.md`
 3. Re-read the epic file: `docs/epics/${epic}.md`
 4. Re-read the dev agent core config: `.bmad-core/core-config.yaml`
 
-**WHY (context refresh)**: After multiple loop iterations the main agent's context window may be summarized, causing it to forget that it must use `prompt.sh` through the bash MCP server for the "fix another bug?" prompt. Re-reading keeps the main orchestration loop correct.
+**WHY (context refresh)**: After multiple loop iterations the main agent's context window may be summarized, causing it to forget that it must use the prompt skill for the "fix another bug?" prompt. Re-reading keeps the main orchestration loop correct.
 
 **WHY (subagent)**: Even with a refresh, the main agent still carries accumulated context from all prior bugs. The subagent in PHASE 3.2 gets a completely clean slate for each bug fix, eliminating any risk of its implementation or quality-validation work being affected by forgotten rules.
 
-**REMINDER after re-reading**: You MUST call `prompt.sh` via the bash MCP server for ALL human interaction in this loop. NEVER write questions or status messages to the chat window.
+**REMINDER after re-reading**: You MUST use the prompt skill for ALL human interaction in this loop. NEVER write questions or status messages to the chat window.
 
 ## PHASE 6: Commit and PR Creation
 
@@ -141,7 +122,7 @@ This keeps the debug workflow context small while the PR lifecycle subagent hand
 3. CodeRabbit polling and remediation loop
 4. any re-validation required during review
 
-**CRITICAL**: The PR lifecycle subagent must not return success until the PR is ready to merge. If it returns `PR FLOW FAILED`, call `.github/prompts/prompt.sh "Debug PR flow failed for ${story}: <reason>"`.
+**CRITICAL**: The PR lifecycle subagent must not return success until the PR is ready to merge. If it returns `PR FLOW FAILED`, use the prompt skill to ask: `Debug PR flow failed for ${story}: <reason>. Reply with stop or instructions.`
 
 ## PHASE 7: CodeRabbit Review Loop
 
@@ -171,7 +152,7 @@ This keeps the debug workflow context small while the merge subagent handles:
 4. squash merge execution
 5. issue-close verification and local cleanup
 
-**CRITICAL**: The merge subagent must not return success until the PR is merged and cleanup is complete. If it returns `MERGE FAILED`, call `.github/prompts/prompt.sh "Debug merge failed for ${story}: <reason>"`.
+**CRITICAL**: The merge subagent must not return success until the PR is merged and cleanup is complete. If it returns `MERGE FAILED`, use the prompt skill to ask: `Debug merge failed for ${story}: <reason>. Reply with stop or instructions.`
 
 ## Error Recovery Strategy
 
@@ -186,6 +167,6 @@ This keeps the debug workflow context small while the merge subagent handles:
 ## Notes
 
 - This workflow is designed for zero human intervention on happy path
-- Human involvement only via prompt.sh through the bash MCP server (with `timeout: 0`) when decisions/help needed
+- Human involvement only via the prompt skill when decisions/help are needed
 - Maintains quality gates while maximizing autonomy
 - See bmad-workflow skill for detailed patterns and best practices

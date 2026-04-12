@@ -4,9 +4,11 @@ argument-hint: epic=AD story=AD.5
 model: Claude Opus 4.6
 ---
 
+load the #skill:prompt
+
 # Dedicated Debug Setup Workflow
 
-Shell execution rule: every shell command in this workflow must use the bash MCP server. Use `mcp_bash_run` for blocking commands and `mcp_bash_run_background` only for true background processes. This applies to `pnpm`, `git`, `gh`, `bash`, and `.github/prompts/prompt.sh`.
+Shell execution rule: every shell command in this workflow must use the bash MCP server. Use `mcp_bash_run` for blocking commands and `mcp_bash_run_background` only for true background processes. This applies to `pnpm`, `git`, `gh`, and `bash`.
 
 ## Purpose
 
@@ -30,8 +32,8 @@ Before doing anything else, read all of the following:
 6. Create the debug branch from `main`.
 7. Check out the branch locally.
 8. Return the created issue number and branch name in the completion summary.
-9. Use the bash MCP server for every shell command in this workflow. Use `mcp_bash_run` for blocking commands and `mcp_bash_run_background` only for true background processes. This applies to `git`, `gh`, `bash`, and `.github/prompts/prompt.sh`.
-10. For all human interaction, use `.github/prompts/prompt.sh` via the bash MCP server with `timeout: 0`.
+9. Use the bash MCP server for every shell command in this workflow. Use `mcp_bash_run` for blocking commands and `mcp_bash_run_background` only for true background processes. This applies to `git`, `gh`, and `bash`.
+10. For all human interaction, use the prompt skill so the question is shown in chat and execution waits for the user's answer.
 11. Do not ask for confirmation on success; return control immediately to the caller.
 
 ## Completion Contract
@@ -44,4 +46,4 @@ Return a concise summary containing:
 - created issue number
 - created branch name
 
-If setup fails after required retries and escalations, return `SETUP FAILED: <reason>` after handling required `prompt.sh` escalation.
+If setup fails after required retries and escalations, return `SETUP FAILED: <reason>` after handling required prompt-skill escalation.
