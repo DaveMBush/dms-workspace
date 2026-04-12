@@ -4,6 +4,10 @@ import { FastifyInstance } from 'fastify';
 import { prisma } from '../../prisma/prisma-client';
 import { axiosGetWithBackoff } from '../common/axios-get-with-backoff.function';
 import {
+  classifySymbolRiskGroupId,
+  RiskGroupMap,
+} from '../common/cef-classification.function';
+import {
   extractHoldingsCount,
   extractTopHoldingsPercent,
   fetchCefPage,
@@ -11,12 +15,6 @@ import {
 import { getConsistentDistributions } from './get-consistent-distributions.function';
 import { ScreeningData } from './screening-data.interface';
 import { filterQualifyingSymbols } from './screening-requirements.function';
-
-interface RiskGroupMap {
-  equities: string;
-  income: string;
-  taxFree: string;
-}
 
 function createRequestHeaders(): Record<string, string> {
   return {
@@ -64,26 +62,6 @@ async function fetchScreeningData(): Promise<ScreeningData[]> {
   }
 
   return data;
-}
-
-function determineRiskGroupId(
-  symbol: ScreeningData,
-  riskGroups: RiskGroupMap
-): string | null {
-  if (
-    symbol.CategoryId <= 10 ||
-    symbol.CategoryId === 25 ||
-    symbol.CategoryId === 26
-  ) {
-    return riskGroups.equities;
-  }
-  if (symbol.CategoryId >= 11 && symbol.CategoryId <= 20) {
-    return riskGroups.income;
-  }
-  if (symbol.CategoryId >= 21 && symbol.CategoryId <= 24) {
-    return riskGroups.taxFree;
-  }
-  return null;
 }
 
 interface ScreenerRecord {
@@ -139,7 +117,7 @@ async function processSymbol(
   riskGroups: RiskGroupMap
 ): Promise<void> {
   // processing symbol
-  const riskGroupId = determineRiskGroupId(symbol, riskGroups);
+  const riskGroupId = classifySymbolRiskGroupId(symbol, riskGroups);
   if (riskGroupId === null) {
     // skip: no risk group
     return;

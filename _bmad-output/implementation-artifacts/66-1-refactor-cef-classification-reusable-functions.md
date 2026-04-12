@@ -29,39 +29,39 @@ so that the same code can be called from the add-symbol paths without duplicatio
 
 ## Definition of Done
 
-- [ ] Existing CefConnect lookup code read and understood (server-side screener route)
-- [ ] Classification logic extracted into reusable functions in a shared location (e.g. `apps/server/src/app/routes/common/cef-classification.function.ts`)
-- [ ] Screener pipeline updated to call the extracted functions — no logic duplication
-- [ ] Unit tests written for the extracted functions covering: known CEF with Equity classification, known CEF with Income classification, known CEF with Tax Free classification, non-CEF symbol (returns null / equity default)
-- [ ] No behaviour change to the screener end-to-end
-- [ ] `pnpm all` passes
+- [x] Existing CefConnect lookup code read and understood (server-side screener route)
+- [x] Classification logic extracted into reusable functions in a shared location (e.g. `apps/server/src/app/routes/common/cef-classification.function.ts`)
+- [x] Screener pipeline updated to call the extracted functions — no logic duplication
+- [x] Unit tests written for the extracted functions covering: known CEF with Equity classification, known CEF with Income classification, known CEF with Tax Free classification, non-CEF symbol (returns null / equity default)
+- [x] No behaviour change to the screener end-to-end
+- [x] `pnpm all` passes
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Read and fully understand the current screener classification flow (AC: #1)
-  - [ ] Subtask 1.1: Read `apps/server/src/app/routes/screener/index.ts` — understand `determineRiskGroupId()`, `loadRiskGroups()`, `fetchScreeningData()`
-  - [ ] Subtask 1.2: Read `apps/server/src/app/routes/screener/cef-page-scraping.function.ts` — understand `fetchCefPage()`, `extractHoldingsCount()`, `extractTopHoldingsPercent()`
-  - [ ] Subtask 1.3: Read `apps/server/src/app/routes/screener/screening-requirements.function.ts` — note the already-extracted `isEquityCategory()`, `isFixedIncomeCategory()`, `isTaxFreeCategory()` functions
-  - [ ] Subtask 1.4: Read `apps/server/src/app/routes/screener/screening-data.interface.ts` — note `ScreeningData` interface shape (especially `CategoryId` and `Ticker` fields)
+- [x] Task 1: Read and fully understand the current screener classification flow (AC: #1)
+  - [x] Subtask 1.1: Read `apps/server/src/app/routes/screener/index.ts` — understand `determineRiskGroupId()`, `loadRiskGroups()`, `fetchScreeningData()`
+  - [x] Subtask 1.2: Read `apps/server/src/app/routes/screener/cef-page-scraping.function.ts` — understand `fetchCefPage()`, `extractHoldingsCount()`, `extractTopHoldingsPercent()`
+  - [x] Subtask 1.3: Read `apps/server/src/app/routes/screener/screening-requirements.function.ts` — note the already-extracted `isEquityCategory()`, `isFixedIncomeCategory()`, `isTaxFreeCategory()` functions
+  - [x] Subtask 1.4: Read `apps/server/src/app/routes/screener/screening-data.interface.ts` — note `ScreeningData` interface shape (especially `CategoryId` and `Ticker` fields)
 
-- [ ] Task 2: Create `cef-classification.function.ts` in the shared common directory (AC: #1)
-  - [ ] Subtask 2.1: Create `apps/server/src/app/routes/common/cef-classification.function.ts`
-  - [ ] Subtask 2.2: Implement `lookupCefConnectSymbol(symbol: string): Promise<ScreeningData | null>` — queries `https://www.cefconnect.com/api/v3/dailypricing`, searches the returned array for an entry where `Ticker === symbol.toUpperCase()`, returns the `ScreeningData` entry or `null` if not found
-  - [ ] Subtask 2.3: Implement `classifySymbolRiskGroupId(data: ScreeningData, riskGroups: RiskGroupMap): string | null` — maps `CategoryId` to a risk_group_id using the `isEquityCategory()`, `isFixedIncomeCategory()`, `isTaxFreeCategory()` functions from `screening-requirements.function.ts`; returns `null` if no category matches
-  - [ ] Subtask 2.4: Export a `RiskGroupMap` interface (or re-export from screener) so callers can pass in pre-loaded risk groups
-  - [ ] Subtask 2.5: Use `axiosGetWithBackoff` from `apps/server/src/app/routes/common/axios-get-with-backoff.function.ts` for the HTTP request — same headers pattern as the screener's `createRequestHeaders()` function
+- [x] Task 2: Create `cef-classification.function.ts` in the shared common directory (AC: #1)
+  - [x] Subtask 2.1: Create `apps/server/src/app/routes/common/cef-classification.function.ts`
+  - [x] Subtask 2.2: Implement `lookupCefConnectSymbol(symbol: string): Promise<ScreeningData | null>` — queries `https://www.cefconnect.com/api/v3/dailypricing`, searches the returned array for an entry where `Ticker === symbol.toUpperCase()`, returns the `ScreeningData` entry or `null` if not found
+  - [x] Subtask 2.3: Implement `classifySymbolRiskGroupId(data: ScreeningData, riskGroups: RiskGroupMap): string | null` — maps `CategoryId` to a risk_group_id using the `isEquityCategory()`, `isFixedIncomeCategory()`, `isTaxFreeCategory()` functions from `screening-requirements.function.ts`; returns `null` if no category matches
+  - [x] Subtask 2.4: Export a `RiskGroupMap` interface (or re-export from screener) so callers can pass in pre-loaded risk groups
+  - [x] Subtask 2.5: Use `axiosGetWithBackoff` from `apps/server/src/app/routes/common/axios-get-with-backoff.function.ts` for the HTTP request — same headers pattern as the screener's `createRequestHeaders()` function
 
-- [ ] Task 3: Update the screener to call the extracted functions (AC: #2)
-  - [ ] Subtask 3.1: Replace the inline `determineRiskGroupId()` implementation in `apps/server/src/app/routes/screener/index.ts` with a call to `classifySymbolRiskGroupId()` from the common module
-  - [ ] Subtask 3.2: Verify that `fetchScreeningData()` in the screener still calls the bulk dailypricing endpoint directly (it can retain its own fetch since it already has all symbols loaded) — only the per-symbol classification logic delegates to the shared function
-  - [ ] Subtask 3.3: Ensure no logic duplication remains between `index.ts` and `cef-classification.function.ts`
+- [x] Task 3: Update the screener to call the extracted functions (AC: #2)
+  - [x] Subtask 3.1: Replace the inline `determineRiskGroupId()` implementation in `apps/server/src/app/routes/screener/index.ts` with a call to `classifySymbolRiskGroupId()` from the common module
+  - [x] Subtask 3.2: Verify that `fetchScreeningData()` in the screener still calls the bulk dailypricing endpoint directly (it can retain its own fetch since it already has all symbols loaded) — only the per-symbol classification logic delegates to the shared function
+  - [x] Subtask 3.3: Ensure no logic duplication remains between `index.ts` and `cef-classification.function.ts`
 
-- [ ] Task 4: Write unit tests for the extracted functions (AC: #3)
-  - [ ] Subtask 4.1: Create `apps/server/src/app/routes/common/cef-classification.function.spec.ts`
-  - [ ] Subtask 4.2: Mock `axiosGetWithBackoff` in tests
-  - [ ] Subtask 4.3: Test `lookupCefConnectSymbol()`: CEF symbol found (returns ScreeningData), symbol not in API response (returns null), API throws error (propagates or returns null — decide and document)
-  - [ ] Subtask 4.4: Test `classifySymbolRiskGroupId()`: CategoryId ≤ 10 → equities risk_group_id, CategoryId 11–20 → income risk_group_id, CategoryId 21–24 → taxFree risk_group_id, CategoryId = 27 (out of range) → null
-  - [ ] Subtask 4.5: Run `pnpm all` and confirm all tests pass
+- [x] Task 4: Write unit tests for the extracted functions (AC: #3)
+  - [x] Subtask 4.1: Create `apps/server/src/app/routes/common/cef-classification.function.spec.ts`
+  - [x] Subtask 4.2: Mock `axiosGetWithBackoff` in tests
+  - [x] Subtask 4.3: Test `lookupCefConnectSymbol()`: CEF symbol found (returns ScreeningData), symbol not in API response (returns null), API throws error (propagates or returns null — decide and document)
+  - [x] Subtask 4.4: Test `classifySymbolRiskGroupId()`: CategoryId ≤ 10 → equities risk_group_id, CategoryId 11–20 → income risk_group_id, CategoryId 21–24 → taxFree risk_group_id, CategoryId = 27 (out of range) → null
+  - [x] Subtask 4.5: Run `pnpm all` and confirm all tests pass
 
 ## Dev Notes
 
