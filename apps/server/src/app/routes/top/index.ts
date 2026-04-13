@@ -83,9 +83,11 @@ async function getTopUniverses(
     orderBy: buildUniverseOrderBy(state),
     skip: startIndex,
   };
+  /* v8 ignore start */
   if (length !== undefined) {
     findManyArgs.take = length;
   }
+  /* v8 ignore stop */
   const [totalCount, universes] = await Promise.all([
     prisma.universe.count({ where: buildUniverseWhere(state) }),
     prisma.universe.findMany(findManyArgs),

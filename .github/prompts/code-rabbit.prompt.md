@@ -5,18 +5,20 @@ argument-hint: story=AD.3
 model: Claude Opus 4.6
 ---
 
+load the #skill:prompt
+
 # CodeRabbit Review Loop Subagent
 
 This subagent implements Phase 6 (CodeRabbit review loop). It is intentionally small and stateful so it can be re-invoked and resumed.
 
-Shell execution rule: every shell command in this workflow must use the bash MCP server. Use `mcp_bash_run` for blocking commands and `mcp_bash_run_background` only for true background processes. This applies to `pnpm`, `git`, `gh`, `bash`, and `.github/prompts/prompt.sh`.
+Shell execution rule: every shell command in this workflow must use the bash MCP server. Use `mcp_bash_run` for blocking commands and `mcp_bash_run_background` only for true background processes. This applies to `pnpm`, `git`, `gh`, and `bash`.
 
 INPUT: `story` (required). Reads the story metadata file for PR metadata. Resolve the path via:
 ```bash
 GIT_COMMON_DIR=$(git rev-parse --git-common-dir)
 META_FILE="$GIT_COMMON_DIR/tmp/story-${story}-meta.json"
 ```
-If that file is missing, use `prompt.sh` through the bash MCP server with `timeout: 0` to ask for help.
+If that file is missing, use the prompt skill to ask for help.
 
 **IMPORTANT**: After reading the state file, use `worktreePath` (from the state file) as the `cwd` for bash MCP calls before applying any code fixes or running validations. All git operations must be executed from within that worktree directory.
 
@@ -56,7 +58,7 @@ If the PR CI pipeline is still running, wait and re-check every 120s (with a max
 8. Commit "Apply CodeRabbit suggestions", push, wait 5 minutes, continue loop
 9. Update state file with final status when complete
 
-Error handling: Use `prompt.sh` through the bash MCP server with `timeout: 0` for any unexpected failures or max iterations.
+Error handling: Use the prompt skill for any unexpected failures or max iterations.
 
 Notes:
 - Use state file to avoid passing large context

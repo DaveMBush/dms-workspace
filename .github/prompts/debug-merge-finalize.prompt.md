@@ -4,6 +4,8 @@ argument-hint: story=AD.5
 model: Claude Opus 4.6
 ---
 
+load the #skill:prompt
+
 # Dedicated Debug Merge And Finalize Workflow
 
 **IMPORTANT**: This workflow uses the bmad-workflow skill:
@@ -12,7 +14,7 @@ model: Claude Opus 4.6
 
 Run this prompt from the repository root after the debug PR is ready to merge.
 
-Shell execution rule: every shell command in this workflow must use the bash MCP server. Use `mcp_bash_run` for blocking commands and `mcp_bash_run_background` only for true background processes. This applies to `pnpm`, `git`, `gh`, `bash`, and `.github/prompts/prompt.sh`.
+Shell execution rule: every shell command in this workflow must use the bash MCP server. Use `mcp_bash_run` for blocking commands and `mcp_bash_run_background` only for true background processes. This applies to `pnpm`, `git`, `gh`, and `bash`.
 
 ## Purpose
 
@@ -30,7 +32,7 @@ Before doing anything else, read all of the following:
 ## Execution Rules
 
 1. Operate in the **current repository** on the debug branch from the metadata file.
-2. Use the bash MCP server for every shell command in this workflow. Use `mcp_bash_run` for blocking commands and `mcp_bash_run_background` only for true background processes. This applies to `git`, `gh`, `bash`, and `.github/prompts/prompt.sh`.
+2. Use the bash MCP server for every shell command in this workflow. Use `mcp_bash_run` for blocking commands and `mcp_bash_run_background` only for true background processes. This applies to `git`, `gh`, and `bash`.
 3. Use the metadata file to recover PR number, branch name, and repo.
 4. Verify PR mergeability:
    - CI/CD checks passing
@@ -59,7 +61,7 @@ run #file:./quality-validation.prompt.md context=debug-${story}-merge
     - checkout `main`
     - pull `main`
     - delete the local debug branch
-13. For all human interaction, use `.github/prompts/prompt.sh` via the bash MCP server with `timeout: 0`.
+13. For all human interaction, use the prompt skill so the question is shown in chat and execution waits for the user's answer.
 14. Do not ask for confirmation on success; return control immediately to the caller.
 
 ## Completion Contract
@@ -74,4 +76,4 @@ Return a concise summary containing:
 - whether re-validation was required
 - cleanup result
 
-If merge/finalization fails after required retries and escalations, return `MERGE FAILED: <reason>` after handling required `prompt.sh` escalation.
+If merge/finalization fails after required retries and escalations, return `MERGE FAILED: <reason>` after handling required prompt-skill escalation.

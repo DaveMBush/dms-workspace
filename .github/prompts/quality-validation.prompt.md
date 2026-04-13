@@ -4,11 +4,13 @@ argument-hint: context=story-AD.3
 model: Claude Opus 4.6
 ---
 
+load the #skill:prompt
+
 # Dedicated Quality Validation Workflow
 
 Run this prompt from the repository/worktree that contains the code being validated.
 
-Shell execution rule: every shell command in this workflow must use the bash MCP server. Use `mcp_bash_run` for blocking commands and `mcp_bash_run_background` only for true background processes. This applies to `pnpm`, `git`, `gh`, `bash`, and `.github/prompts/prompt.sh`.
+Shell execution rule: every shell command in this workflow must use the bash MCP server. Use `mcp_bash_run` for blocking commands and `mcp_bash_run_background` only for true background processes. This applies to `pnpm`, `git`, `gh`, and `bash`.
 
 ## Purpose
 
@@ -41,7 +43,7 @@ Before running the loop, read:
 6. Auto-fix failures and code-review findings when possible.
 7. If any fix is applied, restart the loop from step 1.
 8. All steps must pass in a single uninterrupted iteration before reporting success.
-9. For all human interaction, run `.github/prompts/prompt.sh` through the bash MCP server, for example `mcp_bash_run({ command: 'bash .github/prompts/prompt.sh "<message>"', cwd: process.cwd(), timeout: 0 })`.
+9. For all human interaction, use the prompt skill so the question is shown in chat and execution waits for the user's answer.
 10. Do not ask for confirmation when the loop completes successfully; return control immediately to the caller.
 
 ## Completion Contract
@@ -54,4 +56,4 @@ Return a concise summary containing:
 - checks run
 - brief summary of any auto-fixes applied
 
-If validation fails after exhausting the loop rules, return `VALIDATION FAILED: <reason>` after handling required `prompt.sh` escalation.
+If validation fails after exhausting the loop rules, return `VALIDATION FAILED: <reason>` after handling required prompt-skill escalation.

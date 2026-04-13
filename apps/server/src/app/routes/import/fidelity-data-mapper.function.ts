@@ -1,8 +1,6 @@
-import { logger } from '../../../utils/structured-logger';
 import { prisma } from '../../prisma/prisma-client';
-import { fetchAndUpdatePriceData } from '../universe/fetch-and-update-price-data.function';
-import { adjustLotsForSplit } from './adjust-lots-for-split.function';
-import { calculateSplitRatio } from './calculate-split-ratio.function';
+import { buildCefClassification } from './build-cef-classification.helper';
+import { createUniverseEntry } from './create-universe-entry.helper';
 import { FidelityCsvRow } from './fidelity-csv-row.interface';
 import { isInLieuRow } from './is-in-lieu-row.function';
 import { isSplitFromRow } from './is-split-from-row.function';
@@ -41,16 +39,9 @@ async function resolveAccount(
     return cached;
   }
 
-  let account = await prisma.accounts.findFirst({
-    where: { name: accountName },
-  });
-
-  if (!account) {
-    // Auto-create account if it doesn't exist
-    account = await prisma.accounts.create({
-      data: { name: accountName },
-    });
-  }
+  const account =
+    (await prisma.accounts.findFirst({ where: { name: accountName } })) ??
+    (await prisma.accounts.create({ data: { name: accountName } }));
 
   cache.set(accountName, account);
   return account;
@@ -66,55 +57,11 @@ async function resolveSymbol(
   /* v8 ignore next */
   createIfNotFound: boolean = false
 ): Promise<{ id: string } | null> {
-  const universeEntry = await prisma.universe.findFirst({
-    where: { symbol },
-  });
-
+  const universeEntry = await prisma.universe.findFirst({ where: { symbol } });
   if (!universeEntry && createIfNotFound) {
-    // Auto-create universe entry for new symbols on BUY
-    // Get default risk group (first one available)
-    const defaultRiskGroup = await prisma.risk_group.findFirst();
-
-    if (!defaultRiskGroup) {
-      throw new Error(
-        'No risk groups found in database. Cannot create universe entry.'
-      );
-    }
-
-    const newUniverse = await prisma.universe.create({
-      data: {
-        symbol,
-        risk_group_id: defaultRiskGroup.id,
-        last_price: 0,
-        distribution: 0,
-        distributions_per_year: 0,
-        ex_date: null,
-        most_recent_sell_date: null,
-        expired: false,
-        is_closed_end_fund: true,
-      },
-    });
-
-    try {
-      await fetchAndUpdatePriceData(
-        newUniverse.id,
-        symbol,
-        newUniverse,
-        'CUSIP resolution'
-      );
-    } catch (error) {
-      logger.warn(
-        'Unexpected error during price/dividend fetch after CUSIP resolution',
-        {
-          symbol,
-          error: error instanceof Error ? error.message : String(error),
-        }
-      );
-    }
-
-    return newUniverse;
+    const { riskGroupId, isCef } = await buildCefClassification(symbol);
+    return createUniverseEntry(symbol, riskGroupId, isCef);
   }
-
   return universeEntry;
 }
 
@@ -166,16 +113,9 @@ async function mapDividend(
   accountId: string,
   universeId: string
 ): Promise<MappedDivDeposit> {
-  let depositType = await prisma.divDepositType.findFirst({
-    where: { name: 'Dividend' },
-  });
-
-  // Auto-create "Dividend" type if it doesn't exist
-  if (!depositType) {
-    depositType = await prisma.divDepositType.create({
-      data: { name: 'Dividend' },
-    });
-  }
+  const depositType =
+    (await prisma.divDepositType.findFirst({ where: { name: 'Dividend' } })) ??
+    (await prisma.divDepositType.create({ data: { name: 'Dividend' } }));
 
   return {
     date: convertDate(row.date),
@@ -193,16 +133,11 @@ async function mapCashDeposit(
   row: FidelityCsvRow,
   accountId: string
 ): Promise<MappedDivDeposit> {
-  let depositType = await prisma.divDepositType.findFirst({
-    where: { name: 'Cash Deposit' },
-  });
-
-  // Auto-create "Cash Deposit" type if it doesn't exist
-  if (!depositType) {
-    depositType = await prisma.divDepositType.create({
-      data: { name: 'Cash Deposit' },
-    });
-  }
+  const depositType =
+    (await prisma.divDepositType.findFirst({
+      where: { name: 'Cash Deposit' },
+    })) ??
+    (await prisma.divDepositType.create({ data: { name: 'Cash Deposit' } }));
 
   return {
     date: convertDate(row.date),
@@ -229,6 +164,7 @@ export async function mapFidelityTransactions(
     sales: [],
     divDeposits: [],
     unknownTransactions: [],
+    pendingSplits: [],
   };
 
   const accountCache = new Map<string, { id: string }>();
@@ -255,8 +191,7 @@ function compareByDate(a: FidelityCsvRow, b: FidelityCsvRow): number {
  * Money market funds like SPAXX are used as cash holding accounts.
  */
 function isMoneyMarketFund(symbol: string): boolean {
-  const moneyMarketSymbols = ['SPAXX', 'FDRXX', 'FDIC', 'FCASH'];
-  return moneyMarketSymbols.includes(symbol.toUpperCase());
+  return ['SPAXX', 'FDRXX', 'FDIC', 'FCASH'].includes(symbol.toUpperCase());
 }
 
 function isMoneyMarketTradeAction(action: string): boolean {
@@ -327,7 +262,8 @@ async function handleDividendRow(
 }
 
 /**
- * Handles a split CSV row by calculating the split ratio and adjusting open lots.
+ * Handles a split CSV row by calculating the split ratio and deferring the lot
+ * adjustment to after all buy trades have been committed to the database.
  *
  * TO rows (negative quantity, old-CUSIP symbol) are skipped because they carry no
  * information beyond what the matching FROM row already provides.
@@ -337,6 +273,7 @@ async function handleDividendRow(
  */
 async function handleSplitRow(
   row: FidelityCsvRow,
+  result: MappedTransactionResult,
   accountCache: Map<string, { id: string }>
 ): Promise<void> {
   // Only process FROM rows; TO rows and unrecognised split rows are silently skipped.
@@ -344,11 +281,11 @@ async function handleSplitRow(
     return;
   }
 
-  const account = await resolveAccount(row.account, accountCache);
-  const ratio = await calculateSplitRatio(row.symbol, row.quantity, account.id);
-  if (ratio !== null) {
-    await adjustLotsForSplit(row.symbol, ratio, account.id);
-  }
+  result.pendingSplits.push({
+    symbol: row.symbol,
+    csvQuantity: row.quantity,
+    accountId: (await resolveAccount(row.account, accountCache)).id,
+  });
 }
 
 /**
@@ -365,9 +302,10 @@ async function mapSingleRow(
     return;
   }
 
-  // Split rows: calculate ratio and adjust all open lots (Stories 48.2–48.3, 57.2).
+  // Split rows: accumulate deferred split data (Stories 48.2–48.3, 57.2, 63.2).
+  // Actual lot adjustment is deferred to processAllTransactions after processTrades commits buys.
   if (isSplitRow(row)) {
-    await handleSplitRow(row, accountCache);
+    await handleSplitRow(row, result, accountCache);
     return;
   }
 

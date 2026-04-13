@@ -200,7 +200,7 @@ test.describe('Universe Scrolling Regression — blank rows on fast scroll', () 
   test('should have no blank symbol cells after sort change then fast scroll', async ({
     page,
   }) => {
-    // Regression guard for Epics 29/31/44/60 — sort change triggers a new
+    // Regression guard for Epics 29/31/44/60/64 — sort change triggers a new
     // server-side request; while the response is in-flight SmartNgRX marks all
     // rows as isLoading=true.  Under the old code this shrank the data array to
     // zero and the CDK viewport collapsed, producing a completely blank table.
@@ -208,6 +208,24 @@ test.describe('Universe Scrolling Regression — blank rows on fast scroll', () 
     // The fix (Story 60-2) keeps array length stable by returning placeholders
     // for isLoading rows, so the viewport height does not change during the
     // round-trip and a subsequent fast scroll finds fully-populated rows.
+    //
+    // Round 5 regression (Epic 64, Story 64.1):
+    //   `buildPlaceholderUniverseEntry()` returns `{ symbol: '', ... }` for
+    //   loading rows (the Epic 60 fix).  However, `filteredData$` in
+    //   `global-universe.component.ts` applies a second filter AFTER
+    //   `enrichUniverseWithRiskGroups`:
+    //
+    //     .filter(function excludeLoadingRows(row) { return row.symbol !== ''; })
+    //
+    //   This `excludeLoadingRows` filter removes all placeholder rows before the
+    //   array reaches the CDK virtual-scroll viewport, re-introducing the exact
+    //   array-length instability that Epic 60 was meant to fix.  During the
+    //   in-flight window after a sort click the array shrinks, the CDK viewport
+    //   recalculates a shorter scroll height, and fast-scrolling into that
+    //   region produces blank rows.
+    //
+    //   Fix target (Story 64.2): remove or guard `excludeLoadingRows` so
+    //   placeholder rows are passed through to the CDK viewport unchanged.
     //
     // Sort column interaction pattern (from server-side-sorting.spec.ts):
     //   page.getByRole('button', { name: 'Symbol' }) → click to apply sort.
@@ -229,7 +247,9 @@ test.describe('Universe Scrolling Regression — blank rows on fast scroll', () 
     await assertVisibleSymbolsNonEmpty(
       page,
       'Visible rows have empty symbol cells after sort change + fast scroll. ' +
-        'Epic 60 regression: sort triggers mass isLoading state, old null-return collapses array.'
+        'Round 5 (Epic 64) regression: excludeLoadingRows filter in filteredData$ removes ' +
+        'placeholder rows, re-shrinking the CDK data array during isLoading window. ' +
+        'See global-universe.component.ts filteredData$ and Story 64.2 for the fix.'
     );
   });
 
@@ -266,6 +286,95 @@ test.describe('Universe Scrolling Regression — blank rows on fast scroll', () 
       page,
       'Visible rows have empty symbol cells after symbol filter change + fast scroll. ' +
         'Epic 60 regression: filter triggers mass isLoading state, old null-return collapses array.'
+    );
+  });
+
+  test('should have no blank symbol cells after multiple rapid sort toggles then fast scroll', async ({
+    page,
+  }) => {
+    // Regression guard for Epic 64 (CDK virtual scroll blank rows after
+    // multiple consecutive sort changes).
+    //
+    // Root cause Epic 64: excludeLoadingRows filter in filteredData$ removed
+    // placeholder rows from the CDK data array, re-introducing array-length
+    // instability after sort/filter events.  Each sort click triggers a new
+    // server-side request and a new isLoading window; rapid successive clicks
+    // produce overlapping windows where the old filter would have shrunk the
+    // CDK array multiple times in quick succession.
+    //
+    // Fix (Story 64.2): removed the excludeLoadingRows filter; CDK now always
+    // sees the full stable-length array regardless of how many isLoading windows
+    // are active simultaneously.
+    //
+    // This test guards against a future change that re-introduces row removal
+    // from filteredData$ during overlapping isLoading windows caused by rapid
+    // consecutive sort changes.
+    const symbolHeader = page.getByRole('button', { name: 'Symbol' });
+
+    // Three rapid toggles: asc → desc → asc.  Each triggers a server round-trip
+    // and a new isLoading window — overlapping windows stress-test stability.
+    await symbolHeader.click();
+    await page.waitForTimeout(100);
+    await symbolHeader.click();
+    await page.waitForTimeout(100);
+    await symbolHeader.click();
+
+    // Wait for the final sort round-trip before scrolling.
+    await page.waitForTimeout(100);
+    await page.waitForLoadState('networkidle');
+
+    const viewport = page.locator(VIEWPORT_SELECTOR);
+    await expect(viewport).toBeVisible({ timeout: 10000 });
+
+    await scrollViewportToBottom(viewport);
+
+    await assertVisibleSymbolsNonEmpty(
+      page,
+      'Visible rows have empty symbol cells after multiple rapid sort toggles + fast scroll. ' +
+        'Epic 64 regression: overlapping isLoading windows from consecutive sort clicks ' +
+        're-shrink the CDK array when excludeLoadingRows filter is present. ' +
+        'See global-universe.component.ts filteredData$ and Story 64.2 for the fix.'
+    );
+  });
+
+  test('should have no blank symbol cells after subset symbol filter then scroll to bottom', async ({
+    page,
+  }) => {
+    // Regression guard for Epics 29/31/44/60/64 (CDK virtual scroll blank rows
+    // after a filter that reduces the visible row count to a strict subset).
+    //
+    // Root cause Epic 64: excludeLoadingRows filter in filteredData$ removed
+    // placeholder rows from the CDK data array, re-introducing array-length
+    // instability after sort/filter events.  Fix (Story 64.2): removed the
+    // excludeLoadingRows filter; CDK now always sees the full stable-length
+    // array.
+    //
+    // This test guards against a future change that re-introduces row removal
+    // from filteredData$ during isLoading windows triggered by a filter that
+    // narrows the result set to a subset of the originally loaded rows.
+    //
+    // 'USCRL1' matches USCRL1 and USCRL10–USCRL19 (11 of the 60 seeded rows),
+    // producing a smaller visible set that still requires a server round-trip.
+    const symbolInput = page.locator('input[placeholder="Search Symbol"]');
+    await expect(symbolInput).toBeVisible({ timeout: 10000 });
+    await symbolInput.fill('USCRL1');
+
+    // Wait for the filter network round-trip to settle.
+    await page.waitForTimeout(100);
+    await page.waitForLoadState('networkidle');
+
+    const viewport = page.locator(VIEWPORT_SELECTOR);
+    await expect(viewport).toBeVisible({ timeout: 10000 });
+
+    // Scroll to the bottom of the (now-smaller) filtered result set.
+    await scrollViewportToBottom(viewport);
+
+    await assertVisibleSymbolsNonEmpty(
+      page,
+      'Visible rows have empty symbol cells after subset symbol filter + scroll to bottom. ' +
+        'Epic 64 regression: excludeLoadingRows filter interacted with reduced result size to ' +
+        're-shrink the CDK array during the filter isLoading window. ' +
+        'See global-universe.component.ts filteredData$ and Story 64.2 for the fix.'
     );
   });
 });
