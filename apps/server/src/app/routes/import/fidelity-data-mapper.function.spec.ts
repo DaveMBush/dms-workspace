@@ -5,6 +5,10 @@ import { prisma } from '../../prisma/prisma-client';
 import { getDistributions } from '../settings/common/get-distributions.function';
 import { getLastPrice } from '../settings/common/get-last-price.function';
 import { adjustLotsForSplit } from './adjust-lots-for-split.function';
+import {
+  classifySymbolRiskGroupId,
+  lookupCefConnectSymbol,
+} from '../common/cef-classification.function';
 
 vi.mock('../../prisma/prisma-client', function () {
   return {
@@ -24,6 +28,7 @@ vi.mock('../../prisma/prisma-client', function () {
       },
       risk_group: {
         findFirst: vi.fn(),
+        findMany: vi.fn(),
       },
     },
   };
@@ -40,11 +45,25 @@ vi.mock('../../../utils/structured-logger', function () {
   };
 });
 vi.mock('./adjust-lots-for-split.function');
+vi.mock('../common/cef-classification.function', function () {
+  return {
+    lookupCefConnectSymbol: vi.fn(),
+    classifySymbolRiskGroupId: vi.fn(),
+  };
+});
 
 const mockPrisma = prisma as any;
 const mockGetDistributions = getDistributions as any;
 const mockGetLastPrice = getLastPrice as any;
 const mockAdjustLotsForSplit = adjustLotsForSplit as any;
+const mockLookupCefConnectSymbol = lookupCefConnectSymbol as any;
+const mockClassifySymbolRiskGroupId = classifySymbolRiskGroupId as any;
+
+const DEFAULT_RISK_GROUPS = [
+  { id: 'equities-rg', name: 'Equities' },
+  { id: 'income-rg', name: 'Income' },
+  { id: 'tax-free-rg', name: 'Tax Free Income' },
+];
 
 interface ParsedCsvRow {
   date: string;
@@ -61,6 +80,8 @@ describe('mapFidelityTransactions', function () {
   beforeEach(function () {
     vi.clearAllMocks();
     mockAdjustLotsForSplit.mockResolvedValue(0);
+    mockLookupCefConnectSymbol.mockResolvedValue(null);
+    mockPrisma.risk_group.findMany.mockResolvedValue(DEFAULT_RISK_GROUPS);
   });
 
   describe('purchase transaction mapping', function () {
@@ -673,14 +694,10 @@ describe('mapFidelityTransactions', function () {
         name: 'My Brokerage',
       });
       mockPrisma.universe.findFirst.mockResolvedValue(null);
-      mockPrisma.risk_group.findFirst.mockResolvedValue({
-        id: 'default-risk-group',
-        name: 'Default',
-      });
       mockPrisma.universe.create.mockResolvedValue({
         id: 'new-universe-123',
         symbol: 'NEWSTOCK',
-        risk_group_id: 'default-risk-group',
+        risk_group_id: 'equities-rg',
       });
 
       const result = await mapFidelityTransactions(rows);
@@ -688,14 +705,14 @@ describe('mapFidelityTransactions', function () {
       expect(mockPrisma.universe.create).toHaveBeenCalledWith({
         data: {
           symbol: 'NEWSTOCK',
-          risk_group_id: 'default-risk-group',
+          risk_group_id: 'equities-rg',
           last_price: 0,
           distribution: 0,
           distributions_per_year: 0,
           ex_date: null,
           most_recent_sell_date: null,
           expired: false,
-          is_closed_end_fund: true,
+          is_closed_end_fund: false,
         },
       });
       expect(result.trades).toHaveLength(1);
@@ -721,13 +738,164 @@ describe('mapFidelityTransactions', function () {
         name: 'My Brokerage',
       });
       mockPrisma.universe.findFirst.mockResolvedValue(null);
-      mockPrisma.risk_group.findFirst.mockResolvedValue(null);
+      mockPrisma.risk_group.findMany.mockResolvedValue([]);
 
       await expect(mapFidelityTransactions(rows)).rejects.toThrow(
-        'No risk groups found in database'
+        'Equities risk group not found in database'
       );
     });
+  });
 
+  describe('CEF classification during BUY auto-create', function () {
+    test('should set risk_group_id and is_closed_end_fund=true when symbol is a CEF', async function () {
+      const rows: ParsedCsvRow[] = [
+        {
+          date: '02/15/2026',
+          action: 'YOU BOUGHT',
+          symbol: 'CEFSTOCK',
+          description: 'CEF STOCK',
+          quantity: 10,
+          price: 10.0,
+          totalAmount: -100.0,
+          account: 'My Brokerage',
+        },
+      ];
+
+      mockPrisma.accounts.findFirst.mockResolvedValue({
+        id: 'account-123',
+        name: 'My Brokerage',
+      });
+      mockPrisma.universe.findFirst.mockResolvedValue(null);
+      mockPrisma.universe.create.mockResolvedValue({
+        id: 'new-cef-universe',
+        symbol: 'CEFSTOCK',
+        risk_group_id: 'equities-rg',
+      });
+      mockLookupCefConnectSymbol.mockResolvedValue({
+        Ticker: 'CEFSTOCK',
+        CategoryId: 1,
+      });
+      mockClassifySymbolRiskGroupId.mockReturnValue('equities-rg');
+
+      const result = await mapFidelityTransactions(rows);
+
+      expect(mockPrisma.universe.create).toHaveBeenCalledWith({
+        data: {
+          symbol: 'CEFSTOCK',
+          risk_group_id: 'equities-rg',
+          last_price: 0,
+          distribution: 0,
+          distributions_per_year: 0,
+          ex_date: null,
+          most_recent_sell_date: null,
+          expired: false,
+          is_closed_end_fund: true,
+        },
+      });
+      expect(result.trades).toHaveLength(1);
+      expect(result.trades[0].universeId).toBe('new-cef-universe');
+    });
+
+    test('should use default risk_group_id and is_closed_end_fund=false when symbol is not on CefConnect', async function () {
+      const rows: ParsedCsvRow[] = [
+        {
+          date: '02/15/2026',
+          action: 'YOU BOUGHT',
+          symbol: 'REGULARSTOCK',
+          description: 'REGULAR STOCK',
+          quantity: 5,
+          price: 50.0,
+          totalAmount: -250.0,
+          account: 'My Brokerage',
+        },
+      ];
+
+      mockPrisma.accounts.findFirst.mockResolvedValue({
+        id: 'account-123',
+        name: 'My Brokerage',
+      });
+      mockPrisma.universe.findFirst.mockResolvedValue(null);
+      mockPrisma.universe.create.mockResolvedValue({
+        id: 'new-regular-universe',
+        symbol: 'REGULARSTOCK',
+        risk_group_id: 'equities-rg',
+      });
+      mockLookupCefConnectSymbol.mockResolvedValue(null);
+
+      const result = await mapFidelityTransactions(rows);
+
+      expect(mockPrisma.universe.create).toHaveBeenCalledWith({
+        data: {
+          symbol: 'REGULARSTOCK',
+          risk_group_id: 'equities-rg',
+          last_price: 0,
+          distribution: 0,
+          distributions_per_year: 0,
+          ex_date: null,
+          most_recent_sell_date: null,
+          expired: false,
+          is_closed_end_fund: false,
+        },
+      });
+      expect(result.trades).toHaveLength(1);
+      expect(result.trades[0].universeId).toBe('new-regular-universe');
+    });
+
+    test('should log warning and use default risk group when CefConnect lookup throws', async function () {
+      const rows: ParsedCsvRow[] = [
+        {
+          date: '02/15/2026',
+          action: 'YOU BOUGHT',
+          symbol: 'ERRSTOCK',
+          description: 'ERROR STOCK',
+          quantity: 5,
+          price: 50.0,
+          totalAmount: -250.0,
+          account: 'My Brokerage',
+        },
+      ];
+
+      mockPrisma.accounts.findFirst.mockResolvedValue({
+        id: 'account-123',
+        name: 'My Brokerage',
+      });
+      mockPrisma.universe.findFirst.mockResolvedValue(null);
+      mockPrisma.universe.create.mockResolvedValue({
+        id: 'new-err-universe',
+        symbol: 'ERRSTOCK',
+        risk_group_id: 'equities-rg',
+      });
+      mockLookupCefConnectSymbol.mockRejectedValue(
+        new Error('Network timeout')
+      );
+      const { logger } = await import('../../../utils/structured-logger');
+      const mockLogger = logger as any;
+
+      const result = await mapFidelityTransactions(rows);
+
+      expect(mockLogger.warn).toHaveBeenCalledWith(
+        'CEF classification lookup failed; using default risk group',
+        expect.objectContaining({ symbol: 'ERRSTOCK' })
+      );
+      expect(mockPrisma.universe.create).toHaveBeenCalledWith({
+        data: {
+          symbol: 'ERRSTOCK',
+          risk_group_id: 'equities-rg',
+          last_price: 0,
+          distribution: 0,
+          distributions_per_year: 0,
+          ex_date: null,
+          most_recent_sell_date: null,
+          expired: false,
+          is_closed_end_fund: false,
+        },
+      });
+      expect(result.trades).toHaveLength(1);
+      expect(result.trades[0].universeId).toBe('new-err-universe');
+    });
+  });
+
+  describe('error handling (continued)', function () {
     test('should treat SELL of unknown symbol as cash deposit', async function () {
       const rows: ParsedCsvRow[] = [
         {
@@ -1028,14 +1196,10 @@ describe('mapFidelityTransactions', function () {
         name: 'Joint Brokerage',
       });
       mockPrisma.universe.findFirst.mockResolvedValue(null);
-      mockPrisma.risk_group.findFirst.mockResolvedValue({
-        id: 'default-risk-group',
-        name: 'Default',
-      });
       mockPrisma.universe.create.mockResolvedValue({
         id: 'new-spaxx-universe',
         symbol: 'SPAXX',
-        risk_group_id: 'default-risk-group',
+        risk_group_id: 'equities-rg',
       });
       mockPrisma.divDepositType.findFirst.mockResolvedValue({
         id: 'div-type-123',
@@ -1048,14 +1212,14 @@ describe('mapFidelityTransactions', function () {
       expect(mockPrisma.universe.create).toHaveBeenCalledWith({
         data: {
           symbol: 'SPAXX',
-          risk_group_id: 'default-risk-group',
+          risk_group_id: 'equities-rg',
           last_price: 0,
           distribution: 0,
           distributions_per_year: 0,
           ex_date: null,
           most_recent_sell_date: null,
           expired: false,
-          is_closed_end_fund: true,
+          is_closed_end_fund: false,
         },
       });
       // Should create dividend deposit linked to SPAXX
@@ -1205,10 +1369,6 @@ describe('mapFidelityTransactions', function () {
         name: 'My Brokerage',
       });
       mockPrisma.universe.findFirst.mockResolvedValue(null);
-      mockPrisma.risk_group.findFirst.mockResolvedValue({
-        id: 'default-risk-group',
-        name: 'Default',
-      });
       mockPrisma.universe.create.mockResolvedValue(createdRecord);
       mockGetLastPrice.mockResolvedValue(120.5);
       mockGetDistributions.mockResolvedValue({
@@ -1276,10 +1436,6 @@ describe('mapFidelityTransactions', function () {
         name: 'My Brokerage',
       });
       mockPrisma.universe.findFirst.mockResolvedValue(null);
-      mockPrisma.risk_group.findFirst.mockResolvedValue({
-        id: 'default-risk-group',
-        name: 'Default',
-      });
       mockPrisma.universe.create.mockResolvedValue(createdRecord);
       mockGetLastPrice.mockResolvedValue(undefined);
       mockGetDistributions.mockResolvedValue(undefined);
@@ -1329,10 +1485,6 @@ describe('mapFidelityTransactions', function () {
         name: 'My Brokerage',
       });
       mockPrisma.universe.findFirst.mockResolvedValue(null);
-      mockPrisma.risk_group.findFirst.mockResolvedValue({
-        id: 'default-risk-group',
-        name: 'Default',
-      });
       mockPrisma.universe.create.mockResolvedValue(createdRecord);
       mockGetLastPrice.mockRejectedValue(new Error('Network error'));
 
@@ -1377,10 +1529,6 @@ describe('mapFidelityTransactions', function () {
         name: 'My Brokerage',
       });
       mockPrisma.universe.findFirst.mockResolvedValue(null);
-      mockPrisma.risk_group.findFirst.mockResolvedValue({
-        id: 'default-risk-group',
-        name: 'Default',
-      });
       mockPrisma.universe.create.mockResolvedValue(createdRecord);
       mockGetLastPrice.mockRejectedValue('not an Error object');
 
