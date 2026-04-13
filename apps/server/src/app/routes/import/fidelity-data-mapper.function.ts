@@ -1,11 +1,8 @@
-import { logger } from '../../../utils/structured-logger';
 import { prisma } from '../../prisma/prisma-client';
 import {
-  classifySymbolRiskGroupId,
-  lookupCefConnectSymbol,
-  RiskGroupMap,
-} from '../common/cef-classification.function';
-import { fetchAndUpdatePriceData } from '../universe/fetch-and-update-price-data.function';
+  buildCefClassification,
+  createUniverseEntry,
+} from './fidelity-cef-universe.helper';
 import { FidelityCsvRow } from './fidelity-csv-row.interface';
 import { isInLieuRow } from './is-in-lieu-row.function';
 import { isSplitFromRow } from './is-split-from-row.function';
@@ -44,16 +41,9 @@ async function resolveAccount(
     return cached;
   }
 
-  let account = await prisma.accounts.findFirst({
-    where: { name: accountName },
-  });
-
-  if (!account) {
-    // Auto-create account if it doesn't exist
-    account = await prisma.accounts.create({
-      data: { name: accountName },
-    });
-  }
+  const account =
+    (await prisma.accounts.findFirst({ where: { name: accountName } })) ??
+    (await prisma.accounts.create({ data: { name: accountName } }));
 
   cache.set(accountName, account);
   return account;
@@ -69,89 +59,11 @@ async function resolveSymbol(
   /* v8 ignore next */
   createIfNotFound: boolean = false
 ): Promise<{ id: string } | null> {
-  const universeEntry = await prisma.universe.findFirst({
-    where: { symbol },
-  });
-
+  const universeEntry = await prisma.universe.findFirst({ where: { symbol } });
   if (!universeEntry && createIfNotFound) {
-    // Auto-create universe entry for new symbols on BUY
-    const allRiskGroups = await prisma.risk_group.findMany();
-    const defaultRiskGroup = allRiskGroups.find(function findEquities(g) {
-      return g.name === 'Equities';
-    });
-
-    if (!defaultRiskGroup) {
-      throw new Error(
-        'Equities risk group not found in database. Cannot create universe entry.'
-      );
-    }
-
-    const incomeGroup = allRiskGroups.find(function findIncome(g) {
-      return g.name === 'Income';
-    });
-    const taxFreeGroup = allRiskGroups.find(function findTaxFree(g) {
-      return g.name === 'Tax Free Income';
-    });
-    const riskGroups: RiskGroupMap = {
-      equities: defaultRiskGroup.id,
-      income: incomeGroup?.id ?? defaultRiskGroup.id,
-      taxFree: taxFreeGroup?.id ?? defaultRiskGroup.id,
-    };
-
-    let riskGroupId = defaultRiskGroup.id;
-    let isCef = false;
-
-    try {
-      const cefData = await lookupCefConnectSymbol(symbol);
-      if (cefData) {
-        riskGroupId =
-          classifySymbolRiskGroupId(cefData, riskGroups) ?? defaultRiskGroup.id;
-        isCef = true;
-      }
-    } catch (error) {
-      logger.warn(
-        'CEF classification lookup failed; using default risk group',
-        {
-          symbol,
-          error: error instanceof Error ? error.message : String(error),
-        }
-      );
-    }
-
-    const newUniverse = await prisma.universe.create({
-      data: {
-        symbol,
-        risk_group_id: riskGroupId,
-        last_price: 0,
-        distribution: 0,
-        distributions_per_year: 0,
-        ex_date: null,
-        most_recent_sell_date: null,
-        expired: false,
-        is_closed_end_fund: isCef,
-      },
-    });
-
-    try {
-      await fetchAndUpdatePriceData(
-        newUniverse.id,
-        symbol,
-        newUniverse,
-        'CUSIP resolution'
-      );
-    } catch (error) {
-      logger.warn(
-        'Unexpected error during price/dividend fetch after CUSIP resolution',
-        {
-          symbol,
-          error: error instanceof Error ? error.message : String(error),
-        }
-      );
-    }
-
-    return newUniverse;
+    const { riskGroupId, isCef } = await buildCefClassification(symbol);
+    return createUniverseEntry(symbol, riskGroupId, isCef);
   }
-
   return universeEntry;
 }
 
@@ -164,9 +76,7 @@ function mapPurchase(
   universeId: string
 ): MappedTrade {
   if (row.quantity < 0) {
-    throw new Error(
-      `Invalid quantity for purchase: ${row.quantity} (must be non-negative)`
-    );
+    throw new Error(`Invalid quantity for purchase: ${row.quantity} (must be non-negative)`);
   }
   return {
     universeId,
@@ -203,16 +113,9 @@ async function mapDividend(
   accountId: string,
   universeId: string
 ): Promise<MappedDivDeposit> {
-  let depositType = await prisma.divDepositType.findFirst({
-    where: { name: 'Dividend' },
-  });
-
-  // Auto-create "Dividend" type if it doesn't exist
-  if (!depositType) {
-    depositType = await prisma.divDepositType.create({
-      data: { name: 'Dividend' },
-    });
-  }
+  const depositType =
+    (await prisma.divDepositType.findFirst({ where: { name: 'Dividend' } })) ??
+    (await prisma.divDepositType.create({ data: { name: 'Dividend' } }));
 
   return {
     date: convertDate(row.date),
@@ -230,16 +133,9 @@ async function mapCashDeposit(
   row: FidelityCsvRow,
   accountId: string
 ): Promise<MappedDivDeposit> {
-  let depositType = await prisma.divDepositType.findFirst({
-    where: { name: 'Cash Deposit' },
-  });
-
-  // Auto-create "Cash Deposit" type if it doesn't exist
-  if (!depositType) {
-    depositType = await prisma.divDepositType.create({
-      data: { name: 'Cash Deposit' },
-    });
-  }
+  const depositType =
+    (await prisma.divDepositType.findFirst({ where: { name: 'Cash Deposit' } })) ??
+    (await prisma.divDepositType.create({ data: { name: 'Cash Deposit' } }));
 
   return {
     date: convertDate(row.date),
@@ -293,8 +189,7 @@ function compareByDate(a: FidelityCsvRow, b: FidelityCsvRow): number {
  * Money market funds like SPAXX are used as cash holding accounts.
  */
 function isMoneyMarketFund(symbol: string): boolean {
-  const moneyMarketSymbols = ['SPAXX', 'FDRXX', 'FDIC', 'FCASH'];
-  return moneyMarketSymbols.includes(symbol.toUpperCase());
+  return ['SPAXX', 'FDRXX', 'FDIC', 'FCASH'].includes(symbol.toUpperCase());
 }
 
 function isMoneyMarketTradeAction(action: string): boolean {
@@ -384,11 +279,10 @@ async function handleSplitRow(
     return;
   }
 
-  const account = await resolveAccount(row.account, accountCache);
   result.pendingSplits.push({
     symbol: row.symbol,
     csvQuantity: row.quantity,
-    accountId: account.id,
+    accountId: (await resolveAccount(row.account, accountCache)).id,
   });
 }
 

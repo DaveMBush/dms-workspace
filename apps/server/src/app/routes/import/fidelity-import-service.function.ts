@@ -82,7 +82,6 @@ async function splitTrade(
     universeId: string;
     accountId: string;
     buy: number;
-    // eslint-disable-next-line @typescript-eslint/naming-convention -- Prisma/DB field uses snake_case
     buy_date: Date;
   },
   soldQuantity: number,
