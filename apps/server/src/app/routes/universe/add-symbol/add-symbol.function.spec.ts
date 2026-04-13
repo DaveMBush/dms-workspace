@@ -1,8 +1,13 @@
 import { addSymbol } from './add-symbol.function';
 import { prisma } from '../../../prisma/prisma-client';
+import {
+  lookupCefConnectSymbol,
+  classifySymbolRiskGroupId,
+} from '../../common/cef-classification.function';
 import { getDistributions } from '../../settings/common/get-distributions.function';
 import { getLastPrice } from '../../settings/common/get-last-price.function';
 import { vi } from 'vitest';
+import { logger } from '../../../../utils/structured-logger';
 
 vi.mock('../../../prisma/prisma-client', function () {
   return {
@@ -14,8 +19,16 @@ vi.mock('../../../prisma/prisma-client', function () {
       },
       risk_group: {
         findUnique: vi.fn(),
+        findMany: vi.fn(),
       },
     },
+  };
+});
+
+vi.mock('../../common/cef-classification.function', function () {
+  return {
+    lookupCefConnectSymbol: vi.fn(),
+    classifySymbolRiskGroupId: vi.fn(),
   };
 });
 
@@ -33,6 +46,19 @@ vi.mock('../../../../utils/structured-logger', function () {
 const mockPrisma = prisma as any;
 const mockGetDistributions = getDistributions as any;
 const mockGetLastPrice = getLastPrice as any;
+const mockLookupCefConnectSymbol = lookupCefConnectSymbol as ReturnType<
+  typeof vi.fn
+>;
+const mockClassifySymbolRiskGroupId = classifySymbolRiskGroupId as ReturnType<
+  typeof vi.fn
+>;
+const mockLogger = logger as any;
+
+const mockRiskGroups = [
+  { id: 'eq-id', name: 'Equities' },
+  { id: 'inc-id', name: 'Income' },
+  { id: 'tf-id', name: 'Tax Free Income' },
+];
 
 const mockDefaultRecord = {
   id: 'test-universe-id',
@@ -52,6 +78,99 @@ const mockDefaultRecord = {
 describe('addSymbol', function () {
   beforeEach(function () {
     vi.clearAllMocks();
+    mockPrisma.risk_group.findMany.mockResolvedValue(mockRiskGroups);
+    mockLookupCefConnectSymbol.mockResolvedValue(null);
+  });
+
+  test('should apply CEF classification when symbol is found on CefConnect', async function () {
+    const request = {
+      symbol: 'ETW',
+      risk_group_id: 'test-risk-group-id',
+    };
+
+    const mockCefData = { Ticker: 'ETW', CategoryId: 1 };
+
+    mockPrisma.universe.findFirst.mockResolvedValue(null);
+    mockPrisma.risk_group.findUnique.mockResolvedValue({
+      id: 'test-risk-group-id',
+      name: 'Equities',
+    });
+    mockLookupCefConnectSymbol.mockResolvedValue(mockCefData);
+    mockClassifySymbolRiskGroupId.mockReturnValue('eq-id');
+    mockPrisma.universe.create.mockResolvedValue({
+      ...mockDefaultRecord,
+      symbol: 'ETW',
+      risk_group_id: 'eq-id',
+      is_closed_end_fund: true,
+    } as any);
+    mockGetLastPrice.mockResolvedValue(undefined);
+    mockGetDistributions.mockResolvedValue(undefined);
+
+    await addSymbol(request);
+
+    expect(mockPrisma.universe.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        risk_group_id: 'eq-id',
+        is_closed_end_fund: true,
+      }),
+    });
+  });
+
+  test('should use request risk_group_id when symbol is not found on CefConnect', async function () {
+    const request = {
+      symbol: 'SPY',
+      risk_group_id: 'test-risk-group-id',
+    };
+
+    mockPrisma.universe.findFirst.mockResolvedValue(null);
+    mockPrisma.risk_group.findUnique.mockResolvedValue({
+      id: 'test-risk-group-id',
+      name: 'Equities',
+    });
+    mockLookupCefConnectSymbol.mockResolvedValue(null);
+    mockPrisma.universe.create.mockResolvedValue(mockDefaultRecord as any);
+    mockGetLastPrice.mockResolvedValue(undefined);
+    mockGetDistributions.mockResolvedValue(undefined);
+
+    await addSymbol(request);
+
+    expect(mockPrisma.universe.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        risk_group_id: 'test-risk-group-id',
+        is_closed_end_fund: false,
+      }),
+    });
+  });
+
+  test('should warn and use request risk_group_id when CefConnect lookup throws', async function () {
+    const request = {
+      symbol: 'SPY',
+      risk_group_id: 'test-risk-group-id',
+    };
+
+    mockPrisma.universe.findFirst.mockResolvedValue(null);
+    mockPrisma.risk_group.findUnique.mockResolvedValue({
+      id: 'test-risk-group-id',
+      name: 'Equities',
+    });
+    mockLookupCefConnectSymbol.mockRejectedValue(new Error('Network error'));
+    mockPrisma.universe.create.mockResolvedValue(mockDefaultRecord as any);
+    mockGetLastPrice.mockResolvedValue(undefined);
+    mockGetDistributions.mockResolvedValue(undefined);
+
+    const result = await addSymbol(request);
+
+    expect(mockLogger.warn).toHaveBeenCalledWith(
+      'CEF classification lookup failed; using request risk_group_id',
+      expect.objectContaining({ symbol: 'SPY' })
+    );
+    expect(mockPrisma.universe.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        risk_group_id: 'test-risk-group-id',
+        is_closed_end_fund: false,
+      }),
+    });
+    expect(result.fetchFailed).toBe(true);
   });
 
   test('should save symbol first then fetch price and dividend on success', async function () {
