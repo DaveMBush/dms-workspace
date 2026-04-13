@@ -375,3 +375,40 @@ development_status:
   57-2-implement-reverse-split-detection-ratio: backlog
   57-3-e2e-reverse-split-csv-import: backlog
   epic-57-retrospective: optional
+
+  # ── Epic 67: Inconsistent Row Heights ────────────────────────────────────────
+  epic-67: in-progress
+  67-1-measure-row-height-inconsistency: ready-for-dev
+  67-2-fix-row-height-consistency: ready-for-dev
+  epic-67-retrospective: optional
+
+  # ── Epic 68: Remove "No Results Found" Message ────────────────────────────────
+  epic-68: in-progress
+  68-1-remove-no-results-message: ready-for-dev
+  68-2-e2e-no-overlay-on-empty-universe: ready-for-dev
+  epic-68-retrospective: optional
+
+  # ── Epic 69: CSV Import — 400 Bad Request ────────────────────────────────────
+  epic-69: in-progress
+  69-1-write-failing-csv-import-e2e-test: ready-for-dev
+  69-2-diagnose-fix-csv-import-400: ready-for-dev
+  69-3-harden-csv-import-regression-suite: ready-for-dev
+  epic-69-retrospective: optional
+
+  # ── Epic 70: Error Logs Route Broken ─────────────────────────────────────────
+  epic-70: in-progress
+  70-1-restore-error-logs-route: ready-for-dev
+  70-2-e2e-error-logs-navigation: ready-for-dev
+  epic-70-retrospective: optional
+
+  # ── Epic 71: Screener to Universe Distribution History ───────────────────────
+  epic-71: in-progress
+  71-1-investigate-sync-distribution-history: ready-for-dev
+  71-2-fix-sync-from-screener-distribution-per-year: ready-for-dev
+  epic-71-retrospective: optional
+
+  # ── Epic 72: Re-sort Row on Update ───────────────────────────────────────────
+  epic-72: in-progress
+  72-1-write-failing-resort-on-edit-e2e-test: ready-for-dev
+  72-2-implement-resort-on-cell-edit: ready-for-dev
+  epic-72-retrospective: optional
