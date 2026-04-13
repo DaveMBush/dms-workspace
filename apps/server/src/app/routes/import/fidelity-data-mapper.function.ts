@@ -76,7 +76,9 @@ function mapPurchase(
   universeId: string
 ): MappedTrade {
   if (row.quantity < 0) {
-    throw new Error(`Invalid quantity for purchase: ${row.quantity} (must be non-negative)`);
+    throw new Error(
+      `Invalid quantity for purchase: ${row.quantity} (must be non-negative)`
+    );
   }
   return {
     universeId,
@@ -134,7 +136,9 @@ async function mapCashDeposit(
   accountId: string
 ): Promise<MappedDivDeposit> {
   const depositType =
-    (await prisma.divDepositType.findFirst({ where: { name: 'Cash Deposit' } })) ??
+    (await prisma.divDepositType.findFirst({
+      where: { name: 'Cash Deposit' },
+    })) ??
     (await prisma.divDepositType.create({ data: { name: 'Cash Deposit' } }));
 
   return {
