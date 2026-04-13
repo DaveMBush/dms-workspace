@@ -1,5 +1,10 @@
 import { logger } from '../../../../utils/structured-logger';
 import { prisma } from '../../../prisma/prisma-client';
+import {
+  classifySymbolRiskGroupId,
+  lookupCefConnectSymbol,
+  RiskGroupMap,
+} from '../common/cef-classification.function';
 import { fetchAndUpdatePriceData } from '../fetch-and-update-price-data.function';
 import type { UniverseRecord } from '../universe-record.interface';
 
@@ -71,6 +76,32 @@ function mapUniverseRecordToResult(
   };
 }
 
+async function resolveCefClassification(
+  upperSymbol: string,
+  risk_group_id: string,
+  riskGroups: RiskGroupMap
+): Promise<{ effectiveRiskGroupId: string; isCef: boolean }> {
+  let effectiveRiskGroupId = risk_group_id;
+  let isCef = false;
+  try {
+    const cefData = await lookupCefConnectSymbol(upperSymbol);
+    if (cefData) {
+      effectiveRiskGroupId =
+        classifySymbolRiskGroupId(cefData, riskGroups) ?? risk_group_id;
+      isCef = true;
+    }
+  } catch (error) {
+    logger.warn(
+      'CEF classification lookup failed; using request risk_group_id',
+      {
+        symbol: upperSymbol,
+        error: error instanceof Error ? error.message : String(error),
+      }
+    );
+  }
+  return { effectiveRiskGroupId, isCef };
+}
+
 export async function addSymbol(
   request: AddSymbolRequest
 ): Promise<AddSymbolResult> {
@@ -79,17 +110,39 @@ export async function addSymbol(
 
   await validateSymbolAndRiskGroup(upperSymbol, risk_group_id);
 
+  const groups = await prisma.risk_group.findMany();
+  const riskGroups: RiskGroupMap = {
+    equities:
+      groups.find(function findEquities(g) {
+        return g.name === 'Equities';
+      })?.id ?? risk_group_id,
+    income:
+      groups.find(function findIncome(g) {
+        return g.name === 'Income';
+      })?.id ?? risk_group_id,
+    taxFree:
+      groups.find(function findTaxFree(g) {
+        return g.name === 'Tax Free Income';
+      })?.id ?? risk_group_id,
+  };
+
+  const { effectiveRiskGroupId, isCef } = await resolveCefClassification(
+    upperSymbol,
+    risk_group_id,
+    riskGroups
+  );
+
   const universeRecord = await prisma.universe.create({
     data: {
       symbol: upperSymbol,
-      risk_group_id,
+      risk_group_id: effectiveRiskGroupId,
       last_price: 0,
       distribution: 0,
       distributions_per_year: 0,
       ex_date: null,
       most_recent_sell_date: null,
       expired: false,
-      is_closed_end_fund: false,
+      is_closed_end_fund: isCef,
     },
   });
 
