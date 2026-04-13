@@ -245,15 +245,13 @@ export class AddSymbolDialogComponent {
     }
     const parentRow = topEntityMap[topIds[0]];
     const universeArray = selectUniverses() as unknown as {
-      add(
-        data: { symbol: string; risk_group_id: string },
-        parentRow: unknown
-      ): void;
+      add(data: Record<string, string>, parentRow: unknown): void;
     };
 
     try {
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      universeArray.add({ symbol, risk_group_id: riskGroupId }, parentRow);
+      const data: Record<string, string> = { symbol };
+      data['risk_group_id'] = riskGroupId;
+      universeArray.add(data, parentRow);
       this.notification.success(`Added ${symbol} to universe`);
       this.dialogRef.close({ symbol, riskGroupId });
       this.isLoading.set(false);
