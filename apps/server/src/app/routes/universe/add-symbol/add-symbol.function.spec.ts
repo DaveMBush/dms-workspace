@@ -3,7 +3,7 @@ import { prisma } from '../../../prisma/prisma-client';
 import {
   lookupCefConnectSymbol,
   classifySymbolRiskGroupId,
-} from '../common/cef-classification.function';
+} from '../../common/cef-classification.function';
 import { getDistributions } from '../../settings/common/get-distributions.function';
 import { getLastPrice } from '../../settings/common/get-last-price.function';
 import { vi } from 'vitest';
@@ -25,7 +25,7 @@ vi.mock('../../../prisma/prisma-client', function () {
   };
 });
 
-vi.mock('../common/cef-classification.function', function () {
+vi.mock('../../common/cef-classification.function', function () {
   return {
     lookupCefConnectSymbol: vi.fn(),
     classifySymbolRiskGroupId: vi.fn(),

@@ -4,7 +4,7 @@ import {
   classifySymbolRiskGroupId,
   lookupCefConnectSymbol,
   RiskGroupMap,
-} from '../common/cef-classification.function';
+} from '../../common/cef-classification.function';
 import { fetchAndUpdatePriceData } from '../fetch-and-update-price-data.function';
 import type { UniverseRecord } from '../universe-record.interface';
 
