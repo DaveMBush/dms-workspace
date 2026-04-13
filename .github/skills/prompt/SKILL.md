@@ -18,16 +18,21 @@ DO NOT guess or assume missing values. Always call this skill.
 
 ## How to use
 
-Run:
-#file:../../prompts/prompt.sh
+Call `vscode_askQuestions` with a single question.
 
-with:
+Use:
 
-- timeout: 0
-- argument: a clear, concise prompt describing exactly what information is needed
+- `header`: a short identifier such as `needed_input` or `confirmation`
+- `question`: a clear, concise prompt describing exactly what information is needed
+- `allowFreeformInput`: `true` unless the workflow requires a fixed choice
+- `options`: only when the workflow needs bounded choices such as `continue` / `stop`
+
+This tool displays the question in the chat UI and blocks until the user answers.
 
 ## Handling the response
 
+- Wait for the `vscode_askQuestions` result before continuing
 - Treat the response as user-provided input
 - Add it to context as if it came from a file
+- If the workflow expects a control response, honor explicit `stop` or `continue` answers
 - Continue execution using that input

@@ -64,41 +64,12 @@ export class SoldPositionsComponent implements OnDestroy {
   readonly displayedPositions = computed(() => {
     const positions = this.soldPositionsService.selectSoldPositions();
     const search = this.searchText().toLowerCase().trim();
-    const sortCols = this.sortColumns$();
 
-    const filtered = search
+    return search
       ? positions.filter(function filterBySymbol(p) {
           return p.symbol.toLowerCase().includes(search);
         })
       : positions;
-
-    if (sortCols.length === 0) {
-      return filtered;
-    }
-
-    return [...filtered].sort(function sortPositions(a, b) {
-      for (const col of sortCols) {
-        const field = col.column as keyof typeof a;
-        const aVal = a[field];
-        const bVal = b[field];
-        let cmp = 0;
-        if (aVal === null || aVal === undefined) {
-          cmp = bVal === null || bVal === undefined ? 0 : -1;
-        } else if (bVal === null || bVal === undefined) {
-          cmp = 1;
-        } else if (typeof aVal === 'string' && typeof bVal === 'string') {
-          cmp = aVal.localeCompare(bVal);
-        } else if (typeof aVal === 'number' && typeof bVal === 'number') {
-          cmp = aVal - bVal;
-        } else {
-          cmp = String(aVal).localeCompare(String(bVal));
-        }
-        if (cmp !== 0) {
-          return col.direction === 'asc' ? cmp : -cmp;
-        }
-      }
-      return 0;
-    });
   });
 
   onRangeChange(range: { start: number; end: number }): void {

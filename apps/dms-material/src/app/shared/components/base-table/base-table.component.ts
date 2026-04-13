@@ -215,6 +215,7 @@ export class BaseTableComponent<T extends { id: string }>
   // Helper to add data-is-cef attribute for closed-end fund rows
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- needed for proper typing
   getIsCef$ = (row: T): true | null => {
+    // eslint-disable-next-line @typescript-eslint/naming-convention -- DB column name must match database schema
     const r = row as T & { is_closed_end_fund?: boolean };
     return r.is_closed_end_fund === true ? true : null;
   };

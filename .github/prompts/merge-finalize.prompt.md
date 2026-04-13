@@ -4,11 +4,13 @@ argument-hint: story=AD.3
 model: Claude Opus 4.6
 ---
 
+load the #skill:prompt
+
 # Dedicated Merge And Finalize Workflow
 
 Run this prompt from the story worktree that contains the PR branch to finalize.
 
-Shell execution rule: every shell command in this workflow must use the bash MCP server. Use `mcp_bash_run` for blocking commands and `mcp_bash_run_background` only for true background processes. This applies to `pnpm`, `git`, `gh`, `bash`, and `.github/prompts/prompt.sh`.
+Shell execution rule: every shell command in this workflow must use the bash MCP server. Use `mcp_bash_run` for blocking commands and `mcp_bash_run_background` only for true background processes. This applies to `pnpm`, `git`, `gh`, and `bash`.
 
 ## Purpose
 
@@ -26,7 +28,7 @@ Before doing anything else, read all of the following:
 ## Execution Rules
 
 1. Operate in the **current worktree** for the story branch.
-2. Use the bash MCP server for every shell command in this workflow. Use `mcp_bash_run` for blocking commands and `mcp_bash_run_background` only for true background processes. This applies to `git`, `gh`, `bash`, and `.github/prompts/prompt.sh`.
+2. Use the bash MCP server for every shell command in this workflow. Use `mcp_bash_run` for blocking commands and `mcp_bash_run_background` only for true background processes. This applies to `git`, `gh`, and `bash`.
 3. Use the meta file to recover PR number, branch name, repo, and worktree path.
 4. Verify PR mergeability:
    - CI/CD checks passing
@@ -58,7 +60,7 @@ run #file:./quality-validation.prompt.md context=story-${story}-merge
 - remove the story worktree
 - delete the local story branch
 
-13. For all human interaction, use `.github/prompts/prompt.sh` via the bash MCP server with `timeout: 0`.
+13. For all human interaction, use the prompt skill so the question is shown in chat and execution waits for the user's answer.
 14. Do not ask for confirmation on success; return control immediately to the caller.
 
 ## Completion Contract
@@ -73,4 +75,4 @@ Return a concise summary containing:
 - whether re-validation was required
 - cleanup result
 
-If merge/finalization fails after required retries and escalations, return `MERGE FAILED: <reason>` after handling required `prompt.sh` escalation.
+If merge/finalization fails after required retries and escalations, return `MERGE FAILED: <reason>` after handling required prompt-skill escalation.

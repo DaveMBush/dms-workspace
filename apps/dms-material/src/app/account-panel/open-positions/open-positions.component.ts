@@ -29,6 +29,7 @@ import { OpenPosition } from '../../store/trades/open-position.interface';
 import { Trade } from '../../store/trades/trade.interface';
 import { OpenPositionsComponentService } from './open-positions-component.service';
 import { isPositive, isValidDate, isValidNumber } from './position-validators';
+
 @Component({
   selector: 'dms-open-positions',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -102,47 +103,10 @@ export class OpenPositionsComponent implements OnDestroy {
     );
   }
 
-  // Writable signal for trades (populated from SmartNgRX or set directly in tests)
-  // Apply client-side symbol filter and sort
+  // Server-side symbol filter applied via interceptor (searchText is UI state only)
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- would obscure this
   readonly selectOpenPositions$ = computed(() => {
-    const positions = this.openPositionsService.selectOpenPositions();
-    const search = this.searchText().toLowerCase().trim();
-    const sortCols = this.sortColumns$();
-
-    const filtered = search
-      ? positions.filter(function filterBySymbol(p) {
-          return p.symbol.toLowerCase().includes(search);
-        })
-      : positions;
-
-    if (sortCols.length === 0) {
-      return filtered;
-    }
-
-    return [...filtered].sort(function sortPositions(a, b) {
-      for (const col of sortCols) {
-        const field = col.column as keyof typeof a;
-        const aVal = a[field];
-        const bVal = b[field];
-        let cmp = 0;
-        if (aVal === null || aVal === undefined) {
-          cmp = bVal === null || bVal === undefined ? 0 : -1;
-        } else if (bVal === null || bVal === undefined) {
-          cmp = 1;
-        } else if (aVal instanceof Date && bVal instanceof Date) {
-          cmp = aVal.getTime() - bVal.getTime();
-        } else if (typeof aVal === 'number' && typeof bVal === 'number') {
-          cmp = aVal - bVal;
-        } else {
-          cmp = String(aVal).localeCompare(String(bVal));
-        }
-        if (cmp !== 0) {
-          return col.direction === 'asc' ? cmp : -cmp;
-        }
-      }
-      return 0;
-    });
+    return this.openPositionsService.selectOpenPositions();
   });
 
   columns: ColumnDef[] = [

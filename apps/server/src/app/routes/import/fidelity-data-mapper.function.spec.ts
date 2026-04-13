@@ -4,8 +4,11 @@ import { mapFidelityTransactions } from './fidelity-data-mapper.function';
 import { prisma } from '../../prisma/prisma-client';
 import { getDistributions } from '../settings/common/get-distributions.function';
 import { getLastPrice } from '../settings/common/get-last-price.function';
-import { calculateSplitRatio } from './calculate-split-ratio.function';
 import { adjustLotsForSplit } from './adjust-lots-for-split.function';
+import {
+  classifySymbolRiskGroupId,
+  lookupCefConnectSymbol,
+} from '../common/cef-classification.function';
 
 vi.mock('../../prisma/prisma-client', function () {
   return {
@@ -25,6 +28,7 @@ vi.mock('../../prisma/prisma-client', function () {
       },
       risk_group: {
         findFirst: vi.fn(),
+        findMany: vi.fn(),
       },
     },
   };
@@ -40,14 +44,26 @@ vi.mock('../../../utils/structured-logger', function () {
     },
   };
 });
-vi.mock('./calculate-split-ratio.function');
 vi.mock('./adjust-lots-for-split.function');
+vi.mock('../common/cef-classification.function', function () {
+  return {
+    lookupCefConnectSymbol: vi.fn(),
+    classifySymbolRiskGroupId: vi.fn(),
+  };
+});
 
 const mockPrisma = prisma as any;
 const mockGetDistributions = getDistributions as any;
 const mockGetLastPrice = getLastPrice as any;
-const mockCalculateSplitRatio = calculateSplitRatio as any;
 const mockAdjustLotsForSplit = adjustLotsForSplit as any;
+const mockLookupCefConnectSymbol = lookupCefConnectSymbol as any;
+const mockClassifySymbolRiskGroupId = classifySymbolRiskGroupId as any;
+
+const DEFAULT_RISK_GROUPS = [
+  { id: 'equities-rg', name: 'Equities' },
+  { id: 'income-rg', name: 'Income' },
+  { id: 'tax-free-rg', name: 'Tax Free Income' },
+];
 
 interface ParsedCsvRow {
   date: string;
@@ -63,8 +79,9 @@ interface ParsedCsvRow {
 describe('mapFidelityTransactions', function () {
   beforeEach(function () {
     vi.clearAllMocks();
-    mockCalculateSplitRatio.mockResolvedValue(null);
     mockAdjustLotsForSplit.mockResolvedValue(0);
+    mockLookupCefConnectSymbol.mockResolvedValue(null);
+    mockPrisma.risk_group.findMany.mockResolvedValue(DEFAULT_RISK_GROUPS);
   });
 
   describe('purchase transaction mapping', function () {
@@ -677,14 +694,10 @@ describe('mapFidelityTransactions', function () {
         name: 'My Brokerage',
       });
       mockPrisma.universe.findFirst.mockResolvedValue(null);
-      mockPrisma.risk_group.findFirst.mockResolvedValue({
-        id: 'default-risk-group',
-        name: 'Default',
-      });
       mockPrisma.universe.create.mockResolvedValue({
         id: 'new-universe-123',
         symbol: 'NEWSTOCK',
-        risk_group_id: 'default-risk-group',
+        risk_group_id: 'equities-rg',
       });
 
       const result = await mapFidelityTransactions(rows);
@@ -692,14 +705,14 @@ describe('mapFidelityTransactions', function () {
       expect(mockPrisma.universe.create).toHaveBeenCalledWith({
         data: {
           symbol: 'NEWSTOCK',
-          risk_group_id: 'default-risk-group',
+          risk_group_id: 'equities-rg',
           last_price: 0,
           distribution: 0,
           distributions_per_year: 0,
           ex_date: null,
           most_recent_sell_date: null,
           expired: false,
-          is_closed_end_fund: true,
+          is_closed_end_fund: false,
         },
       });
       expect(result.trades).toHaveLength(1);
@@ -725,13 +738,164 @@ describe('mapFidelityTransactions', function () {
         name: 'My Brokerage',
       });
       mockPrisma.universe.findFirst.mockResolvedValue(null);
-      mockPrisma.risk_group.findFirst.mockResolvedValue(null);
+      mockPrisma.risk_group.findMany.mockResolvedValue([]);
 
       await expect(mapFidelityTransactions(rows)).rejects.toThrow(
-        'No risk groups found in database'
+        'Equities risk group not found in database'
       );
     });
+  });
 
+  describe('CEF classification during BUY auto-create', function () {
+    test('should set risk_group_id and is_closed_end_fund=true when symbol is a CEF', async function () {
+      const rows: ParsedCsvRow[] = [
+        {
+          date: '02/15/2026',
+          action: 'YOU BOUGHT',
+          symbol: 'CEFSTOCK',
+          description: 'CEF STOCK',
+          quantity: 10,
+          price: 10.0,
+          totalAmount: -100.0,
+          account: 'My Brokerage',
+        },
+      ];
+
+      mockPrisma.accounts.findFirst.mockResolvedValue({
+        id: 'account-123',
+        name: 'My Brokerage',
+      });
+      mockPrisma.universe.findFirst.mockResolvedValue(null);
+      mockPrisma.universe.create.mockResolvedValue({
+        id: 'new-cef-universe',
+        symbol: 'CEFSTOCK',
+        risk_group_id: 'equities-rg',
+      });
+      mockLookupCefConnectSymbol.mockResolvedValue({
+        Ticker: 'CEFSTOCK',
+        CategoryId: 1,
+      });
+      mockClassifySymbolRiskGroupId.mockReturnValue('equities-rg');
+
+      const result = await mapFidelityTransactions(rows);
+
+      expect(mockPrisma.universe.create).toHaveBeenCalledWith({
+        data: {
+          symbol: 'CEFSTOCK',
+          risk_group_id: 'equities-rg',
+          last_price: 0,
+          distribution: 0,
+          distributions_per_year: 0,
+          ex_date: null,
+          most_recent_sell_date: null,
+          expired: false,
+          is_closed_end_fund: true,
+        },
+      });
+      expect(result.trades).toHaveLength(1);
+      expect(result.trades[0].universeId).toBe('new-cef-universe');
+    });
+
+    test('should use default risk_group_id and is_closed_end_fund=false when symbol is not on CefConnect', async function () {
+      const rows: ParsedCsvRow[] = [
+        {
+          date: '02/15/2026',
+          action: 'YOU BOUGHT',
+          symbol: 'REGULARSTOCK',
+          description: 'REGULAR STOCK',
+          quantity: 5,
+          price: 50.0,
+          totalAmount: -250.0,
+          account: 'My Brokerage',
+        },
+      ];
+
+      mockPrisma.accounts.findFirst.mockResolvedValue({
+        id: 'account-123',
+        name: 'My Brokerage',
+      });
+      mockPrisma.universe.findFirst.mockResolvedValue(null);
+      mockPrisma.universe.create.mockResolvedValue({
+        id: 'new-regular-universe',
+        symbol: 'REGULARSTOCK',
+        risk_group_id: 'equities-rg',
+      });
+      mockLookupCefConnectSymbol.mockResolvedValue(null);
+
+      const result = await mapFidelityTransactions(rows);
+
+      expect(mockPrisma.universe.create).toHaveBeenCalledWith({
+        data: {
+          symbol: 'REGULARSTOCK',
+          risk_group_id: 'equities-rg',
+          last_price: 0,
+          distribution: 0,
+          distributions_per_year: 0,
+          ex_date: null,
+          most_recent_sell_date: null,
+          expired: false,
+          is_closed_end_fund: false,
+        },
+      });
+      expect(result.trades).toHaveLength(1);
+      expect(result.trades[0].universeId).toBe('new-regular-universe');
+    });
+
+    test('should log warning and use default risk group when CefConnect lookup throws', async function () {
+      const rows: ParsedCsvRow[] = [
+        {
+          date: '02/15/2026',
+          action: 'YOU BOUGHT',
+          symbol: 'ERRSTOCK',
+          description: 'ERROR STOCK',
+          quantity: 5,
+          price: 50.0,
+          totalAmount: -250.0,
+          account: 'My Brokerage',
+        },
+      ];
+
+      mockPrisma.accounts.findFirst.mockResolvedValue({
+        id: 'account-123',
+        name: 'My Brokerage',
+      });
+      mockPrisma.universe.findFirst.mockResolvedValue(null);
+      mockPrisma.universe.create.mockResolvedValue({
+        id: 'new-err-universe',
+        symbol: 'ERRSTOCK',
+        risk_group_id: 'equities-rg',
+      });
+      mockLookupCefConnectSymbol.mockRejectedValue(
+        new Error('Network timeout')
+      );
+      const { logger } = await import('../../../utils/structured-logger');
+      const mockLogger = logger as any;
+
+      const result = await mapFidelityTransactions(rows);
+
+      expect(mockLogger.warn).toHaveBeenCalledWith(
+        'CEF classification lookup failed; using default risk group',
+        expect.objectContaining({ symbol: 'ERRSTOCK' })
+      );
+      expect(mockPrisma.universe.create).toHaveBeenCalledWith({
+        data: {
+          symbol: 'ERRSTOCK',
+          risk_group_id: 'equities-rg',
+          last_price: 0,
+          distribution: 0,
+          distributions_per_year: 0,
+          ex_date: null,
+          most_recent_sell_date: null,
+          expired: false,
+          is_closed_end_fund: false,
+        },
+      });
+      expect(result.trades).toHaveLength(1);
+      expect(result.trades[0].universeId).toBe('new-err-universe');
+    });
+  });
+
+  describe('error handling (continued)', function () {
     test('should treat SELL of unknown symbol as cash deposit', async function () {
       const rows: ParsedCsvRow[] = [
         {
@@ -1032,14 +1196,10 @@ describe('mapFidelityTransactions', function () {
         name: 'Joint Brokerage',
       });
       mockPrisma.universe.findFirst.mockResolvedValue(null);
-      mockPrisma.risk_group.findFirst.mockResolvedValue({
-        id: 'default-risk-group',
-        name: 'Default',
-      });
       mockPrisma.universe.create.mockResolvedValue({
         id: 'new-spaxx-universe',
         symbol: 'SPAXX',
-        risk_group_id: 'default-risk-group',
+        risk_group_id: 'equities-rg',
       });
       mockPrisma.divDepositType.findFirst.mockResolvedValue({
         id: 'div-type-123',
@@ -1052,14 +1212,14 @@ describe('mapFidelityTransactions', function () {
       expect(mockPrisma.universe.create).toHaveBeenCalledWith({
         data: {
           symbol: 'SPAXX',
-          risk_group_id: 'default-risk-group',
+          risk_group_id: 'equities-rg',
           last_price: 0,
           distribution: 0,
           distributions_per_year: 0,
           ex_date: null,
           most_recent_sell_date: null,
           expired: false,
-          is_closed_end_fund: true,
+          is_closed_end_fund: false,
         },
       });
       // Should create dividend deposit linked to SPAXX
@@ -1209,10 +1369,6 @@ describe('mapFidelityTransactions', function () {
         name: 'My Brokerage',
       });
       mockPrisma.universe.findFirst.mockResolvedValue(null);
-      mockPrisma.risk_group.findFirst.mockResolvedValue({
-        id: 'default-risk-group',
-        name: 'Default',
-      });
       mockPrisma.universe.create.mockResolvedValue(createdRecord);
       mockGetLastPrice.mockResolvedValue(120.5);
       mockGetDistributions.mockResolvedValue({
@@ -1280,10 +1436,6 @@ describe('mapFidelityTransactions', function () {
         name: 'My Brokerage',
       });
       mockPrisma.universe.findFirst.mockResolvedValue(null);
-      mockPrisma.risk_group.findFirst.mockResolvedValue({
-        id: 'default-risk-group',
-        name: 'Default',
-      });
       mockPrisma.universe.create.mockResolvedValue(createdRecord);
       mockGetLastPrice.mockResolvedValue(undefined);
       mockGetDistributions.mockResolvedValue(undefined);
@@ -1333,10 +1485,6 @@ describe('mapFidelityTransactions', function () {
         name: 'My Brokerage',
       });
       mockPrisma.universe.findFirst.mockResolvedValue(null);
-      mockPrisma.risk_group.findFirst.mockResolvedValue({
-        id: 'default-risk-group',
-        name: 'Default',
-      });
       mockPrisma.universe.create.mockResolvedValue(createdRecord);
       mockGetLastPrice.mockRejectedValue(new Error('Network error'));
 
@@ -1381,10 +1529,6 @@ describe('mapFidelityTransactions', function () {
         name: 'My Brokerage',
       });
       mockPrisma.universe.findFirst.mockResolvedValue(null);
-      mockPrisma.risk_group.findFirst.mockResolvedValue({
-        id: 'default-risk-group',
-        name: 'Default',
-      });
       mockPrisma.universe.create.mockResolvedValue(createdRecord);
       mockGetLastPrice.mockRejectedValue('not an Error object');
 
@@ -1396,7 +1540,7 @@ describe('mapFidelityTransactions', function () {
   });
 
   describe('split row handling', function () {
-    test('calls calculateSplitRatio with symbol, csv quantity, and accountId when split row detected', async function () {
+    test('FROM split row: adds symbol, csvQuantity, and accountId to pendingSplits', async function () {
       const rows: ParsedCsvRow[] = [
         {
           date: '02/15/2026',
@@ -1411,19 +1555,15 @@ describe('mapFidelityTransactions', function () {
       ];
 
       mockPrisma.accounts.findFirst.mockResolvedValue({ id: 'acct-brokerage' });
-      mockCalculateSplitRatio.mockResolvedValue(5);
-      mockAdjustLotsForSplit.mockResolvedValue(3);
 
-      await mapFidelityTransactions(rows);
+      const result = await mapFidelityTransactions(rows);
 
-      expect(mockCalculateSplitRatio).toHaveBeenCalledWith(
-        'OXLC',
-        306,
-        'acct-brokerage'
-      );
+      expect(result.pendingSplits).toEqual([
+        { symbol: 'OXLC', csvQuantity: 306, accountId: 'acct-brokerage' },
+      ]);
     });
 
-    test('calls adjustLotsForSplit with symbol, ratio, and accountId when calculateSplitRatio returns a ratio', async function () {
+    test('populates pendingSplits with symbol, csvQuantity, and accountId and does NOT call adjustLotsForSplit', async function () {
       const rows: ParsedCsvRow[] = [
         {
           date: '02/15/2026',
@@ -1438,19 +1578,16 @@ describe('mapFidelityTransactions', function () {
       ];
 
       mockPrisma.accounts.findFirst.mockResolvedValue({ id: 'acct-brokerage' });
-      mockCalculateSplitRatio.mockResolvedValue(0.5);
-      mockAdjustLotsForSplit.mockResolvedValue(2);
 
-      await mapFidelityTransactions(rows);
+      const result = await mapFidelityTransactions(rows);
 
-      expect(mockAdjustLotsForSplit).toHaveBeenCalledWith(
-        'XYZ',
-        0.5,
-        'acct-brokerage'
-      );
+      expect(result.pendingSplits).toEqual([
+        { symbol: 'XYZ', csvQuantity: 200, accountId: 'acct-brokerage' },
+      ]);
+      expect(mockAdjustLotsForSplit).not.toHaveBeenCalled();
     });
 
-    test('does not call adjustLotsForSplit when calculateSplitRatio returns null', async function () {
+    test('FROM row is always added to pendingSplits (ratio calculation deferred to service)', async function () {
       const rows: ParsedCsvRow[] = [
         {
           date: '02/15/2026',
@@ -1465,10 +1602,80 @@ describe('mapFidelityTransactions', function () {
       ];
 
       mockPrisma.accounts.findFirst.mockResolvedValue({ id: 'acct-brokerage' });
-      mockCalculateSplitRatio.mockResolvedValue(null);
 
-      await mapFidelityTransactions(rows);
+      const result = await mapFidelityTransactions(rows);
 
+      expect(result.pendingSplits).toEqual([
+        { symbol: 'NOPOS', csvQuantity: 100, accountId: 'acct-brokerage' },
+      ]);
+      expect(mockAdjustLotsForSplit).not.toHaveBeenCalled();
+    });
+
+    test('buy row before split row: pendingSplits populated regardless of row order', async function () {
+      const rows: ParsedCsvRow[] = [
+        {
+          date: '06/01/2025',
+          action: 'YOU BOUGHT',
+          symbol: 'TSTX',
+          description: 'Test Stock',
+          quantity: 1000,
+          price: 1.0,
+          totalAmount: -1000,
+          account: 'My Brokerage',
+        },
+        {
+          date: '09/20/2025',
+          action: 'REVERSE SPLIT',
+          symbol: 'TSTX',
+          description: 'REVERSE SPLIT R/S FROM TSTXOLD#REOR M0000000000001',
+          quantity: 200,
+          price: 0,
+          totalAmount: 0,
+          account: 'My Brokerage',
+        },
+      ];
+
+      mockPrisma.accounts.findFirst.mockResolvedValue({ id: 'acct-brokerage' });
+
+      const result = await mapFidelityTransactions(rows);
+
+      expect(result.pendingSplits).toEqual([
+        { symbol: 'TSTX', csvQuantity: 200, accountId: 'acct-brokerage' },
+      ]);
+      expect(mockAdjustLotsForSplit).not.toHaveBeenCalled();
+    });
+
+    test('split row before buy row: pendingSplits still accumulated (order-agnostic)', async function () {
+      const rows: ParsedCsvRow[] = [
+        {
+          date: '09/20/2025',
+          action: 'REVERSE SPLIT',
+          symbol: 'TSTX',
+          description: 'REVERSE SPLIT R/S FROM TSTXOLD#REOR M0000000000001',
+          quantity: 200,
+          price: 0,
+          totalAmount: 0,
+          account: 'My Brokerage',
+        },
+        {
+          date: '06/01/2025',
+          action: 'YOU BOUGHT',
+          symbol: 'TSTX',
+          description: 'Test Stock',
+          quantity: 1000,
+          price: 1.0,
+          totalAmount: -1000,
+          account: 'My Brokerage',
+        },
+      ];
+
+      mockPrisma.accounts.findFirst.mockResolvedValue({ id: 'acct-brokerage' });
+
+      const result = await mapFidelityTransactions(rows);
+
+      expect(result.pendingSplits).toEqual([
+        { symbol: 'TSTX', csvQuantity: 200, accountId: 'acct-brokerage' },
+      ]);
       expect(mockAdjustLotsForSplit).not.toHaveBeenCalled();
     });
 
@@ -1487,8 +1694,6 @@ describe('mapFidelityTransactions', function () {
       ];
 
       mockPrisma.accounts.findFirst.mockResolvedValue({ id: 'acct-brokerage' });
-      mockCalculateSplitRatio.mockResolvedValue(5);
-      mockAdjustLotsForSplit.mockResolvedValue(3);
 
       const result = await mapFidelityTransactions(rows);
 
@@ -1498,7 +1703,7 @@ describe('mapFidelityTransactions', function () {
     });
 
     // Desktop-format tests: split text is in row.action, description is security name
-    test('desktop-format MSTY FROM row (action contains R/S FROM): calls calculateSplitRatio with correct args', async function () {
+    test('desktop-format MSTY FROM row (action contains R/S FROM): adds csvQuantity to pendingSplits', async function () {
       const rows: ParsedCsvRow[] = [
         {
           date: '12/08/2025',
@@ -1513,24 +1718,16 @@ describe('mapFidelityTransactions', function () {
       ];
 
       mockPrisma.accounts.findFirst.mockResolvedValue({ id: 'acct-joint' });
-      mockCalculateSplitRatio.mockResolvedValue(5);
-      mockAdjustLotsForSplit.mockResolvedValue(1);
 
-      await mapFidelityTransactions(rows);
+      const result = await mapFidelityTransactions(rows);
 
-      expect(mockCalculateSplitRatio).toHaveBeenCalledWith(
-        'MSTY',
-        80,
-        'acct-joint'
-      );
-      expect(mockAdjustLotsForSplit).toHaveBeenCalledWith(
-        'MSTY',
-        5,
-        'acct-joint'
-      );
+      expect(result.pendingSplits).toEqual([
+        { symbol: 'MSTY', csvQuantity: 80, accountId: 'acct-joint' },
+      ]);
+      expect(mockAdjustLotsForSplit).not.toHaveBeenCalled();
     });
 
-    test('desktop-format ULTY FROM row (action contains R/S FROM): processes 1-for-10 split correctly', async function () {
+    test('desktop-format ULTY FROM row (action contains R/S FROM): adds csvQuantity to pendingSplits', async function () {
       const rows: ParsedCsvRow[] = [
         {
           date: '12/01/2025',
@@ -1545,24 +1742,16 @@ describe('mapFidelityTransactions', function () {
       ];
 
       mockPrisma.accounts.findFirst.mockResolvedValue({ id: 'acct-joint' });
-      mockCalculateSplitRatio.mockResolvedValue(10);
-      mockAdjustLotsForSplit.mockResolvedValue(1);
 
-      await mapFidelityTransactions(rows);
+      const result = await mapFidelityTransactions(rows);
 
-      expect(mockCalculateSplitRatio).toHaveBeenCalledWith(
-        'ULTY',
-        100,
-        'acct-joint'
-      );
-      expect(mockAdjustLotsForSplit).toHaveBeenCalledWith(
-        'ULTY',
-        10,
-        'acct-joint'
-      );
+      expect(result.pendingSplits).toEqual([
+        { symbol: 'ULTY', csvQuantity: 100, accountId: 'acct-joint' },
+      ]);
+      expect(mockAdjustLotsForSplit).not.toHaveBeenCalled();
     });
 
-    test('desktop-format TO row (action contains R/S TO): is skipped without calling calculateSplitRatio', async function () {
+    test('desktop-format TO row (action contains R/S TO): is skipped without adding to pendingSplits', async function () {
       const rows: ParsedCsvRow[] = [
         {
           date: '12/08/2025',
@@ -1576,9 +1765,9 @@ describe('mapFidelityTransactions', function () {
         },
       ];
 
-      await mapFidelityTransactions(rows);
+      const result = await mapFidelityTransactions(rows);
 
-      expect(mockCalculateSplitRatio).not.toHaveBeenCalled();
+      expect(result.pendingSplits).toHaveLength(0);
       expect(mockAdjustLotsForSplit).not.toHaveBeenCalled();
     });
 
@@ -1602,6 +1791,99 @@ describe('mapFidelityTransactions', function () {
       expect(result.sales).toHaveLength(0);
       expect(result.divDeposits).toHaveLength(0);
       expect(result.unknownTransactions).toHaveLength(0);
+    });
+
+    test('multi-symbol CSV — only the split symbol appears in pendingSplits', async function () {
+      const rows: ParsedCsvRow[] = [
+        {
+          date: '09/20/2025',
+          action: 'REVERSE SPLIT',
+          symbol: 'TSTX',
+          description: 'REVERSE SPLIT R/S FROM XXXXXXX#REOR MXXXXXXXXXX',
+          quantity: 200,
+          price: 0,
+          totalAmount: 0,
+          account: 'My Brokerage',
+        },
+        {
+          date: '07/15/2025',
+          action: 'YOU BOUGHT',
+          symbol: 'TSTX',
+          description: 'TSTX INC COMMON STOCK',
+          quantity: 1000,
+          price: 4.0,
+          totalAmount: -4000,
+          account: 'My Brokerage',
+        },
+        {
+          date: '06/01/2025',
+          action: 'YOU BOUGHT',
+          symbol: 'ABCD',
+          description: 'ABCD CORP COMMON STOCK',
+          quantity: 100,
+          price: 10.0,
+          totalAmount: -1000,
+          account: 'My Brokerage',
+        },
+      ];
+
+      mockPrisma.accounts.findFirst.mockResolvedValue({
+        id: 'acct-brokerage',
+        name: 'My Brokerage',
+      });
+      // Sorted oldest-first: ABCD buy (06/01), TSTX buy (07/15), TSTX split (09/20)
+      // universe.findFirst is called for ABCD buy first, then TSTX buy
+      mockPrisma.universe.findFirst
+        .mockResolvedValueOnce({ id: 'universe-abcd', symbol: 'ABCD' })
+        .mockResolvedValueOnce({ id: 'universe-tstx', symbol: 'TSTX' });
+
+      const result = await mapFidelityTransactions(rows);
+
+      expect(result.pendingSplits).toHaveLength(1);
+      expect(result.pendingSplits[0].symbol).toBe('TSTX');
+      expect(result.trades).toHaveLength(2);
+      expect(mockAdjustLotsForSplit).not.toHaveBeenCalled();
+    });
+
+    test('CSV with purchases and sales but no split rows → pendingSplits is empty', async function () {
+      const rows: ParsedCsvRow[] = [
+        {
+          date: '07/15/2025',
+          action: 'YOU BOUGHT',
+          symbol: 'TSTX',
+          description: 'TSTX INC COMMON STOCK',
+          quantity: 100,
+          price: 4.0,
+          totalAmount: -400,
+          account: 'My Brokerage',
+        },
+        {
+          date: '08/01/2025',
+          action: 'YOU SOLD',
+          symbol: 'TSTX',
+          description: 'TSTX INC COMMON STOCK',
+          quantity: 50,
+          price: 5.0,
+          totalAmount: 250,
+          account: 'My Brokerage',
+        },
+      ];
+
+      mockPrisma.accounts.findFirst.mockResolvedValue({
+        id: 'acct-brokerage',
+        name: 'My Brokerage',
+      });
+      mockPrisma.universe.findFirst.mockResolvedValue({
+        id: 'universe-tstx',
+        symbol: 'TSTX',
+      });
+
+      const result = await mapFidelityTransactions(rows);
+
+      expect(result.pendingSplits).toHaveLength(0);
+      expect(result.trades).toHaveLength(1);
+      expect(result.sales).toHaveLength(1);
+      expect(mockAdjustLotsForSplit).not.toHaveBeenCalled();
     });
   });
 });
