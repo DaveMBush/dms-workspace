@@ -76,18 +76,36 @@ function mapUniverseRecordToResult(
   };
 }
 
+async function buildRiskGroups(fallbackId: string): Promise<RiskGroupMap> {
+  const groups = await prisma.risk_group.findMany();
+  return {
+    equities:
+      groups.find(function findEquities(g) {
+        return g.name === 'Equities';
+      })?.id ?? fallbackId,
+    income:
+      groups.find(function findIncome(g) {
+        return g.name === 'Income';
+      })?.id ?? fallbackId,
+    taxFree:
+      groups.find(function findTaxFree(g) {
+        return g.name === 'Tax Free Income';
+      })?.id ?? fallbackId,
+  };
+}
+
 async function resolveCefClassification(
   upperSymbol: string,
-  risk_group_id: string,
+  requestRiskGroupId: string,
   riskGroups: RiskGroupMap
 ): Promise<{ effectiveRiskGroupId: string; isCef: boolean }> {
-  let effectiveRiskGroupId = risk_group_id;
+  let effectiveRiskGroupId = requestRiskGroupId;
   let isCef = false;
   try {
     const cefData = await lookupCefConnectSymbol(upperSymbol);
     if (cefData) {
       effectiveRiskGroupId =
-        classifySymbolRiskGroupId(cefData, riskGroups) ?? risk_group_id;
+        classifySymbolRiskGroupId(cefData, riskGroups) ?? requestRiskGroupId;
       isCef = true;
     }
   } catch (error) {
@@ -110,22 +128,7 @@ export async function addSymbol(
 
   await validateSymbolAndRiskGroup(upperSymbol, risk_group_id);
 
-  const groups = await prisma.risk_group.findMany();
-  const riskGroups: RiskGroupMap = {
-    equities:
-      groups.find(function findEquities(g) {
-        return g.name === 'Equities';
-      })?.id ?? risk_group_id,
-    income:
-      groups.find(function findIncome(g) {
-        return g.name === 'Income';
-      })?.id ?? risk_group_id,
-    taxFree:
-      groups.find(function findTaxFree(g) {
-        return g.name === 'Tax Free Income';
-      })?.id ?? risk_group_id,
-  };
-
+  const riskGroups = await buildRiskGroups(risk_group_id);
   const { effectiveRiskGroupId, isCef } = await resolveCefClassification(
     upperSymbol,
     risk_group_id,
