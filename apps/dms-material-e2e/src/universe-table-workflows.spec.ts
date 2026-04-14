@@ -1020,3 +1020,28 @@ test.describe('Universe Table Workflows', () => {
     });
   });
 });
+
+/**
+ * Regression guard for Epic 68 / Story 68.2.
+ * The showEmptyState$ computed signal and its @if template block were removed
+ * in Story 68.1. This test ensures the empty-state overlay cannot be
+ * accidentally re-introduced when the universe table has no data rows.
+ */
+test.describe('Empty Universe State', () => {
+  test.beforeEach(async ({ page }) => {
+    // Do NOT seed any universe data — we want the table empty.
+    await login(page);
+    await page.goto('/global/universe');
+    await expect(page.locator('dms-base-table')).toBeVisible();
+  });
+
+  test('should not show empty-state overlay when universe has no rows', async ({
+    page,
+  }) => {
+    // Assert the overlay element is absent entirely
+    await expect(page.locator('.empty-state')).toHaveCount(0);
+
+    // Assert column headers are visible and not obscured
+    await expect(page.locator('th.mat-mdc-header-cell').first()).toBeVisible();
+  });
+});
