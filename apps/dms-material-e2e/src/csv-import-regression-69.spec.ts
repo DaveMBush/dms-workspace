@@ -9,9 +9,8 @@ const FIXTURES_DIR = path.resolve(__dirname, '..', 'fixtures');
 /**
  * CSV Import Regression Tests — Epic 69
  *
- * Story 69.1: Failing E2E test reproducing the 400 error on CSV import.
- * The server returns 400 Bad Request when uploading a valid Fidelity CSV
- * due to a regression introduced in Epics 63–66.
+ * Story 69.1: Regression test confirming CSV import succeeds.
+ * Story 69.3: Idempotent re-import and empty CSV edge cases.
  */
 test.describe('CSV Import Regression (Epic 69)', () => {
   let cleanupFn: (() => Promise<void>) | null = null;
@@ -94,5 +93,112 @@ test.describe('CSV Import Regression (Epic 69)', () => {
 
     expect(responseBody.success).toBe(true);
     expect(responseBody.imported).toBeGreaterThan(0);
+  });
+
+  test('should handle idempotent re-import without creating duplicates', async ({
+    page,
+  }) => {
+    // First import
+    const firstResponsePromise = page.waitForResponse((response) => {
+      return (
+        response.url().includes('/api/import/fidelity') &&
+        response.request().method() === 'POST'
+      );
+    });
+
+    const importButton = page.locator(
+      '[data-testid="import-transactions-button"]'
+    );
+    await expect(importButton).toBeVisible({ timeout: 10000 });
+    await importButton.click();
+    await expect(
+      page.getByRole('heading', { name: 'Import Fidelity Transactions' })
+    ).toBeVisible({ timeout: 5000 });
+
+    const filePath = path.join(FIXTURES_DIR, 'fidelity-regression-69.csv');
+    const fileInput = page.locator('input[type="file"]');
+    await fileInput.setInputFiles(filePath);
+
+    const uploadButton = page.locator('[data-testid="upload-button"]');
+    await expect(uploadButton).toBeEnabled({ timeout: 5000 });
+    await uploadButton.click();
+
+    const firstResponse = await firstResponsePromise;
+    expect(firstResponse.status()).toBe(200);
+    const firstBody = (await firstResponse.json()) as {
+      success: boolean;
+      imported: number;
+    };
+    expect(firstBody.success).toBe(true);
+
+    // Second import — same file again
+    await page.goto('/global/universe');
+    await page.waitForLoadState('networkidle');
+
+    const secondResponsePromise = page.waitForResponse((response) => {
+      return (
+        response.url().includes('/api/import/fidelity') &&
+        response.request().method() === 'POST'
+      );
+    });
+
+    await expect(importButton).toBeVisible({ timeout: 10000 });
+    await importButton.click();
+    await expect(
+      page.getByRole('heading', { name: 'Import Fidelity Transactions' })
+    ).toBeVisible({ timeout: 5000 });
+
+    const fileInput2 = page.locator('input[type="file"]');
+    await fileInput2.setInputFiles(filePath);
+
+    const uploadButton2 = page.locator('[data-testid="upload-button"]');
+    await expect(uploadButton2).toBeEnabled({ timeout: 5000 });
+    await uploadButton2.click();
+
+    const secondResponse = await secondResponsePromise;
+    expect(secondResponse.status()).toBe(200);
+    const secondBody = (await secondResponse.json()) as {
+      success: boolean;
+      imported: number;
+    };
+    expect(secondBody.success).toBe(true);
+  });
+
+  test('should return success with zero imported for header-only CSV', async ({
+    page,
+  }) => {
+    const responsePromise = page.waitForResponse((response) => {
+      return (
+        response.url().includes('/api/import/fidelity') &&
+        response.request().method() === 'POST'
+      );
+    });
+
+    const importButton = page.locator(
+      '[data-testid="import-transactions-button"]'
+    );
+    await expect(importButton).toBeVisible({ timeout: 10000 });
+    await importButton.click();
+    await expect(
+      page.getByRole('heading', { name: 'Import Fidelity Transactions' })
+    ).toBeVisible({ timeout: 5000 });
+
+    const filePath = path.join(FIXTURES_DIR, 'fidelity-empty-69.csv');
+    const fileInput = page.locator('input[type="file"]');
+    await fileInput.setInputFiles(filePath);
+
+    const uploadButton = page.locator('[data-testid="upload-button"]');
+    await expect(uploadButton).toBeEnabled({ timeout: 5000 });
+    await uploadButton.click();
+
+    const response = await responsePromise;
+    expect(response.status()).toBe(200);
+    const responseBody = (await response.json()) as {
+      success: boolean;
+      imported: number;
+    };
+
+    expect(responseBody.success).toBe(true);
+    expect(responseBody.imported).toBe(0);
   });
 });
