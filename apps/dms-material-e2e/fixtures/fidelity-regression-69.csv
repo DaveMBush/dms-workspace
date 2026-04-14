@@ -1,0 +1,4 @@
+Run Date,Account,Account Number,Action,Symbol,Description,Type,Price ($),Quantity,Commission ($),Fees ($),Accrued Interest ($),Amount ($),Settlement Date
+08/15/2025,Regression 69 Test Account,99887766,YOU BOUGHT,REGT,REGT INC COMMON STOCK,Stock,10.00,100,,,,-1000.00,08/17/2025
+07/10/2025,Regression 69 Test Account,99887766,YOU BOUGHT,REGT,REGT INC COMMON STOCK,Stock,9.50,200,,,,-1900.00,07/12/2025
+06/05/2025,Regression 69 Test Account,99887766,YOU BOUGHT,REGT,REGT INC COMMON STOCK,Stock,9.00,150,,,,-1350.00,06/07/2025

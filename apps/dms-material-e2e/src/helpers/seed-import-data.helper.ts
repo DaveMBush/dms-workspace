@@ -149,9 +149,11 @@ async function createSeedData(
  * Seeds universe and divDepositType data for fidelity import E2E tests.
  * Account creation should be done via the API (request.post).
  */
-export async function seedImportData(): Promise<ImportSeederResult> {
+export async function seedImportData(
+  customSymbol?: string
+): Promise<ImportSeederResult> {
   const prisma = await initializePrismaClient();
-  const symbol = 'IMPORTTEST1';
+  const symbol = customSymbol ?? 'IMPORTTEST1';
 
   try {
     return await createSeedData(prisma, symbol);
