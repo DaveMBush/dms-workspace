@@ -37,11 +37,14 @@ test.describe('CSV Import Regression (Epic 69)', () => {
   });
 
   test.afterAll(async ({ request }) => {
-    if (cleanupFn) {
-      await cleanupFn();
-    }
-    if (testAccountId) {
-      await request.delete(`/api/accounts/${testAccountId}`);
+    try {
+      if (cleanupFn) {
+        await cleanupFn();
+      }
+    } finally {
+      if (testAccountId) {
+        await request.delete(`/api/accounts/${testAccountId}`);
+      }
     }
   });
 
@@ -54,10 +57,11 @@ test.describe('CSV Import Regression (Epic 69)', () => {
   test('should import regression-69 CSV without 400 error', async ({
     page,
   }) => {
-    const responsePromise = page.waitForResponse(function matchImportApi(
-      response
-    ) {
-      return response.url().includes('/api/import/fidelity');
+    const responsePromise = page.waitForResponse((response) => {
+      return (
+        response.url().includes('/api/import/fidelity') &&
+        response.request().method() === 'POST'
+      );
     });
 
     // Open import dialog
@@ -81,6 +85,7 @@ test.describe('CSV Import Regression (Epic 69)', () => {
     await uploadButton.click();
 
     const response = await responsePromise;
+    expect(response.status()).toBe(200);
     const responseBody = (await response.json()) as {
       success: boolean;
       imported: number;
