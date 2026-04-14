@@ -50,10 +50,12 @@ async function waitForUniverseRows(page: Page): Promise<void> {
 
 test.describe('Universe Row Height Consistency — Epic 67 / Story 67.1', () => {
   let cleanup: () => Promise<void>;
+  let seededSymbols: string[] = [];
 
   test.beforeEach(async ({ page }) => {
     const seeder = await seedRowHeightE2eData();
     cleanup = seeder.cleanup;
+    seededSymbols = seeder.symbols;
 
     await login(page);
     await page.goto('/global/universe');
@@ -69,10 +71,14 @@ test.describe('Universe Row Height Consistency — Epic 67 / Story 67.1', () => 
   /**
    * Epic 67 Story 67.1 — Expected Failure (diagnosis)
    *
-   * Collects the `offsetHeight` of every visible `tr.mat-mdc-row` and asserts
-   * they are ALL equal.  This assertion **fails** on the current codebase
-   * because rows containing `<button mat-icon-button>` are approximately 5 px
-   * taller than rows without it.
+   * Collects the `offsetHeight` of only the seeded `tr.mat-mdc-row` elements
+   * (rows whose text content contains one of the six Story 67.1 symbols) and
+   * asserts they are ALL equal.  This assertion **fails** on the current
+   * codebase because rows containing `<button mat-icon-button>` are
+   * approximately 5 px taller than rows without it.
+   *
+   * Scoping to seeded symbols makes the test deterministic regardless of
+   * other universe data that may be present in the E2E fixture.
    *
    * Marked `test.fail()` so the suite remains green while the inconsistency
    * exists.  Remove the `test.fail()` call after Story 67.2 fixes the height.
@@ -83,27 +89,32 @@ test.describe('Universe Row Height Consistency — Epic 67 / Story 67.1', () => 
     // Mark as expected failure — remove this line after Story 67.2 fix.
     test.fail();
 
-    const rowHeights = await page.evaluate(
-      function measureRowHeights(): number[] {
-        return Array.from(document.querySelectorAll('tr.mat-mdc-row')).map(
-          function getHeight(r: Element): number {
-            return (r as HTMLElement).offsetHeight;
-          }
-        );
-      }
-    );
+    const rowHeights = await page.evaluate(function measureSeededRowHeights(
+      symbols: string[]
+    ): number[] {
+      return Array.from(document.querySelectorAll('tr.mat-mdc-row'))
+        .filter(function rowContainsSymbol(row: Element): boolean {
+          const text = row.textContent ?? '';
+          return symbols.some(function matchSymbol(symbol: string): boolean {
+            return text.includes(symbol);
+          });
+        })
+        .map(function getHeight(row: Element): number {
+          return (row as HTMLElement).offsetHeight;
+        });
+    },
+    seededSymbols);
 
-    // At least some rows must be visible for the measurement to be meaningful.
+    // All six seeded rows must be visible for the measurement to be meaningful.
     expect(rowHeights.length).toBeGreaterThan(1);
 
-    // Log the distinct heights to make diagnosis easy when reviewing the report.
     const uniqueHeights = new Set(rowHeights);
 
     // This assertion FAILS because icon-button rows have a different height.
     // Expected (after Story 67.2): uniqueHeights.size === 1 (all 52 px).
     expect(
       uniqueHeights.size,
-      `Expected all rows to share one height but found ${
+      `Expected all seeded rows to share one height but found ${
         uniqueHeights.size
       } distinct values: ${JSON.stringify([...uniqueHeights])}`
     ).toBe(1);

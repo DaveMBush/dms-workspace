@@ -77,7 +77,8 @@ of test files) is permitted. All changes are restricted to test files.
 | `apps/dms-material/src/app/shared/components/base-table/base-table.component.ts`   | CDK virtual scroll host; `rowHeight = input<number>(52)` at line ~92          |
 | `apps/dms-material/src/app/shared/components/base-table/base-table.component.scss` | SCSS for the table; no current pin on `--mat-table-row-item-container-height` |
 | `apps/dms-material-e2e/src/universe-lazy-load-deep-scroll.spec.ts`                 | Line 98: `const ROW_HEIGHT_PX = 52` — used in all scroll-boundary assertions  |
-| `apps/dms-material-e2e/src/universe-table-workflows.spec.ts`                       | Workflow e2e suite; alternative host for the new failing test                 |
+| `apps/dms-material-e2e/src/universe-row-heights.spec.ts`                           | New spec (Story 67.1): failing `test.fail()` height-consistency test          |
+| `apps/dms-material-e2e/src/helpers/seed-row-height-e2e-data.helper.ts`             | New seeder: 3 rows with icon-button (`is_closed_end_fund=false`), 3 without   |
 
 ### Measurement Approach
 
