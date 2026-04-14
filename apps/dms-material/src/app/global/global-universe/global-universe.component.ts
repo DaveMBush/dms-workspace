@@ -176,11 +176,6 @@ export class GlobalUniverseComponent implements OnDestroy {
     });
   });
 
-  // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signal
-  readonly showEmptyState$ = computed(() => {
-    return this.globalLoading.isLoading() && this.filteredData$().length === 0;
-  });
-
   onSortChange(sort: Sort): void {
     const shiftKey = this.baseTable()?.getLastShiftKey() ?? false;
     if (sort.direction === '' && !shiftKey) {
