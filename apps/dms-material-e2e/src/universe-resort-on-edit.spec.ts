@@ -1,3 +1,4 @@
+// eslint-disable-next-line sonarjs/no-empty-test-file -- test.fail() not recognized by plugin
 import { expect, test } from 'playwright/test';
 
 import { login } from './helpers/login.helper';
