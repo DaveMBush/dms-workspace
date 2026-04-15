@@ -14,6 +14,8 @@ test.describe('Error Logs Navigation', () => {
     await navLink.click();
 
     await expect(page).toHaveURL(/\/global\/error-logs$/);
-    await expect(page.locator('mat-toolbar', { hasText: 'Error Logs' })).toBeVisible();
+    await expect(
+      page.locator('mat-toolbar', { hasText: 'Error Logs' })
+    ).toBeVisible();
   });
 });
