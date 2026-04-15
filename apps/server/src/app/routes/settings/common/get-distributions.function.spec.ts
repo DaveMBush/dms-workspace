@@ -526,4 +526,25 @@ describe('getDistributions', () => {
 
     expect(result?.distributions_per_year).toBe(12);
   });
+
+  // Story 73.1: Failing test that documents the CEF distribution history bug.
+  // Root cause (Sub-case A): fetchDividendHistory returns 0 rows for CEF symbols
+  // (e.g. OXLC, NHS, DHY, CIK, DMB) because dividendhistory.net uses a different
+  // URL slug or table structure for closed-end funds, causing parseDividendTable to
+  // return null. The Yahoo Finance fallback stub also returns [], so getDistributions
+  // returns undefined. The ?? fallback in updateExistingUniverseRecord then preserves
+  // the stale distributions_per_year = 1 already in the database.
+  test.fails(
+    'BUG(73-1): getDistributions returns distributions_per_year = 1 for CEF symbol OXLC when fetchDividendHistory provides insufficient history',
+    async function verifyCefDistributionsPerYearBug() {
+      // Sub-case A (0 rows — page parse failure for CEF ticker on dividendhistory.net):
+      mockFetchDividendHistory.mockResolvedValueOnce([]);
+      mockFetchDistributionData.mockResolvedValueOnce([]); // stub always returns []
+
+      const result = await getDistributions('OXLC');
+
+      // OXLC pays monthly — dividendhistory.net confirms 12 distributions/year
+      expect(result?.distributions_per_year).toBe(12);
+    }
+  );
 });
