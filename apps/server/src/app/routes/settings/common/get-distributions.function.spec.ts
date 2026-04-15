@@ -507,4 +507,23 @@ describe('getDistributions', () => {
 
     expect(result?.distributions_per_year).toBe(52);
   });
+
+  // Story 71.1 / 71.2: Edge case — 1 past row + 1 future row (no fallback pair)
+  // Before fix: futureRows.length < 2 → returned 1 regardless of actual cadence.
+  // Fix: use the past-to-future interval when exactly 1 of each is available.
+
+  test('BUG(71-1): 1 past + 1 future row ~30 days apart returns distributions_per_year=12', async () => {
+    // System time: 2025-08-21T10:00:00Z (set in beforeEach)
+    // Only 1 past row and 1 future row — recentRows.length === 1, futureRows.length === 1.
+    const minimalPair: ProcessedRow[] = [
+      { amount: 0.25, date: new Date('2025-08-15') }, // past
+      { amount: 0.25, date: new Date('2025-09-14') }, // future (~30 days later)
+    ];
+
+    mockFetchDividendHistory.mockResolvedValueOnce(minimalPair);
+
+    const result = await getDistributions('MINIMAL-MONTHLY');
+
+    expect(result?.distributions_per_year).toBe(12);
+  });
 });
