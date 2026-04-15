@@ -289,6 +289,7 @@ export class GlobalUniverseComponent implements OnDestroy {
       validationService: this.validationService,
       emitCellEdit: this.cellEdit.emit.bind(this.cellEdit),
     });
+    this.sortColumns$.set([...this.sortColumns$()]);
   }
 
   onSymbolFilterChange(value: string): void {

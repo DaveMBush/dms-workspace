@@ -23,9 +23,6 @@ test.describe('Universe Re-sort After Cell Edit', () => {
   test('BUG(72-1): row re-sorts after cell edit', async function verifyRowResortAfterCellEdit({
     page,
   }) {
-    // Mark as expected failure — the bug prevents re-sort
-    test.fail();
-
     // Sort by Ex-Date ascending
     const exDateHeader = page.locator('[data-sort-header="ex_date"]');
     await exDateHeader.click();
