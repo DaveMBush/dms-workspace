@@ -513,18 +513,21 @@ describe('getDistributions', () => {
   // when there is exactly 1 past + 1 future, frequency falls to the default (1).
   // This is incorrect for monthly (or other known-cadence) payers.
 
-  test.fails('BUG(71-1): 1 past + 1 future row 30 days apart should return 12 but returns 1', async () => {
-    // System time: 2025-08-21T10:00:00Z (set in beforeEach)
-    // Exactly 1 past row and 1 future row, ~30 days apart (monthly cadence).
-    const edgeCaseRows: ProcessedRow[] = [
-      { amount: 0.1, date: new Date('2025-08-01') }, // past
-      { amount: 0.1, date: new Date('2025-08-31') }, // future (+30 days)
-    ];
+  test.fails(
+    'BUG(71-1): 1 past + 1 future row 30 days apart should return 12 but returns 1',
+    async () => {
+      // System time: 2025-08-21T10:00:00Z (set in beforeEach)
+      // Exactly 1 past row and 1 future row, ~30 days apart (monthly cadence).
+      const edgeCaseRows: ProcessedRow[] = [
+        { amount: 0.1, date: new Date('2025-08-01') }, // past
+        { amount: 0.1, date: new Date('2025-08-31') }, // future (+30 days)
+      ];
 
-    mockFetchDividendHistory.mockResolvedValueOnce(edgeCaseRows);
+      mockFetchDividendHistory.mockResolvedValueOnce(edgeCaseRows);
 
-    const result = await getDistributions('EDGE-MONTHLY');
+      const result = await getDistributions('EDGE-MONTHLY');
 
-    expect(result?.distributions_per_year).toBe(12);
-  });
+      expect(result?.distributions_per_year).toBe(12);
+    }
+  );
 });
