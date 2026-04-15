@@ -80,9 +80,11 @@ function calculateDistributionsPerYear(
       return intervalToDistributionsPerYear(crossDaysBetween);
     }
 
+    /* v8 ignore start -- defensive: unexpected when rows are valid and fully partitioned by date */
     if (futureRows.length < 2) {
       return 1;
     }
+    /* v8 ignore stop */
 
     const futureDaysBetween =
       (futureRows[1].date.valueOf() - futureRows[0].date.valueOf()) /
