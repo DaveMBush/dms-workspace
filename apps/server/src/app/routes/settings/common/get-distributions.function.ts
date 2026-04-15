@@ -72,6 +72,14 @@ function calculateDistributionsPerYear(
       })
       .slice(0, 2);
 
+    // If we have 1 past row and 1 future row, use them as the interval pair
+    if (recentRows.length === 1 && futureRows.length === 1) {
+      const crossDaysBetween =
+        (futureRows[0].date.valueOf() - recentRows[0].date.valueOf()) /
+        (1000 * 60 * 60 * 24);
+      return intervalToDistributionsPerYear(crossDaysBetween);
+    }
+
     if (futureRows.length < 2) {
       return 1;
     }
