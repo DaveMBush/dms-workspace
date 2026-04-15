@@ -1,4 +1,3 @@
-/* eslint-disable sonarjs/no-empty-test-file -- test.fail() not recognized by plugin */
 import { expect, test } from 'playwright/test';
 
 import { login } from './helpers/login.helper';
@@ -21,9 +20,12 @@ test.describe('Universe Re-sort After Cell Edit', () => {
     await cleanup();
   });
 
-  test.fail(
-    'BUG(72-1): row does not re-sort after cell edit',
+  test(
+    'BUG(72-1): row re-sorts after cell edit',
     async function verifyRowResortAfterCellEdit({ page }) {
+      // Mark as expected failure — the bug prevents re-sort
+      test.fail();
+
       // Sort by Ex-Date ascending
       const exDateHeader = page.locator('[data-sort-header="ex_date"]');
       await exDateHeader.click();
