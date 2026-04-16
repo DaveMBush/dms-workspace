@@ -125,7 +125,7 @@ async function processSale(sale: MappedSale): Promise<string | null> {
 
   const totalOpenShares = openTrades.reduce(sumTradeQuantity, 0);
 
-  if (totalOpenShares < saleQuantity) {
+  if (totalOpenShares === 0) {
     return buildInsufficientSharesError(
       sale.accountId,
       sale.universeId,

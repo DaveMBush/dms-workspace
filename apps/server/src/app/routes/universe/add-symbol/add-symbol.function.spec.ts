@@ -376,6 +376,90 @@ describe('addSymbol', function () {
     expect(result.fetchFailed).toBe(true);
   });
 
+  test('should use fallbackId for risk groups missing from findMany results', async function () {
+    const request = {
+      symbol: 'SPY',
+      risk_group_id: 'fallback-id',
+    };
+
+    // Empty array forces all three ?? fallbackId branches to be taken
+    mockPrisma.risk_group.findMany.mockResolvedValue([]);
+    mockPrisma.universe.findFirst.mockResolvedValue(null);
+    mockPrisma.risk_group.findUnique.mockResolvedValue({
+      id: 'fallback-id',
+      name: 'Conservative',
+    });
+    mockPrisma.universe.create.mockResolvedValue(mockDefaultRecord as any);
+    mockGetLastPrice.mockResolvedValue(undefined);
+    mockGetDistributions.mockResolvedValue(undefined);
+
+    const result = await addSymbol(request);
+
+    expect(result).toBeDefined();
+  });
+
+  test('should use requestRiskGroupId when classifySymbolRiskGroupId returns null', async function () {
+    const request = {
+      symbol: 'ETW',
+      risk_group_id: 'test-risk-group-id',
+    };
+
+    const mockCefData = { Ticker: 'ETW', CategoryId: 1 };
+
+    mockPrisma.universe.findFirst.mockResolvedValue(null);
+    mockPrisma.risk_group.findUnique.mockResolvedValue({
+      id: 'test-risk-group-id',
+      name: 'Equities',
+    });
+    mockLookupCefConnectSymbol.mockResolvedValue(mockCefData);
+    mockClassifySymbolRiskGroupId.mockReturnValue(null);
+    mockPrisma.universe.create.mockResolvedValue({
+      ...mockDefaultRecord,
+      symbol: 'ETW',
+      risk_group_id: 'test-risk-group-id',
+      is_closed_end_fund: true,
+    } as any);
+    mockGetLastPrice.mockResolvedValue(undefined);
+    mockGetDistributions.mockResolvedValue(undefined);
+
+    await addSymbol(request);
+
+    expect(mockPrisma.universe.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        risk_group_id: 'test-risk-group-id',
+        is_closed_end_fund: true,
+      }),
+    });
+  });
+
+  test('should warn with stringified error when CefConnect lookup throws non-Error', async function () {
+    const request = {
+      symbol: 'SPY',
+      risk_group_id: 'test-risk-group-id',
+    };
+
+    mockPrisma.universe.findFirst.mockResolvedValue(null);
+    mockPrisma.risk_group.findUnique.mockResolvedValue({
+      id: 'test-risk-group-id',
+      name: 'Conservative',
+    });
+    mockLookupCefConnectSymbol.mockRejectedValue('non-error string thrown');
+    mockPrisma.universe.create.mockResolvedValue(mockDefaultRecord as any);
+    mockGetLastPrice.mockResolvedValue(undefined);
+    mockGetDistributions.mockResolvedValue(undefined);
+
+    const result = await addSymbol(request);
+
+    expect(mockLogger.warn).toHaveBeenCalledWith(
+      'CEF classification lookup failed; using request risk_group_id',
+      expect.objectContaining({
+        symbol: 'SPY',
+        error: 'non-error string thrown',
+      })
+    );
+    expect(result.fetchFailed).toBe(true);
+  });
+
   test('should convert symbol to uppercase', async function () {
     const request = {
       symbol: 'spy',
