@@ -19,12 +19,14 @@ so that I can implement a targeted fix in Story 74.2 without guessing.
 ## Tasks / Subtasks
 
 - [x] **Task 1: Study the import pipeline and known error patterns** (AC: #1)
+
   - [x] Subtask 1.1: Read `apps/server/src/app/routes/import/fidelity-csv-parser.function.ts` — note the web vs desktop format detection, `parseNumericField`, and `parseRow` — any field that maps to an unexpected value will throw here
   - [x] Subtask 1.2: Read `apps/server/src/app/routes/import/fidelity-data-mapper.function.ts` — trace `mapSingleRow` for every transaction type: Buy (`isBuyAction`), Sell (`isSellAction`), `DIVIDEND RECEIVED`, `ELECTRONIC FUNDS TRANSFER`, split rows (`isSplitRow`), in-lieu rows (`isInLieuRow`), and the `unknownTransactions` fallthrough
   - [x] Subtask 1.3: Read `apps/server/src/app/routes/import/fidelity-import-service.function.ts` — understand how `processTrades`, `processSales`, `processDeposits`, and `processDeferredSplits` each wrap errors vs throw, confirming that a mid-import error means an exception escapes one of these processors
   - [x] Subtask 1.4: Review `apps/server/src/app/routes/import/index.ts` — understand how unhandled errors propagate through the route handler to the HTTP response so the error seen in the UI can be mapped back to a server log
 
 - [x] **Task 2: Create the synthetic fixture CSV** (AC: #1)
+
   - [x] Subtask 2.1: Create `apps/dms-material-e2e/fixtures/fidelity-regression-74.csv` using the **web export header format** (see Dev Notes for exact column order)
   - [x] Subtask 2.2: Use invented account `"Regression 74 Test Account"` and account number `88776655` — no real personal data
   - [x] Subtask 2.3: Include one row of each transaction type a real 2025/2026 Fidelity export contains:
@@ -37,6 +39,7 @@ so that I can implement a targeted fix in Story 74.2 without guessing.
   - [x] Subtask 2.5: Verify column count matches the header row: 14 columns (Run Date, Account, Account Number, Action, Symbol, Description, Type, Price ($), Quantity, Commission ($), Fees ($), Accrued Interest ($), Amount ($), Settlement Date)
 
 - [x] **Task 3: Use Playwright MCP server to reproduce the error** (AC: #1)
+
   - [x] Subtask 3.1: Seed a universe entry for `REGT74` and `SPLT74` and an account named `"Regression 74 Test Account"` (follow the `seeds` pattern in `csv-import-regression-69.spec.ts`; call `POST /api/accounts/add` and `seedImportData('REGT74')`)
   - [x] Subtask 3.2: Use the Playwright MCP server to navigate to `/global/universe`
   - [x] Subtask 3.3: Click `[data-testid="import-transactions-button"]` to open the Import Fidelity Transactions dialog
@@ -49,6 +52,7 @@ so that I can implement a targeted fix in Story 74.2 without guessing.
   - [x] Subtask 3.7: Identify the failing row type from the error message and record it in Dev Notes below
 
 - [x] **Task 4: Write the failing unit test** (AC: #2, #3)
+
   - [x] Subtask 4.1: Open `apps/server/src/app/routes/import/fidelity-import-service.function.spec.ts`
   - [x] Subtask 4.2: Add a new `describe` block (e.g. `'Epic 74 regression — mid-import error'`) with a single test that:
     - Mocks `parseFidelityCsv` to return a synthetic array containing a row of the **failing transaction type** identified in Task 3
@@ -69,18 +73,18 @@ so that I can implement a targeted fix in Story 74.2 without guessing.
 
 ### Key Files
 
-| File | Purpose |
-|------|---------|
-| `apps/dms-material-e2e/fixtures/fidelity-regression-74.csv` | **New** synthetic fixture — all transaction types, no real data |
-| `apps/server/src/app/routes/import/index.ts` | Route handler for `POST /api/import/fidelity` |
-| `apps/server/src/app/routes/import/fidelity-import-service.function.ts` | Orchestrator: `importFidelityTransactions` — entry point for all CSV processing |
-| `apps/server/src/app/routes/import/fidelity-csv-parser.function.ts` | CSV parser: `parseFidelityCsv` — format detection, row parsing, numeric field parsing |
-| `apps/server/src/app/routes/import/fidelity-data-mapper.function.ts` | Transaction mapper: `mapFidelityTransactions` / `mapSingleRow` — routes rows by action string |
-| `apps/server/src/app/routes/import/fidelity-import-service.function.spec.ts` | Unit tests for the service — **add failing test here** |
-| `apps/server/src/app/routes/import/is-split-row.function.ts` | Helper: detects split rows |
-| `apps/server/src/app/routes/import/is-in-lieu-row.function.ts` | Helper: detects in-lieu rows |
-| `apps/dms-material-e2e/src/csv-import-regression-69.spec.ts` | Reference e2e test pattern from Epic 69 |
-| `apps/dms-material-e2e/src/helpers/seed-import-data.helper.ts` | Reference seed/cleanup pattern |
+| File                                                                         | Purpose                                                                                       |
+| ---------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `apps/dms-material-e2e/fixtures/fidelity-regression-74.csv`                  | **New** synthetic fixture — all transaction types, no real data                               |
+| `apps/server/src/app/routes/import/index.ts`                                 | Route handler for `POST /api/import/fidelity`                                                 |
+| `apps/server/src/app/routes/import/fidelity-import-service.function.ts`      | Orchestrator: `importFidelityTransactions` — entry point for all CSV processing               |
+| `apps/server/src/app/routes/import/fidelity-csv-parser.function.ts`          | CSV parser: `parseFidelityCsv` — format detection, row parsing, numeric field parsing         |
+| `apps/server/src/app/routes/import/fidelity-data-mapper.function.ts`         | Transaction mapper: `mapFidelityTransactions` / `mapSingleRow` — routes rows by action string |
+| `apps/server/src/app/routes/import/fidelity-import-service.function.spec.ts` | Unit tests for the service — **add failing test here**                                        |
+| `apps/server/src/app/routes/import/is-split-row.function.ts`                 | Helper: detects split rows                                                                    |
+| `apps/server/src/app/routes/import/is-in-lieu-row.function.ts`               | Helper: detects in-lieu rows                                                                  |
+| `apps/dms-material-e2e/src/csv-import-regression-69.spec.ts`                 | Reference e2e test pattern from Epic 69                                                       |
+| `apps/dms-material-e2e/src/helpers/seed-import-data.helper.ts`               | Reference seed/cleanup pattern                                                                |
 
 ### Architecture Context
 
@@ -108,7 +112,7 @@ POST /api/import/fidelity
                  └─ processDeposits(deposits)      -- DB create per divDeposit (per-deposit try/catch)
 ```
 
-**Key distinction vs Epic 69:** Epic 69's 400 was thrown *before* `importFidelityTransactions` was called (middleware/validation layer). Epic 74's error occurs *mid-import* — `success: false` is returned with partial `imported > 0`, meaning the error arises inside `processAllTransactions` after at least one row has been committed. Likely candidates:
+**Key distinction vs Epic 69:** Epic 69's 400 was thrown _before_ `importFidelityTransactions` was called (middleware/validation layer). Epic 74's error occurs _mid-import_ — `success: false` is returned with partial `imported > 0`, meaning the error arises inside `processAllTransactions` after at least one row has been committed. Likely candidates:
 
 1. **Unhandled action string** — a 2025/2026 Fidelity export contains a `CASH MERGER`, `TENDERED TO`, `INTEREST EARNED`, or other action not matched by any `if` branch in `mapSingleRow` (falls to `unknownTransactions` — technically not an error, but the row is silently dropped which could be surface as data loss)
 2. **Missing `divDepositTypeId`** — `mapDividend` / `mapCashDeposit` calls `prisma.divDepositType.findFirst` then `create`; a DB constraint on `divDepositType.name` or a race condition could cause this to throw inside `processDeposits`
@@ -146,9 +150,7 @@ The Playwright MCP server follows the same pattern established in Epic 69:
 2. Wait: `page.waitForLoadState('networkidle')`
 3. Intercept response **before** clicking upload:
    ```ts
-   const responsePromise = page.waitForResponse(r =>
-     r.url().includes('/api/import/fidelity') && r.request().method() === 'POST'
-   );
+   const responsePromise = page.waitForResponse((r) => r.url().includes('/api/import/fidelity') && r.request().method() === 'POST');
    ```
 4. Open dialog: click `[data-testid="import-transactions-button"]`
 5. Set fixture file: `page.locator('input[type="file"]').setInputFiles('<absolute-path>')`
@@ -161,9 +163,7 @@ The Playwright MCP server follows the same pattern established in Epic 69:
 ```ts
 test.fails('Epic 74 regression: <describe failing path here>', async () => {
   // Arrange — mock parseFidelityCsv to return the failing row type
-  parseFidelityCsv.mockReturnValue([
-    { action: '<FAILING_ACTION>', symbol: 'REGT74', date: '01/10/2026', /* ... */ }
-  ]);
+  parseFidelityCsv.mockReturnValue([{ action: '<FAILING_ACTION>', symbol: 'REGT74', date: '01/10/2026' /* ... */ }]);
   // Arrange — mock mapFidelityTransactions to return the mapped structure
   const mapped = emptyResult();
   // ... populate mapped.<type> with data that triggers the bug ...
@@ -180,18 +180,19 @@ Remove the `test.fails()` annotation in Story 74.2 when the fix makes the assert
 
 ### Findings
 
-| Field | Value |
-|-------|-------|
-| Error message | `No matching open trade found for sale: account="Regression 74 Test Account", symbol="REGT74", quantity=200 (have 100 open shares, need 200)` |
-| HTTP status returned | `400` (`success: false` triggers `const statusCode = result.success ? 200 : 400` in `index.ts`) |
-| Failing row type / action string | `YOU SOLD` — a CSV sell whose quantity exceeds the open lots available in the DB |
-| Function where error originates | `processSale` → `buildInsufficientSharesError` in `fidelity-import-service.function.ts` |
-| Approximate line | `if (totalOpenShares < saleQuantity)` check (~line 128), returns the error string from `buildInsufficientSharesError` (~line 48) |
-| Server log excerpt | N/A — the error is caught by the per-sale try/catch in `processSales` and pushed to `errors[]`; no uncaught exception in server logs |
-| Partial import state | `imported: 1` (the `YOU BOUGHT` row committed to DB before the `YOU SOLD` failed) |
-| Reproduction CSV path | `apps/dms-material-e2e/fixtures/fidelity-regression-74.csv` (primary fixture; oversell reproduced with `/tmp/test-oversell.csv`: 100 buy + 200 sell) |
+| Field                            | Value                                                                                                                                                |
+| -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Error message                    | `No matching open trade found for sale: account="Regression 74 Test Account", symbol="REGT74", quantity=200 (have 100 open shares, need 200)`        |
+| HTTP status returned             | `400` (`success: false` triggers `const statusCode = result.success ? 200 : 400` in `index.ts`)                                                      |
+| Failing row type / action string | `YOU SOLD` — a CSV sell whose quantity exceeds the open lots available in the DB                                                                     |
+| Function where error originates  | `processSale` → `buildInsufficientSharesError` in `fidelity-import-service.function.ts`                                                              |
+| Approximate line                 | `if (totalOpenShares < saleQuantity)` check (~line 128), returns the error string from `buildInsufficientSharesError` (~line 48)                     |
+| Server log excerpt               | N/A — the error is caught by the per-sale try/catch in `processSales` and pushed to `errors[]`; no uncaught exception in server logs                 |
+| Partial import state             | `imported: 1` (the `YOU BOUGHT` row committed to DB before the `YOU SOLD` failed)                                                                    |
+| Reproduction CSV path            | `apps/dms-material-e2e/fixtures/fidelity-regression-74.csv` (primary fixture; oversell reproduced with `/tmp/test-oversell.csv`: 100 buy + 200 sell) |
 
 **Investigation notes:** The basic fixture (`fidelity-regression-74.csv`) imports successfully (`success: true, imported: 5`). The mid-import error requires a sell quantity that exceeds open lots. In a real user scenario, this can occur when:
+
 - A prior import of the buy rows was incomplete or used a different account name (causing account mismatch)
 - The DB was reset between imports, losing the prior buy records
 - The CSV contains sells from a time period not fully covered by the buy rows in the same CSV
@@ -224,8 +225,8 @@ Claude Sonnet 4.6
 
 ### Change Log
 
-| Date | Change |
-|------|--------|
+| Date       | Change                                                                                                                                                             |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | 2026-07-xx | Story implemented: fixture created, test data seeded, Playwright investigation completed, `test.fails()` unit test added, findings documented. Status set to Done. |
 
 ### File List
