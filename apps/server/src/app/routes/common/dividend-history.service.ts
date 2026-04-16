@@ -119,6 +119,40 @@ function parseDividendTable(html: string): ParsedDividendRow[] | null {
   return rows.length > 0 ? rows : null;
 }
 
+function parseExDivDate(exDiv: string): number {
+  const [month, day, year] = exDiv.split('/').map(Number);
+  return new Date(year, month - 1, day).valueOf();
+}
+
+/**
+ * When a fund issues two rows with the same pay date (e.g. a regular monthly
+ * distribution and a correction/alternate-series row both settling on the same
+ * day), the 14-day gap between their ex-dates skews `calculateDistributionsPerYear`
+ * toward an annual cadence.  Keep only the row with the earliest ex-date for each
+ * distinct pay date so interval calculations see the true monthly spacing.
+ */
+function deduplicateByPayDay(
+  rawRows: ParsedDividendRow[]
+): ParsedDividendRow[] {
+  const sorted = [...rawRows].sort(function sortByExDivAscending(
+    a: ParsedDividendRow,
+    b: ParsedDividendRow
+  ): number {
+    return parseExDivDate(a.exDiv) - parseExDivDate(b.exDiv);
+  });
+
+  const seenPayDays = new Set<string>();
+  return sorted.filter(function filterFirstByPayDay(
+    row: ParsedDividendRow
+  ): boolean {
+    if (seenPayDays.has(row.payDay)) {
+      return false;
+    }
+    seenPayDays.add(row.payDay);
+    return true;
+  });
+}
+
 function mapToProcessedRow(row: ParsedDividendRow): ProcessedRow {
   const [month, day, year] = row.exDiv.split('/').map(Number);
   return {
@@ -161,7 +195,7 @@ export async function fetchDividendHistory(
       return [];
     }
 
-    const processed = rawRows
+    const processed = deduplicateByPayDay(rawRows)
       .map(mapToProcessedRow)
       .filter(isValidProcessedRow)
       .sort(function sortByDate(a: ProcessedRow, b: ProcessedRow): number {
