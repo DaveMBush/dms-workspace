@@ -1,0 +1,6 @@
+Run Date,Account,Account Number,Action,Symbol,Description,Type,Price ($),Quantity,Commission ($),Fees ($),Accrued Interest ($),Amount ($),Settlement Date
+01/05/2026,Regression 74 Test Account,88776655,YOU BOUGHT,REGT74,REGT74 INC COMMON STOCK,Stock,20.00,50,,,,-1000.00,01/07/2026
+02/10/2026,Regression 74 Test Account,88776655,DIVIDEND RECEIVED,REGT74,REGT74 INC COMMON STOCK,Cash,,,,,,62.50,02/12/2026
+03/15/2026,Regression 74 Test Account,88776655,INTEREST EARNED,REGT74,REGT74 INC COMMON STOCK,Cash,,,,,,12.30,03/17/2026
+04/01/2026,Regression 74 Test Account,88776655,YOU BOUGHT,REG74B,REG74B CORP,Stock,8.50,100,,,,-850.00,04/03/2026
+04/20/2026,Regression 74 Test Account,88776655,QUALIFIED DIVIDEND,REG74B,REG74B CORP,Cash,,,,,,18.75,04/22/2026
