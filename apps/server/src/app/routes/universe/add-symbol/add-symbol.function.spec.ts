@@ -393,9 +393,13 @@ describe('addSymbol', function () {
     mockGetLastPrice.mockResolvedValue(undefined);
     mockGetDistributions.mockResolvedValue(undefined);
 
-    const result = await addSymbol(request);
+    await addSymbol(request);
 
-    expect(result).toBeDefined();
+    expect(mockPrisma.universe.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        risk_group_id: 'fallback-id',
+      }),
+    });
   });
 
   test('should use requestRiskGroupId when classifySymbolRiskGroupId returns null', async function () {

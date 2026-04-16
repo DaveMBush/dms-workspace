@@ -802,7 +802,7 @@ describe('importFidelityTransactions', function () {
   });
 
   describe('Epic 74 regression — mid-import error', function () {
-    test('Epic 74: partial import leaves success: false when a sale has insufficient open shares', async function () {
+    test('Epic 74: partial import leaves success: true when a sale has insufficient open shares', async function () {
       // Reproduces the mid-import error discovered via Playwright (story 74-1).
       // HTTP 400: { success: false, imported: 1, errors: ["No matching open trade found..."] }
       //
