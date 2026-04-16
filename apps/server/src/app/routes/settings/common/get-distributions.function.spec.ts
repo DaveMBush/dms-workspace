@@ -545,7 +545,7 @@ describe('getDistributions', () => {
   // All tests below are plain `test()` — the `test.fails()` wrappers have been removed
   // now that both fixes are applied.
 
-  test('BUG(73-1): getDistributions returns distributions_per_year = 1 for CEF symbol OXLC when fetchDividendHistory provides insufficient history', async function verifyCefDistributionsPerYearBug() {
+  test('FIX(73-2): getDistributions returns distributions_per_year = 12 for CEF symbol OXLC after deduplicateByPayDay fix', async function verifyCefDistributionsPerYearBug() {
     // Simulate what fetchDividendHistory now returns after the deduplicateByPayDay
     // fix: the duplicate March row is removed, leaving clean ~30-day monthly spacing.
     // System time: 2025-08-21T10:00:00Z (set in beforeEach)
