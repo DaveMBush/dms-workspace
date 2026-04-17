@@ -114,7 +114,7 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "20.19.9",
     "@typescript-eslint/eslint-plugin": "8.50.1",
-    "@typescript-eslint/parser": "8.50.1",
+    "@typescript-eslint/parser": "8.58.2",
     "@typescript-eslint/utils": "8.50.1",
     "@vitest/coverage-v8": "4.0.9",
     "@vitest/eslint-plugin": "^1.6.12",
