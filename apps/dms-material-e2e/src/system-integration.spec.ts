@@ -70,10 +70,7 @@ test.describe('System Integration — Epic 75', () => {
       'http://localhost:3000/api/universe'
     );
     expect(universeResponse.ok()).toBeTruthy();
-    const universes: Array<{
-      symbol: string;
-      distributions_per_year: number;
-    }> = await universeResponse.json();
+    const universes = (await universeResponse.json()) as any[];
 
     const bySymbol = Object.fromEntries(universes.map((u) => [u.symbol, u]));
     for (const sym of TARGET_SYMBOLS) {
