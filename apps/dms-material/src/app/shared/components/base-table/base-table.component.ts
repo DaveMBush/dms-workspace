@@ -88,7 +88,7 @@ export class BaseTableComponent<T extends { id: string }>
   data = input.required<T[]>(); // Signal-based data input
   columns = input.required<ColumnDef[]>();
   tableLabel = input<string>('Data table');
-  rowHeight = input<number>(52);
+  rowHeight = input<number>(57);
   bufferSize = input<number>(10);
   selectable = input<boolean>(false);
   multiSelect = input<boolean>(false);
