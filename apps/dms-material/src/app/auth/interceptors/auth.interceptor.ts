@@ -108,6 +108,14 @@ function executeAuthenticatedRequest(
     }),
     tap(createTapHandlers(endTiming, services.authService)),
     catchError(function handleTokenError(error: unknown) {
+      if (error instanceof HttpErrorResponse) {
+        // HTTP errors from the actual request are already timed by tap above;
+        // re-throw so the subscriber receives them as errors (not swallowed)
+        return throwError(function returnHttpError() {
+          return error;
+        });
+      }
+      // Token acquisition failure — proceed without auth
       const errorType = getErrorType(error, 'token-error');
       endTiming(false, errorType);
       return next(req);
