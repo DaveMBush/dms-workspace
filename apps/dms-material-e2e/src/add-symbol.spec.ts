@@ -201,7 +201,7 @@ test.describe('Add Symbol Flow', () => {
       await riskGroupOption.click();
 
       // Mock server error response for add symbol endpoint
-      await page.route('**/api/universe/add-symbol', async (route) => {
+      await page.route('**/api/universe/add', async (route) => {
         await route.fulfill({
           status: 500,
           contentType: 'application/json',

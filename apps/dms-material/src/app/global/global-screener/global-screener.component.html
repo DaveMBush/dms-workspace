@@ -70,6 +70,9 @@
           [href]="getCefConnectUrl(row.symbol)"
           target="_blank"
           class="symbol-link"
+          [attr.aria-label]="
+            row.symbol ? row.symbol + ' on CEFConnect' : 'View on CEFConnect'
+          "
         >
           {{ row.symbol }}
         </a>
