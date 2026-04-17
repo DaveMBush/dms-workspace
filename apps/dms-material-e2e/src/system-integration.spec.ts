@@ -8,7 +8,7 @@ const TARGET_SYMBOLS = ['OXLC', 'NHS', 'DHY', 'CIK', 'DMB'];
 
 const FIXTURES_DIR = path.resolve(__dirname, '..', 'fixtures');
 
-test.describe('System Integration — Epic 75', () => {
+test.describe.serial('System Integration — Epic 75', () => {
   let firstImportCount = 0;
   let secondImportCount = 0;
 
