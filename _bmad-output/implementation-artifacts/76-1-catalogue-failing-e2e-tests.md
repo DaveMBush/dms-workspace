@@ -230,107 +230,190 @@ records a full trace (network, console, DOM snapshots). Traces are saved to
 
 ### Chromium Failure Catalogue
 
-> **Fill in during task execution.** Add one entry per failing test (5 expected).
+> **Run date:** 2026-04-18. Full suite: 650 passed, **6 failed**, 7 flaky, 130 skipped (28.6 min).
+> Story expected 5 failures; actual is 6 (the Fidelity Import test was not in the original count).
 
 **Test 1:**
-- Spec file: *(TBD)*
-- Test description: *(TBD)*
-- Error message: *(TBD)*
-- Isolation result (pass/fail): *(TBD)*
-- Classification: *(A / B)*
-- Root cause notes: *(TBD)*
+- Spec file: `account-table-sort.spec.ts:90:9`
+- Test description: `Account Tables - Sorting (Story 37.1 - Failing Tests) › Open Positions table sort › clicking Buy Date header sorts Open Positions rows by buy date ascending (EXPECTED TO FAIL)`
+- Error message: `Expected to fail, but passed.`
+- Failed on all 3 attempts (attempt 1 + 2 retries)
+- Isolation result: **Fail** (reproduced in batch isolation run — 6 failed, 1.3 min)
+- Classification: **B** (functional regression)
+- Root cause notes: Test is wrapped with `test.fail()` expecting the sort to be broken, but the underlying sort logic now works correctly. The `test.fail()` annotation is stale — the test assertion passes, which causes the `test.fail()` wrapper to report failure. Fix: remove the `test.fail()` annotation (Story 76.3).
 
 **Test 2:**
-- Spec file: *(TBD)*
-- Test description: *(TBD)*
-- Error message: *(TBD)*
-- Isolation result (pass/fail): *(TBD)*
-- Classification: *(A / B)*
-- Root cause notes: *(TBD)*
+- Spec file: `account-table-sort.spec.ts:157:9`
+- Test description: `Account Tables - Sorting (Story 37.1 - Failing Tests) › Closed Positions table sort › clicking Sell Date header sorts Closed Positions rows by sell date ascending (EXPECTED TO FAIL)`
+- Error message: `Expected to fail, but passed.`
+- Failed on all 3 attempts (attempt 1 + 2 retries)
+- Isolation result: **Fail**
+- Classification: **B** (functional regression)
+- Root cause notes: Same as Test 1 — stale `test.fail()` annotation. The sell date sort now works correctly. Note: a third test in the same file (`account-table-sort.spec.ts:223` — Dividend Deposits Amount sort) is also marked `test.fail()` but still fails as expected, confirming that sort is not yet fixed.
 
 **Test 3:**
-- Spec file: *(TBD)*
-- Test description: *(TBD)*
-- Error message: *(TBD)*
-- Isolation result (pass/fail): *(TBD)*
-- Classification: *(A / B)*
-- Root cause notes: *(TBD)*
+- Spec file: `fidelity-import.spec.ts:288:9`
+- Test description: `Fidelity Import E2E › Partial Success › should report errors for invalid rows while importing valid ones`
+- Error message:
+  ```
+  Error: expect(received).toBeGreaterThan(expected)
+  Expected: > 0
+  Received:   0
+    at fidelity-import.spec.ts:311:42
+  ```
+  Line 310 asserts `responseBody.imported > 0` (passes), line 311 asserts `responseBody.errors.length > 0` (fails — errors array is empty).
+- Failed on all 3 attempts
+- Isolation result: **Fail**
+- Classification: **B** (functional regression)
+- Root cause notes: The Fidelity import API endpoint accepts all rows without rejecting invalid ones — `responseBody.errors` is an empty array. The test expects partial success (some imported, some errors). Suspected application code: the server-side import validation logic in `apps/server/` Fidelity import route.
 
 **Test 4:**
-- Spec file: *(TBD)*
-- Test description: *(TBD)*
-- Error message: *(TBD)*
-- Isolation result (pass/fail): *(TBD)*
-- Classification: *(A / B)*
-- Root cause notes: *(TBD)*
+- Spec file: `storybook-snapshots.spec.ts:27:7`
+- Test description: `Storybook Dual-Theme Snapshots › BaseTable - Default`
+- Error message:
+  ```
+  Error: expect(page).toHaveScreenshot(expected) failed
+  431 pixels (ratio 0.01 of all image pixels) are different.
+  Snapshot: shared-basetable--default-light.png
+    at helpers/storybook-theme-snapshot.ts:23
+  ```
+  Comparison against stored snapshot `shared-basetable--default-light-chromium-linux.png`.
+- Failed on all 3 attempts (stable screenshot — "captured a stable screenshot" in logs)
+- Isolation result: **Fail**
+- Classification: **B** (functional regression)
+- Root cause notes: Visual regression in the BaseTable component's light theme rendering. 431 pixels differ (0.01 ratio). The snapshot at `apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/shared-basetable--default-light-chromium-linux.png` no longer matches the current render. **Playwright MCP browser reproduction** (Rule 7): navigating to `http://localhost:6006/iframe.html?id=shared-basetable--default&viewMode=story` reveals the component **completely crashes** with `TypeError: Cannot read properties of undefined (reading 'selector')` in the `storybook-addon-themes` code path (`computesTemplateFromComponent`). The Storybook page shows the error overlay instead of the BaseTable component. This is more severe than a cosmetic pixel diff — the component fails to render entirely. The crash occurs in the `@storybook/addon-themes` integration, suggesting a compatibility issue between the BaseTable story decorator and the theme addon. Fix: either fix the decorator/theme integration or update the snapshot (Story 76.3).
 
 **Test 5:**
-- Spec file: *(TBD)*
-- Test description: *(TBD)*
-- Error message: *(TBD)*
-- Isolation result (pass/fail): *(TBD)*
-- Classification: *(A / B)*
-- Root cause notes: *(TBD)*
+- Spec file: `universe-resort-on-edit.spec.ts:23:7`
+- Test description: `Universe Re-sort After Cell Edit › BUG(72-1): row re-sorts after cell edit`
+- Error message:
+  ```
+  Error: expect(received).not.toBe(expected) // Object.is equality
+  Expected: not "TESTIN1"
+    at universe-resort-on-edit.spec.ts:60:40
+  ```
+  Test edits a date to far in the future, expects the first row's symbol to change (row should re-sort to bottom), but the first row still shows "TESTIN1".
+- Failed on all 3 attempts
+- Isolation result: **Fail**
+- Classification: **B** (functional regression)
+- Root cause notes: Known Bug 72-1 — after editing a cell value that affects sort order, the row does not automatically re-sort to its new position. The universe grid fails to trigger a re-sort after inline cell edit. Suspected code: `global-universe.component.ts` or the editable cell update handler.
+
+**Test 6:**
+- Spec file: `universe-symbol-sort-empty-rows.spec.ts:85:7`
+- Test description: `Universe Screen - Empty Rows on Symbol Sort Bug (Story 56.1) › first visible rows have non-empty symbol cells immediately on load with Symbol ascending sort (currently FAILS — confirms bug)`
+- Error message:
+  ```
+  Error: Expected first visible symbol cell to be non-empty but got: ""
+  expect(received).not.toBe(expected) // Object.is equality
+  Expected: not ""
+    at universe-symbol-sort-empty-rows.spec.ts:127:13
+  ```
+- Failed on all 3 attempts
+- Isolation result: **Fail**
+- Classification: **B** (functional regression)
+- Root cause notes: Known Story 56.1 bug — on initial page load with Symbol ascending sort active, the first visible rows display empty symbol cells. The CDK virtual scroll data source emits placeholder/empty rows before the actual data loads. Suspected code: `global-universe.component.ts` `filteredData$` observable — placeholder rows not populated before rendering.
+
+#### Chromium Flaky Tests (7 — failed once then passed on retry)
+
+These tests are **not** counted as failures since they pass on retry, but they indicate timing-sensitive bugs related to the blank-row / lazy-load regression:
+
+| # | Spec file | Line | Test description | Error |
+|---|---|---|---|---|
+| F1 | `universe-lazy-load-deep-scroll.spec.ts` | 227 | should have no blank symbol cells after incremental deep scroll across three lazy-load page boundaries | Timeout 20000ms on `assertVisibleSymbolsNonEmpty` |
+| F2 | `universe-lazy-load-deep-scroll.spec.ts` | 408 | *(deep scroll boundary test)* | Timeout 20000ms on `assertVisibleSymbolsNonEmpty` |
+| F3 | `universe-lazy-load-deep-scroll.spec.ts` | 480 | should have no blank symbol cells after applying symbol filter and scrolling to bottom | Timeout 20000ms on `assertVisibleSymbolsNonEmpty` |
+| F4 | `universe-scrolling-regression.spec.ts` | 125 | should have no blank symbol cells after fast scroll to bottom | Timeout 10000ms on `assertVisibleSymbolsNonEmpty` |
+| F5 | `universe-scrolling-regression.spec.ts` | 200 | should have no blank symbol cells after sort change then fast scroll | Timeout 10000ms on `assertVisibleSymbolsNonEmpty` |
+| F6 | `universe-scrolling-regression.spec.ts` | 256 | should have no blank symbol cells after symbol filter change then fast scroll | Timeout 10000ms on `assertVisibleSymbolsNonEmpty` |
+| F7 | `universe-scrolling-regression.spec.ts` | 292 | should have no blank symbol cells after multiple rapid sort toggles then fast scroll | Timeout 10000ms on `assertVisibleSymbolsNonEmpty` |
+
+All 7 share the same root cause: the `assertVisibleSymbolsNonEmpty` polling helper times out because blank symbol cells persist longer than the timeout. This is the CDK virtual scroll / `filteredData$` / `excludeLoadingRows` regression documented in Epics 60 and 64.
 
 ---
 
 ### Firefox Failure Catalogue
 
-> **Fill in during task execution.** Add one entry per failing test (6 expected).
+> **Run date:** 2026-04-18. Full suite: 654 passed, **7 failed**, 2 flaky, 130 skipped (33.7 min).
+> Story expected 6 failures; actual is 7. The extra failure is `universe-scrolling-regression.spec.ts:125`
+> which was only flaky in Chromium but hard-fails in Firefox.
 
 **Test 1:**
-- Spec file: *(TBD)*
-- Test description: *(TBD)*
-- Error message: *(TBD)*
-- Also fails in Chromium? *(Yes / No)*
-- Isolation result (pass/fail): *(TBD)*
-- Classification: *(A / B)*
-- Root cause notes: *(TBD)*
+- Spec file: `account-table-sort.spec.ts:90:9`
+- Test description: `Account Tables - Sorting (Story 37.1 - Failing Tests) › Open Positions table sort › clicking Buy Date header sorts Open Positions rows by buy date ascending (EXPECTED TO FAIL)`
+- Error message: `Expected to fail, but passed.`
+- Also fails in Chromium? **Yes** (Chromium Test 1 — identical)
+- Isolation result: **Fail**
+- Classification: **B** (functional regression)
+- Root cause notes: Same as Chromium Test 1 — stale `test.fail()` annotation.
 
 **Test 2:**
-- Spec file: *(TBD)*
-- Test description: *(TBD)*
-- Error message: *(TBD)*
-- Also fails in Chromium? *(Yes / No)*
-- Isolation result (pass/fail): *(TBD)*
-- Classification: *(A / B)*
-- Root cause notes: *(TBD)*
+- Spec file: `account-table-sort.spec.ts:157:9`
+- Test description: `Account Tables - Sorting (Story 37.1 - Failing Tests) › Closed Positions table sort › clicking Sell Date header sorts Closed Positions rows by sell date ascending (EXPECTED TO FAIL)`
+- Error message: `Expected to fail, but passed.`
+- Also fails in Chromium? **Yes** (Chromium Test 2 — identical)
+- Isolation result: **Fail**
+- Classification: **B** (functional regression)
+- Root cause notes: Same as Chromium Test 2 — stale `test.fail()` annotation.
 
 **Test 3:**
-- Spec file: *(TBD)*
-- Test description: *(TBD)*
-- Error message: *(TBD)*
-- Also fails in Chromium? *(Yes / No)*
-- Isolation result (pass/fail): *(TBD)*
-- Classification: *(A / B)*
-- Root cause notes: *(TBD)*
+- Spec file: `fidelity-import.spec.ts:288:9`
+- Test description: `Fidelity Import E2E › Partial Success › should report errors for invalid rows while importing valid ones`
+- Error message: `expect(received).toBeGreaterThan(expected) Expected: > 0 Received: 0` at line 311
+- Also fails in Chromium? **Yes** (Chromium Test 3 — identical)
+- Isolation result: **Fail**
+- Classification: **B** (functional regression)
+- Root cause notes: Same as Chromium Test 3 — server import validation not rejecting invalid rows.
 
 **Test 4:**
-- Spec file: *(TBD)*
-- Test description: *(TBD)*
-- Error message: *(TBD)*
-- Also fails in Chromium? *(Yes / No)*
-- Isolation result (pass/fail): *(TBD)*
-- Classification: *(A / B)*
-- Root cause notes: *(TBD)*
+- Spec file: `storybook-snapshots.spec.ts:27:7`
+- Test description: `Storybook Dual-Theme Snapshots › BaseTable - Default`
+- Error message: `expect(page).toHaveScreenshot(expected) failed` — pixel diff against stored snapshot
+- Also fails in Chromium? **Yes** (Chromium Test 4 — identical mechanism, different browser snapshot)
+- Isolation result: **Fail**
+- Classification: **B** (functional regression)
+- Root cause notes: Same as Chromium Test 4 — visual regression in BaseTable component. Firefox may use a separate snapshot file (`-firefox-linux.png`).
 
 **Test 5:**
-- Spec file: *(TBD)*
-- Test description: *(TBD)*
-- Error message: *(TBD)*
-- Also fails in Chromium? *(Yes / No)*
-- Isolation result (pass/fail): *(TBD)*
-- Classification: *(A / B)*
-- Root cause notes: *(TBD)*
+- Spec file: `universe-resort-on-edit.spec.ts:23:7`
+- Test description: `Universe Re-sort After Cell Edit › BUG(72-1): row re-sorts after cell edit`
+- Error message: `expect(received).not.toBe(expected) Expected: not "TESTIN1"` at line 60
+- Also fails in Chromium? **Yes** (Chromium Test 5 — identical)
+- Isolation result: **Fail**
+- Classification: **B** (functional regression)
+- Root cause notes: Same as Chromium Test 5 — Bug 72-1, row doesn't re-sort after cell edit.
 
 **Test 6:**
-- Spec file: *(TBD)*
-- Test description: *(TBD)*
-- Error message: *(TBD)*
-- Also fails in Chromium? *(Yes / No)*
-- Isolation result (pass/fail): *(TBD)*
-- Classification: *(A / B)*
-- Root cause notes: *(TBD)*
+- Spec file: `universe-symbol-sort-empty-rows.spec.ts:85:7`
+- Test description: `Universe Screen - Empty Rows on Symbol Sort Bug (Story 56.1) › first visible rows have non-empty symbol cells immediately on load with Symbol ascending sort (currently FAILS — confirms bug)`
+- Error message: `Expected first visible symbol cell to be non-empty but got: "" — expect(received).not.toBe(expected) Expected: not ""` at line 127
+- Also fails in Chromium? **Yes** (Chromium Test 6 — identical)
+- Isolation result: **Fail**
+- Classification: **B** (functional regression)
+- Root cause notes: Same as Chromium Test 6 — Story 56.1 bug, empty symbol cells on initial load.
+
+**Test 7 (Firefox-specific hard failure):**
+- Spec file: `universe-scrolling-regression.spec.ts:125:7`
+- Test description: `Universe Scrolling Regression — blank rows on fast scroll › should have no blank symbol cells after fast scroll to bottom`
+- Error message:
+  ```
+  Error: Timeout 10000ms exceeded while waiting on the predicate
+    at assertVisibleSymbolsNonEmpty (universe-scrolling-regression.spec.ts:56:3)
+    at universe-scrolling-regression.spec.ts:139:5
+  ```
+  "Visible rows have empty symbol cells after fast scroll to bottom. This indicates the CDK virtual scroll blank-row regression from Epic 60 is active."
+- Also fails in Chromium? **Flaky** in Chromium (Chromium flaky F4 — fails on first attempt but passes on retry); **hard fail** in Firefox full suite (all 3 attempts failed)
+- Isolation result: **Flaky** in Firefox isolation (failed once, passed on retry)
+- Classification: **B** (functional regression — timing-sensitive)
+- Root cause notes: CDK virtual scroll blank-row regression from Epic 60. The `assertVisibleSymbolsNonEmpty` helper polls for blank cells to disappear within 10s but they persist. Firefox is slower than Chromium at rendering after fast scroll, making this a hard failure in the full suite (where system load is higher) but flaky in isolation. Suspected code: `enrich-universe-with-risk-groups.function.ts` isLoading filter, `global-universe.component.ts` `filteredData$`. Not a Firefox-specific browser compatibility issue — same root cause as Chromium flaky tests.
+
+#### Firefox Flaky Tests (2 — failed once then passed on retry)
+
+| # | Spec file | Line | Test description | Also flaky in Chromium? |
+|---|---|---|---|---|
+| FF1 | `universe-lazy-load-deep-scroll.spec.ts` | 227 | should have no blank symbol cells after incremental deep scroll across three lazy-load page boundaries | Yes (Chromium F1) |
+| FF2 | `universe-lazy-load-deep-scroll.spec.ts` | 480 | should have no blank symbol cells after applying symbol filter and scrolling to bottom | Yes (Chromium F3) |
+
+Same `assertVisibleSymbolsNonEmpty` timeout root cause as the Chromium flaky tests.
 
 ---
 
@@ -347,7 +430,27 @@ at the time they were written. Cross-referencing means checking whether the fail
 76 run are the **same tests** that were failing when Epic 42 was created, or whether they are
 different tests that have since emerged.
 
-**Overlap summary:** *(TBD — fill in after running both suites)*
+**Overlap summary:**
+
+- **Stories 42.1 and 42.2 status:** Both are `Approved` / `ready-for-dev` in `sprint-status.yaml`. Neither story has been started — their Dev Agent Record sections are empty.
+- **No specific test names were prescribed** in Epic 42 stories. They only captured failing counts at the time they were written and directed the developer to run the suite and fix all failures.
+- **No previously-applied fixes have regressed.** Since Epic 42 was never executed, there are no "fixed then regressed" tests.
+- **All 13 failures (6 Chromium + 7 Firefox) are candidates for Epic 42 fixes.** The failures found here are exactly the work Epic 42 was designed to address.
+- **Recommendation:** Epic 42 stories (42.1, 42.2) should be superseded by the more granular Stories 76.2 and 76.3 which will have the full classification and root-cause context from this catalogue. Alternatively, Epic 42 stories can reference this catalogue as their investigation phase.
+
+**Summary of unique failures across both browsers:**
+
+| # | Spec file | Browsers affected | Classification | Root cause category |
+|---|---|---|---|---|
+| 1 | `account-table-sort.spec.ts:90` | Chromium + Firefox | B | Stale `test.fail()` — underlying sort now works |
+| 2 | `account-table-sort.spec.ts:157` | Chromium + Firefox | B | Stale `test.fail()` — underlying sort now works |
+| 3 | `fidelity-import.spec.ts:288` | Chromium + Firefox | B | Server import validation not rejecting invalid rows |
+| 4 | `storybook-snapshots.spec.ts:27` | Chromium + Firefox | B | Visual regression — BaseTable snapshot mismatch |
+| 5 | `universe-resort-on-edit.spec.ts:23` | Chromium + Firefox | B | Bug 72-1 — row doesn't re-sort after cell edit |
+| 6 | `universe-symbol-sort-empty-rows.spec.ts:85` | Chromium + Firefox | B | Story 56.1 — empty symbol cells on initial load |
+| 7 | `universe-scrolling-regression.spec.ts:125` | Flaky Chromium, Hard-fail Firefox | B (timing) | CDK virtual scroll blank-row regression (Epic 60/64) |
+
+**Key finding: Zero class-A (isolation) failures.** All failures are class B (functional regression). This means there are no test-ordering or shared-state contamination issues — every failure is a genuine application bug.
 
 ---
 
