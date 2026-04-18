@@ -106,7 +106,7 @@ export class GlobalUniverseComponent implements OnDestroy {
   );
 
   readonly visibleRange = signal({ start: 0, end: 50 });
-
+  private readonly cellEditVersion$ = signal(0);
   private readonly localSyncInProgress$ = signal<boolean>(false);
   private textFilterTimer?: ReturnType<typeof setTimeout>;
   private readonly baseTable = viewChild(BaseTableComponent);
@@ -154,16 +154,16 @@ export class GlobalUniverseComponent implements OnDestroy {
 
   // Server handles symbol/risk_group filtering; expired and yield % need client-side filtering.
   //
-  // IMPORTANT — do NOT filter out placeholder rows (symbol === '') here.
-  // SmartNgRX marks rows isLoading=true and buildPlaceholderUniverseEntry() returns symbol:''
-  // as a temporary stand-in until the real data arrives from the server. CDK virtual scroll
-  // requires a STABLE array length to calculate correct scroll-container height. Removing
-  // placeholder rows before CDK sees the array causes the array length to fluctuate as rows
-  // load, which re-introduces the blank-row / position-jump regression that has been fixed and
-  // re-broken across Epics 29, 31, 44, 60, and 64. Placeholder rows render as blank cells for
-  // a brief moment during loading — that is intentional and acceptable.
+  // IMPORTANT — do NOT filter out placeholder rows (symbol === '\u2026') here.
+  // SmartNgRX marks rows isLoading=true and buildPlaceholderUniverseEntry() returns
+  // symbol:'\u2026' as a temporary stand-in until the real data arrives from the server.
+  // CDK virtual scroll requires a STABLE array length to calculate correct scroll-container
+  // height. Removing placeholder rows before CDK sees the array causes the array length to
+  // fluctuate as rows load, which re-introduces the blank-row / position-jump regression.
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signal
   readonly filteredData$ = computed(() => {
+    // Force recompute after cell edits so enriched objects pick up mutated values.
+    this.cellEditVersion$();
     const rawData = this.universeService.universes();
     const riskGroups = selectRiskGroup();
     const vr = this.visibleRange();
@@ -289,6 +289,7 @@ export class GlobalUniverseComponent implements OnDestroy {
       validationService: this.validationService,
       emitCellEdit: this.cellEdit.emit.bind(this.cellEdit),
     });
+    this.cellEditVersion$.set(this.cellEditVersion$() + 1);
     this.sortColumns$.set([...this.sortColumns$()]);
   }
 

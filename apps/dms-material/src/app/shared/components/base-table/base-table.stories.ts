@@ -1,5 +1,4 @@
 import {
-  componentWrapperDecorator,
   type Meta,
   type StoryObj,
 } from '@storybook/angular';
@@ -143,14 +142,32 @@ const universeData: UniverseRow[] = [
   },
 ];
 
-function wrapInFixedContainer(story: string): string {
-  return `<div style="height: 500px; width: 100%; display: block;">${story}</div>`;
-}
+const TABLE_TEMPLATE = `
+  <div style="height: 500px; width: 100%; display: block;">
+    <dms-base-table
+      [data]="data"
+      [columns]="columns"
+      [tableLabel]="tableLabel"
+      [rowHeight]="rowHeight"
+      [loading]="loading"
+      [selectable]="selectable"
+      [multiSelect]="multiSelect"
+      [sortColumns]="sortColumns"
+      (sortChange)="sortChange($event)"
+      (rowClick)="rowClick($event)"
+      (selectionChange)="selectionChange($event)"
+      (renderedRangeChange)="renderedRangeChange($event)"
+    ></dms-base-table>
+  </div>
+`;
 
 const meta: Meta<BaseTableComponent<SampleRow>> = {
   component: BaseTableComponent,
   title: 'Shared/BaseTable',
-  decorators: [componentWrapperDecorator(wrapInFixedContainer)],
+  render: function renderBaseTable(args) { return {
+    props: args,
+    template: TABLE_TEMPLATE,
+  }; },
   argTypes: {
     sortChange: { action: 'sortChange' },
     rowClick: { action: 'rowClick' },

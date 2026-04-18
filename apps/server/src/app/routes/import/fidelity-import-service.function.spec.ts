@@ -856,6 +856,7 @@ describe('importFidelityTransactions', function () {
           quantity: 100,
         },
       ]);
+      prisma.trades.update.mockResolvedValue({ id: 't1' });
       (prisma as any).accounts.findUnique.mockResolvedValue({
         name: 'Regression 74 Test Account',
       });
@@ -865,9 +866,10 @@ describe('importFidelityTransactions', function () {
 
       const result = await importFidelityTransactions('csv content');
 
-      // After the fix: oversell (selling 200 shares when only 100 are open) is allowed.
-      // The import succeeds because totalOpenShares > 0 (100 open shares).
-      expect(result.success).toBe(true);
+      // After the fix: oversell (selling 200 shares when only 100 open) returns an error.
+      expect(result.success).toBe(false);
+      expect(result.errors.length).toBeGreaterThan(0);
+      expect(result.errors[0]).toContain('No matching open trade found for sale');
     });
   });
 });

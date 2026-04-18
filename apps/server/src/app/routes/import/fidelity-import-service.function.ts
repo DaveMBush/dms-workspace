@@ -124,18 +124,11 @@ async function processSale(sale: MappedSale): Promise<string | null> {
   });
 
   const totalOpenShares = openTrades.reduce(sumTradeQuantity, 0);
-
   if (totalOpenShares === 0) {
-    return buildInsufficientSharesError(
-      sale.accountId,
-      sale.universeId,
-      sale.quantity,
-      totalOpenShares
-    );
+    return buildInsufficientSharesError(sale.accountId, sale.universeId, sale.quantity, totalOpenShares);
   }
 
   let remainingToSell = saleQuantity;
-
   for (const trade of openTrades) {
     if (remainingToSell <= 0) {
       break;
@@ -152,6 +145,10 @@ async function processSale(sale: MappedSale): Promise<string | null> {
       );
       remainingToSell = 0;
     }
+  }
+
+  if (remainingToSell > 0) {
+    return buildInsufficientSharesError(sale.accountId, sale.universeId, sale.quantity, totalOpenShares);
   }
 
   return null;
