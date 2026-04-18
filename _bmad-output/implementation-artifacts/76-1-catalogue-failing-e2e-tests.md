@@ -255,7 +255,7 @@ records a full trace (network, console, DOM snapshots). Traces are saved to
 - Spec file: `fidelity-import.spec.ts:288:9`
 - Test description: `Fidelity Import E2E › Partial Success › should report errors for invalid rows while importing valid ones`
 - Error message:
-  ```
+  ```text
   Error: expect(received).toBeGreaterThan(expected)
   Expected: > 0
   Received:   0
@@ -271,7 +271,7 @@ records a full trace (network, console, DOM snapshots). Traces are saved to
 - Spec file: `storybook-snapshots.spec.ts:27:7`
 - Test description: `Storybook Dual-Theme Snapshots › BaseTable - Default`
 - Error message:
-  ```
+  ```text
   Error: expect(page).toHaveScreenshot(expected) failed
   431 pixels (ratio 0.01 of all image pixels) are different.
   Snapshot: shared-basetable--default-light.png
@@ -287,7 +287,7 @@ records a full trace (network, console, DOM snapshots). Traces are saved to
 - Spec file: `universe-resort-on-edit.spec.ts:23:7`
 - Test description: `Universe Re-sort After Cell Edit › BUG(72-1): row re-sorts after cell edit`
 - Error message:
-  ```
+  ```text
   Error: expect(received).not.toBe(expected) // Object.is equality
   Expected: not "TESTIN1"
     at universe-resort-on-edit.spec.ts:60:40
@@ -302,7 +302,7 @@ records a full trace (network, console, DOM snapshots). Traces are saved to
 - Spec file: `universe-symbol-sort-empty-rows.spec.ts:85:7`
 - Test description: `Universe Screen - Empty Rows on Symbol Sort Bug (Story 56.1) › first visible rows have non-empty symbol cells immediately on load with Symbol ascending sort (currently FAILS — confirms bug)`
 - Error message:
-  ```
+  ```text
   Error: Expected first visible symbol cell to be non-empty but got: ""
   expect(received).not.toBe(expected) // Object.is equality
   Expected: not ""
@@ -395,7 +395,7 @@ All 7 share the same root cause: the `assertVisibleSymbolsNonEmpty` polling help
 - Spec file: `universe-scrolling-regression.spec.ts:125:7`
 - Test description: `Universe Scrolling Regression — blank rows on fast scroll › should have no blank symbol cells after fast scroll to bottom`
 - Error message:
-  ```
+  ```text
   Error: Timeout 10000ms exceeded while waiting on the predicate
     at assertVisibleSymbolsNonEmpty (universe-scrolling-regression.spec.ts:56:3)
     at universe-scrolling-regression.spec.ts:139:5
@@ -403,7 +403,7 @@ All 7 share the same root cause: the `assertVisibleSymbolsNonEmpty` polling help
   "Visible rows have empty symbol cells after fast scroll to bottom. This indicates the CDK virtual scroll blank-row regression from Epic 60 is active."
 - Also fails in Chromium? **Flaky** in Chromium (Chromium flaky F4 — fails on first attempt but passes on retry); **hard fail** in Firefox full suite (all 3 attempts failed)
 - Isolation result: **Flaky** in Firefox isolation (failed once, passed on retry)
-- Classification: **B** (functional regression — timing-sensitive)
+- Classification: **A** (flaky due to timing — per decision algorithm: intermittent isolation failure = class A)
 - Root cause notes: CDK virtual scroll blank-row regression from Epic 60. The `assertVisibleSymbolsNonEmpty` helper polls for blank cells to disappear within 10s but they persist. Firefox is slower than Chromium at rendering after fast scroll, making this a hard failure in the full suite (where system load is higher) but flaky in isolation. Suspected code: `enrich-universe-with-risk-groups.function.ts` isLoading filter, `global-universe.component.ts` `filteredData$`. Not a Firefox-specific browser compatibility issue — same root cause as Chromium flaky tests.
 
 #### Firefox Flaky Tests (2 — failed once then passed on retry)
@@ -448,9 +448,9 @@ different tests that have since emerged.
 | 4 | `storybook-snapshots.spec.ts:27` | Chromium + Firefox | B | Visual regression — BaseTable snapshot mismatch |
 | 5 | `universe-resort-on-edit.spec.ts:23` | Chromium + Firefox | B | Bug 72-1 — row doesn't re-sort after cell edit |
 | 6 | `universe-symbol-sort-empty-rows.spec.ts:85` | Chromium + Firefox | B | Story 56.1 — empty symbol cells on initial load |
-| 7 | `universe-scrolling-regression.spec.ts:125` | Flaky Chromium, Hard-fail Firefox | B (timing) | CDK virtual scroll blank-row regression (Epic 60/64) |
+| 7 | `universe-scrolling-regression.spec.ts:125` | Flaky Chromium, Hard-fail Firefox | A (flaky timing) | CDK virtual scroll blank-row regression (Epic 60/64) |
 
-**Key finding: Zero class-A (isolation) failures.** All failures are class B (functional regression). This means there are no test-ordering or shared-state contamination issues — every failure is a genuine application bug.
+**Key finding: One class-A failure (Firefox-specific flaky timing in Test 7).** All other failures are class B (functional regression). There are no test-ordering or shared-state contamination issues — every non-flaky failure is a genuine application bug.
 
 ---
 
