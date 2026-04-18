@@ -1,7 +1,7 @@
 // Pin all data rows to a single consistent height so CDK virtual scroll
 // receives a stable itemSize regardless of cell content.
 :host {
-  --mat-table-row-item-container-height: 52px;
+  --mat-table-row-item-container-height: 57px;
 }
 
 // Prevent mat-icon-button from inflating cell height beyond the row height.

@@ -412,3 +412,10 @@ development_status:
   72-1-write-failing-resort-on-edit-e2e-test: ready-for-dev
   72-2-implement-resort-on-cell-edit: ready-for-dev
   epic-72-retrospective: optional
+
+  # ── Epic 76: Fix Failing E2E Tests (Chromium + Firefox) ──────────────────────
+  epic-76: in-progress
+  76-1-catalogue-failing-e2e-tests: ready-for-dev
+  76-2-fix-e2e-test-isolation: ready-for-dev
+  76-3-fix-e2e-functional-regressions: ready-for-dev
+  epic-76-retrospective: optional
