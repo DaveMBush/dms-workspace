@@ -125,7 +125,12 @@ async function processSale(sale: MappedSale): Promise<string | null> {
 
   const totalOpenShares = openTrades.reduce(sumTradeQuantity, 0);
   if (totalOpenShares === 0) {
-    return buildInsufficientSharesError(sale.accountId, sale.universeId, sale.quantity, totalOpenShares);
+    return buildInsufficientSharesError(
+      sale.accountId,
+      sale.universeId,
+      sale.quantity,
+      totalOpenShares
+    );
   }
 
   let remainingToSell = saleQuantity;
@@ -148,7 +153,12 @@ async function processSale(sale: MappedSale): Promise<string | null> {
   }
 
   if (remainingToSell > 0) {
-    return buildInsufficientSharesError(sale.accountId, sale.universeId, sale.quantity, totalOpenShares);
+    return buildInsufficientSharesError(
+      sale.accountId,
+      sale.universeId,
+      sale.quantity,
+      totalOpenShares
+    );
   }
 
   return null;

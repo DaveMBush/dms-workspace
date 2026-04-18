@@ -869,7 +869,9 @@ describe('importFidelityTransactions', function () {
       // After the fix: oversell (selling 200 shares when only 100 open) returns an error.
       expect(result.success).toBe(false);
       expect(result.errors.length).toBeGreaterThan(0);
-      expect(result.errors[0]).toContain('No matching open trade found for sale');
+      expect(result.errors[0]).toContain(
+        'No matching open trade found for sale'
+      );
     });
   });
 });
