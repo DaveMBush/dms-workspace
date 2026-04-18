@@ -164,10 +164,19 @@ const TABLE_TEMPLATE = `
 const meta: Meta<BaseTableComponent<SampleRow>> = {
   component: BaseTableComponent,
   title: 'Shared/BaseTable',
-  render: function renderBaseTable(args) { return {
-    props: args,
-    template: TABLE_TEMPLATE,
-  }; },
+  render: function renderBaseTable(args) {
+    return {
+      props: {
+        rowHeight: 57,
+        loading: false,
+        selectable: false,
+        multiSelect: false,
+        sortColumns: [],
+        ...args,
+      },
+      template: TABLE_TEMPLATE,
+    };
+  },
   argTypes: {
     sortChange: { action: 'sortChange' },
     rowClick: { action: 'rowClick' },
