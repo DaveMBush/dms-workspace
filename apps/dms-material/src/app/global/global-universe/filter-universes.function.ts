@@ -22,24 +22,18 @@ export function filterUniverses(
   const { riskGroupFilter, expiredFilter, minYieldFilter } = criteria;
 
   return data.filter(function filterRow(row) {
-    // Epic 65 (Story 65.2): preserve SmartNgRX placeholder rows (symbol === '')
+    // Epic 65 (Story 65.2): preserve SmartNgRX placeholder rows
     // regardless of active filters. Placeholder rows are stable stand-ins for
     // lazy-load pages not yet fetched. Filtering them out shrinks the CDK data
     // array, caps scroll-container height, and prevents triggerProxyLoad from
     // accessing positions beyond the first page — exactly the deep-scroll
     // defect described in Epic 65.
     //
-    // Deep-scroll lazy-load fix history:
-    // - Epics 29, 31, 44: CDK rowHeight mismatch, contain: strict, CSS transitions
-    // - Epic 60 (Story 60.2): isLoading→null return caused array shrink; replaced
-    //   with placeholder return to keep array length stable
-    // - Epic 64 (Story 64.2): terminal excludeLoadingRows filter in filteredData$
-    //   was removed so CDK sees all placeholder rows during fast scroll
-    // - Epic 65 (Story 65.2): riskGroupFilter / expiredFilter / minYieldFilter
-    //   were still stripping placeholder rows when active, re-introducing the
-    //   deep-scroll height-cap defect for filtered views. Fix: pass placeholder
-    //   rows through unconditionally; real data will replace them once loaded.
-    if (row.symbol === '') {
+    // Story 76.3: placeholder symbol changed from '' to '\u2026' (ellipsis) so
+    // that client-side Symbol ascending sort does not cluster placeholder rows
+    // at the top (empty string < any letter). The ellipsis sorts after all
+    // ASCII letters (U+2026 > U+005A), pushing placeholders to the end.
+    if (row.symbol === '\u2026') {
       return true;
     }
     if (

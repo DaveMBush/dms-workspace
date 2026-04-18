@@ -86,11 +86,14 @@ test.describe('Account Tables - Sorting (Story 37.1 - Failing Tests)', () => {
       await waitForTableRows(page);
     });
 
-    // EXPECTED TO FAIL: buggy implementation does not reorder rows
-    test('clicking Buy Date header sorts Open Positions rows by buy date ascending (EXPECTED TO FAIL)', async ({
+    test('clicking Buy Date header sorts Open Positions rows by buy date ascending', async ({
       page,
+      browserName,
     }) => {
-      test.fail(); // Intentional: documents known sort bug from Story 37.1
+      test.fail(
+        browserName === 'firefox',
+        'Sort bug from Story 37.1 still active on Firefox'
+      );
       // Click "Buy Date" column header to trigger ascending sort
       const header = page.getByRole('button', { name: 'Buy Date' });
       await header.click();
@@ -153,11 +156,14 @@ test.describe('Account Tables - Sorting (Story 37.1 - Failing Tests)', () => {
       await waitForTableRows(page);
     });
 
-    // EXPECTED TO FAIL: buggy implementation does not reorder rows
-    test('clicking Sell Date header sorts Closed Positions rows by sell date ascending (EXPECTED TO FAIL)', async ({
+    test('clicking Sell Date header sorts Closed Positions rows by sell date ascending', async ({
       page,
+      browserName,
     }) => {
-      test.fail(); // Intentional: documents known sort bug from Story 37.1
+      test.fail(
+        browserName === 'firefox',
+        'Sort bug from Story 37.1 still active on Firefox'
+      );
       // Click "Sell Date" column header to trigger ascending sort
       const header = page.getByRole('button', { name: 'Sell Date' });
       await header.click();

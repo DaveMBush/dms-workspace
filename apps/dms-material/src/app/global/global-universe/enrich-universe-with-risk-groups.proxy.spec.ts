@@ -47,8 +47,8 @@ describe('enrichUniverseWithRiskGroups – proxy paths', () => {
 
     expect(result).toHaveLength(2);
     expect(result[0].symbol).toBe('AAPL');
-    // Unloaded item should be a placeholder with empty fields
-    expect(result[1].symbol).toBe('');
+    // Unloaded item should be a placeholder with ellipsis symbol
+    expect(result[1].symbol).toBe('\u2026');
     expect(result[1].distribution).toBe(0);
   });
 
@@ -57,7 +57,7 @@ describe('enrichUniverseWithRiskGroups – proxy paths', () => {
 
     const result = enrichUniverseWithRiskGroups(proxyArr, mockRiskGroups);
 
-    expect(result[0].symbol).toBe('');
+    expect(result[0].symbol).toBe('\u2026');
     expect(result[0].id).toContain('placeholder');
   });
 
@@ -70,7 +70,7 @@ describe('enrichUniverseWithRiskGroups – proxy paths', () => {
     const result = enrichUniverseWithRiskGroups(arrWithString, mockRiskGroups);
 
     expect(result[0].id).toBe('placeholder-id');
-    expect(result[0].symbol).toBe('');
+    expect(result[0].symbol).toBe('\u2026');
   });
 
   it('should call triggerProxyLoad when visibleRange is provided and array is a proxy', () => {

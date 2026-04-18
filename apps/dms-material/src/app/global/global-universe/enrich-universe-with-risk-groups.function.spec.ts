@@ -124,7 +124,7 @@ describe('enrichUniverseWithRiskGroups', () => {
     const loadingUniverse = {
       ...mockUniverses[0],
       id: 'loading-id',
-      symbol: '',
+      symbol: '\u2026',
       isLoading: true,
     } as Universe & { isLoading: boolean };
     const mixedUniverses = [loadingUniverse, mockUniverses[1]];
@@ -133,9 +133,9 @@ describe('enrichUniverseWithRiskGroups', () => {
 
     // Both rows must be present (no null filtering) so array length is stable
     expect(result).toHaveLength(2);
-    // Loading row is a placeholder — id is preserved, symbol is empty
+    // Loading row is a placeholder — id is preserved, symbol is ellipsis
     expect(result[0].id).toBe('loading-id');
-    expect(result[0].symbol).toBe('');
+    expect(result[0].symbol).toBe('\u2026');
     // Non-loading row is fully populated
     expect(result[1].id).toBe('2');
   });
@@ -146,7 +146,7 @@ describe('enrichUniverseWithRiskGroups', () => {
     const loadingUniverse = {
       ...mockUniverses[0],
       id: 'real-uuid-from-store',
-      symbol: '',
+      symbol: '\u2026',
       isLoading: true,
     } as Universe & { isLoading: boolean };
 
@@ -165,7 +165,7 @@ describe('enrichUniverseWithRiskGroups', () => {
     expect(result).toHaveLength(2);
     // Proxy path: id comes from getIdAtIndex → 'real-uuid-from-store'
     expect(result[0].id).toBe('real-uuid-from-store');
-    expect(result[0].symbol).toBe('');
+    expect(result[0].symbol).toBe('\u2026');
     // Non-loading row is fully populated
     expect(result[1].id).toBe('2');
   });
