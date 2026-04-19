@@ -21,6 +21,7 @@ function buildPlaceholderClosedPosition(id: string): ClosedPosition {
     daysHeld: 0,
     capitalGain: 0,
     capitalGainPercentage: 0,
+    isLoading: true,
   };
 }
 
@@ -71,6 +72,9 @@ function buildFullClosedPosition(
 @Injectable({ providedIn: 'root' })
 export class SoldPositionsComponentService {
   private currentAccountSignalStore = inject(currentAccountSignalStore);
+  private currentAccount = selectCurrentAccountSignal(
+    this.currentAccountSignalStore
+  );
 
   visibleRange = signal<{ start: number; end: number }>({
     start: 0,
@@ -79,10 +83,7 @@ export class SoldPositionsComponentService {
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signal
   trades = computed(() => {
-    const currentAccount = selectCurrentAccountSignal(
-      this.currentAccountSignalStore
-    );
-    return currentAccount().soldTrades as Trade[];
+    return this.currentAccount().soldTrades as Trade[];
   });
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signal
@@ -95,24 +96,9 @@ export class SoldPositionsComponentService {
       return [] as ClosedPosition[];
     }
 
-    const smartArr = trades as unknown as {
-      getIdAtIndex?(i: number): string | undefined;
-    };
-    const isProxy = typeof smartArr.getIdAtIndex === 'function';
-
-    const range = this.visibleRange();
-    const visStart = Math.max(0, range.start - 20);
-    const visEnd = Math.min(totalLength, range.end + 20);
-
     const soldPositions = new Array<ClosedPosition>(totalLength);
 
     for (let i = 0; i < totalLength; i++) {
-      if (isProxy && !(i >= visStart && i < visEnd)) {
-        soldPositions[i] = buildPlaceholderClosedPosition(
-          smartArr.getIdAtIndex!(i) ?? `placeholder-${String(i)}`
-        );
-        continue;
-      }
       const trade = trades[i];
       if (trade === undefined || typeof trade === 'string') {
         soldPositions[i] = buildPlaceholderClosedPosition(

@@ -34,8 +34,10 @@ function intervalToDistributionsPerYear(daysBetween: number): number {
     return 52; // weekly
   }
 
-  // >27 and ≤45 days accounts for monthly with holiday variations
-  if (daysBetween > 27 && daysBetween <= 45) {
+  // >25 and ≤45 days accounts for monthly with holiday variations and DST-induced
+  // sub-27-day gaps (e.g. a 27-calendar-day interval that spans a spring-forward DST
+  // transition computes to ≈26.96 days in local time, falling below the old >27 guard)
+  if (daysBetween > 25 && daysBetween <= 45) {
     return 12; // monthly
   }
 
@@ -72,9 +74,19 @@ function calculateDistributionsPerYear(
       })
       .slice(0, 2);
 
+    // If we have 1 past row and 1 future row, use them as the interval pair
+    if (recentRows.length === 1 && futureRows.length === 1) {
+      const crossDaysBetween =
+        (futureRows[0].date.valueOf() - recentRows[0].date.valueOf()) /
+        (1000 * 60 * 60 * 24);
+      return intervalToDistributionsPerYear(crossDaysBetween);
+    }
+
+    /* v8 ignore start -- defensive: unexpected when rows are valid and fully partitioned by date */
     if (futureRows.length < 2) {
       return 1;
     }
+    /* v8 ignore stop */
 
     const futureDaysBetween =
       (futureRows[1].date.valueOf() - futureRows[0].date.valueOf()) /

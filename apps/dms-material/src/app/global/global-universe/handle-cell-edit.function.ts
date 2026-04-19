@@ -28,14 +28,14 @@ export function handleCellEdit(
   field: keyof Universe,
   value: unknown,
   deps: CellEditDeps
-): void {
+): unknown | undefined {
   let transformedValue = value;
   if (field === 'ex_date') {
     transformedValue = deps.validationService.transformExDateValue(value);
   }
 
   if (!deps.validationService.validateFieldValue(field, transformedValue)) {
-    return;
+    return undefined;
   }
 
   const universes = selectUniverses();
@@ -52,4 +52,5 @@ export function handleCellEdit(
   }
 
   deps.emitCellEdit({ row, field, value: transformedValue });
+  return transformedValue;
 }

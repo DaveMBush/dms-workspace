@@ -141,7 +141,7 @@ describe('filterUniverses - Symbol Filter', () => {
       } as Universe,
       {
         id: '2',
-        symbol: '', // placeholder — isLoading=true row
+        symbol: '\u2026', // placeholder — isLoading=true row
         risk_group_id: 'equity',
         expired: false,
         distribution: 0,
@@ -170,10 +170,10 @@ describe('filterUniverses - Symbol Filter', () => {
       minYieldFilter: null,
     });
 
-    // 'AAPL' matches id=1, '' placeholder (id=2) passes through, 'MSFT' (id=3) is excluded.
+    // 'AAPL' matches id=1, '\u2026' placeholder (id=2) passes through, 'MSFT' (id=3) is excluded.
     expect(result).toHaveLength(2);
     expect(result[0].symbol).toBe('AAPL');
-    expect(result[1].symbol).toBe('');
+    expect(result[1].symbol).toBe('\u2026');
   });
 });
 
@@ -1230,14 +1230,14 @@ describe('filterUniverses - Edge Cases', () => {
 
 // ─── Epic 65 (Story 65.2) Placeholder Preservation ────────────────────────────
 // Regression guard: filterUniverses MUST preserve SmartNgRX placeholder rows
-// (symbol === '') even when riskGroupFilter, expiredFilter, or minYieldFilter
+// (symbol === '\u2026') even when riskGroupFilter, expiredFilter, or minYieldFilter
 // is active. Filtering them out shrinks the CDK data array, caps scroll height,
 // and prevents triggerProxyLoad from accessing lazy-load pages 2+ during deep
 // scroll — the root defect described in Epic 65.
 describe('filterUniverses - Epic 65 placeholder row preservation (CDK scroll-height stability)', () => {
   const placeholderRow: Universe = {
     id: 'placeholder-uuid-1',
-    symbol: '',
+    symbol: '\u2026',
     risk_group_id: '',
     expired: false,
     distribution: 0,
@@ -1281,7 +1281,7 @@ describe('filterUniverses - Epic 65 placeholder row preservation (CDK scroll-hei
     });
     expect(result).toHaveLength(2);
     expect(result[0].symbol).toBe('AAPL');
-    expect(result[1].symbol).toBe('');
+    expect(result[1].symbol).toBe('\u2026');
   });
 
   it('should preserve placeholder rows when expiredFilter is true (excludes expired rows)', () => {
@@ -1301,7 +1301,7 @@ describe('filterUniverses - Epic 65 placeholder row preservation (CDK scroll-hei
     });
     expect(result).toHaveLength(2);
     expect(result[0].symbol).toBe('EXP');
-    expect(result[1].symbol).toBe('');
+    expect(result[1].symbol).toBe('\u2026');
   });
 
   it('should preserve placeholder rows when minYieldFilter is active (yield > 0)', () => {
@@ -1314,7 +1314,7 @@ describe('filterUniverses - Epic 65 placeholder row preservation (CDK scroll-hei
     });
     expect(result).toHaveLength(2);
     expect(result[0].symbol).toBe('AAPL');
-    expect(result[1].symbol).toBe('');
+    expect(result[1].symbol).toBe('\u2026');
   });
 
   it('should preserve placeholder rows when all non-symbol filters are simultaneously active', () => {
@@ -1335,7 +1335,7 @@ describe('filterUniverses - Epic 65 placeholder row preservation (CDK scroll-hei
     });
     expect(result).toHaveLength(2);
     expect(result[0].symbol).toBe('XPRD');
-    expect(result[1].symbol).toBe('');
+    expect(result[1].symbol).toBe('\u2026');
   });
 
   it('should preserve multiple placeholder rows spanning lazy-load page boundaries', () => {
@@ -1359,7 +1359,7 @@ describe('filterUniverses - Epic 65 placeholder row preservation (CDK scroll-hei
     );
     expect(result).toHaveLength(4);
     const placeholders = result.filter(function selectEmpty(r) {
-      return r.symbol === '';
+      return r.symbol === '\u2026';
     });
     expect(placeholders).toHaveLength(3);
   });

@@ -75,16 +75,29 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
+      testIgnore: ['**/system-integration.spec.ts'],
       use: { ...devices['Desktop Chrome'] },
     },
 
     {
       name: 'firefox',
+      testIgnore: ['**/system-integration.spec.ts'],
       use: {
         ...devices['Desktop Firefox'],
         // Firefox on Linux resolves 'localhost' to ::1 (IPv6), but the dev server
         // only listens on IPv4. Override baseURL to use 127.0.0.1 explicitly.
         baseURL: 'http://127.0.0.1:4301',
+      },
+    },
+
+    {
+      name: 'integration',
+      testMatch: ['**/system-integration.spec.ts'],
+      use: {
+        ...devices['Desktop Chrome'],
+        baseURL: 'http://localhost:4201',
+        navigationTimeout: 120_000,
+        actionTimeout: 60_000,
       },
     },
 

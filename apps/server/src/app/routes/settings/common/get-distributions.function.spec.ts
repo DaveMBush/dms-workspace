@@ -507,4 +507,115 @@ describe('getDistributions', () => {
 
     expect(result?.distributions_per_year).toBe(52);
   });
+
+  // Story 71.1 / 71.2: Edge case — 1 past row + 1 future row (no fallback pair)
+  // Before fix: futureRows.length < 2 → returned 1 regardless of actual cadence.
+  // Fix: use the past-to-future interval when exactly 1 of each is available.
+
+  test('BUG(71-1): 1 past + 1 future row ~30 days apart returns distributions_per_year=12', async () => {
+    // System time: 2025-08-21T10:00:00Z (set in beforeEach)
+    // Only 1 past row and 1 future row — recentRows.length === 1, futureRows.length === 1.
+    const minimalPair: ProcessedRow[] = [
+      { amount: 0.25, date: new Date('2025-08-15') }, // past
+      { amount: 0.25, date: new Date('2025-09-14') }, // future (~30 days later)
+    ];
+
+    mockFetchDividendHistory.mockResolvedValueOnce(minimalPair);
+
+    const result = await getDistributions('MINIMAL-MONTHLY');
+
+    expect(result?.distributions_per_year).toBe(12);
+  });
+
+  // Story 73.1 / 73.2: Regression suite for the CEF distribution-history bug.
+  //
+  // Root causes (confirmed in Story 73.1):
+  //   OXLC  — dividendhistory.net emits two rows with the same pay date (e.g. Mar 17
+  //           and Mar 31 both settling on 03/31).  The 14-day gap between those ex-dates
+  //           caused `intervalToDistributionsPerYear(14)` to return 1 (annual default).
+  //           Fix: `fetchDividendHistory` now deduplicates by pay date, keeping only the
+  //           earliest ex-date per pay date, so the interval reflects the true ~30-day
+  //           monthly cadence.
+  //   NHS/DHY/CIK/DMB — a 27-calendar-day interval that spans a US spring-forward DST
+  //           transition computes to ≈26.96 days in local time.  The old guard
+  //           `daysBetween > 27` evaluates to false for 26.96, falling through to the
+  //           annual-default `return 1`.
+  //           Fix: threshold lowered to `daysBetween > 25`.
+  //
+  // All tests below are plain `test()` — the `test.fails()` wrappers have been removed
+  // now that both fixes are applied.
+
+  test('FIX(73-2): getDistributions returns distributions_per_year = 12 for CEF symbol OXLC after deduplicateByPayDay fix', async function verifyCefDistributionsPerYearBug() {
+    // Simulate what fetchDividendHistory now returns after the deduplicateByPayDay
+    // fix: the duplicate March row is removed, leaving clean ~30-day monthly spacing.
+    // System time: 2025-08-21T10:00:00Z (set in beforeEach)
+    mockFetchDividendHistory.mockResolvedValueOnce([
+      { amount: 0.4, date: new Date('2025-06-17') }, // past
+      { amount: 0.4, date: new Date('2025-07-15') }, // past (+28 days)
+      { amount: 0.4, date: new Date('2025-08-15') }, // past (+31 days)
+      { amount: 0.4, date: new Date('2025-09-15') }, // future
+    ]);
+    // fetchDistributionData not called — primary source returns data
+    const result = await getDistributions('OXLC');
+
+    expect(result?.distributions_per_year).toBe(12);
+  });
+
+  test('FIX(73-2): getDistributions returns distributions_per_year = 12 for CEF symbol NHS', async function fixNhsCefDistributionsPerYear() {
+    // NHS has ~27-day ex-date intervals; when one interval spans a DST transition the
+    // computed gap is ≈26.96 days — below the old `> 27` threshold.  The new `> 25`
+    // threshold correctly classifies it as monthly.
+    // System time: 2025-08-21T10:00:00Z (set in beforeEach)
+    mockFetchDividendHistory.mockResolvedValueOnce([
+      { amount: 0.091, date: new Date('2025-06-24') }, // past
+      { amount: 0.091, date: new Date('2025-07-21') }, // past (+27 days)
+      { amount: 0.091, date: new Date('2025-08-17') }, // past (+27 days — crosses DST threshold)
+      { amount: 0.091, date: new Date('2025-09-15') }, // future
+    ]);
+    const result = await getDistributions('NHS');
+
+    expect(result?.distributions_per_year).toBe(12);
+  });
+
+  test('FIX(73-2): getDistributions returns distributions_per_year = 12 for CEF symbol DHY', async function fixDhyCefDistributionsPerYear() {
+    // Same DST-induced sub-27-day interval pattern as NHS.
+    // System time: 2025-08-21T10:00:00Z (set in beforeEach)
+    mockFetchDividendHistory.mockResolvedValueOnce([
+      { amount: 0.016, date: new Date('2025-06-16') }, // past
+      { amount: 0.016, date: new Date('2025-07-13') }, // past (+27 days)
+      { amount: 0.016, date: new Date('2025-08-09') }, // past (+27 days)
+      { amount: 0.016, date: new Date('2025-09-15') }, // future
+    ]);
+    const result = await getDistributions('DHY');
+
+    expect(result?.distributions_per_year).toBe(12);
+  });
+
+  test('FIX(73-2): getDistributions returns distributions_per_year = 12 for CEF symbol CIK', async function fixCikCefDistributionsPerYear() {
+    // Same DST-induced sub-27-day interval pattern as NHS.
+    // System time: 2025-08-21T10:00:00Z (set in beforeEach)
+    mockFetchDividendHistory.mockResolvedValueOnce([
+      { amount: 0.023, date: new Date('2025-06-16') }, // past
+      { amount: 0.023, date: new Date('2025-07-13') }, // past (+27 days)
+      { amount: 0.023, date: new Date('2025-08-09') }, // past (+27 days)
+      { amount: 0.023, date: new Date('2025-09-15') }, // future
+    ]);
+    const result = await getDistributions('CIK');
+
+    expect(result?.distributions_per_year).toBe(12);
+  });
+
+  test('FIX(73-2): getDistributions returns distributions_per_year = 12 for CEF symbol DMB', async function fixDmbCefDistributionsPerYear() {
+    // Same DST-induced sub-27-day interval pattern as NHS.
+    // System time: 2025-08-21T10:00:00Z (set in beforeEach)
+    mockFetchDividendHistory.mockResolvedValueOnce([
+      { amount: 0.042, date: new Date('2025-06-20') }, // past
+      { amount: 0.042, date: new Date('2025-07-17') }, // past (+27 days)
+      { amount: 0.042, date: new Date('2025-08-13') }, // past (+27 days)
+      { amount: 0.042, date: new Date('2025-09-15') }, // future
+    ]);
+    const result = await getDistributions('DMB');
+
+    expect(result?.distributions_per_year).toBe(12);
+  });
 });

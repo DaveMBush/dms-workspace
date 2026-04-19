@@ -15,6 +15,7 @@ const mockUniverseArray: Array<{ symbol: string }> = [];
 vi.mock('../../store/top/selectors/select-top-entities.function', () => ({
   selectTopEntities: vi.fn().mockReturnValue({
     entities: { '1': { id: '1', name: 'Test Entity' } },
+    ids: [],
   }),
 }));
 
@@ -139,7 +140,7 @@ describe('AddSymbolDialogComponent', () => {
       expect(spy).toHaveBeenCalled();
     });
 
-    it('should set isLoading and call universeArray.add on valid submit', () => {
+    it('should set isLoading and post to API on valid submit', () => {
       const notifySpy = vi.spyOn(notificationService, 'success');
       component.form.patchValue({ symbol: 'AAPL', riskGroupId: 'rg1' });
       component.selectedSymbol.set({
@@ -147,7 +148,11 @@ describe('AddSymbolDialogComponent', () => {
         name: 'Apple Inc.',
       } as any);
       component.onSubmit();
-      expect(mockUniverseAdd).toHaveBeenCalled();
+
+      const req = httpMock.expectOne('./api/universe/add');
+      expect(req.request.method).toBe('POST');
+      req.flush({});
+
       expect(notifySpy).toHaveBeenCalledWith('Added AAPL to universe');
     });
 
@@ -158,30 +163,40 @@ describe('AddSymbolDialogComponent', () => {
         name: 'Apple Inc.',
       } as any);
       component.onSubmit();
+
+      const req = httpMock.expectOne('./api/universe/add');
+      req.flush({});
+
       expect(mockDialogRef.close).toHaveBeenCalledWith(
         expect.objectContaining({ symbol: 'AAPL', riskGroupId: 'rg1' })
       );
     });
 
     it('should handle API error with 409 conflict', () => {
-      mockUniverseAdd.mockRejectedValueOnce({ status: 409 });
       component.form.patchValue({ symbol: 'AAPL', riskGroupId: 'rg1' });
       component.selectedSymbol.set({
         symbol: 'AAPL',
         name: 'Apple Inc.',
       } as any);
       component.onSubmit();
+
+      const req = httpMock.expectOne('./api/universe/add');
+      req.flush('Conflict', { status: 409, statusText: 'Conflict' });
+
       expect(component.isLoading()).toBe(false);
     });
 
     it('should handle network errors gracefully', () => {
-      mockUniverseAdd.mockRejectedValueOnce(new Error('Network error'));
       component.form.patchValue({ symbol: 'AAPL', riskGroupId: 'rg1' });
       component.selectedSymbol.set({
         symbol: 'AAPL',
         name: 'Apple Inc.',
       } as any);
       component.onSubmit();
+
+      const req = httpMock.expectOne('./api/universe/add');
+      req.flush('Network error', { status: 500, statusText: 'Server Error' });
+
       expect(component.isLoading()).toBe(false);
     });
   });
@@ -453,7 +468,7 @@ describe('AddSymbolDialogComponent', () => {
 
   // Story AM.5: TDD RED Phase - Validation and Error Handling Tests
   // Story AM.6: Tests re-enabled for GREEN phase
-  /* eslint-disable no-throw-literal -- AM.5/AM.6: Implementing validation and error handling */
+
   describe('AddSymbolDialogComponent validation - AM.5', () => {
     describe('duplicate symbol validation', () => {
       it('should show error for duplicate symbol', () => {
@@ -661,21 +676,25 @@ describe('AddSymbolDialogComponent', () => {
   });
 
   describe('AddSymbolDialogComponent error handling - AM.5', () => {
+    function submitForm(): void {
+      component.form.patchValue({ symbol: 'AAPL', riskGroupId: 'rg1' });
+      component.selectedSymbol.set({
+        symbol: 'AAPL',
+        name: 'Apple Inc.',
+      } as any);
+      component.onSubmit();
+    }
+
     describe('API 409 Conflict error handling', () => {
       it('should handle 409 Conflict error from universeArray.add', () => {
         // Given: Symbol that will cause 409 error
-        mockUniverseAdd.mockImplementationOnce(() => {
-          throw { status: 409 };
-        });
         const notifyErrorSpy = vi.spyOn(notificationService, 'error');
 
-        // When: User submits the form
-        component.form.patchValue({ symbol: 'AAPL', riskGroupId: 'rg1' });
-        component.selectedSymbol.set({
-          symbol: 'AAPL',
-          name: 'Apple Inc.',
-        } as any);
-        component.onSubmit();
+        // When: User submits the form and server returns 409
+        submitForm();
+        httpMock
+          .expectOne('./api/universe/add')
+          .flush('Conflict', { status: 409, statusText: 'Conflict' });
 
         // Then: Should show appropriate error message
         expect(notifyErrorSpy).toHaveBeenCalledWith(
@@ -684,56 +703,26 @@ describe('AddSymbolDialogComponent', () => {
       });
 
       it('should set isLoading to false after 409 error', () => {
-        // Given: 409 error scenario
-        mockUniverseAdd.mockImplementationOnce(() => {
-          throw { status: 409 };
-        });
-
-        // When: Submission triggers error
-        component.form.patchValue({ symbol: 'AAPL', riskGroupId: 'rg1' });
-        component.selectedSymbol.set({
-          symbol: 'AAPL',
-          name: 'Apple Inc.',
-        } as any);
-        component.onSubmit();
-
-        // Then: Loading state should be reset
+        submitForm();
+        httpMock
+          .expectOne('./api/universe/add')
+          .flush('Conflict', { status: 409, statusText: 'Conflict' });
         expect(component.isLoading()).toBe(false);
       });
 
       it('should keep dialog open after 409 error', () => {
-        // Given: 409 error scenario
-        mockUniverseAdd.mockImplementationOnce(() => {
-          throw { status: 409 };
-        });
-
-        // When: Submission triggers error
-        component.form.patchValue({ symbol: 'AAPL', riskGroupId: 'rg1' });
-        component.selectedSymbol.set({
-          symbol: 'AAPL',
-          name: 'Apple Inc.',
-        } as any);
-        component.onSubmit();
-
-        // Then: Dialog should remain open
+        submitForm();
+        httpMock
+          .expectOne('./api/universe/add')
+          .flush('Conflict', { status: 409, statusText: 'Conflict' });
         expect(mockDialogRef.close).not.toHaveBeenCalled();
       });
 
       it('should preserve form values after 409 error', () => {
-        // Given: 409 error scenario
-        mockUniverseAdd.mockImplementationOnce(() => {
-          throw { status: 409 };
-        });
-
-        // When: Submission triggers error
-        component.form.patchValue({ symbol: 'AAPL', riskGroupId: 'rg1' });
-        component.selectedSymbol.set({
-          symbol: 'AAPL',
-          name: 'Apple Inc.',
-        } as any);
-        component.onSubmit();
-
-        // Then: Form should retain values for user to edit
+        submitForm();
+        httpMock
+          .expectOne('./api/universe/add')
+          .flush('Conflict', { status: 409, statusText: 'Conflict' });
         expect(component.form.get('symbol')?.value).toBe('AAPL');
         expect(component.form.get('riskGroupId')?.value).toBe('rg1');
       });
@@ -741,272 +730,150 @@ describe('AddSymbolDialogComponent', () => {
 
     describe('500 Server error handling', () => {
       it('should handle 500 Server error gracefully', () => {
-        // Given: Server error scenario
-        mockUniverseAdd.mockImplementationOnce(() => {
-          throw { status: 500, message: 'Internal Server Error' };
-        });
         const notifyErrorSpy = vi.spyOn(notificationService, 'error');
-
-        // When: User submits the form
-        component.form.patchValue({ symbol: 'AAPL', riskGroupId: 'rg1' });
-        component.selectedSymbol.set({
-          symbol: 'AAPL',
-          name: 'Apple Inc.',
-        } as any);
-        component.onSubmit();
-
-        // Then: Should show server error message
+        submitForm();
+        httpMock.expectOne('./api/universe/add').flush('Server Error', {
+          status: 500,
+          statusText: 'Internal Server Error',
+        });
         expect(notifyErrorSpy).toHaveBeenCalledWith(
           'Server error. Please try again later.'
         );
       });
 
       it('should set isLoading to false after 500 error', () => {
-        // Given: 500 error scenario
-        mockUniverseAdd.mockImplementationOnce(() => {
-          throw { status: 500 };
+        submitForm();
+        httpMock.expectOne('./api/universe/add').flush('Server Error', {
+          status: 500,
+          statusText: 'Internal Server Error',
         });
-
-        // When: Submission triggers error
-        component.form.patchValue({ symbol: 'AAPL', riskGroupId: 'rg1' });
-        component.selectedSymbol.set({
-          symbol: 'AAPL',
-          name: 'Apple Inc.',
-        } as any);
-        component.onSubmit();
-
-        // Then: Loading state should be reset
         expect(component.isLoading()).toBe(false);
       });
 
       it('should keep dialog open after 500 error', () => {
-        // Given: 500 error scenario
-        mockUniverseAdd.mockImplementationOnce(() => {
-          throw { status: 500 };
+        submitForm();
+        httpMock.expectOne('./api/universe/add').flush('Server Error', {
+          status: 500,
+          statusText: 'Internal Server Error',
         });
-
-        // When: Submission triggers error
-        component.form.patchValue({ symbol: 'AAPL', riskGroupId: 'rg1' });
-        component.selectedSymbol.set({
-          symbol: 'AAPL',
-          name: 'Apple Inc.',
-        } as any);
-        component.onSubmit();
-
-        // Then: Dialog should remain open
         expect(mockDialogRef.close).not.toHaveBeenCalled();
       });
     });
 
     describe('network error handling', () => {
       it('should handle network timeout errors', () => {
-        // Given: Network timeout scenario
-        mockUniverseAdd.mockImplementationOnce(() => {
-          throw new Error('Network timeout');
-        });
         const notifyErrorSpy = vi.spyOn(notificationService, 'error');
-
-        // When: User submits the form
-        component.form.patchValue({ symbol: 'AAPL', riskGroupId: 'rg1' });
-        component.selectedSymbol.set({
-          symbol: 'AAPL',
-          name: 'Apple Inc.',
-        } as any);
-        component.onSubmit();
-
-        // Then: Should show generic error message
+        submitForm();
+        httpMock
+          .expectOne('./api/universe/add')
+          .flush('Timeout', { status: 0, statusText: 'Unknown Error' });
         expect(notifyErrorSpy).toHaveBeenCalledWith(
           'Failed to add symbol. Please try again.'
         );
       });
 
       it('should handle network connection errors', () => {
-        // Given: Connection error scenario
-        mockUniverseAdd.mockImplementationOnce(() => {
-          throw new Error('Failed to fetch');
-        });
         const notifyErrorSpy = vi.spyOn(notificationService, 'error');
-
-        // When: User submits the form
-        component.form.patchValue({ symbol: 'AAPL', riskGroupId: 'rg1' });
-        component.selectedSymbol.set({
-          symbol: 'AAPL',
-          name: 'Apple Inc.',
-        } as any);
-        component.onSubmit();
-
-        // Then: Should show generic error message
+        submitForm();
+        httpMock.expectOne('./api/universe/add').flush('Connection Error', {
+          status: 0,
+          statusText: 'Unknown Error',
+        });
         expect(notifyErrorSpy).toHaveBeenCalledWith(
           'Failed to add symbol. Please try again.'
         );
       });
 
       it('should set isLoading to false after network error', () => {
-        // Given: Network error scenario
-        mockUniverseAdd.mockImplementationOnce(() => {
-          throw new Error('Network error');
+        submitForm();
+        httpMock.expectOne('./api/universe/add').flush('Connection Error', {
+          status: 0,
+          statusText: 'Unknown Error',
         });
-
-        // When: Submission triggers error
-        component.form.patchValue({ symbol: 'AAPL', riskGroupId: 'rg1' });
-        component.selectedSymbol.set({
-          symbol: 'AAPL',
-          name: 'Apple Inc.',
-        } as any);
-        component.onSubmit();
-
-        // Then: Loading state should be reset
         expect(component.isLoading()).toBe(false);
       });
     });
 
     describe('error message display', () => {
       it('should display specific error message for 409 Conflict', () => {
-        // Given: 409 error scenario
-        mockUniverseAdd.mockImplementationOnce(() => {
-          throw { status: 409 };
-        });
         const notifyErrorSpy = vi.spyOn(notificationService, 'error');
-
-        // When: Error occurs
-        component.form.patchValue({ symbol: 'AAPL', riskGroupId: 'rg1' });
-        component.selectedSymbol.set({
-          symbol: 'AAPL',
-          name: 'Apple Inc.',
-        } as any);
-        component.onSubmit();
-
-        // Then: Should show specific message
+        submitForm();
+        httpMock
+          .expectOne('./api/universe/add')
+          .flush('Conflict', { status: 409, statusText: 'Conflict' });
         expect(notifyErrorSpy).toHaveBeenCalledWith(
           'Symbol already exists in universe'
         );
       });
 
       it('should display generic error message for other errors', () => {
-        // Given: Generic error scenario
-        mockUniverseAdd.mockImplementationOnce(() => {
-          throw new Error('Unknown error');
-        });
         const notifyErrorSpy = vi.spyOn(notificationService, 'error');
-
-        // When: Error occurs
-        component.form.patchValue({ symbol: 'AAPL', riskGroupId: 'rg1' });
-        component.selectedSymbol.set({
-          symbol: 'AAPL',
-          name: 'Apple Inc.',
-        } as any);
-        component.onSubmit();
-
-        // Then: Should show generic message
+        submitForm();
+        httpMock
+          .expectOne('./api/universe/add')
+          .flush('Unknown', { status: 400, statusText: 'Bad Request' });
         expect(notifyErrorSpy).toHaveBeenCalledWith(
           'Failed to add symbol. Please try again.'
         );
       });
 
       it('should clear previous error messages on new submission', () => {
-        // Given: Previous error exists
-        mockUniverseAdd.mockImplementationOnce(() => {
-          throw { status: 409 };
-        });
         const notifyErrorSpy = vi.spyOn(notificationService, 'error');
 
-        // When: First submission fails
-        component.form.patchValue({ symbol: 'AAPL', riskGroupId: 'rg1' });
-        component.selectedSymbol.set({
-          symbol: 'AAPL',
-          name: 'Apple Inc.',
-        } as any);
-        component.onSubmit();
+        // First submission fails
+        submitForm();
+        httpMock
+          .expectOne('./api/universe/add')
+          .flush('Conflict', { status: 409, statusText: 'Conflict' });
 
-        // Then: Change symbol and try again
-        mockUniverseAdd.mockImplementationOnce(() => {
-          // Success scenario
-        });
-        component.form.patchValue({ symbol: 'MSFT' });
-        component.selectedSymbol.set({
-          symbol: 'MSFT',
-          name: 'Microsoft Corporation',
-        } as any);
-        component.onSubmit();
+        // Second submission succeeds
+        submitForm();
+        httpMock.expectOne('./api/universe/add').flush({});
 
-        // Previous error should be cleared
+        // Only one error notification (from first submission)
         expect(notifyErrorSpy).toHaveBeenCalledTimes(1);
       });
     });
 
     describe('form state during errors', () => {
       it('should keep form enabled after error', () => {
-        // Given: Error scenario
-        mockUniverseAdd.mockImplementationOnce(() => {
-          throw new Error('Network error');
-        });
-
-        // When: Error occurs
-        component.form.patchValue({ symbol: 'AAPL', riskGroupId: 'rg1' });
-        component.selectedSymbol.set({
-          symbol: 'AAPL',
-          name: 'Apple Inc.',
-        } as any);
-        component.onSubmit();
-
-        // Then: Form should remain enabled for retry
+        submitForm();
+        httpMock
+          .expectOne('./api/universe/add')
+          .flush('Error', { status: 500, statusText: 'Server Error' });
         expect(component.form.enabled).toBe(true);
       });
 
       it('should allow resubmission after error', () => {
-        // Given: First submission failed
-        mockUniverseAdd.mockImplementationOnce(() => {
-          throw new Error('Network error');
-        });
-        component.form.patchValue({ symbol: 'AAPL', riskGroupId: 'rg1' });
-        component.selectedSymbol.set({
-          symbol: 'AAPL',
-          name: 'Apple Inc.',
-        } as any);
-        component.onSubmit();
+        submitForm();
+        httpMock
+          .expectOne('./api/universe/add')
+          .flush('Error', { status: 500, statusText: 'Server Error' });
 
-        // When: User attempts resubmission
-        mockUniverseAdd.mockClear();
+        // Resubmit should trigger a new HTTP request
         component.onSubmit();
-
-        // Then: Should attempt submission again
-        expect(mockUniverseAdd).toHaveBeenCalled();
+        httpMock.expectOne('./api/universe/add').flush({});
+        expect(mockDialogRef.close).toHaveBeenCalled();
       });
 
       it('should maintain selected symbol after error', () => {
-        // Given: Error scenario
-        mockUniverseAdd.mockImplementationOnce(() => {
-          throw new Error('Network error');
+        submitForm();
+        httpMock
+          .expectOne('./api/universe/add')
+          .flush('Error', { status: 500, statusText: 'Server Error' });
+        expect(component.selectedSymbol()).toEqual({
+          symbol: 'AAPL',
+          name: 'Apple Inc.',
         });
-        const selectedSymbol = { symbol: 'AAPL', name: 'Apple Inc.' };
-
-        // When: Error occurs
-        component.form.patchValue({ symbol: 'AAPL', riskGroupId: 'rg1' });
-        component.selectedSymbol.set(selectedSymbol as any);
-        component.onSubmit();
-
-        // Then: Selected symbol should be preserved
-        expect(component.selectedSymbol()).toEqual(selectedSymbol);
       });
 
       it('should not disable submit button permanently after error', () => {
-        // Given: Error scenario
-        mockUniverseAdd.mockImplementationOnce(() => {
-          throw new Error('Network error');
-        });
-
-        // When: Error occurs
-        component.form.patchValue({ symbol: 'AAPL', riskGroupId: 'rg1' });
-        component.selectedSymbol.set({
-          symbol: 'AAPL',
-          name: 'Apple Inc.',
-        } as any);
-        component.onSubmit();
-
-        // Then: Submit button should be re-enabled after loading completes
+        submitForm();
+        httpMock
+          .expectOne('./api/universe/add')
+          .flush('Error', { status: 500, statusText: 'Server Error' });
         expect(component.isSubmitDisabled()).toBe(false);
       });
     });
   });
-  /* eslint-enable no-throw-literal -- End of AM.5 test section */
 });

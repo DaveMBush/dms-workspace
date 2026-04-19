@@ -1,4 +1,5 @@
 import { A11yModule } from '@angular/cdk/a11y';
+import { HttpClient } from '@angular/common/http';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -20,6 +21,7 @@ import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
+import { facadeRegistry } from '@smarttools/smart-core';
 import { firstValueFrom } from 'rxjs';
 
 import { SymbolAutocompleteComponent } from '../../shared/components/symbol-autocomplete/symbol-autocomplete.component';
@@ -53,6 +55,7 @@ export class AddSymbolDialogComponent {
   private dialogRef = inject(MatDialogRef<AddSymbolDialogComponent>);
   private notification = inject(NotificationService);
   private symbolSearchService = inject(SymbolSearchService);
+  private http = inject(HttpClient);
 
   topEntities = selectTopEntities().entities;
 
@@ -234,30 +237,30 @@ export class AddSymbolDialogComponent {
 
   private addSymbolToUniverse(symbol: string, riskGroupId: string): void {
     this.isLoading.set(true);
-    const topEntityMap = selectTopEntities().entities as Record<
-      string,
-      { id: string }
-    >;
-    const topIds = Object.keys(topEntityMap);
-    if (topIds.length === 0) {
-      this.handleAddError(new Error('Parent entity not found'));
-      return;
-    }
-    const parentRow = topEntityMap[topIds[0]];
-    const universeArray = selectUniverses() as unknown as {
-      add(data: Record<string, string>, parentRow: unknown): void;
-    };
-
-    try {
-      const data: Record<string, string> = { symbol };
-      data['risk_group_id'] = riskGroupId;
-      universeArray.add(data, parentRow);
-      this.notification.success(`Added ${symbol} to universe`);
-      this.dialogRef.close({ symbol, riskGroupId });
-      this.isLoading.set(false);
-    } catch (error: unknown) {
-      this.handleAddError(error);
-    }
+    const data: Record<string, string> = { symbol, risk_group_id: riskGroupId };
+    this.http.post<unknown>('./api/universe/add', data).subscribe({
+      next: function handleAddSuccess(this: AddSymbolDialogComponent) {
+        const topState = selectTopEntities();
+        const topIds = topState.ids as string[];
+        if (topIds.length > 0) {
+          const topFacade = facadeRegistry.register('app', 'top');
+          topFacade.updateMany(
+            topIds.map(function markTopDirty(id) {
+              return { id, changes: { isDirty: true } };
+            })
+          );
+        }
+        this.notification.success(`Added ${symbol} to universe`);
+        this.dialogRef.close({ symbol, riskGroupId });
+        this.isLoading.set(false);
+      }.bind(this),
+      error: function handleAddError(
+        this: AddSymbolDialogComponent,
+        error: unknown
+      ) {
+        this.handleAddError(error);
+      }.bind(this),
+    });
   }
 
   private handleAddError(error: unknown): void {

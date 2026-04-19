@@ -11,4 +11,5 @@ export interface ClosedPosition {
   capitalGain: number;
   capitalGainPercentage: number;
   gainLossType?: 'gain' | 'loss' | 'neutral';
+  isLoading?: boolean;
 }

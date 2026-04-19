@@ -40,6 +40,9 @@ import { AddSymbolDialogComponent } from '../../universe-settings/add-symbol-dia
 import { ScreenerService } from '../global-screener/services/screener.service';
 import { ImportDialogComponent } from '../import-dialog/import-dialog.component';
 import { ImportDialogResult } from '../import-dialog/import-dialog-result.interface';
+import { applyPendingEdits } from './apply-pending-edits.function';
+import { buildAccountOptions } from './build-account-options.function';
+import { buildRiskGroupOptions } from './build-risk-group-options.function';
 import { buildShiftSortColumns } from './build-shift-sort-columns.function';
 import { calculateYieldPercent } from './calculate-yield-percent.function';
 import { CellEditEvent } from './cell-edit-event.interface';
@@ -54,6 +57,7 @@ import { restoreUniverseFilters } from './restore-universe-filters.function';
 import { saveUniverseFiltersAndNotify } from './save-universe-filters-and-notify.function';
 import { UniverseService } from './services/universe.service';
 import { UniverseValidationService } from './services/universe-validation.service';
+import { updatePendingEdits } from './update-pending-edits.function';
 
 @Component({
   selector: 'dms-global-universe',
@@ -106,6 +110,10 @@ export class GlobalUniverseComponent implements OnDestroy {
   );
 
   readonly visibleRange = signal({ start: 0, end: 50 });
+  private readonly cellEditVersion$ = signal(0);
+  private readonly pendingEdits$ = signal<Map<string, Record<string, unknown>>>(
+    new Map()
+  );
 
   private readonly localSyncInProgress$ = signal<boolean>(false);
   private textFilterTimer?: ReturnType<typeof setTimeout>;
@@ -133,52 +141,39 @@ export class GlobalUniverseComponent implements OnDestroy {
   readonly formatPosition = formatPosition;
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signal
-  readonly accountOptions$ = computed(() => {
-    const accounts = selectAccounts();
-    const options = [{ label: 'All Accounts', value: 'all' }];
-    for (let i = 0; i < accounts.length; i++) {
-      options.push({ label: accounts[i].name, value: accounts[i].id });
-    }
-    return options;
-  });
+  readonly accountOptions$ = computed(() =>
+    buildAccountOptions(selectAccounts())
+  );
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signal
-  readonly riskGroupOptions$ = computed(() => {
-    const riskGroups = selectRiskGroup();
-    const options: { label: string; value: string }[] = [];
-    for (let i = 0; i < riskGroups.length; i++) {
-      options.push({ label: riskGroups[i].name, value: riskGroups[i].id });
-    }
-    return options;
-  });
+  readonly riskGroupOptions$ = computed(() =>
+    buildRiskGroupOptions(selectRiskGroup())
+  );
 
   // Server handles symbol/risk_group filtering; expired and yield % need client-side filtering.
   //
-  // IMPORTANT — do NOT filter out placeholder rows (symbol === '') here.
-  // SmartNgRX marks rows isLoading=true and buildPlaceholderUniverseEntry() returns symbol:''
-  // as a temporary stand-in until the real data arrives from the server. CDK virtual scroll
-  // requires a STABLE array length to calculate correct scroll-container height. Removing
-  // placeholder rows before CDK sees the array causes the array length to fluctuate as rows
-  // load, which re-introduces the blank-row / position-jump regression that has been fixed and
-  // re-broken across Epics 29, 31, 44, 60, and 64. Placeholder rows render as blank cells for
-  // a brief moment during loading — that is intentional and acceptable.
+  // IMPORTANT — do NOT filter out placeholder rows (symbol === '\u2026') here.
+  // SmartNgRX marks rows isLoading=true and buildPlaceholderUniverseEntry() returns
+  // symbol:'\u2026' as a temporary stand-in until the real data arrives from the server.
+  // CDK virtual scroll requires a STABLE array length to calculate correct scroll-container
+  // height. Removing placeholder rows before CDK sees the array causes the array length to
+  // fluctuate as rows load, which re-introduces the blank-row / position-jump regression.
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signal
   readonly filteredData$ = computed(() => {
+    // Force recompute after cell edits so enriched objects pick up mutated values.
+    this.cellEditVersion$();
     const rawData = this.universeService.universes();
     const riskGroups = selectRiskGroup();
     const vr = this.visibleRange();
     const enrichedData = enrichUniverseWithRiskGroups(rawData, riskGroups, vr);
+
+    applyPendingEdits(enrichedData, this.pendingEdits$());
     return filterUniverses(enrichedData, {
       symbolFilter: this.symbolFilter$(),
       riskGroupFilter: this.riskGroupFilter$(),
       expiredFilter: this.expiredFilter$(),
       minYieldFilter: this.minYieldFilter$(),
     });
-  });
-
-  // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signal
-  readonly showEmptyState$ = computed(() => {
-    return this.globalLoading.isLoading() && this.filteredData$().length === 0;
   });
 
   onSortChange(sort: Sort): void {
@@ -215,15 +210,8 @@ export class GlobalUniverseComponent implements OnDestroy {
       next: function onSyncSuccess(summary) {
         context.localSyncInProgress$.set(false);
         context.globalLoading.hide();
-        const totalSymbols =
-          summary.selectedCount ||
-          summary.inserted + summary.updated + summary.markedExpired;
-        context.notification.showPersistent(
-          `Universe updated: ${summary.inserted} inserted, ` +
-            `${summary.updated} updated, ${summary.markedExpired} expired ` +
-            `(${totalSymbols} symbols processed).`,
-          'success'
-        );
+        // prettier-ignore
+        context.notification.showPersistent(`Universe updated: ${summary.inserted} inserted, ${summary.updated} updated, ${summary.markedExpired} expired (${summary.selectedCount || summary.inserted + summary.updated + summary.markedExpired} symbols processed).`, 'success');
       },
       error: function onSyncError(error: unknown) {
         context.localSyncInProgress$.set(false);
@@ -290,10 +278,17 @@ export class GlobalUniverseComponent implements OnDestroy {
   }
 
   onCellEdit(row: Universe, field: keyof Universe, value: unknown): void {
-    handleCellEdit(row, field, value, {
+    const transformed = handleCellEdit(row, field, value, {
       validationService: this.validationService,
       emitCellEdit: this.cellEdit.emit.bind(this.cellEdit),
     });
+    if (transformed === undefined) {
+      return;
+    }
+
+    updatePendingEdits(this.pendingEdits$, row.id, field, transformed);
+    this.cellEditVersion$.set(this.cellEditVersion$() + 1);
+    this.sortColumns$.set([...this.sortColumns$()]);
   }
 
   onSymbolFilterChange(value: string): void {

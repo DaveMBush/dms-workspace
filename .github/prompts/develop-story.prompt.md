@@ -58,9 +58,12 @@ This keeps the story workflow context small while the validation loop handles:
 3. `pnpm e2e:dms-material:firefox`
 4. `pnpm dupcheck`
 5. `pnpm format`
-6. Code self-review of changed files only (`git diff --name-only origin/main...HEAD`) using `.github/instructions/code-review.md`
+6. Make sure you kill the process running on port 3000 when the e2e tests are done using `mcp_bash_run` to avoid orphaned processes and port conflicts for subsequent stories. Do not use `run_in_terminal` for this.
+7. Code self-review of changed files only (`git diff --name-only origin/main...HEAD`) using `.github/instructions/code-review.md`
 
 **CRITICAL**: The validation subagent must follow the shared quality-validation loop exactly. If ANY check fails and gets fixed, it restarts from step 1 and only returns when all checks pass in a single iteration.
+
+**CRITICAL**: Do not ignore or skip any validation failures because they are not related to this story. All failures must be addressed and resolved before proceeding to the next phase regardless of where or when it originated. This ensures the overall quality and stability of the codebase is maintained. If a test fails it is either due to being missed in a previous story or because something we did in this story caused a regression. In either case, it must be fixed before proceeding.
 
 If the validation subagent returns `VALIDATION FAILED`, use the prompt skill to ask: `Phase 3 validation failed for ${story}: <reason>. Reply with stop, continue, or instructions.`
 

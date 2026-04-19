@@ -1,38 +1,11 @@
 import { generateUniqueId } from './generate-unique-id.helper';
-import { fetchUniverseIds } from './shared-fetch-universe-ids.helper';
+import { seedScrollTradesCommon } from './seed-scroll-base.helper';
 import { initializePrismaClient } from './shared-prisma-client.helper';
-import { createRiskGroups } from './shared-risk-groups.helper';
-import type { UniverseRecord } from './universe-record.types';
 
 interface SeederResult {
   accountId: string;
   symbols: string[];
   cleanup(): Promise<void>;
-}
-
-const ROW_COUNT = 60;
-
-function createBulkUniverseRecords(
-  symbols: string[],
-  riskGroupId: string
-): UniverseRecord[] {
-  const futureDate = new Date();
-  futureDate.setFullYear(futureDate.getFullYear() + 1);
-
-  return symbols.map(function mapSymbol(symbol): UniverseRecord {
-    return {
-      symbol,
-      risk_group_id: riskGroupId,
-      distribution: 1.0,
-      distributions_per_year: 4,
-      last_price: 50.0,
-      ex_date: futureDate,
-      most_recent_sell_date: null,
-      most_recent_sell_price: null,
-      expired: false,
-      is_closed_end_fund: true,
-    };
-  });
 }
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- Prisma createMany requires untyped batch data */
@@ -53,35 +26,22 @@ function createBulkTrades(accountId: string, universeIds: string[]): any[] {
 
 /**
  * Seeds 60 open-position trades for scroll testing.
- * Creates universe records, an account, and open trades (sell_date=null).
+ * Re-uses existing universe entries (first 50 by createdAt asc) so that
+ * buildUniverseMap always has their IDs loaded on account panel render.
+ * Only creates an account and trades — no universe records are created or deleted.
  */
 export async function seedScrollOpenPositionsData(): Promise<SeederResult> {
   const prisma = await initializePrismaClient();
   const uniqueId = generateUniqueId();
-  const symbols = Array.from(
-    { length: ROW_COUNT },
-    function generateSymbol(_: unknown, i: number): string {
-      return `OPSCRL${String(i).padStart(2, '0')}-${uniqueId}`;
-    }
-  );
   const accountName = `E2E-OP-Scroll-${uniqueId}`;
   let accountId = '';
 
   try {
-    const riskGroups = await createRiskGroups(prisma);
-    const records = createBulkUniverseRecords(
-      symbols,
-      riskGroups.equitiesRiskGroup.id
+    accountId = await seedScrollTradesCommon(
+      prisma,
+      accountName,
+      createBulkTrades
     );
-    await prisma.universe.createMany({ data: records });
-    const universeIds = await fetchUniverseIds(prisma, symbols);
-    const account = await prisma.accounts.create({
-      data: { name: accountName },
-    });
-    accountId = account.id;
-    await prisma.trades.createMany({
-      data: createBulkTrades(accountId, universeIds),
-    });
   } catch (error) {
     await prisma.$disconnect();
     throw error;
@@ -89,14 +49,11 @@ export async function seedScrollOpenPositionsData(): Promise<SeederResult> {
 
   return {
     accountId,
-    symbols,
+    symbols: [],
     cleanup: async function cleanupScrollOpenPositions(): Promise<void> {
       try {
         await prisma.trades.deleteMany({ where: { accountId } });
         await prisma.accounts.deleteMany({ where: { name: accountName } });
-        await prisma.universe.deleteMany({
-          where: { symbol: { in: symbols } },
-        });
       } finally {
         await prisma.$disconnect();
       }

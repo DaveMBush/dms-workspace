@@ -22,7 +22,7 @@ function buildRiskGroupMap(riskGroups: RiskGroup[]): Map<string, string> {
 function buildPlaceholderUniverseEntry(id: string): EnrichedUniverse {
   return {
     id,
-    symbol: '',
+    symbol: '\u2026',
     distribution: 0,
     distributions_per_year: 0,
     last_price: 0,

@@ -350,6 +350,39 @@ describe('dividend-history.service', () => {
       expect(result[2].date).toEqual(new Date(2026, 2, 12));
     });
 
+    // FIX(73-2): Regression test for the OXLC duplicate-payDay deduplication fix.
+    // dividendhistory.net sometimes lists two rows with identical pay dates but
+    // different ex-dates (e.g. Mar 17 and Mar 31 both with payDay 03/31/2026).
+    // Without deduplication the 14-day gap between those ex-dates causes
+    // `intervalToDistributionsPerYear` to return 1 (annual) instead of 12 (monthly).
+    // After the fix only the earliest ex-date per pay date is kept.
+    test('FIX(73-2): deduplicates rows sharing the same pay date, keeping earliest ex-date', async () => {
+      const rowsWithDuplicatePayDay = [
+        { exDiv: '03/31/2026', payDay: '03/31/2026', payout: 0.4 }, // later ex-date
+        { exDiv: '03/17/2026', payDay: '03/31/2026', payout: 0.4 }, // earlier ex-date (keep)
+        { exDiv: '02/13/2026', payDay: '02/27/2026', payout: 0.4 }, // different pay date
+        { exDiv: '01/16/2026', payDay: '01/30/2026', payout: 0.4 }, // different pay date
+      ];
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        text: vi
+          .fn()
+          .mockResolvedValueOnce(buildDividendHtml(rowsWithDuplicatePayDay)),
+      });
+
+      const result = await fetchDividendHistory('OXLC');
+
+      // 4 input rows → 3 after dedup (Mar 31 removed, Mar 17 kept)
+      expect(result).toHaveLength(3);
+      // Sorted ascending; first = Jan 16
+      expect(result[0].date).toEqual(new Date(2026, 0, 16));
+      // Second = Feb 13
+      expect(result[1].date).toEqual(new Date(2026, 1, 13));
+      // Third = Mar 17 (earliest ex-date for pay day 03/31), NOT Mar 31
+      expect(result[2].date).toEqual(new Date(2026, 2, 17));
+    });
+
     test('logs debug on successful fetch', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,

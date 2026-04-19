@@ -800,4 +800,78 @@ describe('importFidelityTransactions', function () {
       expect(result.success).toBe(true);
     });
   });
+
+  describe('Epic 74 regression — mid-import error', function () {
+    test('Epic 74: partial import leaves success: true when a sale has insufficient open shares', async function () {
+      // Reproduces the mid-import error discovered via Playwright (story 74-1).
+      // HTTP 400: { success: false, imported: 1, errors: ["No matching open trade found..."] }
+      //
+      // Scenario: CSV has YOU BOUGHT (100 shares) followed by YOU SOLD (200 shares).
+      // The buy succeeds (imported: 1), but the sell fails because only 100 shares are
+      // open in the DB — not enough to cover the 200-share sale.
+      //
+      // Story 74-2 fix: condition changed to totalOpenShares === 0, so oversell is allowed
+      // during import when the DB doesn't have the full buy history.
+      parseFidelityCsv.mockReturnValue([
+        { action: 'YOU BOUGHT', symbol: 'REGT74' },
+        { action: 'YOU SOLD', symbol: 'REGT74' },
+      ]);
+
+      const mapped = emptyResult();
+      mapped.trades = [
+        {
+          universeId: 'u-regt74',
+          accountId: 'a-reg74',
+          buy: 15.0,
+          sell: 0,
+          buy_date: '2026-01-10',
+          quantity: 100,
+        },
+      ];
+      mapped.sales = [
+        {
+          universeId: 'u-regt74',
+          accountId: 'a-reg74',
+          sell: 18.0,
+          sell_date: '2026-02-14',
+          quantity: -200, // selling 200 shares; only 100 are open in the DB
+        },
+      ];
+      mapFidelityTransactions.mockResolvedValue(mapped);
+
+      // Buy succeeds
+      prisma.trades.findFirst.mockResolvedValue(null);
+      prisma.trades.create.mockResolvedValue({ id: 't1' });
+
+      // Only 100 open shares but 200 to sell — oversell scenario
+      prisma.trades.findMany.mockResolvedValue([
+        {
+          id: 't1',
+          universeId: 'u-regt74',
+          accountId: 'a-reg74',
+          buy: 15,
+          sell: 0,
+          buy_date: new Date('2026-01-10'),
+          sell_date: null,
+          quantity: 100,
+        },
+      ]);
+      prisma.trades.update.mockResolvedValue({ id: 't1' });
+      (prisma as any).accounts.findUnique.mockResolvedValue({
+        name: 'Regression 74 Test Account',
+      });
+      (prisma as any).universe.findUnique.mockResolvedValue({
+        symbol: 'REGT74',
+      });
+
+      const result = await importFidelityTransactions('csv content');
+
+      // After the fix: oversell (selling 200 shares when only 100 open) returns an error.
+      expect(result.success).toBe(false);
+      expect(result.errors.length).toBeGreaterThan(0);
+      expect(result.errors[0]).toContain(
+        'No matching open trade found for sale'
+      );
+    });
+  });
 });

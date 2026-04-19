@@ -79,13 +79,6 @@
       </button>
     </mat-card-content>
   </mat-card>
-  } @if (showEmptyState$()) {
-  <mat-card class="empty-state">
-    <mat-card-content>
-      <mat-icon>info</mat-icon>
-      <p>No results found</p>
-    </mat-card-content>
-  </mat-card>
   }
 
   <div class="table-wrapper">
@@ -223,6 +216,7 @@
           mat-icon-button
           color="warn"
           matTooltip="Delete unused symbol"
+          aria-label="Delete unused symbol"
           [attr.data-testid]="'delete-symbol-' + i"
           (click)="deleteUniverse(row)"
         >
