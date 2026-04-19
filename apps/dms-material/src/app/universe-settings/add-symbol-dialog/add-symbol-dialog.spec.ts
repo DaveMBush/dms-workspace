@@ -468,7 +468,7 @@ describe('AddSymbolDialogComponent', () => {
 
   // Story AM.5: TDD RED Phase - Validation and Error Handling Tests
   // Story AM.6: Tests re-enabled for GREEN phase
-  /* eslint-disable no-throw-literal -- AM.5/AM.6: Implementing validation and error handling */
+
   describe('AddSymbolDialogComponent validation - AM.5', () => {
     describe('duplicate symbol validation', () => {
       it('should show error for duplicate symbol', () => {
@@ -876,5 +876,4 @@ describe('AddSymbolDialogComponent', () => {
       });
     });
   });
-  /* eslint-enable no-throw-literal -- End of AM.5 test section */
 });

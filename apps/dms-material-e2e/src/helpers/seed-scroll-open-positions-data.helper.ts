@@ -1,36 +1,11 @@
 import { generateUniqueId } from './generate-unique-id.helper';
+import { seedScrollTradesCommon } from './seed-scroll-base.helper';
 import { initializePrismaClient } from './shared-prisma-client.helper';
 
 interface SeederResult {
   accountId: string;
   symbols: string[];
   cleanup(): Promise<void>;
-}
-
-const ROW_COUNT = 60;
-/** Number of existing universe entries to pull from the DB for trade references. */
-const BASE_UNIVERSE_COUNT = 50;
-
-/**
- * Fetch the first N existing universe IDs ordered by createdAt asc.
- * These are always in the initial page returned by /api/top (page size = 50),
- * so buildUniverseMap will have them loaded when the account panel renders.
- */
-async function fetchExistingUniverseIds(
-  prisma: Awaited<ReturnType<typeof initializePrismaClient>>,
-  count: number
-): Promise<string[]> {
-  const universes = await prisma.universe.findMany({
-    select: { id: true },
-    orderBy: { createdAt: 'asc' },
-    take: count,
-  });
-  if (universes.length === 0) {
-    throw new Error('No universe entries found in the database');
-  }
-  return universes.map(function getId(u) {
-    return u.id;
-  });
 }
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- Prisma createMany requires untyped batch data */
@@ -62,24 +37,11 @@ export async function seedScrollOpenPositionsData(): Promise<SeederResult> {
   let accountId = '';
 
   try {
-    const baseUniverseIds = await fetchExistingUniverseIds(
+    accountId = await seedScrollTradesCommon(
       prisma,
-      BASE_UNIVERSE_COUNT
+      accountName,
+      createBulkTrades
     );
-    // Cycle through the 50 base IDs to produce 60 trade rows
-    const universeIds = Array.from(
-      { length: ROW_COUNT },
-      function cycleId(_: unknown, i: number): string {
-        return baseUniverseIds[i % baseUniverseIds.length];
-      }
-    );
-    const account = await prisma.accounts.create({
-      data: { name: accountName },
-    });
-    accountId = account.id;
-    await prisma.trades.createMany({
-      data: createBulkTrades(accountId, universeIds),
-    });
   } catch (error) {
     await prisma.$disconnect();
     throw error;
