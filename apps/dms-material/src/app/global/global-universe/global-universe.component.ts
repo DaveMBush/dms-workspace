@@ -40,6 +40,9 @@ import { AddSymbolDialogComponent } from '../../universe-settings/add-symbol-dia
 import { ScreenerService } from '../global-screener/services/screener.service';
 import { ImportDialogComponent } from '../import-dialog/import-dialog.component';
 import { ImportDialogResult } from '../import-dialog/import-dialog-result.interface';
+import { applyPendingEdits } from './apply-pending-edits.function';
+import { buildAccountOptions } from './build-account-options.function';
+import { buildRiskGroupOptions } from './build-risk-group-options.function';
 import { buildShiftSortColumns } from './build-shift-sort-columns.function';
 import { calculateYieldPercent } from './calculate-yield-percent.function';
 import { CellEditEvent } from './cell-edit-event.interface';
@@ -54,6 +57,7 @@ import { restoreUniverseFilters } from './restore-universe-filters.function';
 import { saveUniverseFiltersAndNotify } from './save-universe-filters-and-notify.function';
 import { UniverseService } from './services/universe.service';
 import { UniverseValidationService } from './services/universe-validation.service';
+import { updatePendingEdits } from './update-pending-edits.function';
 
 @Component({
   selector: 'dms-global-universe',
@@ -107,9 +111,10 @@ export class GlobalUniverseComponent implements OnDestroy {
 
   readonly visibleRange = signal({ start: 0, end: 50 });
   private readonly cellEditVersion$ = signal(0);
-  private readonly pendingEdits$ = signal<
-    Map<string, Record<string, unknown>>
-  >(new Map());
+  private readonly pendingEdits$ = signal<Map<string, Record<string, unknown>>>(
+    new Map()
+  );
+
   private readonly localSyncInProgress$ = signal<boolean>(false);
   private textFilterTimer?: ReturnType<typeof setTimeout>;
   private readonly baseTable = viewChild(BaseTableComponent);
@@ -136,24 +141,14 @@ export class GlobalUniverseComponent implements OnDestroy {
   readonly formatPosition = formatPosition;
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signal
-  readonly accountOptions$ = computed(() => {
-    const accounts = selectAccounts();
-    const options = [{ label: 'All Accounts', value: 'all' }];
-    for (let i = 0; i < accounts.length; i++) {
-      options.push({ label: accounts[i].name, value: accounts[i].id });
-    }
-    return options;
-  });
+  readonly accountOptions$ = computed(() =>
+    buildAccountOptions(selectAccounts())
+  );
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signal
-  readonly riskGroupOptions$ = computed(() => {
-    const riskGroups = selectRiskGroup();
-    const options: { label: string; value: string }[] = [];
-    for (let i = 0; i < riskGroups.length; i++) {
-      options.push({ label: riskGroups[i].name, value: riskGroups[i].id });
-    }
-    return options;
-  });
+  readonly riskGroupOptions$ = computed(() =>
+    buildRiskGroupOptions(selectRiskGroup())
+  );
 
   // Server handles symbol/risk_group filtering; expired and yield % need client-side filtering.
   //
@@ -172,20 +167,7 @@ export class GlobalUniverseComponent implements OnDestroy {
     const vr = this.visibleRange();
     const enrichedData = enrichUniverseWithRiskGroups(rawData, riskGroups, vr);
 
-    // Apply pending cell-edit overrides so the enriched data reflects
-    // edits immediately — SmartNgRX proxy may not surface the mutation
-    // until the next server round-trip, but the local override guarantees
-    // BaseTable's dataSource sees updated values for immediate re-sort.
-    const edits = this.pendingEdits$();
-    if (edits.size > 0) {
-      for (let i = 0; i < enrichedData.length; i++) {
-        const override = edits.get(enrichedData[i].id);
-        if (override !== undefined) {
-          Object.assign(enrichedData[i], override);
-        }
-      }
-    }
-
+    applyPendingEdits(enrichedData, this.pendingEdits$());
     return filterUniverses(enrichedData, {
       symbolFilter: this.symbolFilter$(),
       riskGroupFilter: this.riskGroupFilter$(),
@@ -228,15 +210,8 @@ export class GlobalUniverseComponent implements OnDestroy {
       next: function onSyncSuccess(summary) {
         context.localSyncInProgress$.set(false);
         context.globalLoading.hide();
-        const totalSymbols =
-          summary.selectedCount ||
-          summary.inserted + summary.updated + summary.markedExpired;
-        context.notification.showPersistent(
-          `Universe updated: ${summary.inserted} inserted, ` +
-            `${summary.updated} updated, ${summary.markedExpired} expired ` +
-            `(${totalSymbols} symbols processed).`,
-          'success'
-        );
+        // prettier-ignore
+        context.notification.showPersistent(`Universe updated: ${summary.inserted} inserted, ${summary.updated} updated, ${summary.markedExpired} expired (${summary.selectedCount || summary.inserted + summary.updated + summary.markedExpired} symbols processed).`, 'success');
       },
       error: function onSyncError(error: unknown) {
         context.localSyncInProgress$.set(false);
@@ -311,24 +286,7 @@ export class GlobalUniverseComponent implements OnDestroy {
       return;
     }
 
-    // Store the edit locally so filteredData$ reflects it immediately.
-    // SmartNgRX proxy may not surface the mutation until the next
-    // server round-trip; this local override guarantees BaseTable's
-    // dataSource sees updated values for immediate re-sort.
-    const newEdits = new Map(this.pendingEdits$());
-    const existing = newEdits.get(row.id) ?? {};
-    existing[field] = transformed;
-    if (field === 'ex_date') {
-      const parsedDate =
-        transformed !== null ? new Date(transformed as string) : null;
-      existing['expired'] =
-        parsedDate !== null &&
-        !isNaN(parsedDate.getTime()) &&
-        parsedDate < new Date();
-    }
-    newEdits.set(row.id, existing);
-    this.pendingEdits$.set(newEdits);
-
+    updatePendingEdits(this.pendingEdits$, row.id, field, transformed);
     this.cellEditVersion$.set(this.cellEditVersion$() + 1);
     this.sortColumns$.set([...this.sortColumns$()]);
   }

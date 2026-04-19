@@ -1,4 +1,5 @@
 import { generateUniqueId } from './generate-unique-id.helper';
+import { fetchExistingUniverseIds } from './seed-scroll-fetch-universe-ids.helper';
 import { initializePrismaClient } from './shared-prisma-client.helper';
 
 interface SeederResult {
@@ -8,30 +9,7 @@ interface SeederResult {
 }
 
 const ROW_COUNT = 60;
-/** Number of existing universe entries to pull from the DB for deposit references. */
 const BASE_UNIVERSE_COUNT = 50;
-
-/**
- * Fetch the first N existing universe IDs ordered by createdAt asc.
- * These are always in the initial page returned by /api/top (page size = 50),
- * so buildUniverseMap will have them loaded when the account panel renders.
- */
-async function fetchExistingUniverseIds(
-  prisma: Awaited<ReturnType<typeof initializePrismaClient>>,
-  count: number
-): Promise<string[]> {
-  const universes = await prisma.universe.findMany({
-    select: { id: true },
-    orderBy: { createdAt: 'asc' },
-    take: count,
-  });
-  if (universes.length === 0) {
-    throw new Error('No universe entries found in the database');
-  }
-  return universes.map(function getId(u) {
-    return u.id;
-  });
-}
 
 /**
  * Get or create a divDepositType named "Dividend" and return its id.
@@ -119,13 +97,14 @@ export async function seedScrollDivDepositsWithSymbolsData(): Promise<SeederResu
   return {
     accountId,
     symbols: [],
-    cleanup: async function cleanupScrollDivDepositsWithSymbols(): Promise<void> {
-      try {
-        await prisma.divDeposits.deleteMany({ where: { accountId } });
-        await prisma.accounts.deleteMany({ where: { name: accountName } });
-      } finally {
-        await prisma.$disconnect();
-      }
-    },
+    cleanup:
+      async function cleanupScrollDivDepositsWithSymbols(): Promise<void> {
+        try {
+          await prisma.divDeposits.deleteMany({ where: { accountId } });
+          await prisma.accounts.deleteMany({ where: { name: accountName } });
+        } finally {
+          await prisma.$disconnect();
+        }
+      },
   };
 }
