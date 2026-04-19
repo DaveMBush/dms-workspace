@@ -107,6 +107,9 @@ export class GlobalUniverseComponent implements OnDestroy {
 
   readonly visibleRange = signal({ start: 0, end: 50 });
   private readonly cellEditVersion$ = signal(0);
+  private readonly pendingEdits$ = signal<
+    Map<string, Record<string, unknown>>
+  >(new Map());
   private readonly localSyncInProgress$ = signal<boolean>(false);
   private textFilterTimer?: ReturnType<typeof setTimeout>;
   private readonly baseTable = viewChild(BaseTableComponent);
@@ -168,6 +171,21 @@ export class GlobalUniverseComponent implements OnDestroy {
     const riskGroups = selectRiskGroup();
     const vr = this.visibleRange();
     const enrichedData = enrichUniverseWithRiskGroups(rawData, riskGroups, vr);
+
+    // Apply pending cell-edit overrides so the enriched data reflects
+    // edits immediately — SmartNgRX proxy may not surface the mutation
+    // until the next server round-trip, but the local override guarantees
+    // BaseTable's dataSource sees updated values for immediate re-sort.
+    const edits = this.pendingEdits$();
+    if (edits.size > 0) {
+      for (let i = 0; i < enrichedData.length; i++) {
+        const override = edits.get(enrichedData[i].id);
+        if (override !== undefined) {
+          Object.assign(enrichedData[i], override);
+        }
+      }
+    }
+
     return filterUniverses(enrichedData, {
       symbolFilter: this.symbolFilter$(),
       riskGroupFilter: this.riskGroupFilter$(),
@@ -285,10 +303,32 @@ export class GlobalUniverseComponent implements OnDestroy {
   }
 
   onCellEdit(row: Universe, field: keyof Universe, value: unknown): void {
-    handleCellEdit(row, field, value, {
+    const transformed = handleCellEdit(row, field, value, {
       validationService: this.validationService,
       emitCellEdit: this.cellEdit.emit.bind(this.cellEdit),
     });
+    if (transformed === undefined) {
+      return;
+    }
+
+    // Store the edit locally so filteredData$ reflects it immediately.
+    // SmartNgRX proxy may not surface the mutation until the next
+    // server round-trip; this local override guarantees BaseTable's
+    // dataSource sees updated values for immediate re-sort.
+    const newEdits = new Map(this.pendingEdits$());
+    const existing = newEdits.get(row.id) ?? {};
+    existing[field] = transformed;
+    if (field === 'ex_date') {
+      const parsedDate =
+        transformed !== null ? new Date(transformed as string) : null;
+      existing['expired'] =
+        parsedDate !== null &&
+        !isNaN(parsedDate.getTime()) &&
+        parsedDate < new Date();
+    }
+    newEdits.set(row.id, existing);
+    this.pendingEdits$.set(newEdits);
+
     this.cellEditVersion$.set(this.cellEditVersion$() + 1);
     this.sortColumns$.set([...this.sortColumns$()]);
   }

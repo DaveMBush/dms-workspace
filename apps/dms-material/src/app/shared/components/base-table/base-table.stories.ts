@@ -163,14 +163,7 @@ const meta: Meta<BaseTableComponent<SampleRow>> = {
   title: 'Shared/BaseTable',
   render: function renderBaseTable(args) {
     return {
-      props: {
-        rowHeight: 57,
-        loading: false,
-        selectable: false,
-        multiSelect: false,
-        sortColumns: [],
-        ...args,
-      },
+      props: args,
       template: TABLE_TEMPLATE,
     };
   },

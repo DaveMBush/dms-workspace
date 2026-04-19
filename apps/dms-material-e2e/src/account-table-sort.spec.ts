@@ -88,12 +88,7 @@ test.describe('Account Tables - Sorting (Story 37.1 - Failing Tests)', () => {
 
     test('clicking Buy Date header sorts Open Positions rows by buy date ascending', async ({
       page,
-      browserName,
     }) => {
-      test.fail(
-        browserName === 'firefox',
-        'Sort bug from Story 37.1 still active on Firefox'
-      );
       // Click "Buy Date" column header to trigger ascending sort
       const header = page.getByRole('button', { name: 'Buy Date' });
       await header.click();
@@ -158,12 +153,7 @@ test.describe('Account Tables - Sorting (Story 37.1 - Failing Tests)', () => {
 
     test('clicking Sell Date header sorts Closed Positions rows by sell date ascending', async ({
       page,
-      browserName,
     }) => {
-      test.fail(
-        browserName === 'firefox',
-        'Sort bug from Story 37.1 still active on Firefox'
-      );
       // Click "Sell Date" column header to trigger ascending sort
       const header = page.getByRole('button', { name: 'Sell Date' });
       await header.click();

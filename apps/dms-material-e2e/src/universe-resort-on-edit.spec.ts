@@ -46,17 +46,26 @@ test.describe('Universe Re-sort After Cell Edit', () => {
     const dateInput = page.locator('[data-testid="ex-date-picker"]');
     await expect(dateInput).toBeVisible({ timeout: 5000 });
 
-    // Set the date to far in the future so the row should move to the bottom
+    // Set the date to far in the future so the row should move to the bottom.
+    // fill() bypasses the datepicker backdrop overlay (no pointer-event check)
+    // and fires an input event that Angular's matDatepickerInput picks up.
+    // Press Enter on the input to trigger saveEdit().
     await dateInput.fill('12/31/2099');
-    await page.keyboard.press('Enter');
-
-    // Wait for the edit to be processed
-    await page.waitForTimeout(500);
+    await dateInput.press('Enter');
 
     // After the edit, the first row should have a DIFFERENT symbol
     // because the original first row (with the earliest date) now has
     // a date far in the future and should have moved to the bottom.
-    const newFirstSymbol = await firstRowSymbol.textContent();
-    expect(newFirstSymbol?.trim()).not.toBe(originalSymbol?.trim());
+    // Use polling to allow Angular's signal graph and server round-trip
+    // to settle.
+    await expect
+      .poll(
+        async function checkFirstRowSymbolChanged() {
+          const symbol = await firstRowSymbol.textContent();
+          return symbol?.trim();
+        },
+        { timeout: 5000 }
+      )
+      .not.toBe(originalSymbol?.trim());
   });
 });
