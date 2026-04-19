@@ -34,31 +34,31 @@ async function fetchExistingUniverseIds(
 }
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- Prisma createMany requires untyped batch data */
-function createBulkTrades(accountId: string, universeIds: string[]): any[] {
+function createBulkSoldTrades(accountId: string, universeIds: string[]): any[] {
   return universeIds.map(function mapTrade(universeId: string) {
     return {
       universeId,
       accountId,
       buy: 50.0,
-      sell: 0,
+      sell: 55.0,
       buy_date: new Date('2025-01-15'),
       quantity: 10,
-      sell_date: null,
+      sell_date: new Date('2025-06-15'),
     };
   });
 }
 /* eslint-enable @typescript-eslint/no-explicit-any -- Re-enable */
 
 /**
- * Seeds 60 open-position trades for scroll testing.
+ * Seeds 60 closed (sold) trades for sort+scroll regression testing.
  * Re-uses existing universe entries (first 50 by createdAt asc) so that
  * buildUniverseMap always has their IDs loaded on account panel render.
  * Only creates an account and trades — no universe records are created or deleted.
  */
-export async function seedScrollOpenPositionsData(): Promise<SeederResult> {
+export async function seedScrollSoldPositionsData(): Promise<SeederResult> {
   const prisma = await initializePrismaClient();
   const uniqueId = generateUniqueId();
-  const accountName = `E2E-OP-Scroll-${uniqueId}`;
+  const accountName = `E2E-SD-Scroll-${uniqueId}`;
   let accountId = '';
 
   try {
@@ -78,7 +78,7 @@ export async function seedScrollOpenPositionsData(): Promise<SeederResult> {
     });
     accountId = account.id;
     await prisma.trades.createMany({
-      data: createBulkTrades(accountId, universeIds),
+      data: createBulkSoldTrades(accountId, universeIds),
     });
   } catch (error) {
     await prisma.$disconnect();
@@ -88,7 +88,7 @@ export async function seedScrollOpenPositionsData(): Promise<SeederResult> {
   return {
     accountId,
     symbols: [],
-    cleanup: async function cleanupScrollOpenPositions(): Promise<void> {
+    cleanup: async function cleanupScrollSoldPositions(): Promise<void> {
       try {
         await prisma.trades.deleteMany({ where: { accountId } });
         await prisma.accounts.deleteMany({ where: { name: accountName } });

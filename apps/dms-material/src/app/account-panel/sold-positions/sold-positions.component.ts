@@ -67,7 +67,9 @@ export class SoldPositionsComponent implements OnDestroy {
 
     return search
       ? positions.filter(function filterBySymbol(p) {
-          return p.symbol.toLowerCase().includes(search);
+          // Keep loading rows to prevent array-length instability in the virtual
+          // scroll viewport (same pattern as the Epic 64 universe table fix).
+          return p.isLoading === true || p.symbol.toLowerCase().includes(search);
         })
       : positions;
   });

@@ -27,6 +27,7 @@ function placeholderOpenPosition(id: string): OpenPosition {
     lastPrice: 0,
     unrealizedGainPercent: 0,
     unrealizedGain: 0,
+    isLoading: true,
   };
 }
 
@@ -47,11 +48,15 @@ function partialOpenPosition(trade: Trade): OpenPosition {
     lastPrice: 0,
     unrealizedGainPercent: 0,
     unrealizedGain: 0,
+    isLoading: true,
   };
 }
 @Injectable({ providedIn: 'root' })
 export class OpenPositionsComponentService {
   private currentAccountSignalStore = inject(currentAccountSignalStore);
+  private currentAccount = selectCurrentAccountSignal(
+    this.currentAccountSignalStore
+  );
 
   visibleRange = signal<{ start: number; end: number }>({
     start: 0,
@@ -60,10 +65,7 @@ export class OpenPositionsComponentService {
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- will hide this
   trades = computed(() => {
-    const currentAccount = selectCurrentAccountSignal(
-      this.currentAccountSignalStore
-    );
-    return currentAccount().openTrades as Trade[];
+    return this.currentAccount().openTrades as Trade[];
   });
 
   deleteOpenPosition(position: OpenPosition): void {
@@ -91,24 +93,9 @@ export class OpenPositionsComponentService {
       return [] as OpenPosition[];
     }
 
-    const smartArr = trades as unknown as {
-      getIdAtIndex?(i: number): string | undefined;
-    };
-    const isProxy = typeof smartArr.getIdAtIndex === 'function';
-
-    const range = this.visibleRange();
-    const visStart = Math.max(0, range.start - 20);
-    const visEnd = Math.min(totalLength, range.end + 20);
-
     const openPositions = new Array<OpenPosition>(totalLength);
 
     for (let i = 0; i < totalLength; i++) {
-      if (isProxy && !(i >= visStart && i < visEnd)) {
-        openPositions[i] = placeholderOpenPosition(
-          smartArr.getIdAtIndex!(i) ?? `placeholder-${String(i)}`
-        );
-        continue;
-      }
       const trade = trades[i];
       if (trade === undefined || typeof trade === 'string') {
         openPositions[i] = placeholderOpenPosition(`placeholder-${String(i)}`);

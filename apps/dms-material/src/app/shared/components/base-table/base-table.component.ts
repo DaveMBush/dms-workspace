@@ -262,6 +262,16 @@ export class BaseTableComponent<T extends { id: string }>
         a: Record<string, unknown>,
         b: Record<string, unknown>
       ): number {
+        // Rows flagged as loading (placeholders) always sort to the end so that
+        // real data is visible at the correct sorted positions.  This prevents
+        // the sort+lazy-load mismatch where placeholder rows with empty fields
+        // move to the top/bottom of the sorted list and the user sees only
+        // empty rows when scrolling.
+        const aLoading = a['isLoading'] === true;
+        const bLoading = b['isLoading'] === true;
+        if (aLoading !== bLoading) {
+          return aLoading ? 1 : -1;
+        }
         for (let i = 0; i < columns.length; i++) {
           const col = columns[i];
           const cmp = compareValues(a[col.column], b[col.column]);

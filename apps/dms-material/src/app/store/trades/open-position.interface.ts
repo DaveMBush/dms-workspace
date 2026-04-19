@@ -14,5 +14,6 @@ export interface OpenPosition {
   lastPrice: number;
   unrealizedGainPercent: number;
   unrealizedGain: number;
+  isLoading?: boolean;
   [key: string]: unknown;
 }

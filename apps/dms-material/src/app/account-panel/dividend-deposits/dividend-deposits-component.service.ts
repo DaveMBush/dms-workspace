@@ -18,6 +18,7 @@ interface DividendRow {
   universeId: string | null;
   symbol: string;
   type: string;
+  isLoading?: boolean;
 }
 
 function buildPlaceholderDividendRow(id: string): DividendRow {
@@ -30,6 +31,7 @@ function buildPlaceholderDividendRow(id: string): DividendRow {
     universeId: null,
     symbol: '',
     type: '',
+    isLoading: true,
   };
 }
 
@@ -81,24 +83,9 @@ export class DividendDepositsComponentService {
       typeNamesMap.set(typesList[ti].id, typesList[ti].name);
     }
 
-    const smartArr = divDepositsArray as unknown as {
-      getIdAtIndex?(i: number): string | undefined;
-    };
-    const isProxy = typeof smartArr.getIdAtIndex === 'function';
-
-    const range = this.visibleRange();
-    const visStart = Math.max(0, range.start - 20);
-    const visEnd = Math.min(totalLength, range.end + 20);
-
     const result = new Array<DividendRow>(totalLength);
 
     for (let i = 0; i < totalLength; i++) {
-      if (isProxy && !(i >= visStart && i < visEnd)) {
-        result[i] = buildPlaceholderDividendRow(
-          smartArr.getIdAtIndex!(i) ?? `placeholder-${String(i)}`
-        );
-        continue;
-      }
       const d = divDepositsArray[i];
       if (d === undefined || typeof d === 'string') {
         result[i] = buildPlaceholderDividendRow(`placeholder-${String(i)}`);
