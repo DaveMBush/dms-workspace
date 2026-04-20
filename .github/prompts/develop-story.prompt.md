@@ -53,13 +53,15 @@ run #file:./quality-validation.prompt.md context=story-${story}
 
 This keeps the story workflow context small while the validation loop handles:
 
-1. `CI=1 pnpm all`
-2. `pnpm e2e:dms-material:chromium`
-3. `pnpm e2e:dms-material:firefox`
-4. `pnpm dupcheck`
-5. `pnpm format`
+1. `pnpm format`
+2. `CI=1 pnpm all`
+3. `pnpm dupcheck`
+4. `pnpm e2e:dms-material:chromium`
+5. `pnpm e2e:dms-material:firefox`
 6. Make sure you kill the process running on port 3000 when the e2e tests are done using `mcp_bash_run` to avoid orphaned processes and port conflicts for subsequent stories. Do not use `run_in_terminal` for this.
 7. Code self-review of changed files only (`git diff --name-only origin/main...HEAD`) using `.github/instructions/code-review.md`
+
+**CRITICAL**: The e2e tests must run as the groups specified. Running tests individually that pass does not count as passing. If they can't run as a group, there is likely a setup issue that needs to be resolved before proceeding.
 
 **CRITICAL**: The validation subagent must follow the shared quality-validation loop exactly. If ANY check fails and gets fixed, it restarts from step 1 and only returns when all checks pass in a single iteration.
 

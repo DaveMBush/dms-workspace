@@ -37,7 +37,7 @@
 #     E1 → E3 → E4(TS rules) → E2 → E5 → E4(template rules) → E6 → E7 → E8
 
 generated: 2026-03-17
-last_updated: 2026-03-27
+last_updated: 2026-04-20
 project_key: NOKEY
 tracking_system: file-system
 story_location: _bmad-output/implementation-artifacts
@@ -419,3 +419,47 @@ development_status:
   76-2-fix-e2e-test-isolation: ready-for-dev
   76-3-fix-e2e-functional-regressions: ready-for-dev
   epic-76-retrospective: optional
+
+  # ── Epic 77: Electron Shell ───────────────────────────────────────────────────
+  epic-77: in-progress
+  77-1-research-electron-setup: ready-for-dev
+  77-2-launch-fastify-in-electron: ready-for-dev
+  77-3-configure-electron-window: ready-for-dev
+  77-4-intercept-api-and-external-links: ready-for-dev
+  77-5-e2e-electron-launch: ready-for-dev
+  epic-77-retrospective: optional
+
+  # ── Epic 78: Dist/Year Weekly Validation Fix ──────────────────────────────────
+  epic-78: in-progress
+  78-1-failing-e2e-distperyear-weekly: ready-for-dev
+  78-2-fix-distperyear-weekly-validation: ready-for-dev
+  epic-78-retrospective: optional
+
+  # ── Epic 79: OXLC Joint Brokerage Missing Positions ──────────────────────────
+  epic-79: in-progress
+  79-1-investigate-oxlc-csv-import: ready-for-dev
+  79-2-fix-csv-import-split-logic: ready-for-dev
+  79-3-verify-oxlc-positions-display: ready-for-dev
+  epic-79-retrospective: optional
+
+  # ── Epic 80: Error Logs Screen Restore ───────────────────────────────────────
+  epic-80: in-progress
+  80-1-locate-error-log-component-git: ready-for-dev
+  80-2-restore-error-log-viewer: ready-for-dev
+  80-3-e2e-error-logs-screen: ready-for-dev
+  epic-80-retrospective: optional
+
+  # ── Epic 81: Distribution Volatility Indicator ────────────────────────────────
+  epic-81: in-progress
+  81-1-backend-volatility-service: ready-for-dev
+  81-2-frontend-vol-column: ready-for-dev
+  81-3-e2e-vol-column: ready-for-dev
+  epic-81-retrospective: optional
+
+  # ── Epic 82: UnSkip Tests ─────────────────────────────────────────────────────
+  epic-82: in-progress
+  82-1-inventory-skipped-tests: ready-for-dev
+  82-2-unskip-fix-unit-tests: ready-for-dev
+  82-3-unskip-fix-e2e-tests: ready-for-dev
+  82-4-verify-zero-skipped-tests: ready-for-dev
+  epic-82-retrospective: optional
