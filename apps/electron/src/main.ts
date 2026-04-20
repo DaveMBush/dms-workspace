@@ -14,11 +14,14 @@ function healthCheck(port: number): Promise<void> {
     reject: (err: Error) => void
   ): void {
     const req = http.get(
-      `http://localhost:${port}/api/health`,
+      `http://127.0.0.1:${port}/api/health`,
+      { timeout: 2000 },
       function onResponse(res): void {
         if (res.statusCode === 200) {
+          res.resume();
           resolve();
         } else {
+          res.resume();
           reject(
             new Error(
               `Health check failed with status: ${res.statusCode ?? 'unknown'}`
@@ -27,6 +30,9 @@ function healthCheck(port: number): Promise<void> {
         }
       }
     );
+    req.on('timeout', function onTimeout(): void {
+      req.destroy(new Error('Health check request timed out'));
+    });
     req.on('error', reject);
   });
 }
@@ -36,6 +42,7 @@ function startServer(port: number): Promise<void> {
     resolve: () => void,
     reject: (err: Error) => void
   ): void {
+    // Note: serverPath must be updated for asar-packaged production builds
     const serverPath = path.join(
       __dirname,
       '../../../dist/apps/server/main.js'
@@ -88,16 +95,19 @@ function createWindow(): void {
 }
 
 function handleQuit(): void {
-  if (serverProcess) {
-    serverProcess.kill('SIGTERM');
-    setTimeout(function killIfStillAlive(): void {
-      if (serverProcess) {
-        serverProcess.kill('SIGTERM');
-        serverProcess = null;
-      }
-    }, 3000);
-    serverProcess = null;
+  if (!serverProcess) {
+    return;
   }
+  const child = serverProcess;
+  child.kill('SIGTERM');
+  setTimeout(function killIfStillAlive(): void {
+    if (!child.killed && child.exitCode === null) {
+      child.kill('SIGKILL');
+    }
+  }, 3000);
+  child.once('exit', function clearRef(): void {
+    serverProcess = null;
+  });
 }
 
 function onWindowAllClosed(): void {
@@ -125,6 +135,10 @@ async function init(): Promise<void> {
     createWindow();
   } catch (error) {
     console.error('[electron] Failed to start server:', error);
+    if (serverProcess?.exitCode === null) {
+      serverProcess.kill('SIGKILL');
+      serverProcess = null;
+    }
     app.exit(1);
   }
 }

@@ -27,7 +27,7 @@ describe('findAvailablePort', () => {
     });
   });
 
-  it('returns different ports on successive calls', async () => {
+  it('handles concurrent calls and returns valid ports', async () => {
     const [port1, port2] = await Promise.all([
       findAvailablePort(),
       findAvailablePort(),
