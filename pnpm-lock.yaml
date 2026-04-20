@@ -304,7 +304,7 @@ importers:
         specifier: ^12.6.2
         version: 12.6.2
       electron:
-        specifier: latest
+        specifier: ^41.0.0
         version: 41.2.1
       esbuild:
         specifier: ^0.25.7
