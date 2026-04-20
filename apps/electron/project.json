@@ -12,9 +12,16 @@
         "cwd": "apps/electron"
       }
     },
+    "test": {
+      "executor": "@nx/vitest:test",
+      "options": {
+        "passWithNoTests": true,
+        "cwd": "apps/electron"
+      }
+    },
     "start": {
       "executor": "nx:run-commands",
-      "dependsOn": ["build"],
+      "dependsOn": ["build", { "projects": ["server"], "target": "build" }],
       "options": {
         "command": "../../node_modules/.bin/electron .",
         "cwd": "apps/electron"

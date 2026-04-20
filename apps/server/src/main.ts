@@ -68,6 +68,10 @@ async function startServer(): Promise<void> {
     console.log(server.printRoutes());
     console.log(`🚀 Server ready at http://${host}:${port}`);
     console.log(`💚 Health check available at http://${host}:${port}/health`);
+    // Notify parent process (e.g. Electron main) that the server is ready
+    if (process.send) {
+      process.send('ready');
+    }
   } catch (error) {
     server.log.error(error);
     process.exit(1);
