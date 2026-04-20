@@ -1,4 +1,7 @@
-import { contextBridge } from 'electron';
+import { contextBridge, ipcRenderer } from 'electron';
 
-// Expose IPC surface to renderer in later stories
-contextBridge.exposeInMainWorld('electronAPI', {});
+contextBridge.exposeInMainWorld('electronAPI', {
+  getApiPort: function getApiPort(): Promise<number> {
+    return ipcRenderer.invoke('get-api-port') as Promise<number>;
+  },
+});
