@@ -123,6 +123,7 @@
     "autoprefixer": "^10.4.27",
     "better-sqlite3": "^12.6.2",
     "esbuild": "^0.25.7",
+    "electron": "^41.0.0",
     "eslint": "^9.39.4",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-cypress": "^4.3.0",

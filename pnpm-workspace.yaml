@@ -6,6 +6,7 @@ onlyBuiltDependencies:
   - '@tailwindcss/oxide'
   - aws-sdk
   - better-sqlite3
+  - electron
   - esbuild
   - lmdb
   - msgpackr-extract
