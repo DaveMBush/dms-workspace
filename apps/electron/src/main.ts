@@ -1,5 +1,5 @@
 import { ChildProcess, fork } from 'child_process';
-import { app, BrowserWindow, ipcMain, session } from 'electron';
+import { app, BrowserWindow, ipcMain, session, shell } from 'electron';
 import http from 'http';
 import path from 'path';
 
@@ -95,7 +95,9 @@ function handleWillNavigate(
 ): void {
   if (!isLocalAppUrl(url, port)) {
     event.preventDefault();
-    // External links handled in Story 77.4 via shell.openExternal
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      void shell.openExternal(url);
+    }
   }
 }
 
@@ -143,6 +145,11 @@ function createWindow(port: number): void {
   ): Electron.WindowOpenHandlerResponse {
     if (isLocalAppUrl(details.url, port)) {
       void win.loadURL(details.url);
+    } else if (
+      details.url.startsWith('http://') ||
+      details.url.startsWith('https://')
+    ) {
+      void shell.openExternal(details.url);
     }
     return { action: 'deny' };
   });
