@@ -49,15 +49,21 @@ test.describe('Dist/Year Weekly Acceptance — Epic 78 / Story 78.1', () => {
     // Filter to the known seed symbol so only one row is visible.
     const symbolInput = page.locator('input[placeholder="Search Symbol"]');
     await symbolInput.fill(TEST_SYMBOL);
-    // Allow 300 ms debounce + UI re-render before asserting rows.
-    await page.waitForTimeout(500);
-    // Wait for the row to appear (auto-retries for up to 10 s).
+    // Wait for the row to appear — Playwright retries until the table re-renders.
+    // No fixed debounce sleep: we let the assertion itself act as the gate.
     await expect(
       page.locator('tr.mat-mdc-row', {
         has: page.locator(`text=${TEST_SYMBOL}`),
       })
     ).toBeVisible({ timeout: 10000 });
   });
+
+  // NOTE: No afterEach teardown is needed.
+  // Both tests are in the TDD-red phase: they FAIL because saveEdit() returns
+  // early when numericValue > max (hardcoded [max]="12"), so the 52 value is
+  // never persisted to the database.  The E2E test database is also rebuilt
+  // from scratch at the start of every run (prepare-e2e-db target), so any
+  // inadvertent mutation would be harmless across runs.
 
   // EXPECTED TO FAIL: Bug exists until Story 78.2 is implemented
   test('AC#1 — entering 52 in Dist/Year for a weekly symbol shows no validation error', async ({
