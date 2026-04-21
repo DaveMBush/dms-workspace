@@ -1,6 +1,6 @@
 # Story 78.1: Write Failing E2E Test for Dist/Year Weekly Acceptance
 
-Status: Approved
+Status: Done
 
 ## Story
 
@@ -24,53 +24,48 @@ so that the fix in Story 78.2 has a definitive pass/fail gate.
 
 ## Tasks / Subtasks
 
-- [ ] Investigate the symbol edit form and Dist/Year field (AC: #1)
-  - [ ] Search for `distPerYear` or `dist_per_year` in `apps/dms-material/src/` to identify the
+- [x] Investigate the symbol edit form and Dist/Year field (AC: #1)
+  - [x] Search for `distPerYear` or `dist_per_year` in `apps/dms-material/src/` to identify the
         edit form component
-  - [ ] Search for "Value must be at most 12" in the codebase to confirm the validation message
+  - [x] Search for "Value must be at most 12" in the codebase to confirm the validation message
         text used in the UI
-  - [ ] Identify the route that opens the symbol edit form (likely `/universe` with an edit
+  - [x] Identify the route that opens the symbol edit form (likely `/universe` with an edit
         dialog)
-  - [ ] Identify the input's selector (role, label, test ID, etc.) by inspecting the component
+  - [x] Identify the input's selector (role, label, test ID, etc.) by inspecting the component
         template
 
-- [ ] Inspect existing E2E specs for universe edit patterns (AC: #1)
-  - [ ] Search `apps/dms-material-e2e/src/` for universe edit or symbol edit tests
-  - [ ] Identify patterns used to: open the edit dialog, fill fields, blur fields, check
+- [x] Inspect existing E2E specs for universe edit patterns (AC: #1)
+  - [x] Search `apps/dms-material-e2e/src/` for universe edit or symbol edit tests
+  - [x] Identify patterns used to: open the edit dialog, fill fields, blur fields, check
         validation messages, and submit the form
-  - [ ] Re-use the same helper functions and selectors
+  - [x] Re-use the same helper functions and selectors
 
-- [ ] Identify or create a weekly test fixture symbol (AC: #1)
-  - [ ] Inspect `apps/dms-material-e2e/src/helpers/` for database seed helpers
-  - [ ] Check how existing specs seed symbols with specific properties (frequency, ticker, etc.)
-  - [ ] Find the Prisma `Universe` model field that stores frequency — check `prisma/schema.prisma`
-        for the field name (likely `frequency` or `distributionFrequency`)
-  - [ ] Confirm the value used to represent weekly frequency in the database (e.g., `"Weekly"`,
-        `"weekly"`, `"W"`, or numeric code)
-  - [ ] Seed a symbol with `frequency = "Weekly"` (or correct value) and `distPerYear = 1` as
-        the initial value in `beforeAll`
+- [x] Identify or create a weekly test fixture symbol (AC: #1)
+  - [x] Inspect `apps/dms-material-e2e/src/helpers/` for database seed helpers
+  - [x] Confirmed: `Universe` model has NO `frequency` field — weekly frequency is represented
+        purely as `distributions_per_year = 52`
+  - [x] Decision: use default seed symbol `TESTEQ1` (seeded by `tools/create-test-db.js`).
+        No custom seeding required — bug manifests for ANY symbol when value > 12 is entered.
 
-- [ ] Create `apps/dms-material-e2e/src/dist-per-year-weekly.spec.ts` (AC: #1, #2, #3)
-  - [ ] Add `beforeAll` to seed a weekly symbol using the existing E2E database helpers
-  - [ ] Add `afterAll` to clean up the seeded symbol
-  - [ ] Implement AC#1 test: open edit form, clear Dist/Year, type `52`, blur, assert no
-        "Value must be at most 12" text is visible — **this test is expected to FAIL**
-  - [ ] Implement AC#2 test: submit form with Dist/Year = 52, assert saved value = 52 and no
-        error toast — **this test is expected to FAIL**
-  - [ ] Add a prominent comment at the top of each failing test:
+- [x] Create `apps/dms-material-e2e/src/dist-per-year-weekly.spec.ts` (AC: #1, #2, #3)
+  - [x] Implement AC#1 test: navigate to /global/universe, filter by TESTEQ1, click Dist/Year
+        cell, type 52, blur, assert no "Value must be at most 12" text is visible —
+        **FAILS due to hardcoded [max]="12" in global-universe.component.html**
+  - [x] Implement AC#2 test: navigate to /global/universe, filter by TESTEQ1, click Dist/Year
+        cell, type 52, press Enter, assert input is hidden and display shows 52 —
+        **FAILS because saveEdit() returns early when value > max**
+  - [x] Added prominent comment at the top of each failing test:
         `// EXPECTED TO FAIL: Bug exists until Story 78.2 is implemented`
 
-- [ ] Confirm tests fail as expected (AC: #3)
-  - [ ] Run `pnpm e2e:dms-material:chromium --grep "dist-per-year-weekly"` (or equivalent)
-  - [ ] Confirm both AC#1 and AC#2 tests FAIL with assertion errors
-  - [ ] Confirm the failure message matches the expected bug behaviour ("Value must be at most 12"
-        is visible when it should not be)
-  - [ ] Record failure output in Dev Agent Record
+- [x] Confirm tests fail as expected (AC: #3)
+  - [x] Ran `CI=1 pnpm exec playwright test ... dist-per-year-weekly.spec.ts`
+  - [x] Both AC#1 and AC#2 tests FAIL with `expect(locator).not.toBeVisible() failed`
+  - [x] AC#1 failure: `getByText('Value must be at most 12')` — Expected: not visible, Received: visible
+  - [x] AC#2 failure: same validation error keeps input in edit mode
 
-- [ ] Ensure `pnpm all` reports the failures cleanly (AC: #3)
-  - [ ] Confirm `pnpm all` runs but exits non-zero due to the new failing tests
-  - [ ] Confirm no other tests are broken by the new spec
-  - [ ] Record outcome in Dev Agent Record
+- [x] Ensure `pnpm all` reports the failures cleanly (AC: #3)
+  - [x] Confirmed `pnpm all` exits non-zero due to the new failing tests
+  - [x] No other tests are broken by the new spec
 
 > **NOTE:** `pnpm all` will NOT pass after this story — that is expected and intentional.
 > The suite is restored to green by Story 78.2. Do not skip or `.skip()` the tests.
@@ -85,117 +80,57 @@ acts as the authoritative acceptance criterion for Story 78.2.
 
 ---
 
-### Finding the Edit Form Component
+### Key Technical Findings
 
-Search for the validation message text or the form field name:
-
+**Bug location:**
+`apps/dms-material/src/app/global/global-universe/global-universe.component.html`
+```html
+<dms-editable-cell ... [max]="12" ... />
 ```
-grep_search "Value must be at most 12" apps/dms-material/src/
-grep_search "distPerYear\|dist_per_year" apps/dms-material/src/ --includePattern="*.ts"
-grep_search "distPerYear\|dist_per_year" apps/dms-material/src/ --includePattern="*.html"
-```
+The `[max]="12"` binding is hardcoded. It should be dynamic based on distribution frequency.
 
-The component containing this field is the one to open in the E2E test.
+**Validation logic:**
+`apps/dms-material/src/app/shared/components/editable-cell/editable-cell.component.ts`
+`saveEdit()` sets `validationError$.set('Value must be at most ${maxVal}')` and returns early
+when `numericValue > max`, keeping `isEditing$ = true`.
+
+**Test data:**
+No `frequency` field exists on the `Universe` Prisma model. Weekly frequency = `distributions_per_year = 52`.
+Default seed symbol `TESTEQ1` is always present (seeded by `tools/create-test-db.js`).
+No custom seeding needed — bug manifests for ANY symbol when value > 12 is entered.
+
+**Universe table selectors:**
+- Symbol filter: `input[placeholder="Search Symbol"]`
+- Table row: `tr.mat-mdc-row` with `text=TESTEQ1`
+- Dist/Year cell: `td.mat-column-distributions_per_year`
+- Display mode: `.display-value` (click to enter edit mode)
+- Input: `input[matinput]` (lowercase attribute)
+- Validation error: `div.validation-error[role="alert"]` / `getByText('Value must be at most 12')`
+
+**Investigation note:**
+Initially attempted custom seeding (`WKL-${uniqueId}` symbols) in `beforeAll/afterAll`,
+but SmartNgRX lazy-loading meant the seeded symbol was not in the visible page range after
+filtering, causing `beforeEach` to timeout. Switched to default seed symbol TESTEQ1, which
+always loads first and resolves immediately.
 
 ---
 
-### Prisma Schema — Frequency Field
+### Confirming the Bug
 
-Check `prisma/schema.prisma` for the `Universe` or related model:
-
-```prisma
-model Universe {
-  // ...
-  distPerYear    Int?
-  frequency      String?  // or an enum
-  // ...
-}
-```
-
-The exact field name for distribution frequency must be confirmed before seeding. Look for
-existing seed data or fixtures in `apps/dms-material-e2e/` to see what values are used.
-
----
-
-### E2E Seed Helper Pattern
-
-Look at `apps/dms-material-e2e/src/helpers/` for a pattern like:
-
-```typescript
-// Example pattern — adapt to actual helper API
-import { seedSymbol, cleanupSymbol } from './helpers/db';
-
-let weeklySymbolId: number;
-
-test.beforeAll(async () => {
-  weeklySymbolId = await seedSymbol({
-    ticker: 'TEST-WKL',
-    frequency: 'Weekly',   // confirm exact value from schema/existing tests
-    distPerYear: 1,
-  });
-});
-
-test.afterAll(async () => {
-  await cleanupSymbol(weeklySymbolId);
-});
-```
-
----
-
-### Opening the Symbol Edit Form
-
-Based on patterns from existing universe specs (adapt selectors to match actual codebase):
-
-```typescript
-// Navigate to universe screen
-await page.goto('/');
-// or await page.goto('/universe');
-
-// Find and click the edit button for the seeded symbol
-await page.getByRole('row', { name: 'TEST-WKL' }).getByRole('button', { name: /edit/i }).click();
-
-// Wait for edit dialog/panel to open
-await page.waitForSelector('[data-testid="symbol-edit-form"]'); // adjust selector
-```
-
----
-
-### Dist/Year Field Interaction
-
-```typescript
-// Find the Dist/Year input
-const distPerYearInput = page.getByLabel(/dist.*year/i); // adjust to actual label
-
-// Clear and type 52
-await distPerYearInput.clear();
-await distPerYearInput.fill('52');
-await distPerYearInput.blur();
-
-// Assert validation error is NOT visible (this FAILS due to the bug)
-await expect(page.getByText('Value must be at most 12')).not.toBeVisible();
-```
-
----
-
-### Confirming the Bug at Test-Write Time
-
-After writing and running the test, paste the Playwright error output into the Dev Agent Record.
-The failure should show something like:
+Playwright error output for AC#1:
 
 ```
-AssertionError: expected "Value must be at most 12" to not be visible
-  Received: visible
+Error: expect(locator).not.toBeVisible() failed
+
+Locator:  getByText('Value must be at most 12')
+Expected: not visible
+Received: visible
+
+  > 87 |     await expect(page.getByText('Value must be at most 12')).not.toBeVisible();
 ```
 
-This confirms the bug exists and the test correctly gates it.
-
----
-
-### Test File Naming Convention
-
-Following the pattern of existing TDD stories (e.g., Story 36.1, 54.1):
-- File: `apps/dms-material-e2e/src/dist-per-year-weekly.spec.ts`
-- Both tests in the same file — one for validation UI behaviour, one for save behaviour
+This confirms the bug: "Value must be at most 12" IS visible when 52 is entered,
+because `[max]="12"` is hardcoded in the template.
 
 ---
 
@@ -203,29 +138,41 @@ Following the pattern of existing TDD stories (e.g., Story 36.1, 54.1):
 
 | Purpose | Command |
 |---------|---------|
-| Run only the new spec (Chromium) | `pnpm e2e:dms-material:chromium --grep "dist per year weekly\|distPerYear"` |
-| Run only the new spec (Firefox) | `pnpm e2e:dms-material:firefox --grep "dist per year weekly\|distPerYear"` |
+| Run only the new spec (Chromium) | `CI=1 pnpm exec playwright test --config=apps/dms-material-e2e/playwright.config.ts --project=chromium apps/dms-material-e2e/src/dist-per-year-weekly.spec.ts` |
 | Run all tests (expect new failures) | `pnpm all` |
-| Search for validation message | `grep -r "Value must be at most 12" apps/dms-material/src/` |
-| Search for distPerYear | `grep -r "distPerYear\|dist_per_year" apps/dms-material/src/` |
-
-### Key Files
-
-| File | Purpose |
-|------|---------|
-| `apps/dms-material-e2e/src/dist-per-year-weekly.spec.ts` | New failing E2E spec (create this) |
-| `apps/dms-material-e2e/src/helpers/` | Existing E2E database seed helpers |
-| `prisma/schema.prisma` | Confirm `frequency` field name and type on Universe model |
-| `apps/dms-material/src/` | Symbol edit form component (find via grep for distPerYear) |
 
 ## Dev Agent Record
 
 ### Agent Model Used
 
-_TBD_
+Claude Sonnet 4.6 (GitHub Copilot)
 
 ### Debug Log References
 
+- SmartNgRX lazy-loading prevented custom-seeded symbols from appearing via filter — root
+  cause: seeded symbols with alphabetically late tickers (WKL-xxx) are not in the initial
+  visible page of the table. Resolved by using default seed symbol TESTEQ1.
+- Each test retry regenerated a different symbol ID because `beforeAll` appears to re-run on
+  retry in Playwright when `reuseExistingServer: true` is set. Resolved by removing custom
+  seeding entirely.
+- `Cannot find module '.prisma/client/default'` — resolved by running
+  `pnpm exec prisma generate` (postinstall only runs when `CI=true` string, not `CI=1`).
+- `The table main.risk_group does not exist` — resolved by running
+  `node tools/create-test-db.js test-database.db`.
+
 ### Completion Notes List
 
+- Tests fail correctly at the bug assertion (not at setup/navigation).
+- No custom seeding, no `beforeAll/afterAll` needed — simpler and more reliable.
+- `pnpm all` fails as expected; no other tests broken.
+- Story 78.2 will fix `[max]="12"` to be dynamic, making these tests green.
+
 ### File List
+
+- `apps/dms-material-e2e/src/dist-per-year-weekly.spec.ts` — Created (new failing E2E spec)
+
+### Change Log
+
+| Date | Change |
+|------|--------|
+| 2025-01-20 | Created `dist-per-year-weekly.spec.ts` with 2 failing tests confirming the [max]="12" bug |
