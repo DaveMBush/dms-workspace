@@ -1,4 +1,6 @@
+import fastifyStatic from '@fastify/static';
 import fastify from 'fastify';
+import path from 'path';
 
 import { configureApp } from './app/app';
 import {
@@ -22,6 +24,28 @@ const server = fastify({
 
 // Register your application as a normal plugin.
 server.register(configureApp);
+
+// Serve Angular static assets when not in test environment
+if (process.env['CI'] !== '1' && process.env['NODE_ENV'] !== 'test') {
+  const angularBuildPath = path.join(
+    __dirname,
+    '../../../dist/apps/dms-material/browser'
+  );
+
+  void server.register(fastifyStatic, {
+    root: angularBuildPath,
+    prefix: '/',
+    decorateReply: false,
+  });
+
+  server.setNotFoundHandler(function handleNotFound(request, reply): void {
+    if (!request.url.startsWith('/api/')) {
+      void reply.sendFile('index.html');
+      return;
+    }
+    void reply.status(404).send({ error: 'Not found' });
+  });
+}
 
 // Graceful shutdown handling
 const shutdown = async function handleShutdown(signal: string): Promise<void> {

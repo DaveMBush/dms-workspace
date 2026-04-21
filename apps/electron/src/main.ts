@@ -1,5 +1,5 @@
 import { ChildProcess, fork } from 'child_process';
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow, ipcMain, session } from 'electron';
 import http from 'http';
 import path from 'path';
 
@@ -80,7 +80,38 @@ function startServer(port: number): Promise<void> {
   });
 }
 
-function createWindow(): void {
+function handleWillNavigate(
+  event: Electron.Event,
+  url: string,
+  port: number
+): void {
+  const localOrigin = `http://localhost:${port}`;
+  if (!url.startsWith(localOrigin)) {
+    event.preventDefault();
+    // External links handled in Story 77.4 via shell.openExternal
+  }
+}
+
+function configureContentSecurityPolicy(port: number): void {
+  session.defaultSession.webRequest.onHeadersReceived(
+    function onHeadersReceived(details, callback): void {
+      callback({
+        responseHeaders: {
+          ...details.responseHeaders,
+          'Content-Security-Policy': [
+            `default-src 'self' http://localhost:${port}; ` +
+              `script-src 'self'; ` +
+              `style-src 'self' 'unsafe-inline'; ` +
+              `img-src 'self' data:; ` +
+              `connect-src 'self' http://localhost:${port};`,
+          ],
+        },
+      });
+    }
+  );
+}
+
+function createWindow(port: number): void {
   const win = new BrowserWindow({
     width: 1280,
     height: 800,
@@ -88,10 +119,18 @@ function createWindow(): void {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
       contextIsolation: true,
+      sandbox: true,
     },
   });
 
-  void win.loadURL('about:blank');
+  win.webContents.on(
+    'will-navigate',
+    function onWillNavigate(event: Electron.Event, url: string): void {
+      handleWillNavigate(event, url, port);
+    }
+  );
+
+  void win.loadURL(`http://localhost:${port}`);
 }
 
 function handleQuit(): void {
@@ -132,7 +171,8 @@ async function init(): Promise<void> {
     console.log(`[electron] Health check passed on port ${port}`);
 
     await app.whenReady();
-    createWindow();
+    configureContentSecurityPolicy(port);
+    createWindow(port);
   } catch (error) {
     console.error('[electron] Failed to start server:', error);
     if (serverProcess?.exitCode === null) {
