@@ -33,7 +33,7 @@ interface LogFileInfo {
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './global-error-logs.html',
 })
-export class GlobalErrorLogs {
+export class GlobalErrorLogsComponent {
   private readonly http = inject(HttpClient);
 
   readonly loading$ = signal(true);
@@ -48,18 +48,16 @@ export class GlobalErrorLogs {
     const self = this;
     self.loading$.set(true);
     self.errorMessage$.set('');
-    this.http
-      .get<{ files: LogFileInfo[] }>('/api/logs/files')
-      .subscribe({
-        next: function onFilesSuccess(response) {
-          self.files$.set(response.files);
-          self.loading$.set(false);
-        },
-        error: function onFilesError() {
-          self.errorMessage$.set('Failed to load error log files.');
-          self.loading$.set(false);
-        },
-      });
+    this.http.get<{ files: LogFileInfo[] }>('/api/logs/files').subscribe({
+      next: function onFilesSuccess(response) {
+        self.files$.set(response.files);
+        self.loading$.set(false);
+      },
+      error: function onFilesError() {
+        self.errorMessage$.set('Failed to load error log files.');
+        self.loading$.set(false);
+      },
+    });
   }
 
   deleteFile(filename: string): void {

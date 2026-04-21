@@ -4,7 +4,10 @@
 <mat-card>
   @if (loading$()) {
   <mat-card-content>
-    <mat-spinner diameter="40" aria-label="Loading error log files"></mat-spinner>
+    <mat-spinner
+      diameter="40"
+      aria-label="Loading error log files"
+    ></mat-spinner>
   </mat-card-content>
   } @else if (errorMessage$()) {
   <mat-card-content>
