@@ -132,4 +132,46 @@ describe('EditableCellComponent', () => {
     component.saveEdit();
     expect(spy).toHaveBeenCalledWith(123.456);
   });
+
+  describe('max validation for distributions_per_year (Story 78.2)', () => {
+    it('should accept 52 when max is 52 (weekly frequency)', () => {
+      fixture.componentRef.setInput('max', 52);
+      const spy = vi.spyOn(component.valueChange, 'emit');
+      component.startEdit();
+      component.onValueChange('52');
+      component.saveEdit();
+      expect(component.validationError$()).toBe('');
+      expect(spy).toHaveBeenCalledWith(52);
+    });
+
+    it('should reject 53 when max is 52 (weekly frequency)', () => {
+      fixture.componentRef.setInput('max', 52);
+      const spy = vi.spyOn(component.valueChange, 'emit');
+      component.startEdit();
+      component.onValueChange('53');
+      component.saveEdit();
+      expect(component.validationError$()).toBe('Value must be at most 52');
+      expect(spy).not.toHaveBeenCalled();
+    });
+
+    it('should accept 12 when max is 12 (monthly frequency)', () => {
+      fixture.componentRef.setInput('max', 12);
+      const spy = vi.spyOn(component.valueChange, 'emit');
+      component.startEdit();
+      component.onValueChange('12');
+      component.saveEdit();
+      expect(component.validationError$()).toBe('');
+      expect(spy).toHaveBeenCalledWith(12);
+    });
+
+    it('should reject 13 when max is 12 (monthly frequency)', () => {
+      fixture.componentRef.setInput('max', 12);
+      const spy = vi.spyOn(component.valueChange, 'emit');
+      component.startEdit();
+      component.onValueChange('13');
+      component.saveEdit();
+      expect(component.validationError$()).toBe('Value must be at most 12');
+      expect(spy).not.toHaveBeenCalled();
+    });
+  });
 });
