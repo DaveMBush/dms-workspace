@@ -62,7 +62,7 @@ test.describe('Electron App Launch', () => {
     expect(consoleErrors).toHaveLength(0);
   });
 
-  test('AC#2: only one BrowserWindow is open on load', async () => {
+  test('AC#2: only one BrowserWindow is open on load', () => {
     expect(app.windows()).toHaveLength(1);
   });
 
