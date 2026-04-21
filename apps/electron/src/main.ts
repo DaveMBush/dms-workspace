@@ -95,7 +95,8 @@ function handleWillNavigate(
 ): void {
   if (!isLocalAppUrl(url, port)) {
     event.preventDefault();
-    if (url.startsWith('http://') || url.startsWith('https://')) {
+    const scheme = url.slice(0, url.indexOf(':') + 1).toLowerCase();
+    if (scheme === 'http:' || scheme === 'https:') {
       void shell.openExternal(url);
     }
   }
@@ -145,11 +146,13 @@ function createWindow(port: number): void {
   ): Electron.WindowOpenHandlerResponse {
     if (isLocalAppUrl(details.url, port)) {
       void win.loadURL(details.url);
-    } else if (
-      details.url.startsWith('http://') ||
-      details.url.startsWith('https://')
-    ) {
-      void shell.openExternal(details.url);
+    } else {
+      const scheme = details.url
+        .slice(0, details.url.indexOf(':') + 1)
+        .toLowerCase();
+      if (scheme === 'http:' || scheme === 'https:') {
+        void shell.openExternal(details.url);
+      }
     }
     return { action: 'deny' };
   });
