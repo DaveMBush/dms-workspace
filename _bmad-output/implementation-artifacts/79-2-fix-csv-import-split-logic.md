@@ -28,11 +28,13 @@ so that the OXLC Joint Brokerage data and any other symbol subject to the same d
 ## Tasks / Subtasks
 
 - [x] Task 1: Review Story 79.1 investigation findings (AC: #1)
+
   - [x] Read completed `79-1-investigate-oxlc-csv-import.md` Dev Notes — "Investigation Findings" section
   - [x] Identify the exact function, file, and line numbers responsible for the data loss
   - [x] Confirm root cause: delete-without-reinsert, never-inserted, or data corruption
 
 - [x] Task 2: Apply targeted fix to split-processing logic (AC: #1)
+
   - [x] Locate the split-processing function identified in Story 79.1
   - [x] Prefer update-in-place: replace `prisma.trades.delete()` + `prisma.trades.create()` pattern with `prisma.trades.update()` where applicable
   - [x] If delete+reinsert pattern must be kept, wrap both operations in `prisma.$transaction([...])` to guarantee atomicity
@@ -40,12 +42,14 @@ so that the OXLC Joint Brokerage data and any other symbol subject to the same d
   - [x] Apply same fix to `DivDeposits` or other affected tables if identified in 79.1
 
 - [x] Task 3: Re-import Fidelity CSV and verify data (AC: #2)
+
   - [x] Trigger re-import via the import endpoint or import function with Fidelity CSV path
   - [x] Query database for OXLC Joint Brokerage rows across `Trades`, `DivDeposits`, `Universe`
   - [x] Confirm every row from the Story 79.1 CSV table is now present with correct values
   - [x] Confirm no duplicate rows were created
 
 - [x] Task 4: Write unit test for split-processing function (AC: #3)
+
   - [x] Create test file colocated with the split-processing function (e.g., `split-processing.function.spec.ts`)
   - [x] Use Vitest; import the pure split-processing function directly
   - [ ] Write fixture data matching the OXLC scenario: at least one purchase row + one split event
@@ -67,20 +71,19 @@ so that the OXLC Joint Brokerage data and any other symbol subject to the same d
 The preferred fix pattern (in priority order):
 
 1. **Update-in-place (preferred):** Replace any `delete` + `create` sequence with a single `update`. This avoids the window where the row doesn't exist.
+
    ```typescript
    // Preferred
    await prisma.trades.update({
      where: { id: existingRow.id },
-     data: { quantity: adjustedQuantity, price: adjustedPrice, /* ... */ },
+     data: { quantity: adjustedQuantity, price: adjustedPrice /* ... */ },
    });
    ```
 
 2. **Atomic transaction (if delete+reinsert must be kept):** Wrap delete and create in `prisma.$transaction()`.
+
    ```typescript
-   await prisma.$transaction([
-     prisma.trades.delete({ where: { id: existingRow.id } }),
-     prisma.trades.create({ data: { ...newRowData } }),
-   ]);
+   await prisma.$transaction([prisma.trades.delete({ where: { id: existingRow.id } }), prisma.trades.create({ data: { ...newRowData } })]);
    ```
 
 3. **Never use**: bare `delete()` followed by `create()` in separate awaits without a transaction.
@@ -94,13 +97,11 @@ import { processSplit } from './split-processing.function'; // adjust import pat
 
 describe('processSplit', () => {
   it('preserves all rows for OXLC split scenario', async () => {
-    const fixture = [
-      { symbol: 'OXLC', account: 'Joint Brokerage', quantity: 100, price: 5.00, date: '2025-01-15' },
-    ];
+    const fixture = [{ symbol: 'OXLC', account: 'Joint Brokerage', quantity: 100, price: 5.0, date: '2025-01-15' }];
     const result = await processSplit(fixture, { ratio: 2, splitDate: '2025-03-01' });
     expect(result).toHaveLength(1); // no rows lost
     expect(result[0].quantity).toBe(200); // quantity doubled
-    expect(result[0].price).toBe(2.50);  // price halved
+    expect(result[0].price).toBe(2.5); // price halved
   });
 
   it('handles split with no prior purchases gracefully', async () => {
@@ -112,23 +113,23 @@ describe('processSplit', () => {
 
 ### Key Commands
 
-| Purpose | Command |
-|---------|---------|
-| Run all tests | `pnpm all` |
+| Purpose                             | Command                                                                                                                |
+| ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| Run all tests                       | `pnpm all`                                                                                                             |
 | Re-import Fidelity CSV via endpoint | `curl -X POST http://localhost:3000/api/import -F "file=@/home/dave/Fidelity-2025.csv"` (confirm URL in server routes) |
-| Query OXLC in dev DB | `sqlite3 <db-path> "SELECT * FROM Trades WHERE symbol='OXLC';"` |
-| Find split function | `grep -r "split\|Split" apps/server/src/ --include="*.ts" -l` |
-| Run unit tests only | `pnpm nx test server` |
+| Query OXLC in dev DB                | `sqlite3 <db-path> "SELECT * FROM Trades WHERE symbol='OXLC';"`                                                        |
+| Find split function                 | `grep -r "split\|Split" apps/server/src/ --include="*.ts" -l`                                                          |
+| Run unit tests only                 | `pnpm nx test server`                                                                                                  |
 
 ### Key Files
 
-| File | Purpose |
-|------|---------|
-| `79-1-investigate-oxlc-csv-import.md` | Root cause findings — **read first** |
-| `apps/server/src/app/routes/` | Import route(s) containing split-processing logic |
-| `prisma/schema.prisma` | Database schema for `Trades`, `DivDeposits`, `Universe` models |
-| `apps/dms-material-e2e/test-database.db` | SQLite dev/E2E database for verification queries |
-| `split-processing.function.spec.ts` | New unit test file to create alongside split function |
+| File                                     | Purpose                                                        |
+| ---------------------------------------- | -------------------------------------------------------------- |
+| `79-1-investigate-oxlc-csv-import.md`    | Root cause findings — **read first**                           |
+| `apps/server/src/app/routes/`            | Import route(s) containing split-processing logic              |
+| `prisma/schema.prisma`                   | Database schema for `Trades`, `DivDeposits`, `Universe` models |
+| `apps/dms-material-e2e/test-database.db` | SQLite dev/E2E database for verification queries               |
+| `split-processing.function.spec.ts`      | New unit test file to create alongside split function          |
 
 ### Constraints
 
@@ -164,8 +165,8 @@ Claude Sonnet 4.6 (GitHub Copilot)
 
 ## Change Log
 
-| Date       | Change                                                                                                                                    | Author    |
-| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------- | --------- |
+| Date       | Change                                                                                                                                      | Author    |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------- | --------- |
 | 2026-04-21 | Fix applied: reordered `processSales` before `processDeferredSplits` in `processAllTransactions`. 2 new unit tests added for OXLC scenario. | Dev Agent |
 
 ## Status

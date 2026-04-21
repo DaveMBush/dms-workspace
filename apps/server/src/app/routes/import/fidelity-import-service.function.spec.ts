@@ -835,7 +835,7 @@ describe('importFidelityTransactions', function () {
         {
           universeId: 'u-oxlc',
           accountId: 'a-joint',
-          buy: 4.50,
+          buy: 4.5,
           sell: 0,
           buy_date: '2025-06-11',
           quantity: 300,
