@@ -202,12 +202,6 @@ async function init(): Promise<void> {
     });
 
     if (process.env['ELECTRON_TEST_MODE'] === '1') {
-      ipcMain.handle(
-        'get-external-open-calls',
-        function getExternalOpenCalls(): string[] {
-          return externalOpenLog;
-        }
-      );
       (
         global as typeof globalThis & { electronTestExternalLog?: string[] }
       ).electronTestExternalLog = externalOpenLog;
