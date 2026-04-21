@@ -80,13 +80,20 @@ function startServer(port: number): Promise<void> {
   });
 }
 
+function isLocalAppUrl(url: string, port: number): boolean {
+  try {
+    return new URL(url).origin === `http://localhost:${port}`;
+  } catch {
+    return false;
+  }
+}
+
 function handleWillNavigate(
   event: Electron.Event,
   url: string,
   port: number
 ): void {
-  const localOrigin = `http://localhost:${port}`;
-  if (!url.startsWith(localOrigin)) {
+  if (!isLocalAppUrl(url, port)) {
     event.preventDefault();
     // External links handled in Story 77.4 via shell.openExternal
   }
@@ -101,9 +108,10 @@ function configureContentSecurityPolicy(port: number): void {
           'Content-Security-Policy': [
             `default-src 'self' http://localhost:${port}; ` +
               `script-src 'self'; ` +
-              `style-src 'self' 'unsafe-inline'; ` +
-              `img-src 'self' data:; ` +
-              `connect-src 'self' http://localhost:${port};`,
+              `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; ` +
+              `font-src 'self' https://fonts.gstatic.com; ` +
+              `img-src 'self' data: https:; ` +
+              `connect-src 'self' http://localhost:${port} https://*.amazonaws.com https://cognito-idp.us-east-1.amazonaws.com https://cognito-identity.us-east-1.amazonaws.com;`,
           ],
         },
       });
@@ -129,6 +137,15 @@ function createWindow(port: number): void {
       handleWillNavigate(event, url, port);
     }
   );
+
+  win.webContents.setWindowOpenHandler(function onWindowOpen(
+    details: Electron.HandlerDetails
+  ): Electron.WindowOpenHandlerResponse {
+    if (isLocalAppUrl(details.url, port)) {
+      void win.loadURL(details.url);
+    }
+    return { action: 'deny' };
+  });
 
   void win.loadURL(`http://localhost:${port}`);
 }

@@ -26,7 +26,8 @@ const server = fastify({
 server.register(configureApp);
 
 // Serve Angular static assets when not in test environment
-if (process.env['CI'] !== '1' && process.env['NODE_ENV'] !== 'test') {
+const isCi = process.env['CI'] === '1' || process.env['CI'] === 'true';
+if (!isCi && process.env['NODE_ENV'] !== 'test') {
   const angularBuildPath = path.join(
     __dirname,
     '../../../dist/apps/dms-material/browser'
@@ -35,11 +36,11 @@ if (process.env['CI'] !== '1' && process.env['NODE_ENV'] !== 'test') {
   void server.register(fastifyStatic, {
     root: angularBuildPath,
     prefix: '/',
-    decorateReply: false,
   });
 
   server.setNotFoundHandler(function handleNotFound(request, reply): void {
-    if (!request.url.startsWith('/api/')) {
+    const pathname = request.url.split('?')[0];
+    if (pathname !== '/api' && !pathname.startsWith('/api/')) {
       void reply.sendFile('index.html');
       return;
     }
