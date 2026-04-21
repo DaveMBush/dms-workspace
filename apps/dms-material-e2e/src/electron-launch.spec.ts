@@ -71,8 +71,8 @@ test.describe('Electron App Launch', () => {
     // setWindowOpenHandler in main.ts intercepts it and calls openExternal().
     // With ELECTRON_TEST_MODE=1 the URL is captured in externalOpenLog instead
     // of actually opening the OS browser.
-    // eslint-disable-next-line sonarjs/link-with-target-blank -- Electron blocks new windows entirely; noopener is irrelevant
     await window.evaluate(function triggerExternalOpen(): void {
+      // eslint-disable-next-line sonarjs/link-with-target-blank -- Electron blocks new windows entirely; noopener is irrelevant
       window.open('https://example.com', '_blank');
     });
 
