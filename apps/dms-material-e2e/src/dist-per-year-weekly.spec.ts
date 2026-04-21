@@ -42,7 +42,9 @@ test.describe('Dist/Year Weekly Acceptance — Epic 78 / Story 78.1', () => {
     await login(page);
     await page.goto('/global/universe');
     await page.waitForLoadState('networkidle');
-    await expect(page.locator('dms-base-table')).toBeVisible({ timeout: 15000 });
+    await expect(page.locator('dms-base-table')).toBeVisible({
+      timeout: 15000,
+    });
     // Wait for at least one data row to render.
     await page.waitForSelector('tr.mat-mdc-row', { timeout: 15000 });
 

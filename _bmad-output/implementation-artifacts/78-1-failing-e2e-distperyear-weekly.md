@@ -25,6 +25,7 @@ so that the fix in Story 78.2 has a definitive pass/fail gate.
 ## Tasks / Subtasks
 
 - [x] Investigate the symbol edit form and Dist/Year field (AC: #1)
+
   - [x] Search for `distPerYear` or `dist_per_year` in `apps/dms-material/src/` to identify the
         edit form component
   - [x] Search for "Value must be at most 12" in the codebase to confirm the validation message
@@ -35,12 +36,14 @@ so that the fix in Story 78.2 has a definitive pass/fail gate.
         template
 
 - [x] Inspect existing E2E specs for universe edit patterns (AC: #1)
+
   - [x] Search `apps/dms-material-e2e/src/` for universe edit or symbol edit tests
   - [x] Identify patterns used to: open the edit dialog, fill fields, blur fields, check
         validation messages, and submit the form
   - [x] Re-use the same helper functions and selectors
 
 - [x] Identify or create a weekly test fixture symbol (AC: #1)
+
   - [x] Inspect `apps/dms-material-e2e/src/helpers/` for database seed helpers
   - [x] Confirmed: `Universe` model has NO `frequency` field — weekly frequency is represented
         purely as `distributions_per_year = 52`
@@ -48,6 +51,7 @@ so that the fix in Story 78.2 has a definitive pass/fail gate.
         No custom seeding required — bug manifests for ANY symbol when value > 12 is entered.
 
 - [x] Create `apps/dms-material-e2e/src/dist-per-year-weekly.spec.ts` (AC: #1, #2, #3)
+
   - [x] Implement AC#1 test: navigate to /global/universe, filter by TESTEQ1, click Dist/Year
         cell, type 52, blur, assert no "Value must be at most 12" text is visible —
         **FAILS due to hardcoded [max]="12" in global-universe.component.html**
@@ -58,6 +62,7 @@ so that the fix in Story 78.2 has a definitive pass/fail gate.
         `// EXPECTED TO FAIL: Bug exists until Story 78.2 is implemented`
 
 - [x] Confirm tests fail as expected (AC: #3)
+
   - [x] Ran `CI=1 pnpm exec playwright test ... dist-per-year-weekly.spec.ts`
   - [x] Both AC#1 and AC#2 tests FAIL with `expect(locator).not.toBeVisible() failed`
   - [x] AC#1 failure: `getByText('Value must be at most 12')` — Expected: not visible, Received: visible
@@ -84,9 +89,11 @@ acts as the authoritative acceptance criterion for Story 78.2.
 
 **Bug location:**
 `apps/dms-material/src/app/global/global-universe/global-universe.component.html`
+
 ```html
 <dms-editable-cell ... [max]="12" ... />
 ```
+
 The `[max]="12"` binding is hardcoded. It should be dynamic based on distribution frequency.
 
 **Validation logic:**
@@ -100,6 +107,7 @@ Default seed symbol `TESTEQ1` is always present (seeded by `tools/create-test-db
 No custom seeding needed — bug manifests for ANY symbol when value > 12 is entered.
 
 **Universe table selectors:**
+
 - Symbol filter: `input[placeholder="Search Symbol"]`
 - Table row: `tr.mat-mdc-row` with `text=TESTEQ1`
 - Dist/Year cell: `td.mat-column-distributions_per_year`
@@ -136,10 +144,10 @@ because `[max]="12"` is hardcoded in the template.
 
 ### Key Commands
 
-| Purpose | Command |
-|---------|---------|
-| Run only the new spec (Chromium) | `CI=1 pnpm exec playwright test --config=apps/dms-material-e2e/playwright.config.ts --project=chromium apps/dms-material-e2e/src/dist-per-year-weekly.spec.ts` |
-| Run all tests (expect new failures) | `pnpm all` |
+| Purpose                             | Command                                                                                                                                                        |
+| ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Run only the new spec (Chromium)    | `CI=1 pnpm exec playwright test --config=apps/dms-material-e2e/playwright.config.ts --project=chromium apps/dms-material-e2e/src/dist-per-year-weekly.spec.ts` |
+| Run all tests (expect new failures) | `pnpm all`                                                                                                                                                     |
 
 ## Dev Agent Record
 
@@ -173,6 +181,6 @@ Claude Sonnet 4.6 (GitHub Copilot)
 
 ### Change Log
 
-| Date | Change |
-|------|--------|
+| Date       | Change                                                                                    |
+| ---------- | ----------------------------------------------------------------------------------------- |
 | 2026-04-21 | Created `dist-per-year-weekly.spec.ts` with 2 failing tests confirming the [max]="12" bug |
