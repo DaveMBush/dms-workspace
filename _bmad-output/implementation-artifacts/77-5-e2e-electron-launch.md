@@ -29,6 +29,7 @@ so that future regressions to the Electron integration are caught automatically.
 ## Tasks / Subtasks
 
 - [x] Research Playwright Electron support and confirm API (AC: #1)
+
   - [x] Check installed Playwright version in `package.json`
   - [x] Confirm `_electron` experimental API availability:
         `import { _electron as electron } from 'playwright'`
@@ -37,15 +38,17 @@ so that future regressions to the Electron integration are caught automatically.
         standalone spec outside the existing projects
 
 - [x] Add `electron` Playwright project to config (AC: #4)
+
   - [x] Open `apps/dms-material-e2e/playwright.config.ts`
   - [x] Add a new project entry:
-        ```ts
-        { name: 'electron', testMatch: '**/electron-*.spec.ts' }
-        ```
+        `ts
+    { name: 'electron', testMatch: '**/electron-*.spec.ts' }
+    `
   - [x] Ensure the `electron` project does NOT use a `baseURL` (the app is launched by the test)
   - [x] Add an Nx target `e2e:electron` in `apps/dms-material-e2e/project.json` if needed
 
 - [x] Create `apps/dms-material-e2e/src/electron-launch.spec.ts` (AC: #1, #2, #3)
+
   - [x] Import `{ _electron as electron }` from `'playwright'`
   - [x] In `beforeAll`: build electron and server, then launch with
         `electron.launch({ args: [path.join(__dirname, '../../../../dist/apps/electron/main.js')] })`
@@ -53,6 +56,7 @@ so that future regressions to the Electron integration are caught automatically.
   - [x] In `afterAll`: call `await app.close()`
 
 - [x] Implement AC#1 test — app launches and Universe screen renders (AC: #1)
+
   - [x] `await window.waitForLoadState('domcontentloaded')`
   - [x] Assert that the Universe screen heading or table is visible
         (use the same selector patterns as existing universe E2E specs)
@@ -60,12 +64,14 @@ so that future regressions to the Electron integration are caught automatically.
         errors; assert the errors array is empty after load
 
 - [x] Implement AC#2 test — sidebar navigation (AC: #2)
+
   - [x] Identify a sidebar navigation link from existing E2E specs (e.g., Accounts nav item)
   - [x] Click the sidebar item
   - [x] Assert the new screen's heading or a unique element is visible
   - [x] Assert the BrowserWindow count is still 1 (`app.windows().length === 1`)
 
 - [x] Implement AC#3 test — external link opens in OS browser, not new window (AC: #3)
+
   - [x] Mock `shell.openExternal` via IPC — expose a test-only IPC handle in `main.ts` that
         intercepts `shell.openExternal` calls and records the URL instead of actually opening it
   - [x] Gate this behaviour behind a `process.env.ELECTRON_TEST_MODE` environment variable
@@ -213,6 +219,7 @@ file and copy the heading/table selector patterns.
 ### Build Prerequisites
 
 The test requires all three outputs to be up-to-date:
+
 1. `pnpm nx run server:build`
 2. `pnpm nx run dms-material:build`
 3. `pnpm nx run electron:build`
@@ -224,22 +231,22 @@ in the Nx target.
 
 ### Key Commands
 
-| Purpose | Command |
-|---------|---------|
+| Purpose                 | Command                                                                   |
+| ----------------------- | ------------------------------------------------------------------------- |
 | Build all prerequisites | `pnpm nx run-many --target=build --projects=server,dms-material,electron` |
-| Run electron E2E only | `pnpm nx run dms-material-e2e:e2e --project=electron` |
-| Run full test suite | `pnpm all` |
-| Run Chromium E2E | `pnpm e2e:dms-material:chromium` |
-| Run Firefox E2E | `pnpm e2e:dms-material:firefox` |
+| Run electron E2E only   | `pnpm nx run dms-material-e2e:e2e --project=electron`                     |
+| Run full test suite     | `pnpm all`                                                                |
+| Run Chromium E2E        | `pnpm e2e:dms-material:chromium`                                          |
+| Run Firefox E2E         | `pnpm e2e:dms-material:firefox`                                           |
 
 ### Key Files
 
-| File | Purpose |
-|------|---------|
-| `apps/dms-material-e2e/src/electron-launch.spec.ts` | New E2E spec for Electron integration |
-| `apps/dms-material-e2e/playwright.config.ts` | Add `electron` project entry |
-| `apps/electron/src/main.ts` | Add `ELECTRON_TEST_MODE` test hooks for `shell.openExternal` mock |
-| `apps/dms-material-e2e/project.json` | Add Nx `e2e:electron` target if needed |
+| File                                                | Purpose                                                           |
+| --------------------------------------------------- | ----------------------------------------------------------------- |
+| `apps/dms-material-e2e/src/electron-launch.spec.ts` | New E2E spec for Electron integration                             |
+| `apps/dms-material-e2e/playwright.config.ts`        | Add `electron` project entry                                      |
+| `apps/electron/src/main.ts`                         | Add `ELECTRON_TEST_MODE` test hooks for `shell.openExternal` mock |
+| `apps/dms-material-e2e/project.json`                | Add Nx `e2e:electron` target if needed                            |
 
 ## Dev Agent Record
 
