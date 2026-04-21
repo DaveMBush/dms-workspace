@@ -1,64 +1,89 @@
-import { DatePipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   inject,
-  OnInit,
   signal,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
+import { MatListModule } from '@angular/material/list';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
 
-interface ErrorLogEntry {
-  id: string;
-  timestamp: string;
-  level: string;
-  message: string;
-  requestId?: string;
-}
-
-interface ErrorLogResponse {
-  logs: ErrorLogEntry[];
-  totalCount: number;
-  currentPage: number;
-  totalPages: number;
+interface LogFileInfo {
+  filename: string;
+  displayName: string;
+  size: number;
+  lastModified: string;
 }
 
 @Component({
   selector: 'dms-global-error-logs',
   standalone: true,
   imports: [
-    DatePipe,
+    MatButtonModule,
     MatCardModule,
+    MatIconModule,
+    MatListModule,
     MatProgressSpinnerModule,
-    MatTableModule,
     MatToolbarModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './global-error-logs.html',
 })
-export class GlobalErrorLogsComponent implements OnInit {
+export class GlobalErrorLogsComponent {
   private readonly http = inject(HttpClient);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly loading$ = signal(true);
   readonly errorMessage$ = signal('');
-  readonly logs$ = signal<ErrorLogEntry[]>([]);
-  readonly displayedColumns = ['timestamp', 'level', 'message'];
+  readonly files$ = signal<LogFileInfo[]>([]);
 
-  ngOnInit(): void {
+  constructor() {
+    this.loadFiles();
+  }
+
+  loadFiles(): void {
     const self = this;
-    this.http.get<ErrorLogResponse>('/api/logs/errors').subscribe({
-      next: function onLogsSuccess(response) {
-        self.logs$.set(response.logs);
-        self.loading$.set(false);
-      },
-      error: function onLogsError() {
-        self.errorMessage$.set('Failed to load error logs.');
-        self.loading$.set(false);
-      },
-    });
+    self.loading$.set(true);
+    self.errorMessage$.set('');
+    this.http
+      .get<{ files: LogFileInfo[] }>('/api/logs/files')
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: function onFilesSuccess(response) {
+          self.files$.set(response.files);
+          self.loading$.set(false);
+        },
+        error: function onFilesError() {
+          self.errorMessage$.set('Failed to load error log files.');
+          self.loading$.set(false);
+        },
+      });
+  }
+
+  deleteFile(filename: string): void {
+    const self = this;
+    this.http
+      .delete<{ success: boolean; message: string }>(
+        `/api/logs/files/${encodeURIComponent(filename)}`
+      )
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: function onDeleteSuccess() {
+          self.files$.update(function removeDeleted(files) {
+            return files.filter(function isNotDeleted(f) {
+              return f.filename !== filename;
+            });
+          });
+        },
+        error: function onDeleteError() {
+          self.errorMessage$.set(`Failed to delete file: ${filename}`);
+        },
+      });
   }
 }

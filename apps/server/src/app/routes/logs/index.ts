@@ -98,6 +98,12 @@ function handleLogFilesRequest(
   }
 }
 
+function isValidFilename(filename: string): boolean {
+  // Security: reject path traversal, null bytes, and path separators
+  // Only allow alphanumeric, hyphens, underscores, and dots
+  return /^[a-zA-Z0-9_.-]+$/.test(filename) && !filename.includes('..');
+}
+
 function handleDeleteLogFile(
   request: FastifyRequest<{
     Params: { filename: string };
@@ -106,6 +112,12 @@ function handleDeleteLogFile(
 ): { error: string; message: string } | { success: boolean; message: string } {
   try {
     const { filename } = request.params;
+
+    if (!isValidFilename(filename)) {
+      void reply.status(400);
+      return { error: 'Invalid filename', message: 'Filename contains invalid characters' };
+    }
+
     const result = deleteLogFile(filename);
 
     if (result.success) {
