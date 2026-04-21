@@ -33,12 +33,14 @@ so that Story 79.2 can apply a precise, targeted fix.
 ## Tasks / Subtasks
 
 - [x] Task 1: Read and document OXLC rows from CSV (AC: #1)
+
   - [x] Open `/home/dave/Fidelity-2025.csv` and extract all rows where account contains "Joint Brokerage" and symbol is "OXLC"
   - [x] Record exact raw CSV field values: date, action/type, symbol, quantity, price, amount
   - [x] Identify which rows are purchases, dividends, or splits
   - [x] Document in Dev Notes with table format
 
 - [x] Task 2: Trace CSV import pipeline for OXLC (AC: #2)
+
   - [x] Run `grep -r "split\|Split\|OXLC" apps/server/src/ --include="*.ts"` to locate relevant code
   - [x] Find import/CSV route(s) in `apps/server/src/app/routes/` (look for `import`, `csv`, `fidelity` files)
   - [x] Trace the full code path from CSV row parsing → type detection → database write
@@ -46,12 +48,14 @@ so that Story 79.2 can apply a precise, targeted fix.
   - [x] Document expected vs actual database outcome for each OXLC row type
 
 - [x] Task 3: Query database for current OXLC state (AC: #3)
+
   - [x] Identify dev database location (likely `apps/dms-material-e2e/test-database.db` for E2E or a local dev DB)
   - [x] Query for OXLC rows across relevant tables: `Universe`, `Trades`, `DivDeposits`, `Screener`
   - [x] Document exact query results including any malformed or orphaned rows
   - [x] Compare DB state against expected rows from CSV (AC #1)
 
 - [x] Task 4: Audit split-processing delete/insert logic (AC: #4)
+
   - [x] Read split-processing function code in full
   - [x] Determine definitively: does the code delete rows and fail to reinsert, never insert, or corrupt data?
   - [x] Record exact file paths, function names, and line numbers responsible
@@ -68,28 +72,29 @@ This is a **pure investigation story** — no production code changes are permit
 
 ### Key Investigation Commands
 
-| Purpose | Command |
-|---------|---------|
-| Search for split/OXLC logic | `grep -r "split\|Split\|OXLC" apps/server/src/ --include="*.ts"` |
-| Find CSV/import routes | `grep -r "import\|csv\|fidelity" apps/server/src/app/routes/ --include="*.ts" -l` |
-| Git history for server | `git log --all --oneline -- apps/server/src/ \| head -50` |
-| Query dev SQLite DB | `sqlite3 <db-path> "SELECT * FROM Trades WHERE symbol='OXLC';"` |
-| List server route files | `ls apps/server/src/app/routes/` |
-| Run all tests | `pnpm all` |
-| Check Prisma schema | `cat prisma/schema.prisma` |
+| Purpose                     | Command                                                                           |
+| --------------------------- | --------------------------------------------------------------------------------- |
+| Search for split/OXLC logic | `grep -r "split\|Split\|OXLC" apps/server/src/ --include="*.ts"`                  |
+| Find CSV/import routes      | `grep -r "import\|csv\|fidelity" apps/server/src/app/routes/ --include="*.ts" -l` |
+| Git history for server      | `git log --all --oneline -- apps/server/src/ \| head -50`                         |
+| Query dev SQLite DB         | `sqlite3 <db-path> "SELECT * FROM Trades WHERE symbol='OXLC';"`                   |
+| List server route files     | `ls apps/server/src/app/routes/`                                                  |
+| Run all tests               | `pnpm all`                                                                        |
+| Check Prisma schema         | `cat prisma/schema.prisma`                                                        |
 
 ### Key Files
 
-| File | Purpose |
-|------|---------|
-| `/home/dave/Fidelity-2025.csv` | Source Fidelity CSV — read to find OXLC Joint Brokerage rows |
-| `apps/server/src/app/routes/` | Server route directory — look for `import`, `csv`, or `fidelity` files |
-| `prisma/schema.prisma` | Database schema — check `Universe`, `Trades`, `DivDeposits`, `Screener` models |
-| `apps/dms-material-e2e/test-database.db` | SQLite E2E database — query for OXLC rows |
+| File                                     | Purpose                                                                        |
+| ---------------------------------------- | ------------------------------------------------------------------------------ |
+| `/home/dave/Fidelity-2025.csv`           | Source Fidelity CSV — read to find OXLC Joint Brokerage rows                   |
+| `apps/server/src/app/routes/`            | Server route directory — look for `import`, `csv`, or `fidelity` files         |
+| `prisma/schema.prisma`                   | Database schema — check `Universe`, `Trades`, `DivDeposits`, `Screener` models |
+| `apps/dms-material-e2e/test-database.db` | SQLite E2E database — query for OXLC rows                                      |
 
 ### Database Models to Inspect
 
 From `prisma/schema.prisma`, check these models for OXLC rows:
+
 - `Universe` — holdings/positions universe
 - `Trades` — individual trade/purchase records
 - `DivDeposits` — dividend and distribution records
@@ -97,27 +102,27 @@ From `prisma/schema.prisma`, check these models for OXLC rows:
 
 ### Investigation Findings
 
-#### OXLC CSV Rows (from `/home/dave/Fidelity-2025.csv`, Joint Brokerage *4767)
+#### OXLC CSV Rows (from `/home/dave/Fidelity-2025.csv`, Joint Brokerage \*4767)
 
 All rows appear under the old CUSIP `691543102` or the new ticker `OXLC`.
 `resolveCusipSymbols` replaces `691543102` → `OXLC` before mapping.
 
-| Date | Action/Type | Raw Symbol | Resolved Symbol | Quantity | Price | Amount |
-|------|-------------|------------|-----------------|----------|-------|--------|
-| Jun-6-2025  | YOU BOUGHT      | 691543102 | OXLC | 400    | 4.48 | −1,795.84    |
-| Jun-9-2025  | YOU SOLD        | 691543102 | OXLC | −400   | 4.54 | +1,816.00    |
-| Jun-11-2025 | YOU BOUGHT      | 691543102 | OXLC | 150    | 4.49 | −673.50      |
-| Jun-11-2025 | YOU BOUGHT      | 691543102 | OXLC | 300    | 4.50 | −1,348.50    |
-| Jun-26-2025 | YOU BOUGHT      | 691543102 | OXLC | 500    | 4.06 | −2,032.30    |
-| Jul-31-2025 | DIVIDEND RECEIVED| 691543102 | OXLC | --    | --   | +85.50       |
-| Aug-5-2025  | YOU BOUGHT      | 691543102 | OXLC | 580    | 3.44 | −1,995.20    |
-| Aug-29-2025 | DIVIDEND RECEIVED| 691543102 | OXLC | --    | --   | +137.70      |
-| Sep-8-2025  | REVERSE SPLIT R/S TO 691543847#… | 691543102 | OXLC | −1,530 | -- | +3,672.63 |
-| Sep-8-2025  | REVERSE SPLIT R/S FROM 691543102#… | OXLC | OXLC | 306 | -- | +3,672.63 |
-| Sep-30-2025 | DIVIDEND RECEIVED| OXLC | OXLC | --   | --   | +137.70      |
-| Oct-31-2025 | DIVIDEND RECEIVED| OXLC | OXLC | --   | --   | +122.40      |
-| Nov-28-2025 | DIVIDEND RECEIVED| OXLC | OXLC | --   | --   | +122.40      |
-| Dec-31-2025 | DIVIDEND RECEIVED| OXLC | OXLC | --   | --   | +122.40      |
+| Date        | Action/Type                        | Raw Symbol | Resolved Symbol | Quantity | Price | Amount    |
+| ----------- | ---------------------------------- | ---------- | --------------- | -------- | ----- | --------- |
+| Jun-6-2025  | YOU BOUGHT                         | 691543102  | OXLC            | 400      | 4.48  | −1,795.84 |
+| Jun-9-2025  | YOU SOLD                           | 691543102  | OXLC            | −400     | 4.54  | +1,816.00 |
+| Jun-11-2025 | YOU BOUGHT                         | 691543102  | OXLC            | 150      | 4.49  | −673.50   |
+| Jun-11-2025 | YOU BOUGHT                         | 691543102  | OXLC            | 300      | 4.50  | −1,348.50 |
+| Jun-26-2025 | YOU BOUGHT                         | 691543102  | OXLC            | 500      | 4.06  | −2,032.30 |
+| Jul-31-2025 | DIVIDEND RECEIVED                  | 691543102  | OXLC            | --       | --    | +85.50    |
+| Aug-5-2025  | YOU BOUGHT                         | 691543102  | OXLC            | 580      | 3.44  | −1,995.20 |
+| Aug-29-2025 | DIVIDEND RECEIVED                  | 691543102  | OXLC            | --       | --    | +137.70   |
+| Sep-8-2025  | REVERSE SPLIT R/S TO 691543847#…   | 691543102  | OXLC            | −1,530   | --    | +3,672.63 |
+| Sep-8-2025  | REVERSE SPLIT R/S FROM 691543102#… | OXLC       | OXLC            | 306      | --    | +3,672.63 |
+| Sep-30-2025 | DIVIDEND RECEIVED                  | OXLC       | OXLC            | --       | --    | +137.70   |
+| Oct-31-2025 | DIVIDEND RECEIVED                  | OXLC       | OXLC            | --       | --    | +122.40   |
+| Nov-28-2025 | DIVIDEND RECEIVED                  | OXLC       | OXLC            | --       | --    | +122.40   |
+| Dec-31-2025 | DIVIDEND RECEIVED                  | OXLC       | OXLC            | --       | --    | +122.40   |
 
 **Pre-split net open position at time of split:** 400 bought Jun-6, then sold Jun-9 = net 0 from that lot; then 150+300+500+580 = 1,530 shares. The R/S TO row confirms −1,530 surrendered. Post-split: 1,530 ÷ 5 = 306 shares ✓.
 
@@ -137,6 +142,7 @@ All rows appear under the old CUSIP `691543102` or the new ticker `OXLC`.
 - **Transaction orchestration:** `fidelity-import-service.function.ts:192–201` — **`processAllTransactions()`**
 
 **Processing order in `processAllTransactions()` (lines 192–201):**
+
 ```
 1. processTrades(mapped.trades)         ← buys inserted first
 2. processDeferredSplits(pendingSplits) ← split applied SECOND (before sales!)
@@ -153,18 +159,19 @@ No universe entry for symbol "691543102" (CUSIP → OXLC rewrite happened before
 
 **Trades in Joint Brokerage (accountId: `c1bd30cb-…`):**
 
-| id (short) | buy_date | quantity | buy | sell | sell_date | Note |
-|------------|----------|----------|-----|------|-----------|------|
-| bc10a1f9   | 2025-06-06 | 63  | 28.26 | 4.54 | 2025-06-09 | CLOSED (wrong split ratio) |
-| 99093050   | 2025-06-11 | 47  | 28.38 | 4.54 | 2025-06-09 | CLOSED (wrong split ratio) |
-| ca641fcd   | 2025-06-11 | 23  | 28.32 | 4.54 | 2025-06-09 | CLOSED (wrong split ratio) |
-| 413c4e31   | 2025-06-26 | 79  | 25.61 | 4.54 | 2025-06-09 | CLOSED (wrong split ratio) |
-| 22573e9d   | 2025-08-05 | 91  | 21.70 | 4.54 | 2025-06-09 | CLOSED (wrong split ratio) |
-| fd4c7e21   | 2026-04-17 | 3   | 0    | 10.005 | 2026-04-17 | Fractional sale (wrong remainder) |
+| id (short) | buy_date   | quantity | buy   | sell   | sell_date  | Note                              |
+| ---------- | ---------- | -------- | ----- | ------ | ---------- | --------------------------------- |
+| bc10a1f9   | 2025-06-06 | 63       | 28.26 | 4.54   | 2025-06-09 | CLOSED (wrong split ratio)        |
+| 99093050   | 2025-06-11 | 47       | 28.38 | 4.54   | 2025-06-09 | CLOSED (wrong split ratio)        |
+| ca641fcd   | 2025-06-11 | 23       | 28.32 | 4.54   | 2025-06-09 | CLOSED (wrong split ratio)        |
+| 413c4e31   | 2025-06-26 | 79       | 25.61 | 4.54   | 2025-06-09 | CLOSED (wrong split ratio)        |
+| 22573e9d   | 2025-08-05 | 91       | 21.70 | 4.54   | 2025-06-09 | CLOSED (wrong split ratio)        |
+| fd4c7e21   | 2026-04-17 | 3        | 0     | 10.005 | 2026-04-17 | Fractional sale (wrong remainder) |
 
 **Total closed OXLC lots in Joint Brokerage: 6 (all closed). Open: 0.**
 
 **Open OXLC lots by account (correct accounts):**
+
 - Dave's IRA: 3 lots, 574 open shares ✓ (matches CSV: 574 post-split)
 - ROTH IRA (Laura): 5 lots, 118 open shares ✓
 - ROTH IRA (Dave): 5 lots, 110 open shares ✓
@@ -185,6 +192,7 @@ No universe entry for symbol "691543102" (CUSIP → OXLC rewrite happened before
 3. **`processTrades`**: All 5 buy lots inserted as open (`sell_date=null`). Total open: 400+150+300+500+580 = **1,930 shares**.
 
 4. **`processDeferredSplits`** ← **THE PROBLEM**: `calculateSplitRatio("OXLC", 306, jointBrokerageId)` queries open lots and finds **1,930 shares** (the Jun-6 sale of 400 hasn't been applied yet). Ratio = 1930/306 = **6.307…** (WRONG — should be 1530/306 = 5).
+
    - `adjustLotsForSplit` applies ratio 6.307: `floor(400/6.307)=63`, `floor(150/6.307)=23`, `floor(300/6.307)=47`, `floor(500/6.307)=79`, `floor(580/6.307)=91`
    - Post-split total: 63+23+47+79+91 = 303 (should be 306)
    - Fractional remainder: ~3.01 → `recordFractionalSale` creates fractional-sale lot (qty=3)
@@ -196,6 +204,7 @@ No universe entry for symbol "691543102" (CUSIP → OXLC rewrite happened before
 
 **Fix for Story 79.2:**
 Reorder `processAllTransactions` to call `processSales` **before** `processDeferredSplits`:
+
 ```
 1. processTrades       ← buys first
 2. processSales        ← apply pre-split sales BEFORE computing split ratio
@@ -206,6 +215,7 @@ Reorder `processAllTransactions` to call `processSales` **before** `processDefer
 **File to change:** `apps/server/src/app/routes/import/fidelity-import-service.function.ts` — the `processAllTransactions` function (lines ~192–201).
 
 **Expected result after fix:**
+
 - Jun-9 sale closes the Jun-6 lot (400 pre-split shares = 400 shares, fully consumed)
 - Remaining open: 150+300+500+580 = 1,530 shares
 - Ratio = 1530/306 = 5 ✓
@@ -245,6 +255,6 @@ Claude Sonnet 4.5 (GitHub Copilot)
 
 ## Change Log
 
-| Date | Change | Author |
-|------|--------|--------|
+| Date       | Change                                                                                                                                                                                                                                | Author    |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- |
 | 2026-04-21 | Investigation complete — root cause identified: `processDeferredSplits` runs before `processSales` in `processAllTransactions`, causing incorrect split ratio (6.307 instead of 5) and incorrect lot closure for Joint Brokerage OXLC | Dev Agent |
