@@ -1,6 +1,6 @@
 # Story 79.3: Verify All OXLC Positions and Dividends Display Correctly
 
-Status: Approved
+Status: Done
 
 ## Story
 
@@ -27,33 +27,36 @@ so that my portfolio data is accurate and complete.
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Locate Positions and Distributions screens in Angular app (AC: #1, #2)
-  - [ ] Find Angular router config: `apps/dms-material/src/app/app.routes.ts` or equivalent
-  - [ ] Identify route paths for Positions screen and Distributions/Dividends screen
-  - [ ] Navigate to each screen in the running app using Playwright MCP server to confirm OXLC rows appear after fix from 79.2
-  - [ ] Verify Joint Brokerage filter is applied and OXLC rows are present with correct quantities/values
+- [x] Task 1: Locate Positions and Distributions screens in Angular app (AC: #1, #2)
 
-- [ ] Task 2: Visual verification with Playwright MCP server (AC: #1, #2)
-  - [ ] Use Playwright MCP server to open the app
-  - [ ] Navigate to Positions screen, apply Joint Brokerage filter
-  - [ ] Confirm at least one OXLC row visible with correct data
-  - [ ] Navigate to Distributions/Dividends screen, filter by OXLC / Joint Brokerage
-  - [ ] Confirm all OXLC dividend rows visible with correct dates and amounts
+  - [x] Find Angular router config: `apps/dms-material/src/app/app.routes.ts` or equivalent
+  - [x] Identify route paths for Positions screen and Distributions/Dividends screen
+  - [x] Navigate to each screen in the running app using Playwright MCP server to confirm OXLC rows appear after fix from 79.2
+  - [x] Verify Joint Brokerage filter is applied and OXLC rows are present with correct quantities/values
 
-- [ ] Task 3: Create E2E test spec for OXLC Joint Brokerage verification (AC: #3)
-  - [ ] Identify existing E2E import patterns: look for `csv-import*.spec.ts` or similar in `apps/dms-material-e2e/src/`
-  - [ ] Find the CSV import endpoint: look for `POST /api/import` or `POST /api/csv` in server routes
-  - [ ] Create new spec file in `apps/dms-material-e2e/src/` (e.g., `oxlc-joint-brokerage.spec.ts`)
-  - [ ] In `beforeAll`: call CSV import endpoint with Fidelity CSV data containing OXLC rows
-  - [ ] Login using existing login helper from `apps/dms-material-e2e/src/helpers/login.helper.ts`
-  - [ ] Navigate to Positions screen and apply Joint Brokerage filter
-  - [ ] Assert at least one row with OXLC ticker is visible
-  - [ ] Navigate to Distributions screen and assert at least one OXLC dividend row is visible
+- [x] Task 2: Visual verification with Playwright MCP server (AC: #1, #2)
 
-- [ ] Task 4: Run full test suite (AC: #4)
-  - [ ] Run `pnpm all` and confirm all tests pass including new E2E spec
-  - [ ] Run Chromium E2E specifically: `pnpm e2e:dms-material:chromium`
-  - [ ] Do not modify pre-existing tests
+  - [x] Use Playwright MCP server to open the app
+  - [x] Navigate to Positions screen, apply Joint Brokerage filter
+  - [x] Confirm at least one OXLC row visible with correct data
+  - [x] Navigate to Distributions/Dividends screen, filter by OXLC / Joint Brokerage
+  - [x] Confirm all OXLC dividend rows visible with correct dates and amounts
+
+- [x] Task 3: Create E2E test spec for OXLC Joint Brokerage verification (AC: #3)
+
+  - [x] Identify existing E2E import patterns: look for `csv-import*.spec.ts` or similar in `apps/dms-material-e2e/src/`
+  - [x] Find the CSV import endpoint: look for `POST /api/import` or `POST /api/csv` in server routes
+  - [x] Create new spec file in `apps/dms-material-e2e/src/` (e.g., `oxlc-joint-brokerage.spec.ts`)
+  - [x] In `beforeAll`: call CSV import endpoint with Fidelity CSV data containing OXLC rows
+  - [x] Login using existing login helper from `apps/dms-material-e2e/src/helpers/login.helper.ts`
+  - [x] Navigate to Positions screen and apply Joint Brokerage filter
+  - [x] Assert at least one row with OXLC ticker is visible
+  - [x] Navigate to Distributions screen and assert at least one OXLC dividend row is visible
+
+- [x] Task 4: Run full test suite (AC: #4)
+  - [x] Run `pnpm all` and confirm all tests pass including new E2E spec
+  - [x] Run Chromium E2E specifically: `pnpm e2e:dms-material:chromium`
+  - [x] Do not modify pre-existing tests
 
 ## Dev Notes
 
@@ -100,14 +103,15 @@ test.describe('OXLC Joint Brokerage', () => {
 
 ### Locating Screen Routes
 
-| Screen | Likely Route | Where to Confirm |
-|--------|-------------|-----------------|
-| Positions | `/positions` or `/accounts` | `apps/dms-material/src/app/app.routes.ts` |
-| Distributions/Dividends | `/distributions` or `/dividends` | Same router config file |
+| Screen                  | Likely Route                     | Where to Confirm                          |
+| ----------------------- | -------------------------------- | ----------------------------------------- |
+| Positions               | `/positions` or `/accounts`      | `apps/dms-material/src/app/app.routes.ts` |
+| Distributions/Dividends | `/distributions` or `/dividends` | Same router config file                   |
 
 ### Account Filter
 
 Find how the Joint Brokerage account filter is implemented in the UI — it may be:
+
 - A dropdown with account names
 - A tab component
 - A URL query parameter (`?account=Joint+Brokerage`)
@@ -116,25 +120,25 @@ Look for the filter in the Positions component template to determine the correct
 
 ### Key Commands
 
-| Purpose | Command |
-|---------|---------|
-| Run all tests | `pnpm all` |
-| Run Chromium E2E only | `pnpm e2e:dms-material:chromium` |
+| Purpose                        | Command                                                                 |
+| ------------------------------ | ----------------------------------------------------------------------- |
+| Run all tests                  | `pnpm all`                                                              |
+| Run Chromium E2E only          | `pnpm e2e:dms-material:chromium`                                        |
 | Find import endpoint in server | `grep -r "import\|csv" apps/server/src/app/routes/ --include="*.ts" -l` |
-| Find Angular routes | `cat apps/dms-material/src/app/app.routes.ts` |
-| Find existing E2E import specs | `ls apps/dms-material-e2e/src/` |
-| Find login helper | `find apps/dms-material-e2e/src/ -name "*.helper.ts"` |
+| Find Angular routes            | `cat apps/dms-material/src/app/app.routes.ts`                           |
+| Find existing E2E import specs | `ls apps/dms-material-e2e/src/`                                         |
+| Find login helper              | `find apps/dms-material-e2e/src/ -name "*.helper.ts"`                   |
 
 ### Key Files
 
-| File | Purpose |
-|------|---------|
-| `79-2-fix-csv-import-split-logic.md` | Prerequisite story — fix must be applied first |
-| `apps/dms-material/src/app/app.routes.ts` | Angular router config — find positions/distributions routes |
-| `apps/dms-material-e2e/src/` | E2E test directory — find import patterns and login helper |
-| `apps/dms-material-e2e/src/helpers/login.helper.ts` | Login helper for E2E tests |
-| `apps/server/src/app/routes/` | Server routes — find CSV import endpoint URL |
-| `/home/dave/Fidelity-2025.csv` | Source CSV with OXLC data for E2E seeding |
+| File                                                | Purpose                                                     |
+| --------------------------------------------------- | ----------------------------------------------------------- |
+| `79-2-fix-csv-import-split-logic.md`                | Prerequisite story — fix must be applied first              |
+| `apps/dms-material/src/app/app.routes.ts`           | Angular router config — find positions/distributions routes |
+| `apps/dms-material-e2e/src/`                        | E2E test directory — find import patterns and login helper  |
+| `apps/dms-material-e2e/src/helpers/login.helper.ts` | Login helper for E2E tests                                  |
+| `apps/server/src/app/routes/`                       | Server routes — find CSV import endpoint URL                |
+| `/home/dave/Fidelity-2025.csv`                      | Source CSV with OXLC data for E2E seeding                   |
 
 ### Constraints
 
@@ -147,10 +151,25 @@ Look for the filter in the Positions component template to determine the correct
 
 ### Agent Model Used
 
-_TBD_
+Claude Sonnet 4.6
 
 ### Debug Log References
 
+- Routes confirmed: `/account/:accountId/open` (open positions), `/account/:accountId/div-dep` (dividend deposits)
+- Import endpoint: `POST /api/import/fidelity` accepts `text/plain` body
+- Import auto-creates account from CSV `Account` column and OXLC universe entry from BUY row
+- Risk groups must pre-exist for `buildCefClassification` to work; seed helper creates them
+- OXLC universe entry creation order: BUY rows processed before DIVIDEND RECEIVED (rows sorted by date)
+
 ### Completion Notes List
 
+- Created CSV fixture with 2 OXLC buys and 1 dividend for account "E2E OXLC Joint Brokerage"
+- Created seed helper that ensures risk groups exist before import runs
+- Created E2E spec that imports CSV via API, resolves account ID via Prisma, navigates to positions and div-dep screens, asserts OXLC visibility
+- Spec uses `test.describe.configure({ mode: 'serial' })` to avoid shared DB conflicts
+
 ### File List
+
+- `apps/dms-material-e2e/fixtures/fidelity-oxlc-joint-brokerage.csv` (new)
+- `apps/dms-material-e2e/src/helpers/seed-oxlc-joint-brokerage.helper.ts` (new)
+- `apps/dms-material-e2e/src/oxlc-joint-brokerage.spec.ts` (new)
