@@ -42,8 +42,8 @@ so that future regressions to the Electron integration are caught automatically.
   - [x] Open `apps/dms-material-e2e/playwright.config.ts`
   - [x] Add a new project entry:
         `ts
-    { name: 'electron', testMatch: '**/electron-*.spec.ts' }
-    `
+{ name: 'electron', testMatch: '**/electron-*.spec.ts' }
+`
   - [x] Ensure the `electron` project does NOT use a `baseURL` (the app is launched by the test)
   - [x] Add an Nx target `e2e:electron` in `apps/dms-material-e2e/project.json` if needed
 
