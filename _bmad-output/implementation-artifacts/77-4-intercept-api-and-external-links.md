@@ -29,6 +29,7 @@ so that the app behaves like a properly isolated desktop application.
 ## Tasks / Subtasks
 
 - [x] Confirm API call routing from renderer (AC: #1)
+
   - [x] Verify that Angular's `HttpClient` uses relative URLs (`/api/...`) or has a base URL
         configured
   - [x] Confirm that since `win.loadURL('http://localhost:PORT')` is used (Story 77.3), relative
@@ -39,6 +40,7 @@ so that the app behaves like a properly isolated desktop application.
         `apps/dms-material/src/environments/environment.ts` to use the dynamic port via IPC
 
 - [x] Update Angular environment to use dynamic port (AC: #1, #2)
+
   - [x] Check `apps/dms-material/src/environments/` for environment files
   - [x] If API URL is hardcoded (e.g., `http://localhost:3000`), add logic to detect Electron
         context and read the port from `window.electronAPI.getApiPort()` (IPC surface from Story 77.2)
@@ -47,6 +49,7 @@ so that the app behaves like a properly isolated desktop application.
   - [x] If the app already uses relative URLs, no change is needed — confirm and document
 
 - [x] Implement external link interception via `setWindowOpenHandler` (AC: #2, #4)
+
   - [x] In `main.ts`, after creating `mainWindow`, register:
         `mainWindow.webContents.setWindowOpenHandler(handleWindowOpen)`
   - [x] `handleWindowOpen` receives `{ url }` — if URL is external, call `shell.openExternal(url)`
@@ -55,6 +58,7 @@ so that the app behaves like a properly isolated desktop application.
         in a dev build and remove it after confirming behaviour)
 
 - [x] Update `will-navigate` handler to allow internal, block external (AC: #2, #3)
+
   - [x] Extend the `handleWillNavigate` function from Story 77.3
   - [x] For external URLs (non-localhost): `event.preventDefault()` then `shell.openExternal(url)`
   - [x] For internal URLs (same localhost origin): allow navigation to proceed (no `preventDefault`)
@@ -63,6 +67,7 @@ so that the app behaves like a properly isolated desktop application.
         navigations (full page loads) trigger it
 
 - [x] Validate no new Electron windows are created for external links (AC: #4)
+
   - [x] Confirm `setWindowOpenHandler` returns `{ action: 'deny' }` for all external URLs
   - [x] Confirm only one `BrowserWindow` exists at any time while the app is running
   - [x] Manually test (or automate in Story 77.5) that an external-link click opens the OS browser
@@ -196,19 +201,19 @@ Do not import `shell` in the preload or renderer — it is a main-process-only A
 
 ### Key Commands
 
-| Purpose | Command |
-|---------|---------|
-| Start full Electron app | `pnpm nx run electron:start` |
+| Purpose                   | Command                                                           |
+| ------------------------- | ----------------------------------------------------------------- |
+| Start full Electron app   | `pnpm nx run electron:start`                                      |
 | Open DevTools in Electron | In `main.ts`: `win.webContents.openDevTools()` during development |
-| Run all tests | `pnpm all` |
+| Run all tests             | `pnpm all`                                                        |
 
 ### Key Files
 
-| File | Purpose |
-|------|---------|
-| `apps/electron/src/main.ts` | `will-navigate` handler, `setWindowOpenHandler`, `shell.openExternal` |
-| `apps/dms-material/src/environments/environment.ts` | Check for hardcoded API URL |
-| `apps/dms-material/src/app/app.config.ts` | APP_INITIALIZER for dynamic port (if needed) |
+| File                                                | Purpose                                                               |
+| --------------------------------------------------- | --------------------------------------------------------------------- |
+| `apps/electron/src/main.ts`                         | `will-navigate` handler, `setWindowOpenHandler`, `shell.openExternal` |
+| `apps/dms-material/src/environments/environment.ts` | Check for hardcoded API URL                                           |
+| `apps/dms-material/src/app/app.config.ts`           | APP_INITIALIZER for dynamic port (if needed)                          |
 
 ## Dev Agent Record
 
