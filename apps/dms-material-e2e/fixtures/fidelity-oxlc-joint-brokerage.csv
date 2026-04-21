@@ -1,0 +1,4 @@
+Run Date,Account,Account Number,Action,Symbol,Description,Type,Price ($),Quantity,Commission ($),Fees ($),Accrued Interest ($),Amount ($),Settlement Date
+01/10/2025,E2E OXLC Joint Brokerage,88887777,YOU BOUGHT,OXLC,OXFORD LANE CAPITAL CORP,Stock,5.20,100,,,,-520.00,01/12/2025
+01/25/2025,E2E OXLC Joint Brokerage,88887777,YOU BOUGHT,OXLC,OXFORD LANE CAPITAL CORP,Stock,5.10,50,,,,-255.00,01/27/2025
+02/15/2025,E2E OXLC Joint Brokerage,88887777,DIVIDEND RECEIVED,OXLC,OXFORD LANE CAPITAL CORP,Dividend,,,,,, 52.00,02/17/2025
