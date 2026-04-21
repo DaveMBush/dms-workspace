@@ -801,6 +801,147 @@ describe('importFidelityTransactions', function () {
     });
   });
 
+  describe('Story 79.2 — processSales runs before processDeferredSplits', function () {
+    test('split ratio uses open lots AFTER pre-split sales are applied (OXLC scenario)', async function () {
+      // OXLC Joint Brokerage scenario:
+      // Trades: 400 Jun-6, 150+300 Jun-11, 500 Jun-26, 580 Aug-5 (total 1,930 open after buys)
+      // Sale: Jun-9 −400 shares (closes Jun-6 lot → 1,530 open remaining)
+      // Split: R/S FROM → 306 post-split shares
+      //
+      // Correct order: processSales first → 1,530 open → ratio = 5 ✓
+      // Wrong order:   processDeferredSplits before processSales → 1,930 open → ratio ≈ 6.307 ✗
+      //
+      // This test verifies calculateSplitRatio is called AFTER processSales by checking call order.
+      const callOrder: string[] = [];
+      parseFidelityCsv.mockReturnValue([{}]);
+      const mapped = emptyResult();
+      mapped.trades = [
+        {
+          universeId: 'u-oxlc',
+          accountId: 'a-joint',
+          buy: 4.48,
+          sell: 0,
+          buy_date: '2025-06-06',
+          quantity: 400,
+        },
+        {
+          universeId: 'u-oxlc',
+          accountId: 'a-joint',
+          buy: 4.49,
+          sell: 0,
+          buy_date: '2025-06-11',
+          quantity: 150,
+        },
+        {
+          universeId: 'u-oxlc',
+          accountId: 'a-joint',
+          buy: 4.5,
+          sell: 0,
+          buy_date: '2025-06-11',
+          quantity: 300,
+        },
+        {
+          universeId: 'u-oxlc',
+          accountId: 'a-joint',
+          buy: 4.06,
+          sell: 0,
+          buy_date: '2025-06-26',
+          quantity: 500,
+        },
+        {
+          universeId: 'u-oxlc',
+          accountId: 'a-joint',
+          buy: 3.44,
+          sell: 0,
+          buy_date: '2025-08-05',
+          quantity: 580,
+        },
+      ];
+      mapped.sales = [
+        {
+          universeId: 'u-oxlc',
+          accountId: 'a-joint',
+          sell: 4.54,
+          sell_date: '2025-06-09',
+          quantity: -400,
+        },
+      ];
+      mapped.pendingSplits = [
+        { symbol: 'OXLC', csvQuantity: 306, accountId: 'a-joint' },
+      ];
+      mapFidelityTransactions.mockResolvedValue(mapped);
+
+      // processTrades — create 5 open lots
+      prisma.trades.findFirst.mockResolvedValue(null);
+      prisma.trades.create.mockResolvedValue({ id: 't-new' });
+
+      // processSales — close the Jun-6 400-share lot via FIFO
+      prisma.trades.findMany.mockImplementation(async function () {
+        callOrder.push('processSales.findMany');
+        return [
+          {
+            id: 't-jun6',
+            universeId: 'u-oxlc',
+            accountId: 'a-joint',
+            buy: 4.48,
+            sell: 0,
+            buy_date: new Date('2025-06-06'),
+            sell_date: null,
+            quantity: 400,
+          },
+        ];
+      });
+      prisma.trades.update.mockResolvedValue({ id: 't-jun6' });
+
+      // processDeferredSplits — should run after sales
+      calculateSplitRatio.mockImplementation(async function () {
+        callOrder.push('calculateSplitRatio');
+        return 5;
+      });
+      adjustLotsForSplit.mockResolvedValue(undefined);
+
+      await importFidelityTransactions('csv content');
+
+      // Sales must be queried before the split ratio is calculated
+      expect(callOrder.indexOf('processSales.findMany')).toBeLessThan(
+        callOrder.indexOf('calculateSplitRatio')
+      );
+      expect(calculateSplitRatio).toHaveBeenCalledWith('OXLC', 306, 'a-joint');
+      expect(adjustLotsForSplit).toHaveBeenCalledWith('OXLC', 5, 'a-joint');
+    });
+
+    test('split with no prior sales preserves all open lots for ratio calculation', async function () {
+      // When there are no sales, all buy lots are used in the split ratio calculation.
+      parseFidelityCsv.mockReturnValue([{}]);
+      const mapped = emptyResult();
+      mapped.trades = [
+        {
+          universeId: 'u-sym',
+          accountId: 'a-acct',
+          buy: 10,
+          sell: 0,
+          buy_date: '2025-01-01',
+          quantity: 500,
+        },
+      ];
+      // No sales — pendingSplit only
+      mapped.pendingSplits = [
+        { symbol: 'SYM', csvQuantity: 100, accountId: 'a-acct' },
+      ];
+      mapFidelityTransactions.mockResolvedValue(mapped);
+      prisma.trades.findFirst.mockResolvedValue(null);
+      prisma.trades.create.mockResolvedValue({ id: 't1' });
+      calculateSplitRatio.mockResolvedValue(5);
+      adjustLotsForSplit.mockResolvedValue(undefined);
+
+      const result = await importFidelityTransactions('csv content');
+
+      expect(result.success).toBe(true);
+      expect(calculateSplitRatio).toHaveBeenCalledWith('SYM', 100, 'a-acct');
+      expect(adjustLotsForSplit).toHaveBeenCalledWith('SYM', 5, 'a-acct');
+    });
+  });
+
   describe('Epic 74 regression — mid-import error', function () {
     test('Epic 74: partial import leaves success: true when a sale has insufficient open shares', async function () {
       // Reproduces the mid-import error discovered via Playwright (story 74-1).
