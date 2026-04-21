@@ -2,9 +2,11 @@ import { HttpClient } from '@angular/common/http';
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   inject,
   signal,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -35,6 +37,7 @@ interface LogFileInfo {
 })
 export class GlobalErrorLogsComponent {
   private readonly http = inject(HttpClient);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly loading$ = signal(true);
   readonly errorMessage$ = signal('');
@@ -48,16 +51,19 @@ export class GlobalErrorLogsComponent {
     const self = this;
     self.loading$.set(true);
     self.errorMessage$.set('');
-    this.http.get<{ files: LogFileInfo[] }>('/api/logs/files').subscribe({
-      next: function onFilesSuccess(response) {
-        self.files$.set(response.files);
-        self.loading$.set(false);
-      },
-      error: function onFilesError() {
-        self.errorMessage$.set('Failed to load error log files.');
-        self.loading$.set(false);
-      },
-    });
+    this.http
+      .get<{ files: LogFileInfo[] }>('/api/logs/files')
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: function onFilesSuccess(response) {
+          self.files$.set(response.files);
+          self.loading$.set(false);
+        },
+        error: function onFilesError() {
+          self.errorMessage$.set('Failed to load error log files.');
+          self.loading$.set(false);
+        },
+      });
   }
 
   deleteFile(filename: string): void {
@@ -66,6 +72,7 @@ export class GlobalErrorLogsComponent {
       .delete<{ success: boolean; message: string }>(
         `/api/logs/files/${encodeURIComponent(filename)}`
       )
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: function onDeleteSuccess() {
           self.files$.update(function removeDeleted(files) {

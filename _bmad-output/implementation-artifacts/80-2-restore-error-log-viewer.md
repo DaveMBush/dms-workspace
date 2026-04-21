@@ -33,11 +33,13 @@ so that I can review and manage error logs the same way I could before the refac
 ## Tasks / Subtasks
 
 - [x] Task 1: Review Story 80.1 findings (AC: #1)
+
   - [x] Read `80-1-locate-error-log-component-git.md` Dev Notes — "Investigation Findings" section
   - [x] Confirm recovered component source, component class name, and correct route target are available
   - [x] If component not recoverable from git, reconstruct from scratch (see Dev Notes for expected shape)
 
 - [x] Task 2: Restore or reconstruct the file-viewer component (AC: #1, #3)
+
   - [x] Create component file(s) at original path (or equivalent) in `apps/dms-material/src/app/`
   - [x] Adapt component to use `inject()` instead of constructor injection
   - [x] Apply `ChangeDetectionStrategy.OnPush`
@@ -48,6 +50,7 @@ so that I can review and manage error logs the same way I could before the refac
   - [x] Named functions for all callbacks — no anonymous arrow functions
 
 - [x] Task 3: Check and create backend endpoints if missing (AC: #3, #4)
+
   - [x] Check `apps/server/src/app/routes/` for existing `GET /api/error-logs` and `DELETE /api/error-logs/:filename`
   - [x] If missing, create the route file with Fastify handlers:
     - `GET /api/logs/files` — reads `logs/` directory, returns array of `LogFileInfo` objects (uses existing autoloaded route)
@@ -56,6 +59,7 @@ so that I can review and manage error logs the same way I could before the refac
   - [x] Security: validate filename param — reject any value containing `/`, `..`, or path separators
 
 - [x] Task 4: Update Angular router (AC: #2)
+
   - [x] Open `apps/dms-material/src/app/app.routes.ts`
   - [x] Find the Error Logs route entry (identified in Story 80.1)
   - [x] Update `component:` reference to point at the restored file-viewer component class
@@ -100,18 +104,24 @@ export class ErrorLogComponent {
   }
 
   loadFiles(): void {
-    this.http.get<string[]>('/api/error-logs').subscribe(function handleFiles(files) {
-      // named function — no anonymous arrow function
-      this.errorLogFiles.set(files);
-    }.bind(this)); // or use rxjs take(1) pattern
+    this.http.get<string[]>('/api/error-logs').subscribe(
+      function handleFiles(files) {
+        // named function — no anonymous arrow function
+        this.errorLogFiles.set(files);
+      }.bind(this)
+    ); // or use rxjs take(1) pattern
   }
 
   deleteFile(filename: string): void {
-    this.http.delete(`/api/error-logs/${encodeURIComponent(filename)}`).subscribe(function handleDelete() {
-      this.errorLogFiles.update(function removeFile(files) {
-        return files.filter(function isNotDeleted(f) { return f !== filename; });
-      });
-    }.bind(this));
+    this.http.delete(`/api/error-logs/${encodeURIComponent(filename)}`).subscribe(
+      function handleDelete() {
+        this.errorLogFiles.update(function removeFile(files) {
+          return files.filter(function isNotDeleted(f) {
+            return f !== filename;
+          });
+        });
+      }.bind(this)
+    );
   }
 }
 ```
@@ -159,24 +169,24 @@ The `DELETE /api/error-logs/:filename` endpoint **must** validate the filename p
 
 ### Key Commands
 
-| Purpose | Command |
-|---------|---------|
-| Run all tests | `pnpm all` |
-| Run Chromium E2E | `pnpm e2e:dms-material:chromium` |
-| List server routes | `ls apps/server/src/app/routes/` |
-| Find Angular router | `cat apps/dms-material/src/app/app.routes.ts` |
+| Purpose                | Command                                            |
+| ---------------------- | -------------------------------------------------- |
+| Run all tests          | `pnpm all`                                         |
+| Run Chromium E2E       | `pnpm e2e:dms-material:chromium`                   |
+| List server routes     | `ls apps/server/src/app/routes/`                   |
+| Find Angular router    | `cat apps/dms-material/src/app/app.routes.ts`      |
 | Find existing services | `ls apps/dms-material/src/app/services/` (or api/) |
-| Check logs directory | `ls logs/` |
+| Check logs directory   | `ls logs/`                                         |
 
 ### Key Files
 
-| File | Purpose |
-|------|---------|
-| `80-1-locate-error-log-component-git.md` | Investigation findings — component source and route target |
-| `apps/dms-material/src/app/app.routes.ts` | Angular router — update Error Logs route |
-| `apps/dms-material/src/app/` | Restore component here (confirm path from 80.1) |
-| `apps/server/src/app/routes/` | Add `GET`/`DELETE` error-logs endpoints if missing |
-| `logs/` | Project logs directory — files listed and deleted by this feature |
+| File                                      | Purpose                                                           |
+| ----------------------------------------- | ----------------------------------------------------------------- |
+| `80-1-locate-error-log-component-git.md`  | Investigation findings — component source and route target        |
+| `apps/dms-material/src/app/app.routes.ts` | Angular router — update Error Logs route                          |
+| `apps/dms-material/src/app/`              | Restore component here (confirm path from 80.1)                   |
+| `apps/server/src/app/routes/`             | Add `GET`/`DELETE` error-logs endpoints if missing                |
+| `logs/`                                   | Project logs directory — files listed and deleted by this feature |
 
 ### Constraints
 

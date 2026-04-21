@@ -9,16 +9,11 @@
       aria-label="Loading error log files"
     ></mat-spinner>
   </mat-card-content>
-  } @else if (errorMessage$()) {
-  <mat-card-content>
-    <p role="alert" aria-live="polite">{{ errorMessage$() }}</p>
-  </mat-card-content>
-  } @else if (files$().length === 0) {
-  <mat-card-content>
-    <p>No error log files found.</p>
-  </mat-card-content>
   } @else {
   <mat-card-content>
+    @if (errorMessage$()) {
+    <p role="alert" aria-live="polite">{{ errorMessage$() }}</p>
+    } @if (files$().length > 0) {
     <mat-list>
       @for (file of files$(); track file.filename) {
       <mat-list-item>
@@ -36,6 +31,9 @@
       </mat-list-item>
       }
     </mat-list>
+    } @else if (!errorMessage$()) {
+    <p>No error log files found.</p>
+    }
   </mat-card-content>
   }
 </mat-card>
