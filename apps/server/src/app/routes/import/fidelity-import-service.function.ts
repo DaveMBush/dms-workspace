@@ -196,8 +196,8 @@ async function processAllTransactions(
   const warnings = collectUnknownWarnings(mapped.unknownTransactions);
 
   const tradeCount = await processTrades(mapped.trades, errors);
-  await processDeferredSplits(mapped.pendingSplits, errors);
   const saleCount = await processSales(mapped.sales, errors);
+  await processDeferredSplits(mapped.pendingSplits, errors);
   const depositCount = await processDeposits(mapped.divDeposits, errors);
 
   return {
