@@ -84,7 +84,7 @@ test.describe('OXLC Joint Brokerage Positions and Dividends', () => {
     await expect(table).toBeVisible({ timeout: 15000 });
 
     // Assert at least one OXLC row is visible in the open positions table
-    await expect(page.getByText('OXLC').first()).toBeVisible({
+    await expect(table.getByText('OXLC').first()).toBeVisible({
       timeout: 10000,
     });
   });
@@ -97,7 +97,9 @@ test.describe('OXLC Joint Brokerage Positions and Dividends', () => {
     await page.waitForLoadState('networkidle');
 
     // Assert at least one OXLC dividend row is visible in the div deposits table
-    await expect(page.getByText('OXLC').first()).toBeVisible({
+    const divDepTable = page.locator('dms-base-table');
+    await expect(divDepTable).toBeVisible({ timeout: 15000 });
+    await expect(divDepTable.getByText('OXLC').first()).toBeVisible({
       timeout: 10000,
     });
   });
