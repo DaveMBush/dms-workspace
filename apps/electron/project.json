@@ -21,7 +21,17 @@
     },
     "start": {
       "executor": "nx:run-commands",
-      "dependsOn": ["build", { "projects": ["server"], "target": "build" }],
+      "dependsOn": [
+        "build",
+        {
+          "projects": ["server"],
+          "target": "build"
+        },
+        {
+          "projects": ["dms-material"],
+          "target": "build"
+        }
+      ],
       "options": {
         "command": "../../node_modules/.bin/electron .",
         "cwd": "apps/electron"
