@@ -30,6 +30,13 @@
         "project": ["firefox"]
       }
     },
+    "e2e-electron": {
+      "executor": "@nx/playwright:playwright",
+      "options": {
+        "config": "apps/dms-material-e2e/playwright.config.ts",
+        "project": ["electron"]
+      }
+    },
     "e2e-ui": {
       "executor": "@nx/playwright:playwright",
       "options": {
