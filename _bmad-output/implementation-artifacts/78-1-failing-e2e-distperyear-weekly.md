@@ -91,7 +91,7 @@ The `[max]="12"` binding is hardcoded. It should be dynamic based on distributio
 
 **Validation logic:**
 `apps/dms-material/src/app/shared/components/editable-cell/editable-cell.component.ts`
-`saveEdit()` sets `validationError$.set('Value must be at most ${maxVal}')` and returns early
+`saveEdit()` sets `` validationError$.set(`Value must be at most ${maxVal}`) `` and returns early
 when `numericValue > max`, keeping `isEditing$ = true`.
 
 **Test data:**
@@ -119,14 +119,14 @@ always loads first and resolves immediately.
 
 Playwright error output for AC#1:
 
-```
+```text
 Error: expect(locator).not.toBeVisible() failed
 
 Locator:  getByText('Value must be at most 12')
 Expected: not visible
 Received: visible
 
-  > 87 |     await expect(page.getByText('Value must be at most 12')).not.toBeVisible();
+  > 93 |     await expect(page.getByText('Value must be at most 12')).not.toBeVisible();
 ```
 
 This confirms the bug: "Value must be at most 12" IS visible when 52 is entered,
@@ -175,4 +175,4 @@ Claude Sonnet 4.6 (GitHub Copilot)
 
 | Date | Change |
 |------|--------|
-| 2025-01-20 | Created `dist-per-year-weekly.spec.ts` with 2 failing tests confirming the [max]="12" bug |
+| 2026-04-21 | Created `dist-per-year-weekly.spec.ts` with 2 failing tests confirming the [max]="12" bug |
