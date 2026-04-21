@@ -208,9 +208,9 @@ async function init(): Promise<void> {
           return externalOpenLog;
         }
       );
-      (global as typeof globalThis & { electronTestExternalLog?: string[] })[
-        'electronTestExternalLog'
-      ] = externalOpenLog;
+      (
+        global as typeof globalThis & { electronTestExternalLog?: string[] }
+      ).electronTestExternalLog = externalOpenLog;
     }
 
     await startServer(port);

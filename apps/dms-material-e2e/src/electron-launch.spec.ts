@@ -71,13 +71,13 @@ test.describe('Electron App Launch', () => {
     // setWindowOpenHandler in main.ts intercepts it and calls openExternal().
     // With ELECTRON_TEST_MODE=1 the URL is captured in externalOpenLog instead
     // of actually opening the OS browser.
-    // eslint-disable-next-line @typescript-eslint/require-await
-    await window.evaluate(function triggerExternalOpen(): void {
-      // Deliberately omit noopener — we are testing that Electron blocks the
-      // new-window entirely, so the noopener attribute is irrelevant here.
-      // eslint-disable-next-line sonarjs/link-with-target-blank
-      window.open('https://example.com', '_blank');
-    });
+    await window.evaluate(
+      // eslint-disable-next-line @typescript-eslint/require-await -- Playwright evaluate() requires an async callback signature
+      async function triggerExternalOpen(): Promise<void> {
+        // eslint-disable-next-line sonarjs/link-with-target-blank -- Electron blocks new windows entirely; noopener is irrelevant
+        window.open('https://example.com', '_blank');
+      }
+    );
 
     // Read the log from the main process via the global exposed in test mode
     const calls = await app.evaluate(function readExternalOpenLog(): string[] {
