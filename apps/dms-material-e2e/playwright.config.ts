@@ -75,13 +75,13 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
-      testIgnore: ['**/system-integration.spec.ts'],
+      testIgnore: ['**/system-integration.spec.ts', '**/electron-*.spec.ts'],
       use: { ...devices['Desktop Chrome'] },
     },
 
     {
       name: 'firefox',
-      testIgnore: ['**/system-integration.spec.ts'],
+      testIgnore: ['**/system-integration.spec.ts', '**/electron-*.spec.ts'],
       use: {
         ...devices['Desktop Firefox'],
         // Firefox on Linux resolves 'localhost' to ::1 (IPv6), but the dev server
@@ -107,6 +107,13 @@ export default defineConfig({
     //   name: 'webkit',
     //   use: { ...devices['Desktop Safari'] },
     // },
+
+    {
+      name: 'electron',
+      testMatch: ['**/electron-*.spec.ts'],
+      // No baseURL — the test launches Electron directly
+      use: {},
+    },
 
     // Uncomment for mobile browsers support
     /* {

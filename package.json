@@ -17,6 +17,7 @@
     "e2e:dms-material:ui": "nx run dms-material-e2e:e2e-ui",
     "e2e:dms-material:chromium": "nx run dms-material-e2e:e2e-chromium",
     "e2e:dms-material:firefox": "nx run dms-material-e2e:e2e-firefox",
+    "e2e:electron": "nx run dms-material-e2e:e2e-electron",
     "db:create": "prisma generate && prisma migrate deploy",
     "postinstall": "if [ \"$CI\" = \"true\" ]; then prisma generate; fi"
   },

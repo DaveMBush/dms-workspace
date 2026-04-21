@@ -8,6 +8,16 @@ import { findAvailablePort } from './utils/port';
 let serverProcess: ChildProcess | null = null;
 let resolvedPort: number | null = null;
 
+const externalOpenLog: string[] = [];
+
+function openExternal(url: string): void {
+  if (process.env['ELECTRON_TEST_MODE'] === '1') {
+    externalOpenLog.push(url);
+    return;
+  }
+  void shell.openExternal(url);
+}
+
 function healthCheck(port: number): Promise<void> {
   return new Promise(function doHealthCheck(
     resolve: () => void,
@@ -97,7 +107,7 @@ function handleWillNavigate(
     event.preventDefault();
     const scheme = url.slice(0, url.indexOf(':') + 1).toLowerCase();
     if (scheme === 'http:' || scheme === 'https:') {
-      void shell.openExternal(url);
+      openExternal(url);
     }
   }
 }
@@ -151,7 +161,7 @@ function createWindow(port: number): void {
         .slice(0, details.url.indexOf(':') + 1)
         .toLowerCase();
       if (scheme === 'http:' || scheme === 'https:') {
-        void shell.openExternal(details.url);
+        openExternal(details.url);
       }
     }
     return { action: 'deny' };
@@ -190,6 +200,18 @@ async function init(): Promise<void> {
     ipcMain.handle('get-api-port', function getApiPort(): number | null {
       return resolvedPort;
     });
+
+    if (process.env['ELECTRON_TEST_MODE'] === '1') {
+      ipcMain.handle(
+        'get-external-open-calls',
+        function getExternalOpenCalls(): string[] {
+          return externalOpenLog;
+        }
+      );
+      (global as NodeJS.Global & { __externalOpenLog?: string[] })[
+        '__externalOpenLog'
+      ] = externalOpenLog;
+    }
 
     await startServer(port);
     console.log(`[electron] Fastify started on port ${port}`);
