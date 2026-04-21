@@ -208,8 +208,8 @@ async function init(): Promise<void> {
           return externalOpenLog;
         }
       );
-      (global as NodeJS.Global & { __externalOpenLog?: string[] })[
-        '__externalOpenLog'
+      (global as typeof globalThis & { electronTestExternalLog?: string[] })[
+        'electronTestExternalLog'
       ] = externalOpenLog;
     }
 
