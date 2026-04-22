@@ -65,7 +65,7 @@ test.describe('Summary Display Component (Charts)', () => {
     });
 
     test('charts resize on window resize', async ({ page, browserName }) => {
-      // TODO(E3): blocked — Chart.js resize behavior is inconsistent on webkit
+      // TODO(E82): blocked — Chart.js resize behavior is inconsistent on webkit
       // Skip on webkit - Chart.js resize behavior is inconsistent
       test.skip(browserName === 'webkit', 'Chart resize flaky on webkit');
 

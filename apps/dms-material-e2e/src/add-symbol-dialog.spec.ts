@@ -154,7 +154,7 @@ test.describe('Add Symbol Dialog', () => {
         await page.waitForTimeout(2000);
         const retryCount = await optionsLocator.count();
         if (retryCount === 0) {
-          // TODO(E3): blocked — SmartNgRX store timing issue
+          // TODO(E82): blocked — SmartNgRX store timing issue
           test.skip(
             true,
             'Risk groups not loaded - SmartNgRX store timing issue'
@@ -195,7 +195,7 @@ test.describe('Add Symbol Dialog', () => {
         await page.waitForTimeout(2000);
         const retryCount = await optionsLocator.count();
         if (retryCount === 0) {
-          // TODO(E3): blocked — SmartNgRX store timing issue
+          // TODO(E82): blocked — SmartNgRX store timing issue
           test.skip(
             true,
             'Risk groups not loaded - SmartNgRX store timing issue'

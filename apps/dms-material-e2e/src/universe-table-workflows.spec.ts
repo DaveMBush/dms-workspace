@@ -347,7 +347,7 @@ test.describe('Universe Table Workflows', () => {
   });
 
   test.describe('Symbol Deletion', () => {
-    // TODO(E3): blocked — symbol deletion not fully testable
+    // TODO(E82): blocked — symbol deletion not fully testable
     test.skip('should display delete button for deletable symbols', async ({
       page,
     }) => {
@@ -380,7 +380,7 @@ test.describe('Universe Table Workflows', () => {
       await expect(deleteButton).not.toBeVisible();
     });
 
-    // TODO(E3): blocked — symbol deletion not fully testable
+    // TODO(E82): blocked — symbol deletion not fully testable
     test.skip('should show confirmation dialog when delete is clicked', async ({
       page,
     }) => {
@@ -394,7 +394,7 @@ test.describe('Universe Table Workflows', () => {
       await expect(confirmDialog).toContainText('confirm');
     });
 
-    // TODO(E3): blocked — symbol deletion not fully testable
+    // TODO(E82): blocked — symbol deletion not fully testable
     test.skip('should cancel deletion when Cancel is clicked', async ({
       page,
     }) => {
@@ -412,7 +412,7 @@ test.describe('Universe Table Workflows', () => {
       expect(rowsAfter).toBe(rowsBefore);
     });
 
-    // TODO(E3): blocked — symbol deletion not fully testable
+    // TODO(E82): blocked — symbol deletion not fully testable
     test.skip('should remove symbol when deletion is confirmed', async ({
       page,
     }) => {
@@ -436,7 +436,7 @@ test.describe('Universe Table Workflows', () => {
       expect(rowsAfter).toBe(rowsBefore - 1);
     });
 
-    // TODO(E3): blocked — symbol deletion not fully testable
+    // TODO(E82): blocked — symbol deletion not fully testable
     test.skip('should show success notification after deletion', async ({
       page,
     }) => {
@@ -487,7 +487,7 @@ test.describe('Universe Table Workflows', () => {
       await expect(dialog).not.toBeVisible();
     });
 
-    // TODO(E3): blocked — add symbol feature not fully testable
+    // TODO(E82): blocked — add symbol feature not fully testable
     test.skip('should validate symbol format before adding', async ({
       page,
     }) => {
@@ -505,7 +505,7 @@ test.describe('Universe Table Workflows', () => {
       await expect(errorMessage).toBeVisible();
     });
 
-    // TODO(E3): blocked — add symbol feature not fully testable
+    // TODO(E82): blocked — add symbol feature not fully testable
     test.skip('should add symbol to table on successful submission', async ({
       page,
     }) => {
@@ -530,7 +530,7 @@ test.describe('Universe Table Workflows', () => {
       expect(rowsAfter).toBe(rowsBefore + 1);
     });
 
-    // TODO(E3): blocked — add symbol feature not fully testable
+    // TODO(E82): blocked — add symbol feature not fully testable
     test.skip('should show success notification after adding symbol', async ({
       page,
     }) => {
@@ -548,7 +548,7 @@ test.describe('Universe Table Workflows', () => {
       await expect(notification).toContainText('NEWTEST');
     });
 
-    // TODO(E3): blocked — add symbol feature not fully testable
+    // TODO(E82): blocked — add symbol feature not fully testable
     test.skip('should handle duplicate symbol error', async ({ page }) => {
       const addButton = page.locator('[data-testid="add-symbol-button"]');
       await addButton.click();
@@ -571,7 +571,7 @@ test.describe('Universe Table Workflows', () => {
     });
   });
 
-  // TODO(E3): blocked — Update Fields feature not fully testable
+  // TODO(E82): blocked — Update Fields feature not fully testable
   test.describe.skip('Update Fields Operation', () => {
     test('should trigger update fields when button is clicked', async ({
       page,
@@ -666,7 +666,7 @@ test.describe('Universe Table Workflows', () => {
     });
   });
 
-  // TODO(E3): blocked — Filter Combinations feature not fully testable
+  // TODO(E82): blocked — Filter Combinations feature not fully testable
   test.describe.skip('Filter Combinations', () => {
     test('should filter by symbol and risk group together', async ({
       page,
@@ -795,7 +795,7 @@ test.describe('Universe Table Workflows', () => {
     });
   });
 
-  // TODO(E3): blocked — Table Refresh feature not fully testable
+  // TODO(E82): blocked — Table Refresh feature not fully testable
   test.describe.skip('Table Refresh', () => {
     test('should refresh table data when refresh icon is clicked', async ({
       page,
@@ -851,7 +851,7 @@ test.describe('Universe Table Workflows', () => {
     });
   });
 
-  // TODO(E3): blocked — Edge Cases and Error Handling not fully testable
+  // TODO(E82): blocked — Edge Cases and Error Handling not fully testable
   test.describe.skip('Edge Cases and Error Handling', () => {
     test('should handle empty table gracefully', async ({ page }) => {
       await page.route('**/api/universe**', async (route) => {
@@ -976,7 +976,7 @@ test.describe('Universe Table Workflows', () => {
     });
   });
 
-  // TODO(E3): blocked — Accessibility and Keyboard Navigation not fully testable
+  // TODO(E82): blocked — Accessibility and Keyboard Navigation not fully testable
   test.describe.skip('Accessibility and Keyboard Navigation', () => {
     test('should support Tab key navigation through editable cells', async ({
       page,
