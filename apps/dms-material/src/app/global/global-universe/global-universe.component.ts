@@ -57,6 +57,7 @@ import { restoreUniverseFilters } from './restore-universe-filters.function';
 import { saveUniverseFiltersAndNotify } from './save-universe-filters-and-notify.function';
 import { UniverseService } from './services/universe.service';
 import { UniverseValidationService } from './services/universe-validation.service';
+import { VolatilityDataService } from './services/volatility-data.service';
 import { updatePendingEdits } from './update-pending-edits.function';
 
 @Component({
@@ -93,6 +94,7 @@ export class GlobalUniverseComponent implements OnDestroy {
   private readonly updateFieldsService = inject(UpdateUniverseFieldsService);
   private readonly errorHandling = inject(ErrorHandlingService);
   private readonly sortFilterStateService = inject(SortFilterStateService);
+  private readonly volatilityDataService = inject(VolatilityDataService);
   readonly cellEdit = output<CellEditEvent>();
   readonly symbolDeleted = output<Universe>();
   readonly today = new Date();
@@ -166,6 +168,15 @@ export class GlobalUniverseComponent implements OnDestroy {
     const riskGroups = selectRiskGroup();
     const vr = this.visibleRange();
     const enrichedData = enrichUniverseWithRiskGroups(rawData, riskGroups, vr);
+
+    const volMap = this.volatilityDataService.volatilityMap();
+    for (const row of enrichedData) {
+      const vol = volMap.get(row.symbol);
+      if (vol !== undefined) {
+        row.volatility1yr = vol.volatility1yr;
+        row.volatility5yr = vol.volatility5yr;
+      }
+    }
 
     applyPendingEdits(enrichedData, this.pendingEdits$());
     return filterUniverses(enrichedData, {
