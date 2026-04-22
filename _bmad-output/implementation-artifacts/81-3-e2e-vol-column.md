@@ -29,18 +29,21 @@ so that regressions to the column are caught in CI.
 ## Tasks / Subtasks
 
 - [x] Task 1: Explore existing Universe E2E specs and understand seeding patterns (AC: #1–3)
+
   - [x] List `apps/dms-material-e2e/src/` to find existing universe-related specs
   - [x] Read any `universe*.spec.ts` files to understand how they seed data and assert table structure
   - [x] Identify how table headers are selected (CSS selectors, role-based, `data-testid`, etc.)
   - [x] Find the login helper: `apps/dms-material-e2e/src/helpers/login.helper.ts`
 
 - [x] Task 2: Identify seeding mechanism for symbol with 12+ months distribution history (AC: #3)
+
   - [x] Check how existing E2E tests seed distribution/dividend data (look for `beforeAll` patterns in existing specs)
   - [x] Find the distribution import endpoint or seed endpoint in server routes
   - [x] Create a fixture with at least 12 monthly distribution records for a test symbol (e.g., `TEST-VOL`)
   - [x] Seed this fixture in `beforeAll` before Universe screen tests
 
 - [x] Task 3: Write E2E spec (AC: #1, #2, #3)
+
   - [x] Create `apps/dms-material-e2e/src/vol-column.spec.ts`
   - [x] `beforeAll`: login and seed at least one symbol with 12+ months of consistent distribution data
   - [x] Test 1: assert first `mat-header-cell` has text "Vol" (first column check)
@@ -49,6 +52,7 @@ so that regressions to the column are caught in CI.
   - [x] Named functions for all callbacks
 
 - [x] Task 4: Verify with Playwright MCP server (AC: #1, #2, #3)
+
   - [x] Use Playwright MCP server to visually confirm:
     - "Vol" is the first column visible
     - Tooltip appears on hover
@@ -141,6 +145,7 @@ Use the Playwright MCP server to inspect the rendered DOM and confirm the correc
 ### Tooltip Assertion
 
 Angular Material tooltips appear as an overlay element. The selector depends on Angular Material version:
+
 - Newer (`mat-mdc-tooltip`): `.mat-mdc-tooltip`
 - Older (`mat-tooltip`): `.mat-tooltip`
 
@@ -161,6 +166,7 @@ Adjust the locator based on actual DOM structure confirmed via Playwright MCP se
 ### Seeding 12+ Months of Data
 
 For AC #3 to pass, at least one symbol in the test database must have 12+ months of distribution records. Options:
+
 1. Look for an existing E2E seed endpoint (check `POST /api/test/seed` or similar in server routes)
 2. Use a test fixture with pre-existing data if the E2E database is seeded before tests
 3. Insert records via Prisma client in a `globalSetup` file if available
@@ -169,24 +175,24 @@ Look at existing universe E2E specs to see how they handle seeding.
 
 ### Key Commands
 
-| Purpose | Command |
-|---------|---------|
-| Run all tests | `pnpm all` |
-| Run Chromium E2E | `pnpm e2e:dms-material:chromium` |
-| List E2E specs | `ls apps/dms-material-e2e/src/` |
-| Find universe E2E specs | `find apps/dms-material-e2e/src/ -name "*universe*"` |
+| Purpose                     | Command                                                      |
+| --------------------------- | ------------------------------------------------------------ |
+| Run all tests               | `pnpm all`                                                   |
+| Run Chromium E2E            | `pnpm e2e:dms-material:chromium`                             |
+| List E2E specs              | `ls apps/dms-material-e2e/src/`                              |
+| Find universe E2E specs     | `find apps/dms-material-e2e/src/ -name "*universe*"`         |
 | Find Angular Universe route | `grep -r "universe" apps/dms-material/src/app/app.routes.ts` |
-| Find login helper | `find apps/dms-material-e2e/src/ -name "*.helper.ts"` |
+| Find login helper           | `find apps/dms-material-e2e/src/ -name "*.helper.ts"`        |
 
 ### Key Files
 
-| File | Purpose |
-|------|---------|
-| `81-2-frontend-vol-column.md` | Prerequisite — Vol column must be implemented first |
-| `apps/dms-material-e2e/src/vol-column.spec.ts` | New E2E spec to create |
-| `apps/dms-material-e2e/src/helpers/login.helper.ts` | Login helper for E2E tests |
-| `apps/dms-material-e2e/src/` | Existing specs — find universe seeding patterns here |
-| `apps/dms-material/src/app/app.routes.ts` | Angular router — find Universe route URL |
+| File                                                | Purpose                                              |
+| --------------------------------------------------- | ---------------------------------------------------- |
+| `81-2-frontend-vol-column.md`                       | Prerequisite — Vol column must be implemented first  |
+| `apps/dms-material-e2e/src/vol-column.spec.ts`      | New E2E spec to create                               |
+| `apps/dms-material-e2e/src/helpers/login.helper.ts` | Login helper for E2E tests                           |
+| `apps/dms-material-e2e/src/`                        | Existing specs — find universe seeding patterns here |
+| `apps/dms-material/src/app/app.routes.ts`           | Angular router — find Universe route URL             |
 
 ### Constraints
 
