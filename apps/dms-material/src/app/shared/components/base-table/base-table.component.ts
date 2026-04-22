@@ -25,6 +25,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSort, MatSortModule, Sort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { debounceTime } from 'rxjs';
 
 import { SortColumn } from '../../services/sort-column.interface';
@@ -63,6 +64,7 @@ function compareValues(aVal: unknown, bVal: unknown): number {
     MatSortModule,
     MatProgressBarModule,
     MatCheckboxModule,
+    MatTooltipModule,
   ],
   templateUrl: './base-table.component.html',
   styleUrl: './base-table.component.scss',

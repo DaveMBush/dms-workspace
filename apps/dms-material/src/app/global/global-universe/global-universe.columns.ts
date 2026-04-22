@@ -1,6 +1,12 @@
 import { ColumnDef } from '../../shared/components/base-table/column-def.interface';
 
 export const UNIVERSE_COLUMNS: ColumnDef[] = [
+  {
+    field: 'vol',
+    header: 'Vol',
+    tooltip: 'Volatility',
+    width: '50px',
+  },
   { field: 'symbol', header: 'Symbol', sortable: true, width: '80px' },
   {
     field: 'risk_group',

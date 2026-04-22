@@ -59,6 +59,7 @@
           [attr.data-sort-header]="column.sortable ? column.field : null"
           [disabled]="!column.sortable"
           [style.width]="column.width"
+          [matTooltip]="column.tooltip ?? null"
         >
           {{ column.header }}
           @if (sortRankMap()[column.field]) {

@@ -1,6 +1,6 @@
 # Story 81.2: Frontend — "Vol" Column on Universe Screen
 
-Status: Approved
+Status: Done
 
 ## Story
 
@@ -36,35 +36,39 @@ so that I can quickly assess distribution stability without scrolling.
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Locate Universe screen component and understand data model (AC: #1)
-  - [ ] Find Universe component in `apps/dms-material/src/app/` (search for `universe`)
-  - [ ] Read the component `.ts` file to understand how data is fetched (signal store, HTTP service, etc.)
-  - [ ] Read the component template `.html` to understand the table structure (column defs, `matColumnDef`, virtual scroll if used)
-  - [ ] Identify how column order is controlled (array of column names, or direct template order)
+- [x] Task 1: Locate Universe screen component and understand data model (AC: #1)
 
-- [ ] Task 2: Update data model and API service (AC: #1)
-  - [ ] Find the Universe interface/type definition (look in `apps/dms-material/src/app/` or shared models)
-  - [ ] Add `volatility1yr?: 'steady' | 'increasing' | 'decreasing' | 'volatile' | null` and `volatility5yr?` to the interface
-  - [ ] Confirm the HTTP service/API call fetches from the correct endpoint augmented in Story 81.1
-  - [ ] Ensure the signal/store state includes the new volatility fields without breaking existing state shape
+  - [x] Find Universe component in `apps/dms-material/src/app/` (search for `universe`)
+  - [x] Read the component `.ts` file to understand how data is fetched (signal store, HTTP service, etc.)
+  - [x] Read the component template `.html` to understand the table structure (column defs, `matColumnDef`, virtual scroll if used)
+  - [x] Identify how column order is controlled (array of column names, or direct template order)
 
-- [ ] Task 3: Add "Vol" column to the table as the first column (AC: #1, #2, #3, #4, #5)
-  - [ ] In the component template, add `<ng-container matColumnDef="vol">` with header and cell definitions
-  - [ ] Header cell: `<mat-header-cell>Vol</mat-header-cell>` with `matTooltip="Volatility"`
-  - [ ] Cell content: display correct Material icon based on `volatility1yr` value (see icon mapping below)
-  - [ ] Handle `null`/`unknown`: render empty cell or a neutral `—` placeholder
-  - [ ] Update the displayed columns array to insert `'vol'` at index 0 (first position)
+- [x] Task 2: Update data model and API service (AC: #1)
 
-- [ ] Task 4: Verify OnPush, inject(), and signal patterns (AC: #6)
-  - [ ] Confirm component has `ChangeDetectionStrategy.OnPush`
-  - [ ] Confirm no constructor injection — use `inject()` only
-  - [ ] Confirm state is managed via signals (not imperative `detectChanges()` calls)
-  - [ ] Named functions for any callbacks — no anonymous arrow functions
+  - [x] Find the Universe interface/type definition (look in `apps/dms-material/src/app/` or shared models)
+  - [x] Add `volatility1yr?: 'steady' | 'increasing' | 'decreasing' | 'volatile' | null` and `volatility5yr?` to the interface
+  - [x] Confirm the HTTP service/API call fetches from the correct endpoint augmented in Story 81.1
+  - [x] Ensure the signal/store state includes the new volatility fields without breaking existing state shape
 
-- [ ] Task 5: Run full test suite (AC: #1–6)
-  - [ ] Run `pnpm all` and confirm all tests pass
-  - [ ] Run `pnpm e2e:dms-material:chromium` for E2E confirmation
-  - [ ] Do not modify pre-existing tests
+- [x] Task 3: Add "Vol" column to the table as the first column (AC: #1, #2, #3, #4, #5)
+
+  - [x] In the component template, add `<ng-container matColumnDef="vol">` with header and cell definitions
+  - [x] Header cell: `<mat-header-cell>Vol</mat-header-cell>` with `matTooltip="Volatility"`
+  - [x] Cell content: display correct Material icon based on `volatility1yr` value (see icon mapping below)
+  - [x] Handle `null`/`unknown`: render empty cell or a neutral `—` placeholder
+  - [x] Update the displayed columns array to insert `'vol'` at index 0 (first position)
+
+- [x] Task 4: Verify OnPush, inject(), and signal patterns (AC: #6)
+
+  - [x] Confirm component has `ChangeDetectionStrategy.OnPush`
+  - [x] Confirm no constructor injection — use `inject()` only
+  - [x] Confirm state is managed via signals (not imperative `detectChanges()` calls)
+  - [x] Named functions for any callbacks — no anonymous arrow functions
+
+- [x] Task 5: Run full test suite (AC: #1–6)
+  - [x] Run `pnpm all` and confirm all tests pass
+  - [x] Run `pnpm e2e:dms-material:chromium` for E2E confirmation
+  - [x] Do not modify pre-existing tests
 
 ## Dev Notes
 
@@ -74,13 +78,13 @@ Story 81.1 must be completed — the backend endpoint must be returning `volatil
 
 ### Volatility Icon Mapping
 
-| Category | Material Icon | Rationale |
-|----------|--------------|-----------|
-| `steady` | `trending_flat` | Flat/stable trend |
-| `increasing` | `trending_up` | Upward trend |
-| `decreasing` | `trending_down` | Downward trend |
-| `volatile` | `show_chart` | Irregular/jagged line |
-| `null`/`unknown` | _(empty)_ or `—` | Insufficient data |
+| Category         | Material Icon    | Rationale             |
+| ---------------- | ---------------- | --------------------- |
+| `steady`         | `trending_flat`  | Flat/stable trend     |
+| `increasing`     | `trending_up`    | Upward trend          |
+| `decreasing`     | `trending_down`  | Downward trend        |
+| `volatile`       | `show_chart`     | Irregular/jagged line |
+| `null`/`unknown` | _(empty)_ or `—` | Insufficient data     |
 
 ### Template Pattern
 
@@ -90,13 +94,13 @@ Story 81.1 must be completed — the backend endpoint must be returning `volatil
   <mat-header-cell *matHeaderCellDef matTooltip="Volatility">Vol</mat-header-cell>
   <mat-cell *matCellDef="let row">
     @if (row.volatility1yr === 'steady') {
-      <mat-icon>trending_flat</mat-icon>
+    <mat-icon>trending_flat</mat-icon>
     } @else if (row.volatility1yr === 'increasing') {
-      <mat-icon>trending_up</mat-icon>
+    <mat-icon>trending_up</mat-icon>
     } @else if (row.volatility1yr === 'decreasing') {
-      <mat-icon>trending_down</mat-icon>
+    <mat-icon>trending_down</mat-icon>
     } @else if (row.volatility1yr === 'volatile') {
-      <mat-icon>show_chart</mat-icon>
+    <mat-icon>show_chart</mat-icon>
     }
     <!-- null/unknown: empty cell — no @else needed -->
   </mat-cell>
@@ -110,9 +114,9 @@ Find the displayed columns array in the component and insert `'vol'` at position
 ```typescript
 // In the component, locate the displayedColumns signal or array
 // Change from:
-displayedColumns = signal(['symbol', 'price', /* ... */]);
+displayedColumns = signal(['symbol', 'price' /* ... */]);
 // To:
-displayedColumns = signal(['vol', 'symbol', 'price', /* ... */]);
+displayedColumns = signal(['vol', 'symbol', 'price' /* ... */]);
 ```
 
 If the table uses a BaseTableComponent or configuration object for columns, find where that config is defined and prepend the `vol` column definition there.
@@ -128,6 +132,7 @@ grep -r "universe\|Universe" apps/dms-material/src/app/ --include="*.ts" -l
 ### Angular Imports Needed
 
 Ensure the component imports:
+
 - `MatIconModule` (or `MatIcon`) for `<mat-icon>`
 - `MatTooltipModule` (or `MatTooltip`) for `matTooltip`
 
@@ -136,6 +141,7 @@ Check the component's `imports: []` array in the `@Component` decorator and add 
 ### SmartSignals / SmartNgRX Pattern
 
 The Universe data likely comes from a `@smarttools/smart-signals` store. When adding `volatility1yr` to the model:
+
 - Update the TypeScript interface/type
 - Ensure the store/smart-signal definition includes the new field
 - The API response will automatically populate it once Story 81.1 is complete
@@ -144,21 +150,21 @@ Look for the Universe store/smart-signal definition in `apps/dms-material/src/ap
 
 ### Key Commands
 
-| Purpose | Command |
-|---------|---------|
-| Run all tests | `pnpm all` |
-| Run Chromium E2E | `pnpm e2e:dms-material:chromium` |
-| Find Universe component | `find apps/dms-material/src/app/ -name "*universe*"` |
+| Purpose                       | Command                                                                   |
+| ----------------------------- | ------------------------------------------------------------------------- |
+| Run all tests                 | `pnpm all`                                                                |
+| Run Chromium E2E              | `pnpm e2e:dms-material:chromium`                                          |
+| Find Universe component       | `find apps/dms-material/src/app/ -name "*universe*"`                      |
 | Find Universe type definition | `grep -r "Universe\|universe" apps/dms-material/src/ --include="*.ts" -l` |
 
 ### Key Files
 
-| File | Purpose |
-|------|---------|
-| `81-1-backend-volatility-service.md` | Prerequisite — backend volatility endpoint must be done first |
-| `apps/dms-material/src/app/universe/` (or similar) | Universe component — add Vol column here |
-| `apps/dms-material/src/app/` | Search here for Universe interface/type |
-| `apps/dms-material/src/app/app.routes.ts` | Confirm Universe route path |
+| File                                               | Purpose                                                       |
+| -------------------------------------------------- | ------------------------------------------------------------- |
+| `81-1-backend-volatility-service.md`               | Prerequisite — backend volatility endpoint must be done first |
+| `apps/dms-material/src/app/universe/` (or similar) | Universe component — add Vol column here                      |
+| `apps/dms-material/src/app/`                       | Search here for Universe interface/type                       |
+| `apps/dms-material/src/app/app.routes.ts`          | Confirm Universe route path                                   |
 
 ### Constraints
 
@@ -174,10 +180,27 @@ Look for the Universe store/smart-signal definition in `apps/dms-material/src/ap
 
 ### Agent Model Used
 
-_TBD_
+Claude Sonnet 4.6 (GitHub Copilot)
 
 ### Debug Log References
 
 ### Completion Notes List
 
+- Used `BaseTableComponent` column-config pattern (ColumnDef array) — added `tooltip?: string` to ColumnDef and `[matTooltip]` in base-table header cell so the "Volatility" tooltip is rendered generically for any column with a tooltip defined.
+- The `vol` column uses `@if`/`@else if` blocks in the `cellTemplate` of GlobalUniverseComponent — no `@else` for null/unknown (empty cell renders by default).
+- `MatTooltipModule` added to `BaseTableComponent` imports.
+- `volatility1yr` and `volatility5yr` added as optional fields to `Universe` interface.
+- All existing Angular patterns (OnPush, inject(), signals) already in place — no changes needed.
+
 ### File List
+
+- `apps/dms-material/src/app/store/universe/universe.interface.ts`
+- `apps/dms-material/src/app/shared/components/base-table/column-def.interface.ts`
+- `apps/dms-material/src/app/shared/components/base-table/base-table.component.ts`
+- `apps/dms-material/src/app/shared/components/base-table/base-table.component.html`
+- `apps/dms-material/src/app/global/global-universe/global-universe.columns.ts`
+- `apps/dms-material/src/app/global/global-universe/global-universe.component.html`
+
+### Change Log
+
+- 2026-04-21: Story 81.2 implemented. Added Vol column as first column on Universe screen with volatility icon mapping.
