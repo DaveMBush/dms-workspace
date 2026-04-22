@@ -8,7 +8,7 @@ import { optimizedHealthCheck } from './optimized-health-check.function';
 import { optimizedSessionDataLoad } from './optimized-session-data-load.function';
 import { optimizedUserLookup } from './optimized-user-lookup.function';
 
-// BLOCKED(E3): blocked — needs database schema setup with Prisma migrations for test DB
+// TODO(E82): blocked — needs database schema setup with Prisma migrations for test DB
 describe.skip('OptimizedPrismaClient', () => {
   let testClient: PrismaClient;
 

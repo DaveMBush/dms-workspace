@@ -92,6 +92,7 @@ export default [
     rules: {
       'sonarjs/no-duplicate-string': 'off',
       'sonarjs/no-ignored-exceptions': 'off',
+      'sonarjs/todo-tag': 'off', // Allow TODO(E82) deferred-test annotations
       '@typescript-eslint/require-await': 'off',
       '@typescript-eslint/restrict-template-expressions': 'off',
       '@smarttools/no-anonymous-functions': 'off',

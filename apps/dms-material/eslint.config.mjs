@@ -34,4 +34,10 @@ export default [
       'no-console': 'off',
     },
   },
+  {
+    files: ['**/*.spec.ts', '**/*.test.ts'],
+    rules: {
+      'sonarjs/todo-tag': 'off', // Allow TODO(E82) deferred-test annotations
+    },
+  },
 ];
