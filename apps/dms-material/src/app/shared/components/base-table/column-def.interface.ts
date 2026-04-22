@@ -1,6 +1,7 @@
 export interface ColumnDef {
   field: string;
   header: string;
+  tooltip?: string;
   width?: string;
   sortable?: boolean;
   editable?: boolean;
