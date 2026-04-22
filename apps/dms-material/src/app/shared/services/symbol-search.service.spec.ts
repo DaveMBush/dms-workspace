@@ -201,7 +201,7 @@ describe('SymbolSearchService', () => {
   });
 
   describe('debouncing', () => {
-    // BLOCKED(E3): blocked — debouncing requires service API redesign (see issue #690)
+    // TODO(E82): blocked — debouncing requires service API redesign (issue #690)
     // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test
     it.skip('should debounce search requests by 300ms', fakeAsync(() => {
       const query1 = 'AA';
@@ -229,7 +229,7 @@ describe('SymbolSearchService', () => {
       requests[0].flush(mockResponse);
     }));
 
-    // BLOCKED(E3): blocked — debouncing requires service API redesign (see issue #690)
+    // TODO(E82): blocked — debouncing requires service API redesign (issue #690)
     // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test
     it.skip('should not debounce separate search sessions', fakeAsync(() => {
       const query1 = 'AAPL';

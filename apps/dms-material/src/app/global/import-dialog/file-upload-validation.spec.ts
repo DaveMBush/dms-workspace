@@ -80,6 +80,7 @@ describe('ImportDialogComponent - File Upload Validation (TDD RED)', () => {
     expect(true).toBe(true);
   });
 
+  // TODO(E82): blocked — file upload features not implemented (Story AR.4)
   // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test
   describe.skip('file size validation', () => {
     it('should reject files larger than 10MB', () => {
@@ -130,6 +131,7 @@ describe('ImportDialogComponent - File Upload Validation (TDD RED)', () => {
     });
   });
 
+  // TODO(E82): blocked — file upload features not implemented (Story AR.4)
   // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test
   describe.skip('file content preview', () => {
     it('should display a preview section after file selection', () => {
@@ -193,6 +195,7 @@ describe('ImportDialogComponent - File Upload Validation (TDD RED)', () => {
     });
   });
 
+  // TODO(E82): blocked — file upload features not implemented (Story AR.4)
   // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test
   describe.skip('FormData creation', () => {
     it('should create FormData with selected file for upload', async () => {
@@ -253,6 +256,7 @@ describe('ImportDialogComponent - File Upload Validation (TDD RED)', () => {
     });
   });
 
+  // TODO(E82): blocked — file upload features not implemented (Story AR.4)
   // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test
   describe.skip('upload progress tracking', () => {
     it('should report upload progress as a percentage', () => {
@@ -309,6 +313,7 @@ describe('ImportDialogComponent - File Upload Validation (TDD RED)', () => {
     });
   });
 
+  // TODO(E82): blocked — file upload features not implemented (Story AR.4)
   // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test
   describe.skip('upload cancellation', () => {
     it('should display a cancel upload button during upload', () => {
@@ -382,6 +387,7 @@ describe('ImportDialogComponent - File Upload Validation (TDD RED)', () => {
     });
   });
 
+  // TODO(E82): blocked — file upload features not implemented (Story AR.4)
   // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test
   describe.skip('file type validation edge cases', () => {
     it('should accept .CSV files with uppercase extension', () => {
@@ -435,6 +441,7 @@ describe('ImportDialogComponent - File Upload Validation (TDD RED)', () => {
     });
   });
 
+  // TODO(E82): blocked — file upload features not implemented (Story AR.4)
   // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test
   describe.skip('empty and corrupted file handling', () => {
     it('should reject empty files (0 bytes)', () => {

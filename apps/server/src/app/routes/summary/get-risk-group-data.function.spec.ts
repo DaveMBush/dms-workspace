@@ -19,7 +19,7 @@ import { getRiskGroupData } from './get-risk-group-data.function';
  * Tests account-specific risk group calculations to ensure
  * proper filtering and aggregation across different scenarios.
  */
-// BLOCKED(E3): blocked — integration test requires database in CI
+// TODO(E82): blocked — integration test requires live database in CI
 describe.skipIf(process.env.CI)('getRiskGroupData', () => {
   let prisma: PrismaClient;
   let testDbPath: string;
