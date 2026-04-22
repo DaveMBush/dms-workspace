@@ -38,11 +38,7 @@ async function getOrCreateDivDepositTypeId(
 function buildMonthlyDates(): Date[] {
   const dates: Date[] = [];
   const now = new Date();
-  for (
-    let monthOffset = MONTHS_TO_SEED - 1;
-    monthOffset >= 0;
-    monthOffset--
-  ) {
+  for (let monthOffset = MONTHS_TO_SEED - 1; monthOffset >= 0; monthOffset--) {
     const d = new Date(now);
     d.setMonth(d.getMonth() - monthOffset);
     d.setDate(1);

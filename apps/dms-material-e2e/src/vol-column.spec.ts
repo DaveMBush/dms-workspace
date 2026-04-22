@@ -28,30 +28,28 @@ test.describe('Volatility Column', function describeVolColumn() {
   test('first column header has text Vol', async function firstColumnIsVol({
     page,
   }) {
-    await expect(page.locator('[role="columnheader"]').first()).toContainText(
-      'Vol'
-    );
+    await expect(
+      page
+        .locator('tr.mat-mdc-header-row:not(.filter-row) [role="columnheader"]')
+        .first()
+    ).toContainText('Vol');
   });
 
-  test(
-    'hovering Vol header shows tooltip Volatility',
-    async function volTooltipShowsVolatility({ page }) {
-      const volHeader = page.getByRole('columnheader', { name: 'Vol' });
-      await volHeader.hover();
-      await expect(
-        page.locator('.mat-mdc-tooltip')
-      ).toContainText('Volatility');
-    }
-  );
+  test('hovering Vol header shows tooltip Volatility', async function volTooltipShowsVolatility({
+    page,
+  }) {
+    const volHeader = page.getByRole('columnheader', { name: 'Vol' });
+    await volHeader.hover();
+    await expect(page.locator('.mat-mdc-tooltip')).toContainText('Volatility');
+  });
 
-  test(
-    'at least one row in Vol column shows an icon',
-    async function volColumnShowsIcon({ page }) {
-      const searchInput = page.locator('input[placeholder="Search Symbol"]');
-      await searchInput.fill(symbol);
-      await expect(
-        page.locator('td.mat-column-vol mat-icon').first()
-      ).toBeVisible({ timeout: 10000 });
-    }
-  );
+  test('at least one row in Vol column shows an icon', async function volColumnShowsIcon({
+    page,
+  }) {
+    const searchInput = page.locator('input[placeholder="Search Symbol"]');
+    await searchInput.fill(symbol);
+    await expect(
+      page.locator('td.mat-column-vol mat-icon').first()
+    ).toBeVisible({ timeout: 10000 });
+  });
 });
