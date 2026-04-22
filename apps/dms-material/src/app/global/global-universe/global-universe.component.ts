@@ -41,6 +41,7 @@ import { ScreenerService } from '../global-screener/services/screener.service';
 import { ImportDialogComponent } from '../import-dialog/import-dialog.component';
 import { ImportDialogResult } from '../import-dialog/import-dialog-result.interface';
 import { applyPendingEdits } from './apply-pending-edits.function';
+import { applyVolatility } from './apply-volatility.function';
 import { buildAccountOptions } from './build-account-options.function';
 import { buildRiskGroupOptions } from './build-risk-group-options.function';
 import { buildShiftSortColumns } from './build-shift-sort-columns.function';
@@ -57,6 +58,7 @@ import { restoreUniverseFilters } from './restore-universe-filters.function';
 import { saveUniverseFiltersAndNotify } from './save-universe-filters-and-notify.function';
 import { UniverseService } from './services/universe.service';
 import { UniverseValidationService } from './services/universe-validation.service';
+import { VolatilityDataService } from './services/volatility-data.service';
 import { updatePendingEdits } from './update-pending-edits.function';
 
 @Component({
@@ -93,6 +95,7 @@ export class GlobalUniverseComponent implements OnDestroy {
   private readonly updateFieldsService = inject(UpdateUniverseFieldsService);
   private readonly errorHandling = inject(ErrorHandlingService);
   private readonly sortFilterStateService = inject(SortFilterStateService);
+  private readonly volatilityDataService = inject(VolatilityDataService);
   readonly cellEdit = output<CellEditEvent>();
   readonly symbolDeleted = output<Universe>();
   readonly today = new Date();
@@ -167,6 +170,8 @@ export class GlobalUniverseComponent implements OnDestroy {
     const vr = this.visibleRange();
     const enrichedData = enrichUniverseWithRiskGroups(rawData, riskGroups, vr);
 
+    const volMap = this.volatilityDataService.volatilityMap();
+    applyVolatility(enrichedData, volMap);
     applyPendingEdits(enrichedData, this.pendingEdits$());
     return filterUniverses(enrichedData, {
       symbolFilter: this.symbolFilter$(),
