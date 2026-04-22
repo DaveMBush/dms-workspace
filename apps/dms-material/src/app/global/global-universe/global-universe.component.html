@@ -169,13 +169,13 @@
       <ng-template #cellTemplate let-row let-column="column" let-i="index">
         @switch (column.field) { @case ('vol') { @if (row.volatility1yr ===
         'steady') {
-        <mat-icon>trending_flat</mat-icon>
+        <mat-icon aria-label="Volatility: steady" matTooltip="Steady">trending_flat</mat-icon>
         } @else if (row.volatility1yr === 'increasing') {
-        <mat-icon>trending_up</mat-icon>
+        <mat-icon aria-label="Volatility: increasing" matTooltip="Increasing">trending_up</mat-icon>
         } @else if (row.volatility1yr === 'decreasing') {
-        <mat-icon>trending_down</mat-icon>
+        <mat-icon aria-label="Volatility: decreasing" matTooltip="Decreasing">trending_down</mat-icon>
         } @else if (row.volatility1yr === 'volatile') {
-        <mat-icon>show_chart</mat-icon>
+        <mat-icon aria-label="Volatility: volatile" matTooltip="Volatile">show_chart</mat-icon>
         } } @case ('distribution') {
         <dms-editable-cell
           [value]="row.distribution"
