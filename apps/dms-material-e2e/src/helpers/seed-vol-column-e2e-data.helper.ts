@@ -40,8 +40,8 @@ function buildMonthlyDates(): Date[] {
   const now = new Date();
   for (let monthOffset = MONTHS_TO_SEED - 1; monthOffset >= 0; monthOffset--) {
     const d = new Date(now);
-    d.setMonth(d.getMonth() - monthOffset);
     d.setDate(1);
+    d.setMonth(d.getMonth() - monthOffset);
     dates.push(d);
   }
   return dates;
@@ -100,6 +100,19 @@ export async function seedVolColumnE2eData(): Promise<VolColumnSeederResult> {
       }),
     });
   } catch (error) {
+    if (universeId !== '') {
+      await prisma.divDeposits
+        .deleteMany({ where: { universeId } })
+        .catch(() => undefined);
+      await prisma.universe
+        .delete({ where: { id: universeId } })
+        .catch(() => undefined);
+    }
+    if (accountId !== '') {
+      await prisma.accounts
+        .delete({ where: { id: accountId } })
+        .catch(() => undefined);
+    }
     await prisma.$disconnect();
     throw error;
   }

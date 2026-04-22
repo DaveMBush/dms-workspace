@@ -28,45 +28,45 @@ so that regressions to the column are caught in CI.
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Explore existing Universe E2E specs and understand seeding patterns (AC: #1–3)
-  - [ ] List `apps/dms-material-e2e/src/` to find existing universe-related specs
-  - [ ] Read any `universe*.spec.ts` files to understand how they seed data and assert table structure
-  - [ ] Identify how table headers are selected (CSS selectors, role-based, `data-testid`, etc.)
-  - [ ] Find the login helper: `apps/dms-material-e2e/src/helpers/login.helper.ts`
+- [x] Task 1: Explore existing Universe E2E specs and understand seeding patterns (AC: #1–3)
+  - [x] List `apps/dms-material-e2e/src/` to find existing universe-related specs
+  - [x] Read any `universe*.spec.ts` files to understand how they seed data and assert table structure
+  - [x] Identify how table headers are selected (CSS selectors, role-based, `data-testid`, etc.)
+  - [x] Find the login helper: `apps/dms-material-e2e/src/helpers/login.helper.ts`
 
-- [ ] Task 2: Identify seeding mechanism for symbol with 12+ months distribution history (AC: #3)
-  - [ ] Check how existing E2E tests seed distribution/dividend data (look for `beforeAll` patterns in existing specs)
-  - [ ] Find the distribution import endpoint or seed endpoint in server routes
-  - [ ] Create a fixture with at least 12 monthly distribution records for a test symbol (e.g., `TEST-VOL`)
-  - [ ] Seed this fixture in `beforeAll` before Universe screen tests
+- [x] Task 2: Identify seeding mechanism for symbol with 12+ months distribution history (AC: #3)
+  - [x] Check how existing E2E tests seed distribution/dividend data (look for `beforeAll` patterns in existing specs)
+  - [x] Find the distribution import endpoint or seed endpoint in server routes
+  - [x] Create a fixture with at least 12 monthly distribution records for a test symbol (e.g., `TEST-VOL`)
+  - [x] Seed this fixture in `beforeAll` before Universe screen tests
 
-- [ ] Task 3: Write E2E spec (AC: #1, #2, #3)
-  - [ ] Create `apps/dms-material-e2e/src/vol-column.spec.ts`
-  - [ ] `beforeAll`: login and seed at least one symbol with 12+ months of consistent distribution data
-  - [ ] Test 1: assert first `mat-header-cell` has text "Vol" (first column check)
-  - [ ] Test 2: hover over "Vol" header → assert Angular Material tooltip contains "Volatility"
-  - [ ] Test 3: locate the "Vol" column cells → assert at least one cell contains a `mat-icon` element with a non-empty icon name
-  - [ ] Named functions for all callbacks
+- [x] Task 3: Write E2E spec (AC: #1, #2, #3)
+  - [x] Create `apps/dms-material-e2e/src/vol-column.spec.ts`
+  - [x] `beforeAll`: login and seed at least one symbol with 12+ months of consistent distribution data
+  - [x] Test 1: assert first `mat-header-cell` has text "Vol" (first column check)
+  - [x] Test 2: hover over "Vol" header → assert Angular Material tooltip contains "Volatility"
+  - [x] Test 3: locate the "Vol" column cells → assert at least one cell contains a `mat-icon` element with a non-empty icon name
+  - [x] Named functions for all callbacks
 
-- [ ] Task 4: Verify with Playwright MCP server (AC: #1, #2, #3)
-  - [ ] Use Playwright MCP server to visually confirm:
+- [x] Task 4: Verify with Playwright MCP server (AC: #1, #2, #3)
+  - [x] Use Playwright MCP server to visually confirm:
     - "Vol" is the first column visible
     - Tooltip appears on hover
     - Icons are visible for seeded symbols
-  - [ ] Adjust selectors in spec based on visual inspection if needed
+  - [x] Adjust selectors in spec based on visual inspection if needed
 
-- [ ] Task 5: Run full test suite (AC: #4)
-  - [ ] Run `pnpm all` and confirm all tests pass
-  - [ ] Run `pnpm e2e:dms-material:chromium`
-  - [ ] Do not modify pre-existing tests
+- [x] Task 5: Run full test suite (AC: #4)
+  - [x] Run `pnpm all` and confirm all tests pass
+  - [x] Run `pnpm e2e:dms-material:chromium`
+  - [x] Do not modify pre-existing tests
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Explore existing Universe E2E specs and understand seeding patterns (AC: #1–3)
-- [ ] Task 2: Identify seeding mechanism for symbol with 12+ months distribution history (AC: #3)
-- [ ] Task 3: Write E2E spec (AC: #1, #2, #3)
-- [ ] Task 4: Verify with Playwright MCP server (AC: #1, #2, #3)
-- [ ] Task 5: Run full test suite (AC: #4)
+- [x] Task 1: Explore existing Universe E2E specs and understand seeding patterns (AC: #1–3)
+- [x] Task 2: Identify seeding mechanism for symbol with 12+ months distribution history (AC: #3)
+- [x] Task 3: Write E2E spec (AC: #1, #2, #3)
+- [x] Task 4: Verify with Playwright MCP server (AC: #1, #2, #3)
+- [x] Task 5: Run full test suite (AC: #4)
 
 ## Dev Notes
 
@@ -200,10 +200,22 @@ Look at existing universe E2E specs to see how they handle seeding.
 
 ### Agent Model Used
 
-_TBD_
+GitHub Copilot (Claude Sonnet 4.6)
 
 ### Debug Log References
 
+None — all issues resolved without debug log review.
+
 ### Completion Notes List
 
+- All 3 E2E tests pass in both Chromium and Firefox
+- Root cause of `VolatilityDataService` not in bundle: `NX_WORKSPACE_ROOT_PATH` must be set to the worktree when starting the dev server from a git worktree
+- `buildMonthlyDates` date-order bug fixed: `setDate(1)` now runs before `setMonth()` to avoid month-overflow on day 29–31
+- Seed helper catch block now cleans up any partially-created rows before rethrowing
+
 ### File List
+
+- `apps/dms-material-e2e/src/vol-column.spec.ts` (new)
+- `apps/dms-material-e2e/src/helpers/seed-vol-column-e2e-data.helper.ts` (new)
+- `apps/dms-material/src/app/global/global-universe/services/volatility-data.service.ts` (new)
+- `apps/dms-material/src/app/global/global-universe/global-universe.component.ts` (modified)
