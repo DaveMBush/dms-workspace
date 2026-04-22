@@ -6,6 +6,7 @@ import { parseSortFilterHeader } from '../common/parse-sort-filter-header.functi
 import registerAddSymbol from './add-symbol';
 import { addSymbol } from './add-symbol/add-symbol.function';
 import registerGetAllUniverses from './get-all-universes';
+import registerVolatilityRoute from './get-volatility';
 import registerSyncFromScreener from './sync-from-screener';
 import { Universe } from './universe.interface';
 import universeHelpers from './universe-helpers';
@@ -246,4 +247,5 @@ export default function registerUniverseRoutes(fastify: FastifyInstance): void {
   handleUpdateUniverseRoute(fastify);
   registerAddSymbol(fastify);
   registerSyncFromScreener(fastify);
+  registerVolatilityRoute(fastify);
 }
