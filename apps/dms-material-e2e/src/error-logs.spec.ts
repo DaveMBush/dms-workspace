@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-import { expect, test } from '@playwright/test';
+import { expect, test } from 'playwright/test';
 
 import { login } from './helpers/login.helper';
 
