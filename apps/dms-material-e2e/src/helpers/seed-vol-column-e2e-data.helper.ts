@@ -47,6 +47,54 @@ function buildMonthlyDates(): Date[] {
   return dates;
 }
 
+function buildUniverseCreateData(
+  symbol: string,
+  riskGroupId: string
+): Record<string, unknown> {
+  return {
+    symbol,
+    // eslint-disable-next-line @typescript-eslint/naming-convention -- database column name
+    risk_group_id: riskGroupId,
+    distribution: 1.0,
+    // eslint-disable-next-line @typescript-eslint/naming-convention -- database column name
+    distributions_per_year: 12,
+    // eslint-disable-next-line @typescript-eslint/naming-convention -- database column name
+    last_price: 10.0,
+    // eslint-disable-next-line @typescript-eslint/naming-convention -- database column name
+    ex_date: null,
+    // eslint-disable-next-line @typescript-eslint/naming-convention -- database column name
+    most_recent_sell_date: null,
+    // eslint-disable-next-line @typescript-eslint/naming-convention -- database column name
+    most_recent_sell_price: null,
+    expired: false,
+    // eslint-disable-next-line @typescript-eslint/naming-convention -- database column name
+    is_closed_end_fund: true,
+  };
+}
+
+async function cleanupOnError(
+  prisma: PrismaClient,
+  universeId: string,
+  accountId: string
+): Promise<void> {
+  function suppressError(): undefined {
+    return undefined;
+  }
+  if (universeId !== '') {
+    await prisma.divDeposits
+      .deleteMany({ where: { universeId } })
+      .catch(suppressError);
+    await prisma.universe
+      .delete({ where: { id: universeId } })
+      .catch(suppressError);
+  }
+  if (accountId !== '') {
+    await prisma.accounts
+      .delete({ where: { id: accountId } })
+      .catch(suppressError);
+  }
+}
+
 export async function seedVolColumnE2eData(): Promise<VolColumnSeederResult> {
   const prisma = await initializePrismaClient();
   const uniqueId = generateUniqueId();
@@ -58,35 +106,14 @@ export async function seedVolColumnE2eData(): Promise<VolColumnSeederResult> {
   try {
     const riskGroupId = await getOrCreateRiskGroupId(prisma);
     const divDepositTypeId = await getOrCreateDivDepositTypeId(prisma);
-
     const universe = await prisma.universe.create({
-      data: {
-        symbol,
-        // eslint-disable-next-line @typescript-eslint/naming-convention -- database column name
-        risk_group_id: riskGroupId,
-        distribution: 1.0,
-        // eslint-disable-next-line @typescript-eslint/naming-convention -- database column name
-        distributions_per_year: 12,
-        // eslint-disable-next-line @typescript-eslint/naming-convention -- database column name
-        last_price: 10.0,
-        // eslint-disable-next-line @typescript-eslint/naming-convention -- database column name
-        ex_date: null,
-        // eslint-disable-next-line @typescript-eslint/naming-convention -- database column name
-        most_recent_sell_date: null,
-        // eslint-disable-next-line @typescript-eslint/naming-convention -- database column name
-        most_recent_sell_price: null,
-        expired: false,
-        // eslint-disable-next-line @typescript-eslint/naming-convention -- database column name
-        is_closed_end_fund: true,
-      },
+      data: buildUniverseCreateData(symbol, riskGroupId),
     });
     universeId = universe.id;
-
     const account = await prisma.accounts.create({
       data: { name: accountName },
     });
     accountId = account.id;
-
     const dates = buildMonthlyDates();
     await prisma.divDeposits.createMany({
       data: dates.map(function buildDepositRecord(date: Date) {
@@ -100,19 +127,7 @@ export async function seedVolColumnE2eData(): Promise<VolColumnSeederResult> {
       }),
     });
   } catch (error) {
-    if (universeId !== '') {
-      await prisma.divDeposits
-        .deleteMany({ where: { universeId } })
-        .catch(() => undefined);
-      await prisma.universe
-        .delete({ where: { id: universeId } })
-        .catch(() => undefined);
-    }
-    if (accountId !== '') {
-      await prisma.accounts
-        .delete({ where: { id: accountId } })
-        .catch(() => undefined);
-    }
+    await cleanupOnError(prisma, universeId, accountId);
     await prisma.$disconnect();
     throw error;
   }

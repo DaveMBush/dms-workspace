@@ -1,5 +1,5 @@
-import type { VolatilityResult } from './services/volatility-result.interface';
 import type { Universe } from '../../store/universe/universe.interface';
+import type { VolatilityResult } from './services/volatility-result.interface';
 
 export function applyVolatility(
   rows: Universe[],
