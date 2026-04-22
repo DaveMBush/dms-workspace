@@ -23,6 +23,7 @@ test.describe('Electron App Launch', () => {
       // Mark all tests in this block as skipped and bail out of beforeAll.
       // test.skip() called in beforeAll skips all enclosed tests and
       // immediately halts the beforeAll hook.
+      // TODO(E82): blocked — electron dist not built in test environment
       test.skip(
         true,
         'Electron dist not built — run: pnpm nx run-many -t build --projects=server,dms-material,electron'
