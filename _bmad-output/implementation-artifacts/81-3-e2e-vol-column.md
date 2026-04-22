@@ -1,6 +1,6 @@
 # Story 81.3: E2E Tests — Vol Column Renders Correctly on Universe Screen
 
-Status: Approved
+Status: Done
 
 ## Story
 
