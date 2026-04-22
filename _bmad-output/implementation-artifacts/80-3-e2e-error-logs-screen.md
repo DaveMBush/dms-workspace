@@ -1,6 +1,6 @@
 # Story 80.3: E2E Test — Error Logs Screen Renders and Deletes Files
 
-Status: Approved
+Status: Done
 
 ## Story
 
@@ -24,35 +24,39 @@ so that future refactors cannot break the route again without failing CI.
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Explore existing E2E structure and helpers (AC: #1, #2)
-  - [ ] List `apps/dms-material-e2e/src/` to find existing spec patterns and helper files
-  - [ ] Find and read the login helper: `apps/dms-material-e2e/src/helpers/login.helper.ts`
-  - [ ] Find the Error Logs route URL from `apps/dms-material/src/app/app.routes.ts`
-  - [ ] Inspect the restored ErrorLog component template (from Story 80.2) to identify selectors for: file list, individual file rows, Delete buttons
+- [x] Task 1: Explore existing E2E structure and helpers (AC: #1, #2)
 
-- [ ] Task 2: Identify or create test log file seeding mechanism (AC: #1)
-  - [ ] Check if `logs/` directory already contains files that would be available in the E2E test environment
-  - [ ] If not, add `beforeAll` that creates a test log file (e.g., `test-e2e-error.log`) using `fs.writeFileSync` in the test
-  - [ ] Alternatively, call a test endpoint if one exists — check server routes
-  - [ ] Ensure `afterAll` cleans up the test log file to avoid test pollution
+  - [x] List `apps/dms-material-e2e/src/` to find existing spec patterns and helper files
+  - [x] Find and read the login helper: `apps/dms-material-e2e/src/helpers/login.helper.ts`
+  - [x] Find the Error Logs route URL from `apps/dms-material/src/app/app.routes.ts`
+  - [x] Inspect the restored ErrorLog component template (from Story 80.2) to identify selectors for: file list, individual file rows, Delete buttons
 
-- [ ] Task 3: Write E2E spec file (AC: #1, #2)
-  - [ ] Create `apps/dms-material-e2e/src/error-logs.spec.ts`
-  - [ ] `beforeAll`: create test log file in `logs/` directory using `fs.writeFileSync`
-  - [ ] `afterAll`: delete any remaining test log files
-  - [ ] Test 1: login → navigate to Error Logs route → assert file-viewer renders (not stub) → assert at least one filename visible
-  - [ ] Test 2: click Delete on the test log file → assert that file row disappears from list → assert no error message
-  - [ ] Named functions for all callbacks — no anonymous arrow functions
+- [x] Task 2: Identify or create test log file seeding mechanism (AC: #1)
 
-- [ ] Task 4: Verify stub is NOT rendered (AC: #1)
-  - [ ] Identify the stub component's selector or unique text from the current (broken) route state
-  - [ ] Add an assertion that the stub is NOT present after routing fix is in place
-  - [ ] This confirms the regression guard works correctly
+  - [x] Check if `logs/` directory already contains files that would be available in the E2E test environment
+  - [x] If not, add `beforeEach` that creates a test log file (e.g., `test-e2e-error.log`) using `fs.writeFileSync` in the test
+  - [x] Alternatively, call a test endpoint if one exists — check server routes
+  - [x] Ensure `afterAll` cleans up the test log file to avoid test pollution
 
-- [ ] Task 5: Run full test suite (AC: #3)
-  - [ ] Run `pnpm all` and confirm all tests pass
-  - [ ] Run `pnpm e2e:dms-material:chromium` to run E2E specifically
-  - [ ] Do not modify pre-existing tests
+- [x] Task 3: Write E2E spec file (AC: #1, #2)
+
+  - [x] Extend existing `apps/dms-material-e2e/src/error-logs.spec.ts` with new describe block
+  - [x] `beforeEach`: create test log file in `logs/` directory using `fs.writeFileSync` (handles retries)
+  - [x] `afterAll`: delete any remaining test log files
+  - [x] Test 1: login → navigate to Error Logs route → assert file-viewer renders (not stub) → assert at least one filename visible
+  - [x] Test 2: click Delete on the test log file → assert that file row disappears from list → assert no error message
+  - [x] Named functions for all callbacks — no anonymous arrow functions
+
+- [x] Task 4: Verify stub is NOT rendered (AC: #1)
+
+  - [x] Identify the stub component's selector or unique text from the current (broken) route state
+  - [x] Add an assertion that the stub is NOT present after routing fix is in place
+  - [x] This confirms the regression guard works correctly
+
+- [x] Task 5: Run full test suite (AC: #3)
+  - [x] Run `pnpm all` and confirm all tests pass
+  - [x] Run `pnpm e2e:dms-material:chromium` to run E2E specifically
+  - [x] Do not modify pre-existing tests
 
 ## Dev Notes
 
@@ -115,12 +119,12 @@ test.describe('Error Logs screen', () => {
 
 Before writing the spec, inspect the restored component template from Story 80.2 to identify:
 
-| Element | Likely Selector Strategy |
-|---------|--------------------------|
-| File rows | `mat-list-item` or `tr` containing filename text |
-| Delete button | `button` with text "Delete" or `aria-label="Delete"` |
-| File name text | Direct text match or `data-testid` attribute |
-| Stub component | Look for the stub's selector or unique heading text |
+| Element        | Likely Selector Strategy                             |
+| -------------- | ---------------------------------------------------- |
+| File rows      | `mat-list-item` or `tr` containing filename text     |
+| Delete button  | `button` with text "Delete" or `aria-label="Delete"` |
+| File name text | Direct text match or `data-testid` attribute         |
+| Stub component | Look for the stub's selector or unique heading text  |
 
 Use the Playwright MCP server to visually inspect the rendered page and confirm selectors before finalising the test.
 
@@ -134,25 +138,25 @@ From `apps/dms-material/src/app/app.routes.ts`, find the entry for Error Logs an
 
 ### Key Commands
 
-| Purpose | Command |
-|---------|---------|
-| Run all tests | `pnpm all` |
-| Run Chromium E2E | `pnpm e2e:dms-material:chromium` |
-| Find Angular routes | `cat apps/dms-material/src/app/app.routes.ts` |
-| List existing E2E specs | `ls apps/dms-material-e2e/src/` |
-| Check logs directory | `ls logs/` |
-| Find login helper | `find apps/dms-material-e2e/src/ -name "*.helper.ts"` |
+| Purpose                 | Command                                               |
+| ----------------------- | ----------------------------------------------------- |
+| Run all tests           | `pnpm all`                                            |
+| Run Chromium E2E        | `pnpm e2e:dms-material:chromium`                      |
+| Find Angular routes     | `cat apps/dms-material/src/app/app.routes.ts`         |
+| List existing E2E specs | `ls apps/dms-material-e2e/src/`                       |
+| Check logs directory    | `ls logs/`                                            |
+| Find login helper       | `find apps/dms-material-e2e/src/ -name "*.helper.ts"` |
 
 ### Key Files
 
-| File | Purpose |
-|------|---------|
-| `80-2-restore-error-log-viewer.md` | Prerequisite — component must be restored first |
-| `apps/dms-material-e2e/src/error-logs.spec.ts` | New E2E spec to create |
-| `apps/dms-material-e2e/src/helpers/login.helper.ts` | Login helper — import into new spec |
-| `apps/dms-material/src/app/app.routes.ts` | Angular router — find Error Logs route URL |
+| File                                                           | Purpose                                                         |
+| -------------------------------------------------------------- | --------------------------------------------------------------- |
+| `80-2-restore-error-log-viewer.md`                             | Prerequisite — component must be restored first                 |
+| `apps/dms-material-e2e/src/error-logs.spec.ts`                 | New E2E spec to create                                          |
+| `apps/dms-material-e2e/src/helpers/login.helper.ts`            | Login helper — import into new spec                             |
+| `apps/dms-material/src/app/app.routes.ts`                      | Angular router — find Error Logs route URL                      |
 | `apps/dms-material/src/app/error-log/error-log.component.html` | Component template — find file list and Delete button selectors |
-| `logs/` | Logs directory — create test file here in beforeAll |
+| `logs/`                                                        | Logs directory — create test file here in beforeAll             |
 
 ### Constraints
 
@@ -166,10 +170,17 @@ From `apps/dms-material/src/app/app.routes.ts`, find the entry for Error Logs an
 
 ### Agent Model Used
 
-_TBD_
+Claude Sonnet 4.6
 
 ### Debug Log References
 
 ### Completion Notes List
 
+- Extended existing `error-logs.spec.ts` (rather than creating a new file) with a `Error Logs Screen` describe block
+- Used `beforeEach` (not `beforeAll`) for file creation to handle Playwright retries after the delete test
+- Route confirmed as `/global/error-logs`; delete button aria-label is `Delete <displayName>` where displayName strips `.log` and replaces `-` with space
+- `logs/` directory is gitignored; test creates it with `mkdirSync({ recursive: true })` if absent
+
 ### File List
+
+- `apps/dms-material-e2e/src/error-logs.spec.ts` — extended with new `Error Logs Screen` describe block
