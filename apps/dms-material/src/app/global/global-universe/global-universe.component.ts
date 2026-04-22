@@ -41,6 +41,7 @@ import { ScreenerService } from '../global-screener/services/screener.service';
 import { ImportDialogComponent } from '../import-dialog/import-dialog.component';
 import { ImportDialogResult } from '../import-dialog/import-dialog-result.interface';
 import { applyPendingEdits } from './apply-pending-edits.function';
+import { applyVolatility } from './apply-volatility.function';
 import { buildAccountOptions } from './build-account-options.function';
 import { buildRiskGroupOptions } from './build-risk-group-options.function';
 import { buildShiftSortColumns } from './build-shift-sort-columns.function';
@@ -170,14 +171,7 @@ export class GlobalUniverseComponent implements OnDestroy {
     const enrichedData = enrichUniverseWithRiskGroups(rawData, riskGroups, vr);
 
     const volMap = this.volatilityDataService.volatilityMap();
-    for (const row of enrichedData) {
-      const vol = volMap.get(row.symbol);
-      if (vol !== undefined) {
-        row.volatility1yr = vol.volatility1yr;
-        row.volatility5yr = vol.volatility5yr;
-      }
-    }
-
+    applyVolatility(enrichedData, volMap);
     applyPendingEdits(enrichedData, this.pendingEdits$());
     return filterUniverses(enrichedData, {
       symbolFilter: this.symbolFilter$(),

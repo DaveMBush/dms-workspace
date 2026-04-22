@@ -1,19 +1,17 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 
-export interface VolatilityResult {
-  symbol: string;
-  volatility1yr: 'decreasing' | 'increasing' | 'steady' | 'volatile' | null;
-  volatility5yr: 'decreasing' | 'increasing' | 'steady' | 'volatile' | null;
-}
+import { VolatilityResult } from './volatility-result.interface';
 
 @Injectable({ providedIn: 'root' })
 export class VolatilityDataService {
   private readonly http = inject(HttpClient);
-  private readonly _volatilityMap = signal<Map<string, VolatilityResult>>(
+
+  private readonly volatilityMapSignal = signal<Map<string, VolatilityResult>>(
     new Map()
   );
-  readonly volatilityMap = this._volatilityMap.asReadonly();
+
+  readonly volatilityMap = this.volatilityMapSignal.asReadonly();
 
   constructor() {
     this.loadVolatilityData();
@@ -27,7 +25,7 @@ export class VolatilityDataService {
         for (const result of results) {
           map.set(result.symbol, result);
         }
-        service._volatilityMap.set(map);
+        service.volatilityMapSignal.set(map);
       },
       // eslint-disable-next-line @typescript-eslint/no-empty-function -- silently handle unavailability; vol cells remain empty
       error: function onVolatilityLoadError(): void {},
