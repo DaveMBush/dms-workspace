@@ -166,10 +166,13 @@ export function calculateVolatility(amounts: number[]): VolatilityCategory {
 ```typescript
 // Example batch query
 const allRecords = await prisma.divDeposits.findMany({
-  // adjust model name from schema
   where: { date: { gte: fiveYearsAgo } },
   orderBy: { date: 'asc' },
-  select: { symbol: true, amount: true, date: true },
+  select: {
+    amount: true,
+    date: true,
+    universe: { select: { symbol: true } },
+  },
 });
 
 // Group by symbol in memory
