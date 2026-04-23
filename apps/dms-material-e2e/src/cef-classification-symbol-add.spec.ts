@@ -154,7 +154,7 @@ async function getRiskGroupForSymbol(
 ): Promise<string> {
   const row = page.locator('tr.mat-mdc-row').filter({ hasText: symbol });
   await expect(row).toBeVisible({ timeout: 15000 });
-  return (await row.locator('td:nth-child(2)').textContent()) ?? '';
+  return (await row.locator('td.mat-column-risk_group').textContent()) ?? '';
 }
 
 test.describe.configure({ mode: 'serial' });

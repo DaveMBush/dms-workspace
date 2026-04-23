@@ -56,10 +56,25 @@ async function getColumnTexts(page: Page, colIndex: number): Promise<string[]> {
   const texts: string[] = [];
   for (let i = 0; i < count; i++) {
     const text = await cells.nth(i).textContent();
-    texts.push((text ?? '').trim());
+    const trimmed = (text ?? '').trim();
+    if (trimmed === '' || trimmed === '…') {
+      continue;
+    }
+    texts.push(trimmed);
   }
   return texts;
 }
+
+const UNIVERSE_COLUMN_INDEX = {
+  symbol: 2,
+  riskGroup: 3,
+  yieldPercent: 6,
+  avgPurchaseYieldPercent: 7,
+  lastPrice: 8,
+  mostRecentSellDate: 10,
+  mostRecentSellPrice: 11,
+  position: 12,
+} as const;
 
 // ─── Universe Screen E2E Tests ───────────────────────────────────────────────
 
@@ -98,7 +113,10 @@ test.describe('Universe Screen E2E', () => {
       await page.waitForTimeout(500);
 
       // The table should show only the matching symbol
-      const symbolCells = await getColumnTexts(page, 1);
+      const symbolCells = await getColumnTexts(
+        page,
+        UNIVERSE_COLUMN_INDEX.symbol
+      );
       expect(symbolCells.length).toBeGreaterThan(0);
       for (const cell of symbolCells) {
         expect(cell).toContain(symbols[0]);
@@ -119,7 +137,10 @@ test.describe('Universe Screen E2E', () => {
       await page.waitForTimeout(500);
 
       // All visible rows should show "Income" in the Risk Group column
-      const riskGroupCells = await getColumnTexts(page, 2);
+      const riskGroupCells = await getColumnTexts(
+        page,
+        UNIVERSE_COLUMN_INDEX.riskGroup
+      );
       expect(riskGroupCells.length).toBeGreaterThan(0);
       for (const cell of riskGroupCells) {
         expect(cell).toBe('Income');
@@ -133,7 +154,10 @@ test.describe('Universe Screen E2E', () => {
       await page.waitForTimeout(500);
 
       // All visible rows should have yield >= 5%
-      const yieldCells = await getColumnTexts(page, 5);
+      const yieldCells = await getColumnTexts(
+        page,
+        UNIVERSE_COLUMN_INDEX.yieldPercent
+      );
       for (const cell of yieldCells) {
         const value = parseFloat(cell);
         if (!isNaN(value)) {
@@ -270,11 +294,26 @@ test.describe('Universe Screen E2E', () => {
       await page.waitForTimeout(800);
 
       // Capture row data with "All Accounts" (default)
-      const allAccountsYield = await getColumnTexts(page, 6);
-      const allAccountsPosition = await getColumnTexts(page, 11);
-      const allAccountsSellPrice = await getColumnTexts(page, 10);
-      const allAccountsSellDate = await getColumnTexts(page, 9);
-      const allAccountsLastPrice = await getColumnTexts(page, 7);
+      const allAccountsYield = await getColumnTexts(
+        page,
+        UNIVERSE_COLUMN_INDEX.avgPurchaseYieldPercent
+      );
+      const allAccountsPosition = await getColumnTexts(
+        page,
+        UNIVERSE_COLUMN_INDEX.position
+      );
+      const allAccountsSellPrice = await getColumnTexts(
+        page,
+        UNIVERSE_COLUMN_INDEX.mostRecentSellPrice
+      );
+      const allAccountsSellDate = await getColumnTexts(
+        page,
+        UNIVERSE_COLUMN_INDEX.mostRecentSellDate
+      );
+      const allAccountsLastPrice = await getColumnTexts(
+        page,
+        UNIVERSE_COLUMN_INDEX.lastPrice
+      );
 
       // All values should be visible
       expect(allAccountsYield.length).toBeGreaterThan(0);
@@ -301,11 +340,26 @@ test.describe('Universe Screen E2E', () => {
         await symbolInput.fill(symbols[0]);
         await page.waitForTimeout(800);
 
-        const acct1Yield = await getColumnTexts(page, 6);
-        const acct1Position = await getColumnTexts(page, 11);
-        const acct1SellPrice = await getColumnTexts(page, 10);
-        const acct1SellDate = await getColumnTexts(page, 9);
-        const acct1LastPrice = await getColumnTexts(page, 7);
+        const acct1Yield = await getColumnTexts(
+          page,
+          UNIVERSE_COLUMN_INDEX.avgPurchaseYieldPercent
+        );
+        const acct1Position = await getColumnTexts(
+          page,
+          UNIVERSE_COLUMN_INDEX.position
+        );
+        const acct1SellPrice = await getColumnTexts(
+          page,
+          UNIVERSE_COLUMN_INDEX.mostRecentSellPrice
+        );
+        const acct1SellDate = await getColumnTexts(
+          page,
+          UNIVERSE_COLUMN_INDEX.mostRecentSellDate
+        );
+        const acct1LastPrice = await getColumnTexts(
+          page,
+          UNIVERSE_COLUMN_INDEX.lastPrice
+        );
 
         // Last Price should remain the same (it's a universe field, not computed from trades)
         expect(acct1LastPrice).toEqual(allAccountsLastPrice);
@@ -336,7 +390,10 @@ test.describe('Universe Screen E2E', () => {
       await page.waitForTimeout(800);
 
       // Get all-accounts yield
-      const allYield = await getColumnTexts(page, 6);
+      const allYield = await getColumnTexts(
+        page,
+        UNIVERSE_COLUMN_INDEX.avgPurchaseYieldPercent
+      );
 
       // Select first account
       const accountSelect = page.locator(
@@ -356,7 +413,10 @@ test.describe('Universe Screen E2E', () => {
         await symbolInput.fill(symbols[0]);
         await page.waitForTimeout(800);
 
-        const acct1Yield = await getColumnTexts(page, 6);
+        const acct1Yield = await getColumnTexts(
+          page,
+          UNIVERSE_COLUMN_INDEX.avgPurchaseYieldPercent
+        );
         // Avg Purch Yield % column should display a numeric value
         expect(acct1Yield.length).toBeGreaterThan(0);
         // Value should be non-empty
@@ -372,7 +432,10 @@ test.describe('Universe Screen E2E', () => {
       await symbolInput.fill(symbols[0]);
       await page.waitForTimeout(800);
 
-      const allPosition = await getColumnTexts(page, 11);
+      const allPosition = await getColumnTexts(
+        page,
+        UNIVERSE_COLUMN_INDEX.position
+      );
       expect(allPosition.length).toBeGreaterThan(0);
 
       // Select second account
@@ -393,7 +456,10 @@ test.describe('Universe Screen E2E', () => {
         await symbolInput.fill(symbols[0]);
         await page.waitForTimeout(800);
 
-        const acct2Position = await getColumnTexts(page, 11);
+        const acct2Position = await getColumnTexts(
+          page,
+          UNIVERSE_COLUMN_INDEX.position
+        );
         expect(acct2Position.length).toBeGreaterThan(0);
         // Position should be a numeric value
         expect(acct2Position[0].length).toBeGreaterThan(0);
@@ -407,7 +473,10 @@ test.describe('Universe Screen E2E', () => {
       await symbolInput.fill(symbols[0]);
       await page.waitForTimeout(800);
 
-      const allSellDate = await getColumnTexts(page, 9);
+      const allSellDate = await getColumnTexts(
+        page,
+        UNIVERSE_COLUMN_INDEX.mostRecentSellDate
+      );
 
       const accountSelect = page.locator(
         '.universe-toolbar mat-form-field mat-select'
@@ -426,7 +495,10 @@ test.describe('Universe Screen E2E', () => {
         await symbolInput.fill(symbols[0]);
         await page.waitForTimeout(800);
 
-        const acct1SellDate = await getColumnTexts(page, 9);
+        const acct1SellDate = await getColumnTexts(
+          page,
+          UNIVERSE_COLUMN_INDEX.mostRecentSellDate
+        );
         expect(acct1SellDate.length).toBeGreaterThan(0);
         // Sell date should be displayed
         expect(acct1SellDate[0].length).toBeGreaterThan(0);
@@ -442,7 +514,10 @@ test.describe('Universe Screen E2E', () => {
       await symbolInput.fill(symbols[0]);
       await page.waitForTimeout(800);
 
-      const allSellPrice = await getColumnTexts(page, 10);
+      const allSellPrice = await getColumnTexts(
+        page,
+        UNIVERSE_COLUMN_INDEX.mostRecentSellPrice
+      );
 
       const accountSelect = page.locator(
         '.universe-toolbar mat-form-field mat-select'
@@ -461,7 +536,10 @@ test.describe('Universe Screen E2E', () => {
         await symbolInput.fill(symbols[0]);
         await page.waitForTimeout(800);
 
-        const acct1SellPrice = await getColumnTexts(page, 10);
+        const acct1SellPrice = await getColumnTexts(
+          page,
+          UNIVERSE_COLUMN_INDEX.mostRecentSellPrice
+        );
         expect(acct1SellPrice.length).toBeGreaterThan(0);
         // Sell price should be displayed
         expect(acct1SellPrice[0].length).toBeGreaterThan(0);
@@ -477,7 +555,10 @@ test.describe('Universe Screen E2E', () => {
       await symbolInput.fill(symbols[0]);
       await page.waitForTimeout(800);
 
-      const allLastPrice = await getColumnTexts(page, 7);
+      const allLastPrice = await getColumnTexts(
+        page,
+        UNIVERSE_COLUMN_INDEX.lastPrice
+      );
       expect(allLastPrice.length).toBeGreaterThan(0);
 
       const accountSelect = page.locator(
@@ -497,7 +578,10 @@ test.describe('Universe Screen E2E', () => {
         await symbolInput.fill(symbols[0]);
         await page.waitForTimeout(800);
 
-        const acct1LastPrice = await getColumnTexts(page, 7);
+        const acct1LastPrice = await getColumnTexts(
+          page,
+          UNIVERSE_COLUMN_INDEX.lastPrice
+        );
         // Last Price is a universe field, not computed from trades — should be identical
         expect(acct1LastPrice).toEqual(allLastPrice);
       }

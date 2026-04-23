@@ -194,19 +194,27 @@ test.describe('CUSIP Cache Admin UI', function describeCusipCache() {
     }) {
       await page.locator('[data-testid="add-mapping-button"]').click();
 
-      await page.locator('[data-testid="dialog-cusip-input"]').fill(TEST_CUSIP);
-      await page
-        .locator('[data-testid="dialog-symbol-input"]')
-        .fill(TEST_SYMBOL);
-
+      const cusipInput = page.locator('[data-testid="dialog-cusip-input"]');
+      const symbolInput = page.locator('[data-testid="dialog-symbol-input"]');
       const sourceSelect = page.locator('[data-testid="dialog-source-select"]');
-      await sourceSelect.click();
-      await page.locator('mat-option:has-text("THIRTEENF")').click();
+      const submitButton = page.locator('[data-testid="dialog-submit-button"]');
+
+      await expect(cusipInput).toBeVisible({ timeout: 5000 });
+      await cusipInput.fill(TEST_CUSIP);
+      await expect(cusipInput).toHaveValue(TEST_CUSIP);
+
+      await symbolInput.fill(TEST_SYMBOL);
+      await expect(symbolInput).toHaveValue(TEST_SYMBOL);
+
+      // The dialog defaults source to THIRTEENF; avoid opening the overlay in
+      // this happy-path test because it is not part of the behavior under test.
+      await expect(sourceSelect).toContainText('THIRTEENF');
 
       await page
         .locator('[data-testid="dialog-reason-input"]')
         .fill('E2E test add');
-      await page.locator('[data-testid="dialog-submit-button"]').click();
+      await expect(submitButton).toBeEnabled();
+      await submitButton.click();
 
       // Verify dialog closes
       await expect(

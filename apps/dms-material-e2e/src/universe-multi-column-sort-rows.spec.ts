@@ -12,10 +12,18 @@ async function getColumnTexts(page: Page, colIndex: number): Promise<string[]> {
   const texts: string[] = [];
   for (let i = 0; i < count; i++) {
     const text = await cells.nth(i).textContent();
-    texts.push((text ?? '').trim());
+    const trimmed = (text ?? '').trim();
+    if (trimmed === '' || trimmed === '…') {
+      continue;
+    }
+    texts.push(trimmed);
   }
   return texts;
 }
+
+const UNIVERSE_COLUMN_INDEX = {
+  symbol: 2,
+} as const;
 
 /**
  * Helper: clear sort-filter state from localStorage.
@@ -42,9 +50,10 @@ async function waitForTableRows(page: Page): Promise<void> {
 // deliver — and that the sort state survives a page refresh (Story 36.3).
 //
 // Column positions (1-based) in Universe table:
-//   1 → Symbol
-//   2 → Risk Group
-//   8 → Ex-Date
+//   1 → Vol
+//   2 → Symbol
+//   3 → Risk Group
+//   9 → Ex-Date
 //
 // Seeded data (from seedUniverseE2eData):
 //   symbols[0] UAAA-<id>  Equities  ex_date = 2026-06-15  (June, later)
@@ -101,7 +110,7 @@ test.describe('Universe Screen - Multi-Column Sort Row Ordering & Refresh Persis
     await page.waitForLoadState('networkidle');
 
     // Collect Symbol values after ascending sort
-    const ascValues = await getColumnTexts(page, 1);
+    const ascValues = await getColumnTexts(page, UNIVERSE_COLUMN_INDEX.symbol);
     expect(ascValues.length).toBe(5);
 
     // UAAA (symbols[0]) must appear before UEEE (symbols[4]) in ascending order
@@ -117,7 +126,7 @@ test.describe('Universe Screen - Multi-Column Sort Row Ordering & Refresh Persis
     await page.waitForTimeout(800);
     await page.waitForLoadState('networkidle');
 
-    const descValues = await getColumnTexts(page, 1);
+    const descValues = await getColumnTexts(page, UNIVERSE_COLUMN_INDEX.symbol);
     expect(descValues.length).toBe(5);
 
     // In descending order UEEE must appear before UAAA — opposite of ascending
@@ -155,7 +164,10 @@ test.describe('Universe Screen - Multi-Column Sort Row Ordering & Refresh Persis
     await page.waitForLoadState('networkidle');
 
     // Capture symbol order before reload — this is the ground truth.
-    const symbolsBefore = await getColumnTexts(page, 1);
+    const symbolsBefore = await getColumnTexts(
+      page,
+      UNIVERSE_COLUMN_INDEX.symbol
+    );
     expect(symbolsBefore.length).toBe(5);
 
     // ── Simulate browser refresh ──────────────────────────────────────────
@@ -173,7 +185,10 @@ test.describe('Universe Screen - Multi-Column Sort Row Ordering & Refresh Persis
 
     // AC #2: row order after refresh must match row order before refresh.
     // This confirms the server honoured the restored sort columns.
-    const symbolsAfter = await getColumnTexts(page, 1);
+    const symbolsAfter = await getColumnTexts(
+      page,
+      UNIVERSE_COLUMN_INDEX.symbol
+    );
     expect(symbolsAfter.length).toBe(5);
     expect(symbolsAfter).toEqual(symbolsBefore);
   });
@@ -213,7 +228,10 @@ test.describe('Universe Screen - Multi-Column Sort Row Ordering & Refresh Persis
     await page.waitForLoadState('networkidle');
 
     // Collect all displayed symbol values in DOM order
-    const symbolValues = await getColumnTexts(page, 1);
+    const symbolValues = await getColumnTexts(
+      page,
+      UNIVERSE_COLUMN_INDEX.symbol
+    );
     expect(symbolValues.length).toBe(5);
 
     // Identify positions of the two Equities rows
