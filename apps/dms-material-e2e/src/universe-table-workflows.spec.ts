@@ -60,22 +60,24 @@ test.describe('Universe Table Workflows', () => {
       // The table has filter row and header row - count only header row
       const headers = page.locator('tr.mat-mdc-header-row:not(.filter-row) th');
       const headerCount = await headers.count();
-      // Symbol, Risk Group, Distribution, Dist/Year, Yield %, Avg Purch Yield %, Last Price, Ex-Date, Most Recent Sell Date, Most Recent Sell Price, Position, Expired, Actions
-      expect(headerCount).toBe(13);
+      // Vol, Symbol, Risk Group, Distribution, Dist/Year, Yield %,
+      // Avg Purch Yield %, Last Price, Ex-Date, Most Recent Sell Date,
+      // Most Recent Sell Price, Position, Expired, Actions
+      expect(headerCount).toBe(14);
     });
 
-    test('should display symbol data in first column', async ({ page }) => {
-      const firstCell = page.locator(
-        'tr.mat-mdc-row:first-child td:first-child'
+    test('should display symbol data in symbol column', async ({ page }) => {
+      const symbolCell = page.locator(
+        'tr.mat-mdc-row:first-child td.mat-column-symbol'
       );
-      await expect(firstCell).toBeVisible();
-      const text = await firstCell.textContent();
+      await expect(symbolCell).toBeVisible();
+      const text = await symbolCell.textContent();
       expect(text?.trim()).toBeTruthy();
     });
 
     test('should display risk group data', async ({ page }) => {
       const riskGroupCell = page.locator(
-        'tr.mat-mdc-row:first-child td:nth-child(2)'
+        'tr.mat-mdc-row:first-child td.mat-column-risk_group'
       );
       await expect(riskGroupCell).toBeVisible();
       const text = await riskGroupCell.textContent();
@@ -86,7 +88,7 @@ test.describe('Universe Table Workflows', () => {
       page,
     }) => {
       const distributionCell = page.locator(
-        'tr.mat-mdc-row:first-child td:nth-child(3)'
+        'tr.mat-mdc-row:first-child td.mat-column-distribution'
       );
       await expect(distributionCell).toBeVisible();
       const text = await distributionCell.textContent();
@@ -97,9 +99,8 @@ test.describe('Universe Table Workflows', () => {
     test('should display yield percentage with two decimals', async ({
       page,
     }) => {
-      // Yield % is in the 5th column (after Symbol, Risk Group, Distribution, Dist/Year)
       const yieldCell = page.locator(
-        'tr.mat-mdc-row:first-child td:nth-child(5)'
+        'tr.mat-mdc-row:first-child td.mat-column-yield_percent'
       );
       await expect(yieldCell).toBeVisible();
       const text = await yieldCell.textContent();
@@ -109,9 +110,8 @@ test.describe('Universe Table Workflows', () => {
     });
 
     test('should display ex-date in correct format', async ({ page }) => {
-      // Ex-Date is in the 8th column
       const exDateCell = page.locator(
-        'tr.mat-mdc-row:first-child td:nth-child(8)'
+        'tr.mat-mdc-row:first-child td.mat-column-ex_date'
       );
       await expect(exDateCell).toBeVisible();
       const text = await exDateCell.textContent();
@@ -120,9 +120,8 @@ test.describe('Universe Table Workflows', () => {
     });
 
     test('should display action buttons in last column', async ({ page }) => {
-      // Actions is the 13th (last) column
       const actionsCell = page.locator(
-        'tr.mat-mdc-row:first-child td:nth-child(13)'
+        'tr.mat-mdc-row:first-child td.mat-column-actions'
       );
       await expect(actionsCell).toBeVisible();
     });

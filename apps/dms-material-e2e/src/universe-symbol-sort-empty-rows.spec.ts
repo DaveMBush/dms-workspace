@@ -4,13 +4,15 @@ import { login } from './helpers/login.helper';
 import { seedUniverseE2eData } from './helpers/seed-universe-e2e-data.helper';
 
 /**
- * Helper: collect text content from all visible cells in a given column index (1-based).
+ * Helper: collect text content from all visible cells matching a selector.
  */
-async function getColumnTexts(page: Page, colIndex: number): Promise<string[]> {
-  const cells = page.locator(`tr.mat-mdc-row td:nth-child(${colIndex})`);
+async function getCellTexts(page: Page, selector: string): Promise<string[]> {
+  const cells = page.locator(selector);
   const rawTexts = await cells.allTextContents();
   return rawTexts.map((text) => text.trim());
 }
+
+const SYMBOL_CELL_SELECTOR = 'tr.mat-mdc-row td.mat-column-symbol';
 
 /**
  * Helper: set Symbol ascending sort in localStorage.
@@ -50,18 +52,9 @@ async function setSymbolAscSort(page: Page): Promise<void> {
 // arrives so quickly in CI that no empty cells are visible by the time
 // Playwright reads the DOM.
 //
-// The test CURRENTLY FAILS because the bug exists:
-//   - assertion: symbol cell text is NOT empty
-//   - actual: symbol cell text IS empty ('') because row data has not yet loaded
-//
-// It will pass once Story 56.2 provides a fix that prevents empty rows from
-// being shown while data is loading.
-//
+// This is now a regression guard for the historical empty-symbol bug.
 // Seeded data:
-//   seedUniverseE2eData()  — 5 named symbols (UAAA-… through UEEE-…)
-//
-// Column positions (1-based) in Universe table:
-//   1 → Symbol
+//   seedUniverseE2eData() — 5 named symbols (UAAA-… through UEEE-…)
 
 test.describe('Universe Screen - Empty Rows on Symbol Sort Bug (Story 56.1)', () => {
   let cleanup: () => Promise<void>;
@@ -78,11 +71,8 @@ test.describe('Universe Screen - Empty Rows on Symbol Sort Bug (Story 56.1)', ()
   });
 
   // ─── AC #1: First visible rows are NOT empty when sorted by Symbol asc ───
-  //
-  // This test is CURRENTLY FAILING because the bug exists. It will be fixed
-  // in Story 56.2 and then this test will pass.
 
-  test('first visible rows have non-empty symbol cells immediately on load with Symbol ascending sort (currently FAILS — confirms bug)', async ({
+  test('first visible rows have non-empty symbol cells immediately on load with Symbol ascending sort', async ({
     page,
   }) => {
     await login(page);
@@ -113,13 +103,10 @@ test.describe('Universe Screen - Empty Rows on Symbol Sort Bug (Story 56.1)', ()
     await firstRow.waitFor({ state: 'attached', timeout: 15000 });
 
     // Do NOT scroll — inspect the first visible symbol cells immediately.
-    // Column 1 (1-based) is the Symbol column.
-    const symbolTexts = await getColumnTexts(page, 1);
+    const symbolTexts = await getCellTexts(page, SYMBOL_CELL_SELECTOR);
     const firstThree = symbolTexts.slice(0, 3);
 
     // Assert every one of the first 3 rows has a non-empty symbol value.
-    // This assertion currently FAILS because the bug causes SmartNgRX to
-    // return defaultRows with symbol:'' before /api/universe responds.
     for (const symbolText of firstThree) {
       expect(
         symbolText,

@@ -13,10 +13,18 @@ async function getColumnTexts(page: Page, colIndex: number): Promise<string[]> {
   const texts: string[] = [];
   for (let i = 0; i < count; i++) {
     const text = await cells.nth(i).textContent();
-    texts.push((text ?? '').trim());
+    const trimmed = (text ?? '').trim();
+    if (trimmed === '' || trimmed === '…') {
+      continue;
+    }
+    texts.push(trimmed);
   }
   return texts;
 }
+
+const UNIVERSE_COLUMN_INDEX = {
+  symbol: 2,
+} as const;
 
 /**
  * Helper: clear sort-filter state from localStorage before each test so sort
@@ -56,9 +64,10 @@ async function waitForTableRows(page: Page): Promise<void> {
 // making them the ideal pair for asserting secondary sort ordering.
 //
 // Column positions (1-based) used in CSS :nth-child selectors:
-//   1 → Symbol
-//   2 → Risk Group
-//   8 → Ex-Date
+//   1 → Vol
+//   2 → Symbol
+//   3 → Risk Group
+//   9 → Ex-Date
 //
 // Shift+click pattern (matching existing e2e conventions):
 //   await header.click({ modifiers: ['Shift'] });
@@ -116,7 +125,10 @@ test.describe('Universe Screen - Secondary Sort (Story 43.2)', () => {
     await page.waitForLoadState('networkidle');
 
     // Collect all symbol values in current DOM row order
-    const symbolValues = await getColumnTexts(page, 1);
+    const symbolValues = await getColumnTexts(
+      page,
+      UNIVERSE_COLUMN_INDEX.symbol
+    );
     expect(symbolValues.length).toBe(5);
 
     // Within the Equities group, descending Ex-Date means later date first:
@@ -155,7 +167,10 @@ test.describe('Universe Screen - Secondary Sort (Story 43.2)', () => {
     await page.waitForLoadState('networkidle');
 
     // Collect all symbol values in current DOM row order
-    const symbolValues = await getColumnTexts(page, 1);
+    const symbolValues = await getColumnTexts(
+      page,
+      UNIVERSE_COLUMN_INDEX.symbol
+    );
     expect(symbolValues.length).toBe(5);
 
     // Within the Equities group, ascending Ex-Date means earlier date first:

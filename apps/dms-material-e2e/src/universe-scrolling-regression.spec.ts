@@ -33,8 +33,7 @@ import { seedScrollUniverseData } from './helpers/seed-scroll-universe-data.help
 
 const VIEWPORT_SELECTOR = 'cdk-virtual-scroll-viewport';
 const ROW_SELECTOR = 'tr.mat-mdc-row';
-// Symbol is the first data cell (column 1, after no selection column in universe)
-const SYMBOL_CELL_SELECTOR = 'tr.mat-mdc-row td:first-child';
+const SYMBOL_CELL_SELECTOR = 'tr.mat-mdc-row td.mat-column-symbol';
 
 /**
  * Assert that all currently visible symbol cells have non-empty text content.
@@ -57,18 +56,19 @@ async function assertVisibleSymbolsNonEmpty(
     .poll(
       async function countEmptySymbols() {
         const symbolCells = page.locator(SYMBOL_CELL_SELECTOR);
-        const count = await symbolCells.count();
-        if (count === 0) {
+        // Read the currently rendered symbol cells in one DOM snapshot so CDK
+        // row recycling cannot race a count()+nth() loop mid-poll.
+        const texts = await symbolCells.evaluateAll(function readTexts(cells) {
+          return cells.map(function readText(cell) {
+            return (cell.textContent ?? '').trim();
+          });
+        });
+        if (texts.length === 0) {
           return -1; // no rows yet — keep polling
         }
-        const emptyIndices: number[] = [];
-        for (let i = 0; i < count; i++) {
-          const text = await symbolCells.nth(i).textContent();
-          if ((text ?? '').trim() === '') {
-            emptyIndices.push(i);
-          }
-        }
-        return emptyIndices.length;
+        return texts.filter(function isEmpty(text) {
+          return text === '';
+        }).length;
       },
       { message: failureMessage, timeout: 10000 }
     )

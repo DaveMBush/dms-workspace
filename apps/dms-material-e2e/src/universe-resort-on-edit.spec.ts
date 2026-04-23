@@ -3,6 +3,10 @@ import { expect, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
 import { seedUniverseData } from './helpers/seed-universe-data.helper';
 
+const UNIVERSE_COLUMN_INDEX = {
+  symbol: 2,
+} as const;
+
 test.describe('Universe Re-sort After Cell Edit', () => {
   let cleanup: () => Promise<void>;
 
@@ -34,7 +38,7 @@ test.describe('Universe Re-sort After Cell Edit', () => {
 
     // Record the first row's symbol before editing
     const firstRowSymbol = page.locator(
-      'tr.mat-mdc-row:first-child td:first-child'
+      `tr.mat-mdc-row:first-child td:nth-child(${UNIVERSE_COLUMN_INDEX.symbol})`
     );
     const originalSymbol = await firstRowSymbol.textContent();
 
