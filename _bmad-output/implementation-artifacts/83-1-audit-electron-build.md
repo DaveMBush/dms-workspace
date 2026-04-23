@@ -239,7 +239,7 @@ View logs and investigate cache misses at https://cloud.nx.app/runs/1BELaLsYAF
 - `apps/electron/src/preload.ts` compiles cleanly, and `webPreferences.preload` resolves to
   `apps/electron/dist/preload.js` as expected.
 - `apps/electron/tsconfig.json` uses appropriate compile settings for Electron (`module:
-  CommonJS`, `target: ES2020`, `outDir: dist`) and does not define `paths` or `baseUrl` overrides
+CommonJS`, `target: ES2020`, `outDir: dist`) and does not define `paths` or `baseUrl` overrides
   that would break import resolution.
 - The current build emits `apps/electron/dist/utils/port.spec.js`, which shows the app build is
   compiling test files into the production dist folder.
