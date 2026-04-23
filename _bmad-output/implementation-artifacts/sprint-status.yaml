@@ -37,7 +37,7 @@
 #     E1 → E3 → E4(TS rules) → E2 → E5 → E4(template rules) → E6 → E7 → E8
 
 generated: 2026-03-17
-last_updated: 2026-04-20
+last_updated: 2026-04-23
 project_key: NOKEY
 tracking_system: file-system
 story_location: _bmad-output/implementation-artifacts
@@ -463,3 +463,40 @@ development_status:
   82-3-unskip-fix-e2e-tests: ready-for-dev
   82-4-verify-zero-skipped-tests: ready-for-dev
   epic-82-retrospective: optional
+
+  # ── Epic 83: Electron App Documentation and Build Fix ─────────────────────────
+  epic-83: in-progress
+  83-1-audit-electron-build: ready-for-dev
+  83-2-electron-documentation: ready-for-dev
+  83-3-fix-electron-build: ready-for-dev
+  epic-83-retrospective: optional
+
+  # ── Epic 84: Volatility Visible for All Symbols and New Icons ─────────────────
+  epic-84: in-progress
+  84-1-investigate-volatility-visibility-bug: ready-for-dev
+  84-2-fix-volatility-data-filtering: ready-for-dev
+  84-3-add-new-volatility-icons: ready-for-dev
+  84-4-e2e-volatility-icons: ready-for-dev
+  epic-84-retrospective: optional
+
+  # ── Epic 85: Store Volatility in Universe Table ───────────────────────────────
+  epic-85: in-progress
+  85-1-universe-schema-volatility-columns: ready-for-dev
+  85-2-wire-volatility-recalculation-triggers: ready-for-dev
+  85-3-serve-stored-volatility: ready-for-dev
+  85-4-e2e-stored-volatility: ready-for-dev
+  epic-85-retrospective: optional
+
+  # ── Epic 86: Short Term Volatility (SVol) Column ──────────────────────────────
+  epic-86: in-progress
+  86-1-api-expose-short-term-volatility: ready-for-dev
+  86-2-frontend-svol-column: ready-for-dev
+  86-3-e2e-svol-column: ready-for-dev
+  epic-86-retrospective: optional
+
+  # ── Epic 87: Janky Scrolling Returns (Round 6) ────────────────────────────────
+  epic-87: in-progress
+  87-1-reproduce-scrolling-failures-all-screens: ready-for-dev
+  87-2-fix-scrolling-all-screens: ready-for-dev
+  87-3-scrolling-regression-prevention-suite: ready-for-dev
+  epic-87-retrospective: optional

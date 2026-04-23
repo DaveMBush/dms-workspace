@@ -1,7 +1,7 @@
 ---
 description: Develop a story using the BMAD V6 dev story skill.
 argument-hint: story=AD.3
-model: Claude Opus 4.6
+model: GPT-5.4 High
 ---
 
 # Story Development: ${story}

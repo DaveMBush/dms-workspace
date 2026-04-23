@@ -1,7 +1,7 @@
 ---
 description: Fully autonomous story development from start to merge
 argument-hint: story=AD.3
-model: Claude Opus 4.6
+model: GPT-5.4 High
 ---
 
 load the #skill:prompt

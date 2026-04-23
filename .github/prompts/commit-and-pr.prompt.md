@@ -1,5 +1,5 @@
 ---
-model: Claude Opus 4.6
+model: GPT-5.4 High
 ---
 
 Shell execution rule: use the bash MCP server for every shell command in this prompt. Use `mcp_bash_run` for blocking commands and `mcp_bash_run_background` only when a background process is truly required. This applies to `pnpm`, `git`, `gh`, `bash`, and helper scripts.

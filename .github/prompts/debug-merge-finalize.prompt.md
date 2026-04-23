@@ -1,7 +1,7 @@
 ---
 description: Dedicated debug merge verification and cleanup runner
 argument-hint: story=AD.5
-model: Claude Opus 4.6
+model: GPT-5.4 High
 ---
 
 load the #skill:prompt

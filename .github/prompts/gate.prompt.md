@@ -1,7 +1,7 @@
 ---
 description: QA the result of story development.
 argument-hint: story=AD.3
-model: Claude Opus 4.6
+model: GPT-5.4 High
 ---
 
 # QA Gate for Story ${story}

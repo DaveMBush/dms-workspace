@@ -2,7 +2,7 @@
 ---
 description: Handle CodeRabbit review loop for a story PR
 argument-hint: story=AD.3
-model: Claude Opus 4.6
+model: GPT-5.4 High
 ---
 
 load the #skill:prompt

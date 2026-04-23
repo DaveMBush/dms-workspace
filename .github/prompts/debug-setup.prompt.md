@@ -1,7 +1,7 @@
 ---
 description: Dedicated debug setup and branch preparation runner
 argument-hint: epic=AD story=AD.5
-model: Claude Opus 4.6
+model: GPT-5.4 High
 ---
 
 load the #skill:prompt
