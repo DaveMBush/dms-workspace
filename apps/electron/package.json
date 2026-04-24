@@ -4,6 +4,6 @@
   "private": true,
   "main": "dist/main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "node ./scripts/start.js"
   }
 }

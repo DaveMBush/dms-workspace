@@ -1,6 +1,6 @@
 # API Contracts
 
-All routes are served by the Fastify backend. Routes under `apps/server/src/app/routes/` are auto-loaded with `/api` prefix. Feature flags are served at the root (`/`).
+All routes are served by the Fastify backend. Routes under `apps/server/src/app/routes/` are auto-loaded with `/api` prefix. Feature flags are served at `/api/feature-flags`.
 
 ## Common Conventions
 
@@ -58,7 +58,7 @@ All entities share common fields:
 
 ## Feature Flags
 
-### `GET /`
+### `GET /api/feature-flags`
 
 Returns feature flags object. No auth required.
 

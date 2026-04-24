@@ -29,8 +29,8 @@ server.register(configureApp);
 const isCi = process.env['CI'] === '1' || process.env['CI'] === 'true';
 if (!isCi && process.env['NODE_ENV'] !== 'test') {
   const angularBuildPath = path.join(
-    __dirname,
-    '../../../dist/apps/dms-material/browser'
+    process.cwd(),
+    'dist/apps/dms-material/browser'
   );
 
   void server.register(fastifyStatic, {

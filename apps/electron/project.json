@@ -33,7 +33,7 @@
         }
       ],
       "options": {
-        "command": "../../node_modules/.bin/electron .",
+        "command": "pnpm start",
         "cwd": "apps/electron"
       }
     }

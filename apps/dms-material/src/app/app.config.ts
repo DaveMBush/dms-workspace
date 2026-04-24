@@ -50,8 +50,23 @@ import { tradeEffectsServiceToken } from './store/trades/trade-effect-service-to
 import { UniverseEffectsService } from './store/universe/universe-effect.service';
 import { universeEffectsServiceToken } from './store/universe/universe-effect-service-token';
 
+function shouldUseElectronMockAuth(): boolean {
+  if (typeof window === 'undefined') {
+    return false;
+  }
+
+  const electronWindow = window as Window & {
+    electronAPI?: {
+      isMockAuthEnabled?: boolean;
+    };
+  };
+
+  return electronWindow.electronAPI?.isMockAuthEnabled === true;
+}
+
 // Configure Amplify before app initialization only if not using mock auth
-const shouldUseMockAuth = environment.auth?.useMockAuth;
+const shouldUseMockAuth =
+  environment.auth?.useMockAuth || shouldUseElectronMockAuth();
 if (!shouldUseMockAuth) {
   configureAmplify();
 }
