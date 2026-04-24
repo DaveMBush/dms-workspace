@@ -61,7 +61,8 @@ What this target does:
 - Builds the Fastify server (`server:build`)
 - Builds the Angular app (`dms-material:build`)
 - Runs the app-local `pnpm start` launcher from `apps/electron`, which clears any inherited
-  `ELECTRON_RUN_AS_NODE` override before spawning Electron
+  `ELECTRON_RUN_AS_NODE` override before spawning Electron and enables Electron mock auth by
+  default for non-production launches unless `DMS_ENABLE_MOCK_AUTH` is already set
 
 You do not need to build Angular manually before `electron:start`; the target already depends on
 the Angular and server build targets.
@@ -92,7 +93,9 @@ pnpm --dir apps/electron start
 ```
 
 The package `start` script also clears any inherited `ELECTRON_RUN_AS_NODE` override before
-launching Electron so the main process does not accidentally boot in plain Node mode.
+launching Electron so the main process does not accidentally boot in plain Node mode. For local
+developer launches it also defaults `DMS_ENABLE_MOCK_AUTH=1` unless the caller already provided a
+value or `NODE_ENV=production`.
 
 Important limitation: the repository does not currently include `electron-builder`,
 `electron-packager`, or equivalent packaging configuration. Today, `electron:build` is a
@@ -182,14 +185,15 @@ Electron injects the Content Security Policy in `apps/electron/src/main.ts` usin
 The injected policy allows:
 
 - `default-src 'self' http://localhost:<port>`
-- `script-src 'self'`
+- `script-src 'self' 'unsafe-hashes' 'sha256-MhtPZXr7+LpJUY5qtMutB+qWfQtMaPccfe7QXtCcEYc='`
 - `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com`
 - `font-src 'self' https://fonts.gstatic.com`
 - `img-src 'self' data: https:`
 - `connect-src 'self' http://localhost:<port>` plus the configured AWS Cognito endpoints
 
-This keeps the Angular app functional while avoiding remote script execution from untrusted
-origins.
+The script hash is currently required for an Angular-generated inline startup handler in the built
+app. This keeps the Angular app functional while still avoiding remote script execution from
+untrusted origins.
 
 ## Testing
 

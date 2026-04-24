@@ -57,6 +57,15 @@ function startServer(port: number): Promise<void> {
       process.env['DMS_NODE_EXEC_PATH'] ?? process.env['npm_node_execpath'];
     const serverPath = path.join(workspaceRoot, 'dist/apps/server/main.js');
 
+    if (!nodeExecPath) {
+      reject(
+        new Error(
+          'Missing DMS_NODE_EXEC_PATH or npm_node_execpath; refusing to fork the server with the Electron binary'
+        )
+      );
+      return;
+    }
+
     serverProcess = fork(serverPath, [], {
       cwd: workspaceRoot,
       env: { ...process.env, PORT: String(port) },

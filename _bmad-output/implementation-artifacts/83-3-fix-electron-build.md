@@ -35,30 +35,34 @@ so that the Electron integration created in Epic 77 is actually usable for distr
 ## Tasks / Subtasks
 
 - [x] Task 1: Read Story 83.1 Dev Agent Record for the prioritised fix list (AC: #1)
+
   - [x] Read `_bmad-output/implementation-artifacts/83-1-audit-electron-build.md` — Dev
-    Agent Record section
+        Agent Record section
   - [x] List every issue to be fixed before writing any code
   - [x] Confirm the `build` target currently only compiles TypeScript (no packaging)
   - [x] Decide scope: fix TypeScript compilation errors first; packaging (electron-builder)
-    is a separate sub-task
+        is a separate sub-task
 
 - [x] Task 2: Fix TypeScript compilation errors (AC: #1)
+
   - [x] If `tsc -p tsconfig.json` fails with errors, address each one in turn
   - [x] Common issues: incorrect module settings, missing type declarations, path alias
-    problems
+        problems
   - [x] Check `apps/electron/tsconfig.json` — ensure `module: "CommonJS"` (Electron main
-    process requires CommonJS, not ESM)
+        process requires CommonJS, not ESM)
   - [x] After each fix, rerun `pnpm nx run electron:build` to confirm progress
   - [x] Do not change logic in `main.ts` / `preload.ts` unless a TypeScript error forces it
 
 - [x] Task 3: Verify compiled output is runnable (AC: #2)
+
   - [x] After `pnpm nx run electron:build` exits 0, confirm `apps/electron/dist/main.js`
-    and `apps/electron/dist/preload.js` exist
+        and `apps/electron/dist/preload.js` exist
   - [x] Confirm `apps/electron/dist/utils/` directory exists with `port.js`
   - [x] Check that `apps/electron/package.json` `"main": "dist/main.js"` points to the
-    compiled file correctly
+        compiled file correctly
 
 - [x] Task 4: Test `pnpm nx run electron:start` (AC: #2)
+
   - [x] Ensure the Fastify server is built: `pnpm nx run server:build`
   - [x] Ensure dms-material is built: `pnpm nx run dms-material:build`
   - [x] Run `pnpm nx run electron:start`
@@ -66,6 +70,7 @@ so that the Electron integration created in Epic 77 is actually usable for distr
   - [x] Navigate between routes in the sidebar — confirm navigation stays in-window
 
 - [x] Task 5: Use Playwright MCP server to verify navigation (AC: #3)
+
   - [x] Start the Electron app (`pnpm nx run electron:start`)
   - [x] Open Playwright MCP server against the running Electron window
   - [x] Navigate to Universe screen, Open Positions, and at least one other route
@@ -74,15 +79,16 @@ so that the Electron integration created in Epic 77 is actually usable for distr
   - [x] Document Playwright MCP findings in Dev Agent Record
 
 - [x] Task 6: Update `apps/electron/README.md` if configuration changed (AC: #1, #2)
+
   - [x] If any configuration values changed during the fix (e.g., tsconfig settings,
-    project.json commands), update `apps/electron/README.md` to reflect the final state
+        project.json commands), update `apps/electron/README.md` to reflect the final state
   - [x] Ensure documentation in Story 83.2 is accurate for the fixed build
 
 - [x] Task 7: Run `pnpm all` and confirm all tests pass (AC: #4)
   - [x] Run `pnpm all` from the workspace root
   - [x] Confirm all previously passing tests still pass
   - [x] Confirm any Electron E2E tests from Epic 77 pass (check
-    `apps/dms-material-e2e/src/` for electron-related specs)
+        `apps/dms-material-e2e/src/` for electron-related specs)
 
 ## Dev Notes
 
@@ -112,9 +118,11 @@ is that `pnpm nx run electron:start` works end-to-end.
 ### Key Architecture Constraint
 
 The `serverPath` in `main.ts` is hardcoded:
+
 ```typescript
 const serverPath = path.join(__dirname, '../../../dist/apps/server/main.js');
 ```
+
 When running from `apps/electron/dist/main.js`, `__dirname` is `<workspace>/apps/electron/dist`.
 `../../../` resolves to `<workspace>/`. So `dist/apps/server/main.js` → `<workspace>/dist/apps/server/main.js`.
 This is the correct path for an Nx monorepo workspace where `server:build` outputs to
@@ -123,6 +131,7 @@ This is the correct path for an Nx monorepo workspace where `server:build` outpu
 ### TypeScript Configuration to Check
 
 Electron main process requires CommonJS modules. Verify `apps/electron/tsconfig.json` has:
+
 ```json
 {
   "compilerOptions": {
@@ -133,6 +142,7 @@ Electron main process requires CommonJS modules. Verify `apps/electron/tsconfig.
   }
 }
 ```
+
 If `module` is set to `ESNext` or `Node16`/`Node18`, Electron may fail to load the main file.
 
 ### Angular App Loading
@@ -145,6 +155,7 @@ works for both the app shell and API calls. **Do not change to `file://` loading
 
 The Playwright MCP server can connect to Electron's BrowserWindow if the devtools are
 accessible. Alternatively, verify manually that:
+
 1. Electron window opens
 2. Angular app renders (Universe screen or login page)
 3. Clicking nav items navigates without opening a new window

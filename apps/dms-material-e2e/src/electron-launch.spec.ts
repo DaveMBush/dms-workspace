@@ -1,7 +1,12 @@
 import fs from 'fs';
 import path from 'path';
 
-import { _electron as electron, ElectronApplication, Page } from 'playwright';
+import {
+  _electron as electron,
+  ElectronApplication,
+  Locator,
+  Page,
+} from 'playwright';
 import { expect, test } from 'playwright/test';
 
 const ELECTRON_MAIN_PATH = path.join(__dirname, '../../electron/dist/main.js');
@@ -20,6 +25,18 @@ function expectSingleWindow(app: ElectronApplication): void {
   expect(app.windows()).toHaveLength(1);
 }
 
+async function isVisibleWithinTimeout(
+  locator: Locator,
+  timeout: number
+): Promise<boolean> {
+  try {
+    await locator.waitFor({ state: 'visible', timeout });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 async function expectPathname(
   window: Page,
   pathnamePattern: RegExp
@@ -35,7 +52,9 @@ async function expectPathname(
 }
 
 async function ensureAuthenticatedShell(window: Page): Promise<void> {
-  if (await window.getByTestId('global-nav-universe').isVisible()) {
+  const universeNav = window.getByTestId('global-nav-universe');
+
+  if (await isVisibleWithinTimeout(universeNav, 2000)) {
     return;
   }
 
@@ -55,7 +74,7 @@ async function ensureAuthenticatedShell(window: Page): Promise<void> {
 async function ensureAccountExists(window: Page): Promise<void> {
   const firstAccount = window.getByTestId('account-item').first();
 
-  if (await firstAccount.isVisible()) {
+  if (await isVisibleWithinTimeout(firstAccount, 2000)) {
     return;
   }
 
@@ -112,6 +131,12 @@ test.describe('Electron App Launch', () => {
   test.afterAll(async () => {
     if (app) {
       await app.close();
+    }
+  });
+
+  test.afterEach(() => {
+    if (app) {
+      expectSingleWindow(app);
     }
   });
 

@@ -6,7 +6,9 @@
   "targets": {
     "build": {
       "executor": "nx:run-commands",
-      "outputs": ["{workspaceRoot}/apps/electron/dist"],
+      "outputs": [
+        "{workspaceRoot}/apps/electron/dist"
+      ],
       "options": {
         "command": "../../node_modules/.bin/tsc -p tsconfig.json",
         "cwd": "apps/electron"
@@ -24,11 +26,15 @@
       "dependsOn": [
         "build",
         {
-          "projects": ["server"],
+          "projects": [
+            "server"
+          ],
           "target": "build"
         },
         {
-          "projects": ["dms-material"],
+          "projects": [
+            "dms-material"
+          ],
           "target": "build"
         }
       ],
