@@ -52,13 +52,15 @@ function startServer(port: number): Promise<void> {
     resolve: () => void,
     reject: (err: Error) => void
   ): void {
-    // Note: serverPath must be updated for asar-packaged production builds
-    const serverPath = path.join(
-      __dirname,
-      '../../../dist/apps/server/main.js'
-    );
+    const workspaceRoot = path.resolve(__dirname, '../../..');
+    const nodeExecPath =
+      process.env['DMS_NODE_EXEC_PATH'] ?? process.env['npm_node_execpath'];
+    const serverPath = path.join(workspaceRoot, 'dist/apps/server/main.js');
+
     serverProcess = fork(serverPath, [], {
+      cwd: workspaceRoot,
       env: { ...process.env, PORT: String(port) },
+      execPath: nodeExecPath,
       silent: false,
     });
 
@@ -120,7 +122,7 @@ function configureContentSecurityPolicy(port: number): void {
           ...details.responseHeaders,
           'Content-Security-Policy': [
             `default-src 'self' http://localhost:${port}; ` +
-              `script-src 'self'; ` +
+              `script-src 'self' 'unsafe-hashes' 'sha256-MhtPZXr7+LpJUY5qtMutB+qWfQtMaPccfe7QXtCcEYc='; ` +
               `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; ` +
               `font-src 'self' https://fonts.gstatic.com; ` +
               `img-src 'self' data: https:; ` +

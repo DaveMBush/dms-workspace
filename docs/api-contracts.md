@@ -58,7 +58,7 @@ All entities share common fields:
 
 ## Feature Flags
 
-### `GET /`
+### `GET /api/feature-flags`
 
 Returns feature flags object. No auth required.
 

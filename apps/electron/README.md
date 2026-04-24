@@ -60,7 +60,8 @@ What this target does:
 - Builds the Electron main/preload scripts (`electron:build`)
 - Builds the Fastify server (`server:build`)
 - Builds the Angular app (`dms-material:build`)
-- Runs `electron .` from `apps/electron`
+- Runs the app-local `pnpm start` launcher from `apps/electron`, which clears any inherited
+  `ELECTRON_RUN_AS_NODE` override before spawning Electron
 
 You do not need to build Angular manually before `electron:start`; the target already depends on
 the Angular and server build targets.
@@ -89,6 +90,9 @@ pnpm nx run dms-material:build
 pnpm nx run electron:build
 pnpm --dir apps/electron start
 ```
+
+The package `start` script also clears any inherited `ELECTRON_RUN_AS_NODE` override before
+launching Electron so the main process does not accidentally boot in plain Node mode.
 
 Important limitation: the repository does not currently include `electron-builder`,
 `electron-packager`, or equivalent packaging configuration. Today, `electron:build` is a
