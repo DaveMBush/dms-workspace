@@ -467,7 +467,7 @@ development_status:
   # ── Epic 83: Electron App Documentation and Build Fix ─────────────────────────
   epic-83: in-progress
   83-1-audit-electron-build: review
-  83-2-electron-documentation: ready-for-dev
+  83-2-electron-documentation: review
   83-3-fix-electron-build: ready-for-dev
   epic-83-retrospective: optional
 
