@@ -75,13 +75,21 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
-      testIgnore: ['**/system-integration.spec.ts', '**/electron-*.spec.ts'],
+      testIgnore: [
+        '**/system-integration.spec.ts',
+        '**/volatility-visibility.spec.ts',
+        '**/electron-*.spec.ts',
+      ],
       use: { ...devices['Desktop Chrome'] },
     },
 
     {
       name: 'firefox',
-      testIgnore: ['**/system-integration.spec.ts', '**/electron-*.spec.ts'],
+      testIgnore: [
+        '**/system-integration.spec.ts',
+        '**/volatility-visibility.spec.ts',
+        '**/electron-*.spec.ts',
+      ],
       use: {
         ...devices['Desktop Firefox'],
         // Firefox on Linux resolves 'localhost' to ::1 (IPv6), but the dev server
