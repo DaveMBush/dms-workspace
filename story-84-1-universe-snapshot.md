@@ -1,0 +1,49 @@
+- generic [ref=e3]:
+  - link "Skip to main content" [ref=e4] [cursor=pointer]:
+    - /url: "#main-content"
+  - navigation "Main navigation" [ref=e5]:
+    - generic [ref=e6]:
+      - generic [ref=e7]: Dividend Management System Material
+      - button "Toggle theme" [ref=e8] [cursor=pointer]:
+        - img [ref=e9]: dark_mode
+      - button "User menu" [ref=e12] [cursor=pointer]:
+        - img [ref=e13]: account_circle
+  - main [ref=e16]:
+    - generic [ref=e18]:
+      - generic [ref=e22]:
+        - generic [ref=e24]: Global
+        - navigation "Global pages" [ref=e25]:
+          - link "Universe" [ref=e26] [cursor=pointer]:
+            - /url: /global/universe
+          - link "Screener" [ref=e29] [cursor=pointer]:
+            - /url: /global/screener
+          - link "Summary" [ref=e32] [cursor=pointer]:
+            - /url: /global/summary
+          - link "Error Logs" [ref=e35] [cursor=pointer]:
+            - /url: /global/error-logs
+          - link "CUSIP Cache" [ref=e38] [cursor=pointer]:
+            - /url: /global/cusip-cache
+        - separator [ref=e41]
+        - generic [ref=e42]:
+          - generic [ref=e43]: Accounts
+          - button "Add account" [ref=e44] [cursor=pointer]
+        - navigation "Accounts" [ref=e48]:
+          - link "Joint Brokerage \*4767 Edit account Delete account" [ref=e49] [cursor=pointer]:
+            - /url: /account/c1bd30cb-c13f-48bc-8d87-97da518362dc
+          - link "Dave's IRA \*0089 Edit account Delete account" [ref=e64] [cursor=pointer]:
+            - /url: /account/0f75a974-49b4-4be5-8f11-01840e370a0f
+          - link "ROTH IRA (Dave) \*0694 Edit account Delete account" [ref=e79] [cursor=pointer]:
+            - /url: /account/f958686b-c2f6-4c41-8be3-7f2bae2e718a
+          - link "ROTH IRA (Laura) \*6835 Edit account Delete account" [ref=e94] [cursor=pointer]:
+            - /url: /account/bc4a2cb7-11df-4f6a-854b-479369039ad0
+      - generic [ref=e114]:
+        - generic [ref=e115]:
+          - generic [ref=e116]: Universe
+          - generic [ref=e119] [cursor=pointer]
+          - button "Add to universe" [ref=e130] [cursor=pointer]
+          - button "Import Fidelity CSV" [ref=e134] [cursor=pointer]
+          - button "Update Universe" [ref=e138] [cursor=pointer]
+          - button "Update Fields" [ref=e142] [cursor=pointer]
+        - table "Universe positions" [ref=e151]:
+          - rowgroup [ref=e152]
+          - rowgroup [ref=e263]

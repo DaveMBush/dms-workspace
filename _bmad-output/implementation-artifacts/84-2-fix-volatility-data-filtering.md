@@ -34,12 +34,14 @@ what I already own.
 ## Tasks / Subtasks
 
 - [ ] Task 1: Read Story 84.1 root cause documentation (AC: #2)
+
   - [ ] Read `_bmad-output/implementation-artifacts/84-1-investigate-volatility-visibility-bug.md`
         — specifically the Dev Agent Record section containing the root cause
   - [ ] Identify the exact file(s) and line(s) where the position-dependent filter exists
   - [ ] Understand the minimal change needed to remove it without breaking other behaviour
 
 - [ ] Task 2: Apply the backend fix (AC: #2)
+
   - [ ] Modify the identified file(s) to remove the position-dependent filter from the
         volatility data path
   - [ ] If the fix is in `volatility-query.function.ts`: ensure the Prisma query returns all
@@ -53,6 +55,7 @@ what I already own.
   - [ ] Keep the fix minimal: change only what Story 84.1 identified as the root cause
 
 - [ ] Task 3: Write or update unit tests for the fix (AC: #2)
+
   - [ ] If the fix is in a Prisma query function, add a unit test (or integration test) that
         confirms a symbol with distribution history but no trades is included in the results
   - [ ] If the fix is in a pure function (e.g., filter removed), update existing tests or add
@@ -61,12 +64,15 @@ what I already own.
   - [ ] Use Vitest; follow existing test patterns in the `volatility/` directory
 
 - [ ] Task 4: Verify the previously failing E2E test now passes (AC: #3)
+
   - [ ] Run the E2E test written in Story 84.1:
         `apps/dms-material-e2e/src/volatility-visibility.spec.ts`
+    - [ ] Remove the temporary Story 84.1 `test.skip()` override from `apps/dms-material-e2e/src/volatility-visibility.spec.ts` before rerunning the live-symbol assertion
   - [ ] Confirm it passes green
   - [ ] Remove the `// This test is expected to fail` comment from that test file
 
 - [ ] Task 5: Use Playwright MCP server to verify the fix on the live app (AC: #4)
+
   - [ ] Start the dev server: `pnpm nx run server:serve` and `pnpm nx run dms-material:serve`
   - [ ] Open Playwright MCP server against `http://localhost:4201`
   - [ ] Navigate to Universe screen
@@ -91,6 +97,7 @@ that story. Do not guess — use the finding.
 ### Backend Volatility Pipeline
 
 The volatility data flows through:
+
 1. `GET /api/universe/volatility`
    → `apps/server/src/app/routes/universe/get-volatility/index.ts`
 2. `fetchVolatilityForAllSymbols()`
@@ -99,6 +106,7 @@ The volatility data flows through:
    → `apps/server/src/app/volatility/volatility-calculation.function.ts`
 
 The fix must be made at the point identified by Story 84.1. The most likely candidates are:
+
 - The Prisma `divDeposits` query in `volatility-query.function.ts`: ensure `universeId`-linked
   records include symbols without trades
 - Or: the `universe` Prisma model query in `routes/universe/index.ts`: ensure all symbols
@@ -112,19 +120,19 @@ passes vacuously.
 
 ### Frontend Files (if fix is frontend-side)
 
-| File | Purpose |
-| ---- | ------- |
-| `apps/dms-material/src/app/global/global-universe/services/volatility-data.service.ts` | Fetches volatility from backend |
-| `apps/dms-material/src/app/global/global-universe/global-universe.component.ts` | Calls `applyVolatility` |
-| `apps/dms-material/src/app/global/global-universe/apply-volatility.function.ts` | Apply volatility to enriched data (if extracted) |
+| File                                                                                   | Purpose                                          |
+| -------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| `apps/dms-material/src/app/global/global-universe/services/volatility-data.service.ts` | Fetches volatility from backend                  |
+| `apps/dms-material/src/app/global/global-universe/global-universe.component.ts`        | Calls `applyVolatility`                          |
+| `apps/dms-material/src/app/global/global-universe/apply-volatility.function.ts`        | Apply volatility to enriched data (if extracted) |
 
 ### Backend Files (if fix is backend-side)
 
-| File | Purpose |
-| ---- | ------- |
+| File                                                          | Purpose                               |
+| ------------------------------------------------------------- | ------------------------------------- |
 | `apps/server/src/app/volatility/volatility-query.function.ts` | Prisma query for distribution history |
-| `apps/server/src/app/routes/universe/index.ts` | Main universe POST endpoint |
-| `apps/server/src/app/routes/universe/get-volatility/index.ts` | Volatility GET endpoint |
+| `apps/server/src/app/routes/universe/index.ts`                | Main universe POST endpoint           |
+| `apps/server/src/app/routes/universe/get-volatility/index.ts` | Volatility GET endpoint               |
 
 ### Key Commands
 
@@ -151,3 +159,13 @@ pnpm all
 - [Source: apps/dms-material-e2e/src/volatility-visibility.spec.ts (created in Story 84.1)]
 - [Source: _bmad-output/implementation-artifacts/84-1-investigate-volatility-visibility-bug.md]
 - [Source: _bmad-output/planning-artifacts/epics-2026-04-23.md#story-842]
+
+## Dev Agent Record
+
+### Root Cause
+
+- Story 84.1 found no position-dependent filter in the main Universe API, the SmartNgRX-backed `UniverseService`, or `applyVolatility`; zero-position symbol `SPAXX` already renders `Volatility: decreasing` in the live app.
+- The actual failure path is data availability plus the 12-point threshold in `apps/server/src/app/volatility/volatility-calculation.function.ts`: `calculateVolatility()` returns `null` for fewer than 12 linked dividend records.
+- `divDeposits.universeId` is populated through the Fidelity dividend import path in `apps/server/src/app/routes/import/fidelity-data-mapper.function.ts`; screener sync and add-symbol flows create/update `universe` rows but do not create historical `divDeposits`.
+- In the live database, investigated zero-position symbols have either no linked deposits (`USA`, `IAE`) or too few to cross the 12-point gate (`GCV` has 1, `MSD` has 2), so `/api/universe/volatility` returns no usable category and the Vol cell stays blank.
+- Story 84.2 should not assume a trade-position filter is the bug. The likely follow-up is either a data backfill or alternate history source for non-held universe symbols, or a product-approved change to how insufficient history is represented.
