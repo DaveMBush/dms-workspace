@@ -37,19 +37,15 @@ what I already own.
 
   - [ ] Read `_bmad-output/implementation-artifacts/84-1-investigate-volatility-visibility-bug.md`
         — specifically the Dev Agent Record section containing the root cause
-  - [ ] Identify the exact file(s) and line(s) where the position-dependent filter exists
-  - [ ] Understand the minimal change needed to remove it without breaking other behaviour
+  - [ ] Identify the exact file(s) and line(s) where dividend-history linkage and the insufficient-history gate suppress volatility for non-held symbols
+  - [ ] Understand the minimal change needed to fix that data path without regressing symbols like `SPAXX` that already show volatility with zero positions
 
-- [ ] Task 2: Apply the backend fix (AC: #2)
+- [ ] Task 2: Apply the backend/data fix (AC: #2)
 
-  - [ ] Modify the identified file(s) to remove the position-dependent filter from the
-        volatility data path
-  - [ ] If the fix is in `volatility-query.function.ts`: ensure the Prisma query returns all
-        universe symbols that have distribution history, not just those with trades
-  - [ ] If the fix is in the main Universe API (`routes/universe/index.ts`): ensure the
-        endpoint returns all universe symbols regardless of position status
-  - [ ] If the fix is on the frontend side: ensure `applyVolatility` applies to all symbols
-        in the universe list, not just those with positions
+  - [ ] Modify the identified file(s) to address the real root cause in the volatility data path
+  - [ ] If the fix is in dividend-history linkage or import/backfill code: ensure non-imported universe symbols can supply enough distribution history for volatility without requiring trades
+  - [ ] If the fix involves `volatility-calculation.function.ts`: implement a product-approved handling for symbols below `MIN_DATA_POINTS = 12` rather than silently leaving the Vol cell blank
+  - [ ] Check `volatility-query.function.ts` and `routes/universe/index.ts` only for related data-source wiring; Story 84.1 found no position-only filter there
   - [ ] Do not duplicate logic — reuse the existing `calculateVolatility` function from
         `apps/server/src/app/volatility/volatility-calculation.function.ts`
   - [ ] Keep the fix minimal: change only what Story 84.1 identified as the root cause
@@ -67,9 +63,9 @@ what I already own.
 
   - [ ] Run the E2E test written in Story 84.1:
         `apps/dms-material-e2e/src/volatility-visibility.spec.ts`
-    - [ ] Remove the temporary Story 84.1 `test.skip()` override from `apps/dms-material-e2e/src/volatility-visibility.spec.ts` before rerunning the live-symbol assertion
+    - [ ] Remove the temporary Story 84.1 expected-failure annotation (`test.fail(...)`) and its surrounding comment from `apps/dms-material-e2e/src/volatility-visibility.spec.ts` before rerunning the live-symbol assertion
   - [ ] Confirm it passes green
-  - [ ] Remove the `// This test is expected to fail` comment from that test file
+  - [ ] Keep the `SPAXX` control assertion passing while the `GCV` live-symbol assertion turns green
 
 - [ ] Task 5: Use Playwright MCP server to verify the fix on the live app (AC: #4)
 
@@ -107,10 +103,12 @@ The volatility data flows through:
 
 The fix must be made at the point identified by Story 84.1. The most likely candidates are:
 
-- The Prisma `divDeposits` query in `volatility-query.function.ts`: ensure `universeId`-linked
-  records include symbols without trades
-- Or: the `universe` Prisma model query in `routes/universe/index.ts`: ensure all symbols
-  are returned, not just those with open trades
+- The dividend-history linkage path (for example, import/backfill or alternate history source)
+  so non-held universe symbols can accumulate enough records for volatility calculation
+- The insufficient-history handling around `MIN_DATA_POINTS = 12` in
+  `volatility-calculation.function.ts`, if product approves a fallback or neutral rendering path
+- Related wiring in `volatility-query.function.ts` or `routes/universe/index.ts` only if needed
+  to consume the corrected data source; Story 84.1 found no position-only filter in either file
 
 ### Constraint: Do Not Weaken Tests
 

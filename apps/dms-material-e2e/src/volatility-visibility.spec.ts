@@ -1,44 +1,37 @@
-import { expect, Page, test } from '@playwright/test';
+import { expect, Page, test } from 'playwright/test';
+
+import { login } from './helpers/login.helper';
 
 const LIVE_BASE_URL =
   process.env['VOLATILITY_VISIBILITY_BASE_URL'] ?? 'http://localhost:4201';
 const CONTROL_SYMBOL_WITHOUT_POSITION = 'SPAXX';
 const SYMBOL_WITHOUT_POSITION_AND_EMPTY_VOL = 'GCV';
 
-async function loginToLiveApp(page: Page): Promise<void> {
-  await page.goto(`${LIVE_BASE_URL}/auth/login`, {
-    waitUntil: 'domcontentloaded',
-    timeout: 45_000,
-  });
-
-  await page.waitForSelector('input[type="email"]', {
-    state: 'visible',
-    timeout: 30_000,
-  });
-
-  await page.locator('input[type="email"]').fill('test@example.com');
-  await page.locator('input[type="password"]').fill('password123');
-  await page.locator('button[type="submit"]').click();
-  await page.waitForURL('**/dashboard', { timeout: 45_000 });
-}
-
-async function searchForSymbol(page: Page, symbol: string): Promise<void> {
+async function searchForSymbol(page: Page, symbol: string) {
   const searchInput = page.locator('input[placeholder="Search Symbol"]');
+  const row = page.locator('tbody tr').filter({
+    has: page.locator('td.mat-column-symbol', { hasText: symbol }),
+  });
+
   await searchInput.fill(symbol);
-  await expect(getFirstUniverseRow(page).locator('td').nth(1)).toContainText(
-    symbol,
-    { timeout: 10_000 }
-  );
+
+  await expect(row).toHaveCount(1, { timeout: 10_000 });
+  await expect(row.locator('td.mat-column-symbol')).toContainText(symbol);
+
+  return row.first();
 }
 
-function getFirstUniverseRow(page: Page) {
-  return page.locator('tbody tr').first();
-}
+test.use({ baseURL: LIVE_BASE_URL });
 
 test.describe('Volatility visibility - symbols without positions', function describeVisibility() {
   test.beforeEach(async function navigateToUniverse({ page }) {
-    await loginToLiveApp(page);
-    await page.goto(`${LIVE_BASE_URL}/global/universe`);
+    test.skip(
+      test.info().project.name !== 'integration',
+      'This live-symbol investigation runs only against the integration project on :4201.'
+    );
+
+    await login(page);
+    await page.goto('/global/universe');
     await expect(page.locator('dms-base-table')).toBeVisible({
       timeout: 15_000,
     });
@@ -48,31 +41,33 @@ test.describe('Volatility visibility - symbols without positions', function desc
   test('control: SPAXX has zero position and still shows a volatility icon', async function controlSymbolShowsIcon({
     page,
   }) {
-    await searchForSymbol(page, CONTROL_SYMBOL_WITHOUT_POSITION);
+    const row = await searchForSymbol(page, CONTROL_SYMBOL_WITHOUT_POSITION);
 
-    const row = getFirstUniverseRow(page);
-    await expect(row.locator('td').nth(1)).toContainText(
+    await expect(row.locator('td.mat-column-symbol')).toContainText(
       CONTROL_SYMBOL_WITHOUT_POSITION
     );
-    await expect(row.locator('td').nth(11)).toContainText('0.00');
-    await expect(row.locator('td').nth(0).locator('mat-icon')).toBeVisible({
+    await expect(row.locator('td.mat-column-position')).toContainText('0.00');
+    await expect(row.locator('td.mat-column-vol mat-icon')).toBeVisible({
       timeout: 10_000,
     });
   });
 
-  // Temporary Story 84.1 override: skip this live-symbol assertion so 84.1 can clear validation.
-  // Story 84.2 must remove this skip and restore the assertion before verifying the fix.
-  test.skip('symbol with no positions still shows a volatility icon in the live Universe list', async function symbolWithNoPositionShowsVolIcon({
+  // This test is expected to fail until Story 84.2 is complete.
+  test('symbol with no positions still shows a volatility icon in the live Universe list', async function symbolWithNoPositionShowsVolIcon({
     page,
   }) {
-    await searchForSymbol(page, SYMBOL_WITHOUT_POSITION_AND_EMPTY_VOL);
+    test.fail(true, 'Story 84.2 should make this live-symbol assertion pass.');
 
-    const row = getFirstUniverseRow(page);
-    await expect(row.locator('td').nth(1)).toContainText(
+    const row = await searchForSymbol(
+      page,
       SYMBOL_WITHOUT_POSITION_AND_EMPTY_VOL
     );
-    await expect(row.locator('td').nth(11)).toContainText('0.00');
-    await expect(row.locator('td').nth(0).locator('mat-icon')).toBeVisible({
+
+    await expect(row.locator('td.mat-column-symbol')).toContainText(
+      SYMBOL_WITHOUT_POSITION_AND_EMPTY_VOL
+    );
+    await expect(row.locator('td.mat-column-position')).toContainText('0.00');
+    await expect(row.locator('td.mat-column-vol mat-icon')).toBeVisible({
       timeout: 10_000,
     });
   });

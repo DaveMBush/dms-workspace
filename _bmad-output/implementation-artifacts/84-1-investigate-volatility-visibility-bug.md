@@ -110,8 +110,8 @@ so that Story 84.2 can make a targeted, minimal fix with a clear pass/fail gate.
 - [x] Task 7: Run `pnpm all` and verify baseline (AC: #4)
   - [x] Run `pnpm all` from workspace root
   - [x] Confirm all previously passing tests still pass
-  - [x] Confirm the new test in `volatility-visibility.spec.ts` fails as expected
-  - [x] Note: Playwright will report the new test as a failure — this is correct and expected
+  - [x] Run `pnpm exec playwright test apps/dms-material-e2e/src/volatility-visibility.spec.ts --project=integration --config=apps/dms-material-e2e/playwright.config.ts` and confirm the live-symbol assertion is captured as an expected failure
+  - [x] Note: `pnpm all` does not execute Playwright in this repo, so the live-symbol assertion is validated separately via the targeted integration command above
 
 ## Dev Notes
 
@@ -174,24 +174,39 @@ page.locator('[aria-label^="Volatility:"]');
 
 ```typescript
 // apps/dms-material-e2e/src/volatility-visibility.spec.ts
-// This test is expected to FAIL until Story 84.2 is complete
-import { expect, test } from 'playwright/test';
+import { expect, Page, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
+
+const LIVE_BASE_URL = process.env['VOLATILITY_VISIBILITY_BASE_URL'] ?? 'http://localhost:4201';
+
+test.use({ baseURL: LIVE_BASE_URL });
+
+async function searchForSymbol(page: Page, symbol: string) {
+  const searchInput = page.locator('input[placeholder="Search Symbol"]');
+  const row = page.locator('tbody tr').filter({
+    has: page.locator('td.mat-column-symbol', { hasText: symbol }),
+  });
+
+  await searchInput.fill(symbol);
+  await expect(row).toHaveCount(1, { timeout: 10_000 });
+  return row.first();
+}
 
 test.describe('Volatility visibility — symbols without positions', function describeVisibility() {
   test.beforeEach(async function navigateToUniverse({ page }) {
+    test.skip(test.info().project.name !== 'integration', 'This live-symbol investigation runs only against the integration project on :4201.');
     await login(page);
     await page.goto('/global/universe');
     await page.waitForLoadState('networkidle');
   });
 
+  // This test is expected to fail until Story 84.2 is complete.
   test('symbol with no positions shows a volatility icon', async function symbolWithNoPositionShowsVolIcon({ page }) {
-    // TODO (Story 84.1): replace SYMBOL_WITH_NO_POSITIONS with an actual symbol
-    // confirmed via Playwright MCP to have no positions but sufficient distribution history
-    const symbolWithNoPositions = 'SYMBOL_WITH_NO_POSITIONS';
-    const searchInput = page.locator('input[placeholder="Search Symbol"]');
-    await searchInput.fill(symbolWithNoPositions);
-    await expect(page.locator('td.mat-column-vol mat-icon').first()).toBeVisible({ timeout: 10_000 });
+    test.fail(true, 'Story 84.2 should make this live-symbol assertion pass.');
+
+    const row = await searchForSymbol(page, 'GCV');
+    await expect(row.locator('td.mat-column-position')).toContainText('0.00');
+    await expect(row.locator('td.mat-column-vol mat-icon')).toBeVisible({ timeout: 10_000 });
   });
 });
 ```
@@ -241,15 +256,16 @@ GPT-5.4
 - Root cause: there is no position-dependent filter in `apps/server/src/app/routes/universe/index.ts`, `apps/dms-material/src/app/global/global-universe/services/universe.service.ts`, or `apps/dms-material/src/app/global/global-universe/apply-volatility.function.ts`; the main Universe list already includes zero-position symbols and `SPAXX` proves a zero-position symbol can render a Vol icon.
 - The live blank Vol cells are caused by the volatility data path itself: `apps/server/src/app/routes/import/fidelity-data-mapper.function.ts` only assigns `divDeposits.universeId` when a dividend import row resolves to a universe symbol, while screener sync and add-symbol flows only create/update `universe` rows and never backfill dividend history.
 - The deciding render gate is `apps/server/src/app/volatility/volatility-calculation.function.ts`, where `MIN_DATA_POINTS = 12` and `calculateVolatility()` returns `null` whenever a symbol has fewer than 12 linked dividend records; symbols with zero positions in the live database currently have 0-2 linked deposits, so `/api/universe/volatility` returns either no row or a row with both volatility fields `null`.
-- Added `apps/dms-material-e2e/src/volatility-visibility.spec.ts` in the worktree with a passing zero-position control (`SPAXX`) and the requested live-symbol assertion for `GCV`.
-- Targeted Playwright validation result: `SPAXX` passes and `GCV` fails because the Vol cell has no `mat-icon`.
-- User override applied after investigation: the live `GCV` assertion in `apps/dms-material-e2e/src/volatility-visibility.spec.ts` is temporarily skipped so Story 84.1 can clear validation; Story 84.2 must remove the skip and rerun that assertion after fixing the data path.
-- `pnpm all` succeeds with the new spec present, but the repo script only ran affected lint for `dms-material-e2e` and did not execute Playwright; the story text that expects `pnpm all` itself to surface the failing E2E is inaccurate for the current `package.json` script.
-- The worktree keeps the live `GCV` assertion documented but temporarily skipped; Story 84.2 must re-enable it as the concrete E2E gate once the fix is implemented.
+- Added `apps/dms-material-e2e/src/volatility-visibility.spec.ts` in the worktree with a passing zero-position control (`SPAXX`) and the requested live-symbol assertion for `GCV`, using symbol-scoped row lookup and stable `mat-column-*` selectors.
+- Targeted Playwright integration validation result: `SPAXX` passes and `GCV` still fails because the Vol cell has no `mat-icon`.
+- The live `GCV` assertion now stays active as a Playwright expected failure via `test.fail()` with the required story comment, so the bug remains captured without turning the suite red.
+- `apps/dms-material-e2e/playwright.config.ts` includes `volatility-visibility.spec.ts` in the `integration` project, while the spec skips the standard Chromium/Firefox projects because those seeded environments do not contain the investigated live symbols.
+- `pnpm all` succeeds but does not execute Playwright in this repo; the live-symbol assertion is therefore validated separately with `pnpm exec playwright test apps/dms-material-e2e/src/volatility-visibility.spec.ts --project=integration --config=apps/dms-material-e2e/playwright.config.ts`.
 
 ## File List
 
-- `apps/dms-material-e2e/src/volatility-visibility.spec.ts` - added live-universe investigation coverage with a passing zero-position control and a temporarily skipped `GCV` assertion that Story 84.2 must restore
+- `apps/dms-material-e2e/src/volatility-visibility.spec.ts` - added live-universe investigation coverage with a passing zero-position control and an integration-only expected-failure `GCV` assertion that Story 84.2 must make pass
+- `apps/dms-material-e2e/playwright.config.ts` - includes the live volatility visibility spec in the integration project so it runs against the 4201 investigation stack
 - `_bmad-output/implementation-artifacts/84-1-investigate-volatility-visibility-bug.md` - updated task state, debug record, file list, and change log for Phase 2 investigation results
 - `_bmad-output/implementation-artifacts/84-2-fix-volatility-data-filtering.md` - added root-cause handoff notes so Story 84.2 does not chase a nonexistent position filter
 - `story-84-1-universe-snapshot.md` - saved Playwright MCP snapshot from the live Universe reproduction

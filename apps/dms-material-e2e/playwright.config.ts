@@ -92,7 +92,10 @@ export default defineConfig({
 
     {
       name: 'integration',
-      testMatch: ['**/system-integration.spec.ts'],
+      testMatch: [
+        '**/system-integration.spec.ts',
+        '**/volatility-visibility.spec.ts',
+      ],
       use: {
         ...devices['Desktop Chrome'],
         baseURL: 'http://localhost:4201',
