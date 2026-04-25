@@ -1,7 +1,7 @@
 ---
 description: Dedicated QA review and remediation loop runner
 argument-hint: story=AD.3
-model: GPT-5.4 High
+model: Claude Sonnet 4.6 High
 ---
 
 load the #skill:prompt

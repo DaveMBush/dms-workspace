@@ -1,7 +1,7 @@
 ---
 description: Fully autonomous epic debug prompt
 argument-hint: epic=AD story=AD.5
-model: GPT-5.4 High
+model: Claude Opus 4.7
 ---
 
 load the #skill:prompt
