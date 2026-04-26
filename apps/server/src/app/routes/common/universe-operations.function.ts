@@ -16,10 +16,10 @@ interface UniverseRecordOptions {
 
 export async function createUniverseRecord(
   options: UniverseRecordOptions
-): Promise<void> {
+): Promise<{ id: string }> {
   const { symbol, riskGroupId, lastPrice, distribution, exDateOverride } =
     options;
-  await prisma.universe.create({
+  return prisma.universe.create({
     data: {
       symbol,
       risk_group_id: riskGroupId,
@@ -29,6 +29,9 @@ export async function createUniverseRecord(
       most_recent_sell_date: null,
       ex_date: exDateOverride ?? distribution?.ex_date ?? new Date(),
       expired: false,
+    },
+    select: {
+      id: true,
     },
   });
 }

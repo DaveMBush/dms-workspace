@@ -6,6 +6,7 @@ import {
 } from '../../common/cef-classification.function';
 import { getDistributions } from '../../settings/common/get-distributions.function';
 import { getLastPrice } from '../../settings/common/get-last-price.function';
+import { recalculateUniverseVolatility } from '../../../volatility/recalculate-universe-volatility.function';
 import { vi } from 'vitest';
 import { logger } from '../../../../utils/structured-logger';
 
@@ -34,6 +35,14 @@ vi.mock('../../common/cef-classification.function', function () {
 
 vi.mock('../../settings/common/get-distributions.function');
 vi.mock('../../settings/common/get-last-price.function');
+vi.mock(
+  '../../../volatility/recalculate-universe-volatility.function',
+  function () {
+    return {
+      recalculateUniverseVolatility: vi.fn(),
+    };
+  }
+);
 vi.mock('../../../../utils/structured-logger', function () {
   return {
     logger: {
@@ -52,6 +61,8 @@ const mockLookupCefConnectSymbol = lookupCefConnectSymbol as ReturnType<
 const mockClassifySymbolRiskGroupId = classifySymbolRiskGroupId as ReturnType<
   typeof vi.fn
 >;
+const mockRecalculateUniverseVolatility =
+  recalculateUniverseVolatility as ReturnType<typeof vi.fn>;
 const mockLogger = logger as any;
 
 const mockRiskGroups = [
@@ -235,6 +246,10 @@ describe('addSymbol', function () {
       },
     });
 
+    expect(mockRecalculateUniverseVolatility).toHaveBeenCalledWith(
+      'test-universe-id'
+    );
+
     expect(mockPrisma.universe.update).toHaveBeenCalledWith({
       where: { id: 'test-universe-id' },
       data: {
@@ -281,6 +296,10 @@ describe('addSymbol', function () {
         distribution: 0,
       }),
     });
+
+    expect(mockRecalculateUniverseVolatility).toHaveBeenCalledWith(
+      'test-universe-id'
+    );
 
     expect(mockPrisma.universe.update).not.toHaveBeenCalled();
   });
