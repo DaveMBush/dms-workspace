@@ -1,0 +1,5 @@
+# New Epics to Implement
+
+## Volatility Based On distribution history
+
+It looks like you are trying to compute the short and long term dividend volatility based on the data in the divDeposit table. This table holds the deposits we received from the broker for the symbols we have historically held positions for. This does not tell is what the dividends per share were for symbols we've never held, and would have gaps if we sold a symbol and then bought it back later. You've completely missed the point. But this should be easy to remedy since, when we retrieve the dividend distribution history when we retrieve the universe data, we should be able to use the dividend history data at that point, that we retrieve from dividendhistory.net, to calculate the short and long term volatility for each symbol in the universe regardless of whether we have positions in them or not. This way, we can show the volatility for all symbols in the universe, which is critical information for making informed decisions about which symbols to buy and sell.
