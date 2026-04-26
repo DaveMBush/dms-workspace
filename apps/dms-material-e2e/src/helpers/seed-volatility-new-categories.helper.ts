@@ -19,6 +19,7 @@ interface VolatilityNewCategoriesSeederResult extends SeederResultBase {
 interface SeedCategoryPlan {
   symbol: string;
   amounts: number[];
+  volatilityLong: string;
 }
 
 interface SeedCategoryContext {
@@ -77,7 +78,8 @@ function buildMonthlyDates(totalMonths: number): Date[] {
 function buildUniverseCreateData(
   symbol: string,
   riskGroupId: string,
-  currentDistribution: number
+  currentDistribution: number,
+  volatilityLong: string
 ): Prisma.universeUncheckedCreateInput {
   return {
     symbol,
@@ -90,6 +92,8 @@ function buildUniverseCreateData(
     most_recent_sell_price: null,
     expired: false,
     is_closed_end_fund: true,
+    volatility_long: volatilityLong,
+    volatility_short: volatilityLong,
   };
 }
 
@@ -98,14 +102,17 @@ function buildSeedPlans(uniqueId: string): SeedCategoryPlan[] {
     {
       symbol: `E2EFLT${uniqueId}`,
       amounts: FLAT_AMOUNTS,
+      volatilityLong: 'flat',
     },
     {
       symbol: `E2EUTD${uniqueId}`,
       amounts: UP_THEN_DOWN_AMOUNTS,
+      volatilityLong: 'up-then-down',
     },
     {
       symbol: `E2EDTU${uniqueId}`,
       amounts: DOWN_THEN_UP_AMOUNTS,
+      volatilityLong: 'down-then-up',
     },
   ];
 }
@@ -134,7 +141,8 @@ async function seedUniverseCategory(
     data: buildUniverseCreateData(
       plan.symbol,
       context.riskGroupId,
-      plan.amounts[plan.amounts.length - 1]
+      plan.amounts[plan.amounts.length - 1],
+      plan.volatilityLong
     ),
   });
 

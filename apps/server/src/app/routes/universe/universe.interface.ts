@@ -12,4 +12,6 @@ export interface Universe {
   is_closed_end_fund: boolean;
   position: number;
   avg_purchase_yield_percent: number;
+  volatilityLong: string | null;
+  volatilityShort: string | null;
 }

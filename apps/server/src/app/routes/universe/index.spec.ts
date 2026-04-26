@@ -35,6 +35,26 @@ function makeUniverseRow(
     distribution: number;
     distributions_per_year: number;
     last_price: number;
+    volatility_long:
+      | 'decreasing'
+      | 'down-then-up'
+      | 'flat'
+      | 'increasing'
+      | 'insufficient-history'
+      | 'steady'
+      | 'up-then-down'
+      | 'volatile'
+      | null;
+    volatility_short:
+      | 'decreasing'
+      | 'down-then-up'
+      | 'flat'
+      | 'increasing'
+      | 'insufficient-history'
+      | 'steady'
+      | 'up-then-down'
+      | 'volatile'
+      | null;
     symbol: string;
     ex_date: Date | null;
     risk_group_id: string;
@@ -54,6 +74,8 @@ function makeUniverseRow(
     distribution: 0.1,
     distributions_per_year: 12,
     last_price: 10.0,
+    volatility_long: 'steady',
+    volatility_short: 'increasing',
     symbol: 'ABC',
     ex_date: null,
     risk_group_id: 'rg1',
@@ -96,8 +118,12 @@ describe('POST /api/universe - avg_purchase_yield_percent (regression: AS.9 Bug 
     expect(response.statusCode).toBe(200);
     const rows = JSON.parse(response.body) as Array<{
       avg_purchase_yield_percent: number;
+      volatilityLong: string | null;
+      volatilityShort: string | null;
     }>;
     expect(rows[0]).toHaveProperty('avg_purchase_yield_percent');
+    expect(rows[0].volatilityLong).toBe('steady');
+    expect(rows[0].volatilityShort).toBe('increasing');
   });
 
   it('should compute avg_purchase_yield_percent correctly from open trades', async () => {

@@ -66,6 +66,9 @@ describe('UniverseEffectsService', () => {
           is_closed_end_fund: false,
           name: 'Apple Inc.',
           position: 0,
+          avg_purchase_yield_percent: 0,
+          volatilityLong: null,
+          volatilityShort: null,
         },
       ];
 
