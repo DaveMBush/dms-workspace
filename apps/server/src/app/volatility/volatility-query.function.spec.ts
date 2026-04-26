@@ -76,8 +76,8 @@ describe('fetchVolatilityForAllSymbols', () => {
         },
         {
           symbol: 'SPAXX',
-          volatility1yr: 'steady',
-          volatility5yr: 'steady',
+          volatility1yr: 'flat',
+          volatility5yr: 'flat',
         },
         {
           symbol: 'USA',

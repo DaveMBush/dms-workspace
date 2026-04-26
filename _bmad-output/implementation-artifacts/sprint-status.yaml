@@ -475,7 +475,7 @@ development_status:
   epic-84: in-progress
   84-1-investigate-volatility-visibility-bug: ready-for-dev
   84-2-fix-volatility-data-filtering: review
-  84-3-add-new-volatility-icons: ready-for-dev
+  84-3-add-new-volatility-icons: review
   84-4-e2e-volatility-icons: ready-for-dev
   epic-84-retrospective: optional
 

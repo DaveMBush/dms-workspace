@@ -180,9 +180,25 @@
         <mat-icon aria-label="Volatility: decreasing" matTooltip="Decreasing"
           >trending_down</mat-icon
         >
+        } @else if (row.volatility1yr === 'flat') {
+        <mat-icon aria-label="Volatility: flat" matTooltip="Flat"
+          >drag_handle</mat-icon
+        >
         } @else if (row.volatility1yr === 'volatile') {
         <mat-icon aria-label="Volatility: volatile" matTooltip="Volatile"
           >show_chart</mat-icon
+        >
+        } @else if (row.volatility1yr === 'up-then-down') {
+        <mat-icon
+          aria-label="Volatility: up-then-down"
+          matTooltip="Up then Down"
+          >change_history</mat-icon
+        >
+        } @else if (row.volatility1yr === 'down-then-up') {
+        <mat-icon
+          aria-label="Volatility: down-then-up"
+          matTooltip="Down then Up"
+          >swap_vert</mat-icon
         >
         } @else if (row.volatility1yr === 'insufficient-history') {
         <mat-icon
