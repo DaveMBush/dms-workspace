@@ -1,7 +1,7 @@
 ---
 description: Fully autonomous epic development - all stories from start to merge
 argument-hint: epic=AD
-model: GPT-5.4 High
+model: Claude Sonnet 4.6 High
 ---
 
 load the #skill:prompt

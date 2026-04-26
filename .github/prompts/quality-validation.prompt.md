@@ -1,7 +1,7 @@
 ---
 description: Dedicated quality validation loop runner
 argument-hint: context=story-AD.3
-model: GPT-5.4 High
+model: Claude Opus 4.7
 ---
 
 load the #skill:prompt
