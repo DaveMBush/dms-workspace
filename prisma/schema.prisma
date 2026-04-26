@@ -38,6 +38,9 @@ model universe {
   updatedAt              DateTime      @updatedAt
   deletedAt              DateTime?
   version                Int           @default(1)
+  volatility_long        String?
+  volatility_short       String?
+  volatility_calculated_at DateTime?
   divDeposits            divDeposits[]
   trades                 trades[]
   risk_group             risk_group    @relation(fields: [risk_group_id], references: [id])

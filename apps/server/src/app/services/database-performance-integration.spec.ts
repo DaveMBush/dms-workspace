@@ -1,6 +1,7 @@
 /* eslint-disable vitest/no-disabled-tests -- Pre-existing: integration tests blocked on database setup */
 import { PrismaClient } from '@prisma/client';
 import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
+import { rmSync } from 'fs';
 
 import { authDatabaseMonitorService } from './auth-database-monitor.service';
 import { authDatabaseOptimizerService } from './auth-database-optimizer.service';
@@ -10,8 +11,11 @@ import { databasePerformanceService } from './database-performance.service';
 describe('Database Performance Integration Tests', () => {
   let testClient: PrismaClient;
   const testDbUrl = 'file:./test-db-performance.db';
+  const testDbPath = testDbUrl.replace('file:', '');
 
   beforeAll(async () => {
+    rmSync(testDbPath, { force: true });
+
     const adapter = new PrismaBetterSqlite3({ url: testDbUrl });
     testClient = new PrismaClient({ adapter });
 
@@ -57,6 +61,9 @@ describe('Database Performance Integration Tests', () => {
       "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
       "deletedAt" DATETIME,
       "version" INTEGER NOT NULL DEFAULT 1,
+      "volatility_long" TEXT,
+      "volatility_short" TEXT,
+      "volatility_calculated_at" DATETIME,
       FOREIGN KEY ("risk_group_id") REFERENCES "risk_group"("id") ON DELETE RESTRICT ON UPDATE CASCADE
     );
   `);
