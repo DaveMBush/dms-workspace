@@ -17,6 +17,8 @@ interface UniverseWithTrades {
   distribution: number;
   distributions_per_year: number;
   last_price: number;
+  volatility_long: string | null;
+  volatility_short: string | null;
   symbol: string;
   ex_date: Date | null;
   risk_group_id: string;
@@ -38,6 +40,8 @@ function mapUniverseToResponse(u: UniverseWithTrades): Universe {
     distribution: u.distribution,
     distributions_per_year: u.distributions_per_year,
     last_price: u.last_price,
+    volatilityLong: u.volatility_long ?? null,
+    volatilityShort: u.volatility_short ?? null,
     most_recent_sell_date: mostRecentSell?.sell_date.toISOString() ?? null,
     most_recent_sell_price: mostRecentSell?.sell ?? null,
     symbol: u.symbol,
@@ -130,6 +134,8 @@ function handleAddUniverseRoute(fastify: FastifyInstance): void {
           expired: result.expired,
           is_closed_end_fund: result.is_closed_end_fund,
           avg_purchase_yield_percent: 0, // new symbol has no purchase history yet
+          volatilityLong: null,
+          volatilityShort: null,
         },
       ]);
     }

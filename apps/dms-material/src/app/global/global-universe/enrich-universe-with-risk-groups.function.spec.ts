@@ -17,6 +17,8 @@ describe('enrichUniverseWithRiskGroups', () => {
       distribution: 0.25,
       distributions_per_year: 4,
       last_price: 150.0,
+      volatilityLong: 'steady',
+      volatilityShort: 'increasing',
       most_recent_sell_date: null,
       most_recent_sell_price: null,
       ex_date: '2024-03-15',
@@ -33,6 +35,8 @@ describe('enrichUniverseWithRiskGroups', () => {
       distribution: 0.0,
       distributions_per_year: 0,
       last_price: 140.0,
+      volatilityLong: null,
+      volatilityShort: null,
       most_recent_sell_date: null,
       most_recent_sell_price: null,
       ex_date: null,
@@ -107,6 +111,15 @@ describe('enrichUniverseWithRiskGroups', () => {
     expect(enriched.avg_purchase_yield_percent).toBe(
       original.avg_purchase_yield_percent
     );
+    expect(enriched.volatilityLong).toBe(original.volatilityLong);
+    expect(enriched.volatilityShort).toBe(original.volatilityShort);
+  });
+
+  it('should preserve null volatility values for symbols without stored history', () => {
+    const result = enrichUniverseWithRiskGroups(mockUniverses, mockRiskGroups);
+
+    expect(result[1].volatilityLong).toBeNull();
+    expect(result[1].volatilityShort).toBeNull();
   });
 
   it('should create new objects, not modify originals', () => {

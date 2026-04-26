@@ -6,6 +6,7 @@ import { initializePrismaClient } from './shared-prisma-client.helper';
 
 const STEADY_AMOUNT = 1.0;
 const MONTHS_TO_SEED = 12;
+const STORED_VOLATILITY = 'steady';
 
 interface VolColumnSeederResult extends SeederResultBase {
   symbol: string;
@@ -69,6 +70,10 @@ function buildUniverseCreateData(
     expired: false,
     // eslint-disable-next-line @typescript-eslint/naming-convention -- database column name
     is_closed_end_fund: true,
+    // eslint-disable-next-line @typescript-eslint/naming-convention -- database column name
+    volatility_long: STORED_VOLATILITY,
+    // eslint-disable-next-line @typescript-eslint/naming-convention -- database column name
+    volatility_short: STORED_VOLATILITY,
   };
 }
 

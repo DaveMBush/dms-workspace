@@ -483,7 +483,7 @@ development_status:
   epic-85: in-progress
   85-1-universe-schema-volatility-columns: ready-for-dev
   85-2-wire-volatility-recalculation-triggers: ready-for-dev
-  85-3-serve-stored-volatility: ready-for-dev
+  85-3-serve-stored-volatility: review
   85-4-e2e-stored-volatility: ready-for-dev
   epic-85-retrospective: optional
 

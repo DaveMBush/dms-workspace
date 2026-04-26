@@ -167,40 +167,40 @@
       <!-- eslint-disable @angular-eslint/template/cyclomatic-complexity -->
       <!-- eslint-disable @angular-eslint/template/no-call-expression -->
       <ng-template #cellTemplate let-row let-column="column" let-i="index">
-        @switch (column.field) { @case ('vol') { @if (row.volatility1yr ===
+        @switch (column.field) { @case ('vol') { @if (row.volatilityLong ===
         'steady') {
         <mat-icon aria-label="Volatility: steady" matTooltip="Steady"
           >trending_flat</mat-icon
         >
-        } @else if (row.volatility1yr === 'increasing') {
+        } @else if (row.volatilityLong === 'increasing') {
         <mat-icon aria-label="Volatility: increasing" matTooltip="Increasing"
           >trending_up</mat-icon
         >
-        } @else if (row.volatility1yr === 'decreasing') {
+        } @else if (row.volatilityLong === 'decreasing') {
         <mat-icon aria-label="Volatility: decreasing" matTooltip="Decreasing"
           >trending_down</mat-icon
         >
-        } @else if (row.volatility1yr === 'flat') {
+        } @else if (row.volatilityLong === 'flat') {
         <mat-icon aria-label="Volatility: flat" matTooltip="Flat"
           >drag_handle</mat-icon
         >
-        } @else if (row.volatility1yr === 'volatile') {
+        } @else if (row.volatilityLong === 'volatile') {
         <mat-icon aria-label="Volatility: volatile" matTooltip="Volatile"
           >show_chart</mat-icon
         >
-        } @else if (row.volatility1yr === 'up-then-down') {
+        } @else if (row.volatilityLong === 'up-then-down') {
         <mat-icon
           aria-label="Volatility: up-then-down"
           matTooltip="Up then Down"
           >change_history</mat-icon
         >
-        } @else if (row.volatility1yr === 'down-then-up') {
+        } @else if (row.volatilityLong === 'down-then-up') {
         <mat-icon
           aria-label="Volatility: down-then-up"
           matTooltip="Down then Up"
           >swap_vert</mat-icon
         >
-        } @else if (row.volatility1yr === 'insufficient-history') {
+        } @else if (row.volatilityLong === 'insufficient-history') {
         <mat-icon
           aria-label="Volatility: insufficient history"
           matTooltip="Insufficient history"

@@ -16,6 +16,8 @@ interface UniverseWithTrades {
   distribution: number;
   distributions_per_year: number;
   last_price: number;
+  volatility_long: string | null;
+  volatility_short: string | null;
   symbol: string;
   ex_date: Date | null;
   risk_group_id: string;
@@ -119,6 +121,8 @@ function mapUniverseToResponse(u: unknown): Record<string, unknown> {
     distribution: uw.distribution,
     distributions_per_year: uw.distributions_per_year,
     last_price: uw.last_price,
+    volatilityLong: uw.volatility_long ?? null,
+    volatilityShort: uw.volatility_short ?? null,
     most_recent_sell_date: mostRecentSell?.sell_date.toISOString() ?? null,
     most_recent_sell_price: mostRecentSell?.sell ?? null,
     symbol: uw.symbol,
