@@ -35,6 +35,7 @@ triggers and API changes are wired up in subsequent stories.
 ## Tasks / Subtasks
 
 - [x] Task 1: Update `schema.prisma` (SQLite dev schema) (AC: #1, #2)
+
   - [x] Open `prisma/schema.prisma` and locate the `universe` model
   - [x] Add `volatility_long String?` after the `version` field
   - [x] Add `volatility_short String?` after `volatility_long`
@@ -42,17 +43,20 @@ triggers and API changes are wired up in subsequent stories.
   - [x] Verify the model compiles with `npx prisma validate`
 
 - [x] Task 2: Update `schema.postgresql.prisma` (PostgreSQL production schema) (AC: #1)
+
   - [x] Open `prisma/schema.postgresql.prisma` and locate the `universe` model
   - [x] Apply the identical three field additions: `volatility_long String?`, `volatility_short String?`, `volatility_calculated_at DateTime?`
   - [x] Keep `provider = "postgresql"`; remove the legacy schema `url` so Prisma 7 validation uses `prisma.config.ts`
   - [x] Verify with `npx prisma validate --schema prisma/schema.postgresql.prisma`
 
 - [x] Task 3: Create and apply the SQLite migration (AC: #2, #3)
+
   - [x] Run `npx prisma migrate dev --name add-volatility-columns-to-universe`
   - [x] Confirm the generated migration SQL adds three nullable columns to the `universe` table
   - [x] Confirm all existing rows have NULL values for the new columns (no backfill)
 
 - [x] Task 4: Regenerate Prisma Client (AC: #4)
+
   - [x] Run `npx prisma generate` to update the Prisma Client types
   - [x] Confirm no TypeScript errors in server code from the schema change
 
@@ -65,10 +69,10 @@ triggers and API changes are wired up in subsequent stories.
 
 Both schema files must be updated. They are structurally identical except for the datasource block:
 
-| File | Provider | Location |
-|------|----------|----------|
-| `prisma/schema.prisma` | `sqlite` | Dev / local |
-| `prisma/schema.postgresql.prisma` | `postgresql` | Production |
+| File                              | Provider     | Location    |
+| --------------------------------- | ------------ | ----------- |
+| `prisma/schema.prisma`            | `sqlite`     | Dev / local |
+| `prisma/schema.postgresql.prisma` | `postgresql` | Production  |
 
 Add the three fields after `version Int @default(1)` in the `universe` model:
 
@@ -85,11 +89,11 @@ model universe {
 
 ### Field Semantics
 
-| Column | Type | Purpose |
-|--------|------|---------|
-| `volatility_long` | `String?` | 5-year distribution volatility category (e.g. `steady`, `increasing`) |
-| `volatility_short` | `String?` | 1-year distribution volatility category |
-| `volatility_calculated_at` | `DateTime?` | Timestamp of last recalculation — used to detect stale values |
+| Column                     | Type        | Purpose                                                               |
+| -------------------------- | ----------- | --------------------------------------------------------------------- |
+| `volatility_long`          | `String?`   | 5-year distribution volatility category (e.g. `steady`, `increasing`) |
+| `volatility_short`         | `String?`   | 1-year distribution volatility category                               |
+| `volatility_calculated_at` | `DateTime?` | Timestamp of last recalculation — used to detect stale values         |
 
 The category strings will be values from `VolatilityCategory` type (see `apps/server/src/app/volatility/volatility-category.type.ts`). After Epic 84, this type includes: `steady`, `increasing`, `decreasing`, `volatile`, `flat`, `up-then-down`, `down-then-up`, and `null`.
 
@@ -164,6 +168,6 @@ GPT-5.4
 
 ### Change Log
 
-| Date       | Change                                                                                                                                      | Author |
-| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| Date       | Change                                                                                                                                                            | Author |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
 | 2026-04-26 | Added nullable volatility columns to the Prisma `universe` model, applied the SQLite migration, regenerated Prisma Client, and validated the worktree end-to-end. | Agent  |
