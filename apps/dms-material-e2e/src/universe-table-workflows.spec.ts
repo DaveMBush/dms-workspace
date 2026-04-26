@@ -9,7 +9,10 @@ function getUniverseRowBySymbol(page: Page, symbol: string) {
   });
 }
 
-async function filterUniverseToSymbol(page: Page, symbol: string): Promise<void> {
+async function filterUniverseToSymbol(
+  page: Page,
+  symbol: string
+): Promise<void> {
   const symbolFilter = page.getByPlaceholder('Search Symbol');
   await symbolFilter.fill(symbol);
   await expect(getUniverseRowBySymbol(page, symbol)).toBeVisible({
