@@ -12,10 +12,14 @@ Shell execution rule: every shell command in this workflow and its delegated ste
 
 ## PHASE 1-2: Epic Validation And Debug Setup
 
-Delegate epic validation and branch setup to a dedicated setup subagent:
+Delegate epic validation and branch setup to a dedicated setup subagent using `runSubagent`:
 
-```bash
-run #file:./debug-setup.prompt.md epic=${epic} story=${story}
+```
+runSubagent:
+  model: "Claude Sonnet 4.6 High"
+  description: "Debug setup for story ${story}"
+  prompt: |
+    You are setting up debug branch for story ${story} in epic ${epic}. Load and follow ./debug-setup.prompt.md exactly.
 ```
 
 This keeps the debug workflow context small while the setup subagent handles:
@@ -52,10 +56,11 @@ Tasks:
 1. Analyze the bug report and identify the root cause.
 2. Implement the fix.
 3. If relevant, use the Playwright MCP server to help see the problem and confirm the fix.
-4. Delegate validation to a fresh subagent by running:
-   - `run #file:./quality-validation.prompt.md context=debug-${story}`
+4. Delegate validation to a fresh subagent using `runSubagent`:
+   - Model: Claude Opus 4.7
+   - Load and follow ./quality-validation.prompt.md with context=debug-${story}
    - This validation subagent must run the full loop from quality-validation.md, including code self-review of changed files only via `.github/instructions/code-review.md`
-  - If the validation subagent returns `VALIDATION FAILED`, use the prompt skill to report the failure to the user
+   - If the validation subagent returns `VALIDATION FAILED`, use the prompt skill to report the failure to the user
 5. Return a summary of: files changed, what the fix was, and either
    "VALIDATION PASSED" or "VALIDATION FAILED: <reason>".
 
@@ -109,10 +114,14 @@ Before making any Phase 5 prompt-skill call or spawning the next subagent, **re-
 
 ## PHASE 6: Commit and PR Creation
 
-Once all bugs are fixed and no more bug work requested, delegate PR creation and CodeRabbit handling to a dedicated subagent:
+Once all bugs are fixed and no more bug work requested, delegate PR creation and CodeRabbit handling to a dedicated subagent using `runSubagent`:
 
-```bash
-run #file:./debug-pr-lifecycle.prompt.md story=${story}
+```
+runSubagent:
+  model: "Claude Sonnet 4.6 High"
+  description: "Debug PR lifecycle for story ${story}"
+  prompt: |
+    You are handling PR creation and CodeRabbit review for story ${story}. Load and follow ./debug-pr-lifecycle.prompt.md exactly.
 ```
 
 This keeps the debug workflow context small while the PR lifecycle subagent handles:
@@ -138,10 +147,14 @@ The PR lifecycle subagent runs the CodeRabbit Review Loop Pattern from bmad-work
 
 ## PHASE 8: Final Merge
 
-Delegate final merge and cleanup to a dedicated subagent:
+Delegate final merge and cleanup to a dedicated subagent using `runSubagent`:
 
-```bash
-run #file:./debug-merge-finalize.prompt.md story=${story}
+```
+runSubagent:
+  model: "Claude Sonnet 4.6 High"
+  description: "Debug merge and finalize for story ${story}"
+  prompt: |
+    You are merging and finalizing debug branch for story ${story}. Load and follow ./debug-merge-finalize.prompt.md exactly.
 ```
 
 This keeps the debug workflow context small while the merge subagent handles:

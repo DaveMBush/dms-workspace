@@ -28,7 +28,16 @@ Shell execution rule: every shell command in this workflow and its delegated ste
 
 ## PHASE 2: Story Implementation
 
-run #file:./code-story.prompt.md story=${story}
+Do NOT use `#file:` for this delegation. Instead use `runSubagent` to invoke the code-story workflow:
+
+```
+runSubagent:
+  agentName: dev
+  model: "Claude Sonnet 4.7"
+  description: "Implement story ${story}"
+  prompt: |
+    You are implementing story ${story}. Load and follow ./code-story.prompt.md exactly.
+```
 
 This will:
 
@@ -45,10 +54,14 @@ If `code-story.prompt.md` encounters issues, it must use the prompt skill or han
 
 ## Phase 3 Quality Validation
 
-Delegate Phase 3 to a dedicated validation subagent:
+Delegate Phase 3 to a dedicated validation subagent using `runSubagent`:
 
-```bash
-run #file:./quality-validation.prompt.md context=story-${story}
+```
+runSubagent:
+  model: "Claude Opus 4.7"
+  description: "Validate story ${story}"
+  prompt: |
+    You are validating story ${story}. Load and follow ./quality-validation.prompt.md exactly with context=story-${story}.
 ```
 
 This keeps the story workflow context small while the validation loop handles:
@@ -71,10 +84,14 @@ If the validation subagent returns `VALIDATION FAILED`, use the prompt skill to 
 
 ## PHASE 4: QA Review
 
-Delegate Phase 4 to a dedicated QA review subagent:
+Delegate Phase 4 to a dedicated QA review subagent using `runSubagent`:
 
-```bash
-run #file:./qa-review-loop.prompt.md story=${story}
+```
+runSubagent:
+  model: "Claude Sonnet 4.6 High"
+  description: "QA review for story ${story}"
+  prompt: |
+    You are running QA review for story ${story}. Load and follow ./qa-review-loop.prompt.md exactly.
 ```
 
 This keeps the story workflow context small while the QA review subagent handles:
@@ -91,9 +108,15 @@ When it returns `QA PASSED`: IMMEDIATELY move to Phase 5.
 
 ## PHASE 5: Commit and PR Creation
 
-Once all validations pass:
+Once all validations pass, use `runSubagent`:
 
-run #file:./commit-and-pr.prompt.md
+```
+runSubagent:
+  model: "Claude Sonnet 4.6 High"
+  description: "Commit and create PR for story ${story}"
+  prompt: |
+    You are creating a commit and PR for story ${story}. Load and follow ./commit-and-pr.prompt.md exactly.
+```
 
 This will:
 
@@ -125,8 +148,12 @@ Phase 6 has been delegated to a dedicated, resumable subagent. After Phase 5 com
 
 Then call the subagent to handle the full CodeRabbit loop:
 
-```bash
-run #file:./code-rabbit.prompt.md story=${story}
+```
+runSubagent:
+  model: "Claude Sonnet 4.6 High"
+  description: "CodeRabbit review for story ${story}"
+  prompt: |
+    You are handling CodeRabbit review for story ${story}. Load and follow ./code-rabbit.prompt.md exactly.
 ```
 
 The `code-rabbit` subagent will poll `mcp_github_pull_request_read method:get_review_comments`, classify suggestions, apply in-scope fixes, run Phase 3 validations, commit/push, and loop until the PR is ready to merge or max iterations are reached. It updates the `.git/tmp/story-${story}-meta.json` file as it proceeds so the process can be resumed safely.
@@ -137,10 +164,14 @@ Use the `code-rabbit.prompt.md` subagent to keep the story prompt small, idempot
 
 ## PHASE 7: Final Merge
 
-Delegate Phase 7 to a dedicated merge/finalize subagent:
+Delegate Phase 7 to a dedicated merge/finalize subagent using `runSubagent`:
 
-```bash
-run #file:./merge-finalize.prompt.md story=${story}
+```
+runSubagent:
+  model: "Claude Sonnet 4.6 High"
+  description: "Merge and finalize story ${story}"
+  prompt: |
+    You are merging and finalizing story ${story}. Load and follow ./merge-finalize.prompt.md exactly.
 ```
 
 This keeps the story workflow context small while the merge subagent handles:

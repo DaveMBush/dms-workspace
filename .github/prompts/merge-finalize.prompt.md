@@ -1,7 +1,7 @@
 ---
 description: Dedicated merge verification and final cleanup runner
 argument-hint: story=AD.3
-model: Claude 
+model: Claude Sonnet 4.6 High
 ---
 
 load the #skill:prompt
@@ -43,10 +43,14 @@ git merge-tree --quiet $(git merge-base HEAD origin/main) HEAD origin/main
 ```
 
 6. If conflicts exist, attempt rebase onto `origin/main` up to 3 times.
-7. After any conflict fix, run:
+7. After any conflict fix, run validation using `runSubagent`:
 
-```bash
-run #file:./quality-validation.prompt.md context=story-${story}-merge
+```
+runSubagent:
+  model: "Claude Opus 4.7"
+  description: "Validation for story ${story} after merge conflict resolution"
+  prompt: |
+    You are re-validating story ${story} after merge conflict fixes. Load and follow ./quality-validation.prompt.md with context=story-${story}-merge exactly.
 ```
 
 8. Verify PR `mergeable` state via GitHub tools until it is `true` or `false`.

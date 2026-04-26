@@ -34,19 +34,27 @@ Before doing anything else, read all of the following:
 
 1. Operate in the **current working directory** on the debug branch.
 2. Use the bash MCP server for every shell command in this workflow. Use `mcp_bash_run` for blocking commands and `mcp_bash_run_background` only for true background processes. This applies to `pnpm`, `git`, `gh`, and `bash`.
-3. Run:
+3. Run commit and PR creation using `runSubagent`:
 
-```bash
-run #file:./commit-and-pr.prompt.md story=${story}
+```
+runSubagent:
+  model: "Claude Sonnet 4.6 High"
+  description: "Commit and PR creation for story ${story}"
+  prompt: |
+    You are creating a commit and PR for story ${story}. Load and follow ./commit-and-pr.prompt.md exactly.
 ```
 
 4. Ensure PR metadata is written to `$(git rev-parse --git-common-dir)/tmp/story-${story}-meta.json`.
 5. If commit-and-pr fails, use the prompt skill to report the failure and stop.
 6. Wait 5 minutes after PR creation for rate-limit protection.
-7. Run the full CodeRabbit loop by calling:
+7. Run the full CodeRabbit loop using `runSubagent`:
 
-```bash
-run #file:./code-rabbit.prompt.md story=${story}
+```
+runSubagent:
+  model: "Claude Sonnet 4.6 High"
+  description: "CodeRabbit review for story ${story}"
+  prompt: |
+    You are handling CodeRabbit review for story ${story}. Load and follow ./code-rabbit.prompt.md exactly.
 ```
 
 8. If CodeRabbit requires in-scope fixes, allow it to use the shared quality-validation prompt as needed.

@@ -41,9 +41,21 @@ For each story in the ordered list:
 
 2. **Execute Story Development**
 
-   - **CRITICAL**: You MUST delegate to the correct workflow file below. Do NOT attempt to implement the story yourself inline. Do NOT start servers, run manual tests, do code reviews, or perform any implementation work outside of the delegated workflow. The workflow file contains the complete instructions — follow them exactly.
-   - **For standard stories**: Run `run #file:./develop-story.prompt.md story=${current_story}`
-   - **For bug fix stories**: Run `run #file:./debug.prompt.md epic=${epic} story=${current_story}`
+   - **CRITICAL**: You MUST delegate to the correct workflow using `runSubagent`. Do NOT attempt to implement the story yourself inline. Do NOT start servers, run manual tests, do code reviews, or perform any implementation work outside of the delegated workflow.
+   - **For standard stories**: Invoke `runSubagent` with:
+     ```
+     model: "Claude Sonnet 4.6 High"
+     description: "Develop story ${current_story}"
+     prompt: |
+       You are developing story ${current_story}. Load and follow ./develop-story.prompt.md exactly.
+     ```
+   - **For bug fix stories**: Invoke `runSubagent` with:
+     ```
+     model: "Claude Opus 4.7"
+     description: "Debug story ${current_story}"
+     prompt: |
+       You are debugging story ${current_story} in epic ${epic}. Load and follow ./debug.prompt.md exactly.
+     ```
    - Both workflows handle: validation, implementation, quality checks, PR creation, CodeRabbit review, and merge
    - **IMPORTANT**: NEVER run stories in parallel. There is an e2e validation step that is part of the story that is not designed to run in isolation and can cause false positives or false negatives if run concurrently for another story in another branch. It also complicates commits, Pull Requests, and subsequent CodeRabbit reviews along with leading to potential merge conflicts and rate limit issues. Run stories sequentially, one at a time, in the order discovered.
    - **IMMEDIATELY after the delegated workflow returns** (do not pause, do not wait for human input): read the minimal state file written by the story workflow. Resolve the path via `$(git rev-parse --git-common-dir)/tmp/story-${current_story}-meta.json`. If the file is missing or malformed, use the prompt skill to ask: `Missing or invalid meta file for ${current_story}. Repair or continue? Reply with continue, stop, or instructions.`
