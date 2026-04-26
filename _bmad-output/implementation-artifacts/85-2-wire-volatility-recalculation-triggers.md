@@ -46,6 +46,7 @@ so that the stored values are always current without requiring a manual recalcul
 ## Tasks / Subtasks
 
 - [x] Task 1: Create `recalculate-universe-volatility.function.ts` (AC: #4)
+
   - [x] Create `apps/server/src/app/volatility/recalculate-universe-volatility.function.ts`
   - [x] Function signature: `recalculateUniverseVolatility(universeId: string): Promise<void>`
   - [x] Import `calculateVolatility` from `./volatility-calculation.function`
@@ -58,20 +59,24 @@ so that the stored values are always current without requiring a manual recalcul
   - [x] Handle case where symbol has no distribution history: write `null` to both columns
 
 - [x] Task 2: Wire trigger on symbol add (AC: #1)
+
   - [x] Open `apps/server/src/app/routes/universe/add-symbol/add-symbol.function.ts`
   - [x] After the `prisma.universe.create` call that creates the new universe row, call `await recalculateUniverseVolatility(newUniverse.id)`
   - [x] Ensure the call does not block the HTTP response (can be fire-and-forget with error logging, or awaited before response — prefer awaited for correctness)
 
 - [x] Task 3: Wire trigger on screener sync (AC: #2)
+
   - [x] Open `apps/server/src/app/routes/universe/sync-from-screener/` — identify the function that updates existing universe rows
   - [x] After each universe row is inserted or updated, call `recalculateUniverseVolatility` for that row's id
   - [x] If the sync processes many rows, batch the recalculations (iterate, don't Promise.all all at once to avoid DB overload)
 
 - [x] Task 4: Wire trigger on universe update (AC: #3)
+
   - [x] Open `apps/server/src/app/routes/universe/index.ts` — find the PATCH/PUT route that updates universe distribution or price
   - [x] After the `prisma.universe.update` call, call `await recalculateUniverseVolatility(universeId)`
 
 - [x] Task 5: Write unit tests for all three trigger paths (AC: #5)
+
   - [x] Create `apps/server/src/app/volatility/recalculate-universe-volatility.function.spec.ts`
   - [x] Use Vitest with a mocked Prisma client (mock `prisma.divDeposits.findMany` and `prisma.universe.update`)
   - [x] Test 1 — Symbol with 12+ months of history: confirm `volatility_long` and `volatility_short` written with non-null values
@@ -105,6 +110,7 @@ apps/server/src/app/volatility/recalculate-universe-volatility.function.ts
 ```
 
 This function is the single entry point for all three trigger paths. It:
+
 1. Queries divDeposits for the universe row (use `universeId` FK on `divDeposits.universeId`)
 2. Separates 1-year and 5-year windows by date filtering
 3. Calls `calculateVolatility` twice
@@ -133,11 +139,9 @@ const now = new Date();
 const oneYearAgo = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
 const fiveYearsAgo = new Date(now.getFullYear() - 5, now.getMonth(), now.getDate());
 
-const oneYearAmounts = deposits
-  .filter(d => d.date >= oneYearAgo)
-  .map(d => d.amount);
+const oneYearAmounts = deposits.filter((d) => d.date >= oneYearAgo).map((d) => d.amount);
 
-const fiveYearAmounts = deposits.map(d => d.amount); // already filtered to 5 years in query
+const fiveYearAmounts = deposits.map((d) => d.amount); // already filtered to 5 years in query
 
 const volatilityShort = calculateVolatility(oneYearAmounts);
 const volatilityLong = calculateVolatility(fiveYearAmounts);
@@ -145,11 +149,11 @@ const volatilityLong = calculateVolatility(fiveYearAmounts);
 
 ### Three Trigger Locations
 
-| Trigger | File | Hook Point |
-|---------|------|------------|
-| Symbol add | `apps/server/src/app/routes/universe/add-symbol/add-symbol.function.ts` | After `prisma.universe.create` |
-| Screener sync | `apps/server/src/app/routes/universe/sync-from-screener/symbol-processing.function.ts` | After each universe insert/update |
-| Universe update | `apps/server/src/app/routes/universe/index.ts` | After PATCH route `prisma.universe.update` |
+| Trigger         | File                                                                                   | Hook Point                                 |
+| --------------- | -------------------------------------------------------------------------------------- | ------------------------------------------ |
+| Symbol add      | `apps/server/src/app/routes/universe/add-symbol/add-symbol.function.ts`                | After `prisma.universe.create`             |
+| Screener sync   | `apps/server/src/app/routes/universe/sync-from-screener/symbol-processing.function.ts` | After each universe insert/update          |
+| Universe update | `apps/server/src/app/routes/universe/index.ts`                                         | After PATCH route `prisma.universe.update` |
 
 ### Named Functions Requirement
 
