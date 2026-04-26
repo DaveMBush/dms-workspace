@@ -16,16 +16,22 @@ export interface Universe {
   avg_purchase_yield_percent: number;
   volatility1yr?:
     | 'decreasing'
+    | 'down-then-up'
+    | 'flat'
     | 'increasing'
     | 'insufficient-history'
     | 'steady'
+    | 'up-then-down'
     | 'volatile'
     | null;
   volatility5yr?:
     | 'decreasing'
+    | 'down-then-up'
+    | 'flat'
     | 'increasing'
     | 'insufficient-history'
     | 'steady'
+    | 'up-then-down'
     | 'volatile'
     | null;
 }

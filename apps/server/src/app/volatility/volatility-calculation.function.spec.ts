@@ -22,18 +22,17 @@ describe('calculateVolatility', () => {
     expect(result).toBe('insufficient-history');
   });
 
-  it('returns steady for 12 months of identical amounts', () => {
+  it('returns flat for 12 months of identical amounts', () => {
     const amounts = Array.from({ length: 12 }, function constant() {
       return 1.0;
     });
     const result: VolatilityCategory = calculateVolatility(amounts);
-    expect(result).toBe('steady');
+    expect(result).toBe('flat');
   });
 
   it('returns steady for 12 months with very low variance', () => {
-    // CV = stddev/mean; all very close to 1.0 → CV << 0.10
     const amounts = [
-      1.0, 1.01, 0.99, 1.0, 1.01, 0.99, 1.0, 1.0, 1.01, 0.99, 1.0, 1.0,
+      1.0, 1.06, 0.94, 1.05, 0.95, 1.04, 0.96, 1.05, 0.95, 1.04, 0.96, 1.0,
     ];
     const result: VolatilityCategory = calculateVolatility(amounts);
     expect(result).toBe('steady');
@@ -57,8 +56,19 @@ describe('calculateVolatility', () => {
     expect(result).toBe('decreasing');
   });
 
+  it('returns up-then-down for a symmetric peak pattern', () => {
+    const amounts = [1, 2, 3, 4, 5, 6, 6, 5, 4, 3, 2, 1];
+    const result: VolatilityCategory = calculateVolatility(amounts);
+    expect(result).toBe('up-then-down');
+  });
+
+  it('returns down-then-up for a symmetric recovery pattern', () => {
+    const amounts = [6, 5, 4, 3, 2, 1, 1, 2, 3, 4, 5, 6];
+    const result: VolatilityCategory = calculateVolatility(amounts);
+    expect(result).toBe('down-then-up');
+  });
+
   it('returns volatile for 12 months of high-variance amounts with no trend', () => {
-    // Mirror-symmetric pattern: slope = 0, CV = 4/5 = 0.8 >> 0.10 → volatile
     const amounts = [9, 1, 9, 1, 9, 1, 1, 9, 1, 9, 1, 9];
     const result: VolatilityCategory = calculateVolatility(amounts);
     expect(result).toBe('volatile');
@@ -73,9 +83,8 @@ describe('calculateVolatility', () => {
   });
 
   it('works correctly with more than 12 data points (60 months)', () => {
-    // 60 months of identical values → steady
-    const amounts = Array.from({ length: 60 }, function constant() {
-      return 2.5;
+    const amounts = Array.from({ length: 60 }, function buildValue(_, index) {
+      return index % 2 === 0 ? 2.1 : 1.9;
     });
     const result: VolatilityCategory = calculateVolatility(amounts);
     expect(result).toBe('steady');
