@@ -44,6 +44,7 @@ increasing, decreasing, volatile) do not express.
 ## Tasks / Subtasks
 
 - [x] Task 1: Extend the `VolatilityCategory` type (AC: #1, #2, #3)
+
   - [x] Read `apps/server/src/app/volatility/volatility-category.type.ts`
   - [x] Add `'flat'`, `'up-then-down'`, and `'down-then-up'` to the union type
   - [x] Update `apps/dms-material/src/app/global/global-universe/services/volatility-result.interface.ts`
@@ -51,6 +52,7 @@ increasing, decreasing, volatile) do not express.
   - [x] These two files must stay in sync — both must list all 7 categories plus `null`
 
 - [x] Task 2: Implement `flat` detection in `calculateVolatility` (AC: #1)
+
   - [x] Read `apps/server/src/app/volatility/volatility-calculation.function.ts`
   - [x] Define a `FLAT_CV_THRESHOLD` constant (suggest a smaller threshold than
         `STEADY_CV_THRESHOLD`, e.g., `0.02` = 2% CV — near-zero movement)
@@ -61,6 +63,7 @@ increasing, decreasing, volatile) do not express.
   - [x] Document the threshold values and rationale in Dev Notes
 
 - [x] Task 3: Implement `up-then-down` and `down-then-up` detection (AC: #2, #3)
+
   - [x] In `calculateVolatility`, after the linear regression slope check (which handles
         `increasing` and `decreasing`), add split-window analysis:
     - Split the `amounts` array in half: `firstHalf = amounts.slice(0, n/2)`,
@@ -77,6 +80,7 @@ increasing, decreasing, volatile) do not express.
   - [x] Document algorithm with thresholds and reasoning in Dev Notes
 
 - [x] Task 4: Write unit tests for all 7 categories (AC: #5)
+
   - [x] Read `apps/server/src/app/volatility/volatility-calculation.function.spec.ts`
   - [x] Add test cases for:
     - `flat`: 12+ months of near-identical amounts (e.g., all `1.00`) → `'flat'`
@@ -88,6 +92,7 @@ increasing, decreasing, volatile) do not express.
         those test cases with amounts in the `flat` < CV < `steady` range instead
 
 - [x] Task 5: Update the Angular Vol column template (AC: #4)
+
   - [x] Read `apps/dms-material/src/app/global/global-universe/global-universe.component.html`
   - [x] Find the `@switch (column.field)` → `@case ('vol')` block
   - [x] Add `@else if` branches for the three new categories:
@@ -101,6 +106,7 @@ increasing, decreasing, volatile) do not express.
   - [x] Follow the exact same pattern as the existing four icons in the template
 
 - [x] Task 6: Verify icons render in the browser (AC: #4)
+
   - [x] Start the dev server: `pnpm nx run server:serve` and `pnpm nx run dms-material:serve`
   - [x] Use Playwright MCP server to navigate to the Universe screen
   - [x] If any symbol in the live database happens to qualify for the new categories, confirm
@@ -121,31 +127,19 @@ increasing, decreasing, volatile) do not express.
 
 ```typescript
 // apps/server/src/app/volatility/volatility-category.type.ts
-export type VolatilityCategory =
-  | 'decreasing'
-  | 'increasing'
-  | 'steady'
-  | 'volatile'
-  | null;
+export type VolatilityCategory = 'decreasing' | 'increasing' | 'steady' | 'volatile' | null;
 ```
 
 ### Target Type (after this story)
 
 ```typescript
-export type VolatilityCategory =
-  | 'decreasing'
-  | 'down-then-up'
-  | 'flat'
-  | 'increasing'
-  | 'steady'
-  | 'up-then-down'
-  | 'volatile'
-  | null;
+export type VolatilityCategory = 'decreasing' | 'down-then-up' | 'flat' | 'increasing' | 'steady' | 'up-then-down' | 'volatile' | null;
 ```
 
 ### Algorithm Extension
 
 The existing `calculateVolatility` function processes amounts in this order:
+
 1. Insufficient data guard (< 12 items → `null`)
 2. Mean = 0 guard → `null`
 3. CV < `STEADY_CV_THRESHOLD` → `'steady'`
@@ -153,6 +147,7 @@ The existing `calculateVolatility` function processes amounts in this order:
 5. Default → `'volatile'`
 
 The extended order should be:
+
 1. Insufficient data guard (< 12 items → `null`)
 2. Mean = 0 guard → `null`
 3. CV < `FLAT_CV_THRESHOLD` (new) → `'flat'`
@@ -163,21 +158,21 @@ The extended order should be:
 
 ### Suggested Thresholds (to be validated with unit tests)
 
-| Threshold | Constant | Suggested Value | Rationale |
-| --------- | -------- | --------------- | --------- |
-| Flat CV ceiling | `FLAT_CV_THRESHOLD` | `0.02` | < 2% variation = essentially no movement |
-| Half-window difference | `HALF_WINDOW_THRESHOLD` | `0.15` | 15% mean difference between halves |
+| Threshold              | Constant                | Suggested Value | Rationale                                |
+| ---------------------- | ----------------------- | --------------- | ---------------------------------------- |
+| Flat CV ceiling        | `FLAT_CV_THRESHOLD`     | `0.02`          | < 2% variation = essentially no movement |
+| Half-window difference | `HALF_WINDOW_THRESHOLD` | `0.15`          | 15% mean difference between halves       |
 
 The developer should adjust these values so that the unit tests pass with realistic data.
 Document the final values and their rationale in the Dev Agent Record.
 
 ### Icon Mapping (Suggested)
 
-| Category | Material Icon | Rationale |
-| -------- | ------------- | --------- |
-| `flat` | `drag_handle` | Horizontal dash — visually flat |
-| `up-then-down` | `change_history` or `expand_less` | Rose then fell |
-| `down-then-up` | `expand_more` or `vertical_align_bottom` | Fell then recovered |
+| Category       | Material Icon                            | Rationale                       |
+| -------------- | ---------------------------------------- | ------------------------------- |
+| `flat`         | `drag_handle`                            | Horizontal dash — visually flat |
+| `up-then-down` | `change_history` or `expand_less`        | Rose then fell                  |
+| `down-then-up` | `expand_more` or `vertical_align_bottom` | Fell then recovered             |
 
 Use `aria-label="Volatility: flat"`, `aria-label="Volatility: up-then-down"`, and
 `aria-label="Volatility: down-then-up"` — these are used by Story 84.4's E2E tests.
@@ -185,6 +180,7 @@ Use `aria-label="Volatility: flat"`, `aria-label="Volatility: up-then-down"`, an
 ### Angular Code Pattern
 
 Follow the existing template pattern in `global-universe.component.html`:
+
 ```html
 @else if (row.volatility1yr === 'flat') {
 <mat-icon aria-label="Volatility: flat" matTooltip="Flat">drag_handle</mat-icon>
@@ -197,13 +193,13 @@ Follow the existing template pattern in `global-universe.component.html`:
 
 ### Files to Modify
 
-| File | Change |
-| ---- | ------ |
-| `apps/server/src/app/volatility/volatility-category.type.ts` | Add 3 new union members |
-| `apps/server/src/app/volatility/volatility-calculation.function.ts` | Add flat, up-then-down, down-then-up logic |
-| `apps/server/src/app/volatility/volatility-calculation.function.spec.ts` | Add 3 new test cases |
-| `apps/dms-material/src/app/global/global-universe/services/volatility-result.interface.ts` | Add 3 new union members |
-| `apps/dms-material/src/app/global/global-universe/global-universe.component.html` | Add 3 new @else if blocks |
+| File                                                                                       | Change                                     |
+| ------------------------------------------------------------------------------------------ | ------------------------------------------ |
+| `apps/server/src/app/volatility/volatility-category.type.ts`                               | Add 3 new union members                    |
+| `apps/server/src/app/volatility/volatility-calculation.function.ts`                        | Add flat, up-then-down, down-then-up logic |
+| `apps/server/src/app/volatility/volatility-calculation.function.spec.ts`                   | Add 3 new test cases                       |
+| `apps/dms-material/src/app/global/global-universe/services/volatility-result.interface.ts` | Add 3 new union members                    |
+| `apps/dms-material/src/app/global/global-universe/global-universe.component.html`          | Add 3 new @else if blocks                  |
 
 ### Key Commands
 
@@ -314,7 +310,7 @@ GPT-5.4
 
 ## Change Log
 
-| Date       | Change                                                                                                                                       | Author |
-| ---------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
-| 2026-04-26 | Implemented the new flat and reversal volatility categories across the backend classifier, frontend unions, and Universe icon rendering      | Agent  |
+| Date       | Change                                                                                                                                                  | Author |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| 2026-04-26 | Implemented the new flat and reversal volatility categories across the backend classifier, frontend unions, and Universe icon rendering                 | Agent  |
 | 2026-04-26 | Added classifier regression coverage, updated the stable-fund expectation, verified icons in-browser via route override, and passed affected validation | Agent  |
