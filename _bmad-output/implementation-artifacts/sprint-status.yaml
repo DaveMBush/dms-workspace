@@ -476,7 +476,7 @@ development_status:
   84-1-investigate-volatility-visibility-bug: ready-for-dev
   84-2-fix-volatility-data-filtering: review
   84-3-add-new-volatility-icons: review
-  84-4-e2e-volatility-icons: ready-for-dev
+  84-4-e2e-volatility-icons: review
   epic-84-retrospective: optional
 
   # ── Epic 85: Store Volatility in Universe Table ───────────────────────────────
