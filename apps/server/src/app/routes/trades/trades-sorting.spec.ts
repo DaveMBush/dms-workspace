@@ -77,6 +77,12 @@ interface ClosedTradeResponse {
   percentGain: number;
 }
 
+interface HydratedTradeRow extends OpenTradeRow {
+  universe: {
+    symbol: string;
+  } | null;
+}
+
 interface ErrorResponse {
   error: string;
 }
@@ -214,6 +220,48 @@ function makeClosedTradesSeedData() {
     },
   ];
 }
+
+describe('Trades hydration route', function tradeHydrationRouteTests() {
+  let app: FastifyInstance;
+
+  beforeEach(async function setupApp() {
+    app = fastify({ logger: false });
+    await app.register(registerTradeRoutes, { prefix: '/api/trades' });
+    await app.ready();
+    mockPrismaTrades.findMany.mockReset();
+  });
+
+  afterEach(async function teardownApp() {
+    await app.close();
+  });
+
+  it('includes the universe symbol when hydrating trades by id', async function includesUniverseSymbol() {
+    const hydratedTrade: HydratedTradeRow = {
+      ...makeOpenTrade(),
+      universe: { symbol: 'AAPL' },
+    };
+    mockPrismaTrades.findMany.mockResolvedValue([hydratedTrade]);
+
+    const response = await app.inject({
+      method: 'POST',
+      url: '/api/trades',
+      payload: ['ot1'],
+    });
+
+    expect(response.statusCode).toBe(200);
+    expect(mockPrismaTrades.findMany).toHaveBeenCalledWith({
+      where: { id: { in: ['ot1'] } },
+      include: { universe: { select: { symbol: true } } },
+    });
+
+    expect(JSON.parse(response.body)).toEqual([
+      expect.objectContaining({
+        id: 'ot1',
+        symbol: 'AAPL',
+      }),
+    ]);
+  });
+});
 
 describe('Open Trades Endpoint - Sorting', function openTradesSortingTests() {
   let app: FastifyInstance;

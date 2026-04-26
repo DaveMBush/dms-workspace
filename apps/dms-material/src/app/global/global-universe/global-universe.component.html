@@ -184,6 +184,12 @@
         <mat-icon aria-label="Volatility: volatile" matTooltip="Volatile"
           >show_chart</mat-icon
         >
+        } @else if (row.volatility1yr === 'insufficient-history') {
+        <mat-icon
+          aria-label="Volatility: insufficient history"
+          matTooltip="Insufficient history"
+          >remove</mat-icon
+        >
         } } @case ('distribution') {
         <dms-editable-cell
           [value]="row.distribution"

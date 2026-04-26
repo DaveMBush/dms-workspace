@@ -34,11 +34,46 @@ function groupAmountsBySymbol(
   return bySymbol;
 }
 
+function buildVolatilityResult(
+  symbol: string,
+  history: Array<{ date: Date; amount: number }>,
+  oneYearAgo: Date
+): VolatilityResult {
+  const amounts5yr = history.map(function getAmount(r) {
+    return r.amount;
+  });
+  const amounts1yr = history
+    .filter(function filterOneYear(r) {
+      return r.date >= oneYearAgo;
+    })
+    .map(function getAmount(r) {
+      return r.amount;
+    });
+
+  return {
+    symbol,
+    volatility1yr: calculateVolatility(amounts1yr),
+    volatility5yr: calculateVolatility(amounts5yr),
+  };
+}
+
 export async function fetchVolatilityForAllSymbols(): Promise<
   VolatilityResult[]
 > {
   const fiveYearsAgo = buildFiveYearsAgo();
   const oneYearAgo = buildOneYearAgo();
+
+  const universeSymbols = await prisma.universe.findMany({
+    where: {
+      deletedAt: null,
+    },
+    orderBy: {
+      symbol: 'asc',
+    },
+    select: {
+      symbol: true,
+    },
+  });
 
   const allRecords = await prisma.divDeposits.findMany({
     where: {
@@ -55,29 +90,11 @@ export async function fetchVolatilityForAllSymbols(): Promise<
   });
 
   const bySymbol = groupAmountsBySymbol(allRecords);
-  const results: VolatilityResult[] = [];
 
-  bySymbol.forEach(function processSymbol(
-    history: Array<{ date: Date; amount: number }>,
-    symbol: string
-  ): void {
-    const amounts5yr = history.map(function getAmount(r) {
-      return r.amount;
-    });
-    const amounts1yr = history
-      .filter(function filterOneYear(r) {
-        return r.date >= oneYearAgo;
-      })
-      .map(function getAmount(r) {
-        return r.amount;
-      });
-
-    results.push({
-      symbol,
-      volatility1yr: calculateVolatility(amounts1yr),
-      volatility5yr: calculateVolatility(amounts5yr),
-    });
+  return universeSymbols.map(function buildResult({
+    symbol,
+  }): VolatilityResult {
+    const history = bySymbol.get(symbol) ?? [];
+    return buildVolatilityResult(symbol, history, oneYearAgo);
   });
-
-  return results;
 }

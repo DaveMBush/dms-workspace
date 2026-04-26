@@ -3,6 +3,7 @@ export interface Trade {
   id: string;
   universeId: string;
   accountId: string;
+  symbol?: string;
   buy: number;
   sell: number;
   buy_date: string;

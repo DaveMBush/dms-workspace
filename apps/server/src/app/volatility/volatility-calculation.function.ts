@@ -35,11 +35,11 @@ function calculateLinearRegressionSlope(values: number[]): number {
 
 export function calculateVolatility(amounts: number[]): VolatilityCategory {
   if (amounts.length < MIN_DATA_POINTS) {
-    return null;
+    return 'insufficient-history';
   }
   const mean = calculateMean(amounts);
   if (mean === 0) {
-    return null;
+    return 'insufficient-history';
   }
   const stdDev = calculateStdDev(amounts, mean);
   const cv = stdDev / mean;

@@ -11,6 +11,7 @@ export const openTradesDefinition: SmartEntityDefinition<Trade> = {
       id,
       universeId: '',
       accountId: '',
+      symbol: '',
       buy: 0,
       sell: 0,
       buy_date: '',
