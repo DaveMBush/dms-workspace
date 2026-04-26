@@ -1,17 +1,21 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import fastify, { FastifyInstance } from 'fastify';
 
+import { recalculateUniverseVolatility } from '../../volatility/recalculate-universe-volatility.function';
 import registerUniverseRoutes from './index';
 
 // Hoisted mocks
 const { mockPrismaUniverse } = vi.hoisted(() => ({
-  mockPrismaUniverse: { findMany: vi.fn() },
+  mockPrismaUniverse: { findMany: vi.fn(), update: vi.fn() },
 }));
 
 vi.mock('../../prisma/prisma-client', () => ({
   prisma: {
     universe: mockPrismaUniverse,
   },
+}));
+vi.mock('../../volatility/recalculate-universe-volatility.function', () => ({
+  recalculateUniverseVolatility: vi.fn(),
 }));
 
 // Stub sub-route registrations so we only test the main universe POST route
@@ -21,6 +25,9 @@ vi.mock('./add-symbol', () => ({
 vi.mock('./sync-from-screener', () => ({
   default: vi.fn(),
 }));
+
+const mockRecalculateUniverseVolatility =
+  recalculateUniverseVolatility as ReturnType<typeof vi.fn>;
 
 function makeUniverseRow(
   overrides: Partial<{
@@ -66,6 +73,7 @@ describe('POST /api/universe - avg_purchase_yield_percent (regression: AS.9 Bug 
     await app.register(registerUniverseRoutes, { prefix: '/api/universe' });
     await app.ready();
     mockPrismaUniverse.findMany.mockReset();
+    mockPrismaUniverse.update.mockReset();
   });
 
   afterEach(async () => {
@@ -252,5 +260,47 @@ describe('POST /api/universe - avg_purchase_yield_percent (regression: AS.9 Bug 
     expect(rows[0].position).toBe(1000);
     // avg yield uses only open trade: (0.1 * 12 * 100) / 10.0 = 12.0
     expect(rows[0].avg_purchase_yield_percent).toBeCloseTo(12.0, 2);
+  });
+
+  it('should recalculate volatility after updating a universe row', async () => {
+    mockPrismaUniverse.update.mockResolvedValue({ id: 'u1' });
+    mockPrismaUniverse.findMany.mockResolvedValue([makeUniverseRow()]);
+
+    const response = await app.inject({
+      method: 'PUT',
+      url: '/api/universe/',
+      payload: {
+        id: 'u1',
+        distribution: 0.2,
+        distributions_per_year: 4,
+        last_price: 11,
+        most_recent_sell_date: null,
+        most_recent_sell_price: null,
+        symbol: 'ABC',
+        ex_date: '',
+        risk_group_id: 'rg1',
+        expired: false,
+        is_closed_end_fund: true,
+        position: 0,
+        avg_purchase_yield_percent: 0,
+      },
+    });
+
+    expect(response.statusCode).toBe(200);
+    expect(mockPrismaUniverse.update).toHaveBeenCalledWith({
+      where: { id: 'u1' },
+      data: {
+        distribution: 0.2,
+        distributions_per_year: 4,
+        last_price: 11,
+        most_recent_sell_date: null,
+        most_recent_sell_price: null,
+        symbol: 'ABC',
+        ex_date: '',
+        risk_group_id: 'rg1',
+        expired: false,
+      },
+    });
+    expect(mockRecalculateUniverseVolatility).toHaveBeenCalledWith('u1');
   });
 });

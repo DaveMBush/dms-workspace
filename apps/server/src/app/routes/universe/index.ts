@@ -1,6 +1,7 @@
 import { FastifyInstance } from 'fastify';
 
 import { prisma } from '../../prisma/prisma-client';
+import { recalculateUniverseVolatility } from '../../volatility/recalculate-universe-volatility.function';
 import { getTableState } from '../common/get-table-state.function';
 import { parseSortFilterHeader } from '../common/parse-sort-filter-header.function';
 import registerAddSymbol from './add-symbol';
@@ -231,6 +232,7 @@ function handleUpdateUniverseRoute(fastify: FastifyInstance): void {
       const { id, ...updateData } = request.body;
 
       await updateUniverseData(id, updateData);
+      await recalculateUniverseVolatility(id);
       const universes = await fetchUpdatedUniverse(id);
 
       const result = universes.map(mapUniverseToResponse);

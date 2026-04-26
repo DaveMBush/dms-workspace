@@ -2,6 +2,7 @@ import { FastifyInstance } from 'fastify';
 
 import { SyncLogger } from '../../../../utils/logger';
 import { prisma } from '../../../prisma/prisma-client';
+import { recalculateUniverseVolatility } from '../../../volatility/recalculate-universe-volatility.function';
 import { getDistributions } from '../../settings/common/get-distributions.function';
 import { getLastPrice } from '../../settings/common/get-last-price.function';
 import { getExDateToSet, processSymbols } from './symbol-processing.function';
@@ -68,16 +69,18 @@ async function upsertUniverse(params: {
       distribution,
       exDateToSet,
     });
+    await recalculateUniverseVolatility(existing.id);
     return 'updated';
   }
 
-  await createNewUniverseRecord({
+  const createdRecord = await createNewUniverseRecord({
     symbol,
     riskGroupId,
     lastPrice,
     distribution,
     exDateToSet,
   });
+  await recalculateUniverseVolatility(createdRecord.id);
   return 'inserted';
 }
 
@@ -124,12 +127,12 @@ async function updateExistingUniverseRecord(
 
 async function createNewUniverseRecord(
   params: CreateRecordParams
-): Promise<void> {
+): Promise<{ id: string }> {
   const { symbol, riskGroupId, lastPrice, distribution, exDateToSet } = params;
   const { createUniverseRecord } = await import(
     '../../common/universe-operations.function.js'
   );
-  await createUniverseRecord({
+  return createUniverseRecord({
     symbol,
     riskGroupId,
     lastPrice,

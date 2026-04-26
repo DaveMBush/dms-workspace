@@ -1,5 +1,6 @@
 import { logger } from '../../../../utils/structured-logger';
 import { prisma } from '../../../prisma/prisma-client';
+import { recalculateUniverseVolatility } from '../../../volatility/recalculate-universe-volatility.function';
 import {
   classifySymbolRiskGroupId,
   lookupCefConnectSymbol,
@@ -148,6 +149,8 @@ export async function addSymbol(
       is_closed_end_fund: isCef,
     },
   });
+
+  await recalculateUniverseVolatility(universeRecord.id);
 
   try {
     const { record, fetchFailed } = await fetchAndUpdatePriceData(

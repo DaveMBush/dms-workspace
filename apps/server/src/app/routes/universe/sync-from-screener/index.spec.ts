@@ -1,6 +1,8 @@
 import type { FastifyInstance } from 'fastify';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 
+import { recalculateUniverseVolatility } from '../../../volatility/recalculate-universe-volatility.function';
+
 // Hoisted mocks
 const h = vi.hoisted(() => {
   const client: Record<string, unknown> & {
@@ -60,6 +62,12 @@ vi.mock('../../../../utils/logger', () => ({
 vi.mock('../../../prisma/prisma-client', () => ({
   prisma: h.client,
 }));
+vi.mock('../../../volatility/recalculate-universe-volatility.function', () => ({
+  recalculateUniverseVolatility: vi.fn(),
+}));
+
+const mockRecalculateUniverseVolatility =
+  recalculateUniverseVolatility as ReturnType<typeof vi.fn>;
 
 function createFastify(): FastifyInstance {
   const routes = new Map<
@@ -173,7 +181,9 @@ describe('sync-from-screener route', () => {
     h.client.universe.findFirst.mockResolvedValue(null); // No existing records
     h.client.universe.findMany.mockResolvedValueOnce([]);
     h.client.universe.findMany.mockResolvedValueOnce([]);
-    h.client.universe.create.mockResolvedValue({});
+    h.client.universe.create
+      .mockResolvedValueOnce({ id: 'new-id-1' })
+      .mockResolvedValueOnce({ id: 'new-id-2' });
     h.client.universe.updateMany.mockResolvedValueOnce({ count: 0 });
 
     const f = createFastify();
@@ -193,6 +203,14 @@ describe('sync-from-screener route', () => {
     });
 
     expect(h.client.universe.create).toHaveBeenCalledTimes(2);
+    expect(mockRecalculateUniverseVolatility).toHaveBeenNthCalledWith(
+      1,
+      'new-id-1'
+    );
+    expect(mockRecalculateUniverseVolatility).toHaveBeenNthCalledWith(
+      2,
+      'new-id-2'
+    );
   });
 
   test('successful sync with existing symbol update', async () => {
@@ -240,6 +258,7 @@ describe('sync-from-screener route', () => {
         expired: false,
       },
     });
+    expect(mockRecalculateUniverseVolatility).toHaveBeenCalledWith(EXISTING_ID);
   });
 
   test('marks symbols as expired when not in screener', async () => {
