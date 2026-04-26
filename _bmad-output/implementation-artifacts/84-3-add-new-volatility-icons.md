@@ -261,6 +261,12 @@ GPT-5.4
 
 ### Validation Notes
 
+- `pnpm all` passed from the committed story branch, running affected lint/build for
+  `dms-material-e2e`, `dms-material`, `server`, and `electron`, then affected tests with
+  coverage for `dms-material`, `server`, and `electron`.
+- The repo-level run completed with the existing `dms-material-e2e` lint warnings about unused
+  `eslint-disable` directives in `seed-vol-column-e2e-data.helper.ts`, but there were no lint
+  errors, build failures, type errors, or test failures.
 - `pnpm exec vitest run apps/server/src/app/volatility/volatility-calculation.function.spec.ts`
   passed with 12 tests, including the new `flat`, `up-then-down`, and `down-then-up` cases.
 - `pnpm nx affected -t lint build --parallel=16 --uncommitted` passed after fixing the type
@@ -275,7 +281,8 @@ GPT-5.4
   - `FCO` -> `Volatility: down-then-up`
 - In this repository, `pnpm all` does not produce a meaningful result for uncommitted worktree
   changes because it compares `main..HEAD`. The story was therefore validated first with the
-  `--uncommitted` affected commands, which exercised the touched projects directly.
+  `--uncommitted` affected commands, and then revalidated after the first commit with a green
+  `pnpm all` run.
 
 ### Completion Notes List
 
