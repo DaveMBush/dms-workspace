@@ -1,3 +1,5 @@
+import type { PrismaClient } from '@prisma/client';
+
 import { buildMonthlyDates } from './build-monthly-dates.helper';
 import { generateUniqueId } from './generate-unique-id.helper';
 import { getOrCreateDivDepositTypeId } from './get-or-create-div-deposit-type-id.helper';
@@ -82,7 +84,7 @@ function buildUniverseRecord(
     last_price: LAST_PRICE,
     most_recent_sell_date: null,
     most_recent_sell_price: null,
-    ex_date: new Date().toISOString(),
+    ex_date: null,
     risk_group_id: riskGroupId,
     expired: false,
     is_closed_end_fund: true,
