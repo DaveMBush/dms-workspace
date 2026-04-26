@@ -14,6 +14,18 @@ export interface Universe {
   name: string;
   position: number;
   avg_purchase_yield_percent: number;
-  volatility1yr?: 'decreasing' | 'increasing' | 'steady' | 'volatile' | null;
-  volatility5yr?: 'decreasing' | 'increasing' | 'steady' | 'volatile' | null;
+  volatility1yr?:
+    | 'decreasing'
+    | 'increasing'
+    | 'insufficient-history'
+    | 'steady'
+    | 'volatile'
+    | null;
+  volatility5yr?:
+    | 'decreasing'
+    | 'increasing'
+    | 'insufficient-history'
+    | 'steady'
+    | 'volatile'
+    | null;
 }

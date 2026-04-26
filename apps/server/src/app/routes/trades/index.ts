@@ -8,6 +8,7 @@ interface Trade {
   id: string;
   universeId: string;
   accountId: string;
+  symbol?: string;
   buy: number;
   sell: number;
   buy_date: string;
@@ -15,7 +16,7 @@ interface Trade {
   quantity: number;
 }
 
-interface TradeWithDates {
+interface TradeWithUniverseAndDates {
   id: string;
   universeId: string;
   accountId: string;
@@ -24,6 +25,9 @@ interface TradeWithDates {
   buy_date: Date;
   sell_date?: Date | null;
   quantity: number;
+  universe: {
+    symbol: string;
+  } | null;
 }
 
 interface NewTrade {
@@ -36,11 +40,12 @@ interface NewTrade {
   quantity: number;
 }
 
-function mapTradeToResponse(trade: TradeWithDates): Trade {
+function mapTradeToResponse(trade: TradeWithUniverseAndDates): Trade {
   return {
     id: trade.id,
     universeId: trade.universeId,
     accountId: trade.accountId,
+    symbol: trade.universe?.symbol,
     buy: trade.buy,
     sell: trade.sell,
     buy_date: trade.buy_date.toISOString(),
@@ -67,6 +72,7 @@ function handleGetTradesRoute(fastify: FastifyInstance): void {
       }
       const trades = await prisma.trades.findMany({
         where: { id: { in: ids } },
+        include: { universe: { select: { symbol: true } } },
       });
       return trades.map(function mapTrade(trade) {
         return mapTradeToResponse(trade);
@@ -96,6 +102,7 @@ function handleAddTradeRoute(fastify: FastifyInstance): void {
       });
       const trade = await prisma.trades.findMany({
         where: { id: { in: [result.id] } },
+        include: { universe: { select: { symbol: true } } },
       });
       reply.status(200).send(
         trade.map(function mapCreatedTrade(t) {
@@ -148,6 +155,7 @@ function handleUpdateTradeRoute(fastify: FastifyInstance): void {
       });
       const trades = await prisma.trades.findMany({
         where: { id },
+        include: { universe: { select: { symbol: true } } },
       });
       reply.status(200).send(
         trades.map(function mapUpdatedTrade(t) {

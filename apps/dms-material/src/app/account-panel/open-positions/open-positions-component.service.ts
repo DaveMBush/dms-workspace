@@ -34,7 +34,7 @@ function placeholderOpenPosition(id: string): OpenPosition {
 function partialOpenPosition(trade: Trade): OpenPosition {
   return {
     id: trade.id,
-    symbol: '',
+    symbol: trade.symbol ?? '',
     exDate: null,
     buy: trade.buy,
     buyDate: trade.buy_date ? new Date(trade.buy_date) : new Date(),

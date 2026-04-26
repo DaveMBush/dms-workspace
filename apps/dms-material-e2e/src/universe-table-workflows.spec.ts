@@ -1,7 +1,21 @@
-import { test, expect } from 'playwright/test';
+import { expect, Page, test } from 'playwright/test';
 
 import { login } from './helpers/login.helper';
 import { seedUniverseData } from './helpers/seed-universe-data.helper';
+
+function getUniverseRowBySymbol(page: Page, symbol: string) {
+  return page.locator('tr.mat-mdc-row').filter({
+    has: page.locator('td.mat-column-symbol', { hasText: symbol }),
+  });
+}
+
+async function filterUniverseToSymbol(page: Page, symbol: string): Promise<void> {
+  const symbolFilter = page.getByPlaceholder('Search Symbol');
+  await symbolFilter.fill(symbol);
+  await expect(getUniverseRowBySymbol(page, symbol)).toBeVisible({
+    timeout: 10000,
+  });
+}
 
 /**
  * Universe Table Workflows E2E Tests (TDD - RED Phase)
@@ -25,11 +39,13 @@ import { seedUniverseData } from './helpers/seed-universe-data.helper';
 
 test.describe('Universe Table Workflows', () => {
   let cleanup: () => Promise<void>;
+  let symbols: string[];
 
   test.beforeEach(async ({ page }) => {
     // Seed test data for this test
     const seeder = await seedUniverseData();
     cleanup = seeder.cleanup;
+    symbols = seeder.symbols;
 
     await login(page);
     await page.goto('/global/universe');
@@ -76,8 +92,9 @@ test.describe('Universe Table Workflows', () => {
     });
 
     test('should display risk group data', async ({ page }) => {
-      const riskGroupCell = page.locator(
-        'tr.mat-mdc-row:first-child td.mat-column-risk_group'
+      await filterUniverseToSymbol(page, symbols[1]);
+      const riskGroupCell = getUniverseRowBySymbol(page, symbols[1]).locator(
+        'td.mat-column-risk_group'
       );
       await expect(riskGroupCell).toBeVisible();
       const text = await riskGroupCell.textContent();
@@ -237,6 +254,7 @@ test.describe('Universe Table Workflows', () => {
     test('should update yield percentage automatically when distribution changes', async ({
       page,
     }) => {
+      await filterUniverseToSymbol(page, symbols[3]);
       const distributionCell = page.locator(
         '[data-testid="distribution-cell-0"]'
       );
@@ -306,11 +324,14 @@ test.describe('Universe Table Workflows', () => {
     });
 
     test('should cancel date edit on Escape', async ({ page }) => {
+      await filterUniverseToSymbol(page, symbols[3]);
       const exDateCell = page.locator('[data-testid="ex-date-cell-0"]');
       const originalValue = await exDateCell.textContent();
       await exDateCell.click();
 
-      await page.keyboard.press('Escape');
+      const dateInput = page.locator('[data-testid="ex-date-picker"]');
+      await expect(dateInput).toBeVisible();
+      await dateInput.press('Escape');
 
       // Datepicker should close without saving
       const datepicker = page.locator('mat-datepicker-content');

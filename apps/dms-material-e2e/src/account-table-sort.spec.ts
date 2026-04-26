@@ -1,4 +1,4 @@
-import { expect, Page, test } from 'playwright/test';
+import { expect, Locator, Page, test } from 'playwright/test';
 
 import { login } from './helpers/login.helper';
 import { seedDivDepositsE2eData } from './helpers/seed-div-deposits-e2e-data.helper';
@@ -17,8 +17,11 @@ async function clearSortFilterState(page: Page): Promise<void> {
 /**
  * Helper: collect trimmed text content from all visible cells in a column (1-based index).
  */
-async function getColumnTexts(page: Page, colIndex: number): Promise<string[]> {
-  const cells = page.locator(`tr.mat-mdc-row td:nth-child(${colIndex})`);
+async function getColumnTexts(
+  scope: Locator,
+  cellSelector: string
+): Promise<string[]> {
+  const cells = scope.locator(cellSelector);
   const count = await cells.count();
   const texts: string[] = [];
   for (let i = 0; i < count; i++) {
@@ -31,9 +34,11 @@ async function getColumnTexts(page: Page, colIndex: number): Promise<string[]> {
 /**
  * Helper: wait for dms-base-table and at least one data row.
  */
-async function waitForTableRows(page: Page): Promise<void> {
-  await expect(page.locator('dms-base-table')).toBeVisible({ timeout: 15000 });
-  await page.waitForSelector('tr.mat-mdc-row', { timeout: 15000 });
+async function waitForTableRows(scope: Locator): Promise<void> {
+  await expect(scope.locator('dms-base-table')).toBeVisible({ timeout: 15000 });
+  await expect(scope.locator('tr.mat-mdc-row').first()).toBeVisible({
+    timeout: 15000,
+  });
 }
 
 // ─── Story 37.1: Account Table Sorting – Failing Tests ───────────────────────
@@ -83,7 +88,7 @@ test.describe('Account Tables - Sorting (Story 37.1 - Failing Tests)', () => {
       await login(page);
       await clearSortFilterState(page);
       await page.goto(`/account/${accountIdOpen}/open`);
-      await waitForTableRows(page);
+      await waitForTableRows(page.locator('dms-open-positions'));
     });
 
     test('clicking Buy Date header sorts Open Positions rows by buy date ascending', async ({
@@ -95,8 +100,19 @@ test.describe('Account Tables - Sorting (Story 37.1 - Failing Tests)', () => {
       await page.waitForTimeout(800);
       await page.waitForLoadState('networkidle');
 
+      const openPositionsTable = page.locator('dms-open-positions');
+      await expect(
+        openPositionsTable
+          .locator('td.mat-column-symbol')
+          .filter({ hasText: symbolsOpen[0] })
+          .first()
+      ).toBeVisible({ timeout: 15000 });
+
       // Read Symbol column (col 1) text values after sort
-      const symbolTexts = await getColumnTexts(page, 1);
+      const symbolTexts = await getColumnTexts(
+        openPositionsTable,
+        'td.mat-column-symbol'
+      );
       expect(symbolTexts.length).toBeGreaterThanOrEqual(3);
 
       // Correct ascending order by buy date: OPAAA (Jan) → OPCCC (Mar) → OPBBB (Jun)
@@ -148,7 +164,7 @@ test.describe('Account Tables - Sorting (Story 37.1 - Failing Tests)', () => {
       await login(page);
       await clearSortFilterState(page);
       await page.goto(`/account/${accountIdClosed}/sold`);
-      await waitForTableRows(page);
+      await waitForTableRows(page.locator('dms-sold-positions'));
     });
 
     test('clicking Sell Date header sorts Closed Positions rows by sell date ascending', async ({
@@ -160,8 +176,19 @@ test.describe('Account Tables - Sorting (Story 37.1 - Failing Tests)', () => {
       await page.waitForTimeout(800);
       await page.waitForLoadState('networkidle');
 
+      const soldPositionsTable = page.locator('dms-sold-positions');
+      await expect(
+        soldPositionsTable
+          .locator('td.mat-column-symbol')
+          .filter({ hasText: symbolsClosed[0] })
+          .first()
+      ).toBeVisible({ timeout: 15000 });
+
       // Read Symbol column (col 1) text values after sort
-      const symbolTexts = await getColumnTexts(page, 1);
+      const symbolTexts = await getColumnTexts(
+        soldPositionsTable,
+        'td.mat-column-symbol'
+      );
       expect(symbolTexts.length).toBeGreaterThanOrEqual(3);
 
       // Correct ascending order by sell date: SPCCC (Aug 2025) → SPBBB (Nov 2025) → SPAAA (Jan 2026)
@@ -226,7 +253,10 @@ test.describe('Account Tables - Sorting (Story 37.1 - Failing Tests)', () => {
       await page.waitForLoadState('networkidle');
 
       // Read Amount column (col 3) text values after sort
-      const amountTexts = await getColumnTexts(page, 3);
+      const amountTexts = await getColumnTexts(
+        page,
+        'tr.mat-mdc-row td:nth-child(3)'
+      );
       expect(amountTexts.length).toBeGreaterThanOrEqual(3);
 
       // Correct ascending order: $50.00, $100.00, $200.00

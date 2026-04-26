@@ -31,7 +31,7 @@ function buildPartialClosedPosition(trade: Trade): ClosedPosition {
     trade.buy !== 0 ? ((trade.sell - trade.buy) / trade.buy) * 100 : 0;
   return {
     id: trade.id,
-    symbol: '',
+    symbol: trade.symbol ?? '',
     buy: trade.buy,
     buy_date: trade.buy_date,
     quantity: trade.quantity,

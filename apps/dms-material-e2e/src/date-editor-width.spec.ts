@@ -1,4 +1,4 @@
-import { expect, test } from 'playwright/test';
+import { expect, Page, test } from 'playwright/test';
 
 import { generateUniqueId } from './helpers/generate-unique-id.helper';
 import { login } from './helpers/login.helper';
@@ -18,6 +18,20 @@ interface SeederResult {
   cleanup(): Promise<void>;
   symbolWithDate: string;
   symbolWithoutDate: string;
+}
+
+function getUniverseRowBySymbol(page: Page, symbol: string) {
+  return page.locator('tr.mat-mdc-row').filter({
+    has: page.locator('td.mat-column-symbol', { hasText: symbol }),
+  });
+}
+
+async function filterUniverseToSymbol(page: Page, symbol: string): Promise<void> {
+  const symbolFilter = page.getByPlaceholder('Search Symbol');
+  await symbolFilter.fill(symbol);
+  await expect(getUniverseRowBySymbol(page, symbol)).toBeVisible({
+    timeout: 10000,
+  });
 }
 
 async function seedDateEditorWidthData(): Promise<SeederResult> {
@@ -111,10 +125,8 @@ test.describe('Date Editor Width Consistency', () => {
     page,
   }) => {
     // — Step 1: Find the row with a date value and click its ex_date cell —
-    const filledRow = page.locator('tr.mat-mdc-row', {
-      has: page.locator(`text=${symbolWithDate}`),
-    });
-    await expect(filledRow).toBeVisible({ timeout: 10000 });
+    await filterUniverseToSymbol(page, symbolWithDate);
+    const filledRow = getUniverseRowBySymbol(page, symbolWithDate);
 
     // Click the ex_date cell (contains a formatted date like "06/15/2026")
     const filledDateCell = filledRow.locator('[data-testid^="ex-date-cell-"]');
@@ -136,10 +148,8 @@ test.describe('Date Editor Width Consistency', () => {
     await expect(filledInput).not.toBeVisible({ timeout: 5000 });
 
     // — Step 2: Find the row with no date and click its ex_date cell —
-    const emptyRow = page.locator('tr.mat-mdc-row', {
-      has: page.locator(`text=${symbolWithoutDate}`),
-    });
-    await expect(emptyRow).toBeVisible({ timeout: 10000 });
+    await filterUniverseToSymbol(page, symbolWithoutDate);
+    const emptyRow = getUniverseRowBySymbol(page, symbolWithoutDate);
 
     // The empty date cell should show empty text; click it to enter edit mode
     const emptyDateCell = emptyRow.locator('[data-testid^="ex-date-cell-"]');

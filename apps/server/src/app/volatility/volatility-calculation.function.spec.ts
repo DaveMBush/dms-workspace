@@ -4,22 +4,22 @@ import { calculateVolatility } from './volatility-calculation.function';
 import { VolatilityCategory } from './volatility-category.type';
 
 describe('calculateVolatility', () => {
-  it('returns null for an empty array', () => {
+  it('returns insufficient-history for an empty array', () => {
     const result: VolatilityCategory = calculateVolatility([]);
-    expect(result).toBeNull();
+    expect(result).toBe('insufficient-history');
   });
 
-  it('returns null for fewer than 12 data points', () => {
+  it('returns insufficient-history for fewer than 12 data points', () => {
     const result: VolatilityCategory = calculateVolatility([1, 2, 3, 4, 5, 6]);
-    expect(result).toBeNull();
+    expect(result).toBe('insufficient-history');
   });
 
-  it('returns null for exactly 11 data points (boundary check)', () => {
+  it('returns insufficient-history for exactly 11 data points (boundary check)', () => {
     const amounts = Array.from({ length: 11 }, function constant() {
       return 1.0;
     });
     const result: VolatilityCategory = calculateVolatility(amounts);
-    expect(result).toBeNull();
+    expect(result).toBe('insufficient-history');
   });
 
   it('returns steady for 12 months of identical amounts', () => {
@@ -64,12 +64,12 @@ describe('calculateVolatility', () => {
     expect(result).toBe('volatile');
   });
 
-  it('returns null when mean is zero', () => {
+  it('returns insufficient-history when mean is zero', () => {
     const amounts = Array.from({ length: 12 }, function constant() {
       return 0;
     });
     const result: VolatilityCategory = calculateVolatility(amounts);
-    expect(result).toBeNull();
+    expect(result).toBe('insufficient-history');
   });
 
   it('works correctly with more than 12 data points (60 months)', () => {

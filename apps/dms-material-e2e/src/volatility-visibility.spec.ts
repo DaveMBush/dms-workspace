@@ -52,12 +52,9 @@ test.describe('Volatility visibility - symbols without positions', function desc
     });
   });
 
-  // This test is expected to fail until Story 84.2 is complete.
   test('symbol with no positions still shows a volatility icon in the live Universe list', async function symbolWithNoPositionShowsVolIcon({
     page,
   }) {
-    test.fail(true, 'Story 84.2 should make this live-symbol assertion pass.');
-
     const row = await searchForSymbol(
       page,
       SYMBOL_WITHOUT_POSITION_AND_EMPTY_VOL
