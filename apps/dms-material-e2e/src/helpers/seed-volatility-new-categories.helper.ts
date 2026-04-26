@@ -21,6 +21,20 @@ interface SeedCategoryPlan {
   amounts: number[];
 }
 
+interface SeedCategoryContext {
+  prisma: PrismaClient;
+  riskGroupId: string;
+  accountId: string;
+  divDepositTypeId: string;
+  universeIds: string[];
+}
+
+interface SeedRuntimeData {
+  accountName: string;
+  seedPlans: SeedCategoryPlan[];
+  universeIds: string[];
+}
+
 async function getOrCreateRiskGroupId(prisma: PrismaClient): Promise<string> {
   const riskGroup = await prisma.risk_group.upsert({
     where: { name: 'Equities' },
@@ -96,36 +110,77 @@ function buildSeedPlans(uniqueId: string): SeedCategoryPlan[] {
   ];
 }
 
+function extractSymbols(seedPlans: SeedCategoryPlan[]): string[] {
+  return seedPlans.map(function extractSymbol(plan: SeedCategoryPlan) {
+    return plan.symbol;
+  });
+}
+
+function createSeedRuntimeData(): SeedRuntimeData {
+  const uniqueId = generateUniqueId();
+
+  return {
+    accountName: `E2E-VOL-CATS-${uniqueId}`,
+    seedPlans: buildSeedPlans(uniqueId),
+    universeIds: [],
+  };
+}
+
 async function seedUniverseCategory(
-  prisma: PrismaClient,
-  plan: SeedCategoryPlan,
-  riskGroupId: string,
-  accountId: string,
-  divDepositTypeId: string,
-  universeIds: string[]
+  context: SeedCategoryContext,
+  plan: SeedCategoryPlan
 ): Promise<void> {
-  const universe = await prisma.universe.create({
+  const universe = await context.prisma.universe.create({
     data: buildUniverseCreateData(
       plan.symbol,
-      riskGroupId,
+      context.riskGroupId,
       plan.amounts[plan.amounts.length - 1]
     ),
   });
 
-  universeIds.push(universe.id);
+  context.universeIds.push(universe.id);
 
   const dates = buildMonthlyDates(plan.amounts.length);
-  await prisma.divDeposits.createMany({
+  await context.prisma.divDeposits.createMany({
     data: dates.map(function buildDepositRecord(date: Date, index: number) {
       return {
         date,
         amount: plan.amounts[index],
-        accountId,
-        divDepositTypeId,
+        accountId: context.accountId,
+        divDepositTypeId: context.divDepositTypeId,
         universeId: universe.id,
       };
     }),
   });
+}
+
+async function createSeedCategoryContext(
+  prisma: PrismaClient,
+  accountName: string,
+  universeIds: string[]
+): Promise<SeedCategoryContext> {
+  const riskGroupId = await getOrCreateRiskGroupId(prisma);
+  const divDepositTypeId = await getOrCreateDivDepositTypeId(prisma);
+  const account = await prisma.accounts.create({
+    data: { name: accountName },
+  });
+
+  return {
+    prisma,
+    riskGroupId,
+    accountId: account.id,
+    divDepositTypeId,
+    universeIds,
+  };
+}
+
+async function seedAllCategories(
+  context: SeedCategoryContext,
+  seedPlans: SeedCategoryPlan[]
+): Promise<void> {
+  for (const plan of seedPlans) {
+    await seedUniverseCategory(context, plan);
+  }
 }
 
 async function cleanupOnError(
@@ -155,71 +210,64 @@ async function cleanupOnError(
     .catch(suppressError);
 }
 
+function buildCleanup(
+  prisma: PrismaClient,
+  universeIds: string[],
+  symbols: string[],
+  accountName: string
+): () => Promise<void> {
+  return async function cleanupVolatilityNewCategoriesData(): Promise<void> {
+    try {
+      await prisma.divDeposits.deleteMany({
+        where: { universeId: { in: universeIds } },
+      });
+      await prisma.universe.deleteMany({
+        where: {
+          symbol: {
+            in: symbols,
+          },
+        },
+      });
+      await prisma.accounts.deleteMany({ where: { name: accountName } });
+    } finally {
+      await prisma.$disconnect();
+    }
+  };
+}
+
 export async function seedVolatilityNewCategoriesData(): Promise<VolatilityNewCategoriesSeederResult> {
   const prisma = await initializePrismaClient();
-  const uniqueId = generateUniqueId();
-  const seedPlans = buildSeedPlans(uniqueId);
-  const accountName = `E2E-VOL-CATS-${uniqueId}`;
-  const universeIds: string[] = [];
+  const runtimeData = createSeedRuntimeData();
+  const symbols = extractSymbols(runtimeData.seedPlans);
 
   try {
-    const riskGroupId = await getOrCreateRiskGroupId(prisma);
-    const divDepositTypeId = await getOrCreateDivDepositTypeId(prisma);
-    const account = await prisma.accounts.create({
-      data: { name: accountName },
-    });
-
-    for (const plan of seedPlans) {
-      await seedUniverseCategory(
-        prisma,
-        plan,
-        riskGroupId,
-        account.id,
-        divDepositTypeId,
-        universeIds
-      );
-    }
+    const context = await createSeedCategoryContext(
+      prisma,
+      runtimeData.accountName,
+      runtimeData.universeIds
+    );
+    await seedAllCategories(context, runtimeData.seedPlans);
   } catch (error) {
     await cleanupOnError(
       prisma,
-      universeIds,
-      seedPlans.map(function extractSymbol(plan: SeedCategoryPlan) {
-        return plan.symbol;
-      }),
-      accountName
+      runtimeData.universeIds,
+      symbols,
+      runtimeData.accountName
     );
     await prisma.$disconnect();
     throw error;
   }
 
   return {
-    flatSymbol: seedPlans[0].symbol,
-    upThenDownSymbol: seedPlans[1].symbol,
-    downThenUpSymbol: seedPlans[2].symbol,
-    symbols: seedPlans.map(function extractSymbol(plan: SeedCategoryPlan) {
-      return plan.symbol;
-    }),
-    cleanup:
-      async function cleanupVolatilityNewCategoriesData(): Promise<void> {
-        try {
-          await prisma.divDeposits.deleteMany({
-            where: { universeId: { in: universeIds } },
-          });
-          await prisma.universe.deleteMany({
-            where: {
-              symbol: {
-                in: seedPlans.map(function extractSymbol(
-                  plan: SeedCategoryPlan
-                ) {
-                  return plan.symbol;
-                }),
-              },
-            },
-          });
-          await prisma.accounts.deleteMany({ where: { name: accountName } });
-        } finally {
-          await prisma.$disconnect();
-        }
-      },
+    flatSymbol: runtimeData.seedPlans[0].symbol,
+    upThenDownSymbol: runtimeData.seedPlans[1].symbol,
+    downThenUpSymbol: runtimeData.seedPlans[2].symbol,
+    symbols,
+    cleanup: buildCleanup(
+      prisma,
+      runtimeData.universeIds,
+      symbols,
+      runtimeData.accountName
+    ),
   };
 }
