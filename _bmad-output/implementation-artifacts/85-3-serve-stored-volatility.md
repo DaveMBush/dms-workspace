@@ -42,26 +42,31 @@ so that the application is more responsive as my universe grows.
 ## Tasks / Subtasks
 
 - [x] Task 1: Update backend Universe interface to include volatility fields (AC: #1)
+
   - [x] Open `apps/server/src/app/routes/universe/universe.interface.ts`
   - [x] Add `volatilityLong: string | null` and `volatilityShort: string | null` to the `Universe` interface
   - [x] Ensure camelCase naming convention for TypeScript interface fields
 
 - [x] Task 2: Update `get-all-universes` Prisma query to select volatility columns (AC: #1)
+
   - [x] Open `apps/server/src/app/routes/universe/get-all-universes/index.ts`
   - [x] Add `volatility_long: true` and `volatility_short: true` to the Prisma `select` object in the query (or confirm `findMany` without select returns all fields)
   - [x] Confirm `volatility_long` and `volatility_short` are available on the query result type
 
 - [x] Task 3: Update `mapUniverseToResponse` to include stored volatility (AC: #1)
+
   - [x] Open `apps/server/src/app/routes/universe/index.ts`
   - [x] In `mapUniverseToResponse`, map `u.volatility_long ?? null` → `volatilityLong` and `u.volatility_short ?? null` → `volatilityShort`
   - [x] Confirm the Universe response shape now includes both new fields
 
 - [x] Task 4: Update frontend `Universe` store interface (AC: #3)
+
   - [x] Open `apps/dms-material/src/app/store/universe/universe.interface.ts`
   - [x] Replace optional `volatility1yr?` and `volatility5yr?` fields with `volatilityLong: string | null` and `volatilityShort: string | null`
   - [x] Update any code that references the old field names (`volatility1yr`, `volatility5yr`)
 
 - [x] Task 5: Update frontend rendering to use new field names (AC: #3)
+
   - [x] Open `apps/dms-material/src/app/global/global-universe/global-universe.component.html`
   - [x] Update `@switch` block for `'vol'` column — change `row.volatility1yr` to `row.volatilityLong`
   - [x] Confirm that `null` case already displays neutral placeholder (no icon)
@@ -72,6 +77,7 @@ so that the application is more responsive as my universe grows.
   - [x] If `VolatilityDataService` is kept for other purposes, mark it as deprecated
 
 - [x] Task 6: Verify with Playwright MCP (AC: #4)
+
   - [x] Start `pnpm start:server` and `pnpm start:dms-material`
   - [x] Use Playwright MCP to navigate to `http://localhost:4301`
   - [x] Log in and navigate to the Universe screen
