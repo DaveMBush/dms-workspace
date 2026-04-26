@@ -54,25 +54,16 @@ function buildUniverseCreateData(
 ): Record<string, unknown> {
   return {
     symbol,
-    // eslint-disable-next-line @typescript-eslint/naming-convention -- database column name
     risk_group_id: riskGroupId,
     distribution: 1.0,
-    // eslint-disable-next-line @typescript-eslint/naming-convention -- database column name
     distributions_per_year: 12,
-    // eslint-disable-next-line @typescript-eslint/naming-convention -- database column name
     last_price: 10.0,
-    // eslint-disable-next-line @typescript-eslint/naming-convention -- database column name
     ex_date: null,
-    // eslint-disable-next-line @typescript-eslint/naming-convention -- database column name
     most_recent_sell_date: null,
-    // eslint-disable-next-line @typescript-eslint/naming-convention -- database column name
     most_recent_sell_price: null,
     expired: false,
-    // eslint-disable-next-line @typescript-eslint/naming-convention -- database column name
     is_closed_end_fund: true,
-    // eslint-disable-next-line @typescript-eslint/naming-convention -- database column name
     volatility_long: STORED_VOLATILITY,
-    // eslint-disable-next-line @typescript-eslint/naming-convention -- database column name
     volatility_short: STORED_VOLATILITY,
   };
 }
