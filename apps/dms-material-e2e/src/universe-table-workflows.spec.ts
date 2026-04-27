@@ -79,10 +79,10 @@ test.describe('Universe Table Workflows', () => {
       // The table has filter row and header row - count only header row
       const headers = page.locator('tr.mat-mdc-header-row:not(.filter-row) th');
       const headerCount = await headers.count();
-      // Vol, Symbol, Risk Group, Distribution, Dist/Year, Yield %,
+      // Vol, SVol, Symbol, Risk Group, Distribution, Dist/Year, Yield %,
       // Avg Purch Yield %, Last Price, Ex-Date, Most Recent Sell Date,
       // Most Recent Sell Price, Position, Expired, Actions
-      expect(headerCount).toBe(14);
+      expect(headerCount).toBe(15);
     });
 
     test('should display symbol data in symbol column', async ({ page }) => {

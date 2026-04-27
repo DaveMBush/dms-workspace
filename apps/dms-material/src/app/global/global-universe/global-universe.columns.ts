@@ -7,6 +7,12 @@ export const UNIVERSE_COLUMNS: ColumnDef[] = [
     tooltip: 'Volatility',
     width: '50px',
   },
+  {
+    field: 'svol',
+    header: 'SVol',
+    tooltip: 'Short-Term Volatility',
+    width: '50px',
+  },
   { field: 'symbol', header: 'Symbol', sortable: true, width: '80px' },
   {
     field: 'risk_group',

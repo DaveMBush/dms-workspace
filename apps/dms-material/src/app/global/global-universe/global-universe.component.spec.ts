@@ -161,6 +161,26 @@ describe('GlobalUniverseComponent', () => {
       expect(col?.editable).toBe(true);
       expect(col?.type).toBe('date');
     });
+
+    it('should have svol column', () => {
+      const col = component.columns.find(function findSvol(c) {
+        return c.field === 'svol';
+      });
+      expect(col).toBeDefined();
+      expect(col?.header).toBe('SVol');
+      expect(col?.tooltip).toBe('Short-Term Volatility');
+    });
+
+    it('should have svol column immediately after vol column', () => {
+      const volIndex = component.columns.findIndex(function findVol(c) {
+        return c.field === 'vol';
+      });
+      const svolIndex = component.columns.findIndex(function findSvol(c) {
+        return c.field === 'svol';
+      });
+      expect(volIndex).toBeGreaterThanOrEqual(0);
+      expect(svolIndex).toBe(volIndex + 1);
+    });
   });
 
   describe('syncUniverse', () => {
