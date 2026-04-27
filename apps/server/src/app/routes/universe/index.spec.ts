@@ -330,3 +330,55 @@ describe('POST /api/universe - avg_purchase_yield_percent (regression: AS.9 Bug 
     expect(mockRecalculateUniverseVolatility).toHaveBeenCalledWith('u1');
   });
 });
+
+describe('POST /api/universe - volatilityShort field (Story 86.1)', () => {
+  let app: FastifyInstance;
+
+  beforeEach(async function setupApp() {
+    app = fastify({ logger: false });
+    await app.register(registerUniverseRoutes, { prefix: '/api/universe' });
+    await app.ready();
+    mockPrismaUniverse.findMany.mockReset();
+    mockPrismaUniverse.update.mockReset();
+  });
+
+  afterEach(async function teardownApp() {
+    await app.close();
+  });
+
+  it('includes volatilityShort in universe response when value is set', async function assertVolatilityShortInResponse() {
+    mockPrismaUniverse.findMany.mockResolvedValue([
+      makeUniverseRow({ volatility_short: 'steady' }),
+    ]);
+
+    const response = await app.inject({
+      method: 'POST',
+      url: '/api/universe/',
+      payload: ['u1'],
+    });
+
+    expect(response.statusCode).toBe(200);
+    const body = JSON.parse(response.body) as Array<{
+      volatilityShort: string | null;
+    }>;
+    expect(body[0].volatilityShort).toBe('steady');
+  });
+
+  it('includes volatilityShort as null when not yet calculated', async function assertVolatilityShortNullInResponse() {
+    mockPrismaUniverse.findMany.mockResolvedValue([
+      makeUniverseRow({ volatility_short: null }),
+    ]);
+
+    const response = await app.inject({
+      method: 'POST',
+      url: '/api/universe/',
+      payload: ['u1'],
+    });
+
+    expect(response.statusCode).toBe(200);
+    const body = JSON.parse(response.body) as Array<{
+      volatilityShort: string | null;
+    }>;
+    expect(body[0].volatilityShort).toBeNull();
+  });
+});
