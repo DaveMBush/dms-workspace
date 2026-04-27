@@ -80,7 +80,7 @@ misidentified five times before.
   - [x] Document: which rows are blank, at what scroll offset, and whether it's reproducible
   - [x] Document the finding in Dev Notes under "Failure Mode — Universe"
 
-- [ ] Task 3: Reproduce scrolling failure on Open Positions screen (AC: #2)
+- [x] Task 3: Reproduce scrolling failure on Open Positions screen (AC: #2)
 
   - [x] Navigate to an account with enough open positions for virtual scroll
   - [x] Scroll down rapidly through the positions list

@@ -89,9 +89,7 @@ async function assertVisibleSymbolsNonEmpty(
   timeout = 10000
 ): Promise<void> {
   // Wait for at least one row to be visible first
-  await expect(page.locator(ROW_SELECTOR).first()).toBeVisible({
-    timeout: 10000,
-  });
+  await expect(page.locator(ROW_SELECTOR).first()).toBeVisible({ timeout });
 
   // Poll until no empty cells remain (auto-retries until timeout)
   await expect
