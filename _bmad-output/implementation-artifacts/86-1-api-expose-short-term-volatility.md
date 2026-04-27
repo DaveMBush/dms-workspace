@@ -31,24 +31,27 @@ Story 86.2.
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Verify `volatilityShort` is included in the backend response (AC: #1)
-  - [ ] Open `apps/server/src/app/routes/universe/universe.interface.ts`
-  - [ ] Confirm `volatilityShort: string | null` is present (added in Story 85.3)
-  - [ ] If Story 85.3 did not include it, add it now alongside `volatilityLong`
-  - [ ] Open `apps/server/src/app/routes/universe/index.ts` — confirm `mapUniverseToResponse` maps `volatility_short → volatilityShort`
+- [x] Task 1: Verify `volatilityShort` is included in the backend response (AC: #1)
 
-- [ ] Task 2: Verify frontend `Universe` interface includes `volatilityShort` (AC: #2)
-  - [ ] Open `apps/dms-material/src/app/store/universe/universe.interface.ts`
-  - [ ] Confirm `volatilityShort: string | null` is declared (added in Story 85.3)
-  - [ ] If missing, add it now
-  - [ ] Run `pnpm nx build dms-material` to confirm no TypeScript errors
+  - [x] Open `apps/server/src/app/routes/universe/universe.interface.ts`
+  - [x] Confirm `volatilityShort: string | null` is present (added in Story 85.3)
+  - [x] If Story 85.3 did not include it, add it now alongside `volatilityLong`
+  - [x] Open `apps/server/src/app/routes/universe/index.ts` — confirm `mapUniverseToResponse` maps `volatility_short → volatilityShort`
 
-- [ ] Task 3: Write/update unit tests for Universe route asserting `volatilityShort` (AC: #3)
-  - [ ] Open or create `apps/server/src/app/routes/universe/index.spec.ts`
-  - [ ] Add a test case: mock a `universe` row with a non-null `volatility_short` value
-  - [ ] Assert the route response JSON includes `volatilityShort` with the expected value
-  - [ ] Add a test case: mock a `universe` row with `volatility_short: null`
-  - [ ] Assert the response includes `volatilityShort: null` (not `undefined`)
+- [x] Task 2: Verify frontend `Universe` interface includes `volatilityShort` (AC: #2)
+
+  - [x] Open `apps/dms-material/src/app/store/universe/universe.interface.ts`
+  - [x] Confirm `volatilityShort: string | null` is declared (added in Story 85.3)
+  - [x] If missing, add it now
+  - [x] Run `pnpm nx build dms-material` to confirm no TypeScript errors
+
+- [x] Task 3: Write/update unit tests for Universe route asserting `volatilityShort` (AC: #3)
+
+  - [x] Open or create `apps/server/src/app/routes/universe/index.spec.ts`
+  - [x] Add a test case: mock a `universe` row with a non-null `volatility_short` value
+  - [x] Assert the route response JSON includes `volatilityShort` with the expected value
+  - [x] Add a test case: mock a `universe` row with `volatility_short: null`
+  - [x] Assert the response includes `volatilityShort: null` (not `undefined`)
 
 - [ ] Task 4: Full test run (AC: #4)
   - [ ] Run `pnpm all` and confirm all tests pass
@@ -72,8 +75,8 @@ this story's primary work is the unit tests (Task 3). Do not duplicate changes a
   id: string;
   symbol: string;
   // ... other fields ...
-  volatilityLong: string | null;   // 5-year category — from Story 85.3
-  volatilityShort: string | null;  // 1-year category — confirmed in this story
+  volatilityLong: string | null; // 5-year category — from Story 85.3
+  volatilityShort: string | null; // 1-year category — confirmed in this story
 }
 ```
 

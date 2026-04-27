@@ -22,7 +22,7 @@ export async function optimizedBatchAccountLoad(
   }
 
   async function performBatchAccountLoad(): Promise<BatchAccountResult> {
-    return optimizedPrisma.accounts.findMany({
+    const accounts = await optimizedPrisma.accounts.findMany({
       where: { id: { in: accountIds } },
       select: {
         id: true,
@@ -50,6 +50,7 @@ export async function optimizedBatchAccountLoad(
         name: 'asc',
       },
     });
+    return accounts;
   }
 
   return databasePerformanceService.measureQueryPerformance(
