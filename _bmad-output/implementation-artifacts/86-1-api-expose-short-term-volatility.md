@@ -53,8 +53,8 @@ Story 86.2.
   - [x] Add a test case: mock a `universe` row with `volatility_short: null`
   - [x] Assert the response includes `volatilityShort: null` (not `undefined`)
 
-- [ ] Task 4: Full test run (AC: #4)
-  - [ ] Run `pnpm all` and confirm all tests pass
+- [x] Task 4: Full test run (AC: #4)
+  - [x] Run `pnpm all` and confirm all tests pass
 
 ## Dev Notes
 
