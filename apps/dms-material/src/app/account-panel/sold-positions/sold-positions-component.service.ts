@@ -9,10 +9,19 @@ import { Trade } from '../../store/trades/trade.interface';
 import { Universe } from '../../store/universe/universe.interface';
 import { classifyCapitalGain } from './classify-capital-gain.function';
 
+/**
+ * Scrolling regression history (Epics 29, 31, 44, 60, 64, 87):
+ * See base-table.component.ts for full history.
+ * Story 87.2 fix: placeholder symbol changed from '' to '\u2026' so that
+ * SmartNgRX in-flight loading rows are visually distinct (ellipsis) rather
+ * than blank, matching the Universe screen pattern from Story 76.3.
+ * A blank symbol causes the blank-cell regression guard in
+ * scrolling-regression-87.spec.ts to fail.
+ */
 function buildPlaceholderClosedPosition(id: string): ClosedPosition {
   return {
     id,
-    symbol: '',
+    symbol: '\u2026',
     buy: 0,
     buy_date: '',
     quantity: 0,

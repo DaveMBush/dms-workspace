@@ -10,10 +10,19 @@ import { OpenPosition } from '../../store/trades/open-position.interface';
 import { Trade } from '../../store/trades/trade.interface';
 import { Universe } from '../../store/universe/universe.interface';
 
+/**
+ * Scrolling regression history (Epics 29, 31, 44, 60, 64, 87):
+ * See base-table.component.ts for full history.
+ * Story 87.2 fix: placeholder symbol changed from '' to '\u2026' so that
+ * SmartNgRX in-flight loading rows are visually distinct (ellipsis) rather
+ * than blank, matching the Universe screen pattern from Story 76.3.
+ * A blank symbol causes the blank-cell regression guard in
+ * scrolling-regression-87.spec.ts to fail.
+ */
 function placeholderOpenPosition(id: string): OpenPosition {
   return {
     id,
-    symbol: '',
+    symbol: '\u2026',
     exDate: null,
     buy: 0,
     buyDate: new Date(),

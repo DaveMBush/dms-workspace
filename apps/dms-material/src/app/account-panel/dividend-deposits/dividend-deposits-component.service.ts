@@ -21,6 +21,15 @@ interface DividendRow {
   isLoading?: boolean;
 }
 
+/**
+ * Scrolling regression history (Epics 29, 31, 44, 60, 64, 87):
+ * See base-table.component.ts for full history.
+ * Story 87.2 fix: placeholder symbol changed from '' to '\u2026' so that
+ * SmartNgRX in-flight loading rows are visually distinct (ellipsis) rather
+ * than blank, matching the Universe screen pattern from Story 76.3.
+ * A blank symbol causes the blank-cell regression guard in
+ * scrolling-regression-87.spec.ts to fail.
+ */
 function buildPlaceholderDividendRow(id: string): DividendRow {
   return {
     id,
@@ -29,7 +38,7 @@ function buildPlaceholderDividendRow(id: string): DividendRow {
     accountId: '',
     divDepositTypeId: '',
     universeId: null,
-    symbol: '',
+    symbol: '\u2026',
     type: '',
     isLoading: true,
   };

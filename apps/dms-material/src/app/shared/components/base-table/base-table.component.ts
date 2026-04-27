@@ -31,6 +31,27 @@ import { debounceTime } from 'rxjs';
 import { SortColumn } from '../../services/sort-column.interface';
 import { ColumnDef } from './column-def.interface';
 
+/**
+ * SCROLLING REGRESSION HISTORY — DO NOT SIMPLIFY THIS CODE:
+ * Epic 29: rowHeight mismatch → CDK scroll height calculated incorrectly
+ * Epic 31: contain:strict on sticky header → jump on CDK viewport recalculation
+ * Epic 44: CSS transitions + extra CD cycles → CDK recalculated mid-animation
+ * Epic 60: isLoading=true rows filtered → array shrinks → CDK shrinks total height → scroll jumps
+ * Epic 64: Edge case follow-up to Epic 60 (excludeLoadingRows re-introduced the bug)
+ * Epic 87: Same root cause as Epic 60/64 but on account-panel screens (Open Positions,
+ *   Sold Positions, Dividend Deposits). Those screens used symbol: '' (empty string) as
+ *   the SmartNgRX placeholder, while Universe already used symbol: '\u2026'. A rapid
+ *   scroll triggered lazy-load in-flight windows where placeholder rows with blank symbols
+ *   were visible. Fix (Story 87.2): change placeholder symbol from '' to '\u2026' in all
+ *   three account-panel component services, matching the Universe screen pattern.
+ *
+ * The structural constraint: CDK virtual scroll requires a STABLE array length.
+ * SmartNgRX marks rows isLoading=true during in-flight requests; filtering those
+ * rows out shrinks the array and causes CDK to recalculate total height, jumping
+ * the viewport. Always keep placeholder/loading rows in the array.
+ * Placeholder rows must use a non-empty symbol (e.g. '\u2026') so blank-cell
+ * regression guards do not false-positive on loading rows.
+ */
 function compareNonNullValues(aVal: unknown, bVal: unknown): number {
   if (typeof aVal === 'string' && typeof bVal === 'string') {
     return aVal.localeCompare(bVal);
