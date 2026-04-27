@@ -206,6 +206,54 @@
           matTooltip="Insufficient history"
           >remove</mat-icon
         >
+        } } @case ('svol') { @if (row.volatilityShort === 'steady') {
+        <mat-icon
+          aria-label="Short-Term Volatility: steady"
+          matTooltip="Steady (Short-Term)"
+          >trending_flat</mat-icon
+        >
+        } @else if (row.volatilityShort === 'increasing') {
+        <mat-icon
+          aria-label="Short-Term Volatility: increasing"
+          matTooltip="Increasing (Short-Term)"
+          >trending_up</mat-icon
+        >
+        } @else if (row.volatilityShort === 'decreasing') {
+        <mat-icon
+          aria-label="Short-Term Volatility: decreasing"
+          matTooltip="Decreasing (Short-Term)"
+          >trending_down</mat-icon
+        >
+        } @else if (row.volatilityShort === 'flat') {
+        <mat-icon
+          aria-label="Short-Term Volatility: flat"
+          matTooltip="Flat (Short-Term)"
+          >drag_handle</mat-icon
+        >
+        } @else if (row.volatilityShort === 'volatile') {
+        <mat-icon
+          aria-label="Short-Term Volatility: volatile"
+          matTooltip="Volatile (Short-Term)"
+          >show_chart</mat-icon
+        >
+        } @else if (row.volatilityShort === 'up-then-down') {
+        <mat-icon
+          aria-label="Short-Term Volatility: up-then-down"
+          matTooltip="Up then Down (Short-Term)"
+          >change_history</mat-icon
+        >
+        } @else if (row.volatilityShort === 'down-then-up') {
+        <mat-icon
+          aria-label="Short-Term Volatility: down-then-up"
+          matTooltip="Down then Up (Short-Term)"
+          >swap_vert</mat-icon
+        >
+        } @else if (row.volatilityShort === 'insufficient-history') {
+        <mat-icon
+          aria-label="Short-Term Volatility: insufficient history"
+          matTooltip="Insufficient history (Short-Term)"
+          >remove</mat-icon
+        >
         } } @case ('distribution') {
         <dms-editable-cell
           [value]="row.distribution"
