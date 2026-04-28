@@ -105,6 +105,20 @@ test.describe('Open Positions Scrolling Regression — Story 87.3', () => {
       'Open Positions: blank symbol cells detected after oscillation scroll (bottom\u2192top\u2192bottom). ' +
         'Story 87.3 regression guard: repeated isLoading cycles should not produce blank symbol cells.'
     );
+
+    await assertVisibleRowsNonEmpty(
+      page,
+      QUANTITY_CELL_SELECTOR,
+      'Open Positions: blank quantity cells detected after oscillation scroll (bottom\u2192top\u2192bottom). ' +
+        'Story 87.3 regression guard: repeated isLoading cycles should not produce blank quantity cells.'
+    );
+
+    await assertVisibleRowsNonEmpty(
+      page,
+      BUY_CELL_SELECTOR,
+      'Open Positions: blank buy-price cells detected after oscillation scroll (bottom\u2192top\u2192bottom). ' +
+        'Story 87.3 regression guard: repeated isLoading cycles should not produce blank buy-price cells.'
+    );
   });
 
   test('position data (symbol, quantity, buy price) non-empty at all scroll positions', async ({
