@@ -44,6 +44,7 @@ production.
 ## Tasks / Subtasks
 
 - [ ] Task 1: Extend `universe-scrolling-regression.spec.ts` with new scroll patterns (AC: #1, #4)
+
   - [ ] Open `apps/dms-material-e2e/src/universe-scrolling-regression.spec.ts`
   - [ ] Add the following new `test()` cases (do NOT remove existing tests):
     - `'scrolls fast to bottom and back without blank rows'` — already exists; confirm still passing
@@ -54,6 +55,7 @@ production.
   - [ ] Data volume: ≥ 60 rows (use existing seed helper — it already seeds 60 rows)
 
 - [ ] Task 2: Create `open-positions-scrolling-regression.spec.ts` (AC: #1, #2, #3)
+
   - [ ] Create `apps/dms-material-e2e/src/open-positions-scrolling-regression.spec.ts`
   - [ ] Use the `seedScrollOpenPositionsData` helper from Story 87.1 findings / existing helper
   - [ ] Data volume: ≥ 40 open-position rows (enough to require virtual scroll)
@@ -65,6 +67,7 @@ production.
   - [ ] Use `expect.poll` — no fixed sleeps
 
 - [ ] Task 3: Create `sold-positions-scrolling-regression.spec.ts` (AC: #1, #2, #3)
+
   - [ ] Create `apps/dms-material-e2e/src/sold-positions-scrolling-regression.spec.ts`
   - [ ] Use `seedScrollSoldPositionsData` helper from `seed-scroll-sold-positions-data.helper.ts`
   - [ ] Data volume: ≥ 40 sold-position rows
@@ -74,6 +77,7 @@ production.
   - [ ] Assertion: symbol cell and sell-price cell non-empty at all scroll positions
 
 - [ ] Task 4: Extend `div-deposits-smooth-scroll.spec.ts` OR create `div-deposits-scrolling-regression.spec.ts` (AC: #1, #2, #3, #4)
+
   - [ ] Check `apps/dms-material-e2e/src/div-deposits-smooth-scroll.spec.ts` — if it already covers the required scroll patterns, extend it; otherwise create a new file
   - [ ] Use `seedScrollDivDepositsWithSymbolsData` helper
   - [ ] Data volume: ≥ 60 deposit rows
@@ -84,6 +88,7 @@ production.
   - [ ] Preserve all existing tests in the file
 
 - [ ] Task 5: Verify `universe-smooth-scroll.spec.ts` is still passing (AC: #4)
+
   - [ ] Open `apps/dms-material-e2e/src/universe-smooth-scroll.spec.ts`
   - [ ] Run it and confirm green
   - [ ] If any tests are flaky, stabilise them using `expect.poll` (do not skip)
@@ -109,12 +114,12 @@ The CDK virtual scroll viewport activates when there are more rows than can be d
 the viewport height. Based on the `row-height-audit.md` documentation, rows are ~48px. A
 typical viewport is ~700px → ~14 visible rows. Use these minimums:
 
-| Screen | Minimum Rows | Existing Seed Helper |
-|--------|-------------|----------------------|
-| Universe | 60 rows | `seed-scroll-universe-data.helper.ts` |
-| Open Positions | 40 rows (in same account) | `seed-scroll-open-positions-data.helper.ts` |
-| Sold Positions | 40 rows | `seed-scroll-sold-positions-data.helper.ts` |
-| Dividend Deposits | 60 deposits | `seed-scroll-div-deposits-with-symbols-data.helper.ts` |
+| Screen            | Minimum Rows              | Existing Seed Helper                                   |
+| ----------------- | ------------------------- | ------------------------------------------------------ |
+| Universe          | 60 rows                   | `seed-scroll-universe-data.helper.ts`                  |
+| Open Positions    | 40 rows (in same account) | `seed-scroll-open-positions-data.helper.ts`            |
+| Sold Positions    | 40 rows                   | `seed-scroll-sold-positions-data.helper.ts`            |
+| Dividend Deposits | 60 deposits               | `seed-scroll-div-deposits-with-symbols-data.helper.ts` |
 
 ### Scroll Pattern Helper
 
@@ -122,19 +127,15 @@ Use the programmatic scroll pattern from `universe-scrolling-regression.spec.ts`
 
 ```typescript
 async function scrollToBottom(page: Page): Promise<void> {
-  await page.locator('cdk-virtual-scroll-viewport').evaluate(
-    function doScroll(el: Element) {
-      (el as HTMLElement).scrollTop = (el as HTMLElement).scrollHeight;
-    }
-  );
+  await page.locator('cdk-virtual-scroll-viewport').evaluate(function doScroll(el: Element) {
+    (el as HTMLElement).scrollTop = (el as HTMLElement).scrollHeight;
+  });
 }
 
 async function scrollToTop(page: Page): Promise<void> {
-  await page.locator('cdk-virtual-scroll-viewport').evaluate(
-    function doScroll(el: Element) {
-      (el as HTMLElement).scrollTop = 0;
-    }
-  );
+  await page.locator('cdk-virtual-scroll-viewport').evaluate(function doScroll(el: Element) {
+    (el as HTMLElement).scrollTop = 0;
+  });
 }
 ```
 
@@ -150,12 +151,14 @@ apps/dms-material-e2e/src/helpers/assert-visible-rows-non-empty.helper.ts
 ### Filter/Sort Scroll Test Strategy
 
 For `scroll-after-filter` tests:
+
 1. Apply a risk group filter (if on Universe) or date range filter
 2. Wait for the filtered result to render
 3. Scroll to the bottom of the filtered list
 4. Assert no blank rows in the visible viewport
 
 For `scroll-after-sort` tests:
+
 1. Click a sortable column header to change sort order
 2. Wait for re-render
 3. Scroll to the bottom
@@ -164,6 +167,7 @@ For `scroll-after-sort` tests:
 ### Existing Spec Files
 
 Do NOT modify these files' existing tests — only extend:
+
 - `apps/dms-material-e2e/src/universe-scrolling-regression.spec.ts` ← extend
 - `apps/dms-material-e2e/src/universe-smooth-scroll.spec.ts` ← keep as-is
 - `apps/dms-material-e2e/src/open-positions-smooth-scroll.spec.ts` ← keep as-is (new regression spec is separate)
