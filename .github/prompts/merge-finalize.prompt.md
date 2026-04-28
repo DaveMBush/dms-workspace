@@ -43,15 +43,11 @@ git merge-tree --quiet $(git merge-base HEAD origin/main) HEAD origin/main
 ```
 
 6. If conflicts exist, attempt rebase onto `origin/main` up to 3 times.
-7. After any conflict fix, run validation using `runSubagent`:
+7. After any conflict fix, call the `runSubagent` tool with:
 
-```
-runSubagent:
-  model: "Claude Opus 4.7"
-  description: "Validation for story ${story} after merge conflict resolution"
-  prompt: |
-    You are re-validating story ${story} after merge conflict fixes. Load and follow ./quality-validation.prompt.md with context=story-${story}-merge exactly.
-```
+   - `model`: `"Claude Opus 4.7 (copilot)"`
+   - `description`: `"Validation for story ${story} after merge conflict resolution"`
+   - `prompt`: Read the full contents of `.github/prompts/quality-validation.prompt.md` and include them verbatim, substituting `context` with `story-${story}-merge`.
 
 8. Verify PR `mergeable` state via GitHub tools until it is `true` or `false`.
 9. If story changes include UI, run a quick Playwright sanity validation; if they include unfamiliar API usage, run a quick Context7 check.

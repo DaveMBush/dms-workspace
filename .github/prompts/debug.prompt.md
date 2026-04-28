@@ -56,10 +56,10 @@ Tasks:
 1. Analyze the bug report and identify the root cause.
 2. Implement the fix.
 3. If relevant, use the Playwright MCP server to help see the problem and confirm the fix.
-4. Delegate validation to a fresh subagent using `runSubagent`:
-   - Model: Claude Opus 4.7
-   - Load and follow ./quality-validation.prompt.md with context=debug-${story}
-   - This validation subagent must run the full loop from quality-validation.md, including code self-review of changed files only via `.github/instructions/code-review.md`
+4. Delegate validation to a fresh subagent. Call the `runSubagent` tool with:
+   - `model`: `"Claude Opus 4.7 (copilot)"`
+   - `description`: `"Validate debug fix for story ${story}"`
+   - `prompt`: Read the full contents of `.github/prompts/quality-validation.prompt.md` and include them verbatim, substituting `context` with `debug-${story}`.
    - If the validation subagent returns `VALIDATION FAILED`, use the prompt skill to report the failure to the user
 5. Return a summary of: files changed, what the fix was, and either
    "VALIDATION PASSED" or "VALIDATION FAILED: <reason>".
@@ -114,15 +114,11 @@ Before making any Phase 5 prompt-skill call or spawning the next subagent, **re-
 
 ## PHASE 6: Commit and PR Creation
 
-Once all bugs are fixed and no more bug work requested, delegate PR creation and CodeRabbit handling to a dedicated subagent using `runSubagent`:
+Once all bugs are fixed and no more bug work requested, call the `runSubagent` tool now with the following parameters to handle PR creation and CodeRabbit in a fresh subagent context:
 
-```
-runSubagent:
-  model: "Claude Sonnet 4.6 High"
-  description: "Debug PR lifecycle for story ${story}"
-  prompt: |
-    You are handling PR creation and CodeRabbit review for story ${story}. Load and follow ./debug-pr-lifecycle.prompt.md exactly.
-```
+- `model`: `"Claude Sonnet 4.6 High (copilot)"`
+- `description`: `"Debug PR lifecycle for story ${story}"`
+- `prompt`: Read the full contents of `.github/prompts/debug-pr-lifecycle.prompt.md` and include them verbatim as the prompt, substituting `${story}` with the actual story ID.
 
 This keeps the debug workflow context small while the PR lifecycle subagent handles:
 
@@ -147,15 +143,11 @@ The PR lifecycle subagent runs the CodeRabbit Review Loop Pattern from bmad-work
 
 ## PHASE 8: Final Merge
 
-Delegate final merge and cleanup to a dedicated subagent using `runSubagent`:
+Call the `runSubagent` tool now with the following parameters to handle the final merge and cleanup in a fresh subagent context:
 
-```
-runSubagent:
-  model: "Claude Sonnet 4.6 High"
-  description: "Debug merge and finalize for story ${story}"
-  prompt: |
-    You are merging and finalizing debug branch for story ${story}. Load and follow ./debug-merge-finalize.prompt.md exactly.
-```
+- `model`: `"Claude Sonnet 4.6 High (copilot)"`
+- `description`: `"Debug merge and finalize for story ${story}"`
+- `prompt`: Read the full contents of `.github/prompts/debug-merge-finalize.prompt.md` and include them verbatim as the prompt, substituting `${story}` with the actual story ID.
 
 This keeps the debug workflow context small while the merge subagent handles:
 

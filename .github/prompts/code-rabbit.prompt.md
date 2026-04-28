@@ -51,14 +51,10 @@ If the PR CI pipeline is still running, wait and re-check every 120s (with a max
 4. Poll `mcp_github_pull_request_read` with `method: "get_review_comments"` every 240s (10 min timeout)
 5. If no suggestions: proceed to merge checks
 6. If suggestions: classify (valid/invalid, in-scope/out-of-scope), use Context7/Playwright for verification
-7. Apply valid in-scope fixes, then run full quality validation using `runSubagent`:
-   ```
-   runSubagent:
-     model: "Claude Opus 4.7"
-     description: "Validation for story ${story} after CodeRabbit fixes"
-     prompt: |
-       You are re-validating story ${story} after applying CodeRabbit suggestions. Load and follow ./quality-validation.prompt.md with context=story-${story}-cr exactly.
-   ```
+7. Apply valid in-scope fixes, then call the `runSubagent` tool with:
+   - `model`: `"Claude Opus 4.7 (copilot)"`
+   - `description`: `"Validation for story ${story} after CodeRabbit fixes"`
+   - `prompt`: Read the full contents of `.github/prompts/quality-validation.prompt.md` and include them verbatim, substituting `context` with `story-${story}-cr`.
 8. Commit "Apply CodeRabbit suggestions", push, wait 5 minutes, continue loop
 9. Update state file with final status when complete
 

@@ -28,27 +28,19 @@ Before doing anything else, read all of the following:
 
 1. Operate in the **current working directory** only.
 2. Use the bash MCP server for every shell command in this workflow. Use `mcp_bash_run` for blocking commands and `mcp_bash_run_background` only for true background processes. This applies to `pnpm`, `git`, `gh`, and `bash`.
-3. Run the QA gate up to 10 times by calling `runSubagent` to invoke gate.prompt.md with Claude Opus 4.7:
+3. Run the QA gate up to 10 times. For each attempt, call the `runSubagent` tool with:
 
-```
-runSubagent:
-  model: "Claude Opus 4.7"
-  description: "QA gate for story ${story}"
-  prompt: |
-    You are running the QA gate for story ${story}. Load and follow ./gate.prompt.md exactly.
-```
+   - `model`: `"Claude Opus 4.7 (copilot)"`
+   - `description`: `"QA gate for story ${story}"`
+   - `prompt`: Read the full contents of `.github/prompts/gate.prompt.md` and include them verbatim, substituting `${story}` with the actual story ID.
 
 4. Interpret results exactly as follows:
-   - **PASS**: Return immediately with `QA PASSED`
-   - **FAIL**: Apply QA fix recommendations automatically, then re-run validation using `runSubagent`:
 
-```
-runSubagent:
-  model: "Claude Opus 4.7"
-  description: "Validation for story ${story} QA"
-  prompt: |
-    You are re-validating story ${story} after QA fixes. Load and follow ./quality-validation.prompt.md with context=story-${story}-qa exactly.
-```
+   - **PASS**: Return immediately with `QA PASSED`
+   - **FAIL**: Apply QA fix recommendations automatically, then call the `runSubagent` tool with:
+     - `model`: `"Claude Opus 4.7 (copilot)"`
+     - `description`: `"Validation for story ${story} after QA fixes"`
+     - `prompt`: Read the full contents of `.github/prompts/quality-validation.prompt.md` and include them verbatim, substituting `context` with `story-${story}-qa`.
 
 5. For QA findings about API misuse, use Context7.
 6. For QA findings about UI behavior, use Playwright.

@@ -34,15 +34,11 @@ Before doing anything else, read all of the following:
 
 1. Operate in the **current working directory** on the debug branch.
 2. Use the bash MCP server for every shell command in this workflow. Use `mcp_bash_run` for blocking commands and `mcp_bash_run_background` only for true background processes. This applies to `pnpm`, `git`, `gh`, and `bash`.
-3. Run commit and PR creation using `runSubagent`:
+3. Call the `runSubagent` tool now with the following parameters for commit and PR creation:
 
-```
-runSubagent:
-  model: "Claude Sonnet 4.6 High"
-  description: "Commit and PR creation for story ${story}"
-  prompt: |
-    You are creating a commit and PR for story ${story}. Load and follow ./commit-and-pr.prompt.md exactly.
-```
+   - `model`: `"Claude Sonnet 4.6 High (copilot)"`
+   - `description`: `"Commit and PR creation for story ${story}"`
+   - `prompt`: Read the full contents of `.github/prompts/commit-and-pr.prompt.md` and include them verbatim, substituting `${story}` with the actual story ID.
 
 4. Ensure PR metadata is written to `$(git rev-parse --git-common-dir)/tmp/story-${story}-meta.json`.
 5. If commit-and-pr fails, use the prompt skill to report the failure and stop.
