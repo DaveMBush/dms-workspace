@@ -38,7 +38,10 @@ test.describe('Volatility Column', function describeVolColumn() {
   test('hovering Vol header shows tooltip Volatility', async function volTooltipShowsVolatility({
     page,
   }) {
-    const volHeader = page.getByRole('columnheader', { name: 'Vol' });
+    const volHeader = page.getByRole('columnheader', {
+      name: 'Vol',
+      exact: true,
+    });
     await volHeader.hover();
     await expect(page.locator('.mat-mdc-tooltip')).toContainText('Volatility');
   });

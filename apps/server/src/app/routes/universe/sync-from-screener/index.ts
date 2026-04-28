@@ -69,7 +69,7 @@ async function upsertUniverse(params: {
       distribution,
       exDateToSet,
     });
-    await recalculateUniverseVolatility(existing.id);
+    await recalculateUniverseVolatility(existing.id, []);
     return 'updated';
   }
 
@@ -80,7 +80,7 @@ async function upsertUniverse(params: {
     distribution,
     exDateToSet,
   });
-  await recalculateUniverseVolatility(createdRecord.id);
+  await recalculateUniverseVolatility(createdRecord.id, []);
   return 'inserted';
 }
 

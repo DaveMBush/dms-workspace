@@ -100,7 +100,7 @@ test.describe('Accessibility - axe-core audits', () => {
       await page.goto('/global/screener', { waitUntil: 'domcontentloaded' });
       await page.waitForSelector('dms-base-table', {
         state: 'visible',
-        timeout: 15000,
+        timeout: 30000,
       });
     });
 

@@ -23,7 +23,7 @@ async function getColumnTexts(page: Page, colIndex: number): Promise<string[]> {
 }
 
 const UNIVERSE_COLUMN_INDEX = {
-  symbol: 2,
+  symbol: 3,
 } as const;
 
 /**

@@ -327,7 +327,7 @@ describe('POST /api/universe - avg_purchase_yield_percent (regression: AS.9 Bug 
         expired: false,
       },
     });
-    expect(mockRecalculateUniverseVolatility).toHaveBeenCalledWith('u1');
+    expect(mockRecalculateUniverseVolatility).toHaveBeenCalledWith('u1', []);
   });
 });
 

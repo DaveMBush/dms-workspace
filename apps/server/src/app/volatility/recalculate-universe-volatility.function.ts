@@ -1,13 +1,9 @@
 import { prisma } from '../prisma/prisma-client';
+import type { ProcessedRow } from '../routes/common/distribution-api.function';
 import { calculateVolatility } from './volatility-calculation.function';
 
 const FIVE_YEARS_MS = 5 * 365 * 24 * 60 * 60 * 1000;
 const ONE_YEAR_MS = 365 * 24 * 60 * 60 * 1000;
-
-interface DistributionRecord {
-  amount: number;
-  date: Date;
-}
 
 function buildFiveYearsAgo(now: Date): Date {
   return new Date(now.getTime() - FIVE_YEARS_MS);
@@ -18,43 +14,43 @@ function buildOneYearAgo(now: Date): Date {
 }
 
 function filterRecordsSince(
-  records: DistributionRecord[],
+  records: ProcessedRow[],
   threshold: Date
-): DistributionRecord[] {
+): ProcessedRow[] {
   return records.filter(function isSinceThreshold(record) {
     return record.date >= threshold;
   });
 }
 
-function mapAmounts(records: DistributionRecord[]): number[] {
+function mapAmounts(records: ProcessedRow[]): number[] {
   return records.map(function getAmount(record) {
     return record.amount;
   });
 }
 
-export async function recalculateUniverseVolatility(
-  universeId: string
-): Promise<void> {
-  const now = new Date();
+function extractWindowedAmounts(
+  history: ProcessedRow[],
+  now: Date
+): { longAmounts: number[]; shortAmounts: number[] } {
   const fiveYearsAgo = buildFiveYearsAgo(now);
   const oneYearAgo = buildOneYearAgo(now);
+  const longRows = filterRecordsSince(history, fiveYearsAgo);
+  const shortRows = filterRecordsSince(history, oneYearAgo);
+  return {
+    longAmounts: mapAmounts(longRows),
+    shortAmounts: mapAmounts(shortRows),
+  };
+}
 
-  const deposits = await prisma.divDeposits.findMany({
-    where: {
-      universeId,
-      deletedAt: null,
-      date: { gte: fiveYearsAgo },
-    },
-    orderBy: { date: 'asc' },
-    select: {
-      amount: true,
-      date: true,
-    },
-  });
+export async function recalculateUniverseVolatility(
+  universeId: string,
+  history: ProcessedRow[]
+): Promise<void> {
+  const now = new Date();
+  const { longAmounts, shortAmounts } = extractWindowedAmounts(history, now);
 
-  const oneYearDeposits = filterRecordsSince(deposits, oneYearAgo);
-  const volatilityLong = calculateVolatility(mapAmounts(deposits));
-  const volatilityShort = calculateVolatility(mapAmounts(oneYearDeposits));
+  const volatilityLong = calculateVolatility(longAmounts);
+  const volatilityShort = calculateVolatility(shortAmounts);
 
   await prisma.universe.update({
     where: { id: universeId },

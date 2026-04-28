@@ -66,14 +66,14 @@ async function getColumnTexts(page: Page, colIndex: number): Promise<string[]> {
 }
 
 const UNIVERSE_COLUMN_INDEX = {
-  symbol: 2,
-  riskGroup: 3,
-  yieldPercent: 6,
-  avgPurchaseYieldPercent: 7,
-  lastPrice: 8,
-  mostRecentSellDate: 10,
-  mostRecentSellPrice: 11,
-  position: 12,
+  symbol: 3,
+  riskGroup: 4,
+  yieldPercent: 7,
+  avgPurchaseYieldPercent: 8,
+  lastPrice: 9,
+  mostRecentSellDate: 11,
+  mostRecentSellPrice: 12,
+  position: 13,
 } as const;
 
 // ─── Universe Screen E2E Tests ───────────────────────────────────────────────

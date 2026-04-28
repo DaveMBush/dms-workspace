@@ -4,7 +4,7 @@ import { login } from './helpers/login.helper';
 import { seedUniverseData } from './helpers/seed-universe-data.helper';
 
 const UNIVERSE_COLUMN_INDEX = {
-  symbol: 2,
+  symbol: 3,
 } as const;
 
 test.describe('Universe Re-sort After Cell Edit', () => {
