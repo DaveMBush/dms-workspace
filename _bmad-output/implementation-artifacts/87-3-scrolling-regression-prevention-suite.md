@@ -1,6 +1,6 @@
 # Story 87.3: Comprehensive Scrolling Regression Prevention Suite
 
-Status: Approved
+Status: Done
 
 ## Story
 
