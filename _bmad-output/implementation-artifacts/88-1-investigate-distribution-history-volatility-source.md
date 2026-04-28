@@ -38,7 +38,7 @@ point that requires zero re-fetching of distribution data.
 
 - [x] Task 1: Inventory every `prisma.divDeposits.findMany` call site (AC: #1)
 
-  - [x] Run `grep_search` (or `rg`) for `prisma.divDeposits.findMany` across `apps/server/src/**`
+  - [x] Run `grep_search` for `prisma.divDeposits.findMany` across `apps/server/src/**`
   - [x] For each hit, record: file path, line number, surrounding function name, one-line description
   - [x] Flag which hits are inside the volatility module vs. unrelated (e.g. position calc, dividend display)
   - [x] Write the full inventory into Dev Notes under "divDeposits Volatility Call Site Inventory"
@@ -133,7 +133,7 @@ should pick one and justify in Dev Notes.
 | File                                                                    | Line (approx) | Trigger                                                  |
 | ----------------------------------------------------------------------- | ------------- | -------------------------------------------------------- |
 | `apps/server/src/app/routes/universe/sync-from-screener/index.ts`       | ~72, ~83      | Per-symbol upsert (this story is the prime wiring point) |
-| `apps/server/src/app/routes/universe/index.ts`                          | ~241          | PATCH universe route                                     |
+| `apps/server/src/app/routes/universe/index.ts`                          | ~241          | PUT universe route                                       |
 | `apps/server/src/app/routes/universe/add-symbol/add-symbol.function.ts` | ~153          | Add-symbol route                                         |
 
 All three callers will need to be updated in Story 88.3 to pass a history payload, since the
@@ -229,7 +229,7 @@ After step 7, `getDistributions` computes `DistributionResult` from the rows and
 
 Running `CI=1 pnpm all` from the worktree (`feat/story-88-1` branch, no code changes vs `main`) produced:
 
-```
+```text
 NX  Affected criteria defaulted to --base=main --head=HEAD
 NX  No tasks were run
 ```
@@ -262,7 +262,7 @@ git status               # Confirm only this story file is modified
 - [apps/server/src/app/routes/settings/common/get-distributions.function.ts](apps/server/src/app/routes/settings/common/get-distributions.function.ts) — Wraps `fetchDividendHistory(symbol)`
 - [apps/server/src/app/routes/common/dividend-history.service.ts](apps/server/src/app/routes/common/dividend-history.service.ts) — `fetchDividendHistory` definition; returns `ProcessedRow[]` (`{ amount, date }`)
 - [apps/server/src/app/routes/universe/add-symbol/add-symbol.function.ts](apps/server/src/app/routes/universe/add-symbol/add-symbol.function.ts) — Existing recalc trigger (Story 85.2)
-- [apps/server/src/app/routes/universe/index.ts](apps/server/src/app/routes/universe/index.ts) — PATCH route recalc trigger (Story 85.2)
+- [apps/server/src/app/routes/universe/index.ts](apps/server/src/app/routes/universe/index.ts) — PUT route recalc trigger (Story 85.2)
 - [\_bmad-output/planning-artifacts/epics-2026-04-28.md](_bmad-output/planning-artifacts/epics-2026-04-28.md) — Source epic (Epic 88, Story 88.1)
 - [\_bmad-output/implementation-artifacts/85-2-wire-volatility-recalculation-triggers.md](_bmad-output/implementation-artifacts/85-2-wire-volatility-recalculation-triggers.md) — Established the existing trigger wiring this story will replace
 
