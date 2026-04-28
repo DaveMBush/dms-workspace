@@ -2,6 +2,13 @@ import { expect, Page } from 'playwright/test';
 
 const ROW_SELECTOR = 'tr.mat-mdc-row';
 
+/** Serialise cell text content for use inside `evaluateAll` (runs in browser context). */
+function readCellTexts(cellElements: Element[]): string[] {
+  return cellElements.map(function readText(cell) {
+    return (cell.textContent ?? '').trim();
+  });
+}
+
 /**
  * Assert that all currently visible cells matching `cellSelector` have non-empty
  * text content.
@@ -32,13 +39,7 @@ export async function assertVisibleRowsNonEmpty(
         const cells = page.locator(cellSelector);
         // Read the currently rendered cells in one DOM snapshot so CDK
         // row recycling cannot race a count()+nth() loop mid-poll.
-        const texts = await cells.evaluateAll(function readTexts(
-          cellElements: Element[]
-        ) {
-          return cellElements.map(function readText(cell) {
-            return (cell.textContent ?? '').trim();
-          });
-        });
+        const texts = await cells.evaluateAll(readCellTexts);
         if (texts.length === 0) {
           return -1; // no rows yet — keep polling
         }
