@@ -205,11 +205,13 @@ describe('sync-from-screener route', () => {
     expect(h.client.universe.create).toHaveBeenCalledTimes(2);
     expect(mockRecalculateUniverseVolatility).toHaveBeenNthCalledWith(
       1,
-      'new-id-1'
+      'new-id-1',
+      []
     );
     expect(mockRecalculateUniverseVolatility).toHaveBeenNthCalledWith(
       2,
-      'new-id-2'
+      'new-id-2',
+      []
     );
   });
 
@@ -258,7 +260,10 @@ describe('sync-from-screener route', () => {
         expired: false,
       },
     });
-    expect(mockRecalculateUniverseVolatility).toHaveBeenCalledWith(EXISTING_ID);
+    expect(mockRecalculateUniverseVolatility).toHaveBeenCalledWith(
+      EXISTING_ID,
+      []
+    );
   });
 
   test('marks symbols as expired when not in screener', async () => {

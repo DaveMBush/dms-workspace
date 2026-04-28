@@ -150,7 +150,7 @@ export async function addSymbol(
     },
   });
 
-  await recalculateUniverseVolatility(universeRecord.id);
+  await recalculateUniverseVolatility(universeRecord.id, []);
 
   try {
     const { record, fetchFailed } = await fetchAndUpdatePriceData(

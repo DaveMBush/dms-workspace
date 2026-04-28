@@ -247,7 +247,8 @@ describe('addSymbol', function () {
     });
 
     expect(mockRecalculateUniverseVolatility).toHaveBeenCalledWith(
-      'test-universe-id'
+      'test-universe-id',
+      []
     );
 
     expect(mockPrisma.universe.update).toHaveBeenCalledWith({
@@ -298,7 +299,8 @@ describe('addSymbol', function () {
     });
 
     expect(mockRecalculateUniverseVolatility).toHaveBeenCalledWith(
-      'test-universe-id'
+      'test-universe-id',
+      []
     );
 
     expect(mockPrisma.universe.update).not.toHaveBeenCalled();
