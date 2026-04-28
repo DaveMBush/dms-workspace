@@ -26,54 +26,15 @@
  *   and the assertion will fail.
  */
 
-import { expect, Locator, Page, test } from 'playwright/test';
+import { expect, Locator, test } from 'playwright/test';
 
+import { assertVisibleRowsNonEmpty } from './helpers/assert-visible-rows-non-empty.helper';
 import { login } from './helpers/login.helper';
 import { seedScrollUniverseData } from './helpers/seed-scroll-universe-data.helper';
 
 const VIEWPORT_SELECTOR = 'cdk-virtual-scroll-viewport';
 const ROW_SELECTOR = 'tr.mat-mdc-row';
 const SYMBOL_CELL_SELECTOR = 'tr.mat-mdc-row td.mat-column-symbol';
-
-/**
- * Assert that all currently visible symbol cells have non-empty text content.
- * Uses expect.poll to retry the assertion until all rows are populated or the
- * timeout expires — no fixed sleeps required.
- *
- * Regression guard for Epics 29/31/44/60 (CDK virtual scroll blank rows).
- */
-async function assertVisibleSymbolsNonEmpty(
-  page: Page,
-  failureMessage: string
-): Promise<void> {
-  // Wait for at least one row to be visible first
-  await expect(page.locator(ROW_SELECTOR).first()).toBeVisible({
-    timeout: 10000,
-  });
-
-  // Poll until no empty cells remain (auto-retries until timeout)
-  await expect
-    .poll(
-      async function countEmptySymbols() {
-        const symbolCells = page.locator(SYMBOL_CELL_SELECTOR);
-        // Read the currently rendered symbol cells in one DOM snapshot so CDK
-        // row recycling cannot race a count()+nth() loop mid-poll.
-        const texts = await symbolCells.evaluateAll(function readTexts(cells) {
-          return cells.map(function readText(cell) {
-            return (cell.textContent ?? '').trim();
-          });
-        });
-        if (texts.length === 0) {
-          return -1; // no rows yet — keep polling
-        }
-        return texts.filter(function isEmpty(text) {
-          return text === '';
-        }).length;
-      },
-      { message: failureMessage, timeout: 10000 }
-    )
-    .toBe(0);
-}
 
 // ─── Scroll Helpers ──────────────────────────────────────────────────────────
 
@@ -136,8 +97,9 @@ test.describe('Universe Scrolling Regression — blank rows on fast scroll', () 
     // triggering the isLoading window (SmartNgRX lazy-load in-flight).
     await scrollViewportToBottom(viewport);
 
-    await assertVisibleSymbolsNonEmpty(
+    await assertVisibleRowsNonEmpty(
       page,
+      SYMBOL_CELL_SELECTOR,
       'Visible rows have empty symbol cells after fast scroll to bottom. ' +
         'This indicates the CDK virtual scroll blank-row regression from Epic 60 is active. ' +
         'See enrich-universe-with-risk-groups.function.ts isLoading filter.'
@@ -159,8 +121,9 @@ test.describe('Universe Scrolling Regression — blank rows on fast scroll', () 
     // Return to top
     await scrollViewportToTop(viewport);
 
-    await assertVisibleSymbolsNonEmpty(
+    await assertVisibleRowsNonEmpty(
       page,
+      SYMBOL_CELL_SELECTOR,
       'Visible rows have empty symbol cells after scrolling bottom→top. ' +
         'Epic 60 regression: isLoading filter in enrich-universe-with-risk-groups shrinks array on re-entry.'
     );
@@ -190,8 +153,9 @@ test.describe('Universe Scrolling Regression — blank rows on fast scroll', () 
     await scrollViewportToBottom(viewport);
     await scrollViewportToTop(viewport);
 
-    await assertVisibleSymbolsNonEmpty(
+    await assertVisibleRowsNonEmpty(
       page,
+      SYMBOL_CELL_SELECTOR,
       'Visible rows have empty symbol cells after repeated scroll oscillation. ' +
         'Epic 60 regression: repeated isLoading cycles destabilise CDK viewport height.'
     );
@@ -244,8 +208,9 @@ test.describe('Universe Scrolling Regression — blank rows on fast scroll', () 
     // Fast-scroll to the bottom to enter the new sorted data range.
     await scrollViewportToBottom(viewport);
 
-    await assertVisibleSymbolsNonEmpty(
+    await assertVisibleRowsNonEmpty(
       page,
+      SYMBOL_CELL_SELECTOR,
       'Visible rows have empty symbol cells after sort change + fast scroll. ' +
         'Round 5 (Epic 64) regression: excludeLoadingRows filter in filteredData$ removes ' +
         'placeholder rows, re-shrinking the CDK data array during isLoading window. ' +
@@ -282,8 +247,9 @@ test.describe('Universe Scrolling Regression — blank rows on fast scroll', () 
     // Fast-scroll to the bottom while the filter response may still be loading.
     await scrollViewportToBottom(viewport);
 
-    await assertVisibleSymbolsNonEmpty(
+    await assertVisibleRowsNonEmpty(
       page,
+      SYMBOL_CELL_SELECTOR,
       'Visible rows have empty symbol cells after symbol filter change + fast scroll. ' +
         'Epic 60 regression: filter triggers mass isLoading state, old null-return collapses array.'
     );
@@ -328,8 +294,9 @@ test.describe('Universe Scrolling Regression — blank rows on fast scroll', () 
 
     await scrollViewportToBottom(viewport);
 
-    await assertVisibleSymbolsNonEmpty(
+    await assertVisibleRowsNonEmpty(
       page,
+      SYMBOL_CELL_SELECTOR,
       'Visible rows have empty symbol cells after multiple rapid sort toggles + fast scroll. ' +
         'Epic 64 regression: overlapping isLoading windows from consecutive sort clicks ' +
         're-shrink the CDK array when excludeLoadingRows filter is present. ' +
@@ -369,12 +336,85 @@ test.describe('Universe Scrolling Regression — blank rows on fast scroll', () 
     // Scroll to the bottom of the (now-smaller) filtered result set.
     await scrollViewportToBottom(viewport);
 
-    await assertVisibleSymbolsNonEmpty(
+    await assertVisibleRowsNonEmpty(
       page,
+      SYMBOL_CELL_SELECTOR,
       'Visible rows have empty symbol cells after subset symbol filter + scroll to bottom. ' +
         'Epic 64 regression: excludeLoadingRows filter interacted with reduced result size to ' +
         're-shrink the CDK array during the filter isLoading window. ' +
         'See global-universe.component.ts filteredData$ and Story 64.2 for the fix.'
+    );
+  });
+
+  // ─── Story 87.3: New scroll pattern tests ─────────────────────────────────
+
+  test('handles oscillation (fast bottom-top-bottom-top) without blank rows', async ({
+    page,
+  }) => {
+    // Story 87.3 regression guard — oscillation (bottom→top→bottom→top)
+    // maximises the number of SmartNgRX lazy-load in-flight windows that
+    // overlap with the viewport. If placeholder rows with empty symbol cells
+    // are rendered at any oscillation step, the assertion will fail.
+    const viewport = page.locator(VIEWPORT_SELECTOR);
+    await expect(viewport).toBeVisible({ timeout: 10000 });
+
+    await scrollViewportToBottom(viewport);
+    await scrollViewportToTop(viewport);
+    await scrollViewportToBottom(viewport);
+    await scrollViewportToTop(viewport);
+
+    await assertVisibleRowsNonEmpty(
+      page,
+      SYMBOL_CELL_SELECTOR,
+      'Universe: blank symbol cells detected after oscillation scroll (bottom→top→bottom→top). ' +
+        'Story 87.3 regression guard: CDK viewport should remain stable across all oscillation cycles.'
+    );
+  });
+
+  test('no blank rows after applying a filter and scrolling', async ({
+    page,
+  }) => {
+    // Story 87.3 regression guard — applying a risk group filter triggers a
+    // new server-side request and an isLoading window.  All 60 seeded rows are
+    // in the 'Equities' risk group, so filtering by it keeps all rows visible
+    // while still triggering the round-trip and the resulting isLoading cycle.
+    const riskGroupSelect = page.locator(
+      'tr.filter-row mat-select[panelwidth=""]'
+    );
+    await expect(riskGroupSelect).toBeVisible({ timeout: 10000 });
+    await riskGroupSelect.click();
+    await page.getByRole('option', { name: 'Equities' }).click();
+
+    const viewport = page.locator(VIEWPORT_SELECTOR);
+    await expect(viewport).toBeVisible({ timeout: 10000 });
+    await scrollViewportToBottom(viewport);
+
+    await assertVisibleRowsNonEmpty(
+      page,
+      SYMBOL_CELL_SELECTOR,
+      'Universe: blank symbol cells detected after risk group filter + scroll to bottom. ' +
+        'Story 87.3 regression guard: filter-triggered isLoading window should not produce blank rows.'
+    );
+  });
+
+  test('no blank rows after changing sort order and scrolling', async ({
+    page,
+  }) => {
+    // Story 87.3 regression guard — changing sort order triggers a new
+    // server-side request and an isLoading window.  A fast scroll into the
+    // newly ordered data range should not expose placeholder rows.
+    const symbolHeader = page.getByRole('button', { name: 'Symbol' });
+    await symbolHeader.click();
+
+    const viewport = page.locator(VIEWPORT_SELECTOR);
+    await expect(viewport).toBeVisible({ timeout: 10000 });
+    await scrollViewportToBottom(viewport);
+
+    await assertVisibleRowsNonEmpty(
+      page,
+      SYMBOL_CELL_SELECTOR,
+      'Universe: blank symbol cells detected after sort change + scroll to bottom. ' +
+        'Story 87.3 regression guard: sort-triggered isLoading window should not produce blank rows.'
     );
   });
 });
