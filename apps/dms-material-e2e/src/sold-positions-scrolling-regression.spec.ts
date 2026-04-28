@@ -122,12 +122,15 @@ test.describe('Sold Positions Scrolling Regression — Story 87.3', () => {
     page,
   }) => {
     // Story 87.3 regression guard — applying a symbol filter triggers a
-    // new isLoading window. All seeded rows use symbols starting with 'TEST'
-    // so filtering by 'T' keeps all rows visible while still triggering the
-    // isLoading cycle that can expose blank cells.
+    // new isLoading window. The filter prefix is derived from the first visible
+    // symbol so the test stays data-driven and is not coupled to any specific
+    // seed-data naming convention.
     const symbolFilter = page.getByPlaceholder('Search Symbol');
     await expect(symbolFilter).toBeVisible({ timeout: 10000 });
-    await symbolFilter.fill('T');
+    const firstSymbolCell = page.locator(SYMBOL_CELL_SELECTOR).first();
+    await expect(firstSymbolCell).toBeVisible({ timeout: 10000 });
+    const firstSymbol = ((await firstSymbolCell.textContent()) ?? '').trim();
+    await symbolFilter.fill(firstSymbol.slice(0, 1));
 
     const viewport = page.locator(VIEWPORT_SELECTOR);
     await expect(viewport).toBeVisible({ timeout: 10000 });
