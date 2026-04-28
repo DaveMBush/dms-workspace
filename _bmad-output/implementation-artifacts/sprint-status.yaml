@@ -37,7 +37,7 @@
 #     E1 → E3 → E4(TS rules) → E2 → E5 → E4(template rules) → E6 → E7 → E8
 
 generated: 2026-03-17
-last_updated: 2026-04-25
+last_updated: 2026-04-28
 project_key: NOKEY
 tracking_system: file-system
 story_location: _bmad-output/implementation-artifacts
@@ -53,11 +53,11 @@ development_status:
   epic-1-retrospective: optional
 
   # ── Epic 2: Fix CUSIP Lookup — Switch to massive.com API ────────────────────
-  epic-2: in-progress
-  2-1-verify-massive-com-api-returns-results-for-failing-cusips: ready-for-dev
-  2-2-implement-massive-com-cusip-resolution-service: ready-for-dev
-  2-3-integrate-massive-com-as-fallback-in-cusip-resolution-chain: ready-for-dev
-  2-4-validate-resolution-of-previously-failing-cusips: ready-for-dev
+  epic-2: done
+  2-1-verify-massive-com-api-returns-results-for-failing-cusips: done
+  2-2-implement-massive-com-cusip-resolution-service: done
+  2-3-integrate-massive-com-as-fallback-in-cusip-resolution-chain: done
+  2-4-validate-resolution-of-previously-failing-cusips: done
   epic-2-retrospective: optional
 
   # ── Epic 3: Enable Skipped Unit and E2E Tests ────────────────────────────────
@@ -69,434 +69,442 @@ development_status:
   epic-3-retrospective: optional
 
   # ── Epic 4: Improve Lint Rules ───────────────────────────────────────────────
-  epic-4: in-progress
-  4-1-diff-lint-configurations: ready-for-dev
-  4-2-add-new-lint-rules-zero-warning-phase: ready-for-dev
-  4-3-add-vitest-equivalent-rules: ready-for-dev
+  epic-4: done
+  4-1-diff-lint-configurations: done
+  4-2-add-new-lint-rules-zero-warning-phase: done
+  4-3-add-vitest-equivalent-rules: done
   epic-4-retrospective: optional
 
   # ── Epic 5: Migrate CSS to Tailwind / Theme ──────────────────────────────────
-  epic-5: in-progress
-  5-1-audit-component-level-css: ready-for-dev
-  5-2-replace-layout-and-spacing-css-with-tailwind-utilities: ready-for-dev
-  5-3-replace-hardcoded-colors-with-theme-variables: ready-for-dev
-  5-4-update-project-context-to-enforce-css-policy: ready-for-dev
+  epic-5: done
+  5-1-audit-component-level-css: done
+  5-2-replace-layout-and-spacing-css-with-tailwind-utilities: done
+  5-3-replace-hardcoded-colors-with-theme-variables: done
+  5-4-update-project-context-to-enforce-css-policy: done
   epic-5-retrospective: optional
 
   # ── Epic 6: Upgrade Tailwind CSS to Version 4 ───────────────────────────────
-  epic-6: in-progress
-  6-1-analyse-breaking-changes-and-branch-state: ready-for-dev
-  6-2-update-dependencies-and-configuration: ready-for-dev
-  6-3-migrate-tailwind-config-js-to-v4-format: ready-for-dev
-  6-4-fix-all-v4-utility-class-breakages: ready-for-dev
-  6-5-ci-pipeline-green-with-tailwind-v4: ready-for-dev
+  epic-6: done
+  6-1-analyse-breaking-changes-and-branch-state: done
+  6-2-update-dependencies-and-configuration: done
+  6-3-migrate-tailwind-config-js-to-v4-format: done
+  6-4-fix-all-v4-utility-class-breakages: done
+  6-5-ci-pipeline-green-with-tailwind-v4: done
   epic-6-retrospective: optional
 
   # ── Epic 7: CUSIP Cache Page Cosmetics ──────────────────────────────────────
-  epic-7: in-progress
-  7-1-inspect-cusip-cache-page-in-dark-mode: ready-for-dev
-  7-2-fix-white-on-white-text-in-recently-added-section: ready-for-dev
-  7-3-fix-any-remaining-dark-mode-cosmetic-issues: ready-for-dev
+  epic-7: done
+  7-1-inspect-cusip-cache-page-in-dark-mode: done
+  7-2-fix-white-on-white-text-in-recently-added-section: done
+  7-3-fix-any-remaining-dark-mode-cosmetic-issues: done
   epic-7-retrospective: optional
 
   # ── Epic 8: Storybook for Display-Only Components ───────────────────────────
-  epic-8: in-progress
-  8-1-install-and-configure-storybook: ready-for-dev
-  8-2-create-stories-for-display-only-components: ready-for-dev
-  8-3-create-stories-for-full-pages-with-mocked-data: ready-for-dev
-  8-4-implement-playwright-visual-regression-tests-against-storybook: ready-for-dev
-  8-5-update-ci-pipeline-to-include-storybook-build-and-visual-tests: ready-for-dev
+  epic-8: done
+  8-1-install-and-configure-storybook: done
+  8-2-create-stories-for-display-only-components: done
+  8-3-create-stories-for-full-pages-with-mocked-data: done
+  8-4-implement-playwright-visual-regression-tests-against-storybook: done
+  8-5-update-ci-pipeline-to-include-storybook-build-and-visual-tests: done
   epic-8-retrospective: optional
 
   # ── Epic 16: Fix Storybook Setup with @nx/storybook ──────────────────────────
-  epic-16: in-progress
-  16-1-remove-existing-storybook-configuration: ready-for-dev
-  16-2-install-and-configure-storybook-via-nx-storybook: ready-for-dev
-  16-3-create-stories-for-all-display-only-components: ready-for-dev
-  16-4-verify-all-stories-render-correctly-using-playwright: ready-for-dev
+  epic-16: done
+  16-1-remove-existing-storybook-configuration: done
+  16-2-install-and-configure-storybook-via-nx-storybook: done
+  16-3-create-stories-for-all-display-only-components: done
+  16-4-verify-all-stories-render-correctly-using-playwright: done
   epic-16-retrospective: optional
 
   # ── Epic 17: Fix Wait Spinner Centering (Retry) ──────────────────────────────
-  epic-17: in-progress
-  17-1-fix-wait-spinner-centering-with-tailwind-css: ready-for-dev
+  epic-17: done
+  17-1-fix-wait-spinner-centering-with-tailwind-css: done
   epic-17-retrospective: optional
 
   # ── Epic 18: Fix Dividend Deposits Table (Retry) ─────────────────────────────
-  epic-18: in-progress
-  18-1-diagnose-dividend-deposits-table-rendering-issue: ready-for-dev
-  18-2-fix-dividend-deposits-table-row-visibility: ready-for-dev
+  epic-18: done
+  18-1-diagnose-dividend-deposits-table-rendering-issue: done
+  18-2-fix-dividend-deposits-table-row-visibility: done
   epic-18-retrospective: optional
 
   # ── Epic 19: Fix Global Summary Layout (Retry) ───────────────────────────────
-  epic-19: in-progress
-  19-1-fix-global-summary-responsive-layout: ready-for-dev
+  epic-19: done
+  19-1-fix-global-summary-responsive-layout: done
   epic-19-retrospective: optional
 
   # ── Epic 20: Fix Account Summary Layout (Retry) ──────────────────────────────
-  epic-20: in-progress
-  20-1-fix-account-summary-responsive-layout: ready-for-dev
+  epic-20: done
+  20-1-fix-account-summary-responsive-layout: done
   epic-20-retrospective: optional
 
   # ── Epic 21: Agent Prompt Rate-Limit Directives ──────────────────────────────
-  epic-21: in-progress
-  21-1-audit-and-update-agent-prompt-files-for-rate-limit-directives: ready-for-dev
+  epic-21: done
+  21-1-audit-and-update-agent-prompt-files-for-rate-limit-directives: done
   epic-21-retrospective: optional
 
   # ── Epic 22: 100% Branch Coverage via Vitest ─────────────────────────────────
-  epic-22: in-progress
-  22-1-configure-vitest-for-100-branch-coverage-threshold: ready-for-dev
-  22-2-achieve-100-branch-coverage-across-all-tested-files: ready-for-dev
+  epic-22: done
+  22-1-configure-vitest-for-100-branch-coverage-threshold: done
+  22-2-achieve-100-branch-coverage-across-all-tested-files: done
   epic-22-retrospective: optional
 
   # ── Epic 23: Fix jscpd Configuration and Resolve Duplication ─────────────────
-  epic-23: in-progress
-  23-1-remove-invalid-ignore-paths-from-jscpd-json: ready-for-dev
-  23-2-resolve-duplication-exposed-by-jscpd-fix: ready-for-dev
-  23-3-add-quality-tool-governance-section-to-architecture-document: ready-for-dev
+  epic-23: done
+  23-1-remove-invalid-ignore-paths-from-jscpd-json: done
+  23-2-resolve-duplication-exposed-by-jscpd-fix: done
+  23-3-add-quality-tool-governance-section-to-architecture-document: done
   epic-23-retrospective: optional
 
   # ── Epic 24: Multi-Column Sort on Universe Table ──────────────────────────────
-  epic-24: in-progress
-  24-1-extend-sort-state-model-for-multi-column-sort: ready-for-dev
-  24-2-implement-multi-column-sort-in-backend-query: ready-for-dev
-  24-3-implement-multi-column-sort-ui-on-universe-screen: ready-for-dev
+  epic-24: done
+  24-1-extend-sort-state-model-for-multi-column-sort: done
+  24-2-implement-multi-column-sort-in-backend-query: done
+  24-3-implement-multi-column-sort-ui-on-universe-screen: done
   epic-24-retrospective: optional
 
   # ── Epic 25: Restore Sort and Filter UI State on Load ────────────────────────
-  epic-25: in-progress
-  25-1-restore-sort-indicator-ui-from-saved-state: ready-for-dev
-  25-2-restore-filter-ui-state-from-saved-state: ready-for-dev
+  epic-25: done
+  25-1-restore-sort-indicator-ui-from-saved-state: done
+  25-2-restore-filter-ui-state-from-saved-state: done
   epic-25-retrospective: optional
 
   # ── Epic 26: Dual-Theme Storybook and Snapshot Testing ───────────────────────
-  epic-26: in-progress
-  26-1-add-theme-switcher-to-storybook-preview: ready-for-dev
-  26-2-dual-theme-snapshot-testing: ready-for-dev
+  epic-26: done
+  26-1-add-theme-switcher-to-storybook-preview: done
+  26-2-dual-theme-snapshot-testing: done
   epic-26-retrospective: optional
 
   # ── Epic 27: Remove Deprecated Checkbox Columns ──────────────────────────────
-  epic-27: in-progress
-  27-1-remove-checkbox-columns-from-screener-frontend: ready-for-dev
-  27-2-remove-checkbox-columns-from-backend-schema-and-api: ready-for-dev
-  27-3-remove-checkbox-update-logic-from-frontend-and-backend: ready-for-dev
-  27-4-update-update-universe-to-not-require-checkboxes: ready-for-dev
+  epic-27: done
+  27-1-remove-checkbox-columns-from-screener-frontend: done
+  27-2-remove-checkbox-columns-from-backend-schema-and-api: done
+  27-3-remove-checkbox-update-logic-from-frontend-and-backend: done
+  27-4-update-update-universe-to-not-require-checkboxes: done
   epic-27-retrospective: optional
 
   # ── Epic 28: Storybook Stories for BaseTableComponent ────────────────────────
-  epic-28: in-progress
-  28-1-create-default-and-variation-stories-for-basetable: ready-for-dev
-  28-2-verify-basetable-stories-with-playwright-snapshot-testing: ready-for-dev
+  epic-28: done
+  28-1-create-default-and-variation-stories-for-basetable: done
+  28-2-verify-basetable-stories-with-playwright-snapshot-testing: done
   epic-28-retrospective: optional
 
   # ── Epic 29: Virtual Scroll Row Height Standardization ───────────────────────
-  epic-29: in-progress
-  29-1-audit-and-standardize-virtual-scroll-row-heights: ready-for-dev
-  29-2-verify-smooth-scrolling-on-all-tables-with-playwright: ready-for-dev
+  epic-29: done
+  29-1-audit-and-standardize-virtual-scroll-row-heights: done
+  29-2-verify-smooth-scrolling-on-all-tables-with-playwright: done
   epic-29-retrospective: optional
 
   # ── Epic 30: Update Rate-Limiting Directives in Agent Prompts ────────────────
-  epic-30: in-progress
-  30-1-replace-rate-limiting-directive-in-all-prompt-and-instruction-files: ready-for-dev
+  epic-30: done
+  30-1-replace-rate-limiting-directive-in-all-prompt-and-instruction-files: done
   epic-30-retrospective: optional
 
   # ── Epic 31: Fix Janky Virtual-Scroll Table Header Jumping ───────────────────
-  epic-31: in-progress
-  31-1-reproduce-and-root-cause-the-header-jumping-issue: ready-for-dev
-  31-2-implement-and-verify-the-virtual-scroll-header-fix: ready-for-dev
+  epic-31: done
+  31-1-reproduce-and-root-cause-the-header-jumping-issue: done
+  31-2-implement-and-verify-the-virtual-scroll-header-fix: done
   epic-31-retrospective: optional
 
   # ── Epic 32: Fix Copy Paste Detection Threshold and Violations ───────────────
-  epic-32: in-progress
-  32-1-lower-jscpd-threshold-to-zero-and-update-architecture-doc: ready-for-dev
-  32-2-refactor-all-copy-paste-violations-to-pass-zero-threshold-check: ready-for-dev
+  epic-32: done
+  32-1-lower-jscpd-threshold-to-zero-and-update-architecture-doc: done
+  32-2-refactor-all-copy-paste-violations-to-pass-zero-threshold-check: done
   epic-32-retrospective: optional
 
   # ── Epic 33: Fix BaseTable Storybook Story Display ───────────────────────────
-  epic-33: in-progress
-  33-1-add-fixed-size-host-wrapper-to-basetable-storybook-stories: ready-for-dev
+  epic-33: done
+  33-1-add-fixed-size-host-wrapper-to-basetable-storybook-stories: done
   epic-33-retrospective: optional
 
   # ── Epic 34: Find a Better Dividend Source ───────────────────────────────────
-  epic-34: backlog
-  34-1-evaluate-and-select-dividend-data-source: backlog
-  34-2-implement-dividend-fetch-service: backlog
-  34-3-wire-new-service-into-dividend-update-process: backlog
-  34-4-e2e-test-dividend-precision-after-update: backlog
+  epic-34: done
+  34-1-evaluate-and-select-dividend-data-source: done
+  34-2-implement-dividend-fetch-service: done
+  34-3-wire-new-service-into-dividend-update-process: done
+  34-4-e2e-test-dividend-precision-after-update: done
   epic-34-retrospective: optional
 
   # ── Epic 35: Fetch Price and Dividend on Symbol Add ──────────────────────────
-  epic-35: backlog
-  35-1-identify-price-dividend-fetch-entry-points: backlog
-  35-2-fetch-price-dividend-after-manual-symbol-add: backlog
-  35-3-fetch-price-dividend-after-cusip-resolution-add: backlog
+  epic-35: done
+  35-1-identify-price-dividend-fetch-entry-points: done
+  35-2-fetch-price-dividend-after-manual-symbol-add: done
+  35-3-fetch-price-dividend-after-cusip-resolution-add: done
   epic-35-retrospective: optional
 
   # ── Epic 36: Fix Multi-Column Sorting on Universe Screen ─────────────────────
-  epic-36: backlog
-  36-1-write-failing-e2e-tests-multi-column-sort-universe: backlog
-  36-2-fix-secondary-sort-universe-screen: backlog
-  36-3-regression-proof-multi-column-sort-persistence: backlog
+  epic-36: done
+  36-1-write-failing-e2e-tests-multi-column-sort-universe: done
+  36-2-fix-secondary-sort-universe-screen: done
+  36-3-regression-proof-multi-column-sort-persistence: done
   epic-36-retrospective: optional
 
   # ── Epic 37: Fix Sorting on Account Tables ───────────────────────────────────
-  epic-37: backlog
-  37-1-write-failing-e2e-tests-account-table-sorting: review
-  37-2-diagnose-and-fix-account-table-sort-bug: backlog
-  37-3-unit-tests-account-table-sort-state-wiring: backlog
+  epic-37: done
+  37-1-write-failing-e2e-tests-account-table-sorting: done
+  37-2-diagnose-and-fix-account-table-sort-bug: done
+  37-3-unit-tests-account-table-sort-state-wiring: done
   epic-37-retrospective: optional
 
   # ── Epic 38: Fix Sort/Filter State Persistence on Account Screens ─────────────
-  epic-38: backlog
-  38-1-write-e2e-tests-sort-filter-state-persistence-account: backlog
-  38-2-fix-sort-filter-state-persistence-account-screens: backlog
-  38-3-verify-universe-screen-sort-filter-persistence: backlog
+  epic-38: done
+  38-1-write-e2e-tests-sort-filter-state-persistence-account: done
+  38-2-fix-sort-filter-state-persistence-account-screens: done
+  38-3-verify-universe-screen-sort-filter-persistence: done
   epic-38-retrospective: optional
 
   # ── Epic 39: Fix Empty Date Editor Width ─────────────────────────────────────
-  epic-39: backlog
-  39-1-write-tests-date-editor-width-consistency: backlog
-  39-2-fix-date-editor-width-consistent: backlog
+  epic-39: done
+  39-1-write-tests-date-editor-width-consistency: done
+  39-2-fix-date-editor-width-consistent: done
   epic-39-retrospective: optional
 
   # ── Epic 40: Implement Lazy Loading for All Tables ───────────────────────────
-  epic-40: backlog
-  40-1-diagnose-root-cause-eager-data-loading: backlog
-  40-2-implement-lazy-loading-universe-screen-table: backlog
-  40-3-implement-lazy-loading-account-tables: backlog
-  40-4-e2e-tests-verifying-lazy-loading-network-traffic: backlog
+  epic-40: done
+  40-1-diagnose-root-cause-eager-data-loading: done
+  40-2-implement-lazy-loading-universe-screen-table: done
+  40-3-implement-lazy-loading-account-tables: done
+  40-4-e2e-tests-verifying-lazy-loading-network-traffic: done
   epic-40-retrospective: optional
 
   # ── Epic 41: Refactor Code and Functionality Duplication ─────────────────────
-  epic-41: backlog
-  41-1-comprehensive-duplication-audit: backlog
-  41-2-refactor-copy-paste-code-duplication: backlog
-  41-3-refactor-functional-duplication: backlog
-  41-4-evaluate-global-summary-account-summary-merge: backlog
+  epic-41: done
+  41-1-comprehensive-duplication-audit: done
+  41-2-refactor-copy-paste-code-duplication: done
+  41-3-refactor-functional-duplication: done
+  41-4-evaluate-global-summary-account-summary-merge: done
   epic-41-retrospective: optional
 
   # ── Epic 42: Fix Failing E2E Tests ───────────────────────────────────────────
-  epic-42: backlog
-  42-1-fix-failing-chromium-e2e-tests: ready-for-dev
-  42-2-fix-failing-firefox-e2e-tests: ready-for-dev
+  epic-42: done
+  42-1-fix-failing-chromium-e2e-tests: done
+  42-2-fix-failing-firefox-e2e-tests: done
   epic-42-retrospective: optional
 
   # ── Epic 43: Fix Secondary Sort on Universe Screen ────────────────────────────
-  epic-43: backlog
-  43-1-diagnose-fix-server-secondary-sort: ready-for-dev
-  43-2-e2e-secondary-sort-universe: ready-for-dev
+  epic-43: done
+  43-1-diagnose-fix-server-secondary-sort: done
+  43-2-e2e-secondary-sort-universe: done
   epic-43-retrospective: optional
 
   # ── Epic 44: Fix Janky Scrolling Across All Tables ────────────────────────────
-  epic-44: backlog
-  44-1-reproduce-diagnose-janky-scrolling: ready-for-dev
-  44-2-fix-janky-scrolling: ready-for-dev
-  44-3-verify-scrolling-e2e-tests: ready-for-dev
+  epic-44: done
+  44-1-reproduce-diagnose-janky-scrolling: done
+  44-2-fix-janky-scrolling: done
+  44-3-verify-scrolling-e2e-tests: done
   epic-44-retrospective: optional
 
   # ── Epic 45: Remove Yahoo Finance Dividend Code ───────────────────────────────
-  epic-45: backlog
-  45-1-remove-yahoo-finance-dividend-code: ready-for-dev
-  45-2-verify-dividend-data-correctness: ready-for-dev
+  epic-45: done
+  45-1-remove-yahoo-finance-dividend-code: done
+  45-2-verify-dividend-data-correctness: done
   epic-45-retrospective: optional
 
   # ── Epic 46: Fix Column Filter Width on Universe Screen ───────────────────────
-  epic-46: backlog
-  46-1-fix-universe-column-filter-width: ready-for-dev
-  46-2-e2e-universe-column-filter-width: ready-for-dev
+  epic-46: done
+  46-1-fix-universe-column-filter-width: done
+  46-2-e2e-universe-column-filter-width: done
   epic-46-retrospective: optional
 
   # ── Epic 47: Fix Lazy Loading of Data on All Tables ───────────────────────────
-  epic-47: backlog
-  47-1-reproduce-diagnose-lazy-loading: ready-for-dev
-  47-2-fix-lazy-loading-implementation: ready-for-dev
-  47-3-verify-lazy-loading-e2e: ready-for-dev
+  epic-47: done
+  47-1-reproduce-diagnose-lazy-loading: done
+  47-2-fix-lazy-loading-implementation: done
+  47-3-verify-lazy-loading-e2e: done
   epic-47-retrospective: optional
 
   # ── Epic 48: CSV Import Split Handling ────────────────────────────────────────
-  epic-48: backlog
-  48-1-detect-split-transactions-csv: ready-for-dev
-  48-2-calculate-split-ratio: ready-for-dev
-  48-3-adjust-positions-for-split: ready-for-dev
-  48-4-handle-split-remainders: ready-for-dev
-  48-5-e2e-csv-import-split-handling: ready-for-dev
+  epic-48: done
+  48-1-detect-split-transactions-csv: done
+  48-2-calculate-split-ratio: done
+  48-3-adjust-positions-for-split: done
+  48-4-handle-split-remainders: done
+  48-5-e2e-csv-import-split-handling: done
   epic-48-retrospective: optional
 
   # ── Epic 49: Fix Risk Group Filter Dropdown Width on Universe Screen ──────────
-  epic-49: backlog
-  49-1-fix-riskgroup-dropdown-panel-width: ready-for-dev
-  49-2-e2e-riskgroup-dropdown-width: ready-for-dev
+  epic-49: done
+  49-1-fix-riskgroup-dropdown-panel-width: done
+  49-2-e2e-riskgroup-dropdown-width: done
   epic-49-retrospective: optional
 
   # ── Epic 50: Fix Dividend History Load Failures (dividendhistory.net) ─────────
-  epic-50: backlog
-  50-1-switch-dividend-fetch-to-dividendhistory-net: ready-for-dev
-  50-2-verify-dividend-data-dividendhistory-net: ready-for-dev
+  epic-50: done
+  50-1-switch-dividend-fetch-to-dividendhistory-net: done
+  50-2-verify-dividend-data-dividendhistory-net: done
   epic-50-retrospective: optional
 
   # ── Epic 51: Correct Risk Group Filter Dropdown Panel Width (panelWidth="") ───
-  epic-51: backlog
-  51-1-fix-riskgroup-panelwidth-empty-string: backlog
-  51-2-update-e2e-riskgroup-panelwidth: backlog
+  epic-51: done
+  51-1-fix-riskgroup-panelwidth-empty-string: done
+  51-2-update-e2e-riskgroup-panelwidth: done
   epic-51-retrospective: optional
 
   # ── Epic 52: Fix Accounts Filter Dropdown Panel Width on Universe Screen ──────
-  epic-52: backlog
-  52-1-fix-accounts-dropdown-panelwidth-empty-string: backlog
-  52-2-e2e-accounts-dropdown-panelwidth: backlog
+  epic-52: done
+  52-1-fix-accounts-dropdown-panelwidth-empty-string: done
+  52-2-e2e-accounts-dropdown-panelwidth: done
   epic-52-retrospective: optional
 
   # ── Epic 53: Properly Evaluate and Fix dividendhistory.net Integration ─────────
-  epic-53: backlog
-  53-1-investigate-dividendhistory-net-html-structure: backlog
-  53-2-fix-dividendhistory-net-integration: backlog
+  epic-53: done
+  53-1-investigate-dividendhistory-net-html-structure: done
+  53-2-fix-dividendhistory-net-integration: done
   epic-53-retrospective: optional
 
   # ── Epic 54: Restore Universe Sort Stickiness (Regression from Epic 43) ───────
-  epic-54: backlog
-  54-1-failing-e2e-universe-sort-stickiness: backlog
-  54-2-fix-universe-sort-stickiness: backlog
+  epic-54: done
+  54-1-failing-e2e-universe-sort-stickiness: done
+  54-2-fix-universe-sort-stickiness: done
   epic-54-retrospective: optional
 
   # ── Epic 55: Fix Duplicate Symbols on Universe Screen ────────────────────────
-  epic-55: backlog
-  55-1-failing-e2e-universe-duplicate-symbols: backlog
-  55-2-fix-universe-duplicate-symbols: backlog
+  epic-55: done
+  55-1-failing-e2e-universe-duplicate-symbols: done
+  55-2-fix-universe-duplicate-symbols: done
   epic-55-retrospective: optional
 
   # ── Epic 56: Fix Universe Initial Load with Symbol Ascending Sort ────────────
-  epic-56: backlog
-  56-1-failing-e2e-universe-symbol-sort-empty-rows: backlog
-  56-2-fix-universe-symbol-sort-empty-rows: backlog
+  epic-56: done
+  56-1-failing-e2e-universe-symbol-sort-empty-rows: done
+  56-2-fix-universe-symbol-sort-empty-rows: done
   epic-56-retrospective: optional
 
   # ── Epic 57: Fix CSV Reverse-Split Import Handling ───────────────────────────
-  epic-57: backlog
-  57-1-investigate-reverse-split-import-code: backlog
-  57-2-implement-reverse-split-detection-ratio: backlog
-  57-3-e2e-reverse-split-csv-import: backlog
+  epic-57: done
+  57-1-investigate-reverse-split-import-code: done
+  57-2-implement-reverse-split-detection-ratio: done
+  57-3-e2e-reverse-split-csv-import: done
   epic-57-retrospective: optional
 
   # ── Epic 67: Inconsistent Row Heights ────────────────────────────────────────
-  epic-67: in-progress
-  67-1-measure-row-height-inconsistency: ready-for-dev
-  67-2-fix-row-height-consistency: ready-for-dev
+  epic-67: done
+  67-1-measure-row-height-inconsistency: done
+  67-2-fix-row-height-consistency: done
   epic-67-retrospective: optional
 
   # ── Epic 68: Remove "No Results Found" Message ────────────────────────────────
-  epic-68: in-progress
-  68-1-remove-no-results-message: ready-for-dev
-  68-2-e2e-no-overlay-on-empty-universe: ready-for-dev
+  epic-68: done
+  68-1-remove-no-results-message: done
+  68-2-e2e-no-overlay-on-empty-universe: done
   epic-68-retrospective: optional
 
   # ── Epic 69: CSV Import — 400 Bad Request ────────────────────────────────────
-  epic-69: in-progress
-  69-1-write-failing-csv-import-e2e-test: ready-for-dev
-  69-2-diagnose-fix-csv-import-400: ready-for-dev
-  69-3-harden-csv-import-regression-suite: ready-for-dev
+  epic-69: done
+  69-1-write-failing-csv-import-e2e-test: done
+  69-2-diagnose-fix-csv-import-400: done
+  69-3-harden-csv-import-regression-suite: done
   epic-69-retrospective: optional
 
   # ── Epic 70: Error Logs Route Broken ─────────────────────────────────────────
-  epic-70: in-progress
-  70-1-restore-error-logs-route: ready-for-dev
-  70-2-e2e-error-logs-navigation: ready-for-dev
+  epic-70: done
+  70-1-restore-error-logs-route: done
+  70-2-e2e-error-logs-navigation: done
   epic-70-retrospective: optional
 
   # ── Epic 71: Screener to Universe Distribution History ───────────────────────
-  epic-71: in-progress
-  71-1-investigate-sync-distribution-history: ready-for-dev
-  71-2-fix-sync-from-screener-distribution-per-year: ready-for-dev
+  epic-71: done
+  71-1-investigate-sync-distribution-history: done
+  71-2-fix-sync-from-screener-distribution-per-year: done
   epic-71-retrospective: optional
 
   # ── Epic 72: Re-sort Row on Update ───────────────────────────────────────────
-  epic-72: in-progress
-  72-1-write-failing-resort-on-edit-e2e-test: ready-for-dev
-  72-2-implement-resort-on-cell-edit: ready-for-dev
+  epic-72: done
+  72-1-write-failing-resort-on-edit-e2e-test: done
+  72-2-implement-resort-on-cell-edit: done
   epic-72-retrospective: optional
 
   # ── Epic 76: Fix Failing E2E Tests (Chromium + Firefox) ──────────────────────
-  epic-76: in-progress
-  76-1-catalogue-failing-e2e-tests: ready-for-dev
-  76-2-fix-e2e-test-isolation: ready-for-dev
-  76-3-fix-e2e-functional-regressions: ready-for-dev
+  epic-76: done
+  76-1-catalogue-failing-e2e-tests: done
+  76-2-fix-e2e-test-isolation: done
+  76-3-fix-e2e-functional-regressions: done
   epic-76-retrospective: optional
 
   # ── Epic 77: Electron Shell ───────────────────────────────────────────────────
-  epic-77: in-progress
-  77-1-research-electron-setup: ready-for-dev
-  77-2-launch-fastify-in-electron: ready-for-dev
-  77-3-configure-electron-window: ready-for-dev
-  77-4-intercept-api-and-external-links: ready-for-dev
-  77-5-e2e-electron-launch: ready-for-dev
+  epic-77: done
+  77-1-research-electron-setup: done
+  77-2-launch-fastify-in-electron: done
+  77-3-configure-electron-window: done
+  77-4-intercept-api-and-external-links: done
+  77-5-e2e-electron-launch: done
   epic-77-retrospective: optional
 
   # ── Epic 78: Dist/Year Weekly Validation Fix ──────────────────────────────────
-  epic-78: in-progress
-  78-1-failing-e2e-distperyear-weekly: ready-for-dev
-  78-2-fix-distperyear-weekly-validation: ready-for-dev
+  epic-78: done
+  78-1-failing-e2e-distperyear-weekly: done
+  78-2-fix-distperyear-weekly-validation: done
   epic-78-retrospective: optional
 
   # ── Epic 79: OXLC Joint Brokerage Missing Positions ──────────────────────────
-  epic-79: in-progress
-  79-1-investigate-oxlc-csv-import: ready-for-dev
-  79-2-fix-csv-import-split-logic: ready-for-dev
-  79-3-verify-oxlc-positions-display: ready-for-dev
+  epic-79: done
+  79-1-investigate-oxlc-csv-import: done
+  79-2-fix-csv-import-split-logic: done
+  79-3-verify-oxlc-positions-display: done
   epic-79-retrospective: optional
 
   # ── Epic 80: Error Logs Screen Restore ───────────────────────────────────────
-  epic-80: in-progress
-  80-1-locate-error-log-component-git: ready-for-dev
-  80-2-restore-error-log-viewer: ready-for-dev
-  80-3-e2e-error-logs-screen: ready-for-dev
+  epic-80: done
+  80-1-locate-error-log-component-git: done
+  80-2-restore-error-log-viewer: done
+  80-3-e2e-error-logs-screen: done
   epic-80-retrospective: optional
 
   # ── Epic 81: Distribution Volatility Indicator ────────────────────────────────
-  epic-81: in-progress
-  81-1-backend-volatility-service: ready-for-dev
-  81-2-frontend-vol-column: ready-for-dev
-  81-3-e2e-vol-column: ready-for-dev
+  epic-81: done
+  81-1-backend-volatility-service: done
+  81-2-frontend-vol-column: done
+  81-3-e2e-vol-column: done
   epic-81-retrospective: optional
 
   # ── Epic 82: UnSkip Tests ─────────────────────────────────────────────────────
-  epic-82: in-progress
-  82-1-inventory-skipped-tests: ready-for-dev
-  82-2-unskip-fix-unit-tests: ready-for-dev
-  82-3-unskip-fix-e2e-tests: ready-for-dev
-  82-4-verify-zero-skipped-tests: ready-for-dev
+  epic-82: done
+  82-1-inventory-skipped-tests: done
+  82-2-unskip-fix-unit-tests: done
+  82-3-unskip-fix-e2e-tests: done
+  82-4-verify-zero-skipped-tests: done
   epic-82-retrospective: optional
 
   # ── Epic 83: Electron App Documentation and Build Fix ─────────────────────────
-  epic-83: in-progress
-  83-1-audit-electron-build: review
-  83-2-electron-documentation: review
-  83-3-fix-electron-build: ready-for-dev
+  epic-83: done
+  83-1-audit-electron-build: done
+  83-2-electron-documentation: done
+  83-3-fix-electron-build: done
   epic-83-retrospective: optional
 
   # ── Epic 84: Volatility Visible for All Symbols and New Icons ─────────────────
-  epic-84: in-progress
-  84-1-investigate-volatility-visibility-bug: ready-for-dev
-  84-2-fix-volatility-data-filtering: review
-  84-3-add-new-volatility-icons: review
-  84-4-e2e-volatility-icons: review
+  epic-84: done
+  84-1-investigate-volatility-visibility-bug: done
+  84-2-fix-volatility-data-filtering: done
+  84-3-add-new-volatility-icons: done
+  84-4-e2e-volatility-icons: done
   epic-84-retrospective: optional
 
   # ── Epic 85: Store Volatility in Universe Table ───────────────────────────────
-  epic-85: in-progress
-  85-1-universe-schema-volatility-columns: ready-for-dev
-  85-2-wire-volatility-recalculation-triggers: ready-for-dev
-  85-3-serve-stored-volatility: review
-  85-4-e2e-stored-volatility: ready-for-dev
+  epic-85: done
+  85-1-universe-schema-volatility-columns: done
+  85-2-wire-volatility-recalculation-triggers: done
+  85-3-serve-stored-volatility: done
+  85-4-e2e-stored-volatility: done
   epic-85-retrospective: optional
 
   # ── Epic 86: Short Term Volatility (SVol) Column ──────────────────────────────
-  epic-86: in-progress
-  86-1-api-expose-short-term-volatility: ready-for-dev
-  86-2-frontend-svol-column: ready-for-dev
-  86-3-e2e-svol-column: ready-for-dev
+  epic-86: done
+  86-1-api-expose-short-term-volatility: done
+  86-2-frontend-svol-column: done
+  86-3-e2e-svol-column: done
   epic-86-retrospective: optional
 
   # ── Epic 87: Janky Scrolling Returns (Round 6) ────────────────────────────────
-  epic-87: in-progress
-  87-1-reproduce-scrolling-failures-all-screens: ready-for-dev
-  87-2-fix-scrolling-all-screens: ready-for-dev
-  87-3-scrolling-regression-prevention-suite: ready-for-dev
+  epic-87: done
+  87-1-reproduce-scrolling-failures-all-screens: done
+  87-2-fix-scrolling-all-screens: done
+  87-3-scrolling-regression-prevention-suite: done
   epic-87-retrospective: optional
+
+  # ── Epic 88: Volatility From Distribution History (All Universe Symbols) ──────
+  epic-88: done
+  88-1-investigate-distribution-history-volatility-source: done
+  88-2-refactor-volatility-to-use-distribution-history: done
+  88-3-wire-distribution-history-volatility-into-universe-retrieval: done
+  88-4-e2e-volatility-all-universe-symbols: done
+  epic-88-retrospective: optional
