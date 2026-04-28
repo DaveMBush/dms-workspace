@@ -187,7 +187,10 @@ test.describe('Open Positions Scrolling Regression — Story 87.3', () => {
     // newly sorted data should not expose placeholder rows.
     // Buy Date is used as the sort trigger because Symbol is not sortable on
     // this screen.
-    const buyDateHeader = page.getByRole('button', { name: 'Buy Date', exact: true });
+    const buyDateHeader = page.getByRole('button', {
+      name: 'Buy Date',
+      exact: true,
+    });
     await expect(buyDateHeader).toBeVisible({ timeout: 10000 });
     await buyDateHeader.click();
 

@@ -156,7 +156,10 @@ test.describe('Sold Positions Scrolling Regression — Story 87.3', () => {
     // newly sorted data should not expose placeholder rows.
     // Sell Date is used as the sort trigger because Symbol is not sortable on
     // this screen.
-    const sellDateHeader = page.getByRole('button', { name: 'Sell Date', exact: true });
+    const sellDateHeader = page.getByRole('button', {
+      name: 'Sell Date',
+      exact: true,
+    });
     await expect(sellDateHeader).toBeVisible({ timeout: 10000 });
     await sellDateHeader.click();
 

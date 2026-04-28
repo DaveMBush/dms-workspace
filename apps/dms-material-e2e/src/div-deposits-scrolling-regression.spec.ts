@@ -128,4 +128,5 @@ test.describe('Dividend Deposits Scrolling Regression — Story 87.3', () => {
       'Dividend Deposits: blank symbol cells detected after sort change + scroll to bottom. ' +
         'Story 87.3 regression guard: sort-triggered isLoading window should not produce blank rows.'
     );
-  });});
+  });
+});
