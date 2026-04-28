@@ -107,4 +107,25 @@ test.describe('Dividend Deposits Scrolling Regression — Story 87.3', () => {
         'Story 87.3 regression guard: repeated isLoading cycles should not produce blank symbol cells.'
     );
   });
-});
+  test('no blank rows after sort change and scroll to bottom', async ({
+    page,
+  }) => {
+    // Story 87.3 regression guard — changing sort order triggers a new
+    // server-side request and an isLoading window. A fast scroll into the
+    // newly sorted data should not expose placeholder rows with blank symbol
+    // cells.
+    const symbolHeader = page.getByRole('button', { name: 'Symbol' });
+    await expect(symbolHeader).toBeVisible({ timeout: 10000 });
+    await symbolHeader.click();
+
+    const viewport = page.locator(VIEWPORT_SELECTOR);
+    await expect(viewport).toBeVisible({ timeout: 10000 });
+    await scrollViewportToBottom(viewport);
+
+    await assertVisibleRowsNonEmpty(
+      page,
+      SYMBOL_CELL_SELECTOR,
+      'Dividend Deposits: blank symbol cells detected after sort change + scroll to bottom. ' +
+        'Story 87.3 regression guard: sort-triggered isLoading window should not produce blank rows.'
+    );
+  });});

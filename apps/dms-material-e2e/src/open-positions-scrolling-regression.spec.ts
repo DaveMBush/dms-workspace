@@ -140,4 +140,80 @@ test.describe('Open Positions Scrolling Regression — Story 87.3', () => {
         'Story 87.3 regression guard: buy-price column must be non-empty at all scroll positions.'
     );
   });
+
+  test('no blank rows after symbol filter and scroll to bottom', async ({
+    page,
+  }) => {
+    // Story 87.3 regression guard — applying a symbol filter triggers a
+    // server-side request and an isLoading window (server-side filter via
+    // interceptor). All seeded rows use symbols starting with 'TEST' so
+    // filtering by 'T' keeps all rows visible while still triggering the
+    // round-trip and the resulting isLoading cycle.
+    const symbolFilter = page.getByTestId('symbol-search-input');
+    await expect(symbolFilter).toBeVisible({ timeout: 10000 });
+    await symbolFilter.fill('T');
+
+    const viewport = page.locator(VIEWPORT_SELECTOR);
+    await expect(viewport).toBeVisible({ timeout: 10000 });
+    await scrollViewportToBottom(viewport);
+
+    await assertVisibleRowsNonEmpty(
+      page,
+      SYMBOL_CELL_SELECTOR,
+      'Open Positions: blank symbol cells detected after symbol filter + scroll to bottom. ' +
+        'Story 87.3 regression guard: filter-triggered isLoading window should not produce blank rows.'
+    );
+
+    await assertVisibleRowsNonEmpty(
+      page,
+      QUANTITY_CELL_SELECTOR,
+      'Open Positions: blank quantity cells detected after symbol filter + scroll to bottom. ' +
+        'Story 87.3 regression guard: filter-triggered isLoading window should not produce blank quantity cells.'
+    );
+
+    await assertVisibleRowsNonEmpty(
+      page,
+      BUY_CELL_SELECTOR,
+      'Open Positions: blank buy-price cells detected after symbol filter + scroll to bottom. ' +
+        'Story 87.3 regression guard: filter-triggered isLoading window should not produce blank buy cells.'
+    );
+  });
+
+  test('no blank rows after sort change and scroll to bottom', async ({
+    page,
+  }) => {
+    // Story 87.3 regression guard — changing sort order triggers a new
+    // server-side request and an isLoading window. A fast scroll into the
+    // newly sorted data should not expose placeholder rows.
+    // Buy Date is used as the sort trigger because Symbol is not sortable on
+    // this screen.
+    const buyDateHeader = page.getByRole('button', { name: 'Buy Date', exact: true });
+    await expect(buyDateHeader).toBeVisible({ timeout: 10000 });
+    await buyDateHeader.click();
+
+    const viewport = page.locator(VIEWPORT_SELECTOR);
+    await expect(viewport).toBeVisible({ timeout: 10000 });
+    await scrollViewportToBottom(viewport);
+
+    await assertVisibleRowsNonEmpty(
+      page,
+      SYMBOL_CELL_SELECTOR,
+      'Open Positions: blank symbol cells detected after sort change + scroll to bottom. ' +
+        'Story 87.3 regression guard: sort-triggered isLoading window should not produce blank rows.'
+    );
+
+    await assertVisibleRowsNonEmpty(
+      page,
+      QUANTITY_CELL_SELECTOR,
+      'Open Positions: blank quantity cells detected after sort change + scroll to bottom. ' +
+        'Story 87.3 regression guard: sort-triggered isLoading window should not produce blank quantity cells.'
+    );
+
+    await assertVisibleRowsNonEmpty(
+      page,
+      BUY_CELL_SELECTOR,
+      'Open Positions: blank buy-price cells detected after sort change + scroll to bottom. ' +
+        'Story 87.3 regression guard: sort-triggered isLoading window should not produce blank buy cells.'
+    );
+  });
 });
