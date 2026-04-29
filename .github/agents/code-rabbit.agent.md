@@ -1,8 +1,10 @@
-````prompt
 ---
-description: Handle CodeRabbit review loop for a story PR
+description: 'Handle CodeRabbit review loop for a story PR — poll review comments, classify suggestions, apply in-scope fixes, run quality validation, and loop until PR is ready to merge'
 argument-hint: story=AD.3
 model: Claude Sonnet 4.6 High
+tools: [read, edit, agent, mcp_bash/*, mcp_github/*, mcp_context7/*, mcp_microsoft_pla/*]
+agents: [quality-validation]
+user-invocable: false
 ---
 
 load the #skill:prompt
@@ -14,10 +16,12 @@ This subagent implements Phase 6 (CodeRabbit review loop). It is intentionally s
 Shell execution rule: every shell command in this workflow must use the bash MCP server. Use `mcp_bash_run` for blocking commands and `mcp_bash_run_background` only for true background processes. This applies to `pnpm`, `git`, `gh`, and `bash`.
 
 INPUT: `story` (required). Reads the story metadata file for PR metadata. Resolve the path via:
+
 ```bash
 GIT_COMMON_DIR=$(git rev-parse --git-common-dir)
 META_FILE="$GIT_COMMON_DIR/tmp/story-${story}-meta.json"
 ```
+
 If that file is missing, use the prompt skill to ask for help.
 
 **IMPORTANT**: After reading the state file, use `worktreePath` (from the state file) as the `cwd` for bash MCP calls before applying any code fixes or running validations. All git operations must be executed from within that worktree directory.
@@ -54,15 +58,14 @@ If the PR CI pipeline is still running, wait and re-check every 120s (with a max
 7. Apply valid in-scope fixes, then call the `runSubagent` tool with:
    - `model`: `"Claude Opus 4.7 (copilot)"`
    - `description`: `"Validation for story ${story} after CodeRabbit fixes"`
-   - `prompt`: Read the full contents of `.github/prompts/quality-validation.prompt.md` and include them verbatim, substituting `context` with `story-${story}-cr`.
+   - `prompt`: Read the full contents of `.github/agents/quality-validation.agent.md` and include them verbatim, substituting `context` with `story-${story}-cr`.
 8. Commit "Apply CodeRabbit suggestions", push, wait 5 minutes, continue loop
 9. Update state file with final status when complete
 
 Error handling: Use the prompt skill for any unexpected failures or max iterations.
 
 Notes:
+
 - Use state file to avoid passing large context
 - Make operations idempotent: re-running should continue safely
 - All detailed instructions are in the "CodeRabbit Review Loop Pattern" section of bmad-workflow skill
-
-````

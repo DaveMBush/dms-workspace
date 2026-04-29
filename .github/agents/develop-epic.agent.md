@@ -1,7 +1,10 @@
 ---
-description: Fully autonomous epic development - all stories from start to merge
+description: 'Fully autonomous epic development: discover all stories, validate Approved status, then develop each story sequentially from implementation through merge'
 argument-hint: epic=AD
 model: Claude Sonnet 4.6 High
+tools: [read, agent, todo, mcp_bash/*]
+agents: [develop-story, debug]
+user-invocable: false
 ---
 
 load the #skill:prompt
@@ -35,8 +38,8 @@ For each story in the ordered list:
 1. **Classify Story Type**
 
    - Read the story file and check the title/filename for keywords
-   - **Bug fix story**: Title or filename contains "bug fix", "bug-fix", "bugfix", or "debug" → Use `debug.prompt.md`
-   - **Standard story**: All other stories → Use `develop-story.prompt.md`
+   - **Bug fix story**: Title or filename contains "bug fix", "bug-fix", "bugfix", or "debug" → Use `debug.agent.md`
+   - **Standard story**: All other stories → Use `develop-story.agent.md`
    - Add a todo item for each story indicating its type (standard/bug-fix) before starting implementation
 
 2. **Execute Story Development**
@@ -45,11 +48,11 @@ For each story in the ordered list:
    - **For standard stories**: Call the `runSubagent` tool with:
      - `model`: `"Claude Sonnet 4.6 High (copilot)"`
      - `description`: `"Develop story ${current_story}"`
-     - `prompt`: Read the full contents of `.github/prompts/develop-story.prompt.md` and include them verbatim, substituting `${story}` with the actual current story ID.
+     - `prompt`: Read the full contents of `.github/agents/develop-story.agent.md` and include them verbatim, substituting `${story}` with the actual current story ID.
    - **For bug fix stories**: Call the `runSubagent` tool with:
      - `model`: `"Claude Opus 4.7 (copilot)"`
      - `description`: `"Debug story ${current_story}"`
-     - `prompt`: Read the full contents of `.github/prompts/debug.prompt.md` and include them verbatim, substituting `${epic}` and `${story}` with the actual values.
+     - `prompt`: Read the full contents of `.github/agents/debug.agent.md` and include them verbatim, substituting `${epic}` and `${story}` with the actual values.
    - Both workflows handle: validation, implementation, quality checks, PR creation, CodeRabbit review, and merge
    - **IMPORTANT**: NEVER run stories in parallel. There is an e2e validation step that is part of the story that is not designed to run in isolation and can cause false positives or false negatives if run concurrently for another story in another branch. It also complicates commits, Pull Requests, and subsequent CodeRabbit reviews along with leading to potential merge conflicts and rate limit issues. Run stories sequentially, one at a time, in the order discovered.
    - **IMMEDIATELY after the delegated workflow returns** (do not pause, do not wait for human input): read the minimal state file written by the story workflow. Resolve the path via `$(git rev-parse --git-common-dir)/tmp/story-${current_story}-meta.json`. If the file is missing or malformed, use the prompt skill to ask: `Missing or invalid meta file for ${current_story}. Repair or continue? Reply with continue, stop, or instructions.`
@@ -76,4 +79,4 @@ All ${N} stories implemented and merged to main.
 
 - **Story fails**: prompt skill decides abort epic / skip story / retry with help
 - **Status validation fails**: prompt skill decides whether to continue anyway
-- **Rate limits or conflicts**: Individual stories handle via develop-story.prompt.md
+- **Rate limits or conflicts**: Individual stories handle via develop-story.agent.md

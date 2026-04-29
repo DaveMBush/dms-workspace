@@ -1,7 +1,10 @@
 ---
-description: Dedicated debug PR creation and CodeRabbit lifecycle runner
+description: 'Create commit and PR for a debug branch then run the full CodeRabbit review loop until the PR is ready to merge'
 argument-hint: story=AD.5
 model: Claude Sonnet 4.6 High
+tools: [read, agent, mcp_bash/*]
+agents: [commit-and-pr, code-rabbit]
+user-invocable: false
 ---
 
 load the #skill:prompt
@@ -26,9 +29,9 @@ Before doing anything else, read all of the following:
 
 1. `_bmad-output/project-context.md`
 2. `_bmad/bmm/config.yaml`
-3. `.github/prompts/commit-and-pr.prompt.md`
-4. `.github/prompts/code-rabbit.prompt.md`
-5. `.github/prompts/quality-validation.prompt.md`
+3. `.github/agents/commit-and-pr.agent.md`
+4. `.github/agents/code-rabbit.agent.md`
+5. `.github/agents/quality-validation.agent.md`
 
 ## Execution Rules
 
@@ -38,20 +41,16 @@ Before doing anything else, read all of the following:
 
    - `model`: `"Claude Sonnet 4.6 High (copilot)"`
    - `description`: `"Commit and PR creation for story ${story}"`
-   - `prompt`: Read the full contents of `.github/prompts/commit-and-pr.prompt.md` and include them verbatim, substituting `${story}` with the actual story ID.
+   - `prompt`: Read the full contents of `.github/agents/commit-and-pr.agent.md` and include them verbatim, substituting `${story}` with the actual story ID.
 
 4. Ensure PR metadata is written to `$(git rev-parse --git-common-dir)/tmp/story-${story}-meta.json`.
 5. If commit-and-pr fails, use the prompt skill to report the failure and stop.
 6. Wait 5 minutes after PR creation for rate-limit protection.
-7. Run the full CodeRabbit loop using `runSubagent`:
+7. Call the `runSubagent` tool now with the following parameters for the full CodeRabbit loop:
 
-```
-runSubagent:
-  model: "Claude Sonnet 4.6 High"
-  description: "CodeRabbit review for story ${story}"
-  prompt: |
-    You are handling CodeRabbit review for story ${story}. Load and follow ./code-rabbit.prompt.md exactly.
-```
+   - `model`: `"Claude Sonnet 4.6 High (copilot)"`
+   - `description`: `"CodeRabbit review for story ${story}"`
+   - `prompt`: Read the full contents of `.github/agents/code-rabbit.agent.md` and include them verbatim, substituting `${story}` with the actual story ID.
 
 8. If CodeRabbit requires in-scope fixes, allow it to use the shared quality-validation prompt as needed.
 9. Return as soon as the PR is ready to merge or the CodeRabbit loop fails.

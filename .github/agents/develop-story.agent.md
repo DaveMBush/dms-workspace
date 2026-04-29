@@ -1,7 +1,10 @@
 ---
-description: Fully autonomous story development from start to merge
+description: 'Fully autonomous story development: pre-development validation, implementation, quality validation, QA review, PR creation, CodeRabbit review, and merge'
 argument-hint: story=AD.3
 model: Claude Sonnet 4.6 High
+tools: [read, agent, todo, mcp_bash/*]
+agents: [code-story, quality-validation, qa-review-loop, commit-and-pr, code-rabbit, merge-finalize]
+user-invocable: false
 ---
 
 load the #skill:prompt
@@ -32,7 +35,7 @@ Call the `runSubagent` tool now with the following parameters to implement the s
 
 - `model`: `"Claude Sonnet 4.7 (copilot)"`
 - `description`: `"Implement story ${story}"`
-- `prompt`: Read the full contents of `.github/prompts/code-story.prompt.md` and include them verbatim as the prompt, substituting `${story}` with the actual story ID.
+- `prompt`: Read the full contents of `.github/agents/code-story.agent.md` and include them verbatim as the prompt, substituting `${story}` with the actual story ID.
 
 This will:
 
@@ -41,9 +44,9 @@ This will:
 - Implement the story from within the worktree directory
 - During implementation, use `mcp_context7_query-docs` for unfamiliar APIs and Playwright for UI checks
 
-If `code-story.prompt.md` encounters issues, it must use the prompt skill or handle internal retries as required.
+If `code-story.agent.md` encounters issues, it must use the prompt skill or handle internal retries as required.
 
-**IMMEDIATELY PROCEED TO PHASE 3** once `code-story.prompt.md` returns — do not pause, do not ask for confirmation. Use the bash MCP server to run `pnpm i` with `cwd` set to `../dms/story-${story}`, then begin Phase 3.
+**IMMEDIATELY PROCEED TO PHASE 3** once `code-story.agent.md` returns — do not pause, do not ask for confirmation. Use the bash MCP server to run `pnpm i` with `cwd` set to `../dms/story-${story}`, then begin Phase 3.
 
 **IMPORTANT**: All subsequent phases (3 through 7) must run from within the worktree at `../dms/story-${story}`.
 
@@ -53,7 +56,7 @@ Call the `runSubagent` tool now with the following parameters to run the quality
 
 - `model`: `"Claude Opus 4.7 (copilot)"`
 - `description`: `"Validate story ${story}"`
-- `prompt`: Read the full contents of `.github/prompts/quality-validation.prompt.md` and include them verbatim as the prompt, substituting `context` with `story-${story}`.
+- `prompt`: Read the full contents of `.github/agents/quality-validation.agent.md` and include them verbatim as the prompt, substituting `context` with `story-${story}`.
 
 This keeps the story workflow context small while the validation loop handles:
 
@@ -79,14 +82,14 @@ Call the `runSubagent` tool now with the following parameters to run the QA revi
 
 - `model`: `"Claude Sonnet 4.6 High (copilot)"`
 - `description`: `"QA review for story ${story}"`
-- `prompt`: Read the full contents of `.github/prompts/qa-review-loop.prompt.md` and include them verbatim as the prompt, substituting `${story}` with the actual story ID.
+- `prompt`: Read the full contents of `.github/agents/qa-review-loop.agent.md` and include them verbatim as the prompt, substituting `${story}` with the actual story ID.
 
 This keeps the story workflow context small while the QA review subagent handles:
 
-1. Running `gate.prompt.md`
+1. Running `gate.agent.md`
 2. Interpreting PASS/FAIL results
 3. Applying QA remediation automatically
-4. Re-running validation through `quality-validation.prompt.md`
+4. Re-running validation through `quality-validation.agent.md`
 5. Retrying the gate up to 10 times
 
 **CRITICAL**: The QA review subagent must not return success until the gate passes. If it returns `QA FAILED`, use the prompt skill to ask: `QA review failed for ${story}: <reason>. Reply with stop, continue, or instructions.`
@@ -99,7 +102,7 @@ Once all validations pass, call the `runSubagent` tool now with the following pa
 
 - `model`: `"Claude Sonnet 4.6 High (copilot)"`
 - `description`: `"Commit and create PR for story ${story}"`
-- `prompt`: Read the full contents of `.github/prompts/commit-and-pr.prompt.md` and include them verbatim as the prompt, substituting `${story}` with the actual story ID.
+- `prompt`: Read the full contents of `.github/agents/commit-and-pr.agent.md` and include them verbatim as the prompt, substituting `${story}` with the actual story ID.
 
 This will:
 
@@ -112,7 +115,7 @@ This will:
 
 If commit-and-pr fails: Use the prompt skill to ask: `Failed to create PR: <error>. Reply with stop, continue, or instructions.`
 
-**IMMEDIATELY PROCEED TO PHASE 6** once `commit-and-pr.prompt.md` returns successfully — do not pause or wait for human input.
+**IMMEDIATELY PROCEED TO PHASE 6** once `commit-and-pr.agent.md` returns successfully — do not pause or wait for human input.
 
 ## PHASE 6: CI Pipeline and CodeRabbit Review Loop (delegated)
 
@@ -133,13 +136,13 @@ Then call the `runSubagent` tool now with the following parameters to handle the
 
 - `model`: `"Claude Sonnet 4.6 High (copilot)"`
 - `description`: `"CodeRabbit review for story ${story}"`
-- `prompt`: Read the full contents of `.github/prompts/code-rabbit.prompt.md` and include them verbatim as the prompt, substituting `${story}` with the actual story ID.
+- `prompt`: Read the full contents of `.github/agents/code-rabbit.agent.md` and include them verbatim as the prompt, substituting `${story}` with the actual story ID.
 
 The `code-rabbit` subagent will poll `mcp_github_pull_request_read method:get_review_comments`, classify suggestions, apply in-scope fixes, run Phase 3 validations, commit/push, and loop until the PR is ready to merge or max iterations are reached. It updates the `.git/tmp/story-${story}-meta.json` file as it proceeds so the process can be resumed safely.
 
-Use the `code-rabbit.prompt.md` subagent to keep the story prompt small, idempotent, and resumable.
+Use the `code-rabbit.agent.md` subagent to keep the story prompt small, idempotent, and resumable.
 
-**IMMEDIATELY PROCEED TO PHASE 7** once `code-rabbit.prompt.md` returns — do not pause or wait for human input.
+**IMMEDIATELY PROCEED TO PHASE 7** once `code-rabbit.agent.md` returns — do not pause or wait for human input.
 
 ## PHASE 7: Final Merge
 
@@ -147,7 +150,7 @@ Delegate Phase 7 by calling the `runSubagent` tool now with the following parame
 
 - `model`: `"Claude Sonnet 4.6 High (copilot)"`
 - `description`: `"Merge and finalize story ${story}"`
-- `prompt`: Read the full contents of `.github/prompts/merge-finalize.prompt.md` and include them verbatim as the prompt, substituting `${story}` with the actual story ID.
+- `prompt`: Read the full contents of `.github/agents/merge-finalize.agent.md` and include them verbatim as the prompt, substituting `${story}` with the actual story ID.
 
 This keeps the story workflow context small while the merge subagent handles:
 
