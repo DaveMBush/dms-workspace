@@ -34,9 +34,16 @@ const STEADY_AMOUNTS = [
   0.95, 1.05, 0.95, 1.05, 0.95, 1.05, 0.95, 1.05, 0.95, 1.05, 0.95, 1.05,
 ];
 
-export interface HeldAndUnheldSeederResult extends SeederResultBase {
+interface HeldAndUnheldSeederResult extends SeederResultBase {
   heldSymbol: string;
   unheldSymbol: string;
+}
+
+interface SeedContext {
+  prisma: PrismaClient;
+  riskGroupId: string;
+  accountId: string;
+  divDepositTypeId: string;
 }
 
 function suppressError(): undefined {
@@ -44,13 +51,11 @@ function suppressError(): undefined {
 }
 
 async function seedHeldSymbol(
-  prisma: PrismaClient,
+  ctx: SeedContext,
   symbol: string,
-  riskGroupId: string,
-  accountId: string,
-  divDepositTypeId: string,
   universeIds: string[]
 ): Promise<void> {
+  const { prisma, riskGroupId, accountId, divDepositTypeId } = ctx;
   const universe = await prisma.universe.create({
     data: {
       symbol,
@@ -97,11 +102,11 @@ async function seedHeldSymbol(
 }
 
 async function seedUnheldSymbol(
-  prisma: PrismaClient,
+  ctx: SeedContext,
   symbol: string,
-  riskGroupId: string,
   universeIds: string[]
 ): Promise<void> {
+  const { prisma, riskGroupId } = ctx;
   const universe = await prisma.universe.create({
     data: {
       symbol,
@@ -174,32 +179,18 @@ export async function seedVolatilityHeldAndUnheldData(): Promise<HeldAndUnheldSe
       data: { name: accountName },
     });
 
-    await seedHeldSymbol(
+    const ctx: SeedContext = {
       prisma,
-      heldSymbol,
       riskGroupId,
-      account.id,
+      accountId: account.id,
       divDepositTypeId,
-      universeIds
-    );
-    await seedUnheldSymbol(prisma, unheldSymbol, riskGroupId, universeIds);
+    };
+
+    await seedHeldSymbol(ctx, heldSymbol, universeIds);
+    await seedUnheldSymbol(ctx, unheldSymbol, universeIds);
   } catch (error) {
-    // Best-effort cleanup on seed failure
-    if (universeIds.length > 0) {
-      await prisma.trades
-        .deleteMany({ where: { universeId: { in: universeIds } } })
-        .catch(suppressError);
-      await prisma.divDeposits
-        .deleteMany({ where: { universeId: { in: universeIds } } })
-        .catch(suppressError);
-      await prisma.universe
-        .deleteMany({ where: { symbol: { in: symbols } } })
-        .catch(suppressError);
-    }
-    await prisma.accounts
-      .deleteMany({ where: { name: accountName } })
-      .catch(suppressError);
-    await prisma.$disconnect();
+    // Best-effort cleanup on seed failure — reuse buildCleanup to avoid duplication
+    await buildCleanup(prisma, universeIds, symbols, accountName)();
     throw error;
   }
 

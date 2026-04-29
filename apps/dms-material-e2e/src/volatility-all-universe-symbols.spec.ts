@@ -38,7 +38,7 @@ async function searchForSymbol(page: Page, symbol: string) {
 async function expectVolIconForSymbol(
   page: Page,
   symbol: string,
-  column: 'vol' | 'svol',
+  column: 'svol' | 'vol',
   ariaLabelRegex: RegExp
 ): Promise<void> {
   const row = await searchForSymbol(page, symbol);
