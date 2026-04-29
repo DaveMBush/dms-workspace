@@ -1,6 +1,6 @@
 # Story 88.3: Wire Volatility Recalculation Into the Universe Distribution-History Fetch
 
-Status: review
+Status: Done
 
 ## Story
 
@@ -44,12 +44,14 @@ so that after a universe sync the `universe` table has correct, current `volatil
 ## Tasks / Subtasks
 
 - [x] Task 1: Re-confirm Story 88.1's chosen wiring point and Story 88.2's signature (AC: #1)
+
   - [x] Open `_bmad-output/implementation-artifacts/88-1-investigate-distribution-history-volatility-source.md` and re-read the "Recommended Story 88.3 Wiring Point" section
   - [x] Open `_bmad-output/implementation-artifacts/88-2-refactor-volatility-to-use-distribution-history.md` and confirm the final signature of `recalculateUniverseVolatility`
   - [x] If Story 88.1 chose to modify `getDistributions` to return the raw rows alongside `DistributionResult`: prepare to update its signature and one caller in `screener/get-consistent-distributions.function.ts` if needed
   - [x] If Story 88.1 chose to call `fetchDividendHistory` directly from `upsertUniverse`: prepare to refactor `getDistributions` to accept rows so we don't double-fetch
 
 - [x] Task 2: Modify the universe-sync per-symbol step to capture and reuse the history payload (AC: #1, #2)
+
   - [x] Open `apps/server/src/app/routes/universe/sync-from-screener/index.ts`
   - [x] In `upsertUniverse({ symbol, riskGroupId })`, capture the `ProcessedRow[]` payload from `fetchDividendHistory(symbol)` exactly once per symbol
     - **Preferred path** (per Story 88.1 hint): change `getDistributions(symbol)` to return `{ result: DistributionResult | undefined, history: ProcessedRow[] }` so the existing single fetch is reused
@@ -58,18 +60,21 @@ so that after a universe sync the `universe` table has correct, current `volatil
   - [x] Verify by reading the resulting code that `fetchDividendHistory(symbol)` is called **exactly once** per symbol per sync (no second fetch path inside `recalculateUniverseVolatility`)
 
 - [x] Task 3: Handle the failure path (AC: #3)
+
   - [x] If `fetchDividendHistory` throws or returns `[]`, the call still completes — `recalculateUniverseVolatility(id, [])` writes the `null`/`unknown` category (already the Story 88.2 behaviour for empty history)
   - [x] Confirm `getDistributions`'s existing `try/catch` (which currently returns a fallback `{ distribution: 0, ex_date: now, distributions_per_year: 0 }`) is preserved — it still applies to the distribution metadata, not to volatility
   - [x] Confirm the universe-sync per-symbol loop is wrapped in or already uses `processSymbols` such that one symbol's failure does not abort the sync — read `symbol-processing.function.ts` to verify
   - [x] Add a structured log entry when `history.length === 0` so failures are observable: `logger.warn('Empty dividend history; volatility set to insufficient-history', { symbol, universeId })`
 
 - [x] Task 4: Update the other two `recalculateUniverseVolatility` callers (AC: #4)
+
   - [x] **Add-symbol route** (`apps/server/src/app/routes/universe/add-symbol/add-symbol.function.ts`): replace the temporary `recalculateUniverseVolatility(universeRecord.id, [])` (left over from Story 88.2) with `recalculateUniverseVolatility(universeRecord.id, await fetchDividendHistory(symbol))`. Wrap the fetch in a `try/catch` so a fetch failure doesn't break add-symbol — log and pass `[]` on failure.
   - [x] **Universe PATCH route** (`apps/server/src/app/routes/universe/index.ts` ~line 241): same pattern — fetch fresh history with the symbol from the updated row, then pass it. The PATCH handler must look up `symbol` from the universe row before fetching.
   - [x] Update each caller's `*.spec.ts` to mock `fetchDividendHistory` and assert the wiring (e.g. `expect(mockFetchDividendHistory).toHaveBeenCalledWith(symbol)` and `expect(mockRecalculateUniverseVolatility).toHaveBeenCalledWith(id, fakeHistoryArray)`)
   - [x] Confirm via `grep_search` that **no caller** invokes `recalculateUniverseVolatility` with a hard-coded `[]` (which would be a stale-data bug)
 
 - [x] Task 5: Update sync-from-screener tests for the new wiring (AC: #1, #2, #3, #5)
+
   - [x] Open `apps/server/src/app/routes/universe/sync-from-screener/index.spec.ts`
   - [x] Update mocks to include `fetchDividendHistory` returning a deterministic fixture for each test symbol
   - [x] Add a test: per-symbol step calls `recalculateUniverseVolatility(id, fixtureHistory)` exactly once with the same payload that was fetched
@@ -78,6 +83,7 @@ so that after a universe sync the `universe` table has correct, current `volatil
   - [x] Update or remove the Story 85.2 mock expectation `expect(mockRecalculateUniverseVolatility).toHaveBeenNthCalledWith(n, id)` to use the new 2-arg signature
 
 - [x] Task 6: Integration confirmation via `sync.integration.spec.ts` (AC: #2)
+
   - [x] Open `apps/server/src/app/routes/universe/sync-from-screener/sync.integration.spec.ts`
   - [x] If the integration spec drives the sync flow end-to-end against a test DB: extend it (or add a new case) that asserts the `universe` row for a symbol with no `divDeposits` history still gets a non-undefined `volatility_long`/`volatility_short` value (either a real category or the `null`/`unknown` marker — but the column must have been written, evidenced by a non-null `volatility_calculated_at`)
   - [x] If extending the integration spec is out of scope for this branch, document why in Dev Notes and rely on the unit tests in Task 5
@@ -116,17 +122,12 @@ interface GetDistributionsOutcome {
   history: ProcessedRow[];
 }
 
-export async function getDistributions(
-  symbol: string
-): Promise<GetDistributionsOutcome> {
+export async function getDistributions(symbol: string): Promise<GetDistributionsOutcome> {
   try {
     let rows = await fetchDividendHistory(symbol);
 
     if (rows.length === 0) {
-      logger.warn(
-        `fetchDividendHistory returned no data for ${symbol}, falling back to Yahoo Finance`,
-        { symbol }
-      );
+      logger.warn(`fetchDividendHistory returned no data for ${symbol}, falling back to Yahoo Finance`, { symbol });
       rows = await fetchDistributionData(symbol);
     }
 
@@ -170,11 +171,11 @@ Update it to destructure `{ result }` and ignore `history`.
 
 ### Failure Path Behaviour
 
-| Failure | Current behaviour | Behaviour after this story |
-| --- | --- | --- |
-| `fetchDividendHistory` throws | `getDistributions` catches → returns fallback `{ result, history: [] }` | Same; `recalculateUniverseVolatility(id, [])` writes `null`/`unknown`; sync continues |
+| Failure                             | Current behaviour                                                                                               | Behaviour after this story                                                            |
+| ----------------------------------- | --------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| `fetchDividendHistory` throws       | `getDistributions` catches → returns fallback `{ result, history: [] }`                                         | Same; `recalculateUniverseVolatility(id, [])` writes `null`/`unknown`; sync continues |
 | `fetchDividendHistory` returns `[]` | `getDistributions` falls back to Yahoo; if that also returns `[]`, returns `{ result: undefined, history: [] }` | Same; `recalculateUniverseVolatility(id, [])` writes `null`/`unknown`; sync continues |
-| Per-symbol step throws unexpectedly | `processSymbols` (existing infra) logs and continues to next symbol | Unchanged |
+| Per-symbol step throws unexpectedly | `processSymbols` (existing infra) logs and continues to next symbol                                             | Unchanged                                                                             |
 
 ### What NOT to Change
 
@@ -186,18 +187,18 @@ Update it to destructure `{ result }` and ignore `history`.
 
 ### Files Likely to Change
 
-| File | Change |
-| --- | --- |
-| `apps/server/src/app/routes/settings/common/get-distributions.function.ts` | Return `{ result, history }` instead of `DistributionResult \| undefined` |
-| `apps/server/src/app/routes/settings/common/get-distributions.function.spec.ts` | Update return-shape assertions |
-| `apps/server/src/app/routes/screener/get-consistent-distributions.function.ts` | Destructure `{ result }` from updated `getDistributions` return |
-| `apps/server/src/app/routes/universe/sync-from-screener/index.ts` | Capture `history` from `getDistributions`; pass to `recalculateUniverseVolatility(id, history)` |
-| `apps/server/src/app/routes/universe/sync-from-screener/index.spec.ts` | Mock `fetchDividendHistory`; assert wiring with payload |
-| `apps/server/src/app/routes/universe/add-symbol/add-symbol.function.ts` | Fetch history; pass to recalc |
-| `apps/server/src/app/routes/universe/add-symbol/add-symbol.function.spec.ts` | Mock `fetchDividendHistory`; assert wiring |
-| `apps/server/src/app/routes/universe/index.ts` | PATCH handler: look up symbol, fetch history, pass to recalc |
-| `apps/server/src/app/routes/universe/index.spec.ts` | Mock `fetchDividendHistory`; assert wiring |
-| (optional) `apps/server/src/app/routes/universe/sync-from-screener/sync.integration.spec.ts` | Add coverage for unheld symbol path |
+| File                                                                                         | Change                                                                                          |
+| -------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `apps/server/src/app/routes/settings/common/get-distributions.function.ts`                   | Return `{ result, history }` instead of `DistributionResult \| undefined`                       |
+| `apps/server/src/app/routes/settings/common/get-distributions.function.spec.ts`              | Update return-shape assertions                                                                  |
+| `apps/server/src/app/routes/screener/get-consistent-distributions.function.ts`               | Destructure `{ result }` from updated `getDistributions` return                                 |
+| `apps/server/src/app/routes/universe/sync-from-screener/index.ts`                            | Capture `history` from `getDistributions`; pass to `recalculateUniverseVolatility(id, history)` |
+| `apps/server/src/app/routes/universe/sync-from-screener/index.spec.ts`                       | Mock `fetchDividendHistory`; assert wiring with payload                                         |
+| `apps/server/src/app/routes/universe/add-symbol/add-symbol.function.ts`                      | Fetch history; pass to recalc                                                                   |
+| `apps/server/src/app/routes/universe/add-symbol/add-symbol.function.spec.ts`                 | Mock `fetchDividendHistory`; assert wiring                                                      |
+| `apps/server/src/app/routes/universe/index.ts`                                               | PATCH handler: look up symbol, fetch history, pass to recalc                                    |
+| `apps/server/src/app/routes/universe/index.spec.ts`                                          | Mock `fetchDividendHistory`; assert wiring                                                      |
+| (optional) `apps/server/src/app/routes/universe/sync-from-screener/sync.integration.spec.ts` | Add coverage for unheld symbol path                                                             |
 
 ### Project Structure Notes
 
@@ -236,10 +237,10 @@ grep_search "recalculateUniverseVolatility\([^,]+, *\[\]\)"   # MUST return zero
 - [apps/server/src/app/routes/universe/index.ts](apps/server/src/app/routes/universe/index.ts) — PATCH route caller (must fetch history)
 - [apps/server/src/app/routes/screener/get-consistent-distributions.function.ts](apps/server/src/app/routes/screener/get-consistent-distributions.function.ts) — Other `getDistributions` consumer
 - [apps/server/src/app/volatility/recalculate-universe-volatility.function.ts](apps/server/src/app/volatility/recalculate-universe-volatility.function.ts) — Story 88.2 refactored signature
-- [_bmad-output/implementation-artifacts/88-1-investigate-distribution-history-volatility-source.md](_bmad-output/implementation-artifacts/88-1-investigate-distribution-history-volatility-source.md) — Required prerequisite (wiring point)
-- [_bmad-output/implementation-artifacts/88-2-refactor-volatility-to-use-distribution-history.md](_bmad-output/implementation-artifacts/88-2-refactor-volatility-to-use-distribution-history.md) — Required prerequisite (signature)
-- [_bmad-output/implementation-artifacts/85-2-wire-volatility-recalculation-triggers.md](_bmad-output/implementation-artifacts/85-2-wire-volatility-recalculation-triggers.md) — Existing trigger wiring this story finishes
-- [_bmad-output/planning-artifacts/epics-2026-04-28.md](_bmad-output/planning-artifacts/epics-2026-04-28.md) — Source epic (Epic 88, Story 88.3)
+- [\_bmad-output/implementation-artifacts/88-1-investigate-distribution-history-volatility-source.md](_bmad-output/implementation-artifacts/88-1-investigate-distribution-history-volatility-source.md) — Required prerequisite (wiring point)
+- [\_bmad-output/implementation-artifacts/88-2-refactor-volatility-to-use-distribution-history.md](_bmad-output/implementation-artifacts/88-2-refactor-volatility-to-use-distribution-history.md) — Required prerequisite (signature)
+- [\_bmad-output/implementation-artifacts/85-2-wire-volatility-recalculation-triggers.md](_bmad-output/implementation-artifacts/85-2-wire-volatility-recalculation-triggers.md) — Existing trigger wiring this story finishes
+- [\_bmad-output/planning-artifacts/epics-2026-04-28.md](_bmad-output/planning-artifacts/epics-2026-04-28.md) — Source epic (Epic 88, Story 88.3)
 
 ## Dev Agent Record
 
@@ -263,8 +264,8 @@ N/A
 
 ### Change Log
 
-| Date | Author | Change |
-|------|--------|--------|
+| Date       | Author    | Change                                                                                                            |
+| ---------- | --------- | ----------------------------------------------------------------------------------------------------------------- |
 | 2025-05-01 | dev-agent | Implemented story 88-3: wire distribution history into universe volatility recalculation across all three callers |
 
 ### File List
