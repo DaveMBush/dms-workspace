@@ -1,7 +1,10 @@
 ---
-description: Dedicated QA review and remediation loop runner
+description: 'QA review and remediation loop: run the gate up to 10 times, auto-apply fixes using Context7 and Playwright, re-validate after each fix until the gate passes'
 argument-hint: story=AD.3
 model: Claude Sonnet 4.6 High
+tools: [read, edit, agent, mcp_bash/*, mcp_context7/*, mcp_microsoft_pla/*]
+agents: [gate, quality-validation]
+user-invocable: false
 ---
 
 load the #skill:prompt
@@ -21,8 +24,8 @@ This prompt exists to run the full QA gate, remediation, and re-validation cycle
 Before doing anything else, read all of the following:
 
 1. `_bmad-output/project-context.md`
-2. `.github/prompts/gate.prompt.md`
-3. `.github/prompts/quality-validation.prompt.md`
+2. `.github/agents/gate.agent.md`
+3. `.github/agents/quality-validation.agent.md`
 
 ## Execution Rules
 
@@ -32,7 +35,7 @@ Before doing anything else, read all of the following:
 
    - `model`: `"Claude Opus 4.7 (copilot)"`
    - `description`: `"QA gate for story ${story}"`
-   - `prompt`: Read the full contents of `.github/prompts/gate.prompt.md` and include them verbatim, substituting `${story}` with the actual story ID.
+   - `prompt`: Read the full contents of `.github/agents/gate.agent.md` and include them verbatim, substituting `${story}` with the actual story ID.
 
 4. Interpret results exactly as follows:
 
@@ -40,7 +43,7 @@ Before doing anything else, read all of the following:
    - **FAIL**: Apply QA fix recommendations automatically, then call the `runSubagent` tool with:
      - `model`: `"Claude Opus 4.7 (copilot)"`
      - `description`: `"Validation for story ${story} after QA fixes"`
-     - `prompt`: Read the full contents of `.github/prompts/quality-validation.prompt.md` and include them verbatim, substituting `context` with `story-${story}-qa`.
+     - `prompt`: Read the full contents of `.github/agents/quality-validation.agent.md` and include them verbatim, substituting `context` with `story-${story}-qa`.
 
 5. For QA findings about API misuse, use Context7.
 6. For QA findings about UI behavior, use Playwright.

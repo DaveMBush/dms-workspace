@@ -1,7 +1,9 @@
 ---
-description: Dedicated quality validation loop runner
+description: 'Full quality validation loop: run pnpm all, e2e tests (chromium and firefox), dupcheck, format, and self-review changed files — restart from step 1 if any fix is applied'
 argument-hint: context=story-AD.3
 model: Claude Opus 4.7
+tools: [read, edit, search, mcp_bash/*, mcp_context7/*, mcp_microsoft_pla/*]
+user-invocable: false
 ---
 
 load the #skill:prompt

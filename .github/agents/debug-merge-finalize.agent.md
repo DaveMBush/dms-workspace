@@ -1,7 +1,10 @@
 ---
-description: Dedicated debug merge verification and cleanup runner
+description: 'Verify debug PR mergeability, resolve merge conflicts with rebase, squash-merge the PR, verify issue auto-close, and delete the local debug branch'
 argument-hint: story=AD.5
 model: Claude Sonnet 4.6 High
+tools: [read, agent, mcp_bash/*, mcp_github/*, mcp_microsoft_pla/*]
+agents: [quality-validation]
+user-invocable: false
 ---
 
 load the #skill:prompt
@@ -26,7 +29,7 @@ Before doing anything else, read all of the following:
 
 1. `_bmad-output/project-context.md`
 2. `_bmad/bmm/config.yaml`
-3. `.github/prompts/quality-validation.prompt.md`
+3. `.github/agents/quality-validation.agent.md`
 4. `$(git rev-parse --git-common-dir)/tmp/story-${story}-meta.json`
 
 ## Execution Rules
@@ -51,7 +54,7 @@ git merge-tree --quiet $(git merge-base HEAD origin/main) HEAD origin/main
 
    - `model`: `"Claude Opus 4.7 (copilot)"`
    - `description`: `"Validation for story ${story} after merge conflict resolution"`
-   - `prompt`: Read the full contents of `.github/prompts/quality-validation.prompt.md` and include them verbatim, substituting `context` with `debug-${story}-merge`.
+   - `prompt`: Read the full contents of `.github/agents/quality-validation.agent.md` and include them verbatim, substituting `context` with `debug-${story}-merge`.
 
 8. Verify PR `mergeable` state via GitHub tools until it is `true` or `false`.
 9. If the changes include UI, run a quick Playwright sanity validation; if they include unfamiliar API usage, run a quick Context7 check.

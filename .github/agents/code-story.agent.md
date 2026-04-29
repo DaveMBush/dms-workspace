@@ -1,7 +1,9 @@
 ---
-description: Develop a story using the BMAD V6 dev story skill.
+description: 'Create GitHub issue and worktree branch, install dependencies, and implement a story using the bmad-dev-story skill'
 argument-hint: story=AD.3
 model: Claude Sonnet 4.7
+tools: [read, edit, search, agent, mcp_bash/*, mcp_github/*, mcp_context7/*, mcp_microsoft_pla/*]
+user-invocable: false
 ---
 
 # Story Development: ${story}

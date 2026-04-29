@@ -1,7 +1,10 @@
 ---
-description: Fully autonomous epic debug prompt
+description: 'Fully autonomous bug fix workflow: validate epic, collect bug description, implement fix, run quality validation, create PR, run CodeRabbit review, and merge'
 argument-hint: epic=AD story=AD.5
 model: Claude Opus 4.7
+tools: [read, agent, mcp_bash/*]
+agents: [debug-setup, quality-validation, debug-pr-lifecycle, debug-merge-finalize]
+user-invocable: false
 ---
 
 load the #skill:prompt
@@ -14,13 +17,11 @@ Shell execution rule: every shell command in this workflow and its delegated ste
 
 Delegate epic validation and branch setup to a dedicated setup subagent using `runSubagent`:
 
-```
-runSubagent:
-  model: "Claude Sonnet 4.6 High"
-  description: "Debug setup for story ${story}"
-  prompt: |
-    You are setting up debug branch for story ${story} in epic ${epic}. Load and follow ./debug-setup.prompt.md exactly.
-```
+Call the `runSubagent` tool now with the following parameters:
+
+- `model`: `"Claude Sonnet 4.6 High (copilot)"`
+- `description`: `"Debug setup for story ${story}"`
+- `prompt`: Read the full contents of `.github/agents/debug-setup.agent.md` and include them verbatim, substituting `${story}` and `${epic}` with the actual values.
 
 This keeps the debug workflow context small while the setup subagent handles:
 
@@ -43,13 +44,19 @@ Use the prompt skill to ask: `Please describe the bug to fix:`
 
 Once the bug description is collected, use `runSubagent` with agent `"dev"` to implement and validate the fix in a **fresh context**. Substitute the actual values for `${epic}`, the branch returned by PHASE 1-2 setup, and the collected bug description:
 
+Call the `runSubagent` tool now with the following parameters:
+
+- `model`: `"Claude Sonnet 4.6 High (copilot)"`
+- `description`: `"Implement debug fix for story ${story}"`
+- `prompt`:
+
 ```
 You are a developer agent implementing a bug fix. Before doing anything else, read ALL of these files:
 1. `_bmad-output/project-context.md`
 2. `_bmad-output/planning-artifacts/${epic}.md`
 3. `_bmad/bmm/config.yaml`
 
-Current branch: <branch name returned by debug-setup.prompt.md>
+Current branch: <branch name returned by debug-setup.agent.md>
 Bug to fix: <bug description from user>
 
 Tasks:
@@ -59,7 +66,7 @@ Tasks:
 4. Delegate validation to a fresh subagent. Call the `runSubagent` tool with:
    - `model`: `"Claude Opus 4.7 (copilot)"`
    - `description`: `"Validate debug fix for story ${story}"`
-   - `prompt`: Read the full contents of `.github/prompts/quality-validation.prompt.md` and include them verbatim, substituting `context` with `debug-${story}`.
+   - `prompt`: Read the full contents of `.github/agents/quality-validation.agent.md` and include them verbatim, substituting `context` with `debug-${story}`.
    - If the validation subagent returns `VALIDATION FAILED`, use the prompt skill to report the failure to the user
 5. Return a summary of: files changed, what the fix was, and either
    "VALIDATION PASSED" or "VALIDATION FAILED: <reason>".
@@ -118,7 +125,7 @@ Once all bugs are fixed and no more bug work requested, call the `runSubagent` t
 
 - `model`: `"Claude Sonnet 4.6 High (copilot)"`
 - `description`: `"Debug PR lifecycle for story ${story}"`
-- `prompt`: Read the full contents of `.github/prompts/debug-pr-lifecycle.prompt.md` and include them verbatim as the prompt, substituting `${story}` with the actual story ID.
+- `prompt`: Read the full contents of `.github/agents/debug-pr-lifecycle.agent.md` and include them verbatim as the prompt, substituting `${story}` with the actual story ID.
 
 This keeps the debug workflow context small while the PR lifecycle subagent handles:
 
@@ -147,7 +154,7 @@ Call the `runSubagent` tool now with the following parameters to handle the fina
 
 - `model`: `"Claude Sonnet 4.6 High (copilot)"`
 - `description`: `"Debug merge and finalize for story ${story}"`
-- `prompt`: Read the full contents of `.github/prompts/debug-merge-finalize.prompt.md` and include them verbatim as the prompt, substituting `${story}` with the actual story ID.
+- `prompt`: Read the full contents of `.github/agents/debug-merge-finalize.agent.md` and include them verbatim as the prompt, substituting `${story}` with the actual story ID.
 
 This keeps the debug workflow context small while the merge subagent handles:
 

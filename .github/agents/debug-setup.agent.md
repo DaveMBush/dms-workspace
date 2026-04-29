@@ -1,7 +1,9 @@
 ---
-description: Dedicated debug setup and branch preparation runner
+description: 'Validate epic status, verify clean git state on main, create GitHub issue and debug branch, and return branch name to the parent debug workflow'
 argument-hint: epic=AD story=AD.5
 model: Claude Sonnet 4.6 High
+tools: [read, mcp_bash/*, mcp_github/*]
+user-invocable: false
 ---
 
 load the #skill:prompt

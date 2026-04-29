@@ -1,7 +1,9 @@
 ---
-description: QA the result of story development.
+description: 'QA gate: invoke the bmad-code-review skill against changed files to verify acceptance criteria, code quality, and test coverage — returns PASS or FAIL'
 argument-hint: story=AD.3
 model: Claude Opus 4.7
+tools: [read, search, mcp_bash/*]
+user-invocable: false
 ---
 
 # QA Gate for Story ${story}
