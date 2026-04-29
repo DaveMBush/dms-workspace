@@ -135,6 +135,26 @@ async function fetchDistributionsForNewSymbol(
   return outcome;
 }
 
+async function createUniverseEntry(
+  upperSymbol: string,
+  effectiveRiskGroupId: string,
+  isCef: boolean
+): Promise<UniverseRecord> {
+  return prisma.universe.create({
+    data: {
+      symbol: upperSymbol,
+      risk_group_id: effectiveRiskGroupId,
+      last_price: 0,
+      distribution: 0,
+      distributions_per_year: 0,
+      ex_date: null,
+      most_recent_sell_date: null,
+      expired: false,
+      is_closed_end_fund: isCef,
+    },
+  });
+}
+
 export async function addSymbol(
   request: AddSymbolRequest
 ): Promise<AddSymbolResult> {
@@ -150,19 +170,11 @@ export async function addSymbol(
     riskGroups
   );
 
-  const universeRecord = await prisma.universe.create({
-    data: {
-      symbol: upperSymbol,
-      risk_group_id: effectiveRiskGroupId,
-      last_price: 0,
-      distribution: 0,
-      distributions_per_year: 0,
-      ex_date: null,
-      most_recent_sell_date: null,
-      expired: false,
-      is_closed_end_fund: isCef,
-    },
-  });
+  const universeRecord = await createUniverseEntry(
+    upperSymbol,
+    effectiveRiskGroupId,
+    isCef
+  );
 
   const addSymbolOutcome = await fetchDistributionsForNewSymbol(upperSymbol);
   await recalculateUniverseVolatility(
