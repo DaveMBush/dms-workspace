@@ -1,7 +1,7 @@
 ---
 description: 'QA review and remediation loop: run the gate up to 10 times, auto-apply fixes using Context7 and Playwright, re-validate after each fix until the gate passes'
 argument-hint: story=AD.3
-model: Claude Sonnet 4.6 High
+model: Claude Sonnet 4.6 High (copilot)
 tools: [read, edit, agent, mcp_bash/*, mcp_context7/*, mcp_microsoft_pla/*]
 agents: [gate, quality-validation]
 user-invocable: false

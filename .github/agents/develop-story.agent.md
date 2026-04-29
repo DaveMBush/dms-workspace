@@ -1,7 +1,7 @@
 ---
 description: 'Fully autonomous story development: pre-development validation, implementation, quality validation, QA review, PR creation, CodeRabbit review, and merge'
 argument-hint: story=AD.3
-model: Claude Sonnet 4.6 High
+model: Claude Sonnet 4.6 High (copilot)
 tools: [read, agent, todo, mcp_bash/*]
 agents: [code-story, quality-validation, qa-review-loop, commit-and-pr, code-rabbit, merge-finalize]
 user-invocable: false

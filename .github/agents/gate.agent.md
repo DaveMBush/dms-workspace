@@ -1,7 +1,7 @@
 ---
 description: 'QA gate: invoke the bmad-code-review skill against changed files to verify acceptance criteria, code quality, and test coverage — returns PASS or FAIL'
 argument-hint: story=AD.3
-model: Claude Opus 4.7
+model: Claude Opus 4.7 (copilot)
 tools: [read, search, mcp_bash/*]
 user-invocable: false
 ---

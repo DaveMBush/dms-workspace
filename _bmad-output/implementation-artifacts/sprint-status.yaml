@@ -37,7 +37,7 @@
 #     E1 → E3 → E4(TS rules) → E2 → E5 → E4(template rules) → E6 → E7 → E8
 
 generated: 2026-03-17
-last_updated: 2026-04-28
+last_updated: 2026-04-29
 project_key: NOKEY
 tracking_system: file-system
 story_location: _bmad-output/implementation-artifacts
@@ -508,3 +508,24 @@ development_status:
   88-3-wire-distribution-history-volatility-into-universe-retrieval: done
   88-4-e2e-volatility-all-universe-symbols: done
   epic-88-retrospective: optional
+
+  # ── Epic 89: CEF Set to Expired on Add ──────────────────────────────────────
+  epic-89: backlog
+  89-1-fix-add-symbol-cef-expired: ready-for-dev
+  89-2-fix-csv-import-cef-expired: ready-for-dev
+  89-3-e2e-cef-expired-on-add: ready-for-dev
+  epic-89-retrospective: optional
+
+  # ── Epic 90: Distribution Frequency Normalization for Volatility ─────────────
+  epic-90: backlog
+  90-1-implement-distribution-frequency-normalization: ready-for-dev
+  90-2-wire-normalization-into-volatility-recalculation: ready-for-dev
+  epic-90-retrospective: optional
+
+  # ── Epic 91: Electron Installation Script ───────────────────────────────────
+  epic-91: backlog
+  91-1-research-electron-packaging-approach: ready-for-dev
+  91-2-configure-electron-builder-cross-platform: ready-for-dev
+  91-3-prisma-migration-on-launch: ready-for-dev
+  91-4-e2e-electron-package-smoke-test: ready-for-dev
+  epic-91-retrospective: optional

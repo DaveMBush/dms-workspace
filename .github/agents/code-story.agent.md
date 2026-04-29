@@ -1,7 +1,7 @@
 ---
 description: 'Create GitHub issue and worktree branch, install dependencies, and implement a story using the bmad-dev-story skill'
 argument-hint: story=AD.3
-model: Claude Sonnet 4.7
+model: Claude Sonnet 4.7 (copilot))
 tools: [read, edit, search, agent, mcp_bash/*, mcp_github/*, mcp_context7/*, mcp_microsoft_pla/*]
 user-invocable: false
 ---

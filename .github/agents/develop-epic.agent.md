@@ -1,7 +1,7 @@
 ---
 description: 'Fully autonomous epic development: discover all stories, validate Approved status, then develop each story sequentially from implementation through merge'
 argument-hint: epic=AD
-model: Claude Sonnet 4.6 High
+model: Claude Sonnet 4.6 High (copilot)
 tools: [read, agent, todo, mcp_bash/*]
 agents: [develop-story, debug]
 user-invocable: false

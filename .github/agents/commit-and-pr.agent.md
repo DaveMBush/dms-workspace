@@ -1,6 +1,6 @@
 ---
 description: 'Format code with pnpm format, commit all staged changes, create a GitHub PR linked to the story issue, and write the story metadata file'
-model: Claude Sonnet 4.6 High
+model: Claude Sonnet 4.6 High (copilot)
 tools: [read, edit, mcp_bash/*, mcp_github/*]
 user-invocable: false
 ---

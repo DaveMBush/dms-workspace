@@ -1,7 +1,7 @@
 ---
 description: 'Full quality validation loop: run pnpm all, e2e tests (chromium and firefox), dupcheck, format, and self-review changed files — restart from step 1 if any fix is applied'
 argument-hint: context=story-AD.3
-model: Claude Opus 4.7
+model: Claude Opus 4.7 (copilot)
 tools: [read, edit, search, mcp_bash/*, mcp_context7/*, mcp_microsoft_pla/*]
 user-invocable: false
 ---

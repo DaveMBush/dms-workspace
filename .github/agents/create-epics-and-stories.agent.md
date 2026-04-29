@@ -1,6 +1,6 @@
 ---
 description: 'Generate epics and stories from a planning file using bmad-create-epics-and-stories and bmad-create-story skills, then set all story statuses to Approved'
-model: Claude Opus 4.7
+model: Claude Opus 4.7 (copilot)
 argument-hint: file=epics-2026-03-31.md
 tools: [read, edit, agent]
 user-invocable: false

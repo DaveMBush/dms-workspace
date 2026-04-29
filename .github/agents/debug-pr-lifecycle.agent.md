@@ -1,7 +1,7 @@
 ---
 description: 'Create commit and PR for a debug branch then run the full CodeRabbit review loop until the PR is ready to merge'
 argument-hint: story=AD.5
-model: Claude Sonnet 4.6 High
+model: Claude Sonnet 4.6 High (copilot)
 tools: [read, agent, mcp_bash/*]
 agents: [commit-and-pr, code-rabbit]
 user-invocable: false
