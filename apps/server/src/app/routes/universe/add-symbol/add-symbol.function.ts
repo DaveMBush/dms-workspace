@@ -135,6 +135,34 @@ async function fetchDistributionsForNewSymbol(
   return outcome;
 }
 
+async function fetchDistributionsAndRecalculate(
+  upperSymbol: string,
+  universeId: string
+): Promise<Awaited<ReturnType<typeof getDistributions>>> {
+  let outcome: Awaited<ReturnType<typeof getDistributions>>;
+  try {
+    outcome = await fetchDistributionsForNewSymbol(upperSymbol);
+  } catch (error) {
+    logger.warn(
+      'Dividend history fetch failed during add-symbol; continuing with insufficient-history',
+      {
+        symbol: upperSymbol,
+        error: error instanceof Error ? error.message : String(error),
+      }
+    );
+    outcome = { result: undefined, history: [] };
+  }
+  try {
+    await recalculateUniverseVolatility(universeId, outcome.history);
+  } catch (error) {
+    logger.warn('Volatility recalculation failed during add-symbol', {
+      symbol: upperSymbol,
+      error: error instanceof Error ? error.message : String(error),
+    });
+  }
+  return outcome;
+}
+
 async function createUniverseEntry(
   upperSymbol: string,
   effectiveRiskGroupId: string,
@@ -176,10 +204,9 @@ export async function addSymbol(
     isCef
   );
 
-  const addSymbolOutcome = await fetchDistributionsForNewSymbol(upperSymbol);
-  await recalculateUniverseVolatility(
-    universeRecord.id,
-    addSymbolOutcome.history
+  const addSymbolOutcome = await fetchDistributionsAndRecalculate(
+    upperSymbol,
+    universeRecord.id
   );
 
   try {

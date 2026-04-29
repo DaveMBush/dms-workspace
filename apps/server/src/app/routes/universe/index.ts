@@ -3,6 +3,7 @@ import { FastifyInstance } from 'fastify';
 import { prisma } from '../../prisma/prisma-client';
 import { recalculateUniverseVolatility } from '../../volatility/recalculate-universe-volatility.function';
 import type { ProcessedRow } from '../common/distribution-api.function';
+import { fetchDividendHistory } from '../common/dividend-history.service';
 import { getTableState } from '../common/get-table-state.function';
 import { parseSortFilterHeader } from '../common/parse-sort-filter-header.function';
 import registerAddSymbol from './add-symbol';
@@ -231,17 +232,12 @@ async function fetchUpdatedUniverse(id: string): Promise<UniverseWithTrades[]> {
   });
 }
 
-async function fetchHistoryFromDeposits(
-  universeId: string
-): Promise<ProcessedRow[]> {
-  const deposits = await prisma.divDeposits.findMany({
-    where: { universeId },
-    select: { date: true, amount: true },
-    orderBy: { date: 'asc' },
-  });
-  return deposits.map(function mapDeposit(d) {
-    return { date: d.date, amount: d.amount };
-  });
+async function fetchHistoryForSymbol(symbol: string): Promise<ProcessedRow[]> {
+  try {
+    return await fetchDividendHistory(symbol);
+  } catch {
+    return [];
+  }
 }
 
 function handleUpdateUniverseRoute(fastify: FastifyInstance): void {
@@ -252,7 +248,7 @@ function handleUpdateUniverseRoute(fastify: FastifyInstance): void {
 
       await updateUniverseData(id, updateData);
 
-      const updateHistory = await fetchHistoryFromDeposits(id);
+      const updateHistory = await fetchHistoryForSymbol(updateData.symbol);
       await recalculateUniverseVolatility(id, updateHistory);
       const universes = await fetchUpdatedUniverse(id);
 

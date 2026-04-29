@@ -299,7 +299,6 @@ describe('POST /api/universe - avg_purchase_yield_percent (regression: AS.9 Bug 
   it('should recalculate volatility after updating a universe row', async () => {
     mockPrismaUniverse.update.mockResolvedValue({ id: 'u1' });
     mockPrismaUniverse.findMany.mockResolvedValue([makeUniverseRow()]);
-    mockPrimsaDivDeposits.findMany.mockResolvedValue([]);
 
     const response = await app.inject({
       method: 'PUT',
@@ -336,11 +335,7 @@ describe('POST /api/universe - avg_purchase_yield_percent (regression: AS.9 Bug 
         expired: false,
       },
     });
-    expect(mockPrimsaDivDeposits.findMany).toHaveBeenCalledWith({
-      where: { universeId: 'u1' },
-      select: { date: true, amount: true },
-      orderBy: { date: 'asc' },
-    });
+    expect(mockFetchDividendHistory).toHaveBeenCalledWith('ABC');
     expect(mockRecalculateUniverseVolatility).toHaveBeenCalledWith('u1', []);
   });
 });
