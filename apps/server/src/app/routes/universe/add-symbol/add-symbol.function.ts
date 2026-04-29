@@ -6,6 +6,8 @@ import {
   lookupCefConnectSymbol,
   RiskGroupMap,
 } from '../../common/cef-classification.function';
+import type { ProcessedRow } from '../../common/distribution-api.function';
+import { fetchDividendHistory } from '../../common/dividend-history.service';
 import { fetchAndUpdatePriceData } from '../fetch-and-update-price-data.function';
 import type { UniverseRecord } from '../universe-record.interface';
 
@@ -121,6 +123,21 @@ async function resolveCefClassification(
   return { effectiveRiskGroupId, isCef };
 }
 
+async function fetchHistoryForNewSymbol(symbol: string): Promise<ProcessedRow[]> {
+  try {
+    return await fetchDividendHistory(symbol);
+  } catch (error) {
+    logger.warn(
+      'Failed to fetch dividend history for add-symbol; volatility set to insufficient-history',
+      {
+        symbol,
+        error: error instanceof Error ? error.message : String(error),
+      }
+    );
+    return [];
+  }
+}
+
 export async function addSymbol(
   request: AddSymbolRequest
 ): Promise<AddSymbolResult> {
@@ -150,7 +167,8 @@ export async function addSymbol(
     },
   });
 
-  await recalculateUniverseVolatility(universeRecord.id, []);
+  const addSymbolHistory = await fetchHistoryForNewSymbol(upperSymbol);
+  await recalculateUniverseVolatility(universeRecord.id, addSymbolHistory);
 
   try {
     const { record, fetchFailed } = await fetchAndUpdatePriceData(

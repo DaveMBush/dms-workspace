@@ -1,7 +1,10 @@
 import { FastifyInstance } from 'fastify';
 
+import { logger } from '../../../utils/structured-logger';
 import { prisma } from '../../prisma/prisma-client';
 import { recalculateUniverseVolatility } from '../../volatility/recalculate-universe-volatility.function';
+import type { ProcessedRow } from '../common/distribution-api.function';
+import { fetchDividendHistory } from '../common/dividend-history.service';
 import { getTableState } from '../common/get-table-state.function';
 import { parseSortFilterHeader } from '../common/parse-sort-filter-header.function';
 import registerAddSymbol from './add-symbol';
@@ -235,9 +238,21 @@ function handleUpdateUniverseRoute(fastify: FastifyInstance): void {
     '/',
     async function handleUpdateUniverse(request, reply): Promise<void> {
       const { id, ...updateData } = request.body;
+      const { symbol } = request.body;
 
       await updateUniverseData(id, updateData);
-      await recalculateUniverseVolatility(id, []);
+
+      let updateHistory: ProcessedRow[] = [];
+      try {
+        updateHistory = await fetchDividendHistory(symbol);
+      } catch (error) {
+        logger.warn('Failed to fetch dividend history for PUT universe; volatility set to insufficient-history', {
+          symbol,
+          universeId: id,
+          error: error instanceof Error ? error.message : String(error),
+        });
+      }
+      await recalculateUniverseVolatility(id, updateHistory);
       const universes = await fetchUpdatedUniverse(id);
 
       const result = universes.map(mapUniverseToResponse);

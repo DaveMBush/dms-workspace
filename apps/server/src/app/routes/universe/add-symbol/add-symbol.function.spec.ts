@@ -4,6 +4,7 @@ import {
   lookupCefConnectSymbol,
   classifySymbolRiskGroupId,
 } from '../../common/cef-classification.function';
+import { fetchDividendHistory } from '../../common/dividend-history.service';
 import { getDistributions } from '../../settings/common/get-distributions.function';
 import { getLastPrice } from '../../settings/common/get-last-price.function';
 import { recalculateUniverseVolatility } from '../../../volatility/recalculate-universe-volatility.function';
@@ -33,6 +34,9 @@ vi.mock('../../common/cef-classification.function', function () {
   };
 });
 
+vi.mock('../../common/dividend-history.service', function () {
+  return { fetchDividendHistory: vi.fn() };
+});
 vi.mock('../../settings/common/get-distributions.function');
 vi.mock('../../settings/common/get-last-price.function');
 vi.mock(
@@ -53,6 +57,7 @@ vi.mock('../../../../utils/structured-logger', function () {
 });
 
 const mockPrisma = prisma as any;
+const mockFetchDividendHistory = fetchDividendHistory as ReturnType<typeof vi.fn>;
 const mockGetDistributions = getDistributions as any;
 const mockGetLastPrice = getLastPrice as any;
 const mockLookupCefConnectSymbol = lookupCefConnectSymbol as ReturnType<
@@ -91,6 +96,7 @@ describe('addSymbol', function () {
     vi.clearAllMocks();
     mockPrisma.risk_group.findMany.mockResolvedValue(mockRiskGroups);
     mockLookupCefConnectSymbol.mockResolvedValue(null);
+    mockFetchDividendHistory.mockResolvedValue([]);
   });
 
   test('should apply CEF classification when symbol is found on CefConnect', async function () {
@@ -115,7 +121,7 @@ describe('addSymbol', function () {
       is_closed_end_fund: true,
     } as any);
     mockGetLastPrice.mockResolvedValue(undefined);
-    mockGetDistributions.mockResolvedValue(undefined);
+    mockGetDistributions.mockResolvedValue({ result: undefined, history: [] });
 
     await addSymbol(request);
 
@@ -141,7 +147,7 @@ describe('addSymbol', function () {
     mockLookupCefConnectSymbol.mockResolvedValue(null);
     mockPrisma.universe.create.mockResolvedValue(mockDefaultRecord as any);
     mockGetLastPrice.mockResolvedValue(undefined);
-    mockGetDistributions.mockResolvedValue(undefined);
+    mockGetDistributions.mockResolvedValue({ result: undefined, history: [] });
 
     await addSymbol(request);
 
@@ -167,7 +173,7 @@ describe('addSymbol', function () {
     mockLookupCefConnectSymbol.mockRejectedValue(new Error('Network error'));
     mockPrisma.universe.create.mockResolvedValue(mockDefaultRecord as any);
     mockGetLastPrice.mockResolvedValue(undefined);
-    mockGetDistributions.mockResolvedValue(undefined);
+    mockGetDistributions.mockResolvedValue({ result: undefined, history: [] });
 
     const result = await addSymbol(request);
 
@@ -211,7 +217,7 @@ describe('addSymbol', function () {
     });
     mockPrisma.universe.create.mockResolvedValue(mockDefaultRecord as any);
     mockGetLastPrice.mockResolvedValue(150.25);
-    mockGetDistributions.mockResolvedValue(mockDistributionData);
+    mockGetDistributions.mockResolvedValue({ result: mockDistributionData, history: [] });
     mockPrisma.universe.update.mockResolvedValue(mockUpdatedRecord as any);
 
     const result = await addSymbol(request);
@@ -280,7 +286,7 @@ describe('addSymbol', function () {
     });
     mockPrisma.universe.create.mockResolvedValue(mockCreatedRecord as any);
     mockGetLastPrice.mockResolvedValue(undefined);
-    mockGetDistributions.mockResolvedValue(undefined);
+    mockGetDistributions.mockResolvedValue({ result: undefined, history: [] });
 
     const result = await addSymbol(request);
 
@@ -347,7 +353,7 @@ describe('addSymbol', function () {
       name: 'Conservative',
     });
     mockGetLastPrice.mockResolvedValue(undefined);
-    mockGetDistributions.mockResolvedValue(undefined);
+    mockGetDistributions.mockResolvedValue({ result: undefined, history: [] });
     mockPrisma.universe.create.mockResolvedValue(mockDefaultRecord as any);
 
     const result = await addSymbol(request);
@@ -412,7 +418,7 @@ describe('addSymbol', function () {
     });
     mockPrisma.universe.create.mockResolvedValue(mockDefaultRecord as any);
     mockGetLastPrice.mockResolvedValue(undefined);
-    mockGetDistributions.mockResolvedValue(undefined);
+    mockGetDistributions.mockResolvedValue({ result: undefined, history: [] });
 
     await addSymbol(request);
 
@@ -445,7 +451,7 @@ describe('addSymbol', function () {
       is_closed_end_fund: true,
     } as any);
     mockGetLastPrice.mockResolvedValue(undefined);
-    mockGetDistributions.mockResolvedValue(undefined);
+    mockGetDistributions.mockResolvedValue({ result: undefined, history: [] });
 
     await addSymbol(request);
 
@@ -471,7 +477,7 @@ describe('addSymbol', function () {
     mockLookupCefConnectSymbol.mockRejectedValue('non-error string thrown');
     mockPrisma.universe.create.mockResolvedValue(mockDefaultRecord as any);
     mockGetLastPrice.mockResolvedValue(undefined);
-    mockGetDistributions.mockResolvedValue(undefined);
+    mockGetDistributions.mockResolvedValue({ result: undefined, history: [] });
 
     const result = await addSymbol(request);
 
@@ -502,7 +508,7 @@ describe('addSymbol', function () {
       name: 'Conservative',
     });
     mockGetLastPrice.mockResolvedValue(undefined);
-    mockGetDistributions.mockResolvedValue(undefined);
+    mockGetDistributions.mockResolvedValue({ result: undefined, history: [] });
     mockPrisma.universe.create.mockResolvedValue(mockCreatedRecord as any);
 
     await addSymbol(request);

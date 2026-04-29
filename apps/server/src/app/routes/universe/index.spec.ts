@@ -5,14 +5,18 @@ import { recalculateUniverseVolatility } from '../../volatility/recalculate-univ
 import registerUniverseRoutes from './index';
 
 // Hoisted mocks
-const { mockPrismaUniverse } = vi.hoisted(() => ({
+const { mockPrismaUniverse, mockFetchDividendHistory } = vi.hoisted(() => ({
   mockPrismaUniverse: { findMany: vi.fn(), update: vi.fn() },
+  mockFetchDividendHistory: vi.fn(),
 }));
 
 vi.mock('../../prisma/prisma-client', () => ({
   prisma: {
     universe: mockPrismaUniverse,
   },
+}));
+vi.mock('../common/dividend-history.service', () => ({
+  fetchDividendHistory: mockFetchDividendHistory,
 }));
 vi.mock('../../volatility/recalculate-universe-volatility.function', () => ({
   recalculateUniverseVolatility: vi.fn(),
@@ -96,6 +100,7 @@ describe('POST /api/universe - avg_purchase_yield_percent (regression: AS.9 Bug 
     await app.ready();
     mockPrismaUniverse.findMany.mockReset();
     mockPrismaUniverse.update.mockReset();
+    mockFetchDividendHistory.mockResolvedValue([]);
   });
 
   afterEach(async () => {
@@ -328,6 +333,7 @@ describe('POST /api/universe - avg_purchase_yield_percent (regression: AS.9 Bug 
       },
     });
     expect(mockRecalculateUniverseVolatility).toHaveBeenCalledWith('u1', []);
+    expect(mockFetchDividendHistory).toHaveBeenCalledWith('ABC');
   });
 });
 
@@ -340,6 +346,7 @@ describe('POST /api/universe - volatilityShort field (Story 86.1)', () => {
     await app.ready();
     mockPrismaUniverse.findMany.mockReset();
     mockPrismaUniverse.update.mockReset();
+    mockFetchDividendHistory.mockResolvedValue([]);
   });
 
   afterEach(async function teardownApp() {
