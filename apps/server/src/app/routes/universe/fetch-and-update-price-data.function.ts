@@ -22,15 +22,23 @@ function buildUpdateData(
   };
 }
 
+interface FetchAndUpdatePriceOptions {
+  logContext?: string;
+  prefetchedDistributionOutcome?: Awaited<ReturnType<typeof getDistributions>>;
+}
+
 export async function fetchAndUpdatePriceData(
   universeId: string,
   symbol: string,
   fallbackRecord: UniverseRecord,
-  logContext: string = 'symbol add'
+  options: FetchAndUpdatePriceOptions = {}
 ): Promise<FetchResult> {
+  const { logContext = 'symbol add', prefetchedDistributionOutcome } = options;
   const [lastPrice, distributionOutcome] = await Promise.all([
     getLastPrice(symbol),
-    getDistributions(symbol),
+    prefetchedDistributionOutcome !== undefined
+      ? Promise.resolve(prefetchedDistributionOutcome)
+      : getDistributions(symbol),
   ]);
   const distributionData = distributionOutcome.result;
 

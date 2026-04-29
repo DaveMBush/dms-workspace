@@ -153,7 +153,11 @@ describe('sync-from-screener route', () => {
 
     // Default: getDistributions returns no history
     mockGetDistributions.mockResolvedValue({
-      result: { distribution: 1, distributions_per_year: 12, ex_date: new Date(0) },
+      result: {
+        distribution: 1,
+        distributions_per_year: 12,
+        ex_date: new Date(0),
+      },
       history: [],
     });
 
@@ -616,7 +620,11 @@ describe('sync-from-screener route', () => {
     ];
 
     mockGetDistributions.mockResolvedValue({
-      result: { distribution: 0.25, distributions_per_year: 12, ex_date: new Date('2025-08-15') },
+      result: {
+        distribution: 0.25,
+        distributions_per_year: 12,
+        ex_date: new Date('2025-08-15'),
+      },
       history: historyFixture,
     });
 
@@ -632,12 +640,19 @@ describe('sync-from-screener route', () => {
     const api = createApiInstance(f);
     await api.invoke(SYNC_PATH);
 
-    expect(mockRecalculateUniverseVolatility).toHaveBeenCalledWith('hist-id', historyFixture);
+    expect(mockRecalculateUniverseVolatility).toHaveBeenCalledWith(
+      'hist-id',
+      historyFixture
+    );
   });
 
   test('logs warning when getDistributions returns empty history on insert', async () => {
     mockGetDistributions.mockResolvedValue({
-      result: { distribution: 1, distributions_per_year: 12, ex_date: new Date(0) },
+      result: {
+        distribution: 1,
+        distributions_per_year: 12,
+        ex_date: new Date(0),
+      },
       history: [],
     });
 
@@ -657,12 +672,19 @@ describe('sync-from-screener route', () => {
       'Empty dividend history; volatility set to insufficient-history',
       { symbol: 'NOHIST' }
     );
-    expect(mockRecalculateUniverseVolatility).toHaveBeenCalledWith('nohist-id', []);
+    expect(mockRecalculateUniverseVolatility).toHaveBeenCalledWith(
+      'nohist-id',
+      []
+    );
   });
 
   test('logs warning when getDistributions returns empty history on update', async () => {
     mockGetDistributions.mockResolvedValue({
-      result: { distribution: 1, distributions_per_year: 12, ex_date: new Date(0) },
+      result: {
+        distribution: 1,
+        distributions_per_year: 12,
+        ex_date: new Date(0),
+      },
       history: [],
     });
 
@@ -692,6 +714,9 @@ describe('sync-from-screener route', () => {
       'Empty dividend history; volatility set to insufficient-history',
       { symbol: 'NOHIST' }
     );
-    expect(mockRecalculateUniverseVolatility).toHaveBeenCalledWith('nohist-update-id', []);
+    expect(mockRecalculateUniverseVolatility).toHaveBeenCalledWith(
+      'nohist-update-id',
+      []
+    );
   });
 });

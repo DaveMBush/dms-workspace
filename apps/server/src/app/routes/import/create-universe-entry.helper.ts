@@ -21,7 +21,9 @@ export async function createUniverseEntry(
     },
   });
   try {
-    await fetchAndUpdatePriceData(entry.id, symbol, entry, 'CUSIP resolution');
+    await fetchAndUpdatePriceData(entry.id, symbol, entry, {
+      logContext: 'CUSIP resolution',
+    });
   } catch (error) {
     logger.warn(
       'Unexpected error during price/dividend fetch after CUSIP resolution',

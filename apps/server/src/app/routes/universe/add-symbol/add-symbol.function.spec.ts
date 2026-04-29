@@ -4,7 +4,6 @@ import {
   lookupCefConnectSymbol,
   classifySymbolRiskGroupId,
 } from '../../common/cef-classification.function';
-import { fetchDividendHistory } from '../../common/dividend-history.service';
 import { getDistributions } from '../../settings/common/get-distributions.function';
 import { getLastPrice } from '../../settings/common/get-last-price.function';
 import { recalculateUniverseVolatility } from '../../../volatility/recalculate-universe-volatility.function';
@@ -34,9 +33,6 @@ vi.mock('../../common/cef-classification.function', function () {
   };
 });
 
-vi.mock('../../common/dividend-history.service', function () {
-  return { fetchDividendHistory: vi.fn() };
-});
 vi.mock('../../settings/common/get-distributions.function');
 vi.mock('../../settings/common/get-last-price.function');
 vi.mock(
@@ -57,7 +53,6 @@ vi.mock('../../../../utils/structured-logger', function () {
 });
 
 const mockPrisma = prisma as any;
-const mockFetchDividendHistory = fetchDividendHistory as ReturnType<typeof vi.fn>;
 const mockGetDistributions = getDistributions as any;
 const mockGetLastPrice = getLastPrice as any;
 const mockLookupCefConnectSymbol = lookupCefConnectSymbol as ReturnType<
@@ -96,7 +91,7 @@ describe('addSymbol', function () {
     vi.clearAllMocks();
     mockPrisma.risk_group.findMany.mockResolvedValue(mockRiskGroups);
     mockLookupCefConnectSymbol.mockResolvedValue(null);
-    mockFetchDividendHistory.mockResolvedValue([]);
+    mockGetDistributions.mockResolvedValue({ result: undefined, history: [] });
   });
 
   test('should apply CEF classification when symbol is found on CefConnect', async function () {
@@ -217,7 +212,10 @@ describe('addSymbol', function () {
     });
     mockPrisma.universe.create.mockResolvedValue(mockDefaultRecord as any);
     mockGetLastPrice.mockResolvedValue(150.25);
-    mockGetDistributions.mockResolvedValue({ result: mockDistributionData, history: [] });
+    mockGetDistributions.mockResolvedValue({
+      result: mockDistributionData,
+      history: [],
+    });
     mockPrisma.universe.update.mockResolvedValue(mockUpdatedRecord as any);
 
     const result = await addSymbol(request);
@@ -522,5 +520,69 @@ describe('addSymbol', function () {
         symbol: 'SPY',
       }),
     });
+  });
+
+  test('should warn when getDistributions returns empty history, and call recalculateUniverseVolatility with []', async function () {
+    const request = {
+      symbol: 'SPY',
+      risk_group_id: 'test-risk-group-id',
+    };
+
+    mockPrisma.universe.findFirst.mockResolvedValue(null);
+    mockPrisma.risk_group.findUnique.mockResolvedValue({
+      id: 'test-risk-group-id',
+      name: 'Conservative',
+    });
+    mockPrisma.universe.create.mockResolvedValue(mockDefaultRecord as any);
+    mockGetLastPrice.mockResolvedValue(undefined);
+    mockGetDistributions.mockResolvedValue({ result: undefined, history: [] });
+
+    const result = await addSymbol(request);
+
+    expect(mockLogger.warn).toHaveBeenCalledWith(
+      'Empty dividend history for add-symbol; volatility set to insufficient-history',
+      { symbol: 'SPY' }
+    );
+    expect(mockRecalculateUniverseVolatility).toHaveBeenCalledWith(
+      'test-universe-id',
+      []
+    );
+    expect(result.fetchFailed).toBe(true);
+  });
+
+  test('should pass real dividend history from getDistributions to recalculateUniverseVolatility (no double-fetch)', async function () {
+    const historyFixture = [
+      { amount: 0.3, date: new Date('2025-06-15') },
+      { amount: 0.3, date: new Date('2025-07-15') },
+    ];
+    const request = {
+      symbol: 'SPY',
+      risk_group_id: 'test-risk-group-id',
+    };
+
+    mockPrisma.universe.findFirst.mockResolvedValue(null);
+    mockPrisma.risk_group.findUnique.mockResolvedValue({
+      id: 'test-risk-group-id',
+      name: 'Conservative',
+    });
+    mockPrisma.universe.create.mockResolvedValue(mockDefaultRecord as any);
+    mockGetLastPrice.mockResolvedValue(undefined);
+    mockGetDistributions.mockResolvedValue({
+      result: {
+        distribution: 0.3,
+        distributions_per_year: 12,
+        ex_date: new Date('2025-07-15'),
+      },
+      history: historyFixture,
+    });
+
+    await addSymbol(request);
+
+    expect(mockGetDistributions).toHaveBeenCalledTimes(1);
+    expect(mockGetDistributions).toHaveBeenCalledWith('SPY');
+    expect(mockRecalculateUniverseVolatility).toHaveBeenCalledWith(
+      'test-universe-id',
+      historyFixture
+    );
   });
 });

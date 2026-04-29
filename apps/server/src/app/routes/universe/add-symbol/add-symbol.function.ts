@@ -6,8 +6,7 @@ import {
   lookupCefConnectSymbol,
   RiskGroupMap,
 } from '../../common/cef-classification.function';
-import type { ProcessedRow } from '../../common/distribution-api.function';
-import { fetchDividendHistory } from '../../common/dividend-history.service';
+import { getDistributions } from '../../settings/common/get-distributions.function';
 import { fetchAndUpdatePriceData } from '../fetch-and-update-price-data.function';
 import type { UniverseRecord } from '../universe-record.interface';
 
@@ -123,19 +122,17 @@ async function resolveCefClassification(
   return { effectiveRiskGroupId, isCef };
 }
 
-async function fetchHistoryForNewSymbol(symbol: string): Promise<ProcessedRow[]> {
-  try {
-    return await fetchDividendHistory(symbol);
-  } catch (error) {
+async function fetchDistributionsForNewSymbol(
+  symbol: string
+): Promise<Awaited<ReturnType<typeof getDistributions>>> {
+  const outcome = await getDistributions(symbol);
+  if (outcome.history.length === 0) {
     logger.warn(
-      'Failed to fetch dividend history for add-symbol; volatility set to insufficient-history',
-      {
-        symbol,
-        error: error instanceof Error ? error.message : String(error),
-      }
+      'Empty dividend history for add-symbol; volatility set to insufficient-history',
+      { symbol }
     );
-    return [];
   }
+  return outcome;
 }
 
 export async function addSymbol(
@@ -167,15 +164,21 @@ export async function addSymbol(
     },
   });
 
-  const addSymbolHistory = await fetchHistoryForNewSymbol(upperSymbol);
-  await recalculateUniverseVolatility(universeRecord.id, addSymbolHistory);
+  const addSymbolOutcome = await fetchDistributionsForNewSymbol(upperSymbol);
+  await recalculateUniverseVolatility(
+    universeRecord.id,
+    addSymbolOutcome.history
+  );
 
   try {
     const { record, fetchFailed } = await fetchAndUpdatePriceData(
       universeRecord.id,
       upperSymbol,
       universeRecord,
-      'manual symbol add'
+      {
+        logContext: 'manual symbol add',
+        prefetchedDistributionOutcome: addSymbolOutcome,
+      }
     );
     return mapUniverseRecordToResult(record, fetchFailed);
   } catch (error) {

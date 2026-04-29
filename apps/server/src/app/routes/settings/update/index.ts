@@ -24,7 +24,7 @@ function getCurrentDistribution(
 async function checkForNewDistribution(
   universe: Awaited<ReturnType<typeof prisma.universe.findMany>>[number]
 ): Promise<Distribution | null> {
-  const newDistribution = await getDistributions(universe.symbol);
+  const { result: newDistribution } = await getDistributions(universe.symbol);
   if (newDistribution === undefined) {
     return null;
   }

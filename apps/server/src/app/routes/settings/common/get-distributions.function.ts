@@ -140,7 +140,11 @@ export async function getDistributions(
     };
   } catch {
     return {
-      result: { distribution: 0, ex_date: new Date(), distributions_per_year: 0 },
+      result: {
+        distribution: 0,
+        ex_date: new Date(),
+        distributions_per_year: 0,
+      },
       history: [],
     };
   }

@@ -62,6 +62,13 @@ async function upsertUniverse(params: {
   const today = new Date();
   const exDateToSet = getExDateToSet(distribution, today);
 
+  if (history.length === 0) {
+    structuredLogger.warn(
+      'Empty dividend history; volatility set to insufficient-history',
+      { symbol }
+    );
+  }
+
   if (existing) {
     await updateExistingUniverseRecord({
       existing,
@@ -70,9 +77,6 @@ async function upsertUniverse(params: {
       distribution,
       exDateToSet,
     });
-    if (history.length === 0) {
-      structuredLogger.warn('Empty dividend history; volatility set to insufficient-history', { symbol });
-    }
     await recalculateUniverseVolatility(existing.id, history);
     return 'updated';
   }
@@ -84,9 +88,6 @@ async function upsertUniverse(params: {
     distribution,
     exDateToSet,
   });
-  if (history.length === 0) {
-    structuredLogger.warn('Empty dividend history; volatility set to insufficient-history', { symbol });
-  }
   await recalculateUniverseVolatility(createdRecord.id, history);
   return 'inserted';
 }
