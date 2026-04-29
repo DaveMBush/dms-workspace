@@ -4,6 +4,12 @@ import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { recalculateUniverseVolatility } from '../../../volatility/recalculate-universe-volatility.function';
 
 // Hoisted mocks
+const mockGetDistributions = vi.hoisted(() => vi.fn());
+const mockStructuredLogger = vi.hoisted(() => ({
+  warn: vi.fn(),
+  info: vi.fn(),
+  error: vi.fn(),
+}));
 const h = vi.hoisted(() => {
   const client: Record<string, unknown> & {
     screener: { findMany: ReturnType<typeof vi.fn> };
@@ -33,11 +39,10 @@ vi.mock('../../settings/common/get-last-price.function', () => ({
   getLastPrice: () => 10,
 }));
 vi.mock('../../settings/common/get-distributions.function', () => ({
-  getDistributions: () => ({
-    distribution: 1,
-    distributions_per_year: 12,
-    ex_date: new Date(0),
-  }),
+  getDistributions: mockGetDistributions,
+}));
+vi.mock('../../../../utils/structured-logger', () => ({
+  logger: mockStructuredLogger,
 }));
 
 // Constants for test values
@@ -145,6 +150,16 @@ describe('sync-from-screener route', () => {
 
     // Reset logger mocks
     vi.clearAllMocks();
+
+    // Default: getDistributions returns no history
+    mockGetDistributions.mockResolvedValue({
+      result: {
+        distribution: 1,
+        distributions_per_year: 12,
+        ex_date: new Date(0),
+      },
+      history: [],
+    });
 
     // Set up default transaction mock that handles the new structure
     h.client.$transaction.mockImplementation(
@@ -596,5 +611,112 @@ describe('sync-from-screener route', () => {
     });
 
     expect(h.client.universe.create).toHaveBeenCalledTimes(2);
+  });
+
+  test('passes real dividend history to recalculateUniverseVolatility when getDistributions returns rows', async () => {
+    const historyFixture = [
+      { amount: 0.25, date: new Date('2025-07-15') },
+      { amount: 0.25, date: new Date('2025-08-15') },
+    ];
+
+    mockGetDistributions.mockResolvedValue({
+      result: {
+        distribution: 0.25,
+        distributions_per_year: 12,
+        ex_date: new Date('2025-08-15'),
+      },
+      history: historyFixture,
+    });
+
+    const mockSymbols = [{ symbol: 'HIST', risk_group_id: RISK_GROUP_1 }];
+    h.client.screener.findMany.mockResolvedValueOnce(mockSymbols);
+    h.client.universe.findFirst.mockResolvedValue(null);
+    h.client.universe.findMany.mockResolvedValueOnce([]);
+    h.client.universe.create.mockResolvedValueOnce({ id: 'hist-id' });
+    h.client.universe.updateMany.mockResolvedValueOnce({ count: 0 });
+
+    const f = createFastify();
+    registerSyncFromScreener(f);
+    const api = createApiInstance(f);
+    await api.invoke(SYNC_PATH);
+
+    expect(mockRecalculateUniverseVolatility).toHaveBeenCalledWith(
+      'hist-id',
+      historyFixture
+    );
+  });
+
+  test('logs warning when getDistributions returns empty history on insert', async () => {
+    mockGetDistributions.mockResolvedValue({
+      result: {
+        distribution: 1,
+        distributions_per_year: 12,
+        ex_date: new Date(0),
+      },
+      history: [],
+    });
+
+    const mockSymbols = [{ symbol: 'NOHIST', risk_group_id: RISK_GROUP_1 }];
+    h.client.screener.findMany.mockResolvedValueOnce(mockSymbols);
+    h.client.universe.findFirst.mockResolvedValue(null);
+    h.client.universe.findMany.mockResolvedValueOnce([]);
+    h.client.universe.create.mockResolvedValueOnce({ id: 'nohist-id' });
+    h.client.universe.updateMany.mockResolvedValueOnce({ count: 0 });
+
+    const f = createFastify();
+    registerSyncFromScreener(f);
+    const api = createApiInstance(f);
+    await api.invoke(SYNC_PATH);
+
+    expect(mockStructuredLogger.warn).toHaveBeenCalledWith(
+      'Empty dividend history; volatility set to insufficient-history',
+      { symbol: 'NOHIST' }
+    );
+    expect(mockRecalculateUniverseVolatility).toHaveBeenCalledWith(
+      'nohist-id',
+      []
+    );
+  });
+
+  test('logs warning when getDistributions returns empty history on update', async () => {
+    mockGetDistributions.mockResolvedValue({
+      result: {
+        distribution: 1,
+        distributions_per_year: 12,
+        ex_date: new Date(0),
+      },
+      history: [],
+    });
+
+    const mockSymbols = [{ symbol: 'NOHIST', risk_group_id: RISK_GROUP_1 }];
+    const existingRecord = {
+      id: 'nohist-update-id',
+      symbol: 'NOHIST',
+      last_price: 5.0,
+      distribution: 0.5,
+      distributions_per_year: 4,
+      ex_date: new Date('2024-01-01'),
+      expired: false,
+    };
+
+    h.client.screener.findMany.mockResolvedValueOnce(mockSymbols);
+    h.client.universe.findFirst.mockResolvedValueOnce(existingRecord);
+    h.client.universe.findMany.mockResolvedValueOnce([]);
+    h.client.universe.update.mockResolvedValue({});
+    h.client.universe.updateMany.mockResolvedValueOnce({ count: 0 });
+
+    const f = createFastify();
+    registerSyncFromScreener(f);
+    const api = createApiInstance(f);
+    await api.invoke(SYNC_PATH);
+
+    expect(mockStructuredLogger.warn).toHaveBeenCalledWith(
+      'Empty dividend history; volatility set to insufficient-history',
+      { symbol: 'NOHIST' }
+    );
+    expect(mockRecalculateUniverseVolatility).toHaveBeenCalledWith(
+      'nohist-update-id',
+      []
+    );
   });
 });

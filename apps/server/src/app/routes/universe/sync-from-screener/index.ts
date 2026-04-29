@@ -1,6 +1,7 @@
 import { FastifyInstance } from 'fastify';
 
 import { SyncLogger } from '../../../../utils/logger';
+import { logger as structuredLogger } from '../../../../utils/structured-logger';
 import { prisma } from '../../../prisma/prisma-client';
 import { recalculateUniverseVolatility } from '../../../volatility/recalculate-universe-volatility.function';
 import { getDistributions } from '../../settings/common/get-distributions.function';
@@ -57,9 +58,16 @@ async function upsertUniverse(params: {
 
   const existing = await prisma.universe.findFirst({ where: { symbol } });
   const lastPrice = await getLastPrice(symbol);
-  const distribution = await getDistributions(symbol);
+  const { result: distribution, history } = await getDistributions(symbol);
   const today = new Date();
   const exDateToSet = getExDateToSet(distribution, today);
+
+  if (history.length === 0) {
+    structuredLogger.warn(
+      'Empty dividend history; volatility set to insufficient-history',
+      { symbol }
+    );
+  }
 
   if (existing) {
     await updateExistingUniverseRecord({
@@ -69,7 +77,7 @@ async function upsertUniverse(params: {
       distribution,
       exDateToSet,
     });
-    await recalculateUniverseVolatility(existing.id, []);
+    await recalculateUniverseVolatility(existing.id, history);
     return 'updated';
   }
 
@@ -80,7 +88,7 @@ async function upsertUniverse(params: {
     distribution,
     exDateToSet,
   });
-  await recalculateUniverseVolatility(createdRecord.id, []);
+  await recalculateUniverseVolatility(createdRecord.id, history);
   return 'inserted';
 }
 
@@ -94,7 +102,7 @@ interface UpdateRecordParams {
   };
   riskGroupId: string;
   lastPrice: number | null | undefined;
-  distribution: Awaited<ReturnType<typeof getDistributions>>;
+  distribution: Awaited<ReturnType<typeof getDistributions>>['result'];
   exDateToSet: Date | undefined;
 }
 
@@ -102,7 +110,7 @@ interface CreateRecordParams {
   symbol: string;
   riskGroupId: string;
   lastPrice: number | null | undefined;
-  distribution: Awaited<ReturnType<typeof getDistributions>>;
+  distribution: Awaited<ReturnType<typeof getDistributions>>['result'];
   exDateToSet: Date | undefined;
 }
 

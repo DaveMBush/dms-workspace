@@ -4,7 +4,7 @@ import { SyncLogger } from '../../../../utils/logger';
 import { getDistributions } from '../../settings/common/get-distributions.function';
 
 export function getExDateToSet(
-  distribution: Awaited<ReturnType<typeof getDistributions>>,
+  distribution: Awaited<ReturnType<typeof getDistributions>>['result'],
   today: Date
 ): Date | undefined {
   if (

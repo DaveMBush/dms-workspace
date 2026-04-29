@@ -59,7 +59,7 @@ describe('getDistributions', () => {
 
     const result = await getDistributions('TEST');
 
-    expect(result).toEqual({
+    expect(result.result).toEqual({
       distribution: 0.5,
       ex_date: new Date('2025-09-15'),
       distributions_per_year: 4,
@@ -71,7 +71,7 @@ describe('getDistributions', () => {
 
     const result = await getDistributions('EMPTY');
 
-    expect(result).toBeUndefined();
+    expect(result.result).toBeUndefined();
   });
 
   test('returns default values on API error', async () => {
@@ -79,7 +79,7 @@ describe('getDistributions', () => {
 
     const result = await getDistributions('ERROR');
 
-    expect(result).toEqual({
+    expect(result.result).toEqual({
       distribution: 0,
       ex_date: new Date('2025-08-21T10:00:00Z'),
       distributions_per_year: 0,
@@ -98,7 +98,7 @@ describe('getDistributions', () => {
 
     const result = await getDistributions('QUARTERLY');
 
-    expect(result).toEqual({
+    expect(result.result).toEqual({
       distribution: 0.5,
       ex_date: new Date('2025-09-15'),
       distributions_per_year: 4,
@@ -118,7 +118,7 @@ describe('getDistributions', () => {
 
     const result = await getDistributions('MONTHLY');
 
-    expect(result).toEqual({
+    expect(result.result).toEqual({
       distribution: 0.1,
       ex_date: new Date('2025-09-15'),
       distributions_per_year: 12,
@@ -135,7 +135,7 @@ describe('getDistributions', () => {
 
     const result = await getDistributions('ANNUAL');
 
-    expect(result).toEqual({
+    expect(result.result).toEqual({
       distribution: 1.5,
       ex_date: new Date('2025-09-15'),
       distributions_per_year: 1,
@@ -153,7 +153,7 @@ describe('getDistributions', () => {
 
     const result = await getDistributions('NEXT');
 
-    expect(result).toEqual({
+    expect(result.result).toEqual({
       distribution: 0.5,
       ex_date: new Date('2025-09-15'),
       distributions_per_year: 4, // Based on the actual function logic
@@ -170,7 +170,7 @@ describe('getDistributions', () => {
 
     const result = await getDistributions('PAST');
 
-    expect(result).toEqual({
+    expect(result.result).toEqual({
       distribution: 0.45, // Most recent in sorted order (last in array)
       ex_date: new Date('2025-06-15'),
       distributions_per_year: 4, // Based on the actual function logic
@@ -186,7 +186,7 @@ describe('getDistributions', () => {
 
     const result = await getDistributions('VALID');
 
-    expect(result).toEqual({
+    expect(result.result).toEqual({
       distribution: 0.5,
       ex_date: new Date('2025-09-15'),
       distributions_per_year: 1,
@@ -202,7 +202,7 @@ describe('getDistributions', () => {
 
     const result = await getDistributions('SINGLE');
 
-    expect(result).toEqual({
+    expect(result.result).toEqual({
       distribution: 1.0,
       ex_date: new Date('2025-09-15'),
       distributions_per_year: 1,
@@ -218,7 +218,7 @@ describe('getDistributions', () => {
 
     const result = await getDistributions('RATE_LIMITED');
 
-    expect(result).toEqual({
+    expect(result.result).toEqual({
       distribution: 0.5,
       ex_date: new Date('2025-09-15'),
       distributions_per_year: 1,
@@ -239,7 +239,7 @@ describe('getDistributions', () => {
 
     const result = await getDistributions('FREQ_CHANGE');
 
-    expect(result?.distributions_per_year).toBe(52); // Should detect weekly
+    expect(result.result?.distributions_per_year).toBe(52); // Should detect weekly
   });
 
   test('handles exactly 2 distributions correctly', async () => {
@@ -252,7 +252,7 @@ describe('getDistributions', () => {
 
     const result = await getDistributions('TWO_ONLY');
 
-    expect(result?.distributions_per_year).toBe(12); // Monthly
+    expect(result.result?.distributions_per_year).toBe(12); // Monthly
   });
 
   test('correctly identifies weekly at 7-day threshold', async () => {
@@ -265,7 +265,7 @@ describe('getDistributions', () => {
 
     const result = await getDistributions('WEEKLY_BOUNDARY');
 
-    expect(result?.distributions_per_year).toBe(52);
+    expect(result.result?.distributions_per_year).toBe(52);
   });
 
   test('correctly identifies weekly with 6-day interval (holiday shift)', async () => {
@@ -278,7 +278,7 @@ describe('getDistributions', () => {
 
     const result = await getDistributions('WEEKLY_HOLIDAY');
 
-    expect(result?.distributions_per_year).toBe(52);
+    expect(result.result?.distributions_per_year).toBe(52);
   });
 
   test('returns annual default for biweekly interval (8-27 days)', async () => {
@@ -291,7 +291,7 @@ describe('getDistributions', () => {
 
     const result = await getDistributions('BIWEEKLY');
 
-    expect(result?.distributions_per_year).toBe(1); // Falls to annual/default
+    expect(result.result?.distributions_per_year).toBe(1); // Falls to annual/default
   });
 
   test('correctly identifies monthly at 30-day interval', async () => {
@@ -304,7 +304,7 @@ describe('getDistributions', () => {
 
     const result = await getDistributions('MONTHLY_BOUNDARY');
 
-    expect(result?.distributions_per_year).toBe(12);
+    expect(result.result?.distributions_per_year).toBe(12);
   });
 
   test('uses primary dividend service when it returns data (no fallback)', async () => {
@@ -318,8 +318,8 @@ describe('getDistributions', () => {
 
     const result = await getDistributions('PDI');
 
-    expect(result).toBeDefined();
-    expect(result?.distribution).toBe(0.2205);
+    expect(result.result).toBeDefined();
+    expect(result.result?.distribution).toBe(0.2205);
     expect(mockFetchDistributionData).not.toHaveBeenCalled();
   });
 
@@ -334,7 +334,7 @@ describe('getDistributions', () => {
 
     const result = await getDistributions('NOLISTING');
 
-    expect(result).toBeDefined();
+    expect(result.result).toBeDefined();
     expect(mockFetchDistributionData).toHaveBeenCalledWith('NOLISTING');
     expect(vi.mocked(logger.warn)).toHaveBeenCalledWith(
       'fetchDividendHistory returned no data for NOLISTING, falling back to Yahoo Finance',
@@ -364,7 +364,7 @@ describe('getDistributions', () => {
 
     const result = await getDistributions('NEW-MONTHLY');
 
-    expect(result?.distributions_per_year).toBe(12);
+    expect(result.result?.distributions_per_year).toBe(12);
   });
 
   test('weekly payer with 1 past row + future rows correctly returns distributions_per_year=52', async () => {
@@ -383,7 +383,7 @@ describe('getDistributions', () => {
 
     const result = await getDistributions('NEW-WEEKLY');
 
-    expect(result?.distributions_per_year).toBe(52);
+    expect(result.result?.distributions_per_year).toBe(52);
   });
 
   // Story 58.2: Additional sparse-history tests
@@ -399,7 +399,7 @@ describe('getDistributions', () => {
 
     const result = await getDistributions('NEW-MONTHLY-ZERO-PAST');
 
-    expect(result?.distributions_per_year).toBe(12);
+    expect(result.result?.distributions_per_year).toBe(12);
   });
 
   test('weekly payer with 0 past rows + weekly future rows returns distributions_per_year=52', async () => {
@@ -413,7 +413,7 @@ describe('getDistributions', () => {
 
     const result = await getDistributions('NEW-WEEKLY-ZERO-PAST');
 
-    expect(result?.distributions_per_year).toBe(52);
+    expect(result.result?.distributions_per_year).toBe(52);
   });
 
   test('quarterly payer with 1 past row + quarterly future rows returns distributions_per_year=4', async () => {
@@ -427,7 +427,7 @@ describe('getDistributions', () => {
 
     const result = await getDistributions('NEW-QUARTERLY-SPARSE');
 
-    expect(result?.distributions_per_year).toBe(4);
+    expect(result.result?.distributions_per_year).toBe(4);
   });
 
   test('annual payer with 0 past rows + annual future rows returns distributions_per_year=1', async () => {
@@ -440,7 +440,7 @@ describe('getDistributions', () => {
 
     const result = await getDistributions('NEW-ANNUAL-ZERO-PAST');
 
-    expect(result?.distributions_per_year).toBe(1);
+    expect(result.result?.distributions_per_year).toBe(1);
   });
 
   test('monthly payer with exactly 2 past rows still uses past-row logic (no regression)', async () => {
@@ -455,7 +455,7 @@ describe('getDistributions', () => {
 
     const result = await getDistributions('MONTHLY-TWO-PAST');
 
-    expect(result?.distributions_per_year).toBe(12);
+    expect(result.result?.distributions_per_year).toBe(12);
   });
 
   // Story 62.1 / 62.2 regression tests — production-accurate scenario (post-fix).
@@ -486,7 +486,7 @@ describe('getDistributions', () => {
 
     const result = await getDistributions('OXLC');
 
-    expect(result?.distributions_per_year).toBe(12);
+    expect(result.result?.distributions_per_year).toBe(12);
   });
 
   test('MSTY weekly payer: 1 past row + future weekly rows returns distributions_per_year=52', async () => {
@@ -505,7 +505,7 @@ describe('getDistributions', () => {
 
     const result = await getDistributions('MSTY');
 
-    expect(result?.distributions_per_year).toBe(52);
+    expect(result.result?.distributions_per_year).toBe(52);
   });
 
   // Story 71.1 / 71.2: Edge case — 1 past row + 1 future row (no fallback pair)
@@ -524,7 +524,7 @@ describe('getDistributions', () => {
 
     const result = await getDistributions('MINIMAL-MONTHLY');
 
-    expect(result?.distributions_per_year).toBe(12);
+    expect(result.result?.distributions_per_year).toBe(12);
   });
 
   // Story 73.1 / 73.2: Regression suite for the CEF distribution-history bug.
@@ -558,7 +558,7 @@ describe('getDistributions', () => {
     // fetchDistributionData not called — primary source returns data
     const result = await getDistributions('OXLC');
 
-    expect(result?.distributions_per_year).toBe(12);
+    expect(result.result?.distributions_per_year).toBe(12);
   });
 
   test('FIX(73-2): getDistributions returns distributions_per_year = 12 for CEF symbol NHS', async function fixNhsCefDistributionsPerYear() {
@@ -574,7 +574,7 @@ describe('getDistributions', () => {
     ]);
     const result = await getDistributions('NHS');
 
-    expect(result?.distributions_per_year).toBe(12);
+    expect(result.result?.distributions_per_year).toBe(12);
   });
 
   test('FIX(73-2): getDistributions returns distributions_per_year = 12 for CEF symbol DHY', async function fixDhyCefDistributionsPerYear() {
@@ -588,7 +588,7 @@ describe('getDistributions', () => {
     ]);
     const result = await getDistributions('DHY');
 
-    expect(result?.distributions_per_year).toBe(12);
+    expect(result.result?.distributions_per_year).toBe(12);
   });
 
   test('FIX(73-2): getDistributions returns distributions_per_year = 12 for CEF symbol CIK', async function fixCikCefDistributionsPerYear() {
@@ -602,7 +602,7 @@ describe('getDistributions', () => {
     ]);
     const result = await getDistributions('CIK');
 
-    expect(result?.distributions_per_year).toBe(12);
+    expect(result.result?.distributions_per_year).toBe(12);
   });
 
   test('FIX(73-2): getDistributions returns distributions_per_year = 12 for CEF symbol DMB', async function fixDmbCefDistributionsPerYear() {
@@ -616,6 +616,6 @@ describe('getDistributions', () => {
     ]);
     const result = await getDistributions('DMB');
 
-    expect(result?.distributions_per_year).toBe(12);
+    expect(result.result?.distributions_per_year).toBe(12);
   });
 });

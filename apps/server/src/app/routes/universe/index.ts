@@ -2,6 +2,8 @@ import { FastifyInstance } from 'fastify';
 
 import { prisma } from '../../prisma/prisma-client';
 import { recalculateUniverseVolatility } from '../../volatility/recalculate-universe-volatility.function';
+import type { ProcessedRow } from '../common/distribution-api.function';
+import { fetchDividendHistory } from '../common/dividend-history.service';
 import { getTableState } from '../common/get-table-state.function';
 import { parseSortFilterHeader } from '../common/parse-sort-filter-header.function';
 import registerAddSymbol from './add-symbol';
@@ -230,6 +232,14 @@ async function fetchUpdatedUniverse(id: string): Promise<UniverseWithTrades[]> {
   });
 }
 
+async function fetchHistoryForSymbol(symbol: string): Promise<ProcessedRow[]> {
+  try {
+    return await fetchDividendHistory(symbol);
+  } catch {
+    return [];
+  }
+}
+
 function handleUpdateUniverseRoute(fastify: FastifyInstance): void {
   fastify.put<{ Body: Universe; Reply: Universe[] }>(
     '/',
@@ -237,7 +247,9 @@ function handleUpdateUniverseRoute(fastify: FastifyInstance): void {
       const { id, ...updateData } = request.body;
 
       await updateUniverseData(id, updateData);
-      await recalculateUniverseVolatility(id, []);
+
+      const updateHistory = await fetchHistoryForSymbol(updateData.symbol);
+      await recalculateUniverseVolatility(id, updateHistory);
       const universes = await fetchUpdatedUniverse(id);
 
       const result = universes.map(mapUniverseToResponse);

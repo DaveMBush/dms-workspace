@@ -144,7 +144,7 @@ async function addOrUpdateSymbol(
   });
 
   const lastPrice = await getLastPrice(symbol);
-  const distribution = await getDistributions(symbol);
+  const { result: distribution } = await getDistributions(symbol);
   const today = new Date();
   const exDateToSet = getExDateToSet(distribution, today);
 

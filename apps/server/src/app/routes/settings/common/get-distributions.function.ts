@@ -11,6 +11,11 @@ interface DistributionResult {
   distributions_per_year: number;
 }
 
+interface GetDistributionsOutcome {
+  result: DistributionResult | undefined;
+  history: ProcessedRow[];
+}
+
 function findNextOrRecentDistribution(
   rows: ProcessedRow[],
   today: Date
@@ -105,7 +110,7 @@ function calculateDistributionsPerYear(
 
 export async function getDistributions(
   symbol: string
-): Promise<DistributionResult | undefined> {
+): Promise<GetDistributionsOutcome> {
   try {
     let rows = await fetchDividendHistory(symbol);
 
@@ -118,7 +123,7 @@ export async function getDistributions(
     }
 
     if (rows.length === 0) {
-      return undefined;
+      return { result: undefined, history: [] };
     }
 
     const today = new Date();
@@ -126,15 +131,21 @@ export async function getDistributions(
     const perYear = calculateDistributionsPerYear(rows, today);
 
     return {
-      distribution: nextOrRecent.amount,
-      ex_date: nextOrRecent.date,
-      distributions_per_year: perYear,
+      result: {
+        distribution: nextOrRecent.amount,
+        ex_date: nextOrRecent.date,
+        distributions_per_year: perYear,
+      },
+      history: rows,
     };
   } catch {
     return {
-      distribution: 0,
-      ex_date: new Date(),
-      distributions_per_year: 0,
+      result: {
+        distribution: 0,
+        ex_date: new Date(),
+        distributions_per_year: 0,
+      },
+      history: [],
     };
   }
 }

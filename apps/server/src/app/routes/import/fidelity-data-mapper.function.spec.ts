@@ -1372,9 +1372,12 @@ describe('mapFidelityTransactions', function () {
       mockPrisma.universe.create.mockResolvedValue(createdRecord);
       mockGetLastPrice.mockResolvedValue(120.5);
       mockGetDistributions.mockResolvedValue({
-        distribution: 2.0,
-        ex_date: new Date('2026-03-01'),
-        distributions_per_year: 4,
+        result: {
+          distribution: 2.0,
+          ex_date: new Date('2026-03-01'),
+          distributions_per_year: 4,
+        },
+        history: [],
       });
       mockPrisma.universe.update.mockResolvedValue({
         ...createdRecord,
@@ -1438,7 +1441,10 @@ describe('mapFidelityTransactions', function () {
       mockPrisma.universe.findFirst.mockResolvedValue(null);
       mockPrisma.universe.create.mockResolvedValue(createdRecord);
       mockGetLastPrice.mockResolvedValue(undefined);
-      mockGetDistributions.mockResolvedValue(undefined);
+      mockGetDistributions.mockResolvedValue({
+        result: undefined,
+        history: [],
+      });
 
       const result = await mapFidelityTransactions(rows);
 

@@ -6,6 +6,7 @@ import {
   lookupCefConnectSymbol,
   RiskGroupMap,
 } from '../../common/cef-classification.function';
+import { getDistributions } from '../../settings/common/get-distributions.function';
 import { fetchAndUpdatePriceData } from '../fetch-and-update-price-data.function';
 import type { UniverseRecord } from '../universe-record.interface';
 
@@ -121,6 +122,67 @@ async function resolveCefClassification(
   return { effectiveRiskGroupId, isCef };
 }
 
+async function fetchDistributionsForNewSymbol(
+  symbol: string
+): Promise<Awaited<ReturnType<typeof getDistributions>>> {
+  const outcome = await getDistributions(symbol);
+  if (outcome.history.length === 0) {
+    logger.warn(
+      'Empty dividend history for add-symbol; volatility set to insufficient-history',
+      { symbol }
+    );
+  }
+  return outcome;
+}
+
+async function fetchDistributionsAndRecalculate(
+  upperSymbol: string,
+  universeId: string
+): Promise<Awaited<ReturnType<typeof getDistributions>>> {
+  let outcome: Awaited<ReturnType<typeof getDistributions>>;
+  try {
+    outcome = await fetchDistributionsForNewSymbol(upperSymbol);
+  } catch (error) {
+    logger.warn(
+      'Dividend history fetch failed during add-symbol; continuing with insufficient-history',
+      {
+        symbol: upperSymbol,
+        error: error instanceof Error ? error.message : String(error),
+      }
+    );
+    outcome = { result: undefined, history: [] };
+  }
+  try {
+    await recalculateUniverseVolatility(universeId, outcome.history);
+  } catch (error) {
+    logger.warn('Volatility recalculation failed during add-symbol', {
+      symbol: upperSymbol,
+      error: error instanceof Error ? error.message : String(error),
+    });
+  }
+  return outcome;
+}
+
+async function createUniverseEntry(
+  upperSymbol: string,
+  effectiveRiskGroupId: string,
+  isCef: boolean
+): Promise<UniverseRecord> {
+  return prisma.universe.create({
+    data: {
+      symbol: upperSymbol,
+      risk_group_id: effectiveRiskGroupId,
+      last_price: 0,
+      distribution: 0,
+      distributions_per_year: 0,
+      ex_date: null,
+      most_recent_sell_date: null,
+      expired: false,
+      is_closed_end_fund: isCef,
+    },
+  });
+}
+
 export async function addSymbol(
   request: AddSymbolRequest
 ): Promise<AddSymbolResult> {
@@ -136,28 +198,26 @@ export async function addSymbol(
     riskGroups
   );
 
-  const universeRecord = await prisma.universe.create({
-    data: {
-      symbol: upperSymbol,
-      risk_group_id: effectiveRiskGroupId,
-      last_price: 0,
-      distribution: 0,
-      distributions_per_year: 0,
-      ex_date: null,
-      most_recent_sell_date: null,
-      expired: false,
-      is_closed_end_fund: isCef,
-    },
-  });
+  const universeRecord = await createUniverseEntry(
+    upperSymbol,
+    effectiveRiskGroupId,
+    isCef
+  );
 
-  await recalculateUniverseVolatility(universeRecord.id, []);
+  const addSymbolOutcome = await fetchDistributionsAndRecalculate(
+    upperSymbol,
+    universeRecord.id
+  );
 
   try {
     const { record, fetchFailed } = await fetchAndUpdatePriceData(
       universeRecord.id,
       upperSymbol,
       universeRecord,
-      'manual symbol add'
+      {
+        logContext: 'manual symbol add',
+        prefetchedDistributionOutcome: addSymbolOutcome,
+      }
     );
     return mapUniverseRecordToResult(record, fetchFailed);
   } catch (error) {
