@@ -130,7 +130,6 @@ async function seedUnheldSymbol(
 function buildCleanup(
   prisma: PrismaClient,
   universeIds: string[],
-  symbols: string[],
   accountName: string
 ): () => Promise<void> {
   return async function cleanupHeldAndUnheldData(): Promise<void> {
@@ -144,7 +143,7 @@ function buildCleanup(
           .deleteMany({ where: { universeId: { in: universeIds } } })
           .catch(suppressError);
         await prisma.universe
-          .deleteMany({ where: { symbol: { in: symbols } } })
+          .deleteMany({ where: { id: { in: universeIds } } })
           .catch(suppressError);
       }
       await prisma.accounts
@@ -190,7 +189,7 @@ export async function seedVolatilityHeldAndUnheldData(): Promise<HeldAndUnheldSe
     await seedUnheldSymbol(ctx, unheldSymbol, universeIds);
   } catch (error) {
     // Best-effort cleanup on seed failure — reuse buildCleanup to avoid duplication
-    await buildCleanup(prisma, universeIds, symbols, accountName)();
+    await buildCleanup(prisma, universeIds, accountName)();
     throw error;
   }
 
@@ -198,6 +197,6 @@ export async function seedVolatilityHeldAndUnheldData(): Promise<HeldAndUnheldSe
     heldSymbol,
     unheldSymbol,
     symbols,
-    cleanup: buildCleanup(prisma, universeIds, symbols, accountName),
+    cleanup: buildCleanup(prisma, universeIds, accountName),
   };
 }

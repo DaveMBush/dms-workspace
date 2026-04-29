@@ -19,9 +19,9 @@ import { seedVolatilityHeldAndUnheldData } from './helpers/seed-volatility-held-
  */
 
 const VOL_CATEGORY_REGEX =
-  /^Volatility: (steady|increasing|decreasing|volatile|flat|up-then-down|down-then-up)$/;
+  /^Volatility: (steady|increasing|decreasing|volatile|flat|up-then-down|down-then-up|insufficient history)$/;
 const SVOL_CATEGORY_REGEX =
-  /^Short-Term Volatility: (steady|increasing|decreasing|volatile|flat|up-then-down|down-then-up)$/;
+  /^Short-Term Volatility: (steady|increasing|decreasing|volatile|flat|up-then-down|down-then-up|insufficient history)$/;
 
 async function searchForSymbol(page: Page, symbol: string) {
   const searchInput = page.locator('input[placeholder="Search Symbol"]');
