@@ -510,10 +510,10 @@ development_status:
   epic-88-retrospective: optional
 
   # ── Epic 89: CEF Set to Expired on Add ──────────────────────────────────────
-  epic-89: backlog
-  89-1-fix-add-symbol-cef-expired: ready-for-dev
+  epic-89: in-progress
+  89-1-fix-add-symbol-cef-expired: review
   89-2-fix-csv-import-cef-expired: ready-for-dev
-  89-3-e2e-cef-expired-on-add: ready-for-dev
+  89-3-e2e-cef-expired-on-add: in-progress
   epic-89-retrospective: optional
 
   # ── Epic 90: Distribution Frequency Normalization for Volatility ─────────────
