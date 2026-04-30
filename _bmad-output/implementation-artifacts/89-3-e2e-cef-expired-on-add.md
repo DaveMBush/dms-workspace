@@ -28,7 +28,7 @@ So that a regression in either add path will be caught automatically.
         "Add Symbol" for a known CEF (e.g., PDI)
   - [x] After the add completes, intercept or call the universe GET API and assert the
         newly-added row has `expired: true` and `is_closed_end_fund: true`
-  - [x] Alternatively, assert via the UI if an "Expired" indicator is visible on the row
+  - [ ] Alternatively, assert via the UI if an "Expired" indicator is visible on the row
 
 - [ ] Task 2: Run the full E2E suite
 
