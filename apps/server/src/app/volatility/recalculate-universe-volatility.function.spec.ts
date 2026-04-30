@@ -2,7 +2,10 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 
 import type { ProcessedRow } from '../routes/common/distribution-api.function';
 import { prisma } from '../prisma/prisma-client';
-import { recalculateUniverseVolatility } from './recalculate-universe-volatility.function';
+import {
+  normalizeToMonthlyEquivalents,
+  recalculateUniverseVolatility,
+} from './recalculate-universe-volatility.function';
 
 vi.mock('../prisma/prisma-client', function () {
   return {
@@ -100,5 +103,94 @@ describe('recalculateUniverseVolatility', function () {
     await recalculateUniverseVolatility('universe-4', []);
 
     expect(mockPrisma.divDeposits.findMany).not.toHaveBeenCalled();
+  });
+});
+
+function buildRows(
+  amounts: number[],
+  startDate: Date,
+  intervalDays: number
+): ProcessedRow[] {
+  return amounts.map(function buildRow(amount, index) {
+    const date = new Date(
+      startDate.getTime() + index * intervalDays * 24 * 60 * 60 * 1000
+    );
+    return { amount, date };
+  });
+}
+
+describe('normalizeToMonthlyEquivalents', function () {
+  test('returns amounts unchanged when all payments are monthly (~30-day gaps)', function () {
+    const start = new Date('2025-01-01T00:00:00.000Z');
+    const rows = buildRows([1, 2, 3, 4], start, 30);
+
+    const result = normalizeToMonthlyEquivalents(rows);
+
+    expect(result).toEqual([1, 2, 3, 4]);
+  });
+
+  test('divides each amount by 3 when all payments are quarterly (~90-day gaps)', function () {
+    const start = new Date('2025-01-01T00:00:00.000Z');
+    const rows = buildRows([3, 6, 9, 12], start, 90);
+
+    const result = normalizeToMonthlyEquivalents(rows);
+
+    expect(result).toEqual([3, 2, 3, 4]);
+  });
+
+  test('divides each amount by 12 when all payments are annual (~365-day gaps)', function () {
+    const start = new Date('2020-01-01T00:00:00.000Z');
+    const rows = buildRows([12, 24, 36], start, 365);
+
+    const result = normalizeToMonthlyEquivalents(rows);
+
+    expect(result).toEqual([12, 2, 3]);
+  });
+
+  test('normalizes each amount independently for mixed monthly/quarterly cadence', function () {
+    const start = new Date('2025-01-01T00:00:00.000Z');
+    const monthlyRows = buildRows([1, 1, 1, 1, 1, 1], start, 30);
+    const lastMonthlyDate = monthlyRows[monthlyRows.length - 1].date;
+    const quarterlyRows = [
+      {
+        amount: 3,
+        date: new Date(
+          lastMonthlyDate.getTime() + 90 * 24 * 60 * 60 * 1000
+        ),
+      },
+      {
+        amount: 6,
+        date: new Date(
+          lastMonthlyDate.getTime() + 180 * 24 * 60 * 60 * 1000
+        ),
+      },
+      {
+        amount: 9,
+        date: new Date(
+          lastMonthlyDate.getTime() + 270 * 24 * 60 * 60 * 1000
+        ),
+      },
+    ];
+    const rows = [...monthlyRows, ...quarterlyRows];
+
+    const result = normalizeToMonthlyEquivalents(rows);
+
+    expect(result).toEqual([1, 1, 1, 1, 1, 1, 1, 2, 3]);
+  });
+
+  test('returns the single amount unchanged for a single-row array', function () {
+    const rows: ProcessedRow[] = [
+      { amount: 5, date: new Date('2025-06-01T00:00:00.000Z') },
+    ];
+
+    const result = normalizeToMonthlyEquivalents(rows);
+
+    expect(result).toEqual([5]);
+  });
+
+  test('returns empty array for empty input', function () {
+    const result = normalizeToMonthlyEquivalents([]);
+
+    expect(result).toEqual([]);
   });
 });
