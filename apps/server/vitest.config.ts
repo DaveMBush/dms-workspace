@@ -55,6 +55,7 @@ export default defineConfig({
     environment: 'node',
     globals: true,
     include: ['src/**/*.spec.ts'],
+    hookTimeout: 30000, // npx prisma migrate deploy in beforeAll can exceed the 10s default
     reporters: ['default'],
     coverage: {
       reportsDirectory: '../../coverage/apps/server',
