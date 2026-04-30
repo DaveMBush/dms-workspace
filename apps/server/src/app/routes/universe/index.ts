@@ -1,7 +1,7 @@
 import { FastifyInstance } from 'fastify';
 
-import { prisma } from '../../prisma/prisma-client';
 import { logger } from '../../../utils/structured-logger';
+import { prisma } from '../../prisma/prisma-client';
 import { recalculateUniverseVolatility } from '../../volatility/recalculate-universe-volatility.function';
 import type { ProcessedRow } from '../common/distribution-api.function';
 import { fetchDividendHistory } from '../common/dividend-history.service';
@@ -11,8 +11,8 @@ import registerAddSymbol from './add-symbol';
 import { addSymbol } from './add-symbol/add-symbol.function';
 import registerGetAllUniverses from './get-all-universes';
 import registerSyncFromScreener from './sync-from-screener';
-import { Universe } from './universe.interface';
 import universeHelpers from './universe-helpers';
+import { Universe } from './universe.interface';
 
 interface UniverseWithTrades {
   id: string;
