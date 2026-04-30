@@ -28,6 +28,7 @@ So that CEF symbols added via CSV import are immediately visible in the expired-
 ## Tasks / Subtasks
 
 - [x] Task 1: Write failing unit test (TDD)
+
   - [x] Check whether `apps/server/src/app/routes/import/create-universe-entry.helper.spec.ts`
         exists; if not, create it
   - [x] Add a test case: when `isCef = true`, the mocked `prisma.universe.create` is called
@@ -36,6 +37,7 @@ So that CEF symbols added via CSV import are immediately visible in the expired-
   - [x] Confirm the CEF test fails before implementation
 
 - [x] Task 2: Implement the fix
+
   - [x] In `apps/server/src/app/routes/import/create-universe-entry.helper.ts`,
         change `expired: false` → `expired: isCef` in the `prisma.universe.create` call
 
@@ -54,11 +56,7 @@ apps/server/src/app/routes/import/create-universe-entry.helper.ts
 Current content (simplified):
 
 ```typescript
-export async function createUniverseEntry(
-  symbol: string,
-  riskGroupId: string,
-  isCef: boolean
-): Promise<{ id: string }> {
+export async function createUniverseEntry(symbol: string, riskGroupId: string, isCef: boolean): Promise<{ id: string }> {
   const entry = await prisma.universe.create({
     data: {
       symbol,
@@ -68,7 +66,7 @@ export async function createUniverseEntry(
       distributions_per_year: 0,
       ex_date: null,
       most_recent_sell_date: null,
-      expired: false,          // ← change to: expired: isCef,
+      expired: false, // ← change to: expired: isCef,
       is_closed_end_fund: isCef,
     },
   });
