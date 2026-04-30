@@ -105,9 +105,9 @@ test.describe('CEF Symbol Added is Flagged Expired', () => {
 
     // Open the add symbol dialog
     await page.locator('[data-testid="add-symbol-button"]').click();
-    await expect(
-      page.locator('[data-testid="add-symbol-dialog"]')
-    ).toBeVisible({ timeout: 5000 });
+    await expect(page.locator('[data-testid="add-symbol-dialog"]')).toBeVisible(
+      { timeout: 5000 }
+    );
 
     // Type CEF symbol and select from autocomplete
     await typeSymbolAndSelectAutocomplete(page, CEF_SYMBOL);

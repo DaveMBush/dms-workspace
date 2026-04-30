@@ -23,6 +23,7 @@ So that a regression in either add path will be caught automatically.
 ## Tasks / Subtasks
 
 - [x] Task 1: Write the E2E test (Playwright MCP server)
+
   - [x] Use the Playwright MCP server to navigate to the Universe screen and trigger
         "Add Symbol" for a known CEF (e.g., PDI)
   - [x] After the add completes, intercept or call the universe GET API and assert the
@@ -30,6 +31,7 @@ So that a regression in either add path will be caught automatically.
   - [x] Alternatively, assert via the UI if an "Expired" indicator is visible on the row
 
 - [ ] Task 2: Run the full E2E suite
+
   - [ ] `pnpm e2e:dms-material:chromium` — must pass
   - [ ] `pnpm e2e:dms-material:firefox` — must pass
 
@@ -41,6 +43,7 @@ So that a regression in either add path will be caught automatically.
 ### Playwright MCP Usage
 
 Use the Playwright MCP server to:
+
 1. Launch the app in test mode
 2. Navigate to the Universe / Add Symbol flow
 3. Submit the add-symbol form with a known CEF ticker
