@@ -585,4 +585,103 @@ describe('addSymbol', function () {
       historyFixture
     );
   });
+
+  test('should set expired: true when symbol is a CEF', async function () {
+    const request = {
+      symbol: 'ETW',
+      risk_group_id: 'test-risk-group-id',
+    };
+
+    const mockCefData = { Ticker: 'ETW', CategoryId: 1 };
+
+    mockPrisma.universe.findFirst.mockResolvedValue(null);
+    mockPrisma.risk_group.findUnique.mockResolvedValue({
+      id: 'test-risk-group-id',
+      name: 'Equities',
+    });
+    mockLookupCefConnectSymbol.mockResolvedValue(mockCefData);
+    mockClassifySymbolRiskGroupId.mockReturnValue('eq-id');
+    mockPrisma.universe.create.mockResolvedValue({
+      ...mockDefaultRecord,
+      symbol: 'ETW',
+      risk_group_id: 'eq-id',
+      expired: true,
+      is_closed_end_fund: true,
+    } as any);
+    mockGetLastPrice.mockResolvedValue(undefined);
+    mockGetDistributions.mockResolvedValue({ result: undefined, history: [] });
+
+    await addSymbol(request);
+
+    expect(mockPrisma.universe.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        expired: true,
+        is_closed_end_fund: true,
+      }),
+    });
+  });
+
+  test('should log Error.message when getDistributions throws Error and String(error) when recalculate throws non-Error', async function () {
+    const request = {
+      symbol: 'SPY',
+      risk_group_id: 'test-risk-group-id',
+    };
+
+    mockPrisma.universe.findFirst.mockResolvedValue(null);
+    mockPrisma.risk_group.findUnique.mockResolvedValue({
+      id: 'test-risk-group-id',
+      name: 'Conservative',
+    });
+    mockPrisma.universe.create.mockResolvedValue(mockDefaultRecord as any);
+    mockGetLastPrice.mockResolvedValue(undefined);
+    mockGetDistributions.mockRejectedValue(new Error('fetch failed'));
+    mockRecalculateUniverseVolatility.mockRejectedValue('volatility error');
+
+    const result = await addSymbol(request);
+
+    expect(result.fetchFailed).toBe(true);
+    expect(mockLogger.warn).toHaveBeenCalledWith(
+      'Dividend history fetch failed during add-symbol; continuing with insufficient-history',
+      expect.objectContaining({ symbol: 'SPY', error: 'fetch failed' })
+    );
+    expect(mockRecalculateUniverseVolatility).toHaveBeenCalledWith(
+      mockDefaultRecord.id,
+      []
+    );
+    expect(mockLogger.warn).toHaveBeenCalledWith(
+      'Volatility recalculation failed during add-symbol',
+      expect.objectContaining({ symbol: 'SPY', error: 'volatility error' })
+    );
+  });
+
+  test('should log String(error) when getDistributions throws non-Error and Error.message when recalculate throws Error', async function () {
+    const request = {
+      symbol: 'SPY',
+      risk_group_id: 'test-risk-group-id',
+    };
+
+    mockPrisma.universe.findFirst.mockResolvedValue(null);
+    mockPrisma.risk_group.findUnique.mockResolvedValue({
+      id: 'test-risk-group-id',
+      name: 'Conservative',
+    });
+    mockPrisma.universe.create.mockResolvedValue(mockDefaultRecord as any);
+    mockGetLastPrice.mockResolvedValue(undefined);
+    mockGetDistributions.mockRejectedValue('fetch failed');
+    mockRecalculateUniverseVolatility.mockRejectedValue(
+      new Error('volatility error')
+    );
+
+    const result = await addSymbol(request);
+
+    expect(result.fetchFailed).toBe(true);
+    expect(mockLogger.warn).toHaveBeenCalledWith(
+      'Dividend history fetch failed during add-symbol; continuing with insufficient-history',
+      expect.objectContaining({ symbol: 'SPY', error: 'fetch failed' })
+    );
+    expect(mockLogger.warn).toHaveBeenCalledWith(
+      'Volatility recalculation failed during add-symbol',
+      expect.objectContaining({ symbol: 'SPY', error: 'volatility error' })
+    );
+  });
 });

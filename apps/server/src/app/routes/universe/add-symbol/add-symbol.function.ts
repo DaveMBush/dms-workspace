@@ -177,7 +177,7 @@ async function createUniverseEntry(
       distributions_per_year: 0,
       ex_date: null,
       most_recent_sell_date: null,
-      expired: false,
+      expired: isCef,
       is_closed_end_fund: isCef,
     },
   });
