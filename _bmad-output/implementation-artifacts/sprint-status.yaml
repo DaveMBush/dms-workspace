@@ -37,7 +37,7 @@
 #     E1 → E3 → E4(TS rules) → E2 → E5 → E4(template rules) → E6 → E7 → E8
 
 generated: 2026-03-17
-last_updated: 2026-04-29
+last_updated: 2026-04-30
 project_key: NOKEY
 tracking_system: file-system
 story_location: _bmad-output/implementation-artifacts
@@ -529,3 +529,31 @@ development_status:
   91-3-prisma-migration-on-launch: ready-for-dev
   91-4-e2e-electron-package-smoke-test: ready-for-dev
   epic-91-retrospective: optional
+  # ── Epic 92: Grab Volatility During Import ───────────────────────────────
+  epic-92: backlog
+  92-1-fix-import-volatility-capture: ready-for-dev
+  92-2-e2e-volatility-after-import: ready-for-dev
+  epic-92-retrospective: optional
+
+  # ── Epic 93: Grab Volatility During Update Fields ────────────────────────
+  epic-93: backlog
+  93-1-add-volatility-to-batch-update: ready-for-dev
+  epic-93-retrospective: optional
+
+  # ── Epic 94: Return Symbol with divDeposit Data ──────────────────────────
+  epic-94: backlog
+  94-1-server-return-symbol-with-divdeposit: ready-for-dev
+  94-2-client-remove-universe-map-divdeposit: ready-for-dev
+  epic-94-retrospective: optional
+
+  # ── Epic 95: Return Symbol with Open Positions Data ──────────────────────
+  epic-95: backlog
+  95-1-enforce-symbol-required-in-trade: ready-for-dev
+  95-2-client-remove-universe-map-open-positions: ready-for-dev
+  epic-95-retrospective: optional
+
+  # ── Epic 96: Return Symbol with Sold Positions Data ──────────────────────
+  epic-96: backlog
+  96-1-client-remove-universe-map-sold-positions: ready-for-dev
+  96-2-delete-build-universe-map: ready-for-dev
+  epic-96-retrospective: optional
