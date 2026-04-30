@@ -1,9 +1,10 @@
+import type { ProcessedRow } from '../common/distribution-api.function';
+
 import { FastifyInstance } from 'fastify';
 
 import { logger } from '../../../utils/structured-logger';
 import { prisma } from '../../prisma/prisma-client';
 import { recalculateUniverseVolatility } from '../../volatility/recalculate-universe-volatility.function';
-import type { ProcessedRow } from '../common/distribution-api.function';
 import { fetchDividendHistory } from '../common/dividend-history.service';
 import { getTableState } from '../common/get-table-state.function';
 import { parseSortFilterHeader } from '../common/parse-sort-filter-header.function';
