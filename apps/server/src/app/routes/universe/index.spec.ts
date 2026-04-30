@@ -104,6 +104,8 @@ describe('POST /api/universe - avg_purchase_yield_percent (regression: AS.9 Bug 
     mockPrismaUniverse.findMany.mockReset();
     mockPrismaUniverse.update.mockReset();
     mockFetchDividendHistory.mockResolvedValue([]);
+    mockPrimsaDivDeposits.findMany.mockReset();
+    mockPrimsaDivDeposits.findMany.mockResolvedValue([]);
   });
 
   afterEach(async () => {
@@ -336,7 +338,50 @@ describe('POST /api/universe - avg_purchase_yield_percent (regression: AS.9 Bug 
       },
     });
     expect(mockFetchDividendHistory).toHaveBeenCalledWith('ABC');
+    expect(mockPrimsaDivDeposits.findMany).toHaveBeenCalledWith({
+      where: { universeId: 'u1' },
+      orderBy: { date: 'asc' },
+      select: { date: true, amount: true },
+    });
     expect(mockRecalculateUniverseVolatility).toHaveBeenCalledWith('u1', []);
+  });
+
+  it('should use external dividend history when available and skip divDeposits fallback', async function useExternalHistoryWhenAvailable() {
+    const externalHistory = [
+      { date: new Date('2024-01-01'), amount: 0.5 },
+      { date: new Date('2024-02-01'), amount: 0.6 },
+    ];
+    mockFetchDividendHistory.mockResolvedValue(externalHistory);
+    mockPrismaUniverse.update.mockResolvedValue({ id: 'u1' });
+    mockPrismaUniverse.findMany.mockResolvedValue([makeUniverseRow()]);
+
+    const response = await app.inject({
+      method: 'PUT',
+      url: '/api/universe/',
+      payload: {
+        id: 'u1',
+        distribution: 0.2,
+        distributions_per_year: 4,
+        last_price: 11,
+        most_recent_sell_date: null,
+        most_recent_sell_price: null,
+        symbol: 'ABC',
+        ex_date: '',
+        risk_group_id: 'rg1',
+        expired: false,
+        is_closed_end_fund: true,
+        position: 0,
+        avg_purchase_yield_percent: 0,
+      },
+    });
+
+    expect(response.statusCode).toBe(200);
+    expect(mockFetchDividendHistory).toHaveBeenCalledWith('ABC');
+    expect(mockPrimsaDivDeposits.findMany).not.toHaveBeenCalled();
+    expect(mockRecalculateUniverseVolatility).toHaveBeenCalledWith(
+      'u1',
+      externalHistory
+    );
   });
 });
 
@@ -350,6 +395,8 @@ describe('POST /api/universe - volatilityShort field (Story 86.1)', () => {
     mockPrismaUniverse.findMany.mockReset();
     mockPrismaUniverse.update.mockReset();
     mockFetchDividendHistory.mockResolvedValue([]);
+    mockPrimsaDivDeposits.findMany.mockReset();
+    mockPrimsaDivDeposits.findMany.mockResolvedValue([]);
   });
 
   afterEach(async function teardownApp() {

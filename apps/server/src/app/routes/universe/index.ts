@@ -1,6 +1,7 @@
 import { FastifyInstance } from 'fastify';
 
 import { prisma } from '../../prisma/prisma-client';
+import { logger } from '../../../utils/structured-logger';
 import { recalculateUniverseVolatility } from '../../volatility/recalculate-universe-volatility.function';
 import type { ProcessedRow } from '../common/distribution-api.function';
 import { fetchDividendHistory } from '../common/dividend-history.service';
@@ -232,12 +233,29 @@ async function fetchUpdatedUniverse(id: string): Promise<UniverseWithTrades[]> {
   });
 }
 
-async function fetchHistoryForSymbol(symbol: string): Promise<ProcessedRow[]> {
+async function fetchHistoryForSymbol(
+  symbol: string,
+  universeId: string
+): Promise<ProcessedRow[]> {
   try {
-    return await fetchDividendHistory(symbol);
-  } catch {
-    return [];
+    const history = await fetchDividendHistory(symbol);
+    if (history.length > 0) {
+      return history;
+    }
+  } catch (err) {
+    logger.warn('fetchDividendHistory failed, falling back to divDeposits', {
+      symbol,
+      error: err instanceof Error ? err.message : String(err),
+    });
   }
+  const deposits = await prisma.divDeposits.findMany({
+    where: { universeId },
+    orderBy: { date: 'asc' },
+    select: { date: true, amount: true },
+  });
+  return deposits.map(function toProcessedRow(dep) {
+    return { date: dep.date, amount: dep.amount };
+  });
 }
 
 function handleUpdateUniverseRoute(fastify: FastifyInstance): void {
@@ -248,7 +266,7 @@ function handleUpdateUniverseRoute(fastify: FastifyInstance): void {
 
       await updateUniverseData(id, updateData);
 
-      const updateHistory = await fetchHistoryForSymbol(updateData.symbol);
+      const updateHistory = await fetchHistoryForSymbol(updateData.symbol, id);
       await recalculateUniverseVolatility(id, updateHistory);
       const universes = await fetchUpdatedUniverse(id);
 
