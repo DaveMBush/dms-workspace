@@ -1,6 +1,6 @@
 # Story 89.3: E2E Verification — CEF Symbol Added is Flagged Expired
 
-Status: Approved
+Status: in-progress
 
 ## Story
 
@@ -22,12 +22,12 @@ So that a regression in either add path will be caught automatically.
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Write the E2E test (Playwright MCP server)
-  - [ ] Use the Playwright MCP server to navigate to the Universe screen and trigger
+- [x] Task 1: Write the E2E test (Playwright MCP server)
+  - [x] Use the Playwright MCP server to navigate to the Universe screen and trigger
         "Add Symbol" for a known CEF (e.g., PDI)
-  - [ ] After the add completes, intercept or call the universe GET API and assert the
+  - [x] After the add completes, intercept or call the universe GET API and assert the
         newly-added row has `expired: true` and `is_closed_end_fund: true`
-  - [ ] Alternatively, assert via the UI if an "Expired" indicator is visible on the row
+  - [x] Alternatively, assert via the UI if an "Expired" indicator is visible on the row
 
 - [ ] Task 2: Run the full E2E suite
   - [ ] `pnpm e2e:dms-material:chromium` — must pass
@@ -57,3 +57,36 @@ whether the existing E2E tests already mock external HTTP calls.
 - `apps/server/src/app/routes/import/fidelity-data-mapper.function.spec.ts` — CSV import
   unit tests (Story 89.2 may add a spec to the helper file)
 - `apps/dms-material-e2e/` — E2E test root; place new test here following existing patterns
+
+## Dev Agent Record
+
+### Implementation Plan
+
+Implemented `apps/dms-material-e2e/src/cef-expired-on-add.spec.ts` following the patterns
+established in `cef-classification-symbol-add.spec.ts`:
+
+1. `cleanupTestData()` — removes PDI from universe (and any linked trades) before/after tests
+2. `seedTestData()` — ensures required risk groups (Equities, Income, Tax Free Income) exist
+3. Helper `typeSymbolAndSelectAutocomplete()` — mocks `/api/symbol/search` for deterministic autocomplete
+4. Helper `selectRiskGroupInDialog()` — selects risk group from Material dropdown
+5. Main test registers a `waitForResponse` on `/api/universe/add` **before** clicking submit
+   to avoid race conditions, then asserts `expired: true` and `is_closed_end_fund: true` on
+   the captured response body
+
+PDI (PIMCO Dynamic Income Fund) is a live CEF on cefconnect.com — the test relies on the
+same real-API approach as the existing `cef-classification-symbol-add.spec.ts`.
+
+### Completion Notes
+
+- Task 1 ✅: `cef-expired-on-add.spec.ts` created under `apps/dms-material-e2e/src/`
+- Tasks 2 & 3: Awaiting E2E suite execution by parent workflow
+
+## File List
+
+- apps/dms-material-e2e/src/cef-expired-on-add.spec.ts (new)
+
+## Change Log
+
+- 2026-04-30: Task 1 complete — wrote E2E test `cef-expired-on-add.spec.ts` asserting
+  `expired: true` and `is_closed_end_fund: true` on the `/api/universe/add` response
+  when a known CEF (PDI) is added via the Add Symbol UI
