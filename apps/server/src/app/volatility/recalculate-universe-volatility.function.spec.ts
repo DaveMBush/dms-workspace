@@ -2,10 +2,8 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 
 import type { ProcessedRow } from '../routes/common/distribution-api.function';
 import { prisma } from '../prisma/prisma-client';
-import {
-  normalizeToMonthlyEquivalents,
-  recalculateUniverseVolatility,
-} from './recalculate-universe-volatility.function';
+import { normalizeToMonthlyEquivalents } from './normalize-to-monthly-equivalents.function';
+import { recalculateUniverseVolatility } from './recalculate-universe-volatility.function';
 
 vi.mock('../prisma/prisma-client', function () {
   return {
