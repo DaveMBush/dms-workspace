@@ -519,7 +519,7 @@ development_status:
   # ── Epic 90: Distribution Frequency Normalization for Volatility ─────────────
   epic-90: backlog
   90-1-implement-distribution-frequency-normalization: ready-for-dev
-  90-2-wire-normalization-into-volatility-recalculation: ready-for-dev
+  90-2-wire-normalization-into-volatility-recalculation: review
   epic-90-retrospective: optional
 
   # ── Epic 91: Electron Installation Script ───────────────────────────────────
