@@ -13,14 +13,14 @@
 
 ### Rationale
 
-| Criterion | `electron-builder` | `@electron-forge/cli` |
-|-----------|-------------------|-----------------------|
-| Nx compatibility | Drop-in: reads existing `dist/` output; no project restructure required | Requires migrating to Forge's own build pipeline (conflicts with Nx targets) |
-| asar support | Native; configurable `files` globs | Native |
-| Auto-updater | `electron-updater` companion package | Built-in but tied to Forge workflow |
-| Cross-platform targets | deb, rpm, AppImage, dmg, pkg, nsis, portable | Same, but more boilerplate |
-| Community / Nx adoption | Dominant pattern in Nx + Electron monorepos | Less common with Nx |
-| Configuration | Single `electron-builder.yml` alongside `project.json` | `forge.config.js` inside app directory |
+| Criterion               | `electron-builder`                                                      | `@electron-forge/cli`                                                        |
+| ----------------------- | ----------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| Nx compatibility        | Drop-in: reads existing `dist/` output; no project restructure required | Requires migrating to Forge's own build pipeline (conflicts with Nx targets) |
+| asar support            | Native; configurable `files` globs                                      | Native                                                                       |
+| Auto-updater            | `electron-updater` companion package                                    | Built-in but tied to Forge workflow                                          |
+| Cross-platform targets  | deb, rpm, AppImage, dmg, pkg, nsis, portable                            | Same, but more boilerplate                                                   |
+| Community / Nx adoption | Dominant pattern in Nx + Electron monorepos                             | Less common with Nx                                                          |
+| Configuration           | Single `electron-builder.yml` alongside `project.json`                  | `forge.config.js` inside app directory                                       |
 
 `electron-builder` can be bolted onto the existing setup by adding a `package` Nx target that
 runs `electron-builder --config electron-builder.yml` after the existing `build` target. No
@@ -35,21 +35,21 @@ resources and files that must survive app upgrades must live **outside** the asa
 
 ### Inside the asar
 
-| Artefact | Source path | Notes |
-|----------|-------------|-------|
-| Electron main process | `apps/electron/dist/main.js` | Compiled by `electron:build` (`tsc`) |
-| Electron preload script | `apps/electron/dist/preload.js` | Compiled by `electron:build` (`tsc`) |
-| Fastify server bundle | `dist/apps/server/` (entire directory) | Compiled by `server:build` |
-| Angular browser app | `dist/apps/dms-material/browser/` (entire directory) | Compiled by `dms-material:build` |
+| Artefact                | Source path                                          | Notes                                |
+| ----------------------- | ---------------------------------------------------- | ------------------------------------ |
+| Electron main process   | `apps/electron/dist/main.js`                         | Compiled by `electron:build` (`tsc`) |
+| Electron preload script | `apps/electron/dist/preload.js`                      | Compiled by `electron:build` (`tsc`) |
+| Fastify server bundle   | `dist/apps/server/` (entire directory)               | Compiled by `server:build`           |
+| Angular browser app     | `dist/apps/dms-material/browser/` (entire directory) | Compiled by `dms-material:build`     |
 
 ### Outside the asar (in `resources/`)
 
-| Artefact | Destination in package | Reason |
-|----------|------------------------|--------|
-| Prisma migration files | `resources/prisma/migrations/` | `prisma migrate deploy` reads SQL files at runtime |
-| Prisma schema | `resources/prisma/schema.prisma` | Required by `migrate deploy` |
-| Prisma query engine binary | `resources/` (auto-placed by `electron-builder`) | Native binary; must not be inside asar |
-| SQLite database file | `app.getPath('userData')/dms.db` | Created/written at runtime; user data |
+| Artefact                   | Destination in package                           | Reason                                             |
+| -------------------------- | ------------------------------------------------ | -------------------------------------------------- |
+| Prisma migration files     | `resources/prisma/migrations/`                   | `prisma migrate deploy` reads SQL files at runtime |
+| Prisma schema              | `resources/prisma/schema.prisma`                 | Required by `migrate deploy`                       |
+| Prisma query engine binary | `resources/` (auto-placed by `electron-builder`) | Native binary; must not be inside asar             |
+| SQLite database file       | `app.getPath('userData')/dms.db`                 | Created/written at runtime; user data              |
 
 > **Key constraint**: Files inside the asar are read-only. The SQLite `.db` file is created fresh
 > in `userData` on first launch via `prisma migrate deploy` and must never be placed inside the
@@ -61,11 +61,11 @@ resources and files that must survive app upgrades must live **outside** the asa
 
 ### Platform-specific `userData` paths
 
-| Platform | `app.getPath('userData')` default |
-|----------|------------------------------------|
-| Linux | `~/.config/<app-name>` |
-| macOS | `~/Library/Application Support/<app-name>` |
-| Windows | `%APPDATA%\<app-name>` |
+| Platform | `app.getPath('userData')` default          |
+| -------- | ------------------------------------------ |
+| Linux    | `~/.config/<app-name>`                     |
+| macOS    | `~/Library/Application Support/<app-name>` |
+| Windows  | `%APPDATA%\<app-name>`                     |
 
 ### Implementation pattern
 
@@ -163,18 +163,18 @@ extraResources:
   - from: node_modules/.prisma/client/libquery_engine-*
     to: ./
     filter:
-      - "**"
+      - '**'
 ```
 
 ---
 
 ## 5. Per-Platform Output Targets
 
-| Platform | Target format | Notes |
-|----------|--------------|-------|
-| Linux | `AppImage` (primary), `deb` | AppImage is self-contained; deb for Debian/Ubuntu distribution |
-| macOS | `dmg` | Standard macOS install experience |
-| Windows | `nsis` | Standard Windows installer |
+| Platform | Target format               | Notes                                                          |
+| -------- | --------------------------- | -------------------------------------------------------------- |
+| Linux    | `AppImage` (primary), `deb` | AppImage is self-contained; deb for Debian/Ubuntu distribution |
+| macOS    | `dmg`                       | Standard macOS install experience                              |
+| Windows  | `nsis`                      | Standard Windows installer                                     |
 
 All three targets are supported natively by `electron-builder` without additional plugins.
 
