@@ -35,11 +35,13 @@ the target machine.
 ## Tasks / Subtasks
 
 - [x] Task 1: Install electron-builder as a dev dependency
+
   - [x] `pnpm add -D electron-builder -w` (workspace root) or
         `pnpm add -D electron-builder` inside `apps/electron/`
   - [x] Confirm no peer-dependency conflicts
 
 - [x] Task 2: Create `electron-builder.yml` (or add config to `apps/electron/package.json`)
+
   - [x] Set `appId`, `productName`, `directories.output`
   - [x] Configure `files` to include all compiled dist artefacts
   - [x] Configure `asarUnpack` or `extraResources` to place Prisma migration files and
@@ -49,12 +51,14 @@ the target machine.
   - [x] Add Windows target: `nsis`
 
 - [x] Task 3: Add `package` Nx target to `apps/electron/project.json`
+
   - [x] Target command: `electron-builder --config apps/electron/electron-builder.yml`
         (or similar, adjusted for Nx)
   - [x] Add `dependsOn`: `["electron:build", "^server:build:production",
-        "^dms-material:build:production"]` (verify exact target names in the workspace)
+"^dms-material:build:production"]` (verify exact target names in the workspace)
 
 - [ ] Task 4: Verify local Linux package build
+
   - [ ] Run `pnpm nx run electron:package` locally — **SKIPPED: cross-platform build not supported in CI/Linux-only environment; config verified by inspection**
   - [ ] Confirm AppImage artefact is produced in the output directory — **SKIPPED: see above**
   - [ ] Check the asar contents to confirm server and Angular bundles are included — **SKIPPED: see above**
@@ -74,15 +78,15 @@ directories:
   output: dist/electron-dist
   buildResources: apps/electron/build-resources
 files:
-  - "dist/apps/electron/**/*"
-  - "dist/apps/server/**/*"
-  - "dist/apps/dms-material/browser/**/*"
-  - "apps/electron/package.json"
+  - 'dist/apps/electron/**/*'
+  - 'dist/apps/server/**/*'
+  - 'dist/apps/dms-material/browser/**/*'
+  - 'apps/electron/package.json'
 extraResources:
-  - from: "prisma/migrations"
-    to: "migrations"
-  - from: "prisma/schema.prisma"
-    to: "schema.prisma"
+  - from: 'prisma/migrations'
+    to: 'migrations'
+  - from: 'prisma/schema.prisma'
+    to: 'schema.prisma'
 linux:
   target:
     - AppImage
