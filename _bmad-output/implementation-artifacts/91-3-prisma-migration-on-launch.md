@@ -1,6 +1,6 @@
 # Story 91.3: Automatic Prisma Migration on App Launch
 
-Status: Approved
+Status: In Progress
 
 ## Story
 
@@ -39,9 +39,9 @@ manual migration step.
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Implement `runMigrations` helper in `apps/electron/src/`
-  - [ ] Create `apps/electron/src/utils/run-migrations.ts`
-  - [ ] The function must:
+- [x] Task 1: Implement `runMigrations` helper in `apps/electron/src/`
+  - [x] Create `apps/electron/src/utils/run-migrations.ts`
+  - [x] The function must:
     - Resolve the database path: `path.join(app.getPath('userData'), 'dms.db')`
     - Set `DATABASE_URL = file:<dbPath>` in `process.env`
     - Resolve the Prisma CLI path from `process.resourcesPath` (packaged) or
@@ -51,18 +51,18 @@ manual migration step.
     - Spawn `prisma migrate deploy --schema=<schemaPath>` as a child process
     - Await completion; reject on non-zero exit code
 
-- [ ] Task 2: Write unit tests for `runMigrations`
-  - [ ] Mock `app.getPath`, `process.resourcesPath`, and `child_process.spawn`
-  - [ ] Test: success path (exit code 0) → resolves
-  - [ ] Test: failure path (exit code 1) → rejects with error message
-  - [ ] Test: development vs packaged path resolution
+- [x] Task 2: Write unit tests for `runMigrations`
+  - [x] Mock `app.getPath`, `process.resourcesPath`, and `child_process.spawn`
+  - [x] Test: success path (exit code 0) → resolves
+  - [x] Test: failure path (exit code 1) → rejects with error message
+  - [x] Test: development vs packaged path resolution
 
-- [ ] Task 3: Integrate `runMigrations` into `apps/electron/src/main.ts`
-  - [ ] Call `await runMigrations()` before the server fork
-  - [ ] Wrap in try/catch; on error: `dialog.showErrorBox(...)` then `app.exit(1)`
+- [x] Task 3: Integrate `runMigrations` into `apps/electron/src/main.ts`
+  - [x] Call `await runMigrations()` before the server fork
+  - [x] Wrap in try/catch; on error: `dialog.showErrorBox(...)` then `app.exit(1)`
 
-- [ ] Task 4: Update `apps/electron/src/main.ts` to set `DATABASE_URL` before forking
-  - [ ] After `runMigrations` resolves, ensure `process.env['DATABASE_URL']` is set
+- [x] Task 4: Update `apps/electron/src/main.ts` to set `DATABASE_URL` before forking
+  - [x] After `runMigrations` resolves, ensure `process.env['DATABASE_URL']` is set
         to the user-data DB path before the `fork(serverPath, ...)` call
 
 - [ ] Task 5: Run `pnpm all` — confirm all tests pass
@@ -119,3 +119,34 @@ try {
   app.exit(1);
 }
 ```
+
+## Dev Agent Record
+
+### Implementation Plan
+
+- Task 1: Created `apps/electron/src/utils/run-migrations.ts` exporting `runMigrations()`.
+  Uses `app.isPackaged` to branch between dev (node_modules/.bin/prisma) and packaged
+  (process.resourcesPath/prisma-cli/prisma) CLI paths and schema paths. Sets
+  `process.env['DATABASE_URL']` to `file:<userData>/dms.db` before spawning.
+  Spawns `prisma migrate deploy --schema=<schemaPath>`, resolves on exit 0, rejects otherwise.
+
+- Task 2: Created `apps/electron/src/utils/run-migrations.spec.ts` with 7 Vitest tests
+  covering: resolve success, exit-1 rejection, DATABASE_URL env setting, dev CLI path,
+  packaged CLI path, dev schema path, packaged schema path, and spawn error.
+
+- Task 3 & 4: Updated `apps/electron/src/main.ts` — added `dialog` import, added
+  `import { runMigrations }` import, restructured `init()` to call `await runMigrations()`
+  first in its own try/catch (showing error dialog and calling `app.exit(1)` on failure),
+  then the existing server-start try/catch. `DATABASE_URL` is set by `runMigrations()`
+  on `process.env` before return; `startServer` fork uses `...process.env` so it inherits it.
+
+### File List
+
+- `apps/electron/src/utils/run-migrations.ts` (new)
+- `apps/electron/src/utils/run-migrations.spec.ts` (new)
+- `apps/electron/src/main.ts` (modified)
+
+### Completion Notes
+
+Tasks 1–4 implemented and type-checked with zero TypeScript errors.
+Task 5 (pnpm all) pending execution by parent workflow.
