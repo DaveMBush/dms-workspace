@@ -37,6 +37,7 @@ pays monthly, quarterly, or annually.
 ## Tasks / Subtasks
 
 - [x] Task 1: Write failing unit tests (TDD)
+
   - [x] Open (or create) `apps/server/src/app/volatility/recalculate-universe-volatility.function.spec.ts`
   - [x] Add a `describe('normalizeToMonthlyEquivalents')` block with at minimum these cases:
     - All monthly (30-day gaps) → amounts unchanged
@@ -47,6 +48,7 @@ pays monthly, quarterly, or annually.
   - [x] Confirm all new tests fail before implementation
 
 - [x] Task 2: Implement `normalizeToMonthlyEquivalents`
+
   - [x] Add the function (not exported) to
         `apps/server/src/app/volatility/recalculate-universe-volatility.function.ts`
   - [x] Algorithm:
@@ -73,6 +75,7 @@ date: Date }`. There is no explicit frequency field. The interval between consec
 must be inferred from the dates.
 
 Approximate intervals:
+
 - Monthly: 28–31 days → `Math.round(intervalDays / 30) = 1` → multiplier = 1 → amount ÷ 1
 - Quarterly: 88–95 days → `Math.round(intervalDays / 30) = 3` → multiplier = 3 → amount ÷ 3
 - Annual: 355–370 days → `Math.round(intervalDays / 30) = 12` → multiplier = 12 → amount ÷ 12

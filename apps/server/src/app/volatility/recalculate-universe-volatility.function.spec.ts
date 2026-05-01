@@ -154,21 +154,15 @@ describe('normalizeToMonthlyEquivalents', function () {
     const quarterlyRows = [
       {
         amount: 3,
-        date: new Date(
-          lastMonthlyDate.getTime() + 90 * 24 * 60 * 60 * 1000
-        ),
+        date: new Date(lastMonthlyDate.getTime() + 90 * 24 * 60 * 60 * 1000),
       },
       {
         amount: 6,
-        date: new Date(
-          lastMonthlyDate.getTime() + 180 * 24 * 60 * 60 * 1000
-        ),
+        date: new Date(lastMonthlyDate.getTime() + 180 * 24 * 60 * 60 * 1000),
       },
       {
         amount: 9,
-        date: new Date(
-          lastMonthlyDate.getTime() + 270 * 24 * 60 * 60 * 1000
-        ),
+        date: new Date(lastMonthlyDate.getTime() + 270 * 24 * 60 * 60 * 1000),
       },
     ];
     const rows = [...monthlyRows, ...quarterlyRows];
