@@ -1,6 +1,6 @@
 # Story 91.1: Research and Document the Electron Packaging Approach
 
-Status: Approved
+Status: Done
 
 ## Story
 
@@ -40,36 +40,36 @@ So that Stories 91.2–91.4 each have an unambiguous implementation target.
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Read existing Electron app docs and code
-  - [ ] Read `apps/electron/README.md` completely
-  - [ ] Read `apps/electron/project.json` build/start targets
-  - [ ] Read `apps/electron/src/main.ts` to understand the current startup sequence
+- [x] Task 1: Read existing Electron app docs and code
+  - [x] Read `apps/electron/README.md` completely
+  - [x] Read `apps/electron/project.json` build/start targets
+  - [x] Read `apps/electron/src/main.ts` to understand the current startup sequence
         (port finding → server fork → health check → BrowserWindow)
-  - [ ] Read `apps/server/src/main.ts` to understand how it serves static Angular assets
+  - [x] Read `apps/server/src/main.ts` to understand how it serves static Angular assets
 
-- [ ] Task 2: Evaluate packaging tools
-  - [ ] Compare `electron-builder` vs `@electron-forge/cli`
-  - [ ] Prefer `electron-builder` if it supports Nx's build output structure naturally
-  - [ ] Document the chosen tool and rationale in Dev Notes
+- [x] Task 2: Evaluate packaging tools
+  - [x] Compare `electron-builder` vs `@electron-forge/cli`
+  - [x] Prefer `electron-builder` if it supports Nx's build output structure naturally
+  - [x] Document the chosen tool and rationale in Dev Notes
 
-- [ ] Task 3: Determine asar bundle contents
-  - [ ] Identify which files go inside the asar (Electron main/preload scripts,
+- [x] Task 3: Determine asar bundle contents
+  - [x] Identify which files go inside the asar (Electron main/preload scripts,
         Fastify server bundle, Angular browser build)
-  - [ ] Identify which files must be outside the asar (SQLite `.db` file, Prisma
+  - [x] Identify which files must be outside the asar (SQLite `.db` file, Prisma
         migration files, any write-able resources)
 
-- [ ] Task 4: Design the database path strategy
-  - [ ] Determine the `userData` path via `app.getPath('userData')`
-  - [ ] Design how `DATABASE_URL` is set before the server forks
-  - [ ] Consider first-launch DB creation (copy seed DB from resources?) vs create-on-migrate
+- [x] Task 4: Design the database path strategy
+  - [x] Determine the `userData` path via `app.getPath('userData')`
+  - [x] Design how `DATABASE_URL` is set before the server forks
+  - [x] Consider first-launch DB creation (copy seed DB from resources?) vs create-on-migrate
 
-- [ ] Task 5: Design the Prisma migration strategy
-  - [ ] Decide timing: Electron main process runs migration before forking the server
-  - [ ] Determine how `prisma migrate deploy` is invoked without `node_modules/.bin/prisma`
+- [x] Task 5: Design the Prisma migration strategy
+  - [x] Decide timing: Electron main process runs migration before forking the server
+  - [x] Determine how `prisma migrate deploy` is invoked without `node_modules/.bin/prisma`
         (use the bundled Prisma binary path relative to `process.resourcesPath`)
-  - [ ] Document in Dev Notes
+  - [x] Document in Dev Notes
 
-- [ ] Task 6: Confirm `pnpm all` passes (no code changes)
+- [x] Task 6: Confirm `pnpm all` passes (no code changes)
 
 ## Dev Notes
 
