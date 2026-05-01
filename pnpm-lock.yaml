@@ -99,8 +99,8 @@ importers:
         specifier: ^5.2.1
         version: 5.2.1
       fastify:
-        specifier: ~5.8.3
-        version: 5.8.3
+        specifier: ~5.8.5
+        version: 5.8.5
       fastify-plugin:
         specifier: ~5.1.0
         version: 5.1.0
@@ -5433,11 +5433,17 @@ packages:
   ajv@6.14.0:
     resolution: {integrity: sha512-IWrosm/yrn43eiKqkfkHis7QioDleaXQHdDVPKg0FSwwd/DuvyX79TZnFOnYpB7dcsFAMmtFztZuXPDvSePkFw==}
 
+  ajv@6.15.0:
+    resolution: {integrity: sha512-fgFx7Hfoq60ytK2c7DhnF8jIvzYgOMxfugjLOSMHjLIPgenqa7S7oaagATUq99mV6IYvN2tRmC0wnTYX6iPbMw==}
+
   ajv@8.17.1:
     resolution: {integrity: sha512-B/gBuNg5SiMTrPkC+A2+cW0RszwxYmn6VYxB/inlBStS5nx6xHIt/ehKRhIMhqusl7a8LjQoZnjCs5vhwxOQ1g==}
 
   ajv@8.18.0:
     resolution: {integrity: sha512-PlXPeEWMXMZ7sPYOHqmDyCJzcfNrUr3fGNKtezX14ykXOEIvyK81d+qydx89KY5O71FKMPaQ2vBfBFI5NHR63A==}
+
+  ajv@8.20.0:
+    resolution: {integrity: sha512-Thbli+OlOj+iMPYFBVBfJ3OmCAnaSyNn4M1vz9T6Gka5Jt9ba/HIR56joy65tY6kx/FCF5VXNB819Y7/GUrBGA==}
 
   algoliasearch@5.48.1:
     resolution: {integrity: sha512-Rf7xmeuIo7nb6S4mp4abW2faW8DauZyE2faBIKFaUfP3wnpOvNSbiI5AwVhqBNj0jPgBWEvhyCu0sLjN2q77Rg==}
@@ -7218,8 +7224,8 @@ packages:
   fastify-plugin@5.1.0:
     resolution: {integrity: sha512-FAIDA8eovSt5qcDgcBvDuX/v0Cjz0ohGhENZ/wpc3y+oZCY2afZ9Baqql3g/lC+OHRnciQol4ww7tuthOb9idw==}
 
-  fastify@5.8.3:
-    resolution: {integrity: sha512-XJXpRQ41+rsJ/GLeP9vyDC+fBXilcTlEXokMSexkdEkla4uf7ZQNaI5xl3el+kW5TZQulqYxLr659ey/KX7XmQ==}
+  fastify@5.8.5:
+    resolution: {integrity: sha512-Yqptv59pQzPgQUSIm87hMqHJmdkb1+GPxdE6vW6FRyVE9G86mt7rOghitiU4JHRaTyDUk9pfeKmDeu70lAwM4Q==}
 
   fastq@1.20.1:
     resolution: {integrity: sha512-GGToxJ/w1x32s/D2EKND7kTil4n8OVk/9mycTc4VDza13lOvpUZTGX3mFSCtV9ksdGBVzvsyAVLM6mHFThxXxw==}
@@ -7330,8 +7336,8 @@ packages:
   flatted@3.4.2:
     resolution: {integrity: sha512-PjDse7RzhcPkIJwy5t7KPWQSZ9cAbzQXcafsetQoD7sOJRQlGikNbx7yZp2OotDnJyrDcbyRq3Ttb18iYOqkxA==}
 
-  follow-redirects@1.15.11:
-    resolution: {integrity: sha512-deG2P0JfjrTxl50XGCDyfI97ZGVCxIpfKYmfyrQ54n5FO/0gfIES8C/Psl6kWVDolizcaaxZJnTS0QSMxvnsBQ==}
+  follow-redirects@1.16.0:
+    resolution: {integrity: sha512-y5rN/uOsadFT/JfYwhxRS5R7Qce+g3zG97+JrtFZlC9klX/W5hD7iiLzScI4nZqUS7DNUdhPgw4xI8W2LuXlUw==}
     engines: {node: '>=4.0'}
     peerDependencies:
       debug: '*'
@@ -10355,8 +10361,8 @@ packages:
     resolution: {integrity: sha512-x/+Cz4YrimQxQccJf5mKEbIa1NzeCRNI5Ecl/ekmlYaampdNLPalVyIcCZNNH3MvmqBugV5TMYZXv0ljslUlaw==}
     engines: {node: '>= 0.4'}
 
-  safe-regex2@5.1.0:
-    resolution: {integrity: sha512-pNHAuBW7TrcleFHsxBr5QMi/Iyp0ENjUKz7GCcX1UO7cMh+NmVK6HxQckNL1tJp1XAJVjG6B8OKIPqodqj9rtw==}
+  safe-regex2@5.1.1:
+    resolution: {integrity: sha512-mOSBvHGDZMuIEZMdOz/aCEYDCv0E7nfcNsIhUF+/P+xC7Hyf3FkvymqgPbg9D1EdSGu+uKbJgy09K/RKKc7kJA==}
     hasBin: true
 
   safe-stable-stringify@2.5.0:
@@ -13810,8 +13816,8 @@ snapshots:
 
   '@develar/schema-utils@2.6.5':
     dependencies:
-      ajv: 6.14.0
-      ajv-keywords: 3.5.2(ajv@6.14.0)
+      ajv: 6.15.0
+      ajv-keywords: 3.5.2(ajv@6.15.0)
 
   '@discoveryjs/json-ext@0.6.3': {}
 
@@ -14237,8 +14243,8 @@ snapshots:
 
   '@fastify/ajv-compiler@4.0.5':
     dependencies:
-      ajv: 8.18.0
-      ajv-formats: 3.0.1(ajv@8.18.0)
+      ajv: 8.20.0
+      ajv-formats: 3.0.1(ajv@8.20.0)
       fast-uri: 3.1.0
 
   '@fastify/autoload@6.3.1': {}
@@ -18181,9 +18187,9 @@ snapshots:
       clean-stack: 2.2.0
       indent-string: 4.0.0
 
-  ajv-formats@2.1.1(ajv@8.18.0):
+  ajv-formats@2.1.1(ajv@8.20.0):
     optionalDependencies:
-      ajv: 8.18.0
+      ajv: 8.20.0
 
   ajv-formats@3.0.1(ajv@8.17.1):
     optionalDependencies:
@@ -18193,16 +18199,27 @@ snapshots:
     optionalDependencies:
       ajv: 8.18.0
 
-  ajv-keywords@3.5.2(ajv@6.14.0):
-    dependencies:
-      ajv: 6.14.0
+  ajv-formats@3.0.1(ajv@8.20.0):
+    optionalDependencies:
+      ajv: 8.20.0
 
-  ajv-keywords@5.1.0(ajv@8.18.0):
+  ajv-keywords@3.5.2(ajv@6.15.0):
     dependencies:
-      ajv: 8.18.0
+      ajv: 6.15.0
+
+  ajv-keywords@5.1.0(ajv@8.20.0):
+    dependencies:
+      ajv: 8.20.0
       fast-deep-equal: 3.1.3
 
   ajv@6.14.0:
+    dependencies:
+      fast-deep-equal: 3.1.3
+      fast-json-stable-stringify: 2.1.0
+      json-schema-traverse: 0.4.1
+      uri-js: 4.4.1
+
+  ajv@6.15.0:
     dependencies:
       fast-deep-equal: 3.1.3
       fast-json-stable-stringify: 2.1.0
@@ -18217,6 +18234,13 @@ snapshots:
       require-from-string: 2.0.2
 
   ajv@8.18.0:
+    dependencies:
+      fast-deep-equal: 3.1.3
+      fast-uri: 3.1.0
+      json-schema-traverse: 1.0.0
+      require-from-string: 2.0.2
+
+  ajv@8.20.0:
     dependencies:
       fast-deep-equal: 3.1.3
       fast-uri: 3.1.0
@@ -18516,7 +18540,7 @@ snapshots:
 
   axios@1.15.0:
     dependencies:
-      follow-redirects: 1.15.11(debug@4.4.3)
+      follow-redirects: 1.16.0(debug@4.4.3)
       form-data: 4.0.5
       proxy-from-env: 2.1.0
     transitivePeerDependencies:
@@ -19627,7 +19651,7 @@ snapshots:
     dependencies:
       '@types/plist': 3.0.5
       '@types/verror': 1.10.11
-      ajv: 6.14.0
+      ajv: 6.15.0
       crc: 3.8.0
       iconv-corefoundation: 1.1.7
       plist: 3.1.1
@@ -20462,8 +20486,8 @@ snapshots:
   fast-json-stringify@6.3.0:
     dependencies:
       '@fastify/merge-json-schemas': 0.2.1
-      ajv: 8.18.0
-      ajv-formats: 3.0.1(ajv@8.18.0)
+      ajv: 8.20.0
+      ajv-formats: 3.0.1(ajv@8.20.0)
       fast-uri: 3.1.0
       json-schema-ref-resolver: 3.0.0
       rfdc: 1.4.1
@@ -20488,7 +20512,7 @@ snapshots:
 
   fastify-plugin@5.1.0: {}
 
-  fastify@5.8.3:
+  fastify@5.8.5:
     dependencies:
       '@fastify/ajv-compiler': 4.0.5
       '@fastify/error': 4.2.0
@@ -20602,7 +20626,7 @@ snapshots:
     dependencies:
       fast-deep-equal: 3.1.3
       fast-querystring: 1.1.2
-      safe-regex2: 5.1.0
+      safe-regex2: 5.1.1
 
   find-pkg@2.0.0:
     dependencies:
@@ -20634,7 +20658,7 @@ snapshots:
 
   flatted@3.4.2: {}
 
-  follow-redirects@1.15.11(debug@4.4.3):
+  follow-redirects@1.16.0(debug@4.4.3):
     optionalDependencies:
       debug: 4.4.3
 
@@ -21116,7 +21140,7 @@ snapshots:
   http-proxy@1.18.1(debug@4.4.3):
     dependencies:
       eventemitter3: 4.0.7
-      follow-redirects: 1.15.11(debug@4.4.3)
+      follow-redirects: 1.16.0(debug@4.4.3)
       requires-port: 1.0.0
     transitivePeerDependencies:
       - debug
@@ -24113,7 +24137,7 @@ snapshots:
       es-errors: 1.3.0
       is-regex: 1.2.1
 
-  safe-regex2@5.1.0:
+  safe-regex2@5.1.1:
     dependencies:
       ret: 0.5.0
 
@@ -24236,15 +24260,15 @@ snapshots:
   schema-utils@3.3.0:
     dependencies:
       '@types/json-schema': 7.0.15
-      ajv: 6.14.0
-      ajv-keywords: 3.5.2(ajv@6.14.0)
+      ajv: 6.15.0
+      ajv-keywords: 3.5.2(ajv@6.15.0)
 
   schema-utils@4.3.3:
     dependencies:
       '@types/json-schema': 7.0.15
-      ajv: 8.18.0
-      ajv-formats: 2.1.1(ajv@8.18.0)
-      ajv-keywords: 5.1.0(ajv@8.18.0)
+      ajv: 8.20.0
+      ajv-formats: 2.1.1(ajv@8.20.0)
+      ajv-keywords: 5.1.0(ajv@8.20.0)
 
   scslre@0.3.0:
     dependencies:
