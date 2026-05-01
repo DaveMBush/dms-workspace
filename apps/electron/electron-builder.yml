@@ -1,0 +1,37 @@
+appId: com.davembush.dms
+productName: DMS
+
+directories:
+  output: ../../dist/electron-dist
+
+files:
+  - 'dist/**/*'
+  - 'package.json'
+  - from: '../../dist/apps/server'
+    to: 'dist/apps/server'
+    filter: '**/*'
+  - from: '../../dist/apps/dms-material/browser'
+    to: 'dist/apps/dms-material/browser'
+    filter: '**/*'
+
+# Unpack server from asar so Node fork() can execute it at runtime
+asarUnpack:
+  - 'dist/apps/server/**'
+
+# Place Prisma migration files and schema outside the asar
+extraResources:
+  - from: '../../prisma/migrations'
+    to: prisma/migrations
+  - from: '../../prisma/schema.prisma'
+    to: prisma/schema.prisma
+
+linux:
+  target:
+    - AppImage
+    - deb
+
+mac:
+  target: dmg
+
+win:
+  target: nsis

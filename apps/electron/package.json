@@ -2,6 +2,8 @@
   "name": "@dms-workspace/electron",
   "version": "0.1.0",
   "private": true,
+  "description": "DMS desktop application",
+  "author": "Dave",
   "main": "dist/main.js",
   "scripts": {
     "start": "node ./scripts/start.js"

@@ -36,6 +36,25 @@
         "command": "pnpm start",
         "cwd": "apps/electron"
       }
+    },
+    "package": {
+      "executor": "nx:run-commands",
+      "outputs": ["{workspaceRoot}/dist/electron-dist"],
+      "options": {
+        "command": "../../node_modules/.bin/electron-builder --config electron-builder.yml",
+        "cwd": "apps/electron"
+      },
+      "dependsOn": [
+        "build",
+        {
+          "projects": ["server"],
+          "target": "build"
+        },
+        {
+          "projects": ["dms-material"],
+          "target": "build"
+        }
+      ]
     }
   }
 }
