@@ -127,10 +127,11 @@ test.describe('CEF Symbol Added is Flagged Expired', () => {
     ).not.toBeVisible({ timeout: 30000 });
 
     // Assert the add-symbol API response contains expired: true and is_closed_end_fund: true
+    // The /api/universe/add endpoint returns an array of universe records
     const addResponse = await addResponsePromise;
-    const body = (await addResponse.json()) as Record<string, unknown>;
+    const bodyArray = (await addResponse.json()) as Record<string, unknown>[];
 
-    expect(body['expired']).toBe(true);
-    expect(body['is_closed_end_fund']).toBe(true);
+    expect(bodyArray[0]['expired']).toBe(true);
+    expect(bodyArray[0]['is_closed_end_fund']).toBe(true);
   });
 });

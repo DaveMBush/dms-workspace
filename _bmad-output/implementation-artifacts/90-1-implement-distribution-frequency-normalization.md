@@ -1,6 +1,6 @@
 # Story 90.1: Implement Distribution Frequency Normalization Helper
 
-Status: Approved
+Status: review
 
 ## Story
 
@@ -36,27 +36,27 @@ pays monthly, quarterly, or annually.
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Write failing unit tests (TDD)
-  - [ ] Open (or create) `apps/server/src/app/volatility/recalculate-universe-volatility.function.spec.ts`
-  - [ ] Add a `describe('normalizeToMonthlyEquivalents')` block with at minimum these cases:
+- [x] Task 1: Write failing unit tests (TDD)
+  - [x] Open (or create) `apps/server/src/app/volatility/recalculate-universe-volatility.function.spec.ts`
+  - [x] Add a `describe('normalizeToMonthlyEquivalents')` block with at minimum these cases:
     - All monthly (30-day gaps) → amounts unchanged
     - All quarterly (90-day gaps) → each amount ÷ 3
     - All annual (365-day gaps) → each amount ÷ 12
     - Mixed cadence (first 6 monthly, last 3 quarterly) → each normalized independently
     - Single-row array → amount unchanged
-  - [ ] Confirm all new tests fail before implementation
+  - [x] Confirm all new tests fail before implementation
 
-- [ ] Task 2: Implement `normalizeToMonthlyEquivalents`
-  - [ ] Add the function (not exported) to
+- [x] Task 2: Implement `normalizeToMonthlyEquivalents`
+  - [x] Add the function (not exported) to
         `apps/server/src/app/volatility/recalculate-universe-volatility.function.ts`
-  - [ ] Algorithm:
+  - [x] Algorithm:
     - For row index 0: multiplier = 1 (no previous row)
     - For row index n: `intervalDays = (row[n].date - row[n-1].date) / msPerDay`
     - `multiplier = Math.round(intervalDays / 30)` clamped to `[1, 12]`
     - `normalizedAmount = row[n].amount / multiplier`
-  - [ ] Return the normalized amounts array
+  - [x] Return the normalized amounts array
 
-- [ ] Task 3: Run `pnpm all` — confirm all tests pass
+- [x] Task 3: Run `pnpm all` — confirm all tests pass
 
 ## Dev Notes
 
