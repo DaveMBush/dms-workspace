@@ -6,3 +6,5 @@
 .angular
 pnpm-lock.yaml
 /node_modules
+
+.nx/self-healing
