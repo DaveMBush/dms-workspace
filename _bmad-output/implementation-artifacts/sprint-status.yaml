@@ -37,7 +37,7 @@
 #     E1 → E3 → E4(TS rules) → E2 → E5 → E4(template rules) → E6 → E7 → E8
 
 generated: 2026-03-17
-last_updated: 2026-04-30
+last_updated: 2026-05-01
 project_key: NOKEY
 tracking_system: file-system
 story_location: _bmad-output/implementation-artifacts
@@ -525,7 +525,7 @@ development_status:
   # ── Epic 91: Electron Installation Script ───────────────────────────────────
   epic-91: backlog
   91-1-research-electron-packaging-approach: ready-for-dev
-  91-2-configure-electron-builder-cross-platform: ready-for-dev
+  91-2-configure-electron-builder-cross-platform: done
   91-3-prisma-migration-on-launch: ready-for-dev
   91-4-e2e-electron-package-smoke-test: ready-for-dev
   epic-91-retrospective: optional
