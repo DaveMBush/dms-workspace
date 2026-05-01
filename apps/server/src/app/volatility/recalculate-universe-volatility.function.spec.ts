@@ -102,6 +102,44 @@ describe('recalculateUniverseVolatility', function () {
 
     expect(mockPrisma.divDeposits.findMany).not.toHaveBeenCalled();
   });
+
+  test('produces flat volatility for mixed quarterly-then-monthly cadence at equivalent annualized rate', async function () {
+    // 25 quarterly payments of $3 each starting 2019-01-01 (before 5y window)
+    const quarterlyStart = new Date('2019-01-01T00:00:00.000Z');
+    const quarterlyRows = buildRows(
+      Array.from({ length: 25 }, function () {
+        return 3;
+      }),
+      quarterlyStart,
+      90
+    );
+    // 17 monthly payments of $1 each starting 30 days after last quarterly payment
+    const lastQuarterlyDate = quarterlyRows[quarterlyRows.length - 1].date;
+    const monthlyStart = new Date(
+      lastQuarterlyDate.getTime() + 30 * 24 * 60 * 60 * 1000
+    );
+    const monthlyRows = buildRows(
+      Array.from({ length: 17 }, function () {
+        return 1;
+      }),
+      monthlyStart,
+      30
+    );
+    const history = [...quarterlyRows, ...monthlyRows];
+
+    await recalculateUniverseVolatility('universe-mixed-cadence', history);
+
+    // After normalization: quarterly $3 ÷ 3 = $1/month, monthly $1 ÷ 1 = $1/month
+    // Both windows receive only $1 values → flat (not a volatility spike)
+    expect(mockPrisma.universe.update).toHaveBeenCalledWith({
+      where: { id: 'universe-mixed-cadence' },
+      data: {
+        volatility_long: 'flat',
+        volatility_short: 'flat',
+        volatility_calculated_at: new Date('2026-04-26T12:00:00.000Z'),
+      },
+    });
+  });
 });
 
 function buildRows(
