@@ -63,9 +63,9 @@ resources and files that must survive app upgrades must live **outside** the asa
 
 | Platform | `app.getPath('userData')` default          |
 | -------- | ------------------------------------------ |
-| Linux    | `~/.config/<app-name>`                     |
-| macOS    | `~/Library/Application Support/<app-name>` |
-| Windows  | `%APPDATA%\<app-name>`                     |
+| Linux    | `~/.config/{app-name}`                     |
+| macOS    | `~/Library/Application Support/{app-name}` |
+| Windows  | `%APPDATA%\{app-name}`                     |
 
 ### Implementation pattern
 
@@ -111,7 +111,7 @@ sufficient to produce a working empty database.
 Migrations run in the **Electron main process**, before `startServer()` forks the Fastify
 process. This guarantees that the database schema is current before any API requests are served.
 
-```
+```text
 init()
   ├─ findAvailablePort()
   ├─ set DATABASE_URL = userData/dms.db      ← new step (Story 91.2)
