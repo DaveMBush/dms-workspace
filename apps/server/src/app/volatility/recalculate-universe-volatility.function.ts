@@ -14,26 +14,31 @@ function buildOneYearAgo(now: Date): Date {
   return new Date(now.getTime() - ONE_YEAR_MS);
 }
 
-function filterRecordsSince(
-  records: ProcessedRow[],
-  threshold: Date
-): ProcessedRow[] {
-  return records.filter(function isSinceThreshold(record) {
-    return record.date >= threshold;
-  });
-}
-
 function extractWindowedAmounts(
   history: ProcessedRow[],
   now: Date
 ): { longAmounts: number[]; shortAmounts: number[] } {
   const fiveYearsAgo = buildFiveYearsAgo(now);
   const oneYearAgo = buildOneYearAgo(now);
-  const longRows = filterRecordsSince(history, fiveYearsAgo);
-  const shortRows = filterRecordsSince(history, oneYearAgo);
+  const normalizedAmounts = normalizeToMonthlyEquivalents(history);
+  const pairedHistory = history.map(function pairRowWithAmount(row, index) {
+    return { row, amount: normalizedAmounts[index] };
+  });
   return {
-    longAmounts: normalizeToMonthlyEquivalents(longRows),
-    shortAmounts: normalizeToMonthlyEquivalents(shortRows),
+    longAmounts: pairedHistory
+      .filter(function isInLongWindow({ row }) {
+        return row.date >= fiveYearsAgo;
+      })
+      .map(function extractLongAmount({ amount }) {
+        return amount;
+      }),
+    shortAmounts: pairedHistory
+      .filter(function isInShortWindow({ row }) {
+        return row.date >= oneYearAgo;
+      })
+      .map(function extractShortAmount({ amount }) {
+        return amount;
+      }),
   };
 }
 
