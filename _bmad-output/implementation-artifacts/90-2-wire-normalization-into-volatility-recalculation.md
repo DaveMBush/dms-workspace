@@ -37,12 +37,14 @@ So that the Vol and SVol columns in the Universe screen reflect genuine distribu
 
 - [x] Task 1: Update `recalculateUniverseVolatility` to call normalization (TDD — write
       failing test first)
+
   - [x] Add a test in `recalculate-universe-volatility.function.spec.ts` that supplies a
         mixed-cadence history and asserts the correct stable volatility category (not a
         spike category)
   - [x] Confirm the new test fails before implementation
 
 - [x] Task 2: Wire normalization
+
   - [x] In `recalculate-universe-volatility.function.ts`, modify
         `extractWindowedAmounts` (or its callers) to apply
         `normalizeToMonthlyEquivalents` on the windowed `ProcessedRow[]` list before
@@ -56,6 +58,7 @@ So that the Vol and SVol columns in the Universe screen reflect genuine distribu
       consistent intervals to produce the same category)
 
 - [x] Task 4: Run E2E tests
+
   - [x] `pnpm e2e:dms-material:chromium` — must pass
   - [x] `pnpm e2e:dms-material:firefox` — must pass
   - [x] Verify Vol and SVol columns render icons on the Universe screen (use Playwright MCP)
@@ -69,17 +72,14 @@ So that the Vol and SVol columns in the Universe screen reflect genuine distribu
 Current shape (after Epic 88):
 
 ```typescript
-function extractWindowedAmounts(
-  history: ProcessedRow[],
-  now: Date
-): { longAmounts: number[]; shortAmounts: number[] } {
+function extractWindowedAmounts(history: ProcessedRow[], now: Date): { longAmounts: number[]; shortAmounts: number[] } {
   const fiveYearsAgo = buildFiveYearsAgo(now);
   const oneYearAgo = buildOneYearAgo(now);
   const longRows = filterRecordsSince(history, fiveYearsAgo);
   const shortRows = filterRecordsSince(history, oneYearAgo);
   return {
-    longAmounts: mapAmounts(longRows),          // ← normalize here
-    shortAmounts: mapAmounts(shortRows),        // ← and here
+    longAmounts: mapAmounts(longRows), // ← normalize here
+    shortAmounts: mapAmounts(shortRows), // ← and here
   };
 }
 ```
