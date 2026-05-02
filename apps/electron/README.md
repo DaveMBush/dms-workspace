@@ -245,11 +245,11 @@ What the smoke test does:
 
 ### Required environment
 
-| Variable | Default | Purpose |
-|---|---|---|
+| Variable             | Default         | Purpose                                                      |
+| -------------------- | --------------- | ------------------------------------------------------------ |
 | `DMS_NODE_EXEC_PATH` | `$(which node)` | Node binary the packaged app uses to fork the server process |
-| `DMS_SMOKE_PORT` | `3000` | Fixed port used during the smoke test |
-| `DISPLAY` | *(unset)* | When unset, `xvfb-run` is used automatically |
+| `DMS_SMOKE_PORT`     | `3000`          | Fixed port used during the smoke test                        |
+| `DISPLAY`            | _(unset)_       | When unset, `xvfb-run` is used automatically                 |
 
 > **Note:** `DMS_NODE_EXEC_PATH` must point to a plain Node.js binary, not the Electron
 > binary. The packaged Electron app forks the server as a separate Node process, and the

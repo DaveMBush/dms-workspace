@@ -26,6 +26,7 @@ So that packaging regressions are caught before a release.
 ## Tasks / Subtasks
 
 - [x] Task 1: Write `apps/electron/scripts/smoke-test.sh`
+
   - [x] Step 1: Find the AppImage in `dist/electron-dist/` (glob for `*.AppImage`)
   - [x] Step 2: Launch the AppImage with `DISPLAY=:99` (or xvfb-run) and `--no-sandbox`
   - [x] Step 3: Poll `http://localhost:<dynamic-port>/api/health` until it returns 200
@@ -34,10 +35,12 @@ So that packaging regressions are caught before a release.
   - [x] Step 5: Kill the AppImage process
 
 - [x] Task 2: Add `smoke-test` Nx target to `apps/electron/project.json`
+
   - [x] Command: `bash apps/electron/scripts/smoke-test.sh`
   - [x] `dependsOn`: `["electron:package"]`
 
 - [x] Task 3: Document the smoke-test in `apps/electron/README.md`
+
   - [x] Add a "Packaging & Smoke Test" section describing how to run
         `pnpm nx run electron:smoke-test`
 
@@ -113,10 +116,7 @@ main process was updated to honour a `DMS_SMOKE_PORT` env var:
 ```typescript
 // apps/electron/src/main.ts — inside init()
 const smokePortEnv = process.env['DMS_SMOKE_PORT'];
-const port =
-  smokePortEnv !== undefined && smokePortEnv.length > 0
-    ? parseInt(smokePortEnv, 10)
-    : await findAvailablePort();
+const port = smokePortEnv !== undefined && smokePortEnv.length > 0 ? parseInt(smokePortEnv, 10) : await findAvailablePort();
 ```
 
 The smoke-test script exports `DMS_SMOKE_PORT=3000` before launching the AppImage.
@@ -132,8 +132,8 @@ giving the smoke test a stable target port.
 
 ## Change Log
 
-| Date | Change | Author |
-|---|---|---|
+| Date       | Change                                                               | Author    |
+| ---------- | -------------------------------------------------------------------- | --------- |
 | 2026-05-01 | Created `smoke-test.sh`, added Nx target, updated README and main.ts | Dev Agent |
 
 ## Dev Agent Record
