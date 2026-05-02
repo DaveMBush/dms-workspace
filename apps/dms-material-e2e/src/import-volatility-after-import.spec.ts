@@ -93,7 +93,14 @@ test.describe('CSV Import — Volatility Present After Import (Story 92.2)', () 
 
     // Delete the test account
     if (testAccountId !== null) {
-      await request.delete(`/api/accounts/${testAccountId}`);
+      const deleteResponse = await request.delete(
+        `/api/accounts/${testAccountId}`
+      );
+      if (!deleteResponse.ok()) {
+        console.warn(
+          `Failed to delete test account ${testAccountId}: ${deleteResponse.status()}`
+        );
+      }
     }
   });
 

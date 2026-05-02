@@ -11,8 +11,8 @@ So that a regression in the import volatility path is caught automatically befor
 
 ## Acceptance Criteria
 
-1. **Given** a Playwright test fixture containing a single Fidelity CSV row for a known CEF
-   ticker (e.g., PDI),
+1. **Given** a Playwright test fixture containing a single Fidelity CSV row for the fictional
+   ticker `IMPVOL92`,
    **When** the fixture CSV is posted to `POST /api/import/fidelity`,
    **Then** a subsequent universe API call for that symbol returns a record where
    `volatilityLong` and `volatilityShort` are non-null values.
@@ -23,8 +23,9 @@ So that a regression in the import volatility path is caught automatically befor
 
 3. **Given** the test environment may not have live internet access,
    **When** the E2E test runs,
-   **Then** the `dividendhistory.net` fetch is intercepted (via `page.route` or equivalent)
-   and returns a fixture response, so the test is deterministic.
+   **Then** no network interception is needed because determinism is achieved via the
+   server's `insufficient-history` fallback path for the fictional ticker `IMPVOL92`,
+   ensuring the test is deterministic without any `page.route` mocking.
 
 ## Tasks / Subtasks
 
