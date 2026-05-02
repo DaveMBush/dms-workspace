@@ -159,8 +159,10 @@ cdk-virtual-scroll-viewport * {
 }
 
 // Dim placeholder text using Material form field variables
+// Override error text color to ensure WCAG 1.4.3 contrast (4.5:1) in all browsers
 mat-form-field {
   --mat-form-field-outlined-input-text-placeholder-color: rgba(0, 0, 0, 0.38);
+  --mat-form-field-error-text-color: #8b1c1c; // 9.1:1 contrast on white — passes in all browsers
 }
 
 .dark-theme mat-form-field {
@@ -170,6 +172,7 @@ mat-form-field {
     255,
     0.38
   );
+  --mat-form-field-error-text-color: #ff8a80; // 8.0:1 contrast on dark background
 }
 
 // Dialog contrast and styling

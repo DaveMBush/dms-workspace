@@ -219,7 +219,11 @@ async function init(): Promise<void> {
   }
 
   try {
-    const port = await findAvailablePort();
+    const smokePortEnv = process.env['DMS_SMOKE_PORT'];
+    const port =
+      smokePortEnv !== undefined && smokePortEnv.length > 0
+        ? parseInt(smokePortEnv, 10)
+        : await findAvailablePort();
     resolvedPort = port;
 
     ipcMain.handle('get-api-port', function getApiPort(): number | null {
