@@ -29,10 +29,12 @@ So that a regression in the import volatility path is caught automatically befor
 ## Tasks / Subtasks
 
 - [x] Task 1: Identify the correct E2E test file for CSV import
+
   - [x] Search in `apps/dms-material-e2e/src/` for existing import-related test files
   - [x] Understand how other tests intercept external HTTP calls (look for `page.route` or server-level mocking patterns)
 
 - [x] Task 2: Create or extend the E2E test
+
   - [x] Create a CSV fixture file with a single Fidelity-format row for a known symbol (e.g., PDI)
   - [x] Set up route interception for `dividendhistory.net` to return a fixture with at least 12 monthly distribution rows
   - [x] After posting the CSV, query the universe endpoint and assert `volatilityLong !== null` and `volatilityShort !== null`
@@ -64,6 +66,7 @@ should return HTML that mimics the structure parsed in `dividend-history.service
 returns a non-`insufficient-history` category.
 
 Example interception pattern:
+
 ```typescript
 await page.route('**/dividendhistory.net/**', (route) => {
   route.fulfill({
