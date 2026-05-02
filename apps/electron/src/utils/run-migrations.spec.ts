@@ -45,9 +45,7 @@ describe('runMigrations', () => {
   beforeEach(function setup(): void {
     vi.clearAllMocks();
     mockApp.isPackaged = false;
-    mockApp.getPath.mockReturnValue(
-      '/mock/userData'
-    );
+    mockApp.getPath.mockReturnValue('/mock/userData');
   });
 
   it('resolves when prisma migrate deploy exits with code 0', async () => {
@@ -106,9 +104,7 @@ describe('runMigrations', () => {
     await runMigrations();
 
     const [, args] = mockSpawn.mock.calls[0] as [string, string[], object];
-    const schemaArg = args.find((a) =>
-      a.startsWith('--schema=')
-    );
+    const schemaArg = args.find((a) => a.startsWith('--schema='));
     expect(schemaArg).toContain('prisma/schema.prisma');
   });
 
@@ -123,9 +119,7 @@ describe('runMigrations', () => {
     await runMigrations();
 
     const [, args] = mockSpawn.mock.calls[0] as [string, string[], object];
-    const schemaArg = args.find((a) =>
-      a.startsWith('--schema=')
-    );
+    const schemaArg = args.find((a) => a.startsWith('--schema='));
     expect(schemaArg).toBe('--schema=/mock/resources/schema.prisma');
 
     (process as NodeJS.Process & { resourcesPath: string }).resourcesPath =

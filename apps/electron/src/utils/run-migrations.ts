@@ -27,10 +27,14 @@ export function runMigrations(): Promise<void> {
     const prismaCliPath = resolvePrismaCliPath();
     const schemaPath = resolveMigrationSchemaPath();
 
-    const child = spawn(prismaCliPath, ['migrate', 'deploy', `--schema=${schemaPath}`], {
-      env: { ...process.env },
-      stdio: 'pipe',
-    });
+    const child = spawn(
+      prismaCliPath,
+      ['migrate', 'deploy', `--schema=${schemaPath}`],
+      {
+        env: { ...process.env },
+        stdio: 'pipe',
+      }
+    );
 
     const stderr: string[] = [];
 
@@ -50,7 +54,9 @@ export function runMigrations(): Promise<void> {
         const errDetail = errMsg.length > 0 ? `\n${errMsg}` : '';
         reject(
           new Error(
-            `prisma migrate deploy exited with code ${code ?? 'null'}${errDetail}`
+            `prisma migrate deploy exited with code ${
+              code ?? 'null'
+            }${errDetail}`
           )
         );
       }

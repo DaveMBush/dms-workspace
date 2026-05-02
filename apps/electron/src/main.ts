@@ -210,7 +210,9 @@ async function init(): Promise<void> {
   } catch (err) {
     dialog.showErrorBox(
       'Database Migration Failed',
-      `Could not update the database schema.\n\n${String(err)}\n\nThe application will now exit.`
+      `Could not update the database schema.\n\n${String(
+        err
+      )}\n\nThe application will now exit.`
     );
     app.exit(1);
     return;

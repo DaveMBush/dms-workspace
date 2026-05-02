@@ -40,6 +40,7 @@ manual migration step.
 ## Tasks / Subtasks
 
 - [x] Task 1: Implement `runMigrations` helper in `apps/electron/src/`
+
   - [x] Create `apps/electron/src/utils/run-migrations.ts`
   - [x] The function must:
     - Resolve the database path: `path.join(app.getPath('userData'), 'dms.db')`
@@ -52,16 +53,19 @@ manual migration step.
     - Await completion; reject on non-zero exit code
 
 - [x] Task 2: Write unit tests for `runMigrations`
+
   - [x] Mock `app.getPath`, `process.resourcesPath`, and `child_process.spawn`
   - [x] Test: success path (exit code 0) → resolves
   - [x] Test: failure path (exit code 1) → rejects with error message
   - [x] Test: development vs packaged path resolution
 
 - [x] Task 3: Integrate `runMigrations` into `apps/electron/src/main.ts`
+
   - [x] Call `await runMigrations()` before the server fork
   - [x] Wrap in try/catch; on error: `dialog.showErrorBox(...)` then `app.exit(1)`
 
 - [x] Task 4: Update `apps/electron/src/main.ts` to set `DATABASE_URL` before forking
+
   - [x] After `runMigrations` resolves, ensure `process.env['DATABASE_URL']` is set
         to the user-data DB path before the `fork(serverPath, ...)` call
 
@@ -97,6 +101,7 @@ Adjust paths based on the electron-builder `extraResources` config from Story 91
 
 `prisma migrate deploy` requires the Prisma CLI binary. In the packaged app, this must be
 available without `node_modules`. Options:
+
 1. Bundle `@prisma/cli` as an `extraResource` (the compiled binary, not the full npm package)
 2. Use `prisma` as a regular (non-dev) dependency so it is included in the app bundle
 
@@ -112,10 +117,7 @@ import { app, dialog } from 'electron';
 try {
   await runMigrations();
 } catch (err) {
-  dialog.showErrorBox(
-    'Database Migration Failed',
-    `Could not update the database schema.\n\n${String(err)}\n\nThe application will now exit.`
-  );
+  dialog.showErrorBox('Database Migration Failed', `Could not update the database schema.\n\n${String(err)}\n\nThe application will now exit.`);
   app.exit(1);
 }
 ```
