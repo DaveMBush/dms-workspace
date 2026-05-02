@@ -56,6 +56,10 @@ echo "Polling $HEALTH_URL (timeout ${TIMEOUT}s) ..."
 until curl -sf "$HEALTH_URL" > /dev/null 2>&1; do
   sleep 1
   ELAPSED=$((ELAPSED + 1))
+  if ! kill -0 "$APPIMAGE_PID" 2>/dev/null; then
+    echo "ERROR: AppImage process (PID $APPIMAGE_PID) exited unexpectedly" >&2
+    exit 1
+  fi
   if [[ $ELAPSED -ge $TIMEOUT ]]; then
     echo "ERROR: App did not become healthy within ${TIMEOUT}s" >&2
     exit 1
