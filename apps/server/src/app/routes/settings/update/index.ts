@@ -3,10 +3,10 @@ import { FastifyInstance, FastifyRequest } from 'fastify';
 
 import { StructuredLogger } from '../../../../utils/structured-logger';
 import { prisma } from '../../../prisma/prisma-client';
+import { recalculateUniverseVolatility } from '../../../volatility/recalculate-universe-volatility.function';
 import type { ProcessedRow } from '../../common/distribution-api.function';
 import { getDistributions } from '../common/get-distributions.function';
 import { getLastPrice } from '../common/get-last-price.function';
-import { recalculateUniverseVolatility } from '../../../volatility/recalculate-universe-volatility.function';
 
 interface Distribution {
   distribution: number;
