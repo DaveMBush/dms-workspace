@@ -1,9 +1,10 @@
 import { ChildProcess, fork } from 'child_process';
-import { app, BrowserWindow, ipcMain, session, shell } from 'electron';
+import { app, BrowserWindow, dialog, ipcMain, session, shell } from 'electron';
 import http from 'http';
 import path from 'path';
 
 import { findAvailablePort } from './utils/port';
+import { runMigrations } from './utils/run-migrations';
 
 let serverProcess: ChildProcess | null = null;
 let resolvedPort: number | null = null;
@@ -204,6 +205,19 @@ function onWindowAllClosed(): void {
 }
 
 async function init(): Promise<void> {
+  try {
+    await runMigrations();
+  } catch (err) {
+    dialog.showErrorBox(
+      'Database Migration Failed',
+      `Could not update the database schema.\n\n${String(
+        err
+      )}\n\nThe application will now exit.`
+    );
+    app.exit(1);
+    return;
+  }
+
   try {
     const port = await findAvailablePort();
     resolvedPort = port;
