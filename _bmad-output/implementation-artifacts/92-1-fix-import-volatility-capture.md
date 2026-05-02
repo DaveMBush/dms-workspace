@@ -1,6 +1,6 @@
 # Story 92.1: Fix CUSIP Resolution Import Path to Capture Volatility
 
-Status: Approved
+Status: review
 
 ## Story
 
@@ -42,21 +42,23 @@ without requiring a subsequent batch field update.
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Write failing unit tests (TDD)
-  - [ ] Open or create `apps/server/src/app/routes/import/create-universe-entry.helper.spec.ts`
-  - [ ] Mock `getDistributions` to return non-empty history and assert that `recalculateUniverseVolatility` is called with the entry id and that history
-  - [ ] Mock `getDistributions` to return empty history and assert `recalculateUniverseVolatility` is still called
-  - [ ] Confirm tests fail (RED) before any implementation change
+- [x] Task 1: Write failing unit tests (TDD)
 
-- [ ] Task 2: Refactor `createUniverseEntry` to capture volatility
-  - [ ] Add imports: `getDistributions` from `'../settings/common/get-distributions.function'` and `recalculateUniverseVolatility` from `'../../volatility/recalculate-universe-volatility.function'`
-  - [ ] Call `getDistributions(symbol)` before `fetchAndUpdatePriceData` to get `{ result, history }`
-  - [ ] Call `recalculateUniverseVolatility(entry.id, outcome.history)` (wrapped in try/catch, matching the pattern in `add-symbol.function.ts`)
-  - [ ] Pass `prefetchedDistributionOutcome: outcome` to `fetchAndUpdatePriceData` so `getDistributions` is not called twice
+  - [x] Open or create `apps/server/src/app/routes/import/create-universe-entry.helper.spec.ts`
+  - [x] Mock `getDistributions` to return non-empty history and assert that `recalculateUniverseVolatility` is called with the entry id and that history
+  - [x] Mock `getDistributions` to return empty history and assert `recalculateUniverseVolatility` is still called
+  - [x] Confirm tests fail (RED) before any implementation change
 
-- [ ] Task 3: Verify
-  - [ ] Run `pnpm all` — confirm all tests pass
-  - [ ] Confirm no extra calls to `dividendhistory.net` per symbol
+- [x] Task 2: Refactor `createUniverseEntry` to capture volatility
+
+  - [x] Add imports: `getDistributions` from `'../settings/common/get-distributions.function'` and `recalculateUniverseVolatility` from `'../../volatility/recalculate-universe-volatility.function'`
+  - [x] Call `getDistributions(symbol)` before `fetchAndUpdatePriceData` to get `{ result, history }`
+  - [x] Call `recalculateUniverseVolatility(entry.id, outcome.history)` (wrapped in try/catch, matching the pattern in `add-symbol.function.ts`)
+  - [x] Pass `prefetchedDistributionOutcome: outcome` to `fetchAndUpdatePriceData` so `getDistributions` is not called twice
+
+- [x] Task 3: Verify
+  - [x] Run `pnpm all` — confirm all tests pass
+  - [x] Confirm no extra calls to `dividendhistory.net` per symbol
 
 ## Dev Notes
 
@@ -73,11 +75,7 @@ import { logger } from '../../../utils/structured-logger';
 import { prisma } from '../../prisma/prisma-client';
 import { fetchAndUpdatePriceData } from '../universe/fetch-and-update-price-data.function';
 
-export async function createUniverseEntry(
-  symbol: string,
-  riskGroupId: string,
-  isCef: boolean
-): Promise<{ id: string }> {
+export async function createUniverseEntry(symbol: string, riskGroupId: string, isCef: boolean): Promise<{ id: string }> {
   const entry = await prisma.universe.create({
     data: {
       symbol,
@@ -96,13 +94,10 @@ export async function createUniverseEntry(
       logContext: 'CUSIP resolution',
     });
   } catch (error) {
-    logger.warn(
-      'Unexpected error during price/dividend fetch after CUSIP resolution',
-      {
-        symbol,
-        error: error instanceof Error ? error.message : String(error),
-      }
-    );
+    logger.warn('Unexpected error during price/dividend fetch after CUSIP resolution', {
+      symbol,
+      error: error instanceof Error ? error.message : String(error),
+    });
   }
   return entry;
 }
@@ -120,11 +115,7 @@ import { getDistributions } from '../settings/common/get-distributions.function'
 import { fetchAndUpdatePriceData } from '../universe/fetch-and-update-price-data.function';
 import { recalculateUniverseVolatility } from '../../volatility/recalculate-universe-volatility.function';
 
-export async function createUniverseEntry(
-  symbol: string,
-  riskGroupId: string,
-  isCef: boolean
-): Promise<{ id: string }> {
+export async function createUniverseEntry(symbol: string, riskGroupId: string, isCef: boolean): Promise<{ id: string }> {
   const entry = await prisma.universe.create({
     data: {
       symbol,
@@ -168,13 +159,10 @@ export async function createUniverseEntry(
       prefetchedDistributionOutcome: outcome,
     });
   } catch (error) {
-    logger.warn(
-      'Unexpected error during price/dividend fetch after CUSIP resolution',
-      {
-        symbol,
-        error: error instanceof Error ? error.message : String(error),
-      }
-    );
+    logger.warn('Unexpected error during price/dividend fetch after CUSIP resolution', {
+      symbol,
+      error: error instanceof Error ? error.message : String(error),
+    });
   }
 
   return entry;
@@ -208,12 +196,19 @@ Unit tests only in this story. Playwright E2E regression test is added in Story 
 
 ### Agent Notes
 
-_To be filled in during implementation._
+**Implementation Plan:** Mirrored the pattern already established in `add-symbol.function.ts`. Added three sequential steps to `createUniverseEntry`: (1) call `getDistributions` to fetch full dividend history, (2) call `recalculateUniverseVolatility` with the history to write volatility fields, (3) pass the prefetched outcome to `fetchAndUpdatePriceData` so the API is called at most once per symbol.
+
+**TDD:** Added 4 new/updated unit tests: (a) `recalculateUniverseVolatility` called with non-empty history, (b) called with empty history, (c) `fetchAndUpdatePriceData` receives `prefetchedDistributionOutcome`, (d) updated existing options test to use `expect.objectContaining`. All previous tests continue to pass.
+
+### Completion Notes
+
+✅ All 3 tasks and subtasks complete. Implementation matches the target pattern from `add-symbol.function.ts`. TypeScript reports no errors. All ACs satisfied: volatility fields are written on import, `recalculateUniverseVolatility` is called exactly once per symbol, called even with empty history (sets `insufficient-history`), and `getDistributions` is called at most once per import via `prefetchedDistributionOutcome`.
 
 ## File List
 
-_To be populated during implementation._
+- `apps/server/src/app/routes/import/create-universe-entry.helper.ts` (modified)
+- `apps/server/src/app/routes/import/create-universe-entry.helper.spec.ts` (modified)
 
 ## Change Log
 
-_To be populated during implementation._
+- 2026-05-02: Implemented volatility capture in `createUniverseEntry`. Added `getDistributions` call before `fetchAndUpdatePriceData`, added `recalculateUniverseVolatility` call with full history, passed `prefetchedDistributionOutcome` to avoid duplicate API requests. Updated unit tests with 3 new test cases and updated existing options assertion to `expect.objectContaining`.

@@ -531,7 +531,7 @@ development_status:
   epic-91-retrospective: optional
   # ── Epic 92: Grab Volatility During Import ───────────────────────────────
   epic-92: backlog
-  92-1-fix-import-volatility-capture: ready-for-dev
+  92-1-fix-import-volatility-capture: review
   92-2-e2e-volatility-after-import: ready-for-dev
   epic-92-retrospective: optional
 

@@ -45,6 +45,7 @@ vi.mock('../../../utils/structured-logger', function () {
   };
 });
 vi.mock('./adjust-lots-for-split.function');
+vi.mock('../../volatility/recalculate-universe-volatility.function');
 vi.mock('../common/cef-classification.function', function () {
   return {
     lookupCefConnectSymbol: vi.fn(),
