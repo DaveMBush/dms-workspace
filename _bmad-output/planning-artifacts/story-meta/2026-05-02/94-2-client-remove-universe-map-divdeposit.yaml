@@ -1,0 +1,17 @@
+epic_num: 94
+story_num: 2
+story_id: '94.2'
+story_key: 94-2-client-remove-universe-map-divdeposit
+slug: 94-2-client-remove-universe-map-divdeposit
+title: Client Remove Universe Map DivDeposit
+epic_title: Return Symbol with divDeposit Data Instead of Looking it Up on the Client
+type: implementation
+status: Approved
+source_epics_file: _bmad-output/planning-artifacts/epics-2026-05-02.md
+source_section: 'Story 94.2'
+covers_requirements:
+  - R55
+depends_on_stories: ['94.1']
+enables_stories: []
+expected_story_file: _bmad-output/implementation-artifacts/94-2-client-remove-universe-map-divdeposit.md
+notes: ''

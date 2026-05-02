@@ -1,0 +1,17 @@
+epic_num: 95
+story_num: 1
+story_id: '95.1'
+story_key: 95-1-enforce-symbol-required-in-trade
+slug: 95-1-enforce-symbol-required-in-trade
+title: Enforce Symbol Required in Trade
+epic_title: Return Symbol with Open Positions Data Instead of Looking it Up on the Client
+type: implementation
+status: Approved
+source_epics_file: _bmad-output/planning-artifacts/epics-2026-05-02.md
+source_section: 'Story 95.1'
+covers_requirements:
+  - R56
+depends_on_stories: []
+enables_stories: ['95.2']
+expected_story_file: _bmad-output/implementation-artifacts/95-1-enforce-symbol-required-in-trade.md
+notes: ''
