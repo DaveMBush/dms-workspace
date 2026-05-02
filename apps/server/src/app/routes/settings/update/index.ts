@@ -140,21 +140,15 @@ async function processUniverse(
       const errorStack =
         volatilityError instanceof Error ? volatilityError.stack : undefined;
 
-      logger.error(
-        'Failed to recalculate universe volatility',
-        undefined,
-        {
-          symbol: universe.symbol,
-          universeId: universe.id,
-          error: errorMessage,
-          stack: errorStack,
-        }
-      );
+      logger.error('Failed to recalculate universe volatility', undefined, {
+        symbol: universe.symbol,
+        universeId: universe.id,
+        error: errorMessage,
+        stack: errorStack,
+      });
 
       // Rethrow to mark this universe as failed
-      throw new Error(
-        `Volatility calculation failed: ${errorMessage}`
-      );
+      throw new Error(`Volatility calculation failed: ${errorMessage}`);
     }
 
     return { success: true };
