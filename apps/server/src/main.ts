@@ -28,10 +28,9 @@ server.register(configureApp);
 // Serve Angular static assets when not in test environment
 const isCi = process.env['CI'] === '1' || process.env['CI'] === 'true';
 if (!isCi && process.env['NODE_ENV'] !== 'test') {
-  const angularBuildPath = path.join(
-    process.cwd(),
-    'dist/apps/dms-material/browser'
-  );
+  const angularBuildPath =
+    process.env['STATIC_DIR'] ??
+    path.join(process.cwd(), 'dist/apps/dms-material/browser');
 
   void server.register(fastifyStatic, {
     root: angularBuildPath,

@@ -53,10 +53,29 @@ function startServer(port: number): Promise<void> {
     resolve: () => void,
     reject: (err: Error) => void
   ): void {
-    const workspaceRoot = path.resolve(__dirname, '../../..');
     const nodeExecPath =
       process.env['DMS_NODE_EXEC_PATH'] ?? process.env['npm_node_execpath'];
-    const serverPath = path.join(workspaceRoot, 'dist/apps/server/main.js');
+
+    let serverPath: string;
+    let serverCwd: string;
+    let staticDir: string;
+
+    if (app.isPackaged) {
+      serverPath = path.join(process.resourcesPath, 'apps/server/main.js');
+      serverCwd = process.resourcesPath;
+      staticDir = path.join(
+        process.resourcesPath,
+        'apps/dms-material/browser'
+      );
+    } else {
+      const workspaceRoot = path.resolve(__dirname, '../../..');
+      serverPath = path.join(workspaceRoot, 'dist/apps/server/main.js');
+      serverCwd = workspaceRoot;
+      staticDir = path.join(
+        workspaceRoot,
+        'dist/apps/dms-material/browser'
+      );
+    }
 
     if (nodeExecPath === undefined || nodeExecPath.length === 0) {
       reject(
@@ -68,8 +87,8 @@ function startServer(port: number): Promise<void> {
     }
 
     serverProcess = fork(serverPath, [], {
-      cwd: workspaceRoot,
-      env: { ...process.env, PORT: String(port) },
+      cwd: serverCwd,
+      env: { ...process.env, PORT: String(port), STATIC_DIR: staticDir },
       execPath: nodeExecPath,
       silent: false,
     });
