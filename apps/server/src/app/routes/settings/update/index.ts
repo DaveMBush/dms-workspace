@@ -91,7 +91,11 @@ async function applyUniverseUpdate(
   logger: StructuredLogger
 ): Promise<void> {
   if (shouldUpdateDistribution(distribution, universe)) {
-    await updateUniverseWithDistribution(universe, lastPriceValue, distribution);
+    await updateUniverseWithDistribution(
+      universe,
+      lastPriceValue,
+      distribution
+    );
     logger.info('Updated universe with new distribution', {
       symbol: universe.symbol,
       lastPrice: lastPriceValue,
