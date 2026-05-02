@@ -4,11 +4,18 @@ import { StructuredLogger } from '../../../../utils/structured-logger';
 import { prisma } from '../../../prisma/prisma-client';
 import { getDistributions } from '../common/get-distributions.function';
 import { getLastPrice } from '../common/get-last-price.function';
+import { recalculateUniverseVolatility } from '../../../volatility/recalculate-universe-volatility.function';
+import type { ProcessedRow } from '../common/distribution-api.function';
 
 interface Distribution {
   distribution: number;
   distributions_per_year: number;
   ex_date: Date;
+}
+
+interface DistributionWithHistory {
+  distribution: Distribution | null;
+  history: ProcessedRow[];
 }
 
 function getCurrentDistribution(
@@ -23,13 +30,16 @@ function getCurrentDistribution(
 
 async function checkForNewDistribution(
   universe: Awaited<ReturnType<typeof prisma.universe.findMany>>[number]
-): Promise<Distribution | null> {
-  const { result: newDistribution } = await getDistributions(universe.symbol);
+): Promise<DistributionWithHistory> {
+  const { result: newDistribution, history } = await getDistributions(
+    universe.symbol
+  );
+
   if (newDistribution === undefined) {
-    return null;
+    return { distribution: null, history };
   }
 
-  return newDistribution;
+  return { distribution: newDistribution, history };
 }
 
 function shouldUpdateDistribution(
@@ -86,7 +96,8 @@ async function processUniverse(
     const lastPrice = await getLastPrice(universe.symbol);
     let distribution = getCurrentDistribution(universe);
 
-    const newDistribution = await checkForNewDistribution(universe);
+    const { distribution: newDistribution, history } =
+      await checkForNewDistribution(universe);
     if (newDistribution !== null) {
       distribution = newDistribution;
     }
@@ -111,6 +122,39 @@ async function processUniverse(
         symbol: universe.symbol,
         lastPrice: lastPriceValue,
       });
+    }
+
+    // Recalculate volatility using the history from getDistributions
+    try {
+      await recalculateUniverseVolatility(universe.id, history);
+      logger.info('Recalculated universe volatility', {
+        symbol: universe.symbol,
+        universeId: universe.id,
+        historyLength: history.length,
+      });
+    } catch (volatilityError) {
+      const errorMessage =
+        volatilityError instanceof Error
+          ? volatilityError.message
+          : 'Unknown volatility calculation error';
+      const errorStack =
+        volatilityError instanceof Error ? volatilityError.stack : undefined;
+
+      logger.error(
+        'Failed to recalculate universe volatility',
+        undefined,
+        {
+          symbol: universe.symbol,
+          universeId: universe.id,
+          error: errorMessage,
+          stack: errorStack,
+        }
+      );
+
+      // Rethrow to mark this universe as failed
+      throw new Error(
+        `Volatility calculation failed: ${errorMessage}`
+      );
     }
 
     return { success: true };
@@ -244,6 +288,13 @@ function handleUpdateRoute(fastify: FastifyInstance): void {
     }
   );
 }
+
+// Export for testing
+export const testExports = {
+  processUniverse,
+  updateAllUniverses,
+  checkForNewDistribution,
+};
 
 export default function registerUpdateRoutes(fastify: FastifyInstance): void {
   handleUpdateRoute(fastify);
