@@ -11,7 +11,7 @@ function resolvePrismaCliPath(): string {
 
 function resolveMigrationSchemaPath(): string {
   if (app.isPackaged) {
-    return path.join(process.resourcesPath, 'schema.prisma');
+    return path.join(process.resourcesPath, 'prisma', 'schema.prisma');
   }
   return path.resolve(__dirname, '../../../../prisma/schema.prisma');
 }

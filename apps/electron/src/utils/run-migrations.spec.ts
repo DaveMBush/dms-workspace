@@ -120,7 +120,7 @@ describe('runMigrations', () => {
 
     const [, args] = mockSpawn.mock.calls[0] as [string, string[], object];
     const schemaArg = args.find((a) => a.startsWith('--schema='));
-    expect(schemaArg).toBe('--schema=/mock/resources/schema.prisma');
+    expect(schemaArg).toBe('--schema=/mock/resources/prisma/schema.prisma');
 
     (process as NodeJS.Process & { resourcesPath: string }).resourcesPath =
       originalResourcesPath;
