@@ -1,11 +1,12 @@
+/* eslint-disable @smarttools/one-exported-item-per-file -- Test helper exports alongside default route registration */
 import { FastifyInstance, FastifyRequest } from 'fastify';
 
 import { StructuredLogger } from '../../../../utils/structured-logger';
 import { prisma } from '../../../prisma/prisma-client';
+import type { ProcessedRow } from '../../common/distribution-api.function';
 import { getDistributions } from '../common/get-distributions.function';
 import { getLastPrice } from '../common/get-last-price.function';
 import { recalculateUniverseVolatility } from '../../../volatility/recalculate-universe-volatility.function';
-import type { ProcessedRow } from '../common/distribution-api.function';
 
 interface Distribution {
   distribution: number;
@@ -83,6 +84,58 @@ async function updateUniverseWithoutDistribution(
   });
 }
 
+async function applyUniverseUpdate(
+  universe: Awaited<ReturnType<typeof prisma.universe.findMany>>[number],
+  lastPriceValue: number,
+  distribution: Distribution,
+  logger: StructuredLogger
+): Promise<void> {
+  if (shouldUpdateDistribution(distribution, universe)) {
+    await updateUniverseWithDistribution(universe, lastPriceValue, distribution);
+    logger.info('Updated universe with new distribution', {
+      symbol: universe.symbol,
+      lastPrice: lastPriceValue,
+      exDate: distribution.ex_date,
+      distribution: distribution.distribution,
+    });
+  } else {
+    await updateUniverseWithoutDistribution(universe, lastPriceValue);
+    logger.info('Updated universe with last price only', {
+      symbol: universe.symbol,
+      lastPrice: lastPriceValue,
+    });
+  }
+}
+
+async function recalculateVolatilityWithLogging(
+  universe: Awaited<ReturnType<typeof prisma.universe.findMany>>[number],
+  history: ProcessedRow[],
+  logger: StructuredLogger
+): Promise<void> {
+  try {
+    await recalculateUniverseVolatility(universe.id, history);
+    logger.info('Recalculated universe volatility', {
+      symbol: universe.symbol,
+      universeId: universe.id,
+      historyLength: history.length,
+    });
+  } catch (volatilityError) {
+    const errorMessage =
+      volatilityError instanceof Error
+        ? volatilityError.message
+        : 'Unknown volatility calculation error';
+    const errorStack =
+      volatilityError instanceof Error ? volatilityError.stack : undefined;
+    logger.error('Failed to recalculate universe volatility', undefined, {
+      symbol: universe.symbol,
+      universeId: universe.id,
+      error: errorMessage,
+      stack: errorStack,
+    });
+    throw new Error(`Volatility calculation failed: ${errorMessage}`);
+  }
+}
+
 async function processUniverse(
   universe: Awaited<ReturnType<typeof prisma.universe.findMany>>[number],
   logger: StructuredLogger
@@ -104,52 +157,8 @@ async function processUniverse(
 
     const lastPriceValue = lastPrice ?? 0;
 
-    if (shouldUpdateDistribution(distribution, universe)) {
-      await updateUniverseWithDistribution(
-        universe,
-        lastPriceValue,
-        distribution
-      );
-      logger.info('Updated universe with new distribution', {
-        symbol: universe.symbol,
-        lastPrice: lastPriceValue,
-        exDate: distribution.ex_date,
-        distribution: distribution.distribution,
-      });
-    } else {
-      await updateUniverseWithoutDistribution(universe, lastPriceValue);
-      logger.info('Updated universe with last price only', {
-        symbol: universe.symbol,
-        lastPrice: lastPriceValue,
-      });
-    }
-
-    // Recalculate volatility using the history from getDistributions
-    try {
-      await recalculateUniverseVolatility(universe.id, history);
-      logger.info('Recalculated universe volatility', {
-        symbol: universe.symbol,
-        universeId: universe.id,
-        historyLength: history.length,
-      });
-    } catch (volatilityError) {
-      const errorMessage =
-        volatilityError instanceof Error
-          ? volatilityError.message
-          : 'Unknown volatility calculation error';
-      const errorStack =
-        volatilityError instanceof Error ? volatilityError.stack : undefined;
-
-      logger.error('Failed to recalculate universe volatility', undefined, {
-        symbol: universe.symbol,
-        universeId: universe.id,
-        error: errorMessage,
-        stack: errorStack,
-      });
-
-      // Rethrow to mark this universe as failed
-      throw new Error(`Volatility calculation failed: ${errorMessage}`);
-    }
+    await applyUniverseUpdate(universe, lastPriceValue, distribution, logger);
+    await recalculateVolatilityWithLogging(universe, history, logger);
 
     return { success: true };
   } catch (error) {
