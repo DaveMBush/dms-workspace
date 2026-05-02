@@ -205,16 +205,24 @@ describe('createUniverseEntry', function () {
   });
 
   test('should log warn and fall back to empty history when getDistributions throws an Error', async function () {
-    mockGetDistributions.mockRejectedValue(new Error('Distribution fetch failed'));
+    mockGetDistributions.mockRejectedValue(
+      new Error('Distribution fetch failed')
+    );
     mockPrisma.universe.create.mockResolvedValue(mockCreatedEntry as any);
 
     const result = await createUniverseEntry('PDI', 'inc-id', true);
 
     expect((logger as any).warn).toHaveBeenCalledWith(
       'Dividend history fetch failed during CUSIP resolution',
-      expect.objectContaining({ symbol: 'PDI', error: 'Distribution fetch failed' })
+      expect.objectContaining({
+        symbol: 'PDI',
+        error: 'Distribution fetch failed',
+      })
     );
-    expect(mockRecalculateUniverseVolatility).toHaveBeenCalledWith('test-entry-id', []);
+    expect(mockRecalculateUniverseVolatility).toHaveBeenCalledWith(
+      'test-entry-id',
+      []
+    );
     expect(result.id).toBe('test-entry-id');
   });
 
@@ -232,7 +240,9 @@ describe('createUniverseEntry', function () {
   });
 
   test('should log warn and continue when recalculateUniverseVolatility throws', async function () {
-    mockRecalculateUniverseVolatility.mockRejectedValue(new Error('Volatility failed'));
+    mockRecalculateUniverseVolatility.mockRejectedValue(
+      new Error('Volatility failed')
+    );
     mockPrisma.universe.create.mockResolvedValue(mockCreatedEntry as any);
 
     const result = await createUniverseEntry('PDI', 'inc-id', true);
