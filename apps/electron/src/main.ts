@@ -204,6 +204,14 @@ function onWindowAllClosed(): void {
   }
 }
 
+function parseSmokePort(smokePortEnv: string): number {
+  const parsed = parseInt(smokePortEnv, 10);
+  if (Number.isNaN(parsed) || parsed < 1 || parsed > 65535) {
+    throw new Error(`Invalid DMS_SMOKE_PORT value: "${smokePortEnv}"`);
+  }
+  return parsed;
+}
+
 async function init(): Promise<void> {
   try {
     await runMigrations();
@@ -219,7 +227,11 @@ async function init(): Promise<void> {
   }
 
   try {
-    const port = await findAvailablePort();
+    const smokePortEnv = process.env['DMS_SMOKE_PORT'];
+    const port =
+      smokePortEnv !== undefined && smokePortEnv.length > 0
+        ? parseSmokePort(smokePortEnv)
+        : await findAvailablePort();
     resolvedPort = port;
 
     ipcMain.handle('get-api-port', function getApiPort(): number | null {

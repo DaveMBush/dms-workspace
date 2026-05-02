@@ -211,6 +211,51 @@ Notes:
 - `electron:start` is the supported end-to-end developer workflow
 - `pnpm all` should continue to pass after documentation changes
 
+## Packaging & Smoke Test
+
+After packaging, you can verify the AppImage starts correctly and the embedded server
+becomes healthy using the smoke-test target.
+
+### Build the distributable
+
+```bash
+pnpm nx run electron:package
+```
+
+This runs `electron-builder` and writes the AppImage (and `.deb`) to
+`dist/electron-dist/`.
+
+### Run the smoke test
+
+```bash
+pnpm nx run electron:smoke-test
+```
+
+What the smoke test does:
+
+1. Finds the `*.AppImage` in `dist/electron-dist/`.
+2. Launches it with `--no-sandbox` and a temporary `--user-data-dir` so the dev
+   database is not touched.
+3. On headless CI (no `DISPLAY` set), wraps the launch with
+   `xvfb-run --auto-servernum`.
+4. Sets `DMS_SMOKE_PORT=3000` so the embedded Fastify server binds to a
+   predictable port instead of a random one (see `apps/electron/src/main.ts`).
+5. Polls `http://localhost:3000/api/health` for up to 30 seconds.
+6. Exits **0** if the server returns HTTP 200; exits **1** on timeout or error.
+
+### Required environment
+
+| Variable             | Default         | Purpose                                                      |
+| -------------------- | --------------- | ------------------------------------------------------------ |
+| `DMS_NODE_EXEC_PATH` | `$(which node)` | Node binary the packaged app uses to fork the server process |
+| `DMS_SMOKE_PORT`     | `3000`          | Fixed port used during the smoke test                        |
+| `DISPLAY`            | _(unset)_       | When unset, `xvfb-run` is used automatically                 |
+
+> **Note:** `DMS_NODE_EXEC_PATH` must point to a plain Node.js binary, not the Electron
+> binary. The packaged Electron app forks the server as a separate Node process, and the
+> fork will fail if the wrong executable is used. In most CI environments `$(which node)`
+> is correct.
+
 ## Source References
 
 - `apps/electron/src/main.ts`

@@ -55,6 +55,13 @@
           "target": "build"
         }
       ]
+    },
+    "smoke-test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "bash apps/electron/scripts/smoke-test.sh"
+      },
+      "dependsOn": ["electron:package"]
     }
   }
 }
