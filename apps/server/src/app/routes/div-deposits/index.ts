@@ -3,6 +3,9 @@ import { FastifyInstance } from 'fastify';
 import { prisma } from '../../prisma/prisma-client';
 import { DivDeposit } from './div-deposits.interface';
 
+type DivDepositWriteBody = Omit<DivDeposit, 'id' | 'symbol'>;
+type DivDepositUpdateBody = DivDepositWriteBody & { id: string };
+
 interface DivDepositFromDb {
   id: string;
   date: Date;
@@ -57,7 +60,7 @@ function handleGetDivDepositsRoute(fastify: FastifyInstance): void {
 }
 
 function handleAddDivDepositRoute(fastify: FastifyInstance): void {
-  fastify.post<{ Body: Omit<DivDeposit, 'id'>; Reply: DivDeposit[] }>(
+  fastify.post<{ Body: DivDepositWriteBody; Reply: DivDeposit[] }>(
     '/add',
     async function handleAddDivDepositRequest(request, reply): Promise<void> {
       const { date, amount, accountId, divDepositTypeId, universeId } =
@@ -95,7 +98,7 @@ function handleDeleteDivDepositRoute(fastify: FastifyInstance): void {
 }
 
 function handleUpdateDivDepositRoute(fastify: FastifyInstance): void {
-  fastify.put<{ Body: DivDeposit; Reply: DivDeposit[] }>(
+  fastify.put<{ Body: DivDepositUpdateBody; Reply: DivDeposit[] }>(
     '/',
     async function handleUpdateDivDepositRequest(
       request,
