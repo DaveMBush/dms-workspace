@@ -1,6 +1,6 @@
 ---
 description: 'Fully autonomous bug fix workflow: validate epic, collect bug description, implement fix, run quality validation, create PR, run CodeRabbit review, and merge'
-argument-hint: epic=AD story=AD.5
+argument-hint: epic=3 story=3-5
 model: Claude Opus 4.7 (copilot)
 tools: [read, agent, mcp_bash/*]
 agents: [debug-setup, quality-validation, debug-pr-lifecycle, debug-merge-finalize]

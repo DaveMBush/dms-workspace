@@ -1,6 +1,6 @@
 ---
 description: 'Verify story PR mergeability, resolve merge conflicts with rebase, squash-merge the PR, verify issue auto-close, and remove the story worktree'
-argument-hint: story=AD.3
+argument-hint: story=3-3
 model: Claude Sonnet 4.6 High (copilot)
 tools: [read, agent, mcp_bash/*, mcp_github/*, mcp_microsoft_pla/*]
 agents: [quality-validation]

@@ -1,6 +1,6 @@
 ---
 description: 'Validate epic status, verify clean git state on main, create GitHub issue and debug branch, and return branch name to the parent debug workflow'
-argument-hint: epic=AD story=AD.5
+argument-hint: epic=3 story=3-5
 model: Claude Sonnet 4.6 High (copilot)
 tools: [read, mcp_bash/*, mcp_github/*]
 user-invocable: false

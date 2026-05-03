@@ -20,7 +20,7 @@ Each phase of the epic development process must be handled by a separate subAgen
 1. **Discover Stories for Epic ${epic}**
 
    - Search for all story files matching: `_bmad-output/implementation-artifacts/${epic}-*.md`
-   - Parse story numbers from filenames (e.g., AD.1, AD.2, AD.3)
+   - Parse story numbers from filenames (e.g., 1-1, 1-2, 1-3)
    - Sort stories by numeric value (1, 2, 3, ...)
    - If no stories found: Use the prompt skill to ask: `No stories found for epic ${epic}. Reply with stop, continue, or instructions.`
 

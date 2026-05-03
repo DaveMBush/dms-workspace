@@ -1,6 +1,6 @@
 ---
 description: 'Verify debug PR mergeability, resolve merge conflicts with rebase, squash-merge the PR, verify issue auto-close, and delete the local debug branch'
-argument-hint: story=AD.5
+argument-hint: story=3-5
 model: Claude Sonnet 4.6 High (copilot)
 tools: [read, agent, mcp_bash/*, mcp_github/*, mcp_microsoft_pla/*]
 agents: [quality-validation]
