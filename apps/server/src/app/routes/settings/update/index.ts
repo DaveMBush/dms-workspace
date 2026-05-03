@@ -136,7 +136,9 @@ async function recalculateVolatilityWithLogging(
       error: errorMessage,
       stack: errorStack,
     });
-    throw new Error(`Volatility calculation failed: ${errorMessage}`);
+    throw volatilityError instanceof Error
+      ? volatilityError
+      : new Error(`Volatility calculation failed: ${errorMessage}`);
   }
 }
 

@@ -4,6 +4,7 @@ import type { StructuredLogger } from '../../../../utils/structured-logger';
 
 // Hoisted mocks — created before module resolution
 const h = vi.hoisted(() => ({
+  prismaFindMany: vi.fn(),
   prismaUpdate: vi.fn().mockResolvedValue({}),
   getDistributions: vi.fn(),
   getLastPrice: vi.fn(),
@@ -13,7 +14,7 @@ const h = vi.hoisted(() => ({
 vi.mock('../../../prisma/prisma-client', () => ({
   prisma: {
     universe: {
-      findMany: vi.fn(),
+      findMany: h.prismaFindMany,
       update: h.prismaUpdate,
     },
   },
@@ -139,5 +140,44 @@ describe('settings/update route — volatility recalculation', () => {
     // Assert
     expect(result.success).toBe(false);
     expect(result.error).toContain('Volatility calculation failed');
+  });
+
+  it('updateAllUniverses should continue processing when one volatility recalculation fails', async () => {
+    // Arrange — two universes; first fails volatility, second succeeds
+    const mockUniverse2 = {
+      ...mockUniverse,
+      id: 'test-universe-id-2',
+      symbol: 'TST2',
+    };
+
+    h.prismaFindMany.mockResolvedValue([mockUniverse, mockUniverse2]);
+
+    // Both universes return distributions without errors
+    h.getLastPrice.mockResolvedValue(155.0);
+    h.getDistributions.mockResolvedValue({
+      result: {
+        distribution: 0.26,
+        distributions_per_year: 4,
+        ex_date: new Date('2024-02-01'),
+      },
+      history: mockHistory,
+    });
+
+    // First universe: volatility fails; second: succeeds
+    h.recalculateUniverseVolatility
+      .mockRejectedValueOnce(new Error('Volatility calculation failed'))
+      .mockResolvedValueOnce(undefined);
+
+    // Act
+    const summary = await testExports.updateAllUniverses(mockLogger);
+
+    // Assert — batch continues; one failure, one success
+    expect(summary.totalProcessed).toBe(2);
+    expect(summary.successful).toBe(1);
+    expect(summary.failed).toBe(1);
+    expect(summary.errors).toHaveLength(1);
+    expect(summary.errors[0].symbol).toBe(mockUniverse.symbol);
+    expect(summary.errors[0].error).toContain('Volatility calculation failed');
+    expect(h.recalculateUniverseVolatility).toHaveBeenCalledTimes(2);
   });
 });
