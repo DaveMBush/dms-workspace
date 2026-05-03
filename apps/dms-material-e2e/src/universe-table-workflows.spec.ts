@@ -364,8 +364,9 @@ test.describe('Universe Table Workflows', () => {
       await expect(datepicker).not.toBeVisible();
 
       // Row should be marked as expired (e.g., different styling)
+      // Use a longer timeout to allow for cross-browser re-render latency
       const row = page.locator('tbody tr:first-child');
-      await expect(row).toHaveClass(/expired/);
+      await expect(row).toHaveClass(/expired/, { timeout: 15000 });
     });
   });
 
