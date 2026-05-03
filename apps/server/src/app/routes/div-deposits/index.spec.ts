@@ -19,8 +19,8 @@ describe('Div Deposits Routes', () => {
   let fastify: FastifyInstance;
 
   beforeEach(async () => {
-    const Fastify = await import('fastify');
-    fastify = Fastify.default();
+    const fastifyModule = await import('fastify');
+    fastify = fastifyModule.default();
     await fastify.register(
       async (instance) => {
         registerDivDepositRoutes(instance);
