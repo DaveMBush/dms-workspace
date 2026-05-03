@@ -4,7 +4,7 @@ import { prisma } from '../../prisma/prisma-client';
 import { DivDeposit } from './div-deposits.interface';
 
 type DivDepositWriteBody = Omit<DivDeposit, 'id' | 'symbol'>;
-type DivDepositUpdateBody = DivDepositWriteBody & { id: string };
+type DivDepositUpdateBody = DivDepositWriteBody & Pick<DivDeposit, 'id'>;
 
 interface DivDepositFromDb {
   id: string;
