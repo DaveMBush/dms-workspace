@@ -10,6 +10,7 @@ interface DivDepositFromDb {
   accountId: string;
   divDepositTypeId: string;
   universeId: string | null;
+  universe: { symbol: string } | null;
 }
 
 function mapDivDepositToResponse(u: DivDepositFromDb): DivDeposit {
@@ -20,6 +21,7 @@ function mapDivDepositToResponse(u: DivDepositFromDb): DivDeposit {
     accountId: u.accountId,
     divDepositTypeId: u.divDepositTypeId,
     universeId: u.universeId,
+    symbol: u.universe?.symbol ?? null,
   };
 }
 
@@ -43,7 +45,8 @@ function handleGetDivDepositsRoute(fastify: FastifyInstance): void {
         return [];
       }
       const divDeposits = await prisma.divDeposits.findMany({
-        where: { id: { in: ids } },
+        where: { id: { in: ids }, deletedAt: null },
+        include: { universe: { select: { symbol: true } } },
       });
 
       return divDeposits.map(function mapDivDeposit(u) {
@@ -57,15 +60,17 @@ function handleAddDivDepositRoute(fastify: FastifyInstance): void {
   fastify.post<{ Body: Omit<DivDeposit, 'id'>; Reply: DivDeposit[] }>(
     '/add',
     async function handleAddDivDepositRequest(request, reply): Promise<void> {
-      const { ...rest } = request.body;
+      const { date, amount, accountId, divDepositTypeId, universeId } =
+        request.body;
       const result = await prisma.divDeposits.create({
         data: {
-          date: rest.date,
-          amount: rest.amount,
-          accountId: rest.accountId,
-          divDepositTypeId: rest.divDepositTypeId,
-          universeId: rest.universeId,
+          date,
+          amount,
+          accountId,
+          divDepositTypeId,
+          universeId,
         },
+        include: { universe: { select: { symbol: true } } },
       });
       reply.status(200).send([mapDivDepositToResponse(result)]);
     }
@@ -78,11 +83,13 @@ function handleDeleteDivDepositRoute(fastify: FastifyInstance): void {
     async function handleDeleteDivDepositRequest(
       request,
       reply
-    ): Promise<{ success: boolean }> {
+    ): Promise<void> {
       const { id } = request.params;
-      await prisma.divDeposits.delete({ where: { id } });
+      await prisma.divDeposits.update({
+        where: { id },
+        data: { deletedAt: new Date() },
+      });
       reply.status(200).send({ success: true });
-      return { success: true };
     }
   );
 }
@@ -107,7 +114,8 @@ function handleUpdateDivDepositRoute(fastify: FastifyInstance): void {
         },
       });
       const divDeposits = await prisma.divDeposits.findMany({
-        where: { id },
+        where: { id, deletedAt: null },
+        include: { universe: { select: { symbol: true } } },
       });
       const result = divDeposits.map(function mapUpdatedDivDeposit(u) {
         return mapDivDepositToResponse(u);
