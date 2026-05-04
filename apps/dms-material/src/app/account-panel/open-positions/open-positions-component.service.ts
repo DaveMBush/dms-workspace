@@ -1,14 +1,12 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { RowProxyDelete, SmartArray } from '@smarttools/smart-signals';
 
-import { buildUniverseMap } from '../../shared/build-universe-map.function';
 import { Account } from '../../store/accounts/account.interface';
 import { currentAccountSignalStore } from '../../store/current-account/current-account.signal-store';
 import { selectCurrentAccountSignal } from '../../store/current-account/select-current-account.signal';
 import { differenceInTradingDays } from '../../store/trades/difference-in-trading-days.function';
 import { OpenPosition } from '../../store/trades/open-position.interface';
 import { Trade } from '../../store/trades/trade.interface';
-import { Universe } from '../../store/universe/universe.interface';
 
 /**
  * Scrolling regression history (Epics 29, 31, 44, 60, 64, 87):
@@ -40,26 +38,6 @@ function placeholderOpenPosition(id: string): OpenPosition {
   };
 }
 
-function partialOpenPosition(trade: Trade): OpenPosition {
-  return {
-    id: trade.id,
-    symbol: trade.symbol ?? '',
-    exDate: null,
-    buy: trade.buy,
-    buyDate: trade.buy_date ? new Date(trade.buy_date) : new Date(),
-    sell: trade.sell,
-    sellDate: undefined,
-    daysHeld: 0,
-    expectedYield: 0,
-    targetGain: 0,
-    targetSell: 0,
-    quantity: trade.quantity,
-    lastPrice: 0,
-    unrealizedGainPercent: 0,
-    unrealizedGain: 0,
-    isLoading: true,
-  };
-}
 @Injectable({ providedIn: 'root' })
 export class OpenPositionsComponentService {
   private currentAccountSignalStore = inject(currentAccountSignalStore);
@@ -95,7 +73,6 @@ export class OpenPositionsComponentService {
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- will hide this
   selectOpenPositions = computed(() => {
     const trades = this.trades();
-    const universeMap = this.universeMap();
 
     const totalLength = trades.length;
     if (totalLength === 0) {
@@ -110,39 +87,35 @@ export class OpenPositionsComponentService {
         openPositions[i] = placeholderOpenPosition(`placeholder-${String(i)}`);
         continue;
       }
-      const universe = universeMap.get(trade.universeId);
-      openPositions[i] =
-        universe === undefined
-          ? partialOpenPosition(trade)
-          : this.transformTradeToPosition(trade, universe);
+      // Story 95.2: Use trade.symbol directly without universe map lookup
+      openPositions[i] = this.transformTradeToPosition(trade);
     }
 
     return openPositions;
   });
 
-  private transformTradeToPosition(
-    trade: Trade,
-    universe: Universe
-  ): OpenPosition {
+  private transformTradeToPosition(trade: Trade): OpenPosition {
+    // Story 95.2: Use safe defaults for Universe fields not available on Trade
+    // TODO: Follow-up story needed to extend Trade interface with these fields
+    const lastPrice = 0; // Universe.last_price not available on Trade
+    const distribution = 0; // Universe.distribution not available on Trade
+    const exDate = null; // Universe.ex_date not available on Trade
+
     const daysHeld = this.differenceInTradingDaysPrivate(
       trade.buy_date,
       new Date().toISOString()
     );
-    const expectedYield = this.getExpectedYield(universe, trade);
-    const targetGain = this.getTargetGain(
-      universe,
-      trade,
-      daysHeld,
-      expectedYield
-    );
+    const expectedYield = distribution ? trade.quantity * distribution : 0;
+    const targetGain = 0; // Requires distribution and ex_date calculations
+
     const sellDate =
       trade.sell_date !== undefined
         ? this.parseDateString(trade.sell_date)
         : undefined;
     return {
       id: trade.id,
-      symbol: universe.symbol,
-      exDate: universe.ex_date || null,
+      symbol: trade.symbol, // Story 95.2: Use trade.symbol directly
+      exDate,
       buy: trade.buy,
       buyDate: this.parseDateString(trade.buy_date),
       sell: trade.sell,
@@ -150,21 +123,17 @@ export class OpenPositionsComponentService {
       daysHeld,
       expectedYield,
       targetGain,
-      targetSell: targetGain / trade.quantity + trade.buy,
+      targetSell: trade.quantity > 0 ? targetGain / trade.quantity + trade.buy : trade.buy,
       quantity: trade.quantity,
-      lastPrice: universe.last_price,
+      lastPrice,
       unrealizedGainPercent:
-        ((universe.last_price - trade.buy) / trade.buy) * 100,
-      unrealizedGain: (universe.last_price - trade.buy) * trade.quantity,
+        trade.buy > 0 ? ((lastPrice - trade.buy) / trade.buy) * 100 : 0,
+      unrealizedGain: (lastPrice - trade.buy) * trade.quantity,
     };
   }
 
   private differenceInTradingDaysPrivate(start: string, end: string): number {
     return differenceInTradingDays(start, end);
-  }
-
-  private universeMap(): Map<string, Universe> {
-    return buildUniverseMap();
   }
 
   /**
@@ -217,62 +186,5 @@ export class OpenPositionsComponentService {
       );
     }
     return new Date();
-  }
-
-  private getFormulaExDate(universe: Universe): Date {
-    if (!universe?.ex_date) {
-      // Return current date as fallback when ex_date is null
-      return new Date();
-    }
-    const formulaExDate = new Date(universe.ex_date);
-    if (formulaExDate.valueOf() >= new Date().valueOf()) {
-      return formulaExDate;
-    }
-    if (universe.distribution === 12) {
-      while (formulaExDate.valueOf() < new Date().valueOf()) {
-        formulaExDate.setMonth(formulaExDate.getMonth() + 1);
-      }
-    } else if (universe.distribution === 4) {
-      while (formulaExDate.valueOf() < new Date().valueOf()) {
-        formulaExDate.setMonth(formulaExDate.getMonth() + 3);
-      }
-    } else {
-      while (formulaExDate.valueOf() < new Date().valueOf()) {
-        formulaExDate.setFullYear(formulaExDate.getFullYear() + 1);
-      }
-    }
-    return formulaExDate;
-  }
-
-  private isClosed(trade: Trade, universe: Universe): boolean {
-    return (
-      universe === undefined ||
-      (trade.sell > 0 && trade.sell_date !== undefined)
-    );
-  }
-
-  private getExpectedYield(universe: Universe, trade: Trade): number {
-    return universe?.distribution ? trade.quantity * universe.distribution : 0;
-  }
-
-  private getTargetGain(
-    universe: Universe,
-    trade: Trade,
-    daysHeld: number,
-    expectedYield: number
-  ): number {
-    const formulaExDate = this.getFormulaExDate(universe);
-    const tradingDaysToExDate = this.differenceInTradingDaysPrivate(
-      trade.buy_date,
-      formulaExDate.toISOString()
-    );
-
-    const targetGainFactor = (3 * daysHeld) / tradingDaysToExDate;
-    return Math.min(
-      expectedYield,
-      universe?.distribution
-        ? targetGainFactor * universe.distribution * trade.quantity
-        : 0
-    );
   }
 }

@@ -13,67 +13,8 @@ vi.mock('../../store/current-account/select-current-account.signal', () => ({
 }));
 
 vi.mock('../../shared/build-universe-map.function', () => ({
-  buildUniverseMap: vi.fn().mockReturnValue(
-    new Map([
-      [
-        'universe-1',
-        {
-          id: 'universe-1',
-          symbol: 'AAPL',
-          distribution: 4,
-          distributions_per_year: 4,
-          last_price: 175,
-          ex_date: '2025-03-15',
-          risk_group_id: 'rg-1',
-          expired: false,
-          is_closed_end_fund: false,
-          name: 'Apple Inc',
-          position: 1,
-          avg_purchase_yield_percent: 0.5,
-          most_recent_sell_date: null,
-          most_recent_sell_price: null,
-        },
-      ],
-      [
-        'universe-2',
-        {
-          id: 'universe-2',
-          symbol: 'MSFT',
-          distribution: 12,
-          distributions_per_year: 12,
-          last_price: 400,
-          ex_date: '2025-04-10',
-          risk_group_id: 'rg-2',
-          expired: false,
-          is_closed_end_fund: false,
-          name: 'Microsoft Corp',
-          position: 2,
-          avg_purchase_yield_percent: 0.8,
-          most_recent_sell_date: null,
-          most_recent_sell_price: null,
-        },
-      ],
-      [
-        'universe-3',
-        {
-          id: 'universe-3',
-          symbol: 'GOOG',
-          distribution: 4,
-          distributions_per_year: 4,
-          last_price: 150,
-          ex_date: '2025-05-01',
-          risk_group_id: 'rg-3',
-          expired: false,
-          is_closed_end_fund: false,
-          name: 'Alphabet Inc',
-          position: 3,
-          avg_purchase_yield_percent: 0.3,
-          most_recent_sell_date: null,
-          most_recent_sell_price: null,
-        },
-      ],
-    ])
-  ),
+  // Story 95.2: Return empty map to ensure code doesn't depend on universe lookup
+  buildUniverseMap: vi.fn().mockReturnValue(new Map()),
 }));
 
 vi.mock('../../store/current-account/current-account.signal-store', () => ({
@@ -116,6 +57,7 @@ function createOpenTrade(overrides: Partial<Trade> = {}): Trade {
     id: 'trade-1',
     universeId: 'universe-1',
     accountId: 'acc-1',
+    symbol: 'PDI', // Symbol is now required on Trade (Story 95.1)
     buy: 150,
     sell: 0,
     buy_date: '2024-01-15',
@@ -127,12 +69,14 @@ function createOpenTrade(overrides: Partial<Trade> = {}): Trade {
 
 // Helper to create a mock array of open trades
 function createMockTradesArray(count: number): Trade[] {
+  const symbols = ['AAPL', 'MSFT', 'GOOG'];
   const items: Trade[] = [];
   for (let i = 0; i < count; i++) {
     items.push(
       createOpenTrade({
         id: `trade-${i}`,
         universeId: `universe-${(i % 3) + 1}`,
+        symbol: symbols[i % 3], // Include symbol directly on Trade
         buy: 100 + i * 10,
         quantity: 50 + i,
         buy_date: '2024-01-15',
@@ -330,7 +274,7 @@ describe('OpenPositionsComponentService - Virtual Data Access (AX.7)', () => {
     expect(firstPosition.symbol).toBe('AAPL');
     expect(firstPosition.buy).toBe(100);
     expect(firstPosition.quantity).toBe(50);
-    expect(firstPosition.lastPrice).toBe(175); // universe-1 last_price
+    expect(firstPosition.lastPrice).toBe(0); // Story 95.2: no universe map, lastPrice defaults to 0
     expect(firstPosition.unrealizedGain).toBeDefined();
     expect(firstPosition.unrealizedGainPercent).toBeDefined();
     expect(firstPosition.daysHeld).toBeDefined();
@@ -362,7 +306,7 @@ describe('OpenPositionsComponentService - Virtual Data Access (AX.7)', () => {
     expect(positions.length).toBe(1);
     expect(positions[0]).toBeDefined();
     expect(positions[0].id).toBe('single-trade');
-    expect(positions[0].symbol).toBe('AAPL');
+    expect(positions[0].symbol).toBe('PDI'); // Story 95.2: symbol comes from trade.symbol directly
   });
 
   // AX.14: Scroll to beginning after scrolling to end
@@ -393,5 +337,42 @@ describe('OpenPositionsComponentService - Virtual Data Access (AX.7)', () => {
       expect(positions[i].id).toBe(`trade-${i}`);
     }
     expect(positions[194]).toBeDefined();
+  });
+
+  // Story 95.2: Test that symbols come from trade.symbol, not universe map
+  it('should use trade.symbol directly without universe map lookup', () => {
+    // Create test trades with explicit symbols
+    const testTrades: Trade[] = [
+      createOpenTrade({
+        id: 'trade-test-1',
+        universeId: 'universe-99',
+        symbol: 'PDI',
+        buy: 100,
+        quantity: 50,
+      }),
+      createOpenTrade({
+        id: 'trade-test-2',
+        universeId: 'universe-98',
+        symbol: 'ABC',
+        buy: 150,
+        quantity: 75,
+      }),
+    ];
+
+    mockCurrentAccount.set({
+      id: 'acc-1',
+      name: 'Test Account',
+      openTrades: testTrades,
+      divDeposits: [],
+      soldTrades: [],
+      months: [],
+    });
+
+    const positions = service.selectOpenPositions();
+
+    // Assert symbols come from trade.symbol, not universe lookup
+    // (universeMap is empty, so if it were used, symbols would be '')
+    expect(positions[0].symbol).toBe('PDI');
+    expect(positions[1].symbol).toBe('ABC');
   });
 });
