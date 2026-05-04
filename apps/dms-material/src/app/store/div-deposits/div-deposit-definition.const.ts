@@ -14,6 +14,7 @@ export const divDepositDefinition: SmartEntityDefinition<DivDeposit> = {
       accountId: '',
       divDepositTypeId: '',
       universeId: '',
+      symbol: null,
     };
   },
 };

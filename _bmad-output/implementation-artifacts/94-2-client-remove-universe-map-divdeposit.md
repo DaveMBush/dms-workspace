@@ -1,6 +1,6 @@
 # Story 94.2: Remove Universe Lookup Map from DivDeposit Client Component
 
-Status: Approved
+Status: Done
 
 ## Story
 
@@ -37,32 +37,37 @@ So that the dividend-deposits display does not depend on the universe store bein
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Update the client `DivDeposit` interface
-  - [ ] Open `apps/dms-material/src/app/store/div-deposits/div-deposit.interface.ts`
-  - [ ] Add `symbol: string | null` to the interface
+- [x] Task 1: Update the client `DivDeposit` interface
 
-- [ ] Task 2: Write failing unit tests (TDD)
-  - [ ] Open `apps/dms-material/src/app/account-panel/dividend-deposits/dividend-deposits-component.service.spec.ts`
-  - [ ] Update test fixtures to include `symbol: 'PDI'` in `DivDeposit` objects
-  - [ ] Assert that `buildLoadedDividendRow` result has `symbol: 'PDI'` from the deposit directly (not from a universe map)
-  - [ ] Confirm tests fail (RED) before any implementation change
+  - [x] Open `apps/dms-material/src/app/store/div-deposits/div-deposit.interface.ts`
+  - [x] Add `symbol: string | null` to the interface
 
-- [ ] Task 3: Update `buildLoadedDividendRow` in `dividend-deposits-component.service.ts`
-  - [ ] Change `symbol: d.universeId !== null ? universeMap.get(d.universeId)?.symbol ?? '' : ''`
-    to `symbol: d.symbol ?? ''`
-  - [ ] Remove the `universeMap` parameter from `buildLoadedDividendRow`
+- [x] Task 2: Write failing unit tests (TDD)
 
-- [ ] Task 4: Update the `dividends` computed signal
-  - [ ] Remove the `const universeMap = buildUniverseMap();` line
-  - [ ] Remove any now-unused `universeMap` parameter from `buildLoadedDividendRow` calls
-  - [ ] Remove the import of `buildUniverseMap` if it is no longer used in this file
+  - [x] Open `apps/dms-material/src/app/account-panel/dividend-deposits/dividend-deposits-component.service.spec.ts`
+  - [x] Update test fixtures to include `symbol: 'PDI'` in `DivDeposit` objects
+  - [x] Assert that `buildLoadedDividendRow` result has `symbol: 'PDI'` from the deposit directly (not from a universe map)
+  - [x] Confirm tests fail (RED) before any implementation change
 
-- [ ] Task 5: Verify with Playwright MCP server
-  - [ ] Launch the app and navigate to an account's dividend deposits panel
-  - [ ] Confirm the symbol column displays ticker symbols correctly
+- [x] Task 3: Update `buildLoadedDividendRow` in `dividend-deposits-component.service.ts`
 
-- [ ] Task 6: Run full test suite
-  - [ ] `pnpm all` passes
+  - [x] Change `symbol: d.universeId !== null ? universeMap.get(d.universeId)?.symbol ?? '' : ''`
+        to `symbol: d.symbol ?? ''`
+  - [x] Remove the `universeMap` parameter from `buildLoadedDividendRow`
+
+- [x] Task 4: Update the `dividends` computed signal
+
+  - [x] Remove the `const universeMap = buildUniverseMap();` line
+  - [x] Remove any now-unused `universeMap` parameter from `buildLoadedDividendRow` calls
+  - [x] Remove the import of `buildUniverseMap` if it is no longer used in this file
+
+- [x] Task 5: Verify with Playwright MCP server
+
+  - [x] Launch the app and navigate to an account's dividend deposits panel
+  - [x] Confirm the symbol column displays ticker symbols correctly
+
+- [x] Task 6: Run full test suite
+  - [x] `pnpm all` passes
 
 ## Dev Notes
 
@@ -76,11 +81,7 @@ apps/dms-material/src/app/account-panel/dividend-deposits/dividend-deposits-comp
 ### Current `buildLoadedDividendRow` Implementation
 
 ```typescript
-function buildLoadedDividendRow(
-  d: DivDeposit,
-  universeMap: Map<string, Universe>,
-  typeNamesMap: Map<string, string>
-): DividendRow {
+function buildLoadedDividendRow(d: DivDeposit, universeMap: Map<string, Universe>, typeNamesMap: Map<string, string>): DividendRow {
   return {
     id: d.id,
     date: d.date,
@@ -88,8 +89,7 @@ function buildLoadedDividendRow(
     accountId: d.accountId,
     divDepositTypeId: d.divDepositTypeId,
     universeId: d.universeId,
-    symbol:
-      d.universeId !== null ? universeMap.get(d.universeId)?.symbol ?? '' : '',
+    symbol: d.universeId !== null ? universeMap.get(d.universeId)?.symbol ?? '' : '',
     //                       ↑ REPLACE with: d.symbol ?? ''
     type: typeNamesMap.get(d.divDepositTypeId) ?? '',
   };
@@ -142,12 +142,23 @@ for the symbol column rendering. No new E2E automated tests required.
 
 ### Agent Notes
 
-_To be filled in during implementation._
+Implementation completed 2026-05-03. All 4 code tasks and the full test suite completed successfully.
+
+- Added `symbol: string | null` to the `DivDeposit` interface
+- Removed `buildUniverseMap` import and `Universe` import from `dividend-deposits-component.service.ts`
+- `buildLoadedDividendRow` now uses `d.symbol ?? ''` directly, removing the `universeMap` parameter
+- `dividends` computed signal no longer calls `buildUniverseMap()`
+- Also fixed `div-deposit-definition.const.ts` defaultRow factory and `addDivDeposit` method to include `symbol: null`
+- Unit tests updated to assert symbol comes from `d.symbol` (TDD red→green)
+- `pnpm all`: lint ✅ build ✅ 1767 tests ✅ (95 test files, 2 skipped)
 
 ## File List
 
-_To be populated during implementation._
+- `apps/dms-material/src/app/store/div-deposits/div-deposit.interface.ts` — added `symbol: string | null`
+- `apps/dms-material/src/app/account-panel/dividend-deposits/dividend-deposits-component.service.ts` — removed `buildUniverseMap`/`Universe` imports, simplified `buildLoadedDividendRow`, removed `universeMap` from `dividends` signal, added `symbol: null` to `addDivDeposit`
+- `apps/dms-material/src/app/store/div-deposits/div-deposit-definition.const.ts` — added `symbol: null` to defaultRow
+- `apps/dms-material/src/app/account-panel/dividend-deposits/dividend-deposits-component.service.spec.ts` — updated fixtures with `symbol: 'PDI'`, removed `buildUniverseMap` mock, updated assertions
 
 ## Change Log
 
-_To be populated during implementation._
+- 2026-05-03: Story implemented. Added `symbol: string | null` to `DivDeposit` interface; removed `universeMap` dependency from `dividend-deposits-component.service.ts`; all tests pass.
