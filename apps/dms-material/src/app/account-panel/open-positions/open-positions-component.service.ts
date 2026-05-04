@@ -127,8 +127,8 @@ export class OpenPositionsComponentService {
       quantity: trade.quantity,
       lastPrice,
       unrealizedGainPercent:
-        trade.buy > 0 ? ((lastPrice - trade.buy) / trade.buy) * 100 : 0,
-      unrealizedGain: (lastPrice - trade.buy) * trade.quantity,
+        lastPrice > 0 && trade.buy > 0 ? ((lastPrice - trade.buy) / trade.buy) * 100 : 0,
+      unrealizedGain: lastPrice > 0 ? (lastPrice - trade.buy) * trade.quantity : 0,
     };
   }
 
