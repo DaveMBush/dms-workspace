@@ -96,7 +96,7 @@ export class OpenPositionsComponentService {
 
   private transformTradeToPosition(trade: Trade): OpenPosition {
     // Story 95.2: Use safe defaults for Universe fields not available on Trade
-    // TODO: Follow-up story needed to extend Trade interface with these fields
+    // A follow-up story will extend the Trade interface with these fields
     const lastPrice = 0; // Universe.last_price not available on Trade
     const distribution = 0; // Universe.distribution not available on Trade
     const exDate = null; // Universe.ex_date not available on Trade
