@@ -63,8 +63,8 @@ So that the dividend-deposits display does not depend on the universe store bein
 
 - [x] Task 5: Verify with Playwright MCP server
 
-  - [ ] Launch the app and navigate to an account's dividend deposits panel
-  - [ ] Confirm the symbol column displays ticker symbols correctly
+  - [x] Launch the app and navigate to an account's dividend deposits panel
+  - [x] Confirm the symbol column displays ticker symbols correctly
 
 - [x] Task 6: Run full test suite
   - [x] `pnpm all` passes
