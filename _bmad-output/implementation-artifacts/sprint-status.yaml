@@ -547,8 +547,8 @@ development_status:
   epic-94-retrospective: optional
 
   # ── Epic 95: Return Symbol with Open Positions Data ──────────────────────
-  epic-95: backlog
-  95-1-enforce-symbol-required-in-trade: ready-for-dev
+  epic-95: in-progress
+  95-1-enforce-symbol-required-in-trade: review
   95-2-client-remove-universe-map-open-positions: ready-for-dev
   epic-95-retrospective: optional
 
