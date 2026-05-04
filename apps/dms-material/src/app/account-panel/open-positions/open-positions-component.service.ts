@@ -123,12 +123,18 @@ export class OpenPositionsComponentService {
       daysHeld,
       expectedYield,
       targetGain,
-      targetSell: trade.quantity > 0 ? targetGain / trade.quantity + trade.buy : trade.buy,
+      targetSell:
+        trade.quantity > 0
+          ? targetGain / trade.quantity + trade.buy
+          : trade.buy,
       quantity: trade.quantity,
       lastPrice,
       unrealizedGainPercent:
-        lastPrice > 0 && trade.buy > 0 ? ((lastPrice - trade.buy) / trade.buy) * 100 : 0,
-      unrealizedGain: lastPrice > 0 ? (lastPrice - trade.buy) * trade.quantity : 0,
+        lastPrice > 0 && trade.buy > 0
+          ? ((lastPrice - trade.buy) / trade.buy) * 100
+          : 0,
+      unrealizedGain:
+        lastPrice > 0 ? (lastPrice - trade.buy) * trade.quantity : 0,
     };
   }
 
