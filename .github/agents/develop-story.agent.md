@@ -15,7 +15,7 @@ Shell execution rule: every shell command in this workflow and its delegated ste
 
 ## PHASE 1: Pre-Development Validation
 
-1. Verify story file exists at `_bmad-output/implementation-artifacts/${story}.md`
+1. Verify story file exists at `_bmad-output/implementation-artifacts/${story}*.md`
    - If not found: Use the prompt skill to ask: `Story file _bmad-output/implementation-artifacts/${story}.md not found. Reply with stop, continue, or instructions.`
 2. Verify story status is "Ready for Development" (not "Draft")
    - If Draft: Use the prompt skill to ask: `Story ${story} is still in Draft status. Reply with stop, continue, or instructions.`
