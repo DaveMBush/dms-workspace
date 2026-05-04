@@ -201,9 +201,9 @@ describe('DividendDepositsComponentService - Virtual Data Access (AX.3)', () => 
     const dividends = service.dividends();
 
     // Symbols come from d.symbol directly, not from a universe lookup
-    expect(dividends[0].symbol).toBe('PDI');   // TEST_SYMBOLS[0]
-    expect(dividends[1].symbol).toBe('AAPL');  // TEST_SYMBOLS[1]
-    expect(dividends[2].symbol).toBe('MSFT');  // TEST_SYMBOLS[2]
+    expect(dividends[0].symbol).toBe('PDI'); // TEST_SYMBOLS[0]
+    expect(dividends[1].symbol).toBe('AAPL'); // TEST_SYMBOLS[1]
+    expect(dividends[2].symbol).toBe('MSFT'); // TEST_SYMBOLS[2]
   });
 
   // AC: Test that deposit type names are resolved for visible items

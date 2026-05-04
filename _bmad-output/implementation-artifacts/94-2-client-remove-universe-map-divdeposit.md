@@ -38,26 +38,31 @@ So that the dividend-deposits display does not depend on the universe store bein
 ## Tasks / Subtasks
 
 - [x] Task 1: Update the client `DivDeposit` interface
+
   - [x] Open `apps/dms-material/src/app/store/div-deposits/div-deposit.interface.ts`
   - [x] Add `symbol: string | null` to the interface
 
 - [x] Task 2: Write failing unit tests (TDD)
+
   - [x] Open `apps/dms-material/src/app/account-panel/dividend-deposits/dividend-deposits-component.service.spec.ts`
   - [x] Update test fixtures to include `symbol: 'PDI'` in `DivDeposit` objects
   - [x] Assert that `buildLoadedDividendRow` result has `symbol: 'PDI'` from the deposit directly (not from a universe map)
   - [x] Confirm tests fail (RED) before any implementation change
 
 - [x] Task 3: Update `buildLoadedDividendRow` in `dividend-deposits-component.service.ts`
+
   - [x] Change `symbol: d.universeId !== null ? universeMap.get(d.universeId)?.symbol ?? '' : ''`
-    to `symbol: d.symbol ?? ''`
+        to `symbol: d.symbol ?? ''`
   - [x] Remove the `universeMap` parameter from `buildLoadedDividendRow`
 
 - [x] Task 4: Update the `dividends` computed signal
+
   - [x] Remove the `const universeMap = buildUniverseMap();` line
   - [x] Remove any now-unused `universeMap` parameter from `buildLoadedDividendRow` calls
   - [x] Remove the import of `buildUniverseMap` if it is no longer used in this file
 
 - [x] Task 5: Verify with Playwright MCP server
+
   - [ ] Launch the app and navigate to an account's dividend deposits panel
   - [ ] Confirm the symbol column displays ticker symbols correctly
 
@@ -76,11 +81,7 @@ apps/dms-material/src/app/account-panel/dividend-deposits/dividend-deposits-comp
 ### Current `buildLoadedDividendRow` Implementation
 
 ```typescript
-function buildLoadedDividendRow(
-  d: DivDeposit,
-  universeMap: Map<string, Universe>,
-  typeNamesMap: Map<string, string>
-): DividendRow {
+function buildLoadedDividendRow(d: DivDeposit, universeMap: Map<string, Universe>, typeNamesMap: Map<string, string>): DividendRow {
   return {
     id: d.id,
     date: d.date,
@@ -88,8 +89,7 @@ function buildLoadedDividendRow(
     accountId: d.accountId,
     divDepositTypeId: d.divDepositTypeId,
     universeId: d.universeId,
-    symbol:
-      d.universeId !== null ? universeMap.get(d.universeId)?.symbol ?? '' : '',
+    symbol: d.universeId !== null ? universeMap.get(d.universeId)?.symbol ?? '' : '',
     //                       ↑ REPLACE with: d.symbol ?? ''
     type: typeNamesMap.get(d.divDepositTypeId) ?? '',
   };
@@ -142,7 +142,7 @@ for the symbol column rendering. No new E2E automated tests required.
 
 ### Agent Notes
 
-Implementation completed 2026-05-03. All 4 code tasks and the full test suite completed successfully. 
+Implementation completed 2026-05-03. All 4 code tasks and the full test suite completed successfully.
 
 - Added `symbol: string | null` to the `DivDeposit` interface
 - Removed `buildUniverseMap` import and `Universe` import from `dividend-deposits-component.service.ts`
