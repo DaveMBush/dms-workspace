@@ -1,3 +1,4 @@
+/* eslint-disable @smarttools/one-exported-item-per-file -- Route module exports types and utilities needed for testing */
 import { FastifyInstance } from 'fastify';
 
 import { prisma } from '../../prisma/prisma-client';
