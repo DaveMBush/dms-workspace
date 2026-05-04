@@ -1,13 +1,11 @@
 import { computed, inject, Injectable, Signal, signal } from '@angular/core';
 import { RowProxyDelete, SmartArray } from '@smarttools/smart-signals';
 
-import { buildUniverseMap } from '../../shared/build-universe-map.function';
 import { Account } from '../../store/accounts/account.interface';
 import { currentAccountSignalStore } from '../../store/current-account/current-account.signal-store';
 import { selectCurrentAccountSignal } from '../../store/current-account/select-current-account.signal';
 import { selectDivDepositTypes } from '../../store/div-deposit-types/selectors/select-div-deposit-types.function';
 import { DivDeposit } from '../../store/div-deposits/div-deposit.interface';
-import { Universe } from '../../store/universe/universe.interface';
 
 interface DividendRow {
   id: string;
@@ -46,7 +44,6 @@ function buildPlaceholderDividendRow(id: string): DividendRow {
 
 function buildLoadedDividendRow(
   d: DivDeposit,
-  universeMap: Map<string, Universe>,
   typeNamesMap: Map<string, string>
 ): DividendRow {
   return {
@@ -56,8 +53,7 @@ function buildLoadedDividendRow(
     accountId: d.accountId,
     divDepositTypeId: d.divDepositTypeId,
     universeId: d.universeId,
-    symbol:
-      d.universeId !== null ? universeMap.get(d.universeId)?.symbol ?? '' : '',
+    symbol: d.symbol ?? '',
     type: typeNamesMap.get(d.divDepositTypeId) ?? '',
   };
 }
@@ -85,7 +81,6 @@ export class DividendDepositsComponentService {
     if (totalLength === 0) {
       return [];
     }
-    const universeMap = buildUniverseMap();
     const typesList = selectDivDepositTypes();
     const typeNamesMap = new Map<string, string>();
     for (let ti = 0; ti < typesList.length; ti++) {
@@ -100,7 +95,7 @@ export class DividendDepositsComponentService {
         result[i] = buildPlaceholderDividendRow(`placeholder-${String(i)}`);
         continue;
       }
-      result[i] = buildLoadedDividendRow(d, universeMap, typeNamesMap);
+      result[i] = buildLoadedDividendRow(d, typeNamesMap);
     }
     return result;
   });
@@ -127,6 +122,7 @@ export class DividendDepositsComponentService {
           accountId: account.id,
           divDepositTypeId: dividend.divDepositTypeId,
           universeId: dividend.universeId ?? null,
+          symbol: null,
         },
         account
       );

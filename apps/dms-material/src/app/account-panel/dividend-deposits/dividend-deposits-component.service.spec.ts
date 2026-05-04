@@ -12,15 +12,7 @@ vi.mock('../../store/current-account/select-current-account.signal', () => ({
   selectCurrentAccountSignal: vi.fn(),
 }));
 
-vi.mock('../../shared/build-universe-map.function', () => ({
-  buildUniverseMap: vi.fn().mockReturnValue(
-    new Map([
-      ['universe-1', { symbol: 'AAPL' }],
-      ['universe-2', { symbol: 'MSFT' }],
-      ['universe-3', { symbol: 'GOOG' }],
-    ])
-  ),
-}));
+// buildUniverseMap should no longer be called after Story 94.2 refactor
 
 vi.mock(
   '../../store/div-deposit-types/selectors/select-div-deposit-types.function',
@@ -70,9 +62,13 @@ function createDivDeposit(overrides: Partial<DivDeposit> = {}): DivDeposit {
     accountId: 'acc-1',
     divDepositTypeId: 'type-1',
     universeId: 'universe-1',
+    symbol: 'PDI',
     ...overrides,
   };
 }
+
+// Story 94.2: symbols are now embedded directly on each DivDeposit row
+const TEST_SYMBOLS = ['PDI', 'AAPL', 'MSFT'];
 
 // Helper to create a mock SmartArray-like array with specified length
 function createMockDivDepositsArray(count: number): DivDeposit[] {
@@ -84,6 +80,7 @@ function createMockDivDepositsArray(count: number): DivDeposit[] {
         amount: (i + 1) * 10,
         divDepositTypeId: i % 2 === 0 ? 'type-1' : 'type-2',
         universeId: `universe-${(i % 3) + 1}`,
+        symbol: TEST_SYMBOLS[i % 3],
       })
     );
   }
@@ -197,18 +194,16 @@ describe('DividendDepositsComponentService - Virtual Data Access (AX.3)', () => 
     expect(dividends.length).toBe(200);
   });
 
-  // AC: Test that universe symbols are resolved for visible items
-  it('should resolve universe symbols for items within visible range', () => {
+  // AC Story 94.2: symbols come directly from d.symbol, not from universeMap
+  it('should resolve symbols directly from deposit symbol field (not universeMap)', () => {
     service.visibleRange.set({ start: 0, end: 10 });
 
     const dividends = service.dividends();
 
-    // First item has universeId: 'universe-1' → symbol: 'AAPL'
-    expect(dividends[0].symbol).toBe('AAPL');
-    // Second item has universeId: 'universe-2' → symbol: 'MSFT'
-    expect(dividends[1].symbol).toBe('MSFT');
-    // Third item has universeId: 'universe-3' → symbol: 'GOOG'
-    expect(dividends[2].symbol).toBe('GOOG');
+    // Symbols come from d.symbol directly, not from a universe lookup
+    expect(dividends[0].symbol).toBe('PDI');   // TEST_SYMBOLS[0]
+    expect(dividends[1].symbol).toBe('AAPL');  // TEST_SYMBOLS[1]
+    expect(dividends[2].symbol).toBe('MSFT');  // TEST_SYMBOLS[2]
   });
 
   // AC: Test that deposit type names are resolved for visible items

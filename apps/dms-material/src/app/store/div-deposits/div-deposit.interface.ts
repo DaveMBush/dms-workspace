@@ -5,4 +5,5 @@ export interface DivDeposit {
   accountId: string;
   divDepositTypeId: string;
   universeId: string | null;
+  symbol: string | null;
 }
