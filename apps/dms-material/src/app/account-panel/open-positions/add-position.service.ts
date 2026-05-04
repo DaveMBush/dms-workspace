@@ -88,6 +88,7 @@ export class AddPositionService {
     return {
       id: 'new',
       universeId: result.universeId!,
+      symbol: result.symbol ?? '',
       quantity: result.quantity!,
       buy: result.price!,
       buy_date: result.purchase_date!,

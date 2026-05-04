@@ -1,14 +1,15 @@
+/* eslint-disable @smarttools/one-exported-item-per-file -- Route module exports types and utilities needed for testing */
 import { FastifyInstance } from 'fastify';
 
 import { prisma } from '../../prisma/prisma-client';
 import registerGetClosedTrades from './get-closed-trades/index';
 import registerGetOpenTrades from './get-open-trades/index';
 
-interface Trade {
+export interface Trade {
   id: string;
   universeId: string;
   accountId: string;
-  symbol?: string;
+  symbol: string;
   buy: number;
   sell: number;
   buy_date: string;
@@ -16,7 +17,7 @@ interface Trade {
   quantity: number;
 }
 
-interface TradeWithUniverseAndDates {
+export interface TradeWithUniverseAndDates {
   id: string;
   universeId: string;
   accountId: string;
@@ -40,12 +41,12 @@ interface NewTrade {
   quantity: number;
 }
 
-function mapTradeToResponse(trade: TradeWithUniverseAndDates): Trade {
+export function mapTradeToResponse(trade: TradeWithUniverseAndDates): Trade {
   return {
     id: trade.id,
     universeId: trade.universeId,
     accountId: trade.accountId,
-    symbol: trade.universe?.symbol,
+    symbol: trade.universe?.symbol ?? '',
     buy: trade.buy,
     sell: trade.sell,
     buy_date: trade.buy_date.toISOString(),
