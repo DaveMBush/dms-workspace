@@ -209,16 +209,28 @@ export class DivDepModalComponent implements OnInit, AfterViewInit {
   }
 
   onSubmit(): void {
-    // If user typed a valid symbol but submitted without blurring, resolve now.
-    if (!this.isDepositType$() && this.selectedUniverseId === null) {
-      this.tryResolveFromControl();
-    }
-    if (
-      this.form.invalid ||
-      (!this.isDepositType$() && this.selectedUniverseId === null)
-    ) {
-      this.form.markAllAsTouched();
-      return;
+    if (this.isEditMode) {
+      // In edit mode the symbol field is readonly — only validate the
+      // user-editable fields (date, amount, type).
+      const dateInvalid = this.form.get('date')!.invalid;
+      const amountInvalid = this.form.get('amount')!.invalid;
+      const typeInvalid = this.form.get('divDepositTypeId')!.invalid;
+      if (dateInvalid || amountInvalid || typeInvalid) {
+        this.form.markAllAsTouched();
+        return;
+      }
+    } else {
+      // Add mode: validate symbol and check universe resolution.
+      if (!this.isDepositType$() && this.selectedUniverseId === null) {
+        this.tryResolveFromControl();
+      }
+      if (
+        this.form.invalid ||
+        (!this.isDepositType$() && this.selectedUniverseId === null)
+      ) {
+        this.form.markAllAsTouched();
+        return;
+      }
     }
 
     interface FormValue {
