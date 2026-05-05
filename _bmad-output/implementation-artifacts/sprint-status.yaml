@@ -37,7 +37,7 @@
 #     E1 → E3 → E4(TS rules) → E2 → E5 → E4(template rules) → E6 → E7 → E8
 
 generated: 2026-03-17
-last_updated: 2026-05-01
+last_updated: 2026-05-04
 project_key: NOKEY
 tracking_system: file-system
 story_location: _bmad-output/implementation-artifacts
@@ -549,7 +549,7 @@ development_status:
   # ── Epic 95: Return Symbol with Open Positions Data ──────────────────────
   epic-95: in-progress
   95-1-enforce-symbol-required-in-trade: review
-  95-2-client-remove-universe-map-open-positions: ready-for-dev
+  95-2-client-remove-universe-map-open-positions: review
   epic-95-retrospective: optional
 
   # ── Epic 96: Return Symbol with Sold Positions Data ──────────────────────
