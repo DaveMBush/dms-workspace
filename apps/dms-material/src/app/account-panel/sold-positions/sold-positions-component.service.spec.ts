@@ -12,16 +12,6 @@ vi.mock('../../store/current-account/select-current-account.signal', () => ({
   selectCurrentAccountSignal: vi.fn(),
 }));
 
-vi.mock('../../shared/build-universe-map.function', () => ({
-  buildUniverseMap: vi.fn().mockReturnValue(
-    new Map([
-      ['universe-1', { symbol: 'AAPL' }],
-      ['universe-2', { symbol: 'MSFT' }],
-      ['universe-3', { symbol: 'GOOG' }],
-    ])
-  ),
-}));
-
 vi.mock('../../store/current-account/current-account.signal-store', () => ({
   currentAccountSignalStore: {
     selectCurrentAccountId: signal(''),
@@ -76,6 +66,7 @@ function createSoldTrade(overrides: Partial<Trade> = {}): Trade {
     id: 'trade-1',
     universeId: 'universe-1',
     accountId: 'acc-1',
+    symbol: 'PDI',
     buy: 100,
     sell: 150,
     buy_date: '2024-01-15',
@@ -87,6 +78,7 @@ function createSoldTrade(overrides: Partial<Trade> = {}): Trade {
 
 // Helper to create a mock SmartArray-like array of sold trades
 function createMockSoldTradesArray(count: number): Trade[] {
+  const symbols = ['AAPL', 'MSFT', 'GOOG'];
   const items: Trade[] = [];
   for (let i = 0; i < count; i++) {
     items.push(
@@ -96,6 +88,7 @@ function createMockSoldTradesArray(count: number): Trade[] {
         sell: (i + 1) * 15,
         quantity: (i + 1) * 5,
         universeId: `universe-${(i % 3) + 1}`,
+        symbol: symbols[i % 3],
         buy_date: '2024-01-15',
         sell_date: '2024-06-15',
       })
@@ -210,17 +203,17 @@ describe('SoldPositionsComponentService - Virtual Data Access (AX.11)', () => {
     expect(positions.length).toBe(200);
   });
 
-  // AC: Test that universe symbols are resolved for visible items
-  it('should resolve universe symbols for items within visible range', () => {
+  // AC: Test that trade.symbol is used directly
+  it('should use trade.symbol directly for sold positions', () => {
     service.visibleRange.set({ start: 0, end: 10 });
 
     const positions = service.selectSoldPositions();
 
-    // First item has universeId: 'universe-1' → symbol: 'AAPL'
+    // First item has trade.symbol: 'AAPL'
     expect(positions[0].symbol).toBe('AAPL');
-    // Second item has universeId: 'universe-2' → symbol: 'MSFT'
+    // Second item has trade.symbol: 'MSFT'
     expect(positions[1].symbol).toBe('MSFT');
-    // Third item has universeId: 'universe-3' → symbol: 'GOOG'
+    // Third item has trade.symbol: 'GOOG'
     expect(positions[2].symbol).toBe('GOOG');
   });
 
@@ -292,6 +285,7 @@ describe('SoldPositionsComponentService - Virtual Data Access (AX.11)', () => {
           sell: 150,
           quantity: 10,
           universeId: 'universe-1',
+          symbol: 'AAPL',
         }),
       ],
       openTrades: [],
