@@ -5,7 +5,6 @@ import {
   Component,
   computed,
   DestroyRef,
-  effect,
   inject,
   OnInit,
   signal,
@@ -69,14 +68,6 @@ export class DivDepModalComponent implements OnInit, AfterViewInit {
   isLoading$ = signal(false);
   readonly selectedDepositTypeId = signal('');
 
-  // Reactively re-apply symbol validators whenever the deposit-type signal
-  // changes (e.g., when SmartNgRX loads the deposit-types list after ngOnInit)
-  private readonly validatorsEffect = effect(
-    function applySymbolValidatorsOnTypeLoad(this: DivDepModalComponent): void {
-      this.updateSymbolValidators();
-    }.bind(this)
-  );
-
   private selectedUniverseId: string | null = null;
   private selectedSymbolId: string | null = null;
 
@@ -84,20 +75,6 @@ export class DivDepModalComponent implements OnInit, AfterViewInit {
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signal
   readonly depositTypes$ = computed(() => selectDivDepositTypes());
-
-  // True once deposit-type definitions have been loaded from SmartNgRX.
-  // The submit button is disabled until this is true so that isDepositType$
-  // and symbol validators are computed against complete data.
-  // Uses a name-check loop (SmartNgRX loading proxies have name:'') to
-  // distinguish real type rows from in-flight placeholders.
-  // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signal
-  readonly isDepositTypesLoaded$ = computed(() => {
-    const types = selectDivDepositTypes();
-    for (let i = 0; i < types.length; i++) {
-      if (types[i].name !== '') return true;
-    }
-    return false;
-  });
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signal
   readonly isDepositType$ = computed(() => {
@@ -207,28 +184,16 @@ export class DivDepModalComponent implements OnInit, AfterViewInit {
   }
 
   onSubmit(): void {
-    if (this.isEditMode) {
-      // In edit mode the symbol field is readonly — only validate the
-      // user-editable fields (date, amount, type).
-      const dateInvalid = this.form.get('date')!.invalid;
-      const amountInvalid = this.form.get('amount')!.invalid;
-      const typeInvalid = this.form.get('divDepositTypeId')!.invalid;
-      if (dateInvalid || amountInvalid || typeInvalid) {
-        this.form.markAllAsTouched();
-        return;
-      }
-    } else {
-      // Add mode: validate symbol and check universe resolution.
-      if (!this.isDepositType$() && this.selectedUniverseId === null) {
-        this.tryResolveFromControl();
-      }
-      if (
-        this.form.invalid ||
-        (!this.isDepositType$() && this.selectedUniverseId === null)
-      ) {
-        this.form.markAllAsTouched();
-        return;
-      }
+    // If user typed a valid symbol but submitted without blurring, resolve now.
+    if (!this.isDepositType$() && this.selectedUniverseId === null) {
+      this.tryResolveFromControl();
+    }
+    if (
+      this.form.invalid ||
+      (!this.isDepositType$() && this.selectedUniverseId === null)
+    ) {
+      this.form.markAllAsTouched();
+      return;
     }
 
     interface FormValue {
@@ -284,10 +249,7 @@ export class DivDepModalComponent implements OnInit, AfterViewInit {
 
   private updateSymbolValidators(): void {
     const symbolCtrl = this.form.get('symbol')!;
-    if (this.isEditMode) {
-      // In edit mode the symbol input is readonly — no validation needed.
-      symbolCtrl.clearValidators();
-    } else if (this.isDepositType$()) {
+    if (this.isDepositType$()) {
       symbolCtrl.removeValidators(Validators.required);
     } else {
       symbolCtrl.addValidators(Validators.required);
