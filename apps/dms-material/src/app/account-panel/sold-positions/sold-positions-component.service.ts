@@ -1,12 +1,10 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 
-import { buildUniverseMap } from '../../shared/build-universe-map.function';
 import { currentAccountSignalStore } from '../../store/current-account/current-account.signal-store';
 import { selectCurrentAccountSignal } from '../../store/current-account/select-current-account.signal';
 import { ClosedPosition } from '../../store/trades/closed-position.interface';
 import { differenceInTradingDays } from '../../store/trades/difference-in-trading-days.function';
 import { Trade } from '../../store/trades/trade.interface';
-import { Universe } from '../../store/universe/universe.interface';
 import { classifyCapitalGain } from './classify-capital-gain.function';
 
 /**
@@ -34,13 +32,13 @@ function buildPlaceholderClosedPosition(id: string): ClosedPosition {
   };
 }
 
-function buildPartialClosedPosition(trade: Trade): ClosedPosition {
+function buildFullClosedPosition(trade: Trade): ClosedPosition {
   const capitalGain = (trade.sell - trade.buy) * trade.quantity;
   const capitalGainPercentage =
     trade.buy !== 0 ? ((trade.sell - trade.buy) / trade.buy) * 100 : 0;
   return {
     id: trade.id,
-    symbol: trade.symbol ?? '',
+    symbol: trade.symbol,
     buy: trade.buy,
     buy_date: trade.buy_date,
     quantity: trade.quantity,
@@ -50,28 +48,6 @@ function buildPartialClosedPosition(trade: Trade): ClosedPosition {
       trade.sell_date !== undefined
         ? differenceInTradingDays(trade.buy_date, trade.sell_date)
         : 0,
-    capitalGain,
-    capitalGainPercentage,
-    gainLossType: classifyCapitalGain(capitalGain),
-  };
-}
-
-function buildFullClosedPosition(
-  trade: Trade,
-  universe: Universe
-): ClosedPosition {
-  const capitalGain = (trade.sell - trade.buy) * trade.quantity;
-  const capitalGainPercentage =
-    trade.buy !== 0 ? ((trade.sell - trade.buy) / trade.buy) * 100 : 0;
-  return {
-    id: trade.id,
-    symbol: universe.symbol,
-    buy: trade.buy,
-    buy_date: trade.buy_date,
-    quantity: trade.quantity,
-    sell: trade.sell,
-    sell_date: trade.sell_date,
-    daysHeld: differenceInTradingDays(trade.buy_date, trade.sell_date!),
     capitalGain,
     capitalGainPercentage,
     gainLossType: classifyCapitalGain(capitalGain),
@@ -98,7 +74,6 @@ export class SoldPositionsComponentService {
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signal
   selectSoldPositions = computed(() => {
     const trades = this.trades();
-    const universeMap = buildUniverseMap();
 
     const totalLength = trades.length;
     if (totalLength === 0) {
@@ -115,11 +90,7 @@ export class SoldPositionsComponentService {
         );
         continue;
       }
-      const universe = universeMap.get(trade.universeId);
-      soldPositions[i] =
-        universe === undefined
-          ? buildPartialClosedPosition(trade)
-          : buildFullClosedPosition(trade, universe);
+      soldPositions[i] = buildFullClosedPosition(trade);
     }
 
     return soldPositions;
