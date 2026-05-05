@@ -87,7 +87,7 @@
     mat-raised-button
     color="primary"
     (click)="onSubmit()"
-    [disabled]="isLoading$()"
+    [disabled]="isLoading$() || !isDepositTypesLoaded$()"
     class="bg-green-600 hover:bg-green-700"
   >
     <mat-icon>check</mat-icon>

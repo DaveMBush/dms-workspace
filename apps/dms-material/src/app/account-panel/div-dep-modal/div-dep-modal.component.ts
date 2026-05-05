@@ -87,6 +87,14 @@ export class DivDepModalComponent implements OnInit, AfterViewInit {
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signal
   readonly depositTypes$ = computed(() => selectDivDepositTypes());
 
+  // True once deposit-type definitions have been loaded from SmartNgRX.
+  // The submit button is disabled until this is true so that isDepositType$
+  // and symbol validators are computed against complete data.
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signal
+  readonly isDepositTypesLoaded$ = computed(
+    () => selectDivDepositTypes().length > 0
+  );
+
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signal
   readonly isDepositType$ = computed(() => {
     const types = selectDivDepositTypes();
