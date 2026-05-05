@@ -109,7 +109,7 @@ export class OpenPositionsComponentService {
     const targetGain = 0; // Requires distribution and ex_date calculations
 
     const sellDate =
-      trade.sell_date !== undefined
+      typeof trade.sell_date === 'string' && trade.sell_date.trim() !== ''
         ? this.parseDateString(trade.sell_date)
         : undefined;
     return {
