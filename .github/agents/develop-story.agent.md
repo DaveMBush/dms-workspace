@@ -74,6 +74,8 @@ This keeps the story workflow context small while the validation loop handles:
 
 **CRITICAL**: Do not ignore or skip any validation failures because they are not related to this story. All failures must be addressed and resolved before proceeding to the next phase regardless of where or when it originated. This ensures the overall quality and stability of the codebase is maintained. If a test fails it is either due to being missed in a previous story or because something we did in this story caused a regression. In either case, it must be fixed before proceeding.
 
+**CRITICAL**: The validation subagent must **never** ask the user for permission to fix a failing test — not for unit tests, not for e2e tests, not for any check. All failures are fixed automatically and unconditionally. Do not use the prompt skill to ask whether a fix is appropriate. Just fix it.
+
 If the validation subagent returns `VALIDATION FAILED`, use the prompt skill to ask: `Phase 3 validation failed for ${story}: <reason>. Reply with stop, continue, or instructions.`
 
 ## PHASE 4: QA Review

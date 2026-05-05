@@ -41,10 +41,10 @@ Before running the loop, read:
    4. `pnpm dupcheck`
    5. `pnpm format`
 5. Self-review changed files (`git diff --name-only origin/main...HEAD`) against `.github/instructions/code-review.md` and fix any findings
-6. Auto-fix failures and code-review findings when possible.
+6. **ALWAYS fix ALL failures automatically — never ask the user for permission to fix a failing test or check.** This applies unconditionally to unit tests, e2e tests, lint errors, and code-review findings, regardless of whether they appear to be pre-existing, unrelated to the current story, or introduced by this story. Every test must pass before reporting success. There is no category of test failure that warrants asking the user whether to fix it.
 7. If any fix is applied, restart the loop from step 1.
 8. All steps must pass in a single uninterrupted iteration before reporting success.
-9. For all human interaction, use the prompt skill so the question is shown in chat and execution waits for the user's answer.
+9. For all human interaction, use the prompt skill so the question is shown in chat and execution waits for the user's answer. **Exception: never use the prompt skill to ask whether to fix a failing test or check — just fix it.**
 10. Do not ask for confirmation when the loop completes successfully; return control immediately to the caller.
 
 ## Completion Contract
