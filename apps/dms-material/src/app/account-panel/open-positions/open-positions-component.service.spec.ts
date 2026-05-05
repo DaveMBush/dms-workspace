@@ -12,11 +12,6 @@ vi.mock('../../store/current-account/select-current-account.signal', () => ({
   selectCurrentAccountSignal: vi.fn(),
 }));
 
-vi.mock('../../shared/build-universe-map.function', () => ({
-  // Story 95.2: Return empty map to ensure code doesn't depend on universe lookup
-  buildUniverseMap: vi.fn().mockReturnValue(new Map()),
-}));
-
 vi.mock('../../store/current-account/current-account.signal-store', () => ({
   currentAccountSignalStore: {
     selectCurrentAccountId: signal(''),
