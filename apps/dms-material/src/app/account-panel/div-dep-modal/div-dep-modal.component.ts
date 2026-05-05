@@ -90,10 +90,16 @@ export class DivDepModalComponent implements OnInit, AfterViewInit {
   // True once deposit-type definitions have been loaded from SmartNgRX.
   // The submit button is disabled until this is true so that isDepositType$
   // and symbol validators are computed against complete data.
+  // Uses a name-check loop (SmartNgRX loading proxies have name:'') to
+  // distinguish real type rows from in-flight placeholders.
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signal
-  readonly isDepositTypesLoaded$ = computed(
-    () => selectDivDepositTypes().length > 0
-  );
+  readonly isDepositTypesLoaded$ = computed(() => {
+    const types = selectDivDepositTypes();
+    for (let i = 0; i < types.length; i++) {
+      if (types[i].name !== '') return true;
+    }
+    return false;
+  });
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signal
   readonly isDepositType$ = computed(() => {
