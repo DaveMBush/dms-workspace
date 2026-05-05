@@ -274,7 +274,10 @@ export class DivDepModalComponent implements OnInit, AfterViewInit {
 
   private updateSymbolValidators(): void {
     const symbolCtrl = this.form.get('symbol')!;
-    if (this.isDepositType$()) {
+    if (this.isEditMode) {
+      // In edit mode the symbol input is readonly — no validation needed.
+      symbolCtrl.clearValidators();
+    } else if (this.isDepositType$()) {
       symbolCtrl.removeValidators(Validators.required);
     } else {
       symbolCtrl.addValidators(Validators.required);
