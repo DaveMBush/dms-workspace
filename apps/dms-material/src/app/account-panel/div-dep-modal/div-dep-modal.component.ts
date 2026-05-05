@@ -5,6 +5,7 @@ import {
   Component,
   computed,
   DestroyRef,
+  effect,
   inject,
   OnInit,
   signal,
@@ -67,6 +68,16 @@ export class DivDepModalComponent implements OnInit, AfterViewInit {
 
   isLoading$ = signal(false);
   readonly selectedDepositTypeId = signal('');
+
+  // Reactively re-apply symbol validators whenever the deposit-type signal
+  // changes (e.g., when SmartNgRX loads the deposit-types list after ngOnInit)
+  private readonly validatorsEffect = effect(
+    function applySymbolValidatorsOnTypeLoad(
+      this: DivDepModalComponent
+    ): void {
+      this.updateSymbolValidators();
+    }.bind(this)
+  );
 
   private selectedUniverseId: string | null = null;
   private selectedSymbolId: string | null = null;
