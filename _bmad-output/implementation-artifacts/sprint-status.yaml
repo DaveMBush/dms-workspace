@@ -560,7 +560,7 @@ development_status:
 
   # ── Epic 97: Restore Missing Open Positions Computed Fields on the Server ──
   epic-97: backlog
-  97-1-research-open-positions-fields-history: approved
+  97-1-research-open-positions-fields-history: done
   97-2-implement-open-positions-fields-server: approved
   97-3-move-target-sell-to-server: approved
   97-4-e2e-open-positions-computed-fields: approved

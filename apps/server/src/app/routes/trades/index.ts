@@ -15,6 +15,10 @@ export interface Trade {
   buy_date: string;
   sell_date?: string;
   quantity: number;
+  expected_dollars: number;
+  last_dollars_unrealized_gain_percent: number;
+  unrealized_gain_dollars: number;
+  target_gain: number;
 }
 
 export interface TradeWithUniverseAndDates {
@@ -28,6 +32,9 @@ export interface TradeWithUniverseAndDates {
   quantity: number;
   universe: {
     symbol: string;
+    last_price: number;
+    distribution: number;
+    distributions_per_year: number;
   } | null;
 }
 
@@ -42,6 +49,25 @@ interface NewTrade {
 }
 
 export function mapTradeToResponse(trade: TradeWithUniverseAndDates): Trade {
+  const lastPrice = trade.universe?.last_price ?? 0;
+  const distribution = trade.universe?.distribution ?? 0;
+  const distributionsPerYear = trade.universe?.distributions_per_year ?? 0;
+
+  const expected_dollars =
+    distribution > 0 && distributionsPerYear > 0
+      ? trade.quantity * distribution * distributionsPerYear
+      : 0;
+
+  const last_dollars_unrealized_gain_percent =
+    lastPrice > 0 && trade.buy > 0
+      ? ((lastPrice - trade.buy) / trade.buy) * 100
+      : 0;
+
+  const unrealized_gain_dollars =
+    lastPrice > 0 ? (lastPrice - trade.buy) * trade.quantity : 0;
+
+  const target_gain = distribution > 0 ? trade.quantity * distribution : 0;
+
   return {
     id: trade.id,
     universeId: trade.universeId,
@@ -52,6 +78,10 @@ export function mapTradeToResponse(trade: TradeWithUniverseAndDates): Trade {
     buy_date: trade.buy_date.toISOString(),
     sell_date: trade.sell_date?.toISOString(),
     quantity: trade.quantity,
+    expected_dollars,
+    last_dollars_unrealized_gain_percent,
+    unrealized_gain_dollars,
+    target_gain,
   };
 }
 
@@ -73,7 +103,16 @@ function handleGetTradesRoute(fastify: FastifyInstance): void {
       }
       const trades = await prisma.trades.findMany({
         where: { id: { in: ids } },
-        include: { universe: { select: { symbol: true } } },
+        include: {
+          universe: {
+            select: {
+              symbol: true,
+              last_price: true,
+              distribution: true,
+              distributions_per_year: true,
+            },
+          },
+        },
       });
       return trades.map(function mapTrade(trade) {
         return mapTradeToResponse(trade);
@@ -103,7 +142,16 @@ function handleAddTradeRoute(fastify: FastifyInstance): void {
       });
       const trade = await prisma.trades.findMany({
         where: { id: { in: [result.id] } },
-        include: { universe: { select: { symbol: true } } },
+        include: {
+          universe: {
+            select: {
+              symbol: true,
+              last_price: true,
+              distribution: true,
+              distributions_per_year: true,
+            },
+          },
+        },
       });
       reply.status(200).send(
         trade.map(function mapCreatedTrade(t) {
@@ -156,7 +204,16 @@ function handleUpdateTradeRoute(fastify: FastifyInstance): void {
       });
       const trades = await prisma.trades.findMany({
         where: { id },
-        include: { universe: { select: { symbol: true } } },
+        include: {
+          universe: {
+            select: {
+              symbol: true,
+              last_price: true,
+              distribution: true,
+              distributions_per_year: true,
+            },
+          },
+        },
       });
       reply.status(200).send(
         trades.map(function mapUpdatedTrade(t) {

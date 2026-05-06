@@ -1,6 +1,6 @@
 # Story 97.2: Implement Expected$, Last$ Unrlz Gain%, Unrlz Gain$, and Target Gain on the Server
 
-Status: Approved
+Status: Done
 
 ## Story
 
@@ -44,69 +44,69 @@ So that I can see my position economics without the columns appearing blank.
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Confirm prerequisites (AC: #1)
-  - [ ] Verify Story 97.1 is complete and that
+- [x] Task 1: Confirm prerequisites (AC: #1)
+  - [x] Verify Story 97.1 is complete and that
         `_bmad-output/implementation-artifacts/open-positions-fields-research.md` exists
-  - [ ] Read the research doc and confirm the exact formulas, source columns, and
+  - [x] Read the research doc and confirm the exact formulas, source columns, and
         precision/rounding rules for: Expected$, Last$ Unrlz Gain%, Unrlz Gain$, Target Gain
-  - [ ] Confirm which `Universe` columns must be selected via Prisma `include` (see Dev
+  - [x] Confirm which `Universe` columns must be selected via Prisma `include` (see Dev
         Notes — likely `last_price`, `distribution`, `distributions_per_year`)
 
-- [ ] Task 2: Write failing unit tests FIRST — RED phase (AC: #4)
-  - [ ] In `apps/server/src/app/routes/trades/index.spec.ts`, extend the existing
+- [x] Task 2: Write failing unit tests FIRST — RED phase (AC: #4)
+  - [x] In `apps/server/src/app/routes/trades/index.spec.ts`, extend the existing
         `mapTradeToResponse` describe block
-  - [ ] Add a happy-path test for each of the 4 new fields:
+  - [x] Add a happy-path test for each of the 4 new fields:
         `expected_dollars`, `last_dollars_unrealized_gain_percent`,
         `unrealized_gain_dollars`, `target_gain` — each asserts the exact numeric value
         produced by the formula in the research doc
-  - [ ] Add a "missing-dependency → 0" test for each field (e.g., `universe` is `null`, or a
+  - [x] Add a "missing-dependency → 0" test for each field (e.g., `universe` is `null`, or a
         required universe field such as `last_price` is `0`/`null` per the research doc's
         edge-case rules)
-  - [ ] Run `pnpm nx test server` and confirm the new tests fail (RED) before continuing
+  - [x] Run `pnpm nx test server` and confirm the new tests fail (RED) before continuing
 
-- [ ] Task 3: Extend the server `Trade` interface and `TradeWithUniverseAndDates` shape
+- [x] Task 3: Extend the server `Trade` interface and `TradeWithUniverseAndDates` shape
         (AC: #1, #2)
-  - [ ] In `apps/server/src/app/routes/trades/index.ts`, add to the exported `Trade`
+  - [x] In `apps/server/src/app/routes/trades/index.ts`, add to the exported `Trade`
         interface (in declaration order, after `quantity`):
         `expected_dollars: number;`,
         `last_dollars_unrealized_gain_percent: number;`,
         `unrealized_gain_dollars: number;`,
         `target_gain: number;`
-  - [ ] Extend `TradeWithUniverseAndDates.universe` to include any additional `Universe`
+  - [x] Extend `TradeWithUniverseAndDates.universe` to include any additional `Universe`
         columns the formulas need (e.g., `last_price`, `distribution`,
         `distributions_per_year`) so the Prisma row type matches the `include` in Task 5
-  - [ ] All four fields are REQUIRED `number` (never optional, never `undefined`)
+  - [x] All four fields are REQUIRED `number` (never optional, never `undefined`)
 
-- [ ] Task 4: Implement `mapTradeToResponse` formulas (AC: #1, #2)
-  - [ ] In `mapTradeToResponse`, compute each of the four fields using the exact formulas
+- [x] Task 4: Implement `mapTradeToResponse` formulas (AC: #1, #2)
+  - [x] In `mapTradeToResponse`, compute each of the four fields using the exact formulas
         from the research doc
-  - [ ] When any required dependency is missing (`universe` is `null`, or a required field
+  - [x] When any required dependency is missing (`universe` is `null`, or a required field
         is `null`/`undefined`), return `0` for that field — DO NOT omit and DO NOT return
         `undefined` or `NaN`
-  - [ ] Preserve existing behavior for `id`, `universeId`, `accountId`, `symbol`, `buy`,
+  - [x] Preserve existing behavior for `id`, `universeId`, `accountId`, `symbol`, `buy`,
         `sell`, `buy_date`, `sell_date`, `quantity`
 
-- [ ] Task 5: Update Prisma `include` clauses for the four call sites (AC: #1)
-  - [ ] In `apps/server/src/app/routes/trades/index.ts`, the `prisma.trades.findMany` calls
+- [x] Task 5: Update Prisma `include` clauses for the four call sites (AC: #1)
+  - [x] In `apps/server/src/app/routes/trades/index.ts`, the `prisma.trades.findMany` calls
         in `handleGetTradesRoute`, `handleAddTradeRoute`, and `handleUpdateTradeRoute`
         currently use `include: { universe: { select: { symbol: true } } }`. Extend each
         `select` to include every additional `Universe` column required by the formulas
         (e.g., `last_price: true, distribution: true, distributions_per_year: true`)
-  - [ ] If `apps/server/src/app/routes/trades/get-open-trades/index.ts` and
+  - [x] If `apps/server/src/app/routes/trades/get-open-trades/index.ts` and
         `apps/server/src/app/routes/trades/get-closed-trades/index.ts` also call
         `mapTradeToResponse`, extend their `include`/`select` the same way (read those
         files first to confirm)
 
-- [ ] Task 6: Mirror the client `Trade` interface (AC: #3)
-  - [ ] In `apps/dms-material/src/app/store/trades/trade.interface.ts`, add the same four
+- [x] Task 6: Mirror the client `Trade` interface (AC: #3)
+  - [x] In `apps/dms-material/src/app/store/trades/trade.interface.ts`, add the same four
         required `number` fields with identical names so the client type matches the server
         wire format
 
-- [ ] Task 7: GREEN phase — confirm all tests pass and quality gates green (AC: #4, #6)
-  - [ ] `pnpm nx test server` — new tests pass
-  - [ ] `pnpm all` — full repo passes
-  - [ ] `pnpm format` — passes
-  - [ ] Spot-check: launch the app locally (or run the existing open-positions e2e if
+- [x] Task 7: GREEN phase — confirm all tests pass and quality gates green (AC: #4, #6)
+  - [x] `pnpm nx test server` — new tests pass
+  - [x] `pnpm all` — full repo passes
+  - [x] `pnpm format` — passes
+  - [x] Spot-check: launch the app locally (or run the existing open-positions e2e if
         available — note the dedicated e2e is Story 97.4) and confirm the four columns
         render non-blank
 
@@ -244,12 +244,20 @@ This story covers `R61`, `R62`, `R63`, `R64` from the requirements inventory in
 
 ### Agent Notes
 
-_To be filled in during implementation._
+Implementation complete. All four new fields added to server `Trade` interface, `TradeWithUniverseAndDates`, and `mapTradeToResponse` using exact formulas from the research doc. Prisma selects extended in all three call sites (handleGetTradesRoute, handleAddTradeRoute, handleUpdateTradeRoute). Client interface mirrored. 17 new tests added (4 happy-path + 13 edge-case) covering all formulas and missing-dependency → 0 guards. get-open-trades and get-closed-trades were verified to use their own local mapToResponse and do not call mapTradeToResponse, so no changes were needed there.
 
 ## File List
 
-_To be populated during implementation._
+- `apps/server/src/app/routes/trades/index.ts` — extended `Trade` interface, `TradeWithUniverseAndDates`, `mapTradeToResponse`, and all three Prisma `include`/`select` blocks
+- `apps/server/src/app/routes/trades/index.spec.ts` — added 17 new tests (4 describe blocks, each with happy-path + edge cases)
+- `apps/dms-material/src/app/store/trades/trade.interface.ts` — mirrored four new required `number` fields
 
 ## Change Log
 
-_To be populated during implementation._
+- Added `expected_dollars`, `last_dollars_unrealized_gain_percent`, `unrealized_gain_dollars`, `target_gain` to server `Trade` interface
+- Widened `TradeWithUniverseAndDates.universe` to include `last_price`, `distribution`, `distributions_per_year`
+- Implemented four formulas in `mapTradeToResponse` with `?? 0` edge-case guards
+- Extended all three `prisma.trades.findMany` selects to include new Universe columns
+- Mirrored four fields in client `Trade` interface
+- Updated existing test fixtures to include new universe fields (TypeScript compilation)
+- Added 17 new unit tests covering formulas and null/zero guards

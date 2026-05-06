@@ -9,4 +9,8 @@ export interface Trade {
   buy_date: string;
   sell_date?: string;
   quantity: number;
+  expected_dollars: number;
+  last_dollars_unrealized_gain_percent: number;
+  unrealized_gain_dollars: number;
+  target_gain: number;
 }
