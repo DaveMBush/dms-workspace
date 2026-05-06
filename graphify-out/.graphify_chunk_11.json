@@ -1,0 +1,363 @@
+{
+  "nodes": [
+    {
+      "id": "shared_basetable_universe_table_variation_dark_chromium",
+      "label": "BaseTable Universe Table Variation (Dark, Chromium)",
+      "file_type": "image",
+      "source_file": "apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/shared-basetable--universe-table-variation-dark-chromium-linux.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "shared_basetable_universe_table_variation_dark_firefox",
+      "label": "BaseTable Universe Table Variation (Dark, Firefox)",
+      "file_type": "image",
+      "source_file": "apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/shared-basetable--universe-table-variation-dark-firefox-linux.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "shared_basetable_universe_table_variation_light_chromium",
+      "label": "BaseTable Universe Table Variation (Light, Chromium)",
+      "file_type": "image",
+      "source_file": "apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/shared-basetable--universe-table-variation-light-chromium-linux.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "shared_basetable_universe_table_variation_light_firefox",
+      "label": "BaseTable Universe Table Variation (Light, Firefox)",
+      "file_type": "image",
+      "source_file": "apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/shared-basetable--universe-table-variation-light-firefox-linux.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "pages_chartdemo_dark_mode",
+      "label": "ChartDemo Page (Dark Mode)",
+      "file_type": "image",
+      "source_file": "apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/pages-chartdemo--dark-mode.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "pages_chartdemo_light_mode",
+      "label": "ChartDemo Page (Light Mode)",
+      "file_type": "image",
+      "source_file": "apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/pages-chartdemo--light-mode.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "pages_cusipcache_dark_mode",
+      "label": "CUSIP Cache Page (Dark Mode)",
+      "file_type": "image",
+      "source_file": "apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/pages-cusipcache--dark-mode.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "pages_cusipcache_light_mode",
+      "label": "CUSIP Cache Page (Light Mode)",
+      "file_type": "image",
+      "source_file": "apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/pages-cusipcache--light-mode.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "pages_dashboard_dark_mode",
+      "label": "Dashboard Page (Dark Mode)",
+      "file_type": "image",
+      "source_file": "apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/pages-dashboard--dark-mode.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "pages_dashboard_light_mode",
+      "label": "Dashboard Page (Light Mode)",
+      "file_type": "image",
+      "source_file": "apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/pages-dashboard--light-mode.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "component_basetable",
+      "label": "BaseTable Component",
+      "file_type": "image",
+      "source_file": "apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/shared-basetable--universe-table-variation-dark-chromium-linux.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "component_universe_table",
+      "label": "Universe Table (Stock Data Grid)",
+      "file_type": "image",
+      "source_file": "apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/shared-basetable--universe-table-variation-dark-chromium-linux.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "component_storybook_error",
+      "label": "Storybook Render Error (Missing Context)",
+      "file_type": "image",
+      "source_file": "apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/pages-chartdemo--dark-mode.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "data_domain_equities",
+      "label": "Equities/Stock Market Data Domain",
+      "file_type": "image",
+      "source_file": "apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/shared-basetable--universe-table-variation-dark-chromium-linux.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "shared_basetable_universe_table_variation_dark_chromium",
+      "target": "shared_basetable_universe_table_variation_dark_firefox",
+      "relation": "semantically_similar_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/shared-basetable--universe-table-variation-dark-chromium-linux.png",
+      "source_location": null,
+      "weight": 0.95
+    },
+    {
+      "source": "shared_basetable_universe_table_variation_dark_chromium",
+      "target": "shared_basetable_universe_table_variation_light_chromium",
+      "relation": "semantically_similar_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/shared-basetable--universe-table-variation-dark-chromium-linux.png",
+      "source_location": null,
+      "weight": 0.9
+    },
+    {
+      "source": "shared_basetable_universe_table_variation_light_chromium",
+      "target": "shared_basetable_universe_table_variation_light_firefox",
+      "relation": "semantically_similar_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/shared-basetable--universe-table-variation-light-chromium-linux.png",
+      "source_location": null,
+      "weight": 0.95
+    },
+    {
+      "source": "shared_basetable_universe_table_variation_dark_chromium",
+      "target": "component_basetable",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/shared-basetable--universe-table-variation-dark-chromium-linux.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "shared_basetable_universe_table_variation_dark_firefox",
+      "target": "component_basetable",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/shared-basetable--universe-table-variation-dark-firefox-linux.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "shared_basetable_universe_table_variation_light_chromium",
+      "target": "component_basetable",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/shared-basetable--universe-table-variation-light-chromium-linux.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "shared_basetable_universe_table_variation_light_firefox",
+      "target": "component_basetable",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/shared-basetable--universe-table-variation-light-firefox-linux.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "component_basetable",
+      "target": "component_universe_table",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/shared-basetable--universe-table-variation-dark-chromium-linux.png",
+      "source_location": null,
+      "weight": 0.85
+    },
+    {
+      "source": "component_universe_table",
+      "target": "data_domain_equities",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/shared-basetable--universe-table-variation-dark-chromium-linux.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "pages_chartdemo_dark_mode",
+      "target": "component_storybook_error",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/pages-chartdemo--dark-mode.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "pages_chartdemo_light_mode",
+      "target": "component_storybook_error",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/pages-chartdemo--light-mode.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "pages_cusipcache_dark_mode",
+      "target": "component_storybook_error",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/pages-cusipcache--dark-mode.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "pages_cusipcache_light_mode",
+      "target": "component_storybook_error",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/pages-cusipcache--light-mode.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "pages_dashboard_dark_mode",
+      "target": "component_storybook_error",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/pages-dashboard--dark-mode.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "pages_dashboard_light_mode",
+      "target": "component_storybook_error",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/pages-dashboard--light-mode.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "pages_chartdemo_dark_mode",
+      "target": "pages_chartdemo_light_mode",
+      "relation": "semantically_similar_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/pages-chartdemo--dark-mode.png",
+      "source_location": null,
+      "weight": 0.95
+    },
+    {
+      "source": "pages_cusipcache_dark_mode",
+      "target": "pages_cusipcache_light_mode",
+      "relation": "semantically_similar_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/pages-cusipcache--dark-mode.png",
+      "source_location": null,
+      "weight": 0.95
+    },
+    {
+      "source": "pages_dashboard_dark_mode",
+      "target": "pages_dashboard_light_mode",
+      "relation": "semantically_similar_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/pages-dashboard--dark-mode.png",
+      "source_location": null,
+      "weight": 0.95
+    },
+    {
+      "source": "pages_chartdemo_dark_mode",
+      "target": "pages_cusipcache_dark_mode",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.7,
+      "source_file": "apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/pages-chartdemo--dark-mode.png",
+      "source_location": null,
+      "weight": 0.7
+    },
+    {
+      "source": "pages_chartdemo_dark_mode",
+      "target": "pages_dashboard_dark_mode",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.7,
+      "source_file": "apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/pages-chartdemo--dark-mode.png",
+      "source_location": null,
+      "weight": 0.7
+    }
+  ],
+  "hyperedges": [],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

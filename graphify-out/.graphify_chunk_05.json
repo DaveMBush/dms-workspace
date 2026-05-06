@@ -1,0 +1,429 @@
+{
+  "nodes": [
+    {
+      "id": "validate_addsymbol_validateaddsymbolrequest",
+      "label": "Validate Add Symbol Request Function",
+      "file_type": "document",
+      "source_file": "apps/server/coverage/apps/server/app/routes/universe/add-symbol/validate-add-symbol-request.function.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "addsymbol_route_coverage_index",
+      "label": "Add Symbol Route Coverage Index",
+      "file_type": "document",
+      "source_file": "apps/server/coverage/apps/server/app/routes/universe/add-symbol/index.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "auth_db_optimizer_authdatabaseoptimizerservice",
+      "label": "Auth Database Optimizer Service",
+      "file_type": "document",
+      "source_file": "apps/server/coverage/apps/server/app/services/auth-database-optimizer.service.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cusip_audit_log_cusipauditlogservice",
+      "label": "CUSIP Audit Log Service",
+      "file_type": "document",
+      "source_file": "apps/server/coverage/apps/server/app/services/cusip-audit-log.service.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cusip_cache_cleanup_cusipcachecleanupservice",
+      "label": "CUSIP Cache Cleanup Service",
+      "file_type": "document",
+      "source_file": "apps/server/coverage/apps/server/app/services/cusip-cache-cleanup.service.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "db_performance_databaseperformanceservice",
+      "label": "Database Performance Service",
+      "file_type": "document",
+      "source_file": "apps/server/coverage/apps/server/app/services/database-performance.service.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "services_coverage_index",
+      "label": "App Services Coverage Index",
+      "file_type": "document",
+      "source_file": "apps/server/coverage/apps/server/app/services/index.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "extract_user_payload_extractuserfrompayload",
+      "label": "Extract User From Payload Function",
+      "file_type": "document",
+      "source_file": "apps/server/coverage/apps/server/app/utils/extract-user-from-payload.function.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "app_utils_coverage_index",
+      "label": "App Utils Coverage Index",
+      "file_type": "document",
+      "source_file": "apps/server/coverage/apps/server/app/utils/index.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "recalc_universe_volatility_recalculateuniversevolatility",
+      "label": "Recalculate Universe Volatility Function",
+      "file_type": "document",
+      "source_file": "apps/server/coverage/apps/server/app/volatility/recalculate-universe-volatility.function.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "volatility_calculation_calculatevolatility",
+      "label": "Volatility Calculation Function",
+      "file_type": "document",
+      "source_file": "apps/server/coverage/apps/server/app/volatility/volatility-calculation.function.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "volatility_coverage_index",
+      "label": "Volatility Coverage Index",
+      "file_type": "document",
+      "source_file": "apps/server/coverage/apps/server/app/volatility/index.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "server_coverage_index",
+      "label": "Server Coverage Index",
+      "file_type": "document",
+      "source_file": "apps/server/coverage/apps/server/index.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "tracing_tracingmiddleware",
+      "label": "Tracing Middleware",
+      "file_type": "document",
+      "source_file": "apps/server/coverage/apps/server/middleware/tracing.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "middleware_coverage_index",
+      "label": "Middleware Coverage Index",
+      "file_type": "document",
+      "source_file": "apps/server/coverage/apps/server/middleware/index.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "logger_logger",
+      "label": "Logger",
+      "file_type": "document",
+      "source_file": "apps/server/coverage/apps/server/utils/logger.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "structured_logger_structuredlogger",
+      "label": "Structured Logger",
+      "file_type": "document",
+      "source_file": "apps/server/coverage/apps/server/utils/structured-logger.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "thirteenf_cusip_thirteenfcusipservice",
+      "label": "13F CUSIP Service",
+      "file_type": "document",
+      "source_file": "apps/server/coverage/apps/server/utils/thirteenf-cusip.service.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "server_utils_coverage_index",
+      "label": "Server Utils Coverage Index",
+      "file_type": "document",
+      "source_file": "apps/server/coverage/apps/server/utils/index.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "account_detail_accountdetailcomponent",
+      "label": "Account Detail Component",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/account-panel/account-detail.component.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "recalc_universe_volatility_recalculateuniversevolatility",
+      "target": "volatility_calculation_calculatevolatility",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/server/coverage/apps/server/app/volatility/recalculate-universe-volatility.function.ts.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "thirteenf_cusip_thirteenfcusipservice",
+      "target": "structured_logger_structuredlogger",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/server/coverage/apps/server/utils/thirteenf-cusip.service.ts.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "logger_logger",
+      "target": "structured_logger_structuredlogger",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "apps/server/coverage/apps/server/utils/logger.ts.html",
+      "source_location": null,
+      "weight": 0.8
+    },
+    {
+      "source": "validate_addsymbol_validateaddsymbolrequest",
+      "target": "addsymbol_route_coverage_index",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/server/coverage/apps/server/app/routes/universe/add-symbol/validate-add-symbol-request.function.ts.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "extract_user_payload_extractuserfrompayload",
+      "target": "auth_db_optimizer_authdatabaseoptimizerservice",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.7,
+      "source_file": "apps/server/coverage/apps/server/app/utils/extract-user-from-payload.function.ts.html",
+      "source_location": null,
+      "weight": 0.7
+    },
+    {
+      "source": "cusip_audit_log_cusipauditlogservice",
+      "target": "cusip_cache_cleanup_cusipcachecleanupservice",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "apps/server/coverage/apps/server/app/services/cusip-audit-log.service.ts.html",
+      "source_location": null,
+      "weight": 0.8
+    },
+    {
+      "source": "thirteenf_cusip_thirteenfcusipservice",
+      "target": "cusip_audit_log_cusipauditlogservice",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.7,
+      "source_file": "apps/server/coverage/apps/server/utils/thirteenf-cusip.service.ts.html",
+      "source_location": null,
+      "weight": 0.7
+    },
+    {
+      "source": "thirteenf_cusip_thirteenfcusipservice",
+      "target": "cusip_cache_cleanup_cusipcachecleanupservice",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.7,
+      "source_file": "apps/server/coverage/apps/server/utils/thirteenf-cusip.service.ts.html",
+      "source_location": null,
+      "weight": 0.7
+    },
+    {
+      "source": "auth_db_optimizer_authdatabaseoptimizerservice",
+      "target": "db_performance_databaseperformanceservice",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.7,
+      "source_file": "apps/server/coverage/apps/server/app/services/auth-database-optimizer.service.ts.html",
+      "source_location": null,
+      "weight": 0.7
+    },
+    {
+      "source": "tracing_tracingmiddleware",
+      "target": "logger_logger",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "apps/server/coverage/apps/server/middleware/tracing.ts.html",
+      "source_location": null,
+      "weight": 0.8
+    },
+    {
+      "source": "tracing_tracingmiddleware",
+      "target": "middleware_coverage_index",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/server/coverage/apps/server/middleware/tracing.ts.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "recalc_universe_volatility_recalculateuniversevolatility",
+      "target": "volatility_coverage_index",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/server/coverage/apps/server/app/volatility/recalculate-universe-volatility.function.ts.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "logger_logger",
+      "target": "server_utils_coverage_index",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/server/coverage/apps/server/utils/logger.ts.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "structured_logger_structuredlogger",
+      "target": "server_utils_coverage_index",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/server/coverage/apps/server/utils/structured-logger.ts.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "thirteenf_cusip_thirteenfcusipservice",
+      "target": "server_utils_coverage_index",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/server/coverage/apps/server/utils/thirteenf-cusip.service.ts.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "extract_user_payload_extractuserfrompayload",
+      "target": "app_utils_coverage_index",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/server/coverage/apps/server/app/utils/extract-user-from-payload.function.ts.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "auth_db_optimizer_authdatabaseoptimizerservice",
+      "target": "services_coverage_index",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/server/coverage/apps/server/app/services/auth-database-optimizer.service.ts.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cusip_audit_log_cusipauditlogservice",
+      "target": "services_coverage_index",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/server/coverage/apps/server/app/services/cusip-audit-log.service.ts.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cusip_cache_cleanup_cusipcachecleanupservice",
+      "target": "services_coverage_index",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/server/coverage/apps/server/app/services/cusip-cache-cleanup.service.ts.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "db_performance_databaseperformanceservice",
+      "target": "services_coverage_index",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/server/coverage/apps/server/app/services/database-performance.service.ts.html",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": [],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

@@ -1,0 +1,342 @@
+{
+  "nodes": [
+    {
+      "id": "shared-basetablecomponent--default",
+      "label": "BaseTableComponent - Default State",
+      "file_type": "image",
+      "source_file": "apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/shared-basetablecomponent--default.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "shared-basetablecomponent--empty-state",
+      "label": "BaseTableComponent - Empty State",
+      "file_type": "image",
+      "source_file": "apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/shared-basetablecomponent--empty-state.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "shared-basetablecomponent--loading",
+      "label": "BaseTableComponent - Loading State",
+      "file_type": "image",
+      "source_file": "apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/shared-basetablecomponent--loading.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "shared-basetablecomponent--with-selection",
+      "label": "BaseTableComponent - With Selection State",
+      "file_type": "image",
+      "source_file": "apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/shared-basetablecomponent--with-selection.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "shared-confirmdialogcomponent--default",
+      "label": "ConfirmDialogComponent - Default State",
+      "file_type": "image",
+      "source_file": "apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/shared-confirmdialogcomponent--default.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "shared-confirmdialogcomponent--delete-confirmation",
+      "label": "ConfirmDialogComponent - Delete Confirmation",
+      "file_type": "image",
+      "source_file": "apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/shared-confirmdialogcomponent--delete-confirmation.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "shared-editablecellcomponent--currency-format",
+      "label": "EditableCellComponent - Currency Format",
+      "file_type": "image",
+      "source_file": "apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/shared-editablecellcomponent--currency-format.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "shared-editablecellcomponent--decimal-format",
+      "label": "EditableCellComponent - Decimal Format",
+      "file_type": "image",
+      "source_file": "apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/shared-editablecellcomponent--decimal-format.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "shared-editablecellcomponent--default",
+      "label": "EditableCellComponent - Default State",
+      "file_type": "image",
+      "source_file": "apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/shared-editablecellcomponent--default.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "shared-editablecellcomponent--with-min-max",
+      "label": "EditableCellComponent - With Min/Max Validation",
+      "file_type": "image",
+      "source_file": "apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/shared-editablecellcomponent--with-min-max.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "shared-basetablecomponent",
+      "label": "BaseTableComponent",
+      "file_type": "image",
+      "source_file": "apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/shared-basetablecomponent--default.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "shared-confirmdialogcomponent",
+      "label": "ConfirmDialogComponent",
+      "file_type": "image",
+      "source_file": "apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/shared-confirmdialogcomponent--default.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "shared-editablecellcomponent",
+      "label": "EditableCellComponent",
+      "file_type": "image",
+      "source_file": "apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/shared-editablecellcomponent--default.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "shared-basetablecomponent--default",
+      "target": "shared-basetablecomponent",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/shared-basetablecomponent--default.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "shared-basetablecomponent--empty-state",
+      "target": "shared-basetablecomponent",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/shared-basetablecomponent--empty-state.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "shared-basetablecomponent--loading",
+      "target": "shared-basetablecomponent",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/shared-basetablecomponent--loading.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "shared-basetablecomponent--with-selection",
+      "target": "shared-basetablecomponent",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/shared-basetablecomponent--with-selection.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "shared-basetablecomponent--empty-state",
+      "target": "shared-basetablecomponent--default",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/shared-basetablecomponent--empty-state.png",
+      "source_location": null,
+      "weight": 0.8
+    },
+    {
+      "source": "shared-basetablecomponent--loading",
+      "target": "shared-basetablecomponent--default",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/shared-basetablecomponent--loading.png",
+      "source_location": null,
+      "weight": 0.8
+    },
+    {
+      "source": "shared-basetablecomponent--with-selection",
+      "target": "shared-basetablecomponent--default",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/shared-basetablecomponent--with-selection.png",
+      "source_location": null,
+      "weight": 0.8
+    },
+    {
+      "source": "shared-confirmdialogcomponent--default",
+      "target": "shared-confirmdialogcomponent",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/shared-confirmdialogcomponent--default.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "shared-confirmdialogcomponent--delete-confirmation",
+      "target": "shared-confirmdialogcomponent",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/shared-confirmdialogcomponent--delete-confirmation.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "shared-confirmdialogcomponent--delete-confirmation",
+      "target": "shared-confirmdialogcomponent--default",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/shared-confirmdialogcomponent--delete-confirmation.png",
+      "source_location": null,
+      "weight": 0.8
+    },
+    {
+      "source": "shared-editablecellcomponent--default",
+      "target": "shared-editablecellcomponent",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/shared-editablecellcomponent--default.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "shared-editablecellcomponent--currency-format",
+      "target": "shared-editablecellcomponent",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/shared-editablecellcomponent--currency-format.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "shared-editablecellcomponent--decimal-format",
+      "target": "shared-editablecellcomponent",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/shared-editablecellcomponent--decimal-format.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "shared-editablecellcomponent--with-min-max",
+      "target": "shared-editablecellcomponent",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/shared-editablecellcomponent--with-min-max.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "shared-editablecellcomponent--currency-format",
+      "target": "shared-editablecellcomponent--default",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/shared-editablecellcomponent--currency-format.png",
+      "source_location": null,
+      "weight": 0.8
+    },
+    {
+      "source": "shared-editablecellcomponent--decimal-format",
+      "target": "shared-editablecellcomponent--default",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/shared-editablecellcomponent--decimal-format.png",
+      "source_location": null,
+      "weight": 0.8
+    },
+    {
+      "source": "shared-editablecellcomponent--with-min-max",
+      "target": "shared-editablecellcomponent--default",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/shared-editablecellcomponent--with-min-max.png",
+      "source_location": null,
+      "weight": 0.8
+    },
+    {
+      "source": "shared-editablecellcomponent--currency-format",
+      "target": "shared-editablecellcomponent--decimal-format",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.7,
+      "source_file": "apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/shared-editablecellcomponent--currency-format.png",
+      "source_location": null,
+      "weight": 0.7
+    },
+    {
+      "source": "shared-editablecellcomponent",
+      "target": "shared-basetablecomponent",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.7,
+      "source_file": "apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/shared-editablecellcomponent--default.png",
+      "source_location": null,
+      "weight": 0.7
+    }
+  ],
+  "hyperedges": [],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

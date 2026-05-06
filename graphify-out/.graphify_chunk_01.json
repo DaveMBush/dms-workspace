@@ -1,0 +1,525 @@
+{
+  "nodes": [
+    {
+      "id": "accountdetail_template",
+      "label": "AccountDetailComponent Template",
+      "file_type": "document",
+      "source_file": "apps/dms-material/src/app/account-panel/account-detail.component.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "accountpanel_template",
+      "label": "AccountPanelComponent Template",
+      "file_type": "document",
+      "source_file": "apps/dms-material/src/app/account-panel/account-panel.component.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "divdepmodal_template",
+      "label": "DivDepModalComponent Template",
+      "file_type": "document",
+      "source_file": "apps/dms-material/src/app/account-panel/div-dep-modal/div-dep-modal.component.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "dividenddeposits_template",
+      "label": "DividendDepositsComponent Template",
+      "file_type": "document",
+      "source_file": "apps/dms-material/src/app/account-panel/dividend-deposits/dividend-deposits.component.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "addpositiondialog_template",
+      "label": "AddPositionDialogComponent Template",
+      "file_type": "document",
+      "source_file": "apps/dms-material/src/app/account-panel/open-positions/add-position-dialog/add-position-dialog.component.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "openpositions_template",
+      "label": "OpenPositionsComponent Template",
+      "file_type": "document",
+      "source_file": "apps/dms-material/src/app/account-panel/open-positions/open-positions.component.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "soldpositions_template",
+      "label": "SoldPositionsComponent Template",
+      "file_type": "document",
+      "source_file": "apps/dms-material/src/app/account-panel/sold-positions/sold-positions.component.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "accountnav_template",
+      "label": "Account Navigation Sidebar Template",
+      "file_type": "document",
+      "source_file": "apps/dms-material/src/app/accounts/account.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "app_template",
+      "label": "App Root Template",
+      "file_type": "document",
+      "source_file": "apps/dms-material/src/app/app.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "sessionwarning_template",
+      "label": "SessionWarningComponent Template",
+      "file_type": "document",
+      "source_file": "apps/dms-material/src/app/auth/components/session-warning/session-warning.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "login_template",
+      "label": "LoginComponent Template",
+      "file_type": "document",
+      "source_file": "apps/dms-material/src/app/auth/login/login.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "mocklogin_template",
+      "label": "MockLoginComponent Template",
+      "file_type": "document",
+      "source_file": "apps/dms-material/src/app/auth/mock-login.component.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "mockprotected_template",
+      "label": "MockProtectedComponent Template",
+      "file_type": "document",
+      "source_file": "apps/dms-material/src/app/auth/mock-protected.component.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "mockpublic_template",
+      "label": "MockPublicComponent Template",
+      "file_type": "document",
+      "source_file": "apps/dms-material/src/app/auth/mock-public.component.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "accountactionscard_template",
+      "label": "AccountActionsCard Template",
+      "file_type": "document",
+      "source_file": "apps/dms-material/src/app/auth/profile/components/account-actions-card.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "emailchangecard_template",
+      "label": "EmailChangeCard Template",
+      "file_type": "document",
+      "source_file": "apps/dms-material/src/app/auth/profile/components/email-change-card.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "profileinfocard_template",
+      "label": "ProfileInfoCard Template",
+      "file_type": "document",
+      "source_file": "apps/dms-material/src/app/auth/profile/components/profile-info-card.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "sessioninfocard_template",
+      "label": "SessionInfoCard Template",
+      "file_type": "document",
+      "source_file": "apps/dms-material/src/app/auth/profile/components/session-info-card.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "profile_template",
+      "label": "ProfileComponent Template",
+      "file_type": "document",
+      "source_file": "apps/dms-material/src/app/auth/profile/profile.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "dashboard_template",
+      "label": "DashboardComponent Template",
+      "file_type": "document",
+      "source_file": "apps/dms-material/src/app/dashboard/dashboard.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "dmsbasetable_component",
+      "label": "DmsBaseTable Component",
+      "file_type": "document",
+      "source_file": "apps/dms-material/src/app/account-panel/dividend-deposits/dividend-deposits.component.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "dmssymbolautocomplete_component",
+      "label": "DmsSymbolAutocomplete Component",
+      "file_type": "document",
+      "source_file": "apps/dms-material/src/app/account-panel/div-dep-modal/div-dep-modal.component.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "dmseditablecell_component",
+      "label": "DmsEditableCell Component",
+      "file_type": "document",
+      "source_file": "apps/dms-material/src/app/account-panel/open-positions/open-positions.component.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "dmseditabledatecell_component",
+      "label": "DmsEditableDateCell Component",
+      "file_type": "document",
+      "source_file": "apps/dms-material/src/app/account-panel/open-positions/open-positions.component.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "dmsnodeeditor_component",
+      "label": "DmsNodeEditor Component",
+      "file_type": "document",
+      "source_file": "apps/dms-material/src/app/accounts/account.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "dmspasswordchangecard_component",
+      "label": "DmsPasswordChangeCard Component",
+      "file_type": "document",
+      "source_file": "apps/dms-material/src/app/auth/profile/profile.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "accountpanel_template",
+      "target": "openpositions_template",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "apps/dms-material/src/app/account-panel/account-panel.component.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "accountpanel_template",
+      "target": "soldpositions_template",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "apps/dms-material/src/app/account-panel/account-panel.component.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "accountpanel_template",
+      "target": "dividenddeposits_template",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "apps/dms-material/src/app/account-panel/account-panel.component.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "accountpanel_template",
+      "target": "accountdetail_template",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "apps/dms-material/src/app/account-panel/account-panel.component.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "divdepmodal_template",
+      "target": "dmssymbolautocomplete_component",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material/src/app/account-panel/div-dep-modal/div-dep-modal.component.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "divdepmodal_template",
+      "target": "dividenddeposits_template",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "apps/dms-material/src/app/account-panel/div-dep-modal/div-dep-modal.component.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "dividenddeposits_template",
+      "target": "dmsbasetable_component",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material/src/app/account-panel/dividend-deposits/dividend-deposits.component.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "addpositiondialog_template",
+      "target": "dmssymbolautocomplete_component",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material/src/app/account-panel/open-positions/add-position-dialog/add-position-dialog.component.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "addpositiondialog_template",
+      "target": "openpositions_template",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "apps/dms-material/src/app/account-panel/open-positions/add-position-dialog/add-position-dialog.component.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "openpositions_template",
+      "target": "dmsbasetable_component",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material/src/app/account-panel/open-positions/open-positions.component.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "openpositions_template",
+      "target": "dmseditablecell_component",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material/src/app/account-panel/open-positions/open-positions.component.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "openpositions_template",
+      "target": "dmseditabledatecell_component",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material/src/app/account-panel/open-positions/open-positions.component.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "soldpositions_template",
+      "target": "dmsbasetable_component",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material/src/app/account-panel/sold-positions/sold-positions.component.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "openpositions_template",
+      "target": "soldpositions_template",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "apps/dms-material/src/app/account-panel/open-positions/open-positions.component.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "accountnav_template",
+      "target": "dmsnodeeditor_component",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material/src/app/accounts/account.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "profile_template",
+      "target": "profileinfocard_template",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material/src/app/auth/profile/profile.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "profile_template",
+      "target": "sessioninfocard_template",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material/src/app/auth/profile/profile.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "profile_template",
+      "target": "dmspasswordchangecard_component",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material/src/app/auth/profile/profile.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "profile_template",
+      "target": "emailchangecard_template",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material/src/app/auth/profile/profile.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "profile_template",
+      "target": "accountactionscard_template",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material/src/app/auth/profile/profile.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "profileinfocard_template",
+      "target": "sessioninfocard_template",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.7,
+      "source_file": "apps/dms-material/src/app/auth/profile/profile.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "emailchangecard_template",
+      "target": "accountactionscard_template",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.65,
+      "source_file": "apps/dms-material/src/app/auth/profile/profile.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "sessionwarning_template",
+      "target": "login_template",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.7,
+      "source_file": "apps/dms-material/src/app/auth/components/session-warning/session-warning.html",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": [],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

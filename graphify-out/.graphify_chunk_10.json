@@ -1,0 +1,371 @@
+{
+  "nodes": [
+    {
+      "id": "introduction_welcome_light_chromium",
+      "label": "Introduction Welcome Story (Light, Chromium)",
+      "file_type": "image",
+      "source_file": "apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/introduction--welcome-light-chromium-linux.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "introduction_welcome_light_firefox",
+      "label": "Introduction Welcome Story (Light, Firefox)",
+      "file_type": "image",
+      "source_file": "apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/introduction--welcome-light-firefox-linux.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "basetable_default_dark_chromium",
+      "label": "BaseTable Default State (Dark Theme, Chromium)",
+      "file_type": "image",
+      "source_file": "apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/shared-basetable--default-dark-chromium-linux.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "basetable_default_dark_firefox",
+      "label": "BaseTable Default State (Dark Theme, Firefox)",
+      "file_type": "image",
+      "source_file": "apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/shared-basetable--default-dark-firefox-linux.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "basetable_default_light_chromium",
+      "label": "BaseTable Default State (Light Theme, Chromium)",
+      "file_type": "image",
+      "source_file": "apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/shared-basetable--default-light-chromium-linux.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "basetable_default_light_firefox",
+      "label": "BaseTable Default State (Light Theme, Firefox)",
+      "file_type": "image",
+      "source_file": "apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/shared-basetable--default-light-firefox-linux.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "basetable_empty_state_dark_chromium",
+      "label": "BaseTable Empty State (Dark Theme, Chromium)",
+      "file_type": "image",
+      "source_file": "apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/shared-basetable--empty-state-dark-chromium-linux.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "basetable_empty_state_dark_firefox",
+      "label": "BaseTable Empty State (Dark Theme, Firefox)",
+      "file_type": "image",
+      "source_file": "apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/shared-basetable--empty-state-dark-firefox-linux.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "basetable_empty_state_light_chromium",
+      "label": "BaseTable Empty State (Light Theme, Chromium)",
+      "file_type": "image",
+      "source_file": "apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/shared-basetable--empty-state-light-chromium-linux.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "basetable_empty_state_light_firefox",
+      "label": "BaseTable Empty State (Light Theme, Firefox)",
+      "file_type": "image",
+      "source_file": "apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/shared-basetable--empty-state-light-firefox-linux.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "basetable_component",
+      "label": "BaseTable Shared UI Component",
+      "file_type": "image",
+      "source_file": "apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/shared-basetable--default-light-chromium-linux.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "introduction_welcome_story",
+      "label": "DMS Material Storybook Introduction Story",
+      "file_type": "image",
+      "source_file": "apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/introduction--welcome-light-chromium-linux.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "introduction_welcome_light_chromium",
+      "target": "introduction_welcome_story",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/introduction--welcome-light-chromium-linux.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "introduction_welcome_light_firefox",
+      "target": "introduction_welcome_story",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/introduction--welcome-light-firefox-linux.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "introduction_welcome_light_chromium",
+      "target": "introduction_welcome_light_firefox",
+      "relation": "semantically_similar_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/introduction--welcome-light-chromium-linux.png",
+      "source_location": null,
+      "weight": 0.95
+    },
+    {
+      "source": "basetable_default_dark_chromium",
+      "target": "basetable_component",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/shared-basetable--default-dark-chromium-linux.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "basetable_default_dark_firefox",
+      "target": "basetable_component",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/shared-basetable--default-dark-firefox-linux.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "basetable_default_light_chromium",
+      "target": "basetable_component",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/shared-basetable--default-light-chromium-linux.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "basetable_default_light_firefox",
+      "target": "basetable_component",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/shared-basetable--default-light-firefox-linux.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "basetable_empty_state_dark_chromium",
+      "target": "basetable_component",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/shared-basetable--empty-state-dark-chromium-linux.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "basetable_empty_state_dark_firefox",
+      "target": "basetable_component",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/shared-basetable--empty-state-dark-firefox-linux.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "basetable_empty_state_light_chromium",
+      "target": "basetable_component",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/shared-basetable--empty-state-light-chromium-linux.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "basetable_empty_state_light_firefox",
+      "target": "basetable_component",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/shared-basetable--empty-state-light-firefox-linux.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "basetable_default_dark_chromium",
+      "target": "basetable_default_dark_firefox",
+      "relation": "semantically_similar_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/shared-basetable--default-dark-chromium-linux.png",
+      "source_location": null,
+      "weight": 0.95
+    },
+    {
+      "source": "basetable_default_light_chromium",
+      "target": "basetable_default_light_firefox",
+      "relation": "semantically_similar_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/shared-basetable--default-light-chromium-linux.png",
+      "source_location": null,
+      "weight": 0.95
+    },
+    {
+      "source": "basetable_empty_state_dark_chromium",
+      "target": "basetable_empty_state_dark_firefox",
+      "relation": "semantically_similar_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/shared-basetable--empty-state-dark-chromium-linux.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "basetable_empty_state_light_chromium",
+      "target": "basetable_empty_state_light_firefox",
+      "relation": "semantically_similar_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/shared-basetable--empty-state-light-chromium-linux.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "basetable_default_dark_chromium",
+      "target": "basetable_default_light_chromium",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/shared-basetable--default-dark-chromium-linux.png",
+      "source_location": null,
+      "weight": 0.9
+    },
+    {
+      "source": "basetable_default_dark_firefox",
+      "target": "basetable_default_light_firefox",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/shared-basetable--default-dark-firefox-linux.png",
+      "source_location": null,
+      "weight": 0.9
+    },
+    {
+      "source": "basetable_empty_state_dark_chromium",
+      "target": "basetable_empty_state_light_chromium",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/shared-basetable--empty-state-dark-chromium-linux.png",
+      "source_location": null,
+      "weight": 0.9
+    },
+    {
+      "source": "basetable_empty_state_dark_firefox",
+      "target": "basetable_empty_state_light_firefox",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/shared-basetable--empty-state-dark-firefox-linux.png",
+      "source_location": null,
+      "weight": 0.9
+    },
+    {
+      "source": "basetable_default_dark_chromium",
+      "target": "basetable_empty_state_dark_chromium",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/shared-basetable--default-dark-chromium-linux.png",
+      "source_location": null,
+      "weight": 0.9
+    },
+    {
+      "source": "basetable_default_light_chromium",
+      "target": "basetable_empty_state_light_chromium",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/shared-basetable--default-light-chromium-linux.png",
+      "source_location": null,
+      "weight": 0.9
+    },
+    {
+      "source": "basetable_default_dark_firefox",
+      "target": "basetable_empty_state_dark_firefox",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/shared-basetable--default-dark-firefox-linux.png",
+      "source_location": null,
+      "weight": 0.9
+    },
+    {
+      "source": "basetable_default_light_firefox",
+      "target": "basetable_empty_state_light_firefox",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/shared-basetable--default-light-firefox-linux.png",
+      "source_location": null,
+      "weight": 0.9
+    }
+  ],
+  "hyperedges": [],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

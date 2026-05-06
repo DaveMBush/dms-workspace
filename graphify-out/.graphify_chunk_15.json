@@ -1,0 +1,228 @@
+{
+  "nodes": [
+    {
+      "id": "shared_summarydisplaycomponent_pie_chart",
+      "label": "SummaryDisplayComponent Pie Chart Storybook Visual Snapshot",
+      "file_type": "image",
+      "source_file": "apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/shared-summarydisplaycomponent--pie-chart.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "shared_symbolautocompletecomponent_default",
+      "label": "SymbolAutocompleteComponent Default Storybook Visual Snapshot (Stock Ticker Search UI)",
+      "file_type": "image",
+      "source_file": "apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/shared-symbolautocompletecomponent--default.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "welcome_default",
+      "label": "Welcome Default Storybook Visual Snapshot (App Introduction)",
+      "file_type": "image",
+      "source_file": "apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/welcome--default.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "server_coverage_favicon",
+      "label": "Server Coverage Report Favicon Asset",
+      "file_type": "image",
+      "source_file": "apps/server/coverage/apps/server/favicon.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "server_coverage_sort_arrow_sprite",
+      "label": "Server Coverage Report Sort Arrow Sprite Asset",
+      "file_type": "image",
+      "source_file": "apps/server/coverage/apps/server/sort-arrow-sprite.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "dms_material_coverage_favicon",
+      "label": "DMS Material Coverage Report Favicon Asset",
+      "file_type": "image",
+      "source_file": "coverage/apps/dms-material/favicon.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "dms_material_coverage_sort_arrow_sprite",
+      "label": "DMS Material Coverage Report Sort Arrow Sprite Asset",
+      "file_type": "image",
+      "source_file": "coverage/apps/dms-material/sort-arrow-sprite.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "electron_coverage_favicon",
+      "label": "Electron Coverage Report Favicon Asset",
+      "file_type": "image",
+      "source_file": "coverage/apps/electron/favicon.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "electron_coverage_sort_arrow_sprite",
+      "label": "Electron Coverage Report Sort Arrow Sprite Asset",
+      "file_type": "image",
+      "source_file": "coverage/apps/electron/sort-arrow-sprite.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "shared_summarydisplaycomponent_pie_chart",
+      "target": "shared_symbolautocompletecomponent_default",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/shared-summarydisplaycomponent--pie-chart.png",
+      "source_location": null,
+      "weight": 0.9
+    },
+    {
+      "source": "shared_summarydisplaycomponent_pie_chart",
+      "target": "welcome_default",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/shared-summarydisplaycomponent--pie-chart.png",
+      "source_location": null,
+      "weight": 0.9
+    },
+    {
+      "source": "shared_symbolautocompletecomponent_default",
+      "target": "welcome_default",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/shared-symbolautocompletecomponent--default.png",
+      "source_location": null,
+      "weight": 0.9
+    },
+    {
+      "source": "server_coverage_favicon",
+      "target": "dms_material_coverage_favicon",
+      "relation": "semantically_similar_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/server/coverage/apps/server/favicon.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "server_coverage_favicon",
+      "target": "electron_coverage_favicon",
+      "relation": "semantically_similar_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/server/coverage/apps/server/favicon.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "dms_material_coverage_favicon",
+      "target": "electron_coverage_favicon",
+      "relation": "semantically_similar_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "coverage/apps/dms-material/favicon.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "server_coverage_sort_arrow_sprite",
+      "target": "dms_material_coverage_sort_arrow_sprite",
+      "relation": "semantically_similar_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/server/coverage/apps/server/sort-arrow-sprite.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "server_coverage_sort_arrow_sprite",
+      "target": "electron_coverage_sort_arrow_sprite",
+      "relation": "semantically_similar_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/server/coverage/apps/server/sort-arrow-sprite.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "dms_material_coverage_sort_arrow_sprite",
+      "target": "electron_coverage_sort_arrow_sprite",
+      "relation": "semantically_similar_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "coverage/apps/dms-material/sort-arrow-sprite.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "server_coverage_favicon",
+      "target": "server_coverage_sort_arrow_sprite",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "apps/server/coverage/apps/server/favicon.png",
+      "source_location": null,
+      "weight": 0.8
+    },
+    {
+      "source": "dms_material_coverage_favicon",
+      "target": "dms_material_coverage_sort_arrow_sprite",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "coverage/apps/dms-material/favicon.png",
+      "source_location": null,
+      "weight": 0.8
+    },
+    {
+      "source": "electron_coverage_favicon",
+      "target": "electron_coverage_sort_arrow_sprite",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "coverage/apps/electron/favicon.png",
+      "source_location": null,
+      "weight": 0.8
+    }
+  ],
+  "hyperedges": [],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

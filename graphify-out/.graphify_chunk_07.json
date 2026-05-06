@@ -1,0 +1,522 @@
+{
+  "nodes": [
+    {
+      "id": "cusip_cache_coverage_dir",
+      "label": "CUSIP Cache Coverage Directory",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/global/cusip-cache/index.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cusip_cache_add_dialog_component",
+      "label": "CusipCacheAddDialogComponent",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/global/cusip-cache/index.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cusip_cache_component",
+      "label": "CusipCacheComponent",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/global/cusip-cache/index.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "global_universe_coverage_dir",
+      "label": "Global Universe Coverage Directory",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/global/global-universe/index.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "enrich_universe_with_risk_groups",
+      "label": "enrichUniverseWithRiskGroups Function",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/global/global-universe/enrich-universe-with-risk-groups.function.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "filter_universes",
+      "label": "filterUniverses Function",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/global/global-universe/filter-universes.function.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "format_position",
+      "label": "formatPosition Function",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/global/global-universe/format-position.function.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "restore_universe_filters",
+      "label": "restoreUniverseFilters Function",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/global/global-universe/restore-universe-filters.function.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "app_coverage_dir",
+      "label": "App Coverage Directory",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/index.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "app_ts",
+      "label": "App Entry Point (app.ts)",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/index.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "allocation_chart_coverage_dir",
+      "label": "Allocation Chart Coverage Directory",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/shared/components/allocation-chart/index.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "allocation_chart_component",
+      "label": "AllocationChartComponent",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/shared/components/allocation-chart/allocation-chart.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "confirm_dialog_coverage_dir",
+      "label": "Confirm Dialog Coverage Directory",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/shared/components/confirm-dialog/index.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "confirm_dialog_component",
+      "label": "ConfirmDialogComponent",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/shared/components/confirm-dialog/confirm-dialog.component.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "performance_chart_coverage_dir",
+      "label": "Performance Chart Coverage Directory",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/shared/components/performance-chart/index.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "performance_chart_component",
+      "label": "PerformanceChartComponent",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/shared/components/performance-chart/performance-chart.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "shared_services_coverage_dir",
+      "label": "Shared Services Coverage Directory",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/shared/services/index.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "confirm_dialog_service",
+      "label": "ConfirmDialogService",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/shared/services/confirm-dialog.service.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "error_handling_service",
+      "label": "ErrorHandlingService",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/shared/services/error-handling.service.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "notification_service",
+      "label": "NotificationService",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/shared/services/notification.service.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "sort_filter_state_service",
+      "label": "SortFilterStateService",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/shared/services/sort-filter-state.service.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "state_persistence_service",
+      "label": "StatePersistenceService",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/shared/services/state-persistence.service.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "theme_service",
+      "label": "ThemeService",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/shared/services/theme.service.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "cusip_cache_coverage_dir",
+      "target": "cusip_cache_add_dialog_component",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "coverage/apps/dms-material/app/global/cusip-cache/index.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cusip_cache_coverage_dir",
+      "target": "cusip_cache_component",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "coverage/apps/dms-material/app/global/cusip-cache/index.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "global_universe_coverage_dir",
+      "target": "enrich_universe_with_risk_groups",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "coverage/apps/dms-material/app/global/global-universe/index.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "global_universe_coverage_dir",
+      "target": "filter_universes",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "coverage/apps/dms-material/app/global/global-universe/index.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "global_universe_coverage_dir",
+      "target": "format_position",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "coverage/apps/dms-material/app/global/global-universe/index.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "global_universe_coverage_dir",
+      "target": "restore_universe_filters",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "coverage/apps/dms-material/app/global/global-universe/index.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "app_coverage_dir",
+      "target": "app_ts",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "coverage/apps/dms-material/app/index.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "allocation_chart_coverage_dir",
+      "target": "allocation_chart_component",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "coverage/apps/dms-material/app/shared/components/allocation-chart/index.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "confirm_dialog_coverage_dir",
+      "target": "confirm_dialog_component",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "coverage/apps/dms-material/app/shared/components/confirm-dialog/index.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "performance_chart_coverage_dir",
+      "target": "performance_chart_component",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "coverage/apps/dms-material/app/shared/components/performance-chart/index.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "shared_services_coverage_dir",
+      "target": "confirm_dialog_service",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "coverage/apps/dms-material/app/shared/services/index.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "shared_services_coverage_dir",
+      "target": "error_handling_service",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "coverage/apps/dms-material/app/shared/services/index.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "shared_services_coverage_dir",
+      "target": "notification_service",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "coverage/apps/dms-material/app/shared/services/index.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "shared_services_coverage_dir",
+      "target": "sort_filter_state_service",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "coverage/apps/dms-material/app/shared/services/index.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "shared_services_coverage_dir",
+      "target": "state_persistence_service",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "coverage/apps/dms-material/app/shared/services/index.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "shared_services_coverage_dir",
+      "target": "theme_service",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "coverage/apps/dms-material/app/shared/services/index.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "confirm_dialog_service",
+      "target": "confirm_dialog_component",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "coverage/apps/dms-material/app/shared/services/confirm-dialog.service.ts.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "error_handling_service",
+      "target": "notification_service",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "coverage/apps/dms-material/app/shared/services/error-handling.service.ts.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "error_handling_service",
+      "target": "notification_service",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "coverage/apps/dms-material/app/shared/services/error-handling.service.ts.html",
+      "source_location": null,
+      "weight": 0.9
+    },
+    {
+      "source": "filter_universes",
+      "target": "restore_universe_filters",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "coverage/apps/dms-material/app/global/global-universe/filter-universes.function.ts.html",
+      "source_location": null,
+      "weight": 0.8
+    },
+    {
+      "source": "filter_universes",
+      "target": "enrich_universe_with_risk_groups",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "coverage/apps/dms-material/app/global/global-universe/filter-universes.function.ts.html",
+      "source_location": null,
+      "weight": 0.8
+    },
+    {
+      "source": "restore_universe_filters",
+      "target": "sort_filter_state_service",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.7,
+      "source_file": "coverage/apps/dms-material/app/global/global-universe/restore-universe-filters.function.ts.html",
+      "source_location": null,
+      "weight": 0.7
+    },
+    {
+      "source": "sort_filter_state_service",
+      "target": "state_persistence_service",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "coverage/apps/dms-material/app/shared/services/sort-filter-state.service.ts.html",
+      "source_location": null,
+      "weight": 0.8
+    },
+    {
+      "source": "theme_service",
+      "target": "state_persistence_service",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.7,
+      "source_file": "coverage/apps/dms-material/app/shared/services/theme.service.ts.html",
+      "source_location": null,
+      "weight": 0.7
+    },
+    {
+      "source": "allocation_chart_component",
+      "target": "performance_chart_component",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "coverage/apps/dms-material/app/shared/components/allocation-chart/allocation-chart.ts.html",
+      "source_location": null,
+      "weight": 0.8
+    },
+    {
+      "source": "confirm_dialog_component",
+      "target": "confirm_dialog_service",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "coverage/apps/dms-material/app/shared/components/confirm-dialog/confirm-dialog.component.ts.html",
+      "source_location": null,
+      "weight": 0.9
+    }
+  ],
+  "hyperedges": [],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

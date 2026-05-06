@@ -1,0 +1,774 @@
+{
+  "nodes": [
+    {
+      "id": "electronbuilder_config",
+      "label": "electron-builder Configuration",
+      "file_type": "document",
+      "source_file": "apps/electron/electron-builder.yml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "appId": "com.davembush.dms",
+      "productName": "DMS",
+      "electronVersion": "41.2.1",
+      "artifactName": "${productName}-${version}-${arch}.${ext}",
+      "outputDir": "../../dist/electron-dist"
+    },
+    {
+      "id": "electronbuilder_linux_targets",
+      "label": "Linux Build Targets (AppImage, deb)",
+      "file_type": "document",
+      "source_file": "apps/electron/electron-builder.yml",
+      "source_location": "linux",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "targets": [
+        "AppImage",
+        "deb"
+      ],
+      "maintainer": "DaveMBush <dave@davembush.com>"
+    },
+    {
+      "id": "electronbuilder_mac_target",
+      "label": "macOS Build Target (dmg)",
+      "file_type": "document",
+      "source_file": "apps/electron/electron-builder.yml",
+      "source_location": "mac",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "target": "dmg"
+    },
+    {
+      "id": "electronbuilder_win_target",
+      "label": "Windows Build Target (nsis)",
+      "file_type": "document",
+      "source_file": "apps/electron/electron-builder.yml",
+      "source_location": "win",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "target": "nsis"
+    },
+    {
+      "id": "electronbuilder_extra_resources",
+      "label": "electron-builder Extra Resources Config",
+      "file_type": "document",
+      "source_file": "apps/electron/electron-builder.yml",
+      "source_location": "extraResources",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "resources": [
+        "dist/apps/server -> apps/server",
+        "dist/apps/dms-material/browser -> apps/dms-material/browser",
+        "prisma/migrations -> prisma/migrations",
+        "prisma/schema.prisma -> prisma/schema.prisma"
+      ],
+      "rationale": "All runtime files placed outside asar in resources/ so they are accessible via process.resourcesPath in main process and forked server; write-able and runtime-required files must not be inside the read-only asar"
+    },
+    {
+      "id": "electron_packaging_doc",
+      "label": "Electron Packaging Research (Story 91.1)",
+      "file_type": "document",
+      "source_file": "apps/electron/PACKAGING.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "story": "91.1",
+      "purpose": "Primary deliverable informing Stories 91.2-91.4"
+    },
+    {
+      "id": "electron_builder_over_forge",
+      "label": "electron-builder Selected Over electron-forge",
+      "file_type": "document",
+      "source_file": "apps/electron/PACKAGING.md",
+      "source_location": "## 1. Selected Packaging Tool",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "electron-builder is a drop-in that reads existing dist/ output without restructuring; electron-forge requires migrating to its own build pipeline which conflicts with Nx targets; electron-builder is the dominant pattern in Nx+Electron monorepos; configured via single electron-builder.yml alongside project.json"
+    },
+    {
+      "id": "electron_asar_bundle",
+      "label": "Asar Bundle Architecture (Inside vs Outside)",
+      "file_type": "document",
+      "source_file": "apps/electron/PACKAGING.md",
+      "source_location": "## 2. Asar Bundle Contents",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "inside_asar": [
+        "apps/electron/dist/main.js",
+        "apps/electron/dist/preload.js",
+        "dist/apps/server/ (Fastify bundle)",
+        "dist/apps/dms-material/browser/ (Angular app)"
+      ],
+      "outside_asar_in_resources": [
+        "prisma/migrations/ - prisma migrate deploy reads SQL at runtime",
+        "prisma/schema.prisma - required by migrate deploy",
+        "Prisma query engine binary - native binary must not be in asar",
+        "SQLite dms.db at app.getPath(userData) - created at runtime"
+      ],
+      "rationale": "Files inside the asar are read-only; the SQLite .db file is created fresh in userData on first launch via prisma migrate deploy and must never be inside the asar"
+    },
+    {
+      "id": "electron_database_url_strategy",
+      "label": "DATABASE_URL Strategy via Electron userData",
+      "file_type": "document",
+      "source_file": "apps/electron/PACKAGING.md",
+      "source_location": "## 3. DATABASE_URL Strategy",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "platform_paths": {
+        "linux": "~/.config/{app-name}",
+        "macos": "~/Library/Application Support/{app-name}",
+        "windows": "%APPDATA%\\{app-name}"
+      },
+      "implementation": "Set DATABASE_URL on process.env in Electron main process before startServer() forks Fastify; forked child inherits it automatically via spread of process.env",
+      "rationale": "DATABASE_URL must be set before server fork so child inherits it; server's initializeDatabaseUrl() already reads process.env.DATABASE_URL as non-AWS fallback"
+    },
+    {
+      "id": "electron_prisma_migration_packaged",
+      "label": "Prisma Migration Strategy in Packaged App",
+      "file_type": "document",
+      "source_file": "apps/electron/PACKAGING.md",
+      "source_location": "## 4. Prisma Migration Strategy",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "timing": "Migrations run in Electron main process before startServer() forks Fastify",
+      "invocation": "execFileSync with bundled prisma binary from process.resourcesPath; no node_modules in packaged app",
+      "sequence": [
+        "findAvailablePort()",
+        "set DATABASE_URL = userData/dms.db (Story 91.2)",
+        "runMigrations() - prisma migrate deploy (Story 91.3)",
+        "startServer(port)",
+        "healthCheck(port)",
+        "createWindow(port)"
+      ],
+      "rationale": "Running migrations before server fork guarantees schema is current before any API requests are served; first launch creates dms.db fresh via migrations without needing a seed DB copy"
+    },
+    {
+      "id": "electron_readme_doc",
+      "label": "Electron App README",
+      "file_type": "document",
+      "source_file": "apps/electron/README.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "electron_startup_sequence",
+      "label": "Electron Main Process Startup Sequence",
+      "file_type": "document",
+      "source_file": "apps/electron/README.md",
+      "source_location": "## Architecture",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "steps": [
+        "findAvailablePort() - reserve unused local port",
+        "fork dist/apps/server/main.js with PORT=<port>",
+        "wait for server ready IPC message",
+        "HTTP health check against /api/health",
+        "createBrowserWindow and load http://localhost:<port>"
+      ]
+    },
+    {
+      "id": "electron_browserwindow_security",
+      "label": "BrowserWindow Security Configuration",
+      "file_type": "document",
+      "source_file": "apps/electron/README.md",
+      "source_location": "## BrowserWindow Configuration",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "settings": {
+        "nodeIntegration": false,
+        "contextIsolation": true,
+        "sandbox": true,
+        "preload": "apps/electron/dist/preload.js"
+      },
+      "rationale": "nodeIntegration:false keeps Node APIs out of renderer; contextIsolation:true isolates preload bridge from web page; sandbox:true adds additional renderer isolation layer"
+    },
+    {
+      "id": "electron_navigation_handling",
+      "label": "Angular Router Navigation Handling in Electron",
+      "file_type": "document",
+      "source_file": "apps/electron/README.md",
+      "source_location": "## Angular Router Handling",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "hooks": [
+        "win.webContents.on('will-navigate', ...)",
+        "win.webContents.setWindowOpenHandler(...)"
+      ],
+      "behavior": "Same-origin localhost URLs treated as internal; external URLs prevented; window.open same-origin redirected to existing window; new window creation always denied"
+    },
+    {
+      "id": "basetable_migration_guide",
+      "label": "BaseTable Migration Guide",
+      "file_type": "document",
+      "source_file": "apps/dms-material/src/app/shared/components/base-table/MIGRATION-GUIDE.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "basetable_old_api",
+      "label": "BaseTable Old Imperative API (Deprecated)",
+      "file_type": "document",
+      "source_file": "apps/dms-material/src/app/shared/components/base-table/MIGRATION-GUIDE.md",
+      "source_location": "### Before (Old Pattern)",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "deprecated_patterns": [
+        "initDataSource() method with RxJS Observable-based loadFn",
+        "@ViewChild(BaseTableComponent) for initialization",
+        "manual refresh() calls after signal/state changes",
+        "manual sort handler that calls refreshTable()"
+      ],
+      "rationale": "Imperative pattern incompatible with SmartNgRX signals; data source disconnected from signals; required manual lifecycle management"
+    },
+    {
+      "id": "basetable_new_api",
+      "label": "BaseTable New Signal-Based API",
+      "file_type": "document",
+      "source_file": "apps/dms-material/src/app/shared/components/base-table/MIGRATION-GUIDE.md",
+      "source_location": "### After (New Pattern)",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "new_patterns": [
+        "[data]='filteredData$()' signal input replaces initDataSource",
+        "[loading]='loading()' signal input",
+        "automatic reactivity - no manual refresh needed",
+        "built-in sorting with signal state",
+        "no @ViewChild unless scrollToTop() needed"
+      ]
+    },
+    {
+      "id": "basetable_refactoring_summary",
+      "label": "BaseTable Refactoring Summary",
+      "file_type": "document",
+      "source_file": "apps/dms-material/src/app/shared/components/base-table/REFACTORING-SUMMARY.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "components_needing_migration": [
+        "global-screener/global-screener.component.ts",
+        "global-universe/global-universe.component.ts",
+        "account-panel/open-positions/open-positions.component.ts",
+        "account-panel/sold-positions/sold-positions.component.ts",
+        "account-panel/dividend-deposits/dividend-deposits.component.ts"
+      ]
+    },
+    {
+      "id": "basetable_component",
+      "label": "BaseTableComponent",
+      "file_type": "document",
+      "source_file": "apps/dms-material/src/app/shared/components/base-table/REFACTORING-SUMMARY.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "selector": "dms-base-table",
+      "key_implementation_details": [
+        "computed() signal derives data from input data() signal",
+        "private sortState signal tracks sort config",
+        "effect() clears SelectionModel when data changes",
+        "virtual scrolling via cdk-virtual-scroll-viewport",
+        "MatTableDataSource handles data subscription internally"
+      ]
+    },
+    {
+      "id": "basetable_builtin_sorting",
+      "label": "BaseTable Built-in Signal-Based Sorting",
+      "file_type": "document",
+      "source_file": "apps/dms-material/src/app/shared/components/base-table/REFACTORING-SUMMARY.md",
+      "source_location": "### Sorting Implementation",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "methods": [
+        "applySortToData(dataValue, sortValue): T[]",
+        "sortData(dataValue, sortValue): T[] - null-safe comparison"
+      ],
+      "rationale": "Sorting internalized to remove need for host component to manage sort state and call refresh"
+    },
+    {
+      "id": "basetable_quick_reference",
+      "label": "BaseTable Quick Reference",
+      "file_type": "document",
+      "source_file": "apps/dms-material/src/app/shared/components/base-table/QUICK-REFERENCE.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "basetable_column_def",
+      "label": "BaseTable ColumnDef Interface",
+      "file_type": "document",
+      "source_file": "apps/dms-material/src/app/shared/components/base-table/QUICK-REFERENCE.md",
+      "source_location": "## Column Definition",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "fields": {
+        "field": "string - property name in data object",
+        "header": "string - display header text",
+        "width": "string? - CSS width",
+        "sortable": "boolean? - enable sorting",
+        "type": "text|number|currency|date|boolean|custom"
+      }
+    },
+    {
+      "id": "basetable_inputs",
+      "label": "BaseTable Component Inputs",
+      "file_type": "document",
+      "source_file": "apps/dms-material/src/app/shared/components/base-table/QUICK-REFERENCE.md",
+      "source_location": "## Inputs",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "inputs": {
+        "data": "T[] - required, array of table data (must be signal)",
+        "columns": "ColumnDef[] - required",
+        "loading": "boolean - optional, default false",
+        "rowHeight": "number - optional, default 52px",
+        "bufferSize": "number - optional, default 10",
+        "selectable": "boolean - optional, default false",
+        "multiSelect": "boolean - optional, default false"
+      },
+      "outputs": {
+        "sortChange": "Sort",
+        "rowClick": "T",
+        "selectionChange": "T[]"
+      }
+    },
+    {
+      "id": "e2e_readme_doc",
+      "label": "E2E Testing Guide (dms-material-e2e)",
+      "file_type": "document",
+      "source_file": "apps/dms-material-e2e/README.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "test_count": 1018,
+      "browsers": [
+        "chromium",
+        "firefox"
+      ],
+      "estimated_time_both_browsers": "~32 minutes sequential"
+    },
+    {
+      "id": "e2e_db_isolation_issue",
+      "label": "E2E Shared SQLite Database Isolation Issue",
+      "file_type": "document",
+      "source_file": "apps/dms-material-e2e/README.md",
+      "source_location": "## Database Isolation Issue",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "problem": "Chromium and Firefox share single test-database.db; parallel execution causes SQLite locking and data pollution",
+      "cause": "Default Playwright parallel execution interleaves tests between browsers against same DB"
+    },
+    {
+      "id": "e2e_sequential_execution",
+      "label": "E2E Sequential Browser Execution Strategy",
+      "file_type": "document",
+      "source_file": "apps/dms-material-e2e/README.md",
+      "source_location": "### Solution",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "solution": "Run browsers sequentially (complete one browser before starting the next) via separate pnpm scripts",
+      "scripts": [
+        "pnpm e2e:dms-material:chromium",
+        "pnpm e2e:dms-material:firefox"
+      ],
+      "future_improvements": [
+        "Separate databases per browser (chromium-test.db, firefox-test.db)",
+        "beforeEach/afterEach hooks to reset DB state",
+        "Transaction rollback per test",
+        "Separate backend instances on different ports"
+      ]
+    },
+    {
+      "id": "fidelity_not_a_csv_fixture",
+      "label": "Invalid CSV Test Fixture (fidelity-not-a-csv.txt)",
+      "file_type": "document",
+      "source_file": "apps/dms-material-e2e/fixtures/fidelity-not-a-csv.txt",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "content": "Plain text file that should be rejected by the import process",
+      "purpose": "Negative test fixture to verify CSV import validation rejects non-CSV files"
+    }
+  ],
+  "edges": [
+    {
+      "source": "electronbuilder_config",
+      "target": "electronbuilder_linux_targets",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/electron/electron-builder.yml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "electronbuilder_config",
+      "target": "electronbuilder_mac_target",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/electron/electron-builder.yml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "electronbuilder_config",
+      "target": "electronbuilder_win_target",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/electron/electron-builder.yml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "electronbuilder_config",
+      "target": "electronbuilder_extra_resources",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/electron/electron-builder.yml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "electron_packaging_doc",
+      "target": "electronbuilder_config",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/electron/PACKAGING.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "electron_packaging_doc",
+      "target": "electron_builder_over_forge",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/electron/PACKAGING.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "electron_packaging_doc",
+      "target": "electron_asar_bundle",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/electron/PACKAGING.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "electron_packaging_doc",
+      "target": "electron_database_url_strategy",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/electron/PACKAGING.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "electron_packaging_doc",
+      "target": "electron_prisma_migration_packaged",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/electron/PACKAGING.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "electron_prisma_migration_packaged",
+      "target": "electronbuilder_extra_resources",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/electron/PACKAGING.md",
+      "source_location": null,
+      "weight": 0.9
+    },
+    {
+      "source": "electron_asar_bundle",
+      "target": "electronbuilder_extra_resources",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/electron/PACKAGING.md",
+      "source_location": null,
+      "weight": 0.9
+    },
+    {
+      "source": "electron_readme_doc",
+      "target": "electron_startup_sequence",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/electron/README.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "electron_readme_doc",
+      "target": "electron_browserwindow_security",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/electron/README.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "electron_readme_doc",
+      "target": "electron_navigation_handling",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/electron/README.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "electron_readme_doc",
+      "target": "electronbuilder_config",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "apps/electron/README.md",
+      "source_location": null,
+      "weight": 0.7
+    },
+    {
+      "source": "basetable_migration_guide",
+      "target": "basetable_old_api",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material/src/app/shared/components/base-table/MIGRATION-GUIDE.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "basetable_migration_guide",
+      "target": "basetable_new_api",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material/src/app/shared/components/base-table/MIGRATION-GUIDE.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "basetable_migration_guide",
+      "target": "basetable_component",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material/src/app/shared/components/base-table/MIGRATION-GUIDE.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "basetable_new_api",
+      "target": "basetable_old_api",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material/src/app/shared/components/base-table/MIGRATION-GUIDE.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "basetable_refactoring_summary",
+      "target": "basetable_component",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material/src/app/shared/components/base-table/REFACTORING-SUMMARY.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "basetable_refactoring_summary",
+      "target": "basetable_builtin_sorting",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material/src/app/shared/components/base-table/REFACTORING-SUMMARY.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "basetable_refactoring_summary",
+      "target": "basetable_migration_guide",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material/src/app/shared/components/base-table/REFACTORING-SUMMARY.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "basetable_refactoring_summary",
+      "target": "basetable_new_api",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material/src/app/shared/components/base-table/REFACTORING-SUMMARY.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "basetable_quick_reference",
+      "target": "basetable_component",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material/src/app/shared/components/base-table/QUICK-REFERENCE.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "basetable_quick_reference",
+      "target": "basetable_column_def",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material/src/app/shared/components/base-table/QUICK-REFERENCE.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "basetable_quick_reference",
+      "target": "basetable_inputs",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material/src/app/shared/components/base-table/QUICK-REFERENCE.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "basetable_quick_reference",
+      "target": "basetable_new_api",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material/src/app/shared/components/base-table/QUICK-REFERENCE.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "basetable_quick_reference",
+      "target": "basetable_migration_guide",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material/src/app/shared/components/base-table/QUICK-REFERENCE.md",
+      "source_location": null,
+      "weight": 0.9
+    },
+    {
+      "source": "e2e_readme_doc",
+      "target": "e2e_db_isolation_issue",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material-e2e/README.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "e2e_readme_doc",
+      "target": "e2e_sequential_execution",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material-e2e/README.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "e2e_sequential_execution",
+      "target": "e2e_db_isolation_issue",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/dms-material-e2e/README.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "e2e_readme_doc",
+      "target": "fidelity_not_a_csv_fixture",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.7,
+      "source_file": "apps/dms-material-e2e/README.md",
+      "source_location": null,
+      "weight": 0.6
+    }
+  ],
+  "hyperedges": [],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

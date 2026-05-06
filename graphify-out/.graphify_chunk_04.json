@@ -1,0 +1,459 @@
+{
+  "nodes": [
+    {
+      "id": "import_create-universe-entry-helper",
+      "label": "Create Universe Entry Helper",
+      "file_type": "document",
+      "source_file": "apps/server/coverage/apps/server/app/routes/import/create-universe-entry.helper.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "import_cusip-cache-service",
+      "label": "CUSIP Cache Service",
+      "file_type": "document",
+      "source_file": "apps/server/coverage/apps/server/app/routes/import/cusip-cache.service.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "import_fidelity-data-mapper",
+      "label": "Fidelity Data Mapper Function",
+      "file_type": "document",
+      "source_file": "apps/server/coverage/apps/server/app/routes/import/fidelity-data-mapper.function.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "import_index",
+      "label": "Import Route Coverage Index",
+      "file_type": "document",
+      "source_file": "apps/server/coverage/apps/server/app/routes/import/index.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "import_is-in-lieu-row",
+      "label": "Is In Lieu Row Function",
+      "file_type": "document",
+      "source_file": "apps/server/coverage/apps/server/app/routes/import/is-in-lieu-row.function.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "import_is-split-from-row",
+      "label": "Is Split From Row Function",
+      "file_type": "document",
+      "source_file": "apps/server/coverage/apps/server/app/routes/import/is-split-from-row.function.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "import_is-split-row",
+      "label": "Is Split Row Function",
+      "file_type": "document",
+      "source_file": "apps/server/coverage/apps/server/app/routes/import/is-split-row.function.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "import_is-split-to-row",
+      "label": "Is Split To Row Function",
+      "file_type": "document",
+      "source_file": "apps/server/coverage/apps/server/app/routes/import/is-split-to-row.function.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "screener_get-consistent-distributions",
+      "label": "Get Consistent Distributions Function",
+      "file_type": "document",
+      "source_file": "apps/server/coverage/apps/server/app/routes/screener/get-consistent-distributions.function.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "screener_index",
+      "label": "Screener Route Coverage Index",
+      "file_type": "document",
+      "source_file": "apps/server/coverage/apps/server/app/routes/screener/index.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "settings-common_ensure-risk-groups-exist",
+      "label": "Ensure Risk Groups Exist Function",
+      "file_type": "document",
+      "source_file": "apps/server/coverage/apps/server/app/routes/settings/common/ensure-risk-groups-exist.function.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "settings-common_get-distributions",
+      "label": "Get Distributions Function (Settings)",
+      "file_type": "document",
+      "source_file": "apps/server/coverage/apps/server/app/routes/settings/common/get-distributions.function.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "settings-common_get-last-price",
+      "label": "Get Last Price Function",
+      "file_type": "document",
+      "source_file": "apps/server/coverage/apps/server/app/routes/settings/common/get-last-price.function.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "settings-common_index",
+      "label": "Settings Common Coverage Index",
+      "file_type": "document",
+      "source_file": "apps/server/coverage/apps/server/app/routes/settings/common/index.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "summary-years_index",
+      "label": "Summary Years Coverage Index",
+      "file_type": "document",
+      "source_file": "apps/server/coverage/apps/server/app/routes/summary/years/index.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "summary-years_index-ts",
+      "label": "Summary Years Route Handler",
+      "file_type": "document",
+      "source_file": "apps/server/coverage/apps/server/app/routes/summary/years/index.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "top_build-universe-order-by",
+      "label": "Build Universe Order By Function",
+      "file_type": "document",
+      "source_file": "apps/server/coverage/apps/server/app/routes/top/build-universe-order-by.function.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "top_index",
+      "label": "Top Route Coverage Index",
+      "file_type": "document",
+      "source_file": "apps/server/coverage/apps/server/app/routes/top/index.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "top_index-ts",
+      "label": "Top Route Handler",
+      "file_type": "document",
+      "source_file": "apps/server/coverage/apps/server/app/routes/top/index.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "universe-add-symbol_add-symbol",
+      "label": "Add Symbol Function",
+      "file_type": "document",
+      "source_file": "apps/server/coverage/apps/server/app/routes/universe/add-symbol/add-symbol.function.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "import_index",
+      "target": "import_create-universe-entry-helper",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/server/coverage/apps/server/app/routes/import/index.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "import_index",
+      "target": "import_cusip-cache-service",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/server/coverage/apps/server/app/routes/import/index.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "import_index",
+      "target": "import_fidelity-data-mapper",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/server/coverage/apps/server/app/routes/import/index.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "import_index",
+      "target": "import_is-in-lieu-row",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/server/coverage/apps/server/app/routes/import/index.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "import_index",
+      "target": "import_is-split-from-row",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/server/coverage/apps/server/app/routes/import/index.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "import_index",
+      "target": "import_is-split-row",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/server/coverage/apps/server/app/routes/import/index.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "import_index",
+      "target": "import_is-split-to-row",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/server/coverage/apps/server/app/routes/import/index.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "screener_index",
+      "target": "screener_get-consistent-distributions",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/server/coverage/apps/server/app/routes/screener/index.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "settings-common_index",
+      "target": "settings-common_ensure-risk-groups-exist",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/server/coverage/apps/server/app/routes/settings/common/index.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "settings-common_index",
+      "target": "settings-common_get-distributions",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/server/coverage/apps/server/app/routes/settings/common/index.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "settings-common_index",
+      "target": "settings-common_get-last-price",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/server/coverage/apps/server/app/routes/settings/common/index.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "summary-years_index",
+      "target": "summary-years_index-ts",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/server/coverage/apps/server/app/routes/summary/years/index.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "top_index",
+      "target": "top_build-universe-order-by",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/server/coverage/apps/server/app/routes/top/index.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "top_index",
+      "target": "top_index-ts",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/server/coverage/apps/server/app/routes/top/index.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "import_fidelity-data-mapper",
+      "target": "import_cusip-cache-service",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "apps/server/coverage/apps/server/app/routes/import/fidelity-data-mapper.function.ts.html",
+      "source_location": null,
+      "weight": 0.8
+    },
+    {
+      "source": "import_is-split-row",
+      "target": "import_is-split-from-row",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "apps/server/coverage/apps/server/app/routes/import/index.html",
+      "source_location": null,
+      "weight": 0.9
+    },
+    {
+      "source": "import_is-split-row",
+      "target": "import_is-split-to-row",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "apps/server/coverage/apps/server/app/routes/import/index.html",
+      "source_location": null,
+      "weight": 0.9
+    },
+    {
+      "source": "import_is-split-from-row",
+      "target": "import_is-split-to-row",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "apps/server/coverage/apps/server/app/routes/import/index.html",
+      "source_location": null,
+      "weight": 0.9
+    },
+    {
+      "source": "import_is-in-lieu-row",
+      "target": "import_is-split-row",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "apps/server/coverage/apps/server/app/routes/import/index.html",
+      "source_location": null,
+      "weight": 0.8
+    },
+    {
+      "source": "import_create-universe-entry-helper",
+      "target": "universe-add-symbol_add-symbol",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.7,
+      "source_file": "apps/server/coverage/apps/server/app/routes/import/create-universe-entry.helper.ts.html",
+      "source_location": null,
+      "weight": 0.7
+    },
+    {
+      "source": "screener_get-consistent-distributions",
+      "target": "settings-common_get-distributions",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "apps/server/coverage/apps/server/app/routes/screener/get-consistent-distributions.function.ts.html",
+      "source_location": null,
+      "weight": 0.8
+    },
+    {
+      "source": "top_index-ts",
+      "target": "top_build-universe-order-by",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "apps/server/coverage/apps/server/app/routes/top/index.ts.html",
+      "source_location": null,
+      "weight": 0.9
+    },
+    {
+      "source": "top_build-universe-order-by",
+      "target": "universe-add-symbol_add-symbol",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.7,
+      "source_file": "apps/server/coverage/apps/server/app/routes/top/build-universe-order-by.function.ts.html",
+      "source_location": null,
+      "weight": 0.7
+    }
+  ],
+  "hyperedges": [],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

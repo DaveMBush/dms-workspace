@@ -1,0 +1,359 @@
+{
+  "nodes": [
+    {
+      "id": "test_session_warning_html",
+      "label": "Test Session Warning Dialog",
+      "file_type": "document",
+      "source_file": "apps/dms-material/src/app/test-session-warning.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "add_symbol_dialog_html",
+      "label": "Add Symbol to Universe Dialog",
+      "file_type": "document",
+      "source_file": "apps/dms-material/src/app/universe-settings/add-symbol-dialog/add-symbol-dialog.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "dms_material_index_html",
+      "label": "DMS Material App Root (index.html)",
+      "file_type": "document",
+      "source_file": "apps/dms-material/src/index.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cov_cognito_validation_function_ts",
+      "label": "Coverage: cognito-validation.function.ts (100%)",
+      "file_type": "document",
+      "source_file": "apps/server/coverage/apps/server/app/config/cognito-validation.function.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cov_config_index",
+      "label": "Coverage Summary: app/config Module (100%)",
+      "file_type": "document",
+      "source_file": "apps/server/coverage/apps/server/app/config/index.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cov_create_error_response_function_ts",
+      "label": "Coverage: create-error-response.function.ts (100%)",
+      "file_type": "document",
+      "source_file": "apps/server/coverage/apps/server/app/middleware/create-error-response.function.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cov_csrf_middleware_ts",
+      "label": "Coverage: csrf.middleware.ts (0% - no coverable code)",
+      "file_type": "document",
+      "source_file": "apps/server/coverage/apps/server/app/middleware/csrf.middleware.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cov_middleware_index",
+      "label": "Coverage Summary: app/middleware Module (100%)",
+      "file_type": "document",
+      "source_file": "apps/server/coverage/apps/server/app/middleware/index.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cov_security_middleware_ts",
+      "label": "Coverage: security.middleware.ts (0% - no coverable code)",
+      "file_type": "document",
+      "source_file": "apps/server/coverage/apps/server/app/middleware/security.middleware.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cov_fetch_standard_page_function_ts",
+      "label": "Coverage: fetch-standard-page.function.ts (100%)",
+      "file_type": "document",
+      "source_file": "apps/server/coverage/apps/server/app/routes/accounts/fetch-standard-page.function.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cov_accounts_index",
+      "label": "Coverage Summary: app/routes/accounts Module (100%)",
+      "file_type": "document",
+      "source_file": "apps/server/coverage/apps/server/app/routes/accounts/index.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cov_cusip_cache_index_html",
+      "label": "Coverage Summary: app/routes/admin/cusip-cache Module (100%)",
+      "file_type": "document",
+      "source_file": "apps/server/coverage/apps/server/app/routes/admin/cusip-cache/index.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cov_cusip_cache_index_ts",
+      "label": "Coverage: cusip-cache/index.ts (100%)",
+      "file_type": "document",
+      "source_file": "apps/server/coverage/apps/server/app/routes/admin/cusip-cache/index.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cov_cusip_cache_validation_ts",
+      "label": "Coverage: cusip-cache/validation.ts (100%)",
+      "file_type": "document",
+      "source_file": "apps/server/coverage/apps/server/app/routes/admin/cusip-cache/validation.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cov_cef_classification_function_ts",
+      "label": "Coverage: cef-classification.function.ts (100%)",
+      "file_type": "document",
+      "source_file": "apps/server/coverage/apps/server/app/routes/common/cef-classification.function.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cov_dividend_history_service_ts",
+      "label": "Coverage: dividend-history.service.ts (100%)",
+      "file_type": "document",
+      "source_file": "apps/server/coverage/apps/server/app/routes/common/dividend-history.service.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cov_common_index",
+      "label": "Coverage Summary: app/routes/common Module (100%)",
+      "file_type": "document",
+      "source_file": "apps/server/coverage/apps/server/app/routes/common/index.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cov_parse_sort_filter_header_function_ts",
+      "label": "Coverage: parse-sort-filter-header.function.ts (100%)",
+      "file_type": "document",
+      "source_file": "apps/server/coverage/apps/server/app/routes/common/parse-sort-filter-header.function.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cov_adjust_lots_for_split_function_ts",
+      "label": "Coverage: adjust-lots-for-split.function.ts (100%)",
+      "file_type": "document",
+      "source_file": "apps/server/coverage/apps/server/app/routes/import/adjust-lots-for-split.function.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cov_calculate_split_ratio_function_ts",
+      "label": "Coverage: calculate-split-ratio.function.ts (100%)",
+      "file_type": "document",
+      "source_file": "apps/server/coverage/apps/server/app/routes/import/calculate-split-ratio.function.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "cov_cognito_validation_function_ts",
+      "target": "cov_config_index",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/server/coverage/apps/server/app/config/cognito-validation.function.ts.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cov_create_error_response_function_ts",
+      "target": "cov_middleware_index",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/server/coverage/apps/server/app/middleware/create-error-response.function.ts.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cov_csrf_middleware_ts",
+      "target": "cov_middleware_index",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/server/coverage/apps/server/app/middleware/csrf.middleware.ts.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cov_security_middleware_ts",
+      "target": "cov_middleware_index",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/server/coverage/apps/server/app/middleware/security.middleware.ts.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cov_fetch_standard_page_function_ts",
+      "target": "cov_accounts_index",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/server/coverage/apps/server/app/routes/accounts/fetch-standard-page.function.ts.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cov_cusip_cache_index_ts",
+      "target": "cov_cusip_cache_index_html",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/server/coverage/apps/server/app/routes/admin/cusip-cache/index.ts.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cov_cusip_cache_validation_ts",
+      "target": "cov_cusip_cache_index_html",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/server/coverage/apps/server/app/routes/admin/cusip-cache/validation.ts.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cov_cef_classification_function_ts",
+      "target": "cov_common_index",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/server/coverage/apps/server/app/routes/common/cef-classification.function.ts.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cov_dividend_history_service_ts",
+      "target": "cov_common_index",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/server/coverage/apps/server/app/routes/common/dividend-history.service.ts.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cov_parse_sort_filter_header_function_ts",
+      "target": "cov_common_index",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "apps/server/coverage/apps/server/app/routes/common/parse-sort-filter-header.function.ts.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cov_adjust_lots_for_split_function_ts",
+      "target": "cov_calculate_split_ratio_function_ts",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "apps/server/coverage/apps/server/app/routes/import/adjust-lots-for-split.function.ts.html",
+      "source_location": null,
+      "weight": 0.8
+    },
+    {
+      "source": "add_symbol_dialog_html",
+      "target": "dms_material_index_html",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "apps/dms-material/src/app/universe-settings/add-symbol-dialog/add-symbol-dialog.html",
+      "source_location": null,
+      "weight": 0.8
+    },
+    {
+      "source": "test_session_warning_html",
+      "target": "dms_material_index_html",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.7,
+      "source_file": "apps/dms-material/src/app/test-session-warning.html",
+      "source_location": null,
+      "weight": 0.7
+    }
+  ],
+  "hyperedges": [],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

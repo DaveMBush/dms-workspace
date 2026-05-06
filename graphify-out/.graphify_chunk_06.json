@@ -1,0 +1,491 @@
+{
+  "nodes": [
+    {
+      "id": "accountpanel_coverage_index",
+      "label": "Account Panel Coverage Index",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/account-panel/index.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "accountpanel_accountdetailcomponent",
+      "label": "AccountDetailComponent",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/account-panel/index.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "soldpositions_coverage_index",
+      "label": "Sold Positions Coverage Index",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/account-panel/sold-positions/index.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "soldpositions_classifycapitalgainfunction",
+      "label": "classifyCapitalGain Function",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/account-panel/sold-positions/classify-capital-gain.function.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "app_appts",
+      "label": "App Root Component (app.ts)",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/app.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "auth_sessionwarning_coverage_index",
+      "label": "Auth Session Warning Coverage Index",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/auth/components/session-warning/index.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "auth_sessionwarning_sessionwarningts",
+      "label": "SessionWarning Component",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/auth/components/session-warning/session-warning.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "auth_guards_coverage_index",
+      "label": "Auth Guards Coverage Index",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/auth/guards/index.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "auth_guards_authguardts",
+      "label": "AuthGuard",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/auth/guards/auth.guard.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "auth_interceptors_coverage_index",
+      "label": "Auth Interceptors Coverage Index",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/auth/interceptors/index.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "auth_interceptors_performanceinterceptorts",
+      "label": "PerformanceInterceptor",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/auth/interceptors/performance.interceptor.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "auth_profilecomponents_coverage_index",
+      "label": "Auth Profile Components Coverage Index",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/auth/profile/components/index.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "auth_profilecomponents_accountactionscardts",
+      "label": "AccountActionsCard Component",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/auth/profile/components/account-actions-card.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "auth_profilecomponents_emailchangecardts",
+      "label": "EmailChangeCard Component",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/auth/profile/components/email-change-card.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "auth_profilecomponents_sessioninfocardts",
+      "label": "SessionInfoCard Component",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/auth/profile/components/session-info-card.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "auth_profile_coverage_index",
+      "label": "Auth Profile Coverage Index",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/auth/profile/index.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "auth_profile_profilets",
+      "label": "Profile Component",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/auth/profile/profile.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "auth_services_coverage_index",
+      "label": "Auth Services Coverage Index",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/auth/services/index.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "auth_services_sessionrestorationservicets",
+      "label": "SessionRestorationService",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/auth/services/session-restoration.service.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "auth_services_tokencacheservicets",
+      "label": "TokenCacheService",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/auth/services/index.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "global_cusipcacheadddialogts",
+      "label": "CusipCacheAddDialog Component",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/global/cusip-cache/cusip-cache-add-dialog.component.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "global_cusipcachecomponentts",
+      "label": "CusipCache Component",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/global/cusip-cache/cusip-cache.component.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "accountpanel_coverage_index",
+      "target": "accountpanel_accountdetailcomponent",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "coverage/apps/dms-material/app/account-panel/index.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "soldpositions_coverage_index",
+      "target": "soldpositions_classifycapitalgainfunction",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "coverage/apps/dms-material/app/account-panel/sold-positions/index.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "accountpanel_coverage_index",
+      "target": "soldpositions_coverage_index",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "coverage/apps/dms-material/app/account-panel/index.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "accountpanel_accountdetailcomponent",
+      "target": "soldpositions_classifycapitalgainfunction",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.7,
+      "source_file": "coverage/apps/dms-material/app/account-panel/sold-positions/classify-capital-gain.function.ts.html",
+      "source_location": null,
+      "weight": 0.7
+    },
+    {
+      "source": "auth_sessionwarning_coverage_index",
+      "target": "auth_sessionwarning_sessionwarningts",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "coverage/apps/dms-material/app/auth/components/session-warning/index.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "auth_guards_coverage_index",
+      "target": "auth_guards_authguardts",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "coverage/apps/dms-material/app/auth/guards/index.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "auth_interceptors_coverage_index",
+      "target": "auth_interceptors_performanceinterceptorts",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "coverage/apps/dms-material/app/auth/interceptors/index.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "auth_profilecomponents_coverage_index",
+      "target": "auth_profilecomponents_accountactionscardts",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "coverage/apps/dms-material/app/auth/profile/components/index.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "auth_profilecomponents_coverage_index",
+      "target": "auth_profilecomponents_emailchangecardts",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "coverage/apps/dms-material/app/auth/profile/components/index.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "auth_profilecomponents_coverage_index",
+      "target": "auth_profilecomponents_sessioninfocardts",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "coverage/apps/dms-material/app/auth/profile/components/index.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "auth_profile_coverage_index",
+      "target": "auth_profile_profilets",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "coverage/apps/dms-material/app/auth/profile/index.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "auth_profile_coverage_index",
+      "target": "auth_profilecomponents_coverage_index",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "coverage/apps/dms-material/app/auth/profile/index.html",
+      "source_location": null,
+      "weight": 0.9
+    },
+    {
+      "source": "auth_services_coverage_index",
+      "target": "auth_services_sessionrestorationservicets",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "coverage/apps/dms-material/app/auth/services/index.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "auth_services_coverage_index",
+      "target": "auth_services_tokencacheservicets",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "coverage/apps/dms-material/app/auth/services/index.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "auth_profile_profilets",
+      "target": "auth_profilecomponents_accountactionscardts",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "coverage/apps/dms-material/app/auth/profile/profile.ts.html",
+      "source_location": null,
+      "weight": 0.8
+    },
+    {
+      "source": "auth_profile_profilets",
+      "target": "auth_profilecomponents_emailchangecardts",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "coverage/apps/dms-material/app/auth/profile/profile.ts.html",
+      "source_location": null,
+      "weight": 0.8
+    },
+    {
+      "source": "auth_profile_profilets",
+      "target": "auth_profilecomponents_sessioninfocardts",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "coverage/apps/dms-material/app/auth/profile/profile.ts.html",
+      "source_location": null,
+      "weight": 0.8
+    },
+    {
+      "source": "auth_guards_authguardts",
+      "target": "auth_services_sessionrestorationservicets",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.7,
+      "source_file": "coverage/apps/dms-material/app/auth/guards/auth.guard.ts.html",
+      "source_location": null,
+      "weight": 0.7
+    },
+    {
+      "source": "auth_sessionwarning_sessionwarningts",
+      "target": "auth_services_sessionrestorationservicets",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.7,
+      "source_file": "coverage/apps/dms-material/app/auth/components/session-warning/session-warning.ts.html",
+      "source_location": null,
+      "weight": 0.7
+    },
+    {
+      "source": "auth_profilecomponents_sessioninfocardts",
+      "target": "auth_services_sessionrestorationservicets",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.7,
+      "source_file": "coverage/apps/dms-material/app/auth/profile/components/session-info-card.ts.html",
+      "source_location": null,
+      "weight": 0.7
+    },
+    {
+      "source": "auth_services_tokencacheservicets",
+      "target": "auth_guards_authguardts",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.7,
+      "source_file": "coverage/apps/dms-material/app/auth/services/index.html",
+      "source_location": null,
+      "weight": 0.7
+    },
+    {
+      "source": "global_cusipcacheadddialogts",
+      "target": "global_cusipcachecomponentts",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "coverage/apps/dms-material/app/global/cusip-cache/cusip-cache-add-dialog.component.ts.html",
+      "source_location": null,
+      "weight": 0.8
+    },
+    {
+      "source": "app_appts",
+      "target": "auth_guards_authguardts",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.7,
+      "source_file": "coverage/apps/dms-material/app/app.ts.html",
+      "source_location": null,
+      "weight": 0.7
+    },
+    {
+      "source": "app_appts",
+      "target": "auth_interceptors_performanceinterceptorts",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.7,
+      "source_file": "coverage/apps/dms-material/app/app.ts.html",
+      "source_location": null,
+      "weight": 0.7
+    }
+  ],
+  "hyperedges": [],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

@@ -1,0 +1,627 @@
+{
+  "nodes": [
+    {
+      "id": "updateuniversefieldsservice_service",
+      "label": "UpdateUniverseFieldsService",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/shared/services/update-universe-fields.service.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "updatefieldssummary_type",
+      "label": "UpdateFieldsSummary Type",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/shared/services/update-universe-fields.service.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "buildallocationchartdata_function",
+      "label": "buildAllocationChartData Function",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/shared/utils/build-allocation-chart-data.function.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "summary_interface",
+      "label": "Summary Interface",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/shared/utils/build-allocation-chart-data.function.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "buildenrichedpoints_function",
+      "label": "buildEnrichedPoints Function",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/shared/utils/build-enriched-points.function.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "graphpoint_interface",
+      "label": "GraphPoint Interface",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/shared/utils/build-enriched-points.function.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "enrichedpoint_interface",
+      "label": "EnrichedPoint Interface",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/shared/utils/build-enriched-points.function.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "buildperformancechartdata_function",
+      "label": "buildPerformanceChartData Function",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/shared/utils/build-performance-chart-data.function.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "computepercentincrease_function",
+      "label": "computePercentIncrease Function",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/shared/utils/compute-percent-increase.function.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "defaultpiechartoptionsconst_const",
+      "label": "defaultPieChartOptions Constant",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/shared/utils/default-pie-chart-options.const.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "formattooltiplabel_function",
+      "label": "formatTooltipLabel Helper Function",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/shared/utils/default-pie-chart-options.const.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "sharedutils_index",
+      "label": "app/shared/utils Coverage Index",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/shared/utils/index.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "migratetablestate_function",
+      "label": "migrateTableState Function",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/shared/utils/migrate-table-state.function.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "tablestate_interface",
+      "label": "TableState Interface",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/shared/utils/migrate-table-state.function.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "storecurrentaccount_index",
+      "label": "app/store/current-account Coverage Index",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/store/current-account/index.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "selectcurrentaccount_signal",
+      "label": "selectCurrentAccountSignal Function",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/store/current-account/select-current-account.signal.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "account_interface",
+      "label": "Account Interface",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/store/current-account/select-current-account.signal.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "selectaccountchildren_function",
+      "label": "selectAccountChildren Selector Function",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/store/current-account/select-current-account.signal.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "currentaccountsignalstore_store",
+      "label": "currentAccountSignalStore Signal Store",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/store/current-account/select-current-account.signal.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "storetop_index",
+      "label": "app/store/top Coverage Index",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/store/top/index.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "topeffects_service",
+      "label": "TopEffectsService",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/store/top/top-effect.service.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "top_interface",
+      "label": "Top Interface",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/app/store/top/top-effect.service.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "environmentprod_config",
+      "label": "environment.prod Production Configuration",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/environments/environment.prod.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cognitoconfigprod_config",
+      "label": "cognitoConfigProd Configuration",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/environments/environment.prod.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "environments_index",
+      "label": "environments Coverage Index",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/environments/index.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "dmsmaterial_coverageindex",
+      "label": "dms-material All Files Coverage Index",
+      "file_type": "document",
+      "source_file": "coverage/apps/dms-material/index.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "electron_coverageindex",
+      "label": "electron All Files Coverage Index",
+      "file_type": "document",
+      "source_file": "coverage/apps/electron/index.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "port_findavailableport",
+      "label": "findAvailablePort Function (electron port.ts)",
+      "file_type": "document",
+      "source_file": "coverage/apps/electron/port.ts.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "dmsmaterial_coverageindex",
+      "target": "sharedutils_index",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "coverage/apps/dms-material/index.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "dmsmaterial_coverageindex",
+      "target": "storecurrentaccount_index",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "coverage/apps/dms-material/index.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "dmsmaterial_coverageindex",
+      "target": "storetop_index",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "coverage/apps/dms-material/index.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "dmsmaterial_coverageindex",
+      "target": "environments_index",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "coverage/apps/dms-material/index.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "sharedutils_index",
+      "target": "buildallocationchartdata_function",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "coverage/apps/dms-material/app/shared/utils/index.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "sharedutils_index",
+      "target": "buildenrichedpoints_function",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "coverage/apps/dms-material/app/shared/utils/index.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "sharedutils_index",
+      "target": "buildperformancechartdata_function",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "coverage/apps/dms-material/app/shared/utils/index.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "sharedutils_index",
+      "target": "computepercentincrease_function",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "coverage/apps/dms-material/app/shared/utils/index.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "sharedutils_index",
+      "target": "defaultpiechartoptionsconst_const",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "coverage/apps/dms-material/app/shared/utils/index.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "sharedutils_index",
+      "target": "migratetablestate_function",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "coverage/apps/dms-material/app/shared/utils/index.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "storecurrentaccount_index",
+      "target": "selectcurrentaccount_signal",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "coverage/apps/dms-material/app/store/current-account/index.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "storetop_index",
+      "target": "topeffects_service",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "coverage/apps/dms-material/app/store/top/index.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "environments_index",
+      "target": "environmentprod_config",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "coverage/apps/dms-material/environments/index.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "electron_coverageindex",
+      "target": "port_findavailableport",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "coverage/apps/electron/index.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "buildperformancechartdata_function",
+      "target": "buildenrichedpoints_function",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "coverage/apps/dms-material/app/shared/utils/build-performance-chart-data.function.ts.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "buildperformancechartdata_function",
+      "target": "graphpoint_interface",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "coverage/apps/dms-material/app/shared/utils/build-performance-chart-data.function.ts.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "buildperformancechartdata_function",
+      "target": "enrichedpoint_interface",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "coverage/apps/dms-material/app/shared/utils/build-performance-chart-data.function.ts.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "buildenrichedpoints_function",
+      "target": "graphpoint_interface",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "coverage/apps/dms-material/app/shared/utils/build-enriched-points.function.ts.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "buildenrichedpoints_function",
+      "target": "enrichedpoint_interface",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "coverage/apps/dms-material/app/shared/utils/build-enriched-points.function.ts.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "buildallocationchartdata_function",
+      "target": "summary_interface",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "coverage/apps/dms-material/app/shared/utils/build-allocation-chart-data.function.ts.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "migratetablestate_function",
+      "target": "tablestate_interface",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "coverage/apps/dms-material/app/shared/utils/migrate-table-state.function.ts.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "defaultpiechartoptionsconst_const",
+      "target": "formattooltiplabel_function",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "coverage/apps/dms-material/app/shared/utils/default-pie-chart-options.const.ts.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "selectcurrentaccount_signal",
+      "target": "account_interface",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "coverage/apps/dms-material/app/store/current-account/select-current-account.signal.ts.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "selectcurrentaccount_signal",
+      "target": "selectaccountchildren_function",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "coverage/apps/dms-material/app/store/current-account/select-current-account.signal.ts.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "selectcurrentaccount_signal",
+      "target": "currentaccountsignalstore_store",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "coverage/apps/dms-material/app/store/current-account/select-current-account.signal.ts.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "updateuniversefieldsservice_service",
+      "target": "updatefieldssummary_type",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "coverage/apps/dms-material/app/shared/services/update-universe-fields.service.ts.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "topeffects_service",
+      "target": "top_interface",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "coverage/apps/dms-material/app/store/top/top-effect.service.ts.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "environmentprod_config",
+      "target": "cognitoconfigprod_config",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "coverage/apps/dms-material/environments/environment.prod.ts.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "buildallocationchartdata_function",
+      "target": "defaultpiechartoptionsconst_const",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "coverage/apps/dms-material/app/shared/utils/index.html",
+      "source_location": null,
+      "weight": 0.8
+    },
+    {
+      "source": "buildenrichedpoints_function",
+      "target": "buildperformancechartdata_function",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "coverage/apps/dms-material/app/shared/utils/build-performance-chart-data.function.ts.html",
+      "source_location": null,
+      "weight": 0.9
+    },
+    {
+      "source": "computepercentincrease_function",
+      "target": "buildperformancechartdata_function",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.7,
+      "source_file": "coverage/apps/dms-material/app/shared/utils/index.html",
+      "source_location": null,
+      "weight": 0.7
+    }
+  ],
+  "hyperedges": [],
+  "input_tokens": 0,
+  "output_tokens": 0
+}
