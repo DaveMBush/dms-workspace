@@ -135,17 +135,6 @@ vi.mock(
   }
 );
 
-vi.mock(
-  '../shared/build-universe-map.function',
-  function mockBuildUniverseMapModule() {
-    return {
-      buildUniverseMap: vi.fn(function buildUniverseMapMock() {
-        return new Map();
-      }),
-    };
-  }
-);
-
 // ── Dynamic imports (after mocks are registered) ─────────────────────────
 type CurrentAccountSignalStoreModule =
   typeof import('../store/current-account/current-account.signal-store');
