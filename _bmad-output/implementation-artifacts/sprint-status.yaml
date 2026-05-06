@@ -1,5 +1,5 @@
 # generated: 2026-03-17
-# last_updated: 2026-03-17
+# last_updated: 2026-05-06
 # project: dms-workspace
 # project_key: NOKEY
 # tracking_system: file-system
@@ -37,7 +37,7 @@
 #     E1 → E3 → E4(TS rules) → E2 → E5 → E4(template rules) → E6 → E7 → E8
 
 generated: 2026-03-17
-last_updated: 2026-05-04
+last_updated: 2026-05-06
 project_key: NOKEY
 tracking_system: file-system
 story_location: _bmad-output/implementation-artifacts
@@ -557,3 +557,19 @@ development_status:
   96-1-client-remove-universe-map-sold-positions: ready-for-dev
   96-2-delete-build-universe-map: ready-for-dev
   epic-96-retrospective: optional
+
+  # ── Epic 97: Restore Missing Open Positions Computed Fields on the Server ──
+  epic-97: backlog
+  97-1-research-open-positions-fields-history: approved
+  97-2-implement-open-positions-fields-server: approved
+  97-3-move-target-sell-to-server: approved
+  97-4-e2e-open-positions-computed-fields: approved
+  epic-97-retrospective: optional
+
+  # ── Epic 98: Electron Setup Scripts (Database and Per-Platform Builds) ─────
+  epic-98: in-progress
+  98-1-electron-first-install-database-creation: approved
+  98-2-electron-node-free-prisma-migrations: approved
+  98-3-electron-per-platform-builds: approved
+  98-4-e2e-electron-package-launch-smoke: approved
+  epic-98-retrospective: optional

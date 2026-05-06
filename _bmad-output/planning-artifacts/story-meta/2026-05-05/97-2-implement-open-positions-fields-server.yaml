@@ -1,0 +1,20 @@
+epic_num: 97
+story_num: 2
+story_id: '97.2'
+story_key: 97-2-implement-open-positions-fields-server
+slug: 97-2-implement-open-positions-fields-server
+title: Implement Expected$, Last$ Unrlz Gain%, Unrlz Gain$, and Target Gain on the Server
+epic_title: Restore Missing Open Positions Computed Fields on the Server
+type: implementation
+status: Approved
+source_epics_file: _bmad-output/planning-artifacts/epics-2026-05-05.md
+source_section: 'Story 97.2'
+covers_requirements:
+  - R61
+  - R62
+  - R63
+  - R64
+depends_on_stories: ['97.1']
+enables_stories: ['97.3', '97.4']
+expected_story_file: _bmad-output/implementation-artifacts/97-2-implement-open-positions-fields-server.md
+notes: 'Server mapper updates in apps/server/src/app/routes/trades/index.ts plus client Trade interface mirror.'

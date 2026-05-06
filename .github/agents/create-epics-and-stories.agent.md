@@ -3,7 +3,7 @@ description: 'Generate epics and stories from a planning file using bmad-create-
 model: Claude Opus 4.7 (copilot)
 argument-hint: file=epics-2026-03-31.md
 tools: [read, edit, agent]
-user-invocable: false
+user-invocable: true
 ---
 
 load the #skill:prompt

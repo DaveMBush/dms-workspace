@@ -1,0 +1,17 @@
+epic_num: 97
+story_num: 1
+story_id: '97.1'
+story_key: 97-1-research-open-positions-fields-history
+slug: 97-1-research-open-positions-fields-history
+title: Research Prior Client-Side Implementation of Open Positions Computed Fields
+epic_title: Restore Missing Open Positions Computed Fields on the Server
+type: research
+status: Approved
+source_epics_file: _bmad-output/planning-artifacts/epics-2026-05-05.md
+source_section: 'Story 97.1'
+covers_requirements:
+  - R60
+depends_on_stories: []
+enables_stories: ['97.2', '97.3']
+expected_story_file: _bmad-output/implementation-artifacts/97-1-research-open-positions-fields-history.md
+notes: 'Pure research story — no production code changes. Output is open-positions-fields-research.md.'

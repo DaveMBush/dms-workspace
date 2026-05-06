@@ -1,0 +1,19 @@
+epic_num: 98
+story_num: 2
+story_id: '98.2'
+story_key: 98-2-electron-node-free-prisma-migrations
+slug: 98-2-electron-node-free-prisma-migrations
+title: Node-Free Prisma Migrations on Launch
+epic_title: Electron Setup Scripts (Database and Per-Platform Builds)
+type: implementation
+status: Approved
+source_epics_file: _bmad-output/planning-artifacts/epics-2026-05-05.md
+source_section: 'Story 98.2'
+covers_requirements:
+  - R70
+  - R71
+  - R72
+depends_on_stories: ['98.1']
+enables_stories: ['98.4']
+expected_story_file: _bmad-output/implementation-artifacts/98-2-electron-node-free-prisma-migrations.md
+notes: 'Preferred path embeds Prisma migration engine binary; documented fallback is fresh-DB + data copy.'

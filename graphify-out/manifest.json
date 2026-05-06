@@ -1,0 +1,4082 @@
+{
+  "/home/dave/code/dms-workspace/apps/electron/eslint.config.mjs": {
+    "mtime": 1776715880.30473,
+    "hash": "64ef3bfeec8d2650c54fd210f210f2ff"
+  },
+  "/home/dave/code/dms-workspace/apps/electron/vitest.config.ts": {
+    "mtime": 1776715880.3051999,
+    "hash": "ff01a681236e43d240f42155ff2a92c4"
+  },
+  "/home/dave/code/dms-workspace/apps/electron/scripts/start.js": {
+    "mtime": 1777030193.0183368,
+    "hash": "a2d60762f1ce3c6de164bbc20033223e"
+  },
+  "/home/dave/code/dms-workspace/apps/electron/src/main.ts": {
+    "mtime": 1777809972.6806252,
+    "hash": "eb5eca5ccb882abaefbba6876d1300c0"
+  },
+  "/home/dave/code/dms-workspace/apps/electron/src/preload.ts": {
+    "mtime": 1777030193.0185823,
+    "hash": "86c0dfbe7e43a789ee581d1ac5a4bb9d"
+  },
+  "/home/dave/code/dms-workspace/apps/electron/src/utils/port.ts": {
+    "mtime": 1776715880.3051162,
+    "hash": "147ba92833df0a19e89100dd3d9c3da5"
+  },
+  "/home/dave/code/dms-workspace/apps/electron/src/utils/run-migrations.ts": {
+    "mtime": 1777809972.6807559,
+    "hash": "38e865cd8aeade39d1c814fcf9e194b8"
+  },
+  "/home/dave/code/dms-workspace/apps/electron/src/utils/run-migrations.spec.ts": {
+    "mtime": 1777749464.491317,
+    "hash": "eb5376717428753144ada5f42a186eac"
+  },
+  "/home/dave/code/dms-workspace/apps/electron/src/utils/port.spec.ts": {
+    "mtime": 1776715880.3050587,
+    "hash": "ecbd35dcd6a3740601f1921736c4b8b7"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/eslint.config.mjs": {
+    "mtime": 1776871448.3875873,
+    "hash": "5d63d07bd4076c9f4493a654df545636"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/postcss.config.js": {
+    "mtime": 1774009532.239692,
+    "hash": "d75cf5f9f66171ccb397e82a93408a65"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/tailwind.config.js": {
+    "mtime": 1774009810.828933,
+    "hash": "6be67373c35fe2f6cea20a5cd8cc4a4f"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/main.ts": {
+    "mtime": 1773885304.5423865,
+    "hash": "6634457813297c520f6381b470ac0b5a"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/test-setup.ts": {
+    "mtime": 1772013443.0054004,
+    "hash": "a6504c99fce071083f78d289480c8efd"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/app.spec.ts": {
+    "mtime": 1773885304.539436,
+    "hash": "9116be56de64b60692039b49c25cb026"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/app.routes.ts": {
+    "mtime": 1776212156.8473403,
+    "hash": "4ec6a6e6849539421e1624609775b7d9"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/test-session-warning.component.ts": {
+    "mtime": 1774007625.0607023,
+    "hash": "0a83df011d50281b9bb122319f4cd3a1"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/amplify.config.ts": {
+    "mtime": 1768523003.633598,
+    "hash": "8b3f18b3b70db60a7dbe8226702f9aed"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/app.ts": {
+    "mtime": 1774007625.0593812,
+    "hash": "f38358453311878662fa9637a51b7d93"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/introduction.stories.ts": {
+    "mtime": 1774534749.0821817,
+    "hash": "2c33f30329bf14cc6eec6d12176f2afe"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/app.config.ts": {
+    "mtime": 1777030193.0179446,
+    "hash": "9fa48ec330aaa6da47618f70b283bf3c"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/utils/save-symbol-filter.function.ts": {
+    "mtime": 1775149010.1639574,
+    "hash": "bdffe05b77d76314bac7a3a9c9039263"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/utils/init-sort-columns.function.ts": {
+    "mtime": 1775149010.16389,
+    "hash": "34072956191e52580c63f5a278f4061c"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/utils/build-allocation-chart-data.function.spec.ts": {
+    "mtime": 1774752990.9283917,
+    "hash": "99f70eb5f113e8a7b5ae9f5016de584f"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/utils/default-pie-chart-options.const.spec.ts": {
+    "mtime": 1774752990.9290366,
+    "hash": "a6e106cd78c07abee8c81a0ac6df27e5"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/utils/symbol-filter-manager.interface.ts": {
+    "mtime": 1775149010.1640089,
+    "hash": "64686c8c93750f380917811a6dcc86fb"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/utils/init-search-text.function.ts": {
+    "mtime": 1775149010.1638343,
+    "hash": "45b48aebdf18dbbcc60ef522699c8c5a"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/utils/compute-percent-increase.function.spec.ts": {
+    "mtime": 1774752990.9288785,
+    "hash": "f2f09f49d0d4b11dd7fe41af460bfa01"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/utils/handle-sort-change.function.ts": {
+    "mtime": 1775149010.1637769,
+    "hash": "953ebb2b0601024ef47bb704d3a3408e"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/utils/enriched-point.interface.ts": {
+    "mtime": 1774752990.9292023,
+    "hash": "3815e512452a9206311f5d2f32271c62"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/utils/default-pie-chart-options.const.ts": {
+    "mtime": 1774752990.9291184,
+    "hash": "36dedf201caa40daf72730c53e6ba4ff"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/utils/create-symbol-filter-manager.function.ts": {
+    "mtime": 1775149010.163716,
+    "hash": "6f31a07c1af1c76ae23c7ad7e62f43d0"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/utils/compute-percent-increase.function.ts": {
+    "mtime": 1774752990.9289556,
+    "hash": "bd41203793e8f79912e460c698dfa390"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/utils/metrics-storage.function.ts": {
+    "mtime": 1768523003.6413436,
+    "hash": "b136ea28aaac6cb96cc37b08cd2bed9a"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/utils/table-container.utils.spec.ts": {
+    "mtime": 1775149010.1640754,
+    "hash": "4dc1a002df0c7922f30b49e04bedcc95"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/utils/migrate-table-state.function.ts": {
+    "mtime": 1774754389.7118573,
+    "hash": "ec4a7af582c53b92ec4bde18565dca48"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/utils/build-enriched-points.function.ts": {
+    "mtime": 1775856830.393457,
+    "hash": "5f26316d06f83504d8259d454067d5dd"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/utils/build-performance-chart-data.function.ts": {
+    "mtime": 1774752990.9287975,
+    "hash": "858e56f4d1439df8717bd6154a0f5c48"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/utils/migrate-table-state.function.spec.ts": {
+    "mtime": 1774754389.7117784,
+    "hash": "915dbce1ac04ca0b2c7bea77b0c75db6"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/utils/build-allocation-chart-data.function.ts": {
+    "mtime": 1774752990.928472,
+    "hash": "684e89d3af4f07647bc55f4dd603381a"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/utils/build-performance-chart-data.function.spec.ts": {
+    "mtime": 1775856830.3935628,
+    "hash": "314e185b11c74cb328d006ee6614ecb0"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/utils/build-enriched-points.function.spec.ts": {
+    "mtime": 1775856830.3933525,
+    "hash": "6b994a9a55ce554dd372ec65ed0cf0de"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/types/notification-severity.type.ts": {
+    "mtime": 1768523003.6413436,
+    "hash": "3946994bc3df3156d0e7b59cc9b53158"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/types/confirm-dialog-data.interface.ts": {
+    "mtime": 1768523003.6409643,
+    "hash": "1546f5f29e76de6708a09dcae903b25d"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/interfaces/performance-thresholds.interface.ts": {
+    "mtime": 1768523003.6408556,
+    "hash": "1ac8ea7c810db9d3867de987a3ae4321"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/interfaces/performance-metric.interface.ts": {
+    "mtime": 1768523003.6408556,
+    "hash": "56dda443ae0d36c1732b713aa797ad04"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/interfaces/performance-alert.interface.ts": {
+    "mtime": 1768523003.6401253,
+    "hash": "1f458008a875de9583198221576ad6d1"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/components/edit/node-editor.component.ts": {
+    "mtime": 1768523003.639282,
+    "hash": "67ec50ae21aa91af1f652cb0bc0c80e8"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/components/edit/node-editor.stories.ts": {
+    "mtime": 1774480117.048343,
+    "hash": "47530e418d4eb3ef81b13e0eb0938fa3"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/components/summary-display/summary-display.ts": {
+    "mtime": 1768523003.639832,
+    "hash": "943fc662f1a1d5c7d0be6ccaaf522605"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/components/summary-display/summary-display.spec.ts": {
+    "mtime": 1768523003.639832,
+    "hash": "9cfde23f64f770a94bb0997b73c7c295"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/components/performance-chart/performance-chart.ts": {
+    "mtime": 1774958674.7073598,
+    "hash": "d9a3e33aa68ee357c3b68701109cff33"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/components/performance-chart/performance-chart.spec.ts": {
+    "mtime": 1774958674.7073598,
+    "hash": "d9eb73722a3743f5609dc83581560163"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/components/confirm-dialog/confirm-dialog.component.ts": {
+    "mtime": 1768523003.6391854,
+    "hash": "5bfeec4126999dafbf07030be2673204"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/components/confirm-dialog/confirm-dialog.component.spec.ts": {
+    "mtime": 1768523003.638916,
+    "hash": "871f183b943b84c2d8c282e473d644b1"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/components/summary-view/get-current-month.function.ts": {
+    "mtime": 1775146434.3501759,
+    "hash": "8ec89463f49b6bd0f3ba9e2f45e09272"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/components/summary-view/summary-view.ts": {
+    "mtime": 1775151286.0892794,
+    "hash": "ef7bf39c10681442cdea58e66f7ff23c"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/components/summary-view/summary-view-account.spec.ts": {
+    "mtime": 1775856830.3932297,
+    "hash": "9bc5856b7d805623c74e19409b5bebe7"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/components/summary-view/summary-view.base.ts": {
+    "mtime": 1775151286.0891201,
+    "hash": "38af72e394e5cd2884d3500f589bf64b"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/components/base-table/column-def.interface.ts": {
+    "mtime": 1776837855.5899544,
+    "hash": "40d97789b4cb8ffb3768b64530464be6"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/components/base-table/base-table.component.spec.ts": {
+    "mtime": 1775608692.9857054,
+    "hash": "1cf9ecfd1e3b2c1d1a82f88a4d26db7a"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/components/base-table/base-table.stories.ts": {
+    "mtime": 1776548322.219937,
+    "hash": "42fd1fcf317a9412be10aa442f816b3e"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/components/base-table/base-table.component.ts": {
+    "mtime": 1777397001.1248443,
+    "hash": "b638a3c689cae72e78cbe168645910cc"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/components/allocation-chart/allocation-chart.ts": {
+    "mtime": 1774958674.7071495,
+    "hash": "c273049af71e760d41fce0aaa3320486"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/components/allocation-chart/allocation-chart.spec.ts": {
+    "mtime": 1774958674.7071495,
+    "hash": "87f8d991e6cc5b8eb1aa75cff9b85418"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/components/editable-cell/editable-cell.stories.ts": {
+    "mtime": 1774480117.0484126,
+    "hash": "c277a0d794bc246b30d2903fed6d9a90"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/components/editable-cell/editable-cell.component.spec.ts": {
+    "mtime": 1776767361.3761568,
+    "hash": "a010e5b342d2ccd9c2c51a85ef4f19e8"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/components/editable-cell/editable-cell.component.ts": {
+    "mtime": 1771629781.5759044,
+    "hash": "0af0c25e8fe99c9879306e50e335e8d1"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/components/splitter/splitter.component.spec.ts": {
+    "mtime": 1768523003.6396768,
+    "hash": "3ce33e202074f9d246f71fe80bce91fc"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/components/splitter/splitter.component.ts": {
+    "mtime": 1768523003.6396768,
+    "hash": "b7e386c1ccb9fbb3cd1115a72d4ec0dc"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/components/splitter/splitter.stories.ts": {
+    "mtime": 1774534749.0823228,
+    "hash": "42eb1bd5a70770436e13c5c5d04604a8"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/components/editable-date-cell/editable-date-cell.component.spec.ts": {
+    "mtime": 1768523003.639542,
+    "hash": "236804de22c53a705bb8562ea41406d3"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/components/editable-date-cell/editable-date-cell.stories.ts": {
+    "mtime": 1774480117.0484843,
+    "hash": "47e3bc77fd613a76e1594e368f21265c"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/components/editable-date-cell/editable-date-cell.component.ts": {
+    "mtime": 1775856830.3929741,
+    "hash": "2d71c23c0f8d14bfeeec472613210619"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/components/symbol-autocomplete/symbol-autocomplete.stories.ts": {
+    "mtime": 1774480117.0486286,
+    "hash": "70b535f18fc2bc6d18f006beee76c4e7"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/components/symbol-autocomplete/symbol-autocomplete.component.ts": {
+    "mtime": 1771629781.5768516,
+    "hash": "9db34fc569c42481c6499a9dcd7411b5"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/components/symbol-autocomplete/symbol-autocomplete.component.spec.ts": {
+    "mtime": 1768523003.6399727,
+    "hash": "39cd5e568b9e3b5c449e53779e3347e4"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/components/symbol-autocomplete/symbol-option.interface.ts": {
+    "mtime": 1771629781.5768516,
+    "hash": "f359984dffb72f311b6a109a0722bf51"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/services/confirm-dialog.service.spec.ts": {
+    "mtime": 1768523003.6408556,
+    "hash": "ea1f21f4a93cd1a345a29b5fac5ccc5a"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/services/state-persistence.service.spec.ts": {
+    "mtime": 1774745983.395506,
+    "hash": "0e4bddbe752479ade9c85f8446548cc2"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/services/performance-logging.service.spec.ts": {
+    "mtime": 1768523003.6409643,
+    "hash": "18c33cf66a569be6a642608b959822a3"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/services/state-persistence.service.ts": {
+    "mtime": 1774745983.3957148,
+    "hash": "8bbff51e7c072a395813c5cea31d817b"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/services/update-universe-fields.types.ts": {
+    "mtime": 1769563450.9423528,
+    "hash": "edcae5ec5024a013840136d019dff1af"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/services/update-universe-fields.service.spec.ts": {
+    "mtime": 1769813534.2600205,
+    "hash": "2086774d762e9d08d13d3aa9ea24b8c8"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/services/universe-sync.types.ts": {
+    "mtime": 1768523003.6409643,
+    "hash": "b9c4e1b6bf0016291e78da6dbb344304"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/services/sort-filter-state.service.spec.ts": {
+    "mtime": 1774759144.444121,
+    "hash": "d1e980385a85f47f6eafc58b605494d8"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/services/table-state.interface.ts": {
+    "mtime": 1774754389.7116838,
+    "hash": "82cc92558af0379488c29a3c37c34e9a"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/services/notification.service.spec.ts": {
+    "mtime": 1771629781.5773787,
+    "hash": "3c2d208158f53397d932bf11620f289c"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/services/filter-config.interface.ts": {
+    "mtime": 1773435782.4487898,
+    "hash": "fd444b2c78dedc0e0543f09c28d09fb9"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/services/sort-column.interface.ts": {
+    "mtime": 1774754389.7115755,
+    "hash": "303ed02b063f0ea11d705f01b85028a4"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/services/error-handling.service.spec.ts": {
+    "mtime": 1770162530.074118,
+    "hash": "2da7234673cbb20ca8577ce0a70f3ad4"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/services/sort-filter-state.service.ts": {
+    "mtime": 1774759144.444228,
+    "hash": "9c6d68e68eebed7f01a7c6796a357b3f"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/services/theme.service.ts": {
+    "mtime": 1768523003.6409643,
+    "hash": "4e6953377c8292d2f88cb6ef7591e04f"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/services/state-restoration.integration.spec.ts": {
+    "mtime": 1773435782.4487898,
+    "hash": "5db14cbd961f93ce75d940c4c1095591"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/services/sort-config.interface.ts": {
+    "mtime": 1773435782.4487898,
+    "hash": "80d9f67707d124e175351028df2e939e"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/services/symbol-search.service.ts": {
+    "mtime": 1773848443.1840227,
+    "hash": "c6e071fa7665f74221d0701da7b892f5"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/services/symbol-search.service.spec.ts": {
+    "mtime": 1776871448.388289,
+    "hash": "cc4f2c1b6718bb676bdb3684e35df3f5"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/services/performance-logging.service.ts": {
+    "mtime": 1768523003.6409643,
+    "hash": "90aafdf44055def95a595d9bef707194"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/services/global-loading.service.ts": {
+    "mtime": 1768523003.6409643,
+    "hash": "739a2eddd64b1da08bba3acab1db19d1"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/services/error-handling.service.ts": {
+    "mtime": 1770162530.0742602,
+    "hash": "22dd695173d26af6eba9683ffbfc21c7"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/services/notification.service.ts": {
+    "mtime": 1771629781.5773787,
+    "hash": "9a394f790792bc659a718d12d7a9fe24"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/services/universe-sync.service.ts": {
+    "mtime": 1769563450.941863,
+    "hash": "3ab5dd5ecbe63e31e6240df14d1bbf91"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/services/update-universe-fields.service.ts": {
+    "mtime": 1769813534.2601323,
+    "hash": "f1cb318c2d2a8225a9e9bb9eca0e1633"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/services/theme.service.spec.ts": {
+    "mtime": 1768523003.6409643,
+    "hash": "698a447fa9d1abc08c6c7379dc1cb301"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/services/error-handling-options.interface.ts": {
+    "mtime": 1770162530.074118,
+    "hash": "78e511049cf875ca5d06346dcda39c35"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/services/confirm-dialog.service.ts": {
+    "mtime": 1768523003.6409643,
+    "hash": "41e2d806e6bca1fda1b54c816298a55a"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/universe-settings/add-symbol-dialog/add-symbol-dialog.ts": {
+    "mtime": 1776429999.2942271,
+    "hash": "063dcf8f51d8f2bce4d9403036a9fca4"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/universe-settings/add-symbol-dialog/add-symbol-dialog.spec.ts": {
+    "mtime": 1776683198.3774862,
+    "hash": "70cdc4197cc4d58badb5a6faf415c46e"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shell/shell.component.ts": {
+    "mtime": 1774007625.060449,
+    "hash": "9f4f098feb673b69bc6089f40d7f5493"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shell/shell.component.spec.ts": {
+    "mtime": 1768523003.6413436,
+    "hash": "c96b7705c4e7a08b9fed8d77532eafb6"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/error-handler/error-handler.service.ts": {
+    "mtime": 1776429928.7763827,
+    "hash": "adc5d2741e7f2aeb9bb8483f4f0c4635"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/accounts/account.spec.ts": {
+    "mtime": 1773885304.5390048,
+    "hash": "41ccb167e197daddcab490cd9b58e54b"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/accounts/account-component.service.ts": {
+    "mtime": 1773885304.538417,
+    "hash": "b62c8e66b14ebaab88966371e7ee92b7"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/accounts/account-component.service.spec.ts": {
+    "mtime": 1773885304.5382822,
+    "hash": "d27762c5bcffeb7b384b3b4c894258f7"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/accounts/account.ts": {
+    "mtime": 1773885304.5391493,
+    "hash": "f4aebeb5da4bba90c7c66c8f7b37d590"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/top/top.interface.ts": {
+    "mtime": 1775124674.5684874,
+    "hash": "e90ceca701cccb4433ea514d40595832"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/top/top-definition.const.ts": {
+    "mtime": 1768523003.6439917,
+    "hash": "a74d27a867fcaa876d6a34bf91d4bf46"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/top/top-effect.service.ts": {
+    "mtime": 1775124674.5684092,
+    "hash": "896943bb1bdae08b52868d9f5caf93bf"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/top/top-effect.service.spec.ts": {
+    "mtime": 1775124674.5683014,
+    "hash": "e897863071c5f1b4164b9cf374dabfaa"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/top/selectors/select-top-entities.function.ts": {
+    "mtime": 1768523003.6439917,
+    "hash": "7c882121a1281561830702303bbfd221"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/top/selectors/select-holidays.function.ts": {
+    "mtime": 1768523003.643938,
+    "hash": "3bacb363f1d6787b502702bf1f9731e5"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/current-account/select-current-account.signal.ts": {
+    "mtime": 1773435782.4487898,
+    "hash": "1ef3ffaa722b1aa290049d937e168cab"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/current-account/current-account.signal-store.spec.ts": {
+    "mtime": 1772691357.8846,
+    "hash": "0ae1cd96cf0229c1c24d90c4abcadad3"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/current-account/select-current-account.signal.spec.ts": {
+    "mtime": 1773435782.4487898,
+    "hash": "b4bf48e3f560d1f367f60d03d5466974"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/current-account/current-account.signal-store.ts": {
+    "mtime": 1768523003.6427124,
+    "hash": "46a4869a815e839b011431a8bf7f8918"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/current-account/current-account.interface.ts": {
+    "mtime": 1768523003.6417255,
+    "hash": "f47e72fce83ee535683cbdac18502d29"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/screen/screen.interface.ts": {
+    "mtime": 1774823776.7084684,
+    "hash": "58a6d1c5df5c0548d2a05b80fb10c4f4"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/screen/screen-definition.const.ts": {
+    "mtime": 1774823776.70839,
+    "hash": "26f9d760147b331bc08e184ea841c04f"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/screen/screen-effect.service.ts": {
+    "mtime": 1768523003.6437175,
+    "hash": "fa58d6ad5e1b3e0ea70cdbca54dffd1a"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/screen/selectors/select-screen-entity.function.ts": {
+    "mtime": 1768523003.6437175,
+    "hash": "bf83339c564ff9b9c1a95c36931ae1f1"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/screen/selectors/select-screen.function.ts": {
+    "mtime": 1768523003.6438496,
+    "hash": "2d079f7bd5f9c2907aa28d9a3115c478"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/screen/selectors/select-top-screen.function.ts": {
+    "mtime": 1768523003.6438496,
+    "hash": "cece7243eacbe793f326da5553811620"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/trades/difference-in-trading-days.function.ts": {
+    "mtime": 1768523003.6441958,
+    "hash": "08a34543adfe81b991445dad3686bd24"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/trades/open-position.interface.ts": {
+    "mtime": 1776609984.1108372,
+    "hash": "6a6a71169aad5e1569e221c1a2e6cfa3"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/trades/sold-trades-definition.const.ts": {
+    "mtime": 1777226243.4440799,
+    "hash": "5768b71b183ca38cf3f45f3fb9388f5a"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/trades/trade-effect.service.ts": {
+    "mtime": 1771093359.4200988,
+    "hash": "07356902b4283043455eca64747ade39"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/trades/open-trades-definition.const.ts": {
+    "mtime": 1777226243.443989,
+    "hash": "c5a8c7a78c0da2db7e60513ed895b655"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/trades/closed-position.interface.ts": {
+    "mtime": 1776609984.110674,
+    "hash": "34c78f7f272e75e3fdd08e7f379bd88c"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/trades/trade.interface.ts": {
+    "mtime": 1777930317.003054,
+    "hash": "938cc9e703cb57ffbaac488e3c659b1a"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/trades/selectors/select-sold-trade-entity.function.ts": {
+    "mtime": 1773435782.4497898,
+    "hash": "038aeffd15bae7ec3ab5dfbbb80bda08"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/trades/selectors/select-trades.function.ts": {
+    "mtime": 1773435782.4497898,
+    "hash": "175240c54efca932558084f1a2e96f3d"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/trades/selectors/select-sold-trades.function.ts": {
+    "mtime": 1773435782.4497898,
+    "hash": "6243f36beefce03f5349e13a87790bc6"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/trades/selectors/select-account-children.function.ts": {
+    "mtime": 1773435782.4497898,
+    "hash": "632165a754d30c948d1e1f249a7552ec"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/trades/selectors/select-open-trade-entity.function.ts": {
+    "mtime": 1773435782.4497898,
+    "hash": "0c16162f5ff5c119483e57a5a743e64b"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/accounts/account-sold-trades.spec.ts": {
+    "mtime": 1775132213.8085406,
+    "hash": "3cb2d6da0032469ac58a0011d4db62fc"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/accounts/account-effect.service.ts": {
+    "mtime": 1768523003.6415997,
+    "hash": "678750f4c5f1ad673042b02722f69ee6"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/accounts/account-open-trades.spec.ts": {
+    "mtime": 1775132213.8084538,
+    "hash": "0b5d7cdefc36585c880471a9fbb4a4c8"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/accounts/account-div-deposits.spec.ts": {
+    "mtime": 1775132213.8083444,
+    "hash": "18bfcc5e889481a30d2dac82fd67f5c8"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/accounts/accounts-definition.const.ts": {
+    "mtime": 1775132213.8086214,
+    "hash": "ad48fd5e9159218c960d275a3a3294b4"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/accounts/account.interface.ts": {
+    "mtime": 1773510751.346689,
+    "hash": "6e66529846c705fea7bf2b61d6bf769a"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/accounts/selectors/get-account-ids.function.ts": {
+    "mtime": 1773435782.4487898,
+    "hash": "ac3b6992b1d70c1e7afc0df0e6c08a38"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/accounts/selectors/select-accounts.function.ts": {
+    "mtime": 1768523003.6417255,
+    "hash": "992148052d956df49b361c86fab466f0"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/accounts/selectors/select-top-accounts.function.ts": {
+    "mtime": 1768523003.6417255,
+    "hash": "c3b923c74d75c21eeacf091ba0a89a7f"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/accounts/selectors/select-accounts-entity.function.ts": {
+    "mtime": 1768523003.6415997,
+    "hash": "74adcc73ed4f7d26e95c9b0c3210edd6"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/div-deposits/div-deposit-definition.const.ts": {
+    "mtime": 1777894017.633349,
+    "hash": "934d7579a78dac0f16bcbfaf8d2df673"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/div-deposits/div-deposits-effect.service.ts": {
+    "mtime": 1768523003.6433227,
+    "hash": "5833fdc2756afeb5e84308145879c704"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/div-deposits/div-deposits.selectors.ts": {
+    "mtime": 1768523003.6433227,
+    "hash": "ba1e6b48b65ff76efae9b2c67be1ed63"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/div-deposits/div-deposit.interface.ts": {
+    "mtime": 1777894017.6334796,
+    "hash": "e9d7ece2690204d2ed9b6698697a0d23"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/risk-group/risk-group.interface.ts": {
+    "mtime": 1768523003.6434827,
+    "hash": "0193cd8ea905289267c5915e7c995e0a"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/risk-group/risk-group-definition.const.ts": {
+    "mtime": 1768523003.6433227,
+    "hash": "f888ee1cbc1e8ce23e74cd38a4bdd907"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/risk-group/risk-group-effect.service.ts": {
+    "mtime": 1768523003.6434827,
+    "hash": "8c0695f35444149951a9be48001b1a2e"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/risk-group/selectors/select-risk-group-entity.function.ts": {
+    "mtime": 1768523003.6434827,
+    "hash": "67414e547fe120122a6927cde6107c3f"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/risk-group/selectors/select-risk-group.function.ts": {
+    "mtime": 1768523003.6436095,
+    "hash": "35467934f97a091a85824cfa4cde593b"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/risk-group/selectors/select-top-risk-group.function.ts": {
+    "mtime": 1768523003.6436095,
+    "hash": "88032e90ac4c24a4baa157c879783445"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/universe/universe-effect.service.spec.ts": {
+    "mtime": 1777235384.53793,
+    "hash": "9221443a9212d915e049bd222a059ba8"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/universe/universe-definition.const.ts": {
+    "mtime": 1777235384.5377326,
+    "hash": "2fbada6dff7d49e325822c957c20ae0c"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/universe/universe-effect.service.ts": {
+    "mtime": 1768523003.644505,
+    "hash": "4465503bacd990bb1cdeb33750574c93"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/universe/universe.interface.ts": {
+    "mtime": 1777235384.5380547,
+    "hash": "ae5c561b7f547371d40096a1910a03a2"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/universe/selectors/select-universe-entity.function.ts": {
+    "mtime": 1768523003.644505,
+    "hash": "393ec0b9b22d28cb3a13ce14f5d43083"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/universe/selectors/select-top-universes.function.ts": {
+    "mtime": 1768523003.644467,
+    "hash": "16399834f6a8a09d6cbec62053504947"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/universe/selectors/select-universes.function.ts": {
+    "mtime": 1768523003.644505,
+    "hash": "17fca653501c7fcc85213e947f936537"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/div-deposit-types/div-deposit-types-definition.const.ts": {
+    "mtime": 1768523003.6431158,
+    "hash": "9649fbd503c84fc012bf59b8a80f7d08"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/div-deposit-types/div-deposit-types-effect.service.ts": {
+    "mtime": 1768523003.6431158,
+    "hash": "4158371aaa4dc0098be13e44e7257cce"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/div-deposit-types/div-deposit-type.interface.ts": {
+    "mtime": 1768523003.6427124,
+    "hash": "5fe960a5cab29f972f983820bb58959a"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/div-deposit-types/selectors/select-div-deposit-types.function.ts": {
+    "mtime": 1768523003.643236,
+    "hash": "82f2e9d3985ca9e77af756b205a7387a"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/div-deposit-types/selectors/select-top-div-deposit-types.function.ts": {
+    "mtime": 1768523003.643236,
+    "hash": "dcb38de97a37abd3e6136400f218d8d9"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/div-deposit-types/selectors/select-div-deposit-type-entity.function.ts": {
+    "mtime": 1768523003.6431158,
+    "hash": "16c1a2429490043d0402d086f0e353cd"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/demo/chart-demo.ts": {
+    "mtime": 1773885304.541225,
+    "hash": "d2f364f94d7a21aaabfb89e8a127f310"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/dashboard/dashboard.stories.ts": {
+    "mtime": 1774480117.0481896,
+    "hash": "55165295133454007ab45147e4b61a69"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/dashboard/dashboard.routes.ts": {
+    "mtime": 1768523003.6375766,
+    "hash": "845815f27efeb72427d64366802e6e44"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/dashboard/dashboard.component.ts": {
+    "mtime": 1768523003.6374645,
+    "hash": "60935059f0df17be5be4c03e477ee5a5"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/auth-performance.benchmark.spec.ts": {
+    "mtime": 1768523003.6339464,
+    "hash": "41f937d60f9b97d43e788475066f88d0"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/auth-integration.spec.ts": {
+    "mtime": 1768523003.633598,
+    "hash": "2e8507fd2c3199417dfb0af0762c2312"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/auth.service.ts": {
+    "mtime": 1768523003.6339464,
+    "hash": "71750bab8f835489cacc534d959ad658"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/base-auth-service.abstract.ts": {
+    "mtime": 1768523003.6339464,
+    "hash": "187ce36b30a9dc71ac582103b4a66eb2"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/auth.service.spec.ts": {
+    "mtime": 1768523003.6339464,
+    "hash": "4b763ebf30bf30a316d508b908a04859"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/auth.routes.ts": {
+    "mtime": 1773885304.5396833,
+    "hash": "513ad4ca2fa1a0b8be30533985d2fdc1"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/mock-auth.service.ts": {
+    "mtime": 1768523003.6351023,
+    "hash": "44381464111eae28e0df29f0f5343fae"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/auth.types.ts": {
+    "mtime": 1768523003.6339464,
+    "hash": "885c9e1aa453fc5cdf34d1913d7c7ceb"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/base-auth.interface.ts": {
+    "mtime": 1768523003.6339464,
+    "hash": "d77e2af7c3f04376d5e8c0c4f11d3a0b"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/login/login.ts": {
+    "mtime": 1773885304.5400698,
+    "hash": "35dd26c97fd4f160f060b650fa33dc8b"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/login/login.spec.ts": {
+    "mtime": 1773885304.5399768,
+    "hash": "2ac848ac50ff99918aeede6788fce475"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/guards/auth.guard.ts": {
+    "mtime": 1768523003.6345935,
+    "hash": "797cddf55eafb59bdac502d4b5b44f16"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/guards/auth.guard.spec.ts": {
+    "mtime": 1768523003.6344178,
+    "hash": "7cf811481acd5581bf20b1e68abbbc24"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/utils/amplify-user-mapper.function.ts": {
+    "mtime": 1768523003.636412,
+    "hash": "8e9498012474f3de11cc99a8a5fdb17f"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/utils/auth-error-handler.function.ts": {
+    "mtime": 1768523003.6374645,
+    "hash": "30d3394f0fc3e29e6cd6f4e5e4ab6575"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/types/profile.types.ts": {
+    "mtime": 1768523003.636412,
+    "hash": "5b7b411bbd71d0bba59e6dd59546b343"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/interceptors/performance.interceptor.ts": {
+    "mtime": 1774745983.3945553,
+    "hash": "56c086fbd1b99b73f21c096c72fbf9b5"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/interceptors/sort.interceptor.ts": {
+    "mtime": 1774754389.7114835,
+    "hash": "13f29898c90695a6c22b1a93dcc367f1"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/interceptors/auth.interceptor.spec.ts": {
+    "mtime": 1768523003.6345935,
+    "hash": "ae5cb62c9843e514995f939ca593a8ce"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/interceptors/auth.interceptor.ts": {
+    "mtime": 1776429928.7762268,
+    "hash": "44e3341d4845859b7dcb3eea6a647fdd"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/interceptors/performance.interceptor.spec.ts": {
+    "mtime": 1768523003.6346815,
+    "hash": "eb0460aa80b75e6e8bd02198ca528cd2"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/interceptors/sort.interceptor.spec.ts": {
+    "mtime": 1774754389.7111113,
+    "hash": "9b4af716f66c70675e60c541cf0e51fc"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/interfaces/system-performance-metrics.interface.ts": {
+    "mtime": 1768523003.6348665,
+    "hash": "fd822d21b345ba45deafc75d7c2b602c"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/interfaces/auth-performance-metrics.interface.ts": {
+    "mtime": 1768523003.6348665,
+    "hash": "179ac0f13c0c7b7b1bb915e9e8148976"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/interfaces/cache-performance-metrics.interface.ts": {
+    "mtime": 1768523003.6348665,
+    "hash": "1af441923984b854b349709f458871df"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/interfaces/performance-dashboard-data.interface.ts": {
+    "mtime": 1768523003.6348665,
+    "hash": "ed3ed03cd2b2e186907fb858ccf3f8c2"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/interfaces/auth-operation-stats.interface.ts": {
+    "mtime": 1768523003.6348665,
+    "hash": "37d9c35599c8c726e45724dcfb2b9c8c"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/interfaces/auth-operation-metric.interface.ts": {
+    "mtime": 1768523003.6346815,
+    "hash": "9526f436097f03a7f1496361bd13ff27"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/interfaces/performance-regression.interface.ts": {
+    "mtime": 1768523003.6348665,
+    "hash": "96d5130f6c748c409c885ba9a2a529b8"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/interfaces/performance-alert.interface.ts": {
+    "mtime": 1768523003.6348665,
+    "hash": "3d8cfee7a2f6c676be6b414d84a4df72"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/interfaces/auth-performance-summary.interface.ts": {
+    "mtime": 1768523003.6348665,
+    "hash": "d10a3f4d838cb3029f5046383343abf5"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/components/session-warning/session-warning.spec.ts": {
+    "mtime": 1774745983.3944135,
+    "hash": "d16b369cc6485d6b035799e03966a9ee"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/components/session-warning/session-warning.ts": {
+    "mtime": 1773885304.5398753,
+    "hash": "148035d014ca2aeb83aee7b7c6db7331"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/services/user-state.service.ts": {
+    "mtime": 1768523003.636412,
+    "hash": "3664281febcac5400b5c26fa4523c03b"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/services/mock-profile.service.ts": {
+    "mtime": 1768523003.6361382,
+    "hash": "09bdda19c012ee74a1a22bd19e910790"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/services/profile-actions.service.spec.ts": {
+    "mtime": 1768523003.6361382,
+    "hash": "af9b2426609adb5c8066014fa12dd42c"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/services/activity-tracking.service.ts": {
+    "mtime": 1768523003.6361382,
+    "hash": "908ac84a4cc3b24e85347bd1d8d155ab"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/services/activity-tracking.service.spec.ts": {
+    "mtime": 1768523003.6354144,
+    "hash": "5c3afd7222e44036334fc13c5be7afe4"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/services/session-warning.service.ts": {
+    "mtime": 1773885304.541225,
+    "hash": "4875ee59595a1ba8ea275b81bce082a6"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/services/profile.service.ts": {
+    "mtime": 1768523003.6361382,
+    "hash": "09eaac699eac5d51b234cb518b7ab113"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/services/session-manager.service.spec.ts": {
+    "mtime": 1768523003.6361382,
+    "hash": "499bc72999082959b34fde394479c6fe"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/services/base-profile.service.ts": {
+    "mtime": 1768523003.6361382,
+    "hash": "a4f8e4a9610f482b5f61ad04d9a6447a"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/services/profile-actions.service.ts": {
+    "mtime": 1768523003.6361382,
+    "hash": "93a7d7cbd549261bcf984167fab5644e"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/services/session-restoration.service.ts": {
+    "mtime": 1768523003.6361382,
+    "hash": "a451d070718aa8b562d7d86ec3c8e023"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/services/secure-cookie.service.ts": {
+    "mtime": 1768523003.6361382,
+    "hash": "a45aec48bbccfbf88786df79b88bb859"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/services/user-state.service.spec.ts": {
+    "mtime": 1768523003.636412,
+    "hash": "05e81cb2d2aee1939beabfb59a6142ad"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/services/session-timer.service.spec.ts": {
+    "mtime": 1773887305.1237376,
+    "hash": "cc561fd204bc225501b35c78444d7d5a"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/services/profile.service.spec.ts": {
+    "mtime": 1768523003.6361382,
+    "hash": "c94749c297f457eb68604eb7e8b415b2"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/services/session-manager.service.ts": {
+    "mtime": 1768523003.6361382,
+    "hash": "d9320b8b01a6372b878a0a2df555acbc"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/services/secure-cookie-request.interface.ts": {
+    "mtime": 1768523003.6361382,
+    "hash": "0787a846b94520a9a0f25ea291c3adea"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/services/session-timer.service.ts": {
+    "mtime": 1768523003.6361382,
+    "hash": "85257b0f2ff6aef87fcb68b92ec66619"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/services/auth-metrics.service.ts": {
+    "mtime": 1768523003.6361382,
+    "hash": "ccafcff24ea67b91728186dcc060db72"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/services/auth-metrics.service.spec.ts": {
+    "mtime": 1768523003.6361382,
+    "hash": "06de8400f79fb694511cd3056927088e"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/services/session-restoration.service.spec.ts": {
+    "mtime": 1768523003.6361382,
+    "hash": "8750c61ca532cac6d34a51d373d6c0b2"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/services/cache-stats.interface.ts": {
+    "mtime": 1768523003.6361382,
+    "hash": "d9a583dbd85e1a24916156e6db8ebf82"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/profile/profile.ts": {
+    "mtime": 1773885304.541225,
+    "hash": "d79c90e6578c5b4769c4ebef5a3f0176"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/profile/profile.spec.ts": {
+    "mtime": 1773885304.5411355,
+    "hash": "108e539890c1ffa05aef62fc85f1d22e"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/profile/components/session-info-card.ts": {
+    "mtime": 1773885304.5410354,
+    "hash": "ade0ac63be7edc41b985788ed1388f70"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/profile/components/email-change-card.ts": {
+    "mtime": 1773885304.5404172,
+    "hash": "f7d1c0c7e4cb201f62af7c49ad232815"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/profile/components/email-change-card.spec.ts": {
+    "mtime": 1773885304.5403342,
+    "hash": "d1933bb1b187457d8f439228a8a2edb3"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/profile/components/session-info-card.spec.ts": {
+    "mtime": 1774745983.3946683,
+    "hash": "2f0e45cf0785bccf2042b4e42a58d8ab"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/profile/components/profile-info-card.ts": {
+    "mtime": 1773885304.5408216,
+    "hash": "18ee8a05bc2226193b4c2a3b708cbdd5"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/profile/components/profile-info-card.spec.ts": {
+    "mtime": 1773885304.540669,
+    "hash": "53d1dd8ed044194b52b207938ed56065"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/profile/components/account-actions-card.spec.ts": {
+    "mtime": 1773885304.5401719,
+    "hash": "fc6522d6413be1b675b13c901680f2f7"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/profile/components/account-actions-card.ts": {
+    "mtime": 1773885304.5402493,
+    "hash": "17e23066b975f8ccc6277bdaf65e136b"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/global-summary.spec.ts": {
+    "mtime": 1775856830.392123,
+    "hash": "cc17824edc93887c7aad25c13eaad927"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/global-universe.ts": {
+    "mtime": 1768523003.6384096,
+    "hash": "752cc4808389339bd55fb50d244762c5"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/global-screener.ts": {
+    "mtime": 1768523003.6379309,
+    "hash": "5ec184cc15ade6e19a1ad6041e5c0d66"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/cusip-cache/cusip-cache.component.ts": {
+    "mtime": 1772846596.9425573,
+    "hash": "707388e7991ee34c5302f01b81b8f10b"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/cusip-cache/cusip-cache-source.type.ts": {
+    "mtime": 1773975386.7982576,
+    "hash": "2d533ec3bfc6f6dc9797d011779b2a6e"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/cusip-cache/cusip-cache-admin.service.ts": {
+    "mtime": 1772846596.9422154,
+    "hash": "a539e07c6b374833f2f39c5d357ac580"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/cusip-cache/cusip-cache-entry.interface.ts": {
+    "mtime": 1772846596.9425573,
+    "hash": "f5ba18ffbab1fb85506374ed65a5369a"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/cusip-cache/audit-result.interface.ts": {
+    "mtime": 1772846596.9420862,
+    "hash": "bf45828e4efe9b28382ae97e398f3500"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/cusip-cache/cusip-cache-admin.service.spec.ts": {
+    "mtime": 1773975386.7981737,
+    "hash": "3ae8b845c8be9fde65d39792e225d519"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/cusip-cache/cusip-cache-add-dialog.component.ts": {
+    "mtime": 1773975386.7979646,
+    "hash": "e3403ee3637ebdaffdcd9a9ad8eda9f2"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/cusip-cache/search-result.interface.ts": {
+    "mtime": 1772846596.9425573,
+    "hash": "9a8812ca0e43f24d76673bb073923005"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/cusip-cache/cusip-cache-audit-entry.interface.ts": {
+    "mtime": 1772846596.9422154,
+    "hash": "9f921599a7200fe93d660f403fc65e3f"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/cusip-cache/cusip-cache-stats.interface.ts": {
+    "mtime": 1772846596.9425573,
+    "hash": "f6d0bd6f3811cabbb020af7b0cee7e3b"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/cusip-cache/cusip-cache-dialog-result.interface.ts": {
+    "mtime": 1772846596.9425573,
+    "hash": "575bf8cd3d15229e121e0a7df910a754"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/cusip-cache/cusip-cache-add-dialog.component.spec.ts": {
+    "mtime": 1773975386.797844,
+    "hash": "fa77fcc0774909d3f2aa0a2310d50c1f"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/cusip-cache/cusip-cache.component.spec.ts": {
+    "mtime": 1774745983.3950417,
+    "hash": "6055907075011f8f32f639e00fbdf524"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/import-dialog/import-dialog-data.interface.ts": {
+    "mtime": 1771989757.1628485,
+    "hash": "fbe986882222bc687fb5645b891d0b92"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/import-dialog/file-upload-validation.spec.ts": {
+    "mtime": 1776871448.3881404,
+    "hash": "fa41700d38fd5abd4c731bd4330257ec"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/import-dialog/import-dialog.component.ts": {
+    "mtime": 1772672857.822741,
+    "hash": "b97bbbf9d985d4e01f3c0389cce72d22"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/import-dialog/import-dialog.component.spec.ts": {
+    "mtime": 1774185042.7809956,
+    "hash": "de6cfab43d7aea87e3296896370017f8"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/import-dialog/import-dialog-result.interface.ts": {
+    "mtime": 1771989757.1628485,
+    "hash": "1e59da41b6dacb718e1c0667708fe563"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/global-error-logs/global-error-logs.ts": {
+    "mtime": 1776812813.3076136,
+    "hash": "ccb4376c8df231505c2710b500489649"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/global-screener/global-screener.component.spec.ts": {
+    "mtime": 1774823776.707951,
+    "hash": "bed2e164cfbff84e325a6b9c3782b7bd"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/global-screener/global-screener.component.ts": {
+    "mtime": 1774823776.7080855,
+    "hash": "8171ea9c396f3a611a4cc0fe35ea7cb2"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/global-screener/services/screener.service.ts": {
+    "mtime": 1774823776.7082925,
+    "hash": "ff4008be79c27141d81fc6492d77e0f4"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/global-screener/services/screener.service.spec.ts": {
+    "mtime": 1774823776.708199,
+    "hash": "c87441ef4ffe87891078b97eea91c62b"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/services/summary.interface.ts": {
+    "mtime": 1772672891.354612,
+    "hash": "c9493a27ca3ad62c94b8b142a8eecc48"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/services/graph-point.interface.ts": {
+    "mtime": 1772672891.354612,
+    "hash": "2ee70b4deaddf4d369d4528ebbed9496"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/services/month-option.interface.ts": {
+    "mtime": 1772672891.354612,
+    "hash": "2c7f31c51ede302568cc97c505856127"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/services/summary.service.spec.ts": {
+    "mtime": 1772674161.8519166,
+    "hash": "57f0f14aa5d040cb9cf3107bbad436f0"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/services/summary.service.ts": {
+    "mtime": 1772674161.8520327,
+    "hash": "7dae1ec63cc497dc08b6d7ab1c7e2a03"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/global-universe/save-universe-filters-and-notify.function.ts": {
+    "mtime": 1776007862.9016807,
+    "hash": "66023928625002859651c46b3ccc438d"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/global-universe/enrich-universe-with-risk-groups.function.spec.ts": {
+    "mtime": 1777235384.537133,
+    "hash": "f11de1b7ef164c578a6e8eb961b8c946"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/global-universe/format-position.function.spec.ts": {
+    "mtime": 1774360230.7991922,
+    "hash": "2918eb6c3b237e853a0a43fdbb8ebb24"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/global-universe/filter-universes.function.spec.ts": {
+    "mtime": 1776534193.3765504,
+    "hash": "0e687a26ed6b5066157240dfd163b1dd"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/global-universe/enriched-universe.interface.ts": {
+    "mtime": 1771629781.5693786,
+    "hash": "ca3b4504db53407337338c01baf647d7"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/global-universe/apply-pending-edits.function.ts": {
+    "mtime": 1776683198.3768551,
+    "hash": "781adcca3f6de9dea6a20a646fee631e"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/global-universe/global-universe.component.ts": {
+    "mtime": 1777235384.5375855,
+    "hash": "f3c9176976cafe647bf39f078cbed5ea"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/global-universe/calculate-yield-percent.function.ts": {
+    "mtime": 1768523003.6384096,
+    "hash": "988c2c0cc1e22c99cebf73f5e80115dd"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/global-universe/global-universe.columns.ts": {
+    "mtime": 1777397001.1242886,
+    "hash": "27927402c324c53062f49b402dac3c4b"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/global-universe/build-risk-group-options.function.ts": {
+    "mtime": 1776683198.3770008,
+    "hash": "ad8885e5359119dbb18ce3fa42557633"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/global-universe/enrich-universe-with-risk-groups.proxy.spec.ts": {
+    "mtime": 1776534193.3762875,
+    "hash": "6ad41448ea5e1522020e6754792d1a13"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/global-universe/handle-cell-edit.function.ts": {
+    "mtime": 1776568340.9129033,
+    "hash": "53c16dfeecc96b5350f48954205199be"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/global-universe/update-pending-edits.function.ts": {
+    "mtime": 1776683198.3772705,
+    "hash": "24613c544e951c87a2df8c70bef8a030"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/global-universe/global-universe.component.spec.ts": {
+    "mtime": 1777397001.1246781,
+    "hash": "42dc3b6a7c9ce5dd3b4b0aeb6dcfc2ba"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/global-universe/build-account-options.function.ts": {
+    "mtime": 1776683198.3769257,
+    "hash": "2780c062eed699ebaf847673fe3e36a6"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/global-universe/build-shift-sort-columns.function.ts": {
+    "mtime": 1774759144.4430664,
+    "hash": "f25d4accb9fc839571de1b6d377a868d"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/global-universe/enrich-universe-with-risk-groups.function.ts": {
+    "mtime": 1777235384.537273,
+    "hash": "1b607cbb6cd5234fecc9e979d3b2b1ee"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/global-universe/restore-universe-filters.function.ts": {
+    "mtime": 1774763472.2546825,
+    "hash": "caf6364fa14f70acf6da8ec855798ad3"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/global-universe/save-universe-filters-and-notify.function.spec.ts": {
+    "mtime": 1776007862.901572,
+    "hash": "6d0acadd6365f54cae39ea7f0b6d3f48"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/global-universe/restore-universe-filters.function.spec.ts": {
+    "mtime": 1774763472.2545938,
+    "hash": "adc927481cc36bb0adc0a8e8add66580"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/global-universe/parse-yield-value.function.ts": {
+    "mtime": 1773435782.4477897,
+    "hash": "fdc987786429ac496e54ba32c8187749"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/global-universe/filter-universes.function.ts": {
+    "mtime": 1776534193.3766928,
+    "hash": "856744cf4f6a99f05fac04d835b1f4f8"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/global-universe/format-position.function.ts": {
+    "mtime": 1774301644.6612816,
+    "hash": "9ab8764917a5e786d5c77a8fc0084a3f"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/global-universe/cell-edit-event.interface.ts": {
+    "mtime": 1768523003.6385942,
+    "hash": "2c70c481029461179e70e1b4f9b09f12"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/global-universe/global-universe.risk-groups.ts": {
+    "mtime": 1769813534.2598987,
+    "hash": "8c2745148837323355915e2e31f38781"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/global-universe/global-universe.expired-options.ts": {
+    "mtime": 1769813534.2598236,
+    "hash": "bb7ad9a61176811f7b410c0a955439c5"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/global-universe/global-universe-import.integration.spec.ts": {
+    "mtime": 1772013443.0054004,
+    "hash": "c156a2c5737d66bd0362f9fa7c520113"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/global-universe/universe-filter-values.interface.ts": {
+    "mtime": 1773435782.4487898,
+    "hash": "66aa97fc589f03fbb8dcac6a42ee55ba"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/global-universe/services/universe.service.ts": {
+    "mtime": 1775335932.429168,
+    "hash": "7e3b6a58ec428eeda8d4bacf7f51a3f7"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/global-universe/services/universe-validation.service.spec.ts": {
+    "mtime": 1771629781.5724547,
+    "hash": "e9813e20db7dfd790de6f1b51fc7dce5"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/global-universe/services/universe-validation.service.ts": {
+    "mtime": 1771629781.5728202,
+    "hash": "c80ff5c1bdd16dece408d2cb63f93800"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/account-panel/account-panel.component.ts": {
+    "mtime": 1774007625.0578482,
+    "hash": "6a0e418abc0fa3b74f719bc0c1db55d5"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/account-panel/account-panel.component.spec.ts": {
+    "mtime": 1773885304.5370264,
+    "hash": "e6ceef663f769393bdc04a74a3e4ccd4"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/account-panel/account-detail.component.spec.ts": {
+    "mtime": 1774745983.3942509,
+    "hash": "4d89364de7f2352353072b16accaa52a"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/account-panel/account-selection-integration.spec.ts": {
+    "mtime": 1778030606.4234824,
+    "hash": "74c0b61960d7974dce28229488807f71"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/account-panel/account-detail.component.ts": {
+    "mtime": 1774007625.0576575,
+    "hash": "2a76b47fd4972388df9f02be38feddc4"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/account-panel/div-dep-modal/div-dep-modal.component.spec.ts": {
+    "mtime": 1773885304.5370264,
+    "hash": "7ab786609e57260887ebed764a433b4f"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/account-panel/div-dep-modal/div-dep-modal-data.interface.ts": {
+    "mtime": 1768523003.6312513,
+    "hash": "5cd629a40f573c6391cf0d806e95376e"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/account-panel/div-dep-modal/div-dep-modal.component.ts": {
+    "mtime": 1773885304.5375123,
+    "hash": "189e7b9c4e101126e7abb7009fa1d7e3"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/account-panel/sold-positions/sold-positions-component.service.ts": {
+    "mtime": 1778026655.2594173,
+    "hash": "cab3e7e3cacfd3301f2d511e87f37ab7"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/account-panel/sold-positions/classify-capital-gain.function.spec.ts": {
+    "mtime": 1771717983.84878,
+    "hash": "1279538e1322110d1e633f743c2faed4"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/account-panel/sold-positions/sold-positions.component.ts": {
+    "mtime": 1776609984.115836,
+    "hash": "2e0a62a9897c0b79966f3fcf0a8a2b84"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/account-panel/sold-positions/classify-capital-gain.function.ts": {
+    "mtime": 1771717983.8489718,
+    "hash": "7ca94cc910d57263a071f1c1b2fa662b"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/account-panel/sold-positions/sold-positions-component.service.spec.ts": {
+    "mtime": 1778026655.2592943,
+    "hash": "fa10be1d3c00e16c6596fbe6610ebc8f"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/account-panel/sold-positions/sold-positions.component.spec.ts": {
+    "mtime": 1775089971.422903,
+    "hash": "28705205884b8f083068549a0158bf1f"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/account-panel/open-positions/add-position.service.ts": {
+    "mtime": 1777930317.0029233,
+    "hash": "7ac87636f64f423d84964bd34c392eaf"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/account-panel/open-positions/open-positions.component.ts": {
+    "mtime": 1775942174.2269077,
+    "hash": "7a85cde6714cf7dbbc892728e940d992"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/account-panel/open-positions/add-position-dialog-result.interface.ts": {
+    "mtime": 1771629781.5663786,
+    "hash": "a56ef2dd211756a56cc05b9bdea7ef04"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/account-panel/open-positions/open-positions-component.service.ts": {
+    "mtime": 1778015112.217334,
+    "hash": "12ef9116c320a57d8470424e8dc74ada"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/account-panel/open-positions/open-positions-component.service.spec.ts": {
+    "mtime": 1778030606.42363,
+    "hash": "8a44c3b8636f89fafe7e6a487632ce6b"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/account-panel/open-positions/position-validators.ts": {
+    "mtime": 1771629781.5692961,
+    "hash": "adcee92282bc3b64fb2be1a1a33e3095"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/account-panel/open-positions/open-positions.component.spec.ts": {
+    "mtime": 1776871448.3879077,
+    "hash": "3ad5b2c57c8ae6c1e7ec7b12eb0f6076"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/account-panel/open-positions/add-position-dialog/add-position-dialog.component.ts": {
+    "mtime": 1771629781.5682359,
+    "hash": "20a62950f2b42429ce3ffc586cfae817"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/account-panel/open-positions/add-position-dialog/add-position-data.interface.ts": {
+    "mtime": 1771629781.5663786,
+    "hash": "97825a5a767c856ea2fc70e96a25aee2"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/account-panel/dividend-deposits/dividend-deposits.component.spec.ts": {
+    "mtime": 1775089971.4219031,
+    "hash": "78ad0c1bec5285c1fa204fd8e4426a91"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/account-panel/dividend-deposits/dividend-deposits-component.service.ts": {
+    "mtime": 1777894017.6331792,
+    "hash": "83ef8205d1f43bc199af76abd5bac401"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/account-panel/dividend-deposits/dividend-deposits.component.ts": {
+    "mtime": 1775149010.1633897,
+    "hash": "070c608cb24b1448fdad8321db7276c0"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/account-panel/dividend-deposits/dividend-deposits-component.service.spec.ts": {
+    "mtime": 1777894017.633019,
+    "hash": "efad20817818a01e987fb7b6a4681e0d"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/test-utils/get-harness-loader.function.ts": {
+    "mtime": 1773607266.7788098,
+    "hash": "e282da262dd87b7098352ffbdea8625e"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/test-utils/create-mock-mat-snack-bar.function.ts": {
+    "mtime": 1773607266.7788098,
+    "hash": "e12a230a0f6f0ebc25505130364942f5"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/test-utils/type-in-input.function.ts": {
+    "mtime": 1773607266.7788098,
+    "hash": "bf3d1ded2b9b2ef945a04ce496be8597"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/test-utils/create-mock-confirm-dialog-service.function.ts": {
+    "mtime": 1773607266.778706,
+    "hash": "f4d3830a555e9c8417f3ee743c0b5df7"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/test-utils/click-button.function.ts": {
+    "mtime": 1773607266.7785635,
+    "hash": "1fa4212ff9b35cc9233ee1bce6457e7c"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/test-utils/create-mock-notification-service.function.ts": {
+    "mtime": 1773607266.7788098,
+    "hash": "2135e3f5c5b88b494adbe391d01859ef"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/test-utils/create-mock-mat-dialog.function.ts": {
+    "mtime": 1773607266.778706,
+    "hash": "ae15ea379dcdb05fdaece625ba7efc31"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/test-utils/select-option.function.ts": {
+    "mtime": 1773607266.7788098,
+    "hash": "e7323b04d253e214c82aedda6603cf6a"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/environments/environment.docker.ts": {
+    "mtime": 1768523003.644902,
+    "hash": "601200b7b5b3fb22232350a1061de9b5"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/environments/environment.cognito.spec.ts": {
+    "mtime": 1773887305.1248426,
+    "hash": "57fe03105c7709d7b1aba1617e0a8950"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/environments/environment.ts": {
+    "mtime": 1768523003.644902,
+    "hash": "d11f1b829ea75b0a3726d825c1e8b439"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/environments/cognito-config.interface.ts": {
+    "mtime": 1768523003.644902,
+    "hash": "3762d428565b58578d7e8088c746ca8d"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/environments/environment.prod.ts": {
+    "mtime": 1768523003.644902,
+    "hash": "1905bfb104ff0af055b27fe23d8e3fdd"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/environments/environment.prod.spec.ts": {
+    "mtime": 1768523003.644902,
+    "hash": "bed37047262e41bc3ed72cf1da393df2"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/environments/cognito-config-local.ts": {
+    "mtime": 1768523003.644902,
+    "hash": "9cac4509de2830d1a60861969c88ec07"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/environments/cognito-config-staging.ts": {
+    "mtime": 1768523003.644902,
+    "hash": "f7e64ac0209b1a7cb84df196da77f95e"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/environments/cognito-config-prod.ts": {
+    "mtime": 1768523003.644902,
+    "hash": "e7feaf66baa7d1e5c09e42caf9d785ae"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/environments/get-cognito-config.function.ts": {
+    "mtime": 1768523003.644902,
+    "hash": "82743de24866523c5992713328b37514"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/environments/cognito-config-dev.ts": {
+    "mtime": 1768523003.6447556,
+    "hash": "fc39380b7ff272cb181ed585c1f6d25d"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/playwright.config.ts": {
+    "mtime": 1777127115.9151313,
+    "hash": "f094a1fec436a9adbba53df704e1b125"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/eslint.config.mjs": {
+    "mtime": 1774180954.8732836,
+    "hash": "48a31bba61ea0d33b8d678ef7b98bb8f"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/account-selection.spec.ts": {
+    "mtime": 1772764539.138068,
+    "hash": "c21f1f254aab92f2388f95a4fe0ddf80"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/global-summary.spec.ts": {
+    "mtime": 1773613288.9305077,
+    "hash": "f2ad1530415a4a594627eec8c6775e5d"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/lazy-loading-dividend-deposits.spec.ts": {
+    "mtime": 1775347811.1372807,
+    "hash": "509ad43d8e9c3268cbeaecc3af056014"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/oxlc-joint-brokerage.spec.ts": {
+    "mtime": 1776777863.6178458,
+    "hash": "300282077f2847db67f68f8baa35e3df"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/volatility-visibility.spec.ts": {
+    "mtime": 1777226243.4433565,
+    "hash": "8d03a8ab63d50e50cb5edf03112e07c2"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/confirm-dialog.spec.ts": {
+    "mtime": 1768523003.6298091,
+    "hash": "9781e993575d6bd76d8ef744247c4627"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/session-warning.spec.ts": {
+    "mtime": 1776881386.7833982,
+    "hash": "c3f31c2ac963effb29ccdf06c2939f31"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/theme.spec.ts": {
+    "mtime": 1768523003.6303287,
+    "hash": "6ee13bca1bcc729cf6cdd1bfd3cc5c0b"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/screener-smooth-scroll.spec.ts": {
+    "mtime": 1774843642.2016728,
+    "hash": "6431462d6e3e0f8cc7a3f42287a41e8e"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/universe-riskgroup-dropdown-width.spec.ts": {
+    "mtime": 1775492653.1397612,
+    "hash": "716d03444f5bf89e380051a78d95e078"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/sold-positions.spec.ts": {
+    "mtime": 1776881386.7835019,
+    "hash": "39bb443ae1f423691de62fc79e9b0b3e"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/universe-table-workflows.spec.ts": {
+    "mtime": 1777894017.6327968,
+    "hash": "a613c32e0f4fbe40c2566b39f1fe6285"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/universe-symbol-sort-empty-rows.spec.ts": {
+    "mtime": 1776977696.5605774,
+    "hash": "517822870bbb1177f28480800a76774f"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/date-editor-width.spec.ts": {
+    "mtime": 1777226243.4428663,
+    "hash": "2b36d26c6be562a430a27f11b5a5c9c9"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/editable-cell.spec.ts": {
+    "mtime": 1776881386.7830641,
+    "hash": "baaa75b1aaad6fea4acbea5b5fc69bdf"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/split-import-e2e.spec.ts": {
+    "mtime": 1775689344.2635791,
+    "hash": "8b09ca75d3af4196c69f4d44bdf2e9c5"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/dividend-deposits-modal.spec.ts": {
+    "mtime": 1771949258.5841217,
+    "hash": "c48f5e1e6ad7fde1979312ecc42b8ad9"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/update-fields.spec.ts": {
+    "mtime": 1774289579.7455556,
+    "hash": "98e0598a9da9cc2948b69af7ba6b7fc8"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/open-positions.spec.ts": {
+    "mtime": 1776881386.7832963,
+    "hash": "e939d2bf27847f375eccc739aeb6419f"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/volatility-new-categories.spec.ts": {
+    "mtime": 1777226243.4432373,
+    "hash": "602416b10f1d7368fbf963a690494561"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/open-positions-screen-e2e.spec.ts": {
+    "mtime": 1773435782.4457898,
+    "hash": "10a6ea6bd17f65500cc5b5d802071c67"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/system-integration.spec.ts": {
+    "mtime": 1776429928.7760127,
+    "hash": "ce59da4ba3f2f8c1842874387cfc1e2c"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/div-deposits-scrolling-regression.spec.ts": {
+    "mtime": 1777397001.122122,
+    "hash": "e4543dab364bc35e3eedbdb041839512"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/account-panel-sort-all-rows-loaded.spec.ts": {
+    "mtime": 1776609984.1259992,
+    "hash": "c9af2839ae12502001c165b591e69efe"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/universe-row-heights.spec.ts": {
+    "mtime": 1776131128.6087565,
+    "hash": "1a1f9e9a2cc8dceed02ffcabd023fb7a"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-snapshots.spec.ts": {
+    "mtime": 1774833657.2080414,
+    "hash": "0a3c255255700bcca1e6348258c0b5d8"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/loading-spinner-centering.spec.ts": {
+    "mtime": 1774819816.2678525,
+    "hash": "dae7201919588d28456bd6670eb054fd"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/volatility-all-universe-symbols.spec.ts": {
+    "mtime": 1777489060.497288,
+    "hash": "bf9305a47699b834047c612347d57d29"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/dividend-precision.spec.ts": {
+    "mtime": 1775453051.9698648,
+    "hash": "322c689962184c1ca210d4513e68b90a"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/add-symbol.spec.ts": {
+    "mtime": 1776429928.775881,
+    "hash": "7c5d182cec11beda0657322a2b17fa37"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/universe-sort-stickiness.spec.ts": {
+    "mtime": 1775599895.3859828,
+    "hash": "e0f1a674a1e9803f3526ff4b72617709"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/vol-column.spec.ts": {
+    "mtime": 1777475508.181124,
+    "hash": "d9c4ce4712cf731014a416d03f996be3"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/server-side-sorting.spec.ts": {
+    "mtime": 1774786803.244041,
+    "hash": "29cd2a4a15d3e8594bab4e62c1fc7db5"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/accessibility.spec.ts": {
+    "mtime": 1777475508.181124,
+    "hash": "c9fec8952f9b4aa4ccc7a01afa06e477"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/universe-secondary-sort.spec.ts": {
+    "mtime": 1777475508.181124,
+    "hash": "1573ab2205f46f1e88da6eff77a8b3c9"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/fidelity-split-multi-symbol.spec.ts": {
+    "mtime": 1775931552.4081104,
+    "hash": "1a86051e008ba112d26b93028708fc04"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/cusip-cache-admin.spec.ts": {
+    "mtime": 1776977696.5596755,
+    "hash": "341726b989ad5e2503b8e25d16bdc3be"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/screener-screen-e2e.spec.ts": {
+    "mtime": 1773435782.4457898,
+    "hash": "4a67d9978148a28e1545763576ff9fda"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/account-table-sort.spec.ts": {
+    "mtime": 1777226243.44275,
+    "hash": "47393540f1a7bc2c7d65b9af01a012be"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/lazy-loading-network.spec.ts": {
+    "mtime": 1775137159.219882,
+    "hash": "1f628c1e4d2f39a7f9dc77ed49bfb43f"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/summary-display.spec.ts": {
+    "mtime": 1776881386.783603,
+    "hash": "4773f7d5d0f96fbcae1730050182f58e"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/filter-persistence.spec.ts": {
+    "mtime": 1774763472.2536535,
+    "hash": "3e2b26324689ecca9718f11a661d3da7"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/splitter.spec.ts": {
+    "mtime": 1768523003.6303287,
+    "hash": "6627c029e0a97bc54a6148e3bc38626b"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/stored-volatility.spec.ts": {
+    "mtime": 1777397001.1233582,
+    "hash": "d3364cfb6fb038cea10796cb4b868eb9"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/symbol-filter-header.spec.ts": {
+    "mtime": 1776881386.7837923,
+    "hash": "b875e244ab5d077e9fab8d0063d9c8d0"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/universe-duplicate-symbols.spec.ts": {
+    "mtime": 1775652517.5468934,
+    "hash": "b9543d063697a9ef51176e8610149bff"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/open-positions-scrolling-regression.spec.ts": {
+    "mtime": 1777397001.123145,
+    "hash": "f7e6ff9eaa1a1b6ef70c99078aeaa4c8"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/cef-classification-symbol-add.spec.ts": {
+    "mtime": 1776977696.559559,
+    "hash": "10d283ec93a786af0c69d797dd2ba91b"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/logout.spec.ts": {
+    "mtime": 1769383774.832266,
+    "hash": "9d2e865893175fef81dc17ddacc75e6a"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/universe-smooth-scroll.spec.ts": {
+    "mtime": 1774843642.2017581,
+    "hash": "0479195f1bc6187e830bd45f9a44eb17"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/universe-accounts-dropdown-width.spec.ts": {
+    "mtime": 1775504278.2105236,
+    "hash": "a6b95c2c9c242359eb270af0588eeee1"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/accounts-crud.spec.ts": {
+    "mtime": 1768523003.6298091,
+    "hash": "4c8f68d7c00be734be580b39c094cb54"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/import-dialog-dark-mode.spec.ts": {
+    "mtime": 1775704634.4000359,
+    "hash": "c274ccd89e7482872fe2f77ebbdf1dd0"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/global-screener.spec.ts": {
+    "mtime": 1775856830.3915427,
+    "hash": "1ec143c4de48756a04bd7e91fb09b9ff"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/dist-per-year-weekly.spec.ts": {
+    "mtime": 1776764221.7897494,
+    "hash": "32c7617eb7754a5bef1c13fad49227e9"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/accounts.spec.ts": {
+    "mtime": 1776881386.7828388,
+    "hash": "12fb24fb1bedd277916a1e545a41f5e0"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/fidelity-import.spec.ts": {
+    "mtime": 1772672857.8222473,
+    "hash": "0a1c81bf8fea07af4a8f02039647579a"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/electron-launch.spec.ts": {
+    "mtime": 1777030193.0178173,
+    "hash": "b5c8829796b9fc36138ad7c39ae7f5e6"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/no-open-lots-split-order.spec.ts": {
+    "mtime": 1775931552.4083662,
+    "hash": "7759099a4c79bdceaea8b0a652b136cf"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/global-universe.spec.ts": {
+    "mtime": 1775397678.1718543,
+    "hash": "6787c8173d4efa57f9df93d22d8855b6"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/universe-screen-e2e.spec.ts": {
+    "mtime": 1777475508.181124,
+    "hash": "eb6c3c3111f407205c8b10d0baa5a97a"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/universe-column-filter-width.spec.ts": {
+    "mtime": 1775312451.999615,
+    "hash": "9b886c3c8dc315b2947b69315859de1a"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/state-persistence.spec.ts": {
+    "mtime": 1773028061.768675,
+    "hash": "f72460d4910a66e05acaf3d5c4e923f4"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/login.spec.ts": {
+    "mtime": 1768523003.6303287,
+    "hash": "2eb3494a0ed6152a8381a1d80b9b3080"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/notification.spec.ts": {
+    "mtime": 1768523003.6303287,
+    "hash": "35ea6701cc7cc124b9d9f3ebe7ac956f"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/cef-expired-on-add.spec.ts": {
+    "mtime": 1777635680.1395447,
+    "hash": "a15a3765484b0326cf43355004cf3458"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/universe-resort-on-edit.spec.ts": {
+    "mtime": 1777475508.181124,
+    "hash": "d793c77133a112eed335bfb7a4dcd56e"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/div-deposits-smooth-scroll.spec.ts": {
+    "mtime": 1775291719.5808053,
+    "hash": "264fbc8b784f6f9b98886a6f3424dc95"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/open-positions-smooth-scroll.spec.ts": {
+    "mtime": 1775291719.5810645,
+    "hash": "11d365a7cd4fe35f34ef97326d09a163"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/profile.spec.ts": {
+    "mtime": 1768523003.6303287,
+    "hash": "a23de1c1cfde0ca52c8108d8a1c9f26c"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/symbol-autocomplete.spec.ts": {
+    "mtime": 1776881386.7837043,
+    "hash": "570a6c8c0aa2ab3dce435686184ae6c0"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/scrolling-regression-87.spec.ts": {
+    "mtime": 1777397001.1232162,
+    "hash": "1b347cd80229c29b44572cadd9495886"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/universe-update.spec.ts": {
+    "mtime": 1774289579.7454684,
+    "hash": "539cadb9296c5118b6f04640af37689d"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/universe-scrolling-regression.spec.ts": {
+    "mtime": 1777397001.1235461,
+    "hash": "4beac8f09c16a622175b7feff0cbaf0e"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/screener-refresh.spec.ts": {
+    "mtime": 1774289579.7452085,
+    "hash": "fe1ca608a8fdf53834121f6b1083c0b0"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/add-symbol-dialog.spec.ts": {
+    "mtime": 1776881386.7829576,
+    "hash": "4d4c61c8248d12337f54ae8910bc87d2"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/sold-positions-scrolling-regression.spec.ts": {
+    "mtime": 1777397001.123283,
+    "hash": "16a5f5f9e24ef27810283960f3156dfc"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/sold-positions-screen-e2e.spec.ts": {
+    "mtime": 1773435782.4457898,
+    "hash": "81e67f9886793a6027764a9ce72ac5a4"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/risk-groups.spec.ts": {
+    "mtime": 1774289579.7451167,
+    "hash": "fc4510a5d96920c270f2e21e6e876aef"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/svol-column.spec.ts": {
+    "mtime": 1777397001.1234229,
+    "hash": "1b106c48fa5ed1866435b9af75b94cf7"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/screener-table.spec.ts": {
+    "mtime": 1774819816.268008,
+    "hash": "32215a6e3311053f4453903ace4c3283"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/universe-lazy-load-deep-scroll.spec.ts": {
+    "mtime": 1776977696.5598414,
+    "hash": "59ff8f1d3abcc3132338b5a639e2c321"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/error-logs.spec.ts": {
+    "mtime": 1776816846.5024097,
+    "hash": "f27eb774ced1182cd48e113d4983da6a"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/account-sort-filter-persistence.spec.ts": {
+    "mtime": 1775103108.486527,
+    "hash": "3fa3dae3be41acdafe652a9f8714b3a8"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/universe-multi-column-sort-rows.spec.ts": {
+    "mtime": 1777475508.181124,
+    "hash": "36112210db541b3a7c9ecfc4c4233de3"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/account-summary.spec.ts": {
+    "mtime": 1773613288.9298193,
+    "hash": "716ec782d0224bb087ad7e8899eb45a7"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/multi-column-sort.spec.ts": {
+    "mtime": 1774759144.4428344,
+    "hash": "4b6ed4cda08ac8540b0bc2efd740bc8a"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/oxlc-reverse-split.spec.ts": {
+    "mtime": 1775714743.1225257,
+    "hash": "17588d4042598ae8518f02b157c8f0d6"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/import-volatility-after-import.spec.ts": {
+    "mtime": 1777750661.1857255,
+    "hash": "0814b5aea3ecbcdf5cd2bf510ffc41f4"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/universe-sort-filter-persistence.spec.ts": {
+    "mtime": 1775113433.4130597,
+    "hash": "a75b6e7dffcf82e13284dc89e0edaca4"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/csv-import-regression-69.spec.ts": {
+    "mtime": 1776198785.1154907,
+    "hash": "abb5390e7bf77c7308f3f13aefc0c2a1"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/helpers/shared-prisma-client.helper.ts": {
+    "mtime": 1773435782.4457898,
+    "hash": "2a94da6f018133a057a066bd9bbc4198"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/helpers/seed-stored-volatility-e2e-data.helper.ts": {
+    "mtime": 1777397001.1227942,
+    "hash": "2d559537048c99f6ab02c8f8b348731f"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/helpers/seed-universe-data.helper.ts": {
+    "mtime": 1773435782.4454167,
+    "hash": "42b600cac6400ef47cb519ccbe1c4786"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/helpers/seed-import-data.helper.ts": {
+    "mtime": 1776194012.974278,
+    "hash": "86333b3c392641564c5059e15810ad44"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/helpers/seed-div-deposits-e2e-data.helper.ts": {
+    "mtime": 1775079782.085039,
+    "hash": "8f1d94462bc4a74a5e3302e3ed24187b"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/helpers/seed-screener-data.helper.ts": {
+    "mtime": 1774819816.267645,
+    "hash": "a1d7e6085d2a60e2801027fa69b8aab7"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/helpers/build-universe-create-data.helper.ts": {
+    "mtime": 1777397001.1224053,
+    "hash": "d470d14221f055592a668d5144d3d413"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/helpers/build-monthly-dates.helper.ts": {
+    "mtime": 1777397001.1224053,
+    "hash": "d98361583b17d5b9d22d67d69434c158"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/helpers/seed-vol-column-e2e-data.helper.ts": {
+    "mtime": 1777397001.1230173,
+    "hash": "8457d1cf977f77e84067bd633650b66f"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/helpers/get-or-create-div-deposit-type-id.helper.ts": {
+    "mtime": 1777397001.1226137,
+    "hash": "602582ae54fca84e6837e8911fa47f78"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/helpers/shared-risk-groups.helper.ts": {
+    "mtime": 1771629781.5643785,
+    "hash": "af8c615ce26d8fdf40dbc1376b7eaa8f"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/helpers/shared-create-universe-records.helper.ts": {
+    "mtime": 1773435782.4457898,
+    "hash": "1198785e9c740ae16135e8897b0d4fe5"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/helpers/cleanup-universe-on-error.helper.ts": {
+    "mtime": 1777397001.1224053,
+    "hash": "82daf5f3e79f4ef3dabed98224b005d6"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/helpers/verify-smooth-scroll.ts": {
+    "mtime": 1774843642.2015865,
+    "hash": "eaef7a95fc7b4053ecd53da5f05a42b9"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/helpers/seed-multi-symbol-e2e-data.helper.ts": {
+    "mtime": 1775931552.408216,
+    "hash": "bd375065864c32af9e4ddfeb316dd898"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/helpers/get-or-create-risk-group-id.helper.ts": {
+    "mtime": 1777397001.122694,
+    "hash": "5bccde0ae835038a3f4a66a6bf46b540"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/helpers/assert-visible-rows-non-empty.helper.ts": {
+    "mtime": 1777397001.1222599,
+    "hash": "3335dd7c2b8f647232510b85d993f46a"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/helpers/seed-no-open-lots-e2e-data.helper.ts": {
+    "mtime": 1775872626.318403,
+    "hash": "55f7e8b92b672294a6108255d61e6bf1"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/helpers/seed-oxlc-joint-brokerage.helper.ts": {
+    "mtime": 1776777863.6177745,
+    "hash": "cc3b3b6e4a2b6f5f7cf078f92e7c808f"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/helpers/navigate-to-profile.helper.ts": {
+    "mtime": 1768523003.6303287,
+    "hash": "28240dfd578679433ebd5b8d902f7963"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/helpers/seed-open-positions-e2e-data.helper.ts": {
+    "mtime": 1773435782.4454167,
+    "hash": "88d64d961455f847c39e7c3f1542fa56"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/helpers/seed-filler-universe-symbols.helper.ts": {
+    "mtime": 1775640359.5073647,
+    "hash": "9cf3cb8b0e8b8e5d0b22ee6458b31802"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/helpers/seed-svol-column-e2e-data.helper.ts": {
+    "mtime": 1777397001.1228392,
+    "hash": "20923c924c783b2ea1456bcbcee2ed66"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/helpers/seed-scroll-div-deposits-data.helper.ts": {
+    "mtime": 1775291719.5808809,
+    "hash": "aaf78d7df452c5f99d3172ae0c0146eb"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/helpers/create-test-dates.helper.ts": {
+    "mtime": 1773435782.4454167,
+    "hash": "e6acc17da8dcc5834c978eb949915225"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/helpers/seed-scroll-base.helper.ts": {
+    "mtime": 1776683198.3761148,
+    "hash": "6dfec596f3a276bb239ffe8ddbceb975"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/helpers/seed-stored-volatility-update-e2e-data.helper.ts": {
+    "mtime": 1777397001.1228392,
+    "hash": "13c895cbaea10245818a2f3bc803dea7"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/helpers/seed-volatility-column-base.helper.ts": {
+    "mtime": 1777397001.1230829,
+    "hash": "beffb3751199edd54dd61117be4c7dd9"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/helpers/risk-groups.types.ts": {
+    "mtime": 1771629781.5633786,
+    "hash": "51f7dfc853dc005d2f7444b9bd1f86f9"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/helpers/seeder-result-base.types.ts": {
+    "mtime": 1773435782.4457898,
+    "hash": "9fef73f200c021571a089e969d2e1af4"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/helpers/seed-oxlc-cusip-reverse-split.helper.ts": {
+    "mtime": 1775711590.0340624,
+    "hash": "1ee9aab6d1e3e65696a3dcf81f88c7f2"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/helpers/shared-fetch-universe-ids.helper.ts": {
+    "mtime": 1773435782.4457898,
+    "hash": "83f07a8ce08dd2c47e5b6138af17bd6d"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/helpers/seed-scroll-open-positions-data.helper.ts": {
+    "mtime": 1776683198.3766286,
+    "hash": "47fdbcceaf296355af600a272eeb993b"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/helpers/seed-lazy-loading-e2e-data.helper.ts": {
+    "mtime": 1775137159.219781,
+    "hash": "9cee1657cc935f6d845491b017189640"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/helpers/seed-scroll-universe-data.helper.ts": {
+    "mtime": 1774843642.2014978,
+    "hash": "a55dbbd94784566a18fea7832c3f367b"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/helpers/seed-universe-e2e-data.helper.ts": {
+    "mtime": 1775063399.0270066,
+    "hash": "a45e923aaa95d02547e9ade7b510a026"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/helpers/seed-row-height-e2e-data.helper.ts": {
+    "mtime": 1776126462.6717942,
+    "hash": "6b7b6a67d1170995fda778e103e69bd7"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/helpers/seed-volatility-held-and-unheld.helper.ts": {
+    "mtime": 1777489060.4972086,
+    "hash": "bde3e3c08abc1257f6ebd2918c1959f9"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/helpers/generate-unique-id.helper.ts": {
+    "mtime": 1773435782.4454167,
+    "hash": "1718edde0097784611db21ad9d892588"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/helpers/seed-scroll-screener-data.helper.ts": {
+    "mtime": 1774843642.201381,
+    "hash": "d99ab6ade5144c118811dd4b80cb5ca8"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/helpers/universe-record.types.ts": {
+    "mtime": 1773435782.4457898,
+    "hash": "e5bb81514f0c3101e1619db2dd218177"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/helpers/seed-volatility-new-categories.helper.ts": {
+    "mtime": 1777235384.536965,
+    "hash": "6f99b0ef1533f197c3067c2be80a8dfa"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/helpers/login.helper.ts": {
+    "mtime": 1768523003.6298091,
+    "hash": "2150b19f79593ed458374f9ebaf684a3"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/helpers/seed-split-import-e2e-data.helper.ts": {
+    "mtime": 1775688524.6609461,
+    "hash": "3820fa8af2d19343ab7d3b38a257453b"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/helpers/seed-scroll-fetch-universe-ids.helper.ts": {
+    "mtime": 1776683198.3765,
+    "hash": "5ece6c42db305670a6e340d117e6e396"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/helpers/storybook-theme-snapshot.ts": {
+    "mtime": 1774799113.3752499,
+    "hash": "14521e83768906bf96dfdfc62a7bd1b9"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/helpers/seed-deep-scroll-universe-data.helper.ts": {
+    "mtime": 1776011730.141529,
+    "hash": "6634b9e468d99d424410836e21267d1e"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/helpers/seed-scroll-div-deposits-with-symbols-data.helper.ts": {
+    "mtime": 1776683198.3764217,
+    "hash": "058d21cd2ebdfa2ccd4ddf80188dc770"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/helpers/seed-scroll-sold-positions-data.helper.ts": {
+    "mtime": 1776683198.3767507,
+    "hash": "6e68caaf57798f3a0b39633679a385d8"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/helpers/seed-sold-positions-e2e-data.helper.ts": {
+    "mtime": 1773435782.4454167,
+    "hash": "e2ee831e4bb5178cc2f558ee01cdbc17"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/helpers/seed-all-three-splits-e2e-data.helper.ts": {
+    "mtime": 1775689344.263445,
+    "hash": "e2a9873faf6fee6840d66b6259620bd1"
+  },
+  "/home/dave/code/dms-workspace/apps/server/eslint.config.mjs": {
+    "mtime": 1776871448.3884542,
+    "hash": "e2d6945c59de33abd89b1c8baa5643e4"
+  },
+  "/home/dave/code/dms-workspace/apps/server/vitest.teardown.ts": {
+    "mtime": 1768523003.6666152,
+    "hash": "ea0e251170602ba61342255de4da7966"
+  },
+  "/home/dave/code/dms-workspace/apps/server/vitest.config.ts": {
+    "mtime": 1777635680.1407833,
+    "hash": "a446b450e769433dce9bbd375952a4aa"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/block-navigation.js": {
+    "mtime": 1777672817.0860305,
+    "hash": "13c8dd65c9b9571b0b4960aeaf3fab0a"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/prettify.js": {
+    "mtime": 1777672817.0865717,
+    "hash": "6051903a2f7363ee232a01bd32f60b6a"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/sorter.js": {
+    "mtime": 1777672817.086323,
+    "hash": "e2f5129270684bf835820ca4433b4abb"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/main.ts": {
+    "mtime": 1777809972.6813107,
+    "hash": "0122c93fc51b3c42dd076f2a5e6036be"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/app.ts": {
+    "mtime": 1777809972.6811619,
+    "hash": "2f001878d94208d1ed634588cc035fb5"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/prisma/optimized-health-check.function.ts": {
+    "mtime": 1768523003.6602542,
+    "hash": "60fde8a9d1a5e297bf229a152543686b"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/prisma/prisma-client.ts": {
+    "mtime": 1768523003.6602542,
+    "hash": "da9b3aa4ed0624ab6f7756df41aacb79"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/prisma/close-optimized-database-connection.function.ts": {
+    "mtime": 1768523003.6602542,
+    "hash": "97259a37a7752a551ba1faceb8298d32"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/prisma/optimized-prisma-client.ts": {
+    "mtime": 1768523003.6602542,
+    "hash": "fbecc7dcf679179839e813adcfcae8d6"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/prisma/build-database-url.function.ts": {
+    "mtime": 1768523003.6596735,
+    "hash": "ebbca9fc8b1d7f888b9de93e8f39626d"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/prisma/optimized-session-data-load.function.ts": {
+    "mtime": 1768523003.6602542,
+    "hash": "605f24b1ababdaf8dc6ea43dc9fed3e6"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/prisma/create-base-prisma-config.function.ts": {
+    "mtime": 1768523003.6602542,
+    "hash": "d3500580288a41bb71c38f87196a723d"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/prisma/optimized-prisma-client.spec.ts": {
+    "mtime": 1776871448.388621,
+    "hash": "19085c375ae84d55a197c777f78d5822"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/prisma/database-event-types.ts": {
+    "mtime": 1768523003.6602542,
+    "hash": "1dfd33465c63c2d4c67c24e78df364ec"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/prisma/create-connection-pool-config.function.ts": {
+    "mtime": 1768523003.6602542,
+    "hash": "599d455201e218e88dee0fd32b709b18"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/prisma/prisma-client.spec.ts": {
+    "mtime": 1776871448.3887575,
+    "hash": "c15bae6aa6c5d9105a07d471179d1675"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/prisma/setup-database-event-listeners.function.ts": {
+    "mtime": 1768523003.6602542,
+    "hash": "83fce0241714d60c02535eb6d147e6f5"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/prisma/optimized-user-lookup.function.ts": {
+    "mtime": 1768523003.6602542,
+    "hash": "21cb487037ef3cb6e09ab9ff6d763644"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/prisma/optimized-batch-account-load.function.ts": {
+    "mtime": 1777397001.1249695,
+    "hash": "56c1b3b558885504acc8112a8034c5cb"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/middleware/csrf-protection-hook.middleware.ts": {
+    "mtime": 1768523003.6585393,
+    "hash": "f67a47141e87b4ac6df6682796ae06cb"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/middleware/enhanced-rate-limit.middleware.ts": {
+    "mtime": 1768523003.6585393,
+    "hash": "001f5a96eea0efb445ea06cac1f4f7e5"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/middleware/create-security-config.function.ts": {
+    "mtime": 1768523003.6585393,
+    "hash": "93a19bd71a3bf8508521d6d41bfabee4"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/middleware/get-rate-limit-stats.function.ts": {
+    "mtime": 1768523003.6585393,
+    "hash": "0280680457d043e10a9c779baa3bafdb"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/middleware/authenticated-request.interface.ts": {
+    "mtime": 1768523003.6585393,
+    "hash": "37dbbfaf0a7c05668b0ecedd1b28a129"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/middleware/csrf.middleware.ts": {
+    "mtime": 1768523003.6585393,
+    "hash": "e318f3ac70cca4bf8f3c1eb8cae13233"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/middleware/csrf.middleware.spec.ts": {
+    "mtime": 1768523003.6585393,
+    "hash": "1d01f29960a514e1106300e18f25064b"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/middleware/rate-limiting.function.spec.ts": {
+    "mtime": 1768523003.6585393,
+    "hash": "e30b7c892c5fe45241ebf09a2ec331c6"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/middleware/security.middleware.ts": {
+    "mtime": 1768523003.6585393,
+    "hash": "6982b7e1a077980927f25d2bb93b2049"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/middleware/enhanced-rate-limit.middleware.spec.ts": {
+    "mtime": 1775686127.8614154,
+    "hash": "6ff7f3d66c47b3eee2c8043969cdd3bb"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/middleware/security-config.interface.ts": {
+    "mtime": 1768523003.6585393,
+    "hash": "d53faa8013c77c4504d9351475f6695b"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/middleware/csrf-protection-hook.middleware.spec.ts": {
+    "mtime": 1775686127.8612983,
+    "hash": "2caadf496b03c6e60fbb096a8346446c"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/middleware/log-authentication-success.function.ts": {
+    "mtime": 1768523003.6585393,
+    "hash": "503765e7e9a0c2f9a207f7058f8240c4"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/middleware/rate-limit-entry.interface.ts": {
+    "mtime": 1768523003.6585393,
+    "hash": "5ecd90247c6c5edba9102629e2113a61"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/middleware/authenticate-jwt.function.ts": {
+    "mtime": 1768523003.6585393,
+    "hash": "70ea33225bf09e1204544735125d8012"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/middleware/csrf-stats.interface.ts": {
+    "mtime": 1768523003.6585393,
+    "hash": "a0aebb349983a9329ee60db8c9353101"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/middleware/auth-failure-store.function.ts": {
+    "mtime": 1768523003.6583369,
+    "hash": "ab1ee27f1196ed28be27bfe4bec0be74"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/middleware/handle-rate-limit-exceeded.function.ts": {
+    "mtime": 1768523003.6585393,
+    "hash": "373ce30a6a30d38bacfab307079c3066"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/middleware/is-authenticated.function.ts": {
+    "mtime": 1768523003.6585393,
+    "hash": "190d45013b3958c702c539c3361901d5"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/middleware/rate-limit-config.interface.ts": {
+    "mtime": 1768523003.6585393,
+    "hash": "f5b45445c1c9405e36ce08f2012ed457"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/middleware/rate-limit-types.type.ts": {
+    "mtime": 1768523003.6585393,
+    "hash": "7a2dd324d1ec6feea28a59913ef9f9f8"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/middleware/handle-authentication-error.function.ts": {
+    "mtime": 1768523003.6585393,
+    "hash": "fc90d4fd1ac21dc02e5539b416de6b29"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/middleware/is-rate-limited.function.ts": {
+    "mtime": 1768523003.6585393,
+    "hash": "3c7bf992e9728705811b0a705b119776"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/middleware/get-csrf-stats.middleware.spec.ts": {
+    "mtime": 1775686127.8615103,
+    "hash": "81114896a5fb8dfd9e780c5839edb1af"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/middleware/security-headers.function.ts": {
+    "mtime": 1768523003.6585393,
+    "hash": "d1acee599b2e3f979588c06b4392a068"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/middleware/rate-limit-store.constant.ts": {
+    "mtime": 1768523003.6585393,
+    "hash": "699af24201bb43cd02824d9eb9e55537"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/middleware/create-error-response.function.spec.ts": {
+    "mtime": 1768523003.6585393,
+    "hash": "c78bc23ee389390dca15864df63eea15"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/middleware/reset-auth-failures.function.ts": {
+    "mtime": 1768523003.6585393,
+    "hash": "a5e149c8f4c1a74c1246abfe044f60c0"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/middleware/update-rate-limit-entry.function.ts": {
+    "mtime": 1768523003.6585393,
+    "hash": "6a26ba45f81d0c64d85ccc4eb572b099"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/middleware/create-error-response.function.ts": {
+    "mtime": 1768523003.6585393,
+    "hash": "d6a2f709e3e973ee2174803744556486"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/middleware/get-csrf-stats.middleware.ts": {
+    "mtime": 1768523003.6585393,
+    "hash": "42d2170b92d47f23770ba60884bb2821"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/middleware/create-adaptive-rate-limiter.function.ts": {
+    "mtime": 1768523003.6585393,
+    "hash": "2ff9693df4a2241fbb39ac04f6ffc57e"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/middleware/create-rate-limiter.function.ts": {
+    "mtime": 1768523003.6585393,
+    "hash": "3f25d3641efd366b7371e550a88fc2aa"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/middleware/rate-limit-configs.constant.ts": {
+    "mtime": 1768523003.6585393,
+    "hash": "f22f468a871079f747307541b932f963"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/middleware/set-rate-limit-headers.function.ts": {
+    "mtime": 1768523003.6585393,
+    "hash": "0ebee310da6df9a5ce6e52d49c3a6b19"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/middleware/get-csrf-stats.function.ts": {
+    "mtime": 1768523003.6585393,
+    "hash": "332d67259690d59d1f065b3f4680313e"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/middleware/csrf-protection-hook.function.ts": {
+    "mtime": 1768523003.6585393,
+    "hash": "e06704218f869f31dd0d14639bc5636d"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/middleware/security.middleware.spec.ts": {
+    "mtime": 1768523003.6585393,
+    "hash": "7921d015a50d7855a11e1eb391d87194"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/middleware/get-authenticated-user.function.ts": {
+    "mtime": 1768523003.6585393,
+    "hash": "60ff55b807dfc78ad9b65a3013ef82e7"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/middleware/record-auth-failure.function.ts": {
+    "mtime": 1768523003.6585393,
+    "hash": "5859de49fb5a8308df503c543f235afb"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/middleware/csrf-stats.type.ts": {
+    "mtime": 1768523003.6585393,
+    "hash": "aad4b01b02614d6e18028a59eabfe9f5"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/middleware/handle-rate-limiting.function.ts": {
+    "mtime": 1768523003.6585393,
+    "hash": "c2ccc92cde9cf09c977c467c628c0e56"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/middleware/get-client-key.function.ts": {
+    "mtime": 1768523003.6585393,
+    "hash": "a27c24895f7355cc87d78f0946c1bd6f"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/config/cognito-validation.function.ts": {
+    "mtime": 1768523003.6583369,
+    "hash": "4059d35aa96ea42f6fbd47d03cee347a"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/config/build-cognito-urls.function.ts": {
+    "mtime": 1768523003.6583004,
+    "hash": "16ff845d1821444bacd62fe1070a2f03"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/config/is-local-environment.function.ts": {
+    "mtime": 1768523003.6583369,
+    "hash": "6536b1ad966a5bc23d206e310edc3873"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/config/cognito-validation.function.spec.ts": {
+    "mtime": 1768523003.6583369,
+    "hash": "5d4f0e4f9bf55f6564e6c07511052703"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/config/create-fallback-config.function.ts": {
+    "mtime": 1768523003.6583369,
+    "hash": "f85ee761273da8f49ab29794b68ecc0b"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/config/validate-cognito-config-async.function.ts": {
+    "mtime": 1768523003.6583369,
+    "hash": "9fba252d9955a3c682609fc66a34eb98"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/config/get-cognito-config.function.ts": {
+    "mtime": 1768523003.6583369,
+    "hash": "d927309d0076ef6ce9e35d530e24014e"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/config/cognito.config.ts": {
+    "mtime": 1768523003.6583369,
+    "hash": "af432e7cb19471c6f9215a536a94c18f"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/utils/apply-rate-limiting.function.ts": {
+    "mtime": 1768523003.6657946,
+    "hash": "9da8815020869381fb7b372956729e86"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/utils/generate-session-id.function.ts": {
+    "mtime": 1768523003.6660128,
+    "hash": "414a61f61a23a19f509d019e82734f01"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/utils/extract-user-from-payload.function.ts": {
+    "mtime": 1768523003.6660128,
+    "hash": "44a8ba19c5008e7af45a70553dce69cd"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/utils/extract-user-from-payload.function.spec.ts": {
+    "mtime": 1768523003.6660128,
+    "hash": "72cea57ff452c2275308417888ee368b"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/utils/apply-security-validation.function.ts": {
+    "mtime": 1768523003.6660128,
+    "hash": "f9fda1d01b0b80ba182e1af6c6e648f8"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/utils/get-signing-key.function.ts": {
+    "mtime": 1768523003.6660128,
+    "hash": "00befeb1071272d53fd705e54535fb61"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/utils/get-auth-cookie-name.function.ts": {
+    "mtime": 1768523003.6660128,
+    "hash": "af728b26e37e95e25554bb5b64e169e4"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/types/cognito-jwt-payload.interface.ts": {
+    "mtime": 1768523003.6657946,
+    "hash": "b27ea3de8878a4af20ee4a79cb4d4b66"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/types/cognito-config.interface.ts": {
+    "mtime": 1768523003.6657946,
+    "hash": "0420f979f3d712a3da802d4c0a8e86a7"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/types/jwt-user.interface.ts": {
+    "mtime": 1768523003.6657946,
+    "hash": "ba56c72ba4b95346ef64c4e398859fc8"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/types/auth-error.class.ts": {
+    "mtime": 1768523003.6657946,
+    "hash": "5ce207be1542afeb546c567d11107186"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/types/authenticated-user.interface.ts": {
+    "mtime": 1768523003.6657946,
+    "hash": "bb5ba2053a9ad8e458fd19e19d4876a0"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/types/auth-error-type.enum.ts": {
+    "mtime": 1768523003.6657946,
+    "hash": "12aafcf85aea61f534d56d432c6f6929"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/types/auth.types.ts": {
+    "mtime": 1768523003.6657946,
+    "hash": "f3b21f69763ce4d98474082cd5ee983f"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/types/fastify.d.ts": {
+    "mtime": 1768523003.6657946,
+    "hash": "46a73dda4e9a8a18f9fb73e697064f97"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/types/auth-error-response.interface.ts": {
+    "mtime": 1768523003.665078,
+    "hash": "064329b46dcb6cec8b6611f9e8a7136b"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/root.ts": {
+    "mtime": 1768523003.662265,
+    "hash": "6b25c050c7257b74fbb72616b998fbbd"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/top/build-universe-where.function.ts": {
+    "mtime": 1773435782.45079,
+    "hash": "5aa79ab76fe6f523da966979f2ad6cda"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/top/build-universe-order-by.function.ts": {
+    "mtime": 1774756496.2027056,
+    "hash": "5d1370469879f2ac008dfccd7b9c811f"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/top/index.ts": {
+    "mtime": 1775913921.9749234,
+    "hash": "0fcfe2210cf7389c1fcd41efe67f9e78"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/top/is-universe-computed-sort.function.ts": {
+    "mtime": 1773435782.45079,
+    "hash": "ae533b4f3b997fe2f18dd4ce65d41b46"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/top/top.interface.ts": {
+    "mtime": 1775124674.5690858,
+    "hash": "15ab556d0bcc963b8b1681d59899f752"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/top/get-top-universes-computed-sort.function.ts": {
+    "mtime": 1775856830.3937073,
+    "hash": "50ef453fa92181f88e2e4ae86accf660"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/top/build-screener-order-by.function.ts": {
+    "mtime": 1773435782.45079,
+    "hash": "b9124709f176befba48239e51a89590d"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/top/partial-array-definition.interface.ts": {
+    "mtime": 1775124674.5689974,
+    "hash": "6bddd53b0c0d2fd4ba857cdc1123ebc4"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/top/index.spec.ts": {
+    "mtime": 1775858591.018821,
+    "hash": "85b3ff1293a079fb23e569f01915ea44"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/top/ensure-holidays-exist.function.ts": {
+    "mtime": 1775124674.5685673,
+    "hash": "e0f43827b19420cefed2bd4105ded6a6"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/top/apply-min-yield-filter.function.ts": {
+    "mtime": 1773435782.45079,
+    "hash": "ce4d67f765648b9b66b74c4f213e2523"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/top/build-universe-order-by.function.spec.ts": {
+    "mtime": 1774756496.202619,
+    "hash": "3d1a6f001cc54551faf82210c45891fd"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/top/get-top-div-deposit-types.function.ts": {
+    "mtime": 1775124674.568623,
+    "hash": "ad81773f8b019f28d54f7d62382816af"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/top/universe-computed-sort.function.ts": {
+    "mtime": 1775264065.6982038,
+    "hash": "fe005f6f626467794d007c6418b45555"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/common/dividend-history.service.spec.ts": {
+    "mtime": 1776308498.208769,
+    "hash": "d899801c169a262024f10e4b8519cb09"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/common/cef-classification.function.ts": {
+    "mtime": 1776036443.0696323,
+    "hash": "4155818011ad6f078726f00744001bc3"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/common/get-table-state.function.ts": {
+    "mtime": 1773435782.45079,
+    "hash": "4da5ba9351babf7ae67a49ac2ba4b544"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/common/parse-sort-filter-header.function.spec.ts": {
+    "mtime": 1774756496.2023158,
+    "hash": "4e801192643ef0ca99a8fc3d7ec016e8"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/common/dividend-history.service.ts": {
+    "mtime": 1776308498.208911,
+    "hash": "33c2e18dc7df7566a306142d418dbb8b"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/common/table-state.interface.ts": {
+    "mtime": 1774756496.202548,
+    "hash": "1b1f2b0682c144caa3d57db86bc6b22a"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/common/sort-column.interface.ts": {
+    "mtime": 1774756496.2024705,
+    "hash": "303ed02b063f0ea11d705f01b85028a4"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/common/query-utils.function.ts": {
+    "mtime": 1768523003.6615088,
+    "hash": "bf68e2bd689df968e4563be1df7cbd01"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/common/parse-sort-filter-header.function.ts": {
+    "mtime": 1774756496.2024188,
+    "hash": "d07a86a6c74656690f82e829fff645b2"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/common/universe-operations.function.ts": {
+    "mtime": 1777226243.4444532,
+    "hash": "4e70d8adf8cbdb5cc870efa18453aa7d"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/common/cef-classification.function.spec.ts": {
+    "mtime": 1776036443.0695324,
+    "hash": "3500daf739d55310357fd4ca9f8a27ce"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/common/distribution-api.function.ts": {
+    "mtime": 1775451820.124014,
+    "hash": "d13d252ca58d0dc0f7fb322ce4207d75"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/common/axios-get-with-backoff.function.ts": {
+    "mtime": 1768523003.661119,
+    "hash": "563ebebbfad278f17c480e298f388ac1"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/trades/index.ts": {
+    "mtime": 1777930317.003245,
+    "hash": "e44bf2fd0abdc2333fb1df2ce325beb7"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/trades/trades-sorting.spec.ts": {
+    "mtime": 1777226243.4447114,
+    "hash": "56aa69d3264f570d6a9a0adcc1aaa1f9"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/trades/index.spec.ts": {
+    "mtime": 1777930317.0031474,
+    "hash": "f972e2a5bc5746f065b1557d4d633204"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/trades/shared/validate-sort-params.ts": {
+    "mtime": 1774140366.8353488,
+    "hash": "b161e71982a28047e42e632f51dafded"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/trades/get-closed-trades/index.ts": {
+    "mtime": 1774140366.8351755,
+    "hash": "04cbf8d9d080e889b471af3f282b0010"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/trades/get-open-trades/index.ts": {
+    "mtime": 1774140366.8352818,
+    "hash": "c8de0095fcfe6114639667d45dca2a16"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/logs/index.ts": {
+    "mtime": 1776812813.3077388,
+    "hash": "a9e9a019740f87796eb40eb4e6d0f639"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/logs/log-utils.ts": {
+    "mtime": 1774054788.4561582,
+    "hash": "1e728795d40b95615f40d32ce3322729"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/logs/types.ts": {
+    "mtime": 1774054788.456354,
+    "hash": "e85fa65835b8c3459fe76986cb7a1a40"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/logs/logs.spec.ts": {
+    "mtime": 1774054788.4562597,
+    "hash": "18847fe1c6e15a50ac10fdb8a97cf24d"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/accounts/is-computed-trade-sort.function.ts": {
+    "mtime": 1775084626.1029508,
+    "hash": "62c7fa3346263517a72ca61b022f6e48"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/accounts/build-trade-where.function.ts": {
+    "mtime": 1773435782.4497898,
+    "hash": "2b6334539304788501dc6dbb81a85f9a"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/accounts/build-div-deposit-order-by.function.ts": {
+    "mtime": 1775084626.102315,
+    "hash": "ec3bf6f1c18c1c537945551fb5e15435"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/accounts/index.ts": {
+    "mtime": 1773510751.3472192,
+    "hash": "edadcb58cdb782fdf567003fe77e7bf2"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/accounts/account-page-size.const.ts": {
+    "mtime": 1775132213.8086946,
+    "hash": "060b1a85acb69182107814bc163026e1"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/accounts/new-account.interface.ts": {
+    "mtime": 1768523003.6608863,
+    "hash": "3806f2a973f765bf9f39cd3d0f1a260c"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/accounts/build-trade-order-by.function.ts": {
+    "mtime": 1775084626.1023974,
+    "hash": "5414ff6d9457be0d9d22373690e2d3b0"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/accounts/build-account-response.function.ts": {
+    "mtime": 1775149010.164203,
+    "hash": "b9f1854da30713464069405e15c18cf9"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/accounts/build-account-response.spec.ts": {
+    "mtime": 1775132213.8090136,
+    "hash": "ecfaa8235c006761c9520db92b9f1232"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/accounts/build-account-response-sold-trades.spec.ts": {
+    "mtime": 1775132213.8087904,
+    "hash": "57db02a62490fa2f5b356ea0ae980ba4"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/accounts/fetch-standard-page.function.spec.ts": {
+    "mtime": 1775149010.164267,
+    "hash": "c5f145923d73127a44bfe964de2f72bd"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/accounts/build-div-deposit-where.function.ts": {
+    "mtime": 1773435782.4497898,
+    "hash": "e2cb4da6eb0da00df4bbfffc541f00bb"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/accounts/get-trade-computed-value.function.ts": {
+    "mtime": 1773534186.9422193,
+    "hash": "35b2ba234ee42e2769fc0733fe2720d4"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/accounts/fetch-standard-page.function.ts": {
+    "mtime": 1775149010.1643252,
+    "hash": "2573f3843b26d7984babecf2fc990ffd"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/accounts/account.interface.ts": {
+    "mtime": 1773510751.3469102,
+    "hash": "a80eb394445ad99de86e2b039c70fde3"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/accounts/indexes/indexes-open-trades.spec.ts": {
+    "mtime": 1773535448.012426,
+    "hash": "ad073d64bf562c3110968a1cebeba27a"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/accounts/indexes/index.ts": {
+    "mtime": 1775084626.1027448,
+    "hash": "e32739bcc61cf4c1a648639dc36afed6"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/accounts/indexes/indexes-sold-trades.spec.ts": {
+    "mtime": 1773535448.012426,
+    "hash": "223eb82160f497552945bc63b911a35b"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/accounts/indexes/indexes-sort-filter.spec.ts": {
+    "mtime": 1775084626.1028564,
+    "hash": "74ce1877e74581a56e0a54f84d571ec3"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/accounts/indexes/indexes-div-deposits.spec.ts": {
+    "mtime": 1773535448.012426,
+    "hash": "d1452cb9d8757d34e1b179aeefe24188"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/health/index.ts": {
+    "mtime": 1768523003.6619759,
+    "hash": "c72fc334ad0cec6e78f191eb8a76b043"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/health/index.spec.ts": {
+    "mtime": 1773964826.60104,
+    "hash": "4bb20575747649d9e3a2eb1751f8725e"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/symbol/search/index.ts": {
+    "mtime": 1770042150.6248055,
+    "hash": "dd107a0aaf209b1ec35ef64fc5778d51"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/div-deposits/index.ts": {
+    "mtime": 1777894017.6338966,
+    "hash": "9b804891a40eab578c5e78c414626016"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/div-deposits/index.spec.ts": {
+    "mtime": 1777894017.6337554,
+    "hash": "082f19603f897d482f494172792ed869"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/div-deposits/div-deposits.interface.ts": {
+    "mtime": 1777894017.633647,
+    "hash": "e9d7ece2690204d2ed9b6698697a0d23"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/auth/log-cookie-success.function.ts": {
+    "mtime": 1768523003.661119,
+    "hash": "88a0b4ed9f07e037e5e1a869173a7f32"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/auth/index.ts": {
+    "mtime": 1768523003.661119,
+    "hash": "12dc5f1d3c22c74e19d6c20f85244c6b"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/auth/validate-cookie-request.function.ts": {
+    "mtime": 1768523003.661119,
+    "hash": "15cc8408915d71d48d703839d82371d7"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/auth/handle-set-secure-cookie.function.ts": {
+    "mtime": 1768523003.661119,
+    "hash": "ba60b1b4081db708f698603227248418"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/auth/handle-clear-cookies-error.function.ts": {
+    "mtime": 1768523003.661119,
+    "hash": "3ba961c65b81ad8c15f4a12b75a1d2b8"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/auth/log-successful-logout.function.ts": {
+    "mtime": 1768523003.661119,
+    "hash": "5708b92314b8c2a48df90e303dc4b11f"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/auth/get-blacklist-stats.function.ts": {
+    "mtime": 1768523003.6608863,
+    "hash": "5af2eb8198ae0fd94ce1319d71c33505"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/auth/set-secure-cookie.function.ts": {
+    "mtime": 1768523003.661119,
+    "hash": "8777eb878843dcf545a3677317bdcb00"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/auth/handle-clear-cookies.function.ts": {
+    "mtime": 1768523003.661119,
+    "hash": "7c45a3e4f100429105327ed5417d308d"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/import/fidelity-import-service.function.ts": {
+    "mtime": 1776773349.396715,
+    "hash": "8e307ceb03665c8b71cdabee6f1c2dfc"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/import/unknown-transaction.interface.ts": {
+    "mtime": 1771956832.7647445,
+    "hash": "47c55ac59c053ee181aa99f75b05155e"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/import/detect-duplicates-in-file.function.ts": {
+    "mtime": 1772013359.8718321,
+    "hash": "83a2e2572035ec9fd780ae18010e59f2"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/import/validate-action.function.ts": {
+    "mtime": 1772013359.8718321,
+    "hash": "e034ee00103da3fd63134896a16d6342"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/import/cusip-cache.service.ts": {
+    "mtime": 1773975386.7990093,
+    "hash": "69353b70183b366b8d9c4b56897b0c0a"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/import/build-cef-classification.helper.ts": {
+    "mtime": 1776079542.5210638,
+    "hash": "d557f84351f838af1d686b2c039fafbd"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/import/adjust-lots-for-split.function.ts": {
+    "mtime": 1775714743.122816,
+    "hash": "d1b5de9932e2ba017db8adf97c8fdb1f"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/import/validate-symbol.function.ts": {
+    "mtime": 1772013359.8730755,
+    "hash": "63416dc80f1b5a4a56c5bdddaee2c758"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/import/is-split-row.function.ts": {
+    "mtime": 1775686127.8630536,
+    "hash": "4a527d910d0ed3ccfd5af83b0fcc77ad"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/import/calculate-split-ratio.function.spec.ts": {
+    "mtime": 1775714743.122924,
+    "hash": "2b1c1cbc2b910cdec942a0896b713e11"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/import/fidelity-csv-parser.function.ts": {
+    "mtime": 1772674161.8535397,
+    "hash": "2ea0d079d8c9eea475173e087b4d5d0e"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/import/validate-amount.function.ts": {
+    "mtime": 1772013359.8718321,
+    "hash": "2c39bed6512afeda2289d314331c6f34"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/import/aggregate-errors.function.ts": {
+    "mtime": 1772013359.8718321,
+    "hash": "e98eb75bfaf6798d67415343fc6e6b5d"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/import/fidelity-csv-row.interface.ts": {
+    "mtime": 1771956832.7647445,
+    "hash": "082b2328d2f76241075d00588df18de5"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/import/index.ts": {
+    "mtime": 1774054788.454305,
+    "hash": "06a898dd49d1b7eaae961cd5e0858759"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/import/detect-duplicate-in-db.function.ts": {
+    "mtime": 1772013359.8718321,
+    "hash": "92154e054441df28edb65d4e37a34cad"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/import/is-split-from-row.function.ts": {
+    "mtime": 1775686127.8628206,
+    "hash": "6593b9563d99350f221f8ba42cb06700"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/import/mapped-transaction-result.interface.ts": {
+    "mtime": 1775913921.9746945,
+    "hash": "24f47ac34ffad3bee6f712ae009f4203"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/import/validate-row.function.ts": {
+    "mtime": 1772013359.8718321,
+    "hash": "c069df298d64d15d2b04a676faf01942"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/import/validation-error.interface.ts": {
+    "mtime": 1772013359.8730755,
+    "hash": "1d4efa2569927cba0224c42796dede0f"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/import/pending-split.interface.ts": {
+    "mtime": 1775913921.9747727,
+    "hash": "65074f7ef5a122de039c736c9a816a66"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/import/validate-rows.function.ts": {
+    "mtime": 1772013359.8730755,
+    "hash": "f3567c690e03a61c4ca2170c077d59a8"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/import/process-sale.function.ts": {
+    "mtime": 1776534193.377866,
+    "hash": "1db7b0d37f2932dc666311ff2be4afa7"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/import/import-result.interface.ts": {
+    "mtime": 1771977199.5839546,
+    "hash": "b39b34c040eee162c504b050ef80d338"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/import/is-split-from-row.function.spec.ts": {
+    "mtime": 1775686127.8627372,
+    "hash": "f60720472d9f1460ac6401cf64fb9d67"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/import/cusip-cache.service.spec.ts": {
+    "mtime": 1774745983.3961453,
+    "hash": "237d890d8265d7d7024510d281764836"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/import/validate-date.function.ts": {
+    "mtime": 1772013359.8718321,
+    "hash": "c440ec49359c52d6b6745ca6d1066cbf"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/import/resolve-cusip-universe-ids.helper.ts": {
+    "mtime": 1775714743.123229,
+    "hash": "d3c3eb17d90fca968ba7f523734fa890"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/import/validation-warning.interface.ts": {
+    "mtime": 1772013359.8730755,
+    "hash": "6a6d04d4fe132e7dba97bd9c8d0f3519"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/import/create-universe-entry.helper.spec.ts": {
+    "mtime": 1777749464.4915204,
+    "hash": "5bd6b4ee81961c4d21f2aa046661e8d2"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/import/file-upload-handling.spec.ts": {
+    "mtime": 1772013443.007098,
+    "hash": "9220016778e2777f95126f92090882de"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/import/validate-price.function.ts": {
+    "mtime": 1772013359.8718321,
+    "hash": "999c82fc1d8087b5cbb4295965ea322b"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/import/mapped-sale.interface.ts": {
+    "mtime": 1771956832.7647445,
+    "hash": "2fd662809fb106f293fc710f1c6b8285"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/import/mapped-trade.interface.ts": {
+    "mtime": 1771956832.7647445,
+    "hash": "2eb4b2a620376e10eb3bac3750958631"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/import/resolve-cusip.function.ts": {
+    "mtime": 1773975386.7992191,
+    "hash": "5bd947c6e7f36bf457fe0166d6cef992"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/import/fidelity-import.endpoint.spec.ts": {
+    "mtime": 1772013443.0054004,
+    "hash": "734dcd7754a8c09faebda573f0215d89"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/import/is-in-lieu-row.function.ts": {
+    "mtime": 1775351107.2956734,
+    "hash": "a8ad47a665f566da88a248708d870324"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/import/is-in-lieu-row.function.spec.ts": {
+    "mtime": 1775351107.2956016,
+    "hash": "7e0eef0cf3c2226953348b341141184b"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/import/adjust-lots-for-split.function.spec.ts": {
+    "mtime": 1775714743.1227033,
+    "hash": "abb518e057c956da2c052ea4c020b8f4"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/import/validate-account.function.ts": {
+    "mtime": 1772013359.8718321,
+    "hash": "4eb09b34bde968afb76a2547e667c9d0"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/import/mapped-div-deposit.interface.ts": {
+    "mtime": 1771956832.7647445,
+    "hash": "70367938fc8f1b416f65f57f42dbe0c4"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/import/check-amount-mismatch.function.ts": {
+    "mtime": 1772013359.8718321,
+    "hash": "03a36011878964cb8a2ab2283c9d1f40"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/import/format-validation-error.function.ts": {
+    "mtime": 1772013359.8718321,
+    "hash": "231415ffbb4ad7abc40b739c187892bf"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/import/fidelity-import-service.function.spec.ts": {
+    "mtime": 1776773349.3966086,
+    "hash": "fcf29c443dcc66e36811064ba419f8d0"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/import/calculate-split-ratio.function.ts": {
+    "mtime": 1775714743.1231122,
+    "hash": "32569b1d21008792ef440c2898761d4d"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/import/is-split-to-row.function.spec.ts": {
+    "mtime": 1775686127.863138,
+    "hash": "416e3ba81bb4ee009206662eb9486c85"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/import/fidelity-data-mapper.function.ts": {
+    "mtime": 1776079542.5215826,
+    "hash": "6d4ea8113c2ad7a100ba413ac218eeb0"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/import/is-cusip.function.ts": {
+    "mtime": 1772674161.85397,
+    "hash": "1108cc23a25114a02fd93acc5968c8dd"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/import/create-universe-entry.helper.ts": {
+    "mtime": 1777749464.4915924,
+    "hash": "439162084171df46f6dc8469cf778032"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/import/fidelity-data-mapper.function.spec.ts": {
+    "mtime": 1777749464.4918022,
+    "hash": "c1b10ff0495537641df182a36e339a54"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/import/fidelity-csv-parser.function.spec.ts": {
+    "mtime": 1772674161.8534093,
+    "hash": "858f51dee2c710e70cd107373caf08e5"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/import/resolve-cusip.function.spec.ts": {
+    "mtime": 1773980309.4825153,
+    "hash": "101f86c07ab425df6ad100865148cba7"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/import/validation.spec.ts": {
+    "mtime": 1772013443.007098,
+    "hash": "e1ce94428110ed2f81bdac1f95d23dd8"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/import/is-split-to-row.function.ts": {
+    "mtime": 1775686127.8632026,
+    "hash": "3825fbaa1fdefd2509628cb2fd4b6f42"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/import/validate-quantity.function.ts": {
+    "mtime": 1772013359.8718321,
+    "hash": "f6c855c4354f27199b4cedc53efabac0"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/import/is-split-row.function.spec.ts": {
+    "mtime": 1775686127.8629448,
+    "hash": "33af97a5c4f97f398e8c192bb915fb19"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/summary/risk-group-result.interface.ts": {
+    "mtime": 1768523003.6639178,
+    "hash": "96d9964e87ff57ba24f23a0b527aeb7d"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/summary/parse-month-string.function.ts": {
+    "mtime": 1768523003.6639178,
+    "hash": "984ab9e133a46491e4e9d3f8a044eb42"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/summary/summary.interface.ts": {
+    "mtime": 1768523003.6639178,
+    "hash": "e85b7a80341b27a226b508dbe042c696"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/summary/calculate-date-range.function.ts": {
+    "mtime": 1768523003.6634228,
+    "hash": "0b1932ddd7e2dbcdb08b1bff60e9be03"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/summary/get-risk-group-data.function.ts": {
+    "mtime": 1768523003.6634228,
+    "hash": "925c3d51294b1b436d51e05aa6f5d02b"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/summary/index.ts": {
+    "mtime": 1775198688.8203151,
+    "hash": "fa6ed078a52b71d9b5bbcbca08c900d0"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/summary/calculate-prior-div-deposits.function.ts": {
+    "mtime": 1768523003.6634228,
+    "hash": "7fa61ee11b6513459ba5f2dcf5453a7e"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/summary/account-with-trades-and-deposits.interface.ts": {
+    "mtime": 1768523003.6628032,
+    "hash": "d062bc17ff17db5ce4f946dc101a7365"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/summary/calculate-prior-capital-gains.function.ts": {
+    "mtime": 1768523003.6634228,
+    "hash": "f4790eaf8d3a7b490df612f4fe5e0b90"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/summary/summary-request.interface.ts": {
+    "mtime": 1768523003.6639178,
+    "hash": "813d3f3d300cca4755827235a268c51f"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/summary/aggregate-account-data.function.ts": {
+    "mtime": 1768523003.6634228,
+    "hash": "a2fa31dd5893b49095aa9d169b661893"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/summary/get-risk-group-data.function.spec.ts": {
+    "mtime": 1776871448.3889146,
+    "hash": "2a110ea2095ab249fd93fe220c1630e5"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/summary/create-risk-group-map.function.ts": {
+    "mtime": 1768523003.6634228,
+    "hash": "447a267e1250e8e8a1d8307bbec8d5d9"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/summary/years/index.ts": {
+    "mtime": 1773964826.6013045,
+    "hash": "2557bfd7f37b2a28ca3bfe37c265b29d"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/summary/years/index.spec.ts": {
+    "mtime": 1774745983.3968785,
+    "hash": "ec1695f4fa01d948e1a869052395eeb2"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/summary/months/index.ts": {
+    "mtime": 1773964826.6011806,
+    "hash": "8839fb0d7eabf6dd6eee0d16235c29e7"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/summary/graph/index.ts": {
+    "mtime": 1772674161.8542905,
+    "hash": "8428fb98719eaaa477637de03a7f1d2b"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/summary/graph/graph.interface.ts": {
+    "mtime": 1768523003.6634228,
+    "hash": "8022c46369192628b3c464d58cd76f83"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/summary/graph/index.spec.ts": {
+    "mtime": 1772674161.8541799,
+    "hash": "f9e183839d4cc5ea4cb6e1174040516c"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/settings/yahoo-finance.instance.ts": {
+    "mtime": 1768523003.6628032,
+    "hash": "095a89bcdedf4b87adbe06bb5fa84350"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/settings/index.ts": {
+    "mtime": 1777475508.182124,
+    "hash": "3c251bec57496724e043ec36c9594aa1"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/settings/settings.interface.ts": {
+    "mtime": 1768523003.6628032,
+    "hash": "30eb02f63960f06974d4e87544ebdd97"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/settings/common/get-distributions.function.spec.ts": {
+    "mtime": 1777475508.182124,
+    "hash": "3c1544d22d8ffc444f090f0b8042d7cf"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/settings/common/ensure-risk-groups-exist.function.ts": {
+    "mtime": 1768523003.6628032,
+    "hash": "5bee585dd504cf8b77a26a21cb7347f3"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/settings/common/sleep.function.ts": {
+    "mtime": 1768523003.6628032,
+    "hash": "540a95727bbdc03e6e9701cac0470350"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/settings/common/get-last-price.function.ts": {
+    "mtime": 1768523003.6628032,
+    "hash": "65204740914f77c58672357d91310258"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/settings/common/get-distributions.function.ts": {
+    "mtime": 1777475508.182124,
+    "hash": "e2026117c35eaf474266fb4d7b90164f"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/settings/common/get-last-price.function.spec.ts": {
+    "mtime": 1768523003.6628032,
+    "hash": "ed8cb7740f49f5ff0e2aaab39d24612c"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/settings/common/ensure-risk-groups-exist.function.spec.ts": {
+    "mtime": 1768523003.6627374,
+    "hash": "1270b5d648ffa0cc72ced2f7e7780d44"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/settings/update/index.ts": {
+    "mtime": 1777810042.230493,
+    "hash": "cf63d169e1b29d6591797b1a2aef81db"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/settings/update/index.spec.ts": {
+    "mtime": 1777810042.2303212,
+    "hash": "b756d0ab1b13b9ca46c2ece2b77627a6"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/test/index.ts": {
+    "mtime": 1776372673.0695243,
+    "hash": "a9737bad2658c0601e970d5cec01bb22"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/risk-group/risk-group.interface.ts": {
+    "mtime": 1768523003.662265,
+    "hash": "0193cd8ea905289267c5915e7c995e0a"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/risk-group/index.ts": {
+    "mtime": 1768523003.6620867,
+    "hash": "5f8ccd943ca3508b4d7edebf3d7aa3fe"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/feature-flags/index.ts": {
+    "mtime": 1768523003.661803,
+    "hash": "7c727d8cd3a04788f72947afbec8be02"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/universe/universe-sorting.spec.ts": {
+    "mtime": 1773068341.0329995,
+    "hash": "6bb6c0635d6f8cbeff7165ee3e1ed597"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/universe/index.ts": {
+    "mtime": 1777635680.1403546,
+    "hash": "eba1d9830c9356c36eb6e1a9ecc1d032"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/universe/universe-record.interface.ts": {
+    "mtime": 1775059949.3012726,
+    "hash": "d4125d2694d232d2a1a5a0a5a0e794a6"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/universe/universe-helpers.ts": {
+    "mtime": 1773068341.0329995,
+    "hash": "c691e3ebb505ed372aa3baf4103b8b3e"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/universe/index.spec.ts": {
+    "mtime": 1777635680.140229,
+    "hash": "a39e0df221ed3003b263c8581a2c7ff6"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/universe/fetch-and-update-price-data.function.ts": {
+    "mtime": 1777475508.183124,
+    "hash": "8f181e62471eea81b29fe4385f21ed94"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/universe/fetch-result.interface.ts": {
+    "mtime": 1775059949.3010647,
+    "hash": "c3d4fabbe688fd397a3257fa6d8322d8"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/universe/delete-universe.spec.ts": {
+    "mtime": 1776871448.3890646,
+    "hash": "458d6af5a59780a87f9d7f4a096265b6"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/universe/universe.interface.ts": {
+    "mtime": 1777235384.538651,
+    "hash": "36d13d30fb3e4396b9baf9051be44938"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/universe/get-all-universes/index.ts": {
+    "mtime": 1777235384.538227,
+    "hash": "625b93fa022dfa3791a9f535252cd4f9"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/universe/sync-from-screener/index.ts": {
+    "mtime": 1777475508.184124,
+    "hash": "8b52d40295e904a4d5fa65ffee3734f3"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/universe/sync-from-screener/sync.integration.spec.ts": {
+    "mtime": 1776871448.3892493,
+    "hash": "14fd6d7531fe5985e4d0eaf6691dc9c0"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/universe/sync-from-screener/index.spec.ts": {
+    "mtime": 1777475508.183124,
+    "hash": "c9481661965e275a4bd5e70b20129e9b"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/universe/sync-from-screener/symbol-processing.function.ts": {
+    "mtime": 1777475508.184124,
+    "hash": "df7524099aaa1e4b8758fd7dd98546b6"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/universe/add-symbol/add-symbol.function.spec.ts": {
+    "mtime": 1777549965.8986406,
+    "hash": "f00c4ad38cb89714c24ff5c6f2ee885c"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/universe/add-symbol/index.ts": {
+    "mtime": 1775043735.1506484,
+    "hash": "3b5f233ff3f1fa84a6b30a8819064a68"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/universe/add-symbol/validate-add-symbol-request.function.ts": {
+    "mtime": 1768523003.6645105,
+    "hash": "3dbc2d690ba96de8d2726f809a30566d"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/universe/add-symbol/add-symbol.function.ts": {
+    "mtime": 1777549965.89881,
+    "hash": "327a15417dd9eee07dcbdb95c50b7aeb"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/universe/add-symbol/validate-add-symbol-request.function.spec.ts": {
+    "mtime": 1768523003.6645105,
+    "hash": "88c779b846087e2208865dca977d85ef"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/admin/cusip-cache/validation.ts": {
+    "mtime": 1773975386.798783,
+    "hash": "a3685a4e2dea6cdacf70e9f32be9b006"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/admin/cusip-cache/index.ts": {
+    "mtime": 1773975386.7987006,
+    "hash": "e107f3be347ff449bcc5f2742d4bc7eb"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/admin/cusip-cache/bulk-add-processor.ts": {
+    "mtime": 1773975386.7984889,
+    "hash": "5a63773120fd45be654e8baae2472aab"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/admin/cusip-cache/index.spec.ts": {
+    "mtime": 1774745983.3960042,
+    "hash": "ed2a4e854465be222b62ed560841cbd8"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/admin/cusip-cache/upsert-with-audit.ts": {
+    "mtime": 1772838631.3533428,
+    "hash": "6f4b268ee6ec022759d4242f18c5ff41"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/admin/cusip-cache/validation.spec.ts": {
+    "mtime": 1772838631.3533428,
+    "hash": "134aaf803acba3d71ccecb23475b306f"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/admin/cusip-cache/audit-log-handler.ts": {
+    "mtime": 1773068341.0319993,
+    "hash": "b49f8716ea3377be309f39ee1b0b6329"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/screener/cef-page-scraping.function.ts": {
+    "mtime": 1768523003.662265,
+    "hash": "e3abb79cacbe630342b59bccafd0e6fa"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/screener/index.ts": {
+    "mtime": 1776036443.0697877,
+    "hash": "a955f529d452f0e5b72b27ca00892d16"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/screener/get-consistent-distributions.function.ts": {
+    "mtime": 1775451820.1245756,
+    "hash": "719f2d8ed4058507bdc1cc17acdfddb3"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/screener/screening-requirements.function.ts": {
+    "mtime": 1768523003.6626182,
+    "hash": "222817b487c44559a21baac24c125e27"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/screener/get-consistent-distributions.function.spec.ts": {
+    "mtime": 1775451820.1244752,
+    "hash": "2eeedff895f7516c14756961260fc865"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/screener/screening-data.interface.ts": {
+    "mtime": 1768523003.6626182,
+    "hash": "b069e9a4402d49e5b02c9ccb0753c8da"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/screener/rows/index.ts": {
+    "mtime": 1774819816.2683582,
+    "hash": "b579b51e6cfa578ea7e172a698ee140c"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/screener/rows/screen.interface.ts": {
+    "mtime": 1774819816.2684712,
+    "hash": "dd6fa44dd12a0adffd28be31ac414d18"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/div-deposit-types/index.ts": {
+    "mtime": 1768523003.661717,
+    "hash": "ff75afe42fbecb8028bdfe065f2883f4"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/routes/div-deposit-types/div-deposits-type.interface.ts": {
+    "mtime": 1768523003.6615088,
+    "hash": "5fe960a5cab29f972f983820bb58959a"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/plugins/cookie.ts": {
+    "mtime": 1768523003.6596735,
+    "hash": "bc78fc6bbd310e9322b7195452886dd5"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/plugins/auth.ts": {
+    "mtime": 1768523003.6585393,
+    "hash": "197c0fe1c9c2054d35424e6c9b650cbb"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/plugins/is-localhost-pattern.function.ts": {
+    "mtime": 1768523003.6596735,
+    "hash": "93b91693f45df0b4d17e10e9bfb96231"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/plugins/cors-config.function.ts": {
+    "mtime": 1768523003.6596735,
+    "hash": "0492d52ef1b1dbfceb2eecb914f00a8e"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/plugins/cors.ts": {
+    "mtime": 1768523003.6596735,
+    "hash": "e4d479381600209d1e355d1a8a2a46ea"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/plugins/multipart.ts": {
+    "mtime": 1772001095.9805875,
+    "hash": "762623c5306955894d01c0055bfbc876"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/plugins/security.ts": {
+    "mtime": 1768523003.6596735,
+    "hash": "7a70ba8ee7667574fd8e9fb684cf94ac"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/plugins/security-hooks.function.ts": {
+    "mtime": 1768523003.6596735,
+    "hash": "1a86df700803d0cbcf53ff6f428b5d2f"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/plugins/log-security-violation.function.ts": {
+    "mtime": 1768523003.6596735,
+    "hash": "8fd204c032995a406255d39c1a77d14b"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/plugins/is-valid-origin.function.ts": {
+    "mtime": 1768523003.6596735,
+    "hash": "d760becaeffcfce831f5c409d05498ae"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/plugins/sensible.ts": {
+    "mtime": 1768523003.6596735,
+    "hash": "ed5a310d9180c636d9f51e9f8eb8fe90"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/plugins/security-on-response-hook.function.ts": {
+    "mtime": 1768523003.6596735,
+    "hash": "01b2edd9a656410bf845203dc3a219aa"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/plugins/cors-origin-handler.function.ts": {
+    "mtime": 1768523003.6596735,
+    "hash": "7d2be3de76638a73ab7a82b85db4faa4"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/plugins/create-mock-request.function.ts": {
+    "mtime": 1768523003.6596735,
+    "hash": "8a6f2dc762dbcf9d614628a266e2e45b"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/plugins/security-on-request-hook.function.ts": {
+    "mtime": 1768523003.6596735,
+    "hash": "79247cc8cd589f605fbb91d80c18edfb"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/plugins/security-stats-handler.function.ts": {
+    "mtime": 1768523003.6596735,
+    "hash": "682f9c556e17d46377c6695ab7a202d0"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/volatility/normalize-to-monthly-equivalents.function.ts": {
+    "mtime": 1777635680.1404364,
+    "hash": "3c286148723e5614b6fc3c1cadef8ca3"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/volatility/recalculate-universe-volatility.function.ts": {
+    "mtime": 1777635680.140658,
+    "hash": "9c5792fd38a3d2aaa1c2fd9eb9d0983a"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/volatility/volatility-calculation.function.ts": {
+    "mtime": 1777226243.4462974,
+    "hash": "9599a68c52c59cbbf3c88bb746761579"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/volatility/volatility-category.type.ts": {
+    "mtime": 1777226243.446401,
+    "hash": "4e13f88b00a7dfcb948062e134c7bdd9"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/volatility/volatility-calculation.function.spec.ts": {
+    "mtime": 1777226243.446189,
+    "hash": "eb06326f39fc8f2dc10b172e952d7a95"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/volatility/recalculate-universe-volatility.function.spec.ts": {
+    "mtime": 1777635680.140544,
+    "hash": "e9f4834bb5d2656276e99c48df4efedf"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/services/audit-log.service.ts": {
+    "mtime": 1768523003.665078,
+    "hash": "393d40d0d8b6e7cc0b978de8c52921f7"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/services/database-performance-integration.spec.ts": {
+    "mtime": 1777226243.4458878,
+    "hash": "fffc1e65246c217fdd463e43224b726e"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/services/database-performance.service.spec.ts": {
+    "mtime": 1774745983.397452,
+    "hash": "796d267d74a02aad0750c355892cec59"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/services/cusip-audit-log.service.ts": {
+    "mtime": 1772838631.3540335,
+    "hash": "8bddf7ea20bb8ef253752cb1e3008f81"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/services/performance-test.interface.ts": {
+    "mtime": 1768523003.665078,
+    "hash": "b5aabf81ddf97fc95d7b9c6453832003"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/services/audit-log-service.instance.ts": {
+    "mtime": 1768523003.665078,
+    "hash": "9fa73aa23130bcc6d6e7fe86b719679a"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/services/slow-query.interface.ts": {
+    "mtime": 1768523003.665078,
+    "hash": "aeae8c19b58dc9286629c5f4251a787e"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/services/database-metrics.interface.ts": {
+    "mtime": 1768523003.665078,
+    "hash": "4e285c9cc94d6536de2b6ffa6a0b3599"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/services/auth-database-monitor.service.ts": {
+    "mtime": 1768523003.665078,
+    "hash": "708245828271743a2ba80675808a8f1a"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/services/database-performance.service.ts": {
+    "mtime": 1768523003.665078,
+    "hash": "8bd06dc6dbef6d3cb4d73c2b66fc6761"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/services/cusip-cache-cleanup.service.spec.ts": {
+    "mtime": 1774745983.3973036,
+    "hash": "7133444b3b2bad4f0f271153fa508c1d"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/services/benchmark-results.interface.ts": {
+    "mtime": 1768523003.665078,
+    "hash": "1116b219c4cbd2dd0baeeb0998367008"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/services/audit-log-entry.interface.ts": {
+    "mtime": 1768523003.665078,
+    "hash": "95daa8cf49c95f5ef8e4bcb5a39ac5d7"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/services/database-performance-benchmark.service.ts": {
+    "mtime": 1768523003.665078,
+    "hash": "53a4d0172297ad8507f2470199c0dffd"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/services/audit-event.interface.ts": {
+    "mtime": 1768523003.6648107,
+    "hash": "9e33ac00fe51404582c01db8631ce6ce"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/services/cusip-cache-cleanup.service.ts": {
+    "mtime": 1772840391.7670617,
+    "hash": "88c2bc0747a69ea1d018d7323050df4e"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/services/authentication-benchmark.interface.ts": {
+    "mtime": 1768523003.665078,
+    "hash": "3df6a3a5abbcf74ddf42713c604caa72"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/services/benchmark-helpers.service.ts": {
+    "mtime": 1768523003.665078,
+    "hash": "22074c378f61efe94a584aa5e4a574de"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/services/cusip-audit-log.service.spec.ts": {
+    "mtime": 1774745983.397175,
+    "hash": "dfc3bf19e1563dc7176973045d850527"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/services/auth-session-stats.interface.ts": {
+    "mtime": 1768523003.665078,
+    "hash": "cf60bda3640fe03d254b48b662c9551d"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/services/auth-database-optimizer.service.spec.ts": {
+    "mtime": 1777226243.4457405,
+    "hash": "3be18da27873b920567ca8aba934d7dd"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/services/query-performance-data.interface.ts": {
+    "mtime": 1768523003.665078,
+    "hash": "18512f5373f6652b77bc9339a7aa8ef3"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/app/services/auth-database-optimizer.service.ts": {
+    "mtime": 1768523003.665078,
+    "hash": "0ab6f9d42175ada627c6b0ce8e093db5"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/middleware/tracing.spec.ts": {
+    "mtime": 1774745983.3976061,
+    "hash": "0a53afddb536db0dd4c4acfc441d7d36"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/middleware/mock-xray-subsegment.ts": {
+    "mtime": 1768523003.6663723,
+    "hash": "110e5d62404c7e907e68f225ea62235b"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/middleware/mock-xray-segment.ts": {
+    "mtime": 1768523003.6663723,
+    "hash": "205f60bc91679089d73e7908026bf2a5"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/middleware/tracing.ts": {
+    "mtime": 1768523003.6663723,
+    "hash": "c576ea8287621772536002ed2350e269"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/middleware/tracing-helpers.ts": {
+    "mtime": 1768523003.6663723,
+    "hash": "ce55f5181beb502e7f150c1fd6aefcf8"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/middleware/capture-functions.ts": {
+    "mtime": 1768523003.6660128,
+    "hash": "c5b16bf921539e272c339f6833e12dfd"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/utils/logger.spec.ts": {
+    "mtime": 1768523003.6666152,
+    "hash": "230efb82d8ea7aa50a656e4df6204b1a"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/utils/structured-logger.ts": {
+    "mtime": 1777809972.6814642,
+    "hash": "87ac10a40f0b20e4d2d4d95e4929c156"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/utils/thirteenf-cusip.service.spec.ts": {
+    "mtime": 1774745983.3978848,
+    "hash": "0ce9706983ab1f7e1d6f3bd4c7bbcdbd"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/utils/aws-config.spec.ts": {
+    "mtime": 1773964826.6017652,
+    "hash": "72893fb0b2683a4ea3c1b149d8244e1b"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/utils/aws-config.ts": {
+    "mtime": 1768523003.6666152,
+    "hash": "98123fd5efc7576e94556a2e3ffa380e"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/utils/thirteenf-cusip.service.ts": {
+    "mtime": 1773969508.1312225,
+    "hash": "0193aaef33f3e1ecefa834fd8988187f"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/utils/logger.types.ts": {
+    "mtime": 1768523003.6666152,
+    "hash": "7e04cac62c05ba523c8389ed54bbfa42"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/utils/structured-logger.spec.ts": {
+    "mtime": 1774745983.3977542,
+    "hash": "9d235dca9f74bc7af0056725b0efca81"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/utils/logger.ts": {
+    "mtime": 1768523003.6666152,
+    "hash": "f911e368310c978e4015705c0eb0b911"
+  },
+  "/home/dave/code/dms-workspace/apps/server/src/utils/structured-logger-types.ts": {
+    "mtime": 1768523003.6666152,
+    "hash": "86327b446725a644c38d7f9b25a517fe"
+  },
+  "/home/dave/code/dms-workspace/apps/electron/electron-builder.yml": {
+    "mtime": 1777809972.680235,
+    "hash": "17bf9281496dd5472735e131819a0dd1"
+  },
+  "/home/dave/code/dms-workspace/apps/electron/PACKAGING.md": {
+    "mtime": 1777635680.1396708,
+    "hash": "eb716fa9952333cba95136b1e3fe2636"
+  },
+  "/home/dave/code/dms-workspace/apps/electron/README.md": {
+    "mtime": 1777750858.2968867,
+    "hash": "e53fc6ee929697538494a7130b6cdc46"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/index.html": {
+    "mtime": 1768523003.644902,
+    "hash": "b8205e5b152a19fb7f947a228e6d484f"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/app.html": {
+    "mtime": 1768523003.633598,
+    "hash": "92b5943b800a66a310a32614ee6e4e97"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/test-session-warning.html": {
+    "mtime": 1768523003.644505,
+    "hash": "9c6b41cd8cc8fc73b1963ebd770ea070"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/components/edit/node-editor.component.html": {
+    "mtime": 1768523003.639282,
+    "hash": "1ab801f793aeb1056761cd64adb1a1bd"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/components/summary-display/summary-display.html": {
+    "mtime": 1775198688.8201926,
+    "hash": "32150bdc891fc5260b15b2f218d7e9e1"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/components/performance-chart/performance-chart.html": {
+    "mtime": 1774958674.7073023,
+    "hash": "e263eb26099f99e90951477da1c12c4c"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/components/confirm-dialog/confirm-dialog.html": {
+    "mtime": 1768523003.6391854,
+    "hash": "74bd447ed5ccc38e14a2c7ac3574a5de"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/components/summary-view/summary-view.html": {
+    "mtime": 1775146434.350234,
+    "hash": "dd55d3f6ef68d2dda650bb0969260dfb"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/components/base-table/base-table.component.html": {
+    "mtime": 1776837855.5897381,
+    "hash": "6e9f6323192f3a346c53a5765e53a6e2"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/components/base-table/MIGRATION-GUIDE.md": {
+    "mtime": 1769364530.3811603,
+    "hash": "30f4d838919dca975825ff6673793e7f"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/components/base-table/REFACTORING-SUMMARY.md": {
+    "mtime": 1769364530.3813422,
+    "hash": "a3fa8c4bfd17619a0380408d994385ef"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/components/base-table/QUICK-REFERENCE.md": {
+    "mtime": 1774838578.6872132,
+    "hash": "f14a82e244149c53225640d4425233c8"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/components/allocation-chart/allocation-chart.html": {
+    "mtime": 1775198688.819875,
+    "hash": "405f54e441cbc32f6a1fdc1f3a090152"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/components/editable-cell/editable-cell.component.html": {
+    "mtime": 1771629781.5748944,
+    "hash": "f2731df34fd31db795471e37c2e001fe"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/components/splitter/splitter.html": {
+    "mtime": 1768523003.6396768,
+    "hash": "e04969f178095e76b79d500c85558c5f"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/components/editable-date-cell/editable-date-cell.component.html": {
+    "mtime": 1775116645.2767475,
+    "hash": "9b74bf0e71bf94c20bbe89d9e8057968"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shared/components/symbol-autocomplete/symbol-autocomplete.component.html": {
+    "mtime": 1771629781.5768516,
+    "hash": "aaba69b4f75fe82cd469afb1ccbf4e81"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/universe-settings/add-symbol-dialog/add-symbol-dialog.html": {
+    "mtime": 1773640296.2170315,
+    "hash": "09a42fb6c3a1564046a96a4ac0e5cc6c"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/shell/shell.html": {
+    "mtime": 1774654781.5088491,
+    "hash": "c87dd2cffaa21d7a5356b90a59a4efad"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/accounts/account.html": {
+    "mtime": 1774054788.4538221,
+    "hash": "f3f70e732fa93119a7633505c9614a87"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/demo/chart-demo.html": {
+    "mtime": 1768523003.6375766,
+    "hash": "59ed18b588fba979ac8b201f8975420d"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/dashboard/dashboard.html": {
+    "mtime": 1768523003.6375766,
+    "hash": "3bb2095d26f15bceb8b462ff8633c156"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/mock-protected.component.html": {
+    "mtime": 1768523003.6351023,
+    "hash": "05cebfd87a24815b74b2dbecb2a7b6ac"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/mock-public.component.html": {
+    "mtime": 1768523003.6351023,
+    "hash": "5f47d4c4ddf8dd6287cf89625e1c03a3"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/mock-login.component.html": {
+    "mtime": 1768523003.6351023,
+    "hash": "58b163062c14607f952f72b2fec1081c"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/login/login.html": {
+    "mtime": 1774007625.0594857,
+    "hash": "42e21ff5fc907b19ba333208ee81fa7b"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/components/session-warning/session-warning.html": {
+    "mtime": 1768523003.6343532,
+    "hash": "3ae6f14b72e3e383e74fa6b7b4884688"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/profile/profile.html": {
+    "mtime": 1774007625.0596719,
+    "hash": "4183a955c364c1babfa98eae64e42035"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/profile/components/session-info-card.html": {
+    "mtime": 1768523003.6354144,
+    "hash": "18b981a4f11d7b2074da05978f958ae6"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/profile/components/profile-info-card.html": {
+    "mtime": 1773640296.2153678,
+    "hash": "33324d624edfe7c88262e026cb04dd37"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/profile/components/email-change-card.html": {
+    "mtime": 1773640296.2151868,
+    "hash": "aab0ed11059def22bd12cdf6ea196db8"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/auth/profile/components/account-actions-card.html": {
+    "mtime": 1768523003.6353712,
+    "hash": "1f3de4dec254789867b4febf77a156bb"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/global-screener.html": {
+    "mtime": 1768523003.6379309,
+    "hash": "d60349c1be7dba3e5c8ddda8d83bec3f"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/cusip-cache/cusip-cache.html": {
+    "mtime": 1774014755.1000695,
+    "hash": "4f0a9bdc9b47ad8dd3b2a3dac41348af"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/cusip-cache/cusip-cache-add-dialog.html": {
+    "mtime": 1773975386.7980611,
+    "hash": "f883e81ea1b99d8e4a8b152ce905689d"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/import-dialog/import-dialog.component.html": {
+    "mtime": 1774185042.7808065,
+    "hash": "94b9cc03c597f62eb3184abe7678b635"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/global-error-logs/global-error-logs.html": {
+    "mtime": 1776812813.307523,
+    "hash": "e592dd95fc489ded9c65d8ee8cfa7021"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/global-screener/global-screener.component.html": {
+    "mtime": 1776429999.294057,
+    "hash": "5f945740b49b934d6bbcf12ae94714b5"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/global/global-universe/global-universe.component.html": {
+    "mtime": 1777397001.1244016,
+    "hash": "09ff2f1bcb9b497da4cc9eea81f24594"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/account-panel/account-panel.component.html": {
+    "mtime": 1773028061.768675,
+    "hash": "6afaf013afa02a4478453fc0d67c7745"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/account-panel/account-detail.component.html": {
+    "mtime": 1774289579.7456572,
+    "hash": "ed2a7a448f4baa1a486fa4d30c10cc78"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/account-panel/div-dep-modal/div-dep-modal.component.html": {
+    "mtime": 1771937407.4084837,
+    "hash": "e73683ad5cbe2d1c56e4ac869f27d9b1"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/account-panel/sold-positions/sold-positions.component.html": {
+    "mtime": 1775103108.4873157,
+    "hash": "cd7a93a27ae5d3c2795f986089c546c3"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/account-panel/open-positions/open-positions.component.html": {
+    "mtime": 1775103108.4871047,
+    "hash": "61b013aa52b14e52c63e05013efcaf79"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/account-panel/open-positions/add-position-dialog/add-position-dialog.component.html": {
+    "mtime": 1771629781.5680637,
+    "hash": "bf8ba40e038d4856e0fc60407d899878"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material/src/app/account-panel/dividend-deposits/dividend-deposits.component.html": {
+    "mtime": 1775103108.4866552,
+    "hash": "ab4994285e1e42965649daf692a7cc73"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/README.md": {
+    "mtime": 1772674161.8490741,
+    "hash": "b3b79938cff53461f118be2fea2966a8"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/fixtures/fidelity-not-a-csv.txt": {
+    "mtime": 1772029901.6695728,
+    "hash": "a5887fa4e8ac8110e3ea411135492cad"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/index.html": {
+    "mtime": 1777672817.0893137,
+    "hash": "e7407083e937628f9a85c811aa24090a"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/app/middleware/security.middleware.ts.html": {
+    "mtime": 1777672817.0930634,
+    "hash": "cc698ce515c7f2152b262499677629d2"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/app/middleware/index.html": {
+    "mtime": 1777672817.0906806,
+    "hash": "94ab34b38304c717945d7e800b06d1df"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/app/middleware/csrf.middleware.ts.html": {
+    "mtime": 1777672817.092786,
+    "hash": "761bfa59314dda6be568a50840a57bd3"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/app/middleware/create-error-response.function.ts.html": {
+    "mtime": 1777672817.0922148,
+    "hash": "2d111aa862921649415b74e8f39ffa9a"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/app/config/index.html": {
+    "mtime": 1777672817.089729,
+    "hash": "932773a6312a25d3c7bb29dd444991a7"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/app/config/cognito-validation.function.ts.html": {
+    "mtime": 1777672817.0906806,
+    "hash": "ec09031096aaf4d65912e5f22f85c791"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/app/utils/extract-user-from-payload.function.ts.html": {
+    "mtime": 1777672817.122644,
+    "hash": "da908312a9194a8b061082bf395fb2eb"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/app/utils/index.html": {
+    "mtime": 1777672817.122335,
+    "hash": "757f6a103ab0b7c3ec3ef998640a9c19"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/app/routes/top/index.ts.html": {
+    "mtime": 1777672817.109681,
+    "hash": "d85f795ecb79b8a1c990a8e066879335"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/app/routes/top/index.html": {
+    "mtime": 1777672817.107188,
+    "hash": "d9321f9bb2fb54435c340a9b19e5a1a5"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/app/routes/top/build-universe-order-by.function.ts.html": {
+    "mtime": 1777672817.1076808,
+    "hash": "eca8e849fb9e9cf42725e026c5db0c00"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/app/routes/common/dividend-history.service.ts.html": {
+    "mtime": 1777672817.0976467,
+    "hash": "b0cbc1b4b0c77f98ca583a8d6df575cc"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/app/routes/common/index.html": {
+    "mtime": 1777672817.0960317,
+    "hash": "62eeecce4aa4bd9df89d9ee755bdf939"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/app/routes/common/parse-sort-filter-header.function.ts.html": {
+    "mtime": 1777672817.0983188,
+    "hash": "cf00fb1d3e2221d3623bb51b5808a931"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/app/routes/common/cef-classification.function.ts.html": {
+    "mtime": 1777672817.0965447,
+    "hash": "5a21332ee189ca0450ee4e7b0b15e37e"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/app/routes/accounts/index.html": {
+    "mtime": 1777672817.0932958,
+    "hash": "e84a15fea5a987d21a3fe751e5a6434c"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/app/routes/accounts/fetch-standard-page.function.ts.html": {
+    "mtime": 1777672817.0939307,
+    "hash": "c8151b956ebeb219cf530dec2508069f"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/app/routes/import/calculate-split-ratio.function.ts.html": {
+    "mtime": 1777672817.100066,
+    "hash": "95c771839cd60c7f0613986aea990f48"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/app/routes/import/create-universe-entry.helper.ts.html": {
+    "mtime": 1777672817.1005213,
+    "hash": "230c8750052c206068ff5dbf1b626cc3"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/app/routes/import/adjust-lots-for-split.function.ts.html": {
+    "mtime": 1777672817.0995276,
+    "hash": "06d15271142539e3d2d7a911bbaf8a8f"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/app/routes/import/is-split-to-row.function.ts.html": {
+    "mtime": 1777672817.103538,
+    "hash": "6c90d6c59724690a01b2777d691a0c7c"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/app/routes/import/is-split-from-row.function.ts.html": {
+    "mtime": 1777672817.1029015,
+    "hash": "7206d25c27df3669cac27bd8d44b6b1a"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/app/routes/import/index.html": {
+    "mtime": 1777672817.0988507,
+    "hash": "923bde299a1d35840677dffb5598de81"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/app/routes/import/is-split-row.function.ts.html": {
+    "mtime": 1777672817.1032138,
+    "hash": "1975e978384ec8a02b22a9ea3ca95635"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/app/routes/import/is-in-lieu-row.function.ts.html": {
+    "mtime": 1777672817.1016808,
+    "hash": "5ba0f6675812a1004fed230fad5b464b"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/app/routes/import/cusip-cache.service.ts.html": {
+    "mtime": 1777672817.101176,
+    "hash": "f4fb6537d3b889514bf2ea0dbee55855"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/app/routes/import/fidelity-data-mapper.function.ts.html": {
+    "mtime": 1777672817.1016808,
+    "hash": "31b531191b4ce06a97ed654460e0d458"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/app/routes/summary/years/index.ts.html": {
+    "mtime": 1777672817.106907,
+    "hash": "2b3cb146c9b15b92555cc476fd7ce2b4"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/app/routes/summary/years/index.html": {
+    "mtime": 1777672817.1064737,
+    "hash": "028f543f71bcb9f3ddb4d5be22bec894"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/app/routes/settings/common/ensure-risk-groups-exist.function.ts.html": {
+    "mtime": 1777672817.1049185,
+    "hash": "16d3fd46e721c250fd3c5335c5c2ddc7"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/app/routes/settings/common/get-last-price.function.ts.html": {
+    "mtime": 1777672817.105947,
+    "hash": "65d39701db6ef1ac30521f87d713a317"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/app/routes/settings/common/index.html": {
+    "mtime": 1777672817.1040905,
+    "hash": "70111dc9a43b9db88da40074ab6edb4e"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/app/routes/settings/common/get-distributions.function.ts.html": {
+    "mtime": 1777672817.1052582,
+    "hash": "ed9b36e157eccfd2d2694bd661f8d7bf"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/app/routes/universe/add-symbol/validate-add-symbol-request.function.ts.html": {
+    "mtime": 1777672817.1116445,
+    "hash": "fac7fc74d5984a4e4dc76d13bdb76e5a"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/app/routes/universe/add-symbol/index.html": {
+    "mtime": 1777672817.109681,
+    "hash": "eb1c0236cdc57ba4940a1392c3902585"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/app/routes/universe/add-symbol/add-symbol.function.ts.html": {
+    "mtime": 1777672817.1108685,
+    "hash": "7a348e106ac376af0641de7719171861"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/app/routes/admin/cusip-cache/index.ts.html": {
+    "mtime": 1777672817.0946805,
+    "hash": "938088062b9c44fed1d4a61f32431ca5"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/app/routes/admin/cusip-cache/validation.ts.html": {
+    "mtime": 1777672817.095697,
+    "hash": "2c6934fca8e5f95a8d4e2e726ace47d7"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/app/routes/admin/cusip-cache/index.html": {
+    "mtime": 1777672817.0942922,
+    "hash": "cd1f97b84a5f121c98029e23f485b49e"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/app/routes/screener/index.html": {
+    "mtime": 1777672817.103538,
+    "hash": "5c2650b07d88f5928609d6e337ae8173"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/app/routes/screener/get-consistent-distributions.function.ts.html": {
+    "mtime": 1777672817.1040905,
+    "hash": "6f222999a47d08a6ad3c3d980fe8e9af"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/app/volatility/index.html": {
+    "mtime": 1777672817.122644,
+    "hash": "7565f030ea67ec5399b892e769e241de"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/app/volatility/recalculate-universe-volatility.function.ts.html": {
+    "mtime": 1777672817.123681,
+    "hash": "648021009e8d1d928a49bd53f56980a1"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/app/volatility/volatility-calculation.function.ts.html": {
+    "mtime": 1777672817.1254132,
+    "hash": "840ed01143c1211e21e48ddf9f8ac41c"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/app/services/cusip-audit-log.service.ts.html": {
+    "mtime": 1777672817.1166809,
+    "hash": "a91218c0a8277c89e6ea976ece9df2bb"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/app/services/cusip-cache-cleanup.service.ts.html": {
+    "mtime": 1777672817.1196811,
+    "hash": "940644fb711e2007a67036dfbee52f9e"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/app/services/index.html": {
+    "mtime": 1777672817.1123276,
+    "hash": "211216abbbd06908905229f57d2c92fd"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/app/services/auth-database-optimizer.service.ts.html": {
+    "mtime": 1777672817.1132262,
+    "hash": "9ba0e2514f360bc195bbb5499ec7a6d5"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/app/services/database-performance.service.ts.html": {
+    "mtime": 1777672817.120681,
+    "hash": "b96437b6e8a0b1ea37685301383b442e"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/middleware/tracing.ts.html": {
+    "mtime": 1777672817.125705,
+    "hash": "79ff2690067dcb36f10cf7bdf2ee6a2f"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/middleware/index.html": {
+    "mtime": 1777672817.125705,
+    "hash": "69a6b6a8703985a0ea59690e526cf2a5"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/utils/index.html": {
+    "mtime": 1777672817.125705,
+    "hash": "bce33ca76da9ad7bd418242808919b4e"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/utils/structured-logger.ts.html": {
+    "mtime": 1777672817.127345,
+    "hash": "b9888bb2812c2948372646246238e7b4"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/utils/logger.ts.html": {
+    "mtime": 1777672817.1267638,
+    "hash": "af54f54f175ec3e2649249d4d24919b6"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/utils/thirteenf-cusip.service.ts.html": {
+    "mtime": 1777672817.129194,
+    "hash": "6eed91d70dca7e90e49d4c18ecb6db22"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/shared-editablecellcomponent--decimal-format.png": {
+    "mtime": 1774054788.4467773,
+    "hash": "48f7096cbf3e490f4b668bfbb433b7b0"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/shared-splittercomponent--wide-left.png": {
+    "mtime": 1774054788.4497774,
+    "hash": "48f7096cbf3e490f4b668bfbb433b7b0"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/pages-globalsummary--light-mode.png": {
+    "mtime": 1774054788.440777,
+    "hash": "4fde651930285932ba869bf3e6cdbb34"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/shared-editabledatecellcomponent--empty-value.png": {
+    "mtime": 1774054788.4487772,
+    "hash": "48f7096cbf3e490f4b668bfbb433b7b0"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/pages-cusipcache--light-mode.png": {
+    "mtime": 1774054788.4387772,
+    "hash": "48f7096cbf3e490f4b668bfbb433b7b0"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/shared-summarydisplaycomponent--no-legend.png": {
+    "mtime": 1774054788.4507773,
+    "hash": "48f7096cbf3e490f4b668bfbb433b7b0"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/pages-login--light-mode.png": {
+    "mtime": 1774054788.4427772,
+    "hash": "48f7096cbf3e490f4b668bfbb433b7b0"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/pages-dashboard--dark-mode.png": {
+    "mtime": 1774054788.4387772,
+    "hash": "48f7096cbf3e490f4b668bfbb433b7b0"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/pages-globalscreener--light-mode.png": {
+    "mtime": 1774054788.4397771,
+    "hash": "48f7096cbf3e490f4b668bfbb433b7b0"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/shared-splittercomponent--default.png": {
+    "mtime": 1774054788.4487772,
+    "hash": "48f7096cbf3e490f4b668bfbb433b7b0"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/shared-editabledatecellcomponent--default.png": {
+    "mtime": 1774054788.4477773,
+    "hash": "48f7096cbf3e490f4b668bfbb433b7b0"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/pages-profile--light-mode.png": {
+    "mtime": 1774054788.4437773,
+    "hash": "48f7096cbf3e490f4b668bfbb433b7b0"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/shared-confirmdialogcomponent--delete-confirmation.png": {
+    "mtime": 1774054788.4457772,
+    "hash": "4fde651930285932ba869bf3e6cdbb34"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/pages-globalsummary--dark-mode.png": {
+    "mtime": 1774054788.440777,
+    "hash": "48f7096cbf3e490f4b668bfbb433b7b0"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/shared-splittercomponent--narrow-left.png": {
+    "mtime": 1774054788.4497774,
+    "hash": "48f7096cbf3e490f4b668bfbb433b7b0"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/shared-summarydisplaycomponent--empty-data.png": {
+    "mtime": 1774054788.4507773,
+    "hash": "48f7096cbf3e490f4b668bfbb433b7b0"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/shared-basetablecomponent--loading.png": {
+    "mtime": 1774054788.4447773,
+    "hash": "48f7096cbf3e490f4b668bfbb433b7b0"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/pages-login--dark-mode.png": {
+    "mtime": 1774054788.4417772,
+    "hash": "48f7096cbf3e490f4b668bfbb433b7b0"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/shared-summarydisplaycomponent--pie-chart.png": {
+    "mtime": 1774054788.4517772,
+    "hash": "48f7096cbf3e490f4b668bfbb433b7b0"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/pages-globaluniverse--dark-mode.png": {
+    "mtime": 1774054788.4417772,
+    "hash": "48f7096cbf3e490f4b668bfbb433b7b0"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/shared-editablecellcomponent--with-min-max.png": {
+    "mtime": 1774054788.4467773,
+    "hash": "48f7096cbf3e490f4b668bfbb433b7b0"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/pages-dashboard--light-mode.png": {
+    "mtime": 1774054788.4397771,
+    "hash": "48f7096cbf3e490f4b668bfbb433b7b0"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/pages-globaluniverse--light-mode.png": {
+    "mtime": 1774054788.4417772,
+    "hash": "48f7096cbf3e490f4b668bfbb433b7b0"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/shared-confirmdialogcomponent--default.png": {
+    "mtime": 1774054788.4447773,
+    "hash": "4fde651930285932ba869bf3e6cdbb34"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/pages-chartdemo--light-mode.png": {
+    "mtime": 1774054788.4386487,
+    "hash": "4fde651930285932ba869bf3e6cdbb34"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/shared-nodeeditorcomponent--default.png": {
+    "mtime": 1774054788.4487772,
+    "hash": "48f7096cbf3e490f4b668bfbb433b7b0"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/welcome--default.png": {
+    "mtime": 1774054788.4527774,
+    "hash": "48f7096cbf3e490f4b668bfbb433b7b0"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/shared-basetablecomponent--empty-state.png": {
+    "mtime": 1774054788.4437773,
+    "hash": "48f7096cbf3e490f4b668bfbb433b7b0"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/pages-globalscreener--dark-mode.png": {
+    "mtime": 1774054788.4397771,
+    "hash": "48f7096cbf3e490f4b668bfbb433b7b0"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/shared-editablecellcomponent--zero-value.png": {
+    "mtime": 1774054788.4477773,
+    "hash": "48f7096cbf3e490f4b668bfbb433b7b0"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/pages-profile--dark-mode.png": {
+    "mtime": 1774054788.4427772,
+    "hash": "48f7096cbf3e490f4b668bfbb433b7b0"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/shared-editablecellcomponent--currency-format.png": {
+    "mtime": 1774054788.4457772,
+    "hash": "48f7096cbf3e490f4b668bfbb433b7b0"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/shared-summarydisplaycomponent--bar-chart.png": {
+    "mtime": 1774054788.4507773,
+    "hash": "48f7096cbf3e490f4b668bfbb433b7b0"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/shared-basetablecomponent--with-selection.png": {
+    "mtime": 1774054788.4447773,
+    "hash": "48f7096cbf3e490f4b668bfbb433b7b0"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/pages-cusipcache--dark-mode.png": {
+    "mtime": 1774054788.4386487,
+    "hash": "48f7096cbf3e490f4b668bfbb433b7b0"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/shared-editablecellcomponent--default.png": {
+    "mtime": 1774054788.4467773,
+    "hash": "48f7096cbf3e490f4b668bfbb433b7b0"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/pages-chartdemo--dark-mode.png": {
+    "mtime": 1774054788.438226,
+    "hash": "48f7096cbf3e490f4b668bfbb433b7b0"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/shared-symbolautocompletecomponent--default.png": {
+    "mtime": 1774054788.4517772,
+    "hash": "48f7096cbf3e490f4b668bfbb433b7b0"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-visual.spec.ts-snapshots/shared-basetablecomponent--default.png": {
+    "mtime": 1774054788.4437773,
+    "hash": "48f7096cbf3e490f4b668bfbb433b7b0"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/shared-basetable--empty-state-dark-firefox-linux.png": {
+    "mtime": 1776564575.5429707,
+    "hash": "bae6151d3e2ca224ef0d2518b1f817da"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/shared-basetable--default-dark-firefox-linux.png": {
+    "mtime": 1776564573.8029463,
+    "hash": "6980d5a1b95682582491fdc596c2bea4"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/components-splitter--default-dark-chromium-linux.png": {
+    "mtime": 1774799113.3755295,
+    "hash": "6cbb834db9c2ec84cbb620ba8d4907bb"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/shared-basetable--universe-table-variation-light-chromium-linux.png": {
+    "mtime": 1775291719.5824609,
+    "hash": "b1e518ab712c7689848588e7a8b5dc02"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/components-splitter--default-light-chromium-linux.png": {
+    "mtime": 1774799113.3755295,
+    "hash": "81ca8cabb723e350b69478e744036f61"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/components-editablecell--default-light-firefox-linux.png": {
+    "mtime": 1774799113.3755295,
+    "hash": "7294bcb461d69bf705d37f4347cd143f"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/shared-basetable--default-light-chromium-linux.png": {
+    "mtime": 1776564216.6760855,
+    "hash": "e97c4690fb38fd463cf113a6dee15eaf"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/components-editablecell--default-dark-firefox-linux.png": {
+    "mtime": 1774799113.3754394,
+    "hash": "f960041207f17c678963e3383e203cdf"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/shared-basetable--default-light-firefox-linux.png": {
+    "mtime": 1776564572.7645483,
+    "hash": "b5762e0af7e9a661114a57a96b967975"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/shared-basetable--universe-table-variation-dark-chromium-linux.png": {
+    "mtime": 1775291719.5821934,
+    "hash": "62effe205601d35f22162b91b329613f"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/shared-basetable--default-dark-chromium-linux.png": {
+    "mtime": 1776564216.6770287,
+    "hash": "f289f02d49e4ded84b568f6d81d9c849"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/components-splitter--default-light-firefox-linux.png": {
+    "mtime": 1774799113.3755295,
+    "hash": "fed4ba0c214c9e63d97ababbf01804fe"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/shared-basetable--universe-table-variation-dark-firefox-linux.png": {
+    "mtime": 1775207564.8606613,
+    "hash": "91a0aaa91a1e8f03471144d47af0ed0f"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/shared-basetable--empty-state-light-firefox-linux.png": {
+    "mtime": 1776564574.5339565,
+    "hash": "11110db2912d3cc05ad341326e82d8f5"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/components-editablecell--default-light-chromium-linux.png": {
+    "mtime": 1774799113.3755295,
+    "hash": "c6ec339a6fcc91b197747599516e837e"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/introduction--welcome-light-firefox-linux.png": {
+    "mtime": 1774799113.3760448,
+    "hash": "028741763dc0bfef43196312fe8e786c"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/introduction--welcome-dark-chromium-linux.png": {
+    "mtime": 1774799113.3755295,
+    "hash": "4dfe52cea1ea07644e33f51e46045c52"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/shared-basetable--empty-state-light-chromium-linux.png": {
+    "mtime": 1776564216.678,
+    "hash": "c609c9628b4b3e2baa2be32661a7a7e9"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/shared-basetable--empty-state-dark-chromium-linux.png": {
+    "mtime": 1776564216.6788547,
+    "hash": "0fb0df961bd730ca7004f3e8158115e5"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/introduction--welcome-dark-firefox-linux.png": {
+    "mtime": 1774799113.3760448,
+    "hash": "955b231fa71bbdbd679f3521e8961c59"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/shared-basetable--universe-table-variation-light-firefox-linux.png": {
+    "mtime": 1775207564.8610165,
+    "hash": "04c8d9cdd0ae827d5977c0cb034e9a97"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/components-editablecell--default-dark-chromium-linux.png": {
+    "mtime": 1774799113.3753128,
+    "hash": "ea208cdc6c435bb9e4e39213a06bfc3d"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/introduction--welcome-light-chromium-linux.png": {
+    "mtime": 1774799113.3760448,
+    "hash": "65386a56965bb8b69ad1afefab094375"
+  },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/storybook-snapshots.spec.ts-snapshots/components-splitter--default-dark-firefox-linux.png": {
+    "mtime": 1774799113.3755295,
+    "hash": "5a705f519eaff55fcaf59c5843ffb062"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/favicon.png": {
+    "mtime": 1777672817.0861218,
+    "hash": "8c814a46f24208d0bc459bb2cf8b7b88"
+  },
+  "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/sort-arrow-sprite.png": {
+    "mtime": 1777672817.0862172,
+    "hash": "fd08a5625d21e34b1d6d9c026f2728a9"
+  }
+}
