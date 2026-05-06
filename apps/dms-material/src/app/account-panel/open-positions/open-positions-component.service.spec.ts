@@ -58,6 +58,11 @@ function createOpenTrade(overrides: Partial<Trade> = {}): Trade {
     buy_date: '2024-01-15',
     sell_date: undefined,
     quantity: 100,
+    expected_dollars: 0,
+    last_dollars_unrealized_gain_percent: 0,
+    unrealized_gain_dollars: 0,
+    target_gain: 0,
+    target_sell: 0,
     ...overrides,
   };
 }
