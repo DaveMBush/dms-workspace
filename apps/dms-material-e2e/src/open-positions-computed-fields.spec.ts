@@ -29,10 +29,9 @@ const TARGET_HEADERS = [
  * Wait for the open-positions table to appear and at least one data row to render.
  */
 async function waitForTableRows(page: Page): Promise<void> {
-  await expect(
-    page.locator('[data-testid="open-positions-table"]')
-  ).toBeVisible({ timeout: 15000 });
-  await page.waitForSelector('tr.mat-mdc-row', { timeout: 15000 });
+  const table = page.locator('[data-testid="open-positions-table"]');
+  await expect(table).toBeVisible({ timeout: 15000 });
+  await table.locator('tr.mat-mdc-row').first().waitFor({ timeout: 15000 });
 }
 
 /**
@@ -109,6 +108,7 @@ test.describe('Open Positions — Computed Columns Render Non-Blank Values (Stor
       for (const header of TARGET_HEADERS) {
         const colIdx = columnIndexes.get(header)!;
         const cell = page
+          .locator('[data-testid="open-positions-table"]')
           .locator(`tr.mat-mdc-row td:nth-child(${colIdx})`)
           .first();
 

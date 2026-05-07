@@ -118,13 +118,13 @@ export class OpenPositionsComponentService {
       sell: trade.sell,
       sellDate,
       daysHeld,
-      expectedYield: trade.expected_dollars,
-      targetGain: trade.target_gain,
+      expectedYield: trade.expected_dollars ?? 0,
+      targetGain: trade.target_gain ?? 0,
       targetSell: trade.target_sell,
       quantity: trade.quantity,
       lastPrice,
-      unrealizedGainPercent: trade.last_dollars_unrealized_gain_percent,
-      unrealizedGain: trade.unrealized_gain_dollars,
+      unrealizedGainPercent: trade.last_dollars_unrealized_gain_percent ?? 0,
+      unrealizedGain: trade.unrealized_gain_dollars ?? 0,
     };
   }
 
