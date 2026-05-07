@@ -1,7 +1,7 @@
 ---
 description: 'Full quality validation loop: run pnpm all, e2e tests (chromium and firefox), dupcheck, format, and self-review changed files — restart from step 1 if any fix is applied'
 argument-hint: context=story-AD.3
-model: Claude Opus 4.7 (copilot)
+model: Claude Sonnet 4.6 High (copilot)
 tools: [read, edit, search, mcp_bash/*, mcp_context7/*, mcp_microsoft_pla/*]
 user-invocable: false
 ---
@@ -27,14 +27,14 @@ Before running the loop, read:
 
 ## Execution Rules
 
-1. Operate in the **current working directory** only.
+1. If a `WORKTREE_PATH:` line appears at the top of this prompt, use that value as the `cwd` for all bash MCP calls. Otherwise use the current working directory as `cwd`.
 2. Treat `${context}` only as a logging label for status messages and summaries.
 3. When running shell commands using the bash MCP server,
    **DO NOT EVER ADD SLEEP STATEMENTS TO THE COMMANDS\*\***.
    **ALWAYS WAIT FOR THE COMMAND TO COMPLETE**.
    **USE THE MCP SERVER'S `timeout` PARAMETER INSTEAD using the MAX timeout value** .
 
-4. Run the following Quality Validation Loop steps in order using a subAgent context and the bash MCP server for each command, for example `mcp_bash_run({ command: "<command>", cwd: process.cwd(), timeout: 0 })`:
+4. Run the following Quality Validation Loop steps in order using the bash MCP server for each command, using `WORKTREE_PATH` (resolved in step 1) as the cwd: `mcp_bash_run({ command: "<command>", cwd: WORKTREE_PATH, timeout: 0 })`:
    1. `CI=1 pnpm all` (lint + build + unit tests)
    2. `pnpm e2e:dms-material:chromium` (this can take a very long time... over 20 minutes or more, so be patient and do not interrupt it)
    3. `pnpm e2e:dms-material:firefox` (this can also take a very long time, so again be patient and do not interrupt it)

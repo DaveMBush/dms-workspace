@@ -29,21 +29,19 @@ Before doing anything else, read all of the following:
 
 ## Execution Rules
 
-1. Operate in the **current working directory** only.
+1. If a `WORKTREE_PATH:` line appears at the top of this prompt, use that value as the `cwd` for all bash MCP calls. Otherwise use the current working directory.
 2. Use the bash MCP server for every shell command in this workflow. Use `mcp_bash_run` for blocking commands and `mcp_bash_run_background` only for true background processes. This applies to `pnpm`, `git`, `gh`, and `bash`.
 3. Run the QA gate up to 10 times. For each attempt, call the `runSubagent` tool with:
 
-   - `model`: `"Claude Opus 4.7 (copilot)"`
    - `description`: `"QA gate for story ${story}"`
-   - `prompt`: Read the full contents of `.github/agents/gate.agent.md` and include them verbatim, substituting `${story}` with the actual story ID.
+   - `prompt`: Prepend `WORKTREE_PATH: <WORKTREE_PATH>` and `Use this path as the cwd for all bash MCP calls.` then read the full contents of `.github/agents/gate.agent.md` and append them verbatim, substituting `${story}` with the actual story ID.
 
 4. Interpret results exactly as follows:
 
    - **PASS**: Return immediately with `QA PASSED`
    - **FAIL**: Apply QA fix recommendations automatically, then call the `runSubagent` tool with:
-     - `model`: `"Claude Opus 4.7 (copilot)"`
      - `description`: `"Validation for story ${story} after QA fixes"`
-     - `prompt`: Read the full contents of `.github/agents/quality-validation.agent.md` and include them verbatim, substituting `context` with `story-${story}-qa`.
+     - `prompt`: Prepend `WORKTREE_PATH: <WORKTREE_PATH>` and `Use this path as the cwd for all bash MCP calls.` then read the full contents of `.github/agents/quality-validation.agent.md` and append them verbatim, substituting `context` with `story-${story}-qa`.
 
 5. For QA findings about API misuse, use Context7.
 6. For QA findings about UI behavior, use Playwright.

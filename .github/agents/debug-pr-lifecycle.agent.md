@@ -39,7 +39,6 @@ Before doing anything else, read all of the following:
 2. Use the bash MCP server for every shell command in this workflow. Use `mcp_bash_run` for blocking commands and `mcp_bash_run_background` only for true background processes. This applies to `pnpm`, `git`, `gh`, and `bash`.
 3. Call the `runSubagent` tool now with the following parameters for commit and PR creation:
 
-   - `model`: `"Claude Sonnet 4.6 High (copilot)"`
    - `description`: `"Commit and PR creation for story ${story}"`
    - `prompt`: Read the full contents of `.github/agents/commit-and-pr.agent.md` and include them verbatim, substituting `${story}` with the actual story ID.
 
@@ -48,7 +47,6 @@ Before doing anything else, read all of the following:
 6. Wait 5 minutes after PR creation for rate-limit protection.
 7. Call the `runSubagent` tool now with the following parameters for the full CodeRabbit loop:
 
-   - `model`: `"Claude Sonnet 4.6 High (copilot)"`
    - `description`: `"CodeRabbit review for story ${story}"`
    - `prompt`: Read the full contents of `.github/agents/code-rabbit.agent.md` and include them verbatim, substituting `${story}` with the actual story ID.
 

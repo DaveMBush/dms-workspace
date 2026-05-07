@@ -52,7 +52,6 @@ git merge-tree --quiet $(git merge-base HEAD origin/main) HEAD origin/main
 6. If conflicts exist, attempt rebase onto `origin/main` up to 3 times.
 7. After any conflict fix, call the `runSubagent` tool with:
 
-   - `model`: `"Claude Opus 4.7 (copilot)"`
    - `description`: `"Validation for story ${story} after merge conflict resolution"`
    - `prompt`: Read the full contents of `.github/agents/quality-validation.agent.md` and include them verbatim, substituting `context` with `debug-${story}-merge`.
 

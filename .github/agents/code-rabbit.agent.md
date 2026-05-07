@@ -56,7 +56,6 @@ If the PR CI pipeline is still running, wait and re-check every 120s (with a max
 5. If no suggestions: proceed to merge checks
 6. If suggestions: classify (valid/invalid, in-scope/out-of-scope), use Context7/Playwright for verification
 7. Apply valid in-scope fixes, then call the `runSubagent` tool with:
-   - `model`: `"Claude Opus 4.7 (copilot)"`
    - `description`: `"Validation for story ${story} after CodeRabbit fixes"`
    - `prompt`: Read the full contents of `.github/agents/quality-validation.agent.md` and include them verbatim, substituting `context` with `story-${story}-cr`.
 8. Commit "Apply CodeRabbit suggestions", push, wait 5 minutes, continue loop

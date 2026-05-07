@@ -46,11 +46,9 @@ For each story in the ordered list:
 
    - **CRITICAL**: You MUST delegate to the correct workflow using `runSubagent`. Do NOT attempt to implement the story yourself inline. Do NOT start servers, run manual tests, do code reviews, or perform any implementation work outside of the delegated workflow.
    - **For standard stories**: Call the `runSubagent` tool with:
-     - `model`: `"Claude Sonnet 4.6 High (copilot)"`
      - `description`: `"Develop story ${current_story}"`
      - `prompt`: Read the full contents of `.github/agents/develop-story.agent.md` and include them verbatim, substituting `${story}` with the actual current story ID.
    - **For bug fix stories**: Call the `runSubagent` tool with:
-     - `model`: `"Claude Opus 4.7 (copilot)"`
      - `description`: `"Debug story ${current_story}"`
      - `prompt`: Read the full contents of `.github/agents/debug.agent.md` and include them verbatim, substituting `${epic}` and `${story}` with the actual values.
    - Both workflows handle: validation, implementation, quality checks, PR creation, CodeRabbit review, and merge
