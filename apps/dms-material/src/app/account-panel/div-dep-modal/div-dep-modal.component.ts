@@ -71,7 +71,31 @@ export class DivDepModalComponent implements OnInit, AfterViewInit {
   private selectedUniverseId: string | null = null;
   private selectedSymbolId: string | null = null;
 
-  readonly symbolSearchFnBound = this.symbolSearchFn.bind(this);
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- arrow fn for stable this binding
+  readonly symbolSearchFnBound = async (
+    query: string
+  ): Promise<SymbolOption[]> => {
+    const universes = selectUniverses();
+    const lowerQuery = query.toLowerCase();
+    const results: SymbolOption[] = [];
+    for (let i = 0; i < universes.length && results.length < 50; i++) {
+      const u = universes[i];
+      if (typeof u.symbol !== 'string' || typeof u.name !== 'string') {
+        continue;
+      }
+      if (
+        u.symbol.toLowerCase().includes(lowerQuery) ||
+        u.name.toLowerCase().includes(lowerQuery)
+      ) {
+        results.push({
+          id: u.id,
+          symbol: u.symbol.toUpperCase(),
+          name: u.name,
+        });
+      }
+    }
+    return Promise.resolve(results);
+  };
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signal
   readonly depositTypes$ = computed(() => selectDivDepositTypes());
@@ -208,22 +232,13 @@ export class DivDepModalComponent implements OnInit, AfterViewInit {
       }
     }
 
-    const formValue = this.form.value as {
-      symbol: string;
-      date: Date;
-      amount: number;
-      divDepositTypeId: string;
-    };
-
-    const dividend: Partial<DivDeposit> = {
+    this.dialogRef.close({
       ...this.data.dividend,
-      date: formValue.date,
-      amount: parseFloat(String(formValue.amount)),
-      divDepositTypeId: formValue.divDepositTypeId,
+      date: this.form.value.date as Date,
+      amount: parseFloat(String(this.form.value.amount)),
+      divDepositTypeId: this.form.value.divDepositTypeId as string,
       universeId: this.selectedUniverseId,
-    };
-
-    this.dialogRef.close(dividend);
+    } as Partial<DivDeposit>);
   }
 
   onSymbolBlur(): void {
@@ -276,13 +291,19 @@ export class DivDepModalComponent implements OnInit, AfterViewInit {
     control: AbstractControl
   ): ValidationErrors | null {
     const value: unknown = control.value;
-    if (typeof value !== 'string' || value.length === 0) return null;
+    if (typeof value !== 'string' || value.length === 0) {
+      return null;
+    }
     const symbolLower = value.toLowerCase();
     const universes = selectUniverses();
     for (let i = 0; i < universes.length; i++) {
       const u = universes[i];
-      if (typeof u.symbol !== 'string') continue;
-      if (u.symbol.toLowerCase() === symbolLower) return null;
+      if (typeof u.symbol !== 'string') {
+        continue;
+      }
+      if (u.symbol.toLowerCase() === symbolLower) {
+        return null;
+      }
     }
     return { invalidSymbol: true };
   }
@@ -291,7 +312,9 @@ export class DivDepModalComponent implements OnInit, AfterViewInit {
   // user submits without blurring the autocomplete first.
   private tryResolveFromControl(): void {
     const controlValue: unknown = this.symbolControl.value;
-    if (typeof controlValue !== 'string' || controlValue.length === 0) return;
+    if (typeof controlValue !== 'string' || controlValue.length === 0) {
+      return;
+    }
     const resolved = this.resolveSymbol(controlValue);
     if (resolved !== null) {
       this.selectedSymbolId = resolved.symbolId;
@@ -308,30 +331,13 @@ export class DivDepModalComponent implements OnInit, AfterViewInit {
     const universes = selectUniverses();
     for (let i = 0; i < universes.length; i++) {
       const u = universes[i];
-      if (typeof u.symbol !== 'string') continue;
-      if (u.symbol.toLowerCase() === symbolLower)
+      if (typeof u.symbol !== 'string') {
+        continue;
+      }
+      if (u.symbol.toLowerCase() === symbolLower) {
         return { symbolId: u.symbol.toUpperCase(), universeId: u.id };
-    }
-    return null;
-  }
-
-  private async symbolSearchFn(query: string): Promise<SymbolOption[]> {
-    const universes = selectUniverses();
-    const lowerQuery = query.toLowerCase();
-    const results: SymbolOption[] = [];
-    for (let i = 0; i < universes.length && results.length < 50; i++) {
-      const u = universes[i];
-      if (typeof u.symbol !== 'string' || typeof u.name !== 'string') continue;
-      const symbolMatch = u.symbol.toLowerCase().includes(lowerQuery);
-      const nameMatch = u.name.toLowerCase().includes(lowerQuery);
-      if (symbolMatch || nameMatch) {
-        results.push({
-          id: u.id,
-          symbol: u.symbol.toUpperCase(),
-          name: u.name,
-        });
       }
     }
-    return Promise.resolve(results);
+    return null;
   }
 }
