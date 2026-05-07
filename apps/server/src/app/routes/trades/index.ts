@@ -19,7 +19,6 @@ export interface Trade {
   last_dollars_unrealized_gain_percent: number;
   unrealized_gain_dollars: number;
   target_gain: number;
-  // eslint-disable-next-line @typescript-eslint/naming-convention -- snake_case required for API compatibility
   target_sell: number;
 }
 
