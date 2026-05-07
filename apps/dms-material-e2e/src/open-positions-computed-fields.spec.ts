@@ -41,7 +41,10 @@ async function waitForTableRows(page: Page): Promise<void> {
  * test does not break if column order ever changes.
  */
 async function getColumnIndex(page: Page, headerText: string): Promise<number> {
-  const headers = page.locator('tr.mat-mdc-header-row:not(.filter-row)').first().locator('th');
+  const headers = page
+    .locator('tr.mat-mdc-header-row:not(.filter-row)')
+    .first()
+    .locator('th');
   const count = await headers.count();
   for (let i = 0; i < count; i++) {
     const raw = (await headers.nth(i).textContent()) ?? '';
@@ -70,67 +73,64 @@ function isNumericCellText(text: string): boolean {
 
 // ─── Open Positions Computed Fields E2E ──────────────────────────────────────
 
-test.describe(
-  'Open Positions — Computed Columns Render Non-Blank Values (Story 97.4)',
-  () => {
-    let cleanup: () => Promise<void>;
-    let accountId: string;
+test.describe('Open Positions — Computed Columns Render Non-Blank Values (Story 97.4)', () => {
+  let cleanup: () => Promise<void>;
+  let accountId: string;
 
-    test.beforeAll(async () => {
-      const seeder = await seedOpenPositionsE2eData();
-      cleanup = seeder.cleanup;
-      accountId = seeder.accountId;
-    });
+  test.beforeAll(async () => {
+    const seeder = await seedOpenPositionsE2eData();
+    cleanup = seeder.cleanup;
+    accountId = seeder.accountId;
+  });
 
-    test.afterAll(async () => {
-      if (cleanup) {
-        await cleanup();
+  test.afterAll(async () => {
+    if (cleanup) {
+      await cleanup();
+    }
+  });
+
+  test(
+    'Expected $, Unrlz Gain %, Unrlz Gain$, Target Gain, and Target Sell ' +
+      'each display a non-blank finite number for the seeded row',
+    async ({ page }) => {
+      await login(page);
+      await page.goto(`/account/${accountId}/open`);
+      await waitForTableRows(page);
+
+      // Resolve column indexes from header text — do NOT hard-code ordinals.
+      const columnIndexes = new Map<string, number>();
+      for (const header of TARGET_HEADERS) {
+        columnIndexes.set(header, await getColumnIndex(page, header));
       }
-    });
 
-    test(
-      'Expected $, Unrlz Gain %, Unrlz Gain$, Target Gain, and Target Sell ' +
-        'each display a non-blank finite number for the seeded row',
-      async ({ page }) => {
-        await login(page);
-        await page.goto(`/account/${accountId}/open`);
-        await waitForTableRows(page);
+      // For each target column, poll until the first data-row cell contains
+      // non-blank, numerically-valid text.  Using expect.poll handles async
+      // rendering without relying on networkidle.
+      for (const header of TARGET_HEADERS) {
+        const colIdx = columnIndexes.get(header)!;
+        const cell = page
+          .locator(`tr.mat-mdc-row td:nth-child(${colIdx})`)
+          .first();
 
-        // Resolve column indexes from header text — do NOT hard-code ordinals.
-        const columnIndexes = new Map<string, number>();
-        for (const header of TARGET_HEADERS) {
-          columnIndexes.set(header, await getColumnIndex(page, header));
-        }
+        await expect
+          .poll(
+            async () => {
+              const text = ((await cell.textContent()) ?? '').trim();
+              return text;
+            },
+            {
+              message: `Column "${header}" cell should contain non-blank text`,
+              timeout: 10000,
+            }
+          )
+          .not.toBe('');
 
-        // For each target column, poll until the first data-row cell contains
-        // non-blank, numerically-valid text.  Using expect.poll handles async
-        // rendering without relying on networkidle.
-        for (const header of TARGET_HEADERS) {
-          const colIdx = columnIndexes.get(header)!;
-          const cell = page
-            .locator(`tr.mat-mdc-row td:nth-child(${colIdx})`)
-            .first();
-
-          await expect
-            .poll(
-              async () => {
-                const text = ((await cell.textContent()) ?? '').trim();
-                return text;
-              },
-              {
-                message: `Column "${header}" cell should contain non-blank text`,
-                timeout: 10000,
-              }
-            )
-            .not.toBe('');
-
-          const cellText = ((await cell.textContent()) ?? '').trim();
-          expect(
-            isNumericCellText(cellText),
-            `Column "${header}" value "${cellText}" should parse as a finite number`
-          ).toBe(true);
-        }
+        const cellText = ((await cell.textContent()) ?? '').trim();
+        expect(
+          isNumericCellText(cellText),
+          `Column "${header}" value "${cellText}" should parse as a finite number`
+        ).toBe(true);
       }
-    );
-  }
-);
+    }
+  );
+});

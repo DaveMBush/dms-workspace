@@ -31,6 +31,7 @@ so that the regression that originally hid these columns cannot recur silently.
 ## Tasks / Subtasks
 
 - [x] Task 1: Create the spec file (AC: #2)
+
   - [x] Create `apps/dms-material-e2e/src/open-positions-computed-fields.spec.ts`
   - [x] Use the existing `login` helper from `apps/dms-material-e2e/src/helpers/login.helper.ts`
   - [x] Follow the file conventions of sibling specs such as
@@ -38,6 +39,7 @@ so that the regression that originally hid these columns cannot recur silently.
         `apps/dms-material-e2e/src/import-volatility-after-import.spec.ts` (see Dev Notes)
 
 - [x] Task 2: Seed an account with at least one open position (AC: #1)
+
   - [x] Reuse the existing open-positions seed helper
         (`apps/dms-material-e2e/src/helpers/seed-open-positions-e2e-data.helper.ts` or the
         equivalent factory used by `open-positions-screen-e2e.spec.ts`) so the seeded
@@ -48,6 +50,7 @@ so that the regression that originally hid these columns cannot recur silently.
         distributions_per_year so server-computed fields are non-zero
 
 - [x] Task 3: Navigate to Open Positions and assert the 5 columns are non-blank (AC: #1)
+
   - [x] Log in and navigate to the Open Positions tab using the same navigation pattern as
         `open-positions-screen-e2e.spec.ts`
   - [x] Resolve the column index for each of the 5 target columns by reading the
@@ -120,13 +123,7 @@ const idxOf = (label: string) => {
   return i + 1; // CSS :nth-child is 1-based
 };
 
-const targetColumns = [
-  'Expected$',
-  'Last$ Unrlz Gain%',
-  'Unrlz Gain$',
-  'Target Gain',
-  'Target Sell',
-];
+const targetColumns = ['Expected$', 'Last$ Unrlz Gain%', 'Unrlz Gain$', 'Target Gain', 'Target Sell'];
 ```
 
 > Confirm the **exact** rendered header strings against the live UI (or the columns
@@ -188,7 +185,7 @@ helpers, no new fixtures, no config changes are required.
 
 ### References
 
-- [_bmad-output/planning-artifacts/epics-2026-05-05.md](../planning-artifacts/epics-2026-05-05.md) — Epic 97 (Story 97.4 source)
+- [\_bmad-output/planning-artifacts/epics-2026-05-05.md](../planning-artifacts/epics-2026-05-05.md) — Epic 97 (Story 97.4 source)
 - [apps/dms-material-e2e/src/open-positions-screen-e2e.spec.ts](apps/dms-material-e2e/src/open-positions-screen-e2e.spec.ts)
 - [apps/dms-material-e2e/src/import-volatility-after-import.spec.ts](apps/dms-material-e2e/src/import-volatility-after-import.spec.ts)
 - [apps/dms-material-e2e/src/svol-column.spec.ts](apps/dms-material-e2e/src/svol-column.spec.ts)
