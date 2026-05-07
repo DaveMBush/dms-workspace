@@ -41,7 +41,7 @@ async function waitForTableRows(page: Page): Promise<void> {
  * test does not break if column order ever changes.
  */
 async function getColumnIndex(page: Page, headerText: string): Promise<number> {
-  const headers = page.locator('tr.mat-mdc-header-row').first().locator('th');
+  const headers = page.locator('tr.mat-mdc-header-row:not(.filter-row)').first().locator('th');
   const count = await headers.count();
   for (let i = 0; i < count; i++) {
     const raw = (await headers.nth(i).textContent()) ?? '';
