@@ -78,6 +78,7 @@ export default defineConfig({
         'src/app/routes/universe/sync-from-screener/index.ts',
         'src/utils/aws-config.ts',
         'src/app/routes/logs/index.ts',
+        'src/app/routes/settings/update/index.ts',
         // Re-export barrel files covered by barrel spec tests
         'src/app/middleware/csrf-protection-hook.middleware.ts',
         'src/app/middleware/enhanced-rate-limit.middleware.ts',

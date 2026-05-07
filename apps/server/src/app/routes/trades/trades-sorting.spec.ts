@@ -80,6 +80,9 @@ interface ClosedTradeResponse {
 interface HydratedTradeRow extends OpenTradeRow {
   universe: {
     symbol: string;
+    last_price: number;
+    distribution: number;
+    distributions_per_year: number;
   } | null;
 }
 
@@ -133,7 +136,12 @@ function makeOpenTradesSeedData() {
         buy_date: new Date('2024-03-10'),
         quantity: 50,
       }),
-      universe: { symbol: 'AAPL', last_price: 195.0 },
+      universe: {
+        symbol: 'AAPL',
+        last_price: 195.0,
+        distribution: 0,
+        distributions_per_year: 0,
+      },
     },
     {
       ...makeOpenTrade({
@@ -143,7 +151,12 @@ function makeOpenTradesSeedData() {
         buy_date: new Date('2024-01-05'),
         quantity: 25,
       }),
-      universe: { symbol: 'MSFT', last_price: 420.0 },
+      universe: {
+        symbol: 'MSFT',
+        last_price: 420.0,
+        distribution: 0,
+        distributions_per_year: 0,
+      },
     },
     {
       ...makeOpenTrade({
@@ -153,7 +166,12 @@ function makeOpenTradesSeedData() {
         buy_date: new Date('2024-06-20'),
         quantity: 75,
       }),
-      universe: { symbol: 'GOOG', last_price: 175.0 },
+      universe: {
+        symbol: 'GOOG',
+        last_price: 175.0,
+        distribution: 0,
+        distributions_per_year: 0,
+      },
     },
     {
       ...makeOpenTrade({
@@ -163,7 +181,12 @@ function makeOpenTradesSeedData() {
         buy_date: new Date('2024-02-14'),
         quantity: 40,
       }),
-      universe: { symbol: 'AMZN', last_price: 185.0 },
+      universe: {
+        symbol: 'AMZN',
+        last_price: 185.0,
+        distribution: 0,
+        distributions_per_year: 0,
+      },
     },
   ];
 }
@@ -180,7 +203,12 @@ function makeClosedTradesSeedData() {
         sell_date: new Date('2024-01-15'),
         quantity: 60,
       }),
-      universe: { symbol: 'AAPL', last_price: 195.0 },
+      universe: {
+        symbol: 'AAPL',
+        last_price: 195.0,
+        distribution: 0,
+        distributions_per_year: 0,
+      },
     },
     {
       ...makeClosedTrade({
@@ -192,7 +220,12 @@ function makeClosedTradesSeedData() {
         sell_date: new Date('2024-03-20'),
         quantity: 30,
       }),
-      universe: { symbol: 'TSLA', last_price: 250.0 },
+      universe: {
+        symbol: 'TSLA',
+        last_price: 250.0,
+        distribution: 0,
+        distributions_per_year: 0,
+      },
     },
     {
       ...makeClosedTrade({
@@ -204,7 +237,12 @@ function makeClosedTradesSeedData() {
         sell_date: new Date('2024-06-10'),
         quantity: 20,
       }),
-      universe: { symbol: 'NVDA', last_price: 800.0 },
+      universe: {
+        symbol: 'NVDA',
+        last_price: 800.0,
+        distribution: 0,
+        distributions_per_year: 0,
+      },
     },
     {
       ...makeClosedTrade({
@@ -216,7 +254,12 @@ function makeClosedTradesSeedData() {
         sell_date: new Date('2024-02-28'),
         quantity: 45,
       }),
-      universe: { symbol: 'META', last_price: 500.0 },
+      universe: {
+        symbol: 'META',
+        last_price: 500.0,
+        distribution: 0,
+        distributions_per_year: 0,
+      },
     },
   ];
 }
@@ -238,7 +281,12 @@ describe('Trades hydration route', function tradeHydrationRouteTests() {
   it('includes the universe symbol when hydrating trades by id', async function includesUniverseSymbol() {
     const hydratedTrade: HydratedTradeRow = {
       ...makeOpenTrade(),
-      universe: { symbol: 'AAPL' },
+      universe: {
+        symbol: 'AAPL',
+        last_price: 195.0,
+        distribution: 0,
+        distributions_per_year: 0,
+      },
     };
     mockPrismaTrades.findMany.mockResolvedValue([hydratedTrade]);
 
@@ -251,7 +299,16 @@ describe('Trades hydration route', function tradeHydrationRouteTests() {
     expect(response.statusCode).toBe(200);
     expect(mockPrismaTrades.findMany).toHaveBeenCalledWith({
       where: { id: { in: ['ot1'] } },
-      include: { universe: { select: { symbol: true } } },
+      include: {
+        universe: {
+          select: {
+            distribution: true,
+            distributions_per_year: true,
+            last_price: true,
+            symbol: true,
+          },
+        },
+      },
     });
 
     expect(JSON.parse(response.body)).toEqual([
@@ -260,6 +317,18 @@ describe('Trades hydration route', function tradeHydrationRouteTests() {
         symbol: 'AAPL',
       }),
     ]);
+  });
+
+  it('returns empty array when no ids are provided', async function returnsEmptyArrayForNoIds() {
+    const response = await app.inject({
+      method: 'POST',
+      url: '/api/trades',
+      payload: [],
+    });
+
+    expect(response.statusCode).toBe(200);
+    expect(JSON.parse(response.body)).toEqual([]);
+    expect(mockPrismaTrades.findMany).not.toHaveBeenCalled();
   });
 });
 

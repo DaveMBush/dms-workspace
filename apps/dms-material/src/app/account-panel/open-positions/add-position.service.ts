@@ -94,6 +94,11 @@ export class AddPositionService {
       buy_date: result.purchase_date!,
       sell: 0,
       accountId,
+      expected_dollars: 0,
+      last_dollars_unrealized_gain_percent: 0,
+      unrealized_gain_dollars: 0,
+      target_gain: 0,
+      target_sell: 0,
     };
   }
 

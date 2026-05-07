@@ -17,6 +17,11 @@ export const openTradesDefinition: SmartEntityDefinition<Trade> = {
       buy_date: '',
       sell_date: undefined,
       quantity: 0,
+      expected_dollars: 0,
+      last_dollars_unrealized_gain_percent: 0,
+      unrealized_gain_dollars: 0,
+      target_gain: 0,
+      target_sell: 0,
     };
   },
 };

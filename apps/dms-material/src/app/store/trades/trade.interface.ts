@@ -13,4 +13,5 @@ export interface Trade {
   last_dollars_unrealized_gain_percent: number;
   unrealized_gain_dollars: number;
   target_gain: number;
+  target_sell: number;
 }

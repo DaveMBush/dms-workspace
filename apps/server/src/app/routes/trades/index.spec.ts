@@ -416,4 +416,75 @@ describe('mapTradeToResponse', function () {
       expect(result.target_gain).toBe(0);
     });
   });
+
+  // --- target_sell = distribution + buy ---
+
+  describe('target_sell', function () {
+    it('should compute target_sell as distribution + buy', function () {
+      const trade: TradeWithUniverseAndDates = {
+        id: '50',
+        universeId: 'uni-50',
+        accountId: 'acc-50',
+        buy: 150,
+        sell: 0,
+        buy_date: new Date('2024-01-01'),
+        sell_date: null,
+        quantity: 100,
+        universe: {
+          symbol: 'SELL',
+          last_price: 155,
+          distribution: 5,
+          distributions_per_year: 2,
+        },
+      };
+
+      const result = mapTradeToResponse(trade);
+
+      // 5 + 150 = 155
+      expect(result.target_sell).toBe(155);
+    });
+
+    it('should return buy for target_sell when distribution is 0', function () {
+      const trade: TradeWithUniverseAndDates = {
+        id: '51',
+        universeId: 'uni-51',
+        accountId: 'acc-51',
+        buy: 100,
+        sell: 0,
+        buy_date: new Date('2024-01-01'),
+        sell_date: null,
+        quantity: 50,
+        universe: {
+          symbol: 'NOSELL',
+          last_price: 105,
+          distribution: 0,
+          distributions_per_year: 4,
+        },
+      };
+
+      const result = mapTradeToResponse(trade);
+
+      // 0 + 100 = 100 (equals buy when distribution is 0)
+      expect(result.target_sell).toBe(100);
+    });
+
+    it('should return buy for target_sell when universe is null', function () {
+      const trade: TradeWithUniverseAndDates = {
+        id: '52',
+        universeId: 'uni-52',
+        accountId: 'acc-52',
+        buy: 200,
+        sell: 0,
+        buy_date: new Date('2024-01-01'),
+        sell_date: null,
+        quantity: 50,
+        universe: null,
+      };
+
+      const result = mapTradeToResponse(trade);
+
+      // distribution defaults to 0, so 0 + 200 = 200 (equals buy)
+      expect(result.target_sell).toBe(200);
+    });
+  });
 });
