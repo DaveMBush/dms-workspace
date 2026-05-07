@@ -3,6 +3,8 @@ import { app, BrowserWindow, dialog, ipcMain, session, shell } from 'electron';
 import http from 'http';
 import path from 'path';
 
+import { resolveDbPath } from './utils/db-path';
+import { ensureDbFile } from './utils/ensure-db-file';
 import { findAvailablePort } from './utils/port';
 import { runMigrations } from './utils/run-migrations';
 
@@ -48,6 +50,58 @@ function healthCheck(port: number): Promise<void> {
   });
 }
 
+interface ServerPaths {
+  serverPath: string;
+  serverCwd: string;
+  staticDir: string;
+}
+
+function resolveServerPaths(): ServerPaths {
+  if (app.isPackaged) {
+    return {
+      serverPath: path.join(process.resourcesPath, 'apps/server/main.js'),
+      serverCwd: process.resourcesPath,
+      staticDir: path.join(process.resourcesPath, 'apps/dms-material/browser'),
+    };
+  }
+  const workspaceRoot = path.resolve(__dirname, '../../..');
+  return {
+    serverPath: path.join(workspaceRoot, 'dist/apps/server/main.js'),
+    serverCwd: workspaceRoot,
+    staticDir: path.join(workspaceRoot, 'dist/apps/dms-material/browser'),
+  };
+}
+
+function attachServerProcessListeners(
+  proc: ChildProcess,
+  timeout: ReturnType<typeof setTimeout>,
+  resolve: () => void,
+  reject: (err: Error) => void
+): void {
+  proc.on('message', function onMessage(msg: Buffer | object | string): void {
+    if (msg === 'ready') {
+      clearTimeout(timeout);
+      resolve();
+    }
+  });
+
+  proc.on('error', function onError(err: Error): void {
+    clearTimeout(timeout);
+    reject(err);
+  });
+
+  proc.on('exit', function onExit(code: number | null): void {
+    clearTimeout(timeout);
+    reject(
+      new Error(
+        `Server process exited with code ${
+          code ?? 'null'
+        } before signalling ready`
+      )
+    );
+  });
+}
+
 function startServer(port: number): Promise<void> {
   return new Promise(function doStartServer(
     resolve: () => void,
@@ -55,27 +109,6 @@ function startServer(port: number): Promise<void> {
   ): void {
     const nodeExecPath =
       process.env['DMS_NODE_EXEC_PATH'] ?? process.env['npm_node_execpath'];
-
-    let serverPath: string;
-    let serverCwd: string;
-    let staticDir: string;
-
-    if (app.isPackaged) {
-      serverPath = path.join(process.resourcesPath, 'apps/server/main.js');
-      serverCwd = process.resourcesPath;
-      staticDir = path.join(
-        process.resourcesPath,
-        'apps/dms-material/browser'
-      );
-    } else {
-      const workspaceRoot = path.resolve(__dirname, '../../..');
-      serverPath = path.join(workspaceRoot, 'dist/apps/server/main.js');
-      serverCwd = workspaceRoot;
-      staticDir = path.join(
-        workspaceRoot,
-        'dist/apps/dms-material/browser'
-      );
-    }
 
     if (nodeExecPath === undefined || nodeExecPath.length === 0) {
       reject(
@@ -85,6 +118,8 @@ function startServer(port: number): Promise<void> {
       );
       return;
     }
+
+    const { serverPath, serverCwd, staticDir } = resolveServerPaths();
 
     serverProcess = fork(serverPath, [], {
       cwd: serverCwd,
@@ -97,27 +132,7 @@ function startServer(port: number): Promise<void> {
       reject(new Error('Server start timeout after 10 seconds'));
     }, 10_000);
 
-    serverProcess.on(
-      'message',
-      function onMessage(msg: Buffer | object | string): void {
-        if (msg === 'ready') {
-          clearTimeout(timeout);
-          resolve();
-        }
-      }
-    );
-
-    serverProcess.on('error', function onError(err: Error): void {
-      clearTimeout(timeout);
-      reject(err);
-    });
-
-    serverProcess.on('exit', function onExit(code: number | null): void {
-      clearTimeout(timeout);
-      if (code !== 0) {
-        reject(new Error(`Server process exited with code ${code ?? 'null'}`));
-      }
-    });
+    attachServerProcessListeners(serverProcess, timeout, resolve, reject);
   });
 }
 
@@ -231,17 +246,46 @@ function parseSmokePort(smokePortEnv: string): number {
   return parsed;
 }
 
-async function init(): Promise<void> {
+function registerTestGlobals(): void {
+  (
+    global as typeof globalThis & { electronTestExternalLog?: string[] }
+  ).electronTestExternalLog = externalOpenLog;
+}
+
+function showFatalError(title: string, detail: string): void {
+  dialog.showErrorBox(title, `${detail}\n\nThe application will now exit.`);
+  app.exit(1);
+}
+
+async function initDatabase(dbPath: string): Promise<boolean> {
+  try {
+    ensureDbFile(dbPath);
+  } catch (err) {
+    showFatalError(
+      'Database Initialisation Failed',
+      `Could not create the database directory or file at ${dbPath}.\n\n${String(
+        err
+      )}`
+    );
+    return false;
+  }
+  process.env['DATABASE_URL'] = `file:${dbPath}`;
+
   try {
     await runMigrations();
   } catch (err) {
-    dialog.showErrorBox(
+    showFatalError(
       'Database Migration Failed',
-      `Could not update the database schema.\n\n${String(
-        err
-      )}\n\nThe application will now exit.`
+      `Could not update the database schema.\n\n${String(err)}`
     );
-    app.exit(1);
+    return false;
+  }
+  return true;
+}
+
+async function init(): Promise<void> {
+  const dbPath = resolveDbPath();
+  if (!(await initDatabase(dbPath))) {
     return;
   }
 
@@ -258,9 +302,7 @@ async function init(): Promise<void> {
     });
 
     if (process.env['ELECTRON_TEST_MODE'] === '1') {
-      (
-        global as typeof globalThis & { electronTestExternalLog?: string[] }
-      ).electronTestExternalLog = externalOpenLog;
+      registerTestGlobals();
     }
 
     await startServer(port);
