@@ -7,7 +7,7 @@ user-invocable: false
 
 Shell execution rule: use the bash MCP server for every shell command in this prompt. Use `mcp_bash_run` for blocking commands and `mcp_bash_run_background` only when a background process is truly required. This applies to `pnpm`, `git`, `gh`, `bash`, and helper scripts.
 
-- Capture current worktree path
+- Resolve working directory: if a `WORKTREE_PATH:` line appears at the top of this prompt, use that value as `WORKTREE_PATH`. Otherwise resolve it with:
   WORKTREE_PATH=$(pwd)
 
 - run `pnpm format` using the bash mcp server to auto-format any files that need it before committing:

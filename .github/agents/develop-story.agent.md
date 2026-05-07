@@ -13,7 +13,7 @@ load the #skill:prompt
 
 Shell execution rule: every shell command in this workflow and its delegated steps must use the bash MCP server. Use `mcp_bash_run` for blocking commands and `mcp_bash_run_background` only for true background processes. This applies to `pnpm`, `git`, `gh`, and `bash`. Do not use `run_in_terminal` for shell execution.
 
-## PHASE 1: Pre-Development Validation
+## PHASE 1: Pre-Development Validation and Worktree Setup
 
 1. Verify story file exists at `_bmad-output/implementation-artifacts/${story}*.md`
    - If not found: Use the prompt skill to ask: `Story file _bmad-output/implementation-artifacts/${story}.md not found. Reply with stop, continue, or instructions.`
@@ -23,40 +23,42 @@ Shell execution rule: every shell command in this workflow and its delegated ste
    - If dirty: Use the prompt skill to ask: `Git working directory has uncommitted changes. Reply with stop, continue, or instructions.`
 4. Verify currently on main branch and it's up to date with remote
    - If issues: switch to main branch.
-5. Check if GitHub issue already exists for this story (search by story ID in title)
+5. Create GitHub issue for story `${story}` if one does not already exist. Use the story title and description from `_bmad-output/implementation-artifacts/${story}.md` as the issue body. Capture the issue number.
 6. Check if branch already exists for this story
    - If exists: Use the prompt skill to ask: `Branch for story ${story} already exists. Reply with stop, continue, or instructions.`
 7. Check if worktree already exists at `../dms/story-${story}`
    - If exists: Use the prompt skill to ask: `Worktree for story ${story} already exists at ../dms/story-${story}. Reply with stop, continue, or instructions.`
+8. Create a branch in GitHub for the issue (e.g. `feat/story-${story}`).
+9. Create a git worktree for the branch:
+   ```
+   mcp_bash_run({ command: "git worktree add ../dms/story-${story} <branch-name>", timeout: 60 })
+   ```
+10. Run `pnpm i` in the worktree:
+    ```
+    mcp_bash_run({ command: "pnpm i", cwd: "../dms/story-${story}", timeout: 0 })
+    ```
+11. Resolve the absolute worktree path and store as `WORKTREE_ABS_PATH`:
+    ```
+    mcp_bash_run({ command: "realpath ../dms/story-${story}", timeout: 30 })
+    ```
 
 ## PHASE 2: Story Implementation
 
 Call the `runSubagent` tool now with the following parameters to implement the story in a fresh subagent context:
 
-- `model`: `"Claude Sonnet 4.7 (copilot)"`
 - `description`: `"Implement story ${story}"`
-- `prompt`: Read the full contents of `.github/agents/code-story.agent.md` and include them verbatim as the prompt, substituting `${story}` with the actual story ID.
-
-This will:
-
-- Create GitHub issue (if not exists)
-- Create branch and a git worktree at `../dms/story-${story}`
-- Implement the story from within the worktree directory
-- During implementation, use `mcp_context7_query-docs` for unfamiliar APIs and Playwright for UI checks
+- `prompt`: Prepend `WORKTREE_PATH: <WORKTREE_ABS_PATH>` and `Use this path as the cwd for all bash MCP calls and file edits.` then read the full contents of `.github/agents/code-story.agent.md` and append them verbatim, substituting `${story}` with the actual story ID.
 
 If `code-story.agent.md` encounters issues, it must use the prompt skill or handle internal retries as required.
 
-**IMMEDIATELY PROCEED TO PHASE 3** once `code-story.agent.md` returns — do not pause, do not ask for confirmation. Use the bash MCP server to run `pnpm i` with `cwd` set to `../dms/story-${story}`, then begin Phase 3.
-
-**IMPORTANT**: All subsequent phases (3 through 7) must run from within the worktree at `../dms/story-${story}`.
+**IMMEDIATELY PROCEED TO PHASE 3** once `code-story.agent.md` returns — do not pause, do not ask for confirmation.
 
 ## Phase 3 Quality Validation
 
 Call the `runSubagent` tool now with the following parameters to run the quality validation loop in a fresh subagent context:
 
-- `model`: `"Claude Opus 4.7 (copilot)"`
 - `description`: `"Validate story ${story}"`
-- `prompt`: Read the full contents of `.github/agents/quality-validation.agent.md` and include them verbatim as the prompt, substituting `context` with `story-${story}`.
+- `prompt`: Prepend `WORKTREE_PATH: <WORKTREE_ABS_PATH>` and `Use this path as the cwd for all bash MCP calls.` then read the full contents of `.github/agents/quality-validation.agent.md` and append them verbatim, substituting `context` with `story-${story}`.
 
 This keeps the story workflow context small while the validation loop handles:
 
@@ -82,9 +84,8 @@ If the validation subagent returns `VALIDATION FAILED`, use the prompt skill to 
 
 Call the `runSubagent` tool now with the following parameters to run the QA review loop in a fresh subagent context:
 
-- `model`: `"Claude Sonnet 4.6 High (copilot)"`
 - `description`: `"QA review for story ${story}"`
-- `prompt`: Read the full contents of `.github/agents/qa-review-loop.agent.md` and include them verbatim as the prompt, substituting `${story}` with the actual story ID.
+- `prompt`: Prepend `WORKTREE_PATH: <WORKTREE_ABS_PATH>` and `Use this path as the cwd for all bash MCP calls.` then read the full contents of `.github/agents/qa-review-loop.agent.md` and append them verbatim, substituting `${story}` with the actual story ID.
 
 This keeps the story workflow context small while the QA review subagent handles:
 
@@ -102,9 +103,8 @@ When it returns `QA PASSED`: IMMEDIATELY move to Phase 5.
 
 Once all validations pass, call the `runSubagent` tool now with the following parameters:
 
-- `model`: `"Claude Sonnet 4.6 High (copilot)"`
 - `description`: `"Commit and create PR for story ${story}"`
-- `prompt`: Read the full contents of `.github/agents/commit-and-pr.agent.md` and include them verbatim as the prompt, substituting `${story}` with the actual story ID.
+- `prompt`: Prepend `WORKTREE_PATH: <WORKTREE_ABS_PATH>` and `Use this path as the cwd for all bash MCP calls.` then read the full contents of `.github/agents/commit-and-pr.agent.md` and append them verbatim, substituting `${story}` with the actual story ID.
 
 This will:
 
@@ -136,7 +136,6 @@ Phase 6 has been delegated to a dedicated, resumable subagent. After Phase 5 com
 
 Then call the `runSubagent` tool now with the following parameters to handle the full CodeRabbit loop:
 
-- `model`: `"Claude Sonnet 4.6 High (copilot)"`
 - `description`: `"CodeRabbit review for story ${story}"`
 - `prompt`: Read the full contents of `.github/agents/code-rabbit.agent.md` and include them verbatim as the prompt, substituting `${story}` with the actual story ID.
 
@@ -150,7 +149,6 @@ Use the `code-rabbit.agent.md` subagent to keep the story prompt small, idempote
 
 Delegate Phase 7 by calling the `runSubagent` tool now with the following parameters:
 
-- `model`: `"Claude Sonnet 4.6 High (copilot)"`
 - `description`: `"Merge and finalize story ${story}"`
 - `prompt`: Read the full contents of `.github/agents/merge-finalize.agent.md` and include them verbatim as the prompt, substituting `${story}` with the actual story ID.
 
