@@ -95,18 +95,15 @@ export class OpenPositionsComponentService {
   });
 
   private transformTradeToPosition(trade: Trade): OpenPosition {
-    // Story 95.2: Use safe defaults for Universe fields not available on Trade
-    // A follow-up story will extend the Trade interface with these fields
-    const lastPrice = 0; // Universe.last_price not available on Trade
-    const distribution = 0; // Universe.distribution not available on Trade
-    const exDate = null; // Universe.ex_date not available on Trade
+    // Story 97.4: Use server-computed fields for computed columns.
+    // last_price is not yet exposed on Trade; keep at 0 for "Last $" display.
+    const lastPrice = 0; // Universe.last_price not included in Trade response
+    const exDate = null; // Universe.ex_date not included in Trade response
 
     const daysHeld = this.differenceInTradingDaysPrivate(
       trade.buy_date,
       new Date().toISOString()
     );
-    const expectedYield = distribution ? trade.quantity * distribution : 0;
-    const targetGain = 0; // Requires distribution and ex_date calculations
 
     const sellDate =
       typeof trade.sell_date === 'string' && trade.sell_date.trim() !== ''
@@ -114,24 +111,20 @@ export class OpenPositionsComponentService {
         : undefined;
     return {
       id: trade.id,
-      symbol: trade.symbol, // Story 95.2: Use trade.symbol directly
+      symbol: trade.symbol,
       exDate,
       buy: trade.buy,
       buyDate: this.parseDateString(trade.buy_date),
       sell: trade.sell,
       sellDate,
       daysHeld,
-      expectedYield,
-      targetGain,
+      expectedYield: trade.expected_dollars ?? 0,
+      targetGain: trade.target_gain ?? 0,
       targetSell: trade.target_sell,
       quantity: trade.quantity,
       lastPrice,
-      unrealizedGainPercent:
-        lastPrice > 0 && trade.buy > 0
-          ? ((lastPrice - trade.buy) / trade.buy) * 100
-          : 0,
-      unrealizedGain:
-        lastPrice > 0 ? (lastPrice - trade.buy) * trade.quantity : 0,
+      unrealizedGainPercent: trade.last_dollars_unrealized_gain_percent ?? 0,
+      unrealizedGain: trade.unrealized_gain_dollars ?? 0,
     };
   }
 
