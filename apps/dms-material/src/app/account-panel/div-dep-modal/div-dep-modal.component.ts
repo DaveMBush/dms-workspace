@@ -208,13 +208,7 @@ export class DivDepModalComponent implements OnInit, AfterViewInit {
       }
     }
 
-    interface FormValue {
-      symbol: string;
-      date: Date;
-      amount: number;
-      divDepositTypeId: string;
-    }
-    const formValue = this.form.value as FormValue;
+    const formValue = this.form.value as { symbol: string; date: Date; amount: number; divDepositTypeId: string };
 
     const dividend: Partial<DivDeposit> = {
       ...this.data.dividend,
@@ -273,23 +267,15 @@ export class DivDepModalComponent implements OnInit, AfterViewInit {
   // Validator: exact case-insensitive match only — pure, no side effects.
   // Uses an index-based loop because SmartNgRX returns an array-like object
   // that does not have built-in Array methods such as .find() or .filter().
-  private symbolExistsValidator(
-    control: AbstractControl
-  ): ValidationErrors | null {
+  private symbolExistsValidator(control: AbstractControl): ValidationErrors | null {
     const value: unknown = control.value;
-    if (typeof value !== 'string' || value.length === 0) {
-      return null; // Let required validator handle empty
-    }
+    if (typeof value !== 'string' || value.length === 0) return null;
     const symbolLower = value.toLowerCase();
     const universes = selectUniverses();
     for (let i = 0; i < universes.length; i++) {
       const u = universes[i];
-      if (typeof u.symbol !== 'string') {
-        continue;
-      }
-      if (u.symbol.toLowerCase() === symbolLower) {
-        return null;
-      }
+      if (typeof u.symbol !== 'string') continue;
+      if (u.symbol.toLowerCase() === symbolLower) return null;
     }
     return { invalidSymbol: true };
   }
@@ -298,9 +284,7 @@ export class DivDepModalComponent implements OnInit, AfterViewInit {
   // user submits without blurring the autocomplete first.
   private tryResolveFromControl(): void {
     const controlValue: unknown = this.symbolControl.value;
-    if (typeof controlValue !== 'string' || controlValue.length === 0) {
-      return;
-    }
+    if (typeof controlValue !== 'string' || controlValue.length === 0) return;
     const resolved = this.resolveSymbol(controlValue);
     if (resolved !== null) {
       this.selectedSymbolId = resolved.symbolId;
@@ -310,50 +294,30 @@ export class DivDepModalComponent implements OnInit, AfterViewInit {
 
   // Resolves a symbol string to its universe entry (exact case-insensitive).
   // Returns null when no match is found.
-  private resolveSymbol(
-    symbol: string
-  ): { symbolId: string; universeId: string } | null {
+  private resolveSymbol(symbol: string): { symbolId: string; universeId: string } | null {
     const symbolLower = symbol.toLowerCase();
     const universes = selectUniverses();
     for (let i = 0; i < universes.length; i++) {
       const u = universes[i];
-      if (typeof u.symbol !== 'string') {
-        continue;
-      }
-      if (u.symbol.toLowerCase() === symbolLower) {
-        return { symbolId: u.symbol.toUpperCase(), universeId: u.id };
-      }
+      if (typeof u.symbol !== 'string') continue;
+      if (u.symbol.toLowerCase() === symbolLower) return { symbolId: u.symbol.toUpperCase(), universeId: u.id };
     }
     return null;
   }
 
   private async symbolSearchFn(query: string): Promise<SymbolOption[]> {
-    return Promise.resolve(this.searchSymbolsSync(query));
-  }
-
-  private searchSymbolsSync(query: string): SymbolOption[] {
     const universes = selectUniverses();
     const lowerQuery = query.toLowerCase();
     const results: SymbolOption[] = [];
-    const maxResults = 50;
-
-    for (let i = 0; i < universes.length && results.length < maxResults; i++) {
+    for (let i = 0; i < universes.length && results.length < 50; i++) {
       const u = universes[i];
-      if (typeof u.symbol !== 'string' || typeof u.name !== 'string') {
-        continue;
-      }
+      if (typeof u.symbol !== 'string' || typeof u.name !== 'string') continue;
       const symbolMatch = u.symbol.toLowerCase().includes(lowerQuery);
       const nameMatch = u.name.toLowerCase().includes(lowerQuery);
-
       if (symbolMatch || nameMatch) {
-        results.push({
-          id: u.id,
-          symbol: u.symbol.toUpperCase(),
-          name: u.name,
-        });
+        results.push({ id: u.id, symbol: u.symbol.toUpperCase(), name: u.name });
       }
     }
-
-    return results;
+    return Promise.resolve(results);
   }
 }
