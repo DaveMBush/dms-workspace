@@ -234,9 +234,9 @@ export class DivDepModalComponent implements OnInit, AfterViewInit {
 
     this.dialogRef.close({
       ...this.data.dividend,
-      date: this.form.value.date as Date,
+      date: this.form.value.date!,
       amount: parseFloat(String(this.form.value.amount)),
-      divDepositTypeId: this.form.value.divDepositTypeId as string,
+      divDepositTypeId: this.form.value.divDepositTypeId!,
       universeId: this.selectedUniverseId,
     } as Partial<DivDeposit>);
   }
