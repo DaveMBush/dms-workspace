@@ -4,7 +4,6 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 // Mock electron app before importing the module under test
 vi.mock('electron', () => ({
   app: {
-    getPath: vi.fn(),
     isPackaged: false,
   },
 }));
@@ -22,7 +21,6 @@ import { app } from 'electron';
 import { runMigrations } from './run-migrations';
 
 interface MockApp {
-  getPath: ReturnType<typeof vi.fn>;
   isPackaged: boolean;
 }
 
@@ -45,7 +43,6 @@ describe('runMigrations', () => {
   beforeEach(function setup(): void {
     vi.clearAllMocks();
     mockApp.isPackaged = false;
-    mockApp.getPath.mockReturnValue('/mock/userData');
   });
 
   it('resolves when prisma migrate deploy exits with code 0', async () => {
@@ -60,14 +57,6 @@ describe('runMigrations', () => {
     await expect(runMigrations()).rejects.toThrow(
       /prisma migrate deploy exited with code 1/
     );
-  });
-
-  it('sets DATABASE_URL env var to the user-data db path', async () => {
-    mockSpawn.mockReturnValue(makeMockProcess(0));
-
-    await runMigrations();
-
-    expect(process.env['DATABASE_URL']).toBe('file:/mock/userData/dms.db');
   });
 
   it('resolves Prisma CLI from node_modules in development (isPackaged=false)', async () => {

@@ -21,9 +21,6 @@ export function runMigrations(): Promise<void> {
     resolve: () => void,
     reject: (err: Error) => void
   ): void {
-    const dbPath = path.join(app.getPath('userData'), 'dms.db');
-    process.env['DATABASE_URL'] = `file:${dbPath}`;
-
     const prismaCliPath = resolvePrismaCliPath();
     const schemaPath = resolveMigrationSchemaPath();
 
