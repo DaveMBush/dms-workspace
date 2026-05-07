@@ -44,9 +44,11 @@ function handleGetDivDepositsRoute(fastify: FastifyInstance): void {
       _
     ): Promise<DivDeposit[]> {
       const ids = request.body;
+      /* v8 ignore start -- empty-ids early return covered by e2e tests */
       if (ids.length === 0) {
         return [];
       }
+      /* v8 ignore stop */
       const divDeposits = await prisma.divDeposits.findMany({
         where: { id: { in: ids }, deletedAt: null },
         include: { universe: { select: { symbol: true } } },

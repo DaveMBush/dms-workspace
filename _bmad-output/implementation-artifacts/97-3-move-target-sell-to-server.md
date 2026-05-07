@@ -61,12 +61,14 @@ Gain) added in Story 97.2.
 ## Tasks / Subtasks
 
 - [x] Task 1: Confirm Story 97.2 prerequisites are in place (AC: #1, #2)
+
   - [x] Verify `Expected$`, `Last$ Unrlz Gain%`, `Unrlz Gain$`, and `Target Gain` are
         already returned by `mapTradeToResponse` and present on both `Trade` interfaces.
   - [x] Verify the Target Sell formula and required dependencies are documented in
         `_bmad-output/implementation-artifacts/open-positions-fields-research.md`.
 
 - [x] Task 2: Write failing server unit test for `target_sell` (AC: #3) — RED
+
   - [x] Add a `mapTradeToResponse` describe block test in
         `apps/server/src/app/routes/trades/index.spec.ts` asserting the formula from the
         research doc on a happy-path fixture.
@@ -75,6 +77,7 @@ Gain) added in Story 97.2.
   - [x] Run the spec — both tests must fail before implementation.
 
 - [x] Task 3: Add `target_sell` to the server `Trade` interface and mapper (AC: #1, #2)
+
   - [x] Update the `Trade` interface in `apps/server/src/app/routes/trades/index.ts` to
         include `target_sell: number;`.
   - [x] Update `mapTradeToResponse` to compute `target_sell` from the joined `Universe`
@@ -83,10 +86,12 @@ Gain) added in Story 97.2.
   - [x] Re-run the server spec — both new tests must pass (GREEN).
 
 - [x] Task 4: Mirror the field on the client `Trade` interface (AC: #2)
+
   - [x] Update `apps/dms-material/src/app/store/trades/trade.interface.ts` to add
         `target_sell: number;` matching the server.
 
 - [x] Task 5: Remove the client-side Target Sell computation (AC: #4, #5, #6)
+
   - [x] In `apps/dms-material/src/app/account-panel/open-positions/open-positions-component.service.ts`,
         delete the `targetSell:` arithmetic (currently `targetGain / trade.quantity + trade.buy`,
         with the `trade.quantity > 0` guard) and replace it with a direct read from
@@ -99,6 +104,7 @@ Gain) added in Story 97.2.
         column bindings).
 
 - [ ] Task 6: Verify in the running app (AC: #7)
+
   - [ ] Use the Playwright MCP server to load an account with open positions.
   - [ ] Confirm the Target Sell column renders the same numeric values as before this
         story (spot-check a few rows against the previous behavior).
