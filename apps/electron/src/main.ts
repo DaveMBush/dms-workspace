@@ -261,7 +261,9 @@ async function init(): Promise<void> {
   } catch (err) {
     showFatalError(
       'Database Initialisation Failed',
-      `Could not create the database directory or file at ${dbPath}.\n\n${String(err)}`
+      `Could not create the database directory or file at ${dbPath}.\n\n${String(
+        err
+      )}`
     );
     return;
   }
