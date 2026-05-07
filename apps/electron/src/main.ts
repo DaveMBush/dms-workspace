@@ -253,9 +253,7 @@ function showFatalError(title: string, detail: string): void {
   app.exit(1);
 }
 
-async function init(): Promise<void> {
-  // Resolve the DB path and ensure the file exists before any other DB work
-  const dbPath = resolveDbPath();
+async function initDatabase(dbPath: string): Promise<boolean> {
   try {
     ensureDbFile(dbPath);
   } catch (err) {
@@ -265,7 +263,7 @@ async function init(): Promise<void> {
         err
       )}`
     );
-    return;
+    return false;
   }
   process.env['DATABASE_URL'] = `file:${dbPath}`;
 
@@ -276,6 +274,14 @@ async function init(): Promise<void> {
       'Database Migration Failed',
       `Could not update the database schema.\n\n${String(err)}`
     );
+    return false;
+  }
+  return true;
+}
+
+async function init(): Promise<void> {
+  const dbPath = resolveDbPath();
+  if (!(await initDatabase(dbPath))) {
     return;
   }
 
