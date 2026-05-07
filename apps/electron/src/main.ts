@@ -92,9 +92,13 @@ function attachServerProcessListeners(
 
   proc.on('exit', function onExit(code: number | null): void {
     clearTimeout(timeout);
-    if (code !== 0) {
-      reject(new Error(`Server process exited with code ${code ?? 'null'}`));
-    }
+    reject(
+      new Error(
+        `Server process exited with code ${
+          code ?? 'null'
+        } before signalling ready`
+      )
+    );
   });
 }
 
