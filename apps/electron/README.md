@@ -362,3 +362,15 @@ The embedded schema-engine approach was confirmed viable on the current target p
 The alternative "fresh DB + SQLite-only copy" fallback (described in story 98.2 Dev Notes)
 was **not** implemented because the embedded binary communicates cleanly via JSON-RPC
 without any Node dependency.
+
+## Smoke testing the packaged app
+
+Two complementary smoke-test mechanisms are provided:
+
+- **`apps/electron/scripts/smoke-test.sh`** (Story 91.4): A bash script that launches the
+  AppImage and curls `/api/health`. Useful as a quick developer-loop check.
+- **`apps/dms-material-e2e/src/electron-package-launch-smoke.spec.ts`** (Story 98.4): A
+  Playwright test that launches the AppImage in an isolated `HOME`, verifies
+  `~/.dms/dms.db` is created, checks all Prisma migrations are applied (first launch),
+  and confirms no re-migrations on a second launch (idempotency). Run via
+  `pnpm e2e:electron` (`nx run dms-material-e2e:e2e-electron`).

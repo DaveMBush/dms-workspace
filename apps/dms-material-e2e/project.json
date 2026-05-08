@@ -32,6 +32,12 @@
     },
     "e2e-electron": {
       "executor": "@nx/playwright:playwright",
+      "dependsOn": [
+        {
+          "projects": ["electron"],
+          "target": "build:linux"
+        }
+      ],
       "options": {
         "config": "apps/dms-material-e2e/playwright.config.ts",
         "project": ["electron"]
