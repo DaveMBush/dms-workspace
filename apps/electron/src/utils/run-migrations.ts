@@ -4,24 +4,15 @@ import path from 'path';
 
 /** Platform-specific schema-engine binary name (Prisma 7.x). */
 function getSchemaEngineBinaryName(): string {
-  switch (process.platform) {
-    case 'darwin':
-      return process.arch === 'arm64'
-        ? 'schema-engine-darwin-arm64'
-        : 'schema-engine-darwin';
-    case 'win32':
-      return 'schema-engine-windows.exe';
-    case 'aix':
-    case 'android':
-    case 'freebsd':
-    case 'haiku':
-    case 'linux':
-    case 'openbsd':
-    case 'sunos':
-    case 'cygwin':
-    case 'netbsd':
-      return 'schema-engine-debian-openssl-3.0.x';
+  if (process.platform === 'darwin') {
+    return process.arch === 'arm64'
+      ? 'schema-engine-darwin-arm64'
+      : 'schema-engine-darwin';
   }
+  if (process.platform === 'win32') {
+    return 'schema-engine-windows.exe';
+  }
+  return 'schema-engine-debian-openssl-3.0.x';
 }
 
 function resolveSchemaEnginePath(): string {
@@ -154,8 +145,8 @@ function parseRpcResponse(
 interface EngineHandlerConfig {
   child: ChildProcess;
   migrationsPath: string;
-  reject: (err: Error) => void;
-  resolve: () => void;
+  reject(err: Error): void;
+  resolve(): void;
   stderr: string[];
   stdout: string[];
 }
