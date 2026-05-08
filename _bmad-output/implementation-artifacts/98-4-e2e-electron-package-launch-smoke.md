@@ -44,6 +44,7 @@ Prisma migrations on launch), 98.3 (per-platform `build:linux` target).
 ## Tasks / Subtasks
 
 - [x] Task 1: Decide test location and document the choice (AC: #3)
+
   - [x] Inspect `apps/dms-material-e2e/playwright.config.ts` `electron` project (already
         configured: `testMatch: ['**/electron-*.spec.ts']`, no `baseURL`, no `webServer`
         dependency — the test launches Electron directly)
@@ -58,9 +59,10 @@ Prisma migrations on launch), 98.3 (per-platform `build:linux` target).
   - [x] Document the decision in Dev Notes including the rationale.
 
 - [x] Task 2: Linux-only guard and packaged-artifact discovery (AC: #1, #3)
+
   - [x] Inside the new spec file, add a top-level guard:
         `test.skip(process.platform !== 'linux', 'Story 98.4 smoke test is Linux-only
-        until macOS/Windows build environments are available');`
+    until macOS/Windows build environments are available');`
   - [x] Locate the packaged AppImage produced by `nx run electron:build:linux` via
         `glob`/`fs.readdirSync` against `dist/electron-dist/*.AppImage` (the output path
         per `apps/electron/project.json`)
@@ -70,18 +72,20 @@ Prisma migrations on launch), 98.3 (per-platform `build:linux` target).
   - [x] Make the AppImage executable (`fs.chmodSync(appImagePath, 0o755)`)
 
 - [x] Task 3: Isolated `HOME` plumbing (AC: #1, #2)
+
   - [x] In a `test.beforeAll` (or per-test `beforeEach` if the second-launch test needs a
         fresh isolated dir per run — it does NOT; both AC #1 and AC #2 share the same
         isolated `HOME`), create a unique temp directory via
         `fs.mkdtempSync(path.join(os.tmpdir(), 'dms-smoke-home-'))` and store its path
   - [x] In an `afterAll`, remove the temp directory recursively (`fs.rmSync(tmpHome,
-        { recursive: true, force: true })`) — even if a test failed; use a Playwright
+    { recursive: true, force: true })`) — even if a test failed; use a Playwright
         `test.afterAll` hook with try/finally semantics
   - [x] Pass the temp directory as `HOME` (Linux uses `HOME`; the resolution chain in
         Story 98.1 is `os.homedir()` which honours `HOME` on POSIX) when launching the
         AppImage; do NOT pollute the developer's real `~/.dms/`
 
 - [x] Task 4: Launch the packaged app, wait for readiness, then exit (AC: #1)
+
   - [x] Use `child_process.spawn` to launch the AppImage with:
     - Args: `['--no-sandbox']` (Story 91.4 precedent — required for many CI/sandboxed
       Linux environments)
@@ -90,7 +94,7 @@ Prisma migrations on launch), 98.3 (per-platform `build:linux` target).
       Fastify health endpoint is reachable at a deterministic URL
     - `stdio: 'pipe'` so the test can capture stdout/stderr for failure diagnostics
   - [x] If `DISPLAY` is unset (typical CI), wrap the launch via `xvfb-run
-        --auto-servernum <appimage>` (Story 91.4 precedent). Detect via
+    --auto-servernum <appimage>` (Story 91.4 precedent). Detect via
         `process.env['DISPLAY'] === undefined`.
   - [x] Poll `http://127.0.0.1:<DMS_SMOKE_PORT>/api/health` until it returns 200 or a
         90-second timeout expires (use `expect.poll(...)` — do NOT use `setTimeout`
@@ -101,8 +105,9 @@ Prisma migrations on launch), 98.3 (per-platform `build:linux` target).
         on timeout. Capture exit code in Dev Notes for diagnostics if it is non-zero.
 
 - [x] Task 5: Verify DB file and `_prisma_migrations` table contents (AC: #1)
+
   - [x] After the app exits, assert `fs.existsSync(path.join(tmpHome, '.dms',
-        'dms.db'))` is `true`
+    'dms.db'))` is `true`
   - [x] Open the SQLite DB read-only from the test using `better-sqlite3` if it is
         already a workspace dependency, else fall back to spawning `sqlite3` CLI with a
         SELECT query. Check `package.json` / `pnpm-lock.yaml` first; **do not** add a
@@ -116,8 +121,9 @@ Prisma migrations on launch), 98.3 (per-platform `build:linux` target).
         On mismatch, include both lists in the failure message for fast diagnosis.
 
 - [x] Task 6: Idempotency — second launch reuses the existing DB (AC: #2)
+
   - [x] In a second `test('second launch reuses existing dms.db without re-applying
-        migrations', ...)` that runs **after** the first test (Playwright runs tests
+    migrations', ...)` that runs **after** the first test (Playwright runs tests
         within a file in declared order with `workers: 1`):
     - Snapshot before: read all rows from `_prisma_migrations` (the full row, including
       `started_at`, `finished_at`, `checksum`, `applied_steps_count`)
@@ -130,6 +136,7 @@ Prisma migrations on launch), 98.3 (per-platform `build:linux` target).
         developer can see exactly which row changed.
 
 - [x] Task 7: Cleanup and resilience
+
   - [x] Ensure `afterAll` reliably terminates any still-running Electron process (track
         the spawned child's pid and `process.kill(pid, 'SIGKILL')` if it is still alive)
   - [x] Ensure the temp `HOME` directory is removed even on test failure (try/finally)
@@ -137,7 +144,7 @@ Prisma migrations on launch), 98.3 (per-platform `build:linux` target).
 
 - [x] Task 8: Wire into the e2e command and verify (AC: #3, #4, #5)
   - [x] Confirm `pnpm e2e:electron` (existing root script: `nx run
-        dms-material-e2e:e2e-electron`) picks up the new spec file via the
+    dms-material-e2e:e2e-electron`) picks up the new spec file via the
         `electron` project's `testMatch`. If the `e2e-electron` Nx target does NOT
         already exist on `dms-material-e2e:project.json`, add it as
         `pnpm playwright test --project=electron` (cwd `apps/dms-material-e2e`).
@@ -216,16 +223,16 @@ the spec file as a constant.
 Prisma maintains a `_prisma_migrations` table with at least these columns (verify
 against the actual schema in a sample DB):
 
-| Column                | Notes                                                                     |
-| --------------------- | ------------------------------------------------------------------------- |
-| `id`                  | UUID assigned by Prisma                                                   |
-| `checksum`            | Hash of the migration SQL                                                 |
-| `finished_at`         | Set when migration completed successfully (NULL for in-progress/failed)   |
-| `migration_name`      | Directory name under `prisma/migrations/` (timestamped)                   |
-| `logs`                | Optional logs from the migration                                          |
-| `rolled_back_at`      | Set if the migration was rolled back                                      |
-| `started_at`          | When the migration started                                                |
-| `applied_steps_count` | Steps applied                                                             |
+| Column                | Notes                                                                   |
+| --------------------- | ----------------------------------------------------------------------- |
+| `id`                  | UUID assigned by Prisma                                                 |
+| `checksum`            | Hash of the migration SQL                                               |
+| `finished_at`         | Set when migration completed successfully (NULL for in-progress/failed) |
+| `migration_name`      | Directory name under `prisma/migrations/` (timestamped)                 |
+| `logs`                | Optional logs from the migration                                        |
+| `rolled_back_at`      | Set if the migration was rolled back                                    |
+| `started_at`          | When the migration started                                              |
+| `applied_steps_count` | Steps applied                                                           |
 
 The AC #1 assertion is: every directory under `prisma/migrations/` (with a
 `migration.sql` file) has a corresponding row in `_prisma_migrations` with a non-NULL

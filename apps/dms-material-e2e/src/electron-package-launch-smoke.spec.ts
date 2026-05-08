@@ -203,7 +203,15 @@ test.describe('Packaged Electron App – launch smoke test', () => {
 
     expect(
       appliedMigrations,
-      `Migration mismatch.\nExpected (from prisma/migrations/): ${JSON.stringify(expectedMigrations, null, 2)}\nActual (from _prisma_migrations): ${JSON.stringify(appliedMigrations, null, 2)}`
+      `Migration mismatch.\nExpected (from prisma/migrations/): ${JSON.stringify(
+        expectedMigrations,
+        null,
+        2
+      )}\nActual (from _prisma_migrations): ${JSON.stringify(
+        appliedMigrations,
+        null,
+        2
+      )}`
     ).toEqual(expectedMigrations);
   });
 
@@ -226,7 +234,11 @@ test.describe('Packaged Electron App – launch smoke test', () => {
 
     expect(
       rowsAfter,
-      `_prisma_migrations changed after second launch (idempotency violation).\nBefore: ${JSON.stringify(rowsBefore, null, 2)}\nAfter:  ${JSON.stringify(rowsAfter, null, 2)}`
+      `_prisma_migrations changed after second launch (idempotency violation).\nBefore: ${JSON.stringify(
+        rowsBefore,
+        null,
+        2
+      )}\nAfter:  ${JSON.stringify(rowsAfter, null, 2)}`
     ).toEqual(rowsBefore);
   });
 });
