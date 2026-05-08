@@ -53,6 +53,7 @@ currently fails because no Mac is available).
 ## Tasks / Subtasks
 
 - [x] Task 1: Inspect current build wiring (AC: #1)
+
   - [x] Read `apps/electron/project.json` and document the existing `package` target
         (currently the only `electron-builder` invocation)
   - [x] Read `apps/electron/electron-builder.yml` to confirm it already declares
@@ -62,6 +63,7 @@ currently fails because no Mac is available).
         `electron:package` or `electron-builder` so we can update them in lockstep
 
 - [x] Task 2: Add per-platform Nx targets (AC: #1, #2, #3)
+
   - [x] Add `build:linux` target to `apps/electron/project.json` invoking
         `../../node_modules/.bin/electron-builder --config electron-builder.yml --linux`
         (cwd `apps/electron`, output `{workspaceRoot}/dist/electron-dist`)
@@ -74,16 +76,18 @@ currently fails because no Mac is available).
         independent (non-fail-fast) commands so a Mac failure does not abort the others
 
 - [x] Task 3: Preserve or replace the combined target (AC: #4)
+
   - [x] Either: keep `package` as a convenience alias that invokes the three
         per-platform targets via `nx:run-commands` with `parallel: false` and a shell
         sequence that does NOT fail-fast (e.g. `nx run electron:build:linux; nx run
-        electron:build:mac; nx run electron:build:win`)
+    electron:build:mac; nx run electron:build:win`)
   - [x] OR: remove the combined target and document the per-platform commands as the
         only supported entry points
   - [x] Update `apps/electron/scripts/smoke-test.sh` (and any other scripts) if they
         depend on `electron:package`
 
 - [x] Task 4: Documentation (AC: #5)
+
   - [x] Update `apps/electron/README.md` with a "Building" section that lists each
         per-platform command (`nx run electron:build:linux`, `:build:mac`, `:build:win`)
   - [x] Document that the combined target (if retained) is non-fail-fast
@@ -182,11 +186,11 @@ available; this must not block Linux/Windows artifact production.
 
 ### Source Requirements
 
-| Req | Description |
-| --- | --- |
+| Req | Description                                                                                                                                      |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
 | R73 | Electron build pipeline must expose separate per-platform targets (`build:linux`, `build:mac`, `build:win`) so each can be invoked independently |
-| R74 | A failure in the macOS build must not prevent the Linux or Windows builds from completing |
-| R75 | `apps/electron/README.md` must describe each per-platform build command and the database location convention |
+| R74 | A failure in the macOS build must not prevent the Linux or Windows builds from completing                                                        |
+| R75 | `apps/electron/README.md` must describe each per-platform build command and the database location convention                                     |
 
 ### Files to Modify
 
@@ -207,7 +211,7 @@ available; this must not block Linux/Windows artifact production.
 
 - No new unit tests are required for build configuration changes.
 - Validation is via `pnpm all` (lint + unit tests + build) and a manual `nx run
-  electron:build:linux` to confirm an artifact lands in `dist/electron-dist/`.
+electron:build:linux` to confirm an artifact lands in `dist/electron-dist/`.
 - E2E smoke validation of the packaged artifact is the scope of Story 98.4 — do not
   expand this story to cover it.
 
