@@ -71,6 +71,7 @@ by this story).
 ## Tasks / Subtasks
 
 - [x] Task 1: Investigate the embedded-migration-engine approach (AC: #1, #2, #3)
+
   - [x] Identify the Prisma 7.x migration engine binary name and location inside the
         `@prisma/engines` package for Linux, macOS, and Windows
   - [x] Determine whether the binary can be invoked directly (CLI-style) or whether it
@@ -81,6 +82,7 @@ by this story).
 
 - [x] Task 2: Bundle the migration engine binary + migration SQL outside the asar
       (AC: #1, #2)
+
   - [x] Update `apps/electron/electron-builder.yml` `extraResources` to include the
         platform-appropriate migration engine binary (alongside the existing
         `prisma/migrations` and `prisma/schema.prisma` entries)
@@ -90,6 +92,7 @@ by this story).
 
 - [x] Task 3: Replace the Story 91.3 `runMigrations` implementation with the Node-free
       path (AC: #1, #2, #4, #5, #6)
+
   - [x] Update `apps/electron/src/utils/run-migrations.ts`:
     - Resolve the database path from the Story 98.1 helper (`~/.dms/dms.db`), **not**
       `app.getPath('userData')`
@@ -106,16 +109,19 @@ by this story).
 
 - [x] Task 4: If Task 1 concludes the embedded-engine path is infeasible, implement the
       fallback fresh-DB + copy approach (AC: #3)
+
   - [x] N/A — Task 1 confirmed the embedded schema-engine path is viable. Fallback not
         implemented. Decision documented in `apps/electron/README.md`.
 
 - [x] Task 5: Wire the failure path through `apps/electron/src/main.ts` (AC: #5)
+
   - [x] The existing try/catch around `runMigrations()` (added in Story 91.3) is
         retained; confirmed it surfaces `dialog.showErrorBox(...)` and calls `app.exit(1)`
         on failure (lines 255-282 of `main.ts`)
   - [x] Confirmed the server fork is not reached when migrations fail
 
 - [x] Task 6: Write failing unit tests first (TDD) (AC: #7)
+
   - [x] Update `apps/electron/src/utils/run-migrations.spec.ts`:
     - Mock `child_process.spawn`, `process.resourcesPath`, `app.isPackaged`, and the
       `~/.dms/dms.db` path helper
@@ -127,6 +133,7 @@ by this story).
     - Tests were written RED first, then implementation turned them GREEN (13 total pass)
 
 - [x] Task 7: Update documentation (AC: #3, supports Story 98.3)
+
   - [x] Added "Database Migrations on Launch" section to `apps/electron/README.md`
         describing: embedded engine approach chosen, binary location, JSON-RPC protocol,
         dev path, how to update migrations, and fallback note
@@ -170,7 +177,7 @@ If the embedded engine cannot be made to work without a JS wrapper:
    directory under `prisma/migrations/` already contains a `migration.sql` file authored
    for SQLite — these can be executed with the bundled `sqlite3` CLI.
 2. Use `ATTACH DATABASE 'file:~/.dms/dms.db' AS old; INSERT INTO new.<table> SELECT *
-   FROM old.<table>;` for each table to copy data.
+FROM old.<table>;` for each table to copy data.
 3. Atomically rename `dms.db.new` → `dms.db` (with a one-step backup of the original on
    Windows where atomic rename is not guaranteed across an existing file).
 
@@ -192,10 +199,7 @@ import { app, dialog } from 'electron';
 try {
   await runMigrations();
 } catch (err) {
-  dialog.showErrorBox(
-    'Database Migration Failed',
-    `Could not update the database schema.\n\n${String(err)}\n\nThe application will now exit.`,
-  );
+  dialog.showErrorBox('Database Migration Failed', `Could not update the database schema.\n\n${String(err)}\n\nThe application will now exit.`);
   app.exit(1);
 }
 ```
@@ -250,7 +254,7 @@ preserved and continues to wrap the new implementation.
   _bmad-output/planning-artifacts/epics-2026-05-05.md#Non-Functional Requirements]
 - Story 98.1 (path + DATABASE_URL contract): [Source: epics-2026-05-05.md#Story 98.1]
 - Story 91.3 (prior CLI-based implementation, now superseded):
-  _bmad-output/implementation-artifacts/91-3-prisma-migration-on-launch.md
+  \_bmad-output/implementation-artifacts/91-3-prisma-migration-on-launch.md
 - Electron `dialog.showErrorBox` API: https://www.electronjs.org/docs/latest/api/dialog
 - Prisma 7 migration engine reference: https://www.prisma.io/docs/orm/prisma-migrate
 
@@ -296,5 +300,5 @@ N/A — no blocking issues required debug logs.
 
 | Date       | Author | Description                                          |
 | ---------- | ------ | ---------------------------------------------------- |
-| 2026-05-06 | Dave   | Story created (Approved) via bmad-create-story flow.   |
-| 2026-05-06 | Agent  | Implementation complete. Status set to Done.           |
+| 2026-05-06 | Dave   | Story created (Approved) via bmad-create-story flow. |
+| 2026-05-06 | Agent  | Implementation complete. Status set to Done.         |

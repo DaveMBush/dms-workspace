@@ -270,7 +270,7 @@ What the smoke test does:
 ## Database Migrations on Launch
 
 The packaged Electron app applies any pending Prisma migrations automatically at startup,
-before the Fastify server is forked.  This allows users to install a new app version on a
+before the Fastify server is forked. This allows users to install a new app version on a
 machine that has **no Node, npm, or pnpm toolchain** and have their `~/.dms/dms.db` schema
 upgraded automatically.
 
@@ -278,7 +278,7 @@ upgraded automatically.
 
 Prisma 7 ships a standalone native binary called **schema-engine** (e.g.
 `schema-engine-debian-openssl-3.0.x` on Linux, `schema-engine-darwin-arm64` on Apple
-Silicon, `schema-engine-windows.exe` on Windows).  The binary acts as a JSON-RPC server
+Silicon, `schema-engine-windows.exe` on Windows). The binary acts as a JSON-RPC server
 over stdio when invoked without a subcommand; no JS wrapper or Node runtime on the user's
 PATH is required.
 
@@ -295,7 +295,7 @@ At runtime, `apps/electron/src/utils/run-migrations.ts` (function `runMigrations
      the `db-path` helper before migrations run).
 3. Sends a single JSON-RPC `applyMigrations` request to the binary's stdin with
    `migrationsDirectoryPath` pointing at `<resourcesPath>/prisma/migrations/`.
-4. Reads the JSON-RPC response from stdout.  An `error` field in the response causes the
+4. Reads the JSON-RPC response from stdout. An `error` field in the response causes the
    promise to reject; a `result` field (even with `appliedMigrationNames: []`) resolves.
 5. On non-zero exit the promise rejects regardless of the JSON response.
 
@@ -313,7 +313,7 @@ The dev loop is regression-protected and unaffected by the packaging changes.
 When a new Prisma migration is added (`pnpm exec prisma migrate dev --name ...`), the
 generated directory under `prisma/migrations/` is automatically included in the next
 packaged build because `electron-builder.yml` copies the entire `prisma/migrations/`
-directory tree into `extraResources`.  No manual step is required beyond committing the
+directory tree into `extraResources`. No manual step is required beyond committing the
 new migration files to the repository.
 
 ### Binary fallback note

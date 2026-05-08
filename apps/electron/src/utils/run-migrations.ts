@@ -81,7 +81,9 @@ function runMigrationsDev(): Promise<void> {
         const errDetail = errMsg.length > 0 ? `\n${errMsg}` : '';
         reject(
           new Error(
-            `prisma migrate deploy exited with code ${code ?? 'null'}${errDetail}`
+            `prisma migrate deploy exited with code ${
+              code ?? 'null'
+            }${errDetail}`
           )
         );
       }
@@ -151,8 +153,7 @@ function runMigrationsPackaged(): Promise<void> {
             result?: unknown;
           };
           if (parsed.error) {
-            const errMsg =
-              parsed.error.message ?? JSON.stringify(parsed.error);
+            const errMsg = parsed.error.message ?? JSON.stringify(parsed.error);
             reject(new Error(`Migration failed: ${errMsg}`));
             return;
           }

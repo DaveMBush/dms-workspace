@@ -1,7 +1,7 @@
 appId: com.davembush.dms
 productName: DMS
-electronVersion: "41.2.1"
-artifactName: "${productName}-${version}-${arch}.${ext}"
+electronVersion: '41.2.1'
+artifactName: '${productName}-${version}-${arch}.${ext}'
 
 directories:
   output: ../../dist/electron-dist
@@ -35,7 +35,7 @@ linux:
   target:
     - AppImage
     - deb
-  maintainer: "DaveMBush <dave@davembush.com>"
+  maintainer: 'DaveMBush <dave@davembush.com>'
 
 mac:
   target: dmg
