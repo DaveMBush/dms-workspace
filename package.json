@@ -48,7 +48,7 @@
     "@prisma/adapter-better-sqlite3": "^7.2.0",
     "@smarttools/smart-core": "3.0.0",
     "@smarttools/smart-signals": "3.0.0",
-    "axios": "^1.15.0",
+    "axios": "^1.15.2",
     "chart.js": "^4.5.1",
     "cheerio": "^1.0.0",
     "dotenv": "^17.3.1",
