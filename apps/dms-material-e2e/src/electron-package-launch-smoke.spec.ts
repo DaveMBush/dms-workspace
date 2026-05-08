@@ -3,7 +3,7 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 
-import Database from 'better-sqlite3';
+import betterSqlite3 from 'better-sqlite3';
 import { expect, test } from 'playwright/test';
 
 // ─── Linux-only guard ────────────────────────────────────────────────────────
@@ -58,6 +58,7 @@ function getExpectedMigrationNames(): string[] {
     .sort();
 }
 
+/* eslint-disable @typescript-eslint/naming-convention */
 interface MigrationRow {
   id: string;
   checksum: string;
@@ -68,9 +69,10 @@ interface MigrationRow {
   started_at: string;
   applied_steps_count: number;
 }
+/* eslint-enable @typescript-eslint/naming-convention */
 
 function readMigrationsTable(dbPath: string): MigrationRow[] {
-  const db = new Database(dbPath, { readonly: true });
+  const db = new betterSqlite3(dbPath, { readonly: true });
   try {
     const rows = db
       .prepare(
@@ -83,10 +85,7 @@ function readMigrationsTable(dbPath: string): MigrationRow[] {
   }
 }
 
-async function launchAppImage(
-  appImagePath: string,
-  tmpHome: string
-): Promise<ChildProcess> {
+function launchAppImage(appImagePath: string, tmpHome: string): ChildProcess {
   const args = ['--no-sandbox'];
   const env = {
     ...process.env,
@@ -98,10 +97,14 @@ async function launchAppImage(
 
   // On headless CI (no DISPLAY), wrap with xvfb-run so Electron can open a window
   if (process.env['DISPLAY'] === undefined) {
-    child = spawn('xvfb-run', ['--auto-servernum', appImagePath, ...args], {
-      env,
-      stdio: 'pipe',
-    });
+    child = spawn(
+      '/usr/bin/xvfb-run',
+      ['--auto-servernum', appImagePath, ...args],
+      {
+        env,
+        stdio: 'pipe',
+      }
+    );
   } else {
     child = spawn(appImagePath, args, { env, stdio: 'pipe' });
   }
@@ -164,7 +167,7 @@ test.describe('Packaged Electron App – launch smoke test', () => {
 
   test.beforeAll(() => {
     appImagePath = findAppImage();
-    fs.chmodSync(appImagePath, 0o755);
+    fs.chmodSync(appImagePath, 0o755); // NOSONAR: AppImage must be executable
     tmpHome = fs.mkdtempSync(path.join(os.tmpdir(), 'dms-smoke-home-'));
   });
 
@@ -182,7 +185,7 @@ test.describe('Packaged Electron App – launch smoke test', () => {
   });
 
   test('first launch creates dms.db with all migrations applied', async () => {
-    const child = await launchAppImage(appImagePath, tmpHome);
+    const child = launchAppImage(appImagePath, tmpHome);
     activeChild = child;
 
     await waitForHealth();
@@ -221,7 +224,7 @@ test.describe('Packaged Electron App – launch smoke test', () => {
     // Snapshot before second launch
     const rowsBefore = readMigrationsTable(dbPath);
 
-    const child = await launchAppImage(appImagePath, tmpHome);
+    const child = launchAppImage(appImagePath, tmpHome);
     activeChild = child;
 
     await waitForHealth();
