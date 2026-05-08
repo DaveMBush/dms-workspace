@@ -1,6 +1,6 @@
 # Story 98.4: E2E Smoke Test — Packaged App Launches with Fresh DB and Applied Migrations
 
-Status: Approved
+Status: Done
 
 ## Story
 
@@ -43,81 +43,87 @@ Prisma migrations on launch), 98.3 (per-platform `build:linux` target).
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Decide test location and document the choice (AC: #3)
-  - [ ] Inspect `apps/dms-material-e2e/playwright.config.ts` `electron` project (already
+- [x] Task 1: Decide test location and document the choice (AC: #3)
+
+  - [x] Inspect `apps/dms-material-e2e/playwright.config.ts` `electron` project (already
         configured: `testMatch: ['**/electron-*.spec.ts']`, no `baseURL`, no `webServer`
         dependency — the test launches Electron directly)
-  - [ ] Inspect existing `apps/dms-material-e2e/src/electron-launch.spec.ts` (Story 77.5)
+  - [x] Inspect existing `apps/dms-material-e2e/src/electron-launch.spec.ts` (Story 77.5)
         to understand the existing electron-launch pattern
-  - [ ] Decision (default — record in Dev Notes): add a NEW spec file
+  - [x] Decision (default — record in Dev Notes): add a NEW spec file
         `apps/dms-material-e2e/src/electron-package-launch-smoke.spec.ts` rather than
         extending `electron-launch.spec.ts`. The Story 77.5 spec exercises the **dev**
         Electron flow; this story exercises the **packaged** artifact — keeping them
         separate keeps the failure surface clearly attributable. The new file is picked
         up automatically by the `electron` project's `testMatch` glob.
-  - [ ] Document the decision in Dev Notes including the rationale.
+  - [x] Document the decision in Dev Notes including the rationale.
 
-- [ ] Task 2: Linux-only guard and packaged-artifact discovery (AC: #1, #3)
-  - [ ] Inside the new spec file, add a top-level guard:
+- [x] Task 2: Linux-only guard and packaged-artifact discovery (AC: #1, #3)
+
+  - [x] Inside the new spec file, add a top-level guard:
         `test.skip(process.platform !== 'linux', 'Story 98.4 smoke test is Linux-only
-        until macOS/Windows build environments are available');`
-  - [ ] Locate the packaged AppImage produced by `nx run electron:build:linux` via
+    until macOS/Windows build environments are available');`
+  - [x] Locate the packaged AppImage produced by `nx run electron:build:linux` via
         `glob`/`fs.readdirSync` against `dist/electron-dist/*.AppImage` (the output path
         per `apps/electron/project.json`)
-  - [ ] If no AppImage is found, fail the test with a clear message that points the
+  - [x] If no AppImage is found, fail the test with a clear message that points the
         developer at the missing build step (do NOT silently skip — silent skips on a
         required test are the exact regression risk this story protects against)
-  - [ ] Make the AppImage executable (`fs.chmodSync(appImagePath, 0o755)`)
+  - [x] Make the AppImage executable (`fs.chmodSync(appImagePath, 0o755)`)
 
-- [ ] Task 3: Isolated `HOME` plumbing (AC: #1, #2)
-  - [ ] In a `test.beforeAll` (or per-test `beforeEach` if the second-launch test needs a
+- [x] Task 3: Isolated `HOME` plumbing (AC: #1, #2)
+
+  - [x] In a `test.beforeAll` (or per-test `beforeEach` if the second-launch test needs a
         fresh isolated dir per run — it does NOT; both AC #1 and AC #2 share the same
         isolated `HOME`), create a unique temp directory via
         `fs.mkdtempSync(path.join(os.tmpdir(), 'dms-smoke-home-'))` and store its path
-  - [ ] In an `afterAll`, remove the temp directory recursively (`fs.rmSync(tmpHome,
-        { recursive: true, force: true })`) — even if a test failed; use a Playwright
+  - [x] In an `afterAll`, remove the temp directory recursively (`fs.rmSync(tmpHome,
+    { recursive: true, force: true })`) — even if a test failed; use a Playwright
         `test.afterAll` hook with try/finally semantics
-  - [ ] Pass the temp directory as `HOME` (Linux uses `HOME`; the resolution chain in
+  - [x] Pass the temp directory as `HOME` (Linux uses `HOME`; the resolution chain in
         Story 98.1 is `os.homedir()` which honours `HOME` on POSIX) when launching the
         AppImage; do NOT pollute the developer's real `~/.dms/`
 
-- [ ] Task 4: Launch the packaged app, wait for readiness, then exit (AC: #1)
-  - [ ] Use `child_process.spawn` to launch the AppImage with:
+- [x] Task 4: Launch the packaged app, wait for readiness, then exit (AC: #1)
+
+  - [x] Use `child_process.spawn` to launch the AppImage with:
     - Args: `['--no-sandbox']` (Story 91.4 precedent — required for many CI/sandboxed
       Linux environments)
     - Env: `{ ...process.env, HOME: tmpHome, DMS_SMOKE_PORT: '<some-fixed-port>' }`
       where `DMS_SMOKE_PORT` matches the env var added in Story 91.4's `main.ts` so the
       Fastify health endpoint is reachable at a deterministic URL
     - `stdio: 'pipe'` so the test can capture stdout/stderr for failure diagnostics
-  - [ ] If `DISPLAY` is unset (typical CI), wrap the launch via `xvfb-run
-        --auto-servernum <appimage>` (Story 91.4 precedent). Detect via
+  - [x] If `DISPLAY` is unset (typical CI), wrap the launch via `xvfb-run
+    --auto-servernum <appimage>` (Story 91.4 precedent). Detect via
         `process.env['DISPLAY'] === undefined`.
-  - [ ] Poll `http://127.0.0.1:<DMS_SMOKE_PORT>/api/health` until it returns 200 or a
+  - [x] Poll `http://127.0.0.1:<DMS_SMOKE_PORT>/api/health` until it returns 200 or a
         90-second timeout expires (use `expect.poll(...)` — do NOT use `setTimeout`
         sleeps). The 90s timeout matches the Playwright config's CI timeout.
-  - [ ] After the health check succeeds (which guarantees the migration step from
+  - [x] After the health check succeeds (which guarantees the migration step from
         Story 98.2 ran successfully — the server only forks after migrations resolve),
         terminate the Electron process with SIGTERM and wait up to 10s for exit; SIGKILL
         on timeout. Capture exit code in Dev Notes for diagnostics if it is non-zero.
 
-- [ ] Task 5: Verify DB file and `_prisma_migrations` table contents (AC: #1)
-  - [ ] After the app exits, assert `fs.existsSync(path.join(tmpHome, '.dms',
-        'dms.db'))` is `true`
-  - [ ] Open the SQLite DB read-only from the test using `better-sqlite3` if it is
+- [x] Task 5: Verify DB file and `_prisma_migrations` table contents (AC: #1)
+
+  - [x] After the app exits, assert `fs.existsSync(path.join(tmpHome, '.dms',
+    'dms.db'))` is `true`
+  - [x] Open the SQLite DB read-only from the test using `better-sqlite3` if it is
         already a workspace dependency, else fall back to spawning `sqlite3` CLI with a
         SELECT query. Check `package.json` / `pnpm-lock.yaml` first; **do not** add a
         new dependency if one of these paths is already available.
-  - [ ] Query: `SELECT migration_name FROM _prisma_migrations ORDER BY started_at;`
-  - [ ] Compute the expected migration name list by reading directory names under
+  - [x] Query: `SELECT migration_name FROM _prisma_migrations ORDER BY started_at;`
+  - [x] Compute the expected migration name list by reading directory names under
         `prisma/migrations/` (filter to entries containing a `migration.sql` file) and
         sorting lexicographically — Prisma's directory naming is timestamped so this
         matches the applied order.
-  - [ ] Assert the DB list matches the directory list (length and per-element equality).
+  - [x] Assert the DB list matches the directory list (length and per-element equality).
         On mismatch, include both lists in the failure message for fast diagnosis.
 
-- [ ] Task 6: Idempotency — second launch reuses the existing DB (AC: #2)
-  - [ ] In a second `test('second launch reuses existing dms.db without re-applying
-        migrations', ...)` that runs **after** the first test (Playwright runs tests
+- [x] Task 6: Idempotency — second launch reuses the existing DB (AC: #2)
+
+  - [x] In a second `test('second launch reuses existing dms.db without re-applying
+    migrations', ...)` that runs **after** the first test (Playwright runs tests
         within a file in declared order with `workers: 1`):
     - Snapshot before: read all rows from `_prisma_migrations` (the full row, including
       `started_at`, `finished_at`, `checksum`, `applied_steps_count`)
@@ -126,27 +132,28 @@ Prisma migrations on launch), 98.3 (per-platform `build:linux` target).
     - Snapshot after: read all rows from `_prisma_migrations` again
     - Assert the two snapshots are deeply equal — same row count, same rows, no new
       rows, no mutated columns. This proves no migrations were re-applied.
-  - [ ] If the assertion fails, include both snapshots in the failure message so the
+  - [x] If the assertion fails, include both snapshots in the failure message so the
         developer can see exactly which row changed.
 
-- [ ] Task 7: Cleanup and resilience
-  - [ ] Ensure `afterAll` reliably terminates any still-running Electron process (track
-        the spawned child's pid and `process.kill(pid, 'SIGKILL')` if it is still alive)
-  - [ ] Ensure the temp `HOME` directory is removed even on test failure (try/finally)
-  - [ ] Do NOT leave orphan AppImage processes on the test machine
+- [x] Task 7: Cleanup and resilience
 
-- [ ] Task 8: Wire into the e2e command and verify (AC: #3, #4, #5)
-  - [ ] Confirm `pnpm e2e:electron` (existing root script: `nx run
-        dms-material-e2e:e2e-electron`) picks up the new spec file via the
+  - [x] Ensure `afterAll` reliably terminates any still-running Electron process (track
+        the spawned child's pid and `process.kill(pid, 'SIGKILL')` if it is still alive)
+  - [x] Ensure the temp `HOME` directory is removed even on test failure (try/finally)
+  - [x] Do NOT leave orphan AppImage processes on the test machine
+
+- [x] Task 8: Wire into the e2e command and verify (AC: #3, #4, #5)
+  - [x] Confirm `pnpm e2e:electron` (existing root script: `nx run
+    dms-material-e2e:e2e-electron`) picks up the new spec file via the
         `electron` project's `testMatch`. If the `e2e-electron` Nx target does NOT
         already exist on `dms-material-e2e:project.json`, add it as
         `pnpm playwright test --project=electron` (cwd `apps/dms-material-e2e`).
-  - [ ] Document that the test requires a prior `nx run electron:build:linux` to have
+  - [x] Document that the test requires a prior `nx run electron:build:linux` to have
         run; add a `dependsOn` entry to the `e2e-electron` Nx target so the build is
         chained automatically.
-  - [ ] Run `pnpm e2e:electron` locally on Linux, confirm green
-  - [ ] Run `pnpm all` and confirm zero failures
-  - [ ] Run `pnpm format` and confirm zero diffs
+  - [x] Run `pnpm e2e:electron` locally on Linux, confirm green
+  - [x] Run `pnpm all` and confirm zero failures
+  - [x] Run `pnpm format` and confirm zero diffs
 
 ## Dev Notes
 
@@ -216,16 +223,16 @@ the spec file as a constant.
 Prisma maintains a `_prisma_migrations` table with at least these columns (verify
 against the actual schema in a sample DB):
 
-| Column                | Notes                                                                     |
-| --------------------- | ------------------------------------------------------------------------- |
-| `id`                  | UUID assigned by Prisma                                                   |
-| `checksum`            | Hash of the migration SQL                                                 |
-| `finished_at`         | Set when migration completed successfully (NULL for in-progress/failed)   |
-| `migration_name`      | Directory name under `prisma/migrations/` (timestamped)                   |
-| `logs`                | Optional logs from the migration                                          |
-| `rolled_back_at`      | Set if the migration was rolled back                                      |
-| `started_at`          | When the migration started                                                |
-| `applied_steps_count` | Steps applied                                                             |
+| Column                | Notes                                                                   |
+| --------------------- | ----------------------------------------------------------------------- |
+| `id`                  | UUID assigned by Prisma                                                 |
+| `checksum`            | Hash of the migration SQL                                               |
+| `finished_at`         | Set when migration completed successfully (NULL for in-progress/failed) |
+| `migration_name`      | Directory name under `prisma/migrations/` (timestamped)                 |
+| `logs`                | Optional logs from the migration                                        |
+| `rolled_back_at`      | Set if the migration was rolled back                                    |
+| `started_at`          | When the migration started                                              |
+| `applied_steps_count` | Steps applied                                                           |
 
 The AC #1 assertion is: every directory under `prisma/migrations/` (with a
 `migration.sql` file) has a corresponding row in `_prisma_migrations` with a non-NULL
@@ -404,3 +411,22 @@ _To be populated during implementation._
 | Date       | Author | Description                                          |
 | ---------- | ------ | ---------------------------------------------------- |
 | 2026-05-06 | Dave   | Story created (Approved) via bmad-create-story flow. |
+
+## Dev Agent Completion Record
+
+### Completion Notes
+
+- Created `apps/dms-material-e2e/src/electron-package-launch-smoke.spec.ts` with:
+  - Linux-only guard via `test.skip(process.platform !== 'linux', ...)`
+  - AppImage discovery from `dist/electron-dist/*.AppImage` with clear error if missing
+  - Isolated temp HOME via `fs.mkdtempSync`
+  - Launch via `child_process.spawn` with `--no-sandbox`; wraps with `xvfb-run --auto-servernum` if `DISPLAY` is unset
+  - Health-check polling via `expect.poll` at port 39001 with 90s timeout
+  - SIGTERM then SIGKILL (10s grace) on shutdown
+  - Test 1: verifies `~/.dms/dms.db` exists and `_prisma_migrations` rows match `prisma/migrations/` dirs
+  - Test 2: snapshots all migration rows before/after second launch and asserts deep equality
+  - `afterAll` cleanup: terminates process if still alive, removes tmpHome via try/finally
+- Updated `apps/dms-material-e2e/project.json`: added `dependsOn` on `electron:build:linux` to the `e2e-electron` target
+- Updated `apps/electron/README.md`: added "Smoke testing the packaged app" section cross-referencing `smoke-test.sh` and the new Playwright spec
+- `better-sqlite3` confirmed already a workspace dependency (no new deps added)
+- New spec file auto-discovered by Playwright `electron` project glob `**/electron-*.spec.ts`
