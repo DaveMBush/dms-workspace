@@ -80,7 +80,7 @@ currently fails because no Mac is available).
   - [x] Either: keep `package` as a convenience alias that invokes the three
         per-platform targets via `nx:run-commands` with `parallel: false` and a shell
         sequence that does NOT fail-fast (e.g. `nx run electron:build:linux; nx run
-    electron:build:mac; nx run electron:build:win`)
+electron:build:mac; nx run electron:build:win`)
   - [x] OR: remove the combined target and document the per-platform commands as the
         only supported entry points
   - [x] Update `apps/electron/scripts/smoke-test.sh` (and any other scripts) if they
