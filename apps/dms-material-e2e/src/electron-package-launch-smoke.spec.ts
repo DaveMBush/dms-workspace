@@ -144,7 +144,7 @@ async function terminateProcess(child: ChildProcess): Promise<void> {
   // Wait up to 10 s for graceful exit, then SIGKILL
   await new Promise<void>((resolve) => {
     const killTimer = setTimeout(() => {
-      if (child.exitCode === null && !child.killed) {
+      if (child.exitCode === null) {
         child.kill('SIGKILL');
       }
       resolve();

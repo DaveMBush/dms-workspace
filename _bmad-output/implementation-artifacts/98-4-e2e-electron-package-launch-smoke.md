@@ -412,7 +412,7 @@ _To be populated during implementation._
 | ---------- | ------ | ---------------------------------------------------- |
 | 2026-05-06 | Dave   | Story created (Approved) via bmad-create-story flow. |
 
-## Dev Agent Record
+## Dev Agent Completion Record
 
 ### Completion Notes
 
