@@ -81,7 +81,7 @@ describe('runMigrations', () => {
 
   afterEach(function teardown(): void {
     (process as NodeJS.Process & { resourcesPath: string }).resourcesPath =
-      savedResourcesPath as string;
+      savedResourcesPath!;
   });
 
   // ────────────────────────────────────────────────────────────

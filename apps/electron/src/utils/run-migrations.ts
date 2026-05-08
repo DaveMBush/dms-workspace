@@ -1,4 +1,4 @@
-import { spawn } from 'child_process';
+import { ChildProcess, spawn } from 'child_process';
 import { app } from 'electron';
 import path from 'path';
 
@@ -11,7 +11,15 @@ function getSchemaEngineBinaryName(): string {
         : 'schema-engine-darwin';
     case 'win32':
       return 'schema-engine-windows.exe';
-    default:
+    case 'aix':
+    case 'android':
+    case 'freebsd':
+    case 'haiku':
+    case 'linux':
+    case 'openbsd':
+    case 'sunos':
+    case 'cygwin':
+    case 'netbsd':
       return 'schema-engine-debian-openssl-3.0.x';
   }
 }
@@ -91,6 +99,108 @@ function runMigrationsDev(): Promise<void> {
   });
 }
 
+/** Build the JSON-RPC applyMigrations request payload. */
+function buildApplyMigrationsRequest(migrationsPath: string): string {
+  return (
+    JSON.stringify({
+      jsonrpc: '2.0',
+      id: 1,
+      method: 'applyMigrations',
+      params: { migrationsDirectoryPath: migrationsPath },
+    }) + '\n'
+  );
+}
+
+/** Returns true if the line is non-empty after trimming. */
+function isNonEmptyLine(l: string): boolean {
+  return l.trim().length > 0;
+}
+
+/**
+ * Try to parse a single stdout line as a JSON-RPC error.
+ * Returns the error message string, or null if no error is present.
+ */
+function tryParseJsonRpcError(line: string): string | null {
+  try {
+    const parsed = JSON.parse(line) as { error?: { message?: string } };
+    if (parsed.error) {
+      return parsed.error.message ?? JSON.stringify(parsed.error);
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Scan all JSON-RPC response lines for an error object.
+ * Calls `reject` and returns true if one is found.
+ */
+function parseRpcResponse(
+  responseText: string,
+  reject: (err: Error) => void
+): boolean {
+  const lines = responseText.split('\n').filter(isNonEmptyLine);
+  for (const line of lines) {
+    const errMsg = tryParseJsonRpcError(line);
+    if (errMsg !== null) {
+      reject(new Error(`Migration failed: ${errMsg}`));
+      return true;
+    }
+  }
+  return false;
+}
+
+interface EngineHandlerConfig {
+  child: ChildProcess;
+  migrationsPath: string;
+  reject: (err: Error) => void;
+  resolve: () => void;
+  stderr: string[];
+  stdout: string[];
+}
+
+/** Attach all event handlers to the schema-engine child process. */
+function attachEngineHandlers(config: EngineHandlerConfig): void {
+  const { child, stdout, stderr, resolve, reject, migrationsPath } = config;
+
+  child.stdout?.on('data', function onStdout(chunk: Buffer): void {
+    stdout.push(chunk.toString());
+  });
+
+  child.stderr?.on('data', function onStderr(chunk: Buffer): void {
+    stderr.push(chunk.toString());
+  });
+
+  child.on('error', function onError(err: Error): void {
+    reject(new Error(`Failed to spawn schema-engine: ${err.message}`));
+  });
+
+  child.on('spawn', function onSpawn(): void {
+    const request = buildApplyMigrationsRequest(migrationsPath);
+    child.stdin?.write(request);
+    child.stdin?.end();
+  });
+
+  child.on('close', function onClose(code: number | null): void {
+    const responseText = stdout.join('');
+    if (parseRpcResponse(responseText, reject)) {
+      return;
+    }
+    if (code === 0) {
+      resolve();
+    } else {
+      const errMsg = stderr.join('').trim();
+      const errDetail = errMsg.length > 0 ? `\n${errMsg}` : '';
+      reject(
+        new Error(
+          `schema-engine exited with code ${code ?? 'null'}${errDetail}`
+        )
+      );
+    }
+  });
+}
+
 /**
  * Packaged path: invoke the bundled schema-engine binary via JSON-RPC over
  * stdio.  No Node binary on the user's PATH is required — the binary is a
@@ -118,61 +228,13 @@ function runMigrationsPackaged(): Promise<void> {
     const stdout: string[] = [];
     const stderr: string[] = [];
 
-    child.stdout?.on('data', function onStdout(chunk: Buffer): void {
-      stdout.push(chunk.toString());
-    });
-
-    child.stderr?.on('data', function onStderr(chunk: Buffer): void {
-      stderr.push(chunk.toString());
-    });
-
-    child.on('error', function onError(err: Error): void {
-      reject(new Error(`Failed to spawn schema-engine: ${err.message}`));
-    });
-
-    child.on('spawn', function onSpawn(): void {
-      const request =
-        JSON.stringify({
-          jsonrpc: '2.0',
-          id: 1,
-          method: 'applyMigrations',
-          params: { migrationsDirectoryPath: migrationsPath },
-        }) + '\n';
-      child.stdin?.write(request);
-      child.stdin?.end();
-    });
-
-    child.on('close', function onClose(code: number | null): void {
-      const responseText = stdout.join('');
-      // Check for a JSON-RPC error in any response line before inspecting exit code
-      const lines = responseText.split('\n').filter((l) => l.trim().length > 0);
-      for (const line of lines) {
-        try {
-          const parsed = JSON.parse(line) as {
-            error?: { message?: string };
-            result?: unknown;
-          };
-          if (parsed.error) {
-            const errMsg = parsed.error.message ?? JSON.stringify(parsed.error);
-            reject(new Error(`Migration failed: ${errMsg}`));
-            return;
-          }
-        } catch {
-          // Non-JSON diagnostic line — skip
-        }
-      }
-
-      if (code === 0) {
-        resolve();
-      } else {
-        const errMsg = stderr.join('').trim();
-        const errDetail = errMsg.length > 0 ? `\n${errMsg}` : '';
-        reject(
-          new Error(
-            `schema-engine exited with code ${code ?? 'null'}${errDetail}`
-          )
-        );
-      }
+    attachEngineHandlers({
+      child,
+      stdout,
+      stderr,
+      resolve,
+      reject,
+      migrationsPath,
     });
   });
 }
