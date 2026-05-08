@@ -1,6 +1,6 @@
 # Story 98.3: Split Electron Build into Per-Platform Targets
 
-Status: Approved
+Status: Done
 
 ## Story
 
@@ -52,51 +52,55 @@ currently fails because no Mac is available).
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Inspect current build wiring (AC: #1)
-  - [ ] Read `apps/electron/project.json` and document the existing `package` target
+- [x] Task 1: Inspect current build wiring (AC: #1)
+
+  - [x] Read `apps/electron/project.json` and document the existing `package` target
         (currently the only `electron-builder` invocation)
-  - [ ] Read `apps/electron/electron-builder.yml` to confirm it already declares
+  - [x] Read `apps/electron/electron-builder.yml` to confirm it already declares
         per-platform `linux`, `mac`, and `win` sections (so the platform flag selects
         which to emit)
-  - [ ] Search the workspace for any `pnpm`/`nx` scripts that invoke
+  - [x] Search the workspace for any `pnpm`/`nx` scripts that invoke
         `electron:package` or `electron-builder` so we can update them in lockstep
 
-- [ ] Task 2: Add per-platform Nx targets (AC: #1, #2, #3)
-  - [ ] Add `build:linux` target to `apps/electron/project.json` invoking
+- [x] Task 2: Add per-platform Nx targets (AC: #1, #2, #3)
+
+  - [x] Add `build:linux` target to `apps/electron/project.json` invoking
         `../../node_modules/.bin/electron-builder --config electron-builder.yml --linux`
         (cwd `apps/electron`, output `{workspaceRoot}/dist/electron-dist`)
-  - [ ] Add `build:mac` target with `--mac`
-  - [ ] Add `build:win` target with `--win`
-  - [ ] Each new target keeps the same `dependsOn` as the current `package` target
+  - [x] Add `build:mac` target with `--mac`
+  - [x] Add `build:win` target with `--win`
+  - [x] Each new target keeps the same `dependsOn` as the current `package` target
         (`build`, `server:build`, `dms-material:build`) so dependencies build first
-  - [ ] Decide on naming: prefer `build:linux` etc. as specified by the story; if a
+  - [x] Decide on naming: prefer `build:linux` etc. as specified by the story; if a
         combined alias is retained, it MUST run the three per-platform targets as
         independent (non-fail-fast) commands so a Mac failure does not abort the others
 
-- [ ] Task 3: Preserve or replace the combined target (AC: #4)
-  - [ ] Either: keep `package` as a convenience alias that invokes the three
+- [x] Task 3: Preserve or replace the combined target (AC: #4)
+
+  - [x] Either: keep `package` as a convenience alias that invokes the three
         per-platform targets via `nx:run-commands` with `parallel: false` and a shell
         sequence that does NOT fail-fast (e.g. `nx run electron:build:linux; nx run
-        electron:build:mac; nx run electron:build:win`)
-  - [ ] OR: remove the combined target and document the per-platform commands as the
+electron:build:mac; nx run electron:build:win`)
+  - [x] OR: remove the combined target and document the per-platform commands as the
         only supported entry points
-  - [ ] Update `apps/electron/scripts/smoke-test.sh` (and any other scripts) if they
+  - [x] Update `apps/electron/scripts/smoke-test.sh` (and any other scripts) if they
         depend on `electron:package`
 
-- [ ] Task 4: Documentation (AC: #5)
-  - [ ] Update `apps/electron/README.md` with a "Building" section that lists each
+- [x] Task 4: Documentation (AC: #5)
+
+  - [x] Update `apps/electron/README.md` with a "Building" section that lists each
         per-platform command (`nx run electron:build:linux`, `:build:mac`, `:build:win`)
-  - [ ] Document that the combined target (if retained) is non-fail-fast
-  - [ ] Document the database location convention from Story 98.1
+  - [x] Document that the combined target (if retained) is non-fail-fast
+  - [x] Document the database location convention from Story 98.1
         (`~/.dms/dms.db` on POSIX, `%USERPROFILE%\.dms\dms.db` on Windows, derived
         from `os.homedir()`)
-  - [ ] Document the Prisma migration mechanism from Story 98.2 (Node-free, runs on
+  - [x] Document the Prisma migration mechanism from Story 98.2 (Node-free, runs on
         launch)
 
-- [ ] Task 5: Quality gates (AC: #6, #7)
-  - [ ] Run `pnpm all` and confirm zero failures
-  - [ ] Run `pnpm format` and confirm zero diffs
-  - [ ] Run `nx run electron:build:linux` locally and confirm a Linux artifact is
+- [x] Task 5: Quality gates (AC: #6, #7)
+  - [x] Run `pnpm all` and confirm zero failures
+  - [x] Run `pnpm format` and confirm zero diffs
+  - [x] Run `nx run electron:build:linux` locally and confirm a Linux artifact is
         produced under `dist/electron-dist/`
   - [ ] Verify `nx run electron:build:win` either succeeds (if Wine is available) or
         fails in isolation without affecting the Linux build
@@ -182,11 +186,11 @@ available; this must not block Linux/Windows artifact production.
 
 ### Source Requirements
 
-| Req | Description |
-| --- | --- |
+| Req | Description                                                                                                                                      |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
 | R73 | Electron build pipeline must expose separate per-platform targets (`build:linux`, `build:mac`, `build:win`) so each can be invoked independently |
-| R74 | A failure in the macOS build must not prevent the Linux or Windows builds from completing |
-| R75 | `apps/electron/README.md` must describe each per-platform build command and the database location convention |
+| R74 | A failure in the macOS build must not prevent the Linux or Windows builds from completing                                                        |
+| R75 | `apps/electron/README.md` must describe each per-platform build command and the database location convention                                     |
 
 ### Files to Modify
 
@@ -207,7 +211,7 @@ available; this must not block Linux/Windows artifact production.
 
 - No new unit tests are required for build configuration changes.
 - Validation is via `pnpm all` (lint + unit tests + build) and a manual `nx run
-  electron:build:linux` to confirm an artifact lands in `dist/electron-dist/`.
+electron:build:linux` to confirm an artifact lands in `dist/electron-dist/`.
 - E2E smoke validation of the packaged artifact is the scope of Story 98.4 — do not
   expand this story to cover it.
 

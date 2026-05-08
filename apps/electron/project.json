@@ -37,11 +37,11 @@
         "cwd": "apps/electron"
       }
     },
-    "package": {
+    "build:linux": {
       "executor": "nx:run-commands",
       "outputs": ["{workspaceRoot}/dist/electron-dist"],
       "options": {
-        "command": "../../node_modules/.bin/electron-builder --config electron-builder.yml",
+        "command": "../../node_modules/.bin/electron-builder --config electron-builder.yml --linux",
         "cwd": "apps/electron"
       },
       "dependsOn": [
@@ -56,12 +56,63 @@
         }
       ]
     },
+    "build:mac": {
+      "executor": "nx:run-commands",
+      "outputs": ["{workspaceRoot}/dist/electron-dist"],
+      "options": {
+        "command": "../../node_modules/.bin/electron-builder --config electron-builder.yml --mac",
+        "cwd": "apps/electron"
+      },
+      "dependsOn": [
+        "build",
+        {
+          "projects": ["server"],
+          "target": "build"
+        },
+        {
+          "projects": ["dms-material"],
+          "target": "build"
+        }
+      ]
+    },
+    "build:win": {
+      "executor": "nx:run-commands",
+      "outputs": ["{workspaceRoot}/dist/electron-dist"],
+      "options": {
+        "command": "../../node_modules/.bin/electron-builder --config electron-builder.yml --win",
+        "cwd": "apps/electron"
+      },
+      "dependsOn": [
+        "build",
+        {
+          "projects": ["server"],
+          "target": "build"
+        },
+        {
+          "projects": ["dms-material"],
+          "target": "build"
+        }
+      ]
+    },
+    "package": {
+      "executor": "nx:run-commands",
+      "outputs": ["{workspaceRoot}/dist/electron-dist"],
+      "options": {
+        "commands": [
+          "nx run electron:build:linux || true",
+          "nx run electron:build:mac || true",
+          "nx run electron:build:win || true"
+        ],
+        "parallel": false,
+        "shell": true
+      }
+    },
     "smoke-test": {
       "executor": "nx:run-commands",
       "options": {
         "command": "bash apps/electron/scripts/smoke-test.sh"
       },
-      "dependsOn": ["electron:package"]
+      "dependsOn": ["build:linux"]
     }
   }
 }

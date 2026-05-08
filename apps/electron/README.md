@@ -216,14 +216,39 @@ Notes:
 After packaging, you can verify the AppImage starts correctly and the embedded server
 becomes healthy using the smoke-test target.
 
-### Build the distributable
+### Per-platform build targets
+
+Three independent targets build for each OS. They can be run on any machine regardless
+of whether other platforms are available; a missing macOS environment will cause only the
+`build:mac` target to fail — the others succeed independently.
+
+```bash
+# Linux (AppImage + deb)
+pnpm nx run electron:build:linux
+
+# macOS (dmg) — requires a macOS host or code-signing environment
+pnpm nx run electron:build:mac
+
+# Windows (nsis installer)
+pnpm nx run electron:build:win
+```
+
+All three targets depend on `electron:build`, `server:build`, and `dms-material:build`
+automatically, so you do not need to build those manually beforehand.
+
+Each target writes its artifacts to `dist/electron-dist/`.
+
+### Build all platforms (combined convenience target)
 
 ```bash
 pnpm nx run electron:package
 ```
 
-This runs `electron-builder` and writes the AppImage (and `.deb`) to
-`dist/electron-dist/`.
+The `package` target invokes `build:linux`, `build:mac`, and `build:win` sequentially
+with `parallel: false`. Each command is suffixed with `|| true` so a failure on one
+platform (e.g. `build:mac` on a Linux-only CI) does **not** abort the others. Note that
+the overall `package` target always exits 0; check individual target logs to confirm
+which platforms succeeded.
 
 ### Run the smoke test
 
@@ -266,6 +291,21 @@ What the smoke test does:
 - `apps/electron/tsconfig.json`
 - `apps/server/src/main.ts`
 - `apps/dms-material/project.json`
+
+## Database Location
+
+The packaged Electron app stores the SQLite database in the user's home directory:
+
+| Platform | Path                        |
+| -------- | --------------------------- |
+| Linux    | `~/.dms/dms.db`             |
+| macOS    | `~/.dms/dms.db`             |
+| Windows  | `%USERPROFILE%\.dms\dms.db` |
+
+The path is derived from Node's `os.homedir()` at runtime so it follows the user's actual
+home directory regardless of how the app is launched. The `.dms/` directory is created
+automatically if it does not exist. The `DATABASE_URL` environment variable is set to this
+path before the Fastify server is forked.
 
 ## Database Migrations on Launch
 
