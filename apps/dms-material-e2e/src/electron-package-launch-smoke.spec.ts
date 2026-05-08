@@ -58,7 +58,7 @@ function getExpectedMigrationNames(): string[] {
     .sort();
 }
 
-/* eslint-disable @typescript-eslint/naming-convention */
+/* eslint-disable @typescript-eslint/naming-convention -- _prisma_migrations column names are snake_case by Prisma convention */
 interface MigrationRow {
   id: string;
   checksum: string;
@@ -69,7 +69,7 @@ interface MigrationRow {
   started_at: string;
   applied_steps_count: number;
 }
-/* eslint-enable @typescript-eslint/naming-convention */
+/* eslint-enable @typescript-eslint/naming-convention -- end of _prisma_migrations column name block */
 
 function readMigrationsTable(dbPath: string): MigrationRow[] {
   const db = new betterSqlite3(dbPath, { readonly: true });
@@ -167,7 +167,8 @@ test.describe('Packaged Electron App – launch smoke test', () => {
 
   test.beforeAll(() => {
     appImagePath = findAppImage();
-    fs.chmodSync(appImagePath, 0o755); // NOSONAR: AppImage must be executable
+    // eslint-disable-next-line sonarjs/file-permissions -- AppImage must be executable
+    fs.chmodSync(appImagePath, 0o755);
     tmpHome = fs.mkdtempSync(path.join(os.tmpdir(), 'dms-smoke-home-'));
   });
 
