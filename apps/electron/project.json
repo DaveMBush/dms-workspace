@@ -103,7 +103,8 @@
           "nx run electron:build:mac || true",
           "nx run electron:build:win || true"
         ],
-        "parallel": false
+        "parallel": false,
+        "shell": true
       }
     },
     "smoke-test": {
