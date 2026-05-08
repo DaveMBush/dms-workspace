@@ -1,5 +1,5 @@
 # generated: 2026-03-17
-# last_updated: 2026-05-06
+# last_updated: 2026-05-08
 # project: dms-workspace
 # project_key: NOKEY
 # tracking_system: file-system
@@ -37,7 +37,7 @@
 #     E1 → E3 → E4(TS rules) → E2 → E5 → E4(template rules) → E6 → E7 → E8
 
 generated: 2026-03-17
-last_updated: 2026-05-06
+last_updated: 2026-05-08
 project_key: NOKEY
 tracking_system: file-system
 story_location: _bmad-output/implementation-artifacts
@@ -573,3 +573,32 @@ development_status:
   98-3-electron-per-platform-builds: approved
   98-4-e2e-electron-package-launch-smoke: approved
   epic-98-retrospective: optional
+
+  # ── Epic 99: Last $ Column on Open Positions Tab ──────────────────────────
+  epic-99: in-progress
+  99-1-investigate-last-price-open-positions: approved
+  99-2-wire-last-price-open-positions: approved
+  99-3-e2e-last-price-open-positions: approved
+  epic-99-retrospective: optional
+
+  # ── Epic 100: Delete Row on Universe Screen ─────────────────────────────────
+  epic-100: in-progress
+  100-1-investigate-universe-delete: approved
+  100-2-fix-universe-delete: approved
+  100-3-e2e-universe-delete: approved
+  epic-100-retrospective: optional
+
+  # ── Epic 101: General Scrolling Issues (Round 7) ──────────────────────────
+  epic-101: in-progress
+  101-1-reproduce-scrolling-all-screens: approved
+  101-2-root-cause-and-fix-scrolling: approved
+  101-3-scrolling-regression-suite: approved
+  101-4-update-architecture-scrolling-guardrails: approved
+  epic-101-retrospective: optional
+
+  # ── Epic 102: Electron App Build Bugs ──────────────────────────────────────
+  epic-102: in-progress
+  102-1-fix-electron-chrome-sandbox-perms: approved
+  102-2-fix-electron-tslib-importhelpers: approved
+  102-3-e2e-electron-package-launch: approved
+  epic-102-retrospective: optional
