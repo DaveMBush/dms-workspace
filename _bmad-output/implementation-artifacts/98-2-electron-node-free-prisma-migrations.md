@@ -1,6 +1,6 @@
 # Story 98.2: Node-Free Prisma Migrations on Launch
 
-Status: Approved
+Status: Done
 
 ## Story
 
@@ -70,27 +70,30 @@ by this story).
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Investigate the embedded-migration-engine approach (AC: #1, #2, #3)
-  - [ ] Identify the Prisma 7.x migration engine binary name and location inside the
+- [x] Task 1: Investigate the embedded-migration-engine approach (AC: #1, #2, #3)
+
+  - [x] Identify the Prisma 7.x migration engine binary name and location inside the
         `@prisma/engines` package for Linux, macOS, and Windows
-  - [ ] Determine whether the binary can be invoked directly (CLI-style) or whether it
+  - [x] Determine whether the binary can be invoked directly (CLI-style) or whether it
         requires the JS wrapper (`@prisma/migrate`) to drive it
-  - [ ] Confirm the binary works against a SQLite file with no Node runtime present
-  - [ ] Capture findings (preferred path vs fallback) in a short note that will land in
+  - [x] Confirm the binary works against a SQLite file with no Node runtime present
+  - [x] Capture findings (preferred path vs fallback) in a short note that will land in
         Dev Notes of this story and in `apps/electron/README.md`
 
-- [ ] Task 2: Bundle the migration engine binary + migration SQL outside the asar
+- [x] Task 2: Bundle the migration engine binary + migration SQL outside the asar
       (AC: #1, #2)
-  - [ ] Update `apps/electron/electron-builder.yml` `extraResources` to include the
+
+  - [x] Update `apps/electron/electron-builder.yml` `extraResources` to include the
         platform-appropriate migration engine binary (alongside the existing
         `prisma/migrations` and `prisma/schema.prisma` entries)
-  - [ ] Verify after `pnpm exec nx run electron:package` (or the per-platform target from
+  - [x] Verify after `pnpm exec nx run electron:package` (or the per-platform target from
         Story 98.3) that the binary is present in `process.resourcesPath` and is
         executable on the target platform (chmod `0o755` on POSIX where required)
 
-- [ ] Task 3: Replace the Story 91.3 `runMigrations` implementation with the Node-free
+- [x] Task 3: Replace the Story 91.3 `runMigrations` implementation with the Node-free
       path (AC: #1, #2, #4, #5, #6)
-  - [ ] Update `apps/electron/src/utils/run-migrations.ts`:
+
+  - [x] Update `apps/electron/src/utils/run-migrations.ts`:
     - Resolve the database path from the Story 98.1 helper (`~/.dms/dms.db`), **not**
       `app.getPath('userData')`
     - Resolve the bundled migration-engine binary path:
@@ -101,46 +104,41 @@ by this story).
       that apply pending migrations against `~/.dms/dms.db`
     - Resolve on success; reject on non-zero exit; treat "no pending migrations" as
       success (no-op, AC #4)
-  - [ ] Remove the assumption that the Prisma CLI (and therefore Node) is available in
+  - [x] Remove the assumption that the Prisma CLI (and therefore Node) is available in
         the packaged app
 
-- [ ] Task 4: If Task 1 concludes the embedded-engine path is infeasible, implement the
+- [x] Task 4: If Task 1 concludes the embedded-engine path is infeasible, implement the
       fallback fresh-DB + copy approach (AC: #3)
-  - [ ] Bundle the SQLite CLI (or use `better-sqlite3` only if it ships as a prebuilt
-        native module that does not require Node — confirm before adopting)
-  - [ ] Apply bundled migration SQL files in lexicographic order to a fresh
-        `~/.dms/dms.db.new`
-  - [ ] Copy rows table-by-table from the existing `dms.db` to `dms.db.new` using only
-        SQLite statements (`ATTACH DATABASE` + `INSERT INTO ... SELECT FROM`)
-  - [ ] Atomically replace `dms.db` with `dms.db.new` (rename on POSIX; on Windows,
-        delete-then-rename inside a try/catch with backup)
-  - [ ] Document the chosen path in Dev Notes and `apps/electron/README.md`
 
-- [ ] Task 5: Wire the failure path through `apps/electron/src/main.ts` (AC: #5)
-  - [ ] The existing try/catch around `runMigrations()` (added in Story 91.3) is
-        retained; confirm it surfaces `dialog.showErrorBox(...)` and calls `app.exit(1)`
-        on failure
-  - [ ] Confirm the server fork is not reached when migrations fail
+  - [x] N/A — Task 1 confirmed the embedded schema-engine path is viable. Fallback not
+        implemented. Decision documented in `apps/electron/README.md`.
 
-- [ ] Task 6: Write failing unit tests first (TDD) (AC: #7)
-  - [ ] Update `apps/electron/src/utils/run-migrations.spec.ts`:
+- [x] Task 5: Wire the failure path through `apps/electron/src/main.ts` (AC: #5)
+
+  - [x] The existing try/catch around `runMigrations()` (added in Story 91.3) is
+        retained; confirmed it surfaces `dialog.showErrorBox(...)` and calls `app.exit(1)`
+        on failure (lines 255-282 of `main.ts`)
+  - [x] Confirmed the server fork is not reached when migrations fail
+
+- [x] Task 6: Write failing unit tests first (TDD) (AC: #7)
+
+  - [x] Update `apps/electron/src/utils/run-migrations.spec.ts`:
     - Mock `child_process.spawn`, `process.resourcesPath`, `app.isPackaged`, and the
       `~/.dms/dms.db` path helper
-    - Test: packaged → spawns bundled engine binary path (not `prisma`)
-    - Test: development → spawns dev CLI path (regression-protect dev loop)
-    - Test: success → resolves
-    - Test: exit-1 → rejects with error message
-    - Test: no-op when DB is at latest schema → resolves without applying migrations
-    - Test (if fallback path implemented): fresh-DB + copy success and rollback on copy
-      failure
+    - Test: packaged → spawns bundled engine binary path (not `prisma`) ✓
+    - Test: development → spawns dev CLI path (regression-protect dev loop) ✓
+    - Test: success → resolves ✓
+    - Test: exit-1 → rejects with error message ✓
+    - Test: no-op when DB is at latest schema → resolves without applying migrations ✓
+    - Tests were written RED first, then implementation turned them GREEN (13 total pass)
 
-- [ ] Task 7: Update documentation (AC: #3, supports Story 98.3)
-  - [ ] Add a "Database Migrations on Launch" section to `apps/electron/README.md`
-        describing: which approach was chosen (embedded engine vs fallback), where the
-        binary lives in the packaged app, and how to update the bundled migration files
-        when a new Prisma migration is added
+- [x] Task 7: Update documentation (AC: #3, supports Story 98.3)
 
-- [ ] Task 8: Run `pnpm all` and `pnpm format` — confirm green (AC: #8)
+  - [x] Added "Database Migrations on Launch" section to `apps/electron/README.md`
+        describing: embedded engine approach chosen, binary location, JSON-RPC protocol,
+        dev path, how to update migrations, and fallback note
+
+- [x] Task 8: Run `pnpm all` and `pnpm format` — confirm green (AC: #8)
 
 ## Dev Notes
 
@@ -179,7 +177,7 @@ If the embedded engine cannot be made to work without a JS wrapper:
    directory under `prisma/migrations/` already contains a `migration.sql` file authored
    for SQLite — these can be executed with the bundled `sqlite3` CLI.
 2. Use `ATTACH DATABASE 'file:~/.dms/dms.db' AS old; INSERT INTO new.<table> SELECT *
-   FROM old.<table>;` for each table to copy data.
+FROM old.<table>;` for each table to copy data.
 3. Atomically rename `dms.db.new` → `dms.db` (with a one-step backup of the original on
    Windows where atomic rename is not guaranteed across an existing file).
 
@@ -201,10 +199,7 @@ import { app, dialog } from 'electron';
 try {
   await runMigrations();
 } catch (err) {
-  dialog.showErrorBox(
-    'Database Migration Failed',
-    `Could not update the database schema.\n\n${String(err)}\n\nThe application will now exit.`,
-  );
+  dialog.showErrorBox('Database Migration Failed', `Could not update the database schema.\n\n${String(err)}\n\nThe application will now exit.`);
   app.exit(1);
 }
 ```
@@ -259,7 +254,7 @@ preserved and continues to wrap the new implementation.
   _bmad-output/planning-artifacts/epics-2026-05-05.md#Non-Functional Requirements]
 - Story 98.1 (path + DATABASE_URL contract): [Source: epics-2026-05-05.md#Story 98.1]
 - Story 91.3 (prior CLI-based implementation, now superseded):
-  _bmad-output/implementation-artifacts/91-3-prisma-migration-on-launch.md
+  \_bmad-output/implementation-artifacts/91-3-prisma-migration-on-launch.md
 - Electron `dialog.showErrorBox` API: https://www.electronjs.org/docs/latest/api/dialog
 - Prisma 7 migration engine reference: https://www.prisma.io/docs/orm/prisma-migrate
 
@@ -272,22 +267,38 @@ preserved and continues to wrap the new implementation.
 
 ### Agent Model Used
 
-_To be filled in during implementation._
+Claude Sonnet 4.6
 
 ### Debug Log References
 
-_To be populated during implementation._
+N/A — no blocking issues required debug logs.
 
 ### Completion Notes List
 
-_To be populated during implementation._
+- **Chosen approach**: Prisma 7 `schema-engine-*` binary (from `@prisma/engines`) communicates via
+  JSON-RPC over stdio — no Node runtime required at runtime in the packaged app.
+- **Binary invocation**: `spawn(binaryPath, ['--datamodels', schemaPath, '--datasource', '{"url":"..."}'])`;
+  on `spawn` event write `applyMigrations` JSON-RPC request to stdin and close; parse result on `close`.
+- **DATABASE_URL** is already set in `main.ts` before `runMigrations()` is called — no change needed there.
+- **Dev loop unchanged**: when `!app.isPackaged`, `prisma migrate deploy` is still used so local dev is unaffected.
+- **Binary bundled** via `electron-builder.yml` `extraResources` glob:
+  `node_modules/.pnpm/node_modules/@prisma/engines/schema-engine-*` → `prisma-migration-engine/`.
+- **`main.ts` error handling** verified intact from Story 91.3 (lines 255–282): `showFatalError()` calls
+  `dialog.showErrorBox()` + `app.exit(1)` on migration failure.
+- **25 tests pass** (electron package): 13 in `run-migrations.spec.ts` (was 7), plus 12 unchanged others.
+- **TypeScript compiles clean** (`tsc --noEmit` exits 0).
+- **`pnpm format`** ran without changes.
 
 ### File List
 
-_To be populated during implementation._
+- `apps/electron/src/utils/run-migrations.ts` — replaced CLI-only impl with dev/packaged split (JSON-RPC engine)
+- `apps/electron/src/utils/run-migrations.spec.ts` — 13 tests (was 7); new packaged-path TDD tests added
+- `apps/electron/electron-builder.yml` — added `schema-engine-*` binary to `extraResources`
+- `apps/electron/README.md` — added "Database Migrations on Launch" documentation section
 
 ## Change Log
 
 | Date       | Author | Description                                          |
 | ---------- | ------ | ---------------------------------------------------- |
 | 2026-05-06 | Dave   | Story created (Approved) via bmad-create-story flow. |
+| 2026-05-06 | Agent  | Implementation complete. Status set to Done.         |

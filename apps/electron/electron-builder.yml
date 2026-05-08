@@ -1,7 +1,7 @@
 appId: com.davembush.dms
 productName: DMS
-electronVersion: "41.2.1"
-artifactName: "${productName}-${version}-${arch}.${ext}"
+electronVersion: '41.2.1'
+artifactName: '${productName}-${version}-${arch}.${ext}'
 
 directories:
   output: ../../dist/electron-dist
@@ -23,12 +23,19 @@ extraResources:
     to: prisma/migrations
   - from: '../../prisma/schema.prisma'
     to: prisma/schema.prisma
+  # Prisma 7 schema-engine binary for node-free migrations at runtime.
+  # Glob matches the platform-specific binary installed by @prisma/engines.
+  # The binary is excluded from the asar so it remains executable.
+  - from: '../../node_modules/.pnpm/node_modules/@prisma/engines'
+    to: prisma-migration-engine
+    filter:
+      - 'schema-engine-*'
 
 linux:
   target:
     - AppImage
     - deb
-  maintainer: "DaveMBush <dave@davembush.com>"
+  maintainer: 'DaveMBush <dave@davembush.com>'
 
 mac:
   target: dmg

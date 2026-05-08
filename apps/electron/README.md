@@ -266,3 +266,59 @@ What the smoke test does:
 - `apps/electron/tsconfig.json`
 - `apps/server/src/main.ts`
 - `apps/dms-material/project.json`
+
+## Database Migrations on Launch
+
+The packaged Electron app applies any pending Prisma migrations automatically at startup,
+before the Fastify server is forked. This allows users to install a new app version on a
+machine that has **no Node, npm, or pnpm toolchain** and have their `~/.dms/dms.db` schema
+upgraded automatically.
+
+### Chosen approach: embedded Prisma schema-engine binary (preferred path)
+
+Prisma 7 ships a standalone native binary called **schema-engine** (e.g.
+`schema-engine-debian-openssl-3.0.x` on Linux, `schema-engine-darwin-arm64` on Apple
+Silicon, `schema-engine-windows.exe` on Windows). The binary acts as a JSON-RPC server
+over stdio when invoked without a subcommand; no JS wrapper or Node runtime on the user's
+PATH is required.
+
+At package time, `electron-builder.yml` copies the platform-appropriate binary from
+`node_modules/.pnpm/node_modules/@prisma/engines/schema-engine-*` into
+`<resourcesPath>/prisma-migration-engine/`.
+
+At runtime, `apps/electron/src/utils/run-migrations.ts` (function `runMigrationsPackaged`):
+
+1. Resolves the binary path: `<resourcesPath>/prisma-migration-engine/<platform-binary>`.
+2. Spawns the binary with:
+   - `--datamodels <resourcesPath>/prisma/schema.prisma` — points to the bundled schema.
+   - `--datasource '{"url":"<DATABASE_URL>"}'` — passes the database URL (already set by
+     the `db-path` helper before migrations run).
+3. Sends a single JSON-RPC `applyMigrations` request to the binary's stdin with
+   `migrationsDirectoryPath` pointing at `<resourcesPath>/prisma/migrations/`.
+4. Reads the JSON-RPC response from stdout. An `error` field in the response causes the
+   promise to reject; a `result` field (even with `appliedMigrationNames: []`) resolves.
+5. On non-zero exit the promise rejects regardless of the JSON response.
+
+On failure, `apps/electron/src/main.ts` surfaces a `dialog.showErrorBox(...)` and calls
+`app.exit(1)` — the Fastify server is never forked with a stale or partial schema.
+
+### Development path (unchanged)
+
+During development (`app.isPackaged === false`) the standard `prisma migrate deploy
+--schema=<path>` CLI invocation is used, which requires Node on the developer's machine.
+The dev loop is regression-protected and unaffected by the packaging changes.
+
+### Updating bundled migration files
+
+When a new Prisma migration is added (`pnpm exec prisma migrate dev --name ...`), the
+generated directory under `prisma/migrations/` is automatically included in the next
+packaged build because `electron-builder.yml` copies the entire `prisma/migrations/`
+directory tree into `extraResources`. No manual step is required beyond committing the
+new migration files to the repository.
+
+### Binary fallback note
+
+The embedded schema-engine approach was confirmed viable on the current target platforms.
+The alternative "fresh DB + SQLite-only copy" fallback (described in story 98.2 Dev Notes)
+was **not** implemented because the embedded binary communicates cleanly via JSON-RPC
+without any Node dependency.

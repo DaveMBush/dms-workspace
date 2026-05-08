@@ -273,6 +273,7 @@ async function initDatabase(dbPath: string): Promise<boolean> {
 
   try {
     await runMigrations();
+    console.log('[electron] Database migrations applied successfully');
   } catch (err) {
     showFatalError(
       'Database Migration Failed',
