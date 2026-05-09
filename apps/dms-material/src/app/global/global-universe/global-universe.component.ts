@@ -20,7 +20,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { Sort } from '@angular/material/sort';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { handleSocketNotification } from '@smarttools/smart-signals';
+import { handleSocketNotification, RowProxyDelete } from '@smarttools/smart-signals';
 
 import { BaseTableComponent } from '../../shared/components/base-table/base-table.component';
 import { ColumnDef } from '../../shared/components/base-table/column-def.interface';
@@ -94,7 +94,6 @@ export class GlobalUniverseComponent implements OnDestroy {
   private readonly errorHandling = inject(ErrorHandlingService);
   private readonly sortFilterStateService = inject(SortFilterStateService);
   readonly cellEdit = output<CellEditEvent>();
-  readonly symbolDeleted = output<Universe>();
   readonly today = new Date();
   private readonly rf = restoreUniverseFilters(
     this.sortFilterStateService.loadFilterState('universes')
@@ -273,8 +272,7 @@ export class GlobalUniverseComponent implements OnDestroy {
   }
 
   deleteUniverse(row: Universe): void {
-    this.symbolDeleted.emit(row);
-    this.notification.success(`Deleted symbol: ${row.symbol}`);
+    (row as RowProxyDelete).delete!();
   }
 
   onCellEdit(row: Universe, field: keyof Universe, value: unknown): void {

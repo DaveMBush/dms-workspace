@@ -174,16 +174,29 @@ function handleDeleteUniverseRoute(fastify: FastifyInstance): void {
         }
 
         // Query trades table for any references to this universe_id
-        const existingTrades = await prisma.trades.findMany({
+        const allTrades = await prisma.trades.findMany({
           where: { universeId: id },
         });
 
-        if (existingTrades.length > 0) {
+        // Only block deletion for active (unsold) trades
+        const activeTrades = allTrades.filter(
+          (trade) => trade.sell_date === null
+        );
+
+        if (activeTrades.length > 0) {
           reply.status(400).send({
             success: false,
             error: 'Cannot delete symbols with active trades',
           });
           return;
+        }
+
+        // Delete any sold trades first to avoid foreign-key constraint
+        const soldTrades = allTrades.filter(
+          (trade) => trade.sell_date !== null
+        );
+        if (soldTrades.length > 0) {
+          await prisma.trades.deleteMany({ where: { universeId: id } });
         }
 
         // If validations pass, delete from universe table
