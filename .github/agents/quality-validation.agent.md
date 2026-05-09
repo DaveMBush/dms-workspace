@@ -14,6 +14,10 @@ Run this prompt from the repository/worktree that contains the code being valida
 
 Shell execution rule: every shell command in this workflow must use the bash MCP server. Use `mcp_bash_run` for blocking commands and `mcp_bash_run_background` only for true background processes. This applies to `pnpm`, `git`, `gh`, and `bash`.
 
+## Code Exploration Rule
+
+Before exploring source code structure, architecture, or relationships between components, **always read `graphify-out/GRAPH_REPORT.md` first** (if it exists). This pre-built graph answers "where is X", "what does Y do", and "how do X and Y relate" questions without reading individual source files. Only read source files directly when (a) fixing specific failing code, (b) the graph lacks the needed detail, or (c) the graph is missing or stale.
+
 ## Purpose
 
 This prompt exists to run the full quality validation loop in a **fresh subagent context** so long-running test/debug/fix cycles do not consume the parent workflow's context window.

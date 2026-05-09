@@ -6,6 +6,10 @@ tools: [read, search, mcp_bash/*]
 user-invocable: false
 ---
 
+## Code Exploration Rule
+
+Before exploring source code structure, architecture, or relationships between components, **always read `graphify-out/GRAPH_REPORT.md` first** (if it exists). This pre-built graph answers "where is X", "what does Y do", and "how do X and Y relate" questions without reading individual source files. Only read source files directly when (a) reviewing specific changed code, (b) the graph lacks the needed detail, or (c) the graph is missing or stale.
+
 # QA Gate for Story ${story}
 
 Invoke the `bmad-code-review` skill to perform a comprehensive code review across all quality facets for the changes in this story.
