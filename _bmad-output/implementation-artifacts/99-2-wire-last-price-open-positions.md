@@ -137,19 +137,19 @@ So that I can see the current price next to my cost basis without leaving the sc
         encoding the bug (NFR5 applies: do not weaken tests; here we are correcting them
         to assert the new correct behaviour).
 
-- [ ] Task 8: Manual visual verification with Playwright MCP (AC: #8)
-  - [ ] Use the Playwright MCP server to load the Open Positions tab against the dev
+- [x] Task 8: Manual visual verification with Playwright MCP (AC: #8)
+  - [x] Use the Playwright MCP server to load the Open Positions tab against the dev
         database.
-  - [ ] Confirm the `Last $` column displays the formatted currency value for an open
+  - [x] Confirm the `Last $` column displays the formatted currency value for an open
         position whose universe row has a non-null `last_price` (no longer blank/zero
         for every row).
 
-- [ ] Task 9: GREEN phase — full validation (AC: #6, #9)
-  - [ ] `pnpm nx test server` — all server tests (including new `last_price` tests) pass.
-  - [ ] `pnpm nx test dms-material` — client tests pass.
-  - [ ] `pnpm all` — full repo passes.
-  - [ ] `pnpm format` — passes with no changes.
-  - [ ] Spot-check Open Positions scroll, single-column sort, multi-column sort, and
+- [x] Task 9: GREEN phase — full validation (AC: #6, #9)
+  - [x] `pnpm nx test server` — all server tests (including new `last_price` tests) pass.
+  - [x] `pnpm nx test dms-material` — client tests pass.
+  - [x] `pnpm all` — full repo passes.
+  - [x] `pnpm format` — passes with no changes.
+  - [x] Spot-check Open Positions scroll, single-column sort, multi-column sort, and
         filter behaviour — confirm no regression (NFR6).
 
 ## Dev Notes
