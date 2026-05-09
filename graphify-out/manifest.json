@@ -12,24 +12,40 @@
     "hash": "a2d60762f1ce3c6de164bbc20033223e"
   },
   "/home/dave/code/dms-workspace/apps/electron/src/main.ts": {
-    "mtime": 1777809972.6806252,
-    "hash": "eb5eca5ccb882abaefbba6876d1300c0"
+    "mtime": 1778274073.9221942,
+    "hash": "4a68c8e90bf9660c94c93c8204078f48"
   },
   "/home/dave/code/dms-workspace/apps/electron/src/preload.ts": {
     "mtime": 1777030193.0185823,
     "hash": "86c0dfbe7e43a789ee581d1ac5a4bb9d"
   },
+  "/home/dave/code/dms-workspace/apps/electron/src/utils/db-path.spec.ts": {
+    "mtime": 1778190158.1423457,
+    "hash": "82273006afdf8ae5d53e21a34ee7a1c8"
+  },
   "/home/dave/code/dms-workspace/apps/electron/src/utils/port.ts": {
     "mtime": 1776715880.3051162,
     "hash": "147ba92833df0a19e89100dd3d9c3da5"
   },
+  "/home/dave/code/dms-workspace/apps/electron/src/utils/db-path.ts": {
+    "mtime": 1778190158.1424148,
+    "hash": "679de9d925dd4ff0f517618e835f0aa6"
+  },
   "/home/dave/code/dms-workspace/apps/electron/src/utils/run-migrations.ts": {
-    "mtime": 1777809972.6807559,
-    "hash": "38e865cd8aeade39d1c814fcf9e194b8"
+    "mtime": 1778274073.922501,
+    "hash": "e6c51fc1d0f2057dce38f5e860932197"
   },
   "/home/dave/code/dms-workspace/apps/electron/src/utils/run-migrations.spec.ts": {
-    "mtime": 1777749464.491317,
-    "hash": "eb5376717428753144ada5f42a186eac"
+    "mtime": 1778274073.9223716,
+    "hash": "1d900947bfe9e35b9d1d45a890232ebb"
+  },
+  "/home/dave/code/dms-workspace/apps/electron/src/utils/ensure-db-file.spec.ts": {
+    "mtime": 1778190158.1424868,
+    "hash": "1ea634f181b5225cc5bf75e04ff39891"
+  },
+  "/home/dave/code/dms-workspace/apps/electron/src/utils/ensure-db-file.ts": {
+    "mtime": 1778190158.1425507,
+    "hash": "bf86f2cd4880f2940e2ee56e40e58132"
   },
   "/home/dave/code/dms-workspace/apps/electron/src/utils/port.spec.ts": {
     "mtime": 1776715880.3050587,
@@ -536,24 +552,24 @@
     "hash": "6a6a71169aad5e1569e221c1a2e6cfa3"
   },
   "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/trades/sold-trades-definition.const.ts": {
-    "mtime": 1777226243.4440799,
-    "hash": "5768b71b183ca38cf3f45f3fb9388f5a"
+    "mtime": 1778180858.748434,
+    "hash": "3520e6747e3c99a220c4d7c64b170af4"
   },
   "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/trades/trade-effect.service.ts": {
     "mtime": 1771093359.4200988,
     "hash": "07356902b4283043455eca64747ade39"
   },
   "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/trades/open-trades-definition.const.ts": {
-    "mtime": 1777226243.443989,
-    "hash": "c5a8c7a78c0da2db7e60513ed895b655"
+    "mtime": 1778180858.748335,
+    "hash": "8b2949c831aea409ae3b57c979156b39"
   },
   "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/trades/closed-position.interface.ts": {
     "mtime": 1776609984.110674,
     "hash": "34c78f7f272e75e3fdd08e7f379bd88c"
   },
   "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/trades/trade.interface.ts": {
-    "mtime": 1777930317.003054,
-    "hash": "938cc9e703cb57ffbaac488e3c659b1a"
+    "mtime": 1778180858.7485347,
+    "hash": "d45d9fd3c210bf9d2cadcab207ae3829"
   },
   "/home/dave/code/dms-workspace/apps/dms-material/src/app/store/trades/selectors/select-sold-trade-entity.function.ts": {
     "mtime": 1773435782.4497898,
@@ -1260,8 +1276,8 @@
     "hash": "5cd629a40f573c6391cf0d806e95376e"
   },
   "/home/dave/code/dms-workspace/apps/dms-material/src/app/account-panel/div-dep-modal/div-dep-modal.component.ts": {
-    "mtime": 1773885304.5375123,
-    "hash": "189e7b9c4e101126e7abb7009fa1d7e3"
+    "mtime": 1778180858.7477727,
+    "hash": "4856555082aafa355f5148a6f3117d2b"
   },
   "/home/dave/code/dms-workspace/apps/dms-material/src/app/account-panel/sold-positions/sold-positions-component.service.ts": {
     "mtime": 1778026655.2594173,
@@ -1288,8 +1304,8 @@
     "hash": "28705205884b8f083068549a0158bf1f"
   },
   "/home/dave/code/dms-workspace/apps/dms-material/src/app/account-panel/open-positions/add-position.service.ts": {
-    "mtime": 1777930317.0029233,
-    "hash": "7ac87636f64f423d84964bd34c392eaf"
+    "mtime": 1778180858.7479146,
+    "hash": "e6afc4559017f17df062cb5c7353902b"
   },
   "/home/dave/code/dms-workspace/apps/dms-material/src/app/account-panel/open-positions/open-positions.component.ts": {
     "mtime": 1775942174.2269077,
@@ -1300,12 +1316,12 @@
     "hash": "a56ef2dd211756a56cc05b9bdea7ef04"
   },
   "/home/dave/code/dms-workspace/apps/dms-material/src/app/account-panel/open-positions/open-positions-component.service.ts": {
-    "mtime": 1778015112.217334,
-    "hash": "12ef9116c320a57d8470424e8dc74ada"
+    "mtime": 1778180858.7482002,
+    "hash": "b88048284950edf54abd4b02aaefb725"
   },
   "/home/dave/code/dms-workspace/apps/dms-material/src/app/account-panel/open-positions/open-positions-component.service.spec.ts": {
-    "mtime": 1778030606.42363,
-    "hash": "8a44c3b8636f89fafe7e6a487632ce6b"
+    "mtime": 1778180858.7480683,
+    "hash": "7da4ddc72b180b81195f5a488ef17191"
   },
   "/home/dave/code/dms-workspace/apps/dms-material/src/app/account-panel/open-positions/position-validators.ts": {
     "mtime": 1771629781.5692961,
@@ -1771,6 +1787,10 @@
     "mtime": 1774759144.4428344,
     "hash": "4b6ed4cda08ac8540b0bc2efd740bc8a"
   },
+  "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/open-positions-computed-fields.spec.ts": {
+    "mtime": 1778180858.7475898,
+    "hash": "be16190e7a86ef8878c79b94a6c7a660"
+  },
   "/home/dave/code/dms-workspace/apps/dms-material-e2e/src/oxlc-reverse-split.spec.ts": {
     "mtime": 1775714743.1225257,
     "hash": "17588d4042598ae8518f02b157c8f0d6"
@@ -2000,8 +2020,8 @@
     "hash": "ea0e251170602ba61342255de4da7966"
   },
   "/home/dave/code/dms-workspace/apps/server/vitest.config.ts": {
-    "mtime": 1777635680.1407833,
-    "hash": "a446b450e769433dce9bbd375952a4aa"
+    "mtime": 1778180858.7493906,
+    "hash": "a2d196aed6afe5bcaf6c0accbf32fb4b"
   },
   "/home/dave/code/dms-workspace/apps/server/coverage/apps/server/block-navigation.js": {
     "mtime": 1777672817.0860305,
@@ -2460,16 +2480,16 @@
     "hash": "563ebebbfad278f17c480e298f388ac1"
   },
   "/home/dave/code/dms-workspace/apps/server/src/app/routes/trades/index.ts": {
-    "mtime": 1777930317.003245,
-    "hash": "e44bf2fd0abdc2333fb1df2ce325beb7"
+    "mtime": 1778180858.7490962,
+    "hash": "81fa3f50de8caa375f9f176169be86ec"
   },
   "/home/dave/code/dms-workspace/apps/server/src/app/routes/trades/trades-sorting.spec.ts": {
-    "mtime": 1777226243.4447114,
-    "hash": "56aa69d3264f570d6a9a0adcc1aaa1f9"
+    "mtime": 1778180858.7492595,
+    "hash": "d8f40edb3fea5dae29c1f3d10e29876f"
   },
   "/home/dave/code/dms-workspace/apps/server/src/app/routes/trades/index.spec.ts": {
-    "mtime": 1777930317.0031474,
-    "hash": "f972e2a5bc5746f065b1557d4d633204"
+    "mtime": 1778180858.748966,
+    "hash": "3126ba4a40d30f5f0b29040e8c499b76"
   },
   "/home/dave/code/dms-workspace/apps/server/src/app/routes/trades/shared/validate-sort-params.ts": {
     "mtime": 1774140366.8353488,
@@ -2592,8 +2612,8 @@
     "hash": "dd107a0aaf209b1ec35ef64fc5778d51"
   },
   "/home/dave/code/dms-workspace/apps/server/src/app/routes/div-deposits/index.ts": {
-    "mtime": 1777894017.6338966,
-    "hash": "9b804891a40eab578c5e78c414626016"
+    "mtime": 1778180858.748683,
+    "hash": "2e377a9d7b11599df8a05d2e2b98cae1"
   },
   "/home/dave/code/dms-workspace/apps/server/src/app/routes/div-deposits/index.spec.ts": {
     "mtime": 1777894017.6337554,
@@ -2980,8 +3000,8 @@
     "hash": "1270b5d648ffa0cc72ced2f7e7780d44"
   },
   "/home/dave/code/dms-workspace/apps/server/src/app/routes/settings/update/index.ts": {
-    "mtime": 1777810042.230493,
-    "hash": "cf63d169e1b29d6591797b1a2aef81db"
+    "mtime": 1778180858.7488308,
+    "hash": "e6a879538656e8acd5c847276329c7ba"
   },
   "/home/dave/code/dms-workspace/apps/server/src/app/routes/settings/update/index.spec.ts": {
     "mtime": 1777810042.2303212,
@@ -3392,16 +3412,16 @@
     "hash": "86327b446725a644c38d7f9b25a517fe"
   },
   "/home/dave/code/dms-workspace/apps/electron/electron-builder.yml": {
-    "mtime": 1777809972.680235,
-    "hash": "17bf9281496dd5472735e131819a0dd1"
+    "mtime": 1778274073.921893,
+    "hash": "955943def6dc7c15f487adb119b1f16f"
   },
   "/home/dave/code/dms-workspace/apps/electron/PACKAGING.md": {
     "mtime": 1777635680.1396708,
     "hash": "eb716fa9952333cba95136b1e3fe2636"
   },
   "/home/dave/code/dms-workspace/apps/electron/README.md": {
-    "mtime": 1777750858.2968867,
-    "hash": "e53fc6ee929697538494a7130b6cdc46"
+    "mtime": 1778274073.921767,
+    "hash": "aee78ca624653b1e5eab76422d001502"
   },
   "/home/dave/code/dms-workspace/apps/dms-material/src/index.html": {
     "mtime": 1768523003.644902,
