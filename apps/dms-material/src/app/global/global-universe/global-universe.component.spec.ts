@@ -282,14 +282,22 @@ describe('GlobalUniverseComponent', () => {
   describe('deleteUniverse', () => {
     it('should call delete on the RowProxyDelete', () => {
       const mockDelete = vi.fn();
-      const row = { id: '1', symbol: 'AAPL', delete: mockDelete } as unknown as Universe;
+      const row = {
+        id: '1',
+        symbol: 'AAPL',
+        delete: mockDelete,
+      } as unknown as Universe;
       component.deleteUniverse(row);
       expect(mockDelete).toHaveBeenCalled();
     });
 
     it('should NOT show a success notification when deleting', () => {
       const mockDelete = vi.fn();
-      const row = { id: '1', symbol: 'AAPL', delete: mockDelete } as unknown as Universe;
+      const row = {
+        id: '1',
+        symbol: 'AAPL',
+        delete: mockDelete,
+      } as unknown as Universe;
       component.deleteUniverse(row);
       expect(mockNotification.success).not.toHaveBeenCalled();
     });
@@ -1094,7 +1102,9 @@ describe('GlobalUniverseComponent - SmartNgRX Integration', () => {
     const { selectUniverses } = await import(
       '../../store/universe/selectors/select-universes.function'
     );
-    selectUniversesMock = selectUniverses as unknown as ReturnType<typeof vi.fn>;
+    selectUniversesMock = selectUniverses as unknown as ReturnType<
+      typeof vi.fn
+    >;
 
     mockSyncService = {
       syncFromScreener: vi.fn().mockReturnValue(
@@ -1365,7 +1375,9 @@ describe('Universe Selectors', () => {
     const { selectUniverses } = await import(
       '../../store/universe/selectors/select-universes.function'
     );
-    selectUniversesMock = selectUniverses as unknown as ReturnType<typeof vi.fn>;
+    selectUniversesMock = selectUniverses as unknown as ReturnType<
+      typeof vi.fn
+    >;
 
     mockSyncService = {
       syncFromScreener: vi.fn().mockReturnValue(
