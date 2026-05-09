@@ -476,8 +476,8 @@
     "hash": "c3d4fabbe688fd397a3257fa6d8322d8"
   },
   "/home/copilot/code/dms/story-100-2/apps/server/src/app/routes/universe/index.ts": {
-    "mtime": 1778341505.1244345,
-    "hash": "eba1d9830c9356c36eb6e1a9ecc1d032"
+    "mtime": 1778343050.0854042,
+    "hash": "59597cf9219ee309ddca963f5639be71"
   },
   "/home/copilot/code/dms/story-100-2/apps/server/src/app/routes/universe/delete-universe.spec.ts": {
     "mtime": 1778341505.1224368,
@@ -2348,8 +2348,8 @@
     "hash": "fdc987786429ac496e54ba32c8187749"
   },
   "/home/copilot/code/dms/story-100-2/apps/dms-material/src/app/global/global-universe/global-universe.component.ts": {
-    "mtime": 1778341505.0684338,
-    "hash": "f3c9176976cafe647bf39f078cbed5ea"
+    "mtime": 1778343050.0854042,
+    "hash": "ca9ba32ca610304e2bd2b074082d7b70"
   },
   "/home/copilot/code/dms/story-100-2/apps/dms-material/src/app/global/global-universe/universe-filter-values.interface.ts": {
     "mtime": 1778341505.070439,
@@ -2360,8 +2360,8 @@
     "hash": "0e687a26ed6b5066157240dfd163b1dd"
   },
   "/home/copilot/code/dms/story-100-2/apps/dms-material/src/app/global/global-universe/global-universe.component.spec.ts": {
-    "mtime": 1778341505.0684338,
-    "hash": "42dc3b6a7c9ce5dd3b4b0aeb6dcfc2ba"
+    "mtime": 1778343447.2019644,
+    "hash": "a6d591478d9ef3e545a7344bf3295963"
   },
   "/home/copilot/code/dms/story-100-2/apps/dms-material/src/app/global/global-universe/save-universe-filters-and-notify.function.ts": {
     "mtime": 1778341505.0694337,
@@ -2544,8 +2544,8 @@
     "hash": "ae5c561b7f547371d40096a1910a03a2"
   },
   "/home/copilot/code/dms/story-100-2/apps/dms-material/src/app/store/universe/universe-effect.service.spec.ts": {
-    "mtime": 1778341505.086434,
-    "hash": "9221443a9212d915e049bd222a059ba8"
+    "mtime": 1778343050.0884042,
+    "hash": "fa050750fb83929030af333722371dd7"
   },
   "/home/copilot/code/dms/story-100-2/apps/dms-material/src/app/store/universe/selectors/select-universe-entity.function.ts": {
     "mtime": 1778341505.0862508,
@@ -3158,6 +3158,10 @@
   "/home/copilot/code/dms/story-100-2/apps/dms-material-e2e/src/loading-spinner-centering.spec.ts": {
     "mtime": 1778341505.0154328,
     "hash": "dae7201919588d28456bd6670eb054fd"
+  },
+  "/home/copilot/code/dms/story-100-2/apps/dms-material-e2e/src/universe-delete-row.spec.ts": {
+    "mtime": 1778343050.086404,
+    "hash": "1f8015244978375648c771892fffea73"
   },
   "/home/copilot/code/dms/story-100-2/apps/dms-material-e2e/src/fidelity-import.spec.ts": {
     "mtime": 1778341505.0064328,
