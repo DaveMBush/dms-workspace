@@ -215,4 +215,41 @@ describe('UniverseEffectsService', () => {
       );
     });
   });
+
+  describe('delete', () => {
+    it('should send DELETE request to ./api/universe/:id', () => {
+      service.delete('universe-123').subscribe();
+
+      const req = httpMock.expectOne('./api/universe/universe-123');
+      expect(req.request.method).toBe('DELETE');
+      req.flush(null);
+    });
+
+    it('should complete successfully on 2xx response', async () => {
+      const resultPromise = new Promise<void>((resolve) => {
+        service.delete('universe-abc').subscribe({ complete: resolve });
+      });
+
+      const req = httpMock.expectOne('./api/universe/universe-abc');
+      req.flush(null, { status: 200, statusText: 'OK' });
+
+      await expect(resultPromise).resolves.toBeUndefined();
+    });
+
+    it('should emit error on non-2xx response', async () => {
+      const errorPromise = new Promise<unknown>((_, reject) => {
+        service.delete('universe-xyz').subscribe({
+          error: (error: unknown) => reject(error),
+        });
+      });
+
+      const req = httpMock.expectOne('./api/universe/universe-xyz');
+      req.flush(
+        { success: false, error: 'Internal server error' },
+        { status: 500, statusText: 'Internal Server Error' }
+      );
+
+      await expect(errorPromise).rejects.toMatchObject({ status: 500 });
+    });
+  });
 });

@@ -144,61 +144,59 @@ function handleAddUniverseRoute(fastify: FastifyInstance): void {
   );
 }
 
+function isActiveTrade(trade: { sell_date: Date | null }): boolean {
+  return trade.sell_date === null;
+}
+
+function isSoldTrade(trade: { sell_date: Date | null }): boolean {
+  return trade.sell_date !== null;
+}
+
+async function deleteUniverseAndTrades(id: string): Promise<string | null> {
+  const allTrades = await prisma.trades.findMany({ where: { universeId: id } });
+  const activeTrades = allTrades.filter(isActiveTrade);
+  if (activeTrades.length > 0) {
+    return 'Cannot delete symbols with active trades';
+  }
+  const soldTrades = allTrades.filter(isSoldTrade);
+  if (soldTrades.length > 0) {
+    await prisma.trades.deleteMany({ where: { universeId: id } });
+  }
+  await prisma.universe.delete({ where: { id } });
+  return null;
+}
+
 function handleDeleteUniverseRoute(fastify: FastifyInstance): void {
   fastify.delete<{ Params: { id: string } }>(
     '/:id',
     async function handleDeleteUniverse(request, reply): Promise<void> {
       const { id } = request.params;
-
       try {
-        // Check if universe entry exists
-        const universe = await prisma.universe.findUnique({
-          where: { id },
-        });
-
+        const universe = await prisma.universe.findUnique({ where: { id } });
         if (!universe) {
-          reply.status(404).send({
-            success: false,
-            error: 'Universe entry not found',
-          });
+          reply
+            .status(404)
+            .send({ success: false, error: 'Universe entry not found' });
           return;
         }
-
-        // Verify is_closed_end_fund = false
         if (universe.is_closed_end_fund) {
-          reply.status(400).send({
-            success: false,
-            error: 'Cannot delete CEF symbols',
-          });
+          reply
+            .status(400)
+            .send({ success: false, error: 'Cannot delete CEF symbols' });
           return;
         }
-
-        // Query trades table for any references to this universe_id
-        const existingTrades = await prisma.trades.findMany({
-          where: { universeId: id },
-        });
-
-        if (existingTrades.length > 0) {
-          reply.status(400).send({
-            success: false,
-            error: 'Cannot delete symbols with active trades',
-          });
+        const errorMsg = await deleteUniverseAndTrades(id);
+        if (errorMsg !== null) {
+          reply.status(400).send({ success: false, error: errorMsg });
           return;
         }
-
-        // If validations pass, delete from universe table
-        await prisma.universe.delete({ where: { id } });
-
-        reply.status(200).send({
-          success: true,
-          message: 'Symbol deleted successfully',
-        });
+        reply
+          .status(200)
+          .send({ success: true, message: 'Symbol deleted successfully' });
       } catch {
-        // Error is handled by returning appropriate status code
-        reply.status(500).send({
-          success: false,
-          error: 'Internal server error',
-        });
+        reply
+          .status(500)
+          .send({ success: false, error: 'Internal server error' });
       }
     }
   );

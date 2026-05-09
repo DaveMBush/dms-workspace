@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { signal } from '@angular/core';
+import { signal, Signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Sort } from '@angular/material/sort';
 import { provideSmartNgRX } from '@smarttools/smart-signals';
@@ -280,21 +280,26 @@ describe('GlobalUniverseComponent', () => {
   });
 
   describe('deleteUniverse', () => {
-    it('should emit symbolDeleted event', () => {
-      const row = { id: '1', symbol: 'AAPL' } as Universe;
-      const spy = vi.spyOn(component.symbolDeleted, 'emit');
-      component.table = { refresh: vi.fn() } as never;
+    it('should call delete on the RowProxyDelete', () => {
+      const mockDelete = vi.fn();
+      const row = {
+        id: '1',
+        symbol: 'AAPL',
+        delete: mockDelete,
+      } as unknown as Universe;
       component.deleteUniverse(row);
-      expect(spy).toHaveBeenCalledWith(row);
+      expect(mockDelete).toHaveBeenCalled();
     });
 
-    it('should show success notification with symbol', () => {
-      const row = { id: '1', symbol: 'AAPL' } as Universe;
-      component.table = { refresh: vi.fn() } as never;
+    it('should NOT show a success notification when deleting', () => {
+      const mockDelete = vi.fn();
+      const row = {
+        id: '1',
+        symbol: 'AAPL',
+        delete: mockDelete,
+      } as unknown as Universe;
       component.deleteUniverse(row);
-      expect(mockNotification.success).toHaveBeenCalledWith(
-        expect.stringContaining('AAPL')
-      );
+      expect(mockNotification.success).not.toHaveBeenCalled();
     });
   });
 
@@ -941,6 +946,7 @@ describe('GlobalUniverseComponent - Update Fields Button Integration (TDD - Stor
   let mockGlobalLoading: {
     show: ReturnType<typeof vi.fn>;
     hide: ReturnType<typeof vi.fn>;
+    isLoading: Signal<boolean>;
   };
   let mockNotification: {
     showPersistent: ReturnType<typeof vi.fn>;
@@ -1096,7 +1102,9 @@ describe('GlobalUniverseComponent - SmartNgRX Integration', () => {
     const { selectUniverses } = await import(
       '../../store/universe/selectors/select-universes.function'
     );
-    selectUniversesMock = selectUniverses as ReturnType<typeof vi.fn>;
+    selectUniversesMock = selectUniverses as unknown as ReturnType<
+      typeof vi.fn
+    >;
 
     mockSyncService = {
       syncFromScreener: vi.fn().mockReturnValue(
@@ -1154,6 +1162,9 @@ describe('GlobalUniverseComponent - SmartNgRX Integration', () => {
           expired: false,
           is_closed_end_fund: false,
           position: 100,
+          avg_purchase_yield_percent: 0,
+          volatilityLong: null,
+          volatilityShort: null,
         },
       ];
       selectUniversesMock.mockReturnValue(mockUniverses);
@@ -1184,6 +1195,9 @@ describe('GlobalUniverseComponent - SmartNgRX Integration', () => {
           expired: false,
           is_closed_end_fund: false,
           position: 50,
+          avg_purchase_yield_percent: 0,
+          volatilityLong: null,
+          volatilityShort: null,
         },
       ];
       selectUniversesMock.mockReturnValue(mockUniverses);
@@ -1213,6 +1227,9 @@ describe('GlobalUniverseComponent - SmartNgRX Integration', () => {
           expired: false,
           is_closed_end_fund: false,
           position: 50,
+          avg_purchase_yield_percent: 0,
+          volatilityLong: null,
+          volatilityShort: null,
         },
         {
           id: '1',
@@ -1228,6 +1245,9 @@ describe('GlobalUniverseComponent - SmartNgRX Integration', () => {
           expired: false,
           is_closed_end_fund: false,
           position: 100,
+          avg_purchase_yield_percent: 0,
+          volatilityLong: null,
+          volatilityShort: null,
         },
       ];
       selectUniversesMock.mockReturnValue(mockUniverses);
@@ -1261,6 +1281,9 @@ describe('GlobalUniverseComponent - SmartNgRX Integration', () => {
           expired: false,
           is_closed_end_fund: false,
           position: 100,
+          avg_purchase_yield_percent: 0,
+          volatilityLong: null,
+          volatilityShort: null,
         },
       ]);
 
@@ -1299,6 +1322,9 @@ describe('GlobalUniverseComponent - SmartNgRX Integration', () => {
           expired: false,
           is_closed_end_fund: false,
           position: 100,
+          avg_purchase_yield_percent: 0,
+          volatilityLong: null,
+          volatilityShort: null,
         },
       ]);
 
@@ -1349,7 +1375,9 @@ describe('Universe Selectors', () => {
     const { selectUniverses } = await import(
       '../../store/universe/selectors/select-universes.function'
     );
-    selectUniversesMock = selectUniverses as ReturnType<typeof vi.fn>;
+    selectUniversesMock = selectUniverses as unknown as ReturnType<
+      typeof vi.fn
+    >;
 
     mockSyncService = {
       syncFromScreener: vi.fn().mockReturnValue(
@@ -1399,6 +1427,9 @@ describe('Universe Selectors', () => {
           expired: false,
           is_closed_end_fund: false,
           position: 100,
+          avg_purchase_yield_percent: 0,
+          volatilityLong: null,
+          volatilityShort: null,
         },
         {
           id: '2',
@@ -1414,6 +1445,9 @@ describe('Universe Selectors', () => {
           expired: false,
           is_closed_end_fund: false,
           position: 50,
+          avg_purchase_yield_percent: 0,
+          volatilityLong: null,
+          volatilityShort: null,
         },
       ];
       selectUniversesMock.mockReturnValue(mockUniverses);
@@ -1441,6 +1475,9 @@ describe('Universe Selectors', () => {
           expired: false,
           is_closed_end_fund: false,
           position: 50,
+          avg_purchase_yield_percent: 0,
+          volatilityLong: null,
+          volatilityShort: null,
         },
         {
           id: '1',
@@ -1456,6 +1493,9 @@ describe('Universe Selectors', () => {
           expired: false,
           is_closed_end_fund: false,
           position: 100,
+          avg_purchase_yield_percent: 0,
+          volatilityLong: null,
+          volatilityShort: null,
         },
       ];
       selectUniversesMock.mockReturnValue(mockUniverses);
@@ -2413,10 +2453,10 @@ describe('GlobalUniverseComponent - Client-Side Sorting Removal', () => {
   describe('Verify no client-side sorting', () => {
     it('should not have sortData method', () => {
       expect(
-        (component as Record<string, unknown>)['sortData']
+        (component as unknown as Record<string, unknown>)['sortData']
       ).toBeUndefined();
       expect(
-        typeof (component as Record<string, unknown>)['sortData']
+        typeof (component as unknown as Record<string, unknown>)['sortData']
       ).not.toBe('function');
     });
 
@@ -2465,10 +2505,10 @@ describe('GlobalUniverseComponent - Client-Side Sorting Removal', () => {
 
       // Component should NOT have any local sort logic that reorders filteredData$
       expect(
-        (component as Record<string, unknown>)['sortData']
+        (component as unknown as Record<string, unknown>)['sortData']
       ).toBeUndefined();
       expect(
-        (component as Record<string, unknown>)['compareFunction']
+        (component as unknown as Record<string, unknown>)['compareFunction']
       ).toBeUndefined();
     });
 
