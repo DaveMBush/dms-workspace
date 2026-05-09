@@ -91,13 +91,12 @@ async function createSymbolTrades(
 function buildCleanup(
   prisma: PrismaClient,
   accountId: string,
-  accountName: string,
   symbols: string[]
 ): () => Promise<void> {
   return async function cleanupLastPriceData(): Promise<void> {
     try {
       await prisma.trades.deleteMany({ where: { accountId } });
-      await prisma.accounts.deleteMany({ where: { name: accountName } });
+      await prisma.accounts.deleteMany({ where: { id: accountId } });
       await prisma.universe.deleteMany({
         where: { symbol: { in: symbols } },
       });
@@ -162,6 +161,6 @@ export async function seedLastPriceE2eData(): Promise<LastPriceSeederResult> {
     symbolB,
     tradeIdA,
     tradeIdB,
-    cleanup: buildCleanup(prisma, accountId, accountName, symbols),
+    cleanup: buildCleanup(prisma, accountId, symbols),
   };
 }
