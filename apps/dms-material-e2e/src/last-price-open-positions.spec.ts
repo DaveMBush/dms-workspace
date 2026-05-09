@@ -121,6 +121,7 @@ test.describe('Open Positions — Last $ Column Renders Correctly (Story 99.3)',
 
     const trades = (await response.json()) as Array<{
       id: string;
+      // eslint-disable-next-line @typescript-eslint/naming-convention -- Server API returns snake_case property names matching DB column names
       last_price: number;
     }>;
 
