@@ -22,6 +22,7 @@ export const soldTradesDefinition: SmartEntityDefinition<Trade> = {
       unrealized_gain_dollars: 0,
       target_gain: 0,
       target_sell: 0,
+      last_price: 0,
     };
   },
 };
