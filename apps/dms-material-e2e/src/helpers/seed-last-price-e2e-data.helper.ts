@@ -88,6 +88,25 @@ async function createSymbolTrades(
   return { tradeIdA: tradeA.id, tradeIdB: tradeB.id };
 }
 
+function buildCleanup(
+  prisma: PrismaClient,
+  accountId: string,
+  accountName: string,
+  symbols: string[]
+): () => Promise<void> {
+  return async function cleanupLastPriceData(): Promise<void> {
+    try {
+      await prisma.trades.deleteMany({ where: { accountId } });
+      await prisma.accounts.deleteMany({ where: { name: accountName } });
+      await prisma.universe.deleteMany({
+        where: { symbol: { in: symbols } },
+      });
+    } finally {
+      await prisma.$disconnect();
+    }
+  };
+}
+
 /**
  * Seed two open positions for the Last $ column E2E test (Story 99.3).
  *
@@ -143,16 +162,6 @@ export async function seedLastPriceE2eData(): Promise<LastPriceSeederResult> {
     symbolB,
     tradeIdA,
     tradeIdB,
-    cleanup: async function cleanupLastPriceData(): Promise<void> {
-      try {
-        await prisma.trades.deleteMany({ where: { accountId } });
-        await prisma.accounts.deleteMany({ where: { name: accountName } });
-        await prisma.universe.deleteMany({
-          where: { symbol: { in: symbols } },
-        });
-      } finally {
-        await prisma.$disconnect();
-      }
-    },
+    cleanup: buildCleanup(prisma, accountId, accountName, symbols),
   };
 }
