@@ -81,147 +81,133 @@ async function getColumnIndex(page: Page, headerText: string): Promise<number> {
 
 // ─── Last $ Column E2E ───────────────────────────────────────────────────────
 
-test.describe(
-  'Open Positions — Last $ Column Renders Correctly (Story 99.3)',
-  () => {
-    let cleanup: (() => Promise<void>) | undefined;
-    let accountId: string;
-    let symbolA: string;
-    let symbolB: string;
-    let tradeIdA: string;
-    let tradeIdB: string;
+test.describe('Open Positions — Last $ Column Renders Correctly (Story 99.3)', () => {
+  let cleanup: (() => Promise<void>) | undefined;
+  let accountId: string;
+  let symbolA: string;
+  let symbolB: string;
+  let tradeIdA: string;
+  let tradeIdB: string;
 
-    test.beforeAll(async () => {
-      const seeder = await seedLastPriceE2eData();
-      cleanup = seeder.cleanup;
-      accountId = seeder.accountId;
-      symbolA = seeder.symbolA;
-      symbolB = seeder.symbolB;
-      tradeIdA = seeder.tradeIdA;
-      tradeIdB = seeder.tradeIdB;
+  test.beforeAll(async () => {
+    const seeder = await seedLastPriceE2eData();
+    cleanup = seeder.cleanup;
+    accountId = seeder.accountId;
+    symbolA = seeder.symbolA;
+    symbolB = seeder.symbolB;
+    tradeIdA = seeder.tradeIdA;
+    tradeIdB = seeder.tradeIdB;
+  });
+
+  test.afterAll(async () => {
+    if (cleanup !== undefined) {
+      await cleanup();
+    }
+  });
+
+  test('API pre-check: server returns last_price 123.45 for Symbol A and 0 for Symbol B', async ({
+    request,
+  }) => {
+    // AC #1, AC #2, AC #3 — confirm server wiring (Story 99.2) is intact.
+    // If this assertion fails, the bug is in mapTradeToResponse (server
+    // side), not in the Angular column binding (client side).
+    const response = await request.post('/api/trades', {
+      data: [tradeIdA, tradeIdB],
     });
+    expect(
+      response.ok(),
+      `POST /api/trades failed with status ${response.status()} — server may be down or route broken`
+    ).toBe(true);
 
-    test.afterAll(async () => {
-      if (cleanup !== undefined) {
-        await cleanup();
-      }
-    });
+    const trades = (await response.json()) as Array<{
+      id: string;
+      last_price: number;
+    }>;
 
-    test(
-      'API pre-check: server returns last_price 123.45 for Symbol A and 0 for Symbol B',
-      async ({ request }) => {
-        // AC #1, AC #2, AC #3 — confirm server wiring (Story 99.2) is intact.
-        // If this assertion fails, the bug is in mapTradeToResponse (server
-        // side), not in the Angular column binding (client side).
-        const response = await request.post('/api/trades', {
-          data: [tradeIdA, tradeIdB],
-        });
-        expect(
-          response.ok(),
-          `POST /api/trades failed with status ${response.status()} — server may be down or route broken`
-        ).toBe(true);
+    const tradeA = trades.find((t) => t.id === tradeIdA);
+    const tradeB = trades.find((t) => t.id === tradeIdB);
 
-        const trades = (await response.json()) as Array<{
-          id: string;
-          last_price: number;
-        }>;
+    expect(
+      tradeA,
+      `Server did not return a Trade row for symbolA (${symbolA}) ` +
+        `— mapTradeToResponse or POST /api/trades route is broken`
+    ).toBeDefined();
+    expect(
+      tradeB,
+      `Server did not return a Trade row for symbolB (${symbolB}) ` +
+        `— mapTradeToResponse or POST /api/trades route is broken`
+    ).toBeDefined();
 
-        const tradeA = trades.find((t) => t.id === tradeIdA);
-        const tradeB = trades.find((t) => t.id === tradeIdB);
+    expect(
+      tradeA!.last_price,
+      `Server last_price for ${symbolA} was ${tradeA!.last_price}, ` +
+        `expected ${SYMBOL_A_LAST_PRICE} — mapTradeToResponse did not ` +
+        `forward Universe.last_price (Story 99.2 server wiring broken)`
+    ).toBe(SYMBOL_A_LAST_PRICE);
 
-        expect(
-          tradeA,
-          `Server did not return a Trade row for symbolA (${symbolA}) ` +
-            `— mapTradeToResponse or POST /api/trades route is broken`
-        ).toBeDefined();
-        expect(
-          tradeB,
-          `Server did not return a Trade row for symbolB (${symbolB}) ` +
-            `— mapTradeToResponse or POST /api/trades route is broken`
-        ).toBeDefined();
+    expect(
+      tradeB!.last_price,
+      `Server last_price for ${symbolB} was ${tradeB!.last_price}, ` +
+        `expected 0 — mapTradeToResponse did not handle zero ` +
+        `Universe.last_price (Story 99.2 server wiring broken)`
+    ).toBe(0);
+  });
 
-        expect(
-          tradeA!.last_price,
-          `Server last_price for ${symbolA} was ${tradeA!.last_price}, ` +
-            `expected ${SYMBOL_A_LAST_PRICE} — mapTradeToResponse did not ` +
-            `forward Universe.last_price (Story 99.2 server wiring broken)`
-        ).toBe(SYMBOL_A_LAST_PRICE);
+  test('UI: Last $ cell shows $123.45 for Symbol A and $0.00 for Symbol B', async ({
+    page,
+  }) => {
+    await login(page);
+    await page.goto(`/account/${accountId}/open`);
+    await waitForTableRows(page);
 
-        expect(
-          tradeB!.last_price,
-          `Server last_price for ${symbolB} was ${tradeB!.last_price}, ` +
-            `expected 0 — mapTradeToResponse did not handle zero ` +
-            `Universe.last_price (Story 99.2 server wiring broken)`
-        ).toBe(0);
-      }
-    );
+    // Resolve column index dynamically — do NOT hard-code numeric positions
+    // (column order may change; pattern from Story 97.4).
+    const lastPriceColIdx = await getColumnIndex(page, 'Last $');
 
-    test(
-      'UI: Last $ cell shows $123.45 for Symbol A and $0.00 for Symbol B',
-      async ({ page }) => {
-        await login(page);
-        await page.goto(`/account/${accountId}/open`);
-        await waitForTableRows(page);
+    // ── Symbol A: assert the known price renders as "$123.45" ────────────
+    const rowA = page
+      .locator(`tr.mat-mdc-row:has(td:has-text("${symbolA}"))`)
+      .first();
+    const cellA = rowA.locator(`td:nth-child(${lastPriceColIdx})`);
 
-        // Resolve column index dynamically — do NOT hard-code numeric positions
-        // (column order may change; pattern from Story 97.4).
-        const lastPriceColIdx = await getColumnIndex(page, 'Last $');
+    await expect
+      .poll(async () => ((await cellA.textContent()) ?? '').trim(), {
+        message:
+          `Last $ cell for ${symbolA} should display ` +
+          `${EXPECTED_FORMATTED_A} — if empty or wrong, check ` +
+          `transformTradeToPosition (client binding) or server wiring`,
+        timeout: 10000,
+      })
+      .toBe(EXPECTED_FORMATTED_A);
 
-        // ── Symbol A: assert the known price renders as "$123.45" ────────────
-        const rowA = page
-          .locator(`tr.mat-mdc-row:has(td:has-text("${symbolA}"))`)
-          .first();
-        const cellA = rowA.locator(`td:nth-child(${lastPriceColIdx})`);
+    // ── Symbol B: zero price → "$0.00"; must not expose null/NaN ────────
+    const rowB = page
+      .locator(`tr.mat-mdc-row:has(td:has-text("${symbolB}"))`)
+      .first();
 
-        await expect
-          .poll(
-            async () => ((await cellA.textContent()) ?? '').trim(),
-            {
-              message:
-                `Last $ cell for ${symbolA} should display ` +
-                `${EXPECTED_FORMATTED_A} — if empty or wrong, check ` +
-                `transformTradeToPosition (client binding) or server wiring`,
-              timeout: 10000,
-            }
-          )
-          .toBe(EXPECTED_FORMATTED_A);
+    await expect
+      .poll(async () => rowB.isVisible(), {
+        message: `Row for ${symbolB} should be visible on the Open Positions tab`,
+        timeout: 10000,
+      })
+      .toBeTruthy();
 
-        // ── Symbol B: zero price → "$0.00"; must not expose null/NaN ────────
-        const rowB = page
-          .locator(`tr.mat-mdc-row:has(td:has-text("${symbolB}"))`)
-          .first();
+    const cellB = rowB.locator(`td:nth-child(${lastPriceColIdx})`);
 
-        await expect
-          .poll(
-            async () => rowB.isVisible(),
-            {
-              message: `Row for ${symbolB} should be visible on the Open Positions tab`,
-              timeout: 10000,
-            }
-          )
-          .toBeTruthy();
+    await expect
+      .poll(async () => ((await cellB.textContent()) ?? '').trim(), {
+        message:
+          `Last $ cell for ${symbolB} should display ` +
+          `${EXPECTED_FORMATTED_B} (zero/missing price convention)`,
+        timeout: 10000,
+      })
+      .toBe(EXPECTED_FORMATTED_B);
 
-        const cellB = rowB.locator(`td:nth-child(${lastPriceColIdx})`);
-
-        await expect
-          .poll(
-            async () => ((await cellB.textContent()) ?? '').trim(),
-            {
-              message:
-                `Last $ cell for ${symbolB} should display ` +
-                `${EXPECTED_FORMATTED_B} (zero/missing price convention)`,
-              timeout: 10000,
-            }
-          )
-          .toBe(EXPECTED_FORMATTED_B);
-
-        const textB = ((await cellB.textContent()) ?? '').trim();
-        expect(
-          textB,
-          `Last $ cell for ${symbolB} must not expose a literal ` +
-            `null / undefined / NaN string — check the currency pipe path`
-        ).not.toMatch(/null|undefined|NaN/i);
-      }
-    );
-  }
-);
+    const textB = ((await cellB.textContent()) ?? '').trim();
+    expect(
+      textB,
+      `Last $ cell for ${symbolB} must not expose a literal ` +
+        `null / undefined / NaN string — check the currency pipe path`
+    ).not.toMatch(/null|undefined|NaN/i);
+  });
+});
