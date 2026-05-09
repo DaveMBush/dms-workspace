@@ -487,4 +487,95 @@ describe('mapTradeToResponse', function () {
       expect(result.target_sell).toBe(200);
     });
   });
+
+  // --- last_price = Universe.last_price (or 0 when missing) ---
+
+  describe('last_price', function () {
+    it('should return universe.last_price as last_price (happy path)', function () {
+      const trade: TradeWithUniverseAndDates = {
+        id: '60',
+        universeId: 'uni-60',
+        accountId: 'acc-60',
+        buy: 100,
+        sell: 0,
+        buy_date: new Date('2024-01-01'),
+        sell_date: null,
+        quantity: 10,
+        universe: {
+          symbol: 'PDI',
+          last_price: 12.34,
+          distribution: 2,
+          distributions_per_year: 4,
+        },
+      };
+
+      const result = mapTradeToResponse(trade);
+
+      expect(result.last_price).toBe(12.34);
+    });
+
+    it('should return 0 for last_price when universe is null', function () {
+      const trade: TradeWithUniverseAndDates = {
+        id: '61',
+        universeId: 'uni-61',
+        accountId: 'acc-61',
+        buy: 100,
+        sell: 0,
+        buy_date: new Date('2024-01-01'),
+        sell_date: null,
+        quantity: 10,
+        universe: null,
+      };
+
+      const result = mapTradeToResponse(trade);
+
+      expect(result.last_price).toBe(0);
+    });
+
+    it('should return 0 for last_price when universe.last_price is null', function () {
+      const trade: TradeWithUniverseAndDates = {
+        id: '62',
+        universeId: 'uni-62',
+        accountId: 'acc-62',
+        buy: 100,
+        sell: 0,
+        buy_date: new Date('2024-01-01'),
+        sell_date: null,
+        quantity: 10,
+        universe: {
+          symbol: 'PDI',
+          last_price: null as unknown as number,
+          distribution: 2,
+          distributions_per_year: 4,
+        },
+      };
+
+      const result = mapTradeToResponse(trade);
+
+      expect(result.last_price).toBe(0);
+    });
+
+    it('should return 0 for last_price when universe.last_price is undefined', function () {
+      const trade: TradeWithUniverseAndDates = {
+        id: '63',
+        universeId: 'uni-63',
+        accountId: 'acc-63',
+        buy: 100,
+        sell: 0,
+        buy_date: new Date('2024-01-01'),
+        sell_date: null,
+        quantity: 10,
+        universe: {
+          symbol: 'PDI',
+          last_price: undefined as unknown as number,
+          distribution: 2,
+          distributions_per_year: 4,
+        },
+      };
+
+      const result = mapTradeToResponse(trade);
+
+      expect(result.last_price).toBe(0);
+    });
+  });
 });

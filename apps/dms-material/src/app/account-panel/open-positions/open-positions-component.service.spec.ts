@@ -63,6 +63,7 @@ function createOpenTrade(overrides: Partial<Trade> = {}): Trade {
     unrealized_gain_dollars: 0,
     target_gain: 0,
     target_sell: 0,
+    last_price: 0,
     ...overrides,
   };
 }
@@ -274,13 +275,34 @@ describe('OpenPositionsComponentService - Virtual Data Access (AX.7)', () => {
     expect(firstPosition.symbol).toBe('AAPL');
     expect(firstPosition.buy).toBe(100);
     expect(firstPosition.quantity).toBe(50);
-    expect(firstPosition.lastPrice).toBe(0); // Story 95.2: no universe map, lastPrice defaults to 0
+    expect(firstPosition.lastPrice).toBe(0); // Story 99.2: lastPrice reads trade.last_price (0 by default in fixture)
     expect(firstPosition.unrealizedGain).toBeDefined();
     expect(firstPosition.unrealizedGainPercent).toBeDefined();
     expect(firstPosition.daysHeld).toBeDefined();
     expect(firstPosition.expectedYield).toBeDefined();
     expect(firstPosition.targetGain).toBeDefined();
     expect(firstPosition.targetSell).toBeDefined();
+  });
+
+  // Story 99.2: lastPrice should pass through trade.last_price, not hardcode 0
+  it('should read lastPrice from trade.last_price (pass-through, not hardcoded 0)', () => {
+    const tradeWithLastPrice = createOpenTrade({
+      id: 'trade-with-price',
+      last_price: 42.5,
+    });
+
+    mockCurrentAccount.set({
+      id: 'acc-1',
+      name: 'Test Account',
+      openTrades: [tradeWithLastPrice],
+      divDeposits: [],
+      soldTrades: [],
+      months: [],
+    });
+
+    const positions = service.selectOpenPositions();
+
+    expect(positions[0].lastPrice).toBe(42.5);
   });
 
   // AX.14: Single item edge case

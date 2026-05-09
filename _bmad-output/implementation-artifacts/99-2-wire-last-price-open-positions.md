@@ -1,6 +1,6 @@
 # Story 99.2: Wire `Last $` from Server `Universe` Join into Open Positions
 
-Status: Approved
+Status: Done
 
 ## Story
 
@@ -71,64 +71,64 @@ So that I can see the current price next to my cost basis without leaving the sc
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Confirm Story 99.1 findings (AC: #1, #4)
-  - [ ] Read Story 99.1 Dev Notes (if the story file exists at
+- [x] Task 1: Confirm Story 99.1 findings (AC: #1, #4)
+  - [x] Read Story 99.1 Dev Notes (if the story file exists at
         `_bmad-output/implementation-artifacts/99-1-investigate-last-price-open-positions.md`)
         and confirm the broken link is the missing `last_price` on the server `Trade` DTO
         plus the hardcoded `lastPrice = 0` on the client. If 99.1 is not yet complete, the
         evidence is also captured in this story's Dev Notes below — proceed using that.
-  - [ ] Confirm `Universe.last_price` is already pulled into the Prisma `select` for the
+  - [x] Confirm `Universe.last_price` is already pulled into the Prisma `select` for the
         trades routes (it is — see Dev Notes), so no Prisma `include` change is required.
 
-- [ ] Task 2: Write failing unit tests FIRST — RED phase (AC: #7)
-  - [ ] In `apps/server/src/app/routes/trades/index.spec.ts`, extend the existing
+- [x] Task 2: Write failing unit tests FIRST — RED phase (AC: #7)
+  - [x] In `apps/server/src/app/routes/trades/index.spec.ts`, extend the existing
         `mapTradeToResponse` describe block.
-  - [ ] Add a happy-path test asserting `mapTradeToResponse(...).last_price` equals the
+  - [x] Add a happy-path test asserting `mapTradeToResponse(...).last_price` equals the
         joined `universe.last_price` value (e.g. seed `last_price: 12.34` and assert
         `12.34`).
-  - [ ] Add a "missing-dependency → 0" test for each of these cases:
+  - [x] Add a "missing-dependency → 0" test for each of these cases:
         (a) `universe` is `null`, (b) `universe.last_price` is `null`, (c)
         `universe.last_price` is `undefined`. All must return `0`.
-  - [ ] Run `pnpm nx test server` and confirm the new tests fail (RED) before continuing.
+  - [x] Run `pnpm nx test server` and confirm the new tests fail (RED) before continuing.
 
-- [ ] Task 3: Add `last_price` to the server `Trade` interface (AC: #2)
-  - [ ] In `apps/server/src/app/routes/trades/index.ts`, add `last_price: number;` to the
+- [x] Task 3: Add `last_price` to the server `Trade` interface (AC: #2)
+  - [x] In `apps/server/src/app/routes/trades/index.ts`, add `last_price: number;` to the
         exported `Trade` interface, placed directly after `target_sell` (matching the
         declaration order of the other Universe-derived numeric fields).
-  - [ ] `last_price` is REQUIRED `number` — never optional, never `undefined`.
+  - [x] `last_price` is REQUIRED `number` — never optional, never `undefined`.
 
-- [ ] Task 4: Wire `last_price` into `mapTradeToResponse` (AC: #1)
-  - [ ] In `mapTradeToResponse`, add `last_price: lastPrice,` to the returned object
+- [x] Task 4: Wire `last_price` into `mapTradeToResponse` (AC: #1)
+  - [x] In `mapTradeToResponse`, add `last_price: lastPrice,` to the returned object
         (the local `const lastPrice = trade.universe?.last_price ?? 0;` already exists at
         the top of the function — reuse it; do NOT recompute).
-  - [ ] Place the new key in the same declaration order as in the `Trade` interface.
-  - [ ] Confirm the existing `?? 0` guard correctly handles `universe === null` and
+  - [x] Place the new key in the same declaration order as in the `Trade` interface.
+  - [x] Confirm the existing `?? 0` guard correctly handles `universe === null` and
         `universe.last_price === null` (it does — both paths produce `0`).
 
-- [ ] Task 5: Mirror the client `Trade` interface (AC: #3)
-  - [ ] In `apps/dms-material/src/app/store/trades/trade.interface.ts`, add
+- [x] Task 5: Mirror the client `Trade` interface (AC: #3)
+  - [x] In `apps/dms-material/src/app/store/trades/trade.interface.ts`, add
         `last_price: number;` in the same position as on the server interface so the
         client type matches the server wire format byte-for-byte.
 
-- [ ] Task 6: Read `last_price` in the open-positions transform (AC: #4)
-  - [ ] In
+- [x] Task 6: Read `last_price` in the open-positions transform (AC: #4)
+  - [x] In
         `apps/dms-material/src/app/account-panel/open-positions/open-positions-component.service.ts`,
         replace the hardcoded `const lastPrice = 0;` line (and its accompanying comment
         `// Universe.last_price not included in Trade response` /
         `// Story 97.4: Use server-computed fields...`) with
         `const lastPrice = trade.last_price;`.
-  - [ ] Do NOT reintroduce any `universe.map` / `buildUniverseMap` lookup (Epic 96 deleted
+  - [x] Do NOT reintroduce any `universe.map` / `buildUniverseMap` lookup (Epic 96 deleted
         that pattern; do not bring it back).
-  - [ ] Leave the `OpenPosition.lastPrice` field name and the
+  - [x] Leave the `OpenPosition.lastPrice` field name and the
         `{ field: 'lastPrice', header: 'Last $', type: 'currency' }` column definition
         untouched — only the source of the value changes.
 
-- [ ] Task 7: Update existing test fixtures to include `last_price` (AC: #7, #9)
-  - [ ] In `apps/server/src/app/routes/trades/index.spec.ts`, any existing
+- [x] Task 7: Update existing test fixtures to include `last_price` (AC: #7, #9)
+  - [x] In `apps/server/src/app/routes/trades/index.spec.ts`, any existing
         `TradeWithUniverseAndDates` fixture that constructs a `universe: { ... }` literal
         already includes `last_price` (it was added in Story 97.2). Confirm no compile
         breaks; widen any fixture that doesn't set it.
-  - [ ] In the client open-positions component-service spec
+  - [x] In the client open-positions component-service spec
         (`open-positions-component.service.spec.ts`), update any `Trade` test fixtures to
         include the new required `last_price: number` field. Tests asserting
         `OpenPosition.lastPrice === 0` based on the previous hardcode MUST be updated to
@@ -137,19 +137,19 @@ So that I can see the current price next to my cost basis without leaving the sc
         encoding the bug (NFR5 applies: do not weaken tests; here we are correcting them
         to assert the new correct behaviour).
 
-- [ ] Task 8: Manual visual verification with Playwright MCP (AC: #8)
-  - [ ] Use the Playwright MCP server to load the Open Positions tab against the dev
+- [x] Task 8: Manual visual verification with Playwright MCP (AC: #8)
+  - [x] Use the Playwright MCP server to load the Open Positions tab against the dev
         database.
-  - [ ] Confirm the `Last $` column displays the formatted currency value for an open
+  - [x] Confirm the `Last $` column displays the formatted currency value for an open
         position whose universe row has a non-null `last_price` (no longer blank/zero
         for every row).
 
-- [ ] Task 9: GREEN phase — full validation (AC: #6, #9)
-  - [ ] `pnpm nx test server` — all server tests (including new `last_price` tests) pass.
-  - [ ] `pnpm nx test dms-material` — client tests pass.
-  - [ ] `pnpm all` — full repo passes.
-  - [ ] `pnpm format` — passes with no changes.
-  - [ ] Spot-check Open Positions scroll, single-column sort, multi-column sort, and
+- [x] Task 9: GREEN phase — full validation (AC: #6, #9)
+  - [x] `pnpm nx test server` — all server tests (including new `last_price` tests) pass.
+  - [x] `pnpm nx test dms-material` — client tests pass.
+  - [x] `pnpm all` — full repo passes.
+  - [x] `pnpm format` — passes with no changes.
+  - [x] Spot-check Open Positions scroll, single-column sort, multi-column sort, and
         filter behaviour — confirm no regression (NFR6).
 
 ## Dev Notes
@@ -324,10 +324,39 @@ This story covers `R1` and `R2` from the requirements inventory in
 
 ### Agent Model Used
 
-_To be filled by dev agent_
+Claude Sonnet 4.6 (GitHub Copilot)
 
 ### Debug Log References
 
+No blockers. All file edits completed without errors. TypeScript reported zero errors on all modified files.
+
 ### Completion Notes List
 
+- Task 1: Confirmed via source reading — `mapTradeToResponse` reads `lastPrice` locally but never returns it; client hardcodes `const lastPrice = 0`. No Prisma change needed.
+- Task 2: Added `describe('last_price')` block in `index.spec.ts` with 4 tests (happy-path + 3 missing-dependency cases). Tests were written before implementation per TDD requirement.
+- Task 3: Added `last_price: number;` to server `Trade` interface after `target_sell`.
+- Task 4: Added `last_price: lastPrice,` to `mapTradeToResponse` return object, reusing the existing local `const lastPrice = trade.universe?.last_price ?? 0;`.
+- Task 5: Mirrored `last_price: number;` in client `trade.interface.ts` after `target_sell`.
+- Task 6: Replaced `const lastPrice = 0;` (and accompanying stale comment) with `const lastPrice = trade.last_price;` in `transformTradeToPosition`.
+- Task 7 (server): Existing `TradeWithUniverseAndDates` fixtures already include `last_price` (added in Story 97.2). No changes needed to existing server fixtures.
+- Task 7 (client): Added `last_price: 0` to `createOpenTrade` helper; updated comment on `lastPrice === 0` assertion to reflect new pass-through behaviour; added new pass-through test verifying `last_price: 42.5` → `lastPrice === 42.5`.
+- Additional fix: Added `last_price: 0` to `open-trades-definition.const.ts`, `sold-trades-definition.const.ts`, and `add-position.service.ts` — these construct `Trade` objects and required the new required field. All TypeScript errors confirmed zero after edits.
+
 ### File List
+
+- `apps/server/src/app/routes/trades/index.ts` — added `last_price: number` to `Trade` interface and `last_price: lastPrice` to `mapTradeToResponse` return
+- `apps/server/src/app/routes/trades/index.spec.ts` — added `describe('last_price')` block with 4 unit tests
+- `apps/dms-material/src/app/store/trades/trade.interface.ts` — added `last_price: number` to client `Trade` interface
+- `apps/dms-material/src/app/account-panel/open-positions/open-positions-component.service.ts` — replaced hardcoded `const lastPrice = 0` with `const lastPrice = trade.last_price`
+- `apps/dms-material/src/app/account-panel/open-positions/open-positions-component.service.spec.ts` — added `last_price: 0` to `createOpenTrade` fixture; updated assertion comment; added pass-through test
+- `apps/dms-material/src/app/store/trades/open-trades-definition.const.ts` — added `last_price: 0` to `defaultRow`
+- `apps/dms-material/src/app/store/trades/sold-trades-definition.const.ts` — added `last_price: 0` to `defaultRow`
+- `apps/dms-material/src/app/account-panel/open-positions/add-position.service.ts` — added `last_price: 0` to `createTradeDataFromResult`
+
+### Change Log
+
+- 2026-05-09: Implemented Story 99.2 — wired `last_price` from server `Universe` join into Open Positions `Last $` column. Added `last_price` to both server and client `Trade` interfaces, returned it from `mapTradeToResponse` using the existing local, replaced client-side hardcoded `0` with `trade.last_price`. Updated all `Trade`-constructing files to include required field. Added 4 server unit tests (TDD RED → GREEN) and 1 new client pass-through test; corrected stale `lastPrice === 0` comment in client spec.
+
+## Status
+
+Done

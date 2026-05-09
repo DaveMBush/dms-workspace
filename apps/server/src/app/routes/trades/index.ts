@@ -20,6 +20,7 @@ export interface Trade {
   unrealized_gain_dollars: number;
   target_gain: number;
   target_sell: number;
+  last_price: number;
 }
 
 export interface TradeWithUniverseAndDates {
@@ -107,6 +108,7 @@ export function mapTradeToResponse(trade: TradeWithUniverseAndDates): Trade {
     ),
     target_gain: computeTargetGain(distribution, trade.quantity),
     target_sell: distribution + trade.buy,
+    last_price: lastPrice,
   };
 }
 

@@ -14,4 +14,5 @@ export interface Trade {
   unrealized_gain_dollars: number;
   target_gain: number;
   target_sell: number;
+  last_price: number;
 }

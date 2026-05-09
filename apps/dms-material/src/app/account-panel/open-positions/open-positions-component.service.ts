@@ -95,9 +95,7 @@ export class OpenPositionsComponentService {
   });
 
   private transformTradeToPosition(trade: Trade): OpenPosition {
-    // Story 97.4: Use server-computed fields for computed columns.
-    // last_price is not yet exposed on Trade; keep at 0 for "Last $" display.
-    const lastPrice = 0; // Universe.last_price not included in Trade response
+    const lastPrice = trade.last_price;
     const exDate = null; // Universe.ex_date not included in Trade response
 
     const daysHeld = this.differenceInTradingDaysPrivate(
