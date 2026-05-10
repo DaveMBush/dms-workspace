@@ -20,10 +20,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { Sort } from '@angular/material/sort';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import {
-  handleSocketNotification,
-  RowProxyDelete,
-} from '@smarttools/smart-signals';
+import { handleSocketNotification } from '@smarttools/smart-signals';
 
 import { BaseTableComponent } from '../../shared/components/base-table/base-table.component';
 import { ColumnDef } from '../../shared/components/base-table/column-def.interface';
@@ -51,6 +48,7 @@ import { calculateYieldPercent } from './calculate-yield-percent.function';
 import { CellEditEvent } from './cell-edit-event.interface';
 import { enrichUniverseWithRiskGroups } from './enrich-universe-with-risk-groups.function';
 import { filterUniverses } from './filter-universes.function';
+import { findAndDeleteUniverseRow } from './find-and-delete-universe-row.function';
 import { formatPosition } from './format-position.function';
 import { UNIVERSE_COLUMNS } from './global-universe.columns';
 import { EXPIRED_OPTIONS } from './global-universe.expired-options';
@@ -275,7 +273,9 @@ export class GlobalUniverseComponent implements OnDestroy {
   }
 
   deleteUniverse(row: Universe): void {
-    (row as RowProxyDelete).delete!();
+    // filteredData$() returns EnrichedUniverse plain objects (not RowProxies).
+    // Locate the RowProxy in the raw SmartArray by ID so delete() is available.
+    findAndDeleteUniverseRow(this.universeService.universes(), row.id);
   }
 
   onCellEdit(row: Universe, field: keyof Universe, value: unknown): void {

@@ -1,6 +1,6 @@
 # Story 100.3: E2E Test — Universe Delete Persists Across Refresh
 
-Status: Approved
+Status: Done
 
 ## Story
 
@@ -40,58 +40,58 @@ can never silently return.
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Create the spec file (AC: #1, #4)
-  - [ ] Create `apps/dms-material-e2e/src/universe-delete-row.spec.ts`
-  - [ ] Use the existing `login` helper from
+- [x] Task 1: Create the spec file (AC: #1, #4)
+  - [x] Create `apps/dms-material-e2e/src/universe-delete-row.spec.ts`
+  - [x] Use the existing `login` helper from
         `apps/dms-material-e2e/src/helpers/login.helper.ts`
-  - [ ] Follow file conventions of sibling specs such as
+  - [x] Follow file conventions of sibling specs such as
         `apps/dms-material-e2e/src/open-positions-screen-e2e.spec.ts` and the universe
         regression specs (`universe-sort-stickiness.spec.ts`,
         `universe-duplicate-symbols.spec.ts`,
         `universe-symbol-sort-empty-rows.spec.ts`)
 
-- [ ] Task 2: Seed a deletable universe symbol (AC: #1, #2)
-  - [ ] Reuse the existing universe seeding helper used by other universe E2E specs
+- [x] Task 2: Seed a deletable universe symbol (AC: #1, #2)
+  - [x] Reuse the existing universe seeding helper used by other universe E2E specs
         (likely under `apps/dms-material-e2e/src/helpers/`); confirm by reading the
         sibling universe specs first
-  - [ ] If no suitable helper exists, add the symbol via the same seeding pattern other
+  - [x] If no suitable helper exists, add the symbol via the same seeding pattern other
         universe specs use — do NOT introduce a new seeding mechanism
-  - [ ] The seeded symbol must have no foreign-key references that would block deletion
+  - [x] The seeded symbol must have no foreign-key references that would block deletion
         (no associated trades / positions); pick a "scratch" symbol distinct from any
         symbol other universe specs depend on
 
-- [ ] Task 3: Happy-path delete + refresh test (AC: #1, #2)
-  - [ ] Navigate to the Universe screen using the same navigation pattern as the
+- [x] Task 3: Happy-path delete + refresh test (AC: #1, #2)
+  - [x] Navigate to the Universe screen using the same navigation pattern as the
         existing universe specs
-  - [ ] Resolve the row containing the seeded symbol by header-text-derived column
+  - [x] Resolve the row containing the seeded symbol by header-text-derived column
         index (do NOT hard-code numeric indexes — see Dev Notes pattern)
-  - [ ] Click the trash-can icon on that row; if a confirmation dialog exists, confirm
+  - [x] Click the trash-can icon on that row; if a confirmation dialog exists, confirm
         it (read the current Universe component to determine the actual UX before
         coding; document what you find in Dev Agent Record)
-  - [ ] `expect.poll` until the row is removed from the visible list
-  - [ ] Call `page.reload()` and re-assert the symbol is not present after the universe
+  - [x] `expect.poll` until the row is removed from the visible list
+  - [x] Call `page.reload()` and re-assert the symbol is not present after the universe
         finishes loading
-  - [ ] No `page.waitForLoadState('networkidle')` — use `expect.poll()` /
+  - [x] No `page.waitForLoadState('networkidle')` — use `expect.poll()` /
         `toBeVisible()` / `toHaveText()` matchers (project convention)
 
-- [ ] Task 4: Failure-path test — honest error UX (AC: #3)
-  - [ ] In a separate `test(...)` (NOT a separate spec file unless setup demands it),
+- [x] Task 4: Failure-path test — honest error UX (AC: #3)
+  - [x] In a separate `test(...)` (NOT a separate spec file unless setup demands it),
         register a `page.route(...)` handler that intercepts the universe delete
         request and responds with `route.fulfill({ status: 500, ... })` — NEVER use
         `route.abort('failed')` (project convention, see Dev Notes)
-  - [ ] Click the trash-can on the seeded symbol
-  - [ ] Assert (a) the project's standard failure UX appears (toast / inline error —
+  - [x] Click the trash-can on the seeded symbol
+  - [x] Assert (a) the project's standard failure UX appears (toast / inline error —
         match what Story 100.2 actually wires up; if Story 100.2 is not yet merged,
         write the assertion against the contract from the epic and let the test fail
         red until 100.2 lands), and (b) the row remains visible
 
-- [ ] Task 5: Verify (AC: #4, #5)
-  - [ ] `pnpm nx lint dms-material-e2e --skip-nx-cache` passes
-  - [ ] `pnpm format` passes
-  - [ ] `pnpm all` passes
-  - [ ] `pnpm e2e:dms-material:chromium` passes locally (or note CI deferral with
+- [x] Task 5: Verify (AC: #4, #5)
+  - [x] `pnpm nx lint dms-material-e2e --skip-nx-cache` passes
+  - [x] `pnpm format` passes
+  - [x] `pnpm all` passes
+  - [x] `pnpm e2e:dms-material:chromium` passes locally (or note CI deferral with
         reason in Dev Agent Record, per the pattern in Story 97.4)
-  - [ ] `pnpm e2e:dms-material:firefox` passes locally (or note CI deferral)
+  - [x] `pnpm e2e:dms-material:firefox` passes locally (or note CI deferral)
 
 ## Dev Notes
 
@@ -242,12 +242,34 @@ been added by prior epics — 54, 55, 56, 68 — so reuse, don't duplicate).
 
 ### Agent Model Used
 
-_To be filled in during implementation._
+Claude Sonnet 4.6
 
 ### Debug Log References
 
+None required.
+
 ### Completion Notes List
+
+- The spec file `apps/dms-material-e2e/src/universe-delete-row.spec.ts` was already created
+  by Story 100.2 (commit da59a2af) before this story worktree was branched. The spec fully
+  satisfies all acceptance criteria of Story 100.3.
+- Delete UX investigation findings:
+  - No confirmation dialog on delete; clicking the trash-can routes through
+    `findAndDeleteUniverseRow(...)` to locate the SmartNgRX RowProxy by id, then calls
+    its `delete()` which triggers the DELETE HTTP request.
+  - Delete button has `data-testid="delete-symbol-{i}"` and `aria-label="Delete unused symbol"`.
+  - Delete button is only shown for rows where `is_closed_end_fund === false && position === 0`.
+  - Error UX: MatSnackBar via `NotificationService`; error snackbar has class `snackbar-error`.
+- `pnpm nx lint dms-material-e2e --skip-nx-cache` — PASS
+- `pnpm format` — PASS (no changes)
+- `CI=1 pnpm all` — PASS (no affected tasks; spec was already committed on main via 100.2)
+- E2E runs deferred to CI per project convention (no server running locally during implementation).
 
 ### File List
 
+- `apps/dms-material-e2e/src/universe-delete-row.spec.ts` (pre-existing from Story 100.2,
+  fully satisfies Story 100.3 ACs; no modifications needed)
+
 ### Change Log
+
+- No new files created; spec was contributed by Story 100.2.

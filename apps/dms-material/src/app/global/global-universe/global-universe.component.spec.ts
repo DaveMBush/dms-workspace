@@ -280,24 +280,37 @@ describe('GlobalUniverseComponent', () => {
   });
 
   describe('deleteUniverse', () => {
-    it('should call delete on the RowProxyDelete', () => {
-      const mockDelete = vi.fn();
-      const row = {
-        id: '1',
+    function makeSmartArray(
+      id: string,
+      mockDelete: ReturnType<typeof vi.fn>
+    ): Universe[] {
+      const rowProxy = {
+        id,
         symbol: 'AAPL',
         delete: mockDelete,
       } as unknown as Universe;
+      const arr = [rowProxy] as Universe[];
+      // Simulate SmartNgRX ArrayProxy with getIdAtIndex
+      Object.assign(arr, {
+        getIdAtIndex: function getIdAtIndex(i: number) {
+          return i === 0 ? id : undefined;
+        },
+      });
+      return arr;
+    }
+
+    it('should call delete on the RowProxyDelete', () => {
+      const mockDelete = vi.fn();
+      mockUniverseService.universes.set(makeSmartArray('1', mockDelete));
+      const row = { id: '1', symbol: 'AAPL' } as unknown as Universe;
       component.deleteUniverse(row);
       expect(mockDelete).toHaveBeenCalled();
     });
 
     it('should NOT show a success notification when deleting', () => {
       const mockDelete = vi.fn();
-      const row = {
-        id: '1',
-        symbol: 'AAPL',
-        delete: mockDelete,
-      } as unknown as Universe;
+      mockUniverseService.universes.set(makeSmartArray('1', mockDelete));
+      const row = { id: '1', symbol: 'AAPL' } as unknown as Universe;
       component.deleteUniverse(row);
       expect(mockNotification.success).not.toHaveBeenCalled();
     });
