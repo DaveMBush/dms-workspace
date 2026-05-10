@@ -44,14 +44,30 @@ import { ColumnDef } from './column-def.interface';
  *   scroll triggered lazy-load in-flight windows where placeholder rows with blank symbols
  *   were visible. Fix (Story 87.2): change placeholder symbol from '' to '\u2026' in all
  *   three account-panel component services, matching the Universe screen pattern.
+ * Epic 101: contain:paint on .virtual-scroll-viewport (base-table.component.scss) caused
+ *   slow-scroll sticky header drift on all five CDK virtual-scroll hosts (Universe, Open
+ *   Positions, Sold Positions, Dividend Deposits, Screener). CSS Containment Level 2
+ *   (Chrome 114+, Firefox 109+) changed contain:paint to imply contain:layout, creating
+ *   an independent formatting context. Combined with CDK's transform:translateY() on
+ *   .cdk-virtual-scroll-content-wrapper, the browser's sticky resolver computed anchor
+ *   offsets in the transformed coordinate space during 4px/step slow scroll, producing
+ *   header-scrolls-with-content and header-under-header artifacts. Fix (Story 101.2):
+ *   removed contain:paint from .virtual-scroll-viewport; overflow:auto/hidden already
+ *   provides the equivalent paint boundary without the layout-containment side-effect.
  *
- * The structural constraint: CDK virtual scroll requires a STABLE array length.
- * SmartNgRX marks rows isLoading=true during in-flight requests; filtering those
- * rows out shrinks the array and causes CDK to recalculate total height, jumping
- * the viewport. Always keep placeholder/loading rows in the array.
- * Placeholder rows must use a non-empty symbol (e.g. '\u2026') so blank-cell
- * regression guards do not false-positive on loading rows.
+ * Structural constraints:
+ *   1. CDK virtual scroll requires a STABLE array length. SmartNgRX marks rows
+ *      isLoading=true during in-flight requests; filtering those rows out shrinks the
+ *      array and causes CDK to recalculate total height, jumping the viewport. Always
+ *      keep placeholder/loading rows in the array. Placeholder rows must use a non-empty
+ *      symbol (e.g. '\u2026') so blank-cell regression guards do not false-positive.
+ *   2. .virtual-scroll-viewport MUST be a scroll container (overflow-y:auto) but MUST
+ *      NOT apply layout containment (contain:layout or any shorthand that implies it).
+ *      CDK positions visible rows via transform:translateY on the content-wrapper;
+ *      position:sticky on <th> elements must anchor to the scrollport, not the
+ *      transformed subtree. Any layout containment on the viewport breaks this.
  */
+
 function compareNonNullValues(aVal: unknown, bVal: unknown): number {
   if (typeof aVal === 'string' && typeof bVal === 'string') {
     return aVal.localeCompare(bVal);

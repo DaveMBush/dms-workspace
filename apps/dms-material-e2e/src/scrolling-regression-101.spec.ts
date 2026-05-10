@@ -317,14 +317,9 @@ test.describe('Universe — Round 7 slow-scroll sticky-header regression (Story 
   test('Universe: sticky header does not drift down with content during slow scroll (header-scrolls-with-content)', async ({
     page,
   }) => {
-    // TODO Story 101.2: root-cause and fix the sticky-header position drift.
-    // During Round 7 live-app observation, the sticky <thead> (position:sticky;
-    // top:0) drifted downward with content rows during 4px/step slow scroll
-    // instead of remaining anchored at the top of cdk-virtual-scroll-viewport.
-    // Primary hypothesis: a transform or will-change on a mat-sidenav-container
-    // ancestor creates a new containing block, evicting the sticky header from
-    // the viewport's stacking context.
-    test.fail();
+    // Fixed by Story 101.2: removed contain:paint from .virtual-scroll-viewport in
+    // base-table.component.scss. Root cause: CSS Containment Level 2 made contain:paint
+    // imply contain:layout, breaking position:sticky anchoring during slow scroll.
 
     const viewport = page.locator(VIEWPORT_SELECTOR);
     const header = page.locator(HEADER_ROW_SELECTOR).first();
@@ -353,13 +348,7 @@ test.describe('Universe — Round 7 slow-scroll sticky-header regression (Story 
   test('Universe: sticky header does not slide behind app bar during slow scroll (header-under-header)', async ({
     page,
   }) => {
-    // TODO Story 101.2: fix the header-under-header artifact on Universe.
-    // During live-app observation, the sticky <thead> slid ABOVE the viewport
-    // top, disappearing behind the parent toolbar. This is the inverse of
-    // header-scrolls-with-content: the header overshoots upward instead of
-    // lagging downward, producing the "header-under-header" visual where the
-    // table header appears to slide behind the app navigation bar.
-    test.fail();
+    // Fixed by Story 101.2: same root cause as header-scrolls-with-content.
 
     const viewport = page.locator(VIEWPORT_SELECTOR);
     const header = page.locator(HEADER_ROW_SELECTOR).first();
@@ -414,9 +403,7 @@ test.describe('Open Positions — Round 7 slow-scroll sticky-header regression (
   test('Open Positions: sticky header does not drift down with content during slow scroll (header-scrolls-with-content)', async ({
     page,
   }) => {
-    // TODO Story 101.2: fix. Same hypothesis as Universe — see Universe
-    // header-scrolls-with-content for full context.
-    test.fail();
+    // Fixed by Story 101.2: removed contain:paint from base-table.component.scss.
 
     const viewport = page.locator(VIEWPORT_SELECTOR);
     const header = page.locator(HEADER_ROW_SELECTOR).first();
@@ -439,8 +426,7 @@ test.describe('Open Positions — Round 7 slow-scroll sticky-header regression (
   test('Open Positions: sticky header does not slide behind app bar during slow scroll (header-under-header)', async ({
     page,
   }) => {
-    // TODO Story 101.2: fix.
-    test.fail();
+    // Fixed by Story 101.2.
 
     const viewport = page.locator(VIEWPORT_SELECTOR);
     const header = page.locator(HEADER_ROW_SELECTOR).first();
@@ -491,8 +477,7 @@ test.describe('Sold Positions — Round 7 slow-scroll sticky-header regression (
   test('Sold Positions: sticky header does not drift down with content during slow scroll (header-scrolls-with-content)', async ({
     page,
   }) => {
-    // TODO Story 101.2: fix.
-    test.fail();
+    // Fixed by Story 101.2.
 
     const viewport = page.locator(VIEWPORT_SELECTOR);
     const header = page.locator(HEADER_ROW_SELECTOR).first();
@@ -515,8 +500,7 @@ test.describe('Sold Positions — Round 7 slow-scroll sticky-header regression (
   test('Sold Positions: sticky header does not slide behind app bar during slow scroll (header-under-header)', async ({
     page,
   }) => {
-    // TODO Story 101.2: fix.
-    test.fail();
+    // Fixed by Story 101.2.
 
     const viewport = page.locator(VIEWPORT_SELECTOR);
     const header = page.locator(HEADER_ROW_SELECTOR).first();
@@ -567,8 +551,7 @@ test.describe('Dividend Deposits — Round 7 slow-scroll sticky-header regressio
   test('Dividend Deposits: sticky header does not drift down with content during slow scroll (header-scrolls-with-content)', async ({
     page,
   }) => {
-    // TODO Story 101.2: fix.
-    test.fail();
+    // Fixed by Story 101.2.
 
     const viewport = page.locator(VIEWPORT_SELECTOR);
     const header = page.locator(HEADER_ROW_SELECTOR).first();
@@ -591,8 +574,7 @@ test.describe('Dividend Deposits — Round 7 slow-scroll sticky-header regressio
   test('Dividend Deposits: sticky header does not slide behind app bar during slow scroll (header-under-header)', async ({
     page,
   }) => {
-    // TODO Story 101.2: fix.
-    test.fail();
+    // Fixed by Story 101.2.
 
     const viewport = page.locator(VIEWPORT_SELECTOR);
     const header = page.locator(HEADER_ROW_SELECTOR).first();
@@ -641,12 +623,11 @@ test.describe('Screener — Round 7 slow-scroll sticky-header regression (Story 
   test('Screener: sticky header does not drift down with content during slow scroll (header-scrolls-with-content)', async ({
     page,
   }) => {
-    // TODO Story 101.2: fix.
+    // Fixed by Story 101.2.
     // Note: Screener was confirmed as a dms-base-table host via
     //   grep -rn "cdk-virtual-scroll-viewport" apps/dms-material/src
     // It was not explicitly listed in the Epic 101 story scope but is a
     // CDK virtual-scroll host and must be covered per AC #1.
-    test.fail();
 
     const viewport = page.locator(VIEWPORT_SELECTOR);
     const header = page.locator(HEADER_ROW_SELECTOR).first();
@@ -669,8 +650,7 @@ test.describe('Screener — Round 7 slow-scroll sticky-header regression (Story 
   test('Screener: sticky header does not slide behind app bar during slow scroll (header-under-header)', async ({
     page,
   }) => {
-    // TODO Story 101.2: fix.
-    test.fail();
+    // Fixed by Story 101.2.
 
     const viewport = page.locator(VIEWPORT_SELECTOR);
     const header = page.locator(HEADER_ROW_SELECTOR).first();

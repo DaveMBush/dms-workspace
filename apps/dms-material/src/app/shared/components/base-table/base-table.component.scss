@@ -18,11 +18,44 @@ td.mat-mdc-cell button.mat-mdc-icon-button {
   overflow: hidden;
 }
 
+/**
+ * SCROLLING REGRESSION HISTORY — DO NOT SIMPLIFY THIS CODE:
+ * Epic 29:  rowHeight mismatch → CDK total scroll height wrong
+ * Epic 31:  contain:strict on .virtual-scroll-viewport → jump on CDK viewport recalc
+ *           Fixed by replacing contain:strict with contain:paint (correct at the time).
+ * Epic 44:  CSS transitions + extra CD cycles → CDK recalculated mid-animation
+ *           Also removed will-change:transform from .virtual-scroll-viewport.
+ * Epic 60:  isLoading=true rows filtered → array shrank → CDK recalculated total height
+ * Epic 64:  Edge case follow-up to Epic 60 (different code path)
+ * Epic 87:  Account-panel placeholder symbol:'' → blank cells during fast scroll
+ * Epic 101: contain:paint on .virtual-scroll-viewport caused slow-scroll sticky drift.
+ *   CSS Containment Level 2 (Chrome 114+, Firefox 109+) changed contain:paint to imply
+ *   contain:layout. This independent-formatting-context boundary, combined with CDK's
+ *   transform:translateY() on .cdk-virtual-scroll-content-wrapper, caused the browser's
+ *   sticky-position resolver to compute anchor offsets relative to the transformed
+ *   coordinate space instead of the scrollport. During 4px/step slow scroll, the resolver
+ *   fires between CDK transform updates, producing frames where the header drifts below
+ *   or above the viewport top (header-scrolls-with-content and header-under-header).
+ *   Fix (Story 101.2): remove contain:paint entirely. overflow:auto/hidden already
+ *   provides the paint boundary CDK needs; the explicit contain property is redundant
+ *   and was breaking position:sticky on all five CDK virtual-scroll hosts.
+ *
+ * Structural constraint: .virtual-scroll-viewport MUST be a scroll container
+ * (overflow-y:auto) but MUST NOT apply layout containment (contain:layout or any
+ * shorthand that implies it). CDK virtual scroll positions visible rows using
+ * transform:translateY on .cdk-virtual-scroll-content-wrapper; position:sticky on
+ * <th> elements inside must anchor to the scrollport (the viewport element), not to
+ * the transformed subtree. Any containment that creates an independent formatting
+ * context on the viewport element will break this invariant in browsers implementing
+ * CSS Containment Level 2.
+ */
 .virtual-scroll-viewport {
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  contain: paint; // was: strict — strict breaks position:sticky on header cells
+  // contain:paint removed in Epic 101 (Story 101.2) — see comment block above.
+  // overflow:auto already provides the equivalent paint boundary without the
+  // layout-containment side-effect that broke position:sticky in modern browsers.
 }
 
 mat-progress-bar {
