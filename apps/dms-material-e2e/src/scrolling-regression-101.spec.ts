@@ -258,7 +258,8 @@ async function captureSlowScrollFrames(
       top: number
     ) {
       (el as HTMLElement).scrollTop = top;
-    }, y);
+    },
+    y);
     await page.waitForTimeout(frameDelayMs);
 
     const [hb, vb, st] = await Promise.all([
@@ -281,430 +282,405 @@ async function captureSlowScrollFrames(
 
 // ─── Universe ─────────────────────────────────────────────────────────────────
 
-test.describe(
-  'Universe — Round 7 slow-scroll sticky-header regression (Story 101.1)',
-  () => {
-    let cleanup: () => Promise<void>;
+test.describe('Universe — Round 7 slow-scroll sticky-header regression (Story 101.1)', () => {
+  let cleanup: () => Promise<void>;
 
-    test.beforeAll(async () => {
-      const seeder = await seedScrollUniverseData();
-      cleanup = seeder.cleanup;
+  test.beforeAll(async () => {
+    const seeder = await seedScrollUniverseData();
+    cleanup = seeder.cleanup;
+  });
+
+  test.afterAll(async () => {
+    if (cleanup) {
+      await cleanup();
+    }
+  });
+
+  test.beforeEach(async ({ page }) => {
+    await login(page);
+    await page.goto('/global/universe');
+    await expect(page.locator('dms-base-table')).toBeVisible({
+      timeout: 15000,
+    });
+    await page.waitForSelector(ROW_SELECTOR, { timeout: 15000 });
+  });
+
+  test('Universe: sticky header does not drift down with content during slow scroll (header-scrolls-with-content)', async ({
+    page,
+  }) => {
+    // TODO Story 101.2: root-cause and fix the sticky-header position drift.
+    // During Round 7 live-app observation, the sticky <thead> (position:sticky;
+    // top:0) drifted downward with content rows during 4px/step slow scroll
+    // instead of remaining anchored at the top of cdk-virtual-scroll-viewport.
+    // Primary hypothesis: a transform or will-change on a mat-sidenav-container
+    // ancestor creates a new containing block, evicting the sticky header from
+    // the viewport's stacking context.
+    test.fail();
+
+    const viewport = page.locator(VIEWPORT_SELECTOR);
+    const header = page.locator(HEADER_ROW_SELECTOR).first();
+    await expect(viewport).toBeVisible({ timeout: 10000 });
+    await expect(header).toBeVisible({ timeout: 5000 });
+
+    const snapshots = await captureSlowScrollFrames(page, viewport, header);
+
+    // Geometric invariant: with position:sticky; top:0, the header's screen Y
+    // must equal the viewport's screen Y on every frame (within PIXEL_TOLERANCE).
+    // Violation: headerTop > viewportTop + PIXEL_TOLERANCE = header drifted down.
+    const driftingDown = snapshots.filter(function isDriftingDown(
+      snap: FrameSnapshot
+    ) {
+      return snap.headerTop - snap.viewportTop > PIXEL_TOLERANCE;
     });
 
-    test.afterAll(async () => {
-      if (cleanup) {
-        await cleanup();
-      }
+    expect(
+      driftingDown,
+      `Universe header-scrolls-with-content: ${driftingDown.length} frame(s) where header Y ` +
+        `exceeded viewport Y by >${PIXEL_TOLERANCE}px during 4px/step slow scroll. ` +
+        'position:sticky anchoring failed — fix in Story 101.2.'
+    ).toHaveLength(0);
+  });
+
+  test('Universe: sticky header does not slide behind app bar during slow scroll (header-under-header)', async ({
+    page,
+  }) => {
+    // TODO Story 101.2: fix the header-under-header artifact on Universe.
+    // During live-app observation, the sticky <thead> slid ABOVE the viewport
+    // top, disappearing behind the parent toolbar. This is the inverse of
+    // header-scrolls-with-content: the header overshoots upward instead of
+    // lagging downward, producing the "header-under-header" visual where the
+    // table header appears to slide behind the app navigation bar.
+    test.fail();
+
+    const viewport = page.locator(VIEWPORT_SELECTOR);
+    const header = page.locator(HEADER_ROW_SELECTOR).first();
+    await expect(viewport).toBeVisible({ timeout: 10000 });
+    await expect(header).toBeVisible({ timeout: 5000 });
+
+    const snapshots = await captureSlowScrollFrames(page, viewport, header);
+
+    // Violation: viewportTop - headerTop > PIXEL_TOLERANCE
+    //   = header Y is above viewport Y = header slid behind app bar.
+    const hiddenBehindBar = snapshots.filter(function isAboveViewport(
+      snap: FrameSnapshot
+    ) {
+      return snap.viewportTop - snap.headerTop > PIXEL_TOLERANCE;
     });
 
-    test.beforeEach(async ({ page }) => {
-      await login(page);
-      await page.goto('/global/universe');
-      await expect(page.locator('dms-base-table')).toBeVisible({
-        timeout: 15000,
-      });
-      await page.waitForSelector(ROW_SELECTOR, { timeout: 15000 });
-    });
-
-    test(
-      'Universe: sticky header does not drift down with content during slow scroll (header-scrolls-with-content)',
-      async ({ page }) => {
-        // TODO Story 101.2: root-cause and fix the sticky-header position drift.
-        // During Round 7 live-app observation, the sticky <thead> (position:sticky;
-        // top:0) drifted downward with content rows during 4px/step slow scroll
-        // instead of remaining anchored at the top of cdk-virtual-scroll-viewport.
-        // Primary hypothesis: a transform or will-change on a mat-sidenav-container
-        // ancestor creates a new containing block, evicting the sticky header from
-        // the viewport's stacking context.
-        test.fail();
-
-        const viewport = page.locator(VIEWPORT_SELECTOR);
-        const header = page.locator(HEADER_ROW_SELECTOR).first();
-        await expect(viewport).toBeVisible({ timeout: 10000 });
-        await expect(header).toBeVisible({ timeout: 5000 });
-
-        const snapshots = await captureSlowScrollFrames(page, viewport, header);
-
-        // Geometric invariant: with position:sticky; top:0, the header's screen Y
-        // must equal the viewport's screen Y on every frame (within PIXEL_TOLERANCE).
-        // Violation: headerTop > viewportTop + PIXEL_TOLERANCE = header drifted down.
-        const driftingDown = snapshots.filter(function isDriftingDown(
-          snap: FrameSnapshot
-        ) {
-          return snap.headerTop - snap.viewportTop > PIXEL_TOLERANCE;
-        });
-
-        expect(
-          driftingDown,
-          `Universe header-scrolls-with-content: ${driftingDown.length} frame(s) where header Y ` +
-            `exceeded viewport Y by >${PIXEL_TOLERANCE}px during 4px/step slow scroll. ` +
-            'position:sticky anchoring failed — fix in Story 101.2.'
-        ).toHaveLength(0);
-      }
-    );
-
-    test(
-      'Universe: sticky header does not slide behind app bar during slow scroll (header-under-header)',
-      async ({ page }) => {
-        // TODO Story 101.2: fix the header-under-header artifact on Universe.
-        // During live-app observation, the sticky <thead> slid ABOVE the viewport
-        // top, disappearing behind the parent toolbar. This is the inverse of
-        // header-scrolls-with-content: the header overshoots upward instead of
-        // lagging downward, producing the "header-under-header" visual where the
-        // table header appears to slide behind the app navigation bar.
-        test.fail();
-
-        const viewport = page.locator(VIEWPORT_SELECTOR);
-        const header = page.locator(HEADER_ROW_SELECTOR).first();
-        await expect(viewport).toBeVisible({ timeout: 10000 });
-        await expect(header).toBeVisible({ timeout: 5000 });
-
-        const snapshots = await captureSlowScrollFrames(page, viewport, header);
-
-        // Violation: viewportTop - headerTop > PIXEL_TOLERANCE
-        //   = header Y is above viewport Y = header slid behind app bar.
-        const hiddenBehindBar = snapshots.filter(function isAboveViewport(
-          snap: FrameSnapshot
-        ) {
-          return snap.viewportTop - snap.headerTop > PIXEL_TOLERANCE;
-        });
-
-        expect(
-          hiddenBehindBar,
-          `Universe header-under-header: ${hiddenBehindBar.length} frame(s) where header Y was ` +
-            `>${PIXEL_TOLERANCE}px above viewport Y (header slid behind app bar). Fix in Story 101.2.`
-        ).toHaveLength(0);
-      }
-    );
-  }
-);
+    expect(
+      hiddenBehindBar,
+      `Universe header-under-header: ${hiddenBehindBar.length} frame(s) where header Y was ` +
+        `>${PIXEL_TOLERANCE}px above viewport Y (header slid behind app bar). Fix in Story 101.2.`
+    ).toHaveLength(0);
+  });
+});
 
 // ─── Open Positions ───────────────────────────────────────────────────────────
 
-test.describe(
-  'Open Positions — Round 7 slow-scroll sticky-header regression (Story 101.1)',
-  () => {
-    let cleanup: () => Promise<void>;
-    let accountId: string;
+test.describe('Open Positions — Round 7 slow-scroll sticky-header regression (Story 101.1)', () => {
+  let cleanup: () => Promise<void>;
+  let accountId: string;
 
-    test.beforeAll(async () => {
-      const seeder = await seedScrollOpenPositionsData();
-      cleanup = seeder.cleanup;
-      accountId = seeder.accountId;
+  test.beforeAll(async () => {
+    const seeder = await seedScrollOpenPositionsData();
+    cleanup = seeder.cleanup;
+    accountId = seeder.accountId;
+  });
+
+  test.afterAll(async () => {
+    if (cleanup) {
+      await cleanup();
+    }
+  });
+
+  test.beforeEach(async ({ page }) => {
+    await login(page);
+    await page.goto(`/account/${accountId}/open`);
+    await expect(page.locator('dms-base-table')).toBeVisible({
+      timeout: 15000,
+    });
+    await page.waitForSelector(ROW_SELECTOR, { timeout: 15000 });
+  });
+
+  test('Open Positions: sticky header does not drift down with content during slow scroll (header-scrolls-with-content)', async ({
+    page,
+  }) => {
+    // TODO Story 101.2: fix. Same hypothesis as Universe — see Universe
+    // header-scrolls-with-content for full context.
+    test.fail();
+
+    const viewport = page.locator(VIEWPORT_SELECTOR);
+    const header = page.locator(HEADER_ROW_SELECTOR).first();
+    await expect(viewport).toBeVisible({ timeout: 10000 });
+    await expect(header).toBeVisible({ timeout: 5000 });
+
+    const snapshots = await captureSlowScrollFrames(page, viewport, header);
+    const driftingDown = snapshots.filter(function isDriftingDown(
+      snap: FrameSnapshot
+    ) {
+      return snap.headerTop - snap.viewportTop > PIXEL_TOLERANCE;
     });
 
-    test.afterAll(async () => {
-      if (cleanup) {
-        await cleanup();
-      }
+    expect(
+      driftingDown,
+      `Open Positions header-scrolls-with-content: ${driftingDown.length} frames with drift >${PIXEL_TOLERANCE}px. Fix in Story 101.2.`
+    ).toHaveLength(0);
+  });
+
+  test('Open Positions: sticky header does not slide behind app bar during slow scroll (header-under-header)', async ({
+    page,
+  }) => {
+    // TODO Story 101.2: fix.
+    test.fail();
+
+    const viewport = page.locator(VIEWPORT_SELECTOR);
+    const header = page.locator(HEADER_ROW_SELECTOR).first();
+    await expect(viewport).toBeVisible({ timeout: 10000 });
+    await expect(header).toBeVisible({ timeout: 5000 });
+
+    const snapshots = await captureSlowScrollFrames(page, viewport, header);
+    const hiddenBehindBar = snapshots.filter(function isAboveViewport(
+      snap: FrameSnapshot
+    ) {
+      return snap.viewportTop - snap.headerTop > PIXEL_TOLERANCE;
     });
 
-    test.beforeEach(async ({ page }) => {
-      await login(page);
-      await page.goto(`/account/${accountId}/open`);
-      await expect(page.locator('dms-base-table')).toBeVisible({
-        timeout: 15000,
-      });
-      await page.waitForSelector(ROW_SELECTOR, { timeout: 15000 });
-    });
-
-    test(
-      'Open Positions: sticky header does not drift down with content during slow scroll (header-scrolls-with-content)',
-      async ({ page }) => {
-        // TODO Story 101.2: fix. Same hypothesis as Universe — see Universe
-        // header-scrolls-with-content for full context.
-        test.fail();
-
-        const viewport = page.locator(VIEWPORT_SELECTOR);
-        const header = page.locator(HEADER_ROW_SELECTOR).first();
-        await expect(viewport).toBeVisible({ timeout: 10000 });
-        await expect(header).toBeVisible({ timeout: 5000 });
-
-        const snapshots = await captureSlowScrollFrames(page, viewport, header);
-        const driftingDown = snapshots.filter(function isDriftingDown(
-          snap: FrameSnapshot
-        ) {
-          return snap.headerTop - snap.viewportTop > PIXEL_TOLERANCE;
-        });
-
-        expect(
-          driftingDown,
-          `Open Positions header-scrolls-with-content: ${driftingDown.length} frames with drift >${PIXEL_TOLERANCE}px. Fix in Story 101.2.`
-        ).toHaveLength(0);
-      }
-    );
-
-    test(
-      'Open Positions: sticky header does not slide behind app bar during slow scroll (header-under-header)',
-      async ({ page }) => {
-        // TODO Story 101.2: fix.
-        test.fail();
-
-        const viewport = page.locator(VIEWPORT_SELECTOR);
-        const header = page.locator(HEADER_ROW_SELECTOR).first();
-        await expect(viewport).toBeVisible({ timeout: 10000 });
-        await expect(header).toBeVisible({ timeout: 5000 });
-
-        const snapshots = await captureSlowScrollFrames(page, viewport, header);
-        const hiddenBehindBar = snapshots.filter(function isAboveViewport(
-          snap: FrameSnapshot
-        ) {
-          return snap.viewportTop - snap.headerTop > PIXEL_TOLERANCE;
-        });
-
-        expect(
-          hiddenBehindBar,
-          `Open Positions header-under-header: ${hiddenBehindBar.length} frames hidden behind app bar. Fix in Story 101.2.`
-        ).toHaveLength(0);
-      }
-    );
-  }
-);
+    expect(
+      hiddenBehindBar,
+      `Open Positions header-under-header: ${hiddenBehindBar.length} frames hidden behind app bar. Fix in Story 101.2.`
+    ).toHaveLength(0);
+  });
+});
 
 // ─── Sold Positions ───────────────────────────────────────────────────────────
 
-test.describe(
-  'Sold Positions — Round 7 slow-scroll sticky-header regression (Story 101.1)',
-  () => {
-    let cleanup: () => Promise<void>;
-    let accountId: string;
+test.describe('Sold Positions — Round 7 slow-scroll sticky-header regression (Story 101.1)', () => {
+  let cleanup: () => Promise<void>;
+  let accountId: string;
 
-    test.beforeAll(async () => {
-      const seeder = await seedScrollSoldPositionsData();
-      cleanup = seeder.cleanup;
-      accountId = seeder.accountId;
+  test.beforeAll(async () => {
+    const seeder = await seedScrollSoldPositionsData();
+    cleanup = seeder.cleanup;
+    accountId = seeder.accountId;
+  });
+
+  test.afterAll(async () => {
+    if (cleanup) {
+      await cleanup();
+    }
+  });
+
+  test.beforeEach(async ({ page }) => {
+    await login(page);
+    await page.goto(`/account/${accountId}/sold`);
+    await expect(page.locator('dms-base-table')).toBeVisible({
+      timeout: 15000,
+    });
+    await page.waitForSelector(ROW_SELECTOR, { timeout: 15000 });
+  });
+
+  test('Sold Positions: sticky header does not drift down with content during slow scroll (header-scrolls-with-content)', async ({
+    page,
+  }) => {
+    // TODO Story 101.2: fix.
+    test.fail();
+
+    const viewport = page.locator(VIEWPORT_SELECTOR);
+    const header = page.locator(HEADER_ROW_SELECTOR).first();
+    await expect(viewport).toBeVisible({ timeout: 10000 });
+    await expect(header).toBeVisible({ timeout: 5000 });
+
+    const snapshots = await captureSlowScrollFrames(page, viewport, header);
+    const driftingDown = snapshots.filter(function isDriftingDown(
+      snap: FrameSnapshot
+    ) {
+      return snap.headerTop - snap.viewportTop > PIXEL_TOLERANCE;
     });
 
-    test.afterAll(async () => {
-      if (cleanup) {
-        await cleanup();
-      }
+    expect(
+      driftingDown,
+      `Sold Positions header-scrolls-with-content: ${driftingDown.length} frames with drift >${PIXEL_TOLERANCE}px. Fix in Story 101.2.`
+    ).toHaveLength(0);
+  });
+
+  test('Sold Positions: sticky header does not slide behind app bar during slow scroll (header-under-header)', async ({
+    page,
+  }) => {
+    // TODO Story 101.2: fix.
+    test.fail();
+
+    const viewport = page.locator(VIEWPORT_SELECTOR);
+    const header = page.locator(HEADER_ROW_SELECTOR).first();
+    await expect(viewport).toBeVisible({ timeout: 10000 });
+    await expect(header).toBeVisible({ timeout: 5000 });
+
+    const snapshots = await captureSlowScrollFrames(page, viewport, header);
+    const hiddenBehindBar = snapshots.filter(function isAboveViewport(
+      snap: FrameSnapshot
+    ) {
+      return snap.viewportTop - snap.headerTop > PIXEL_TOLERANCE;
     });
 
-    test.beforeEach(async ({ page }) => {
-      await login(page);
-      await page.goto(`/account/${accountId}/sold`);
-      await expect(page.locator('dms-base-table')).toBeVisible({
-        timeout: 15000,
-      });
-      await page.waitForSelector(ROW_SELECTOR, { timeout: 15000 });
-    });
-
-    test(
-      'Sold Positions: sticky header does not drift down with content during slow scroll (header-scrolls-with-content)',
-      async ({ page }) => {
-        // TODO Story 101.2: fix.
-        test.fail();
-
-        const viewport = page.locator(VIEWPORT_SELECTOR);
-        const header = page.locator(HEADER_ROW_SELECTOR).first();
-        await expect(viewport).toBeVisible({ timeout: 10000 });
-        await expect(header).toBeVisible({ timeout: 5000 });
-
-        const snapshots = await captureSlowScrollFrames(page, viewport, header);
-        const driftingDown = snapshots.filter(function isDriftingDown(
-          snap: FrameSnapshot
-        ) {
-          return snap.headerTop - snap.viewportTop > PIXEL_TOLERANCE;
-        });
-
-        expect(
-          driftingDown,
-          `Sold Positions header-scrolls-with-content: ${driftingDown.length} frames with drift >${PIXEL_TOLERANCE}px. Fix in Story 101.2.`
-        ).toHaveLength(0);
-      }
-    );
-
-    test(
-      'Sold Positions: sticky header does not slide behind app bar during slow scroll (header-under-header)',
-      async ({ page }) => {
-        // TODO Story 101.2: fix.
-        test.fail();
-
-        const viewport = page.locator(VIEWPORT_SELECTOR);
-        const header = page.locator(HEADER_ROW_SELECTOR).first();
-        await expect(viewport).toBeVisible({ timeout: 10000 });
-        await expect(header).toBeVisible({ timeout: 5000 });
-
-        const snapshots = await captureSlowScrollFrames(page, viewport, header);
-        const hiddenBehindBar = snapshots.filter(function isAboveViewport(
-          snap: FrameSnapshot
-        ) {
-          return snap.viewportTop - snap.headerTop > PIXEL_TOLERANCE;
-        });
-
-        expect(
-          hiddenBehindBar,
-          `Sold Positions header-under-header: ${hiddenBehindBar.length} frames hidden behind app bar. Fix in Story 101.2.`
-        ).toHaveLength(0);
-      }
-    );
-  }
-);
+    expect(
+      hiddenBehindBar,
+      `Sold Positions header-under-header: ${hiddenBehindBar.length} frames hidden behind app bar. Fix in Story 101.2.`
+    ).toHaveLength(0);
+  });
+});
 
 // ─── Dividend Deposits ────────────────────────────────────────────────────────
 
-test.describe(
-  'Dividend Deposits — Round 7 slow-scroll sticky-header regression (Story 101.1)',
-  () => {
-    let cleanup: () => Promise<void>;
-    let accountId: string;
+test.describe('Dividend Deposits — Round 7 slow-scroll sticky-header regression (Story 101.1)', () => {
+  let cleanup: () => Promise<void>;
+  let accountId: string;
 
-    test.beforeAll(async () => {
-      const seeder = await seedScrollDivDepositsWithSymbolsData();
-      cleanup = seeder.cleanup;
-      accountId = seeder.accountId;
+  test.beforeAll(async () => {
+    const seeder = await seedScrollDivDepositsWithSymbolsData();
+    cleanup = seeder.cleanup;
+    accountId = seeder.accountId;
+  });
+
+  test.afterAll(async () => {
+    if (cleanup) {
+      await cleanup();
+    }
+  });
+
+  test.beforeEach(async ({ page }) => {
+    await login(page);
+    await page.goto(`/account/${accountId}/div-dep`);
+    await expect(page.locator('dms-base-table')).toBeVisible({
+      timeout: 15000,
+    });
+    await page.waitForSelector(ROW_SELECTOR, { timeout: 15000 });
+  });
+
+  test('Dividend Deposits: sticky header does not drift down with content during slow scroll (header-scrolls-with-content)', async ({
+    page,
+  }) => {
+    // TODO Story 101.2: fix.
+    test.fail();
+
+    const viewport = page.locator(VIEWPORT_SELECTOR);
+    const header = page.locator(HEADER_ROW_SELECTOR).first();
+    await expect(viewport).toBeVisible({ timeout: 10000 });
+    await expect(header).toBeVisible({ timeout: 5000 });
+
+    const snapshots = await captureSlowScrollFrames(page, viewport, header);
+    const driftingDown = snapshots.filter(function isDriftingDown(
+      snap: FrameSnapshot
+    ) {
+      return snap.headerTop - snap.viewportTop > PIXEL_TOLERANCE;
     });
 
-    test.afterAll(async () => {
-      if (cleanup) {
-        await cleanup();
-      }
+    expect(
+      driftingDown,
+      `Dividend Deposits header-scrolls-with-content: ${driftingDown.length} frames with drift >${PIXEL_TOLERANCE}px. Fix in Story 101.2.`
+    ).toHaveLength(0);
+  });
+
+  test('Dividend Deposits: sticky header does not slide behind app bar during slow scroll (header-under-header)', async ({
+    page,
+  }) => {
+    // TODO Story 101.2: fix.
+    test.fail();
+
+    const viewport = page.locator(VIEWPORT_SELECTOR);
+    const header = page.locator(HEADER_ROW_SELECTOR).first();
+    await expect(viewport).toBeVisible({ timeout: 10000 });
+    await expect(header).toBeVisible({ timeout: 5000 });
+
+    const snapshots = await captureSlowScrollFrames(page, viewport, header);
+    const hiddenBehindBar = snapshots.filter(function isAboveViewport(
+      snap: FrameSnapshot
+    ) {
+      return snap.viewportTop - snap.headerTop > PIXEL_TOLERANCE;
     });
 
-    test.beforeEach(async ({ page }) => {
-      await login(page);
-      await page.goto(`/account/${accountId}/div-dep`);
-      await expect(page.locator('dms-base-table')).toBeVisible({
-        timeout: 15000,
-      });
-      await page.waitForSelector(ROW_SELECTOR, { timeout: 15000 });
-    });
-
-    test(
-      'Dividend Deposits: sticky header does not drift down with content during slow scroll (header-scrolls-with-content)',
-      async ({ page }) => {
-        // TODO Story 101.2: fix.
-        test.fail();
-
-        const viewport = page.locator(VIEWPORT_SELECTOR);
-        const header = page.locator(HEADER_ROW_SELECTOR).first();
-        await expect(viewport).toBeVisible({ timeout: 10000 });
-        await expect(header).toBeVisible({ timeout: 5000 });
-
-        const snapshots = await captureSlowScrollFrames(page, viewport, header);
-        const driftingDown = snapshots.filter(function isDriftingDown(
-          snap: FrameSnapshot
-        ) {
-          return snap.headerTop - snap.viewportTop > PIXEL_TOLERANCE;
-        });
-
-        expect(
-          driftingDown,
-          `Dividend Deposits header-scrolls-with-content: ${driftingDown.length} frames with drift >${PIXEL_TOLERANCE}px. Fix in Story 101.2.`
-        ).toHaveLength(0);
-      }
-    );
-
-    test(
-      'Dividend Deposits: sticky header does not slide behind app bar during slow scroll (header-under-header)',
-      async ({ page }) => {
-        // TODO Story 101.2: fix.
-        test.fail();
-
-        const viewport = page.locator(VIEWPORT_SELECTOR);
-        const header = page.locator(HEADER_ROW_SELECTOR).first();
-        await expect(viewport).toBeVisible({ timeout: 10000 });
-        await expect(header).toBeVisible({ timeout: 5000 });
-
-        const snapshots = await captureSlowScrollFrames(page, viewport, header);
-        const hiddenBehindBar = snapshots.filter(function isAboveViewport(
-          snap: FrameSnapshot
-        ) {
-          return snap.viewportTop - snap.headerTop > PIXEL_TOLERANCE;
-        });
-
-        expect(
-          hiddenBehindBar,
-          `Dividend Deposits header-under-header: ${hiddenBehindBar.length} frames hidden behind app bar. Fix in Story 101.2.`
-        ).toHaveLength(0);
-      }
-    );
-  }
-);
+    expect(
+      hiddenBehindBar,
+      `Dividend Deposits header-under-header: ${hiddenBehindBar.length} frames hidden behind app bar. Fix in Story 101.2.`
+    ).toHaveLength(0);
+  });
+});
 
 // ─── Screener ─────────────────────────────────────────────────────────────────
 
-test.describe(
-  'Screener — Round 7 slow-scroll sticky-header regression (Story 101.1)',
-  () => {
-    let cleanup: () => Promise<void>;
+test.describe('Screener — Round 7 slow-scroll sticky-header regression (Story 101.1)', () => {
+  let cleanup: () => Promise<void>;
 
-    test.beforeAll(async () => {
-      const seeder = await seedScrollScreenerData();
-      cleanup = seeder.cleanup;
+  test.beforeAll(async () => {
+    const seeder = await seedScrollScreenerData();
+    cleanup = seeder.cleanup;
+  });
+
+  test.afterAll(async () => {
+    if (cleanup) {
+      await cleanup();
+    }
+  });
+
+  test.beforeEach(async ({ page }) => {
+    await login(page);
+    await page.goto('/global/screener');
+    await expect(page.locator('dms-base-table')).toBeVisible({
+      timeout: 15000,
+    });
+    await page.waitForSelector(ROW_SELECTOR, { timeout: 15000 });
+  });
+
+  test('Screener: sticky header does not drift down with content during slow scroll (header-scrolls-with-content)', async ({
+    page,
+  }) => {
+    // TODO Story 101.2: fix.
+    // Note: Screener was confirmed as a dms-base-table host via
+    //   grep -rn "cdk-virtual-scroll-viewport" apps/dms-material/src
+    // It was not explicitly listed in the Epic 101 story scope but is a
+    // CDK virtual-scroll host and must be covered per AC #1.
+    test.fail();
+
+    const viewport = page.locator(VIEWPORT_SELECTOR);
+    const header = page.locator(HEADER_ROW_SELECTOR).first();
+    await expect(viewport).toBeVisible({ timeout: 10000 });
+    await expect(header).toBeVisible({ timeout: 5000 });
+
+    const snapshots = await captureSlowScrollFrames(page, viewport, header);
+    const driftingDown = snapshots.filter(function isDriftingDown(
+      snap: FrameSnapshot
+    ) {
+      return snap.headerTop - snap.viewportTop > PIXEL_TOLERANCE;
     });
 
-    test.afterAll(async () => {
-      if (cleanup) {
-        await cleanup();
-      }
+    expect(
+      driftingDown,
+      `Screener header-scrolls-with-content: ${driftingDown.length} frames with drift >${PIXEL_TOLERANCE}px. Fix in Story 101.2.`
+    ).toHaveLength(0);
+  });
+
+  test('Screener: sticky header does not slide behind app bar during slow scroll (header-under-header)', async ({
+    page,
+  }) => {
+    // TODO Story 101.2: fix.
+    test.fail();
+
+    const viewport = page.locator(VIEWPORT_SELECTOR);
+    const header = page.locator(HEADER_ROW_SELECTOR).first();
+    await expect(viewport).toBeVisible({ timeout: 10000 });
+    await expect(header).toBeVisible({ timeout: 5000 });
+
+    const snapshots = await captureSlowScrollFrames(page, viewport, header);
+    const hiddenBehindBar = snapshots.filter(function isAboveViewport(
+      snap: FrameSnapshot
+    ) {
+      return snap.viewportTop - snap.headerTop > PIXEL_TOLERANCE;
     });
 
-    test.beforeEach(async ({ page }) => {
-      await login(page);
-      await page.goto('/global/screener');
-      await expect(page.locator('dms-base-table')).toBeVisible({
-        timeout: 15000,
-      });
-      await page.waitForSelector(ROW_SELECTOR, { timeout: 15000 });
-    });
-
-    test(
-      'Screener: sticky header does not drift down with content during slow scroll (header-scrolls-with-content)',
-      async ({ page }) => {
-        // TODO Story 101.2: fix.
-        // Note: Screener was confirmed as a dms-base-table host via
-        //   grep -rn "cdk-virtual-scroll-viewport" apps/dms-material/src
-        // It was not explicitly listed in the Epic 101 story scope but is a
-        // CDK virtual-scroll host and must be covered per AC #1.
-        test.fail();
-
-        const viewport = page.locator(VIEWPORT_SELECTOR);
-        const header = page.locator(HEADER_ROW_SELECTOR).first();
-        await expect(viewport).toBeVisible({ timeout: 10000 });
-        await expect(header).toBeVisible({ timeout: 5000 });
-
-        const snapshots = await captureSlowScrollFrames(page, viewport, header);
-        const driftingDown = snapshots.filter(function isDriftingDown(
-          snap: FrameSnapshot
-        ) {
-          return snap.headerTop - snap.viewportTop > PIXEL_TOLERANCE;
-        });
-
-        expect(
-          driftingDown,
-          `Screener header-scrolls-with-content: ${driftingDown.length} frames with drift >${PIXEL_TOLERANCE}px. Fix in Story 101.2.`
-        ).toHaveLength(0);
-      }
-    );
-
-    test(
-      'Screener: sticky header does not slide behind app bar during slow scroll (header-under-header)',
-      async ({ page }) => {
-        // TODO Story 101.2: fix.
-        test.fail();
-
-        const viewport = page.locator(VIEWPORT_SELECTOR);
-        const header = page.locator(HEADER_ROW_SELECTOR).first();
-        await expect(viewport).toBeVisible({ timeout: 10000 });
-        await expect(header).toBeVisible({ timeout: 5000 });
-
-        const snapshots = await captureSlowScrollFrames(page, viewport, header);
-        const hiddenBehindBar = snapshots.filter(function isAboveViewport(
-          snap: FrameSnapshot
-        ) {
-          return snap.viewportTop - snap.headerTop > PIXEL_TOLERANCE;
-        });
-
-        expect(
-          hiddenBehindBar,
-          `Screener header-under-header: ${hiddenBehindBar.length} frames hidden behind app bar. Fix in Story 101.2.`
-        ).toHaveLength(0);
-      }
-    );
-  }
-);
+    expect(
+      hiddenBehindBar,
+      `Screener header-under-header: ${hiddenBehindBar.length} frames hidden behind app bar. Fix in Story 101.2.`
+    ).toHaveLength(0);
+  });
+});
 
 // ─── Flicker (skipped — assertion pattern requires live-app frame observation) ─
 
