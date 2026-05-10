@@ -229,6 +229,12 @@ interface FrameSnapshot {
   viewportTop: number;
 }
 
+interface SlowScrollOptions {
+  totalPx?: number;
+  stepPx?: number;
+  frameDelayMs?: number;
+}
+
 // ─── Slow-Scroll Frame Capture ────────────────────────────────────────────────
 
 /**
@@ -246,10 +252,13 @@ async function captureSlowScrollFrames(
   page: Page,
   viewportLocator: Locator,
   headerLocator: Locator,
-  totalPx = SLOW_SCROLL_TOTAL_PX,
-  stepPx = SLOW_SCROLL_STEP_PX,
-  frameDelayMs = SLOW_SCROLL_FRAME_MS
+  options: SlowScrollOptions = {}
 ): Promise<FrameSnapshot[]> {
+  const {
+    totalPx = SLOW_SCROLL_TOTAL_PX,
+    stepPx = SLOW_SCROLL_STEP_PX,
+    frameDelayMs = SLOW_SCROLL_FRAME_MS,
+  } = options;
   const snapshots: FrameSnapshot[] = [];
 
   for (let y = stepPx; y <= totalPx; y += stepPx) {
