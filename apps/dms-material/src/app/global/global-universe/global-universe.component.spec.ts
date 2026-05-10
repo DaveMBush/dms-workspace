@@ -280,8 +280,15 @@ describe('GlobalUniverseComponent', () => {
   });
 
   describe('deleteUniverse', () => {
-    function makeSmartArray(id: string, mockDelete: ReturnType<typeof vi.fn>): Universe[] {
-      const rowProxy = { id, symbol: 'AAPL', delete: mockDelete } as unknown as Universe;
+    function makeSmartArray(
+      id: string,
+      mockDelete: ReturnType<typeof vi.fn>
+    ): Universe[] {
+      const rowProxy = {
+        id,
+        symbol: 'AAPL',
+        delete: mockDelete,
+      } as unknown as Universe;
       const arr = [rowProxy] as Universe[];
       // Simulate SmartNgRX ArrayProxy with getIdAtIndex
       Object.assign(arr, {
