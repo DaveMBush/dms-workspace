@@ -2348,8 +2348,8 @@
     "hash": "fdc987786429ac496e54ba32c8187749"
   },
   "/home/copilot/code/dms/story-100-3/apps/dms-material/src/app/global/global-universe/global-universe.component.ts": {
-    "mtime": 1778359072.1987426,
-    "hash": "e384afa7ad5727fd63896c056297b4fb"
+    "mtime": 1778385200.5123081,
+    "hash": "2fe23c78f198ab6af4682dc524b5f8cb"
   },
   "/home/copilot/code/dms/story-100-3/apps/dms-material/src/app/global/global-universe/universe-filter-values.interface.ts": {
     "mtime": 1778359072.1997426,
@@ -2360,8 +2360,8 @@
     "hash": "0e687a26ed6b5066157240dfd163b1dd"
   },
   "/home/copilot/code/dms/story-100-3/apps/dms-material/src/app/global/global-universe/global-universe.component.spec.ts": {
-    "mtime": 1778359072.1987426,
-    "hash": "8cecb04b00090075ce0989aa032c46e3"
+    "mtime": 1778385706.972168,
+    "hash": "e0fe329ce168a1101e535e0117a9b27c"
   },
   "/home/copilot/code/dms/story-100-3/apps/dms-material/src/app/global/global-universe/save-universe-filters-and-notify.function.ts": {
     "mtime": 1778359072.1987426,
@@ -2414,6 +2414,10 @@
   "/home/copilot/code/dms/story-100-3/apps/dms-material/src/app/global/global-universe/build-shift-sort-columns.function.ts": {
     "mtime": 1778359072.197029,
     "hash": "f25d4accb9fc839571de1b6d377a868d"
+  },
+  "/home/copilot/code/dms/story-100-3/apps/dms-material/src/app/global/global-universe/find-and-delete-universe-row.function.ts": {
+    "mtime": 1778385173.8394356,
+    "hash": "d292d6b69f54c6a1a8659a754241a56e"
   },
   "/home/copilot/code/dms/story-100-3/apps/dms-material/src/app/global/global-universe/handle-cell-edit.function.ts": {
     "mtime": 1778359072.1987426,
@@ -2532,8 +2536,8 @@
     "hash": "5833fdc2756afeb5e84308145879c704"
   },
   "/home/copilot/code/dms/story-100-3/apps/dms-material/src/app/store/universe/universe-effect.service.ts": {
-    "mtime": 1778359072.2170377,
-    "hash": "4465503bacd990bb1cdeb33750574c93"
+    "mtime": 1778384746.0775964,
+    "hash": "23517e516d33b940fa933c3f7bc6c75b"
   },
   "/home/copilot/code/dms/story-100-3/apps/dms-material/src/app/store/universe/universe-definition.const.ts": {
     "mtime": 1778359072.2170377,

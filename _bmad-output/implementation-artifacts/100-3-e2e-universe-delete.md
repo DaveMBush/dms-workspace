@@ -254,8 +254,9 @@ None required.
   by Story 100.2 (commit da59a2af) before this story worktree was branched. The spec fully
   satisfies all acceptance criteria of Story 100.3.
 - Delete UX investigation findings:
-  - No confirmation dialog on delete; clicking the trash-can calls `(row as RowProxyDelete).delete!()`
-    directly which triggers SmartNgRX to dispatch the DELETE HTTP request.
+  - No confirmation dialog on delete; clicking the trash-can routes through
+    `findAndDeleteUniverseRow(...)` to locate the SmartNgRX RowProxy by id, then calls
+    its `delete()` which triggers the DELETE HTTP request.
   - Delete button has `data-testid="delete-symbol-{i}"` and `aria-label="Delete unused symbol"`.
   - Delete button is only shown for rows where `is_closed_end_fund === false && position === 0`.
   - Error UX: MatSnackBar via `NotificationService`; error snackbar has class `snackbar-error`.
