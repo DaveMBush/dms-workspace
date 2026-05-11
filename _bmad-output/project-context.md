@@ -201,6 +201,7 @@ Use `--dms-*` custom properties for semantic colors (defined in `_theme-variable
 - Use Tailwind utility classes for layout and spacing.
 - Use Angular Material components for interactive UI (buttons, forms, dialogs, tables).
 - **Do not** use Tailwind `bg-*`, `text-*`, `border-*` for colors on Material components — use theme variables instead.
+- **Virtual scroll ancestor constraint:** Never add `contain: paint`, `contain: layout`, `contain: strict`, `contain: content`, `transform`, or `will-change: transform` to `.cdk-virtual-scroll-viewport` or any of its scroll ancestors — these break `position: sticky` on CDK table headers in Chrome 114+/Firefox 109+. See [Virtual Scroll & Sticky Header Guardrails](../planning-artifacts/architecture.md#6-virtual-scroll--sticky-header-guardrails) in architecture.md.
 
 ### SCSS for Component Styles
 
@@ -382,6 +383,7 @@ Imports must be sorted: external → @angular → @smarttools/@ngrx → internal
 | Writing component CSS for layout/spacing    | Tailwind utilities handle this                   | Use Tailwind utility classes in template           |
 | Hardcoding hex/RGB color values in SCSS     | Breaks dark mode theming                         | Use `--dms-*` variables or Material tokens         |
 | Using `:host {}` for layout in SCSS         | Tailwind host classes are preferred              | Use `host: { class: '...' }` in @Component         |
+| `contain: paint`/`layout`/`strict`/`content` on `.cdk-virtual-scroll-viewport` or ancestors | Breaks `position: sticky` on CDK table headers in Chrome 114+/Firefox 109+ (CSS Containment Level 2) | Remove `contain`; `overflow: auto` is sufficient. See [Virtual Scroll & Sticky Header Guardrails](../planning-artifacts/architecture.md#6-virtual-scroll--sticky-header-guardrails) |
 
 ---
 
