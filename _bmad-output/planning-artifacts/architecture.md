@@ -463,6 +463,110 @@ Never batch-delete multiple components in a single commit.
 
 ---
 
+### 6. Virtual Scroll & Sticky Header Guardrails
+
+**One-line summary:** Never apply CSS layout containment (`contain: paint`, `contain: layout`, `contain: strict`, `contain: content`) to `.cdk-virtual-scroll-viewport` or any of its ancestors — doing so breaks `position: sticky` on CDK table headers in all browsers implementing CSS Containment Level 2 (Chrome 114+, Firefox 109+).
+
+#### Root Cause (Epic 101 — Round 7)
+
+[Source: _bmad-output/implementation-artifacts/101-2-root-cause-and-fix-scrolling.md#Root-Cause-Investigation]
+
+The confirmed root cause (Round 7 / Epic 101) was `contain: paint` on `.virtual-scroll-viewport` inside `base-table.component.scss`. As of CSS Containment Level 2 (Chrome 114+, Firefox 109+), `contain: paint` implies `contain: layout`. An element with layout containment creates an **independent formatting context (IFC)**, which is a containing-block boundary. `position: sticky` with `top: 0` anchors to the nearest scroll container that is NOT an IFC ancestor. When `.virtual-scroll-viewport` (which is the scroll container) also became an IFC via `contain: paint → contain: layout`, the sticky resolver could not find a valid scroll container to anchor against. It computed offsets relative to the IFC root instead, causing the table header to drift during 4px/16ms slow programmatic scroll.
+
+`contain: paint` was added in Epic 31 to replace `contain: strict` — it was correct at the time (pre-CSS Containment Level 2). The browser spec change in Chrome 114 / Firefox 109 silently made it harmful.
+
+**Evidence:** CDK's `transform: translateY()` on `.cdk-virtual-scroll-content-wrapper` updates on each scroll frame. The browser's sticky-position resolver fires between CDK transform updates, producing frames where the header's computed Y differs from the viewport's Y by `PIXEL_TOLERANCE` (2px).
+
+**Fix applied:** Removed `contain: paint` from `.virtual-scroll-viewport` in `apps/dms-material/src/app/shared/components/base-table/base-table.component.scss`. `overflow: auto` on the same element already provides the paint boundary CDK needs. The explicit `contain` property was redundant and harmful.
+
+#### Patterns to Avoid
+
+The following CSS properties, when applied to `.cdk-virtual-scroll-viewport` or **any ancestor element** in the scroll chain, break `position: sticky` on CDK table headers:
+
+| Property / Value | Effect | Status |
+| --- | --- | --- |
+| `contain: paint` | Implies `contain: layout` in CSS Containment Level 2; creates IFC | ✅ Confirmed root cause — Epic 101 |
+| `contain: layout` | Creates IFC directly; breaks sticky containing block | ✅ Implied by root cause |
+| `contain: strict` | Implies layout + paint; creates IFC | ✅ Was root cause — Epic 31 |
+| `contain: content` | Implies layout + paint; creates IFC | ✅ Avoid |
+| `transform` | Creates new stacking context and containing block | ⚠️ Candidate A (documented risk; not confirmed as active in Round 7) |
+| `will-change: transform` | Same effect as `transform` in most browsers | ⚠️ Candidate A |
+| `filter` | Creates new stacking context | ⚠️ Documented risk; not confirmed |
+| `perspective` | Creates new stacking context | ⚠️ Documented risk; not confirmed |
+| `backdrop-filter` | Creates new stacking context | ⚠️ Documented risk; not confirmed |
+
+**Structural constraint (do not violate):**
+
+> `.virtual-scroll-viewport` MUST be a scroll container (`overflow-y: auto`) but MUST NOT apply layout containment (`contain: layout` or any shorthand that implies it, including `contain: paint` in CSS Containment Level 2 browsers). CDK virtual scroll positions visible rows using `transform: translateY()` on `.cdk-virtual-scroll-content-wrapper`; `position: sticky` on `<th>` elements inside must anchor to the scrollport (the viewport element), not to the transformed subtree. Any containment that creates an independent formatting context on the viewport element will break this invariant in browsers implementing CSS Containment Level 2 (Chrome 114+, Firefox 109+).
+>
+> [Source: _bmad-output/implementation-artifacts/101-2-root-cause-and-fix-scrolling.md#Hand-off-Note-for-Story-101.3]
+
+**Additional guardrails:**
+
+- `overflow: auto` on `.virtual-scroll-viewport` is sufficient as a paint boundary for CDK — do not add any explicit `contain` property to this element.
+- If a future refactor adds a Tailwind utility class or SCSS rule that applies any of the above properties to a scroll ancestor, verify sticky behavior first using a 4px/16ms slow-scroll test across all five virtual-scrolled screens before merging.
+- Tailwind ring/shadow utilities (`ring-*`, `shadow-*`) are safe — none apply layout containment.
+
+#### Reproduction Matrix (Story 101.1)
+
+[Source: _bmad-output/implementation-artifacts/101-1-reproduce-scrolling-all-screens.md#Dev-Notes]
+
+Five virtual-scrolled screens were confirmed in Round 7 (all share `<dms-base-table>` / `base-table.component.scss` as the root of the CSS bug):
+
+| Screen | Component | Round 7 Artifact |
+| --- | --- | --- |
+| Universe | `global-universe.component` | header-scrolls-with-content, header-under-header |
+| Open Positions | `open-positions.component` | header-scrolls-with-content, header-under-header |
+| Sold Positions | `sold-positions.component` | header-scrolls-with-content, header-under-header |
+| Dividend Deposits | `dividend-deposits.component` | header-scrolls-with-content, header-under-header |
+| Screener | `global-screener.component` | header-scrolls-with-content, header-under-header |
+
+All five screens were resolved by removing `contain: paint` from the single shared SCSS file.
+
+#### Regression Suite (Story 101.3)
+
+[Source: _bmad-output/implementation-artifacts/101-3-scrolling-regression-suite.md#Implementation-Notes]
+
+The permanent regression suite that prevents reintroduction of the `contain`/sticky breakage:
+
+| File | Purpose |
+| --- | --- |
+| `apps/dms-material-e2e/src/helpers/assert-sticky-header-invariant.helper.ts` | CSS guard (`contain` must be absent or `none`) + geometric invariant assertions |
+| `apps/dms-material-e2e/src/helpers/slow-scroll.helper.ts` | RAF-based 4px/16ms slow-scroll driver |
+| `apps/dms-material-e2e/src/universe-scrolling-regression.spec.ts` | Universe — 101.3 regression block |
+| `apps/dms-material-e2e/src/open-positions-scrolling-regression.spec.ts` | Open Positions — 101.3 regression block |
+| `apps/dms-material-e2e/src/sold-positions-scrolling-regression.spec.ts` | Sold Positions — 101.3 regression block |
+| `apps/dms-material-e2e/src/div-deposits-scrolling-regression.spec.ts` | Dividend Deposits — 101.3 regression block |
+| `apps/dms-material-e2e/src/screener-scrolling-regression.spec.ts` | Screener — new in 101.3 |
+
+**Key assertion per frame during 4px/16ms slow scroll:**
+
+```
+abs(header.getBoundingClientRect().top - viewport.getBoundingClientRect().top) <= 2
+```
+
+where `header` = the `<thead>` / `mat-header-row`, `viewport` = `cdk-virtual-scroll-viewport`, and `2` is `PIXEL_TOLERANCE` (subpixel-rounding tolerance). The helper also asserts that `getComputedStyle(viewport).contain` is `'none'` or unset.
+
+#### Prior Epic History (Back-Pointer)
+
+Seven rounds of scrolling artifacts led to this fix. This section exists so Round 8 never starts.
+
+[Source: _bmad-output/implementation-artifacts/101-1-reproduce-scrolling-all-screens.md#Prior-Root-Cause-History]
+
+| Epic | Round | Symptom Targeted | Why Symptoms Returned |
+| --- | --- | --- | --- |
+| 29 | 1 | `rowHeight` mismatch — CDK total scroll height wrong | Reduced symptoms; `contain` issue persisted |
+| 31 | 2 | `contain: strict` on header → jump on viewport recalc | Replaced with `contain: paint` (safe pre-Containment Level 2) |
+| 44 | 3 | CSS transitions + extra CD cycles → CDK recalc mid-scroll | Reduced symptoms; `contain` issue persisted |
+| 60 | 4 | `isLoading` filter shrank array → CDK recalculated total height | Reduced symptoms; `contain` issue persisted |
+| 64 | 5 | Edge case of Epic 60 (different code path) | Reduced symptoms; `contain` issue persisted |
+| 87 | 6 | Placeholder rows had `symbol: ''` → blank cells during fast scroll | Fixed fast-scroll blank cells; `contain: paint` triggered slow-scroll drift |
+| **101** | **7** | **`contain: paint` on `.virtual-scroll-viewport` → slow-scroll sticky drift** | **Root cause eliminated** |
+
+The structural constraint that made this area recurrence-prone: every Epic 31–87 patch removed or masked one symptom but left `contain: paint` on `.virtual-scroll-viewport` intact, because the CSS Containment Level 2 behavior change (Chrome 114 / Firefox 109) was not yet observed.
+
+---
+
 ## Project Structure & Boundaries
 
 ### Complete Project Directory Structure

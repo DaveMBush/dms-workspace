@@ -1,6 +1,6 @@
 # Story 101.4: Update Architecture Doc with Scrolling Root Cause and Guardrails
 
-Status: Approved
+Status: Done
 
 ## Story
 
@@ -58,60 +58,66 @@ starts because someone reverted the fix while not knowing it was load-bearing.
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Pre-read the current architecture and project-context docs (AC: 1, 2, 3)
-  - [ ] Read `_bmad-output/planning-artifacts/architecture.md` end-to-end and note
+- [x] Task 1: Pre-read the current architecture and project-context docs (AC: 1, 2, 3)
+  - [x] Read `_bmad-output/planning-artifacts/architecture.md` end-to-end and note
         every existing section that references scrolling, virtual scroll, table
         headers, sticky positioning, or CDK
-  - [ ] Read `_bmad-output/project-context.md` end-to-end and note every existing
+  - [x] Read `_bmad-output/project-context.md` end-to-end and note every existing
         rule that touches `transform`, `will-change`, `contain`, sticky positioning,
         Tailwind utility classes on header rows, or virtual scroll
-  - [ ] Document those locations in this story's Dev Notes (file + line range +
+  - [x] Document those locations in this story's Dev Notes (file + line range +
         one-line summary) before editing anything
 
-- [ ] Task 2: Pull the verified root cause and guardrails from Story 101.2 (AC: 1)
-  - [ ] Open the Story 101.2 file
+- [x] Task 2: Pull the verified root cause and guardrails from Story 101.2 (AC: 1)
+  - [x] Open the Story 101.2 file
         (`_bmad-output/implementation-artifacts/101-2-root-cause-and-fix-scrolling.md`)
         and copy out the root-cause statement and the rationale verbatim
-  - [ ] Open the Story 101.1 file
+  - [x] Open the Story 101.1 file
         (`_bmad-output/implementation-artifacts/101-1-reproduce-scrolling-all-screens.md`)
         and copy out the reproduction-matrix summary so the architecture doc can
         reference it
-  - [ ] Open the Story 101.3 file
+  - [x] Open the Story 101.3 file
         (`_bmad-output/implementation-artifacts/101-3-scrolling-regression-suite.md`)
         and capture the final test file path(s) and the assertions they make
-  - [ ] If Stories 101.1 / 101.2 / 101.3 are not yet `done`, **HALT** this story —
+  - [x] If Stories 101.1 / 101.2 / 101.3 are not yet `done`, **HALT** this story —
         this story is a write-up of their conclusions and cannot be completed
         before they are
 
-- [ ] Task 3: Add the new architecture subsection (AC: 1)
-  - [ ] In `_bmad-output/planning-artifacts/architecture.md`, add a new top-level
+- [x] Task 3: Add the new architecture subsection (AC: 1)
+  - [x] In `_bmad-output/planning-artifacts/architecture.md`, add a new top-level
         subsection titled **"Virtual Scroll & Sticky Header Guardrails"**, placed in
         a logical location (suggested: near the existing structure / patterns
         section that already discusses Angular / CDK conventions — confirm exact
         placement after Task 1's review)
-  - [ ] Use the structure: one-line summary → root cause → patterns to avoid →
+  - [x] Use the structure: one-line summary → root cause → patterns to avoid →
         regression suite reference → back-pointer to Epic 101 and prior epics
-  - [ ] Cite the source story files using the project's existing citation format
+  - [x] Cite the source story files using the project's existing citation format
         (`[Source: _bmad-output/implementation-artifacts/101-2-…#…]`)
 
-- [ ] Task 4: Reconcile project-context.md (AC: 2)
-  - [ ] If Task 1 found contradicting guidance in `project-context.md`, update or
+- [x] Task 4: Reconcile project-context.md (AC: 2)
+  - [x] If Task 1 found contradicting guidance in `project-context.md`, update or
         remove it
-  - [ ] Add a one-line pointer to the new architecture subsection under the most
+  - [x] Add a one-line pointer to the new architecture subsection under the most
         relevant existing section (likely the Tailwind / Material rules, since
         `transform`-bearing utility classes are a candidate culprit category)
 
-- [ ] Task 5: Cross-reference sweep (AC: 3)
-  - [ ] Re-scan `architecture.md` for any other mention of scrolling / virtual
+- [x] Task 5: Cross-reference sweep (AC: 3)
+  - [x] Re-scan `architecture.md` for any other mention of scrolling / virtual
         scroll / sticky / table header and either link to or align with the new
         subsection
-  - [ ] No contradictions left in the document
+  - [x] No contradictions left in the document
 
-- [ ] Task 6: Quality gates (AC: 4, 5)
-  - [ ] `git diff --stat` shows only `.md` files touched (no `.ts`, `.html`,
+- [x] Task 6: Quality gates (AC: 4, 5)
+  - [x] `git diff --stat` shows only `.md` files touched (no `.ts`, `.html`,
         `.scss`, `.spec.ts`, or test files)
-  - [ ] `pnpm all` passes
-  - [ ] `pnpm format` passes (markdown formatting)
+  - [x] `pnpm all` passes
+  - [x] `pnpm format` passes (markdown formatting)
+
+### Review Findings
+
+- [x] [Review][Patch] Screen count "Six" vs "Five" in architecture.md Reproduction Matrix — `_bmad-output/planning-artifacts/architecture.md` line 514 said "Six virtual-scrolled screens" but Story 101.1 confirmed 5 total (verified: "5 total — all CDK virtual-scroll / dms-base-table hosts found in the codebase"). Fixed: changed "Six" → "Five". The immediately-following sentence "All five screens were resolved..." was already correct.
+- [x] [Review][Patch] Duplicate `## Dev Agent Record` / `### Agent Model Used` headers in story file — `_bmad-output/implementation-artifacts/101-4-update-architecture-scrolling-guardrails.md` had the completion notes added inside a first `## Dev Agent Record` block, but the original blank template block (`## Dev Agent Record` / `### Agent Model Used`) was left below it, creating duplicate headers. Fixed: removed the redundant second block.
+- [x] [Review][Defer] `graphify-out/graph.html` is an `.html` file in the unstaged working tree — pre-existing, unrelated to this story. Committing workflow must use targeted `git add` for the three story-relevant `.md` files only. deferred, pre-existing
 
 ## Dev Notes
 
@@ -221,6 +227,36 @@ Use the project's existing citation style for source pointers:
 ## Dev Agent Record
 
 ### Agent Model Used
+
+Claude Sonnet 4.6 (GitHub Copilot)
+
+### Completion Notes
+
+**Status: Done**
+
+#### Files Modified
+
+| File | Change |
+| --- | --- |
+| `_bmad-output/planning-artifacts/architecture.md` | Added new `### 6. Virtual Scroll & Sticky Header Guardrails` subsection at the end of `## Implementation Patterns & Consistency Rules` (before `## Project Structure & Boundaries`) |
+| `_bmad-output/project-context.md` | Added virtual scroll ancestor constraint bullet under `### Tailwind + Material Coexistence`; added new Anti-Pattern row for `contain:` on `.cdk-virtual-scroll-viewport` ancestors |
+
+#### Pre-Read Findings (Task 1)
+
+- **architecture.md** (893 lines): No existing section references CDK virtual scroll, sticky headers, or `contain`. The only CDK mentions are in the tech-stack table (`Angular Material + Angular CDK`) and test-harness rules. No contradictions found — addition only.
+- **project-context.md** (428 lines): No existing rule forbids `contain` or `transform` on virtual scroll ancestors. The `Tailwind + Material Coexistence` section and `Anti-Patterns` table were the appropriate insertion points. No contradicting guidance found — addition only.
+
+#### Root Cause (verbatim from Story 101.2 Dev Notes)
+
+Confirmed root cause: `contain: paint` on `.virtual-scroll-viewport` (in `base-table.component.scss`). CSS Containment Level 2 (Chrome 114+, Firefox 109+) changed `contain: paint` to imply `contain: layout`, creating an independent formatting context that broke `position: sticky` anchor resolution. Fix: removed `contain: paint` — `overflow: auto` is sufficient as the CDK paint boundary.
+
+#### Cross-Reference Sweep (Task 5)
+
+Scanned architecture.md for all mentions of: scroll, virtual, CDK, cdk, sticky, header, table, transform, contain. No existing section contradicts the new guardrails. No existing reference needed to be linked or updated — the new `### 6.` subsection is the only scrolling/CDK virtual scroll content in the document.
+
+#### git diff --stat (Task 6)
+
+My changes: `_bmad-output/planning-artifacts/architecture.md` (+104 lines), `_bmad-output/project-context.md` (+2 lines). No `.ts`, `.html`, `.scss`, `.spec.ts`, or test files touched. Pre-existing `graphify-out/` modifications in the worktree are unrelated to this story.
 
 ### Debug Log References
 
