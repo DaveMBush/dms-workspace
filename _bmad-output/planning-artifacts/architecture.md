@@ -541,7 +541,7 @@ The permanent regression suite that prevents reintroduction of the `contain`/sti
 
 **Key assertion per frame during 4px/16ms slow scroll:**
 
-```
+```typescript
 abs(header.getBoundingClientRect().top - viewport.getBoundingClientRect().top) <= 2
 ```
 
