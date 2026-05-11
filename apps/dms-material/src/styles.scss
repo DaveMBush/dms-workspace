@@ -242,3 +242,34 @@ textarea:focus-visible,
 .month-select-panel {
   min-width: 12rem !important;
 }
+
+// Epic 101, Story 101.3 — CDK virtual scroll content-wrapper containment fix.
+//
+// CDK applies `contain: content` (= contain: layout paint style) to
+// .cdk-virtual-scroll-content-wrapper. In CSS Containment Level 2
+// (Chrome 114+, Firefox 109+) `contain: layout` creates an independent
+// formatting context (IFC). When a <th> with `position: sticky; top: 0` is
+// inside an IFC, the browser changes its sticky anchor from the scroll
+// container (cdk-virtual-scroll-viewport) to the IFC boundary (the content
+// wrapper itself). Because CDK repositions the content wrapper via
+// transform: translateY(), the sticky header drifts with the content instead
+// of remaining anchored — the "header-under-header" Round 7 artifact.
+//
+// Story 101.2 removed contain:paint from .virtual-scroll-viewport (correct
+// but incomplete). Story 101.3 removes layout containment from the content
+// wrapper that houses the table. The viewport's overflow:auto already
+// provides the scroll-container boundary CDK needs; explicit containment on
+// the inner wrapper is redundant and harmful when position:sticky is in use.
+//
+// Guard: assertStickyHeaderInvariant (helper) now also verifies that
+// .cdk-virtual-scroll-content-wrapper does not have contain:layout or
+// contain:paint, so any future CDK upgrade that re-introduces containment
+// on the wrapper will fail the regression suite immediately.
+.cdk-virtual-scroll-content-wrapper {
+  // !important is required: CDK's component styles (which load after global
+  // styles in Angular's CSS cascade) set `contain: content` on this element.
+  // Without !important our `contain: none` is silently overridden by CDK.
+  // See assertStickyHeaderInvariant helper — it verifies computed contain is
+  // not `content` (or any value that implies layout containment).
+  contain: none !important;
+}

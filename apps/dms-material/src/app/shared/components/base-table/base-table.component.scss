@@ -28,26 +28,34 @@ td.mat-mdc-cell button.mat-mdc-icon-button {
  * Epic 60:  isLoading=true rows filtered → array shrank → CDK recalculated total height
  * Epic 64:  Edge case follow-up to Epic 60 (different code path)
  * Epic 87:  Account-panel placeholder symbol:'' → blank cells during fast scroll
- * Epic 101: contain:paint on .virtual-scroll-viewport caused slow-scroll sticky drift.
- *   CSS Containment Level 2 (Chrome 114+, Firefox 109+) changed contain:paint to imply
- *   contain:layout. This independent-formatting-context boundary, combined with CDK's
- *   transform:translateY() on .cdk-virtual-scroll-content-wrapper, caused the browser's
- *   sticky-position resolver to compute anchor offsets relative to the transformed
- *   coordinate space instead of the scrollport. During 4px/step slow scroll, the resolver
- *   fires between CDK transform updates, producing frames where the header drifts below
- *   or above the viewport top (header-scrolls-with-content and header-under-header).
- *   Fix (Story 101.2): remove contain:paint entirely. overflow:auto/hidden already
- *   provides the paint boundary CDK needs; the explicit contain property is redundant
- *   and was breaking position:sticky on all five CDK virtual-scroll hosts.
+ * Epic 101: Two-part fix for slow-scroll sticky-header drift.
+ *
+ *   Part A (Story 101.2): contain:paint on .virtual-scroll-viewport was the original
+ *   suspect. CSS Containment Level 2 (Chrome 114+, Firefox 109+) changed contain:paint
+ *   to imply contain:layout. Removing it was correct but incomplete.
+ *
+ *   Part B (Story 101.3, ROOT CAUSE): CDK itself applies `contain: content` (which
+ *   equals contain: layout + paint + style) to .cdk-virtual-scroll-content-wrapper.
+ *   In CSS Containment Level 2, `contain:layout` creates an independent formatting
+ *   context (IFC). When a <th> with `position: sticky; top: 0` is inside this IFC,
+ *   the browser changes its sticky anchor from the scroll container
+ *   (cdk-virtual-scroll-viewport) to the IFC boundary (the content wrapper itself).
+ *   Because CDK repositions the content wrapper via transform:translateY(), the sticky
+ *   header drifts with the content — the "header-under-header" Round 7 artifact.
+ *   Fix (Story 101.3): global override in styles.scss removes contain from
+ *   .cdk-virtual-scroll-content-wrapper. The viewport's overflow:auto already provides
+ *   the scroll-container boundary CDK needs.
  *
  * Structural constraint: .virtual-scroll-viewport MUST be a scroll container
  * (overflow-y:auto) but MUST NOT apply layout containment (contain:layout or any
- * shorthand that implies it). CDK virtual scroll positions visible rows using
+ * shorthand that implies it). .cdk-virtual-scroll-content-wrapper MUST NOT apply
+ * layout containment either. CDK virtual scroll positions visible rows using
  * transform:translateY on .cdk-virtual-scroll-content-wrapper; position:sticky on
  * <th> elements inside must anchor to the scrollport (the viewport element), not to
- * the transformed subtree. Any containment that creates an independent formatting
- * context on the viewport element will break this invariant in browsers implementing
- * CSS Containment Level 2.
+ * the transformed subtree or any IFC boundary within the scroll container.
+ * Any containment that creates an independent formatting context on the viewport
+ * element OR on any element between the viewport and the sticky headers will break
+ * this invariant in browsers implementing CSS Containment Level 2.
  */
 .virtual-scroll-viewport {
   flex: 1;
