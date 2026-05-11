@@ -62,7 +62,12 @@ export async function slowScrollToBottom(
     options?: { stepPx?: number; scrollMs?: number };
   }
 ): Promise<FrameSample[]> {
-  const { containerSelector, headerSelector, parentHeaderSelector, options = {} } = config;
+  const {
+    containerSelector,
+    headerSelector,
+    parentHeaderSelector,
+    options = {},
+  } = config;
   return runSlowScroll(page, {
     containerSel: containerSelector,
     headerSel: headerSelector,

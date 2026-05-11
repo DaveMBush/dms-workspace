@@ -55,11 +55,11 @@ async function assertViewportCssGuards(
   page: Page,
   containerSelector: string
 ): Promise<void> {
-  const containValue = await page.locator(containerSelector).evaluate(
-    function getContain(el: Element): string {
+  const containValue = await page
+    .locator(containerSelector)
+    .evaluate(function getContain(el: Element): string {
       return window.getComputedStyle(el).contain;
-    }
-  );
+    });
 
   expect(
     containValue,
@@ -77,11 +77,11 @@ async function assertViewportCssGuards(
       '(Epic 101, Story 101.2). Do not re-add contain:paint to .virtual-scroll-viewport.'
   ).not.toMatch(/\bpaint\b/);
 
-  const overflowY = await page.locator(containerSelector).evaluate(
-    function getOverflowY(el: Element): string {
+  const overflowY = await page
+    .locator(containerSelector)
+    .evaluate(function getOverflowY(el: Element): string {
       return window.getComputedStyle(el).overflowY;
-    }
-  );
+    });
 
   expect(
     ['auto', 'scroll'],
