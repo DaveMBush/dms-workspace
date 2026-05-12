@@ -42,3 +42,6 @@ mac:
 
 win:
   target: nsis
+
+deb:
+  afterInstall: build-resources/linux/after-install.sh
