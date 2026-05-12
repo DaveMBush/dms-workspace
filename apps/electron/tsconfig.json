@@ -7,12 +7,8 @@
     "rootDir": "src",
     "esModuleInterop": true,
     "strict": true,
-    "types": [
-      "node"
-    ],
+    "types": ["node"],
     "importHelpers": false
   },
-  "include": [
-    "src"
-  ]
+  "include": ["src"]
 }
