@@ -43,6 +43,19 @@
         "project": ["electron"]
       }
     },
+    "e2e-electron-smoke": {
+      "executor": "@nx/playwright:playwright",
+      "dependsOn": [
+        {
+          "projects": ["electron"],
+          "target": "build:linux"
+        }
+      ],
+      "options": {
+        "config": "apps/dms-material-e2e/playwright.config.ts",
+        "project": ["electron-smoke"]
+      }
+    },
     "e2e-ui": {
       "executor": "@nx/playwright:playwright",
       "options": {
