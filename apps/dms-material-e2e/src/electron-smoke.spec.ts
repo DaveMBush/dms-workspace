@@ -18,11 +18,7 @@ import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 
-import {
-  _electron as electron,
-  ElectronApplication,
-  Page,
-} from 'playwright';
+import { _electron as electron, ElectronApplication, Page } from 'playwright';
 import { expect, test } from 'playwright/test';
 
 // ---------------------------------------------------------------------------
@@ -73,8 +69,7 @@ function findDebArtifact(): string | null {
 
 // Evaluate preconditions at module load time so skip messages are immediate.
 const debPath = findDebArtifact();
-const isRoot =
-  typeof process.getuid === 'function' && process.getuid() === 0;
+const isRoot = typeof process.getuid === 'function' && process.getuid() === 0;
 
 // ---------------------------------------------------------------------------
 // Suite
@@ -165,10 +160,9 @@ test.describe('Packaged Electron Smoke Test', () => {
         `The afterInstall hook from Story 102.1 may not have run.`
     ).toBe(true);
 
-    const statOutput = execSync(
-      `stat -c '%U:%G %a' "${CHROME_SANDBOX_PATH}"`,
-      { encoding: 'utf8' }
-    ).trim();
+    const statOutput = execSync(`stat -c '%U:%G %a' "${CHROME_SANDBOX_PATH}"`, {
+      encoding: 'utf8',
+    }).trim();
 
     expect(
       statOutput,

@@ -317,12 +317,12 @@ elevated privileges or a fully packaged artifact.
 
 **Story 102.3** — Validates the Linux `.deb` artifact end-to-end.
 
-| What it checks | Related story |
-|---|---|
-| `chrome-sandbox` has owner `root:root` and mode `4755` after `dpkg -i` | Story 102.1 |
-| No `The SUID sandbox helper binary was found, but is not configured correctly` in process output | Story 102.1 |
-| No `Cannot find module 'tslib'` in process output | Story 102.2 |
-| Angular home route renders without renderer console errors | Story 77.5 |
+| What it checks                                                                                   | Related story |
+| ------------------------------------------------------------------------------------------------ | ------------- |
+| `chrome-sandbox` has owner `root:root` and mode `4755` after `dpkg -i`                           | Story 102.1   |
+| No `The SUID sandbox helper binary was found, but is not configured correctly` in process output | Story 102.1   |
+| No `Cannot find module 'tslib'` in process output                                                | Story 102.2   |
+| Angular home route renders without renderer console errors                                       | Story 77.5    |
 
 **How to run:**
 
