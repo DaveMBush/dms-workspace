@@ -113,7 +113,7 @@ test.describe('Packaged Electron Smoke Test', () => {
     }
 
     try {
-      // eslint-disable-next-line sonarjs/os-command
+      // eslint-disable-next-line sonarjs/os-command -- debPath is a validated local file path from a controlled test environment
       const installLog = execSync(`dpkg -i "${debPath}" 2>&1`, {
         encoding: 'utf8',
       });
@@ -143,7 +143,7 @@ test.describe('Packaged Electron Smoke Test', () => {
 
     if (isRoot) {
       try {
-        // eslint-disable-next-line sonarjs/os-command
+        // eslint-disable-next-line sonarjs/os-command -- DPKG_PACKAGE_NAME is a constant defined in this test file
         execSync(`dpkg -r ${DPKG_PACKAGE_NAME} 2>&1`, { encoding: 'utf8' });
       } catch {
         // Best-effort cleanup — dpkg -r may fail if the package was never
@@ -162,7 +162,7 @@ test.describe('Packaged Electron Smoke Test', () => {
         `The afterInstall hook from Story 102.1 may not have run.`
     ).toBe(true);
 
-    // eslint-disable-next-line sonarjs/os-command
+    // eslint-disable-next-line sonarjs/os-command -- CHROME_SANDBOX_PATH is a constant defined in this test file
     const statOutput = execSync(`stat -c '%U:%G %a' "${CHROME_SANDBOX_PATH}"`, {
       encoding: 'utf8',
     }).trim();
