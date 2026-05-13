@@ -1,0 +1,21 @@
+epic_num: 103
+story_num: 2
+story_id: '103.2'
+story_key: 103-2-fix-universe-add-validator-polarity
+slug: 103-2-fix-universe-add-validator-polarity
+title: Fix Universe Add Modal Validation Without Regressing Open Positions Add
+epic_title: Add New Symbol on Universe Screen (Validation Polarity Fix)
+type: implementation
+status: Approved
+source_epics_file: _bmad-output/planning-artifacts/epics-2026-05-13.md
+source_section: 'Story 103.2'
+covers_requirements:
+  - R1
+  - R2
+depends_on_stories: ['103.1']
+enables_stories: ['103.3']
+expected_story_file: _bmad-output/implementation-artifacts/103-2-fix-universe-add-validator-polarity.md
+notes: |
+  Parameterise (or split) the shared symbol-in-universe validator so each call
+  site gets the polarity it requires. Universe Add: NOT IN. Open Positions Add:
+  IN. Do not duplicate-and-diverge or special-case by route.

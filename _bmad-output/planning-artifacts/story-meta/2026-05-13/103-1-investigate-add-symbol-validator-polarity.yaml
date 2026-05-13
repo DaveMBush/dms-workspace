@@ -1,0 +1,19 @@
+epic_num: 103
+story_num: 1
+story_id: '103.1'
+story_key: 103-1-investigate-add-symbol-validator-polarity
+slug: 103-1-investigate-add-symbol-validator-polarity
+title: Investigate the Shared Add-Symbol Validator and the Polarity Bug
+epic_title: Add New Symbol on Universe Screen (Validation Polarity Fix)
+type: investigation
+status: Approved
+source_epics_file: _bmad-output/planning-artifacts/epics-2026-05-13.md
+source_section: 'Story 103.1'
+covers_requirements: []
+depends_on_stories: []
+enables_stories: ['103.2', '103.3']
+expected_story_file: _bmad-output/implementation-artifacts/103-1-investigate-add-symbol-validator-polarity.md
+notes: |
+  Code-only audit + Playwright MCP reproduction of both modals.
+  No production code or tests changed. Outputs Dev Notes that
+  unblock 103.2 (validator fix) and 103.3 (E2E coverage).

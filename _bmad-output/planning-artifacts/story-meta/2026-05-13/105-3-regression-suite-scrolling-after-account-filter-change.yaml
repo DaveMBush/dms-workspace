@@ -1,0 +1,22 @@
+epic_num: 105
+story_num: 3
+story_id: '105.3'
+story_key: 105-3-regression-suite-scrolling-after-account-filter-change
+slug: 105-3-regression-suite-scrolling-after-account-filter-change
+title: Regression Test Suite — Scrolling Stays Clean After Account / Filter Change
+epic_title: Janky Scrolling After Account / Filter Change (Round 8)
+type: e2e-test
+status: Approved
+source_epics_file: _bmad-output/planning-artifacts/epics-2026-05-13.md
+source_section: 'Story 105.3'
+covers_requirements:
+  - R5
+  - R6
+  - R7
+depends_on_stories: ['105.2']
+enables_stories: []
+expected_story_file: _bmad-output/implementation-artifacts/105-3-regression-suite-scrolling-after-account-filter-change.md
+notes: |
+  Per-screen Playwright suite that performs a context change (account swap or
+  filter apply-clear) then slow-scrolls and asserts header invariants. Must be
+  hand-verified to fail if the 105.2 fix is reverted. Chromium + Firefox.

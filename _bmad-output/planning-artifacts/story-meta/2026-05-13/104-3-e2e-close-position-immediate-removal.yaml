@@ -1,0 +1,20 @@
+epic_num: 104
+story_num: 3
+story_id: '104.3'
+story_key: 104-3-e2e-close-position-immediate-removal
+slug: 104-3-e2e-close-position-immediate-removal
+title: E2E Test — Closing a Position Removes It Without Refresh
+epic_title: Closing a Position Removes It from Open Positions Immediately
+type: e2e-test
+status: Approved
+source_epics_file: _bmad-output/planning-artifacts/epics-2026-05-13.md
+source_section: 'Story 104.3'
+covers_requirements:
+  - R3
+  - R4
+depends_on_stories: ['104.2']
+enables_stories: []
+expected_story_file: _bmad-output/implementation-artifacts/104-3-e2e-close-position-immediate-removal.md
+notes: |
+  Playwright E2E: set sell date + positive sell price → row gone from Open
+  Positions without reload; same row visible on Sold Positions. Chromium + Firefox.

@@ -1,0 +1,19 @@
+epic_num: 105
+story_num: 1
+story_id: '105.1'
+story_key: 105-1-reproduce-scrolling-after-account-filter-change
+slug: 105-1-reproduce-scrolling-after-account-filter-change
+title: Reproduce Janky Scrolling After Account / Filter Change Across All Screens
+epic_title: Janky Scrolling After Account / Filter Change (Round 8)
+type: investigation
+status: Approved
+source_epics_file: _bmad-output/planning-artifacts/epics-2026-05-13.md
+source_section: 'Story 105.1'
+covers_requirements: []
+depends_on_stories: []
+enables_stories: ['105.2', '105.3']
+expected_story_file: _bmad-output/implementation-artifacts/105-1-reproduce-scrolling-after-account-filter-change.md
+notes: |
+  Build a screen × browser × trigger (account-change | filter-change) × artifact
+  matrix via Playwright MCP. Summarise prior epics 29, 31, 44, 60, 64, 87, 101 and
+  enumerate live root-cause candidates for 105.2.

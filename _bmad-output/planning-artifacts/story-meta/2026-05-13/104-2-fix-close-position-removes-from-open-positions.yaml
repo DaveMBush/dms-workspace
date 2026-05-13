@@ -1,0 +1,21 @@
+epic_num: 104
+story_num: 2
+story_id: '104.2'
+story_key: 104-2-fix-close-position-removes-from-open-positions
+slug: 104-2-fix-close-position-removes-from-open-positions
+title: Fix Immediate Removal of Closed Positions From Open Positions List
+epic_title: Closing a Position Removes It from Open Positions Immediately
+type: implementation
+status: Approved
+source_epics_file: _bmad-output/planning-artifacts/epics-2026-05-13.md
+source_section: 'Story 104.2'
+covers_requirements:
+  - R3
+  - R4
+depends_on_stories: ['104.1']
+enables_stories: ['104.3']
+expected_story_file: _bmad-output/implementation-artifacts/104-2-fix-close-position-removes-from-open-positions.md
+notes: |
+  Targeted fix at the layer identified by 104.1 (save mutation, store update,
+  selector reactivity, or refetch). Must not regress sort/filter/scroll/edit on
+  Open Positions and must not change server-side persistence behaviour.
