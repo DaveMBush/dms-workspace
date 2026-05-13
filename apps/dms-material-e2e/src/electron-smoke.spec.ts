@@ -88,7 +88,7 @@ test.describe('Packaged Electron Smoke Test', () => {
   // -------------------------------------------------------------------------
   // beforeAll — install the .deb
   // -------------------------------------------------------------------------
-  test.beforeAll(async () => {
+  test.beforeAll(() => {
     if (!isRoot) {
       test.skip(
         true,
@@ -113,6 +113,7 @@ test.describe('Packaged Electron Smoke Test', () => {
     }
 
     try {
+      // eslint-disable-next-line sonarjs/os-command
       const installLog = execSync(`dpkg -i "${debPath}" 2>&1`, {
         encoding: 'utf8',
       });
@@ -142,6 +143,7 @@ test.describe('Packaged Electron Smoke Test', () => {
 
     if (isRoot) {
       try {
+        // eslint-disable-next-line sonarjs/os-command
         execSync(`dpkg -r ${DPKG_PACKAGE_NAME} 2>&1`, { encoding: 'utf8' });
       } catch {
         // Best-effort cleanup — dpkg -r may fail if the package was never
@@ -160,6 +162,7 @@ test.describe('Packaged Electron Smoke Test', () => {
         `The afterInstall hook from Story 102.1 may not have run.`
     ).toBe(true);
 
+    // eslint-disable-next-line sonarjs/os-command
     const statOutput = execSync(`stat -c '%U:%G %a' "${CHROME_SANDBOX_PATH}"`, {
       encoding: 'utf8',
     }).trim();
