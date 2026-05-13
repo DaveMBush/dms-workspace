@@ -1,6 +1,6 @@
 # Story 102.3: E2E Smoke Test — Packaged Electron App Launches Cleanly
 
-Status: Approved
+Status: Complete
 
 <!-- Source: _bmad-output/planning-artifacts/epics-2026-05-08.md, Epic 102, Story 102.3 -->
 
@@ -39,72 +39,72 @@ inlining) are caught before release.
 
 ## Tasks / Subtasks
 
-- [ ] Decide test placement and gating strategy (AC: #4)
-  - [ ] Inspect `apps/dms-material-e2e/playwright.config.ts` and existing `electron` project
+- [x] Decide test placement and gating strategy (AC: #4)
+  - [x] Inspect `apps/dms-material-e2e/playwright.config.ts` and existing `electron` project
         used by Story 77.5 (`electron-launch.spec.ts`) to confirm naming conventions
-  - [ ] Decide whether the new spec joins the existing `electron` project or lives in a new
+  - [x] Decide whether the new spec joins the existing `electron` project or lives in a new
         `electron-smoke` project (recommend new project: it requires a packaged installer,
         not just a built `main.js`)
-  - [ ] If `pnpm all` cannot reasonably install a packaged `.deb` in the developer/CI
+  - [x] If `pnpm all` cannot reasonably install a packaged `.deb` in the developer/CI
         environment, gate behind a new Nx target `e2e:electron:smoke` and document in
         `docs/architecture.md` (or `_bmad-output/planning-artifacts/architecture.md`) as a
         required release-gate check; otherwise wire into the default `pnpm all` flow
-  - [ ] Update `apps/dms-material-e2e/project.json` with the chosen target
+  - [x] Update `apps/dms-material-e2e/project.json` with the chosen target
 
-- [ ] Build a clean-fixture install helper (AC: #1)
-  - [ ] In a new spec (e.g., `apps/dms-material-e2e/src/electron-smoke.spec.ts`) add a helper
+- [x] Build a clean-fixture install helper (AC: #1)
+  - [x] In a new spec (e.g., `apps/dms-material-e2e/src/electron-smoke.spec.ts`) add a helper
         that: locates the latest `.deb` under `dist/electron-dist/` (per
         `apps/electron/electron-builder.yml` `directories.output`), installs it into an
         isolated fixture, and records the install root path
-  - [ ] Prefer `dpkg -x <deb> <fixture>` for an unprivileged extract when only verifying file
+  - [x] Prefer `dpkg -x <deb> <fixture>` for an unprivileged extract when only verifying file
         layout; use `sudo dpkg -i` (or `pkexec`) only when the test must validate the real
         post-install hook from Story 102.1 — which it must, per AC #1
-  - [ ] Capture `stdout`/`stderr` of the install and fail fast on non-zero exit
-  - [ ] If `sudo` is required, gate with a clear precondition skip + actionable error message
+  - [x] Capture `stdout`/`stderr` of the install and fail fast on non-zero exit
+  - [x] If `sudo` is required, gate with a clear precondition skip + actionable error message
 
-- [ ] Assert chrome-sandbox ownership and mode (AC: #1)
-  - [ ] After install, `stat -c '%U:%G %a' /opt/DMS/chrome-sandbox` (or installed equivalent
+- [x] Assert chrome-sandbox ownership and mode (AC: #1)
+  - [x] After install, `stat -c '%U:%G %a' /opt/DMS/chrome-sandbox` (or installed equivalent
         path resolved from the fixture) and assert `root:root` and `4755`
-  - [ ] On failure, surface the actual values and the install log to make Story 102.1
+  - [x] On failure, surface the actual values and the install log to make Story 102.1
         regressions obvious
 
-- [ ] Launch the installed binary without `--no-sandbox` and capture diagnostics (AC: #2, #3)
-  - [ ] Spawn the installed app binary directly (NOT via `playwright._electron.launch` against
+- [x] Launch the installed binary without `--no-sandbox` and capture diagnostics (AC: #2, #3)
+  - [x] Spawn the installed app binary directly (NOT via `playwright._electron.launch` against
         `dist/apps/electron/main.js` — that bypasses packaging). Use `child_process.spawn` to
         execute the installed binary at its real path (e.g., `/opt/DMS/dms`), then attach
         Playwright via Chrome DevTools Protocol if needed for window assertions
-  - [ ] Pass NO `--no-sandbox` argument
-  - [ ] Tee stdout+stderr; assert the captured text does NOT contain
+  - [x] Pass NO `--no-sandbox` argument
+  - [x] Tee stdout+stderr; assert the captured text does NOT contain
         `The SUID sandbox helper binary was found, but is not configured correctly`
-  - [ ] Assert the captured text does NOT contain `Cannot find module 'tslib'`
-  - [ ] Assert the process did not exit with a non-zero code within the launch window
-  - [ ] If using Playwright `_electron.launch` against the installed binary path is feasible
+  - [x] Assert the captured text does NOT contain `Cannot find module 'tslib'`
+  - [x] Assert the process did not exit with a non-zero code within the launch window
+  - [x] If using Playwright `_electron.launch` against the installed binary path is feasible
         (Playwright accepts an `executablePath` for ElectronApplication on some channels),
         prefer that for window/console assertions; otherwise fall back to CDP attach
 
-- [ ] Assert the main window renders cleanly (AC: #3)
-  - [ ] Wait for the first BrowserWindow and `domcontentloaded`, mirroring the Story 77.5
+- [x] Assert the main window renders cleanly (AC: #3)
+  - [x] Wait for the first BrowserWindow and `domcontentloaded`, mirroring the Story 77.5
         pattern in `apps/dms-material-e2e/src/electron-launch.spec.ts`
-  - [ ] Register `window.on('console', ...)` to collect console errors and assert empty
-  - [ ] Assert a known home-route element is visible (reuse the selector pattern from
+  - [x] Register `window.on('console', ...)` to collect console errors and assert empty
+  - [x] Assert a known home-route element is visible (reuse the selector pattern from
         `electron-launch.spec.ts`)
 
-- [ ] Cleanup (AC: #1, #2)
-  - [ ] In `afterAll`: close the app, then `dpkg -r dms` (or extract-only cleanup `rm -rf
+- [x] Cleanup (AC: #1, #2)
+  - [x] In `afterAll`: close the app, then `dpkg -r dms` (or extract-only cleanup `rm -rf
         <fixture>`) to leave the host clean
-  - [ ] Ensure cleanup runs even when the test fails
+  - [x] Ensure cleanup runs even when the test fails
 
-- [ ] Wire into the build pipeline (AC: #4)
-  - [ ] Add `dependsOn` so the smoke target requires `electron:package` (or whatever target
+- [x] Wire into the build pipeline (AC: #4)
+  - [x] Add `dependsOn` so the smoke target requires `electron:package` (or whatever target
         produces the `.deb` per `electron-builder.yml`) — not just `electron:build`
-  - [ ] Update `pnpm all` script in root `package.json` to include the smoke target IF not
+  - [x] Update `pnpm all` script in root `package.json` to include the smoke target IF not
         gated; otherwise add a docs note pointing to the gated `pnpm e2e:electron:smoke`
-  - [ ] Run the chosen path locally and confirm the test runs and passes
+  - [x] Run the chosen path locally and confirm the test runs and passes
 
-- [ ] Documentation (AC: #4)
-  - [ ] If gated: add a "Release Gate Tests" subsection to the architecture document
+- [x] Documentation (AC: #4)
+  - [x] If gated: add a "Release Gate Tests" subsection to the architecture document
         listing `e2e:electron:smoke` as required before tagging an Electron release
-  - [ ] Cross-link Stories 102.1 and 102.2 so future regressions to either are routed back to
+  - [x] Cross-link Stories 102.1 and 102.2 so future regressions to either are routed back to
         this test
 
 ## Dev Notes

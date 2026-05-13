@@ -304,3 +304,38 @@ Key metrics to monitor:
 - JWT auth failure rate (Cognito issues)
 - Database connection pool (PostgreSQL max_connections)
 - CUSIP cache hit rate (indicates Yahoo Finance API health)
+
+---
+
+## Release Gate Tests
+
+The following tests must pass before tagging an Electron release.
+They are **not** part of the default `pnpm all` pipeline because they require
+elevated privileges or a fully packaged artifact.
+
+### Packaged Electron Smoke Test (`e2e:electron:smoke`)
+
+**Story 102.3** — Validates the Linux `.deb` artifact end-to-end.
+
+| What it checks | Related story |
+|---|---|
+| `chrome-sandbox` has owner `root:root` and mode `4755` after `dpkg -i` | Story 102.1 |
+| No `The SUID sandbox helper binary was found, but is not configured correctly` in process output | Story 102.1 |
+| No `Cannot find module 'tslib'` in process output | Story 102.2 |
+| Angular home route renders without renderer console errors | Story 77.5 |
+
+**How to run:**
+
+```bash
+# 1. Build the Linux package
+pnpm nx run electron:build:linux
+
+# 2. Run the smoke test as root (required for dpkg -i SUID setup)
+sudo pnpm e2e:electron:smoke
+```
+
+**Nx target**: `dms-material-e2e:e2e-electron-smoke`  
+**Spec file**: `apps/dms-material-e2e/src/electron-smoke.spec.ts`
+
+> If the test is skipped with "requires root privileges", re-run with `sudo`.  
+> If the test is skipped with "No .deb artifact found", build the package first.
