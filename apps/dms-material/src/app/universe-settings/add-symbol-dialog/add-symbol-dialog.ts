@@ -3,12 +3,14 @@ import { HttpClient } from '@angular/common/http';
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   computed,
   effect,
   inject,
   signal,
+  viewChild,
 } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import {
   AbstractControl,
   FormBuilder,
@@ -73,6 +75,9 @@ export class AddSymbolDialogComponent {
         : [];
     }.bind(this)
   );
+
+  private readonly symbolAutocomplete = viewChild(SymbolAutocompleteComponent);
+  private readonly destroyRef = inject(DestroyRef);
 
   isLoading = signal(false);
   selectedSymbol = signal<SymbolOption | null>(null);
@@ -198,6 +203,27 @@ export class AddSymbolDialogComponent {
       return null;
     };
   }
+
+  private readonly syncSearchToFormEffect = effect(
+    function syncSearchControlToFormSymbol(
+      this: AddSymbolDialogComponent
+    ): void {
+      const autocomplete = this.symbolAutocomplete();
+      if (autocomplete === undefined) {
+        return;
+      }
+      const self = this;
+      function onSearchValueChange(value: unknown): void {
+        if (typeof value === 'string') {
+          self.form.get('symbol')?.setValue(value);
+          self.form.get('symbol')?.markAsTouched();
+        }
+      }
+      autocomplete.searchControl.valueChanges
+        .pipe(takeUntilDestroyed(self.destroyRef))
+        .subscribe(onSearchValueChange);
+    }.bind(this)
+  );
 
   async searchSymbols(query: string): Promise<SymbolOption[]> {
     if (!query || query.trim().length === 0) {
