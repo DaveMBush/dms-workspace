@@ -227,6 +227,47 @@ describe('AddSymbolDialogComponent', () => {
     });
   });
 
+  // Story 103.2: isSubmitDisabled gate tests (form.invalid replaces selectedSymbol check)
+  describe('isSubmitDisabled gate (Story 103.2)', () => {
+    it('should be false when valid free-text symbol and risk group are set', () => {
+      component.form.patchValue({ symbol: 'TSLA', riskGroupId: 'rg1' });
+      expect(component.isSubmitDisabled()).toBe(false);
+    });
+
+    it('should be true when symbol is a duplicate already in the universe', () => {
+      mockUniverseArray.push({ symbol: 'AAPL' });
+      fixture = TestBed.createComponent(AddSymbolDialogComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+
+      component.form.patchValue({ symbol: 'AAPL', riskGroupId: 'rg1' });
+
+      expect(component.isSubmitDisabled()).toBe(true);
+      expect(component.symbolDuplicateError()).toBe(true);
+    });
+
+    it('should be true when symbol is empty', () => {
+      component.form.patchValue({ symbol: '', riskGroupId: 'rg1' });
+      expect(component.isSubmitDisabled()).toBe(true);
+    });
+
+    it('should be true when symbol does not match pattern', () => {
+      component.form.patchValue({ symbol: 'aapl', riskGroupId: 'rg1' });
+      expect(component.isSubmitDisabled()).toBe(true);
+    });
+
+    it('should be true when risk group is missing', () => {
+      component.form.patchValue({ symbol: 'AAPL', riskGroupId: '' });
+      expect(component.isSubmitDisabled()).toBe(true);
+    });
+
+    it('should be true while isLoading is true even with a valid form', () => {
+      component.form.patchValue({ symbol: 'AAPL', riskGroupId: 'rg1' });
+      component.isLoading.set(true);
+      expect(component.isSubmitDisabled()).toBe(true);
+    });
+  });
+
   describe('riskGroups', () => {
     it('should return array of risk groups', () => {
       expect(Array.isArray(component.riskGroups)).toBe(true);
@@ -345,20 +386,20 @@ describe('AddSymbolDialogComponent', () => {
       expect(requests.length).toBe(3);
     });
 
-    it('should validate symbol is selected before enabling submit', () => {
-      // This test will fail until validation logic is implemented
+    it('should enable submit when form is valid without autocomplete selection (free-text entry)', () => {
+      // Story 103.2 fix: isSubmitDisabled now depends on form.invalid, NOT selectedSymbol.
+      // A user who types a valid new symbol without clicking an autocomplete option
+      // must be able to submit.
       component.form.patchValue({
         symbol: 'AAPL',
         riskGroupId: 'rg1',
       });
 
-      // Submit should be disabled if symbol not selected from autocomplete
-      expect(component.isSubmitDisabled()).toBe(true);
+      // Submit must be enabled when form is valid — regardless of selectedSymbol
+      expect(component.isSubmitDisabled()).toBe(false);
 
-      // Select symbol from autocomplete
+      // Selecting via autocomplete also keeps submit enabled
       component.onSymbolSelected({ symbol: 'AAPL', name: 'Apple Inc.' } as any);
-
-      // Now submit should be enabled
       expect(component.isSubmitDisabled()).toBe(false);
     });
 
