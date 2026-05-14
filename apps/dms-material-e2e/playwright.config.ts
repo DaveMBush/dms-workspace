@@ -63,6 +63,10 @@ export default defineConfig({
       reuseExistingServer: true,
       cwd: workspaceRoot,
       timeout: 120000,
+      env: {
+        ...process.env,
+        NODE_OPTIONS: '--max-old-space-size=4096',
+      },
     },
     {
       command: 'pnpm nx run dms-material:storybook --port 6006',

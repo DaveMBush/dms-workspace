@@ -19,6 +19,7 @@
     },
     "prepare-e2e-db": {
       "executor": "nx:run-commands",
+      "cache": false,
       "outputs": ["{workspaceRoot}/test-database.db"],
       "options": {
         "command": "node tools/create-test-db.js test-database.db"
