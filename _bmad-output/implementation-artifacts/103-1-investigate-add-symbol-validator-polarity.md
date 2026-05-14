@@ -377,6 +377,7 @@ isSubmitDisabled = computed(
 4. **Comparison**: Open Positions Add uses `[disabled]="!form.valid"` (template-bound to form state), which is driven by the validator — a fundamentally different architecture.
 
 **Validator polarity summary (both are correct):**
+
 | Modal | Validator | Predicate | Polarity | Status |
 |---|---|---|---|---|
 | Universe Add | `duplicateSymbolValidator()` | error if symbol IS in universe | Blocks duplicates | ✅ Correct |

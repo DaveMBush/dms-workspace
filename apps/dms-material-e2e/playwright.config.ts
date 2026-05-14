@@ -58,7 +58,7 @@ export default defineConfig({
       },
     },
     {
-      command: 'pnpm nx run dms-material:serve-e2e',
+      command: 'NODE_OPTIONS="--max-old-space-size=4096" pnpm nx run dms-material:serve-e2e',
       url: 'http://localhost:4301',
       reuseExistingServer: true,
       cwd: workspaceRoot,
