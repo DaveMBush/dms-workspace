@@ -28,7 +28,9 @@ async function pickAvailableSymbol(
     }
   }
   throw new Error(
-    `All candidate symbols are already in use: ${candidates.join(', ')}. Cannot seed test data.`
+    `All candidate symbols are already in use: ${candidates.join(
+      ', '
+    )}. Cannot seed test data.`
   );
 }
 
@@ -47,11 +49,9 @@ export async function seedAddSymbolModalsE2eData(): Promise<SeederResult> {
     universeInSymbol = await pickAvailableSymbol(prisma, UNIV_IN_CANDIDATES);
     universeOutSymbol = await pickAvailableSymbol(
       prisma,
-      UNIV_OUT_CANDIDATES.filter(
-        function notSameAsIn(c: string): boolean {
-          return c !== universeInSymbol;
-        }
-      )
+      UNIV_OUT_CANDIDATES.filter(function notSameAsIn(c: string): boolean {
+        return c !== universeInSymbol;
+      })
     );
 
     await prisma.universe.create({

@@ -33,7 +33,9 @@ test.describe('Add-Symbol modals validation polarity', () => {
     page,
   }) => {
     await page.goto('/global/universe');
-    await expect(page.locator('button[mattooltip="Add Symbol"]')).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('button[mattooltip="Add Symbol"]')).toBeVisible({
+      timeout: 10000,
+    });
 
     await page.locator('button[mattooltip="Add Symbol"]').click();
     await expect(
@@ -50,15 +52,12 @@ test.describe('Add-Symbol modals validation polarity', () => {
       'mat-dialog-container mat-form-field mat-select'
     );
     await riskGroupSelect.click();
-    await page
-      .locator('.cdk-overlay-container mat-option')
-      .first()
-      .click();
+    await page.locator('.cdk-overlay-container mat-option').first().click();
 
     // Submit button must be enabled (fix from Story 103.2)
-    await expect(
-      page.locator('[data-testid="submit-button"]')
-    ).toBeEnabled({ timeout: 5000 });
+    await expect(page.locator('[data-testid="submit-button"]')).toBeEnabled({
+      timeout: 5000,
+    });
 
     // No duplicate error visible
     await expect(
@@ -83,7 +82,9 @@ test.describe('Add-Symbol modals validation polarity', () => {
     page,
   }) => {
     await page.goto('/global/universe');
-    await expect(page.locator('button[mattooltip="Add Symbol"]')).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('button[mattooltip="Add Symbol"]')).toBeVisible({
+      timeout: 10000,
+    });
 
     await page.locator('button[mattooltip="Add Symbol"]').click();
     await expect(
@@ -100,15 +101,12 @@ test.describe('Add-Symbol modals validation polarity', () => {
       'mat-dialog-container mat-form-field mat-select'
     );
     await riskGroupSelect.click();
-    await page
-      .locator('.cdk-overlay-container mat-option')
-      .first()
-      .click();
+    await page.locator('.cdk-overlay-container mat-option').first().click();
 
     // Submit button must be disabled (duplicate symbol in Universe)
-    await expect(
-      page.locator('[data-testid="submit-button"]')
-    ).toBeDisabled({ timeout: 5000 });
+    await expect(page.locator('[data-testid="submit-button"]')).toBeDisabled({
+      timeout: 5000,
+    });
 
     // Duplicate error must be visible
     await expect(
