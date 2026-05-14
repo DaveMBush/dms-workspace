@@ -1,6 +1,6 @@
 # Story 103.2: Fix Universe Add Modal Validation Without Regressing Open Positions Add
 
-Status: Approved
+Status: In Progress
 
 **Story Key:** `103-2-fix-universe-add-validator-polarity`
 **Epic:** 103 — Add New Symbol on Universe Screen (Validation Polarity Fix)
@@ -129,15 +129,15 @@ on the form's actual validity (and any genuinely required fields), **not** on
 ## Tasks / Subtasks
 
 - [ ] **Task 1 — Re-read the 103.1 investigation findings** (AC: #1, #2)
-  - [ ] Read [103-1-investigate-add-symbol-validator-polarity.md](103-1-investigate-add-symbol-validator-polarity.md)
+  - [x] Read [103-1-investigate-add-symbol-validator-polarity.md](103-1-investigate-add-symbol-validator-polarity.md)
         Dev Notes in full, especially the "Recommendation for Story 103.2" subsection.
-  - [ ] Confirm in this story's Dev Notes that the recommendation matches the plan in this
+  - [x] Confirm in this story's Dev Notes that the recommendation matches the plan in this
         story file. If 103.1's recommendation differs (e.g. it pinpoints a different broken
         layer), STOP and `correct-course` before changing code.
 
-- [ ] **Task 2 — Fix the Universe Add submit-disabled gate** (AC: #2, #3, #6)
-  - [ ] Open [apps/dms-material/src/app/universe-settings/add-symbol-dialog/add-symbol-dialog.ts](../../apps/dms-material/src/app/universe-settings/add-symbol-dialog/add-symbol-dialog.ts).
-  - [ ] Replace the current `isSubmitDisabled` computation:
+- [x] **Task 2 — Fix the Universe Add submit-disabled gate** (AC: #2, #3, #6)
+  - [x] Open [apps/dms-material/src/app/universe-settings/add-symbol-dialog/add-symbol-dialog.ts](../../apps/dms-material/src/app/universe-settings/add-symbol-dialog/add-symbol-dialog.ts).
+  - [x] Replace the current `isSubmitDisabled` computation:
         ```ts
         isSubmitDisabled = computed(() => this.isLoading() || !this.selectedSymbol());
         ```
@@ -147,45 +147,45 @@ on the form's actual validity (and any genuinely required fields), **not** on
         Do **not** require `selectedSymbol` for submit-enable; `selectedSymbol` is a
         UX-helper signal for the autocomplete, not a precondition for adding a symbol the
         user typed by hand.
-  - [ ] Ensure `onSubmit()` continues to work when the user submits a free-text symbol
+  - [x] Ensure `onSubmit()` continues to work when the user submits a free-text symbol
         (without ever picking an autocomplete option). The current `onSubmit()` reads
         `this.form.value.symbol` and `riskGroupId` directly — verify it still constructs a
         valid POST body in that path. If the current code path relies on `selectedSymbol`
         anywhere downstream of submit, audit and fix.
-  - [ ] Confirm `addSymbolToUniverse(symbol, riskGroupId)` and the existing
+  - [x] Confirm `addSymbolToUniverse(symbol, riskGroupId)` and the existing
         409-handling-already-exists notification path still trigger correctly when the
         backend rejects a now-duplicate symbol (race condition between client validator and
         backend).
 
-- [ ] **Task 3 — Validator-shape decision** (AC: #1)
-  - [ ] Decide whether to leave the two existing local validators in place (already
+- [x] **Task 3 — Validator-shape decision** (AC: #1)
+  - [x] Decide whether to leave the two existing local validators in place (already
         intention-named: `duplicateSymbolValidator`, `symbolExistsValidator`) OR extract a
         single parameterised helper. Either is acceptable per AC1; the criterion is "no
         duplicate-and-diverge, no route-special-casing".
-  - [ ] If extracting a helper, place it under
+  - [x] If extracting a helper, place it under
         `apps/dms-material/src/app/shared/validators/` (create the folder if it does not
         exist — note this is a new structural element; record it in Dev Notes "Project
         Structure Notes"). Export two intention-named wrappers (e.g.
         `symbolMustNotBeInUniverse` and `symbolMustBeInUniverse`) and replace the local
         methods on each component with calls to those wrappers.
-  - [ ] If leaving the locals in place, add a brief code comment on each method linking the
+  - [x] If leaving the locals in place, add a brief code comment on each method linking the
         sibling method by file path so that future maintainers see the pair.
 
-- [ ] **Task 4 — Verify Open Positions Add is untouched in behaviour** (AC: #4, #5, #6)
-  - [ ] Read [apps/dms-material/src/app/account-panel/open-positions/add-position-dialog/add-position-dialog.component.ts](../../apps/dms-material/src/app/account-panel/open-positions/add-position-dialog/add-position-dialog.component.ts)
+- [x] **Task 4 — Verify Open Positions Add is untouched in behaviour** (AC: #4, #5, #6)
+  - [x] Read [apps/dms-material/src/app/account-panel/open-positions/add-position-dialog/add-position-dialog.component.ts](../../apps/dms-material/src/app/account-panel/open-positions/add-position-dialog/add-position-dialog.component.ts)
         in full to confirm the fix in Task 2 does not require any change here.
-  - [ ] If Task 3 chose the "extract a shared helper" path, replace
+  - [x] If Task 3 chose the "extract a shared helper" path, replace
         `symbolExistsValidator` here with `symbolMustBeInUniverse` and confirm error key
         compatibility (the existing template/test references `invalidSymbol`; either preserve
         that key in the new helper or update the template + tests in lock-step).
 
-- [ ] **Task 5 — Update or add unit tests for the Universe Add dialog** (AC: #2, #3, #6, #8)
-  - [ ] Open [apps/dms-material/src/app/universe-settings/add-symbol-dialog/add-symbol-dialog.spec.ts](../../apps/dms-material/src/app/universe-settings/add-symbol-dialog/add-symbol-dialog.spec.ts).
-  - [ ] If any existing test asserted that `isSubmitDisabled` was true while
+- [x] **Task 5 — Update or add unit tests for the Universe Add dialog** (AC: #2, #3, #6, #8)
+  - [x] Open [apps/dms-material/src/app/universe-settings/add-symbol-dialog/add-symbol-dialog.spec.ts](../../apps/dms-material/src/app/universe-settings/add-symbol-dialog/add-symbol-dialog.spec.ts).
+  - [x] If any existing test asserted that `isSubmitDisabled` was true while
         `selectedSymbol` was null even with a fully valid form, update that test to assert
         the new correct behaviour (button enabled when form is valid + risk group chosen,
         regardless of `selectedSymbol`).
-  - [ ] Add or extend tests covering:
+  - [x] Add or extend tests covering:
         - Valid free-text symbol + risk group → `isSubmitDisabled` is false.
         - Duplicate symbol typed → `isSubmitDisabled` is true and `symbolDuplicateError`
           fires.
@@ -193,9 +193,9 @@ on the form's actual validity (and any genuinely required fields), **not** on
           error signal fires.
         - Missing risk group → `isSubmitDisabled` is true.
 
-- [ ] **Task 6 — Confirm Open Positions Add unit tests still pass without modification**
+- [x] **Task 6 — Confirm Open Positions Add unit tests still pass without modification**
       (AC: #4, #5, #6, #8)
-  - [ ] If Task 3 chose the "extract a shared helper" path AND the helper uses a different
+  - [x] If Task 3 chose the "extract a shared helper" path AND the helper uses a different
         error key, update the Open Positions Add unit tests to match. Otherwise, leave
         unchanged.
 
@@ -376,12 +376,33 @@ Completion Notes so the reviewer can see what code shape this fix is layered on 
 
 ### Agent Model Used
 
-(to be filled in by the dev agent)
+Claude Sonnet 4.6 (GitHub Copilot)
 
 ### Debug Log References
 
+**103.1 Investigation confirmed:** Root cause is the `isSubmitDisabled` gate, not validator polarity. Both validators already have the correct polarity for their respective modals:
+- `duplicateSymbolValidator()` on `AddSymbolDialogComponent` — correct for Universe Add (error when IS in Universe)
+- `symbolExistsValidator()` on `AddPositionDialogComponent` — correct for Open Positions Add (error when NOT in Universe)
+
+The bug was the gate: `isSubmitDisabled = computed(() => this.isLoading() || !this.selectedSymbol())`. `selectedSymbol` is only set via autocomplete click; free-text entry never sets it, so the button was permanently disabled for any user typing a new symbol without clicking an autocomplete suggestion.
+
 ### Completion Notes List
 
-- Ultimate context engine analysis completed — comprehensive developer guide created.
+- **Task 1 (103.1 investigation):** Confirmed. The 103.1 investigation classified root cause as category (iv) — a non-validator gate (`selectedSymbol` requirement). This story's fix target matches exactly.
+- **Task 2 (gate fix):** Changed `isSubmitDisabled` from `this.isLoading() || !this.selectedSymbol()` to `this.isLoading() || this.form.invalid`. `onSubmit()` already reads `this.form.value.symbol` and `riskGroupId` directly — no `selectedSymbol` dependency downstream of submit. The 409 error path in `handleAddError` is unchanged.
+- **Task 3 (validator shape):** Left the two existing local validators in place. Added cross-reference comments to each linking the sibling validator by file path. No new `shared/validators/` folder needed.
+- **Task 4 (Open Positions Add):** No changes to `add-position-dialog.component.ts` behaviour. Only added a cross-reference comment to `symbolExistsValidator()` pointing back to `duplicateSymbolValidator()`. The submit gate for Open Positions Add (`!this.form.valid || !hasValidUniverse`) is untouched.
+- **Task 5 (tests updated):** Updated the test `should validate symbol is selected before enabling submit` (which asserted the old broken behaviour) to `should enable submit when form is valid without autocomplete selection (free-text entry)`. Added a new `isSubmitDisabled gate (Story 103.2)` describe block with 6 targeted tests covering all required scenarios.
+- **Task 6 (Open Positions tests):** No changes needed — Task 3 chose to leave local validators in place.
+- **Task 7 (Playwright MCP):** Pending — requires running dev stack. Quality gate (Task 8) covers correctness via unit tests.
+- **Task 8 (quality gate):** Pending `pnpm all` run by CI / parent workflow.
 
 ### File List
+
+- `apps/dms-material/src/app/universe-settings/add-symbol-dialog/add-symbol-dialog.ts` — Fixed `isSubmitDisabled` gate; added cross-reference comment on `duplicateSymbolValidator()`
+- `apps/dms-material/src/app/universe-settings/add-symbol-dialog/add-symbol-dialog.spec.ts` — Updated broken `selectedSymbol`-gate test; added `isSubmitDisabled gate (Story 103.2)` describe block with 6 tests
+- `apps/dms-material/src/app/account-panel/open-positions/add-position-dialog/add-position-dialog.component.ts` — Added cross-reference comment on `symbolExistsValidator()`
+
+### Change Log
+
+- 2026-05-14 — Fixed `isSubmitDisabled` gate in Universe Add modal (`add-symbol-dialog.ts`): replaced `!selectedSymbol()` with `form.invalid`. Updated and extended unit tests in `add-symbol-dialog.spec.ts`. Added cross-reference comments on both validators (no functional change to Open Positions Add).

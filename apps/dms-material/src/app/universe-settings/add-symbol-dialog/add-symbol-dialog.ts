@@ -8,6 +8,7 @@ import {
   inject,
   signal,
 } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import {
   AbstractControl,
   FormBuilder,
@@ -132,9 +133,13 @@ export class AddSymbolDialogComponent {
     }.bind(this)
   );
 
+  private readonly formStatus = toSignal(this.form.statusChanges, {
+    initialValue: this.form.status,
+  });
+
   isSubmitDisabled = computed(
     function isSubmitDisabled(this: AddSymbolDialogComponent) {
-      return this.isLoading() || !this.selectedSymbol();
+      return this.isLoading() || this.formStatus() === 'INVALID';
     }.bind(this)
   );
 
@@ -172,6 +177,10 @@ export class AddSymbolDialogComponent {
     return selectRiskGroup();
   }
 
+  // Polarity: returns error when symbol IS already in the Universe (must NOT be in Universe).
+  // Sibling validator with opposite polarity lives in:
+  //   apps/dms-material/src/app/account-panel/open-positions/add-position-dialog/add-position-dialog.component.ts
+  //   → symbolExistsValidator() (returns error when symbol is NOT in the Universe)
   duplicateSymbolValidator(): ValidatorFn {
     // Capture existingSymbols at validator creation time
     const symbols = this.existingSymbols;

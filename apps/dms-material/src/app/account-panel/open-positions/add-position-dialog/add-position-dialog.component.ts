@@ -246,6 +246,10 @@ export class AddPositionDialogComponent implements AfterViewInit {
     }
   }
 
+  // Polarity: returns error when symbol is NOT in the Universe (must BE in Universe).
+  // Sibling validator with opposite polarity lives in:
+  //   apps/dms-material/src/app/universe-settings/add-symbol-dialog/add-symbol-dialog.ts
+  //   → duplicateSymbolValidator() (returns error when symbol IS in the Universe)
   // Custom validator to check if symbol exists in universe
   // Also auto-selects first match (exact match first, then partial match)
   private symbolExistsValidator(
