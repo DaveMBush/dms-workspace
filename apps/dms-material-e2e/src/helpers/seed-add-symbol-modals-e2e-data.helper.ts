@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import type { PrismaClient } from '@prisma/client';
 
 import { initializePrismaClient } from './shared-prisma-client.helper';
@@ -14,7 +15,7 @@ interface SeederResult {
   cleanup(): Promise<void>;
 }
 
-async function pickAvailableSymbol(
+async function pickAbsentSymbol(
   prisma: PrismaClient,
   candidates: string[]
 ): Promise<string> {
@@ -25,6 +26,32 @@ async function pickAvailableSymbol(
     });
     if (existing === null) {
       return candidate;
+    }
+  }
+  throw new Error(
+    `All candidate symbols are already in use: ${candidates.join(
+      ', '
+    )}. Cannot seed test data.`
+  );
+}
+
+async function createUniverseSymbolAtomically(
+  prisma: PrismaClient,
+  candidates: string[],
+  data: Omit<Prisma.universeUncheckedCreateInput, 'symbol'>
+): Promise<string> {
+  for (const candidate of candidates) {
+    try {
+      await prisma.universe.create({ data: { ...data, symbol: candidate } });
+      return candidate;
+    } catch (e) {
+      if (
+        e instanceof Prisma.PrismaClientKnownRequestError &&
+        e.code === 'P2002'
+      ) {
+        continue;
+      }
+      throw e;
     }
   }
   throw new Error(
@@ -46,17 +73,10 @@ export async function seedAddSymbolModalsE2eData(): Promise<SeederResult> {
     const riskGroups = await createRiskGroups(prisma);
     riskGroupId = riskGroups.equitiesRiskGroup.id;
 
-    universeInSymbol = await pickAvailableSymbol(prisma, UNIV_IN_CANDIDATES);
-    universeOutSymbol = await pickAvailableSymbol(
+    universeInSymbol = await createUniverseSymbolAtomically(
       prisma,
-      UNIV_OUT_CANDIDATES.filter(function notSameAsIn(c: string): boolean {
-        return c !== universeInSymbol;
-      })
-    );
-
-    await prisma.universe.create({
-      data: {
-        symbol: universeInSymbol,
+      UNIV_IN_CANDIDATES,
+      {
         risk_group_id: riskGroupId,
         distribution: 1.0,
         distributions_per_year: 4,
@@ -66,8 +86,14 @@ export async function seedAddSymbolModalsE2eData(): Promise<SeederResult> {
         most_recent_sell_price: null,
         expired: false,
         is_closed_end_fund: true,
-      },
-    });
+      }
+    );
+    universeOutSymbol = await pickAbsentSymbol(
+      prisma,
+      UNIV_OUT_CANDIDATES.filter(function notSameAsIn(c: string): boolean {
+        return c !== universeInSymbol;
+      })
+    );
 
     const universeRow = await prisma.universe.findFirst({
       where: { symbol: universeInSymbol },

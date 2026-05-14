@@ -309,7 +309,7 @@ browsers, which is what makes it a true regression net for the Epic 103 polarity
 - New seed helper:
   `apps/dms-material-e2e/src/helpers/seed-add-symbol-modals-e2e-data.helper.ts` — fits
   the existing `seed-*-e2e-data.helper.ts` naming convention.
-- No production source files are modified by this story.
+- **Production change required:** `add-symbol-dialog.ts` was modified to wire `viewChild(SymbolAutocompleteComponent)` via signal + effect + `takeUntilDestroyed` to sync typed autocomplete text into the dialog's `symbol` form control. This wiring was the missing piece from Story 103.2 and is required for AC1's free-text path to function correctly.
 - Conventions per [project-context.md](../project-context.md): Vitest for unit tests,
   Playwright for E2E (Chromium + Firefox), tests are authoritative.
 
