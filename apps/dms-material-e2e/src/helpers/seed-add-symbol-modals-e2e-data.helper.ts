@@ -1,5 +1,4 @@
-import { Prisma } from '@prisma/client';
-import type { PrismaClient } from '@prisma/client';
+import { Prisma, type PrismaClient } from '@prisma/client';
 
 import { initializePrismaClient } from './shared-prisma-client.helper';
 import { createRiskGroups } from './shared-risk-groups.helper';
@@ -13,6 +12,12 @@ interface SeederResult {
   universeInSymbol: string;
   universeOutSymbol: string;
   cleanup(): Promise<void>;
+}
+
+function isUniqueConstraintError(e: unknown): boolean {
+  return (
+    e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2002'
+  );
 }
 
 async function pickAbsentSymbol(
@@ -45,13 +50,7 @@ async function createUniverseSymbolAtomically(
       await prisma.universe.create({ data: { ...data, symbol: candidate } });
       return candidate;
     } catch (e) {
-      if (
-        e instanceof Prisma.PrismaClientKnownRequestError &&
-        e.code === 'P2002'
-      ) {
-        continue;
-      }
-      throw e;
+      if (!isUniqueConstraintError(e)) throw e;
     }
   }
   throw new Error(
@@ -61,18 +60,62 @@ async function createUniverseSymbolAtomically(
   );
 }
 
+async function seedAccountAndTrade(
+  prisma: PrismaClient,
+  universeInSymbol: string,
+  riskGroupId: string
+): Promise<string> {
+  const universeRow = await prisma.universe.findFirst({
+    where: { symbol: universeInSymbol },
+    select: { id: true },
+  });
+  if (universeRow === null) {
+    throw new Error(
+      `Failed to find universe row for symbol: ${universeInSymbol}`
+    );
+  }
+  const account = await prisma.accounts.create({
+    data: { name: `E2E-ASM-${universeInSymbol}-${riskGroupId.slice(0, 8)}` },
+  });
+  await prisma.trades.create({
+    data: {
+      universeId: universeRow.id,
+      accountId: account.id,
+      buy: 100.0,
+      sell: 0,
+      buy_date: new Date('2025-01-15'),
+      quantity: 10,
+      sell_date: null,
+    },
+  });
+  return account.id;
+}
+
+function buildCleanup(
+  prisma: PrismaClient,
+  accountId: string,
+  universeInSymbol: string
+): () => Promise<void> {
+  return async function cleanupAddSymbolModalsData(): Promise<void> {
+    try {
+      await prisma.trades.deleteMany({ where: { accountId } });
+      await prisma.accounts.deleteMany({ where: { id: accountId } });
+      await prisma.universe.deleteMany({ where: { symbol: universeInSymbol } });
+    } finally {
+      await prisma.$disconnect();
+    }
+  };
+}
+
 export async function seedAddSymbolModalsE2eData(): Promise<SeederResult> {
   const prisma = await initializePrismaClient();
-
   let accountId = '';
   let universeInSymbol = '';
   let universeOutSymbol = '';
   let riskGroupId = '';
-
   try {
     const riskGroups = await createRiskGroups(prisma);
     riskGroupId = riskGroups.equitiesRiskGroup.id;
-
     universeInSymbol = await createUniverseSymbolAtomically(
       prisma,
       UNIV_IN_CANDIDATES,
@@ -90,72 +133,31 @@ export async function seedAddSymbolModalsE2eData(): Promise<SeederResult> {
     );
     universeOutSymbol = await pickAbsentSymbol(
       prisma,
-      UNIV_OUT_CANDIDATES.filter(function notSameAsIn(c: string): boolean {
-        return c !== universeInSymbol;
-      })
+      UNIV_OUT_CANDIDATES.filter((c) => c !== universeInSymbol)
     );
-
-    const universeRow = await prisma.universe.findFirst({
-      where: { symbol: universeInSymbol },
-      select: { id: true },
-    });
-    if (universeRow === null) {
-      throw new Error(
-        `Failed to find universe row for symbol: ${universeInSymbol}`
-      );
-    }
-
-    const account = await prisma.accounts.create({
-      data: { name: `E2E-ASM-${universeInSymbol}` },
-    });
-    accountId = account.id;
-
-    await prisma.trades.create({
-      data: {
-        universeId: universeRow.id,
-        accountId,
-        buy: 100.0,
-        sell: 0,
-        buy_date: new Date('2025-01-15'),
-        quantity: 10,
-        sell_date: null,
-      },
-    });
-
-    // Verify UNIV_OUT is indeed not in the Universe
+    accountId = await seedAccountAndTrade(
+      prisma,
+      universeInSymbol,
+      riskGroupId
+    );
     const outCheck = await prisma.universe.findFirst({
       where: { symbol: universeOutSymbol },
       select: { id: true },
     });
     if (outCheck !== null) {
       throw new Error(
-        `universeOutSymbol ${universeOutSymbol} is unexpectedly present in the Universe. Cannot seed test data.`
+        `universeOutSymbol ${universeOutSymbol} is unexpectedly in the Universe.`
       );
     }
   } catch (error) {
     await prisma.$disconnect();
     throw error;
   }
-
   return {
     accountId,
     riskGroupId,
     universeInSymbol,
     universeOutSymbol,
-    cleanup: async function cleanupAddSymbolModalsData(): Promise<void> {
-      try {
-        await prisma.trades.deleteMany({
-          where: { accountId },
-        });
-        await prisma.accounts.deleteMany({
-          where: { id: accountId },
-        });
-        await prisma.universe.deleteMany({
-          where: { symbol: universeInSymbol },
-        });
-      } finally {
-        await prisma.$disconnect();
-      }
-    },
+    cleanup: buildCleanup(prisma, accountId, universeInSymbol),
   };
 }
