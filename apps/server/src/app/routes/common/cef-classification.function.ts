@@ -37,10 +37,14 @@ export async function lookupCefConnectSymbol(
     return null;
   }
   const url = 'https://www.cefconnect.com/api/v3/dailypricing';
-  const response = await axiosGetWithBackoff<ScreeningData[]>(url, {
-    headers: createCefConnectRequestHeaders(),
-    timeout: 8000,
-  }, { maxRetries: 1, baseDelayMs: 1000 });
+  const response = await axiosGetWithBackoff<ScreeningData[]>(
+    url,
+    {
+      headers: createCefConnectRequestHeaders(),
+      timeout: 8000,
+    },
+    { maxRetries: 1, baseDelayMs: 1000 }
+  );
   return (
     response.data.find(function findMatchingTicker(
       entry: ScreeningData
