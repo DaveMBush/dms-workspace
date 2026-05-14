@@ -58,12 +58,15 @@ export default defineConfig({
       },
     },
     {
-      command:
-        'NODE_OPTIONS="--max-old-space-size=4096" pnpm nx run dms-material:serve-e2e',
+      command: 'pnpm nx run dms-material:serve-e2e',
       url: 'http://localhost:4301',
       reuseExistingServer: true,
       cwd: workspaceRoot,
       timeout: 120000,
+      env: {
+        ...process.env,
+        NODE_OPTIONS: '--max-old-space-size=4096',
+      },
     },
     {
       command: 'pnpm nx run dms-material:storybook --port 6006',
