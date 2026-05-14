@@ -1,4 +1,4 @@
-import { test, expect } from 'playwright/test';
+import { expect, test } from 'playwright/test';
 
 import { login } from './helpers/login.helper';
 import { seedAddSymbolModalsE2eData } from './helpers/seed-add-symbol-modals-e2e-data.helper';
