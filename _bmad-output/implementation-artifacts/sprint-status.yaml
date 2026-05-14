@@ -602,3 +602,10 @@ development_status:
   102-2-fix-electron-tslib-importhelpers: approved
   102-3-e2e-electron-package-launch: approved
   epic-102-retrospective: optional
+
+  # ── Epic 103: Add New Symbol on Universe Screen (Validation Polarity Fix) ───
+  epic-103: in-progress
+  103-1-investigate-add-symbol-validator-polarity: review
+  103-2-fix-universe-add-validator-polarity: ready-for-dev
+  103-3-e2e-add-symbol-modals-validation: ready-for-dev
+  epic-103-retrospective: optional
