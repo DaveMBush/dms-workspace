@@ -370,8 +370,8 @@ importers:
         specifier: ~4.0.9
         version: 4.0.9
       jsdom:
-        specifier: ~29.0.1
-        version: 29.0.1
+        specifier: ~29.1.1
+        version: 29.1.1
       nx:
         specifier: 22.7.1
         version: 22.7.1(@swc-node/register@1.11.1(@swc/core@1.15.8(@swc/helpers@0.5.18))(@swc/types@0.1.25)(typescript@5.9.3))(@swc/core@1.15.8(@swc/helpers@0.5.18))
@@ -410,7 +410,7 @@ importers:
         version: 7.3.2(@types/node@20.19.9)(jiti@2.6.1)(less@4.4.2)(lightningcss@1.32.0)(sass-embedded@1.89.2)(sass@1.97.3)(stylus@0.64.0)(terser@5.46.0)(yaml@2.8.3)
       vitest:
         specifier: 4.0.9
-        version: 4.0.9(@types/debug@4.1.13)(@types/node@20.19.9)(@vitest/ui@4.0.9)(jiti@2.6.1)(jsdom@29.0.1)(less@4.4.2)(lightningcss@1.32.0)(sass-embedded@1.89.2)(sass@1.97.3)(stylus@0.64.0)(terser@5.46.0)(yaml@2.8.3)
+        version: 4.0.9(@types/debug@4.1.13)(@types/node@20.19.9)(@vitest/ui@4.0.9)(jiti@2.6.1)(jsdom@29.1.1)(less@4.4.2)(lightningcss@1.32.0)(sass-embedded@1.89.2)(sass@1.97.3)(stylus@0.64.0)(terser@5.46.0)(yaml@2.8.3)
 
 packages:
 
@@ -829,12 +829,16 @@ packages:
       '@angular/platform-server':
         optional: true
 
-  '@asamuzakjp/css-color@5.0.1':
-    resolution: {integrity: sha512-2SZFvqMyvboVV1d15lMf7XiI3m7SDqXUuKaTymJYLN6dSGadqp+fVojqJlVoMlbZnlTmu3S0TLwLTJpvBMO1Aw==}
+  '@asamuzakjp/css-color@5.1.11':
+    resolution: {integrity: sha512-KVw6qIiCTUQhByfTd78h2yD1/00waTmm9uy/R7Ck/ctUyAPj+AEDLkQIdJW0T8+qGgj3j5bpNKK7Q3G+LedJWg==}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
 
-  '@asamuzakjp/dom-selector@7.0.4':
-    resolution: {integrity: sha512-jXR6x4AcT3eIrS2fSNAwJpwirOkGcd+E7F7CP3zjdTqz9B/2huHOL8YJZBgekKwLML+u7qB/6P1LXQuMScsx0w==}
+  '@asamuzakjp/dom-selector@7.1.1':
+    resolution: {integrity: sha512-67RZDnYRc8H/8MLDgQCDE//zoqVFwajkepHZgmXrbwybzXOEwOWGPYGmALYl9J2DOLfFPPs6kKCqmbzV895hTQ==}
+    engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
+
+  '@asamuzakjp/generational-cache@1.0.1':
+    resolution: {integrity: sha512-wajfB8KqzMCN2KGNFdLkReeHncd0AslUSrvHVvvYWuU8ghncRJoA50kT3zP9MVL0+9g4/67H+cdvBskj9THPzg==}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
 
   '@asamuzakjp/nwsapi@2.3.9':
@@ -1704,15 +1708,15 @@ packages:
     resolution: {integrity: sha512-LMGQLS9EuADloEFkcTBR3BwV/CGHV7zyDxVRtVDTwdI2Ca4it0CCVTT9wCkxSgokjE5Ho41hEPgb8OEUwoXr6Q==}
     engines: {node: '>=20.19.0'}
 
-  '@csstools/css-calc@3.1.1':
-    resolution: {integrity: sha512-HJ26Z/vmsZQqs/o3a6bgKslXGFAungXGbinULZO3eMsOyNJHeBBZfup5FiZInOghgoM4Hwnmw+OgbJCNg1wwUQ==}
+  '@csstools/css-calc@3.2.1':
+    resolution: {integrity: sha512-DtdHlgXh5ZkA43cwBcAm+huzgJiwx3ZTWVjBs94kwz2xKqSimDA3lBgCjphYgwgVUMWatSM0pDd8TILB1yrVVg==}
     engines: {node: '>=20.19.0'}
     peerDependencies:
       '@csstools/css-parser-algorithms': ^4.0.0
       '@csstools/css-tokenizer': ^4.0.0
 
-  '@csstools/css-color-parser@4.0.2':
-    resolution: {integrity: sha512-0GEfbBLmTFf0dJlpsNU7zwxRIH0/BGEMuXLTCvFYxuL1tNhqzTbtnFICyJLTNK4a+RechKP75e7w42ClXSnJQw==}
+  '@csstools/css-color-parser@4.1.1':
+    resolution: {integrity: sha512-eZ5XOtyhK+mggRafYUWzA0tvaYOFgdY8AkgQiCJF9qNAePnUo/zmsqqYubBBb3sQ8uNUaSKTY9s9klfRaAXL0g==}
     engines: {node: '>=20.19.0'}
     peerDependencies:
       '@csstools/css-parser-algorithms': ^4.0.0
@@ -1724,8 +1728,8 @@ packages:
     peerDependencies:
       '@csstools/css-tokenizer': ^4.0.0
 
-  '@csstools/css-syntax-patches-for-csstree@1.1.1':
-    resolution: {integrity: sha512-BvqN0AMWNAnLk9G8jnUT77D+mUbY/H2b3uDTvg2isJkHaOufUE2R3AOwxWo7VBQKT1lOdwdvorddo2B/lk64+w==}
+  '@csstools/css-syntax-patches-for-csstree@1.1.4':
+    resolution: {integrity: sha512-wgsqt92b7C7tQhIdPNxj0n9zuUbQlvAuI1exyzeNrOKOi62SD7ren8zqszmpVREjAOqg8cD2FqYhQfAuKjk4sw==}
     peerDependencies:
       css-tree: ^3.2.1
     peerDependenciesMeta:
@@ -6864,6 +6868,10 @@ packages:
     resolution: {integrity: sha512-aN97NXWF6AWBTahfVOIrB/NShkzi5H7F9r1s9mD3cDj4Ko5f2qhhVoYMibXF7GlLveb/D2ioWay8lxI97Ven3g==}
     engines: {node: '>=0.12'}
 
+  entities@8.0.0:
+    resolution: {integrity: sha512-zwfzJecQ/Uej6tusMqwAqU/6KL2XaB2VZ2Jg54Je6ahNBGNH6Ek6g3jjNCF0fG9EWQKGZNddNjU5F1ZQn/sBnA==}
+    engines: {node: '>=20.19.0'}
+
   env-paths@2.2.1:
     resolution: {integrity: sha512-+h1lkLKhZMTYjog1VEpJNG7NZJWcuc2DDk/qsqSTRRCOXiLjeQ1d1/udrUGhqMxUgAlwKNZ0cf2uqan5GLuS2A==}
     engines: {node: '>=6'}
@@ -8392,8 +8400,8 @@ packages:
     resolution: {integrity: sha512-dh140MMgjyg3JhJZY/+iEzW+NO5xR2gpbDFKHqotCmexElVntw7GjWjt511+C/Ef02RU5TKYrJo/Xlzk+OLaTw==}
     engines: {node: '>=20.0.0'}
 
-  jsdom@29.0.1:
-    resolution: {integrity: sha512-z6JOK5gRO7aMybVq/y/MlIpKh8JIi68FBKMUtKkK2KH/wMSRlCxQ682d08LB9fYXplyY/UXG8P4XXTScmdjApg==}
+  jsdom@29.1.1:
+    resolution: {integrity: sha512-ECi4Fi2f7BdJtUKTflYRTiaMxIB0O6zfR1fX0GXpUrf6flp8QIYn1UT20YQqdSOfk2dfkCwS8LAFoJDEppNK5Q==}
     engines: {node: ^20.19.0 || ^22.13.0 || >=24.0.0}
     peerDependencies:
       canvas: ^3.0.0
@@ -8843,8 +8851,8 @@ packages:
   lru-cache@10.4.3:
     resolution: {integrity: sha512-JNAzZcXrCt42VGLuYz0zfAzDfAvJWW6AfYlDBQyDV5DClI2m5sAmK+OIO7s59XfsRsWHp02jAJrRadPRGTt6SQ==}
 
-  lru-cache@11.2.7:
-    resolution: {integrity: sha512-aY/R+aEsRelme17KGQa/1ZSIpLpNYYrhcrepKTZgE+W3WM16YMCaPwOHLHsmopZHELU0Ojin1lPVxKR0MihncA==}
+  lru-cache@11.3.6:
+    resolution: {integrity: sha512-Gf/KoL3C/MlI7Bt0PGI9I+TeTC/I6r/csU58N4BSNc4lppLBeKsOdFYkK+dX0ABDUMJNfCHTyPpzwwO21Awd3A==}
     engines: {node: 20 || >=22}
 
   lru-cache@5.1.1:
@@ -9544,6 +9552,9 @@ packages:
 
   parse5@8.0.0:
     resolution: {integrity: sha512-9m4m5GSgXjL4AjumKzq1Fgfp3Z8rsvjRNbnkVwfu2ImRqE5D0LnY2QfDen18FSY9C573YU5XxSapdHZTZ2WolA==}
+
+  parse5@8.0.1:
+    resolution: {integrity: sha512-z1e/HMG90obSGeidlli3hj7cbocou0/wa5HacvI3ASx34PecNjNQeaHNo5WIZpWofN9kgkqV1q5YvXe3F0FoPw==}
 
   parseurl@1.3.3:
     resolution: {integrity: sha512-CiyeOxFT/JZyN5m0z9PfXw4SCBJ6Sygz1Dpl0wqjlhDEGGBP1GnsUVEL0p63hoG1fcj3fHynXi9NYO4nWOL+qQ==}
@@ -11222,15 +11233,15 @@ packages:
   tldts-core@6.1.86:
     resolution: {integrity: sha512-Je6p7pkk+KMzMv2XXKmAE3McmolOQFdxkKw0R8EYNr7sELW46JqnNeTX8ybPiQgvg1ymCoF8LXs5fzFaZvJPTA==}
 
-  tldts-core@7.0.27:
-    resolution: {integrity: sha512-YQ7uPjgWUibIK6DW5lrKujGwUKhLevU4hcGbP5O6TcIUb+oTjJYJVWPS4nZsIHrEEEG6myk/oqAJUEQmpZrHsg==}
+  tldts-core@7.0.30:
+    resolution: {integrity: sha512-uiHN8PIB1VmWyS98eZYja4xzlYqeFZVjb4OuYlJQnZAuJhMw4PbKQOKgHKhBdJR3FE/t5mUQ1Kd80++B+qhD1Q==}
 
   tldts@6.1.86:
     resolution: {integrity: sha512-WMi/OQ2axVTf/ykqCQgXiIct+mSQDFdH2fkwhPwgEwvJ1kSzZRiinb0zF2Xb8u4+OqPChmyI6MEu4EezNJz+FQ==}
     hasBin: true
 
-  tldts@7.0.27:
-    resolution: {integrity: sha512-I4FZcVFcqCRuT0ph6dCDpPuO4Xgzvh+spkcTr1gK7peIvxWauoloVO0vuy1FQnijT63ss6AsHB6+OIM4aXHbPg==}
+  tldts@7.0.30:
+    resolution: {integrity: sha512-ELrFxuqsDdHUwoh0XxDbxuLD3Wnz49Z57IFvTtvWy1hJdcMZjXLIuonjilCiWHlT2GbE4Wlv1wKVTzDFnXH1aw==}
     hasBin: true
 
   tmp-promise@3.0.3:
@@ -11456,12 +11467,12 @@ packages:
     resolution: {integrity: sha512-BM/JzwwaRXxrLdElV2Uo6cTLEjhSb3WXboncJamZ15NgUURmvlXvxa6xkwIOILIjPNo9i8ku136ZvWV0Uly8+w==}
     engines: {node: '>=20.18.1'}
 
-  undici@7.24.5:
-    resolution: {integrity: sha512-3IWdCpjgxp15CbJnsi/Y9TCDE7HWVN19j1hmzVhoAkY/+CJx449tVxT5wZc1Gwg8J+P0LWvzlBzxYRnHJ+1i7Q==}
-    engines: {node: '>=20.18.1'}
-
   undici@7.24.7:
     resolution: {integrity: sha512-H/nlJ/h0ggGC+uRL3ovD+G0i4bqhvsDOpbDv7At5eFLlj2b41L8QliGbnl2H7SnDiYhENphh1tQFJZf+MyfLsQ==}
+    engines: {node: '>=20.18.1'}
+
+  undici@7.25.0:
+    resolution: {integrity: sha512-xXnp4kTyor2Zq+J1FfPI6Eq3ew5h6Vl0F/8d9XU5zZQf1tX9s2Su1/3PiMmUANFULpmksxkClamIZcaUqryHsQ==}
     engines: {node: '>=20.18.1'}
 
   unicode-canonical-property-names-ecmascript@2.0.1:
@@ -12172,7 +12183,7 @@ snapshots:
       '@analogjs/vite-plugin-angular': 2.4.9(@angular-devkit/build-angular@21.2.9(b9f070a751af99c934ff3e7cb9899973))(@angular/build@21.2.9(20cb7a8d7aeee97e699544b85594ed97))
       '@angular-devkit/architect': 0.2102.9(chokidar@5.0.0)
       '@angular-devkit/schematics': 21.2.9(chokidar@5.0.0)
-      vitest: 4.0.9(@types/debug@4.1.13)(@types/node@20.19.9)(@vitest/ui@4.0.9)(jiti@2.6.1)(jsdom@29.0.1)(less@4.4.2)(lightningcss@1.32.0)(sass-embedded@1.89.2)(sass@1.97.3)(stylus@0.64.0)(terser@5.46.0)(yaml@2.8.3)
+      vitest: 4.0.9(@types/debug@4.1.13)(@types/node@20.19.9)(@vitest/ui@4.0.9)(jiti@2.6.1)(jsdom@29.1.1)(less@4.4.2)(lightningcss@1.32.0)(sass-embedded@1.89.2)(sass@1.97.3)(stylus@0.64.0)(terser@5.46.0)(yaml@2.8.3)
     optionalDependencies:
       zone.js: 0.15.1
 
@@ -12452,7 +12463,7 @@ snapshots:
       lmdb: 3.5.1
       postcss: 8.5.14
       tailwindcss: 4.2.2
-      vitest: 4.0.9(@types/debug@4.1.13)(@types/node@20.19.9)(@vitest/ui@4.0.9)(jiti@2.6.1)(jsdom@29.0.1)(less@4.4.2)(lightningcss@1.32.0)(sass-embedded@1.89.2)(sass@1.97.3)(stylus@0.64.0)(terser@5.46.0)(yaml@2.8.3)
+      vitest: 4.0.9(@types/debug@4.1.13)(@types/node@20.19.9)(@vitest/ui@4.0.9)(jiti@2.6.1)(jsdom@29.1.1)(less@4.4.2)(lightningcss@1.32.0)(sass-embedded@1.89.2)(sass@1.97.3)(stylus@0.64.0)(terser@5.46.0)(yaml@2.8.3)
     transitivePeerDependencies:
       - '@types/node'
       - chokidar
@@ -12508,7 +12519,7 @@ snapshots:
       lmdb: 3.5.1
       postcss: 8.5.12
       tailwindcss: 4.2.2
-      vitest: 4.0.9(@types/debug@4.1.13)(@types/node@20.19.9)(@vitest/ui@4.0.9)(jiti@2.6.1)(jsdom@29.0.1)(less@4.4.2)(lightningcss@1.32.0)(sass-embedded@1.89.2)(sass@1.97.3)(stylus@0.64.0)(terser@5.46.0)(yaml@2.8.3)
+      vitest: 4.0.9(@types/debug@4.1.13)(@types/node@20.19.9)(@vitest/ui@4.0.9)(jiti@2.6.1)(jsdom@29.1.1)(less@4.4.2)(lightningcss@1.32.0)(sass-embedded@1.89.2)(sass@1.97.3)(stylus@0.64.0)(terser@5.46.0)(yaml@2.8.3)
     transitivePeerDependencies:
       - '@types/node'
       - chokidar
@@ -12655,21 +12666,23 @@ snapshots:
     optionalDependencies:
       '@angular/platform-server': 21.2.11(@angular/common@21.2.11(@angular/core@21.2.11(@angular/compiler@21.2.11)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/compiler@21.2.11)(@angular/core@21.2.11(@angular/compiler@21.2.11)(rxjs@7.8.2)(zone.js@0.15.1))(@angular/platform-browser@21.2.11(@angular/animations@21.2.11(@angular/core@21.2.11(@angular/compiler@21.2.11)(rxjs@7.8.2)(zone.js@0.15.1)))(@angular/common@21.2.11(@angular/core@21.2.11(@angular/compiler@21.2.11)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@21.2.11(@angular/compiler@21.2.11)(rxjs@7.8.2)(zone.js@0.15.1)))(rxjs@7.8.2)
 
-  '@asamuzakjp/css-color@5.0.1':
+  '@asamuzakjp/css-color@5.1.11':
     dependencies:
-      '@csstools/css-calc': 3.1.1(@csstools/css-parser-algorithms@4.0.0(@csstools/css-tokenizer@4.0.0))(@csstools/css-tokenizer@4.0.0)
-      '@csstools/css-color-parser': 4.0.2(@csstools/css-parser-algorithms@4.0.0(@csstools/css-tokenizer@4.0.0))(@csstools/css-tokenizer@4.0.0)
+      '@asamuzakjp/generational-cache': 1.0.1
+      '@csstools/css-calc': 3.2.1(@csstools/css-parser-algorithms@4.0.0(@csstools/css-tokenizer@4.0.0))(@csstools/css-tokenizer@4.0.0)
+      '@csstools/css-color-parser': 4.1.1(@csstools/css-parser-algorithms@4.0.0(@csstools/css-tokenizer@4.0.0))(@csstools/css-tokenizer@4.0.0)
       '@csstools/css-parser-algorithms': 4.0.0(@csstools/css-tokenizer@4.0.0)
       '@csstools/css-tokenizer': 4.0.0
-      lru-cache: 11.2.7
 
-  '@asamuzakjp/dom-selector@7.0.4':
+  '@asamuzakjp/dom-selector@7.1.1':
     dependencies:
+      '@asamuzakjp/generational-cache': 1.0.1
       '@asamuzakjp/nwsapi': 2.3.9
       bidi-js: 1.0.3
       css-tree: 3.2.1
       is-potential-custom-element-name: 1.0.1
-      lru-cache: 11.2.7
+
+  '@asamuzakjp/generational-cache@1.0.1': {}
 
   '@asamuzakjp/nwsapi@2.3.9': {}
 
@@ -14027,15 +14040,15 @@ snapshots:
 
   '@csstools/color-helpers@6.0.2': {}
 
-  '@csstools/css-calc@3.1.1(@csstools/css-parser-algorithms@4.0.0(@csstools/css-tokenizer@4.0.0))(@csstools/css-tokenizer@4.0.0)':
+  '@csstools/css-calc@3.2.1(@csstools/css-parser-algorithms@4.0.0(@csstools/css-tokenizer@4.0.0))(@csstools/css-tokenizer@4.0.0)':
     dependencies:
       '@csstools/css-parser-algorithms': 4.0.0(@csstools/css-tokenizer@4.0.0)
       '@csstools/css-tokenizer': 4.0.0
 
-  '@csstools/css-color-parser@4.0.2(@csstools/css-parser-algorithms@4.0.0(@csstools/css-tokenizer@4.0.0))(@csstools/css-tokenizer@4.0.0)':
+  '@csstools/css-color-parser@4.1.1(@csstools/css-parser-algorithms@4.0.0(@csstools/css-tokenizer@4.0.0))(@csstools/css-tokenizer@4.0.0)':
     dependencies:
       '@csstools/color-helpers': 6.0.2
-      '@csstools/css-calc': 3.1.1(@csstools/css-parser-algorithms@4.0.0(@csstools/css-tokenizer@4.0.0))(@csstools/css-tokenizer@4.0.0)
+      '@csstools/css-calc': 3.2.1(@csstools/css-parser-algorithms@4.0.0(@csstools/css-tokenizer@4.0.0))(@csstools/css-tokenizer@4.0.0)
       '@csstools/css-parser-algorithms': 4.0.0(@csstools/css-tokenizer@4.0.0)
       '@csstools/css-tokenizer': 4.0.0
 
@@ -14043,7 +14056,7 @@ snapshots:
     dependencies:
       '@csstools/css-tokenizer': 4.0.0
 
-  '@csstools/css-syntax-patches-for-csstree@1.1.1(css-tree@3.2.1)':
+  '@csstools/css-syntax-patches-for-csstree@1.1.4(css-tree@3.2.1)':
     optionalDependencies:
       css-tree: 3.2.1
 
@@ -15565,7 +15578,7 @@ snapshots:
       agent-base: 7.1.4
       http-proxy-agent: 7.0.2
       https-proxy-agent: 7.0.6
-      lru-cache: 11.2.7
+      lru-cache: 11.3.6
       socks-proxy-agent: 8.0.5
     transitivePeerDependencies:
       - supports-color
@@ -15583,7 +15596,7 @@ snapshots:
     dependencies:
       '@npmcli/promise-spawn': 9.0.1
       ini: 6.0.0
-      lru-cache: 11.2.7
+      lru-cache: 11.3.6
       npm-pick-manifest: 11.0.3
       proc-log: 6.1.0
       promise-retry: 2.0.1
@@ -16121,7 +16134,7 @@ snapshots:
       tsconfig-paths: 4.2.0
       tslib: 2.8.1
       vite: 7.3.2(@types/node@20.19.9)(jiti@2.6.1)(less@4.4.2)(lightningcss@1.32.0)(sass-embedded@1.89.2)(sass@1.97.3)(stylus@0.64.0)(terser@5.46.0)(yaml@2.8.3)
-      vitest: 4.0.9(@types/debug@4.1.13)(@types/node@20.19.9)(@vitest/ui@4.0.9)(jiti@2.6.1)(jsdom@29.0.1)(less@4.4.2)(lightningcss@1.32.0)(sass-embedded@1.89.2)(sass@1.97.3)(stylus@0.64.0)(terser@5.46.0)(yaml@2.8.3)
+      vitest: 4.0.9(@types/debug@4.1.13)(@types/node@20.19.9)(@vitest/ui@4.0.9)(jiti@2.6.1)(jsdom@29.1.1)(less@4.4.2)(lightningcss@1.32.0)(sass-embedded@1.89.2)(sass@1.97.3)(stylus@0.64.0)(terser@5.46.0)(yaml@2.8.3)
     transitivePeerDependencies:
       - '@babel/traverse'
       - '@nx/eslint'
@@ -16143,7 +16156,7 @@ snapshots:
     optionalDependencies:
       '@nx/eslint': 22.7.1(@babel/traverse@7.29.0)(@nx/jest@22.7.1(@babel/traverse@7.29.0)(@swc-node/register@1.11.1(@swc/core@1.15.8(@swc/helpers@0.5.18))(@swc/types@0.1.25)(typescript@5.9.3))(@swc/core@1.15.8(@swc/helpers@0.5.18))(@types/node@20.19.9)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.7))(nx@22.7.1(@swc-node/register@1.11.1(@swc/core@1.15.8(@swc/helpers@0.5.18))(@swc/types@0.1.25)(typescript@5.9.3))(@swc/core@1.15.8(@swc/helpers@0.5.18)))(typescript@5.9.3))(@swc-node/register@1.11.1(@swc/core@1.15.8(@swc/helpers@0.5.18))(@swc/types@0.1.25)(typescript@5.9.3))(@swc/core@1.15.8(@swc/helpers@0.5.18))(@zkochan/js-yaml@0.0.7)(eslint@9.39.4(jiti@2.6.1))(nx@22.7.1(@swc-node/register@1.11.1(@swc/core@1.15.8(@swc/helpers@0.5.18))(@swc/types@0.1.25)(typescript@5.9.3))(@swc/core@1.15.8(@swc/helpers@0.5.18)))
       vite: 7.3.2(@types/node@20.19.9)(jiti@2.6.1)(less@4.4.2)(lightningcss@1.32.0)(sass-embedded@1.89.2)(sass@1.97.3)(stylus@0.64.0)(terser@5.46.0)(yaml@2.8.3)
-      vitest: 4.0.9(@types/debug@4.1.13)(@types/node@20.19.9)(@vitest/ui@4.0.9)(jiti@2.6.1)(jsdom@29.0.1)(less@4.4.2)(lightningcss@1.32.0)(sass-embedded@1.89.2)(sass@1.97.3)(stylus@0.64.0)(terser@5.46.0)(yaml@2.8.3)
+      vitest: 4.0.9(@types/debug@4.1.13)(@types/node@20.19.9)(@vitest/ui@4.0.9)(jiti@2.6.1)(jsdom@29.1.1)(less@4.4.2)(lightningcss@1.32.0)(sass-embedded@1.89.2)(sass@1.97.3)(stylus@0.64.0)(terser@5.46.0)(yaml@2.8.3)
     transitivePeerDependencies:
       - '@babel/traverse'
       - '@swc-node/register'
@@ -18191,7 +18204,7 @@ snapshots:
       magicast: 0.5.1
       std-env: 3.10.0
       tinyrainbow: 3.0.3
-      vitest: 4.0.9(@types/debug@4.1.13)(@types/node@20.19.9)(@vitest/ui@4.0.9)(jiti@2.6.1)(jsdom@29.0.1)(less@4.4.2)(lightningcss@1.32.0)(sass-embedded@1.89.2)(sass@1.97.3)(stylus@0.64.0)(terser@5.46.0)(yaml@2.8.3)
+      vitest: 4.0.9(@types/debug@4.1.13)(@types/node@20.19.9)(@vitest/ui@4.0.9)(jiti@2.6.1)(jsdom@29.1.1)(less@4.4.2)(lightningcss@1.32.0)(sass-embedded@1.89.2)(sass@1.97.3)(stylus@0.64.0)(terser@5.46.0)(yaml@2.8.3)
     transitivePeerDependencies:
       - supports-color
 
@@ -18202,7 +18215,7 @@ snapshots:
       eslint: 9.39.4(jiti@2.6.1)
     optionalDependencies:
       typescript: 5.9.3
-      vitest: 4.0.9(@types/debug@4.1.13)(@types/node@20.19.9)(@vitest/ui@4.0.9)(jiti@2.6.1)(jsdom@29.0.1)(less@4.4.2)(lightningcss@1.32.0)(sass-embedded@1.89.2)(sass@1.97.3)(stylus@0.64.0)(terser@5.46.0)(yaml@2.8.3)
+      vitest: 4.0.9(@types/debug@4.1.13)(@types/node@20.19.9)(@vitest/ui@4.0.9)(jiti@2.6.1)(jsdom@29.1.1)(less@4.4.2)(lightningcss@1.32.0)(sass-embedded@1.89.2)(sass@1.97.3)(stylus@0.64.0)(terser@5.46.0)(yaml@2.8.3)
     transitivePeerDependencies:
       - supports-color
 
@@ -18265,7 +18278,7 @@ snapshots:
       sirv: 3.0.2
       tinyglobby: 0.2.15
       tinyrainbow: 3.0.3
-      vitest: 4.0.9(@types/debug@4.1.13)(@types/node@20.19.9)(@vitest/ui@4.0.9)(jiti@2.6.1)(jsdom@29.0.1)(less@4.4.2)(lightningcss@1.32.0)(sass-embedded@1.89.2)(sass@1.97.3)(stylus@0.64.0)(terser@5.46.0)(yaml@2.8.3)
+      vitest: 4.0.9(@types/debug@4.1.13)(@types/node@20.19.9)(@vitest/ui@4.0.9)(jiti@2.6.1)(jsdom@29.1.1)(less@4.4.2)(lightningcss@1.32.0)(sass-embedded@1.89.2)(sass@1.97.3)(stylus@0.64.0)(terser@5.46.0)(yaml@2.8.3)
 
   '@vitest/utils@3.2.4':
     dependencies:
@@ -19178,7 +19191,7 @@ snapshots:
       '@npmcli/fs': 5.0.0
       fs-minipass: 3.0.3
       glob: 13.0.0
-      lru-cache: 11.2.7
+      lru-cache: 11.3.6
       minipass: 7.1.2
       minipass-collect: 2.0.1
       minipass-flush: 1.0.5
@@ -20120,6 +20133,8 @@ snapshots:
   entities@4.5.0: {}
 
   entities@6.0.1: {}
+
+  entities@8.0.0: {}
 
   env-paths@2.2.1: {}
 
@@ -21256,7 +21271,7 @@ snapshots:
 
   hosted-git-info@9.0.2:
     dependencies:
-      lru-cache: 11.2.7
+      lru-cache: 11.3.6
 
   hpack.js@2.1.6:
     dependencies:
@@ -22151,24 +22166,24 @@ snapshots:
 
   jsdoc-type-pratt-parser@7.2.0: {}
 
-  jsdom@29.0.1:
+  jsdom@29.1.1:
     dependencies:
-      '@asamuzakjp/css-color': 5.0.1
-      '@asamuzakjp/dom-selector': 7.0.4
+      '@asamuzakjp/css-color': 5.1.11
+      '@asamuzakjp/dom-selector': 7.1.1
       '@bramus/specificity': 2.4.2
-      '@csstools/css-syntax-patches-for-csstree': 1.1.1(css-tree@3.2.1)
+      '@csstools/css-syntax-patches-for-csstree': 1.1.4(css-tree@3.2.1)
       '@exodus/bytes': 1.15.0
       css-tree: 3.2.1
       data-urls: 7.0.0
       decimal.js: 10.6.0
       html-encoding-sniffer: 6.0.0
       is-potential-custom-element-name: 1.0.1
-      lru-cache: 11.2.7
-      parse5: 8.0.0
+      lru-cache: 11.3.6
+      parse5: 8.0.1
       saxes: 6.0.0
       symbol-tree: 3.2.4
       tough-cookie: 6.0.1
-      undici: 7.24.5
+      undici: 7.25.0
       w3c-xmlserializer: 5.0.0
       webidl-conversions: 8.0.1
       whatwg-mimetype: 5.0.0
@@ -22602,7 +22617,7 @@ snapshots:
 
   lru-cache@10.4.3: {}
 
-  lru-cache@11.2.7: {}
+  lru-cache@11.3.6: {}
 
   lru-cache@5.1.1:
     dependencies:
@@ -23505,7 +23520,7 @@ snapshots:
   parse5-html-rewriting-stream@8.0.0:
     dependencies:
       entities: 6.0.1
-      parse5: 8.0.0
+      parse5: 8.0.1
       parse5-sax-parser: 8.0.0
 
   parse5-htmlparser2-tree-adapter@7.1.0:
@@ -23519,7 +23534,7 @@ snapshots:
 
   parse5-sax-parser@8.0.0:
     dependencies:
-      parse5: 8.0.0
+      parse5: 8.0.1
 
   parse5@4.0.0: {}
 
@@ -23530,6 +23545,10 @@ snapshots:
   parse5@8.0.0:
     dependencies:
       entities: 6.0.1
+
+  parse5@8.0.1:
+    dependencies:
+      entities: 8.0.0
 
   parseurl@1.3.3: {}
 
@@ -23561,7 +23580,7 @@ snapshots:
 
   path-scurry@2.0.1:
     dependencies:
-      lru-cache: 11.2.7
+      lru-cache: 11.3.6
       minipass: 7.1.2
 
   path-to-regexp@0.1.13: {}
@@ -25333,15 +25352,15 @@ snapshots:
 
   tldts-core@6.1.86: {}
 
-  tldts-core@7.0.27: {}
+  tldts-core@7.0.30: {}
 
   tldts@6.1.86:
     dependencies:
       tldts-core: 6.1.86
 
-  tldts@7.0.27:
+  tldts@7.0.30:
     dependencies:
-      tldts-core: 7.0.27
+      tldts-core: 7.0.30
 
   tmp-promise@3.0.3:
     dependencies:
@@ -25387,7 +25406,7 @@ snapshots:
 
   tough-cookie@6.0.1:
     dependencies:
-      tldts: 7.0.27
+      tldts: 7.0.30
 
   tr46@0.0.3: {}
 
@@ -25579,9 +25598,9 @@ snapshots:
 
   undici@7.24.4: {}
 
-  undici@7.24.5: {}
-
   undici@7.24.7: {}
+
+  undici@7.25.0: {}
 
   unicode-canonical-property-names-ecmascript@2.0.1: {}
 
@@ -25752,7 +25771,7 @@ snapshots:
       terser: 5.46.0
       yaml: 2.8.3
 
-  vitest@4.0.9(@types/debug@4.1.13)(@types/node@20.19.9)(@vitest/ui@4.0.9)(jiti@2.6.1)(jsdom@29.0.1)(less@4.4.2)(lightningcss@1.32.0)(sass-embedded@1.89.2)(sass@1.97.3)(stylus@0.64.0)(terser@5.46.0)(yaml@2.8.3):
+  vitest@4.0.9(@types/debug@4.1.13)(@types/node@20.19.9)(@vitest/ui@4.0.9)(jiti@2.6.1)(jsdom@29.1.1)(less@4.4.2)(lightningcss@1.32.0)(sass-embedded@1.89.2)(sass@1.97.3)(stylus@0.64.0)(terser@5.46.0)(yaml@2.8.3):
     dependencies:
       '@vitest/expect': 4.0.9
       '@vitest/mocker': 4.0.9(vite@7.3.2(@types/node@20.19.9)(jiti@2.6.1)(less@4.4.2)(lightningcss@1.32.0)(sass-embedded@1.89.2)(sass@1.97.3)(stylus@0.64.0)(terser@5.46.0)(yaml@2.8.3))
@@ -25778,7 +25797,7 @@ snapshots:
       '@types/debug': 4.1.13
       '@types/node': 20.19.9
       '@vitest/ui': 4.0.9(vitest@4.0.9)
-      jsdom: 29.0.1
+      jsdom: 29.1.1
     transitivePeerDependencies:
       - jiti
       - less
