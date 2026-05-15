@@ -2895,6 +2895,10 @@
     "mtime": 1778523205.5929196,
     "hash": "04938101206847ad6144675dc2d11447"
   },
+  "/home/copilot/code/dms-workspace/apps/dms-material-e2e/src/add-symbol-modals-validation.spec.ts": {
+    "mtime": 1778787427.3344746,
+    "hash": "3a32ce7cc2a7195896e14d1fb385d564"
+  },
   "/home/copilot/code/dms-workspace/apps/dms-material-e2e/src/import-dialog-dark-mode.spec.ts": {
     "mtime": 1776724179.027686,
     "hash": "c274ccd89e7482872fe2f77ebbdf1dd0"
@@ -3342,6 +3346,10 @@
   "/home/copilot/code/dms-workspace/apps/dms-material-e2e/src/helpers/seed-oxlc-joint-brokerage.helper.ts": {
     "mtime": 1777235186.3772523,
     "hash": "cc3b3b6e4a2b6f5f7cf078f92e7c808f"
+  },
+  "/home/copilot/code/dms-workspace/apps/dms-material-e2e/src/helpers/seed-add-symbol-modals-e2e-data.helper.ts": {
+    "mtime": 1778787427.3346624,
+    "hash": "645ecf843dabe1ef7c8be304a503a417"
   },
   "/home/copilot/code/dms-workspace/apps/dms-material-e2e/src/helpers/seed-universe-e2e-data.helper.ts": {
     "mtime": 1775128321.4776428,
