@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `a6f510bb`
+- Built from commit: `97e9364c`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -573,40 +573,40 @@ Cohesion: 0.22
 Nodes (14): createTestDates(), cleanupRowHeightData(), createButtonRows(), createNoButtonRows(), createRowHeightRecords(), seedRowHeightE2eData(), cleanupUniverseData(), createExpiredEquity() (+6 more)
 
 ### Community 35 - "Community 35"
-Cohesion: 0.14
-Nodes (20): adjustLotsForSplit: rewrite open lot quantities/buy by split ratio, calculateSplitRatio: ratio = openQty / csvPostSplitQty, CUSIP cache admin route handlers (stats/audit/bulk), handleGetAuditLog, processBulkMappings, handleGetStats: aggregate CUSIP cache statistics, cusip-cache.service: read-side lookups by CUSIP, CusipCacheSource enum (THIRTEENF | YAHOO_FINANCE) (+12 more)
-
-### Community 36 - "Community 36"
 Cohesion: 0.26
 Nodes (15): attachEngineHandlers(), buildApplyMigrationsRequest(), getSchemaEngineBinaryName(), isNonEmptyLine(), parseRpcResponse(), resolveMigrationsPath(), resolvePrismaCliPath(), resolveSchemaEnginePath() (+7 more)
 
-### Community 41 - "Community 41"
+### Community 40 - "Community 40"
 Cohesion: 0.22
 Nodes (8): configureApp(), health(), checkDatabaseHealth(), checkDatabaseHealthWithClient(), closeDatabaseConnection(), connectWithRetry(), createPrismaClient(), connectWithRetryTest()
 
-### Community 42 - "Community 42"
+### Community 41 - "Community 41"
 Cohesion: 0.31
 Nodes (14): filterLogs(), handleDeleteLogFile(), handleErrorLogsRequest(), handleLogFilesRequest(), isValidFilename(), isValidLogLevel(), isWithinDateRange(), matchesSearchTerm() (+6 more)
 
-### Community 45 - "Community 45"
+### Community 44 - "Community 44"
 Cohesion: 0.17
 Nodes (3): BaseTableComponent, compareNonNullValues(), compareValues()
 
-### Community 47 - "Community 47"
-Cohesion: 0.16
-Nodes (16): axiosGetWithBackoff HTTP helper, buildCefClassification helper, CEF classification utilities, classifySymbolRiskGroupId: map CategoryId → risk group, createUniverseEntry: insert universe row + fetch initial price, ensureRiskGroupsExist: seed Equities/Income/TaxFree risk groups, fetchAndUpdatePriceData, FidelityCsvRow interface (+8 more)
+### Community 46 - "Community 46"
+Cohesion: 0.15
+Nodes (16): ACCOUNT_PAGE_SIZE constant, CUSIP cache admin route handlers (stats/audit/bulk), handleGetAuditLog, processBulkMappings, handleGetStats: aggregate CUSIP cache statistics, cusip-cache.service: read-side lookups by CUSIP, CusipCacheSource enum (THIRTEENF | YAHOO_FINANCE), cusip_cache Prisma table (+8 more)
 
-### Community 48 - "Community 48"
+### Community 47 - "Community 47"
 Cohesion: 0.36
 Nodes (13): addSearchBox(), addSortIndicators(), enableUI(), getNthColumn(), getTable(), getTableBody(), getTableHeader(), loadColumns() (+5 more)
 
-### Community 49 - "Community 49"
+### Community 48 - "Community 48"
 Cohesion: 0.18
 Nodes (7): seedScrollTradesCommon(), createBulkDivDeposits(), getOrCreateDividendType(), seedScrollDivDepositsWithSymbolsData(), fetchExistingUniverseIds(), createBulkSoldTrades(), seedScrollSoldPositionsData()
 
-### Community 50 - "Community 50"
+### Community 49 - "Community 49"
 Cohesion: 0.36
 Nodes (13): buildCleanup(), buildMonthlyDates(), buildSeedPlans(), buildUniverseCreateData(), cleanupOnError(), createSeedCategoryContext(), createSeedRuntimeData(), extractSymbols() (+5 more)
+
+### Community 50 - "Community 50"
+Cohesion: 0.17
+Nodes (15): axiosGetWithBackoff HTTP helper, buildCefClassification helper, CEF classification utilities, classifySymbolRiskGroupId: map CategoryId → risk group, createUniverseEntry: insert universe row + fetch initial price, ensureRiskGroupsExist: seed Equities/Income/TaxFree risk groups, fetchAndUpdatePriceData, FidelityCsvRow interface (+7 more)
 
 ### Community 51 - "Community 51"
 Cohesion: 0.27
@@ -645,16 +645,16 @@ Cohesion: 0.17
 Nodes (4): createSecurityConfig(), csrfProtectionHook(), securityHeaders(), securityOnRequestHook()
 
 ### Community 61 - "Community 61"
-Cohesion: 0.27
-Nodes (6): validateCognitoConfig(), authenticateJWT(), extractAndValidateToken(), handleFailedAuthentication(), processSuccessfulAuthentication(), getAuthCookieName()
+Cohesion: 0.17
+Nodes (4): handleSetSecureCookie(), logCookieSuccess(), setSecureCookie(), validateCookieRequest()
 
 ### Community 62 - "Community 62"
 Cohesion: 0.21
 Nodes (4): getBlacklistStats(), getCSRFStats(), getRateLimitStats(), securityStatsHandler()
 
 ### Community 63 - "Community 63"
-Cohesion: 0.17
-Nodes (4): handleSetSecureCookie(), logCookieSuccess(), setSecureCookie(), validateCookieRequest()
+Cohesion: 0.27
+Nodes (6): validateCognitoConfig(), authenticateJWT(), extractAndValidateToken(), handleFailedAuthentication(), processSuccessfulAuthentication(), getAuthCookieName()
 
 ### Community 66 - "Community 66"
 Cohesion: 0.2
@@ -685,40 +685,40 @@ Cohesion: 0.24
 Nodes (12): BaseTable Column Sort Indicator, BaseTable Shared Component, BaseTable Dark Theme Variant, BaseTable Empty State (Dark Theme, Chromium), BaseTable Empty State (Light Theme, Chromium), BaseTable Light Theme Variant, BaseTable Row Selection (Checkbox Column), BaseTable Universe Table Variation (Light Theme, Firefox) (+4 more)
 
 ### Community 73 - "Community 73"
-Cohesion: 0.23
-Nodes (12): dms-material Angular browser build, electron-builder packaging config, extraResources: server+angular+prisma migrations bundled, Platform targets: AppImage/deb (linux), dmg (mac), nsis (win), Content Security Policy injection, findAvailablePort() dynamic port reservation, Electron main process (startup, BrowserWindow, CSP), preload getApiPort IPC bridge (+4 more)
+Cohesion: 0.35
+Nodes (8): a(), B(), D(), g(), i(), k(), Q(), y()
 
 ### Community 74 - "Community 74"
 Cohesion: 0.35
 Nodes (8): a(), B(), D(), g(), i(), k(), Q(), y()
 
-### Community 75 - "Community 75"
-Cohesion: 0.35
-Nodes (8): a(), B(), D(), g(), i(), k(), Q(), y()
+### Community 83 - "Community 83"
+Cohesion: 0.25
+Nodes (5): buildDeepScrollRecords(), seedDeepScrollUniverseData(), cleanupOxlcData(), seedOxlcJointBrokerageData(), createRiskGroups()
 
 ### Community 84 - "Community 84"
-Cohesion: 0.24
-Nodes (5): generateUniqueId(), buildFillerRecord(), seedFillerUniverseSymbols(), createBulkTrades(), seedScrollOpenPositionsData()
-
-### Community 85 - "Community 85"
-Cohesion: 0.25
-Nodes (5): cleanupOxlcData(), seedOxlcJointBrokerageData(), createBulkRecords(), seedScrollScreenerData(), createRiskGroups()
-
-### Community 86 - "Community 86"
 Cohesion: 0.49
 Nodes (9): buildTradeData(), createAccountsAndTrades(), createAllTrades(), createFirstBatch(), createRecord(), createSecondBatch(), createUniverseRecords(), generateTestNames() (+1 more)
 
-### Community 87 - "Community 87"
+### Community 85 - "Community 85"
+Cohesion: 0.24
+Nodes (5): generateUniqueId(), createBulkTrades(), seedScrollOpenPositionsData(), createBulkRecords(), seedScrollScreenerData()
+
+### Community 86 - "Community 86"
 Cohesion: 0.47
 Nodes (9): buildCleanup(), createUniverseSymbolAtomically(), isUniqueConstraintError(), pickAbsentSymbol(), pickAvailableSymbol(), rethrowUnlessUniqueConstraint(), seedAccountAndTrade(), seedAddSymbolModalsE2eData() (+1 more)
 
-### Community 88 - "Community 88"
+### Community 87 - "Community 87"
 Cohesion: 0.24
 Nodes (11): GlobalSummary Page Component, GlobalSummary Page Dark Mode Story Snapshot, Profile Page Component, Profile Page Light Mode Story Snapshot, ConfirmDialogComponent, ConfirmDialogComponent Delete Confirmation Story Snapshot, EditableDateCellComponent, EditableDateCellComponent Default Story Snapshot (+3 more)
 
-### Community 89 - "Community 89"
+### Community 88 - "Community 88"
 Cohesion: 0.25
 Nodes (11): ChartDemo Page Light Mode Story Snapshot, ChartDemo Page Light Mode Story (Storybook), Dashboard Page Light Mode Story Snapshot, Dashboard Page Light Mode Story (Storybook), GlobalUniverse Page Light Mode Story Snapshot, GlobalUniverse Page Light Mode Story (Storybook), ConfirmDialogComponent Default Story Snapshot, ConfirmDialogComponent Default Story (Storybook) (+3 more)
+
+### Community 89 - "Community 89"
+Cohesion: 0.25
+Nodes (11): dms-material Angular browser build, electron-builder packaging config, extraResources: server+angular+prisma migrations bundled, Platform targets: AppImage/deb (linux), dmg (mac), nsis (win), Content Security Policy injection, findAvailablePort() dynamic port reservation, Electron main process (startup, BrowserWindow, CSP), preload getApiPort IPC bridge (+3 more)
 
 ### Community 91 - "Community 91"
 Cohesion: 0.49
@@ -742,175 +742,175 @@ Nodes (10): buildWhereClause, logCacheChange, queryAuditLog, cusipAuditLogServic
 
 ### Community 99 - "Community 99"
 Cohesion: 0.22
-Nodes (3): createRateLimiter(), applyRateLimitingWithValidation(), applySecurityValidation()
+Nodes (3): handleClearCookiesError(), handleClearCookies(), logSuccessfulLogout()
 
 ### Community 100 - "Community 100"
 Cohesion: 0.22
-Nodes (3): handleClearCookiesError(), handleClearCookies(), logSuccessfulLogout()
+Nodes (3): createRateLimiter(), applyRateLimitingWithValidation(), applySecurityValidation()
 
 ### Community 104 - "Community 104"
 Cohesion: 0.53
 Nodes (7): buildCleanup(), buildSeedPlans(), cleanupOnError(), seedAllPlans(), seedOnePlan(), seedStoredVolatilityData(), suppressError()
 
-### Community 106 - "Community 106"
+### Community 105 - "Community 105"
+Cohesion: 0.28
+Nodes (9): adjustLotsForSplit: rewrite open lot quantities/buy by split ratio, calculateSplitRatio: ratio = openQty / csvPostSplitQty, recordFractionalSale: create trades row for split remainder, isCusip predicate, OpenLot interface (id, quantity, buy, accountId), resolveCusipUniverseIds helper, structured logger utility, universe Prisma table (+1 more)
+
+### Community 107 - "Community 107"
 Cohesion: 0.68
 Nodes (6): handleAddDivDepositRoute(), handleDeleteDivDepositRoute(), handleGetDivDepositsRoute(), handleUpdateDivDepositRoute(), mapDivDepositToResponse(), registerDivDepositRoutes()
 
-### Community 109 - "Community 109"
+### Community 110 - "Community 110"
 Cohesion: 0.39
 Nodes (4): buildMappedEntry(), buildMappedState(), mapSortField(), migrateTableState()
 
-### Community 111 - "Community 111"
+### Community 112 - "Community 112"
 Cohesion: 0.32
 Nodes (3): buildLoadedDividendRow(), buildPlaceholderDividendRow(), DividendDepositsComponentService
 
-### Community 113 - "Community 113"
+### Community 114 - "Community 114"
 Cohesion: 0.61
 Nodes (6): buildEnrichedEntry(), buildFullUniverseEntry(), buildPlaceholderUniverseEntry(), buildRiskGroupMap(), enrichUniverseWithRiskGroups(), triggerProxyLoad()
 
-### Community 122 - "Community 122"
+### Community 123 - "Community 123"
 Cohesion: 0.43
 Nodes (6): findAppImage(), getExpectedMigrationNames(), launchAppImage(), readMigrationsTable(), terminateProcess(), waitForHealth()
 
-### Community 123 - "Community 123"
+### Community 124 - "Community 124"
 Cohesion: 0.61
 Nodes (6): cleanupAllThreeSymbols(), cleanupSymbolData(), createAllThreeLots(), createAllThreeSeedData(), createThreeUniverses(), seedAllThreeSplitsE2eData()
 
-### Community 124 - "Community 124"
+### Community 125 - "Community 125"
 Cohesion: 0.57
 Nodes (6): buildUniverseRecord(), buildUpdateToVolatile(), performCleanup(), seedFlatSymbol(), seedStoredVolatilityUpdateData(), suppressError()
 
-### Community 125 - "Community 125"
+### Community 126 - "Community 126"
 Cohesion: 0.61
 Nodes (6): cleanupPartialSeed(), createBulkUniverseRecords(), createOpenPositionTrades(), generateSymbols(), seedLazyLoadingE2eData(), seedRecordsIntoDb()
 
-### Community 126 - "Community 126"
+### Community 127 - "Community 127"
 Cohesion: 0.57
 Nodes (6): authGuard(), checkSessionValidity(), guestGuard(), performSignOut(), redirectToDashboard(), redirectToLogin()
 
-### Community 127 - "Community 127"
+### Community 128 - "Community 128"
 Cohesion: 0.62
 Nodes (5): isDevEnvironment(), isHealthCheckEndpoint(), onRequestHook(), onResponseHook(), shouldSkipAuth()
 
-### Community 128 - "Community 128"
+### Community 129 - "Community 129"
 Cohesion: 0.57
 Nodes (5): archiveAndAuditEntries(), archiveStaleEntries(), getArchived(), getCleanupAgeDays(), isCleanupEnabled()
 
-### Community 129 - "Community 129"
+### Community 130 - "Community 130"
 Cohesion: 0.57
 Nodes (5): findByCusip(), findManyCusips(), updateLastUsedAt(), upsertManyMappings(), upsertMapping()
 
-### Community 134 - "Community 134"
+### Community 135 - "Community 135"
 Cohesion: 0.67
 Nodes (5): determineOperation(), extractCacheHit(), extractRequestId(), generateFallbackRequestId(), measureRequestPerformance()
 
-### Community 135 - "Community 135"
+### Community 136 - "Community 136"
 Cohesion: 0.52
 Nodes (5): clearEntities(), createAccount(), createDivDeposit(), createTrade(), populateAccounts()
 
-### Community 136 - "Community 136"
+### Community 137 - "Community 137"
 Cohesion: 0.62
 Nodes (5): ensureAccountExists(), ensureAuthenticatedShell(), expectPathname(), expectSingleWindow(), isVisibleWithinTimeout()
 
-### Community 137 - "Community 137"
+### Community 138 - "Community 138"
 Cohesion: 0.48
 Nodes (5): assertViewportCrossedPage1(), assertVisibleSymbolsNonEmpty(), scrollViewportTo(), scrollViewportToBottom(), scrollViewportToTop()
 
-### Community 138 - "Community 138"
+### Community 139 - "Community 139"
 Cohesion: 0.48
 Nodes (5): clickUpload(), navigateToUniverse(), openImportDialog(), uploadFile(), verifySymbolRow()
 
-### Community 139 - "Community 139"
+### Community 140 - "Community 140"
 Cohesion: 0.48
 Nodes (5): clearSortState(), extractSortParams(), getSortColumnsState(), getSortState(), setSortState()
 
-### Community 140 - "Community 140"
+### Community 141 - "Community 141"
 Cohesion: 0.48
 Nodes (5): clickUpload(), navigateToUniverse(), openImportDialog(), uploadFile(), waitForImportResult()
 
-### Community 141 - "Community 141"
+### Community 142 - "Community 142"
 Cohesion: 0.67
 Nodes (5): cleanupExistingData(), createPresplitLots(), createSeedData(), createUniverses(), seedOxlcCusipReverseSplitData()
-
-### Community 142 - "Community 142"
-Cohesion: 0.48
-Nodes (5): cleanupTestData(), navigateToUniverse(), seedTestData(), selectRiskGroupInDialog(), typeSymbolAndSelectAutocomplete()
 
 ### Community 143 - "Community 143"
 Cohesion: 0.62
 Nodes (5): buildCleanup(), seedHeldSymbol(), seedUnheldSymbol(), seedVolatilityHeldAndUnheldData(), suppressError()
 
 ### Community 144 - "Community 144"
-Cohesion: 0.29
-Nodes (7): server common routes coverage index, dividend-history.service, fetchDistributionData (fallback source), fetchDividendHistory (primary source), getConsistentDistributions: detect declining-trend dividends, parse-sort-filter-header function, ProcessedRow {date, amount}
+Cohesion: 0.48
+Nodes (5): cleanupTestData(), navigateToUniverse(), seedTestData(), selectRiskGroupInDialog(), typeSymbolAndSelectAutocomplete()
 
 ### Community 145 - "Community 145"
 Cohesion: 0.29
+Nodes (7): server common routes coverage index, dividend-history.service, fetchDistributionData (fallback source), fetchDividendHistory (primary source), getConsistentDistributions: detect declining-trend dividends, parse-sort-filter-header function, ProcessedRow {date, amount}
+
+### Community 146 - "Community 146"
+Cohesion: 0.29
 Nodes (7): app/utils coverage index, SyncLogger class, AsyncLocalStorage context, StructuredLogger class, logger singleton, enforceThirteenfRateLimit, resolveCusipViaThirteenf
 
-### Community 148 - "Community 148"
+### Community 149 - "Community 149"
 Cohesion: 0.67
 Nodes (4): buildDateFilter(), buildWhereClause(), logCacheChange(), queryAuditLog()
 
-### Community 149 - "Community 149"
+### Community 150 - "Community 150"
 Cohesion: 0.53
 Nodes (4): calculateAvgPurchaseYieldPercent(), calculatePosition(), getMostRecentSell(), getOpenTrades()
 
-### Community 150 - "Community 150"
+### Community 151 - "Community 151"
 Cohesion: 0.67
 Nodes (4): makeClosedTrade(), makeClosedTradesSeedData(), makeOpenTrade(), makeOpenTradesSeedData()
 
-### Community 151 - "Community 151"
+### Community 152 - "Community 152"
 Cohesion: 0.53
 Nodes (4): buildDividendHtml(), buildHtmlWithMalformedTable(), buildHtmlWithoutScript(), buildMultiTableDividendHtml()
 
-### Community 152 - "Community 152"
+### Community 153 - "Community 153"
 Cohesion: 0.73
 Nodes (4): goToNext(), goToPrevious(), makeCurrent(), toggleClass()
 
-### Community 155 - "Community 155"
+### Community 156 - "Community 156"
 Cohesion: 0.53
 Nodes (4): MockLoginComponent, MockProtectedComponent, MockPublicComponent, navigateAndWait()
 
-### Community 156 - "Community 156"
+### Community 157 - "Community 157"
 Cohesion: 0.6
 Nodes (4): executeLoadProfile(), executeWithErrorHandling(), getErrorMessage(), isValidEmail()
 
-### Community 159 - "Community 159"
+### Community 160 - "Community 160"
 Cohesion: 0.53
 Nodes (4): clickUpload(), navigateToUniverse(), openImportDialog(), uploadFile()
 
-### Community 160 - "Community 160"
+### Community 161 - "Community 161"
 Cohesion: 0.6
 Nodes (4): composite(), contrastRatio(), parseRgba(), relativeLuminance()
 
-### Community 161 - "Community 161"
+### Community 162 - "Community 162"
 Cohesion: 0.53
 Nodes (4): clickUpload(), navigateToUniverse(), openImportDialog(), uploadFile()
 
-### Community 162 - "Community 162"
+### Community 163 - "Community 163"
 Cohesion: 0.67
 Nodes (4): addDeposit(), getDivDepUrl(), navigateToDivDep(), openAddDialog()
 
-### Community 163 - "Community 163"
+### Community 164 - "Community 164"
 Cohesion: 0.53
 Nodes (4): clearSortFilterState(), getColumnTexts(), getSortState(), waitForTableRows()
 
-### Community 164 - "Community 164"
+### Community 165 - "Community 165"
 Cohesion: 0.53
 Nodes (4): clickUpload(), navigateToUniverse(), openImportDialog(), uploadFile()
 
-### Community 165 - "Community 165"
+### Community 166 - "Community 166"
 Cohesion: 0.67
 Nodes (4): assertNoEmptyCellsAfterSortScroll(), getFirstColumnTexts(), scrollToBottom(), waitForTable()
 
-### Community 166 - "Community 166"
-Cohesion: 0.53
-Nodes (4): ignoreError(), navigateToAccountTab(), selectAccountByName(), waitForAccountsPanel()
-
 ### Community 167 - "Community 167"
 Cohesion: 0.53
-Nodes (4): clearSortFilterState(), getColumnTexts(), getSortState(), waitForTableRows()
+Nodes (4): ignoreError(), navigateToAccountTab(), selectAccountByName(), waitForAccountsPanel()
 
 ### Community 168 - "Community 168"
 Cohesion: 0.53
@@ -921,8 +921,8 @@ Cohesion: 0.53
 Nodes (4): clearSortFilterState(), getColumnTexts(), getSortState(), waitForTableRows()
 
 ### Community 170 - "Community 170"
-Cohesion: 0.73
-Nodes (4): buildScreenerRecords(), createScreenerRecords(), createTestDataArray(), seedScreenerData()
+Cohesion: 0.53
+Nodes (4): clearSortFilterState(), getColumnTexts(), getSortState(), waitForTableRows()
 
 ### Community 171 - "Community 171"
 Cohesion: 0.73
@@ -930,79 +930,79 @@ Nodes (4): buildCleanup(), createSymbolTrades(), createSymbolUniverses(), seedLa
 
 ### Community 172 - "Community 172"
 Cohesion: 0.73
-Nodes (4): cleanupExistingOxlcData(), createOxlcSeedData(), createPresplitLots(), seedSplitImportE2eData()
+Nodes (4): buildScreenerRecords(), createScreenerRecords(), createTestDataArray(), seedScreenerData()
 
 ### Community 173 - "Community 173"
-Cohesion: 0.47
-Nodes (6): EditableCell Component - Dark Theme Snapshot, EditableCell Value Display (42, dark background), Introduction Welcome Story - Light Theme Snapshot, Splitter Component - Dark Theme Snapshot (Firefox), Splitter Two-Pane Layout with Drag Handle, Storybook Welcome Page for dms-material
+Cohesion: 0.73
+Nodes (4): cleanupExistingOxlcData(), createOxlcSeedData(), createPresplitLots(), seedSplitImportE2eData()
 
 ### Community 174 - "Community 174"
-Cohesion: 0.7
-Nodes (4): goToNext(), goToPrevious(), makeCurrent(), toggleClass()
+Cohesion: 0.47
+Nodes (6): EditableCell Component - Dark Theme Snapshot, EditableCell Value Display (42, dark background), Introduction Welcome Story - Light Theme Snapshot, Splitter Component - Dark Theme Snapshot (Firefox), Splitter Two-Pane Layout with Drag Handle, Storybook Welcome Page for dms-material
 
 ### Community 175 - "Community 175"
 Cohesion: 0.7
 Nodes (4): goToNext(), goToPrevious(), makeCurrent(), toggleClass()
 
-### Community 177 - "Community 177"
-Cohesion: 0.8
-Nodes (3): getAvailableMonths(), handleAvailableMonthsRoute(), registerMonthsRoutes()
+### Community 176 - "Community 176"
+Cohesion: 0.7
+Nodes (4): goToNext(), goToPrevious(), makeCurrent(), toggleClass()
 
 ### Community 178 - "Community 178"
 Cohesion: 0.8
-Nodes (3): getAvailableYears(), handleAvailableYearsRoute(), registerYearsRoutes()
+Nodes (3): getAvailableMonths(), handleAvailableMonthsRoute(), registerMonthsRoutes()
 
 ### Community 179 - "Community 179"
+Cohesion: 0.8
+Nodes (3): getAvailableYears(), handleAvailableYearsRoute(), registerYearsRoutes()
+
+### Community 180 - "Community 180"
 Cohesion: 0.6
 Nodes (3): isNonEmptySymbol(), isValidCusip(), isValidSource()
 
-### Community 180 - "Community 180"
+### Community 181 - "Community 181"
 Cohesion: 0.7
 Nodes (3): handleGetScreenerRequest(), mapScreenerToScreen(), registerScreenerRoutes()
 
-### Community 181 - "Community 181"
+### Community 182 - "Community 182"
 Cohesion: 0.7
 Nodes (3): filterEquityOrETF(), getSymbolName(), mapToSymbolOption()
 
-### Community 182 - "Community 182"
+### Community 183 - "Community 183"
 Cohesion: 0.8
 Nodes (3): handleGetDivDepositTypesRoute(), mapDivDepositTypeToResponse(), registerDivDepositTypeRoutes()
 
-### Community 183 - "Community 183"
+### Community 184 - "Community 184"
 Cohesion: 0.8
 Nodes (3): applyMinYieldFilter(), computeYieldPercent(), hasMinYieldFilter()
 
-### Community 189 - "Community 189"
+### Community 190 - "Community 190"
 Cohesion: 0.6
 Nodes (3): captureIndexesRequests(), waitForCapturedResponses(), waitForDivDepositsTable()
 
-### Community 190 - "Community 190"
-Cohesion: 0.6
-Nodes (3): clearSortFilterState(), getColumnTexts(), waitForTableRows()
-
 ### Community 191 - "Community 191"
 Cohesion: 0.6
-Nodes (3): getColumnIndex(), isNumericCellText(), waitForTableRows()
+Nodes (3): clearSortFilterState(), getColumnTexts(), waitForTableRows()
 
 ### Community 192 - "Community 192"
 Cohesion: 0.6
-Nodes (3): ignoreError(), selectAccountByName(), waitForAccountsPanel()
+Nodes (3): getColumnIndex(), isNumericCellText(), waitForTableRows()
 
 ### Community 193 - "Community 193"
 Cohesion: 0.6
-Nodes (3): assertVisibleSymbolsNonEmpty(), scrollViewportToBottom(), scrollViewportToTop()
+Nodes (3): ignoreError(), selectAccountByName(), waitForAccountsPanel()
 
 ### Community 194 - "Community 194"
+Cohesion: 0.6
+Nodes (3): assertVisibleSymbolsNonEmpty(), scrollViewportToBottom(), scrollViewportToTop()
+
+### Community 195 - "Community 195"
 Cohesion: 0.7
 Nodes (3): cleanupTestSymbol(), getWorkspaceRoot(), initializePrismaClient()
 
-### Community 195 - "Community 195"
-Cohesion: 0.6
-Nodes (3): captureIndexesRequests(), captureTopResponses(), waitForTableRows()
-
 ### Community 196 - "Community 196"
 Cohesion: 0.6
-Nodes (3): clearSortFilterState(), getColumnTexts(), waitForTableRows()
+Nodes (3): captureIndexesRequests(), captureTopResponses(), waitForTableRows()
 
 ### Community 197 - "Community 197"
 Cohesion: 0.6
@@ -1012,85 +1012,85 @@ Nodes (3): clearSortFilterState(), getColumnTexts(), waitForTableRows()
 Cohesion: 0.6
 Nodes (3): clearSortFilterState(), getColumnTexts(), waitForTableRows()
 
-### Community 200 - "Community 200"
-Cohesion: 0.7
-Nodes (3): filterUniverseToSymbol(), getUniverseRowBySymbol(), seedDateEditorWidthData()
+### Community 199 - "Community 199"
+Cohesion: 0.6
+Nodes (3): clearSortFilterState(), getColumnTexts(), waitForTableRows()
 
 ### Community 201 - "Community 201"
 Cohesion: 0.8
-Nodes (3): createDivDeposits(), getOrCreateDivDepositType(), seedDivDepositsE2eData()
+Nodes (3): cleanupExistingData(), createSeedData(), seedMultiSymbolE2eData()
 
 ### Community 202 - "Community 202"
-Cohesion: 0.8
-Nodes (3): createBulkDeposits(), getOrCreateDepositType(), seedScrollDivDepositsData()
+Cohesion: 0.7
+Nodes (3): filterUniverseToSymbol(), getUniverseRowBySymbol(), seedDateEditorWidthData()
 
 ### Community 203 - "Community 203"
 Cohesion: 0.8
-Nodes (3): createBulkRecords(), initializePrismaClient(), seedScrollUniverseData()
+Nodes (3): createBulkDeposits(), getOrCreateDepositType(), seedScrollDivDepositsData()
 
 ### Community 204 - "Community 204"
 Cohesion: 0.8
-Nodes (3): cleanupExistingTstxData(), createTstxSeedData(), seedNoOpenLotsE2eData()
+Nodes (3): createBulkRecords(), initializePrismaClient(), seedScrollUniverseData()
 
 ### Community 205 - "Community 205"
 Cohesion: 0.8
-Nodes (3): cleanupExistingData(), createSeedData(), seedMultiSymbolE2eData()
+Nodes (3): createDivDeposits(), getOrCreateDivDepositType(), seedDivDepositsE2eData()
 
 ### Community 206 - "Community 206"
+Cohesion: 0.8
+Nodes (3): cleanupExistingTstxData(), createTstxSeedData(), seedNoOpenLotsE2eData()
+
+### Community 207 - "Community 207"
 Cohesion: 0.6
 Nodes (3): buildHtmlWithoutJsonLd(), buildJsonLdHtml(), buildJsonLdHtmlEmpty()
 
-### Community 207 - "Community 207"
+### Community 208 - "Community 208"
 Cohesion: 0.8
 Nodes (5): BaseTable Migration Guide, BaseTable Quick Reference, BaseTable Refactoring Summary, Base Table Component Template, SmartNgRX Signal-Based Reactive Pattern
 
-### Community 208 - "Community 208"
+### Community 209 - "Community 209"
 Cohesion: 0.4
 Nodes (5): Chart Demo Page – Dark Mode Visual Snapshot, Base Table – Empty State Dark Mode (Firefox, Linux) Snapshot, Base Table Component – Default Visual Snapshot, Editable Cell Component – Default Visual Snapshot, Symbol Autocomplete Component – Default Visual Snapshot
 
-### Community 209 - "Community 209"
+### Community 210 - "Community 210"
 Cohesion: 0.6
 Nodes (5): Column Sorting Feature (Sort Indicators on Headers), Row Selection Feature (Checkbox per Row), Universe Table Extended Column Set (Ticker, Name, Price, Market Cap, Sector, P/E Ratio), BaseTable Default Story - Dark Theme (Firefox), BaseTable Universe Table Variation Story - Light Theme (Chromium)
 
-### Community 257 - "Community 257"
+### Community 258 - "Community 258"
 Cohesion: 0.5
 Nodes (4): Asar Bundle and Runtime File Strategy, electron-builder Packaging Tool, electron-forge (Rejected Alternative), Electron Packaging Research Document
 
-### Community 258 - "Community 258"
+### Community 259 - "Community 259"
 Cohesion: 0.5
 Nodes (4): Allocation Chart Component Template, Performance Chart Component Template, Summary Display Component Template, Summary View Component Template
 
-### Community 259 - "Community 259"
+### Community 260 - "Community 260"
 Cohesion: 0.5
 Nodes (4): create-error-response middleware, csrf middleware, server middleware coverage index, security middleware
 
-### Community 260 - "Community 260"
+### Community 261 - "Community 261"
 Cohesion: 0.67
 Nodes (4): getAvailableYears, handleAvailableYearsRequest, registerYearsRoutes, top routes coverage index
 
-### Community 261 - "Community 261"
+### Community 262 - "Community 262"
 Cohesion: 0.5
 Nodes (4): validateAddSymbolRequest, AddSymbolRequest interface, validateRiskGroupId, validateSymbol
 
-### Community 262 - "Community 262"
+### Community 263 - "Community 263"
 Cohesion: 0.5
 Nodes (4): AllocationChartComponent, Allocation Chart Coverage Directory, PerformanceChartComponent, Performance Chart Coverage Directory
 
-### Community 360 - "Community 360"
+### Community 361 - "Community 361"
 Cohesion: 1.0
 Nodes (3): Splitter Component Default Story - Dark Theme (Chromium), Splitter Component Default Story - Light Theme (Chromium), Splitter Two-Pane Layout Feature
 
-### Community 361 - "Community 361"
+### Community 362 - "Community 362"
 Cohesion: 0.67
 Nodes (3): Server Coverage Report Favicon (Istanbul/NYC icon), Server Coverage Report UI Assets, Coverage Report Sort Arrow Sprite (up/down arrows)
 
-### Community 362 - "Community 362"
-Cohesion: 0.67
-Nodes (3): getLastPrice, sleep helper, yahooFinance import
-
 ### Community 363 - "Community 363"
 Cohesion: 0.67
-Nodes (3): ACCOUNT_PAGE_SIZE constant, fetchStandardPage: generic Prisma count+findMany page fetcher, PartialArrayDefinition pagination interface
+Nodes (3): getLastPrice, sleep helper, yahooFinance import
 
 ### Community 364 - "Community 364"
 Cohesion: 0.67
