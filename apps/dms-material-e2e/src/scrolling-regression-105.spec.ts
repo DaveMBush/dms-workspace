@@ -1,4 +1,5 @@
 /* eslint-disable sonarjs/fixme-tag */
+/* eslint-disable sonarjs/fixme-tag */
 /**
  * scrolling-regression-105.spec.ts — Round 8 (Epic 105)
  * ──────────────────────────────────────────────────────
