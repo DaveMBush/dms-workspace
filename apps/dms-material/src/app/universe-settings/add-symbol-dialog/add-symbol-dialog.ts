@@ -111,12 +111,8 @@ export class AddSymbolDialogComponent implements OnInit {
           rows: Array<{ symbol?: string }>
         ) {
           const symbols = rows
-            .map(function extractSymbol(r: { symbol?: string }) {
-              return r.symbol ?? '';
-            })
-            .filter(function keepValidSymbol(s: string) {
-              return s.length > 0 && s !== '\u2026';
-            });
+            .map(function extractSymbol(r: { symbol?: string }) { return r.symbol ?? ''; })
+            .filter(function keepValidSymbol(s: string) { return s.length > 0 && s !== '\u2026'; });
           this.existingSymbolsSignal.set(symbols);
           this.isLoading.set(false);
         }.bind(this),
@@ -343,10 +339,7 @@ export class AddSymbolDialogComponent implements OnInit {
         this.dialogRef.close({ symbol, riskGroupId });
         this.isLoading.set(false);
       }.bind(this),
-      error: function handleAddError(
-        this: AddSymbolDialogComponent,
-        error: unknown
-      ) {
+      error: function handleAddError(this: AddSymbolDialogComponent, error: unknown) {
         this.handleAddError(error);
       }.bind(this),
     });
