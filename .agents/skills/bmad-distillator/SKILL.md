@@ -14,6 +14,7 @@ This is a compression task, not a summarization task. Summaries are lossy. Disti
 ## On Activation
 
 1. **Validate inputs.** The caller must provide:
+
    - **source_documents** (required) — One or more file paths, folder paths, or glob patterns to distill
    - **downstream_consumer** (optional) — What workflow/agent consumes this distillate (e.g., "PRD creation", "architecture design"). When provided, use it to judge signal vs noise. When omitted, preserve everything.
    - **token_budget** (optional) — Approximate target size. When provided and the distillate would exceed it, trigger semantic splitting.
@@ -24,12 +25,12 @@ This is a compression task, not a summarization task. Summaries are lossy. Disti
 
 ## Stages
 
-| # | Stage | Purpose |
-|---|-------|---------|
-| 1 | Analyze | Run analysis script, determine routing and splitting |
-| 2 | Compress | Spawn compressor agent(s) to produce the distillate |
-| 3 | Verify & Output | Completeness check, format check, save output |
-| 4 | Round-Trip Validate | (--validate only) Reconstruct and diff against originals |
+| #   | Stage               | Purpose                                                  |
+| --- | ------------------- | -------------------------------------------------------- |
+| 1   | Analyze             | Run analysis script, determine routing and splitting     |
+| 2   | Compress            | Spawn compressor agent(s) to produce the distillate      |
+| 3   | Verify & Output     | Completeness check, format check, save output            |
+| 4   | Round-Trip Validate | (--validate only) Reconstruct and diff against originals |
 
 ### Stage 1: Analyze
 
@@ -60,6 +61,7 @@ After the compressor (or merge compressor) returns:
 1. **Completeness check.** Using the headings and named entities list returned by the compressor, verify each appears in the distillate content. If gaps are found, send them back to the compressor for a targeted fix pass — not a full recompression. Limit to 2 fix passes maximum.
 
 2. **Format check.** Verify the output follows distillate format rules:
+
    - No prose paragraphs (only bullets)
    - No decorative formatting
    - No repeated information
@@ -76,11 +78,11 @@ After the compressor (or merge compressor) returns:
    ---
    type: bmad-distillate
    sources:
-     - "{relative path to source file 1}"
-     - "{relative path to source file 2}"
+     - '{relative path to source file 1}'
+     - '{relative path to source file 2}'
    downstream_consumer: "{consumer or 'general'}"
-   created: "{date}"
-   token_estimate: {approximate token count}
+   created: '{date}'
+   token_estimate: { approximate token count }
    parts: 1
    ---
    ```
@@ -98,6 +100,7 @@ After the compressor (or merge compressor) returns:
    ```
 
    The `_index.md` contains:
+
    - Frontmatter with sources (relative paths from the distillate folder to the originals)
    - 3-5 bullet orientation (what was distilled, from what)
    - Section manifest: each section's filename + 1-line description
@@ -141,6 +144,7 @@ This stage proves the distillate is lossless by reconstructing source documents 
 2. **Receive reconstructions.** The reconstructor returns reconstruction file paths saved adjacent to the distillate.
 
 3. **Perform semantic diff.** Read both the original source documents and the reconstructions. For each section of the original, assess:
+
    - Is the core information present in the reconstruction?
    - Are specific details preserved (numbers, names, decisions)?
    - Are relationships and rationale intact?
@@ -151,24 +155,28 @@ This stage proves the distillate is lossless by reconstructing source documents 
    ```markdown
    ---
    type: distillate-validation
-   distillate: "{distillate path}"
-   sources: ["{source paths}"]
-   created: "{date}"
+   distillate: '{distillate path}'
+   sources: ['{source paths}']
+   created: '{date}'
    ---
 
    ## Validation Summary
+
    - Status: PASS | PASS_WITH_WARNINGS | FAIL
    - Information preserved: {percentage estimate}
    - Gaps found: {count}
    - Hallucinations detected: {count}
 
    ## Gaps (information in originals but missing from reconstruction)
+
    - {gap description} — Source: {which original}, Section: {where}
 
    ## Hallucinations (information in reconstruction not traceable to originals)
+
    - {hallucination description} — appears to fill gap in: {section}
 
    ## Possible Gap Markers (flagged by reconstructor)
+
    - {marker description}
    ```
 

@@ -199,12 +199,12 @@ Load the template from `assets/SKILL-template.md` and `./template-substitution-r
 │   └── tests/
 ```
 
-| Location            | Contains                           | LLM relationship                     |
-| ------------------- | ---------------------------------- | ------------------------------------ |
-| **SKILL.md**        | Overview, activation, routing      | LLM identity and router              |
-| **`references/`**   | Capability prompts, reference data | Loaded on demand                     |
-| **`assets/`**       | Templates, starter files           | Copied/transformed into output       |
-| **`scripts/`**      | Python, shell scripts with tests   | Invoked for deterministic operations |
+| Location          | Contains                           | LLM relationship                     |
+| ----------------- | ---------------------------------- | ------------------------------------ |
+| **SKILL.md**      | Overview, activation, routing      | LLM identity and router              |
+| **`references/`** | Capability prompts, reference data | Loaded on demand                     |
+| **`assets/`**     | Templates, starter files           | Copied/transformed into output       |
+| **`scripts/`**    | Python, shell scripts with tests   | Invoked for deterministic operations |
 
 **If the built skill includes scripts**, also load `./script-standards.md` — ensures PEP 723 metadata, correct shebangs, and `uv run` invocation from the start.
 

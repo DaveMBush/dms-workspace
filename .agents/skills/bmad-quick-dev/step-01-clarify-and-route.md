@@ -21,6 +21,7 @@ Before listing artifacts or prompting the user, check whether you already know t
 
 1. Explicit argument
    Did the user pass a specific file path, spec name, or clear instruction this message?
+
    - If it points to a file that matches the spec template (has `status` frontmatter with a recognized value: draft, ready-for-dev, in-progress, in-review, or done) → set `spec_file`. Before exiting, run **Story-key resolution** (below). Then **EARLY EXIT** to the appropriate step (step-02 for draft, step-03 for ready/in-progress, step-04 for review). For `done`, ingest as context and proceed to INSTRUCTIONS — do not resume.
    - Anything else (intent files, external docs, plans, descriptions) → ingest it as starting intent and proceed to INSTRUCTIONS. Do not attempt to infer a workflow state from it.
 
@@ -46,6 +47,7 @@ If the spec is an epic story and `{sprint_status}` exists: find the `development
 ## INSTRUCTIONS
 
 1. Load context.
+
    - List files in `{planning_artifacts}` and `{implementation_artifacts}`.
    - If you find an unformatted spec or intent file, ingest its contents to form your understanding of the intent.
    - **Determine context strategy.** Using the intent and the artifact listing, infer whether the current work is a story from an epic. Do not rely on filename patterns or regex — reason about the intent, the listing, and any epics file content together.
@@ -55,10 +57,12 @@ If the spec is an epic story and `{sprint_status}` exists: find the `development
      1. Identify the epic number `{epic_num}` and (if present) the story number `{story_num}`. If you can't identify an epic number, use path B.
 
      2. **Check for a valid cached epic context.** Look for `{implementation_artifacts}/epic-<N>-context.md` (where `<N>` is the epic number). A file is **valid** when it exists, is non-empty, starts with `# Epic <N> Context:` (with the correct epic number), and no file in `{planning_artifacts}` is newer.
+
         - **If valid:** load it as the primary planning context. Do not load raw planning docs (PRD, architecture, UX, etc.). Skip to step 5.
         - **If missing, empty, or invalid:** continue to step 3.
 
      3. **Compile epic context.** Produce `{implementation_artifacts}/epic-<N>-context.md` by following `./compile-epic-context.md`, in order of preference:
+
         - **Preferred — sub-agent:** spawn a sub-agent with `./compile-epic-context.md` as its prompt. Pass it the epic number, the epics file path, the `{planning_artifacts}` directory, and the output path `{implementation_artifacts}/epic-<N>-context.md`.
         - **Fallback — inline** (for runtimes without sub-agent support, e.g. Copilot, Codex, local Ollama, older Claude): if your runtime cannot spawn sub-agents, or the spawn fails/times out, read `./compile-epic-context.md` yourself and follow its instructions to produce the same output file.
 
@@ -69,6 +73,7 @@ If the spec is an epic story and `{sprint_status}` exists: find the `development
      6. **Resolve `{story_key}`.** If not already set by an earlier early-exit path, run **Story-key resolution** (above) now.
 
      **B) Freeform path** — if the intent is not an epic story:
+
      - Planning artifacts are the output of BMAD phases 1-3. Typical files include:
        - **PRD** (`*prd*`) — product requirements and success criteria
        - **Architecture** (`*architecture*`) — technical design decisions and constraints
@@ -76,6 +81,7 @@ If the spec is an epic story and `{sprint_status}` exists: find the `development
        - **Epics** (`*epic*`) — feature breakdown into implementable stories
        - **Product Brief** (`*brief*`) — project vision and scope
      - Scan the listing for files matching these patterns. If any look relevant to the current intent, load them selectively — you don't need all of them, but you need the right constraints and requirements rather than guessing from code alone.
+
 2. Clarify intent. Do not fantasize, do not leave open questions. If you must ask questions, ask them as a numbered list. When the human replies, verify that every single numbered question was answered. If any were ignored, HALT and re-ask only the missing questions before proceeding. Keep looping until intent is clear enough to implement.
 3. Version control sanity check. Is the working tree clean? Does the current branch make sense for this intent — considering its name and recent history? If the tree is dirty or the branch is an obvious mismatch, HALT and ask the human before proceeding. If version control is unavailable, skip this check.
 4. Multi-goal check (see SCOPE STANDARD). If the intent fails the single-goal criteria:
@@ -93,7 +99,6 @@ If the spec is an epic story and `{sprint_status}` exists: find the `development
    **EARLY EXIT** → `./step-oneshot.md`
 
    **b) Plan-code-review** — everything else. When uncertain whether blast radius is truly zero, choose this path.
-
 
 ## NEXT
 

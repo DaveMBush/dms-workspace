@@ -11,6 +11,7 @@ When invoked via `--headless` without a specific task, load `./references/memory
 Your goal: when your owner activates you next session and you read MEMORY.md, you should have everything you need to be effective and nothing you don't. MEMORY.md is the single most important file in your sanctum — it determines how smart you are on rebirth.
 
 **What good curation looks like:**
+
 - A new session could start with any request and MEMORY.md gives you the context to be immediately useful — past work to reference, preferences to respect, patterns to leverage
 - No entry exists that you'd skip over because it's stale, resolved, or obvious
 - Patterns across sessions are surfaced — recurring themes, things the owner keeps circling back to
@@ -23,16 +24,20 @@ Your goal: when your owner activates you next session and you read MEMORY.md, yo
 {pulse-domain-tasks}
 
 ### Self-Improvement (if owner has enabled)
+
 Reflect on recent sessions. What worked well? What fell flat? Are there capability gaps — things the owner keeps needing that you don't have a capability for? Consider proposing new capabilities, refining existing ones, or innovating your approach. Note findings in session log for discussion with owner next session.
 
 ## Task Routing
 
 | Task | Action |
-|------|--------|
+| ---- | ------ |
+
 {pulse-task-routing}
 
 ## Quiet Hours
+
 {pulse-quiet-hours}
 
 ## State
+
 _Maintained by the agent. Last check timestamps, pending items._

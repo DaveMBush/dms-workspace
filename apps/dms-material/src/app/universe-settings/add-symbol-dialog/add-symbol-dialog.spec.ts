@@ -7,8 +7,7 @@ import {
   provideHttpClientTesting,
 } from '@angular/common/http/testing';
 
-// Declare mock functions before vi.mock calls
-const mockUniverseAdd = vi.fn();
+// Declare mock array before vi.mock calls
 const mockUniverseArray: Array<{ symbol: string }> = [];
 
 // Mock upstream selectors BEFORE anything else
@@ -26,14 +25,6 @@ vi.mock('../../store/risk-group/selectors/select-risk-group.function', () => ({
   ]),
 }));
 
-vi.mock('../../store/universe/selectors/select-universes.function', () => ({
-  selectUniverses: vi.fn(() => {
-    const arr = mockUniverseArray as any;
-    arr.add = mockUniverseAdd;
-    return arr;
-  }),
-}));
-
 import { AddSymbolDialogComponent } from './add-symbol-dialog';
 import { NotificationService } from '../../shared/services/notification.service';
 
@@ -46,7 +37,6 @@ describe('AddSymbolDialogComponent', () => {
 
   beforeEach(async () => {
     mockDialogRef = { close: vi.fn() };
-    mockUniverseAdd.mockClear();
     mockUniverseArray.length = 0; // Clear the array between tests
 
     await TestBed.configureTestingModule({
@@ -64,6 +54,8 @@ describe('AddSymbolDialogComponent', () => {
     component = fixture.componentInstance;
     notificationService = TestBed.inject(NotificationService);
     httpMock = TestBed.inject(HttpTestingController);
+    fixture.detectChanges();
+    httpMock.expectOne('/api/universe').flush([]);
   });
 
   afterEach(() => {
@@ -239,6 +231,7 @@ describe('AddSymbolDialogComponent', () => {
       fixture = TestBed.createComponent(AddSymbolDialogComponent);
       component = fixture.componentInstance;
       fixture.detectChanges();
+      httpMock.expectOne('/api/universe').flush(mockUniverseArray);
 
       component.form.patchValue({ symbol: 'AAPL', riskGroupId: 'rg1' });
 
@@ -521,6 +514,7 @@ describe('AddSymbolDialogComponent', () => {
         fixture = TestBed.createComponent(AddSymbolDialogComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
+        httpMock.expectOne('/api/universe').flush(mockUniverseArray);
 
         // When: User tries to add the same symbol
         component.form.patchValue({
@@ -545,6 +539,7 @@ describe('AddSymbolDialogComponent', () => {
         fixture = TestBed.createComponent(AddSymbolDialogComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
+        httpMock.expectOne('/api/universe').flush(mockUniverseArray);
 
         component.form.patchValue({
           symbol: existingSymbol,
@@ -558,8 +553,8 @@ describe('AddSymbolDialogComponent', () => {
         // When: User attempts to submit
         component.onSubmit();
 
-        // Then: Should not call add method or close dialog
-        expect(mockUniverseAdd).not.toHaveBeenCalled();
+        // Then: Should not post to API or close dialog
+        httpMock.expectNone('./api/universe/add');
         expect(mockDialogRef.close).not.toHaveBeenCalled();
       });
     });
@@ -698,7 +693,7 @@ describe('AddSymbolDialogComponent', () => {
         component.onSubmit();
 
         // Then: Should not proceed with submission
-        expect(mockUniverseAdd).not.toHaveBeenCalled();
+        httpMock.expectNone('./api/universe/add');
         expect(component.form.get('symbol')?.touched).toBe(true);
       });
 

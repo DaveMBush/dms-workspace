@@ -125,7 +125,7 @@ const allPriorityActions = domains.flatMap((domain) =>
     domain,
     action,
     urgency: assessments[domain].risk_level === 'HIGH' ? 'URGENT' : 'NORMAL',
-  })),
+  }))
 );
 
 // Sort by urgency
@@ -138,21 +138,9 @@ const prioritizedActions = allPriorityActions.sort((a, b) => (a.urgency === 'URG
 
 ```javascript
 const resolvedMode = subagentContext?.execution?.resolvedMode ?? 'unknown';
-const subagentExecutionLabel =
-  resolvedMode === 'sequential'
-    ? 'SEQUENTIAL (4 NFR domains)'
-    : resolvedMode === 'agent-team'
-      ? 'AGENT-TEAM (4 NFR domains)'
-      : resolvedMode === 'subagent'
-        ? 'SUBAGENT (4 NFR domains)'
-        : 'MODE-DEPENDENT (4 NFR domains)';
+const subagentExecutionLabel = resolvedMode === 'sequential' ? 'SEQUENTIAL (4 NFR domains)' : resolvedMode === 'agent-team' ? 'AGENT-TEAM (4 NFR domains)' : resolvedMode === 'subagent' ? 'SUBAGENT (4 NFR domains)' : 'MODE-DEPENDENT (4 NFR domains)';
 
-const performanceGainLabel =
-  resolvedMode === 'sequential'
-    ? 'baseline (no parallel speedup)'
-    : resolvedMode === 'agent-team' || resolvedMode === 'subagent'
-      ? '~67% faster than sequential'
-      : 'mode-dependent';
+const performanceGainLabel = resolvedMode === 'sequential' ? 'baseline (no parallel speedup)' : resolvedMode === 'agent-team' || resolvedMode === 'subagent' ? '~67% faster than sequential' : 'mode-dependent';
 
 const executiveSummary = {
   overall_risk: overallRisk,

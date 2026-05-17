@@ -62,6 +62,7 @@ inputDocuments: []
 **Source:** See Architecture doc "Quick Guide" for detailed mitigation plans
 
 1. **{Dependency 1}** - {Team} - {Timeline}
+
    - {What QA needs}
    - {Why it blocks testing}
 
@@ -72,6 +73,7 @@ inputDocuments: []
 ### QA Infrastructure Setup (Pre-Implementation)
 
 1. **Test Data Factories** - QA
+
    - {Entity} factory with faker-based randomization
    - Auto-cleanup fixtures for parallel safety
 

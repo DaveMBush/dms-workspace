@@ -388,5 +388,6 @@ uv run ./scripts/generate-html-report.py {quality-report-dir}
 10. Comparison Validator (Python) -- still a future opportunity
 
 Additional implemented scripts not in original plan:
+
 - `scan-scripts.py` -- validates script quality (PEP 723, agentic design, linting)
 - `scan-path-standards.py` -- validates path conventions across all skill files

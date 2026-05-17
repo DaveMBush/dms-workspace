@@ -19,6 +19,7 @@ story_key: '' # set at runtime when discovered from sprint status
 
    **Tier 1 — Explicit argument.**
    Did the user pass a PR, commit SHA, branch, spec file, or diff source this message?
+
    - PR reference → resolve to branch/commit via `gh pr view`. If resolution fails, ask for a SHA or branch.
    - Commit or branch → use directly.
    - Spec file → set `{spec_file}` to the provided path. Check its frontmatter for `baseline_commit`. If found, use as diff baseline. If not found, continue the cascade (a spec alone does not identify a diff source).
@@ -35,6 +36,7 @@ story_key: '' # set at runtime when discovered from sprint status
 
    **Tier 3 — Sprint tracking.**
    Look for a sprint status file (`*sprint-status*`) in `{implementation_artifacts}` or `{planning_artifacts}`. If found, scan for stories with status `review`:
+
    - **Exactly one `review` story:** Set `{story_key}` to the story's key (e.g., `1-2-user-auth`). Suggest it: "I found story <story-id> in `review` status. Would you like to review its changes? [Y] Yes / [N] No, let me choose". If confirmed, use the story context to determine the diff source (branch name derived from story slug, or uncommitted changes). If declined, clear `{story_key}` and fall through.
    - **Multiple `review` stories:** Present them as numbered options alongside a manual choice option. Wait for user selection. If a story is selected, set `{story_key}` and use its context to determine the diff source. If manual choice is selected, clear `{story_key}` and fall through.
    - **None:** Fall through.
@@ -48,6 +50,7 @@ story_key: '' # set at runtime when discovered from sprint status
    Never ask extra questions beyond what the cascade prescribes. If a tier above already identified the target, skip the remaining tiers and proceed to instruction 3 (construct diff).
 
 2. HALT. Ask the user: **What do you want to review?** Present these options:
+
    - **Uncommitted changes** (staged + unstaged)
    - **Staged changes only**
    - **Branch diff** vs a base branch (ask which base branch)
@@ -55,6 +58,7 @@ story_key: '' # set at runtime when discovered from sprint status
    - **Provided diff or file list** (user pastes or provides a path)
 
 3. Construct `{diff_output}` from the chosen source.
+
    - For **staged changes only**: run `git diff --cached`.
    - For **uncommitted changes** (staged + unstaged): run `git diff HEAD`.
    - For **branch diff**: verify the base branch exists before running `git diff`. If it does not exist, HALT and ask the user for a valid branch.
@@ -64,6 +68,7 @@ story_key: '' # set at runtime when discovered from sprint status
    - After constructing `{diff_output}`, verify it is non-empty regardless of source type. If empty, HALT and tell the user there is nothing to review.
 
 4. **Set the spec context.**
+
    - If `{spec_file}` is already set (from Tier 1 or Tier 2): verify the file exists and is readable, then set `{review_mode}` = `"full"`.
    - Otherwise, ask the user: **Is there a spec or story file that provides context for these changes?**
      - If yes: set `{spec_file}` to the path provided, verify the file exists and is readable, then set `{review_mode}` = `"full"`.
@@ -78,7 +83,6 @@ story_key: '' # set at runtime when discovered from sprint status
 ### CHECKPOINT
 
 Present a summary before proceeding: diff stats (files changed, lines added/removed), `{review_mode}`, and loaded spec/context docs (if any). HALT and wait for user confirmation to proceed.
-
 
 ## NEXT
 

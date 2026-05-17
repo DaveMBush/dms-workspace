@@ -31,7 +31,7 @@ const test = mergeTests(
   base,
   // ...your other fixtures...
   webhookFixture,
-  webhookProviderFixture,
+  webhookProviderFixture
 );
 
 // Use matched-only cleanup project-wide: each test only deletes the webhooks it

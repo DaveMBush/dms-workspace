@@ -61,6 +61,7 @@ Finalize validation report, summarize all findings from steps 1-12, present summ
 Read the entire validation report from {validationReportPath}
 
 Extract all findings from:
+
 - Format Detection (Step 2)
 - Parity Analysis (Step 2B, if applicable)
 - Information Density (Step 3)
@@ -93,12 +94,14 @@ overallStatus: '{Pass/Warning/Critical based on all findings}'
 ### 3. Create Summary of Findings
 
 **Overall Status:**
+
 - Determine from all validation findings
 - **Pass:** All critical checks pass, minor warnings acceptable
 - **Warning:** Some issues found but PRD is usable
 - **Critical:** Major issues that prevent PRD from being fit for purpose
 
 **Quick Results Table:**
+
 - Format: [classification]
 - Information Density: [severity]
 - Measurability: [severity]
@@ -142,12 +145,14 @@ Display:
 **Holistic Quality:** {rating}/5 - {label}
 
 **Top 3 Improvements:**
+
 1. {Improvement 1}
 2. {Improvement 2}
 3. {Improvement 3}
 
 **Recommendation:**
 {Based on overall status:
+
 - Pass: "PRD is in good shape. Address minor improvements to make it great."
 - Warning: "PRD is usable but has issues that should be addressed. Review warnings and improve where needed."
 - Critical: "PRD has significant issues that should be fixed before use. Focus on critical issues above."}
@@ -171,18 +176,21 @@ Display:
 #### Menu Handling Logic:
 
 - **IF R (Review Detailed Findings):**
+
   - Walk through validation report section by section
   - Present findings from each validation step
   - Allow user to ask questions
   - After review, return to menu
 
 - **IF E (Use Edit Workflow):**
+
   - Explain: "The Edit workflow can use this validation report to systematically address issues. Edit mode will guide you through discovering what to edit, reviewing the PRD, and applying targeted improvements."
   - Offer: "Would you like to launch Edit mode now? It will help you fix validation findings systematically."
   - If yes: Invoke the `bmad-edit-prd` skill, passing the validation report path as context
   - If no: Return to menu
 
 - **IF F (Fix Simpler Items):**
+
   - Offer immediate fixes for:
     - Template variables (fill in with appropriate content)
     - Conversational filler (remove wordy phrases)
@@ -193,6 +201,7 @@ Display:
   - Return to menu
 
 - **IF X (Exit):**
+
   - Display: "**Validation Report Saved:** {validationReportPath}"
   - Display: "**Summary:** {overall status} - {recommendation}"
   - PRD Validation complete. Invoke the `bmad-help` skill.

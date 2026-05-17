@@ -122,11 +122,7 @@ if (backendTestsOutput) {
 **Collect all fixture needs from all launched subagents:**
 
 ```javascript
-const allFixtureNeeds = [
-  ...apiTestsOutput.fixture_needs,
-  ...(e2eTestsOutput ? e2eTestsOutput.fixture_needs : []),
-  ...(backendTestsOutput ? backendTestsOutput.coverageSummary?.fixtureNeeds || [] : []),
-];
+const allFixtureNeeds = [...apiTestsOutput.fixture_needs, ...(e2eTestsOutput ? e2eTestsOutput.fixture_needs : []), ...(backendTestsOutput ? backendTestsOutput.coverageSummary?.fixtureNeeds || [] : [])];
 
 // Remove duplicates
 const uniqueFixtures = [...new Set(allFixtureNeeds)];
@@ -230,23 +226,11 @@ export const observeApiCall = (page: Page, urlPattern: string, method: string = 
 
 ```javascript
 const e2eCount = e2eTestsOutput ? e2eTestsOutput.test_count : 0;
-const backendCount = backendTestsOutput ? (backendTestsOutput.coverageSummary?.totalTests ?? 0) : 0;
+const backendCount = backendTestsOutput ? backendTestsOutput.coverageSummary?.totalTests ?? 0 : 0;
 
 const resolvedMode = subagentContext?.execution?.resolvedMode;
-const subagentExecutionLabel =
-  resolvedMode === 'sequential'
-    ? 'SEQUENTIAL (API then dependent workers)'
-    : resolvedMode === 'agent-team'
-      ? 'AGENT-TEAM (parallel worker squad)'
-      : resolvedMode === 'subagent'
-        ? 'SUBAGENT (parallel subagents)'
-        : `PARALLEL (based on ${detected_stack})`;
-const performanceGainLabel =
-  resolvedMode === 'sequential'
-    ? 'baseline (no parallel speedup)'
-    : resolvedMode === 'agent-team' || resolvedMode === 'subagent'
-      ? '~40-70% faster than sequential'
-      : 'mode-dependent';
+const subagentExecutionLabel = resolvedMode === 'sequential' ? 'SEQUENTIAL (API then dependent workers)' : resolvedMode === 'agent-team' ? 'AGENT-TEAM (parallel worker squad)' : resolvedMode === 'subagent' ? 'SUBAGENT (parallel subagents)' : `PARALLEL (based on ${detected_stack})`;
+const performanceGainLabel = resolvedMode === 'sequential' ? 'baseline (no parallel speedup)' : resolvedMode === 'agent-team' || resolvedMode === 'subagent' ? '~40-70% faster than sequential' : 'mode-dependent';
 
 const summary = {
   detected_stack: '{detected_stack}',
@@ -259,28 +243,12 @@ const summary = {
   e2e_test_files: e2eTestsOutput ? e2eTestsOutput.tests.length : 0,
   backend_test_files: backendTestsOutput ? backendTestsOutput.testsGenerated.length : 0,
   priority_coverage: {
-    P0:
-      (apiTestsOutput.priority_coverage?.P0 ?? 0) +
-      (e2eTestsOutput?.priority_coverage?.P0 ?? 0) +
-      (backendTestsOutput?.testsGenerated?.reduce((sum, t) => sum + (t.priority_coverage?.P0 ?? 0), 0) ?? 0),
-    P1:
-      (apiTestsOutput.priority_coverage?.P1 ?? 0) +
-      (e2eTestsOutput?.priority_coverage?.P1 ?? 0) +
-      (backendTestsOutput?.testsGenerated?.reduce((sum, t) => sum + (t.priority_coverage?.P1 ?? 0), 0) ?? 0),
-    P2:
-      (apiTestsOutput.priority_coverage?.P2 ?? 0) +
-      (e2eTestsOutput?.priority_coverage?.P2 ?? 0) +
-      (backendTestsOutput?.testsGenerated?.reduce((sum, t) => sum + (t.priority_coverage?.P2 ?? 0), 0) ?? 0),
-    P3:
-      (apiTestsOutput.priority_coverage?.P3 ?? 0) +
-      (e2eTestsOutput?.priority_coverage?.P3 ?? 0) +
-      (backendTestsOutput?.testsGenerated?.reduce((sum, t) => sum + (t.priority_coverage?.P3 ?? 0), 0) ?? 0),
+    P0: (apiTestsOutput.priority_coverage?.P0 ?? 0) + (e2eTestsOutput?.priority_coverage?.P0 ?? 0) + (backendTestsOutput?.testsGenerated?.reduce((sum, t) => sum + (t.priority_coverage?.P0 ?? 0), 0) ?? 0),
+    P1: (apiTestsOutput.priority_coverage?.P1 ?? 0) + (e2eTestsOutput?.priority_coverage?.P1 ?? 0) + (backendTestsOutput?.testsGenerated?.reduce((sum, t) => sum + (t.priority_coverage?.P1 ?? 0), 0) ?? 0),
+    P2: (apiTestsOutput.priority_coverage?.P2 ?? 0) + (e2eTestsOutput?.priority_coverage?.P2 ?? 0) + (backendTestsOutput?.testsGenerated?.reduce((sum, t) => sum + (t.priority_coverage?.P2 ?? 0), 0) ?? 0),
+    P3: (apiTestsOutput.priority_coverage?.P3 ?? 0) + (e2eTestsOutput?.priority_coverage?.P3 ?? 0) + (backendTestsOutput?.testsGenerated?.reduce((sum, t) => sum + (t.priority_coverage?.P3 ?? 0), 0) ?? 0),
   },
-  knowledge_fragments_used: [
-    ...apiTestsOutput.knowledge_fragments_used,
-    ...(e2eTestsOutput ? e2eTestsOutput.knowledge_fragments_used : []),
-    ...(backendTestsOutput ? backendTestsOutput.knowledge_fragments_used || [] : []),
-  ],
+  knowledge_fragments_used: [...apiTestsOutput.knowledge_fragments_used, ...(e2eTestsOutput ? e2eTestsOutput.knowledge_fragments_used : []), ...(backendTestsOutput ? backendTestsOutput.knowledge_fragments_used || [] : [])],
   subagent_execution: subagentExecutionLabel,
   performance_gain: performanceGainLabel,
 };

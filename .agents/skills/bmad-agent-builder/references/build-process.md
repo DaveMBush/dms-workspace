@@ -70,6 +70,7 @@ Identify deterministic operations that should be scripts. Load `./references/scr
 **Evolvable Capabilities (memory agents only):**
 
 Ask: "Should the user be able to teach this agent new things over time?" If yes, the agent gets:
+
 - `capability-authoring.md` in its references (teaches the agent how to create new capabilities)
 - A "Learned" section in CAPABILITIES.md (registry for user-taught capabilities)
 
@@ -254,6 +255,7 @@ Use `./assets/SKILL-template.md` (the full identity template). No Three Laws, no
 ### Memory Agent Output
 
 Load these samples before generating memory agent files:
+
 - `./references/sample-first-breath.md` — quality bar for first-breath.md
 - `./references/sample-memory-guidance.md` — quality bar for memory-guidance.md
 - `./references/sample-capability-prompt.md` — quality bar for capability prompts
@@ -293,10 +295,12 @@ Use `./assets/SKILL-template-bootloader.md` for the lean bootloader. Generate th
 - **CAPABILITIES-template.md**: Built-in capability table pre-filled. Evolvable sections included only if evolvable capabilities enabled.
 
 **Generate first-breath.md** from the appropriate template:
+
 - Calibration-style: Use `./assets/first-breath-template.md`. Fill in identity-nature, owner-discovery-territories, mission context, pulse explanation (if autonomous), example-learned-capabilities (if evolvable).
 - Configuration-style: Use `./assets/first-breath-config-template.md`. Fill in config-discovery-questions (3-7 domain-specific questions).
 
 **Parameterize init-sanctum.py** from `./assets/init-sanctum-template.py`:
+
 - Set `SKILL_NAME` to the agent's skill name
 - Set `SKILL_ONLY_FILES` (always includes `first-breath.md`)
 - Set `TEMPLATE_FILES` to match the actual templates in `./assets/`
@@ -314,6 +318,7 @@ Use `./assets/SKILL-template-bootloader.md` for the lean bootloader. Generate th
 **Stateless agents:** Single flow — load config, greet user, present capabilities.
 
 **Memory agents:** Three-path activation (already in bootloader template):
+
 1. No sanctum → run init script, then load first-breath.md
 2. `--headless` → load PULSE.md from sanctum, execute, exit
 3. Normal → batch-load sanctum files (PERSONA, CREED, BOND, MEMORY, CAPABILITIES), become yourself, greet owner

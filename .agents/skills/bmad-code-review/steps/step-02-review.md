@@ -29,7 +29,6 @@ failed_layers: '' # set at runtime: comma-separated list of layers that failed o
 
 4. Collect all findings from the completed layers.
 
-
 ## NEXT
 
 Read fully and follow `./step-03-triage.md`

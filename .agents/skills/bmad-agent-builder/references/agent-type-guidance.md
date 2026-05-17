@@ -9,6 +9,7 @@ Use this during Phase 1 to determine what kind of agent the user is describing. 
 Everything lives in SKILL.md. No memory folder, no First Breath, no init script. The agent is the same every time it activates.
 
 **Choose this when:**
+
 - The agent handles isolated, self-contained sessions (no context carries over)
 - There's no ongoing relationship to deepen (each interaction is independent)
 - The user describes a focused expert for individual tasks, not a long-term partner
@@ -21,6 +22,7 @@ Everything lives in SKILL.md. No memory folder, no First Breath, no init script.
 Lean bootloader SKILL.md + sanctum folder with 6 standard files. First Breath calibrates the agent to its owner. Identity evolves over time.
 
 **Choose this when:**
+
 - The agent needs to remember between sessions (past conversations, preferences, learned context)
 - The user describes an ongoing relationship: coach, companion, creative partner, advisor
 - The agent should adapt to its owner over time
@@ -33,6 +35,7 @@ Lean bootloader SKILL.md + sanctum folder with 6 standard files. First Breath ca
 A memory agent with PULSE enabled. Operates on its own when no one is watching. Maintains itself, improves itself, creates proactive value.
 
 **Choose this when:**
+
 - The agent should do useful work autonomously (cron jobs, background maintenance)
 - The user describes wanting the agent to "check in," "stay on top of things," or "work while I'm away"
 - The domain has recurring maintenance or proactive value creation opportunities

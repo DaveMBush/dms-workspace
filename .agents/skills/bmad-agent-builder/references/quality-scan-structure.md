@@ -122,12 +122,12 @@ Agents should describe outcomes, not prescribe procedures for things the LLM doe
 
 ### Memory Setup (Agents with Memory)
 
-| Check                                                       | Why It Matters                                      |
-| ----------------------------------------------------------- | --------------------------------------------------- |
-| Memory system file exists if agent has persistent memory    | Agent memory without memory spec is incomplete      |
-| Access boundaries defined                           | Critical for headless agents especially         |
-| Memory paths consistent across all files            | Different paths in different files break memory |
-| Save triggers defined if memory persists            | Without save triggers, memory never updates     |
+| Check                                                    | Why It Matters                                  |
+| -------------------------------------------------------- | ----------------------------------------------- |
+| Memory system file exists if agent has persistent memory | Agent memory without memory spec is incomplete  |
+| Access boundaries defined                                | Critical for headless agents especially         |
+| Memory paths consistent across all files                 | Different paths in different files break memory |
+| Save triggers defined if memory persists                 | Without save triggers, memory never updates     |
 
 ### Headless Mode (If Declared)
 
@@ -141,12 +141,12 @@ Agents should describe outcomes, not prescribe procedures for things the LLM doe
 
 ## Severity Guidelines
 
-| Severity     | When to Apply                                                                                                                                |
-| ------------ | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Critical** | Missing SKILL.md, invalid frontmatter (no name), missing required sections, orphaned capabilities pointing to non-existent files             |
+| Severity     | When to Apply                                                                                                                    |
+| ------------ | -------------------------------------------------------------------------------------------------------------------------------- |
+| **Critical** | Missing SKILL.md, invalid frontmatter (no name), missing required sections, orphaned capabilities pointing to non-existent files |
 | **High**     | Description too vague to trigger, identity missing or ineffective, memory setup incomplete, activation sequence logically broken |
-| **Medium**   | Principles are generic, communication style lacks examples, minor consistency issues, headless mode incomplete                               |
-| **Low**      | Style refinement suggestions, principle strengthening opportunities                                                                          |
+| **Medium**   | Principles are generic, communication style lacks examples, minor consistency issues, headless mode incomplete                   |
+| **Low**      | Style refinement suggestions, principle strengthening opportunities                                                              |
 
 ---
 

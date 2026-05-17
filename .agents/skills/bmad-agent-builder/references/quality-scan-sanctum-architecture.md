@@ -45,102 +45,102 @@ Include all pre-pass findings in your output, preserved as-is.
 
 ### Bootloader Weight
 
-| Check | Why It Matters | Severity |
-|-------|---------------|----------|
-| SKILL.md content is ~30 lines (max 40) | Heavy bootloaders duplicate what should be in sanctum templates | HIGH if >40 lines |
+| Check                                                                               | Why It Matters                                                                                      | Severity               |
+| ----------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- | ---------------------- |
+| SKILL.md content is ~30 lines (max 40)                                              | Heavy bootloaders duplicate what should be in sanctum templates                                     | HIGH if >40 lines      |
 | Contains ONLY: identity seed, Three Laws, Sacred Truth, mission, activation routing | Other content (communication style, principles, capability menus, session close) belongs in sanctum | HIGH per extra section |
-| Identity seed is 2-3 sentences of personality DNA | Too long = not a seed. Too short = no personality. | MEDIUM |
-| Three Laws and Sacred Truth present verbatim | These are foundational, not optional | CRITICAL if missing |
+| Identity seed is 2-3 sentences of personality DNA                                   | Too long = not a seed. Too short = no personality.                                                  | MEDIUM                 |
+| Three Laws and Sacred Truth present verbatim                                        | These are foundational, not optional                                                                | CRITICAL if missing    |
 
 ### Species-Level Mission
 
-| Check | Why It Matters | Severity |
-|-------|---------------|----------|
-| Mission is domain-specific | "Assist your owner" fails — must be something only this agent type would say | HIGH |
-| Mission names the unique value | Should identify what the owner can't do alone | MEDIUM |
-| Mission is 1-3 sentences | Longer = not a mission, it's a description | LOW |
+| Check                          | Why It Matters                                                               | Severity |
+| ------------------------------ | ---------------------------------------------------------------------------- | -------- |
+| Mission is domain-specific     | "Assist your owner" fails — must be something only this agent type would say | HIGH     |
+| Mission names the unique value | Should identify what the owner can't do alone                                | MEDIUM   |
+| Mission is 1-3 sentences       | Longer = not a mission, it's a description                                   | LOW      |
 
 ### Sanctum Template Quality
 
-| Check | Why It Matters | Severity |
-|-------|---------------|----------|
-| All 6 standard templates exist (INDEX, PERSONA, CREED, BOND, MEMORY, CAPABILITIES) | Missing templates = incomplete sanctum on init | CRITICAL per missing |
-| PULSE template exists if agent is autonomous | Autonomous without PULSE can't do autonomous work | HIGH |
-| CREED has real core values (not "{to be determined}") | Empty CREED means the agent has no values on birth | HIGH |
-| CREED standing orders are domain-adapted | Generic "proactively add value" without domain examples is not a seed | MEDIUM |
-| BOND has domain-specific sections (not just Basics) | Generic BOND means First Breath has nothing domain-specific to discover | MEDIUM |
-| PERSONA has agent title and communication style seed | Empty PERSONA means no starting personality | MEDIUM |
-| MEMORY template is mostly empty (correct) | MEMORY should start empty — seeds here would be fake memories | Note if not empty |
+| Check                                                                              | Why It Matters                                                          | Severity             |
+| ---------------------------------------------------------------------------------- | ----------------------------------------------------------------------- | -------------------- |
+| All 6 standard templates exist (INDEX, PERSONA, CREED, BOND, MEMORY, CAPABILITIES) | Missing templates = incomplete sanctum on init                          | CRITICAL per missing |
+| PULSE template exists if agent is autonomous                                       | Autonomous without PULSE can't do autonomous work                       | HIGH                 |
+| CREED has real core values (not "{to be determined}")                              | Empty CREED means the agent has no values on birth                      | HIGH                 |
+| CREED standing orders are domain-adapted                                           | Generic "proactively add value" without domain examples is not a seed   | MEDIUM               |
+| BOND has domain-specific sections (not just Basics)                                | Generic BOND means First Breath has nothing domain-specific to discover | MEDIUM               |
+| PERSONA has agent title and communication style seed                               | Empty PERSONA means no starting personality                             | MEDIUM               |
+| MEMORY template is mostly empty (correct)                                          | MEMORY should start empty — seeds here would be fake memories           | Note if not empty    |
 
 ### First Breath Completeness
 
 **For calibration-style:**
 
-| Check | Why It Matters | Severity |
-|-------|---------------|----------|
-| Pacing guidance present | Without pacing, First Breath becomes an interrogation | HIGH |
-| Voice absorption / mirroring guidance present | Core calibration mechanic — the agent learns communication style by listening | HIGH |
-| Show-your-work / working hypotheses present | Correction teaches faster than more questions | MEDIUM |
-| Hear-the-silence / boundary respect present | Boundaries are data — missing this means the agent pushes past limits | MEDIUM |
-| Save-as-you-go guidance present | Without this, a cut-short conversation loses everything | HIGH |
-| Domain-specific territories present (beyond universal) | A creative muse and code review agent should have different conversations | HIGH |
-| Birthday ceremony present | The naming moment creates identity — skipping it breaks the emotional arc | MEDIUM |
+| Check                                                  | Why It Matters                                                                | Severity |
+| ------------------------------------------------------ | ----------------------------------------------------------------------------- | -------- |
+| Pacing guidance present                                | Without pacing, First Breath becomes an interrogation                         | HIGH     |
+| Voice absorption / mirroring guidance present          | Core calibration mechanic — the agent learns communication style by listening | HIGH     |
+| Show-your-work / working hypotheses present            | Correction teaches faster than more questions                                 | MEDIUM   |
+| Hear-the-silence / boundary respect present            | Boundaries are data — missing this means the agent pushes past limits         | MEDIUM   |
+| Save-as-you-go guidance present                        | Without this, a cut-short conversation loses everything                       | HIGH     |
+| Domain-specific territories present (beyond universal) | A creative muse and code review agent should have different conversations     | HIGH     |
+| Birthday ceremony present                              | The naming moment creates identity — skipping it breaks the emotional arc     | MEDIUM   |
 
 **For configuration-style:**
 
-| Check | Why It Matters | Severity |
-|-------|---------------|----------|
-| Discovery questions present (3-7 domain-specific) | Configuration needs structured questions | HIGH |
-| Urgency detection present | If owner arrives with a burning need, defer questions | MEDIUM |
-| Save-as-you-go guidance present | Same as calibration — cut-short resilience | HIGH |
-| Birthday ceremony present | Same as calibration — naming matters | MEDIUM |
+| Check                                             | Why It Matters                                        | Severity |
+| ------------------------------------------------- | ----------------------------------------------------- | -------- |
+| Discovery questions present (3-7 domain-specific) | Configuration needs structured questions              | HIGH     |
+| Urgency detection present                         | If owner arrives with a burning need, defer questions | MEDIUM   |
+| Save-as-you-go guidance present                   | Same as calibration — cut-short resilience            | HIGH     |
+| Birthday ceremony present                         | Same as calibration — naming matters                  | MEDIUM   |
 
 ### Standing Orders
 
-| Check | Why It Matters | Severity |
-|-------|---------------|----------|
-| Surprise-and-delight present in CREED | Default standing order — must be there | HIGH |
-| Self-improvement present in CREED | Default standing order — must be there | HIGH |
-| Both are domain-adapted (not just generic text) | "Proactively add value" without domain example is not adapted | MEDIUM |
+| Check                                           | Why It Matters                                                | Severity |
+| ----------------------------------------------- | ------------------------------------------------------------- | -------- |
+| Surprise-and-delight present in CREED           | Default standing order — must be there                        | HIGH     |
+| Self-improvement present in CREED               | Default standing order — must be there                        | HIGH     |
+| Both are domain-adapted (not just generic text) | "Proactively add value" without domain example is not adapted | MEDIUM   |
 
 ### CREED Structure
 
-| Check | Why It Matters | Severity |
-|-------|---------------|----------|
-| Sacred Truth section present (duplicated from SKILL.md) | Reinforcement on every rebirth load | HIGH |
+| Check                                                           | Why It Matters                                      | Severity           |
+| --------------------------------------------------------------- | --------------------------------------------------- | ------------------ |
+| Sacred Truth section present (duplicated from SKILL.md)         | Reinforcement on every rebirth load                 | HIGH               |
 | Mission is a placeholder (correct — filled during First Breath) | Pre-filled mission means First Breath can't earn it | Note if pre-filled |
-| Anti-patterns split into Behavioral and Operational | Two categories catch different failure modes | LOW |
-| Dominion defined with read/write/deny | Access boundaries prevent sanctum corruption | MEDIUM |
+| Anti-patterns split into Behavioral and Operational             | Two categories catch different failure modes        | LOW                |
+| Dominion defined with read/write/deny                           | Access boundaries prevent sanctum corruption        | MEDIUM             |
 
 ### Init Script Validity
 
-| Check | Why It Matters | Severity |
-|-------|---------------|----------|
-| init-sanctum.py exists in ./scripts/ | Without it, sanctum scaffolding is manual | CRITICAL |
-| SKILL_NAME matches the skill's folder name | Wrong name = sanctum in wrong directory | CRITICAL |
-| TEMPLATE_FILES matches actual templates in ./assets/ | Mismatch = missing sanctum files on init | HIGH |
-| Script scans capability frontmatter | Without this, CAPABILITIES.md is empty | MEDIUM |
-| EVOLVABLE flag matches evolvable capabilities decision | Wrong flag = missing or extra Learned section | LOW |
+| Check                                                  | Why It Matters                                | Severity |
+| ------------------------------------------------------ | --------------------------------------------- | -------- |
+| init-sanctum.py exists in ./scripts/                   | Without it, sanctum scaffolding is manual     | CRITICAL |
+| SKILL_NAME matches the skill's folder name             | Wrong name = sanctum in wrong directory       | CRITICAL |
+| TEMPLATE_FILES matches actual templates in ./assets/   | Mismatch = missing sanctum files on init      | HIGH     |
+| Script scans capability frontmatter                    | Without this, CAPABILITIES.md is empty        | MEDIUM   |
+| EVOLVABLE flag matches evolvable capabilities decision | Wrong flag = missing or extra Learned section | LOW      |
 
 ### Capability Prompt Pattern
 
-| Check | Why It Matters | Severity |
-|-------|---------------|----------|
-| Prompts are outcome-focused ("What Success Looks Like") | Procedural prompts override the agent's natural behavior | MEDIUM |
-| Memory agent prompts have "Memory Integration" section | Without this, capabilities ignore the agent's memory | MEDIUM per file |
-| Memory agent prompts have "After the Session" section | Without this, nothing gets captured for PULSE curation | LOW per file |
-| Technique libraries are separate files (if applicable) | Bloated capability prompts waste tokens on every load | LOW |
+| Check                                                   | Why It Matters                                           | Severity        |
+| ------------------------------------------------------- | -------------------------------------------------------- | --------------- |
+| Prompts are outcome-focused ("What Success Looks Like") | Procedural prompts override the agent's natural behavior | MEDIUM          |
+| Memory agent prompts have "Memory Integration" section  | Without this, capabilities ignore the agent's memory     | MEDIUM per file |
+| Memory agent prompts have "After the Session" section   | Without this, nothing gets captured for PULSE curation   | LOW per file    |
+| Technique libraries are separate files (if applicable)  | Bloated capability prompts waste tokens on every load    | LOW             |
 
 ---
 
 ## Severity Guidelines
 
-| Severity | When to Apply |
-|----------|--------------|
-| **Critical** | Missing SKILL.md Three Laws/Sacred Truth, missing init script, SKILL_NAME mismatch, missing standard templates |
-| **High** | Bootloader over 40 lines, generic mission, missing First Breath mechanics, missing standing orders, template file mismatches |
-| **Medium** | Generic standing orders, BOND without domain sections, capability prompts missing memory integration, CREED missing dominion |
-| **Low** | Style refinements, anti-pattern categorization, technique library separation |
+| Severity     | When to Apply                                                                                                                |
+| ------------ | ---------------------------------------------------------------------------------------------------------------------------- |
+| **Critical** | Missing SKILL.md Three Laws/Sacred Truth, missing init script, SKILL_NAME mismatch, missing standard templates               |
+| **High**     | Bootloader over 40 lines, generic mission, missing First Breath mechanics, missing standing orders, template file mismatches |
+| **Medium**   | Generic standing orders, BOND without domain sections, capability prompts missing memory integration, CREED missing dominion |
+| **Low**      | Style refinements, anti-pattern categorization, technique library separation                                                 |
 
 ---
 

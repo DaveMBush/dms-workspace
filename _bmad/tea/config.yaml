@@ -3,7 +3,7 @@
 # Version: 6.6.0
 # Date: 2026-05-03T20:41:59.692Z
 
-test_artifacts: "{project-root}/_bmad-output/test-artifacts"
+test_artifacts: '{project-root}/_bmad-output/test-artifacts'
 tea_use_playwright_utils: true
 tea_use_pactjs_utils: true
 tea_pact_mcp: mcp
@@ -22,5 +22,5 @@ trace_output: _bmad-output/test-artifacts/traceability
 user_name: Dave
 communication_language: English
 document_output_language: English
-output_folder: "{project-root}/_bmad-output"
+output_folder: '{project-root}/_bmad-output'
 project_name: dms-workspace

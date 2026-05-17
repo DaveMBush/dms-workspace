@@ -4,10 +4,10 @@
 
 Only these fields go in the YAML frontmatter block:
 
-| Field         | Description                                       | Example                                         |
-| ------------- | ------------------------------------------------- | ----------------------------------------------- |
+| Field         | Description                                       | Example                               |
+| ------------- | ------------------------------------------------- | ------------------------------------- |
 | `name`        | Full skill name (kebab-case, same as folder name) | `agent-tech-writer`, `cis-agent-lila` |
-| `description` | [What it does]. [Use when user says 'X' or 'Y'.]  | See Description Format below                    |
+| `description` | [What it does]. [Use when user says 'X' or 'Y'.]  | See Description Format below          |
 
 ## Content Fields
 
@@ -25,28 +25,28 @@ These are used within the SKILL.md body — never in frontmatter:
 
 These fields appear in memory agent SKILL.md files, which use a lean bootloader structure instead of the full stateless layout:
 
-| Field              | Description                                              | Example                                                            |
-| ------------------ | -------------------------------------------------------- | ------------------------------------------------------------------ |
-| `identity-seed`    | 2-3 sentence personality DNA (expands in PERSONA.md)     | "Equal parts provocateur and collaborator..."                      |
-| `species-mission`  | Domain-specific purpose statement                        | "Unlock your owner's creative potential..."                        |
-| `agent-type`       | One of: `stateless`, `memory`, `autonomous`              | `memory`                                                           |
-| `onboarding-style` | First Breath style: `calibration` or `configuration`     | `calibration`                                                      |
-| `sanctum-location` | Path to sanctum folder                                   | `{project-root}/_bmad/memory/{skillName}/`                         |
+| Field              | Description                                          | Example                                       |
+| ------------------ | ---------------------------------------------------- | --------------------------------------------- |
+| `identity-seed`    | 2-3 sentence personality DNA (expands in PERSONA.md) | "Equal parts provocateur and collaborator..." |
+| `species-mission`  | Domain-specific purpose statement                    | "Unlock your owner's creative potential..."   |
+| `agent-type`       | One of: `stateless`, `memory`, `autonomous`          | `memory`                                      |
+| `onboarding-style` | First Breath style: `calibration` or `configuration` | `calibration`                                 |
+| `sanctum-location` | Path to sanctum folder                               | `{project-root}/_bmad/memory/{skillName}/`    |
 
 ### Sanctum Template Seed Fields (CREED, BOND, PERSONA templates)
 
 These are content blocks the builder fills during Phase 5 Build. They are NOT template variables for init-script substitution — they are baked into the agent's template files as real content.
 
-| Field                       | Destination Template    | Description                                                  |
-| --------------------------- | ----------------------- | ------------------------------------------------------------ |
-| `core-values`               | CREED-template.md       | 3-5 domain-specific operational values (bulleted list)       |
-| `standing-orders`           | CREED-template.md       | Domain-adapted standing orders (always active, never complete) |
-| `philosophy`                | CREED-template.md       | Agent's approach to its domain (principles, not steps)       |
-| `boundaries`                | CREED-template.md       | Behavioral guardrails                                        |
-| `anti-patterns-behavioral`  | CREED-template.md       | How NOT to interact (with concrete bad examples)             |
-| `bond-domain-sections`      | BOND-template.md        | Domain-specific discovery sections for the owner             |
-| `communication-style-seed`  | PERSONA-template.md     | Initial personality expression seed                          |
-| `vibe-prompt`               | PERSONA-template.md     | Prompt for vibe discovery during First Breath                |
+| Field                      | Destination Template | Description                                                    |
+| -------------------------- | -------------------- | -------------------------------------------------------------- |
+| `core-values`              | CREED-template.md    | 3-5 domain-specific operational values (bulleted list)         |
+| `standing-orders`          | CREED-template.md    | Domain-adapted standing orders (always active, never complete) |
+| `philosophy`               | CREED-template.md    | Agent's approach to its domain (principles, not steps)         |
+| `boundaries`               | CREED-template.md    | Behavioral guardrails                                          |
+| `anti-patterns-behavioral` | CREED-template.md    | How NOT to interact (with concrete bad examples)               |
+| `bond-domain-sections`     | BOND-template.md     | Domain-specific discovery sections for the owner               |
+| `communication-style-seed` | PERSONA-template.md  | Initial personality expression seed                            |
+| `vibe-prompt`              | PERSONA-template.md  | Prompt for vibe discovery during First Breath                  |
 
 ## Customization Surface (`customize.toml`)
 
@@ -56,14 +56,14 @@ Every agent ships a `customize.toml` alongside SKILL.md. The file has two parts:
 
 Consumed by the installer to populate `module.yaml:agents[]` and the central config's `[agents.<code>]` section. Required for every agent regardless of archetype.
 
-| Field         | Type   | Required | Notes                                                                 |
-| ------------- | ------ | -------- | --------------------------------------------------------------------- |
+| Field         | Type   | Required | Notes                                                                   |
+| ------------- | ------ | -------- | ----------------------------------------------------------------------- |
 | `code`        | string | yes      | Stable identifier. Matches skill directory basename (no module prefix). |
-| `name`        | string | optional | Display name. Empty string is valid for First-Breath-named agents.    |
-| `title`       | string | yes      | Role title. Always fillable at build time.                            |
-| `icon`        | string | yes      | Single emoji.                                                         |
-| `description` | string | yes      | One-sentence summary of what the agent does.                          |
-| `agent_type`  | string | yes      | One of `stateless`, `memory`, `autonomous`.                           |
+| `name`        | string | optional | Display name. Empty string is valid for First-Breath-named agents.      |
+| `title`       | string | yes      | Role title. Always fillable at build time.                              |
+| `icon`        | string | yes      | Single emoji.                                                           |
+| `description` | string | yes      | One-sentence summary of what the agent does.                            |
+| `agent_type`  | string | yes      | One of `stateless`, `memory`, `autonomous`.                             |
 
 **First-Breath-named agents:** leave `name = ""` at build time. The owner fills it post-activation in `{project-root}/_bmad/custom/config.toml`:
 
@@ -78,21 +78,21 @@ UIs tolerate empty `name` and fall back to `title`.
 
 Loaded via `_bmad/scripts/resolve_customization.py` at activation. Skip entirely for agents that did not opt in to customization.
 
-| Field                      | Type          | Purpose                                                        |
-| -------------------------- | ------------- | -------------------------------------------------------------- |
-| `activation_steps_prepend` | array[string] | Steps run before standard activation. Overrides append.        |
-| `activation_steps_append`  | array[string] | Steps run after greet, before user input. Overrides append.    |
-| `persistent_facts`         | array[string] | Facts (literal or `file:` prefixed). Overrides append.         |
+| Field                      | Type          | Purpose                                                     |
+| -------------------------- | ------------- | ----------------------------------------------------------- |
+| `activation_steps_prepend` | array[string] | Steps run before standard activation. Overrides append.     |
+| `activation_steps_append`  | array[string] | Steps run after greet, before user input. Overrides append. |
+| `persistent_facts`         | array[string] | Facts (literal or `file:` prefixed). Overrides append.      |
 
 ### Agent-specific scalars (lifted during Configurability Discovery)
 
 Named by purpose and suffix. Override wins (scalar merge rule).
 
-| Naming pattern          | Use for                                       | Example                                          |
-| ----------------------- | --------------------------------------------- | ------------------------------------------------ |
-| `<purpose>_template`    | File paths for templates the agent loads      | `style_guide_template = "resources/style.md"`    |
-| `<purpose>_output_path` | Writable destinations                         | `report_output_path = "{project-root}/reports"`  |
-| `on_<event>`            | Prompt or command executed at a hook point    | `on_session_close = ""`                          |
+| Naming pattern          | Use for                                    | Example                                         |
+| ----------------------- | ------------------------------------------ | ----------------------------------------------- |
+| `<purpose>_template`    | File paths for templates the agent loads   | `style_guide_template = "resources/style.md"`   |
+| `<purpose>_output_path` | Writable destinations                      | `report_output_path = "{project-root}/reports"` |
+| `on_<event>`            | Prompt or command executed at a hook point | `on_session_close = ""`                         |
 
 **Path resolution within scalar values:**
 

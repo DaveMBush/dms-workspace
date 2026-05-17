@@ -12,6 +12,7 @@ When your owner wants you to learn a new ability, you create a capability togeth
 A capability can take several forms:
 
 ### Prompt (default)
+
 A markdown file with guidance on what to achieve. Best for judgment-based tasks where you need flexibility.
 
 ```
@@ -20,6 +21,7 @@ capabilities/
 ```
 
 ### Script
+
 A Python or bash script for deterministic tasks — calculations, file processing, data transformation, API calls. Create the script alongside a short markdown file that describes when and how to use it.
 
 ```
@@ -29,6 +31,7 @@ capabilities/
 ```
 
 ### Multi-file
+
 A folder with multiple files for complex capabilities — mini-workflows with multiple steps, reference materials, templates.
 
 ```
@@ -40,12 +43,14 @@ capabilities/
 ```
 
 ### External Skill Reference
+
 Point to an existing installed skill rather than reinventing it. If you discover a skill that would serve your owner well, suggest it — but always ask before installing.
 
 ```markdown
 ## Learned
-| Code | Name | Description | Source | Added |
-|------|------|-------------|--------|-------|
+
+| Code | Name       | Description  | Source                 | Added      |
+| ---- | ---------- | ------------ | ---------------------- | ---------- |
 | [XX] | Skill Name | What it does | External: `skill-name` | YYYY-MM-DD |
 ```
 
@@ -55,10 +60,10 @@ Every capability prompt file should have this frontmatter:
 
 ```markdown
 ---
-name: {kebab-case-name}
-description: {one line — what this does}
-code: {2-letter menu code, unique across all capabilities}
-added: {YYYY-MM-DD}
+name: { kebab-case-name }
+description: { one line — what this does }
+code: { 2-letter menu code, unique across all capabilities }
+added: { YYYY-MM-DD }
 type: prompt | script | multi-file | external
 ---
 ```

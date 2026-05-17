@@ -1,6 +1,6 @@
-import { workspaceRoot } from '@nx/devkit';
 import { nxE2EPreset } from '@nx/playwright/preset';
 import { defineConfig, devices } from '@playwright/test';
+import * as path from 'path';
 
 // For CI, you may want to set BASE_URL to the deployed application.
 const baseURL = process.env['BASE_URL'] || 'http://localhost:4301';
@@ -48,7 +48,7 @@ export default defineConfig({
       command: 'pnpm nx run server:e2e-server',
       url: 'http://localhost:3001/api/health',
       reuseExistingServer: true,
-      cwd: workspaceRoot,
+      cwd: path.resolve(__dirname, '../..'),
       timeout: 120000,
       env: {
         ...process.env,
@@ -61,7 +61,7 @@ export default defineConfig({
       command: 'pnpm nx run dms-material:serve-e2e',
       url: 'http://localhost:4301',
       reuseExistingServer: true,
-      cwd: workspaceRoot,
+      cwd: path.resolve(__dirname, '../..'),
       timeout: 120000,
       env: {
         ...process.env,
@@ -72,7 +72,7 @@ export default defineConfig({
       command: 'pnpm nx run dms-material:storybook --port 6006',
       url: 'http://localhost:6006',
       reuseExistingServer: true,
-      cwd: workspaceRoot,
+      cwd: path.resolve(__dirname, '../..'),
       timeout: 120000,
     },
   ],

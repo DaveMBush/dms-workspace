@@ -136,6 +136,7 @@ Order by impact — "how many findings does fixing this resolve?" The fix that c
 ### Script Opportunities
 
 ### Sanctum Architecture
+
 {Only include this section if sanctum-architecture-analysis.md exists in the report directory}
 
 ### Customization Surface

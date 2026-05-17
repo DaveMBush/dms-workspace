@@ -187,11 +187,11 @@ test.describe('Sold Positions: sort+scroll shows all real data', () => {
       )
       .toBeGreaterThan(0);
 
-    const initialHeight = await viewport.evaluate(
-      function getHeight(el: Element): number {
-        return (el as HTMLElement).scrollHeight;
-      }
-    );
+    const initialHeight = await viewport.evaluate(function getHeight(
+      el: Element
+    ): number {
+      return (el as HTMLElement).scrollHeight;
+    });
 
     // Use the first visible symbol's first character as a filter that is
     // guaranteed to match at least one row regardless of the test DB state.
@@ -206,11 +206,11 @@ test.describe('Sold Positions: sort+scroll shows all real data', () => {
     await filterInput.fill(filterChar);
     await page.waitForTimeout(600);
 
-    const filteredHeight = await viewport.evaluate(
-      function getHeight(el: Element): number {
-        return (el as HTMLElement).scrollHeight;
-      }
-    );
+    const filteredHeight = await viewport.evaluate(function getHeight(
+      el: Element
+    ): number {
+      return (el as HTMLElement).scrollHeight;
+    });
 
     // At least one row matches the filter character → height > 0
     // Before the fix, loading placeholder rows (symbol='') were removed by the
@@ -221,11 +221,11 @@ test.describe('Sold Positions: sort+scroll shows all real data', () => {
     await filterInput.fill('');
     await page.waitForTimeout(600);
 
-    const clearedHeight = await viewport.evaluate(
-      function getHeight(el: Element): number {
-        return (el as HTMLElement).scrollHeight;
-      }
-    );
+    const clearedHeight = await viewport.evaluate(function getHeight(
+      el: Element
+    ): number {
+      return (el as HTMLElement).scrollHeight;
+    });
     expect(clearedHeight).toBeCloseTo(initialHeight, -2);
   });
 });

@@ -9,5 +9,5 @@ visual_tools: intermediate
 user_name: Dave
 communication_language: English
 document_output_language: English
-output_folder: "{project-root}/_bmad-output"
+output_folder: '{project-root}/_bmad-output'
 project_name: dms-workspace

@@ -29,7 +29,7 @@ Load and follow `build-process.md` with these parameters pre-set:
 - **Classification:** Determine from the original's structure and purpose
 - **Requirements:** Derive from the original, applying aggressive pruning
 
-**Critical:** Do not inherit the original's verbosity, structure, or mechanical procedures. Extract *what it achieves*, then build the leanest skill that delivers the same outcome.
+**Critical:** Do not inherit the original's verbosity, structure, or mechanical procedures. Extract _what it achieves_, then build the leanest skill that delivers the same outcome.
 
 When the build process reaches Phase 6 (Summary), skip the quality analysis offer and continue to Step 3 below.
 
@@ -67,30 +67,30 @@ Not every conversion is about bloat — some skills are well-intentioned but non
 
 **Content removal** (when applicable):
 
-| Category | Signal |
-|----------|--------|
-| **Training Data Redundancy** | Facts, biographies, domain knowledge the LLM already has |
-| **Prescriptive Procedures** | Step-by-step instructions for things the LLM reasons through naturally |
-| **Mechanical Frameworks** | Scoring rubrics, decision matrices, evaluation checklists for subjective judgment |
-| **Generic Boilerplate** | "Best Practices", "Common Pitfalls", "When to Use/Not Use" filler |
-| **Template Bloat** | Response format templates, greeting scripts, output structure prescriptions |
-| **Redundant Examples** | Examples that repeat what the instructions already say |
-| **Per-Platform Duplication** | Separate instructions per platform when one adaptive instruction works |
+| Category                     | Signal                                                                            |
+| ---------------------------- | --------------------------------------------------------------------------------- |
+| **Training Data Redundancy** | Facts, biographies, domain knowledge the LLM already has                          |
+| **Prescriptive Procedures**  | Step-by-step instructions for things the LLM reasons through naturally            |
+| **Mechanical Frameworks**    | Scoring rubrics, decision matrices, evaluation checklists for subjective judgment |
+| **Generic Boilerplate**      | "Best Practices", "Common Pitfalls", "When to Use/Not Use" filler                 |
+| **Template Bloat**           | Response format templates, greeting scripts, output structure prescriptions       |
+| **Redundant Examples**       | Examples that repeat what the instructions already say                            |
+| **Per-Platform Duplication** | Separate instructions per platform when one adaptive instruction works            |
 
 **Structural changes** (conformance to BMad best practices):
 
-| Category | Signal |
-|----------|--------|
-| **Progressive Disclosure** | Monolithic content split into SKILL.md routing + references |
-| **Outcome-Driven Rewrite** | Prescriptive instructions reframed as outcomes |
-| **Frontmatter/Description** | Added or fixed BMad-compliant frontmatter and trigger phrases |
-| **Path Convention Fixes** | Corrected file references to use `./` for skill-internal, `{project-root}/` for project-scope |
+| Category                    | Signal                                                                                        |
+| --------------------------- | --------------------------------------------------------------------------------------------- |
+| **Progressive Disclosure**  | Monolithic content split into SKILL.md routing + references                                   |
+| **Outcome-Driven Rewrite**  | Prescriptive instructions reframed as outcomes                                                |
+| **Frontmatter/Description** | Added or fixed BMad-compliant frontmatter and trigger phrases                                 |
+| **Path Convention Fixes**   | Corrected file references to use `./` for skill-internal, `{project-root}/` for project-scope |
 
 Severity: **high** = significant impact on quality or compliance, **medium** = notable improvement, **low** = minor or stylistic.
 
 ### Categorizing Retained Content
 
-Focus on what the LLM *wouldn't* do correctly without being told. The retained categories should explain why each piece earns its place.
+Focus on what the LLM _wouldn't_ do correctly without being told. The retained categories should explain why each piece earns its place.
 
 2. **Generate the HTML report:**
 

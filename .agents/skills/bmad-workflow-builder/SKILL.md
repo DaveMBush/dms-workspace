@@ -20,6 +20,7 @@ Act as an architect guide — walk users through conversational discovery to und
 1. Detect user's intent. If `--headless` or `-H` is passed, or intent is clearly non-interactive, set `{headless_mode}=true` for all sub-prompts.
 
 2. Load available config from `{project-root}/_bmad/config.yaml` and `{project-root}/_bmad/config.user.yaml` (root and bmb section). If neither exists, fall back to `{project-root}/_bmad/bmb/config.yaml` (legacy per-module format). If still missing, and the `bmad-builder-setup` skill is available, let the user know they can run it at any time to configure. Resolve and apply throughout the session (defaults in parens):
+
    - `{user_name}` (default: null) — address the user by name
    - `{communication_language}` (default: user or system intent) — use for all communications
    - `{document_output_language}` (default: user or system intent) — use for generated document content
@@ -52,13 +53,13 @@ Load `references/convert-process.md` to begin.
 
 ## Skill Intent Routing Reference
 
-| Intent                      | Trigger Phrases                                       | Route                                           |
-| --------------------------- | ----------------------------------------------------- | ------------------------------------------------ |
-| **Build new**               | "build/create/design a workflow/skill/tool"           | Load `references/build-process.md`               |
-| **Convert**                 | `--convert path-or-url`                               | Load `references/convert-process.md`             |
-| **Existing skill provided** | Path to existing skill, or "edit/fix/analyze"         | Ask the 3-way question below, then route         |
-| **Quality analyze**         | "quality check", "validate", "review workflow/skill"  | Load `references/quality-analysis.md`            |
-| **Unclear**                 | —                                                     | Present options and ask                          |
+| Intent                      | Trigger Phrases                                      | Route                                    |
+| --------------------------- | ---------------------------------------------------- | ---------------------------------------- |
+| **Build new**               | "build/create/design a workflow/skill/tool"          | Load `references/build-process.md`       |
+| **Convert**                 | `--convert path-or-url`                              | Load `references/convert-process.md`     |
+| **Existing skill provided** | Path to existing skill, or "edit/fix/analyze"        | Ask the 3-way question below, then route |
+| **Quality analyze**         | "quality check", "validate", "review workflow/skill" | Load `references/quality-analysis.md`    |
+| **Unclear**                 | —                                                    | Present options and ask                  |
 
 ### When given an existing skill, ask:
 

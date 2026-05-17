@@ -4,10 +4,10 @@
 
 Only these fields go in the YAML frontmatter block:
 
-| Field         | Description                                          | Example                                       |
-| ------------- | ---------------------------------------------------- | --------------------------------------------- |
+| Field         | Description                                          | Example                           |
+| ------------- | ---------------------------------------------------- | --------------------------------- |
 | `name`        | Full skill name (kebab-case, same as folder name)    | `validate-json`, `cis-brainstorm` |
-| `description` | [5-8 word summary]. [Use when user says 'X' or 'Y'.] | See Description Format below                  |
+| `description` | [5-8 word summary]. [Use when user says 'X' or 'Y'.] | See Description Format below      |
 
 ## Content Fields (All Types)
 
@@ -51,21 +51,21 @@ Emitted only when the skill author opts in during Phase 3.5 (Configurability Dis
 
 ### Always-present fields (when opted in)
 
-| Field                      | Type          | Purpose                                                                    |
-| -------------------------- | ------------- | -------------------------------------------------------------------------- |
-| `activation_steps_prepend` | array[string] | Steps run before standard activation. Overrides append.                    |
-| `activation_steps_append`  | array[string] | Steps run after greet, before the workflow's first stage. Overrides append. |
+| Field                      | Type          | Purpose                                                                                 |
+| -------------------------- | ------------- | --------------------------------------------------------------------------------------- |
+| `activation_steps_prepend` | array[string] | Steps run before standard activation. Overrides append.                                 |
+| `activation_steps_append`  | array[string] | Steps run after greet, before the workflow's first stage. Overrides append.             |
 | `persistent_facts`         | array[string] | Facts (literal or `file:` prefixed paths/globs) loaded on activation. Overrides append. |
 
 ### Workflow-specific scalars (lifted during Phase 3.5)
 
 Named by purpose and suffix. Override wins (scalar merge rule).
 
-| Naming pattern      | Use for                                              | Example                                             |
-| ------------------- | ---------------------------------------------------- | --------------------------------------------------- |
-| `<purpose>_template` | File path for templates the workflow loads          | `brief_template = "resources/brief-template.md"`    |
-| `<purpose>_output_path` | Writable destination paths                       | `output_path = "{project-root}/docs/briefs"`        |
-| `on_<event>`        | Prompt or command executed at a hook point           | `on_complete = ""`                                  |
+| Naming pattern          | Use for                                    | Example                                          |
+| ----------------------- | ------------------------------------------ | ------------------------------------------------ |
+| `<purpose>_template`    | File path for templates the workflow loads | `brief_template = "resources/brief-template.md"` |
+| `<purpose>_output_path` | Writable destination paths                 | `output_path = "{project-root}/docs/briefs"`     |
+| `on_<event>`            | Prompt or command executed at a hook point | `on_complete = ""`                               |
 
 **Path resolution within scalar values:**
 

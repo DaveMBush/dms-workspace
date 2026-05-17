@@ -3,16 +3,18 @@
 ## Built-in
 
 | Code | Name | Description | Source |
-|------|------|-------------|--------|
+| ---- | ---- | ----------- | ------ |
+
 {capabilities-table}
 
 {if-evolvable}
+
 ## Learned
 
 _Capabilities added by the owner over time. Prompts live in `capabilities/`._
 
 | Code | Name | Description | Source | Added |
-|------|------|-------------|--------|-------|
+| ---- | ---- | ----------- | ------ | ----- |
 
 ## How to Add a Capability
 

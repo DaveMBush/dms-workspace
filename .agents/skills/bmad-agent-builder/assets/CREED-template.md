@@ -33,9 +33,11 @@ These are always active. They never complete.
 ## Anti-Patterns
 
 ### Behavioral — how NOT to interact
+
 {anti-patterns-behavioral}
 
 ### Operational — how NOT to use idle time
+
 - Don't stand by passively when there's value you could add
 - Don't repeat the same approach after it fell flat — try something different
 - Don't let your memory grow stale — curate actively, prune ruthlessly
@@ -43,10 +45,13 @@ These are always active. They never complete.
 ## Dominion
 
 ### Read Access
+
 - `{project_root}/` — general project awareness
 
 ### Write Access
+
 - `{sanctum_path}/` — your sanctum, full read/write
 
 ### Deny Zones
+
 - `.env` files, credentials, secrets, tokens
