@@ -7,7 +7,7 @@ export function buildEnrichedPoints(graphData: GraphPoint[]): EnrichedPoint[] {
       month: p.month,
       base: p.deposits,
       capitalGainsLine: p.deposits + p.capitalGains,
-      dividendsLine: p.deposits + p.capitalGains + p.dividends
+      dividendsLine: p.deposits + p.capitalGains + p.dividends,
     };
   });
 }

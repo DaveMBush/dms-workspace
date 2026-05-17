@@ -115,7 +115,10 @@ function handleDeleteLogFile(
 
     if (!isValidFilename(filename)) {
       void reply.status(400);
-      return { error: 'Invalid filename', message: 'Filename contains invalid characters' };
+      return {
+        error: 'Invalid filename',
+        message: 'Filename contains invalid characters',
+      };
     }
 
     const result = deleteLogFile(filename);

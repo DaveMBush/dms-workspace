@@ -98,6 +98,14 @@ export class MockAuthService extends BaseAuthService {
     }
   }
 
+  getCachedAccessToken(): string | null {
+    try {
+      return localStorage.getItem('dms_mock_access_token');
+    } catch {
+      return null;
+    }
+  }
+
   /**
    * Mock token refresh
    */

@@ -64,6 +64,8 @@ describe('AddSymbolDialogComponent', () => {
     component = fixture.componentInstance;
     notificationService = TestBed.inject(NotificationService);
     httpMock = TestBed.inject(HttpTestingController);
+    fixture.detectChanges();
+    httpMock.expectOne('/api/universe').flush([]);
   });
 
   afterEach(() => {
@@ -239,6 +241,7 @@ describe('AddSymbolDialogComponent', () => {
       fixture = TestBed.createComponent(AddSymbolDialogComponent);
       component = fixture.componentInstance;
       fixture.detectChanges();
+      httpMock.expectOne('/api/universe').flush(mockUniverseArray);
 
       component.form.patchValue({ symbol: 'AAPL', riskGroupId: 'rg1' });
 
@@ -521,6 +524,7 @@ describe('AddSymbolDialogComponent', () => {
         fixture = TestBed.createComponent(AddSymbolDialogComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
+        httpMock.expectOne('/api/universe').flush(mockUniverseArray);
 
         // When: User tries to add the same symbol
         component.form.patchValue({
@@ -545,6 +549,7 @@ describe('AddSymbolDialogComponent', () => {
         fixture = TestBed.createComponent(AddSymbolDialogComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
+        httpMock.expectOne('/api/universe').flush(mockUniverseArray);
 
         component.form.patchValue({
           symbol: existingSymbol,
