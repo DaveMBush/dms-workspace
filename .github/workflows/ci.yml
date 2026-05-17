@@ -57,7 +57,7 @@ jobs:
       - run: pnpm format:check
       - run: pnpm dupcheck
       # Tests run with SQLite (default environment), builds use PostgreSQL schema
-      - run: pnpm nx affected -t lint build test --parallel=1 --verbose
+      - run: pnpm nx affected -t lint build test --parallel=1
 
       - name: Upload visual regression diffs
         if: failure()
