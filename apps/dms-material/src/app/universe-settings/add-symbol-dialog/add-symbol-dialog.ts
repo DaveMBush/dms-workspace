@@ -36,6 +36,14 @@ import { RiskGroup } from '../../store/risk-group/risk-group.interface';
 import { selectRiskGroup } from '../../store/risk-group/selectors/select-risk-group.function';
 import { selectTopEntities } from '../../store/top/selectors/select-top-entities.function';
 
+function extractSymbol(r: { symbol?: string }): string {
+  return r.symbol ?? '';
+}
+
+function keepValidSymbol(s: string): boolean {
+  return s.length > 0 && s !== '\u2026';
+}
+
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'dms-add-symbol-dialog',
@@ -110,9 +118,7 @@ export class AddSymbolDialogComponent implements OnInit {
           this: AddSymbolDialogComponent,
           rows: Array<{ symbol?: string }>
         ) {
-          const symbols = rows
-            .map((r: { symbol?: string }) => r.symbol ?? '')
-            .filter((s: string) => s.length > 0 && s !== '\u2026');
+          const symbols = rows.map(extractSymbol).filter(keepValidSymbol);
           this.existingSymbolsSignal.set(symbols);
           this.isLoading.set(false);
         }.bind(this),

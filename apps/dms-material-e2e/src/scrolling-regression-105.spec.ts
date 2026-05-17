@@ -1,4 +1,4 @@
-/* eslint-disable sonarjs/fixme-tag */
+/* eslint-disable sonarjs/fixme-tag -- test.fixme() API references appear in the JSDoc block comment explaining the spec design */
 /**
  * scrolling-regression-105.spec.ts — Round 8 (Epic 105)
  * ──────────────────────────────────────────────────────
