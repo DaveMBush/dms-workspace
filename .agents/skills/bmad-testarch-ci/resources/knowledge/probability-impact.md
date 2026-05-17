@@ -233,21 +233,15 @@ export const paymentScenarios: Array<Omit<TestScenario, 'priority'>> = [
  * Generate risk assessment report with priority distribution
  */
 export function generateRiskReport(scenarios: TestScenario[]): string {
-  const priorityCounts = scenarios.reduce(
-    (acc, s) => {
-      acc[s.priority] = (acc[s.priority] || 0) + 1;
-      return acc;
-    },
-    {} as Record<string, number>,
-  );
+  const priorityCounts = scenarios.reduce((acc, s) => {
+    acc[s.priority] = (acc[s.priority] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
 
-  const actionCounts = scenarios.reduce(
-    (acc, s) => {
-      acc[s.risk.action] = (acc[s.risk.action] || 0) + 1;
-      return acc;
-    },
-    {} as Record<string, number>,
-  );
+  const actionCounts = scenarios.reduce((acc, s) => {
+    acc[s.risk.action] = (acc[s.risk.action] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
 
   return `
 # Risk Assessment Report
@@ -319,15 +313,7 @@ export class RiskTracker {
   /**
    * Add new risk to tracker
    */
-  addRisk(params: {
-    id: string;
-    title: string;
-    feature: string;
-    probability: Probability;
-    impact: Impact;
-    reasoning: string;
-    changedBy: string;
-  }): TrackedRisk {
+  addRisk(params: { id: string; title: string; feature: string; probability: Probability; impact: Impact; reasoning: string; changedBy: string }): TrackedRisk {
     const { id, title, feature, probability, impact, reasoning, changedBy } = params;
 
     const assessment = assessRisk({ probability, impact, reasoning });
@@ -356,13 +342,7 @@ export class RiskTracker {
   /**
    * Reassess risk (probability or impact changed)
    */
-  reassessRisk(params: {
-    id: string;
-    probability?: Probability;
-    impact?: Impact;
-    reasoning: string;
-    changedBy: string;
-  }): TrackedRisk | null {
+  reassessRisk(params: { id: string; probability?: Probability; impact?: Impact; reasoning: string; changedBy: string }): TrackedRisk | null {
     const { id, probability, impact, reasoning, changedBy } = params;
     const risk = this.risks.get(id);
     if (!risk) return null;
@@ -415,9 +395,7 @@ export class RiskTracker {
    * Get risks requiring action (MITIGATE or BLOCK)
    */
   getRisksRequiringAction(): TrackedRisk[] {
-    return Array.from(this.risks.values()).filter(
-      (r) => r.status === 'OPEN' && (r.currentRisk.action === 'MITIGATE' || r.currentRisk.action === 'BLOCK'),
-    );
+    return Array.from(this.risks.values()).filter((r) => r.status === 'OPEN' && (r.currentRisk.action === 'MITIGATE' || r.currentRisk.action === 'BLOCK'));
   }
 
   /**

@@ -29,12 +29,14 @@ Do not assume the edit is small. A user saying "make it friendlier" might mean a
 Some edits are local. Others ripple. Before making changes, map the impact:
 
 **Local edits (single file, no cascade):**
+
 - Fixing wording in a capability prompt
 - Adjusting a standing order's examples
 - Updating BOND territory labels
 - Tweaking the greeting or session close
 
 **Cascading edits (touch multiple files):**
+
 - Adding a capability: new reference file + CAPABILITIES-template entry + possibly CREED update if it changes what the agent watches for
 - Changing the agent's core identity: SKILL.md seed + PERSONA-template + possibly CREED philosophy + capability prompts that reference the old identity
 - Switching agent type (e.g., stateless to memory): this is a rebuild, not an edit. Redirect to the build process.

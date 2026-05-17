@@ -49,6 +49,7 @@ Note: This assessment summarizes existing evidence; it does not run tests or CI 
 ### Resource Usage
 
 - **CPU Usage**
+
   - **Status:** {STATUS} {STATUS_ICON}
   - **Threshold:** {THRESHOLD_VALUE}
   - **Actual:** {ACTUAL_VALUE}
@@ -160,6 +161,7 @@ Note: This assessment summarizes existing evidence; it does not run tests or CI 
 ### Disaster Recovery (if applicable)
 
 - **RTO (Recovery Time Objective)**
+
   - **Status:** {STATUS} {STATUS_ICON}
   - **Threshold:** {THRESHOLD_VALUE}
   - **Actual:** {ACTUAL_VALUE}
@@ -242,6 +244,7 @@ Note: This assessment summarizes existing evidence; it does not run tests or CI 
 {QUICK_WIN_COUNT} quick wins identified for immediate implementation:
 
 1. **{QUICK_WIN_TITLE_1}** ({NFR_CATEGORY}) - {PRIORITY} - {ESTIMATED_EFFORT}
+
    - {QUICK_WIN_DESCRIPTION}
    - No code changes needed / Minimal code changes
 
@@ -255,6 +258,7 @@ Note: This assessment summarizes existing evidence; it does not run tests or CI 
 ### Immediate (Before Release) - CRITICAL/HIGH Priority
 
 1. **{ACTION_TITLE_1}** - {PRIORITY} - {ESTIMATED_EFFORT} - {OWNER}
+
    - {ACTION_DESCRIPTION}
    - {SPECIFIC_STEPS}
    - {VALIDATION_CRITERIA}
@@ -267,6 +271,7 @@ Note: This assessment summarizes existing evidence; it does not run tests or CI 
 ### Short-term (Next Milestone) - MEDIUM Priority
 
 1. **{ACTION_TITLE_3}** - {PRIORITY} - {ESTIMATED_EFFORT} - {OWNER}
+
    - {ACTION_DESCRIPTION}
 
 2. **{ACTION_TITLE_4}** - {PRIORITY} - {ESTIMATED_EFFORT} - {OWNER}
@@ -286,6 +291,7 @@ Note: This assessment summarizes existing evidence; it does not run tests or CI 
 ### Performance Monitoring
 
 - [ ] {MONITORING_TOOL_1} - {MONITORING_DESCRIPTION}
+
   - **Owner:** {OWNER}
   - **Deadline:** {DEADLINE}
 
@@ -348,6 +354,7 @@ Note: This assessment summarizes existing evidence; it does not run tests or CI 
 {EVIDENCE_GAP_COUNT} evidence gaps identified - action required:
 
 - [ ] **{NFR_NAME_1}** ({NFR_CATEGORY})
+
   - **Owner:** {OWNER}
   - **Deadline:** {DEADLINE}
   - **Suggested Evidence:** {SUGGESTED_EVIDENCE_SOURCE}

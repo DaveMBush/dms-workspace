@@ -1,6 +1,7 @@
 # Module Setup
 
 Standalone module self-registration. This file is loaded when:
+
 - The user passes `setup`, `configure`, or `install` as an argument
 - The module is not yet registered in `{project-root}/_bmad/config.yaml`
 - The skill's first-run init flow detects this is a fresh installation (e.g., agent memory doesn't exist yet)

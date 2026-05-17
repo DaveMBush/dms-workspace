@@ -19,6 +19,7 @@ description: { skill-description } # [5-8 word summary]. [trigger phrases, e.g. 
 ## On Activation
 
 {if-customizable}
+
 ### Step 1: Resolve the Workflow Block
 
 Run: `python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow`

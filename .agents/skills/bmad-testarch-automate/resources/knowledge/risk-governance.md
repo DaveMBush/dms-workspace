@@ -76,13 +76,7 @@ export function classifyRiskLevel(score: number): 'LOW' | 'MEDIUM' | 'HIGH' | 'C
 }
 
 // Example: Risk assessment from test failures
-export function assessTestFailureRisk(failure: {
-  test: string;
-  category: RiskCategory;
-  affectedUsers: number;
-  revenueImpact: number;
-  securityVulnerability: boolean;
-}): RiskScore {
+export function assessTestFailureRisk(failure: { test: string; category: RiskCategory; affectedUsers: number; revenueImpact: number; securityVulnerability: boolean }): RiskScore {
   // Probability based on test failure frequency (simplified)
   const probability: 1 | 2 | 3 = 3; // Test failed = High probability
 

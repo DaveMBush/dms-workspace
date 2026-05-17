@@ -43,6 +43,7 @@ These replace the legacy memory/headless conditionals for the new agent type sys
 - `{if-pulse}` ... `{/if-pulse}` → Keep if agent has autonomous mode (PULSE enabled)
 
 **Mapping from legacy conditionals:**
+
 - `{if-memory}` is equivalent to `{if-memory-agent}` — both mean the agent has persistent state
 - `{if-headless}` maps to `{if-pulse}` — both mean the agent can operate autonomously
 
@@ -80,10 +81,12 @@ The builder determines the rest of the agent structure — capabilities, activat
 All generated agents use `./` prefix for skill-internal paths:
 
 **Stateless agents:**
+
 - `./references/{capability}.md` — Individual capability prompts
 - `./scripts/` — Python/shell scripts for deterministic operations
 
 **Memory agents:**
+
 - `./references/first-breath.md` — First Breath onboarding (loaded when no sanctum exists)
 - `./references/memory-guidance.md` — Memory philosophy
 - `./references/capability-authoring.md` — Capability evolution framework (if evolvable)

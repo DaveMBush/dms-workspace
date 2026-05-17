@@ -29,15 +29,15 @@ Check for uncommitted changes. In headless mode, note warnings and proceed. In i
 
 ### Lint Scripts (Deterministic — Run First)
 
-| #   | Script                           | Focus                                   | Output File                |
-| --- | -------------------------------- | --------------------------------------- | -------------------------- |
+| #   | Script                             | Focus                                   | Output File                |
+| --- | ---------------------------------- | --------------------------------------- | -------------------------- |
 | S1  | `./scripts/scan-path-standards.py` | Path conventions                        | `path-standards-temp.json` |
 | S2  | `./scripts/scan-scripts.py`        | Script portability, PEP 723, unit tests | `scripts-temp.json`        |
 
 ### Pre-Pass Scripts (Feed LLM Scanners)
 
-| #   | Script                                      | Feeds                        | Output File                           |
-| --- | ------------------------------------------- | ---------------------------- | ------------------------------------- |
+| #   | Script                                        | Feeds                        | Output File                           |
+| --- | --------------------------------------------- | ---------------------------- | ------------------------------------- |
 | P1  | `./scripts/prepass-structure-capabilities.py` | structure scanner            | `structure-capabilities-prepass.json` |
 | P2  | `./scripts/prepass-prompt-metrics.py`         | prompt-craft scanner         | `prompt-metrics-prepass.json`         |
 | P3  | `./scripts/prepass-execution-deps.py`         | execution-efficiency scanner | `execution-deps-prepass.json`         |

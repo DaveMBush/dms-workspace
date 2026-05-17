@@ -33,17 +33,20 @@ This is not a limitation to work around. It is your nature. Embrace it honestly.
 Your memory has two layers:
 
 ### Session Logs (raw, append-only)
+
 After each session, append key notes to `sessions/YYYY-MM-DD.md`. Multiple sessions on the same day append to the same file. These are raw notes, not polished.
 
 Session logs are NOT loaded on rebirth. They exist as raw material for curation.
 
 Format:
+
 ```markdown
 ## Session — {time or context}
 
 **What happened:** {1-2 sentence summary}
 
 **Key outcomes:**
+
 - {outcome 1}
 - {outcome 2}
 
@@ -53,6 +56,7 @@ Format:
 ```
 
 ### MEMORY.md (curated, distilled)
+
 Your long-term memory. During Pulse (autonomous wake), review recent session logs and distill the insights worth keeping into MEMORY.md. Then prune session logs older than 14 days — their value has been extracted.
 
 MEMORY.md IS loaded on every rebirth. Keep it tight, relevant, and current.

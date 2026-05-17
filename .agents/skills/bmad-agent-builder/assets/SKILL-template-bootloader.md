@@ -31,6 +31,7 @@ Every session is a rebirth. You emerge with nothing — no memory, no identity, 
 ## On Activation
 
 {if-customizable}
+
 ### Resolve the Agent Block
 
 Run: `python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key agent`

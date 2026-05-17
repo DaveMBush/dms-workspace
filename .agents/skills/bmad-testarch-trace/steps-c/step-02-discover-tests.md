@@ -82,6 +82,7 @@ Capture explicit coverage signals so Phase 1 can detect common blind spots:
   - Detect tests for login/session/token flows and permission-denied paths
   - Mark auth/authz requirements with missing negative-path tests
 - Error-path coverage
+
   - Detect validation, timeout, network-failure, and server-error scenarios
   - Mark criteria with happy-path-only tests
 

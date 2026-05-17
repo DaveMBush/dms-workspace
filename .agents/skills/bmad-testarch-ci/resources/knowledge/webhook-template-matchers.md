@@ -15,21 +15,9 @@ import { webhookTemplate } from '@seontechnologies/playwright-utils/webhook';
 // 15s timeout: the Kafka → HTTP webhook delivery pipeline can back up under
 // high CI concurrency (burn-in with many parallel workers). 10s was occasionally
 // not enough; 15s gives the pipeline headroom without slowing normal runs.
-const movieCreated = (movieId: number) =>
-  webhookTemplate<{ event: string; data: { id: number } }>('movie.created')
-    .matchField('event', 'movie.created')
-    .matchField('data.id', movieId)
-    .withTimeout(15_000)
-    .withInterval(500)
-    .build();
+const movieCreated = (movieId: number) => webhookTemplate<{ event: string; data: { id: number } }>('movie.created').matchField('event', 'movie.created').matchField('data.id', movieId).withTimeout(15_000).withInterval(500).build();
 
-const movieDeleted = (movieId: number) =>
-  webhookTemplate<{ event: string; data: { id: number } }>('movie.deleted')
-    .matchField('event', 'movie.deleted')
-    .matchField('data.id', movieId)
-    .withTimeout(15_000)
-    .withInterval(500)
-    .build();
+const movieDeleted = (movieId: number) => webhookTemplate<{ event: string; data: { id: number } }>('movie.deleted').matchField('event', 'movie.deleted').matchField('data.id', movieId).withTimeout(15_000).withInterval(500).build();
 ```
 
 The ID parameter scopes each template to a specific entity, preventing parallel workers from matching each other's webhooks.

@@ -7,8 +7,7 @@ import {
   provideHttpClientTesting,
 } from '@angular/common/http/testing';
 
-// Declare mock functions before vi.mock calls
-const mockUniverseAdd = vi.fn();
+// Declare mock array before vi.mock calls
 const mockUniverseArray: Array<{ symbol: string }> = [];
 
 // Mock upstream selectors BEFORE anything else
@@ -26,14 +25,6 @@ vi.mock('../../store/risk-group/selectors/select-risk-group.function', () => ({
   ]),
 }));
 
-vi.mock('../../store/universe/selectors/select-universes.function', () => ({
-  selectUniverses: vi.fn(() => {
-    const arr = mockUniverseArray as any;
-    arr.add = mockUniverseAdd;
-    return arr;
-  }),
-}));
-
 import { AddSymbolDialogComponent } from './add-symbol-dialog';
 import { NotificationService } from '../../shared/services/notification.service';
 
@@ -46,7 +37,6 @@ describe('AddSymbolDialogComponent', () => {
 
   beforeEach(async () => {
     mockDialogRef = { close: vi.fn() };
-    mockUniverseAdd.mockClear();
     mockUniverseArray.length = 0; // Clear the array between tests
 
     await TestBed.configureTestingModule({

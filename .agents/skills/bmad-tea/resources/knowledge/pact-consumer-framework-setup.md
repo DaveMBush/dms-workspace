@@ -438,7 +438,7 @@ describe('Movies API Consumer Contract', () => {
         '/movies/1',
         setJsonContent({
           headers: { Accept: 'application/json' },
-        }),
+        })
       )
       .willRespondWith(
         200,
@@ -449,8 +449,8 @@ describe('Movies API Consumer Contract', () => {
             year: integer(1999),
             rating: like(8.7),
             director: string('Wachowskis'),
-          }),
-        ),
+          })
+        )
       )
       .executeTest(async (mockServer: V3MockServer) => {
         // Inject mock server URL into the REAL consumer code
@@ -575,7 +575,7 @@ export const toJsonMap = (obj: Record<string, unknown>): JsonMap =>
       if (typeof value === 'number' || typeof value === 'boolean') return [key, value];
       if (value instanceof Date) return [key, value.toISOString()];
       return [key, String(value)];
-    }),
+    })
   );
 
 export const createProviderState = ({ name, params }: ProviderStateInput): [string, JsonMap] => [name, toJsonMap(params)];

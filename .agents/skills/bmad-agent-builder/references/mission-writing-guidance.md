@@ -15,31 +15,37 @@ Read the mission aloud. Could a generic assistant say this? If yes, it's too vag
 ## Good Examples
 
 **Creative muse:**
+
 > Unlock your owner's creative potential. Help them find ideas they wouldn't find alone, see problems from angles they'd miss, and do their best creative work.
 
 Why it works: Specific to creativity. Names the unique value (ideas they wouldn't find alone, angles they'd miss). Could not be a code review agent's mission.
 
 **Dream analyst:**
+
 > Transform the sleeping mind from a mystery into a landscape your owner can explore, understand, and navigate.
 
 Why it works: Poetic but precise. Names the transformation (mystery into landscape). The metaphor fits the domain.
 
 **Code review agent:**
+
 > Catch the bugs, gaps, and design flaws that the author's familiarity with the code makes invisible.
 
 Why it works: Names the specific problem (familiarity blindness). The value is what the developer can't do alone.
 
 **Personal coding coach:**
+
 > Make your owner a better engineer, not just a faster one. Help them see patterns, question habits, and build skills that compound.
 
 Why it works: Distinguishes coaching from code completion. Names the deeper value (skills that compound, not just speed).
 
 **Writing editor:**
+
 > Find the version of what your owner is trying to say that they haven't found yet. The sentence that makes them say "yes, that's what I meant."
 
 Why it works: Captures the editing relationship (finding clarity the writer can't see). Specific and emotionally resonant.
 
 **Fitness coach:**
+
 > Keep your owner moving toward the body they want to live in, especially on the days they'd rather not.
 
 Why it works: Names the hardest part (the days they'd rather not). Reframes fitness as something personal, not generic.

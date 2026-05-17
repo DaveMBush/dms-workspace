@@ -17,6 +17,7 @@ These appear in every first-breath.md regardless of domain:
 - **Tools** — MCP servers, APIs, or services to register in CAPABILITIES.md.
 
 If autonomous mode is enabled:
+
 - **PULSE preferences** — does the owner want autonomous check-ins? How often? What should the agent do unsupervised? Update PULSE.md with their preferences.
 
 ## Deriving Domain-Specific Territories
@@ -31,14 +32,14 @@ The answer is the domain territory. Here's the pattern:
 
 Every domain has questions that shape how the agent should show up. These are NOT capability questions ("What features do you want?") but relationship questions ("How do you engage with this domain?").
 
-| Agent Domain | Core Questions |
-|-------------|----------------|
-| Creative muse | What are they building? How does their mind move through creative problems? What lights them up? What shuts them down? |
-| Dream analyst | What's their dream recall like? Have they experienced lucid dreaming? What draws them to dream work? Do they journal? |
-| Code review agent | What's their codebase? What languages? What do they care most about: correctness, performance, readability? What bugs have burned them? |
-| Personal coding coach | What's their experience level? What are they trying to learn? How do they learn best? What frustrates them about coding? |
-| Writing editor | What do they write? Who's their audience? What's their relationship with editing? Do they overwrite or underwrite? |
-| Fitness coach | What's their current routine? What's their goal? What's their relationship with exercise? What's derailed them before? |
+| Agent Domain          | Core Questions                                                                                                                          |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| Creative muse         | What are they building? How does their mind move through creative problems? What lights them up? What shuts them down?                  |
+| Dream analyst         | What's their dream recall like? Have they experienced lucid dreaming? What draws them to dream work? Do they journal?                   |
+| Code review agent     | What's their codebase? What languages? What do they care most about: correctness, performance, readability? What bugs have burned them? |
+| Personal coding coach | What's their experience level? What are they trying to learn? How do they learn best? What frustrates them about coding?                |
+| Writing editor        | What do they write? Who's their audience? What's their relationship with editing? Do they overwrite or underwrite?                      |
+| Fitness coach         | What's their current routine? What's their goal? What's their relationship with exercise? What's derailed them before?                  |
 
 ### Step 2: Frame as Conversation, Not Interview
 
@@ -54,18 +55,19 @@ The territory description in first-breath.md should guide the agent toward natur
 
 Each territory should have a clear destination:
 
-| Territory | Writes To |
-|-----------|----------|
-| Agent identity | PERSONA.md |
-| Owner understanding | BOND.md |
-| Personalized mission | CREED.md (Mission section) |
-| Domain-specific discovery | BOND.md + MEMORY.md |
+| Territory                 | Writes To                            |
+| ------------------------- | ------------------------------------ |
+| Agent identity            | PERSONA.md                           |
+| Owner understanding       | BOND.md                              |
+| Personalized mission      | CREED.md (Mission section)           |
+| Domain-specific discovery | BOND.md + MEMORY.md                  |
 | Capabilities introduction | CAPABILITIES.md (if tools mentioned) |
-| PULSE preferences | PULSE.md |
+| PULSE preferences         | PULSE.md                             |
 
 ### Step 4: Write the Territory Section
 
 In first-breath.md, each territory gets a section under "## The Territories" with:
+
 - A heading naming the territory
 - Guidance on what to explore (framed as conversation topics, not checklist items)
 - Which sanctum file to update as things are learned
@@ -74,6 +76,7 @@ In first-breath.md, each territory gets a section under "## The Territories" wit
 ## Adaptation Examples
 
 ### Creative Muse Territories (reference: sample-first-breath.md)
+
 - Your Identity (name, personality expression)
 - Your Owner (what they build, how they think creatively, what inspires/blocks)
 - Your Mission (specific creative value for this person)
@@ -82,6 +85,7 @@ In first-breath.md, each territory gets a section under "## The Territories" wit
 - Your Tools (MCP servers, APIs)
 
 ### Dream Analyst Territories (hypothetical)
+
 - Your Identity (name, approach to dream work)
 - Your Dreamer (recall patterns, relationship with dreams, lucid experience, journaling habits)
 - Your Mission (specific dream work value for this person)
@@ -89,6 +93,7 @@ In first-breath.md, each territory gets a section under "## The Territories" wit
 - Your Capabilities (dream logging, pattern discovery, interpretation, lucid coaching)
 
 ### Code Review Agent Territories (hypothetical)
+
 - Your Identity (name, review style)
 - Your Developer (codebase, languages, experience, what they care about, past burns)
 - Your Mission (specific review value for this person)
@@ -109,6 +114,7 @@ Configuration-style does NOT include calibration mechanics (mirroring, working h
 ## Quality Check
 
 A good domain-adapted first-breath.md should:
+
 - Feel different from every other agent's First Breath (the territories are unique)
 - Have at least 2 domain-specific territories beyond the universal ones
 - Guide the agent toward natural conversation, not interrogation

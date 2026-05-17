@@ -25,14 +25,14 @@ Find and read:
 
 ### Frontmatter (The Trigger)
 
-| Check                                                                                                 | Why It Matters                                                                                     |
-| ----------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| Check                                                                                                  | Why It Matters                                                                                     |
+| ------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------- |
 | `name` MUST match the folder name, kebab-case. Module: `{code}-{skillname}`. Standalone: `{skillname}` | Naming convention identifies module affiliation. `bmad-` prefix reserved for official BMad skills  |
-| `description` follows two-part format: [5-8 word summary]. [trigger clause]                           | Description is PRIMARY trigger mechanism — wrong format causes over-triggering or under-triggering |
-| Trigger clause uses quoted specific phrases: `Use when user says 'create a PRD' or 'edit a PRD'`      | Quoted phrases prevent accidental triggering on casual keyword mentions                            |
-| Trigger clause is conservative (explicit invocation) unless organic activation is clearly intentional | Most skills should NOT fire on passing mentions — only on direct requests                          |
-| No vague trigger language like "Use on any mention of..." or "Helps with..."                          | Over-broad descriptions hijack unrelated conversations                                             |
-| No extra frontmatter fields beyond name/description                                                   | Extra fields clutter metadata, may not parse correctly                                             |
+| `description` follows two-part format: [5-8 word summary]. [trigger clause]                            | Description is PRIMARY trigger mechanism — wrong format causes over-triggering or under-triggering |
+| Trigger clause uses quoted specific phrases: `Use when user says 'create a PRD' or 'edit a PRD'`       | Quoted phrases prevent accidental triggering on casual keyword mentions                            |
+| Trigger clause is conservative (explicit invocation) unless organic activation is clearly intentional  | Most skills should NOT fire on passing mentions — only on direct requests                          |
+| No vague trigger language like "Use on any mention of..." or "Helps with..."                           | Over-broad descriptions hijack unrelated conversations                                             |
+| No extra frontmatter fields beyond name/description                                                    | Extra fields clutter metadata, may not parse correctly                                             |
 
 ### Required Sections
 

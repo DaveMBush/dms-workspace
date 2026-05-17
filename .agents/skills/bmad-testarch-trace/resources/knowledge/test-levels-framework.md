@@ -328,7 +328,12 @@ test.describe('Button Component', () => {
   test('should call onClick handler when clicked', async ({ mount }) => {
     let clicked = false;
     const component = await mount(
-      <Button label="Submit" onClick={() => { clicked = true; }} />
+      <Button
+        label="Submit"
+        onClick={() => {
+          clicked = true;
+        }}
+      />
     );
 
     await component.getByRole('button').click();

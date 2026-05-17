@@ -86,23 +86,23 @@ Check the pre-pass JSON for `metadata.is_memory_agent` (from structure prepass) 
 
 **Stateless agents (traditional pattern):**
 
-| Check                                                  | Why It Matters                          |
-| ------------------------------------------------------ | --------------------------------------- |
-| Selective memory loading (only what's needed)          | Loading all memory files wastes tokens  |
-| Index file loaded first for routing                    | Index tells what else to load           |
-| Memory sections loaded per-capability, not all-at-once | Each capability needs different memory  |
-| Access boundaries loaded on every activation           | Required for security                   |
+| Check                                                  | Why It Matters                         |
+| ------------------------------------------------------ | -------------------------------------- |
+| Selective memory loading (only what's needed)          | Loading all memory files wastes tokens |
+| Index file loaded first for routing                    | Index tells what else to load          |
+| Memory sections loaded per-capability, not all-at-once | Each capability needs different memory |
+| Access boundaries loaded on every activation           | Required for security                  |
 
 **Memory agents (sanctum pattern):**
 
 Memory agents batch-load 6 identity files on rebirth: INDEX.md, PERSONA.md, CREED.md, BOND.md, MEMORY.md, CAPABILITIES.md. **This is correct, not wasteful.** These files ARE the agent's identity -- without all 6, it can't become itself. Do NOT flag this as "loading all memory unnecessarily."
 
-| Check                                                        | Why It Matters                                    |
-| ------------------------------------------------------------ | ------------------------------------------------- |
-| 6 sanctum files batch-loaded on rebirth (correct)            | Agent needs full identity to function             |
-| Capability reference files loaded on demand (not at startup) | These are in `./references/`, loaded when triggered |
-| Session logs NOT loaded on rebirth (correct)                  | Raw material, curated during Pulse                |
-| `memory-guidance.md` loaded at session close and during Pulse | Memory discipline is on-demand, not startup       |
+| Check                                                         | Why It Matters                                      |
+| ------------------------------------------------------------- | --------------------------------------------------- |
+| 6 sanctum files batch-loaded on rebirth (correct)             | Agent needs full identity to function               |
+| Capability reference files loaded on demand (not at startup)  | These are in `./references/`, loaded when triggered |
+| Session logs NOT loaded on rebirth (correct)                  | Raw material, curated during Pulse                  |
+| `memory-guidance.md` loaded at session close and during Pulse | Memory discipline is on-demand, not startup         |
 
 ```
 BAD (memory agent): Load session logs on rebirth
