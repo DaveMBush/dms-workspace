@@ -553,8 +553,8 @@ describe('AddSymbolDialogComponent', () => {
         // When: User attempts to submit
         component.onSubmit();
 
-        // Then: Should not call add method or close dialog
-        expect(mockUniverseAdd).not.toHaveBeenCalled();
+        // Then: Should not post to API or close dialog
+        httpMock.expectNone('./api/universe/add');
         expect(mockDialogRef.close).not.toHaveBeenCalled();
       });
     });
@@ -693,7 +693,7 @@ describe('AddSymbolDialogComponent', () => {
         component.onSubmit();
 
         // Then: Should not proceed with submission
-        expect(mockUniverseAdd).not.toHaveBeenCalled();
+        httpMock.expectNone('./api/universe/add');
         expect(component.form.get('symbol')?.touched).toBe(true);
       });
 
