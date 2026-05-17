@@ -339,12 +339,7 @@ export class AddSymbolDialogComponent implements OnInit {
         this.dialogRef.close({ symbol, riskGroupId });
         this.isLoading.set(false);
       }.bind(this),
-      error: function handleAddError(
-        this: AddSymbolDialogComponent,
-        error: unknown
-      ) {
-        this.handleAddError(error);
-      }.bind(this),
+      error: this.handleAddError.bind(this),
     });
   }
 

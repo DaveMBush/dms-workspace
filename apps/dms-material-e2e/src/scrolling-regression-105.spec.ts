@@ -1,5 +1,4 @@
 /* eslint-disable sonarjs/fixme-tag */
-/* eslint-disable sonarjs/fixme-tag */
 /**
  * scrolling-regression-105.spec.ts — Round 8 (Epic 105)
  * ──────────────────────────────────────────────────────
@@ -52,7 +51,6 @@
  *   filter between scroll passes. The 4px/16ms slow-scroll pattern applied in
  *   Round 8 exposes whether CDK's internal state is coherent after the swap.
  */
-/* eslint-enable sonarjs/fixme-tag */
 
 import { expect, Locator, Page, test } from 'playwright/test';
 
