@@ -124,17 +124,17 @@ export class SummaryViewComponent extends SummaryViewBase implements OnInit {
       this.enableSelectors.bind(this),
       this.accountId
     );
-    this.summaryService.fetchGraph(
-      undefined,
-      this.accountId,
-      currentMonth
-    );
+    this.summaryService.fetchGraph(undefined, this.accountId, currentMonth);
     this.summaryService.fetchMonths(this.accountId);
     this.summaryService.fetchYears();
   }
 
   private onMonthChange(month: string | null): void {
-    if (month !== null && this.accountId !== '' && month !== this.lastFetchedMonth) {
+    if (
+      month !== null &&
+      this.accountId !== '' &&
+      month !== this.lastFetchedMonth
+    ) {
       this.lastFetchedMonth = month;
       this.selectedMonth.disable({ emitEvent: false });
       this.summaryService.fetchSummary(
@@ -151,7 +151,11 @@ export class SummaryViewComponent extends SummaryViewBase implements OnInit {
   }
 
   private onYearChange(year: number | null): void {
-    if (year !== null && this.accountId !== '' && year !== this.lastFetchedYear) {
+    if (
+      year !== null &&
+      this.accountId !== '' &&
+      year !== this.lastFetchedYear
+    ) {
       this.lastFetchedYear = year;
       this.summaryService.fetchMonths(this.accountId, year);
       this.summaryService.fetchGraph(
