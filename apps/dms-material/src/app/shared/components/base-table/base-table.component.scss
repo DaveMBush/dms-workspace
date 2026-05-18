@@ -40,12 +40,12 @@ td.mat-mdc-cell button.mat-mdc-icon-button {
  *   provides the paint boundary CDK needs; the explicit contain property is redundant
  *   and was breaking position:sticky on all five CDK virtual-scroll hosts.
  * Epic 105: Sticky header drift reappears AFTER an in-place account- or filter-change
- *   on all five CDK virtual-scroll screens. Because there is no cdkVirtualForOf directive,
- *   CDK's FixedSizeVirtualScrollStrategy sees dataLength=0 and never updates
- *   setRenderedContentOffset() or _renderedRange on data changes. After a data swap the
- *   CDK content-wrapper transform and the browser's sticky resolver can fall out of sync,
- *   causing Angular Material updateStickyHeaderRowStyles() to measure row heights from a
- *   stale layout and write incorrect top values for subsequent sticky rows.
+ *   on all five CDK virtual-scroll screens. Root cause was a selector/measurement mismatch
+ *   in the regression spec: `tr.mat-mdc-header-row` was measured instead of the sticky
+ *   `th.mat-mdc-header-cell`. Chrome returns the `<tr>`'s natural-flow bounding-box
+ *   (y = viewportTop − scrollTop), producing false sticky-drift violations regardless of
+ *   whether sticky is working correctly. Confirmed by live-DOM diagnostic at scrollTop=4:
+ *   `tr.y=124` (natural-flow), `th.y=128` (sticky, correctly at viewportTop).
  *   Fix (Story 105.2): BaseTableComponent.contextId input — screen components bind a key
  *   that changes on every account/filter context change; an effect scrolls to index 0,
  *   resetting the viewport to a clean state before sticky heights are re-measured.

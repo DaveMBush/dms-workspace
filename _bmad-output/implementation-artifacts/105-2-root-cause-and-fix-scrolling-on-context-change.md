@@ -460,7 +460,7 @@ comment pointing at this central history block.
 After any context change (account swap or filter apply/clear) followed by a 4px/16ms
 slow scroll across the full scroll range, the sticky `<th>` cell (not the `<tr>` row
 container) must remain at the viewport top on every frame:
-```
+```ts
 abs(th.getBoundingClientRect().top − viewport.getBoundingClientRect().top) ≤ 2
 ```
 on every frame, on every virtual-scrolled screen (Universe, Open Positions, Sold
@@ -488,6 +488,7 @@ project config if not already there).
 - `seedScrollFetchUniverseIds()` (from `seed-scroll-fetch-universe-ids.helper.ts`) — needed for multi-account tests
 
 **Context-change driver per screen:**
+
 | Screen | Driver |
 |--------|--------|
 | Universe | `.account-select mat-select` → `mat-option` at index 1 (second option) |
@@ -495,6 +496,7 @@ project config if not already there).
 | Open / Sold / Div Dep | `page.goto('/account/${accountId2}/open')` (or `/sold`, `/div-dep`) |
 | Open / Sold (filter) | `[data-testid="symbol-search-input"]` or `thead input[placeholder="Search Symbol"]` → `fill('E2E-OP')`/`fill('E2E-SD')` |
 | Screener | `[data-testid="risk-group-filter"]` → select `Income` then `All` |
+
 
 **Structural constraints Story 105.3 must guard:**
 1. `cdk-virtual-scroll-viewport` MUST NOT have `contain: paint`, `contain: layout`, or
@@ -631,7 +633,7 @@ All code changes verified via static analysis and code reading only.
 - Tasks 1, 3, 4, 7, 9 completed via code-analysis evidence.
 - Tasks 2, 5, 6, 8 blocked (bash/Playwright MCP unavailable); deferred to parent workflow quality-validation agent.
 - All 16 `test.fixme()` annotations removed from `scrolling-regression-105.spec.ts` (10 inline `test.fixme()` calls + 6 `test.fixme(title, fn)` → `test(title, fn)` conversions).
-- Root cause confirmed as C1 (no `cdkVirtualForOf` → CDK `getDataLength()` = 0 → stale scroll state after data swap).
+- Root cause confirmed as selector mismatch: `tr.mat-mdc-header-row` was measured instead of sticky `th.mat-mdc-header-cell`; Chrome returns the `<tr>`'s natural-flow bounding-box (y = viewportTop − scrollTop), producing false sticky-drift violations regardless of whether sticky is working. C1 (cdkVirtualForOf/dataLength=0) was an initial hypothesis but is not the root cause.
 - Fix implemented: `contextId = input<string | null>(null)` on `BaseTableComponent` + `effect()` calling `untracked(() => scrollToTop())` + `contextKey$` computed signals on all 5 screens.
 - C2 and C4 eliminated by code inspection; C3 and C5 possible but not root cause.
 - Stale JSDoc comment in `scrolling-regression-105.spec.ts` updated: "ALL TESTS are annotated test.fixme()" replaced with accurate "ALL test.fixme() annotations were removed by Story 105.2..." description.

@@ -212,21 +212,26 @@ test.describe('Loading Spinner Centering', () => {
         }
 
         if (url.includes('/years')) {
+          const currentYear = new Date().getFullYear();
           await route.fulfill({
             status: 200,
             contentType: 'application/json',
-            body: JSON.stringify([2026, 2025]),
+            body: JSON.stringify([currentYear, currentYear - 1]),
           });
           return;
         }
 
         if (url.includes('/graph')) {
+          const nowGraph = new Date();
+          const graphMonth = `${String(nowGraph.getFullYear())}-${String(
+            nowGraph.getMonth() + 1
+          ).padStart(2, '0')}`;
           await route.fulfill({
             status: 200,
             contentType: 'application/json',
             body: JSON.stringify([
               {
-                month: '2026-03',
+                month: graphMonth,
                 deposits: 100000,
                 dividends: 2500,
                 capitalGains: 5000,

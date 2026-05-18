@@ -172,16 +172,15 @@ export class BaseTableComponent<T extends { id: string }>
   private lastShiftKey = false;
   private prevCtxId: string | null = null;
 
-  // eslint-disable-next-line @smarttools/no-anonymous-functions -- Required for computed signal
   readonly activeSortColumn = computed(
+    // eslint-disable-next-line @smarttools/no-anonymous-functions -- Required for computed signal
     () => this.sortColumns()[0]?.column ?? ''
   );
 
-  // eslint-disable-next-line @smarttools/no-anonymous-functions -- Required for computed signal
-  readonly activeSortDirection = computed(() => {
-    const columns = this.sortColumns();
-    return columns.length > 0 ? columns[0].direction : '';
-  });
+  readonly activeSortDirection = computed(
+    // eslint-disable-next-line @smarttools/no-anonymous-functions -- Required for computed signal
+    () => this.sortColumns()[0]?.direction ?? ''
+  );
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- Required for computed signal
   readonly sortRankMap = computed(() => {
@@ -411,9 +410,8 @@ export class BaseTableComponent<T extends { id: string }>
   }
 
   isAllSelected(): boolean {
-    const numSelected = this.selection.selected.length;
     const numRows = this.dataSource().length;
-    return numSelected === numRows && numRows > 0;
+    return this.selection.selected.length === numRows && numRows > 0;
   }
 
   toggleAllRows(): void {
