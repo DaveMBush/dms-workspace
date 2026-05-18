@@ -147,6 +147,7 @@ export class SummaryService {
       return;
     }
     this.errorSignal.set(null);
+    this.loadingSignal.set(true);
 
     const self = this;
     const shouldCache = !hasAccountId;
@@ -168,10 +169,12 @@ export class SummaryService {
       if (shouldCache) {
         self.monthsCached = true;
       }
+      self.loadingSignal.set(false);
     }
 
     function onMonthsError(err: HttpErrorResponse): void {
       self.errorSignal.set(err.message || 'Failed to fetch months');
+      self.loadingSignal.set(false);
     }
 
     const params: Record<string, string> = {};
