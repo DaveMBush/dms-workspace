@@ -36,6 +36,7 @@
       [data]="filteredData$()"
       [columns]="columns"
       [selectable]="false"
+      [contextId]="contextKey$()"
       tableLabel="Screener positions"
       (sortChange)="onSortChange($event)"
     >

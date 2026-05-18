@@ -39,6 +39,18 @@ td.mat-mdc-cell button.mat-mdc-icon-button {
  *   Fix (Story 101.2): remove contain:paint entirely. overflow:auto/hidden already
  *   provides the paint boundary CDK needs; the explicit contain property is redundant
  *   and was breaking position:sticky on all five CDK virtual-scroll hosts.
+ * Epic 105: Sticky header drift reappears AFTER an in-place account- or filter-change
+ *   on all five CDK virtual-scroll screens. Because there is no cdkVirtualForOf directive,
+ *   CDK's FixedSizeVirtualScrollStrategy sees dataLength=0 and never updates
+ *   setRenderedContentOffset() or _renderedRange on data changes. After a data swap the
+ *   CDK content-wrapper transform and the browser's sticky resolver can fall out of sync,
+ *   causing Angular Material updateStickyHeaderRowStyles() to measure row heights from a
+ *   stale layout and write incorrect top values for subsequent sticky rows.
+ *   Fix (Story 105.2): BaseTableComponent.contextId input — screen components bind a key
+ *   that changes on every account/filter context change; an effect scrolls to index 0,
+ *   resetting the viewport to a clean state before sticky heights are re-measured.
+ *   No CSS changes required; the existing layout is correct. See SCROLLING REGRESSION
+ *   HISTORY in base-table.component.ts for the TypeScript-side details.
  *
  * Structural constraint: .virtual-scroll-viewport MUST be a scroll container
  * (overflow-y:auto) but MUST NOT apply layout containment (contain:layout or any

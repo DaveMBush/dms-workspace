@@ -1,8 +1,7 @@
-import type { PrismaClient } from '@prisma/client';
-
 import { createTestDates } from './create-test-dates.helper';
 import { generateUniqueId } from './generate-unique-id.helper';
 import type { RiskGroups } from './risk-groups.types';
+import { cleanupUniverseBySymbols } from './shared-cleanup-universe-symbols.helper';
 import { initializePrismaClient } from './shared-prisma-client.helper';
 import { createRiskGroups } from './shared-risk-groups.helper';
 import type { UniverseRecord } from './universe-record.types';
@@ -134,19 +133,6 @@ function createRowHeightRecords(
   ];
 }
 
-async function cleanupRowHeightData(
-  prisma: PrismaClient,
-  symbols: string[]
-): Promise<void> {
-  try {
-    await prisma.universe.deleteMany({
-      where: { symbol: { in: symbols } },
-    });
-  } finally {
-    await prisma.$disconnect();
-  }
-}
-
 /**
  * Seeds universe records for the Epic 67 / Story 67.1 row-height diagnosis test.
  * Returns a cleanup function and the generated symbol names.
@@ -174,7 +160,7 @@ export async function seedRowHeightE2eData(): Promise<SeederResult> {
 
   return {
     cleanup: async function cleanupFunction(): Promise<void> {
-      await cleanupRowHeightData(prisma, symbols);
+      await cleanupUniverseBySymbols(prisma, symbols);
     },
     symbols,
   };

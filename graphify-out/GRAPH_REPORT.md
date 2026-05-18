@@ -1,7 +1,7 @@
-# Graph Report - story-105-1  (2026-05-17)
+# Graph Report - story-105-2  (2026-05-17)
 
 ## Corpus Check
-- 863 files · ~544,782 words
+- 863 files · ~544,756 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `5b13a941`
+- Built from commit: `170572b9`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -626,16 +626,16 @@ Cohesion: 0.17
 Nodes (4): createSecurityConfig(), csrfProtectionHook(), securityHeaders(), securityOnRequestHook()
 
 ### Community 63 - "Community 63"
-Cohesion: 0.21
-Nodes (4): getBlacklistStats(), getCSRFStats(), getRateLimitStats(), securityStatsHandler()
-
-### Community 64 - "Community 64"
 Cohesion: 0.17
 Nodes (4): handleSetSecureCookie(), logCookieSuccess(), setSecureCookie(), validateCookieRequest()
 
-### Community 65 - "Community 65"
+### Community 64 - "Community 64"
 Cohesion: 0.27
 Nodes (6): validateCognitoConfig(), authenticateJWT(), extractAndValidateToken(), handleFailedAuthentication(), processSuccessfulAuthentication(), getAuthCookieName()
+
+### Community 65 - "Community 65"
+Cohesion: 0.21
+Nodes (4): getBlacklistStats(), getCSRFStats(), getRateLimitStats(), securityStatsHandler()
 
 ### Community 66 - "Community 66"
 Cohesion: 0.26
@@ -663,7 +663,7 @@ Nodes (12): BaseTable Column Sort Indicator, BaseTable Shared Component, BaseTab
 
 ### Community 79 - "Community 79"
 Cohesion: 0.25
-Nodes (5): generateUniqueId(), buildDeepScrollRecords(), seedDeepScrollUniverseData(), buildFillerRecord(), seedFillerUniverseSymbols()
+Nodes (5): generateUniqueId(), buildDeepScrollRecords(), seedDeepScrollUniverseData(), createBulkRecords(), seedScrollScreenerData()
 
 ### Community 81 - "Community 81"
 Cohesion: 0.35
@@ -695,11 +695,11 @@ Nodes (10): Account Actions Card, Email Change Card, Login Form, Mock Login Comp
 
 ### Community 92 - "Community 92"
 Cohesion: 0.22
-Nodes (3): handleClearCookiesError(), handleClearCookies(), logSuccessfulLogout()
+Nodes (3): createRateLimiter(), applyRateLimitingWithValidation(), applySecurityValidation()
 
 ### Community 93 - "Community 93"
 Cohesion: 0.22
-Nodes (3): createRateLimiter(), applyRateLimitingWithValidation(), applySecurityValidation()
+Nodes (3): handleClearCookiesError(), handleClearCookies(), logSuccessfulLogout()
 
 ### Community 97 - "Community 97"
 Cohesion: 0.53
@@ -734,12 +734,12 @@ Cohesion: 0.43
 Nodes (6): findAppImage(), getExpectedMigrationNames(), launchAppImage(), readMigrationsTable(), terminateProcess(), waitForHealth()
 
 ### Community 118 - "Community 118"
-Cohesion: 0.57
-Nodes (6): buildUniverseRecord(), buildUpdateToVolatile(), performCleanup(), seedFlatSymbol(), seedStoredVolatilityUpdateData(), suppressError()
-
-### Community 119 - "Community 119"
 Cohesion: 0.61
 Nodes (6): cleanupPartialSeed(), createBulkUniverseRecords(), createOpenPositionTrades(), generateSymbols(), seedLazyLoadingE2eData(), seedRecordsIntoDb()
+
+### Community 119 - "Community 119"
+Cohesion: 0.57
+Nodes (6): buildUniverseRecord(), buildUpdateToVolatile(), performCleanup(), seedFlatSymbol(), seedStoredVolatilityUpdateData(), suppressError()
 
 ### Community 120 - "Community 120"
 Cohesion: 0.57
@@ -947,15 +947,15 @@ Nodes (3): filterUniverseToSymbol(), getUniverseRowBySymbol(), seedDateEditorWid
 
 ### Community 188 - "Community 188"
 Cohesion: 0.8
-Nodes (3): createBulkDivDeposits(), getOrCreateDividendType(), seedScrollDivDepositsWithSymbolsData()
+Nodes (3): createBulkDeposits(), getOrCreateDepositType(), seedScrollDivDepositsData()
 
 ### Community 189 - "Community 189"
 Cohesion: 0.8
-Nodes (3): createDivDeposits(), getOrCreateDivDepositType(), seedDivDepositsE2eData()
+Nodes (3): createBulkDivDeposits(), getOrCreateDividendType(), seedScrollDivDepositsWithSymbolsData()
 
 ### Community 190 - "Community 190"
 Cohesion: 0.8
-Nodes (3): createBulkDeposits(), getOrCreateDepositType(), seedScrollDivDepositsData()
+Nodes (3): createDivDeposits(), getOrCreateDivDepositType(), seedDivDepositsE2eData()
 
 ### Community 191 - "Community 191"
 Cohesion: 0.8

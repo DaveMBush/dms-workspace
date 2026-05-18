@@ -87,6 +87,7 @@
       [columns]="columns"
       [sortColumns]="sortColumns$()"
       [selectable]="false"
+      [contextId]="contextKey$()"
       tableLabel="Universe positions"
       (sortChange)="onSortChange($event)"
       (renderedRangeChange)="visibleRange.set($event)"

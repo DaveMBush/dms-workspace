@@ -101,13 +101,21 @@ export class SummaryViewBase {
   }
 
   constructor() {
-    // Auto-select first available month when months load
+    // Auto-select first available month when months load.
+    // Only emit valueChanges (triggering a re-fetch) when the first available
+    // month differs from the currently selected month.  Emitting when the value
+    // is unchanged creates an infinite loop:
+    //   fetchMonths → auto-select setValue → valueChanges → fetchSummary →
+    //   enableSelectors → (mat-select re-validates) → fetchMonths → …
     effect(
       // eslint-disable-next-line @smarttools/no-anonymous-functions -- Required for effect
       () => {
         const months = this.monthOptions$();
         if (months.length > 0) {
-          this.selectedMonth.setValue(months[0].value);
+          const newMonth = months[0].value;
+          if (newMonth !== this.selectedMonth.value) {
+            this.selectedMonth.setValue(newMonth);
+          }
         }
       }
     );

@@ -25,6 +25,7 @@ import { handleSortChange } from '../../shared/utils/handle-sort-change.function
 import { initSearchText } from '../../shared/utils/init-search-text.function';
 import { initSortColumns } from '../../shared/utils/init-sort-columns.function';
 import { SymbolFilterManager } from '../../shared/utils/symbol-filter-manager.interface';
+import { currentAccountSignalStore } from '../../store/current-account/current-account.signal-store';
 import { OpenPosition } from '../../store/trades/open-position.interface';
 import { Trade } from '../../store/trades/trade.interface';
 import { OpenPositionsComponentService } from './open-positions-component.service';
@@ -55,6 +56,8 @@ export class OpenPositionsComponent implements OnDestroy {
   private route = inject(ActivatedRoute);
   // Inject MatDialog for add position dialog
   private dialog = inject(MatDialog);
+  // See SCROLLING REGRESSION HISTORY — Epic 105 in base-table.component.ts.
+  private readonly currentAccountStore = inject(currentAccountSignalStore);
 
   searchText = initSearchText(
     this.sortFilterStateService,
@@ -68,6 +71,13 @@ export class OpenPositionsComponent implements OnDestroy {
 
   errorMessage = signal<string>('');
   successMessage = signal<string>('');
+
+  // See SCROLLING REGRESSION HISTORY — Epic 105 in base-table.component.ts.
+  readonly contextKey$ = computed(
+    // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signal
+    () =>
+      `${this.currentAccountStore.selectCurrentAccountId()}|${this.searchText()}`
+  );
 
   visibleRange = signal<{ start: number; end: number }>({
     start: 0,

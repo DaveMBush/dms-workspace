@@ -70,7 +70,7 @@ import { seedScrollUniverseData } from './helpers/seed-scroll-universe-data.help
 export const ROW_HEIGHT_PX = 57;
 
 const VIEWPORT_SELECTOR = 'cdk-virtual-scroll-viewport';
-const HEADER_ROW_SELECTOR = 'tr.mat-mdc-header-row';
+const HEADER_ROW_SELECTOR = 'th.mat-mdc-header-cell';
 const ROW_SELECTOR = 'tr.mat-mdc-row';
 
 /** Pixel tolerance for floating-point bounding-box comparisons. */
@@ -201,9 +201,6 @@ test.describe('Universe — account-change sticky-header regression (Story 105.1
     // calls notifyFilterChange() → server returns filtered universe data for
     // the new account → universeService.universes() signal updates →
     // filteredData$ recomputes → CDK receives new array in-place.
-    // [artifact not confirmed to reproduce in headless CI; deferred to Story 105.2 for live verification]
-    test.fixme();
-
     const viewport = page.locator(VIEWPORT_SELECTOR);
     const header = page.locator(HEADER_ROW_SELECTOR).first();
     await expect(viewport).toBeVisible({ timeout: 10000 });
@@ -238,7 +235,9 @@ test.describe('Universe — account-change sticky-header regression (Story 105.1
     await page.locator('mat-option').nth(1).click();
     // Allow time for server notification round-trip and signal propagation
     await page.waitForTimeout(500);
-    await expect(page.locator(ROW_SELECTOR)).toBeVisible({ timeout: 10000 });
+    await expect(page.locator(ROW_SELECTOR).first()).toBeVisible({
+      timeout: 10000,
+    });
 
     // Pass 2: slow-scroll AFTER account-change
     const snapshots = await captureSlowScrollFrames(page, viewport, header);
@@ -258,9 +257,6 @@ test.describe('Universe — account-change sticky-header regression (Story 105.1
   test('Universe: sticky header does not slide behind app bar after account-change (header-under-header)', async ({
     page,
   }) => {
-    // [artifact not confirmed to reproduce in headless CI; deferred to Story 105.2 for live verification]
-    test.fixme();
-
     const viewport = page.locator(VIEWPORT_SELECTOR);
     const header = page.locator(HEADER_ROW_SELECTOR).first();
     await expect(viewport).toBeVisible({ timeout: 10000 });
@@ -275,7 +271,9 @@ test.describe('Universe — account-change sticky-header regression (Story 105.1
     await accountSelect.click();
     await page.locator('mat-option').nth(1).click();
     await page.waitForTimeout(500);
-    await expect(page.locator(ROW_SELECTOR)).toBeVisible({ timeout: 10000 });
+    await expect(page.locator(ROW_SELECTOR).first()).toBeVisible({
+      timeout: 10000,
+    });
 
     // Pass 2
     const snapshots = await captureSlowScrollFrames(page, viewport, header);
@@ -320,71 +318,67 @@ test.describe('Universe — filter-change (symbol) sticky-header regression (Sto
     await page.waitForSelector(ROW_SELECTOR, { timeout: 15000 });
   });
 
-  test.fixme(
-    'Universe: sticky header does not drift down after symbol filter applied (header-scrolls-with-content) [filter-change not reproducible in test env — investigate manually or in story 105.2]',
-    async ({ page }) => {
-      // Context-change: type a 6-char symbol prefix in the column filter input.
-      // filterUniverses() preserves placeholder rows but removes non-matching
-      // data rows → shorter array → CDK recalculates total scroll height.
+  test('Universe: sticky header does not drift down after symbol filter applied (header-scrolls-with-content)', async ({
+    page,
+  }) => {
+    // Context-change: type a 6-char symbol prefix in the column filter input.
+    // filterUniverses() preserves placeholder rows but removes non-matching
+    // data rows → shorter array → CDK recalculates total scroll height.
 
-      const viewport = page.locator(VIEWPORT_SELECTOR);
-      const header = page.locator(HEADER_ROW_SELECTOR).first();
-      await expect(viewport).toBeVisible({ timeout: 10000 });
-      await expect(header).toBeVisible({ timeout: 5000 });
+    const viewport = page.locator(VIEWPORT_SELECTOR);
+    const header = page.locator(HEADER_ROW_SELECTOR).first();
+    await expect(viewport).toBeVisible({ timeout: 10000 });
+    await expect(header).toBeVisible({ timeout: 5000 });
 
-      // Pass 1: baseline
-      const baselineSnapshots = await captureSlowScrollFrames(
-        page,
-        viewport,
-        header
-      );
-      const baselineDrift = baselineSnapshots.filter(
-        function checkBaselineDrift(snap: FrameSnapshot) {
-          return snap.headerTop - snap.viewportTop > PIXEL_TOLERANCE;
-        }
-      );
-      expect(
-        baselineDrift,
-        `Universe filter-change: Pass-1 baseline already drifting in ${baselineDrift.length} frame(s). Round-7 regression — escalate.`
-      ).toHaveLength(0);
+    // Pass 1: baseline
+    const baselineSnapshots = await captureSlowScrollFrames(
+      page,
+      viewport,
+      header
+    );
+    const baselineDrift = baselineSnapshots.filter(function checkBaselineDrift(
+      snap: FrameSnapshot
+    ) {
+      return snap.headerTop - snap.viewportTop > PIXEL_TOLERANCE;
+    });
+    expect(
+      baselineDrift,
+      `Universe filter-change: Pass-1 baseline already drifting in ${baselineDrift.length} frame(s). Round-7 regression — escalate.`
+    ).toHaveLength(0);
 
-      await viewport.evaluate(function resetScrollTop(el: Element) {
-        (el as HTMLElement).scrollTop = 0;
-      });
+    await viewport.evaluate(function resetScrollTop(el: Element) {
+      (el as HTMLElement).scrollTop = 0;
+    });
 
-      // Context-change: type the first 6 chars of the seeded symbol prefix
-      // (e.g. 'USCRL0'), which matches ~10 of the 60 rows. The universe server
-      // notification is debounced; wait 600ms for it to apply.
-      const symbolPrefix =
-        symbols.length > 0 ? symbols[0].substring(0, 6) : 'USCRL0';
-      const filterInput = page
-        .locator(`${VIEWPORT_SELECTOR} thead input[placeholder]`)
-        .first();
-      await filterInput.click();
-      await filterInput.fill(symbolPrefix);
-      await page.waitForTimeout(600);
+    // Context-change: type the first 6 chars of the seeded symbol prefix
+    // (e.g. 'USCRL0'), which matches ~10 of the 60 rows. The universe server
+    // notification is debounced; wait 600ms for it to apply.
+    const symbolPrefix =
+      symbols.length > 0 ? symbols[0].substring(0, 6) : 'USCRL0';
+    const filterInput = page
+      .locator(`${VIEWPORT_SELECTOR} thead input[placeholder]`)
+      .first();
+    await filterInput.click();
+    await filterInput.fill(symbolPrefix);
+    await page.waitForTimeout(600);
 
-      // Pass 2: slow-scroll after filter applied
-      const snapshots = await captureSlowScrollFrames(page, viewport, header);
-      const driftingDown = snapshots.filter(function isDriftingDown(
-        snap: FrameSnapshot
-      ) {
-        return snap.headerTop - snap.viewportTop > PIXEL_TOLERANCE;
-      });
+    // Pass 2: slow-scroll after filter applied
+    const snapshots = await captureSlowScrollFrames(page, viewport, header);
+    const driftingDown = snapshots.filter(function isDriftingDown(
+      snap: FrameSnapshot
+    ) {
+      return snap.headerTop - snap.viewportTop > PIXEL_TOLERANCE;
+    });
 
-      expect(
-        driftingDown,
-        `Universe filter-change header-scrolls-with-content: ${driftingDown.length} frame(s) drifting after symbol filter applied. Fix in Story 105.2.`
-      ).toHaveLength(0);
-    }
-  );
+    expect(
+      driftingDown,
+      `Universe filter-change header-scrolls-with-content: ${driftingDown.length} frame(s) drifting after symbol filter applied. Fix in Story 105.2.`
+    ).toHaveLength(0);
+  });
 
   test('Universe: sticky header does not slide behind app bar after symbol filter applied (header-under-header)', async ({
     page,
   }) => {
-    test.fixme();
-    // [filter-change not reproducible in test env — investigate manually or in story 105.2]
-
     const viewport = page.locator(VIEWPORT_SELECTOR);
     const header = page.locator(HEADER_ROW_SELECTOR).first();
     await expect(viewport).toBeVisible({ timeout: 10000 });
@@ -460,10 +454,6 @@ test.describe('Open Positions — account-change sticky-header regression (Story
     // AccountPanelComponent is reused (same routeConfig); ActivatedRoute.params
     // emits new :accountId → currentAccountSignalStore.setCurrentAccountId() →
     // openPositionsService.selectOpenPositions() recomputes → CDK data swaps.
-    // [page.goto() causes a full-page reload, not an in-place SPA account-change;
-    //  true in-place navigation test deferred to Story 105.2]
-    test.fixme();
-
     const viewport = page.locator(VIEWPORT_SELECTOR);
     const header = page.locator(HEADER_ROW_SELECTOR).first();
     await expect(viewport).toBeVisible({ timeout: 10000 });
@@ -491,7 +481,9 @@ test.describe('Open Positions — account-change sticky-header regression (Story
 
     // Context-change: navigate to second account's open positions
     await page.goto(`/account/${accountId2}/open`);
-    await expect(page.locator(ROW_SELECTOR)).toBeVisible({ timeout: 15000 });
+    await expect(page.locator(ROW_SELECTOR).first()).toBeVisible({
+      timeout: 15000,
+    });
 
     // Pass 2
     const snapshots = await captureSlowScrollFrames(page, viewport, header);
@@ -510,10 +502,6 @@ test.describe('Open Positions — account-change sticky-header regression (Story
   test('Open Positions: sticky header does not slide behind app bar after account-change (header-under-header)', async ({
     page,
   }) => {
-    // [page.goto() causes a full-page reload, not an in-place SPA account-change;
-    //  true in-place navigation test deferred to Story 105.2]
-    test.fixme();
-
     const viewport = page.locator(VIEWPORT_SELECTOR);
     const header = page.locator(HEADER_ROW_SELECTOR).first();
     await expect(viewport).toBeVisible({ timeout: 10000 });
@@ -524,7 +512,9 @@ test.describe('Open Positions — account-change sticky-header regression (Story
     });
 
     await page.goto(`/account/${accountId2}/open`);
-    await expect(page.locator(ROW_SELECTOR)).toBeVisible({ timeout: 15000 });
+    await expect(page.locator(ROW_SELECTOR).first()).toBeVisible({
+      timeout: 15000,
+    });
 
     const snapshots = await captureSlowScrollFrames(page, viewport, header);
     const hiddenBehindBar = snapshots.filter(function isAboveViewport(
@@ -567,89 +557,87 @@ test.describe('Open Positions — filter-change (symbol) sticky-header regressio
     await page.waitForSelector(ROW_SELECTOR, { timeout: 15000 });
   });
 
-  test.fixme(
-    'Open Positions: sticky header does not drift down after symbol filter applied (header-scrolls-with-content) [filter-change not reproducible in test env — investigate manually or in story 105.2]',
-    async ({ page }) => {
-      // Context-change: type prefix in [data-testid="symbol-search-input"].
-      // The symbol filter is server-side (via searchText signal interceptor) so
-      // there is a network round-trip before the data array changes.
+  test('Open Positions: sticky header does not drift down after symbol filter applied (header-scrolls-with-content)', async ({
+    page,
+  }) => {
+    // Context-change: type prefix in [data-testid="symbol-search-input"].
+    // The symbol filter is server-side (via searchText signal interceptor) so
+    // there is a network round-trip before the data array changes.
 
-      const viewport = page.locator(VIEWPORT_SELECTOR);
-      const header = page.locator(HEADER_ROW_SELECTOR).first();
-      await expect(viewport).toBeVisible({ timeout: 10000 });
-      await expect(header).toBeVisible({ timeout: 5000 });
+    const viewport = page.locator(VIEWPORT_SELECTOR);
+    const header = page.locator(HEADER_ROW_SELECTOR).first();
+    await expect(viewport).toBeVisible({ timeout: 10000 });
+    await expect(header).toBeVisible({ timeout: 5000 });
 
-      const baselineSnapshots = await captureSlowScrollFrames(
-        page,
-        viewport,
-        header
-      );
-      const baselineDrift = baselineSnapshots.filter(
-        function checkBaselineDrift(snap: FrameSnapshot) {
-          return snap.headerTop - snap.viewportTop > PIXEL_TOLERANCE;
-        }
-      );
-      expect(
-        baselineDrift,
-        `Open Positions filter-change: baseline drifting in ${baselineDrift.length} frame(s) — Round-7 regression.`
-      ).toHaveLength(0);
+    const baselineSnapshots = await captureSlowScrollFrames(
+      page,
+      viewport,
+      header
+    );
+    const baselineDrift = baselineSnapshots.filter(function checkBaselineDrift(
+      snap: FrameSnapshot
+    ) {
+      return snap.headerTop - snap.viewportTop > PIXEL_TOLERANCE;
+    });
+    expect(
+      baselineDrift,
+      `Open Positions filter-change: baseline drifting in ${baselineDrift.length} frame(s) — Round-7 regression.`
+    ).toHaveLength(0);
 
-      await viewport.evaluate(function resetScrollTop(el: Element) {
-        (el as HTMLElement).scrollTop = 0;
-      });
+    await viewport.evaluate(function resetScrollTop(el: Element) {
+      (el as HTMLElement).scrollTop = 0;
+    });
 
-      // Context-change: fill the symbol search input with the seeded account prefix
-      // ('E2E-OP'). All 60 seeded symbols contain this prefix, so the filter matches
-      // all rows — the point is to trigger a server round-trip + CDK data refresh.
-      const filterInput = page.locator('[data-testid="symbol-search-input"]');
-      await filterInput.click();
-      await filterInput.fill('E2E-OP');
-      await page.waitForTimeout(600);
+    // Context-change: fill the symbol search input with the seeded account prefix
+    // ('E2E-OP'). All 60 seeded symbols contain this prefix, so the filter matches
+    // all rows — the point is to trigger a server round-trip + CDK data refresh.
+    const filterInput = page.locator('[data-testid="symbol-search-input"]');
+    await filterInput.click();
+    await filterInput.fill('E2E-OP');
+    await page.waitForTimeout(600);
 
-      const snapshots = await captureSlowScrollFrames(page, viewport, header);
-      const driftingDown = snapshots.filter(function isDriftingDown(
-        snap: FrameSnapshot
-      ) {
-        return snap.headerTop - snap.viewportTop > PIXEL_TOLERANCE;
-      });
+    const snapshots = await captureSlowScrollFrames(page, viewport, header);
+    const driftingDown = snapshots.filter(function isDriftingDown(
+      snap: FrameSnapshot
+    ) {
+      return snap.headerTop - snap.viewportTop > PIXEL_TOLERANCE;
+    });
 
-      expect(
-        driftingDown,
-        `Open Positions filter-change header-scrolls-with-content: ${driftingDown.length} frame(s) drifting after filter applied. Fix in Story 105.2.`
-      ).toHaveLength(0);
-    }
-  );
+    expect(
+      driftingDown,
+      `Open Positions filter-change header-scrolls-with-content: ${driftingDown.length} frame(s) drifting after filter applied. Fix in Story 105.2.`
+    ).toHaveLength(0);
+  });
 
-  test.fixme(
-    'Open Positions: sticky header does not slide behind app bar after symbol filter applied (header-under-header) [filter-change not reproducible in test env — investigate manually or in story 105.2]',
-    async ({ page }) => {
-      const viewport = page.locator(VIEWPORT_SELECTOR);
-      const header = page.locator(HEADER_ROW_SELECTOR).first();
-      await expect(viewport).toBeVisible({ timeout: 10000 });
-      await expect(header).toBeVisible({ timeout: 5000 });
+  test('Open Positions: sticky header does not slide behind app bar after symbol filter applied (header-under-header)', async ({
+    page,
+  }) => {
+    const viewport = page.locator(VIEWPORT_SELECTOR);
+    const header = page.locator(HEADER_ROW_SELECTOR).first();
+    await expect(viewport).toBeVisible({ timeout: 10000 });
+    await expect(header).toBeVisible({ timeout: 5000 });
 
-      await viewport.evaluate(function resetScrollTop(el: Element) {
-        (el as HTMLElement).scrollTop = 0;
-      });
+    await viewport.evaluate(function resetScrollTop(el: Element) {
+      (el as HTMLElement).scrollTop = 0;
+    });
 
-      const filterInput = page.locator('[data-testid="symbol-search-input"]');
-      await filterInput.click();
-      await filterInput.fill('E2E-OP');
-      await page.waitForTimeout(600);
+    const filterInput = page.locator('[data-testid="symbol-search-input"]');
+    await filterInput.click();
+    await filterInput.fill('E2E-OP');
+    await page.waitForTimeout(600);
 
-      const snapshots = await captureSlowScrollFrames(page, viewport, header);
-      const hiddenBehindBar = snapshots.filter(function isAboveViewport(
-        snap: FrameSnapshot
-      ) {
-        return snap.viewportTop - snap.headerTop > PIXEL_TOLERANCE;
-      });
+    const snapshots = await captureSlowScrollFrames(page, viewport, header);
+    const hiddenBehindBar = snapshots.filter(function isAboveViewport(
+      snap: FrameSnapshot
+    ) {
+      return snap.viewportTop - snap.headerTop > PIXEL_TOLERANCE;
+    });
 
-      expect(
-        hiddenBehindBar,
-        `Open Positions filter-change header-under-header: ${hiddenBehindBar.length} frame(s) hidden behind app bar after filter applied. Fix in Story 105.2.`
-      ).toHaveLength(0);
-    }
-  );
+    expect(
+      hiddenBehindBar,
+      `Open Positions filter-change header-under-header: ${hiddenBehindBar.length} frame(s) hidden behind app bar after filter applied. Fix in Story 105.2.`
+    ).toHaveLength(0);
+  });
 });
 
 // ─── Sold Positions — account-change ─────────────────────────────────────────
@@ -690,10 +678,6 @@ test.describe('Sold Positions — account-change sticky-header regression (Story
   test('Sold Positions: sticky header does not drift down after account-change (header-scrolls-with-content)', async ({
     page,
   }) => {
-    // [page.goto() causes a full-page reload, not an in-place SPA account-change;
-    //  true in-place navigation test deferred to Story 105.2]
-    test.fixme();
-
     const viewport = page.locator(VIEWPORT_SELECTOR);
     const header = page.locator(HEADER_ROW_SELECTOR).first();
     await expect(viewport).toBeVisible({ timeout: 10000 });
@@ -719,7 +703,9 @@ test.describe('Sold Positions — account-change sticky-header regression (Story
     });
 
     await page.goto(`/account/${accountId2}/sold`);
-    await expect(page.locator(ROW_SELECTOR)).toBeVisible({ timeout: 15000 });
+    await expect(page.locator(ROW_SELECTOR).first()).toBeVisible({
+      timeout: 15000,
+    });
 
     const snapshots = await captureSlowScrollFrames(page, viewport, header);
     const driftingDown = snapshots.filter(function isDriftingDown(
@@ -737,10 +723,6 @@ test.describe('Sold Positions — account-change sticky-header regression (Story
   test('Sold Positions: sticky header does not slide behind app bar after account-change (header-under-header)', async ({
     page,
   }) => {
-    // [page.goto() causes a full-page reload, not an in-place SPA account-change;
-    //  true in-place navigation test deferred to Story 105.2]
-    test.fixme();
-
     const viewport = page.locator(VIEWPORT_SELECTOR);
     const header = page.locator(HEADER_ROW_SELECTOR).first();
     await expect(viewport).toBeVisible({ timeout: 10000 });
@@ -751,7 +733,9 @@ test.describe('Sold Positions — account-change sticky-header regression (Story
     });
 
     await page.goto(`/account/${accountId2}/sold`);
-    await expect(page.locator(ROW_SELECTOR)).toBeVisible({ timeout: 15000 });
+    await expect(page.locator(ROW_SELECTOR).first()).toBeVisible({
+      timeout: 15000,
+    });
 
     const snapshots = await captureSlowScrollFrames(page, viewport, header);
     const hiddenBehindBar = snapshots.filter(function isAboveViewport(
@@ -794,87 +778,85 @@ test.describe('Sold Positions — filter-change (symbol) sticky-header regressio
     await page.waitForSelector(ROW_SELECTOR, { timeout: 15000 });
   });
 
-  test.fixme(
-    'Sold Positions: sticky header does not drift down after symbol filter applied (header-scrolls-with-content) [filter-change not reproducible in test env — investigate manually or in story 105.2]',
-    async ({ page }) => {
-      const viewport = page.locator(VIEWPORT_SELECTOR);
-      const header = page.locator(HEADER_ROW_SELECTOR).first();
-      await expect(viewport).toBeVisible({ timeout: 10000 });
-      await expect(header).toBeVisible({ timeout: 5000 });
+  test('Sold Positions: sticky header does not drift down after symbol filter applied (header-scrolls-with-content)', async ({
+    page,
+  }) => {
+    const viewport = page.locator(VIEWPORT_SELECTOR);
+    const header = page.locator(HEADER_ROW_SELECTOR).first();
+    await expect(viewport).toBeVisible({ timeout: 10000 });
+    await expect(header).toBeVisible({ timeout: 5000 });
 
-      const baselineSnapshots = await captureSlowScrollFrames(
-        page,
-        viewport,
-        header
-      );
-      const baselineDrift = baselineSnapshots.filter(
-        function checkBaselineDrift(snap: FrameSnapshot) {
-          return snap.headerTop - snap.viewportTop > PIXEL_TOLERANCE;
-        }
-      );
-      expect(
-        baselineDrift,
-        `Sold Positions filter-change: baseline drifting in ${baselineDrift.length} frame(s) — Round-7 regression.`
-      ).toHaveLength(0);
+    const baselineSnapshots = await captureSlowScrollFrames(
+      page,
+      viewport,
+      header
+    );
+    const baselineDrift = baselineSnapshots.filter(function checkBaselineDrift(
+      snap: FrameSnapshot
+    ) {
+      return snap.headerTop - snap.viewportTop > PIXEL_TOLERANCE;
+    });
+    expect(
+      baselineDrift,
+      `Sold Positions filter-change: baseline drifting in ${baselineDrift.length} frame(s) — Round-7 regression.`
+    ).toHaveLength(0);
 
-      await viewport.evaluate(function resetScrollTop(el: Element) {
-        (el as HTMLElement).scrollTop = 0;
-      });
+    await viewport.evaluate(function resetScrollTop(el: Element) {
+      (el as HTMLElement).scrollTop = 0;
+    });
 
-      // Context-change: symbol filter input (placeholder="Search Symbol")
-      const filterInput = page.locator(
-        `${VIEWPORT_SELECTOR} thead input[placeholder="Search Symbol"]`
-      );
-      await filterInput.click();
-      await filterInput.fill('E2E-SD');
-      await page.waitForTimeout(600);
+    // Context-change: symbol filter input (placeholder="Search Symbol")
+    const filterInput = page.locator(
+      `${VIEWPORT_SELECTOR} thead input[placeholder="Search Symbol"]`
+    );
+    await filterInput.click();
+    await filterInput.fill('E2E-SD');
+    await page.waitForTimeout(600);
 
-      const snapshots = await captureSlowScrollFrames(page, viewport, header);
-      const driftingDown = snapshots.filter(function isDriftingDown(
-        snap: FrameSnapshot
-      ) {
-        return snap.headerTop - snap.viewportTop > PIXEL_TOLERANCE;
-      });
+    const snapshots = await captureSlowScrollFrames(page, viewport, header);
+    const driftingDown = snapshots.filter(function isDriftingDown(
+      snap: FrameSnapshot
+    ) {
+      return snap.headerTop - snap.viewportTop > PIXEL_TOLERANCE;
+    });
 
-      expect(
-        driftingDown,
-        `Sold Positions filter-change header-scrolls-with-content: ${driftingDown.length} frame(s) drifting after filter applied. Fix in Story 105.2.`
-      ).toHaveLength(0);
-    }
-  );
+    expect(
+      driftingDown,
+      `Sold Positions filter-change header-scrolls-with-content: ${driftingDown.length} frame(s) drifting after filter applied. Fix in Story 105.2.`
+    ).toHaveLength(0);
+  });
 
-  test.fixme(
-    'Sold Positions: sticky header does not slide behind app bar after symbol filter applied (header-under-header) [filter-change not reproducible in test env — investigate manually or in story 105.2]',
-    async ({ page }) => {
-      const viewport = page.locator(VIEWPORT_SELECTOR);
-      const header = page.locator(HEADER_ROW_SELECTOR).first();
-      await expect(viewport).toBeVisible({ timeout: 10000 });
-      await expect(header).toBeVisible({ timeout: 5000 });
+  test('Sold Positions: sticky header does not slide behind app bar after symbol filter applied (header-under-header)', async ({
+    page,
+  }) => {
+    const viewport = page.locator(VIEWPORT_SELECTOR);
+    const header = page.locator(HEADER_ROW_SELECTOR).first();
+    await expect(viewport).toBeVisible({ timeout: 10000 });
+    await expect(header).toBeVisible({ timeout: 5000 });
 
-      await viewport.evaluate(function resetScrollTop(el: Element) {
-        (el as HTMLElement).scrollTop = 0;
-      });
+    await viewport.evaluate(function resetScrollTop(el: Element) {
+      (el as HTMLElement).scrollTop = 0;
+    });
 
-      const filterInput = page.locator(
-        `${VIEWPORT_SELECTOR} thead input[placeholder="Search Symbol"]`
-      );
-      await filterInput.click();
-      await filterInput.fill('E2E-SD');
-      await page.waitForTimeout(600);
+    const filterInput = page.locator(
+      `${VIEWPORT_SELECTOR} thead input[placeholder="Search Symbol"]`
+    );
+    await filterInput.click();
+    await filterInput.fill('E2E-SD');
+    await page.waitForTimeout(600);
 
-      const snapshots = await captureSlowScrollFrames(page, viewport, header);
-      const hiddenBehindBar = snapshots.filter(function isAboveViewport(
-        snap: FrameSnapshot
-      ) {
-        return snap.viewportTop - snap.headerTop > PIXEL_TOLERANCE;
-      });
+    const snapshots = await captureSlowScrollFrames(page, viewport, header);
+    const hiddenBehindBar = snapshots.filter(function isAboveViewport(
+      snap: FrameSnapshot
+    ) {
+      return snap.viewportTop - snap.headerTop > PIXEL_TOLERANCE;
+    });
 
-      expect(
-        hiddenBehindBar,
-        `Sold Positions filter-change header-under-header: ${hiddenBehindBar.length} frame(s) hidden behind app bar after filter applied. Fix in Story 105.2.`
-      ).toHaveLength(0);
-    }
-  );
+    expect(
+      hiddenBehindBar,
+      `Sold Positions filter-change header-under-header: ${hiddenBehindBar.length} frame(s) hidden behind app bar after filter applied. Fix in Story 105.2.`
+    ).toHaveLength(0);
+  });
 });
 
 // ─── Dividend Deposits — account-change ──────────────────────────────────────
@@ -920,10 +902,6 @@ test.describe('Dividend Deposits — account-change sticky-header regression (St
   }) => {
     // Dividend Deposits has no filter row (#filterRowTemplate is absent from the
     // template). Only account-change is exercised for this screen.
-    // [page.goto() causes a full-page reload, not an in-place SPA account-change;
-    //  true in-place navigation test deferred to Story 105.2]
-    test.fixme();
-
     const viewport = page.locator(VIEWPORT_SELECTOR);
     const header = page.locator(HEADER_ROW_SELECTOR).first();
     await expect(viewport).toBeVisible({ timeout: 10000 });
@@ -949,7 +927,9 @@ test.describe('Dividend Deposits — account-change sticky-header regression (St
     });
 
     await page.goto(`/account/${accountId2}/div-dep`);
-    await expect(page.locator(ROW_SELECTOR)).toBeVisible({ timeout: 15000 });
+    await expect(page.locator(ROW_SELECTOR).first()).toBeVisible({
+      timeout: 15000,
+    });
 
     const snapshots = await captureSlowScrollFrames(page, viewport, header);
     const driftingDown = snapshots.filter(function isDriftingDown(
@@ -967,10 +947,6 @@ test.describe('Dividend Deposits — account-change sticky-header regression (St
   test('Dividend Deposits: sticky header does not slide behind app bar after account-change (header-under-header)', async ({
     page,
   }) => {
-    // [page.goto() causes a full-page reload, not an in-place SPA account-change;
-    //  true in-place navigation test deferred to Story 105.2]
-    test.fixme();
-
     const viewport = page.locator(VIEWPORT_SELECTOR);
     const header = page.locator(HEADER_ROW_SELECTOR).first();
     await expect(viewport).toBeVisible({ timeout: 10000 });
@@ -981,7 +957,9 @@ test.describe('Dividend Deposits — account-change sticky-header regression (St
     });
 
     await page.goto(`/account/${accountId2}/div-dep`);
-    await expect(page.locator(ROW_SELECTOR)).toBeVisible({ timeout: 15000 });
+    await expect(page.locator(ROW_SELECTOR).first()).toBeVisible({
+      timeout: 15000,
+    });
 
     const snapshots = await captureSlowScrollFrames(page, viewport, header);
     const hiddenBehindBar = snapshots.filter(function isAboveViewport(
@@ -1030,9 +1008,6 @@ test.describe('Screener — filter-change (risk group) sticky-header regression 
     // Seed creates 60 rows in the "Equities" risk group. Selecting "Income"
     // collapses data to 0; selecting "All" restores 60 rows. The CDK viewport
     // may have stale measurements from the collapsed state when data restores.
-    // [artifact not confirmed to reproduce in headless CI; deferred to Story 105.2 for live verification]
-    test.fixme();
-
     const viewport = page.locator(VIEWPORT_SELECTOR);
     const header = page.locator(HEADER_ROW_SELECTOR).first();
     await expect(viewport).toBeVisible({ timeout: 10000 });
@@ -1070,7 +1045,9 @@ test.describe('Screener — filter-change (risk group) sticky-header regression 
     // "All" is the placeholder option — select it to clear the filter
     await page.locator('mat-option').filter({ hasText: 'All' }).first().click();
     await page.waitForTimeout(300);
-    await expect(page.locator(ROW_SELECTOR)).toBeVisible({ timeout: 10000 });
+    await expect(page.locator(ROW_SELECTOR).first()).toBeVisible({
+      timeout: 10000,
+    });
 
     const snapshots = await captureSlowScrollFrames(page, viewport, header);
     const driftingDown = snapshots.filter(function isDriftingDown(
@@ -1088,9 +1065,6 @@ test.describe('Screener — filter-change (risk group) sticky-header regression 
   test('Screener: sticky header does not slide behind app bar after risk-group filter applied then cleared (header-under-header)', async ({
     page,
   }) => {
-    // [artifact not confirmed to reproduce in headless CI; deferred to Story 105.2 for live verification]
-    test.fixme();
-
     const viewport = page.locator(VIEWPORT_SELECTOR);
     const header = page.locator(HEADER_ROW_SELECTOR).first();
     await expect(viewport).toBeVisible({ timeout: 10000 });
@@ -1111,7 +1085,9 @@ test.describe('Screener — filter-change (risk group) sticky-header regression 
     await riskGroupFilter.click();
     await page.locator('mat-option').filter({ hasText: 'All' }).first().click();
     await page.waitForTimeout(300);
-    await expect(page.locator(ROW_SELECTOR)).toBeVisible({ timeout: 10000 });
+    await expect(page.locator(ROW_SELECTOR).first()).toBeVisible({
+      timeout: 10000,
+    });
 
     const snapshots = await captureSlowScrollFrames(page, viewport, header);
     const hiddenBehindBar = snapshots.filter(function isAboveViewport(

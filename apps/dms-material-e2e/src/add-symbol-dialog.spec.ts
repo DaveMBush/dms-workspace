@@ -514,6 +514,10 @@ test.describe('Add Symbol Dialog', () => {
       // Should be empty
       const inputValue = await input.inputValue();
       expect(inputValue).toBe('');
+
+      // Close the dialog so it does not leak open state into the next test
+      await page.keyboard.press('Escape');
+      await expect(page.locator('mat-dialog-container')).not.toBeVisible();
     });
 
     test('should handle search input with debouncing', async ({ page }) => {
@@ -527,6 +531,10 @@ test.describe('Add Symbol Dialog', () => {
 
       // Dialog should remain stable
       await expect(page.locator('mat-dialog-container')).toBeVisible();
+
+      // Close dialog so it does not leak open state to the next spec
+      await page.keyboard.press('Escape');
+      await expect(page.locator('mat-dialog-container')).not.toBeVisible();
     });
   });
 });

@@ -6,6 +6,7 @@ export async function fetchExistingUniverseIds(
 ): Promise<string[]> {
   const universes = await prisma.universe.findMany({
     select: { id: true },
+    where: { deletedAt: null },
     orderBy: { createdAt: 'asc' },
     take: count,
   });

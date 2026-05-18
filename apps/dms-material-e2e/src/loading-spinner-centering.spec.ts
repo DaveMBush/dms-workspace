@@ -197,10 +197,16 @@ test.describe('Loading Spinner Centering', () => {
         });
 
         if (url.includes('/months')) {
+          const now = new Date();
+          const currentMonth = `${String(now.getFullYear())}-${String(
+            now.getMonth() + 1
+          ).padStart(2, '0')}`;
           await route.fulfill({
             status: 200,
             contentType: 'application/json',
-            body: JSON.stringify([{ month: '2026-03', label: 'March 2026' }]),
+            body: JSON.stringify([
+              { month: currentMonth, label: 'Current Month' },
+            ]),
           });
           return;
         }

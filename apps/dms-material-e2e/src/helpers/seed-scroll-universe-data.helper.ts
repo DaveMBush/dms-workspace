@@ -1,6 +1,7 @@
 import type { PrismaClient } from '@prisma/client';
 
 import { generateUniqueId } from './generate-unique-id.helper';
+import { cleanupUniverseBySymbols } from './shared-cleanup-universe-symbols.helper';
 import { createRiskGroups } from './shared-risk-groups.helper';
 import type { UniverseRecord } from './universe-record.types';
 
@@ -76,13 +77,7 @@ export async function seedScrollUniverseData(): Promise<SeederResult> {
   return {
     symbols,
     cleanup: async function cleanupScrollUniverse(): Promise<void> {
-      try {
-        await prisma.universe.deleteMany({
-          where: { symbol: { in: symbols } },
-        });
-      } finally {
-        await prisma.$disconnect();
-      }
+      await cleanupUniverseBySymbols(prisma, symbols);
     },
   };
 }

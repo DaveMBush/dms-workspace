@@ -433,7 +433,9 @@ test.describe('Universe Update Flow', () => {
     });
 
     test('should handle different HTTP error codes', async ({ page }) => {
-      const errorCodes = [400, 401, 403, 404, 500, 502, 503];
+      // 401 and 403 are excluded: the auth interceptor handles them by redirecting
+      // to the login page (not showing a snackbar), so they cannot be tested here.
+      const errorCodes = [400, 404, 500, 502, 503];
 
       for (const statusCode of errorCodes) {
         // Remove previous handler to avoid accumulation
