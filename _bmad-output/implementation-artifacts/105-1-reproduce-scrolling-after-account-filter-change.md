@@ -1,7 +1,7 @@
 <!-- markdownlint-disable MD033 MD060 -->
 # Story 105.1: Reproduce Janky Scrolling After Account / Filter Change Across All Screens
 
-Status: review
+Status: Approved
 
 **Story Key:** `105-1-reproduce-scrolling-after-account-filter-change`
 **Epic:** 105 — Janky Scrolling After Account / Filter Change (Round 8)
