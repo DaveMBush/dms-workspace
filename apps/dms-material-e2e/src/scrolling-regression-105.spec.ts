@@ -1,4 +1,3 @@
-/* eslint-disable sonarjs/fixme-tag -- test.fixme() API references appear in the JSDoc block comment explaining the spec design */
 /**
  * scrolling-regression-105.spec.ts — Round 8 (Epic 105)
  * ──────────────────────────────────────────────────────
@@ -37,11 +36,8 @@
  *   signal recalculates, producing a shorter (or longer) array. CDK receives the
  *   new array without resetting its internal range state or scroll position.
  *
- * ALL TESTS are annotated test.fixme() — they encode hypothetical FAIL cells
- * based on code-analysis. Story 105.2 will:
- *   (a) remove test.fixme() and add test.fail() for cells confirmed to fail on the live app,
- *   (b) delete tests for cells confirmed clean on the live app.
- * Story 105.3 owns the persistent regression suite.
+ * Round-8 tests were validated against the live app in Story 105.2. This file is the
+ * persistent regression suite maintained by Epic 105. All tests must remain green in CI.
  *
  * WHY ROUND 8 EXISTS (Epic 101 did not cover context-change):
  *   Epic 101 (Story 101.2) removed contain:paint from .virtual-scroll-viewport
@@ -54,6 +50,7 @@
 
 import { expect, Locator, Page, test } from 'playwright/test';
 
+import { applyAndClearColumnFilter, applyAndClearGlobalFilter, swapActiveAccountViaNavigation, swapUniverseAccount } from './helpers/context-change.helper';
 import { login } from './helpers/login.helper';
 import { seedScrollDivDepositsWithSymbolsData } from './helpers/seed-scroll-div-deposits-with-symbols-data.helper';
 import { seedScrollOpenPositionsData } from './helpers/seed-scroll-open-positions-data.helper';
@@ -161,7 +158,7 @@ async function captureSlowScrollFrames(
 
 // ─── Universe — account-change ────────────────────────────────────────────────
 
-test.describe('Universe — account-change sticky-header regression (Story 105.1)', () => {
+test.describe('Universe — account-change sticky-header regression', () => {
   let universeCleanup: () => Promise<void>;
   let openPositionsCleanup: () => Promise<void>;
 
@@ -228,16 +225,8 @@ test.describe('Universe — account-change sticky-header regression (Story 105.1
       (el as HTMLElement).scrollTop = 0;
     });
 
-    // Context-change: click the account mat-select and choose the second option
-    // (index 1; index 0 is "All Accounts").
-    const accountSelect = page.locator('.account-select mat-select');
-    await accountSelect.click();
-    await page.locator('mat-option').nth(1).click();
-    // Allow time for server notification round-trip and signal propagation
-    await page.waitForTimeout(500);
-    await expect(page.locator(ROW_SELECTOR).first()).toBeVisible({
-      timeout: 10000,
-    });
+    // Context-change: swap active account via Universe toolbar mat-select
+    await swapUniverseAccount(page);
 
     // Pass 2: slow-scroll AFTER account-change
     const snapshots = await captureSlowScrollFrames(page, viewport, header);
@@ -250,7 +239,7 @@ test.describe('Universe — account-change sticky-header regression (Story 105.1
     expect(
       driftingDown,
       `Universe account-change header-scrolls-with-content: ${driftingDown.length} frame(s) where ` +
-        `header Y exceeded viewport Y by >${PIXEL_TOLERANCE}px after account-change. Fix in Story 105.2.`
+        `header Y exceeded viewport Y by >${PIXEL_TOLERANCE}px after account-change. (Epic 105 round-8 regression guard)`
     ).toHaveLength(0);
   });
 
@@ -266,14 +255,8 @@ test.describe('Universe — account-change sticky-header regression (Story 105.1
       (el as HTMLElement).scrollTop = 0;
     });
 
-    // Context-change
-    const accountSelect = page.locator('.account-select mat-select');
-    await accountSelect.click();
-    await page.locator('mat-option').nth(1).click();
-    await page.waitForTimeout(500);
-    await expect(page.locator(ROW_SELECTOR).first()).toBeVisible({
-      timeout: 10000,
-    });
+    // Context-change: swap active account via Universe toolbar mat-select
+    await swapUniverseAccount(page);
 
     // Pass 2
     const snapshots = await captureSlowScrollFrames(page, viewport, header);
@@ -286,14 +269,14 @@ test.describe('Universe — account-change sticky-header regression (Story 105.1
     expect(
       hiddenBehindBar,
       `Universe account-change header-under-header: ${hiddenBehindBar.length} frame(s) where ` +
-        `header Y was >${PIXEL_TOLERANCE}px above viewport Y (slid behind app bar) after account-change. Fix in Story 105.2.`
+        `header Y was >${PIXEL_TOLERANCE}px above viewport Y (slid behind app bar) after account-change. (Epic 105 round-8 regression guard)`
     ).toHaveLength(0);
   });
 });
 
 // ─── Universe — filter-change (symbol) ───────────────────────────────────────
 
-test.describe('Universe — filter-change (symbol) sticky-header regression (Story 105.1)', () => {
+test.describe('Universe — filter-change (symbol) sticky-header regression', () => {
   let cleanup: () => Promise<void>;
   let symbols: string[];
 
@@ -350,17 +333,13 @@ test.describe('Universe — filter-change (symbol) sticky-header regression (Sto
       (el as HTMLElement).scrollTop = 0;
     });
 
-    // Context-change: type the first 6 chars of the seeded symbol prefix
-    // (e.g. 'USCRL0'), which matches ~10 of the 60 rows. The universe server
-    // notification is debounced; wait 600ms for it to apply.
+    // Context-change: apply then clear the symbol column filter
     const symbolPrefix =
       symbols.length > 0 ? symbols[0].substring(0, 6) : 'USCRL0';
-    const filterInput = page
-      .locator(`${VIEWPORT_SELECTOR} thead input[placeholder]`)
-      .first();
-    await filterInput.click();
-    await filterInput.fill(symbolPrefix);
-    await page.waitForTimeout(600);
+    await applyAndClearColumnFilter(page, {
+      columnSelector: `${VIEWPORT_SELECTOR} thead input[placeholder]`,
+      filterValue: symbolPrefix,
+    });
 
     // Pass 2: slow-scroll after filter applied
     const snapshots = await captureSlowScrollFrames(page, viewport, header);
@@ -372,7 +351,7 @@ test.describe('Universe — filter-change (symbol) sticky-header regression (Sto
 
     expect(
       driftingDown,
-      `Universe filter-change header-scrolls-with-content: ${driftingDown.length} frame(s) drifting after symbol filter applied. Fix in Story 105.2.`
+      `Universe filter-change header-scrolls-with-content: ${driftingDown.length} frame(s) drifting after symbol filter applied. (Epic 105 round-8 regression guard)`
     ).toHaveLength(0);
   });
 
@@ -390,12 +369,10 @@ test.describe('Universe — filter-change (symbol) sticky-header regression (Sto
 
     const symbolPrefix =
       symbols.length > 0 ? symbols[0].substring(0, 6) : 'USCRL0';
-    const filterInput = page
-      .locator(`${VIEWPORT_SELECTOR} thead input[placeholder]`)
-      .first();
-    await filterInput.click();
-    await filterInput.fill(symbolPrefix);
-    await page.waitForTimeout(600);
+    await applyAndClearColumnFilter(page, {
+      columnSelector: `${VIEWPORT_SELECTOR} thead input[placeholder]`,
+      filterValue: symbolPrefix,
+    });
 
     const snapshots = await captureSlowScrollFrames(page, viewport, header);
     const hiddenBehindBar = snapshots.filter(function isAboveViewport(
@@ -406,14 +383,14 @@ test.describe('Universe — filter-change (symbol) sticky-header regression (Sto
 
     expect(
       hiddenBehindBar,
-      `Universe filter-change header-under-header: ${hiddenBehindBar.length} frame(s) hidden behind app bar after filter applied. Fix in Story 105.2.`
+      `Universe filter-change header-under-header: ${hiddenBehindBar.length} frame(s) hidden behind app bar after filter applied. (Epic 105 round-8 regression guard)`
     ).toHaveLength(0);
   });
 });
 
 // ─── Open Positions — account-change ─────────────────────────────────────────
 
-test.describe('Open Positions — account-change sticky-header regression (Story 105.1)', () => {
+test.describe('Open Positions — account-change sticky-header regression', () => {
   let cleanup1: () => Promise<void>;
   let cleanup2: () => Promise<void>;
   let accountId1: string;
@@ -480,10 +457,7 @@ test.describe('Open Positions — account-change sticky-header regression (Story
     });
 
     // Context-change: navigate to second account's open positions
-    await page.goto(`/account/${accountId2}/open`);
-    await expect(page.locator(ROW_SELECTOR).first()).toBeVisible({
-      timeout: 15000,
-    });
+    await swapActiveAccountViaNavigation(page, { toAccountId: accountId2, routeSuffix: 'open' });
 
     // Pass 2
     const snapshots = await captureSlowScrollFrames(page, viewport, header);
@@ -495,7 +469,7 @@ test.describe('Open Positions — account-change sticky-header regression (Story
 
     expect(
       driftingDown,
-      `Open Positions account-change header-scrolls-with-content: ${driftingDown.length} frame(s) drifting after account-change. Fix in Story 105.2.`
+      `Open Positions account-change header-scrolls-with-content: ${driftingDown.length} frame(s) drifting after account-change. (Epic 105 round-8 regression guard)`
     ).toHaveLength(0);
   });
 
@@ -511,10 +485,7 @@ test.describe('Open Positions — account-change sticky-header regression (Story
       (el as HTMLElement).scrollTop = 0;
     });
 
-    await page.goto(`/account/${accountId2}/open`);
-    await expect(page.locator(ROW_SELECTOR).first()).toBeVisible({
-      timeout: 15000,
-    });
+    await swapActiveAccountViaNavigation(page, { toAccountId: accountId2, routeSuffix: 'open' });
 
     const snapshots = await captureSlowScrollFrames(page, viewport, header);
     const hiddenBehindBar = snapshots.filter(function isAboveViewport(
@@ -525,14 +496,14 @@ test.describe('Open Positions — account-change sticky-header regression (Story
 
     expect(
       hiddenBehindBar,
-      `Open Positions account-change header-under-header: ${hiddenBehindBar.length} frame(s) hidden behind app bar after account-change. Fix in Story 105.2.`
+      `Open Positions account-change header-under-header: ${hiddenBehindBar.length} frame(s) hidden behind app bar after account-change. (Epic 105 round-8 regression guard)`
     ).toHaveLength(0);
   });
 });
 
 // ─── Open Positions — filter-change (symbol) ─────────────────────────────────
 
-test.describe('Open Positions — filter-change (symbol) sticky-header regression (Story 105.1)', () => {
+test.describe('Open Positions — filter-change (symbol) sticky-header regression', () => {
   let cleanup: () => Promise<void>;
   let accountId: string;
 
@@ -588,13 +559,11 @@ test.describe('Open Positions — filter-change (symbol) sticky-header regressio
       (el as HTMLElement).scrollTop = 0;
     });
 
-    // Context-change: fill the symbol search input with the seeded account prefix
-    // ('E2E-OP'). All 60 seeded symbols contain this prefix, so the filter matches
-    // all rows — the point is to trigger a server round-trip + CDK data refresh.
-    const filterInput = page.locator('[data-testid="symbol-search-input"]');
-    await filterInput.click();
-    await filterInput.fill('E2E-OP');
-    await page.waitForTimeout(600);
+    // Context-change: fill the symbol search input (triggers server round-trip + CDK refresh)
+    await applyAndClearColumnFilter(page, {
+      columnSelector: '[data-testid="symbol-search-input"]',
+      filterValue: 'E2E-OP',
+    });
 
     const snapshots = await captureSlowScrollFrames(page, viewport, header);
     const driftingDown = snapshots.filter(function isDriftingDown(
@@ -605,7 +574,7 @@ test.describe('Open Positions — filter-change (symbol) sticky-header regressio
 
     expect(
       driftingDown,
-      `Open Positions filter-change header-scrolls-with-content: ${driftingDown.length} frame(s) drifting after filter applied. Fix in Story 105.2.`
+      `Open Positions filter-change header-scrolls-with-content: ${driftingDown.length} frame(s) drifting after filter applied. (Epic 105 round-8 regression guard)`
     ).toHaveLength(0);
   });
 
@@ -621,10 +590,10 @@ test.describe('Open Positions — filter-change (symbol) sticky-header regressio
       (el as HTMLElement).scrollTop = 0;
     });
 
-    const filterInput = page.locator('[data-testid="symbol-search-input"]');
-    await filterInput.click();
-    await filterInput.fill('E2E-OP');
-    await page.waitForTimeout(600);
+    await applyAndClearColumnFilter(page, {
+      columnSelector: '[data-testid="symbol-search-input"]',
+      filterValue: 'E2E-OP',
+    });
 
     const snapshots = await captureSlowScrollFrames(page, viewport, header);
     const hiddenBehindBar = snapshots.filter(function isAboveViewport(
@@ -635,14 +604,14 @@ test.describe('Open Positions — filter-change (symbol) sticky-header regressio
 
     expect(
       hiddenBehindBar,
-      `Open Positions filter-change header-under-header: ${hiddenBehindBar.length} frame(s) hidden behind app bar after filter applied. Fix in Story 105.2.`
+      `Open Positions filter-change header-under-header: ${hiddenBehindBar.length} frame(s) hidden behind app bar after filter applied. (Epic 105 round-8 regression guard)`
     ).toHaveLength(0);
   });
 });
 
 // ─── Sold Positions — account-change ─────────────────────────────────────────
 
-test.describe('Sold Positions — account-change sticky-header regression (Story 105.1)', () => {
+test.describe('Sold Positions — account-change sticky-header regression', () => {
   let cleanup1: () => Promise<void>;
   let cleanup2: () => Promise<void>;
   let accountId1: string;
@@ -702,10 +671,7 @@ test.describe('Sold Positions — account-change sticky-header regression (Story
       (el as HTMLElement).scrollTop = 0;
     });
 
-    await page.goto(`/account/${accountId2}/sold`);
-    await expect(page.locator(ROW_SELECTOR).first()).toBeVisible({
-      timeout: 15000,
-    });
+    await swapActiveAccountViaNavigation(page, { toAccountId: accountId2, routeSuffix: 'sold' });
 
     const snapshots = await captureSlowScrollFrames(page, viewport, header);
     const driftingDown = snapshots.filter(function isDriftingDown(
@@ -716,7 +682,7 @@ test.describe('Sold Positions — account-change sticky-header regression (Story
 
     expect(
       driftingDown,
-      `Sold Positions account-change header-scrolls-with-content: ${driftingDown.length} frame(s) drifting after account-change. Fix in Story 105.2.`
+      `Sold Positions account-change header-scrolls-with-content: ${driftingDown.length} frame(s) drifting after account-change. (Epic 105 round-8 regression guard)`
     ).toHaveLength(0);
   });
 
@@ -732,10 +698,7 @@ test.describe('Sold Positions — account-change sticky-header regression (Story
       (el as HTMLElement).scrollTop = 0;
     });
 
-    await page.goto(`/account/${accountId2}/sold`);
-    await expect(page.locator(ROW_SELECTOR).first()).toBeVisible({
-      timeout: 15000,
-    });
+    await swapActiveAccountViaNavigation(page, { toAccountId: accountId2, routeSuffix: 'sold' });
 
     const snapshots = await captureSlowScrollFrames(page, viewport, header);
     const hiddenBehindBar = snapshots.filter(function isAboveViewport(
@@ -746,14 +709,14 @@ test.describe('Sold Positions — account-change sticky-header regression (Story
 
     expect(
       hiddenBehindBar,
-      `Sold Positions account-change header-under-header: ${hiddenBehindBar.length} frame(s) hidden behind app bar after account-change. Fix in Story 105.2.`
+      `Sold Positions account-change header-under-header: ${hiddenBehindBar.length} frame(s) hidden behind app bar after account-change. (Epic 105 round-8 regression guard)`
     ).toHaveLength(0);
   });
 });
 
 // ─── Sold Positions — filter-change (symbol) ─────────────────────────────────
 
-test.describe('Sold Positions — filter-change (symbol) sticky-header regression (Story 105.1)', () => {
+test.describe('Sold Positions — filter-change (symbol) sticky-header regression', () => {
   let cleanup: () => Promise<void>;
   let accountId: string;
 
@@ -806,12 +769,10 @@ test.describe('Sold Positions — filter-change (symbol) sticky-header regressio
     });
 
     // Context-change: symbol filter input (placeholder="Search Symbol")
-    const filterInput = page.locator(
-      `${VIEWPORT_SELECTOR} thead input[placeholder="Search Symbol"]`
-    );
-    await filterInput.click();
-    await filterInput.fill('E2E-SD');
-    await page.waitForTimeout(600);
+    await applyAndClearColumnFilter(page, {
+      columnSelector: `${VIEWPORT_SELECTOR} thead input[placeholder="Search Symbol"]`,
+      filterValue: 'E2E-SD',
+    });
 
     const snapshots = await captureSlowScrollFrames(page, viewport, header);
     const driftingDown = snapshots.filter(function isDriftingDown(
@@ -822,7 +783,7 @@ test.describe('Sold Positions — filter-change (symbol) sticky-header regressio
 
     expect(
       driftingDown,
-      `Sold Positions filter-change header-scrolls-with-content: ${driftingDown.length} frame(s) drifting after filter applied. Fix in Story 105.2.`
+      `Sold Positions filter-change header-scrolls-with-content: ${driftingDown.length} frame(s) drifting after filter applied. (Epic 105 round-8 regression guard)`
     ).toHaveLength(0);
   });
 
@@ -838,12 +799,10 @@ test.describe('Sold Positions — filter-change (symbol) sticky-header regressio
       (el as HTMLElement).scrollTop = 0;
     });
 
-    const filterInput = page.locator(
-      `${VIEWPORT_SELECTOR} thead input[placeholder="Search Symbol"]`
-    );
-    await filterInput.click();
-    await filterInput.fill('E2E-SD');
-    await page.waitForTimeout(600);
+    await applyAndClearColumnFilter(page, {
+      columnSelector: `${VIEWPORT_SELECTOR} thead input[placeholder="Search Symbol"]`,
+      filterValue: 'E2E-SD',
+    });
 
     const snapshots = await captureSlowScrollFrames(page, viewport, header);
     const hiddenBehindBar = snapshots.filter(function isAboveViewport(
@@ -854,14 +813,14 @@ test.describe('Sold Positions — filter-change (symbol) sticky-header regressio
 
     expect(
       hiddenBehindBar,
-      `Sold Positions filter-change header-under-header: ${hiddenBehindBar.length} frame(s) hidden behind app bar after filter applied. Fix in Story 105.2.`
+      `Sold Positions filter-change header-under-header: ${hiddenBehindBar.length} frame(s) hidden behind app bar after filter applied. (Epic 105 round-8 regression guard)`
     ).toHaveLength(0);
   });
 });
 
 // ─── Dividend Deposits — account-change ──────────────────────────────────────
 
-test.describe('Dividend Deposits — account-change sticky-header regression (Story 105.1)', () => {
+test.describe('Dividend Deposits — account-change sticky-header regression', () => {
   let cleanup1: () => Promise<void>;
   let cleanup2: () => Promise<void>;
   let accountId1: string;
@@ -926,10 +885,7 @@ test.describe('Dividend Deposits — account-change sticky-header regression (St
       (el as HTMLElement).scrollTop = 0;
     });
 
-    await page.goto(`/account/${accountId2}/div-dep`);
-    await expect(page.locator(ROW_SELECTOR).first()).toBeVisible({
-      timeout: 15000,
-    });
+    await swapActiveAccountViaNavigation(page, { toAccountId: accountId2, routeSuffix: 'div-dep' });
 
     const snapshots = await captureSlowScrollFrames(page, viewport, header);
     const driftingDown = snapshots.filter(function isDriftingDown(
@@ -940,7 +896,7 @@ test.describe('Dividend Deposits — account-change sticky-header regression (St
 
     expect(
       driftingDown,
-      `Dividend Deposits account-change header-scrolls-with-content: ${driftingDown.length} frame(s) drifting after account-change. Fix in Story 105.2.`
+      `Dividend Deposits account-change header-scrolls-with-content: ${driftingDown.length} frame(s) drifting after account-change. (Epic 105 round-8 regression guard)`
     ).toHaveLength(0);
   });
 
@@ -956,10 +912,7 @@ test.describe('Dividend Deposits — account-change sticky-header regression (St
       (el as HTMLElement).scrollTop = 0;
     });
 
-    await page.goto(`/account/${accountId2}/div-dep`);
-    await expect(page.locator(ROW_SELECTOR).first()).toBeVisible({
-      timeout: 15000,
-    });
+    await swapActiveAccountViaNavigation(page, { toAccountId: accountId2, routeSuffix: 'div-dep' });
 
     const snapshots = await captureSlowScrollFrames(page, viewport, header);
     const hiddenBehindBar = snapshots.filter(function isAboveViewport(
@@ -970,14 +923,14 @@ test.describe('Dividend Deposits — account-change sticky-header regression (St
 
     expect(
       hiddenBehindBar,
-      `Dividend Deposits account-change header-under-header: ${hiddenBehindBar.length} frame(s) hidden behind app bar after account-change. Fix in Story 105.2.`
+      `Dividend Deposits account-change header-under-header: ${hiddenBehindBar.length} frame(s) hidden behind app bar after account-change. (Epic 105 round-8 regression guard)`
     ).toHaveLength(0);
   });
 });
 
 // ─── Screener — filter-change (risk group) ───────────────────────────────────
 
-test.describe('Screener — filter-change (risk group) sticky-header regression (Story 105.1)', () => {
+test.describe('Screener — filter-change (risk group) sticky-header regression', () => {
   let cleanup: () => Promise<void>;
 
   test.beforeAll(async () => {
@@ -1033,20 +986,10 @@ test.describe('Screener — filter-change (risk group) sticky-header regression 
     });
 
     // Context-change: apply "Income" filter (collapses data), then clear (restores)
-    const riskGroupFilter = page.locator('[data-testid="risk-group-filter"]');
-    await riskGroupFilter.click();
-    await page
-      .locator('mat-option')
-      .filter({ hasText: 'Income' })
-      .first()
-      .click();
-    await page.waitForTimeout(300);
-    await riskGroupFilter.click();
-    // "All" is the placeholder option — select it to clear the filter
-    await page.locator('mat-option').filter({ hasText: 'All' }).first().click();
-    await page.waitForTimeout(300);
-    await expect(page.locator(ROW_SELECTOR).first()).toBeVisible({
-      timeout: 10000,
+    await applyAndClearGlobalFilter(page, {
+      filterSelector: '[data-testid="risk-group-filter"]',
+      applyOptionText: 'Income',
+      clearOptionText: 'All',
     });
 
     const snapshots = await captureSlowScrollFrames(page, viewport, header);
@@ -1058,7 +1001,7 @@ test.describe('Screener — filter-change (risk group) sticky-header regression 
 
     expect(
       driftingDown,
-      `Screener filter-change header-scrolls-with-content: ${driftingDown.length} frame(s) drifting after filter cleared. Fix in Story 105.2.`
+      `Screener filter-change header-scrolls-with-content: ${driftingDown.length} frame(s) drifting after filter cleared. (Epic 105 round-8 regression guard)`
     ).toHaveLength(0);
   });
 
@@ -1074,19 +1017,10 @@ test.describe('Screener — filter-change (risk group) sticky-header regression 
       (el as HTMLElement).scrollTop = 0;
     });
 
-    const riskGroupFilter = page.locator('[data-testid="risk-group-filter"]');
-    await riskGroupFilter.click();
-    await page
-      .locator('mat-option')
-      .filter({ hasText: 'Income' })
-      .first()
-      .click();
-    await page.waitForTimeout(300);
-    await riskGroupFilter.click();
-    await page.locator('mat-option').filter({ hasText: 'All' }).first().click();
-    await page.waitForTimeout(300);
-    await expect(page.locator(ROW_SELECTOR).first()).toBeVisible({
-      timeout: 10000,
+    await applyAndClearGlobalFilter(page, {
+      filterSelector: '[data-testid="risk-group-filter"]',
+      applyOptionText: 'Income',
+      clearOptionText: 'All',
     });
 
     const snapshots = await captureSlowScrollFrames(page, viewport, header);
@@ -1098,7 +1032,7 @@ test.describe('Screener — filter-change (risk group) sticky-header regression 
 
     expect(
       hiddenBehindBar,
-      `Screener filter-change header-under-header: ${hiddenBehindBar.length} frame(s) hidden behind app bar after filter cleared. Fix in Story 105.2.`
+      `Screener filter-change header-under-header: ${hiddenBehindBar.length} frame(s) hidden behind app bar after filter cleared. (Epic 105 round-8 regression guard)`
     ).toHaveLength(0);
   });
 });
