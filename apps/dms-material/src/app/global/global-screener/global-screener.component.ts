@@ -70,6 +70,10 @@ export class GlobalScreenerComponent {
       : null
   );
 
+  // See SCROLLING REGRESSION HISTORY — Epic 105 in base-table.component.ts.
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signal
+  readonly contextKey$ = computed(() => this.riskGroupFilter$() ?? '');
+
   readonly columns: ColumnDef[] = [
     { field: 'symbol', header: 'Symbol', sortable: true, width: '100px' },
     {

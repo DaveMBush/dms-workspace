@@ -119,6 +119,23 @@ export class GlobalUniverseComponent implements OnDestroy {
   private textFilterTimer?: ReturnType<typeof setTimeout>;
   private readonly baseTable = viewChild(BaseTableComponent);
 
+  // See SCROLLING REGRESSION HISTORY — Epic 105 in base-table.component.ts.
+  // Concatenating all context-changing signals into a single key ensures the
+  // base-table scrolls to top (and CDK viewport resets) on every account- or
+  // filter-change, preventing sticky header drift on the new dataset.
+  // symbolFilter$ IS included: the base-table effect skips the first (null→value)
+  // transition so it never fires during page initialisation, avoiding any race
+  // with SmartNgRX. For user-initiated text filter changes the scrollToTop() fires
+  // synchronously (before the 300ms-debounced server re-fetch), resetting CDK to
+  // a clean state before new data arrives.
+  readonly contextKey$ = computed(
+    // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signal
+    () =>
+      `${this.selectedAccountId$()}|${this.riskGroupFilter$() ?? ''}|` +
+      `${String(this.expiredFilter$())}|${String(this.minYieldFilter$())}|` +
+      `${this.symbolFilter$()}`
+  );
+
   ngOnDestroy(): void {
     clearTimeout(this.textFilterTimer);
   }

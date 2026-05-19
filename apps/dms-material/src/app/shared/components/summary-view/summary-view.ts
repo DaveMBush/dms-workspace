@@ -13,6 +13,7 @@ import { MatOptionModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { ActivatedRoute } from '@angular/router';
+import { distinctUntilChanged } from 'rxjs';
 
 import { currentAccountSignalStore } from '../../../store/current-account/current-account.signal-store';
 import { AllocationChartComponent } from '../allocation-chart/allocation-chart';
@@ -41,6 +42,8 @@ import { SummaryViewBase } from './summary-view.base';
 export class SummaryViewComponent extends SummaryViewBase implements OnInit {
   private readonly accountStore = inject(currentAccountSignalStore);
   private accountId = '';
+  private lastFetchedMonth: string | null = null;
+  private lastFetchedYear: number | null = null;
 
   constructor() {
     super();
@@ -80,11 +83,11 @@ export class SummaryViewComponent extends SummaryViewBase implements OnInit {
     });
 
     this.selectedMonth.valueChanges
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntilDestroyed(this.destroyRef), distinctUntilChanged())
       .subscribe(this.onMonthChange.bind(this));
 
     this.selectedYear.valueChanges
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntilDestroyed(this.destroyRef), distinctUntilChanged())
       .subscribe(this.onYearChange.bind(this));
   }
 
@@ -99,35 +102,40 @@ export class SummaryViewComponent extends SummaryViewBase implements OnInit {
     );
 
     this.selectedYear.valueChanges
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntilDestroyed(this.destroyRef), distinctUntilChanged())
       .subscribe(this.onGlobalYearChange.bind(this));
 
     this.selectedMonth.valueChanges
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntilDestroyed(this.destroyRef), distinctUntilChanged())
       .subscribe(this.onGlobalMonthChange.bind(this));
   }
 
   private fetchAccountData(): void {
-    this.selectedMonth.setValue(getCurrentMonth(), { emitEvent: false });
-    this.selectedYear.setValue(new Date().getFullYear(), { emitEvent: false });
+    const currentMonth = getCurrentMonth();
+    const currentYear = new Date().getFullYear();
+    this.lastFetchedMonth = currentMonth;
+    this.lastFetchedYear = currentYear;
+    this.selectedMonth.setValue(currentMonth, { emitEvent: false });
+    this.selectedYear.setValue(currentYear, { emitEvent: false });
     this.selectedMonth.disable({ emitEvent: false });
     this.selectedYear.disable({ emitEvent: false });
     this.summaryService.fetchSummary(
-      this.selectedMonth.value ?? getCurrentMonth(),
+      currentMonth,
       this.enableSelectors.bind(this),
       this.accountId
     );
-    this.summaryService.fetchGraph(
-      undefined,
-      this.accountId,
-      this.selectedMonth.value ?? getCurrentMonth()
-    );
+    this.summaryService.fetchGraph(undefined, this.accountId, currentMonth);
     this.summaryService.fetchMonths(this.accountId);
     this.summaryService.fetchYears();
   }
 
   private onMonthChange(month: string | null): void {
-    if (month !== null && this.accountId !== '') {
+    if (
+      month !== null &&
+      this.accountId !== '' &&
+      month !== this.lastFetchedMonth
+    ) {
+      this.lastFetchedMonth = month;
       this.selectedMonth.disable({ emitEvent: false });
       this.summaryService.fetchSummary(
         month,
@@ -143,7 +151,12 @@ export class SummaryViewComponent extends SummaryViewBase implements OnInit {
   }
 
   private onYearChange(year: number | null): void {
-    if (year !== null && this.accountId !== '') {
+    if (
+      year !== null &&
+      this.accountId !== '' &&
+      year !== this.lastFetchedYear
+    ) {
+      this.lastFetchedYear = year;
       this.summaryService.fetchMonths(this.accountId, year);
       this.summaryService.fetchGraph(
         year,

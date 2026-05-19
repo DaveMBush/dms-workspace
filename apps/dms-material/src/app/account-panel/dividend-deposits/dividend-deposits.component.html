@@ -3,6 +3,7 @@
   [columns]="columns"
   [bufferSize]="20"
   [sortColumns]="sortColumns$()"
+  [contextId]="contextKey$()"
   (sortChange)="onSortChange($event)"
   (rowClick)="onEditDividend($event)"
   (renderedRangeChange)="onRangeChange($event)"

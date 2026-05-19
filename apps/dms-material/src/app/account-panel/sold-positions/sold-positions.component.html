@@ -3,6 +3,7 @@
   [data]="displayedPositions()"
   [columns]="columns"
   [sortColumns]="sortColumns$()"
+  [contextId]="contextKey$()"
   (sortChange)="onSortChange($event)"
   (renderedRangeChange)="onRangeChange($event)"
 >

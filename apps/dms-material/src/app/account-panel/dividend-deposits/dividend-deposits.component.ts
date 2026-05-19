@@ -2,6 +2,7 @@ import { CurrencyPipe, DatePipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   effect,
   inject,
   signal,
@@ -68,6 +69,12 @@ export class DividendDepositsComponent {
     start: 0,
     end: 50,
   });
+
+  // See SCROLLING REGRESSION HISTORY — Epic 105 in base-table.component.ts.
+  readonly contextKey$ = computed(
+    // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signal
+    () => this.currentAccountStore.selectCurrentAccountId()
+  );
 
   onRangeChange(range: { start: number; end: number }): void {
     this.visibleRange.set(range);

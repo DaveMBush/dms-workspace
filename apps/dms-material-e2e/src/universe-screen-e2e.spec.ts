@@ -198,7 +198,7 @@ test.describe('Universe Screen E2E', () => {
     });
 
     test('should sort by Symbol', async ({ page }) => {
-      const header = page.getByRole('button', { name: 'Symbol' });
+      const header = page.getByRole('button', { name: 'Symbol', exact: true });
       await header.click();
       await page.waitForTimeout(500);
 

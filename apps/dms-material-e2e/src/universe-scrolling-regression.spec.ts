@@ -197,8 +197,11 @@ test.describe('Universe Scrolling Regression — blank rows on fast scroll', () 
     //   placeholder rows are passed through to the CDK viewport unchanged.
     //
     // Sort column interaction pattern (from server-side-sorting.spec.ts):
-    //   page.getByRole('button', { name: 'Symbol' }) → click to apply sort.
-    const symbolHeader = page.getByRole('button', { name: 'Symbol' });
+    //   page.getByRole('button', { name: 'Symbol', exact: true }) → click to apply sort.
+    const symbolHeader = page.getByRole('button', {
+      name: 'Symbol',
+      exact: true,
+    });
     await symbolHeader.click();
 
     // Wait for the sort network round-trip to complete before scrolling.
@@ -280,7 +283,10 @@ test.describe('Universe Scrolling Regression — blank rows on fast scroll', () 
     // This test guards against a future change that re-introduces row removal
     // from filteredData$ during overlapping isLoading windows caused by rapid
     // consecutive sort changes.
-    const symbolHeader = page.getByRole('button', { name: 'Symbol' });
+    const symbolHeader = page.getByRole('button', {
+      name: 'Symbol',
+      exact: true,
+    });
 
     // Three rapid toggles: asc → desc → asc.  Each triggers a server round-trip
     // and a new isLoading window — overlapping windows stress-test stability.
@@ -408,7 +414,10 @@ test.describe('Universe Scrolling Regression — blank rows on fast scroll', () 
     // Story 87.3 regression guard — changing sort order triggers a new
     // server-side request and an isLoading window.  A fast scroll into the
     // newly ordered data range should not expose placeholder rows.
-    const symbolHeader = page.getByRole('button', { name: 'Symbol' });
+    const symbolHeader = page.getByRole('button', {
+      name: 'Symbol',
+      exact: true,
+    });
     await symbolHeader.click();
 
     const viewport = page.locator(VIEWPORT_SELECTOR);

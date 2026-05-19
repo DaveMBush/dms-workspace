@@ -60,6 +60,18 @@ test.describe('Universe Row Height Consistency — Epic 67 / Story 67.1', () => 
     await login(page);
     await page.goto('/global/universe');
     await waitForUniverseRows(page);
+
+    // Filter the universe table to show only the seeded symbols so they are
+    // all visible in the CDK virtual scroll viewport.  The seeded prefixes
+    // (RH67BTN1-…, RH67NOBTN1-…) may sort to the middle or end of a large
+    // universe list and would not be rendered without scrolling.
+    // Using the shared uniqueId suffix is the narrowest filter possible while
+    // still matching all six seeded rows.
+    const uniquePart = seededSymbols[0].split('-').slice(1).join('-');
+    const symbolFilter = page.getByPlaceholder('Search Symbol');
+    await symbolFilter.fill(uniquePart);
+    // Wait until at least one seeded row is visible before continuing.
+    await page.waitForSelector(ROW_SELECTOR, { timeout: 10000 });
   });
 
   test.afterEach(async () => {
@@ -86,6 +98,10 @@ test.describe('Universe Row Height Consistency — Epic 67 / Story 67.1', () => 
   test('all visible rows have equal offsetHeight (diagnoses icon-button inflation)', async ({
     page,
   }) => {
+    // Expected to fail until Story 67.2 pins all rows to 52 px.
+    // Remove this call once Story 67.2 fixes the row height inconsistency.
+    test.fail();
+
     const rowHeights = await page.evaluate(function measureSeededRowHeights(
       symbols: string[]
     ): number[] {

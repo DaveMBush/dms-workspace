@@ -18,6 +18,7 @@ import {
   output,
   signal,
   TemplateRef,
+  untracked,
   viewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -54,6 +55,22 @@ import { ColumnDef } from './column-def.interface';
  *   header-scrolls-with-content and header-under-header artifacts. Fix (Story 101.2):
  *   removed contain:paint from .virtual-scroll-viewport; overflow:auto/hidden already
  *   provides the equivalent paint boundary without the layout-containment side-effect.
+ * Epic 105: Story 105.1 added a slow-scroll regression spec
+ *   (scrolling-regression-105.spec.ts) to capture "header-under-header" artifacts
+ *   (sticky header sliding above the viewport top) on context-change. Live-DOM
+ *   diagnostic (Story 105.2) confirmed that th.mat-mdc-header-cell (position:sticky;
+ *   top:0) remained correctly anchored at viewportTop in both baseline and after
+ *   account/filter changes. The 6/16 test failures were caused by the spec measuring
+ *   tr.mat-mdc-header-row (position:static, natural-flow y = viewportTop - scrollTop)
+ *   instead of the actual sticky element; at any scrollTop > PIXEL_TOLERANCE the check
+ *   viewportTop - tr.y = scrollTop > 2 produced a false violation.
+ *   Fix (Story 105.2): changed HEADER_ROW_SELECTOR from 'tr.mat-mdc-header-row' to
+ *   'th.mat-mdc-header-cell' so the spec correctly measures the sticky-positioned cell.
+ *   Additionally added contextId = input<string|null>() to BaseTableComponent: screen
+ *   components bind a key that changes on every account- or filter-change, and an effect
+ *   calls scrollToIndex(0) on key change — resetting viewport scroll position to the top
+ *   for clean UX after a context switch. See SCROLLING REGRESSION HISTORY in
+ *   base-table.component.scss for the CSS-side constraints.
  *
  * Structural constraints:
  *   1. CDK virtual scroll requires a STABLE array length. SmartNgRX marks rows
@@ -133,6 +150,10 @@ export class BaseTableComponent<T extends { id: string }>
   multiSelect = input<boolean>(false);
   loading = input<boolean>(false);
   sortColumns = input<SortColumn[]>([]);
+  // See SCROLLING REGRESSION HISTORY — Epic 105: bind a key that changes on every
+  // account- or filter-change to force a scroll reset before Angular Material
+  // re-measures sticky row heights on the new dataset.
+  contextId = input<string | null>(null);
 
   // Outputs
   readonly sortChange = output<Sort>();
@@ -149,18 +170,17 @@ export class BaseTableComponent<T extends { id: string }>
   private sortState = signal<Sort | null>(null);
   private destroyRef = inject(DestroyRef);
   private lastShiftKey = false;
+  private prevCtxId: string | null = null;
 
-  // eslint-disable-next-line @smarttools/no-anonymous-functions -- Required for computed signal
-  readonly activeSortColumn = computed(() => {
-    const columns = this.sortColumns();
-    return columns.length > 0 ? columns[0].column : '';
-  });
+  readonly activeSortColumn = computed(
+    // eslint-disable-next-line @smarttools/no-anonymous-functions -- Required for computed signal
+    () => this.sortColumns()[0]?.column ?? ''
+  );
 
-  // eslint-disable-next-line @smarttools/no-anonymous-functions -- Required for computed signal
-  readonly activeSortDirection = computed(() => {
-    const columns = this.sortColumns();
-    return columns.length > 0 ? columns[0].direction : '';
-  });
+  readonly activeSortDirection = computed(
+    // eslint-disable-next-line @smarttools/no-anonymous-functions -- Required for computed signal
+    () => this.sortColumns()[0]?.direction ?? ''
+  );
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- Required for computed signal
   readonly sortRankMap = computed(() => {
@@ -218,6 +238,27 @@ export class BaseTableComponent<T extends { id: string }>
         }
       }
     );
+
+    // See SCROLLING REGRESSION HISTORY — Epic 105.
+    // Reset the CDK viewport to scrollTop=0 whenever the contextId changes to a
+    // non-null value. This forces a clean layout state before Angular Material
+    // re-measures sticky header row heights on the new dataset, preventing
+    // header-scrolls-with-content and header-under-header artifacts.
+    //
+    // We track the previous value so we can skip the initial binding — firing
+    // scrollToTop() on the very first (non-null) value would interfere with
+    // tests that navigate to a pre-scrolled position immediately after mount.
+    effect(
+      // eslint-disable-next-line @smarttools/no-anonymous-functions -- Required for effect
+      () => {
+        const key = this.contextId();
+        const prev = this.prevCtxId;
+        this.prevCtxId = key;
+        if (prev !== null && key !== null) {
+          untracked(this.scrollToTop.bind(this));
+        }
+      }
+    );
   }
 
   ngAfterViewInit(): void {
@@ -245,11 +286,8 @@ export class BaseTableComponent<T extends { id: string }>
 
   // Helper to check if row has expired property
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- needed for proper typing
-  isExpired$ = (row: T): boolean => {
-    return (
-      'expired' in row && (row as T & { expired?: boolean }).expired === true
-    );
-  };
+  isExpired$ = (row: T): boolean =>
+    'expired' in row && (row as T & { expired?: boolean }).expired === true;
 
   // Helper to add data-is-cef attribute for closed-end fund rows
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- needed for proper typing
@@ -268,24 +306,17 @@ export class BaseTableComponent<T extends { id: string }>
 
   // Helper to read gainLossType from a row when present
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- needed for proper typing
-  gainLossType$ = (row: T): 'gain' | 'loss' | 'neutral' | undefined => {
-    if ('gainLossType' in row) {
-      return (row as T & { gainLossType?: 'gain' | 'loss' | 'neutral' })
-        .gainLossType;
-    }
-    return undefined;
-  };
+  gainLossType$ = (row: T): 'gain' | 'loss' | 'neutral' | undefined =>
+    'gainLossType' in row
+      ? (row as T & { gainLossType?: 'gain' | 'loss' | 'neutral' }).gainLossType
+      : undefined;
 
   // Returns an ngClass-compatible map from the row's gainLossType to avoid
   // triple evaluation of gainLossType$ per change-detection cycle.
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- needed for proper typing
   gainLossClassMap$ = (row: T): Record<string, boolean> => {
-    const type = this.gainLossType$(row);
-    return {
-      gain: type === 'gain',
-      loss: type === 'loss',
-      neutral: type === 'neutral',
-    };
+    const t = this.gainLossType$(row);
+    return { gain: t === 'gain', loss: t === 'loss', neutral: t === 'neutral' };
   };
 
   // Data source - reactive to data() and sortColumns() changes
@@ -379,9 +410,8 @@ export class BaseTableComponent<T extends { id: string }>
   }
 
   isAllSelected(): boolean {
-    const numSelected = this.selection.selected.length;
     const numRows = this.dataSource().length;
-    return numSelected === numRows && numRows > 0;
+    return this.selection.selected.length === numRows && numRows > 0;
   }
 
   toggleAllRows(): void {
@@ -399,9 +429,10 @@ export class BaseTableComponent<T extends { id: string }>
   }
 
   scrollToTop(): void {
-    const viewportValue = this.viewport();
-    if (viewportValue) {
-      viewportValue.scrollToIndex(0);
+    try {
+      this.viewport()?.scrollToIndex(0);
+    } catch {
+      /* no-op – scrollTo absent in JSDOM */
     }
   }
 

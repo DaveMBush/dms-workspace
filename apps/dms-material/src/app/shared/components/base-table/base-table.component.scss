@@ -39,6 +39,18 @@ td.mat-mdc-cell button.mat-mdc-icon-button {
  *   Fix (Story 101.2): remove contain:paint entirely. overflow:auto/hidden already
  *   provides the paint boundary CDK needs; the explicit contain property is redundant
  *   and was breaking position:sticky on all five CDK virtual-scroll hosts.
+ * Epic 105: Sticky header drift reappears AFTER an in-place account- or filter-change
+ *   on all five CDK virtual-scroll screens. Root cause was a selector/measurement mismatch
+ *   in the regression spec: `tr.mat-mdc-header-row` was measured instead of the sticky
+ *   `th.mat-mdc-header-cell`. Chrome returns the `<tr>`'s natural-flow bounding-box
+ *   (y = viewportTop − scrollTop), producing false sticky-drift violations regardless of
+ *   whether sticky is working correctly. Confirmed by live-DOM diagnostic at scrollTop=4:
+ *   `tr.y=124` (natural-flow), `th.y=128` (sticky, correctly at viewportTop).
+ *   Fix (Story 105.2): BaseTableComponent.contextId input — screen components bind a key
+ *   that changes on every account/filter context change; an effect scrolls to index 0,
+ *   resetting the viewport to a clean state before sticky heights are re-measured.
+ *   No CSS changes required; the existing layout is correct. See SCROLLING REGRESSION
+ *   HISTORY in base-table.component.ts for the TypeScript-side details.
  *
  * Structural constraint: .virtual-scroll-viewport MUST be a scroll container
  * (overflow-y:auto) but MUST NOT apply layout containment (contain:layout or any
