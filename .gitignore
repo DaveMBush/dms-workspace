@@ -64,4 +64,3 @@ dist/storybook/
 apps/server/coverage
 .nx/polygraph
 .nx/self-healing
-graphify-out/.graphify_root
