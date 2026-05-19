@@ -122,6 +122,56 @@ function assertDriftInvariant(samples: SamplesArr, tolerance: number): void {
   ).toHaveLength(0);
 }
 
+type LocalRowSnapshot = NonNullable<SamplesArr[number]['rows']>[number];
+
+function checkRowFlicker(
+  curr: LocalRowSnapshot[],
+  prev: LocalRowSnapshot[],
+  next: LocalRowSnapshot[],
+  ctx: { frameIndex: number; rowHeightPx: number }
+): void {
+  const { frameIndex, rowHeightPx } = ctx;
+  for (const row of curr) {
+    const prevRow = prev.find(function matchRow(r) {
+      return r.rowIndex === row.rowIndex;
+    });
+    const nextRow = next.find(function matchRow(r) {
+      return r.rowIndex === row.rowIndex;
+    });
+    if (!prevRow || !nextRow) {
+      continue;
+    }
+    const jumpThisFrame = Math.abs(row.top - prevRow.top);
+    const revertNextFrame = Math.abs(nextRow.top - row.top);
+    if (jumpThisFrame > rowHeightPx / 2 && revertNextFrame > rowHeightPx / 2) {
+      expect.fail(
+        `Row flicker detected at frame ${frameIndex}, rowIndex ${row.rowIndex}: ` +
+          `jumped ${jumpThisFrame.toFixed(
+            1
+          )}px then reverted ${revertNextFrame.toFixed(1)}px ` +
+          `(threshold=${rowHeightPx / 2}px). ` +
+          'Row position jitter during slow scroll detected (Epic 105 round-8). ' +
+          'Root cause: CDK virtual-scroll height recalculation during data-context change.'
+      );
+    }
+  }
+}
+
+function assertFlickerInvariant(
+  samples: SamplesArr,
+  rowHeightPx: number
+): void {
+  for (let f = 1; f < samples.length - 1; f++) {
+    const prev = samples[f - 1].rows;
+    const curr = samples[f].rows;
+    const next = samples[f + 1].rows;
+    if (!prev || !curr || !next) {
+      continue;
+    }
+    checkRowFlicker(curr, prev, next, { frameIndex: f, rowHeightPx });
+  }
+}
+
 // ─── Public API ───────────────────────────────────────────────────────────────
 
 /**
@@ -131,12 +181,21 @@ function assertDriftInvariant(samples: SamplesArr, tolerance: number): void {
  *   2. Does not drift downward with content (no "header-scrolls-with-content").
  *   3. The viewport has no layout containment (CSS guard).
  *   4. The viewport has `overflow-y: auto|scroll` (CSS guard).
+ *
+ * When `rowSelector` is provided, also asserts:
+ *   5. No two consecutive frames show the same logical row jumping by more than
+ *      half of `rowHeightPx` and then reverting (no flicker — AC2 Story 105.3).
  */
 export async function assertStickyHeaderInvariant(
   page: Page,
   containerSelector = DEFAULT_VIEWPORT_SELECTOR,
   headerSelector = DEFAULT_HEADER_ROW_SELECTOR,
-  options?: { stepPx?: number; scrollMs?: number }
+  options?: {
+    stepPx?: number;
+    scrollMs?: number;
+    rowSelector?: string;
+    rowHeightPx?: number;
+  }
 ): Promise<void> {
   await assertViewportCssGuards(page, containerSelector);
 
@@ -145,6 +204,7 @@ export async function assertStickyHeaderInvariant(
     headerSelector,
     parentHeaderSelector: PARENT_HEADER_SELECTOR,
     options,
+    rowSelector: options?.rowSelector,
   });
 
   expect(
@@ -155,4 +215,8 @@ export async function assertStickyHeaderInvariant(
 
   assertOverlapInvariant(samples, DRIFT_TOLERANCE);
   assertDriftInvariant(samples, DRIFT_TOLERANCE);
+
+  if (options?.rowSelector) {
+    assertFlickerInvariant(samples, options.rowHeightPx ?? 57);
+  }
 }
