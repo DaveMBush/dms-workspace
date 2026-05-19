@@ -104,11 +104,7 @@ export async function applyAndClearColumnFilter(
   page: Page,
   options: ColumnFilterOptions
 ): Promise<void> {
-  const {
-    columnSelector,
-    filterValue,
-    rowSelector = ROW_SELECTOR,
-  } = options;
+  const { columnSelector, filterValue, rowSelector = ROW_SELECTOR } = options;
   const filterInput = page.locator(columnSelector).first();
   await filterInput.click();
   await filterInput.fill(filterValue);
@@ -159,12 +155,20 @@ export async function applyAndClearGlobalFilter(
   const select = page.locator(filterSelector);
   // Apply the filter
   await select.click();
-  await page.locator('mat-option').filter({ hasText: applyOptionText }).first().click();
+  await page
+    .locator('mat-option')
+    .filter({ hasText: applyOptionText })
+    .first()
+    .click();
   // Wait for the mat-select to reflect the chosen value before re-opening
   await expect(select).toContainText(applyOptionText, { timeout: 5000 });
   // Clear the filter (restore full dataset)
   await select.click();
-  await page.locator('mat-option').filter({ hasText: clearOptionText }).first().click();
+  await page
+    .locator('mat-option')
+    .filter({ hasText: clearOptionText })
+    .first()
+    .click();
   await expect(page.locator(rowSelector).first()).toBeVisible({
     timeout: 10000,
   });

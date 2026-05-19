@@ -44,8 +44,12 @@ test.describe('Accessibility - axe-core audits', () => {
         timeout: 10000,
       });
 
-      let axeBuilder = new AxeBuilder({ page })
-        .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']);
+      let axeBuilder = new AxeBuilder({ page }).withTags([
+        'wcag2a',
+        'wcag2aa',
+        'wcag21a',
+        'wcag21aa',
+      ]);
 
       // Firefox renders mat-error text with a slightly different color metric that
       // trips the color-contrast rule while Chromium (where the color is genuinely

@@ -146,7 +146,9 @@ function checkRowFlicker(
     if (jumpThisFrame > rowHeightPx / 2 && revertNextFrame > rowHeightPx / 2) {
       expect.fail(
         `Row flicker detected at frame ${frameIndex}, rowIndex ${row.rowIndex}: ` +
-          `jumped ${jumpThisFrame.toFixed(1)}px then reverted ${revertNextFrame.toFixed(1)}px ` +
+          `jumped ${jumpThisFrame.toFixed(
+            1
+          )}px then reverted ${revertNextFrame.toFixed(1)}px ` +
           `(threshold=${rowHeightPx / 2}px). ` +
           'Row position jitter during slow scroll detected (Epic 105 round-8). ' +
           'Root cause: CDK virtual-scroll height recalculation during data-context change.'
@@ -188,7 +190,12 @@ export async function assertStickyHeaderInvariant(
   page: Page,
   containerSelector = DEFAULT_VIEWPORT_SELECTOR,
   headerSelector = DEFAULT_HEADER_ROW_SELECTOR,
-  options?: { stepPx?: number; scrollMs?: number; rowSelector?: string; rowHeightPx?: number }
+  options?: {
+    stepPx?: number;
+    scrollMs?: number;
+    rowSelector?: string;
+    rowHeightPx?: number;
+  }
 ): Promise<void> {
   await assertViewportCssGuards(page, containerSelector);
 

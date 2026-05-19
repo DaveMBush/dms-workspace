@@ -164,6 +164,9 @@ async function captureScrollFrames({
   });
 }
 
-async function runSlowScroll(page: Page, arg: ScrollEvalArg): Promise<FrameSample[]> {
+async function runSlowScroll(
+  page: Page,
+  arg: ScrollEvalArg
+): Promise<FrameSample[]> {
   return page.evaluate<FrameSample[], ScrollEvalArg>(captureScrollFrames, arg);
 }

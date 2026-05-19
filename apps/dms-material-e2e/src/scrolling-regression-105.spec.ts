@@ -111,12 +111,18 @@ async function runTwoPassInvariantCheck(
   contextChange: () => Promise<void>
 ): Promise<void> {
   // Pass 1: baseline — drift, overlap, CSS guards
-  await assertStickyHeaderInvariant(page, VIEWPORT_SELECTOR, HEADER_ROW_SELECTOR);
+  await assertStickyHeaderInvariant(
+    page,
+    VIEWPORT_SELECTOR,
+    HEADER_ROW_SELECTOR
+  );
 
   // Reset viewport scroll before context-change
-  await page.locator(VIEWPORT_SELECTOR).evaluate(function resetScroll(el: Element) {
-    (el as HTMLElement).scrollTop = 0;
-  });
+  await page
+    .locator(VIEWPORT_SELECTOR)
+    .evaluate(function resetScroll(el: Element) {
+      (el as HTMLElement).scrollTop = 0;
+    });
 
   // In-place data-context change
   await contextChange();
@@ -158,7 +164,9 @@ test.describe('Universe — account-change sticky-header regression', () => {
   test.beforeEach(async ({ page }) => {
     await login(page);
     await page.goto('/global/universe');
-    await page.locator('dms-base-table').waitFor({ state: 'visible', timeout: 15000 });
+    await page
+      .locator('dms-base-table')
+      .waitFor({ state: 'visible', timeout: 15000 });
     await page.waitForSelector(ROW_SELECTOR, { timeout: 15000 });
   });
 
@@ -197,7 +205,9 @@ test.describe('Universe — filter-change (symbol) sticky-header regression', ()
   test.beforeEach(async ({ page }) => {
     await login(page);
     await page.goto('/global/universe');
-    await page.locator('dms-base-table').waitFor({ state: 'visible', timeout: 15000 });
+    await page
+      .locator('dms-base-table')
+      .waitFor({ state: 'visible', timeout: 15000 });
     await page.waitForSelector(ROW_SELECTOR, { timeout: 15000 });
   });
 
@@ -249,7 +259,9 @@ test.describe('Open Positions — account-change sticky-header regression', () =
   test.beforeEach(async ({ page }) => {
     await login(page);
     await page.goto(`/account/${accountId1}/open`);
-    await page.locator('dms-base-table').waitFor({ state: 'visible', timeout: 15000 });
+    await page
+      .locator('dms-base-table')
+      .waitFor({ state: 'visible', timeout: 15000 });
     await page.waitForSelector(ROW_SELECTOR, { timeout: 15000 });
   });
 
@@ -290,7 +302,9 @@ test.describe('Open Positions — filter-change (symbol) sticky-header regressio
   test.beforeEach(async ({ page }) => {
     await login(page);
     await page.goto(`/account/${accountId}/open`);
-    await page.locator('dms-base-table').waitFor({ state: 'visible', timeout: 15000 });
+    await page
+      .locator('dms-base-table')
+      .waitFor({ state: 'visible', timeout: 15000 });
     await page.waitForSelector(ROW_SELECTOR, { timeout: 15000 });
   });
 
@@ -336,7 +350,9 @@ test.describe('Sold Positions — account-change sticky-header regression', () =
   test.beforeEach(async ({ page }) => {
     await login(page);
     await page.goto(`/account/${accountId1}/sold`);
-    await page.locator('dms-base-table').waitFor({ state: 'visible', timeout: 15000 });
+    await page
+      .locator('dms-base-table')
+      .waitFor({ state: 'visible', timeout: 15000 });
     await page.waitForSelector(ROW_SELECTOR, { timeout: 15000 });
   });
 
@@ -373,7 +389,9 @@ test.describe('Sold Positions — filter-change (symbol) sticky-header regressio
   test.beforeEach(async ({ page }) => {
     await login(page);
     await page.goto(`/account/${accountId}/sold`);
-    await page.locator('dms-base-table').waitFor({ state: 'visible', timeout: 15000 });
+    await page
+      .locator('dms-base-table')
+      .waitFor({ state: 'visible', timeout: 15000 });
     await page.waitForSelector(ROW_SELECTOR, { timeout: 15000 });
   });
 
@@ -422,7 +440,9 @@ test.describe('Dividend Deposits — account-change sticky-header regression', (
   test.beforeEach(async ({ page }) => {
     await login(page);
     await page.goto(`/account/${accountId1}/div-dep`);
-    await page.locator('dms-base-table').waitFor({ state: 'visible', timeout: 15000 });
+    await page
+      .locator('dms-base-table')
+      .waitFor({ state: 'visible', timeout: 15000 });
     await page.waitForSelector(ROW_SELECTOR, { timeout: 15000 });
   });
 
@@ -459,7 +479,9 @@ test.describe('Screener — filter-change (risk group) sticky-header regression'
   test.beforeEach(async ({ page }) => {
     await login(page);
     await page.goto('/global/screener');
-    await page.locator('dms-base-table').waitFor({ state: 'visible', timeout: 15000 });
+    await page
+      .locator('dms-base-table')
+      .waitFor({ state: 'visible', timeout: 15000 });
     await page.waitForSelector(ROW_SELECTOR, { timeout: 15000 });
   });
 
