@@ -1,0 +1,20 @@
+epic_num: 106
+story_num: 1
+story_id: '106.1'
+story_key: 106-1-reproduce-scrolling-all-screens
+slug: 106-1-reproduce-scrolling-all-screens
+title: Reproduce Janky Scrolling After Account/Filter Change Across All Screens
+epic_title: Janky Scrolling After Account/Filter Change (Round 9)
+type: investigation
+status: Approved
+source_epics_file: _bmad-output/planning-artifacts/epics-2026-05-19.md
+source_section: 'Story 106.1'
+covers_requirements: []
+depends_on_stories: []
+enables_stories: ['106.2', '106.3']
+expected_story_file: _bmad-output/implementation-artifacts/106-1-reproduce-scrolling-all-screens.md
+notes: |
+  Round 9 reproduction. Build a screen × browser × trigger (account-change |
+  filter-change) × artifact matrix via Playwright MCP. Summarise prior epics
+  29, 31, 44, 60, 64, 87, 101, 105 and especially what Story 105.2 actually
+  changed. Enumerate live root-cause candidates for 106.2.

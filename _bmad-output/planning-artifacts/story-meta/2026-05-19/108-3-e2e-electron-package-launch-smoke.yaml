@@ -1,0 +1,19 @@
+epic_num: 108
+story_num: 3
+story_id: '108.3'
+story_key: 108-3-e2e-electron-package-launch-smoke
+slug: 108-3-e2e-electron-package-launch-smoke
+title: E2E Test Cross-Platform Installation and Migration
+epic_title: Fix Linux Installation and AppImage Migration Failure
+type: test
+status: Approved
+source_epics_file: _bmad-output/planning-artifacts/epics-2026-05-19.md
+source_section: 'Story 108.3'
+covers_requirements: ['R7', 'R8', 'R9']
+depends_on_stories: ['108.2']
+enables_stories: []
+expected_story_file: _bmad-output/implementation-artifacts/108-3-e2e-electron-package-launch-smoke.md
+notes: |
+  Packaged-launch smoke test per platform (Linux AppImage, macOS DMG,
+  Windows EXE). Asserts process starts, migrations complete without the
+  missingField error, DB schema correct, main window renders.
