@@ -59,13 +59,11 @@
 
 import { type Page, test } from 'playwright/test';
 
+import { applyAndClearColumnFilter } from './helpers/apply-and-clear-column-filter.helper';
+import { applyAndClearGlobalFilter } from './helpers/apply-and-clear-global-filter.helper';
 import { assertStickyHeaderInvariant } from './helpers/assert-sticky-header-invariant.helper';
-import {
-  applyAndClearColumnFilter,
-  applyAndClearGlobalFilter,
-  swapActiveAccountViaNavigation,
-  swapUniverseAccount,
-} from './helpers/context-change.helper';
+import { swapActiveAccountViaNavigation } from './helpers/swap-active-account-via-navigation.helper';
+import { swapUniverseAccount } from './helpers/swap-universe-account.helper';
 import { login } from './helpers/login.helper';
 import { seedScrollDivDepositsWithSymbolsData } from './helpers/seed-scroll-div-deposits-with-symbols-data.helper';
 import { seedScrollOpenPositionsData } from './helpers/seed-scroll-open-positions-data.helper';

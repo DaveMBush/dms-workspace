@@ -3156,8 +3156,8 @@
     "hash": "98e0598a9da9cc2948b69af7ba6b7fc8"
   },
   "/home/copilot/code/dms/story-105-3/apps/dms-material-e2e/src/accessibility.spec.ts": {
-    "mtime": 1779149314.5674343,
-    "hash": "c9fec8952f9b4aa4ccc7a01afa06e477"
+    "mtime": 1779182850.9977005,
+    "hash": "2a50963371b31cfa2ef52fa653578b1e"
   },
   "/home/copilot/code/dms/story-105-3/apps/dms-material-e2e/src/risk-groups.spec.ts": {
     "mtime": 1779149314.5854347,
@@ -3188,8 +3188,8 @@
     "hash": "0a1c81bf8fea07af4a8f02039647579a"
   },
   "/home/copilot/code/dms/story-105-3/apps/dms-material-e2e/src/scrolling-regression-105.spec.ts": {
-    "mtime": 1779149314.5864346,
-    "hash": "2152d2b3c17e442b354678b4c9c69804"
+    "mtime": 1779182851.1968384,
+    "hash": "e04fc9c504d41348d83d0ee91c7dc5d2"
   },
   "/home/copilot/code/dms/story-105-3/apps/dms-material-e2e/src/universe-update.spec.ts": {
     "mtime": 1779149314.6194353,
@@ -3336,8 +3336,8 @@
     "hash": "13c895cbaea10245818a2f3bc803dea7"
   },
   "/home/copilot/code/dms/story-105-3/apps/dms-material-e2e/src/helpers/assert-sticky-header-invariant.helper.ts": {
-    "mtime": 1779149314.5734346,
-    "hash": "27ad281aba4fc8170ab0dc96b92439c6"
+    "mtime": 1779182851.0587013,
+    "hash": "2798a07f6ea3b6c0692eaf8158a8e67c"
   },
   "/home/copilot/code/dms/story-105-3/apps/dms-material-e2e/src/helpers/get-or-create-risk-group-id.helper.ts": {
     "mtime": 1779149314.5754344,
@@ -3379,6 +3379,10 @@
     "mtime": 1779149314.5804346,
     "hash": "42b600cac6400ef47cb519ccbe1c4786"
   },
+  "/home/copilot/code/dms/story-105-3/apps/dms-material-e2e/src/helpers/context-change.helper.ts": {
+    "mtime": 1779182851.0877018,
+    "hash": "7a9735b14303e3c642c59db39551bf5e"
+  },
   "/home/copilot/code/dms/story-105-3/apps/dms-material-e2e/src/helpers/shared-risk-groups.helper.ts": {
     "mtime": 1779149314.5814347,
     "hash": "af8c615ce26d8fdf40dbc1376b7eaa8f"
@@ -3388,8 +3392,8 @@
     "hash": "2150b19f79593ed458374f9ebaf684a3"
   },
   "/home/copilot/code/dms/story-105-3/apps/dms-material-e2e/src/helpers/slow-scroll.helper.ts": {
-    "mtime": 1779149314.5824347,
-    "hash": "86a92d338eee68df0223f807819ae38b"
+    "mtime": 1779182851.1138632,
+    "hash": "cb939bb8c6efca0c2f2c90e7d5ec93ab"
   },
   "/home/copilot/code/dms/story-105-3/apps/dms-material-e2e/src/helpers/create-test-dates.helper.ts": {
     "mtime": 1779149314.5754344,
