@@ -6,7 +6,7 @@
  * This file performs Tasks 2–6 of Story 106.1 live-browser investigation.
  *
  * CONSTRAINTS:
- *  - test.fixme() wraps all tests so pnpm all stays green (per AC5/AC6)
+ *  - test.skip() wraps all tests so pnpm all stays green (per AC5/AC6)
  *  - The sweep records findings to console; Dev Agent post-processes into story file
  *  - Uses the same helpers as Round-8 (scrolling-regression-105.spec.ts)
  *  - Seeds data on beforeAll; cleans up on afterAll
@@ -22,7 +22,6 @@
  *       --config=apps/dms-material-e2e/playwright.config.ts --project=chromium --reporter=list
  */
 
-/* eslint-disable no-console */
 import { expect, type Page, test } from 'playwright/test';
 
 import { login } from './helpers/login.helper';
@@ -126,8 +125,12 @@ async function softScrollPass(
   let driftViolations = 0;
   let overlapViolations = 0;
   for (const f of frames) {
-    if (f.headerTop > f.viewportTop + 1) driftViolations++;
-    if (f.headerTop < f.parentBottom - 1) overlapViolations++;
+    if (f.headerTop > f.viewportTop + 1) {
+      driftViolations++;
+    }
+    if (f.headerTop < f.parentBottom - 1) {
+      overlapViolations++;
+    }
   }
 
   const pass = driftViolations === 0 && overlapViolations === 0;
@@ -153,7 +156,9 @@ async function navigateAndWaitForTable(page: Page, url: string): Promise<void> {
 async function resetScrollToTop(page: Page): Promise<void> {
   await page.evaluate(function scrollTop(sel: string) {
     const el = document.querySelector<HTMLElement>(sel);
-    if (el) el.scrollTop = 0;
+    if (el) {
+      el.scrollTop = 0;
+    }
   }, VIEWPORT_SELECTOR);
   await page.waitForTimeout(500);
 }
@@ -486,7 +491,7 @@ test.describe.skip(
         .locator(`${VIEWPORT_SELECTOR} thead input[placeholder]`)
         .first();
       await soldFilterInput.click();
-      await soldFilterInput.type('USCRL', { delay: 30 });
+      await soldFilterInput.fill('USCRL');
       await page.waitForTimeout(1500);
       await soldFilterInput.clear();
       await page.waitForTimeout(1500);
