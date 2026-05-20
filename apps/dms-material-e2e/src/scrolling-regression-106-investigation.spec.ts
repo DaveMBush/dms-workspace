@@ -86,8 +86,7 @@ async function softScrollPass(
           parentBottom: number;
           viewportTop: number;
         }> = [];
-        const container =
-          document.querySelector<HTMLElement>(containerSel)!;
+        const container = document.querySelector<HTMLElement>(containerSel)!;
         const header = document.querySelector<HTMLElement>(headerSel)!;
         const parent = document.querySelector<HTMLElement>(parentSel)!;
 
@@ -133,7 +132,11 @@ async function softScrollPass(
 
   const pass = driftViolations === 0 && overlapViolations === 0;
   console.log(
-    `  [${label}] frames=${frames.length} drift=${driftViolations} overlap=${overlapViolations} → ${pass ? 'PASS' : 'FAIL'}`
+    `  [${label}] frames=${
+      frames.length
+    } drift=${driftViolations} overlap=${overlapViolations} → ${
+      pass ? 'PASS' : 'FAIL'
+    }`
   );
   return { pass, driftViolations, overlapViolations, frames: frames.length };
 }
@@ -158,120 +161,127 @@ async function resetScrollToTop(page: Page): Promise<void> {
 /** Capture live-DOM evidence for contextId mechanism */
 async function captureDomEvidence(
   page: Page
-): Promise<{ containValue: string; overflowY: string; headerTop: number; viewportTop: number }> {
-  return page.evaluate(function getEvidence(arg: {
-    vpSel: string;
-    hSel: string;
-  }) {
-    const vp = document.querySelector<HTMLElement>(arg.vpSel);
-    const h = document.querySelector<HTMLElement>(arg.hSel);
-    if (!vp || !h) {
+): Promise<{
+  containValue: string;
+  overflowY: string;
+  headerTop: number;
+  viewportTop: number;
+}> {
+  return page.evaluate(
+    function getEvidence(arg: { vpSel: string; hSel: string }) {
+      const vp = document.querySelector<HTMLElement>(arg.vpSel);
+      const h = document.querySelector<HTMLElement>(arg.hSel);
+      if (!vp || !h) {
+        return {
+          containValue: 'NOT_FOUND',
+          overflowY: 'NOT_FOUND',
+          headerTop: -999,
+          viewportTop: -999,
+        };
+      }
+      const cs = getComputedStyle(vp);
       return {
-        containValue: 'NOT_FOUND',
-        overflowY: 'NOT_FOUND',
-        headerTop: -999,
-        viewportTop: -999,
+        containValue: cs.contain,
+        overflowY: cs.overflowY,
+        headerTop: h.getBoundingClientRect().top,
+        viewportTop: vp.getBoundingClientRect().top,
       };
-    }
-    const cs = getComputedStyle(vp);
-    return {
-      containValue: cs.contain,
-      overflowY: cs.overflowY,
-      headerTop: h.getBoundingClientRect().top,
-      viewportTop: vp.getBoundingClientRect().top,
-    };
-  }, { vpSel: VIEWPORT_SELECTOR, hSel: HEADER_SELECTOR });
+    },
+    { vpSel: VIEWPORT_SELECTOR, hSel: HEADER_SELECTOR }
+  );
 }
 
 // ─── Test Suite ────────────────────────────────────────────────────────────────
 
 // TODO(106.2): Remove skip wrapper when root-cause investigation begins.
 // All tests are skipped here per AC5/AC6 so pnpm all stays green.
-test.describe.skip('Round-9 Investigation: Context-change scrolling reproduction', () => {
-  // Seed data handles
-  let universeCleanup: () => Promise<void>;
-  let openPositionsCleanup1: () => Promise<void>;
-  let openPositionsCleanup2: () => Promise<void>;
-  let soldPositionsCleanup1: () => Promise<void>;
-  let soldPositionsCleanup2: () => Promise<void>;
-  let divDepositsCleanup1: () => Promise<void>;
-  let divDepositsCleanup2: () => Promise<void>;
-  let screenerCleanup: () => Promise<void>;
-  let openAccountId1 = '';
-  let openAccountId2 = '';
-  let soldAccountId1 = '';
-  let soldAccountId2 = '';
-  let divDepositsAccountId1 = '';
-  let divDepositsAccountId2 = '';
+test.describe.skip(
+  'Round-9 Investigation: Context-change scrolling reproduction',
+  () => {
+    // Seed data handles
+    let universeCleanup: () => Promise<void>;
+    let openPositionsCleanup1: () => Promise<void>;
+    let openPositionsCleanup2: () => Promise<void>;
+    let soldPositionsCleanup1: () => Promise<void>;
+    let soldPositionsCleanup2: () => Promise<void>;
+    let divDepositsCleanup1: () => Promise<void>;
+    let divDepositsCleanup2: () => Promise<void>;
+    let screenerCleanup: () => Promise<void>;
+    let openAccountId1 = '';
+    let openAccountId2 = '';
+    let soldAccountId1 = '';
+    let soldAccountId2 = '';
+    let divDepositsAccountId1 = '';
+    let divDepositsAccountId2 = '';
 
-  test.beforeAll(async () => {
-    // Seed universe data (needed for universe screen + screener)
-    const universeSeeder = await seedScrollUniverseData();
-    universeCleanup = universeSeeder.cleanup;
+    test.beforeAll(async () => {
+      // Seed universe data (needed for universe screen + screener)
+      const universeSeeder = await seedScrollUniverseData();
+      universeCleanup = universeSeeder.cleanup;
 
-    // Seed TWO open positions accounts for account-swap test
-    const op1 = await seedScrollOpenPositionsData();
-    openAccountId1 = op1.accountId;
-    openPositionsCleanup1 = op1.cleanup;
+      // Seed TWO open positions accounts for account-swap test
+      const op1 = await seedScrollOpenPositionsData();
+      openAccountId1 = op1.accountId;
+      openPositionsCleanup1 = op1.cleanup;
 
-    const op2 = await seedScrollOpenPositionsData();
-    openAccountId2 = op2.accountId;
-    openPositionsCleanup2 = op2.cleanup;
+      const op2 = await seedScrollOpenPositionsData();
+      openAccountId2 = op2.accountId;
+      openPositionsCleanup2 = op2.cleanup;
 
-    // Seed TWO sold positions accounts for account-swap test
-    const sold1 = await seedScrollSoldPositionsData();
-    soldAccountId1 = sold1.accountId;
-    soldPositionsCleanup1 = sold1.cleanup;
+      // Seed TWO sold positions accounts for account-swap test
+      const sold1 = await seedScrollSoldPositionsData();
+      soldAccountId1 = sold1.accountId;
+      soldPositionsCleanup1 = sold1.cleanup;
 
-    const sold2 = await seedScrollSoldPositionsData();
-    soldAccountId2 = sold2.accountId;
-    soldPositionsCleanup2 = sold2.cleanup;
+      const sold2 = await seedScrollSoldPositionsData();
+      soldAccountId2 = sold2.accountId;
+      soldPositionsCleanup2 = sold2.cleanup;
 
-    // Seed TWO div deposit accounts for account-swap test
-    const div1 = await seedScrollDivDepositsWithSymbolsData();
-    divDepositsAccountId1 = div1.accountId;
-    divDepositsCleanup1 = div1.cleanup;
+      // Seed TWO div deposit accounts for account-swap test
+      const div1 = await seedScrollDivDepositsWithSymbolsData();
+      divDepositsAccountId1 = div1.accountId;
+      divDepositsCleanup1 = div1.cleanup;
 
-    const div2 = await seedScrollDivDepositsWithSymbolsData();
-    divDepositsAccountId2 = div2.accountId;
-    divDepositsCleanup2 = div2.cleanup;
+      const div2 = await seedScrollDivDepositsWithSymbolsData();
+      divDepositsAccountId2 = div2.accountId;
+      divDepositsCleanup2 = div2.cleanup;
 
-    // Seed screener (no accountId needed for screener screen)
-    const sc = await seedScrollScreenerData();
-    screenerCleanup = sc.cleanup;
+      // Seed screener (no accountId needed for screener screen)
+      const sc = await seedScrollScreenerData();
+      screenerCleanup = sc.cleanup;
 
-    console.log('Seeded data:');
-    console.log('  openAccountId1:', openAccountId1);
-    console.log('  openAccountId2:', openAccountId2);
-    console.log('  soldAccountId1:', soldAccountId1);
-    console.log('  soldAccountId2:', soldAccountId2);
-    console.log('  divDepositsAccountId1:', divDepositsAccountId1);
-    console.log('  divDepositsAccountId2:', divDepositsAccountId2);
-  });
+      console.log('Seeded data:');
+      console.log('  openAccountId1:', openAccountId1);
+      console.log('  openAccountId2:', openAccountId2);
+      console.log('  soldAccountId1:', soldAccountId1);
+      console.log('  soldAccountId2:', soldAccountId2);
+      console.log('  divDepositsAccountId1:', divDepositsAccountId1);
+      console.log('  divDepositsAccountId2:', divDepositsAccountId2);
+    });
 
-  test.afterAll(async () => {
-    const cleanups = [
-      universeCleanup,
-      openPositionsCleanup1,
-      openPositionsCleanup2,
-      soldPositionsCleanup1,
-      soldPositionsCleanup2,
-      divDepositsCleanup1,
-      divDepositsCleanup2,
-      screenerCleanup,
-    ];
-    for (const cleanup of cleanups) {
-      if (cleanup) {
-        await cleanup().catch(console.error);
+    test.afterAll(async () => {
+      const cleanups = [
+        universeCleanup,
+        openPositionsCleanup1,
+        openPositionsCleanup2,
+        soldPositionsCleanup1,
+        soldPositionsCleanup2,
+        divDepositsCleanup1,
+        divDepositsCleanup2,
+        screenerCleanup,
+      ];
+      for (const cleanup of cleanups) {
+        if (cleanup) {
+          await cleanup().catch(console.error);
+        }
       }
-    }
-  });
+    });
 
-  // ─── Task 2 + Task 3: Universe — baseline + account-change ─────────────────
+    // ─── Task 2 + Task 3: Universe — baseline + account-change ─────────────────
 
-  test(
-    'UNIVERSE: baseline clean + account-change reproduction',
-    async ({ page }) => {
+    test('UNIVERSE: baseline clean + account-change reproduction', async ({
+      page,
+    }) => {
       await login(page);
 
       // ── Pass 1: Baseline (fresh load) ──
@@ -314,17 +324,19 @@ test.describe.skip('Round-9 Investigation: Context-change scrolling reproduction
       console.log('Pass2 result:', JSON.stringify(pass2));
 
       // Record to console (will be scraped by dev agent)
-      console.log('MATRIX_CELL: Universe|Chromium|account-change|' +
-        (pass2.pass ? 'PASS' : 'FAIL') +
-        '|drift=' + pass2.driftViolations + ',overlap=' + pass2.overlapViolations);
-    }
-  );
+      console.log(
+        'MATRIX_CELL: Universe|Chromium|account-change|' +
+          (pass2.pass ? 'PASS' : 'FAIL') +
+          '|drift=' +
+          pass2.driftViolations +
+          ',overlap=' +
+          pass2.overlapViolations
+      );
+    });
 
-  // ─── Task 4: Universe — filter-change reproduction ─────────────────────────
+    // ─── Task 4: Universe — filter-change reproduction ─────────────────────────
 
-  test(
-    'UNIVERSE: filter-change reproduction',
-    async ({ page }) => {
+    test('UNIVERSE: filter-change reproduction', async ({ page }) => {
       await login(page);
 
       console.log('\n=== UNIVERSE: Pass 1 (baseline before filter) ===');
@@ -345,17 +357,21 @@ test.describe.skip('Round-9 Investigation: Context-change scrolling reproduction
       const pass2 = await softScrollPass(page, 'Universe-Pass2-post-filter');
       console.log('Pass2 result:', JSON.stringify(pass2));
 
-      console.log('MATRIX_CELL: Universe|Chromium|filter-change|' +
-        (pass2.pass ? 'PASS' : 'FAIL') +
-        '|drift=' + pass2.driftViolations + ',overlap=' + pass2.overlapViolations);
-    }
-  );
+      console.log(
+        'MATRIX_CELL: Universe|Chromium|filter-change|' +
+          (pass2.pass ? 'PASS' : 'FAIL') +
+          '|drift=' +
+          pass2.driftViolations +
+          ',overlap=' +
+          pass2.overlapViolations
+      );
+    });
 
-  // ─── Task 3: Open Positions — account-change reproduction ──────────────────
+    // ─── Task 3: Open Positions — account-change reproduction ──────────────────
 
-  test(
-    'OPEN POSITIONS: baseline clean + account-change reproduction',
-    async ({ page }) => {
+    test('OPEN POSITIONS: baseline clean + account-change reproduction', async ({
+      page,
+    }) => {
       await login(page);
 
       console.log('\n=== OPEN POSITIONS: Pass 1 (baseline) ===');
@@ -376,17 +392,19 @@ test.describe.skip('Round-9 Investigation: Context-change scrolling reproduction
       const pass2 = await softScrollPass(page, 'OpenPos-Pass2-post-acct');
       console.log('Pass2 result:', JSON.stringify(pass2));
 
-      console.log('MATRIX_CELL: OpenPositions|Chromium|account-change|' +
-        (pass2.pass ? 'PASS' : 'FAIL') +
-        '|drift=' + pass2.driftViolations + ',overlap=' + pass2.overlapViolations);
-    }
-  );
+      console.log(
+        'MATRIX_CELL: OpenPositions|Chromium|account-change|' +
+          (pass2.pass ? 'PASS' : 'FAIL') +
+          '|drift=' +
+          pass2.driftViolations +
+          ',overlap=' +
+          pass2.overlapViolations
+      );
+    });
 
-  // ─── Task 4: Open Positions — filter-change reproduction ───────────────────
+    // ─── Task 4: Open Positions — filter-change reproduction ───────────────────
 
-  test(
-    'OPEN POSITIONS: filter-change reproduction',
-    async ({ page }) => {
+    test('OPEN POSITIONS: filter-change reproduction', async ({ page }) => {
       await login(page);
 
       console.log('\n=== OPEN POSITIONS: Pass 1 (baseline before filter) ===');
@@ -406,17 +424,21 @@ test.describe.skip('Round-9 Investigation: Context-change scrolling reproduction
       const pass2 = await softScrollPass(page, 'OpenPos-Pass2-post-filter');
       console.log('Pass2 result:', JSON.stringify(pass2));
 
-      console.log('MATRIX_CELL: OpenPositions|Chromium|filter-change|' +
-        (pass2.pass ? 'PASS' : 'FAIL') +
-        '|drift=' + pass2.driftViolations + ',overlap=' + pass2.overlapViolations);
-    }
-  );
+      console.log(
+        'MATRIX_CELL: OpenPositions|Chromium|filter-change|' +
+          (pass2.pass ? 'PASS' : 'FAIL') +
+          '|drift=' +
+          pass2.driftViolations +
+          ',overlap=' +
+          pass2.overlapViolations
+      );
+    });
 
-  // ─── Task 3: Sold Positions — account-change reproduction ──────────────────
+    // ─── Task 3: Sold Positions — account-change reproduction ──────────────────
 
-  test(
-    'SOLD POSITIONS: baseline clean + account-change reproduction',
-    async ({ page }) => {
+    test('SOLD POSITIONS: baseline clean + account-change reproduction', async ({
+      page,
+    }) => {
       await login(page);
 
       console.log('\n=== SOLD POSITIONS: Pass 1 (baseline) ===');
@@ -436,17 +458,19 @@ test.describe.skip('Round-9 Investigation: Context-change scrolling reproduction
       const pass2 = await softScrollPass(page, 'SoldPos-Pass2-post-acct');
       console.log('Pass2 result:', JSON.stringify(pass2));
 
-      console.log('MATRIX_CELL: SoldPositions|Chromium|account-change|' +
-        (pass2.pass ? 'PASS' : 'FAIL') +
-        '|drift=' + pass2.driftViolations + ',overlap=' + pass2.overlapViolations);
-    }
-  );
+      console.log(
+        'MATRIX_CELL: SoldPositions|Chromium|account-change|' +
+          (pass2.pass ? 'PASS' : 'FAIL') +
+          '|drift=' +
+          pass2.driftViolations +
+          ',overlap=' +
+          pass2.overlapViolations
+      );
+    });
 
-  // ─── Task 4: Sold Positions — filter-change reproduction ───────────────────
+    // ─── Task 4: Sold Positions — filter-change reproduction ───────────────────
 
-  test(
-    'SOLD POSITIONS: filter-change reproduction',
-    async ({ page }) => {
+    test('SOLD POSITIONS: filter-change reproduction', async ({ page }) => {
       await login(page);
 
       console.log('\n=== SOLD POSITIONS: Pass 1 (baseline before filter) ===');
@@ -455,10 +479,14 @@ test.describe.skip('Round-9 Investigation: Context-change scrolling reproduction
       console.log('Pass1 result:', JSON.stringify(pass1));
 
       await resetScrollToTop(page);
-      console.log('\n=== SOLD POSITIONS: Apply + clear column filter (inline) ===');
+      console.log(
+        '\n=== SOLD POSITIONS: Apply + clear column filter (inline) ==='
+      );
       // Use inline approach: applyAndClearColumnFilter waits for tr.mat-mdc-row but
       // sold positions filter may not trigger row visibility change reliably in all envs.
-      const soldFilterInput = page.locator(`${VIEWPORT_SELECTOR} thead input[placeholder]`).first();
+      const soldFilterInput = page
+        .locator(`${VIEWPORT_SELECTOR} thead input[placeholder]`)
+        .first();
       await soldFilterInput.click();
       await soldFilterInput.type('USCRL', { delay: 30 });
       await page.waitForTimeout(1500);
@@ -469,17 +497,21 @@ test.describe.skip('Round-9 Investigation: Context-change scrolling reproduction
       const pass2 = await softScrollPass(page, 'SoldPos-Pass2-post-filter');
       console.log('Pass2 result:', JSON.stringify(pass2));
 
-      console.log('MATRIX_CELL: SoldPositions|Chromium|filter-change|' +
-        (pass2.pass ? 'PASS' : 'FAIL') +
-        '|drift=' + pass2.driftViolations + ',overlap=' + pass2.overlapViolations);
-    }
-  );
+      console.log(
+        'MATRIX_CELL: SoldPositions|Chromium|filter-change|' +
+          (pass2.pass ? 'PASS' : 'FAIL') +
+          '|drift=' +
+          pass2.driftViolations +
+          ',overlap=' +
+          pass2.overlapViolations
+      );
+    });
 
-  // ─── Task 3: Dividend Deposits — account-change reproduction ───────────────
+    // ─── Task 3: Dividend Deposits — account-change reproduction ───────────────
 
-  test(
-    'DIVIDEND DEPOSITS: baseline clean + account-change reproduction',
-    async ({ page }) => {
+    test('DIVIDEND DEPOSITS: baseline clean + account-change reproduction', async ({
+      page,
+    }) => {
       await login(page);
 
       console.log('\n=== DIV DEPOSITS: Pass 1 (baseline) ===');
@@ -502,19 +534,23 @@ test.describe.skip('Round-9 Investigation: Context-change scrolling reproduction
       const pass2 = await softScrollPass(page, 'DivDep-Pass2-post-acct');
       console.log('Pass2 result:', JSON.stringify(pass2));
 
-      console.log('MATRIX_CELL: DivDeposits|Chromium|account-change|' +
-        (pass2.pass ? 'PASS' : 'FAIL') +
-        '|drift=' + pass2.driftViolations + ',overlap=' + pass2.overlapViolations);
-    }
-  );
+      console.log(
+        'MATRIX_CELL: DivDeposits|Chromium|account-change|' +
+          (pass2.pass ? 'PASS' : 'FAIL') +
+          '|drift=' +
+          pass2.driftViolations +
+          ',overlap=' +
+          pass2.overlapViolations
+      );
+    });
 
-  // ─── Task 3: Screener — account-change reproduction ────────────────────────
-  // NOTE: Screener uses universe account selector, not route-based account swap.
-  // After seeding universe data, there should be accounts in the selector.
+    // ─── Task 3: Screener — account-change reproduction ────────────────────────
+    // NOTE: Screener uses universe account selector, not route-based account swap.
+    // After seeding universe data, there should be accounts in the selector.
 
-  test(
-    'SCREENER: baseline clean + account-change reproduction',
-    async ({ page }) => {
+    test('SCREENER: baseline clean + account-change reproduction', async ({
+      page,
+    }) => {
       await login(page);
 
       console.log('\n=== SCREENER: Pass 1 (baseline) ===');
@@ -523,7 +559,9 @@ test.describe.skip('Round-9 Investigation: Context-change scrolling reproduction
       console.log('Pass1 result:', JSON.stringify(pass1));
 
       await resetScrollToTop(page);
-      console.log('\n=== SCREENER: Account change (via navigation away + back) ===');
+      console.log(
+        '\n=== SCREENER: Account change (via navigation away + back) ==='
+      );
       // Screener has no account selector; navigate away and back to trigger contextId change.
       await page.goto('/global/universe');
       await page.waitForSelector(VIEWPORT_SELECTOR, { timeout: 10000 });
@@ -535,17 +573,19 @@ test.describe.skip('Round-9 Investigation: Context-change scrolling reproduction
       const pass2 = await softScrollPass(page, 'Screener-Pass2-post-acct');
       console.log('Pass2 result:', JSON.stringify(pass2));
 
-      console.log('MATRIX_CELL: Screener|Chromium|account-change|' +
-        (pass2.pass ? 'PASS' : 'FAIL') +
-        '|drift=' + pass2.driftViolations + ',overlap=' + pass2.overlapViolations);
-    }
-  );
+      console.log(
+        'MATRIX_CELL: Screener|Chromium|account-change|' +
+          (pass2.pass ? 'PASS' : 'FAIL') +
+          '|drift=' +
+          pass2.driftViolations +
+          ',overlap=' +
+          pass2.overlapViolations
+      );
+    });
 
-  // ─── Task 4: Screener — filter-change reproduction ─────────────────────────
+    // ─── Task 4: Screener — filter-change reproduction ─────────────────────────
 
-  test(
-    'SCREENER: filter-change reproduction',
-    async ({ page }) => {
+    test('SCREENER: filter-change reproduction', async ({ page }) => {
       await login(page);
 
       console.log('\n=== SCREENER: Pass 1 (baseline before filter) ===');
@@ -567,26 +607,33 @@ test.describe.skip('Round-9 Investigation: Context-change scrolling reproduction
       const pass2 = await softScrollPass(page, 'Screener-Pass2-post-filter');
       console.log('Pass2 result:', JSON.stringify(pass2));
 
-      console.log('MATRIX_CELL: Screener|Chromium|filter-change|' +
-        (pass2.pass ? 'PASS' : 'FAIL') +
-        '|drift=' + pass2.driftViolations + ',overlap=' + pass2.overlapViolations);
-    }
-  );
+      console.log(
+        'MATRIX_CELL: Screener|Chromium|filter-change|' +
+          (pass2.pass ? 'PASS' : 'FAIL') +
+          '|drift=' +
+          pass2.driftViolations +
+          ',overlap=' +
+          pass2.overlapViolations
+      );
+    });
 
-  // ─── Task 6: Live-DOM Evidence capture for ALL screens ─────────────────────
-  // Captures CSS contain/overflow-y values and header bounding rect to document
-  // whether Round-9 candidates are observable in the live DOM.
+    // ─── Task 6: Live-DOM Evidence capture for ALL screens ─────────────────────
+    // Captures CSS contain/overflow-y values and header bounding rect to document
+    // whether Round-9 candidates are observable in the live DOM.
 
-  test(
-    'LIVE-DOM EVIDENCE: CSS guards and header position on all screens',
-    async ({ page }) => {
+    test('LIVE-DOM EVIDENCE: CSS guards and header position on all screens', async ({
+      page,
+    }) => {
       await login(page);
 
       const screens: Array<{ name: string; url: string }> = [
         { name: 'Universe', url: '/global/universe' },
         { name: 'OpenPositions', url: `/account/${openAccountId1}/open` },
         { name: 'SoldPositions', url: `/account/${soldAccountId1}/sold` },
-        { name: 'DivDeposits', url: `/account/${divDepositsAccountId1}/div-dep` },
+        {
+          name: 'DivDeposits',
+          url: `/account/${divDepositsAccountId1}/div-dep`,
+        },
         { name: 'Screener', url: '/global/screener' },
       ];
 
@@ -597,19 +644,39 @@ test.describe.skip('Round-9 Investigation: Context-change scrolling reproduction
         const evidence = await captureDomEvidence(page);
         console.log(`  contain: "${evidence.containValue}"`);
         console.log(`  overflow-y: "${evidence.overflowY}"`);
-        console.log(`  headerTop: ${evidence.headerTop}, viewportTop: ${evidence.viewportTop}`);
-        console.log(`  drift on load: ${Math.max(0, evidence.headerTop - evidence.viewportTop - 1).toFixed(1)}px`);
+        console.log(
+          `  headerTop: ${evidence.headerTop}, viewportTop: ${evidence.viewportTop}`
+        );
+        console.log(
+          `  drift on load: ${Math.max(
+            0,
+            evidence.headerTop - evidence.viewportTop - 1
+          ).toFixed(1)}px`
+        );
 
         // Check if contain includes layout/paint (Candidate 4)
-        const containHasLayoutOrPaint = /layout|paint/.test(evidence.containValue);
-        console.log(`  CANDIDATE_4 (contain includes layout/paint): ${containHasLayoutOrPaint}`);
+        const containHasLayoutOrPaint = /layout|paint/.test(
+          evidence.containValue
+        );
+        console.log(
+          `  CANDIDATE_4 (contain includes layout/paint): ${containHasLayoutOrPaint}`
+        );
 
         // Check overflow-y (Candidate 5)
-        const overflowOk = evidence.overflowY === 'auto' || evidence.overflowY === 'scroll';
+        const overflowOk =
+          evidence.overflowY === 'auto' || evidence.overflowY === 'scroll';
         console.log(`  CANDIDATE_5 (overflow-y is auto/scroll): ${overflowOk}`);
 
-        console.log(`DOM_EVIDENCE: ${screen.name}|contain=${evidence.containValue}|overflow-y=${evidence.overflowY}|headerTop=${evidence.headerTop.toFixed(1)}|viewportTop=${evidence.viewportTop.toFixed(1)}`);
+        console.log(
+          `DOM_EVIDENCE: ${screen.name}|contain=${
+            evidence.containValue
+          }|overflow-y=${
+            evidence.overflowY
+          }|headerTop=${evidence.headerTop.toFixed(
+            1
+          )}|viewportTop=${evidence.viewportTop.toFixed(1)}`
+        );
       }
-    }
-  );
-});
+    });
+  }
+);
