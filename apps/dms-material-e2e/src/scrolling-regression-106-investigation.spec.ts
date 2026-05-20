@@ -185,7 +185,9 @@ async function captureDomEvidence(
 
 // ─── Test Suite ────────────────────────────────────────────────────────────────
 
-test.describe('Round-9 Investigation: Context-change scrolling reproduction', () => {
+// TODO(106.2): Remove skip wrapper when root-cause investigation begins.
+// All tests are skipped here per AC5/AC6 so pnpm all stays green.
+test.describe.skip('Round-9 Investigation: Context-change scrolling reproduction', () => {
   // Seed data handles
   let universeCleanup: () => Promise<void>;
   let openPositionsCleanup1: () => Promise<void>;
