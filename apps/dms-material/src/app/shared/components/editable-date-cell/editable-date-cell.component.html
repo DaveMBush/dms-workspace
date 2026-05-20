@@ -22,7 +22,6 @@
   [attr.data-testid]="testId"
   role="button"
   tabindex="0"
-  [attr.aria-label]="value ? 'Edit date: ' + (value | date : dateFormat) : 'Set date'"
   (click)="startEdit()"
   (keydown.enter)="startEdit()"
   (keydown.space)="startEdit()"
