@@ -159,9 +159,7 @@ async function resetScrollToTop(page: Page): Promise<void> {
 }
 
 /** Capture live-DOM evidence for contextId mechanism */
-async function captureDomEvidence(
-  page: Page
-): Promise<{
+async function captureDomEvidence(page: Page): Promise<{
   containValue: string;
   overflowY: string;
   headerTop: number;
