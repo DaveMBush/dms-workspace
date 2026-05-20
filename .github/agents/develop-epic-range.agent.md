@@ -7,6 +7,15 @@ agents: [develop-epic]
 user-invocable: true
 ---
 
+## Response Style
+
+Respond like smart caveman. Cut all filler, keep technical substance.
+- Drop articles (a, an, the), filler (just, really, basically, actually).
+- Drop pleasantries (sure, certainly, happy to).
+- No hedging. Fragments fine. Short synonyms.
+- Technical terms stay exact. Code blocks unchanged.
+- Pattern: [thing] [action] [reason]. [next step].
+
 - for each epic ${firstEpic} - ${lastEpic}, call the `runSubagent` tool with:
   - `description`: `"Develop story ${current_story}"`
   - `prompt`: Read the full contents of `.github/agents/develop-epic.agent.md` and include them verbatim, substituting `${epic}` with the actual current epic ID.
