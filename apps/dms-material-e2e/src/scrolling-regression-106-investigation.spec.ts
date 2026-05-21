@@ -6,7 +6,9 @@
  * This file performs Tasks 2–6 of Story 106.1 live-browser investigation.
  *
  * CONSTRAINTS:
- *  - test.skip() wraps all tests so pnpm all stays green (per AC5/AC6)
+ *  - test.describe.skip() wraps all tests so pnpm all stays green (per AC5/AC6)
+ *  - Story 106.2: Firefox sweep complete; skip wrapper restored. Story 106.3 creates
+ *    the permanent regression suite.
  *  - The sweep records findings to console; Dev Agent post-processes into story file
  *  - Uses the same helpers as Round-8 (scrolling-regression-105.spec.ts)
  *  - Seeds data on beforeAll; cleans up on afterAll
@@ -196,8 +198,10 @@ async function captureDomEvidence(page: Page): Promise<{
 
 // ─── Test Suite ────────────────────────────────────────────────────────────────
 
-// TODO(106.2): Remove skip wrapper when root-cause investigation begins.
-// All tests are skipped here per AC5/AC6 so pnpm all stays green.
+// Story 106.2: Firefox sweep complete — all 5 screens × account-change + filter-change
+// returned drift=0, overlap=0 on both Chromium and Firefox. Investigation done.
+// Skip wrapper restored to keep pnpm all green (investigation is a one-shot tool, not
+// a persistent regression suite — Story 106.3 creates the permanent regression spec).
 test.describe.skip(
   'Round-9 Investigation: Context-change scrolling reproduction',
   () => {

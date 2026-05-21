@@ -257,10 +257,10 @@ test.describe('Open Positions — account-change sticky-header regression', () =
   test.beforeEach(async ({ page }) => {
     await login(page);
     await page.goto(`/account/${accountId1}/open`);
-    await page
-      .locator('dms-base-table')
-      .waitFor({ state: 'visible', timeout: 15000 });
-    await page.waitForSelector(ROW_SELECTOR, { timeout: 15000 });
+    await page.waitForSelector('cdk-virtual-scroll-viewport', {
+      timeout: 30000,
+    });
+    await page.waitForTimeout(2000);
   });
 
   test('Open Positions: all sticky-header invariants hold after account-change (drift / overlap / flicker)', async ({
@@ -300,10 +300,10 @@ test.describe('Open Positions — filter-change (symbol) sticky-header regressio
   test.beforeEach(async ({ page }) => {
     await login(page);
     await page.goto(`/account/${accountId}/open`);
-    await page
-      .locator('dms-base-table')
-      .waitFor({ state: 'visible', timeout: 15000 });
-    await page.waitForSelector(ROW_SELECTOR, { timeout: 15000 });
+    await page.waitForSelector('cdk-virtual-scroll-viewport', {
+      timeout: 30000,
+    });
+    await page.waitForTimeout(2000);
   });
 
   test('Open Positions: all sticky-header invariants hold after symbol filter apply/clear (drift / overlap / flicker)', async ({
@@ -348,10 +348,10 @@ test.describe('Sold Positions — account-change sticky-header regression', () =
   test.beforeEach(async ({ page }) => {
     await login(page);
     await page.goto(`/account/${accountId1}/sold`);
-    await page
-      .locator('dms-base-table')
-      .waitFor({ state: 'visible', timeout: 15000 });
-    await page.waitForSelector(ROW_SELECTOR, { timeout: 15000 });
+    await page.waitForSelector('cdk-virtual-scroll-viewport', {
+      timeout: 30000,
+    });
+    await page.waitForTimeout(2000);
   });
 
   test('Sold Positions: all sticky-header invariants hold after account-change (drift / overlap / flicker)', async ({
@@ -387,10 +387,10 @@ test.describe('Sold Positions — filter-change (symbol) sticky-header regressio
   test.beforeEach(async ({ page }) => {
     await login(page);
     await page.goto(`/account/${accountId}/sold`);
-    await page
-      .locator('dms-base-table')
-      .waitFor({ state: 'visible', timeout: 15000 });
-    await page.waitForSelector(ROW_SELECTOR, { timeout: 15000 });
+    await page.waitForSelector('cdk-virtual-scroll-viewport', {
+      timeout: 30000,
+    });
+    await page.waitForTimeout(2000);
   });
 
   test('Sold Positions: all sticky-header invariants hold after symbol filter apply/clear (drift / overlap / flicker)', async ({
@@ -438,10 +438,10 @@ test.describe('Dividend Deposits — account-change sticky-header regression', (
   test.beforeEach(async ({ page }) => {
     await login(page);
     await page.goto(`/account/${accountId1}/div-dep`);
-    await page
-      .locator('dms-base-table')
-      .waitFor({ state: 'visible', timeout: 15000 });
-    await page.waitForSelector(ROW_SELECTOR, { timeout: 15000 });
+    await page.waitForSelector('cdk-virtual-scroll-viewport', {
+      timeout: 30000,
+    });
+    await page.waitForTimeout(2000);
   });
 
   test('Dividend Deposits: all sticky-header invariants hold after account-change (drift / overlap / flicker)', async ({

@@ -71,6 +71,20 @@ import { ColumnDef } from './column-def.interface';
  *   calls scrollToIndex(0) on key change — resetting viewport scroll position to the top
  *   for clean UX after a context switch. See SCROLLING REGRESSION HISTORY in
  *   base-table.component.scss for the CSS-side constraints.
+ * Epic 106: Round-9 investigation (Story 106.1) swept all 5 CDK virtual-scroll screens
+ *   × Chromium × account-change + filter-change triggers with the Round-8 contextId /
+ *   scrollToIndex(0) mechanism in place. Result: 0 FAIL cells — drift=0, overlap=0 for
+ *   every screen × trigger. All 6 root-cause candidates (C1: CDK _renderedRange stale
+ *   after data-source swap; C2: sticky containing-block re-created by structural
+ *   directive; C3: row-identity churn from stale SmartNgRX UUIDs; C4: conditional
+ *   ancestor transform/will-change/contain during loading state; C5: contextKey$
+ *   formula missing a trigger signal; C6: isLoading→null array shrink) are ELIMINATED
+ *   by the Chromium evidence plus live-DOM baseline (headerTop == viewportTop on all
+ *   5 screens, no anomalous ancestor CSS properties detected). Firefox sweep (Story
+ *   106.2) confirmed all deferred cells clean: same result (drift=0, overlap=0) — the
+ *   contextId / scrollToIndex(0) mechanism from Epic 105 is sufficient for both
+ *   browsers. Investigation spec at scrolling-regression-106-investigation.spec.ts.
+ *   No production code changes required in Epic 106.
  *
  * Structural constraints:
  *   1. CDK virtual scroll requires a STABLE array length. SmartNgRX marks rows
