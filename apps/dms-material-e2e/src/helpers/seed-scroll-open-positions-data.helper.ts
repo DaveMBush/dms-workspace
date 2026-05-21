@@ -29,12 +29,14 @@ function createBulkTrades(accountId: string, universeIds: string[]): any[] {
  * Re-uses existing universe entries (first 50 by createdAt asc) so that
  * buildUniverseMap always has their IDs loaded on account panel render.
  * Only creates an account and trades — no universe records are created or deleted.
+ * Returns `symbols` for the linked universe rows so callers can derive filter values.
  */
 export async function seedScrollOpenPositionsData(): Promise<SeederResult> {
   const prisma = await initializePrismaClient();
   const uniqueId = generateUniqueId();
   const accountName = `E2E-OP-Scroll-${uniqueId}`;
   let accountId = '';
+  let linkedSymbols: string[] = [];
 
   try {
     accountId = await seedScrollTradesCommon(
@@ -42,6 +44,17 @@ export async function seedScrollOpenPositionsData(): Promise<SeederResult> {
       accountName,
       createBulkTrades
     );
+    // Fetch symbols for the universe rows linked to these trades
+    // (same first-50 records by createdAt asc used by seedScrollTradesCommon).
+    const universeRecords = await prisma.universe.findMany({
+      select: { symbol: true },
+      where: { deletedAt: null },
+      orderBy: { createdAt: 'asc' },
+      take: 50,
+    });
+    linkedSymbols = universeRecords.map(function getSymbol(u) {
+      return u.symbol;
+    });
   } catch (error) {
     await prisma.$disconnect();
     throw error;
@@ -49,7 +62,7 @@ export async function seedScrollOpenPositionsData(): Promise<SeederResult> {
 
   return {
     accountId,
-    symbols: [],
+    symbols: linkedSymbols,
     cleanup: async function cleanupScrollOpenPositions(): Promise<void> {
       try {
         await prisma.trades.deleteMany({ where: { accountId } });

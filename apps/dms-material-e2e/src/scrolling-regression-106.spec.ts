@@ -269,7 +269,7 @@ test.describe('Open Positions — account-change sticky-header regression (Round
     await page.waitForSelector('cdk-virtual-scroll-viewport', {
       timeout: 30000,
     });
-    await page.waitForTimeout(2000);
+    await page.waitForSelector(ROW_SELECTOR, { timeout: 30000 });
   });
 
   test('Open Positions: all sticky-header invariants hold after account-change (drift / overlap / flicker)', async ({
@@ -294,11 +294,13 @@ test.describe('Open Positions — account-change sticky-header regression (Round
 test.describe('Open Positions — filter-change (symbol) sticky-header regression (Round 9)', () => {
   let cleanup: () => Promise<void>;
   let accountId: string;
+  let symbols: string[];
 
   test.beforeAll(async () => {
     const seeder = await seedScrollOpenPositionsData();
     cleanup = seeder.cleanup;
     accountId = seeder.accountId;
+    symbols = seeder.symbols;
   });
 
   test.afterAll(async () => {
@@ -313,18 +315,22 @@ test.describe('Open Positions — filter-change (symbol) sticky-header regressio
     await page.waitForSelector('cdk-virtual-scroll-viewport', {
       timeout: 30000,
     });
-    await page.waitForTimeout(2000);
+    await page.waitForSelector(ROW_SELECTOR, { timeout: 30000 });
   });
 
   test('Open Positions: all sticky-header invariants hold after symbol filter apply/clear (drift / overlap / flicker)', async ({
     page,
   }) => {
     // Context-change: fill the symbol search input (triggers server round-trip + CDK refresh).
+    // Filter by a prefix from seeded universe symbols so the server returns a
+    // non-trivial subset (>0 but <60 rows), exercising a real CDK height change.
     // Round-9 (Story 106.1) confirmed drift=0, overlap=0 on Chromium and Firefox.
+    const symbolPrefix =
+      symbols.length > 0 ? symbols[0].substring(0, 6) : 'USCRL0';
     await runTwoPassInvariantCheck(page, async function doContextChange() {
       await applyAndClearColumnFilter(page, {
         columnSelector: '[data-testid="symbol-search-input"]',
-        filterValue: 'E2E-OP',
+        filterValue: symbolPrefix,
       });
     });
   });
@@ -362,7 +368,7 @@ test.describe('Sold Positions — account-change sticky-header regression (Round
     await page.waitForSelector('cdk-virtual-scroll-viewport', {
       timeout: 30000,
     });
-    await page.waitForTimeout(2000);
+    await page.waitForSelector(ROW_SELECTOR, { timeout: 30000 });
   });
 
   test('Sold Positions: all sticky-header invariants hold after account-change (drift / overlap / flicker)', async ({
@@ -402,7 +408,7 @@ test.describe('Sold Positions — filter-change (symbol) sticky-header regressio
     await page.waitForSelector('cdk-virtual-scroll-viewport', {
       timeout: 30000,
     });
-    await page.waitForTimeout(2000);
+    await page.waitForSelector(ROW_SELECTOR, { timeout: 30000 });
   });
 
   test('Sold Positions: all sticky-header invariants hold after symbol filter apply/clear (drift / overlap / flicker)', async ({
@@ -454,7 +460,7 @@ test.describe('Dividend Deposits — account-change sticky-header regression (Ro
     await page.waitForSelector('cdk-virtual-scroll-viewport', {
       timeout: 30000,
     });
-    await page.waitForTimeout(2000);
+    await page.waitForSelector(ROW_SELECTOR, { timeout: 30000 });
   });
 
   test('Dividend Deposits: all sticky-header invariants hold after account-change (drift / overlap / flicker)', async ({
