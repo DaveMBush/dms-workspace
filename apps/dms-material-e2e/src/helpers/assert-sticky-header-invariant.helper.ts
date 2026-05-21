@@ -124,11 +124,11 @@ function assertDriftInvariant(samples: SamplesArr, tolerance: number): void {
 
 type LocalRowSnapshot = NonNullable<SamplesArr[number]['rows']>[number];
 
-type MatchedRow = {
+interface MatchedRow {
   row: LocalRowSnapshot;
   prevRow: LocalRowSnapshot;
   nextRow: LocalRowSnapshot;
-};
+}
 
 function buildMatchedRows(
   curr: LocalRowSnapshot[],
