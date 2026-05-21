@@ -184,7 +184,9 @@ function checkRowFlicker(
     if (jumpThisFrame > threshold && revertNextFrame > threshold) {
       throw new Error(
         `Row flicker detected at frame ${frameIndex}, rowIndex ${row.rowIndex}: ` +
-          `jumped ${jumpThisFrame.toFixed(1)}px then reverted ${revertNextFrame.toFixed(1)}px ` +
+          `jumped ${jumpThisFrame.toFixed(
+            1
+          )}px then reverted ${revertNextFrame.toFixed(1)}px ` +
           `(threshold=${threshold}px). ` +
           'Row position jitter during slow scroll detected (Epic 105 round-8). ' +
           'Root cause: row-specific position shift (not a CDK global content-wrapper adjustment).'

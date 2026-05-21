@@ -257,7 +257,9 @@ test.describe('Open Positions — account-change sticky-header regression', () =
   test.beforeEach(async ({ page }) => {
     await login(page);
     await page.goto(`/account/${accountId1}/open`);
-    await page.waitForSelector('cdk-virtual-scroll-viewport', { timeout: 30000 });
+    await page.waitForSelector('cdk-virtual-scroll-viewport', {
+      timeout: 30000,
+    });
     await page.waitForTimeout(2000);
   });
 
@@ -298,7 +300,9 @@ test.describe('Open Positions — filter-change (symbol) sticky-header regressio
   test.beforeEach(async ({ page }) => {
     await login(page);
     await page.goto(`/account/${accountId}/open`);
-    await page.waitForSelector('cdk-virtual-scroll-viewport', { timeout: 30000 });
+    await page.waitForSelector('cdk-virtual-scroll-viewport', {
+      timeout: 30000,
+    });
     await page.waitForTimeout(2000);
   });
 
@@ -344,7 +348,9 @@ test.describe('Sold Positions — account-change sticky-header regression', () =
   test.beforeEach(async ({ page }) => {
     await login(page);
     await page.goto(`/account/${accountId1}/sold`);
-    await page.waitForSelector('cdk-virtual-scroll-viewport', { timeout: 30000 });
+    await page.waitForSelector('cdk-virtual-scroll-viewport', {
+      timeout: 30000,
+    });
     await page.waitForTimeout(2000);
   });
 
@@ -381,7 +387,9 @@ test.describe('Sold Positions — filter-change (symbol) sticky-header regressio
   test.beforeEach(async ({ page }) => {
     await login(page);
     await page.goto(`/account/${accountId}/sold`);
-    await page.waitForSelector('cdk-virtual-scroll-viewport', { timeout: 30000 });
+    await page.waitForSelector('cdk-virtual-scroll-viewport', {
+      timeout: 30000,
+    });
     await page.waitForTimeout(2000);
   });
 
@@ -430,7 +438,9 @@ test.describe('Dividend Deposits — account-change sticky-header regression', (
   test.beforeEach(async ({ page }) => {
     await login(page);
     await page.goto(`/account/${accountId1}/div-dep`);
-    await page.waitForSelector('cdk-virtual-scroll-viewport', { timeout: 30000 });
+    await page.waitForSelector('cdk-virtual-scroll-viewport', {
+      timeout: 30000,
+    });
     await page.waitForTimeout(2000);
   });
 
