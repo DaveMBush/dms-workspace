@@ -124,17 +124,18 @@ function assertDriftInvariant(samples: SamplesArr, tolerance: number): void {
 
 type LocalRowSnapshot = NonNullable<SamplesArr[number]['rows']>[number];
 
-function checkRowFlicker(
+type MatchedRow = {
+  row: LocalRowSnapshot;
+  prevRow: LocalRowSnapshot;
+  nextRow: LocalRowSnapshot;
+};
+
+function buildMatchedRows(
   curr: LocalRowSnapshot[],
   prev: LocalRowSnapshot[],
-  next: LocalRowSnapshot[],
-  ctx: { frameIndex: number; rowHeightPx: number }
-): void {
-  const { frameIndex, rowHeightPx } = ctx;
-  const threshold = rowHeightPx / 2;
-
-  // Gather all rows that have matching prev/next snapshots.
-  const matched = curr
+  next: LocalRowSnapshot[]
+): MatchedRow[] {
+  return curr
     .map(function mapRowWithNeighbors(row) {
       return {
         row,
@@ -146,13 +147,21 @@ function checkRowFlicker(
         }),
       };
     })
-    .filter(function hasNeighbors(e): e is {
-      row: LocalRowSnapshot;
-      prevRow: LocalRowSnapshot;
-      nextRow: LocalRowSnapshot;
-    } {
+    .filter(function hasNeighbors(e): e is MatchedRow {
       return e.prevRow !== undefined && e.nextRow !== undefined;
     });
+}
+
+function checkRowFlicker(
+  curr: LocalRowSnapshot[],
+  prev: LocalRowSnapshot[],
+  next: LocalRowSnapshot[],
+  ctx: { frameIndex: number; rowHeightPx: number }
+): void {
+  const { frameIndex, rowHeightPx } = ctx;
+  const threshold = rowHeightPx / 2;
+
+  const matched = buildMatchedRows(curr, prev, next);
 
   if (matched.length === 0) {
     return;

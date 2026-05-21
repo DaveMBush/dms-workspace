@@ -18,6 +18,39 @@ interface GlobalFilterOptions {
 }
 
 /**
+ * Browser-side helper serialized into page.evaluate().
+ * Polls for `text` among mat-option elements and clicks it when found.
+ * Uses a polling loop because Angular Material may destroy/recreate options
+ * during BaseTableComponent re-render; Playwright's locator.click() cannot
+ * handle the detach-and-recreate cycle within its retry window.
+ */
+async function pollClearOption({
+  text,
+  timeout,
+}: {
+  text: string;
+  timeout: number;
+}): Promise<boolean> {
+  const deadline = Date.now() + timeout;
+  while (Date.now() < deadline) {
+    const opt = Array.from(document.querySelectorAll('mat-option')).find(
+      function findMatchingOption(el: Element): boolean {
+        return (el as HTMLElement).textContent?.trim() === text;
+      }
+    ) as HTMLElement | undefined;
+    if (opt?.isConnected) {
+      opt.click();
+      return true;
+    }
+    // eslint-disable-next-line no-restricted-syntax -- browser-side event-loop yield; RxJS unavailable in page.evaluate context
+    await new Promise<void>(function scheduleResolve(r): void {
+      setTimeout(r, 10);
+    });
+  }
+  return false;
+}
+
+/**
  * Applies a mat-select based global filter then clears it.
  *
  * Flow:
@@ -56,35 +89,10 @@ export async function applyAndClearGlobalFilter(
   // Playwright's locator.click() retries on "element detached", exhausting the action
   // timeout.  Instead, poll for the option and click it in a single synchronous
   // browser-side JS call — no Playwright retry, no window between find and click.
-  const cleared = await page.evaluate(
-    async function pollClearOption({
-      text,
-      timeout,
-    }: {
-      text: string;
-      timeout: number;
-    }): Promise<boolean> {
-      const deadline = Date.now() + timeout;
-      while (Date.now() < deadline) {
-        const opt = Array.from(document.querySelectorAll('mat-option')).find(
-          function findMatchingOption(el: Element): boolean {
-            return (el as HTMLElement).textContent?.trim() === text;
-          }
-        ) as HTMLElement | undefined;
-        if (opt?.isConnected) {
-          opt.click();
-          return true;
-        }
-        // Yield the event loop so Angular can process pending tasks before re-poll.
-        // eslint-disable-next-line no-restricted-syntax
-        await new Promise<void>(function scheduleResolve(r): void {
-          setTimeout(r, 10);
-        });
-      }
-      return false;
-    },
-    { text: clearOptionText, timeout: 5000 }
-  );
+  const cleared = await page.evaluate(pollClearOption, {
+    text: clearOptionText,
+    timeout: 5000,
+  });
   if (!cleared) {
     throw new Error(
       `mat-option '${clearOptionText}' not found or not connected within 5 s`
