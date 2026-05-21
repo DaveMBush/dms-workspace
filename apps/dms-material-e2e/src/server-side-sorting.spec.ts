@@ -108,7 +108,7 @@ test.describe('Universe Table - Server-Side Sorting', () => {
     page,
   }) => {
     // Click the Symbol sort header
-    const symbolHeader = page.getByRole('button', { name: 'Symbol' });
+    const symbolHeader = page.getByRole('button', { name: 'Symbol' }).first();
     await symbolHeader.click();
     await page.waitForTimeout(300);
 
@@ -119,7 +119,7 @@ test.describe('Universe Table - Server-Side Sorting', () => {
   });
 
   test('should toggle sort direction on second click', async ({ page }) => {
-    const symbolHeader = page.getByRole('button', { name: 'Symbol' });
+    const symbolHeader = page.getByRole('button', { name: 'Symbol' }).first();
 
     // First click → asc
     await symbolHeader.click();
@@ -137,7 +137,7 @@ test.describe('Universe Table - Server-Side Sorting', () => {
   test('should save sort state to localStorage on sort click', async ({
     page,
   }) => {
-    const symbolHeader = page.getByRole('button', { name: 'Symbol' });
+    const symbolHeader = page.getByRole('button', { name: 'Symbol' }).first();
     await symbolHeader.click();
     await page.waitForTimeout(500);
 
@@ -160,7 +160,7 @@ test.describe('Universe Table - Server-Side Sorting', () => {
   test('should update localStorage sort state when column is clicked', async ({
     page,
   }) => {
-    const symbolHeader = page.getByRole('button', { name: 'Symbol' });
+    const symbolHeader = page.getByRole('button', { name: 'Symbol' }).first();
 
     // Before sorting, verify no sort state
     let cols = await getSortColumnsState(page, 'universes');
@@ -190,7 +190,7 @@ test.describe('Universe Sort Persistence', () => {
     await page.waitForLoadState('networkidle');
 
     // Click Symbol to sort
-    const symbolHeader = page.getByRole('button', { name: 'Symbol' });
+    const symbolHeader = page.getByRole('button', { name: 'Symbol' }).first();
     await symbolHeader.click();
     await page.waitForTimeout(500);
 
@@ -243,7 +243,7 @@ test.describe('Universe Sort Persistence', () => {
     await page.waitForLoadState('networkidle');
 
     // Sort by Symbol ascending
-    const symbolHeader = page.getByRole('button', { name: 'Symbol' });
+    const symbolHeader = page.getByRole('button', { name: 'Symbol' }).first();
     await symbolHeader.click();
     await page.waitForTimeout(500);
 
@@ -434,7 +434,7 @@ test.describe('Cross-Table Sort Independence', () => {
     await page.goto('/global/universe');
     await page.waitForLoadState('networkidle');
 
-    const symbolHeader = page.getByRole('button', { name: 'Symbol' });
+    const symbolHeader = page.getByRole('button', { name: 'Symbol' }).first();
 
     // Click 1 → asc
     await symbolHeader.click();

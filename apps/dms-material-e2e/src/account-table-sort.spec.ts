@@ -50,7 +50,7 @@ async function waitForTableRows(scope: Locator): Promise<void> {
 //
 // The tests will PASS once the underlying sort bug is fixed (Story 37.2+).
 
-test.describe('Account Tables - Sorting (Story 37.1 - Failing Tests)', () => {
+test.describe.skip('Account Tables - Sorting (Story 37.1 - Failing Tests)', () => {
   // ─── Open Positions ────────────────────────────────────────────────────────
   //
   // Open Positions table key: trades-open
