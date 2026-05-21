@@ -623,6 +623,6 @@ development_status:
   # ── Epic 106: Scrolling After Account / Filter Change (Round 9) ────────────
   epic-106: in-progress
   106-1-reproduce-scrolling-all-screens: done
-  106-2-root-cause-and-fix-scrolling: in-progress
+  106-2-root-cause-and-fix-scrolling: review
   106-3-scrolling-regression-suite-106: ready-for-dev
   epic-106-retrospective: optional
