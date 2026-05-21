@@ -51,11 +51,34 @@ export async function applyAndClearGlobalFilter(
   await expect(select).toContainText(applyOptionText, { timeout: 5000 });
   // Clear the filter (restore full dataset)
   await select.click();
-  await page
-    .locator(MAT_OPTION_SELECTOR)
-    .filter({ hasText: clearOptionText })
-    .first()
-    .click();
+  // Angular Material's CDK overlay may destroy and recreate mat-options while the
+  // BaseTableComponent re-renders after the data-context change (0 rows → CDK resets).
+  // Playwright's locator.click() retries on "element detached", exhausting the action
+  // timeout.  Instead, poll for the option and click it in a single synchronous
+  // browser-side JS call — no Playwright retry, no window between find and click.
+  const cleared = await page.evaluate(
+    async ({ text, timeout }: { text: string; timeout: number }) => {
+      const deadline = Date.now() + timeout;
+      while (Date.now() < deadline) {
+        const opt = Array.from(document.querySelectorAll('mat-option')).find(
+          (el) => (el as HTMLElement).textContent?.trim() === text
+        ) as HTMLElement | undefined;
+        if (opt?.isConnected) {
+          opt.click();
+          return true;
+        }
+        // Yield the event loop so Angular can process pending tasks before re-poll.
+        await new Promise((r) => setTimeout(r, 10));
+      }
+      return false;
+    },
+    { text: clearOptionText, timeout: 5000 }
+  );
+  if (!cleared) {
+    throw new Error(
+      `mat-option '${clearOptionText}' not found or not connected within 5 s`
+    );
+  }
   await expect(page.locator(rowSelector).first()).toBeVisible({
     timeout: 10000,
   });

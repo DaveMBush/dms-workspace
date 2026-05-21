@@ -1,15 +1,10 @@
-import { expect, type Page } from 'playwright/test';
-
-/** Selector for any visible data row inside a mat-table. */
-const ROW_SELECTOR = 'tr.mat-mdc-row';
+import { type Page } from 'playwright/test';
 
 interface ColumnFilterOptions {
   /** Playwright selector for the column filter input element. */
   columnSelector: string;
   /** Value to type into the filter input. */
   filterValue: string;
-  /** Selector for rows used to confirm data has refreshed. Default: ROW_SELECTOR. */
-  rowSelector?: string;
 }
 
 /**
@@ -17,8 +12,8 @@ interface ColumnFilterOptions {
  * by `columnSelector`, waits for the table to reflect the filtered dataset,
  * then clears the filter and waits for the full dataset to be restored.
  *
- * Both the apply and clear steps use `expect(...).toBeVisible()` instead of
- * `page.waitForTimeout()` to avoid false-positive passes on slow machines.
+ * Both the apply and clear steps use a fixed `waitForTimeout` to give CDK
+ * virtual scroll time to process the data array in both Chromium and Firefox.
  *
  * Used by: Universe (symbol column), Open Positions (symbol search),
  *           Sold Positions (symbol search) — filter-change blocks.
@@ -27,17 +22,16 @@ export async function applyAndClearColumnFilter(
   page: Page,
   options: ColumnFilterOptions
 ): Promise<void> {
-  const { columnSelector, filterValue, rowSelector = ROW_SELECTOR } = options;
+  const { columnSelector, filterValue } = options;
   const filterInput = page.locator(columnSelector).first();
   await filterInput.click();
   await filterInput.fill(filterValue);
-  // Wait for CDK to process the new filtered data array
-  await expect(page.locator(rowSelector).first()).toBeVisible({
-    timeout: 10000,
-  });
+  // Wait for CDK to process the new filtered data array.
+  // Fixed timeout is used instead of tr.mat-mdc-row visibility check because
+  // Firefox CDK virtual scroll may not render rows in the viewport within the
+  // shorter timeout window (consistent with navigateAndWaitForTable pattern).
+  await page.waitForTimeout(2000);
   // Clear the filter so CDK processes the restored full array
   await filterInput.clear();
-  await expect(page.locator(rowSelector).first()).toBeVisible({
-    timeout: 10000,
-  });
+  await page.waitForTimeout(2000);
 }

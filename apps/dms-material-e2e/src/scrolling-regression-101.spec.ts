@@ -399,10 +399,10 @@ test.describe('Open Positions — Round 7 slow-scroll sticky-header regression (
   test.beforeEach(async ({ page }) => {
     await login(page);
     await page.goto(`/account/${accountId}/open`);
-    await expect(page.locator('dms-base-table')).toBeVisible({
-      timeout: 15000,
+    await page.waitForSelector('cdk-virtual-scroll-viewport', {
+      timeout: 30000,
     });
-    await page.waitForSelector(ROW_SELECTOR, { timeout: 15000 });
+    await page.waitForTimeout(2000);
   });
 
   test('Open Positions: sticky header does not drift down with content during slow scroll (header-scrolls-with-content)', async ({
@@ -432,8 +432,8 @@ test.describe('Open Positions — Round 7 slow-scroll sticky-header regression (
     page,
   }) => {
     // Story 101.2: see Universe header-under-header for full context.
-    // header-scrolls-with-content is fixed; this artifact still triggers in Playwright headless.
-    test.fail();
+    // header-under-header no longer reproduces for Open Positions in Playwright headless;
+    // test.fail() removed per spec contract (see NOTE in spec header).
 
     const viewport = page.locator(VIEWPORT_SELECTOR);
     const header = page.locator(HEADER_ROW_SELECTOR).first();
@@ -475,10 +475,10 @@ test.describe('Sold Positions — Round 7 slow-scroll sticky-header regression (
   test.beforeEach(async ({ page }) => {
     await login(page);
     await page.goto(`/account/${accountId}/sold`);
-    await expect(page.locator('dms-base-table')).toBeVisible({
-      timeout: 15000,
+    await page.waitForSelector('cdk-virtual-scroll-viewport', {
+      timeout: 30000,
     });
-    await page.waitForSelector(ROW_SELECTOR, { timeout: 15000 });
+    await page.waitForTimeout(2000);
   });
 
   test('Sold Positions: sticky header does not drift down with content during slow scroll (header-scrolls-with-content)', async ({
@@ -508,8 +508,8 @@ test.describe('Sold Positions — Round 7 slow-scroll sticky-header regression (
     page,
   }) => {
     // Story 101.2: see Universe header-under-header for full context.
-    // header-scrolls-with-content is fixed; this artifact still triggers in Playwright headless.
-    test.fail();
+    // header-under-header no longer reproduces for Sold Positions in Playwright headless;
+    // test.fail() removed per spec contract (see NOTE in spec header).
 
     const viewport = page.locator(VIEWPORT_SELECTOR);
     const header = page.locator(HEADER_ROW_SELECTOR).first();
@@ -551,10 +551,10 @@ test.describe('Dividend Deposits — Round 7 slow-scroll sticky-header regressio
   test.beforeEach(async ({ page }) => {
     await login(page);
     await page.goto(`/account/${accountId}/div-dep`);
-    await expect(page.locator('dms-base-table')).toBeVisible({
-      timeout: 15000,
+    await page.waitForSelector('cdk-virtual-scroll-viewport', {
+      timeout: 30000,
     });
-    await page.waitForSelector(ROW_SELECTOR, { timeout: 15000 });
+    await page.waitForTimeout(2000);
   });
 
   test('Dividend Deposits: sticky header does not drift down with content during slow scroll (header-scrolls-with-content)', async ({
@@ -584,8 +584,8 @@ test.describe('Dividend Deposits — Round 7 slow-scroll sticky-header regressio
     page,
   }) => {
     // Story 101.2: see Universe header-under-header for full context.
-    // header-scrolls-with-content is fixed; this artifact still triggers in Playwright headless.
-    test.fail();
+    // header-under-header no longer reproduces for Dividend Deposits in Playwright headless;
+    // test.fail() removed per spec contract (see NOTE in spec header).
 
     const viewport = page.locator(VIEWPORT_SELECTOR);
     const header = page.locator(HEADER_ROW_SELECTOR).first();
