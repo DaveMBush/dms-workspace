@@ -135,25 +135,33 @@ function checkRowFlicker(
 
   // Gather all rows that have matching prev/next snapshots.
   const matched = curr
-    .map((row) => ({
-      row,
-      prevRow: prev.find((r) => r.rowIndex === row.rowIndex),
-      nextRow: next.find((r) => r.rowIndex === row.rowIndex),
-    }))
-    .filter(
-      (
-        e
-      ): e is {
-        row: LocalRowSnapshot;
-        prevRow: LocalRowSnapshot;
-        nextRow: LocalRowSnapshot;
-      } => e.prevRow !== undefined && e.nextRow !== undefined
-    );
+    .map(function mapRowWithNeighbors(row) {
+      return {
+        row,
+        prevRow: prev.find(function findPrev(r) {
+          return r.rowIndex === row.rowIndex;
+        }),
+        nextRow: next.find(function findNext(r) {
+          return r.rowIndex === row.rowIndex;
+        }),
+      };
+    })
+    .filter(function hasNeighbors(e): e is {
+      row: LocalRowSnapshot;
+      prevRow: LocalRowSnapshot;
+      nextRow: LocalRowSnapshot;
+    } {
+      return e.prevRow !== undefined && e.nextRow !== undefined;
+    });
 
-  if (matched.length === 0) return;
+  if (matched.length === 0) {
+    return;
+  }
 
   // Compute the signed delta (this frame vs previous frame) for every matched row.
-  const deltas = matched.map((e) => e.row.top - e.prevRow.top);
+  const deltas = matched.map(function computeDelta(e) {
+    return e.row.top - e.prevRow.top;
+  });
 
   // CDK's AutoSizeVirtualScrollStrategy adjusts the content-wrapper translateY
   // whenever it recalibrates its total-size estimate.  This shifts ALL visible
@@ -169,7 +177,9 @@ function checkRowFlicker(
   const refDelta = deltas[0];
   const isGlobalShift =
     matched.length > 1 &&
-    deltas.every((d) => Math.abs(d - refDelta) < 5) &&
+    deltas.every(function isNearRefDelta(d) {
+      return Math.abs(d - refDelta) < 5;
+    }) &&
     Math.abs(refDelta) > threshold;
 
   if (isGlobalShift) {

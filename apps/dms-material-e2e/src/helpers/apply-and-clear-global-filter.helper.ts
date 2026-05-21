@@ -57,18 +57,29 @@ export async function applyAndClearGlobalFilter(
   // timeout.  Instead, poll for the option and click it in a single synchronous
   // browser-side JS call — no Playwright retry, no window between find and click.
   const cleared = await page.evaluate(
-    async ({ text, timeout }: { text: string; timeout: number }) => {
+    async function pollClearOption({
+      text,
+      timeout,
+    }: {
+      text: string;
+      timeout: number;
+    }): Promise<boolean> {
       const deadline = Date.now() + timeout;
       while (Date.now() < deadline) {
         const opt = Array.from(document.querySelectorAll('mat-option')).find(
-          (el) => (el as HTMLElement).textContent?.trim() === text
+          function findMatchingOption(el: Element): boolean {
+            return (el as HTMLElement).textContent?.trim() === text;
+          }
         ) as HTMLElement | undefined;
         if (opt?.isConnected) {
           opt.click();
           return true;
         }
         // Yield the event loop so Angular can process pending tasks before re-poll.
-        await new Promise((r) => setTimeout(r, 10));
+        // eslint-disable-next-line no-restricted-syntax
+        await new Promise<void>(function scheduleResolve(r): void {
+          setTimeout(r, 10);
+        });
       }
       return false;
     },
