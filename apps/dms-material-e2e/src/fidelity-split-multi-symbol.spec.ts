@@ -150,11 +150,13 @@ test.describe('Multi-Symbol Split Import (Story 63.3)', () => {
     await navigateToUniverse(page);
     await page.waitForSelector('tr.mat-mdc-row', { timeout: 15000 });
 
+    await page.getByPlaceholder('Search Symbol').fill(TSTX_SYMBOL);
     const tstxRow = page
       .locator('tr.mat-mdc-row')
       .filter({ hasText: TSTX_SYMBOL });
     await expect(tstxRow).toHaveCount(1, { timeout: 10000 });
 
+    await page.getByPlaceholder('Search Symbol').fill(ABCD_SYMBOL);
     const abcdRow = page
       .locator('tr.mat-mdc-row')
       .filter({ hasText: ABCD_SYMBOL });

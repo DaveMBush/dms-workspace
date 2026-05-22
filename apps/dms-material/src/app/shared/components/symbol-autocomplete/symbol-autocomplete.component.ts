@@ -11,7 +11,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { debounceTime, filter, switchMap, tap } from 'rxjs/operators';
+import { debounceTime, filter, from, Observable, ObservableInput, of, switchMap, tap } from 'rxjs';
 
 import { SymbolOption } from './symbol-option.interface';
 
@@ -35,7 +35,7 @@ export class SymbolAutocompleteComponent implements OnInit {
   readonly minLength = input<number>(2);
   readonly placeholder = input<string>('Search for a symbol...');
   readonly searchFn =
-    input.required<(query: string) => Promise<SymbolOption[]>>();
+    input.required<(query: string) => ObservableInput<SymbolOption[]>>();
 
   private filteredOptionsSig = signal<SymbolOption[]>([]);
   private isLoadingSig = signal(false);
@@ -75,9 +75,9 @@ export class SymbolAutocompleteComponent implements OnInit {
     function setLoadingFn(): void {
       self.setLoading();
     }
-    async function doSearchFn(value: string | null): Promise<SymbolOption[]> {
+    function doSearchFn(value: string | null): Observable<SymbolOption[]> {
       if (value === null) {
-        return Promise.resolve([]);
+        return of([]);
       }
       return self.doSearch(value);
     }
@@ -110,8 +110,8 @@ export class SymbolAutocompleteComponent implements OnInit {
     return option?.symbol ?? '';
   }
 
-  async doSearch(query: string): Promise<SymbolOption[]> {
-    return this.searchFn()(query);
+  doSearch(query: string): Observable<SymbolOption[]> {
+    return from(this.searchFn()(query));
   }
 
   filterMinLength(value: string | null): value is string {

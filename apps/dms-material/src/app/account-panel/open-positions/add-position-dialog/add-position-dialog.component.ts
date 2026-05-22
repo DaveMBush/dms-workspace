@@ -4,9 +4,12 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  computed,
   inject,
+  Injector,
   ViewChild,
 } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
 import {
   AbstractControl,
   FormBuilder,
@@ -25,6 +28,7 @@ import {
 } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { filter, map, Observable, of, take } from 'rxjs';
 
 import { SymbolAutocompleteComponent } from '../../../shared/components/symbol-autocomplete/symbol-autocomplete.component';
 import { SymbolOption } from '../../../shared/components/symbol-autocomplete/symbol-option.interface';
@@ -54,6 +58,7 @@ export class AddPositionDialogComponent implements AfterViewInit {
   private readonly fb = inject(FormBuilder);
   private readonly dialogRef = inject(MatDialogRef<AddPositionDialogComponent>);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly injector = inject(Injector);
   readonly data: AddPositionData = inject<AddPositionData>(MAT_DIALOG_DATA);
 
   form: FormGroup;
@@ -64,6 +69,14 @@ export class AddPositionDialogComponent implements AfterViewInit {
   private readonly pricePattern = /^\d+\.\d{2,5}$/;
   // Quantity pattern: integers only
   private readonly quantityPattern = /^\d+$/;
+
+  // Class-level computed: checks that all SmartNgRX universe rows are fully loaded.
+  // Using a named method reference (not an arrow function) to satisfy
+  // @smarttools/no-anonymous-functions. Accessing all items inside computed
+  // triggers SmartNgRX batch server request for universe rows.
+  private readonly allUniversesLoaded = computed(
+    this.checkUniversesLoaded.bind(this)
+  );
 
   // Bound symbol search function for autocomplete
   readonly symbolSearchFnBound = this.symbolSearchFn.bind(this);
@@ -127,8 +140,20 @@ export class AddPositionDialogComponent implements AfterViewInit {
   }
 
   // Symbol search function for autocomplete - bound method
-  async symbolSearchFn(query: string): Promise<SymbolOption[]> {
-    return Promise.resolve(this.searchSymbolsSync(query));
+  // Waits for SmartNgRX to fully load all universe rows before searching.
+  // SmartNgRX lazy-loads individual rows via array proxy; accessing all items
+  // inside a computed triggers a single batch server request. The computed
+  // re-evaluates when entityMap() updates, eventually returning true once
+  // all rows have actual symbol data (defaultRow sentinel uses symbol: '').
+  symbolSearchFn(query: string): Observable<SymbolOption[]> {
+    if (this.allUniversesLoaded()) {
+      return of(this.searchSymbolsSync(query));
+    }
+    return toObservable(this.allUniversesLoaded, { injector: this.injector }).pipe(
+      filter(Boolean),
+      take(1),
+      map(this.searchSymbolsSync.bind(this, query))
+    );
   }
 
   onSymbolSelected(option: SymbolOption): void {
@@ -316,6 +341,21 @@ export class AddPositionDialogComponent implements AfterViewInit {
     this.selectedUniverseId = null;
   }
 
+  // Named method used for the class-level allUniversesLoaded computed field.
+  // Checks that all SmartNgRX universe rows are loaded (sentinel value is symbol: '').
+  private checkUniversesLoaded(): boolean {
+    const universes = selectUniverses();
+    if (universes.length === 0) {
+      return false;
+    }
+    for (let i = 0; i < universes.length; i++) {
+      if (universes[i].symbol === '') {
+        return false;
+      }
+    }
+    return true;
+  }
+
   private searchSymbolsSync(query: string): SymbolOption[] {
     const universes = selectUniverses();
     const lowerQuery = query.toLowerCase();
@@ -325,14 +365,17 @@ export class AddPositionDialogComponent implements AfterViewInit {
     // Iterate using index-based loop since SmartSignals are array-like but not true arrays
     for (let i = 0; i < universes.length && results.length < maxResults; i++) {
       const u = universes[i];
-      const symbolMatch = u.symbol.toLowerCase().includes(lowerQuery);
-      const nameMatch = u.name.toLowerCase().includes(lowerQuery);
+      // Guard: server does not return a 'name' field, so u.name may be undefined at runtime
+      const uSymbol = typeof u.symbol === 'string' ? u.symbol : '';
+      const uName = typeof u.name === 'string' ? u.name : '';
+      const symbolMatch = uSymbol !== '' && uSymbol.toLowerCase().includes(lowerQuery);
+      const nameMatch = uName !== '' && uName.toLowerCase().includes(lowerQuery);
 
       if (symbolMatch || nameMatch) {
         results.push({
           id: u.id,
-          symbol: u.symbol.toUpperCase(),
-          name: u.name,
+          symbol: uSymbol.toUpperCase(),
+          name: uName,
         });
       }
     }

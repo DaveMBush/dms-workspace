@@ -30,6 +30,7 @@
 <span
   class="display-value"
   [attr.data-testid]="testId$()"
+  [attr.aria-label]="ariaLabel$()"
   (click)="startEdit()"
   (keydown.enter)="startEdit()"
   (keydown.space)="startEdit()"

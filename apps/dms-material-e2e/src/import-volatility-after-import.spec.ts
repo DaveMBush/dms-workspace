@@ -58,6 +58,16 @@ test.describe('CSV Import — Volatility Present After Import (Story 92.2)', () 
   let testAccountId: string | null = null;
 
   test.beforeAll(async ({ request }) => {
+    // Remove any leftover test account from a previous run to avoid duplicate-name 500s
+    const prismaPreCleanup = await initializePrismaClient();
+    try {
+      await prismaPreCleanup.accounts.deleteMany({
+        where: { name: TEST_ACCOUNT_NAME },
+      });
+    } finally {
+      await prismaPreCleanup.$disconnect();
+    }
+
     // Create a dedicated test account so we can clean it up precisely
     const accountResponse = await request.post('/api/accounts/add', {
       data: { name: TEST_ACCOUNT_NAME },
