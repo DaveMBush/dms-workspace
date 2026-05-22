@@ -162,6 +162,72 @@ async function seedTestData() {
       ],
     });
 
+    // ── Additional well-known accounts for scroll regression tests ──────
+    // These accounts are pre-seeded with 60 open trades, 60 sold trades, and
+    // 60 div deposits each (cycling through the 3 test universe symbols) so
+    // that SmartNgRX receives a non-empty array at server start time and does
+    // NOT cache openTrades:[] for the 15-30-minute dirty window.
+    await prisma.accounts.create({
+      data: {
+        id: '22222222-2222-2222-2222-222222222222',
+        name: 'E2E Test Account 2',
+      },
+    });
+    await prisma.accounts.create({
+      data: {
+        id: '33333333-3333-3333-3333-333333333333',
+        name: 'E2E Test Account 3',
+      },
+    });
+
+    // ── Pre-seeded scroll regression rows for well-known accounts 2 & 3 ─
+    // 60 open + 60 sold + 60 div-deposits per account, cycling sym1/sym2/sym3.
+    const scrollSymIds = [sym1.id, sym2.id, sym3.id];
+    const scrollUniverseIds = Array.from(
+      { length: 60 },
+      (_, i) => scrollSymIds[i % 3]
+    );
+    const SCROLL_ACCOUNT_IDS = [
+      '22222222-2222-2222-2222-222222222222',
+      '33333333-3333-3333-3333-333333333333',
+    ];
+    for (const accId of SCROLL_ACCOUNT_IDS) {
+      // Open trades (sell_date = null)
+      await prisma.trades.createMany({
+        data: scrollUniverseIds.map((universeId, i) => ({
+          universeId,
+          accountId: accId,
+          buy: 50.0 + i,
+          sell: 0,
+          buy_date: new Date('2025-01-15'),
+          quantity: 10,
+          sell_date: null,
+        })),
+      });
+      // Sold trades (sell_date populated)
+      await prisma.trades.createMany({
+        data: scrollUniverseIds.map((universeId, i) => ({
+          universeId,
+          accountId: accId,
+          buy: 50.0 + i,
+          sell: 55.0 + i,
+          buy_date: new Date('2025-01-15'),
+          quantity: 10,
+          sell_date: new Date('2025-06-15'),
+        })),
+      });
+      // Div deposits
+      await prisma.divDeposits.createMany({
+        data: scrollUniverseIds.map((universeId, i) => ({
+          accountId: accId,
+          divDepositTypeId: divType.id,
+          universeId,
+          date: new Date(2025, i % 12, (i % 28) + 1),
+          amount: 10.0 + i,
+        })),
+      });
+    }
+
     console.log('Test data seeded successfully.');
   } finally {
     await prisma.$disconnect();

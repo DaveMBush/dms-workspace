@@ -29,19 +29,29 @@ function createBulkSoldTrades(accountId: string, universeIds: string[]): any[] {
  * Re-uses existing universe entries (first 50 by createdAt asc) so that
  * buildUniverseMap always has their IDs loaded on account panel render.
  * Only creates an account and trades — no universe records are created or deleted.
+ *
+ * When `targetAccountId` is provided (e.g. a well-known DB account UUID), account
+ * creation is skipped and that ID is used directly.  Cleanup will only delete
+ * the seeded trades, not the pre-existing account.
  */
-export async function seedScrollSoldPositionsData(): Promise<SeederResult> {
+export async function seedScrollSoldPositionsData(
+  targetAccountId?: string
+): Promise<SeederResult> {
   const prisma = await initializePrismaClient();
   const uniqueId = generateUniqueId();
   const accountName = `E2E-SD-Scroll-${uniqueId}`;
   let accountId = '';
+  let isNewAccount = true;
 
   try {
-    accountId = await seedScrollTradesCommon(
+    const result = await seedScrollTradesCommon(
       prisma,
       accountName,
-      createBulkSoldTrades
+      createBulkSoldTrades,
+      targetAccountId
     );
+    accountId = result.accountId;
+    isNewAccount = result.isNewAccount;
   } catch (error) {
     await prisma.$disconnect();
     throw error;
@@ -53,7 +63,9 @@ export async function seedScrollSoldPositionsData(): Promise<SeederResult> {
     cleanup: async function cleanupScrollSoldPositions(): Promise<void> {
       try {
         await prisma.trades.deleteMany({ where: { accountId } });
-        await prisma.accounts.deleteMany({ where: { name: accountName } });
+        if (isNewAccount) {
+          await prisma.accounts.deleteMany({ where: { name: accountName } });
+        }
       } finally {
         await prisma.$disconnect();
       }

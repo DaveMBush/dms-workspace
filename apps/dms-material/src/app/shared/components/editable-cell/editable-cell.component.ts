@@ -63,6 +63,11 @@ export class EditableCellComponent {
   max$ = computed(() => this.max() ?? null);
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- needed to capture this
   step$ = computed(() => this.step());
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- needed to capture this
+  ariaLabel$ = computed(() => {
+    const fieldName = this.testIdFieldName$();
+    return fieldName ? `Edit ${fieldName}` : 'Click to edit';
+  });
 
   @ViewChild('inputRef') inputRef!: ElementRef<HTMLInputElement>;
 

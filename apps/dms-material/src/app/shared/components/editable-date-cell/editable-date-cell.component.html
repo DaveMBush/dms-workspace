@@ -20,6 +20,7 @@
 <span
   class="display-value"
   [attr.data-testid]="testId"
+  [attr.aria-label]="value ? (value | date : dateFormat) : 'Click to set date'"
   role="button"
   tabindex="0"
   (click)="startEdit()"
