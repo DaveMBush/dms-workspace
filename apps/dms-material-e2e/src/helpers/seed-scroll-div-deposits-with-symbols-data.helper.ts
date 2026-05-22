@@ -63,11 +63,24 @@ function createBulkDivDeposits(
  * buildUniverseMap always has their IDs loaded on account panel render.
  * Only creates an account and div deposits — no universe records are created or deleted.
  */
-export async function seedScrollDivDepositsWithSymbolsData(): Promise<SeederResult> {
+/**
+ * Seeds 60 dividend deposit rows for sort+scroll regression testing.
+ * Re-uses existing universe entries (first 50 by createdAt asc) so that
+ * buildUniverseMap always has their IDs loaded on account panel render.
+ * Only creates an account and div deposits — no universe records are created or deleted.
+ *
+ * When `targetAccountId` is provided (e.g. a well-known DB account UUID), account
+ * creation is skipped and that ID is used directly.  Cleanup will only delete
+ * the seeded div deposits, not the pre-existing account.
+ */
+export async function seedScrollDivDepositsWithSymbolsData(
+  targetAccountId?: string
+): Promise<SeederResult> {
   const prisma = await initializePrismaClient();
   const uniqueId = generateUniqueId();
   const accountName = `E2E-DDS-Scroll-${uniqueId}`;
   let accountId = '';
+  const isNewAccount = targetAccountId === undefined;
 
   try {
     const baseUniverseIds = await fetchExistingUniverseIds(
@@ -82,10 +95,14 @@ export async function seedScrollDivDepositsWithSymbolsData(): Promise<SeederResu
       }
     );
     const divDepositTypeId = await getOrCreateDividendType(prisma);
-    const account = await prisma.accounts.create({
-      data: { name: accountName },
-    });
-    accountId = account.id;
+    if (isNewAccount) {
+      const account = await prisma.accounts.create({
+        data: { name: accountName },
+      });
+      accountId = account.id;
+    } else {
+      accountId = targetAccountId;
+    }
     await prisma.divDeposits.createMany({
       data: createBulkDivDeposits(accountId, divDepositTypeId, universeIds),
     });
@@ -101,7 +118,9 @@ export async function seedScrollDivDepositsWithSymbolsData(): Promise<SeederResu
       async function cleanupScrollDivDepositsWithSymbols(): Promise<void> {
         try {
           await prisma.divDeposits.deleteMany({ where: { accountId } });
-          await prisma.accounts.deleteMany({ where: { name: accountName } });
+          if (isNewAccount) {
+            await prisma.accounts.deleteMany({ where: { name: accountName } });
+          }
         } finally {
           await prisma.$disconnect();
         }

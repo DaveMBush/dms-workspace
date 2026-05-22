@@ -30,20 +30,30 @@ function createBulkTrades(accountId: string, universeIds: string[]): any[] {
  * buildUniverseMap always has their IDs loaded on account panel render.
  * Only creates an account and trades — no universe records are created or deleted.
  * Returns `symbols` for the linked universe rows so callers can derive filter values.
+ *
+ * When `targetAccountId` is provided (e.g. a well-known DB account UUID), account
+ * creation is skipped and that ID is used directly.  Cleanup will only delete
+ * the seeded trades, not the pre-existing account.
  */
-export async function seedScrollOpenPositionsData(): Promise<SeederResult> {
+export async function seedScrollOpenPositionsData(
+  targetAccountId?: string
+): Promise<SeederResult> {
   const prisma = await initializePrismaClient();
   const uniqueId = generateUniqueId();
   const accountName = `E2E-OP-Scroll-${uniqueId}`;
   let accountId = '';
   let linkedSymbols: string[] = [];
+  let isNewAccount = true;
 
   try {
-    accountId = await seedScrollTradesCommon(
+    const result = await seedScrollTradesCommon(
       prisma,
       accountName,
-      createBulkTrades
+      createBulkTrades,
+      targetAccountId
     );
+    accountId = result.accountId;
+    isNewAccount = result.isNewAccount;
     // Fetch symbols for the universe rows linked to these trades
     // (same first-50 records by createdAt asc used by seedScrollTradesCommon).
     const universeRecords = await prisma.universe.findMany({
@@ -66,7 +76,9 @@ export async function seedScrollOpenPositionsData(): Promise<SeederResult> {
     cleanup: async function cleanupScrollOpenPositions(): Promise<void> {
       try {
         await prisma.trades.deleteMany({ where: { accountId } });
-        await prisma.accounts.deleteMany({ where: { name: accountName } });
+        if (isNewAccount) {
+          await prisma.accounts.deleteMany({ where: { name: accountName } });
+        }
       } finally {
         await prisma.$disconnect();
       }

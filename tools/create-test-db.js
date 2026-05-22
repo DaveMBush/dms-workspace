@@ -162,6 +162,23 @@ async function seedTestData() {
       ],
     });
 
+    // ── Additional well-known accounts for scroll regression tests ──────
+    // These accounts have no pre-seeded trades. Each scroll-regression spec
+    // seeds 60 trade/div-deposit rows for these accounts in beforeAll and
+    // removes them in afterAll, so the accounts themselves never change.
+    await prisma.accounts.create({
+      data: {
+        id: '22222222-2222-2222-2222-222222222222',
+        name: 'E2E Test Account 2',
+      },
+    });
+    await prisma.accounts.create({
+      data: {
+        id: '33333333-3333-3333-3333-333333333333',
+        name: 'E2E Test Account 3',
+      },
+    });
+
     console.log('Test data seeded successfully.');
   } finally {
     await prisma.$disconnect();
