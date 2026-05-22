@@ -75,9 +75,7 @@ import { assertStickyHeaderInvariant } from './helpers/assert-sticky-header-inva
 import { swapActiveAccountViaNavigation } from './helpers/swap-active-account-via-navigation.helper';
 import { swapUniverseAccount } from './helpers/swap-universe-account.helper';
 import { login } from './helpers/login.helper';
-import { seedScrollDivDepositsWithSymbolsData } from './helpers/seed-scroll-div-deposits-with-symbols-data.helper';
 import { seedScrollOpenPositionsData } from './helpers/seed-scroll-open-positions-data.helper';
-import { seedScrollSoldPositionsData } from './helpers/seed-scroll-sold-positions-data.helper';
 import { seedScrollUniverseData } from './helpers/seed-scroll-universe-data.helper';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -95,11 +93,10 @@ const ROW_SELECTOR = 'tr.mat-mdc-row';
 
 /**
  * Well-known account UUIDs seeded in tools/create-test-db.js.
- * These accounts have no pre-seeded trades; each scroll-regression describe
- * block seeds data in beforeAll and cleans up in afterAll.
- * Using pre-existing accounts avoids the SmartNgRX lazy-load timing issue
- * that occurs when a newly created account ID is not yet in the store on
- * first navigation.
+ * These accounts are pre-seeded with 60 open trades, 60 sold trades, and
+ * 60 div deposits each (symbols TESTEQ1/TESTIN1/TESTTF1 cycling), ensuring
+ * SmartNgRX loads a non-empty dataset at server start time and never caches
+ * an empty array for the 15-30-minute dirty window.
  */
 const WELL_KNOWN_ACCOUNT_ID_2 = '22222222-2222-2222-2222-222222222222';
 const WELL_KNOWN_ACCOUNT_ID_3 = '33333333-3333-3333-3333-333333333333';
@@ -252,35 +249,17 @@ test.describe('Universe — filter-change (symbol) sticky-header regression (Rou
 // ─── Open Positions — account-change ─────────────────────────────────────────
 
 test.describe('Open Positions — account-change sticky-header regression (Round 9)', () => {
-  let cleanup1: () => Promise<void>;
-  let cleanup2: () => Promise<void>;
-  let accountId1: string;
-  let accountId2: string;
-
-  test.beforeAll(async () => {
-    // Two accounts required so the route-param change triggers a real data swap.
-    // Well-known account IDs are used so SmartNgRX can load them immediately on
-    // first navigation (pre-existing in the test DB at server start time).
-    const seeder1 = await seedScrollOpenPositionsData(WELL_KNOWN_ACCOUNT_ID_2);
-    cleanup1 = seeder1.cleanup;
-    accountId1 = seeder1.accountId;
-    const seeder2 = await seedScrollOpenPositionsData(WELL_KNOWN_ACCOUNT_ID_3);
-    cleanup2 = seeder2.cleanup;
-    accountId2 = seeder2.accountId;
-  });
-
-  test.afterAll(async () => {
-    if (cleanup1) {
-      await cleanup1();
-    }
-    if (cleanup2) {
-      await cleanup2();
-    }
-  });
+  // Pre-seeded in tools/create-test-db.js — no beforeAll/afterAll needed.
+  const accountId1 = WELL_KNOWN_ACCOUNT_ID_2;
+  const accountId2 = WELL_KNOWN_ACCOUNT_ID_3;
 
   test.beforeEach(async ({ page }) => {
     await login(page);
     await page.goto(`/account/${accountId1}/open`);
+    // Wait for the sidebar to show the account link — confirms SmartNgRX has
+    // loaded the top entity and discovered the account ID before we wait
+    // for data rows (which only appear after the account entity itself loads).
+    await page.waitForSelector(`a[href*="${accountId1}"]`, { timeout: 30000 });
     await page.waitForSelector('cdk-virtual-scroll-viewport', {
       timeout: 30000,
     });
@@ -307,26 +286,18 @@ test.describe('Open Positions — account-change sticky-header regression (Round
 // ─── Open Positions — filter-change (symbol) ─────────────────────────────────
 
 test.describe('Open Positions — filter-change (symbol) sticky-header regression (Round 9)', () => {
-  let cleanup: () => Promise<void>;
-  let accountId: string;
-  let symbols: string[];
-
-  test.beforeAll(async () => {
-    const seeder = await seedScrollOpenPositionsData(WELL_KNOWN_ACCOUNT_ID_2);
-    cleanup = seeder.cleanup;
-    accountId = seeder.accountId;
-    symbols = seeder.symbols;
-  });
-
-  test.afterAll(async () => {
-    if (cleanup) {
-      await cleanup();
-    }
-  });
+  // Pre-seeded in tools/create-test-db.js — no beforeAll/afterAll needed.
+  const accountId = WELL_KNOWN_ACCOUNT_ID_2;
+  // Symbols pre-seeded for accounts 2 & 3 (TESTEQ1/TESTIN1/TESTTF1).
+  const symbols = ['TESTEQ1', 'TESTIN1', 'TESTTF1'];
 
   test.beforeEach(async ({ page }) => {
     await login(page);
     await page.goto(`/account/${accountId}/open`);
+    // Wait for the sidebar to show the account link — confirms SmartNgRX has
+    // loaded the top entity and discovered the account ID before we wait
+    // for data rows (which only appear after the account entity itself loads).
+    await page.waitForSelector(`a[href*="${accountId}"]`, { timeout: 30000 });
     await page.waitForSelector('cdk-virtual-scroll-viewport', {
       timeout: 30000,
     });
@@ -354,32 +325,17 @@ test.describe('Open Positions — filter-change (symbol) sticky-header regressio
 // ─── Sold Positions — account-change ─────────────────────────────────────────
 
 test.describe('Sold Positions — account-change sticky-header regression (Round 9)', () => {
-  let cleanup1: () => Promise<void>;
-  let cleanup2: () => Promise<void>;
-  let accountId1: string;
-  let accountId2: string;
-
-  test.beforeAll(async () => {
-    const seeder1 = await seedScrollSoldPositionsData(WELL_KNOWN_ACCOUNT_ID_2);
-    cleanup1 = seeder1.cleanup;
-    accountId1 = seeder1.accountId;
-    const seeder2 = await seedScrollSoldPositionsData(WELL_KNOWN_ACCOUNT_ID_3);
-    cleanup2 = seeder2.cleanup;
-    accountId2 = seeder2.accountId;
-  });
-
-  test.afterAll(async () => {
-    if (cleanup1) {
-      await cleanup1();
-    }
-    if (cleanup2) {
-      await cleanup2();
-    }
-  });
+  // Pre-seeded in tools/create-test-db.js — no beforeAll/afterAll needed.
+  const accountId1 = WELL_KNOWN_ACCOUNT_ID_2;
+  const accountId2 = WELL_KNOWN_ACCOUNT_ID_3;
 
   test.beforeEach(async ({ page }) => {
     await login(page);
     await page.goto(`/account/${accountId1}/sold`);
+    // Wait for the sidebar to show the account link — confirms SmartNgRX has
+    // loaded the top entity and discovered the account ID before we wait
+    // for data rows (which only appear after the account entity itself loads).
+    await page.waitForSelector(`a[href*="${accountId1}"]`, { timeout: 30000 });
     await page.waitForSelector('cdk-virtual-scroll-viewport', {
       timeout: 30000,
     });
@@ -402,24 +358,16 @@ test.describe('Sold Positions — account-change sticky-header regression (Round
 // ─── Sold Positions — filter-change (symbol) ─────────────────────────────────
 
 test.describe('Sold Positions — filter-change (symbol) sticky-header regression (Round 9)', () => {
-  let cleanup: () => Promise<void>;
-  let accountId: string;
-
-  test.beforeAll(async () => {
-    const seeder = await seedScrollSoldPositionsData(WELL_KNOWN_ACCOUNT_ID_2);
-    cleanup = seeder.cleanup;
-    accountId = seeder.accountId;
-  });
-
-  test.afterAll(async () => {
-    if (cleanup) {
-      await cleanup();
-    }
-  });
+  // Pre-seeded in tools/create-test-db.js — no beforeAll/afterAll needed.
+  const accountId = WELL_KNOWN_ACCOUNT_ID_2;
 
   test.beforeEach(async ({ page }) => {
     await login(page);
     await page.goto(`/account/${accountId}/sold`);
+    // Wait for the sidebar to show the account link — confirms SmartNgRX has
+    // loaded the top entity and discovered the account ID before we wait
+    // for data rows (which only appear after the account entity itself loads).
+    await page.waitForSelector(`a[href*="${accountId}"]`, { timeout: 30000 });
     await page.waitForSelector('cdk-virtual-scroll-viewport', {
       timeout: 30000,
     });
@@ -434,7 +382,7 @@ test.describe('Sold Positions — filter-change (symbol) sticky-header regressio
     await runTwoPassInvariantCheck(page, async function doContextChange() {
       await applyAndClearColumnFilter(page, {
         columnSelector: `${VIEWPORT_SELECTOR} thead input[placeholder="Search Symbol"]`,
-        filterValue: 'E2E-SD',
+        filterValue: 'TESTEQ',
       });
     });
   });
@@ -443,41 +391,17 @@ test.describe('Sold Positions — filter-change (symbol) sticky-header regressio
 // ─── Dividend Deposits — account-change ──────────────────────────────────────
 
 test.describe('Dividend Deposits — account-change sticky-header regression (Round 9)', () => {
-  let cleanup1: () => Promise<void>;
-  let cleanup2: () => Promise<void>;
-  let accountId1: string;
-  let accountId2: string;
-
-  test.beforeAll(async () => {
-    // Requires pre-existing universe rows (e.g. seeded by the Universe describe
-    // above or present in the test DB). Both accounts reuse the same first-50
-    // universe rows; their div-deposit records differ only by accountId.
-    // Well-known account IDs are used so SmartNgRX can load them immediately on
-    // first navigation (pre-existing in the test DB at server start time).
-    const seeder1 = await seedScrollDivDepositsWithSymbolsData(
-      WELL_KNOWN_ACCOUNT_ID_2
-    );
-    cleanup1 = seeder1.cleanup;
-    accountId1 = seeder1.accountId;
-    const seeder2 = await seedScrollDivDepositsWithSymbolsData(
-      WELL_KNOWN_ACCOUNT_ID_3
-    );
-    cleanup2 = seeder2.cleanup;
-    accountId2 = seeder2.accountId;
-  });
-
-  test.afterAll(async () => {
-    if (cleanup1) {
-      await cleanup1();
-    }
-    if (cleanup2) {
-      await cleanup2();
-    }
-  });
+  // Pre-seeded in tools/create-test-db.js — no beforeAll/afterAll needed.
+  const accountId1 = WELL_KNOWN_ACCOUNT_ID_2;
+  const accountId2 = WELL_KNOWN_ACCOUNT_ID_3;
 
   test.beforeEach(async ({ page }) => {
     await login(page);
     await page.goto(`/account/${accountId1}/div-dep`);
+    // Wait for the sidebar to show the account link — confirms SmartNgRX has
+    // loaded the top entity and discovered the account ID before we wait
+    // for data rows (which only appear after the account entity itself loads).
+    await page.waitForSelector(`a[href*="${accountId1}"]`, { timeout: 30000 });
     await page.waitForSelector('cdk-virtual-scroll-viewport', {
       timeout: 30000,
     });

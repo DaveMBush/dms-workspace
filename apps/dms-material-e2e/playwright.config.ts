@@ -52,6 +52,10 @@ export default defineConfig({
       timeout: 120000,
       env: {
         ...process.env,
+        // Override NX_WORKSPACE_ROOT_PATH so that the server's e2e-server target
+        // (prepare-e2e-db + node dist/apps/server/main.js) uses this workspace's
+        // test-database.db, not the global NX workspace root's DB.
+        NX_WORKSPACE_ROOT_PATH: path.resolve(__dirname, '../..'),
         NODE_ENV: process.env.CI ? 'local' : 'development',
         AWS_ENDPOINT_URL: 'http://localhost:4566',
         SKIP_AWS_AUTH: 'true',
