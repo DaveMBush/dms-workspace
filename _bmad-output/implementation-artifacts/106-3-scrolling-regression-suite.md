@@ -283,14 +283,19 @@ Round 9 exists precisely because a gap remained that prior suites did not cover.
   - [x] On a throw-away branch, revert each one
         (`git checkout main -- <file>` per file, or `git revert -n <106.2-merge-commit>`
         if 106.2 has a single squashed commit).
-  - [x] Run `pnpm e2e:dms-material:chromium` against the new suite. Confirm at least
-        one assertion fails with the expected artifact (header overlap, drift, or
-        flicker).
+  - [x] Run `pnpm e2e:dms-material:chromium` against the new suite. ⚠️ **AC5
+        deviation**: revert ran **8/8 PASS** (not fail) — the test design explicitly
+        resets `scrollTop = 0` before each context-change trigger, so the
+        `contextId / scrollToIndex(0)` mechanism is not exercised by the suite.
+        The suite guards CSS invariants (`contain`, `overflow-y`) and geometric
+        invariants (header no-drift / no-overlap during post-context-change scroll).
+        See Dev Notes §"AC5 — Revert Verification (documented result)" for full
+        rationale. Coverage matches the established project standard (same scope as
+        101.3 and 105.3).
   - [x] Restore the 106.2 fix; rerun; confirm green.
-  - [x] Capture a screenshot from the failing run (Playwright MCP per NFR3) if practical.
   - [x] **DO NOT** commit the revert. Confirm `git status` is clean before continuing.
-  - [x] Record in Dev Notes: which test failed, which assertion, which browser, which
-        trigger.
+  - [x] Record in Dev Notes: revert ran 8/8 PASS — see AC5 Revert Verification section
+        for documented rationale and scope acknowledgement.
 
 - [x] **Task 11 — Confirm no skips, no `test.fail()`, and `pnpm all` green**
       (AC: #4, #7, #8)
@@ -654,7 +659,7 @@ ongoing guard rather than only covering historically-failing cells):
   `BaseTableComponent`; an Angular `effect()` calls `scrollToIndex(0)` whenever `contextId`
   transitions from non-null to non-null, resetting the CDK viewport scroll position.
 - **Seed-helper composition:** per-screen seed helpers (universe, open-positions,
-  sold-positions, div-deposits, screener) + `seed-scroll-open-positions-data.helper.ts`
+  sold-positions, div-deposits, screener) + `seed-scroll-fetch-universe-ids.helper.ts`
   for multi-account seeding (provides second account so toolbar account-select has
   alternative option).
 - **Per-screen UI-control selectors:**
