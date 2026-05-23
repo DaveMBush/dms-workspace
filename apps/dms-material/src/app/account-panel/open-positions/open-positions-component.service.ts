@@ -76,14 +76,16 @@ export class OpenPositionsComponentService {
 
     const accountId = this.currentAccount().id;
     const rawAccount = entityMap[accountId];
-    if (rawAccount == null) { return; }
+    if (rawAccount == null) {
+      return;
+    }
 
     const openTrades = rawAccount.openTrades;
-    const newIndexes = openTrades.indexes.filter(
-      function isNotClosedPosition(id: string): boolean {
-        return id !== position.id;
-      }
-    );
+    const newIndexes = openTrades.indexes.filter(function isNotClosedPosition(
+      id: string
+    ): boolean {
+      return id !== position.id;
+    });
     accountsFacade.upsertRow({
       ...rawAccount,
       openTrades: {
