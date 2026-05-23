@@ -25,7 +25,7 @@ export function isPositive(value: number): boolean {
 }
 
 export function isTradeClosed(trade: {
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+  // eslint-disable-next-line @typescript-eslint/naming-convention -- sell_date is a backend API field using snake_case
   sell_date?: string | null;
   sell?: number;
 }): boolean {
