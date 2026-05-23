@@ -1,5 +1,5 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { castTo, facadeRegistry, FacadeBase } from '@smarttools/smart-core';
+import { castTo, FacadeBase, facadeRegistry } from '@smarttools/smart-core';
 import { PartialArrayDefinition } from '@smarttools/smart-signals';
 
 import { Account } from '../../store/accounts/account.interface';
@@ -76,7 +76,7 @@ export class OpenPositionsComponentService {
 
     const accountId = this.currentAccount().id;
     const rawAccount = entityMap[accountId];
-    if (rawAccount == null) {
+    if (rawAccount === undefined) {
       return;
     }
 
