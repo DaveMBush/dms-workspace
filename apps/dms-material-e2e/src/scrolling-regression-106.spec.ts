@@ -48,9 +48,9 @@
  *                > rowHeight/2 AND reverts next frame (Story 105.3 AC2)
  *
  * BROWSER COVERAGE:
- *   All tests must pass on both Chromium and Firefox (no test.skip,
- *   test.fail, test.fixme, or describe.skip).  The Playwright config
- *   runs both projects in CI.
+ *   All tests must pass on both Chromium and Firefox. The Playwright config
+ *   runs both projects in CI. Do not use test.skip, test.fail,
+ *   pending-marker test annotations, or describe.skip in this file.
  *
  * SCREENS COVERED (from Story 106.1 matrix, all cells PASS):
  *   Universe         × account-change   (toolbar account-select swap)

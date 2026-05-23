@@ -73,6 +73,7 @@ function createBulkDivDeposits(
  * creation is skipped and that ID is used directly.  Cleanup will only delete
  * the seeded div deposits, not the pre-existing account.
  */
+// eslint-disable-next-line max-lines-per-function -- seeding function requires account creation, universe ID fetching, div deposit creation, and cleanup closure in a single operation
 export async function seedScrollDivDepositsWithSymbolsData(
   targetAccountId?: string
 ): Promise<SeederResult> {
