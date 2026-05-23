@@ -1,5 +1,6 @@
 import { ChildProcess, spawn } from 'child_process';
 import { app } from 'electron';
+import fs from 'fs';
 import path from 'path';
 
 /** Platform-specific schema-engine binary name (Prisma 7.x). */
@@ -92,12 +93,29 @@ function runMigrationsDev(): Promise<void> {
 
 /** Build the JSON-RPC applyMigrations request payload. */
 function buildApplyMigrationsRequest(migrationsPath: string): string {
+  const migrationsList = fs
+    .readdirSync(migrationsPath, { withFileTypes: true })
+    .filter(function isMigrationDirectory(entry: fs.Dirent): boolean {
+      return entry.isDirectory() && !entry.name.startsWith('.');
+    })
+    .sort(function sortByName(a: fs.Dirent, b: fs.Dirent): number {
+      return a.name.localeCompare(b.name);
+    })
+    .map(function toMigrationEntry(entry: fs.Dirent): {
+      migrationName: string;
+      migrationDirectoryPath: string;
+    } {
+      return {
+        migrationName: entry.name,
+        migrationDirectoryPath: path.join(migrationsPath, entry.name),
+      };
+    });
   return (
     JSON.stringify({
       jsonrpc: '2.0',
       id: 1,
       method: 'applyMigrations',
-      params: { migrationsDirectoryPath: migrationsPath },
+      params: { migrationsList },
     }) + '\n'
   );
 }
@@ -168,9 +186,13 @@ function attachEngineHandlers(config: EngineHandlerConfig): void {
   });
 
   child.on('spawn', function onSpawn(): void {
-    const request = buildApplyMigrationsRequest(migrationsPath);
-    child.stdin?.write(request);
-    child.stdin?.end();
+    try {
+      const request = buildApplyMigrationsRequest(migrationsPath);
+      child.stdin?.write(request);
+      child.stdin?.end();
+    } catch (err) {
+      reject(err instanceof Error ? err : new Error(String(err)));
+    }
   });
 
   child.on('close', function onClose(code: number | null): void {

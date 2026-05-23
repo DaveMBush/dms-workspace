@@ -14,6 +14,7 @@ vi.mock('child_process', () => ({
 }));
 
 import { spawn } from 'child_process';
+import fs from 'fs';
 import path from 'path';
 
 import { app } from 'electron';
@@ -77,6 +78,9 @@ describe('runMigrations', () => {
     vi.clearAllMocks();
     mockApp.isPackaged = false;
     savedResourcesPath = process.resourcesPath;
+    vi.spyOn(fs, 'readdirSync').mockReturnValue(
+      [] as unknown as fs.Dirent<Buffer>[]
+    );
   });
 
   afterEach(function teardown(): void {
@@ -223,13 +227,72 @@ describe('runMigrations', () => {
     const writtenArg = mockProc.stdin.write.mock.calls[0]?.[0] as string;
     const rpcMsg = JSON.parse(writtenArg.trim()) as {
       method?: string;
-      params?: { migrationsDirectoryPath?: string };
+      params?: {
+        migrationsList?: Array<{
+          migrationName: string;
+          migrationDirectoryPath: string;
+        }>;
+      };
     };
     expect(rpcMsg.method).toBe('applyMigrations');
-    expect(rpcMsg.params?.migrationsDirectoryPath).toBe(
-      '/mock/resources/prisma/migrations'
-    );
+    expect(Array.isArray(rpcMsg.params?.migrationsList)).toBe(true);
     expect(mockProc.stdin.end).toHaveBeenCalledOnce();
+
+    (process as NodeJS.Process & { resourcesPath: string }).resourcesPath =
+      originalResourcesPath;
+  });
+
+  it('packaged: migrationsList entries have correct migrationName and migrationDirectoryPath', async () => {
+    mockApp.isPackaged = true;
+    const originalResourcesPath = process.resourcesPath;
+    (process as NodeJS.Process & { resourcesPath: string }).resourcesPath =
+      '/mock/resources';
+
+    vi.spyOn(fs, 'readdirSync').mockReturnValue([
+      {
+        name: '20250101000000_init',
+        isDirectory: () => true,
+      } as unknown as fs.Dirent<Buffer>,
+      {
+        name: '20250201000000_add_user',
+        isDirectory: () => true,
+      } as unknown as fs.Dirent<Buffer>,
+    ]);
+
+    const noOpResponse = JSON.stringify({
+      jsonrpc: '2.0',
+      id: 1,
+      result: { appliedMigrationNames: [] },
+    });
+    const mockProc = makeMockEngineProcess(noOpResponse, 0);
+    mockSpawn.mockReturnValue(mockProc);
+
+    await runMigrations();
+
+    const writtenArg = mockProc.stdin.write.mock.calls[0]?.[0] as string;
+    const rpcMsg = JSON.parse(writtenArg.trim()) as {
+      params: {
+        migrationsList: Array<{
+          migrationName: string;
+          migrationDirectoryPath: string;
+        }>;
+      };
+    };
+    expect(rpcMsg.params.migrationsList).toHaveLength(2);
+    expect(rpcMsg.params.migrationsList[0]?.migrationName).toBe(
+      '20250101000000_init'
+    );
+    expect(rpcMsg.params.migrationsList[0]?.migrationDirectoryPath).toBe(
+      path.join(
+        '/mock/resources',
+        'prisma',
+        'migrations',
+        '20250101000000_init'
+      )
+    );
+    expect(rpcMsg.params.migrationsList[1]?.migrationName).toBe(
+      '20250201000000_add_user'
+    );
 
     (process as NodeJS.Process & { resourcesPath: string }).resourcesPath =
       originalResourcesPath;
