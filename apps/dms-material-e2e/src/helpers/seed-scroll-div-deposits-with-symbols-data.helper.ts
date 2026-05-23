@@ -57,12 +57,22 @@ function createBulkDivDeposits(
 }
 /* eslint-enable @typescript-eslint/no-explicit-any -- Re-enable */
 
-/**
- * Seeds 60 dividend deposit rows for sort+scroll regression testing.
- * Re-uses existing universe entries (first 50 by createdAt asc) so that
- * buildUniverseMap always has their IDs loaded on account panel render.
- * Only creates an account and div deposits — no universe records are created or deleted.
- */
+async function cleanupScrollDivDeposits(
+  prisma: Awaited<ReturnType<typeof initializePrismaClient>>,
+  accountId: string,
+  accountName: string,
+  isNewAccount: boolean
+): Promise<void> {
+  try {
+    await prisma.divDeposits.deleteMany({ where: { accountId } });
+    if (isNewAccount) {
+      await prisma.accounts.deleteMany({ where: { name: accountName } });
+    }
+  } finally {
+    await prisma.$disconnect();
+  }
+}
+
 /**
  * Seeds 60 dividend deposit rows for sort+scroll regression testing.
  * Re-uses existing universe entries (first 50 by createdAt asc) so that
@@ -114,16 +124,13 @@ export async function seedScrollDivDepositsWithSymbolsData(
   return {
     accountId,
     symbols: [],
-    cleanup:
-      async function cleanupScrollDivDepositsWithSymbols(): Promise<void> {
-        try {
-          await prisma.divDeposits.deleteMany({ where: { accountId } });
-          if (isNewAccount) {
-            await prisma.accounts.deleteMany({ where: { name: accountName } });
-          }
-        } finally {
-          await prisma.$disconnect();
-        }
-      },
+    cleanup: async function cleanup(): Promise<void> {
+      await cleanupScrollDivDeposits(
+        prisma,
+        accountId,
+        accountName,
+        isNewAccount
+      );
+    },
   };
 }

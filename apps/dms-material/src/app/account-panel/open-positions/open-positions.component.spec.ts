@@ -782,6 +782,72 @@ describe('OpenPositionsComponent', () => {
 
       expect(mockTrade.sell_date).toBe('2024-06-01');
     });
+
+    // Story 107.2: Close-detection — deleteOpenPosition called when trade is fully closed
+    it('should call deleteOpenPosition when sell price set and sell_date already exists', () => {
+      mockTrade.sell_date = '2024-06-01';
+      mockTrade.sell = 0;
+
+      component.onSellChange(mockPosition, 175);
+
+      expect(mockOpenPositionsService.deleteOpenPosition).toHaveBeenCalledWith(
+        mockPosition
+      );
+    });
+
+    it('should NOT call deleteOpenPosition when sell price set but sell_date is absent', () => {
+      mockTrade.sell_date = undefined;
+
+      component.onSellChange(mockPosition, 175);
+
+      expect(
+        mockOpenPositionsService.deleteOpenPosition
+      ).not.toHaveBeenCalled();
+    });
+
+    it('should NOT call deleteOpenPosition when sell price is zero', () => {
+      mockTrade.sell_date = '2024-06-01';
+
+      component.onSellChange(mockPosition, 0);
+
+      expect(
+        mockOpenPositionsService.deleteOpenPosition
+      ).not.toHaveBeenCalled();
+    });
+
+    it('should call deleteOpenPosition when sell_date set and sell > 0', () => {
+      mockTrade.sell = 175;
+      mockTrade.sell_date = undefined;
+
+      const sellDate = new Date(2024, 5, 1);
+      component.onSellDateChange(mockPosition, sellDate);
+
+      expect(mockOpenPositionsService.deleteOpenPosition).toHaveBeenCalledWith(
+        mockPosition
+      );
+    });
+
+    it('should NOT call deleteOpenPosition when sell_date set but sell == 0', () => {
+      mockTrade.sell = 0;
+      mockTrade.sell_date = undefined;
+
+      component.onSellDateChange(mockPosition, new Date(2024, 5, 1));
+
+      expect(
+        mockOpenPositionsService.deleteOpenPosition
+      ).not.toHaveBeenCalled();
+    });
+
+    it('should NOT call deleteOpenPosition when sell_date is cleared (null)', () => {
+      mockTrade.sell = 175;
+      mockTrade.sell_date = '2024-06-01';
+
+      component.onSellDateChange(mockPosition, null);
+
+      expect(
+        mockOpenPositionsService.deleteOpenPosition
+      ).not.toHaveBeenCalled();
+    });
   });
 });
 

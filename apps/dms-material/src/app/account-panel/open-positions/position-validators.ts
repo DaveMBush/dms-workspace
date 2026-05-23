@@ -23,3 +23,17 @@ export function isValidNumber(value: number): boolean {
 export function isPositive(value: number): boolean {
   return value > 0;
 }
+
+export function isTradeClosed(trade: {
+  // eslint-disable-next-line @typescript-eslint/naming-convention -- sell_date is a backend API field using snake_case
+  sell_date?: string | null;
+  sell?: number;
+}): boolean {
+  const hasSellDate =
+    typeof trade.sell_date === 'string' && trade.sell_date.trim() !== '';
+  const hasPositiveSell =
+    typeof trade.sell === 'number' &&
+    Number.isFinite(trade.sell) &&
+    trade.sell > 0;
+  return hasSellDate && hasPositiveSell;
+}
