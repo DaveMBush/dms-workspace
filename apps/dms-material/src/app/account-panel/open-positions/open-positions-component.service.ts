@@ -1,5 +1,6 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { RowProxyDelete, SmartArray } from '@smarttools/smart-signals';
+import { castTo, FacadeBase, facadeRegistry } from '@smarttools/smart-core';
+import { PartialArrayDefinition } from '@smarttools/smart-signals';
 
 import { Account } from '../../store/accounts/account.interface';
 import { currentAccountSignalStore } from '../../store/current-account/current-account.signal-store';
@@ -56,18 +57,45 @@ export class OpenPositionsComponentService {
   });
 
   deleteOpenPosition(position: OpenPosition): void {
-    const currentAccount = selectCurrentAccountSignal(
-      this.currentAccountSignalStore
-    );
-    const trades = currentAccount().openTrades as Trade[];
-    const tradesArray = trades as SmartArray<Account, Trade> & Trade[];
-    for (let i = 0; i < tradesArray.length; i++) {
-      const trade = tradesArray[i] as RowProxyDelete & Trade;
-      if (trade.id === position.id) {
-        trade.delete!();
-        break;
+    // Use facadeRegistry to directly update the account's openTrades in the
+    // NgRX signal store, bypassing the SmartRocks removeFromStore path which
+    // has a double-decrement bug in mergeVirtualArrays for single-item arrays.
+    const accountsFacade = facadeRegistry.register<Account>('app', 'accounts');
+    // entityState is on SignalsFacade at runtime but not declared on FacadeBase;
+    // use castTo so TypeScript accepts the property access.
+    const withEntityState = castTo<
+      FacadeBase<Account> & {
+        entityState: {
+          entityMap(): Partial<
+            Record<string, Account & { openTrades: PartialArrayDefinition }>
+          >;
+        };
       }
+    >(accountsFacade);
+    const entityMap = withEntityState.entityState.entityMap();
+
+    const accountId = this.currentAccount().id;
+    const rawAccount = entityMap[accountId];
+    if (rawAccount === undefined) {
+      return;
     }
+
+    const openTrades = rawAccount.openTrades;
+    const newIndexes = openTrades.indexes.filter(function isNotClosedPosition(
+      id: string
+    ): boolean {
+      return id !== position.id;
+    });
+    const lengthDecrement =
+      newIndexes.length < openTrades.indexes.length ? 1 : 0;
+    accountsFacade.upsertRow({
+      ...rawAccount,
+      openTrades: {
+        ...openTrades,
+        indexes: newIndexes,
+        length: openTrades.length - lengthDecrement,
+      },
+    });
   }
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- will hide this
