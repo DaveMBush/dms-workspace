@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
-import { isTradeClosed, isPositive, isValidDate, isValidNumber } from './position-validators';
+import {
+  isTradeClosed,
+  isPositive,
+  isValidDate,
+  isValidNumber,
+} from './position-validators';
 
 describe('isValidDate', () => {
   it('returns true for a valid date string', () => {
