@@ -95,12 +95,21 @@ function runMigrationsDev(): Promise<void> {
 function buildApplyMigrationsRequest(migrationsPath: string): string {
   const migrationsList = fs
     .readdirSync(migrationsPath, { withFileTypes: true })
-    .filter((entry) => entry.isDirectory() && !entry.name.startsWith('.'))
-    .sort((a, b) => a.name.localeCompare(b.name))
-    .map((entry) => ({
-      migrationName: entry.name,
-      migrationDirectoryPath: path.join(migrationsPath, entry.name),
-    }));
+    .filter(function isMigrationDirectory(entry: fs.Dirent): boolean {
+      return entry.isDirectory() && !entry.name.startsWith('.');
+    })
+    .sort(function sortByName(a: fs.Dirent, b: fs.Dirent): number {
+      return a.name.localeCompare(b.name);
+    })
+    .map(function toMigrationEntry(entry: fs.Dirent): {
+      migrationName: string;
+      migrationDirectoryPath: string;
+    } {
+      return {
+        migrationName: entry.name,
+        migrationDirectoryPath: path.join(migrationsPath, entry.name),
+      };
+    });
   return (
     JSON.stringify({
       jsonrpc: '2.0',

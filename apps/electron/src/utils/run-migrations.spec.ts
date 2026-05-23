@@ -78,7 +78,9 @@ describe('runMigrations', () => {
     vi.clearAllMocks();
     mockApp.isPackaged = false;
     savedResourcesPath = process.resourcesPath;
-    vi.spyOn(fs, 'readdirSync').mockReturnValue([] as unknown as fs.Dirent[]);
+    vi.spyOn(fs, 'readdirSync').mockReturnValue(
+      [] as unknown as fs.Dirent<Buffer>[]
+    );
   });
 
   afterEach(function teardown(): void {
@@ -250,11 +252,11 @@ describe('runMigrations', () => {
       {
         name: '20250101000000_init',
         isDirectory: () => true,
-      } as unknown as fs.Dirent,
+      } as unknown as fs.Dirent<Buffer>,
       {
         name: '20250201000000_add_user',
         isDirectory: () => true,
-      } as unknown as fs.Dirent,
+      } as unknown as fs.Dirent<Buffer>,
     ]);
 
     const noOpResponse = JSON.stringify({
