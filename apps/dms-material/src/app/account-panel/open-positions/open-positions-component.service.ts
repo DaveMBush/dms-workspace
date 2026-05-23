@@ -86,12 +86,14 @@ export class OpenPositionsComponentService {
     ): boolean {
       return id !== position.id;
     });
+    const lengthDecrement =
+      newIndexes.length < openTrades.indexes.length ? 1 : 0;
     accountsFacade.upsertRow({
       ...rawAccount,
       openTrades: {
         ...openTrades,
         indexes: newIndexes,
-        length: newIndexes.length,
+        length: openTrades.length - lengthDecrement,
       },
     });
   }
