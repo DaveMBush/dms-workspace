@@ -124,7 +124,13 @@ export async function seedScrollDivDepositsWithSymbolsData(
   return {
     accountId,
     symbols: [],
-    cleanup: () =>
-      cleanupScrollDivDeposits(prisma, accountId, accountName, isNewAccount),
+    cleanup: async function cleanup(): Promise<void> {
+      await cleanupScrollDivDeposits(
+        prisma,
+        accountId,
+        accountName,
+        isNewAccount
+      );
+    },
   };
 }
