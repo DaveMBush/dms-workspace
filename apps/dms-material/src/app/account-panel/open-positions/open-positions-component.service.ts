@@ -66,9 +66,8 @@ export class OpenPositionsComponentService {
     const withEntityState = castTo<
       FacadeBase<Account> & {
         entityState: {
-          entityMap(): Record<
-            string,
-            Account & { openTrades: PartialArrayDefinition }
+          entityMap(): Partial<
+            Record<string, Account & { openTrades: PartialArrayDefinition }>
           >;
         };
       }
@@ -77,11 +76,13 @@ export class OpenPositionsComponentService {
 
     const accountId = this.currentAccount().id;
     const rawAccount = entityMap[accountId];
-    if (!rawAccount) return;
+    if (rawAccount == null) { return; }
 
     const openTrades = rawAccount.openTrades;
     const newIndexes = openTrades.indexes.filter(
-      (id: string) => id !== position.id
+      function isNotClosedPosition(id: string): boolean {
+        return id !== position.id;
+      }
     );
     accountsFacade.upsertRow({
       ...rawAccount,

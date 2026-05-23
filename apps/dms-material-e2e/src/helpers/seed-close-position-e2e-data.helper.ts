@@ -28,6 +28,27 @@ async function createOpenTrade(
   });
 }
 
+async function createTestUniverse(
+  prisma: PrismaClient,
+  symbol: string,
+  riskGroupId: string
+): Promise<void> {
+  await prisma.universe.create({
+    data: {
+      symbol,
+      risk_group_id: riskGroupId,
+      distribution: 1.0,
+      distributions_per_year: 4,
+      last_price: 120.0,
+      ex_date: new Date('2026-06-15'),
+      most_recent_sell_date: null,
+      most_recent_sell_price: null,
+      expired: false,
+      is_closed_end_fund: true,
+    },
+  });
+}
+
 /**
  * Seeds one open-position trade for the Epic 107 close-position E2E test.
  * Creates its own universe record, account, and trade — fully hermetic.
@@ -44,20 +65,7 @@ export async function seedClosePositionE2eData(): Promise<SeederResult> {
 
   try {
     const riskGroups = await createRiskGroups(prisma);
-    await prisma.universe.create({
-      data: {
-        symbol,
-        risk_group_id: riskGroups.equitiesRiskGroup.id,
-        distribution: 1.0,
-        distributions_per_year: 4,
-        last_price: 120.0,
-        ex_date: new Date('2026-06-15'),
-        most_recent_sell_date: null,
-        most_recent_sell_price: null,
-        expired: false,
-        is_closed_end_fund: true,
-      },
-    });
+    await createTestUniverse(prisma, symbol, riskGroups.equitiesRiskGroup.id);
     const universeIds = await fetchUniverseIds(prisma, symbols);
     const account = await prisma.accounts.create({
       data: { name: accountName },
