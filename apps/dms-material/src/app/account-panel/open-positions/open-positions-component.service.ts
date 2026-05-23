@@ -9,7 +9,6 @@ import { differenceInTradingDays } from '../../store/trades/difference-in-tradin
 import { OpenPosition } from '../../store/trades/open-position.interface';
 import { Trade } from '../../store/trades/trade.interface';
 
-
 /**
  * Scrolling regression history (Epics 29, 31, 44, 60, 64, 87):
  * See base-table.component.ts for full history.
@@ -66,7 +65,12 @@ export class OpenPositionsComponentService {
     // use castTo so TypeScript accepts the property access.
     const withEntityState = castTo<
       FacadeBase<Account> & {
-        entityState: { entityMap(): Record<string, Account & { openTrades: PartialArrayDefinition }> };
+        entityState: {
+          entityMap(): Record<
+            string,
+            Account & { openTrades: PartialArrayDefinition }
+          >;
+        };
       }
     >(accountsFacade);
     const entityMap = withEntityState.entityState.entityMap();
