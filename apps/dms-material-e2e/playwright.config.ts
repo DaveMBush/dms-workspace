@@ -19,6 +19,12 @@ if (process.env.WSL_DISTRO_NAME && !process.env.CI) {
   delete process.env.DISPLAY;
 }
 
+// Ensure seeders (Prisma-based helpers running in the test process) connect to
+// the same test-database.db that the e2e-server reads from.  In a git worktree
+// the inherited NX_WORKSPACE_ROOT_PATH points to the main workspace, not the
+// worktree, so we override it here for both the test runner and the servers.
+process.env['NX_WORKSPACE_ROOT_PATH'] = path.resolve(__dirname, '../..');
+
 export default defineConfig({
   ...nxE2EPreset(__filename, { testDir: './src' }),
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
@@ -37,6 +43,8 @@ export default defineConfig({
     actionTimeout: 20000,
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
+    /* Fix timezone to UTC so date rendering is deterministic regardless of host system timezone */
+    timezoneId: 'UTC',
   },
   /* Configure test execution to run one project at a time */
   // Note: With workers: 1, tests will run serially, but by default they interleave between projects.
