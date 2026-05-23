@@ -1,5 +1,6 @@
 import { ChildProcess, spawn } from 'child_process';
 import { app } from 'electron';
+import fs from 'fs';
 import path from 'path';
 
 /** Platform-specific schema-engine binary name (Prisma 7.x). */
@@ -92,12 +93,19 @@ function runMigrationsDev(): Promise<void> {
 
 /** Build the JSON-RPC applyMigrations request payload. */
 function buildApplyMigrationsRequest(migrationsPath: string): string {
+  const migrationsList = (fs.readdirSync(migrationsPath) as string[])
+    .filter((name) => !name.startsWith('.'))
+    .sort()
+    .map((name) => ({
+      migrationName: name,
+      migrationDirectoryPath: path.join(migrationsPath, name),
+    }));
   return (
     JSON.stringify({
       jsonrpc: '2.0',
       id: 1,
       method: 'applyMigrations',
-      params: { migrationsDirectoryPath: migrationsPath },
+      params: { migrationsList },
     }) + '\n'
   );
 }
@@ -168,9 +176,13 @@ function attachEngineHandlers(config: EngineHandlerConfig): void {
   });
 
   child.on('spawn', function onSpawn(): void {
-    const request = buildApplyMigrationsRequest(migrationsPath);
-    child.stdin?.write(request);
-    child.stdin?.end();
+    try {
+      const request = buildApplyMigrationsRequest(migrationsPath);
+      child.stdin?.write(request);
+      child.stdin?.end();
+    } catch (err) {
+      reject(err instanceof Error ? err : new Error(String(err)));
+    }
   });
 
   child.on('close', function onClose(code: number | null): void {
