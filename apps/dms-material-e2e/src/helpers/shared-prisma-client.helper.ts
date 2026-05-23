@@ -1,6 +1,5 @@
-import * as path from 'path';
-
 import type { PrismaClient } from '@prisma/client';
+import * as path from 'path';
 
 export async function initializePrismaClient(): Promise<PrismaClient> {
   const prismaClientImport = (await import('@prisma/client')).PrismaClient;
