@@ -93,12 +93,13 @@ function runMigrationsDev(): Promise<void> {
 
 /** Build the JSON-RPC applyMigrations request payload. */
 function buildApplyMigrationsRequest(migrationsPath: string): string {
-  const migrationsList = (fs.readdirSync(migrationsPath) as string[])
-    .filter((name) => !name.startsWith('.'))
-    .sort()
-    .map((name) => ({
-      migrationName: name,
-      migrationDirectoryPath: path.join(migrationsPath, name),
+  const migrationsList = fs
+    .readdirSync(migrationsPath, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory() && !entry.name.startsWith('.'))
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .map((entry) => ({
+      migrationName: entry.name,
+      migrationDirectoryPath: path.join(migrationsPath, entry.name),
     }));
   return (
     JSON.stringify({

@@ -1,6 +1,6 @@
 # Story 108.2: Fix Migration Deployment for Electron Builds
 
-Status: Complete
+Status: In Progress
 
 ## Story
 

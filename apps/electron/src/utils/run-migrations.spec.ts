@@ -246,9 +246,16 @@ describe('runMigrations', () => {
     (process as NodeJS.Process & { resourcesPath: string }).resourcesPath =
       '/mock/resources';
 
-    vi.spyOn(fs, 'readdirSync').mockReturnValue(
-      ['20250101000000_init', '20250201000000_add_user'] as unknown as fs.Dirent[]
-    );
+    vi.spyOn(fs, 'readdirSync').mockReturnValue([
+      {
+        name: '20250101000000_init',
+        isDirectory: () => true,
+      } as unknown as fs.Dirent,
+      {
+        name: '20250201000000_add_user',
+        isDirectory: () => true,
+      } as unknown as fs.Dirent,
+    ]);
 
     const noOpResponse = JSON.stringify({
       jsonrpc: '2.0',
