@@ -149,9 +149,6 @@ tr.mat-mdc-row {
 th.mat-mdc-header-cell {
   font-weight: 600;
   background-color: var(--dms-surface);
-  position: sticky;
-  top: 0;
-  z-index: 1;
   // box-shadow replaces the collapsed border line for sticky cells:
   // a border-bottom on a sticky th disappears during scroll; box-shadow persists
   box-shadow: 0 1px 0 0
