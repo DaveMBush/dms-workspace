@@ -29,7 +29,7 @@ import { currentAccountSignalStore } from '../../store/current-account/current-a
 import { OpenPosition } from '../../store/trades/open-position.interface';
 import { Trade } from '../../store/trades/trade.interface';
 import { OpenPositionsComponentService } from './open-positions-component.service';
-import { isPositive, isValidDate, isValidNumber } from './position-validators';
+import { isPositive, isTradeClosed, isValidDate, isValidNumber } from './position-validators';
 
 @Component({
   selector: 'dms-open-positions',
@@ -216,6 +216,9 @@ export class OpenPositionsComponent implements OnDestroy {
     const trade = this.findTradeById(position.id);
     if (trade) {
       trade.sell = newValue;
+      if (isTradeClosed(trade)) {
+        this.openPositionsService.deleteOpenPosition(position);
+      }
     }
   }
 
@@ -239,6 +242,9 @@ export class OpenPositionsComponent implements OnDestroy {
       return;
     }
     trade.sell_date = dateString;
+    if (isTradeClosed(trade)) {
+      this.openPositionsService.deleteOpenPosition(position);
+    }
   }
 
   onDeletePosition(position: OpenPosition): void {
