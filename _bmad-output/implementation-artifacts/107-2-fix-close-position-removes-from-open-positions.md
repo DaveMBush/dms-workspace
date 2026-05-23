@@ -454,21 +454,21 @@ local SmartArray entry only — does NOT call DELETE /api/trades/:id".
 
 ## Dev Agent Record
 
-**Completed:** 2026-05-23  
-**Developer:** GitHub Copilot (Claude Sonnet 4.6)  
-**Hypothesis selected:** Option (a) — Local SmartArray remove on close  
+**Completed:** 2026-05-23
+**Developer:** GitHub Copilot (Claude Sonnet 4.6)
+**Hypothesis selected:** Option (a) — Local SmartArray remove on close
 **Story 107.1 recommendation confirmed:** Yes — `deleteOpenPosition` identified as the correct existing method; Epic 104 never shipped this code path.
 
 ### Implementation Summary
 
-1. **`isTradeClosed` predicate added to `position-validators.ts`**  
+1. **`isTradeClosed` predicate added to `position-validators.ts`**
    - Parameter uses optional properties (`sell_date?`, `sell?`) to match the `Trade` interface shape.
    - Logic: returns `true` only when `sell_date` is a non-empty string AND `sell` is a finite number > 0.
 
-2. **`onSellChange` updated in `open-positions.component.ts`**  
+2. **`onSellChange` updated in `open-positions.component.ts`**
    - After setting `trade.sell = newValue`, calls `isTradeClosed(trade)` and if closed, calls `this.openPositionsService.deleteOpenPosition(position)`.
 
-3. **`onSellDateChange` updated in `open-positions.component.ts`**  
+3. **`onSellDateChange` updated in `open-positions.component.ts`**
    - After setting `trade.sell_date = dateString`, calls `isTradeClosed(trade)` and if closed, calls `this.openPositionsService.deleteOpenPosition(position)`.
    - The null-clear path (`newDate === null` → `trade.sell_date = undefined`) does NOT call deleteOpenPosition (correct — clearing a date re-opens the trade).
 
