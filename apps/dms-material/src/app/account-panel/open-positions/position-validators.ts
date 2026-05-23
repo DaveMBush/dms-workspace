@@ -25,8 +25,9 @@ export function isPositive(value: number): boolean {
 }
 
 export function isTradeClosed(trade: {
-  sell_date?: string | null | undefined;
-  sell?: number | undefined;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  sell_date?: string | null;
+  sell?: number;
 }): boolean {
   const hasSellDate =
     typeof trade.sell_date === 'string' && trade.sell_date.trim() !== '';
