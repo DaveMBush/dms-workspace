@@ -281,7 +281,12 @@ describe('runMigrations', () => {
       '20250101000000_init'
     );
     expect(rpcMsg.params.migrationsList[0]?.migrationDirectoryPath).toBe(
-      path.join('/mock/resources', 'prisma', 'migrations', '20250101000000_init')
+      path.join(
+        '/mock/resources',
+        'prisma',
+        'migrations',
+        '20250101000000_init'
+      )
     );
     expect(rpcMsg.params.migrationsList[1]?.migrationName).toBe(
       '20250201000000_add_user'
