@@ -1,5 +1,5 @@
 # generated: 2026-03-17
-# last_updated: 2026-05-08
+# last_updated: 2026-05-23
 # project: dms-workspace
 # project_key: NOKEY
 # tracking_system: file-system
@@ -37,7 +37,7 @@
 #     E1 → E3 → E4(TS rules) → E2 → E5 → E4(template rules) → E6 → E7 → E8
 
 generated: 2026-03-17
-last_updated: 2026-05-08
+last_updated: 2026-05-23
 project_key: NOKEY
 tracking_system: file-system
 story_location: _bmad-output/implementation-artifacts
@@ -626,3 +626,17 @@ development_status:
   106-2-root-cause-and-fix-scrolling: review
   106-3-scrolling-regression-suite-106: ready-for-dev
   epic-106-retrospective: optional
+
+  # ── Epic 107: Close Position Not Removed Immediately ────────────────────────
+  epic-107: done
+  107-1-investigate-close-position-not-removed: done
+  107-2-fix-close-position-removes-from-open-positions: done
+  107-3-e2e-close-position-immediate-removal: done
+  epic-107-retrospective: optional
+
+  # ── Epic 108: Fix Linux Installation and AppImage Migration Failure ──────────
+  epic-108: in-progress
+  108-1-investigate-electron-migration-failure: done
+  108-2-fix-electron-migration-deployment: in-progress
+  108-3-e2e-electron-package-launch-smoke: review
+  epic-108-retrospective: optional
