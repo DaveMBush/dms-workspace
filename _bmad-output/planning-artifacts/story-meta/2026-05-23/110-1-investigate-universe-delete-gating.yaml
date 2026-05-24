@@ -1,0 +1,19 @@
+epic_num: 110
+story_num: 1
+story_id: '110.1'
+story_key: 110-1-investigate-universe-delete-gating
+slug: 110-1-investigate-universe-delete-gating
+title: Investigate Current Delete-Button Logic and Choose Gating Strategy
+epic_title: Restrict Universe Delete Button to Truly Unused Symbols Under All Accounts Filter Only
+type: investigation
+status: Approved
+source_epics_file: _bmad-output/planning-artifacts/epics-2026-05-23.md
+source_section: 'Story 110.1'
+covers_requirements: []
+depends_on_stories: []
+enables_stories: ['110.2', '110.3']
+expected_story_file: _bmad-output/implementation-artifacts/110-1-investigate-universe-delete-gating.md
+notes: |
+  Trace the current delete-button visibility expression and the active-account-
+  filter source. Prefer a server-derived `deletable: boolean` on the Universe
+  row DTO over N client-side count queries — justify in Dev Notes.

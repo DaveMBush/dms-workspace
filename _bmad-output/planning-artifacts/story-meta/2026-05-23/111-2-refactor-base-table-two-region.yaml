@@ -1,0 +1,21 @@
+epic_num: 111
+story_num: 2
+story_id: '111.2'
+story_key: 111-2-refactor-base-table-two-region
+slug: 111-2-refactor-base-table-two-region
+title: Refactor Base Table to Two-Region Layout With Shared Fixed Columns
+epic_title: Eliminate Janky Scroll by Decoupling Sticky Header from Virtualized Body (Round 10)
+type: implementation
+status: Approved
+source_epics_file: _bmad-output/planning-artifacts/epics-2026-05-23.md
+source_section: 'Story 111.2'
+covers_requirements: ['R7', 'R8', 'R9', 'R11']
+depends_on_stories: ['111.1']
+enables_stories: ['111.3', '111.4']
+expected_story_file: _bmad-output/implementation-artifacts/111-2-refactor-base-table-two-region.md
+notes: |
+  Header rendered as a separate DOM region with NO position:sticky. Body keeps
+  cdk-virtual-scroll-viewport. Header and body share a single fixed-column-width
+  model and remain perfectly aligned in all states. Horizontal scroll
+  synchronized between header and body. Smoke-verify on at least one consumer
+  screen via Playwright MCP; full sweep happens in 111.3.
