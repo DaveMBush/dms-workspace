@@ -165,10 +165,7 @@ export default function registerGetAllUniverses(
       const universes = await prisma.universe.findMany({
         where: {
           NOT: {
-            AND: [
-              { expired: true },
-              { trades: { none: { sell_date: null } } },
-            ],
+            AND: [{ expired: true }, { trades: { none: { sell_date: null } } }],
           },
         },
         include: {

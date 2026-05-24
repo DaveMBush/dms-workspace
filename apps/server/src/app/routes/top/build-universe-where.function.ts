@@ -24,10 +24,7 @@ export function buildUniverseWhere(
   // Always exclude expired symbols that have no open trades (sell_date: null means open).
   // This is a permanent server-side filter: the client must never receive expired-no-open rows.
   where.NOT = {
-    AND: [
-      { expired: true },
-      { trades: { none: { sell_date: null } } },
-    ],
+    AND: [{ expired: true }, { trades: { none: { sell_date: null } } }],
   };
 
   return where;
