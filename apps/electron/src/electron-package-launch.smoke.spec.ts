@@ -141,10 +141,7 @@ function httpGet(url: string): Promise<HttpResult> {
  * table name when no @@map directive is present).
  */
 function parseSchemaModels(): string[] {
-  const schemaPath = path.resolve(
-    __dirname,
-    '../../../prisma/schema.prisma'
-  );
+  const schemaPath = path.resolve(__dirname, '../../../prisma/schema.prisma');
   const content = fs.readFileSync(schemaPath, 'utf8');
   const names: string[] = [];
   for (const line of content.split('\n')) {
@@ -182,10 +179,9 @@ function killProcess(proc: ChildProcess): Promise<void> {
  */
 function assertDbSchema(dbPath: string): void {
   const stat = fs.statSync(dbPath);
-  expect(
-    stat.size,
-    `dms.db at ${dbPath} should be non-empty`
-  ).toBeGreaterThan(0);
+  expect(stat.size, `dms.db at ${dbPath} should be non-empty`).toBeGreaterThan(
+    0
+  );
 
   const db = new Database(dbPath, { readonly: true });
   try {
@@ -210,9 +206,7 @@ function assertDbSchema(dbPath: string): void {
     const expectedTables = parseSchemaModels();
     for (const table of expectedTables) {
       const row = db
-        .prepare(
-          `SELECT name FROM sqlite_master WHERE type='table' AND name=?`
-        )
+        .prepare(`SELECT name FROM sqlite_master WHERE type='table' AND name=?`)
         .get(table) as { name: string } | undefined;
       expect(row, `Table '${table}' not found in dms.db`).toBeDefined();
     }
@@ -259,9 +253,7 @@ describe('Packaged Electron launch — Linux AppImage', () => {
   beforeEach(async function setupLinux(): Promise<void> {
     if (!isCurrentPlatform('linux')) return;
     logBuffer = '';
-    userDataDir = fs.mkdtempSync(
-      path.join(os.tmpdir(), 'dms-smoke-udata-')
-    );
+    userDataDir = fs.mkdtempSync(path.join(os.tmpdir(), 'dms-smoke-udata-'));
     tempHome = fs.mkdtempSync(path.join(os.tmpdir(), 'dms-smoke-home-'));
     port = await getFreePort();
   });
@@ -288,10 +280,7 @@ describe('Packaged Electron launch — Linux AppImage', () => {
   async function launchLinuxAndPoll(): Promise<void> {
     fs.chmodSync(appImagePath, 0o755);
 
-    const electronArgs = [
-      '--no-sandbox',
-      `--user-data-dir=${userDataDir}`,
-    ];
+    const electronArgs = ['--no-sandbox', `--user-data-dir=${userDataDir}`];
 
     let cmd: string;
     let args: string[];
@@ -315,8 +304,7 @@ describe('Packaged Electron launch — Linux AppImage', () => {
       args = electronArgs;
     }
 
-    const nodeExecPath =
-      process.env['DMS_NODE_EXEC_PATH'] ?? process.execPath;
+    const nodeExecPath = process.env['DMS_NODE_EXEC_PATH'] ?? process.execPath;
 
     child = spawn(cmd, args, {
       env: {
@@ -356,7 +344,10 @@ describe('Packaged Electron launch — Linux AppImage', () => {
       await launchLinuxAndPoll();
 
       // AC1: process alive, no migration error
-      expect(child!.exitCode, 'AppImage process must still be running').toBeNull();
+      expect(
+        child!.exitCode,
+        'AppImage process must still be running'
+      ).toBeNull();
       expect(logBuffer).not.toMatch(/missing field ['"`]migrationsList['"`]/);
       expect(logBuffer).not.toMatch(/Migration failed/);
     }
@@ -444,16 +435,10 @@ describe('Packaged Electron launch — macOS DMG', () => {
   beforeEach(async function setupMac(): Promise<void> {
     if (!isCurrentPlatform('darwin')) return;
     logBuffer = '';
-    userDataDir = fs.mkdtempSync(
-      path.join(os.tmpdir(), 'dms-smoke-udata-')
-    );
+    userDataDir = fs.mkdtempSync(path.join(os.tmpdir(), 'dms-smoke-udata-'));
     tempHome = fs.mkdtempSync(path.join(os.tmpdir(), 'dms-smoke-home-'));
-    mountPoint = fs.mkdtempSync(
-      path.join(os.tmpdir(), 'dms-smoke-mount-')
-    );
-    appTempDir = fs.mkdtempSync(
-      path.join(os.tmpdir(), 'dms-smoke-app-')
-    );
+    mountPoint = fs.mkdtempSync(path.join(os.tmpdir(), 'dms-smoke-mount-'));
+    appTempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'dms-smoke-app-'));
     port = await getFreePort();
   });
 
@@ -517,12 +502,7 @@ describe('Packaged Electron launch — macOS DMG', () => {
       mountPoint = '';
 
       const executableName = appBundles[0].replace('.app', '');
-      const execPath = path.join(
-        appCopy,
-        'Contents',
-        'MacOS',
-        executableName
-      );
+      const execPath = path.join(appCopy, 'Contents', 'MacOS', executableName);
 
       fs.chmodSync(execPath, 0o755);
 
@@ -628,13 +608,9 @@ describe('Packaged Electron launch — Windows NSIS', () => {
   beforeEach(async function setupWin(): Promise<void> {
     if (!isCurrentPlatform('win32')) return;
     logBuffer = '';
-    userDataDir = fs.mkdtempSync(
-      path.join(os.tmpdir(), 'dms-smoke-udata-')
-    );
+    userDataDir = fs.mkdtempSync(path.join(os.tmpdir(), 'dms-smoke-udata-'));
     tempHome = fs.mkdtempSync(path.join(os.tmpdir(), 'dms-smoke-home-'));
-    extractDir = fs.mkdtempSync(
-      path.join(os.tmpdir(), 'dms-smoke-extract-')
-    );
+    extractDir = fs.mkdtempSync(path.join(os.tmpdir(), 'dms-smoke-extract-'));
     port = await getFreePort();
   });
 
@@ -684,20 +660,16 @@ describe('Packaged Electron launch — Windows NSIS', () => {
       const nodeExecPath =
         process.env['DMS_NODE_EXEC_PATH'] ?? process.execPath;
 
-      child = spawn(
-        dmsExe,
-        [`--user-data-dir=${userDataDir}`],
-        {
-          env: {
-            ...process.env,
-            DMS_SMOKE_PORT: String(port),
-            DMS_NODE_EXEC_PATH: nodeExecPath,
-            USERPROFILE: tempHome,
-            HOMEPATH: tempHome,
-          },
-          stdio: 'pipe',
-        }
-      );
+      child = spawn(dmsExe, [`--user-data-dir=${userDataDir}`], {
+        env: {
+          ...process.env,
+          DMS_SMOKE_PORT: String(port),
+          DMS_NODE_EXEC_PATH: nodeExecPath,
+          USERPROFILE: tempHome,
+          HOMEPATH: tempHome,
+        },
+        stdio: 'pipe',
+      });
 
       child.stdout?.on('data', function onStdout(chunk: Buffer): void {
         logBuffer += chunk.toString();
@@ -718,7 +690,10 @@ describe('Packaged Electron launch — Windows NSIS', () => {
       );
 
       // AC1 assertions (Windows)
-      expect(child.exitCode, 'Windows process must still be running').toBeNull();
+      expect(
+        child.exitCode,
+        'Windows process must still be running'
+      ).toBeNull();
       expect(logBuffer).not.toMatch(/missing field ['"`]migrationsList['"`]/);
       expect(logBuffer).not.toMatch(/Migration failed/);
 
