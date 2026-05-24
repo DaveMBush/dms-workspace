@@ -231,8 +231,16 @@ Universe screen rendered without errors showing exactly 3 rows.
 
 - `apps/server/src/app/routes/universe/get-all-universes/index.ts` (modified — added WHERE clause to exclude expired-no-open rows)
 - `apps/server/src/app/routes/top/build-universe-where.function.ts` (modified — added permanent NOT filter so SmartNgRX top route also excludes expired-no-open IDs)
+- `apps/server/src/app/routes/top/build-universe-where.function.spec.ts` (added — unit tests for permanent NOT filter, 12 cases)
+- `apps/dms-material-e2e/src/helpers/seed-universe-e2e-data.helper.ts` (modified — added open trade for UDDD to satisfy AC2)
 - `_bmad-output/implementation-artifacts/109-2-implement-universe-expired-filter.md` (modified — story file updated)
 
 ### Change Log
 
 - 2026-05-24: Implemented server-side filter for expired-no-open symbols. Added Prisma WHERE clause to `get-all-universes/index.ts` and permanent NOT filter to `build-universe-where.function.ts`. Playwright verified 3 correct rows on Universe screen. All 975 server tests pass.
+
+### Review Findings
+
+- [x] [Review][Patch] Untracked spec file not committed [`apps/server/src/app/routes/top/build-universe-where.function.spec.ts`] — File exists locally (git status shows `??`) but is NOT staged. Modified `buildUniverseWhere` has no committed unit tests for new permanent-filter behavior. Stage and commit the spec, or delete it if 109.3 owns all tests.
+- [x] [Review][Patch] File list missing changed file [`_bmad-output/implementation-artifacts/109-2-implement-universe-expired-filter.md` File List section] — `apps/dms-material-e2e/src/helpers/seed-universe-e2e-data.helper.ts` was modified (open trade added for UDDD) but is absent from Dev Agent Record → File List.
+- [x] [Review][Defer] `where.NOT` unconditional direct assignment — fragile for future composition [`apps/server/src/app/routes/top/build-universe-where.function.ts:28`] — deferred, pre-existing pattern; not an active bug
