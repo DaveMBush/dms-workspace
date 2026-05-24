@@ -607,32 +607,32 @@ Claude Sonnet 4.6 (GitHub Copilot)
 
 Gate result: **FAIL** — 1 decision_needed + 1 patch block approval. 4 deferred (pre-existing).
 
-- [ ] [Review][Decision] D1 — AC3 title check: spec says "page title matches `productName` (`DMS`)" but `apps/dms-material/src/index.html` has `<title>Dividend Management System Material</title>`. Implementation asserts `<dms-root` presence instead of the title (which is semantically correct and more reliable). Spec text is wrong about the actual page title. Human decision required: (a) keep `<dms-root` as-is and add a spec note clarifying the title discrepancy; (b) also assert actual HTML title `<title>Dividend Management System Material</title>`; (c) treat `<dms-root` as sufficient for AC3 and accept spec as-written. Applies to Linux AC3, macOS AC4, and Windows AC5 blocks.
-- [ ] [Review][Patch] P1 — Spawn setup block (chmod, xvfb detection, spawn, stdout/stderr attach, pollHealth) is duplicated verbatim 3× in the Linux describe block — once per test (AC1/AC2/AC3). ~55 identical lines copied 3 times = ~110 extra lines. Extract to a `launchLinuxAndPoll()` async helper. Each test calls helper then asserts. Reduces duplication, makes future changes to spawn logic a single edit. [`apps/electron/src/electron-package-launch.smoke.spec.ts` ~L295–490]
-- [x] [Review][Defer] W1 — `parseSchemaModels()` ignores `@@map` directives — pre-existing, already in deferred-work.md. [`apps/electron/src/electron-package-launch.smoke.spec.ts` — `parseSchemaModels()`]
-- [x] [Review][Defer] W2 — No `--appimage-extract-and-run` for FUSE-less Linux CI — pre-existing, already in deferred-work.md.
-- [x] [Review][Defer] W3 — `beforeAll` throws on missing AppImage (intentional per Task 3) — already in deferred-work.md.
-- [x] [Review][Defer] W4 — `check-no-skipped-tests.sh` fails on 5 pre-existing violations from Stories 98.4 and 82 (not caused by Story 108.3). New Vitest spec is clean and not flagged.
+- [ ] `[Review][Decision]` D1 — AC3 title check: spec says "page title matches `productName` (`DMS`)" but `apps/dms-material/src/index.html` has `<title>Dividend Management System Material</title>`. Implementation asserts `<dms-root` presence instead of the title (which is semantically correct and more reliable). Spec text is wrong about the actual page title. Human decision required: (a) keep `<dms-root` as-is and add a spec note clarifying the title discrepancy; (b) also assert actual HTML title `<title>Dividend Management System Material</title>`; (c) treat `<dms-root` as sufficient for AC3 and accept spec as-written. Applies to Linux AC3, macOS AC4, and Windows AC5 blocks.
+- [ ] `[Review][Patch]` P1 — Spawn setup block (chmod, xvfb detection, spawn, stdout/stderr attach, pollHealth) is duplicated verbatim 3× in the Linux describe block — once per test (AC1/AC2/AC3). ~55 identical lines copied 3 times = ~110 extra lines. Extract to a `launchLinuxAndPoll()` async helper. Each test calls helper then asserts. Reduces duplication, makes future changes to spawn logic a single edit. [`apps/electron/src/electron-package-launch.smoke.spec.ts` ~L295–490]
+- [x] `[Review][Defer]` W1 — `parseSchemaModels()` ignores `@@map` directives — pre-existing, already in deferred-work.md. [`apps/electron/src/electron-package-launch.smoke.spec.ts` — `parseSchemaModels()`]
+- [x] `[Review][Defer]` W2 — No `--appimage-extract-and-run` for FUSE-less Linux CI — pre-existing, already in deferred-work.md.
+- [x] `[Review][Defer]` W3 — `beforeAll` throws on missing AppImage (intentional per Task 3) — already in deferred-work.md.
+- [x] `[Review][Defer]` W4 — `check-no-skipped-tests.sh` fails on 5 pre-existing violations from Stories 98.4 and 82 (not caused by Story 108.3). New Vitest spec is clean and not flagged.
 
 ### Review Findings (Pass 1 — 2026-05-23, superseded)
 
 Previous pass findings — kept for reference. P1 fixed, D1 resolved, P2–P5 deferred.
 
-- [x] [Review][Decision] D1 (pass 1) — Two overlapping implementations: Vitest spec (Story 108.3 deliverable, complete) vs Playwright spec (Story 98.4 pre-existing, incomplete). **Resolved:** Playwright spec is pre-existing; Vitest spec is Story 108.3's contribution. P2–P5 (Playwright gaps) deferred.
-- [x] [Review][Patch] P1 (pass 1) — Windows `7z` invocation lacked guard. **Fixed** — `execFileSync('7z', ['i'])` guard added with descriptive error. [`apps/electron/src/electron-package-launch.smoke.spec.ts` ~L770]
-- [x] [Review][Defer] P2 (pass 1) — Playwright `launchAppImage()` no logBuffer capture. Deferred (pre-existing Story 98.4 spec).
-- [x] [Review][Defer] P3 (pass 1) — Playwright spec missing `finished_at IS NOT NULL` assert. Deferred.
-- [x] [Review][Defer] P4 (pass 1) — Playwright spec missing AC3 (GET / assertion). Deferred.
-- [x] [Review][Defer] P5 (pass 1) — Playwright spec hardcoded port 39001. Deferred.
-- [x] [Review][Defer] W1 — parseSchemaModels @@map gap. Deferred.
-- [x] [Review][Defer] W2 — No --appimage-extract-and-run. Deferred.
-- [x] [Review][Defer] W3 — beforeAll throws on missing AppImage (intentional). Deferred.
+- [x] `[Review][Decision]` D1 (pass 1) — Two overlapping implementations: Vitest spec (Story 108.3 deliverable, complete) vs Playwright spec (Story 98.4 pre-existing, incomplete). **Resolved:** Playwright spec is pre-existing; Vitest spec is Story 108.3's contribution. P2–P5 (Playwright gaps) deferred.
+- [x] `[Review][Patch]` P1 (pass 1) — Windows `7z` invocation lacked guard. **Fixed** — `execFileSync('7z', ['i'])` guard added with descriptive error. [`apps/electron/src/electron-package-launch.smoke.spec.ts` ~L770]
+- [x] `[Review][Defer]` P2 (pass 1) — Playwright `launchAppImage()` no logBuffer capture. Deferred (pre-existing Story 98.4 spec).
+- [x] `[Review][Defer]` P3 (pass 1) — Playwright spec missing `finished_at IS NOT NULL` assert. Deferred.
+- [x] `[Review][Defer]` P4 (pass 1) — Playwright spec missing AC3 (GET / assertion). Deferred.
+- [x] `[Review][Defer]` P5 (pass 1) — Playwright spec hardcoded port 39001. Deferred.
+- [x] `[Review][Defer]` W1 — parseSchemaModels @@map gap. Deferred.
+- [x] `[Review][Defer]` W2 — No --appimage-extract-and-run. Deferred.
+- [x] `[Review][Defer]` W3 — beforeAll throws on missing AppImage (intentional). Deferred.
 
 ### Review Findings (Pass 3 — 2026-05-23)
 
 Gate result: **PASS** — 0 new patch, 0 decision_needed. Pass 2 D1+P1 verified resolved in current implementation. 2 deferred remain (pre-existing, unchanged from pass 2).
 
-- [x] [Review][Resolved] D1 from pass 2 — Implementation asserts both `<dms-root` AND `'Dividend Management System Material'` (lines 397–398, 582–583, 739–740). Option (b) from D1 is implemented. Resolved.
-- [x] [Review][Resolved] P1 from pass 2 — `launchLinuxAndPoll()` helper defined at line 288, called by all three Linux tests (lines 356, 371, 390). No spawn-block duplication. Resolved.
-- [x] [Review][Defer] W3 — `beforeAll` silently returns on missing AppImage instead of failing with clear message (Task 3 violation) — pre-existing deferred, not new.
-- [x] [Review][Defer] W4 — `check-no-skipped-tests.sh` exits 1 due to pre-existing `test.skip(condition)` in `apps/dms-material-e2e/src/electron-package-launch-smoke.spec.ts:12` (from Story 108.1) — not caused by Story 108.3. New Vitest spec is clean and not flagged by the grep.
+- [x] `[Review][Resolved]` D1 from pass 2 — Implementation asserts both `<dms-root` AND `'Dividend Management System Material'` (lines 397–398, 582–583, 739–740). Option (b) from D1 is implemented. Resolved.
+- [x] `[Review][Resolved]` P1 from pass 2 — `launchLinuxAndPoll()` helper defined at line 288, called by all three Linux tests (lines 356, 371, 390). No spawn-block duplication. Resolved.
+- [x] `[Review][Defer]` W3 — `beforeAll` silently returns on missing AppImage instead of failing with clear message (Task 3 violation) — pre-existing deferred, not new.
+- [x] `[Review][Defer]` W4 — `check-no-skipped-tests.sh` exits 1 due to pre-existing `test.skip(condition)` in `apps/dms-material-e2e/src/electron-package-launch-smoke.spec.ts:12` (from Story 108.1) — not caused by Story 108.3. New Vitest spec is clean and not flagged by the grep.
