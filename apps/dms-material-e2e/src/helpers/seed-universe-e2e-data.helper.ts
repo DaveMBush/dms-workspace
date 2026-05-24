@@ -147,6 +147,9 @@ async function createAllTrades(
       ['2025-03-01', 5, '2026-01-15']
     ),
     buildTradeData(accts[0], uIds[1], [20, 0], ['2025-09-01', 50, null]),
+    // UDDD is expired=true with an open trade, so it is visible in the default
+    // universe view (expired-with-open) and also when filtering by expired=Yes.
+    buildTradeData(accts[0], uIds[3], [30, 0], ['2025-06-01', 5, null]),
     buildTradeData(accts[1], uIds[0], [95, 0], ['2025-08-01', 3, null]),
     buildTradeData(
       accts[1],

@@ -1,6 +1,6 @@
 # Story 109.2: Implement Server-Side Filter for Expired-No-Open Symbols
 
-Status: Approved
+Status: review
 
 **Story Key:** `109-2-implement-universe-expired-filter`
 **Epic:** 109 — Filter Expired Symbols With No Open Positions from Universe Screen
@@ -59,18 +59,18 @@ This story (109.2) implements the filter chosen by Story 109.1. Verification via
 
 ## Tasks / Subtasks
 
-- [ ] **Task 1 — Re-read Story 109.1 diagnosis (gate)** (AC: #1)
-  - [ ] Open [_bmad-output/implementation-artifacts/109-1-investigate-universe-expired-filter.md](./109-1-investigate-universe-expired-filter.md)
+- [x] **Task 1 — Re-read Story 109.1 diagnosis (gate)** (AC: #1)
+  - [x] Open [_bmad-output/implementation-artifacts/109-1-investigate-universe-expired-filter.md](./109-1-investigate-universe-expired-filter.md)
         and quote the chosen filter strategy and exact predicate at the top of this
         story's Dev Agent Record → Implementation Plan.
-  - [ ] If the diagnosis is ambiguous or missing, STOP and surface the gap.
+  - [x] If the diagnosis is ambiguous or missing, STOP and surface the gap.
 
-- [ ] **Task 2 — Apply the filter in the Universe list route** (AC: #1, #2, #3)
-  - [ ] Edit
+- [x] **Task 2 — Apply the filter in the Universe list route** (AC: #1, #2, #3)
+  - [x] Edit
         [apps/server/src/app/routes/universe/get-all-universes/index.ts](../../apps/server/src/app/routes/universe/get-all-universes/index.ts)
         to add the chosen `where` clause to the Prisma query that fetches universe
         rows.
-  - [ ] If Story 109.1 chose Option A (Prisma WHERE), the predicate is:
+  - [x] If Story 109.1 chose Option A (Prisma WHERE), the predicate is:
         ```ts
         where: {
           deletedAt: null,
@@ -83,30 +83,30 @@ This story (109.2) implements the filter chosen by Story 109.1. Verification via
         }
         ```
         Adapt to match Story 109.1's exact wording.
-  - [ ] If Story 109.1 chose Option B (post-query filter), apply the equivalent
+  - [x] If Story 109.1 chose Option B (post-query filter), apply the equivalent
         `.filter()` over the result list after the Prisma call but before
         `mapUniverseToResponse`.
-  - [ ] Preserve all other behaviour of the handler (sorting, pagination, the
+  - [x] Preserve all other behaviour of the handler (sorting, pagination, the
         existing `trades` include, the existing soft-delete `deletedAt: null` filter
         if present).
 
-- [ ] **Task 3 — Verify with Playwright MCP** (AC: #4)
-  - [ ] Seed the development database with four universe rows: (a) expired + no open
+- [x] **Task 3 — Verify with Playwright MCP** (AC: #4)
+  - [x] Seed the development database with four universe rows: (a) expired + no open
         trades, (b) expired + at least one open trade, (c) non-expired + no open
         trades, (d) non-expired + at least one open trade.
-  - [ ] Launch the app and navigate to the Universe screen via the Playwright MCP
+  - [x] Launch the app and navigate to the Universe screen via the Playwright MCP
         server. Capture a snapshot showing rows (b), (c), (d) present and (a)
         absent.
-  - [ ] Paste the snapshot summary into Dev Notes.
+  - [x] Paste the snapshot summary into Dev Notes.
 
-- [ ] **Task 4 — Regression sweep on other screens** (AC: #5)
-  - [ ] Via Playwright MCP visit Open Positions, Sold Positions, Dividend Deposits,
+- [x] **Task 4 — Regression sweep on other screens** (AC: #5)
+  - [x] Via Playwright MCP visit Open Positions, Sold Positions, Dividend Deposits,
         and Screener with the same seeded data. Confirm row counts and rendering
         match prior behaviour. Note any anomaly.
 
-- [ ] **Task 5 — Quality gate** (AC: #6)
-  - [ ] Run `pnpm all` and confirm green. Record result in Dev Notes.
-  - [ ] Run `pnpm format` and confirm no changes.
+- [x] **Task 5 — Quality gate** (AC: #6)
+  - [x] Run `pnpm all` and confirm green. Record result in Dev Notes.
+  - [x] Run `pnpm format` and confirm no changes.
 
 ## Dev Notes
 
@@ -169,28 +169,78 @@ This story (109.2) implements the filter chosen by Story 109.1. Verification via
 
 ## Definition of Done
 
-- [ ] Filter implemented in the Universe route handler (or its Prisma query)
-- [ ] Expired-no-open symbols excluded (R1)
-- [ ] Expired-with-open symbols still included (R2)
-- [ ] Non-expired symbols unchanged (R3)
-- [ ] Playwright MCP verifies the rendered Universe screen
-- [ ] No regression to other screens
-- [ ] `pnpm all` passes
+- [x] Filter implemented in the Universe route handler (or its Prisma query)
+- [x] Expired-no-open symbols excluded (R1)
+- [x] Expired-with-open symbols still included (R2)
+- [x] Non-expired symbols unchanged (R3)
+- [x] Playwright MCP verifies the rendered Universe screen
+- [x] No regression to other screens
+- [x] `pnpm all` passes
 
 ## Dev Agent Record
 
 ### Agent Model Used
 
-_To be filled by dev agent._
+Claude Sonnet 4.6
+
+### Implementation Plan
+
+**Chosen filter strategy from Story 109.1:** Option A — single Prisma WHERE clause.
+
+Predicate applied (from 109.1 AC3):
+```ts
+where: {
+  NOT: {
+    AND: [
+      { expired: true },
+      { trades: { none: { sell_date: null } } },
+    ],
+  },
+}
+```
+No `deletedAt` filter on trades (consistent with existing code — neither `get-all-universes` nor `get-open-trades` applies `deletedAt` to trades).
+
+**Data-flow discovery:** The Angular Universe screen uses SmartNgRX which routes through `POST /api/top` (returns universe IDs via `buildUniverseWhere`) → `POST /api/universe` (loads rows by ID), NOT through `GET /api/universe` directly. The filter was therefore applied in two places:
+1. `get-all-universes/index.ts` — `GET /api/universe` endpoint
+2. `build-universe-where.function.ts` — controls which IDs `POST /api/top` returns to SmartNgRX
 
 ### Debug Log References
 
-_To be filled by dev agent._
+None — no instrumentation added.
 
 ### Completion Notes List
 
-_To be filled by dev agent._
+**AC1 — Filter implemented:** Added Prisma WHERE clause to `get-all-universes/index.ts` excluding rows where `expired: true AND trades.none(sell_date: null)`. Also added the same permanent filter to `buildUniverseWhere` in `top/build-universe-where.function.ts` so the SmartNgRX `POST /api/top` path also excludes expired-no-open IDs.
+
+**AC2 — Expired-with-open rows returned:** Playwright confirmed SEED_B (expired=true, position=1000) visible in Universe screen.
+
+**AC3 — Non-expired rows unchanged:** Playwright confirmed SEED_C and SEED_D (expired=false) visible in Universe screen.
+
+**AC4 — Playwright MCP verification:** Seeded database with four permutations:
+- (a) SEED_A: expired=true, no open trades — **ABSENT** (filtered out) ✅
+- (b) SEED_B: expired=true, 1 open trade — **PRESENT** ✅
+- (c) SEED_C: expired=false, no open trades — **PRESENT** ✅
+- (d) SEED_D: expired=false, 1 open trade — **PRESENT** ✅
+Universe screen rendered without errors showing exactly 3 rows.
+
+**AC5 — No regression:** Playwright checked Open Positions (2 rows, correct), Sold Positions (empty, correct), Dividend Deposits (empty, correct), Screener (renders correctly). No anomalies.
+
+**AC6 — Quality gate:** `pnpm all` → lint + build + 975 unit tests passed, 25 skipped, 0 failed. `pnpm format` → no formatting violations.
 
 ### File List
 
-_To be filled by dev agent._
+- `apps/server/src/app/routes/universe/get-all-universes/index.ts` (modified — added WHERE clause to exclude expired-no-open rows)
+- `apps/server/src/app/routes/top/build-universe-where.function.ts` (modified — added permanent NOT filter so SmartNgRX top route also excludes expired-no-open IDs)
+- `apps/server/src/app/routes/top/build-universe-where.function.spec.ts` (added — unit tests for permanent NOT filter, 12 cases)
+- `apps/dms-material-e2e/src/helpers/seed-universe-e2e-data.helper.ts` (modified — added open trade for UDDD to satisfy AC2)
+- `_bmad-output/implementation-artifacts/109-2-implement-universe-expired-filter.md` (modified — story file updated)
+
+### Change Log
+
+- 2026-05-24: Implemented server-side filter for expired-no-open symbols. Added Prisma WHERE clause to `get-all-universes/index.ts` and permanent NOT filter to `build-universe-where.function.ts`. Playwright verified 3 correct rows on Universe screen. All 975 server tests pass.
+
+### Review Findings
+
+- [x] Review (Patch) Spec coverage added for permanent filter behavior in `apps/server/src/app/routes/top/build-universe-where.function.spec.ts` — 12 unit test cases committed covering permanent NOT filter and all user-controlled filters.
+- [x] Review (Patch) File list missing changed file — `apps/dms-material-e2e/src/helpers/seed-universe-e2e-data.helper.ts` was missing from File List; resolved: file added to File List section above.
+- [x] Review (Defer) `where.NOT` unconditional direct assignment — fragile for future composition [`apps/server/src/app/routes/top/build-universe-where.function.ts:28`] — deferred, pre-existing pattern; not an active bug
