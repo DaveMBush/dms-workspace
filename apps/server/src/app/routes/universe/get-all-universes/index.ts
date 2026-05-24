@@ -163,6 +163,14 @@ export default function registerGetAllUniverses(
         sortOrder === 'desc' ? 'desc' : 'asc';
 
       const universes = await prisma.universe.findMany({
+        where: {
+          NOT: {
+            AND: [
+              { expired: true },
+              { trades: { none: { sell_date: null } } },
+            ],
+          },
+        },
         include: {
           risk_group: true,
           trades: true,
