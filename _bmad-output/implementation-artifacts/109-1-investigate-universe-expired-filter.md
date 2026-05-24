@@ -260,7 +260,7 @@ Justification: (a) **Correctness** — expired symbols with zero open trades are
 
 **AC4 — Quality gate:**
 
-`pnpm all` passed — see File List for the only changed file (story doc). No production source files modified.
+`pnpm all` passed — see File List for the only changed file (story doc). No production source files modified. CI evidence: [run 26352011954, job 77571829027](https://github.com/DaveMBush/dms-workspace/actions/runs/26352011954/job/77571829027) completed 2026-05-24T04:36:38Z with conclusion **success**.
 
 ### File List
 
