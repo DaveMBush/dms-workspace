@@ -225,7 +225,7 @@ Universe screen rendered without errors showing exactly 3 rows.
 
 **AC5 — No regression:** Playwright checked Open Positions (2 rows, correct), Sold Positions (empty, correct), Dividend Deposits (empty, correct), Screener (renders correctly). No anomalies.
 
-**AC6 — Quality gate:** `pnpm exec nx run server:test --skip-nx-cache` → 975 passed, 25 skipped, 0 failed. `pnpm exec nx run server:build:development` → success.
+**AC6 — Quality gate:** `pnpm all` → lint + build + 975 unit tests passed, 25 skipped, 0 failed. `pnpm format` → no formatting violations.
 
 ### File List
 
@@ -241,6 +241,6 @@ Universe screen rendered without errors showing exactly 3 rows.
 
 ### Review Findings
 
-- [x] [Review][Patch] Untracked spec file not committed [`apps/server/src/app/routes/top/build-universe-where.function.spec.ts`] — File exists locally (git status shows `??`) but is NOT staged. Modified `buildUniverseWhere` has no committed unit tests for new permanent-filter behavior. Stage and commit the spec, or delete it if 109.3 owns all tests.
-- [x] [Review][Patch] File list missing changed file [`_bmad-output/implementation-artifacts/109-2-implement-universe-expired-filter.md` File List section] — `apps/dms-material-e2e/src/helpers/seed-universe-e2e-data.helper.ts` was modified (open trade added for UDDD) but is absent from Dev Agent Record → File List.
-- [x] [Review][Defer] `where.NOT` unconditional direct assignment — fragile for future composition [`apps/server/src/app/routes/top/build-universe-where.function.ts:28`] — deferred, pre-existing pattern; not an active bug
+- [x] Review (Patch) Untracked spec file not committed [`apps/server/src/app/routes/top/build-universe-where.function.spec.ts`] — File exists locally (git status shows `??`) but is NOT staged. Modified `buildUniverseWhere` has no committed unit tests for new permanent-filter behavior. Stage and commit the spec, or delete it if 109.3 owns all tests.
+- [x] Review (Patch) File list missing changed file — `apps/dms-material-e2e/src/helpers/seed-universe-e2e-data.helper.ts` was missing from File List; resolved: file added to File List section above.
+- [x] Review (Defer) `where.NOT` unconditional direct assignment — fragile for future composition [`apps/server/src/app/routes/top/build-universe-where.function.ts:28`] — deferred, pre-existing pattern; not an active bug
