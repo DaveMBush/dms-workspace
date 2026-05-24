@@ -13,6 +13,7 @@
  * is not triggered (see scripts/check-no-skipped-tests.sh).
  */
 
+// eslint-disable-next-line @typescript-eslint/naming-convention -- better-sqlite3 exports a PascalCase default that violates the rule
 import Database from 'better-sqlite3';
 import { ChildProcess, execFileSync, spawn } from 'child_process';
 import fs from 'fs';
@@ -24,7 +25,7 @@ import { afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-function isCurrentPlatform(target: 'linux' | 'darwin' | 'win32'): boolean {
+function isCurrentPlatform(target: 'darwin' | 'linux' | 'win32'): boolean {
   return process.platform === target;
 }
 
@@ -228,7 +229,9 @@ describe('Packaged Electron launch — Linux AppImage', () => {
   let port = 0;
 
   beforeAll(function locateAppImage(): void {
-    if (!isCurrentPlatform('linux')) return;
+    if (!isCurrentPlatform('linux')) {
+      return;
+    }
 
     let entries: string[] = [];
     try {
@@ -251,7 +254,9 @@ describe('Packaged Electron launch — Linux AppImage', () => {
   });
 
   beforeEach(async function setupLinux(): Promise<void> {
-    if (!isCurrentPlatform('linux')) return;
+    if (!isCurrentPlatform('linux')) {
+      return;
+    }
     logBuffer = '';
     userDataDir = fs.mkdtempSync(path.join(os.tmpdir(), 'dms-smoke-udata-'));
     tempHome = fs.mkdtempSync(path.join(os.tmpdir(), 'dms-smoke-home-'));
@@ -278,6 +283,7 @@ describe('Packaged Electron launch — Linux AppImage', () => {
    * Assigns `child` in outer scope, appends to `logBuffer`, awaits health.
    */
   async function launchLinuxAndPoll(): Promise<void> {
+    // eslint-disable-next-line sonarjs/file-permissions -- AppImage must be executable; 0o755 is the standard permission for a packaged binary
     fs.chmodSync(appImagePath, 0o755);
 
     const electronArgs = ['--no-sandbox', `--user-data-dir=${userDataDir}`];
@@ -290,6 +296,7 @@ describe('Packaged Electron launch — Linux AppImage', () => {
       process.env['DISPLAY'].length === 0
     ) {
       try {
+        // eslint-disable-next-line sonarjs/no-os-command-from-path -- probing for xvfb-run availability via system PATH is intentional in this CI smoke test
         execFileSync('which', ['xvfb-run'], { stdio: 'ignore' });
       } catch {
         throw new Error(
@@ -339,7 +346,9 @@ describe('Packaged Electron launch — Linux AppImage', () => {
     'AC1 — launches and migrates without error',
     { timeout: 60_000 },
     async function testLinuxAC1(): Promise<void> {
-      if (!isCurrentPlatform('linux') || appImagePath.length === 0) return;
+      if (!isCurrentPlatform('linux') || appImagePath.length === 0) {
+        return;
+      }
 
       await launchLinuxAndPoll();
 
@@ -357,7 +366,9 @@ describe('Packaged Electron launch — Linux AppImage', () => {
     'AC2 — database schema present after first launch',
     { timeout: 60_000 },
     async function testLinuxAC2(): Promise<void> {
-      if (!isCurrentPlatform('linux') || appImagePath.length === 0) return;
+      if (!isCurrentPlatform('linux') || appImagePath.length === 0) {
+        return;
+      }
 
       await launchLinuxAndPoll();
 
@@ -376,7 +387,9 @@ describe('Packaged Electron launch — Linux AppImage', () => {
     'AC3 — main window renders and is interactive',
     { timeout: 60_000 },
     async function testLinuxAC3(): Promise<void> {
-      if (!isCurrentPlatform('linux') || appImagePath.length === 0) return;
+      if (!isCurrentPlatform('linux') || appImagePath.length === 0) {
+        return;
+      }
 
       await launchLinuxAndPoll();
 
@@ -406,7 +419,9 @@ describe('Packaged Electron launch — macOS DMG', () => {
   let port = 0;
 
   beforeAll(function locateDmg(): void {
-    if (!isCurrentPlatform('darwin')) return;
+    if (!isCurrentPlatform('darwin')) {
+      return;
+    }
 
     let entries: string[] = [];
     try {
@@ -433,7 +448,9 @@ describe('Packaged Electron launch — macOS DMG', () => {
   });
 
   beforeEach(async function setupMac(): Promise<void> {
-    if (!isCurrentPlatform('darwin')) return;
+    if (!isCurrentPlatform('darwin')) {
+      return;
+    }
     logBuffer = '';
     userDataDir = fs.mkdtempSync(path.join(os.tmpdir(), 'dms-smoke-udata-'));
     tempHome = fs.mkdtempSync(path.join(os.tmpdir(), 'dms-smoke-home-'));
@@ -449,6 +466,7 @@ describe('Packaged Electron launch — macOS DMG', () => {
     }
     if (mountPoint.length > 0) {
       try {
+        // eslint-disable-next-line sonarjs/no-os-command-from-path -- hdiutil is a macOS system utility for DMG management; PATH lookup is intentional
         execFileSync('hdiutil', ['detach', mountPoint], { stdio: 'ignore' });
       } catch {
         // best-effort unmount
@@ -475,6 +493,7 @@ describe('Packaged Electron launch — macOS DMG', () => {
     { timeout: 60_000 },
     async function testMacSmoke(): Promise<void> {
       // Mount the DMG
+      // eslint-disable-next-line sonarjs/no-os-command-from-path -- hdiutil is a macOS system utility; PATH lookup is required for DMG mounting
       execFileSync('hdiutil', [
         'attach',
         dmgPath,
@@ -497,13 +516,16 @@ describe('Packaged Electron launch — macOS DMG', () => {
       const appBundle = path.join(mountPoint, appBundles[0]);
       const appCopy = path.join(appTempDir, appBundles[0]);
 
+      // eslint-disable-next-line sonarjs/no-os-command-from-path -- cp is used to duplicate the .app bundle out of the read-only DMG mount
       execFileSync('cp', ['-r', appBundle, appCopy]);
+      // eslint-disable-next-line sonarjs/no-os-command-from-path -- hdiutil detach unmounts the DMG after copying the app bundle
       execFileSync('hdiutil', ['detach', mountPoint]);
       mountPoint = '';
 
       const executableName = appBundles[0].replace('.app', '');
       const execPath = path.join(appCopy, 'Contents', 'MacOS', executableName);
 
+      // eslint-disable-next-line sonarjs/file-permissions -- the macOS executable must be marked as executable; 0o755 is the standard permission
       fs.chmodSync(execPath, 0o755);
 
       const nodeExecPath =
@@ -579,7 +601,9 @@ describe('Packaged Electron launch — Windows NSIS', () => {
   let port = 0;
 
   beforeAll(function locateExe(): void {
-    if (!isCurrentPlatform('win32')) return;
+    if (!isCurrentPlatform('win32')) {
+      return;
+    }
 
     let entries: string[] = [];
     try {
@@ -606,7 +630,9 @@ describe('Packaged Electron launch — Windows NSIS', () => {
   });
 
   beforeEach(async function setupWin(): Promise<void> {
-    if (!isCurrentPlatform('win32')) return;
+    if (!isCurrentPlatform('win32')) {
+      return;
+    }
     logBuffer = '';
     userDataDir = fs.mkdtempSync(path.join(os.tmpdir(), 'dms-smoke-udata-'));
     tempHome = fs.mkdtempSync(path.join(os.tmpdir(), 'dms-smoke-home-'));
@@ -639,6 +665,7 @@ describe('Packaged Electron launch — Windows NSIS', () => {
     async function testWinSmoke(): Promise<void> {
       // Guard: verify 7z is available on PATH before attempting extraction
       try {
+        // eslint-disable-next-line sonarjs/no-os-command-from-path -- checking 7z availability via PATH is intentional; it is a prerequisite for NSIS extraction
         execFileSync('7z', ['i'], { stdio: 'ignore' });
       } catch {
         throw new Error(
@@ -648,6 +675,7 @@ describe('Packaged Electron launch — Windows NSIS', () => {
       }
 
       // Extract the NSIS installer (7z-format archive, no admin required)
+      // eslint-disable-next-line sonarjs/no-os-command-from-path -- 7z is the only cross-platform tool that can extract NSIS installers without elevation
       execFileSync('7z', ['x', exePath, `-o${extractDir}`]);
 
       const dmsExe = path.join(extractDir, 'DMS.exe');
