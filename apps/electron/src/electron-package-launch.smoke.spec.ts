@@ -345,8 +345,9 @@ describe('Packaged Electron launch — Linux AppImage', () => {
   it(
     'AC1 — launches and migrates without error',
     { timeout: 60_000 },
-    async function testLinuxAC1(): Promise<void> {
+    async function testLinuxAC1({ skip }: { skip(): void }): Promise<void> {
       if (!isCurrentPlatform('linux') || appImagePath.length === 0) {
+        skip();
         return;
       }
 
@@ -365,8 +366,9 @@ describe('Packaged Electron launch — Linux AppImage', () => {
   it(
     'AC2 — database schema present after first launch',
     { timeout: 60_000 },
-    async function testLinuxAC2(): Promise<void> {
+    async function testLinuxAC2({ skip }: { skip(): void }): Promise<void> {
       if (!isCurrentPlatform('linux') || appImagePath.length === 0) {
+        skip();
         return;
       }
 
@@ -386,8 +388,9 @@ describe('Packaged Electron launch — Linux AppImage', () => {
   it(
     'AC3 — main window renders and is interactive',
     { timeout: 60_000 },
-    async function testLinuxAC3(): Promise<void> {
+    async function testLinuxAC3({ skip }: { skip(): void }): Promise<void> {
       if (!isCurrentPlatform('linux') || appImagePath.length === 0) {
+        skip();
         return;
       }
 
