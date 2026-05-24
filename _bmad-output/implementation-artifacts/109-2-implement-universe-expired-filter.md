@@ -241,6 +241,6 @@ Universe screen rendered without errors showing exactly 3 rows.
 
 ### Review Findings
 
-- [x] Review (Patch) Untracked spec file not committed [`apps/server/src/app/routes/top/build-universe-where.function.spec.ts`] — File exists locally (git status shows `??`) but is NOT staged. Modified `buildUniverseWhere` has no committed unit tests for new permanent-filter behavior. Stage and commit the spec, or delete it if 109.3 owns all tests.
+- [x] Review (Patch) Spec coverage added for permanent filter behavior in `apps/server/src/app/routes/top/build-universe-where.function.spec.ts` — 12 unit test cases committed covering permanent NOT filter and all user-controlled filters.
 - [x] Review (Patch) File list missing changed file — `apps/dms-material-e2e/src/helpers/seed-universe-e2e-data.helper.ts` was missing from File List; resolved: file added to File List section above.
 - [x] Review (Defer) `where.NOT` unconditional direct assignment — fragile for future composition [`apps/server/src/app/routes/top/build-universe-where.function.ts:28`] — deferred, pre-existing pattern; not an active bug
