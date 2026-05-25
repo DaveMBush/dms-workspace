@@ -29,6 +29,7 @@ interface UniverseWithTrades {
   }>;
   expired: boolean;
   is_closed_end_fund: boolean;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   _count: { trades: number; divDeposits: number };
 }
 
@@ -113,6 +114,11 @@ function buildPrismaOrderBy(
   }
 }
 
+function isUniverseDeletable(uw: UniverseWithTrades): boolean {
+  // eslint-disable-next-line no-underscore-dangle
+  return !uw.is_closed_end_fund && uw._count.trades === 0 && uw._count.divDeposits === 0;
+}
+
 function mapUniverseToResponse(u: unknown): Record<string, unknown> {
   const uw = u as UniverseWithTrades;
   const openTrades = universeHelpers.getOpenTrades(uw.trades);
@@ -132,10 +138,7 @@ function mapUniverseToResponse(u: unknown): Record<string, unknown> {
     position: universeHelpers.calculatePosition(openTrades),
     expired: uw.expired,
     is_closed_end_fund: uw.is_closed_end_fund,
-    deletable:
-      !uw.is_closed_end_fund &&
-      uw._count.trades === 0 &&
-      uw._count.divDeposits === 0,
+    deletable: isUniverseDeletable(uw),
     avg_purchase_yield_percent:
       universeHelpers.calculateAvgPurchaseYieldPercent(
         openTrades,
