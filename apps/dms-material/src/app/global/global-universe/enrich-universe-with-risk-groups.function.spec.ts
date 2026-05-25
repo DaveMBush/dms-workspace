@@ -28,6 +28,7 @@ describe('enrichUniverseWithRiskGroups', () => {
       name: 'Apple Inc.',
       position: 100,
       avg_purchase_yield_percent: 6.5,
+      deletable: true,
     },
     {
       id: '2',
@@ -46,6 +47,7 @@ describe('enrichUniverseWithRiskGroups', () => {
       name: 'Alphabet Inc.',
       position: 50,
       avg_purchase_yield_percent: 0,
+      deletable: true,
     },
   ];
 

@@ -32,6 +32,7 @@ interface UniverseWithTrades {
   }>;
   expired: boolean;
   is_closed_end_fund: boolean;
+  _count: { trades: number; divDeposits: number };
 }
 
 function mapUniverseToResponse(u: UniverseWithTrades): Universe {
@@ -52,6 +53,10 @@ function mapUniverseToResponse(u: UniverseWithTrades): Universe {
     position: universeHelpers.calculatePosition(openTrades),
     expired: u.expired,
     is_closed_end_fund: u.is_closed_end_fund,
+    deletable:
+      !u.is_closed_end_fund &&
+      u._count.trades === 0 &&
+      u._count.divDeposits === 0,
     avg_purchase_yield_percent:
       universeHelpers.calculateAvgPurchaseYieldPercent(
         openTrades,
@@ -91,6 +96,12 @@ function handleGetUniversesRoute(fastify: FastifyInstance): void {
         include: {
           risk_group: true,
           trades: accountId !== null ? { where: { accountId } } : true,
+          _count: {
+            select: {
+              trades: { where: { deletedAt: null } },
+              divDeposits: { where: { deletedAt: null } },
+            },
+          },
         },
       });
       return universes.map(function mapUniverse(u) {
@@ -138,6 +149,7 @@ function handleAddUniverseRoute(fastify: FastifyInstance): void {
           avg_purchase_yield_percent: 0, // new symbol has no purchase history yet
           volatilityLong: null,
           volatilityShort: null,
+          deletable: !result.is_closed_end_fund,
         },
       ]);
     }

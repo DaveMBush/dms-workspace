@@ -58,6 +58,7 @@ function makeUniverseRow(overrides: RowOverrides) {
         sell_date: t.sell_date,
       };
     }),
+    _count: { trades: overrides.trades.length, divDeposits: 0 },
   };
   if (overrides.risk_group !== undefined) {
     result['risk_group'] = overrides.risk_group;

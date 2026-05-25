@@ -29,6 +29,7 @@ interface UniverseWithTrades {
   }>;
   expired: boolean;
   is_closed_end_fund: boolean;
+  _count: { trades: number; divDeposits: number };
 }
 
 interface SortableUniverse {
@@ -131,6 +132,10 @@ function mapUniverseToResponse(u: unknown): Record<string, unknown> {
     position: universeHelpers.calculatePosition(openTrades),
     expired: uw.expired,
     is_closed_end_fund: uw.is_closed_end_fund,
+    deletable:
+      !uw.is_closed_end_fund &&
+      uw._count.trades === 0 &&
+      uw._count.divDeposits === 0,
     avg_purchase_yield_percent:
       universeHelpers.calculateAvgPurchaseYieldPercent(
         openTrades,
@@ -171,6 +176,12 @@ export default function registerGetAllUniverses(
         include: {
           risk_group: true,
           trades: true,
+          _count: {
+            select: {
+              trades: { where: { deletedAt: null } },
+              divDeposits: { where: { deletedAt: null } },
+            },
+          },
         },
         orderBy: buildPrismaOrderBy(effectiveSortBy, effectiveSortOrder),
       });

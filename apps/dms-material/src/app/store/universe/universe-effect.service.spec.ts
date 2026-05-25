@@ -69,6 +69,7 @@ describe('UniverseEffectsService', () => {
           avg_purchase_yield_percent: 0,
           volatilityLong: null,
           volatilityShort: null,
+          deletable: false,
         },
       ];
 

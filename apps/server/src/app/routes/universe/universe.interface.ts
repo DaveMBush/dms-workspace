@@ -14,4 +14,5 @@ export interface Universe {
   avg_purchase_yield_percent: number;
   volatilityLong: string | null;
   volatilityShort: string | null;
+  deletable: boolean;
 }
