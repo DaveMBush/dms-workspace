@@ -116,6 +116,7 @@ export class GlobalUniverseComponent implements OnDestroy {
   );
 
   private readonly localSyncInProgress$ = signal<boolean>(false);
+  // prettier-ignore
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signal
   private readonly isAllAccountsFilter = computed(() => this.selectedAccountId$() === 'all');
 

@@ -38,7 +38,9 @@ interface UniverseWithTrades {
 
 function isUniverseDeletable(u: UniverseWithTrades): boolean {
   // eslint-disable-next-line no-underscore-dangle
-  return !u.is_closed_end_fund && u._count.trades === 0 && u._count.divDeposits === 0;
+  return (
+    !u.is_closed_end_fund && u._count.trades === 0 && u._count.divDeposits === 0
+  );
 }
 
 function mapUniverseToResponse(u: UniverseWithTrades): Universe {

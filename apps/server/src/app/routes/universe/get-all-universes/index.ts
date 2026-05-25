@@ -116,7 +116,11 @@ function buildPrismaOrderBy(
 
 function isUniverseDeletable(uw: UniverseWithTrades): boolean {
   // eslint-disable-next-line no-underscore-dangle
-  return !uw.is_closed_end_fund && uw._count.trades === 0 && uw._count.divDeposits === 0;
+  return (
+    !uw.is_closed_end_fund &&
+    uw._count.trades === 0 &&
+    uw._count.divDeposits === 0
+  );
 }
 
 function mapUniverseToResponse(u: unknown): Record<string, unknown> {
