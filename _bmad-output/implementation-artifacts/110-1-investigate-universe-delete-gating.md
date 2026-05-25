@@ -1,6 +1,6 @@
 # Story 110.1: Investigate Current Delete-Button Logic and Choose Gating Strategy
 
-Status: Approved
+Status: Done
 
 **Story Key:** `110-1-investigate-universe-delete-gating`
 **Epic:** 110 — Restrict Universe Delete Button to Truly Unused Symbols Under "All Accounts" Filter Only
@@ -56,56 +56,56 @@ This story (110.1) is the **investigation/diagnosis** story — locate the curre
 
 ## Tasks / Subtasks
 
-- [ ] **Task 1 — Locate the delete-button visibility expression** (AC: #1)
-  - [ ] Read
+- [x] **Task 1 — Locate the delete-button visibility expression** (AC: #1)
+  - [x] Read
         [apps/dms-material/src/app/global/global-universe/global-universe.component.html](../../apps/dms-material/src/app/global/global-universe/global-universe.component.html)
         around lines 302–311 (the `@if (shouldShowDeleteButton(row))` block with the
         `data-testid="'delete-symbol-' + i"` button).
-  - [ ] Read the matching method `shouldShowDeleteButton(row: Universe)` in
+  - [x] Read the matching method `shouldShowDeleteButton(row: Universe)` in
         [apps/dms-material/src/app/global/global-universe/global-universe.component.ts](../../apps/dms-material/src/app/global/global-universe/global-universe.component.ts)
         line ~288 (current implementation: `!row.is_closed_end_fund && row.position === 0`).
-  - [ ] Note the dependence on `row.position` (computed per current account filter
+  - [x] Note the dependence on `row.position` (computed per current account filter
         on the server) and `row.is_closed_end_fund` — i.e. **today's logic is local
         to the current account view**, which is exactly the bug Epic 110 fixes.
 
-- [ ] **Task 2 — Locate the active-account-filter signal** (AC: #3)
-  - [ ] Search the Universe component for the account-filter source — likely
+- [x] **Task 2 — Locate the active-account-filter signal** (AC: #3)
+  - [x] Search the Universe component for the account-filter source — likely
         `selectedAccountId$` (referenced near line ~325 of
         `global-universe.component.ts` per `onAccountChange`).
-  - [ ] Trace where the signal is set. Document the value that means
+  - [x] Trace where the signal is set. Document the value that means
         "All Accounts" (commonly `null`, `''`, or a string like `'all'`).
-  - [ ] Cite the file + line.
+  - [x] Cite the file + line.
 
-- [ ] **Task 3 — Locate every reference to `divDeposits` & `trades` aggregations**
+- [x] **Task 3 — Locate every reference to `divDeposits` & `trades` aggregations**
       (AC: #2)
-  - [ ] Inspect the Universe server route
+  - [x] Inspect the Universe server route
         [apps/server/src/app/routes/universe/get-all-universes/index.ts](../../apps/server/src/app/routes/universe/get-all-universes/index.ts)
         and confirm it already `include`s `trades` per row (it does — used by
         `mapUniverseToResponse` to compute `position`).
-  - [ ] Determine whether `divDeposits` is currently included on the universe
+  - [x] Determine whether `divDeposits` is currently included on the universe
         row. If not, document that Story 110.2 will need to extend the Prisma
         query with `divDeposits: { select: { id: true }, take: 1 }` (or a `_count`
         aggregation) to derive `deletable`.
-  - [ ] Confirm `prisma/schema.prisma` shows the relations
+  - [x] Confirm `prisma/schema.prisma` shows the relations
         (`model universe { divDeposits divDeposits[] trades trades[] … }` — see
         line 25 area).
 
-- [ ] **Task 4 — Choose the gating strategy** (AC: #2)
-  - [ ] Recommend **Option A (preferred): server-derived `deletable: boolean` on
+- [x] **Task 4 — Choose the gating strategy** (AC: #2)
+  - [x] Recommend **Option A (preferred): server-derived `deletable: boolean` on
         each Universe row DTO**. The flag is computed in the same Prisma query
         that already loads `trades`. For `divDeposits`, add a minimal
         existence-check `select`/`_count` (avoids fetching rows). The client
         renders the delete button when (active filter == All Accounts) AND
         `row.deletable === true`.
-  - [ ] Alternative (Option B): two client-side count queries per row. **Reject**
+  - [x] Alternative (Option B): two client-side count queries per row. **Reject**
         — N+1, race conditions, more complex client.
-  - [ ] Document the chosen approach plus the exact server contract change
+  - [x] Document the chosen approach plus the exact server contract change
         (`deletable` added to the Universe row interface) and the exact client
         condition.
 
-- [ ] **Task 5 — Quality gate** (AC: #4)
-  - [ ] Confirm `git status` shows no production source file changes.
-  - [ ] Run `pnpm all` and record result.
+- [x] **Task 5 — Quality gate** (AC: #4)
+  - [x] Confirm `git status` shows no production source file changes.
+  - [x] Run `pnpm all` and record result.
 
 ## Dev Notes
 
@@ -113,25 +113,55 @@ This story (110.1) is the **investigation/diagnosis** story — locate the curre
 
 - **Delete-button template:**
   [apps/dms-material/src/app/global/global-universe/global-universe.component.html](../../apps/dms-material/src/app/global/global-universe/global-universe.component.html)
-  lines 302–311. Already exposes `data-testid="'delete-symbol-' + i"` for
-  Playwright assertions.
+  **CONFIRMED lines 302–313.** The block is:
+  ```html
+  } @case ('actions') { @if (shouldShowDeleteButton(row)) {
+  <button
+    mat-icon-button
+    color="warn"
+    matTooltip="Delete unused symbol"
+    aria-label="Delete unused symbol"
+    [attr.data-testid]="'delete-symbol-' + i"
+    (click)="deleteUniverse(row)"
+  >
+    <mat-icon>delete</mat-icon>
+  </button>
+  } }
+  ```
+  Already exposes `data-testid="'delete-symbol-' + i"` for Playwright assertions.
 - **Visibility method:**
   [apps/dms-material/src/app/global/global-universe/global-universe.component.ts](../../apps/dms-material/src/app/global/global-universe/global-universe.component.ts)
-  line ~288: `shouldShowDeleteButton(row: Universe): boolean { return !row.is_closed_end_fund && row.position === 0; }`
-  — this is the predicate Story 110.2 will rewrite.
-- **Account-change handler:** same file, `onAccountChange(value: string)` near
-  line ~325 — calls `this.selectedAccountId$.set(value)`. Find where the signal
-  is declared and how "All Accounts" is represented.
+  **CONFIRMED lines 288–290:**
+  ```ts
+  shouldShowDeleteButton(row: Universe): boolean {
+    return !row.is_closed_end_fund && row.position === 0;
+  }
+  ```
+  Depends on `row.position` (server-computed per current account filter) and
+  `row.is_closed_end_fund`. Bug: only checks current account's open positions,
+  ignores other accounts and `divDeposits`.
+- **Account-filter signal:**
+  [apps/dms-material/src/app/global/global-universe/global-universe.component.ts](../../apps/dms-material/src/app/global/global-universe/global-universe.component.ts)
+  **CONFIRMED line 106:**
+  ```ts
+  readonly selectedAccountId$ = signal<string>(this.rf.accountId);
+  ```
+  `onAccountChange(value: string)` at line 328 calls `this.selectedAccountId$.set(value)`.
+  **"All Accounts" sentinel = string `'all'`** — confirmed in
+  [apps/dms-material/src/app/global/global-universe/restore-universe-filters.function.ts](../../apps/dms-material/src/app/global/global-universe/restore-universe-filters.function.ts)
+  lines 18 and 30: `accountId: 'all'` (default) and `accountId: (filters['account_id'] as string) ?? 'all'`.
 - **Universe server route:**
   [apps/server/src/app/routes/universe/get-all-universes/index.ts](../../apps/server/src/app/routes/universe/get-all-universes/index.ts)
-  already includes `trades`. To add `deletable`, also need a minimal
-  `divDeposits` aggregation per row.
+  **CONFIRMED** Prisma query includes `trades: true` (alongside `risk_group: true`).
+  `divDeposits` is **NOT** currently included — Story 110.2 must add it.
+  `mapUniverseToResponse` uses `trades` to compute `position` via
+  `universeHelpers.calculatePosition(openTrades)`.
 - **Universe DTO:**
   [apps/server/src/app/routes/universe/universe.interface.ts](../../apps/server/src/app/routes/universe/universe.interface.ts).
-  Story 110.2 will add `deletable: boolean`.
+  **CONFIRMED** 16 fields. No `deletable` field yet. Story 110.2 will add `deletable: boolean`.
 - **Prisma schema:** [prisma/schema.prisma](../../prisma/schema.prisma):
-  `model universe` line 25 — has relations `trades trades[]` and
-  `divDeposits divDeposits[]`. Both are indexed for `accountId`/`sell_date`/`date`.
+  **CONFIRMED** `model universe` lines 23–54 — has both `divDeposits divDeposits[]`
+  and `trades trades[]` relations.
 
 ### Recommended Strategy (Server-Derived `deletable`)
 
@@ -198,25 +228,46 @@ signal.
 
 ## Definition of Done
 
-- [ ] Current delete-button visibility logic traced and cited in Dev Notes
-- [ ] Server-derived `deletable` flag chosen (or client-side counts chosen) with rationale
-- [ ] Active-account-filter source cited
-- [ ] No production code changed; `pnpm all` passes
+- [x] Current delete-button visibility logic traced and cited in Dev Notes
+- [x] Server-derived `deletable` flag chosen (or client-side counts chosen) with rationale
+- [x] Active-account-filter source cited
+- [x] No production code changed; `pnpm all` passes
 
 ## Dev Agent Record
 
 ### Agent Model Used
 
-_To be filled by dev agent._
+Claude Sonnet 4.6
 
 ### Debug Log References
 
-_To be filled by dev agent._
+None — investigation only, no production code changed.
 
 ### Completion Notes List
 
-_To be filled by dev agent._
+- **Delete button template confirmed:** `global-universe.component.html` line 302 — `@case ('actions') { @if (shouldShowDeleteButton(row)) {` block with `data-testid="'delete-symbol-' + i"` button (lines 302–313).
+- **shouldShowDeleteButton confirmed:** `global-universe.component.ts` line 288–290 — `return !row.is_closed_end_fund && row.position === 0;`. Depends on `row.position` (server-computed per current account filter only) — this is the bug.
+- **selectedAccountId$ confirmed:** `global-universe.component.ts` line 106 — `signal<string>(this.rf.accountId)`. Sentinel for "All Accounts" = string `'all'` (from `restore-universe-filters.function.ts` lines 18 and 30).
+- **Server route trades inclusion confirmed:** `get-all-universes/index.ts` Prisma query has `include: { risk_group: true, trades: true }`. `divDeposits` is NOT currently included.
+- **divDeposits NOT in current query:** Story 110.2 must add `_count: { select: { divDeposits: true } }` to derive `deletable`.
+- **Prisma schema confirmed:** `model universe` (lines 23–54) has both `divDeposits divDeposits[]` and `trades trades[]` relations.
+- **Chosen strategy:** Option A — server-derived `deletable: boolean` flag. Avoids N+1, consistent with existing server aggregations, simpler client logic. Client condition: `this.selectedAccountId$() === 'all' && row.deletable`.
+- **pnpm all:** PASS (no production files changed).
 
 ### File List
 
-_To be filled by dev agent._
+**Files read (investigation only — no production files changed):**
+
+- `apps/dms-material/src/app/global/global-universe/global-universe.component.html`
+- `apps/dms-material/src/app/global/global-universe/global-universe.component.ts`
+- `apps/dms-material/src/app/global/global-universe/restore-universe-filters.function.ts`
+- `apps/server/src/app/routes/universe/get-all-universes/index.ts`
+- `apps/server/src/app/routes/universe/universe.interface.ts`
+- `prisma/schema.prisma`
+- `_bmad-output/implementation-artifacts/110-1-investigate-universe-delete-gating.md` (this file — updated with findings)
+
+## Change Log
+
+| Date | Version | Description | Author |
+|------|---------|-------------|--------|
+| 2026-05-25 | 1.0 | Investigation complete - findings documented | AI Agent |
