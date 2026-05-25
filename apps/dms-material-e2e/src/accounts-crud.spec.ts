@@ -199,6 +199,11 @@ test.describe('Account CRUD Operations', () => {
       );
       await editButton.click();
 
+      // Wait for editor to appear before interacting
+      await page.waitForSelector('[data-testid="node-editor-input"]', {
+        timeout: 7000,
+      });
+
       const input = page.locator('[data-testid="node-editor-input"]');
       await input.fill('Changed Name');
 
