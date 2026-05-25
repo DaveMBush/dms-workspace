@@ -32,6 +32,16 @@ interface UniverseWithTrades {
   }>;
   expired: boolean;
   is_closed_end_fund: boolean;
+  // eslint-disable-next-line @typescript-eslint/naming-convention -- Prisma aggregate field
+  _count: { trades: number; divDeposits: number };
+}
+
+function isUniverseDeletable(u: UniverseWithTrades): boolean {
+  if (u.is_closed_end_fund) {
+    return false;
+  }
+  // eslint-disable-next-line no-underscore-dangle -- Prisma aggregate field
+  return u._count.trades === 0 && u._count.divDeposits === 0;
 }
 
 function mapUniverseToResponse(u: UniverseWithTrades): Universe {
@@ -52,6 +62,7 @@ function mapUniverseToResponse(u: UniverseWithTrades): Universe {
     position: universeHelpers.calculatePosition(openTrades),
     expired: u.expired,
     is_closed_end_fund: u.is_closed_end_fund,
+    deletable: isUniverseDeletable(u),
     avg_purchase_yield_percent:
       universeHelpers.calculateAvgPurchaseYieldPercent(
         openTrades,
@@ -91,6 +102,12 @@ function handleGetUniversesRoute(fastify: FastifyInstance): void {
         include: {
           risk_group: true,
           trades: accountId !== null ? { where: { accountId } } : true,
+          _count: {
+            select: {
+              trades: { where: { deletedAt: null } },
+              divDeposits: { where: { deletedAt: null } },
+            },
+          },
         },
       });
       return universes.map(function mapUniverse(u) {
@@ -138,6 +155,7 @@ function handleAddUniverseRoute(fastify: FastifyInstance): void {
           avg_purchase_yield_percent: 0, // new symbol has no purchase history yet
           volatilityLong: null,
           volatilityShort: null,
+          deletable: !result.is_closed_end_fund,
         },
       ]);
     }
@@ -227,6 +245,12 @@ async function fetchUpdatedUniverse(id: string): Promise<UniverseWithTrades[]> {
     where: { id },
     include: {
       trades: true,
+      _count: {
+        select: {
+          trades: { where: { deletedAt: null } },
+          divDeposits: { where: { deletedAt: null } },
+        },
+      },
     },
   });
 }

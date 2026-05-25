@@ -116,6 +116,10 @@ export class GlobalUniverseComponent implements OnDestroy {
   );
 
   private readonly localSyncInProgress$ = signal<boolean>(false);
+  // prettier-ignore
+  // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signal
+  private readonly isAllAccountsFilter = computed(() => this.selectedAccountId$() === 'all');
+
   private textFilterTimer?: ReturnType<typeof setTimeout>;
   private readonly baseTable = viewChild(BaseTableComponent);
 
@@ -286,7 +290,7 @@ export class GlobalUniverseComponent implements OnDestroy {
   }
 
   shouldShowDeleteButton(row: Universe): boolean {
-    return !row.is_closed_end_fund && row.position === 0;
+    return this.isAllAccountsFilter() && row.deletable;
   }
 
   deleteUniverse(row: Universe): void {

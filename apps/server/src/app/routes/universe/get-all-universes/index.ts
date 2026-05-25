@@ -29,6 +29,8 @@ interface UniverseWithTrades {
   }>;
   expired: boolean;
   is_closed_end_fund: boolean;
+  // eslint-disable-next-line @typescript-eslint/naming-convention -- Prisma aggregate field
+  _count: { trades: number; divDeposits: number };
 }
 
 interface SortableUniverse {
@@ -112,6 +114,14 @@ function buildPrismaOrderBy(
   }
 }
 
+function isUniverseDeletable(uw: UniverseWithTrades): boolean {
+  if (uw.is_closed_end_fund) {
+    return false;
+  }
+  // eslint-disable-next-line no-underscore-dangle -- Prisma aggregate field
+  return uw._count.trades === 0 && uw._count.divDeposits === 0;
+}
+
 function mapUniverseToResponse(u: unknown): Record<string, unknown> {
   const uw = u as UniverseWithTrades;
   const openTrades = universeHelpers.getOpenTrades(uw.trades);
@@ -131,6 +141,7 @@ function mapUniverseToResponse(u: unknown): Record<string, unknown> {
     position: universeHelpers.calculatePosition(openTrades),
     expired: uw.expired,
     is_closed_end_fund: uw.is_closed_end_fund,
+    deletable: isUniverseDeletable(uw),
     avg_purchase_yield_percent:
       universeHelpers.calculateAvgPurchaseYieldPercent(
         openTrades,
@@ -171,6 +182,12 @@ export default function registerGetAllUniverses(
         include: {
           risk_group: true,
           trades: true,
+          _count: {
+            select: {
+              trades: { where: { deletedAt: null } },
+              divDeposits: { where: { deletedAt: null } },
+            },
+          },
         },
         orderBy: buildPrismaOrderBy(effectiveSortBy, effectiveSortOrder),
       });

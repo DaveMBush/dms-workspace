@@ -90,6 +90,7 @@ function makeUniverseRow(
     is_closed_end_fund: true,
     trades: [],
     risk_group: { name: 'Income' },
+    _count: { trades: 0, divDeposits: 0 },
     ...overrides,
   };
 }

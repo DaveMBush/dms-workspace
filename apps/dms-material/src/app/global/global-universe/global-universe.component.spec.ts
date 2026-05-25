@@ -248,32 +248,31 @@ describe('GlobalUniverseComponent', () => {
   });
 
   describe('shouldShowDeleteButton', () => {
-    it('should return true when position is 0 and not closed end fund', () => {
+    it('should return true when All Accounts filter is active and row is deletable', () => {
+      // selectedAccountId$ defaults to 'all' (from restoreUniverseFilters default)
       const row = {
         id: '1',
         symbol: 'AAPL',
-        position: 0,
-        is_closed_end_fund: false,
+        deletable: true,
       } as Universe;
       expect(component.shouldShowDeleteButton(row)).toBe(true);
     });
 
-    it('should return false when position is not 0', () => {
+    it('should return false when row is not deletable', () => {
       const row = {
         id: '1',
         symbol: 'AAPL',
-        position: 100,
-        is_closed_end_fund: false,
+        deletable: false,
       } as Universe;
       expect(component.shouldShowDeleteButton(row)).toBe(false);
     });
 
-    it('should return false when is closed end fund', () => {
+    it('should return false when a specific account is selected', () => {
+      component.selectedAccountId$.set('account-123');
       const row = {
         id: '1',
         symbol: 'CEF',
-        position: 0,
-        is_closed_end_fund: true,
+        deletable: true,
       } as Universe;
       expect(component.shouldShowDeleteButton(row)).toBe(false);
     });
@@ -1178,6 +1177,7 @@ describe('GlobalUniverseComponent - SmartNgRX Integration', () => {
           avg_purchase_yield_percent: 0,
           volatilityLong: null,
           volatilityShort: null,
+          deletable: false,
         },
       ];
       selectUniversesMock.mockReturnValue(mockUniverses);
@@ -1211,6 +1211,7 @@ describe('GlobalUniverseComponent - SmartNgRX Integration', () => {
           avg_purchase_yield_percent: 0,
           volatilityLong: null,
           volatilityShort: null,
+          deletable: false,
         },
       ];
       selectUniversesMock.mockReturnValue(mockUniverses);
@@ -1243,6 +1244,7 @@ describe('GlobalUniverseComponent - SmartNgRX Integration', () => {
           avg_purchase_yield_percent: 0,
           volatilityLong: null,
           volatilityShort: null,
+          deletable: false,
         },
         {
           id: '1',
@@ -1261,6 +1263,7 @@ describe('GlobalUniverseComponent - SmartNgRX Integration', () => {
           avg_purchase_yield_percent: 0,
           volatilityLong: null,
           volatilityShort: null,
+          deletable: false,
         },
       ];
       selectUniversesMock.mockReturnValue(mockUniverses);
@@ -1297,6 +1300,7 @@ describe('GlobalUniverseComponent - SmartNgRX Integration', () => {
           avg_purchase_yield_percent: 0,
           volatilityLong: null,
           volatilityShort: null,
+          deletable: false,
         },
       ]);
 
@@ -1338,6 +1342,7 @@ describe('GlobalUniverseComponent - SmartNgRX Integration', () => {
           avg_purchase_yield_percent: 0,
           volatilityLong: null,
           volatilityShort: null,
+          deletable: false,
         },
       ]);
 
@@ -1443,6 +1448,7 @@ describe('Universe Selectors', () => {
           avg_purchase_yield_percent: 0,
           volatilityLong: null,
           volatilityShort: null,
+          deletable: false,
         },
         {
           id: '2',
@@ -1461,6 +1467,7 @@ describe('Universe Selectors', () => {
           avg_purchase_yield_percent: 0,
           volatilityLong: null,
           volatilityShort: null,
+          deletable: false,
         },
       ];
       selectUniversesMock.mockReturnValue(mockUniverses);
@@ -1491,6 +1498,7 @@ describe('Universe Selectors', () => {
           avg_purchase_yield_percent: 0,
           volatilityLong: null,
           volatilityShort: null,
+          deletable: false,
         },
         {
           id: '1',
@@ -1509,6 +1517,7 @@ describe('Universe Selectors', () => {
           avg_purchase_yield_percent: 0,
           volatilityLong: null,
           volatilityShort: null,
+          deletable: false,
         },
       ];
       selectUniversesMock.mockReturnValue(mockUniverses);

@@ -35,6 +35,9 @@ describe('enrichUniverseWithRiskGroups – proxy paths', () => {
     name: 'Apple Inc.',
     position: 100,
     avg_purchase_yield_percent: 6.5,
+    volatilityLong: null,
+    volatilityShort: null,
+    deletable: true,
   };
 
   it('should return placeholder entries for unloaded proxy items (getIdAtIndex returns index-N)', () => {

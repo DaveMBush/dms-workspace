@@ -38,6 +38,7 @@ function buildPlaceholderUniverseEntry(id: string): EnrichedUniverse {
     name: '',
     position: 0,
     avg_purchase_yield_percent: 0,
+    deletable: false,
   };
 }
 
@@ -64,6 +65,7 @@ function buildFullUniverseEntry(
     name: universe.name,
     position: universe.position,
     avg_purchase_yield_percent: universe.avg_purchase_yield_percent,
+    deletable: universe.deletable,
   };
 }
 
