@@ -167,7 +167,9 @@ test.describe('Universe Delete-Button Gating (Story 110.3)', () => {
       await prisma.trades.deleteMany({ where: { id: tradesRowId } });
       await prisma.divDeposits.deleteMany({ where: { id: divDepositsRowId } });
       await prisma.universe.deleteMany({
-        where: { id: { in: [universeUnusedId, universeTradesId, universeDivsId] } },
+        where: {
+          id: { in: [universeUnusedId, universeTradesId, universeDivsId] },
+        },
       });
       await prisma.accounts.deleteMany({ where: { id: testAccountId } });
     } finally {
@@ -184,62 +186,58 @@ test.describe('Universe Delete-Button Gating (Story 110.3)', () => {
     await waitForTableRows(page);
   });
 
-  test(
-    'All Accounts filter: delete button visible only for unused symbol',
-    async ({ page }) => {
-      // After clearing sort-filter state, account defaults to "All Accounts"
-      // Verify symUnused row shows the delete button
-      await filterBySymbol(page, symUnused);
-      const unusedRow = page
-        .locator('tr.mat-mdc-row')
-        .filter({ hasText: symUnused });
-      await expect(unusedRow).toBeVisible({ timeout: 15000 });
-      await expect(
-        unusedRow.locator('[aria-label="Delete unused symbol"]')
-      ).toBeVisible({ timeout: 10000 });
+  test('All Accounts filter: delete button visible only for unused symbol', async ({
+    page,
+  }) => {
+    // After clearing sort-filter state, account defaults to "All Accounts"
+    // Verify symUnused row shows the delete button
+    await filterBySymbol(page, symUnused);
+    const unusedRow = page
+      .locator('tr.mat-mdc-row')
+      .filter({ hasText: symUnused });
+    await expect(unusedRow).toBeVisible({ timeout: 15000 });
+    await expect(
+      unusedRow.locator('[aria-label="Delete unused symbol"]')
+    ).toBeVisible({ timeout: 10000 });
 
-      // Verify symTrades row does NOT show the delete button
-      await filterBySymbol(page, symTrades);
-      const tradesRow = page
-        .locator('tr.mat-mdc-row')
-        .filter({ hasText: symTrades });
-      await expect(tradesRow).toBeVisible({ timeout: 15000 });
-      await expect(
-        tradesRow.locator('[aria-label="Delete unused symbol"]')
-      ).not.toBeVisible({ timeout: 5000 });
+    // Verify symTrades row does NOT show the delete button
+    await filterBySymbol(page, symTrades);
+    const tradesRow = page
+      .locator('tr.mat-mdc-row')
+      .filter({ hasText: symTrades });
+    await expect(tradesRow).toBeVisible({ timeout: 15000 });
+    await expect(
+      tradesRow.locator('[aria-label="Delete unused symbol"]')
+    ).not.toBeVisible({ timeout: 5000 });
 
-      // Verify symDivs row does NOT show the delete button
-      await filterBySymbol(page, symDivs);
-      const divsRow = page
-        .locator('tr.mat-mdc-row')
-        .filter({ hasText: symDivs });
-      await expect(divsRow).toBeVisible({ timeout: 15000 });
-      await expect(
-        divsRow.locator('[aria-label="Delete unused symbol"]')
-      ).not.toBeVisible({ timeout: 5000 });
-    }
-  );
+    // Verify symDivs row does NOT show the delete button
+    await filterBySymbol(page, symDivs);
+    const divsRow = page.locator('tr.mat-mdc-row').filter({ hasText: symDivs });
+    await expect(divsRow).toBeVisible({ timeout: 15000 });
+    await expect(
+      divsRow.locator('[aria-label="Delete unused symbol"]')
+    ).not.toBeVisible({ timeout: 5000 });
+  });
 
-  test(
-    'Specific account filter: delete button hidden on all rows',
-    async ({ page }) => {
-      // Switch to the specific test account
-      await selectUniverseAccount(page, testAccountName);
+  test('Specific account filter: delete button hidden on all rows', async ({
+    page,
+  }) => {
+    // Switch to the specific test account
+    await selectUniverseAccount(page, testAccountName);
 
-      // Even the unused symbol should NOT show the delete button
-      await filterBySymbol(page, symUnused);
-      const unusedRow = page
-        .locator('tr.mat-mdc-row')
-        .filter({ hasText: symUnused });
-      await expect(unusedRow).toBeVisible({ timeout: 15000 });
-      await expect(
-        unusedRow.locator('[aria-label="Delete unused symbol"]')
-      ).not.toBeVisible({ timeout: 5000 });
+    // Even the unused symbol should NOT show the delete button
+    await filterBySymbol(page, symUnused);
+    const unusedRow = page
+      .locator('tr.mat-mdc-row')
+      .filter({ hasText: symUnused });
+    await expect(unusedRow).toBeVisible({ timeout: 15000 });
+    await expect(
+      unusedRow.locator('[aria-label="Delete unused symbol"]')
+    ).not.toBeVisible({ timeout: 5000 });
 
-      // No delete buttons on page at all
-      await expect(
-        page.locator('[aria-label="Delete unused symbol"]')
-      ).toHaveCount(0, { timeout: 5000 });
-    }
-  );
+    // No delete buttons on page at all
+    await expect(
+      page.locator('[aria-label="Delete unused symbol"]')
+    ).toHaveCount(0, { timeout: 5000 });
+  });
 });
