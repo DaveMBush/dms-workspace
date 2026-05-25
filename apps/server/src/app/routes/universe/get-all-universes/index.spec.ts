@@ -34,7 +34,7 @@ interface RowOverrides {
   volatility_long?: string | null;
   volatility_short?: string | null;
   last_price?: number;
-  risk_group?: { name: string } | undefined;
+  risk_group?: { name: string };
 }
 
 function makeUniverseRow(overrides: RowOverrides) {

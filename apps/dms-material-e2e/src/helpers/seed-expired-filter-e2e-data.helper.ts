@@ -15,7 +15,7 @@ import { createRiskGroups } from './shared-risk-groups.helper';
  *   (c) ACNO — expired=false, no trades       → PRESENT
  *   (d) ACOP — expired=false, 1 open trade    → PRESENT
  */
-export interface ExpiredFilterSeederResult extends SeederResultBase {
+interface ExpiredFilterSeederResult extends SeederResultBase {
   /** Symbol that must be ABSENT (a): expired + no open trades. */
   absentSymbol: string;
   /** Symbols that must be PRESENT: (b), (c), (d). */

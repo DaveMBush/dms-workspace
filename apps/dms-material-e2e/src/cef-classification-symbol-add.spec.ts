@@ -148,10 +148,7 @@ async function importCsvFile(page: Page, filename: string): Promise<void> {
   await navigateToUniverse(page);
 }
 
-async function getRiskGroupForSymbol(
-  _page: Page,
-  symbol: string
-): Promise<string> {
+async function getRiskGroupForSymbol(_: Page, symbol: string): Promise<string> {
   // Query the DB directly: expired CEFs have no open trades and are filtered
   // out of the Universe UI, so we cannot rely on table-row visibility to verify
   // the risk-group assignment made by the server-side CEF classifier.

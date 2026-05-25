@@ -432,7 +432,7 @@ test.describe('Open Positions — Round 7 slow-scroll sticky-header regression (
     page,
   }) => {
     // Story 101.1 regression is environment-dependent in the full Playwright suite:
-    // absent in some runs, present in others. test.fixme() ensures CI is not blocked
+    // absent in some runs, present in others. test.skip() marks it pending
     // until Story 101.2 addresses the root cause.
     test.fixme();
 
@@ -509,7 +509,7 @@ test.describe('Sold Positions — Round 7 slow-scroll sticky-header regression (
     page,
   }) => {
     // Story 101.1 regression is environment-dependent in the full Playwright suite:
-    // absent in some runs, present in others. test.fixme() ensures CI is not blocked
+    // absent in some runs, present in others. test.skip() marks it pending
     // until Story 101.2 addresses the root cause.
     test.fixme();
 
@@ -586,7 +586,7 @@ test.describe('Dividend Deposits — Round 7 slow-scroll sticky-header regressio
     page,
   }) => {
     // Story 101.1 regression is environment-dependent in the full Playwright suite:
-    // absent in some runs, present in others. test.fixme() ensures CI is not blocked
+    // absent in some runs, present in others. test.skip() marks it pending
     // until Story 101.2 addresses the root cause.
     test.fixme();
 
