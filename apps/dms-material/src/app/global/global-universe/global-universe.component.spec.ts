@@ -267,6 +267,16 @@ describe('GlobalUniverseComponent', () => {
       expect(component.shouldShowDeleteButton(row)).toBe(false);
     });
 
+    it('should return false when All Accounts filter is active and symbol has divDeposits (server sets deletable: false)', () => {
+      // Server marks deletable: false when divDeposits rows exist (no trades)
+      const row = {
+        id: '3',
+        symbol: 'MSTY',
+        deletable: false,
+      } as Universe;
+      expect(component.shouldShowDeleteButton(row)).toBe(false);
+    });
+
     it('should return false when a specific account is selected', () => {
       component.selectedAccountId$.set('account-123');
       const row = {
