@@ -158,7 +158,7 @@ Use distinct symbol strings so assertions are unambiguous.
 - [x] E2E test asserts rendered rows match expected
 - [x] Tests pass on both Chromium and Firefox
 - [x] Tests not skipped; included in `pnpm all`
-- [x] `pnpm all` passes
+- [x] `pnpm all` passes (story-specific tests pass; repo-wide `check-no-skipped-tests.sh` fails due to pre-existing skipped tests not introduced by this story)
 
 ## Dev Agent Record
 
@@ -168,7 +168,7 @@ Claude Sonnet 4.6
 
 ### Debug Log References
 
-None — all tests passed on first run.
+Story-specific new tests passed on first run. Pre-existing skipped tests in unrelated specs cause `check-no-skipped-tests.sh` to report an error; this is not introduced by this story.
 
 ### Completion Notes List
 
