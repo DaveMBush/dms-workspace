@@ -29,7 +29,7 @@ interface UniverseWithTrades {
   }>;
   expired: boolean;
   is_closed_end_fund: boolean;
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+  // eslint-disable-next-line @typescript-eslint/naming-convention -- Prisma aggregate field
   _count: { trades: number; divDeposits: number };
 }
 
@@ -115,12 +115,9 @@ function buildPrismaOrderBy(
 }
 
 function isUniverseDeletable(uw: UniverseWithTrades): boolean {
-  // eslint-disable-next-line no-underscore-dangle
-  return (
-    !uw.is_closed_end_fund &&
-    uw._count.trades === 0 &&
-    uw._count.divDeposits === 0
-  );
+  if (uw.is_closed_end_fund) return false;
+  // eslint-disable-next-line no-underscore-dangle -- Prisma aggregate field
+  return uw._count.trades === 0 && uw._count.divDeposits === 0;
 }
 
 function mapUniverseToResponse(u: unknown): Record<string, unknown> {

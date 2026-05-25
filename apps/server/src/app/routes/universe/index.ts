@@ -32,15 +32,14 @@ interface UniverseWithTrades {
   }>;
   expired: boolean;
   is_closed_end_fund: boolean;
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+  // eslint-disable-next-line @typescript-eslint/naming-convention -- Prisma aggregate field
   _count: { trades: number; divDeposits: number };
 }
 
 function isUniverseDeletable(u: UniverseWithTrades): boolean {
-  // eslint-disable-next-line no-underscore-dangle
-  return (
-    !u.is_closed_end_fund && u._count.trades === 0 && u._count.divDeposits === 0
-  );
+  if (u.is_closed_end_fund) return false;
+  // eslint-disable-next-line no-underscore-dangle -- Prisma aggregate field
+  return u._count.trades === 0 && u._count.divDeposits === 0;
 }
 
 function mapUniverseToResponse(u: UniverseWithTrades): Universe {
