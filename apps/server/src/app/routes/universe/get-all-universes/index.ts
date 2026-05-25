@@ -115,7 +115,9 @@ function buildPrismaOrderBy(
 }
 
 function isUniverseDeletable(uw: UniverseWithTrades): boolean {
-  if (uw.is_closed_end_fund) return false;
+  if (uw.is_closed_end_fund) {
+    return false;
+  }
   // eslint-disable-next-line no-underscore-dangle -- Prisma aggregate field
   return uw._count.trades === 0 && uw._count.divDeposits === 0;
 }

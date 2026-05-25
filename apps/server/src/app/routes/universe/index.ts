@@ -37,7 +37,9 @@ interface UniverseWithTrades {
 }
 
 function isUniverseDeletable(u: UniverseWithTrades): boolean {
-  if (u.is_closed_end_fund) return false;
+  if (u.is_closed_end_fund) {
+    return false;
+  }
   // eslint-disable-next-line no-underscore-dangle -- Prisma aggregate field
   return u._count.trades === 0 && u._count.divDeposits === 0;
 }
