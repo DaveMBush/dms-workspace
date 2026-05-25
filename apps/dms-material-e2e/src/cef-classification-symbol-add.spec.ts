@@ -149,13 +149,22 @@ async function importCsvFile(page: Page, filename: string): Promise<void> {
 }
 
 async function getRiskGroupForSymbol(
-  page: Page,
+  _page: Page,
   symbol: string
 ): Promise<string> {
-  await page.getByPlaceholder('Search Symbol').fill(symbol);
-  const row = page.locator('tr.mat-mdc-row').filter({ hasText: symbol });
-  await expect(row).toBeVisible({ timeout: 15000 });
-  return (await row.locator('td.mat-column-risk_group').textContent()) ?? '';
+  // Query the DB directly: expired CEFs have no open trades and are filtered
+  // out of the Universe UI, so we cannot rely on table-row visibility to verify
+  // the risk-group assignment made by the server-side CEF classifier.
+  const prisma = await initializePrismaClient();
+  try {
+    const entry = await prisma.universe.findFirst({
+      where: { symbol: symbol.toUpperCase() },
+      include: { risk_group: true },
+    });
+    return entry?.risk_group?.name ?? '';
+  } finally {
+    await prisma.$disconnect();
+  }
 }
 
 test.describe.configure({ mode: 'serial' });
