@@ -405,6 +405,6 @@ E2E test stabilisation changes (test artifacts only, no production code):
 
 ### Review Findings
 
-- [x] [Review][Patch] File List said "No files modified" but 8 E2E test files changed — updated File List to enumerate actual modified files with descriptions [111-1-design-base-table-two-region-layout.md:386]
-- [x] [Review][Defer] `navigateToUniverse` uses `waitForLoadState('networkidle')` — pre-existing anti-pattern in `no-open-lots-split-order.spec.ts` line 37; not introduced by this diff — deferred, pre-existing
-- [x] [Review][Defer] `verifyMonotonicScroll` settle time 50ms → 300ms increases smooth-scroll test duration 6× (1s → 6s per test across 4 specs) — acceptable flakiness fix; impact is minor — deferred, pre-existing context
+- [x] Review/Patch: File List said "No files modified" but 8 E2E test files changed — updated File List to enumerate actual modified files with descriptions [111-1-design-base-table-two-region-layout.md:386]
+- [x] Review/Defer: `navigateToUniverse` uses `waitForLoadState('networkidle')` — pre-existing anti-pattern in `no-open-lots-split-order.spec.ts` line 37; not introduced by this diff — deferred, pre-existing
+- [x] Review/Defer: `verifyMonotonicScroll` settle time 50ms → 300ms increases smooth-scroll test duration 6× (1s → 6s per test across 4 specs) — acceptable flakiness fix; impact is minor — deferred, pre-existing context
