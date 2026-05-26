@@ -90,14 +90,18 @@ test.describe('Open Positions Screen E2E', () => {
     test('should filter by Symbol', async ({ page }) => {
       const symbolInput = page.locator('[data-testid="symbol-search-input"]');
       await symbolInput.fill(symbols[0]);
-      await page.waitForTimeout(500);
 
-      // The table should show only the matching symbol (column 1)
-      const symbolCells = await getColumnTexts(page, 1);
-      expect(symbolCells.length).toBeGreaterThan(0);
-      for (const cell of symbolCells) {
-        expect(cell).toContain(symbols[0]);
-      }
+      // Retry the whole assertion until all visible rows match the filter.
+      // A simple toBeVisible() guard is insufficient because the target row is
+      // already seeded and visible BEFORE the filter takes effect; we need to
+      // wait until non-matching rows have been removed from the DOM too.
+      await expect(async () => {
+        const symbolCells = await getColumnTexts(page, 1);
+        expect(symbolCells.length).toBeGreaterThan(0);
+        for (const cell of symbolCells) {
+          expect(cell).toContain(symbols[0]);
+        }
+      }).toPass({ timeout: 15000 });
     });
   });
 

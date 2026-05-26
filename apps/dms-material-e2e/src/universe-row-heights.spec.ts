@@ -98,10 +98,9 @@ test.describe('Universe Row Height Consistency — Epic 67 / Story 67.1', () => 
   test('all visible rows have equal offsetHeight (diagnoses icon-button inflation)', async ({
     page,
   }) => {
-    // Expected to fail until Story 67.2 pins all rows to 52 px.
-    // Remove this call once Story 67.2 fixes the row height inconsistency.
+    // Marked test.fail() because icon-button rows are still ~1 px taller than
+    // the 52-px target. Remove this call once Story 67.2 fully equalises all rows.
     test.fail();
-
     const rowHeights = await page.evaluate(function measureSeededRowHeights(
       symbols: string[]
     ): number[] {

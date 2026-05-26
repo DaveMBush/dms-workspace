@@ -110,7 +110,19 @@ test.describe('Universe Screen E2E', () => {
       // Type a symbol prefix that matches one of our seeded records
       const symbolInput = page.locator('input[placeholder="Search Symbol"]');
       await symbolInput.fill(symbols[0]);
-      await page.waitForTimeout(500);
+      // Wait for debounce (300ms) + server round-trip: poll until at least one
+      // symbol cell contains the expected value rather than using a fixed timeout.
+      const colSelector = `tr.mat-mdc-row td:nth-child(${UNIVERSE_COLUMN_INDEX.symbol})`;
+      await page.waitForFunction(
+        function waitForSymbolCell(arg: { sel: string; sym: string }): boolean {
+          const cells = Array.from(document.querySelectorAll(arg.sel));
+          return cells.some(function checkCell(c): boolean {
+            return ((c as HTMLElement).textContent ?? '').trim().includes(arg.sym);
+          });
+        },
+        { sel: colSelector, sym: symbols[0] },
+        { timeout: 10000 }
+      );
 
       // The table should show only the matching symbol
       const symbolCells = await getColumnTexts(
