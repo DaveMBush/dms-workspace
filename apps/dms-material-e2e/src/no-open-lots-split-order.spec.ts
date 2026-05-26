@@ -183,13 +183,28 @@ test.describe('No Open Lots Split Ordering Bug (Story 63.1)', () => {
   test('should display TSTX in universe table after import', async ({
     page,
   }) => {
-    await navigateToUniverse(page);
-    await page.waitForSelector('tr.mat-mdc-row', { timeout: 15000 });
+    // Pre-seed the universe symbol filter in localStorage so the component
+    // initialises with TSTX already filtered. The sortInterceptor reads this
+    // state on every HTTP request (via X-Sort-Filter-State header), so the
+    // very first /api/top fetch will already be scoped to TSTX — avoiding the
+    // debounce / event-timing race that occurs when the page has just finished
+    // a network-intensive import.
+    await page.evaluate((symbol: string) => {
+      localStorage.setItem(
+        'dms-sort-filter-state',
+        JSON.stringify({ universes: { filters: { symbol } } })
+      );
+    }, TSTX_SYMBOL);
 
-    const tstxRow = page
-      .locator('tr.mat-mdc-row')
-      .filter({ hasText: TSTX_SYMBOL });
-    await expect(tstxRow).toHaveCount(1, { timeout: 10000 });
+    await navigateToUniverse(page);
+    await expect(page.locator('dms-base-table')).toBeVisible({
+      timeout: 15000,
+    });
+
+    const tstxRow = page.locator('tr.mat-mdc-row').filter({
+      has: page.locator('td.mat-column-symbol', { hasText: TSTX_SYMBOL }),
+    });
+    await expect(tstxRow).toHaveCount(1, { timeout: 15000 });
   });
 });
 

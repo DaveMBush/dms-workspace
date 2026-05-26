@@ -640,3 +640,11 @@ development_status:
   108-2-fix-electron-migration-deployment: in-progress
   108-3-e2e-electron-package-launch-smoke: review
   epic-108-retrospective: optional
+
+  # ── Epic 111: Eliminate Janky Scroll by Decoupling Sticky Header (Round 10) ──
+  epic-111: in-progress
+  111-1-design-base-table-two-region-layout: done
+  111-2-refactor-base-table-two-region: ready-for-dev
+  111-3-verify-all-screens-after-refactor: ready-for-dev
+  111-4-base-table-two-region-regression-suite: ready-for-dev
+  epic-111-retrospective: optional
