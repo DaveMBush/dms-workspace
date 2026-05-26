@@ -117,7 +117,9 @@ test.describe('Universe Screen E2E', () => {
         function waitForSymbolCell(arg: { sel: string; sym: string }): boolean {
           const cells = Array.from(document.querySelectorAll(arg.sel));
           return cells.some(function checkCell(c): boolean {
-            return ((c as HTMLElement).textContent ?? '').trim().includes(arg.sym);
+            return ((c as HTMLElement).textContent ?? '')
+              .trim()
+              .includes(arg.sym);
           });
         },
         { sel: colSelector, sym: symbols[0] },

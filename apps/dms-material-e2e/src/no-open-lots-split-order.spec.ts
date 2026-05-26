@@ -192,7 +192,7 @@ test.describe('No Open Lots Split Ordering Bug (Story 63.1)', () => {
     await page.evaluate((symbol: string) => {
       localStorage.setItem(
         'dms-sort-filter-state',
-        JSON.stringify({ universes: { filters: { symbol } } }),
+        JSON.stringify({ universes: { filters: { symbol } } })
       );
     }, TSTX_SYMBOL);
 
