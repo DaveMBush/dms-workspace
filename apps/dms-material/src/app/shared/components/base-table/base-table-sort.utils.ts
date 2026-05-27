@@ -15,8 +15,11 @@ export function compareValues(aVal: unknown, bVal: unknown): number {
   if (typeof aVal === 'string' && typeof bVal === 'string') {
     return aVal.localeCompare(bVal);
   }
-  const a = aVal as number;
-  const b = bVal as number;
+  const a = Number(aVal);
+  const b = Number(bVal);
+  if (Number.isNaN(a) || Number.isNaN(b)) {
+    return 0;
+  }
   if (a < b) {
     return -1;
   }
