@@ -31,7 +31,10 @@ const TARGET_HEADERS = [
 async function waitForTableRows(page: Page): Promise<void> {
   const table = page.locator('[data-testid="open-positions-table"]');
   await expect(table).toBeVisible({ timeout: 15000 });
-  await table.locator('tr.mat-mdc-row').first().waitFor({ timeout: 15000 });
+  await table
+    .locator('.dms-body-row[role="row"]')
+    .first()
+    .waitFor({ timeout: 15000 });
 }
 
 /**
@@ -41,7 +44,7 @@ async function waitForTableRows(page: Page): Promise<void> {
  */
 async function getColumnIndex(page: Page, headerText: string): Promise<number> {
   const headers = page
-    .locator('tr.mat-mdc-header-row:not(.filter-row)')
+    .locator('.dms-column-header-row[role="row"]')
     .first()
     .locator('th');
   const count = await headers.count();
@@ -109,7 +112,9 @@ test.describe('Open Positions — Computed Columns Render Non-Blank Values (Stor
         const colIdx = columnIndexes.get(header)!;
         const cell = page
           .locator('[data-testid="open-positions-table"]')
-          .locator(`tr.mat-mdc-row td:nth-child(${colIdx})`)
+          .locator(
+            `.dms-body-row[role="row"] .dms-body-cell:nth-child(${colIdx})`
+          )
           .first();
 
         await expect

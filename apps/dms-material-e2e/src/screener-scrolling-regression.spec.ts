@@ -37,8 +37,8 @@ const VIEWPORT_SELECTOR = 'cdk-virtual-scroll-viewport';
 // NOTE: must be a TH cell selector — Angular Material's stickRows applies
 // position:sticky to TH children, not the TR. getBoundingClientRect on TR
 // returns the table-layout flow position, not the visual sticky position.
-const HEADER_ROW_SELECTOR = 'th.mat-mdc-header-cell';
-const ROW_SELECTOR = 'tr.mat-mdc-row';
+const HEADER_ROW_SELECTOR = '.dms-header-cell[role="columnheader"]';
+const ROW_SELECTOR = '.dms-body-row[role="row"]';
 
 // ─── Story 101.3: Header-Invariant Regression — Screener ─────────────────────
 

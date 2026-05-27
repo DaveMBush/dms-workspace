@@ -40,14 +40,16 @@ async function waitForTableRows(page: Page): Promise<void> {
   await expect(page.locator('[data-testid="screener-table"]')).toBeVisible({
     timeout: 15000,
   });
-  await page.waitForSelector('tr.mat-mdc-row', { timeout: 15000 });
+  await page.waitForSelector('.dms-body-row[role="row"]', { timeout: 15000 });
 }
 
 /**
  * Helper: collect text content from all visible cells in a given column index (1-based).
  */
 async function getColumnTexts(page: Page, colIndex: number): Promise<string[]> {
-  const cells = page.locator(`tr.mat-mdc-row td:nth-child(${colIndex})`);
+  const cells = page.locator(
+    `.dms-body-row[role="row"] .dms-body-cell:nth-child(${colIndex})`
+  );
   const count = await cells.count();
   const texts: string[] = [];
   for (let i = 0; i < count; i++) {
@@ -111,7 +113,7 @@ test.describe('Screener Screen E2E', () => {
     });
 
     test('should sort by Symbol', async ({ page }) => {
-      const header = page.getByRole('button', { name: 'Symbol' });
+      const header = page.getByRole('columnheader', { name: 'Symbol' });
       await header.click();
       await page.waitForTimeout(500);
 
@@ -122,7 +124,7 @@ test.describe('Screener Screen E2E', () => {
     });
 
     test('should sort by Risk Group', async ({ page }) => {
-      const header = page.getByRole('button', { name: 'Risk Group' });
+      const header = page.getByRole('columnheader', { name: 'Risk Group' });
       await header.click();
       await page.waitForTimeout(500);
 

@@ -40,7 +40,7 @@ import { applyAndClearGlobalFilter } from './helpers/apply-and-clear-global-filt
 // ─── Constants ─────────────────────────────────────────────────────────────────
 
 const ROW_HEIGHT_PX = 57;
-const HEADER_SELECTOR = 'th.mat-mdc-header-cell';
+const HEADER_SELECTOR = '.dms-header-cell[role="columnheader"]';
 const VIEWPORT_SELECTOR = 'cdk-virtual-scroll-viewport';
 const TOOLBAR_SELECTOR = 'mat-toolbar';
 
@@ -489,7 +489,7 @@ test.describe.skip(
       console.log(
         '\n=== SOLD POSITIONS: Apply + clear column filter (inline) ==='
       );
-      // Use inline approach: applyAndClearColumnFilter waits for tr.mat-mdc-row but
+      // Use inline approach: applyAndClearColumnFilter waits for .dms-body-row but
       // sold positions filter may not trigger row visibility change reliably in all envs.
       const soldFilterInput = page
         .locator(`${VIEWPORT_SELECTOR} thead input[placeholder]`)

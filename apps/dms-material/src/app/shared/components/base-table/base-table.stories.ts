@@ -21,9 +21,21 @@ interface UniverseRow {
 }
 
 const sampleColumns: ColumnDef[] = [
-  { field: 'name', header: 'Name', sortable: true, type: 'text' },
-  { field: 'ticker', header: 'Ticker', sortable: true, type: 'text' },
-  { field: 'value', header: 'Value', sortable: true, type: 'currency' },
+  { field: 'name', header: 'Name', sortable: true, type: 'text', width: 150 },
+  {
+    field: 'ticker',
+    header: 'Ticker',
+    sortable: true,
+    type: 'text',
+    width: 100,
+  },
+  {
+    field: 'value',
+    header: 'Value',
+    sortable: true,
+    type: 'currency',
+    width: 120,
+  },
 ];
 
 const sampleData: SampleRow[] = [
@@ -38,12 +50,42 @@ const sampleData: SampleRow[] = [
 ];
 
 const universeColumns: ColumnDef[] = [
-  { field: 'ticker', header: 'Ticker', sortable: true, type: 'text' },
-  { field: 'name', header: 'Name', sortable: true, type: 'text' },
-  { field: 'price', header: 'Price', sortable: true, type: 'currency' },
-  { field: 'marketCap', header: 'Market Cap', sortable: true, type: 'number' },
-  { field: 'sector', header: 'Sector', sortable: false, type: 'text' },
-  { field: 'peRatio', header: 'P/E Ratio', sortable: true, type: 'number' },
+  {
+    field: 'ticker',
+    header: 'Ticker',
+    sortable: true,
+    type: 'text',
+    width: 100,
+  },
+  { field: 'name', header: 'Name', sortable: true, type: 'text', width: 200 },
+  {
+    field: 'price',
+    header: 'Price',
+    sortable: true,
+    type: 'currency',
+    width: 100,
+  },
+  {
+    field: 'marketCap',
+    header: 'Market Cap',
+    sortable: true,
+    type: 'number',
+    width: 130,
+  },
+  {
+    field: 'sector',
+    header: 'Sector',
+    sortable: false,
+    type: 'text',
+    width: 130,
+  },
+  {
+    field: 'peRatio',
+    header: 'P/E Ratio',
+    sortable: true,
+    type: 'number',
+    width: 100,
+  },
 ];
 
 const universeData: UniverseRow[] = [

@@ -135,11 +135,11 @@ test.describe('Dividend Precision After Update', () => {
     await page.waitForTimeout(500);
 
     // Wait for exactly one data row matching the test symbol.
-    await page.waitForSelector('tr.mat-mdc-row', { timeout: 10000 });
+    await page.waitForSelector('.dms-body-row[role="row"]', { timeout: 10000 });
 
     // Verify the first visible row actually contains the expected test symbol
     // before asserting on the distribution cell value.
-    const firstRow = page.locator('tr.mat-mdc-row').first();
+    const firstRow = page.locator('.dms-body-row[role="row"]').first();
     await expect(firstRow).toContainText(testSymbol, { timeout: 10000 });
 
     // The editable-cell component uses data-testid="distribution-cell-0" for
@@ -195,11 +195,13 @@ test.describe('Dividend Precision After Update', () => {
       await symbolInput.fill(baselineSymbol);
       await page.waitForTimeout(500);
 
-      await page.waitForSelector('tr.mat-mdc-row', { timeout: 10000 });
+      await page.waitForSelector('.dms-body-row[role="row"]', {
+        timeout: 10000,
+      });
 
       // Verify the first visible row actually contains the expected baseline symbol
       // before asserting on the distribution cell value.
-      const firstRow = page.locator('tr.mat-mdc-row').first();
+      const firstRow = page.locator('.dms-body-row[role="row"]').first();
       await expect(firstRow).toContainText(baselineSymbol, { timeout: 10000 });
 
       const distributionCell = page.locator(

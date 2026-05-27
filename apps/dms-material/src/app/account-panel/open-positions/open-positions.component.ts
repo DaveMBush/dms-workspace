@@ -125,7 +125,7 @@ export class OpenPositionsComponent implements OnDestroy {
   });
 
   columns: ColumnDef[] = [
-    { field: 'symbol', header: 'Symbol', sortable: false, width: '80px' },
+    { field: 'symbol', header: 'Symbol', sortable: false, width: 80 },
     { field: 'exDate', header: 'Ex-Date', type: 'date' },
     { field: 'buy', header: 'Buy', type: 'currency', editable: true },
     {
@@ -134,7 +134,7 @@ export class OpenPositionsComponent implements OnDestroy {
       type: 'date',
       sortable: true,
       editable: true,
-      width: '130px',
+      width: 130,
     },
     { field: 'quantity', header: 'Quantity', type: 'number', editable: true },
     { field: 'expectedYield', header: 'Expected $', type: 'currency' },
@@ -157,12 +157,12 @@ export class OpenPositionsComponent implements OnDestroy {
       header: 'Sell Date',
       type: 'date',
       editable: true,
-      width: '130px',
+      width: 130,
     },
     { field: 'daysHeld', header: 'Days Held', type: 'number' },
     { field: 'targetGain', header: 'Target Gain', type: 'number' },
     { field: 'targetSell', header: 'Target Sell', type: 'currency' },
-    { field: 'actions', header: '', sortable: false, width: '50px' },
+    { field: 'actions', header: '', sortable: false, width: 50 },
   ];
 
   /**

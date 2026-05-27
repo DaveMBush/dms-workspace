@@ -39,13 +39,17 @@ test.describe('Screener Table', () => {
     });
 
     test('should display data rows', async ({ page }) => {
-      const rows = page.locator('[data-testid="screener-table"] tbody tr');
+      const rows = page.locator(
+        '[data-testid="screener-table"] .dms-body-row[role="row"]'
+      );
       await expect(rows).not.toHaveCount(0);
     });
 
     test('should display symbols in sorted order', async ({ page }) => {
       const symbols = await page
-        .locator('[data-testid="screener-table"] tbody tr td:first-child')
+        .locator(
+          '[data-testid="screener-table"] .dms-body-row[role="row"] .dms-body-cell:first-child'
+        )
         .allTextContents();
 
       // Verify we have data
@@ -89,7 +93,9 @@ test.describe('Screener Table', () => {
 
       // All visible rows should have "Equities" risk group
       const riskGroups = await page
-        .locator('[data-testid="screener-table"] tbody tr td:nth-child(2)')
+        .locator(
+          '[data-testid="screener-table"] .dms-body-row[role="row"] .dms-body-cell:nth-child(2)'
+        )
         .allTextContents();
 
       expect(riskGroups.length).toBeGreaterThan(0);

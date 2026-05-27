@@ -131,7 +131,7 @@ test.describe('CUSIP Cache Admin UI', function describeCusipCache() {
       ).toBeVisible({ timeout: 10000 });
 
       const firstRow = page.locator(
-        '[data-testid="search-results-table"] tr.mat-mdc-row'
+        '[data-testid="search-results-table"] .dms-body-row[role="row"]'
       );
       await expect(firstRow.first()).toContainText(TEST_CUSIP);
     });
@@ -230,7 +230,7 @@ test.describe('CUSIP Cache Admin UI', function describeCusipCache() {
       ).toBeVisible({ timeout: 10000 });
 
       const firstRow = page.locator(
-        '[data-testid="search-results-table"] tr.mat-mdc-row'
+        '[data-testid="search-results-table"] .dms-body-row[role="row"]'
       );
       await expect(firstRow.first()).toContainText(TEST_CUSIP);
     });
@@ -378,7 +378,7 @@ test.describe('CUSIP Cache Admin UI', function describeCusipCache() {
 
       // Should have at least one audit row with the seeded CUSIP
       const auditRows = page.locator(
-        '[data-testid="audit-table"] tr.mat-mdc-row'
+        '[data-testid="audit-table"] .dms-body-row[role="row"]'
       );
       await expect(auditRows.first()).toBeVisible({ timeout: 5000 });
     });

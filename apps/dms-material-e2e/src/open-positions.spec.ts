@@ -28,13 +28,13 @@ test.describe('Open Positions', () => {
     const quantityHeader = page.getByRole('columnheader', { name: 'Quantity' });
     await expect(quantityHeader).toBeVisible();
 
-    const buyHeader = page.locator('th.mat-column-buy');
+    const buyHeader = page.locator('.dms-header-cell[data-column="buy"]');
     await expect(buyHeader).toBeVisible();
 
     const buyDateHeader = page.getByRole('columnheader', { name: 'Buy Date' });
     await expect(buyDateHeader).toBeVisible();
 
-    const sellHeader = page.locator('th.mat-column-sell');
+    const sellHeader = page.locator('.dms-header-cell[data-column="sell"]');
     await expect(sellHeader).toBeVisible();
 
     const sellDateHeader = page.getByRole('columnheader', {
@@ -66,7 +66,9 @@ test.describe('Open Positions', () => {
     // See apps/server/prisma/seed.ts for data setup.
     // Get initial row count
     const table = page.locator('dms-base-table');
-    const initialRows = await table.locator('.mat-mdc-row').count();
+    const initialRows = await table
+      .locator('.dms-body-row[role="row"]')
+      .count();
 
     // Open add position dialog
     const addButton = page.locator('[data-testid="add-new-position-button"]');
@@ -116,7 +118,7 @@ test.describe('Open Positions', () => {
 
     // Verify row count increased
     await page.waitForTimeout(1000); // Wait for table to update
-    const newRows = await table.locator('.mat-mdc-row').count();
+    const newRows = await table.locator('.dms-body-row[role="row"]').count();
     expect(newRows).toBeGreaterThan(initialRows);
   });
 
@@ -517,7 +519,9 @@ test.describe('Open Positions', () => {
 
     // Get initial row count
     const table = page.locator('dms-base-table');
-    const initialRows = await table.locator('.mat-mdc-row').count();
+    const initialRows = await table
+      .locator('.dms-body-row[role="row"]')
+      .count();
 
     // Type in symbol search
     const searchInput = page.locator('[data-testid="symbol-search-input"]');
@@ -527,7 +531,9 @@ test.describe('Open Positions', () => {
     await page.waitForTimeout(1000);
 
     // Get filtered row count
-    const filteredRows = await table.locator('.mat-mdc-row').count();
+    const filteredRows = await table
+      .locator('.dms-body-row[role="row"]')
+      .count();
 
     // Filtered count should be less than or equal to initial count
     expect(filteredRows).toBeLessThanOrEqual(initialRows);
@@ -535,7 +541,7 @@ test.describe('Open Positions', () => {
     // If there are rows, they should contain 'A'
     if (filteredRows > 0) {
       const firstSymbol = await table
-        .locator('.mat-mdc-row')
+        .locator('.dms-body-row[role="row"]')
         .first()
         .locator('td')
         .first()
@@ -582,7 +588,9 @@ test.describe('Open Positions', () => {
     await page.waitForTimeout(2000);
 
     // Get initial row count
-    const initialRows = await table.locator('.mat-mdc-row').count();
+    const initialRows = await table
+      .locator('.dms-body-row[role="row"]')
+      .count();
 
     // Click delete button on first row
     const deleteButton = page
@@ -594,7 +602,7 @@ test.describe('Open Positions', () => {
     await page.waitForTimeout(1000);
 
     // Verify row count decreased
-    const newRows = await table.locator('.mat-mdc-row').count();
+    const newRows = await table.locator('.dms-body-row[role="row"]').count();
     expect(newRows).toBe(initialRows - 1);
   });
 

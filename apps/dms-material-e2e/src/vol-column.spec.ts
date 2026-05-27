@@ -30,7 +30,7 @@ test.describe('Volatility Column', function describeVolColumn() {
   }) {
     await expect(
       page
-        .locator('tr.mat-mdc-header-row:not(.filter-row) [role="columnheader"]')
+        .locator('.dms-column-header-row[role="row"] [role="columnheader"]')
         .first()
     ).toContainText('Vol');
   });
@@ -52,7 +52,7 @@ test.describe('Volatility Column', function describeVolColumn() {
     const searchInput = page.locator('input[placeholder="Search Symbol"]');
     await searchInput.fill(symbol);
     await expect(
-      page.locator('td.mat-column-vol mat-icon').first()
+      page.locator('.dms-body-cell[data-column="vol"] mat-icon').first()
     ).toBeVisible({ timeout: 10000 });
   });
 });

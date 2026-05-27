@@ -91,23 +91,23 @@ export class DividendDepositsComponent {
   }
 
   columns: ColumnDef[] = [
-    { field: 'symbol', header: 'Symbol', sortable: true, width: '120px' },
+    { field: 'symbol', header: 'Symbol', sortable: true, width: 120 },
     {
       field: 'date',
       header: 'Date',
       type: 'date',
       sortable: true,
-      width: '110px',
+      width: 110,
     },
     {
       field: 'amount',
       header: 'Amount',
       type: 'currency',
       sortable: true,
-      width: '100px',
+      width: 100,
     },
-    { field: 'type', header: 'Type', width: '120px' },
-    { field: 'actions', header: '', type: 'actions', width: '60px' },
+    { field: 'type', header: 'Type', width: 120 },
+    { field: 'actions', header: '', type: 'actions', width: 60 },
   ];
 
   onAddDividend(): void {

@@ -2,7 +2,7 @@ export interface ColumnDef {
   field: string;
   header: string;
   tooltip?: string;
-  width?: string;
+  width?: number;
   sortable?: boolean;
   editable?: boolean;
   type?:

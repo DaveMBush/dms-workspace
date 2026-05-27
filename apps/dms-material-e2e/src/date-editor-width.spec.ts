@@ -21,8 +21,10 @@ interface SeederResult {
 }
 
 function getUniverseRowBySymbol(page: Page, symbol: string) {
-  return page.locator('tr.mat-mdc-row').filter({
-    has: page.locator('td.mat-column-symbol', { hasText: symbol }),
+  return page.locator('.dms-body-row[role="row"]').filter({
+    has: page.locator('.dms-body-cell[data-column="symbol"]', {
+      hasText: symbol,
+    }),
   });
 }
 
@@ -121,7 +123,7 @@ test.describe('Date Editor Width Consistency', () => {
     await expect(page.locator('dms-base-table')).toBeVisible({
       timeout: 15000,
     });
-    await page.waitForSelector('tr.mat-mdc-row', { timeout: 15000 });
+    await page.waitForSelector('.dms-body-row[role="row"]', { timeout: 15000 });
   });
 
   test('empty date editor should have same width as filled date editor', async ({

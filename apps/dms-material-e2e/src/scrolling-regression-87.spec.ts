@@ -71,8 +71,9 @@ import { seedScrollOpenPositionsData } from './helpers/seed-scroll-open-position
 import { seedScrollSoldPositionsData } from './helpers/seed-scroll-sold-positions-data.helper';
 
 const VIEWPORT_SELECTOR = 'cdk-virtual-scroll-viewport';
-const ROW_SELECTOR = 'tr.mat-mdc-row';
-const SYMBOL_CELL_SELECTOR = 'tr.mat-mdc-row td.mat-column-symbol';
+const ROW_SELECTOR = '.dms-body-row[role="row"]';
+const SYMBOL_CELL_SELECTOR =
+  '.dms-body-row[role="row"] .dms-body-cell[data-column="symbol"]';
 
 /**
  * Assert that all currently visible symbol cells have non-empty text content.

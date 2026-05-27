@@ -27,7 +27,7 @@ export async function applyAndClearColumnFilter(
   await filterInput.click();
   await filterInput.fill(filterValue);
   // Wait for CDK to process the new filtered data array.
-  // Fixed timeout is used instead of tr.mat-mdc-row visibility check because
+  // Fixed timeout is used instead of .dms-body-row[role="row"] visibility check because
   // Firefox CDK virtual scroll may not render rows in the viewport within the
   // shorter timeout window (consistent with navigateAndWaitForTable pattern).
   await page.waitForTimeout(2000);

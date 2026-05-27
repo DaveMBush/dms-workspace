@@ -20,14 +20,17 @@ import { login } from './helpers/login.helper';
 import { seedScrollOpenPositionsData } from './helpers/seed-scroll-open-positions-data.helper';
 
 const VIEWPORT_SELECTOR = 'cdk-virtual-scroll-viewport';
-// NOTE: must be a TH cell selector — Angular Material's stickRows applies
-// position:sticky to TH children, not the TR. getBoundingClientRect on TR
-// returns the table-layout flow position, not the visual sticky position.
-const HEADER_ROW_SELECTOR = 'th.mat-mdc-header-cell';
-const ROW_SELECTOR = 'tr.mat-mdc-row';
-const SYMBOL_CELL_SELECTOR = 'tr.mat-mdc-row td.mat-column-symbol';
-const QUANTITY_CELL_SELECTOR = 'tr.mat-mdc-row td.mat-column-quantity';
-const BUY_CELL_SELECTOR = 'tr.mat-mdc-row td.mat-column-buy';
+// NOTE: HEADER_ROW_SELECTOR must target individual header cells because
+// getBoundingClientRect on the header row container returns the layout
+// flow position, not individual cell positions.
+const HEADER_ROW_SELECTOR = '.dms-header-cell[role="columnheader"]';
+const ROW_SELECTOR = '.dms-body-row[role="row"]';
+const SYMBOL_CELL_SELECTOR =
+  '.dms-body-row[role="row"] .dms-body-cell[data-column="symbol"]';
+const QUANTITY_CELL_SELECTOR =
+  '.dms-body-row[role="row"] .dms-body-cell[data-column="quantity"]';
+const BUY_CELL_SELECTOR =
+  '.dms-body-row[role="row"] .dms-body-cell[data-column="buy"]';
 
 // ─── Scroll Helpers ────────────────────────────────────────────────────────────
 
@@ -206,7 +209,7 @@ test.describe('Open Positions Scrolling Regression — Story 87.3', () => {
     // newly sorted data should not expose placeholder rows.
     // Buy Date is used as the sort trigger because Symbol is not sortable on
     // this screen.
-    const buyDateHeader = page.getByRole('button', {
+    const buyDateHeader = page.getByRole('columnheader', {
       name: 'Buy Date',
       exact: true,
     });
@@ -268,7 +271,7 @@ test.describe('Open Positions — Story 101.3 slow-scroll header-invariant regre
     await expect(page.locator('dms-base-table')).toBeVisible({
       timeout: 15000,
     });
-    await page.waitForSelector('tr.mat-mdc-row', { timeout: 15000 });
+    await page.waitForSelector('.dms-body-row[role="row"]', { timeout: 15000 });
   });
 
   test('open positions — slow scroll keeps header anchored under parent header', async ({

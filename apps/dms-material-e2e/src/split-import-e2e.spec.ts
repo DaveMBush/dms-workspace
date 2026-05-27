@@ -42,7 +42,9 @@ async function verifySymbolRow(
   expectedQty: number,
   expectedBuy: number
 ): Promise<void> {
-  const rows = page.locator('tr.mat-mdc-row').filter({ hasText: symbol });
+  const rows = page
+    .locator('.dms-body-row[role="row"]')
+    .filter({ hasText: symbol });
   await expect(rows).toHaveCount(1, { timeout: 10000 });
   const qtyText = await rows
     .nth(0)
@@ -166,9 +168,11 @@ test.describe('OXLC Split Import E2E', () => {
     await expect(
       page.locator('[data-testid="open-positions-table"]')
     ).toBeVisible({ timeout: 15000 });
-    await page.waitForSelector('tr.mat-mdc-row', { timeout: 15000 });
+    await page.waitForSelector('.dms-body-row[role="row"]', { timeout: 15000 });
 
-    const oxlcRows = page.locator('tr.mat-mdc-row').filter({ hasText: 'OXLC' });
+    const oxlcRows = page
+      .locator('.dms-body-row[role="row"]')
+      .filter({ hasText: 'OXLC' });
     await expect(oxlcRows).toHaveCount(3, { timeout: 10000 });
 
     let totalQty = 0;
@@ -315,7 +319,7 @@ test.describe('All-Three Reverse Split E2E', () => {
     await expect(
       page.locator('[data-testid="open-positions-table"]')
     ).toBeVisible({ timeout: 15000 });
-    await page.waitForSelector('tr.mat-mdc-row', { timeout: 15000 });
+    await page.waitForSelector('.dms-body-row[role="row"]', { timeout: 15000 });
 
     // MSTY 1-for-5: 400 → 80 shares @ $10.00
     await verifySymbolRow(page, 'MSTY', 80, 10);

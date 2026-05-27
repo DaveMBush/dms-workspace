@@ -170,7 +170,7 @@ describe('DividendDepositsComponent', () => {
       );
       expect(col).toBeTruthy();
       expect(col?.sortable).toBe(true);
-      expect(col?.width).toBe('120px');
+      expect(col?.width).toBe(120);
     });
 
     it('should have date column with type date, sortable true, and correct width', () => {
@@ -178,7 +178,7 @@ describe('DividendDepositsComponent', () => {
       expect(col).toBeTruthy();
       expect(col?.type).toBe('date');
       expect(col?.sortable).toBe(true);
-      expect(col?.width).toBe('110px');
+      expect(col?.width).toBe(110);
     });
 
     it('should have amount column with type currency, sortable true, and correct width', () => {
@@ -188,13 +188,13 @@ describe('DividendDepositsComponent', () => {
       expect(col).toBeTruthy();
       expect(col?.type).toBe('currency');
       expect(col?.sortable).toBe(true);
-      expect(col?.width).toBe('100px');
+      expect(col?.width).toBe(100);
     });
 
     it('should have type column with correct width', () => {
       const col = component.columns.find((c: ColumnDef) => c.field === 'type');
       expect(col).toBeTruthy();
-      expect(col?.width).toBe('120px');
+      expect(col?.width).toBe(120);
     });
 
     it('should have actions column with type actions and correct width', () => {
@@ -203,7 +203,7 @@ describe('DividendDepositsComponent', () => {
       );
       expect(col).toBeTruthy();
       expect(col?.type).toBe('actions');
-      expect(col?.width).toBe('60px');
+      expect(col?.width).toBe(60);
     });
 
     // AC 4: Tests verify table sorting functionality

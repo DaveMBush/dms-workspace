@@ -4,8 +4,10 @@ import { login } from './helpers/login.helper';
 import { seedUniverseData } from './helpers/seed-universe-data.helper';
 
 function getUniverseRowBySymbol(page: Page, symbol: string) {
-  return page.locator('tr.mat-mdc-row').filter({
-    has: page.locator('td.mat-column-symbol', { hasText: symbol }),
+  return page.locator('.dms-body-row[role="row"]').filter({
+    has: page.locator('.dms-body-cell[data-column="symbol"]', {
+      hasText: symbol,
+    }),
   });
 }
 
@@ -55,7 +57,7 @@ test.describe('Universe Table Workflows', () => {
     // Wait for table to be ready instead of networkidle
     await expect(page.locator('dms-base-table')).toBeVisible();
     // Wait for data rows to load (Material table rows)
-    await page.waitForSelector('tr.mat-mdc-row', { timeout: 10000 });
+    await page.waitForSelector('.dms-body-row[role="row"]', { timeout: 10000 });
   });
 
   test.afterEach(async () => {
@@ -70,14 +72,16 @@ test.describe('Universe Table Workflows', () => {
       const table = page.locator('dms-base-table');
       await expect(table).toBeVisible();
 
-      const rows = page.locator('tr.mat-mdc-row');
+      const rows = page.locator('.dms-body-row[role="row"]');
       const rowCount = await rows.count();
       expect(rowCount).toBeGreaterThan(0);
     });
 
     test('should display correct number of columns', async ({ page }) => {
       // The table has filter row and header row - count only header row
-      const headers = page.locator('tr.mat-mdc-header-row:not(.filter-row) th');
+      const headers = page.locator(
+        '.dms-column-header-row[role="row"] [role="columnheader"]'
+      );
       const headerCount = await headers.count();
       // Vol, SVol, Symbol, Risk Group, Distribution, Dist/Year, Yield %,
       // Avg Purch Yield %, Last Price, Ex-Date, Most Recent Sell Date,
@@ -87,7 +91,7 @@ test.describe('Universe Table Workflows', () => {
 
     test('should display symbol data in symbol column', async ({ page }) => {
       const symbolCell = page.locator(
-        'tr.mat-mdc-row:first-child td.mat-column-symbol'
+        '.dms-body-row[role="row"]:first-child .dms-body-cell[data-column="symbol"]'
       );
       await expect(symbolCell).toBeVisible();
       const text = await symbolCell.textContent();
@@ -97,7 +101,7 @@ test.describe('Universe Table Workflows', () => {
     test('should display risk group data', async ({ page }) => {
       await filterUniverseToSymbol(page, symbols[1]);
       const riskGroupCell = getUniverseRowBySymbol(page, symbols[1]).locator(
-        'td.mat-column-risk_group'
+        '.dms-body-cell[data-column="risk_group"]'
       );
       await expect(riskGroupCell).toBeVisible();
       const text = await riskGroupCell.textContent();
@@ -108,7 +112,7 @@ test.describe('Universe Table Workflows', () => {
       page,
     }) => {
       const distributionCell = page.locator(
-        'tr.mat-mdc-row:first-child td.mat-column-distribution'
+        '.dms-body-row[role="row"]:first-child .dms-body-cell[data-column="distribution"]'
       );
       await expect(distributionCell).toBeVisible();
       const text = await distributionCell.textContent();
@@ -120,7 +124,7 @@ test.describe('Universe Table Workflows', () => {
       page,
     }) => {
       const yieldCell = page.locator(
-        'tr.mat-mdc-row:first-child td.mat-column-yield_percent'
+        '.dms-body-row[role="row"]:first-child .dms-body-cell[data-column="yield_percent"]'
       );
       await expect(yieldCell).toBeVisible();
       const text = await yieldCell.textContent();
@@ -131,7 +135,7 @@ test.describe('Universe Table Workflows', () => {
 
     test('should display ex-date in correct format', async ({ page }) => {
       const exDateCell = page.locator(
-        'tr.mat-mdc-row:first-child td.mat-column-ex_date'
+        '.dms-body-row[role="row"]:first-child .dms-body-cell[data-column="ex_date"]'
       );
       await expect(exDateCell).toBeVisible();
       const text = await exDateCell.textContent();
@@ -141,7 +145,7 @@ test.describe('Universe Table Workflows', () => {
 
     test('should display action buttons in last column', async ({ page }) => {
       const actionsCell = page.locator(
-        'tr.mat-mdc-row:first-child td.mat-column-actions'
+        '.dms-body-row[role="row"]:first-child .dms-body-cell[data-column="actions"]'
       );
       await expect(actionsCell).toBeVisible();
     });
@@ -1066,6 +1070,8 @@ test.describe('Empty Universe State', () => {
     await expect(page.locator('.empty-state')).toHaveCount(0);
 
     // Assert column headers are visible and not obscured
-    await expect(page.locator('th.mat-mdc-header-cell').first()).toBeVisible();
+    await expect(
+      page.locator('.dms-header-cell[role="columnheader"]').first()
+    ).toBeVisible();
   });
 });

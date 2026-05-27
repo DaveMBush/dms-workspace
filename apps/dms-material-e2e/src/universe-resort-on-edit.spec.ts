@@ -17,7 +17,7 @@ test.describe('Universe Re-sort After Cell Edit', () => {
     await login(page);
     await page.goto('/global/universe');
     await expect(page.locator('dms-base-table')).toBeVisible();
-    await page.waitForSelector('tr.mat-mdc-row', { timeout: 15000 });
+    await page.waitForSelector('.dms-body-row[role="row"]', { timeout: 15000 });
   });
 
   test.afterEach(async function cleanupUniverseData() {
@@ -38,7 +38,7 @@ test.describe('Universe Re-sort After Cell Edit', () => {
 
     // Record the first row's symbol before editing
     const firstRowSymbol = page.locator(
-      `tr.mat-mdc-row:first-child td:nth-child(${UNIVERSE_COLUMN_INDEX.symbol})`
+      `.dms-body-row[role="row"]:first-child .dms-body-cell:nth-child(${UNIVERSE_COLUMN_INDEX.symbol})`
     );
     const originalSymbol = await firstRowSymbol.textContent();
 

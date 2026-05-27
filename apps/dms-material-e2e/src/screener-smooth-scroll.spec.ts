@@ -28,7 +28,7 @@ test.describe('Screener Smooth Scroll', () => {
     await expect(page.locator('[data-testid="screener-table"]')).toBeVisible({
       timeout: 15000,
     });
-    await page.waitForSelector('tr.mat-mdc-row', { timeout: 15000 });
+    await page.waitForSelector('.dms-body-row[role="row"]', { timeout: 15000 });
   });
 
   test('scrolling screener table should be monotonically non-decreasing', async ({

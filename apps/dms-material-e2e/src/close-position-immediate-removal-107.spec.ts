@@ -10,7 +10,7 @@ async function waitForOpenPositionsTable(page: Page): Promise<void> {
   await expect(
     page.locator('[data-testid="open-positions-table"]')
   ).toBeVisible({ timeout: 15000 });
-  await page.waitForSelector('tr.mat-mdc-row', { timeout: 15000 });
+  await page.waitForSelector('.dms-body-row[role="row"]', { timeout: 15000 });
 }
 
 /**
@@ -55,7 +55,7 @@ test.describe('Close Position — Immediate Removal (Epic 107)', () => {
   }) => {
     // Scope the row by unique symbol text — survives any row-ordering difference.
     const row = page
-      .locator('[data-testid="open-positions-table"] tr.mat-mdc-row')
+      .locator('[data-testid="open-positions-table"] .dms-body-row[role="row"]')
       .filter({ hasText: symbols[0] });
     await expect(row).toHaveCount(1);
 
@@ -150,10 +150,10 @@ test.describe('Close Position — Immediate Removal (Epic 107)', () => {
     await expect(page.locator('dms-base-table')).toBeVisible({
       timeout: 15000,
     });
-    await page.waitForSelector('tr.mat-mdc-row', { timeout: 15000 });
+    await page.waitForSelector('.dms-body-row[role="row"]', { timeout: 15000 });
 
     const soldRow = page
-      .locator('dms-base-table tr.mat-mdc-row')
+      .locator('dms-base-table .dms-body-row[role="row"]')
       .filter({ hasText: symbols[0] });
     await expect(soldRow).toHaveCount(1, { timeout: 5000 });
     // Sell date rendered as M/D/YY — 06/15/2026 → 6/15/26

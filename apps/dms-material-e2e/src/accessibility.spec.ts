@@ -268,6 +268,8 @@ test.describe('Accessibility - Keyboard Navigation', () => {
       const passwordInput = page.locator('input[formControlName="password"]');
       await expect(passwordInput).toHaveAttribute('type', 'text');
 
+      // Re-focus the toggle button before second toggle (focus may shift after first Enter)
+      await toggleButton.focus();
       await page.keyboard.press('Enter');
       await expect(passwordInput).toHaveAttribute('type', 'password');
     });
@@ -472,7 +474,9 @@ test.describe('Accessibility - Keyboard Navigation', () => {
     test('should navigate table headers with keyboard for sorting', async ({
       page,
     }) => {
-      const headers = page.locator('th.mat-mdc-header-cell[data-sort-header]');
+      const headers = page.locator(
+        '.dms-header-cell[role="columnheader"].dms-header-cell--sortable'
+      );
       const headerCount = await headers.count();
 
       expect(
@@ -480,17 +484,15 @@ test.describe('Accessibility - Keyboard Navigation', () => {
         'Sortable table headers must be present'
       ).toBeGreaterThan(0);
 
-      // Focus the internal sort-header container (mat-sort-header provides its own keyboard support)
-      const sortButton = headers.first().locator('.mat-sort-header-container');
-      await sortButton.focus();
-      await expect(headers.first()).toHaveAttribute('aria-sort');
-
-      // Enter should trigger sort — verify aria-sort changes
+      // Focus the first sortable header directly (tabindex="0" is set on sortable headers)
+      await headers.first().focus();
       const sortBefore = await headers.first().getAttribute('aria-sort');
 
+      // Enter should trigger sort — verify aria-sort changes
       await page.keyboard.press('Enter');
       await page.waitForTimeout(500);
 
+      await expect(headers.first()).toHaveAttribute('aria-sort');
       const sortAfter = await headers.first().getAttribute('aria-sort');
 
       expect(sortAfter, 'Sort state should change after Enter').not.toBe(
@@ -581,19 +583,17 @@ test.describe('Accessibility - Screen Reader Support', () => {
     });
 
     // table should have headers
-    const headers = page.locator('th');
+    const table = page
+      .locator('.dms-table-scroll-container[role="table"]')
+      .first();
+    const headers = table.locator('.dms-header-cell[role="columnheader"]');
     const headerCount = await headers.count();
     expect(headerCount).toBeGreaterThan(0);
 
-    // table should have an accessible name (caption or aria-label)
-    const table = page.locator('table').first();
+    // table should have an accessible name (aria-label)
     const ariaLabel = await table.getAttribute('aria-label');
-    const caption = await table.locator('caption').count();
 
-    expect(
-      ariaLabel !== null || caption > 0,
-      'Table is missing accessible name'
-    ).toBeTruthy();
+    expect(ariaLabel, 'Table is missing accessible name').toBeTruthy();
   });
 
   // ─── Error Messages ──────────────────────────────────────────────────
@@ -687,15 +687,7 @@ test.describe('Accessibility - Visual Requirements', () => {
 
   test('should have visible focus indicators on all interactive elements', async ({
     page,
-    browserName,
   }) => {
-    // Firefox does not expose a computed outline/box-shadow on mat-nav-list when
-    // focused via Tab; pre-existing browser rendering difference. Remove once
-    // Angular Material equalises focus-indicator styles across all browsers.
-    test.fail(
-      browserName === 'firefox',
-      'Firefox: mat-nav-list has no computed outline/box-shadow focus indicator'
-    );
     await page.goto('/global/universe', { waitUntil: 'domcontentloaded' });
     await page.waitForSelector('dms-base-table', {
       state: 'visible',

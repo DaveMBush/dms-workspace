@@ -30,7 +30,7 @@ test.describe('Dividend Deposits Smooth Scroll', () => {
     await expect(page.locator('dms-base-table')).toBeVisible({
       timeout: 15000,
     });
-    await page.waitForSelector('tr.mat-mdc-row', { timeout: 15000 });
+    await page.waitForSelector('.dms-body-row[role="row"]', { timeout: 15000 });
   });
 
   test('scrolling dividend deposits table should be monotonically non-decreasing', async ({

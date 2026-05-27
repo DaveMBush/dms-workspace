@@ -81,7 +81,7 @@ test.describe.serial('System Integration — Epic 75', () => {
     await expect(overlay).toBeHidden({ timeout: 120_000 });
 
     // Assert at least one row is visible in the universe table
-    const rows = page.locator('tr.mat-mdc-row');
+    const rows = page.locator('.dms-body-row[role="row"]');
     await expect(rows.first()).toBeVisible({ timeout: 5_000 });
 
     // Verify distributions_per_year via the API for known monthly payers

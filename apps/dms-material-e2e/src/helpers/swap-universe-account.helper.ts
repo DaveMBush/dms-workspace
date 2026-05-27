@@ -1,7 +1,7 @@
 import { expect, type Page } from 'playwright/test';
 
 /** Selector for any visible data row inside a mat-table. */
-const ROW_SELECTOR = 'tr.mat-mdc-row';
+const ROW_SELECTOR = '.dms-body-row[role="row"]';
 
 interface UniverseSwapOptions {
   /** Selector for the account mat-select control. Default: '.account-select mat-select'. */

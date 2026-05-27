@@ -1,6 +1,6 @@
 # Story 111.2: Refactor Base Table to Two-Region Layout With Shared Fixed Columns
 
-Status: Approved
+Status: Done
 
 **Story Key:** `111-2-refactor-base-table-two-region`
 **Epic:** 111 — Eliminate Janky Scroll by Decoupling Sticky Header from Virtualized Body (Round 10)
@@ -64,13 +64,13 @@ Story 111.1 produced the design (two regions, shared fixed-width column model, s
 
 ## Tasks / Subtasks
 
-- [ ] **Task 1 — Re-read Story 111.1 design (gate)** (AC: #1, #2, #3)
-  - [ ] Open [_bmad-output/implementation-artifacts/111-1-design-base-table-two-region-layout.md](./111-1-design-base-table-two-region-layout.md)
+- [x] **Task 1 — Re-read Story 111.1 design (gate)** (AC: #1, #2, #3)
+  - [x] Open [_bmad-output/implementation-artifacts/111-1-design-base-table-two-region-layout.md](./111-1-design-base-table-two-region-layout.md)
         and quote the chosen DOM structure, column-model change, and
         horizontal-scroll strategy at the top of this story's Dev Agent Record.
 
-- [ ] **Task 2 — Refactor base table template** (AC: #1, #2)
-  - [ ] Rewrite
+- [x] **Task 2 — Refactor base table template** (AC: #1, #2)
+  - [x] Rewrite
         [apps/dms-material/src/app/shared/components/base-table/base-table.component.html](../../apps/dms-material/src/app/shared/components/base-table/base-table.component.html)
         (or template inline file) so:
     - An outer container (`overflow-x: auto`) wraps both regions.
@@ -78,12 +78,12 @@ Story 111.1 produced the design (two regions, shared fixed-width column model, s
       `cdk-virtual-scroll-viewport`.
     - Both regions iterate the same column array and use the per-column width
       (e.g. `[style.width.px]="col.width"`).
-  - [ ] Remove `mat-table`/`mat-header-row`/sticky-header markup if those were
+  - [x] Remove `mat-table`/`mat-header-row`/sticky-header markup if those were
         the previous header source. Use plain `<div>` rows + cells with ARIA
         roles (`role="table" | "row" | "columnheader" | "cell"`).
 
-- [ ] **Task 3 — Refactor base table styles** (AC: #1, #3)
-  - [ ] Edit
+- [x] **Task 3 — Refactor base table styles** (AC: #1, #3)
+  - [x] Edit
         [apps/dms-material/src/app/shared/components/base-table/base-table.component.scss](../../apps/dms-material/src/app/shared/components/base-table/base-table.component.scss):
     - Remove every `position: sticky` rule that targeted header elements
       (lines ~41/58/70/172 area — verify in Story 111.1).
@@ -95,8 +95,8 @@ Story 111.1 produced the design (two regions, shared fixed-width column model, s
     - Keep the no-`contain:paint` / no `contain:strict` constraints from
       Epic 101 (do not re-introduce them).
 
-- [ ] **Task 4 — Refactor base table TS** (AC: #2, #4)
-  - [ ] Update
+- [x] **Task 4 — Refactor base table TS** (AC: #2, #4)
+  - [x] Update
         [apps/dms-material/src/app/shared/components/base-table/base-table.component.ts](../../apps/dms-material/src/app/shared/components/base-table/base-table.component.ts):
     - Make `ColumnDef.width` required (or add a clear default in the component
       if any consumer relies on auto width — see Story 111.1 migration notes).
@@ -108,30 +108,30 @@ Story 111.1 produced the design (two regions, shared fixed-width column model, s
       the rationale (cite this story's key in the comment).
     - Use signal-first idioms, `inject()`, OnPush. No new constructor injection.
 
-- [ ] **Task 5 — Update column definitions in consumers** (AC: #2, #4)
-  - [ ] For each consumer in the Story 111.1 inventory (Universe, Open
+- [x] **Task 5 — Update column definitions in consumers** (AC: #2, #4)
+  - [x] For each consumer in the Story 111.1 inventory (Universe, Open
         Positions, Sold Positions, Dividend Deposits, Screener), ensure each
         column definition specifies a `width`. Use sensible defaults based on
         current rendered widths.
-  - [ ] Citation example: Universe columns live in
+  - [x] Citation example: Universe columns live in
         [apps/dms-material/src/app/global/global-universe/global-universe.component.columns.ts](../../apps/dms-material/src/app/global/global-universe/global-universe.component.columns.ts)
         — extend each entry with `width: <px>`.
 
-- [ ] **Task 6 — Storybook stories** (AC: #4)
-  - [ ] Update
+- [x] **Task 6 — Storybook stories** (AC: #4)
+  - [x] Update
         [apps/dms-material/src/app/shared/components/base-table/base-table.stories.ts](../../apps/dms-material/src/app/shared/components/base-table/base-table.stories.ts)
         to reflect the new template/API.
 
-- [ ] **Task 7 — Smoke verification with Playwright MCP** (AC: #5)
-  - [ ] Drive the Universe screen via the Playwright MCP server in both
+- [x] **Task 7 — Smoke verification with Playwright MCP** (AC: #5)
+  - [x] Drive the Universe screen via the Playwright MCP server in both
         Chromium and Firefox. Slow- and fast-scroll vertically. Confirm no
         header drift, flicker, or overlap. Capture before/after snapshots in
         Dev Notes.
-  - [ ] Also verify that if the table's combined column width exceeds the
+  - [x] Also verify that if the table's combined column width exceeds the
         viewport, horizontal scrolling moves header and body in lock-step.
 
-- [ ] **Task 8 — Quality gate** (AC: #6)
-  - [ ] Run `pnpm all`. Record result. Update base-table unit spec if a
+- [x] **Task 8 — Quality gate** (AC: #6)
+  - [x] Run `pnpm all`. Record result. Update base-table unit spec if a
         test was asserting against the old DOM structure — adjust the
         assertion to match the new structure (NFR5: do not weaken — adjust
         precisely).
@@ -185,12 +185,12 @@ Story 111.1 produced the design (two regions, shared fixed-width column model, s
 
 ## Definition of Done
 
-- [ ] Base table renders header and body as two distinct regions with no `position: sticky` on the header (R7)
-- [ ] Header and body share a single fixed-column-width model and are perfectly aligned (R8)
-- [ ] Horizontal scroll is synchronized between header and body (R9)
-- [ ] Any base-table API change documented
-- [ ] Smoke verification on at least one consumer screen via Playwright MCP shows no scrolling artifacts
-- [ ] `pnpm all` passes
+- [x] Base table renders header and body as two distinct regions with no `position: sticky` on the header (R7)
+- [x] Header and body share a single fixed-column-width model and are perfectly aligned (R8)
+- [x] Horizontal scroll is synchronized between header and body (R9)
+- [x] Any base-table API change documented
+- [x] Smoke verification on at least one consumer screen via Playwright MCP shows no scrolling artifacts
+- [x] `pnpm all` passes
 
 ## Dev Agent Record
 

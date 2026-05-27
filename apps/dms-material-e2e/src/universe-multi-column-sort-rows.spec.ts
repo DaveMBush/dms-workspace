@@ -7,7 +7,9 @@ import { seedUniverseE2eData } from './helpers/seed-universe-e2e-data.helper';
  * Helper: collect text content from all visible cells in a given column index (1-based).
  */
 async function getColumnTexts(page: Page, colIndex: number): Promise<string[]> {
-  const cells = page.locator(`tr.mat-mdc-row td:nth-child(${colIndex})`);
+  const cells = page.locator(
+    `.dms-body-row[role="row"] .dms-body-cell:nth-child(${colIndex})`
+  );
   const count = await cells.count();
   const texts: string[] = [];
   for (let i = 0; i < count; i++) {
@@ -39,7 +41,7 @@ async function clearSortFilterState(page: Page): Promise<void> {
  */
 async function waitForTableRows(page: Page): Promise<void> {
   await expect(page.locator('dms-base-table')).toBeVisible({ timeout: 15000 });
-  await page.waitForSelector('tr.mat-mdc-row', { timeout: 15000 });
+  await page.waitForSelector('.dms-body-row[role="row"]', { timeout: 15000 });
 }
 
 // ─── Stories 36.1 + 36.3: Multi-Column Sort Row Ordering & Refresh Persistence ─
@@ -104,7 +106,7 @@ test.describe('Universe Screen - Multi-Column Sort Row Ordering & Refresh Persis
     await page.waitForLoadState('networkidle');
 
     // Click Symbol header to sort ascending (primary sort)
-    const symbolHeader = page.getByRole('button', { name: 'Symbol' });
+    const symbolHeader = page.getByRole('columnheader', { name: 'Symbol' });
     await symbolHeader.click();
     await page.waitForTimeout(800);
     await page.waitForLoadState('networkidle');
@@ -152,13 +154,15 @@ test.describe('Universe Screen - Multi-Column Sort Row Ordering & Refresh Persis
     await page.waitForLoadState('networkidle');
 
     // Primary sort: Risk Group ascending
-    const riskGroupHeader = page.getByRole('button', { name: 'Risk Group' });
+    const riskGroupHeader = page.getByRole('columnheader', {
+      name: 'Risk Group',
+    });
     await riskGroupHeader.click();
     await page.waitForTimeout(800);
     await page.waitForLoadState('networkidle');
 
     // Secondary sort: Ex-Date ascending (Shift+click)
-    const exDateHeader = page.getByRole('button', { name: 'Ex-Date' });
+    const exDateHeader = page.getByRole('columnheader', { name: 'Ex-Date' });
     await exDateHeader.click({ modifiers: ['Shift'] });
     await page.waitForTimeout(800);
     await page.waitForLoadState('networkidle');
@@ -213,7 +217,9 @@ test.describe('Universe Screen - Multi-Column Sort Row Ordering & Refresh Persis
     await page.waitForLoadState('networkidle');
 
     // Primary sort: Risk Group ascending
-    const riskGroupHeader = page.getByRole('button', { name: 'Risk Group' });
+    const riskGroupHeader = page.getByRole('columnheader', {
+      name: 'Risk Group',
+    });
     await riskGroupHeader.click();
     await page.waitForTimeout(800);
     await page.waitForLoadState('networkidle');
@@ -222,7 +228,7 @@ test.describe('Universe Screen - Multi-Column Sort Row Ordering & Refresh Persis
     // After this, within the Equities group:
     //   UDDD (ex_date 2026-04-15, April)  should appear before
     //   UAAA (ex_date 2026-06-15, June)
-    const exDateHeader = page.getByRole('button', { name: 'Ex-Date' });
+    const exDateHeader = page.getByRole('columnheader', { name: 'Ex-Date' });
     await exDateHeader.click({ modifiers: ['Shift'] });
     await page.waitForTimeout(800);
     await page.waitForLoadState('networkidle');

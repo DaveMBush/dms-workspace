@@ -30,7 +30,7 @@ test.describe('Open Positions Smooth Scroll', () => {
     await expect(
       page.locator('[data-testid="open-positions-table"]')
     ).toBeVisible({ timeout: 15000 });
-    await page.waitForSelector('tr.mat-mdc-row', { timeout: 15000 });
+    await page.waitForSelector('.dms-body-row[role="row"]', { timeout: 15000 });
   });
 
   test('scrolling open positions table should be monotonically non-decreasing', async ({

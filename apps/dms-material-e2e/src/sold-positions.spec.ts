@@ -54,7 +54,7 @@ test.describe('Sold Positions', () => {
 
     test('should have sortable sell date column', async ({ page }) => {
       // Find the button within the Sell Date column
-      const sortButton = page.getByRole('button', {
+      const sortButton = page.getByRole('columnheader', {
         name: 'Sell Date',
         exact: true,
       });
@@ -65,7 +65,7 @@ test.describe('Sold Positions', () => {
       page,
     }) => {
       // Click the sort button for Sell Date
-      const sellDateButton = page.getByRole('button', {
+      const sellDateButton = page.getByRole('columnheader', {
         name: 'Sell Date',
         exact: true,
       });

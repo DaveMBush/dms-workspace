@@ -44,7 +44,7 @@ async function waitForTable(
   page: import('playwright/test').Page
 ): Promise<void> {
   await expect(page.locator('dms-base-table')).toBeVisible({ timeout: 15000 });
-  await page.waitForSelector('tr.mat-mdc-row', { timeout: 15000 });
+  await page.waitForSelector('.dms-body-row[role="row"]', { timeout: 15000 });
 }
 
 /**
@@ -53,7 +53,9 @@ async function waitForTable(
 async function getFirstColumnTexts(
   page: import('playwright/test').Page
 ): Promise<string[]> {
-  return page.locator('tr.mat-mdc-row td:first-child').allTextContents();
+  return page
+    .locator('.dms-body-row[role="row"] td:first-child')
+    .allTextContents();
 }
 
 /**
@@ -68,7 +70,7 @@ async function assertNoEmptyCellsAfterSortScroll(
   const viewport = page.locator(VIEWPORT_SELECTOR);
   await expect(viewport).toBeVisible({ timeout: 10000 });
 
-  const symbolHeader = page.locator('th.mat-mdc-header-cell', {
+  const symbolHeader = page.locator('.dms-header-cell[role="columnheader"]', {
     hasText: 'Symbol',
   });
   await symbolHeader.click();
@@ -196,7 +198,7 @@ test.describe('Sold Positions: sort+scroll shows all real data', () => {
     // Use the first visible symbol's first character as a filter that is
     // guaranteed to match at least one row regardless of the test DB state.
     const firstSymbol = await page
-      .locator('tr.mat-mdc-row td:first-child')
+      .locator('.dms-body-row[role="row"] td:first-child')
       .first()
       .textContent();
     const filterChar = (firstSymbol ?? '').trim().charAt(0) || 'A';

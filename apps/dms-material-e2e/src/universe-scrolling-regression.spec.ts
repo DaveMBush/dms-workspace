@@ -37,9 +37,10 @@ const VIEWPORT_SELECTOR = 'cdk-virtual-scroll-viewport';
 // NOTE: must be a TH cell selector — Angular Material's stickRows applies
 // position:sticky to TH children, not the TR. getBoundingClientRect on TR
 // returns the table-layout flow position, not the visual sticky position.
-const HEADER_ROW_SELECTOR = 'th.mat-mdc-header-cell';
-const ROW_SELECTOR = 'tr.mat-mdc-row';
-const SYMBOL_CELL_SELECTOR = 'tr.mat-mdc-row td.mat-column-symbol';
+const HEADER_ROW_SELECTOR = '.dms-header-cell[role="columnheader"]';
+const ROW_SELECTOR = '.dms-body-row[role="row"]';
+const SYMBOL_CELL_SELECTOR =
+  '.dms-body-row[role="row"] .dms-body-cell[data-column="symbol"]';
 
 // ─── Scroll Helpers ──────────────────────────────────────────────────────────
 
@@ -197,8 +198,8 @@ test.describe('Universe Scrolling Regression — blank rows on fast scroll', () 
     //   placeholder rows are passed through to the CDK viewport unchanged.
     //
     // Sort column interaction pattern (from server-side-sorting.spec.ts):
-    //   page.getByRole('button', { name: 'Symbol', exact: true }) → click to apply sort.
-    const symbolHeader = page.getByRole('button', {
+    //   page.getByRole('columnheader', { name: 'Symbol', exact: true }) → click to apply sort.
+    const symbolHeader = page.getByRole('columnheader', {
       name: 'Symbol',
       exact: true,
     });
@@ -283,7 +284,7 @@ test.describe('Universe Scrolling Regression — blank rows on fast scroll', () 
     // This test guards against a future change that re-introduces row removal
     // from filteredData$ during overlapping isLoading windows caused by rapid
     // consecutive sort changes.
-    const symbolHeader = page.getByRole('button', {
+    const symbolHeader = page.getByRole('columnheader', {
       name: 'Symbol',
       exact: true,
     });
@@ -414,7 +415,7 @@ test.describe('Universe Scrolling Regression — blank rows on fast scroll', () 
     // Story 87.3 regression guard — changing sort order triggers a new
     // server-side request and an isLoading window.  A fast scroll into the
     // newly ordered data range should not expose placeholder rows.
-    const symbolHeader = page.getByRole('button', {
+    const symbolHeader = page.getByRole('columnheader', {
       name: 'Symbol',
       exact: true,
     });
@@ -472,7 +473,7 @@ test.describe('Universe — Story 101.3 slow-scroll header-invariant regression'
     await expect(page.locator('dms-base-table')).toBeVisible({
       timeout: 15000,
     });
-    await page.waitForSelector('tr.mat-mdc-row', { timeout: 15000 });
+    await page.waitForSelector('.dms-body-row[role="row"]', { timeout: 15000 });
   });
 
   test('universe — slow scroll keeps header anchored under parent header', async ({

@@ -1,7 +1,6 @@
 import { ListRange } from '@angular/cdk/collections';
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatSort } from '@angular/material/sort';
 import { Subject } from 'rxjs';
 
 import { BaseTableComponent } from './base-table.component';
@@ -58,16 +57,15 @@ describe('BaseTableComponent', () => {
     expect(component.trackByFn(0, { id: '123', name: 'Test' })).toBe('123');
   });
 
-  it('should render header cells with mat-mdc-header-cell class for scroll border transparency fix (regression: AS.9 Bug #1)', () => {
-    // Regression: th.mat-mdc-header-cell must be sticky with background-color: var(--dms-surface)
-    // so that when td.mat-mdc-cell also has background-color: var(--dms-surface), borders remain
-    // visible and do not "ghost" (become transparent) during scroll in real browsers.
+  it('should render header cells with dms-header-cell class and columnheader role for column header styling (regression: AS.9 Bug #1)', () => {
+    // Regression: .dms-header-cell[role="columnheader"] must have background-color: var(--dms-surface)
+    // so that cell backgrounds remain opaque and do not "ghost" (become transparent) during scroll.
     // The fix is purely CSS — verified here by confirming the table header renders correctly
     // so that the CSS selectors will apply in a real browser context.
     fixture.componentRef.setInput('data', []);
     fixture.detectChanges();
     const headerCells = fixture.nativeElement.querySelectorAll(
-      'th.mat-mdc-header-cell'
+      '.dms-header-cell[role="columnheader"]'
     );
     expect(headerCells.length).toBeGreaterThan(0);
   });
@@ -283,139 +281,5 @@ describe('BaseTableComponent - Rendered Range Tracking', () => {
     vi.advanceTimersByTime(100);
 
     expect(emitted).toEqual([{ start: 0, end: 0 }]);
-  });
-});
-
-describe('BaseTableComponent - Sort State Restoration', () => {
-  let component: BaseTableComponent<{ id: string; name: string }>;
-  let fixture: ComponentFixture<
-    BaseTableComponent<{ id: string; name: string }>
-  >;
-
-  const columns: ColumnDef[] = [
-    { field: 'name', header: 'Name', sortable: true },
-    { field: 'id', header: 'ID', sortable: true },
-  ];
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [BaseTableComponent],
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(BaseTableComponent);
-    component = fixture.componentInstance;
-    fixture.componentRef.setInput('columns', columns);
-    fixture.componentRef.setInput('data', []);
-  });
-
-  it('should derive activeSortColumn from single sortColumns input', () => {
-    fixture.componentRef.setInput('sortColumns', [
-      { column: 'name', direction: 'asc' },
-    ]);
-    fixture.detectChanges();
-
-    expect(component.activeSortColumn()).toBe('name');
-    expect(component.activeSortDirection()).toBe('asc');
-  });
-
-  it('should derive activeSortColumn from first of multiple sortColumns', () => {
-    fixture.componentRef.setInput('sortColumns', [
-      { column: 'name', direction: 'desc' },
-      { column: 'id', direction: 'asc' },
-    ]);
-    fixture.detectChanges();
-
-    expect(component.activeSortColumn()).toBe('name');
-    expect(component.activeSortDirection()).toBe('desc');
-  });
-
-  it('should return empty strings when sortColumns is empty', () => {
-    fixture.componentRef.setInput('sortColumns', []);
-    fixture.detectChanges();
-
-    expect(component.activeSortColumn()).toBe('');
-    expect(component.activeSortDirection()).toBe('');
-  });
-});
-
-// Story 54.2 regression guard: notifySortHeadersOfRestoredState behaviour
-describe('BaseTableComponent - Sort Header State Notification', () => {
-  let component: BaseTableComponent<{ id: string; name: string }>;
-  let fixture: ComponentFixture<
-    BaseTableComponent<{ id: string; name: string }>
-  >;
-
-  interface PrivateNotify {
-    notifySortHeadersOfRestoredState(): void;
-  }
-
-  const columns: ColumnDef[] = [
-    { field: 'name', header: 'Name', sortable: true },
-    { field: 'id', header: 'ID', sortable: true },
-  ];
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [BaseTableComponent],
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(BaseTableComponent);
-    component = fixture.componentInstance;
-    fixture.componentRef.setInput('columns', columns);
-    fixture.componentRef.setInput('data', []);
-  });
-
-  it('should invoke notifySortHeadersOfRestoredState during ngAfterViewInit when sortColumns is non-empty', () => {
-    const notifySpy = vi.spyOn(
-      component as unknown as PrivateNotify,
-      'notifySortHeadersOfRestoredState'
-    );
-    fixture.componentRef.setInput('sortColumns', [
-      { column: 'name', direction: 'desc' },
-    ]);
-    fixture.detectChanges();
-
-    expect(notifySpy).toHaveBeenCalledOnce();
-  });
-
-  it('should NOT invoke notifySortHeadersOfRestoredState during ngAfterViewInit when sortColumns is empty', () => {
-    const notifySpy = vi.spyOn(
-      component as unknown as PrivateNotify,
-      'notifySortHeadersOfRestoredState'
-    );
-    fixture.componentRef.setInput('sortColumns', []);
-    fixture.detectChanges();
-
-    expect(notifySpy).not.toHaveBeenCalled();
-  });
-
-  it('should not throw when MatSort._stateChanges is absent (fail-soft regression guard)', () => {
-    // Simulates a future Angular Material version that removes _stateChanges
-    Object.defineProperty(component, 'matSort', {
-      value: () => ({} as MatSort),
-      writable: true,
-      configurable: true,
-    });
-    fixture.componentRef.setInput('sortColumns', [
-      { column: 'name', direction: 'desc' },
-    ]);
-
-    expect(() => fixture.detectChanges()).not.toThrow();
-  });
-
-  it('should call _stateChanges.next() when MatSort._stateChanges is present', () => {
-    const mockNext = vi.fn();
-    Object.defineProperty(component, 'matSort', {
-      value: () =>
-        ({ _stateChanges: { next: mockNext } } as unknown as MatSort),
-      writable: true,
-      configurable: true,
-    });
-    fixture.componentRef.setInput('sortColumns', [
-      { column: 'name', direction: 'desc' },
-    ]);
-    fixture.detectChanges();
-
-    expect(mockNext).toHaveBeenCalledOnce();
   });
 });

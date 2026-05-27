@@ -56,7 +56,7 @@ async function addDeposit(
   await page.waitForLoadState('networkidle');
   await expect(
     page
-      .locator('tr[mat-row]')
+      .locator('.dms-body-row[role="row"]')
       .filter({ hasText: `$${amount}` })
       .first()
   ).toBeVisible({ timeout: 10000 });
@@ -240,10 +240,10 @@ test.describe('Dividend Deposits', () => {
       await addDeposit(page, '06/10/2025', '55.00');
       // Click the amount cell of the row (avoiding the delete button)
       const row = page
-        .locator('tr[mat-row]')
+        .locator('.dms-body-row[role="row"]')
         .filter({ hasText: '$55.00' })
         .first();
-      await row.locator('.mat-column-amount').click();
+      await row.locator('.dms-body-cell[data-column="amount"]').click();
       await expect(page.locator('dms-div-dep-modal')).toBeVisible({
         timeout: 5000,
       });
@@ -257,10 +257,10 @@ test.describe('Dividend Deposits', () => {
     }) => {
       await addDeposit(page, '07/04/2025', '88.88');
       const row = page
-        .locator('tr[mat-row]')
+        .locator('.dms-body-row[role="row"]')
         .filter({ hasText: '$88.88' })
         .first();
-      await row.locator('.mat-column-amount').click();
+      await row.locator('.dms-body-cell[data-column="amount"]').click();
       await expect(page.locator('dms-div-dep-modal')).toBeVisible({
         timeout: 5000,
       });
@@ -278,10 +278,10 @@ test.describe('Dividend Deposits', () => {
     }) => {
       await addDeposit(page, '08/15/2025', '22.22');
       const row = page
-        .locator('tr[mat-row]')
+        .locator('.dms-body-row[role="row"]')
         .filter({ hasText: '$22.22' })
         .first();
-      await row.locator('.mat-column-amount').click();
+      await row.locator('.dms-body-cell[data-column="amount"]').click();
       await expect(page.locator('dms-div-dep-modal')).toBeVisible({
         timeout: 5000,
       });
@@ -294,17 +294,20 @@ test.describe('Dividend Deposits', () => {
       });
       // Row should still exist with original amount
       await expect(
-        page.locator('tr[mat-row]').filter({ hasText: '$22.22' }).first()
+        page
+          .locator('.dms-body-row[role="row"]')
+          .filter({ hasText: '$22.22' })
+          .first()
       ).toBeVisible();
     });
 
     test('should successfully update a deposit', async ({ page }) => {
       await addDeposit(page, '09/01/2025', '33.33');
       const row = page
-        .locator('tr[mat-row]')
+        .locator('.dms-body-row[role="row"]')
         .filter({ hasText: '$33.33' })
         .first();
-      await row.locator('.mat-column-amount').click();
+      await row.locator('.dms-body-cell[data-column="amount"]').click();
       await expect(page.locator('dms-div-dep-modal')).toBeVisible({
         timeout: 5000,
       });
@@ -335,7 +338,7 @@ test.describe('Dividend Deposits', () => {
     test('should display a delete button for each row', async ({ page }) => {
       await addDeposit(page, '10/10/2025', '11.11');
       const deleteBtn = page
-        .locator('tr[mat-row]')
+        .locator('.dms-body-row[role="row"]')
         .filter({ hasText: '$11.11' })
         .first()
         .locator('[data-testid="delete-dividend-button"]');
@@ -347,7 +350,7 @@ test.describe('Dividend Deposits', () => {
     }) => {
       await addDeposit(page, '11/11/2025', '44.44');
       const row = page
-        .locator('tr[mat-row]')
+        .locator('.dms-body-row[role="row"]')
         .filter({ hasText: '$44.44' })
         .first();
       await row.locator('[data-testid="delete-dividend-button"]').click();
@@ -366,7 +369,7 @@ test.describe('Dividend Deposits', () => {
     }) => {
       await addDeposit(page, '12/12/2025', '66.66');
       const row = page
-        .locator('tr[mat-row]')
+        .locator('.dms-body-row[role="row"]')
         .filter({ hasText: '$66.66' })
         .first();
       await row.locator('[data-testid="delete-dividend-button"]').click();
@@ -384,14 +387,17 @@ test.describe('Dividend Deposits', () => {
       ).not.toBeVisible({ timeout: 3000 });
       // Row should still be in the table
       await expect(
-        page.locator('tr[mat-row]').filter({ hasText: '$66.66' }).first()
+        page
+          .locator('.dms-body-row[role="row"]')
+          .filter({ hasText: '$66.66' })
+          .first()
       ).toBeVisible();
     });
 
     test('should successfully delete a deposit', async ({ page }) => {
       await addDeposit(page, '05/05/2025', '77.77');
       const row = page
-        .locator('tr[mat-row]')
+        .locator('.dms-body-row[role="row"]')
         .filter({ hasText: '$77.77' })
         .first();
       await row.locator('[data-testid="delete-dividend-button"]').click();
@@ -412,7 +418,7 @@ test.describe('Dividend Deposits', () => {
       // Row should no longer be visible
       await page.waitForTimeout(1000);
       await expect(
-        page.locator('tr[mat-row]').filter({ hasText: '$77.77' })
+        page.locator('.dms-body-row[role="row"]').filter({ hasText: '$77.77' })
       ).toHaveCount(0);
     });
   });

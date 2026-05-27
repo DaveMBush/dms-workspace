@@ -14,7 +14,7 @@ import { expect, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
 import { seedSvolColumnE2eData } from './helpers/seed-svol-column-e2e-data.helper';
 
-const HEADER_ROW = 'tr.mat-mdc-header-row:not(.filter-row)';
+const HEADER_ROW = '.dms-column-header-row[role="row"]';
 const COLUMN_HEADER = '[role="columnheader"]';
 
 test.describe('SVol Column', function describeSvolColumn() {
@@ -66,10 +66,10 @@ test.describe('SVol Column', function describeSvolColumn() {
     const searchInput = page.locator('input[placeholder="Search Symbol"]');
     await searchInput.fill(symbol);
     await expect(
-      page.locator('td.mat-column-svol mat-icon').first()
+      page.locator('.dms-body-cell[data-column="svol"] mat-icon').first()
     ).toBeVisible({ timeout: 10000 });
     const ariaLabel = await page
-      .locator('td.mat-column-svol mat-icon')
+      .locator('.dms-body-cell[data-column="svol"] mat-icon')
       .first()
       .getAttribute('aria-label');
     expect(ariaLabel).toMatch(/^Short-Term Volatility:/);

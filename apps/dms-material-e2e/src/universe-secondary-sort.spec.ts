@@ -8,7 +8,9 @@ import { seedUniverseE2eData } from './helpers/seed-universe-e2e-data.helper';
  * index (1-based).
  */
 async function getColumnTexts(page: Page, colIndex: number): Promise<string[]> {
-  const cells = page.locator(`tr.mat-mdc-row td:nth-child(${colIndex})`);
+  const cells = page.locator(
+    `.dms-body-row[role="row"] .dms-body-cell:nth-child(${colIndex})`
+  );
   const count = await cells.count();
   const texts: string[] = [];
   for (let i = 0; i < count; i++) {
@@ -41,7 +43,7 @@ async function clearSortFilterState(page: Page): Promise<void> {
  */
 async function waitForTableRows(page: Page): Promise<void> {
   await expect(page.locator('dms-base-table')).toBeVisible({ timeout: 15000 });
-  await page.waitForSelector('tr.mat-mdc-row', { timeout: 15000 });
+  await page.waitForSelector('.dms-body-row[role="row"]', { timeout: 15000 });
 }
 
 // ─── Story 43.2 – Secondary Sort E2E Tests ───────────────────────────────────
@@ -109,14 +111,16 @@ test.describe('Universe Screen - Secondary Sort (Story 43.2)', () => {
     await page.waitForLoadState('networkidle');
 
     // Primary sort: Risk Group ascending (single click)
-    const riskGroupHeader = page.getByRole('button', { name: 'Risk Group' });
+    const riskGroupHeader = page.getByRole('columnheader', {
+      name: 'Risk Group',
+    });
     await riskGroupHeader.click();
     await page.waitForTimeout(800);
     await page.waitForLoadState('networkidle');
 
     // Secondary sort: Ex-Date — first Shift+click sets it to ascending,
     // second Shift+click toggles it to descending.
-    const exDateHeader = page.getByRole('button', { name: 'Ex-Date' });
+    const exDateHeader = page.getByRole('columnheader', { name: 'Ex-Date' });
     await exDateHeader.click({ modifiers: ['Shift'] }); // asc
     await page.waitForTimeout(800);
     await page.waitForLoadState('networkidle');
@@ -155,13 +159,15 @@ test.describe('Universe Screen - Secondary Sort (Story 43.2)', () => {
     await page.waitForLoadState('networkidle');
 
     // Primary sort: Risk Group ascending (single click)
-    const riskGroupHeader = page.getByRole('button', { name: 'Risk Group' });
+    const riskGroupHeader = page.getByRole('columnheader', {
+      name: 'Risk Group',
+    });
     await riskGroupHeader.click();
     await page.waitForTimeout(800);
     await page.waitForLoadState('networkidle');
 
     // Secondary sort: Ex-Date ascending (single Shift+click)
-    const exDateHeader = page.getByRole('button', { name: 'Ex-Date' });
+    const exDateHeader = page.getByRole('columnheader', { name: 'Ex-Date' });
     await exDateHeader.click({ modifiers: ['Shift'] });
     await page.waitForTimeout(800);
     await page.waitForLoadState('networkidle');

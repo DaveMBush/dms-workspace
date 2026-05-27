@@ -75,12 +75,12 @@ export class GlobalScreenerComponent {
   readonly contextKey$ = computed(() => this.riskGroupFilter$() ?? '');
 
   readonly columns: ColumnDef[] = [
-    { field: 'symbol', header: 'Symbol', sortable: true, width: '100px' },
+    { field: 'symbol', header: 'Symbol', sortable: true, width: 100 },
     {
       field: 'risk_group',
       header: 'Risk Group',
       sortable: true,
-      width: '120px',
+      width: 120,
     },
   ];
 
