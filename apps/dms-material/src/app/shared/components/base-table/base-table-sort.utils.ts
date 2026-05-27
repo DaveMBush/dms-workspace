@@ -15,13 +15,17 @@ export function compareValues(aVal: unknown, bVal: unknown): number {
   if (typeof aVal === 'string' && typeof bVal === 'string') {
     return aVal.localeCompare(bVal);
   }
-  const a = Number(aVal);
-  const b = Number(bVal);
-  if (Number.isNaN(a) || Number.isNaN(b)) {
+  return compareNumbers(aVal, bVal);
+}
+
+function compareNumbers(a: unknown, b: unknown): number {
+  const numA = Number(a);
+  const numB = Number(b);
+  if (Number.isNaN(numA) || Number.isNaN(numB)) {
     return 0;
   }
-  if (a < b) {
+  if (numA < numB) {
     return -1;
   }
-  return a > b ? 1 : 0;
+  return numA > numB ? 1 : 0;
 }
