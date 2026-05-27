@@ -399,7 +399,8 @@ test.describe('Sold Positions — filter-change (symbol) sticky-header regressio
     // Context-change: symbol filter input (placeholder="Search Symbol")
     await runTwoPassInvariantCheck(page, async function doContextChange() {
       await applyAndClearColumnFilter(page, {
-        columnSelector: 'dms-base-table .dms-filter-row input[placeholder="Search Symbol"]',
+        columnSelector:
+          'dms-base-table .dms-filter-row input[placeholder="Search Symbol"]',
         filterValue: 'E2E-SD',
       });
     });

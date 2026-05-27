@@ -381,7 +381,8 @@ test.describe('Sold Positions — filter-change (symbol) sticky-header regressio
     // Round-9 (Story 106.1) confirmed drift=0, overlap=0 on Chromium and Firefox.
     await runTwoPassInvariantCheck(page, async function doContextChange() {
       await applyAndClearColumnFilter(page, {
-        columnSelector: 'dms-base-table .dms-filter-row input[placeholder="Search Symbol"]',
+        columnSelector:
+          'dms-base-table .dms-filter-row input[placeholder="Search Symbol"]',
         filterValue: 'TESTEQ',
       });
     });
