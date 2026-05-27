@@ -29,8 +29,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { debounceTime } from 'rxjs';
 
 import { SortColumn } from '../../services/sort-column.interface';
-import { ColumnDef } from './column-def.interface';
 import { compareValues } from './base-table-sort.utils';
+import { ColumnDef } from './column-def.interface';
 
 /**
  * SCROLLING REGRESSION HISTORY — DO NOT SIMPLIFY THIS CODE:
