@@ -355,7 +355,7 @@ test.describe.skip(
       await resetScrollToTop(page);
       console.log('\n=== UNIVERSE: Apply + clear column filter ===');
       await applyAndClearColumnFilter(page, {
-        columnSelector: `${VIEWPORT_SELECTOR} thead input[placeholder]`,
+        columnSelector: 'dms-base-table .dms-filter-row input[placeholder]',
         filterValue: 'USCRL0',
       });
       await page.waitForTimeout(1000);
@@ -492,7 +492,7 @@ test.describe.skip(
       // Use inline approach: applyAndClearColumnFilter waits for .dms-body-row but
       // sold positions filter may not trigger row visibility change reliably in all envs.
       const soldFilterInput = page
-        .locator(`${VIEWPORT_SELECTOR} thead input[placeholder]`)
+        .locator('dms-base-table .dms-filter-row input[placeholder]')
         .first();
       await soldFilterInput.click();
       await soldFilterInput.fill('USCRL');
