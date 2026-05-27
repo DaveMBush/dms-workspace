@@ -1,4 +1,3 @@
-/* eslint-disable max-lines -- file contains essential scrolling regression history comment block */
 import { ListRange, SelectionModel } from '@angular/cdk/collections';
 import {
   CdkVirtualScrollViewport,
@@ -31,6 +30,7 @@ import { debounceTime } from 'rxjs';
 
 import { SortColumn } from '../../services/sort-column.interface';
 import { ColumnDef } from './column-def.interface';
+import { compareValues } from './base-table-sort.utils';
 
 /**
  * SCROLLING REGRESSION HISTORY — DO NOT SIMPLIFY THIS CODE:
@@ -105,26 +105,6 @@ import { ColumnDef } from './column-def.interface';
  *      it). CDK positions visible rows via transform:translateY on the content-wrapper;
  *      layout containment would break CDK's scroll height calculation.
  */
-
-function compareValues(aVal: unknown, bVal: unknown): number {
-  const aNull = aVal === null || aVal === undefined;
-  const bNull = bVal === null || bVal === undefined;
-  if (aNull) {
-    return bNull ? 0 : -1;
-  }
-  if (bNull) {
-    return 1;
-  }
-  if (typeof aVal === 'string' && typeof bVal === 'string') {
-    return aVal.localeCompare(bVal);
-  }
-  const a = aVal as number;
-  const b = bVal as number;
-  if (a < b) {
-    return -1;
-  }
-  return a > b ? 1 : 0;
-}
 
 @Component({
   selector: 'dms-base-table',
