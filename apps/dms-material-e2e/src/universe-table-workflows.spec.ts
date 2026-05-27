@@ -79,7 +79,9 @@ test.describe('Universe Table Workflows', () => {
 
     test('should display correct number of columns', async ({ page }) => {
       // The table has filter row and header row - count only header row
-      const headers = page.locator('.dms-column-header-row[role="row"] th');
+      const headers = page.locator(
+        '.dms-column-header-row[role="row"] [role="columnheader"]'
+      );
       const headerCount = await headers.count();
       // Vol, SVol, Symbol, Risk Group, Distribution, Dist/Year, Yield %,
       // Avg Purch Yield %, Last Price, Ex-Date, Most Recent Sell Date,

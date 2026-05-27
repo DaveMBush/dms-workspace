@@ -20,9 +20,9 @@ import { login } from './helpers/login.helper';
 import { seedScrollOpenPositionsData } from './helpers/seed-scroll-open-positions-data.helper';
 
 const VIEWPORT_SELECTOR = 'cdk-virtual-scroll-viewport';
-// NOTE: must be a TH cell selector — Angular Material's stickRows applies
-// position:sticky to TH children, not the TR. getBoundingClientRect on TR
-// returns the table-layout flow position, not the visual sticky position.
+// NOTE: HEADER_ROW_SELECTOR must target individual header cells because
+// getBoundingClientRect on the header row container returns the layout
+// flow position, not individual cell positions.
 const HEADER_ROW_SELECTOR = '.dms-header-cell[role="columnheader"]';
 const ROW_SELECTOR = '.dms-body-row[role="row"]';
 const SYMBOL_CELL_SELECTOR =

@@ -107,6 +107,7 @@ mat-progress-bar {
   display: flex;
   flex-direction: row;
   background-color: var(--dms-surface);
+
   // box-shadow replaces the collapsed border line that sticky <th> borders provided:
   // on a flex-layout div, a plain border-bottom persists during horizontal scroll.
   box-shadow: 0 1px 0 0
@@ -147,6 +148,8 @@ mat-progress-bar {
 // MUST NOT have contain:layout (see SCROLLING REGRESSION HISTORY, Epic 101/111).
 .dms-table-body {
   flex: 1;
+  width: max-content;
+  min-width: 100%;
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -209,6 +212,7 @@ mat-progress-bar {
 .dms-body-cell {
   flex-shrink: 0;
   padding: 8px 16px;
+
   // Prevent transparent cell backgrounds that cause visual artifacts during scroll.
   background-color: var(--dms-surface);
   background-clip: padding-box;

@@ -261,7 +261,7 @@ test.describe('Universe Sort Persistence', () => {
 
     // Verify the Symbol sort header has the active sort rank indicator
     const symbolSortIndicator = page.locator(
-      '[data-sort-header="symbol"] [data-testid="sort-rank"]'
+      '.dms-header-cell[data-column="symbol"] [data-testid="sort-rank"]'
     );
     await expect(symbolSortIndicator).toBeVisible();
   });

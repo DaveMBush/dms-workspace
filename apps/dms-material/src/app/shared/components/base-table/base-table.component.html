@@ -48,6 +48,7 @@
           <mat-checkbox
             [checked]="isAllSelected()"
             [indeterminate]="selection.hasValue() && !isAllSelected()"
+            (change)="toggleAllRows()"
           ></mat-checkbox>
           }
         </div>
@@ -113,6 +114,7 @@
           >
             <mat-checkbox
               [checked]="selection.isSelected(row)"
+              (change)="toggleSelection(row)"
               (click)="$event.stopPropagation()"
             ></mat-checkbox>
           </div>

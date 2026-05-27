@@ -583,19 +583,17 @@ test.describe('Accessibility - Screen Reader Support', () => {
     });
 
     // table should have headers
-    const headers = page.locator('th');
+    const table = page
+      .locator('.dms-table-scroll-container[role="table"]')
+      .first();
+    const headers = table.locator('.dms-header-cell[role="columnheader"]');
     const headerCount = await headers.count();
     expect(headerCount).toBeGreaterThan(0);
 
-    // table should have an accessible name (caption or aria-label)
-    const table = page.locator('table').first();
+    // table should have an accessible name (aria-label)
     const ariaLabel = await table.getAttribute('aria-label');
-    const caption = await table.locator('caption').count();
 
-    expect(
-      ariaLabel !== null || caption > 0,
-      'Table is missing accessible name'
-    ).toBeTruthy();
+    expect(ariaLabel, 'Table is missing accessible name').toBeTruthy();
   });
 
   // ─── Error Messages ──────────────────────────────────────────────────
