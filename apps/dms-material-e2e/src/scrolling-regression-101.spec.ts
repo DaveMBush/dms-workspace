@@ -193,8 +193,8 @@ import { seedScrollUniverseData } from './helpers/seed-scroll-universe-data.help
 export const ROW_HEIGHT_PX = 57;
 
 const VIEWPORT_SELECTOR = 'cdk-virtual-scroll-viewport';
-const HEADER_ROW_SELECTOR = 'tr.mat-mdc-header-row';
-const ROW_SELECTOR = 'tr.mat-mdc-row';
+const HEADER_ROW_SELECTOR = '.dms-header-cell[role="columnheader"]';
+const ROW_SELECTOR = '.dms-body-row[role="row"]';
 
 /** Pixel tolerance for floating-point bounding-box comparisons. */
 const PIXEL_TOLERANCE = 2;

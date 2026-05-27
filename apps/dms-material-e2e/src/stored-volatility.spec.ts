@@ -7,12 +7,12 @@ import { seedStoredVolatilityUpdateData } from './helpers/seed-stored-volatility
 async function searchForSymbol(page: Page, symbol: string) {
   const searchInput = page.locator('input[placeholder="Search Symbol"]');
   const row = page.locator('tbody tr').filter({
-    has: page.locator('td.mat-column-symbol', { hasText: symbol }),
+    has: page.locator('.dms-body-cell[data-column="symbol"]', { hasText: symbol }),
   });
 
   await searchInput.fill(symbol);
   await expect(row).toHaveCount(1, { timeout: 15_000 });
-  await expect(row.locator('td.mat-column-symbol')).toContainText(symbol);
+  await expect(row.locator('.dms-body-cell[data-column="symbol"]')).toContainText(symbol);
 
   return row.first();
 }
@@ -25,7 +25,7 @@ async function expectVolIconForSymbol(
   const row = await searchForSymbol(page, symbol);
   const ariaLabel = `Volatility: ${expectedCategory}`;
   await expect(
-    row.locator(`td.mat-column-vol [aria-label="${ariaLabel}"]`)
+    row.locator(`.dms-body-cell[data-column="vol"] [aria-label="${ariaLabel}"]`)
   ).toBeVisible({ timeout: 10_000 });
 }
 
@@ -133,7 +133,7 @@ test.describe('Stored Volatility - icon updates after data-change trigger', func
         async function pollForUpdatedIcon() {
           const row = await searchForSymbol(page, symbol);
           return row
-            .locator('td.mat-column-vol mat-icon')
+            .locator('.dms-body-cell[data-column="vol"] mat-icon')
             .getAttribute('aria-label');
         },
         { timeout: 15_000, intervals: [500, 1000, 2000] }

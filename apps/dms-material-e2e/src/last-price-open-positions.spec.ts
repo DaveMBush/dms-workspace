@@ -49,7 +49,7 @@ const EXPECTED_FORMATTED_B = '$0.00';
 async function waitForTableRows(page: Page): Promise<void> {
   const table = page.locator('[data-testid="open-positions-table"]');
   await expect(table).toBeVisible({ timeout: 15000 });
-  await table.locator('tr.mat-mdc-row').first().waitFor({ timeout: 15000 });
+  await table.locator('.dms-body-row[role="row"]').first().waitFor({ timeout: 15000 });
 }
 
 /**
@@ -61,7 +61,7 @@ async function waitForTableRows(page: Page): Promise<void> {
  */
 async function getColumnIndex(page: Page, headerText: string): Promise<number> {
   const headers = page
-    .locator('tr.mat-mdc-header-row:not(.filter-row)')
+    .locator('.dms-column-header-row[role="row"]')
     .first()
     .locator('th');
   const count = await headers.count();
@@ -167,7 +167,7 @@ test.describe('Open Positions — Last $ Column Renders Correctly (Story 99.3)',
 
     // ── Symbol A: assert the known price renders as "$123.45" ────────────
     const rowA = page
-      .locator(`tr.mat-mdc-row:has(td:has-text("${symbolA}"))`)
+      .locator(`.dms-body-row[role="row"]:has(td:has-text("${symbolA}"))`)
       .first();
     const cellA = rowA.locator(`td:nth-child(${lastPriceColIdx})`);
 
@@ -183,7 +183,7 @@ test.describe('Open Positions — Last $ Column Renders Correctly (Story 99.3)',
 
     // ── Symbol B: zero price → "$0.00"; must not expose null/NaN ────────
     const rowB = page
-      .locator(`tr.mat-mdc-row:has(td:has-text("${symbolB}"))`)
+      .locator(`.dms-body-row[role="row"]:has(td:has-text("${symbolB}"))`)
       .first();
 
     await expect

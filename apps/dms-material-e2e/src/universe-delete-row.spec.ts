@@ -12,7 +12,7 @@ import { initializePrismaClient } from './helpers/shared-prisma-client.helper';
  */
 async function waitForTableRows(page: Page): Promise<void> {
   await expect(page.locator('dms-base-table')).toBeVisible({ timeout: 15000 });
-  await page.waitForSelector('tr.mat-mdc-row', { timeout: 15000 });
+  await page.waitForSelector('.dms-body-row[role="row"]', { timeout: 15000 });
 }
 
 /**
@@ -98,10 +98,6 @@ test.describe('Universe Row Delete (Story 100.2)', () => {
   test('happy path: deleted row is gone from DB and stays gone after hard refresh', async ({
     page,
   }) => {
-    // findAndDeleteUniverseRow silently no-ops: VirtualArray[i] returns the ID
-    // string, not a RowProxy, so .delete?.() is called on a string and does
-    // nothing. Remove test.fail() once the production-code bug is fixed.
-    test.fail();
     await login(page);
     await page.goto('/global/universe');
     await waitForTableRows(page);
@@ -109,7 +105,7 @@ test.describe('Universe Row Delete (Story 100.2)', () => {
     // Narrow the list to our seeded symbol
     await filterBySymbol(page, symbol1);
 
-    const row = page.locator('tr.mat-mdc-row').filter({ hasText: symbol1 });
+    const row = page.locator('.dms-body-row[role="row"]').filter({ hasText: symbol1 });
     await expect(row).toBeVisible({ timeout: 15000 });
 
     // Click the trash-can (delete) button
@@ -127,7 +123,7 @@ test.describe('Universe Row Delete (Story 100.2)', () => {
 
     // Row must still be absent after reload (AC 2)
     await expect(
-      page.locator('tr.mat-mdc-row').filter({ hasText: symbol1 })
+      page.locator('.dms-body-row[role="row"]').filter({ hasText: symbol1 })
     ).not.toBeVisible({ timeout: 10000 });
   });
 
@@ -141,7 +137,7 @@ test.describe('Universe Row Delete (Story 100.2)', () => {
     // Narrow the list to our seeded symbol
     await filterBySymbol(page, symbol2);
 
-    const row = page.locator('tr.mat-mdc-row').filter({ hasText: symbol2 });
+    const row = page.locator('.dms-body-row[role="row"]').filter({ hasText: symbol2 });
     await expect(row).toBeVisible({ timeout: 15000 });
 
     // Intercept the universe DELETE endpoint and force a 500

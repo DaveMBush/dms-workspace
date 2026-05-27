@@ -24,8 +24,7 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatSort, MatSortModule, Sort } from '@angular/material/sort';
-import { MatTableModule } from '@angular/material/table';
+import { Sort } from '@angular/material/sort';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { debounceTime } from 'rxjs';
 
@@ -85,6 +84,14 @@ import { ColumnDef } from './column-def.interface';
  *   contextId / scrollToIndex(0) mechanism from Epic 105 is sufficient for both
  *   browsers. Investigation spec at scrolling-regression-106-investigation.spec.ts.
  *   No production code changes required in Epic 106.
+ * Epic 111: (Story 111.2) Replaced the combined <table mat-table> + position:sticky
+ *   <th> header approach with a two-region layout. A plain .dms-table-header <div>
+ *   sits above cdk-virtual-scroll-viewport in document flow so it can never drift with
+ *   virtual-scroll content. MatTableModule and MatSortModule removed from imports[];
+ *   sort implemented via onHeaderClick()/getAriaSort(). Column widths changed from
+ *   string (e.g. '80px') to number (e.g. 80) for uniform [style.width.px] binding.
+ *   Single outer .dms-table-scroll-container (overflow-x:auto) keeps header and body
+ *   horizontally aligned without a JS sync mechanism.
  *
  * Structural constraints:
  *   1. CDK virtual scroll requires a STABLE array length. SmartNgRX marks rows
@@ -92,11 +99,10 @@ import { ColumnDef } from './column-def.interface';
  *      array and causes CDK to recalculate total height, jumping the viewport. Always
  *      keep placeholder/loading rows in the array. Placeholder rows must use a non-empty
  *      symbol (e.g. '\u2026') so blank-cell regression guards do not false-positive.
- *   2. .virtual-scroll-viewport MUST be a scroll container (overflow-y:auto) but MUST
- *      NOT apply layout containment (contain:layout or any shorthand that implies it).
- *      CDK positions visible rows via transform:translateY on the content-wrapper;
- *      position:sticky on <th> elements must anchor to the scrollport, not the
- *      transformed subtree. Any layout containment on the viewport breaks this.
+ *   2. .dms-table-body (CDK viewport) MUST be a vertical scroll container (overflow-y:auto)
+ *      but MUST NOT apply layout containment (contain:layout or any shorthand that implies
+ *      it). CDK positions visible rows via transform:translateY on the content-wrapper;
+ *      layout containment would break CDK's scroll height calculation.
  */
 
 function compareNonNullValues(aVal: unknown, bVal: unknown): number {
@@ -128,8 +134,6 @@ function compareValues(aVal: unknown, bVal: unknown): number {
   imports: [
     CommonModule,
     ScrollingModule,
-    MatTableModule,
-    MatSortModule,
     MatProgressBarModule,
     MatCheckboxModule,
     MatTooltipModule,
@@ -154,6 +158,11 @@ export class BaseTableComponent<T extends { id: string }>
     '\u2079',
   ];
 
+  // Default column width in pixels when a column definition omits width.
+  readonly DEFAULT_COLUMN_WIDTH = 100;
+  // Width in pixels for the selection checkbox column.
+  readonly SELECT_COLUMN_WIDTH = 48;
+
   // Inputs
   data = input.required<T[]>(); // Signal-based data input
   columns = input.required<ColumnDef[]>();
@@ -177,7 +186,6 @@ export class BaseTableComponent<T extends { id: string }>
 
   // ViewChild for virtual scroll viewport
   viewport = viewChild<CdkVirtualScrollViewport>('viewport');
-  private readonly matSort = viewChild(MatSort);
 
   // Internal state
   selection = new SelectionModel<T>(true, []);
@@ -185,16 +193,6 @@ export class BaseTableComponent<T extends { id: string }>
   private destroyRef = inject(DestroyRef);
   private lastShiftKey = false;
   private prevCtxId: string | null = null;
-
-  readonly activeSortColumn = computed(
-    // eslint-disable-next-line @smarttools/no-anonymous-functions -- Required for computed signal
-    () => this.sortColumns()[0]?.column ?? ''
-  );
-
-  readonly activeSortDirection = computed(
-    // eslint-disable-next-line @smarttools/no-anonymous-functions -- Required for computed signal
-    () => this.sortColumns()[0]?.direction ?? ''
-  );
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- Required for computed signal
   readonly sortRankMap = computed(() => {
@@ -285,16 +283,6 @@ export class BaseTableComponent<T extends { id: string }>
             this.renderedRangeChange.emit(range);
           }.bind(this)
         );
-    }
-    // In zoneless Angular, MatSort.ngOnChanges() fires _stateChanges.next()
-    // when [matSortActive]/[matSortDirection] bindings are set. However,
-    // MatSortHeader.ngOnInit() subscribes to _stateChanges AFTER that event
-    // fires (parent inputs bind before child ngOnInit), so headers miss the
-    // notification and never update their aria-sort attribute.
-    // Triggering _stateChanges here (after all child ngOnInit have run)
-    // ensures sort headers re-evaluate and render the correct aria-sort value.
-    if (this.sortColumns().length > 0) {
-      this.notifySortHeadersOfRestoredState();
     }
   }
 
@@ -414,6 +402,30 @@ export class BaseTableComponent<T extends { id: string }>
     this.sortChange.emit(sort);
   }
 
+  onHeaderClick(column: ColumnDef): void {
+    if (!column.sortable) {
+      return;
+    }
+    const primarySort = this.sortColumns()[0];
+    if (primarySort?.column === column.field) {
+      if (primarySort.direction === 'asc') {
+        this.onSort({ active: column.field, direction: 'desc' });
+      } else {
+        this.onSort({ active: '', direction: '' });
+      }
+    } else {
+      this.onSort({ active: column.field, direction: 'asc' });
+    }
+  }
+
+  getAriaSort(column: ColumnDef): string | null {
+    const primarySort = this.sortColumns()[0];
+    if (primarySort?.column === column.field) {
+      return primarySort.direction === 'asc' ? 'ascending' : 'descending';
+    }
+    return null;
+  }
+
   onRowClick(row: T): void {
     this.rowClick.emit(row);
   }
@@ -450,16 +462,4 @@ export class BaseTableComponent<T extends { id: string }>
     }
   }
 
-  // Fail-soft wrapper around the undocumented MatSort._stateChanges subject.
-  // Isolating access here means a future Angular Material upgrade that renames
-  // or removes _stateChanges only needs a single-point fix.
-  private notifySortHeadersOfRestoredState(): void {
-    // Use Reflect.get with a string key to access the semi-private _stateChanges
-    // subject without triggering no-underscore-dangle lint rules, and to fail
-    // soft (returns undefined) if Angular Material ever removes this property.
-    const subject = Reflect.get(this.matSort() ?? {}, '_stateChanges') as
-      | { next?(): void }
-      | undefined;
-    subject?.next?.();
-  }
 }

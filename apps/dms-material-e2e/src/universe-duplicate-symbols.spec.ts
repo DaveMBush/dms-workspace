@@ -8,7 +8,7 @@ import { seedUniverseE2eData } from './helpers/seed-universe-e2e-data.helper';
  * Helper: collect text content from all visible cells in a given column index (1-based).
  */
 async function getColumnTexts(page: Page, colIndex: number): Promise<string[]> {
-  const cells = page.locator(`tr.mat-mdc-row td:nth-child(${colIndex})`);
+  const cells = page.locator(`.dms-body-row[role="row"] .dms-body-cell:nth-child(${colIndex})`);
   const rawTexts = await cells.allTextContents();
   return rawTexts.map((text) => text.trim());
 }
@@ -27,7 +27,7 @@ async function clearSortFilterState(page: Page): Promise<void> {
  */
 async function waitForTableRows(page: Page): Promise<void> {
   await expect(page.locator('dms-base-table')).toBeVisible({ timeout: 15000 });
-  await page.waitForSelector('tr.mat-mdc-row', { timeout: 15000 });
+  await page.waitForSelector('.dms-body-row[role="row"]', { timeout: 15000 });
 }
 
 // ─── Story 55.1: Duplicate Universe Symbols Bug ──────────────────────────────

@@ -35,7 +35,7 @@ async function clearSortFilterState(page: Page): Promise<void> {
 /** Wait for the dms-base-table and at least one data row. */
 async function waitForTableRows(page: Page): Promise<void> {
   await expect(page.locator('dms-base-table')).toBeVisible({ timeout: 15000 });
-  await page.waitForSelector('tr.mat-mdc-row', { timeout: 15000 });
+  await page.waitForSelector('.dms-body-row[role="row"]', { timeout: 15000 });
 }
 
 /** Filter the symbol column to isolate a single row. */
@@ -193,7 +193,7 @@ test.describe('Universe Delete-Button Gating (Story 110.3)', () => {
     // Verify symUnused row shows the delete button
     await filterBySymbol(page, symUnused);
     const unusedRow = page
-      .locator('tr.mat-mdc-row')
+      .locator('.dms-body-row[role="row"]')
       .filter({ hasText: symUnused });
     await expect(unusedRow).toBeVisible({ timeout: 15000 });
     await expect(
@@ -203,7 +203,7 @@ test.describe('Universe Delete-Button Gating (Story 110.3)', () => {
     // Verify symTrades row does NOT show the delete button
     await filterBySymbol(page, symTrades);
     const tradesRow = page
-      .locator('tr.mat-mdc-row')
+      .locator('.dms-body-row[role="row"]')
       .filter({ hasText: symTrades });
     await expect(tradesRow).toBeVisible({ timeout: 15000 });
     await expect(
@@ -212,7 +212,7 @@ test.describe('Universe Delete-Button Gating (Story 110.3)', () => {
 
     // Verify symDivs row does NOT show the delete button
     await filterBySymbol(page, symDivs);
-    const divsRow = page.locator('tr.mat-mdc-row').filter({ hasText: symDivs });
+    const divsRow = page.locator('.dms-body-row[role="row"]').filter({ hasText: symDivs });
     await expect(divsRow).toBeVisible({ timeout: 15000 });
     await expect(
       divsRow.locator('[aria-label="Delete unused symbol"]')
@@ -228,7 +228,7 @@ test.describe('Universe Delete-Button Gating (Story 110.3)', () => {
     // Even the unused symbol should NOT show the delete button
     await filterBySymbol(page, symUnused);
     const unusedRow = page
-      .locator('tr.mat-mdc-row')
+      .locator('.dms-body-row[role="row"]')
       .filter({ hasText: symUnused });
     await expect(unusedRow).toBeVisible({ timeout: 15000 });
     await expect(

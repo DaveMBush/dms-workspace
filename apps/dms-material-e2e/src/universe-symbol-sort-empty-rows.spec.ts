@@ -12,7 +12,7 @@ async function getCellTexts(page: Page, selector: string): Promise<string[]> {
   return rawTexts.map((text) => text.trim());
 }
 
-const SYMBOL_CELL_SELECTOR = 'tr.mat-mdc-row td.mat-column-symbol';
+const SYMBOL_CELL_SELECTOR = '.dms-body-row[role="row"] .dms-body-cell[data-column="symbol"]';
 
 /**
  * Helper: set Symbol ascending sort in localStorage.
@@ -99,7 +99,7 @@ test.describe('Universe Screen - Empty Rows on Symbol Sort Bug (Story 56.1)', ()
     // CDK virtual scroll renders rows immediately using SmartNgRX defaultRows
     // (symbol:'') while the real data is still in-flight — do NOT wait for
     // data to load.
-    const firstRow = page.locator('tr.mat-mdc-row').first();
+    const firstRow = page.locator('.dms-body-row[role="row"]').first();
     await firstRow.waitFor({ state: 'attached', timeout: 15000 });
 
     // Do NOT scroll — inspect the first visible symbol cells immediately.

@@ -41,7 +41,7 @@ test.describe('Universe Table - Multi-Column Sort', () => {
   });
 
   test('single click sets sole sort column (AC #1)', async ({ page }) => {
-    const symbolHeader = page.getByRole('button', { name: 'Symbol' });
+    const symbolHeader = page.getByRole('columnheader', { name: 'Symbol' });
     await symbolHeader.click();
     await page.waitForTimeout(300);
 
@@ -53,12 +53,12 @@ test.describe('Universe Table - Multi-Column Sort', () => {
     page,
   }) => {
     // Primary sort: Symbol asc
-    const symbolHeader = page.getByRole('button', { name: 'Symbol' });
+    const symbolHeader = page.getByRole('columnheader', { name: 'Symbol' });
     await symbolHeader.click();
     await page.waitForTimeout(300);
 
     // Secondary sort: Risk Group asc (Shift+click)
-    const riskGroupHeader = page.getByRole('button', { name: 'Risk Group' });
+    const riskGroupHeader = page.getByRole('columnheader', { name: 'Risk Group' });
     await riskGroupHeader.click({ modifiers: ['Shift'] });
     await page.waitForTimeout(300);
 
@@ -73,12 +73,12 @@ test.describe('Universe Table - Multi-Column Sort', () => {
     page,
   }) => {
     // Primary sort: Symbol
-    const symbolHeader = page.getByRole('button', { name: 'Symbol' });
+    const symbolHeader = page.getByRole('columnheader', { name: 'Symbol' });
     await symbolHeader.click();
     await page.waitForTimeout(300);
 
     // Secondary sort: Risk Group
-    const riskGroupHeader = page.getByRole('button', { name: 'Risk Group' });
+    const riskGroupHeader = page.getByRole('columnheader', { name: 'Risk Group' });
     await riskGroupHeader.click({ modifiers: ['Shift'] });
     await page.waitForTimeout(300);
 
@@ -91,12 +91,12 @@ test.describe('Universe Table - Multi-Column Sort', () => {
     page,
   }) => {
     // Primary sort: Symbol asc
-    const symbolHeader = page.getByRole('button', { name: 'Symbol' });
+    const symbolHeader = page.getByRole('columnheader', { name: 'Symbol' });
     await symbolHeader.click();
     await page.waitForTimeout(300);
 
     // Secondary sort: Risk Group asc
-    const riskGroupHeader = page.getByRole('button', { name: 'Risk Group' });
+    const riskGroupHeader = page.getByRole('columnheader', { name: 'Risk Group' });
     await riskGroupHeader.click({ modifiers: ['Shift'] });
     await page.waitForTimeout(300);
 
@@ -115,12 +115,12 @@ test.describe('Universe Table - Multi-Column Sort', () => {
     page,
   }) => {
     // Primary sort: Symbol asc
-    const symbolHeader = page.getByRole('button', { name: 'Symbol' });
+    const symbolHeader = page.getByRole('columnheader', { name: 'Symbol' });
     await symbolHeader.click();
     await page.waitForTimeout(300);
 
     // Secondary sort: Risk Group asc
-    const riskGroupHeader = page.getByRole('button', { name: 'Risk Group' });
+    const riskGroupHeader = page.getByRole('columnheader', { name: 'Risk Group' });
     await riskGroupHeader.click({ modifiers: ['Shift'] });
     await page.waitForTimeout(300);
 
@@ -140,11 +140,11 @@ test.describe('Universe Table - Multi-Column Sort', () => {
     page,
   }) => {
     // Set up multi-column sort: Symbol + Risk Group
-    const symbolHeader = page.getByRole('button', { name: 'Symbol' });
+    const symbolHeader = page.getByRole('columnheader', { name: 'Symbol' });
     await symbolHeader.click();
     await page.waitForTimeout(300);
 
-    const riskGroupHeader = page.getByRole('button', { name: 'Risk Group' });
+    const riskGroupHeader = page.getByRole('columnheader', { name: 'Risk Group' });
     await riskGroupHeader.click({ modifiers: ['Shift'] });
     await page.waitForTimeout(300);
 

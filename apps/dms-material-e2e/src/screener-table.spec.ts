@@ -89,7 +89,7 @@ test.describe('Screener Table', () => {
 
       // All visible rows should have "Equities" risk group
       const riskGroups = await page
-        .locator('[data-testid="screener-table"] tbody tr td:nth-child(2)')
+        .locator('[data-testid="screener-table"] tbody tr .dms-body-cell:nth-child(2)')
         .allTextContents();
 
       expect(riskGroups.length).toBeGreaterThan(0);

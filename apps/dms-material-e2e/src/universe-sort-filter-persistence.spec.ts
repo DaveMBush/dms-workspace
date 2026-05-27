@@ -19,7 +19,7 @@ async function clearSortFilterState(page: Page): Promise<void> {
  */
 async function waitForTableRows(page: Page): Promise<void> {
   await expect(page.locator('dms-base-table')).toBeVisible({ timeout: 15000 });
-  await page.waitForSelector('tr.mat-mdc-row', { timeout: 15000 });
+  await page.waitForSelector('.dms-body-row[role="row"]', { timeout: 15000 });
 }
 
 // ─── Story 38.3: Universe Screen Sort/Filter State Persistence ───────────────
@@ -119,7 +119,7 @@ test.describe('Universe Sort/Filter Persistence (Story 38.3)', () => {
       await page.waitForTimeout(600);
 
       // Verify filtered data is visible before reload
-      const rowsBefore = page.locator('tr.mat-mdc-row');
+      const rowsBefore = page.locator('.dms-body-row[role="row"]');
       await expect(rowsBefore.first()).toBeVisible({ timeout: 10000 });
 
       // Reload the page
@@ -131,7 +131,7 @@ test.describe('Universe Sort/Filter Persistence (Story 38.3)', () => {
       await expect(restoredInput).toHaveValue(filterValue);
 
       // After reload, filtered data should still be visible
-      const rowsAfter = page.locator('tr.mat-mdc-row');
+      const rowsAfter = page.locator('.dms-body-row[role="row"]');
       await expect(rowsAfter.first()).toBeVisible({ timeout: 10000 });
     });
   });

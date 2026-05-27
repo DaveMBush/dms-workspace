@@ -46,7 +46,7 @@ test.describe('Dist/Year Weekly Acceptance — Epic 78 / Story 78.1', () => {
       timeout: 15000,
     });
     // Wait for at least one data row to render.
-    await page.waitForSelector('tr.mat-mdc-row', { timeout: 15000 });
+    await page.waitForSelector('.dms-body-row[role="row"]', { timeout: 15000 });
 
     // Filter to the known seed symbol so only one row is visible.
     const symbolInput = page.locator('input[placeholder="Search Symbol"]');
@@ -54,7 +54,7 @@ test.describe('Dist/Year Weekly Acceptance — Epic 78 / Story 78.1', () => {
     // Wait for the row to appear — Playwright retries until the table re-renders.
     // No fixed debounce sleep: we let the assertion itself act as the gate.
     await expect(
-      page.locator('tr.mat-mdc-row', {
+      page.locator('.dms-body-row[role="row"]', {
         has: page.locator(`text=${TEST_SYMBOL}`),
       })
     ).toBeVisible({ timeout: 10000 });
@@ -71,13 +71,13 @@ test.describe('Dist/Year Weekly Acceptance — Epic 78 / Story 78.1', () => {
   test('AC#1 — entering 52 in Dist/Year for a weekly symbol shows no validation error', async ({
     page,
   }) => {
-    const row = page.locator('tr.mat-mdc-row', {
+    const row = page.locator('.dms-body-row[role="row"]', {
       has: page.locator(`text=${TEST_SYMBOL}`),
     });
     await expect(row).toBeVisible({ timeout: 10000 });
 
     // Click the Dist/Year display value to enter edit mode.
-    const distPerYearTd = row.locator('td.mat-column-distributions_per_year');
+    const distPerYearTd = row.locator('.dms-body-cell[data-column="distributions_per_year"]');
     const distPerYearDisplay = distPerYearTd.locator('.display-value');
     await distPerYearDisplay.click();
 
@@ -99,13 +99,13 @@ test.describe('Dist/Year Weekly Acceptance — Epic 78 / Story 78.1', () => {
   test('AC#2 — Dist/Year cell saves 52 and exits edit mode for a weekly symbol', async ({
     page,
   }) => {
-    const row = page.locator('tr.mat-mdc-row', {
+    const row = page.locator('.dms-body-row[role="row"]', {
       has: page.locator(`text=${TEST_SYMBOL}`),
     });
     await expect(row).toBeVisible({ timeout: 10000 });
 
     // Click the Dist/Year display value to enter edit mode.
-    const distPerYearTd = row.locator('td.mat-column-distributions_per_year');
+    const distPerYearTd = row.locator('.dms-body-cell[data-column="distributions_per_year"]');
     const distPerYearDisplay = distPerYearTd.locator('.display-value');
     await distPerYearDisplay.click();
 

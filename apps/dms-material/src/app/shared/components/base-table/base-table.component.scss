@@ -5,7 +5,7 @@
 }
 
 // Prevent mat-icon-button from inflating cell height beyond the row height.
-td.mat-mdc-cell button.mat-mdc-icon-button {
+.dms-body-cell button.mat-mdc-icon-button {
   height: var(--mat-table-row-item-container-height);
   width: var(--mat-table-row-item-container-height);
 }
@@ -51,23 +51,43 @@ td.mat-mdc-cell button.mat-mdc-icon-button {
  *   resetting the viewport to a clean state before sticky heights are re-measured.
  *   No CSS changes required; the existing layout is correct. See SCROLLING REGRESSION
  *   HISTORY in base-table.component.ts for the TypeScript-side details.
+ * Epic 111: (Story 111.2) Eliminated position:sticky-based header drift structurally.
+ *   Replaced mat-table + sticky <th> with a two-region layout: .dms-table-header <div>
+ *   sits above cdk-virtual-scroll-viewport in document flow so the header can never drift
+ *   with virtual-scroll content. MatTableModule and MatSortModule removed from imports[];
+ *   sort implemented via onHeaderClick()/getAriaSort(). Column widths changed from
+ *   string (e.g. '80px') to number (e.g. 80) for uniform [style.width.px] binding.
+ *   Single outer .dms-table-scroll-container (overflow-x:auto) keeps header and body
+ *   horizontally aligned without a JS sync mechanism.
+ *   Selector updates applied to all regression specs:
+ *   th.mat-mdc-header-cell → .dms-header-cell[role="columnheader"]
+ *   tr.mat-mdc-row → .dms-body-row[role="row"]
  *
- * Structural constraint: .virtual-scroll-viewport MUST be a scroll container
- * (overflow-y:auto) but MUST NOT apply layout containment (contain:layout or any
- * shorthand that implies it). CDK virtual scroll positions visible rows using
- * transform:translateY on .cdk-virtual-scroll-content-wrapper; position:sticky on
- * <th> elements inside must anchor to the scrollport (the viewport element), not to
- * the transformed subtree. Any containment that creates an independent formatting
- * context on the viewport element will break this invariant in browsers implementing
- * CSS Containment Level 2.
+ * Structural constraints:
+ *   1. CDK virtual scroll requires a STABLE array length. SmartNgRX marks rows
+ *      isLoading=true during in-flight requests; filtering those rows out shrinks the
+ *      array and causes CDK to recalculate total height, jumping the viewport. Always
+ *      keep placeholder/loading rows in the array. Placeholder rows must use a non-empty
+ *      symbol (e.g. '\u2026') so blank-cell regression guards do not false-positive.
+ *   2. .dms-table-body (CDK viewport) MUST be a vertical scroll container (overflow-y:auto)
+ *      but MUST NOT apply layout containment (contain:layout or any shorthand that implies
+ *      it). CDK positions visible rows via transform:translateY on the content-wrapper;
+ *      layout containment would break CDK's scroll height calculation.
+ *   3. .dms-table-body MUST have overflow-x:hidden so horizontal scrolling is handled
+ *      exclusively by the outer .dms-table-scroll-container. This prevents double
+ *      horizontal scrollbars and ensures the header and body scroll as one unit.
  */
-.virtual-scroll-viewport {
+
+// Single horizontal scroll container — wraps header div AND CDK viewport.
+// Epic 111: Both header and body shift together on horizontal scroll.
+// overflow-x:auto here; overflow-x:hidden on .dms-table-body.
+.dms-table-scroll-container {
   flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
-  // contain:paint removed in Epic 101 (Story 101.2) — see comment block above.
-  // overflow:auto already provides the equivalent paint boundary without the
-  // layout-containment side-effect that broke position:sticky in modern browsers.
+  overflow-x: auto;
+  overflow-y: hidden;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
 }
 
 mat-progress-bar {
@@ -78,18 +98,62 @@ mat-progress-bar {
   z-index: 10;
 }
 
-table {
-  width: 100%;
-  table-layout: fixed;
-  // Fix for sticky <th> headers with borders:
-  // border-collapse:collapse causes borders to ghost/disappear on sticky cells
-  // during scroll. Use separate+0 spacing to restore border painting.
-  // See: https://css-tricks.com/position-sticky-and-table-headers/
-  border-collapse: separate;
-  border-spacing: 0;
+// Header region — NOT position:sticky. Always above CDK viewport in document flow.
+.dms-table-header {
+  flex-shrink: 0;
 }
 
-tr.mat-mdc-row {
+.dms-header-row {
+  display: flex;
+  flex-direction: row;
+  background-color: var(--dms-surface);
+  // box-shadow replaces the collapsed border line that sticky <th> borders provided:
+  // on a flex-layout div, a plain border-bottom persists during horizontal scroll.
+  box-shadow: 0 1px 0 0
+    color-mix(in srgb, var(--dms-text-primary) 12%, transparent);
+}
+
+.dms-header-cell {
+  flex-shrink: 0;
+  padding: 8px 16px;
+  font-weight: 600;
+  background-color: var(--dms-surface);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+
+  .sort-rank-indicator {
+    font-size: 0.75em;
+    margin-left: 2px;
+    opacity: 0.8;
+  }
+
+  &.dms-header-cell--sortable {
+    cursor: pointer;
+    user-select: none;
+  }
+}
+
+.dms-filter-row .dms-header-cell {
+  padding: 4px 8px;
+  font-weight: normal;
+  box-shadow: none;
+}
+
+// Body region: CDK virtual scroll viewport.
+// overflow-y:auto required by CDK; overflow-x:hidden defers to outer container.
+// MUST NOT have contain:layout (see SCROLLING REGRESSION HISTORY, Epic 101/111).
+.dms-table-body {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.dms-body-row {
+  display: flex;
+  flex-direction: row;
   cursor: pointer;
 
   &:hover {
@@ -99,9 +163,7 @@ tr.mat-mdc-row {
       transparent
     );
 
-    td.mat-mdc-cell {
-      // Must also set on td: opaque td background-color (set below) would
-      // otherwise block the tr hover from showing through
+    .dms-body-cell {
       background-color: color-mix(
         in srgb,
         var(--dms-surface) 96%,
@@ -113,7 +175,7 @@ tr.mat-mdc-row {
   &.selected {
     background-color: rgba(var(--dms-primary-500), 0.1);
 
-    td.mat-mdc-cell {
+    .dms-body-cell {
       background-color: color-mix(
         in srgb,
         var(--dms-primary-500) 10%,
@@ -123,68 +185,56 @@ tr.mat-mdc-row {
   }
 
   // Capital gain/loss classification colors — WCAG AA compliant
-  // Losses use red to stand out; gains use default text color (white in dark theme)
-  // font-weight provides a non-color reinforcing indicator for both
   &.gain {
-    td.mat-mdc-cell {
-      color: inherit; // Default text color — avoids green/red colorblind confusion
+    .dms-body-cell {
+      color: inherit;
       font-weight: 600;
     }
   }
 
   &.loss {
-    td.mat-mdc-cell {
+    .dms-body-cell {
       color: var(--dms-error);
       font-weight: 600;
     }
   }
 
   &.neutral {
-    td.mat-mdc-cell {
+    .dms-body-cell {
       color: var(--dms-text-secondary);
     }
   }
 }
 
-th.mat-mdc-header-cell {
-  font-weight: 600;
-  background-color: var(--dms-surface);
-  // box-shadow replaces the collapsed border line for sticky cells:
-  // a border-bottom on a sticky th disappears during scroll; box-shadow persists
-  box-shadow: 0 1px 0 0
-    color-mix(in srgb, var(--dms-text-primary) 12%, transparent);
-
-  .sort-rank-indicator {
-    font-size: 0.75em;
-    margin-left: 2px;
-    opacity: 0.8;
-  }
-}
-
-tr.filter-row th.mat-mdc-header-cell {
-  padding: 4px 8px;
-  font-weight: normal;
-}
-
-td.mat-mdc-cell {
+.dms-body-cell {
+  flex-shrink: 0;
   padding: 8px 16px;
-  // Prevent transparent cell backgrounds that cause border "ghosting" during
-  // scroll when position:sticky headers overlap border-collapse table borders
+  // Prevent transparent cell backgrounds that cause visual artifacts during scroll.
   background-color: var(--dms-surface);
   background-clip: padding-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
   contain: content;
 }
 
+.dms-select-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .dark-theme {
-  tr.mat-mdc-row:hover {
+  .dms-body-row:hover {
     background-color: color-mix(
       in srgb,
       var(--dms-text-primary) 4%,
       transparent
     );
 
-    td.mat-mdc-cell {
-      // Dark theme: blend text-primary at 4% opacity equivalent
+    .dms-body-cell {
       background-color: color-mix(
         in srgb,
         var(--dms-surface) 96%,

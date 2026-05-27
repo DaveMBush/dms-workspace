@@ -38,7 +38,7 @@ const DEFAULT_VIEWPORT_SELECTOR = 'cdk-virtual-scroll-viewport';
  * Angular Material applies `position:sticky` to TH cells, not the TR.
  * We must measure a TH cell to observe actual stickiness.
  */
-const DEFAULT_HEADER_ROW_SELECTOR = 'th.mat-mdc-header-cell';
+const DEFAULT_HEADER_ROW_SELECTOR = '.dms-header-cell[role="columnheader"]';
 
 /** App-chrome toolbar that occupies the top of every screen. */
 const PARENT_HEADER_SELECTOR = 'mat-toolbar';

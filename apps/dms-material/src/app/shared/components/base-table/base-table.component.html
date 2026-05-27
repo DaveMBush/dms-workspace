@@ -5,61 +5,64 @@
   <mat-progress-bar mode="indeterminate"></mat-progress-bar>
   }
 
-  <cdk-virtual-scroll-viewport
-    #viewport
-    class="virtual-scroll-viewport"
-    [itemSize]="rowHeight()"
-    [minBufferPx]="rowHeight() * bufferSize()"
-    [maxBufferPx]="rowHeight() * bufferSize() * 2"
+  <!-- Single horizontal scroll container — header div and CDK viewport scroll together.
+       Epic 111 (Story 111.2): two-region layout — header is a plain <div> above the
+       CDK viewport so it can never drift with virtual-scroll content. -->
+  <div
+    class="dms-table-scroll-container"
+    role="table"
+    [attr.aria-label]="tableLabel()"
   >
-    <table
-      mat-table
-      [dataSource]="dataSource()"
-      [trackBy]="trackByFn"
-      matSort
-      [matSortActive]="activeSortColumn()"
-      [matSortDirection]="activeSortDirection()"
-      (matSortChange)="onSort($event)"
-      [attr.aria-label]="tableLabel()"
-    >
-      <!-- Selection Column -->
-      @if (selectable()) {
-      <ng-container matColumnDef="select">
-        <th mat-header-cell *matHeaderCellDef>
+    <!-- Header region: NOT position:sticky — always above CDK viewport in document flow -->
+    <div class="dms-table-header" role="rowgroup">
+      @if (filterRowTemplate) {
+      <div class="dms-header-row dms-filter-row" role="row">
+        @if (selectable()) {
+        <div
+          class="dms-header-cell dms-select-cell"
+          role="columnheader"
+          [style.width.px]="SELECT_COLUMN_WIDTH"
+        ></div>
+        } @for (column of columns(); track column.field) {
+        <div
+          class="dms-header-cell"
+          role="columnheader"
+          [style.width.px]="column.width ?? DEFAULT_COLUMN_WIDTH"
+        >
+          <ng-container
+            [ngTemplateOutlet]="filterRowTemplate"
+            [ngTemplateOutletContext]="{ $implicit: column }"
+          ></ng-container>
+        </div>
+        }
+      </div>
+      }
+      <div class="dms-header-row dms-column-header-row" role="row">
+        @if (selectable()) {
+        <div
+          class="dms-header-cell dms-select-cell"
+          role="columnheader"
+          [style.width.px]="SELECT_COLUMN_WIDTH"
+        >
           @if (multiSelect()) {
           <mat-checkbox
             [checked]="isAllSelected()"
             [indeterminate]="selection.hasValue() && !isAllSelected()"
           ></mat-checkbox>
           }
-        </th>
-        <td mat-cell *matCellDef="let row">
-          <mat-checkbox
-            [checked]="selection.isSelected(row)"
-            (click)="$event.stopPropagation()"
-          ></mat-checkbox>
-        </td>
-      </ng-container>
-      }
-
-      <!-- Selection Filter Column (empty placeholder) -->
-      @if (selectable() && filterRowTemplate) {
-      <ng-container matColumnDef="selectFilter">
-        <th mat-header-cell *matHeaderCellDef></th>
-      </ng-container>
-      }
-
-      <!-- Dynamic Columns -->
-      @for (column of columns(); track column.field) {
-      <ng-container [matColumnDef]="column.field">
-        <th
-          mat-header-cell
-          *matHeaderCellDef
-          [mat-sort-header]="column.sortable ? column.field : ''"
-          [attr.data-sort-header]="column.sortable ? column.field : null"
-          [disabled]="!column.sortable"
-          [style.width]="column.width"
+        </div>
+        } @for (column of columns(); track column.field) {
+        <div
+          class="dms-header-cell"
+          [class.dms-header-cell--sortable]="column.sortable"
+          role="columnheader"
+          [attr.data-column]="column.field"
+          [attr.tabindex]="column.sortable ? 0 : null"
+          [style.width.px]="column.width ?? DEFAULT_COLUMN_WIDTH"
+          [attr.aria-sort]="getAriaSort(column)"
           [matTooltip]="column.tooltip ?? null"
+          (click)="onHeaderClick(column)"
+          (keydown.enter)="onHeaderClick(column)"
         >
           {{ column.header }}
           @if (sortRankMap()[column.field]) {
@@ -70,57 +73,65 @@
             >{{ sortRankMap()[column.field] }}</span
           >
           }
-        </th>
-        <td mat-cell *matCellDef="let row; let i = index">
-          <ng-container
-            [ngTemplateOutlet]="cellTemplate || defaultCell"
-            [ngTemplateOutletContext]="{
-              $implicit: row,
-              column: column,
-              index: i
-            }"
-          ></ng-container>
-        </td>
-      </ng-container>
-      }
+        </div>
+        }
+      </div>
+    </div>
 
-      <!-- Filter Columns -->
-      @if (filterRowTemplate) { @for (column of columns(); track column.field) {
-      <ng-container [matColumnDef]="column.field + 'Filter'">
-        <th mat-header-cell *matHeaderCellDef [style.width]="column.width">
-          <ng-container
-            [ngTemplateOutlet]="filterRowTemplate"
-            [ngTemplateOutletContext]="{ $implicit: column }"
-          ></ng-container>
-        </th>
-      </ng-container>
-      } }
-
-      <!-- Filter Row -->
-      @if (filterRowTemplate) {
-      <tr
-        mat-header-row
-        *matHeaderRowDef="filterColumns(); sticky: true"
-        class="filter-row"
-      ></tr>
-      }
-      <!-- Column Headers Row -->
-      <tr
-        mat-header-row
-        *matHeaderRowDef="displayedColumns(); sticky: true"
-      ></tr>
-      <tr
-        mat-row
-        *matRowDef="let row; columns: displayedColumns()"
-        [class.selected]="selection.isSelected(row)"
-        [class.expired]="isExpired$(row)"
-        [ngClass]="gainLossClassMap$(row)"
-        [attr.data-is-cef]="getIsCef$(row)"
-        [attr.data-has-position]="getHasPosition$(row)"
-        (click)="onRowClick(row)"
-      ></tr>
-    </table>
-  </cdk-virtual-scroll-viewport>
+    <!-- Body region: CDK virtual scroll handles vertical scrolling.
+         overflow-x is hidden here — horizontal scrolling handled by the outer container. -->
+    <cdk-virtual-scroll-viewport
+      #viewport
+      class="dms-table-body"
+      [itemSize]="rowHeight()"
+      [minBufferPx]="rowHeight() * bufferSize()"
+      [maxBufferPx]="rowHeight() * bufferSize() * 2"
+    >
+      <div role="rowgroup">
+        <div
+          *cdkVirtualFor="let row of dataSource(); let i = index; trackBy: trackByFn"
+          class="dms-body-row"
+          role="row"
+          [style.height.px]="rowHeight()"
+          [class.selected]="selection.isSelected(row)"
+          [class.expired]="isExpired$(row)"
+          [ngClass]="gainLossClassMap$(row)"
+          [attr.data-is-cef]="getIsCef$(row)"
+          [attr.data-has-position]="getHasPosition$(row)"
+          (click)="onRowClick(row)"
+        >
+          @if (selectable()) {
+          <div
+            class="dms-body-cell dms-select-cell"
+            role="cell"
+            [style.width.px]="SELECT_COLUMN_WIDTH"
+          >
+            <mat-checkbox
+              [checked]="selection.isSelected(row)"
+              (click)="$event.stopPropagation()"
+            ></mat-checkbox>
+          </div>
+          } @for (column of columns(); track column.field) {
+          <div
+            class="dms-body-cell"
+            role="cell"
+            [style.width.px]="column.width ?? DEFAULT_COLUMN_WIDTH"
+            [attr.data-column]="column.field"
+          >
+            <ng-container
+              [ngTemplateOutlet]="cellTemplate || defaultCell"
+              [ngTemplateOutletContext]="{
+                $implicit: row,
+                column: column,
+                index: i
+              }"
+            ></ng-container>
+          </div>
+          }
+        </div>
+      </div>
+    </cdk-virtual-scroll-viewport>
+  </div>
 </div>
 
 <!-- Default cell template -->

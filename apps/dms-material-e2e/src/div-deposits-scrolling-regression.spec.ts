@@ -24,9 +24,9 @@ const VIEWPORT_SELECTOR = 'cdk-virtual-scroll-viewport';
 // NOTE: must be a TH cell selector — Angular Material's stickRows applies
 // position:sticky to TH children, not the TR. getBoundingClientRect on TR
 // returns the table-layout flow position, not the visual sticky position.
-const HEADER_ROW_SELECTOR = 'th.mat-mdc-header-cell';
-const ROW_SELECTOR = 'tr.mat-mdc-row';
-const SYMBOL_CELL_SELECTOR = 'tr.mat-mdc-row td.mat-column-symbol';
+const HEADER_ROW_SELECTOR = '.dms-header-cell[role="columnheader"]';
+const ROW_SELECTOR = '.dms-body-row[role="row"]';
+const SYMBOL_CELL_SELECTOR = '.dms-body-row[role="row"] .dms-body-cell[data-column="symbol"]';
 
 // ─── Scroll Helpers ────────────────────────────────────────────────────────────
 
@@ -119,7 +119,7 @@ test.describe('Dividend Deposits Scrolling Regression — Story 87.3', () => {
     // server-side request and an isLoading window. A fast scroll into the
     // newly sorted data should not expose placeholder rows with blank symbol
     // cells.
-    const symbolHeader = page.getByRole('button', { name: 'Symbol' });
+    const symbolHeader = page.getByRole('columnheader', { name: 'Symbol' });
     await expect(symbolHeader).toBeVisible({ timeout: 10000 });
     await symbolHeader.click();
 
@@ -164,7 +164,7 @@ test.describe('Dividend Deposits — Story 101.3 slow-scroll header-invariant re
     await expect(page.locator('dms-base-table')).toBeVisible({
       timeout: 15000,
     });
-    await page.waitForSelector('tr.mat-mdc-row', { timeout: 15000 });
+    await page.waitForSelector('.dms-body-row[role="row"]', { timeout: 15000 });
   });
 
   test('dividend deposits — slow scroll keeps header anchored under parent header', async ({

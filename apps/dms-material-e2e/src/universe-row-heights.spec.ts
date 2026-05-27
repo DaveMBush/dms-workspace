@@ -20,7 +20,7 @@
  *
  * ── Chosen target height for Story 67.2 ──────────────────────────────────
  * Pin ALL rows at 52 px by adding an explicit height constraint on
- * `mat-icon-button` inside `tr.mat-mdc-row td`.  This prevents the button
+ * `mat-icon-button` inside `.dms-body-row[role="row"] td`.  This prevents the button
  * from inflating the cell while keeping the visible icon the same size.
  *
  * ── test.fail() rationale ────────────────────────────────────────────────
@@ -40,7 +40,7 @@ import { expect, Page, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
 import { seedRowHeightE2eData } from './helpers/seed-row-height-e2e-data.helper';
 
-const ROW_SELECTOR = 'tr.mat-mdc-row';
+const ROW_SELECTOR = '.dms-body-row[role="row"]';
 
 /** Wait for the Universe table to render at least one data row. */
 async function waitForUniverseRows(page: Page): Promise<void> {
@@ -83,7 +83,7 @@ test.describe('Universe Row Height Consistency — Epic 67 / Story 67.1', () => 
   /**
    * Epic 67 Story 67.1 — Expected Failure (diagnosis)
    *
-   * Collects the `offsetHeight` of only the seeded `tr.mat-mdc-row` elements
+   * Collects the `offsetHeight` of only the seeded `.dms-body-row[role="row"]` elements
    * (rows whose text content contains one of the six Story 67.1 symbols) and
    * asserts they are ALL equal.  This assertion **fails** on the current
    * codebase because rows containing `<button mat-icon-button>` are
@@ -104,7 +104,7 @@ test.describe('Universe Row Height Consistency — Epic 67 / Story 67.1', () => 
     const rowHeights = await page.evaluate(function measureSeededRowHeights(
       symbols: string[]
     ): number[] {
-      return Array.from(document.querySelectorAll('tr.mat-mdc-row'))
+      return Array.from(document.querySelectorAll('.dms-body-row[role="row"]'))
         .filter(function rowContainsSymbol(row: Element): boolean {
           const text = row.textContent ?? '';
           return symbols.some(function matchSymbol(symbol: string): boolean {

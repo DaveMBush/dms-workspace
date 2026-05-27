@@ -36,7 +36,7 @@ async function getColumnTexts(
  */
 async function waitForTableRows(scope: Locator): Promise<void> {
   await expect(scope.locator('dms-base-table')).toBeVisible({ timeout: 15000 });
-  await expect(scope.locator('tr.mat-mdc-row').first()).toBeVisible({
+  await expect(scope.locator('.dms-body-row[role="row"]').first()).toBeVisible({
     timeout: 15000,
   });
 }
@@ -95,7 +95,7 @@ test.describe('Account Tables - Sorting (Story 37.1 - Failing Tests)', () => {
       page,
     }) => {
       // Click "Buy Date" column header to trigger ascending sort
-      const header = page.getByRole('button', { name: 'Buy Date' });
+      const header = page.getByRole('columnheader', { name: 'Buy Date' });
       await header.click();
       await page.waitForTimeout(800);
       await page.waitForLoadState('networkidle');
@@ -103,7 +103,7 @@ test.describe('Account Tables - Sorting (Story 37.1 - Failing Tests)', () => {
       const openPositionsTable = page.locator('dms-open-positions');
       await expect(
         openPositionsTable
-          .locator('td.mat-column-symbol')
+          .locator('.dms-body-cell[data-column="symbol"]')
           .filter({ hasText: symbolsOpen[0] })
           .first()
       ).toBeVisible({ timeout: 15000 });
@@ -111,7 +111,7 @@ test.describe('Account Tables - Sorting (Story 37.1 - Failing Tests)', () => {
       // Read Symbol column (col 1) text values after sort
       const symbolTexts = await getColumnTexts(
         openPositionsTable,
-        'td.mat-column-symbol'
+        '.dms-body-cell[data-column="symbol"]'
       );
       expect(symbolTexts.length).toBeGreaterThanOrEqual(3);
 
@@ -171,7 +171,7 @@ test.describe('Account Tables - Sorting (Story 37.1 - Failing Tests)', () => {
       page,
     }) => {
       // Click "Sell Date" column header to trigger ascending sort
-      const header = page.getByRole('button', { name: 'Sell Date' });
+      const header = page.getByRole('columnheader', { name: 'Sell Date' });
       await header.click();
       await page.waitForTimeout(800);
       await page.waitForLoadState('networkidle');
@@ -179,7 +179,7 @@ test.describe('Account Tables - Sorting (Story 37.1 - Failing Tests)', () => {
       const soldPositionsTable = page.locator('dms-sold-positions');
       await expect(
         soldPositionsTable
-          .locator('td.mat-column-symbol')
+          .locator('.dms-body-cell[data-column="symbol"]')
           .filter({ hasText: symbolsClosed[0] })
           .first()
       ).toBeVisible({ timeout: 15000 });
@@ -187,7 +187,7 @@ test.describe('Account Tables - Sorting (Story 37.1 - Failing Tests)', () => {
       // Read Symbol column (col 1) text values after sort
       const symbolTexts = await getColumnTexts(
         soldPositionsTable,
-        'td.mat-column-symbol'
+        '.dms-body-cell[data-column="symbol"]'
       );
       expect(symbolTexts.length).toBeGreaterThanOrEqual(3);
 
@@ -247,7 +247,7 @@ test.describe('Account Tables - Sorting (Story 37.1 - Failing Tests)', () => {
       page,
     }) => {
       // Click "Amount" column header to trigger ascending sort
-      const header = page.getByRole('button', { name: 'Amount' });
+      const header = page.getByRole('columnheader', { name: 'Amount' });
       await header.click();
       await page.waitForTimeout(800);
       await page.waitForLoadState('networkidle');
@@ -255,7 +255,7 @@ test.describe('Account Tables - Sorting (Story 37.1 - Failing Tests)', () => {
       // Read Amount column (col 3) text values after sort
       const amountTexts = await getColumnTexts(
         page,
-        'tr.mat-mdc-row td:nth-child(3)'
+        '.dms-body-row[role="row"] .dms-body-cell:nth-child(3)'
       );
       expect(amountTexts.length).toBeGreaterThanOrEqual(3);
 

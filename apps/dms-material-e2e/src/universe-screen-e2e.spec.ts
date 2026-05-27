@@ -44,14 +44,14 @@ async function clearSortFilterState(page: Page): Promise<void> {
  */
 async function waitForTableRows(page: Page): Promise<void> {
   await expect(page.locator('dms-base-table')).toBeVisible({ timeout: 15000 });
-  await page.waitForSelector('tr.mat-mdc-row', { timeout: 15000 });
+  await page.waitForSelector('.dms-body-row[role="row"]', { timeout: 15000 });
 }
 
 /**
  * Helper: collect text content from all visible cells in a given column index (1-based).
  */
 async function getColumnTexts(page: Page, colIndex: number): Promise<string[]> {
-  const cells = page.locator(`tr.mat-mdc-row td:nth-child(${colIndex})`);
+  const cells = page.locator(`.dms-body-row[role="row"] .dms-body-cell:nth-child(${colIndex})`);
   const count = await cells.count();
   const texts: string[] = [];
   for (let i = 0; i < count; i++) {
@@ -112,7 +112,7 @@ test.describe('Universe Screen E2E', () => {
       await symbolInput.fill(symbols[0]);
       // Wait for debounce (300ms) + server round-trip: poll until at least one
       // symbol cell contains the expected value rather than using a fixed timeout.
-      const colSelector = `tr.mat-mdc-row td:nth-child(${UNIVERSE_COLUMN_INDEX.symbol})`;
+      const colSelector = `.dms-body-row[role="row"] .dms-body-cell:nth-child(${UNIVERSE_COLUMN_INDEX.symbol})`;
       await page.waitForFunction(
         function waitForSymbolCell(arg: { sel: string; sym: string }): boolean {
           const cells = Array.from(document.querySelectorAll(arg.sel));
@@ -215,7 +215,7 @@ test.describe('Universe Screen E2E', () => {
     });
 
     test('should sort by Symbol', async ({ page }) => {
-      const header = page.getByRole('button', { name: 'Symbol', exact: true });
+      const header = page.getByRole('columnheader', { name: 'Symbol', exact: true });
       await header.click();
       await page.waitForTimeout(500);
 
@@ -226,7 +226,7 @@ test.describe('Universe Screen E2E', () => {
     });
 
     test('should sort by Risk Group', async ({ page }) => {
-      const header = page.getByRole('button', { name: 'Risk Group' });
+      const header = page.getByRole('columnheader', { name: 'Risk Group' });
       await header.click();
       await page.waitForTimeout(500);
 
@@ -237,7 +237,7 @@ test.describe('Universe Screen E2E', () => {
     });
 
     test('should sort by Yield %', async ({ page }) => {
-      const header = page.getByRole('button', { name: 'Yield %', exact: true });
+      const header = page.getByRole('columnheader', { name: 'Yield %', exact: true });
       await header.click();
       await page.waitForTimeout(500);
 
@@ -248,7 +248,7 @@ test.describe('Universe Screen E2E', () => {
     });
 
     test('should sort by Avg Purch Yield %', async ({ page }) => {
-      const header = page.getByRole('button', { name: 'Avg Purch Yield %' });
+      const header = page.getByRole('columnheader', { name: 'Avg Purch Yield %' });
       await header.click();
       await page.waitForTimeout(500);
 
@@ -259,7 +259,7 @@ test.describe('Universe Screen E2E', () => {
     });
 
     test('should sort by Ex-Date', async ({ page }) => {
-      const header = page.getByRole('button', { name: 'Ex-Date' });
+      const header = page.getByRole('columnheader', { name: 'Ex-Date' });
       await header.click();
       await page.waitForTimeout(500);
 
@@ -270,7 +270,7 @@ test.describe('Universe Screen E2E', () => {
     });
 
     test('should sort by Mst Rcnt Sll Dt', async ({ page }) => {
-      const header = page.getByRole('button', { name: 'Mst Rcnt Sll Dt' });
+      const header = page.getByRole('columnheader', { name: 'Mst Rcnt Sll Dt' });
       await header.click();
       await page.waitForTimeout(500);
 
@@ -281,7 +281,7 @@ test.describe('Universe Screen E2E', () => {
     });
 
     test('should sort by Mst Rcnt Sell $', async ({ page }) => {
-      const header = page.getByRole('button', { name: 'Mst Rcnt Sell $' });
+      const header = page.getByRole('columnheader', { name: 'Mst Rcnt Sell $' });
       await header.click();
       await page.waitForTimeout(500);
 

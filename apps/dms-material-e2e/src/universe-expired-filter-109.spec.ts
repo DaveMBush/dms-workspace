@@ -10,7 +10,7 @@ import { seedExpiredFilterE2eData } from './helpers/seed-expired-filter-e2e-data
  */
 async function waitForTableRows(page: Page): Promise<void> {
   await expect(page.locator('dms-base-table')).toBeVisible({ timeout: 15000 });
-  await page.waitForSelector('tr.mat-mdc-row', { timeout: 15000 });
+  await page.waitForSelector('.dms-body-row[role="row"]', { timeout: 15000 });
 }
 
 /**
@@ -68,7 +68,7 @@ test.describe('Universe Expired-No-Open Filter (Epic 109 / Story 109.3)', functi
     // After filtering by the exact symbol, no rows should match because
     // the server-side filter drops it before the response reaches the UI.
     const rows = page
-      .locator('tr.mat-mdc-row')
+      .locator('.dms-body-row[role="row"]')
       .filter({ hasText: absentSymbol });
     await expect(rows).toHaveCount(0, { timeout: 10000 });
   });
@@ -78,7 +78,7 @@ test.describe('Universe Expired-No-Open Filter (Epic 109 / Story 109.3)', functi
   }) {
     const symbol = presentSymbols[0];
     await filterBySymbol(page, symbol);
-    const row = page.locator('tr.mat-mdc-row').filter({ hasText: symbol });
+    const row = page.locator('.dms-body-row[role="row"]').filter({ hasText: symbol });
     await expect(row).toHaveCount(1, { timeout: 10000 });
   });
 
@@ -87,7 +87,7 @@ test.describe('Universe Expired-No-Open Filter (Epic 109 / Story 109.3)', functi
   }) {
     const symbol = presentSymbols[1];
     await filterBySymbol(page, symbol);
-    const row = page.locator('tr.mat-mdc-row').filter({ hasText: symbol });
+    const row = page.locator('.dms-body-row[role="row"]').filter({ hasText: symbol });
     await expect(row).toHaveCount(1, { timeout: 10000 });
   });
 
@@ -96,7 +96,7 @@ test.describe('Universe Expired-No-Open Filter (Epic 109 / Story 109.3)', functi
   }) {
     const symbol = presentSymbols[2];
     await filterBySymbol(page, symbol);
-    const row = page.locator('tr.mat-mdc-row').filter({ hasText: symbol });
+    const row = page.locator('.dms-body-row[role="row"]').filter({ hasText: symbol });
     await expect(row).toHaveCount(1, { timeout: 10000 });
   });
 });

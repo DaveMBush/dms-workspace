@@ -108,7 +108,7 @@ test.describe('Universe Table - Server-Side Sorting', () => {
     page,
   }) => {
     // Click the Symbol sort header
-    const symbolHeader = page.getByRole('button', { name: 'Symbol' });
+    const symbolHeader = page.getByRole('columnheader', { name: 'Symbol' });
     await symbolHeader.click();
     await page.waitForTimeout(300);
 
@@ -119,7 +119,7 @@ test.describe('Universe Table - Server-Side Sorting', () => {
   });
 
   test('should toggle sort direction on second click', async ({ page }) => {
-    const symbolHeader = page.getByRole('button', { name: 'Symbol' });
+    const symbolHeader = page.getByRole('columnheader', { name: 'Symbol' });
 
     // First click → asc
     await symbolHeader.click();
@@ -137,7 +137,7 @@ test.describe('Universe Table - Server-Side Sorting', () => {
   test('should save sort state to localStorage on sort click', async ({
     page,
   }) => {
-    const symbolHeader = page.getByRole('button', { name: 'Symbol' });
+    const symbolHeader = page.getByRole('columnheader', { name: 'Symbol' });
     await symbolHeader.click();
     await page.waitForTimeout(500);
 
@@ -147,7 +147,7 @@ test.describe('Universe Table - Server-Side Sorting', () => {
   });
 
   test('should send sort params for Risk Group column', async ({ page }) => {
-    const riskGroupHeader = page.getByRole('button', { name: 'Risk Group' });
+    const riskGroupHeader = page.getByRole('columnheader', { name: 'Risk Group' });
     await riskGroupHeader.click();
     await page.waitForTimeout(300);
 
@@ -160,7 +160,7 @@ test.describe('Universe Table - Server-Side Sorting', () => {
   test('should update localStorage sort state when column is clicked', async ({
     page,
   }) => {
-    const symbolHeader = page.getByRole('button', { name: 'Symbol' });
+    const symbolHeader = page.getByRole('columnheader', { name: 'Symbol' });
 
     // Before sorting, verify no sort state
     let cols = await getSortColumnsState(page, 'universes');
@@ -190,7 +190,7 @@ test.describe('Universe Sort Persistence', () => {
     await page.waitForLoadState('networkidle');
 
     // Click Symbol to sort
-    const symbolHeader = page.getByRole('button', { name: 'Symbol' });
+    const symbolHeader = page.getByRole('columnheader', { name: 'Symbol' });
     await symbolHeader.click();
     await page.waitForTimeout(500);
 
@@ -214,7 +214,7 @@ test.describe('Universe Sort Persistence', () => {
     await page.waitForLoadState('networkidle');
 
     // Sort by Risk Group
-    const riskGroupHeader = page.getByRole('button', { name: 'Risk Group' });
+    const riskGroupHeader = page.getByRole('columnheader', { name: 'Risk Group' });
     await riskGroupHeader.click();
     await page.waitForTimeout(500);
 
@@ -243,7 +243,7 @@ test.describe('Universe Sort Persistence', () => {
     await page.waitForLoadState('networkidle');
 
     // Sort by Symbol ascending
-    const symbolHeader = page.getByRole('button', { name: 'Symbol' });
+    const symbolHeader = page.getByRole('columnheader', { name: 'Symbol' });
     await symbolHeader.click();
     await page.waitForTimeout(500);
 
@@ -307,11 +307,11 @@ test.describe('Open Positions - Sort Interceptor', () => {
     await page.waitForLoadState('networkidle');
 
     // Buy Date is sortable
-    const buyDateButton = page.getByRole('button', { name: 'Buy Date' });
+    const buyDateButton = page.getByRole('columnheader', { name: 'Buy Date' });
     await expect(buyDateButton).toBeVisible();
 
     // Unrlz Gain$ is sortable
-    const gainButton = page.getByRole('button', { name: 'Unrlz Gain$' });
+    const gainButton = page.getByRole('columnheader', { name: 'Unrlz Gain$' });
     await expect(gainButton).toBeVisible();
   });
 
@@ -321,13 +321,13 @@ test.describe('Open Positions - Sort Interceptor', () => {
     await page.goto(`/account/${ACCOUNT_UUID}/open`);
     await page.waitForLoadState('networkidle');
 
-    const buyDateButton = page.getByRole('button', { name: 'Buy Date' });
+    const buyDateButton = page.getByRole('columnheader', { name: 'Buy Date' });
     await buyDateButton.click();
     await page.waitForTimeout(300);
 
     // Sort indicator should appear
     const sortIndicator = page.locator(
-      'th.mat-column-buyDate .mat-sort-header-arrow'
+      '.dms-header-cell[data-column="buyDate"] .sort-rank-indicator'
     );
     await expect(sortIndicator).toBeVisible();
   });
@@ -361,7 +361,7 @@ test.describe('Closed Positions - Sort Interceptor', () => {
     await page.goto(`/account/${ACCOUNT_UUID}/sold`);
     await page.waitForLoadState('networkidle');
 
-    const sellDateButton = page.getByRole('button', {
+    const sellDateButton = page.getByRole('columnheader', {
       name: 'Sell Date',
       exact: true,
     });
@@ -374,7 +374,7 @@ test.describe('Closed Positions - Sort Interceptor', () => {
     await page.goto(`/account/${ACCOUNT_UUID}/sold`);
     await page.waitForLoadState('networkidle');
 
-    const sellDateButton = page.getByRole('button', {
+    const sellDateButton = page.getByRole('columnheader', {
       name: 'Sell Date',
       exact: true,
     });
@@ -383,7 +383,7 @@ test.describe('Closed Positions - Sort Interceptor', () => {
 
     // Sort indicator should appear
     const sortIndicator = page.locator(
-      'th.mat-column-sell_date .mat-sort-header-arrow'
+      '.dms-header-cell[data-column="sell_date"] .sort-rank-indicator'
     );
     await expect(sortIndicator).toBeVisible();
   });
@@ -434,7 +434,7 @@ test.describe('Cross-Table Sort Independence', () => {
     await page.goto('/global/universe');
     await page.waitForLoadState('networkidle');
 
-    const symbolHeader = page.getByRole('button', { name: 'Symbol' });
+    const symbolHeader = page.getByRole('columnheader', { name: 'Symbol' });
 
     // Click 1 → asc
     await symbolHeader.click();

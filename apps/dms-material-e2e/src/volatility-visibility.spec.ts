@@ -10,13 +10,13 @@ const SYMBOL_WITHOUT_POSITION_AND_EMPTY_VOL = 'GCV';
 async function searchForSymbol(page: Page, symbol: string) {
   const searchInput = page.locator('input[placeholder="Search Symbol"]');
   const row = page.locator('tbody tr').filter({
-    has: page.locator('td.mat-column-symbol', { hasText: symbol }),
+    has: page.locator('.dms-body-cell[data-column="symbol"]', { hasText: symbol }),
   });
 
   await searchInput.fill(symbol);
 
   await expect(row).toHaveCount(1, { timeout: 10_000 });
-  await expect(row.locator('td.mat-column-symbol')).toContainText(symbol);
+  await expect(row.locator('.dms-body-cell[data-column="symbol"]')).toContainText(symbol);
 
   return row.first();
 }
@@ -35,7 +35,7 @@ test.describe('Volatility visibility - symbols without positions', function desc
     await expect(page.locator('dms-base-table')).toBeVisible({
       timeout: 15_000,
     });
-    await page.waitForSelector('tr.mat-mdc-row', { timeout: 15_000 });
+    await page.waitForSelector('.dms-body-row[role="row"]', { timeout: 15_000 });
   });
 
   test('control: SPAXX has zero position and still shows a volatility icon', async function controlSymbolShowsIcon({
@@ -43,11 +43,11 @@ test.describe('Volatility visibility - symbols without positions', function desc
   }) {
     const row = await searchForSymbol(page, CONTROL_SYMBOL_WITHOUT_POSITION);
 
-    await expect(row.locator('td.mat-column-symbol')).toContainText(
+    await expect(row.locator('.dms-body-cell[data-column="symbol"]')).toContainText(
       CONTROL_SYMBOL_WITHOUT_POSITION
     );
-    await expect(row.locator('td.mat-column-position')).toContainText('0.00');
-    await expect(row.locator('td.mat-column-vol mat-icon')).toBeVisible({
+    await expect(row.locator('.dms-body-cell[data-column="position"]')).toContainText('0.00');
+    await expect(row.locator('.dms-body-cell[data-column="vol"] mat-icon')).toBeVisible({
       timeout: 10_000,
     });
   });
@@ -60,11 +60,11 @@ test.describe('Volatility visibility - symbols without positions', function desc
       SYMBOL_WITHOUT_POSITION_AND_EMPTY_VOL
     );
 
-    await expect(row.locator('td.mat-column-symbol')).toContainText(
+    await expect(row.locator('.dms-body-cell[data-column="symbol"]')).toContainText(
       SYMBOL_WITHOUT_POSITION_AND_EMPTY_VOL
     );
-    await expect(row.locator('td.mat-column-position')).toContainText('0.00');
-    await expect(row.locator('td.mat-column-vol mat-icon')).toBeVisible({
+    await expect(row.locator('.dms-body-cell[data-column="position"]')).toContainText('0.00');
+    await expect(row.locator('.dms-body-cell[data-column="vol"] mat-icon')).toBeVisible({
       timeout: 10_000,
     });
   });

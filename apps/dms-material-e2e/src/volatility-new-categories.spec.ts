@@ -6,12 +6,12 @@ import { seedVolatilityNewCategoriesData } from './helpers/seed-volatility-new-c
 async function searchForSymbol(page: Page, symbol: string) {
   const searchInput = page.locator('input[placeholder="Search Symbol"]');
   const row = page.locator('tbody tr').filter({
-    has: page.locator('td.mat-column-symbol', { hasText: symbol }),
+    has: page.locator('.dms-body-cell[data-column="symbol"]', { hasText: symbol }),
   });
 
   await searchInput.fill(symbol);
   await expect(row).toHaveCount(1, { timeout: 10_000 });
-  await expect(row.locator('td.mat-column-symbol')).toContainText(symbol);
+  await expect(row.locator('.dms-body-cell[data-column="symbol"]')).toContainText(symbol);
 
   return row.first();
 }
@@ -23,9 +23,9 @@ async function expectVolatilityIconForSymbol(
 ) {
   const row = await searchForSymbol(page, symbol);
 
-  await expect(row.locator('td.mat-column-position')).toContainText('0.00');
+  await expect(row.locator('.dms-body-cell[data-column="position"]')).toContainText('0.00');
   await expect(
-    row.locator(`td.mat-column-vol [aria-label="${ariaLabel}"]`)
+    row.locator(`.dms-body-cell[data-column="vol"] [aria-label="${ariaLabel}"]`)
   ).toBeVisible({ timeout: 10_000 });
 }
 

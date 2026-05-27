@@ -90,8 +90,8 @@ import { login } from './helpers/login.helper';
 import { seedDeepScrollUniverseData } from './helpers/seed-deep-scroll-universe-data.helper';
 
 const VIEWPORT_SELECTOR = 'cdk-virtual-scroll-viewport';
-const ROW_SELECTOR = 'tr.mat-mdc-row';
-const SYMBOL_CELL_SELECTOR = 'tr.mat-mdc-row td.mat-column-symbol';
+const ROW_SELECTOR = '.dms-body-row[role="row"]';
+const SYMBOL_CELL_SELECTOR = '.dms-body-row[role="row"] .dms-body-cell[data-column="symbol"]';
 
 // Row height for Global Universe after Story 29.1 fix (52px, no custom binding)
 const ROW_HEIGHT_PX = 52;
@@ -357,7 +357,7 @@ test.describe('Universe Lazy-Load Deep Scroll — empty symbols after crossing p
 
     // Click 'Yield %' column header to trigger sort change and data reload
     // Use exact:true to avoid matching 'Avg Purch Yield %' which also contains 'Yield %'
-    const yieldHeader = page.getByRole('button', {
+    const yieldHeader = page.getByRole('columnheader', {
       name: 'Yield %',
       exact: true,
     });
@@ -480,9 +480,6 @@ test.describe('Universe Lazy-Load Deep Scroll — empty symbols after crossing p
   test('should have no blank symbol cells after applying symbol filter and scrolling to bottom', async ({
     page,
   }) => {
-    // Story 65.2 regression: CDK viewport height is still capped at ~50 rows
-    // when symbol filter is active. Remove once Story 65.2 fully resolves.
-    test.fail();
     // Regression guard for Story 65.2 fix: symbol text filter reduces the
     // visible set but must still include placeholder rows (symbol='') so CDK
     // height remains stable during lazy load.

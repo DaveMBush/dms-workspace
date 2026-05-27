@@ -105,7 +105,7 @@ export class SoldPositionsComponent implements OnDestroy {
   }
 
   columns: ColumnDef[] = [
-    { field: 'symbol', header: 'Symbol', sortable: false, width: '120px' },
+    { field: 'symbol', header: 'Symbol', sortable: false, width: 120 },
     { field: 'buy', header: 'Buy', type: 'currency', editable: true },
     {
       field: 'buy_date',

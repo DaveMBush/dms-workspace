@@ -1,6 +1,6 @@
 import { expect, Page } from 'playwright/test';
 
-const ROW_SELECTOR = 'tr.mat-mdc-row';
+const ROW_SELECTOR = '.dms-body-row[role="row"]';
 
 /** Serialise cell text content for use inside `evaluateAll` (runs in browser context). */
 function readCellTexts(cellElements: Element[]): string[] {
@@ -19,7 +19,7 @@ function readCellTexts(cellElements: Element[]): string[] {
  *
  * @param page           - The Playwright Page object.
  * @param cellSelector   - CSS selector for the cells to check
- *                         (e.g. `'tr.mat-mdc-row td.mat-column-symbol'`).
+ *                         (e.g. `'.dms-body-row[role="row"] .dms-body-cell[data-column="symbol"]'`).
  * @param failureMessage - Message to display when the assertion fails.
  * @param timeout        - Maximum polling time in milliseconds. Default: 10000.
  */
