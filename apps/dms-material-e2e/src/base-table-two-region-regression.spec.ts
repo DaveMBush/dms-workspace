@@ -110,18 +110,28 @@ async function assertColumnWidthParity(page: Page): Promise<void> {
       const headerCells = Array.from(document.querySelectorAll(headerCellsSel));
       const bodyRow = document.querySelector(bodyRowSel);
       if (!bodyRow) {
-        // No body rows rendered yet (loading state) — skip width check.
+        // Precondition unmet: body rows must be present to verify column widths.
         return {
-          ok: true,
+          ok: false,
           message:
-            'no body rows visible — width check deferred (loading state)',
+            'precondition unmet: no body rows visible — cannot verify column width parity',
         };
       }
       const bodyCells = Array.from(bodyRow.querySelectorAll(bodyCellSel));
       const violations: string[] = [];
       for (let i = 0; i < headerCells.length; i++) {
         if (!bodyCells[i]) {
-          continue;
+          return {
+            ok: false,
+            message:
+              'precondition unmet: body cell missing at column ' +
+              i +
+              ' (header count: ' +
+              headerCells.length +
+              ', body count: ' +
+              bodyCells.length +
+              ')',
+          };
         }
         const headerWidth = headerCells[i].getBoundingClientRect().width;
         const bodyWidth = bodyCells[i].getBoundingClientRect().width;
@@ -204,10 +214,17 @@ async function assertHorizontalScrollSync(page: Page): Promise<void> {
       const bodyCell = bodyRow?.querySelector<HTMLElement>(bodyCellSel);
 
       if (!container || !headerCell || !bodyCell) {
-        // Elements not present — cannot test; pass through.
+        // Precondition unmet: required elements must be present to test scroll sync.
         return {
-          ok: true,
-          message: 'required elements not found — skipped',
+          ok: false,
+          message:
+            'precondition unmet: required elements not found (container=' +
+            !!container +
+            ' headerCell=' +
+            !!headerCell +
+            ' bodyCell=' +
+            !!bodyCell +
+            ')',
           hDelta: 0,
           bDelta: 0,
           syncDiff: 0,
@@ -339,8 +356,16 @@ async function assertPostContextChangeInvariant(
 
           const maxScroll = viewport.scrollHeight - viewport.clientHeight;
           if (maxScroll <= 0) {
-            // Not enough content to scroll — invariant holds trivially.
-            resolve({ ok: true, violations: [], frames });
+            // Precondition unmet: scrollable content is required to verify the invariant.
+            resolve({
+              ok: false,
+              violations: [
+                'precondition unmet: no scrollable content after context change (maxScroll=' +
+                  maxScroll +
+                  ')',
+              ],
+              frames,
+            });
             return;
           }
 
