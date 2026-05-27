@@ -105,28 +105,17 @@ import { ColumnDef } from './column-def.interface';
  *      layout containment would break CDK's scroll height calculation.
  */
 
-function compareNonNullValues(aVal: unknown, bVal: unknown): number {
+function compareValues(aVal: unknown, bVal: unknown): number {
+  const aNull = aVal === null || aVal === undefined;
+  const bNull = bVal === null || bVal === undefined;
+  if (aNull) return bNull ? 0 : -1;
+  if (bNull) return 1;
   if (typeof aVal === 'string' && typeof bVal === 'string') {
     return aVal.localeCompare(bVal);
   }
   const a = aVal as number;
   const b = bVal as number;
-  if (a < b) {
-    return -1;
-  }
-  return a > b ? 1 : 0;
-}
-
-function compareValues(aVal: unknown, bVal: unknown): number {
-  const aNull = aVal === null || aVal === undefined;
-  const bNull = bVal === null || bVal === undefined;
-  if (aNull) {
-    return bNull ? 0 : -1;
-  }
-  if (bNull) {
-    return 1;
-  }
-  return compareNonNullValues(aVal, bVal);
+  return a < b ? -1 : a > b ? 1 : 0;
 }
 
 @Component({
@@ -159,8 +148,10 @@ export class BaseTableComponent<T extends { id: string }>
   ];
 
   // Default column width in pixels when a column definition omits width.
+  // eslint-disable-next-line @typescript-eslint/naming-convention -- UPPER_SNAKE_CASE intentional for class-level constant
   readonly DEFAULT_COLUMN_WIDTH = 100;
   // Width in pixels for the selection checkbox column.
+  // eslint-disable-next-line @typescript-eslint/naming-convention -- UPPER_SNAKE_CASE intentional for class-level constant
   readonly SELECT_COLUMN_WIDTH = 48;
 
   // Inputs
@@ -403,7 +394,7 @@ export class BaseTableComponent<T extends { id: string }>
   }
 
   onHeaderClick(column: ColumnDef): void {
-    if (!column.sortable) {
+    if (column.sortable !== true) {
       return;
     }
     const primarySort = this.sortColumns()[0];

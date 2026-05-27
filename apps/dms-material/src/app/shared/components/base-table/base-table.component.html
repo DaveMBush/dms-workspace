@@ -103,6 +103,7 @@
           [attr.data-is-cef]="getIsCef$(row)"
           [attr.data-has-position]="getHasPosition$(row)"
           (click)="onRowClick(row)"
+          (keydown.enter)="onRowClick(row)"
         >
           @if (selectable()) {
           <div
