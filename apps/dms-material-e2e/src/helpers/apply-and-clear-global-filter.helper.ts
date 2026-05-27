@@ -27,13 +27,15 @@ interface GlobalFilterOptions {
 async function pollClearOption({
   text,
   timeout,
+  selectorStr,
 }: {
   text: string;
   timeout: number;
+  selectorStr: string;
 }): Promise<boolean> {
   const deadline = Date.now() + timeout;
   while (Date.now() < deadline) {
-    const opt = Array.from(document.querySelectorAll('mat-option')).find(
+    const opt = Array.from(document.querySelectorAll(selectorStr)).find(
       function findMatchingOption(el: Element): boolean {
         return (el as HTMLElement).textContent?.trim() === text;
       }
@@ -87,7 +89,7 @@ export async function applyAndClearGlobalFilter(
   // Wait for at least one mat-option to appear before polling — Firefox renders the
   // overlay panel slower than Chromium, so the 5 s poll budget could expire before
   // the first option is injected into the DOM.
-  await page.waitForSelector('mat-option', { timeout: 10000 });
+  await page.waitForSelector(MAT_OPTION_SELECTOR, { timeout: 10000 });
   // Angular Material's CDK overlay may destroy and recreate mat-options while the
   // BaseTableComponent re-renders after the data-context change (0 rows → CDK resets).
   // Playwright's locator.click() retries on "element detached", exhausting the action
@@ -96,6 +98,7 @@ export async function applyAndClearGlobalFilter(
   const cleared = await page.evaluate(pollClearOption, {
     text: clearOptionText,
     timeout: 10000,
+    selectorStr: MAT_OPTION_SELECTOR,
   });
   if (!cleared) {
     throw new Error(
