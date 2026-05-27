@@ -283,4 +283,3 @@ describe('BaseTableComponent - Rendered Range Tracking', () => {
     expect(emitted).toEqual([{ start: 0, end: 0 }]);
   });
 });
-
