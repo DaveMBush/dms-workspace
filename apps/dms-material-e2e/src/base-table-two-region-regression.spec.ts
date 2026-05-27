@@ -77,11 +77,12 @@ const BODY_CELL_SEL = '.dms-body-cell[role="cell"]';
  * no future refactor silently re-introduces sticky on the header region.
  */
 async function assertHeaderNotSticky(page: Page): Promise<void> {
-  const position = await page.locator(HEADER_REGION_SEL).first().evaluate(
-    function getComputedPositionValue(el: Element): string {
+  const position = await page
+    .locator(HEADER_REGION_SEL)
+    .first()
+    .evaluate(function getComputedPositionValue(el: Element): string {
       return window.getComputedStyle(el).position;
-    }
-  );
+    });
   expect(
     position,
     'Header region computed position must not be "sticky". ' +
@@ -112,7 +113,8 @@ async function assertColumnWidthParity(page: Page): Promise<void> {
         // No body rows rendered yet (loading state) — skip width check.
         return {
           ok: true,
-          message: 'no body rows visible — width check deferred (loading state)',
+          message:
+            'no body rows visible — width check deferred (loading state)',
         };
       }
       const bodyCells = Array.from(bodyRow.querySelectorAll(bodyCellSel));
@@ -125,7 +127,9 @@ async function assertColumnWidthParity(page: Page): Promise<void> {
         const bodyWidth = bodyCells[i].getBoundingClientRect().width;
         if (Math.abs(headerWidth - bodyWidth) > 1) {
           violations.push(
-            `col[${i}]: header=${headerWidth.toFixed(2)}px body=${bodyWidth.toFixed(2)}px ` +
+            `col[${i}]: header=${headerWidth.toFixed(
+              2
+            )}px body=${bodyWidth.toFixed(2)}px ` +
               `delta=${(headerWidth - bodyWidth).toFixed(2)}px`
           );
         }
@@ -240,8 +244,12 @@ async function assertHorizontalScrollSync(page: Page): Promise<void> {
       const ok = syncDiff <= 1 && resetDiff <= 1;
       const message =
         `scrollTarget=${targetScroll}px — ` +
-        `header shifted ${hDelta.toFixed(2)}px, body shifted ${bDelta.toFixed(2)}px; ` +
-        `syncDiff=${syncDiff.toFixed(2)}px, resetDiff=${resetDiff.toFixed(2)}px`;
+        `header shifted ${hDelta.toFixed(2)}px, body shifted ${bDelta.toFixed(
+          2
+        )}px; ` +
+        `syncDiff=${syncDiff.toFixed(2)}px, resetDiff=${resetDiff.toFixed(
+          2
+        )}px`;
       return { ok, message, hDelta, bDelta, syncDiff, resetDiff };
     },
     {
@@ -347,7 +355,9 @@ async function assertPostContextChangeInvariant(
             if (diff > 1) {
               violations.push(
                 `scrollTop=${viewport.scrollTop}: ` +
-                  `headerTop=${headerTop.toFixed(2)} containerTop=${containerTop.toFixed(2)} ` +
+                  `headerTop=${headerTop.toFixed(
+                    2
+                  )} containerTop=${containerTop.toFixed(2)} ` +
                   `diff=${diff.toFixed(2)}`
               );
             }

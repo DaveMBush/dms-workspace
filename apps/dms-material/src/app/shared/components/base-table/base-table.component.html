@@ -14,7 +14,11 @@
     [attr.aria-label]="tableLabel()"
   >
     <!-- Header region: NOT position:sticky — always above CDK viewport in document flow -->
-    <div class="dms-table-header" role="rowgroup" data-testid="base-table-header">
+    <div
+      class="dms-table-header"
+      role="rowgroup"
+      data-testid="base-table-header"
+    >
       @if (filterRowTemplate) {
       <div class="dms-header-row dms-filter-row" role="row">
         @if (selectable()) {
