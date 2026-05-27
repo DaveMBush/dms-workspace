@@ -5,7 +5,9 @@ import { seedUniverseData } from './helpers/seed-universe-data.helper';
 
 function getUniverseRowBySymbol(page: Page, symbol: string) {
   return page.locator('.dms-body-row[role="row"]').filter({
-    has: page.locator('.dms-body-cell[data-column="symbol"]', { hasText: symbol }),
+    has: page.locator('.dms-body-cell[data-column="symbol"]', {
+      hasText: symbol,
+    }),
   });
 }
 
@@ -1066,6 +1068,8 @@ test.describe('Empty Universe State', () => {
     await expect(page.locator('.empty-state')).toHaveCount(0);
 
     // Assert column headers are visible and not obscured
-    await expect(page.locator('.dms-header-cell[role="columnheader"]').first()).toBeVisible();
+    await expect(
+      page.locator('.dms-header-cell[role="columnheader"]').first()
+    ).toBeVisible();
   });
 });

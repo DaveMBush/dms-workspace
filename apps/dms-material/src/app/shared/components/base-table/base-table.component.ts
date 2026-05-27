@@ -461,5 +461,4 @@ export class BaseTableComponent<T extends { id: string }>
       /* no-op – scrollTo absent in JSDOM */
     }
   }
-
 }

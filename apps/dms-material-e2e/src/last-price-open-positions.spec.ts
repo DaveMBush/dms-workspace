@@ -49,7 +49,10 @@ const EXPECTED_FORMATTED_B = '$0.00';
 async function waitForTableRows(page: Page): Promise<void> {
   const table = page.locator('[data-testid="open-positions-table"]');
   await expect(table).toBeVisible({ timeout: 15000 });
-  await table.locator('.dms-body-row[role="row"]').first().waitFor({ timeout: 15000 });
+  await table
+    .locator('.dms-body-row[role="row"]')
+    .first()
+    .waitFor({ timeout: 15000 });
 }
 
 /**

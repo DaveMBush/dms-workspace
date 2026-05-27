@@ -77,7 +77,9 @@ test.describe('Dist/Year Weekly Acceptance — Epic 78 / Story 78.1', () => {
     await expect(row).toBeVisible({ timeout: 10000 });
 
     // Click the Dist/Year display value to enter edit mode.
-    const distPerYearTd = row.locator('.dms-body-cell[data-column="distributions_per_year"]');
+    const distPerYearTd = row.locator(
+      '.dms-body-cell[data-column="distributions_per_year"]'
+    );
     const distPerYearDisplay = distPerYearTd.locator('.display-value');
     await distPerYearDisplay.click();
 
@@ -105,7 +107,9 @@ test.describe('Dist/Year Weekly Acceptance — Epic 78 / Story 78.1', () => {
     await expect(row).toBeVisible({ timeout: 10000 });
 
     // Click the Dist/Year display value to enter edit mode.
-    const distPerYearTd = row.locator('.dms-body-cell[data-column="distributions_per_year"]');
+    const distPerYearTd = row.locator(
+      '.dms-body-cell[data-column="distributions_per_year"]'
+    );
     const distPerYearDisplay = distPerYearTd.locator('.display-value');
     await distPerYearDisplay.click();
 

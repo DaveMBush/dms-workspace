@@ -195,7 +195,9 @@ test.describe('Dividend Precision After Update', () => {
       await symbolInput.fill(baselineSymbol);
       await page.waitForTimeout(500);
 
-      await page.waitForSelector('.dms-body-row[role="row"]', { timeout: 10000 });
+      await page.waitForSelector('.dms-body-row[role="row"]', {
+        timeout: 10000,
+      });
 
       // Verify the first visible row actually contains the expected baseline symbol
       // before asserting on the distribution cell value.

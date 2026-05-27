@@ -78,7 +78,9 @@ test.describe('Universe Expired-No-Open Filter (Epic 109 / Story 109.3)', functi
   }) {
     const symbol = presentSymbols[0];
     await filterBySymbol(page, symbol);
-    const row = page.locator('.dms-body-row[role="row"]').filter({ hasText: symbol });
+    const row = page
+      .locator('.dms-body-row[role="row"]')
+      .filter({ hasText: symbol });
     await expect(row).toHaveCount(1, { timeout: 10000 });
   });
 
@@ -87,7 +89,9 @@ test.describe('Universe Expired-No-Open Filter (Epic 109 / Story 109.3)', functi
   }) {
     const symbol = presentSymbols[1];
     await filterBySymbol(page, symbol);
-    const row = page.locator('.dms-body-row[role="row"]').filter({ hasText: symbol });
+    const row = page
+      .locator('.dms-body-row[role="row"]')
+      .filter({ hasText: symbol });
     await expect(row).toHaveCount(1, { timeout: 10000 });
   });
 
@@ -96,7 +100,9 @@ test.describe('Universe Expired-No-Open Filter (Epic 109 / Story 109.3)', functi
   }) {
     const symbol = presentSymbols[2];
     await filterBySymbol(page, symbol);
-    const row = page.locator('.dms-body-row[role="row"]').filter({ hasText: symbol });
+    const row = page
+      .locator('.dms-body-row[role="row"]')
+      .filter({ hasText: symbol });
     await expect(row).toHaveCount(1, { timeout: 10000 });
   });
 });

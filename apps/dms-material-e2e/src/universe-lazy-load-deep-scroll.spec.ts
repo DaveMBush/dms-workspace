@@ -91,7 +91,8 @@ import { seedDeepScrollUniverseData } from './helpers/seed-deep-scroll-universe-
 
 const VIEWPORT_SELECTOR = 'cdk-virtual-scroll-viewport';
 const ROW_SELECTOR = '.dms-body-row[role="row"]';
-const SYMBOL_CELL_SELECTOR = '.dms-body-row[role="row"] .dms-body-cell[data-column="symbol"]';
+const SYMBOL_CELL_SELECTOR =
+  '.dms-body-row[role="row"] .dms-body-cell[data-column="symbol"]';
 
 // Row height for Global Universe after Story 29.1 fix (52px, no custom binding)
 const ROW_HEIGHT_PX = 52;

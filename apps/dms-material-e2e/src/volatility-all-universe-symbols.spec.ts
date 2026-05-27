@@ -26,7 +26,9 @@ const SVOL_CATEGORY_REGEX =
 async function searchForSymbol(page: Page, symbol: string) {
   const searchInput = page.locator('input[placeholder="Search Symbol"]');
   const row = page.locator('tbody tr').filter({
-    has: page.locator('.dms-body-cell[data-column="symbol"]', { hasText: symbol }),
+    has: page.locator('.dms-body-cell[data-column="symbol"]', {
+      hasText: symbol,
+    }),
   });
 
   await searchInput.fill(symbol);
@@ -83,7 +85,9 @@ test.describe('Story 88.4 — Volatility for held and unheld universe symbols', 
     await expect(page.locator('dms-base-table')).toBeVisible({
       timeout: 15_000,
     });
-    await page.waitForSelector('.dms-body-row[role="row"]', { timeout: 15_000 });
+    await page.waitForSelector('.dms-body-row[role="row"]', {
+      timeout: 15_000,
+    });
   });
 
   test('Vol column shows a real category for both held and unheld symbols', async function volColumnShowsRealCategory({

@@ -235,7 +235,9 @@ test.describe('Lazy Loading Network Traffic', () => {
       await expect(
         page.locator('[data-testid="open-positions-table"]')
       ).toBeVisible({ timeout: 15000 });
-      await page.waitForSelector('.dms-body-row[role="row"]', { timeout: 15000 });
+      await page.waitForSelector('.dms-body-row[role="row"]', {
+        timeout: 15000,
+      });
 
       // Wait for indexes requests to complete
       await page.waitForTimeout(2000);

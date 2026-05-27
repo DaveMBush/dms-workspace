@@ -212,7 +212,9 @@ test.describe('Universe Delete-Button Gating (Story 110.3)', () => {
 
     // Verify symDivs row does NOT show the delete button
     await filterBySymbol(page, symDivs);
-    const divsRow = page.locator('.dms-body-row[role="row"]').filter({ hasText: symDivs });
+    const divsRow = page
+      .locator('.dms-body-row[role="row"]')
+      .filter({ hasText: symDivs });
     await expect(divsRow).toBeVisible({ timeout: 15000 });
     await expect(
       divsRow.locator('[aria-label="Delete unused symbol"]')

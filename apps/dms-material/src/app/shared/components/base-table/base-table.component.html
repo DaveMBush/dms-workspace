@@ -89,7 +89,11 @@
     >
       <div role="rowgroup">
         <div
-          *cdkVirtualFor="let row of dataSource(); let i = index; trackBy: trackByFn"
+          *cdkVirtualFor="
+            let row of dataSource();
+            let i = index;
+            trackBy: trackByFn
+          "
           class="dms-body-row"
           role="row"
           [style.height.px]="rowHeight()"

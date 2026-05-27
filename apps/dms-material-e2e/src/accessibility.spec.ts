@@ -474,7 +474,9 @@ test.describe('Accessibility - Keyboard Navigation', () => {
     test('should navigate table headers with keyboard for sorting', async ({
       page,
     }) => {
-      const headers = page.locator('.dms-header-cell[role="columnheader"].dms-header-cell--sortable');
+      const headers = page.locator(
+        '.dms-header-cell[role="columnheader"].dms-header-cell--sortable'
+      );
       const headerCount = await headers.count();
 
       expect(

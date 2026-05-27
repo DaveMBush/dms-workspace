@@ -105,7 +105,9 @@ test.describe('Universe Row Delete (Story 100.2)', () => {
     // Narrow the list to our seeded symbol
     await filterBySymbol(page, symbol1);
 
-    const row = page.locator('.dms-body-row[role="row"]').filter({ hasText: symbol1 });
+    const row = page
+      .locator('.dms-body-row[role="row"]')
+      .filter({ hasText: symbol1 });
     await expect(row).toBeVisible({ timeout: 15000 });
 
     // Click the trash-can (delete) button
@@ -137,7 +139,9 @@ test.describe('Universe Row Delete (Story 100.2)', () => {
     // Narrow the list to our seeded symbol
     await filterBySymbol(page, symbol2);
 
-    const row = page.locator('.dms-body-row[role="row"]').filter({ hasText: symbol2 });
+    const row = page
+      .locator('.dms-body-row[role="row"]')
+      .filter({ hasText: symbol2 });
     await expect(row).toBeVisible({ timeout: 15000 });
 
     // Intercept the universe DELETE endpoint and force a 500

@@ -12,7 +12,8 @@ async function getCellTexts(page: Page, selector: string): Promise<string[]> {
   return rawTexts.map((text) => text.trim());
 }
 
-const SYMBOL_CELL_SELECTOR = '.dms-body-row[role="row"] .dms-body-cell[data-column="symbol"]';
+const SYMBOL_CELL_SELECTOR =
+  '.dms-body-row[role="row"] .dms-body-cell[data-column="symbol"]';
 
 /**
  * Helper: set Symbol ascending sort in localStorage.

@@ -51,7 +51,9 @@ async function waitForTableRows(page: Page): Promise<void> {
  * Helper: collect text content from all visible cells in a given column index (1-based).
  */
 async function getColumnTexts(page: Page, colIndex: number): Promise<string[]> {
-  const cells = page.locator(`.dms-body-row[role="row"] .dms-body-cell:nth-child(${colIndex})`);
+  const cells = page.locator(
+    `.dms-body-row[role="row"] .dms-body-cell:nth-child(${colIndex})`
+  );
   const count = await cells.count();
   const texts: string[] = [];
   for (let i = 0; i < count; i++) {
@@ -215,7 +217,10 @@ test.describe('Universe Screen E2E', () => {
     });
 
     test('should sort by Symbol', async ({ page }) => {
-      const header = page.getByRole('columnheader', { name: 'Symbol', exact: true });
+      const header = page.getByRole('columnheader', {
+        name: 'Symbol',
+        exact: true,
+      });
       await header.click();
       await page.waitForTimeout(500);
 
@@ -237,7 +242,10 @@ test.describe('Universe Screen E2E', () => {
     });
 
     test('should sort by Yield %', async ({ page }) => {
-      const header = page.getByRole('columnheader', { name: 'Yield %', exact: true });
+      const header = page.getByRole('columnheader', {
+        name: 'Yield %',
+        exact: true,
+      });
       await header.click();
       await page.waitForTimeout(500);
 
@@ -248,7 +256,9 @@ test.describe('Universe Screen E2E', () => {
     });
 
     test('should sort by Avg Purch Yield %', async ({ page }) => {
-      const header = page.getByRole('columnheader', { name: 'Avg Purch Yield %' });
+      const header = page.getByRole('columnheader', {
+        name: 'Avg Purch Yield %',
+      });
       await header.click();
       await page.waitForTimeout(500);
 
@@ -270,7 +280,9 @@ test.describe('Universe Screen E2E', () => {
     });
 
     test('should sort by Mst Rcnt Sll Dt', async ({ page }) => {
-      const header = page.getByRole('columnheader', { name: 'Mst Rcnt Sll Dt' });
+      const header = page.getByRole('columnheader', {
+        name: 'Mst Rcnt Sll Dt',
+      });
       await header.click();
       await page.waitForTimeout(500);
 
@@ -281,7 +293,9 @@ test.describe('Universe Screen E2E', () => {
     });
 
     test('should sort by Mst Rcnt Sell $', async ({ page }) => {
-      const header = page.getByRole('columnheader', { name: 'Mst Rcnt Sell $' });
+      const header = page.getByRole('columnheader', {
+        name: 'Mst Rcnt Sell $',
+      });
       await header.click();
       await page.waitForTimeout(500);
 

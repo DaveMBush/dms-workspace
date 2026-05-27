@@ -22,7 +22,9 @@ interface SeederResult {
 
 function getUniverseRowBySymbol(page: Page, symbol: string) {
   return page.locator('.dms-body-row[role="row"]').filter({
-    has: page.locator('.dms-body-cell[data-column="symbol"]', { hasText: symbol }),
+    has: page.locator('.dms-body-cell[data-column="symbol"]', {
+      hasText: symbol,
+    }),
   });
 }
 

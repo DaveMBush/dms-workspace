@@ -58,7 +58,9 @@ test.describe('Universe Table - Multi-Column Sort', () => {
     await page.waitForTimeout(300);
 
     // Secondary sort: Risk Group asc (Shift+click)
-    const riskGroupHeader = page.getByRole('columnheader', { name: 'Risk Group' });
+    const riskGroupHeader = page.getByRole('columnheader', {
+      name: 'Risk Group',
+    });
     await riskGroupHeader.click({ modifiers: ['Shift'] });
     await page.waitForTimeout(300);
 
@@ -78,7 +80,9 @@ test.describe('Universe Table - Multi-Column Sort', () => {
     await page.waitForTimeout(300);
 
     // Secondary sort: Risk Group
-    const riskGroupHeader = page.getByRole('columnheader', { name: 'Risk Group' });
+    const riskGroupHeader = page.getByRole('columnheader', {
+      name: 'Risk Group',
+    });
     await riskGroupHeader.click({ modifiers: ['Shift'] });
     await page.waitForTimeout(300);
 
@@ -96,7 +100,9 @@ test.describe('Universe Table - Multi-Column Sort', () => {
     await page.waitForTimeout(300);
 
     // Secondary sort: Risk Group asc
-    const riskGroupHeader = page.getByRole('columnheader', { name: 'Risk Group' });
+    const riskGroupHeader = page.getByRole('columnheader', {
+      name: 'Risk Group',
+    });
     await riskGroupHeader.click({ modifiers: ['Shift'] });
     await page.waitForTimeout(300);
 
@@ -120,7 +126,9 @@ test.describe('Universe Table - Multi-Column Sort', () => {
     await page.waitForTimeout(300);
 
     // Secondary sort: Risk Group asc
-    const riskGroupHeader = page.getByRole('columnheader', { name: 'Risk Group' });
+    const riskGroupHeader = page.getByRole('columnheader', {
+      name: 'Risk Group',
+    });
     await riskGroupHeader.click({ modifiers: ['Shift'] });
     await page.waitForTimeout(300);
 
@@ -144,7 +152,9 @@ test.describe('Universe Table - Multi-Column Sort', () => {
     await symbolHeader.click();
     await page.waitForTimeout(300);
 
-    const riskGroupHeader = page.getByRole('columnheader', { name: 'Risk Group' });
+    const riskGroupHeader = page.getByRole('columnheader', {
+      name: 'Risk Group',
+    });
     await riskGroupHeader.click({ modifiers: ['Shift'] });
     await page.waitForTimeout(300);
 

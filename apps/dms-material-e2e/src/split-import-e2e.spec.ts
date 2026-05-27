@@ -42,7 +42,9 @@ async function verifySymbolRow(
   expectedQty: number,
   expectedBuy: number
 ): Promise<void> {
-  const rows = page.locator('.dms-body-row[role="row"]').filter({ hasText: symbol });
+  const rows = page
+    .locator('.dms-body-row[role="row"]')
+    .filter({ hasText: symbol });
   await expect(rows).toHaveCount(1, { timeout: 10000 });
   const qtyText = await rows
     .nth(0)
@@ -168,7 +170,9 @@ test.describe('OXLC Split Import E2E', () => {
     ).toBeVisible({ timeout: 15000 });
     await page.waitForSelector('.dms-body-row[role="row"]', { timeout: 15000 });
 
-    const oxlcRows = page.locator('.dms-body-row[role="row"]').filter({ hasText: 'OXLC' });
+    const oxlcRows = page
+      .locator('.dms-body-row[role="row"]')
+      .filter({ hasText: 'OXLC' });
     await expect(oxlcRows).toHaveCount(3, { timeout: 10000 });
 
     let totalQty = 0;

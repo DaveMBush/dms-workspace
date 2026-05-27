@@ -294,7 +294,10 @@ test.describe('Dividend Deposits', () => {
       });
       // Row should still exist with original amount
       await expect(
-        page.locator('.dms-body-row[role="row"]').filter({ hasText: '$22.22' }).first()
+        page
+          .locator('.dms-body-row[role="row"]')
+          .filter({ hasText: '$22.22' })
+          .first()
       ).toBeVisible();
     });
 
@@ -384,7 +387,10 @@ test.describe('Dividend Deposits', () => {
       ).not.toBeVisible({ timeout: 3000 });
       // Row should still be in the table
       await expect(
-        page.locator('.dms-body-row[role="row"]').filter({ hasText: '$66.66' }).first()
+        page
+          .locator('.dms-body-row[role="row"]')
+          .filter({ hasText: '$66.66' })
+          .first()
       ).toBeVisible();
     });
 

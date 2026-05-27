@@ -147,7 +147,9 @@ test.describe('Universe Table - Server-Side Sorting', () => {
   });
 
   test('should send sort params for Risk Group column', async ({ page }) => {
-    const riskGroupHeader = page.getByRole('columnheader', { name: 'Risk Group' });
+    const riskGroupHeader = page.getByRole('columnheader', {
+      name: 'Risk Group',
+    });
     await riskGroupHeader.click();
     await page.waitForTimeout(300);
 
@@ -214,7 +216,9 @@ test.describe('Universe Sort Persistence', () => {
     await page.waitForLoadState('networkidle');
 
     // Sort by Risk Group
-    const riskGroupHeader = page.getByRole('columnheader', { name: 'Risk Group' });
+    const riskGroupHeader = page.getByRole('columnheader', {
+      name: 'Risk Group',
+    });
     await riskGroupHeader.click();
     await page.waitForTimeout(500);
 

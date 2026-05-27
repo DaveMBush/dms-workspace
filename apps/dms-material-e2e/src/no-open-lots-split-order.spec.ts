@@ -202,7 +202,9 @@ test.describe('No Open Lots Split Ordering Bug (Story 63.1)', () => {
     });
 
     const tstxRow = page.locator('.dms-body-row[role="row"]').filter({
-      has: page.locator('.dms-body-cell[data-column="symbol"]', { hasText: TSTX_SYMBOL }),
+      has: page.locator('.dms-body-cell[data-column="symbol"]', {
+        hasText: TSTX_SYMBOL,
+      }),
     });
     await expect(tstxRow).toHaveCount(1, { timeout: 15000 });
   });

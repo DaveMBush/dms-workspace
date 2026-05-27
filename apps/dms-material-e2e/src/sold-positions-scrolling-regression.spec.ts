@@ -25,8 +25,10 @@ const VIEWPORT_SELECTOR = 'cdk-virtual-scroll-viewport';
 // returns the table-layout flow position, not the visual sticky position.
 const HEADER_ROW_SELECTOR = '.dms-header-cell[role="columnheader"]';
 const ROW_SELECTOR = '.dms-body-row[role="row"]';
-const SYMBOL_CELL_SELECTOR = '.dms-body-row[role="row"] .dms-body-cell[data-column="symbol"]';
-const SELL_CELL_SELECTOR = '.dms-body-row[role="row"] .dms-body-cell[data-column="sell"]';
+const SYMBOL_CELL_SELECTOR =
+  '.dms-body-row[role="row"] .dms-body-cell[data-column="symbol"]';
+const SELL_CELL_SELECTOR =
+  '.dms-body-row[role="row"] .dms-body-cell[data-column="sell"]';
 
 // ─── Scroll Helpers ────────────────────────────────────────────────────────────
 

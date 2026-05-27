@@ -8,7 +8,9 @@ import { seedUniverseE2eData } from './helpers/seed-universe-e2e-data.helper';
  * index (1-based).
  */
 async function getColumnTexts(page: Page, colIndex: number): Promise<string[]> {
-  const cells = page.locator(`.dms-body-row[role="row"] .dms-body-cell:nth-child(${colIndex})`);
+  const cells = page.locator(
+    `.dms-body-row[role="row"] .dms-body-cell:nth-child(${colIndex})`
+  );
   const count = await cells.count();
   const texts: string[] = [];
   for (let i = 0; i < count; i++) {
@@ -109,7 +111,9 @@ test.describe('Universe Screen - Secondary Sort (Story 43.2)', () => {
     await page.waitForLoadState('networkidle');
 
     // Primary sort: Risk Group ascending (single click)
-    const riskGroupHeader = page.getByRole('columnheader', { name: 'Risk Group' });
+    const riskGroupHeader = page.getByRole('columnheader', {
+      name: 'Risk Group',
+    });
     await riskGroupHeader.click();
     await page.waitForTimeout(800);
     await page.waitForLoadState('networkidle');
@@ -155,7 +159,9 @@ test.describe('Universe Screen - Secondary Sort (Story 43.2)', () => {
     await page.waitForLoadState('networkidle');
 
     // Primary sort: Risk Group ascending (single click)
-    const riskGroupHeader = page.getByRole('columnheader', { name: 'Risk Group' });
+    const riskGroupHeader = page.getByRole('columnheader', {
+      name: 'Risk Group',
+    });
     await riskGroupHeader.click();
     await page.waitForTimeout(800);
     await page.waitForLoadState('networkidle');

@@ -66,7 +66,9 @@ test.describe('Open Positions', () => {
     // See apps/server/prisma/seed.ts for data setup.
     // Get initial row count
     const table = page.locator('dms-base-table');
-    const initialRows = await table.locator('.dms-body-row[role="row"]').count();
+    const initialRows = await table
+      .locator('.dms-body-row[role="row"]')
+      .count();
 
     // Open add position dialog
     const addButton = page.locator('[data-testid="add-new-position-button"]');
@@ -517,7 +519,9 @@ test.describe('Open Positions', () => {
 
     // Get initial row count
     const table = page.locator('dms-base-table');
-    const initialRows = await table.locator('.dms-body-row[role="row"]').count();
+    const initialRows = await table
+      .locator('.dms-body-row[role="row"]')
+      .count();
 
     // Type in symbol search
     const searchInput = page.locator('[data-testid="symbol-search-input"]');
@@ -527,7 +531,9 @@ test.describe('Open Positions', () => {
     await page.waitForTimeout(1000);
 
     // Get filtered row count
-    const filteredRows = await table.locator('.dms-body-row[role="row"]').count();
+    const filteredRows = await table
+      .locator('.dms-body-row[role="row"]')
+      .count();
 
     // Filtered count should be less than or equal to initial count
     expect(filteredRows).toBeLessThanOrEqual(initialRows);
@@ -582,7 +588,9 @@ test.describe('Open Positions', () => {
     await page.waitForTimeout(2000);
 
     // Get initial row count
-    const initialRows = await table.locator('.dms-body-row[role="row"]').count();
+    const initialRows = await table
+      .locator('.dms-body-row[role="row"]')
+      .count();
 
     // Click delete button on first row
     const deleteButton = page

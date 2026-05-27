@@ -8,7 +8,9 @@ import { seedUniverseE2eData } from './helpers/seed-universe-e2e-data.helper';
  * Helper: collect text content from all visible cells in a given column index (1-based).
  */
 async function getColumnTexts(page: Page, colIndex: number): Promise<string[]> {
-  const cells = page.locator(`.dms-body-row[role="row"] .dms-body-cell:nth-child(${colIndex})`);
+  const cells = page.locator(
+    `.dms-body-row[role="row"] .dms-body-cell:nth-child(${colIndex})`
+  );
   const rawTexts = await cells.allTextContents();
   return rawTexts.map((text) => text.trim());
 }

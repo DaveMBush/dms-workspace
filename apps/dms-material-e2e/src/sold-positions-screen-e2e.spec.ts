@@ -45,7 +45,9 @@ async function waitForTableRows(page: Page): Promise<void> {
  * Helper: collect text content from all visible cells in a given column index (1-based).
  */
 async function getColumnTexts(page: Page, colIndex: number): Promise<string[]> {
-  const cells = page.locator(`.dms-body-row[role="row"] .dms-body-cell:nth-child(${colIndex})`);
+  const cells = page.locator(
+    `.dms-body-row[role="row"] .dms-body-cell:nth-child(${colIndex})`
+  );
   const count = await cells.count();
   const texts: string[] = [];
   for (let i = 0; i < count; i++) {

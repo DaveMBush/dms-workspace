@@ -7,12 +7,16 @@ import { seedStoredVolatilityUpdateData } from './helpers/seed-stored-volatility
 async function searchForSymbol(page: Page, symbol: string) {
   const searchInput = page.locator('input[placeholder="Search Symbol"]');
   const row = page.locator('tbody tr').filter({
-    has: page.locator('.dms-body-cell[data-column="symbol"]', { hasText: symbol }),
+    has: page.locator('.dms-body-cell[data-column="symbol"]', {
+      hasText: symbol,
+    }),
   });
 
   await searchInput.fill(symbol);
   await expect(row).toHaveCount(1, { timeout: 15_000 });
-  await expect(row.locator('.dms-body-cell[data-column="symbol"]')).toContainText(symbol);
+  await expect(
+    row.locator('.dms-body-cell[data-column="symbol"]')
+  ).toContainText(symbol);
 
   return row.first();
 }

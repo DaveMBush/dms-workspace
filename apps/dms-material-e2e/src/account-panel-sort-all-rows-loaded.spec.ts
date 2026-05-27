@@ -53,7 +53,9 @@ async function waitForTable(
 async function getFirstColumnTexts(
   page: import('playwright/test').Page
 ): Promise<string[]> {
-  return page.locator('.dms-body-row[role="row"] td:first-child').allTextContents();
+  return page
+    .locator('.dms-body-row[role="row"] td:first-child')
+    .allTextContents();
 }
 
 /**
