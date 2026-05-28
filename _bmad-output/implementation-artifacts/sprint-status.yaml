@@ -659,6 +659,6 @@ development_status:
   # ── Epic 113: Fix Universe Sort Vanishing After Account/Filter Change ─────────
   epic-113: backlog
   113-1-investigate-universe-sort-vanishing: ready-for-dev
-  113-2-fix-universe-sort-persistence: ready-for-dev
+  113-2-fix-universe-sort-persistence: in-progress
   113-3-tests-universe-sort-persistence: ready-for-dev
   epic-113-retrospective: optional

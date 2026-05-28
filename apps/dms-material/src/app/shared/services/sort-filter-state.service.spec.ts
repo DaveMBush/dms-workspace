@@ -245,6 +245,57 @@ describe('SortFilterStateService', () => {
       expect(savedData.universes.filters).toEqual({ symbol: 'AAPL' });
       expect(savedData.universes.sort).toBeUndefined();
     });
+
+    it('should preserve sortColumns when clearing legacy sort (regression: Epic 113 secondary fix)', () => {
+      mockGetItem.mockReturnValue(
+        JSON.stringify({
+          universes: {
+            sort: { field: 'name', order: 'asc' },
+            sortColumns: [{ column: 'symbol', direction: 'asc' }],
+            filters: { symbol: 'AAPL' },
+          },
+        })
+      );
+
+      service.clearSortState('universes');
+
+      const savedData = JSON.parse(mockSetItem.mock.calls[0][1]);
+      expect(savedData.universes.sortColumns).toEqual([
+        { column: 'symbol', direction: 'asc' },
+      ]);
+      expect(savedData.universes.sort).toBeUndefined();
+    });
+
+    it('should remove table entry when sort cleared and no filters or sortColumns remain', () => {
+      mockGetItem.mockReturnValue(
+        JSON.stringify({
+          universes: { sort: { field: 'name', order: 'asc' } },
+        })
+      );
+
+      service.clearSortState('universes');
+
+      expect(mockRemoveItem).toHaveBeenCalledWith(STORAGE_KEY);
+    });
+
+    it('should keep table entry when sort cleared but sortColumns remain', () => {
+      mockGetItem.mockReturnValue(
+        JSON.stringify({
+          universes: {
+            sort: { field: 'name', order: 'asc' },
+            sortColumns: [{ column: 'price', direction: 'desc' }],
+          },
+        })
+      );
+
+      service.clearSortState('universes');
+
+      expect(mockRemoveItem).not.toHaveBeenCalled();
+      const savedData = JSON.parse(mockSetItem.mock.calls[0][1]);
+      expect(savedData.universes.sortColumns).toEqual([
+        { column: 'price', direction: 'desc' },
+      ]);
+    });
   });
 
   describe('saveSortColumnsState', () => {
@@ -446,6 +497,57 @@ describe('SortFilterStateService', () => {
         field: 'name',
         order: 'asc',
       });
+    });
+
+    it('should preserve sortColumns when clearing filter state (regression: Epic 113 bug)', () => {
+      mockGetItem.mockReturnValue(
+        JSON.stringify({
+          universes: {
+            sortColumns: [{ column: 'symbol', direction: 'asc' }, { column: 'last_price', direction: 'desc' }],
+            filters: { symbol: 'AAPL' },
+          },
+        })
+      );
+
+      service.clearFilterState('universes');
+
+      const savedData = JSON.parse(mockSetItem.mock.calls[0][1]);
+      expect(savedData.universes.sortColumns).toEqual([
+        { column: 'symbol', direction: 'asc' },
+        { column: 'last_price', direction: 'desc' },
+      ]);
+      expect(savedData.universes.filters).toBeUndefined();
+    });
+
+    it('should remove table entry when filter cleared and no sort or sortColumns exist', () => {
+      mockGetItem.mockReturnValue(
+        JSON.stringify({
+          universes: { filters: { symbol: 'AAPL' } },
+        })
+      );
+
+      service.clearFilterState('universes');
+
+      expect(mockRemoveItem).toHaveBeenCalledWith(STORAGE_KEY);
+    });
+
+    it('should keep table entry when filter cleared but sortColumns remain', () => {
+      mockGetItem.mockReturnValue(
+        JSON.stringify({
+          universes: {
+            sortColumns: [{ column: 'symbol', direction: 'asc' }],
+            filters: { symbol: 'AAPL' },
+          },
+        })
+      );
+
+      service.clearFilterState('universes');
+
+      expect(mockRemoveItem).not.toHaveBeenCalled();
+      const savedData = JSON.parse(mockSetItem.mock.calls[0][1]);
+      expect(savedData.universes.sortColumns).toEqual([
+        { column: 'symbol', direction: 'asc' },
+      ]);
     });
   });
 

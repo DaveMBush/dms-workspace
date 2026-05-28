@@ -41,8 +41,14 @@ export class SortFilterStateService {
   clearSortState(table: string): void {
     const state = this.loadAllState();
     if (state[table] !== undefined) {
-      state[table] = { filters: state[table].filters };
-      if (state[table].filters === undefined) {
+      state[table] = {
+        filters: state[table].filters,
+        sortColumns: state[table].sortColumns,
+      };
+      if (
+        state[table].filters === undefined &&
+        state[table].sortColumns === undefined
+      ) {
         this.saveState(this.removeTableEntry(state, table));
         return;
       }
@@ -80,8 +86,14 @@ export class SortFilterStateService {
   clearFilterState(table: string): void {
     const state = this.loadAllState();
     if (state[table] !== undefined) {
-      state[table] = { sort: state[table].sort };
-      if (state[table].sort === undefined) {
+      state[table] = {
+        sort: state[table].sort,
+        sortColumns: state[table].sortColumns,
+      };
+      if (
+        state[table].sort === undefined &&
+        state[table].sortColumns === undefined
+      ) {
         this.saveState(this.removeTableEntry(state, table));
         return;
       }
