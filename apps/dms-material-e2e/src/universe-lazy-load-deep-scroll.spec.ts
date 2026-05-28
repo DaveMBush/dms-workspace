@@ -144,7 +144,7 @@ async function assertVisibleSymbolsNonEmpty(
 }
 
 /**
- * Scroll the CDK virtual-scroll viewport to a specific pixel offset.
+ * Scroll the outer scroll wrapper to a specific pixel offset.
  * Returns the actual scrollTop achieved after the operation.
  */
 async function scrollViewportTo(
@@ -162,7 +162,7 @@ async function scrollViewportTo(
 }
 
 /**
- * Scroll the CDK virtual-scroll viewport to the very bottom in one jump.
+ * Scroll the outer scroll wrapper to the very bottom in one jump.
  * Mirrors the Epic 60/64 fast-scroll pattern; used here against 150-row
  * deep-scroll data spanning 3 lazy-load pages.
  */
@@ -173,7 +173,7 @@ async function scrollViewportToBottom(viewport: Locator): Promise<void> {
 }
 
 /**
- * Scroll the CDK virtual-scroll viewport back to the very top.
+ * Scroll the outer scroll wrapper back to the very top.
  */
 async function scrollViewportToTop(viewport: Locator): Promise<void> {
   await viewport.evaluate(function setScrollToTop(node: Element): void {

@@ -113,9 +113,9 @@ Story 112.1 produced the root-cause analysis and fix design for all three regres
 
 | File | Change |
 |------|--------|
-| `base-table.component.html` | Added `<div class="dms-outer-scroller" cdkVirtualScrollingElement>` wrapper; changed 3× `[style.width.px]` → `[style.minWidth.px]` on data column cells (filter row, header row, body row; select cells unchanged) |
-| `base-table.component.scss` | Added `.dms-outer-scroller { flex: 1; overflow-y: auto; overflow-x: hidden }`. Removed `flex: 1` from `.dms-table-scroll-container`. Changed `.dms-table-body` to `overflow-y: visible`, removed `flex: 1` and `width: max-content`. Added `flex-grow: 1` to header/body cells, `flex-grow: 0` to select cell, `min-width: 100%` to both row rules, `background-color: var(--dms-surface)` to `.dms-body-row`. Updated SCROLLING REGRESSION HISTORY and structural constraints comments. |
+| `base-table.component.html` | Added `<div class="dms-outer-scroller" cdkVirtualScrollingElement>` wrapper; added `.dms-col-spacer` element (flex: 1 0 auto) at end of filter row, header row, and body row to absorb spare horizontal width; column cells retain `[style.width.px]` bindings unchanged |
+| `base-table.component.scss` | Added `.dms-outer-scroller { flex: 1; overflow-y: auto; overflow-x: hidden }`. Removed `flex: 1` from `.dms-table-scroll-container`. Changed `.dms-table-body` to `overflow-y: visible`, removed `flex: 1` and `width: max-content`. Added `flex-grow: 0` to `.dms-select-cell`. Added `.dms-col-spacer { flex: 1 0 auto; min-width: 0 }` rule to absorb spare width (data cells keep `flex-grow: 0` to preserve column width parity). Added `background-color: var(--dms-surface)` to `.dms-body-row`. Updated SCROLLING REGRESSION HISTORY and structural constraints comments. |
 | `base-table.component.ts` | Updated structural constraint 2 comment: `overflow-y:visible` (Epic 112) with CDK scroll delegated to `.dms-outer-scroller` via `cdkVirtualScrollingElement`. |
-| `base-table.component.spec.ts` | Added 4 RED-phase unit tests (outer scroller present, viewport nested, min-width on header cells, min-width on body cells); all pass after HTML/SCSS changes. |
+| `base-table.component.spec.ts` | Added 4 RED-phase unit tests (outer scroller present, viewport nested, col-spacer in header row, col-spacer in body row); all pass after HTML/SCSS changes. |
 
 **Note on Tasks 5 & 6:** Playwright MCP and e2e suite runs are deferred to story 112.3 (regression tests). This is consistent with code-story mode (implementation only; QA validation is a separate story).

@@ -45,12 +45,18 @@ async function scrollToBottom(
   await page.waitForTimeout(600);
 }
 
-/** Wait for the virtual scroll table to be visible and rows to appear. */
+/** Wait for the virtual scroll table to be visible and rows to appear.
+ * Epic 112 (Story 112.2): row-appearance timeout raised to 30 s to match
+ * base-table-two-region-regression.spec.ts, which uses waitForSelector(30 s).
+ * The 15 s budget was too tight when the full e2e suite starts with a
+ * cold webpack-dev-server; the CDK virtual scroll (cdkVirtualScrollingElement
+ * architecture) needs extra time on first render with a fresh server.
+ */
 async function waitForTable(
   page: import('playwright/test').Page
 ): Promise<void> {
   await expect(page.locator('dms-base-table')).toBeVisible({ timeout: 15000 });
-  await page.waitForSelector('.dms-body-row[role="row"]', { timeout: 15000 });
+  await page.waitForSelector('.dms-body-row[role="row"]', { timeout: 30000 });
 }
 
 /**
