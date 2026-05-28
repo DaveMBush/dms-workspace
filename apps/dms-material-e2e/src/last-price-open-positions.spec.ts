@@ -57,8 +57,8 @@ async function waitForTableRows(page: Page): Promise<void> {
 
 /**
  * Resolve the 1-based column index for a given header string by scanning all
- * <th> elements in the first non-filter header row.  Dynamic lookup ensures
- * the test does not break if column order ever changes.
+ * `.dms-header-cell` elements in the first non-filter header row.  Dynamic
+ * lookup ensures the test does not break if column order ever changes.
  *
  * Mirrors the pattern from Story 97.4 (`open-positions-computed-fields.spec.ts`).
  */

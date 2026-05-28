@@ -39,8 +39,8 @@ async function waitForTableRows(page: Page): Promise<void> {
 
 /**
  * Resolve the 1-based column index for a given header string by scanning all
- * <th> elements in the first header row.  Using dynamic lookup ensures the
- * test does not break if column order ever changes.
+ * `.dms-header-cell` elements in the first header row.  Using dynamic lookup
+ * ensures the test does not break if column order ever changes.
  */
 async function getColumnIndex(page: Page, headerText: string): Promise<number> {
   const headers = page

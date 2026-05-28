@@ -139,7 +139,7 @@ Write is synchronous, happens immediately on sort change.
 Component field initializer (runs at construction before first CD cycle) → `sortFilterStateService.loadSortColumnsState('universes')` → `state['universes']?.sortColumns ?? null`
 
 **The persistence bug — triggered call chain:**
-```
+```text
 onAccountChange('all')
   → notifyFilterChange()
     → saveUniverseFiltersAndNotify(service, { accountId: 'all', symbol: '', riskGroup: null, expired: null, minYield: null })
