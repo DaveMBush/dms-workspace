@@ -35,7 +35,7 @@ test.describe('Universe Column Filter Width', () => {
 
     // The Symbol filter form field is in the filter row
     const symbolFilterField = page
-      .locator('tr.filter-row th')
+      .locator('div.dms-filter-row .dms-header-cell')
       .filter({ has: page.locator('input[placeholder="Search Symbol"]') })
       .locator('mat-form-field');
     await expect(symbolFilterField).toBeVisible({ timeout: 10000 });
@@ -68,7 +68,7 @@ test.describe('Universe Column Filter Width', () => {
 
     // The Yield % filter form field is in the filter row
     const yieldFilterField = page
-      .locator('tr.filter-row th')
+      .locator('div.dms-filter-row .dms-header-cell')
       .filter({ has: page.locator('input[placeholder="Min Yield %"]') })
       .locator('mat-form-field');
     await expect(yieldFilterField).toBeVisible({ timeout: 10000 });

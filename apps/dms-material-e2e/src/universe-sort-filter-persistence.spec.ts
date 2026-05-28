@@ -59,7 +59,7 @@ test.describe('Universe Sort/Filter Persistence (Story 38.3)', () => {
       page,
     }) => {
       // Click "Symbol" column header to apply ascending sort
-      const header = page.locator('[data-sort-header="symbol"]');
+      const header = page.locator('[data-column="symbol"]');
       await header.click();
       await page.waitForTimeout(500);
 
@@ -72,7 +72,7 @@ test.describe('Universe Sort/Filter Persistence (Story 38.3)', () => {
       await waitForTableRows(page);
 
       // After reload, sort indicator should show the same direction
-      const restoredHeader = page.locator('[data-sort-header="symbol"]');
+      const restoredHeader = page.locator('[data-column="symbol"]');
       await expect(restoredHeader).toHaveAttribute('aria-sort', sortBefore!);
     });
 
@@ -80,7 +80,7 @@ test.describe('Universe Sort/Filter Persistence (Story 38.3)', () => {
       page,
     }) => {
       // Click "Ex-Date" column header to apply ascending sort
-      const header = page.locator('[data-sort-header="ex_date"]');
+      const header = page.locator('.dms-header-cell[data-column="ex_date"]');
       await header.click();
       await page.waitForTimeout(500);
 
@@ -93,7 +93,7 @@ test.describe('Universe Sort/Filter Persistence (Story 38.3)', () => {
       await waitForTableRows(page);
 
       // After reload, sort indicator should show the same direction
-      const restoredHeader = page.locator('[data-sort-header="ex_date"]');
+      const restoredHeader = page.locator('.dms-header-cell[data-column="ex_date"]');
       await expect(restoredHeader).toHaveAttribute('aria-sort', sortBefore!);
     });
   });

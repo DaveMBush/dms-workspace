@@ -114,7 +114,7 @@ test.describe('Screener Table', () => {
       await page.waitForTimeout(500); // Wait for filter to apply
 
       const filteredCount = await page
-        .locator('[data-testid="screener-table"] tbody tr')
+        .locator('[data-testid="screener-table"] .dms-body-row[role="row"]')
         .count();
 
       // Then select All
@@ -124,7 +124,7 @@ test.describe('Screener Table', () => {
       await page.waitForTimeout(500); // Wait for filter to apply
 
       const allCount = await page
-        .locator('[data-testid="screener-table"] tbody tr')
+        .locator('[data-testid="screener-table"] .dms-body-row[role="row"]')
         .count();
 
       // "All" should show at least as many items (could be equal if all items are in filtered group)

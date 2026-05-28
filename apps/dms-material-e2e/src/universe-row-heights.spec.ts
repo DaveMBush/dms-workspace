@@ -23,14 +23,10 @@
  * `mat-icon-button` inside `.dms-body-row[role="row"] td`.  This prevents the button
  * from inflating the cell while keeping the visible icon the same size.
  *
- * ── test.fail() rationale ────────────────────────────────────────────────
- * The assertion below (`uniqueHeights.size === 1`) FAILS on the current
- * codebase because icon-button rows are taller.  Wrapping it with
- * `test.fail()` marks this as an *expected* failure so CI stays green.
- *
- * When Story 67.2 pins the row height correctly this test will UNEXPECTEDLY
- * PASS, turning CI red and signalling that the `test.fail()` wrapper must be
- * removed.
+ * ── Fix applied (Epic 111 / Story 67.2) ─────────────────────────────────
+ * Epic 111 refactored the base-table to a two-region layout that eliminated
+ * the mat-icon-button height inflation.  All rows now render at 52 px.
+ * The `test.fail()` wrapper was removed; this test now passes green.
  *
  * References: _bmad-output/planning-artifacts/epics-2026-04-13.md — Epic 67
  */
@@ -92,15 +88,13 @@ test.describe('Universe Row Height Consistency — Epic 67 / Story 67.1', () => 
    * Scoping to seeded symbols makes the test deterministic regardless of
    * other universe data that may be present in the E2E fixture.
    *
-   * Marked `test.fail()` so the suite remains green while the inconsistency
-   * exists.  Remove the `test.fail()` call after Story 67.2 fixes the height.
+   * Story 67.2 (via Epic 111) equalised all row heights by removing the
+   * mat-icon-button height inflation.  The test.fail() wrapper was removed
+   * after verifying this test passes consistently.
    */
   test('all visible rows have equal offsetHeight (diagnoses icon-button inflation)', async ({
     page,
   }) => {
-    // Marked test.fail() because icon-button rows are still ~1 px taller than
-    // the 52-px target. Remove this call once Story 67.2 fully equalises all rows.
-    test.fail();
     const rowHeights = await page.evaluate(function measureSeededRowHeights(
       symbols: string[]
     ): number[] {

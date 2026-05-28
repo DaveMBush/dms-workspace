@@ -292,7 +292,7 @@ test.describe('Sold Positions', () => {
       await startDateInput.press('Enter');
 
       // All rows should be filtered out when start date is in the far future
-      await expect(page.locator('mat-row')).toHaveCount(0);
+      await expect(page.locator('.dms-body-row[role="row"]')).toHaveCount(0);
 
       // Clear filters to restore state
       await page.getByRole('button', { name: 'Clear Filters' }).click();
@@ -308,7 +308,7 @@ test.describe('Sold Positions', () => {
       await endDateInput.press('Enter');
 
       // All rows should be filtered out when end date is before any real data
-      await expect(page.locator('mat-row')).toHaveCount(0);
+      await expect(page.locator('.dms-body-row[role="row"]')).toHaveCount(0);
 
       // Clear filters to restore state
       await page.getByRole('button', { name: 'Clear Filters' }).click();
@@ -324,7 +324,7 @@ test.describe('Sold Positions', () => {
       await startDateInput.press('Enter');
 
       // Verify filter is applied (no rows)
-      await expect(page.locator('mat-row')).toHaveCount(0);
+      await expect(page.locator('.dms-body-row[role="row"]')).toHaveCount(0);
 
       // Click clear filters
       await page.getByRole('button', { name: 'Clear Filters' }).click();
@@ -349,7 +349,7 @@ test.describe('Sold Positions', () => {
       await endDateInput.press('Enter');
 
       // No rows should match an impossible date range
-      await expect(page.locator('mat-row')).toHaveCount(0);
+      await expect(page.locator('.dms-body-row[role="row"]')).toHaveCount(0);
 
       // Clear filters to restore state
       await page.getByRole('button', { name: 'Clear Filters' }).click();

@@ -28,7 +28,7 @@ test.describe('Universe Re-sort After Cell Edit', () => {
     page,
   }) {
     // Sort by Ex-Date ascending
-    const exDateHeader = page.locator('[data-sort-header="ex_date"]');
+    const exDateHeader = page.locator('[data-column="ex_date"]');
     await exDateHeader.click();
     await page.waitForTimeout(500);
 

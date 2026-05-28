@@ -39,7 +39,7 @@ test.describe('Universe Risk Group Filter Dropdown Width', () => {
   }) => {
     // Risk Group filter mat-select uses panelWidth="" (content width)
     const riskGroupSelect = page.locator(
-      'tr.filter-row mat-select[panelwidth=""]'
+      'div.dms-filter-row mat-select[panelwidth=""]'
     );
     await expect(riskGroupSelect).toHaveCount(1);
     await expect(riskGroupSelect).toBeVisible({ timeout: 10000 });
@@ -72,7 +72,7 @@ test.describe('Universe Risk Group Filter Dropdown Width', () => {
   }) => {
     // Risk Group filter mat-select uses panelWidth="" (content width)
     const riskGroupSelect = page.locator(
-      'tr.filter-row mat-select[panelwidth=""]'
+      'div.dms-filter-row mat-select[panelwidth=""]'
     );
     await expect(riskGroupSelect).toHaveCount(1);
     await expect(riskGroupSelect).toBeVisible({ timeout: 10000 });
