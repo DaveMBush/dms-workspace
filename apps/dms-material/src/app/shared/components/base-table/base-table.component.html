@@ -5,6 +5,12 @@
   <mat-progress-bar mode="indeterminate"></mat-progress-bar>
   }
 
+  <!-- Epic 112 (Story 112.2): dms-outer-scroller owns vertical scrolling so the
+       scrollbar stays pinned to the right edge of the full viewport width on any
+       screen size. cdkVirtualScrollingElement delegates CDK scroll-position detection
+       to this full-width wrapper; the inner dms-table-scroll-container handles only
+       horizontal scroll so header and body remain aligned. -->
+  <div class="dms-outer-scroller" cdkVirtualScrollingElement>
   <!-- Single horizontal scroll container — header div and CDK viewport scroll together.
        Epic 111 (Story 111.2): two-region layout — header is a plain <div> above the
        CDK viewport so it can never drift with virtual-scroll content. -->
@@ -39,6 +45,7 @@
           ></ng-container>
         </div>
         }
+      <div class="dms-col-spacer" aria-hidden="true"></div>
       </div>
       }
       <div class="dms-header-row dms-column-header-row" role="row">
@@ -80,6 +87,7 @@
           }
         </div>
         }
+      <div class="dms-col-spacer" aria-hidden="true"></div>
       </div>
     </div>
 
@@ -139,9 +147,11 @@
             ></ng-container>
           </div>
           }
+          <div class="dms-col-spacer" aria-hidden="true"></div>
         </div>
       </div>
     </cdk-virtual-scroll-viewport>
+  </div>
   </div>
 </div>
 

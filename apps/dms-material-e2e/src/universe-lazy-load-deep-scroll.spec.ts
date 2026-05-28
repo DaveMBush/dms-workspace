@@ -89,7 +89,7 @@ import { expect, Locator, Page, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
 import { seedDeepScrollUniverseData } from './helpers/seed-deep-scroll-universe-data.helper';
 
-const VIEWPORT_SELECTOR = 'cdk-virtual-scroll-viewport';
+const VIEWPORT_SELECTOR = '.dms-outer-scroller';
 const ROW_SELECTOR = '.dms-body-row[role="row"]';
 const SYMBOL_CELL_SELECTOR =
   '.dms-body-row[role="row"] .dms-body-cell[data-column="symbol"]';

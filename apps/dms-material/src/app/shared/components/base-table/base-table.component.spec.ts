@@ -1,6 +1,6 @@
 import { ListRange } from '@angular/cdk/collections';
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, discardPeriodicTasks, fakeAsync, flushMicrotasks } from '@angular/core/testing';
 import { Subject } from 'rxjs';
 
 import { BaseTableComponent } from './base-table.component';
@@ -69,6 +69,65 @@ describe('BaseTableComponent', () => {
     );
     expect(headerCells.length).toBeGreaterThan(0);
   });
+
+  // Story 112.2 — Layout regression fixes (R1/R2: scrollbar pinning; R3: column fill)
+
+  it('should render a dms-outer-scroller wrapper element for viewport-width vertical scrollbar (R1/R2 fix)', () => {
+    // R1/R2: vertical scrollbar must be on a full-width outer wrapper (not on the CDK viewport)
+    // so it stays pinned to the right edge of the screen instead of scrolling with content.
+    fixture.componentRef.setInput('data', []);
+    fixture.detectChanges();
+    const outerScroller = fixture.nativeElement.querySelector('.dms-outer-scroller');
+    expect(outerScroller).not.toBeNull();
+  });
+
+  it('should nest cdk-virtual-scroll-viewport inside dms-outer-scroller (R1/R2 fix)', () => {
+    // R1/R2: CDK viewport must be a descendant of the outer scroller so CDK
+    // delegates scroll events to the outer element via cdkVirtualScrollingElement.
+    fixture.componentRef.setInput('data', []);
+    fixture.detectChanges();
+    const outerScroller = fixture.nativeElement.querySelector('.dms-outer-scroller');
+    const cdkViewport = fixture.nativeElement.querySelector('cdk-virtual-scroll-viewport');
+    expect(outerScroller).not.toBeNull();
+    expect(cdkViewport).not.toBeNull();
+    expect(outerScroller.contains(cdkViewport)).toBe(true);
+  });
+
+  it('should include a flex spacer at end of column header row so it fills full available width (R3 fix)', () => {
+    // R3: a .dms-col-spacer (flex:1) at the end of each row absorbs spare horizontal space
+    // so the row always spans the full container width regardless of defined column widths.
+    // Column cells keep exact [style.width.px] bindings so header/body parity is maintained;
+    // the spacer provides the background fill without altering column widths.
+    fixture.componentRef.setInput('data', []);
+    fixture.detectChanges();
+    const columnHeaderRow = fixture.nativeElement.querySelector('.dms-column-header-row');
+    expect(columnHeaderRow).not.toBeNull();
+    const spacer = columnHeaderRow.querySelector('.dms-col-spacer');
+    expect(spacer).not.toBeNull();
+  });
+
+  it('should include a flex spacer at end of each body row so it fills full available width (R3 fix)', fakeAsync(() => {
+    // R3: a .dms-col-spacer (flex:1) at the end of each body row absorbs spare horizontal
+    // space so every row spans the full container width and the beyond-table area has a
+    // consistent background (together with AC4 background-color on .dms-body-row).
+    fixture.componentRef.setInput('data', [{ id: '1', name: 'Test Row' }]);
+    fixture.detectChanges();
+    // CdkVirtualScrollViewport.ngOnInit defers all setup (scroll-strategy attach +
+    // rendered-range calculation) to a Promise microtask running outside NgZone.
+    // Flushing microtasks lets CDK complete initialization: attach scroll strategy →
+    // setRenderedRange({start:0,end:1}) → markForCheck on the OnPush viewport.
+    // The subsequent detectChanges triggers CdkVirtualForOf.ngDoCheck which calls
+    // applyChanges() → createEmbeddedView() to insert the body-row template into the DOM.
+    flushMicrotasks();
+    fixture.detectChanges();
+    const bodyRows = fixture.nativeElement.querySelectorAll('.dms-body-row[role="row"]');
+    expect(bodyRows.length).toBeGreaterThan(0);
+    bodyRows.forEach((row: HTMLElement) => {
+      const spacer = row.querySelector('.dms-col-spacer');
+      expect(spacer).not.toBeNull();
+    });
+    discardPeriodicTasks();
+  }));
 });
 
 // TDD RED Phase: Tests for Story AX.1 - renderedRangeChange output

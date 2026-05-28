@@ -4,7 +4,7 @@ import { login } from './helpers/login.helper';
 import { seedScrollUniverseData } from './helpers/seed-scroll-universe-data.helper';
 import { verifyMonotonicScroll } from './helpers/verify-smooth-scroll';
 
-const VIEWPORT_SELECTOR = 'cdk-virtual-scroll-viewport';
+const VIEWPORT_SELECTOR = '.dms-outer-scroller';
 
 // ─── Universe Smooth Scroll Tests ────────────────────────────────────────────
 

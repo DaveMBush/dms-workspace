@@ -94,14 +94,24 @@ import { ColumnDef } from './column-def.interface';
  *   Single outer .dms-table-scroll-container (overflow-x:auto) keeps header and body
  *   horizontally aligned without a JS sync mechanism.
  *
+ * Epic 112: (Story 112.2) Fixed three layout regressions from Epic 111.
+ *   R1/R2: vertical scrollbar drift — moved overflow-y:auto to a new .dms-outer-scroller
+ *   wrapper with cdkVirtualScrollingElement so CDK delegates scroll detection to the
+ *   full-width element. .dms-table-body now has overflow-y:visible.
+ *   R3: columns don't fill container — cell bindings kept as exact [style.width.px];
+ *   flex-grow:0 on cells; .dms-col-spacer (flex:1) at end of each row absorbs spare
+ *   width, keeping header and body column widths in exact parity.
+ *   R4: beyond-table background mismatch — background-color:var(--dms-surface) on rows.
+ *
  * Structural constraints:
  *   1. CDK virtual scroll requires a STABLE array length. SmartNgRX marks rows
  *      isLoading=true during in-flight requests; filtering those rows out shrinks the
  *      array and causes CDK to recalculate total height, jumping the viewport. Always
  *      keep placeholder/loading rows in the array. Placeholder rows must use a non-empty
  *      symbol (e.g. '\u2026') so blank-cell regression guards do not false-positive.
- *   2. .dms-table-body (CDK viewport) MUST be a vertical scroll container (overflow-y:auto)
- *      but MUST NOT apply layout containment (contain:layout or any shorthand that implies
+ *   2. .dms-table-body (CDK viewport) has overflow-y:visible (Epic 112). Scroll detection
+ *      is delegated to .dms-outer-scroller via cdkVirtualScrollingElement directive.
+ *      MUST NOT apply layout containment (contain:layout or any shorthand that implies
  *      it). CDK positions visible rows via transform:translateY on the content-wrapper;
  *      layout containment would break CDK's scroll height calculation.
  */

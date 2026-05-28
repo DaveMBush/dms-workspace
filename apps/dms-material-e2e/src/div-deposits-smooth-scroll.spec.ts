@@ -4,7 +4,7 @@ import { login } from './helpers/login.helper';
 import { seedScrollDivDepositsData } from './helpers/seed-scroll-div-deposits-data.helper';
 import { verifyMonotonicScroll } from './helpers/verify-smooth-scroll';
 
-const VIEWPORT_SELECTOR = 'cdk-virtual-scroll-viewport';
+const VIEWPORT_SELECTOR = '.dms-outer-scroller';
 
 // ─── Dividend Deposits Smooth Scroll Tests ────────────────────────────────────
 
