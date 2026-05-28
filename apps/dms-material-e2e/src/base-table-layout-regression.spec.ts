@@ -2,7 +2,7 @@
  * base-table-layout-regression.spec.ts — Epic 112
  * ──────────────────────────────────────────────────────────────
  *
- * Regression suite for the three layout regressions fixed in Story 112.2.
+ * Regression suite for the four layout regressions fixed in Story 112.2.
  *
  * FOUR ASSERTIONS:
  *   (a) Scrollbar right-edge stays stable across horizontal scroll positions (R1)
@@ -119,6 +119,12 @@ test.describe('Base Table Layout Regression — AC1: scrollbar right-edge on nar
     }
 
     // ── Capture baseline right edge at 0% scroll ──────────────────────
+    // NOTE: We assert drift stability (right edge must not move relative to
+    // baseline) rather than an absolute right ≈ window.innerWidth check.
+    // The app layout has a sidebar so outerScroller.right < window.innerWidth
+    // by design. The regression (R1) is that the right edge *moves* when the
+    // inner container scrolls horizontally — the drift guard catches exactly
+    // that without depending on sidebar width.
     const baseline = await page.evaluate(function captureRightEdge(
       outerSel: string
     ): {
