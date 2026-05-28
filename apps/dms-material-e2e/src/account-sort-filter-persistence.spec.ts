@@ -74,7 +74,9 @@ test.describe('Account Sort/Filter Persistence (Story 38.1)', () => {
       await waitForTableRows(page);
 
       // After reload, sort indicator should still be visible
-      const restoredHeader = page.locator('.dms-header-cell[data-column="buyDate"]');
+      const restoredHeader = page.locator(
+        '.dms-header-cell[data-column="buyDate"]'
+      );
       await expect(restoredHeader).toHaveAttribute(
         'aria-sort',
         /ascending|descending/
@@ -173,7 +175,9 @@ test.describe('Account Sort/Filter Persistence (Story 38.1)', () => {
       await waitForTableRows(page);
 
       // After reload, sort indicator should still be visible
-      const restoredHeader = page.locator('.dms-header-cell[data-column="sell_date"]');
+      const restoredHeader = page.locator(
+        '.dms-header-cell[data-column="sell_date"]'
+      );
       await expect(restoredHeader).toHaveAttribute(
         'aria-sort',
         /ascending|descending/
@@ -272,7 +276,9 @@ test.describe('Account Sort/Filter Persistence (Story 38.1)', () => {
       await waitForTableRows(page);
 
       // After reload, sort indicator should still be visible
-      const restoredHeader = page.locator('.dms-header-cell[data-column="amount"]');
+      const restoredHeader = page.locator(
+        '.dms-header-cell[data-column="amount"]'
+      );
       await expect(restoredHeader).toHaveAttribute(
         'aria-sort',
         /ascending|descending/
