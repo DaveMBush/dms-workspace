@@ -126,7 +126,9 @@ test.describe('Base Table Layout Regression — AC1: scrollbar right-edge on nar
       right: number;
     } {
       const el = document.querySelector<HTMLElement>(outerSel);
-      if (!el) return { ok: false, right: -9999 };
+      if (!el) {
+        return { ok: false, right: -9999 };
+      }
       return { ok: true, right: el.getBoundingClientRect().right };
     }, OUTER_SCROLLER_SEL);
 
@@ -249,7 +251,8 @@ test.describe('Base Table Layout Regression — AC2: outer container width on wi
       diff: number;
     } {
       const el = document.querySelector<HTMLElement>(outerSel);
-      if (!el || !el.parentElement) {
+      const parent = el?.parentElement;
+      if (!el || !parent) {
         return {
           ok: false,
           outerClientWidth: 0,
@@ -258,7 +261,7 @@ test.describe('Base Table Layout Regression — AC2: outer container width on wi
         };
       }
       const outerClientWidth = el.clientWidth;
-      const parentClientWidth = el.parentElement.clientWidth;
+      const parentClientWidth = parent.clientWidth;
       const diff = Math.abs(outerClientWidth - parentClientWidth);
       return { ok: diff <= 2, outerClientWidth, parentClientWidth, diff };
     }, OUTER_SCROLLER_SEL);
