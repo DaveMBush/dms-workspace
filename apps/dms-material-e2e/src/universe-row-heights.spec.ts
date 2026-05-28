@@ -116,8 +116,8 @@ test.describe('Universe Row Height Consistency — Epic 67 / Story 67.1', () => 
 
     const uniqueHeights = new Set(rowHeights);
 
-    // This assertion FAILS because icon-button rows have a different height.
-    // Expected (after Story 67.2): uniqueHeights.size === 1 (all 52 px).
+    // This assertion passes after Epic 111 / Story 67.2 fixed the icon-button inflation.
+    // All rows now have uniqueHeights.size === 1 (all 52 px).
     expect(
       uniqueHeights.size,
       `Expected all seeded rows to share one height but found ${
