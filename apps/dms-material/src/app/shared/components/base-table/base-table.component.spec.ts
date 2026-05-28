@@ -1,6 +1,12 @@
 import { ListRange } from '@angular/cdk/collections';
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
-import { ComponentFixture, TestBed, discardPeriodicTasks, fakeAsync, flushMicrotasks } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed,
+  discardPeriodicTasks,
+  fakeAsync,
+  flushMicrotasks,
+} from '@angular/core/testing';
 import { Subject } from 'rxjs';
 
 import { BaseTableComponent } from './base-table.component';
@@ -77,7 +83,9 @@ describe('BaseTableComponent', () => {
     // so it stays pinned to the right edge of the screen instead of scrolling with content.
     fixture.componentRef.setInput('data', []);
     fixture.detectChanges();
-    const outerScroller = fixture.nativeElement.querySelector('.dms-outer-scroller');
+    const outerScroller = fixture.nativeElement.querySelector(
+      '.dms-outer-scroller'
+    );
     expect(outerScroller).not.toBeNull();
   });
 
@@ -86,8 +94,12 @@ describe('BaseTableComponent', () => {
     // delegates scroll events to the outer element via cdkVirtualScrollingElement.
     fixture.componentRef.setInput('data', []);
     fixture.detectChanges();
-    const outerScroller = fixture.nativeElement.querySelector('.dms-outer-scroller');
-    const cdkViewport = fixture.nativeElement.querySelector('cdk-virtual-scroll-viewport');
+    const outerScroller = fixture.nativeElement.querySelector(
+      '.dms-outer-scroller'
+    );
+    const cdkViewport = fixture.nativeElement.querySelector(
+      'cdk-virtual-scroll-viewport'
+    );
     expect(outerScroller).not.toBeNull();
     expect(cdkViewport).not.toBeNull();
     expect(outerScroller.contains(cdkViewport)).toBe(true);
@@ -100,7 +112,9 @@ describe('BaseTableComponent', () => {
     // the spacer provides the background fill without altering column widths.
     fixture.componentRef.setInput('data', []);
     fixture.detectChanges();
-    const columnHeaderRow = fixture.nativeElement.querySelector('.dms-column-header-row');
+    const columnHeaderRow = fixture.nativeElement.querySelector(
+      '.dms-column-header-row'
+    );
     expect(columnHeaderRow).not.toBeNull();
     const spacer = columnHeaderRow.querySelector('.dms-col-spacer');
     expect(spacer).not.toBeNull();
@@ -120,7 +134,9 @@ describe('BaseTableComponent', () => {
     // applyChanges() → createEmbeddedView() to insert the body-row template into the DOM.
     flushMicrotasks();
     fixture.detectChanges();
-    const bodyRows = fixture.nativeElement.querySelectorAll('.dms-body-row[role="row"]');
+    const bodyRows = fixture.nativeElement.querySelectorAll(
+      '.dms-body-row[role="row"]'
+    );
     expect(bodyRows.length).toBeGreaterThan(0);
     bodyRows.forEach((row: HTMLElement) => {
       const spacer = row.querySelector('.dms-col-spacer');
