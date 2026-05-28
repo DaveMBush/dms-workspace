@@ -109,6 +109,8 @@ Story 112.1 produced the root-cause analysis and fix design for all three regres
 > Root cause: `.dms-body-row` has no `background-color`. Area beyond last cell is transparent → host page background.
 > Fix: Add `background-color: var(--dms-surface)` to `.dms-body-row`.
 
+**Implementation note — R3 design deviation:** The quoted fix design (from 112-1 planning) proposed changing `[style.width.px]` → `[style.minWidth.px]` and adding `flex-grow: 1` to data cells. During implementation this approach was rejected because applying `flex-grow` to data cells breaks header/body column-width parity — each row's cells grow independently, misaligning header and body columns. The spacer approach (`.dms-col-spacer` with `flex: 1 0 auto`) was chosen as a superior alternative: cells retain fixed `[style.width.px]` bindings with `flex-grow: 0`, and a single trailing spacer element per row absorbs all spare width without affecting column alignment.
+
 **Changes made:**
 
 | File | Change |
