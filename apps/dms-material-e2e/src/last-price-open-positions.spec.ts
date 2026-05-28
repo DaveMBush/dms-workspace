@@ -66,7 +66,7 @@ async function getColumnIndex(page: Page, headerText: string): Promise<number> {
   const headers = page
     .locator('.dms-column-header-row[role="row"]')
     .first()
-    .locator('th');
+    .locator('.dms-header-cell');
   const count = await headers.count();
   for (let i = 0; i < count; i++) {
     const raw = (await headers.nth(i).textContent()) ?? '';
@@ -170,9 +170,9 @@ test.describe('Open Positions — Last $ Column Renders Correctly (Story 99.3)',
 
     // ── Symbol A: assert the known price renders as "$123.45" ────────────
     const rowA = page
-      .locator(`.dms-body-row[role="row"]:has(td:has-text("${symbolA}"))`)
+      .locator(`.dms-body-row[role="row"]:has(.dms-body-cell:has-text("${symbolA}"))`)
       .first();
-    const cellA = rowA.locator(`td:nth-child(${lastPriceColIdx})`);
+    const cellA = rowA.locator(`.dms-body-cell:nth-child(${lastPriceColIdx})`);
 
     await expect
       .poll(async () => ((await cellA.textContent()) ?? '').trim(), {
@@ -186,7 +186,7 @@ test.describe('Open Positions — Last $ Column Renders Correctly (Story 99.3)',
 
     // ── Symbol B: zero price → "$0.00"; must not expose null/NaN ────────
     const rowB = page
-      .locator(`.dms-body-row[role="row"]:has(td:has-text("${symbolB}"))`)
+      .locator(`.dms-body-row[role="row"]:has(.dms-body-cell:has-text("${symbolB}"))`)
       .first();
 
     await expect
@@ -196,7 +196,7 @@ test.describe('Open Positions — Last $ Column Renders Correctly (Story 99.3)',
       })
       .toBeTruthy();
 
-    const cellB = rowB.locator(`td:nth-child(${lastPriceColIdx})`);
+    const cellB = rowB.locator(`.dms-body-cell:nth-child(${lastPriceColIdx})`);
 
     await expect
       .poll(async () => ((await cellB.textContent()) ?? '').trim(), {

@@ -110,7 +110,7 @@ test.describe('Universe Screen - Duplicate Symbols Bug (Story 55.1)', () => {
     // This is more reliable than DOM inspection with CDK virtual scroll, which
     // only renders ~30 rows in the viewport and cannot show stale rows at position 50+.
     const avgYieldHeader = page.locator(
-      '[data-column="avg_purchase_yield_percent"]'
+      '.dms-header-cell[data-column="avg_purchase_yield_percent"]'
     );
 
     // First click (ascending) — capture the response.

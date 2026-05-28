@@ -158,7 +158,7 @@ test.describe('Global Screener Component', () => {
     test('should have accessible table structure', async ({ page }) => {
       await expect(page.locator('dms-base-table')).toBeVisible();
       // Table should have column headers
-      const headers = page.locator('th');
+      const headers = page.locator('.dms-header-cell[data-column]');
       const count = await headers.count();
       expect(count).toBeGreaterThan(0);
     });

@@ -46,7 +46,7 @@ async function getColumnIndex(page: Page, headerText: string): Promise<number> {
   const headers = page
     .locator('.dms-column-header-row[role="row"]')
     .first()
-    .locator('th');
+    .locator('.dms-header-cell');
   const count = await headers.count();
   for (let i = 0; i < count; i++) {
     const raw = (await headers.nth(i).textContent()) ?? '';
