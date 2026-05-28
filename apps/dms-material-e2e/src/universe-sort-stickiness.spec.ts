@@ -60,7 +60,7 @@ test.describe('Universe Sort State Stickiness (Story 54.1)', () => {
     await waitForTableRows(page);
 
     // Step 1: Click the Symbol column header twice to apply Symbol descending sort
-    const symbolHeader = page.locator('[data-sort-header="symbol"]');
+    const symbolHeader = page.locator('.dms-header-cell[data-column="symbol"]');
     await symbolHeader.click();
     await expect(symbolHeader).toHaveAttribute('aria-sort', 'ascending');
     await symbolHeader.click();
@@ -79,7 +79,9 @@ test.describe('Universe Sort State Stickiness (Story 54.1)', () => {
     // Step 4: Assert the sort indicator is restored after SPA navigation.
     // The sort state is read from localStorage via GlobalUniverseComponent's
     // sortColumns$ signal and passed to BaseTableComponent via [sortColumns].
-    const restoredHeader = page.locator('[data-sort-header="symbol"]');
+    const restoredHeader = page.locator(
+      '.dms-header-cell[data-column="symbol"]'
+    );
     await expect(restoredHeader).toHaveAttribute('aria-sort', 'descending');
   });
 });

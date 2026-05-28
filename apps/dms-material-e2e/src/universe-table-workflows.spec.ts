@@ -369,7 +369,7 @@ test.describe('Universe Table Workflows', () => {
 
       // Row should be marked as expired (e.g., different styling)
       // Use a longer timeout to allow for cross-browser re-render latency
-      const row = page.locator('tbody tr:first-child');
+      const row = page.locator('.dms-body-row[role="row"]').first();
       await expect(row).toHaveClass(/expired/, { timeout: 15000 });
     });
   });
@@ -390,7 +390,9 @@ test.describe('Universe Table Workflows', () => {
       page,
     }) => {
       // Test assumes we have CEF symbols in the data
-      const cefRow = page.locator('tbody tr[data-is-cef="true"]').first();
+      const cefRow = page
+        .locator('.dms-body-row[role="row"][data-is-cef="true"]')
+        .first();
       const deleteButton = cefRow.locator('[data-testid^="delete-symbol"]');
       await expect(deleteButton).not.toBeVisible();
     });
@@ -400,7 +402,7 @@ test.describe('Universe Table Workflows', () => {
     }) => {
       // Test assumes we have symbols with positions > 0
       const positionRow = page
-        .locator('tbody tr[data-has-position="true"]')
+        .locator('.dms-body-row[role="row"][data-has-position="true"]')
         .first();
       const deleteButton = positionRow.locator(
         '[data-testid^="delete-symbol"]'

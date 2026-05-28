@@ -391,7 +391,7 @@ test.describe('Universe Scrolling Regression — blank rows on fast scroll', () 
     // in the 'Equities' risk group, so filtering by it keeps all rows visible
     // while still triggering the round-trip and the resulting isLoading cycle.
     const riskGroupSelect = page.locator(
-      'tr.filter-row mat-select[panelwidth=""]'
+      'div.dms-filter-row mat-select[panelwidth=""]'
     );
     await expect(riskGroupSelect).toBeVisible({ timeout: 10000 });
     await riskGroupSelect.click();
