@@ -390,7 +390,9 @@ test.describe('Universe Table Workflows', () => {
       page,
     }) => {
       // Test assumes we have CEF symbols in the data
-      const cefRow = page.locator('.dms-body-row[role="row"][data-is-cef="true"]').first();
+      const cefRow = page
+        .locator('.dms-body-row[role="row"][data-is-cef="true"]')
+        .first();
       const deleteButton = cefRow.locator('[data-testid^="delete-symbol"]');
       await expect(deleteButton).not.toBeVisible();
     });

@@ -79,7 +79,9 @@ test.describe('Universe Sort State Stickiness (Story 54.1)', () => {
     // Step 4: Assert the sort indicator is restored after SPA navigation.
     // The sort state is read from localStorage via GlobalUniverseComponent's
     // sortColumns$ signal and passed to BaseTableComponent via [sortColumns].
-    const restoredHeader = page.locator('.dms-header-cell[data-column="symbol"]');
+    const restoredHeader = page.locator(
+      '.dms-header-cell[data-column="symbol"]'
+    );
     await expect(restoredHeader).toHaveAttribute('aria-sort', 'descending');
   });
 });

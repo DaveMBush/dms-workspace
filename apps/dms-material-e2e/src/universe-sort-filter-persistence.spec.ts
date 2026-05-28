@@ -93,7 +93,9 @@ test.describe('Universe Sort/Filter Persistence (Story 38.3)', () => {
       await waitForTableRows(page);
 
       // After reload, sort indicator should show the same direction
-      const restoredHeader = page.locator('.dms-header-cell[data-column="ex_date"]');
+      const restoredHeader = page.locator(
+        '.dms-header-cell[data-column="ex_date"]'
+      );
       await expect(restoredHeader).toHaveAttribute('aria-sort', sortBefore!);
     });
   });
