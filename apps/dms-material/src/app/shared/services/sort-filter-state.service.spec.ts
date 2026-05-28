@@ -503,7 +503,10 @@ describe('SortFilterStateService', () => {
       mockGetItem.mockReturnValue(
         JSON.stringify({
           universes: {
-            sortColumns: [{ column: 'symbol', direction: 'asc' }, { column: 'last_price', direction: 'desc' }],
+            sortColumns: [
+              { column: 'symbol', direction: 'asc' },
+              { column: 'last_price', direction: 'desc' },
+            ],
             filters: { symbol: 'AAPL' },
           },
         })
