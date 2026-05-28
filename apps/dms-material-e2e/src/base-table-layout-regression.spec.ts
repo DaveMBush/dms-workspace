@@ -63,6 +63,32 @@ const BODY_ROW_SEL = '.dms-body-row[role="row"]';
 /** Body cells inside a row. */
 const BODY_CELL_SEL = '.dms-body-cell[role="cell"]';
 
+// ─── Shared browser-side helpers ──────────────────────────────────────────────
+
+/**
+ * Checks whether `.dms-outer-scroller`'s right edge has drifted from a
+ * previously captured baseline.  Passed to `page.evaluate()` — must be a
+ * self-contained, serialisable function (no outer-scope closures).
+ */
+function checkOuterScrollerDrift(arg: {
+  outerSel: string;
+  baselineRight: number;
+}): {
+  ok: boolean;
+  right: number;
+  baselineRight: number;
+  drift: number;
+} {
+  const { outerSel, baselineRight } = arg;
+  const el = document.querySelector<HTMLElement>(outerSel);
+  if (!el) {
+    return { ok: false, right: 0, baselineRight, drift: 9999 };
+  }
+  const right = el.getBoundingClientRect().right;
+  const drift = Math.abs(right - baselineRight);
+  return { ok: drift <= 2, right, baselineRight, drift };
+}
+
 // ─── Suite Setup ─────────────────────────────────────────────────────────────
 
 let cleanup: (() => Promise<void>) | undefined;
@@ -162,27 +188,10 @@ test.describe('Base Table Layout Regression — AC1: scrollbar right-edge on nar
     // Allow one frame for the layout to settle.
     await page.waitForTimeout(50);
 
-    const result50 = await page.evaluate(
-      function checkOuterScrollerDrift(arg: {
-        outerSel: string;
-        baselineRight: number;
-      }): {
-        ok: boolean;
-        right: number;
-        baselineRight: number;
-        drift: number;
-      } {
-        const { outerSel, baselineRight } = arg;
-        const el = document.querySelector<HTMLElement>(outerSel);
-        if (!el) {
-          return { ok: false, right: 0, baselineRight, drift: 9999 };
-        }
-        const right = el.getBoundingClientRect().right;
-        const drift = Math.abs(right - baselineRight);
-        return { ok: drift <= 2, right, baselineRight, drift };
-      },
-      { outerSel: OUTER_SCROLLER_SEL, baselineRight: baseline.right }
-    );
+    const result50 = await page.evaluate(checkOuterScrollerDrift, {
+      outerSel: OUTER_SCROLLER_SEL,
+      baselineRight: baseline.right,
+    });
 
     expect(
       result50.ok,
@@ -204,27 +213,10 @@ test.describe('Base Table Layout Regression — AC1: scrollbar right-edge on nar
 
     await page.waitForTimeout(50);
 
-    const result100 = await page.evaluate(
-      function checkOuterScrollerDrift(arg: {
-        outerSel: string;
-        baselineRight: number;
-      }): {
-        ok: boolean;
-        right: number;
-        baselineRight: number;
-        drift: number;
-      } {
-        const { outerSel, baselineRight } = arg;
-        const el = document.querySelector<HTMLElement>(outerSel);
-        if (!el) {
-          return { ok: false, right: 0, baselineRight, drift: 9999 };
-        }
-        const right = el.getBoundingClientRect().right;
-        const drift = Math.abs(right - baselineRight);
-        return { ok: drift <= 2, right, baselineRight, drift };
-      },
-      { outerSel: OUTER_SCROLLER_SEL, baselineRight: baseline.right }
-    );
+    const result100 = await page.evaluate(checkOuterScrollerDrift, {
+      outerSel: OUTER_SCROLLER_SEL,
+      baselineRight: baseline.right,
+    });
 
     expect(
       result100.ok,

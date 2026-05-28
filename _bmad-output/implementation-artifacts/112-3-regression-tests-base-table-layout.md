@@ -69,7 +69,7 @@ Story 112.2 applied the fixes. This story locks them in by adding a Playwright E
 
 - [x] **Task 3 — Container-width test (wide viewport)** (AC: #2)
   - [x] Set the viewport to a width wider than the table (e.g. 1800px).
-  - [x] Assert the scrollable outer container's `clientWidth` equals the viewport width (within 2px), confirming the scrollbar would appear at the far right.
+  - [x] Assert the scrollable outer container's `outer-scroller.clientWidth` equals its `parentElement.clientWidth` (available container width, within 2px), confirming the scrollbar would appear at the container's right edge.
 
 - [x] **Task 4 — Column fill test** (AC: #3)
   - [x] Navigate to a screen whose columns total less than the test viewport width.
@@ -96,14 +96,15 @@ Story 112.2 applied the fixes. This story locks them in by adding a Playwright E
 
 **Change Log:**
 - Created `apps/dms-material-e2e/src/base-table-layout-regression.spec.ts` with four describe blocks:
-  - AC1 (narrow 800px): scrolls `.dms-table-scroll-container` to 50% and 100% of max scroll; asserts `.dms-outer-scroller.getBoundingClientRect().right ≈ window.innerWidth` (≤2px tolerance)
-  - AC2 (wide 1800px): asserts `.dms-outer-scroller.getBoundingClientRect().right ≈ window.innerWidth` (≤2px) — scrollbar at viewport right, not content right
-  - AC3 (wide 1800px): sums `.dms-column-header-row .dms-header-cell` widths + `.dms-col-spacer` width; asserts sum ≈ `.dms-table-scroll-container.clientWidth` (≤2px)
+  - AC1 (narrow 800px): captures `.dms-outer-scroller.getBoundingClientRect().right` as baseline at 0% scroll; asserts right-edge drift ≤2px at 50% and 100% horizontal scroll (drift-stability guard — app layout has a sidebar so absolute viewport-right comparison would always fail by design)
+  - AC2 (wide 1800px): asserts `.dms-outer-scroller.clientWidth ≈ parentElement.clientWidth` (≤2px) — scrollbar at container edge, not content right
+  - AC3 (wide 2200px): sums `.dms-column-header-row .dms-header-cell` widths + `.dms-col-spacer` width; asserts sum ≈ `.dms-table-scroll-container.clientWidth` (≤2px)
   - AC4 (wide 1800px): compares `getComputedStyle(bodyCell).backgroundColor` to `getComputedStyle(bodyRow).backgroundColor`; asserts equal
 
 **Completion Notes:**
 - Spec uses `seedScrollUniverseData()` (60 Universe rows) to ensure scrollable content at narrow viewport and column-fill scenario at wide viewport
-- Universe column total ≈ 1475px: narrower than 1580px content area at 1800px viewport (spacer absorbs gap for AC3/AC4); wider than ~580px content area at 800px viewport (horizontal scroll available for AC1)
+- Universe column total ≈ 1475px: narrower than content area at 1800px and 2200px viewports (spacer absorbs gap for AC2/AC3/AC4); wider than ~580px content area at 800px viewport (horizontal scroll available for AC1)
+- AC3 uses a 2200px viewport so the content area (~1800px after sidebar) exceeds the column total (~1475px), ensuring the spacer has positive width; at 1800px the content area would be too close to the column total in some configurations
 - AC3 includes the `.dms-col-spacer` width in the sum because the 112.2 fix uses a trailing spacer (`flex: 1 0 auto`) rather than `flex-grow` on cells; the spacer IS the fill mechanism
-- No `.skip` or `.only` annotations — spec is part of `pnpm all` via the standard Playwright project config
+- No `.skip` or `.only` annotations — spec runs via `npx playwright test ... --project=chromium` / `--project=firefox`; E2E tests are not part of `pnpm all` (which targets lint/build/test only) and are run separately
 - TypeScript compilation: zero errors
