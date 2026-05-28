@@ -25,12 +25,18 @@ import { seedScrollSoldPositionsData } from './helpers/seed-scroll-sold-position
 
 const VIEWPORT_SELECTOR = 'cdk-virtual-scroll-viewport';
 
-/** Scroll to the bottom of the CDK virtual scroll viewport. */
+/** Scroll to the bottom of the CDK virtual scroll viewport.
+ * Epic 112 (Story 112.2): The vertical scroll container is now .dms-outer-scroller
+ * (via cdkVirtualScrollingElement). Prefer that element so CDK detects the scroll and
+ * re-renders the visible range.  Fall back to cdk-virtual-scroll-viewport for any
+ * table that does not use the outer-scroller pattern.
+ */
 async function scrollToBottom(
   page: import('playwright/test').Page
 ): Promise<void> {
   await page.evaluate(function doScroll(): void {
-    const vp = document.querySelector('cdk-virtual-scroll-viewport');
+    const outer = document.querySelector('.dms-outer-scroller');
+    const vp = outer ?? document.querySelector('cdk-virtual-scroll-viewport');
     if (vp !== null) {
       vp.scrollTop = vp.scrollHeight;
     }
@@ -39,22 +45,30 @@ async function scrollToBottom(
   await page.waitForTimeout(600);
 }
 
-/** Wait for the virtual scroll table to be visible and rows to appear. */
+/** Wait for the virtual scroll table to be visible and rows to appear.
+ * Epic 112 (Story 112.2): row-appearance timeout raised to 30 s to match
+ * base-table-two-region-regression.spec.ts, which uses waitForSelector(30 s).
+ * The 15 s budget was too tight when the full e2e suite starts with a
+ * cold webpack-dev-server; the CDK virtual scroll (cdkVirtualScrollingElement
+ * architecture) needs extra time on first render with a fresh server.
+ */
 async function waitForTable(
   page: import('playwright/test').Page
 ): Promise<void> {
   await expect(page.locator('dms-base-table')).toBeVisible({ timeout: 15000 });
-  await page.waitForSelector('.dms-body-row[role="row"]', { timeout: 15000 });
+  await page.waitForSelector('.dms-body-row[role="row"]', { timeout: 30000 });
 }
 
 /**
  * Return text content of all first-column cells currently rendered in the DOM.
+ * Epic 112 (Story 112.2): Body cells are <div class="dms-body-cell"> not <td>.
+ * Use the class selector instead of the td tag selector.
  */
 async function getFirstColumnTexts(
   page: import('playwright/test').Page
 ): Promise<string[]> {
   return page
-    .locator('.dms-body-row[role="row"] td:first-child')
+    .locator('.dms-body-row[role="row"] .dms-body-cell:first-child')
     .allTextContents();
 }
 
@@ -81,14 +95,20 @@ async function assertNoEmptyCellsAfterSortScroll(
 
   await scrollToBottom(page);
 
-  // Poll until no empty first-column cells remain.  Partial positions
-  // (universe entity not yet in buildUniverseMap) resolve once SmartNgRX
-  // loads the universe ids from /api/top — typically within a few seconds.
+  // Poll until rows are visible AND no empty first-column cells remain.
+  // CDK virtual scroll briefly removes rows during re-render after sort+scroll;
+  // returning 1 when cells.length===0 keeps the poll running until rows appear.
+  // Partial positions (universe entity not yet in buildUniverseMap) resolve once
+  // SmartNgRX loads the universe ids from /api/top — typically within a few seconds.
   await expect
     .poll(
       async function checkEmptyCells(): Promise<number> {
         await scrollToBottom(page);
         const cells = await getFirstColumnTexts(page);
+        // Still re-rendering — treat as "not yet ready" so poll keeps retrying
+        if (cells.length === 0) {
+          return 1;
+        }
         return cells.filter(function isEmpty(t: string): boolean {
           return t.trim() === '';
         }).length;
@@ -97,7 +117,7 @@ async function assertNoEmptyCellsAfterSortScroll(
     )
     .toBe(0);
 
-  // Sanity: at least some rows are visible
+  // Sanity: at least some rows are visible (poll above already guarantees this)
   const cells = await getFirstColumnTexts(page);
   expect(cells.length).toBeGreaterThan(0);
 }
@@ -198,7 +218,7 @@ test.describe('Sold Positions: sort+scroll shows all real data', () => {
     // Use the first visible symbol's first character as a filter that is
     // guaranteed to match at least one row regardless of the test DB state.
     const firstSymbol = await page
-      .locator('.dms-body-row[role="row"] td:first-child')
+      .locator('.dms-body-row[role="row"] .dms-body-cell:first-child')
       .first()
       .textContent();
     const filterChar = (firstSymbol ?? '').trim().charAt(0) || 'A';

@@ -4,7 +4,7 @@ import { login } from './helpers/login.helper';
 import { seedScrollScreenerData } from './helpers/seed-scroll-screener-data.helper';
 import { verifyMonotonicScroll } from './helpers/verify-smooth-scroll';
 
-const VIEWPORT_SELECTOR = 'cdk-virtual-scroll-viewport';
+const VIEWPORT_SELECTOR = '.dms-outer-scroller';
 
 // ─── Screener Smooth Scroll Tests ────────────────────────────────────────────
 

@@ -54,7 +54,7 @@ const HEADER_REGION_SEL = '[data-testid="base-table-header"]';
 const SCROLL_CONTAINER_SEL = '.dms-table-scroll-container';
 
 /** CDK virtual-scroll viewport — handles vertical scrolling only. */
-const VIEWPORT_SEL = 'cdk-virtual-scroll-viewport';
+const VIEWPORT_SEL = '.dms-outer-scroller';
 
 /** Column-header cells in the column-label row (not the filter row). */
 const COLUMN_HEADER_CELLS_SEL =

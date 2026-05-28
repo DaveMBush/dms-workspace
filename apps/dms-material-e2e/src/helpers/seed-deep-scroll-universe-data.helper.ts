@@ -1,4 +1,5 @@
 import { generateUniqueId } from './generate-unique-id.helper';
+import { initializePrismaClient } from './shared-prisma-client.helper';
 import { createRiskGroups } from './shared-risk-groups.helper';
 import type { UniverseRecord } from './universe-record.types';
 
@@ -37,12 +38,7 @@ function buildDeepScrollRecords(
  * so placeholders do not cluster at beginning of the sorted list.
  */
 export async function seedDeepScrollUniverseData(): Promise<SeederResult> {
-  const prismaClientImport = (await import('@prisma/client')).PrismaClient;
-  const { PrismaBetterSqlite3 } = await import(
-    '@prisma/adapter-better-sqlite3'
-  );
-  const adapter = new PrismaBetterSqlite3({ url: 'file:./test-database.db' });
-  const prisma = new prismaClientImport({ adapter });
+  const prisma = await initializePrismaClient();
 
   const uniqueId = generateUniqueId();
   const symbols = Array.from(

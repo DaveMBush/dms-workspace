@@ -1,7 +1,6 @@
-import type { PrismaClient } from '@prisma/client';
-
 import { generateUniqueId } from './generate-unique-id.helper';
 import { cleanupUniverseBySymbols } from './shared-cleanup-universe-symbols.helper';
+import { initializePrismaClient } from './shared-prisma-client.helper';
 import { createRiskGroups } from './shared-risk-groups.helper';
 import type { UniverseRecord } from './universe-record.types';
 
@@ -36,20 +35,6 @@ function createBulkRecords(
       is_closed_end_fund: true,
     };
   });
-}
-
-/**
- * Initialize Prisma client with test database
- */
-async function initializePrismaClient(): Promise<PrismaClient> {
-  const prismaClientImport = (await import('@prisma/client')).PrismaClient;
-  const { PrismaBetterSqlite3 } = await import(
-    '@prisma/adapter-better-sqlite3'
-  );
-
-  const testDbUrl = 'file:./test-database.db';
-  const adapter = new PrismaBetterSqlite3({ url: testDbUrl });
-  return new prismaClientImport({ adapter });
 }
 
 /**

@@ -1,4 +1,5 @@
 import { generateUniqueId } from './generate-unique-id.helper';
+import { initializePrismaClient } from './shared-prisma-client.helper';
 import { createRiskGroups } from './shared-risk-groups.helper';
 
 interface SeederResult {
@@ -40,14 +41,7 @@ function createBulkRecords(
  * Seeds 60 screener rows for scroll testing
  */
 export async function seedScrollScreenerData(): Promise<SeederResult> {
-  const prismaClientImport = (await import('@prisma/client')).PrismaClient;
-  const { PrismaBetterSqlite3 } = await import(
-    '@prisma/adapter-better-sqlite3'
-  );
-
-  const testDbUrl = 'file:./test-database.db';
-  const adapter = new PrismaBetterSqlite3({ url: testDbUrl });
-  const prisma = new prismaClientImport({ adapter });
+  const prisma = await initializePrismaClient();
 
   const uniqueId = generateUniqueId();
   const symbols = Array.from(
