@@ -650,15 +650,15 @@ development_status:
   epic-111-retrospective: optional
 
   # ── Epic 112: Fix Post-Refactor Layout Regressions in Two-Region Base Table ──
-  epic-112: in-progress
+  epic-112: done
   112-1-investigate-base-table-layout-regressions: done
-  112-2-fix-base-table-layout-regressions: review
-  112-3-regression-tests-base-table-layout: ready-for-dev
+  112-2-fix-base-table-layout-regressions: done
+  112-3-regression-tests-base-table-layout: done
   epic-112-retrospective: optional
 
   # ── Epic 113: Fix Universe Sort Vanishing After Account/Filter Change ─────────
-  epic-113: in-progress
-  113-1-investigate-universe-sort-vanishing: ready-for-dev
-  113-2-fix-universe-sort-persistence: in-progress
-  113-3-tests-universe-sort-persistence: ready-for-dev
+  epic-113: review
+  113-1-investigate-universe-sort-vanishing: done
+  113-2-fix-universe-sort-persistence: done
+  113-3-tests-universe-sort-persistence: review
   epic-113-retrospective: optional
