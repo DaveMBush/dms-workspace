@@ -1,22 +1,27 @@
 ---
 description: 'Fully autonomous bug fix workflow: validate epic, collect bug description, implement fix, run quality validation, create PR, run CodeRabbit review, and merge'
 argument-hint: epic=3 story=3-5
-model: Claude Sonnet 4.6 High (copilot)
-tools: [read, agent, mcp_bash/*]
+model: Claude Sonnet 4.6 (copilot)
+tools: [vscode, execute, read, agent, edit, search, web, 'bash/*', 'context7/*', 'playwright/*', 'github/*', 'nx-mcp-server/*', browser, 'gitkraken/*', github.vscode-pull-request-github/issue_fetch, github.vscode-pull-request-github/labels_fetch, github.vscode-pull-request-github/notification_fetch, github.vscode-pull-request-github/doSearch, github.vscode-pull-request-github/activePullRequest, github.vscode-pull-request-github/pullRequestStatusChecks, github.vscode-pull-request-github/openPullRequest, github.vscode-pull-request-github/create_pull_request, github.vscode-pull-request-github/resolveReviewThread, todo]
 agents: [debug-setup, quality-validation, debug-pr-lifecycle, debug-merge-finalize]
 user-invocable: false
 ---
 
 ## Response Style
 
-Respond like smart caveman. Cut all filler, keep technical substance.
-- Drop articles (a, an, the), filler (just, really, basically, actually).
-- Drop pleasantries (sure, certainly, happy to).
-- No hedging. Fragments fine. Short synonyms.
-- Technical terms stay exact. Code blocks unchanged.
-- Pattern: [thing] [action] [reason]. [next step].
+- Use "smart caveman" tersely for internal status updates and short technical progress messages. Drop articles (a, an, the) and pleasantries. Fragments allowed for internal updates.
+- Keep technical terms exact. Code blocks unchanged.
+- Pattern for internal updates: [thing] [action] [reason]. [next step].
 
-load the #skill:prompt
+**User-facing prompts:** Use full grammatical English exactly as written in this file for any prompt-skill messages. Do not rewrite prompt templates into caveman style.
+
+## Invariants
+
+- Prompt-skill: Use the prompt skill (`vscode_askQuestions`) for all human-facing questions and decisions. Never post user-facing questions or status prompts directly to chat.
+- Before Phase 1: load the prompt skill by reading `.github/skills/prompt/SKILL.md` into context.
+- Internal status messages: caveman-style allowed. User-facing messages: full sentences verbatim.
+- Subagent outputs that will be parsed must be structured (see PHASE 1-2 and PHASE 3.2).
+- If agent exhibits high cognitive load, split execution into focused prompts (suggested groups: 1) Setup, 2) Implement+Validate, 3) PR lifecycle+Merge).
 
 # Autonomous Epic Bug Fix Workflow
 
@@ -38,7 +43,11 @@ This keeps the debug workflow context small while the setup subagent handles:
 3. GitHub issue creation
 4. debug branch creation and local checkout
 
-**CRITICAL**: The setup subagent must not return success until the debug branch exists locally and is checked out. Capture the branch name it returns and use that exact branch name in PHASE 3.2. If it returns `SETUP FAILED`, use the prompt skill to ask: `Debug setup failed for ${story}: <reason>. Reply with stop or instructions.`
+**CRITICAL**: The setup subagent must not return success until the debug branch exists locally and is checked out. The setup subagent MUST include a line in its result exactly in the format:
+
+BRANCH: <branch-name>
+
+on its own line; parse that line to extract the branch name and use it verbatim in PHASE 3.2. If the subagent returns `SETUP FAILED`, does not return within a reasonable time (for example, ~10 minutes), or returns unparseable output, treat setup as FAILED and use the prompt skill to ask: `Debug setup failed for ${story}: <reason>. Reply with stop or instructions.`
 
 ## PHASE 3: Implement Debug Fix
 
@@ -46,7 +55,9 @@ This keeps the debug workflow context small while the setup subagent handles:
 
 Use the prompt skill to ask: `Please describe the bug to fix:`
 
-**CRITICAL**: After invoking the prompt skill, do NOTHING until the user responds. Do NOT start servers, run manual tests, do code reviews, or perform any speculative work while waiting. The prompt skill blocks on `vscode_askQuestions` — your only job is to wait for the response and then act on it.
+After invoking the prompt skill, do NOTHING until the user responds. Do NOT start servers, run manual tests, do code reviews, or perform speculative work while waiting. The prompt skill blocks on `vscode_askQuestions` — wait for the response and then act.
+
+If the user's response is exactly one of {stop, no, n, cancel} (case-insensitive), cancel the workflow: delete the debug branch, close the created GitHub issue, and halt. If the response is empty, whitespace-only, or fewer than 10 characters, re-prompt with: `Need more detail. Please describe the bug, including expected vs actual behavior:`. Otherwise treat the response as the bug description.
 
 ### 3.2 Delegate Fix and Validation to a Subagent
 
@@ -69,21 +80,18 @@ Bug to fix: <bug description from user>
 Tasks:
 1. Analyze the bug report and identify the root cause.
 2. Implement the fix.
-3. If relevant, use the Playwright MCP server to help see the problem and confirm the fix.
+3. If the bug description references UI behavior, visual rendering, or user interaction flows, use the Playwright MCP server to reproduce and verify the fix.
 4. Delegate validation to a fresh subagent. Call the `runSubagent` tool with:
    - `description`: `"Validate debug fix for story ${story}"`
    - `prompt`: Read the full contents of `.github/agents/quality-validation.agent.md` and include them verbatim, substituting `context` with `debug-${story}`.
-   - If the validation subagent returns `VALIDATION FAILED`, use the prompt skill to report the failure to the user
+   - The validation subagent MUST return either `VALIDATION PASSED` or `VALIDATION FAILED: <reason>` on a separate line. If `VALIDATION FAILED`, use the prompt skill to report the failure. For any other output, treat as ambiguous and use the prompt skill to ask: `Validation subagent returned ambiguous result: <output>. Reply with retry, stop, or instructions.`
 5. Return a summary of: files changed, what the fix was, and either
    "VALIDATION PASSED" or "VALIDATION FAILED: <reason>".
-
-CRITICAL: You MUST use the prompt skill for ALL human interaction.
-NEVER write questions or status messages to the chat window.
 ```
 
 **WHY subagent**: Each bug fix starts with fully freshly loaded context — no risk of prior loop iterations summarizing away critical rules like the prompt-skill requirement.
 
-**After subagent returns**: If the result contains `VALIDATION FAILED`, use the prompt skill to report the failure and halt. Otherwise proceed to Phase 5.
+**After subagent returns**: If the result contains `VALIDATION PASSED`, proceed to Phase 5. If the result contains `VALIDATION FAILED`, use the prompt skill to report the failure and halt. For any other output, treat as ambiguous: use the prompt skill to ask: `Validation subagent returned ambiguous result: <output>. Reply with retry, stop, or instructions.`
 
 ## PHASE 4: Quality Validation (with auto-fix)
 
@@ -100,15 +108,20 @@ All checks must pass in a single iteration. The validation subagent returns to t
 
 ## PHASE 5: Next Bug Decision
 
-After current bug fix is validated, use the prompt skill to ask: `Bug fix validated. Fix another bug in this branch? Reply with continue, stop, or the next bug description.`
+After the current bug fix is validated, follow this algorithm:
 
-Handle the response:
+1. Context refresh: re-read the required files listed in PHASE 5 Context Refresh below to restore main-agent context.
+2. Use the prompt skill to ask: `Bug fix validated. Fix another bug in this branch? Reply with continue, stop, or the next bug description.`
+3. Classify the user's response (case-insensitive):
+   - If the response is exactly one of {continue, yes, y, yep, ok} with no additional text: re-prompt for the full bug description (go to PHASE 3.1).
+   - If the response is exactly one of {stop, no, n, done} with no additional text: proceed to PHASE 6.
+   - If the response contains additional descriptive text (not a single affirmative/stop token): treat the entire response as the next bug description and spawn the PHASE 3.2 subagent using that text.
+   - If the response is empty or fewer than 10 characters: re-prompt with: `Need more detail. Please describe the bug, including expected vs actual behavior:` and await a substantive reply.
+   - If the response is 'stop' but the repository is not clean (unstaged changes or inconsistent state): verify `git status` is clean and all fixes are committed; if not, halt and prompt the user via prompt skill to resolve the repository state.
+4. Spawn the appropriate subagent or proceed to PHASE 6 based on classification.
+5. Iteration limit: after 5 bug fixes in this loop, force-prompt: `5 bugs fixed in this branch. Recommend creating PR now. Reply stop to proceed to PR, or continue to add more.`
 
-- **"continue"** OR any affirmative: Make a second call for bug description, then spawn a subagent as described in PHASE 3.2
-- **"stop"**: Proceed to Phase 6 (create PR with all fixes)
-- **Custom text**: Use as the bug description and spawn a subagent as described in PHASE 3.2 (skip the separate Phase 3.1 prompt-skill call)
-
-**Note**: All bugs fixed in Phase 5 loop will be in ONE PR for atomic review.
+All bugs fixed in the Phase 5 loop should be grouped into one PR for atomic review unless the user overrides via prompt-skill instruction.
 
 ### PHASE 5 Context Refresh (REQUIRED before each new bug in this loop)
 
@@ -123,7 +136,7 @@ Before making any Phase 5 prompt-skill call or spawning the next subagent, **re-
 
 **WHY (subagent)**: Even with a refresh, the main agent still carries accumulated context from all prior bugs. The subagent in PHASE 3.2 gets a completely clean slate for each bug fix, eliminating any risk of its implementation or quality-validation work being affected by forgotten rules.
 
-**REMINDER after re-reading**: You MUST use the prompt skill for ALL human interaction in this loop. NEVER write questions or status messages to the chat window.
+**REMINDER after re-reading**: Follow Invariants: use the prompt skill for all human-facing questions; do not post user-facing prompts to chat.
 
 ## PHASE 6: Commit and PR Creation
 
@@ -173,6 +186,12 @@ This keeps the debug workflow context small while the merge subagent handles:
 ## Error Recovery Strategy
 
 **See "Error Recovery Strategy" in bmad-workflow skill for full details.**
+
+Local rules (subset):
+
+- If a subagent does not return within a reasonable time or returns unparseable output, treat it as FAILED and use the prompt skill to surface: `Subagent <name> failed or timed out: <summary>. Reply with stop or instructions.`
+- If a validation subagent returns ambiguous output (neither `VALIDATION PASSED` nor `VALIDATION FAILED`), use the prompt skill to ask: `Validation subagent returned ambiguous result: <output>. Reply with retry, stop, or instructions.`
+- If the user replies `stop` at Phase 5 but the repository has unstaged changes or is in an inconsistent state, verify `git status` is clean and all fixes are committed; if not, halt and prompt user to resolve repository state before creating PR.
 
 ## Success Criteria
 
