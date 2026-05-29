@@ -1,7 +1,10 @@
 import { expect, Page, test } from 'playwright/test';
 
 import { login } from './helpers/login.helper';
-import { seedUniverseE2eData } from './helpers/seed-universe-e2e-data.helper';
+import {
+  createDeletableUniverseSymbol,
+  seedUniverseE2eData,
+} from './helpers/seed-universe-e2e-data.helper';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -256,11 +259,13 @@ test.describe('Universe Sort State Persistence (Story 113.3)', () => {
   // ── Test (c): sort survives row delete ──────────────────────────────────────
 
   test('(c) sort state survives row delete', async ({ page }) => {
-    // symbols[4] (UEEE) has no trades so its delete button is visible under
-    // the All Accounts filter (default view).
-    // Filter BEFORE sort so the full universe cache is available and the row
-    // is reliably found (same rationale as test (a)).
-    const noTradeSymbol = symbols[4];
+    // Create a fresh deletable symbol for this test so it is fully retryable.
+    // Playwright re-runs beforeEach (not beforeAll) on retry — if we deleted
+    // symbols[4] from the shared seed, any retry would fail because the row
+    // would not exist. A per-test symbol is created here and cleaned up in the
+    // finally block whether or not the DELETE API call succeeds.
+    const { symbol: noTradeSymbol, cleanup: cleanupDelete } =
+      await createDeletableUniverseSymbol();
 
     // Wait for networkidle so the SmartNgRX cache is populated before the
     // symbol filter fires. Virtual scroll only renders visible viewport rows
@@ -268,6 +273,8 @@ test.describe('Universe Sort State Persistence (Story 113.3)', () => {
     const row = page
       .locator('.dms-body-row[role="row"]')
       .filter({ hasText: noTradeSymbol });
+
+    try {
     await page
       .waitForLoadState('networkidle', { timeout: 15000 })
       .catch(() => {});
@@ -315,6 +322,12 @@ test.describe('Universe Sort State Persistence (Story 113.3)', () => {
     await waitForTableRows(page);
 
     await assertSortSurvived(page);
+    } finally {
+      // If the DELETE API call already removed the row, deleteMany is a no-op.
+      await cleanupDelete().catch(() => {
+        /* row already deleted by the test — no action needed */
+      });
+    }
   });
 
   // ── Test (d): sort survives account filter change ───────────────────────────
