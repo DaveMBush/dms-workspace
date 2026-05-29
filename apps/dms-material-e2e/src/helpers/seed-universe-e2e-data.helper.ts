@@ -21,6 +21,7 @@ function createRecord(opts: {
   lastPrice: number;
   exDate: Date | null;
   expired: boolean;
+  isCef?: boolean;
 }): UniverseRecord {
   return {
     symbol: opts.symbol,
@@ -32,7 +33,7 @@ function createRecord(opts: {
     most_recent_sell_date: null,
     most_recent_sell_price: null,
     expired: opts.expired,
-    is_closed_end_fund: true,
+    is_closed_end_fund: opts.isCef ?? true,
   };
 }
 
@@ -97,6 +98,9 @@ function createSecondBatch(
       lastPrice: 15.0,
       exDate: new Date('2026-01-15'),
       expired: false,
+      // Not a closed-end fund — required for the delete button to appear
+      // (isUniverseDeletable returns false immediately for CEFs)
+      isCef: false,
     }),
   ];
 }
