@@ -41,7 +41,8 @@ async function getSortColumnsState(
       { sortColumns?: { column: string; direction: string }[] }
     >;
     return state[t]?.sortColumns ?? null;
-  }, table);
+  },
+  table);
 }
 
 /**
