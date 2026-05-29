@@ -1,10 +1,8 @@
 import { expect, Page, test } from 'playwright/test';
 
 import { login } from './helpers/login.helper';
-import {
-  createDeletableUniverseSymbol,
-  seedUniverseE2eData,
-} from './helpers/seed-universe-e2e-data.helper';
+import { createDeletableUniverseSymbol } from './helpers/create-deletable-universe-symbol.helper';
+import { seedUniverseE2eData } from './helpers/seed-universe-e2e-data.helper';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -156,9 +154,9 @@ test.describe('Universe Sort State Persistence (Story 113.3)', () => {
     // Wait for networkidle so the SmartNgRX cache is populated before the
     // symbol filter fires. Virtual scroll only renders visible viewport rows
     // so waiting for the specific row to be visible is unreliable on Firefox.
-    await page
-      .waitForLoadState('networkidle', { timeout: 15000 })
-      .catch(() => {});
+    await page.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => {
+      // ignore
+    });
 
     const symbolFilter = page.getByPlaceholder('Search Symbol');
     await symbolFilter.fill('');
@@ -277,7 +275,9 @@ test.describe('Universe Sort State Persistence (Story 113.3)', () => {
     try {
       await page
         .waitForLoadState('networkidle', { timeout: 15000 })
-        .catch(() => {});
+        .catch(() => {
+          // ignore
+        });
 
       const symbolFilter = page.getByPlaceholder('Search Symbol');
       await symbolFilter.fill('');
