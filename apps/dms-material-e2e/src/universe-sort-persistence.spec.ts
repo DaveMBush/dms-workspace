@@ -275,53 +275,53 @@ test.describe('Universe Sort State Persistence (Story 113.3)', () => {
       .filter({ hasText: noTradeSymbol });
 
     try {
-    await page
-      .waitForLoadState('networkidle', { timeout: 15000 })
-      .catch(() => {});
+      await page
+        .waitForLoadState('networkidle', { timeout: 15000 })
+        .catch(() => {});
 
-    const symbolFilter = page.getByPlaceholder('Search Symbol');
-    await symbolFilter.fill('');
-    await symbolFilter.fill(noTradeSymbol);
-    await page.waitForTimeout(600);
-    await expect(row).toBeVisible({ timeout: 20000 });
+      const symbolFilter = page.getByPlaceholder('Search Symbol');
+      await symbolFilter.fill('');
+      await symbolFilter.fill(noTradeSymbol);
+      await page.waitForTimeout(600);
+      await expect(row).toBeVisible({ timeout: 20000 });
 
-    // Apply multi-column sort while the filter is still active.
-    await applyMultiColumnSort(page);
+      // Apply multi-column sort while the filter is still active.
+      await applyMultiColumnSort(page);
 
-    // Wait for SmartNgRX to finish re-fetching the sorted data so that the
-    // RowProxy at each index has a real delete() method (not a placeholder
-    // no-op). Without this, findAndDeleteUniverseRow may silently do nothing.
-    await page
-      .waitForLoadState('networkidle', { timeout: 8000 })
-      .catch(() => {
-        /* ignore – background polling may keep the network busy */
-      });
+      // Wait for SmartNgRX to finish re-fetching the sorted data so that the
+      // RowProxy at each index has a real delete() method (not a placeholder
+      // no-op). Without this, findAndDeleteUniverseRow may silently do nothing.
+      await page
+        .waitForLoadState('networkidle', { timeout: 8000 })
+        .catch(() => {
+          /* ignore – background polling may keep the network busy */
+        });
 
-    const deleteButton = row.locator('[aria-label="Delete unused symbol"]');
-    await expect(deleteButton).toBeVisible({ timeout: 15000 });
+      const deleteButton = row.locator('[aria-label="Delete unused symbol"]');
+      await expect(deleteButton).toBeVisible({ timeout: 15000 });
 
-    // Intercept the DELETE API call to confirm SmartNgRX fires the request.
-    const deleteApiResponsePromise = page.waitForResponse(
-      (response) =>
-        response.url().includes('/api/universe/') &&
-        response.request().method() === 'DELETE',
-      { timeout: 15000 }
-    );
+      // Intercept the DELETE API call to confirm SmartNgRX fires the request.
+      const deleteApiResponsePromise = page.waitForResponse(
+        (response) =>
+          response.url().includes('/api/universe/') &&
+          response.request().method() === 'DELETE',
+        { timeout: 15000 }
+      );
 
-    await deleteButton.click();
+      await deleteButton.click();
 
-    // Wait for the server to confirm the delete before asserting DOM state.
-    await deleteApiResponsePromise;
+      // Wait for the server to confirm the delete before asserting DOM state.
+      await deleteApiResponsePromise;
 
-    // Clear the symbol filter so the filter-header row no longer contains the
-    // symbol text (avoiding locator ambiguity between the header and data rows).
-    await symbolFilter.fill('');
+      // Clear the symbol filter so the filter-header row no longer contains the
+      // symbol text (avoiding locator ambiguity between the header and data rows).
+      await symbolFilter.fill('');
 
-    // The deleted row must no longer appear in the full (unfiltered) table.
-    await expect(row).not.toBeVisible({ timeout: 10000 });
-    await waitForTableRows(page);
+      // The deleted row must no longer appear in the full (unfiltered) table.
+      await expect(row).not.toBeVisible({ timeout: 10000 });
+      await waitForTableRows(page);
 
-    await assertSortSurvived(page);
+      await assertSortSurvived(page);
     } finally {
       // If the DELETE API call already removed the row, deleteMany is a no-op.
       await cleanupDelete().catch(() => {

@@ -73,7 +73,9 @@ export default defineConfig({
       command: 'pnpm nx run server:e2e-server',
       url: 'http://localhost:3001/api/health',
       reuseExistingServer: true,
-      cwd: process.env['NX_WORKSPACE_ROOT_PATH'] ?? path.resolve(__dirname, '../..'),
+      cwd:
+        process.env['NX_WORKSPACE_ROOT_PATH'] ??
+        path.resolve(__dirname, '../..'),
       timeout: 120000,
       env: {
         ...process.env,
