@@ -1,5 +1,6 @@
 import { nxE2EPreset } from '@nx/playwright/preset';
 import { defineConfig, devices } from '@playwright/test';
+import { execSync } from 'child_process';
 import * as path from 'path';
 
 // For CI, you may want to set BASE_URL to the deployed application.
@@ -20,10 +21,26 @@ if (process.env.WSL_DISTRO_NAME && !process.env.CI) {
 }
 
 // Ensure seeders (Prisma-based helpers running in the test process) connect to
-// the same test-database.db that the e2e-server reads from.  In a git worktree
-// the inherited NX_WORKSPACE_ROOT_PATH points to the main workspace, not the
-// worktree, so we override it here for both the test runner and the servers.
-process.env['NX_WORKSPACE_ROOT_PATH'] = path.resolve(__dirname, '../..');
+// the same test-database.db that the e2e-server reads from.
+// In a git worktree, `git rev-parse --git-common-dir` returns an absolute path
+// to the main workspace's .git dir, so we derive the main workspace root from
+// it.  In the main workspace, it returns the relative string ".git", so we fall
+// back to the config-file's own two levels up (which IS the workspace root).
+(function resolveWorkspaceRoot(): void {
+  try {
+    const worktreeRoot = path.resolve(__dirname, '../..');
+    const commonGitDir = execSync('git rev-parse --git-common-dir', {
+      cwd: worktreeRoot,
+      encoding: 'utf8',
+    }).trim();
+    const mainWorkspace = path.isAbsolute(commonGitDir)
+      ? path.dirname(commonGitDir)
+      : worktreeRoot;
+    process.env['NX_WORKSPACE_ROOT_PATH'] = mainWorkspace;
+  } catch {
+    process.env['NX_WORKSPACE_ROOT_PATH'] = path.resolve(__dirname, '../..');
+  }
+})();
 
 export default defineConfig({
   ...nxE2EPreset(__filename, { testDir: './src' }),
@@ -56,14 +73,13 @@ export default defineConfig({
       command: 'pnpm nx run server:e2e-server',
       url: 'http://localhost:3001/api/health',
       reuseExistingServer: true,
-      cwd: path.resolve(__dirname, '../..'),
+      cwd: process.env['NX_WORKSPACE_ROOT_PATH'] ?? path.resolve(__dirname, '../..'),
       timeout: 120000,
       env: {
         ...process.env,
-        // Override NX_WORKSPACE_ROOT_PATH so that the server's e2e-server target
-        // (prepare-e2e-db + node dist/apps/server/main.js) uses this workspace's
-        // test-database.db, not the global NX workspace root's DB.
-        NX_WORKSPACE_ROOT_PATH: path.resolve(__dirname, '../..'),
+        // NX_WORKSPACE_ROOT_PATH is already resolved above (git-common-dir aware)
+        // and spread via ...process.env.  Do not override it here so that the
+        // server always uses the same workspace root as the seeders.
         NODE_ENV: process.env.CI ? 'local' : 'development',
         AWS_ENDPOINT_URL: 'http://localhost:4566',
         SKIP_AWS_AUTH: 'true',

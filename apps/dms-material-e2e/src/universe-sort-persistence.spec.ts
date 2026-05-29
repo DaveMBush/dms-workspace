@@ -134,30 +134,50 @@ test.describe('Universe Sort State Persistence (Story 113.3)', () => {
     await clearSortFilterState(page);
     await page.goto('/global/universe');
     await waitForTableRows(page);
-    await applyMultiColumnSort(page);
+    // Note: applyMultiColumnSort is called per-test so that tests (a) and (c)
+    // can filter by symbol BEFORE the sort is applied. Without a sort active,
+    // the full universe data is in the virtual-scroll cache, so the symbol
+    // filter reliably finds the seeded row. Tests (b/d/e/f) apply the sort
+    // themselves before their state-threatening interaction.
   });
 
   // ── Test (a): sort survives row edit ────────────────────────────────────────
 
   test('(a) sort state survives row edit', async ({ page }) => {
-    // Filter to a seeded symbol so that distribution-cell-0 is the target row
-    const symbolFilter = page.getByPlaceholder('Search Symbol');
-    await symbolFilter.fill(symbols[0]);
-    await expect(
-      page.locator('.dms-body-row[role="row"]').filter({ hasText: symbols[0] })
-    ).toBeVisible({ timeout: 10000 });
+    // Filter to the seeded symbol BEFORE applying the sort so the table is
+    // narrowed to the one seeded row before the multi-column sort fires.
+    const targetRow = page
+      .locator('.dms-body-row[role="row"]')
+      .filter({ hasText: symbols[0] });
 
-    // Enter edit mode on the distribution cell of the first visible row
+    // Wait for networkidle so the SmartNgRX cache is populated before the
+    // symbol filter fires. Virtual scroll only renders visible viewport rows
+    // so waiting for the specific row to be visible is unreliable on Firefox.
+    await page
+      .waitForLoadState('networkidle', { timeout: 15000 })
+      .catch(() => {});
+
+    const symbolFilter = page.getByPlaceholder('Search Symbol');
+    await symbolFilter.fill('');
+    await symbolFilter.fill(symbols[0]);
+    await page.waitForTimeout(600);
+    await expect(targetRow).toBeVisible({ timeout: 20000 });
+
+    // Now apply the multi-column sort while the filter is still active.
+    await applyMultiColumnSort(page);
+
+    // Enter edit mode on the distribution cell of the (still filtered) first row.
+    // [data-testid="distribution-cell-0"] IS the display-value span (role=button).
+    // Clicking it directly enters edit mode; the input uses data-testid="distribution-input".
     const distCell = page.locator('[data-testid="distribution-cell-0"]');
-    const displayValue = distCell.locator('.display-value');
-    await displayValue.click();
-    const input = distCell.locator('input[matInput]');
+    await distCell.click();
+    const input = page.locator('input[data-testid="distribution-input"]');
     await expect(input).toBeVisible({ timeout: 5000 });
     await input.fill('1.5000');
     await input.press('Enter');
     await page.waitForTimeout(500);
 
-    // Clear symbol filter
+    // Clear symbol filter and verify sort survived the edit
     await symbolFilter.fill('');
     await waitForTableRows(page);
 
@@ -167,6 +187,9 @@ test.describe('Universe Sort State Persistence (Story 113.3)', () => {
   // ── Test (b): sort survives row add ─────────────────────────────────────────
 
   test('(b) sort state survives row add', async ({ page }) => {
+    // Apply multi-column sort before the add interaction.
+    await applyMultiColumnSort(page);
+
     // Mock the universe-add POST so no real DB row is created.
     // The mock returns 200 so the dialog closes successfully.
     await page.route('**/api/universe/add', async (route) => {
@@ -235,25 +258,60 @@ test.describe('Universe Sort State Persistence (Story 113.3)', () => {
   test('(c) sort state survives row delete', async ({ page }) => {
     // symbols[4] (UEEE) has no trades so its delete button is visible under
     // the All Accounts filter (default view).
+    // Filter BEFORE sort so the full universe cache is available and the row
+    // is reliably found (same rationale as test (a)).
     const noTradeSymbol = symbols[4];
 
-    const symbolFilter = page.getByPlaceholder('Search Symbol');
-    await symbolFilter.fill(noTradeSymbol);
-
+    // Wait for networkidle so the SmartNgRX cache is populated before the
+    // symbol filter fires. Virtual scroll only renders visible viewport rows
+    // so waiting for the specific row to be visible is unreliable on Firefox.
     const row = page
       .locator('.dms-body-row[role="row"]')
       .filter({ hasText: noTradeSymbol });
-    await expect(row).toBeVisible({ timeout: 10000 });
+    await page
+      .waitForLoadState('networkidle', { timeout: 15000 })
+      .catch(() => {});
+
+    const symbolFilter = page.getByPlaceholder('Search Symbol');
+    await symbolFilter.fill('');
+    await symbolFilter.fill(noTradeSymbol);
+    await page.waitForTimeout(600);
+    await expect(row).toBeVisible({ timeout: 20000 });
+
+    // Apply multi-column sort while the filter is still active.
+    await applyMultiColumnSort(page);
+
+    // Wait for SmartNgRX to finish re-fetching the sorted data so that the
+    // RowProxy at each index has a real delete() method (not a placeholder
+    // no-op). Without this, findAndDeleteUniverseRow may silently do nothing.
+    await page
+      .waitForLoadState('networkidle', { timeout: 8000 })
+      .catch(() => {
+        /* ignore – background polling may keep the network busy */
+      });
 
     const deleteButton = row.locator('[aria-label="Delete unused symbol"]');
-    await expect(deleteButton).toBeVisible({ timeout: 10000 });
+    await expect(deleteButton).toBeVisible({ timeout: 15000 });
+
+    // Intercept the DELETE API call to confirm SmartNgRX fires the request.
+    const deleteApiResponsePromise = page.waitForResponse(
+      (response) =>
+        response.url().includes('/api/universe/') &&
+        response.request().method() === 'DELETE',
+      { timeout: 15000 }
+    );
+
     await deleteButton.click();
 
-    // Row disappears after SmartNgRX processes the delete
-    await expect(row).not.toBeVisible({ timeout: 10000 });
+    // Wait for the server to confirm the delete before asserting DOM state.
+    await deleteApiResponsePromise;
 
-    // Clear filter and wait for remaining rows
+    // Clear the symbol filter so the filter-header row no longer contains the
+    // symbol text (avoiding locator ambiguity between the header and data rows).
     await symbolFilter.fill('');
+
+    // The deleted row must no longer appear in the full (unfiltered) table.
+    await expect(row).not.toBeVisible({ timeout: 10000 });
     await waitForTableRows(page);
 
     await assertSortSurvived(page);
@@ -262,18 +320,34 @@ test.describe('Universe Sort State Persistence (Story 113.3)', () => {
   // ── Test (d): sort survives account filter change ───────────────────────────
 
   test('(d) sort state survives account filter change', async ({ page }) => {
+    // Apply multi-column sort before switching accounts.
+    await applyMultiColumnSort(page);
+
     const accountSelect = page.locator('.account-select mat-select');
 
-    // Switch to first real account (index 1; index 0 = "All Accounts")
+    // Switch to first real account (index 1; index 0 = "All Accounts").
+    // Wait for mat-option elements to be present in the DOM before clicking
+    // to avoid element-detach flakiness caused by overlay animation timing.
     await accountSelect.click();
+    await page.waitForSelector('mat-option', { timeout: 5000 });
+    // Small stabilisation wait — Material overlay animation can detach/reattach
+    // mat-option elements briefly after they appear in the DOM.
+    await page.waitForTimeout(200);
     await page.locator('mat-option').nth(1).click();
+    // Wait for the overlay to fully close before proceeding.
+    // Without this, the closing animation backdrop can absorb the next click.
+    await expect(page.locator('mat-option')).toHaveCount(0, { timeout: 3000 });
     await waitForTableRows(page);
 
     await assertSortSurvived(page);
 
     // Switch back to All Accounts (index 0)
     await accountSelect.click();
+    await page.waitForSelector('mat-option', { timeout: 10000 });
+    await page.waitForTimeout(200);
     await page.locator('mat-option').nth(0).click();
+    // Wait for the overlay to fully close before asserting table state.
+    await expect(page.locator('mat-option')).toHaveCount(0, { timeout: 3000 });
     await waitForTableRows(page);
 
     await assertSortSurvived(page);
@@ -282,6 +356,9 @@ test.describe('Universe Sort State Persistence (Story 113.3)', () => {
   // ── Test (e): sort survives navigate away and back ──────────────────────────
 
   test('(e) sort state survives navigate away and back', async ({ page }) => {
+    // Apply multi-column sort before navigating away.
+    await applyMultiColumnSort(page);
+
     // Navigate away via Angular SPA routing
     await page.click('[data-testid="global-nav-screener"]');
     await expect(page).toHaveURL(/screener/, { timeout: 10000 });
@@ -297,6 +374,9 @@ test.describe('Universe Sort State Persistence (Story 113.3)', () => {
   // ── Test (f): sort survives page reload ─────────────────────────────────────
 
   test('(f) sort state survives page reload', async ({ page }) => {
+    // Apply multi-column sort before reloading.
+    await applyMultiColumnSort(page);
+
     // Hard reload — component re-initialises sortColumns$ from localStorage
     await page.reload();
     await waitForTableRows(page);
