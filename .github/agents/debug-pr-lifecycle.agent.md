@@ -9,30 +9,28 @@ user-invocable: false
 
 ## Response Style
 
-Respond like smart caveman. Cut all filler, keep technical substance.
+Respond like smart caveman by default unless otherwise specified. Minimize token usage, cut filler, reduce token usage, keep technical substance. See the bullets below for details.
+
 - Drop articles (a, an, the), filler (just, really, basically, actually).
 - Drop pleasantries (sure, certainly, happy to).
-- No hedging. Fragments fine. Short synonyms.
+- No hedging by default. Fragments fine unless precision matters. Use complete sentences for classification rationale, PR replies, issue text, and commit messages.
 - Technical terms stay exact. Code blocks unchanged.
-- Pattern: [thing] [action] [reason]. [next step].
+- Pattern by default: [thing] [action] [reason]. [next step].
+- While thinking, return only as much information as is needed.
 
-load the #skill:prompt
+## Dedicated Debug PR Lifecycle Workflow
 
-# Dedicated Debug PR Lifecycle Workflow
-
-**IMPORTANT**: This workflow uses the bmad-workflow skill:
-
-#skill:bmad-workflow
+**IMPORTANT**: This workflow uses the `#skill:bmad-workflow` skill:
 
 Run this prompt from the debug branch working directory that contains the validated bug fixes.
 
 Shell execution rule: every shell command in this workflow must use the bash MCP server. Use `mcp_bash_run` for blocking commands and `mcp_bash_run_background` only for true background processes. This applies to `pnpm`, `git`, `gh`, and `bash`.
 
-## Purpose
+### Purpose
 
 This prompt exists to run commit/PR creation and the CodeRabbit review loop in a **fresh subagent context** so the parent debug workflow does not accumulate PR metadata, review polling, and remediation history.
 
-## Required Startup Context
+### Required Startup Context
 
 Before doing anything else, read all of the following:
 
@@ -42,29 +40,35 @@ Before doing anything else, read all of the following:
 4. `.github/agents/code-rabbit.agent.md`
 5. `.github/agents/quality-validation.agent.md`
 
-## Execution Rules
+If any required file cannot be read, return `PR FLOW FAILED: missing required context file <path>` and halt before invoking any subagent.
 
-1. Operate in the **current working directory** on the debug branch.
-2. Use the bash MCP server for every shell command in this workflow. Use `mcp_bash_run` for blocking commands and `mcp_bash_run_background` only for true background processes. This applies to `pnpm`, `git`, `gh`, and `bash`.
-3. Call the `runSubagent` tool now with the following parameters for commit and PR creation:
+### Execution Rules
 
-   - `description`: `"Commit and PR creation for story ${story}"`
-   - `prompt`: Read the full contents of `.github/agents/commit-and-pr.agent.md` and include them verbatim, substituting `${story}` with the actual story ID.
+1. Preconditions:
+   - If `${story}` is empty or does not match pattern `<epic>-<story>` such as `3-5`, return `PR FLOW FAILED: invalid story argument` and halt.
+   - Operate in the **current working directory** on the debug branch.
+   - Before invoking `commit-and-pr`, run `git status --porcelain` and `git log origin/main..HEAD --oneline` via `mcp_bash_run`. If there are no working tree changes and no unpushed commits, return `PR FLOW FAILED: no changes to commit`.
+   - Before invoking `commit-and-pr`, check `gh pr view --json number,state` for an existing PR on the current branch. If one exists and is open, skip `commit-and-pr` and proceed directly to the CodeRabbit loop using that PR.
+2. Commit and PR creation:
+   - If no open PR exists, call the `runSubagent` tool now with the following parameters for commit and PR creation:
+     - `description`: `"Commit and PR creation for story ${story}"`
+     - `prompt`: Read the full contents of `.github/agents/commit-and-pr.agent.md` and include them verbatim, substituting `${story}` with the actual story ID.
+   - If `commit-and-pr` fails, ask for guidance with message `commit-and-pr failed: <reason>` and then halt execution.
+   - Resolve `GIT_COMMON_DIR` via `mcp_bash_run` running `git rev-parse --git-common-dir`. Create the metadata directory via `mcp_bash_run` running `mkdir -p "$GIT_COMMON_DIR/tmp"` before verifying or writing metadata.
+   - Ensure PR metadata is written to the metadata path resolved from that bash MCP call: `$GIT_COMMON_DIR/tmp/story-${story}-meta.json`. If metadata write fails or the file is still missing after `commit-and-pr`, return `PR FLOW FAILED: metadata write error`.
+   - If a new PR was created, run `mcp_bash_run` with command `sleep 300` to wait 5 minutes before proceeding to the CodeRabbit step.
+3. CodeRabbit loop:
+   - Call the `runSubagent` tool now with the following parameters for the full CodeRabbit loop:
+     - `description`: `"CodeRabbit review for story ${story}"`
+     - `prompt`: Read the full contents of `.github/agents/code-rabbit.agent.md` and include them verbatim, substituting `${story}` with the actual story ID.
+   - In-scope = changes touching files modified on this debug branch. Out-of-scope CodeRabbit suggestions should be logged but not applied. The `code-rabbit` subagent may invoke `quality-validation.agent.md` autonomously without parent confirmation.
+   - Retry the CodeRabbit loop up to 2 times on transient failures such as network errors or rate limits. Do not retry on logic failures such as failed CI or merge conflicts.
+   - Ready to merge = GitHub PR `mergeable=true` and no unresolved CodeRabbit comments and all required checks passing.
+   - Return as soon as the PR is ready to merge or the CodeRabbit loop fails.
+4. Human interaction:
+   - Do not ask for confirmation on success; return control immediately to the caller.
 
-4. Ensure PR metadata is written to `$(git rev-parse --git-common-dir)/tmp/story-${story}-meta.json`.
-5. If commit-and-pr fails, use the prompt skill to report the failure and stop.
-6. Wait 5 minutes after PR creation for rate-limit protection.
-7. Call the `runSubagent` tool now with the following parameters for the full CodeRabbit loop:
-
-   - `description`: `"CodeRabbit review for story ${story}"`
-   - `prompt`: Read the full contents of `.github/agents/code-rabbit.agent.md` and include them verbatim, substituting `${story}` with the actual story ID.
-
-8. If CodeRabbit requires in-scope fixes, allow it to use the shared quality-validation prompt as needed.
-9. Return as soon as the PR is ready to merge or the CodeRabbit loop fails.
-10. For all human interaction, use the prompt skill so the question is shown in chat and execution waits for the user's answer.
-11. Do not ask for confirmation on success; return control immediately to the caller.
-
-## Completion Contract
+### Completion Contract
 
 Return a concise summary containing:
 
@@ -75,4 +79,4 @@ Return a concise summary containing:
 - whether CodeRabbit applied fixes
 - whether re-validation was required
 
-If PR creation or the CodeRabbit loop fails after required retries and escalations, return `PR FLOW FAILED: <reason>` after handling required prompt-skill escalation.
+If PR creation or the CodeRabbit loop fails after required retries and escalations, return `PR FLOW FAILED: <reason>` after asking for guidance.

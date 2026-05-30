@@ -8,24 +8,24 @@ user-invocable: false
 
 ## Response Style
 
-Respond like smart caveman. Cut all filler, keep technical substance.
+Respond like smart caveman by default unless otherwise specified. Minimize token usage, cut filler, reduce token usage, keep technical substance. See the bullets below for details.
+
 - Drop articles (a, an, the), filler (just, really, basically, actually).
 - Drop pleasantries (sure, certainly, happy to).
-- No hedging. Fragments fine. Short synonyms.
+- No hedging by default. Fragments fine unless precision matters. Use complete sentences for classification rationale, PR replies, issue text, and commit messages.
 - Technical terms stay exact. Code blocks unchanged.
-- Pattern: [thing] [action] [reason]. [next step].
+- Pattern by default: [thing] [action] [reason]. [next step].
+- While thinking, return only as much information as is needed.
 
-load the #skill:prompt
+## Dedicated Debug Setup Workflow
 
-# Dedicated Debug Setup Workflow
+Shell execution rule: all shell commands MUST use `mcp_bash_run` for blocking commands or `mcp_bash_run_background` for true background processes only. If bash MCP is unavailable, return `SETUP FAILED: bash MCP unavailable`.
 
-Shell execution rule: every shell command in this workflow must use the bash MCP server. Use `mcp_bash_run` for blocking commands and `mcp_bash_run_background` only for true background processes. This applies to `pnpm`, `git`, `gh`, and `bash`.
-
-## Purpose
+### Purpose
 
 This prompt exists to run epic validation, repository preflight checks, GitHub issue creation, and debug branch setup in a **fresh subagent context** so the parent debug workflow does not accumulate setup state.
 
-## Required Startup Context
+### Required Startup Context
 
 Before doing anything else, read all of the following:
 
@@ -33,21 +33,25 @@ Before doing anything else, read all of the following:
 2. `_bmad/bmm/config.yaml`
 3. `_bmad-output/planning-artifacts/${epic}.md`
 
-## Execution Rules
+If any required file is missing or unparseable, return `SETUP FAILED: missing context file <path>`.
 
-1. Verify the epic file exists and is in `Ready for Debugging` status.
-2. Verify the git working directory is clean.
-3. Verify the current branch is `main` and up to date with remote; if needed, switch/fetch/pull.
-4. Load GitHub MCP tools needed for issue/branch creation.
-5. Create the GitHub issue for `${story}`.
-6. Create the debug branch from `main`.
-7. Check out the branch locally.
-8. Return the created issue number and branch name in the completion summary.
-9. Use the bash MCP server for every shell command in this workflow. Use `mcp_bash_run` for blocking commands and `mcp_bash_run_background` only for true background processes. This applies to `git`, `gh`, and `bash`.
-10. For all human interaction, use the prompt skill so the question is shown in chat and execution waits for the user's answer.
-11. Do not ask for confirmation on success; return control immediately to the caller.
+### Execution Rules
 
-## Completion Contract
+1. Verify `${epic}` matches `^\d+$` and `${story}` matches `^\d+-\d+$`. Otherwise return `SETUP FAILED: invalid arguments`.
+2. Verify the epic file exists and its YAML frontmatter field is exactly `status: Ready for Debugging`. If the status is not `Ready for Debugging`, return `SETUP FAILED: epic ${epic} status is <actual>, expected Ready for Debugging`.
+3. Verify the git working directory is clean. If dirty, do NOT auto-stash. Return `SETUP FAILED: working directory not clean` and include the output of `git status`.
+4. Only after rule 3 passes, verify the current branch is `main` and up to date with `origin/main`; if needed, switch, fetch, and fast-forward pull. If pull is non-fast-forward or produces conflicts, return `SETUP FAILED: main diverged from origin/main`.
+5. Use `mcp_github_search_issues` and `mcp_github_issue_write` for issue lookup and creation in the repo defined by `project-context.md`. Before creating, search open issues for exact title `[Debug] Epic ${epic} Story ${story}`. If found, reuse that issue number instead of creating a duplicate. If not found, create an issue with:
+   - Title: `[Debug] Epic ${epic} Story ${story}`
+   - Body: reference `_bmad-output/planning-artifacts/${epic}.md`
+   - Labels: `debug`, `epic-${epic}`
+   - Assignees: none
+     On GitHub auth or rate-limit error, return `SETUP FAILED: github <error>`. Retry this rule up to 2 times only for transient network or rate-limit failures.
+6. Create the debug branch from `main` using exact pattern `debug/epic-${epic}-story-${story}-issue-<issue_number>`. If the branch exists remotely, fetch and check it out. If it exists locally and tracks the same remote/base, check it out. If it exists locally with a different base or conflicting remote state, return `SETUP FAILED: branch conflict`. Retry this rule up to 2 times only for transient network failures.
+7. Return the created or reused issue number and branch name in the completion summary.
+8. Do not ask for confirmation on success; return control immediately to the caller.
+
+### Completion Contract
 
 Return a concise summary containing:
 
@@ -57,4 +61,4 @@ Return a concise summary containing:
 - created issue number
 - created branch name
 
-If setup fails after required retries and escalations, return `SETUP FAILED: <reason>` after handling required prompt-skill escalation.
+If setup fails after required retries and escalations, return `SETUP FAILED: <reason>`. Retry only rules 5 through 6 up to 2 times on transient failures. Do not retry rules 1 through 4.

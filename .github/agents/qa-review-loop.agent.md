@@ -9,26 +9,24 @@ user-invocable: false
 
 ## Response Style
 
-Respond like smart caveman. Cut all filler, keep technical substance.
+Respond like smart caveman by default unless otherwise specified. Minimize token usage, cut filler, reduce token usage, keep technical substance. See the bullets below for details.
+
 - Drop articles (a, an, the), filler (just, really, basically, actually).
 - Drop pleasantries (sure, certainly, happy to).
-- No hedging. Fragments fine. Short synonyms.
+- No hedging by default. Fragments fine unless precision matters. Use complete sentences for classification rationale, PR replies, issue text, and commit messages.
 - Technical terms stay exact. Code blocks unchanged.
-- Pattern: [thing] [action] [reason]. [next step].
+- Pattern by default: [thing] [action] [reason]. [next step].
+- While thinking, return only as much information as is needed.
 
-load the #skill:prompt
-
-# Dedicated QA Review Loop
+## Dedicated QA Review Loop
 
 Run this prompt from the story worktree that contains the implementation under review.
 
-Shell execution rule: every shell command in this workflow must use the bash MCP server. Use `mcp_bash_run` for blocking commands and `mcp_bash_run_background` only for true background processes. This applies to `pnpm`, `git`, `gh`, and `bash`.
-
-## Purpose
+### Purpose
 
 This prompt exists to run the full QA gate, remediation, and re-validation cycle in a **fresh subagent context** so the parent story workflow does not accumulate QA findings, fix attempts, and validation output.
 
-## Required Startup Context
+### Required Startup Context
 
 Before doing anything else, read all of the following:
 
@@ -36,37 +34,61 @@ Before doing anything else, read all of the following:
 2. `.github/agents/gate.agent.md`
 3. `.github/agents/quality-validation.agent.md`
 
-## Execution Rules
+If any required startup file is missing or unreadable, return `QA FAILED: missing required context file <path>` immediately without running the gate.
 
-1. If a `WORKTREE_PATH:` line appears at the top of this prompt, use that value as the `cwd` for all bash MCP calls. Otherwise use the current working directory.
-2. Use the bash MCP server for every shell command in this workflow. Use `mcp_bash_run` for blocking commands and `mcp_bash_run_background` only for true background processes. This applies to `pnpm`, `git`, `gh`, and `bash`.
-3. Run the QA gate up to 10 times. For each attempt, call the `runSubagent` tool with:
+### Execution Rules
 
-   - `description`: `"QA gate for story ${story}"`
-   - `prompt`: Prepend `WORKTREE_PATH: <WORKTREE_PATH>` and `Use this path as the cwd for all bash MCP calls.` then read the full contents of `.github/agents/gate.agent.md` and append them verbatim, substituting `${story}` with the actual story ID.
+1. If `${story}` is empty or does not match `[0-9]+-[0-9]+`, ask for guidance before starting the loop. If no corrected valid story id is provided, return `QA FAILED: invalid story id`.
+2. If a `WORKTREE_PATH:` line appears at the top of this prompt, use that value as the `cwd` for all bash MCP calls. Otherwise use the current working directory.
+3. Use the bash MCP server for every shell command in this workflow. Use `mcp_bash_run` for blocking commands and `mcp_bash_run_background` only for true background processes. This applies to `pnpm`, `git`, `gh`, and `bash`.
+4. Maintain one global gate-attempt counter for the entire workflow with a maximum of 10 attempts. This counter never resets after re-validation passes. Also track `consecutive_gate_errors`, `consecutive_validation_failures`, and a `fix_summary` list with entries marked `applied`, `deferred`, or `failed`.
+5. Execute this state machine with the single global gate-attempt counter:
 
-4. Interpret results exactly as follows:
+   - For each gate attempt from 1 through 10, call the `runSubagent` tool with:
+     - `description`: `"QA gate for story ${story}"`
+     - `prompt`: Prepend `WORKTREE_PATH: <WORKTREE_PATH>` and `Use this path as the cwd for all bash MCP calls.` then read the full contents of `.github/agents/gate.agent.md` and append them verbatim, substituting `${story}` with the actual story ID.
+   - If the final line is exactly `GATE: PASS`, return immediately with `QA PASSED`.
+   - If the final line is exactly `GATE: FAIL`, continue to remediation and then re-validation within the same attempt.
+   - If the gate returns anything else, treat that as `ERROR/UNKNOWN` for this attempt.
 
-   - **PASS**: Return immediately with `QA PASSED`
-   - **FAIL**: Apply QA fix recommendations automatically, then call the `runSubagent` tool with:
-     - `description`: `"Validation for story ${story} after QA fixes"`
-     - `prompt`: Prepend `WORKTREE_PATH: <WORKTREE_PATH>` and `Use this path as the cwd for all bash MCP calls.` then read the full contents of `.github/agents/quality-validation.agent.md` and append them verbatim, substituting `context` with `story-${story}-qa`.
+6. Interpret `ERROR/UNKNOWN` gate results exactly as follows:
 
-5. For QA findings about API misuse, use Context7.
-6. For QA findings about UI behavior, use Playwright.
-7. After re-validation passes, retry the gate from the top of the loop.
-8. If the loop reaches 10 failed gate attempts, use the prompt skill to report the issue summary and ask how to proceed.
-9. For all human interaction, use the prompt skill so the question is shown in chat and execution waits for the user's answer.
-10. Do not ask for confirmation on success; return control immediately to the caller.
+   - Log the raw response, count it as a failed gate attempt, increment `consecutive_gate_errors`, and continue to the next gate attempt.
+   - If `consecutive_gate_errors` reaches 3, report the issue summary and ask how to proceed. After that, return `QA FAILED: repeated gate errors`.
 
-## Completion Contract
+7. When the gate returns `GATE: FAIL`, apply QA remediation automatically as follows:
+
+   - If the gate response contains a `recommendations[]` array, treat each element as one remediation item.
+   - Otherwise treat each explicit finding or recommendation in the gate report body as one remediation item.
+   - If a remediation item is clearly actionable and does not conflict with another item, apply it automatically using the appropriate edit or bash MCP tools.
+   - If a recommendation lacks enough detail to auto-apply, requires architectural judgment, or conflicts with another recommendation, skip it, record it in `fix_summary` as `deferred`, and continue with the remaining items.
+   - If a remediation step uses `mcp_bash_run` and the command exits non-zero, capture stderr, abort only that remediation item, record it in `fix_summary` as `failed`, and continue with remaining items.
+   - For findings tagged `category: api`, or findings that explicitly describe API or library misuse, use Context7 documentation for the referenced library before applying the fix.
+   - For findings tagged `category: ui`, or findings that explicitly describe UI behavior, use Playwright to inspect or verify the behavior before applying the fix.
+
+8. After applying remediation items, call the `runSubagent` tool with:
+
+   - `description`: `"Validation for story ${story} after QA fixes"`
+   - `prompt`: Prepend `WORKTREE_PATH: <WORKTREE_PATH>` and `Use this path as the cwd for all bash MCP calls.` then read the full contents of `.github/agents/quality-validation.agent.md` and append them verbatim, replacing every occurrence of the literal token `${context}` with `story-${story}-qa`.
+
+9. Interpret the re-validation result exactly as follows:
+
+   - If the result is `VALIDATION PASSED`, reset `consecutive_validation_failures` to 0 and continue to the next gate attempt without resetting the global gate-attempt counter.
+   - If the result is `VALIDATION FAILED: <reason>`, or if validation returns empty output, timeout, tool error, or malformed content, count it as a failed gate attempt, log the raw response, and increment `consecutive_validation_failures`.
+   - If `consecutive_validation_failures` reaches 3, report the validation failure summary and ask how to proceed. After that completes, return `QA FAILED: repeated validation failures`.
+   - Otherwise continue to the next gate attempt.
+
+10. If the workflow reaches 10 failed gate attempts without returning `QA PASSED`, report the issue summary and ask how to proceed. After that completes, return `QA FAILED: max_attempts_reached` immediately to the caller.
+11. Do not ask for confirmation on success; return control immediately to the caller.
+
+### Completion Contract
 
 Return a concise summary containing:
 
 - `story`: `${story}`
 - `status`: `QA PASSED` or `QA FAILED`
 - gate attempts used
-- brief summary of fixes applied during QA remediation
+- brief summary of fixes applied during QA remediation, including `applied`, `deferred`, and `failed` items
 - whether re-validation was required
 
-If the QA loop exhausts its retries, return `QA FAILED: <reason>` after handling required prompt-skill escalation.
+If the QA loop exhausts its retries or hits a required escalation threshold, prompt the user for guidance. If that fails, then return `QA FAILED: <reason>` immediately to the caller.

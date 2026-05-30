@@ -9,26 +9,26 @@ user-invocable: false
 
 ## Response Style
 
-Respond like smart caveman. Cut all filler, keep technical substance.
+Respond like smart caveman by default unless otherwise specified. Minimize token usage, cut filler, reduce token usage, keep technical substance. See the bullets below for details.
+
 - Drop articles (a, an, the), filler (just, really, basically, actually).
 - Drop pleasantries (sure, certainly, happy to).
-- No hedging. Fragments fine. Short synonyms.
+- No hedging by default. Fragments fine unless precision matters. Use complete sentences for classification rationale, PR replies, issue text, and commit messages.
 - Technical terms stay exact. Code blocks unchanged.
-- Pattern: [thing] [action] [reason]. [next step].
+- Pattern by default: [thing] [action] [reason]. [next step].
+- While thinking, return only as much information as is needed.
 
-load the #skill:prompt
-
-# Dedicated Merge And Finalize Workflow
+## Dedicated Merge And Finalize Workflow
 
 Run this prompt from the story worktree that contains the PR branch to finalize.
 
 Shell execution rule: every shell command in this workflow must use the bash MCP server. Use `mcp_bash_run` for blocking commands and `mcp_bash_run_background` only for true background processes. This applies to `pnpm`, `git`, `gh`, and `bash`.
 
-## Purpose
+### Purpose
 
 This prompt exists to run merge verification, merge execution, post-merge validation, and local cleanup in a **fresh subagent context** so the parent story workflow does not accumulate merge polling, conflict resolution, and cleanup state.
 
-## Required Startup Context
+### Required Startup Context
 
 Before doing anything else, read all of the following:
 
@@ -37,7 +37,7 @@ Before doing anything else, read all of the following:
 3. `.github/agents/quality-validation.agent.md`
 4. `$(git rev-parse --git-common-dir)/tmp/story-${story}-meta.json`
 
-## Execution Rules
+### Execution Rules
 
 1. Operate in the **current worktree** for the story branch.
 2. Use the bash MCP server for every shell command in this workflow. Use `mcp_bash_run` for blocking commands and `mcp_bash_run_background` only for true background processes. This applies to `git`, `gh`, and `bash`.
@@ -47,12 +47,7 @@ Before doing anything else, read all of the following:
    - no merge conflicts
    - issue linkage present
    - CodeRabbit approved or no blocking comments
-5. Perform the main conflict check using:
-
-```bash
-git fetch origin main
-git merge-tree --quiet $(git merge-base HEAD origin/main) HEAD origin/main
-```
+5. Perform the main conflict check by running `git fetch origin main`, then running `git merge-tree --quiet $(git merge-base HEAD origin/main) HEAD origin/main`.
 
 6. If conflicts exist, attempt rebase onto `origin/main` up to 3 times.
 7. After any conflict fix, call the `runSubagent` tool with:
@@ -71,10 +66,9 @@ git merge-tree --quiet $(git merge-base HEAD origin/main) HEAD origin/main
 - remove the story worktree
 - delete the local story branch
 
-13. For all human interaction, use the prompt skill so the question is shown in chat and execution waits for the user's answer.
-14. Do not ask for confirmation on success; return control immediately to the caller.
+13. Do not ask for confirmation on success; return control immediately to the caller.
 
-## Completion Contract
+### Completion Contract
 
 Return a concise summary containing:
 
@@ -86,4 +80,4 @@ Return a concise summary containing:
 - whether re-validation was required
 - cleanup result
 
-If merge/finalization fails after required retries and escalations, return `MERGE FAILED: <reason>` after handling required prompt-skill escalation.
+If merge/finalization fails after required retries and escalations, return `MERGE FAILED: <reason>` after trying to get clarification from the user.
