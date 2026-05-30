@@ -1,0 +1,21 @@
+epic_num: 115
+story_num: 1
+story_id: '115.1'
+story_key: 115-1-investigate-modal-symbol-lookup-source
+slug: 115-1-investigate-modal-symbol-lookup-source
+title: Investigate Current Modal Symbol Lookup Flow and Choose Shared Lookup Design
+epic_title: Decouple Modal Symbol Lookup from Universe Filters
+type: investigation
+status: Approved
+source_epics_file: _bmad-output/planning-artifacts/epics-2026-05-30.md
+source_section: 'Story 115.1'
+covers_requirements: []
+depends_on_stories: []
+enables_stories: ['115.2', '115.3']
+expected_story_file: _bmad-output/implementation-artifacts/115-1-investigate-modal-symbol-lookup-source.md
+notes: |
+  Current anchors are add-position-dialog.component.ts,
+  div-dep-modal.component.ts, symbol-autocomplete.component.ts, and
+  filter-universes.function.ts. Document how lookup currently depends on
+  filtered Universe state and choose a shared unfiltered query-driven contract
+  for both modals.

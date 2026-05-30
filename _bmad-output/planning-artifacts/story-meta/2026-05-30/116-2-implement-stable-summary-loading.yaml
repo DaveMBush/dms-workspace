@@ -1,0 +1,19 @@
+epic_num: 116
+story_num: 2
+story_id: '116.2'
+story_key: 116-2-implement-stable-summary-loading
+slug: 116-2-implement-stable-summary-loading
+title: Implement Stable One-Time Loading for Account Summary Screens
+epic_title: Stop Continuous Reloading on Account Summary Screens
+type: implementation
+status: Approved
+source_epics_file: _bmad-output/planning-artifacts/epics-2026-05-30.md
+source_section: 'Story 116.2'
+covers_requirements: ['R7', 'R8']
+depends_on_stories: ['116.1']
+enables_stories: ['116.3']
+expected_story_file: _bmad-output/implementation-artifacts/116-2-implement-stable-summary-loading.md
+notes: |
+  Stabilize Account Summary initial load so it fetches once on open and only
+  refetches for legitimate account, month, or year changes. Verify via
+  Playwright MCP that the screen no longer flickers or repaints continuously.

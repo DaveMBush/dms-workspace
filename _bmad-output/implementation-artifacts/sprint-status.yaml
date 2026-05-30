@@ -1,5 +1,5 @@
 # generated: 2026-03-17
-# last_updated: 2026-05-23
+# last_updated: 2026-05-30
 # project: dms-workspace
 # project_key: NOKEY
 # tracking_system: file-system
@@ -37,7 +37,7 @@
 #     E1 → E3 → E4(TS rules) → E2 → E5 → E4(template rules) → E6 → E7 → E8
 
 generated: 2026-03-17
-last_updated: 2026-05-23
+last_updated: 2026-05-30
 project_key: NOKEY
 tracking_system: file-system
 story_location: _bmad-output/implementation-artifacts
@@ -624,7 +624,7 @@ development_status:
   epic-106: in-progress
   106-1-reproduce-scrolling-all-screens: done
   106-2-root-cause-and-fix-scrolling: review
-  106-3-scrolling-regression-suite-106: ready-for-dev
+  116-3-summary-load-stability-regression-tests: ready-for-dev
   epic-106-retrospective: optional
 
   # ── Epic 107: Close Position Not Removed Immediately ────────────────────────
@@ -662,3 +662,24 @@ development_status:
   113-2-fix-universe-sort-persistence: done
   113-3-tests-universe-sort-persistence: review
   epic-113-retrospective: optional
+
+  # ── Epic 114: Fix Disconnected-Header Table Layout and Scrollbar Behavior ────
+  epic-114: in-progress
+  114-1-investigate-disconnected-header-scroll-layout: ready-for-dev
+  114-2-implement-disconnected-header-layout-fix: ready-for-dev
+  114-3-regression-tests-disconnected-header-layout: ready-for-dev
+  epic-114-retrospective: optional
+
+  # ── Epic 115: Decouple Modal Symbol Lookup from Universe Filters ────────────
+  epic-115: in-progress
+  115-1-investigate-modal-symbol-lookup-source: ready-for-dev
+  115-2-implement-unfiltered-symbol-lookup-add-position: ready-for-dev
+  115-3-extend-unfiltered-symbol-lookup-div-dep-and-tests: ready-for-dev
+  epic-115-retrospective: optional
+
+  # ── Epic 116: Stop Continuous Reloading on Account Summary Screens ──────────
+  epic-116: in-progress
+  116-1-investigate-summary-reload-loop: ready-for-dev
+  116-2-implement-stable-summary-loading: ready-for-dev
+  116-3-summary-load-stability-regression-tests: backlog
+  epic-116-retrospective: optional

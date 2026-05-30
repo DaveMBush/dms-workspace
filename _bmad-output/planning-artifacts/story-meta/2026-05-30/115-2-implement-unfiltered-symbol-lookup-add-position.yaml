@@ -1,0 +1,19 @@
+epic_num: 115
+story_num: 2
+story_id: '115.2'
+story_key: 115-2-implement-unfiltered-symbol-lookup-add-position
+slug: 115-2-implement-unfiltered-symbol-lookup-add-position
+title: Implement Shared Unfiltered Symbol Lookup for Add Position
+epic_title: Decouple Modal Symbol Lookup from Universe Filters
+type: implementation
+status: Approved
+source_epics_file: _bmad-output/planning-artifacts/epics-2026-05-30.md
+source_section: 'Story 115.2'
+covers_requirements: ['R4', 'R6']
+depends_on_stories: ['115.1']
+enables_stories: ['115.3']
+expected_story_file: _bmad-output/implementation-artifacts/115-2-implement-unfiltered-symbol-lookup-add-position.md
+notes: |
+  Introduce a shared unfiltered symbol lookup source, likely backed by Fastify
+  and Prisma, and wire Add Position to it. Preserve uppercase normalization,
+  validation, and universe resolution behavior in the add-position dialog.

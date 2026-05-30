@@ -1,0 +1,19 @@
+epic_num: 116
+story_num: 3
+story_id: '116.3'
+story_key: 116-3-summary-load-stability-regression-tests
+slug: 116-3-summary-load-stability-regression-tests
+title: Regression Coverage for Summary Load Stability and Legitimate Refreshes
+epic_title: Stop Continuous Reloading on Account Summary Screens
+type: test
+status: Approved
+source_epics_file: _bmad-output/planning-artifacts/epics-2026-05-30.md
+source_section: 'Story 116.3'
+covers_requirements: ['R7', 'R8']
+depends_on_stories: ['116.2']
+enables_stories: []
+expected_story_file: _bmad-output/implementation-artifacts/116-3-summary-load-stability-regression-tests.md
+notes: |
+  Add component and E2E regression coverage that asserts a single initial load
+  and bounded follow-up fetches for legitimate selector changes. Validate on
+  Chromium and Firefox.
