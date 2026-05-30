@@ -1,6 +1,6 @@
 ---
 description: 'Generate epics and stories from a planning file using bmad-create-epics-and-stories and bmad-create-story skills, then set all story statuses to Approved'
-model: GPT-5 mini (copilot)
+model: GPT-5.4 (copilot)
 argument-hint: file=epics-2026-03-31.md
 tools: [vscode, execute/runNotebookCell, execute/getTerminalOutput, execute/killTerminal, execute/runTask, execute/createAndRunTask, execute/runTests, execute/testFailure, read, agent, edit, search, web, browser, 'bash/*', 'context7/*', 'playwright/*', 'github/*', 'nx-mcp-server/*', 'gitkraken/*', todo]
 user-invocable: true
