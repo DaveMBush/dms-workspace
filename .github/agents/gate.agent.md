@@ -1,8 +1,8 @@
 ---
 description: 'QA gate: invoke the bmad-code-review skill against changed files to verify acceptance criteria, code quality, and test coverage — returns PASS or FAIL'
 argument-hint: story=3-3
-model: Claude Sonnet 4.6 High (copilot)
-tools: [read, search, mcp_bash/*]
+model: GPT-5.4 (copilot)
+tools: [vscode, execute/runNotebookCell, execute/getTerminalOutput, execute/killTerminal, execute/runTask, execute/createAndRunTask, execute/runTests, execute/testFailure, read, agent, edit, search, web, browser, 'bash/*', 'context7/*', 'playwright/*', 'github/*', 'nx-mcp-server/*', 'gitkraken/*', todo]
 user-invocable: false
 ---
 

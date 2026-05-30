@@ -1,8 +1,8 @@
 ---
 description: 'Full quality validation loop: run pnpm all, e2e tests (chromium and firefox), dupcheck, format, and self-review changed files — restart from step 1 if any fix is applied'
 argument-hint: context=story-AD.3
-model: Claude Sonnet 4.6 High (copilot)
-tools: [read, edit, search, mcp_bash/*, mcp_context7/*, mcp_microsoft_pla/*]
+model: GPT-5.4 (copilot)
+tools: [vscode, execute/runNotebookCell, execute/getTerminalOutput, execute/killTerminal, execute/runTask, execute/createAndRunTask, execute/runTests, execute/testFailure, read, agent, edit, search, web, browser, 'bash/*', 'context7/*', 'playwright/*', 'github/*', 'nx-mcp-server/*', 'gitkraken/*', todo]
 user-invocable: false
 ---
 

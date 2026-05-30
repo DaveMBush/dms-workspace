@@ -1,8 +1,8 @@
 ---
 description: 'Validate epic status, verify clean git state on main, create GitHub issue and debug branch, and return branch name to the parent debug workflow'
 argument-hint: epic=3 story=3-5
-model: Claude Sonnet 4.6 High (copilot)
-tools: [read, mcp_bash/*, mcp_github/*]
+model: GPT-5.4 (copilot)
+tools: [vscode, execute/runNotebookCell, execute/getTerminalOutput, execute/killTerminal, execute/runTask, execute/createAndRunTask, execute/runTests, execute/testFailure, read, agent, edit, search, web, browser, 'bash/*', 'context7/*', 'playwright/*', 'github/*', 'nx-mcp-server/*', 'gitkraken/*', todo]
 user-invocable: false
 ---
 

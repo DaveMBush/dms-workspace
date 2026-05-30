@@ -1,8 +1,8 @@
 ---
 description: 'QA review and remediation loop: run the gate up to 10 times, auto-apply fixes using Context7 and Playwright, re-validate after each fix until the gate passes'
 argument-hint: story=3-3
-model: Claude Sonnet 4.6 High (copilot)
-tools: [read, edit, agent, mcp_bash/*, mcp_context7/*, mcp_microsoft_pla/*]
+model: GPT-5.4 (copilot)
+tools: [vscode, execute/runNotebookCell, execute/getTerminalOutput, execute/killTerminal, execute/runTask, execute/createAndRunTask, execute/runTests, execute/testFailure, read, agent, edit, search, web, browser, 'bash/*', 'context7/*', 'playwright/*', 'github/*', 'nx-mcp-server/*', 'gitkraken/*', todo]
 agents: [gate, quality-validation]
 user-invocable: false
 ---

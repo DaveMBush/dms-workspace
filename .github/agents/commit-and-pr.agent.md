@@ -1,7 +1,7 @@
 ---
 description: 'Format code with pnpm format, commit all staged changes, create a GitHub PR linked to the story issue, and write the story metadata file'
-model: Claude Sonnet 4.6 High (copilot)
-tools: [read, edit, mcp_bash/*, mcp_github/*]
+model: GPT-5.4 (copilot)
+tools: [vscode, execute/runNotebookCell, execute/getTerminalOutput, execute/killTerminal, execute/runTask, execute/createAndRunTask, execute/runTests, execute/testFailure, read, agent, edit, search, web, browser, 'bash/*', 'context7/*', 'playwright/*', 'github/*', 'nx-mcp-server/*', 'gitkraken/*', todo]
 user-invocable: false
 ---
 
