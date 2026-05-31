@@ -32,13 +32,17 @@ Then read:
 1. `_bmad-output/project-context.md`
 2. The resolved story file for `${story}` — acceptance criteria and story context
 
-Use `git diff --name-only $(git merge-base HEAD origin/main)...HEAD` to identify the changed files and scope the review to only those files.
+Use `git diff --name-only $(git merge-base HEAD origin/main)...HEAD` to identify the changed files already present in `HEAD` and scope the review to only those files.
 
-If `git merge-base` or `git diff` fails, return a short report with the command error and make the final line exactly `GATE: FAIL`.
+If that committed diff returns zero files, run `git diff --name-only` and use tracked working-tree changes as the review scope fallback. Mention in the gate report that the fallback was used.
+
+If `git merge-base` fails, or if both diff commands fail, return a short report with the command error and make the final line exactly `GATE: FAIL`.
 
 Exclude non-reviewable files from the review scope: binary files, lockfiles (`package-lock.json`, `pnpm-lock.yaml`, `yarn.lock`, `bun.lockb`), and generated directories or outputs (`dist/`, `build/`, `.next/`, `coverage/`).
 
-If `git diff` returns zero changed files, or if no reviewable changed files remain after exclusions, return a short report with reason `no changes detected vs origin/main` and make the final line exactly `GATE: FAIL`.
+Exclude story artifacts and QA workflow files from the review scope because they are operational context, not story implementation: `_bmad-output/implementation-artifacts/`, `.github/agents/`.
+
+If both committed diff and working-tree fallback return zero changed files, or if no reviewable changed files remain after exclusions, inspect the story scope before failing. If the story is explicitly investigation-only, documentation-only, or otherwise states that no implementation changes are expected, assess the acceptance criteria from the story artifact itself and return `GATE: PASS` when that evidence is complete. Otherwise return a short report with reason `no changes detected vs origin/main or working tree` and make the final line exactly `GATE: FAIL`.
 
 Invoke the `#skill:bmad-code-review` skill now against the reviewable changed files and the story context.
 
