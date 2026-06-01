@@ -6,14 +6,11 @@ export async function initializePrismaClient(): Promise<PrismaClient> {
   const { PrismaBetterSqlite3 } = await import(
     '@prisma/adapter-better-sqlite3'
   );
-  // Resolve the DB path relative to the Nx workspace root so that seeders
-  // always write to the same database that the running e2e-server reads from,
-  // regardless of the Playwright process CWD (which differs in git worktrees).
-  const workspaceRoot =
-    process.env['NX_WORKSPACE_ROOT_PATH'] ??
-    process.env['NX_WORKSPACE_ROOT'] ??
-    process.cwd();
-  const testDbUrl = `file:${path.resolve(workspaceRoot, 'test-database.db')}`;
+  const repoRelativeTestDbUrl = `file:${path.resolve(
+    __dirname,
+    '../../../../test-database.db'
+  )}`;
+  const testDbUrl = process.env['E2E_DATABASE_URL'] ?? repoRelativeTestDbUrl;
   const adapter = new PrismaBetterSqlite3({ url: testDbUrl });
   return new prismaClientImport({ adapter });
 }

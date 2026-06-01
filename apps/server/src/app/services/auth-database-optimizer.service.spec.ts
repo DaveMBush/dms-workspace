@@ -260,24 +260,27 @@ describe('AuthDatabaseOptimizerService', () => {
     it('should be more efficient than individual lookups', async () => {
       const usernames = ['auth-user-1', 'auth-user-2', 'auth-user-3'];
 
-      // Individual lookups
-      const individualStartTime = performance.now();
+      // Efficiency here means consolidating N lookups into one instrumented query.
+      // Wall-clock timing is too noisy for CI, so compare recorded query counts.
       for (const username of usernames) {
         await authDatabaseOptimizerService.optimizedUserLookup(
           testClient,
           username
         );
       }
-      const individualTime = performance.now() - individualStartTime;
+      const [individualStats] = databasePerformanceService.getQueryStatistics(
+        'auth:optimized_user_lookup'
+      );
 
-      // Batch lookup
-      const batchStartTime = performance.now();
+      databasePerformanceService.clearMetrics();
       await authDatabaseOptimizerService.batchUserLookup(testClient, usernames);
-      const batchTime = performance.now() - batchStartTime;
+      const [batchStats] = databasePerformanceService.getQueryStatistics(
+        'auth:batch_user_lookup'
+      );
 
-      // Batch should be faster (or at least not significantly slower)
-      // In CI environments, timing can be highly variable, so we allow more tolerance
-      expect(batchTime).toBeLessThanOrEqual(individualTime * 2.0); // Allow 100% margin for CI stability
+      expect(individualStats?.count).toBe(usernames.length);
+      expect(batchStats?.count).toBe(1);
+      expect(batchStats?.count ?? 0).toBeLessThan(individualStats?.count ?? 0);
     });
   });
 

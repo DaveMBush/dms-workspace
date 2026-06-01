@@ -30,7 +30,10 @@ interface RowOverrides {
   symbol: string;
   expired: boolean;
   trades: TradeOverride[];
+  countDivDeposits?: number;
+  countTrades?: number;
   ex_date?: Date | null;
+  is_closed_end_fund?: boolean;
   volatility_long?: string | null;
   volatility_short?: string | null;
   last_price?: number;
@@ -49,7 +52,7 @@ function makeUniverseRow(overrides: RowOverrides) {
     ex_date: overrides.ex_date ?? null,
     risk_group_id: 'rg1',
     expired: overrides.expired,
-    is_closed_end_fund: true,
+    is_closed_end_fund: overrides.is_closed_end_fund ?? true,
     trades: overrides.trades.map(function normaliseTrade(t) {
       return {
         buy: t.buy ?? 10,
@@ -58,7 +61,10 @@ function makeUniverseRow(overrides: RowOverrides) {
         sell_date: t.sell_date,
       };
     }),
-    _count: { trades: overrides.trades.length, divDeposits: 0 },
+    _count: {
+      trades: overrides.countTrades ?? overrides.trades.length,
+      divDeposits: overrides.countDivDeposits ?? 0,
+    },
   };
   if (overrides.risk_group !== undefined) {
     result['risk_group'] = overrides.risk_group;
@@ -91,6 +97,20 @@ describe('GET /api/universe - expired-no-open filter (Story 109.3)', function fi
   // ── AC1: four seed permutations ─────────────────────────────────────────
 
   describe('AC1 — four seed permutations', function fourPermutationsSpec() {
+    it('returns 400 for invalid sort fields', async function invalidSortFieldTest() {
+      const response = await app.inject({
+        method: 'GET',
+        url: '/api/universe/?sortBy=invalidField',
+      });
+
+      expect(response.statusCode).toBe(400);
+      expect(JSON.parse(response.body)).toEqual({
+        error:
+          'Invalid sort field: invalidField. Valid fields: symbol, name, sector, marketCap',
+      });
+      expect(mockPrismaUniverse.findMany).not.toHaveBeenCalled();
+    });
+
     it('calls findMany with WHERE clause that excludes expired-and-no-open rows', async function whereClauseTest() {
       mockPrismaUniverse.findMany.mockResolvedValue([
         makeUniverseRow({
@@ -276,6 +296,114 @@ describe('GET /api/universe - expired-no-open filter (Story 109.3)', function fi
       expect(response.statusCode).toBe(200);
       const rows = JSON.parse(response.body) as Array<{ symbol: string }>;
       expect(rows.length).toBe(2);
+    });
+
+    it('marks non-closed-end funds with no activity as deletable', async function deletableTrueTest() {
+      mockPrismaUniverse.findMany.mockResolvedValue([
+        makeUniverseRow({
+          symbol: 'DELETABLE_TRUE',
+          expired: false,
+          trades: [],
+          countTrades: 0,
+          countDivDeposits: 0,
+          is_closed_end_fund: false,
+          risk_group: { name: 'Income' },
+        }),
+      ]);
+
+      const response = await app.inject({
+        method: 'GET',
+        url: '/api/universe/',
+      });
+
+      expect(response.statusCode).toBe(200);
+      const rows = JSON.parse(response.body) as Array<{ deletable: boolean }>;
+      expect(rows[0].deletable).toBe(true);
+    });
+
+    it('marks non-closed-end funds with dividend deposits as not deletable', async function deletableFalseTest() {
+      mockPrismaUniverse.findMany.mockResolvedValue([
+        makeUniverseRow({
+          symbol: 'DELETABLE_FALSE',
+          expired: false,
+          trades: [],
+          countTrades: 0,
+          countDivDeposits: 1,
+          is_closed_end_fund: false,
+          risk_group: { name: 'Income' },
+        }),
+      ]);
+
+      const response = await app.inject({
+        method: 'GET',
+        url: '/api/universe/',
+      });
+
+      expect(response.statusCode).toBe(200);
+      const rows = JSON.parse(response.body) as Array<{ deletable: boolean }>;
+      expect(rows[0].deletable).toBe(false);
+    });
+
+    it('sorts by sector using risk group names', async function sectorSortTest() {
+      mockPrismaUniverse.findMany.mockResolvedValue([
+        makeUniverseRow({
+          symbol: 'SECTOR_B',
+          expired: false,
+          trades: [],
+          risk_group: { name: 'Utilities' },
+        }),
+        makeUniverseRow({
+          symbol: 'SECTOR_A',
+          expired: false,
+          trades: [],
+          risk_group: { name: 'Energy' },
+        }),
+      ]);
+
+      const response = await app.inject({
+        method: 'GET',
+        url: '/api/universe/?sortBy=sector&sortOrder=asc',
+      });
+
+      expect(response.statusCode).toBe(200);
+      const rows = JSON.parse(response.body) as Array<{ symbol: string }>;
+      expect(
+        rows.map(function getSymbol(row) {
+          return row.symbol;
+        })
+      ).toEqual(['SECTOR_A', 'SECTOR_B']);
+    });
+
+    it('sorts by marketCap using last_price values', async function marketCapSortTest() {
+      mockPrismaUniverse.findMany.mockResolvedValue([
+        makeUniverseRow({
+          symbol: 'MARKET_CAP_LOW',
+          expired: false,
+          trades: [],
+          last_price: 10,
+          risk_group: { name: 'Income' },
+        }),
+        makeUniverseRow({
+          symbol: 'MARKET_CAP_HIGH',
+          expired: false,
+          trades: [],
+          last_price: 25,
+          risk_group: { name: 'Income' },
+        }),
+      ]);
+
+      const response = await app.inject({
+        method: 'GET',
+        url: '/api/universe/?sortBy=marketCap&sortOrder=desc',
+      });
+
+      expect(response.statusCode).toBe(200);
+      const rows = JSON.parse(response.body) as Array<{ symbol: string }>;
+      expect(
+        rows.map(function getSymbol(row) {
+          return row.symbol;
+        })
+      ).toEqual(['MARKET_CAP_HIGH', 'MARKET_CAP_LOW']);
     });
 
     it('handles equal text values in sort (compareTextValues returns 0)', async function equalTextSortTest() {

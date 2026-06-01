@@ -7,7 +7,7 @@
  * FOUR ASSERTIONS:
  *   (a) Scrollbar right-edge stays stable across horizontal scroll positions (R1)
  *       .dms-outer-scroller owns overflow-y:auto and is always full-width.
- *       Its right edge must NOT DRIFT when the inner container scrolls horizontally.
+ *       Its right edge must NOT DRIFT when the body viewport scrolls horizontally.
  *       Before the fix the vertical scrollbar sat on the inner container and would
  *       shift right as the user scrolled left, exposing blank space (R1 regression).
  *   (b) Outer container fills its flex parent (R2)
@@ -42,10 +42,14 @@ import { seedScrollUniverseData } from './helpers/seed-scroll-universe-data.help
 const OUTER_SCROLLER_SEL = '.dms-outer-scroller';
 
 /**
- * Single horizontal scroll container wrapping header and CDK viewport.
- * overflow-x:auto — shifts header and body together.
+ * Body viewport owns horizontal scroll.
+ * Story 114.2 keeps the vertical scrollbar on .dms-outer-scroller and mirrors
+ * this viewport scrollLeft into the sibling header viewport.
  */
-const SCROLL_CONTAINER_SEL = '.dms-table-scroll-container';
+const SCROLL_CONTAINER_SEL = '.dms-table-body';
+
+/** Header viewport receives wheel input and proxies horizontal motion into body viewport. */
+const HEADER_VIEWPORT_SEL = '.dms-table-header-viewport';
 
 /** Column-header cells in the column-label row (not the filter row). */
 const COLUMN_HEADER_CELLS_SEL =
@@ -138,7 +142,7 @@ test.describe('Base Table Layout Regression — AC1: scrollbar right-edge on nar
       // Universe columns (≈1475px) must be wider than the 800px content area.
       // If this branch is hit the seeder or layout changed — flag it as a failure.
       throw new Error(
-        'Precondition failed: .dms-table-scroll-container is not horizontally ' +
+        'Precondition failed: .dms-table-body is not horizontally ' +
           'scrollable at 800px viewport. Universe column total should exceed ' +
           '800px; check column definitions and seeder.'
       );
@@ -226,6 +230,112 @@ test.describe('Base Table Layout Regression — AC1: scrollbar right-edge on nar
         'The vertical scrollbar must stay fixed at the container right edge — ' +
         'it must not scroll with the table content (R1 regression guard).'
     ).toBe(true);
+  });
+
+  test('Universe: wheel input over detached header forwards horizontal scroll into body viewport', async ({
+    page,
+  }) => {
+    const canScroll = await page
+      .locator(SCROLL_CONTAINER_SEL)
+      .first()
+      .evaluate(function checkScrollable(el: Element): boolean {
+        return el.scrollWidth > el.clientWidth;
+      });
+
+    if (!canScroll) {
+      throw new Error(
+        'Precondition failed: .dms-table-body is not horizontally ' +
+          'scrollable at 800px viewport. Universe column total should exceed ' +
+          '800px; check column definitions and seeder.'
+      );
+    }
+
+    const before = await page.evaluate(
+      function captureScrollState(arg: {
+        headerSel: string;
+        bodySel: string;
+      }): { headerScrollLeft: number; bodyScrollLeft: number } {
+        const header = document.querySelector<HTMLElement>(arg.headerSel);
+        const body = document.querySelector<HTMLElement>(arg.bodySel);
+
+        if (!header || !body) {
+          throw new Error(
+            'Precondition failed: detached header or body viewport not found'
+          );
+        }
+
+        body.scrollLeft = 0;
+        return {
+          headerScrollLeft: header.scrollLeft,
+          bodyScrollLeft: body.scrollLeft,
+        };
+      },
+      { headerSel: HEADER_VIEWPORT_SEL, bodySel: SCROLL_CONTAINER_SEL }
+    );
+
+    await page.locator(HEADER_VIEWPORT_SEL).hover();
+    await page.mouse.wheel(240, 0);
+    await page.waitForFunction(
+      function waitForMirroredHorizontalScroll(arg: {
+        headerSel: string;
+        bodySel: string;
+        previousBodyScrollLeft: number;
+      }): boolean {
+        const header = document.querySelector<HTMLElement>(arg.headerSel);
+        const body = document.querySelector<HTMLElement>(arg.bodySel);
+
+        if (!header || !body) {
+          return false;
+        }
+
+        return (
+          body.scrollLeft > arg.previousBodyScrollLeft + 1 &&
+          Math.abs(header.scrollLeft - body.scrollLeft) <= 1
+        );
+      },
+      {
+        headerSel: HEADER_VIEWPORT_SEL,
+        bodySel: SCROLL_CONTAINER_SEL,
+        previousBodyScrollLeft: before.bodyScrollLeft,
+      },
+      { timeout: 2000 }
+    );
+
+    const after = await page.evaluate(
+      function captureScrollState(arg: {
+        headerSel: string;
+        bodySel: string;
+      }): { headerScrollLeft: number; bodyScrollLeft: number } {
+        const header = document.querySelector<HTMLElement>(arg.headerSel);
+        const body = document.querySelector<HTMLElement>(arg.bodySel);
+
+        if (!header || !body) {
+          throw new Error(
+            'Precondition failed: detached header or body viewport not found'
+          );
+        }
+
+        return {
+          headerScrollLeft: header.scrollLeft,
+          bodyScrollLeft: body.scrollLeft,
+        };
+      },
+      { headerSel: HEADER_VIEWPORT_SEL, bodySel: SCROLL_CONTAINER_SEL }
+    );
+
+    expect(
+      after.bodyScrollLeft,
+      `Header wheel input should move the body viewport horizontally. ` +
+        `Observed body scrollLeft before=${before.bodyScrollLeft.toFixed(2)} ` +
+        `after=${after.bodyScrollLeft.toFixed(2)}.`
+    ).toBeGreaterThan(before.bodyScrollLeft + 1);
+
+    expect(
+      Math.abs(after.headerScrollLeft - after.bodyScrollLeft),
+      `Header and body scrollLeft must stay synchronized after wheel forwarding. ` +
+        `Observed header=${after.headerScrollLeft.toFixed(2)} ` +
+        `body=${after.bodyScrollLeft.toFixed(2)}.`
+    ).toBeLessThanOrEqual(1);
   });
 });
 

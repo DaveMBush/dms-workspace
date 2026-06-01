@@ -5,20 +5,10 @@
   <mat-progress-bar mode="indeterminate"></mat-progress-bar>
   }
 
-  <!-- Epic 112 (Story 112.2): dms-outer-scroller owns vertical scrolling so the
-       scrollbar stays pinned to the right edge of the full viewport width on any
-       screen size. cdkVirtualScrollingElement delegates CDK scroll-position detection
-       to this full-width wrapper; the inner dms-table-scroll-container handles only
-       horizontal scroll so header and body remain aligned. -->
-  <div class="dms-outer-scroller" cdkVirtualScrollingElement>
-    <!-- Single horizontal scroll container — header div and CDK viewport scroll together.
-       Epic 111 (Story 111.2): two-region layout — header is a plain <div> above the
-       CDK viewport so it can never drift with virtual-scroll content. -->
-    <div
-      class="dms-table-scroll-container"
-      role="table"
-      [attr.aria-label]="tableLabel()"
-    >
+  <div class="dms-table-shell" role="table" [attr.aria-label]="tableLabel()">
+    <!-- Story 114.2: header leaves vertical scroll subtree so .dms-outer-scroller
+         can keep far-right scrollbar ownership without pulling header vertically. -->
+    <div #headerScrollViewport class="dms-table-header-viewport">
       <!-- Header region: NOT position:sticky — always above CDK viewport in document flow -->
       <div
         class="dms-table-header"
@@ -75,6 +65,7 @@
             [matTooltip]="column.tooltip ?? null"
             (click)="onHeaderClick(column)"
             (keydown.enter)="onHeaderClick(column)"
+            (keydown.space)="onHeaderClick(column); $event.preventDefault()"
           >
             {{ column.header }}
             @if (sortRankMap()[column.field]) {
@@ -90,67 +81,83 @@
           <div class="dms-col-spacer" aria-hidden="true"></div>
         </div>
       </div>
+    </div>
 
-      <!-- Body region: CDK virtual scroll handles vertical scrolling.
-         overflow-x is hidden here — horizontal scrolling handled by the outer container. -->
-      <cdk-virtual-scroll-viewport
-        #viewport
-        class="dms-table-body"
-        [itemSize]="rowHeight()"
-        [minBufferPx]="rowHeight() * bufferSize()"
-        [maxBufferPx]="rowHeight() * bufferSize() * 2"
-      >
-        <div role="rowgroup">
-          <div
-            *cdkVirtualFor="
-              let row of dataSource();
-              let i = index;
-              trackBy: trackByFn
-            "
-            class="dms-body-row"
-            role="row"
-            [style.height.px]="rowHeight()"
-            [class.selected]="selection.isSelected(row)"
-            [class.expired]="isExpired$(row)"
-            [ngClass]="gainLossClassMap$(row)"
-            [attr.data-is-cef]="getIsCef$(row)"
-            [attr.data-has-position]="getHasPosition$(row)"
-            (click)="onRowClick(row)"
-            (keydown.enter)="onRowClick(row)"
-          >
-            @if (selectable()) {
+    <!-- Epic 112 (Story 112.2): dms-outer-scroller keeps vertical-scroll ownership
+         so scrollbar stays pinned to far-right edge of available table area. -->
+    <div #outerScroller class="dms-outer-scroller" cdkVirtualScrollingElement>
+      <!-- Wrapper around the CDK viewport. The viewport host owns horizontal scroll,
+        while this wrapper keeps the body region clipped to the available width. -->
+      <div class="dms-table-scroll-container">
+        <!-- Body region: CDK virtual scroll handles vertical rendering.
+           overflow-x is hidden here — horizontal scrolling handled by body container. -->
+        <cdk-virtual-scroll-viewport
+          #viewport
+          class="dms-table-body"
+          [itemSize]="rowHeight()"
+          [minBufferPx]="rowHeight() * bufferSize()"
+          [maxBufferPx]="rowHeight() * bufferSize() * 2"
+        >
+          <div role="rowgroup">
             <div
-              class="dms-body-cell dms-select-cell"
-              role="cell"
-              [style.width.px]="SELECT_COLUMN_WIDTH"
+              *cdkVirtualFor="
+                let row of dataSource();
+                let i = index;
+                trackBy: trackByFn
+              "
+              class="dms-body-row"
+              role="row"
+              tabindex="0"
+              [style.height.px]="rowHeight()"
+              [class.selected]="selection.isSelected(row)"
+              [class.expired]="isExpired$(row)"
+              [ngClass]="gainLossClassMap$(row)"
+              [attr.data-is-cef]="getIsCef$(row)"
+              [attr.data-has-position]="getHasPosition$(row)"
+              (click)="onRowClick(row)"
+              (keydown.enter)="
+                $event.target === $event.currentTarget && onRowClick(row)
+              "
+              (keydown.space)="
+                $event.target === $event.currentTarget &&
+                  $event.preventDefault();
+                $event.target === $event.currentTarget && onRowClick(row)
+              "
             >
-              <mat-checkbox
-                [checked]="selection.isSelected(row)"
-                (change)="toggleSelection(row)"
-                (click)="$event.stopPropagation()"
-              ></mat-checkbox>
+              @if (selectable()) {
+              <div
+                class="dms-body-cell dms-select-cell"
+                role="cell"
+                [style.width.px]="SELECT_COLUMN_WIDTH"
+              >
+                <mat-checkbox
+                  [checked]="selection.isSelected(row)"
+                  (change)="toggleSelection(row)"
+                  (click)="$event.stopPropagation()"
+                ></mat-checkbox>
+              </div>
+              } @for (column of columns(); track column.field) {
+              <div
+                class="dms-body-cell"
+                role="cell"
+                [style.width.px]="column.width ?? DEFAULT_COLUMN_WIDTH"
+                [attr.data-column]="column.field"
+              >
+                <ng-container
+                  [ngTemplateOutlet]="cellTemplate || defaultCell"
+                  [ngTemplateOutletContext]="{
+                    $implicit: row,
+                    column: column,
+                    index: i
+                  }"
+                ></ng-container>
+              </div>
+              }
+              <div class="dms-col-spacer" aria-hidden="true"></div>
             </div>
-            } @for (column of columns(); track column.field) {
-            <div
-              class="dms-body-cell"
-              role="cell"
-              [style.width.px]="column.width ?? DEFAULT_COLUMN_WIDTH"
-              [attr.data-column]="column.field"
-            >
-              <ng-container
-                [ngTemplateOutlet]="cellTemplate || defaultCell"
-                [ngTemplateOutletContext]="{
-                  $implicit: row,
-                  column: column,
-                  index: i
-                }"
-              ></ng-container>
-            </div>
-            }
-            <div class="dms-col-spacer" aria-hidden="true"></div>
           </div>
-        </div>
-      </cdk-virtual-scroll-viewport>
+        </cdk-virtual-scroll-viewport>
+      </div>
     </div>
   </div>
 </div>
