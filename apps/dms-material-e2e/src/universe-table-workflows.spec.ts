@@ -351,26 +351,34 @@ test.describe('Universe Table Workflows', () => {
     test('should mark expired symbols when ex-date is in past', async ({
       page,
     }) => {
-      const exDateCell = page.locator('[data-testid="ex-date-cell-0"]');
+      await filterUniverseToSymbol(page, symbols[1]);
+      const row = getUniverseRowBySymbol(page, symbols[1]);
+      await expect(row).toBeVisible();
+
+      const exDateCell = row.locator(
+        '.dms-body-cell[data-column="ex_date"] [data-testid^="ex-date-cell-"]'
+      );
       await exDateCell.click();
 
-      // Navigate to previous month and select a date
-      const prevMonthButton = page.locator(
-        'button[aria-label="Previous month"]'
-      );
-      await prevMonthButton.click();
-
-      const dateButton = page.locator('button[aria-label*="15"]').first();
-      await dateButton.click();
+      const pastDate = new Date();
+      pastDate.setMonth(pastDate.getMonth() - 1, 15);
+      const pastDateInput = [
+        String(pastDate.getMonth() + 1).padStart(2, '0'),
+        String(pastDate.getDate()).padStart(2, '0'),
+        String(pastDate.getFullYear()),
+      ].join('/');
+      const dateInput = row.getByRole('textbox', { name: 'Edit date' });
+      await dateInput.fill(pastDateInput);
+      await dateInput.press('Enter');
 
       // Wait for datepicker to close (ensures save operation completes)
       const datepicker = page.locator('mat-datepicker-content');
       await expect(datepicker).not.toBeVisible();
 
-      // Row should be marked as expired (e.g., different styling)
-      // Use a longer timeout to allow for cross-browser re-render latency
-      const row = page.locator('.dms-body-row[role="row"]').first();
-      await expect(row).toHaveClass(/expired/, { timeout: 15000 });
+      const expiredIndicator = row.locator(
+        '.dms-body-cell[data-column="expired"] .expired-indicator'
+      );
+      await expect(expiredIndicator).toHaveText('*', { timeout: 15000 });
     });
   });
 

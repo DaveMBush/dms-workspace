@@ -2,7 +2,9 @@ import { test, expect, Page } from 'playwright/test';
 
 import { login } from './helpers/login.helper';
 
-const BASE_API = 'http://localhost:3001/api/admin/cusip-cache';
+const BASE_API = `${
+  process.env['E2E_API_BASE_URL'] ?? 'http://localhost:3001/api'
+}/admin/cusip-cache`;
 const TEST_CUSIP = 'E2ETEST01';
 const TEST_SYMBOL = 'E2ETEST';
 

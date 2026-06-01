@@ -182,8 +182,9 @@ const universeData: UniverseRow[] = [
 ];
 
 const TABLE_TEMPLATE = `
-  <div style="height: 500px; width: 100%; display: block;">
+  <div style="height: 500px; width: 100%; display: flex;">
     <dms-base-table
+      style="display: block; flex: 1 1 auto; height: 100%; min-height: 0; width: 100%;"
       [data]="data"
       [columns]="columns"
       [tableLabel]="tableLabel"

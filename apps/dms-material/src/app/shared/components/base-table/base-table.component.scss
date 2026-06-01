@@ -2,6 +2,9 @@
 // receives a stable itemSize regardless of cell content.
 :host {
   --mat-table-row-item-container-height: 57px;
+  display: block;
+  min-width: 0;
+  width: 100%;
 }
 
 // Prevent mat-icon-button from inflating cell height beyond the row height.
@@ -13,9 +16,20 @@
 .table-container {
   position: relative;
   height: 100%;
+  width: 100%;
   display: flex;
   flex-direction: column;
+  min-width: 0;
   overflow: hidden;
+}
+
+.dms-table-shell {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  width: 100%;
 }
 
 /**
@@ -97,27 +111,37 @@
  *      horizontal scrollbars and ensures the header and body scroll as one unit.
  */
 
+// Story 114.2: header viewport stays outside vertical scroll subtree. It clips
+// horizontally, mirrors body scrollLeft from TS, and forwards wheel gestures so
+// scroll interaction still works while pointer is over header region.
+.dms-table-header-viewport {
+  flex-shrink: 0;
+  min-width: 0;
+  width: 100%;
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+
 // Epic 112 (Story 112.2): full-width outer scroll container that pins the vertical
-// scrollbar to the right edge of the screen. Takes over flex:1 from
-// .dms-table-scroll-container. overflow-x:hidden lets the inner container own
-// horizontal scroll without a second scrollbar appearing here.
+// scrollbar to the right edge of the screen. Story 114.2 keeps that ownership and
+// removes header from this subtree so vertical scroll no longer translates header.
 .dms-outer-scroller {
   flex: 1;
+  min-width: 0;
+  width: 100%;
   overflow-y: auto;
   overflow-x: hidden;
 }
 
-// Single horizontal scroll container — wraps header div AND CDK viewport.
-// Epic 111: Both header and body shift together on horizontal scroll.
-// overflow-x:auto here; overflow-x:hidden on .dms-table-body.
-// Epic 112: flex:1 moved to .dms-outer-scroller; this element now has natural
-// (fit-content) height so its full content height is visible to the outer scroller.
+// Single body horizontal scroll owner. Header stays in sibling viewport and mirrors
+// this element's scrollLeft so body remains only user-visible horizontal scrollbar.
 .dms-table-scroll-container {
-  overflow-x: auto;
+  overflow-x: hidden;
   overflow-y: hidden;
   display: flex;
   flex-direction: column;
   min-width: 0;
+  width: 100%;
 }
 
 mat-progress-bar {
@@ -131,6 +155,8 @@ mat-progress-bar {
 // Header region — NOT position:sticky. Always above CDK viewport in document flow.
 .dms-table-header {
   flex-shrink: 0;
+  min-width: 100%;
+  width: max-content;
 }
 
 .dms-header-row {
@@ -182,9 +208,10 @@ mat-progress-bar {
 // overflow-x:hidden still defers horizontal scrolling to .dms-table-scroll-container.
 // MUST NOT have contain:layout (see SCROLLING REGRESSION HISTORY, Epic 101/111/112).
 .dms-table-body {
+  width: 100%;
   min-width: 100%;
   overflow-y: visible;
-  overflow-x: hidden;
+  overflow-x: auto;
 }
 
 .dms-body-row {

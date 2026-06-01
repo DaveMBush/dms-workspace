@@ -3,8 +3,15 @@ import { defineConfig, devices } from '@playwright/test';
 import { execSync } from 'child_process';
 import * as path from 'path';
 
-// For CI, you may want to set BASE_URL to the deployed application.
-const baseURL = process.env['BASE_URL'] || 'http://localhost:4301';
+const localWorkspaceRoot = path.resolve(__dirname, '../..');
+
+function computeWorktreePortOffset(workspaceRoot: string): number {
+  let hash = 0;
+  for (const character of workspaceRoot) {
+    hash = (hash * 31 + character.charCodeAt(0)) >>> 0;
+  }
+  return 100 + (hash % 200);
+}
 
 /**
  * Read environment variables from file.
@@ -20,27 +27,59 @@ if (process.env.WSL_DISTRO_NAME && !process.env.CI) {
   delete process.env.DISPLAY;
 }
 
-// Ensure seeders (Prisma-based helpers running in the test process) connect to
-// the same test-database.db that the e2e-server reads from.
-// In a git worktree, `git rev-parse --git-common-dir` returns an absolute path
-// to the main workspace's .git dir, so we derive the main workspace root from
-// it.  In the main workspace, it returns the relative string ".git", so we fall
-// back to the config-file's own two levels up (which IS the workspace root).
-(function resolveWorkspaceRoot(): void {
+let isGitWorktree = false;
+
+const workspaceRoot = (function resolveWorkspaceRoot(): string {
   try {
-    const worktreeRoot = path.resolve(__dirname, '../..');
     const commonGitDir = execSync('git rev-parse --git-common-dir', {
-      cwd: worktreeRoot,
+      cwd: localWorkspaceRoot,
       encoding: 'utf8',
     }).trim();
-    const mainWorkspace = path.isAbsolute(commonGitDir)
-      ? path.dirname(commonGitDir)
-      : worktreeRoot;
-    process.env['NX_WORKSPACE_ROOT_PATH'] = mainWorkspace;
+    isGitWorktree = path.isAbsolute(commonGitDir);
   } catch {
-    process.env['NX_WORKSPACE_ROOT_PATH'] = path.resolve(__dirname, '../..');
+    isGitWorktree = false;
   }
+
+  const configuredWorkspaceRoot =
+    process.env['NX_WORKSPACE_ROOT_PATH'] ?? process.env['NX_WORKSPACE_ROOT'];
+  if (configuredWorkspaceRoot) {
+    const resolvedWorkspaceRoot = path.resolve(configuredWorkspaceRoot);
+    process.env['NX_WORKSPACE_ROOT_PATH'] = resolvedWorkspaceRoot;
+    return resolvedWorkspaceRoot;
+  }
+
+  process.env['NX_WORKSPACE_ROOT_PATH'] = localWorkspaceRoot;
+  return localWorkspaceRoot;
 })();
+
+const portOffset = isGitWorktree
+  ? computeWorktreePortOffset(localWorkspaceRoot)
+  : 0;
+const serverPort = Number(process.env['E2E_SERVER_PORT'] ?? 3001 + portOffset);
+const appPort = Number(process.env['E2E_APP_PORT'] ?? 4301 + portOffset);
+const storybookPort = Number(
+  process.env['E2E_STORYBOOK_PORT'] ?? 6006 + portOffset
+);
+const baseURL =
+  process.env['BASE_URL'] ?? `http://localhost:${String(appPort)}`;
+const firefoxBaseURL = `http://127.0.0.1:${String(appPort)}`;
+const storybookBaseUrl =
+  process.env['STORYBOOK_BASE_URL'] ??
+  `http://localhost:${String(storybookPort)}/iframe.html?viewMode=story&id=`;
+const apiBaseUrl =
+  process.env['E2E_API_BASE_URL'] ??
+  `http://localhost:${String(serverPort)}/api`;
+const reuseExistingServer = !isGitWorktree;
+const hasExplicitTestPath = process.argv.some(
+  (argument) => argument.endsWith('.spec.ts') || argument.includes('/src/')
+);
+const requiresStorybook =
+  process.argv.some((argument) => argument.includes('storybook')) ||
+  !hasExplicitTestPath;
+
+process.env['BASE_URL'] = baseURL;
+process.env['STORYBOOK_BASE_URL'] = storybookBaseUrl;
+process.env['E2E_API_BASE_URL'] = apiBaseUrl;
 
 export default defineConfig({
   ...nxE2EPreset(__filename, { testDir: './src' }),
@@ -70,41 +109,48 @@ export default defineConfig({
   /* Run your local dev server before starting the tests */
   webServer: [
     {
-      command: 'pnpm nx run server:e2e-server',
-      url: 'http://localhost:3001/api/health',
-      reuseExistingServer: true,
-      cwd:
-        process.env['NX_WORKSPACE_ROOT_PATH'] ??
-        path.resolve(__dirname, '../..'),
-      timeout: 120000,
+      command:
+        'pnpm nx run server:prepare-e2e-db && pnpm nx run server:build && node dist/apps/server/main.js',
+      url: `http://localhost:${String(serverPort)}/api/health`,
+      reuseExistingServer,
+      cwd: workspaceRoot,
+      timeout: 180000,
       env: {
         ...process.env,
-        // NX_WORKSPACE_ROOT_PATH is already resolved above (git-common-dir aware)
-        // and spread via ...process.env.  Do not override it here so that the
-        // server always uses the same workspace root as the seeders.
+        DATABASE_URL: 'file:./test-database.db',
         NODE_ENV: process.env.CI ? 'local' : 'development',
+        PORT: String(serverPort),
         AWS_ENDPOINT_URL: 'http://localhost:4566',
         SKIP_AWS_AUTH: 'true',
       },
     },
     {
-      command: 'pnpm nx run dms-material:serve-e2e',
-      url: 'http://localhost:4301',
-      reuseExistingServer: true,
-      cwd: path.resolve(__dirname, '../..'),
-      timeout: 120000,
+      command:
+        `pnpm nx run dms-material:serve-e2e --port=${String(appPort)} ` +
+        '--proxyConfig=apps/dms-material/proxy.playwright.conf.js',
+      url: baseURL,
+      reuseExistingServer,
+      cwd: workspaceRoot,
+      timeout: 180000,
       env: {
         ...process.env,
+        E2E_API_PROXY_TARGET: `http://localhost:${String(serverPort)}`,
         NODE_OPTIONS: '--max-old-space-size=4096',
       },
     },
-    {
-      command: 'pnpm nx run dms-material:storybook --port 6006',
-      url: 'http://localhost:6006',
-      reuseExistingServer: true,
-      cwd: path.resolve(__dirname, '../..'),
-      timeout: 120000,
-    },
+    ...(requiresStorybook
+      ? [
+          {
+            command: `pnpm nx run dms-material:storybook --port ${String(
+              storybookPort
+            )}`,
+            url: `http://localhost:${String(storybookPort)}`,
+            reuseExistingServer,
+            cwd: workspaceRoot,
+            timeout: 300000,
+          },
+        ]
+      : []),
   ],
   projects: [
     {
@@ -128,7 +174,7 @@ export default defineConfig({
         ...devices['Desktop Firefox'],
         // Firefox on Linux resolves 'localhost' to ::1 (IPv6), but the dev server
         // only listens on IPv4. Override baseURL to use 127.0.0.1 explicitly.
-        baseURL: 'http://127.0.0.1:4301',
+        baseURL: firefoxBaseURL,
       },
     },
 

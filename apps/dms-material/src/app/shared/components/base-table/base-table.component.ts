@@ -29,91 +29,18 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { debounceTime } from 'rxjs';
 
 import { SortColumn } from '../../services/sort-column.interface';
+import { bindHeaderInteractions } from './base-table-scroll.utils';
 import { compareValues } from './base-table-sort.utils';
 import { ColumnDef } from './column-def.interface';
 
 /**
- * SCROLLING REGRESSION HISTORY — DO NOT SIMPLIFY THIS CODE:
- * Epic 29: rowHeight mismatch → CDK scroll height calculated incorrectly
- * Epic 31: contain:strict on sticky header → jump on CDK viewport recalculation
- * Epic 44: CSS transitions + extra CD cycles → CDK recalculated mid-animation
- * Epic 60: isLoading=true rows filtered → array shrinks → CDK shrinks total height → scroll jumps
- * Epic 64: Edge case follow-up to Epic 60 (excludeLoadingRows re-introduced the bug)
- * Epic 87: Same root cause as Epic 60/64 but on account-panel screens (Open Positions,
- *   Sold Positions, Dividend Deposits). Those screens used symbol: '' (empty string) as
- *   the SmartNgRX placeholder, while Universe already used symbol: '\u2026'. A rapid
- *   scroll triggered lazy-load in-flight windows where placeholder rows with blank symbols
- *   were visible. Fix (Story 87.2): change placeholder symbol from '' to '\u2026' in all
- *   three account-panel component services, matching the Universe screen pattern.
- * Epic 101: contain:paint on .virtual-scroll-viewport (base-table.component.scss) caused
- *   slow-scroll sticky header drift on all five CDK virtual-scroll hosts (Universe, Open
- *   Positions, Sold Positions, Dividend Deposits, Screener). CSS Containment Level 2
- *   (Chrome 114+, Firefox 109+) changed contain:paint to imply contain:layout, creating
- *   an independent formatting context. Combined with CDK's transform:translateY() on
- *   .cdk-virtual-scroll-content-wrapper, the browser's sticky resolver computed anchor
- *   offsets in the transformed coordinate space during 4px/step slow scroll, producing
- *   header-scrolls-with-content and header-under-header artifacts. Fix (Story 101.2):
- *   removed contain:paint from .virtual-scroll-viewport; overflow:auto/hidden already
- *   provides the equivalent paint boundary without the layout-containment side-effect.
- * Epic 105: Story 105.1 added a slow-scroll regression spec
- *   (scrolling-regression-105.spec.ts) to capture "header-under-header" artifacts
- *   (sticky header sliding above the viewport top) on context-change. Live-DOM
- *   diagnostic (Story 105.2) confirmed that th.mat-mdc-header-cell (position:sticky;
- *   top:0) remained correctly anchored at viewportTop in both baseline and after
- *   account/filter changes. The 6/16 test failures were caused by the spec measuring
- *   tr.mat-mdc-header-row (position:static, natural-flow y = viewportTop - scrollTop)
- *   instead of the actual sticky element; at any scrollTop > PIXEL_TOLERANCE the check
- *   viewportTop - tr.y = scrollTop > 2 produced a false violation.
- *   Fix (Story 105.2): changed HEADER_ROW_SELECTOR from 'tr.mat-mdc-header-row' to
- *   'th.mat-mdc-header-cell' so the spec correctly measures the sticky-positioned cell.
- *   Additionally added contextId = input<string|null>() to BaseTableComponent: screen
- *   components bind a key that changes on every account- or filter-change, and an effect
- *   calls scrollToIndex(0) on key change — resetting viewport scroll position to the top
- *   for clean UX after a context switch. See SCROLLING REGRESSION HISTORY in
- *   base-table.component.scss for the CSS-side constraints.
- * Epic 106: Round-9 investigation (Story 106.1) swept all 5 CDK virtual-scroll screens
- *   × Chromium × account-change + filter-change triggers with the Round-8 contextId /
- *   scrollToIndex(0) mechanism in place. Result: 0 FAIL cells — drift=0, overlap=0 for
- *   every screen × trigger. All 6 root-cause candidates (C1: CDK _renderedRange stale
- *   after data-source swap; C2: sticky containing-block re-created by structural
- *   directive; C3: row-identity churn from stale SmartNgRX UUIDs; C4: conditional
- *   ancestor transform/will-change/contain during loading state; C5: contextKey$
- *   formula missing a trigger signal; C6: isLoading→null array shrink) are ELIMINATED
- *   by the Chromium evidence plus live-DOM baseline (headerTop == viewportTop on all
- *   5 screens, no anomalous ancestor CSS properties detected). Firefox sweep (Story
- *   106.2) confirmed all deferred cells clean: same result (drift=0, overlap=0) — the
- *   contextId / scrollToIndex(0) mechanism from Epic 105 is sufficient for both
- *   browsers. Investigation spec at scrolling-regression-106-investigation.spec.ts.
- *   No production code changes required in Epic 106.
- * Epic 111: (Story 111.2) Replaced the combined <table mat-table> + position:sticky
- *   <th> header approach with a two-region layout. A plain .dms-table-header <div>
- *   sits above cdk-virtual-scroll-viewport in document flow so it can never drift with
- *   virtual-scroll content. MatTableModule and MatSortModule removed from imports[];
- *   sort implemented via onHeaderClick()/getAriaSort(). Column widths changed from
- *   string (e.g. '80px') to number (e.g. 80) for uniform [style.width.px] binding.
- *   Single outer .dms-table-scroll-container (overflow-x:auto) keeps header and body
- *   horizontally aligned without a JS sync mechanism.
- *
- * Epic 112: (Story 112.2) Fixed three layout regressions from Epic 111.
- *   R1/R2: vertical scrollbar drift — moved overflow-y:auto to a new .dms-outer-scroller
- *   wrapper with cdkVirtualScrollingElement so CDK delegates scroll detection to the
- *   full-width element. .dms-table-body now has overflow-y:visible.
- *   R3: columns don't fill container — cell bindings kept as exact [style.width.px];
- *   flex-grow:0 on cells; .dms-col-spacer (flex:1) at end of each row absorbs spare
- *   width, keeping header and body column widths in exact parity.
- *   R4: beyond-table background mismatch — background-color:var(--dms-surface) on rows.
- *
- * Structural constraints:
- *   1. CDK virtual scroll requires a STABLE array length. SmartNgRX marks rows
- *      isLoading=true during in-flight requests; filtering those rows out shrinks the
- *      array and causes CDK to recalculate total height, jumping the viewport. Always
- *      keep placeholder/loading rows in the array. Placeholder rows must use a non-empty
- *      symbol (e.g. '\u2026') so blank-cell regression guards do not false-positive.
- *   2. .dms-table-body (CDK viewport) has overflow-y:visible (Epic 112). Scroll detection
- *      is delegated to .dms-outer-scroller via cdkVirtualScrollingElement directive.
- *      MUST NOT apply layout containment (contain:layout or any shorthand that implies
- *      it). CDK positions visible rows via transform:translateY on the content-wrapper;
- *      layout containment would break CDK's scroll height calculation.
+ * Scrolling guardrails:
+ * - Keep placeholder rows in array; shrinking length breaks CDK height math.
+ * - Placeholder symbols must stay non-empty (`\u2026`) so blank-row guards stay valid.
+ * - `.dms-table-body` delegates vertical scroll detection to `.dms-outer-scroller`.
+ * - Never add layout containment to viewport path; CDK uses translated content wrappers.
+ * - `contextId` resets scroll position after account/filter swaps.
+ * - Header stays above viewport in document flow while body scrollLeft is mirrored into it.
  */
 
 @Component({
@@ -148,12 +75,13 @@ export class BaseTableComponent<T extends { id: string }>
   // Default column width in pixels when a column definition omits width.
   // eslint-disable-next-line @typescript-eslint/naming-convention -- UPPER_SNAKE_CASE intentional for class-level constant
   readonly DEFAULT_COLUMN_WIDTH = 100;
+
   // Width in pixels for the selection checkbox column.
   // eslint-disable-next-line @typescript-eslint/naming-convention -- UPPER_SNAKE_CASE intentional for class-level constant
   readonly SELECT_COLUMN_WIDTH = 48;
 
   // Inputs
-  data = input.required<T[]>(); // Signal-based data input
+  data = input.required<T[]>();
   columns = input.required<ColumnDef[]>();
   tableLabel = input<string>('Data table');
   rowHeight = input<number>(57);
@@ -162,9 +90,6 @@ export class BaseTableComponent<T extends { id: string }>
   multiSelect = input<boolean>(false);
   loading = input<boolean>(false);
   sortColumns = input<SortColumn[]>([]);
-  // See SCROLLING REGRESSION HISTORY — Epic 105: bind a key that changes on every
-  // account- or filter-change to force a scroll reset before Angular Material
-  // re-measures sticky row heights on the new dataset.
   contextId = input<string | null>(null);
 
   // Outputs
@@ -175,6 +100,12 @@ export class BaseTableComponent<T extends { id: string }>
 
   // ViewChild for virtual scroll viewport
   viewport = viewChild<CdkVirtualScrollViewport>('viewport');
+
+  headerScrollViewport = viewChild<ElementRef<HTMLElement>>(
+    'headerScrollViewport'
+  );
+
+  outerScroller = viewChild<ElementRef<HTMLElement>>('outerScroller');
 
   // Internal state
   selection = new SelectionModel<T>(true, []);
@@ -212,19 +143,13 @@ export class BaseTableComponent<T extends { id: string }>
       el.removeEventListener('click', captureShiftKey, true);
     });
 
-    // Track dataSource changes so the effect is reactive to data/sort updates
     effect(
       // eslint-disable-next-line @smarttools/no-anonymous-functions -- Required for effect
       () => {
-        const context = this;
-        // Read the signal to track it — Angular 21 zoneless signals schedule
-        // view updates automatically; markForCheck() is not needed here and
-        // would add a redundant CD cycle on every scroll-triggered recompute
-        context.dataSource();
+        this.dataSource();
       }
     );
 
-    // Initialize sortState from sortColumns input for restored state
     effect(
       // eslint-disable-next-line @smarttools/no-anonymous-functions -- Required for effect
       () => {
@@ -240,15 +165,6 @@ export class BaseTableComponent<T extends { id: string }>
       }
     );
 
-    // See SCROLLING REGRESSION HISTORY — Epic 105.
-    // Reset the CDK viewport to scrollTop=0 whenever the contextId changes to a
-    // non-null value. This forces a clean layout state before Angular Material
-    // re-measures sticky header row heights on the new dataset, preventing
-    // header-scrolls-with-content and header-under-header artifacts.
-    //
-    // We track the previous value so we can skip the initial binding — firing
-    // scrollToTop() on the very first (non-null) value would interfere with
-    // tests that navigate to a pre-scrolled position immediately after mount.
     effect(
       // eslint-disable-next-line @smarttools/no-anonymous-functions -- Required for effect
       () => {
@@ -264,6 +180,12 @@ export class BaseTableComponent<T extends { id: string }>
 
   ngAfterViewInit(): void {
     const viewportValue = this.viewport();
+    const headerScrollViewportValue =
+      this.headerScrollViewport()?.nativeElement;
+    const bodyHorizontalScrollerValue =
+      viewportValue?.elementRef?.nativeElement;
+    const outerScrollerValue = this.outerScroller()?.nativeElement;
+
     if (viewportValue) {
       viewportValue.renderedRangeStream
         .pipe(debounceTime(100), takeUntilDestroyed(this.destroyRef))
@@ -272,6 +194,15 @@ export class BaseTableComponent<T extends { id: string }>
             this.renderedRangeChange.emit(range);
           }.bind(this)
         );
+    }
+
+    if (headerScrollViewportValue && bodyHorizontalScrollerValue) {
+      bindHeaderInteractions(
+        this.destroyRef,
+        headerScrollViewportValue,
+        bodyHorizontalScrollerValue,
+        outerScrollerValue
+      );
     }
   }
 
@@ -302,15 +233,13 @@ export class BaseTableComponent<T extends { id: string }>
       ? (row as T & { gainLossType?: 'gain' | 'loss' | 'neutral' }).gainLossType
       : undefined;
 
-  // Returns an ngClass-compatible map from the row's gainLossType to avoid
-  // triple evaluation of gainLossType$ per change-detection cycle.
+  // Returns an ngClass-compatible map from the row's gainLossType to avoid triple evaluation.
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- needed for proper typing
   gainLossClassMap$ = (row: T): Record<string, boolean> => {
     const t = this.gainLossType$(row);
     return { gain: t === 'gain', loss: t === 'loss', neutral: t === 'neutral' };
   };
 
-  // Data source - reactive to data() and sortColumns() changes
   dataSource = computed(
     // eslint-disable-next-line @smarttools/no-anonymous-functions -- Required for computed signal
     () => {
@@ -323,11 +252,6 @@ export class BaseTableComponent<T extends { id: string }>
         a: Record<string, unknown>,
         b: Record<string, unknown>
       ): number {
-        // Rows flagged as loading (placeholders) always sort to the end so that
-        // real data is visible at the correct sorted positions.  This prevents
-        // the sort+lazy-load mismatch where placeholder rows with empty fields
-        // move to the top/bottom of the sorted list and the user sees only
-        // empty rows when scrolling.
         const aLoading = a['isLoading'] === true;
         const bLoading = b['isLoading'] === true;
         if (aLoading !== bLoading) {
@@ -348,13 +272,10 @@ export class BaseTableComponent<T extends { id: string }>
   displayedColumns = computed(
     // eslint-disable-next-line @smarttools/no-anonymous-functions -- Required for computed signal
     () => {
-      const context = this;
-      const columnsValue = context.columns();
-      const cols = columnsValue.map(function getField(c) {
+      const cols = this.columns().map(function getField(c) {
         return c.field;
       });
-      const selectableValue = context.selectable();
-      if (selectableValue) {
+      if (this.selectable()) {
         return ['select', ...cols];
       }
       return cols;
@@ -364,13 +285,10 @@ export class BaseTableComponent<T extends { id: string }>
   filterColumns = computed(
     // eslint-disable-next-line @smarttools/no-anonymous-functions -- Required for computed signal
     () => {
-      const context = this;
-      const columnsValue = context.columns();
-      const cols = columnsValue.map(function getFilterField(c) {
+      const cols = this.columns().map(function getFilterField(c) {
         return c.field + 'Filter';
       });
-      const selectableValue = context.selectable();
-      if (selectableValue) {
+      if (this.selectable()) {
         return ['selectFilter', ...cols];
       }
       return cols;

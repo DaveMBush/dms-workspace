@@ -10,7 +10,7 @@
  *   (b) Header and body column widths match within 1px (shared fixed-column-width model)
  *       Validates that ColumnDef.width drives both header cells and body cells identically.
  *   (c) Synchronized horizontal scroll (when body content exceeds viewport width)
- *       The outer .dms-table-scroll-container (overflow-x:auto) scrolls both regions as one unit.
+ *       .dms-table-body owns horizontal scroll while the sibling header viewport mirrors it.
  *   (d) Post-context-change: header top stays at scroll-container top during slow vertical scroll
  *       The header is in document flow, never position:sticky, so it cannot drift with CDK content.
  *
@@ -47,13 +47,16 @@ import { swapUniverseAccount } from './helpers/swap-universe-account.helper';
  */
 const HEADER_REGION_SEL = '[data-testid="base-table-header"]';
 
-/**
- * Outer horizontal-scroll container shared by header and CDK viewport.
- * overflow-x:auto on this element is the sole horizontal scroller (Epic 111).
- */
-const SCROLL_CONTAINER_SEL = '.dms-table-scroll-container';
+/** Non-scrolling table shell that owns header + body regions. */
+const TABLE_SHELL_SEL = '.dms-table-shell';
 
-/** CDK virtual-scroll viewport — handles vertical scrolling only. */
+/**
+ * Body horizontal-scroll owner.
+ * Story 114.2 mirrors this viewport scrollLeft into the sibling header viewport.
+ */
+const SCROLL_CONTAINER_SEL = '.dms-table-body';
+
+/** Full-width outer vertical scroller delegated via cdkVirtualScrollingElement. */
 const VIEWPORT_SEL = '.dms-outer-scroller';
 
 /** Column-header cells in the column-label row (not the filter row). */
@@ -166,9 +169,8 @@ async function assertColumnWidthParity(page: Page): Promise<void> {
 /**
  * (c) Synchronized horizontal scroll.
  *
- * The outer .dms-table-scroll-container wraps both the header div and the CDK
- * viewport. When it scrolls horizontally both regions shift together — there is
- * no separate JS sync mechanism. This assertion verifies:
+ * Story 114.2 keeps one body horizontal-scroll owner and mirrors that scrollLeft
+ * into the sibling header viewport. This assertion verifies:
  *   1. Scrolling right by ≤50px shifts both the first header cell and the first
  *      body cell by the same delta within 1px.
  *   2. Resetting scrollLeft to 0 returns both cells to their original positions
@@ -197,77 +199,89 @@ async function assertHorizontalScrollSync(page: Page): Promise<void> {
       containerSel: string;
       headerCellSel: string;
       bodyCellSel: string;
-    }): {
+    }): Promise<{
       ok: boolean;
       message: string;
       hDelta: number;
       bDelta: number;
       syncDiff: number;
       resetDiff: number;
-    } {
+    }> {
       const { containerSel, headerCellSel, bodyCellSel } = arg;
-      const container = document.querySelector<HTMLElement>(containerSel);
-      const headerCell = document.querySelector<HTMLElement>(headerCellSel);
-      const bodyRow = document.querySelector<HTMLElement>(
-        '.dms-body-row[role="row"]'
-      );
-      const bodyCell = bodyRow?.querySelector<HTMLElement>(bodyCellSel);
+      return new Promise(function executor(
+        resolve: (value: {
+          ok: boolean;
+          message: string;
+          hDelta: number;
+          bDelta: number;
+          syncDiff: number;
+          resetDiff: number;
+        }) => void
+      ): void {
+        const container = document.querySelector<HTMLElement>(containerSel);
+        const headerCell = document.querySelector<HTMLElement>(headerCellSel);
+        const bodyRow = document.querySelector<HTMLElement>(
+          '.dms-body-row[role="row"]'
+        );
+        const bodyCell = bodyRow?.querySelector<HTMLElement>(bodyCellSel);
 
-      if (!container || !headerCell || !bodyCell) {
-        // Precondition unmet: required elements must be present to test scroll sync.
-        return {
-          ok: false,
-          message:
-            'precondition unmet: required elements not found (container=' +
-            !!container +
-            ' headerCell=' +
-            !!headerCell +
-            ' bodyCell=' +
-            !!bodyCell +
-            ')',
-          hDelta: 0,
-          bDelta: 0,
-          syncDiff: 0,
-          resetDiff: 0,
-        };
-      }
+        if (!container || !headerCell || !bodyCell) {
+          resolve({
+            ok: false,
+            message:
+              'precondition unmet: required elements not found (container=' +
+              !!container +
+              ' headerCell=' +
+              !!headerCell +
+              ' bodyCell=' +
+              !!bodyCell +
+              ')',
+            hDelta: 0,
+            bDelta: 0,
+            syncDiff: 0,
+            resetDiff: 0,
+          });
+          return;
+        }
 
-      // Record initial viewport-relative left positions.
-      const hBefore = headerCell.getBoundingClientRect().left;
-      const bBefore = bodyCell.getBoundingClientRect().left;
+        const hBefore = headerCell.getBoundingClientRect().left;
+        const bBefore = bodyCell.getBoundingClientRect().left;
+        const available = container.scrollWidth - container.clientWidth;
+        const targetScroll = Math.min(50, Math.floor(available / 2));
 
-      // Scroll right by a capped amount (half of available range, max 50px).
-      const available = container.scrollWidth - container.clientWidth;
-      const targetScroll = Math.min(50, Math.floor(available / 2));
-      container.scrollLeft = targetScroll;
+        container.scrollLeft = targetScroll;
 
-      // scrollLeft is applied synchronously — no rAF needed.
-      const hAfter = headerCell.getBoundingClientRect().left;
-      const bAfter = bodyCell.getBoundingClientRect().left;
+        requestAnimationFrame(function afterScroll(): void {
+          const hAfter = headerCell.getBoundingClientRect().left;
+          const bAfter = bodyCell.getBoundingClientRect().left;
 
-      const hDelta = hBefore - hAfter;
-      const bDelta = bBefore - bAfter;
-      const syncDiff = Math.abs(hDelta - bDelta);
+          const hDelta = hBefore - hAfter;
+          const bDelta = bBefore - bAfter;
+          const syncDiff = Math.abs(hDelta - bDelta);
 
-      // Reset and verify both cells return to starting positions.
-      container.scrollLeft = 0;
-      const hReset = headerCell.getBoundingClientRect().left;
-      const bReset = bodyCell.getBoundingClientRect().left;
-      const resetDiff = Math.max(
-        Math.abs(hReset - hBefore),
-        Math.abs(bReset - bBefore)
-      );
+          container.scrollLeft = 0;
 
-      const ok = syncDiff <= 1 && resetDiff <= 1;
-      const message =
-        `scrollTarget=${targetScroll}px — ` +
-        `header shifted ${hDelta.toFixed(2)}px, body shifted ${bDelta.toFixed(
-          2
-        )}px; ` +
-        `syncDiff=${syncDiff.toFixed(2)}px, resetDiff=${resetDiff.toFixed(
-          2
-        )}px`;
-      return { ok, message, hDelta, bDelta, syncDiff, resetDiff };
+          requestAnimationFrame(function afterReset(): void {
+            const hReset = headerCell.getBoundingClientRect().left;
+            const bReset = bodyCell.getBoundingClientRect().left;
+            const resetDiff = Math.max(
+              Math.abs(hReset - hBefore),
+              Math.abs(bReset - bBefore)
+            );
+
+            const ok = syncDiff <= 1 && resetDiff <= 1;
+            const message =
+              `scrollTarget=${targetScroll}px — ` +
+              `header shifted ${hDelta.toFixed(
+                2
+              )}px, body shifted ${bDelta.toFixed(2)}px; ` +
+              `syncDiff=${syncDiff.toFixed(2)}px, resetDiff=${resetDiff.toFixed(
+                2
+              )}px`;
+            resolve({ ok, message, hDelta, bDelta, syncDiff, resetDiff });
+          });
+        });
+      });
     },
     {
       containerSel: SCROLL_CONTAINER_SEL,
@@ -280,7 +294,7 @@ async function assertHorizontalScrollSync(page: Page): Promise<void> {
     result.ok,
     `Horizontal scroll synchronization failed: ${result.message}. ` +
       'Header and body must shift by equal deltas (≤1px difference) — ' +
-      'they share one .dms-table-scroll-container (overflow-x:auto) parent.'
+      'body owns horizontal scroll and header must mirror that offset.'
   ).toBe(true);
 }
 
@@ -292,12 +306,11 @@ async function assertHorizontalScrollSync(page: Page): Promise<void> {
  * This assertion slow-scrolls the CDK viewport (4px/step for up to 3s) and
  * on every rAF frame verifies:
  *
- *   header.getBoundingClientRect().top === scrollContainer.getBoundingClientRect().top ± 1px
+ *   header.getBoundingClientRect().top === tableShell.getBoundingClientRect().top ± 1px
  *
- * Because the header div is in normal document flow at the top of
- * .dms-table-scroll-container (which has overflow-y:hidden), the header can
- * never move while the CDK viewport scrolls. Any violation means something
- * has re-introduced a mechanism that moves the header with scroll content.
+ * Story 114.2 keeps the header as a sibling above the outer vertical scroller.
+ * Any violation means the header re-entered the vertical scroll subtree or some
+ * other layout change is translating it during body scroll.
  */
 async function assertPostContextChangeInvariant(
   page: Page,
@@ -313,11 +326,11 @@ async function assertPostContextChangeInvariant(
     function slowScrollAndCheckHeaderPosition(arg: {
       viewportSel: string;
       headerSel: string;
-      containerSel: string;
+      shellSel: string;
       scrollMs: number;
       stepPx: number;
     }): Promise<{ ok: boolean; violations: string[]; frames: number }> {
-      const { viewportSel, headerSel, containerSel, scrollMs, stepPx } = arg;
+      const { viewportSel, headerSel, shellSel, scrollMs, stepPx } = arg;
       return new Promise(function executor(
         resolve: (value: {
           ok: boolean;
@@ -327,13 +340,13 @@ async function assertPostContextChangeInvariant(
       ): void {
         const viewport = document.querySelector<HTMLElement>(viewportSel);
         const header = document.querySelector<HTMLElement>(headerSel);
-        const container = document.querySelector<HTMLElement>(containerSel);
+        const shell = document.querySelector<HTMLElement>(shellSel);
 
-        if (!viewport || !header || !container) {
+        if (!viewport || !header || !shell) {
           resolve({
             ok: false,
             violations: [
-              `selector not found: viewport=${!!viewport} header=${!!header} container=${!!container}`,
+              `selector not found: viewport=${!!viewport} header=${!!header} shell=${!!shell}`,
             ],
             frames: 0,
           });
@@ -374,15 +387,15 @@ async function assertPostContextChangeInvariant(
           requestAnimationFrame(function onFrame(): void {
             frames++;
             const headerTop = header.getBoundingClientRect().top;
-            const containerTop = container.getBoundingClientRect().top;
-            const diff = Math.abs(headerTop - containerTop);
+            const shellTop = shell.getBoundingClientRect().top;
+            const diff = Math.abs(headerTop - shellTop);
 
             if (diff > 1) {
               violations.push(
                 `scrollTop=${viewport.scrollTop}: ` +
                   `headerTop=${headerTop.toFixed(
                     2
-                  )} containerTop=${containerTop.toFixed(2)} ` +
+                  )} shellTop=${shellTop.toFixed(2)} ` +
                   `diff=${diff.toFixed(2)}`
               );
             }
@@ -402,7 +415,7 @@ async function assertPostContextChangeInvariant(
     {
       viewportSel: VIEWPORT_SEL,
       headerSel: HEADER_REGION_SEL,
-      containerSel: SCROLL_CONTAINER_SEL,
+      shellSel: TABLE_SHELL_SEL,
       scrollMs: 3000,
       stepPx: 4,
     }
@@ -410,11 +423,11 @@ async function assertPostContextChangeInvariant(
 
   expect(
     result.ok,
-    `Header drifted from scroll-container top after context change ` +
+    `Header drifted from table-shell top after context change ` +
       `(${result.violations.length} violation(s) across ${result.frames} frames):\n` +
       result.violations.join('\n') +
-      '\nThe two-region header is in document flow inside overflow-y:hidden container — ' +
-      'it must never shift during CDK viewport vertical scrolling.'
+      '\nThe two-region header must remain outside the outer vertical scroller — ' +
+      'it must never shift during body scrolling.'
   ).toBe(true);
 }
 

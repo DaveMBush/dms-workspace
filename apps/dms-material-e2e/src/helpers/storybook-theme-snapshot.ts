@@ -1,6 +1,7 @@
 import { expect, Page } from 'playwright/test';
 
 const STORYBOOK_BASE_URL =
+  process.env['STORYBOOK_BASE_URL'] ??
   'http://localhost:6006/iframe.html?viewMode=story&id=';
 
 /**
