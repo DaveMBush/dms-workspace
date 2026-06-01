@@ -11,6 +11,30 @@ function getUniverseRowBySymbol(page: Page, symbol: string) {
   });
 }
 
+function getDistributionCellBySymbol(page: Page, symbol: string) {
+  return getUniverseRowBySymbol(page, symbol).first().locator(
+    '.dms-body-cell[data-column="distribution"] [data-testid^="distribution-cell-"]'
+  ).first();
+}
+
+async function getFirstVisibleUniverseSymbol(page: Page): Promise<string> {
+  const firstVisibleSymbolCell = page.locator(
+    '.dms-body-row[role="row"] .dms-body-cell[data-column="symbol"]'
+  ).first();
+  await expect(firstVisibleSymbolCell).toBeVisible({ timeout: 10000 });
+  await expect
+    .poll(
+      async function readVisibleSymbolText() {
+        return (await firstVisibleSymbolCell.textContent())?.trim() ?? '';
+      },
+      { timeout: 10000 }
+    )
+    .toMatch(/^(?!…$).+/);
+  const symbolText = (await firstVisibleSymbolCell.textContent())?.trim() ?? '';
+  expect(symbolText).toBeTruthy();
+  return symbolText;
+}
+
 async function filterUniverseToSymbol(
   page: Page,
   symbol: string
@@ -155,9 +179,8 @@ test.describe('Universe Table Workflows', () => {
     test('should enter edit mode when clicking distribution cell', async ({
       page,
     }) => {
-      const distributionCell = page.locator(
-        '[data-testid="distribution-cell-0"]'
-      );
+      const symbol = await getFirstVisibleUniverseSymbol(page);
+      const distributionCell = getDistributionCellBySymbol(page, symbol);
       await distributionCell.click();
 
       const input = page.locator('input[data-testid="distribution-input"]');
@@ -166,9 +189,8 @@ test.describe('Universe Table Workflows', () => {
     });
 
     test('should display current value in edit mode', async ({ page }) => {
-      const distributionCell = page.locator(
-        '[data-testid="distribution-cell-0"]'
-      );
+      const symbol = await getFirstVisibleUniverseSymbol(page);
+      const distributionCell = getDistributionCellBySymbol(page, symbol);
       const originalValue = await distributionCell.textContent();
       await distributionCell.click();
 
@@ -179,9 +201,8 @@ test.describe('Universe Table Workflows', () => {
     });
 
     test('should save distribution value on Enter key', async ({ page }) => {
-      const distributionCell = page.locator(
-        '[data-testid="distribution-cell-0"]'
-      );
+      const symbol = await getFirstVisibleUniverseSymbol(page);
+      const distributionCell = getDistributionCellBySymbol(page, symbol);
       await distributionCell.click();
 
       const input = page.locator('input[data-testid="distribution-input"]');
@@ -196,9 +217,8 @@ test.describe('Universe Table Workflows', () => {
     });
 
     test('should save distribution value on blur', async ({ page }) => {
-      const distributionCell = page.locator(
-        '[data-testid="distribution-cell-0"]'
-      );
+      const symbol = await getFirstVisibleUniverseSymbol(page);
+      const distributionCell = getDistributionCellBySymbol(page, symbol);
       await distributionCell.click();
 
       const input = page.locator('input[data-testid="distribution-input"]');
@@ -210,9 +230,8 @@ test.describe('Universe Table Workflows', () => {
     });
 
     test('should cancel edit on Escape key', async ({ page }) => {
-      const distributionCell = page.locator(
-        '[data-testid="distribution-cell-0"]'
-      );
+      const symbol = await getFirstVisibleUniverseSymbol(page);
+      const distributionCell = getDistributionCellBySymbol(page, symbol);
       const originalValue = await distributionCell.textContent();
       await distributionCell.click();
 
@@ -229,9 +248,8 @@ test.describe('Universe Table Workflows', () => {
     });
 
     test('should validate numeric input for distribution', async ({ page }) => {
-      const distributionCell = page.locator(
-        '[data-testid="distribution-cell-0"]'
-      );
+      const symbol = await getFirstVisibleUniverseSymbol(page);
+      const distributionCell = getDistributionCellBySymbol(page, symbol);
       await distributionCell.click();
 
       const input = page.locator('input[data-testid="distribution-input"]');
@@ -244,9 +262,8 @@ test.describe('Universe Table Workflows', () => {
     });
 
     test('should reject negative distribution values', async ({ page }) => {
-      const distributionCell = page.locator(
-        '[data-testid="distribution-cell-0"]'
-      );
+      const symbol = await getFirstVisibleUniverseSymbol(page);
+      const distributionCell = getDistributionCellBySymbol(page, symbol);
       await distributionCell.click();
 
       const input = page.locator('input[data-testid="distribution-input"]');

@@ -56,6 +56,9 @@ const TABLE_SHELL_SEL = '.dms-table-shell';
  */
 const SCROLL_CONTAINER_SEL = '.dms-table-body';
 
+/** Detached header viewport clipped to the same visible width as the body viewport. */
+const HEADER_VIEWPORT_SEL = '.dms-table-header-viewport';
+
 /** Full-width outer vertical scroller delegated via cdkVirtualScrollingElement. */
 const VIEWPORT_SEL = '.dms-outer-scroller';
 
@@ -95,11 +98,12 @@ async function assertHeaderNotSticky(page: Page): Promise<void> {
 }
 
 /**
- * (b) Per-column header-cell and body-cell widths must match within 1px.
+ * (b) Per-column header/body widths and whole-row parity must match.
  *
  * Story 111.2 introduced a shared fixed-column-width model: both header cells
  * and body cells use [style.width.px]="column.width" from the same ColumnDef.
- * This assertion verifies the model produces aligned columns in the rendered DOM.
+ * This assertion verifies the model produces aligned columns in the rendered DOM
+ * and that detached header/body regions keep matching visible and content widths.
  * Tolerance of 1px accounts for sub-pixel rounding on hi-DPI displays.
  */
 async function assertColumnWidthParity(page: Page): Promise<void> {
@@ -108,10 +112,21 @@ async function assertColumnWidthParity(page: Page): Promise<void> {
       headerCellsSel: string;
       bodyRowSel: string;
       bodyCellSel: string;
+      headerViewportSel: string;
+      bodyViewportSel: string;
     }): { ok: boolean; message: string } {
-      const { headerCellsSel, bodyRowSel, bodyCellSel } = arg;
+      const {
+        headerCellsSel,
+        bodyRowSel,
+        bodyCellSel,
+        headerViewportSel,
+        bodyViewportSel,
+      } = arg;
       const headerCells = Array.from(document.querySelectorAll(headerCellsSel));
       const bodyRow = document.querySelector(bodyRowSel);
+      const headerViewport =
+        document.querySelector<HTMLElement>(headerViewportSel);
+      const bodyViewport = document.querySelector<HTMLElement>(bodyViewportSel);
       if (!bodyRow) {
         // Precondition unmet: body rows must be present to verify column widths.
         return {
@@ -121,6 +136,9 @@ async function assertColumnWidthParity(page: Page): Promise<void> {
         };
       }
       const bodyCells = Array.from(bodyRow.querySelectorAll(bodyCellSel));
+      const headerRow = headerCells[0]?.closest<HTMLElement>(
+        '.dms-column-header-row'
+      );
       const violations: string[] = [];
       for (let i = 0; i < headerCells.length; i++) {
         if (!bodyCells[i]) {
@@ -147,6 +165,49 @@ async function assertColumnWidthParity(page: Page): Promise<void> {
           );
         }
       }
+
+      const missingParts = [
+        ['headerViewport', headerViewport],
+        ['bodyViewport', bodyViewport],
+        ['headerRow', headerRow],
+      ]
+        .filter(function isMissing(entry): boolean {
+          return !entry[1];
+        })
+        .map(function getMissingName(entry): string {
+          return entry[0];
+        });
+
+      if (missingParts.length > 0) {
+        return {
+          ok: false,
+          message: `precondition unmet: ${missingParts.join(', ')}`,
+        };
+      }
+
+      const headerViewportWidth = headerViewport.getBoundingClientRect().width;
+      const bodyViewportWidth = bodyViewport.clientWidth;
+      const viewportDiff = Math.abs(headerViewportWidth - bodyViewportWidth);
+      if (viewportDiff > 2) {
+        violations.push(
+          `viewport: header=${headerViewportWidth.toFixed(
+            2
+          )}px body=${bodyViewportWidth.toFixed(2)}px ` +
+            `delta=${viewportDiff.toFixed(2)}px`
+        );
+      }
+
+      const headerRowWidth = headerRow.getBoundingClientRect().width;
+      const bodyRowWidth = (bodyRow as HTMLElement).getBoundingClientRect()
+        .width;
+      const rowDiff = Math.abs(headerRowWidth - bodyRowWidth);
+      if (rowDiff > 1) {
+        violations.push(
+          `row: header=${headerRowWidth.toFixed(2)}px ` +
+            `body=${bodyRowWidth.toFixed(2)}px delta=${rowDiff.toFixed(2)}px`
+        );
+      }
+
       return {
         ok: violations.length === 0,
         message: violations.join('; '),
@@ -156,13 +217,15 @@ async function assertColumnWidthParity(page: Page): Promise<void> {
       headerCellsSel: COLUMN_HEADER_CELLS_SEL,
       bodyRowSel: BODY_ROW_SEL,
       bodyCellSel: BODY_CELL_SEL,
+      headerViewportSel: HEADER_VIEWPORT_SEL,
+      bodyViewportSel: SCROLL_CONTAINER_SEL,
     }
   );
   expect(
     result.ok,
     `Column width parity violation (tolerance: 1px):\n${result.message}\n` +
-      'Header and body cells must share fixed widths from ColumnDef.width. ' +
-      'A delta > 1px indicates the shared column-width model is broken.'
+      'Header/body cells must share fixed widths from ColumnDef.width, and the ' +
+      'detached header/body regions must preserve matching visible and content widths.'
   ).toBe(true);
 }
 

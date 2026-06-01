@@ -102,7 +102,8 @@ async function createScreenerRecords(
  */
 export async function seedScreenerData(): Promise<SeederResult> {
   // Import Prisma and adapter dynamically to avoid bundling issues
-  const prismaClientImport = (await import('@prisma/client')).PrismaClient;
+  const prismaClientImport = (await import('@prisma/client/index'))
+    .PrismaClient;
   const { PrismaBetterSqlite3 } = await import(
     '@prisma/adapter-better-sqlite3'
   );

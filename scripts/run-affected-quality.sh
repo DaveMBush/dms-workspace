@@ -91,6 +91,11 @@ run_many_for_target() {
     return 0
   fi
 
+  if [[ "$target_name" == "e2e" ]]; then
+    pnpm exec nx run-many -t e2e --projects="$projects_arg" --parallel=1
+    return 0
+  fi
+
   pnpm exec nx run-many -t "$target_name" --projects="$projects_arg" --parallel=16
 }
 
@@ -100,10 +105,12 @@ if ((${#affected_projects[@]} > 0)); then
   mapfile -t lint_projects < <(filter_projects_for_target lint)
   mapfile -t build_projects < <(filter_projects_for_target build)
   mapfile -t test_projects < <(filter_projects_for_target test)
+  mapfile -t e2e_projects < <(filter_projects_for_target e2e)
 
   run_many_for_target lint "${lint_projects[@]}"
   run_many_for_target build "${build_projects[@]}"
   run_many_for_target test "${test_projects[@]}"
+  run_many_for_target e2e "${e2e_projects[@]}"
   exit 0
 fi
 
@@ -115,3 +122,4 @@ fi
 
 pnpm exec nx "${affected_args[@]}" -t lint build
 pnpm exec nx "${affected_args[@]}" -t test --coverage
+pnpm exec nx "${affected_args[@]}" -t e2e
