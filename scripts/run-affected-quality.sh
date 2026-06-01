@@ -42,25 +42,14 @@ collect_changed_files() {
 
 mapfile -t changed_files < <(collect_changed_files)
 
-filter_project_files() {
-  local changed_file=""
-  for changed_file in "${changed_files[@]}"; do
-    case "$changed_file" in
-      apps/*|libs/*)
-        printf '%s\n' "$changed_file"
-        ;;
-    esac
-  done | awk 'NF && !seen[$0]++'
-}
-
 resolve_affected_projects() {
-  if ((${#project_files[@]} == 0)); then
+  if ((${#changed_files[@]} == 0)); then
     return 0
   fi
 
-  local project_files_arg=""
-  project_files_arg="$(IFS=,; printf '%s' "${project_files[*]}")"
-  pnpm exec nx show projects --affected --files="$project_files_arg"
+  local changed_files_arg=""
+  changed_files_arg="$(IFS=,; printf '%s' "${changed_files[*]}")"
+  pnpm exec nx show projects --affected --files="$changed_files_arg"
 }
 
 project_has_target() {
@@ -105,7 +94,6 @@ run_many_for_target() {
   pnpm exec nx run-many -t "$target_name" --projects="$projects_arg" --parallel=16
 }
 
-mapfile -t project_files < <(filter_project_files)
 mapfile -t affected_projects < <(resolve_affected_projects)
 
 if ((${#affected_projects[@]} > 0)); then

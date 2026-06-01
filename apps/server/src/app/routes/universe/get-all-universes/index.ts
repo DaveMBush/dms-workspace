@@ -5,6 +5,7 @@ import universeHelpers from '../universe-helpers';
 
 const VALID_SORT_FIELDS = ['symbol', 'name', 'sector', 'marketCap'] as const;
 type SortField = (typeof VALID_SORT_FIELDS)[number];
+type TextSortField = Exclude<SortField, 'marketCap'>;
 
 interface SortQuerystring {
   sortBy?: string;
@@ -43,10 +44,11 @@ function isValidSortField(field: string): field is SortField {
   return (VALID_SORT_FIELDS as readonly string[]).includes(field);
 }
 
-function getTextSortValue(item: SortableUniverse, sortBy: SortField): string {
+function getTextSortValue(
+  item: SortableUniverse,
+  sortBy: TextSortField
+): string {
   switch (sortBy) {
-    case 'marketCap':
-      return String(item.last_price);
     case 'name':
     case 'sector':
       return item.risk_group?.name ?? '';
@@ -56,19 +58,8 @@ function getTextSortValue(item: SortableUniverse, sortBy: SortField): string {
   }
 }
 
-function getNumericSortValue(
-  item: SortableUniverse,
-  sortBy: SortField
-): number {
-  switch (sortBy) {
-    case 'marketCap':
-      return item.last_price;
-    case 'name':
-    case 'sector':
-    case 'symbol':
-    default:
-      return 0;
-  }
+function getNumericSortValue(item: SortableUniverse): number {
+  return item.last_price;
 }
 
 function compareTextValues(aText: string, bText: string): number {
@@ -89,7 +80,7 @@ function compareUniverseItems(
 ): number {
   let diff: number;
   if (sortBy === 'marketCap') {
-    diff = getNumericSortValue(a, sortBy) - getNumericSortValue(b, sortBy);
+    diff = getNumericSortValue(a) - getNumericSortValue(b);
   } else {
     const aText = getTextSortValue(a, sortBy).toLowerCase();
     const bText = getTextSortValue(b, sortBy).toLowerCase();

@@ -247,7 +247,10 @@ async function assertHorizontalScrollSync(page: Page): Promise<void> {
         const hBefore = headerCell.getBoundingClientRect().left;
         const bBefore = bodyCell.getBoundingClientRect().left;
         const available = container.scrollWidth - container.clientWidth;
-        const targetScroll = Math.min(50, Math.floor(available / 2));
+        const targetScroll =
+          available > 0
+            ? Math.max(1, Math.min(50, Math.ceil(available / 2)))
+            : 0;
 
         container.scrollLeft = targetScroll;
 

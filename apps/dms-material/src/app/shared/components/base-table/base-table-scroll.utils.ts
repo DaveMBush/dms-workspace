@@ -40,6 +40,8 @@ export function bindHeaderInteractions(
   }
 
   function proxyHeaderWheel(event: WheelEvent): void {
+    const isBrowserZoomGesture = event.ctrlKey || event.metaKey;
+
     const handledHorizontalScroll = applyHorizontalWheelDelta(
       bodyScrollerEl,
       event.deltaX
@@ -49,7 +51,10 @@ export function bindHeaderInteractions(
       event.deltaY
     );
 
-    if (handledHorizontalScroll || handledVerticalScroll) {
+    if (
+      !isBrowserZoomGesture &&
+      (handledHorizontalScroll || handledVerticalScroll)
+    ) {
       event.preventDefault();
     }
   }

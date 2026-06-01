@@ -275,7 +275,31 @@ test.describe('Base Table Layout Regression — AC1: scrollbar right-edge on nar
 
     await page.locator(HEADER_VIEWPORT_SEL).hover();
     await page.mouse.wheel(240, 0);
-    await page.waitForTimeout(100);
+    await page.waitForFunction(
+      function waitForMirroredHorizontalScroll(arg: {
+        headerSel: string;
+        bodySel: string;
+        previousBodyScrollLeft: number;
+      }): boolean {
+        const header = document.querySelector<HTMLElement>(arg.headerSel);
+        const body = document.querySelector<HTMLElement>(arg.bodySel);
+
+        if (!header || !body) {
+          return false;
+        }
+
+        return (
+          body.scrollLeft > arg.previousBodyScrollLeft + 1 &&
+          Math.abs(header.scrollLeft - body.scrollLeft) <= 1
+        );
+      },
+      {
+        headerSel: HEADER_VIEWPORT_SEL,
+        bodySel: SCROLL_CONTAINER_SEL,
+        previousBodyScrollLeft: before.bodyScrollLeft,
+      },
+      { timeout: 2000 }
+    );
 
     const after = await page.evaluate(
       function captureScrollState(arg: {

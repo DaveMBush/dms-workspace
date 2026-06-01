@@ -177,6 +177,47 @@ describe('bindHeaderInteractions', () => {
     expect(outerScrollerEl.scrollTop).toBe(120);
   });
 
+  it('preserves browser zoom gestures on the detached header wheel listener', () => {
+    const { destroyRef } = createDestroyRefMock();
+    const headerViewportEl = document.createElement('div');
+    const bodyScrollerEl = document.createElement('div');
+    const outerScrollerEl = document.createElement('div');
+
+    defineScrollableAxis(headerViewportEl, 'horizontal', {
+      clientSize: 320,
+      scrollSize: 320,
+    });
+    defineScrollableAxis(bodyScrollerEl, 'horizontal', {
+      clientSize: 320,
+      scrollSize: 960,
+    });
+    defineScrollableAxis(outerScrollerEl, 'vertical', {
+      clientSize: 240,
+      scrollSize: 720,
+    });
+
+    bindHeaderInteractions(
+      destroyRef,
+      headerViewportEl,
+      bodyScrollerEl,
+      outerScrollerEl
+    );
+
+    const wheelEvent = new WheelEvent('wheel', {
+      deltaY: 120,
+      ctrlKey: true,
+      bubbles: true,
+      cancelable: true,
+    });
+
+    const dispatchResult = headerViewportEl.dispatchEvent(wheelEvent);
+
+    expect(dispatchResult).toBe(true);
+    expect(wheelEvent.defaultPrevented).toBe(false);
+    expect(bodyScrollerEl.scrollLeft).toBe(0);
+    expect(outerScrollerEl.scrollTop).toBe(120);
+  });
+
   it('observes body geometry with ResizeObserver and disconnects it on destroy', () => {
     const { destroyRef, runDestroyCallbacks } = createDestroyRefMock();
     const headerViewportEl = document.createElement('div');
