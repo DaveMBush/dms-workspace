@@ -12,15 +12,18 @@ function getUniverseRowBySymbol(page: Page, symbol: string) {
 }
 
 function getDistributionCellBySymbol(page: Page, symbol: string) {
-  return getUniverseRowBySymbol(page, symbol).first().locator(
-    '.dms-body-cell[data-column="distribution"] [data-testid^="distribution-cell-"]'
-  ).first();
+  return getUniverseRowBySymbol(page, symbol)
+    .first()
+    .locator(
+      '.dms-body-cell[data-column="distribution"] [data-testid^="distribution-cell-"]'
+    )
+    .first();
 }
 
 async function getFirstVisibleUniverseSymbol(page: Page): Promise<string> {
-  const firstVisibleSymbolCell = page.locator(
-    '.dms-body-row[role="row"] .dms-body-cell[data-column="symbol"]'
-  ).first();
+  const firstVisibleSymbolCell = page
+    .locator('.dms-body-row[role="row"] .dms-body-cell[data-column="symbol"]')
+    .first();
   await expect(firstVisibleSymbolCell).toBeVisible({ timeout: 10000 });
   await expect
     .poll(
