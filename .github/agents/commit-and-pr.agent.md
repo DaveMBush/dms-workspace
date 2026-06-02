@@ -47,6 +47,8 @@ Write story metadata file (required)
 
 After creating or locating the PR, write a minimal, idempotent metadata file for the story at `.git/tmp/story-${STORY_ID}-meta.json`. This file allows other subagents (CodeRabbit, epic orchestrator) to resume work without passing large prompt contexts. If both `gh pr create` and `gh pr view` fail to return a PR number, abort and report the error instead of writing metadata with `pr: null`.
 
+Downstream story and epic workflows require a stable contract here: write `story`, string `pr`, string `branch`, and boolean `merged`. Before merge, set `merged` to `false`. Merge-finalize will flip it to `true` and add `mergedAt`.
+
 Suggested bash MCP script (pass this content to `mcp_bash_run` with `cwd` set to `${WORKTREE_PATH}`):
 
 ```bash
@@ -83,8 +85,10 @@ REPO_NAME=$(gh repo view --json nameWithOwner -q .nameWithOwner)
 
 cat > "$GIT_COMMON_DIR/tmp/story-${STORY_ID}-meta.json" <<EOF
 {
-	"pr": ${PR_NUMBER},
+	"story": "${STORY_ID}",
+	"pr": "${PR_NUMBER}",
 	"branch": "${branch}",
+	"merged": false,
 	"repo": "${REPO_NAME}",
 	"worktreePath": "${WORKTREE_PATH}",
 	"attempt": 0,

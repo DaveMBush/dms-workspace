@@ -87,7 +87,7 @@ For each story in the ordered list:
 
    - If `runSubagent` returns an error or throws, do NOT attempt to read the meta file. Follow the failure decision table below.
    - Resolve meta path: `${GIT_COMMON_DIR}/tmp/story-${current_story}-meta.json` and read it.
-   - If the meta file is missing or malformed, follow the failure decision table below.
+   - If the meta file is missing or malformed, first attempt one local metadata recovery pass when the delegated workflow already proves the story merged or is otherwise complete. Recovery may coerce a numeric `pr` to a string and must write string `story`, string `pr`, string `branch`, boolean `merged`, and optional ISO-8601 `mergedAt`. Only follow the failure decision table if completion facts cannot be recovered.
    - Validate meta JSON against this schema before updating the aggregation file: an object with required string fields `story`, `pr`, and `branch`, required boolean `merged`, optional ISO-8601 string `mergedAt`, and optional string `reason`.
    - Append or update `${GIT_COMMON_DIR}/tmp/epic-${epic}-stories.json` with at minimum: `story`, `pr`, `branch`, `merged`, `mergedAt`, and `reason` when present.
    - Continue to the next story unless the failure decision table directs otherwise.

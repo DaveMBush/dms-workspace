@@ -59,14 +59,15 @@ Before doing anything else, read all of the following:
 9. If story changes include UI, run a quick Playwright sanity validation; if they include unfamiliar API usage, run a quick Context7 check.
 10. Merge the PR using squash merge.
 11. Verify linked issue auto-closes.
-12. Perform local cleanup:
+12. After a successful merge, normalize `$(git rev-parse --git-common-dir)/tmp/story-${story}-meta.json` so downstream epic workflows can resume without repair. Write at minimum: string `story`, string `pr`, string `branch`, boolean `merged: true`, and ISO-8601 `mergedAt`. If the PR was already merged when this workflow started, still write the normalized merged metadata before cleanup.
+13. Perform local cleanup:
 
 - return to main workspace
 - pull `main`
 - remove the story worktree
 - delete the local story branch
 
-13. Do not ask for confirmation on success; return control immediately to the caller.
+14. Do not ask for confirmation on success; return control immediately to the caller.
 
 ### Completion Contract
 
