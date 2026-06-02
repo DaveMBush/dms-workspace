@@ -19,6 +19,57 @@ resolve_base_ref() {
   return 1
 }
 
+extract_nx_json() {
+  node -e '
+    function main() {
+      const fs = require("fs");
+      const input = fs.readFileSync(0, "utf8");
+      const startIndexes = [];
+      const endIndexes = [];
+
+      for (let index = 0; index < input.length; index += 1) {
+        const currentCharacter = input[index];
+        if (currentCharacter === "{" || currentCharacter === "[") {
+          startIndexes.push(index);
+        }
+
+        if (currentCharacter === "}" || currentCharacter === "]") {
+          endIndexes.push(index + 1);
+        }
+      }
+
+      for (const startIndex of startIndexes) {
+        for (let offset = endIndexes.length - 1; offset >= 0; offset -= 1) {
+          const endIndex = endIndexes[offset];
+          if (endIndex <= startIndex) {
+            continue;
+          }
+
+          const candidate = input.slice(startIndex, endIndex).trim();
+          if (!candidate) {
+            continue;
+          }
+
+          try {
+            const parsed = JSON.parse(candidate);
+            process.stdout.write(JSON.stringify(parsed), function handleWrite() {
+              process.exit(0);
+            });
+            return;
+          } catch {
+            // Keep scanning until valid JSON payload is found.
+          }
+        }
+      }
+
+      process.stderr.write(input);
+      process.exit(1);
+    }
+
+    main();
+  '
+}
+
 collect_changed_files() {
   local base_ref=""
   local merge_base=""
@@ -49,14 +100,27 @@ resolve_affected_projects() {
 
   local changed_files_arg=""
   changed_files_arg="$(IFS=,; printf '%s' "${changed_files[*]}")"
-  pnpm exec nx show projects --affected --files="$changed_files_arg"
+  pnpm exec nx show projects --affected --files="$changed_files_arg" --json \
+    | extract_nx_json \
+    | node -e '
+        const fs = require("fs");
+        const payload = JSON.parse(fs.readFileSync(0, "utf8"));
+
+        for (const projectName of Array.isArray(payload) ? payload : []) {
+          if (typeof projectName === "string" && projectName.length > 0) {
+            process.stdout.write(`${projectName}\n`);
+          }
+        }
+      '
 }
 
 project_has_target() {
   local project_name="$1"
   local target_name="$2"
 
-  pnpm exec nx show project "$project_name" --json | node -e '
+  pnpm exec nx show project "$project_name" --json \
+    | extract_nx_json \
+    | node -e '
     const fs = require("fs");
     const project = JSON.parse(fs.readFileSync(0, "utf8"));
     process.exit(project.targets && project.targets[process.argv[1]] ? 0 : 1);
@@ -120,6 +184,11 @@ if ((${#changed_files[@]} > 0)); then
   affected_args+=("--files=$files_arg")
 fi
 
+affected_e2e_args=(affected --parallel=1)
+if ((${#changed_files[@]} > 0)); then
+  affected_e2e_args+=("--files=$files_arg")
+fi
+
 pnpm exec nx "${affected_args[@]}" -t lint build
 pnpm exec nx "${affected_args[@]}" -t test --coverage
-pnpm exec nx "${affected_args[@]}" -t e2e
+pnpm exec nx "${affected_e2e_args[@]}" -t e2e

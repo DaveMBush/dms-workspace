@@ -156,10 +156,10 @@ GPT-5.4 (GitHub Copilot)
 
 ### Debug Log References
 
-- Targeted Chromium validation: `NX_DAEMON=false NX_WORKSPACE_ROOT_PATH=/home/copilot/code/dms/story-114-3 CI=1 E2E_DATABASE_URL=file:/home/copilot/code/dms/story-114-3/test-database.db pnpm exec playwright test apps/dms-material-e2e/src/base-table-layout-regression.spec.ts --config=apps/dms-material-e2e/playwright.config.ts --project=chromium`
-- Targeted Chromium validation: `NX_DAEMON=false NX_WORKSPACE_ROOT_PATH=/home/copilot/code/dms/story-114-3 CI=1 E2E_DATABASE_URL=file:/home/copilot/code/dms/story-114-3/test-database.db pnpm exec playwright test apps/dms-material-e2e/src/base-table-two-region-regression.spec.ts --config=apps/dms-material-e2e/playwright.config.ts --project=chromium`
-- Targeted Firefox validation: `NX_DAEMON=false NX_WORKSPACE_ROOT_PATH=/home/copilot/code/dms/story-114-3 CI=1 E2E_DATABASE_URL=file:/home/copilot/code/dms/story-114-3/test-database.db pnpm exec playwright test apps/dms-material-e2e/src/base-table-layout-regression.spec.ts apps/dms-material-e2e/src/base-table-two-region-regression.spec.ts --config=apps/dms-material-e2e/playwright.config.ts --project=firefox`
-- Worktree quality gate: `NX_DAEMON=false NX_WORKSPACE_ROOT_PATH=/home/copilot/code/dms/story-114-3 CI=1 E2E_DATABASE_URL=file:/home/copilot/code/dms/story-114-3/test-database.db pnpm all`
+- Targeted Chromium validation: `NX_DAEMON=false NX_WORKSPACE_ROOT_PATH="$PWD" CI=1 E2E_DATABASE_URL="file:$PWD/test-database.db" pnpm exec playwright test apps/dms-material-e2e/src/base-table-layout-regression.spec.ts --config=apps/dms-material-e2e/playwright.config.ts --project=chromium`
+- Targeted Chromium validation: `NX_DAEMON=false NX_WORKSPACE_ROOT_PATH="$PWD" CI=1 E2E_DATABASE_URL="file:$PWD/test-database.db" pnpm exec playwright test apps/dms-material-e2e/src/base-table-two-region-regression.spec.ts --config=apps/dms-material-e2e/playwright.config.ts --project=chromium`
+- Targeted Firefox validation: `NX_DAEMON=false NX_WORKSPACE_ROOT_PATH="$PWD" CI=1 E2E_DATABASE_URL="file:$PWD/test-database.db" pnpm exec playwright test apps/dms-material-e2e/src/base-table-layout-regression.spec.ts apps/dms-material-e2e/src/base-table-two-region-regression.spec.ts --config=apps/dms-material-e2e/playwright.config.ts --project=firefox`
+- Worktree quality gate: `NX_DAEMON=false NX_WORKSPACE_ROOT_PATH="$PWD" CI=1 E2E_DATABASE_URL="file:$PWD/test-database.db" pnpm all`
 - Full Chromium suite validation: `pnpm e2e:dms-material:chromium`
 - Full Firefox suite validation: `pnpm e2e:dms-material:firefox`
 
@@ -170,7 +170,7 @@ GPT-5.4 (GitHub Copilot)
 - Extended the disconnected-header cross-consumer regression to assert detached header/body viewport parity and whole-row width parity across Universe, Screener, Open Positions, Sold Positions, and Dividend Deposits.
 - Updated `pnpm all` to run affected `e2e` targets so disconnected-header regression coverage stays in the normal validation flow.
 - Switched Playwright E2E Prisma helper imports to `@prisma/client/index` so worktree validation no longer fails on Prisma package-root resolution.
-- Worktree Playwright validation requires `NX_DAEMON=false`, `NX_WORKSPACE_ROOT_PATH=/home/copilot/code/dms/story-114-3`, and `E2E_DATABASE_URL=file:/home/copilot/code/dms/story-114-3/test-database.db` so Nx and the E2E seeders stay inside this worktree.
+- Worktree Playwright validation requires `NX_DAEMON=false`, `NX_WORKSPACE_ROOT_PATH="$PWD"`, and `E2E_DATABASE_URL="file:$PWD/test-database.db"` so Nx and the E2E seeders stay inside the active worktree.
 - Firefox targeted validation passed with one built-in flaky retry on the Screener filter-clear step; the suite ultimately passed.
 
 ### File List
