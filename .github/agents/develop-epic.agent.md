@@ -1,7 +1,7 @@
 ---
 description: 'Fully autonomous epic development: discover all stories, validate Approved status, then develop each story sequentially from implementation through merge'
 argument-hint: epic=AD
-model: deepseek-v3.1:latest (ollama)
+model: qwen3-coder:latest (ollama)
 tools: [vscode, execute/runNotebookCell, execute/getTerminalOutput, execute/killTerminal, execute/runTask, execute/createAndRunTask, execute/runTests, execute/testFailure, read, agent, edit, search, web, browser, 'bash/*', 'context7/*', 'playwright/*', 'github/*', 'nx-mcp-server/*', 'gitkraken/*', todo]
 agents: [develop-story, debug]
 user-invocable: false

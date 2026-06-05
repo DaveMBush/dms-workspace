@@ -1,7 +1,7 @@
 ---
 description: 'Fully autonomous story development: pre-development validation, implementation, quality validation, QA review, PR creation, CodeRabbit review, and merge'
 argument-hint: story=3-3
-model: deepseek-v3.1:latest (ollama)
+model: qwen3-coder:latest (ollama)
 tools: [vscode, execute/runNotebookCell, execute/getTerminalOutput, execute/killTerminal, execute/runTask, execute/createAndRunTask, execute/runTests, execute/testFailure, read, agent, edit, search, web, browser, 'bash/*', 'context7/*', 'playwright/*', 'github/*', 'nx-mcp-server/*', 'gitkraken/*', todo]
 agents: [code-story, quality-validation, qa-review-loop, commit-and-pr, code-rabbit, merge-finalize]
 user-invocable: false

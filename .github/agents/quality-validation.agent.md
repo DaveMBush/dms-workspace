@@ -1,7 +1,7 @@
 ---
 description: 'Full quality validation loop: run pnpm all, e2e tests, dupcheck, format, and self-review until one full iteration passes or 5 iterations are exhausted'
 argument-hint: context=story-AD.3
-model: deepseek-v3.1:latest (ollama)
+model: qwen3-coder:latest (ollama)
 tools: [vscode, execute/runNotebookCell, execute/getTerminalOutput, execute/killTerminal, execute/runTask, execute/createAndRunTask, execute/runTests, execute/testFailure, read, agent, edit, search, web, browser, 'bash/*', 'context7/*', 'playwright/*', 'github/*', 'nx-mcp-server/*', 'gitkraken/*', todo]
 user-invocable: false
 ---
