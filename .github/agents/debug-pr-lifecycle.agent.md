@@ -1,7 +1,7 @@
 ---
 description: 'Create commit and PR for a debug branch then run the full CodeRabbit review loop until the PR is ready to merge'
 argument-hint: story=3-5
-model: GPT-5.4 (copilot)
+model: deepseek-v3.1:latest (ollama)
 tools: [vscode, execute/runNotebookCell, execute/getTerminalOutput, execute/killTerminal, execute/runTask, execute/createAndRunTask, execute/runTests, execute/testFailure, read, agent, edit, search, web, browser, 'bash/*', 'context7/*', 'playwright/*', 'github/*', 'nx-mcp-server/*', 'gitkraken/*', todo]
 agents: [commit-and-pr, code-rabbit]
 user-invocable: false
