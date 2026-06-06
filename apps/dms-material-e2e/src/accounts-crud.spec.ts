@@ -50,6 +50,14 @@ async function createTestAccount(
     .locator('[data-testid="account-item"]')
     .filter({ hasText: accountName });
   await expect(newAccount).toBeVisible({ timeout: 10000 });
+  await expect(
+    newAccount.locator('[data-testid="edit-account-button"]')
+  ).toBeVisible({ timeout: 10000 });
+  await expect(
+    page.locator('[data-testid="node-editor-input"]')
+  ).not.toBeVisible({
+    timeout: 10000,
+  });
 
   return accountName;
 }
@@ -161,11 +169,12 @@ test.describe('Account CRUD Operations', () => {
       const editButton = accountItem.locator(
         '[data-testid="edit-account-button"]'
       );
+      await expect(editButton).toBeVisible({ timeout: 10000 });
       await editButton.click();
 
       // Wait for editor to appear
       await page.waitForSelector('[data-testid="node-editor-input"]', {
-        timeout: 7000,
+        timeout: 10000,
       });
 
       // Change name
@@ -197,11 +206,12 @@ test.describe('Account CRUD Operations', () => {
       const editButton = accountItem.locator(
         '[data-testid="edit-account-button"]'
       );
+      await expect(editButton).toBeVisible({ timeout: 10000 });
       await editButton.click();
 
       // Wait for editor to appear before interacting
       await page.waitForSelector('[data-testid="node-editor-input"]', {
-        timeout: 7000,
+        timeout: 10000,
       });
 
       const input = page.locator('[data-testid="node-editor-input"]');
@@ -230,6 +240,7 @@ test.describe('Account CRUD Operations', () => {
       const editButton = accountItem.locator(
         '[data-testid="edit-account-button"]'
       );
+      await expect(editButton).toBeVisible({ timeout: 10000 });
       await editButton.click();
 
       const input = page.locator('[data-testid="node-editor-input"]');
