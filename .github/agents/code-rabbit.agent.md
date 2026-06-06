@@ -1,8 +1,8 @@
 ---
 description: 'Handle CodeRabbit review loop for a story PR — poll review comments, classify suggestions, apply in-scope fixes, run quality validation, and loop until PR is ready to merge'
 argument-hint: story=3-3
-model: GPT-5.4 (copilot)
-tools: [vscode, execute/runNotebookCell, execute/getTerminalOutput, execute/killTerminal, execute/runTask, execute/createAndRunTask, execute/runTests, execute/testFailure, read, agent, edit, search, web, browser, 'bash/*', 'context7/*', 'playwright/*', 'github/*', 'nx-mcp-server/*', 'gitkraken/*', todo]
+model: qwen3-coder:latest (ollama)
+tools: [vscode, execute, read, agent, edit, search, web, 'context7/*', 'playwright/*', 'github/*', 'nx-mcp-server/*', browser, todo]
 agents: [quality-validation]
 user-invocable: false
 ---

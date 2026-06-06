@@ -1,7 +1,7 @@
 ---
 description: 'Format code with pnpm format, commit all staged changes, create a GitHub PR linked to the story issue, and write the story metadata file'
-model: GPT-5.4 (copilot)
-tools: [vscode, execute/runNotebookCell, execute/getTerminalOutput, execute/killTerminal, execute/runTask, execute/createAndRunTask, execute/runTests, execute/testFailure, read, agent, edit, search, web, browser, 'bash/*', 'context7/*', 'playwright/*', 'github/*', 'nx-mcp-server/*', 'gitkraken/*', todo]
+model: qwen3-coder:latest (ollama)
+tools: [vscode, execute, read, agent, edit, search, web, 'context7/*', 'playwright/*', 'github/*', 'nx-mcp-server/*', browser, todo]
 user-invocable: false
 ---
 
@@ -47,6 +47,8 @@ Write story metadata file (required)
 
 After creating or locating the PR, write a minimal, idempotent metadata file for the story at `.git/tmp/story-${STORY_ID}-meta.json`. This file allows other subagents (CodeRabbit, epic orchestrator) to resume work without passing large prompt contexts. If both `gh pr create` and `gh pr view` fail to return a PR number, abort and report the error instead of writing metadata with `pr: null`.
 
+Downstream story and epic workflows require a stable contract here: write `story`, string `pr`, string `branch`, and boolean `merged`. Before merge, set `merged` to `false`. Merge-finalize will flip it to `true` and add `mergedAt`.
+
 Suggested bash MCP script (pass this content to `mcp_bash_run` with `cwd` set to `${WORKTREE_PATH}`):
 
 ```bash
@@ -83,8 +85,10 @@ REPO_NAME=$(gh repo view --json nameWithOwner -q .nameWithOwner)
 
 cat > "$GIT_COMMON_DIR/tmp/story-${STORY_ID}-meta.json" <<EOF
 {
-	"pr": ${PR_NUMBER},
+	"story": "${STORY_ID}",
+	"pr": "${PR_NUMBER}",
 	"branch": "${branch}",
+	"merged": false,
 	"repo": "${REPO_NAME}",
 	"worktreePath": "${WORKTREE_PATH}",
 	"attempt": 0,

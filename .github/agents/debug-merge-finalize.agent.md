@@ -1,8 +1,8 @@
 ---
 description: 'Verify debug PR mergeability, resolve merge conflicts with rebase, squash-merge the PR, verify issue auto-close, and delete the local debug branch'
 argument-hint: story=3-5
-model: GPT-5.4 (copilot)
-tools: [vscode, execute/runNotebookCell, execute/getTerminalOutput, execute/killTerminal, execute/runTask, execute/createAndRunTask, execute/runTests, execute/testFailure, read, agent, edit, search, web, browser, 'bash/*', 'context7/*', 'playwright/*', 'github/*', 'nx-mcp-server/*', 'gitkraken/*', todo]
+model: qwen3-coder:latest (ollama)
+tools: [vscode, execute, read, agent, edit, search, web, 'context7/*', 'playwright/*', 'github/*', 'nx-mcp-server/*', browser, todo]
 agents: [quality-validation]
 user-invocable: false
 ---
@@ -70,7 +70,8 @@ git merge-tree --quiet $(git merge-base HEAD origin/main) HEAD origin/main
 7. If the PR diff touches files under `apps/dms-material/` or other browser-visible route, component, template, or style files, run one Playwright smoke validation that opens the changed screen or route and exercises the changed UI path once. If the diff introduces third-party package imports not already present on `main`, run a Context7 lookup for each new package.
 8. Phase 4 - Merge: merge the PR using squash merge. If the squash-merge call returns an error, fetch `origin/main`, re-run rules 2 through 7 once, and retry the squash merge one time. If the second merge attempt fails, return `MERGE FAILED: <gh error>`.
 9. Phase 4 - Post-merge issue closure: verify the linked issue auto-closes. If the issue is not closed within 60s of merge, close it manually via `gh issue close <num> --comment "Closed by PR #<pr>"`.
-10. Phase 5 - Local cleanup:
+10. Phase 5 - Metadata normalization: after a successful merge, normalize `$(git rev-parse --git-common-dir)/tmp/story-${story}-meta.json` so downstream epic workflows can resume without repair. Write at minimum: string `story`, string `pr`, string `branch`, boolean `merged: true`, and ISO-8601 `mergedAt`. If the PR was already merged when this workflow started, still write the normalized merged metadata before cleanup.
+11. Phase 5 - Local cleanup:
     - Before checking out `main`, run `git status --porcelain`; if non-empty, stash with `git stash push -m "debug-${story}-cleanup"`.
     - checkout `main`
     - pull `main`

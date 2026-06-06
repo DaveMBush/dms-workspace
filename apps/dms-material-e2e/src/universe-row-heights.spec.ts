@@ -44,6 +44,25 @@ async function waitForUniverseRows(page: Page): Promise<void> {
   await page.waitForSelector(ROW_SELECTOR, { timeout: 15000 });
 }
 
+async function waitForSeededRows(page: Page, symbols: string[]): Promise<void> {
+  await page.waitForFunction(
+    ([rowSelector, seededSymbols]) => {
+      return (
+        Array.from(document.querySelectorAll(rowSelector)).filter(
+          function rowContainsSeededSymbol(row: Element): boolean {
+            const text = row.textContent ?? '';
+            return seededSymbols.some(function matchesSymbol(symbol: string) {
+              return text.includes(symbol);
+            });
+          }
+        ).length > 1
+      );
+    },
+    [ROW_SELECTOR, symbols],
+    { timeout: 10000 }
+  );
+}
+
 test.describe('Universe Row Height Consistency — Epic 67 / Story 67.1', () => {
   let cleanup: () => Promise<void>;
   let seededSymbols: string[] = [];
@@ -66,8 +85,8 @@ test.describe('Universe Row Height Consistency — Epic 67 / Story 67.1', () => 
     const uniquePart = seededSymbols[0].split('-').slice(1).join('-');
     const symbolFilter = page.getByPlaceholder('Search Symbol');
     await symbolFilter.fill(uniquePart);
-    // Wait until at least one seeded row is visible before continuing.
-    await page.waitForSelector(ROW_SELECTOR, { timeout: 10000 });
+    // Wait until the filtered seeded rows are actually rendered before measuring.
+    await waitForSeededRows(page, seededSymbols);
   });
 
   test.afterEach(async () => {

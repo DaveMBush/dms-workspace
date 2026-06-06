@@ -94,7 +94,6 @@ export class EditableCellComponent {
   saveEdit(): void {
     // Don't save if we're canceling
     if (this.isCanceling$()) {
-      this.isCanceling$.set(false);
       return;
     }
 

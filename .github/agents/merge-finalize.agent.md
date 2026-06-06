@@ -1,8 +1,8 @@
 ---
 description: 'Verify story PR mergeability, resolve merge conflicts with rebase, squash-merge the PR, verify issue auto-close, and remove the story worktree'
 argument-hint: story=3-3
-model: GPT-5.4 (copilot)
-tools: [vscode, execute/runNotebookCell, execute/getTerminalOutput, execute/killTerminal, execute/runTask, execute/createAndRunTask, execute/runTests, execute/testFailure, read, agent, edit, search, web, browser, 'bash/*', 'context7/*', 'playwright/*', 'github/*', 'nx-mcp-server/*', 'gitkraken/*', todo]
+model: qwen3-coder:latest (ollama)
+tools: [vscode, execute, read, agent, edit, search, web, 'context7/*', 'playwright/*', 'github/*', 'nx-mcp-server/*', browser, todo]
 agents: [quality-validation]
 user-invocable: false
 ---
@@ -59,14 +59,15 @@ Before doing anything else, read all of the following:
 9. If story changes include UI, run a quick Playwright sanity validation; if they include unfamiliar API usage, run a quick Context7 check.
 10. Merge the PR using squash merge.
 11. Verify linked issue auto-closes.
-12. Perform local cleanup:
+12. After a successful merge, normalize `$(git rev-parse --git-common-dir)/tmp/story-${story}-meta.json` so downstream epic workflows can resume without repair. Write at minimum: string `story`, string `pr`, string `branch`, boolean `merged: true`, and ISO-8601 `mergedAt`. If the PR was already merged when this workflow started, still write the normalized merged metadata before cleanup.
+13. Perform local cleanup:
 
 - return to main workspace
 - pull `main`
 - remove the story worktree
 - delete the local story branch
 
-13. Do not ask for confirmation on success; return control immediately to the caller.
+14. Do not ask for confirmation on success; return control immediately to the caller.
 
 ### Completion Contract
 

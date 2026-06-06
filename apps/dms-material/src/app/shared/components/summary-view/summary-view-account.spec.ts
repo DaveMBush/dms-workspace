@@ -59,6 +59,46 @@ function createMockMonths(): Array<{ month: string; label: string }> {
   ];
 }
 
+function createBootstrapMonths(): Array<{ month: string; label: string }> {
+  const currentMonth = testCurrentMonth();
+  const [yearText, monthText] = currentMonth.split('-');
+  const currentYear = Number.parseInt(yearText, 10);
+  const currentMonthIndex = Number.parseInt(monthText, 10) - 1;
+  const currentDate = new Date(currentYear, currentMonthIndex, 1);
+  const previousDate = new Date(currentYear, currentMonthIndex - 1, 1);
+  const previousMonth = `${previousDate.getFullYear()}-${String(
+    previousDate.getMonth() + 1
+  ).padStart(2, '0')}`;
+
+  return [
+    {
+      month: currentMonth,
+      label: currentDate.toLocaleString('en-US', {
+        month: 'long',
+        year: 'numeric',
+      }),
+    },
+    {
+      month: previousMonth,
+      label: previousDate.toLocaleString('en-US', {
+        month: 'long',
+        year: 'numeric',
+      }),
+    },
+  ];
+}
+
+function createBootstrapYears(): number[] {
+  const currentYear = new Date().getFullYear();
+  return [currentYear, currentYear - 1, currentYear - 2];
+}
+
+interface InitAccountOptions {
+  bootstrapMonths?: Array<{ month: string; label: string }>;
+  bootstrapYears?: number[];
+  resolveBootstrap?: boolean;
+}
+
 function flushPendingRequests(httpMock: HttpTestingController): void {
   const pending = httpMock.match(() => true);
   for (const req of pending) {
@@ -144,13 +184,39 @@ describe('SummaryViewComponent - Service Integration', () => {
   let httpMock: HttpTestingController;
   let store: InstanceType<typeof currentAccountSignalStore>;
 
-  function initAccount(accountId: string): void {
+  function emitAccountSelection(accountId: string): void {
     if (store.selectCurrentAccountId() === accountId) {
       store.setCurrentAccountId('');
       fixture.detectChanges();
     }
     store.setCurrentAccountId(accountId);
     fixture.detectChanges();
+  }
+
+  function resolveInitialBootstrap(
+    accountId: string,
+    options: InitAccountOptions = {}
+  ): void {
+    const monthsReq = httpMock.expectOne(
+      `/api/summary/months?account_id=${accountId}`
+    );
+    monthsReq.flush(options.bootstrapMonths ?? createBootstrapMonths());
+    fixture.detectChanges();
+
+    const yearsReq = httpMock.expectOne('/api/summary/years');
+    yearsReq.flush(options.bootstrapYears ?? createBootstrapYears());
+    fixture.detectChanges();
+  }
+
+  function initAccount(
+    accountId: string,
+    options: InitAccountOptions = {}
+  ): void {
+    emitAccountSelection(accountId);
+
+    if (options.resolveBootstrap !== false) {
+      resolveInitialBootstrap(accountId, options);
+    }
   }
 
   beforeEach(async () => {
@@ -255,6 +321,52 @@ describe('SummaryViewComponent - Service Integration', () => {
       expect(component.error()).toBeTruthy();
       expect(component.loading()).toBe(false);
     });
+
+    it('should bootstrap once from the first available month', () => {
+      initAccount('123', {
+        resolveBootstrap: false,
+      });
+
+      expect(httpMock.match(matchSummary('123'))).toHaveLength(0);
+      expect(httpMock.match(matchGraph('123', '2025-02'))).toHaveLength(0);
+
+      resolveInitialBootstrap('123', {
+        bootstrapMonths: [
+          { month: '2025-02', label: 'February 2025' },
+          { month: '2025-01', label: 'January 2025' },
+        ],
+        bootstrapYears: [2025, 2024],
+      });
+
+      const summaryReqs = httpMock.match(matchSummary('123'));
+      const graphReqs = httpMock.match(matchGraph('123', '2025-02'));
+
+      expect(summaryReqs).toHaveLength(1);
+      expect(graphReqs).toHaveLength(1);
+
+      summaryReqs[0].flush(createMockSummary());
+      graphReqs[0].flush(createMockGraphData());
+
+      expect(component.selectedMonth.value).toBe('2025-02');
+      expect(component.selectedYear.value).toBe(2025);
+    });
+
+    it('should ignore repeated same-account emissions after bootstrap settles', () => {
+      initAccount('123');
+
+      const summaryReq = httpMock.expectOne(matchSummary('123'));
+      const graphReq = httpMock.expectOne(
+        matchGraph('123', testCurrentMonth())
+      );
+
+      summaryReq.flush(createMockSummary());
+      graphReq.flush(createMockGraphData());
+
+      store.setCurrentAccountId('123');
+      fixture.detectChanges();
+
+      expect(httpMock.match(() => true)).toHaveLength(0);
+    });
   });
 
   describe('Graph Integration', () => {
@@ -318,7 +430,7 @@ describe('SummaryViewComponent - Service Integration', () => {
 
   describe('Available Months', () => {
     it('should fetch available months with accountId', () => {
-      initAccount('123');
+      initAccount('123', { resolveBootstrap: false });
 
       const req = httpMock.expectOne('/api/summary/months?account_id=123');
       expect(req.request.method).toBe('GET');
@@ -330,7 +442,7 @@ describe('SummaryViewComponent - Service Integration', () => {
     });
 
     it('should populate month selector options', () => {
-      initAccount('123');
+      initAccount('123', { resolveBootstrap: false });
 
       const req = httpMock.expectOne('/api/summary/months?account_id=123');
       req.flush([
@@ -362,7 +474,7 @@ describe('SummaryViewComponent - Service Integration', () => {
     });
 
     it('should handle months fetch errors', () => {
-      initAccount('123');
+      initAccount('123', { resolveBootstrap: false });
 
       const req = httpMock.expectOne('/api/summary/months?account_id=123');
       req.error(new ProgressEvent('error'));
@@ -631,14 +743,9 @@ describe('SummaryViewComponent - Service Integration', () => {
 
   describe('Month/Year Selectors', function monthYearSelectorsTests() {
     it('should populate month selector from available months', function populateMonthSelector() {
-      initAccount('123');
-
-      const req = httpMock.expectOne('/api/summary/months?account_id=123');
-      req.flush([
-        { month: '2025-01', label: 'January 2025' },
-        { month: '2025-02', label: 'February 2025' },
-        { month: '2025-03', label: 'March 2025' },
-      ]);
+      initAccount('123', {
+        bootstrapMonths: createMockMonths(),
+      });
 
       const options = component.monthOptions$();
       expect(options).toHaveLength(3);
@@ -647,7 +754,7 @@ describe('SummaryViewComponent - Service Integration', () => {
     });
 
     it('should populate year selector from service', function populateYearSelector() {
-      initAccount('123');
+      initAccount('123', { resolveBootstrap: false });
 
       const yearsReq = httpMock.expectOne('/api/summary/years');
       yearsReq.flush([2025, 2024, 2023]);
@@ -799,7 +906,7 @@ describe('SummaryViewComponent - Service Integration', () => {
     });
 
     it('should handle empty month options gracefully', function emptyMonthOptions() {
-      initAccount('123');
+      initAccount('123', { resolveBootstrap: false });
 
       const req = httpMock.expectOne('/api/summary/months?account_id=123');
       req.flush([]);
@@ -809,7 +916,7 @@ describe('SummaryViewComponent - Service Integration', () => {
     });
 
     it('should handle empty year options gracefully', function emptyYearOptions() {
-      initAccount('123');
+      initAccount('123', { resolveBootstrap: false });
 
       const yearsReq = httpMock.expectOne('/api/summary/years');
       yearsReq.flush([]);
@@ -1219,21 +1326,13 @@ describe('SummaryViewComponent - Service Integration', () => {
       const summaryReq = httpMock.expectOne(matchSummary('123'));
       summaryReq.flush(createMockSummary());
 
-      const monthsReq = httpMock.expectOne(
-        '/api/summary/months?account_id=123'
-      );
-      monthsReq.flush(createMockMonths());
-
-      const yearsReq = httpMock.expectOne('/api/summary/years');
-      yearsReq.flush([2025, 2024, 2023]);
-
       const graphReq = httpMock.expectOne(
         matchGraphByYear('123', new Date().getFullYear())
       );
       graphReq.flush(createMockGraphData());
 
       expect(component.basis$()).toBe(100000);
-      expect(component.monthOptions$()).toHaveLength(3);
+      expect(component.monthOptions$()).toHaveLength(2);
       expect(component.yearOptions$()).toHaveLength(3);
     });
 
@@ -1268,9 +1367,11 @@ describe('SummaryViewComponent - Service Integration', () => {
 
       expect(component.error()).toBeTruthy();
 
-      // Retry by calling ngOnInit again
-      initAccount('123');
+      flushPendingRequests(httpMock);
+      component.selectedMonth.setValue('2025-02');
 
+      const graphReq = httpMock.expectOne(matchGraph('123', '2025-02'));
+      graphReq.flush(createMockGraphData());
       const req2 = httpMock.expectOne(matchSummary('123'));
       req2.flush(createMockSummary());
 
@@ -1305,7 +1406,7 @@ describe('SummaryViewComponent - Service Integration', () => {
     });
 
     it('should recover from months error on year change', function recoverFromMonthsError() {
-      initAccount('123');
+      initAccount('123', { resolveBootstrap: false });
 
       const req1 = httpMock.expectOne('/api/summary/months?account_id=123');
       req1.error(new ProgressEvent('error'));
@@ -1335,10 +1436,10 @@ describe('SummaryViewComponent - Service Integration', () => {
 
       expect(component.error()).toBeTruthy();
 
-      // Start new fetch
-      initAccount('123');
+      component.refreshData();
 
       // Error should be cleared when new fetch starts
+      expect(component.error()).toBeNull();
       expect(component.loading()).toBe(true);
     });
   });

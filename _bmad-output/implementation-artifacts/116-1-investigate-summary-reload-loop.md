@@ -1,6 +1,6 @@
 # Story 116.1: Investigate Summary Reload Loop Root Cause and Define Fix Strategy
 
-Status: Approved
+Status: In Progress
 
 **Story Key:** `116-1-investigate-summary-reload-loop`
 **Epic:** 116 - Stop Continuous Reloading on Account Summary Screens
@@ -8,6 +8,7 @@ Status: Approved
 **Story Meta:** [_bmad-output/planning-artifacts/story-meta/2026-05-30/116-1-investigate-summary-reload-loop.yaml](../planning-artifacts/story-meta/2026-05-30/116-1-investigate-summary-reload-loop.yaml)
 **Source Story Title in Epic File:** `Reproduce the Summary Reload Loop and Identify the Trigger`
 **Authoritative Title for This Artifact:** `Investigate Summary Reload Loop Root Cause and Define Fix Strategy`
+**GitHub Issue:** `#1333`
 **Type:** investigation / design handoff only - no production code changes
 **Depends on:** none
 **Enables:** Story 116.2 and Story 116.3
@@ -51,84 +52,84 @@ allowed refresh rules, and hand off the smallest credible fix seam for Story 116
 
 ## Tasks / Subtasks
 
-- [ ] **Task 1 - Read the current reactive path end-to-end before changing anything**
+- [x] **Task 1 - Read the current reactive path end-to-end before changing anything**
       (AC: 1, 2, 3)
-  - [ ] Read `apps/dms-material/src/app/shared/components/summary-view/summary-view.ts`
+  - [x] Read `apps/dms-material/src/app/shared/components/summary-view/summary-view.ts`
         completely and record the route-mode split, `setupAccountWatcher()`,
         `initGlobalMode()`, `refreshData()`, and the current `lastFetchedMonth` /
         `lastFetchedYear` guards.
-  - [ ] Read `apps/dms-material/src/app/shared/components/summary-view/summary-view.base.ts`
+  - [x] Read `apps/dms-material/src/app/shared/components/summary-view/summary-view.base.ts`
         completely and record the month/year auto-select effects, selector enable/disable
         flow, and the inline comment that already documents one historical infinite-loop
         path.
-  - [ ] Read `apps/dms-material/src/app/global/services/summary.service.ts`
+  - [x] Read `apps/dms-material/src/app/global/services/summary.service.ts`
         completely and document the side effects of `fetchSummary()`, `fetchGraph()`,
         `fetchMonths()`, and `fetchYears()`, including `summaryRequestSeq`, loading/error
         signals, cache behavior, account-vs-global month handling, and `onComplete`
         callback sequencing.
-  - [ ] Read `apps/dms-material/src/app/store/current-account/current-account.signal-store.ts`
+  - [x] Read `apps/dms-material/src/app/store/current-account/current-account.signal-store.ts`
         completely and document how `selectCurrentAccountId()` is computed and whether the
         store can re-emit the same visible account ID.
-  - [ ] Read `apps/dms-material/src/app/app.routes.ts` and confirm both route entry points:
+  - [x] Read `apps/dms-material/src/app/app.routes.ts` and confirm both route entry points:
         `/global/summary` with `mode: 'global'` and the default account summary child route
         with `mode: 'account'`.
-  - [ ] Read `apps/dms-material/src/app/shared/components/summary-view/summary-view-account.spec.ts`,
+  - [x] Read `apps/dms-material/src/app/shared/components/summary-view/summary-view-account.spec.ts`,
         `apps/dms-material/src/app/global/global-summary.spec.ts`, and
         `apps/dms-material/src/app/global/services/summary.service.spec.ts` to document
         what unit/integration coverage already exists and what coverage is missing around
         "load once" behavior.
-  - [ ] Read `apps/dms-material-e2e/src/account-summary.spec.ts` and
+  - [x] Read `apps/dms-material-e2e/src/account-summary.spec.ts` and
         `apps/dms-material-e2e/src/global-summary.spec.ts` to document the current user
         flows and the lack of an assertion that idle screens stop issuing requests.
 
-- [ ] **Task 2 - Reproduce the reload loop and capture the exact request pattern**
+- [x] **Task 2 - Reproduce the reload loop and capture the exact request pattern**
       (AC: 1)
-  - [ ] Use the Playwright MCP server to open `/global/summary` and at least one real
+  - [x] Use the Playwright MCP server to open `/global/summary` and at least one real
         `/account/:accountId` summary screen.
-  - [ ] Observe network activity after the screen becomes visible and record which
+  - [x] Observe network activity after the screen becomes visible and record which
         endpoints repeat unexpectedly: `/api/summary`, `/api/summary/graph`,
         `/api/summary/months`, and/or `/api/summary/years`.
-  - [ ] Record whether the repeat happens in global mode, account mode, or both.
-  - [ ] Record whether the repeat begins immediately on initial load, only after selectors
+  - [x] Record whether the repeat happens in global mode, account mode, or both.
+  - [x] Record whether the repeat begins immediately on initial load, only after selectors
         enable, only after months/years resolve, or only after account resolution.
 
-- [ ] **Task 3 - Identify the exact reactive trigger instead of guessing** (AC: 2)
-  - [ ] Prove or eliminate the `SummaryViewBase` month auto-select effect as the trigger.
+- [x] **Task 3 - Identify the exact reactive trigger instead of guessing** (AC: 2)
+  - [x] Prove or eliminate the `SummaryViewBase` month auto-select effect as the trigger.
         The inline code comment already documents a historical path:
         `fetchMonths -> setValue -> valueChanges -> fetchSummary -> enableSelectors -> ...`.
-  - [ ] Prove or eliminate `setupAccountWatcher()` as the trigger, including any repeated
+  - [x] Prove or eliminate `setupAccountWatcher()` as the trigger, including any repeated
         `fetchAccountData()` calls caused by `currentAccountSignalStore.selectCurrentAccountId()`
         recomputation.
-  - [ ] Prove or eliminate selector `valueChanges` feedback caused by `setValue()`,
+  - [x] Prove or eliminate selector `valueChanges` feedback caused by `setValue()`,
         `disable()`, `enableSelectors()`, or Angular Material revalidation.
-  - [ ] If the loop comes from another boundary, document the precise signal/effect/
+  - [x] If the loop comes from another boundary, document the precise signal/effect/
         subscription chain with enough detail that Story 116.2 can change one seam
         instead of refactoring blindly.
 
-- [ ] **Task 4 - Define the fix strategy and legitimate refresh rules** (AC: 3)
-  - [ ] Document the allowed one-time load behavior for initial screen open in global and
+- [x] **Task 4 - Define the fix strategy and legitimate refresh rules** (AC: 3)
+  - [x] Document the allowed one-time load behavior for initial screen open in global and
         account modes.
-  - [ ] Document the allowed refresh behavior for explicit account change, month change,
+  - [x] Document the allowed refresh behavior for explicit account change, month change,
         year change, and manual refresh.
-  - [ ] State which requests are intentionally coupled and which are not. Example: year
+  - [x] State which requests are intentionally coupled and which are not. Example: year
         change may legitimately re-fetch months and graph without implying an immediate
         summary re-fetch unless the selected month changes.
-  - [ ] Name the smallest likely code seam for Story 116.2 to change, using exact methods
+  - [x] Name the smallest likely code seam for Story 116.2 to change, using exact methods
         and guards rather than a vague "refactor summary view" direction.
 
-- [ ] **Task 5 - Hand off concrete validation surfaces for Stories 116.2 and 116.3**
+- [x] **Task 5 - Hand off concrete validation surfaces for Stories 116.2 and 116.3**
       (AC: 3)
-  - [ ] List the likely implementation files for Story 116.2:
+  - [x] List the likely implementation files for Story 116.2:
         `summary-view.ts`, `summary-view.base.ts`, and `summary.service.ts` only if the
         proven trigger is service-level.
-  - [ ] List the likely unit/regression files for Story 116.3:
+  - [x] List the likely unit/regression files for Story 116.3:
         `summary-view-account.spec.ts`, `global-summary.spec.ts`, and
         `summary.service.spec.ts` if the root cause sits in service orchestration.
-  - [ ] List the likely E2E regression surfaces:
+  - [x] List the likely E2E regression surfaces:
         `apps/dms-material-e2e/src/account-summary.spec.ts`,
         `apps/dms-material-e2e/src/global-summary.spec.ts`, or a dedicated new summary-load
         stability spec if that is clearer.
-  - [ ] Record what must be preserved: initial data render, chart rendering, selector
+  - [x] Record what must be preserved: initial data render, chart rendering, selector
         usability, route-mode split, legitimate account/month/year refreshes, and current
         loading/error UX.
 
@@ -234,12 +235,61 @@ reactive edge are proved from live reproduction plus code trace.
 
 ### Agent Model Used
 
-To be filled by implementing agent.
+GPT-5.4
 
 ### Debug Log References
 
+- Playwright MCP reproduction against `http://localhost:4520/global/summary` and
+      `http://localhost:4520/account/1677e04f-ef9b-4372-adb3-b740443088dc`
+- Local investigation runtime launched from worktree with `pnpm prisma generate`,
+      `node tools/create-test-db.js test-database.db`, backend on port `3220`, and app on
+      port `4520`
+- Validation commands: `pnpm all`, `pnpm test`, `pnpm lint`
+
 ### Completion Notes List
+
+- Reproduced mode split in browser. Global summary stabilizes after initial load and a
+      one-time correction from current month/year to first available `2025-12` / `2025`.
+      It does not continue looping after `networkidle`.
+- Reproduced account summary continuous reloads. After initial load and the same one-time
+      correction to available month/year, the visible account summary re-enters loading every
+      ~3 seconds and reissues `/api/summary`, `/api/summary/graph`, and
+      `/api/summary/months` for the same account.
+- Live component instrumentation on the real page proved the steady-state trigger is the
+      `setupAccountWatcher()` effect in `summary-view.ts`. The same component instance calls
+      `selectCurrentAccountId()` and then `fetchAccountData()` twice per cycle, even though the
+      returned account ID stays unchanged at
+      `1677e04f-ef9b-4372-adb3-b740443088dc`.
+- Eliminated `SummaryViewBase` month auto-select and selector `valueChanges` as the
+      steady-state trigger. They explain the one-time correction from current calendar month
+      to the first available month/year, but they do not explain the continuing 3-second idle
+      bursts.
+- Smallest likely fix seam for Story 116.2 is `setupAccountWatcher()` in
+      `apps/dms-material/src/app/shared/components/summary-view/summary-view.ts`. That effect
+      needs a same-account guard before `fetchAccountData()` so repeated recomputation of
+      `selectCurrentAccountId()` cannot replay the startup burst for an unchanged account.
+- Legitimate refresh rules for Story 116.2: global initial load should fetch months,
+      years, graph, and summary once, with at most one corrective summary/graph fetch if the
+      first available month/year differs from the current calendar defaults. Account initial
+      load should fetch summary, graph, months, and years once for the resolved account, with
+      at most one corrective month/year follow-up. Explicit month change should fetch summary
+      and graph once. Explicit year change should fetch months and graph once, and summary
+      only if the selected month actually changes. Manual refresh should re-fetch summary once.
+- Coverage gaps remain. Current unit specs cover rendering and selector-driven updates,
+      but do not assert that account/global summary screens settle and stop issuing idle
+      requests. Current E2E specs verify render and selector usability only; they do not cap
+      steady-state request counts.
+- Investigation stayed source-clean. No production source files were modified. `pnpm all`
+      succeeded but ran no affected tasks. `pnpm test` and `pnpm lint` failed because root
+      workspace scripts are not defined in `package.json`, so Task 6 and Acceptance Criterion 4
+      remain incomplete.
 
 ### File List
 
 - `_bmad-output/implementation-artifacts/116-1-investigate-summary-reload-loop.md`
+
+## Change Log
+
+- 2026-06-02: Investigated summary reload loop, captured live reproduction evidence,
+      documented root-cause handoff notes in Dev Agent Record, and left story in progress
+      because `pnpm test` / `pnpm lint` do not pass in this worktree.

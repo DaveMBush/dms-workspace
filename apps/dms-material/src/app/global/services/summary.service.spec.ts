@@ -398,6 +398,77 @@ describe('SummaryService', () => {
       expect(service.summary().deposits).toBe(100);
       expect(service.error()).toBeNull();
     });
+
+    it('should ignore stale graph response when a newer graph request is pending', () => {
+      service.fetchGraph(2024, '123', '2024-12');
+      const req1 = httpMock.expectOne(
+        (req) =>
+          req.url === '/api/summary/graph' &&
+          req.params.get('account_id') === '123' &&
+          req.params.get('month') === '2024-12'
+      );
+
+      service.fetchGraph(2025, '456', '2025-02');
+      const req2 = httpMock.expectOne(
+        (req) =>
+          req.url === '/api/summary/graph' &&
+          req.params.get('account_id') === '456' &&
+          req.params.get('month') === '2025-02'
+      );
+
+      req1.flush([
+        {
+          month: '2024-12',
+          deposits: 999,
+          dividends: 999,
+          capitalGains: 999,
+        },
+      ]);
+
+      expect(service.graph()).toEqual([]);
+
+      req2.flush([
+        {
+          month: '2025-02',
+          deposits: 100,
+          dividends: 200,
+          capitalGains: 300,
+        },
+      ]);
+
+      expect(service.graph()).toEqual([
+        {
+          month: '2025-02',
+          deposits: 100,
+          dividends: 200,
+          capitalGains: 300,
+        },
+      ]);
+    });
+
+    it('should ignore stale account-month response when a newer request is pending', () => {
+      service.fetchMonths('123', 2024);
+      const req1 = httpMock.expectOne(
+        '/api/summary/months?account_id=123&year=2024'
+      );
+
+      service.fetchMonths('456', 2025);
+      const req2 = httpMock.expectOne(
+        '/api/summary/months?account_id=456&year=2025'
+      );
+
+      req1.flush([{ month: '2024-12', label: '12/2024' }]);
+
+      expect(service.accountMonths()).toEqual([]);
+      expect(service.loading()).toBe(true);
+
+      req2.flush([{ month: '2025-02', label: '02/2025' }]);
+
+      expect(service.accountMonths()).toEqual([
+        { label: '02/2025', value: '2025-02' },
+      ]);
+      expect(service.loading()).toBe(false);
+    });
   });
 
   describe('onComplete Callback', () => {

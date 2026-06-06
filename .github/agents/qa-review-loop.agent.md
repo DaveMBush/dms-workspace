@@ -1,8 +1,8 @@
 ---
 description: 'QA review and remediation loop: run the gate up to 10 times, auto-apply fixes using Context7 and Playwright, re-validate after each fix until the gate passes'
 argument-hint: story=3-3
-model: GPT-5.4 (copilot)
-tools: [vscode, execute/runNotebookCell, execute/getTerminalOutput, execute/killTerminal, execute/runTask, execute/createAndRunTask, execute/runTests, execute/testFailure, read, agent, edit, search, web, browser, 'bash/*', 'context7/*', 'playwright/*', 'github/*', 'nx-mcp-server/*', 'gitkraken/*', todo]
+model: qwen3-coder:latest (ollama)
+tools: [vscode, execute, read, agent, edit, search, web, 'context7/*', 'playwright/*', 'github/*', 'nx-mcp-server/*', browser, todo]
 agents: [gate, quality-validation]
 user-invocable: false
 ---

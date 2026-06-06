@@ -16,6 +16,17 @@ function createDefaultSummary(): Summary {
   };
 }
 
+function mapMonthOptions(
+  data: Array<{ month: string; label: string }>
+): MonthOption[] {
+  return data.map(function transformMonth(m: {
+    month: string;
+    label: string;
+  }): MonthOption {
+    return { label: m.label, value: m.month };
+  });
+}
+
 /**
  * Service for fetching and managing summary data.
  * Communicates with /api/summary, /api/summary/graph, /api/summary/months,
@@ -26,7 +37,9 @@ function createDefaultSummary(): Summary {
 })
 export class SummaryService {
   private readonly http = inject(HttpClient);
+  private graphRequestSeq = 0;
   private summaryRequestSeq = 0;
+  private accountMonthsRequestSeq = 0;
   private monthsCached = false;
   private yearsCached = false;
 
@@ -106,14 +119,22 @@ export class SummaryService {
    * @param month - Optional month for account-specific graph queries
    */
   fetchGraph(year?: number, accountId?: string, month?: string): void {
+    const requestSeq = ++this.graphRequestSeq;
     this.errorSignal.set(null);
+    const self = this;
 
-    function onGraphSuccess(this: SummaryService, data: GraphPoint[]): void {
-      this.graphSignal.set(data);
+    function onGraphSuccess(data: GraphPoint[]): void {
+      if (requestSeq !== self.graphRequestSeq) {
+        return;
+      }
+      self.graphSignal.set(data);
     }
 
-    function onGraphError(this: SummaryService, err: HttpErrorResponse): void {
-      this.errorSignal.set(err.message || 'Failed to fetch graph');
+    function onGraphError(err: HttpErrorResponse): void {
+      if (requestSeq !== self.graphRequestSeq) {
+        return;
+      }
+      self.errorSignal.set(err.message || 'Failed to fetch graph');
     }
 
     const params: Record<string, string> = {};
@@ -130,8 +151,8 @@ export class SummaryService {
     }
 
     this.http.get<GraphPoint[]>('/api/summary/graph', { params }).subscribe({
-      next: onGraphSuccess.bind(this),
-      error: onGraphError.bind(this),
+      next: onGraphSuccess,
+      error: onGraphError,
     });
   }
 
@@ -143,6 +164,7 @@ export class SummaryService {
    */
   fetchMonths(accountId?: string, year?: number): void {
     const hasAccountId = accountId !== undefined && accountId !== '';
+    const requestSeq = hasAccountId ? ++this.accountMonthsRequestSeq : 0;
     if (!hasAccountId && this.monthsCached) {
       return;
     }
@@ -155,12 +177,10 @@ export class SummaryService {
     function onMonthsSuccess(
       data: Array<{ month: string; label: string }>
     ): void {
-      const mapped = data.map(function transformMonth(m: {
-        month: string;
-        label: string;
-      }): MonthOption {
-        return { label: m.label, value: m.month };
-      });
+      if (hasAccountId && requestSeq !== self.accountMonthsRequestSeq) {
+        return;
+      }
+      const mapped = mapMonthOptions(data);
       if (hasAccountId) {
         self.accountMonthsSignal.set(mapped);
       } else {
@@ -173,6 +193,9 @@ export class SummaryService {
     }
 
     function onMonthsError(err: HttpErrorResponse): void {
+      if (hasAccountId && requestSeq !== self.accountMonthsRequestSeq) {
+        return;
+      }
       self.errorSignal.set(err.message || 'Failed to fetch months');
       self.loadingSignal.set(false);
     }

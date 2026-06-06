@@ -1,8 +1,8 @@
 ---
 description: 'Fully autonomous epic development: discover all stories, validate Approved status, then develop each story sequentially from implementation through merge'
 argument-hint: epic=AD
-model: GPT-5.4 (copilot)
-tools: [vscode, execute/runNotebookCell, execute/getTerminalOutput, execute/killTerminal, execute/runTask, execute/createAndRunTask, execute/runTests, execute/testFailure, read, agent, edit, search, web, browser, 'bash/*', 'context7/*', 'playwright/*', 'github/*', 'nx-mcp-server/*', 'gitkraken/*', todo]
+model: qwen3-coder:latest (ollama)
+tools: [vscode, execute, read, agent, edit, search, web, 'context7/*', 'playwright/*', 'github/*', 'nx-mcp-server/*', browser, todo]
 agents: [develop-story, debug]
 user-invocable: false
 ---
@@ -87,7 +87,7 @@ For each story in the ordered list:
 
    - If `runSubagent` returns an error or throws, do NOT attempt to read the meta file. Follow the failure decision table below.
    - Resolve meta path: `${GIT_COMMON_DIR}/tmp/story-${current_story}-meta.json` and read it.
-   - If the meta file is missing or malformed, follow the failure decision table below.
+   - If the meta file is missing or malformed, first attempt one local metadata recovery pass when the delegated workflow already proves the story merged or is otherwise complete. Recovery may coerce a numeric `pr` to a string and must write string `story`, string `pr`, string `branch`, boolean `merged`, and optional ISO-8601 `mergedAt`. Only follow the failure decision table if completion facts cannot be recovered.
    - Validate meta JSON against this schema before updating the aggregation file: an object with required string fields `story`, `pr`, and `branch`, required boolean `merged`, optional ISO-8601 string `mergedAt`, and optional string `reason`.
    - Append or update `${GIT_COMMON_DIR}/tmp/epic-${epic}-stories.json` with at minimum: `story`, `pr`, `branch`, `merged`, `mergedAt`, and `reason` when present.
    - Continue to the next story unless the failure decision table directs otherwise.
