@@ -42,6 +42,8 @@ import { SummaryViewBase } from './summary-view.base';
 export class SummaryViewComponent extends SummaryViewBase implements OnInit {
   private readonly accountStore = inject(currentAccountSignalStore);
   private accountId = '';
+  private accountBootstrapPending = false;
+  private bootstrapMonthsSeed = this.monthOptions$();
   private lastFetchedMonth: string | null = null;
   private lastFetchedYear: number | null = null;
 
@@ -54,6 +56,7 @@ export class SummaryViewComponent extends SummaryViewBase implements OnInit {
     }
 
     if (this.mode === 'account') {
+      this.setupAccountBootstrap();
       this.setupAccountWatcher();
     }
   }
@@ -76,7 +79,7 @@ export class SummaryViewComponent extends SummaryViewBase implements OnInit {
     const component = this;
     effect(function watchAccountChange(): void {
       const accountId = component.accountStore.selectCurrentAccountId();
-      if (accountId !== '') {
+      if (accountId !== '' && accountId !== component.accountId) {
         component.accountId = accountId;
         component.fetchAccountData();
       }
@@ -89,6 +92,53 @@ export class SummaryViewComponent extends SummaryViewBase implements OnInit {
     this.selectedYear.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef), distinctUntilChanged())
       .subscribe(this.onYearChange.bind(this));
+  }
+
+  private setupAccountBootstrap(): void {
+    const component = this;
+    effect(function bootstrapAccountSummary(): void {
+      const months = component.monthOptions$();
+
+      if (!component.accountBootstrapPending) {
+        return;
+      }
+
+      if (months === component.bootstrapMonthsSeed) {
+        return;
+      }
+
+      const bootstrapMonth = months[0]?.value ?? getCurrentMonth();
+      const parsedYear = Number.parseInt(bootstrapMonth.slice(0, 4), 10);
+      const knownYears = component.yearOptions$();
+      const fallbackYear = new Date().getFullYear();
+      let bootstrapYear = parsedYear;
+
+      if (!knownYears.includes(parsedYear)) {
+        if (knownYears[0] !== undefined) {
+          bootstrapYear = knownYears[0];
+        } else if (Number.isNaN(parsedYear)) {
+          bootstrapYear = fallbackYear;
+        }
+      }
+
+      component.accountBootstrapPending = false;
+      component.suppressMonthAutoSelectEvents = false;
+      component.suppressYearAutoSelectEvents = false;
+      component.lastFetchedMonth = bootstrapMonth;
+      component.lastFetchedYear = bootstrapYear;
+      component.selectedMonth.setValue(bootstrapMonth, { emitEvent: false });
+      component.selectedYear.setValue(bootstrapYear, { emitEvent: false });
+      component.summaryService.fetchSummary(
+        bootstrapMonth,
+        component.enableSelectors.bind(component),
+        component.accountId
+      );
+      component.summaryService.fetchGraph(
+        bootstrapYear,
+        component.accountId,
+        bootstrapMonth
+      );
+    });
   }
 
   private initGlobalMode(): void {
@@ -113,18 +163,16 @@ export class SummaryViewComponent extends SummaryViewBase implements OnInit {
   private fetchAccountData(): void {
     const currentMonth = getCurrentMonth();
     const currentYear = new Date().getFullYear();
-    this.lastFetchedMonth = currentMonth;
-    this.lastFetchedYear = currentYear;
+    this.accountBootstrapPending = true;
+    this.bootstrapMonthsSeed = this.monthOptions$();
+    this.suppressMonthAutoSelectEvents = true;
+    this.suppressYearAutoSelectEvents = true;
+    this.lastFetchedMonth = null;
+    this.lastFetchedYear = null;
     this.selectedMonth.setValue(currentMonth, { emitEvent: false });
     this.selectedYear.setValue(currentYear, { emitEvent: false });
     this.selectedMonth.disable({ emitEvent: false });
     this.selectedYear.disable({ emitEvent: false });
-    this.summaryService.fetchSummary(
-      currentMonth,
-      this.enableSelectors.bind(this),
-      this.accountId
-    );
-    this.summaryService.fetchGraph(undefined, this.accountId, currentMonth);
     this.summaryService.fetchMonths(this.accountId);
     this.summaryService.fetchYears();
   }

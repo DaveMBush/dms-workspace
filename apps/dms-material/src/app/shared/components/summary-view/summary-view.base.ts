@@ -15,6 +15,8 @@ import { getCurrentMonth } from './get-current-month.function';
  */
 export class SummaryViewBase {
   private readonly modeSignal = signal<'account' | 'global'>('global');
+  protected suppressMonthAutoSelectEvents = false;
+  protected suppressYearAutoSelectEvents = false;
 
   get mode(): 'account' | 'global' {
     return this.modeSignal();
@@ -114,7 +116,9 @@ export class SummaryViewBase {
         if (months.length > 0) {
           const newMonth = months[0].value;
           if (newMonth !== this.selectedMonth.value) {
-            this.selectedMonth.setValue(newMonth);
+            this.selectedMonth.setValue(newMonth, {
+              emitEvent: !this.suppressMonthAutoSelectEvents,
+            });
           }
         }
       }
@@ -128,7 +132,9 @@ export class SummaryViewBase {
         if (years.length > 0) {
           const currentValue = this.selectedYear.value;
           if (currentValue === null || !years.includes(currentValue)) {
-            this.selectedYear.setValue(years[0]);
+            this.selectedYear.setValue(years[0], {
+              emitEvent: !this.suppressYearAutoSelectEvents,
+            });
           }
         }
       }
