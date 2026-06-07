@@ -1,7 +1,7 @@
 ---
 description: 'Fully autonomous epic development: discover all stories, validate Approved status, then develop each story sequentially from implementation through merge'
 argument-hint: epic=AD
-model: qwen3-coder:latest (ollama)
+model: Qwen3.6-40B-Claude-4.6-Opus-Deckard-Heretic-Uncensored-Thinking (customendpoint)
 tools: [vscode, execute, read, agent, edit, search, web, 'context7/*', 'playwright/*', 'github/*', 'nx-mcp-server/*', browser, todo]
 agents: [develop-story, debug]
 user-invocable: false

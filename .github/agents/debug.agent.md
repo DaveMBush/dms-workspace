@@ -1,7 +1,7 @@
 ---
 description: 'Fully autonomous bug fix workflow: validate epic, collect bug description, implement fix, run quality validation, create PR, run CodeRabbit review, and merge'
 argument-hint: epic=3 story=3-5
-model: qwen3-coder:latest (ollama)
+model: Qwen3.6-40B-Claude-4.6-Opus-Deckard-Heretic-Uncensored-Thinking (customendpoint)
 tools: [vscode, execute, read, agent, edit, search, web, 'context7/*', 'playwright/*', 'github/*', 'nx-mcp-server/*', browser, todo]
 agents: [debug-setup, quality-validation, debug-pr-lifecycle, debug-merge-finalize]
 user-invocable: false

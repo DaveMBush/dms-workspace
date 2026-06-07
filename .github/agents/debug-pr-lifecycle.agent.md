@@ -1,7 +1,7 @@
 ---
 description: 'Create commit and PR for a debug branch then run the full CodeRabbit review loop until the PR is ready to merge'
 argument-hint: story=3-5
-model: qwen3-coder:latest (ollama)
+model: Qwen3.6-40B-Claude-4.6-Opus-Deckard-Heretic-Uncensored-Thinking (customendpoint)
 tools: [vscode, execute, read, agent, edit, search, web, 'context7/*', 'playwright/*', 'github/*', 'nx-mcp-server/*', browser, todo]
 agents: [commit-and-pr, code-rabbit]
 user-invocable: false

@@ -1,6 +1,6 @@
 ---
 description: 'Format code with pnpm format, commit all staged changes, create a GitHub PR linked to the story issue, and write the story metadata file'
-model: qwen3-coder:latest (ollama)
+model: Qwen3.6-40B-Claude-4.6-Opus-Deckard-Heretic-Uncensored-Thinking (customendpoint)
 tools: [vscode, execute, read, agent, edit, search, web, 'context7/*', 'playwright/*', 'github/*', 'nx-mcp-server/*', browser, todo]
 user-invocable: false
 ---
