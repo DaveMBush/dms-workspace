@@ -32,7 +32,12 @@ test.describe('Summary Load Stability Regression', () => {
 
       page.on('request', (req) => {
         const url = req.url();
-        if (url.includes('/api/summary') && !url.includes('/graph') && !url.includes('/months') && !url.includes('/years')) {
+        if (
+          url.includes('/api/summary') &&
+          !url.includes('/graph') &&
+          !url.includes('/months') &&
+          !url.includes('/years')
+        ) {
           requestCounts.summary++;
         } else if (url.includes('/api/summary/graph')) {
           requestCounts.graph++;
@@ -50,7 +55,9 @@ test.describe('Summary Load Stability Regression', () => {
       await page.waitForLoadState('networkidle');
 
       // Wait for summary card to be visible
-      const summaryCard = page.locator('[data-testid="account-summary-container"]');
+      const summaryCard = page.locator(
+        '[data-testid="account-summary-container"]'
+      );
       await expect(summaryCard).toBeVisible({ timeout: 15000 });
 
       // Record counts after initial load
@@ -109,8 +116,18 @@ test.describe('Summary Load Stability Regression', () => {
             status: 200,
             contentType: 'application/json',
             body: JSON.stringify([
-              { month: '2025-01', deposits: 10000, dividends: 100, capitalGains: 200 },
-              { month: '2025-02', deposits: 20000, dividends: 150, capitalGains: 300 },
+              {
+                month: '2025-01',
+                deposits: 10000,
+                dividends: 100,
+                capitalGains: 200,
+              },
+              {
+                month: '2025-02',
+                deposits: 20000,
+                dividends: 150,
+                capitalGains: 300,
+              },
             ]),
           });
         }
@@ -135,7 +152,12 @@ test.describe('Summary Load Stability Regression', () => {
 
       page.on('request', (req) => {
         const url = req.url();
-        if (url.includes('/api/summary') && !url.includes('/graph') && !url.includes('/months') && !url.includes('/years')) {
+        if (
+          url.includes('/api/summary') &&
+          !url.includes('/graph') &&
+          !url.includes('/months') &&
+          !url.includes('/years')
+        ) {
           summaryRequests++;
         } else if (url.includes('/api/summary/graph')) {
           graphRequests++;
@@ -194,8 +216,18 @@ test.describe('Summary Load Stability Regression', () => {
             status: 200,
             contentType: 'application/json',
             body: JSON.stringify([
-              { month: '2025-01', deposits: 10000, dividends: 100, capitalGains: 200 },
-              { month: '2025-02', deposits: 20000, dividends: 150, capitalGains: 300 },
+              {
+                month: '2025-01',
+                deposits: 10000,
+                dividends: 100,
+                capitalGains: 200,
+              },
+              {
+                month: '2025-02',
+                deposits: 20000,
+                dividends: 150,
+                capitalGains: 300,
+              },
             ]),
           });
         }
@@ -270,7 +302,9 @@ test.describe('Summary Load Stability Regression', () => {
       await page.waitForLoadState('networkidle');
 
       // Wait for summary card to be visible
-      const summaryCard = page.locator('[data-testid="account-summary-container"]');
+      const summaryCard = page.locator(
+        '[data-testid="account-summary-container"]'
+      );
       await expect(summaryCard).toBeVisible({ timeout: 15000 });
 
       // Wait for stats grid to be visible
@@ -342,7 +376,9 @@ test.describe('Summary Load Stability Regression', () => {
         await page.waitForLoadState('networkidle');
 
         // Assert: Screen remains stable after month change
-        const summaryCard = page.locator('[data-testid="account-summary-container"]');
+        const summaryCard = page.locator(
+          '[data-testid="account-summary-container"]'
+        );
         const statsGrid = page.locator('[data-testid="stats-grid"]');
 
         await expect(summaryCard).toBeVisible();
@@ -365,7 +401,10 @@ test.describe('Summary Load Stability Regression', () => {
       let requestCount = 0;
 
       page.on('request', (req) => {
-        if (req.url().includes('/api/summary') && !req.url().includes('/graph')) {
+        if (
+          req.url().includes('/api/summary') &&
+          !req.url().includes('/graph')
+        ) {
           requestCount++;
         }
       });
@@ -375,7 +414,9 @@ test.describe('Summary Load Stability Regression', () => {
       await page.waitForLoadState('networkidle');
 
       // Wait for summary card to be visible
-      const summaryCard = page.locator('[data-testid="global-summary-container"]');
+      const summaryCard = page.locator(
+        '[data-testid="global-summary-container"]'
+      );
       await expect(summaryCard).toBeVisible({ timeout: 15000 });
 
       // Record count after initial load

@@ -1466,7 +1466,9 @@ describe('SummaryViewComponent - Service Integration', () => {
 
       // Assert: After bootstrap completes, no idle summary requests fire
       const idleSummaryReqs = httpMock.match(matchSummary('123'));
-      const idleGraphReqs = httpMock.match(matchGraph('123', testCurrentMonth()));
+      const idleGraphReqs = httpMock.match(
+        matchGraph('123', testCurrentMonth())
+      );
 
       expect(idleSummaryReqs).toHaveLength(0);
       expect(idleGraphReqs).toHaveLength(0);
@@ -1508,9 +1510,10 @@ describe('SummaryViewComponent - Service Integration', () => {
       component.selectedYear.setValue(2024);
 
       // Assert: Exactly one months and one graph request for the year change
-      const monthsReqs = httpMock.match((r: HttpRequest<unknown>) =>
-        r.url.includes('/api/summary/months') &&
-        r.params.get('year') === '2024'
+      const monthsReqs = httpMock.match(
+        (r: HttpRequest<unknown>) =>
+          r.url.includes('/api/summary/months') &&
+          r.params.get('year') === '2024'
       );
       const yearGraphReqs = httpMock.match(matchGraphByYear('123', 2024));
 
