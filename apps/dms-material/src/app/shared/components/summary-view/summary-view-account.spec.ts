@@ -1443,4 +1443,129 @@ describe('SummaryViewComponent - Service Integration', () => {
       expect(component.loading()).toBe(true);
     });
   });
+
+  describe('Regression: Summary Load Stability', () => {
+    it('AC1: should settle after one bounded bootstrap sequence with no idle requests', () => {
+      // Arrange & Act: Open account summary
+      initAccount('123');
+
+      // Assert: Initial bootstrap produces exactly one summary and one graph request
+      const summaryReqs = httpMock.match(matchSummary('123'));
+      const graphReqs = httpMock.match(matchGraph('123', testCurrentMonth()));
+
+      expect(summaryReqs).toHaveLength(1);
+      expect(graphReqs).toHaveLength(1);
+
+      // Flush bootstrap requests
+      summaryReqs[0].flush(createMockSummary());
+      graphReqs[0].flush(createMockGraphData());
+
+      // Assert: After bootstrap completes, no idle summary requests fire
+      const idleSummaryReqs = httpMock.match(matchSummary('123'));
+      const idleGraphReqs = httpMock.match(matchGraph('123', testCurrentMonth()));
+
+      expect(idleSummaryReqs).toHaveLength(0);
+      expect(idleGraphReqs).toHaveLength(0);
+    });
+
+    it('AC2: should issue only one summary and one graph request per month change', () => {
+      // Arrange: Initial load and flush
+      initAccount('123');
+      flushPendingRequests(httpMock);
+
+      // Track request counts before month change
+      let summaryCount = 0;
+      let graphCount = 0;
+
+      // Act: Change month
+      component.selectedMonth.setValue('2025-02');
+
+      // Assert: Exactly one summary and one graph request for the month change
+      const monthSummaryReqs = httpMock.match(matchSummary('123'));
+      const monthGraphReqs = httpMock.match(matchGraph('123', '2025-02'));
+
+      summaryCount = monthSummaryReqs.length;
+      graphCount = monthGraphReqs.length;
+
+      expect(summaryCount).toBe(1);
+      expect(graphCount).toBe(1);
+
+      // Flush
+      monthSummaryReqs[0].flush(createMockSummary());
+      monthGraphReqs[0].flush(createMockGraphData());
+    });
+
+    it('AC2: should issue only one months and one graph request per year change', () => {
+      // Arrange: Initial load and flush
+      initAccount('123');
+      flushPendingRequests(httpMock);
+
+      // Act: Change year
+      component.selectedYear.setValue(2024);
+
+      // Assert: Exactly one months and one graph request for the year change
+      const monthsReqs = httpMock.match((r: HttpRequest<unknown>) =>
+        r.url.includes('/api/summary/months') &&
+        r.params.get('year') === '2024'
+      );
+      const yearGraphReqs = httpMock.match(matchGraphByYear('123', 2024));
+
+      expect(monthsReqs).toHaveLength(1);
+      expect(yearGraphReqs).toHaveLength(1);
+
+      // Flush
+      monthsReqs[0].flush(createMockMonths());
+      yearGraphReqs[0].flush(createMockGraphData());
+    });
+
+    it('AC2: should not re-trigger bootstrap on repeated same-account emission', () => {
+      // Arrange: Initial load and flush
+      initAccount('123');
+      flushPendingRequests(httpMock);
+
+      // Act: Re-emit same account ID
+      store.setCurrentAccountId('123');
+      fixture.detectChanges();
+
+      // Assert: No new bootstrap requests
+      const pending = httpMock.match((r: HttpRequest<unknown>) =>
+        r.url.includes('/api/summary')
+      );
+      expect(pending).toHaveLength(0);
+    });
+
+    it('AC2: should not re-trigger bootstrap on same month selection', () => {
+      // Arrange: Initial load and flush
+      initAccount('123');
+      flushPendingRequests(httpMock);
+
+      const currentMonth = component.selectedMonth.value;
+
+      // Act: Select same month
+      component.selectedMonth.setValue(currentMonth);
+
+      // Assert: No new requests (distinctUntilChanged blocks)
+      const pending = httpMock.match((r: HttpRequest<unknown>) =>
+        r.url.includes('/api/summary')
+      );
+      expect(pending).toHaveLength(0);
+    });
+
+    it('AC2: should not re-trigger bootstrap on same year selection', () => {
+      // Arrange: Initial load and flush
+      initAccount('123');
+      flushPendingRequests(httpMock);
+
+      const currentYear = component.selectedYear.value;
+
+      // Act: Select same year
+      component.selectedYear.setValue(currentYear);
+
+      // Assert: No new requests (distinctUntilChanged blocks)
+      const pending = httpMock.match((r: HttpRequest<unknown>) =>
+        r.url.includes('/api/summary')
+      );
+      expect(pending).toHaveLength(0);
+    });
+  });
 });
