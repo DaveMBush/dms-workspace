@@ -148,15 +148,14 @@ test.describe('Summary Load Stability Regression', () => {
       const options = page.locator('mat-option');
       const count = await options.count();
 
-      if (count > 1) {
-        await options.nth(1).click();
-        await page.waitForLoadState('networkidle');
-        await page.waitForTimeout(1000);
+      expect(count).toBeGreaterThan(1);
+      await options.nth(1).click();
+      await page.waitForLoadState('networkidle');
+      await page.waitForTimeout(1000);
 
-        // Assert: Exactly one summary and one graph request
-        expect(summaryRequests).toBe(1);
-        expect(graphRequests).toBe(1);
-      }
+      // Assert: Exactly one summary and one graph request
+      expect(summaryRequests).toBe(1);
+      expect(graphRequests).toBe(1);
     });
 
     test('AC2: should issue only one months and one graph request per year change', async ({

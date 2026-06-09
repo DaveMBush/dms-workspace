@@ -1445,7 +1445,7 @@ describe('SummaryViewComponent - Service Integration', () => {
   });
 
   describe('Regression: Summary Load Stability', () => {
-    it('AC1: should settle after one bounded bootstrap sequence with no idle requests', () => {
+    it('AC1: should settle after one bounded bootstrap sequence with no idle requests', async () => {
       // Arrange & Act: Open account summary
       initAccount('123');
 
@@ -1459,6 +1459,10 @@ describe('SummaryViewComponent - Service Integration', () => {
       // Flush bootstrap requests
       summaryReqs[0].flush(createMockSummary());
       graphReqs[0].flush(createMockGraphData());
+
+      // Allow queued async work (timers/microtasks) to run
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      fixture.detectChanges();
 
       // Assert: After bootstrap completes, no idle summary requests fire
       const idleSummaryReqs = httpMock.match(matchSummary('123'));
