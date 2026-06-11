@@ -1,7 +1,7 @@
 ---
 description: 'Fully autonomous epic development for range of epics'
 argument-hint: firstEpic=45 lastEpic=56
-model: Qwen3.6-40B-Claude-4.6-Opus-Deckard-Heretic-Uncensored-Thinking (customendpoint)
+model: Qwen3.6-27B-Claude-4.6-Opus-Deckard-Heretic-Uncensored-Thinking (customendpoint)
 tools: [vscode, execute, read, agent, edit, search, web, 'context7/*', 'playwright/*', 'github/*', 'nx-mcp-server/*', browser, todo]
 agents: [develop-epic]
 user-invocable: true
