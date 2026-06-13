@@ -33,7 +33,7 @@
     "@angular/forms": "21.2.11",
     "@angular/material": "21.2.9",
     "@angular/platform-browser": "21.2.11",
-    "@angular/platform-server": "21.2.11",
+    "@angular/platform-server": "21.2.13",
     "@angular/router": "21.2.11",
     "@angular/ssr": "21.2.9",
     "@aws-amplify/auth": "^6.19.1",
@@ -49,7 +49,7 @@
     "@prisma/adapter-better-sqlite3": "^7.2.0",
     "@smarttools/smart-core": "3.0.0",
     "@smarttools/smart-signals": "3.0.0",
-    "axios": "^1.15.2",
+    "axios": "^1.16.0",
     "chart.js": "^4.5.1",
     "cheerio": "^1.0.0",
     "dotenv": "^17.3.1",
@@ -159,7 +159,7 @@
     "typescript": "5.9.3",
     "typescript-eslint": "8.59.0",
     "vite": "7.3.2",
-    "vitest": "4.0.9"
+    "vitest": "4.1.0"
   },
   "packageManager": "pnpm@10.12.1",
   "engines": {
