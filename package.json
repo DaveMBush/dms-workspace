@@ -127,7 +127,7 @@
     "better-sqlite3": "^12.6.2",
     "electron": "^42.1.0",
     "electron-builder": "^25.0.0",
-    "esbuild": "^0.25.7",
+    "esbuild": "^0.28.1",
     "eslint": "^9.39.4",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-cypress": "^4.3.0",
