@@ -1,7 +1,7 @@
 ---
 description: 'Validate epic status, verify clean git state on main, create GitHub issue and debug branch, and return branch name to the parent debug workflow'
 argument-hint: epic=3 story=3-5
-model: Qwen3.6-40B-Claude-4.6-Opus-Deckard-Heretic-Uncensored-Thinking (customendpoint)
+model: Qwen3.6-27B-Claude-4.6-Opus-Deckard-Heretic-Uncensored-Thinking (customendpoint)
 tools: [vscode, execute, read, agent, edit, search, web, 'context7/*', 'playwright/*', 'github/*', 'nx-mcp-server/*', browser, todo]
 user-invocable: false
 ---

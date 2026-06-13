@@ -1,7 +1,7 @@
 ---
 description: 'Handle CodeRabbit review loop for a story PR — poll review comments, classify suggestions, apply in-scope fixes, run quality validation, and loop until PR is ready to merge'
 argument-hint: story=3-3
-model: Qwen3.6-40B-Claude-4.6-Opus-Deckard-Heretic-Uncensored-Thinking (customendpoint)
+model: Qwen3.6-27B-Claude-4.6-Opus-Deckard-Heretic-Uncensored-Thinking (customendpoint)
 tools: [vscode, execute, read, agent, edit, search, web, 'context7/*', 'playwright/*', 'github/*', 'nx-mcp-server/*', browser, todo]
 agents: [quality-validation]
 user-invocable: false

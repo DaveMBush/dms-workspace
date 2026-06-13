@@ -1,7 +1,7 @@
 ---
 description: 'Full quality validation loop: run pnpm all, e2e tests, dupcheck, format, and self-review until one full iteration passes or 5 iterations are exhausted'
 argument-hint: context=story-AD.3
-model: Qwen3.6-40B-Claude-4.6-Opus-Deckard-Heretic-Uncensored-Thinking (customendpoint)
+model: Qwen3.6-27B-Claude-4.6-Opus-Deckard-Heretic-Uncensored-Thinking (customendpoint)
 tools: [vscode, execute, read, agent, edit, search, web, 'context7/*', 'playwright/*', 'github/*', 'nx-mcp-server/*', browser, todo]
 user-invocable: false
 ---
