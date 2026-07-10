@@ -66,7 +66,7 @@
     "yahoo-finance2": "^3.13.0"
   },
   "devDependencies": {
-    "@analogjs/vite-plugin-angular": "2.5.2",
+    "@analogjs/vite-plugin-angular": "2.6.3",
     "@analogjs/vitest-angular": "2.6.1",
     "@angular-devkit/core": "21.2.15",
     "@angular-devkit/schematics": "21.2.15",
