@@ -70,7 +70,7 @@
     "@analogjs/vitest-angular": "2.6.1",
     "@angular-devkit/core": "21.2.15",
     "@angular-devkit/schematics": "21.2.15",
-    "@angular-eslint/eslint-plugin": "21.3.1",
+    "@angular-eslint/eslint-plugin": "22.0.0",
     "@angular-eslint/eslint-plugin-template": "21.3.1",
     "@angular-eslint/template-parser": "21.3.1",
     "@angular/build": "21.2.15",
