@@ -1,7 +1,6 @@
 ---
 description: 'Fully autonomous bug fix workflow: validate epic, collect bug description, implement fix, run quality validation, create PR, run CodeRabbit review, and merge'
 argument-hint: epic=3 story=3-5
-model: Qwen3.6-27B-Claude-4.6-Opus-Deckard-Heretic-Uncensored-Thinking (customendpoint)
 tools: [vscode, execute, read, agent, edit, search, web, 'context7/*', 'playwright/*', 'github/*', 'nx-mcp-server/*', browser, todo]
 agents: [debug-setup, quality-validation, debug-pr-lifecycle, debug-merge-finalize]
 user-invocable: false
@@ -100,7 +99,7 @@ Tasks:
 
 **This phase runs inside the dedicated validation subagent spawned from PHASE 3.2** — listed here for visibility.
 
-The validation subagent runs the Quality Validation Loop from `#skill:bmad-workflow` skill:
+The validation subagent runs the Quality Validation Loop from `#skill:bmad-workflow-builder` skill:
 
 - Full validation steps (pnpm all, e2e tests, dupcheck, format, code self-review)
 - Retry logic (10 attempts per step)
@@ -127,8 +126,8 @@ Keep a bug counter for this session. After 5 validated bugs in one session, info
 
 Before spawning the next subagent, emit and complete this numbered todo checklist in order to restore lost context in the main agent:
 
-1. Re-read the `#skill:bmad-workflow` skill: `.github/skills/bmad-workflow/SKILL.md`
-2. Re-read the human interaction protocol: `.github/skills/bmad-workflow/references/human-interaction.md`
+1. Re-read the `#skill:bmad-workflow-builder` skill: `.github/skills/bmad-workflow-builder/SKILL.md`
+2. Re-read the human interaction protocol: `.github/skills/bmad-workflow-builder/references/human-interaction.md`
 3. Re-read the epic file: `docs/epics/${epic}.md`
 4. Re-read the dev agent core config: `.bmad-core/core-config.yaml`
 5. Re-apply the exact Phase 5 response-classification rules above before either prompting again or spawning the next subagent.
@@ -159,7 +158,7 @@ If the `runSubagent` call itself errors or returns no structured result, treat i
 
 **This phase runs inside the dedicated PR lifecycle subagent from PHASE 6** — listed here for visibility.
 
-The PR lifecycle subagent runs the CodeRabbit Review Loop Pattern from `#skill:bmad-workflow` skill, including:
+The PR lifecycle subagent runs the CodeRabbit Review Loop Pattern from `#skill:bmad-workflow-builder` skill, including:
 
 - waiting for CodeRabbit review completion
 - retrieving and evaluating suggestions
@@ -188,7 +187,7 @@ If the `runSubagent` call itself errors or returns no structured result, treat i
 
 ### Error Recovery Strategy
 
-**See "Error Recovery Strategy" in `#skill:bmad-workflow` skill for full details.**
+**See "Error Recovery Strategy" in `#skill:bmad-workflow-builder` skill for full details.**
 
 ### Success Criteria
 
@@ -200,4 +199,4 @@ If the `runSubagent` call itself errors or returns no structured result, treat i
 
 - This workflow is designed for zero human intervention on happy path
 - Maintains quality gates while maximizing autonomy
-- See `#skill:bmad-workflow` skill for detailed patterns and best practices
+- See `#skill:bmad-workflow-builder` skill for detailed patterns and best practices
